@@ -72,7 +72,7 @@ export function amountBlock(key: string, name: string): AmountBlock {
 /** The block as the formula's spec (chain order; left raw: the sink floors it, as these sites always did). */
 export function amountSpecOf(key: string, name: string): AmountSpec {
   const b = amountBlock(key, name);
-  return { kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), order: 'chain', round: 'none', ...(b.provisional ? { provisional: true } : {}) };
+  return { kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none', ...(b.provisional ? { provisional: true } : {}) };
 }
 /** THE ONE HELPER: an item's amount from its data block, × the multipliers the caller names (in that order: the Stat
  * term from the unit first where the item has one). `counts` feeds the block's per-point parts. Raw (not floored). */

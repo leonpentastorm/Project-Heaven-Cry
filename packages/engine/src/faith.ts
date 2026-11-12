@@ -90,13 +90,13 @@ export const INTERVENTION = {
 /** How many interventions this character's patron may make in a fight now (item 740). */
 export const interventionLimit = (c: Character) => (devotionNow(c) >= INTERVENTION.highFrom ? INTERVENTION.perFightHigh : INTERVENTION.perFight);
 /** A Devotion-scaled intervention's number: (20 + 4 × Devotion) × Blessing power, rounded (item 741). */
-export const interventionAmount = (c: Character, power = 1) => amountOf({ kind: 'damage', base: INTERVENTION.base, per: [{ of: 'devotion', value: INTERVENTION.perDevotion }], profile: 'blessing', order: 'chain', round: 'round' }, null, { level: null, counts: { devotion: devotionNow(c) }, mults: [term(power, 'stat: blessing power')] }).amount;
+export const interventionAmount = (c: Character, power = 1) => amountOf({ kind: 'damage', base: INTERVENTION.base, per: [{ of: 'devotion', value: INTERVENTION.perDevotion }], profile: 'blessing', round: 'round' }, null, { level: null, counts: { devotion: devotionNow(c) }, mults: [term(power, 'stat: blessing power')] }).amount;
 // ---------- rules 1.20 (the heal and shield pass): prayer heals and shields ----------
 // On the one formula (effects/output.ts; step a5): a prayer's amount is its base (patrons.json) × the Stat term
 // (Blessing power: the unit's own, as the prayer landed it) × its own named multipliers; a heal or a shield also takes
 // the Level term (the level factor of rules 1.20). The number is left raw: the heal line and harm round it as before.
 const prayerAmount = (kind: 'damage' | 'heal' | 'shield', base: number, power: number, ...own: Term[]): number =>
-  amountOf({ kind, base, profile: kind === 'damage' ? 'blessing' : 'blessing_mend', order: 'chain', round: 'none' }, null, { level: null, mults: [term(power, 'stat: blessing power'), ...own] }).raw;
+  amountOf({ kind, base, profile: kind === 'damage' ? 'blessing' : 'blessing_mend', round: 'none' }, null, { level: null, mults: [term(power, 'stat: blessing power'), ...own] }).raw;
 const levelTerm = (u: Unit | null | undefined): Term => term(mendFactorOf(u), 'level');
 /** A prayer's heal or shield base, read from its data entry (patrons.json; `fallback` only for data without one). */
 const effVal = (entry: any, op: 'heal' | 'shield', fallback = 0): number => {
@@ -106,7 +106,7 @@ const effVal = (entry: any, op: 'heal' | 'shield', fallback = 0): number => {
 const hymnEntry = (id: string): any => { for (const p of FAITH_PATRONS) for (const h of p.hymns || []) if (h.id === id) return h; return null; };
 /** Mother Ember's healing intervention: (10 + 3 × Devotion) × Blessing power. Its own numbers, not the damage
  * interventions' 20 + 4 × Devotion; no level factor (Devotion is what it grows with). */
-export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_PATRON.mother_ember?.intervention?.effects || [])[0] || {}; return amountOf({ kind: 'heal', base: e.value ?? 10, per: [{ of: 'devotion', value: e.per_devotion ?? 3 }], profile: 'blessing', order: 'chain', round: 'round' }, null, { level: null, counts: { devotion: devotionNow(c) }, mults: [term(power, 'stat: blessing power')] }).amount; };
+export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_PATRON.mother_ember?.intervention?.effects || [])[0] || {}; return amountOf({ kind: 'heal', base: e.value ?? 10, per: [{ of: 'devotion', value: e.per_devotion ?? 3 }], profile: 'blessing', round: 'round' }, null, { level: null, counts: { devotion: devotionNow(c) }, mults: [term(power, 'stat: blessing power')] }).amount; };
 
 // ---------- rules 1.22 (Faith, round 2): the Hymn's wait ----------
 /** Rounds a character waits between Hymns: the cooldown (character.ts prayerCooldown), less 1 for True Believer (the

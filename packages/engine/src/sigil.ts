@@ -420,7 +420,7 @@ export function evokeGrowth(cb: Combat, u: Unit, words: string[], glyphs: number
 //   healing    Healing given, and  level  the level factor of rules 1.20 (MEND and WARD)
 // The preview (numbersFor) and the resolve (applyToInner) share these two functions. A Sigil part is ROUNDED (not
 // floored), each damage type apart, in the order base × shape × line × Stat × the rest: as it always was.
-const SIGIL_DAMAGE: AmountSpec = { kind: 'damage', base: 0, profile: 'sigil', order: 'chain', round: 'round' };
+const SIGIL_DAMAGE: AmountSpec = { kind: 'damage', base: 0, profile: 'sigil', round: 'round' };
 /** One damage part of a spell (all its Sigil-type glyphs, or all its Elemental ones) on one creature, before armour. */
 export function sigilDamage(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): number {
   return amountOf({ ...SIGIL_DAMAGE, base }, null, { level: null, mults: [term(shape, 'shape'), term(line, 'line'), term(sigilPower(mg, type), type === 'elemental' ? 'stat: sigil + elemental' : 'stat: sigil'), term(sharp, 'sharpened'), term(items, 'items'), term(crit, 'critical')] }).amount;
@@ -428,7 +428,7 @@ export function sigilDamage(mg: { sigilMult?: number; elemMult?: number } | null
 /** What MEND heals or WARD shields on one creature: the word's base × shape × Sigil multiplier × Healing given × the
  * level factor (two Stat terms: the second is an own multiplier with a name). */
 export function sigilBoon(kind: 'heal' | 'shield', base: number, shape: number, sigil: number, healing: number, level: number, items: number): number {
-  return amountOf({ kind, base, profile: 'mend', order: 'chain', round: 'round' }, null, { level: null, mults: [term(shape, 'shape'), term(sigil, 'stat: sigil'), term(healing, 'healing given'), term(level, 'level'), term(items, 'items')] }).amount;
+  return amountOf({ kind, base, profile: 'mend', round: 'round' }, null, { level: null, mults: [term(shape, 'shape'), term(sigil, 'stat: sigil'), term(healing, 'healing given'), term(level, 'level'), term(items, 'items')] }).amount;
 }
 /** The numbers a spell would put on one creature, after multipliers (spec: Grammar 6). */
 function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: number, roll: boolean, origin: string | null): Pick<Affected, 'dmg' | 'dmgAfterArmour' | 'heal' | 'shield' | 'roll' | 'saves'> {

@@ -59,7 +59,7 @@ export const FIELD_REPAIR_HEAL: number = MEDIC.field_repair_per_point ?? 3;
  * factor of the giver) × the move's own named multipliers. `per` adds the per-point part (a Field Repair's 3 a point of
  * Improvisation). The number is left raw unless `floor`: the heal sink floors it. */
 export function kitHeal(base: number, healing: number, level: number, o: { own?: Term[]; per?: { of: string; value: number; n: number }; floor?: boolean } = {}): number {
-  const a = amountOf({ kind: 'heal', base, ...(o.per ? { per: [{ of: o.per.of, value: o.per.value }] } : {}), profile: 'mend', order: 'chain', round: o.floor ? 'floor' : 'none' }, null,
+  const a = amountOf({ kind: 'heal', base, ...(o.per ? { per: [{ of: o.per.of, value: o.per.value }] } : {}), profile: 'mend', round: o.floor ? 'floor' : 'none' }, null,
     { level: null, ...(o.per ? { counts: { [o.per.of]: o.per.n } } : {}), mults: [term(healing, 'stat: healing given'), term(level, 'level'), ...(o.own || [])] });
   return o.floor ? a.amount : a.raw;
 }

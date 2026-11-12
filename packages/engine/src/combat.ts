@@ -1061,7 +1061,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   // multiplier, which follows the weapon's scales_with, rules 1.12, with perks and gear in it; an enemy: its tier and
   // level, rules 1.15, which is its Stat and its Level together); the Level term (×1 today); then this attack's own
   // multipliers below, the items' ('damage_out') and the bonuses against this target.
-  const amt = openAmount({ kind: 'damage', base, profile: 'weapon', order: 'stack' }, att, { level: who ? att.level : null,
+  const amt = openAmount({ kind: 'damage', base, profile: 'weapon' }, att, { level: who ? att.level : null,
     stat: who ? { v: weaponMult(who, useW.id), label: weaponMultLabel(useW.id) } : { v: att.lvlDmg ? att.lvlDmg : 1, label: att.tier ? 'tier and level' : 'level' } });
   const mults: Term[] = amt.mults, vs: Term[] = amt.vs;
   const M = (v: number, label: string) => { if (v !== 1) mults.push({ v, label }); };

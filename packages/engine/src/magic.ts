@@ -435,7 +435,7 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
   // attacker skip it. Armour by the damage's type (Sigil and physical full, Elemental half, Soul and true none)
   // unless the caller says otherwise; then the sink.
   const ak = armour || (type === 'sigil' || type === 'physical' ? 'full' : type === 'elemental' ? 'half' : 'none');
-  const r = deal(cb, att, t, { kind: 'damage', base: dmg, order: 'base', armour: ak, hook: !!att && !hurtWhy }, {
+  const r = deal(cb, att, t, { kind: 'damage', base: dmg, armour: ak, hook: !!att && !hurtWhy }, {
     hookCtx: { mode: 'spell', spell: true, src: { by: att, type, dmgType: dmgType || type, spell: true, ...(SPELL_FROM ? { from: SPELL_FROM } : {}) } },
     src: { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp', ...(SPELL && att ? { spellMp: SPELL.mp, spellWords: SPELL.words } : {}), ...(SPELL_FROM ? { from: SPELL_FROM } : {}), ...(NONLETHAL_BY && att === NONLETHAL_BY ? { nonlethal: true } : {}) } as any });
   if (r.shielded) { out += ' (' + r.shielded + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: r.shielded }); }
@@ -453,7 +453,7 @@ export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null, ki
   if (t.dead) return '';
   // The air's Healing given multiplier (spec: the meter bands) applies to magical healing.
   // (step a5: the one heal path, effects/output.ts mend; the air's band is the heal's own named multiplier)
-  const r = mend(cb || null, by, t, { kind: 'heal', base: n, order: 'chain', round: 'none' }, { mults: [term(cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1, 'the air')], healKind: kind });
+  const r = mend(cb || null, by, t, { kind: 'heal', base: n, round: 'none' }, { mults: [term(cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1, 'the air')], healKind: kind });
   if (r.revived) { if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
   if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored }); return ' · ' + t.name + ' heals ' + r.restored;
 }
@@ -1151,7 +1151,7 @@ const formMult = (d: OutburstDesign) => { const f = formOf(d); return f === 'bol
 // The number is left raw: the caller adds the way of striking, a second school's half, the critical and the tone's
 // riders, and harm floors it (as before).
 const soulAmount = (kind: 'damage' | 'heal' | 'shield', base: number, mults: { v: number; label: string }[]): number =>
-  amountOf({ kind, base, profile: kind === 'heal' ? 'mend' : 'soul', order: 'chain', round: 'none' }, null, { level: null, mults }).raw;
+  amountOf({ kind, base, profile: kind === 'heal' ? 'mend' : 'soul', round: 'none' }, null, { level: null, mults }).raw;
 export const outburstDamage = (m: MagicUnit, d: OutburstDesign, sm: number) => soulAmount('damage', m.soulBase ?? SOUL_DAMAGE_ENEMY, [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.5 : 1, 'at once')]);
 // ---------- rules 1.20: what an Outburst heals and shields with ----------
 // Their own bases, never the Damage base (moving one must not move the other): the Buff school's `heal`, Inverse's and

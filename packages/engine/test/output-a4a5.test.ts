@@ -63,11 +63,11 @@ describe('a5: prayers and the kit on the one formula, to the last place', () => 
       expect(kitHeal(0, hm, lf, { per: { of: 'improvisation', value: base, n: prof }, floor: true })).toBe(Math.floor(base * prof * hm * lf));
     }
   });
-  it('the chain order multiplies the base by each term in turn, then by the target bonus; `round` says how it is made whole', () => {
-    const a = openAmount({ kind: 'damage', base: 30, order: 'chain' }, null, { mults: [term(1.5, 'a'), term(1.1, 'b')], vs: [term(0.2, 'vs')] });
+  it('the base is multiplied by each term in turn, then by the target bonus; `round` says how it is made whole', () => {
+    const a = openAmount({ kind: 'damage', base: 30 }, null, { mults: [term(1.5, 'a'), term(1.1, 'b')], vs: [term(0.2, 'vs')] });
     expect(closeAmount(a).raw).toBe(30 * 1.5 * 1.1 * 1.2);
-    expect(amountOf({ kind: 'damage', base: 2.5, order: 'chain', round: 'round' }, null).amount).toBe(3);
-    expect(amountOf({ kind: 'damage', base: 2.5, order: 'chain' }, null).amount).toBe(2);
-    expect(amountOf({ kind: 'damage', base: 2.5, order: 'chain', round: 'none' }, null).amount).toBe(2.5);
+    expect(amountOf({ kind: 'damage', base: 2.5, round: 'round' }, null).amount).toBe(3);
+    expect(amountOf({ kind: 'damage', base: 2.5 }, null).amount).toBe(2);
+    expect(amountOf({ kind: 'damage', base: 2.5, round: 'none' }, null).amount).toBe(2.5);
   });
 });
