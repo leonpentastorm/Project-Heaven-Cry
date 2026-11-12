@@ -487,3 +487,24 @@ Built as rules 1.24 (hand-off `mp-rework.md`).
     what they don't: closing distance, being hit in reach, credits, session-long MP and cores, a target that moves
     off a Line), and the budget rule for new content prices cost classes explicitly: AP, a resource inside a fight, a
     resource across a session, set-up turns, exposure, reliability, targets, reach.
+
+## 18. The engine review (Leon, 12 Nov 2026)
+
+"Use this chance to do a code review then optimize the engine, this is our last chance to do it reasonably before
+more system get pile on [the roguelike mode]. The fact that we worked this far with no unified dmg formula terrified
+me... find more of this type of fuck up and optimize them too, prevent catastrophe later."
+
+Four read-only reviews, written to `docs/design/proposals/2026-11-engine-review/`:
+
+1. `1-duplication.md`: one concept implemented more than once in the engine (costs, limits, targets and areas,
+   rolls and saves, conditions, movement, preview against execution, the enemy's version, story against combat,
+   logs and effects events, the bespoke per-item code).
+2. `2-performance.md`: measured hot paths (the reaction dispatch is about 40% of an action), state cloning, sight and
+   paths, the simulator's cost, what a long run needs.
+3. `3-data-text-tests.md`: numbers that live in more than one place, rules numbers in code, the validator's gaps, how
+   brittle the tests are and what they cost each revision, the browser suites, the docs.
+4. `4-client-boundary.md`: rules computed in the client, one picker per system, the effects layer's timing, the
+   size of the combat screen, the Narrator prompt.
+
+The lead turns them into one ordered plan (what to unify first, each with what must be pinned before it moves) and
+runs it with the damage migration, before the re-fit.
