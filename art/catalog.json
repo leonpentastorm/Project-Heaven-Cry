@@ -11201,6 +11201,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-inverse.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-inverse.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-size": {
+      "id": "module-size",
+      "label": "a small circle inside a large one",
+      "path": "art/icons/modules/module-size.png",
+      "sha256": "f421b714f9b4447ac54beda54abe476df2efbf3b741e20b76dbdd8853db98044",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-size.png",
+        "128": "art/icons/modules/exports/128/module-size.png",
+        "64": "art/icons/modules/exports/64/module-size.png",
+        "56": "art/icons/modules/exports/56/module-size.png",
+        "48": "art/icons/modules/exports/48/module-size.png",
+        "44": "art/icons/modules/exports/44/module-size.png",
+        "40": "art/icons/modules/exports/40/module-size.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-size.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-size.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
