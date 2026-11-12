@@ -19,8 +19,8 @@ hand-offs as the work went; **the live column is to be checked against `origin/m
 | Elites and Bosses | Could be one-shot by a big level gap | Never taken out in one hit by the gap |
 | AP perks | Usable every turn | 3-turn cooldown |
 | Enemy 13 or 14 tiles away | (maps were too small for it) | Closes in or fires (it used to stand still: fixed) |
-| Target choice | Threat, nearest, orders | **Also goes for whoever heals the most** (rules 1.23, being built) |
-| Boss HP | 960 at its level | **Being refitted** (rules 1.23) |
+| Target choice | Most hurt, but techniques went at the first character in the list (a bug that spread the fire) | Techniques aim at the chosen target; **enemies go for whoever heals the most** (Soldiers lean, Elites and Bosses hunt); a **fire doctrine per tier** is being fitted (rules 1.25) because fixed aim made them pile on one character |
+| Boss HP | 960 at its level | **820** (rules 1.23) |
 
 Detail: `balance-sim-step1-full.md`, `defence-step.md` (to come).
 
@@ -95,7 +95,7 @@ Detail: `damage-step-magic.md`, `outburst-rework-2.md`.
 | Area heal | Every ally in full | Each ally ×0.4 |
 | Love, Inverse, Shell | Shares of damage | Their own bases |
 | Round limit | | None (a half-max-HP limit was built in 1.20 and is **withdrawn**: Leon) |
-| Medic's kit, Triage, stims | Flat | **Being fitted** with the level factor (rules 1.23) |
+| Medic's kit, Triage, stims | Triage 20, stim 30, Rally 20, flat | Triage 5, stim 6, Rally 6, × Healing given × the level factor |
 
 Detail: `heal-shield-pass.md`, `defence-step.md` (to come).
 
@@ -103,17 +103,30 @@ Detail: `heal-shield-pass.md`, `defence-step.md` (to come).
 
 | | Live | This patch |
 | --- | --- | --- |
-| Prayer as a way to fight | Two patrons with a damage Hymn, 84 to 116% from Devotion 5; six at 15 to 53% | A Whisper turn about **80%**, a Hymn turn about **125%** (being built) |
+| Prayer as a way to fight | Two patrons with a damage Hymn, 84 to 116% from Devotion 5; six at 15 to 53% | A Whisper turn about **74%**, a Hymn turn about **150%** (Leon: raised from 125%) |
 | Whispers | Six, none hurts | Seven: **Rebuke** hurts |
-| Hymn cooldown | 1 round from Virtue 4 and Faith 3 (every turn) | **Long at low Faith, down with Faith**; not every turn without items (being built) |
-| Vows | Kept at the end of a fight | **A vow fulfilled in a fight takes 1 round off the Hymn cooldown** (being built) |
+| Hymn cooldown | 1 round from Virtue 4 and Faith 3 (every turn) | **9 − 0.75 × Faith − 0.25 × Virtue rounds, never under 3** (2 with a vow or True Believer); the rest is for Faith items |
+| Vows | Kept at the end of a fight | **A vow fulfilled in a fight takes 1 round off the Hymn cooldown**; each of the six vows has a moment the engine sees |
 | Thunderclap, Lightning Rod, Judgement, The Saints' Verdict | | Deal damage / more damage |
 | Cut Short | Could lock one enemy out all fight | Not the same enemy two rounds running |
-| Hold the Gate | Any Hymn turn | Its own long cooldown (being built) |
-| Witnessed, Old Overcast | +2 to hit on every attack | On a kill (being built) |
-| Prayer heals | Flat | Level factor; refitted with the cooldown (being built) |
+| Hold the Gate | Any Hymn turn | Its own 6-round cooldown |
+| Witnessed, Old Overcast | +2 to hit on every attack | +2 on the next attack after a kill made while Witnessed |
+| Prayer heals | Flat | Level factor; Warm Hands 13, Saint's Shield 16, Absolution 9 |
 
 Detail: `faith-fit.md`, `faith-round-2.md` (to come).
+
+## 7b. MP (rules 1.24)
+
+| | Live | This patch |
+| --- | --- | --- |
+| Max MP | 100 + 100 × (Virtue − 1) | **100 + 75 × (Determination − 1) + 25 × (Insight − 1)**; Virtue gives none |
+| A Pump | 1 AP, no MP | 1 AP and **10% of the Begin's MP × the stage reached** (a full heart costs the Begin twice over) |
+| The reference caster's pool | 300 at every level (Virtue 3) | 400 at level 1 to 900 at level 20 |
+| Archetypes | Casters carried Virtue for MP | Seven re-spread (Stormcaller, Mender, Troubadour, Heartreader, Unbroken, Zealot, Prophet) |
+| Old saves | | Migrated: an Emanator keeps its share of the pool |
+
+Detail: `mp-rework.md`. Open: Virtue is thin now (the caps on its skills, the Guardian, a quarter-round off the Hymn
+wait); a Guardian's Will Shield and Sanctuary sit on 100 MP.
 
 ## 8. The screen, effects and tools
 
@@ -190,14 +203,14 @@ Finisher); a gun in each hand (123 to 144%).
 | A drawn glyph vanished before its Evoke played | Yes | Fixed |
 | Edge Word triggered on an opportunity attack | Yes | Fixed |
 | The step out played before the opportunity attack that interrupted it | Yes | Fixed |
-| The longbow deals a flat 20 (its formula is text the engine doesn't read) | Yes | Being fixed |
-| An enemy's blast splash ignores its tier and level | Yes | Being fixed |
-| The generic heal effect ignores its scale | Yes | Being fixed |
-| An enemy technique (most Bursts) goes at the first character in the list, not the chosen target | Yes | Being fixed |
-| A shield stops a bullet or a spell but not a grenade, a trap or a hazard | Yes | Being fixed (ruled: it stops them) |
-| The Elite and Boss guard covered Sigil only | New in this patch | Being widened to every action |
-| Card texts with old numbers (the Outburst base, Triage, Stim Throw, Rally) | New in this patch | Being fixed |
-| The Narrator prompt 45 tokens over its cap | New in this patch | Being fixed |
+| The longbow deals a flat 20 (its formula is text the engine doesn't read) | Yes | Fixed |
+| An enemy's blast splash ignores its tier and level | Yes | Fixed |
+| The generic heal effect ignores its scale | Yes | Fixed |
+| An enemy technique (most Bursts) goes at the first character in the list, not the chosen target | Yes | Fixed |
+| A shield stops a bullet or a spell but not a grenade, a trap or a hazard | Yes | Fixed (ruled: it stops them; damage over time and true damage go past) |
+| The Elite and Boss guard covered Sigil only | New in this patch | On every action now (Miracles exempt) |
+| Card texts with old numbers (the Outburst base, Triage, Stim Throw, Rally) | New in this patch | Fixed |
+| The Narrator prompt 45 tokens over its cap | New in this patch | Fixed |
 
 ## Still moving (12 Nov)
 
