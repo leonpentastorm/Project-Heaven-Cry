@@ -1753,6 +1753,23 @@ export function burstRolls(u: Unit, w: WeaponDef): number[] {
 /** The Heat a Burst gives back when it ends. Heat is one a roll: a character's two rolls are 2 Heat and nothing cools; an
  * enemy's three rolls cool 1 (2 Heat too), as its table was fitted. */
 export const burstCool = (u: Unit, auto: boolean): number => (!auto ? 0 : !u.charId && !BURST_NUM('enemy_same', 0) ? BURST_NUM('enemy_heat_cool', 1) : BURST_NUM('auto_heat_cool', 0));
+/** Rounds that left the gun with no roll of their own (a Burst's third, a Suppress's two, the rest of a Mag Dump or of a
+ * full-auto volley): counted on the action's own volley event as `loose`, so the screen draws one tracer, one muzzle
+ * flash and one casing for every round the magazine lost, not one for every roll. Presentation only: nothing reads it
+ * back. The volley is the latest of this unit's in this action (the search stops at the action's technique event or a
+ * turn); with no volley, the action's last shot carries them; a round spent before any shot (a Rout's, a Warning Shot's)
+ * is drawn by the shot that follows it. */
+export function noteLoose(cb: Combat, u: Unit, n: number): void {
+  if (!(n > 0) || !cb.fx) return;
+  let shot: any = null;
+  for (let i = cb.fx.length - 1; i >= 0; i--) {
+    const e: any = cb.fx[i];
+    if (e.k === 'turn' || (e.k === 'technique' && e.unit === u.id)) break;
+    if (e.k === 'volley' && e.unit === u.id) { e.loose = (e.loose || 0) + n; return; }
+    if (!shot && e.k === 'shot' && e.unit === u.id && !e.thrown) shot = e;
+  }
+  if (shot) shot.loose = (shot.loose || 0) + n; // no volley (Both Barrels' one roll for two rounds): on the roll itself
+}
 export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
   const rolls = burstRolls(u, WEAPON[u.weapon]), mag = WEAPON[u.weapon].magazine;
@@ -1762,7 +1779,7 @@ export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character
   let made = 0;
   chained(() => { for (let i = 0; i < rolls.length && !t.dead && (mag == null || u.ammo > 0) && !u.jammed; i++) { const r = resolveAttack(cb, rng, u, t, 'shot', who, { extra: rolls[i], noAp: true, noWear: i > 0, vi: i } as any); if (r.refused || r.cancelled) break; made++; } }, 'burst');
   // three rounds leave the gun whatever was rolled (rules 1.18): the one with no roll of its own is burned (no Heat: Heat is one a roll)
-  if (made === rolls.length && rolls.length < 3 && mag != null && !u.infiniteAmmo) u.ammo -= Math.min(3 - rolls.length, Math.max(0, u.ammo));
+  if (made === rolls.length && rolls.length < 3 && mag != null) { const burn = u.infiniteAmmo ? 3 - rolls.length : Math.min(3 - rolls.length, Math.max(0, u.ammo)); if (!u.infiniteAmmo) u.ammo -= burn; noteLoose(cb, u, burn); }
   u.heat = Math.max(0, u.heat - burstCool(u, true)); emit(cb, 'volley_end', { u, mode: 'burst', target: t, cb, rng }); checkOver(cb); return null;
 }
 export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
@@ -1772,13 +1789,15 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
   const hits = cb.units.filter((v) => v.side !== u.side && !v.dead && near(v) && previewAttack(cb, u, v, 'auto', { free: true }).ok);
   pay(cb, u, pv.ap); say(cb, u.name + ' opens up on full auto' + (pv.ap !== 4 ? ' (' + pv.ap + ' AP)' : '') + '.');
   const w = WEAPON[u.weapon], startAmmo = u.ammo;
-  emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
+  const vev = emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
   // The line is worked out once; each target is checked again as it comes up (resolveAttack refuses a shot it can't
   // take), and a jam or an empty magazine ends the burst of fire.
   chained(() => { let i = 0; for (const v of hits) { if (u.jammed || (w.magazine != null && u.ammo <= 0)) break; if (resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true, noWear: true, vi: i++ } as any).cancelled) break; } }, 'auto');
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 2);
   // Ten rounds go out whatever the shots took; what items changed during the volley stays (hooks gap C4).
+  const rolled = (cb.fx || []).filter((x: any) => x.k === 'shot' && x.unit === u.id && x.n > vev.n).length;
   if (w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - Math.max(0, 10 - (startAmmo - u.ammo)));
+  noteLoose(cb, u, Math.max(0, (w.magazine != null && !u.infiniteAmmo ? startAmmo - u.ammo : 10) - rolled)); // the rounds with no roll, for the screen
   u.heat += 4 - hits.length; emit(cb, 'volley_end', { u, mode: 'auto', target: t, hits, cb, rng }); checkOver(cb); return null;
 }
 // ---------- forced movement (engine foundations 1, review finding F2; spec: Combat on the grid, Forced movement) ----------

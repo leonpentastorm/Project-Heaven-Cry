@@ -11,7 +11,8 @@ import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
 import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
-import { wrapRanged, rangedBeat, rangedBatch, resetRanged } from './ranged';
+import { wrapRanged, rangedBeat, rangedBatch, resetRanged, rattlesOf, drawsOwnLoose } from './ranged';
+import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
@@ -794,6 +795,7 @@ const H: Record<string, Handler> = {
       after(() => fire(), draw);
     } else fire();
     function fire() {
+      if (!e.thrown) trace('round', { unit: e.unit }); // one round left the gun (fx/techniqueFx.ts draws any it spent beyond this roll)
       if (!silent && g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
       if (!toP) return;
       let mp: { x: number; y: number } | null = null;
@@ -856,11 +858,13 @@ const H: Record<string, Handler> = {
     volley = { unit: e.unit, silent: !!vs, until: performance.now() + slow(2500) }; // the shots it covers are spaced at the pace
     if (vs) play(vs.s, p, { rate: vs.rate });
     if (e.mode === 'skill' && e.name) { const q = centre(e.from); if (q && visible(e.from)) floatText(String(e.name).toUpperCase(), q, WHITE, { small: true, ms: 1100 }); }
-    if (e.mode === 'auto' && p && e.to && gunOf(e.weapon || '', e.cat || '').look === 'bullet') {
+    if (e.mode === 'auto' && p && e.to && ['bullet', 'pellets'].includes(gunOf(e.weapon || '', e.cat || '').look)) {
       // The spray: extra tracers fanning around the line (the engine rolls one shot per enemy near it).
       const toP = centre(e.to); if (!toP || !visible(e.from)) return;
       const br = brassOf(e.weapon || '', e.cat || ''), who = br.when === 'shot' ? whoOf(tokOf(e.unit, e.from)) : null, aim = angle(p, toP);
-      for (let i = 0; i < 7; i++) after(() => { const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, 'bullet', toP.s); if (who) ejectShell(who, br.shell, aim); }, i * 85);
+      // as many as the volley spent beyond its rolls (the engine's `loose`); seven before it was sent
+      const n = Number.isFinite(Number(e.loose)) ? Math.max(0, Number(e.loose)) : 7;
+      for (let i = 0; i < n; i++) after(() => { trace('round', { unit: e.unit, loose: true }); const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, 'bullet', toP.s); if (who) ejectShell(who, br.shell, aim); }, i * Math.min(85, 600 / Math.max(1, n)));
     }
   },
   reload(e) {
@@ -1393,10 +1397,15 @@ Object.assign(H, physHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, n
 Object.assign(H, meleeTechHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, sideOf: (id) => unit(id)?.side, play, sawThen }));
 // Physical 2.0 B (fx/ranged.ts): the ranged techniques, the quiver and thrown weapons; it wraps the handlers above.
 wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, projectile, missPoint, dust, explosion, corners, seesUnit });
+// Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond
+// its rolls drawn one by one; it wraps everything above.
+wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, rattles: rattlesOf, drawsOwnLoose });
+/** A volley that draws its own rounds as one stream (a Mag Dump with bullets: fx/ranged.ts dumpStream). */
+const streamsOwn = (v: FxEvent) => v.mode === 'dump' && gunOf(v.weapon || '', v.cat || '').look === 'bullet' && v.cat !== 'shotgun';
 
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */
-const beatOf = (e: FxEvent): number => { const b = baseBeat(e); return b ? b * fxPace() : b; };
+const beatOf = (e: FxEvent): number => { const b = baseBeat(e) + (mineOnly(e) ? techExtraBeat(e, !drawsOwnLoose(e)) : 0); return b ? b * fxPace() : b; };
 /** The beat at Fast (the written timings). */
 function baseBeat(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
@@ -1566,6 +1575,7 @@ export const sameAction = (sp: FxEvent, x: FxEvent) => { const f = Number.isFini
 function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: number; from?: number }) {
   if (!evs.length) return;
   evs = meleePrepass(evs); // the melee techniques' movement beats over their moves, quick later strikes, Thrown Flurry flights
+  evs = techPrepass(evs, streamsOwn); // a volley's rounds beyond its rolls on its last roll; a use technique's outcome (fx/techniqueFx.ts)
   if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);
   // A fight plays every effect, in order, at the speed the player chose (Leon, 11 Nov 2026: "the animation must be
