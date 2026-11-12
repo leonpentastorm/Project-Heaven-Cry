@@ -101,8 +101,8 @@ Each game is reduced to (fixture `packages/engine/test/golden/replays.json`):
    says** (it fails if a policy stops moving, casting, praying or calling, so the hashes cannot go quietly "stable").
 3. A story fight takes at most 7 listed enemies; 4 v 10 goes through the Proving Ground, which is the public way to
    field that many. The open ground is covered to 4 v 7.
-4. Run time: 6 to 10 s alone on this machine for the default set before the fixes, about 3 s after; under load 20
-   it took up to 37 s inside a full suite run. The larger set: 35 to 45 s alone.
+4. Run time (this machine, load 12 to 15): the default set 10 s before the fixes and 5 s now; the larger set 43 s
+   before and 18 s now. Inside a full suite run at load 20 and over, the default set took up to 37 s.
 5. Not covered: `viewFor` per player (review 4's fog work should add a hash per side), the human Narrator's tools,
    co-op speaking order.
 
@@ -167,10 +167,10 @@ It was never re-recorded in this work. The hashes in the fixture are the unmodif
 
 | Command | Runs | Time on this (loaded) machine |
 | --- | --- | --- |
-| `npm run check` | The validator, both type checks, the engine suite **without** `test/balance/` (153 files, 3,339 tests: the replay guard's default set, the golden tables, the old saves and the path oracle are in it), the web suite, and the **balance smoke** line | engine 147 to 277 s by load, web 114 s, smoke 5 to 8 s |
+| `npm run check` | The validator, both type checks, the engine suite **without** `test/balance/` (153 files, 3,339 tests: the replay guard's default set, the golden tables, the old saves and the path oracle are in it), the web suite, and the **balance smoke** line | engine 129 to 277 s by load, web 93 to 114 s, smoke 4 to 8 s. The last run on the final commit: ALL GREEN (engine 3,337 passed and 2 skipped, web 993 passed and 2 skipped, smoke 10 passed) |
 | The balance smoke line (`npm run balance:smoke -w @phc/engine`) | 10 tests of `balance-sim.test.ts`: every reference build at every level is legal, earns its class, is not overburdened; the simulator is deterministic, its plain attacks deal what `previewAttack` says, it measures both sides; one fight for every way to fight plays without a refusal | 5 to 8 s |
 | `npm run balance` (or `npm run check -- balance`) | All of `packages/engine/test/balance/`: 60 tests, the targets of rules 1.17 to 1.24 and the fit of the enemy table | 30 s |
-| `REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash` | The 20 replays | 35 to 45 s |
+| `REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash` | The 20 replays | 18 s |
 
 1. **What `npm run check` no longer catches:** a balance target that moves (a Line at 150 to 200% of the rifle, a
    Hymn turn, the medic's kit, the Boss's HP in hits). Run `npm run balance` after any change to a number, a policy
