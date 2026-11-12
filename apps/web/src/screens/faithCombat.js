@@ -1,7 +1,7 @@
 // Faith in a fight (Blessing 2.0, rules 1.6): a prayer's targets picked on the grid with the engine's preview as the
 // verdict, the vow prompt at the start of a fight, and the patron's lines as cards beside the combat log. The rules are
 // the engine's (faithView, previewPrayer); this is screen glue for screens/combat.js.
-import { faithView, previewPrayer, beliefOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, MIRACLE_COST_LEVELS } from '@engine';
+import { faithView, previewPrayer, beliefOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, MIRACLE_COST_LEVELS, HYMN_COOLDOWN } from '@engine';
 import { prayAction, pickerFor, oddsText, faithPanel, FAITH_INK, FAITH_GOLD } from '../game/faithView';
 import { accentOf, patronFace, patronMarkUri, vowIconUri } from '../game/faithArt';
 import { patronOfLog, FACE_BOX } from './faithTab';
@@ -58,8 +58,8 @@ export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
   return {
     show: true, key, shield, allies, hasAllies: allies.length > 0, noAllies: shield && !allies.length,
     head: 'SWEAR A VOW · ' + (v.patron ? v.patron.name.toUpperCase() : 'YOUR PATRON'),
-    sub: 'Kept to the end of the fight: +' + DEVOTION_XP.vowKept + ' Devotion XP. Broken: −' + DEVOTION_XP.vowBroken + ', and your patron says so. Or fight unsworn.',
-    vows: v.vows.map((x) => ({ key: x.id, icon: vowIconUri(x.id), name: x.name, words: x.words, title: 'Broken when: ' + x.brokenWhen, pressed: shield && x.id === 'shield' ? 'true' : 'false',
+    sub: 'Fulfilled in the fight: your next Hymn comes ' + HYMN_COOLDOWN.vowCut + ' round sooner (once for each Hymn). Kept to the end of the fight: +' + DEVOTION_XP.vowKept + ' Devotion XP. Broken: −' + DEVOTION_XP.vowBroken + ', and your patron says so. Or fight unsworn.',
+    vows: v.vows.map((x) => ({ key: x.id, icon: vowIconUri(x.id), name: x.name, words: x.words, title: (x.fulfilledWhen ? 'Fulfilled when: ' + x.fulfilledWhen + '. ' : '') + 'Broken when: ' + x.brokenWhen, pressed: shield && x.id === 'shield' ? 'true' : 'false',
       pick: () => (x.needsAlly ? sc.setState({ vowShield: shield ? null : key }) : swear(x.id)),
       style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 1px 8px; align-items: center; text-align: left; min-height: 40px; padding: 5px 8px; border-radius: 8px; font-family: inherit; color: #E7EBF3; cursor: pointer; '
         + (shield && x.id === 'shield' ? 'border: 1px solid ' + FAITH_INK + '; background: #1C2536' : 'border: 1px solid #2E3A50; background: #10151F') })),

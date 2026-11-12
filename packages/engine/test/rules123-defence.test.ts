@@ -40,15 +40,15 @@ describe('rules 1.23: who has been mending', () => {
   it('healing and shields given to OTHERS are counted on the giver, for this round and the last', () => {
     const f = rig(); expect(TEND_ROUNDS).toBe(2); expect(TEND_NOTICE).toBe(0.1);
     G(f, () => {
-      const a = ada(f), b = bo(f); a.hp = 100;
+      const a = ada(f), b = bo(f); a.hp = 50;
       healUnit(f.cb, a, 30, b, 'soul'); expect(tendedLately(f.cb, b)).toBe(30);
       healUnit(f.cb, a, 30, b, 'stim'); healUnit(f.cb, a, 30, b, 'triage'); healUnit(f.cb, a, 30, b, 'blessing'); expect(tendedLately(f.cb, b)).toBe(120); // spells, prayers, the medic's kit alike
-      healUnit(f.cb, a, 500, b, 'soul'); expect(tendedLately(f.cb, b)).toBe(130); // only what was restored (she was 10 short of full)
-      grantShield(f.cb, a, 40, b); expect(tendedLately(f.cb, b)).toBe(170);
-      grantShield(f.cb, a, 25, b); expect(tendedLately(f.cb, b)).toBe(170); // a smaller shield over a bigger one adds nothing
-      grantShield(f.cb, a, 50, b); expect(tendedLately(f.cb, b)).toBe(180); // the 10 it added
-      b.hp = 50; healUnit(f.cb, b, 40, b, 'leech'); grantShield(f.cb, b, 40, b); expect(tendedLately(f.cb, b)).toBe(180); // what you do for yourself is not counted
-      f.cb.round++; expect(tendedLately(f.cb, b)).toBe(180); // last round still counts
+      healUnit(f.cb, a, 500, b, 'soul'); expect(tendedLately(f.cb, b)).toBe(150); // only what was restored (she was 30 short of full)
+      grantShield(f.cb, a, 40, b); expect(tendedLately(f.cb, b)).toBe(190);
+      grantShield(f.cb, a, 25, b); expect(tendedLately(f.cb, b)).toBe(190); // a smaller shield over a bigger one adds nothing
+      grantShield(f.cb, a, 50, b); expect(tendedLately(f.cb, b)).toBe(200); // the 10 it added
+      b.hp = 50; healUnit(f.cb, b, 40, b, 'leech'); grantShield(f.cb, b, 40, b); expect(tendedLately(f.cb, b)).toBe(200); // what you do for yourself is not counted
+      f.cb.round++; expect(tendedLately(f.cb, b)).toBe(200); // last round still counts
       f.cb.round++; expect(tendedLately(f.cb, b)).toBe(0); // two rounds on, it is forgotten
     });
   });
@@ -163,10 +163,9 @@ describe('rules 1.23: the medic\'s kit', () => {
     for (const level of [1, 12]) {
       const f = fightWith([{ classId: 'bard', level, skills: { empathy: 4 }, attrs: { insight: 4 } }, { level }], [{ tier: 'minion' }]); const [me, al] = f.pcs; al.pos = '3,5'; me.pos = '3,4'; (al as any).healRecv = 1; al.maxHp = 900; al.hp = 100;
       f.turn(me);
-      const item = (f.unit(me.id).items || []).find((x: any) => /triage/.test(x.id || x.key || ''));
-      f.act({ type: 'combat/item', unitId: me.id, item: 'class:medic.triage', action: 'triage', targetId: al.id } as any);
+      f.act({ type: 'combat/perk', unitId: me.id, id: 'class:medic.triage', actionId: 'triage', targetId: al.id } as any);
       const hm = G(f as any, () => healingMult(f.g.characters[me.charId!]));
-      expect(f.unit(al.id).hp, 'level ' + level + (item ? '' : ' (no triage item?)')).toBe(100 + Math.floor(5 * hm * mendFactor(level)));
+      expect(f.unit(al.id).hp, 'level ' + level).toBe(100 + Math.floor(5 * hm * mendFactor(level)));
     }
   });
 });

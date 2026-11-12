@@ -433,3 +433,32 @@ Built as rules 1.22 (hand-off `faith-round-2.md`).
     with a Hymn about 125%; both go up with Faith items later. This replaces the 120 to 125% average of ruling 7.
 
 Built as rules 1.23 (hand-off `defence-step.md`) and in rules 1.22.
+
+## 17. The capstone (Leon, 12 Nov 2026)
+
+"Do the things you think this balance patch needed, this will be the floor any future class/addition/combat system
+base themselves around, so capstone it." And: "is the damage engine unified? Each action that deals dmg should have
+something like base+attribute+level, since we have had to patch in level scaling several times now."
+
+The lead's plan, in order. Each step ends with `npm run check` green and its numbers in a hand-off.
+
+1. **Finish what is in flight:** rules 1.22 (Faith round 2) and 1.23 (the defence step).
+2. **One damage formula** (`proposals/2026-11-unified-damage.md`, being written from an audit of every source):
+   every action that deals damage, heals or shields declares base + attribute term + level term in data and goes
+   through one engine function and one sink. A re-expression, not a re-balance: the tables of rules 1.17 to 1.23 must
+   not move.
+3. **Many targets:** the simulator fights groups; area, blasts and shapes get a price per target (tally section 10,
+   row 1). This moves other numbers, so it comes before the rest.
+4. **A yardstick for control** (a turn taken away, a Slow, a Mark, damage over time), then the conditions and the
+   Sigil fields, traps and turrets against it.
+5. **What was left out:** class moves (a ceiling per rank), melee beyond one build, thrown, mana arms, special rounds
+   and mods, reactions and held actions, stealth openers, Calls and squad buffs.
+6. **The all-in builds:** a ruling from Leon, then the fit.
+7. **The floor, written down and enforced:** a budget rule for new content (cost in AP, resource, cooldown, set-up,
+   targets, reach, reliability gives the output allowed), in `docs/design/balance-contract.md`; and a guard in
+   `npm run check` that fails when a reference build or a data item goes over its ceiling.
+8. **Close the patch:** the stale browser suites repaired or retired, every suite green, the tally's live column
+   checked against `main`, the version and changelog. Deploy on Leon's word only.
+
+Left for their own systems, with the budget rule to hold them: Weapon Arts, armour (Equipment 2.0), enemy casters and
+the enemy table refit, Faith items.

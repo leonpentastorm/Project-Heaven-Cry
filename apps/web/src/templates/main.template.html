@@ -407,7 +407,7 @@
 <sc-if value="{{b.open}}"><div role="group" aria-label="Choose the target" style="display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; margin-left: 42px; border-left: 2px solid #D36A90"><div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{b.opts}}" as="o"><button type="button" aria-pressed="{{o.pressed}}" onClick="{{o.pick}}" style="{{o.style}}">{{o.label}}</button></sc-for></div><span style="{{b.verdictStyle}}">{{b.verdict}}</span><div style="display: flex; gap: 6px"><button type="button" data-prayer-confirm onClick="{{b.confirm}}" aria-disabled="{{b.cantConfirm}}" style="min-height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid #FFFFFF; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer">Pray</button><button type="button" onClick="{{b.cancel}}" style="min-height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer">Cancel</button></div></div></sc-if>
 </sc-for>
 <sc-if value="{{fa.hasHymns}}">
-<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #D36A90; padding-top: 6px">HYMNS</span>
+<span data-hymn-head style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #D36A90; padding-top: 6px">{{fa.hymnHead}}</span>
 <sc-for list="{{fa.hymns}}" as="b">
 <button type="button" data-prayer="{{b.key}}" onClick="{{b.click}}" aria-pressed="{{b.pressed}}" aria-label="{{b.aria}}" title="{{b.why}}" style="{{b.style}}">
 <img src="{{b.icon}}" alt="" style="grid-row: span 4; width: 32px; height: 32px">

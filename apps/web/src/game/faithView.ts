@@ -107,6 +107,8 @@ export interface FaithPanel {
   /** The liked-tag caps (items 703, 722): what tags have given against the caps, and whether one is reached. Faithful only. */ tagCaps: { text: string; capped: boolean } | null;
   witnessed: { on: boolean; icon: string; word: string; can: boolean };
   vow: { icon: string; label: string; state: 'sworn' | 'kept' | 'broken' } | null;
+  /** Rules 1.22: the Hymns' heading with the wait in words: "HYMNS · EVERY 3 ROUNDS · NEXT IN 2 ROUNDS" ("· READY"; "· YOUR VOW: 1 ROUND SOONER" when the vow has shortened this wait). */
+  hymnText: string;
   rites: { id: string; name: string; text: string; kept: boolean; engine: boolean; available: boolean; why?: string }[];
   likes: string[]; taboos: string[]; rule: string;
   /** Atheists: the pieces per patron ("Mother Ember 2/3") and the learned Hymns with their dice TN. */
@@ -115,6 +117,12 @@ export interface FaithPanel {
   /** Faith under 3: praying is closed (the reason, in words). */ closed?: string;
 }
 const vowLabel = (v: FaithView['vow'], vows: FaithView['vows']) => { if (!v) return ''; const d = vows.find((x) => x.id === v.id); return (d ? d.words : v.id) + ' · ' + v.state.toUpperCase(); };
+const rounds = (n: number) => n + (n === 1 ? ' ROUND' : ' ROUNDS');
+/** The Hymns' heading (rules 1.22): how often a Hymn comes, when the next one does, and what the vow did to the wait. */
+export function hymnHeadText(cd: FaithView['cooldowns'] | null | undefined): string {
+  if (!cd || !cd.hymnWait) return 'HYMNS';
+  return 'HYMNS · EVERY ' + rounds(cd.hymnWait) + (cd.hymnRoundsLeft > 0 ? ' · NEXT IN ' + rounds(cd.hymnRoundsLeft) : ' · READY') + (cd.vowCut ? ' · YOUR VOW: 1 ROUND SOONER' : cd.vowBanked ? ' · YOUR VOW: THE NEXT WAIT 1 ROUND SHORTER' : '');
+}
 export function faithPanel(v: FaithView | null): FaithPanel | null {
   if (!v) return null;
   const faithful = v.belief.kind === 'faithful', p = v.patron;
@@ -133,6 +141,7 @@ export function faithPanel(v: FaithView | null): FaithPanel | null {
     tagCaps: faithful && v.tagXp ? tagCapsText(v.tagXp) : null,
     witnessed: { on: v.witnessed, icon: witnessedUri(), word: v.witnessed ? 'WITNESSED' : 'NOT WITNESSED', can: v.canBeWitnessed },
     vow: v.vow ? { icon: vowIconUri(v.vow.id), label: vowLabel(v.vow, v.vows), state: v.vow.state } : null,
+    hymnText: hymnHeadText(v.cooldowns),
     rites: v.rites.map((r) => ({ id: r.id, name: r.name, text: r.text, kept: r.keptThisSession, engine: r.engine, available: r.available, why: r.why })),
     likes: (p?.likes || []).map((t) => t.name.toUpperCase()), taboos: (p?.taboos || []).map((t) => t.name.toUpperCase()), rule: v.rule === 'jealous' ? 'JEALOUS: no other god\'s Hymns' : v.rule === 'open' ? 'OPEN: other gods\' Hymns are kept' : '',
     pieces, learned: v.hymns.filter((h) => h.source !== 'patron').map((h) => ({ name: h.name, patronName: h.patronName, tn: h.preview.roll?.tn ?? null })),

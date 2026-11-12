@@ -400,7 +400,7 @@ export function faithRows(u: any | null, c: any | null): ResRow[] {
     if (wit) rows.push({ key: 'witnessed', label: 'Witnessed', value: 'WATCHED', kind: 'text', colour: RES_INK.faith, level: 'ready', sub: p?.name, hint: (p?.name || 'Your patron') + ' is watching until the fight ends or ' + (p?.name || 'your patron') + ' intervenes: what they like gets +2, taboos cost double.' });
     const vow = (u && u.vow) || c.vow;
     if (vow) { const vd = ((E as any).VOW || {})[vow.id]; rows.push({ key: 'vow', label: 'Vow', value: vow.state.toUpperCase(), kind: 'text', colour: vow.state === 'broken' ? RES_INK.muted : RES_INK.faith, sub: vd?.words || vow.id,
-      ...(vow.state === 'broken' ? { warn: 'BROKEN' as ResWarn, level: 'alert' as const } : {}), hint: (vd?.words || 'Your vow') + ' Kept at the end of the fight: +' + ((E as any).DEVOTION_XP?.vowKept ?? 3) + ' Devotion XP. Broken: −' + ((E as any).DEVOTION_XP?.vowBroken ?? 5) + '.' }); }
+      ...(vow.state === 'broken' ? { warn: 'BROKEN' as ResWarn, level: 'alert' as const } : {}), hint: (vd?.words || 'Your vow') + (vd?.fulfilled_when ? ' Fulfilled when ' + vd.fulfilled_when + ': your next Hymn comes 1 round sooner.' : '') + ' Kept at the end of the fight: +' + ((E as any).DEVOTION_XP?.vowKept ?? 3) + ' Devotion XP. Broken: −' + ((E as any).DEVOTION_XP?.vowBroken ?? 5) + '.' }); }
   } else {
     for (const [id, n] of Object.entries(c.faithPieces || {}) as [string, number][]) if (n > 0) rows.push({ key: 'piece-' + id, label: P[id]?.name || id, value: Math.min(3, n) + ' / 3', now: Math.min(3, n), max: 3, kind: 'pips', colour: RES_INK.faith, sub: 'Pieces (Atheist)',
       hint: 'Knowledge pieces of ' + (P[id]?.name || id) + ': each unlocks their next Hymn, prayed by dice (TN 14 / 16 / 18).' });
