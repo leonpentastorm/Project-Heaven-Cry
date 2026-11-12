@@ -391,3 +391,18 @@ Not a balance number, a fight-screen change; build it with the bug list (it touc
 one-hit range). **Outburst gets a peak too: 150% at the biggest Pump possible** (stage 4, held and pumped all the
 way); below that it stays the steady 125% school. So the peaks are: Sigil 150% to 200% after two turns of set-up,
 Outburst 150% at full Pump, guns a bit under 150% (rocket-class ammo at 150%).
+
+## 16. Rulings, 12 Nov 2026 (Leon)
+
+1. **The Outburst goes up: steady about 135% of the plain rifle, the biggest Release about 165%.** With the best gun
+   at about 145% every turn and no set-up (rules 1.18), an Outburst whose two-turn peak was 150% felt weak. It now sits
+   between a gun and a full Sigil Line (150 to 200%). Built after the heal and shield pass (rules 1.20) lands, through
+   the damage base.
+2. **Weapon Arts break the ceiling, as a charged ultimate.** A physical class's Art is its big moment and is allowed
+   over 150%; it has to be charged, and what it deals is **counted in the build's average**: the ceiling of rules 1.18
+   is on the average over a fight with the Art in it, not on the Art's own hit. So when Arts are built, a gun or blade
+   build's steady output comes down by what its Art adds over the turns it takes to charge. "Big moment deserve to be
+   big."
+3. The peaks, in order: a full Sigil Line 150 to 200% (two turns of drawing), a charged Art (to be set with the
+   Arts), the Outburst's biggest Release 165%, the best gun's steady 145%, the Outburst's steady 135%, a prayer-led
+   build about level with the Outburst (rules 1.21, being measured), the plain rifle 100%.
