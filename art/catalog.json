@@ -10824,6 +10824,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-jealousy.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-jealousy.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-wonder": {
+      "id": "feeling-wonder",
+      "label": "Wonder: a spiral opening into a small star",
+      "path": "art/icons/feelings/feeling-wonder.png",
+      "sha256": "c600e91bbc9812b2df9f11024aae8a85e5191e5f394c22c7d42eed0e38c38d01",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-wonder.png",
+        "128": "art/icons/feelings/exports/128/feeling-wonder.png",
+        "64": "art/icons/feelings/exports/64/feeling-wonder.png",
+        "56": "art/icons/feelings/exports/56/feeling-wonder.png",
+        "48": "art/icons/feelings/exports/48/feeling-wonder.png",
+        "44": "art/icons/feelings/exports/44/feeling-wonder.png",
+        "40": "art/icons/feelings/exports/40/feeling-wonder.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-wonder.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-wonder.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {

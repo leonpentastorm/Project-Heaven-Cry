@@ -1603,6 +1603,52 @@
           "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
         }
       ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-wonder.png",
+      "sha256": "c600e91bbc9812b2df9f11024aae8a85e5191e5f394c22c7d42eed0e38c38d01",
+      "id": "feeling-wonder",
+      "family": "feelings",
+      "action": "Wonder: a spiral opening into a small star.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-wonder.png",
+        "sha256": "a5b380d019c4c67b035bb3356f05b1b43bd50904968e514d3ccf1a8c37b8192d"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-wonder.png",
+        "sha256": "c600e91bbc9812b2df9f11024aae8a85e5191e5f394c22c7d42eed0e38c38d01"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-wonder.txt",
+        "sha256": "55246ae34ba47efec0b5be298f02040f58dd4e7bf093c1cab3868270eec47a6e"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-wonder.png",
+        "128": "art/icons/feelings/exports/128/feeling-wonder.png",
+        "64": "art/icons/feelings/exports/64/feeling-wonder.png",
+        "56": "art/icons/feelings/exports/56/feeling-wonder.png",
+        "48": "art/icons/feelings/exports/48/feeling-wonder.png",
+        "44": "art/icons/feelings/exports/44/feeling-wonder.png",
+        "40": "art/icons/feelings/exports/40/feeling-wonder.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
     }
   ]
 }
