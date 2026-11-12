@@ -1441,7 +1441,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
   // which it walks at the start of its turn (its own AP; never into harm the caster knows of: the caster picked it).
   if (!u.dead && condOn(u, 'commanded') && (u.side === 'foe' || u.condBy?.commanded)) {
     const o = u.condArg?.commanded || 'halt';
-    if (o === 'drop') applyCond(cb, rng, null, u, 'disarmed', undefined, undefined, { skipSave: true }); if (o === 'kneel') setProne(cb, u, true);
+    if (o === 'drop') applyCond(cb, rng, null, u, 'disarmed', undefined, undefined, { skipSave: true }); if (o === 'kneel') setProne(cb, u, true, { endBrace: true });
     let said = false;
     if (o.startsWith('move:')) {
       // The walk is checked again here (the ground may have changed since the Evoke): too far, blocked or prone, it

@@ -116,7 +116,7 @@ register({
       if (!st.killed) { st.wasHidden = false; return; } st.killed = false; st.wasHidden = false;
       if (u.hidden) { say(cb, u.name + ' stays in the dark (Silent Kill).'); return; }
       if (loud(u, !!ctx.melee)) { say(cb, u.name + '\'s shot is too loud to stay hidden (Silent Kill needs a quiet weapon).'); note(h, u.name + ' killed from Hidden with a loud gun: who heard it?'); return; }
-      if (!hideAgain(cb, u)) return; say(cb, u.name + ' kills without a sound and stays Hidden (Silent Kill; no new ambush until you hide again).');
+      if (!hideAgain(cb, rngOf(h, ctx), u)) return; say(cb, u.name + ' kills without a sound and stays Hidden (Silent Kill; no new ambush until you hide again).');
     },
     spot: (ctx, h) => { if (ctx.u !== h.u || !inFight(h)) return; const st = stateOf(h); if (st.kr === h.cb!.round && st.kn) ctx.tn -= 2 * st.kn; },
   },
@@ -890,7 +890,7 @@ function grandTurnStart(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, g: any)
     case 'dread': return !ally ? applyCond(cb, rng, o, t, 'shaken', undefined, 'heart') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
     case 'light': return t.hidden && !ally ? reveal(cb, t, 'the Noon form') : '';
-    case 'veil': if (!t.hidden && hideAgain(cb, t)) return ' · ' + t.name + ' vanishes in the smoke'; return '';
+    case 'veil': if (!t.hidden && hideAgain(cb, rng, t)) return ' · ' + t.name + ' vanishes in the smoke'; return '';
     // The 1.4 words (item 468).
     // COMMAND (Parade ground): a Brain save, or halt: Pinned for the turn (no moving; it can still act).
     case 'command': return ally || condOn(t, 'pinned') || bodySave(cb, rng, o, t, 'brain') ? '' : ' · the Parade ground halts ' + t.name + applyCond(cb, rng, o, t, 'pinned', 1, undefined, { skipSave: true });
@@ -909,7 +909,7 @@ function grandEnter(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, ms: any): s
     case 'gale': { ms.stop = 'cyclone'; const [cx, cy] = xy(zCentre(z)), [x, y] = xy(t.pos); return nudge(cb, t, key(cx - (x - cx) * 9, cy - (y - cy) * 9), 2).replace('is pulled', 'is thrown') || ' · the cyclone batters ' + t.name; }
     case 'light': return t.hidden && t.side !== o.side ? reveal(cb, t, 'the Noon form') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
-    case 'veil': if (!t.hidden && hideAgain(cb, t)) return ' · ' + t.name + ' vanishes in the smoke'; return '';
+    case 'veil': if (!t.hidden && hideAgain(cb, rng, t)) return ' · ' + t.name + ' vanishes in the smoke'; return '';
     case 'wait': if (t.side === o.side) return ''; ms.stop = 'tripwire'; return ' · a tripwire catches ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'tripwire'), 'sigil');
   }
   return '';
@@ -971,7 +971,7 @@ register({
         if (!t || dist(u.pos, t) > 1 || !standable(cb.map, t)) return { ok: false, why: 'Plant it on your tile or one next to you.' };
         return { lines: [SIGIL[w].word + ': ' + SIGIL[w].grand] };
       },
-      run: (h, a) => {
+      run: (h, a, rng) => {
         const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, w = a.choice!, m = u.mg!, left = 3 + m.durBonus;
         m.charge -= 3; m.cast = true;
         const tiles = tilesAround(t, 2).filter((k) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; });
@@ -991,7 +991,7 @@ register({
           line = placed.length ? ' · earthworks rise at ' + placed.map(refOf).join(', ') : ' · no room for earthworks';
         }
         if (w === 'light') for (const x of cb.units) if (x.hidden && x.side !== u.side && inZ(z, x.pos)) line += reveal(cb, x, 'the Noon form');
-        if (w === 'veil') for (const x of cb.units) if (!x.dead && inZ(z, x.pos) && !x.hidden && hideAgain(cb, x)) line += ' · ' + x.name + ' vanishes in the smoke';
+        if (w === 'veil') for (const x of cb.units) if (!x.dead && inZ(z, x.pos) && !x.hidden && hideAgain(cb, rng, x)) line += ' · ' + x.name + ' vanishes in the smoke';
         if (w === 'null') line += cleanGround(cb, z);
         // RAISE (Ramparts): up to 8 wall segments on the edge ring, every other tile, never on anyone; they fall with the form.
         if (w === 'raise') {

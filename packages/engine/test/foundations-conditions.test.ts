@@ -82,8 +82,8 @@ describe('applyCond: the one door', () => {
     const x = field(); x.put('hidden'); expect(x.t.hidden).toBe(true); expect(x.t.hideEntry).toBe(1); expect(x.cb.lastSeen?.pc?.[x.t.id]).toBe(x.t.pos);
     x.put('hidden'); expect(x.t.hideEntry).toBe(1); // already Hidden: not a second ambush
     endCond(x.t, 'hidden', x.cb); expect(x.t.hidden).toBe(false); expect(x.cb.lastSeen?.pc?.[x.t.id]).toBeUndefined();
-    expect(withGame(x.f.g, () => hideAgain(x.cb, x.t))).toBe(true); expect(x.t.hideEntry).toBe(1);
-    endCond(x.t, 'hidden', x.cb); x.put('marked'); expect(withGame(x.f.g, () => hideAgain(x.cb, x.t))).toBe(false); expect(withGame(x.f.g, () => hide(x.cb, x.t))).toMatch(/Marked/);
+    expect(withGame(x.f.g, () => hideAgain(x.cb, x.rng, x.t))).toBe(true); expect(x.t.hideEntry).toBe(1);
+    endCond(x.t, 'hidden', x.cb); x.put('marked'); expect(withGame(x.f.g, () => hideAgain(x.cb, x.rng, x.t))).toBe(false); expect(withGame(x.f.g, () => hide(x.cb, x.t))).toMatch(/Marked/);
     endCond(x.t, 'marked', x.cb); withGame(x.f.g, () => { hide(x.cb, x.t); reveal(x.cb, x.t, 'test'); }); expect(x.t.hidden).toBe(false); expect(x.cb.lastSeen?.pc?.[x.t.id]).toBeUndefined();
   });
   it('the few other writes: setCondRounds, restoreConds (numbers applied once), condsAside (put back as they were)', () => {

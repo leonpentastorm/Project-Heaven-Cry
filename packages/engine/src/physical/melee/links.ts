@@ -252,7 +252,7 @@ technique({
     fallFx(t, tgt, wasProne);
     if (grapple) {
       if (t.preview) t.note('You go Prone with it.');
-      else if (!t.u.prone) { setProne(t.cb, t.u, true); emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'prone' }); t.cb.log.push(t.u.name + ' goes down with ' + tgt.name + '.'); }
+      else if (!t.u.prone) { setProne(t.cb, t.u, true, { endBrace: true }); emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'prone' }); t.cb.log.push(t.u.name + ' goes down with ' + tgt.name + '.'); }
       cond(t, tgt, 'grappled');
     }
     return null;
