@@ -27,5 +27,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-bloom.png`: nested rings growing outward
 - `module-anchor.png`: a dot pinned by a cross-shaped stake
 - `module-lure.png`: an arrow pulling a dot inward
+- `module-shell.png`: a dome over a dot
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

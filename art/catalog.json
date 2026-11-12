@@ -11526,6 +11526,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-lure.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-lure.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-shell": {
+      "id": "module-shell",
+      "label": "a dome over a dot",
+      "path": "art/icons/modules/module-shell.png",
+      "sha256": "68c9a09919c29f3c30c0f7cd5600084c107db416479cedf7dcfd2b50a195c73e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-shell.png",
+        "128": "art/icons/modules/exports/128/module-shell.png",
+        "64": "art/icons/modules/exports/64/module-shell.png",
+        "56": "art/icons/modules/exports/56/module-shell.png",
+        "48": "art/icons/modules/exports/48/module-shell.png",
+        "44": "art/icons/modules/exports/44/module-shell.png",
+        "40": "art/icons/modules/exports/40/module-shell.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-shell.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-shell.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
