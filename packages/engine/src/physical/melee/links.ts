@@ -16,7 +16,7 @@ import { statQuery } from '../../effects/hooks';
 import { technique, save, cond, stop, forceMove, pushBlocked, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { PHYS_RULES } from '../data';
 import { strikingWith, techSaveTn, techVia, saveOutside, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
-import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf } from '../../combat';
+import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf, swapUnits } from '../../combat';
 import { mod } from '../../character';
 import { zoneEnter } from '../../magic';
 import { hazardStep, hazardLiveAt } from '../../hazards';
@@ -286,20 +286,14 @@ function dragPlan(t: Tech): { how: 'pull' | 'swap' | 'carry'; why?: string } {
 function swap(t: Tech, tgt: Unit): boolean {
   const cb = t.cb, u = t.u, a = u.pos, b = tgt.pos;
   if (t.preview) { (t.pv.moves ||= []).push({ unit: tgt.id, to: a }, { unit: u.id, to: b }); return true; }
-  const fm: any = emit(cb, 'forced_move', { u: tgt, by: u, tiles: 1, to: a, how: 'drag', cancel: false, cb, rng: t.rng });
-  if (fm.cancel) { cb.log.push(tgt.name + ' holds firm.'); return false; }
-  tgt.pos = a; u.pos = b; tgt.braced = false; u.braced = false; u.moved = true;
-  emitFx(cb, 'shove', { unit: u.id, target: tgt.id, from: b, to: a, ok: true }); moveFx(cb, u, [a, b], 'drag');
-  cb.log.push(u.name + ' and ' + tgt.name + ' swap places (' + t.def.name + ').');
-  // what each tile does to whoever enters it (a Sigil zone, a hazard), as the engine's own move runs it
-  const enter = (v: Unit, k: string) => {
-    if (!alive(v) || v.pos !== k) return;
-    if ((cb.zones || []).length) zoneEnter(cb, t.rng, v, k);
-    if (alive(v) && v.pos === k && cb.hazards?.some((h) => hazardLiveAt(h, k, v.side as 'pc' | 'foe'))) hazardStep(cb, t.rng, v, k);
-  };
-  enter(tgt, a); enter(u, b);
-  emit(cb, 'move_step', { u: tgt, from: b, at: a, i: 0, route: [b, a], how: 'forced', stop: false, cb, rng: t.rng, forced: true });
-  if (alive(tgt)) triggerOverwatch(cb, t.rng, tgt);
+  // the one swap (combat.ts swapUnits): the user chose it, the target is moved by force (Nailed, immunity and the hook can refuse); each tile acts on whoever lands on it
+  const sw = swapUnits(cb, t.rng, u, tgt, { by: u, source: 'drag', willing: [u], drawn: () => {
+    u.moved = true;
+    emitFx(cb, 'shove', { unit: u.id, target: tgt.id, from: b, to: a, ok: true }); moveFx(cb, u, [a, b], 'drag');
+    cb.log.push(u.name + ' and ' + tgt.name + ' swap places (' + t.def.name + ').');
+  } });
+  if (!sw.ok) { cb.log.push(tgt.name + ' holds firm.'); return false; }
+  // the user's own step is a move it chose, so a held shot may answer it; the target's half is forced: nobody reacts
   if (alive(u)) { emit(cb, 'move_step', { u, from: a, at: b, i: 0, route: [b], how: 'drag', stop: false, cb, rng: t.rng, technique: t.def.id }); if (alive(u) && !u.hidden) triggerOverwatch(cb, t.rng, u, [a, b]); }
   return true;
 }

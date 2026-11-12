@@ -49,7 +49,7 @@ export type HookName =
   | 'move_cost' | 'move_step' | 'moved' | 'forced_move'
   | 'attack_preview' | 'attack_target' | 'attack_roll' | 'damage_out' | 'on_hit' | 'on_miss'
   | 'damage_in' | 'on_damaged' | 'on_downed' | 'on_kill'
-  | 'cond_apply' | 'save' | 'cond_landed' | 'cond_end'
+  | 'cond_apply' | 'save' | 'cond_landed' | 'cond_end' | 'displaced'
   | 'heal_given' | 'heal_in' | 'shield_grant'
   | 'reaction_window' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
   | 'reload' | 'jam_clear' | 'swap'

@@ -16,7 +16,7 @@ import { RALLY_HEAL, mendFactorOf } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, moveUnit,
-  previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike,
+  previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike, displace, swapUnits
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
@@ -157,12 +157,9 @@ register({
       const s = famSave(cb, rng as Rng, u, t, how === 'prone' ? 'prone' : 'shoved', 'body', 'raw_power');
       if (s.ok) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': ' + (s.cancel ? s.line : 'holds firm (' + s.line + ')') + '.'); return; }
       if (how === 'push') {
-        const to = pushTile(cb, u, t);
-        const fm: any = to && canStand(cb, to, t) ? emit(cb, 'forced_move', { u: t, by: u, tiles: 1, to, how: 'shove', cancel: false, cb, rng }) : { cancel: true };
-        if (fm.cancel || !to) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': holds firm.'); return; }
-        t.pos = to; t.braced = false;
-        emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to, ok: true });
-        say(cb, u.name + ' shoves ' + t.name + ' back to ' + refOf(to) + ' (' + s.line + ').'); sightCheck(cb); return;
+        const mv = displace(cb, rng as Rng, t, { away: u.pos, tiles: 1 }, { by: u, how: 'push', source: 'shove' }); // the one forced move (combat.ts)
+        if (!mv.moved) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': holds firm.'); return; }
+        say(cb, u.name + ' shoves ' + t.name + ' back to ' + refOf(mv.to) + ' (' + s.line + ')' + mv.text + '.'); sightCheck(cb); return;
       }
       t.prone = true; t.braced = false; (t.condAt ||= {}).prone = (cb.condSeq = (cb.condSeq || 0) + 1);
       emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: true, prone: true });
@@ -539,9 +536,8 @@ register({
       preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === u) return { ok: false, why: 'Pick a squadmate.' }; if (!alive(t)) return { ok: false, why: t.name + ' is Downed and can\'t swap.' }; return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, from = u.pos, to = t.pos; uses(h).take('per_scene', 1, h.key);
-        u.pos = to; t.pos = from; u.braced = false; t.braced = false;
-        emitFx(cb, 'swap', { unit: u.id, target: t.id, from, to });
-        say(cb, u.name + ' and ' + t.name + ' swap places.');
+        const sw = swapUnits(cb, rng as Rng, u, t, { by: u, source: 'sleight', willing: [u, t], drawn: () => { emitFx(cb, 'swap', { unit: u.id, target: t.id, from, to }); say(cb, u.name + ' and ' + t.name + ' swap places.'); } }); // both chose it
+        if (sw.text) say(cb, sw.text.replace(/^ · /, '') + '.');
         emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
         emit(cb, 'moved', { u: t, from: to, to: from, tiles: dist(from, to), how: 'swap', forced: false, route: [from], stopped: null, cb, rng });
         sightCheck(cb);
@@ -557,9 +553,8 @@ register({
         return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; },
       run: (h, _args, rng) => {
         const cb = h.cb!, u = h.u!, img = imageOfOwner(cb, u.id)!, from = u.pos, to = img.pos; uses(h).take('per_scene', 1, h.key);
-        u.pos = to; img.pos = from; u.braced = false;
-        emitFx(cb, 'swap', { unit: u.id, target: img.id, from, to, image: true });
-        say(cb, u.name + ' swaps places with the False Image (' + refOf(to) + ').');
+        const sw = displace(cb, rng as Rng, u, { tile: to }, { by: u, how: 'swap', source: 'sleight', willing: true, fx: false, drawn: () => { img.pos = from; emitFx(cb, 'swap', { unit: u.id, target: img.id, from, to, image: true }); say(cb, u.name + ' swaps places with the False Image (' + refOf(to) + ').'); } }); // an image is not a unit: the caster lands on its tile and the image is put where the caster stood
+        if (sw.text) say(cb, sw.text.replace(/^ · /, '') + '.');
         emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
         sightCheck(cb);
       },

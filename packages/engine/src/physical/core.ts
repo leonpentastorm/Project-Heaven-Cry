@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced } from '../combat';
+import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
@@ -531,40 +531,25 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
   return true;
 }
 export type StopHow = 'pinned' | 'push' | 'prone' | 'halt';
-/** Move a unit against its will, tile by tile, so held Watches and Overwatch fire. dir: 'away' from or 'toward' the user
- * (or opts.from), or a tile to move onto. Returns the tiles moved (0: blocked or it held firm). */
+/** Move a unit against its will: the one forced move (combat.ts displace). dir: 'away' from or 'toward' the user (or
+ * opts.from), or a tile to move toward. Nobody reacts to it (no held Watch, no Overwatch: the unit did not choose to
+ * move); the tiles it enters act on it. Returns the tiles moved (0: blocked or it held firm). */
 export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string, tiles: number, opts: { from?: string; how?: string } = {}): number {
   const cb = t.cb, origin = opts.from || t.u.pos;
-  if (target.nailed) { if (t.preview) t.note(target.name + ' is nailed in place and can\'t be moved.'); return 0; } // nailed in place: nothing moves it until it is pulled free
-  const stepTo = (from: string): string | null => {
-    const [x, y] = xy(from);
-    if (dir !== 'away' && dir !== 'toward') { const [dx, dy] = xy(dir); return x === dx && y === dy ? null : key(x + Math.sign(dx - x), y + Math.sign(dy - y)); }
-    const [ox, oy] = xy(origin), s = dir === 'away' ? 1 : -1, nx = x + s * Math.sign(x - ox), ny = y + s * Math.sign(y - oy);
-    return nx === x && ny === y ? null : key(nx, ny);
-  };
   // Heavy Hands (Raw Power 3): a melee technique's push away goes 1 tile further (the card, the preview and the push agree)
   if (dir === 'away') tiles += statQuery({ u: t.u, cb }, 'push_tiles', { tech: t.def.id, system: t.def.system }).add;
-  if (t.preview) { let at = target.pos, n = 0; const blocked = moveBlockers(cb); for (; n < tiles; n++) { const to = stepTo(at); if (!to || bad(cb, to, blocked, target)) break; at = to; } if (n) (t.pv.moves ||= []).push({ unit: target.id, to: at }); return n; }
-  let moved = 0; const blocked = moveBlockers(cb);
-  for (let i = 0; i < tiles && alive(target); i++) {
-    const to = stepTo(target.pos); if (!to) break;
-    if (bad(cb, to, blocked, target)) { // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
-      if (dir === 'away') pushBlocked(t, target, to, opts.how);
-      break;
-    }
-    const fm: any = emit(cb, 'forced_move', { u: target, by: t.u, tiles: 1, to, how: opts.how || t.def.id, cancel: false, cb, rng: t.rng }); if (fm.cancel) break;
-    const stopNow = unheld(t.u, () => {
-    const was = target.pos; target.pos = to; target.braced = false; moved++;
-    emitFx(cb, 'shove', { unit: t.u.id, target: target.id, from: was, to, ok: true });
-    // The walk a held shot is waiting for: the new Watches listen on move_step, the old Overwatch on its own call.
-    const ms: any = emit(cb, 'move_step', { u: target, from: was, at: to, i, route: [was, to], how: 'forced', stop: false, cb, rng: t.rng, forced: true });
-    if (alive(target)) triggerOverwatch(cb, t.rng, target);
-    return !!ms.stop;
-    });
-    if (stopNow) break;
+  const to = dir === 'away' ? { away: origin, tiles } : { toward: dir === 'toward' ? origin : dir, tiles };
+  const o = { by: t.u, how: (dir === 'away' ? 'push' : 'pull') as DisplaceHow, source: opts.how || t.def.id };
+  if (t.preview) {
+    const pv = displace(cb, null, target, to, { ...o, preview: true });
+    if (pv.stoppedBy === 'nailed') t.note(target.name + ' is nailed in place and can\'t be moved.');
+    if (pv.moved) (t.pv.moves ||= []).push({ unit: target.id, to: pv.to });
+    return pv.moved;
   }
-  if (moved) cb.log.push(target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ').');
-  return moved;
+  const mv = displace(cb, t.rng, target, to, o);
+  if (mv.blockedAt && dir === 'away') pushBlocked(t, target, mv.blockedAt, opts.how); // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
+  if (mv.moved) cb.log.push(target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ')' + mv.text + '.');
+  return mv.moved;
 }
 /** Breaching Strike's rule for a push that is blocked, bound by perks/skeleton.ts (that file imports this one). */
 let SLAM: ((cb: Combat, by: Unit, target: Unit, into: 'wall' | Unit, how: string) => void) | null = null;
@@ -575,7 +560,6 @@ export function pushBlocked(t: Tech, target: Unit, to: string | null, how?: stri
   if (!SLAM || t.preview || t.def.system !== 'melee' || !alive(target)) return;
   SLAM(t.cb, t.u, target, (to && t.cb.units.find((v) => v !== target && !v.dead && v.pos === to)) || 'wall', how || t.def.id);
 }
-const bad = (cb: Combat, to: string, blocked: Set<string>, mover: Unit) => { const [x, y] = xy(to); return x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h || blocked.has(to) || cb.units.some((v) => v !== mover && !v.dead && v.pos === to); };
 /** Rounds a technique burns beyond its rolls. False (with a note) if the weapon can't pay. */
 export function spendRounds(t: Tech, n: number): boolean {
   if (t.wield === 'throwable' && n > 0) { // a grenade is the ammunition: one from what the user carries

@@ -11,7 +11,7 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, isMelee, emitFx, checkOver,
-  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode,
+  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode, displace
 } from '../combat';
 import { WEAPON, SIGIL } from '../data';
 import { dropToPile } from '../combat';
@@ -550,7 +550,7 @@ register({
       let line = 'The Company strike hits ' + refOf(at);
       for (const v of cb.units) {
         if (v.dead || !tiles.includes(v.pos)) continue;
-        if (alive(v) && canReact(cb, v)) { const out = stepOut(cb, v, tiles); if (out) { useReaction(cb, v); emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); v.pos = out; continue; } }
+        if (alive(v) && canReact(cb, v)) { const out = stepOut(cb, v, tiles); if (out) { useReaction(cb, v); emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); displace(cb, null, v, { tile: out }, { by: v, how: 'teleport', source: 'dive', willing: true, fx: false }); continue; } }
         line += hurtUnit(v, 50, false, cb, 'explosion', u);
       }
       for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) line += damageObject(cb, o.pos, 50, 0, u);

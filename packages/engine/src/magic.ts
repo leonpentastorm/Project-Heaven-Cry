@@ -8,7 +8,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury } from './combat';
+import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits } from './combat';
 import { type Rng, die } from './rng';
 import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult } from './rolls';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
@@ -459,22 +459,12 @@ export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null, ki
 }
 /** Magic forced movement (GALE, PULL, Control push and pull): knockback immunity and the 'forced_move' hook
  * {u, by, tiles, how: 'magic', cancel} can stop it (hooks gap A3). */
-export function magicShove(cb: Combat, t: Unit, from: string, n: number, by: Unit | null = null): string {
+export function magicShove(cb: Combat, t: Unit, from: string, n: number, by: Unit | null = null, rng?: Rng | null): string {
   if (t.dead || n === 0) return '';
-  { const im = immune({ u: t }, 'knockback'); if (im) return ' · ' + t.name + ' holds its ground (' + im + ')'; }
-  { const fm: any = emit(cb, 'forced_move', { u: t, by, tiles: Math.abs(n), how: 'magic', pull: n < 0, cancel: false, cb }); if (fm.cancel) return ' · ' + t.name + ' holds its ground';
-    if (fm.tiles !== Math.abs(n)) n = Math.sign(n) * Math.max(0, Math.round(fm.tiles)); } // an item may change the distance (Heart Surge doubles it)
-  const was = t.pos;
-  const [fx, fy] = from.split(',').map(Number); let [x, y] = t.pos.split(',').map(Number);
-  let dx = Math.sign(x - fx), dy = Math.sign(y - fy); if (n < 0) { dx = -dx; dy = -dy; } if (!dx && !dy) return '';
-  let moved = 0;
-  for (let i = 0; i < Math.abs(n); i++) {
-    const k = (x + dx) + ',' + (y + dy);
-    if (!standable(cb.map, k) || cb.units.some((u) => u !== t && !u.dead && u.pos === k) || (cb.objects || []).some((o) => o.pos === k && /barricade|pillar|door|crate/.test(o.kind) && !o.open)) break;
-    x += dx; y += dy; moved++;
-  }
-  if (!moved) return '';
-  t.pos = x + ',' + y; emitFx(cb, 'shove', { target: t.id, from: was, to: t.pos, ok: true, magic: true, ...(n < 0 ? { pull: true } : {}) }); return ' · ' + t.name + (n > 0 ? ' is thrown' : ' is dragged') + ' to ' + refOf(t.pos);
+  // the one forced move (combat.ts displace): Nailed, the knockback immunity and the 'forced_move' hook (which may change the distance: Heart Surge doubles it) are asked there
+  const mv = displace(cb, rng, t, n > 0 ? { away: from, tiles: n } : { toward: from, tiles: -n }, { by, how: n > 0 ? 'push' : 'pull', source: 'magic', fx: { magic: true } });
+  if (mv.stoppedBy === 'immune' || mv.stoppedBy === 'held' || mv.stoppedBy === 'nailed') return ' · ' + t.name + ' holds its ground' + (mv.why ? ' (' + mv.why + ')' : '');
+  return mv.moved ? ' · ' + t.name + (n > 0 ? ' is thrown' : ' is dragged') + ' to ' + refOf(t.pos) + mv.text : '';
 }
 
 // ---------- turns ----------
@@ -495,7 +485,6 @@ export function magicRoundTick(cb: Combat) { sigilRoundTick(cb); }
 /** Moving onto a tile: fields bite and traps go off (sigil.ts sigilEnter). */
 export function zoneEnter(cb: Combat, rng: Rng, u: Unit, k: string): boolean { const stop = sigilEnter(cb, rng, u, k); if (!u.dead && u.pos === k) feelEnter(cb, rng, u, k); return stop || u.pos !== k; }
 // A STEP landing (sigil.ts) enters its tile the same way a walk does, residue included.
-setEnterHook(zoneEnter);
 /** Sight blockers and light from magic (VEIL smoke, LIGHT). */
 export const veilTiles = (cb: Combat) => (cb.zones || []).filter((z) => z.kind === 'veil').flatMap((z) => z.tiles);
 export const magicLit = (cb: Combat, k: string) => (cb.zones || []).some((z) => z.kind === 'light' && z.tiles.includes(k));
@@ -512,7 +501,7 @@ export {
   evokeGrowth, strokeRuns, strokeOf, strokeOfGlyph, strokesOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, fadePattern, glyphDrawer, junctionsFor, JUNCTION, type Stroke, type StrokeOption,
   lineMult, LINE_MULT, lineMultFor, spellCritMult, spellGapToHit, lineGuards, capParts, SIGIL_CAP, SIGIL_CAP_CRIT,
 } from './sigil';
-import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS, setEnterHook, spellCritMult, spellGapToHit } from './sigil';
+import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS, spellCritMult, spellGapToHit } from './sigil';
 /** The element of the spell resolving now, carried on its damage, miss and condition fx events (the FX layer reads it). */
 let FX_ELEMENT: string | null = null;
 /** Where a Sigil spell's damage comes from (the missile's origin: a Line glyph, SEEK's far glyph, a chain's last target,
@@ -1213,9 +1202,11 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
       const sv = noSave ? null : rollSave(cb, rng, { by: u, target: t, fam: 'body', id: 'shoved', via: 'will_power', tn: saveTn(u, 'will_power') + tnUp + pen, mod: saveOf(t, 'body'), ca }), ok = !!sv?.ok;
       if (opt === 'swap') {
         if (ok) { out.push(t.name + ' holds its ground (Body save)'); return { landed: false, crit: false, line: '' }; }
-        const a = u.pos, b = t.pos; u.pos = b; t.pos = a; if (REL) REL.swapped = true;
-        emitFx(cb, 'shove', { target: t.id, from: b, to: a, ok: true, magic: true, swap: true }); emitFx(cb, 'shove', { target: u.id, from: a, to: b, ok: true, magic: true, swap: true });
-        out.push(u.name + ' and ' + t.name + ' trade places'); return { landed: true, crit: false, line: '' };
+        const a = u.pos, b = t.pos;
+        const sw = swapUnits(cb, rng, u, t, { by: u, source: 'magic', willing: ally ? [u, t] : [u], drawn: () => { emitFx(cb, 'shove', { target: t.id, from: b, to: a, ok: true, magic: true, swap: true }); emitFx(cb, 'shove', { target: u.id, from: a, to: b, ok: true, magic: true, swap: true }); } });
+        if (!sw.ok) { out.push(t.name + ' can\'t be moved' + (sw.why ? ' (' + sw.why + ')' : '')); return { landed: false, crit: false, line: '' }; }
+        if (REL) REL.swapped = true;
+        out.push(u.name + ' and ' + t.name + ' trade places' + sw.text); return { landed: true, crit: false, line: '' };
       }
       const n = Math.max(1, Math.floor((((SCHOOL.control as any)?.push_tiles ?? 3) + stageTiles(stage)) * f));
       out.push(ok ? t.name + ' holds its ground (Body save)' : (magicShove(cb, t, u.pos, opt === 'push' ? n : -n, u).replace(/^ · /, '') || t.name + ' can\'t be moved'));

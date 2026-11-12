@@ -11,7 +11,7 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   key, xy, dist, alive, refOf, keyOf as refKey, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, reload, clearJam,
-  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees,
+  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees, displace
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf } from '../character';
@@ -688,12 +688,11 @@ register({
     },
     run: (h, args) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId)!, k = tileOf(cb, args.tile)!, kg = weightOf(t);
-      const fm: any = emit(cb, 'forced_move', { u: t, by: u, tiles: dist(t.pos, k), to: k, how: 'throw', cancel: false, cb });
-      if (fm.cancel) { say(cb, t.name + ' won\'t be thrown.'); return null; }
-      const hit = cb.units.find((v) => v !== t && !v.dead && v.pos === k) || null, land = landing(cb, k, t)!, was = t.pos;
+      const hit = cb.units.find((v) => v !== t && !v.dead && v.pos === k) || null, land = landing(cb, k, t)!;
+      const mv = displace(cb, null, t, { tile: land }, { by: u, how: 'throw', source: 'throw' }); // the one forced move (combat.ts): it lands, and the tile acts on it
+      if (!mv.moved) { say(cb, t.name + ' won\'t be thrown' + (mv.why ? ' (' + mv.why + ')' : '') + '.'); return null; }
       const dmg = Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1));
-      t.pos = land; t.braced = false; emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: land, ok: true });
-      say(cb, u.name + ' throws ' + t.name + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + hurtUnit(t, dmg, false, cb, 'thrown', u) + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + '.');
+      say(cb, u.name + ' throws ' + t.name + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + hurtUnit(t, dmg, false, cb, 'thrown', u) + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + mv.text + '.');
       checkOver(cb); return null;
     },
   }, {

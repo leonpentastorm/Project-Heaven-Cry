@@ -15,7 +15,7 @@ import {
 export * from './sigilwords';
 import {
   type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
-  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction,
+  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction, displace
 } from './combat';
 import { type Rng } from './rng';
 import { rollD20, rollVs, judge, rollFx, tierSave, tierStrength, CONTEST_BASE } from './rolls';
@@ -478,9 +478,7 @@ function chainJumps(cb: Combat, sp: Spell, side: 'pc' | 'foe', source: string, f
 }
 /** Where a forced move would leave a creature (preview only; magicShove does the real one). */
 function shoveEnd(cb: Combat, t: Unit, from: string, n: number): string {
-  const [fx, fy] = xy(from); let [x, y] = xy(t.pos); let dx = sgn(x - fx), dy = sgn(y - fy); if (n < 0) { dx = -dx; dy = -dy; } if (!dx && !dy) return t.pos;
-  for (let i = 0; i < Math.abs(n); i++) { const k = key(x + dx, y + dy); if (!standable(cb.map, k) || cb.units.some((u) => u !== t && !u.dead && u.pos === k) || objectsAt(cb, k).some((o) => o.hp == null ? false : o.hp > 0 && ['pillar', 'barricade', 'door', 'crate', 'sigil_wall'].includes(o.kind) && !o.open)) break; x += dx; y += dy; }
-  return key(x, y);
+  return displace(cb, null, t, n > 0 ? { away: from, tiles: n } : { toward: from, tiles: -n }, { by: null, how: n > 0 ? 'push' : 'pull', source: 'magic', preview: true }).to;
 }
 /** Is a tile empty for RAISE: no creature, object, glyph or placed Sigil magic. */
 function emptyForRaise(cb: Combat, k: string): boolean {
@@ -1089,8 +1087,10 @@ function strikeInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', 
     const t = cb.units.find((x) => x.id === st.unit); if (!t || t.dead || !canStand(cb, st.to, t)) continue;
     let failed = '';
     if (by && t.side !== by.side) { const sv = teleportSave(cb, rng, by, t); if (sv.held) { line += sv.line; continue; } failed = sv.line; }
-    const from = t.pos; t.pos = st.to; emitFx(cb, 'blink', { target: t.id, from, to: st.to, element: 'step' }); line += ' · ' + t.name + ' steps to ' + refOf(st.to) + failed;
-    ENTER_HOOK(cb, rng, t, st.to); // magic.ts zoneEnter: fields and traps, and Outburst residue on entry (rules 1.8)
+    // the one forced move (combat.ts displace): the caster's own side steps willingly; an enemy that failed its save is moved by force
+    const from = t.pos, mv = displace(cb, rng, t, { tile: st.to }, { by, how: 'teleport', source: 'step', willing: !by || t.side === by.side, fx: false, drawn: () => { emitFx(cb, 'blink', { target: t.id, from, to: st.to, element: 'step' }); } });
+    if (!mv.moved) { if (mv.stoppedBy === 'nailed' || mv.stoppedBy === 'immune' || mv.stoppedBy === 'held') line += ' · ' + t.name + ' can\'t be moved' + (mv.why ? ' (' + mv.why + ')' : ''); continue; }
+    line += ' · ' + t.name + ' steps to ' + refOf(st.to) + failed + mv.text;
   }
   if (mp.veil.length) { addZone(cb, { kind: 'veil', tiles: mp.veil, words: ['veil'], by: by?.id || '', side, left: ((W('veil') as any)?.lasts_rounds ?? 2) + Math.floor(by?.mg?.durBonus || 0) + iv(sp, 'veil', 'lasts_rounds'), mult: 1, who: by?.name || '' }); emitFx(cb, 'veil', { at: mp.impact, tiles: mp.veil, side }); line += ' · smoke-bots fill ' + refOf(mp.impact); }
   if (mp.light.length) { addZone(cb, { kind: 'light', tiles: mp.light, words: ['light'], by: by?.id || '', side, left: 99, mult: 1, who: by?.name || '' }); emitFx(cb, 'light', { at: mp.impact, tiles: mp.light, side }); for (const v of cb.units) if (v.hidden && mp.light.includes(v.pos)) line += revealUnit(cb, v, 'LIGHT') && ' · LIGHT reveals ' + v.name; line += ' · light floods around ' + refOf(mp.impact); }
@@ -1245,10 +1245,6 @@ export function strikeTurret(cb: Combat, rng: Rng, u: Unit, tile: string): strin
   if (hit) destroyPlaced(cb, z, u.name + ' hits it (d20 ' + r + ' → ' + tot + ' vs ' + def + ')'); else cb.log.push(u.name + ' misses the turret at ' + refOf(tile) + ' (d20 ' + r + ' → ' + tot + ' vs ' + def + ').');
   return null;
 }
-/** What entering a tile runs after a STEP: sigilEnter here, until magic.ts registers zoneEnter (which adds the
- * Outburst residue on entry) at load. sigil.ts can't import magic.ts without a cycle. */
-let ENTER_HOOK: (cb: Combat, rng: Rng, u: Unit, k: string) => boolean = (cb, rng, u, k) => sigilEnter(cb, rng, u, k);
-export function setEnterHook(fn: (cb: Combat, rng: Rng, u: Unit, k: string) => boolean) { ENTER_HOOK = fn; }
 /** Moving onto a tile: fields bite, traps of the other side go off (spec: STAY, WAIT). Called on each step of a walk and
  * after a teleport. */
 export function sigilEnter(cb: Combat, rng: Rng, u: Unit, k: string): boolean {

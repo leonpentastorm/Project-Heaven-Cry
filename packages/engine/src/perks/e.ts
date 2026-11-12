@@ -15,7 +15,7 @@ import type { Character } from '../character';
 import { FIELD_REPAIR_HEAL, mendFactorOf } from '../effects/mending';
 import {
   dist, alive, keyOf as refKey, unitSees, sideSees, lineOfSight, paths, apForTiles, previewAttack, resolveAttack, moveUnit,
-  toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active,
+  toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active, displace
 } from '../combat';
 import { WEAPON, SKILL } from '../data';
 import { mod, strengthOf, healingMult, maxHp, packOf, levelForXp, applyLevels, isMedicChar, classRank } from '../character';
@@ -742,7 +742,7 @@ register({
       }
       if (!to) return;
       uses(h).take('per_combat');
-      if (to !== u.pos) { const from = u.pos; u.pos = to; emitFx(cb, 'move', { unit: u.id, from, to, path: [from, to] }); }
+      if (to !== u.pos) { const from = u.pos; displace(cb, null, u, { tile: to }, { by: u, how: 'teleport', source: 'angel_of_the_trenches', willing: true, fx: false, drawn: () => { emitFx(cb, 'move', { unit: u.id, from, to, path: [from, to] }); } }); } // its own rush: not forced, but the tile it lands on acts on it
       ctx.floor = 1; t.bleed = 0;
       emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: 0, revive: false });
       say(cb, u.name + ' is there before ' + t.name + ' hits the ground and holds them up at 1 HP (Angel of the Trenches).');

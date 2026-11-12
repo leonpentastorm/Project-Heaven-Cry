@@ -16,7 +16,7 @@
 import { register, stateOf, applyDamage, emit, has, tierOf, type Holder } from '../effects';
 import { onHook, charOfUnit } from '../effects/hooks';
 import { landed } from '../effects/output';
-import { type Combat, type Unit, key, xy, dist, alive, moveBlockers, emitFx, attackDamage, checkOver, previewAttack, resolveAttack, isMelee } from '../combat';
+import { type Combat, type Unit, key, xy, dist, alive, moveBlockers, emitFx, attackDamage, checkOver, previewAttack, resolveAttack, isMelee, displace } from '../combat';
 import { WEAPON } from '../data';
 import { resGain, resOf } from '../tactics';
 import { condSource } from '../magic';
@@ -54,11 +54,11 @@ register({ id: 'raw_power.3', kind: 'skill', claims: 'all', stat: (_h, stat, ctx
 const NOT_A_PUSH = new Set(['drag', 'throw_down', 'iron_grip']);
 interface Push { from: string; to: string }
 const BREACH = 'breaching_strike';
-onHook('forced_move', (ctx: any) => {
-  const by: Unit | undefined = ctx.by, t: Unit | undefined = ctx.u; if (!by || !t || ctx.cancel || !ctx.to || NOT_A_PUSH.has(ctx.how)) return;
-  if (TECHNIQUE[ctx.how]?.system !== 'melee' || dist(by.pos, ctx.to) <= dist(by.pos, t.pos)) return; // a melee technique, moving it away
+onHook('displaced', (ctx: any) => { // after the one forced move (combat.ts displace): where it started and where it ended
+  const by: Unit | undefined = ctx.by, t: Unit | undefined = ctx.u; if (!by || !t || !ctx.to || ctx.to === ctx.from || NOT_A_PUSH.has(ctx.how)) return;
+  if (TECHNIQUE[ctx.how]?.system !== 'melee' || dist(by.pos, ctx.to) <= dist(by.pos, ctx.from)) return; // a melee technique, moving it away
   if (!has(by, BREACH)) return;
-  (((by as any)._push ||= {}) as Record<string, Push>)[t.id] = { from: t.pos, to: ctx.to };
+  (((by as any)._push ||= {}) as Record<string, Push>)[t.id] = { from: ctx.from, to: ctx.to };
 });
 onHook('on_hit', (ctx: any) => { const a: Unit = ctx.att; if (ctx.melee && a && has(a, BREACH)) ((a as any)._hit ||= {})[ctx.tgt.id] = ctx.dmg; });
 onHook('action_done', (_ctx: any, cb) => {
@@ -149,12 +149,9 @@ register({
       const u = h.u, cb = h.cb; if (!u || !cb || ctx.u !== u || ctx.forced || ctx.how === 'drag' || !ctx.from) return;
       const ids: string[] = peek(h).drag || []; if (!ids.length) return;
       const t = cb.units.find((x) => ids.includes(x.id) && alive(x) && dist(x.pos, ctx.from) <= 1 && x.pos !== ctx.from);
-      if (!t || t.nailed || cb.units.some((v) => !v.dead && v.pos === ctx.from)) return;
-      const fm: any = emit(cb, 'forced_move', { u: t, by: u, tiles: 1, to: ctx.from, how: 'iron_grip', cancel: false, cb, rng: ctx.rng }); if (fm.cancel) return;
-      const was = t.pos; t.pos = ctx.from; t.braced = false;
-      emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: t.pos, ok: true });
-      say(cb, u.name + ' drags ' + t.name + ' along (Iron Grip).');
-      emit(cb, 'move_step', { u: t, from: was, at: t.pos, i: 0, route: [was, t.pos], how: 'forced', stop: false, cb, rng: ctx.rng, forced: true });
+      if (!t || cb.units.some((v) => !v.dead && v.pos === ctx.from)) return;
+      const mv = displace(cb, ctx.rng, t, { tile: ctx.from }, { by: u, how: 'pull', source: 'iron_grip' }); if (!mv.moved) return; // the one forced move (combat.ts): Nailed, immunity and the hook can hold it
+      say(cb, u.name + ' drags ' + t.name + ' along (Iron Grip)' + mv.text + '.');
     },
     moved: (ctx, h) => { if (ctx.u === h.u) stateOf(h).drag = []; },
     on_hit: (ctx, h) => {

@@ -18,7 +18,7 @@ import patronsJ from '../../../data/patrons.json';
 import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
-import { unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor, encoreKey } from './combat';
+import { unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor, encoreKey, swapUnits } from './combat';
 import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { actionAp, pushAway } from './effects/core';
 import { sessionN, dayOf } from './effects/uses';
@@ -1054,7 +1054,10 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     case 'lucky_break': { const n = Math.max(1, Number(fxOf(e, 'reroll')?.uses ?? 2)); fs(one!).luckyBreak = n; return ' · ' + one!.name + '\'s next ' + (n > 1 ? n + ' failed attack rolls are each' : 'failed attack roll is') + ' rerolled at +5'; } // item 1265
     case 'switcheroo': {
       const [x, y] = two; for (const v of [x, y]) if (v.side !== u.side) { const s = hymnSave(cb, rng, u, v, 'brain'); if (s.ok) return ' · ' + v.name + ' resists (' + s.text + ')'; }
-      const px = x.pos; x.pos = y.pos; y.pos = px; emitFx(cb, 'shove', { unit: u.id, target: x.id, from: px, to: x.pos, ok: true, magic: true, swap: true }); emitFx(cb, 'shove', { unit: u.id, target: y.id, from: x.pos, to: px, ok: true, magic: true, swap: true }); faithTag(cb, u, 'trick'); return ' · ' + x.name + ' and ' + y.name + ' swap places';
+      const px = x.pos, py = y.pos; // the caster's own side is swapped willingly; an enemy that failed its save is moved by force
+      const sw = swapUnits(cb, rng, x, y, { by: u, source: 'switcheroo', willing: [x, y].filter((v) => v.side === u.side), drawn: () => { emitFx(cb, 'shove', { unit: u.id, target: x.id, from: px, to: py, ok: true, magic: true, swap: true }); emitFx(cb, 'shove', { unit: u.id, target: y.id, from: py, to: px, ok: true, magic: true, swap: true }); } });
+      if (!sw.ok) return ' · ' + (sw.who?.name || 'it') + ' can\'t be moved' + (sw.why ? ' (' + sw.why + ')' : '');
+      faithTag(cb, u, 'trick'); return ' · ' + x.name + ' and ' + y.name + ' swap places' + sw.text;
     }
     case 'pratfall': { const s = hymnSave(cb, rng, u, one!, 'body'); if (s.ok) return ' · ' + one!.name + ' keeps its feet (' + s.text + ')'; return applyCond(cb, rng, u, one!, 'prone', undefined, undefined, { skipSave: true }) + applyCond(cb, rng, u, one!, 'disarmed', undefined, undefined, { skipSave: true }); }
     case 'encore': { // rules 1.6.2 (item 729): each ally may repeat its last action this round for free; enemies in sight Confused

@@ -14,7 +14,7 @@ import type { Combat, Unit, Term } from '../combat';
 import type { Character, OutburstDesign } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, standable, lineOfSight, resolveAttack, previewAttack, isMelee, emitFx, fxFell,
-  checkOver, unitSees, sideSees, objectsOf, unitFromEnemy,
+  checkOver, unitSees, sideSees, objectsOf, unitFromEnemy, displace
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
 import { mod, devotionXpOf, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns } from '../character';
@@ -58,13 +58,8 @@ const handsEmpty = (u: Unit) => W(u)?.category === 'unarmed' && !u.offWeapon;
 /** Move a unit n tiles toward (n > 0) or away from (n < 0) a tile, stopping at anything in the way. */
 function nudge(cb: Combat, t: Unit, toward: string, n: number): string {
   if (t.dead || !n) return '';
-  const was = t.pos; let [x, y] = xy(t.pos); const [cx, cy] = xy(toward);
-  let dx = Math.sign(cx - x), dy = Math.sign(cy - y); if (n < 0) { dx = -dx; dy = -dy; } if (!dx && !dy) return '';
-  let moved = 0;
-  for (let i = 0; i < Math.abs(n); i++) { const k = key(x + dx, y + dy); if (!canStand(cb, k, t)) break; x += dx; y += dy; moved++; }
-  if (!moved) return '';
-  t.pos = key(x, y); emitFx(cb, 'shove', { target: t.id, from: was, to: t.pos, ok: true, magic: true });
-  return ' · ' + t.name + (n > 0 ? ' is pulled' : ' is thrown') + ' to ' + refOf(t.pos);
+  const mv = displace(cb, null, t, n > 0 ? { toward, tiles: n } : { away: toward, tiles: -n }, { by: null, how: n > 0 ? 'pull' : 'push', source: 'magic', fx: { magic: true } }); // the one forced move (combat.ts)
+  return mv.moved ? ' · ' + t.name + (n > 0 ? ' is pulled' : ' is thrown') + ' to ' + refOf(t.pos) + mv.text : '';
 }
 /** Flux on an Evoker (the engine's own rule, magic.ts flux): over 6 the Evoker overloads. MISSING EXPORT: flux(). */
 /** Flux through the engine's own rule (magic.ts flux, exported for class moves: hooks gap K1). */
@@ -1752,7 +1747,7 @@ register({
     moved: (ctx, h) => {
       const u = h.u; if (!u || isTwin(u) || ctx.u !== u || !h.cb) return; const tw = twinOf(h.cb, u); if (!tw || dist(tw.pos, u.pos) <= 6) return;
       const spot = tilesAround(u.pos, 6).filter((k) => canStand(h.cb!, k, tw)).sort((a, b) => dist(a, tw.pos) - dist(b, tw.pos))[0];
-      if (spot) { tw.pos = spot; say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' follows to ' + refOf(spot) + '.'); }
+      if (spot) { displace(h.cb!, null, tw, { tile: spot }, { by: null, how: 'teleport', source: 'twin', willing: true, fx: false }); say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' follows to ' + refOf(spot) + '.'); }
     },
     on_downed: (ctx, h) => {
       const u = h.u; if (!u || isTwin(u) || ctx.victim !== u || !h.cb) return; const tw = twinOf(h.cb, u); if (!tw) return;

@@ -121,3 +121,29 @@ describe('F1: every d20 goes through src/rolls.ts', () => {
     expect(hits(/\b12 \+ (?:unitStrength|strengthFor|strengthOf)\(/, rolls)).toEqual([]);
   });
 });
+
+// ============================================================================================ F2: forced movement
+describe('F2: a unit changes tile by moveUnit (it walks) or displace / swapUnits (it is moved): combat.ts', () => {
+  it('no new write to `.pos`: every one left is counted here, with what it is', () => {
+    // A unit is moved with displace(cb, rng, unit, { away | toward | tile }, { by, how, source }) or swapUnits(...)
+    // (combat.ts): they ask Nailed, the knockback immunity and the 'forced_move' hook, use the one "can it stand
+    // there" rule, and run the trap, the field and the hazard of every tile entered. A bare `unit.pos = tile` skips
+    // all of that. What is counted below is NOT a move:
+    //   combat.ts 11   moveUnit's step (1) and its opportunity-strike replay (2), displace (2) and swapUnits (2), the fog's "as if it walked there" probe (2), an opportunity strike struck from the tile it left (2)
+    //   game.ts 2      the area map: an NPC walks, characters are placed when a scratch fight is built
+    //   scratch tiles  "stand it there, measure, put it back" (a set and a restore each): sigil.ts 2, ai-sigil.ts 2, ai-soul.ts 2, calls/rules.ts 2,
+    //                  physical/core.ts 2 (standingAt), physical/ranged/takes.ts 1 (restored by Object.assign), physical/ranged/sets.ts 2, classes/i.ts 2, classes/k.ts 2 (fromLink), classes/rev3.ts 4
+    //   a walk vetoed  inside 'move_step' the walker is put back on the tile it came from: physical/melee/links.ts 1, classes/k.ts 1, perks/d.ts 1
+    //   not a unit     a glyph, an object, a False Image: classes/k.ts 1, perks/c.ts 1, classes/rev3.ts 1
+    const allowed: Record<string, number> = { 'combat.ts': 11, 'game.ts': 2, 'sigil.ts': 2, 'ai-sigil.ts': 2, 'ai-soul.ts': 2, 'calls/rules.ts': 2, 'physical/core.ts': 2, 'physical/ranged/takes.ts': 1, 'physical/ranged/sets.ts': 2,
+      'physical/melee/links.ts': 1, 'classes/i.ts': 2, 'classes/k.ts': 4, 'classes/rev3.ts': 5, 'perks/d.ts': 1, 'perks/c.ts': 1 };
+    const found: Record<string, number> = {}; for (const h of hits(/\.pos = /)) { const f = h.split(':')[0]; found[f] = (found[f] || 0) + 1; }
+    expect(found, 'a new `.pos = `: move the unit with displace() or swapUnits() (combat.ts), or moveUnit() if it walks. If it truly is not a move (a scratch tile put back, an object), add it to this table and say what it is').toEqual(allowed);
+  });
+  it('nothing fires the forced_move hook but displace and swapUnits', () => {
+    expect(hits(/emit\(cb, 'forced_move'/, (rel) => rel === 'combat.ts')).toEqual([]);
+  });
+  it('one blocker list: no regex of object kinds decides where a unit may land', () => {
+    expect(hits(/\/(?:barricade|pillar|crate)\|[a-z_|]+\/\.test\(o\.kind\)/)).toEqual([]);
+  });
+});

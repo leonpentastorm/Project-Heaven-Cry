@@ -13,8 +13,9 @@ import type { Combat, Unit } from '../combat';
 import type { Holder, ItemInfo } from './types';
 import { registerGeneric, genericEffects, statQuery, charOfUnit } from './hooks';
 import { COST_SITES, type CostSite } from './stats';
+import type { Rng } from '../rng';
 import { applyCond, endCond, isCondition, condFamily } from '../magic';
-import { moveBlockers, key, xy, dist } from '../combat';
+import { moveBlockers, key, xy, dist, displace } from '../combat';
 import { grantShield, healUnit, tendHook } from './damage';
 import { gainEcho } from './echo';
 
@@ -233,15 +234,9 @@ registerGeneric({
   run: (h, e) => { if (!h.c) return null; const n = gainEcho(h.c, e.value, h.info.name); return ' · ' + h.c.name + ' ' + (n >= 0 ? '+' : '') + n + ' Echo'; },
 });
 /** Push a unit straight away from another, tile by tile, until blocked (knockback). Respects immunity. */
-export function pushAway(cb: Combat, from: Unit, t: Unit, tiles: number): string {
-  if (immune({ u: t }, 'knockback')) return ' · ' + t.name + ' holds its ground';
-  const [ax, ay] = xy(from.pos); let moved = 0;
-  for (let i = 0; i < tiles; i++) {
-    const [tx, ty] = xy(t.pos), to = key(tx + Math.sign(tx - ax), ty + Math.sign(ty - ay)), [nx, ny] = xy(to);
-    if (nx < 0 || ny < 0 || nx >= cb.map.w || ny >= cb.map.h || moveBlockers(cb).has(to) || cb.units.some((v) => !v.dead && v.pos === to)) break;
-    t.pos = to; moved++;
-  }
-  void dist;
-  return moved ? ' · ' + t.name + ' is knocked back ' + moved + (moved === 1 ? ' tile' : ' tiles') : '';
+export function pushAway(cb: Combat, from: Unit, t: Unit, tiles: number, rng?: Rng | null): string {
+  const mv = displace(cb, rng, t, { away: from.pos, tiles }, { by: from, how: 'push', source: 'knockback' });
+  if (mv.stoppedBy === 'immune' || mv.stoppedBy === 'nailed' || mv.stoppedBy === 'held') return ' · ' + t.name + ' holds its ground';
+  return mv.moved ? ' · ' + t.name + ' is knocked back ' + mv.moved + (mv.moved === 1 ? ' tile' : ' tiles') + mv.text : '';
 }
 export type { ItemInfo };

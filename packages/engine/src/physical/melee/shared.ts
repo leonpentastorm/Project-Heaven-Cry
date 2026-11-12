@@ -35,7 +35,7 @@ export const fxMark = (t: T_): number => t.cb.fxSeq || 0;
  * Empty when it didn't move. */
 export function movedSince(t: T_, unitId: string, mark: number): string[] {
   const steps = (t.cb.fx || []).filter((e) => e.n > mark && e.k === 'shove' && e.ok && e.target === unitId && e.from !== e.to);
-  return steps.length ? [steps[0].from, ...steps.map((e) => e.to)] : [];
+  return steps.length ? [steps[0].from, ...steps.flatMap((e) => (Array.isArray(e.path) && e.path.length > 1 ? e.path.slice(1) : [e.to]))] : [];
 }
 /** After a stop that may have knocked a unit Prone: the fall beat when it really went down now. */
 export function fallFx(t: T_, v: U_, wasProne: boolean): void { if (!t.preview && v.prone && !wasProne) meleeFx(t, 'fall', { target: v.id, to: v.pos }); }
