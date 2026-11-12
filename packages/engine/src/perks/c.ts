@@ -16,13 +16,13 @@ import {
 import { WEAPON, ITEM } from '../data';
 import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf } from '../character';
 import { applyCond, condOn } from '../magic';
-import { d20 } from '../rng';
 import { throwItem, blast, radiusOf, canReact, useReaction, refundReaction, throwRangeOf } from '../tactics';
 import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
 import { callMarks, callLevel } from '../calls/core';
 import { CALL, callStepAt } from '../calls/data';
 import { positionsOf } from '../game';
 import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
+import { rollVs } from '../rolls';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -851,8 +851,8 @@ register({
       preview: (h, args) => { const d = deviceAt(h, args); if (typeof d === 'string') return { ok: false, why: d }; const m = unitMod(h.u!, 'analysis'); return { lines: [d.name + ': d20 ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + d.tn + ' (' + Math.max(5, Math.min(95, (21 - (d.tn - m)) * 5)) + '%).'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, d = deviceAt(h, args); if (typeof d === 'string') return d;
-        const r = d20(rng), m = unitMod(u, 'analysis'), ok = r === 20 || (r !== 1 && r + m >= d.tn);
-        let line = u.name + ' backdoors the ' + d.name.toLowerCase() + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs ' + d.tn;
+        const rv = rollVs(cb, rng, { by: u, mod: unitMod(u, 'analysis'), tn: d.tn, why: 'slicer' }), ok = rv.ok;
+        let line = u.name + ' backdoors the ' + d.name.toLowerCase() + ': ' + rv.text;
         if (!ok) { say(cb, line + ' · locked out (Slicer).'); return null; }
         const st = stateOf(h), list: any[] = (st.devices ||= []);
         if (d.unit) { line += ' · it\'s yours until your next turn' + applyCond(cb, rng, u, d.unit, 'puppeted', 1, undefined, { skipSave: true, via: 'ingenuity' }); say(cb, line + '.'); return null; }

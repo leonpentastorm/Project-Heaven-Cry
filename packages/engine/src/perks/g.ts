@@ -18,11 +18,11 @@ import { isTrap } from '../objects';
 import { HEARING } from '../tactics';
 import { applyCond } from '../magic';
 import { SKILL, WEAPON } from '../data';
-import { d20 } from '../rng';
 import { npcsOf, sideRollMod } from '../game';
 import { foreseeVote } from '../game';
 import './briefs';
 import { overworld, say } from '../kit';
+import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 
 // ---------- small helpers ----------
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
@@ -440,7 +440,6 @@ register({
 // a named, important or supernatural listener on the map (an elite or boss, or upper-realm or cursed) makes a Heart save,
 // d20 + its tier's save vs 12 + your Insinuation strength, rolled by the engine; Celestials are immune (the Accords).
 // A directly self-harmful suggestion is refused (the use comes back).
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 register({
   id: 'their_own_idea',
   narrator: 'all',
@@ -461,8 +460,8 @@ register({
       const who = t ? t.name : r!.name, n: any = t ? { tier: t.tier, kind: t.kind } : r!.npc;
       let save = '';
       if (n && (['elite', 'boss'].includes(n.tier) || ['upper_realm', 'cursed'].includes(n.kind || ''))) {
-        const die = d20(rng), m = TIER_SAVE[n.tier] ?? 0, tn = 12 + (h.c ? strengthOf(h.c, 'implication') : 0), ok = die === 20 || (die !== 1 && die + m >= tn);
-        save = ' · ' + who + ' HEART SAVE d20 ' + die + ' +' + m + ' = ' + (die + m) + ' vs ' + tn + (ok ? ': resists' : ': takes it');
+        const rv = rollVs(null, rng, { mod: tierSave(n.tier), tn: SAVE_TN + (h.c ? strengthOf(h.c, 'implication') : 0), lead: 'HEART SAVE' }), ok = rv.ok;
+        save = ' · ' + who + ' ' + rv.text + (ok ? ': resists' : ': takes it');
         if (ok) { if (inFight(h)) say(h.cb, h.u!.name + ' plants an idea in ' + who + save + '.'); else entry(g, { kind: 'check', charId: h.c!.id, ok: false, to: h.c!.owner, head: 'THEIR OWN IDEA · ' + save.slice(3).toUpperCase(), text: who + ' doesn\'t take the bait.' }); return; }
       }
       if (inFight(h)) { say(h.cb, h.u!.name + ' plants an idea in ' + who + ' (Their Own Idea)' + save + '.'); return raiseWords(h, { text: textArg(a), ask: 'Their Own Idea: ' + who + ' believes this is their own idea and acts on it. Refuse if it would harm them directly (the use comes back).', targetId: a.targetId, private: true, per: 'per_scene', actionId: 'suggest' }); }
@@ -733,8 +732,8 @@ register({
     check_build: (ctx, h) => {
       if (ctx.c !== h.c || !tagsOf(ctx).includes('unglamorous') || hasSkill(ctx.ck, 'visualization') || !h.c) return;
       const g = gOf(h), rng = g?.rng; if (!rng) return;
-      const m = sideRollMod(g, h.c, 'visualization'), die = d20(rng), ok = die === 20 || (die !== 1 && die + m >= 12);
-      entry(g, { kind: 'check', charId: h.c.id, ok, head: 'VISUALIZATION · LEADING ROLE · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs 12 · ' + (ok ? '✓ SUCCESS' : '✕ FAILURE'), text: h.c.name + ' pictures it as a scene worth filming' + (ok ? '.' : ': they refuse, or do it at −3.') });
+      const rv = rollVs(null, rng, { mod: sideRollMod(g, h.c, 'visualization'), tn: TN.standard }), ok = rv.ok;
+      entry(g, { kind: 'check', charId: h.c.id, ok, head: 'VISUALIZATION · LEADING ROLE · ' + rv.text + ' · ' + (ok ? '✓ SUCCESS' : '✕ FAILURE'), text: h.c.name + ' pictures it as a scene worth filming' + (ok ? '.' : ': they refuse, or do it at −3.') });
       if (!ok) (ctx.ck as any).leadingRole = -3;
     },
     attack_preview: (ctx, h) => { const n = (h.u?.ps?.[h.key] as any)?.next; if (n && ctx.att === h.u && n.turn === h.cb!.round + '.' + h.cb!.turn) ctx.terms.push({ v: 3, label: 'Dramatic Timing' }); },

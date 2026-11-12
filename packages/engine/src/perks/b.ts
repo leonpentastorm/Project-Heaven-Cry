@@ -14,10 +14,11 @@ import { hide, reveal, seenByFoes, TIER_NOTICE } from '../tactics';
 import { applyCond, condOn } from '../magic';
 import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod } from '../character';
 import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../objects';
-import { d20, die, type Rng } from '../rng';
+import { die, type Rng } from '../rng';
 import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game';
 import { cdFire, cdTick, landsNext } from './cooldown';
 import { rngOf, foesOf } from '../kit';
+import { rollVs, rollD20, judge, TN } from '../rolls';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -244,7 +245,7 @@ register({
       const best = eyes.reduce((m, v) => Math.max(m, TIER_NOTICE[v.tier || 'minion'] ?? 0), 0), tn = 10 + best + 2 * (s.stayed || 0);
       const m = (h.u.ingMod ?? (h.c ? mod(h.c.skills.ingenuity || 0) : -2)) + (h.u.sk?.ingenuity || 0);
       let ok = true, line = '';
-      if (eyes.length) { const d = d20(rng); ok = d === 20 || (d !== 1 && d + m >= tn); line = ': d20 ' + d + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn; }
+      if (eyes.length) { const rv = rollVs(cb, rng, { by: h.u, mod: m, tn, why: 'hide' }); ok = rv.ok; line = ': ' + rv.text; }
       if (!ok) { log(cb, h.u.name + ' tries to melt back into cover (Shadow Step' + line + ' · seen).'); return; }
       s.stayed = (s.stayed || 0) + 1;
       h.u.hidden = true; // the same Hidden entry: no new ambush
@@ -546,7 +547,7 @@ register({
       if (ctx.c !== h.c || !intimidates(ctx.ck)) return;
       const g = gameOf(h), s = stateOf(h), who = String(ctx.ck.target || ctx.ck.npc || ''), scene = g?.story?.scene?.n;
       if (who && s.unmoved?.[who] === scene && ctx.auto !== 'success') { ctx.auto = 'fail'; ctx.labels.push('War Footing: ' + who + ' is unmoved this scene'); return; }
-      const ok = ctx.auto === 'success' || (ctx.auto !== 'fail' && (ctx.die === 20 || (ctx.die !== 1 && ctx.die + ctx.mod >= ctx.tn)));
+      const ok = ctx.auto === 'success' || (ctx.auto !== 'fail' && judge('roll', { die: ctx.die }, ctx.mod, ctx.tn).ok);
       if (!ok) { ctx.labels.push('costs nothing (War Footing)'); ctx.noFumble = true; } // no CRITICAL FAIL head
     },
     check_result: (ctx, h) => {
@@ -863,8 +864,8 @@ register({
     turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); if (s.pen) { pushAp(ctx, -s.pen, 'stealth broken (Ghost Soldier)'); s.pen = 0; } },
     rest: (ctx, h) => {
       if (!ctx.settlement || !h.c || !ctx.chars.includes(h.c)) return; const g = gameOf(h) || ctx.g; if (!g) return;
-      const d = d20(g.rng), m = checkMod(h.c, 'vigilant') + skillRollMod({ c: h.c }, 'vigilant', { roll: 'check', tags: (() => { try { return zoneTags(g); } catch { return []; } })() }).add, ok = d === 20 || (d !== 1 && d + m >= 12);
-      postStory(h, 'VIGILANCE · d20 ' + d + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (d + m) + ' vs 12 · ' + (ok ? 'sleeps, for once.' : 'spends the night watching the doors: no rest benefit.'), { kind: 'system' });
+      const rd0 = rollD20(g.rng), m = checkMod(h.c, 'vigilant') + skillRollMod({ c: h.c }, 'vigilant', { roll: 'check', tags: (() => { try { return zoneTags(g); } catch { return []; } })() }).add, rv = judge('roll', rd0, m, TN.standard), ok = rv.ok;
+      postStory(h, 'VIGILANCE · ' + rv.text + ' · ' + (ok ? 'sleeps, for once.' : 'spends the night watching the doors: no rest benefit.'), { kind: 'system' });
       if (!ok) { const i = ctx.chars.indexOf(h.c); if (i >= 0) ctx.chars.splice(i, 1); }
     },
     // The prosthetic arm (the start item, while carried): an arm injury hits metal, not flesh. No −2 to attacks; the

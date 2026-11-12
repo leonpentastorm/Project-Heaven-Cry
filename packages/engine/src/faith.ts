@@ -19,7 +19,7 @@ import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
 import { unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor, encoreKey } from './combat';
-import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitStrength, withVia, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
+import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { actionAp, pushAway } from './effects/core';
 import { sessionN, dayOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
@@ -28,7 +28,8 @@ import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emit
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
 import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing , dropHeldShot } from './tactics';
-import { d20, die, type Rng } from './rng';
+import { die, type Rng } from './rng';
+import { rollVs, rerollAttack, attackHits } from './rolls';
 import { spotlight } from './spotlight';
 import { WEAPON, SKILL, ITEM } from './data';
 import { rngOf, overworld, tilesAround, foesOf } from './kit';
@@ -777,8 +778,8 @@ export function registerFaithHooks() {
     if (vowOn(att, 'bare') && !isMelee(WEAPON[att.weapon]) && rc.mode !== 'melee') breakVow(cb, att, 'attacked with a gun');
     // Lucky Break: the next failed attack roll is rerolled at +5.
     if (att.faith?.luckyBreak && rc.hit !== true) {
-      const fails = rc.die === 1 || (rc.die < rc.critMin && rc.die + rc.toHit < rc.need);
-      if (fails) { const left = (att.faith.luckyBreak === true ? 1 : Number(att.faith.luckyBreak) || 1) - 1; if (left > 0) att.faith.luckyBreak = left; else delete att.faith.luckyBreak; const r = d20(rc.rng || rngOf()); rc.die = r; rc.hit = r !== 1 && (r >= rc.critMin || r + rc.toHit + 5 >= rc.need); cb.log.push('Lucky Break: ' + att.name + ' rerolls (d20 ' + r + ' +5).'); }
+      const fails = !attackHits({ ...rc, hit: undefined });
+      if (fails) { const left = (att.faith.luckyBreak === true ? 1 : Number(att.faith.luckyBreak) || 1) - 1; if (left > 0) att.faith.luckyBreak = left; else delete att.faith.luckyBreak; const r = rerollAttack(rc, rc.rng || rngOf(), 5); cb.log.push('Lucky Break: ' + att.name + ' rerolls (d20 ' + r + ' +5).'); }
     }
     if (!tgt || att.side === tgt.side) return;
     for (const f of intervening(cb, 'counting_weaver')) { if (f !== tgt || !(rc.die === 20 || rc.die >= rc.critMin)) continue; intervene(cb, f, 'enemy_crits_you', att, null, () => ': the critical becomes a normal hit'); rc.die = 19; rc.critMin = 21; rc.hit = true; break; }
@@ -865,8 +866,8 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   const to = patron ? ' to ' + patron.name : '', what = pe.entry.name || id;
   let line = u.name + (kind === 'miracle' ? ' calls for a MIRACLE from ' + (patron?.name || '?') + ': ' + what : kind === 'whisper' ? ' whispers a prayer' + to + ': ' + what : ' prays to ' + (patron?.name || '?') + ': ' + what + ' (Hymn ' + (['', 'I', 'II', 'III'][pe.tier] || pe.tier) + ')');
   if (pv.roll) {
-    const r = d20(rng), tot = r + pv.roll.mod, ok = r === 20 || (r !== 1 && tot >= pv.roll.tn);
-    line += ' · d20 ' + r + ' ' + (pv.roll.mod >= 0 ? '+' : '−') + Math.abs(pv.roll.mod) + ' = ' + tot + ' vs ' + pv.roll.tn + (pv.mode === 'overreach' ? ' (overreach)' : '');
+    const rv = rollVs(cb, rng, { by: u, mod: pv.roll.mod, tn: pv.roll.tn, why: 'pray' }), r = rv.die, tot = rv.total, ok = rv.ok;
+    line += ' · ' + rv.text + (pv.mode === 'overreach' ? ' (overreach)' : '');
     if (!ok) {
       emitFx(cb, FAITH_FX.prayer_fail, { unit: u.id, kind, id, patron: patron?.id || null, at: u.pos, why: pv.mode === 'overreach' ? 'overreach' : 'dice' });
       cb.log.push(line + ' · no answer.');
@@ -932,10 +933,8 @@ function land(cb: Combat, rng: Rng, u: Unit, t: Unit, entry: any, power: number,
   return run(Math.max(0, ctx.power ?? power));
 }
 const enemiesIn = (cb: Combat, u: Unit, tiles: string[]) => foesOf(cb, u, { downed: true }).filter((v) => tiles.includes(v.pos)); // a Downed enemy in the area counts
-function rollSaveVs(rng: Rng, by: Unit, t: Unit, fam: 'body' | 'brain' | 'heart'): { ok: boolean; text: string } {
-  const r = d20(rng), m = unitSave(t, fam), tn = 12 + unitStrength(by, 'faith'), ok = r === 20 || (r !== 1 && r + m >= tn);
-  return { ok, text: fam + ' save ' + (r + m) + ' vs ' + tn };
-}
+/** A Hymn's save: the one save (rolls.ts), delivered by Faith. */
+const hymnSave = (cb: Combat, rng: Rng, by: Unit, t: Unit, fam: 'body' | 'brain' | 'heart') => saveAgainst(cb, rng, by, t, fam, 'hymn', { via: 'faith' });
 /** Enemies the praying unit sees (not Hidden, not out of the fight): a Miracle's "every enemy in sight". */
 const enemiesInSight = (cb: Combat, u: Unit) => foesOf(cb, u, { hidden: false, seenBy: u });
 /** Would this enemy yield to Love Conquers: not a boss, not a machine, not no_surrender (a refused parley doesn't matter). */
@@ -1054,10 +1053,10 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     // The Laughing Mask
     case 'lucky_break': { const n = Math.max(1, Number(fxOf(e, 'reroll')?.uses ?? 2)); fs(one!).luckyBreak = n; return ' · ' + one!.name + '\'s next ' + (n > 1 ? n + ' failed attack rolls are each' : 'failed attack roll is') + ' rerolled at +5'; } // item 1265
     case 'switcheroo': {
-      const [x, y] = two; for (const v of [x, y]) if (v.side !== u.side) { const s = rollSaveVs(rng, u, v, 'brain'); if (s.ok) return ' · ' + v.name + ' resists (' + s.text + ')'; }
+      const [x, y] = two; for (const v of [x, y]) if (v.side !== u.side) { const s = hymnSave(cb, rng, u, v, 'brain'); if (s.ok) return ' · ' + v.name + ' resists (' + s.text + ')'; }
       const px = x.pos; x.pos = y.pos; y.pos = px; emitFx(cb, 'shove', { unit: u.id, target: x.id, from: px, to: x.pos, ok: true, magic: true, swap: true }); emitFx(cb, 'shove', { unit: u.id, target: y.id, from: x.pos, to: px, ok: true, magic: true, swap: true }); faithTag(cb, u, 'trick'); return ' · ' + x.name + ' and ' + y.name + ' swap places';
     }
-    case 'pratfall': { const s = rollSaveVs(rng, u, one!, 'body'); if (s.ok) return ' · ' + one!.name + ' keeps its feet (' + s.text + ')'; return applyCond(cb, rng, u, one!, 'prone', undefined, undefined, { skipSave: true }) + applyCond(cb, rng, u, one!, 'disarmed', undefined, undefined, { skipSave: true }); }
+    case 'pratfall': { const s = hymnSave(cb, rng, u, one!, 'body'); if (s.ok) return ' · ' + one!.name + ' keeps its feet (' + s.text + ')'; return applyCond(cb, rng, u, one!, 'prone', undefined, undefined, { skipSave: true }) + applyCond(cb, rng, u, one!, 'disarmed', undefined, undefined, { skipSave: true }); }
     case 'encore': { // rules 1.6.2 (item 729): each ally may repeat its last action this round for free; enemies in sight Confused
       let out = '';
       for (const v of allies) {
@@ -1075,7 +1074,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     case 'last_crossing': {
       const v = one!; if (v.hp > v.maxHp / 4) return ' · ' + v.name + ' is not near enough to the shore (above a quarter HP)';
       if (v.tier === 'boss') return harmLine(cb, u, v, P(40), 'soul') + ' (a boss: 40 Soul)';
-      const s = rollSaveVs(rng, u, v, 'heart'); if (s.ok) return ' · ' + v.name + ' holds on (' + s.text + ')';
+      const s = hymnSave(cb, rng, u, v, 'heart'); if (s.ok) return ' · ' + v.name + ' holds on (' + s.text + ')';
       applyDamage(cb, v, v.hp + (v.shield || 0), { by: u, type: 'true', shield: false, credit: 'hp' }); return ' · ' + v.name + ' crosses over (' + s.text + ')';
     }
     case 'turned_back': { // rules 1.6.2 (item 730): every ally who died or fell this fight stands at half HP
@@ -1278,7 +1277,7 @@ export function makePact(g: GameState, c: Character, patronId: string): string |
 function leavePatron(g: GameState, c: Character, old: any, to: any) {
   const lv = old.leave || {}, rng = g.rng as Rng;
   let letGo = true, roll: { die: number; mod: number; total: number; tn: number } | undefined;
-  if (lv.lets_go === 'roll') { const r = d20(rng), m = mod(faithOf(c)), tn = lv.tn ?? 11; roll = { die: r, mod: m, total: r + m, tn }; letGo = r === 20 || (r !== 1 && r + m >= tn); }
+  if (lv.lets_go === 'roll') { const rv = rollVs(null, rng, { mod: mod(faithOf(c)), tn: lv.tn ?? 11 }); roll = { die: rv.die, mod: rv.mod, total: rv.total, tn: rv.tn }; letGo = rv.ok; }
   else if (lv.lets_go === 'never') letGo = false;
   const head = 'LEAVING · ' + String(old.name).toUpperCase() + (roll ? ' · d20 ' + roll.die + ' ' + (roll.mod >= 0 ? '+' : '−') + Math.abs(roll.mod) + ' = ' + roll.total + ' vs ' + roll.tn : '') + (letGo ? ' · LET GO' : ' · A GRUDGE');
   B!.push(g, { kind: roll ? 'check' : 'system', charId: c.id, ...(roll ? { ok: letGo } : {}), head, text: c.name + ' leaves ' + old.name + ' for ' + to.name + (letGo ? ': ' + old.name + ' lets them go.' : lv.lets_go === 'never' ? ': ' + old.name + ' is Jealous and never lets anyone go.' : ': ' + old.name + ' won\'t let go.') } as any);
@@ -1388,8 +1387,8 @@ function storyPray(g: GameState, c: Character, a: Extract<FaithAction, { type: '
   const head = 'FAITH · ' + kind.toUpperCase() + ' · ' + name.toUpperCase();
   const said = c.name + (kind === 'whisper' ? ' whispers a prayer' : kind === 'miracle' ? ' calls for a Miracle' : ' sings a Hymn') + (text ? ': "' + text + '"' : '.');
   if (pv.roll) {
-    const r = d20(rng), tot = r + pv.roll.mod, ok = r === 20 || (r !== 1 && tot >= pv.roll.tn);
-    const dice = ' · d20 ' + r + ' ' + (pv.roll.mod >= 0 ? '+' : '−') + Math.abs(pv.roll.mod) + ' = ' + tot + ' vs ' + pv.roll.tn + (pv.mode === 'overreach' ? ' (overreach)' : '');
+    const rv = rollVs(null, rng, { mod: pv.roll.mod, tn: pv.roll.tn }), r = rv.die, tot = rv.total, ok = rv.ok;
+    const dice = ' · ' + rv.text + (pv.mode === 'overreach' ? ' (overreach)' : '');
     if (!ok) {
       B!.push(g, { kind: 'check', charId: c.id, ok: false, head: head + dice + ' · ✕ SILENCE', text: said } as any);
       storyFx(g, FAITH_FX.prayer_fail, { unit: c.id, kind, id, patron: patron?.id || null, at: null, why: pv.mode === 'overreach' ? 'overreach' : 'dice' });

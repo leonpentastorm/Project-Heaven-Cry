@@ -32,6 +32,7 @@ import {
 import { aiRouteRisk } from './ai-sigil';
 import { fooledBy } from './illusion';
 import { foesOf } from './kit';
+import { tierSave, tierStrength } from './rolls';
 
 // ---------- Soul caster archetypes (data/enemies.json `soul_casters`) ----------
 export interface HeartCasterDef {
@@ -40,13 +41,11 @@ export interface HeartCasterDef {
 }
 export const HEART_CASTERS: HeartCasterDef[] = ((enemiesJ as any).soul_casters || []) as HeartCasterDef[];
 export const HEART_CASTER: Record<string, HeartCasterDef> = Object.fromEntries(HEART_CASTERS.map((c) => [c.id, c]));
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
-const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 2 };
 
 /** A Soul caster's heart (an Emanator, its designs, MP and Strain limit). Will Power for its rolls is its tier's attack
  * bonus; saves and debuff strength by tier, as a Sigil caster's. */
 export function heartMagic(u: Unit, c: HeartCasterDef): MagicUnit {
-  const tier = u.tier || c.tier, s = TIER_SAVE[tier] ?? 0, d = TIER_DEBUFF[tier] ?? 0;
+  const tier = u.tier || c.tier, s = tierSave(tier), d = tierStrength(tier);
   return {
     words: [], designs: c.designs.map((x) => ({ ...x, modules: [...(x.modules || [])] })), evoker: false, emanator: true,
     charge: 0, cores: 0, coresMade: 0, flux: 0, mp: c.mp, mpMax: c.mp, strain: 0, held: null, cast: false, freePumps: c.free_pumps || 0, freePumpsMax: c.free_pumps || 0,

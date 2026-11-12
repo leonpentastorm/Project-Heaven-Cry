@@ -8,7 +8,7 @@ import { alive, active, dist, type Unit } from '../../combat';
 import { ITEM } from '../../data';
 import { canReact } from '../../tactics';
 import { mod } from '../../character';
-import { d20 } from '../../rng';
+import { rollVs } from '../../rolls';
 import { weaponPhys } from '../data';
 
 // 26. Riposte: a melee attack misses you: strike back for 0 AP. Edge or Point: +2 to hit.
@@ -70,8 +70,8 @@ technique({
         ROLLS.delete(att); ctx.parried = true;
         const shield = shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, // with any weapon (Leon's ruling, 10 Nov 2026)
            bonus = attackSkill(t) + shield;
-        const r = d20(t.rng), total = r + bonus, won = total > vs;
-        t.cb.log.push(t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': d20 ' + r + ' ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + (shield ? ' (incl. +' + shield + ' shield)' : '') + ' = ' + total + ' vs ' + vs + (won ? ' · the hit is halved' : ' · it gets through') + '.');
+        const rv = rollVs(t.cb, t.rng, { by: t.u, mod: bonus, tn: vs, nat: false, over: true, why: 'parry' }), won = rv.ok; // it must BEAT the attack's total
+        t.cb.log.push(t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': ' + rv.text + (shield ? ' (incl. +' + shield + ' shield)' : '') + (won ? ' · the hit is halved' : ' · it gets through') + '.');
         meleeFx(t, 'parry', { from: att.pos, to: v.pos, attacker: att.id, ally: forAlly ? v.id : null, won });
         if (!won) return;
         ctx.parryWon = true; // a Parried hit costs the one it lands on no Momentum (physical/rules.ts)

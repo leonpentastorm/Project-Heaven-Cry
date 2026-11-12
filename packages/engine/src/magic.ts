@@ -9,7 +9,8 @@ import {
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
 import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury } from './combat';
-import { type Rng, d20, die } from './rng';
+import { type Rng, die } from './rng';
+import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult } from './rolls';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
 import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
@@ -201,12 +202,10 @@ export function magicToCharacter(c: Character, u: Unit) {
 /** Saves (spec: Conditions and saves): a PC's d20 + mod(Guts | Charisma | Composure) + items, from the unit (u.sv,
  * fixed when the unit is built, so every PC has it, casters or not); enemies by tier (+0 / +1 / +2 / +3). Shaken is −2
  * on Heart saves. unitSave is the one collector (lanes add through 'cond_apply' saveAdd or stat 'save_<family>'). */
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
-const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 2 };
 /** Is a condition a boon (Guarded, Inspired, Witnessed…)? (Unravel ends them; rules 1.6.) */
 export const condIsBoon = (id: string) => !!CONDS[condId(id)]?.boon;
 export function unitSave(u: Unit, fam: Fam): number {
-  const base = u.sv ? u.sv[fam] : u.mg ? u.mg.saves[fam] : TIER_SAVE[u.tier || 'minion'] ?? 0;
+  const base = u.sv ? u.sv[fam] : u.mg ? u.mg.saves[fam] : tierSave(u.tier);
   return base + (fam === 'heart' && condOn(u, 'shaken') ? -2 : 0) + (fam === 'brain' ? condSkillMod(u, 'rumination') : fam === 'heart' ? condSkillMod(u, 'composure') : 0) /* rules 1.13: the Brain save's skill is Rumination, so only the Left Brain Debuff lowers it */ + residueStand(liveCb(), u, 'save')
     + ((u as any).call?.saves?.n || 0); // Name It (a Call, rules 1.13): + on every save until the speaker's next turn
 }
@@ -216,9 +215,9 @@ export const condFam = (id: string): Fam | null => (CONDS[condId(id)]?.fam as Fa
  * it. Ends the condition on a success. Returns the line for the log, or '' when there was nothing to roll. */
 export function freshSave(cb: Combat, rng: Rng, u: Unit, id: string): string {
   const fam = condFam(id); if (!fam || !condOn(u, id)) return '';
-  const by = condSource(u, id), src = by ? cb.units.find((x) => x.id === by) : null, r = d20(rng), m = unitSave(u, fam), tn = 12 + unitStrength(src || null, (u.condVia as any)?.[condId(id)] || 'raw_power');
-  const ok = r === 20 || (r !== 1 && r + m >= tn); if (ok) endCond(u, id, cb);
-  return u.name + (ok ? ' shakes off ' : ' can\'t shake off ') + (CONDS[condId(id)]?.name || id) + ' (' + fam + ' save ' + (r + m) + ' vs ' + tn + ')';
+  const by = condSource(u, id), src = by ? cb.units.find((x) => x.id === by) || null : null, via = (u.condVia as any)?.[condId(id)] || 'raw_power';
+  const sv = saveAgainst(cb, rng, src, u, fam, condId(id), { via }), ok = sv.ok; if (ok) endCond(u, id, cb);
+  return u.name + (ok ? ' shakes off ' : ' can\'t shake off ') + (CONDS[condId(id)]?.name || id) + ' (' + sv.text + ')';
 }
 /** Conditions on skill rolls (spec): Left Brain Debuff −2 on Mind skills, Right Brain Debuff −2 on Expression and Soul
  * skills. Reaches every d20 that uses the skill (attacks, Sigil and Soul strikes, saves). */
@@ -248,13 +247,23 @@ export const strengthFor = (by: Unit | null | undefined, via?: string | null): n
 export function unitStrength(u: Unit | null | undefined, via?: string | null): number {
   if (!u) return 0;
   const tbl = u.dbf || u.mg?.debuff;
-  if (!tbl) return TIER_DEBUFF[u.tier || 'minion'] ?? 0;
+  if (!tbl) return tierStrength(u.tier);
   if ('*' in tbl) return tbl['*'];
   const v = viaOf(u, via);
   if (!v) { if (STRICT_VIA.on) throw new Error('A condition from ' + u.name + ' names no source skill.'); return 0; }
   return tbl[v] ?? 0;
 }
 const saveOf = unitSave;
+/** The TN of a save against something `by` did: 12 (rolls.ts SAVE_TN) + the strength of the skill that delivered it
+ * (`via`; `str`: a strength fixed when it was laid, a zone's or a residue's). */
+export const saveTn = (by: Unit | null | undefined, via?: string | null, str?: number): number => SAVE_TN + (str ?? strengthFor(by, via));
+/** THE USUAL SAVE: `target` saves with its family save against what `by` did, at saveTn(by, via). `id` is what is
+ * saved against (a condition id, or a word: 'shoved', 'stop', 'hymn'). Returns the result (`ok`: it resists; `text`:
+ * the sentence). o.tn replaces the TN outright (a hazard's own); o.tnAdd is harder (+) or easier (−); o.adv rolls two
+ * dice. Every item that changes saves is asked (rolls.ts rollSave). */
+export function saveAgainst(cb: Combat, rng: Rng, by: Unit | null, target: Unit, fam: Fam, id: string, o: { via?: string | null; str?: number; tn?: number; tnAdd?: number; adv?: boolean; fx?: boolean } = {}): RollResult {
+  return rollSave(cb, rng, { by, target, fam, id, via: viaOf(by, o.via), tn: o.tn ?? saveTn(by, o.via, o.str), mod: unitSave(target, fam), ...(o.tnAdd ? { tnAdd: o.tnAdd } : {}), ...(o.adv ? { adv: true } : {}), ...(o.fx === false ? { fx: false } : {}) });
+}
 export const condOn = (u: Unit, id: string) => !!(u.conds && u.conds[condId(id)] > 0);
 /** Who put a condition on a unit (its unit id), if anyone. */
 export const condSource = (u: Unit, id: string): string | null => (condOn(u, id) && u.condBy?.[condId(id)]) || null;
@@ -306,11 +315,11 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
   let saved = '';
   // Rules 1.8: Defiance poured in, no saves against the release (NOSAVE_BY); Defiance's "your next save passes".
   if (NOSAVE_BY && by === NOSAVE_BY && t !== by) { if (DEFY_PEN > 0) ca.tnAdd = (ca.tnAdd || 0) + DEFY_PEN; else ca.skipSave = true; } // rules 1.19: 4 harder to resist (it was: no save)
-  if ((t as any).feelSaveNext && !BOOST.has(id) && !def.noSave && !ca.skipSave) { delete (t as any).feelSaveNext; emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' shrugs it off (Defiance)'; }
   if (!BOOST.has(id) && !def.noSave && !ca.skipSave) {
-    const r = d20(rng), m = saveOf(t, f) + (ca.saveAdd || 0), tn = 12 + (opts.str ?? strengthFor(by, opts.via)) + (ca.tnAdd || 0), ok = r === 20 || (r !== 1 && r + m >= tn);
-    if (ok) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); emit(cb, 'cond_resisted', { by, t, id, cb }); return ' · ' + t.name + ' resists (' + f + ' save ' + (r + m) + ' vs ' + tn + ')'; }
-    saved = f + ' save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : '');
+    // the one save (rolls.ts): 'cond_apply' was fired above, so its context is handed over (ca). Defiance's "your next save passes" is settled there.
+    const sv = rollSave(cb, rng, { by, target: t, fam: f, id, via, tn: saveTn(by, opts.via, opts.str), mod: saveOf(t, f), ca });
+    if (sv.ok) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); if (sv.skipped) return ' · ' + t.name + ' ' + sv.text; emit(cb, 'cond_resisted', { by, t, id, cb }); return ' · ' + t.name + ' resists (' + sv.text + ')'; }
+    saved = sv.skipped ? '' : sv.text;
   }
   if (id === 'marked' && t.hidden) { t.hidden = false; delete t.hideEntry; (cb.sightWhy ||= {})[t.id] = 'reveal'; }
   const n = ca.rounds || rounds || def.rounds, had = condOn(t, id);
@@ -343,9 +352,9 @@ function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: string, ro
   const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || 1, skipSave: noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, cb, rng });
   if (ca.cancel) return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '');
   let saved = '';
-  if (!ca.skipSave) { const r = d20(rng), m = saveOf(t, fam) + (ca.saveAdd || 0), tn = 12 + (opts.str ?? strengthFor(by, opts.via)) + (ca.tnAdd || 0);
-    if (r === 20 || (r !== 1 && r + m >= tn)) return ' · ' + t.name + ' resists (body save ' + (r + m) + ' vs ' + tn + ')';
-    saved = ' (body save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : '') + ')'; }
+  if (!ca.skipSave) { const sv = rollSave(cb, rng, { by, target: t, fam, id, via, tn: saveTn(by, opts.via, opts.str), mod: saveOf(t, fam), ca });
+    if (sv.ok) return ' · ' + t.name + (sv.skipped ? ' ' + sv.text : ' resists (' + sv.text + ')');
+    saved = sv.skipped ? '' : ' (' + sv.text + ')'; }
   if (id === 'dazed' || id === 'prone' || id === 'bleeding') (t.condAt ||= {})[id] = (cb.condSeq = (cb.condSeq || 0) + 1);
   if (id === 'dazed') { t.dazedNext = 1; emit(cb, 'cond_landed', { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed' + saved; }
   if (id === 'prone') { t.prone = true; t.braced = false; emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
@@ -388,8 +397,8 @@ export function condTurnEnd(cb: Combat, u: Unit, rng?: Rng | null) {
   // Corroded (rules 1.4): a Body save at the end of each of the bearer's turns ends it early (against 12 + the strength of the
   // skill that delivered it, kept in condVia). Not on the turn it landed.
   if (condOn(u, 'corroded') && !fresh.has('corroded') && rng) {
-    const by = condSource(u, 'corroded'), src = by ? cb.units.find((x) => x.id === by) : null, r = d20(rng), m = saveOf(u, 'body'), tn = 12 + unitStrength(src, u.condVia?.corroded || 'brain_power');
-    if (r === 20 || (r !== 1 && r + m >= tn)) { endCond(u, 'corroded', cb); cb.log.push(u.name + ' scrubs off the acid (body save ' + (r + m) + ' vs ' + tn + ').'); }
+    const by = condSource(u, 'corroded'), src = by ? cb.units.find((x) => x.id === by) || null : null, sv = saveAgainst(cb, rng, src, u, 'body', 'corroded', { via: u.condVia?.corroded || 'brain_power' });
+    if (sv.ok) { endCond(u, 'corroded', cb); cb.log.push(u.name + ' scrubs off the acid (' + sv.text + ').'); }
   }
   for (const id of Object.keys(u.conds)) {
     const def = CONDS[id]; if (!def) continue;
@@ -1174,9 +1183,10 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
     if (primary && rolls(d) && REL?.calm && (FEELING.calm?.pour as any)?.no_miss) out.push('strikes ' + t.name + ' (Calm: no roll)' + withElement(toneElement(tone), () => harm(cb, rng, u, t, base + bonusDmg(tone, rs), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
     else if (primary && rolls(d)) {
       // Calm (rules 1.19): two rolls, the better kept, and no critical. Joy: a critical from 18 up, when it hits.
-      const adv = !!REL?.calm, r1 = d20(rng), r2 = adv ? d20(rng) : 0, r = Math.max(r1, r2), rf = rollFor(cb, u, d, t, ign || !!REL?.ignoreCover), tot = r + rf.bonus + (emit(cb, 'spell_roll', { u, t, die: r, add: 0, kind: 'soul', cb }) as any).add;
+      const adv = !!REL?.calm, rd = rollD20(rng, { adv }), r1 = rd.dice[0], r2 = rd.dice[1] || 0, r = rd.die, rf = rollFor(cb, u, d, t, ign || !!REL?.ignoreCover), sr = judge('roll', rd, rf.bonus + (emit(cb, 'spell_roll', { u, t, die: r, add: 0, kind: 'soul', cb }) as any).add, t.def), tot = sr.total;
       const rolled = adv ? 'd20 ' + r1 + ' and ' + r2 + ', Calm keeps ' + r : 'd20 ' + r;
-      if (r === 1 || (r !== 20 && tot < t.def)) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); out.push('misses ' + t.name + ' (' + rolled + ' → ' + tot + ' vs ' + t.def + ')'); return { landed: false, crit: false, line: '' }; }
+      rollFx(cb, sr, u, { why: 'soul' });
+      if (!sr.ok) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); out.push('misses ' + t.name + ' (' + rolled + ' → ' + tot + ' vs ' + t.def + ')'); return { landed: false, crit: false, line: '' }; }
       crit = !adv && r >= (REL?.critFrom ?? 20); out.push('hits ' + t.name + ' (' + rolled + (crit ? ', CRITICAL' : '') + ')' + withElement(toneElement(tone), () => harm(cb, rng, u, t, base * (crit ? spellCritMult(cb, u, t) : 1) + bonusDmg(tone, rs), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
       if (crit) noteCrit(cb, u, t, 'outburst'); // the spotlight's crit (decision 113): presentation only
     } else out.push((primary ? '' : 'and ') + withElement(toneElement(tone), () => harm(cb, rng, u, t, base + (primary ? bonusDmg(tone, rs) : 0), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))).replace(/^ · /, ''));
@@ -1200,7 +1210,7 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
       const ca: any = emit(cb, 'cond_apply', { by: u, t, id: 'shoved', fam: 'body', rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
       if (ca.cancel) { out.push(t.name + ' can\'t be moved' + (ca.why ? ' (' + ca.why + ')' : '')); return { landed: false, crit: false, line: '' }; }
       const pen = NOSAVE_BY === u ? DEFY_PEN : 0, noSave = ca.skipSave || (NOSAVE_BY === u && !DEFY_PEN) || (opt === 'swap' && ally);
-      const r = noSave ? 0 : d20(rng), ok = !noSave && (r === 20 || (r !== 1 && r + saveOf(t, 'body') + (ca.saveAdd || 0) >= 12 + unitStrength(u, 'will_power') + (ca.tnAdd || 0) + tnUp + pen));
+      const sv = noSave ? null : rollSave(cb, rng, { by: u, target: t, fam: 'body', id: 'shoved', via: 'will_power', tn: saveTn(u, 'will_power') + tnUp + pen, mod: saveOf(t, 'body'), ca }), ok = !!sv?.ok;
       if (opt === 'swap') {
         if (ok) { out.push(t.name + ' holds its ground (Body save)'); return { landed: false, crit: false, line: '' }; }
         const a = u.pos, b = t.pos; u.pos = b; t.pos = a; if (REL) REL.swapped = true;
@@ -1408,8 +1418,8 @@ function pourOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, F: Se
   if (F.has('contempt') && !t.dead) out += applyCond(cb, rng, u, t, 'scorned', FP('contempt').rounds ?? 2, undefined, { skipSave: true });
   if (F.has('mercy') && !t.dead && !t.surrendered && t.hp > 0 && t.hp <= t.maxHp * (FP('mercy').surrender_at ?? 0.25) && canSurrender(t)) {
     t.surrenderTried = true;
-    const r = d20(rng), mm = unitSave(t, 'heart'), tn = 12 + unitStrength(u, 'will_power') + (NOSAVE_BY === u ? DEFY_PEN : 0), held = (NOSAVE_BY !== u || DEFY_PEN > 0) && (r === 20 || (r !== 1 && r + mm >= tn));
-    out += held ? ' · ' + t.name + ' won\'t yield (Heart save ' + (r + mm) + ' vs ' + tn + ')' : surrender(cb, t, u, 'Mercy');
+    const sv = saveAgainst(cb, rng, u, t, 'heart', 'surrender', { via: 'will_power', tnAdd: NOSAVE_BY === u ? DEFY_PEN : 0 }), held = (NOSAVE_BY !== u || DEFY_PEN > 0) && sv.ok;
+    out += held ? ' · ' + t.name + ' won\'t yield (' + sv.text + ')' : surrender(cb, t, u, 'Mercy');
   }
   // Modules that ride a landed hit (rules 1.8): Anchor pins, Lure pulls.
   if (has('anchor') && !t.dead) out += applyCond(cb, rng, u, t, 'pinned', (MODULE.anchor as any)?.rounds ?? 1);
@@ -1652,12 +1662,12 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
         a.dmg += n; a.dmgAfterArmour += Math.max(1, n - arm);
         if (primary && rolls(d) && !(F.has('calm') && (FEELING.calm?.pour as any)?.no_miss)) { a.roll = rollFor(cb, u, d, t, toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover') || bankShot(cb, d, at)); if (F.has('calm')) a.roll.pct = twiceBetter(a.roll.pct); } // Calm (rules 1.19): the better of two rolls
       } else if (school === 'buff') { if (optOf('buff', option) === 'heal' && t.side === u.side) a.heal += Math.floor((outburstHeal(m, d, sm) * f + (primary && F.has('love') ? loveHeal(m, d, sm, false, true) : 0)) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); }
-      else if (school === 'control') { const o = optOf('control', option); if (!(o === 'swap' && t.side === u.side)) a.saves.push({ cond: o, fam: 'body', tn: 12 + unitStrength(u, 'will_power') + stageSaveTn(stage) + defy }); }
-      else if (school === 'status') { const o = optOf('status', option), fam: Fam = d.modules.includes('left') ? 'brain' : d.modules.includes('right') ? 'heart' : (condFamily(OPT_COND[o] || o) || 'heart'); a.saves.push({ cond: OPT_COND[o] || o, fam, tn: 12 + unitStrength(u, 'will_power') + stageSaveTn(stage) + defy }); }
+      else if (school === 'control') { const o = optOf('control', option); if (!(o === 'swap' && t.side === u.side)) a.saves.push({ cond: o, fam: 'body', tn: saveTn(u, 'will_power') + stageSaveTn(stage) + defy }); }
+      else if (school === 'status') { const o = optOf('status', option), fam: Fam = d.modules.includes('left') ? 'brain' : d.modules.includes('right') ? 'heart' : (condFamily(OPT_COND[o] || o) || 'heart'); a.saves.push({ cond: OPT_COND[o] || o, fam, tn: saveTn(u, 'will_power') + stageSaveTn(stage) + defy }); }
     };
     one(d.school, d.option, 1, true);
     if (secondOf(d) && !(sameWayTwice(d) && d.school !== 'damage' && !(d.school === 'buff' && optOf('buff', d.option) === 'heal') && !['push', 'pull', 'swap'].includes(optOf(d.school, d.option)))) { one(d.school2!, d.option2, half, false); a.second = (SCHOOL[d.school2!]?.name || d.school2) + ' (' + optOf(d.school2!, d.option2) + ') at half'; }
-    if (tone !== 'raw' && t.side !== u.side) { a.rider = toneRiders(tone, rs).text; for (const r of toneRiders(tone, rs).riders) if (r.rider === 'cond' && r.save && r.condition) { const fam = condFamily(r.condition) || 'body'; a.saves.push({ cond: r.condition, fam, tn: 12 + unitStrength(u, 'will_power') }); } }
+    if (tone !== 'raw' && t.side !== u.side) { a.rider = toneRiders(tone, rs).text; for (const r of toneRiders(tone, rs).riders) if (r.rider === 'cond' && r.save && r.condition) { const fam = condFamily(r.condition) || 'body'; a.saves.push({ cond: r.condition, fam, tn: saveTn(u, 'will_power') }); } }
     return a;
   });
   // Everyone else the release would reach past its area (section 7): Storm's chains, Fire's stage-4 spread, Gale's
@@ -1677,7 +1687,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
   const spread = riders.find((r) => r.rider === 'spread'), pushAll = riders.find((r) => r.rider === 'push_around');
   if (tone !== 'raw') for (const t of foesHit) {
     if (spread?.condition) for (const v of cb.units) if (v !== t && !v.dead && v.side !== u.side && dist(v.pos, t.pos) <= (spread.radius || 1))
-      add({ ...blankAffected(u, v, 'spread'), rider: condName(spread.condition) + (spread.rounds ? ' ' + spread.rounds + ' rounds' : '') + ' (spreads from ' + t.name + ')', saves: spread.save ? [{ cond: spread.condition, fam: (condFamily(spread.condition) || 'body') as Fam, tn: 12 + unitStrength(u, 'will_power') }] : [] });
+      add({ ...blankAffected(u, v, 'spread'), rider: condName(spread.condition) + (spread.rounds ? ' ' + spread.rounds + ' rounds' : '') + ' (spreads from ' + t.name + ')', saves: spread.save ? [{ cond: spread.condition, fam: (condFamily(spread.condition) || 'body') as Fam, tn: saveTn(u, 'will_power') }] : [] });
     if (pushAll) for (const v of cb.units) if (v !== t && v !== u && !v.dead && dist(v.pos, t.pos) <= (pushAll.radius || 1))
       add({ ...blankAffected(u, v, 'push'), rider: 'pushed ' + pushAll.tiles + ' tiles away from ' + t.name + ' (' + TONE[tone].name + ')' });
   }
@@ -1700,7 +1710,7 @@ export function planStrike(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, sm: 
   a.dmg = n; a.dmgAfterArmour = Math.max(1, n - arm);
   if (o.roll) a.roll = rollFor(cb, u, d, t, toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover'));
   const rr = o.riders ?? (tone !== 'raw' ? toneRiders(tone, rs).riders : []);
-  for (const r of rr) if (r.rider === 'cond' && r.save && r.condition) { const fam = (condFamily(r.condition) || 'body') as Fam; a.saves.push({ cond: r.condition, fam, tn: 12 + unitStrength(u, 'will_power') }); }
+  for (const r of rr) if (r.rider === 'cond' && r.save && r.condition) { const fam = (condFamily(r.condition) || 'body') as Fam; a.saves.push({ cond: r.condition, fam, tn: saveTn(u, 'will_power') }); }
   a.rider = [o.note, tone !== 'raw' && rr.length ? (o.riders ? rr.map((r) => r.condition ? condName(r.condition) : '').filter(Boolean).join(', ') : toneRiders(tone, rs).text) : ''].filter(Boolean).join(' · ');
   return a;
 }

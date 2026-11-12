@@ -211,7 +211,7 @@ describe('the engine\'s own heart events play', () => {
     }
     expect(warn).not.toHaveBeenCalled();
     for (const k of ['outburst', 'pump', 'swell', 'hold', 'release', 'letgo', 'steady', 'strain', 'short']) expect(kinds, k).toContain(k);
-    const handled = new Set(['turn', 'hurt', 'heal', 'down', 'cond', 'mana', 'miss', 'shove', 'chain', 'explode', 'outburst', 'pump', 'swell', 'hold', 'aura_tick', 'release', 'heart_overwatch', 'resonance', 'feed', 'calm', 'letgo', 'steady', 'strain', 'burn', 'short', 'infusion', 'charge', 'shield']);
+    const handled = new Set(['roll' /* a roll's numbers: no drawing, no beat */, 'turn', 'hurt', 'heal', 'down', 'cond', 'mana', 'miss', 'shove', 'chain', 'explode', 'outburst', 'pump', 'swell', 'hold', 'aura_tick', 'release', 'heart_overwatch', 'resonance', 'feed', 'calm', 'letgo', 'steady', 'strain', 'burn', 'short', 'infusion', 'charge', 'shield']);
     for (const k of kinds) expect(handled, k).toContain(k);
     snd.mockRestore(); clearFx(); vi.advanceTimersByTime(20000); vi.useRealTimers();
   });

@@ -15,7 +15,7 @@
 import { statQuery } from '../../effects/hooks';
 import { technique, save, cond, stop, forceMove, pushBlocked, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { PHYS_RULES } from '../data';
-import { strikingWith, techSaveTn, techVia, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
+import { strikingWith, techSaveTn, techVia, saveOutside, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
 import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf } from '../../combat';
 import { mod } from '../../character';
 import { zoneEnter } from '../../magic';
@@ -25,7 +25,8 @@ import { emit, charOfUnit } from '../../effects/hooks';
 import { immune } from '../../effects/core';
 import { unitSave } from '../../magic';
 import { resOf } from '../../tactics';
-import { d20, type Rng } from '../../rng';
+import { type Rng } from '../../rng';
+import { rollVs } from '../../rolls';
 import { canStand } from '../../kit';
 
 // ---------- small helpers ----------
@@ -49,13 +50,6 @@ function shieldBonus(u: Unit): number {
   const c = u.companion ? null : charOfUnit(u), it: any = c?.offHand ? (ITEM as any)[c.offHand.id] : null;
   if (!it || it.category !== 'shield') return 0;
   return (it.effects || []).filter((e: any) => e.op === 'defense_bonus' && typeof e.value === 'number').reduce((n: number, e: any) => n + e.value, 0);
-}
-/** A Body save outside a technique's own use (Guard with Reach, on the mover's step): the core's save, with the hook's
- * dice. tn: techSaveTn of the unit that forces it (rules 1.13). */
-function bodySave(cb: Combat, rng: Rng, who: Unit, against: string, tn: number): boolean {
-  const bonus = unitSave(who, 'body'), r = d20(rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
-  cb.log.push(who.name + (ok ? ' saves' : ' fails the save') + ' against ' + against + ' (body ' + (r + bonus) + ' vs ' + tn + ').');
-  return ok;
 }
 
 // ---------- 15. Sidestep ----------
@@ -166,7 +160,7 @@ onHook('move_step', (ctx: any, cb) => {
   if (cb.units.some((v) => v !== m && alive(v) && v.pos === ctx.from)) return;
   for (const h of cb.units) {
     const g = guardStance(h); if (!g?.reach || h.side === m.side || !alive(h) || dist(h.pos, ctx.at) > 1 || dist(h.pos, ctx.from) <= 1) continue;
-    if (bodySave(cb, ctx.rng, m, h.name + '\'s Guard', techSaveTn(h, g.via || 'raw_power'))) continue; // the guard's strength with the weapon it was set with
+    if (saveOutside(cb, ctx.rng, h, m, h.name + '\'s Guard', techSaveTn(h, g.via || 'raw_power'), g.via || 'raw_power')) continue; // the guard's strength with the weapon it was set with
     m.pos = ctx.from; ctx.stop = 'guard';
     cb.log.push(m.name + ' can\'t get past ' + h.name + '\'s guard and stops at ' + refOf(m.pos) + '.');
     return;
@@ -218,9 +212,9 @@ technique({
       stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false }); // a push records where it would leave it
       return null;
     }
-    const roll = d20(t.rng), total = roll + bonus;
-    t.cb.log.push(u.name + ' shoves ' + tgt.name + ': d20 ' + roll + ' ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + ' = ' + total + ' vs ' + need + (total >= need ? '' : ' · holds firm') + '.');
-    if (total < need) { emitFx(t.cb, 'shove', { unit: u.id, target: tgt.id, from: tgt.pos, to: tgt.pos, ok: false }); return null; }
+    const rv = rollVs(t.cb, t.rng, { by: u, mod: bonus, tn: need, nat: false, why: 'shove' }); // an opposed number: no natural 1 or 20
+    t.cb.log.push(u.name + ' shoves ' + tgt.name + ': ' + rv.text + (rv.ok ? '' : ' · holds firm') + '.');
+    if (!rv.ok) { emitFx(t.cb, 'shove', { unit: u.id, target: tgt.id, from: tgt.pos, to: tgt.pos, ok: false }); return null; }
     const was = tgt.pos, wasProne = !!tgt.prone, mk = fxMark(t);
     stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false });
     if (blocked) pushBlocked(t, tgt, to); // shoved against a wall or a body: Breaching Strike's hit again

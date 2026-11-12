@@ -18,6 +18,7 @@ import { die, d20, type Rng } from '../rng';
 import { setStoryCond, storyConds, strikeFromWorld } from '../game';
 import { reveal, PATRON , dropHeldShot } from '../tactics';
 import { overworld, say, tileOf, rngOf } from '../kit';
+import { rollVs, TN } from '../rolls';
 
 // ---------- small helpers ----------
 const ow = overworld;
@@ -608,9 +609,9 @@ register({
     },
     rest: (ctx, h) => {
       if (!h.c || !augOf(h) || !ctx.g?.rng) return;
-      const c = h.c, r = d20(ctx.g.rng), m = mod(c.skills.proficiency || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
+      const c = h.c, rv = rollVs(null, ctx.g.rng, { mod: mod(c.skills.proficiency || 0), tn: TN.standard }), ok = rv.ok;
       charState(c).augmentOffline = !ok;
-      postStory(h, 'maintenance on the ' + augOf(h) + ' augment: Improvisation d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs 12 · ' + (ok ? 'working.' : 'it won\'t work until the next rest.'));
+      postStory(h, 'maintenance on the ' + augOf(h) + ' augment: Improvisation ' + rv.text + ' · ' + (ok ? 'working.' : 'it won\'t work until the next rest.'));
     },
   },
   actions: [{

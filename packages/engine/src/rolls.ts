@@ -119,6 +119,7 @@ export interface SaveSpec {
   /** applyCond has already fired 'cond_apply' for this condition: its context (the save reads saveAdd, tnAdd,
    * skipSave and cancel from it and does not fire it again). */ ca?: any;
   /** Harder (+) or easier (−), from the caller. */ tnAdd?: number;
+  /** The words before "d20" in the sentence (default: '<family> save'; a technique names the skills it lets the target use). */ lead?: string;
   /** false: no effect event. */ fx?: boolean;
 }
 /** A unit's save. It RESISTS when `ok`. In order: every item is asked ('cond_apply' unless `ca` is given, then
@@ -142,7 +143,7 @@ export function rollSave(cb: Combat, rng: Rng, s: SaveSpec): RollResult {
   if (sv.pass) return skip('auto', true, sv.why || '');
   if (sv.fail) return skip('no_save', false, sv.why || '');
   const parts: RollPart[] = [{ add: s.mod, label: s.fam + ' save' }, ...(sv.saveAdd ? [{ add: sv.saveAdd, label: 'items' }] : [])];
-  const res = judge('save', rollD20(rng, { adv: s.adv }), parts, s.tn + (sv.tnAdd || 0), { fam: s.fam });
+  const res = judge('save', rollD20(rng, { adv: s.adv }), parts, s.tn + (sv.tnAdd || 0), { fam: s.fam, ...(s.lead ? { lead: s.lead } : {}) });
   if (s.fx !== false) rollFx(cb, res, t, { by: s.by, why: s.id });
   return res;
 }
@@ -156,11 +157,16 @@ export function contest(cb: Combat | null | undefined, rng: Rng, a: { by?: Unit 
   return { a: ra, b: rb, won: ra.ok, text: 'd20 ' + ra.die + ' ' + sign(ra.mod) + ' = ' + ra.total + ' vs d20 ' + rb.die + ' ' + sign(rb.mod) + ' = ' + rb.total };
 }
 
+/** How many of the 20 faces pass d20 + mod against a TN (a natural 20 passes, a natural 1 fails): the odds a card shows. */
+export const passFaces = (mod: number, tn: number): number => { let n = 0; for (let f = 1; f <= 20; f++) if (judge('roll', { die: f }, mod, tn).ok) n++; return n; };
+/** Does this attack roll hit, by the attack's own rule (a natural 1 misses, the critical range hits, else the total
+ * against the Defense)? For an item inside the 'attack_roll' hook, before resolveAttack settles it. */
+export const attackHits = (rc: { die: number; hit?: boolean; critMin: number; toHit: number; need: number }): boolean => rc.hit ?? (rc.die !== 1 && (rc.die >= rc.critMin || rc.die + rc.toHit >= rc.need));
 /** Reroll an attack's die inside the 'attack_roll' hook (Lucky Break, Lucky Foot): the new die replaces the old one.
  * With a `bonus` the hit is settled here, by the attack's own rule with the bonus added (a natural 1 misses, the
  * critical range hits); without one resolveAttack settles it from the new die. Returns the new die. */
 export function rerollAttack(rc: { die: number; hit?: boolean; critMin: number; toHit: number; need: number }, rng: Rng, bonus = 0): number {
   const r = rollD20(rng).die; rc.die = r;
-  if (bonus) rc.hit = r !== 1 && (r >= rc.critMin || r + rc.toHit + bonus >= rc.need); else delete rc.hit;
+  delete rc.hit; if (bonus) rc.hit = attackHits({ ...rc, toHit: rc.toHit + bonus });
   return r;
 }

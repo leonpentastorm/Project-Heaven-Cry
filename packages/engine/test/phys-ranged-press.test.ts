@@ -168,7 +168,7 @@ describe('Warning Shot', () => {
     expect(f.tech('warning_shot', { targetId: f.foe.id })).toBeNull();
     expect(f.pc.ap).toBe(5); expect(f.pc.ammo).toBe(11); expect(f.pc.heat).toBe(2); expect(f.pc.shotsThisTurn).toBe(1);
     expect(f.foe.hp).toBe(hp); expect(f.pressure(f.foe)).toBe(1);
-    expect(f.cb.log.some((l) => /fails the save against Warning Shot .* vs 15\)/.test(l))).toBe(true);
+    expect(f.cb.log.some((l) => /fails the save against Warning Shot .* vs 15[,)]/.test(l))).toBe(true);
   });
   it('a target that keeps its nerve gains nothing', () => {
     const f = fight('service_pistol'); nerves(f, 50);
@@ -178,7 +178,7 @@ describe('Warning Shot', () => {
   it('Loud: the save is at −2 (TN 14); without Loud it is TN 12', () => {
     const f = fight('magistrate_pistol'); nerves(f, -50);
     expect(f.pv('warning_shot', { targetId: f.foe.id }).saves![0].tn).toBe(14 + 3);
-    f.tech('warning_shot', { targetId: f.foe.id }); expect(f.cb.log.some((l) => /Warning Shot \(heart .* vs 17\)/.test(l))).toBe(true);
+    f.tech('warning_shot', { targetId: f.foe.id }); expect(f.cb.log.some((l) => /Warning Shot \(heart .* vs 17[,)]/.test(l))).toBe(true);
     expect(f.pressure(f.foe)).toBe(1);
   });
   it('Silent: not available; refusals for an ally and a target out of sight', () => {

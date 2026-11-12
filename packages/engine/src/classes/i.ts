@@ -23,15 +23,16 @@ import {
 } from '../character';
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
 import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL } from '../effects/mending';
-import { BUFF_HEAL } from '../magic';
+import { BUFF_HEAL , saveTn } from '../magic';
 import {
-  applyCond, endCond, condOn, condSource, unitSave, unitStrength, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
+  applyCond, endCond, condOn, condSource, unitSave, unitStrength, saveAgainst, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
   grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil, strokeOfGlyph, tidyStrokes,
   formOf, outburstArea, riderStage, toneElement, toneOf, designCost, MAX_STAGE, SOUL_AP, planStrike,
   type EvokePreview, type Spell,
 } from '../magic';
 import { soulStrike, designRolls } from './soul';
-import { d20, die, type Rng } from '../rng';
+import { die, type Rng } from '../rng';
+import { rollVs, rollD20, SAVE_TN } from '../rolls';
 import { resOf, resGain, resSpend, canReact, useReaction, refundReaction, reveal , dropHeldShot } from '../tactics';
 import { itemWords, wordCostMods, actionAp } from '../effects/core';
 import { makeObject } from '../objects';
@@ -618,8 +619,8 @@ register({
     on_hit: (ctx, h) => {
       const st = stateOf(h), u = h.u!; if (ctx.att !== u || !st.coat || !coatable(u) || ctx.tgt.dead) return;
       const id = st.coat; delete st.coat;
-      const r = d20(rngOf(h, ctx)), m = unitSave(ctx.tgt, 'body'), tn = 12 + unitStrength(u, 'ingenuity'), ok = r === 20 || (r !== 1 && r + m >= tn);
-      say(h.cb, 'The toxin on ' + u.name + '\'s weapon: ' + ctx.tgt.name + ' Body save d20 ' + r + ' ' + fmt(m) + ' vs ' + tn + (ok ? ' · resists.' : (applyCond(h.cb!, rngOf(h, ctx), u, ctx.tgt, id, undefined, 'body', { skipSave: true, via: 'ingenuity' }) || ' · takes hold') + '.'));
+      const sv = saveAgainst(h.cb!, rngOf(h, ctx), u, ctx.tgt, 'body', id, { via: 'ingenuity' }), ok = sv.ok;
+      say(h.cb, 'The toxin on ' + u.name + '\'s weapon: ' + ctx.tgt.name + ' ' + sv.text + (ok ? ' · resists.' : (applyCond(h.cb!, rngOf(h, ctx), u, ctx.tgt, id, undefined, 'body', { skipSave: true, via: 'ingenuity' }) || ' · takes hold') + '.'));
     },
   },
   brief: () => null,
@@ -1136,11 +1137,11 @@ register({
       available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < 3) return 'Needs 3 charge.'; return true; },
       preview: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {}; const r = MOVE_RANGE + (u.mg?.rangeBonus || 0);
         if (dist(u.pos, t.pos) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' }; if (!lineOfSight(cb, u.pos, t.pos)) return { ok: false, why: 'No line of sight.' };
-        const f = flippable(t); return { lines: [f.length ? 'Flips ' + f[0] + ' (Brain save vs ' + (12 + unitStrength(u, 'brain_power')) + ').' : t.name + ' has nothing the game tracks to flip. The Narrator decides what flips.'] }; },
+        const f = flippable(t); return { lines: [f.length ? 'Flips ' + f[0] + ' (Brain save vs ' + (saveTn(u, 'brain_power')) + ').' : t.name + ' has nothing the game tracks to flip. The Narrator decides what flips.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, r0 = rng as Rng; u.mg!.charge -= 3; u.mg!.cast = true;
-        const r = d20(r0), m = unitSave(t, 'brain'), tn = 12 + unitStrength(u, 'brain_power'), ok = r === 20 || (r !== 1 && r + m >= tn);
-        let line = u.name + ' rewrites ' + t.name + ' (Brain save d20 ' + r + ' ' + fmt(m) + ' vs ' + tn + ')';
+        const sv = saveAgainst(cb, r0, u, t, 'brain', 'rewrite', { via: 'brain_power' }), ok = sv.ok;
+        let line = u.name + ' rewrites ' + t.name + ' (' + sv.text + ')';
         if (ok) { say(cb, line + ' · resists' + addFlux(cb, u, 1) + '.'); return; }
         const f = flippable(t)[0], st = stateOf(h);
         switch (f) {
@@ -1162,7 +1163,7 @@ register({
       text: 'Once a scene, for 3 charge: flip a blessing, ward or advantage someone relies on (say who and what). They make a Brain save. If they fail, the Narrator decides how it flips.',
       available: (h) => (h.c && hasEvoker(h.c) ? (evoChargeNow(h.c) < 3 ? 'Needs 3 charge in the core.' : true) : 'Needs an Evoker in hand.'),
       run: (h, args) => {
-        const c = h.c!; c.evoCharge = evoChargeNow(c) - 3; const r = d20(h.g.rng), tn = 12 + strengthOf(c, 'brain_power'), ok = r === 20 || (r !== 1 && r >= tn);
+        const c = h.c!; c.evoCharge = evoChargeNow(c) - 3; const rv = rollVs(null, h.g.rng, { mod: 0, tn: SAVE_TN + strengthOf(c, 'brain_power') }), r = rv.die, tn = rv.tn, ok = rv.ok; // the target is named in free text (no sheet): the Narrator adds its Rumination modifier
         const eid = postStory(h, c.name + ' rewrites: "' + String(args.text).slice(0, 160) + '"');
         pendRuling(h.g, c, h.key, 'Rewrite on "' + String(args.text).slice(0, 120) + '": Brain save d20 ' + r + ' + their Rumination modifier vs ' + tn + ' (a plain d20 ' + (ok ? 'already holds' : 'fails without help') + '). On a failure one helpful state flips to its opposite until it ends: rule which.', eid || undefined);
       },
@@ -1562,11 +1563,11 @@ register({
     {
       id: 'puppet', label: 'Puppet', scope: ['combat'], target: 'enemy', ap: (h) => (h.u?.mg ? soulPrice(h, 'status', 60, 1).ap : 2), uses: { per: 'per_scene', n: 1 },
       available: (h) => { const e = soulReady(h); if (e) return e; const p = soulPrice(h, 'status', 60, 1); if (h.u!.mg!.emanator && h.u!.mg!.mp < p.mp) return 'Needs ' + p.mp + ' MP.'; return true; },
-      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; const p = soulPrice(h, 'status', 60, 1), e = soulAim(h, t.pos, p.range); return e ? { ok: false, why: e } : { lines: ['Puppet ' + t.name + ': Heart save vs ' + (12 + unitStrength(h.u!, 'will_power')) + (isBoss(t) ? ' (rolled twice)' : '') + '; ' + p.mp + ' MP.'] }; },
+      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; const p = soulPrice(h, 'status', 60, 1), e = soulAim(h, t.pos, p.range); return e ? { ok: false, why: e } : { lines: ['Puppet ' + t.name + ': Heart save vs ' + (saveTn(h.u!, 'will_power')) + (isBoss(t) ? ' (rolled twice)' : '') + '; ' + p.mp + ' MP.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, p = soulPrice(h, 'status', 60, 1), r0 = rng as Rng;
-        const tn = 12 + unitStrength(u, 'will_power'), m = unitSave(t, 'heart'), a = d20(r0), b = isBoss(t) ? d20(r0) : 0, r = Math.max(a, b), ok = r === 20 || (r !== 1 && r + m >= tn);
-        let line = u.name + ' reaches for ' + t.name + '\'s strings (Heart save d20 ' + (b ? a + '/' + b : a) + ' ' + fmt(m) + ' vs ' + tn + ')';
+        const sv = saveAgainst(cb, r0, u, t, 'heart', 'puppeted', { via: 'will_power', adv: isBoss(t) }), ok = sv.ok; // a Boss rolls twice and keeps the better
+        let line = u.name + ' reaches for ' + t.name + '\'s strings (' + sv.text + ')';
         line += ok ? ' · resists' : applyCond(cb, r0, u, t, 'puppeted', 1, 'heart', { skipSave: true, via: 'will_power' }) + ': ' + u.name + ' chooses its next action';
         say(cb, line + ' (' + p.mp + ' MP)' + soulPay(h, r0, p) + '.');
       },
@@ -1576,7 +1577,7 @@ register({
       text: 'Once a scene, for 60 MP: say who you take over and what they do. They make a Heart save. If they fail, the Narrator plays out the forced act.',
       available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => {
-        const c = h.c!; c.mp = mpNow(c) - 60; const r = d20(h.g.rng), tn = 12 + strengthOf(c, 'will_power');
+        const c = h.c!; c.mp = mpNow(c) - 60; const r = rollD20(h.g.rng).die, tn = SAVE_TN + strengthOf(c, 'will_power'); // the die only: the Narrator adds the target's Composure
         const eid = postStory(h, c.name + ' reaches for someone\'s strings: "' + String(args.text).slice(0, 160) + '"');
         pendRuling(h.g, c, h.key, 'Puppet: "' + String(args.text).slice(0, 120) + '". Their Heart save: d20 ' + r + ' + their Composure modifier vs ' + tn + ' (a boss rolls again and keeps the better). On a failure they do the one thing asked, never harming themselves directly; rule it.', eid || undefined);
       },

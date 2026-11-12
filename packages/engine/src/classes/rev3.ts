@@ -20,10 +20,10 @@ import {
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
-import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana } from '../magic';
+import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana, saveAgainst , saveTn } from '../magic';
 import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
 type Fam = 'body' | 'brain' | 'heart';
-import { d20, type Rng } from '../rng';
+import { type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, hide, seenByFoes, HEARING } from '../tactics';
 import { addImage, dropImage, imageOfOwner, imageTurnStart, imagesOf, type FalseImage } from '../illusion';
 import { makeObject, kindOf } from '../objects';
@@ -44,11 +44,10 @@ const policyAction = (id: string, label: string, value: string, text: string): A
 /** A family save against this unit's move: 'cond_apply' {id, fam} first (an immunity cancels it, items add to the
  * save or its TN), then d20 + the target's save against 12 + the mover's strength with the skill that delivers the move (`via`, rules 1.13). */
 function famSave(cb: Combat, rng: Rng, by: Unit, t: Unit, id: string, fam: Fam, via: string): { ok: boolean; cancel: string | null; line: string } {
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
-  if (ca.cancel) return { ok: true, cancel: ca.why || 'immune', line: t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '') };
-  if (ca.skipSave) return { ok: false, cancel: null, line: 'no save' };
-  const r = d20(rng), m = unitSave(t, fam) + (ca.saveAdd || 0), tn = 12 + unitStrength(by, via) + (ca.tnAdd || 0), ok = r === 20 || (r !== 1 && r + m >= tn);
-  return { ok, cancel: null, line: fam + ' save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : r === 20 ? ', natural 20' : '') };
+  const sv = saveAgainst(cb, rng, by, t, fam, id, { via }); // the one save (rolls.ts): this only shapes its answer for the moves below
+  if (sv.skipped === 'immune') return { ok: true, cancel: sv.why || 'immune', line: t.name + ' is untouched' + (sv.why ? ' (' + sv.why + ')' : '') };
+  if (sv.skipped === 'no_save') return { ok: false, cancel: null, line: 'no save' };
+  return { ok: sv.ok, cancel: null, line: sv.text };
 }
 /** The tile one step on from `from` past `t` (a push), or null off the map. */
 function pushTile(cb: Combat, from: Unit, t: Unit): string | null {
@@ -148,8 +147,8 @@ register({
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
       const how = args.choice === 'prone' ? 'prone' : 'push';
       if (how === 'prone' && t.prone) return { ok: false, why: t.name + ' is already prone.' };
-      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !canStand(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] }; }
-      return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] };
+      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !canStand(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (saveTn(u, 'raw_power')) + ').'] }; }
+      return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (saveTn(u, 'raw_power')) + ').'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, how = args.choice === 'prone' ? 'prone' : 'push', was = t.pos;
@@ -477,7 +476,7 @@ register({
       if (dist(u.pos, k) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' };
       if (!unitSees(cb, u, k)) return { ok: false, why: 'You can\'t see that tile.' };
       if (!canStand(cb, k) || imagesOf(cb).some((i) => i.pos === k)) return { ok: false, why: 'That tile isn\'t free.' };
-      return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (12 + unitStrength(u, 'brain_power')) + ').'] };
+      return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (saveTn(u, 'brain_power')) + ').'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!; u.mg!.charge -= 1; u.mg!.cast = true;
@@ -509,7 +508,7 @@ register({
   actions: [{
     id: 'silver_tongue', label: 'Silver Tongue', scope: ['combat'], target: 'enemy', ap: 2, range: 6,
     text: 'An enemy within 6 tiles that can hear you makes a Brain save. If it fails, it loses 2 AP on its next turn. A boss or a Celestial loses 1 AP instead. It doesn\'t work on machines, turrets or drones.',
-    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (12 + unitStrength(h.u!, 'charisma')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
+    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (saveTn(h.u!, 'charisma')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, s = famSave(cb, rng as Rng, u, t, 'silver_tongue', 'brain', 'charisma'), n = isBoss(t) ? 1 : 2;
       emitFx(cb, 'silver_tongue', { unit: u.id, target: t.id, from: u.pos, to: t.pos, ok: !s.ok, ap: s.ok ? 0 : n });

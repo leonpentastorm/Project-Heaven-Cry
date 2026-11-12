@@ -12,11 +12,11 @@ import type { Character } from '../character';
 import { mod, packOf, maxHp, maxMp, hasEmanator, restockResources } from '../character';
 import { unitFromCharacter } from '../combat';
 import { condFamily, endCond, MANA_START } from '../magic';
-import { d20 } from '../rng';
 import { SKILL, ITEM, MANA_BANDS } from '../data';
 import { storyConds, zoneTags, karmaBand, sideRollMod } from '../game';
 import { applyMemOp } from '../memory';
 import { overworld, say } from '../kit';
+import { rollVs, TN } from '../rolls';
 
 // ---------- small helpers ----------
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
@@ -363,8 +363,8 @@ register({
       poured(h);
       const c = h.c; if (!c) return; const l: Lunar | undefined = ro(c).lunar; if (!l || !l.drinks) return;
       if (l.drinks >= 3) {
-        const tn = 12 + l.today, m = sideRollMod(h.g, c, 'will_power'), die = d20(h.g.rng), ok = die === 20 || (die !== 1 && die + m >= tn);
-        sys(h, 'The Slope: WILL POWER · d20 ' + die + ' ' + sgn(m) + ' = ' + (die + m) + ' vs ' + tn + ' · ' + (ok ? '✓ ' + c.name + ' puts the glass down; the drinks wear off.' : '✕ ' + c.name + ' keeps drinking: ' + (l.drinks + 1) + ' drinks.'));
+        const tn = TN.standard + l.today, rv = rollVs(null, h.g.rng, { mod: sideRollMod(h.g, c, 'will_power'), tn }), ok = rv.ok;
+        sys(h, 'The Slope: WILL POWER · ' + rv.text + ' · ' + (ok ? '✓ ' + c.name + ' puts the glass down; the drinks wear off.' : '✕ ' + c.name + ' keeps drinking: ' + (l.drinks + 1) + ' drinks.'));
         if (ok) l.drinks = 0; else { l.drinks++; l.today++; }
       } else l.drinks = 0;
     },

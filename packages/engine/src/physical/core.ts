@@ -11,7 +11,8 @@ import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, useReaction } from '../tactics';
-import { d20, type Rng } from '../rng';
+import { type Rng } from '../rng';
+import { rollSave } from '../rolls';
 import { mod } from '../character';
 import type { Character } from '../character';
 import { packOf } from '../character';
@@ -468,11 +469,19 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
   const c = target.companion ? null : charOfUnit(target);
   const FAM: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', rumination: 'brain', composure: 'heart', body: 'body', brain: 'brain', heart: 'heart' };
   const bonus = Math.max(...skills.map((s) => (FAM[s] && (s === FAM[s] || !c) ? unitSave(target, FAM[s]) : c ? mod((c.skills as any)[s] || 0) : target.attack ?? 0)));
-  const r = d20(t.rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
-  t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + skills.join(' or ') + ' ' + (r + bonus) + ' vs ' + tn + ').');
+  // the one save (rolls.ts): items that change saves are asked; the family is the first one named (a skill save: Body)
+  const sv = rollSave(t.cb, t.rng, { by: t.u, target, fam: skills.map((x) => FAM[x]).find(Boolean) || 'body', id: 'stop', via: techVia(t), tn, mod: bonus, lead: skills.join(' or ') + ' save' }), ok = sv.ok;
+  t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + sv.text + ').');
   // the save for the screen (HOLDS / STEADY); kept to the target's side when the user's side can't see it
-  emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
+  emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sv.skipped ? {} : { die: sv.die, mod: sv.mod, total: sv.total, tn: sv.tn }), ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
   return ok;
+}
+/** A Body save forced by a technique AFTER its own use (Guard with Reach on a mover's step, a Bound unit walking away):
+ * `by` set it, `who` saves against `tn` (techSaveTn of `by` with the skill it was set with). True: it saved. */
+export function saveOutside(cb: Combat, rng: Rng, by: Unit | null, who: Unit, against: string, tn: number, via?: string): boolean {
+  const sv = rollSave(cb, rng, { by, target: who, fam: 'body', id: 'stop', via, tn, mod: unitSave(who, 'body') });
+  cb.log.push(who.name + (sv.ok ? ' saves' : ' fails the save') + ' against ' + against + ' (' + sv.text + ').');
+  return sv.ok;
 }
 /** The skill a technique's conditions and saves are delivered by (rules 1.13): the one its weapon hits with. */
 export const techVia = (t: Tech): string => hitsWith(t.weaponId) || 'raw_power';

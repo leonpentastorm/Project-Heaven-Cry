@@ -40,3 +40,4 @@ export { CALLS, CALL, CALL_RULES, callOfSkill, callRangeAt, callStepAt, type Cal
 export { aiCall } from './calls/ai';
 export type { CallDef, CallArgs, CallPreview, CallPadEntry, CallHandler, CallMarks, CallKind, CallAim, CallStep } from './calls/types';
 export * from './kit';
+export * from './rolls';

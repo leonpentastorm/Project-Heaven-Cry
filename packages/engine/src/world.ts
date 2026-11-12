@@ -20,6 +20,7 @@ import { KINDS } from './tactics';
 import { canon } from './memory';
 import { type GameState, type Npc, type Check, type NarratorTurn, RuleError, _world, storyCb, positionsOf, npcsOf, storyObjects, zoneMap, apLeft, campaignOf, portraitFor, setStoryCond } from './game';
 import { tilesLine } from './kit';
+import { passFaces } from './rolls';
 
 const WP: any = WORLD_PLAY;
 const fail = (m: string): never => { throw new RuleError(m); };
@@ -442,8 +443,7 @@ export function previewOdds(g: GameState, c: Character, skills: string[], tn: nu
   const ss = (pick === 'best' ? [bestSkill(g, c, skills)] : skills).filter((s) => SKILL[s]); if (!ss.length) return { skills: [], mod: -2, chance: 0 };
   const ms = ss.map((s) => skillMod(g, c, s)), low = Math.min(...ms), li = ms.indexOf(low);
   const m = low + 2 * ss.filter((s, i) => i !== li && (c.skills[s] || 0) > 0).length;
-  let ok = 0; for (let f = 1; f <= 20; f++) if (f === 20 || (f !== 1 && f + m >= tn)) ok++;
-  return { skills: ss, mod: m, chance: ok / 20 };
+  return { skills: ss, mod: m, chance: passFaces(m, tn) / 20 };
 }
 
 /** The common checks for a player's area-map choice (round open, their character up, nothing else to roll first). */

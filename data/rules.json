@@ -1318,6 +1318,33 @@
     },
     "text": "Every amount of damage, healing and shield is one formula with its terms in data (packages/engine/src/effects/output.ts): the source's base, the Stat term of its profile (the character's Attribute and Skill), the Level term, the source's own multipliers, then the bonuses against this target. The derived multipliers of the sheet (Physical, a weapon's, Sigil, Elemental, Soul, Healing given, Blessing power) are the Stat terms of these profiles, and the level factor of healing and shields is the mend column. Nothing is fitted by a number in code."
   },
+  "rolls": {
+    "note": "Read by packages/engine/src/rolls.ts, the one place the engine rolls a d20 (engine foundations 1, 12 Nov 2026). The save base TN is conditions_rules.save_base_tn and the check ladder is resolution.tn_ladder; what is here are the other numbers a roll used to carry as a literal.",
+    "contest_base": 10,
+    "death_save_tn": 10,
+    "npc_save_by_tier": {
+      "vermin": 0,
+      "minion": 0,
+      "soldier": 1,
+      "elite": 2,
+      "boss": 3
+    },
+    "npc_strength_by_tier": {
+      "vermin": 0,
+      "minion": 0,
+      "soldier": 1,
+      "elite": 2,
+      "boss": 2
+    }
+  },
+  "forced_movement": {
+    "note": "Read by combat.ts displace(), the one function that moves a unit against its will (engine foundations 1, 12 Nov 2026; spec: Combat on the grid, Forced movement). For each kind of move: `tiles` is how the tiles are entered (each: tile by tile, and a trap, a field and a hazard act on every tile entered, a trap stopping the move there; landing: only the tile it ends on), `immunity` is whether Nailed, the knockback immunity and the forced_move hook can stop it, `reactions` is whether held Watches, Overwatch and opportunity attacks answer it (never: the mover did not choose to move). A move its own unit chose (`willing`) is never stopped by immunity.",
+    "push": { "tiles": "each", "traps": true, "fields": true, "hazards": true, "immunity": true, "reactions": false },
+    "pull": { "tiles": "each", "traps": true, "fields": true, "hazards": true, "immunity": true, "reactions": false },
+    "throw": { "tiles": "landing", "traps": true, "fields": true, "hazards": true, "immunity": true, "reactions": false },
+    "teleport": { "tiles": "landing", "traps": true, "fields": true, "hazards": true, "immunity": true, "reactions": false },
+    "swap": { "tiles": "landing", "traps": true, "fields": true, "hazards": true, "immunity": true, "reactions": false }
+  },
   "social": {
     "disposition_tn": {
       "friendly": 8,

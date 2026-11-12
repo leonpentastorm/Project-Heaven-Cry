@@ -19,12 +19,12 @@ import {
 } from '../combat';
 import { WEAPON, SKILL } from '../data';
 import { mod, strengthOf, healingMult, maxHp, packOf, levelForXp, applyLevels, isMedicChar, classRank } from '../character';
-import { applyCond, condOn, condSource, unitStrength, isBoon } from '../magic';
-import { d20 } from '../rng';
+import { applyCond, condOn, condSource, unitStrength, isBoon , saveTn } from '../magic';
 import { HEARING } from '../tactics';
 import { apLeft, positionsOf, rankReached } from '../game';
 import { cdFire, cdTick, landsNow, landsNext } from './cooldown';
 import { overworld, say, unitById, tileOf, rngOf } from '../kit';
+import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -109,8 +109,8 @@ export function pettyGate(h: Holder, target: Unit | Character | null | undefined
   const st = h.u && inFight(h) ? stateOf(rh) : storyState(rh), stamp = h.cb && !overworld(h.cb) ? h.cb.round + '.' + h.cb.turn : 'w' + (gameOf(h)?.story?.round ?? 0);
   if (st.pettyFail === stamp) return 'Petty (Rival): you can\'t bring yourself to help them this turn.';
   if (st.pettyOk === stamp) return null;
-  const r = d20(rng), m = mod(c.skills.camaraderie || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
-  say(h.cb, c.name + ' swallows their pride? Camaraderie d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs 12 · ' + (ok ? 'yes' : 'no (Rival: Petty)'));
+  const rv = rollVs(h.cb || null, rng, { by: h.u || null, mod: mod(c.skills.camaraderie || 0), tn: TN.standard, why: 'pride' }), ok = rv.ok;
+  say(h.cb, c.name + ' swallows their pride? Camaraderie ' + rv.text + ' · ' + (ok ? 'yes' : 'no (Rival: Petty)'));
   if (ok) { st.pettyOk = stamp; return null; }
   st.pettyFail = stamp; return 'Petty (Rival): you can\'t bring yourself to help them this turn.';
 }
@@ -466,7 +466,7 @@ register({
       const order = ORDERS[String(args.choice || '').trim().toLowerCase()] || (args.text ? 'other' : '');
       if (!order) return { ok: false, why: 'Pick an order: halt, hold fire, drop it, kneel or fall back, or type your own.' };
       const n = cb.units.filter((t) => t.side !== u.side && alive(t) && ['minion', 'soldier'].includes(t.tier || 'minion') && dist(t.pos, u.pos) <= HEARING).length;
-      return n ? { lines: [n + ' enemies hear you (Heart save vs ' + (12 + unitStrength(u, 'authority')) + ').'] } : { ok: false, why: 'No rank-and-file enemy within ' + HEARING + ' tiles.' };
+      return n ? { lines: [n + ' enemies hear you (Heart save vs ' + (saveTn(u, 'authority')) + ').'] } : { ok: false, why: 'No rank-and-file enemy within ' + HEARING + ' tiles.' };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, order = ORDERS[String(args.choice || '').trim().toLowerCase()] || 'other';
@@ -631,11 +631,10 @@ function patSee(ctx: any, h: Holder) {
 // Area map and story: the same plea to a hostile person; the engine rolls the save (d20 + its tier save vs 12 +
 // Implication), and on a failure the Narrator plays them standing down for the moment (a pending ruling).
 const humanoid = (t: Unit) => !['robot', 'machine', 'turret', 'drone', 'beast'].includes(t.kind || '') && !isMachine(t) && !(t.tags || []).includes('non_humanoid');
-const NPC_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 function storyPlea(h: Holder, who: { name: string; tier?: string } | null, rng: Rng, text?: string): string | null {
   if (!who) return 'Name who you plead with.';
-  const r = d20(rng), m = NPC_SAVE[who.tier || 'soldier'] ?? 1, tn = 12 + (h.c ? strengthOf(h.c, 'empathy') : 0), saved = r === 20 || (r !== 1 && r + m >= tn);
-  const line = who.name + ' Heart save d20 ' + r + ' +' + m + ' = ' + (r + m) + ' vs ' + tn + ' · ' + (saved ? 'holds their weapon' : 'lowers their weapon');
+  const rv = rollVs(null, rng, { mod: tierSave(who.tier || 'soldier'), tn: SAVE_TN + (h.c ? strengthOf(h.c, 'empathy') : 0), lead: 'Heart save' }), saved = rv.ok; // someone in the story with no tier named saves as a Soldier
+  const line = who.name + ' ' + rv.text + ' · ' + (saved ? 'holds their weapon' : 'lowers their weapon');
   say(h.cb, (h.c?.name || '') + ' pleads with ' + who.name + (text ? ' "' + text.slice(0, 120) + '"' : '') + ' (Lay Down Arms): ' + line + '.');
   const g = gameOf(h); if (g && h.c) pendRuling(g, h.c, h.key, 'Lay Down Arms on ' + who.name + (text ? ' ("' + text.slice(0, 100) + '")' : '') + ': ' + line + (saved ? '.' : ': play them standing down for the moment.'));
   return null;
@@ -649,7 +648,7 @@ register({
         const cb = h.cb; if (!cb) return {};
         const ids = [...new Set([args.targetId, ...(args.targetIds || [])].filter(Boolean) as string[])].slice(0, tierII(h) ? 3 : 1);
         for (const id of ids) { const t = unitById(cb, id); if (!t || t.side === h.u!.side || !alive(t)) return { ok: false, why: 'Pick enemies.' }; if (!humanoid(t)) return { ok: false, why: t.name + ' doesn\'t listen to pleas.' }; if (dist(t.pos, h.u!.pos) > HEARING) return { ok: false, why: t.name + ' can\'t hear you (' + HEARING + ' tiles).' }; }
-        return { lines: [ids.length + ' Heart save' + (ids.length === 1 ? '' : 's') + ' vs ' + (12 + unitStrength(h.u!, 'empathy')) + '.'] };
+        return { lines: [ids.length + ' Heart save' + (ids.length === 1 ? '' : 's') + ' vs ' + (saveTn(h.u!, 'empathy')) + '.'] };
       },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!;
@@ -898,8 +897,8 @@ register({
       const p = pettyGate(h, t, rng); if (p) { say(cb, p); return null; }
       const tc = charOf(h, t);
       if (tc && has(tc, 'trait:born_officer')) {
-        const r = d20(rng), m = mod(tc.skills.composure || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
-        say(cb, t.name + ' takes orders from no one but themselves? Composure d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs 12 · ' + (ok ? 'obeys' : 'refuses (Born Officer)'));
+        const rv = rollVs(cb, rng, { by: t, mod: mod(tc.skills.composure || 0), tn: TN.standard, why: 'born officer' }), ok = rv.ok;
+        say(cb, t.name + ' takes orders from no one but themselves? Composure ' + rv.text + ' · ' + (ok ? 'obeys' : 'refuses (Born Officer)'));
         if (!ok) return null;
       }
       if (kind === 'move') {

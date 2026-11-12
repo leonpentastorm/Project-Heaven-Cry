@@ -17,7 +17,8 @@ import {
   type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction,
 } from './combat';
-import { type Rng, d20 } from './rng';
+import { type Rng } from './rng';
+import { rollD20, rollVs, judge, rollFx, tierSave, tierStrength, CONTEST_BASE } from './rolls';
 import { emit, boundGame, onHook } from './effects/hooks';
 import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTION_STATS, STUDY, masteredWords as masteredOf } from './sigilgrowth';
 import type { Character } from './character';
@@ -28,8 +29,9 @@ import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
 import { ENEMY_LEVELS } from './data';
 import {
-  type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, strengthFor, withVia,
+  type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, saveAgainst, strengthFor, withVia,
   SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
+  saveTn,
 } from './magic';
 import { makeObject, OBJ } from './objects';
 import { tilesAround, canStand, inBounds } from './kit';
@@ -422,8 +424,8 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
   const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') + spellGapToHit(cb, caster, t) : 0;
   const saves: Affected['saves'] = [];
-  for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: 12 + unitStrength(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
-  if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: 12 + unitStrength(caster, 'brain_power') });
+  for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: saveTn(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
+  if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: saveTn(caster, 'brain_power') });
   return { dmg: E + S, dmgAfterArmour: arm, heal: Math.round(hook('heal', hl * m * sm * hm * lf)), shield: Math.round(hook('shield', sh * m * sm * hm * lf)),
     roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
 }
@@ -996,9 +998,9 @@ function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe',
   if (sp.damaging && harmOk) {
     let crit = false, r = 0;
     if (o.roll && by) {
-      r = d20(rng); const add = (emit(cb, 'spell_roll', { u: by, t, die: r, add: 0, kind: 'sigil', cb }) as any).add || 0, tot = r + (a.roll?.bonus ?? 0) + add;
-      crit = r === 20;
-      if (r === 1 || (!crit && tot < t.def)) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: sp.element }); line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (a.roll?.cover ? ', cover' : '') + ')'; return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt, missed: true }; }
+      r = rollD20(rng).die; const add = (emit(cb, 'spell_roll', { u: by, t, die: r, add: 0, kind: 'sigil', cb }) as any).add || 0, sr = judge('roll', { die: r }, (a.roll?.bonus ?? 0) + add, t.def), tot = sr.total;
+      crit = r === 20; rollFx(cb, sr, by, { why: 'sigil' });
+      if (!sr.ok) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: sp.element }); line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (a.roll?.cover ? ', cover' : '') + ')'; return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt, missed: true }; }
     }
     const hp0 = t.hp + (t.shield || 0), sharp = by && condOn(by, 'sharpened') && o.roll && !['turret', 'trap', 'field'].includes(a.via) ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
     const parts = sigilParts(sp.subjects, sp.infl);
@@ -1099,12 +1101,10 @@ function strikeInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', 
 /** STEP on someone of the other side: a Body save resists. held: it stays (the line says why); else the line is the
  * failed save, for the log (spec 9.11: every save). */
 function teleportSave(cb: Combat, rng: Rng, by: Unit, t: Unit): { held: boolean; line: string } {
-  const ca: any = emit(cb, 'cond_apply', { by, t, id: 'teleport', fam: 'body', rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
-  if (ca.cancel) return { held: true, line: ' · ' + t.name + ' can\'t be moved' + (ca.why ? ' (' + ca.why + ')' : '') };
-  if (ca.skipSave) return { held: false, line: '' };
-  const r = d20(rng), m = unitSave(t, 'body') + (ca.saveAdd || 0), tn = 12 + strengthFor(by, null) + (ca.tnAdd || 0);
-  return r === 20 || (r !== 1 && r + m >= tn) ? { held: true, line: ' · ' + t.name + ' holds its place (body save ' + (r + m) + ' vs ' + tn + ')' }
-    : { held: false, line: ' (body save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : '') + ')' };
+  const sv = saveAgainst(cb, rng, by, t, 'body', 'teleport');
+  if (sv.skipped === 'immune') return { held: true, line: ' · ' + t.name + ' can\'t be moved' + (sv.why ? ' (' + sv.why + ')' : '') };
+  if (sv.skipped === 'no_save') return { held: false, line: '' };
+  return sv.ok ? { held: true, line: ' · ' + t.name + ' holds its place (' + sv.text + ')' } : { held: false, line: ' (' + sv.text + ')' };
 }
 
 // ---------- what stays: fields, traps, turrets, walls ----------
@@ -1240,7 +1240,7 @@ export function strikeTurret(cb: Combat, rng: Rng, u: Unit, tile: string): strin
   const w = WEAPON[u.weapon], melee = !w || isMelee(w), ap = attackApCost(w || WEAPON.fists, melee ? 'melee' : 'shot');
   if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   if (melee ? dist(u.pos, tile) > 1 : dist(u.pos, tile) > effectiveRange(w) * 3 || !lineOfSight(cb, u.pos, tile)) return melee ? 'Walk up to it first.' : 'Out of range or no line of sight.';
-  u.ap -= ap; const r = d20(rng), tot = r + (u.attack || 0), def = (z as any).def ?? 10, hit = r === 20 || (r !== 1 && tot >= def);
+  u.ap -= ap; const def = (z as any).def ?? CONTEST_BASE, sr = rollVs(cb, rng, { by: u, mod: u.attack || 0, tn: def, why: 'turret' }), r = sr.die, tot = sr.total, hit = sr.ok;
   emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: u.weapon, cat: w?.category, mode: melee ? 'melee' : 'shot', hit, crit: r === 20, fumble: r === 1, dmg: 0, killed: hit, object: true });
   if (hit) destroyPlaced(cb, z, u.name + ' hits it (d20 ' + r + ' → ' + tot + ' vs ' + def + ')'); else cb.log.push(u.name + ' misses the turret at ' + refOf(tile) + ' (d20 ' + r + ' → ' + tot + ' vs ' + def + ').');
   return null;
@@ -1382,12 +1382,10 @@ export const glyphsAt = (cb: Combat, k: string) => (cb.glyphs || []).filter((g) 
 export const enemyDefaultWords = (tier: string): string[] => [...(ENEMY_AI.default_words?.[tier] || ENEMY_AI.default_words?.minion || STARTING_DEFAULT)];
 /** Max Sigil words for an enemy by tier (sigils.json enemy_ai.max_words; spec item 453, provisional). */
 export const ENEMY_MAX_WORDS: Record<string, number> = ENEMY_AI.max_words || { minion: 2, soldier: 3, elite: 4, boss: 4 };
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
-const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 2 };
 /** An enemy's Evoker and words (FoeSpec.sigils: its words, or true for its tier's default set). */
 export function enemyMagic(u: Unit, words: string[] | true): NonNullable<Unit['mg']> {
   const tier = u.tier || 'minion', list = (words === true ? enemyDefaultWords(tier) : words).filter((w) => W(w));
-  const s = TIER_SAVE[tier] ?? 0, d = TIER_DEBUFF[tier] ?? 0;
+  const s = tierSave(tier), d = tierStrength(tier);
   return { words: list, designs: [], evoker: true, emanator: false, charge: CORE_CHARGE, cores: 2, coresMade: 0, flux: 0, mp: 0, mpMax: 0, strain: 0, held: null, cast: false,
     brain: u.attack || 0, will: 0, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: ENEMY_MAX_WORDS[tier] ?? 2, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0,
     soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5, saves: { body: s, brain: s, heart: s }, debuff: { '*': d } } as any;

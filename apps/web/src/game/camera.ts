@@ -132,7 +132,7 @@ export function miniToScroll(mx: number, my: number, m: Mini, g: GridAt, view: S
 
 // ---------- which tiles an effect is about ----------
 /** Effects that never move the camera: bookkeeping with no place of its own (a turn's banner has its own rule). */
-export const NO_CAMERA = new Set(['turn', 'sight', 'spotlight', 'miracle', 'mana', 'song', 'cover', 'object', 'cond', 'shield', 'volley', 'glyph_fade', 'field_gone', 'trap_gone', 'stance']);
+export const NO_CAMERA = new Set(['roll', 'turn', 'sight', 'spotlight', 'miracle', 'mana', 'song', 'cover', 'object', 'cond', 'shield', 'volley', 'glyph_fade', 'field_gone', 'trap_gone', 'stance']);
 /** Effects that are the result of something else (a wound, a heal, a unit going down, a condition's word, a reload):
  *  they never move the camera by themselves (a blast or a Miracle on ten units would swing it ten times); when they
  *  play off screen they get an arrow at the window's edge. A technique's name over the attacker is one of them: the

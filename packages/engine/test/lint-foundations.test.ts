@@ -95,3 +95,29 @@ describe('F6: the kit is the only home of the lane helpers (src/kit.ts)', () => 
     expect(found, 'a new { state: 1 }: use rngOf(h, ctx) from kit.ts (it throws when no rng is in reach); a preview that must not move the dice is the one exception, and is counted here').toEqual(allowed);
   });
 });
+
+// ============================================================================================ F1: the rolls
+describe('F1: every d20 goes through src/rolls.ts', () => {
+  const rolls = (rel: string) => rel === 'rolls.ts' || rel === 'rng.ts';
+  it('no raw d20( outside rolls.ts: roll a save with saveAgainst / rollSave, anything else with rollVs or contest', () => {
+    expect(hits(/\bd20\(/, rolls)).toEqual([]);
+  });
+  it('the bare die (rollD20) is only for the rolls that are not "d20 + modifier against a number": each use is counted here', () => {
+    // combat.ts: initiative ×2, the weapon attack (its own hooks: attack_roll), the death save (a hook sees the die first)
+    // game.ts: asking a voice (it may have no hook to roll against), the story check (its own hooks: check_post), staying hidden (its own hook)
+    // tactics.ts: spotting (the 'spot' hook may change the die); sigil.ts and magic.ts: a spell's to-hit ('spell_roll' sees the die first)
+    // classes/k.ts: the Stitch (a bare d20 read off a table) and its reroll; classes/i.ts: story Puppet (the Narrator adds the target's modifier)
+    // perks/b.ts: a night's Vigilance (the modifier is gathered after the die, as it always was)
+    const allowed: Record<string, number> = { 'combat.ts': 4, 'game.ts': 3, 'tactics.ts': 1, 'sigil.ts': 1, 'magic.ts': 1, 'classes/k.ts': 2, 'classes/i.ts': 1, 'perks/b.ts': 1 };
+    const found: Record<string, number> = {}; for (const h of hits(/\brollD20\(/, rolls)) { const f = h.split(':')[0]; found[f] = (found[f] || 0) + 1; }
+    expect(found, 'a new rollD20(): if it is d20 + a modifier against a number, call rollVs / saveAgainst instead; if it truly is a bare die, add it to this table with the reason').toEqual(allowed);
+  });
+  it('no hand-written pass / fail: "die === 20 || (die !== 1 && …)" is judge() in rolls.ts', () => {
+    expect(hits(/=== 20 \|\| \(\s*\w+ !== 1 &&/, rolls)).toEqual([]);
+    expect(hits(/=== 1 \|\| \(\s*!?\w+(?: !== 20)? && \w+ < /, rolls)).toEqual([]);
+  });
+  it('no private tier table and no literal save base: tierSave / tierStrength / saveTn / SAVE_TN', () => {
+    expect(hits(/\b(?:TIER_SAVE|NPC_SAVE|TIER_DEBUFF)\b/, rolls)).toEqual([]);
+    expect(hits(/\b12 \+ (?:unitStrength|strengthFor|strengthOf)\(/, rolls)).toEqual([]);
+  });
+});

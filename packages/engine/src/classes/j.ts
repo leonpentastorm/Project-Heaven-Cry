@@ -19,7 +19,8 @@ import { magItem } from '../containers';
 import { mod, healingMult, magazineSize } from '../character';
 import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, magicOf, flux, withElement, CORE_CHARGE, applyToneRiders } from '../magic';
 import { castAt, glyphCost, sigilReady } from '../sigil';
-import { d20, die } from '../rng';
+import { die } from '../rng';
+import { rollVs } from '../rolls';
 import { resOf, resGain, resSpend, canReact, useReaction , dropHeldShot } from '../tactics';
 import { makeObject } from '../objects';
 import { overworld, say, unitById, tileOf, rngOf, foesOf } from '../kit';
@@ -807,9 +808,9 @@ register({
     turn_end: (ctx, h) => {
       const u = h.u, tu = turretOf(h), cb = h.cb; if (ctx.u !== u || !tu || !cb || !u) return;
       const t = foesOf(cb, tu).filter((v) => !v.hidden && unitSees(cb, tu, v.pos)).sort((a, b) => dist(a.pos, tu.pos) - dist(b.pos, tu.pos) || a.hp - b.hp)[0]; if (!t) return;
-      const rng = rngOf(h, ctx), r = d20(rng as any), cover = coverTileFor(cb, tu.pos, t.pos) ? 5 : 0, tot = r + 4 - cover, hit = r === 20 || (r !== 1 && tot >= t.def);
+      const rng = rngOf(h, ctx), cover = coverTileFor(cb, tu.pos, t.pos) ? 5 : 0, sr = rollVs(cb, rng as any, { by: tu, mod: [{ add: 4, label: 'turret' }, { add: -cover, label: 'cover' }], tn: t.def, why: 'turret shot' }), r = sr.die, hit = sr.ok;
       emitFx(cb, 'shot', { unit: tu.id, target: t.id, from: tu.pos, to: t.pos, weapon: 'service_pistol', cat: 'pistol', mode: 'shot', hit, crit: false, fumble: r === 1, dmg: 0, killed: false });
-      say(cb, 'The sentry turret fires at ' + t.name + ': d20 ' + r + ' +4' + (cover ? ' −5 cover' : '') + ' = ' + tot + ' vs ' + t.def + (hit ? harm(cb, rng as any, u, t, 20, 'physical') : ' · miss') + '.');
+      say(cb, 'The sentry turret fires at ' + t.name + ': ' + sr.text + (cover ? ' (−5 cover)' : '') + (hit ? harm(cb, rng as any, u, t, 20, 'physical') : ' · miss') + '.');
       checkOver(cb);
     },
     on_downed: (ctx, h) => { const id = stateOf(h).turret; if (h.cb && ctx.victim.id === id) { const seen = (h.cb.deadSeen ||= []); if (!seen.includes(id)) seen.push(id); say(h.cb, 'The sentry turret is wrecked.'); } },

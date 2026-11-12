@@ -11,14 +11,14 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
 import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, type AttackMode } from '../combat';
-import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength } from '../magic';
-import { d20 } from '../rng';
+import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength, saveAgainst , saveTn } from '../magic';
 import { tendHook } from '../effects/damage';
 import { WEAPON } from '../data';
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
 import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
 import { cdFire, cdTick, landsNext } from './cooldown';
 import { overworld, say, rngOf } from '../kit';
+import { rollVs, rerollAttack, attackHits, tierSave, TN, SAVE_TN } from '../rolls';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -30,7 +30,6 @@ const cst = (c: Character | null | undefined): Record<string, any> => (c ? (c.st
 const ro = (c: Character | null | undefined): Record<string, any> => c?.state || {};
 const sceneN = (h: Holder) => h.g?.story?.scene?.n ?? 0;
 const sgn = (n: number) => (n >= 0 ? '+' : '−') + Math.abs(n);
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 /** Does a unit answer to a name or id the story uses (an NPC id, or its name; loose for names of 3+ letters)? */
 function matches(u: Unit, ref: any): boolean {
   if (ref == null) return false;
@@ -79,7 +78,7 @@ register({
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
         if (!unitSees(h.cb!, t, h.u.pos)) return { ok: false, why: t.name + ' has to see you.' };
-        const tn = 12 + unitStrength(h.u, 'intimidation');
+        const tn = saveTn(h.u, 'intimidation');
         return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + tn + ' or Shaken' + (tierII(h) ? '. Every enemy in earshot who sees you rolls too.' : '.')] };
       },
       run: (h, a, rng) => {
@@ -146,8 +145,8 @@ function mercyOk(t: Unit) { const was = t.surrenderTried; t.surrenderTried = fal
 const offered = (h: Holder): string[] => (stateOf(h).offered ||= []);
 function offerMercy(h: Holder, t: Unit, rng: Rng): string {
   offered(h).push(t.id);
-  const r = d20(rng), m = unitSave(t, 'heart'), tn = 12 + unitStrength(h.u!, 'empathy'), held = r === 20 || (r !== 1 && r + m >= tn);
-  const roll = ' (Heart save d20 ' + r + ' ' + sgn(m) + ' vs ' + tn + ')';
+  const sv = saveAgainst(h.cb!, rng, h.u!, t, 'heart', 'surrender', { via: 'empathy' }), held = sv.ok;
+  const roll = ' (' + sv.text + ')';
   return held ? ' · ' + t.name + ' won\'t take it' + roll : surrender(h.cb!, t, h.u!, 'mercy accepted' + roll);
 }
 const mercyMode = (h: Holder) => ro(h.c).open_hand || 'always';
@@ -172,7 +171,7 @@ register({
         if (offered(h).includes(t.id)) return { ok: false, why: 'Mercy was offered to ' + t.name + ' already.' };
         if (!mercyOk(t)) return { ok: false, why: t.name + ' won\'t surrender.' };
         if (!unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' };
-        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitStrength(h.u, 'empathy')) + ' or it surrenders.'] };
+        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (saveTn(h.u, 'empathy')) + ' or it surrenders.'] };
       },
       run: (h, a, rng) => { const t = h.cb!.units.find((x) => x.id === a.targetId)!; say(h.cb, h.u!.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.'); },
     },
@@ -501,8 +500,8 @@ const heartCondsOn = (u: Unit) => debuffsOf(u, 'heart');
 const storyHeart = (h: Holder) => (h.c && h.g ? storyConds(h.g, h.c).filter((id) => condFamily(id) === 'heart' && !isBoon(id)) : []);
 function flashback(h: Holder, why: string, rng: Rng | null) {
   const u = h.u, cb = h.cb; if (!up(u) || !cb || !rng || !oncePerFight(h, 'flashback')) return;
-  const r = d20(rng), m = mod(h.c?.skills.composure || 0) + (u.sk?.composure || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
-  let line = u.name + ' is back at Daggerfall (' + why + '): Composure d20 ' + r + ' ' + sgn(m) + ' vs 12';
+  const rv = rollVs(cb, rng, { by: u, mod: mod(h.c?.skills.composure || 0) + (u.sk?.composure || 0), tn: TN.standard, why: 'flashback' }), ok = rv.ok;
+  let line = u.name + ' is back at Daggerfall (' + why + '): Composure ' + rv.text;
   if (ok) line += ' · holds it together';
   else line += ' · lost in it' + applyCond(cb, rng, null, u, 'stunned', 1, 'body', { skipSave: true }) + ', loses the next turn';
   say(cb, line + '.');
@@ -613,7 +612,7 @@ register({
     {
       id: 'verse', label: 'Verse', scope: ['combat'], target: 'enemy', ap: 1, range: HEARING, uses: { per: 'per_scene', n: 1 },
       text: 'Once a scene: answer an enemy in metaphor. It makes a Heart save or is Confused. Allies in earshot get +1 Composure for the scene.',
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {}; return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitStrength(h.u, 'implication')) + ' or Confused.'] }; },
+      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {}; return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (saveTn(h.u, 'implication')) + ' or Confused.'] }; },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
         const allies = cb.units.filter((v) => v.side === u.side && v !== u && !v.dead && v.charId && dist(v.pos, u.pos) <= HEARING).map((v) => v.charId!);
@@ -628,7 +627,7 @@ register({
       run: (h, a, rng) => {
         uses(h).take('per_scene', 1, h.key + '#verse');
         const g = h.g, c = h.c!, who = a.npc || '', n = who ? npcsOf(g).find((x) => nameMatch(x.name, who) || x.id === who) : null;
-        const r = d20(rng), m = TIER_SAVE[n?.tier || 'minion'] ?? 0, tn = 12 + Math.max(0, mod(c.skills.implication || 0)), held = r === 20 || (r !== 1 && r + m >= tn);
+        const rv = rollVs(null, rng, { mod: tierSave(n?.tier), tn: SAVE_TN + Math.max(0, mod(c.skills.implication || 0)), lead: 'Heart save' }), r = rv.die, m = rv.mod, tn = rv.tn, held = rv.ok;
         const allies = Object.values<Character>(g.characters).filter((x) => x !== c && !x.dead).map((x) => x.id);
         cst(c).verse = { scene: sceneN(h), allies };
         if (!held && who) { const k = n ? n.id : who.toLowerCase().slice(0, 40); const l = ((g.story.scene.npcConds ||= {})[k] ||= []); if (!l.includes('confused')) l.push('confused'); }
@@ -825,9 +824,9 @@ register({
     combat_start: (ctx, h) => { if (h.u && luckyLeft(h)) (h.u.armed ||= {})[h.key] = { choice: true, round: 0 }; },
     attack_roll: (ctx, h) => {
       if (ctx.tgt !== h.u || ctx.att.side === h.u!.side || !armedOf(h) || !luckyLeft(h)) return;
-      const hit = ctx.hit ?? (ctx.die !== 1 && (ctx.die >= ctx.critMin || ctx.die + ctx.toHit >= ctx.need)); if (!hit) return;
+      const hit = attackHits(ctx); if (!hit) return;
       uses(h).take('per_session', 1, LUCKY(h)); disarm(h);
-      const was = ctx.die; ctx.die = d20(rngOf(h, ctx)); delete ctx.hit;
+      const was = ctx.die; rerollAttack(ctx, rngOf(h, ctx)); // the new die stands; resolveAttack settles the hit from it
       say(h.cb, 'Lucky Foot: ' + ctx.att.name + '\'s ' + was + ' against ' + h.u!.name + ' is rerolled: ' + ctx.die + '.');
     },
     // Vengeful: once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts); the AP lands on your next turn.
@@ -937,8 +936,8 @@ register({
     turn_start_pre: (ctx, h) => { if (myComp(h, ctx.u, 'beast')) pushAp(ctx, -2, 'a beast: 4 AP'); },
     turn_start: (ctx, h) => {
       const b: Unit = ctx.u, cb = h.cb!; if (!myComp(h, b, 'beast') || !up(b) || !h.c) return;
-      const rng = rngOf(h, ctx), r = d20(rng), m = mod(h.c.skills.empathy || 0) + (h.u?.sk?.empathy || 0), ok = !up(h.u) ? false : r === 20 || (r !== 1 && r + m >= 8);
-      let line = h.c.name + ' calls the beast: Empathy d20 ' + r + ' ' + sgn(m) + ' vs 8';
+      const rng = rngOf(h, ctx), rv = rollVs(cb, rng, { by: h.u || null, mod: mod(h.c.skills.empathy || 0) + (h.u?.sk?.empathy || 0), tn: TN.easy, why: 'beast' }), ok = !up(h.u) ? false : rv.ok;
+      let line = h.c.name + ' calls the beast: Empathy ' + rv.text;
       if (ok) { say(cb, line + ' · it obeys.'); return; }
       const foe = cb.units.find((v) => v.side !== b.side && up(v) && dist(v.pos, b.pos) <= 1 && previewAttack(cb, b, v, 'melee').ok);
       say(cb, line + ' · it acts on instinct' + (foe ? ' and goes for ' + foe.name : ' and holds') + '.');
