@@ -228,7 +228,7 @@ function runHost(a: Action, by: string, nonce: string | null) {
   const prev = S.game;
   set({ game: viewFor(hostState, S.me.id) });
   followPhase(prev, S.game!);
-  persist();
+  persistSoon();
   broadcast(false);
   queueMicrotask(maybeNarrate);
   queueMicrotask(maybeFightRule);
@@ -237,7 +237,13 @@ function runHost(a: Action, by: string, nonce: string | null) {
 
 let lastSave = 0;
 let idbTimer: any = null;
-function persist() { if (hostState) { write(LS.game(hostState.code), slim(hostState)); noteSession(hostState, 'host'); clearTimeout(idbTimer); const g = hostState; idbTimer = setTimeout(() => idbPut(g.code, g), 400); } }
+let lsTimer: any = null;
+/** After an action: the save is written as soon as the action has been handled and drawn, not inside the click (the
+ * whole state is turned into text for localStorage: 0.3 ms on a fresh fight, 1 ms after 50 fights, more on a long
+ * campaign), and once for several actions run in the same step. Leaving the page before it ran writes it at once. */
+function persistSoon() { if (hostState && lsTimer == null) lsTimer = setTimeout(() => { lsTimer = null; persist(); }, 0); }
+if (typeof addEventListener === 'function') addEventListener('pagehide', () => { if (lsTimer != null) persist(); });
+function persist() { if (lsTimer != null) { clearTimeout(lsTimer); lsTimer = null; } if (hostState) { write(LS.game(hostState.code), slim(hostState)); noteSession(hostState, 'host'); clearTimeout(idbTimer); const g = hostState; idbTimer = setTimeout(() => idbPut(g.code, g), 400); } }
 function broadcast(force: boolean) {
   if (!conn || !hostState) return;
   for (const p of hostState.players) if (p.id !== S.me.id) conn.send({ t: 'view', pid: p.id, state: viewFor(hostState, p.id) });
@@ -302,7 +308,7 @@ async function maybeFightRule() {
     if (!waiting()) return; // the host skipped the wait meanwhile
     try { hostState = apply(hostState!, { type: 'narrator/fight-ruling', id: r.id, lines: res.answer.lines, effect: res.answer.effect }, S.me.id); }
     catch { giveBack('The Narrator\'s answer could not be used.'); return; }
-    const prev = S.game; set({ game: viewFor(hostState, S.me.id) }); followPhase(prev, S.game!); persist(); broadcast(false);
+    const prev = S.game; set({ game: viewFor(hostState, S.me.id) }); followPhase(prev, S.game!); persistSoon(); broadcast(false);
     queueMicrotask(maybeNarrate); // the answer may have ended the fight (a surrender): whatever follows runs as after any action
   } catch (e) {
     const spent = (e as any)?.usage; if (spent) runHost({ type: 'narrator/usage', ...spent, kind: 'fight' }, S.me.id, null);
@@ -347,7 +353,7 @@ async function carryOutVote() {
       if (!before) { toast('The copy from before that turn isn\'t on this computer any more: the reroll can\'t be done.'); runHost({ type: 'vote/close' }, S.me.id, null); return; }
       hostState = rerollFrom(hostState!, before, o.note);
       for (const k of Object.keys(befores)) if (!votesOf(hostState).turns.includes(k)) delete befores[k];
-      const prev = S.game; set({ game: viewFor(hostState, S.me.id) }); followPhase(prev, S.game!); persist(); broadcast(true);
+      const prev = S.game; set({ game: viewFor(hostState, S.me.id) }); followPhase(prev, S.game!); persistSoon(); broadcast(true);
       queueMicrotask(maybeNarrate);
     } else {
       const p = provider();
