@@ -25,7 +25,7 @@
 // Sounds go through cue() (exported: App.tsx uses it for the combat transition). It plays the wished file names below
 // when sfx.ts has a file for them, else stand-ins from the existing set plus a small synthesised hit.
 import React from 'react';
-import { type GameState, WEAPON, CLASS, FLUX_MAX, visibility } from '@engine';
+import { type GameState, WEAPON, CLASS, FLUX_MAX, isUnseenId } from '@engine';
 import { ART, ART_BIG, IMG } from '../screens/shared';
 import { castFight } from './cast';
 import { bigPortrait } from './charfile';
@@ -87,12 +87,12 @@ const dispatch = (name: string, detail: any) => { try { window.dispatchEvent(new
 const unitImg = (u: any) => (u?.img && (ART(u.img) || u.img)) || '';
 
 function bannerFor(g: GameState, cb: any, unitId: string, meId: string, round: number): (Banner & { mine: boolean; at: string; unitId: string; side: string; unseen: boolean }) | null {
-  const cast = castFight(g, cb, ART) || cb, u = cast.units.find((x: any) => x.id === unitId);
+  const cast = castFight(g, cb, ART) || cb, here = cast.units.find((x: any) => x.id === unitId), u = here || (isUnseenId(unitId) ? { id: unitId, side: 'foe', pos: '', name: '' } : null);
   if (!u) return null;
   const ch = u.charId ? g.characters[u.charId] : null, owner = ch ? g.players.find((p) => p.id === ch.owner) : null;
   const mine = !!ch && ch.owner === meId, foe = u.side === 'foe';
-  // Fog of war: a hostile the squad can't see stays unnamed and faceless, as on the grid.
-  let unseen = false; if (foe) { try { unseen = !visibility(cb, 'pc').seen.has(u.id); } catch { /* */ } }
+  // Fog of war: a hostile the squad can't see is not in the view (the engine's fog, fog.ts): unnamed and faceless.
+  const unseen = foe && !here;
   const color = foe ? '#F65157' : owner?.color || '#7FD4FF';
   return {
     id: 'b' + unitId + ':' + round + ':' + Math.random().toString(36).slice(2, 6), unitId, side: u.side, at: u.pos, mine, foe, unseen,

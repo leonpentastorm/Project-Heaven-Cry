@@ -15,7 +15,7 @@ Read `CONVENTIONS.md` first. It covers ids, effect ops, requirements, and engine
 | `archetypes.json` | 46 | Creation presets, guidance only: 9 families including All-in (7/1/1 builds); each archetype spends every creation point (10-point skill preset and all 9 attributes; no Core points since rules 1.13, though each item still carries a `cores` block; `tools/archetype_fill.py`) plus class leans |
 | `traits.json` | 74 | Max 2 at creation; upsides, downsides, excludes, Narrator hooks |
 | `perks.json` | 106 | 54 Acquired (2 per skill; one perk step at each Mastery level 3/5/7/9: a Tier I or an upgrade to Tier II), 27 Mastered (one per skill, automatic at 10; provisional), 19 Achieved (combo perks: Mastery 2 in each listed skill plus a deed), 6 Ultimate (secret until granted) |
-| `conditions.json` | 40 | Debuffs (body, brain or heart family), helpful states, Downed |
+| `conditions.json` | 42 | THE condition table (the engine loads it; it has no other): debuffs (body, brain or heart family), boons, the flag conditions, the unit states |
 | `weapons.json` | 60 | Weapons version 2 (59 roster weapons and the beast's bite): hands, the granted weapon skill, the `phys` block (properties, the signature technique), damage, range in tiles, AP, ammo, properties, mastery family |
 | `weapon_mastery.json` | retired | **Retired by rules 1.12; nothing loads it.** Weapon mastery by kills: levels 0–5 (attack bonus, perk tier) and one weapon perk per family per tier; **provisional numbers** |
 | `items.json` | 60 | Armour pieces, shields, mods, ammunition, kits, focuses and the items with rules of their own; **provisional numbers** |

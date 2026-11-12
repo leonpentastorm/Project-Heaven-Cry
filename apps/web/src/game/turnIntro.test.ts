@@ -32,8 +32,9 @@ describe('turn banners', () => {
     expect(hostile).toMatchObject({ kicker: 'HOSTILE', kickerColor: '#F65157', foe: true, sub: 'ROUND 2' });
     // a hostile in sight is named and its turn may move the view; one out of sight is neither (no focus key is sent)
     expect(hostile.unseen).toBe(false);
-    cb.map.solid = [...cb.map.solid, ...Array.from({ length: cb.map.h }, (_, y) => '2,' + y)];
-    const hidden = _test.bannerFor(g, cb, foe.id, 'p1', 2)!;
+    // out of sight, the view holds no such unit (the engine's fog, fog.ts): its turn comes as its opaque mark
+    const fogged = { ...cb, units: cb.units.filter((x) => x.id !== foe.id), order: cb.order.map((id, i) => (id === foe.id ? '?' + i : id)) };
+    const hidden = _test.bannerFor(g, fogged, '?' + cb.order.indexOf(foe.id), 'p1', 2)!;
     expect(hidden).toMatchObject({ unseen: true, name: 'Unseen hostile', img: '' });
   });
   it('the cut-in shows the unit\'s numbers and four commands with combat.js action ids', () => {

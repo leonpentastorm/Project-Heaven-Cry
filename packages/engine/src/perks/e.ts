@@ -27,6 +27,7 @@ import { cdFire, cdTick, landsNow, landsNext } from './cooldown';
 import { overworld, say, unitById, tileOf, rngOf } from '../kit';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 import { price, costOf, refund, grantAp, setAp, freely, withAp } from '../effects/cost';
+import { endCond } from '../magic';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -747,7 +748,7 @@ register({
       if (!to) return;
       uses(h).take('per_combat');
       if (to !== u.pos) { const from = u.pos; displace(cb, null, u, { tile: to }, { by: u, how: 'teleport', source: 'angel_of_the_trenches', willing: true, fx: false, drawn: () => { emitFx(cb, 'move', { unit: u.id, from, to, path: [from, to] }); } }); } // its own rush: not forced, but the tile it lands on acts on it
-      ctx.floor = 1; t.bleed = 0;
+      ctx.floor = 1; endCond(t, 'bleeding');
       emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: 0, revive: false });
       say(cb, u.name + ' is there before ' + t.name + ' hits the ground and holds them up at 1 HP (Angel of the Trenches).');
     },
@@ -962,7 +963,7 @@ register({
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
       const p = pettyGate(h, t, rng); if (p) { refund(cb, u, price({ cb, u }, 'stabilise', costOf('stim', isMedicChar(h.c) ? 'ap_downed_medic' : 'ap_downed')).ap); return null; }
-      if (h.c) h.c.stims--; t.bleed = 0;
+      if (h.c) h.c.stims--; endCond(t, 'bleeding');
       healUnit(cb, t, 1, u, 'stim');
       emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: 1, revive: true, thrown: true });
       say(cb, u.name + ' lobs a stim to ' + t.name + ': stabilised at 1 HP (Thrown Stim).');

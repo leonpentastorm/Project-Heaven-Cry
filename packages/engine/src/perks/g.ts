@@ -24,6 +24,8 @@ import './briefs';
 import { overworld, say } from '../kit';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 import { loseAp } from '../effects/cost';
+import { stagger } from '../unitstate';
+import { restoreConds } from '../magic';
 
 // ---------- small helpers ----------
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
@@ -314,7 +316,7 @@ register({
         const t = h.cb!.units.find((x) => x.id === a.targetId)!; (sst(h).beings ||= []).push(t.npcId || t.name);
         // Holding its attacks is the 'hold' order of Commanded (the enemy's turn: no attack, spell or technique; it may
         // move), put on with no save and by nobody's Heart magic, so nothing that stops a condition stops the parley.
-        (t.conds ||= {}).commanded = Math.max(t.conds.commanded || 0, 1); (t.condArg ||= {}).commanded = 'hold';
+        restoreConds(t, { commanded: Math.max(t.conds?.commanded || 0, 1) }, undefined, undefined, { commanded: 'hold' });
         stateOf(h).listening = t.id;
         say(h.cb, h.u!.name + ' speaks to ' + t.name + ' in the old tongue (Old Tongue): it holds its attacks on its next turn and listens.');
         note(h, t.name + ' (upper-realm) parleys with ' + h.u!.name + (a.text ? ': "' + clip(a.text, 160) + '"' : '') + '. Rule what it agrees to.');
@@ -598,7 +600,7 @@ register({
       const hit = ctx.hit ?? (!fumble && (crit || ctx.die + ctx.toHit >= ctx.need));
       const w = WEAPON[h.u!.weapon], melee = !w || isMelee(w) || ctx.mode === 'melee';
       if (hit) { ctx.critMin = Math.min(ctx.critMin, ctx.die); ctx.hit = true; say(h.cb, h.u!.name + ' goes double or nothing: the hit is a critical (Gambler).'); }
-      else { ctx.hit = false; if (!melee && canJam(w)) h.u!.jammed = true; else h.u!.stunnedNext = 1; say(h.cb, h.u!.name + ' goes double or nothing and loses: ' + (!melee && canJam(w) ? 'the gun jams' : '−1 AP next turn') + ' (Gambler).'); }
+      else { ctx.hit = false; if (!melee && canJam(w)) h.u!.jammed = true; else stagger(h.u!); say(h.cb, h.u!.name + ' goes double or nothing and loses: ' + (!melee && canJam(w) ? 'the gun jams' : '−1 AP next turn') + ' (Gambler).'); }
     },
   },
   brief: () => 'In Debt: Smetanita Conjunction collectors turn up when you decide',

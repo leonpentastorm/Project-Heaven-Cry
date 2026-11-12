@@ -32,7 +32,7 @@ export function classMarks(cb: any, side: 'pc' | 'foe' = 'pc', o: ClassMarkOpts 
   const units: any[] = cb.units || [];
   // ---- False Image: a decoy of its owner ----
   for (const img of cb.images || []) {
-    const own = units.find((u) => u.id === img.owner); if (!own) continue;
+    const own = units.find((u) => u.id === img.owner) || img.look; if (!own) continue; // look: the face an unseen owner's decoy wears (the engine's fog)
     if (img.side !== side && !seen(img.pos)) continue; // another side's decoy, out of sight
     const pic = o.imgOf ? o.imgOf(own) : '', round = own.side === 'pc' ? '50%' : '4px';
     const mine = img.side === side, fooled = (img.fooled || []).length, fades = (img.round || 0) + 2;

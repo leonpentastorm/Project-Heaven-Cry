@@ -20,6 +20,8 @@ import { packRef } from '../gear';
 import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
 import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
+import { setBraced, setNailed, bracedAs } from '../unitstate';
+import { condsAside } from '../magic';
 
 // ---------- the registry ----------
 const HANDLERS: Record<string, TechHandler> = {};
@@ -526,10 +528,10 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
     if (h === 'pinned' && opts.untilAp) {
       // a weapon an earlier nail left in the target: a second weapon knocks it to the ground, a nail without one keeps it in
       const old = target.nailed; if (old?.weapon && opts.weapon) dropNailed(t.cb, target);
-      target.nailed = { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : old?.weapon ? { weapon: old.weapon, ...(old.item ? { item: old.item } : {}), by: old.by } : {}) };
+      setNailed(target, { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : old?.weapon ? { weapon: old.weapon, ...(old.item ? { item: old.item } : {}), by: old.by } : {}) });
     }
     else if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true, via: techVia(t) });
-    else if (h === 'prone') { if (!target.prone) { target.prone = true; target.braced = false; emitFx(t.cb, 'stance', { unit: target.id, at: target.pos, what: 'prone' }); } }
+    else if (h === 'prone') { if (!target.prone) { applyCond(t.cb, t.rng, t.u, target, 'prone', undefined, undefined, { skipSave: true, via: techVia(t) }); if (target.prone) emitFx(t.cb, 'stance', { unit: target.id, at: target.pos, what: 'prone' }); else took.pop(); } }
   }
   if (opts.apLoss) apDebt(target, opts.apLoss);
   if (!took.length && !opts.apLoss) return false;
@@ -649,12 +651,11 @@ const HOLDS: { u: Unit; keep: Record<string, any>; out: boolean }[] = [];
 function holding<T>(u: Unit, wi: Wield, fn: () => T): T {
   const c = u.companion ? null : charOfUnit(u), w = WEAPON[wi.weaponId];
   const keep: Record<string, any> = {}; for (const k of HELD_FIELDS) keep[k] = (u as any)[k];
-  let braced: boolean | undefined, disarmed: number | undefined, lowered: number | undefined, drew = false;
+  let braced: boolean | undefined, putBack: (() => void) | null = null, drew = false;
   if (wi.kind === 'stowed' && wi.as) {
-    drew = true; braced = u.braced; disarmed = u.conds?.disarmed;
-    putFields(u, wi.as); if (wi.as.weapon !== keep.weapon) u.braced = false;
-    if (disarmed != null) delete u.conds!.disarmed;
-    lowered = u.conds?.lowered; if (lowered != null) delete u.conds!.lowered;
+    drew = true; braced = u.braced;
+    putFields(u, wi.as); if (wi.as.weapon !== keep.weapon) bracedAs(u, false);
+    putBack = condsAside(u, ['disarmed', 'lowered']);
   } else {
     const pts = (c?.skills as any)?.[w.skill];
     putFields(u, { weapon: w.id, ammo: wi.ammo, maxDur: 0, dur: undefined, mods: wi.entry?.mods || [], ammoType: wi.entry?.ammoType ?? null, jammed: false, dmgMult: 1 });
@@ -663,7 +664,7 @@ function holding<T>(u: Unit, wi: Wield, fn: () => T): T {
   const hold = { u, keep, out: false }; HOLDS.push(hold);
   try { return fn(); } finally {
     HOLDS.splice(HOLDS.indexOf(hold), 1); putFields(u, keep);
-    if (drew) { if (braced === undefined) delete u.braced; else u.braced = braced; if (disarmed != null) (u.conds ||= {}).disarmed = disarmed; if (lowered != null) (u.conds ||= {}).lowered = lowered; }
+    if (drew) { bracedAs(u, braced); putBack?.(); }
   }
 }
 /** Run fn with a unit's real weapon back in its hand, if it is in the middle of a technique used with something else

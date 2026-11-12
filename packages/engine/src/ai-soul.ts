@@ -121,7 +121,7 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
     : m.designs.map((d) => ({ src: d.id, d }));
   if (!srcs.length) return null;
   const tiles: { k: string; ap: number }[] = [{ k: u.pos, ap: 0 }];
-  if (opts.move && !condOn(u, 'pinned') && !condOn(u, 'rooted')) {
+  if (opts.move && !condOn(u, 'pinned')) {
     const P = paths(cb, u.pos, u.id), fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
     const foes = seenFoes(cb, u), maxReach = Math.max(...srcs.map((s) => heartReach(m, s.d))) + 2;
     const cand = Object.entries(P.dist).map(([k, n]) => ({ k, ap: apForTiles(n, u.bank, u.movement) }))

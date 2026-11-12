@@ -66,7 +66,24 @@ Every rule-bearing item carries both:
 - `enemies.json` `companions`: stat blocks for companions (`id`, `kind`, `hp`, `defense`, `attack_bonus`, `armour`,
   `movement`, `weapon`), used by a character's `companions: [{id, kind, name, hp?}]`.
 - `objects.json` `electronic: true` marks devices (terminal, lamp, camera, alarm, turret).
-- Condition ids the engine runs are the ones in conditions.json (the long Brain-debuff ids are accepted for `ldebuff`/`rdebuff`), and three that are not in it yet: `guarded` and `inspired` (packages/engine/src/magic.ts `CONDS`) and `hesitates` (fighttalk.ts); spec item 1513 (p) asks for one table.
+- Condition ids the engine runs are the ones in conditions.json (the long Brain-debuff ids are accepted for `ldebuff`/`rdebuff`).
+- **Conditions (conditions.json) are THE table** (engine foundations 2, 12 Nov 2026): the engine has no other. `packages/engine/src/condtable.ts`
+  is its one loader; `tools/validate.py` checks every field below; `packages/engine/test/lint-conditions.test.ts` fails on a condition id
+  in code that has no row, and on a row nothing uses. A row:
+  - `engine`: how the engine keeps it. `"table"` (in a unit's conditions with its rounds left; `applyCond` puts it on, `endCond` ends it),
+    `"flag"` (a field of the unit: Bleeding, Dazed, Prone, Hidden, Injured; still only through `applyCond` / `endCond`), or `"state"` (a unit
+    state with its own rule and setter in `unitstate.ts`: Braced, Overwatch, Downed; `applyCond` does not put it on).
+  - `kind`: `"debuff"` (has a `family`) or `"state"`. `family`: `body` / `brain` / `heart`, or `null`. `save`: `true` (the target rolls its
+    family's save unless the source says there is none) or `false`. `boon: true`: a help; never saved against; no family.
+  - `duration`: exactly one of `{"rounds": N}` (ONE unit: the ends of the bearer's own turns; one put on during the bearer's own turn does not
+    lose a round at that turn's end) or `{"until": "<word>"}` (it lasts until its rule ends it: `put_out`, `next_turn`, `stand`, `revealed`,
+    `source`, `moved`, `fight_end`, `stabilised`, `escape`, `recovered`, `treated`, `repaired`, `raised`). `ends_on` stays prose.
+  - `key`: the name it is stored under in a unit's conditions when that is not the id (`ldebuff`, `rdebuff`: saved fights hold them).
+    `aliases`: other ids the engine answers to. `label`: the word in "X is <label>" when it is not the `name` ("Afraid", "Guarded (+2 Defense)").
+  - The numbers the engine applies are read from `effects`, so they are written once: `stat_mod` with `stat` `defense`, `move_mult`, `vision`,
+    `ap`, `save_<family>`, `damage_dealt_pct`, `sigil_ap`, `soul_cost_pct`; `skill_mod_tag` (`core:<core>`, `attr:<attribute>`); `attack_mod` with
+    `context` `own_attacks` (default), `next_attack`, `not_vs_source`, `vs_source`, `marker_squad_vs_self`, `melee_vs_self`, `ranged_vs_self`;
+    `damage_mult` with `context: "next_attack"`. A to-hit change is always `attack_mod` (not `tn_mod`). Damage each turn is `amounts.tick`.
 - Campaign zones may carry `tags`, `terrain`, `in_city`, `urban`, `fear`, `upper_realm`, `faction`; zone NPCs `kind` and `tags`.
 
 ## Sigil words (sigils.json, rules 1.4 and 1.10)

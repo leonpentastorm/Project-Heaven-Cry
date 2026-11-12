@@ -11,6 +11,7 @@ import { PHYS_RULES } from '../data';
 import { pressureCap } from '../pressure';
 import { bracedSuppress } from './sets';
 import { canPay } from '../../effects/cost';
+import { unitsIn } from '../../kit';
 
 // 8. Suppress: 3 rounds, one roll at +2. A hit is half damage and 2 Pressure in all; a miss is 1.
 //    Auto: enemies within 1 tile of the target also gain 1. Heavy, Braced: it holds until your next turn, and any enemy
@@ -138,8 +139,7 @@ function burnRest(t: Tech, total: number, fired: number, ammo0: number): void {
 function coneTargets(t: Tech, tgt: Unit): Unit[] {
   const u = t.u, [ax, ay] = xy(u.pos), [tx, ty] = xy(tgt.pos), len = Math.hypot(tx - ax, ty - ay) || 1;
   const fx: any = (t.w as any).grants?.effect || {}, width = fx.op === 'auto_width' ? fx.value + 0.5 : t.num('auto_cone_width', 1.5);
-  const near = (v: Unit) => { const [vx, vy] = xy(v.pos), along = ((vx - ax) * (tx - ax) + (vy - ay) * (ty - ay)) / len; return along > 0 && Math.abs((vx - ax) * (ty - ay) - (vy - ay) * (tx - ax)) / len <= width; };
-  return t.cb.units.filter((v) => enemyOf(t, v) && alive(v) && near(v) && canStrike(t, v));
+  return unitsIn(t.cb, { shape: 'band', from: u.pos, toward: tgt.pos, width }).filter((v) => enemyOf(t, v) && canStrike(t, v));
 }
 /** The 3-target Rake's targets: the ones the player named (args.targetIds; the main target first), or else the main
  * target and the enemies nearest it that can be shot, every pair within the spread. A refusal is a string. */

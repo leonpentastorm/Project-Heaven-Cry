@@ -15,6 +15,7 @@ import type { Call } from './types';
 import { CALL } from './data';
 import { call, callMarks, callLevel, giveAp, hinder } from './core';
 import { grantAp, setAp } from '../effects/cost';
+import { asStanding } from '../unitstate';
 
 const plural = (n: number, w: string) => n + ' ' + w + (n === 1 ? '' : 's');
 
@@ -45,8 +46,8 @@ function thingWhy(t: Call, th: Thing, stood: boolean): string | null {
   if (th === 'pickup') return !a.charId ? 'Only a character picks things up.' : pileNear(cb, a) ? null : 'Nothing for ' + a.name + ' to pick up there.';
   if (!t.num('move')) return 'Ordering a move needs 3 points of Authority.';
   if (!t.args.tile) return 'Pick the tile ' + a.name + ' moves to.';
-  const was = a.prone; if (stood) a.prone = false; // read as if the stand-up before it had happened (put back at once)
-  const blk = moveBlock(a); a.prone = was; if (blk) return a.name + ': ' + blk;
+  const blk = stood ? asStanding(a, () => moveBlock(a)) : moveBlock(a); // read as if the stand-up before it had happened
+  if (blk) return a.name + ': ' + blk;
   const d = paths(cb, a.pos, a.id).dist[t.args.tile];
   if (d === undefined || d < 1) return a.name + ' can\'t reach that tile.';
   if (d > orderMoveTiles(a)) return 'Too far: ' + a.name + ' moves ' + plural(orderMoveTiles(a), 'tile') + ' on an order.';

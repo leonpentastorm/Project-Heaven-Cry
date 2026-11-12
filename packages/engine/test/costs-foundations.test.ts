@@ -188,7 +188,7 @@ describe('uses(): limits, firsts, per-target counters and cooldowns in one store
   });
   it('the reset points are one table: every scope says when it is fresh and where it lives', () => {
     for (const [id, row] of Object.entries(SCOPES)) { expect(row.fresh, id).toBeTruthy(); expect(['unit', 'story', 'character']).toContain(row.fight); expect(['unit', 'story', 'character']).toContain(row.map); }
-    expect(scopeOf('once_per_turn')).toBe('per_turn'); expect(scopeOf('per_fight')).toBe('per_combat'); expect(scopeOf('cooldown')).toBe('at_will'); // data never names the cooldown scope: an item asks cool(turns)
+    expect(scopeOf('once_per_turn')).toBe('per_turn'); expect(scopeOf('per_fight')).toBe('per_combat'); expect(scopeOf('cooldown')).toBe('at_will'); // data never names the cooldown scope: an item asks for one in code
     // a scene's use is the character's and outlives the fight's unit
     const f = fight(), u = f.pc, c = f.g.characters[u.charId!], h = { key: 'perk:x', u, c, cb: f.cb, g: f.g };
     uses(h).take('per_scene'); expect(Object.keys(c.uses || {})).toContain('perk:x|per_scene'); expect(Object.keys(u.uses || {})).not.toContain('perk:x|per_scene');

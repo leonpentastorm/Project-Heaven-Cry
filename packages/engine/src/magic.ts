@@ -10,6 +10,8 @@ import {
 } from './character';
 import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits } from './combat';
 import { type Rng, die } from './rng';
+import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
+import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
 import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult } from './rolls';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
 import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
@@ -25,6 +27,7 @@ import { rollDeathDrops } from './loot';
 import { itemWords, wordCostMods, immune } from './effects/core';
 import { price, priced, costOf, whyNot, canPay, pay, refund, apFor } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
+import { tilesIn, rngOf } from './kit';
 
 type Fam = 'body' | 'brain' | 'heart';
 /** A glyph on a tile. v: the rules revision it was drawn under (14 = rules 1.4; a glyph without it is from 1.2). */
@@ -78,69 +81,27 @@ export const MANA_START = 15;
 export const FLUX_MAX = 6;
 export const CORE_CHARGE = 10;
 export const SOUL_REACH = 4;
-/** Conditions (spec: Conditions and saves; rules 1.3 shared subsystems). rounds counts the bearer's turn ends (a
- * condition put on you during your own turn doesn't lose a round at that turn's end); noTick: it lasts until something
- * ends it (Burning until put out, Grappled until you break free, Disarmed until you recover the weapon); boon: no save;
- * noSave: a state or a condition from a hit. 99 rounds means "until ended". */
-interface CondDef { name: string; fam: Fam; rounds: number; boon?: boolean; noTick?: boolean; noSave?: boolean; text: string }
-const CONDS: Record<string, CondDef> = {
-  slowed: { name: 'Slowed', fam: 'body', rounds: 2, text: 'Half Movement.' },
-  pinned: { name: 'Pinned', fam: 'body', rounds: 1, text: 'Can\'t move; −2 to hit. Until the end of your next turn.' },
-  blinded: { name: 'Blinded', fam: 'body', rounds: 1, text: '−4 to hit; you see only adjacent tiles.' },
-  burning: { name: 'Burning', fam: 'body', rounds: 99, noTick: true, text: '10 damage at the start of each turn until someone spends 1 AP to put it out.' },
-  weakened: { name: 'Weakened', fam: 'body', rounds: 2, text: '−25% damage dealt.' },
-  nausea: { name: 'Nausea', fam: 'body', rounds: 2, text: '−1 AP.' },
-  stunned: { name: 'Stunned', fam: 'body', rounds: 1, text: 'Lose your next turn.' },
-  grappled: { name: 'Grappled', fam: 'body', rounds: 99, noTick: true, text: 'Held: you can\'t move; −2 to attacks against anyone but the grappler. Break free: 2 AP, opposed Raw Power or Athletics.' },
-  suppressed: { name: 'Suppressed', fam: 'body', rounds: 1, text: '−1 AP; no reactions.' },
-  augment_offline: { name: 'Augment Offline', fam: 'body', rounds: 99, noTick: true, noSave: true, text: 'One augment gives nothing until repaired.' },
-  confused: { name: 'Confused', fam: 'brain', rounds: 1, text: 'Each attack has a 50% chance to go at someone at random.' },
-  ldebuff: { name: 'Left Brain Debuff', fam: 'brain', rounds: 2, text: '−2 on Mind skill rolls; Sigils cost +1 AP.' },
-  rdebuff: { name: 'Right Brain Debuff', fam: 'brain', rounds: 2, text: '−2 on Expression and Soul skill rolls; Soul spells cost +20% MP.' },
-  silenced: { name: 'Silenced', fam: 'brain', rounds: 1, text: 'No Sigils, Outbursts, prayers or Calls.' },
-  puppeted: { name: 'Puppeted', fam: 'brain', rounds: 1, text: 'The caster\'s player runs your next turn (no self-harm).' },
-  shaken: { name: 'Shaken', fam: 'heart', rounds: 3, text: '−2 on Heart saves and social checks.' },
-  fear: { name: 'Afraid', fam: 'heart', rounds: 2, text: 'Can\'t move toward or attack the source; −2 to hit anyone else.' },
-  taunted: { name: 'Taunted', fam: 'heart', rounds: 1, text: 'Your next attack must go at the one who taunted you, if you can see them.' },
-  commanded: { name: 'Commanded', fam: 'heart', rounds: 1, text: 'You obey one short order on your next turn (an enemy: halt, hold, drop, kneel or flee; COMMAND: halt, kneel, drop your weapon, or move up to 3 tiles).' },
-  corroded: { name: 'Corroded', fam: 'body', rounds: 3, text: '5 damage at the start of each turn; Defense −2. A Body save at the end of each of your turns ends it.' },
-  disarmed: { name: 'Disarmed', fam: 'heart', rounds: 99, noTick: true, text: 'Your weapon is down: no attacks with it until you recover it (2 AP).' },
-  lowered: { name: 'Weapon lowered', fam: 'heart', rounds: 99, noTick: true, text: 'Your weapon is lowered: raise it (1 AP) to attack with it.' },
-  marked: { name: 'Marked', fam: 'body', rounds: 99, noTick: true, noSave: true, text: 'The marker\'s squad gets +1 to hit you; you can\'t become Hidden.' },
-  guarded: { name: 'Guarded (+2 Defense)', fam: 'body', rounds: 2, boon: true, text: '+2 Defense.' },
-  inspired: { name: 'Inspired (+2 to hit)', fam: 'heart', rounds: 2, boon: true, text: '+2 to hit.' },
-  withdrawing: { name: 'Withdrawing (+2 Defense)', fam: 'body', rounds: 1, boon: true, text: '+2 Defense until your next turn ends.' },
-  emplaced: { name: 'Emplaced', fam: 'body', rounds: 99, noTick: true, boon: true, text: '+2 to attacks with the weapon; Recoil halved; moving ends it.' },
-  last_turn: { name: 'Last Turn', fam: 'body', rounds: 1, boon: true, text: 'Still standing on borrowed time.' },
-  quickened: { name: 'Quickened', fam: 'body', rounds: 99, noTick: true, boon: true, text: '+2 AP on your next turn (within the ceiling of 9).' },
-  sharpened: { name: 'Sharpened', fam: 'body', rounds: 1, boon: true, text: 'Your next attack: +3 to hit and ×1.25 damage (until that attack, or the end of your next turn).' },
-  // Rules 1.6.3 (item 738): until the fight ends or the patron intervenes (faith.ts ends it), so it never ticks.
-  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 99, noTick: true, boon: true, text: 'Your patron is watching until the fight ends or it intervenes: attack rolls carrying a tag your patron likes +2 (a kill is not one: for a patron that likes kills, a kill made while Witnessed gives +2 on your next attack roll); taboo actions cost double Devotion XP.' },
-  smitten: { name: 'Smitten', fam: 'heart', rounds: 1, text: 'You can\'t attack the one who smote you, or the allies linked to them (Sweet Nothings).' },
-  hopeful: { name: 'Hopeful (+2)', fam: 'heart', rounds: 1, boon: true, text: 'Your next attack or spell roll gets +2 (Hope).' },
-  scorned: { name: 'Scorned', fam: 'heart', rounds: 2, noSave: true, text: '−2 to attack the one who scorned you (Contempt).' },
-};
-/** Data and older ids for the same conditions (conditions.json uses the long names). */
-const ALIAS: Record<string, string> = { left_brain_debuff: 'ldebuff', right_brain_debuff: 'rdebuff', afraid: 'fear', stun: 'stunned', braced: 'emplaced' };
-/** Conditions kept as unit flags rather than in u.conds (applyCond sets them). */
-const FLAG_CONDS = new Set(['dazed', 'prone', 'bleeding', 'hidden', 'injured']);
+// THE CONDITION TABLE is data/conditions.json, read by condtable.ts (engine foundations 2): names, families, saves,
+// durations and numbers. `rounds` counts the bearer's turn ends (a condition put on you during your own turn doesn't
+// lose a round at that turn's end); noTick: it lasts until something ends it (99 rounds); boon: no save, no family;
+// noSave: a state, or a condition from a hit.
 /** The story conditions that come into a fight (and that a failed approach on the area map puts on the scene) in
  * their combat form. ONE list (review bug 11: game.ts and world.ts each kept one, and they differed). */
 export const STORY_CARRY = new Set(['shaken', 'fear', 'ldebuff', 'rdebuff', 'left_brain_debuff', 'right_brain_debuff', 'weakened', 'nausea', 'injured', 'augment_offline', 'bleeding']);
-export const condId = (id: string) => ALIAS[id] || id;
+export { condId, condMods, condDef, CONDITION_NAMES, CONDITION_ROWS, type CondDef, type CondMods } from './condtable';
 /** A condition's own rounds (conditions data), for durations an item lengthens. */
 export const condRoundsOf = (id: string): number | undefined => CONDS[condId(id)]?.rounds;
-export const condName = (id: string) => CONDS[condId(id)]?.name || ({ dazed: 'Dazed', prone: 'Prone', bleeding: 'Bleeding', hidden: 'Hidden' } as Record<string, string>)[id] || id;
+export const condName = (id: string) => CONDS[condId(id)]?.name || id;
 export const condText = (id: string) => CONDS[condId(id)]?.text || '';
-/** Is this a condition the engine knows, and which save family it belongs to. */
-export const isCondition = (id: string) => !!CONDS[condId(id)] || FLAG_CONDS.has(id);
-export const condFamily = (id: string): Fam | undefined => CONDS[condId(id)]?.fam || (FLAG_CONDS.has(id) && id !== 'hidden' ? 'body' : undefined);
+/** Is this a condition applyCond puts on (a unit state, Braced or Downed, is not: it has its own setter). */
+export const isCondition = (id: string) => { const d = CONDS[condId(id)]; return !!d && d.engine !== 'state'; };
+/** The save family of a debuff (a boon and a state have none). */
+export const condFamily = (id: string): Fam | undefined => CONDS[condId(id)]?.fam;
 /** familyOf: the same, under the plan's name. */
 export const familyOf = condFamily;
-export const isBoon = (id: string) => !!CONDS[condId(id)]?.boon || id === 'hidden';
+export const isBoon = (id: string) => !!CONDS[condId(id)]?.boon;
 /** Every condition id the engine runs (for the validator, the wiki and lanes). */
-export const CONDITION_IDS = [...Object.keys(CONDS), ...FLAG_CONDS];
-const BOOST = new Set(Object.keys(CONDS).filter((k) => CONDS[k].boon));
+export const CONDITION_IDS = Object.keys(CONDS).filter((k) => CONDS[k].engine !== 'state');
 
 // ---------- the meter ----------
 export const manaBand = (m: number) => MANA_BANDS.find((b) => m >= b.min && m <= b.max) || MANA_BANDS[1];
@@ -204,10 +165,10 @@ export function magicToCharacter(c: Character, u: Unit) {
  * fixed when the unit is built, so every PC has it, casters or not); enemies by tier (+0 / +1 / +2 / +3). Shaken is −2
  * on Heart saves. unitSave is the one collector (lanes add through 'cond_apply' saveAdd or stat 'save_<family>'). */
 /** Is a condition a boon (Guarded, Inspired, Witnessed…)? (Unravel ends them; rules 1.6.) */
-export const condIsBoon = (id: string) => !!CONDS[condId(id)]?.boon;
+export const condIsBoon = isBoon;
 export function unitSave(u: Unit, fam: Fam): number {
   const base = u.sv ? u.sv[fam] : u.mg ? u.mg.saves[fam] : tierSave(u.tier);
-  return base + (fam === 'heart' && condOn(u, 'shaken') ? -2 : 0) + (fam === 'brain' ? condSkillMod(u, 'rumination') : fam === 'heart' ? condSkillMod(u, 'composure') : 0) /* rules 1.13: the Brain save's skill is Rumination, so only the Left Brain Debuff lowers it */ + residueStand(liveCb(), u, 'save')
+  return base + condSaveMod(u, fam) + (fam === 'brain' ? condSkillMod(u, 'rumination') : fam === 'heart' ? condSkillMod(u, 'composure') : 0) /* rules 1.13: the Brain save's skill is Rumination, so only the Left Brain Debuff lowers it */ + residueStand(liveCb(), u, 'save')
     + ((u as any).call?.saves?.n || 0); // Name It (a Call, rules 1.13): + on every save until the speaker's next turn
 }
 /** The save family of a condition (null: it has none). */
@@ -223,8 +184,11 @@ export function freshSave(cb: Combat, rng: Rng, u: Unit, id: string): string {
 /** Conditions on skill rolls (spec): Left Brain Debuff −2 on Mind skills, Right Brain Debuff −2 on Expression and Soul
  * skills. Reaches every d20 that uses the skill (attacks, Sigil and Soul strikes, saves). */
 export function condSkillMod(u: Unit, skill: string): number {
-  const s = SKILL[skill]; if (!s) return 0;
-  return (condOn(u, 'ldebuff') && s.core === 'mind' ? -2 : 0) + (condOn(u, 'rdebuff') && (s.core === 'soul' || s.attribute === 'expression') ? -2 : 0);
+  const s = SKILL[skill]; if (!s || !u.conds) return 0;
+  // the row's `skill_mod_tag` effects: one condition counts once, whichever of its tags the skill carries
+  let n = 0;
+  for (const id of Object.keys(u.conds)) { if (!(u.conds[id] > 0)) continue; const hit = CONDS[id]?.mods.skills?.find((m) => m.tag === 'core:' + s.core || m.tag === 'attr:' + s.attribute); if (hit) n += hit.value; }
+  return n;
 }
 /** Debuff strength by source (rules 1.13, Skeleton 2.0): how hard a unit's condition is to save against is the
  * modifier of the skill that DELIVERED it (`via`), floor 0: a melee blow Raw Power, a shot or a throw Dexterity, traps
@@ -255,6 +219,8 @@ export function unitStrength(u: Unit | null | undefined, via?: string | null): n
   return tbl[v] ?? 0;
 }
 const saveOf = unitSave;
+/** What a unit's conditions do to its saves of a family (Shaken: Heart −2; the row's `stat_mod save_<family>`). */
+export function condSaveMod(u: Unit, fam: Fam): number { let n = 0; for (const id of Object.keys(u.conds || {})) if (u.conds![id] > 0) n += CONDS[id]?.mods.save?.[fam] || 0; return n; }
 /** The TN of a save against something `by` did: 12 (rolls.ts SAVE_TN) + the strength of the skill that delivered it
  * (`via`; `str`: a strength fixed when it was laid, a zone's or a residue's). */
 export const saveTn = (by: Unit | null | undefined, via?: string | null, str?: number): number => SAVE_TN + (str ?? strengthFor(by, via));
@@ -275,17 +241,15 @@ export const condArg = (u: Unit, id: string): string | null => (condOn(u, id) &&
  * the marker's squad. Shaken and Confused no longer touch the roll (spec). */
 export function condHit(u: Unit, tgt?: Unit | null, cb?: Combat | null): number {
   let n = 0;
-  if (condOn(u, 'pinned')) n -= 2;
-  if (condOn(u, 'blinded')) n -= 4;
-  if (condOn(u, 'fear') && (!tgt || condSource(u, 'fear') !== tgt.id)) n -= 2;
-  if (condOn(u, 'grappled') && (!tgt || condSource(u, 'grappled') !== tgt.id)) n -= 2;
-  if (condOn(u, 'inspired')) n += 2;
-  if (condOn(u, 'sharpened')) n += 3; // SHARPEN (rules 1.4): spent on the next attack
-  if (tgt && condOn(tgt, 'marked')) { const by = condSource(tgt, 'marked'), m = by && cb ? cb.units.find((x) => x.id === by) : null; if (!by || !cb || (m && m.side === u.side)) n += 1; }
-  // Rules 1.8: Hopeful +2 (spent on the roll), Scorned −2 against the one who scorned you, and residue underfoot (Joy +1,
-  // Shame −1, Contempt −2 to attacks; Belonging's +1 Defense on the target's tile).
-  if (condOn(u, 'hopeful')) n += 2;
-  if (tgt && condOn(u, 'scorned') && condSource(u, 'scorned') === tgt.id) n -= 2;
+  // the rows' `attack_mod` effects, by what each applies to (condtable.ts HitContext)
+  for (const id of Object.keys(u.conds || {})) {
+    if (!(u.conds![id] > 0)) continue; const h = CONDS[id]?.mods.hit; if (!h) continue;
+    n += (h.own_attacks || 0) + (h.next_attack || 0); // SHARPEN and Hope are spent on the next attack
+    if (h.not_vs_source && (!tgt || condSource(u, id) !== tgt.id)) n += h.not_vs_source;
+    if (h.vs_source && tgt && condSource(u, id) === tgt.id) n += h.vs_source;
+  }
+  if (tgt && condOn(tgt, 'marked')) { const by = condSource(tgt, 'marked'), m = by && cb ? cb.units.find((x) => x.id === by) : null; if (!by || !cb || (m && m.side === u.side)) n += condMods('marked').hit?.marker_squad_vs_self || 0; }
+  // Rules 1.8: residue underfoot (Joy +1, Shame −1, Contempt −2 to attacks; Belonging's +1 Defense on the target's tile).
   const lc = cb || liveCb();
   n += residueStand(lc, u, 'roll') + residueStand(lc, u, 'attack');
   if (tgt) n -= residueStand(lc, tgt, 'defense');
@@ -297,36 +261,57 @@ export const debuffsOf = (u: Unit, fam?: Fam) => [...Object.keys(u.conds || {}).
 export const bodyDebuffs = (u: Unit) => debuffsOf(u, 'body');
 
 // ---------- conditions, shields, harm ----------
+// THE CONDITION BLOCK (engine foundations 2). Everything that puts a condition on a unit, changes it or takes it off
+// goes through the functions between here and condSourcesCheck:
+//   applyCond(cb, rng, by, target, id, rounds?, fam?, opts)   put it on (items asked, the save, no stacking)
+//   endCond(target, id, cb?)                                   take it off (its numbers undone)
+//   setCondRounds / restoreConds / clearConds / condsAside     the few other writes there are
+//   setProne(cb, u, on) / hide: tactics.ts                     what a unit does to ITSELF by choice
+//   condTurnEnd (durations) / bleedTick, dazeSpent (turn start)   the clock
+// No other file writes u.conds, u.bleed, u.dazedNext, u.prone or u.hidden (test/lint-conditions.test.ts).
 export interface CondOpts { /** No save (a hit's rider, a perk that says so). */ skipSave?: boolean; tnAdd?: number; /** Commanded's order, a variant. */ arg?: string;
-  /** The skill that delivered it (rules 1.13: its strength sets the TN). */ via?: string; /** A strength fixed earlier (residue, a zone, a stored spell): used as it is. */ str?: number }
+  /** The skill that delivered it (rules 1.13: its strength sets the TN). */ via?: string; /** A strength fixed earlier (residue, a zone, a stored spell): used as it is. */ str?: number;
+  /** Hidden only: the same Hidden entry as before (no new ambush). */ sameEntry?: boolean;
+  /** Called once the condition has taken hold, just before 'cond_landed' is told (a move logs its own line here, so
+   * that what reacts to the landing (Shrug It Off) reads after it). Never stored. */ onLand?: () => void }
+/** The second door of an immunity (the first is the 'cond_apply' hook): the `immune:<id>` query, and for Bleeding the
+ * data's own word for it ('bleed'). Sets ca.cancel. Both doors are asked for every condition, whoever applies it. */
+/** The condition took hold: the caller's onLand, then 'cond_landed' {by, t, id, rounds}. */
+function landed(cb: Combat, opts: CondOpts, ctx: any) { opts.onLand?.(); emit(cb, 'cond_landed', ctx); }
+function askImmune(ca: any, t: Unit, id: string, fam?: Fam) {
+  if (ca.cancel) return;
+  const im = immune({ u: t }, id, fam) || (id === 'bleeding' ? immune({ u: t }, 'bleed') : null);
+  if (im) { ca.cancel = true; if (!ca.why && im !== 'perk') ca.why = im; }
+}
 /** Apply a condition: the target saves (d20 + its save) against 12 + the source's strength with the skill that delivered it (opts.via, or the call it runs inside: withVia; rules 1.13) (spec: Conditions
  * and saves). Boons (Guarded, Inspired…) and states need no save. No stacking: a second dose resets to the longer
  * duration. The source is kept (u.condBy) for Fear, Taunted, Grappled, Marked and kill credit. */
 export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: string, rounds?: number, fam?: Fam, opts: CondOpts = {}): string {
-  const id = condId(id0);
-  if (FLAG_CONDS.has(id)) return flagCond(cb, rng, by, t, id, rounds, opts);
-  const def = CONDS[id]; if (!def || t.dead) return '';
+  const id = condId(id0), def = CONDS[id];
+  if (!def || def.engine === 'state' || t.dead) return ''; // a unit state (Braced, Downed) has its own setter: unitstate.ts
+  if (def.engine === 'flag') return flagCond(cb, rng, by, t, def, rounds, opts);
   // Items first: 'cond_apply' {by, t, id, fam, rounds, skipSave, cancel, why, tnAdd, saveAdd} (an immunity cancels it,
   // a perk may skip the save, change the rounds or the save's TN).
   const via = viaOf(by, opts.via);
   const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, arg: opts.arg, via, cb, rng });
+  askImmune(ca, t, id, ca.fam);
   if (ca.cancel) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : ''); }
-  const f: Fam = ca.fam || fam || def.fam;
+  const f: Fam = ca.fam || fam || def.fam || 'body';
   // The log shows every save, failed ones too (spec: Sigils 9, Afterwards: "every target, roll, save and number").
   let saved = '';
   // Defiance poured in: every save against the release is DEFY_PEN harder (rules 1.19; rules 1.8 had no save at all, NOSAVE_BY); Defiance's "your next save passes".
   if (NOSAVE_BY && by === NOSAVE_BY && t !== by) { if (DEFY_PEN > 0) ca.tnAdd = (ca.tnAdd || 0) + DEFY_PEN; else ca.skipSave = true; } // rules 1.19: 4 harder to resist (it was: no save)
-  if (!BOOST.has(id) && !def.noSave && !ca.skipSave) {
+  if (!def.boon && !def.noSave && !ca.skipSave) {
     // the one save (rolls.ts): 'cond_apply' was fired above, so its context is handed over (ca). Defiance's "your next save passes" is settled there.
     const sv = rollSave(cb, rng, { by, target: t, fam: f, id, via, tn: saveTn(by, opts.via, opts.str), mod: saveOf(t, f), ca });
     if (sv.ok) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); if (sv.skipped) return ' · ' + t.name + ' ' + sv.text; emit(cb, 'cond_resisted', { by, t, id, cb }); return ' · ' + t.name + ' resists (' + sv.text + ')'; }
     saved = sv.skipped ? '' : sv.text;
   }
-  if (id === 'marked' && t.hidden) { t.hidden = false; delete t.hideEntry; (cb.sightWhy ||= {})[t.id] = 'reveal'; }
+  if (id === 'marked' && t.hidden) { rawHidden(cb, t, false); delete t.hideEntry; (cb.sightWhy ||= {})[t.id] = 'reveal'; }
   const n = ca.rounds || rounds || def.rounds, had = condOn(t, id);
   emitFx(cb, 'cond', { target: t.id, at: t.pos, id, ...(FX_ELEMENT ? { element: FX_ELEMENT } : {}) });
   (t.condAt ||= {})[id] = (cb.condSeq = (cb.condSeq || 0) + 1); // CLEANSE ends the newest
-  (t.conds ||= {})[id] = def.noTick && !rounds ? 99 : Math.max(had ? t.conds[id] || 0 : 0, n);
+  (t.conds ||= {})[id] = def.noTick && !rounds ? UNTIL : Math.max(had ? t.conds[id] || 0 : 0, n);
   if (by) (t.condBy ||= {})[id] = by.id; else if (t.condBy) delete t.condBy[id];
   if (via) (t.condVia ||= {})[id] = via; else if (t.condVia) delete t.condVia[id];
   if (ca.arg ?? opts.arg) (t.condArg ||= {})[id] = String(ca.arg ?? opts.arg);
@@ -334,51 +319,68 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
   const onOwnTurn = cb.order?.[cb.turn] === t.id && !cb.window && !cb.overworld;
   if (onOwnTurn) { const fr = (t.condFresh ||= []); if (!fr.includes(id)) fr.push(id); }
   if (!had) {
-    if (id === 'slowed') { t.baseMove ??= t.movement; t.movement = t.baseMove / 2; }
-    if (id === 'blinded') { t.baseVision ??= t.vision || 12; t.vision = 1; }
-    if (id === 'guarded' || id === 'withdrawing') t.def += 2;
-    if (id === 'corroded') t.def -= 2;
+    condNumbers(t, def, true);
     if (id === 'grappled' || id === 'stunned') { dropHeldShot(cb, t, id); }
   }
-  emit(cb, 'cond_landed', { by, t, id, rounds: n, cb, rng }); // 'cond_landed' {by, t, id, rounds}: after it takes hold
+  landed(cb, opts, { by, t, id, rounds: n, cb, rng }); // 'cond_landed' {by, t, id, rounds}: after it takes hold
   const dur = def.noTick && !rounds ? '' : n + ' round' + (n === 1 ? '' : 's');
   return ' · ' + t.name + ' is ' + def.name + (dur || saved ? ' (' + [dur, saved].filter(Boolean).join('; ') + ')' : '');
 }
-/** Conditions the engine keeps as unit flags: Dazed (−2 AP next turn), Prone, Bleeding (3 rounds; a hit's rider, no
- * save), Hidden (see combat.ts hide), Injured (a d6 location, no resistance). */
-function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: string, rounds: number | undefined, opts: CondOpts): string {
-  if (t.dead) return '';
-  const fam: Fam = 'body', noSave = id === 'bleeding' || id === 'injured' || id === 'hidden' || id === 'prone';
+/** The numbers a table condition puts on its bearer while it lasts (the row's Defense, Movement and vision; condtable.ts
+ * CondMods), on and off. Every other number of a condition is read where it is used (condHit, condSaveMod, turnAp…). */
+function condNumbers(u: Unit, def: CondDef, on: boolean) {
+  const m = def.mods;
+  if (m.moveMult != null) { if (on) { u.baseMove ??= u.movement; u.movement = u.baseMove * m.moveMult; } else if (u.baseMove != null) { u.movement = u.baseMove; delete u.baseMove; } }
+  if (m.vision != null) { if (on) { u.baseVision ??= u.vision || 12; u.vision = m.vision; } else if (u.baseVision != null) { u.vision = u.baseVision; delete u.baseVision; } }
+  if (m.defense) u.def += on ? m.defense : -m.defense;
+}
+/** Conditions the engine keeps as unit flags (conditions.json `engine: "flag"`): Dazed (−2 AP next turn), Prone,
+ * Bleeding (3 rounds; a hit's rider, no save), Hidden (tactics.ts hide is the unit's own action), Injured (the injury
+ * table: combat.ts rollInjury). The same door as every condition: 'cond_apply', both immunity doors, the save,
+ * 'cond_landed'. */
+function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, def: CondDef, rounds: number | undefined, opts: CondOpts): string {
+  const id = def.key, fam: Fam = def.fam || 'body';
   const via = viaOf(by, opts.via);
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || (id === 'bleeding' ? 3 : 1), skipSave: noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, cb, rng });
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || (def.noTick ? 1 : def.rounds), skipSave: !!def.noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, cb, rng });
+  askImmune(ca, t, id, def.fam);
   if (ca.cancel) return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '');
   let saved = '';
   if (!ca.skipSave) { const sv = rollSave(cb, rng, { by, target: t, fam, id, via, tn: saveTn(by, opts.via, opts.str), mod: saveOf(t, fam), ca });
     if (sv.ok) return ' · ' + t.name + (sv.skipped ? ' ' + sv.text : ' resists (' + sv.text + ')');
     saved = sv.skipped ? '' : ' (' + sv.text + ')'; }
   if (id === 'dazed' || id === 'prone' || id === 'bleeding') (t.condAt ||= {})[id] = (cb.condSeq = (cb.condSeq || 0) + 1);
-  if (id === 'dazed') { t.dazedNext = 1; emit(cb, 'cond_landed', { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed' + saved; }
-  if (id === 'prone') { t.prone = true; t.braced = false; emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
-  if (id === 'bleeding') { t.bleed = Math.max(t.bleed || 0, ca.rounds || 3); if (by) t.lastHitBy = by.id; emit(cb, 'cond_landed', { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
-  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; t.hidden = true; t.hideEntry = (t.hideEntry || 0) + 1; (cb.sightWhy ||= {})[t.id] = 'hide'; return ' · ' + t.name + ' is Hidden'; }
-  if (id === 'injured') { const inj = rollInjury(rng, t, cb, by); emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return inj; }
+  if (id === 'dazed') { rawDazed(t, 1); landed(cb, opts, { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed' + saved; }
+  if (id === 'prone') { rawProne(t, true); landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
+  if (id === 'bleeding') { rawBleed(t, Math.max(t.bleed || 0, ca.rounds || def.rounds)); if (by) t.lastHitBy = by.id; landed(cb, opts, { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
+  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; if (t.hidden) return ''; rawHidden(cb, t, true, { entry: !opts.sameEntry }); (cb.sightWhy ||= {})[t.id] = 'hide'; landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is Hidden'; }
+  if (id === 'injured') { const inj = rollInjury(rng, t, cb, by); landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return inj; }
   return '';
 }
+/** Prone by the unit's own choice (it drops, it kneels on an order, it stands): no item is asked and nobody saves.
+ * Knocking someone Prone is applyCond(…, 'prone'), and it ends Braced. Dropping Prone by choice keeps a weapon's Brace
+ * (spec, Brace: "while braced (or prone)"; the old toggleProne); kneeling on an order and going down with a thrown body
+ * end it (`endBrace: true`, as their old code did). */
+export function setProne(cb: Combat | null, u: Unit, on: boolean, o: { endBrace?: boolean } = {}) {
+  rawProne(u, on, !!o.endBrace);
+  if (on && cb) (u.condAt ||= {}).prone = (cb.condSeq = (cb.condSeq || 0) + 1); else if (!on && u.condAt) delete u.condAt.prone;
+}
 /** End a condition now (its effects undone). 'cond_end' {u, id} when a fight is given. */
-export function endCond(u: Unit, id: string, cb?: Combat) {
+export function endCond(u: Unit, id: string, cb?: Combat | null) {
   id = condId(id);
-  if (id === 'hidden') { if (u.hidden && cb) (cb.sightWhy ||= {})[u.id] = 'reveal'; u.hidden = false; return; }
-  if (id === 'prone') { u.prone = false; return; }
-  if (id === 'bleeding') { u.bleed = 0; return; }
-  if (id === 'dazed') { u.dazedNext = 0; return; }
+  const def = CONDS[id];
+  if (def?.engine === 'flag') {
+    if (id === 'hidden') { if (u.hidden && cb) (cb.sightWhy ||= {})[u.id] = 'reveal'; rawHidden(cb, u, false); }
+    else if (id === 'prone') rawProne(u, false);
+    else if (id === 'bleeding') rawBleed(u, 0);
+    else if (id === 'dazed') rawDazed(u, 0);
+    if (u.condAt) delete u.condAt[id];
+    return;
+  }
   if (!u.conds || !(id in u.conds)) return;
   endCondRaw(u, id); if (cb) emit(cb, 'cond_end', { u, id, cb });
 }
 function endCondRaw(u: Unit, id: string) {
-  if (id === 'slowed' && u.baseMove != null) { u.movement = u.baseMove; delete u.baseMove; }
-  if (id === 'blinded' && u.baseVision != null) { u.vision = u.baseVision; delete u.baseVision; }
-  if (id === 'guarded' || id === 'withdrawing') u.def -= 2;
-  if (id === 'corroded') u.def += 2;
+  if (CONDS[id]) condNumbers(u, CONDS[id], false);
   delete u.conds![id];
   if (u.condAt) delete u.condAt[id];
   if (u.condBy) delete u.condBy[id];
@@ -386,13 +388,65 @@ function endCondRaw(u: Unit, id: string) {
   if (u.condArg) delete u.condArg[id];
   if (u.condFresh) u.condFresh = u.condFresh.filter((x) => x !== id);
 }
-/** The end of a unit's turn (spec: Conditions tick at the end of the bearer's turn, rules 1.3): every timed condition
+/** Change the rounds left of a condition a unit already has (an item halves it, lengthens it, lets it smoulder).
+ * `fresh`: it was changed during the bearer's own turn, so that turn's end doesn't count. Nothing if it isn't on. */
+export function setCondRounds(u: Unit, id0: string, rounds: number, o: { fresh?: boolean; cb?: Combat | null; /** null: drop the variant it carried */ arg?: string | null } = {}) {
+  const id = condId(id0); if (!u.conds || !(id in u.conds)) return;
+  if (rounds <= 0) { endCond(u, id, o.cb); return; }
+  u.conds[id] = rounds;
+  if (o.arg === null) { if (u.condArg) delete u.condArg[id]; } else if (o.arg != null) (u.condArg ||= {})[id] = o.arg;
+  if (o.fresh) { const fr = (u.condFresh ||= []); if (!fr.includes(id)) fr.push(id); }
+}
+/** A condition is no longer "put on this turn" (its next turn end counts): an item that makes this turn count. */
+export function condNotFresh(u: Unit, id0: string) { const id = condId(id0); if (u.condFresh) { u.condFresh = u.condFresh.filter((x) => x !== id); if (!u.condFresh.length) delete u.condFresh; } }
+/** Put back conditions a unit carried before (a fight that picks the story's magic state up again): no save, no hook,
+ * the longer of what it has and what it carried, and each condition's numbers applied once. */
+export function restoreConds(u: Unit, conds: Record<string, number>, by?: Record<string, string>, via?: Record<string, string>, arg?: Record<string, string>) {
+  for (const [k, n] of Object.entries(conds || {})) {
+    const id = condId(k), def = CONDS[id]; if (!def || def.engine !== 'table' || !(n > 0)) continue;
+    const had = condOn(u, id);
+    (u.conds ||= {})[id] = Math.max(had ? u.conds[id] : 0, n);
+    if (!had) condNumbers(u, def, true);
+    if (by?.[k]) (u.condBy ||= {})[id] = by[k]; if (via?.[k]) (u.condVia ||= {})[id] = via[k]; if (arg?.[k]) (u.condArg ||= {})[id] = arg[k];
+  }
+}
+/** Every condition off a unit, each one's numbers undone (it is lifted out of the fight and put back whole). */
+export function clearConds(u: Unit, cb?: Combat | null) {
+  for (const id of Object.keys(u.conds || {})) endCondRaw(u, id);
+  u.conds = {}; for (const id of FLAG_CONDS) if (id !== 'injured') endCond(u, id, cb);
+}
+/** Set some conditions aside for a moment (the unit is read as if it did not have them: a draw ends Disarmed).
+ * Returns the function that puts them back exactly as they were. Nothing is ended and no item is told. */
+export function condsAside(u: Unit, ids: string[]): () => void {
+  const kept: Record<string, number> = {};
+  for (const id0 of ids) { const id = condId(id0); if (u.conds && u.conds[id] != null) { kept[id] = u.conds[id]; delete u.conds[id]; } }
+  return () => { for (const [id, n] of Object.entries(kept)) (u.conds ||= {})[id] = n; };
+}
+/** Slip out of sight again on the same Hidden entry (no new ambush): Shadow Step, Silent Kill, smoke. The items are
+ * asked as for any condition, and a Marked unit can't. Returns whether the unit is Hidden now. */
+export function hideAgain(cb: Combat, rng: Rng, u: Unit, by: Unit | null = null): boolean { applyCond(cb, rng, by, u, 'hidden', undefined, undefined, { sameEntry: true }); return !!u.hidden; }
+/** THE CLOCK, turn start (combat.ts beginTurn): Dazed has cost its AP and is spent. */
+export function dazeSpent(u: Unit) { rawDazed(u, 0); if (u.condAt) delete u.condAt.dazed; }
+/** THE CLOCK, turn start: Bleeding bites (the tick is the row's amount) and loses a round; its rounds are its bites.
+ * Kill credit to whoever opened the wound. Returns true when the bearer went down from it. */
+export function bleedTick(cb: Combat, u: Unit): boolean {
+  if (!u.bleed || u.dead || u.downed) return false;
+  rawBleed(u, u.bleed - 1);
+  const by = u.lastHitBy ? cb.units.find((x) => x.id === u.lastHitBy) || null : null; // kill credit: whoever opened the wound
+  const r = applyDamage(cb, u, itemAmount('condition:bleeding', 'tick'), { type: 'bleed', by, shield: false, credit: 'hp' });
+  emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'bleed', killed: u.hp === 0 }); if (u.hp === 0) fxFell(cb, u);
+  cb.log.push(u.name + ' bleeds: ' + r.dealt + ' damage' + (u.hp === 0 ? (u.side === 'foe' ? ' · down for good' : ' · Downed') : ''));
+  if (u.hp === 0) { rawBleed(u, 0); return true; }
+  if (!u.bleed && u.condAt) delete u.condAt.bleeding;
+  return false;
+}
+/** THE CLOCK, turn end (spec: Conditions tick at the end of the bearer's turn, rules 1.3): every timed condition
  * loses a round, except one put on during this same turn; at 0 it ends. Grappled ends if the grappler is gone or no
  * longer adjacent; Taunted when the taunter is down. */
 export function condTurnEnd(cb: Combat, u: Unit, rng?: Rng | null) {
   if (u.dead) return;
   // MASK (rules 1.4): Hidden for 2 of the bearer's turn ends, or until it attacks (then it is no longer Hidden).
-  if (u.maskLeft) { if (!u.hidden) delete u.maskLeft; else if (u.maskFresh) u.maskFresh = false; else if (--u.maskLeft <= 0) { delete u.maskLeft; u.hidden = false; (cb.sightWhy ||= {})[u.id] = 'reveal'; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id]; emitFx(cb, 'mask', { target: u.id, at: u.pos, fade: true }); cb.log.push(u.name + "'s MASK fades: no longer Hidden."); } }
+  if (u.maskLeft) { if (!u.hidden) delete u.maskLeft; else if (u.maskFresh) u.maskFresh = false; else if (--u.maskLeft <= 0) { delete u.maskLeft; rawHidden(cb, u, false); (cb.sightWhy ||= {})[u.id] = 'reveal'; emitFx(cb, 'mask', { target: u.id, at: u.pos, fade: true }); cb.log.push(u.name + "'s MASK fades: no longer Hidden."); } }
   if (!u.conds) return;
   const fresh = new Set(u.condFresh || []); u.condFresh = [];
   // Corroded (rules 1.4): a Body save at the end of each of the bearer's turns ends it early (against 12 + the strength of the
@@ -403,7 +457,7 @@ export function condTurnEnd(cb: Combat, u: Unit, rng?: Rng | null) {
   }
   for (const id of Object.keys(u.conds)) {
     const def = CONDS[id]; if (!def) continue;
-    if (def.noTick && u.conds[id] >= 99) continue;
+    if (def.noTick && u.conds[id] >= UNTIL) continue;
     if (fresh.has(id)) continue;
     u.conds[id]--;
     if (u.conds[id] <= 0) { endCond(u, id, cb); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
@@ -738,17 +792,13 @@ export function outburstArea(cb: Combat, u: Unit, d: OutburstDesign, aim: string
   if (f === 'bolt') return [aim];
   const [cx, cy] = XY(u.pos);
   if (f === 'burst' || f === 'aura') {
-    const c = f === 'burst' ? aim : u.pos, [ax, ay] = XY(c);
-    for (let x = ax - n; x <= ax + n; x++) for (let y = ay - n; y <= ay + n; y++) { const k = x + ',' + y; if (!onGrid(cb, k) || !standable(cb.map, k) && !cb.units.some((v) => v.pos === k)) continue; if (f === 'aura' && k === u.pos) continue; if (seen(k, c)) out.push(k); }
+    const c = f === 'burst' ? aim : u.pos;
+    // the shape is the kit's; what is left out is this spell's own: ground nobody can stand on (unless somebody does), and what the centre can't see
+    for (const k of tilesIn(cb, f === 'burst' ? { shape: 'burst', at: c, r: n } : { shape: 'aura', at: c, r: n })) { if (!standable(cb.map, k) && !cb.units.some((v) => v.pos === k)) continue; if (seen(k, c)) out.push(k); }
     return out;
   }
   if (f === 'wave') {
-    const [tx, ty] = XY(aim), dx = tx - cx, dy = ty - cy, dl = Math.hypot(dx, dy) || 1;
-    for (let x = cx - n; x <= cx + n; x++) for (let y = cy - n; y <= cy + n; y++) {
-      const k = x + ',' + y, ax = x - cx, ay = y - cy, l = Math.hypot(ax, ay);
-      if (!l || l > n + 0.5 || (ax * dx + ay * dy) / (l * dl) < 0.7 || !onGrid(cb, k)) continue;
-      if (seen(k, u.pos)) out.push(k);
-    }
+    for (const k of tilesIn(cb, { shape: 'cone', from: u.pos, toward: aim, n })) if (seen(k, u.pos)) out.push(k);
     return out;
   }
   // Lance: n tiles straight on (8 directions), through creatures, stopped by what stops a walk (walls).
@@ -885,7 +935,7 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
   const d = findDesign(m, designId); if (!d) return no('No such design.');
   // 'outburst_cost' {u, design, mp, ap, range, strain, hp, release, preview} (mutable): items change the Begin's price
   // (pay HP instead of MP, a free cast, more reach). ap is the Begin's; a snap cast adds the Release (1 AP).
-  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? 1.2 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.begin_strain ?? 1) + (m.emanator ? 0 : CYC.no_emanator_strain ?? 2), hp: 0, release, preview: true, fail: '', relMult: 1, relAll: 1, relNotes: [] as string[], cb });
+  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? condMods('rdebuff').soulCostMult ?? 1 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.begin_strain ?? 1) + (m.emanator ? 0 : CYC.no_emanator_strain ?? 2), hp: 0, release, preview: true, fail: '', relMult: 1, relAll: 1, relNotes: [] as string[], cb });
   if (oc.fail) return no(oc.fail);
   const cost = Math.max(0, Math.round(oc.mp)), ap = priced({ cb, u }, 'begin', Math.max(0, oc.ap), undefined, { design: d.id }).ap + (release ? SOUL_AP.release : 0), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
   if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 0, hp };
@@ -1341,7 +1391,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   if (!wild) { noteRelease(cb, u); if (F.has('belonging')) noteRelease(cb, u); } // Belonging counts twice for allies' Resonance
   if (res.with.length) emitFx(cb, 'resonance', { unit: u.id, at: u.pos, with: res.with, bonus: res.bonus });
   // Silent (rules 1.8): a hostile release reveals a Hidden caster, as a harmful Sigil does; Silent keeps you hidden.
-  if (u.hidden && hostile && !has('silent') && !wild) { u.hidden = false; (cb.sightWhy ||= {})[u.id] = 'reveal'; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id]; cb.log.push(u.name + ' is revealed (released an Outburst).'); emit(cb, 'spotted', { u, why: 'released an Outburst', cb }); }
+  if (u.hidden && hostile && !has('silent') && !wild) { endCond(u, 'hidden', cb); cb.log.push(u.name + ' is revealed (released an Outburst).'); emit(cb, 'spotted', { u, why: 'released an Outburst', cb }); }
   const does = felt.map((f) => feelingWord(d, f)).filter(Boolean);
   emitFx(cb, 'release', { unit: u.id, at: u.pos, to: aim, design: d.id, school: d.school, school2: d.school2 || null, option: d.option || null, form, tone, element: toneElement(tone), stage, mult: Math.round(sm * 100) / 100,
     riderStage: rs, wild, reaction, resonance: res.bonus, area: tiles, targets: [...targets, ...loved].map((t) => t.id), felt, ...(does.length ? { does: [...new Set(does)] } : {}) });
@@ -1462,9 +1512,9 @@ function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<stri
   if (F.has('pride') && FP('pride').strain_unless_down && !wild && !u.dead && !hits.some((v) => v.side !== u.side && (v.dead || v.downed || v.hp <= 0 || v.surrendered))) { const s = addStrain(cb, rng, u, FP('pride').strain_unless_down, 'pride'); out.push(u.name + '\'s pride stings (+' + FP('pride').strain_unless_down + ' Strain)' + s); }
   // Shame (rules 1.17): each Shame poured in costs its own damage (it was 5 once, however many).
   if (F.has('shame') && !u.dead) out.push(u.name + ' pays' + harmFor('shame', () => harm(cb, rng, null, u, (FP('shame').self_damage ?? 0) * (FP('shame').per_pour ? felt.filter((x) => x === 'shame').length : 1), 'true')));
-  if (F.has('jealousy')) { const t = hits.find((v) => v.side !== u.side); if (t) { const boon = Object.keys(t.conds || {}).find((c) => condOn(t, c) && isBoon(c) && c !== 'hidden'); if (boon) { const n = t.conds![boon]; endCond(t, boon, cb); (u.conds ||= {})[boon] = Math.max(u.conds[boon] || 0, Math.min(n, 3)); out.push(u.name + ' steals ' + condName(boon) + ' from ' + t.name + ' (Jealousy)'); } else if ((t.shield || 0) > 0) { const n = t.shield!; t.shield = 0; out.push(clean(grantShield(cb, u, n, u) + '') + ' ' + u.name + ' steals ' + t.name + "'s shield (Jealousy)"); } } }
+  if (F.has('jealousy')) { const t = hits.find((v) => v.side !== u.side); if (t) { const boon = Object.keys(t.conds || {}).find((c) => condOn(t, c) && isBoon(c) && c !== 'hidden'); if (boon) { const n = t.conds![boon]; endCond(t, boon, cb); restoreConds(u, { [boon]: Math.min(n, 3) }); out.push(u.name + ' steals ' + condName(boon) + ' from ' + t.name + ' (Jealousy)'); } else if ((t.shield || 0) > 0) { const n = t.shield!; t.shield = 0; out.push(clean(grantShield(cb, u, n, u) + '') + ' ' + u.name + ' steals ' + t.name + "'s shield (Jealousy)"); } } }
   if (F.has('wonder')) {
-    for (const v of cb.units) if (v.hidden && v.side !== u.side && set.has(v.pos)) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][v.id]; out.push(v.name + ' is revealed (Wonder)'); }
+    for (const v of cb.units) if (v.hidden && v.side !== u.side && set.has(v.pos)) { endCond(v, 'hidden', cb); out.push(v.name + ' is revealed (Wonder)'); }
     for (const z of cb.zones || []) { const zz: any = z; if (z.side !== u.side && (z.kind === 'trap' || (z.kind === 'turret' && zz.hidden)) && z.tiles.some((k) => set.has(k)) && !(zz.spotted ||= []).includes(u.side)) { zz.spotted.push(u.side); emitFx(cb, 'trap_spotted', { id: z.id, tile: z.tiles[0], by: u.id, side: u.side, only: u.side, kind: z.kind }); out.push('a trap shows at ' + refOf(z.tiles[0]) + ' (Wonder)'); } }
     for (const h of (cb.hazards || []) as any[]) if (h.hidden && h.tiles.some((k: string) => set.has(k))) { h.hidden = false; emitFx(cb, 'hazard_spotted', { id: h.id, kind: h.kind, at: h.tiles[0], tiles: [...h.tiles], by: u.id, how: 'wonder' }); out.push('a hazard shows (Wonder)'); }
   }
@@ -1516,7 +1566,7 @@ export function residueTick(cb: Combat, rng: Rng, u: Unit, when: 'turn' | 'entry
   if (r.condition) line.push(applyCond(cb, rng, by, u, r.condition, r.rounds, undefined, { skipSave: !r.save, ...rs }));
   if (r.random) { const pick = r.random[die(rng, r.random.length) - 1]; line.push(applyCond(cb, rng, by, u, pick, r.rounds ?? 1, undefined, { skipSave: true, via: 'will_power' })); }
   if (r.strain && u.mg && r.strain < 0) { const n = easeStrain(cb, u, -r.strain, 'residue'); if (n) line.push(' · ' + u.name + "'s Strain −" + n); }
-  if (r.reveal_radius) for (const v of cb.units) if (v.hidden && v.side !== u.side && dist(v.pos, u.pos) <= r.reveal_radius) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][v.id]; line.push(' · ' + v.name + ' is revealed'); }
+  if (r.reveal_radius) for (const v of cb.units) if (v.hidden && v.side !== u.side && dist(v.pos, u.pos) <= r.reveal_radius) { endCond(v, 'hidden', cb); line.push(' · ' + v.name + ' is revealed'); }
   const txt = line.filter(Boolean).join('');
   if (txt) { emitFx(cb, 'residue_tick', { unit: u.id, at: u.pos, feeling: f.id, kind: r.kind, when }); cb.log.push(f.name + ' residue at ' + refOf(u.pos) + ' (' + u.name + ')' + txt + '.'); }
 }

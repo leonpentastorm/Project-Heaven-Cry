@@ -27,6 +27,7 @@ function fight(seed: string, edit: (c: any) => void = () => {}, o: { two?: boole
   doAct({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }] } } });
   const cb = G.combat!, u: any = cb.units.find((x) => x.charId === c.id)!, foe: any = cb.units.find((x) => x.side === 'foe')!, ally: any = cb.units.find((x) => x.side === 'pc' && x.id !== u.id) || null;
   cb.order = [u.id, ...cb.order.filter((x) => x !== u.id)]; cb.turn = 0; u.ap = 6; u.pos = '3,3'; foe.pos = (cb.map.w - 2) + ',' + (cb.map.h - 2); foe.hidden = false; if (ally) ally.pos = '3,4';
+  cb.map = { ...(cb.map as any) }; // (the fight's map is shared between states and frozen in tests: change a copy)
   (cb.map as any).solid = (cb.map as any).solid.filter((k: string) => { const [x, y] = k.split(',').map(Number); return Math.abs(x - 3) > 3 || Math.abs(y - 3) > 3; }); // open ground round the unit
   snap = view();
   return { c, u, foe, ally, cb };

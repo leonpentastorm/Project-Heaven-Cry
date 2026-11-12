@@ -207,8 +207,11 @@ describe('team fight', () => {
     // The active unit is a player's (no enemy AI ran Team B).
     expect(active(g.combat!)!.charId).toBeTruthy();
     const vb = viewFor(g, P2), va = viewFor(g, HOST);
-    expect(vb.combat!.units.find((u) => u.id === b.id)!.side).toBe('pc'); expect(vb.combat!.units.find((u) => u.id === a.id)!.side).toBe('foe');
-    expect(va.combat!.units.find((u) => u.id === b.id)!.side).toBe('foe');
+    // Each team's view holds the other team only where it sees it (fog of war in the engine, fog.ts, 12 Nov 2026).
+    const bSeesA = visibility(g.combat!, 'foe').seen.has(a.id), aSeesB = visibility(g.combat!, 'pc').seen.has(b.id);
+    expect(vb.combat!.units.find((u) => u.id === b.id)!.side).toBe('pc'); expect(vb.combat!.units.find((u) => u.id === a.id)?.side).toBe(bSeesA ? 'foe' : undefined);
+    expect(va.combat!.units.find((u) => u.id === b.id)?.side).toBe(aSeesB ? 'foe' : undefined);
+    if (!bSeesA) expect(JSON.stringify({ ...vb.combat, log: [] })).not.toContain('"' + a.id + '"');
     // Fog per team: Team B's eyes are its own units.
     const vis = visibility(vb.combat!, 'pc'); expect(vis.tiles.has(b.pos)).toBe(true);
     // Team B's player acts on their own turn; Team A's player can't move Team B.

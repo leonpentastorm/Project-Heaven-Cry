@@ -3,7 +3,9 @@
 //   - binding the game by hand (bindGame) instead of asking through the engine's preview (withGame, dryRun, preview);
 //   - copying a fight by hand for a dry run, or setting an action's switches on the fight a screen holds;
 //   - hiding units from a preview by their names;
-//   - typing a basic action's AP cost into a row or into the cost of the picked action.
+//   - typing a basic action's AP cost into a row or into the cost of the picked action;
+//   - working out sight itself to hide units, glyphs or effects (finding 4: the view is fogged by the engine, fog.ts;
+//     docs/design/handoffs/client-boundary-2-fog.md).
 // What to do instead is in docs/design/handoffs/client-boundary-1.md ("How to add an action").
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
@@ -27,6 +29,14 @@ describe('the client asks the engine; it does not go round it', () => {
   });
   it('nobody sets an action\'s switches on a fight (cb.mods is the reducer\'s and the engine preview\'s)', () => {
     expect(hits(/\b(cb|c|pcb|cbx)\.mods\s*=[^=]/)).toEqual([]);
+  });
+  it('nobody works out sight to hide what the view holds (the engine fogs the view; fightSight is its sight)', () => {
+    // visibility() is the engine's own sight for every side: a screen that asks it is filtering by sight again
+    expect(hits(/\bvisibility\s*\(/)).toEqual([]);
+    // the old shapes: a unit kept or dropped by whether the side sees it
+    expect(hits(/\bseenFoe\b|\.seen\.has\(\w+\.id\)|\.sensed\.has\(\w+\.id\)/)).toEqual([]);
+    // glyphs, strokes, placed magic and class marks are not passed a sight filter (the view holds only what is seen)
+    expect(hits(/strokeLayer\([^)]*\bseen:|placedView\([^)]*,\s*\w*\.?tiles\s*\)|classMarks\([^)]*\bseen:/)).toEqual([]);
   });
   it('nobody hides units from a preview by matching their names in its sentences', () => {
     expect(hits(/unseenNames|\.includes\(nm\)/)).toEqual([]);

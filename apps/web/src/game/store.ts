@@ -336,6 +336,8 @@ setTimeout(() => { const r = read(LS.room, null), invite = new URLSearchParams(l
 
 /** Testing hook: lets the end-to-end test swap in the scripted Narrator. */
 (globalThis as any).__phc = { getState, act, setNarrator, toast, go,
+  /** The host's whole game (the e2e fog check compares a guest's view with it); null on a guest's computer. */
+  truth: () => hostState,
   /** The room link now: this player's role, the link's state, the last message and how long ago, the game's version. */
   net: () => ({ role: S.role, conn: S.conn, link: conn?.state || 'none', last: net.last, lastAgoMs: net.lastAt ? Date.now() - net.lastAt : -1, got: net.got, resyncs: net.resyncs, v: S.game?.v ?? -1, hostV: hostState?.v ?? -1 }) };
 

@@ -42,7 +42,8 @@ describe('F3: one way to price, check, pay and give AP', () => {
   it('nothing writes a unit\'s AP by hand: pay() / refund() / grantAp() / loseAp() / setAp() / freely() / withAp()', () => {
     // what is left are not units: a hook's context (ctx), a preview (pv, out), a cost being built (c), the area map's round
     // pool (g.story.ap, one door of its own: game.ts apLeft / spendAp), a fight ruling's record (fr)
-    const NOT_A_UNIT = new Set(['ctx', 'g.story', 't.pv', 'out', 'fr', 'c']);
+    // (condtable.ts `m`: a condition's modifiers, read from its data row)
+    const NOT_A_UNIT = new Set(['ctx', 'g.story', 't.pv', 'out', 'fr', 'c', 'm']);
     const bad: string[] = [];
     for (const f of FILES) { if (AP(f.rel)) continue; for (const m of f.code.matchAll(/([A-Za-z_][\w.!\]\)]*)\.ap\s*(\+=|-=|\*=|\/=|\+\+|--|=(?!=))/g)) if (!NOT_A_UNIT.has(m[1])) bad.push(f.rel + ': ' + m[0]); }
     expect(bad).toEqual([]);
@@ -158,7 +159,7 @@ describe('F8: every limit and cooldown goes through uses() (effects/uses.ts)', (
   });
   it('a read never creates a bag: only take / refund / cool write (uses.ts makes cells in one place)', () => {
     const f = FILES.find((x) => x.rel === 'effects/uses.ts')!;
-    expect([...f.code.matchAll(/\.uses \|\|= \{\}/g)].length).toBe(2); // the bag of a unit or a character, and the story's: both inside cellsOf(…, create)
+    expect([...f.code.matchAll(/\.uses \|\|= \{\}/g)].length).toBe(2); // the bag of a unit or a character, and the story's: both made in the one cellsOf function
     // (game.ts copies a foreseen action's cells from one game to another; sigilgrowth.ts's `uses` is how often a Sigil word was used: another thing)
     expect(hits(/\.uses \|\|= \{\}/, (rel) => rel === 'effects/uses.ts').map((x) => x.split(':')[0])).toEqual(['game.ts', 'sigilgrowth.ts']);
   });

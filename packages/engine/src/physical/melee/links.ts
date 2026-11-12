@@ -28,6 +28,7 @@ import { resOf } from '../../tactics';
 import { type Rng } from '../../rng';
 import { rollVs } from '../../rolls';
 import { canStand } from '../../kit';
+import { setProne } from '../../magic';
 
 // ---------- small helpers ----------
 /** The weapon's melee reach for a Link: 2 with a Reach weapon, else 1. */
@@ -251,7 +252,7 @@ technique({
     fallFx(t, tgt, wasProne);
     if (grapple) {
       if (t.preview) t.note('You go Prone with it.');
-      else if (!t.u.prone) { t.u.prone = true; t.u.braced = false; emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'prone' }); t.cb.log.push(t.u.name + ' goes down with ' + tgt.name + '.'); }
+      else if (!t.u.prone) { setProne(t.cb, t.u, true, { endBrace: true }); emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'prone' }); t.cb.log.push(t.u.name + ' goes down with ' + tgt.name + '.'); }
       cond(t, tgt, 'grappled');
     }
     return null;

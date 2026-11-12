@@ -6,6 +6,7 @@
 //   PRELUDE     overworld, inFight, say, unitById, tileOf, rngOf
 //   GRID        tilesAround, tilesLine, inBounds, landBlockers, canStand
 //   SELECTORS   units, foesOf, alliesOf
+//   AREAS       Area (burst, aura, cone, line, band), inArea, tilesIn, unitsIn   (engine foundations 2)
 import type { Combat, Unit } from './combat';
 import { keyOf, key, xy, dist, moveBlockers, unitSees } from './combat';
 import { boundGame } from './effects/hooks';
@@ -105,4 +106,49 @@ export const work = (what: string): void => { WORK[what] = (WORK[what] || 0) + 1
 export function counted<T>(fn: () => T): { ret: T; work: Record<string, number> } {
   const was = { ...WORK }; for (const k of Object.keys(WORK)) delete WORK[k];
   try { const ret = fn(); return { ret, work: { ...WORK } }; } finally { for (const k of Object.keys(WORK)) delete WORK[k]; Object.assign(WORK, was); }
+}
+
+// =================================================================================================== areas
+// ONE description of an area and ONE answer to "which tiles" and "who is in it" (engine foundations 2, the rest of
+// review finding F6). An area is tiles, nothing more: what blocks sight, who is spared and what the area does are the
+// caller's. Distances are the grid's (dist: a diagonal step is one tile), so a radius is a square.
+//   burst   every tile within r of a tile, that tile too (a grenade, a Burst, a splash)
+//   aura    the same around a unit's tile, its own tile left out
+//   cone    from a tile toward a tile or a direction: within n tiles and within about 45 degrees of the line
+//           (reach 'round', the default: n + 0.5 as the crow flies, the flamer's and the Wave's; 'square': n by the
+//           grid's distance, a Sigil PUSH's)
+//   line    the straight run of tiles from a tile toward another, n tiles long (tilesLine; the far tile when n is not given)
+//   band    everything ahead of a tile and within `width` of the line to another (full-auto fire)
+export type Area =
+  | { shape: 'burst'; at: string; r: number }
+  | { shape: 'aura'; at: string; r: number }
+  | { shape: 'cone'; from: string; toward: string | [number, number]; n: number; reach?: 'round' | 'square' }
+  | { shape: 'line'; from: string; toward: string; n?: number }
+  | { shape: 'band'; from: string; toward: string; width: number };
+/** The cone's cosine: a tile is in the cone when the angle between it and the cone's line is no more than about 45 degrees. */
+export const CONE_COS = 0.7;
+/** Is tile k inside the area? (No map is asked: a tile off the map can be "in" an area; tilesIn drops those.) */
+export function inArea(a: Area, k: string): boolean {
+  if (a.shape === 'burst') return dist(a.at, k) <= a.r;
+  if (a.shape === 'aura') return k !== a.at && dist(a.at, k) <= a.r;
+  if (a.shape === 'line') { const run = tilesLine(a.from, a.toward); return (a.n == null ? run : run.slice(0, a.n)).includes(k); }
+  const [fx, fy] = xy(a.from), [x, y] = xy(k), ax = x - fx, ay = y - fy, l = Math.hypot(ax, ay);
+  const [dx, dy] = typeof a.toward === 'string' ? (() => { const [tx, ty] = xy(a.toward as string); return [tx - fx, ty - fy]; })() : a.toward, dl = Math.hypot(dx, dy) || 1;
+  if (a.shape === 'band') { const along = (ax * dx + ay * dy) / dl; return along > 0 && Math.abs(ax * dy - ay * dx) / dl <= a.width; }
+  if (!l || (a.reach === 'square' ? dist(a.from, k) > a.n : l > a.n + 0.5)) return false;
+  return (ax * dx + ay * dy) / (l * dl) >= CONE_COS;
+}
+/** The tiles of an area that are on the map, column by column (a line: nearest first). */
+export function tilesIn(cb: Combat, a: Area): string[] {
+  if (a.shape === 'line') { const run = tilesLine(a.from, a.toward).filter((k) => inBounds(cb, k)); return a.n == null ? run : run.slice(0, a.n); }
+  if (a.shape === 'band') { const out: string[] = []; for (let x = 0; x < cb.map.w; x++) for (let y = 0; y < cb.map.h; y++) if (inArea(a, key(x, y))) out.push(key(x, y)); return out; }
+  const c = a.shape === 'cone' ? a.from : a.at, r = a.shape === 'cone' ? a.n : a.r;
+  return tilesAround(c, r, cb).filter((k) => inArea(a, k));
+}
+/** WHO IS IN IT: the units standing in an area (or on any of a list of tiles), of either side. `Who` says who counts
+ * (by default a unit still in the fight: not dead, Downed or surrendered); `side`: only that side; `not`: leave these
+ * out (the one the blast was aimed at, the caster). In the fight's own order. */
+export function unitsIn(cb: Combat, a: Area | string[], o: Who & { side?: Unit['side']; not?: (Unit | null | undefined)[] } = {}): Unit[] {
+  const tiles = Array.isArray(a) ? new Set(a) : null;
+  return cb.units.filter((v) => (tiles ? tiles.has(v.pos) : inArea(a as Area, v.pos)) && (!o.side || v.side === o.side) && !(o.not || []).includes(v) && counts(cb, v, o, v.pos));
 }

@@ -8,6 +8,7 @@ export * from './objects';
 export * from './campaign';
 export { MAP_LIMITS, MAP_LAYOUTS, readLayout, expandZone, sizeProblem, startGap, deployEnemy, nearestFree } from './maplayout';
 export * from './music';
+export { fogFight, fightSight, isUnseenId, UNSEEN, UNSEEN_NAME, type FightFog } from './fog';
 export * from './spotlight';
 export * from './glossary';
 export * from './memory';
@@ -48,3 +49,5 @@ export { preview, dryRun, previewAction, withGame, copyFight, shadowGame, fightS
 export { perkCards, shelfOf, cardText, cardTrigger, coreWired, PERK_CARDS, LOG_LOOKBACK, type PerkCard, type ShelfId, type CardState } from './perkcard';
 export * from './kit';
 export * from './rolls';
+// Engine foundations 2: the unit states' setters (Braced, Staggered, Downed, Nailed). The raw flag writes are not exported: applyCond / endCond (magic.ts) are the door.
+export { setBraced, stagger, clearStagger, setDowned, setNailed, startHidden, asStanding } from './unitstate';

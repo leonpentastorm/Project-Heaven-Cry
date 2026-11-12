@@ -91,6 +91,8 @@ export interface MusicState {
   silent: Record<string, number>;
   /** The last ordinary fight's song (the next fight picks another), and how many picks were made (spec: The fight's song). */
   lastSong?: OstId; picks?: number;
+  /** A player's view only (viewFor): musicFor worked out on the whole game, which the view no longer holds all of. */
+  view?: ReturnType<typeof musicFor>;
 }
 
 export const PIN_AREAS = 2;
@@ -135,6 +137,7 @@ export function musicOf(g: GameState): MusicState {
  * place of the area's music.
  */
 export function musicFor(g: GameState): { key: string; layer: 'spotlight' | 'pin' | 'encounter' | 'combat' | 'ambient'; track: Track | null; reason: string; charId?: string; seq?: number } {
+  const pre = g.music?.view; if (pre) return pre; // a player's view: picked on the whole fight (viewFor)
   const m = g.music?.now;
   if (m) return { key: 's' + m.seq, layer: m.layer, track: m.track, reason: m.reason, charId: m.charId, seq: m.seq };
   const camp = g.campaign, zone = camp?.zones.find((z) => z.id === (g.combat && g.phase === 'combat' ? g.combat.map.id : g.story.zone));
