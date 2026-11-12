@@ -31,6 +31,9 @@ export interface ItemInfo {
   /** Class moves: the class, and the rank that unlocks the move. */
   classId?: string; rank?: string;
   provisional?: boolean;
+  /** Which damage this item's 'damage_out' speaks about besides weapon attacks and spells (data `damage_kinds`:
+   * 'blast' = a blast, a splash, a trap and a thrown item someone made; or one of 'explosion', 'trap', 'thrown'). */
+  damageKinds?: string[];
 }
 
 /** One effect a holder has right now. */

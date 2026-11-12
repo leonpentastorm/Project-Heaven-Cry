@@ -5165,6 +5165,7 @@
     },
     {
       "id": "case_closed",
+      "damage_kinds": ["blast"],
       "name": "Case Closed",
       "tier": "mastered",
       "perk_type": "combat_interaction",
@@ -5409,6 +5410,7 @@
     },
     {
       "id": "true_name",
+      "damage_kinds": ["blast"],
       "name": "True Name",
       "tier": "mastered",
       "perk_type": "active_skill",

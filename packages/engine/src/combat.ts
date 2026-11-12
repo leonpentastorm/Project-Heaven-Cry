@@ -603,13 +603,18 @@ export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objects
 export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb)]);
 
 /** Damage to a unit from something other than an attack (explosions, traps, hazards). Returns a log suffix. */
+/** What hurtUnit deals that an item may speak about when someone made it (its `damage_kinds`). */
+export const BLAST_KINDS = ['explosion', 'trap', 'thrown'];
 export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false, cb?: Combat, why = 'hazard', by?: Unit | null): string {
   if (u.dead) return '';
   // The one way in (effects/output.ts deal): the number as given (no Stat or Level term yet, no 'damage_out' hook:
   // this is nobody's roll), the target's armour in full unless ignored, then the sink.
   // A shield stops a blast, a trap and a hazard as it stops a bullet or a spell (Leon, 12 Nov 2026): everything but
   // damage over time and true damage (effects/damage.ts pastShields). It used to be skipped here.
-  const r = deal(cb || null, by || null, u, { kind: 'damage', base: dmg, armour: 'full' }, { ignoreArmour, src: { type: why, by: by || null, shield: true, explosive: why === 'explosion', credit: 'hp' } });
+  // Step a7 (leak 4): a blast, a splash, a trap and a thrown item that SOMEONE made fire 'damage_out' (ctx.blast,
+  // ctx.kind), so that an item which says it speaks about them does (data `damage_kinds`; effects/hooks.ts emit).
+  const made = !!by && !!cb && BLAST_KINDS.includes(why);
+  const r = deal(cb || null, by || null, u, { kind: 'damage', base: dmg, armour: 'full', hook: made }, { ignoreArmour, src: { type: why, by: by || null, shield: true, explosive: why === 'explosion', credit: 'hp' }, ...(made ? { hookCtx: { mode: 'blast', blast: true, kind: why } } : {}) });
   if (r.shielded && cb) emitFx(cb, 'shield', { target: u.id, at: u.pos, absorbed: r.shielded });
   if (r.downedHit) { if (cb) { emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: 0, why, killed: u.dead }); if (u.dead) fxFell(cb, u); } return ' · ' + u.name + ' takes a hit while Downed' + (u.dead ? ' and dies' : ''); }
   if (r.shielded && r.amount <= 0) return ' · ' + u.name + "'s shield takes it (" + r.shielded + ')';

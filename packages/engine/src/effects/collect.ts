@@ -55,7 +55,9 @@ const infoCache = new Map<string, ItemInfo | null>();
 /** One item at one tier, from the data. key: "perk:<id>", "trait:<id>", "class:<classId>.<moveId>". */
 export function itemInfo(key: string, tier?: Tier | string): ItemInfo | null {
   const ck = key + '@' + (tier || ''); if (infoCache.has(ck)) return infoCache.get(ck)!;
-  const out = buildInfo(key, tier); infoCache.set(ck, out); return out;
+  const out = buildInfo(key, tier);
+  if (out) { const dk = rawItem(key)?.damage_kinds; if (Array.isArray(dk)) out.damageKinds = dk.map(String); }
+  infoCache.set(ck, out); return out;
 }
 function buildInfo(key: string, tier?: string): ItemInfo | null {
   const [kind, id] = splitKey(key);
@@ -94,6 +96,15 @@ export function classMove(cls: string, mv: string): { move: any; rank: string } 
   const key = 'class:' + cls + '.' + mv;
   for (const b of CLASSES as any[]) for (const r of RANKS) { const m = (b.ranks?.[r]?.moves || []).find((x: any) => x.key === key); if (m) return { move: m, rank: r }; }
   const p = CLASS_MOVE_POOL[cls + '.' + mv]; if (p) return { move: p, rank: ADVANCED[cls] ? 'adv' : p.origin_rank || 'I' };
+  return null;
+}
+/** The data object behind an item's key (perks.json, traits.json, a skill's unlock, a class move), or null. */
+export function rawItem(key: string): any | null {
+  const [kind, id] = splitKey(key);
+  if (kind === 'perk') return (PERK as any)[id] || null;
+  if (kind === 'trait') return TRAIT[id] || null;
+  if (kind === 'skill') { const [sid, lvl] = id.split('.'); return (SKILL[sid] as any)?.unlocks?.[lvl] || null; }
+  if (kind === 'class') { const [cls, mv] = id.split('.'); return classMove(cls, mv)?.move || null; }
   return null;
 }
 export function splitKey(key: string): [ItemKind, string] {

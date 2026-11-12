@@ -152,6 +152,7 @@
     },
     {
       "id": "the_brightest_light",
+      "damage_kinds": ["blast"],
       "number": 2,
       "name": "The Brightest Light",
       "category": "Combat",
@@ -423,6 +424,7 @@
     },
     {
       "id": "pain_eater",
+      "damage_kinds": ["blast"],
       "number": 8,
       "name": "Pain Eater",
       "category": "Combat",
@@ -2674,6 +2676,7 @@
     },
     {
       "id": "humanity_first",
+      "damage_kinds": ["blast"],
       "number": 48,
       "name": "Humanity First",
       "category": "Bond",

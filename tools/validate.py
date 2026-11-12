@@ -1445,9 +1445,14 @@ def effects_of(x):
         if isinstance(t, dict): rec(t.get("effects"))
     return out
 
+DAMAGE_KINDS = {"blast", "all", "explosion", "trap", "thrown"}
+
 def check_amounts(x, where):
     if not isinstance(x, dict):
         return
+    # step a7 (leak 4): which blasts an item's damage bonus speaks about besides weapon attacks and spells
+    if "damage_kinds" in x and not (isinstance(x["damage_kinds"], list) and x["damage_kinds"] and set(x["damage_kinds"]) <= DAMAGE_KINDS):
+        errors.append(f"{where}: damage_kinds is a list of {sorted(DAMAGE_KINDS)}")
     blocks = x.get("amounts")
     if blocks is not None:
         if not isinstance(blocks, dict) or not blocks:

@@ -51,3 +51,39 @@ describe('a7 (3): what an item adds to a spell goes in beside the base (spec ite
     expect(closeAmount(openAmount({ kind: 'damage', base: 40, plus: 10 }, null, {})).raw).toBe(50);
   });
 });
+
+describe('a7 (4): a blast, a splash, a trap and a thrown item fire damage_out when someone made them; an item speaks about them only if its data says so (spec item 1441)', () => {
+  it('the hook fires with the maker, marked as a blast of its kind; with nobody behind it (a hazard, a map trap) it does not', () => {
+    const { f, foe, a } = setup();
+    withGame(f.g, () => {
+      for (const why of ['explosion', 'trap', 'thrown']) { bend({}, () => hurtUnit(foe, 40, false, f.cb, why, a)); expect(BEND.seen).toEqual([{ mode: 'blast', type: why, base: 40, mults: [], spell: false, blast: true }]); }
+      bend({}, () => hurtUnit(foe, 40, false, f.cb, 'explosion', null)); expect(BEND.seen).toEqual([]);
+      bend({}, () => hurtUnit(foe, 40, false, f.cb, 'hazard', a)); expect(BEND.seen).toEqual([]);
+      bend({}, () => hurtUnit(foe, 40, true, f.cb, 'weapon', a)); expect(BEND.seen).toEqual([]); // a derived weapon hit (the carried round): its attack already spoke
+    });
+  });
+  it('Demolitionist (+30% explosive damage) already reached an explosion credited to it, at the sink: it is not tagged, and not doubled', () => {
+    const f = fightWith([{ traits: ['demolitionist'] }, {}], [{ tier: 'soldier', at: 'F6', classic: true }]), foe = f.foe, [a, b] = f.pcs; foe.maxHp = 5000; foe.armour = 0; foe.shield = 0;
+    withGame(f.g, () => {
+      expect(hpLost(foe, () => hurtUnit(foe, 40, false, f.cb, 'explosion', a))).toBe(52); // as before a7 (perks/c.ts: its own damage_in)
+      expect(hpLost(foe, () => hurtUnit(foe, 40, false, f.cb, 'explosion', b))).toBe(40); // somebody else's grenade
+      expect(hpLost(foe, () => hurtUnit(foe, 40, false, f.cb, 'trap', a))).toBe(40);
+      expect(hpLost(foe, () => hurtUnit(foe, 40, false, f.cb, 'thrown', a))).toBe(40);
+      expect(hpLost(foe, () => hurtUnit(foe, 40, false, f.cb, 'explosion', null))).toBe(40);
+    });
+  });
+  it('the items whose text says ALL the damage you deal are tagged `blast`: Pain Eater while Bloodied, Humanity First against a non-human', () => {
+    const f = fightWith([{ traits: ['pain_eater', 'humanity_first'] }, {}], [{ tier: 'soldier', at: 'F6', classic: true }]), foe = f.foe, [a] = f.pcs; foe.maxHp = 5000; foe.armour = 0; foe.shield = 0;
+    withGame(f.g, () => {
+      a.hp = a.maxHp; expect(hpLost(foe, () => hurtUnit(foe, 40, false, f.cb, 'thrown', a))).toBe(40);
+      a.hp = Math.floor(a.maxHp / 2) - 1; expect(hpLost(foe, () => hurtUnit(foe, 40, false, f.cb, 'thrown', a))).toBe(60); // Bloodied: ×1.5
+      foe.kind = 'robot'; expect(hpLost(foe, () => hurtUnit(foe, 40, false, f.cb, 'explosion', a))).toBe(Math.floor(40 * 1.5 * 1.15)); // and +15% against a non-human
+    });
+  });
+  it('an item that does not say so keeps meaning weapon attacks and spells: nothing moved by itself', () => {
+    // Raised by Orks (+20% melee damage, the generic damage_mod op), Southern Fist, Ghost Soldier, Moon Hunter, Augmented: none tagged
+    const f = fightWith([{ traits: ['raised_by_orks', 'southern_fist', 'ghost_soldier', 'moon_hunter', 'augmented'] }, {}], [{ tier: 'soldier', at: 'F6', classic: true }]), foe = f.foe, [a] = f.pcs; foe.maxHp = 5000; foe.armour = 0; foe.shield = 0;
+    a.hidden = true;
+    withGame(f.g, () => { for (const why of ['explosion', 'trap', 'thrown']) expect(hpLost(foe, () => hurtUnit(foe, 40, false, f.cb, why, a))).toBe(40); });
+  });
+});
