@@ -2539,6 +2539,52 @@
           "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-volley.png",
+      "sha256": "dcd109531803ecdb505b78e5116253dc751eed53fb220eb85bc018bd58fdffa9",
+      "id": "module-volley",
+      "family": "modules",
+      "action": "three small parallel dashes",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-volley.png",
+        "sha256": "7b6f498b548324ef332ebf01a6ce6acbd0d5d2001aea918d364541f3e9681281"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-volley.png",
+        "sha256": "dcd109531803ecdb505b78e5116253dc751eed53fb220eb85bc018bd58fdffa9"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-volley.txt",
+        "sha256": "34da74aff24e9e374cdb613a974eab034b0943a597473dbe448b21cabfdaa097"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-volley.png",
+        "128": "art/icons/modules/exports/128/module-volley.png",
+        "64": "art/icons/modules/exports/64/module-volley.png",
+        "56": "art/icons/modules/exports/56/module-volley.png",
+        "48": "art/icons/modules/exports/48/module-volley.png",
+        "44": "art/icons/modules/exports/44/module-volley.png",
+        "40": "art/icons/modules/exports/40/module-volley.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
     }
   ]
 }

@@ -11426,6 +11426,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-return.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-return.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-volley": {
+      "id": "module-volley",
+      "label": "three small parallel dashes",
+      "path": "art/icons/modules/module-volley.png",
+      "sha256": "dcd109531803ecdb505b78e5116253dc751eed53fb220eb85bc018bd58fdffa9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-volley.png",
+        "128": "art/icons/modules/exports/128/module-volley.png",
+        "64": "art/icons/modules/exports/64/module-volley.png",
+        "56": "art/icons/modules/exports/56/module-volley.png",
+        "48": "art/icons/modules/exports/48/module-volley.png",
+        "44": "art/icons/modules/exports/44/module-volley.png",
+        "40": "art/icons/modules/exports/40/module-volley.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-volley.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-volley.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

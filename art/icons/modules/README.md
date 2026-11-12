@@ -23,5 +23,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-lance.png`: one long straight line through two dots
 - `module-fuse.png`: a dot on a ground line with a short burning line leading to it
 - `module-return.png`: a loop going out and coming back
+- `module-volley.png`: three small parallel dashes
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
