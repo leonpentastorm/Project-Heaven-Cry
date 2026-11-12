@@ -56,6 +56,22 @@ def set_catalog_entry(text, family, id, asset):
 
 
 def reviews(manifest):
+    # The initial eleven Wicks and ten Outburst tests are followed by batches of ten.
+    production = manifest['icons'][21:]
+    for start in range(0, len(production), 10):
+        items = production[start:start + 10]
+        for size in [40, 64]:
+            columns = min(5, len(items))
+            sheet = Image.new('RGB', (columns * 160, ((len(items) + columns - 1) // columns) * (size + 45)), '#10151F')
+            draw = ImageDraw.Draw(sheet)
+            for n, a in enumerate(items):
+                x, y = n % columns * 160, n // columns * (size + 45)
+                im = Image.open(ROOT / a['exports'][str(size)]).convert('RGBA')
+                sheet.paste(im, (x + (160 - size) // 2, y + 5), im)
+                draw.text((x + 4, y + size + 12), a['id'].replace('feeling-', '').replace('module-', ''), fill='white')
+            path = BASE / f'reviews/batch-{start // 10 + 1:02}-{size}px.png'
+            path.parent.mkdir(parents=True, exist_ok=True)
+            sheet.save(path)
     for family in ['prayers', 'perks', 'calls', 'feelings', 'modules']:
         items = [a for a in manifest['icons'] if a['family'] == family]
         if not items:
