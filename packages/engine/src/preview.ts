@@ -102,8 +102,8 @@ export function fightSeenBy(cb: Combat, side: Side): Combat {
 /** A preview for a viewer. The verdict (whether it can be done, why not, what it costs: everything not named in
  * `fields`) is the whole fight's. The fields that mark, count or name units are worked out on the fight as the side sees
  * it, so a unit in the fog is never told of: not by id, not by name, not by a count. */
-export function previewSeenBy<T extends object>(cb: Combat, side: Side, run: (cb: Combat) => T, fields: (keyof T)[]): T {
-  const real = run(cb), seen = fightSeenBy(cb, side);
+export function previewSeenBy<T extends object>(cb: Combat, side: Side, run: (cb: Combat) => T, fields: (keyof T)[], /** the whole fight's preview, when the caller already has it */ whole?: T): T {
+  const real = whole ?? run(cb), seen = fightSeenBy(cb, side);
   if (seen === cb || !real) return real;
   const shown = run(seen), out: any = { ...real };
   for (const f of fields) out[f] = shown ? (shown as any)[f] : Array.isArray((real as any)[f]) ? [] : undefined;

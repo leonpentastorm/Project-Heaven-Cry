@@ -150,9 +150,9 @@ export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}):
       // it keeps the old rows.
       ...(legacy ? [...(melee ? [['melee', 'Strike', attackApCost(w, 'melee') + ' AP', 'd20 + ' + w.skill.replace('_', ' ') + ' vs Defense. ' + w.damage + ' damage.'] as ActionItem]
         : [['shot', 'Shot', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'd20 + Dexterity against Defense, at −5 if the target is behind half cover. ' + (w && typeof w.damage === 'number' ? w.damage + ' damage. ' : '') + 'Heat +1.'] as ActionItem,
-          ['aimed', 'Aimed shot', '3 AP', '+2 to hit, and a critical hit on 19–20.'] as ActionItem,
-          ...(modes.includes('burst') ? [['burst', 'Burst', '3 AP', 'Fire 3 rounds at one target, with two rolls. The second roll is at −4 to hit (−3 with a Quick weapon, −1 with a Heavy weapon that is braced).'] as ActionItem] : []),
-          ...(modes.includes('auto') ? [['auto', 'Full auto', '4 AP', 'Fire 10 rounds. Every enemy near the line to your target is attacked with one roll at −2 to hit.'] as ActionItem] : [])]),
+          ['aimed', 'Aimed shot', attackApCost(w || WEAPON.fists, 'aimed') + ' AP', '+2 to hit, and a critical hit on 19–20.'] as ActionItem,
+          ...(modes.includes('burst') && W('burst') ? [['burst', 'Burst', W('burst')!.ap + ' AP', 'Fire 3 rounds at one target, with two rolls. The second roll is at −4 to hit (−3 with a Quick weapon, −1 with a Heavy weapon that is braced).'] as ActionItem] : []),
+          ...(modes.includes('auto') && W('auto') ? [['auto', 'Full auto', W('auto')!.ap + ' AP', 'Fire 10 rounds. Every enemy near the line to your target is attacked with one roll at −2 to hit.'] as ActionItem] : [])]),
         ...(W('overwatch') ? [['overwatch', W('overwatch')!.label, W('overwatch')!.ap + ' AP', W('overwatch')!.text] as ActionItem] : [])]
         : [...withBoth(blockItems(blocks0) as ActionItem[], dual, bothRows),
           // a gun in the hand still hits: the butt of the weapon (the engine's bare-hand strike; Leon, 10 Nov 2026)
@@ -294,8 +294,8 @@ export function smartCommands(u: any): Command[] {
   // Holding an Outburst (rules 1.5): the heart's two moves come first, Pump and Release; then Move and the weapon.
   if (mg?.held) {
     const st = mg.held.stage ?? 0, full = st >= 4, free = (mg.freePumps || 0) > 0;
-    cmds.push({ action: 'pump', label: 'Pump', sub: full ? 'The heart is full (stage 4)' : 'Stage ' + st + ' → ' + (st + 1) + ' · ' + (free ? 'FREE' : '1 AP'), key: '1', off: full || (!free && (u.ap ?? 0) < 1) });
-    cmds.push({ action: 'release', label: 'Release', sub: 'Stage ' + st + ' ×' + stageMult(st) + ' · 1 AP', key: '2', off: (u.ap ?? 0) < 1 });
+    cmds.push({ action: 'pump', label: 'Pump', sub: full ? 'The heart is full (stage 4)' : 'Stage ' + st + ' → ' + (st + 1) + ' · ' + (free ? 'FREE' : SPELL_AP.pump + ' AP'), key: '1', off: full || (!free && (u.ap ?? 0) < SPELL_AP.pump) });
+    cmds.push({ action: 'release', label: 'Release', sub: 'Stage ' + st + ' ×' + stageMult(st) + ' · ' + SPELL_AP.release + ' AP', key: '2', off: (u.ap ?? 0) < SPELL_AP.release });
     cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '3', off: !!u.prone });
     if (melee) cmds.push({ action: plainAction(u), label: legacy ? 'Strike' : 'Cut', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '4' });
     else cmds.push({ action: plainAction(u), label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '4', off: u.ammo <= 0 || !!u.jammed });

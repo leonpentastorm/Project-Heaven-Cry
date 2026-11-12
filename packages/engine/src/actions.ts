@@ -131,7 +131,7 @@ export function loadPlan(g: any, cb: Combat | null, u: Unit): { rounds: number; 
 /** The AP the picked basic action takes, with what was picked (a stim's ally; the pinned unit to free). Null when `id`
  * is not a basic action (a technique, a Call, a perk, magic and a prayer have their own previews). */
 export function basicCost(cb: Combat | null, u: Unit, id: string, picks: { targetId?: string | null } = {}, x: ActionCtx = {}): number | null {
-  if (!u) return null;
+  if (!u || !id || (id !== 'load' && !ACTION[id.replace(/-tac$/, '')])) return null; // not a basic action: nothing is worked out
   const t = picks.targetId && cb ? cb.units.find((v) => v.id === picks.targetId) || null : null;
   if (id === 'stim') { const p = stimPrices(u, isMedicChar(charOf(u, x))); return t ? (t.downed ? p.down : p.up) : p.up; }
   if (id === 'load') return loadPlan(x.g, cb, u)?.ap ?? null;
