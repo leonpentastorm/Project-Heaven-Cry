@@ -37,5 +37,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-siphon.png`: a curve drawing drops toward a centre
 - `module-phantom.png`: a dot passing through a solid block
 - `module-volatile.png`: a dot cracking open with sparks
+- `module-bastion.png`: three small domes over three dots
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

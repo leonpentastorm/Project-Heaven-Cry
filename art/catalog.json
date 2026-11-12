@@ -11776,6 +11776,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-volatile.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-volatile.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-bastion": {
+      "id": "module-bastion",
+      "label": "three small domes over three dots",
+      "path": "art/icons/modules/module-bastion.png",
+      "sha256": "7b12557d841b5348d4c9a2675484755e16bbf53810567f075f54881d1f5dae03",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-bastion.png",
+        "128": "art/icons/modules/exports/128/module-bastion.png",
+        "64": "art/icons/modules/exports/64/module-bastion.png",
+        "56": "art/icons/modules/exports/56/module-bastion.png",
+        "48": "art/icons/modules/exports/48/module-bastion.png",
+        "44": "art/icons/modules/exports/44/module-bastion.png",
+        "40": "art/icons/modules/exports/40/module-bastion.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-bastion.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-bastion.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
