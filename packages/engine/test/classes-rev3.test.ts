@@ -8,6 +8,7 @@ import {
   CLASSES, CLASS, CLASS_MOVE_POOL, ADVANCED, classRank, eligibleClasses, classPickError, classResources, migrateCharacterClass,
   advancedPairError, advancedClassError, advancedActive, _setAdvancedLive, heldOfChar, itemsOf, itemInfo, coverageOf, actionDefs, newCharacter, healingMult, handlerOf,
   CLASS_REV, rankReached, type Character,
+  mendFactor,
 } from '../src';
 import { fightWith, storyWith, sheetOf, type CharSpec } from './helpers/perkfight';
 
@@ -122,7 +123,7 @@ describe('reused moves run their old handlers', () => {
     const u = f.turn(m);
     f.act({ type: 'combat/perk', unitId: u.id, id: 'class:medic.triage', actionId: 'triage', targetId: ally.id });
     const mult = healingMult(f.g.characters[m.charId!]);
-    expect(f.unit(ally.id).hp).toBe(20 + Math.floor(Math.floor(20 * mult) * (a.healRecv || 1)));
+    expect(f.unit(ally.id).hp).toBe(20 + Math.floor(Math.floor(5 * mult * mendFactor(f.g.characters[m.charId!].level)) * (a.healRecv || 1))); // rules 1.23: 5 × Healing given × the level factor
     expect(f.unit(ally.id).bleed).toBe(0);
   });
   it('a Fighter at rank II holds Lingering Dread under its Shade key; a Defender Unbroken under the Knight\'s', () => {

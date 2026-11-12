@@ -174,14 +174,14 @@ describe('Defender', () => {
 
 // ======================================================================================================== MEDIC
 describe('Medic', () => {
-  it('Triage: an adjacent ally heals 20 × Healing given and stops bleeding; once per ally per turn', () => {
+  it('Triage: an adjacent ally heals 5 × Healing given × the level factor (rules 1.23; it was 20 × Healing given) and stops bleeding; once per ally per turn', () => {
     const f = fightWith([cls('medic', 1), {}], [{}]);
     const [m, ally] = f.pcs; line(f, [m, 3], [ally, 4], [f.foe, 12]);
     const a = f.unit(ally.id); a.hp = 20; a.bleed = 2;
     const u = f.turn(m);
     act(f, u, { type: 'combat/perk', id: 'class:medic.triage', actionId: 'triage', targetId: ally.id });
     const mult = healingMult(f.g.characters[m.charId!]);
-    expect(f.unit(ally.id).hp).toBe(20 + Math.floor(Math.floor(20 * mult) * (a.healRecv || 1))); expect(f.unit(ally.id).bleed).toBe(0);
+    expect(f.unit(ally.id).hp).toBe(20 + Math.floor(Math.floor(5 * mult * mendFactor(f.g.characters[m.charId!].level)) * (a.healRecv || 1))); expect(f.unit(ally.id).bleed).toBe(0);
     expect(() => act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:medic.triage', actionId: 'triage', targetId: ally.id })).toThrow(/already treated/i);
     f.unit(ally.id).hp = 0; f.unit(ally.id).downed = true;
     act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:medic.triage', actionId: 'stabilise', targetId: ally.id });
@@ -194,12 +194,12 @@ describe('Medic', () => {
     expect(s.g.characters[ally.id].hp).toBeGreaterThan(30);
     expect(() => s.act({ type: 'story/perk', charId: m.id, id: 'class:medic.triage', actionId: 'triage_story', text: s.g.characters[ally.id].name })).toThrow(/already treated/);
   });
-  it('Stim Throw: 1 Supply, an ally within 4 heals 30 × Healing given; a Downed ally gets up at 1 HP', () => {
+  it('Stim Throw: 1 Supply, an ally within 4 heals 6 × Healing given × the level factor (rules 1.23; it was 30 × Healing given); a Downed ally gets up at 1 HP', () => {
     const f = fightWith([cls('medic', 2), {}], [{}]);
     const [m, ally] = f.pcs; line(f, [m, 2], [ally, 5], [f.foe, 13]);
     f.unit(ally.id).hp = 10; const u = f.turn(m), sup = f.unit(m.id).res!.supplies;
     act(f, u, { type: 'combat/perk', id: 'class:medic.stim_throw', targetId: ally.id });
-    expect(f.unit(ally.id).hp).toBeGreaterThan(10 + 29); expect(f.unit(m.id).res!.supplies).toBe(sup - 1);
+    { const c = f.g.characters[m.charId!]; expect(f.unit(ally.id).hp).toBe(10 + Math.floor(Math.floor(6 * healingMult(c) * mendFactor(c.level)) * (f.unit(ally.id).healRecv || 1))); } expect(f.unit(m.id).res!.supplies).toBe(sup - 1);
     f.unit(ally.id).hp = 0; f.unit(ally.id).downed = true;
     act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:medic.stim_throw', targetId: ally.id });
     expect(f.unit(ally.id).hp).toBe(1);

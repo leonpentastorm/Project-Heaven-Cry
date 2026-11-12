@@ -453,7 +453,12 @@ The lead's plan, in order. Each step ends with `npm run check` green and its num
    Sigil fields, traps and turrets against it.
 5. **What was left out:** class moves (a ceiling per rank), melee beyond one build, thrown, mana arms, special rounds
    and mods, reactions and held actions, stealth openers, Calls and squad buffs.
-6. **The all-in builds:** a ruling from Leon, then the fit.
+6. **The all-in builds. Ruled (Leon, 12 Nov): "you kinda need all in builds to achieve any of the ceiling listed".**
+   The ceilings are what an **all-in** build reaches; a normal-share build sits under them. Rules 1.17 to 1.21 were
+   fitted the other way (normal share on the ceiling, all-in at 148 to 270%), so every system is re-fitted: all-in
+   lands on its ceiling, and the gap between all-in and normal share is one ratio for every system, set by the
+   attribute term of the unified formula (step 2). The lead's starting ratio: all-in about 1.25 times normal share.
+   The plain rifle at a normal share stays the 100% line the enemy table is fitted to.
 7. **The floor, written down and enforced:** a budget rule for new content (cost in AP, resource, cooldown, set-up,
    targets, reach, reliability gives the output allowed), in `docs/design/balance-contract.md`; and a guard in
    `npm run check` that fails when a reference build or a data item goes over its ceiling.

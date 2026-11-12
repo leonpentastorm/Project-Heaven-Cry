@@ -67,11 +67,12 @@ describe('the heal and shield bands hold (rules 1.20)', () => {
     }
     expect(BOON_AREA * 4).toBeCloseTo(1.6, 5);
   });
-  it('prayer: a Whisper is 28 to 45% of a Soldier-turn, a healing Hymn 55 to 80%, the intervention 120 to 180%', () => {
+  // Rules 1.22: the healing Hymn waits on its cooldown now and is 13 (10): 75 to 100% of a Soldier-turn a cast.
+  it('prayer: a Whisper is 28 to 45% of a Soldier-turn, a healing Hymn 75 to 100% (rules 1.22), the intervention 120 to 180%', () => {
     for (const lv of [1, 6, 20]) {
       const f = inventory('faith_s', 'normal', lv);
       for (const w of [/Whisper: Health/, /Whisper: Protection/]) { expect(row(f, w).pctNow, String(w) + ' level ' + lv).toBeGreaterThanOrEqual(28); expect(row(f, w).pctNow).toBeLessThanOrEqual(45); }
-      expect(row(f, /Warm Hands/).pctNow).toBeGreaterThanOrEqual(55); expect(row(f, /Warm Hands/).pctNow).toBeLessThanOrEqual(80);
+      expect(row(f, /Warm Hands/).pctNow).toBeGreaterThanOrEqual(75); expect(row(f, /Warm Hands/).pctNow).toBeLessThanOrEqual(100);
       expect(row(f, /intervention/).pctNow).toBeGreaterThanOrEqual(120); expect(row(f, /intervention/).pctNow).toBeLessThanOrEqual(180);
     }
   });

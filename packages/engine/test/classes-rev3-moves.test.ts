@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CLASS, d20, healingMult, applyCond, condOn, moveUnit, beginTurn, objectsOf, manaOf, strainLimit, readyDesigns, enemyIntent, coverageOf, itemInfo, handlerOf, paths,
   type Unit, type Combat, type Character,
+  mendFactor,
 } from '../src';
 import { makeObject } from '../src/objects';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -339,13 +340,13 @@ describe('Trickster', () => {
 
 // ======================================================================================================== BARD
 describe('Bard', () => {
-  it('Rally: allies within 4 heal 20 × Healing given and lose Fear and Shaken; the far one doesn\'t; once a scene', () => {
+  it('Rally: allies within 4 heal 6 × Healing given × the level factor (rules 1.23; it was 20 × Healing given) and lose Fear and Shaken; the far one doesn\'t; once a scene', () => {
     const f = fightWith([cls('bard', 8), {}, {}], [{ at: 'P11' }]);
     const [b, a, far] = f.pcs; at(f, b, '2,2'); at(f, a, '4,2'); at(f, far, '9,2');
     f.unit(a.id).hp = 20; f.unit(far.id).hp = 20;
     withGame(f.g, () => { applyCond(f.cb, f.g.rng, f.foe, f.unit(a.id), 'fear', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, f.foe, f.unit(a.id), 'shaken', 3, undefined, { skipSave: true }); });
     f.turn(b); perk(f, f.unit(b.id), 'class:bard.rally');
-    const n = Math.floor(Math.floor(20 * healingMult(charOf(f, b))) * (f.unit(a.id).healRecv || 1));
+    const n = Math.floor(Math.floor(6 * healingMult(charOf(f, b)) * mendFactor(charOf(f, b).level)) * (f.unit(a.id).healRecv || 1));
     expect(f.unit(a.id).hp).toBe(20 + n);
     expect(condOn(f.unit(a.id), 'fear')).toBe(false); expect(condOn(f.unit(a.id), 'shaken')).toBe(false);
     expect(f.unit(far.id).hp).toBe(20); expect(f.unit(b.id).ap).toBe(4);

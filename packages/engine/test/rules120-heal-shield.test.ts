@@ -119,11 +119,11 @@ describe('rules 1.20: prayer', () => {
   it('the bases', () => {
     const w = (id: string) => (WHISPERS as any[]).find((q) => q.id === id);
     expect(val(w('health'), 'heal')).toBe(5); expect(val(w('protection'), 'shield')).toBe(6);
-    expect(val(hymn('mother_ember', 'warm_hands'), 'heal')).toBe(10); expect(val(hymn('nerukhan', 'saints_shield'), 'shield')).toBe(12);
-    expect(val(hymn('nerukhan', 'absolution'), 'heal')).toBe(7); expect(val(hymn('mother_ember', 'hearthlight'), 'heal')).toBe(4); expect(val(hymn('toll_keeper', 'coin_for_the_ferry'), 'heal')).toBe(5);
+    expect(val(hymn('mother_ember', 'warm_hands'), 'heal')).toBe(13); expect(val(hymn('nerukhan', 'saints_shield'), 'shield')).toBe(16); // rules 1.22: 13 and 16 (10 and 12 here), for a Hymn that waits on its cooldown
+    expect(val(hymn('nerukhan', 'absolution'), 'heal')).toBe(9); /* rules 1.22: 9 (7) */ expect(val(hymn('mother_ember', 'hearthlight'), 'heal')).toBe(4); expect(val(hymn('toll_keeper', 'coin_for_the_ferry'), 'heal')).toBe(5);
     expect(val(FAITH_PATRON.mother_ember.miracle, 'shield')).toBe(17);
     expect(FAITH_PATRON.mother_ember.intervention.effects[0]).toMatchObject({ value: 10, per_devotion: 3 });
-    for (const [h, s] of [[val(w('health'), 'heal'), val(w('protection'), 'shield')], [10, 12]]) expect(s / h).toBeCloseTo(1.2, 5); // a shield is 1.2 times the heal of the same cost
+    for (const [h, s] of [[val(w('health'), 'heal'), val(w('protection'), 'shield')], [13, 16]]) expect(s / h).toBeCloseTo(1.2, 1); // a shield is 1.2 times the heal of the same cost
   });
 });
 

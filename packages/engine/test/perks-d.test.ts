@@ -8,6 +8,7 @@ import {
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { strokePool } from '../src/perks/d';
+import { hymnWait, prayerCooldown } from '../src';
 
 /** A seed whose next d20 is n. */
 function rngFor(n: number): { state: number } { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return { state: s }; } throw new Error('no seed'); }
@@ -318,7 +319,8 @@ describe('True Believer', () => {
     const f = soulFight({}, { traits: ['true_believer'], skills: { faith: 3 } }); const c = charOf(f.g, f.pc);
     c.patron = PATRONS[0].id; f.g.rng.state = rngFor(15).state;
     f.act({ type: 'combat/pray', unitId: f.pc.id, choice: PATRONS[0].blessings[0].id });
-    const r = f.pc.prayedRound!; f.turn(f.pc); expect(f.pc.prayedRound).toBe(r - 1);
+    // rules 1.22: the wait itself is a round shorter (it was a round taken off the last Hymn's mark); never under 2
+    expect(withGame(f.g, () => hymnWait(c, f.pc))).toBe(prayerCooldown(c) - 1); expect(prayerCooldown(c)).toBe(6);
     c.state = { rites_missed: 5 }; expect(skillRollMod({ c }, 'faith').add).toBe(-3);
     const s = storyWith([{ traits: ['true_believer'] }]);
     s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'true_believer', actionId: 'miracle', text: 'Let the door open' } as any);

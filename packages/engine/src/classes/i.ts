@@ -462,7 +462,7 @@ register({
 // Supplies (3 + floor(Proficiency ÷ 2)) persist between fights and refill at a long rest (lane 0B).
 
 // ---------- Triage (rank I, 2 AP) ----------
-// Heal an adjacent ally 20 × your Healing given multiplier and end their Bleeding; no Supplies. GAMEBREAKING at will:
+// Heal an adjacent ally 5 × your Healing given multiplier × the level factor (rules 1.23; it was 20) and end their Bleeding; no Supplies. GAMEBREAKING at will:
 // PROVISIONAL once per target per turn in a fight, once per ally per scene out of one. Stabilise a Downed ally for 1 AP
 // without a stim (that is the point of the move; the base 1-AP Medic stim stays).
 const healMultOf = (h: Holder) => (h.c ? healingMult(h.c) : h.u?.mg?.healMult || 1);

@@ -433,13 +433,13 @@ describe('Lay Down Arms', () => {
 
 // ======================================================================================================== Field Surgeon
 describe('Field Surgeon', () => {
-  it('Field Repair heals an adjacent living ally: 10 × Proficiency × Healing given, one spare-parts charge', () => {
+  it('Field Repair heals an adjacent living ally: 3 × Proficiency × Healing given × the level factor (rules 1.23; it was 10 a point), one spare-parts charge', () => {
     const f = fightWith([{ perks: { field_surgeon: 'achieved' }, skills: { proficiency: 5 }, kit: 'engineer' }, {}]); open(f.cb);
     const [me, ally] = f.pcs; at(f, me, '2,5'); at(f, ally, '3,5'); f.unit(me.id).parts = 2; f.unit(me.id).proficiency = 5; f.unit(ally.id).hp = 10;
     f.turn(f.unit(me.id));
     pcAct(f, { type: 'combat/perk', id: 'field_surgeon', actionId: 'repair_ally', targetId: ally.id }, me);
     expect(f.unit(me.id).ap).toBe(4); expect(f.unit(me.id).parts).toBe(1);
-    expect(f.unit(ally.id).hp).toBeGreaterThanOrEqual(60);
+    expect(f.unit(ally.id).hp).toBeGreaterThanOrEqual(10 + 15); expect(f.unit(ally.id).hp).toBeLessThan(60);
   });
   it('a Factory Made ally is healed at full power (the Plug halving undone)', () => {
     const run = (perk: boolean) => {

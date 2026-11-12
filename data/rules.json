@@ -368,7 +368,7 @@
       "soul_range_bonus_tiles": "0.5*will_power",
       "syphon_bonus_pct": "10*(determination-1) + 10*will_power",
       "strain_limit": "3 + floor(will_power/2)",
-      "prayer_cooldown_turns": "max(1, 4 - 0.5*(virtue-1) - 0.5*faith)",
+      "prayer_cooldown_turns": "max(3, ceil(9 - 0.75*faith - 0.25*virtue)) rounds (rules 1.22; patrons.json prayer.hymn.cooldown_rule)",
       "ready_designs": "2 + floor(will_power/2), at least 3"
     },
     "social": {

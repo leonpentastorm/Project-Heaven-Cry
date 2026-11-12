@@ -5873,7 +5873,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "deed": "bring a squadmate back from below 10% HP.",
-      "text": "Your Field Repair works on a living ally next to you, for its usual AP and one spare-parts charge: it heals 10 HP per point of your Improvisation, and it gets a Downed ally back on their feet. Your heals on robotic allies work at full power.",
+      "text": "Your Field Repair works on a living ally next to you, for its usual AP and one spare-parts charge: it heals 3 HP per point of your Improvisation, raised by your Healing given and your level, and it gets a Downed ally back on their feet. Your heals on robotic allies work at full power.",
       "effects": [
         {
           "op": "extend_action",

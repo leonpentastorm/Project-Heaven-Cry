@@ -249,8 +249,8 @@
         },
         {
           "stat": "prayer_cooldown",
-          "formula": "4 turns − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1",
-          "per_point_above_1": -0.5
+          "formula": "9 rounds − 0.75 × Faith − 0.25 × Virtue, rounded up, never under 3 (rules 1.22)",
+          "per_point_above_1": -0.25
         }
       ]
     }

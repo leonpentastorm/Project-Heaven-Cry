@@ -3708,7 +3708,7 @@
       "slot": "alpha",
       "summary": "The saints judge. You deliver.",
       "per_point": {
-        "text": "+10% Blessing power. Prayers come back half a turn sooner. Your Blessings' conditions are harder to save against.",
+        "text": "+10% Blessing power. Hymns come back sooner: each point takes three quarters of a round off the wait, down to 3 rounds. Your Blessings' conditions are harder to save against.",
         "effects": [
           {
             "op": "stat_mod",
@@ -3718,7 +3718,7 @@
           {
             "op": "stat_mod",
             "stat": "prayer_cooldown",
-            "value": -0.5
+            "value": -0.75
           }
         ]
       },

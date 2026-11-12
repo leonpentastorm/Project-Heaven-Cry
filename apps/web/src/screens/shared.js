@@ -21,7 +21,7 @@ export const checkMod = (skillId, p) => checkModOf(skillId, p || 0);
 export const ATTR_GIVES = {
   endurance: '+15 max HP, +10% chance to ignore an injury', strength: '+10% physical damage, +5 kg carried', agility: '+0.5 tile of movement an AP, +1 Initiative',
   perception: '+2 tiles of vision, +10% critical damage, −10% critical damage taken', intelligence: '+10% Sigil power, a longer Line every 2 points', expression: '+10% elemental damage, glyphs 0.1 AP cheaper',
-  insight: '+10% healing given, Soul magic costs 5% less MP', determination: '+5% Soul power, +10% mana syphoned', virtue: '+100 max MP, prayers come back half a turn sooner',
+  insight: '+10% healing given, Soul magic costs 5% less MP', determination: '+5% Soul power, +10% mana syphoned', virtue: '+100 max MP, Hymns come back a little sooner',
 };
 /** A skill's place under its attribute, in words: the first is how you fight, the second how you survive, the third how
  *  you talk and notice (the third rolls checks one better than the others, which the roll shown already counts). */

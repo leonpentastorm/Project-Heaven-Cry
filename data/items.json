@@ -47,7 +47,7 @@
       "weight_kg": 0.1,
       "adjudication": "engine",
       "provisional": true,
-      "text": "One dose. Use it on an ally next to you: it stabilises a Downed ally at 1 HP, or heals 30 × your Healing given. It also stops Bleeding.",
+      "text": "One dose. Use it on an ally next to you: it stabilises a Downed ally at 1 HP, or heals 6 × your Healing given, more as you level. It also stops Bleeding.",
       "price_credits": 80
     },
     {

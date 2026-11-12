@@ -1026,7 +1026,7 @@
               "name": "Rally",
               "ap_cost": 2,
               "uses": "per_scene",
-              "text": "Costs 2 AP, once per scene. Every ally within 4 tiles heals 20 × your Healing given and loses Fear and Shaken. It doesn't heal you, and it doesn't reach Downed allies.",
+              "text": "Costs 2 AP, once per scene. Every ally within 4 tiles heals 6 × your Healing given, more as you level, and loses Fear and Shaken. It doesn't heal you, and it doesn't reach Downed allies.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1041,7 +1041,7 @@
                   "effects": [
                     {
                       "op": "heal",
-                      "value": 20,
+                      "value": 6,
                       "scale": "healing_given",
                       "target": "allies"
                     },
@@ -1641,11 +1641,11 @@
         "name": "Triage",
         "ap_cost": 2,
         "uses": "at_will",
-        "text": "Costs 2 AP. Heal an ally next to you for 20 × your Healing given and end their Bleeding. It uses no Supplies, and works once per ally per turn (out of a fight, once per ally per scene). You can also Stabilise a Downed ally next to you for 1 AP: they come back at 1 HP, with no stim needed.",
+        "text": "Costs 2 AP. Heal an ally next to you for 5 × your Healing given, more as you level, and end their Bleeding. It uses no Supplies, and works once per ally per turn. Out of a fight you have time to work: three times as much, once per ally per scene. You can also Stabilise a Downed ally next to you for 1 AP: they come back at 1 HP, with no stim needed.",
         "effects": [
           {
             "op": "heal",
-            "value": 20,
+            "value": 5,
             "target": "ally_adjacent",
             "scale": "healing_given"
           },
@@ -1679,7 +1679,7 @@
         "name": "Stim Throw",
         "ap_cost": 1,
         "uses": "at_will",
-        "text": "Costs 1 AP and 1 Supply. An ally within 4 tiles that you can see heals 30 × your Healing given and stops Bleeding. A Downed ally is stabilised at 1 HP instead.",
+        "text": "Costs 1 AP and 1 Supply. An ally within 4 tiles that you can see heals 6 × your Healing given, more as you level, and stops Bleeding. A Downed ally is stabilised at 1 HP instead.",
         "effects": [
           {
             "op": "resource",
@@ -1689,7 +1689,7 @@
           },
           {
             "op": "heal",
-            "value": 30,
+            "value": 6,
             "target": "ally_within_4",
             "scale": "healing_given"
           }
