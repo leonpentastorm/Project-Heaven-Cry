@@ -16,6 +16,7 @@
 //
 // Items that only matter in the story are left off (null shelf). Class moves have their own tab and are not listed.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
+import { triggerHook } from './effects/triggers';
 import cardsJ from '../../../data/perk_cards.json';
 import type { Character } from './character';
 import type { Combat, Unit } from './combat';
@@ -80,7 +81,8 @@ function registryOf(h: Holder): Reg {
   const own = [...Object.keys(hd?.on || {}), ...(hd?.stat ? ['stat'] : []), ...(hd?.checkMod ? ['checkMod'] : [])];
   const generic = (info.effects || []).flatMap((e: any, i: number) => {
     let who = ''; try { who = ownerOf(info, i); } catch { who = ''; }
-    if (who !== 'generic') return []; const g: any = genericOf(e?.op);
+    if (who !== 'generic') return []; const t = triggerHook(e); if (t) return [t]; // an item op (engine foundations 3): its trigger's hook
+    const g: any = genericOf(e?.op);
     return [...Object.keys(g?.on || {}), ...(g?.stat ? ['stat'] : []), ...(g?.checkMod ? ['checkMod'] : [])];
   });
   return {

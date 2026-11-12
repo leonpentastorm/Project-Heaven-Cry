@@ -143,6 +143,8 @@
 "cool/ap/trait/ghost_soldier/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/glass_runner/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/glass_runner/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
+"cool/ap/trait/grenadiers_arm/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
+"cool/ap/trait/grenadiers_arm/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/headbanger/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/headbanger/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/heavens_faithful/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",

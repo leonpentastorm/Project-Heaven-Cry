@@ -4522,7 +4522,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "Hurt is information. You've read it all before.",
-      "text": "Injuries never cost you AP or Movement: a head injury doesn't Daze you and a leg injury doesn't slow you. While you are below half your max HP, you take {=effects.1.value_pct}% less damage.",
+      "text": "Injuries never cost you AP or Movement: a head injury doesn't Daze you and a leg injury doesn't slow you. While you are below half your max HP, you take {=effects.1.value_pct|abs}% less damage.",
       "effects": [
         {"op": "immunity", "to": "injury_ap_and_move_penalties"},
         {"op": "damage_mod", "value_pct": -20, "when": "taking", "if": {"self_hp_below": 0.5, "self_alive": true, "amount_above": 0}}
