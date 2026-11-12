@@ -19,7 +19,7 @@ import { POLICIES, plain, type Ctx, type Step, type Policy } from './policies';
 import {
   MAPS, ENEMY, SIGIL, MODULE, SCHOOL, FEELING, STAGE_MULT, WHISPERS, FAITH_PATRON, bindGame, dist, paths, apForTiles, lineOfSight, standable, canStand,
   previewOutburst, heartReach, planEvoke, glyphCost, previewPrayer, patronOf, blessingPower, devotionNow,
-  mendFactor, outburstHeal, inverseShield, shellShield, loveHeal, interventionHeal, BUFF_HEAL, BOON_AREA, CLASS_MOVE_POOL,
+  mendFactor, outburstHeal, inverseShield, shellShield, loveHeal, interventionHeal, BUFF_HEAL, BOON_AREA, CLASS_MOVE_POOL, profileOf,
 } from '../../src';
 import { startFight } from './sim';
 
@@ -251,15 +251,16 @@ export function inventory(build: string, variant: string, level: number, st = SO
   }
   if (c.belief?.patron || c.belief?.kind === 'faithful') {
     const bp = W(g, () => blessingPower(c)), dev = W(g, () => devotionNow(c)), w = (id: string) => (WHISPERS as any[]).find((q) => q.id === id);
-    add('Prayer', 'Whisper: Health', '1 AP, once a turn', '1', OLD.health * bp, ev(w('health'), 'heal') * bp * lf);
-    add('Prayer', 'Whisper: Protection (a shield)', '1 AP, once a turn', '1', OLD.protection * bp, ev(w('protection'), 'shield') * bp * lf);
-    add('Prayer', 'Hymn I: Warm Hands (Mother Ember)', '3 AP, on a cooldown', '1', OLD.warmHands * bp, ev(hymnOf('warm_hands'), 'heal') * bp * lf);
-    add('Prayer', 'Hymn I: Saint\'s Shield (Nerukhan)', '3 AP, on a cooldown', '1', OLD.saintsShield * bp, ev(hymnOf('saints_shield'), 'shield') * bp * lf);
-    add('Prayer', 'Hymn I: Coin for the Ferry (a Downed ally stands up with)', '3 AP, on a cooldown', '1 Downed', OLD.coin * bp, ev(hymnOf('coin_for_the_ferry'), 'heal') * bp * lf);
-    add('Prayer', 'Hymn II: Hearthlight (each ally starting a turn in a 3 × 3, for 3 rounds)', '3 AP, on a cooldown', 'each, each round', OLD.hearthlight * bp, ev(hymnOf('hearthlight'), 'heal') * bp * lf, 'from Devotion 5');
-    add('Prayer', 'Hymn III: Absolution (every harmful condition ends, and a heal)', '3 AP, on a cooldown', '1', OLD.absolution * bp, ev(hymnOf('absolution'), 'heal') * bp * lf, 'from Devotion 7');
+    const bm = bp * profileOf('blessing_mend').k / profileOf('blessing').k; // rules 1.27: a prayer's heal or shield reads the heal dial (faith.ts mendDial)
+    add('Prayer', 'Whisper: Health', '1 AP, once a turn', '1', OLD.health * bp, ev(w('health'), 'heal') * bm * lf);
+    add('Prayer', 'Whisper: Protection (a shield)', '1 AP, once a turn', '1', OLD.protection * bp, ev(w('protection'), 'shield') * bm * lf);
+    add('Prayer', 'Hymn I: Warm Hands (Mother Ember)', '3 AP, on a cooldown', '1', OLD.warmHands * bp, ev(hymnOf('warm_hands'), 'heal') * bm * lf);
+    add('Prayer', 'Hymn I: Saint\'s Shield (Nerukhan)', '3 AP, on a cooldown', '1', OLD.saintsShield * bp, ev(hymnOf('saints_shield'), 'shield') * bm * lf);
+    add('Prayer', 'Hymn I: Coin for the Ferry (a Downed ally stands up with)', '3 AP, on a cooldown', '1 Downed', OLD.coin * bp, ev(hymnOf('coin_for_the_ferry'), 'heal') * bm * lf);
+    add('Prayer', 'Hymn II: Hearthlight (each ally starting a turn in a 3 × 3, for 3 rounds)', '3 AP, on a cooldown', 'each, each round', OLD.hearthlight * bp, ev(hymnOf('hearthlight'), 'heal') * bm * lf, 'from Devotion 5');
+    add('Prayer', 'Hymn III: Absolution (every harmful condition ends, and a heal)', '3 AP, on a cooldown', '1', OLD.absolution * bp, ev(hymnOf('absolution'), 'heal') * bm * lf, 'from Devotion 7');
     add('Prayer', 'Mother Ember\'s intervention (an ally under a quarter HP)', 'no action; once a fight, twice from Devotion 7', '1', (OLD.intervention[0] + OLD.intervention[1] * dev) * bp, W(g, () => interventionHeal(c, bp)), 'Devotion ' + dev);
-    add('Prayer', 'Miracle: Everyone Home, the shield on each', 'once a session', 'each', OLD.everyoneHomeShield * bp, ev((FAITH_PATRON.mother_ember as any).miracle, 'shield') * bp * lf, 'the heal to full is not changed');
+    add('Prayer', 'Miracle: Everyone Home, the shield on each', 'once a session', 'each', OLD.everyoneHomeShield * bp, ev((FAITH_PATRON.mother_ember as any).miracle, 'shield') * bm * lf, 'the heal to full is not changed');
   }
   return rows;
 }

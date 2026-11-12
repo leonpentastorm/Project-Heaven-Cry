@@ -2,7 +2,7 @@
 // Kit step, the MAGIC sheet tab shows them, a 2-glyph Line is walked and Evoked on the area map, then a fight: walk a
 // Line, Evoke it from its end, begin/hold/release an Outburst.
 // Screenshots (deviceScaleFactor 1) land in e2e/shots/magic-*.png.
-import { chromium, player, click, hostAs, OUT, pickAction, pause } from './lib.mjs';
+import { chromium, player, click, hostAs, OUT, pickAction, pause, fxIdle, camStill, until } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -248,14 +248,19 @@ ok('draw lines in the log', cb.log.filter((l) => /draws (FIRE|ARC)/.test(l)).len
 await host.evaluate(() => scrollTo(0, 0)); await snap('09-combat-drawn');
 
 // Evoke it at the raider, from the Line's end
-await pickAction(host, /^Evoke/);
-await ctile(step).click(); await pause(host, 200);
-await ctile(foe.pos).click(); await pause(host, 250);
-await snap('10-combat-evoke-aim');
+// (wait on state, not a stopwatch: the draws' effects and the camera's move finish before a tile is clicked, and the
+// aim is read when Confirm comes up enabled; beside two other suites it once came after a fixed 250 ms)
+await fxIdle(host); await pickAction(host, /^Evoke/);
+await camStill(host); await ctile(step).click(); await pause(host, 200);
+await camStill(host); await ctile(foe.pos).click();
 const conf2 = host.getByRole('button', { name: /^Confirm/ }).first();
+await until(host, () => { const b = [...document.querySelectorAll('button')].find((x) => /^Confirm/.test((x.textContent || '').trim())); return !!b && !b.disabled; }, null, 30000).catch(() => {});
+await snap('10-combat-evoke-aim');
 console.log('  confirm:', await conf2.textContent(), 'enabled', await conf2.isEnabled());
+const evN = (await CB()).cb.log.filter((l) => /evokes/.test(l)).length;
 if (await conf2.isEnabled()) await conf2.click();
-await pause(host, 500);
+await until(host, ([id, n]) => window.__phc.getState().game.combat.log.filter((l) => /evokes/.test(l)).length > n, [me, evN], 30000).catch(() => {});
+await fxIdle(host);
 ({ cb, u } = await CB());
 const evl = cb.log.filter((l) => /evokes/.test(l));
 ok('evoke in the combat log: ' + evl.at(-1), evl.length > 0);

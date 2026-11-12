@@ -8,6 +8,7 @@ import type { Frame, GridAt, Pt2, Why } from './camera';
 import { shiftLayer, setLayerClip } from './fx/dom';
 import { battlePace } from './combatSpeed';
 import { reducedMotion } from './sfx';
+import { ZOOM_MIN } from './mapZoom';
 
 export interface MiniDot { key: string; color: string; me?: boolean; square?: boolean }
 export interface MiniData { solid: Iterable<string>; full: Iterable<string>; half: Iterable<string>; dots: MiniDot[]; label: string }
@@ -47,6 +48,11 @@ export class CameraView {
   private gridKey = ''; private gridAt: GridAt | null = null;
   private last = { x: 0, y: 0 };
   private goal: Pt2 | null = null; private raf = 0;
+  /** The move under way (camera.ts planMove) and when it started; the zoom arc on the grid now (1: none). */
+  private mv: { m: C.Move; t0: number } | null = null;
+  private scale = 1; private arcEl: HTMLElement | null = null; private arcBox: { x: number; y: number; w: number; h: number } | null = null;
+  private arcContent: { w: number; h: number } | null = null; private relaxRaf = 0;
+  private lastMove: { ms: number; px: number; arc: number; over: number; lean: number; plain: boolean; at: number } | null = null;
   private drag: { id: number; x: number; y: number; sx: number; sy: number; on: boolean } | null = null;
   private eatClick = 0;
   private pointerOn = false;
@@ -82,7 +88,7 @@ export class CameraView {
   attach(scroller: HTMLElement | null, over: HTMLElement | null, mapW: number, mapH: number) {
     this.mapW = mapW; this.mapH = mapH;
     if (scroller !== this.el) {
-      for (const f of this.off) f(); this.off = []; this.cancelGlide(); this.drag = null; this.arrows = []; this.gridKey = '';
+      for (const f of this.off) f(); this.off = []; this.cancelGlide(); this.clearArc(); this.drag = null; this.arrows = []; this.gridKey = '';
       this.el = scroller; this.miniBox = null; this.canvas = null; this.tog = null;
       if (scroller) {
         this.last = { x: scroller.scrollLeft, y: scroller.scrollTop };
@@ -116,10 +122,12 @@ export class CameraView {
     setLayerClip({ left: r.left - 6, top: r.top - 22, right: r.right + 6, bottom: r.bottom + 6 });
   }
   frame(at?: Pt2 | null): Frame { const e = this.el!; return { x: at ? at.x : e.scrollLeft, y: at ? at.y : e.scrollTop, w: e.clientWidth, h: e.clientHeight }; }
-  private content() { const e = this.el!; return { w: e.scrollWidth, h: e.scrollHeight }; }
+  // (while the zoom arc is on, the grid's scale shrinks what the page measures: the sizes from before it hold)
+  private content() { const e = this.el!; return this.scale !== 1 && this.arcContent ? this.arcContent : { w: e.scrollWidth, h: e.scrollHeight }; }
   /** Where the tiles are inside the scrolling content, measured from the page (cached until the content's size changes). */
   grid(): GridAt | null {
     const e = this.el; if (!e || !this.live() || !this.mapW || !this.mapH) return null;
+    if (this.scale !== 1 && this.gridAt) return this.gridAt; // the zoom arc scales the tiles for a moment: not a new grid
     const key = e.scrollWidth + 'x' + e.scrollHeight + '|' + this.mapW + 'x' + this.mapH;
     if (key === this.gridKey && this.gridAt) return this.gridAt;
     const tiles = e.querySelectorAll<HTMLElement>('button.phc-tok');
@@ -149,7 +157,8 @@ export class CameraView {
   // ---------- moving ----------
   private hands(): C.Hands { return { dragging: !!(this.drag && this.drag.on), overview: this.overview, myTurn: this.myTurn, pointerOnMap: this.pointerOn, handAt: this.handAt, now: now() }; }
   private hand() { this.handAt = now(); }
-  private cancelGlide() { if (this.raf) cancelAnimationFrame(this.raf); this.raf = 0; this.goal = null; }
+  /** Stop the move under way (the player took over, or the window changed). A zoom arc under way eases back. */
+  private cancelGlide() { if (this.raf) cancelAnimationFrame(this.raf); this.raf = 0; this.goal = null; this.mv = null; if (this.scale !== 1) this.relaxArc(); }
   private set(x: number, y: number) { const e = this.el; if (!e) return; e.scrollLeft = x; e.scrollTop = y; this.scrolled(); }
   private scrolled() {
     const e = this.el; if (!e) return;
@@ -160,21 +169,92 @@ export class CameraView {
     this.placeArrows();
     if (!this.miniRaf) this.miniRaf = requestAnimationFrame(() => { this.miniRaf = 0; this.drawMini(); });
   }
-  /** Move to a scroll offset over ms (0: a cut). */
-  glide(to: Pt2, ms: number) {
+  // ---------- the camera move (camera.ts planMove / sampleMove; the numbers are camera.ts MOVE) ----------
+  /** The grid inside the scrolling box: what the zoom arc scales. */
+  private gridEl(): HTMLElement | null { const t = this.el?.querySelector<HTMLElement>('button.phc-tok'); return t ? t.parentElement : null; }
+  /** The zoom arc: the grid scaled by s about the middle of the window (a transform: nothing is laid out again). */
+  private applyArc(s: number) {
     const e = this.el; if (!e) return;
-    if (this.goal && Math.abs(this.goal.x - to.x) < 1 && Math.abs(this.goal.y - to.y) < 1) return;
-    this.cancelGlide();
-    if (!(ms > 0) || (typeof document !== 'undefined' && document.hidden)) { this.set(to.x, to.y); return; }
-    const from = { x: e.scrollLeft, y: e.scrollTop }, t0 = now();
-    this.goal = to;
+    if (Math.abs(s - 1) < 1e-4) { this.clearArc(); return; }
+    const g = this.arcEl && this.arcEl.isConnected ? this.arcEl : this.gridEl(); if (!g) return;
+    // (the your-turn zoom, screens/combat.js, animates the same grid's transform: the arc waits it out)
+    if (g.getAnimations && g.getAnimations().some((x) => x.playState === 'running')) { if (this.scale !== 1) this.clearArc(); return; }
+    if (this.scale === 1 || !this.arcBox || g !== this.arcEl) {
+      // measured once, before any arc: where the grid sits in the scrolling content, in the page's own pixels
+      const r = g.getBoundingClientRect(), sr = e.getBoundingClientRect(), k = e.offsetWidth ? sr.width / e.offsetWidth : 1;
+      if (!(r.width > 0) || !(r.height > 0)) return;
+      this.arcBox = { x: (r.left - sr.left) / k - e.clientLeft + e.scrollLeft, y: (r.top - sr.top) / k - e.clientTop + e.scrollTop, w: r.width / k, h: r.height / k };
+      this.arcContent = { w: e.scrollWidth, h: e.scrollHeight }; this.arcEl = g;
+    }
+    const b = this.arcBox!, ox = ((e.scrollLeft + e.clientWidth / 2 - b.x) / b.w) * 100, oy = ((e.scrollTop + e.clientHeight / 2 - b.y) / b.h) * 100;
+    g.style.transformOrigin = ox.toFixed(3) + '% ' + oy.toFixed(3) + '%';
+    g.style.transform = 'scale(' + s.toFixed(5) + ')';
+    this.scale = s;
+  }
+  /** No arc: the grid at its own size, crisp (no transform left on it). */
+  private clearArc() {
+    if (this.relaxRaf) cancelAnimationFrame(this.relaxRaf); this.relaxRaf = 0;
+    const g = this.arcEl; if (g) { g.style.transform = ''; g.style.transformOrigin = ''; }
+    this.arcEl = null; this.arcBox = null; this.arcContent = null; this.scale = 1;
+  }
+  /** The player took over in the middle of an arc: it eases back to the map's own size (no jump), the view stays theirs. */
+  private relaxArc() {
+    if (this.relaxRaf) cancelAnimationFrame(this.relaxRaf);
+    const s0 = this.scale, t0 = now(), ms = reducedMotion() ? 0 : C.MOVE.HAND_MS;
+    const step = () => { const u = ms ? (now() - t0) / ms : 1; if (u >= 1 || !this.live()) { this.clearArc(); return; } this.applyArc(1 + (s0 - 1) * (1 - C.ease(u))); this.relaxRaf = requestAnimationFrame(step); };
+    this.relaxRaf = requestAnimationFrame(step);
+  }
+  /** Play a planned move on requestAnimationFrame: the scroll offset and the arc each frame, the exact mark at the end. */
+  private play(m: C.Move) {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.relaxRaf) { cancelAnimationFrame(this.relaxRaf); this.relaxRaf = 0; }
+    const t0 = now(); this.mv = { m, t0 }; this.goal = m.to;
+    this.lastMove = { ms: m.ms, px: Math.round(Math.hypot(m.to.x - m.from.x, m.to.y - m.from.y)), arc: m.arc, over: Math.hypot(m.over.x, m.over.y), lean: Math.hypot(m.lean.x, m.lean.y), plain: m.plain, at: t0 };
     const step = () => {
-      const k = C.ease((now() - t0) / ms);
-      this.set(from.x + (to.x - from.x) * k, from.y + (to.y - from.y) * k);
-      if (k >= 1 || !this.live()) { this.raf = 0; this.goal = null; return; }
+      if (!this.live() || !this.mv || this.mv.m !== m) { this.raf = 0; return; }
+      const s = C.sampleMove(m, now() - t0);
+      if (s.done) { this.raf = 0; this.goal = null; this.mv = null; this.applyArc(1); this.set(Math.round(m.to.x), Math.round(m.to.y)); return; }
+      this.set(s.x, s.y); this.applyArc(s.scale);
       this.raf = requestAnimationFrame(step);
     };
     this.raf = requestAnimationFrame(step);
+  }
+  /** Move to a scroll offset. By default a designed move (its length from the distance and the combat speed; `by`: the
+   *  time it must have arrived by, so it is squeezed when its beat is close, never under the plain glide); `plain`: the
+   *  player's own short eased glide; `cut`: at once. A move that starts while another plays blends from where that one
+   *  is and how fast it goes: no snap, no restart from the old origin. */
+  glide(to: Pt2, how: { cut?: boolean; plain?: boolean; ms?: number; by?: number } = {}) {
+    const e = this.el; if (!e) return;
+    const t = now();
+    // The same place: the move under way goes on, unless it must now arrive sooner than it would.
+    if (this.goal && Math.abs(this.goal.x - to.x) < 1 && Math.abs(this.goal.y - to.y) < 1 && !how.cut && !how.plain && !(how.by != null && this.mv && this.mv.t0 + this.mv.m.ms > how.by + 8)) return;
+    if (how.cut || (how.ms != null && !(how.ms > 0)) || (typeof document !== 'undefined' && document.hidden)) {
+      if (this.raf) cancelAnimationFrame(this.raf); this.raf = 0; this.goal = null; this.mv = null; this.clearArc(); this.set(to.x, to.y); return;
+    }
+    let from = { x: e.scrollLeft, y: e.scrollTop }, v0 = { x: 0, y: 0 };
+    if (this.mv) { const st = C.moveState(this.mv.m, t - this.mv.t0); from = { x: st.x, y: st.y }; v0 = st.v; }
+    const g = this.grid(), pitch = g ? g.pitch : C.GRID_PITCH, pace = battlePace(), reduced = reducedMotion();
+    let ms = how.ms;
+    if (ms == null && !how.plain) {
+      let full = C.moveMs(Math.hypot(to.x - from.x, to.y - from.y) / pitch, pace, reduced);
+      // (squeezing the move under way to the same place: never longer than what it had left)
+      const same = this.mv && Math.abs(this.mv.m.to.x - to.x) < 1 && Math.abs(this.mv.m.to.y - to.y) < 1;
+      if (same) full = Math.min(full, this.mv!.t0 + this.mv!.m.ms - t);
+      // (nearly there and nearly still: the rest is under a pixel, it ends now)
+      if (same && Math.hypot(to.x - from.x, to.y - from.y) < 0.75 && Math.hypot(v0.x, v0.y) < 0.02) { this.glide(to, { cut: true }); return; }
+      ms = how.by != null && !reduced ? Math.max(Math.min(full, C.glideMs(pace)), Math.min(full, how.by - t)) : full;
+    }
+    if (how.plain && ms == null) ms = reduced ? 0 : C.MOVE.HAND_MS;
+    if (!(ms! > 0)) { this.glide(to, { cut: true }); return; }
+    const c = this.content();
+    this.play(C.planMove(from, to, { pitch, pace, reduced, v0, s0: this.scale, zoom: pitch / C.GRID_PITCH, zoomMin: ZOOM_MIN, max: { x: Math.max(0, c.w - e.clientWidth), y: Math.max(0, c.h - e.clientHeight) }, plain: how.plain, ms }));
+  }
+  /** How long the camera's move from `from` (or from where it is going) to the offset `to` would take (ms): the effects
+   *  queue leaves that much ahead of the beat it serves (game/fx/play.ts). */
+  moveMs(from: Pt2 | null, to: Pt2): number {
+    const e = this.el; if (!e) return 0;
+    const f = from || this.goal || { x: e.scrollLeft, y: e.scrollTop }, g = this.grid();
+    return C.moveMs(Math.hypot(to.x - f.x, to.y - f.y) / (g ? g.pitch : C.GRID_PITCH), battlePace(), reducedMotion());
   }
   private margin(g: GridAt) { const e = this.el!; return Math.min(g.pitch * 1.5, e.clientWidth / 4, e.clientHeight / 4); }
   /** Where the camera would go to show these tiles from the offset `from` (or from where it is, or is gliding to), or
@@ -182,26 +262,29 @@ export class CameraView {
   plan(keys: string[], from: Pt2 | null, why: Why): Pt2 | null {
     if (!keys.length || !this.scrolls()) return null;
     const g = this.grid(); if (!g) return null;
-    return C.aim(this.frame(from || this.goal), this.content(), keys.map((k) => C.pointOf(k, g)), this.margin(g), why === 'turn-mine' || why === 'ask');
+    const force = why === 'turn-mine' || why === 'ask';
+    return C.aim(this.frame(from || this.goal), this.content(), keys.map((k) => C.pointOf(k, g)), this.margin(g), force, force ? C.MOVE.DEAD_ZONE_TILES * g.pitch : 0);
   }
   /** Show these tiles (the first must show; the rest when they fit), if the camera may move by itself now. Returns
    *  whether it moves. */
-  follow(keys: string[], why: Why, instant = false): boolean {
+  follow(keys: string[], why: Why, instant = false, by?: number): boolean {
     // A turn on your own unit's tile is your turn, whoever asks (the effects queue and the turn banner both do): one
     // glide to the same place, not two that meet half-way.
     if (why === 'turn' && keys.length === 1 && keys[0] === this.home) why = 'turn-mine';
     if (!this.live() || !C.mayFollow(this.hands(), why)) return false;
     if (why === 'turn' && this.pass && this.pass.key === keys[0] && now() < this.pass.until) return false;
-    const to = this.plan(keys, null, why); if (!to) return false;
-    this.glide(to, instant ? 0 : C.glideMs(battlePace(), reducedMotion()));
+    const to = this.plan(keys, null, why);
+    // Already showing (or on its way to showing) these tiles: a move still under way is made to arrive by this beat.
+    if (!to) { if (by != null && this.mv && this.goal && this.mv.t0 + this.mv.m.ms > by + 8) this.glide(this.goal, { by }); return false; }
+    this.glide(to, instant ? { cut: true } : { by });
     return true;
   }
   /** The turn starting on this tile does not bring the camera (the effects queue: its unit acts on a far tile at once,
    *  and the camera goes straight there). Your own turn still centres on your unit. */
   passTurn(key: string) { this.pass = { key, until: now() + 1500 }; }
   /** follow, and an arrow at the window's edge for each of these tiles that still does not show. */
-  show(keys: string[], why: Why, tag?: { color: string; label: string }, move = true) {
-    if (move) this.follow(keys, why);
+  show(keys: string[], why: Why, tag?: { color: string; label: string }, move = true, by?: number) {
+    if (move) this.follow(keys, why, false, by);
     if (!tag || !this.scrolls()) return;
     const g = this.grid(); if (!g) return;
     const f = this.frame(this.goal);
@@ -215,7 +298,7 @@ export class CameraView {
     const g = this.grid(), e = this.el!; if (!g) return false;
     const base = this.goal || { x: e.scrollLeft, y: e.scrollTop };
     const to = C.clampScroll(base.x + dir.x * g.pitch * C.PAN_TILES, base.y + dir.y * g.pitch * C.PAN_TILES, this.content(), this.frame());
-    this.hand(); this.glide(to, reducedMotion() ? 0 : 110);
+    this.hand(); this.glide(to, { plain: true });
     return true;
   }
 
@@ -272,7 +355,7 @@ export class CameraView {
         const g = this.grid(); if (!g) return;
         const r = cv.getBoundingClientRect(), m = C.miniGeom(this.mapW, this.mapH, this.miniPx());
         const to = C.miniToScroll((e.clientX - r.left) * (m.w / Math.max(1, r.width)), (e.clientY - r.top) * (m.h / Math.max(1, r.height)), m, g, this.frame(), this.content());
-        this.hand(); this.glide(to, cut || reducedMotion() ? 0 : 140);
+        this.hand(); this.glide(to, cut ? { cut: true } : { plain: true });
       };
       let held = -1;
       map.addEventListener('pointerdown', (e) => { if (e.button !== 0) return; held = e.pointerId; try { map.setPointerCapture(e.pointerId); } catch { /* */ } go(e, false); e.preventDefault(); map.focus(); });
@@ -353,7 +436,7 @@ export class CameraView {
   /** For the browser suites: where the camera is. */
   debug() {
     const g = this.live() ? this.grid() : null;
-    return { id: this.id, live: this.live(), scrolls: this.scrolls(), overview: this.overview, myTurn: this.myTurn, home: this.home, frame: this.live() ? this.frame() : null, grid: g, tiles: this.live() ? this.tiles() : null, arrows: this.arrows.map((a) => a.key), mini: this.miniShown(), gliding: !!this.goal };
+    return { id: this.id, live: this.live(), scrolls: this.scrolls(), overview: this.overview, myTurn: this.myTurn, home: this.home, frame: this.live() ? this.frame() : null, grid: g, tiles: this.live() ? this.tiles() : null, arrows: this.arrows.map((a) => a.key), mini: this.miniShown(), gliding: !!this.goal, scale: this.scale, lastMove: this.lastMove };
   }
 }
 

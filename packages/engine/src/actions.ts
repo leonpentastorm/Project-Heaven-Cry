@@ -19,7 +19,7 @@ import actionsJ from '../../../data/actions.json';
 import type { Character } from './character';
 import { isMedicChar } from './character';
 import { WEAPON } from './data';
-import { type Combat, type Unit, type AttackMode, isMelee, attackApCost, effectiveRange, analyzeCost, analyzeRange, stimAp, reloadBothAp, reloadHands, loadMagazine, moveBlock, moveHowBlock, movePlan,
+import { type Combat, type Unit, type AttackMode, isMelee, attackApCost, effectiveRange, analyzeCost, analyzeRange, stimAp, reloadBothAp, reloadOffAp, reloadHands, loadMagazine, clearJam, coverOffAp, canJam, moveBlock, moveHowBlock, movePlan,
   sprintTiles, apForTiles, paths, movePaths, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, dist, objectsOf, type MoveHow } from './combat';
 import { price, whyNot, needs, creditFor, setAp } from './effects/cost';
 import { COST_SITE_IDS, type CostSite } from './effects/stats';
@@ -123,6 +123,42 @@ export function reloadBothRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): B
   const whyOf = (tactical: boolean, _n: number) => dryRun(x.g || null, fight, u.id, (c2, u2) => reloadHands(c2, u2, 'both', tactical)).err;
   const out: BasicAction[] = [{ id: 'reload2', label: d.name + (loose ? '' : ' (speed)'), tab: d.tab, ap, cost: apText(ap) + (loose ? '' : ' · the magazines drop'), text: d.text, why: whyOf(false, ap) }];
   if (!loose && w.reload !== 'loose' && Array.isArray(u.mags)) out.push({ id: 'reload2-tac', label: d.name_tactical, tab: d.tab, ap: tac, cost: apText(tac) + ' · the magazines go in your pack', text: d.text_tactical, why: whyOf(true, tac) });
+  return out;
+}
+
+/** Reload the off-hand gun alone (two guns in hand; Leon, live 0.23.0: reloading one gun must not block the other):
+ * the speed reload, and the tactical one for a magazine gun. Each gun that is not full can be reloaded for its own AP.
+ * The refusal is the engine's own (reloadHands, tried on a copy). */
+export function reloadOffRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): BasicAction[] {
+  const ow: any = u.offWeapon ? WEAPON[u.offWeapon] : null;
+  if (!ow || ow.magazine == null || !ow.reload) return [];
+  const ap = reloadOffAp(u, cb), tac = ap + PILE.tactical_reload_extra_ap, loose = ow.reload === 'loose', unit = ow.reload_unit || 'magazine';
+  const fight = cb || ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
+  const whyOf = (tactical: boolean) => dryRun(x.g || null, fight, u.id, (c2, u2) => reloadHands(c2, u2, 'off', tactical)).err;
+  const now = ' ' + (u.offAmmo ?? 0) + ' / ' + ow.magazine + ' loaded now.';
+  if (loose) return [{ id: 'reload-off', label: 'Load the off-hand gun', tab: 'attack', ap, cost: apText(ap), text: 'Top up the off-hand gun from loose rounds. Nothing drops.' + now, why: whyOf(false) }];
+  return [{ id: 'reload-off', label: 'Reload (speed)', tab: 'attack', ap, cost: apText(ap) + ' · the ' + unit + ' drops', text: 'Swap in the off-hand gun\'s fullest spare ' + unit + '. The one in the gun drops onto your tile with its rounds still in it.' + now, why: whyOf(false) },
+    { id: 'reload-off-tac', label: 'Reload (tactical)', tab: 'attack', ap: tac, cost: apText(tac) + ' · the ' + unit + ' goes in your pack', text: 'Swap in the off-hand gun\'s fullest spare ' + unit + '. The one in the gun goes back in your pack with its rounds still in it.' + now, why: whyOf(true) }];
+}
+
+/** The off-hand weapon's own Clear jam and Shoot an object (two weapons in hand; lead's call for Leon, live 0.23.0: a
+ * jammed off-hand gun could never be cleared): the main hand's rule and price, on the off-hand weapon (its jam, its
+ * rounds, its range and damage). Clear jam is listed for an off-hand gun that can jam; the refusal is the engine's own
+ * (clearJam, tried on a copy). */
+export function offHandRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): BasicAction[] {
+  const ow: any = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow) return [];
+  const out: BasicAction[] = [], d = ACTION.cover, was = CB; CB = cb;
+  try {
+    const ap = coverOffAp(u, cb);
+    out.push({ id: 'cover-off', label: d.name, tab: d.tab, ap, cost: apText(ap), text: 'With the off-hand ' + ow.name + ': ' + d.text.replace(/your weapon's/, 'its'), why: need(u, ap, { type: 'combat/shoot-cover', hand: 'off' }) });
+    const hd: any = ow.handling || {};
+    if (canJam(ow) || (hd.grant || []).includes('clear')) {
+      const c = price({ cb, u }, 'clear_jam', undefined, { hand: 'off' }).ap;
+      const fight = cb || ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
+      const why = !u.offJammed ? 'Not jammed.' : dryRun(x.g || null, fight, u.id, (c2, u2) => clearJam(c2, u2, 'off')).err;
+      out.push({ id: 'clear-off', label: 'Clear jam', tab: 'attack', ap: c, cost: apText(c), text: 'The off-hand ' + ow.name + ': a jammed gun can\'t fire until cleared. Clearing resets Heat.', why });
+    }
+  } finally { CB = was; }
   return out;
 }
 

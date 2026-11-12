@@ -64,5 +64,47 @@ if (await row.count()) {
   ok('…Confirm frees it', !(await G()).combat.units.find((u) => u.id === me.id).nailed);
 } else console.log('note the nail could not be set from the page (no setState hook): Pull free not driven here');
 await p.screenshot({ path: OUT + 'phys-pack-utility.png' });
+
+// Found by Leon on live 0.23.0 (12 Nov): with two guns, reloading one gun hid Reload both and left no way to reload the
+// other. Two pistols, both part-empty: the Attack tab's areas (main hand, off hand, Both) and reload one, then the other.
+await p.evaluate((id) => { const u = window.__phc.truth().combat.units.find((x) => x.id === id); Object.assign(u, { weapon: 'service_pistol', offWeapon: 'service_pistol', ammo: 2, offAmmo: 3, mags: [12, 12, 12, 12], ap: 9, nailed: undefined, jammed: false }); }, me.id).catch(() => {});
+await act({ type: 'sandbox/ai', on: false }); await settle(p, 300);
+await p.locator('#phc-tab-attack').click(); await settle(p, 400);
+const areasNow = () => panel().locator('[data-area]').evaluateAll((ws) => { const out = []; for (const w of ws) { const a = w.getAttribute('data-area'), id = w.querySelector('button[data-act]')?.getAttribute('data-act'); if (!out.length || out[out.length - 1].area !== a) out.push({ area: a, sep: !!w.querySelector('[data-area-sep]'), head: (w.querySelector('[data-weapon-block]')?.textContent || '').trim(), ids: [] }); if (id) out[out.length - 1].ids.push(id); } return out; });
+let ar = await areasNow();
+ok('two guns: the Attack tab is main hand, off hand, Both, then the rest (' + ar.map((x) => x.area + ':' + x.ids.join(',')).join(' | ') + ')', ar.map((x) => x.area).join(' ') === 'main off both other');
+ok('…each area has its header and a line between areas', /MAIN HAND/.test(ar[0]?.head) && /OFF HAND/.test(ar[1]?.head) && ar[2]?.head === 'BOTH' && ar.slice(1).every((x) => x.sep) && !ar[0]?.sep);
+ok('…each gun\'s reload is in its own area, Reload both in Both', ar[0]?.ids.includes('reload') && ar[1]?.ids.includes('reload-off') && ar[2]?.ids.includes('reload2'));
+await p.screenshot({ path: OUT + 'phys-pack-two-guns.png' });
+const confirmIt = async () => { await p.getByRole('button', { name: /^Confirm/ }).first().click().catch(() => {}); await settle(p, 900); };
+await panel().locator('[data-act="reload"]').first().click(); await settle(p, 300); await confirmIt();
+let mu = (await G()).combat.units.find((u) => u.id === me.id);
+ok('reload the main gun: 12 loaded, the off-hand gun still at ' + mu.offAmmo, mu.ammo === 12 && mu.offAmmo === 3);
+await p.locator('#phc-tab-attack').click(); await settle(p, 300);
+const offRow = panel().locator('[data-act="reload-off"]').first();
+ok('…the off-hand gun\'s own reload is still there and usable', (await offRow.count()) > 0 && (await offRow.isEnabled()));
+await offRow.click(); await settle(p, 300); await confirmIt();
+mu = (await G()).combat.units.find((u) => u.id === me.id);
+ok('…and reloading it fills the off-hand gun (' + mu.offAmmo + ')', mu.offAmmo === 12 && mu.ammo === 12);
+
+// Found by Leon on live 0.23.0 (12 Nov): after the map was dragged, a tile under the column letters drew over them when
+// hovered (and over the small map). Scroll a row half under the header, hover the part of a tile still in view: the
+// header is still what is at the header, its gaps included.
+const strad = await p.evaluate(async () => {
+  const sc = document.querySelector('.phc-grid-scroll'), hd = [...document.querySelectorAll('.phc-grid .phc-axis')].filter((e) => getComputedStyle(e).top === '0px' && getComputedStyle(e).left !== '0px');
+  for (let s = 20; s < 400; s += 3) {
+    sc.scrollTop = s; await new Promise((r) => requestAnimationFrame(r));
+    const h = hd[3].getBoundingClientRect(), t = [...document.querySelectorAll('.phc-grid button.phc-tok')].find((b) => { const r = b.getBoundingClientRect(); return Math.abs(r.left - h.left) < 3 && r.top < h.bottom - 6 && r.bottom > h.bottom + 14; });
+    if (t) { const r = t.getBoundingClientRect(), h2 = hd[4].getBoundingClientRect(); return { x: r.left + r.width / 2, y: (h.bottom + r.bottom) / 2, hx: h.left + h.width / 2, hy: h.top + h.height / 2, gx: (h.right + h2.left) / 2, scroll: s }; }
+  }
+  return null;
+});
+if (strad) {
+  await p.mouse.move(strad.x, strad.y + 20); await settle(p, 150); await p.mouse.move(strad.x, strad.y); await settle(p, 500);
+  const at = await p.evaluate((q) => { const a = document.elementFromPoint(q.hx, q.hy), b = document.elementFromPoint(q.gx, q.hy); return { head: !!a && a.classList.contains('phc-axis'), gap: !!b && b.classList.contains('phc-axis'), what: a ? a.tagName + '.' + a.className : '' }; }, strad);
+  ok('a hovered tile half under the header does not cover it: the header cell is on top (' + at.what + ')', at.head);
+  ok('…and the gap between two header cells is the header\'s too (a tile under it never hovers)', at.gap);
+  await p.screenshot({ path: OUT + 'phys-pack-header.png' });
+} else ok('a row could be scrolled half under the header', false);
 ok('no page errors (' + errs.join(' | ') + ')', errs.length === 0);
 await browser.close();

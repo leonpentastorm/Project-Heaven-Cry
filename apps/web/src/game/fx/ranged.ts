@@ -26,7 +26,7 @@
 import type { FxEvent } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
-import { type Pt, after, angle, anim, burst, centre, flash, floatText, lunge, ring, shake, shakeScreen } from './dom';
+import { type Pt, after, angle, anim, burst, centre, flash, floatText, lunge, ring, shake, shakeScreen, trace } from './dom';
 import { tagChip } from './sight';
 import { DRAW_MS, brassOf, ejectShell, whoOf } from './brass';
 import { physBeat, NAME_DY, NAME_RISE } from './physical';
@@ -277,6 +277,12 @@ const streams = (e: any, r: TechRec | null) => !!r && gunLook(String(e.weapon ||
 const tracers = (e: any) => !e.thrown && !['lob', 'rocket', 'arrow', 'flame', 'thrown'].includes(gunLook(String(e.weapon || ''), String(e.cat || '')));
 /** …and whose burst is one recording (play.ts volleySound: bullets, not a shotgun's); any other gun's rounds each bang. */
 const rattles = (e: any) => gunLook(String(e.weapon || ''), String(e.cat || '')) === 'bullet' && e.cat !== 'shotgun' && !e.thrown;
+/** For fx/techniqueFx.ts (the rounds a volley spent beyond its rolls): does one recording cover this shot's volley, and
+ *  does this file draw the shot's loose rounds itself (Suppress's, before its rolled round)? */
+export const rattlesOf = (e: any) => rattles(e);
+export const drawsOwnLoose = (e: any) => (e?.tech || tags.get(canon(e))?.id) === 'suppress';
+/** The most rounds a Mag Dump's stream draws (a 200-round belt is not 200 tracers): past it each tracer is a few. */
+export const STREAM_CAP = 30;
 /** How long after a Suppress's first round its rolled round leaves (ms at Fast): two rounds crack past, then the one
  *  that was rolled lands, so the hit and its number come at the end of the burst, not before two thirds of it. */
 export const SUPPRESS_LEAD = 120;
@@ -444,6 +450,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
     if (from && shooter) { lunge(shooter, -Math.cos(ang) * 3, -Math.sin(ang) * 3, 120); const br = brassOf(e.weapon || '', e.cat || ''); if (br.when === 'shot') ejectShell(whoOf(shooter), br.shell, ang, { delay: br.cycle }); }
     const start: XY = mp || (from ? { x: from.x, y: from.y } : { x: toP.x - Math.cos(ang) * s * 3, y: toP.y - Math.sin(ang) * s * 3 });
     const look = ownLook(g), tracer = look === 'bullet';
+    if (!e.thrown) trace('round', { unit: e.unit }); // the one round it fires (its casing above)
     // the round raised the Heat to the limit: the gun jams, as the base shot says it (JAMMED, the dry click)
     if (e.jam) { const fp = from || toP; after(() => { floatText('JAMMED', fp, HP, { small: true }); play('dry_click', fp); }, flight(start, toP, look) + 120); }
     const over = (lift: number, past: number): XY => ({ x: toP.x + Math.cos(ang) * s * past, y: toP.y + Math.sin(ang) * s * past - s * lift });
@@ -506,15 +513,18 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
   function dumpStream(e: any, r: TechRec) {
     const from = at(e.from), toP = centre(e.to); if (!from || !toP) return;
     // the rounds the magazine held (E4 volley `shots`); before E4, about three a roll
-    const vol: any = r.volleys.find((v: any) => v.mode === 'dump'), loaded = Number(vol?.shots);
-    const n = Math.min(12, Math.max(4, Number.isFinite(loaded) && loaded > 0 ? loaded : r.shots.length * 3)), a = angle(from, toP), s = toP.s;
+    // (the rounds with no roll of their own: the engine's `loose` on the volley, combat.ts noteLoose; each roll draws its
+    // own round as the base shot. Before `loose`: the rounds the magazine held, less the rolls)
+    const vol: any = r.volleys.find((v: any) => v.mode === 'dump'), loose = Number(vol?.loose), loaded = Number(vol?.shots);
+    const n = Math.min(STREAM_CAP, Number.isFinite(loose) ? Math.max(0, loose) : Math.max(0, (Number.isFinite(loaded) && loaded > 0 ? loaded : r.shots.length * 3) - r.shots.length)), a = angle(from, toP), s = toP.s;
     const tok = tokOf(e.unit, e.from), br = brassOf(e.weapon || '', e.cat || ''), who = tok && br.when === 'shot' ? whoOf(tok) : null;
     for (let i = 0; i < n; i++) after(() => {
       const m = i % 2 === 0 ? K.muzzle(from, toP) : { x: from.x + Math.cos(a) * s * 0.42, y: from.y + Math.sin(a) * s * 0.42 };
       const spread = s * (0.12 + 0.045 * i), climb = s * 0.03 * i;
       const end = { x: toP.x + (Math.random() - 0.5) * spread - Math.sin(a) * (Math.random() - 0.5) * spread, y: toP.y - climb + (Math.random() - 0.5) * spread };
+      trace('round', { unit: e.unit, loose: true });
       K.projectile(m, end, 110, 'bullet', s * 0.9);
-      if (who && i % 2 === 0) ejectShell(who, br.shell, a);
+      if (who) ejectShell(who, br.shell, a); // a casing for every round (Leon, 12 Nov 2026: rounds on screen match rounds spent)
     }, i * 45);
     if (tok) for (let k = 0; k < 4; k++) after(() => lunge(tok, -Math.cos(a) * 2.5, -Math.sin(a) * 2.5, 90), k * 110);
     for (let k = 0; k < 3; k++) play('brass', from, { delay: 200 + k * 170, gain: 0.55, rate: jit(0.12) });
@@ -635,15 +645,19 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
           const a = angle(from, toP), s = toP.s, g = K.gunOf(e.weapon || '', e.cat || ''), look = g.look;
           // what goes past is what the weapon fires (Leon, 11 Nov 2026: a grenade launcher's Suppress drew bullet
           // tracers): a launcher's two more rounds are lobbed and go off small beside the target, a bow's are arrows,
-          // a flamer's gout is the one the shot draws
-          if (look === 'flame' || look === 'thrown') break;
+          // a flamer's two more are short gouts of their own (each round is fuel spent: drawn, Leon 12 Nov 2026)
+          if (look === 'thrown') break;
           const own = ownLook(g);
           // a gun's burst (lead): the two leave first, each with its flash, and the rolled round follows them; anything
           // else fires its rolled round first and the two after it
-          for (const [k, side] of [[0, -1], [1, 1]] as [number, number][]) after(() => {
+          // the rounds beyond the rolled one (the engine's `loose`, on this shot from techPrepass; 2 before it was sent)
+          const extra = Number.isFinite(Number(e._loose)) && Number(e._loose) >= 0 ? Number(e._loose) : 2, shooter = tokOf(e.unit, e.from), sbr = brassOf(e.weapon || '', e.cat || '');
+          for (const [k, side] of Array.from({ length: extra }, (_, i) => [i, i % 2 ? 1 : -1]) as [number, number][]) after(() => {
+            trace('round', { unit: e.unit, loose: true });
+            if (shooter && sbr.when === 'shot') ejectShell(whoOf(shooter), sbr.shell, a); // a casing for each round
             const end = { x: toP.x + Math.cos(a) * s * 0.9 - Math.sin(a) * side * s * 0.42, y: toP.y + Math.sin(a) * s * 0.9 + Math.cos(a) * side * s * 0.42 };
             const start: XY = lead ? K.muzzle(from, toP, g.color) : from, ft = flight(start, end, own);
-            if (lead && !rattles(e) && g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04) }); // no recording covers them: each round bangs
+            if (!rattles(e) && g.sound) play(g.sound, from, { rate: (g.rate || 1) * jit(0.04) }); // no recording covers them: each round bangs
             fly(g, start, end, ft, own === 'bullet' ? s * 0.8 : s);
             if (own === 'bullet' || own === 'arrow') play(own === 'arrow' ? 'swish' : 'whiz', toP, { delay: ft * 0.6, gain: 0.55, rate: k ? 0.9 : 1.12 });
             after(() => lands(g, own === 'bullet' || own === 'arrow' ? { x: toP.x + side * s * 0.42, y: toP.y + s * 0.62 } : end, s, 0.85), ft); // at its feet, below the token

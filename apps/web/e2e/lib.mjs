@@ -62,6 +62,14 @@ export async function pickAction(page, name, opts = {}) {
   await btn().click({ timeout: opts.timeout || 30000 }); // (30 s unless the caller is only trying: see click())
 }
 export const shot = (page, n) => page.screenshot({ path: OUT + n + '.png', fullPage: !!0 });
+/** The words of an element's hover card, as a screen reader gets them. Since 0.24.0 an action row, technique chip, glyph
+ *  key, heart button, feeling or design card has no native `title`: its card is data-tip (game/actionTip.ts) and the
+ *  same words are its `aria-description`. Read that (or a `title`, where an element still has one); '' when neither,
+ *  or when the locator matches nothing. */
+export async function tipOf(locator) {
+  if (!(await locator.count().catch(() => 0))) return '';
+  return locator.first().evaluate((el) => (el.getAttribute('aria-description') || el.getAttribute('title')) || '').catch(() => '');
+}
 export async function makeCharacter(page, name, archFamily, archName, kit) {
   await click(page, 'Make a character');
   await page.getByPlaceholder('What the squad calls you').fill(name);
@@ -125,6 +133,10 @@ const FX_IDLE = () => {
 /** Wait until the fight's effects have all played and the input hold is over (the screen has caught up with the
  *  state). Use it after an action in a fight in place of a sleep. False when it didn't happen in `timeout` ms. */
 export async function fxIdle(page, timeout = 30000) { return page.waitForFunction(FX_IDLE, null, { timeout, polling: 30 }).then(() => true, () => false); }
+/** Wait until the map's camera is not moving (cameraView.ts debug(): `gliding`), so a click lands on the tile Playwright
+ *  aimed at and not on the one that slid under the pointer (0.24.0 rebuilt the move: longer, eased, with a settle).
+ *  False when it is still moving after `timeout` ms, or there is no map. */
+export async function camStill(page, timeout = 30000) { return page.waitForFunction(() => { const c = window.__phcCamera?.(); return !c || !c.gliding; }, null, { timeout, polling: 30 }).then(() => true, () => false); }
 /** Wait for the page to go QUIET after a click, a key or an action, in place of `waitForTimeout(ms)`.
  *  It waits `ms` on the PAGE's own clock (a timer in the page: the page's own shorter timers always run before it, so
  *  a busy machine stretches both alike, which a sleep in this script does not), then until the effects queue has

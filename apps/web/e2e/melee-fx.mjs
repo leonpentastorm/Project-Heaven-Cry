@@ -198,6 +198,7 @@ async function answerCase(label, kind, dist, tries = 5) {
     // recorded, or when the enemy's turn has played out and ours is back with no beat (the dice), 45 s at most.
     await watch(p, 'answer', '[data-melee-fx^="' + kind + '"]');
     const round0 = await p.evaluate(() => window.__phc.getState().game.combat.round);
+    const log0 = await p.evaluate(() => window.__phc.getState().game.combat.log.length);
     await act({ type: 'sandbox/ai', on: true });
     await act({ type: 'combat/end-turn', unitId: u.id });
     let el = false, shot = false; const t1 = Date.now();
@@ -214,12 +215,15 @@ async function answerCase(label, kind, dist, tries = 5) {
     await act({ type: 'sandbox/ai', on: false });
     await myTurn(); await idle();
     if (el) { ok(label + ': its ' + kind + ' beat draws on the enemy\'s turn', true); return; }
-    note(label + ': no ' + kind + ' beat this round (the dice); again');
+    note(label + ': no ' + kind + ' beat this round (the dice); again · ' + (await p.evaluate((n) => (window.__phc.getState().game?.combat?.log || []).slice(n).filter((l) => !/^(Initiative|The air)/.test(l)).slice(0, 4).join(' | '), log0)).slice(0, 400));
   }
   ok(label + ': the beat came within ' + tries + ' rounds', false);
 }
 if (!ONLY || ONLY.includes('keep_back')) await answerCase('Keep Back', 'halt', 3, 8);
-if (!ONLY || ONLY.includes('parry')) await answerCase('Parry', 'parry', 1, 8);
+// Parry fires only on a melee HIT; at Athletics 10 (Defense 19) the drill elite's swing (d20 + 5) hits 3 times in 10,
+// and 8 rounds with no hit came 1 run in 17 (the 0.24.0 browser run). Athletics 1 (Defense 10) for this case: the
+// swing hits about 3 times in 4, so the beat is under test and not the dice.
+if (!ONLY || ONLY.includes('parry')) { await act({ type: 'sandbox/skill', charId: cid, skill: 'athletics', points: 1 }); await answerCase('Parry', 'parry', 1, 8); }
 
 // ---------- the hook and the budget ----------
 const recs = await records();

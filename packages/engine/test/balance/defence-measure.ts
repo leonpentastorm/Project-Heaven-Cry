@@ -114,6 +114,8 @@ export const PAIRS: Record<string, { label: string; seconds: any[]; first?: stri
   pair: { label: 'a Soul healer and an Inverse shielder', seconds: [S('mender', 'ob_heal'), S('outburst_s', 'ob_heal', { design: 'aegis' })] },
   tank: { label: 'the tank and a dedicated Soul healer', seconds: [S('mender', 'ob_heal')], first: 'tank' },
   tankIdle: { label: 'the tank and an idle Soul healer (the control)', seconds: [S('mender', 'idle')], first: 'tank' },
+  /** Rules 1.27 (the heal re-fit): the check the ruling asked for: an ALL-IN healer dedicated to the tank. */
+  tankAllin: { label: 'the tank and a dedicated all-in Soul healer', seconds: [S('mender', 'ob_heal', undefined, 'allin')], first: 'tank' },
 };
 
 // ---------- the yardstick under fire, on either ground ----------

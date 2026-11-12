@@ -281,7 +281,7 @@ register({
       resSpend(u, 'momentum', 1); const st = stateOf(h); st.lungeFrom = u.pos;
       if (at !== u.pos) { lunging = u; try { const e = moveUnit(cb, u, at, rng as Rng, 'move'); if (e) { resGain(u, 'momentum', 1); return e; } } finally { lunging = null; } }
       if (u.dead || u.downed || t.dead) return null;
-      resolveAttack(cb, rng as Rng, u, t, 'melee', null, { noAp: true }); delete st.lungeFrom; checkOver(cb);
+      resolveAttack(cb, rng as Rng, u, t, 'melee', null, { noAp: true, fx: { move: 'fighter.lunge' } }); delete st.lungeFrom; checkOver(cb);
     },
   }],
   on: {
@@ -312,7 +312,7 @@ register({
       if (!alive(u) || resOf(u, 'momentum') < 1 || !canReact(cb, u) || dist(u.pos, ctx.att.pos) > reachOf(u) || !alive(ctx.att)) return;
       if (!previewAttack(cb, u, ctx.att, 'melee', { free: true, extra: u.counter || 0 }).ok) return;
       resSpend(u, 'momentum', 1); useReaction(cb, u); say(cb, u.name + ' ripostes (1 Momentum).');
-      riposting = true; try { resolveAttack(cb, rngOf(h, ctx), u, ctx.att, 'melee', null, { noAp: true, extra: u.counter || 0 }); } finally { riposting = false; }
+      riposting = true; try { resolveAttack(cb, rngOf(h, ctx), u, ctx.att, 'melee', null, { noAp: true, extra: u.counter || 0, fx: { move: 'fighter.riposte' } }); } finally { riposting = false; }
       checkOver(cb);
     },
   },
@@ -334,7 +334,7 @@ register({
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, n = Math.min(5, resOf(u, 'momentum'));
       u.res!.momentum = 0; say(cb, u.name + ' spends ' + n + ' Momentum on a Finisher.');
-      finishing = { u, n }; try { resolveAttack(cb, rng as Rng, u, t, 'melee', null, { noAp: true }); } finally { finishing = null; }
+      finishing = { u, n }; try { resolveAttack(cb, rng as Rng, u, t, 'melee', null, { noAp: true, fx: { move: 'fighter.finisher' } }); } finally { finishing = null; }
       checkOver(cb);
     },
   }],

@@ -9,7 +9,7 @@
 //  · Mage: Vent and Swap core read the engine's AP (Bleed the Flux 0, Core Change 1).
 // Every move through its real button on the CLASS tab, its picker's chips and the grid; the engine state checked and the
 // fx events seen playing (the layer draws). Screenshots: e2e/shots/classes-moves-*.png (deviceScaleFactor 1).
-import { chromium, player, click, BASE, OUT, pickAction, settle } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, pickAction, settle, tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -157,7 +157,8 @@ await snap('02-unstoppable');
 const tabTxt = await host.locator('[role="tabpanel"]').first().textContent();
 ok('the Class tab shows Unstoppable as used for the scene: ' + (tabTxt.match(/Unstoppable[^A-Z]*/) || [''])[0], /Unstoppable/.test(tabTxt));
 const unBtn = host.locator('[role="tabpanel"] button', { hasText: 'Unstoppable' }).first();
-ok('its button carries the reason: ' + (await unBtn.getAttribute('title')).slice(0, 40), /Used until the next scene/.test(await unBtn.getAttribute('title')));
+const unTip = await tipOf(unBtn);
+ok('its button carries the reason: ' + unTip.slice(0, 60), /Used until the next scene/.test(unTip));
 
 // ---------- 2. Guardian: Command ----------
 await act(host, { type: 'sandbox/clear' });
@@ -267,7 +268,7 @@ await settle(host, 250); await snap('09-rally');
 await setClass('marksman', 2);
 ok('host turn', await newTurn());
 await pickClass(/^Duck and Roll: on/);
-const onTitle = await host.locator('[role="tabpanel"] button', { hasText: 'Duck and Roll: on' }).first().getAttribute('title');
+const onTitle = await tipOf(host.locator('[role="tabpanel"] button', { hasText: 'Duck and Roll: on' }));
 ok('Duck and Roll: on is ticked as in force: ' + onTitle.slice(0, 40), /In force now/.test(onTitle) && (await host.locator('[role="tabpanel"] button', { hasText: 'Duck and Roll: on ✓' }).count()) > 0);
 r = await useMove(/^Duck and Roll: off/);
 await settle(host, 250);

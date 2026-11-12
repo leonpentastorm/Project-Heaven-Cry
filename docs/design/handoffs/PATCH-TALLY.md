@@ -2,7 +2,7 @@
 
 **Live: 0.22.0.** This branch (`claude/charming-gauss-hbq4n0`) is everything below on top of it. Kept by the lead as the
 work goes; the last section says where it stands. Rules revisions 1.15 to 1.26 are all new to players: live stops
-at rules 1.14.
+at rules 1.14. (Rules 1.27, the heal re-fit, is on top of live 0.23.0: section 6.)
 
 Each row: what a player on live has today, what they get with this patch, and where the detail is. Written from the
 hand-offs as the work went; **the live column is to be checked against `origin/main` line by line before release**
@@ -96,7 +96,7 @@ Detail: `damage-step-magic.md`; the re-fit: `balance-refit.md`.
 
 Detail: `damage-step-magic.md`, `outburst-rework-2.md`.
 
-## 6. Healing and shields (rules 1.20, 1.23)
+## 6. Healing and shields (rules 1.20, 1.23, 1.27)
 
 | | Live | This patch |
 | --- | --- | --- |
@@ -107,6 +107,7 @@ Detail: `damage-step-magic.md`, `outburst-rework-2.md`.
 | Round limit | | None (a half-max-HP limit was built in 1.20 and is **withdrawn**: Leon) |
 | Medic's kit, Triage, stims | Triage 20, stim 30, Rally 20, flat | Triage 5, stim 6, Rally 6, × Healing given × the level factor |
 | **Rules 1.26, the re-fit** | | A healer's turn **all in** on 1.25 Soldier-turns (146 / 132 / 122 / 99% measured at levels 1, 5, 10, 20), a normal share about 1.0: Healing given 0.87 × (1 + 0.06 per point of Insight over 1 and of Empathy). Inverse and Shell read a landed Soul Stat (`soul_mend`) |
+| **Rules 1.27, the heal re-fit** (Leon on 0.23.0: "we might have over-nerfed the healing") | | A healer's turn **all in** on **2.0 Soldier-turns** (234 / 211 / 195 / 158%), a normal share about 1.6: every heal and shield ×1.6 by its dial (Healing given 1.392 ×, the Soul shields 1.296 ×, the Sigil boon 1.17 ×; Faith ×1.51, capped where a Hymn turn heals 2.5 Soldier-turns). The medic's kit ×1.6 through Healing given. A Recruit with no Soul skill: a stage-4 Mend heals 15 at level 1 (it was 9; 6 at stage 1). A heal by a caster with no points in its skill is never under half of a normal share's (a floor; it binds nowhere today). Enemy healers unchanged |
 
 Detail: `heal-shield-pass.md`, `defence-step.md`.
 

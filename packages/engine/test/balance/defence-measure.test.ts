@@ -24,7 +24,10 @@ import { describe, it, expect } from 'vitest';
 import { appendFileSync, readFileSync } from 'node:fs';
 import { useTable } from './fit';
 import { fightRow, fightLine, pairFire, pairLine, yardFire, medicRow, medicLine, healerWeight, PAIRS, SQUADS, FIGHTS, TARGET, D_LEVELS, SOLDIER_TURN } from './defence-measure';
-import { ENEMY, TECHNIQUE, enemyStats, TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL } from '../../src';
+import { ENEMY, TECHNIQUE, enemyStats, TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL, RULES } from '../../src';
+// Rules 1.27 (the heal re-fit): the kit rose with Healing given by the healer's ceiling (data) over the 125 these bands
+// were set on (×1.6); its bases did not move.
+const R = (RULES as any).balance.ceilings.healer_turn.allin / 125;
 
 const FULL = !!process.env.DEFENCE_MEASURE, N = Math.max(1, Number(process.env.DEFENCE_N) || 10);
 const list = (k: string, d: string) => (process.env[k] || d).split(',').filter(Boolean);
@@ -32,19 +35,19 @@ const LV = list('DEFENCE_LEVELS', '').map(Number), PARTS = list('DEFENCE_PARTS',
 const say = (s: string) => { console.log(s); if (process.env.DEFENCE_OUT) appendFileSync(process.env.DEFENCE_OUT, s + '\n'); };
 
 describe('the defence step: the medic\'s kit against the yardstick (rules 1.23)', () => {
-  it('Triage in the medic\'s hands is 20 to 40% of a Soldier-turn for 2 AP (a normal share; rules 1.26: the healer\'s turn is 1.25 Soldier-turns all in, 1.0 at a normal share): a bit under the same character\'s magic, per AP', () => {
+  it('Triage in the medic\'s hands is 20 to 40% of a Soldier-turn for 2 AP, ×1.6 since rules 1.27 (a normal share; the healer\'s turn is 2.0 Soldier-turns all in, 1.6 at a normal share): a bit under the same character\'s magic, per AP', () => {
     for (const lv of D_LEVELS) { const r = medicRow('medic', 'mender', 'normal', lv);
-      expect(r.triagePct, 'Triage, level ' + lv).toBeGreaterThanOrEqual(20); expect(r.triagePct).toBeLessThanOrEqual(40);
+      expect(r.triagePct, 'Triage, level ' + lv).toBeGreaterThanOrEqual(20 * R); expect(r.triagePct).toBeLessThanOrEqual(40 * R);
       expect(r.magicPerAp, 'the steady Outburst heal an AP, level ' + lv).not.toBe(null); expect(r.triagePerAp).toBeLessThan(r.magicPerAp!); expect(r.triagePerAp).toBeGreaterThanOrEqual(r.magicPerAp! * 0.7); }
   });
-  it('a dose (a stim, a thrown stim) in the medic\'s hands is 25 to 50% for 1 AP; in anyone\'s hands 12 to 35% (rules 1.26)', () => {
+  it('a dose (a stim, a thrown stim) in the medic\'s hands is 25 to 50% for 1 AP; in anyone\'s hands 12 to 35% (rules 1.26); each ×1.6 since rules 1.27', () => {
     for (const lv of D_LEVELS) { const m = medicRow('medic', 'mender', 'normal', lv), a = medicRow('anyone', 'plain_gun', 'normal', lv);
-      expect(m.stimPct, 'the medic, level ' + lv).toBeGreaterThanOrEqual(25); expect(m.stimPct).toBeLessThanOrEqual(50);
-      expect(a.healGiven).toBeLessThan(1.1); expect(a.stimPct, 'anyone, level ' + lv).toBeGreaterThanOrEqual(12); expect(a.stimPct).toBeLessThanOrEqual(35); }
+      expect(m.stimPct, 'the medic, level ' + lv).toBeGreaterThanOrEqual(25 * R); expect(m.stimPct).toBeLessThanOrEqual(50 * R);
+      expect(a.healGiven).toBeLessThan(1.1 * R); expect(a.stimPct, 'anyone, level ' + lv).toBeGreaterThanOrEqual(12 * R); expect(a.stimPct).toBeLessThanOrEqual(35 * R); }
   });
   it('before rules 1.23 the same kit was 150 to 180% and 225 to 265% at level 1 to 12 in the medic\'s hands: no level factor', () => {
     const b1 = medicRow('medic', 'mender', 'normal', 1).before, b20 = medicRow('anyone', 'plain_gun', 'normal', 20).before;
-    expect(b1.triagePct).toBeGreaterThan(100); expect(b1.stimPct).toBeGreaterThan(150); expect(b20.triagePct).toBeLessThan(40); // the old bases with today's Healing given (rules 1.26: the landed profile, about 0.75 of the old one)
+    expect(b1.triagePct).toBeGreaterThan(100); expect(b1.stimPct).toBeGreaterThan(150); expect(b20.triagePct).toBeLessThan(40 * R); // the old bases with today's Healing given (rules 1.26: the landed profile, about 0.75 of the old one)
     expect([TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL]).toEqual([5, 6, 6]);
   });
 });

@@ -1,5 +1,7 @@
 # Pick-up: if the lead session died mid-mission, start here
 
+**12 Nov 2026, later: version 0.23.0 is LIVE** (Leon: "to live to live"). `develop` and `main` hold it, backups `backup/live-0.23.0` and `backup/live-0.22.0` exist, the live site answered two browser suites (old-save, creation-points) after the deploy. The mission below is closed; what comes next is `SESSION-HANDOFF.md` section "After live" and Leon's playtest notes.
+
 Written 12 Nov 2026 by the lead, for whoever continues (Leon has said it may be an Opus session). Read this, then
 `docs/design/proposals/2026-11-engine-review/PLAN.md`. Everything else is linked from those two. Keep this file
 current: when you finish a step below, tick it here in the same commit.

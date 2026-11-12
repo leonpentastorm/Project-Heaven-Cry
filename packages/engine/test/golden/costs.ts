@@ -40,7 +40,7 @@ const flat = (o: any, pre: string, out: Record<string, string>, depth = 0) => {
   if (depth > 4) { out[pre] = JSON.stringify(o).slice(0, 120); return; }
   for (const k of Object.keys(o).sort()) flat(o[k], pre ? pre + '.' + k : k, out, depth + 1);
 };
-const RES = ['ap', 'bank', 'ammo', 'offAmmo', 'heat', 'loose', 'offLoose', 'mags', 'offMags', 'parts', 'apNext', 'apDebt', 'throwables', 'res', 'quiver'];
+const RES = ['ap', 'bank', 'ammo', 'offAmmo', 'offJammed', 'heat', 'loose', 'offLoose', 'mags', 'offMags', 'parts', 'apNext', 'apDebt', 'throwables', 'res', 'quiver'];
 const MG = ['charge', 'cores', 'coresMade', 'flux', 'mp', 'strain', 'freePumps', 'debt'];
 const MARK = ['uses', 'ps', 'tech', 'reactUsed', 'reactedRound', 'prayedRound', 'shotsThisTurn', 'firstShotTurn', 'firstShotDone', 'sprinted', 'attackedTurn', 'openerUsed', 'moved', 'apGained', 'apTurnTotal', 'faith', 'call', 'quickRound', 'owShots', 'hideEntry', 'ambushUsed', 'chain', 'edgeWord', 'freeReload'];
 const MG_MARK = ['freeUsed', 'firstUsed', 'cast', 'calmFight', 'calmTend', 'lockRound'];
@@ -150,6 +150,7 @@ const BASIC: Case[] = [
   ['reload-off', (_g, u) => { if (u.offWeapon) u.offAmmo = 0; }, () => [{ type: 'combat/reload', hand: 'off' }]],
   ['load', (_g, u) => { if (u.mags?.length) { u.mags[0] = Math.max(0, u.mags[0] - 4); u.loose = (u.loose || 0) + 6; } }, () => [{ type: 'combat/load' }]],
   ['clear', (_g, u) => { u.jammed = true; u.heat = 3; }, () => [{ type: 'combat/clear' }]],
+  ['clear-off', (_g, u) => { if (u.offWeapon) u.offJammed = true; u.heat = 3; }, () => [{ type: 'combat/clear', hand: 'off' }]],
   ['repair', (_g, u) => { u.parts = 2; if (u.maxDur) u.dur = Math.max(1, Math.floor(u.maxDur / 2)); }, () => [{ type: 'combat/repair' }]],
   ['stim', (g) => { for (const c of Object.values(g.characters) as any[]) c.stims = 2; }, (g) => [{ type: 'combat/stim', targetId: pcs(g)[1].id }]],
   ['stim-downed', (g) => { for (const c of Object.values(g.characters) as any[]) c.stims = 2; const a = pcs(g)[1]; a.hp = 0; a.downed = true; }, (g) => [{ type: 'combat/stim', targetId: pcs(g)[1].id }]],
@@ -164,6 +165,7 @@ const BASIC: Case[] = [
   ['throw', (_g, u) => { u.throwables = { frag_grenade: 2 }; }, (g) => [{ type: 'combat/throw', item: 'frag_grenade', tile: foes(g)[1].pos }]],
   ['door', (g) => obj(g, { id: 'dr', kind: 'door', name: 'Door', pos: '3,7', open: false }), () => [{ type: 'combat/door', tile: '3,7' }]],
   ['shoot-cover', (g) => obj(g, { id: 'bx', kind: 'barricade', name: 'Barricade', pos: '5,8', hp: 30 }), () => [{ type: 'combat/shoot-cover', tile: '5,8' }]],
+  ['shoot-cover-off', (g) => obj(g, { id: 'bx', kind: 'barricade', name: 'Barricade', pos: '5,8', hp: 30 }), () => [{ type: 'combat/shoot-cover', tile: '5,8', hand: 'off' }]],
   ['pickup', (g) => { W(g, () => A.dropToPile(g.combat, '3,7', [{ id: 'stim', item: 'stim', name: 'Stim', qty: 1, kind: 'consumable' }])); }, () => [{ type: 'combat/pickup', tile: '3,7' }]],
   ['pull-free', (g, u) => { u.nailed = { by: foes(g)[0].id, id: 'run_through', ap: 2 }; }, () => [{ type: 'combat/pull-free' }]],
   ['pull-free-ally', (g) => { pcs(g)[1].nailed = { by: foes(g)[0].id, id: 'run_through', ap: 1 }; }, (g) => [{ type: 'combat/pull-free', targetId: pcs(g)[1].id }]],

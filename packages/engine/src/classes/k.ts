@@ -279,7 +279,7 @@ register({
       const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!, m = 1 + blessPower(u, h.c);
       shiftDevotion(h.g || null, cb, h.c!, -DEVOTION_XP.judgement, 'Judgement');
       say(cb, u.name + ' passes Judgement on ' + t.name + ' (' + DEVOTION_XP.judgement + ' Devotion XP; Devotion ' + devotionOf(h.c!) + ' left).');
-      withMult(u, m, 'Judgement', () => resolveAttack(cb, rng, u, t, isMelee(W(u)) ? 'melee' : 'shot', null, { free: true }));
+      withMult(u, m, 'Judgement', () => resolveAttack(cb, rng, u, t, isMelee(W(u)) ? 'melee' : 'shot', null, { free: true, fx: { move: 'lumeri_templar.judgement' } }));
       note(h, 'Judgement by ' + u.name + ' on ' + t.name + ': does it keep or break a taboo of ' + (PATRON[h.c!.patron!]?.name || 'the patron') + '?');
       checkOver(cb); return null;
     },
