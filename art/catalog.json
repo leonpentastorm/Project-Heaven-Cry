@@ -10324,6 +10324,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-grief.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-grief.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-fear": {
+      "id": "feeling-fear",
+      "label": "Fear: the ribbon recoils outward from an empty centre, in broken ring fragments",
+      "path": "art/icons/feelings/feeling-fear.png",
+      "sha256": "98436c051bc5163ce0e57ef48d14b343c440267fddba65f206610b212b419dad",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-fear.png",
+        "128": "art/icons/feelings/exports/128/feeling-fear.png",
+        "64": "art/icons/feelings/exports/64/feeling-fear.png",
+        "56": "art/icons/feelings/exports/56/feeling-fear.png",
+        "48": "art/icons/feelings/exports/48/feeling-fear.png",
+        "44": "art/icons/feelings/exports/44/feeling-fear.png",
+        "40": "art/icons/feelings/exports/40/feeling-fear.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-fear.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-fear.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

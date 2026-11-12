@@ -555,6 +555,44 @@
           "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
         }
       ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-fear.png",
+      "sha256": "98436c051bc5163ce0e57ef48d14b343c440267fddba65f206610b212b419dad",
+      "id": "feeling-fear",
+      "family": "feelings",
+      "action": "Fear: the ribbon recoils outward from an empty centre, in broken ring fragments.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-fear.png",
+        "sha256": "4dd3b43c5d19d6bc222e809d0e889d68d289621af2c06a5425d69d60b82d7771"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-fear.png",
+        "sha256": "98436c051bc5163ce0e57ef48d14b343c440267fddba65f206610b212b419dad"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-fear.txt",
+        "sha256": "f6c441c6f354c561039da4381877af53a31ff343f354cffecdccefc263d055cf"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-fear.png",
+        "128": "art/icons/feelings/exports/128/feeling-fear.png",
+        "64": "art/icons/feelings/exports/64/feeling-fear.png",
+        "56": "art/icons/feelings/exports/56/feeling-fear.png",
+        "48": "art/icons/feelings/exports/48/feeling-fear.png",
+        "44": "art/icons/feelings/exports/44/feeling-fear.png",
+        "40": "art/icons/feelings/exports/40/feeling-fear.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
     }
   ]
 }
