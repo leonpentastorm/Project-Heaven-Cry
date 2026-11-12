@@ -5,3 +5,5 @@ It shows: a dome over a dot
 Match the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.
 
 Use ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.
+
+Do not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.

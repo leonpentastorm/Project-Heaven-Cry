@@ -25,5 +25,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-return.png`: a loop going out and coming back
 - `module-volley.png`: three small parallel dashes
 - `module-bloom.png`: nested rings growing outward
+- `module-anchor.png`: a dot pinned by a cross-shaped stake
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

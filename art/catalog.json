@@ -11476,6 +11476,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-bloom.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-bloom.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-anchor": {
+      "id": "module-anchor",
+      "label": "a dot pinned by a cross-shaped stake",
+      "path": "art/icons/modules/module-anchor.png",
+      "sha256": "459e5ddedd3800a233bcd875f66f36fb02064af046cc8d87547c411f10d58fb3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-anchor.png",
+        "128": "art/icons/modules/exports/128/module-anchor.png",
+        "64": "art/icons/modules/exports/64/module-anchor.png",
+        "56": "art/icons/modules/exports/56/module-anchor.png",
+        "48": "art/icons/modules/exports/48/module-anchor.png",
+        "44": "art/icons/modules/exports/44/module-anchor.png",
+        "40": "art/icons/modules/exports/40/module-anchor.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-anchor.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-anchor.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
