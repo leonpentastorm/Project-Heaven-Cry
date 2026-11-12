@@ -27,6 +27,7 @@
 // A block that is not there is a bug in the data, never a silent 0: itemAmount throws, the validator
 // (tools/validate.py) checks every block's shape, and test/amount-literals.test.ts checks that every (key, name) the
 // engine's source asks for exists and that no new numeric literal is passed to a damage, heal or shield sink.
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { PERK, TRAITS, SKILL, RULES, SIGIL } from '../data';
 import conditionsJ from '../../../../data/conditions.json';
 import feelingsJ from '../../../../data/feelings.json';

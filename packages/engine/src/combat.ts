@@ -1,7 +1,8 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
 import { MAP_LAYOUTS, readLayout, nearestFree } from './maplayout';
-import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
+import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
@@ -653,12 +654,12 @@ export const damageCover = damageObject;
 export function spotTraps(objs: MapObject[], pos: string, vigilant: number, name: string, log: (s: string) => void) {
   for (const o of objs) if (o.hidden && isTrap(o)) {
     const t = kindOf(o).trap!, passive = passiveVigilance(vigilant);
-    if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots a trap at ' + refOf(o.pos) + ' (Vigilant ' + passive + ' vs ' + t.detect_tn + ').'); }
+    if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots a trap at ' + refOf(o.pos) + ' (' + SKILL.vigilant.name + ' ' + passive + ' vs ' + t.detect_tn + ').'); }
   }
   // Rules 1.9: a hidden pile (the Narrator's) falls to the same passive Vigilant, by its kind's spot TN and range (item 677).
   for (const o of objs) if (o.hidden && !isTrap(o) && kindOf(o).spot) {
     const t = kindOf(o).spot!, passive = passiveVigilance(vigilant);
-    if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots something on the ground at ' + refOf(o.pos) + ' (Vigilant ' + passive + ' vs ' + t.detect_tn + ').'); }
+    if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots something on the ground at ' + refOf(o.pos) + ' (' + SKILL.vigilant.name + ' ' + passive + ' vs ' + t.detect_tn + ').'); }
   }
 }
 /** Open or close an adjacent door (1 AP in a fight). */
@@ -1094,7 +1095,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   if (o.ambush) M(att.ambushMult || 1.5, 'ambush');
   if (condOn(att, 'weakened')) M(0.75, 'Weakened');
   if (condOn(att, 'sharpened')) M(1.25, 'Sharpened'); // SHARPEN (rules 1.4)
-  if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
+  if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (fx.statuses.includes('stunned') && condOn(tgt, 'stunned')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
   const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null };
   // pierce / ignoreArmour: armour this attack ignores, set by a listener (a technique's strike, rules 1.12)
   const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0 };
@@ -1199,7 +1200,9 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   const ev = emitFx(cb, melee ? 'melee' : 'shot', { unit: att.id, target: tgt.id, from: attAt, to: tgtAt, weapon: useW.id, cat: useW.category, mode, hit, crit, fumble, dmg: 0, killed: false,
     ...(!melee && att.jammed ? { jam: true } : {}), ...(fxChain ? { chain: true } : {}), ...(mode === 'thrown' ? { thrown: true } : {}),
     // the special round or arrow fired (Load Special's, a quiver's): its look on screen
-    ...(!melee && mode !== 'thrown' && ammoId(att.ammoType) && ammoId(att.ammoType) !== 'standard' ? { round: ammoId(att.ammoType) } : {}), ...(opts.fx || {}) });
+    ...(!melee && mode !== 'thrown' && ammoId(att.ammoType) && ammoId(att.ammoType) !== 'standard' ? { round: ammoId(att.ammoType) } : {}),
+    ...(!melee && typeof opts.extra === 'number' && opts.extra < 0 ? { step: opts.extra } : {}), // this roll's own to-hit step (a Burst's later roll: −4, −3, −1; an enemy's −1 or −2), for the screen
+    ...(opts.fx || {}) });
   let damage = 0, killed = false, injury = '';
   if (hit) {
     const d = attackDamage(cb, att, tgt, mode, who, { crit, dmgMult: opts.dmgMult, ambush });
@@ -1256,7 +1259,7 @@ export function coneUnits(cb: Combat, from: string, toward: string, n: number): 
  * the shooter (rules 1.3; provisional): the hit's damage before the target's armour, less each one's armour. */
 function splash(cb: Combat, att: Unit, tgt: Unit, w: WeaponDef, dealt: number): string {
   // An enemy's splash grows with its tier and level as its direct hit does (rules 1.15; attackDamage's 'tier and level' term).
-  const r = radiusOf(w), raw = weaponDamage(w, dist(att.pos, tgt.pos)) * (!att.charId && att.lvlDmg ? att.lvlDmg : 1); let out = '';
+  const r = radiusOf(w), raw = ((w as any).splash_damage ?? weaponDamage(w, dist(att.pos, tgt.pos))) * (!att.charId && att.lvlDmg ? att.lvlDmg : 1); let out = '';
   for (const v of cb.units) if (v !== tgt && !v.dead && !v.surrendered && dist(v.pos, tgt.pos) <= r) out += hurtUnit(v, raw, false, cb, 'explosion', att);
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && dist(o.pos, tgt.pos) <= r) out += damageObject(cb, o.pos, raw * (((w as any).grants?.effect?.op === 'cover_damage_mult') ? (w as any).grants.effect.value : 1), 0, att);
   void dealt;
@@ -1878,6 +1881,7 @@ export function brace(cb: Combat, u: Unit): string | null {
   // its bearer sets only themself, for Guard and for the class moves that ask for the braced stance (rules 1.13).
   u.ap -= 1; u.braced = true; if (weaponBraces(u)) delete u.guardBrace; else u.guardBrace = true; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' }); cb.log.push(u.name + ' braces.');
   braceHook.f?.(cb, u); // a unit with a Guard pool gains Guard as it sets itself
+  emit(cb, 'protect_act', { u, how: 'brace', cb }); // 'protect_act' {u, how}: a Brace or an Interpose (the patrons' protect tag, item 600)
   return null;
 }
 
@@ -1929,12 +1933,13 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
 /** Field Repair (spec): 2 AP, Proficiency 3+, one spare-parts charge; restores 10% + 5% per Proficiency point above 3. */
 export function fieldRepair(cb: Combat, u: Unit): string | null {
   if (!u.maxDur) return 'Nothing to repair.';
-  if ((u.proficiency || 0) < 3) return 'Needs Proficiency 3.';
+  if ((u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
   if (!(u.parts || 0)) return 'No spare-parts charges.';
   if ((u.dur ?? u.maxDur) >= u.maxDur) return 'Already in full repair.';
   const cost = actionAp({ u }, 'field_repair', 2).ap;
   if (u.ap < cost) return 'Needs ' + cost + ' AP.';
-  const add = Math.ceil(u.maxDur * (0.1 + 0.05 * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
+  const fr: any = (SKILL.proficiency as any).unlocks?.['3']?.effects?.[0] || {}; // the card's numbers (skills.json Field Repair)
+  const add = Math.ceil(u.maxDur * ((fr.repair_base ?? 0.1) + (fr.repair_per_point ?? 0.05) * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
   u.ap -= cost; u.parts = (u.parts || 0) - 1; u.dur = Math.min(u.maxDur, (u.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, at: u.pos, dur: 1400 });
   cb.log.push(u.name + ' patches the weapon: +' + add + ' durability (' + u.dur + '/' + u.maxDur + ').'); return null;
 }
@@ -2550,10 +2555,10 @@ export function weaponActions(u: Unit): WeaponAction[] {
   // Rules 1.13: anyone with a Guard pool (Durability 1+) may Brace, whatever the weapon: it is how Guard is gained.
   const pool = u.resMax?.guard != null;
   if (braces || pool) add({ id: 'brace', label: 'Brace', ap: 1, why: u.braced ? 'Already braced.' : need(1), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (pool ? ' You gain ' + (GUARD_RULES().brace_gain ?? 2) + ' Guard (' + ((GUARD_RULES().brace_gain ?? 2) + (GUARD_RULES().brace_shield_gain ?? 1)) + ' with a shield).' : '') + ' Moving ends it.' });
-  if (u.maxDur) { const c = actionAp({ u }, 'field_repair', 2).ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs Proficiency 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: 'Proficiency 3+, one spare-parts charge: +10% durability, +5% per Proficiency above 3.' }); }
+  if (u.maxDur) { const c = actionAp({ u }, 'field_repair', 2).ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
   const owAp = attackApCost(w, melee ? 'melee' : 'shot');
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });
-  for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? 4 : 3, why: null, text: '' });
+  for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? ((w as any).grants?.effect?.op === 'auto_ap' ? (w as any).grants.effect.value : 4) : 3, why: null, text: '' });
   // An item may replace the weapon's own skill (stat 'hide_weapon_skill' > 0: Old School's Fan the Hammer: hooks gap C6).
   if (w.grants && !((u.charId || u.held) && statQuery({ u }, 'hide_weapon_skill', { weapon: w.id, skill: w.grants.name }).add > 0)) add({ id: 'skill', label: w.grants.name + (w.grants.effect?.op === 'narrator' ? ' (Narrator)' : ''), ap: w.grants.effect?.ap || 0, why: null, text: w.grants.text || '' });
   // A unit with a fixed action list (the drone: move and shoot, item 370) has none of the weapon's other actions.

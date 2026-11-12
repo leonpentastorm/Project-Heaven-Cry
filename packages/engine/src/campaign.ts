@@ -1,6 +1,7 @@
 // Campaigns (spec: Campaigns): a premade package of zones (maps with notes, objects and points of interest), an arc the
 // Narrator steers by (beginning, middle, end, secrets), an opening, a cast and suggested fights. Built-in campaigns live
 // in data/campaigns/; a host can load their own file in the same format (docs/design/campaign-format.md).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { type MapDef, keyOf } from './combat';
 import { OBJ, MARK } from './objects';
 import { sizeProblem, expandZone, expandCampaign, deployEnemy } from './maplayout';

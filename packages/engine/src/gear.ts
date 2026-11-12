@@ -4,6 +4,7 @@
 // armour piece (1.2 kg or less; provisional) on or off 1 AP each; heavier armour isn't changed in a fight. This module only plans: it
 // says what a change costs and why it can't be made, without changing anything (the reducer in game.ts runs it through
 // the fight's checks, Hot-Swap, the write-back and the rebuild). The numbers are `data/world_play.json` `gear`.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
 import { WEAPON, ITEM } from './data';
 import { type Character, packOf, twoHands, isPlotItem, isAmmoEntry, AMMO_WHY } from './character';

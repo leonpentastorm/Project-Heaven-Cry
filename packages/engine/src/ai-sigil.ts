@@ -17,6 +17,7 @@
 //    tiles players will cross, turrets and fields where players stand. It respects AP, charge (a core swap first),
 //    Flux (a vent first, never an overload), friendly fire (it holds a spell that hits more of its own than of yours)
 //    and casts only when the spell's value per AP beats its weapon's.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
 import { WEAPON } from './data';
 import { type Combat, type Unit, dist, xy, key, paths, moveUnit, apForTiles, previewAttack, isMelee, effectiveRange, lineOfSight, unitSees, objectsOf, shootCover } from './combat';

@@ -3,6 +3,7 @@
 // mid-fight; throwing and blasts; special ammo and damage types; the target-specific damage bucket; prayer and
 // Blessings; companions; class resources; Burning put out, grapples broken, weapons recovered.
 // Every number here is provisional (spec 14, items 82 onward). Deterministic: dice come from the rng passed in.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { WEAPON, RULES, ENEMY, type WeaponDef } from './data';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
@@ -363,7 +364,6 @@ export function applyFoeTraits(u: Unit, f: FoeTraits | undefined) {
   if (f?.unaware) u.waitRound = Math.max(u.waitRound || 0, 2);
   if (f?.hidden) { u.hidden = true; u.hideEntry = 1; }
 }
-/** Mana from a death (spec: the meter): +5 a person or beast, +2 a robot, machine, turret or drone. */
 /** The bots one death releases (spec: the meter; rules.json mana.meter.events): a robot or machine +2, a beast or monster
  * +3, a person +5. */
 export const deathMana = (u: Unit): number => {

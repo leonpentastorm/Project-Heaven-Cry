@@ -5,7 +5,7 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 
 | You changed… | Run | Takes | It tells you |
 | --- | --- | --- | --- |
-| Anything, before you say "done" | `npm run check` | 1 to 2 min | The data validator, both type checks, the screen data's freshness and both unit suites: one line each, only failures printed |
+| Anything, before you say "done" | `npm run check` | 1 to 2 min | The data validator (with the text-number guard), the spec tables, the screen data's freshness, both type checks and both unit suites (the test lint is in the engine's): one line each, only failures printed |
 | Only the engine or the data | `npm run check -- engine` | under 1 min | Validator, engine types, engine tests |
 | Only the client | `npm run check -- web` | about 1.5 min | Web types, the screen data's freshness (`protodata.json` against `data/*.json`; when it says STALE, run `python3 design/canvas-build/build.py --web`), web tests |
 | One rule, and you want only its tests | `npm run check -- -t "Heart Overload"` | seconds | Both suites, only tests whose name matches |
@@ -38,6 +38,13 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 ## The tools
 
 - `tools/check.py` (`npm run check`): the no-browser gate. Logs of failures in `.check/`.
+- The truth guards, all inside `npm run check` (how they work and how to extend them:
+  `docs/design/handoffs/text-number-truth.md`): `tools/text_numbers.py` (a number in a data text must be a number in the
+  item's own fields; `tools/text_numbers.json` is the allowlist and a baseline that only shrinks),
+  `tools/check_spec_tables.py` (the spec's weapon, enemy and condition tables against data),
+  `design/canvas-build/build.py --web --check` (`protodata.json` is fresh), and
+  `packages/engine/test/test-lint.test.ts` (no statement after a `//` comment on a test line; no skipped test without
+  a dated reason).
 - `tools/try_fight.py` + `packages/engine/test/try.test.ts` (`npm run try`): a scenario in JSON, played by the engine.
 - `fx-sweep` (in `anim`): every weapon × technique in the Effect testing room, judged from the effects layer's own trace (`window.__phcFxTrace`, `fx/dom.ts`). The whole table takes about 9.5 min; `PARTS=real` (19 cases on the wall clock) 1.5 min; `ONLY='<regex>'` narrows it. Report in `.check/e2e/fx-sweep.json`.
 - `tools/e2e.py` (`npm run e2e`): the browser suites; groups `smoke`, `rules`, `anim`, `all`; `--jobs`, `--no-build`,

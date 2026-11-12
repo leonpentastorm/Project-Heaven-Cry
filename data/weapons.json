@@ -2,7 +2,7 @@
   "$schema_version": "1.0",
   "kind": "weapons",
   "source": "PHC Core Rules v1.0 (Game Spec)",
-  "notes": "Damage before multipliers. Range in tiles (effective range; up to 2 further bands at -2 each). accuracy and price_credits are null: the spec has no column for them. accuracy=0 is provisional (spec open item 1); price_credits=null pending open item 2. Weapons v2 (7 Nov 2026): 58 types with hands, granted weapon skills (grants.effect; \"narrator\" = ruled from the text until the engine runs it), durability, mod slots, prices and lore.",
+  "notes": "Damage before multipliers. Range in tiles (effective range; up to 2 further bands at -2 each). accuracy is provisional (spec open item 1). A thrown weapon reaches the thrower's Throwing range, whatever a throwable_N property says (rules 1.12). A melee or thrown item's ap_cost states the category's price (the engine charges by category). Weapons v2 (7 Nov 2026): 59 roster types and the beast's bite with hands, granted weapon skills (grants.effect; \"narrator\" = ruled from the text until the engine runs it), durability, mod slots, prices and lore.",
   "items": [
     {
       "id": "service_pistol",
@@ -93,7 +93,7 @@
       ],
       "grants": {
         "name": "Fan the Hammer",
-        "text": "For 3 AP, fire up to 3 shots at one target, each at −2 to hit.",
+        "text": "For {=grants.effect.ap} AP, fire up to {=grants.effect.shots} shots at one target, each at −2 to hit.",
         "effect": {
           "op": "multi_shot",
           "ap": 3,
@@ -388,7 +388,7 @@
       ],
       "grants": {
         "name": "One Breath",
-        "text": "If you haven't moved this turn, an Aimed Shot gets +3 to hit instead of +2.",
+        "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
         "effect": {
           "op": "aimed_still_bonus",
           "value": 1
@@ -668,7 +668,6 @@
         "throwable_6_tiles"
       ],
       "text": "",
-      "thrown_range_tiles": 6,
       "mastery_family": "light_blades",
       "hands": "1H",
       "durability": 250,
@@ -678,11 +677,12 @@
       ],
       "grants": {
         "name": "Finish It",
-        "text": "Deals +50% damage to a target that is Dazed, Bleeding or Downed.",
+        "text": "Deals +{=grants.effect.mult|more}% damage to a target that is Dazed, Stunned, Bleeding or Downed.",
         "effect": {
           "op": "vs_status_damage",
           "statuses": [
             "dazed",
+            "stunned",
             "bleeding",
             "downed"
           ],
@@ -833,7 +833,7 @@
       ],
       "grants": {
         "name": "Knockdown",
-        "text": "A hit knocks the target Prone.",
+        "text": "A plain attack that hits knocks the target Prone.",
         "effect": {
           "op": "on_hit",
           "apply": "prone"
@@ -885,7 +885,7 @@
       ],
       "grants": {
         "name": "Charge",
-        "text": "If you have moved 3 tiles or more this turn, your attack deals +50% damage.",
+        "text": "The lance lends the Charge technique: after a straight run of 3 tiles or more, the strike deals +10% damage for each tile, up to +50%.",
         "effect": {
           "op": "narrator"
         }
@@ -980,7 +980,7 @@
         "area_radius_2",
         "consumable"
       ],
-      "text": "Deals 40 damage to everyone within 2 tiles of where it lands.",
+      "text": "Deals {=damage} damage to everyone within 2 tiles of where it lands.",
       "mastery_family": "thrown",
       "hands": "1H",
       "durability": null,
@@ -1137,7 +1137,7 @@
       "accuracy": 0,
       "price_credits": 500,
       "properties": [],
-      "text": "+2 to hit against targets within 2 tiles.",
+      "text": "+{=grants.effect.value} to hit against targets within {=grants.effect.within} tiles.",
       "mastery_family": "sidearms",
       "hands": "1H",
       "durability": 300,
@@ -1148,7 +1148,7 @@
       ],
       "grants": {
         "name": "Point Blank",
-        "text": "+2 to hit against targets within 2 tiles.",
+        "text": "+{=grants.effect.value} to hit against targets within {=grants.effect.within} tiles.",
         "effect": {
           "op": "hit_bonus",
           "within": 2,
@@ -1195,14 +1195,14 @@
       "accuracy": 0,
       "price_credits": 150,
       "properties": [],
-      "text": "+2 to hit on your first shot of each fight.",
+      "text": "+{=grants.effect.value} to hit on your first shot of each fight.",
       "mastery_family": "sidearms",
       "hands": "1H",
       "durability": 300,
       "mod_slots": [],
       "grants": {
         "name": "Ace in the Sleeve",
-        "text": "+2 to hit on your first shot of each fight.",
+        "text": "+{=grants.effect.value} to hit on your first shot of each fight.",
         "effect": {
           "op": "first_shot_bonus",
           "value": 2
@@ -1247,7 +1247,7 @@
       "accuracy": 0,
       "price_credits": 450,
       "properties": [],
-      "text": "A hit takes 1 AP from the target's next turn.",
+      "text": "A plain attack that hits takes 1 AP from the target's next turn.",
       "mastery_family": "sidearms",
       "hands": "1H",
       "durability": 300,
@@ -1258,7 +1258,7 @@
       ],
       "grants": {
         "name": "Stopping Power",
-        "text": "A hit takes 1 AP from the target's next turn.",
+        "text": "A plain attack that hits takes 1 AP from the target's next turn.",
         "effect": {
           "op": "on_hit",
           "apply": "ap_loss",
@@ -1305,7 +1305,7 @@
       "accuracy": 0,
       "price_credits": 800,
       "properties": [],
-      "text": "A hit pushes the target 1 tile away from you.",
+      "text": "A plain attack that hits pushes the target 1 tile away from you.",
       "mastery_family": "sidearms",
       "hands": "1H",
       "durability": 300,
@@ -1314,7 +1314,7 @@
       ],
       "grants": {
         "name": "Knockback",
-        "text": "A hit pushes the target 1 tile away from you.",
+        "text": "A plain attack that hits pushes the target 1 tile away from you.",
         "effect": {
           "op": "on_hit",
           "apply": "push",
@@ -1365,7 +1365,7 @@
       "accuracy": 0,
       "price_credits": 750,
       "properties": [],
-      "text": "+2 to hit against targets within 3 tiles.",
+      "text": "+{=grants.effect.value} to hit against targets within {=grants.effect.within} tiles.",
       "mastery_family": "smgs",
       "hands": "1H",
       "durability": 300,
@@ -1376,7 +1376,7 @@
       ],
       "grants": {
         "name": "Clear the Room",
-        "text": "+2 to hit against targets within 3 tiles.",
+        "text": "+{=grants.effect.value} to hit against targets within {=grants.effect.within} tiles.",
         "effect": {
           "op": "hit_bonus",
           "within": 3,
@@ -1544,7 +1544,7 @@
       "accuracy": 0,
       "price_credits": 1300,
       "properties": [],
-      "text": "Shots ignore 5 points of the target's armour.",
+      "text": "Shots ignore {=grants.effect.value} points of the target's armour.",
       "mastery_family": "rifles",
       "hands": "2H",
       "durability": 400,
@@ -1556,7 +1556,7 @@
       ],
       "grants": {
         "name": "Armour-Breaker",
-        "text": "Shots ignore 5 points of the target's armour.",
+        "text": "Shots ignore {=grants.effect.value} points of the target's armour.",
         "effect": {
           "op": "ignore_armour",
           "value": 5
@@ -1612,7 +1612,7 @@
         "magazine"
       ],
       "grants": {
-        "name": "Dead Steady",
+        "name": "Steady Aim",
         "text": "Aimed Shots score a critical hit on a roll of 18, 19 or 20.",
         "effect": {
           "op": "aimed_crit_min",
@@ -1723,14 +1723,14 @@
       "properties": [
         "damage_falloff"
       ],
-      "text": "For 3 AP, fire both shells as one attack that deals +50% damage.",
+      "text": "For {=grants.effect.ap} AP, fire both shells as one attack that deals +50% damage.",
       "mastery_family": "shotguns",
       "hands": "2H",
       "durability": 300,
       "mod_slots": [],
       "grants": {
         "name": "Both Barrels",
-        "text": "For 3 AP, fire both shells as one attack that deals +50% damage.",
+        "text": "For {=grants.effect.ap} AP, fire both shells as one attack that deals +50% damage.",
         "effect": {
           "op": "multi_shot",
           "ap": 3,
@@ -1959,7 +1959,7 @@
       "properties": [
         "area_radius_2"
       ],
-      "text": "You can fire at a tile you can't see, as long as an ally can see it, at −2 to hit.",
+      "text": "The thumper lends the Lob technique: you aim at a tile, with no roll and no penalty, and everyone in the blast gains 2 Pressure.",
       "mastery_family": "heavy",
       "hands": "2H",
       "durability": 500,
@@ -1968,7 +1968,7 @@
       ],
       "grants": {
         "name": "Lob",
-        "text": "You can fire at a tile you can't see, as long as an ally can see it, at −2 to hit.",
+        "text": "The thumper lends the Lob technique: you aim at a tile, with no roll and no penalty, and everyone in the blast gains 2 Pressure.",
         "effect": {
           "op": "narrator"
         }
@@ -2049,7 +2049,8 @@
           "agility"
         ],
         "teaches": "flush"
-      }
+      },
+      "splash_damage": 60
     },
     {
       "id": "purifier_flamer",
@@ -2077,14 +2078,14 @@
         "applies_burning",
         "ignores_half_cover"
       ],
-      "text": "For 3 AP, set a line 3 tiles long burning for 2 rounds.",
+      "text": "For 3 AP, set a line {=range_tiles} tiles long burning for 2 rounds.",
       "mastery_family": "heavy",
       "hands": "2H",
       "durability": 500,
       "mod_slots": [],
       "grants": {
         "name": "Wall of Fire",
-        "text": "For 3 AP, set a line 3 tiles long burning for 2 rounds.",
+        "text": "For 3 AP, set a line {=range_tiles} tiles long burning for 2 rounds.",
         "effect": {
           "op": "narrator"
         }
@@ -2116,8 +2117,7 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "throw": 2
       },
       "ammo": null,
       "skill": "dexterity",
@@ -2246,7 +2246,7 @@
         "no_heat",
         "no_recoil"
       ],
-      "text": "For 3 AP, fire two bolts. Each rolls to hit on its own.",
+      "text": "For {=grants.effect.ap} AP, fire two bolts. Each rolls to hit on its own.",
       "mastery_family": "bows",
       "hands": "2H",
       "durability": 200,
@@ -2255,7 +2255,7 @@
       ],
       "grants": {
         "name": "Volley",
-        "text": "For 3 AP, fire two bolts. Each rolls to hit on its own.",
+        "text": "For {=grants.effect.ap} AP, fire two bolts. Each rolls to hit on its own.",
         "effect": {
           "op": "multi_shot",
           "ap": 3,
@@ -2292,8 +2292,8 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 2,
+        "throw": 2
       },
       "ammo": null,
       "skill": "dexterity",
@@ -2345,8 +2345,8 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 2,
+        "throw": 2
       },
       "ammo": null,
       "skill": "dexterity",
@@ -2356,7 +2356,7 @@
       "properties": [
         "throwable_5_tiles"
       ],
-      "text": "Deals double damage to shields and cover.",
+      "text": "Deals double damage to cover.",
       "mastery_family": "light_blades",
       "hands": "1H",
       "durability": 250,
@@ -2366,7 +2366,7 @@
       ],
       "grants": {
         "name": "Splitter",
-        "text": "Deals double damage to shields and cover.",
+        "text": "Deals double damage to cover.",
         "effect": {
           "op": "cover_damage_mult",
           "value": 2
@@ -2401,8 +2401,7 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 2
       },
       "ammo": null,
       "skill": "dexterity",
@@ -2410,7 +2409,7 @@
       "accuracy": 0,
       "price_credits": 300,
       "properties": [],
-      "text": "+1 Defense while you hold a shield in your off hand.",
+      "text": "+{=grants.effect.value} Defense while you hold a shield in your off hand.",
       "mastery_family": "light_blades",
       "hands": "1H",
       "durability": 250,
@@ -2420,7 +2419,7 @@
       ],
       "grants": {
         "name": "Shield Partner",
-        "text": "+1 Defense while you hold a shield in your off hand.",
+        "text": "+{=grants.effect.value} Defense while you hold a shield in your off hand.",
         "effect": {
           "op": "defense_with_shield",
           "value": 1
@@ -2454,8 +2453,7 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 2
       },
       "ammo": null,
       "skill": "dexterity",
@@ -2506,8 +2504,7 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 3
       },
       "ammo": null,
       "skill": "raw_power",
@@ -2515,7 +2512,7 @@
       "accuracy": 0,
       "price_credits": 500,
       "properties": [],
-      "text": "A hit lowers the target's armour by 5 for the rest of the fight, to 10 below its starting armour at most.",
+      "text": "A plain attack that hits lowers the target's armour by {=grants.effect.value} for the rest of the fight, to 10 below its starting armour at most.",
       "mastery_family": "heavy_melee",
       "hands": "2H",
       "durability": 300,
@@ -2525,7 +2522,7 @@
       ],
       "grants": {
         "name": "Bite the Plate",
-        "text": "A hit lowers the target's armour by 5 for the rest of the fight, to 10 below its starting armour at most.",
+        "text": "A plain attack that hits lowers the target's armour by {=grants.effect.value} for the rest of the fight, to 10 below its starting armour at most.",
         "effect": {
           "op": "on_hit",
           "apply": "armour_break",
@@ -2560,8 +2557,7 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 3
       },
       "ammo": null,
       "skill": "raw_power",
@@ -2569,7 +2565,7 @@
       "accuracy": 0,
       "price_credits": 900,
       "properties": [],
-      "text": "For 4 AP, attack every enemy next to you.",
+      "text": "For {=grants.effect.ap} AP, attack every enemy next to you.",
       "mastery_family": "heavy_melee",
       "hands": "2H",
       "durability": 300,
@@ -2579,7 +2575,7 @@
       ],
       "grants": {
         "name": "Sweep",
-        "text": "For 4 AP, attack every enemy next to you.",
+        "text": "For {=grants.effect.ap} AP, attack every enemy next to you.",
         "effect": {
           "op": "sweep",
           "ap": 4
@@ -2613,8 +2609,7 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 3
       },
       "ammo": null,
       "skill": "raw_power",
@@ -2669,8 +2664,7 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 3
       },
       "ammo": null,
       "skill": "raw_power",
@@ -2680,7 +2674,7 @@
       "properties": [
         "armor_ignore_5"
       ],
-      "text": "A hit leaves the target Bleeding.",
+      "text": "A plain attack that hits leaves the target Bleeding.",
       "mastery_family": "heavy_melee",
       "hands": "2H",
       "durability": 300,
@@ -2689,7 +2683,7 @@
       ],
       "grants": {
         "name": "Rip",
-        "text": "A hit leaves the target Bleeding.",
+        "text": "A plain attack that hits leaves the target Bleeding.",
         "effect": {
           "op": "on_hit",
           "apply": "bleed"
@@ -2722,8 +2716,7 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 2
       },
       "ammo": null,
       "skill": "raw_power",
@@ -2775,8 +2768,7 @@
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "attack": 2
       },
       "ammo": null,
       "skill": "raw_power",
@@ -2784,14 +2776,14 @@
       "accuracy": 0,
       "price_credits": 1200,
       "properties": [],
-      "text": "A hit pushes the target 2 tiles away from you.",
+      "text": "A plain attack that hits pushes the target 2 tiles away from you.",
       "mastery_family": "unarmed",
       "hands": "1H",
       "durability": 200,
       "mod_slots": [],
       "grants": {
         "name": "Haymaker",
-        "text": "A hit pushes the target 2 tiles away from you.",
+        "text": "A plain attack that hits pushes the target 2 tiles away from you.",
         "effect": {
           "op": "on_hit",
           "apply": "push",
@@ -2831,13 +2823,12 @@
       "category": "thrown",
       "damage": 15,
       "damage_type": "fire",
-      "range_tiles": 1,
+      "range_tiles": "throwing_range",
       "magazine": null,
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "throw": 2
       },
       "ammo": null,
       "skill": "dexterity",
@@ -2849,7 +2840,7 @@
         "consumable",
         "applies_burning"
       ],
-      "text": "Deals 15 fire damage to everyone within 2 tiles of where it lands and sets them Burning. The tile it lands on catches fire.",
+      "text": "Deals {=damage} fire damage to everyone within 2 tiles of where it lands and sets them Burning. The tile it lands on catches fire.",
       "mastery_family": "thrown",
       "hands": "1H",
       "durability": null,
@@ -2884,13 +2875,12 @@
       "category": "thrown",
       "damage": 0,
       "damage_type": "emp",
-      "range_tiles": 1,
+      "range_tiles": "throwing_range",
       "magazine": null,
       "heat_limit": null,
       "modes": [],
       "ap_cost": {
-        "single": 2,
-        "aimed": 3
+        "throw": 2
       },
       "ammo": null,
       "skill": "dexterity",

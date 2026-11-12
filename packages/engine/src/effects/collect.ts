@@ -1,6 +1,7 @@
 // Collecting a holder's active effects (plan 2.2): traits, perks at their tier (Mastered, Achieved and Ultimate
 // included), and class moves by rank (base classes) or all at once (an advanced class). Built like gearEffects in
 // character.ts; memoised per holder on what it holds.
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { PERK, PERKS, TRAITS, CLASSES, SKILL, CLASS_MOVE_POOL } from '../data';
 import classesJ from '../../../../data/classes.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';

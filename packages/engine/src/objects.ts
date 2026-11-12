@@ -2,6 +2,7 @@
 // background that is visual only: cover, barricades, doors, holes, traps, hazards, barrels, containers, POIs.
 // The engine owns what they do (blocking, cover, HP, traps, hazards, explosions); the Narrator writes what they
 // mean and the ways to deal with them (approaches), which players can try, and retry, without a Narrator call.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import objectsJ from '../../../data/objects.json';
 import type { PackItem } from './character';
 

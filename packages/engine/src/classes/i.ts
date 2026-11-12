@@ -248,8 +248,8 @@ register({
 });
 
 // ======================================================================================================== FIGHTER
-// Momentum (0-5): +1 per melee hit (combat.ts), reset after a turn with no attack (closeTurn) and after the fight (units
-// are rebuilt). Lunge's handler adds the other half: +1 per tile closed on the target since the turn began, counted at
+// Momentum (0-5): +1 per melee hit (combat.ts); it carries from turn to turn, a Finisher spends it, and it is gone after
+// the fight (units are rebuilt). Lunge's handler adds the other half: +1 per tile closed on the target since the turn began, counted at
 // the first melee attack, at most +2 a turn (PROVISIONAL reading of "toward a target"); Lunge's own tiles don't count.
 const reachOf = (u: Unit) => { const w: any = WEAPON[u.weapon]; if (!w || !isMelee(w)) return 1; return (w.properties || []).includes('reach_2') || w.id === 'lance' || w.grants?.effect?.op === 'reach' ? (w.grants?.effect?.op === 'reach' ? w.grants.effect.value : 2) : 1; };
 const meleeAp = (u: Unit) => attackApCost(isMelee(WEAPON[u.weapon]) ? WEAPON[u.weapon] : WEAPON.fists, 'melee');
@@ -1236,7 +1236,7 @@ register({
 // once it has landed ('outburst_after'), the storm arcs on to up to 2 more enemies within 2 tiles of the first creature
 // it hit (else the first in its area, else the aim),
 // nearest first, outside the release's own area: each takes the design's Damage at the release's stage multiplier, one
-// roll each where the design rolls (At Once: no roll, half), with its tone's rider at the release's rider stage. The
+// roll each where the design rolls (At Once: no roll, its damage_mult), with its tone's rider at the release's rider stage. The
 // area shapes (Wave, Burst, Aura) already reach a crowd: they can't take it (item 523, PROVISIONAL). Enemies only.
 const stormable = (d: any) => isDamageDesign(d) && ['bolt', 'lance'].includes(formOf(migrateDesign(d)));
 register({
@@ -1279,7 +1279,7 @@ register({
 
 // ---------- Heart Surge (rank III; a toggle on Release or a snap cast; once a turn; rules 1.5) ----------
 // The release fires one stage higher: a held Outburst's stage really rises (its tone's rider too); past stage 4, and on a
-// snap cast, the multiplier reads one step higher (stage 4: ×2.8, the table's 0.4 step continued; a snap: ×1.2, stage 1).
+// snap cast, the multiplier reads one step higher (past stage 4: one more step of the table, ×1.8 under rules 1.19; a snap: stage 1, ×1.0).
 // For double the Strain: the Begin's Strain again (1, 2 in Flooded air), added once the release has landed (it can burn
 // and short like any Strain). Item 524, PROVISIONAL (1.2's ×2 for +1 Strain is gone: 1.5 already pays for holding).
 const SURGE_PAST = Math.round((stageMult(MAX_STAGE) + (stageMult(MAX_STAGE) - stageMult(MAX_STAGE - 1))) * 100) / 100; // one more step of the stage table past its top (rules 1.19: ×1.8; rules 1.17: ×2.8)
@@ -1411,6 +1411,10 @@ register({
 // gets +2 on their next d20 roll: an attack, a save or a check (named "Encouraged" so it never overwrites the Buff
 // school's Inspired). One at a time per ally: a second Inspire refreshes, never stacks (PROVISIONAL). Sigil and Soul
 // strikes take it too ('spell_roll'). In the story: 10 MP, +2 on the ally's next check.
+// Its numbers are read from its card (classes.json bard inspire: effects[0] the MP and, without an Emanator, the Strain;
+// effects[1] the bonus), so the card and the engine cannot drift apart.
+const insFx = (): any[] => (Object.values(CLASS_MOVE_POOL).find((m: any) => m?.id === 'inspire') as any)?.effects || [];
+const INS_MP = () => Math.abs(insFx()[0]?.value ?? -10), INS_STRAIN = () => insFx()[0]?.without_emanator?.value ?? 2, INS_BONUS = () => insFx()[1]?.value ?? 2;
 const encouraged = (g: any): Record<string, string> => (!g ? {} : ((g.story ||= {}).encouraged ||= {}));
 const encKey = (u: Unit | null | undefined, c?: Character | null) => c?.id || u?.charId || u?.id || '';
 function useEnc(h: Holder, who: string): boolean { const e = encouraged(h.g); if (!e[who] || e[who] !== (h.c?.id || h.u?.charId)) return false; delete e[who]; return true; }
@@ -1419,41 +1423,41 @@ register({
   actions: [
     {
       id: 'inspire', label: 'Inspire', scope: ['combat', 'world'], target: 'ally', ap: 1, range: 6,
-      available: (h) => { const u = h.u; if (!u) return false; if (condOn(u, 'silenced')) return 'Silenced.'; if (u.mg?.emanator && u.mg.mp < 10) return 'Needs 10 MP.'; if (!u.mg) return 'You have no Soul magic.'; return true; },
+      available: (h) => { const u = h.u; if (!u) return false; if (condOn(u, 'silenced')) return 'Silenced.'; if (u.mg?.emanator && u.mg.mp < INS_MP()) return 'Needs ' + INS_MP() + ' MP.'; if (!u.mg) return 'You have no Soul magic.'; return true; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!; if (t === u) return 'Inspire an ally, not yourself.';
-        let out = ''; if (u.mg!.emanator) u.mg!.mp -= 10; else out = strainUp(cb, rng as Rng, u, 2);
+        let out = ''; if (u.mg!.emanator) u.mg!.mp -= INS_MP(); else out = strainUp(cb, rng as Rng, u, INS_STRAIN());
         encouraged(h.g)[encKey(t)] = h.c?.id || u.charId || u.id;
         emitFx(cb, 'stance', { unit: t.id, at: t.pos, what: 'inspire' });
-        say(cb, u.name + ' inspires ' + t.name + ': +2 on their next roll' + (u.mg!.emanator ? ' (10 MP)' : '') + out + '.');
+        say(cb, u.name + ' inspires ' + t.name + ': +' + INS_BONUS() + ' on their next roll' + (u.mg!.emanator ? ' (' + INS_MP() + ' MP)' : '') + out + '.');
       },
     },
     {
       id: 'inspire_story', label: 'Inspire', scope: ['story'], target: 'none', ap: 0,
-      text: 'For 10 MP: an ally gets +2 on their next check. Name the ally in what you say.',
-      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 10 ? 'Needs 10 MP.' : true) : 'Needs an Emanator in hand.'),
+      get text() { return 'For ' + INS_MP() + ' MP: an ally gets +' + INS_BONUS() + ' on their next check. Name the ally in what you say.'; },
+      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < INS_MP() ? 'Needs ' + INS_MP() + ' MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => {
         const t = charNamed(h, args); if (!t || t === h.c) return 'Name the ally you inspire.';
-        h.c!.mp = mpNow(h.c!) - 10; encouraged(h.g)[t.id] = h.c!.id; postStory(h, h.c!.name + ' inspires ' + t.name + ': +2 on their next check.');
+        h.c!.mp = mpNow(h.c!) - INS_MP(); encouraged(h.g)[t.id] = h.c!.id; postStory(h, h.c!.name + ' inspires ' + t.name + ': +' + INS_BONUS() + ' on their next check.');
       },
     },
   ],
   on: {
-    attack_preview: (ctx, h) => { const who = encKey(ctx.att); if (encouraged(h.g)[who] && encouraged(h.g)[who] === (h.c?.id || h.u?.charId)) ctx.terms.push({ v: 2, label: 'Encouraged' }); },
+    attack_preview: (ctx, h) => { const who = encKey(ctx.att); if (encouraged(h.g)[who] && encouraged(h.g)[who] === (h.c?.id || h.u?.charId)) ctx.terms.push({ v: INS_BONUS(), label: 'Encouraged' }); },
     attack_roll: (ctx, h) => { useEnc(h, encKey(ctx.att)); },
-    spell_roll: (ctx, h) => { if (useEnc(h, encKey(ctx.u))) ctx.add += 2; }, // Sigil and Soul strikes are d20 rolls too
-    cond_apply: (ctx, h) => { if (ctx.skipSave || isBoon(ctx.id) || ['marked', 'augment_offline', 'bleeding', 'injured', 'hidden', 'prone'].includes(ctx.id) || ctx.t.side === ctx.by?.side) return; if (useEnc(h, encKey(ctx.t))) ctx.saveAdd += 2; },
+    spell_roll: (ctx, h) => { if (useEnc(h, encKey(ctx.u))) ctx.add += INS_BONUS(); }, // Sigil and Soul strikes are d20 rolls too
+    cond_apply: (ctx, h) => { if (ctx.skipSave || isBoon(ctx.id) || ['marked', 'augment_offline', 'bleeding', 'injured', 'hidden', 'prone'].includes(ctx.id) || ctx.t.side === ctx.by?.side) return; if (useEnc(h, encKey(ctx.t))) ctx.saveAdd += INS_BONUS(); },
   },
   brief: () => null,
 });
 // Story checks: check_mod reaches every character's handlers; the ally's check takes the +2 here (the Bard's handler).
 register({
   id: 'bard.inspire',
-  on: { check_mod: (ctx, h) => { const c: Character = ctx.c, e = encouraged(h.g); if (!c || !e[c.id] || e[c.id] !== h.c?.id) return; delete e[c.id]; ctx.add.push({ add: 2, label: 'Encouraged by ' + h.c!.name }); } },
+  on: { check_mod: (ctx, h) => { const c: Character = ctx.c, e = encouraged(h.g); if (!c || !e[c.id] || e[c.id] !== h.c?.id) return; delete e[c.id]; ctx.add.push({ add: INS_BONUS(), label: 'Encouraged by ' + h.c!.name }); } },
 });
 
 // ---------- Mend (rank II) ----------
-// Your Buff-school heals heal 40 (not 30) × your Healing given × the stage × the air's Healing multiplier (Thin ×0.75,
+// Your Buff-school heals use a base of 9 (not 7; rules 1.20) × the level factor × your Healing given × the stage × the air's Healing multiplier (Thin ×0.75,
 // Normal ×1, Rich and Flooded ×1.25; heal() applies the air): an upgrade of every Bard Buff heal, not a separate design
 // (PROVISIONAL). The data's AP 0 is the Soul cast AP. Out of combat the area map's casts use the same numbers.
 const GIFT_AP = SOUL_AP.begin + SOUL_AP.release, GIFT_STAGE = 1;

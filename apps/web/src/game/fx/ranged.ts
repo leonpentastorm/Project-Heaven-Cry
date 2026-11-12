@@ -231,7 +231,9 @@ export function looseKind(e: any): 'warning' | 'rout' | 'covering' | 'arc' | 'fl
 export const quietEnd = (why: unknown) => !why || ['replaced', 'fired', 'turn', 'head down'].includes(String(why));
 /** The word a special round or arrow shows (E9 `round`, Load Special's `special`). */
 export const ROUND_WORD: Record<string, string> = { armor_piercing: 'AP ROUND', armour_piercing: 'AP ROUND', hollow_point: 'HOLLOW-POINT', broadhead: 'BROADHEAD', incendiary: 'INCENDIARY', enhanced: 'ENHANCED' };
-/** A Burst's step-down per later roll (2 rolls: the second at −2; 3 rolls, Auto: each −1 more). Pure. */
+/** A Burst's step-down per later roll when the event does not carry the engine's own `step` (an old save): the enemy's
+ * kept Burst, 2 rolls with the second at −2, or 3 rolls each −1 more. A character's is −4 (Quick −3, Heavy braced −1,
+ * rules 1.18) and comes from the event. Pure. */
 export const stepDown = (vi: number, rolls: number) => (vi <= 0 ? 0 : rolls >= 3 ? vi : 2);
 /** The part a Called Shot struck: the engine's opt (E1), else read from what it caused (Slowed, lowered, Dazed, Prone). */
 export function partOf(r: TechRec | null): 'leg' | 'arm' | 'head' | null {
@@ -619,7 +621,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
       switch (id) {
         case 'burst': case 'walking_fire': {
           // the step-down shows: each later roll climbs (the token kicks up) and a muted −N flicks off the muzzle
-          const st = stepDown(vi, r!.shots.length);
+          const st = vi > 0 && Number.isFinite((e as any).step) ? Math.abs(Number((e as any).step)) : stepDown(vi, r!.shots.length);
           if (st && from) {
             const a = angle(from, toP);
             word('−' + st, { x: from.x + Math.cos(a) * from.s * 0.5, y: from.y + Math.sin(a) * from.s * 0.5, s: from.s }, WHITE, 0.3, { ms: 480, rise: 0.2 });

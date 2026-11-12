@@ -1,3 +1,4 @@
+export { resolveTexts, renderText, fmtNumber } from './datatext';
 export * from './data';
 export * from './rng';
 export * from './character';

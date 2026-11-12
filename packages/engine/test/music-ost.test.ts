@@ -124,8 +124,10 @@ describe('musicFor in a fight', () => {
     g = apply(g, { type: 'char/add', sheet: sheetFrom('sharpshooter', 'Vel') }, 'host');
     g = apply(g, { type: 'sandbox/start' }, 'host');
     // Gearing up (the story phase on the Proving Ground map) plays Gearing Up; a wave on plays the fight music.
-    if (g.phase !== 'combat') { expect(musicFor(g)).toMatchObject({ layer: 'ambient', track: OST.gearing_up }); g = JSON.parse(JSON.stringify(g)); g.phase = 'combat'; }
-    if (!g.combat) return;
+    expect(g.phase).not.toBe('combat'); expect(musicFor(g)).toMatchObject({ layer: 'ambient', track: OST.gearing_up });
+    // truth pass 3: there is no fight until a wave is called (the early return here never let the combat half run)
+    g = apply(g, { type: 'sandbox/fight' } as any, 'host');
+    expect(g.combat).toBeTruthy();
     expect(musicFor(g)).toMatchObject({ layer: 'combat', track: { artist: 'Project Heaven Cry OST' } });
   });
 });

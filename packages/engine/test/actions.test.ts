@@ -27,7 +27,7 @@ describe('data/actions.json', () => {
   it('where rules.json lists the same action, the two costs agree', () => {
     const R: Record<string, any> = Object.fromEntries(((rulesJ as any).combat.actions as any[]).map((a) => [a.id, a]));
     for (const a of ACTIONS) if (a.rule && typeof R[a.rule]?.ap === 'number') expect(a.ap, a.id).toBe(R[a.rule].ap);
-    expect(ACTION.stim.ap_downed).toBe(R.stabilise.ap); expect(ACTION.stim.ap_downed_medic).toBe(R.stabilise.ap_combat_medic);
+    expect(ACTION.stim.ap_downed).toBe(R.stabilise.ap); expect(ACTION.stim.ap_downed_medic).toBe(R.stabilise.ap_bard); // the key the truth pass renamed (ap_combat_medic: the Bard is the class now)
   });
 });
 

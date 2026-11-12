@@ -539,7 +539,7 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
 // =====================================================================================================================
 function verseNote(h: Holder) { const l = sayLine(h); note(h, 'cast an Outburst in verse' + (l ? ': "' + l.slice(0, 160) + '"' : ' (no line said)') + ' (+1 range, ×1.1 damage given).'); }
 register({
-  id: 'verse_of_war', claims: [0, 1],
+  id: 'verse_of_war', claims: 'all',
   toggles: [{
     id: 'verse', label: 'In verse', on: ['combat/outburst'],
     available: (h) => (!h.u?.mg ? false : sayLine(h) ? true : 'Say your verse first (Say).'),
@@ -839,7 +839,7 @@ register({
 
 // =====================================================================================================================
 // Heretic (trait). Stolen Fire: pray and use Blessings without Faith or a pact: the Perks action prays to any patron
-// for one of its Blessings with Will Power in Faith's place (the 3/5/7 gates, the roll, the cooldown), and Blessing
+// for one of its Blessings as an Atheist prays a learned Hymn (rules 1.6, item 628: d20 + Will Power against 14 / 16 / 18, no Witnessed), and Blessing
 // Power is 1 + 0.1 × Will Power (provisional reading, plan 6a). Excommunicated: an ally's Blessing on you fails on a
 // d6 of 1-2; at the first session start the Lumeri Church is Hostile (standing −40); which other faiths count is the
 // Narrator's.
@@ -897,7 +897,7 @@ register({
 });
 
 // =====================================================================================================================
-// True Believer (trait). Unshaken: prayer cooldown 1 turn shorter (minimum 1). Once per session your prayer is
+// True Believer (trait). Unshaken: the wait between Hymns is 1 round shorter, never under 2 rounds (rules 1.22). Once per session your prayer is
 // answered with a small miracle (a story button: the Narrator grants it). Rites: every day you can't keep them, −1 on
 // Faith and Will Power rolls until amends; the Narrator keeps the count in traitState rites_missed (capped at −3, plan
 // 6a, provisional).

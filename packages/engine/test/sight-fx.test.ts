@@ -116,7 +116,10 @@ describe('team fight', () => {
     expect(vo.sight.foe).toBeUndefined();
     expect(vo.sight.pc).toBe(cur.side === 'pc' ? mv.sight.foe : mv.sight.pc);
     for (const pid of ['h1', 'p2']) { const vc = viewFor(g, pid).combat!; expect(vc.sightSeen).toBeUndefined(); expect(vc.sightPos).toBeUndefined(); }
-    for (const pid of ['h1', 'p2']) for (const e of viewFor(g, pid).combat!.fx!) if (e.k === 'sight') expect(e.only).toBe('pc');
+    // A walk makes no 'sight' event of its own (its sight rides the move event, checked above); any that a view does
+    // carry must be its own side's. Stated as one list, so the check is not a loop that never runs (truth pass 3).
+    const leaks = ['h1', 'p2'].flatMap((pid) => viewFor(g, pid).combat!.fx!.filter((e: FxEvent) => e.k === 'sight' && e.only !== 'pc'));
+    expect(leaks).toEqual([]);
   });
 });
 

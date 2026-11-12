@@ -161,13 +161,19 @@ describe('Into the Dark, Shadow Step and Charge! on the area map', () => {
 
 describe('Grim Reaper on the area map', () => {
   it('a kill from the area map (the opening blow of the fight) counts', () => {
-    const s = storyWith([{ perks: ['grim_reaper'], weapon: 'hellraiser_service_rifle' }]); const c = s.chars[0], at = positionsOf(s.g)[c.id];
-    s.act({ type: 'narrator/turn', turn: { narration: 'A drone.', npcs: [{ action: 'place', name: 'Scavenger drone', side: 'hostile', tier: 'minion', weapon: 'fists', at: refOf(freeNear(s.g, at, 2)) }] } } as any);
-    const n = npcsOf(s.g)[npcsOf(s.g).length - 1];
-    s.g.characters[c.id].skills.marksmanship = 10;
-    for (let i = 0; i < 1; i++) s.act({ type: 'world/act', charId: c.id, act: 'attack', targetId: n.id, mode: 'shot' } as any);
-    const cb = s.g.combat; if (!cb) return;
-    if (cb.units.find((u) => u.npcId === n.id)?.dead) expect(logHas(cb, /Grim Reaper/)).toBe(true);
+    // truth pass 3: the expect below never ran (the opening shot missed with this seed and the test returned). The seed
+    // is now searched for the first one whose opening shot kills the 1-HP drone, and the kill's AP is asserted.
+    const once = (seed: number) => {
+      const s = storyWith([{ perks: ['grim_reaper'], weapon: 'hellraiser_service_rifle' }]); const c = s.chars[0], at = positionsOf(s.g)[c.id];
+      s.act({ type: 'narrator/turn', turn: { narration: 'A drone.', npcs: [{ action: 'place', name: 'Scavenger drone', side: 'hostile', tier: 'minion', weapon: 'fists', at: refOf(freeNear(s.g, at, 2)) }] } } as any);
+      const n = npcsOf(s.g)[npcsOf(s.g).length - 1];
+      s.g.characters[c.id].skills.marksmanship = 10; (n as any).hp = 1; s.g.rng.state = seed;
+      s.act({ type: 'world/act', charId: c.id, act: 'attack', targetId: n.id, mode: 'shot' } as any);
+      return { cb: s.g.combat!, dead: !!s.g.combat?.units.find((u) => u.npcId === n.id)?.dead };
+    };
+    let r = once(1); for (let seed = 2; !r.dead && seed < 80; seed++) r = once(seed);
+    expect(r.dead).toBe(true);
+    expect(logHas(r.cb, /\+2 AP.*Grim Reaper|Grim Reaper.*\+2/)).toBe(true);
   });
 });
 

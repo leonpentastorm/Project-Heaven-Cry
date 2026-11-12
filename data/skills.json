@@ -45,19 +45,7 @@
       "slot": "alpha",
       "summary": "The tank.",
       "per_point": {
-        "text": "Your Guard pool holds 1 more (5 at most). The Guard technique gives you more Guard: 1, plus 1 for every point here after the first (Brace gives a flat 2, whatever your points).",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "hp_per_level",
-            "value": 2
-          },
-          {
-            "op": "stat_mod",
-            "stat": "crit_damage_taken_pct",
-            "value": -5
-          }
-        ]
+        "text": "Your Guard pool holds 1 more (5 at most). The Guard technique gives you more Guard: 1, plus 1 for every point here after the first (Brace gives a flat 2, whatever your points)."
       },
       "gates": [
         "armor:heavy"
@@ -87,7 +75,7 @@
           "name": "Second Wind",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "2 AP, once per combat: recover 25% of your max HP.",
+          "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover 25% of your max HP.",
           "effects": [
             {
               "op": "grant_action",
@@ -101,12 +89,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "durability",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -114,29 +102,30 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "durability",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
         "from_points": 5,
         "trigger": "a social roll against someone weaker or nervous",
         "consequence": "They freeze up around the walking statue: −3 on that roll.",
-        "text": "Trigger: a social roll against someone weaker or nervous. Indulge: They freeze up around the walking statue: −3 on that roll.",
+        "text": "Trigger: a social roll against someone weaker or nervous. Indulge: They freeze up around the walking statue: −{=overreach.effects.0.value} on that roll.",
         "effects": [
           {
             "op": "tn_mod",
@@ -148,9 +137,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "defender"
-      ],
       "tags": [
         "alpha",
         "core:body",
@@ -198,14 +184,7 @@
       "slot": "beta",
       "summary": "Wounds don't slow you down.",
       "per_point": {
-        "text": "−10% elemental damage taken. +2 HP every level.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "elemental_damage_taken_pct",
-            "value": -10
-          }
-        ]
+        "text": "−10% elemental damage taken. +2 HP every level."
       },
       "gates": [],
       "unlocks": {
@@ -232,7 +211,7 @@
           "name": "Still Standing",
           "category": "AP Mod",
           "mastery": 2,
-          "text": "When you drop to 0 HP, take one more turn with 3 AP before you fall Downed.",
+          "text": "When you drop to 0 HP, take one more turn with {=unlocks.5.effects.0.ap} AP before you fall Downed.",
           "effects": [
             {
               "op": "grant_action",
@@ -246,12 +225,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "pain_threshold",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -259,22 +238,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "pain_threshold",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -292,9 +272,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "defender"
-      ],
       "tags": [
         "beta",
         "core:body",
@@ -342,14 +319,7 @@
       "slot": "gamma",
       "summary": "Touch, smell, temperature and the ground under your feet. Not sight or sound; that's Vigilance.",
       "per_point": {
-        "text": "You sense what you can't see (by ear, smell and touch) 1 better. Your Warn Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "heal_received_pct",
-            "value": 10
-          }
-        ]
+        "text": "You sense what you can't see (by ear, smell and touch) 1 better. Your Warn Call reaches 1 tile further. On a check it rolls 1 better than its points say."
       },
       "gates": [],
       "unlocks": {
@@ -357,7 +327,7 @@
           "name": "Read the Air",
           "category": "Conversation Quirk",
           "mastery": 1,
-          "text": "Learn one physical tell of an NPC you're close to (pulse, sweat, scent). +2 on your next social roll against them.",
+          "text": "Learn one physical tell of an NPC you're close to (pulse, sweat, scent). +{=unlocks.3.effects.1.value} on your next social roll against them.",
           "effects": [
             {
               "op": "narrator",
@@ -394,12 +364,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "sensory",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -407,29 +377,30 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "sensory",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
         "from_points": 5,
         "trigger": "a blast of noise, light or stench (flashbang, crowd, gas)",
         "consequence": "Overwhelmed: lose 2 AP next turn.",
-        "text": "Trigger: a blast of noise, light or stench (flashbang, crowd, gas). Indulge: Overwhelmed: lose 2 AP next turn.",
+        "text": "Trigger: a blast of noise, light or stench (flashbang, crowd, gas). Indulge: Overwhelmed: lose {=overreach.effects.0.value|abs} AP next turn.",
         "effects": [
           {
             "op": "stat_mod",
@@ -441,9 +412,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "medic"
-      ],
       "tags": [
         "gamma",
         "core:body",
@@ -491,20 +459,7 @@
       "slot": "alpha",
       "summary": "Hit harder, bend further, lift higher.",
       "per_point": {
-        "text": "+1 to hit with heavy melee weapons and bare hands. +5% physical damage. Your melee techniques are harder to save against. From 2 points, +1 to your counter-attacks.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "mult_physical",
-            "value": 0.05
-          },
-          {
-            "op": "stat_mod",
-            "stat": "counter",
-            "basis": "skill_mod",
-            "min": 0
-          }
-        ]
+        "text": "+1 to hit with heavy melee weapons and bare hands. +5% physical damage. Your melee techniques are harder to save against. From 2 points, +1 to your counter-attacks."
       },
       "gates": [
         "weapon:heavy_melee",
@@ -515,7 +470,7 @@
           "name": "Heavy Hands",
           "category": "Combat Interaction",
           "mastery": 1,
-          "text": "A melee technique of yours that pushes its target moves it 1 tile further.",
+          "text": "A melee technique of yours that pushes its target moves it {=unlocks.3.effects.0.tiles} tile further.",
           "effects": [
             {
               "op": "knockback",
@@ -535,7 +490,7 @@
           "name": "Follow Through",
           "category": "Combat Interaction",
           "mastery": 2,
-          "text": "When a Finisher of yours takes its target out, you are left with 1 Momentum.",
+          "text": "When a Finisher of yours takes its target out, you are left with {=unlocks.5.effects.0.set} Momentum.",
           "effects": [
             {
               "op": "resource",
@@ -550,12 +505,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "raw_power",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -563,22 +518,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "raw_power",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -596,9 +552,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "fighter"
-      ],
       "tags": [
         "alpha",
         "core:body",
@@ -646,14 +599,7 @@
       "slot": "beta",
       "summary": "Fear doesn't get a vote.",
       "per_point": {
-        "text": "+1 on Body saves (poison, knock-downs, being pushed or pinned).",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "save_body",
-            "basis": "skill_mod"
-          }
-        ]
+        "text": "+1 on Body saves (poison, knock-downs, being pushed or pinned)."
       },
       "gates": [],
       "unlocks": {
@@ -680,7 +626,7 @@
           "name": "Point Man",
           "category": "Passive",
           "mastery": 2,
-          "text": "Allies within 3 tiles roll Fear saves with your Guts in place of their own.",
+          "text": "Allies within {=unlocks.5.effects.0.value} tiles roll Fear saves with your Guts in place of their own.",
           "effects": [
             {
               "op": "stat_mod",
@@ -693,12 +639,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "guts",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -706,22 +652,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "guts",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -739,10 +686,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "fighter",
-        "defender"
-      ],
       "tags": [
         "beta",
         "core:body",
@@ -795,16 +738,7 @@
       "slot": "gamma",
       "summary": "You run the conversation through fear.",
       "per_point": {
-        "text": "Your Threaten Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "strength",
-            "basis": "skill_mod",
-            "min": 0,
-            "context": "Threaten and the conditions this skill speaks: the save against them is 12 + this"
-          }
-        ]
+        "text": "Your Threaten Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say."
       },
       "gates": [],
       "unlocks": {
@@ -852,12 +786,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "intimidation",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -865,22 +799,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "intimidation",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -898,10 +833,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "assassin",
-        "hexer"
-      ],
       "tags": [
         "gamma",
         "core:body",
@@ -949,19 +880,7 @@
       "slot": "alpha",
       "summary": "The quick hand. Guns, bows, thrown weapons and light blades; reloads, recoil, quick-draw.",
       "per_point": {
-        "text": "+1 to hit with guns, light blades and thrown weapons. +2% critical damage. You throw half a tile further. Your shots' techniques are harder to save against.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "throw_range",
-            "value": 0.5
-          },
-          {
-            "op": "stat_mod",
-            "stat": "recoil_reduction",
-            "value": 0.5
-          }
-        ]
+        "text": "+1 to hit with guns, light blades and thrown weapons. +2% critical damage. You throw half a tile further. Your shots' techniques are harder to save against."
       },
       "gates": [
         "weapon:guns",
@@ -973,7 +892,7 @@
           "name": "Speed Load",
           "category": "AP Mod",
           "mastery": 1,
-          "text": "Reloading costs 1 AP less.",
+          "text": "Reloading costs {=unlocks.3.effects.0.value|abs} AP less.",
           "effects": [
             {
               "op": "stat_mod",
@@ -1008,12 +927,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "dexterity",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1021,22 +940,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "dexterity",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -1054,9 +974,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "marksman"
-      ],
       "tags": [
         "alpha",
         "core:body",
@@ -1105,15 +1022,7 @@
       "slot": "beta",
       "summary": "Armour just slows you down.",
       "per_point": {
-        "text": "+1 Defense (you are harder to hit), from 2 points.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "dodge",
-            "basis": "skill_mod",
-            "min": 0
-          }
-        ]
+        "text": "+1 Defense (you are harder to hit), from 2 points."
       },
       "gates": [
         "armor:light",
@@ -1155,12 +1064,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "athletics",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1168,22 +1077,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "athletics",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -1202,9 +1112,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "fighter"
-      ],
       "tags": [
         "beta",
         "core:body",
@@ -1252,14 +1159,7 @@
       "slot": "gamma",
       "summary": "Spotting danger is one thing. Moving in time is another.",
       "per_point": {
-        "text": "+1 Initiative: you act earlier in the round. Your Cue Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "ambush_damage_taken_pct",
-            "value": -10
-          }
-        ]
+        "text": "+1 Initiative: you act earlier in the round. Your Cue Call reaches 1 tile further. On a check it rolls 1 better than its points say."
       },
       "gates": [],
       "unlocks": {
@@ -1301,12 +1201,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "reaction_speed",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1314,22 +1214,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "reaction_speed",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -1347,10 +1248,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "marksman",
-        "assassin"
-      ],
       "tags": [
         "gamma",
         "core:body",
@@ -1398,19 +1295,8 @@
       "slot": "alpha",
       "summary": "Stealth, sleight of hand, sticky fingers.",
       "per_point": {
-        "text": "+5% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "stealth",
-            "value": 0.5
-          },
-          {
-            "op": "stat_mod",
-            "stat": "mult_ambush",
-            "value": 0.05
-          }
-        ]
+        "text": "+{=per_point.ambush_per_point|pct}% ambush damage. Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
+        "ambush_per_point": 0.05
       },
       "gates": [
         "gear:stealth"
@@ -1420,7 +1306,7 @@
           "name": "Lift",
           "category": "Combat Interaction",
           "mastery": 1,
-          "text": "2 AP: steal one item or magazine from an adjacent enemy.",
+          "text": "{=unlocks.3.effects.0.ap} AP: steal one item or magazine from an adjacent enemy.",
           "effects": [
             {
               "op": "grant_action",
@@ -1440,7 +1326,7 @@
           "name": "Vanish",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "3 AP: become Hidden even while watched, if there's cover within one Move.",
+          "text": "{=unlocks.5.effects.0.ap} AP: become Hidden even while watched, if there's cover within one Move.",
           "effects": [
             {
               "op": "grant_action",
@@ -1460,12 +1346,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "ingenuity",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1473,29 +1359,30 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "ingenuity",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
         "from_points": 5,
         "trigger": "dealing with guards, police or officials",
         "consequence": "You look shifty: −3 on social rolls with them, and they may search you.",
-        "text": "Trigger: dealing with guards, police or officials. Indulge: You look shifty: −3 on social rolls with them, and they may search you.",
+        "text": "Trigger: dealing with guards, police or officials. Indulge: You look shifty: {=overreach.effects.0.value} on social rolls with them, and they may search you.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -1511,9 +1398,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "assassin"
-      ],
       "tags": [
         "alpha",
         "core:mind",
@@ -1566,14 +1450,7 @@
       "slot": "beta",
       "summary": "Seeing how a thing works: a lock, a mechanism, a crime scene, an enemy. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
       "per_point": {
-        "text": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "analyze_range",
-            "value": 1
-          }
-        ]
+        "text": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it is quicker (Quick Read), and at 5 it also shows the target's weak point."
       },
       "gates": [],
       "unlocks": {
@@ -1600,7 +1477,7 @@
           "name": "Read Them",
           "category": "Passive",
           "mastery": 2,
-          "text": "Enemies you've analyzed deal 15% less damage to your whole squad.",
+          "text": "Enemies you've analyzed deal {=unlocks.5.effects.0.value_pct}% less damage to your whole squad.",
           "effects": [
             {
               "op": "damage_reduction",
@@ -1614,12 +1491,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "analysis",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1627,22 +1504,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "analysis",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -1660,10 +1538,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "warden",
-        "trickster"
-      ],
       "tags": [
         "beta",
         "core:mind",
@@ -1695,7 +1569,7 @@
           "Yes, yes, a watchmaker and a gunsmith aren't far apart. Lay every part of a pendulum clock on the table and odds are your brain starts shorting out. Guns are the same: picking one up and shooting is a world away from stripping every screw and putting it back. Anyone can read a clock, but how many can fix one? What you need is someone who sees every piece of the puzzle and joins them into one. Like me! Unless you use a digital clock or one of those toy guns from the carnival stalls, in which case: scram. Shoo, shoo."
         ],
         "intro": "Acuity is your grasp of complex mechanisms, from something as small as a stopwatch to something as huge as a transcontinental cannon. All of it can be taken apart by you.",
-        "effect": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
+        "effect": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it is quicker (Quick Read), and at 5 it also shows the target's weak point.",
         "high_levels": "you see how everything works, man-made or not: a lock, a network, a crime scene, the way an enemy guards itself. That helps with a lot, but the first answer that fits is the one you keep, and you lose interest in anything that can't be taken apart, people included.",
         "good_for": "detectives, locksmiths, slicers, clockmakers, anyone who reads an enemy before the shooting starts.",
         "bad_for": "enchanters, party people, therapists, anyone who has to act before they understand.",
@@ -1722,14 +1596,7 @@
       "slot": "gamma",
       "summary": "Sight, sound and hostile intent.",
       "per_point": {
-        "text": "You notice traps, hidden things and hidden enemies 1 better, and 1 tile further off. Your Spot Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "detection",
-            "value": 1
-          }
-        ]
+        "text": "You notice traps, hidden things and hidden enemies 1 better, and 1 tile further off. Your Spot Call reaches 1 tile further. On a check it rolls 1 better than its points say."
       },
       "gates": [],
       "unlocks": {
@@ -1768,12 +1635,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "vigilant",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1781,22 +1648,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "vigilant",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -1814,10 +1682,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "marksman",
-        "mage"
-      ],
       "tags": [
         "gamma",
         "core:mind",
@@ -1865,19 +1729,7 @@
       "slot": "alpha",
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
       "per_point": {
-        "text": "+10% Sigil power. You know 1 more Sigil word. Every 2 points: Sigils reach 1 tile further and last 1 round longer. Every 3 points: a Sigil burns 1 less core charge. Your Sigils' conditions are harder to save against.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "mult_sigil",
-            "value": 0.1
-          },
-          {
-            "op": "stat_mod",
-            "stat": "sigil_duration",
-            "value": 0.5
-          }
-        ]
+        "text": "+10% Sigil power. You know 1 more Sigil word. Every 2 points: Sigils reach 1 tile further and last 1 round longer. Every 3 points: a Sigil burns 1 less core charge. Your Sigils' conditions are harder to save against."
       },
       "gates": [
         "focus:evoker"
@@ -1887,7 +1739,7 @@
           "name": "Overclock",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "Draw a spell one word longer than your Max Sigil words (never past 4 glyphs), for +2 Core charge.",
+          "text": "Draw a spell one word longer than your Max Sigil words (never past 4 glyphs), for +{=unlocks.3.effects.1.value|abs} Core charge.",
           "effects": [
             {
               "op": "grant_action",
@@ -1927,12 +1779,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "brain_power",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1940,29 +1792,30 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "brain_power",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
         "from_points": 5,
         "trigger": "examining something under time pressure",
         "consequence": "Lost in theory: lose 2 AP.",
-        "text": "Trigger: examining something under time pressure. Indulge: Lost in theory: lose 2 AP.",
+        "text": "Trigger: examining something under time pressure. Indulge: Lost in theory: lose {=overreach.effects.0.value|abs} AP.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1974,9 +1827,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "mage"
-      ],
       "tags": [
         "alpha",
         "core:mind",
@@ -2023,14 +1873,7 @@
       "slot": "beta",
       "summary": "The scientist's library. Mirrors Lore Master.",
       "per_point": {
-        "text": "+1 on Brain saves (confusion, illusions, having your mind turned).",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "sigil_range",
-            "value": 0.5
-          }
-        ]
+        "text": "+1 on Brain saves (confusion, illusions, having your mind turned)."
       },
       "gates": [],
       "unlocks": {
@@ -2062,7 +1905,7 @@
           "name": "Proven Formula",
           "category": "Passive",
           "mastery": 2,
-          "text": "+3 on your saves against a spell or condition that has already hit you this combat.",
+          "text": "+{=unlocks.5.effects.0.value} on your saves against a spell or condition that has already hit you this combat.",
           "effects": [
             {
               "op": "save_mod",
@@ -2076,12 +1919,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "rumination",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -2089,22 +1932,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "rumination",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -2128,10 +1972,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "warden",
-        "scribe"
-      ],
       "tags": [
         "beta",
         "core:mind",
@@ -2183,16 +2023,7 @@
       "slot": "gamma",
       "summary": "Logic as a weapon.",
       "per_point": {
-        "text": "Persuading an enemy in a fight is harder to resist. Your Brief Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "strength",
-            "basis": "skill_mod",
-            "min": 0,
-            "context": "Persuade and the conditions this skill speaks: the save against them is 12 + this"
-          }
-        ]
+        "text": "Persuading an enemy in a fight is harder to resist. Your Brief Call reaches 1 tile further. On a check it rolls 1 better than its points say."
       },
       "gates": [],
       "unlocks": {
@@ -2236,12 +2067,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "eloquence",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -2249,22 +2080,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "eloquence",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -2282,10 +2114,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "scribe",
-        "trickster"
-      ],
       "tags": [
         "gamma",
         "core:mind",
@@ -2333,14 +2161,7 @@
       "slot": "alpha",
       "summary": "Shapes thought into images and Sigils into forms.",
       "per_point": {
-        "text": "+5% elemental damage.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "mult_elemental",
-            "value": 0.1
-          }
-        ]
+        "text": "+5% elemental damage."
       },
       "gates": [
         "gear:projector",
@@ -2351,7 +2172,7 @@
           "name": "Afterimage",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "2 AP: project a decoy of yourself that draws the next enemy attack.",
+          "text": "{=unlocks.3.effects.0.ap} AP: project a decoy of yourself that draws the next enemy attack.",
           "effects": [
             {
               "op": "grant_action",
@@ -2384,12 +2205,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "visualization",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -2397,22 +2218,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "visualization",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -2430,10 +2252,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "mage",
-        "channeler"
-      ],
       "tags": [
         "alpha",
         "core:mind",
@@ -2481,14 +2299,7 @@
       "slot": "beta",
       "summary": "Making a thing work now with what is at hand. Fixes guns, gear and machines in the field, robot squadmates included.",
       "per_point": {
-        "text": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "sigil_core_saving",
-            "value": 0.3334
-          }
-        ]
+        "text": "−10% ambush damage taken. Field Repair restores more for each point from 3 up."
       },
       "gates": [],
       "unlocks": {
@@ -2496,13 +2307,15 @@
           "name": "Field Repair",
           "category": "AP Mod",
           "mastery": 1,
-          "text": "2 AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore 10% + 5% per Improvisation point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
+          "text": "{=unlocks.3.effects.0.ap} AP and a spare-parts kit charge: clear a jam, fix a broken device, or restore {=unlocks.3.effects.0.repair_base|pct}% + {=unlocks.3.effects.0.repair_per_point|pct}% per Improvisation point above 3 of a weapon's, a machine's or a robotic ally's Durability. Out of combat, 10 minutes per charge restores 50%.",
           "effects": [
             {
               "op": "grant_action",
               "action": "field_repair",
               "ap": 2,
-              "uses": "at_will"
+              "uses": "at_will",
+              "repair_base": 0.1,
+              "repair_per_point": 0.05
             },
             {
               "op": "perk_choice",
@@ -2530,12 +2343,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "proficiency",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -2543,22 +2356,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "proficiency",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -2576,10 +2390,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "medic",
-        "scribe"
-      ],
       "tags": [
         "beta",
         "core:mind",
@@ -2611,7 +2421,7 @@
           "The manual says a servo-hand wants a clean bench, a calibrated driver and four hours. I had a ditch, a soup spoon, and as long as it takes an Ork to cross a field. He still has the hand. Plans are lovely things. I have had hundreds, and every one of them died in the first minute, most of them louder than I did. What you have after that is whatever is in your pockets, and how fast you stop mourning the plan. The spoon is still in there, by the way. Load-bearing. Nobody tell him."
         ],
         "intro": "Improvisation is what you do when the plan is gone: making the thing in front of you work with whatever is at hand, right now, and working out why later.",
-        "effect": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
+        "effect": "−10% ambush damage taken. Field Repair restores more for each point from 3 up.",
         "high_levels": "nothing catches you flat and nothing stays broken near you. But you stop making plans at all, and the people who depend on you can never tell what you will do next.",
         "good_for": "field mechanics, ditch medics, smugglers, anyone who performs for a living.",
         "bad_for": "planners, quartermasters, whoever signed for the equipment.",
@@ -2629,14 +2439,7 @@
       "slot": "gamma",
       "summary": "Warmth, persuasion, and lying with a smile.",
       "per_point": {
-        "text": "An offer of terms is harder to refuse. Your Rally Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "save_brain",
-            "basis": "skill_mod"
-          }
-        ]
+        "text": "An offer of terms is harder to refuse. Your Rally Call reaches 1 tile further. On a check it rolls 1 better than its points say."
       },
       "gates": [],
       "unlocks": {
@@ -2680,12 +2483,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "charisma",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -2693,29 +2496,30 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "charisma",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
         "from_points": 5,
         "trigger": "a proud or hostile NPC",
         "consequence": "They read you as a bootlicker: −3 with them for the scene.",
-        "text": "Trigger: a proud or hostile NPC. Indulge: They read you as a bootlicker: −3 with them for the scene.",
+        "text": "Trigger: a proud or hostile NPC. Indulge: They read you as a bootlicker: {=overreach.effects.0.value} with them for the scene.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -2727,9 +2531,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "trickster"
-      ],
       "tags": [
         "gamma",
         "core:mind",
@@ -2776,19 +2577,7 @@
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
       "per_point": {
-        "text": "+10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "soul_cast_ap",
-            "value": -0.5
-          },
-          {
-            "op": "stat_mod",
-            "stat": "soul_designs_ready",
-            "value": 0.5
-          }
-        ]
+        "text": "+10% healing given. From 3 points, one Pump of an Outburst each round is free. From 7 points, a held Outburst swells without Strain."
       },
       "gates": [
         "focus:emanator_foci"
@@ -2817,7 +2606,7 @@
           "name": "Mercy",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "2 AP: a humanoid enemy below 50% HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
+          "text": "{=unlocks.5.effects.0.ap} AP: a humanoid enemy below 50% HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
           "effects": [
             {
               "op": "grant_action",
@@ -2831,12 +2620,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "empathy",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -2844,22 +2633,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "empathy",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -2878,9 +2668,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "channeler"
-      ],
       "tags": [
         "alpha",
         "core:soul",
@@ -2915,7 +2702,7 @@
           "I saw. Horror... horror and pain, grief and helplessness. Oh, I'd give my whole fortune to forget, you understand? Forget the horror in their eyes, the horror I still feel in my chest, the horror no words can describe. The horror of an empty face hanging above an iron stake."
         ],
         "intro": "Empathy is the bridge between one person and another: feeling what someone else is going through, putting yourself where they stand, and understanding at least partly why they do what they do.",
-        "effect": "+10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two.",
+        "effect": "+10% healing given. From 3 points, one Pump of an Outburst each round is free. From 7 points, a held Outburst swells without Strain.",
         "high_levels": "you become one with humanity. You understand everyone's circumstances, and everyone's story gets into you. You cry other people's tears and stick your nose into business that isn't yours.",
         "good_for": "therapists, human lie detectors, good alignments.",
         "bad_for": "chaotic alignments, serial killers, non-humanoids.",
@@ -2931,14 +2718,7 @@
       "slot": "beta",
       "summary": "The squad is a world of its own.",
       "per_point": {
-        "text": "+10% healing received.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "mult_heal_given",
-            "value": 0.1
-          }
-        ]
+        "text": "+10% healing received."
       },
       "gates": [],
       "unlocks": {
@@ -2969,7 +2749,7 @@
           "name": "Nobody Left Behind",
           "category": "Passive",
           "mastery": 2,
-          "text": "Carry a Downed ally at full Movement, and stabilise them for 1 AP.",
+          "text": "Carry a Downed ally at full Movement, and stabilise them for {=unlocks.5.effects.0.value|abs} AP.",
           "effects": [
             {
               "op": "stat_mod",
@@ -2987,12 +2767,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "camaraderie",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -3000,22 +2780,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "camaraderie",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -3033,10 +2814,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "medic",
-        "bard"
-      ],
       "tags": [
         "beta",
         "core:soul",
@@ -3084,16 +2861,7 @@
       "slot": "gamma",
       "summary": "Metaphor, subtext, poetry and flirting.",
       "per_point": {
-        "text": "Your Taunt Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "strength",
-            "basis": "skill_mod",
-            "min": 0,
-            "context": "Taunt and the conditions this skill speaks: the save against them is 12 + this"
-          }
-        ]
+        "text": "Your Taunt Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say."
       },
       "gates": [],
       "unlocks": {
@@ -3133,12 +2901,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "implication",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -3146,22 +2914,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "implication",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -3179,10 +2948,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "bard",
-        "hexer"
-      ],
       "tags": [
         "gamma",
         "core:soul",
@@ -3232,29 +2997,7 @@
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
       "per_point": {
-        "text": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "mult_soul",
-            "value": 0.15
-          },
-          {
-            "op": "stat_mod",
-            "stat": "mana_syphon_pct",
-            "value": 10
-          },
-          {
-            "op": "stat_mod",
-            "stat": "strain_limit",
-            "value": 0.5
-          },
-          {
-            "op": "stat_mod",
-            "stat": "soul_module_slots",
-            "value": 0.3334
-          }
-        ]
+        "text": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against."
       },
       "gates": [
         "focus:emanator"
@@ -3300,12 +3043,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "will_power",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -3313,29 +3056,30 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "will_power",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
         "from_points": 5,
         "trigger": "contact with the upper realm (a holy site, a Blessing, a strong Soul spell)",
         "consequence": "Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Acuity this scene.",
-        "text": "Trigger: contact with the upper realm (a holy site, a Blessing, a strong Soul spell). Indulge: Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take −2 on Rumination and Acuity this scene.",
+        "text": "Trigger: contact with the upper realm (a holy site, a Blessing, a strong Soul spell). Indulge: Your twin soul speaks. The Narrator gives you a vision that may or may not be true, and you take {=overreach.effects.1.value} on Rumination and Acuity this scene.",
         "effects": [
           {
             "op": "narrator",
@@ -3356,9 +3100,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "channeler"
-      ],
       "tags": [
         "alpha",
         "core:soul",
@@ -3405,14 +3146,7 @@
       "slot": "beta",
       "summary": "A face that never moves.",
       "per_point": {
-        "text": "+1 on Heart saves (fear, despair, losing your nerve).",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "save_heart",
-            "basis": "skill_mod"
-          }
-        ]
+        "text": "+1 on Heart saves (fear, despair, losing your nerve)."
       },
       "gates": [],
       "unlocks": {
@@ -3420,7 +3154,7 @@
           "name": "Poker Face",
           "category": "Conversation Quirk",
           "mastery": 1,
-          "text": "Interrogators and lie-readers take −3 against you.",
+          "text": "Interrogators and lie-readers take −{=unlocks.3.effects.0.value} against you.",
           "effects": [
             {
               "op": "tn_mod",
@@ -3459,12 +3193,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "composure",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -3472,22 +3206,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "composure",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -3506,9 +3241,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "warden"
-      ],
       "tags": [
         "gamma",
         "core:soul",
@@ -3556,14 +3288,7 @@
       "slot": "gamma",
       "summary": "The occultist's library: old scripts, curses, relics and the names of things.",
       "per_point": {
-        "text": "Your Name It Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "soul_range",
-            "value": 0.5
-          }
-        ]
+        "text": "Your Name It Call reaches 1 tile further. On a check it rolls 1 better than its points say."
       },
       "gates": [],
       "unlocks": {
@@ -3595,7 +3320,7 @@
           "name": "Ward",
           "category": "AP Mod",
           "mastery": 2,
-          "text": "1 AP: an ally gets +3 on their next save against a supernatural effect.",
+          "text": "{=unlocks.5.effects.0.ap} AP: an ally gets +3 on their next save against a supernatural effect.",
           "effects": [
             {
               "op": "grant_action",
@@ -3609,12 +3334,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "lore_master",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -3622,29 +3347,30 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "lore_master",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
         "from_points": 5,
         "trigger": "a purely scientific explanation",
         "consequence": "You reject it: −2 on rolls that rely on tech (Evokers, Acuity, Improvisation) this scene.",
-        "text": "Trigger: a purely scientific explanation. Indulge: You reject it: −2 on rolls that rely on tech (Evokers, Acuity, Improvisation) this scene.",
+        "text": "Trigger: a purely scientific explanation. Indulge: You reject it: {=overreach.effects.0.value} on rolls that rely on tech (Evokers, Acuity, Improvisation) this scene.",
         "effects": [
           {
             "op": "skill_mod_tag",
@@ -3656,10 +3382,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "guardian",
-        "hexer"
-      ],
       "tags": [
         "beta",
         "core:soul",
@@ -3708,19 +3430,7 @@
       "slot": "alpha",
       "summary": "The saints judge. You deliver.",
       "per_point": {
-        "text": "+10% Blessing power. Hymns come back sooner: each point takes three quarters of a round off the wait, down to 3 rounds. Your Blessings' conditions are harder to save against.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "mult_blessing",
-            "value": 0.1
-          },
-          {
-            "op": "stat_mod",
-            "stat": "prayer_cooldown",
-            "value": -0.75
-          }
-        ]
+        "text": "+10% Blessing power. Hymns come back sooner: each point takes three quarters of a round off the wait, down to 3 rounds. Your Blessings' conditions are harder to save against."
       },
       "gates": [
         "gear:holy_relic"
@@ -3750,7 +3460,7 @@
           "name": "Deliver the Sinner",
           "category": "Combat Interaction",
           "mastery": 2,
-          "text": "2 AP: mark an enemy. Your whole squad deals +20% damage to it until it falls.",
+          "text": "{=unlocks.5.effects.0.ap} AP: mark an enemy. Your whole squad deals +20% damage to it until it falls.",
           "effects": [
             {
               "op": "grant_action",
@@ -3770,12 +3480,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "faith",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -3783,22 +3493,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "faith",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -3816,9 +3527,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "guardian"
-      ],
       "tags": [
         "alpha",
         "core:soul",
@@ -3869,14 +3577,7 @@
       "slot": "beta",
       "summary": "Seeing where an act leads.",
       "per_point": {
-        "text": "+10% to every shield you are given.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "karma_per_award",
-            "value": 1
-          }
-        ]
+        "text": "+10% to every shield you are given."
       },
       "gates": [],
       "unlocks": {
@@ -3902,7 +3603,7 @@
           "name": "Righteous",
           "category": "AP Mod",
           "mastery": 2,
-          "text": "While protecting innocents, your first action each turn costs 1 AP less.",
+          "text": "While protecting innocents, your first action each turn costs {=unlocks.5.effects.0.value|abs} AP less.",
           "effects": [
             {
               "op": "stat_mod",
@@ -3919,12 +3620,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "conscience",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -3932,22 +3633,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "conscience",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -3965,9 +3667,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "guardian"
-      ],
       "tags": [
         "beta",
         "core:soul",
@@ -4015,14 +3714,7 @@
       "slot": "gamma",
       "summary": "The measure of cool, and your Leadership rating.",
       "per_point": {
-        "text": "Karma moves 1 further each time it changes: more when it is awarded, more when it is taken. Your Order Call reaches 1 tile further. On a check it rolls 1 better than its points say.",
-        "effects": [
-          {
-            "op": "stat_mod",
-            "stat": "reputation_per_award",
-            "value": 1
-          }
-        ]
+        "text": "Karma moves 1 further each time it changes: more when it is awarded, more when it is taken. Your Order Call reaches 1 tile further. On a check it rolls 1 better than its points say."
       },
       "gates": [],
       "unlocks": {
@@ -4048,7 +3740,7 @@
           "name": "Five Stars",
           "category": "Combat Starter",
           "mastery": 2,
-          "text": "Your squad has +1 AP in round 1, and enemy rank-and-file make a Heart save or hesitate (−1 AP).",
+          "text": "Your squad has +{=unlocks.5.effects.0.value} AP in round 1, and enemy rank-and-file make a Heart save or hesitate (−{=unlocks.5.effects.0.value} AP).",
           "effects": [
             {
               "op": "stat_mod",
@@ -4061,12 +3753,12 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "Upgrade this skill's Acquired perk to Tier II, or take its other perk at Tier I.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "authority",
-              "choice": "upgrade_or_second"
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -4074,22 +3766,23 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "Mastery 4.",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [],
           "adjudication": "engine"
         },
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You hold both of this skill's Acquired perks at Tier II. Resisting this skill's Overreach now costs 2 Echo.",
+          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "authority",
-              "choice": "both_tier_2"
+              "choice": "mastered_perk"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "resist_echo": 2
         }
       },
       "overreach": {
@@ -4107,9 +3800,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "bard"
-      ],
       "tags": [
         "gamma",
         "core:soul",

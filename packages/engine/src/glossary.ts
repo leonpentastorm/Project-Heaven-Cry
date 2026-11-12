@@ -2,8 +2,10 @@
 // Narrator can look up by key ("weapon:service_pistol", "condition:bleeding") when a moment needs it, instead of
 // carrying all of it in every prompt. Entries describe what a thing is and does in words; the engine still owns
 // every number in play, so entries carry only the few numbers that help the Narrator describe it.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL, ATTR, SIGILS, SCHOOLS, MODULES, TONES, SOUL_RULES } from './data';
 import { OBJECT_KINDS } from './objects';
+import { RANK_ATTR, RANK_LEVEL } from './character';
 import conditionsJ from '../../../data/conditions.json';
 import patronsJ from '../../../data/patrons.json';
 import classesJ from '../../../data/classes.json';
@@ -37,7 +39,7 @@ function build(): WikiEntry[] {
   for (const [id, it] of Object.entries(ITEM) as [string, any][]) add('item:' + id, it.name, line(it.name + ' (' + (it.category || 'item') + (it.slot ? ', ' + it.slot.replace(/_/g, ' ') : '') + ').', it.text, it.price_credits ? 'Price ' + it.price_credits + ' credits.' : ''));
   for (const c of (conditionsJ as any).items) add('condition:' + c.id, c.name, line(c.name + ' (' + c.kind + ').', c.text));
   // Class Roster Revision 3: one base class per attribute; advanced classes are shelved (being rebuilt).
-  for (const c of CLASSES as any[]) add('class:' + c.id, c.name, line(c.name + ' (' + c.core + ' class, ' + (ATTR[c.attribute]?.name || c.attribute) + ').', c.tagline, 'Skills: ' + (c.skills || []).map((x: string) => SKILL[x]?.name || x).join(', ') + '. Earned at level 3 by the highest attribute; rank II at ' + (ATTR[c.attribute]?.name || c.attribute) + ' 5, rank III at 8.'));
+  for (const c of CLASSES as any[]) add('class:' + c.id, c.name, line(c.name + ' (' + c.core + ' class, ' + (ATTR[c.attribute]?.name || c.attribute) + ').', c.tagline, 'Skills: ' + (c.skills || []).map((x: string) => SKILL[x]?.name || x).join(', ') + '. Earned at level 3 by the highest attribute; rank II at ' + (ATTR[c.attribute]?.name || c.attribute) + ' ' + RANK_ATTR.II + ' and level ' + RANK_LEVEL.II + ', rank III at ' + RANK_ATTR.III + ' and level ' + RANK_LEVEL.III + '.'));
   for (const c of (classesJ as any).advanced || []) add('class:' + c.id, c.name, line(c.name + ' (advanced, shelved: advanced classes are being rebuilt; not learnable yet).', c.summary));
   // Class moves, by the key they run under ("class:<origin>.<moveId>": Bard's Triage is class:medic.triage), as characterBrief names them.
   const seen = new Set<string>();

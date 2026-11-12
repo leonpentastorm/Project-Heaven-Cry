@@ -335,8 +335,7 @@ register({
 // by the mod they fit; PROVISIONAL).
 register({
   id: 'overhaul', claims: 'all',
-  // The data's action_cost says value 1 (which actionAp reads as +1); the text says Field Repair costs 1 AP, so the
-  // lane answers it: 2 → 1 (data delta in the lane notes: set 1).
+  // The data's action_cost carries set: 1 (Field Repair costs 1 AP); the lane answers it: 2 → 1.
   stat: (h, stat, ctx) => (stat === 'field_repair_amount' ? { mult: 2 } : stat === 'ap_cost:field_repair' ? 1 - (ctx?.base ?? 2) : 0),
   actions: [
     { id: 'bench_repair', label: 'Bench repair', scope: ['story', 'world'], ap: 0, target: 'none',
@@ -819,7 +818,7 @@ register({
 
 // ---------- Slicer ----------
 // Backdoor: 2 AP, at will, within 5 tiles (no sight needed, PROVISIONAL): take over one static electronic device — a
-// door, terminal, camera, alarm panel or emplaced turret — until your next turn, on Proficiency (d20 + mod) against its
+// door, terminal, camera, alarm panel or emplaced turret — until your next turn, on Acuity (analysis; d20 + mod) against its
 // tier (doors, terminals, cameras and alarms TN 12; a turret object 14; a turret unit by tier: minion 12, soldier 14,
 // elite 16, boss 20; PROVISIONAL). Never mobile robots, bosses' bodies or people (plan 6a-17). A door opens, closes or
 // locks; a turret unit is Puppeted (your player runs its next turn); what a terminal, camera or alarm does is the

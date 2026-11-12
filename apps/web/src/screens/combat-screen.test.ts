@@ -208,9 +208,11 @@ describe('combat screen', () => {
       expect(r.mini.cmds[1].action).toBe('move');
       expect(r.mini.pips.length).toBe(r.apPips.length);
       const key = (k: string, target: any = document.body) => ({ key: k, target, preventDefault() {}, defaultPrevented: false });
-      const third = r.mini.cmds[2];
+      const third = r.mini.cmds[2], was = L.state.action;
       L.numKey(key('3')); r = L.renderVals();
-      if (!third.off) expect(L.state.action).toBe(third.action === 'shot' ? 'shot' : third.action);
+      // truth pass 3: the fixture's third command is off (a speed reload with a full magazine), so the old
+      // `if (!third.off)` never asserted anything. Both arms are stated: an off command leaves the action as it was.
+      expect(L.state.action).toBe(third.off ? was : third.action === 'shot' ? 'shot' : third.action);
       L.numKey(key('2')); r = L.renderVals(); expect(L.state.action).toBe('move');
       expect(r.mini.cmds[1].pressed).toBe('true');
       // H toggles, but not while typing.

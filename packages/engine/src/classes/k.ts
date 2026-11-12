@@ -528,7 +528,7 @@ register({
   brief: () => null,
 });
 // Love Made Manifest (K12, PROVISIONAL, audit 1-4; rules 1.5): once per fight, a toggle on Begin: a Beloved Outburst
-// Begins at stage 4, the heart full at once (×2.2 and the tone's stage-4 rider; a snap cast releases at stage 4). Its
+// Begins at stage 4, the heart full at once (stage 4's multiplier, STAGE_MULT[4], and the tone's stage-4 rider; a snap cast releases at stage 4). Its
 // Begin Strain is paid as usual. 1.2's ×3 is gone: on 1.5's stage table it would reach ×6.6 (item 527).
 register({
   id: 'devoted.love_made_manifest', claims: 'all', priority: 200,
@@ -612,7 +612,7 @@ register({
 // covers (and its multipliers), TWICE more missiles, CHAIN its jumps, KIN who is spared, PULL drags each one it reached
 // toward you afterwards, LEECH heals you from the Outburst's damage. STAY, WAIT and WATCH are refused: no standing
 // Outbursts. Every creature the plan affects takes the Outburst's school as a Bolt (its own shape is the Sigil's now)
-// at stage 0 (rules 1.5: a snap, ×0.6; or its held stage: Begin and Pump first, then fuse it), at the plan's
+// at stage 0 (a snap, ×0.8 since rules 1.8; or its held stage: Begin and Pump first, then fuse it), at the plan's
 // multiplier for that creature. You pay everything a normal pattern costs (the draws, then the Evoke's AP and charge)
 // plus the Outburst's MP, Soul cast AP and Strain, plus +1 Strain and +2 Flux. Every Fusion is a fight note for the
 // Narrator (a Knowing risk).
@@ -660,7 +660,7 @@ register({
       emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: r.p.shape, tiles: r.p.tiles, words: r.p.words, element: null, side: u.side, facing: pl.facing?.mode, dir: pl.facing?.dir, area: pl.area,
         src: pl.missiles[0]?.origin, impact: pl.missiles[0]?.impact ?? null, targets: pl.targets, targetAt: pl.targets.map((id) => unitById(cb, id)?.pos), fusion: r.d.id,
         missiles: pl.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: null })) });
-      // Rules 1.5: a fresh Outburst is fused at stage 0 (a snap, ×0.6); a held one at the stage it reached (item 528).
+      // Rules 1.5: a fresh Outburst is fused at stage 0 (a snap, ×0.8); a held one at the stage it reached (item 528).
       let stage = m.held?.stage ?? 0, cost = m.held?.cost || 0;
       if (!r.held) {
         const e = freeAp(u, () => beginOutburst(cb, rng, u, r.d.id, undefined, true)); if (e) return e;
@@ -1273,7 +1273,7 @@ register({
   id: 'heartfed.fed', claims: 'all', priority: 20,
   actions: [{
     id: 'feed_feeling', label: 'Feed a feeling (a free Pump)', scope: ['combat', 'world'], target: 'none', ap: 0,
-    text: 'Spend 1 point from the gauge your held Outburst is keyed to: Pump it for 0 AP. Twice a turn at most.',
+    text: 'Spend 1 point from the gauge your held Outburst is keyed to: Pump it. Twice a turn at most; the first is free (one free stage a turn), the second costs the Pump\'s AP.',
     available: (h) => {
       const m = h.u?.mg; if (!m?.held) return 'Hold a keyed Outburst first.'; const k = heldKey(h); if (!k) return 'The held Outburst isn\'t keyed to a gauge.';
       if ((gauges(h)[k] || 0) < 1) return 'Your ' + k + ' is empty.'; if (uses(h).left('per_turn', FEEL_PER_TURN, h.key + '#feel') <= 0) return 'Used twice this turn already.';
@@ -1353,7 +1353,7 @@ register({
 });
 let MIRROR = false, SHARING = false;
 // Through (K26, PROVISIONAL, audit 1-3; rules 1.5): your Outbursts can go off from a linked ally's place: "Cast through
-// a link" is a snap cast (Begin and Release at once, 3 AP, ×0.6) and "Release through a link" lets your held Outburst
+// a link" is a snap cast (Begin and Release at once, 3 AP, ×0.8) and "Release through a link" lets your held Outburst
 // go at the stage it reached (1 AP). Range, sight and the shape (a Wave's cone, a Lance's line, an Aura around them)
 // all run from the ally's tile, as if you stood there; the ally is never in its own Aura. Heals, shields and the
 // Guarded or Inspired boons you receive (whatever their source) reach every linked ally at half (a boon for half its
@@ -1368,13 +1368,13 @@ register({
   id: 'heartbinder.through', claims: 'all',
   actions: [
     { id: 'begin_through', label: 'Cast through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
-      text: 'Snap-cast an Outburst from a linked ally\'s tile instead of your own. A snap cast is Begin and Release in one go, at ×0.6.',
+      text: 'Snap-cast an Outburst from a linked ally\'s tile instead of your own. A snap cast is Begin and Release in one go, at ×' + stageMult(0) + '.',
       available: (h) => (!h.u?.mg?.designs?.length ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, f = linkFrom(h, a); if (typeof f === 'string') return { ok: false, why: f };
         const d = u.mg!.designs.find((x) => x.id === a.choice); if (!d) return { ok: false, why: 'Pick a design.' };
         const aim = aimOf(cb, a, 'tile'); if (!aim) return { ok: false, why: 'Pick a target tile.' };
-        const pv = fromLink(u, f, () => previewOutburst(cb, u, d.id, aim, true)); return pv.ok ? { lines: ['From ' + f.name + ': ' + pv.ap + ' AP, ' + pv.cost + ' MP, ×0.6.'] } : { ok: false, why: pv.why };
+        const pv = fromLink(u, f, () => previewOutburst(cb, u, d.id, aim, true)); return pv.ok ? { lines: ['From ' + f.name + ': ' + pv.ap + ' AP, ' + pv.cost + ' MP, ×' + stageMult(0) + '.'] } : { ok: false, why: pv.why };
       },
       run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit, d = u.mg!.designs.find((x) => x.id === a.choice)!; say(cb, u.name + ' casts through ' + f.name + '.'); const e = fromLink(u, f, () => beginOutburst(cb, rng, u, d.id, aimOf(cb, a, 'tile')!, false)); if (!e) checkOver(cb); return e; } },
     { id: 'release_through', label: 'Release through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
@@ -1444,7 +1444,7 @@ register({
 // =============================================================================================== VESSEL
 // Inner Charge (K28, PROVISIONAL, audit 1-6; rules 1.5, item 531): Begin's 2 AP, 20 MP (× the air's cost band; from the
 // air without an Emanator, +2 Strain), 1 Strain (2 in Flooded air): take a body form and hold it like an Outburst. A
-// form starts at stage 1 and reads the 1.5 stage table (×1, ×1.4, ×1.8, ×2.2 at stage 4); it swells a stage at your
+// form starts at stage 1 and reads the stage table (magic.ts STAGE_MULT, stages 1 to 4); it swells a stage at your
 // turn start and strains you 1 each (2 Flooded). "Pump a form" (1 AP, or one of Empathy's free Pumps) adds a stage to
 // one form. Iron armour +10, Surge melee and unarmed damage +15, Swift Movement +2, Steady no Prone or push and +2 Body
 // saves, Heartbeat heal 10 at turn start: each × its stage multiplier. Pain to Power: +1 AP next turn per 20 damage
@@ -1552,8 +1552,8 @@ register({
 });
 // Release (K29, PROVISIONAL, audit 1-4; rules 1.5, item 532): 1 AP (a melee attack roll with your fists or melee
 // weapon), or free with a melee hit (a toggle on the attack): every form ends in one strike. Each form adds 15 Soul
-// damage × its stage multiplier (stage 1 ×1 … stage 4 ×2.2), summed, × your Soul multiplier, armour ignored (1.2's
-// +15 a stage capped at 8 stages is gone: two stage-4 forms are 66 before the multiplier). The forms end on a miss too.
+// damage × its stage multiplier (magic.ts STAGE_MULT), summed, × your Soul multiplier, armour ignored (1.2's
+// +15 a stage capped at 8 stages is gone: two stage-4 forms are 2 × 15 × STAGE_MULT[4] before the multiplier). The forms end on a miss too.
 const releaseSum = (h: Holder) => formsOf(h).reduce((a, x) => a + itemAmount('class:vessel.release_strike', 'damage', [term(vesselMult(x.stage), 'stage')]), 0);
 function releaseRider(h: Holder, t: Unit, rng: Rng): string {
   const u = h.u!, cb = h.cb!, fs = formsOf(h); if (!fs.length) return '';

@@ -8,7 +8,7 @@
 // Rules revision 1.10 (Sigil 1.5, strokes): a Line is a stroke, the glyphs drawn as one (each glyph's strokeId; see
 // strokeRuns, strokePick); glyphs of other strokes never join, poison or block it. Old glyphs with no strokeId keep the
 // 1.4 touching-group reading (groupAt) until they fade.
-import { WEAPON, type SigilDef } from './data';
+import { WEAPON, SKILL, type SigilDef } from './data';
 import {
   type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT, lineMult,
 } from './sigilwords';
@@ -441,7 +441,7 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const mg = caster?.mg, sm = mg?.sigilMult || 1, hm = mg?.healMult || 1;
   let el = 0, sg = 0, hl = 0, sh = 0;
   for (const p of sigilParts(sp.subjects, sp.infl)) { if (p.type === 'elemental') el += p.n; else sg += p.n; }
-  const foe = !!caster && caster.side !== 'pc'; // rules 1.20: an enemy caster keeps the bases the enemy table was fitted with
+  const foe = !!caster && caster.side !== 'pc' && !caster.charId && !caster.ctrl; // an enemy caster (rules 1.20: it keeps the bases the enemy table was fitted with). A character casts at a character's bases on either side (Team B in the Proving Ground), and so does an allied caster that is not a character (truth pass 3: the first fix moved it onto the enemy bases)
   for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; const dh = foe ? d.heal_enemy ?? d.heal : d.heal, ds = foe ? d.shield_enemy ?? d.shield : d.shield; if (dh) hl += dh * (1 + iv(sp, w, 'heal_pct') / 100); if (ds) sh += ds * (1 + iv(sp, w, 'shield_pct') / 100); }
   const sharp = caster && condOn(caster, 'sharpened') && roll ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
   const hook = (kind: string): number => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1);
@@ -1317,7 +1317,7 @@ export function sigilRoundTick(cb: Combat) {
 }
 const x2fx = (k: string) => (k === 'turret' ? 'turret_destroyed' : k === 'trap' ? 'trap_gone' : k === 'field' || k === 'wall' ? 'field_gone' : k + '_gone');
 /** Spotting hidden Sigil traps and turrets (spec: WAIT, "like any hidden trap"): a unit of the other side within the
- * trap object's detect range spots it on a passive of 10 + Vigilant − 1 (a PC) or 10 + its tier's notice (an enemy)
+ * trap object's detect range spots it on a passive of 10 + Vigilance (a gamma: its full points; a PC) or 10 + its tier's notice (an enemy)
  * against the trap's TN. */
 export function sigilSpot(cb: Combat, u: Unit) {
   if (u.dead || u.downed) return;
@@ -1327,7 +1327,7 @@ export function sigilSpot(cb: Combat, u: Unit) {
     const zz: any = z; if (z.side === u.side || !(z.kind === 'trap' || (z.kind === 'turret' && zz.hidden))) continue;
     if ((zz.spotted ||= []).includes(u.side) || dist(z.tiles[0], u.pos) > tr.range || passive < tr.tn) continue;
     zz.spotted.push(u.side); emitFx(cb, 'trap_spotted', { id: z.id, tile: z.tiles[0], by: u.id, side: u.side, only: u.side, kind: z.kind });
-    cb.log.push(u.name + ' spots a hidden ' + (z.kind === 'turret' ? 'turret' : 'Sigil trap') + ' at ' + refOf(z.tiles[0]) + ' (' + (u.side === 'pc' ? 'Vigilant ' : 'notice ') + passive + ' vs ' + tr.tn + ').');
+    cb.log.push(u.name + ' spots a hidden ' + (z.kind === 'turret' ? 'turret' : 'Sigil trap') + ' at ' + refOf(z.tiles[0]) + ' (' + (u.side === 'pc' ? SKILL.vigilant.name + ' ' : 'notice ') + passive + ' vs ' + tr.tn + ').');
   }
 }
 /** The placed Sigil magic a side can see (spec: Mana, Sigils 9.9): fields, traps, turrets, smoke, light and RAISE walls,

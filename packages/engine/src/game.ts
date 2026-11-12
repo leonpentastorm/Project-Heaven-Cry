@@ -1,5 +1,6 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS, levelGiven, fightLevelOf } from './data';
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
@@ -351,7 +352,7 @@ export type Action =
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean; watch?: boolean }
   | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
   // Outburst 2.0 (rules 1.5): combat/outburst Begins and holds at stage 0; with an aim (and no hold: true) it is a snap
-  // cast, Begin + Release at once at stage 0 (3 AP, ×0.6); then Pump, Release, Let go, Steady the heart, Feed (a glyph on your tile), Heart Overwatch.
+  // cast, Begin + Release at once at stage 0 (3 AP, at stage 0's multiplier); then Pump, Release, Let go, Steady the heart, Feed (a glyph on your tile), Heart Overwatch.
   | { type: 'combat/pump'; unitId: string; feeling?: string } | { type: 'combat/revert'; unitId: string } | { type: 'combat/letgo'; unitId: string } | { type: 'combat/steady'; unitId: string } | { type: 'combat/feed'; unitId: string }
   | { type: 'combat/heartwatch'; unitId: string; on?: boolean }
   | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; tone?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/pick'; charId: string; module: string; via?: string } | { type: 'magic/forget'; charId: string; designId: string }
@@ -679,7 +680,7 @@ function reduce(g: GameState, a: Action, by: string) {
       const o = g.overreach.find((x) => x.id === a.id); if (!o || o.choice) fail('Nothing to choose.');
       const c = g.characters[o!.charId]; if (c.owner !== by) fail('Not your character.');
       // 'overreach_cost' {c, skill, cost}: Echo to resist (Crowded Head +1).
-      const oc: any = emitStory(g, 'overreach_cost', { c, skill: o!.skill, cost: (c.skills[o!.skill] || 0) >= 10 ? 2 : 1, g }), cost = Math.max(0, oc.cost);
+      const oc: any = emitStory(g, 'overreach_cost', { c, skill: o!.skill, cost: (c.skills[o!.skill] || 0) >= 10 ? ((SKILL[o!.skill] as any)?.unlocks?.['10']?.resist_echo ?? 2) : 1, g }), cost = Math.max(0, oc.cost);
       const choice = a.choice === 'resist' && c.echo >= cost ? 'resist' : 'indulge';
       if (choice === 'resist') gainEcho(c, -cost, 'resisting Overreach', g); else gainEcho(c, 1, 'indulging Overreach', g);
       feelOverreach(g, c, choice); // rules 1.8: Defiance, Abandon
@@ -2632,7 +2633,7 @@ function repairAlly(cb: Combat, u: Combat['units'][number], t: Combat['units'][n
   if (!t || t.side !== u.side || t.dead) return 'Pick a squadmate.';
   if (!holdersOf({ u: t }).some((h) => h.key === 'trait:factory_made')) return t.name + ' isn\'t a machine: stim them instead.';
   if (dist(u.pos, t.pos) > 1) return 'Walk up to them first.';
-  if ((u.proficiency || 0) < 3) return 'Needs Proficiency 3.';
+  if ((u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
   if (!(u.parts || 0)) return 'No spare-parts charges.';
   if (t.hp >= t.maxHp) return t.name + ' is already whole.';
   const cost = actionAp({ u }, 'field_repair', 2).ap; if (u.ap < cost) return 'Needs ' + cost + ' AP.';

@@ -12,7 +12,7 @@ import type { Character } from '../character';
 import { mod, packOf, maxHp, maxMp, hasEmanator, restockResources } from '../character';
 import { unitFromCharacter } from '../combat';
 import { condFamily, endCond, MANA_START } from '../magic';
-import { SKILL, ITEM, MANA_BANDS } from '../data';
+import { SKILL, ITEM, MANA_BANDS, TRAITS } from '../data';
 import { storyConds, zoneTags, karmaBand, sideRollMod } from '../game';
 import { applyMemOp } from '../memory';
 import { overworld, say } from '../kit';
@@ -77,7 +77,7 @@ function bandAward(h: Holder, ctx: any, b: Band) {
 }
 
 // ---------- Mind Without Fog ----------
-// +1 Core point at creation (rules 1.11, item 929; FOG_CORE in character.ts reads the trait). Heart Debuffs never affect it: the generic immunity cancels
+// +2 Attribute points at creation (rules 1.13; FOG_CORE in character.ts reads the trait). Heart Debuffs never affect it: the generic immunity cancels
 // Heart-family conditions in a fight; here, a Heart condition carried in is dropped, a story Heart condition never takes
 // (Shaken's −2 is cancelled and the condition removed), and a story Heart save, or a check the Narrator tags
 // 'heart_debuff', succeeds on its own. Unmoving: gear bonuses to Attributes and Skills don't apply (no item grants one
@@ -202,7 +202,7 @@ register({
 
 // ---------- The Mask ----------
 // Masked: +2 Composure and Authority (the generic skill mods; they reach checks, passives and the Heart save). Bare: −3.
-// The mask is worn and taken off through the sheet (free out of a fight, not in one). Two Faces: the brief tells the
+// The mask is worn and taken off through the sheet (free out of a fight; 1 AP in one, as any light piece: rules 1.9, item 685). Two Faces: the brief tells the
 // Narrator which face the character shows now; recognition is the Narrator's.
 register({
   id: 'the_mask', kind: 'trait', claims: ['start_item'], narrator: ['narrator'],
@@ -210,7 +210,7 @@ register({
 });
 
 // ---------- Bottle Butts for Eyes ----------
-// +2 Rumination; glasses on: +1 Proficiency and Ingenuity, off: −4 (the generic skill mods). A critical hit that lands
+// +2 Rumination; glasses on: +1 Acuity (analysis) and Ingenuity, off: −4 (the generic skill mods). A critical hit that lands
 // a head injury (Dazed) knocks the glasses off (PROVISIONAL, plan 6 Bottle Butts 4): −4 at once, back in the pack after
 // the fight. In the story the Narrator knocks them off with traitState {key:'glasses', value:'off'}; the player puts
 // them back on from the sheet.
@@ -248,9 +248,16 @@ const bothOils = (h: Holder) => has(h.c || h.u || null, 'oil_in_my_mind') && has
 function paperStat(h: Holder, stat: string): number {
   if (!paperOwner(h)) return 0;
   const m = /^skill:(.+)$/.exec(stat); if (m && PAPER[m[1]]) return -1;
-  if (stat === 'hp_per_level') return -2;
-  if (stat === 'elemental_taken' || stat === 'heal_received') return -0.1;
+  const d = paperDerived();
+  if (stat === 'hp_per_level') return d.hp_per_level ?? -2;
+  if (stat === 'elemental_taken') return -(d.elemental_taken_pct ?? 10) / 100; // it takes that much MORE: a negative reduction
+  if (stat === 'heal_received') return (d.heal_received_pct ?? -10) / 100;
   return 0;
+}
+/** Paper's derived numbers, read from the card (traits.json oil_in_my_mind, the shared penalty's `derived`). */
+function paperDerived(): { hp_per_level?: number; elemental_taken_pct?: number; heal_received_pct?: number } {
+  const t: any = TRAITS.find((x) => x.id === 'oil_in_my_mind');
+  return (t?.effects || []).find((e: any) => e.op === 'shared_penalty')?.derived || {};
 }
 const MP = 'masterpiece';
 function inspired(c: Character | null | undefined) { return (ro(c)[MP] as { n: number; by: string; used?: string } | undefined); }
@@ -453,8 +460,8 @@ register({
 });
 
 // ---------- Company Man ----------
-// Company Card: RTC gear at cost. The data's −100% would make it free (GAMEBREAKING, plan 6 Company Man 1): PROVISIONAL
-// −40% (60% of list). No shops exist yet, so the price is the Narrator's, told in the brief. Once a campaign RTC extracts
+// Company Card: RTC gear at cost. The data carries −40% (60% of list; PROVISIONAL, item 260:
+// the first −100% would have made it free). No shops exist yet, so the price is the Narrator's, told in the brief. Once a campaign RTC extracts
 // them from anywhere: in the story a pending ruling (where they land); in a fight they leave it (conscious only), take
 // no part in its XP, and the fight goes on without them. Contract jobs: Narrator.
 const RTC_PRICE = 0.6;

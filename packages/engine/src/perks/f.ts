@@ -14,7 +14,9 @@ import { mod, packOf } from '../character';
 import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, type AttackMode } from '../combat';
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength, saveAgainst , saveTn } from '../magic';
 import { tendHook } from '../effects/damage';
-import { WEAPON } from '../data';
+import { WEAPON, PERK } from '../data';
+/** Case Closed's two numbers, read from its card (perks.json effects[1] and [2]): the Defense and the damage. */
+const CASE_CLOSED: any[] = (PERK.case_closed as any)?.effects || [];
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
 import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
 import { cdFire, cdTick, landsNext } from './cooldown';
@@ -333,7 +335,7 @@ register({
 // Analyze reveals everything at once (HP, Defense, armour, its kind and tags, its saves, conditions; it is read, as
 // Read Them has it: −15% damage to your side) and what it wants (the Narrator's, in the report). Rules 1.13 (a beta is
 // defence): you and every ally have +2 Defense against an enemy you analyzed (its attacks on your side are at −2); the
-// +2 to hit and +20% damage are gone. An enemy an ally analyzed can be re-read with Close the case (the Analyze cost).
+// +2 to hit is gone; the squad's +20% damage on the target is back (Leon, 10 Nov 2026). An enemy an ally analyzed can be re-read with Close the case (the Analyze cost).
 // Story: a successful Acuity check on an NPC owes the motive (a pending ruling).
 const closed = (h: Holder): string[] => ((h.u?.ps?.[h.key] as any)?.closed || []);
 function closeCase(h: Holder, t: Unit) {
@@ -341,15 +343,15 @@ function closeCase(h: Holder, t: Unit) {
   t.weakPoint = true;
   const conds = debuffsOf(t);
   say(h.cb, 'Case Closed on ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + ', ' + (t.kind || 'human') + ((t.tags || []).length ? ' (' + t.tags!.join(', ') + ')' : '') +
-    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · read: it deals 15% less to the squad, and the squad has +2 Defense against it · motive: for the Narrator.');
+    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · read: it deals 15% less to the squad, the squad has +' + Math.abs(CASE_CLOSED[1]?.value ?? -2) + ' Defense against it and deals ' + Math.round(((CASE_CLOSED[2]?.value ?? 1.2) - 1) * 100) + '% more to it · motive: for the Narrator.');
   note(h, h.u!.name + ' read ' + t.name + ' completely: say what it wants, in the report.');
 }
 register({
   id: 'case_closed', claims: 'all',
   on: {
     analyze: (ctx, h) => { if (ctx.u === h.u && ctx.t) closeCase(h, ctx.t); },
-    attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: -2, label: 'Case Closed' }); },
-    damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: 1.2, label: 'Case Closed' }); },
+    attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: CASE_CLOSED[1]?.value ?? -2, label: 'Case Closed' }); },
+    damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: CASE_CLOSED[2]?.value ?? 1.2, label: 'Case Closed' }); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !ctx.roll?.ok || !ctx.ck.skills?.includes('analysis') || !h.g || !h.c) return;
       pendRuling(h.g, h.c, h.key, 'Case Closed: the Acuity check succeeded; tell ' + h.c.name + ' (a private perkLine) what ' + (ctx.ck.target || 'the subject') + ' wants most.');
@@ -743,7 +745,7 @@ register({
 // Trade prices with other races (+20% buy, −20% sell) are the Narrator's: there is no shop.
 const raceOf = (u: Unit | null | undefined) => { if (!u) return null; const c = charOfUnit(u); return c ? c.race || 'human' : u.kind || 'human'; };
 register({
-  id: 'the_old_blood', claims: [7], narrator: [8, 9],
+  id: 'the_old_blood', claims: [7, 8], narrator: [9],
   on: {
     heal_in: (ctx, h) => {
       if (ctx.t !== h.u || !ctx.by || ctx.by === h.u || ctx.kind === 'blessing' || raceOf(ctx.by) === (h.c?.race || 'human')) return; // a Blessing: halved at its power
@@ -754,7 +756,7 @@ register({
       ctx.power = (ctx.power ?? 1) * 0.5; say(h.cb, h.u!.name + ' takes ' + ctx.u.name + '\'s Blessing badly (The Old Blood): half power.');
     },
   },
-  brief: () => 'Narrator: tag checks vs_same_race_and_homeworld / vs_other_race; trade +20% buy, −20% sell; story heals and Blessings from another race at half',
+  brief: () => 'Narrator: tag checks vs_same_race_and_homeworld / vs_other_race; trade +20% buy, −20% sell; in the story, heals and Blessings from another race at half (a fight halves them itself)',
 });
 
 // ---------- Moon Hunter ----------

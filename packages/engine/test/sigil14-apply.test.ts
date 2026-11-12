@@ -143,7 +143,8 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
     evoke(f, '3,5', '9,5');
     const z = f.cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(f.foe.hp).toBe(493);
     f.cb.round++; f.turn(f.foe); // the next round: the strike counted as this round's bite
-    expect(493 - f.foe.hp).toBe(4 + 5); // the field ×0.5, and Corroded (from the strike) bites 5 expect(condOn(f.foe, 'corroded')).toBe(true); expect(logHas(f.cb, /caught in .*ACID field/)).toBe(true);
+    expect(493 - f.foe.hp).toBe(4 + 5); // the field ×0.5, and Corroded (from the strike) bites 5
+    expect(condOn(f.foe, 'corroded')).toBe(true); expect(logHas(f.cb, /caught in .*ACID field/)).toBe(true);
   });
   it('Swap a friend, STEP · RELAY: your relay jumps to the tile you pick (no save for your side)', () => {
     const f = rig(['step', 'relay'], ['14,9'], ['7,5']); line(f, ['step', 'relay'], L2);

@@ -276,12 +276,12 @@ technique({
 });
 
 // 12. Mag Dump (particular: Auto, Quick, Spread). 4 AP, every round. Empty the weapon at one target: one roll per 3
-//     rounds left (at least one, at most 4), each at −1 more than the last; +1 Pressure per hit (in place of the
+//     rounds left (at least one, at most 3), each at −4 more than the last (rules 1.18); +1 Pressure per hit (in place of the
 //     ordinary +1). Heat goes to one under the limit. Auto: +1 Pressure per roll, hit or miss. Quick and Precise: no
 //     growing penalty. Spread: both barrels, one roll, at double damage within 4 tiles. Drawn: not available (the core).
 const dumpRolls = (t: Tech): number => {
   const have = loaded(t), n = Number.isFinite(have) ? have : t.w.magazine ?? t.num('per_roll', 3);
-  return Math.min(t.num('max_rolls', 4), Math.max(1, Math.floor(n / t.num('per_roll', 3))));
+  return Math.min(t.num('max_rolls', 3), Math.max(1, Math.floor(n / t.num('per_roll', 3))));
 };
 technique({
   id: 'mag_dump',
@@ -298,7 +298,7 @@ technique({
       if (t.preview) { addPressure(t, tgt, press, 'a mag dump'); onHitOnly(t); if (!close) t.note('Double damage only within ' + t.num('spread_range', 4) + ' tiles.'); }
       else if (r.hit) addPressure(t, tgt, press, 'a mag dump');
     } else {
-      const rolls = dumpRolls(t), step = p === 'quick' ? 0 : t.num('step', 1);
+      const rolls = dumpRolls(t), step = p === 'quick' ? 0 : t.num('step', 4);
       const vev = t.preview ? null : volleyFx(t, tgt, 'dump', Number.isFinite(ammo0) ? ammo0 : rolls, { rolls });
       // the rolls chained for the screen only (no volley name: no item reads it as a burst or full auto)
       const out = chained((): string | null | undefined => {

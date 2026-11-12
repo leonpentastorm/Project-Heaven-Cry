@@ -174,8 +174,8 @@ register({
 // ---------- Unstoppable (rank III, 1 AP, once a scene) ----------
 // Until your next turn starts: Fear, Shaken, Slowed and Pinned don't touch you (new ones are cancelled; ones you carry
 // are set aside and come back at your next turn start with the rounds they would have had), no opportunity attack is
-// taken against you (the 'opportunity_attack' immunity), and you gain 2 Momentum. Momentum still empties at the end of a
-// turn with no attack (the class rule). Combat only.
+// taken against you (the 'opportunity_attack' immunity), and you gain 2 Momentum. Momentum carries from turn to turn
+// (nothing drops it at a turn's end). Combat only.
 const UNSTOP = ['fear', 'shaken', 'slowed', 'pinned'];
 const unstoppable = (h: Holder) => !!stateOf(h).on;
 register({
