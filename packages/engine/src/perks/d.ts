@@ -12,7 +12,7 @@ import {
   register, stateOf, uses, stampOf, note, pendRuling, postStory, grantPerkAp, modOn, boundGame, charOfUnit, holderOf, type Holder,
 } from '../effects';
 import { SKILLS, SCHOOL } from '../data';
-import {
+import { say,
   type Combat, type Unit, dist, xy, key, refOf, alive, active, unitSees, lineOfSight, moveUnit, coverTileFor, objectsOf, standable, emitFx,
 } from '../combat';
 import {
@@ -40,7 +40,7 @@ const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name =
 const gameOf = (h: Holder): any => h.g ?? boundGame();
 const me = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id === h.u.id;
 const charOf = (h: Holder): Character | null => h.c || charOfUnit(h.u) || null;
-const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
+const log = (cb: Combat | null | undefined, s: string) => { if (cb) say(cb, s); };
 const turnStamp = (h: Holder) => stampOf('per_turn', { cb: h.cb, g: gameOf(h) });
 /** Outburst damage (rules 1.5): Soul damage, or an elemental Outburst's (told from a Sigil's by the MP it carries). */
 const outburstHit = (src: any) => !!src && (src.type === 'soul' || (src.type === 'elemental' && src.spellMp != null));

@@ -10,7 +10,7 @@
 import { register, stateOf, uses, has, note, postStory, grantPerkAp, bankAp, pushAp, grantShield, boundGame, skillRollMod, type Holder } from '../effects';
 import { itemAmount } from '../effects/amounts';
 import { SKILL, WEAPON, ITEM } from '../data';
-import { type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
+import { say, type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE } from '../tactics';
 import { applyCond, condOn } from '../magic';
 import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod } from '../character';
@@ -28,7 +28,7 @@ const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name =
 const gameOf = (h: Holder): any => h.g ?? boundGame();
 const turnKey = (cb: Combat) => cb.round + '.' + cb.turn;
 const myTurn = (cb: Combat, u: Unit | null | undefined) => !!u && active(cb) === u && !cb.window;
-const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
+const log = (cb: Combat | null | undefined, s: string) => { if (cb) say(cb, s); };
 /** The zone the story stands in carries this tag (terrain:open, urban, fear…; campaign zones set them). */
 const zoneHas = (g: any, ...tags: string[]) => { if (!g?.story) return false; try { const z = zoneTags(g); return tags.some((t) => z.includes(t)); } catch { return false; } };
 /** Is this overworld unit a hostile NPC (storyCb makes every NPC a 'foe' unit)? In a fight every foe is hostile. */

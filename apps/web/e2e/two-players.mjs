@@ -67,14 +67,17 @@ const books = (p) => p.evaluate(() => { const s = window.__phc.getState(), cb = 
   return { v: s.game && s.game.v, round: cb && cb.round, unit: cb && cb.order[cb.turn], lock: dock && dock.getAttribute('data-lock'), fx: window.__phcFxDebug && window.__phcFxDebug(), net: window.__phc.net && window.__phc.net() }; });
 const version = (p) => p.evaluate(() => { const g = window.__phc.getState().game; return g ? g.v : -1; });
 // Fog of war is the engine's (fog.ts; docs/design/handoffs/client-boundary-2-fog.md): a guest's view holds no living hostile
-// its side doesn't see, nowhere but in the effects of the moment it was seen and the log (the known gap); every hostile
-// it does hold stands on a tile the view's own sight (cb.fog) says is seen.
+// its side doesn't see, anywhere: not in its units, its effects or its log (each log line carries who saw what it names,
+// log.ts; a line the players' side never saw must not reach the guest); every hostile it does hold stands on a tile the
+// view's own sight (cb.fog) says is seen.
 let fogChecks = 0;
 const fogLeaks = async () => {
-  const truth = await host.evaluate(() => { const g = window.__phc.truth(); return g && g.combat ? JSON.stringify(g.combat.units.map((u) => ({ id: u.id, side: u.side, dead: u.dead }))) : null; });
-  const view = await guest.evaluate(() => { const cb = window.__phc.getState().game?.combat; return cb ? JSON.stringify({ ...cb, log: [], fx: [] }) : null; });
+  const truth = await host.evaluate(() => { const g = window.__phc.truth(); if (!g || !g.combat) return null; const cb = g.combat, see = cb.logSee || [];
+    return JSON.stringify({ units: cb.units.map((u) => ({ id: u.id, side: u.side, dead: u.dead })), hidden: cb.log.filter((l, i) => see[i] && see[i].pc === 0), shown: cb.log.filter((l, i) => !(see[i] && see[i].pc === 0)) }); });
+  const view = await guest.evaluate(() => { const cb = window.__phc.getState().game?.combat; return cb ? JSON.stringify(cb) : null; });
   if (!truth || !view) return [];
-  const T = JSON.parse(truth), V = JSON.parse(view), inView = new Set(V.units.map((u) => u.id)), out = [];
+  const TT = JSON.parse(truth), T = TT.units, V = JSON.parse(view), inView = new Set(V.units.map((u) => u.id)), out = [];
+  const shown = new Set(TT.shown); for (const l of TT.hidden) if (!shown.has(l) && (V.log || []).includes(l)) out.push('a line its side never saw: ' + l.slice(0, 80));
   if (!V.fog) out.push('no fog in the view');
   for (const u of T) if (u.side === 'foe' && !u.dead && !inView.has(u.id) && view.includes('"' + u.id + '"')) out.push('unseen ' + u.id + ' named');
   for (const u of V.units) if (u.side === 'foe' && !u.dead && V.fog && !V.fog.tiles.includes(u.pos)) out.push(u.id + ' on an unseen tile ' + u.pos);

@@ -13,9 +13,11 @@
 //     from and out to); a walk never seen is dropped. An event that names an unseen unit has that id as '?', that unit's
 //     name as 'Unseen hostile', and every tile the side doesn't see as null. HP stamps of unseen units are dropped.
 //   - `fog`: the tiles the side sees and the tiles where it senses something, for the client's shading.
-// KNOWN GAP: the fight's log lines are plain strings with no record of whom they name: they pass unchanged (the hand-off
-// docs/design/handoffs/client-boundary-2-fog.md says what fixing that needs).
-import { visibility, type Combat, type FxEvent, type Unit } from './combat';
+//   - log: each line carries, from when it was written (say(), log.ts: cb.logSee), whether this side saw the units it
+//     names. A line about none the side saw is not sent; one that also names a unit the side saw (its own, say) is sent
+//     with each unseen unit's name as 'something unseen'. The fx's L (lines before it) counts the lines sent. A line with
+//     no mark (it names nobody, an old save) is sent as it is.
+import { visibility, type Combat, type FxEvent, type LogMark, type Unit } from './combat';
 import { bindGame } from './effects/hooks';
 
 type Side = 'pc' | 'foe';
@@ -23,6 +25,29 @@ type Side = 'pc' | 'foe';
 export const UNSEEN = '?';
 /** An unseen unit's name, wherever a view's fx would have said it. */
 export const UNSEEN_NAME = 'Unseen hostile';
+/** An unseen unit's name, wherever a log line sent to a player would have said it. */
+export const UNSEEN_LOG = 'something unseen';
+/** An unseen unit's tile, wherever a log line sent to a player would have said it. */
+export const UNSEEN_TILE = 'somewhere unseen';
+const escRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/** The log as one side may read it: the lines it may read (unseen names replaced), and for each old line count the
+ * number of lines kept before it (keptBefore[i]), so an fx's L can be moved. */
+export function fogLog(log: string[], marks: LogMark[] | undefined, me: Side): { log: string[]; keptBefore: (i: number) => number } {
+  if (!marks || !marks.length) return { log, keptBefore: (i) => i };
+  const out: string[] = [], before: number[] = [];
+  for (let i = 0; i < log.length; i++) {
+    before.push(out.length);
+    const m = marks[i], s = m ? m[me] : undefined;
+    if (s === undefined) { out.push(log[i]); continue; }
+    if (s === 0) continue;
+    let line = log[i];
+    const swap = (list: string[] | undefined, by: string, word: string) => { for (const n of [...(list || [])].sort((a, b) => b.length - a.length)) line = line.replace(new RegExp('(^|[^' + word + '])' + escRe(n) + '(?![' + word + '])', 'g'), (_x, a) => a + by); };
+    swap(s.n, UNSEEN_LOG, '\\w'); swap(s.t, UNSEEN_TILE, '\\w,');
+    out.push(line.replace(/^something unseen/, 'Something unseen'));
+  }
+  before.push(out.length);
+  return { log: out, keptBefore: (i) => before[Math.max(0, Math.min(i, before.length - 1))] };
+}
 /** An unseen unit's place in the turn order ('?3': the fourth in the order). */
 export const isUnseenId = (id: unknown): boolean => typeof id === 'string' && id.startsWith(UNSEEN);
 /** What the viewer's side sees, as the view carries it (cb.fog). full: the viewer is the human Narrator, who is sent
@@ -98,18 +123,20 @@ export function fogFight(g: unknown, real: Combat, view: Combat, me: Side, full 
   try { vis = visibility(probe, me); } finally { bindGame(was); }
   const posOf = new Map(real.units.map((u) => [u.id, u.pos]));
   const fog: FightFog = { tiles: [...vis.tiles], sensed: [...new Set([...vis.sensed].map((id) => posOf.get(id)!).filter(Boolean))] };
-  if (full) return { ...view, fog: { ...fog, full: true } } as Combat;
+  if (full) { const { logSee: _all, ...whole } = view; return { ...whole, fog: { ...fog, full: true } } as Combat; }
   const hid = new Map(real.units.filter((u) => u.side !== me && !u.dead && !vis.seen.has(u.id)).map((u) => [u.id, u]));
   const seenNames = new Set(real.units.filter((u) => !hid.has(u.id)).map((u) => u.name));
   const c: Ctx = { hid, names: new Set([...hid.values()].map((u) => u.name).filter((n) => !!n && !seenNames.has(n))), tiles: vis.tiles };
   const own = new Set(real.units.filter((u) => u.side === me).map((u) => u.id));
-  const { units, order, fx, glyphs, traces, zones, images, sightWas, lastSeen, sightPos, ...rest } = view as Combat & { sightPos?: unknown };
+  const { units, order, fx, glyphs, traces, zones, images, sightWas, lastSeen, sightPos, log, logSee, ...rest } = view as Combat & { sightPos?: unknown };
+  const lg = fogLog(log || [], logSee, me);
   const mine = (x: { side?: string }) => x.side === me;
   const out = {
     ...scrub(rest, c),
     units: units.filter((u) => !hid.has(u.id)).map((u) => scrub(u, c)),
     order: order.map((id, i) => (hid.has(id) ? UNSEEN + i : id)),
-    fx: (fx || []).map((e) => fogFx(e, me, own, c)).filter((e): e is FxEvent => !!e),
+    log: lg.log,
+    fx: (fx || []).map((e) => fogFx(e, me, own, c)).filter((e): e is FxEvent => !!e).map((e) => (typeof e.L === 'number' && lg.log !== log ? { ...e, L: lg.keptBefore(e.L) } : e)),
     ...(glyphs ? { glyphs: glyphs.filter((x) => mine(x) || vis.tiles.has(x.pos)).map((x) => scrub(x, c, { near: !mine(x) })) } : {}),
     ...(traces ? { traces: traces.filter((x) => mine(x) || vis.tiles.has(x.pos)).map((x) => scrub(x, c, { near: !mine(x) })) } : {}),
     ...(zones ? { zones: zones.map((z) => (mine(z) ? scrub(z, c) : { ...scrub(z, c, { near: true }), tiles: z.tiles.filter((k) => vis.tiles.has(k)) })).filter((z) => z.tiles.length) } : {}),

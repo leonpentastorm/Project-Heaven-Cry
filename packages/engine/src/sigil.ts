@@ -13,7 +13,7 @@ import {
   type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT, lineMult,
 } from './sigilwords';
 export * from './sigilwords';
-import {
+import { say,
   type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction, displace
 } from './combat';
@@ -54,7 +54,7 @@ function hideUnit(cb: Combat, u: Unit, why: string): string {
 function revealUnit(cb: Combat, u: Unit, why: string): string {
   if (!u.hidden) return '';
   rawHidden(cb, u, false);
-  cb.log.push(u.name + ' is revealed (' + why + ').'); emit(cb, 'spotted', { u, why, cb }); sightFx(cb, null, { [u.id]: 'reveal' }); return ' · revealed';
+  say(cb, u.name + ' is revealed (' + why + ').'); emit(cb, 'spotted', { u, why, cb }); sightFx(cb, null, { [u.id]: 'reveal' }); return ' · revealed';
 }
 // ---------- ready, costs ----------
 const canCast = (u: Unit): string | null => (u.dead || u.downed ? 'Downed.' : condOn(u, 'silenced') ? 'Silenced: no magic this round.' : null);
@@ -907,7 +907,7 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile?: st
   const mine = myGlyphs(cb, u);
   if (mine.length > groundCap(u, cb)) { const old = mine[0]; cb.glyphs = cb.glyphs.filter((x) => x !== old); emitFx(cb, 'glyph_fade', { tile: old.pos, word: old.word, side: old.side, why: 'cap' }); faded = ' (' + up(old.word) + ' at ' + refOf(old.pos) + ' fades: ' + groundCap(u, cb) + ' glyphs at most)'; }
   tidyStrokes(cb.glyphs);
-  cb.log.push(u.name + ' draws ' + w.word + ' at ' + refOf(pv.tile) + ' (' + gc.charge + ' charge, ' + gc.ap + ' AP' + (pv.junction ? ', a junction: the Lines read ' + pv.words.map(up).join(' · ') + ' and ' + (pv.words2 || []).map(up).join(' · ') : pv.effect === 'extends' || pv.effect === 'stacks' ? ', the Line reads ' + pv.words.map(up).join(' · ') : pv.effect === 'breaks' ? ', no shape now' : pv.strokes.length ? ', a new Line' : '') + ')' + (edge ? ' (Edge Word: no AP)' : '') + faded + '.' + (gc.flux ? flux(cb, rng, u, gc.flux) : ''));
+  say(cb, u.name + ' draws ' + w.word + ' at ' + refOf(pv.tile) + ' (' + gc.charge + ' charge, ' + gc.ap + ' AP' + (pv.junction ? ', a junction: the Lines read ' + pv.words.map(up).join(' · ') + ' and ' + (pv.words2 || []).map(up).join(' · ') : pv.effect === 'extends' || pv.effect === 'stacks' ? ', the Line reads ' + pv.words.map(up).join(' · ') : pv.effect === 'breaks' ? ', no shape now' : pv.strokes.length ? ', a new Line' : '') + ')' + (edge ? ' (Edge Word: no AP)' : '') + faded + '.' + (gc.flux ? flux(cb, rng, u, gc.flux) : ''));
   emit(cb, 'glyph_drawn', { u, glyph: g, cb, rng });
   return null;
 }
@@ -923,7 +923,7 @@ export function scuff(cb: Combat, u: Unit): string | null {
   tidyStrokes(cb.glyphs); // a middle glyph scuffed splits its stroke in two (rules 1.10, Drawing 3.8)
   emitFx(cb, 'scuff', { unit: u.id, at: u.pos });
   for (const z of tur) destroyPlaced(cb, z, u.name + ' scuffs it out');
-  cb.log.push(u.name + ' scuffs out ' + [...here.map((g) => g.word.toUpperCase()), ...tur.map(() => 'a turret')].join(' and ') + ' at ' + refOf(u.pos) + '.');
+  say(cb, u.name + ' scuffs out ' + [...here.map((g) => g.word.toUpperCase()), ...tur.map(() => 'a turret')].join(' and ') + ' at ' + refOf(u.pos) + '.');
   return null;
 }
 
@@ -954,7 +954,7 @@ export function readGlyph(cb: Combat, u: Unit, tile: string): string | null {
   if (dist(u.pos, tile) > range) return 'Out of Analyze range (' + range + ' tiles).';
   if (dist(u.pos, tile) > 1 && !lineOfSight(cb, u.pos, tile)) return 'No line of sight to it.';
   pay(cb, u, cost); emitFx(cb, 'analyze', { unit: u.id, target: null, from: u.pos, to: tile, glyph: true });
-  cb.log.push(u.name + ' reads the ' + list.map((g) => g.word.toUpperCase() + ((cb.traces || []).includes(g as Trace) ? ' trace' : ' glyph')).join(' and ') + ' at ' + refOf(tile) + ' (' + cost + ' AP).', ...copyFrom(cb, u, list));
+  say(cb, u.name + ' reads the ' + list.map((g) => g.word.toUpperCase() + ((cb.traces || []).includes(g as Trace) ? ' trace' : ' glyph')).join(' and ') + ' at ' + refOf(tile) + ' (' + cost + ' AP).', ...copyFrom(cb, u, list));
   return null;
 }
 /** Analyze also reads the glyphs the analyzed enemy has drawn within the analyst's Analyze range (no extra AP). */
@@ -962,7 +962,7 @@ export function readDrawnBy(cb: Combat, u: Unit, t: Unit): void {
   if (!charOfUnit(cb, u)) return;
   const range = 4 + (u.analysis || 0), tiles = [...new Set((cb.glyphs || []).filter((g) => glyphDrawer(g) === t.id && dist(u.pos, g.pos) <= range).map((g) => g.pos))];
   const list = tiles.flatMap((k) => readable(cb, u, k).filter((g) => glyphDrawer(g as Glyph) === t.id));
-  if (list.length) cb.log.push(...copyFrom(cb, u, list));
+  if (list.length) say(cb, ...copyFrom(cb, u, list));
 }
 
 /** The glyphs of a fired pattern fade (a Keystone survives). Rules 1.10 Junctions (item 919): a junction leaves the
@@ -993,7 +993,7 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
   fadePattern(cb, p);
   if (pv.fizzle) {
     emitFx(cb, 'fizzle', { unit: u.id, at: u.pos, tiles: pv.missiles.flatMap((x) => x.burst.tiles), words: p.words, element: sp.element });
-    cb.log.push(head + ': nothing it may affect, and it fizzles (the charge, AP and Flux are spent).');
+    say(cb, head + ': nothing it may affect, and it fizzles (the charge, AP and Flux are spent).');
     emit(cb, 'spell_fizzle', { u, pattern: p, spell: sp, cb });
     emit(cb, 'evoked', { u, pattern: p, spell: sp, plan: pv, targets: [], impact: pv.impact, fizzle: true, charge: pv.charge, ap: pv.ap, cb, rng });
     return null;
@@ -1014,7 +1014,7 @@ function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: Evoke
   // What it learns rides on the Evoke's own log line (one line an Evoke), after it.
   const grew = evokeGrowth(cb, u, p.words, p.glyphs.length, struckIds.some((id) => cb.units.find((x) => x.id === id)?.side !== u.side));
   const ruled = narratorInflections(sp).map((n) => 'Inflection, the Narrator rules it: ' + n + '.');
-  cb.log.push(head + (line || ' · it strikes and finds no one') + '.' + [...ruled, ...grew].map((x) => ' ' + x).join(''));
+  say(cb, head + (line || ' · it strikes and finds no one') + '.' + [...ruled, ...grew].map((x) => ' ' + x).join(''));
   emit(cb, 'evoked', { u, pattern: p, spell: sp, plan: pv, targets: hitIds.map((id) => cb.units.find((x) => x.id === id)).filter(Boolean), impact: pv.impact, stay: sp.stay, zone: (cb.zones || [])[(cb.zones || []).length - 1], dealt, charge: pv.charge, ap: pv.ap, cb, rng });
   return null;
 }
@@ -1194,7 +1194,7 @@ function nullWave(cb: Combat, tiles: string[], at: string): string {
 export function destroyPlaced(cb: Combat, z: Zone, why: string) {
   cb.zones = (cb.zones || []).filter((x) => x !== z);
   emitFx(cb, z.kind === 'turret' ? 'turret_destroyed' : z.kind === 'trap' ? 'trap_gone' : 'field_gone', { id: z.id, tile: z.tiles[0], tiles: z.tiles, side: z.side, why, ...(z.kind === 'trap' || (z.kind === 'turret' && (z as any).hidden) ? { only: z.side } : {}) });
-  cb.log.push((z.who ? z.who + '\'s ' : '') + (z.kind === 'wall' ? 'field' : z.kind) + ' at ' + refOf(z.tiles[0]) + ' is gone (' + why + ').');
+  say(cb, (z.who ? z.who + '\'s ' : '') + (z.kind === 'wall' ? 'field' : z.kind) + ' at ' + refOf(z.tiles[0]) + ' is gone (' + why + ').');
 }
 const ownerOf = (cb: Combat, z: { by: string }) => cb.units.find((x) => x.id === z.by) || null;
 /** A field bites whoever enters it or starts a turn in it, once per creature per round: at full the first time it
@@ -1213,7 +1213,7 @@ function fieldBite(cb: Combat, rng: Rng, z: Zone, t: Unit) {
   let line = r.line;
   if (sp.pull && by && !by.dead && t !== by) line += magicShove(cb, t, by.pos, -sp.pull, by);
   emitFx(cb, 'field_tick', { id: z.id, target: t.id, at: t.pos, element: sp.element, side: z.side });
-  if (line) cb.log.push(t.name + ' is caught in ' + (z.who ? z.who + '\'s ' : 'the ') + sp.subjects.map((w) => w.toUpperCase()).join('·') + ' field' + line + '.');
+  if (line) say(cb, t.name + ' is caught in ' + (z.who ? z.who + '\'s ' : 'the ') + sp.subjects.map((w) => w.toUpperCase()).join('·') + ' field' + line + '.');
 }
 /** A trap goes off on someone of the other side (spec: WAIT): the spell resolves at its tile with the owner's numbers;
  * with STAY it then leaves a field there (the springing is the field's placing strike; item 422). */
@@ -1228,7 +1228,7 @@ function springTrap(cb: Combat, rng: Rng, z: Zone, t: Unit) {
     const src = by && !by.dead ? by.pos : z.tiles[0]; // PULL and CHAIN measure from the trap's owner (Snare: dragged toward you)
     const mp = missileEffects(cb, by, z.side, sp, { i: 0, aim: z.tiles[0], origin: z.tiles[0], impact: z.tiles[0], f, self: false, kind: sp.missile, source: src, deliveryMult: 1, roll: !!by, hops: [], path: [], blockedAt: null, stoppedBy: null, arc: null, opts: {}, reachMult: zz.reachMult ?? 1, via: 'trap', victim: t });
     let struck: string[] = [];
-    if (typeof mp !== 'string') { const r = magicSpellWords(z.words.length, () => strike(cb, rng, by, z.side, sp, mp.plan, mp.affected, { roll: !!by, source: src, opts: {}, str: zz.str })); struck = r.struck; cb.log.push(head + (r.line || ': it finds no one') + (sp.stay ? ' · a field springs up' : '') + '.'); }
+    if (typeof mp !== 'string') { const r = magicSpellWords(z.words.length, () => strike(cb, rng, by, z.side, sp, mp.plan, mp.affected, { roll: !!by, source: src, opts: {}, str: zz.str })); struck = r.struck; say(cb, head + (r.line || ': it finds no one') + (sp.stay ? ' · a field springs up' : '') + '.'); }
     if (sp.stay) { const bt = typeof mp !== 'string' ? mp.plan.burst : burstTiles(cb, sp, z.tiles[0], f); placeField(cb, z.by, z.who, z.side, sp, bt, f, Math.floor(by?.mg?.durBonus || 0), zz.reachMult ?? 1, struck); }
   }
   if (zz.triggers <= 0) cb.zones = (cb.zones || []).filter((x) => x !== z);
@@ -1252,7 +1252,7 @@ function turretFire(cb: Combat, rng: Rng, z: Zone) {
     line += r.line;
     if (sp.leech && r.dealt > 0 && !by.dead) { const h = healUnit(cb, by, Math.floor(r.dealt * sp.leech), by, 'leech'); line += ' · ' + by.name + ' drinks ' + h.restored + ' HP'; }
   }
-  cb.log.push((z.who ? z.who + '\'s ' : 'A ') + 'turret at ' + refOf(at) + ' fires (' + z.words.map((w) => w.toUpperCase()).join(' · ') + ')' + (line || ': nothing') + '.');
+  say(cb, (z.who ? z.who + '\'s ' : 'A ') + 'turret at ' + refOf(at) + ' fires (' + z.words.map((w) => w.toUpperCase()).join(' · ') + ')' + (line || ': nothing') + '.');
 }
 /** A turret's reach (spec: WATCH; the screen shows it, spec 9.9): its range (a Reach word's, + the owner's range bonus;
  * Touch or RELAY 1), the tiles within it it can fire into (in sight, or any with SENSE), and the creatures it would fire
@@ -1275,7 +1275,7 @@ export function strikeTurret(cb: Combat, rng: Rng, u: Unit, tile: string): strin
   if (melee ? dist(u.pos, tile) > 1 : dist(u.pos, tile) > effectiveRange(w) * 3 || !lineOfSight(cb, u.pos, tile)) return melee ? 'Walk up to it first.' : 'Out of range or no line of sight.';
   pay(cb, u, ap); const def = (z as any).def ?? CONTEST_BASE, sr = rollVs(cb, rng, { by: u, mod: u.attack || 0, tn: def, why: 'turret' }), r = sr.die, tot = sr.total, hit = sr.ok;
   emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: u.weapon, cat: w?.category, mode: melee ? 'melee' : 'shot', hit, crit: r === 20, fumble: r === 1, dmg: 0, killed: hit, object: true });
-  if (hit) destroyPlaced(cb, z, u.name + ' hits it (d20 ' + r + ' → ' + tot + ' vs ' + def + ')'); else cb.log.push(u.name + ' misses the turret at ' + refOf(tile) + ' (d20 ' + r + ' → ' + tot + ' vs ' + def + ').');
+  if (hit) destroyPlaced(cb, z, u.name + ' hits it (d20 ' + r + ' → ' + tot + ' vs ' + def + ')'); else say(cb, u.name + ' misses the turret at ' + refOf(tile) + ' (d20 ' + r + ' → ' + tot + ' vs ' + def + ').');
   return null;
 }
 /** Moving onto a tile: fields bite, traps of the other side go off (spec: STAY, WAIT). Called on each step of a walk and
@@ -1297,8 +1297,8 @@ const quickened = (cb: Combat, t: Unit) => uses({ key: 'sigil:quicken', u: t, cb
 export function sigilTurnStart(cb: Combat, rng: Rng, u: Unit) {
   migrateSigil(cb);
   if (u.dead) return;
-  if (condOn(u, 'quickened')) { const add = (W('quicken') as any)?.ap ?? 2, was = u.ap; if (!cb.overworld) grantAp(cb, u, add); endCond(u, 'quickened', cb); cb.log.push(u.name + ' is Quickened: +' + (u.ap - was) + ' AP this turn.'); }
-  if (condOn(u, 'corroded') && !u.downed) { const by = u.condBy?.corroded; cb.log.push(u.name + ' corrodes' + withElement('acid', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, Math.floor(itemAmount('condition:corroded', 'tick', [term(flatLevelOf(by ? cb.units.find((x) => x.id === by) || null : null, cb), 'level')])), 'true', 'acid'))); }
+  if (condOn(u, 'quickened')) { const add = (W('quicken') as any)?.ap ?? 2, was = u.ap; if (!cb.overworld) grantAp(cb, u, add); endCond(u, 'quickened', cb); say(cb, u.name + ' is Quickened: +' + (u.ap - was) + ' AP this turn.'); }
+  if (condOn(u, 'corroded') && !u.downed) { const by = u.condBy?.corroded; say(cb, u.name + ' corrodes' + withElement('acid', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, Math.floor(itemAmount('condition:corroded', 'tick', [term(flatLevelOf(by ? cb.units.find((x) => x.id === by) || null : null, cb), 'level')])), 'true', 'acid'))); }
   for (const z of [...(cb.zones || [])]) {
     if (u.dead || !z.tiles.includes(u.pos)) continue;
     if (z.kind === 'field' || z.kind === 'wall') fieldBite(cb, rng, z, u);
@@ -1311,7 +1311,7 @@ export function sigilRoundTick(cb: Combat) {
   migrateSigil(cb);
   for (const g of cb.glyphs || []) if (!(g as any).keystone) g.left--; // a Keystone never fades (Glyph Mason)
   const gone = (cb.glyphs || []).filter((g) => g.left <= 0);
-  if (gone.length) { cb.log.push(gone.map((g) => g.word.toUpperCase()).join(', ') + ' fade' + (gone.length === 1 ? 's' : '') + ' at ' + [...new Set(gone.map((g) => refOf(g.pos)))].join(', ') + '.'); for (const g of gone) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'time' }); }
+  if (gone.length) { say(cb, gone.map((g) => g.word.toUpperCase()).join(', ') + ' fade' + (gone.length === 1 ? 's' : '') + ' at ' + [...new Set(gone.map((g) => refOf(g.pos)))].join(', ') + '.'); for (const g of gone) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'time' }); }
   cb.glyphs = (cb.glyphs || []).filter((g) => g.left > 0); tidyStrokes(cb.glyphs);
   if (cb.traces?.length) { for (const t of cb.traces) t.left--; cb.traces = cb.traces.filter((t) => t.left > 0); }
   for (const z of cb.zones || []) z.left--;
@@ -1320,7 +1320,7 @@ export function sigilRoundTick(cb: Combat) {
   const walls = objectsOf(cb).filter((o) => o.kind === 'sigil_wall');
   for (const o of walls) (o as any).left = ((o as any).left ?? 1) - 1;
   const down = walls.filter((o) => (o as any).left <= 0 || (o.hp ?? 1) <= 0);
-  if (down.length) { cb.objects = objectsOf(cb).filter((o) => !down.includes(o)); emitFx(cb, 'wall_crumbled', { tiles: down.map((o) => o.pos), why: 'time' }); cb.log.push('The RAISE wall' + (down.length === 1 ? '' : 's') + ' at ' + down.map((o) => refOf(o.pos)).join(', ') + ' crumble' + (down.length === 1 ? 's' : '') + '.'); }
+  if (down.length) { cb.objects = objectsOf(cb).filter((o) => !down.includes(o)); emitFx(cb, 'wall_crumbled', { tiles: down.map((o) => o.pos), why: 'time' }); say(cb, 'The RAISE wall' + (down.length === 1 ? '' : 's') + ' at ' + down.map((o) => refOf(o.pos)).join(', ') + ' crumble' + (down.length === 1 ? 's' : '') + '.'); }
 }
 const x2fx = (k: string) => (k === 'turret' ? 'turret_destroyed' : k === 'trap' ? 'trap_gone' : k === 'field' || k === 'wall' ? 'field_gone' : k + '_gone');
 /** Spotting hidden Sigil traps and turrets (spec: WAIT, "like any hidden trap"): a unit of the other side within the
@@ -1334,7 +1334,7 @@ export function sigilSpot(cb: Combat, u: Unit) {
     const zz: any = z; if (z.side === u.side || !(z.kind === 'trap' || (z.kind === 'turret' && zz.hidden))) continue;
     if ((zz.spotted ||= []).includes(u.side) || dist(z.tiles[0], u.pos) > tr.range || passive < tr.tn) continue;
     zz.spotted.push(u.side); emitFx(cb, 'trap_spotted', { id: z.id, tile: z.tiles[0], by: u.id, side: u.side, only: u.side, kind: z.kind });
-    cb.log.push(u.name + ' spots a hidden ' + (z.kind === 'turret' ? 'turret' : 'Sigil trap') + ' at ' + refOf(z.tiles[0]) + ' (' + (u.side === 'pc' ? SKILL.vigilant.name + ' ' : 'notice ') + passive + ' vs ' + tr.tn + ').');
+    say(cb, u.name + ' spots a hidden ' + (z.kind === 'turret' ? 'turret' : 'Sigil trap') + ' at ' + refOf(z.tiles[0]) + ' (' + (u.side === 'pc' ? SKILL.vigilant.name + ' ' : 'notice ') + passive + ' vs ' + tr.tn + ').');
   }
 }
 /** The placed Sigil magic a side can see (spec: Mana, Sigils 9.9): fields, traps, turrets, smoke, light and RAISE walls,

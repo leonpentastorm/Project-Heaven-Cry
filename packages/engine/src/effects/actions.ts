@@ -1,3 +1,4 @@
+import { say } from '../log';
 // Active items become actions (plan 2.7). One action type per surface:
 //   combat/perk {unitId, id, actionId?, targetId?, targetIds?, tile?, choice?, text?, arm?}   (combat Perks and Class tabs)
 //   world/act  {act:'perk', charId, id, actionId?, targetId?, tile?, choice?}                  (the area map)
@@ -58,7 +59,7 @@ function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: numb
   }
   const who = h.u?.name || h.c?.name || 'Someone', tgt = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) : null;
   const what = who + ' uses ' + h.info.name + (tgt ? ' on ' + tgt.name : '') + (args.text ? ': "' + args.text.slice(0, 200) + '"' : '') + line + '.';
-  if (h.cb) h.cb.log.push(what);
+  if (h.cb) say(h.cb, what);
   const ask = (tgt ? 'on ' + tgt.name + '. ' : '') + (args.npc ? 'with ' + args.npc + '. ' : '') + (args.text ? '"' + args.text.slice(0, 160) + '" ' : '') + h.info.text;
   if (!h.cb) { const eid = postStory(h, (args.npc ? args.npc + ': ' : '') + (args.text || 'uses ' + h.info.name + '.')); const g = h.g ?? boundGame(); if (g && h.c) pendRuling(g, h.c, h.key, ask, eid || undefined); }
   else if (rest || !effs.length) note(h, ask);
@@ -212,10 +213,10 @@ export function runPerkAction(x: Who, id: string, args: ActionArgs & { actionId?
   if (d.arm || args.arm) {
     if (!h.u) return 'Arm it in a fight.';
     const armed = (h.u.armed ||= {});
-    if (armed[h.key] && (args.choice == null || armed[h.key].choice === args.choice)) { delete armed[h.key]; if (h.cb) h.cb.log.push(h.u.name + ' stands down ' + h.info.name + '.'); return null; }
+    if (armed[h.key] && (args.choice == null || armed[h.key].choice === args.choice)) { delete armed[h.key]; if (h.cb) say(h.cb, h.u.name + ' stands down ' + h.info.name + '.'); return null; }
     const e0 = entryOf(h, d, sc); if (!e0) return 'Not here.'; if (e0.why && !/^Needs \d/.test(e0.why)) return e0.why;
     armed[h.key] = { choice: args.choice ?? true, round: h.cb?.round ?? 0, targetId: args.targetId };
-    if (h.cb) h.cb.log.push(h.u.name + ' readies ' + h.info.name + (args.choice ? ' (' + args.choice + ')' : '') + '.');
+    if (h.cb) say(h.cb, h.u.name + ' readies ' + h.info.name + (args.choice ? ' (' + args.choice + ')' : '') + '.');
     return null;
   }
   const pv = previewPerkAction(x, id, args, sc); if (!pv.ok) return pv.why || 'Not now.';
@@ -267,7 +268,7 @@ export function openWindow(cb: Combat, kind: string, entries: WindowEntry[], by?
   const saved: Record<string, number> = {};
   for (const e of queue) { const u = cb.units.find((x) => x.id === e.unitId)!; saved[u.id] = u.ap; if (e.ap != null) setAp(u, e.ap); }
   cb.window = { kind, queue, saved, by };
-  cb.log.push(kind + ': ' + queue.map((e) => cb.units.find((u) => u.id === e.unitId)!.name).join(', ') + (queue.length === 1 ? ' acts now.' : ' act now.'));
+  say(cb, kind + ': ' + queue.map((e) => cb.units.find((u) => u.id === e.unitId)!.name).join(', ') + (queue.length === 1 ? ' acts now.' : ' act now.'));
 }
 /** After an action in a window: count it, and move on when the unit is done. */
 export function windowStep(cb: Combat, declined = false) {

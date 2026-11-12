@@ -16,7 +16,7 @@ import { statQuery } from '../../effects/hooks';
 import { technique, save, cond, stop, forceMove, pushBlocked, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { PHYS_RULES } from '../data';
 import { strikingWith, techSaveTn, techVia, saveOutside, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
-import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf, swapUnits } from '../../combat';
+import { say, type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf, swapUnits } from '../../combat';
 import { mod } from '../../character';
 import { zoneEnter } from '../../magic';
 import { hazardStep, hazardLiveAt } from '../../hazards';
@@ -141,7 +141,7 @@ technique({
     Object.assign(t.state(), { on: true, t: turnStamp(t.cb), def, reach: p === 'reach', heavy: p === 'heavy', front, via: techVia(t) });
     meleeFx(t, 'guard', { front, reach: p === 'reach', heavy: p === 'heavy' });
     const got = addGuard(t.cb, t.u, guardGain(t.u));
-    t.cb.log.push(t.u.name + ' is on Guard (+' + def + ' Defense against melee' + (p === 'heavy' ? ' and shots from the front' : '') + ')' + (got ? ': +' + got + ' Guard (' + guardOf(t.u) + '/' + guardMax(t.u) + ')' : '') + '.');
+    say(t.cb, t.u.name + ' is on Guard (+' + def + ' Defense against melee' + (p === 'heavy' ? ' and shots from the front' : '') + ')' + (got ? ': +' + got + ' Guard (' + guardOf(t.u) + '/' + guardMax(t.u) + ')' : '') + '.');
     return null;
   },
   ai: (t) => (t.u.ap <= 1 && t.cb.units.some((v) => v.side !== t.u.side && alive(v) && dist(v.pos, t.u.pos) <= 2) ? 4 : 0),
@@ -163,7 +163,7 @@ onHook('move_step', (ctx: any, cb) => {
     const g = guardStance(h); if (!g?.reach || h.side === m.side || !alive(h) || dist(h.pos, ctx.at) > 1 || dist(h.pos, ctx.from) <= 1) continue;
     if (saveOutside(cb, ctx.rng, h, m, h.name + '\'s Guard', techSaveTn(h, g.via || 'raw_power'), g.via || 'raw_power')) continue; // the guard's strength with the weapon it was set with
     m.pos = ctx.from; ctx.stop = 'guard';
-    cb.log.push(m.name + ' can\'t get past ' + h.name + '\'s guard and stops at ' + refOf(m.pos) + '.');
+    say(cb, m.name + ' can\'t get past ' + h.name + '\'s guard and stops at ' + refOf(m.pos) + '.');
     return;
   }
 });
@@ -181,7 +181,7 @@ pressureFilter((cb, target, n) => {
   const per = PHYS_RULES.guard?.pressure_per_point ?? 1; // Guard a point of Pressure (techniques.json rules.guard)
   const g = resOf(target, 'guard'), take = Math.min(Math.floor(g / per), n); if (!take) return n;
   spendGuard(cb, target, take * per);
-  cb.log.push(target.name + ' takes ' + take + ' Pressure on Guard (' + (g - take * per) + ' Guard left).');
+  say(cb, target.name + ' takes ' + take + ' Pressure on Guard (' + (g - take * per) + ' Guard left).');
   return n - take;
 });
 
@@ -214,7 +214,7 @@ technique({
       return null;
     }
     const rv = rollVs(t.cb, t.rng, { by: u, mod: bonus, tn: need, nat: false, why: 'shove' }); // an opposed number: no natural 1 or 20
-    t.cb.log.push(u.name + ' shoves ' + tgt.name + ': ' + rv.text + (rv.ok ? '' : ' · holds firm') + '.');
+    say(t.cb, u.name + ' shoves ' + tgt.name + ': ' + rv.text + (rv.ok ? '' : ' · holds firm') + '.');
     if (!rv.ok) { emitFx(t.cb, 'shove', { unit: u.id, target: tgt.id, from: tgt.pos, to: tgt.pos, ok: false }); return null; }
     const was = tgt.pos, wasProne = !!tgt.prone, mk = fxMark(t);
     stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false });
@@ -222,7 +222,7 @@ technique({
     const path = movedSince(t, tgt.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: tgt.id, path, how: 'push' });
     fallFx(t, tgt, wasProne);
     // it works when the target really moved, or went Prone where it was blocked (an item may cancel the push)
-    if (!(tgt.pos !== was || (blocked && tgt.prone && !wasProne))) t.cb.log.push(tgt.name + ' holds its ground.');
+    if (!(tgt.pos !== was || (blocked && tgt.prone && !wasProne))) say(t.cb, tgt.name + ' holds its ground.');
     // Siege Engine: a Shove that moves its target gives its holder Guard (the perk answers 'shove_guard')
     else if (tgt.pos !== was && u.resMax?.guard) { const n = statQuery({ u, cb: t.cb }, 'shove_guard').add; if (n > 0) { u.res ||= {}; u.res.guard = Math.min(u.resMax.guard, (u.res.guard || 0) + n); } }
     return null;
@@ -252,7 +252,7 @@ technique({
     fallFx(t, tgt, wasProne);
     if (grapple) {
       if (t.preview) t.note('You go Prone with it.');
-      else if (!t.u.prone) { setProne(t.cb, t.u, true, { endBrace: true }); emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'prone' }); t.cb.log.push(t.u.name + ' goes down with ' + tgt.name + '.'); }
+      else if (!t.u.prone) { setProne(t.cb, t.u, true, { endBrace: true }); emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'prone' }); say(t.cb, t.u.name + ' goes down with ' + tgt.name + '.'); }
       cond(t, tgt, 'grappled');
     }
     return null;
@@ -291,9 +291,9 @@ function swap(t: Tech, tgt: Unit): boolean {
   const sw = swapUnits(cb, t.rng, u, tgt, { by: u, source: 'drag', willing: [u], drawn: () => {
     u.moved = true;
     emitFx(cb, 'shove', { unit: u.id, target: tgt.id, from: b, to: a, ok: true }); moveFx(cb, u, [a, b], 'drag');
-    cb.log.push(u.name + ' and ' + tgt.name + ' swap places (' + t.def.name + ').');
+    say(cb, u.name + ' and ' + tgt.name + ' swap places (' + t.def.name + ').');
   } });
-  if (!sw.ok) { cb.log.push(tgt.name + ' holds firm.'); return false; }
+  if (!sw.ok) { say(cb, tgt.name + ' holds firm.'); return false; }
   // the user's own step is a move it chose, so a held shot may answer it; the target's half is forced: nobody reacts
   if (alive(u)) { emit(cb, 'move_step', { u, from: a, at: b, i: 0, route: [b], how: 'drag', stop: false, cb, rng: t.rng, technique: t.def.id }); if (alive(u) && !u.hidden) triggerOverwatch(cb, t.rng, u, [a, b]); }
   return true;
@@ -319,7 +319,7 @@ technique({
       else if (stepUser(t, [to]) && alive(t.u) && alive(tgt)) worked = forceMove(t, tgt, dest, 1) > 0;
     }
     if (worked) { const path = movedSince(t, tgt.id, mk); if (path.length > 1) meleeFx(t, 'force', { target: tgt.id, path, how, ...(how !== 'pull' ? { user: [from, t.u.pos] } : {}) }); }
-    else if (!t.preview) t.cb.log.push(tgt.name + ' doesn\'t move.');
+    else if (!t.preview) say(t.cb, tgt.name + ' doesn\'t move.');
     return null;
   },
   ai: () => 0,

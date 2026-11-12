@@ -3,7 +3,7 @@
 // ranged lane builds Pin Down, Rout, Stopping Shot, Storm and Last Round here.
 import { technique, strike, canStrike, save, stop, ownSideOnly, forceMove, spendRounds, lowerPressure, wasSuppressed, isPressed, isSuppressed, pressureOf, pressureState, onHook, TECHNIQUE, type Tech } from './shared';
 import { looseRound } from './press';
-import { alive, dist, xy, paths, moveUnit, moveBlock, emitFx, type Combat, type Unit } from '../../combat';
+import { say, alive, dist, xy, paths, moveUnit, moveBlock, emitFx, type Combat, type Unit } from '../../combat';
 import { radiusOf } from '../../tactics';
 import { AP_BASE } from '../../effects/ap';
 import { PHYS_RULES } from '../data';
@@ -96,7 +96,7 @@ technique({
       if (save(t, v, 'heart', tn(sup))) continue;
       const blk = moveBlock(v); if (blk) { t.note(v.name + ' can\'t run: ' + blk); continue; }
       const to = runTo(cb, v, t.u, tiles(v)); if (!to) { t.note(v.name + ' has nowhere to run.'); continue; }
-      cb.log.push(v.name + ' breaks and runs (Rout).');
+      say(cb, v.name + ' breaks and runs (Rout).');
       emitFx(cb, 'routed', { unit: v.id, from: v.pos, to, by: t.u.id });
       const err = walkFree(v, to, t, false); if (err) t.note(v.name + ' can\'t run: ' + err);
     }

@@ -17,7 +17,7 @@
 // What a client must never do again: copy a fight by hand, call bindGame, set cb.mods, or hide units from a preview by
 // their ids or names. A lint test (apps/web/src/game/boundary.test.ts) fails when one comes back.
 import type { Combat, Unit } from './combat';
-import { visibility } from './combat';
+import { visibility, logQuietly } from './combat';
 import type { Rng } from './rng';
 import { bindGame } from './effects/hooks';
 import { apply, RuleError, type Action, type GameState } from './game';
@@ -41,6 +41,7 @@ export function withGame<T>(g: any, fn: () => T): T {
 export function copyFight(cb: Combat, o: { mods?: string[] | null } = {}): Combat {
   const c: Combat = clone({ ...cb, log: [], notes: [], fx: [] } as Combat);
   if (o.mods) c.mods = [...o.mods]; else delete c.mods;
+  delete c.logSee;
   return c;
 }
 /** The game a dry run's handlers see: its own characters, counters and dice, and the copied fight. The story's entries
@@ -63,7 +64,7 @@ export interface PreviewOpts {
 export function preview<T>(g: any, cb: Combat, fn: (cb: Combat, g: any, rng: Rng) => T, o: PreviewOpts = {}): T {
   const seen = o.viewer ? fightSeenBy(cb, o.viewer) : cb, c = copyFight(seen, o), sg = shadowGame(g, c);
   const was = bindGame(sg || null);
-  try { return fn(c, sg, sg?.rng || { state: 1 }); } finally { bindGame(was); }
+  try { return logQuietly(() => fn(c, sg, sg?.rng || { state: 1 })); } finally { bindGame(was); }
 }
 
 export interface DryRun { /** the engine's refusal in plain words, or null: it would go through */ err: string | null;

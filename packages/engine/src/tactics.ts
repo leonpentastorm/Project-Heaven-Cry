@@ -9,7 +9,7 @@ import { factorOf } from './effects/output';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import { type Character, mod, prayerCooldown } from './character';
-import { type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
+import { say, type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
 import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst } from './magic';
@@ -79,11 +79,11 @@ export function reactionDonor(cb: Combat, u: Unit): Unit | null {
 export const canReact = (cb: Combat, u: Unit) => ownReact(cb, u) || !!reactionDonor(cb, u);
 /** Spend a reaction now; false when none is left. */
 export function useReaction(cb: Combat, u: Unit): boolean {
-  if (!baseReact(cb, u) && cueLive(cb, u) && maxReactions(u, cb) > 0) { delete u.call!.cue; cb.log.push(u.name + ' reacts again (Cue).'); return true; } // the cued reaction, after its own
+  if (!baseReact(cb, u) && cueLive(cb, u) && maxReactions(u, cb) > 0) { delete u.call!.cue; say(cb, u.name + ' reacts again (Cue).'); return true; } // the cued reaction, after its own
   if (!ownReact(cb, u)) {
     const d = reactionDonor(cb, u); if (!d) return false;
     d.reactUsed = { r: cb.round, n: reactionsUsed(cb, d) + 1 }; d.reactedRound = cb.round;
-    cb.log.push(u.name + ' reacts on ' + d.name + '\'s reaction (Many Hands).'); return true;
+    say(cb, u.name + ' reacts on ' + d.name + '\'s reaction (Many Hands).'); return true;
   }
   u.reactUsed = { r: cb.round, n: reactionsUsed(cb, u) + 1 }; u.reactedRound = cb.round; return true;
 }
@@ -107,7 +107,7 @@ export function hide(cb: Combat, u: Unit, why = ''): string {
 export function reveal(cb: Combat, u: Unit, why: string): string {
   if (!u.hidden) return '';
   rawHidden(cb, u, false);
-  cb.log.push(u.name + ' is revealed (' + why + ').');
+  say(cb, u.name + ' is revealed (' + why + ').');
   emit(cb, 'spotted', { u, why, cb });
   sightFx(cb, null, { [u.id]: 'reveal' }); // presentation: it shimmers into the sight of a side that can see its tile
   return ' · revealed';
@@ -123,7 +123,7 @@ export function hideBlock(cb: Combat, u: Unit): string | null {
 export function hideAction(cb: Combat, u: Unit): string | null {
   { const no = hideBlock(cb, u); if (no) return no; }
   const ap = price({ cb, u }, 'hide').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
-  pay(cb, u, ap); cb.log.push(u.name + ' goes to ground' + hide(cb, u) + '.'); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' });
+  pay(cb, u, ap); say(cb, u.name + ' goes to ground' + hide(cb, u) + '.'); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' });
   return null;
 }
 /** An ambush: the first attack from each Hidden entry (spec item 41; plan 6a-8): crit on 19-20, × the Ambush multiplier. */
@@ -141,7 +141,7 @@ export function spotHidden(cb: Combat, rng: Rng, by: Unit) {
     const ctx: any = emit(cb, 'spot', { by, u, die: rollD20(rng).die, mod: m, tn: CONTEST_BASE + (u.ingMod ?? -2) + (u.stealth || 0) + (u.sk?.ingenuity || 0), cancel: false, cb, rng });
     if (ctx.cancel) continue;
     const sr = judge('roll', { die: ctx.die }, ctx.mod, ctx.tn), ok = sr.ok; rollFx(cb, sr, by, { why: 'spot' }); // the hook may have changed the die, the modifier or the TN
-    cb.log.push(by.name + ' looks for ' + u.name + ': ' + sr.text + (ok ? ' · spotted' : ' · nothing'));
+    say(cb, by.name + ' looks for ' + u.name + ': ' + sr.text + (ok ? ' · spotted' : ' · nothing'));
     if (ok) reveal(cb, u, 'spotted by ' + by.name);
   }
 }
@@ -198,7 +198,7 @@ export function parley(cb: Combat, rng: Rng, u: Unit, t: Unit, kind: 'persuade' 
   if (kind === 'persuade') out = applyCond(cb, rng, u, t, 'ldebuff', undefined, 'brain', { tnAdd: ctx.tnAdd, via: ctx.via });
   else if (kind === 'threaten') out = THREATEN ? THREATEN.run(cb, rng, u, t, ctx.tnAdd, ctx.via) : applyCond(cb, rng, u, t, 'shaken', undefined, 'heart', { tnAdd: ctx.tnAdd, via: ctx.via });
   else out = trySurrender(cb, rng, u, t, ctx.tnAdd, ctx.via);
-  cb.log.push(u.name + (kind === 'persuade' ? ' works on ' : kind === 'threaten' ? ' threatens ' : ' offers terms to ') + t.name + said + out + (ctx.result || '') + '.');
+  say(cb, u.name + (kind === 'persuade' ? ' works on ' : kind === 'threaten' ? ' threatens ' : ' offers terms to ') + t.name + said + out + (ctx.result || '') + '.');
   if (text) (cb.notes ||= []).push(u.name + ' (round ' + cb.round + ', ' + kind + ' at ' + t.name + '):' + said);
   return null;
 }
@@ -219,7 +219,7 @@ export function throwItem(cb: Combat, rng: Rng, u: Unit, item: string, tile: str
   { const no = whyNot(cb, u, ctx.ap); if (no) return no; }
   pay(cb, u, ctx.ap); u.throwables![item]--;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: item, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true });
-  cb.log.push(u.name + (placed ? ' places a ' : ' throws a ') + w.name.toLowerCase() + ' at ' + refOf(tile) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : blast(cb, rng, u, tile, item, ctx.radius)) + '.');
+  say(cb, u.name + (placed ? ' places a ' : ' throws a ') + w.name.toLowerCase() + ' at ' + refOf(tile) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : blast(cb, rng, u, tile, item, ctx.radius)) + '.');
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + w.name.toLowerCase());
   return null;
 }
@@ -292,8 +292,8 @@ export function extinguish(cb: Combat, u: Unit, t: Unit): string | null {
   pay(cb, u, ap);
   // FIRE's inflection (rules 1.10, Sigil 1.5): a Mastered FIRE's Burning lasts +1 round past being put out.
   const linger = /^linger:(\d+)/.exec(String(t.condArg?.burning || ''));
-  if (linger) { setCondRounds(t, 'burning', +linger[1], { fresh: cb.order?.[cb.turn] === t.id, arg: null }); cb.log.push(u.name + ' beats down the fire' + (t === u ? '' : ' on ' + t.name) + ', but it smoulders ' + linger[1] + ' more round' + (linger[1] === '1' ? '' : 's') + ' (a Mastered FIRE).'); return null; }
-  endCond(t, 'burning', cb); cb.log.push(u.name + ' puts out the fire' + (t === u ? '' : ' on ' + t.name) + '.'); return null;
+  if (linger) { setCondRounds(t, 'burning', +linger[1], { fresh: cb.order?.[cb.turn] === t.id, arg: null }); say(cb, u.name + ' beats down the fire' + (t === u ? '' : ' on ' + t.name) + ', but it smoulders ' + linger[1] + ' more round' + (linger[1] === '1' ? '' : 's') + ' (a Mastered FIRE).'); return null; }
+  endCond(t, 'burning', cb); say(cb, u.name + ' puts out the fire' + (t === u ? '' : ' on ' + t.name) + '.'); return null;
 }
 /** Break a grapple (2 AP): d20 + the better of your Raw Power and Athletics modifiers against d20 + the grappler's. */
 export function escapeGrapple(cb: Combat, rng: Rng, u: Unit): string | null {
@@ -304,14 +304,14 @@ export function escapeGrapple(cb: Combat, rng: Rng, u: Unit): string | null {
   const mine = Math.max(u.strength ?? 0, mod(u.athleticsPts || 0)), theirs = by ? Math.max(by.strength ?? 0, mod(by.athleticsPts || 0)) : 0;
   const ct = contest(cb, rng, { by: u, mod: mine }, { by: by || null, mod: theirs }, 'escape'), ok = ct.won || !by; // the higher total; the holder keeps a tie
   if (ok) endCond(u, 'grappled', cb);
-  cb.log.push(u.name + ' strains against the hold: ' + ct.text + (ok ? ' · breaks free' : ' · still held') + '.');
+  say(cb, u.name + ' strains against the hold: ' + ct.text + (ok ? ' · breaks free' : ' · still held') + '.');
   return null;
 }
 /** Recover a dropped or lowered weapon: 2 AP (1 for a lowered one). */
 export function recoverWeapon(cb: Combat, u: Unit): string | null {
   const id = condOn(u, 'disarmed') ? 'disarmed' : condOn(u, 'lowered') ? 'lowered' : null; if (!id) return 'Your weapon is in your hand.';
   const ap = price({ cb, u }, 'recover', costOf('recover', id === 'disarmed' ? 'ap' : 'ap_lowered')).ap; { const no = whyNot(cb, u, ap); if (no) return no; }
-  pay(cb, u, ap); endCond(u, id, cb); cb.log.push(u.name + (id === 'disarmed' ? ' recovers the weapon.' : ' raises the weapon.')); return null;
+  pay(cb, u, ap); endCond(u, id, cb); say(cb, u.name + (id === 'disarmed' ? ' recovers the weapon.' : ' raises the weapon.')); return null;
 }
 
 // ---------- companions (rules 1.3; stat blocks provisional) ----------

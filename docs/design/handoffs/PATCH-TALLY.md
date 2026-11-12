@@ -147,6 +147,7 @@ wait); a Guardian's Will Shield and Sanctuary sit on 100 MP.
 | Lob | Went off before it landed | Blast, damage and HP wait for the landing |
 | Suppress | Sound and damage before the shots | Rattle with the first flash, damage with the last round |
 | Area preview | Marked and named enemies in the fog | Only what you can see |
+| The fight log (co-op, team fights) | Every player read every line, so a line named and placed hostiles they had never seen ("Drill drone 3 moves to N10") | Each player reads only the lines about what their side saw when it happened; a line that hits you from the fog reads "Something unseen shoots Cy from somewhere unseen" (spec item 1600 a) |
 | A drawn glyph | Could vanish before its Evoke played | Stays until the effect that removes it has played |
 | Opportunity attack | The step out played before the blow | The blow, then the step, if the mover still stands |
 | Tests | | `fx-sweep`: every weapon × technique (2,022 cases) |

@@ -11,7 +11,7 @@ import {
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
 import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
@@ -951,7 +951,7 @@ function reduce(g: GameState, a: Action, by: string) {
       { const o = oocOf(a.text); if (o.ooc) { if (!o.text) fail('Say something.'); askOoc(g, by, o.text, (e) => push(g, e)); return; } } // answered after the fight
       const text = String(a.text || '').trim().slice(0, 300); if (!text) fail('Say something.');
       (cb!.notes ||= []).push(c!.name + ' (round ' + cb!.round + '): "' + text + '"');
-      cb!.log.push(c!.name + ': "' + text + '"');
+      say(cb!, c!.name + ': "' + text + '"');
       // rules 1.14: speech is free and goes to the Narrator (its next answer in this fight reads the last few lines)
       { const t = talkOf(cb!); t.said = [...(t.said || []), { who: c!.name, text, round: cb!.round }].slice(-6); }
       return;
@@ -1464,7 +1464,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   // an empty chair (UI pass review: a guest who pressed Leave mid-fight froze everyone at their turn).
   const hostSkip = !!c && c.owner !== by && a.type === 'combat/end-turn' && isHost(g, by) && !g.players.find((p) => p.id === c.owner)?.online;
   if (!c || (c.owner !== by && !hostSkip)) fail('Not your unit.');
-  if (hostSkip) cb!.log.push((g.players.find((p) => p.id === by)?.name || 'The host') + ' passes ' + u.name + '\'s turn: ' + (g.players.find((p) => p.id === c!.owner)?.name || 'their player') + ' is away.');
+  if (hostSkip) say(cb!, (g.players.find((p) => p.id === by)?.name || 'The host') + ' passes ' + u.name + '\'s turn: ' + (g.players.find((p) => p.id === c!.owner)?.name || 'their player') + ' is away.');
   if ((u.companion || pup) && !COMPANION_ACTS.has(a.type)) fail((u.companion ? 'A companion' : 'A puppet') + ' can move, attack, hold Overwatch and end its turn.');
   if ((u.companion || pup) && a.type === 'combat/technique' && !TECHNIQUE[(a as any).id]?.free) fail((u.companion ? 'A companion' : 'A puppet') + ' makes plain attacks only.'); // rules 1.12: the free techniques
   // A unit with a fixed action list (the drone: move and a plain shot; spec §14 item 370) refuses everything else.
@@ -1567,7 +1567,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/song': {
       if (!musicTraitOf(c)) fail('Only a music trait plays its song on demand.');
       const sAp = price({ cb, u }, 'song').ap; { const no = whyNot(cb, u, sAp); if (no) fail(no); }
-      if (!startSong(g, c!, 'on the Musek Blestor', 'manual', (t) => cb!.log.push(t))) fail(musicOf(g).now?.charId === c!.id ? 'Your song is already playing.' : 'Another song is playing; wait for it to end.');
+      if (!startSong(g, c!, 'on the Musek Blestor', 'manual', (t) => say(cb!, t))) fail(musicOf(g).now?.charId === c!.id ? 'Your song is already playing.' : 'Another song is playing; wait for it to end.');
       pay(cb, u, sAp); emitFx(cb!, 'song', { unit: u.id, at: u.pos }); spotlight(g, { kind: 'song', char: c!.id, unit: u.id, reason: 'plays their song', song: true }); break;
     }
     default: fail('Unknown action.');
@@ -1595,7 +1595,7 @@ function attempt(g: GameState, cb: Combat, u: Combat['units'][number], text0: st
   const ap = price({ cb, u }, 'attempt').ap, why = attemptWhy(g, cb, u, ap); if (why) return why;
   pay(cb, u, ap);
   openRuling(g, cb, u, text, ap);
-  cb.log.push(u.name + ' attempts (' + ap + ' AP): "' + text + '"');
+  say(cb, u.name + ' attempts (' + ap + ' AP): "' + text + '"');
   return null;
 }
 /** Give back what a fight ruling cost: its AP and, for a perk, the use. Returns what came back, in words. */
@@ -1611,7 +1611,7 @@ function fightSkip(g: GameState, id?: string, note?: string) {
   const cb = g.combat, r = fightRulingOf(cb); if (!cb || !r || (id && id !== r.id)) fail('Nothing is waiting for the Narrator.');
   const u = cb!.units.find((x) => x.id === r!.unit), back = refundFight(g, cb!, r!), t = talkOf(cb!);
   delete t.ruling; if (t.attempted) delete t.attempted[r!.unit];
-  cb!.log.push((String(note || '').trim().slice(0, 160) || 'The Narrator didn\'t answer.') + (back ? ' ' + (u?.name || 'The speaker') + ' gets ' + back + ' back.' : ''));
+  sayOf(cb!, [], (String(note || '').trim().slice(0, 160) || 'The Narrator didn\'t answer.') + (back ? ' ' + (u?.name || 'The speaker') + ' gets ' + back + ' back.' : ''));
 }
 const UNYIELDING = ['machine', 'robot', 'turret', 'drone'];
 /** A unit the speaker may name in a fight ruling: an enemy of theirs still in the fight (by its id, or its name when
@@ -1669,22 +1669,22 @@ function fightRuling(g: GameState, a: FightAnswer) {
   if (!lines.length && !eff) fail('The Narrator\'s answer is empty.');
   const u = cb!.units.find((x) => x.id === r!.unit), c = g.characters[r!.charId], t = talkOf(cb!);
   delete t.ruling;
-  for (const l of lines) cb!.log.push('Narrator: ' + l);
+  for (const l of lines) sayOf(cb!, [], 'Narrator: ' + l);
   let did = '';
   // A speaker who is dead or Downed when the answer comes rolls nothing and earns nothing; a perk's yes or no still stands.
   const up = !!u && !u.dead && !u.downed;
   if (eff && u && (up || 'perk' in eff)) {
     if ('perk' in eff) {
-      if (!eff.perk.accepted) { const back = refundFight(g, cb!, r!); did = r!.perk!.name + ' refused'; cb!.log.push(u.name + '\'s ' + r!.perk!.name + ' is refused' + (back ? ': ' + back + ' come' + (/ and /.test(back) ? '' : 's') + ' back.' : '.')); }
+      if (!eff.perk.accepted) { const back = refundFight(g, cb!, r!); did = r!.perk!.name + ' refused'; say(cb!, u.name + '\'s ' + r!.perk!.name + ' is refused' + (back ? ': ' + back + ' come' + (/ and /.test(back) ? '' : 's') + ' back.' : '.')); }
       else did = r!.perk!.name + ' accepted';
     } else if ('check' in eff && c) {
       // The same dice as a story check: d20 + the speaker's modifier against the Narrator's TN; a natural 20 succeeds, a natural 1 fails.
       const sk = eff.check.skill, m = sideRollMod(g, c, sk) + condSkillMod(u, sk), tn = eff.check.tn, rv = rollVs(cb!, g.rng, { by: u, mod: m, tn, why: 'check' }), die = rv.die, total = rv.total;
       const crit = rv.nat === 20, fumble = rv.nat === 1, ok = rv.ok;
       const won = ok && eff.check.onSuccess ? applyFightOutcome(g, cb!, u, eff.check.onSuccess) : '';
-      cb!.log.push(u.name + ' · ' + SKILL[sk].name.toUpperCase() + ' CHECK · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + ' ' + Math.abs(m) + ' = ' + total + ' vs ' + tn + ' · ' + (crit ? '✓ CRITICAL' : fumble ? '✕ CRITICAL FAIL' : ok ? '✓ SUCCESS' : '✕ FAILURE') + won + '.');
+      say(cb!, u.name + ' · ' + SKILL[sk].name.toUpperCase() + ' CHECK · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + ' ' + Math.abs(m) + ' = ' + total + ' vs ' + tn + ' · ' + (crit ? '✓ CRITICAL' : fumble ? '✕ CRITICAL FAIL' : ok ? '✓ SUCCESS' : '✕ FAILURE') + won + '.');
       did = SKILL[sk].name + ' check ' + total + ' vs ' + tn + (ok ? ', a success' : ', a failure') + won;
-    } else if (!('check' in eff)) { const out = applyFightOutcome(g, cb!, u, eff); cb!.log.push(out.replace(/^ · /, '') + '.'); did = out.replace(/^ · /, ''); }
+    } else if (!('check' in eff)) { const out = applyFightOutcome(g, cb!, u, eff); say(cb!, out.replace(/^ · /, '') + '.'); did = out.replace(/^ · /, ''); }
   }
   // The after-fight report: already answered, with what the engine did (the Narrator follows through, it doesn't rule twice).
   (cb!.notes ||= []).push((u?.name || 'Someone') + ' (round ' + r!.round + (r!.perk ? ', ' + r!.perk.name : ', an attempt') + '): "' + r!.text.slice(0, 160) + '" — answered in the fight' + (lines.length ? ': ' + lines.join(' ') : '') + (did ? ' [' + did + ']' : '') + (r!.perk?.ask && !(eff && 'perk' in eff && !eff.perk.accepted) ? ' Follow through: ' + r!.perk.ask : ''));
@@ -1709,7 +1709,7 @@ deedGrant.f = grantCombo;
 const unitOfChar = (g: GameState, charId: string) => (g.phase === 'combat' ? g.combat?.units.find((x) => x.charId === charId && !x.companion)?.id ?? null : null);
 /** Spotlight moments in a fight (spec: Music): an elite or boss taken down, an ally revived; for the music traits also any kill and any big heal. */
 function songTriggers(g: GameState, u: Combat['units'][number], c: Character, before: { id: string; dead: boolean; downed: boolean; hp: number }[]) {
-  const cb = g.combat!, log = (t: string) => cb.log.push(t), was = Object.fromEntries(before.map((b) => [b.id, b]));
+  const cb = g.combat!, log = (t: string) => say(cb, t), was = Object.fromEntries(before.map((b) => [b.id, b]));
   const killed = cb.units.filter((x) => x.side === 'foe' && x.dead && was[x.id] && !was[x.id].dead);
   const big = killed.find((x) => x.tier === 'elite' || x.tier === 'boss');
   const revived = cb.units.find((x) => x.side === 'pc' && was[x.id]?.downed && !x.downed && !x.dead);
@@ -1862,7 +1862,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
   if (c.weapon !== wasMain) { u.jammed = false; setBraced(u, false); }
   pay(cb, u, ap);
   const where = toPile.length && pileAt ? (op.op === 'drop' ? ': it lands in the pile at ' : ', leaving the weapon on the ground in the pile at ') + refOf(pileAt) : '';
-  if (!(o.free && op.op === 'drop')) cb.log.push(c.name + ' ' + plan.label + (o.free ? '' : ' (' + ap + ' AP)') + where + (op.op !== 'mod' && u.mg ? focusLine(c) : '') + '.');
+  if (!(o.free && op.op === 'drop')) say(cb, c.name + ' ' + plan.label + (o.free ? '' : ' (' + ap + ' AP)') + where + (op.op !== 'mod' && u.mg ? focusLine(c) : '') + '.');
   syncSong(g);
   return null;
 }
@@ -1885,7 +1885,7 @@ setGearService({
   lose(cb, u, hand, at) {
     const g: GameState | null = boundGame(), c = g && u.charId ? g.characters[u.charId] : null; if (!g || !c) return null;
     const id = hand === 'off' ? c.offHand?.id : c.weapon, out: PackItem[] = [];
-    if (!gearInFight(g, cb, u, c, { op: 'drop', slot: hand }, { free: true, at, out }) && id && WEAPON[id]) cb.log.push(c.name + '\'s ' + WEAPON[id].name.toLowerCase() + (at ? ' lands at ' + refOf(at) + '.' : ' stays where it struck.'));
+    if (!gearInFight(g, cb, u, c, { op: 'drop', slot: hand }, { free: true, at, out }) && id && WEAPON[id]) say(cb, c.name + '\'s ' + WEAPON[id].name.toLowerCase() + (at ? ' lands at ' + refOf(at) + '.' : ' stays where it struck.'));
     return out[0] || null;
   },
   take(cb, u, it) { const g: GameState | null = boundGame(); return !!g && takeIntoHand(g, cb, u, it); },
@@ -1994,7 +1994,7 @@ export function storyHarm(g: GameState, c: Character, dmg: number, o: { type?: s
   try {
     const r = applyDamage(cb, u, dmg, { type: o.type || 'hazard', by: null, shield: true, credit: 'none', ...(o.dmgType ? { dmgType: o.dmgType } : {}) });
     if (o.floor && (u.downed || u.hp <= 0) && !u.dead) { setDowned(u, false); u.hp = Math.max(1, u.hp); }
-    if (r.amount && o.why) cb.log.push(c.name + ' takes ' + r.amount + ' damage (' + o.why + ').');
+    if (r.amount && o.why) say(cb, c.name + ' takes ' + r.amount + ' damage (' + o.why + ').');
   } finally { bindGame(was); }
   for (const x of cb.units) if (x.charId) unitToCharacter(g, x, false, true);
   for (const l of cb.log) push(g, { kind: 'system', text: l, act: true, charId: c.id });
@@ -2358,7 +2358,7 @@ function magicIn(g: GameState, cb: Combat) {
       for (const id of storyConds(g, c)) {
         if (!isCondition(id) || (u.conds && id in u.conds)) continue;
         if (!STORY_CARRY.has(id)) { (cb.notes ||= []).push(c.name + ' entered the fight ' + id.replace(/_/g, ' ') + ' in the story: not carried as a combat condition (yours to rule).'); continue; }
-        const r = applyCondition(cb, rng, null, u, id, undefined, undefined, { skipSave: true }); if (r) cb.log.push(u.name + ' carries it into the fight' + r + '.');
+        const r = applyCondition(cb, rng, null, u, id, undefined, undefined, { skipSave: true }); if (r) say(cb, u.name + ' carries it into the fight' + r + '.');
       } }
   } finally { bindGame(was); } }
 }
@@ -2564,7 +2564,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   } else if (a.act === 'door') {
     const o = storyObjects(g).find((x) => x.id === a.objId && kindOf(x).door); if (!o) fail('No such door.');
     if (dist(u.pos, o!.pos) > 1) fail('Walk up to it first.'); if (o!.locked) fail('Locked. Examine it for a way in.');
-    { const ap = price({ cb, u }, 'door').ap, no = whyNot(cb, u, ap); if (no) fail(no); pay(cb, u, ap); } o!.open = !o!.open; emitFx(cb, 'door', { unit: u.id, at: o!.pos, open: !!o!.open }); cb.log.push(c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
+    { const ap = price({ cb, u }, 'door').ap, no = whyNot(cb, u, ap); if (no) fail(no); pay(cb, u, ap); } o!.open = !o!.open; emitFx(cb, 'door', { unit: u.id, at: o!.pos, open: !!o!.open }); say(cb, c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
   } else if (a.act === 'perk') {
     if (!a.id) fail('Pick a perk, trait or class move.');
     (cb as any).mods = a.mods || []; worldStrikeReq = null;
@@ -2615,7 +2615,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
           if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1 - (u.jammed ? 5 : 0));
         }
         pay(cb, u, cost); emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: o.pos, weapon: useW.id, cat: useW.category, mode, hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, ...(u.jammed ? { jam: true } : {}) });
-        cb.log.push(c!.name + (melee ? ' strikes ' : mode === 'aimed' ? ' takes an aimed shot at ' : ' fires at ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + (melee ? '.' : ' (' + (w.magazine != null ? u.ammo + ' left in the ' + (w.name || 'weapon').toLowerCase() : 'loose round') + ')' + (u.jammed ? '; the weapon jams' : '') + '.'));
+        say(cb, c!.name + (melee ? ' strikes ' : mode === 'aimed' ? ' takes an aimed shot at ' : ' fires at ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + (melee ? '.' : ' (' + (w.magazine != null ? u.ammo + ' left in the ' + (w.name || 'weapon').toLowerCase() : 'loose round') + ')' + (u.jammed ? '; the weapon jams' : '') + '.'));
         g.story.needs = true;
       }
       else err = shootCover(cb, u, o.pos, c!);
@@ -2674,7 +2674,7 @@ function repairAlly(cb: Combat, u: Combat['units'][number], t: Combat['units'][n
   const cost = price({ cb, u }, 'field_repair').ap; { const no = whyNot(cb, u, cost); if (no) return no; }
   const was = t.hp; pay(cb, u, cost); u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 })); if (t.downed && t.hp > 0) setDowned(t, false);
   emitFx(cb, 'repair', { unit: u.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was });
-  cb.log.push(u.name + ' patches ' + t.name + '\'s chassis: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
+  say(cb, u.name + ' patches ' + t.name + '\'s chassis: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
 }
 /** Can this character design Outbursts? A Vessel can't (K30: the charge lives in the body). The Magic panel hides the
  * design screen when this gives a reason. */
@@ -2717,7 +2717,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   const cbx = g.combat, seated = cbx.units.filter((x) => x.side === 'foe').length; g.story.npcs = [...stay, ...foes.slice(seated)];
   // Who starts Hidden is set up quietly (no 'sight' event: a lurker the party could have seen must not fade out where it
   // lurks, which would give the ambush away); each side's sight is recorded afresh after it.
-  sightQuietly(cbx, () => cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || n.avatar || x.img; if (n.analyzed) x.analyzedBy = u.id; if (n.hidden) { const l = hideUnit(cbx, x, 'lurking'); if (l) cbx.log.push(l.replace(/^ · /, '') + '.'); delete n.hidden; } }));
+  sightQuietly(cbx, () => cbx.units.filter((x) => x.side === 'foe').forEach((x, i) => { const n = foes[i]; if (!n) return; x.npcId = n.id; x.img = n.portrait || n.avatar || x.img; if (n.analyzed) x.analyzedBy = u.id; if (n.hidden) { const l = hideUnit(cbx, x, 'lurking'); if (l) say(cbx, l.replace(/^ · /, '') + '.'); delete n.hidden; } }));
   if (!wasHostile) cbx.noXp = true;
   const att = cbx.units.find((x) => x.charId === c.id)!, tgt = cbx.units.find((x) => x.npcId === npc.id)!;
   g.phase = 'combat'; g.story.await = 'none'; musicOf(g).fight++; syncSong(g);
@@ -2725,16 +2725,16 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   // What each player said this overworld round carries into the fight it opens, as their round-1 line (Verse of War).
   for (const x of cbx.units) { const pc = x.charId ? g.characters[x.charId] : null, t = pc ? g.story.spoken?.[pc.owner] : null; if (pc && t) (cbx.notes ||= []).push(pc.name + ' (round 1): "' + String(t).slice(0, 400) + '"'); }
   sightQuietly(cbx, () => {
-    if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; cbx.log.push(c.name + ' strikes from hiding: the fight opens on their turn.'); hideUnit(cbx, att, 'struck from hiding'); }
+    if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; say(cbx, c.name + ' strikes from hiding: the fight opens on their turn.'); hideUnit(cbx, att, 'struck from hiding'); }
     // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
     for (const x of cbx.units) if (x.charId && x !== att && g.story.sneak?.[x.charId] && g.story.hidden?.[x.charId]) hideUnit(cbx, x, 'sneaking');
   });
-  if (!hidden) { att.waitRound = 2; cbx.log.push(c.name + ' attacks in the open and acts from round 2.'); }
+  if (!hidden) { att.waitRound = 2; say(cbx, c.name + ' attacks in the open and acts from round 2.'); }
   // The opening strike is an action of the fight like any other (spotlight.ts): its fx start here, so a crit, a takedown,
   // a revive or an intervention in it cuts in and slows its playback (decision 113).
   const before = cbx.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
   setAp(att, apNow); markAction(cbx);
-  if (perform) { const e = perform(cbx, att); if (e) cbx.log.push(c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
+  if (perform) { const e = perform(cbx, att); if (e) say(cbx, c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
   if (hidden && silentTakedown(g, cbx, c, att, tgt)) return; // no fight opens: its moments are thrown away with it
   songTriggers(g, att, c, before);
   critMoment(g);
@@ -3218,7 +3218,7 @@ function sbKit(g: GameState, c: Character, kind: MagicKit): string[] {
   return got;
 }
 /** A line in the fight's log, or (gearing up) in the story stream. */
-const sbLog = (g: GameState, t: string) => { const cb = liveFight(g); if (cb) cb.log.push('⚙ ' + t); else push(g, { kind: 'system', text: '⚙ ' + t, ooc: true }); };
+const sbLog = (g: GameState, t: string) => { const cb = liveFight(g); if (cb) say(cb, '⚙ ' + t); else push(g, { kind: 'system', text: '⚙ ' + t, ooc: true }); };
 /** The fighters' state written back onto their characters (nobody stays dead or down). */
 function sbCollect(g: GameState) {
   const cb = g.combat; if (!cb) return;
@@ -3266,7 +3266,7 @@ function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; we
   cb.noXp = true;
   const seated = cb.units.filter((u) => u.side === 'foe');
   if (room) { sb.fx = true; for (const u of cb.units) u.undying = true; for (const u of seated) { u.maxHp = u.hp = FX_DUMMY_HP; } }
-  cb.log.unshift(room ? room.toUpperCase() + ' · the dummy can\'t die and never acts · your AP comes back after every action'
+  sayAt(cb, 0, room ? room.toUpperCase() + ' · the dummy can\'t die and never acts · your AP comes back after every action'
     : 'WAVE ' + n + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' · ' + seated.length + ' drill unit' + (seated.length === 1 ? '' : 's'));
   { const seen: Record<string, number> = {}; seated.forEach((u, i) => { const f = foes[i]; u.npcId = f?.npc?.id || u.id; const p = f?.npc?.portrait || portraitFor(g, u.name, seen); if (p) u.img = p; }); }
   g.story.npcs = [...(g.story.npcs || []).filter((x) => !foes.some((f) => f.npc === x)), ...(foes.slice(seated.length).map((f) => f.npc).filter(Boolean) as Npc[])];
@@ -3330,8 +3330,8 @@ function sandboxOver(g: GameState) {
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
   if (sb.mode === 'teams') { sbTeamsOver(g); return; }
   if (won) sbNoteBest(g, sb.wave);
-  if (won) { sb.state = 'cleared'; sb.best = Math.max(sb.best, sb.wave); cb.log.push('WAVE ' + sb.wave + ' CLEARED in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '.'); }
-  else { sb.state = 'fallen'; cb.log.push('The squad falls on wave ' + sb.wave + '. Everyone is back up: retry the wave, or gear up first.'); }
+  if (won) { sb.state = 'cleared'; sb.best = Math.max(sb.best, sb.wave); say(cb, 'WAVE ' + sb.wave + ' CLEARED in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '.'); }
+  else { sb.state = 'fallen'; say(cb, 'The squad falls on wave ' + sb.wave + '. Everyone is back up: retry the wave, or gear up first.'); }
   cb.summary = (won ? 'Cleared' : 'Fell on') + ' wave ' + sb.wave + '.';
   sbToNeutral(g, won ? 'won' : 'fell');
 }
@@ -3360,7 +3360,7 @@ function sandboxWorld(g: GameState, a: Action, by: string) {
     if (g.phase === 'combat') {
       cb.noXp = true; sb.waveMana = cb.mana ?? MANA_START; cb.name = 'Proving Ground · Wave ' + n;
       const foes = cb.units.filter((u) => u.side === 'foe').length;
-      cb.log.unshift('WAVE ' + n + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' · ' + foes + ' drill unit' + (foes === 1 ? '' : 's'));
+      sayAt(cb, 0, 'WAVE ' + n + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' · ' + foes + ' drill unit' + (foes === 1 ? '' : 's'));
     }
     sbAttackStarted(g, w.charId, by);
     return;
@@ -3830,7 +3830,7 @@ function sbFightBegun(g: GameState) { const sb = sbOf(g); sb.ready = {}; sb.plac
 function sbAttackStarted(g: GameState, charId: string | undefined, by: string) {
   const sb = sbOf(g), cb = g.combat; if (!cb) return;
   const r = sandboxReady(g), who = (charId && g.characters[charId]?.name) || g.players.find((p) => p.id === by)?.name || 'Someone';
-  if (r.of > 1) cb.log.splice(1, 0, who + ' attacked a drill unit: the fight starts at once (' + r.ready + ' / ' + r.of + ' were ready).');
+  if (r.of > 1) sayAt(cb, 1, who + ' attacked a drill unit: the fight starts at once (' + r.ready + ' / ' + r.of + ' were ready).');
   sbFightBegun(g); void sb;
 }
 /** A cleared wave counts for every player with a fighter in it. */
@@ -3977,7 +3977,7 @@ function sbBeginTeams(g: GameState) {
   delete cb.sightSeen; sightFx(cb); // the sides changed: record each team's opening sight again
   magicIn(g, cb);
   cb.noXp = true;
-  cb.log.unshift('TEAM FIGHT · Team A (' + A.map((c) => c.name).join(', ') + ') against Team B (' + B.map((c) => c.name).join(', ') + '). Downed is out.');
+  sayAt(cb, 0, 'TEAM FIGHT · Team A (' + A.map((c) => c.name).join(', ') + ') against Team B (' + B.map((c) => c.name).join(', ') + '). Downed is out.');
   g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
   sb.state = 'fighting'; sb.waveMana = cb.mana ?? MANA_START; sb.fights = (sb.fights || 0) + 1; sb.lastWin = undefined;
   sbFightBegun(g);
@@ -3990,7 +3990,7 @@ function sbTeamsOver(g: GameState) {
   const sb = sbOf(g), cb = g.combat!, won: 'A' | 'B' = cb.over === 'win' ? 'A' : 'B', w = (sb.wins ||= {});
   const owners = new Set(cb.units.filter((u) => u.charId && (u.side === 'pc') === (won === 'A')).map((u) => g.characters[u.charId!]?.owner).filter(Boolean) as string[]);
   for (const pid of owners) w[pid] = (w[pid] || 0) + 1;
-  cb.log.push('TEAM ' + won + ' WINS in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '. Everyone is back up for the next one.');
+  say(cb, 'TEAM ' + won + ' WINS in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '. Everyone is back up for the next one.');
   cb.summary = 'Team ' + won + ' wins.';
   sb.lastWin = won;
   sbToNeutral(g, 'fell');
@@ -4010,7 +4010,7 @@ export function sandboxAfter(g: GameState, a: Action, by: string) {
     sbPlayerGone(g, a.id); sbReplace(g);
   }
   const cb = liveFight(g);
-  if (sb.mode === 'teams' && cb) for (const u of cb.units) if (u.charId && u.downed && !u.dead) { setDowned(u, false); u.dead = true; u.hp = 0; cb.log.push(u.name + ' is out.'); }
+  if (sb.mode === 'teams' && cb) for (const u of cb.units) if (u.charId && u.downed && !u.dead) { setDowned(u, false); u.dead = true; u.hp = 0; say(cb, u.name + ' is out.'); }
 }
 /** A player's view of the Proving Ground: no saved room; in a team fight Team B sees the fight from its side. */
 function sandboxView(g: GameState, v: GameState, playerId: string) {

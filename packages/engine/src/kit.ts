@@ -17,8 +17,8 @@ import type { Rng } from './rng';
 export const overworld = (cb: Combat | null | undefined): boolean => !!cb && !!(cb.overworld || cb.name === 'overworld');
 /** A real fight (not the area map), with a unit in it. */
 export const inFight = (h: { cb?: Combat | null; u?: Unit | null }): boolean => !!h.cb && !!h.u && !overworld(h.cb);
-/** Write a line in the fight log (nothing when there is no fight). */
-export const say = (cb: Combat | null | undefined, line: string): void => { if (cb) cb.log.push(line); };
+/** Write a line in the fight log (nothing when there is no fight): combat.ts's say, the one way to write a line. */
+export { say } from './combat';
 /** The unit with this id, or null. */
 export const unitById = (cb: Combat | null | undefined, id?: string | null): Unit | null => (cb && id ? cb.units.find((x) => x.id === id) || null : null);
 /** A tile named by a player or the Narrator ('3,4' or a grid reference 'D5') as a tile key, or null. Tile keys are

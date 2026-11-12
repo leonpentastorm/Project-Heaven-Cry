@@ -16,7 +16,7 @@ technique({
 });
 
 // ---------- Sweep, Bash, Sunder, Flurry ----------
-import { type Combat, type Unit, alive, xy, key, keyOf, refOf, dist, lineOfSight, dropToPile } from '../../combat';
+import { say, type Combat, type Unit, alive, xy, key, keyOf, refOf, dist, lineOfSight, dropToPile } from '../../combat';
 import { throwRangeOf } from '../../tactics';
 import { PHYS_RULES, weaponPhys } from '../data';
 import { save, stop, forceMove, setUp, momentumOf, chainOf, canStrike, loseWeapon } from '../core';
@@ -143,7 +143,7 @@ technique({
     st.done = { ...(st.done || {}), [v.id]: true };
     if (broken) br!.cut = now; else v.armour = now;
     meleeFx(t, 'sunder', { target: v.id, to: v.pos, was: base, now, broken });
-    t.cb.log.push(v.name + '\'s armour is sundered to ' + now + (broken ? ' once the Break ends' : '') + ' (Sunder).');
+    say(t.cb, v.name + '\'s armour is sundered to ' + now + (broken ? ' once the Break ends' : '') + ' (Sunder).');
     return null;
   },
   ai: (t) => (!t.tgt ? 0 : t.tgt.armour > 0 && !(t.u.tech?.sunder?.done || {})[t.tgt.id] ? 6 : 3),

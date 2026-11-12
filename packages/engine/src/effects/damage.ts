@@ -1,3 +1,4 @@
+import { say } from '../log';
 // The one damage chokepoint (plan 2.8 item 1, the part the hooks need now): every HP loss in a fight goes through
 // applyDamage, in phases, so perks and traits can reduce it, shield it, stop a drop to 0, and hear about wounds,
 // Downs and kills. Sites still work out their own armour (it differs: attacks, hazards, Sigil, Elemental, Soul, true)
@@ -95,7 +96,7 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   if (src.by) { t.lastHitBy = src.by.id; const d = (t.damagedBy ||= []); if (!d.includes(src.by.id)) d.push(src.by.id); }
   if (t.hidden && res.dealt > 0) { rawHidden(cb, t, false); if (cb) (cb.sightWhy ||= {})[t.id] = 'reveal'; } // damage reveals a Hidden unit (rules 1.3; presentation: a reveal, not a plain entry)
   if (t.hp === 0) {
-    if (src.nonlethal && t.side === 'foe' && !t.companion) { t.surrendered = true; t.subdued = true; res.killed = false; if (cb) { emit(cb, 'on_surrender', { t, by: src.by || null, why: 'subdued', cb }); cb.log.push(t.name + ' is subdued, not killed.'); } }
+    if (src.nonlethal && t.side === 'foe' && !t.companion) { t.surrendered = true; t.subdued = true; res.killed = false; if (cb) { emit(cb, 'on_surrender', { t, by: src.by || null, why: 'subdued', cb }); say(cb, t.name + ' is subdued, not killed.'); } }
     else { if (t.side === 'foe' || t.companion) t.dead = true; else setDowned(t, true); res.killed = true; dropped(cb, t, src, res, src.credit !== 'none'); }
   }
   if (cb) {

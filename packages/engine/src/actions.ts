@@ -169,7 +169,7 @@ export function moveOptions(g: any, cb: Combat, unitId: string, how: MoveHow = '
     // Items count uses and keep notes as they price a move: every tile is asked from the same start.
     const bag = () => JSON.stringify({ u: c.units.map((v) => [v.ps, v.uses, (v as any).tech]), c: sg ? Object.values(sg.characters || {}).map((k: any) => k.uses) : null, ps: sg?.story?.ps, rng: sg?.rng });
     const start = bag(), own = u.ap, ap0 = own + out.lend, reset = () => { const b = JSON.parse(start); c.units.forEach((v, i) => { v.ps = b.u[i][0]; v.uses = b.u[i][1]; (v as any).tech = b.u[i][2]; });
-      if (sg && b.c) Object.values(sg.characters || {}).forEach((k: any, i) => { k.uses = b.c[i]; }); if (sg?.story) sg.story.ps = b.ps; if (sg?.rng && b.rng) sg.rng.state = b.rng.state; c.log.length = 0; setAp(u, own); };
+      if (sg && b.c) Object.values(sg.characters || {}).forEach((k: any, i) => { k.uses = b.c[i]; }); if (sg?.story) sg.story.ps = b.ps; if (sg?.rng && b.rng) sg.rng.state = b.rng.state; c.log.length = 0; delete c.logSee; setAp(u, own); };
     let first: string | null = null, dirty = false;
     for (const k of Object.keys(base.dist)) {
       if (k === u.pos) continue;

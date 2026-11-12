@@ -152,3 +152,16 @@ describe('F2: a unit changes tile by moveUnit (it walks) or displace / swapUnits
     expect(hits(/\/(?:barricade|pillar|crate)\|[a-z_|]+\/\.test\(o\.kind\)/)).toEqual([]);
   });
 });
+
+// ============================================================================================ the fight log (item 1600 a)
+// Every line of a fight's log is written by say / sayOf / sayAt / unsay (log.ts), which keep each line's mark of who
+// saw what it names (cb.logSee) beside it: fog.ts sends a player only the lines about what their side saw. A raw push,
+// unshift or splice on a log writes a line every player reads, whatever it names, and shifts the marks off their lines.
+describe('the fight log is written through say()', () => {
+  it('no raw push, unshift or splice on a log outside the primitive (memory.ts\'s thread logs are not a fight\'s): call say(cb, line)', () => {
+    const raw = hits(/\.log\.(?:push|unshift|splice)\(/, (rel) => rel === 'memory.ts');
+    expect(raw.map((h) => h.replace(/:\d+ /, ' '))).toEqual([
+      'log.ts  .log.push(', 'log.ts  .log.push(', 'log.ts  .log.splice(', 'log.ts  .log.splice(', // say, sayOf, sayAt, unsay
+    ]);
+  });
+});

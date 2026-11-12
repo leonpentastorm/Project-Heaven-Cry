@@ -1,6 +1,7 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
+import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from './log';
 import { MAP_LAYOUTS, readLayout, nearestFree } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
@@ -244,6 +245,9 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   fire?: { round: number; on: Record<string, string[]> }; doctrineSaid?: Record<string, true>;
   /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id. */
   lastSeen?: Record<string, Record<string, string>>;
+  /** Who each log line is about, as each side saw it when it was written (say(); fog.ts reads it): logSee[i] is line i's
+   * mark, 0 (or past the end: an old save, a line naming nobody) is a line every side may read. Trailing 0s are not kept. */
+  logSee?: LogMark[];
   /** A player's view only (fog.ts): the tiles the viewer's side sees and where it senses something. */
   fog?: import('./fog').FightFog;
   /** The Narrator's start_fight flag: the place itself is frightening (dark, a nightmare; perks read it). */
@@ -314,6 +318,41 @@ export function stampFxHp(cb: Combat) {
     const m: Record<string, [number, number]> = (last.hp ||= {}); m[u.id] = [m[u.id] ? m[u.id][0] : was, u.hp];
   }
 }
+// ------------------------------------------------------------------------------------------------- the fight's log
+// The log's writers (say, sayOf, sayAt, unsay) are in log.ts, a leaf module; this is the part that needs the fight's
+// rules: which units a line names and whether each side sees them now (registered with log.ts as its marker).
+export { say, sayOf, sayAt, unsay, logQuietly, remarkOpening, type LogMark, type LogSideMark } from './log';
+const escRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/** The units a line names, by name (the longest names first, so 'Raider 2' is not also 'Raider'). */
+export function unitsNamedIn(cb: Combat, text: string): Unit[] {
+  const cand = cb.units.filter((u) => u.name && text.includes(u.name)); if (!cand.length) return [];
+  const byName = new Map<string, Unit[]>(); for (const u of cand) byName.set(u.name, [...(byName.get(u.name) || []), u]);
+  let rest = text; const out: Unit[] = [];
+  for (const n of [...byName.keys()].sort((a, b) => b.length - a.length)) {
+    const re = new RegExp('(^|[^\\w])' + escRe(n) + '(?!\\w)', 'g');
+    if (!re.test(rest)) continue;
+    out.push(...byName.get(n)!); rest = rest.replace(re, (_m, a) => a + ' ');
+  }
+  return out;
+}
+/** A line's mark, from each side's sight now. about: the ids of the units it names (default: found by name; [] names
+ * nobody). A unit the line names is seen by a side when it is on that side, dead (a body is no secret), or in its sight. */
+function logMark(cb: Combat, text: string, about?: readonly string[]): LogMark {
+  if (cb.overworld) return 0;
+  const named = about ? cb.units.filter((u) => about.includes(u.id)) : unitsNamedIn(cb, text);
+  if (!named.length) return 0;
+  const mark: { pc?: LogSideMark; foe?: LogSideMark } = {};
+  for (const side of ['pc', 'foe'] as const) {
+    const unseen = named.filter((u) => u.side !== side && !u.dead && !sideSeesUnit(cb, side, u));
+    if (!unseen.length) continue;
+    if (unseen.length === named.length) { mark[side] = 0; continue; }
+    const seenNames = new Set(cb.units.filter((u) => !unseen.includes(u)).map((u) => u.name));
+    const hide = [...new Set(unseen.map((u) => u.name))].filter((n) => !seenNames.has(n)), at = [...new Set(unseen.flatMap((u) => (u.pos ? [refOf(u.pos), u.pos] : [])))];
+    if (hide.length || at.length) mark[side] = { n: hide, ...(at.length ? { t: at } : {}) };
+  }
+  return Object.keys(mark).length ? mark : 0;
+}
+setLogMarker(logMark);
 export const FX_CAP = 40;
 /** Shots and swings inside a burst, auto, skill or paired attack are marked chain (the client spaces them tighter). */
 let fxChain = 0;
@@ -554,7 +593,7 @@ onHook('damage_in', (ctx: any) => {
   const t: Unit = ctx.t, src = ctx.src;
   if (ctx.phase === 'reduce') { if (t.hp >= t.maxHp && t.maxHp > BOSS_GUARD.hp && !t.downed && bossGuards(t, src, ctx.cb)) GUARD_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); return; }
   // (an Evoke says it in its own line: sigil.ts, ctx.lineGuard)
-  if (ctx.phase === 'after') { if (ctx.bossGuard && !ctx.lineGuard && !ctx.killed && ctx.cb) ctx.cb.log.push(bossGuardLine(t, src)); return; }
+  if (ctx.phase === 'after') { if (ctx.bossGuard && !ctx.lineGuard && !ctx.killed && ctx.cb) say(ctx.cb, bossGuardLine(t, src)); return; }
   if (ctx.phase !== 'would_drop_to_0') return;
   const m = GUARD_MARK.get(t); if (!m || m.seq !== GUARD_SEQ || m.by !== src?.by?.id || !bossGuards(t, src, ctx.cb)) return;
   if (ctx.floor == null || ctx.floor < BOSS_GUARD.hp) ctx.floor = BOSS_GUARD.hp;
@@ -566,7 +605,7 @@ const bossGuardLine = (t: Unit, src: any) => (t.name + ' is ' + (t.tier === 'bos
 // such phase), in 'reduce' (a listener like this one runs after every item's).
 onHook('damage_in', (ctx: any) => {
   const t: Unit = ctx.t;
-  if (ctx.phase === 'after') { if (ctx.oneHit && ctx.killed && ctx.cb) ctx.cb.log.push(t.name + ' is far below ' + (ctx.src?.by?.name || 'you') + '\'s level: one hit is enough.'); return; }
+  if (ctx.phase === 'after') { if (ctx.oneHit && ctx.killed && ctx.cb) say(ctx.cb, t.name + ' is far below ' + (ctx.src?.by?.name || 'you') + '\'s level: one hit is enough.'); return; }
   if (!(ctx.phase === 'shield' || (ctx.phase === 'reduce' && (ctx.src?.shield === false || t.downed))) || !(ctx.dmg >= 1)) return;
   if (farBelow(t, ctx.src?.by, ctx.cb)) { ctx.dmg = Math.max(ctx.dmg, t.hp + (t.shield || 0)); ctx.oneHit = true; }
 });
@@ -678,7 +717,7 @@ export function toggleDoor(cb: Combat, u: Unit, tile: string): string | null {
   if (o.open && cb.units.some((x) => !x.dead && x.pos === tile)) return 'Someone is in the doorway.';
   const ap = price({ cb, u }, 'door').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
   pay(cb, u, ap); o.open = !o.open; emitFx(cb, 'door', { unit: u.id, at: tile, open: !!o.open });
-  cb.log.push(u.name + (o.open ? ' opens ' : ' closes ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(tile) + '.');
+  say(cb, u.name + (o.open ? ' opens ' : ' closes ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(tile) + '.');
   return null;
 }
 
@@ -941,7 +980,7 @@ let SIGHT_MUTE = 0;
 /** Run f without sight events (a fight being set up: who starts Hidden), then record each side's sight afresh. */
 export function sightQuietly<T>(cb: Combat, f: () => T): T {
   SIGHT_MUTE++;
-  try { return f(); } finally { SIGHT_MUTE--; delete cb.sightSeen; delete cb.sightPos; delete cb.sightWhy; sightFx(cb); }
+  try { return f(); } finally { SIGHT_MUTE--; delete cb.sightSeen; delete cb.sightPos; delete cb.sightWhy; sightFx(cb); remarkOpening(cb); }
 }
 /**
  * Presentation only: the hostiles each side sees now against the last check (cb.sightSeen). Each one that came into a
@@ -1192,7 +1231,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // Confused (spec): each attack has a 50% chance to go at someone at random (anyone else it could attack).
   if (condOn(att, 'confused') && die(rng, 2) === 1) {
     const pool = cb.units.filter((v) => v !== att && v !== tgt0 && !v.dead && !v.surrendered && previewAttack(cb, att, v, mode, { free: true }).ok);
-    if (pool.length) { const pick = pool[die(rng, pool.length) - 1]; cb.log.push(att.name + ' is Confused: the attack goes at ' + pick.name + ' instead.'); tgt0 = pick; }
+    if (pool.length) { const pick = pool[die(rng, pool.length) - 1]; say(cb, att.name + ' is Confused: the attack goes at ' + pick.name + ' instead.'); tgt0 = pick; }
   }
   // ctx.locked: an item that keeps the attack on its first target whatever redirects it (Rabbit's Foot's hunters).
   const at: any = emit(cb, 'attack_target', { att, tgt: tgt0, orig: tgt0, mode, volley: VOLLEY, vi: (opts as any).vi ?? 0, free: !!(opts.free || opts.noAp), cb, rng, mods: cb.mods || [], locked: null, cancel: false, why: '' }), tgt: Unit = at.locked || at.tgt || tgt0;
@@ -1200,7 +1239,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // attacker out) ends it here: its AP is spent, nothing is rolled.
   if (at.cancel || att.dead || att.downed || att.surrendered) {
     if (alive(att) && !opts.free && !opts.noAp) { const pv0 = previewAttack(cb, att, tgt, mode, { extra: opts.extra }); if (pv0.ok) pay(cb, att, pv0.ap); }
-    const line = '(' + att.name + '\'s attack on ' + tgt.name + ' never comes' + (at.why ? ': ' + at.why : '') + '.)'; cb.log.push(line);
+    const line = '(' + att.name + '\'s attack on ' + tgt.name + ' never comes' + (at.why ? ': ' + at.why : '') + '.)'; say(cb, line);
     return { roll: 0, total: 0, vs: 0, hit: false, crit: false, fumble: false, damage: 0, line, killed: false, cancelled: true };
   }
   if (!who) who = charFor(att);
@@ -1210,7 +1249,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // no AP, ammo, wear or dice are spent, and the log says why. Volleys (burst, full auto, weapon skills) rely on this.
   if (!pv.ok) {
     const line = '(' + att.name + ' can\'t attack ' + tgt.name + ': ' + pv.why + ')';
-    cb.log.push(line);
+    say(cb, line);
     return { roll: 0, total: 0, vs: 0, hit: false, crit: false, fumble: false, damage: 0, line, killed: false, refused: pv.why };
   }
   const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
@@ -1293,7 +1332,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   const verb = melee ? 'strikes' : mode === 'thrown' ? 'throws the ' + useW.name.toLowerCase() + ' at' : mode === 'aimed' ? 'takes an aimed shot at' : 'fires at';
   const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + (pv.cover ? ' (incl. −5 cover)' : '') + ' = ' + total + ' vs ' + pv.need +
     (fumble ? (tuned ? ' · natural 1, a miss; the weapon doesn\'t jam (Tuned)' : melee || !canJam(w) ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss' + injury);
-  cb.log.push(line);
+  say(cb, line);
   // After the line: 'on_hit' {att, tgt, mode, dmg, crit, killed} or 'on_miss' {att, tgt, mode, die, fumble} (a shot cover stopped is neither).
   if (hit) emit(cb, 'on_hit', { att, tgt, mode, dmg: damage, crit, killed, melee, volley: VOLLEY, cb, rng, mods: cb.mods || [] });
   else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
@@ -1381,8 +1420,9 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
     units.push(u);
   });
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
-  const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: ['Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')], over: null, level, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
+  const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: [], over: null, level, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
   cb.objects = objs; cb.sigilV = SIGIL_REV; // a fresh fight: rules 1.4 glyphs only
+  say(cb, 'Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')); // (re-marked by sightQuietly when the set-up hides someone)
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
   if (Array.isArray(cs.order) && cs.order.length === cb.order.length && cs.order.every((id: string) => cb.order.includes(id))) cb.order = cs.order;
@@ -1405,16 +1445,16 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const pens = ['nausea', 'suppressed'].filter((id) => condOn(u, id)).map((id) => ({ n: -(condMods(id).ap || 0), why: condDef(id)!.title })); // the rows' AP (data/conditions.json)
   const pre: any = emit(cb, 'turn_start_pre', { u, grants: [], penalties: pens, cb, rng });
   const t = turnAp(u, pre.grants || [], pre.penalties || []);
-  setAp(u, t.ap); for (const l of t.lines) cb.log.push(l);
-  if (u.dazedNext) cb.log.push(u.name + ' is Dazed: −2 AP this turn.');
+  setAp(u, t.ap); for (const l of t.lines) say(cb, l);
+  if (u.dazedNext) say(cb, u.name + ' is Dazed: −2 AP this turn.');
   clearStagger(u); dazeSpent(u); u.overwatch = null; u.owShots = 0; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - (heatPair(u) ? 4 : 2)); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
   // Stunned (spec): the turn is lost; the engine passes it (endTurn).
-  if (condOn(u, 'stunned') && !u.downed) { setAp(u, 0); u.skipTurn = true; cb.log.push(u.name + ' is Stunned and loses the turn.'); }
+  if (condOn(u, 'stunned') && !u.downed) { setAp(u, 0); u.skipTurn = true; say(cb, u.name + ' is Stunned and loses the turn.'); }
   emitFx(cb, 'turn', { unit: u.id, side: u.side, at: u.pos, round: cb.round });
   // Magic upkeep (spec: Mana): conditions, a held Outburst growing, Strain, wall zones.
   magicTurnStart(cb, rng, u); if (u.dead) { setAp(u, 0); return; }
   const hzObj = objectsAt(cb, u.pos).find((o) => hazardOf(o) && !(u.hazardImmune || []).includes(o.kind)), hz = hzObj ? hazardOf(hzObj) : null;
-  if (hz && !u.dead) { cb.log.push(u.name + ' starts the turn in ' + (objectsAt(cb, u.pos).find((o) => hazardOf(o))!.name.toLowerCase()) + hurtUnit(u, hz.damage, true, cb, 'hazard')); if (u.downed || u.dead) { setAp(u, 0); return; } }
+  if (hz && !u.dead) { say(cb, u.name + ' starts the turn in ' + (objectsAt(cb, u.pos).find((o) => hazardOf(o))!.name.toLowerCase()) + hurtUnit(u, hz.damage, true, cb, 'hazard')); if (u.downed || u.dead) { setAp(u, 0); return; } }
   if (bleedTick(cb, u)) { setAp(u, 0); return; } // Bleeding bites and loses a round (magic.ts: the condition clock)
   if (u.downed && !u.dead) {
     // Items may add to death saves (stat 'death_save', rules 1.3; Still Standing, Bite the Bullet…).
@@ -1423,9 +1463,9 @@ export function beginTurn(cb: Combat, rng: Rng) {
     const ds: any = emit(cb, 'death_save', { u, add: dm0, die: r0, cb, rng }), dm = ds.add, r = r0 + dm;
     const dsr = judge('roll', { die: r0 }, dm, DEATH_SAVE_TN, { nat: false }); rollFx(cb, dsr, u, { why: 'death save' });
     if (dsr.ok) u.saves.ok++; else u.saves.fail++;
-    cb.log.push(u.name + ' is Downed: death save d20 ' + r0 + (dm ? (dm > 0 ? ' +' : ' −') + Math.abs(dm) : '') + (dsr.ok ? ' · success (' + u.saves.ok + '/3)' : ' · failure (' + u.saves.fail + '/3)'));
-    if (u.saves.ok >= 3) { setDowned(u, false); u.hp = 1; cb.log.push(u.name + ' stabilises at 1 HP.'); }
-    else if (u.saves.fail >= 3) { u.dead = true; cb.log.push(u.name + ' dies.'); fxFell(cb, u); }
+    say(cb, u.name + ' is Downed: death save d20 ' + r0 + (dm ? (dm > 0 ? ' +' : ' −') + Math.abs(dm) : '') + (dsr.ok ? ' · success (' + u.saves.ok + '/3)' : ' · failure (' + u.saves.fail + '/3)'));
+    if (u.saves.ok >= 3) { setDowned(u, false); u.hp = 1; say(cb, u.name + ' stabilises at 1 HP.'); }
+    else if (u.saves.fail >= 3) { u.dead = true; say(cb, u.name + ' dies.'); fxFell(cb, u); }
     setAp(u, 0);
   }
   // Commanded (spec; rules 1.3 engine menu): an enemy obeys the order it was given: halt (no moving), hold (no
@@ -1441,10 +1481,10 @@ export function beginTurn(cb: Combat, rng: Rng) {
       // stays where it is and the log says why (item 481).
       const to = o.slice(5), P = paths(cb, u.pos, u.id), max = (SIGIL.command as any)?.move_tiles ?? 3; endCond(u, 'commanded', cb);
       const why = u.prone ? 'it is prone' : P.dist[to] === undefined ? 'no way through' : P.dist[to] > max ? 'more than ' + max + ' tiles' : '';
-      if (why) { cb.log.push(u.name + ' is Commanded to walk to ' + refOf(to) + ' but can\'t (' + why + '): it stays.'); said = true; }
+      if (why) { say(cb, u.name + ' is Commanded to walk to ' + refOf(to) + ' but can\'t (' + why + '): it stays.'); said = true; }
       else moveUnit(cb, u, to, rng);
     }
-    if (!said) cb.log.push(u.name + ' obeys: ' + o.split(':')[0] + (o.startsWith('move:') ? ' to ' + refOf(o.slice(5)) : '') + '.');
+    if (!said) say(cb, u.name + ' obeys: ' + o.split(':')[0] + (o.startsWith('move:') ? ' to ' + refOf(o.slice(5)) : '') + '.');
   }
   // 'turn_start' {u}: after AP, conditions, hazards, bleeding and death saves.
   if (!u.dead) emit(cb, 'turn_start', { u, cb, rng });
@@ -1481,7 +1521,7 @@ export function endTurn(cb: Combat, rng: Rng) {
     if (cb.turn >= cb.order.length) { cb.turn = 0; cb.round++; magicRoundTick(cb); emit(cb, 'round_start', { cb, round: cb.round, rng }); }
     const u = active(cb)!;
     if (u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
-    if (u.waitRound && cb.round < u.waitRound) { cb.log.push(u.name + (u.tags?.includes('unaware') ? ' is caught unaware: no turn this round.' : ' is still reeling from striking in the open: no turn this round.')); continue; }
+    if (u.waitRound && cb.round < u.waitRound) { say(cb, u.name + (u.tags?.includes('unaware') ? ' is caught unaware: no turn this round.' : ' is still reeling from striking in the open: no turn this round.')); continue; }
     beginTurn(cb, rng);
     if (u.dead || (u.downed && u.side === 'pc') || u.skipTurn) { closeTurn(cb, rng, u); checkOver(cb); if (cb.over) return; continue; }
     return;
@@ -1520,12 +1560,12 @@ export function pullFree(cb: Combat, u: Unit, target: Unit = u, take?: (it: Pack
     let took = !!take && take(it);
     if (!took && !u.charId && !u.companion && !u.allowedActions && u.weapon === 'fists') { u.weapon = wid!; u.ammo = 0; u.jammed = false; took = true; } // no sheet: straight into the empty hand
     if (!took) dropToPile(cb, target.pos, [it], 'drop');
-    cb.log.push(u.name + ' pulls the ' + WEAPON[wid!].name.toLowerCase() + ' out of ' + target.name + ' (' + ap + ' AP)' + (took ? ' and keeps it in hand' : ': it drops at ' + refOf(target.pos)) + '. ' + target.name + ' is free.');
+    say(cb, u.name + ' pulls the ' + WEAPON[wid!].name.toLowerCase() + ' out of ' + target.name + ' (' + ap + ' AP)' + (took ? ' and keeps it in hand' : ': it drops at ' + refOf(target.pos)) + '. ' + target.name + ' is free.');
     return null;
   }
   pay(cb, u, ap); dropNailed(cb, target);
   emitFx(cb, 'pull_free', { unit: u.id, target: target.id, at: target.pos });
-  cb.log.push(u.name + (target === u ? ' pulls free' : ' pulls ' + target.name + ' free') + ' (' + ap + ' AP)' + (n.weapon && WEAPON[n.weapon] ? ': the ' + WEAPON[n.weapon].name.toLowerCase() + ' drops at ' + refOf(target.pos) : '') + '.');
+  say(cb, u.name + (target === u ? ' pulls free' : ' pulls ' + target.name + ' free') + ' (' + ap + ' AP)' + (n.weapon && WEAPON[n.weapon] ? ': the ' + WEAPON[n.weapon].name.toLowerCase() + ' drops at ' + refOf(target.pos) : '') + '.');
   return null;
 }
 export function moveBlock(u: Unit): string | null {
@@ -1619,7 +1659,7 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
         // the mover is still on its feet (a mover dropped there never showed the step it didn't finish).
         if (seg[seg.length - 1] === k) { seg.pop(); tileSight.pop(); }
         u.pos = was; flush(); u.pos = k;
-        useReaction(cb, h); cb.log.push(h.name + ' takes an opportunity attack.'); opportunityStrike(cb, rng!, h, u, was);
+        useReaction(cb, h); say(cb, h.name + ' takes an opportunity attack.'); opportunityStrike(cb, rng!, h, u, was);
         if (!u.dead && !u.downed) { seg.push(k); tileSight.push(sightHere(cb, u)); }
       }
       if (!mc.skipOW && !u.dead && !u.downed) { const before = cb.log.length; triggerOverwatch(cb, rng!, u, seg, tileSight); if (cb.log.length !== before) restart(); }
@@ -1634,8 +1674,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   const end = u.pos, walked = P.dist[end] ?? tiles;
   // The bank: tiles paid for and not walked carry over (a walk cut short keeps them).
   if (how === 'move' && !mc.free) u.bank = bank0 + ap * u.movement - walked;
-  cb.log.push(u.name + (how === 'sprint' ? ' sprints' : how === 'disengage' ? ' disengages' : ' moves') + ' to ' + refOf(end) + ' (' + walked + (walked === 1 ? ' tile' : ' tiles') + (walked < tiles ? ' of ' + tiles : '') + ', ' + ap + ' AP)' + sprung + '.');
-  if (u.side === 'pc' && !u.dead) { spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => cb.log.push(l)); spotHazards(cb, u); }
+  say(cb, u.name + (how === 'sprint' ? ' sprints' : how === 'disengage' ? ' disengages' : ' moves') + ' to ' + refOf(end) + ' (' + walked + (walked === 1 ? ' tile' : ' tiles') + (walked < tiles ? ' of ' + tiles : '') + ', ' + ap + ' AP)' + sprung + '.');
+  if (u.side === 'pc' && !u.dead) { spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => say(cb, l)); spotHazards(cb, u); }
   if (!u.dead && (cb.zones || []).length) sigilSpot(cb, u);
   // 'moved' {u, from, to, tiles, how, forced:false, route}
   // part: a step that is part of something else (a technique's own step or run: o.free or o.part; a class move's or a
@@ -1668,7 +1708,7 @@ export function opportunityStrike(cb: Combat, rng: Rng, h: Unit, t: Unit, from: 
 }
 function react(cb: Combat, rng: Rng, h: Unit, t: Unit, mode: AttackMode) {
   const pv = previewAttack(cb, h, t, mode, { free: true });
-  if (!pv.ok) { cb.log.push('(' + h.name + ' can\'t: ' + pv.why + ')'); return; }
+  if (!pv.ok) { say(cb, '(' + h.name + ' can\'t: ' + pv.why + ')'); return; }
   resolveAttack(cb, rng, h, t, mode, null, { noAp: true }); checkOver(cb);
 }
 /** Overwatch (spec): a unit holding a shot fires at the first enemy that moves in its sight and range, as its reaction
@@ -1682,7 +1722,7 @@ export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit, seg?: string
     useReaction(cb, h); const mode = h.overwatch, shots = Math.max(1, h.owShots || 1); h.overwatch = null; h.owShots = 0;
     // Presentation: the held shot is sprung here (the client stops the mover's walk on this tile for it).
     emitFx(cb, 'overwatch', { unit: h.id, target: mover.id, from: h.pos, at: mover.pos, mode });
-    cb.log.push(h.name + ' fires from overwatch.');
+    say(cb, h.name + ' fires from overwatch.');
     for (let i = 0; i < shots && !mover.dead && !mover.downed; i++) { if (i && !previewAttack(cb, h, mover, mode, { free: true }).ok) break; resolveAttack(cb, rng, h, mover, mode, null, { noAp: true }); }
     checkOver(cb);
   }
@@ -1690,7 +1730,7 @@ export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit, seg?: string
 export function setOverwatch(cb: Combat, u: Unit, mode: 'shot' | 'aimed' | 'melee'): string | null {
   const w = WEAPON[u.weapon], cost = price({ cb, u }, 'overwatch', attackApCost(isMelee(w) ? w : w, mode)).ap;
   { const no = whyNot(cb, u, cost); if (no) return no; }
-  pay(cb, u, cost); u.overwatch = mode; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); cb.log.push(u.name + ' holds a shot on overwatch.'); return null;
+  pay(cb, u, cost); u.overwatch = mode; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); say(cb, u.name + ' holds a shot on overwatch.'); return null;
 }
 /** Burst (spec, rules 1.18): 3 AP, 3 rounds at one target, two rolls (burstRolls below). Full auto: 4 AP, 10 rounds, one roll at −2 per enemy near the line. */
 /** The rolls of a Burst (rules 1.18; techniques.json burst.numbers), as the to-hit step of each roll. A character's
@@ -1716,7 +1756,7 @@ export const burstCool = (u: Unit, auto: boolean): number => (!auto ? 0 : !u.cha
 export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
   const rolls = burstRolls(u, WEAPON[u.weapon]), mag = WEAPON[u.weapon].magazine;
-  pay(cb, u, pv.ap); cb.log.push(u.name + ' fires a burst' + (pv.ap !== 3 ? ' (' + pv.ap + ' AP)' : '') + '.');
+  pay(cb, u, pv.ap); say(cb, u.name + ' fires a burst' + (pv.ap !== 3 ? ' (' + pv.ap + ' AP)' : '') + '.');
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: WEAPON[u.weapon].category, mode: 'burst', shots: 3 });
   // resolveAttack refuses (and ends the burst on) any round the preview won't allow: broken gun, target pushed out of sight.
   let made = 0;
@@ -1730,7 +1770,7 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
   const [ax, ay] = xy(u.pos), [tx, ty] = xy(t.pos), len = Math.hypot(tx - ax, ty - ay) || 1;
   const near = (v: Unit) => { const [vx, vy] = xy(v.pos), along = ((vx - ax) * (tx - ax) + (vy - ay) * (ty - ay)) / len; return along > 0 && Math.abs((vx - ax) * (ty - ay) - (vy - ay) * (tx - ax)) / len <= (((WEAPON[u.weapon] as any).grants?.effect?.op === 'auto_width') ? (WEAPON[u.weapon] as any).grants.effect.value + 0.5 : 1.5); };
   const hits = cb.units.filter((v) => v.side !== u.side && !v.dead && near(v) && previewAttack(cb, u, v, 'auto', { free: true }).ok);
-  pay(cb, u, pv.ap); cb.log.push(u.name + ' opens up on full auto' + (pv.ap !== 4 ? ' (' + pv.ap + ' AP)' : '') + '.');
+  pay(cb, u, pv.ap); say(cb, u.name + ' opens up on full auto' + (pv.ap !== 4 ? ' (' + pv.ap + ' AP)' : '') + '.');
   const w = WEAPON[u.weapon], startAmmo = u.ammo;
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
   // The line is worked out once; each target is checked again as it comes up (resolveAttack refuses a shot it can't
@@ -1886,7 +1926,7 @@ export function shove(cb: Combat, rng: Rng, u: Unit, t: Unit): string | null {
   const cost = price({ cb, u }, 'shove').ap;
   { const no = whyNot(cb, u, cost); if (no) return no; }
   pay(cb, u, cost);
-  { const im = immune({ u: t }, 'shove'); if (im) { cb.log.push(u.name + ' shoves ' + t.name + ', who doesn\'t budge (' + im + ').'); emitFx(cb, 'shove', { unit: u.id, target: t.id, from: t.pos, to: t.pos, ok: false }); return null; } }
+  { const im = immune({ u: t }, 'shove'); if (im) { say(cb, u.name + ' shoves ' + t.name + ', who doesn\'t budge (' + im + ').'); emitFx(cb, 'shove', { unit: u.id, target: t.id, from: t.pos, to: t.pos, ok: false }); return null; } }
   // Item Raw Power mods reach the shove's d20 (the global ruling); the target defends with its better of Raw Power and Athletics.
   const need = CONTEST_BASE + Math.max((t.strength ?? 0) + (t.sk?.raw_power || 0), t.athleticsPts != null ? mod(t.athleticsPts) + (t.sk?.athletics || 0) : 0, 0);
   const rv = rollVs(cb, rng, { by: u, mod: (u.strength ?? 0) + (u.sk?.raw_power || 0), tn: need, nat: false, why: 'shove' }); // an opposed number: no natural 1 or 20
@@ -1897,11 +1937,11 @@ export function shove(cb: Combat, rng: Rng, u: Unit, t: Unit): string | null {
     if (blocked) { const pr = applyCond(cb, rng, u, t, 'prone', undefined, undefined, { skipSave: true }); line += t.prone ? ' · knocked prone' : pr; } else if (!mv.moved) line += ' · holds firm' + (mv.why ? ' (' + mv.why + ')' : ''); else line += ' · pushed to ' + refOf(mv.to) + mv.text;
     emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: t.pos, ok: true, prone: blocked && !!t.prone });
   } else { line += ' · holds firm'; emitFx(cb, 'shove', { unit: u.id, target: t.id, from: t.pos, to: t.pos, ok: false }); }
-  cb.log.push(line + '.'); return null;
+  say(cb, line + '.'); return null;
 }
 export function toggleProne(cb: Combat, u: Unit): string | null {
   const ap = price({ cb, u }, 'prone').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
-  pay(cb, u, ap); setProne(cb, u, !u.prone); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: u.prone ? 'prone' : 'stand' }); cb.log.push(u.name + (u.prone ? ' drops prone.' : ' stands up.'));
+  pay(cb, u, ap); setProne(cb, u, !u.prone); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: u.prone ? 'prone' : 'stand' }); say(cb, u.name + (u.prone ? ' drops prone.' : ' stands up.'));
   if (!u.prone) emit(cb, 'stood_up', { u, cb }); // 'stood_up' {u}: after standing (a held shot waits for it: Dead to Rights)
   return null;
 }
@@ -1924,7 +1964,7 @@ export function brace(cb: Combat, u: Unit): string | null {
   const ap = price({ cb, u }, 'brace').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
   // A weapon that has the Brace action of its own is set (Recoil halved, its penalties gone). Any other weapon is not:
   // its bearer sets only themself, for Guard and for the class moves that ask for the braced stance (rules 1.13).
-  pay(cb, u, ap); setBraced(u, true, !weaponBraces(u)); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' }); cb.log.push(u.name + ' braces.');
+  pay(cb, u, ap); setBraced(u, true, !weaponBraces(u)); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' }); say(cb, u.name + ' braces.');
   braceHook.f?.(cb, u); // a unit with a Guard pool gains Guard as it sets itself
   emit(cb, 'protect_act', { u, how: 'brace', cb }); // 'protect_act' {u, how}: a Brace or an Interpose (the patrons' protect tag, item 600)
   return null;
@@ -1953,12 +1993,12 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
     const pv = previewAttack(cb, u, t, 'shot', { free: true }); if (!pv.ok) return pv.why!;
     const rounds = fx.rounds || 1;
     if (w.magazine != null && u.ammo < rounds) return 'Not enough rounds loaded.';
-    pay(cb, u, sap); cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
+    pay(cb, u, sap); say(cb, u.name + ' uses ' + (w as any).grants.name + '.');
     emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: w.id, cat: w.category, mode: 'skill', name: (w as any).grants.name, shots: fx.shots });
     // Each shot after the first is checked again: one that can no longer be taken (the target fell or dropped out of
     // sight, the gun broke) ends the volley; it is never rolled against a refused preview.
     chained(() => { for (let i = 0; i < fx.shots && !t.dead && !u.jammed && (w.magazine == null || u.ammo > 0); i++) {
-      if (i > 0) { const p = previewAttack(cb, u, t, 'shot', { free: true }); if (!p.ok) { cb.log.push('(' + (w as any).grants.name + ' stops: ' + p.why + ')'); break; } }
+      if (i > 0) { const p = previewAttack(cb, u, t, 'shot', { free: true }); if (!p.ok) { say(cb, '(' + (w as any).grants.name + ' stops: ' + p.why + ')'); break; } }
       resolveAttack(cb, rng, u, t, 'shot', who, { extra: fx.extra || 0, noAp: true, dmgMult: fx.dmg_mult || 1, noWear: i > 0, vi: i } as any);
     } }, 'skill');
     if (rounds > 1 && w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - (rounds - 1));
@@ -1968,7 +2008,7 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
     const sap = volleyAp(cb, u, null, 'skill', fx.ap); { const no = whyNot(cb, u, sap); if (no) return no; }
     const near = cb.units.filter((v) => v.side !== u.side && !v.dead && dist(v.pos, u.pos) <= 1 && sideSees(cb, u.side, v));
     if (!near.length) return 'Nobody next to you.';
-    pay(cb, u, sap); cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
+    pay(cb, u, sap); say(cb, u.name + ' uses ' + (w as any).grants.name + '.');
     emitFx(cb, 'volley', { unit: u.id, from: u.pos, weapon: w.id, cat: w.category, mode: 'sweep', name: (w as any).grants.name, shots: near.length });
     chained(() => { for (const v of near) resolveAttack(cb, rng, u, v, 'melee', who, { noAp: true }); }, 'skill');
     emit(cb, 'volley_end', { u, mode: 'skill', cb, rng }); checkOver(cb); return null;
@@ -1986,7 +2026,7 @@ export function fieldRepair(cb: Combat, u: Unit): string | null {
   const fr: any = (SKILL.proficiency as any).unlocks?.['3']?.effects?.[0] || {}; // the card's numbers (skills.json Field Repair)
   const add = Math.ceil(u.maxDur * ((fr.repair_base ?? 0.1) + (fr.repair_per_point ?? 0.05) * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
   pay(cb, u, cost); u.parts = (u.parts || 0) - 1; u.dur = Math.min(u.maxDur, (u.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, at: u.pos, dur: 1400 });
-  cb.log.push(u.name + ' patches the weapon: +' + add + ' durability (' + u.dur + '/' + u.maxDur + ').'); return null;
+  say(cb, u.name + ' patches the weapon: +' + add + ' durability (' + u.dur + '/' + u.maxDur + ').'); return null;
 }
 /** Paired attack (spec: Hands): both weapons in one action. AP = the higher cost + 1; main −1, off −3 (better by 1 per 3 skill points, to −1). */
 export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | null, who: Character | null): string | null {
@@ -1996,7 +2036,7 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   { const no = whyNot(cb, u, cost); if (no) return no; }
   const offTarget = t2 || t, mainMode = isMelee(mw) ? 'melee' : 'shot';
   const pv = previewAttack(cb, u, t, mainMode, { free: true }); if (!pv.ok) return pv.why!;
-  pay(cb, u, cost); cb.log.push(u.name + ' attacks with both hands.');
+  pay(cb, u, cost); say(cb, u.name + ' attacks with both hands.');
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: mw.id, cat: mw.category, mode: 'paired', shots: 2 });
   fxChain++; const wasV = VOLLEY; VOLLEY = 'paired';
   try {
@@ -2005,7 +2045,7 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType };
   const skillPts = u.dexterity || 0; // rules 1.12 (item 953): an off-hand gun or light blade hits with Dexterity
   u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null;
-  if (!offTarget.dead) { const p2 = previewAttack(cb, u, offTarget, isMelee(ow) ? 'melee' : 'shot', { free: true }); if (p2.ok) resolveAttack(cb, rng, u, offTarget, isMelee(ow) ? 'melee' : 'shot', who, { extra: Math.min(-1, -3 + Math.floor(skillPts / 3)), noAp: true }); else cb.log.push('(off hand: ' + p2.why + ')'); }
+  if (!offTarget.dead) { const p2 = previewAttack(cb, u, offTarget, isMelee(ow) ? 'melee' : 'shot', { free: true }); if (p2.ok) resolveAttack(cb, rng, u, offTarget, isMelee(ow) ? 'melee' : 'shot', who, { extra: Math.min(-1, -3 + Math.floor(skillPts / 3)), noAp: true }); else say(cb, '(off hand: ' + p2.why + ')'); }
   u.offAmmo = u.ammo; Object.assign(u, keep);
   } finally { fxChain--; VOLLEY = wasV; }
   emit(cb, 'volley_end', { u, mode: 'paired', target: t, cb, rng }); checkOver(cb); return null;
@@ -2015,7 +2055,7 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
 export function dropToPile(cb: Combat, at: string, list: PackItem[], why = 'drop') {
   const { pile, lost } = dropOnTile(objectsOf(cb), at, list);
   emitFx(cb, 'pile', { at, id: pile.id, count: (pile.items || []).length, why });
-  if (lost.length) cb.log.push('The pile at ' + refOf(at) + ' is full: ' + lost.join(', ') + ' ' + (lost.length === 1 ? 'is' : 'are') + ' lost.');
+  if (lost.length) say(cb, 'The pile at ' + refOf(at) + ' is full: ' + lost.join(', ') + ' ' + (lost.length === 1 ? 'is' : 'are') + ' lost.');
 }
 /** Line up a unit's spare types with its spares (special ammo, item 680): null for a standard one. */
 const typesFor = (types: (string | null)[] | undefined, n: number) => Array.from({ length: n }, (_, i) => types?.[i] ?? null);
@@ -2040,7 +2080,7 @@ export function reloadRefused(u: Unit, weaponId: string | null | undefined, cb: 
  * reload that would cost AP. */
 export function reload(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean; free?: boolean } = {}): string | null {
   const owed = !!u.freeReload && !o.tactical && !o.both && !o.free, err = reloadPaid(cb, u, o, owed || !!o.free); // a both-hands reload is its own action: the free one stays owed
-  if (!err && owed && !u.dead && !u.downed) { delete u.freeReload; cb.log.push('  (' + u.name + '\'s reload is free.)'); }
+  if (!err && owed && !u.dead && !u.downed) { delete u.freeReload; say(cb, '  (' + u.name + '\'s reload is free.)'); }
   return err;
 }
 function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean }, free: boolean): string | null {
@@ -2063,14 +2103,14 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
   const rDur = (how: string) => (rAp === 1 ? 800 : how === 'loose' ? 1400 : 1200);
   // The event's counts are for the picture only (the reload card, fx/reload.ts): what was in the gun, what is in it now, its size.
   // Unlimited spares (a companion's, a twin's: no mags) drop nothing in the pile: noDrop tells the card and the portrait not to show one falling.
-  if (!u.mags) { const was = u.ammo; pay(cb, u, rAp); u.ammo = w.magazine; u.jammed = false; emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: w.reload === 'loose' ? 'loose' : 'mag', dur: rDur(w.reload === 'loose' ? 'loose' : 'mag'), left: was, ammo: u.ammo, cap: w.magazine, noDrop: true }); cb.log.push(u.name + ' reloads.'); return null; }
+  if (!u.mags) { const was = u.ammo; pay(cb, u, rAp); u.ammo = w.magazine; u.jammed = false; emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: w.reload === 'loose' ? 'loose' : 'mag', dur: rDur(w.reload === 'loose' ? 'loose' : 'mag'), left: was, ammo: u.ammo, cap: w.magazine, noDrop: true }); say(cb, u.name + ' reloads.'); return null; }
   if (w.reload === 'loose') {
     const room = w.magazine - u.ammo, take = Math.min(room, u.loose || 0);
     if (room <= 0) return 'Already full.';
     if (!take) return 'No rounds left to load.';
     pay(cb, u, rAp); u.ammo += take; u.loose = (u.loose || 0) - take; u.jammed = false;
     emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: 'loose', rounds: take, dur: rDur('loose'), ammo: u.ammo, cap: w.magazine });
-    cb.log.push(u.name + ' loads ' + take + (take === 1 ? ' round' : ' rounds') + ' (' + u.loose + ' loose left).');
+    say(cb, u.name + ' loads ' + take + (take === 1 ? ' round' : ' rounds') + ' (' + u.loose + ' loose left).');
     return null;
   }
   if (!u.mags.some((n) => n > 0)) return 'No loaded spare ' + (w.reload_unit || 'magazine') + 's.' + (u.mags.length && u.loose ? ' Load one first.' : '');
@@ -2082,8 +2122,8 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
   if (types) u.magTypes = types;
   pay(cb, u, rAp); u.ammo = fresh; u.ammoType = freshType; u.jammed = false;
   emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: 'mag', dur: rDur('mag'), left, ammo: fresh, cap: magazineSize(w.id, u.mods) ?? w.magazine, ...(tactical ? { tactical: true } : {}) });
-  if (tactical) cb.log.push(u.name + ' reloads (tactical) and puts ' + what + ' back in the pack (' + u.mags.length + ' spare).');
-  else { cb.log.push(u.name + ' reloads and drops ' + what + ' (' + u.mags.length + ' spare left).'); dropToPile(cb, u.pos, [magItem(u.weapon, left, leftType)]); } // no tile in the log: the pile shows it, under fog (review fix)
+  if (tactical) say(cb, u.name + ' reloads (tactical) and puts ' + what + ' back in the pack (' + u.mags.length + ' spare).');
+  else { say(cb, u.name + ' reloads and drops ' + what + ' (' + u.mags.length + ' spare left).'); dropToPile(cb, u.pos, [magItem(u.weapon, left, leftType)]); } // no tile in the log: the pile shows it, under fog (review fix)
   return null;
 }
 /** Reload the off-hand gun (2 AP), or both guns at once (3 AP; spec: Weapons v2, Two guns); tactical +1 (item 679).
@@ -2137,7 +2177,7 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   const kept = !!pool && ow.reload !== 'loose';
   if (kept && tactical) { pool!.push(left); pushType(u, shared, leftType, pool!.length - 1); }
   // The log names no tile (review fix: the pile shows where it fell, under fog).
-  cb.log.push(u.name + (hand === 'both' ? ' reloads both guns' : ' reloads the off-hand gun') + (tactical ? ' (tactical)' : '') + ' (' + ap + ' AP)' + (kept ? (tactical ? '; the off-hand ' + unit + ' goes back in the pack' : '; the off-hand ' + unit + ' drops') : looseTake ? ' (' + looseTake + (looseTake === 1 ? ' round' : ' rounds') + ')' : '') + '.');
+  say(cb, u.name + (hand === 'both' ? ' reloads both guns' : ' reloads the off-hand gun') + (tactical ? ' (tactical)' : '') + ' (' + ap + ' AP)' + (kept ? (tactical ? '; the off-hand ' + unit + ' goes back in the pack' : '; the off-hand ' + unit + ' drops') : looseTake ? ' (' + looseTake + (looseTake === 1 ? ' round' : ' rounds') + ')' : '') + '.');
   if (kept && !tactical) dropToPile(cb, u.pos, [magItem(ow.id, left, leftType)]);
   // The picture (no rules): the off-hand gun's reload, or, with both guns, the off hand's part of the main reload's event.
   const off = { weapon: ow.id, cat: ow.category, how: ow.reload === 'loose' ? 'loose' : 'mag', left, ammo: fresh, cap: ow.magazine, ...(kept && tactical ? { tactical: true } : {}), ...(!kept ? { noDrop: true } : {}), ...(looseTake ? { rounds: looseTake } : {}) };
@@ -2195,7 +2235,7 @@ export function pickUp(cb: Combat, u: Unit, tile: string, take?: (string | numbe
   for (const e of sel) for (const it of entryPack(e)) { names.push(itemLabel(it)); intoUnit(u, c, it); }
   emitFx(cb, 'pickup', { unit: u.id, at: tile, items: names });
   emitFx(cb, 'pile', { at: tile, id: p.id, count: (p.items || []).length, why: 'take' });
-  cb.log.push(u.name + ' picks up ' + names.join(', ') + ' at ' + refOf(tile) + '.');
+  say(cb, u.name + ' picks up ' + names.join(', ') + ' at ' + refOf(tile) + '.');
   return null;
 }
 /** Load a spare magazine from loose rounds (spec: Loading): 1 AP per 5 rounds; part-loads when AP runs short. */
@@ -2209,7 +2249,7 @@ export function loadMagazine(cb: Combat, u: Unit): string | null {
   const per = price({ cb, u }, 'load').ap; { const no = whyNot(cb, u, per); if (no) return no; }
   const [n, i] = open[0], rounds = Math.min(cap - n, u.loose, Math.floor(apFor(cb, u) / per) * ROUNDS_PER_AP), cost = Math.ceil(rounds / ROUNDS_PER_AP) * per;
   u.mags[i] = n + rounds; u.loose -= rounds; pay(cb, u, cost); emitFx(cb, 'load', { unit: u.id, at: u.pos, rounds, dur: Math.min(2000, 900 + 250 * cost) });
-  cb.log.push(u.name + ' loads ' + rounds + (rounds === 1 ? ' round' : ' rounds') + ' into a ' + (w.reload_unit || 'magazine') + ' (' + u.mags[i] + '/' + cap + ') for ' + cost + ' AP.');
+  say(cb, u.name + ' loads ' + rounds + (rounds === 1 ? ' round' : ' rounds') + ' into a ' + (w.reload_unit || 'magazine') + ' (' + u.mags[i] + '/' + cap + ') for ' + cost + ' AP.');
   return null;
 }
 /** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. */
@@ -2231,7 +2271,7 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1); // an attack action wears 1 (spec: Weapons v2)
   const fx: any = (w as any).grants?.effect || {};
   emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: w.id, cat: w.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true });
-  cb.log.push(u.name + (melee ? ' smashes' : ' shoots') + ' the ' + c.name.toLowerCase() + ' at ' + refOf(tile) + damageObject(cb, tile, weaponDamage(w, r, who?.skills.raw_power || 0) * (who ? weaponMult(who, w.id) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1)) + '.');
+  say(cb, u.name + (melee ? ' smashes' : ' shoots') + ' the ' + c.name.toLowerCase() + ' at ' + refOf(tile) + damageObject(cb, tile, weaponDamage(w, r, who?.skills.raw_power || 0) * (who ? weaponMult(who, w.id) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1)) + '.');
   return null;
 }
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
@@ -2247,7 +2287,7 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';
   pay(cb, u, cost); t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos }); t.weakPoint = (u.analysis || 0) >= 5;
   emit(cb, 'analyze', { u, t, ap: cost, cb });
-  cb.log.push(u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
+  say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
   return null;
 }
 export function clearJam(cb: Combat, u: Unit): string | null {
@@ -2257,7 +2297,7 @@ export function clearJam(cb: Combat, u: Unit): string | null {
   // 'jam_clear' {u, ap, keepHeat}: an item may keep the Heat (Gun Nut's free clear doesn't reset it, plan 6a-29).
   const jc: any = emit(cb, 'jam_clear', { u, ap: cost, keepHeat: false, cb });
   pay(cb, u, cost); u.jammed = false; if (!jc.keepHeat) u.heat = 0; emitFx(cb, 'clear', { unit: u.id, at: u.pos, dur: 1000 });
-  cb.log.push(u.name + ' clears the jam.');
+  say(cb, u.name + ' clears the jam.');
   return null;
 }
 /** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others).
@@ -2272,12 +2312,12 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   if (forbids({ u }, 'stim')) return forbids({ u }, 'stim') + ': no stims.';
   // 'stim_start' {u, t, cb, cancel, why}: an item may stop the stim before anything is spent, revive included (Rival's
   // Petty). It is not a refusal (the item's own rolls stand): nothing is used and the line says why.
-  { const ss: any = emit(cb, 'stim_start', { u, t, cb, cancel: false, why: '' }); if (ss.cancel) { cb.log.push(u.name + ' doesn\'t stim ' + t.name + (ss.why ? ' (' + ss.why + ')' : '') + '.'); return null; } }
+  { const ss: any = emit(cb, 'stim_start', { u, t, cb, cancel: false, why: '' }); if (ss.cancel) { say(cb, u.name + ' doesn\'t stim ' + t.name + (ss.why ? ' (' + ss.why + ')' : '') + '.'); return null; } }
   pay(cb, u, cost); who.stims--;
   const hpWas = t.hp, wasDown = t.downed;
-  if (t.bleed) { endCond(t, 'bleeding', cb); cb.log.push('The stim stops ' + t.name + '\'s bleeding.'); }
-  if (t.downed) { setDowned(t, false); t.hp = 1; cb.log.push(u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); emit(cb, 'heal_given', { t, by: u, n: 1, kind: 'stim', revived: true, cb }); calmTend(cb, u, t); }
-  else { const r = healUnit(cb, t, stimHeal(u, who), u, 'stim'); cb.log.push(u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); calmTend(cb, u, t); } // a stim given is tending, full HP or not (rules 1.5, 3.3)
+  if (t.bleed) { endCond(t, 'bleeding', cb); say(cb, 'The stim stops ' + t.name + '\'s bleeding.'); }
+  if (t.downed) { setDowned(t, false); t.hp = 1; say(cb, u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); emit(cb, 'heal_given', { t, by: u, n: 1, kind: 'stim', revived: true, cb }); calmTend(cb, u, t); }
+  else { const r = healUnit(cb, t, stimHeal(u, who), u, 'stim'); say(cb, u.name + ' stims ' + t.name + ': +' + r.restored + ' HP.'); calmTend(cb, u, t); } // a stim given is tending, full HP or not (rules 1.5, 3.3)
   emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: t.hp - (wasDown ? 0 : hpWas), revive: wasDown });
   return null;
 }
@@ -2396,7 +2436,7 @@ export function noteEnemyAim(cb: Combat, u: Unit, t: Unit, why?: AimWhy) {
   const on = (cb.fire.on[aimOwner(t)] ||= []); if (!on.includes(u.id)) on.push(u.id);
   if (why === 'healer') { noteHealerHunt(cb, u, t); return; }
   if (!why || (cb.doctrineSaid ||= {})[why]) return; cb.doctrineSaid[why] = true;
-  cb.log.push(u.name + (why === 'spread' ? ' takes a target nobody else is shooting at: the enemy spreads its fire.' : why === 'wounded' ? ' picks out ' + t.name + ': the enemy goes for the wounded.' : ' goes at ' + t.name + ': it takes whoever is nearest.'));
+  say(cb, u.name + (why === 'spread' ? ' takes a target nobody else is shooting at: the enemy spreads its fire.' : why === 'wounded' ? ' picks out ' + t.name + ': the enemy goes for the wounded.' : ' goes at ' + t.name + ': it takes whoever is nearest.'));
 }
 /** The one choice of target behind an enemy's plain attack (enemyTargets) and anything else it aims (enemyPreference:
  * a technique): the given enemies of it, best first, by its Taunter, standing before Downed, its doctrine (rules 1.25),
@@ -2457,7 +2497,7 @@ function enemyHuntTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[],
 function noteHealerHunt(cb: Combat, u: Unit, t: Unit) {
   const seen = (((cb as any).healerHunt ||= {}) as Record<string, number>), id = (t as any).ghostOf || t.id;
   if (seen[id] === cb.round) return; seen[id] = cb.round;
-  cb.log.push(u.name + ' turns on ' + t.name + ': the enemy has seen who is mending the squad.');
+  say(cb, u.name + ' turns on ' + t.name + ': the enemy has seen who is mending the squad.');
 }
 /** Where an enemy closes in: the reachable tile that is nearest a living PC and has line of sight to one (Afraid: never
  * nearer the source; fleeing: the tile farthest from every PC). 'ai_move_risk' {u, from, to, risk} lets items add to a
@@ -2552,7 +2592,7 @@ function intentInner(cb: Combat, u: Unit): Intent {
 }
 /** Can the unit pay for this verb now (its price for this unit: data/actions.json, then the items)? */
 const affords = (cb: Combat, u: Unit, action: string, field = 'ap'): boolean => canPay(cb, u, price({ cb, u }, action, costOf(action, field)));
-const extinguishSelf = (cb: Combat, u: Unit): boolean => { pay(cb, u, price({ cb, u }, 'extinguish')); endCond(u, 'burning', cb); cb.log.push(u.name + ' beats out the flames.'); return true; };
+const extinguishSelf = (cb: Combat, u: Unit): boolean => { pay(cb, u, price({ cb, u }, 'extinguish')); endCond(u, 'burning', cb); say(cb, u.name + ' beats out the flames.'); return true; };
 function escapeHold(cb: Combat, rng: Rng, u: Unit) { escapeGrappleT(cb, rng, u); }
 function recoverHeld(cb: Combat, u: Unit) { recoverWeaponT(cb, u); }
 

@@ -3,7 +3,7 @@
 import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, save, setUp, cond, onHook, turnStamp, techState, techStateOf, meleeFx, fxMark, movedSince, fallFx, refuseFx } from './shared';
 import { canStrike } from '../core';
 import { PHYS_RULES } from '../data';
-import { moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
+import { say, moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
 import { ambushReady, reveal } from '../../tactics';
 import type { Tech } from './shared';
 import { canPay } from '../../effects/cost';
@@ -138,7 +138,7 @@ technique({
     // save() adds the user's strength with the skill the weapon hits with (rules 1.13), as for every technique's save
     const tnAdd = p === 'light' ? t.num('light_save', 2) : 0;
     if (t.preview) t.note('No damage. ' + tgt.name + ' makes a Brain save; if it fails:');
-    if (save(t, tgt, 'brain', tnAdd)) { t.cb.log.push(tgt.name + ' isn\'t fooled by the feint.'); meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: false }); return null; } // it saw through: nothing more
+    if (save(t, tgt, 'brain', tnAdd)) { say(t.cb, tgt.name + ' isn\'t fooled by the feint.'); meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: false }); return null; } // it saw through: nothing more
     meleeFx(t, 'feint', { target: tgt.id, to: tgt.pos, ok: true, lowered: p === 'hook' });
     setUp(t, tgt, { hit: t.num('hit', 3), noAnswer: true, label: 'Feint' });
     if (p === 'hook') cond(t, tgt, 'lowered');
@@ -207,7 +207,7 @@ technique({
       meleeFx(t, 'ambush', { target: tgt.id, to: tgt.pos, fromHidden: !!t.u.hidden, bare: true });
       emitFx(t.cb, 'melee', { unit: t.u.id, target: tgt.id, from: t.u.pos, to: tgt.pos, weapon: t.weaponId, cat: 'unarmed', mode: 'grapple', hit: true, crit: false, fumble: false, dmg: 0, killed: false });
       cond(t, tgt, 'grappled', t.num('bare_rounds', 1)); cond(t, tgt, 'silenced', t.num('bare_rounds', 1));
-      const rv = reveal(t.cb, t.u, 'attacked'); if (rv) t.cb.log.push(t.u.name + rv.replace(/^ · /, ': ') + '.');
+      const rv = reveal(t.cb, t.u, 'attacked'); if (rv) say(t.cb, t.u.name + rv.replace(/^ · /, ': ') + '.');
       return null;
     }
     const fx = meleeFx(t, 'ambush', { target: tgt.id, to: tgt.pos, fromHidden: !!t.u.hidden, bare: false });
