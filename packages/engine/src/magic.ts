@@ -1417,6 +1417,8 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
       const back = has('return') && !(has('volley') && form === 'bolt') ? (MODULE.return as any)?.second_mult ?? 1 : 1;
       for (let i = 0; i < strikes && !t.dead; i++) { const h = schoolOn(cb, rng, u, d, t, d.school, d.option, smOf(t) * per * (i > 0 ? back : 1), 1, true, rs, tone, line); landed ||= h.landed; }
       if (landed) hits.push(t);
+      // a hit that kills still chains (Storm leaps from where it struck: live 0.22.0 lost the chain on a kill, and the preview showed it)
+      if (landed && t.dead && tone !== 'raw' && t.side !== u.side) hitFoes.push(t);
       if (!landed || t.dead) continue;
       if (s2 && !deepen) schoolOn(cb, rng, u, d, t, s2, d.option2, smOf(t), half, false, rs, tone, line);
       if (tone !== 'raw' && t.side !== u.side && !t.dead) { const rr = applyToneRiders(cb, rng, u, t, tone, rs, form === 'burst' ? aim : u.pos, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']); if (rr) line.push(rr.replace(/^ · /, '')); hitFoes.push(t); }

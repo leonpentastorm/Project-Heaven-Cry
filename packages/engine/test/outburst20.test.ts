@@ -216,6 +216,10 @@ describe('tones: Raw and the six elements, riders by stage (section 5)', () => {
     const f4 = hit('storm', 4, { foes: ['6,5', '8,5', '10,5'] }); expect(lost(f4.foes[2])).toBe(Math.floor(20 * 1.6 * 0.5));
     expect(condOn(f4.foes[0], 'shaken')).toBe(true); expect(fx(f4.cb, 'chain').length).toBe(2);
   });
+  it('Storm still chains when the hit kills its target (live 0.22.0 lost the chain on a kill)', () => {
+    const f = rig(['6,5', '7,5']); f.foes[0].hp = 1; const d = give(f.pc, { tone: 'storm' }); begin(f, d); pump(f, 2); release(f, '6,5');
+    expect(f.foes[0].dead).toBe(true); expect(lost(f.foes[1])).toBeGreaterThan(0); expect(fx(f.cb, 'chain').length).toBe(1);
+  });
   it('Frost: Slowed (save) at 1; Slowed (no save) at 2–3; Slowed and Pinned 1 round at 4', () => {
     expect(condOn(hit('frost', 1).foe, 'slowed')).toBe(true);
     const f = rig(); f.foe.sv = { body: 99, brain: 0, heart: 0 } as any; const d = give(f.pc, { tone: 'frost' }); begin(f, d); pump(f, 1); release(f, '6,5');

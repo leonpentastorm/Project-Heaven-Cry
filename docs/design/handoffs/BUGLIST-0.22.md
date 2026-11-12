@@ -120,3 +120,8 @@ reproduced yet, so check it before fixing:
 1. Merge `origin/main`. 2. Item 1 (the Effect testing room). 3. Items 9, 10, 11 (the fight looks broken without
 them). 4. Items 8 and 12. 5. The weapon sweep (items 3, 4, 5, 7) as one browser suite. 6. Items 2, 6, 13, 14.
 Then back to `SESSION-HANDOFF.md` section 4 (the damage step).
+
+
+## Storm lost its chain when the hit killed (found by Leon, 12 Nov; fixed on the branch)
+
+Live 0.22.0: an Outburst toned Storm at stage 2+ that killed its target did not chain, although the preview showed the chain. Cause: `magic.ts` only counted a target as struck if it was still alive after the hit. Fixed: a killing hit still chains from where it struck. Test: `outburst20.test.ts`, "Storm still chains when the hit kills its target". No golden table moved.
