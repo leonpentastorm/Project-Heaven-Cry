@@ -97,7 +97,7 @@ export interface GridMarks {
   /** Units the action would touch (fogged: only units the viewer sees). tone: harm, help, spared, or the picked target. */
   units: { id: string; tag: string; tone: 'harm' | 'help' | 'spared' | 'target' }[];
   /** Tiles: the area it covers, the picked tile, the tiles that may be picked next. */
-  tiles: { tile: string; kind: 'area' | 'pick' | 'choice' }[];
+  tiles: { tile: string; kind: 'area' | 'pick' | 'choice' | 'reach' }[];
 }
 export interface DescriptorPreview {
   id: string;
@@ -573,7 +573,14 @@ const CALLS: ActionSystem = {
     const lines: PreviewLine[] = (pv.notes || []).map((t: string) => ({ k: 'note' as const, text: t }));
     if (pv.save) lines.push({ k: 'save', text: name(pv.save.unit) + ' rolls a ' + SAVE_NAME[pv.save.family] + ' save against TN ' + pv.save.tn });
     if (pv.gives) lines.push({ k: 'meter', text: name(pv.gives.unit) + ' gets ' + pv.gives.ap + ' AP ' + pv.gives.when });
-    return { ok: pv.ok, why: pv.ok ? null : pv.why || 'Not now.', ap: pv.ap || undefined, lines, marks: { units: [{ id: tgt, tag: '', tone: 'target' }] } };
+    const e: any = safe(() => callPad(x.cb, x.u, x.g).find((c: any) => c.id === id), null);
+    const may = d.picks.find((st) => st.key === 'tile' && st.optional);
+    if (may && !p.tile) lines.push({ k: 'cost', text: may.prompt });
+    if (e) lines.push({ k: 'cost', text: e.skillName + ' · step ' + e.step + ' of 3' });
+    // the tiles it reaches from the speaker (its own tile too: a Call to yourself)
+    const reach: GridMarks['tiles'] = [];
+    if (e) for (let y = 0; y < x.cb.map.h; y++) for (let xx = 0; xx < x.cb.map.w; xx++) { const k = xx + ',' + y; if (dist(x.u.pos, k) <= e.range) reach.push({ tile: k, kind: 'reach' }); }
+    return { ok: pv.ok, why: pv.ok ? null : pv.why || 'Not now.', ap: pv.ap || undefined, lines, marks: { units: [{ id: tgt, tag: '', tone: 'target' }], tiles: reach } };
   },
 };
 

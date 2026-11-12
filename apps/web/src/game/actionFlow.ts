@@ -14,7 +14,7 @@ import { previewDescriptor, actionsFor, stepOn, type ActionDescriptor, type Desc
 
 /** The descriptor previews that run on this flow. A system not listed keeps its own screen code (Sigils and Outbursts:
  *  the glyph keyboard and the HEART panel; a Move's hover route), until it moves here. */
-export const FLOW_PREVIEWS = new Set(['basic', 'attack', 'perk']);
+export const FLOW_PREVIEWS = new Set(['basic', 'attack', 'perk', 'call']);
 /** Ids that stay with their own screen code even though their system is on the flow. */
 const OWN = new Set(['move', 'sprint', 'disengage']);
 
@@ -40,6 +40,8 @@ export interface FlowView {
   chips: FlowChip[];
   /** Units to ring (a prayer's picks) and the preview's area and targets (a technique, a perk). */
   ring: Set<string>; area: string[]; targets: string[];
+  /** The tiles it reaches from the unit (a Call's range), to shade. */
+  reach: Set<string>;
   ready: boolean; action: any | null;
   /** What a grid click does: a state patch for the screen, or null (the screen's own default runs). */
   click: (u: { id: string; side: string } | null, k: string) => Record<string, any> | null;
@@ -79,7 +81,11 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
   if (!pv) return null;
   const say = (ks: string[]) => pv.lines.filter((l) => ks.includes(l.k)).map((l) => l.text);
   const notes = say(['odds', 'note']), more = say(['meter', 'save', 'cost']);
-  const text = !pv.ok && pv.why && !pv.ask ? pv.why : pv.ask ? pv.ask + (d.preview === 'technique' || d.preview === 'call' ? ' ' + d.text : '') : notes.join(' ') || d.text;
+  // whom it goes to, before the verdict (a Call: "To Keel."; a prayer: "Target: Keel and Vale.")
+  const nm = (id: string) => (id === cur.id ? null : (cb.units.find((u: any) => u.id === id) || {}).name || id);
+  const who = d.preview === 'call' ? (picks.targetId && picks.targetId !== cur.id ? 'To ' + nm(picks.targetId) + '. ' : d.picks.some((st) => st.key === 'targetId' && st.optional) ? 'To yourself. ' : '')
+    : d.preview === 'prayer' ? ((ids) => (ids.length ? 'Target: ' + ids.map((id) => nm(id) || 'you').join(' and ') + '. ' : picks.tile ? 'Target: tile ' + picks.tile + '. ' : ''))([picks.targetId, picks.targetId2].filter(Boolean)) : '';
+  const text = !pv.ok && pv.why && !pv.ask ? (pv.ask ? '' : who) + pv.why : pv.ask ? pv.ask + (d.preview === 'technique' || d.preview === 'call' ? ' ' + d.text : '') : who + (notes.join(' ') || d.text);
   const own = S.picks && S.picks.__id === d.id ? S.picks : {};
   const chips: FlowChip[] = [];
   for (const st of d.picks) {
@@ -113,6 +119,7 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
     if (!tile) return null;
     return { tile: S.tile === k && tile.optional ? null : k };
   };
-  return { d, pv, picks, cost: pv.ap, sel: { name: d.name + (pv.cost ? ' · ' + pv.cost : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, ready: !!action, action, click,
+  const reach = new Set(pv.marks.tiles.filter((t) => t.kind === 'reach').map((t) => t.tile));
+  return { d, pv, picks, cost: pv.ap, reach, sel: { name: d.name + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, ready: !!action, action, click,
     after: { tile: null, picks: null, ...(d.preview === 'prayer' ? { target: null, target2: null } : {}) } };
 }
