@@ -6,7 +6,8 @@
 //   tq:<hand>:<id>   a technique to use (the plain attack row, or a chip picked from a pad)
 //   tpad:<hand>      a weapon's Techniques row (selecting it opens the pad)
 //   twatch           Hold a shot (selecting it opens the Watches)
-import { WEAPON, ITEM, phys, parseTechId } from '@engine';
+import { WEAPON, ITEM, phys, parseTechId, techParts } from '@engine';
+import { tipAttrs } from './actionTip';
 type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup;
 import { heatLimit } from '@engine';
 const { techniquePad, packPad, pairedPad, physView, weaponSystem, propText, TECHNIQUE, shieldOf } = phys;
@@ -51,6 +52,7 @@ export interface TechChip {
   choices: { prop: string; text: string }[];
   /** used with something that isn't in the hand: the pack entry or throwable (the engine's args.item) */ item?: string | number;
   /** an Answer: it has no button, it happens by itself on its trigger (a shield's Shield Wall, Interpose) */ reaction?: boolean;
+  /** its hover card (game/actionTip.ts) as data-tip, and the same in words */ tip: string; tipText: string;
 }
 export interface ChipGroup { key: string; label: string; chips: TechChip[] }
 export interface WeaponBlock {
@@ -79,7 +81,7 @@ export function needsText(id: string): string {
   if (n.stowed) out.push('Used with a weapon in your pack, not the one in your hand.');
   return out.length ? out.join(' ') + ' ' : '';
 }
-const chipOf = (e: PadEntry): TechChip => {
+const chipOf = (e: PadEntry, reaction = false): TechChip => {
   const rounds = e.rounds === 'all' ? 'all rounds' : e.rounds ? e.rounds + (e.rounds === 1 ? ' round' : ' rounds') : '';
   const mark = e.signature ? '◆' : e.lent ? '◇' : '';
   const markTitle = e.signature ? '' : e.lent ? 'This is the weapon\'s signature technique. You can use it while you hold the weapon. Drill it to keep it.' : '';
@@ -90,8 +92,11 @@ const chipOf = (e: PadEntry): TechChip => {
   const full = (t: string) => (/[.!?:)]$/.test(t.trim()) ? t.trim() : t.trim() + '.');
   // what it needs before it can be used at all, said first and in plain words (Leon, 10 Nov 2026)
   const help = needsText(e.id) + full(e.text) + (e.line ? ' With this weapon: ' + full(e.line) : '') + (why1 ? ' (' + why1.trim() + ')' : '');
+  // the hover card: a line each (what it needs, what it does, the weapon's line, its traits, the signature note, why not)
+  const parts = techParts(e), card = (cost: string[]) => tipAttrs({ name: e.name, cost, needs: parts.needs, text: parts.text, line: parts.line, traits: parts.traits, notes: markTitle ? [{ label: 'Signature', text: markTitle }] : [], why: why || null });
   return { key: e.id, id: e.id, name: e.name, ap: e.ap, apText: e.ap + ' AP', rounds, line: e.line || '', ok: e.ok, why, lent: e.lent, signature: e.signature, built: e.built,
-    mark, markTitle, title: e.name + ' · ' + e.ap + ' AP' + (rounds ? ' · ' + rounds : '') + '. ' + help + (why ? ' (' + why + ')' : '') + (markTitle ? ' ' + markTitle : ''), help, aim: e.aim, choices: e.choices || [] };
+    mark, markTitle, title: e.name + ' · ' + e.ap + ' AP' + (rounds ? ' · ' + rounds : '') + '. ' + help + (why ? ' (' + why + ')' : '') + (markTitle ? ' ' + markTitle : ''), help, aim: e.aim, choices: e.choices || [],
+    ...card(reaction ? ['reaction'] : [e.ap + ' AP', ...(rounds ? [rounds] : [])]) };
 };
 /** An Answer on a pad: not a button. What it costs and when it happens are in its text; a refusal (no Guard) is kept. */
 const reactionChip = (c: TechChip): TechChip => ({ ...c, reaction: true, apText: 'reaction', title: c.name + ' · a reaction. ' + c.help + (c.why ? ' (' + c.why + ')' : ''), line: c.line || c.help });
@@ -113,7 +118,7 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
         if (more.length) { const ans = pad.find((gr) => gr.group === 'answer'); if (ans) pad = pad.map((gr) => (gr === ans ? { ...gr, entries: [...gr.entries, ...more] } : gr)); else pad = [...pad, { group: 'answer' as any, label: 'Answers', entries: more }]; }
       } catch { /* the shield's own pad stands */ }
       const groups = pad.filter((gr) => gr.group !== 'watch').map((gr) => ({ key: gr.group, label: gr.group === 'answer' ? 'REACTIONS · THEY HAPPEN BY THEMSELVES' : gr.label.toUpperCase(),
-        chips: gr.entries.filter((e) => !e.plain).map((e) => (gr.group === 'answer' ? reactionChip(chipOf(e)) : chipOf(e))) })).filter((gr) => gr.chips.length);
+        chips: gr.entries.filter((e) => !e.plain).map((e) => (gr.group === 'answer' ? reactionChip(chipOf(e, true)) : chipOf(e))) })).filter((gr) => gr.chips.length);
       const chips = groups.flatMap((gr) => gr.chips).filter((c) => !c.reaction), gd = pv && pv.guard;
       return { hand, weaponId: shieldId, name: (ITEM as any)[shieldId]?.name || 'Shield', icon: gearIconUri(shieldId), iconOff: gearIconUri(shieldId, GEAR_INK_OFF), system: 'melee', shield: true, meterKind: 'guard',
         meter: gd ? 'Guard ' + gd.now + ' / ' + gd.max : 'No Guard pool', pips: gd ? Array.from({ length: gd.max }, (_, i) => ({ key: 'g' + i, on: i < gd.now })) : [],
@@ -124,8 +129,8 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
     let pad: PadGroup[] = []; try { pad = techniquePad(cb, u, hand as 'main' | 'off', g); } catch { pad = []; }
     const system = weaponSystem(weaponId) as 'melee' | 'ranged';
     const all = pad.flatMap((gr) => gr.entries), plainE = all.find((e) => e.plain) || null;
-    const groups = pad.filter((gr) => gr.group !== 'watch' && gr.group !== 'answer').map((gr) => ({ key: gr.group, label: gr.label.toUpperCase(), chips: gr.entries.filter((e) => !e.plain).map(chipOf) })).filter((gr) => gr.chips.length);
-    const watch = (pad.find((gr) => gr.group === 'watch')?.entries || []).map(chipOf);
+    const groups = pad.filter((gr) => gr.group !== 'watch' && gr.group !== 'answer').map((gr) => ({ key: gr.group, label: gr.label.toUpperCase(), chips: gr.entries.filter((e) => !e.plain).map((e) => chipOf(e)) })).filter((gr) => gr.chips.length);
+    const watch = (pad.find((gr) => gr.group === 'watch')?.entries || []).map((e) => chipOf(e));
     // what a ready technique can do with a weapon in the pack (Draw Cut, Snap Shot) or a carried throwable (Lob, Rout):
     // one group per item, on the main hand's pad
     if (hand === 'main') { let packs: any[] = []; try { packs = packPad(cb, u, g); } catch { packs = []; }
@@ -149,7 +154,7 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
   const bm = blocks.find((b) => b.hand === 'main'), bo = blocks.find((b) => b.hand === 'off');
   if (bm && bo && !bo.shield && bm.system === bo.system) {
     let pe: PadEntry[] = []; try { pe = pairedPad(cb, u, g); } catch { pe = []; }
-    const chips = pe.map(chipOf);
+    const chips = pe.map((e) => chipOf(e));
     blocks.push({ hand: 'both', weaponId: bm.weaponId, name: 'Both hands', icon: bm.icon, iconOff: bm.iconOff, system: bm.system, meter: bm.name + ' + ' + bo.name, pips: [], meterHint: 'The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1. It costs the higher of the two AP costs, plus 1.',
       plain: null, groups: chips.length ? [{ key: 'paired' as any, label: 'WITH BOTH WEAPONS · EACH IN TURN', chips }] : [], usable: chips.filter((c) => c.ok).length, total: chips.length, watch: [] });
   }

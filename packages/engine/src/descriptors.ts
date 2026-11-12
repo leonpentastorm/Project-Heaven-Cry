@@ -95,6 +95,8 @@ export interface ActionDescriptor {
    * unjam, shooting an object with it): 'main', 'off', or 'both' for what uses both hands (the paired attack, Reload
    * both). Absent: no one weapon (Shove, Brace, Hold a shot). */
   hand?: 'main' | 'off' | 'both';
+  /** A technique's text in parts (techParts), for a hover card that lays it out a line each. */
+  parts?: TechParts;
 }
 export type Picks = Record<string, any>;
 export interface PreviewLine { k: 'odds' | 'note' | 'meter' | 'save' | 'cost' | 'ask'; text: string }
@@ -217,12 +219,19 @@ function needsText(id: string): string {
   if (n.stowed) out.push('Used with a weapon in your pack, not the one in your hand.');
   return out.length ? out.join(' ') + ' ' : '';
 }
-/** A pad entry's card text, as the pad shows it: what it needs, its text, its line with this weapon, the property. */
-export function techHelp(e: { id: string; text: string; line?: string | null }): string {
+/** A pad entry's card text in parts (the hover card lays them out a line each; Leon, live 0.23.0): what it needs, what it
+ * does, its line with this weapon, and the weapon's properties behind that line (each with the glossary's words). */
+export interface TechParts { needs: string; text: string; line: string; traits: { label: string; text: string }[] }
+export function techParts(e: { id: string; text: string; line?: string | null }): TechParts {
   const full = (t: string) => (/[.!?:)]$/.test(t.trim()) ? t.trim() : t.trim() + '.');
   const ln = e.line ? (((TECHNIQUE as any)[e.id]?.lines) || []).find((l: any) => l.text === e.line) : null;
-  const why1 = ln ? ln.props.map((p: string) => (propText(p) ? p.charAt(0).toUpperCase() + p.slice(1) + ': ' + propText(p) : '')).filter(Boolean).join(' ') : '';
-  return needsText(e.id) + full(e.text) + (e.line ? ' With this weapon: ' + full(e.line) : '') + (why1 ? ' (' + why1.trim() + ')' : '');
+  const traits = ln ? ln.props.filter((p: string) => !!propText(p)).map((p: string) => ({ label: p.charAt(0).toUpperCase() + p.slice(1), text: propText(p) })) : [];
+  return { needs: needsText(e.id).trim(), text: full(e.text), line: e.line ? full(e.line) : '', traits };
+}
+/** A pad entry's card text, as the pad shows it: what it needs, its text, its line with this weapon, the property. */
+export function techHelp(e: { id: string; text: string; line?: string | null }): string {
+  const t = techParts(e), why1 = t.traits.map((x) => x.label + ': ' + x.text).join(' ');
+  return (t.needs ? t.needs + ' ' : '') + t.text + (t.line ? ' With this weapon: ' + t.line : '') + (why1 ? ' (' + why1 + ')' : '');
 }
 /** A technique's pick steps by what it aims at, then its line and its options. */
 function techPicks(x: DescCtx, e: { id: string; choices?: { prop: string; text: string }[] }): PickStep[] {
@@ -469,7 +478,7 @@ function techRows(x: DescCtx): ActionDescriptor[] {
   const shield = !u.offWeapon ? safe(() => shieldOf(u), null) : null;
   const hands: ('main' | 'off')[] = ['main', ...((u.offWeapon && WEAPON[u.offWeapon]) || shield ? ['off' as const] : [])];
   const watch: ActionDescriptor[] = [], seenW = new Set<string>();
-  const chip = (hand: string, e: any, parent: string | undefined, item?: string | number) => D(techId(hand, e.id, item), 'attack', e.name, priceOf(e), apT(priceOf(e)), techHelp(e), e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.', { parent, picks: techPicks(x, e), toggleOn: 'combat/attack', preview: 'technique', hidden: !!parent, hand: hand as any });
+  const chip = (hand: string, e: any, parent: string | undefined, item?: string | number) => D(techId(hand, e.id, item), 'attack', e.name, priceOf(e), apT(priceOf(e)), techHelp(e), e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.', { parent, picks: techPicks(x, e), toggleOn: 'combat/attack', preview: 'technique', hidden: !!parent, hand: hand as any, parts: techParts(e) });
   const sys: Record<string, string> = {};
   for (const hand of hands) {
     let pad: any[] = safe(() => techniquePad(cb, u, hand, g), []);

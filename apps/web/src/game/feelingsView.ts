@@ -4,6 +4,7 @@
 // previewOutburstPlan, practiceOf); this file only words and styles them.
 import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, MODULE, SKILL } from '@engine';
 import { feelingIcon, moduleIcon, heartMark, paintedStyle } from './heartIcons';
+import { tipAttrs } from './actionTip';
 
 /** Each feeling's light (a proposal for Leon; docs/design/handoffs/outburst-4.0-HANDOFF.md). Light and particles only,
  *  never body text, and always beside the feeling's word: 25 hues can't carry meaning alone (colour-system.md). Kept
@@ -64,7 +65,8 @@ export function feelingRows(btns: FeelingBtn[], open: boolean, query: string, ru
     has: btns.length > 0, many, open: show, count: btns.length, canSearch: many && show,
     toggleLabel: (show ? 'Feelings ▾' : 'Feelings ▸') + ' (' + btns.length + ')',
     rows: list.map((b) => ({ key: b.id, name: b.name, icon: b.icon, iconStyle: b.iconStyle, ink: b.ink, off: !b.ok, cost: b.ok ? b.cost : '✕ ' + b.why.replace(/\.$/, ''), step: b.stepText, effect: b.effect,
-      title: b.name + ' (step ' + b.stepText + ', ×' + b.mult + ' after): ' + b.effect + (b.why ? ' · ' + b.why : ''), pick: () => { if (b.ok) run('pump:' + b.id); },
+      title: b.name + ' (step ' + b.stepText + ', ×' + b.mult + ' after): ' + b.effect + (b.why ? ' · ' + b.why : ''),
+      ...tipAttrs({ name: b.name, cost: [...(b.ok ? [b.cost] : []), 'step ' + b.stepText, '×' + b.mult + ' after'], text: b.effect, why: b.why || null }), pick: () => { if (b.ok) run('pump:' + b.id); },
       style: 'display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0 6px; align-items: center; min-height: 34px; padding: 3px 7px; border-radius: 8px; text-align: left; font-family: inherit; color: #E7EBF3; cursor: ' + (b.ok ? 'pointer' : 'default') + '; border: 1px solid ' + rgba(b.ink, b.ok ? 0.75 : 0.3) + '; background: ' + rgba(b.ink, b.ok ? 0.12 : 0.04) + (b.ok ? '' : '; opacity: 0.55'),
       nameStyle: 'font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
       stepStyle: 'font-size: 11px; font-weight: 700; color: ' + b.ink,
