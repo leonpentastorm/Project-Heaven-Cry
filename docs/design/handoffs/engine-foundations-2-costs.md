@@ -63,6 +63,7 @@ interface Priced { action: string; ap: number; res: Record<string, number>; labe
 
 price(x: { cb?, u?, c? }, action: string, base?: number | Cost | null, ctx?: Record<string, unknown>): Priced
 priced(x, action, ap, res?, ctx?): Priced               // a number its own pipeline worked out, through the same hook
+bill(action, ap, res?): Priced                          // a final cost (no hook asked again), for pay()
 costOf(action, field = 'ap'): number                    // the data's number (throws on an action the data lacks)
 whyNot(cb, u, p: Priced | number, o?: { as?, c? }): string | null     // THE refusal sentence, or null
 canPay(cb, u, p, o?): boolean
@@ -80,6 +81,8 @@ RESOURCES;  resLeft(u, id, c?)
   generic `action_cost` op and the `ap_cost:<site>` stat, for a cost site), then the **one `cost` hook**
   (`{ u, c, cb, action, base, ap, res, min, free, labels, …ctx }`: a handler changes `ap` or `res`, raises `min`, sets
   `free`), then the floor, rounded to tenths. The hook costs nothing while nobody listens (`hooks.ts` `hookUsed`).
+  A pipeline that works out its own AP (an attack, a move, a glyph, an Outburst, a technique, a Call) ends in
+  `priced(x, '<action>', ap)`: the same hook. `bill(action, ap, res)` is a cost that is already final, for `pay()`.
   With no fight in reach (`price({ u }, …)`, a row made before a fight is known) only the unit's own items answer.
 - **`whyNot`** is the one sentence: `Needs 2 AP.`, `Needs 3 charge.`, `Needs 1 Guard.` (the word is the resource's
   `name` in the data). What an action declares (`res`) is asked before its AP, as the items' own checks were.
@@ -250,12 +253,14 @@ Short rules. Each has a lint or a test that fails with a sentence telling you wh
 
 ## What is left
 
-1. **The specialised pipelines keep their own hooks.** An attack (`attack_preview`), a move (`move_cost`), a glyph and
-   an Evoke (`glyph_cost`, `evoke_cost`), an Outburst (`outburst_cost`, `outburst_pump`, `release_cost`), a technique
-   (`apFor`), a Call (`call_cost`), a gear change (`swap`) and a throw work out their AP as before and then pay through
-   `whyNot` / `pay`. Only Sigil's draw and Evoke also pass through the new `cost` hook (`priced`). Moving the old hook
-   names onto `cost` as thin adapters is the rest of review F3's "ten channels become one"; the previews run thousands
-   of times a turn, so do it with the performance piece.
+1. **The specialised pipelines keep their own hooks, and end in the one.** An attack (`attack_preview`), a move
+   (`move_cost`), a glyph and an Evoke (`glyph_cost`, `evoke_cost`), an Outburst's Begin, Pump and Release
+   (`outburst_cost`, `outburst_pump`, `release_cost`), a technique (`apFor`) and a Call (`call_cost`) work out their AP
+   as before, then pass the number through `priced(x, '<action>', ap)`, so the `cost` hook sees them as `attack`,
+   `move`, `draw`, `evoke`, `begin`, `pump`, `release`, `technique:<id>` and `call`. Not yet: a gear change (the `swap`
+   hook; `gear.ts` and `game.ts` price it twice already), a thrown item after its `throw` hook, and the planned Pumps of
+   an Outburst preview (`pumpsAp`). Moving the 60-odd handlers of the old hook names onto `cost` is the rest of review
+   F3's "ten channels become one"; the old names are the adapters until then.
 2. **28 resource payments are still made by hand** (the lint's ratchet lists them by file): prices worked out inside the
    action (a script's Evoke charge, `soulPrice`), spare parts and stims in the built-in verbs, Echo's reroll in the
    story. Each wants `res` or `spend()`.

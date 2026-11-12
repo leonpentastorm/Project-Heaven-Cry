@@ -35,7 +35,7 @@ import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } fr
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround, foesOf, canStand, tilesLine } from '../kit';
-import { priced, whyNot, pay, grantAp, freely } from '../effects/cost';
+import { bill, whyNot, pay, grantAp, freely } from '../effects/cost';
 
 // =============================================================================================== helpers
 type Rng = { state: number };
@@ -420,7 +420,7 @@ register({
       say(cb, 'STITCH d20 ' + g + (g <= 5 ? ': it turns on its maker' : g >= 16 ? ': the house pays double' : ': it holds'));
       const st = stateOf(h);
       if (g <= 5) {
-        pay(cb, u, priced({ cb, u }, 'evoke', pv.ap, { charge: pv.charge })); u.mg!.cast = true;
+        pay(cb, u, bill('evoke', pv.ap, { charge: pv.charge })); u.mg!.cast = true;
         fadePattern(cb, p);
         const v = backlashTarget(cb, u);
         emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, src: p.tiles[0], impact: v.pos, targets: [v.id], targetAt: [v.pos], words: p.words, element: p.words.find((w) => wordCls(w) === 'subject_element') || null, side: u.side, backlash: true });

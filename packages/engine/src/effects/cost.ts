@@ -1,6 +1,8 @@
 // PAYING A COST (engine review 1, finding F3; docs/design/handoffs/engine-foundations-2-costs.md). One path for what an
 // action takes: its AP and any other resource.
 //
+//   (the pipelines with a price of their own, an attack, a move, a glyph, an Evoke, an Outburst, a technique, a Call,
+//    end in priced(x, '<action>', ap): the same hook; they pay with the number, or bill() when a resource goes with it)
 //   price(x, action, base?, ctx?)   what the action costs THIS unit now: the base (data/actions.json when none is given),
 //                                   then the items (the `action_cost` op and the 'ap_cost:<site>' stat for a cost site,
 //                                   then the ONE `cost` hook, which every action passes through), the floor, "free".
@@ -80,6 +82,8 @@ type Who = { cb?: Combat | null; u?: Unit | null; c?: Character | null };
 export function price(x: Who, action: string, base?: number | Cost | null, ctx: Record<string, unknown> = {}): Priced {
   const b: Cost = base == null ? { ap: costOf(action) } : typeof base === 'number' ? { ap: base } : base;
   let ap = b.ap ?? 0; const labels: string[] = [], site = VERBS[action]?.site || action;
+  // the fast way out (an attack's preview runs thousands of times a turn): no site to ask, and nobody on the `cost` hook
+  if (!hookUsed('cost') && !(x.u && COST_SITES.has(site))) return { action, ap: r10(Math.max(VERBS[action]?.min ?? 0, ap)), res: b.res ? { ...b.res } : {}, labels, free: false };
   if (x.u && COST_SITES.has(site) && site !== 'heal') { const r = actionAp(x, site as CostSite, ap, ctx); ap = r.ap; labels.push(...r.labels); }
   const c: any = { ...ctx, u: x.u || null, c: x.c || null, cb: x.cb || null, action, base: b.ap ?? 0, ap, res: { ...(b.res || {}) }, min: VERBS[action]?.min ?? 0, free: false, labels };
   if (!hookUsed('cost')) { /* nobody listens: nothing to ask */ } else if (x.cb) emit(x.cb, 'cost', c); else if (x.u) emitOwn(x.u, 'cost', c); // with no fight in reach, the unit's own items only
@@ -88,6 +92,8 @@ export function price(x: Who, action: string, base?: number | Cost | null, ctx: 
 /** An action whose AP its own pipeline has already worked out (an attack's preview, a glyph's, an Outburst's): the
  * number as a Priced, through the `cost` hook like every other. */
 export const priced = (x: Who, action: string, ap: number, res?: Record<string, number>, ctx?: Record<string, unknown>): Priced => price(x, action, { ap, res }, ctx);
+/** A cost that is already final (its pipeline priced it, hook and all): what pay() takes. No hook is asked again. */
+export const bill = (action: string, ap: number, res: Record<string, number> = {}): Priced => ({ action, ap, res, labels: [], free: false });
 
 // ---------------------------------------------------------------------------------------------- credit (Encore, a Brief)
 const ENCORE_PLAIN: Record<string, string> = { shot: 'combat/attack:shot', aimed_shot: 'combat/attack:aimed', cut: 'combat/attack:melee', overwatch: 'combat/overwatch' };

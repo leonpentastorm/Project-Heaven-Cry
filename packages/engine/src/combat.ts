@@ -22,7 +22,7 @@ import { openAmount, closeAmount, armourAgainst, landed, deal } from './effects/
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
 import { skillRollMod, immune, forbids } from './effects/core';
-import { price, costOf, whyNot, canPay, pay, setAp, withAp, creditFor } from './effects/cost';
+import { price, priced, costOf, whyNot, canPay, pay, setAp, withAp, creditFor } from './effects/cost';
 import { statQuery } from './effects/hooks';
 import { noteFallbacks } from './effects/narrator';
 import { windowStep } from './effects/actions';
@@ -342,7 +342,7 @@ export function asChain<T>(f: () => T): T { return chained(f); }
  * Discipline: hooks gap A6/I2). */
 function volleyAp(cb: Combat, u: Unit, t: Unit | null, mode: string, base: number): number {
   const hk: any = { att: u, tgt: t || u, mode, melee: false, ap: base, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
-  emit(cb, 'attack_preview', hk); return Math.max(0, hk.ap);
+  emit(cb, 'attack_preview', hk); return priced({ cb, u }, 'attack', Math.max(0, hk.ap), undefined, { mode, tgt: t, volley: true }).ap;
 }
 
 export const key = (x: number, y: number) => x + ',' + y;
@@ -985,7 +985,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   // terms (ctx.terms), or a refusal (ctx.fail). ctx.preview is true: handlers must not change state here.
   const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [], seeVeil: false, noLos: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false, bandsLess: 0 };
   emit(cb, 'attack_preview', hk);
-  const ap = opts.free ? 0 : Math.max(0, hk.ap);
+  const ap = opts.free ? 0 : priced({ cb, u: att }, 'attack', Math.max(0, hk.ap), undefined, { mode, tgt }).ap; // the one `cost` hook (effects/cost.ts)
   const fail = (why: string): AttackPreview => ({ ok: false, why, ap, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 });
   if (!alive(tgt) && !tgt.downed) return fail(tgt.surrendered ? tgt.name + ' has surrendered.' : 'Target is out of the fight.');
   if (hk.fail) return fail(hk.fail);
@@ -1516,7 +1516,7 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   const ap0 = ap; // the move's own price, before a free step or an item changes it
   if (o.free) ap = 0;
   const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: !!o.free && !o.oa, skipOW: false, free: !!o.free, cb, mods: cb.mods || [], ...(o.preview ? { preview: true } : {}) });
-  ap = o.free ? 0 : Math.max(0, mc.ap); // a free step stays free whatever the ground adds (the items were told it is free before they priced it)
+  ap = o.free ? 0 : how === 'move' ? priced({ cb, u }, 'move', Math.max(0, mc.ap), undefined, { to, tiles }).ap : Math.max(0, mc.ap); // (a Sprint and a Disengage passed the `cost` hook when they were priced above) a free step stays free whatever the ground adds (the items were told it is free before they priced it)
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/move', how } }); if (no) return no; }
   return { ap, ap0, tiles, route, mc, P };
 }

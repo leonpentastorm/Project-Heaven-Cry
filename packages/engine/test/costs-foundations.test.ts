@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import {
   price, priced, costOf, hasCost, whyNot, canPay, pay, refund, spend, needs, poolWhyNot, grantAp, loseAp, setAp, freely, withAp, apFor, creditFor, lend, settleCredit,
-  resLeft, RESOURCES, AP_MAX, uses, SCOPES, scopeOf, register, perkActionsFor, previewPerkAction, basicActions, previewAction, loadMagazine, enemyTurn, apply, type Unit,
+  resLeft, RESOURCES, AP_MAX, previewAttack, moveOptions, uses, SCOPES, scopeOf, register, perkActionsFor, previewPerkAction, basicActions, previewAction, loadMagazine, enemyTurn, apply, type Unit,
 } from '../src';
 import { fightWith, withGame, onlyHandlers } from './helpers/perkfight';
 import ACTIONS from '../../../data/actions.json';
@@ -31,7 +31,9 @@ describe('price(): one way to say what an action costs', () => {
         expect(priced({ cb: f.cb, u }, 'evoke', 1.6, { charge: 2 })).toMatchObject({ ap: 1.6, res: { charge: 2 } });
         expect(price({ u }, 'prone').ap).toBe(costOf('prone') - 1);                       // no fight in reach: the unit's own items still answer
       });
-      expect(seen).toEqual(expect.arrayContaining(['prone', 'brace', 'door', 'evoke']));
+      // the pipelines with a price of their own end in the same hook: an attack, a move, a technique, a Call
+      withGame(f.g, () => { previewAttack(f.cb, u, f.foe, 'shot'); moveOptions(f.g, f.cb, u.id, 'move'); });
+      expect(seen).toEqual(expect.arrayContaining(['prone', 'brace', 'door', 'evoke', 'attack', 'move']));
       // and the reducer takes what price() said: Prone for 0 AP
       expect(previewAction(f.g, { type: 'combat/prone', unitId: u.id } as any, 'host').ap).toBe(0);
     });

@@ -6,7 +6,7 @@ import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, asCha
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
-import { price, whyNot, pay, refund } from '../effects/cost';
+import { price, priced, whyNot, pay, refund } from '../effects/cost';
 import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
@@ -217,9 +217,9 @@ export function apFor(cb: Combat, u: Unit, def: TechDef, hand: 'main' | 'off', c
   // the techniques a perk prices by name (Siege Engine: Shove and Break 1 AP less, never below 1): the old actions' path
   const own = AP_BY_NAME.has(def.id) ? price({ cb, u }, def.id, own0).ap : own0;
   const mode = (def.ap as any).mode || (def.ap.base === 'weapon' ? (def.system === 'melee' ? 'melee' : 'shot') : null);
-  if (!mode || hand === 'off' || def.ap.base === 'reaction') return own;
+  if (!mode || hand === 'off' || def.ap.base === 'reaction') return priced({ cb, u }, 'technique:' + def.id, own, undefined, { tech: def.id }).ap;
   const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', tech: def.id, ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
-  emit(cb, 'attack_preview', hk); return Math.max(0, hk.ap);
+  emit(cb, 'attack_preview', hk); return priced({ cb, u }, 'technique:' + def.id, Math.max(0, hk.ap), undefined, { tech: def.id, mode }).ap;
 }
 /** The techniques a unit may use with the weapon in this hand, and how it has each: free, lent by the weapon, coming
  * with a property, or ready. A unit with no character (an enemy, a companion) has the free ones, what its weapon lends

@@ -36,7 +36,7 @@ import {
 } from './magic';
 import { makeObject, OBJ } from './objects';
 import { tilesAround, canStand, inBounds, work } from './kit';
-import { price, priced, whyNot, canPay, pay, grantAp, withAp } from './effects/cost';
+import { price, priced, bill, whyNot, canPay, pay, grantAp, withAp } from './effects/cost';
 import { uses } from './effects/uses';
 
 type Fam = SigilFam;
@@ -72,7 +72,7 @@ export function glyphCost(cb: Combat, u: Unit, word: string, preview = false, ti
   const base = { u, word, ap: glyphApOf(u) + ((cb.zones || []).some((z) => z.kind === 'scramble' && z.tiles.includes(tile || u.pos)) ? 1 : 0), charge: Math.max(0, w0.charge), flux: w0.flux, preview, tile: tile || u.pos, fail: '', cb };
   const c: any = emit(cb, 'glyph_cost', base);
   if (u.edgeWord) c.ap = 0; // the Evoker blade's Edge Word (item 487): the glyph after a hit costs no AP
-  return { ap: Math.max(0, Math.round(c.ap * 10) / 10), charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux), ...(c.fail ? { fail: c.fail } : {}) };
+  return { ap: priced({ cb, u }, 'draw', Math.max(0, Math.round(c.ap * 10) / 10), undefined, { word, tile: tile || u.pos }).ap, charge: Math.max(0, Math.round(c.charge)), flux: Math.max(0, c.flux), ...(c.fail ? { fail: c.fail } : {}) };
 }
 /** How many glyphs one tile may hold for this caster: 1, unless an item raises it ('glyphs_per_tile' {u, tile, n};
  * the two-glyph hook) or the unit carries mg.glyphsPerTile. */
@@ -620,7 +620,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   // 'evoke_cost' {u, pattern, ap, charge, preview, fail} (mutable): items change what firing costs; fail refuses it.
   const ec: any = emit(cb, 'evoke_cost', { u, pattern: p, ap: SPELL_AP.evoke + (condOn(u, 'ldebuff') ? 1 : 0), charge: evokeCharge(p, u), preview: true, fail: '', cb });
   if (ec.fail) return no(ec.fail, { pattern: p, spell: sp });
-  const charge = Math.max(0, ec.charge), eap = Math.max(0, ec.ap), depth = spellRange(cb, u, sp, p);
+  const charge = Math.max(0, ec.charge), eap = priced({ cb, u }, 'evoke', Math.max(0, ec.ap)).ap, depth = spellRange(cb, u, sp, p);
   const base = { pattern: p, spell: sp, charge, ap: eap, flux: 0, facing, range: depth, targets: [] as string[] };
   if (u.mg!.charge < charge) return no('Firing needs ' + charge + ' charge (' + u.mg!.charge + ' left): swap a core.', base);
   { const n0 = whyNot(cb, u, eap); if (n0) return no(n0, base); }
@@ -896,7 +896,7 @@ export function drawGlyph(cb: Combat, rng: Rng, u: Unit, word: string, tile?: st
   const pv = previewDraw(cb, u, word, tile, stroke); if (!pv.ok) return pv.why || 'Can\'t draw that.';
   const gc = glyphCost(cb, u, word, false, pv.tile); if (gc.fail) return gc.fail;
   const m = u.mg!, w = W(word)!;
-  pay(cb, u, priced({ cb, u }, 'draw', gc.ap, { charge: gc.charge }, { word }));
+  pay(cb, u, bill('draw', gc.ap, { charge: gc.charge }));
   const edge = !!u.edgeWord; delete u.edgeWord;
   const g: Glyph = { id: 'gl' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), word, pos: pv.tile, by: u.id, side: u.side, left: 2 + Math.floor(m.durBonus || 0), who: u.name, v: SIGIL_REV, ...(pv.strokeId ? { strokeId: pv.strokeId } : {}), ...(pv.strokeId2 ? { strokeId2: pv.strokeId2 } : {}) } as Glyph;
   cb.glyphs = [...(cb.glyphs || []), g]; cb.sigilV = SIGIL_REV;
@@ -981,7 +981,7 @@ export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string,
 }
 function evokeInner(cb: Combat, rng: Rng, u: Unit, pv: EvokePreview, opts: EvokeOpts): string | null {
   const p = pv.pattern!, sp = pv.spell!, m = u.mg!, name = p.words.map((w) => w.toUpperCase()).join(' · ');
-  pay(cb, u, priced({ cb, u }, 'evoke', pv.ap, { charge: pv.charge })); m.cast = true;
+  pay(cb, u, bill('evoke', pv.ap, { charge: pv.charge })); m.cast = true;
   const head = u.name + ' evokes ' + name + ' (' + (p.shape === 'stack' ? 'a Stack' : 'a Line of ' + p.tiles.length + ', ' + pv.facing!.mode) + ', ' + pv.charge + ' charge)';
   emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, words: p.words, element: sp.element, side: u.side, facing: pv.facing!.mode, dir: pv.facing!.dir, area: pv.area,
     src: pv.missiles[0]?.origin, impact: pv.missiles[0]?.impact ?? null, targets: pv.targets, targetAt: pv.targets.map((id) => cb.units.find((x) => x.id === id)?.pos),

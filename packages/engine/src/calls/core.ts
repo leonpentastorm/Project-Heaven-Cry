@@ -14,7 +14,7 @@ import type { Rng } from '../rng';
 import { turnStamp, ownSideOnly } from '../physical/core';
 import type { Call, CallArgs, CallDef, CallHandler, CallMarks, CallPadEntry, CallPreview } from './types';
 import { CALL, CALLS, CALL_RULES, callBaseAp, callRangeAt, callSkillName, callStepAt } from './data';
-import { whyNot, pay, refund } from '../effects/cost';
+import { priced, whyNot, pay, refund } from '../effects/cost';
 import { uses } from '../effects/uses';
 
 // ---------- the registry ----------
@@ -45,7 +45,7 @@ export function callAp(cb: Combat, u: Unit, def: CallDef, react = false): number
   let ap = react ? CALL_RULES.reaction_ap : callBaseAp(level);
   if (!react && level >= CALL_RULES.free_at && callsThisTurn(cb, u) < CALL_RULES.free_per_turn) ap = 0;
   const hk: any = emit(cb, 'call_cost', { u, id: def.id, ap, react, preview: true, cb });
-  return Math.max(0, hk.ap);
+  return priced({ cb, u }, 'call', Math.max(0, hk.ap), undefined, { id: def.id, react }).ap;
 }
 /** The TN an enemy saves against: 12 + the speaker's strength with the Call's skill (points − 1, floor 0; an enemy
  * speaker: its tier's number). Not halved, and never the full-points check number (plan ruling 1). */

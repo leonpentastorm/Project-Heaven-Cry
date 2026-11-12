@@ -32,7 +32,7 @@ import { die, type Rng } from '../rng';
 import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
 import { rngOf, tilesLine, foesOf, alliesOf } from '../kit';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
-import { pay, refund, canPay, priced } from '../effects/cost';
+import { pay, refund, canPay, bill } from '../effects/cost';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -108,7 +108,7 @@ register({
       if (!s.left || !placedStanding(cb, h.u!)) return;
       const d = Math.min(s.left, ctx.ap); if (d <= 0) return;
       ctx.ap -= d;
-      if (!ctx.preview && canPay(cb, h.u!, priced({ cb, u: h.u! }, 'draw', ctx.ap, { charge: ctx.charge }))) { s.left = Math.round((s.left - d) * 10) / 10; s.spent = true; log(cb, h.u!.name + ' thinks in parallel: the glyph costs ' + d + ' AP less (Parallel Thought).'); }
+      if (!ctx.preview && canPay(cb, h.u!, bill('draw', ctx.ap, { charge: ctx.charge }))) { s.left = Math.round((s.left - d) * 10) / 10; s.spent = true; log(cb, h.u!.name + ' thinks in parallel: the glyph costs ' + d + ' AP less (Parallel Thought).'); }
     },
     // planEvoke is pure (every evoke_cost is a preview): the discount is shown here and taken up at 'evoked'.
     evoke_cost: (ctx, h) => {

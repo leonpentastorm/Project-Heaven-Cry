@@ -51,4 +51,4 @@ export function stateOf(h: { key: string; u?: Unit | null; c?: Character | null;
   return h.u ? ((h.u.ps ||= {})[h.key] ||= {}) : {};
 }
 export * from './stats';
-export { price, priced, costOf, hasCost, whyNot, canPay, pay, refund, spend, needs, poolWhyNot, grantAp, loseAp, setAp, freely, withAp, apFor, creditFor, lend, settleCredit, unlend, resLeft, RESOURCES, type Cost, type Priced, type Credit } from './cost';
+export { price, priced, bill, costOf, hasCost, whyNot, canPay, pay, refund, spend, needs, poolWhyNot, grantAp, loseAp, setAp, freely, withAp, apFor, creditFor, lend, settleCredit, unlend, resLeft, RESOURCES, type Cost, type Priced, type Credit } from './cost';

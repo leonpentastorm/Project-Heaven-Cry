@@ -887,7 +887,7 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
   // (pay HP instead of MP, a free cast, more reach). ap is the Begin's; a snap cast adds the Release (1 AP).
   const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? 1.2 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.begin_strain ?? 1) + (m.emanator ? 0 : CYC.no_emanator_strain ?? 2), hp: 0, release, preview: true, fail: '', relMult: 1, relAll: 1, relNotes: [] as string[], cb });
   if (oc.fail) return no(oc.fail);
-  const cost = Math.max(0, Math.round(oc.mp)), ap = Math.max(0, oc.ap) + (release ? SOUL_AP.release : 0), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
+  const cost = Math.max(0, Math.round(oc.mp)), ap = priced({ cb, u }, 'begin', Math.max(0, oc.ap), undefined, { design: d.id }).ap + (release ? SOUL_AP.release : 0), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
   if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 0, hp };
   { const no = whyNot(cb, u, ap); if (no) return { ok: false, why: no, cost, ap, range, strain, stage: 0, hp }; }
   if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP (' + m.mp + '): Syphon first.', cost, ap, range, strain, stage: 0, hp };
@@ -945,7 +945,7 @@ export function previewPump(cb: Combat, u: Unit, feeling?: string | null): PumpP
   const capLeft = freeStageLeft(u), first = capLeft && firstFree(cb, m, u), emp = capLeft && (m.freePumps || 0) > 0, free = first || emp;
   const op: any = emit(cb, 'outburst_pump', { u, design: d, stage: m.held.stage, ap: free ? 0 : pumpBaseAp(m, feeling), free, capLeft, fail: '', preview: true, feeling: feeling || null, stages: 1, note: '', mpMult: 1, cb });
   if (op.fail) return no(op.fail);
-  const ap = Math.max(0, op.ap), next = { design: m.held.design, stage: Math.min(MAX_STAGE, m.held.stage + Math.max(1, Math.round(op.stages || 1))), felt: [...(m.held.felt || []), ...(feeling ? [feeling] : [])], plus: (m.held.plus || 0) + (op.plus || 0) };
+  const ap = priced({ cb, u }, 'pump', Math.max(0, op.ap), undefined, { feeling: feeling || null }).ap, next = { design: m.held.design, stage: Math.min(MAX_STAGE, m.held.stage + Math.max(1, Math.round(op.stages || 1))), felt: [...(m.held.felt || []), ...(feeling ? [feeling] : [])], plus: (m.held.plus || 0) + (op.plus || 0) };
   const step = feeling ? feelingStep(cb, u, feeling, next.stage) : PLAIN_STEP;
   // Rules 1.24: the MP of the stages this Pump adds (the engine's own number: the HEART panel shows it before the click).
   const mp = pumpMp(u, m.held.stage, next.stage - m.held.stage, op.mpMult ?? 1);
@@ -1029,10 +1029,10 @@ export function releaseOutburst(cb: Combat, rng: Rng, u: Unit, aim?: string): st
   const longing = (m.held.felt || []).includes('longing') ? (FEELING.longing?.pour as any)?.reach ?? 2 : 0;
   const pc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d) + longing, fail: '', preview: true, cb });
   if (pc.fail) return pc.fail;
-  const pap = Math.max(0, pc.ap); { const no = whyNot(cb, u, pap); if (no) return no; }
+  const pap = priced({ cb, u }, 'release', Math.max(0, pc.ap)).ap; { const no = whyNot(cb, u, pap); if (no) return no; }
   const why = aimError(cb, u, d, aim, pc.range); if (why) return why;
   const rc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d), fail: '', cb });
-  pay(cb, u, Math.min(apFor(cb, u), Math.max(0, rc.ap)));
+  pay(cb, u, Math.min(apFor(cb, u), priced({ cb, u }, 'release', Math.max(0, rc.ap)).ap));
   releaseAt(cb, rng, u, d, formOf(d) === 'aura' ? u.pos : aim!, false);
   return null;
 }
