@@ -1975,6 +1975,56 @@
           "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-left.png",
+      "sha256": "8a8253362977180cdf546cb0a682da8569b3bdd00cb5d0b64a6ec78e8a39d745",
+      "id": "module-left",
+      "family": "modules",
+      "action": "an arrow curving to the left; mirror direction of module-right, preserving the same geometry",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-left.png",
+        "sha256": "89a6aaaae7f5ddfbd9e992e2a59cbf953f5a382c1a3c8566f408c5ec64823bc4"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-left.png",
+        "sha256": "8a8253362977180cdf546cb0a682da8569b3bdd00cb5d0b64a6ec78e8a39d745"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-left.txt",
+        "sha256": "129cf5b2a6e9b5bdcf7f90ab00e646f735f432565655ceb9c3ddf7c98652fc45"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-left.png",
+        "128": "art/icons/modules/exports/128/module-left.png",
+        "64": "art/icons/modules/exports/64/module-left.png",
+        "56": "art/icons/modules/exports/56/module-left.png",
+        "48": "art/icons/modules/exports/48/module-left.png",
+        "44": "art/icons/modules/exports/44/module-left.png",
+        "40": "art/icons/modules/exports/40/module-left.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/module-right.png",
+          "sha256": "6c3f632433fc1c15552a5d482a2013df0328be906e18817dff81b2defb7c0a63"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
     }
   ]
 }

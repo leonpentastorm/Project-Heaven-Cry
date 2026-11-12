@@ -11126,6 +11126,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-right.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-right.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-left": {
+      "id": "module-left",
+      "label": "an arrow curving to the left; mirror direction of module-right, preserving the same geometry",
+      "path": "art/icons/modules/module-left.png",
+      "sha256": "8a8253362977180cdf546cb0a682da8569b3bdd00cb5d0b64a6ec78e8a39d745",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-left.png",
+        "128": "art/icons/modules/exports/128/module-left.png",
+        "64": "art/icons/modules/exports/64/module-left.png",
+        "56": "art/icons/modules/exports/56/module-left.png",
+        "48": "art/icons/modules/exports/48/module-left.png",
+        "44": "art/icons/modules/exports/44/module-left.png",
+        "40": "art/icons/modules/exports/40/module-left.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-left.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-left.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
