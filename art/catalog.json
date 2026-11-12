@@ -11176,6 +11176,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-time.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-time.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-inverse": {
+      "id": "module-inverse",
+      "label": "two arrows swapping direction, one above the other",
+      "path": "art/icons/modules/module-inverse.png",
+      "sha256": "411b7f0418cdb8176e494263a695d61084811f1f692d9a8682f2107eb2e1a51d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-inverse.png",
+        "128": "art/icons/modules/exports/128/module-inverse.png",
+        "64": "art/icons/modules/exports/64/module-inverse.png",
+        "56": "art/icons/modules/exports/56/module-inverse.png",
+        "48": "art/icons/modules/exports/48/module-inverse.png",
+        "44": "art/icons/modules/exports/44/module-inverse.png",
+        "40": "art/icons/modules/exports/40/module-inverse.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-inverse.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-inverse.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
