@@ -377,7 +377,7 @@ const PHYSICAL: ActionSystem = {
       if (['multi_shot', 'sweep'].includes(fx.op)) { const a: any = W('skill'); atk.push(D('skill', 'attack', sk.name, fx.ap || 0, apT(fx.ap || 0), sk.text || sk.name, a ? a.why : null, { picks: basicPicks(x, 'skill'), hidden: true })); }
     } else {
       // the both-hands block gets Reload both after its first row
-      const both = dual ? bothRows : [];
+      const both = dual ? bothRows.map((d) => ({ ...d, group: 'attack' as DescGroup })) : [];
       let at = pads.findIndex((d) => d.id === TPAD + 'both'); if (at < 0) at = pads.findIndex((d) => d.id === 'paired');
       atk.push(...(at < 0 || !both.length ? pads : [...pads.slice(0, at + 1), ...both, ...pads.slice(at + 1)]));
       if (w && !melee) atk.push(D('melee', 'attack', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee'), apT(attackApCost(WEAPON.fists, 'melee')), 'Hit an enemy next to you with the gun itself: d20 + Raw Power against Defense, for the damage of a bare-hand strike. It uses no round and adds no Heat.', null, { picks: basicPicks(x, 'melee'), toggleOn: 'combat/attack', preview: 'attack' }));
@@ -630,7 +630,7 @@ const MAGIC: ActionSystem = {
         const pumpCost = pp.ok ? (pp.mp ? (pp.free ? '0 AP' : pp.ap + ' AP') + ' · ' + pp.mp + ' MP' : pp.free ? 'FREE' : pp.ap + ' AP') : (pp.ap ? pp.ap + ' AP' : '—');
         out.push(D('pump', 'outbursts', 'Pump · stage ' + held.stage + (pp.ok ? ' → ' + (held.stage + 1) : ''), pp.free ? 0 : pp.ap || 0, pumpCost, 'Raise the held Outburst by 1 stage. Stages run from ×' + stageMult(0) + ' at stage 0 to ×' + stageMult(4) + ' at stage 4: a plain Pump adds +' + Math.round((stageMult(1) - stageMult(0)) * 10) / 10 + ', and a feeling adds its own step instead. One Pump a turn can cost 0 AP: your first of the fight, or one each round from Empathy 3.', pp.ok ? null : pp.why || 'Not now.',
           { picks: [{ key: 'feeling', kind: 'custom', renderer: 'heart', prompt: 'A plain Pump, or pour a feeling in.', optional: true }], toggleOn: 'combat/pump', preview: 'outburst' }));
-        out.push(D('release', 'outbursts', 'Release · stage ' + held.stage + ' ×' + (plan.mult || STAGE_MULT[held.stage]), plan.ap || SPELL_AP.release, (plan.ap || SPELL_AP.release) + ' AP', 'Fire the held Outburst at the stage reached.', relWhy,
+        out.push(D('release', 'outbursts', 'Release · stage ' + held.stage + ' ×' + (plan.mult || STAGE_MULT[held.stage]), plan.ap || SPELL_AP.release, (plan.ap || SPELL_AP.release) + ' AP', 'Fire ' + ((designs.find((d) => d.id === held.design) || {}).name || 'the held Outburst') + ' at the stage reached.', relWhy,
           { picks: [{ key: 'aim', kind: 'tile', prompt: 'Hover to preview, click a tile to aim.', optional: true }], toggleOn: 'combat/release', preview: 'outburst' }));
         out.push(D('steady', 'outbursts', 'Steady the heart', SPELL_AP.steady, apT(SPELL_AP.steady), 'Lose 1 Strain, and the Outburst doesn\'t swell at the start of your next turn.', st.err || null, { preview: 'outburst' }));
         out.push(D('letgo', 'outbursts', 'Let it go' + (off ? ' · −' + off + ' Strain' : ''), 0, 'free', 'Drop the Outburst without releasing it. The power you built is lost, and you lose ' + off + ' Strain.', lg.err || null, { preview: 'outburst' }));
