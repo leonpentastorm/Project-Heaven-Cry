@@ -25,6 +25,7 @@ that can do a piece; no more than two pieces running at once; a reviewer only wh
 | Piece | Branch | State when this was written |
 | --- | --- | --- |
 | Browser suites clean-up (review 3: row 10) | `worktree-wf_bff3748c-24c-*` (remote: `wip/worktree-wf_bff3748c-24c-1`) | building |
+| Balance pass stage b (the re-fit) | a `worktree-agent-*` branch (remote `wip/…`), started 12 Nov | building |
 
 Every other `worktree-…` branch is **already merged** (wave 1, wave 2, the sweep, performance); leave them.
 
@@ -70,11 +71,16 @@ not push, and to report the branch name. Hand long lists to an agent as a **file
 - [x] **Wave 2** merged (12 Nov): costs and counters, conditions, fog in the engine. Left over from it, for wave 3: the fight log still reaches every player whole (spec item 1600 a: do it with the effects schema); about half the counters and 28 resource payments are still by hand (ratcheted by `lint-costs`; they ride on item ops).
 - [ ] **Browser suites** clean-up merged (every suite in a group or deleted; timing checks made load-proof).
 - [ ] **Wave 3** (PLAN.md has the table; the reviews have the detail). Cheapest order:
-  1. Item ops (review 1: F5): `when` / `if` / `limit` and about nine generic ops so most of the 310 per-item
-     handlers become data. The biggest piece and the one the roguelike needs most. One reviewer for this one.
+  1. [x] Item ops, first pass (merged 12 Nov; `engine-foundations-3-item-ops.md`): the runner, closed lists of
+     30 triggers / 54 predicates / 18 ops, a ratchet lint, a `relic` item kind loaded at run time. **Only 20 of 310
+     handlers moved** (11 data-only); the review's estimate was too high. What is left is listed in that hand-off in
+     order (cost triggers, a turn-counted cooldown, "next X after Y", area targets); the lint stops it growing.
+     Lead's call: the second pass waits until after the balance pass, it does not block live.
   2. Preview is a dry run (F7), then character / unit / story state in one table (F9, F10).
-  3. Action descriptors (review 4: 3): `actionsFor(game, unit)` and one generic client flow; then split the combat
-     screen (review 4: 8). One reviewer.
+  3. [x] Action descriptors (merged 12 Nov; `client-boundary-3-actions.md`): `actionsFor`, `previewDescriptor`,
+     `sendDescriptor`, `registerActions`; all seven systems on `apps/web/src/game/actionFlow.ts`. Not done: the combat
+     screen split (review 4: 8), the story map, `smartCommands` costs. Browser suites it names still to run:
+     `npm run e2e -- playscreen physical physical-pack perks classes-moves rules114 ground reload world-play tabs resources combat-fixes turn-order faith faith-pg skeleton-screens heart soul feelings40 magic sigil14 sigil15 sigil15-strokes sandbox two-players`.
   4. Effects with a schema (review 4: 5).
   5. Rooms and the Narrator prompt (review 4: 7, 10). **First to cut if tokens run short.**
   6. Fold the spec's revision sections 1.14 to 1.25 into its body (review 3: row 7); section 14 as a ledger.
