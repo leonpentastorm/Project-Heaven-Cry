@@ -11726,6 +11726,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-siphon.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-siphon.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-phantom": {
+      "id": "module-phantom",
+      "label": "a dot passing through a solid block",
+      "path": "art/icons/modules/module-phantom.png",
+      "sha256": "25c8cf55ced8b19926a0dc2966407e3b7849da4fbd2984f2b6e75a33f3b43f95",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-phantom.png",
+        "128": "art/icons/modules/exports/128/module-phantom.png",
+        "64": "art/icons/modules/exports/64/module-phantom.png",
+        "56": "art/icons/modules/exports/56/module-phantom.png",
+        "48": "art/icons/modules/exports/48/module-phantom.png",
+        "44": "art/icons/modules/exports/44/module-phantom.png",
+        "40": "art/icons/modules/exports/40/module-phantom.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-phantom.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-phantom.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

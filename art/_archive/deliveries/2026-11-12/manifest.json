@@ -3099,6 +3099,52 @@
           "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-phantom.png",
+      "sha256": "25c8cf55ced8b19926a0dc2966407e3b7849da4fbd2984f2b6e75a33f3b43f95",
+      "id": "module-phantom",
+      "family": "modules",
+      "action": "a dot passing through a solid block",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-phantom.png",
+        "sha256": "d542c86e2ea892345ddd700dfd4b6342d7359c65c134386cff793aa08d0cc2fe"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-phantom.png",
+        "sha256": "25c8cf55ced8b19926a0dc2966407e3b7849da4fbd2984f2b6e75a33f3b43f95"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-phantom.txt",
+        "sha256": "5e8ab61ad1945be38d6da2afed31f2e8c8f4b1664c0d93a703131a64d1bd7f6f"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-phantom.png",
+        "128": "art/icons/modules/exports/128/module-phantom.png",
+        "64": "art/icons/modules/exports/64/module-phantom.png",
+        "56": "art/icons/modules/exports/56/module-phantom.png",
+        "48": "art/icons/modules/exports/48/module-phantom.png",
+        "44": "art/icons/modules/exports/44/module-phantom.png",
+        "40": "art/icons/modules/exports/40/module-phantom.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
     }
   ]
 }

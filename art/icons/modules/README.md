@@ -35,5 +35,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-cascade.png`: a stair of small dots growing in size
 - `module-tether.png`: a straight beam between two rings
 - `module-siphon.png`: a curve drawing drops toward a centre
+- `module-phantom.png`: a dot passing through a solid block
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
