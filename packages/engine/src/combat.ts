@@ -16,6 +16,7 @@ import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion
 import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
+import { tendedLately, TEND_NOTICE } from './effects/mending';
 import { turnAp, briefCredit } from './effects/ap';
 import { skillRollMod, actionAp, immune, forbids } from './effects/core';
 import { statQuery } from './effects/hooks';
@@ -2002,7 +2003,7 @@ export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? action
  * acting (the Trickster's Read). */
 /** Steps an engine system outside this file gives the enemy AI (physical/ai.ts: a technique), tried where the plain
  * attack would be. plan says what it would do now, changing nothing (the intent line); act does it and returns true. */
-export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId?: string } | null; act(cb: Combat, rng: Rng, u: Unit): boolean }
+export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId?: string; why?: 'healer' } | null; act(cb: Combat, rng: Rng, u: Unit): boolean }
 const ENEMY_STEPS: EnemyStep[] = [];
 /** first: tried before the steps already registered (a Call comes before a technique: calls/ai.ts). */
 export const enemyStep = (s: EnemyStep, first = false) => { if (first) ENEMY_STEPS.unshift(s); else ENEMY_STEPS.push(s); };
@@ -2010,6 +2011,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
   const u = active(cb)!;
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
   const stood = new Set<string>([u.pos]); // the tiles it has stood on this turn: it doesn't pace between them
+  let hunted = false; // rules 1.23: it repositions for a line on the healer at most once a turn
   for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
     stood.add(u.pos);
     // 'enemy_action_start' {u, step}: before each enemy action; an item may open a window (Between Heartbeats) or set
@@ -2035,7 +2037,9 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
     const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
     const targets = enemyTargets(cb, u, mode, order, pcs);
-    if (targets.length) { const t = targets[0].t; if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
+    // Rules 1.23, the hunt: an Elite or a Boss with a gun and no shot at the squad's healer steps to where it has one.
+    if (!order && !hunted) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; checkOver(cb); continue; } }
+    if (targets.length) { const t = targets[0].t; if (targets[0].healer) noteHealerHunt(cb, u, t); if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
     if (!pcs.length) break;
@@ -2046,14 +2050,63 @@ export function enemyTurn(cb: Combat, rng: Rng) {
 const enemyDry = (u: Unit) => { const w = WEAPON[u.weapon]; return w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0); };
 const enemyNeedsReload = (u: Unit) => { const w = WEAPON[u.weapon]; return w.magazine != null && u.ammo <= 0 && !enemyDry(u) && !condOn(u, 'disarmed'); };
 const enemyMode = (u: Unit): 'melee' | 'shot' => (isMelee(WEAPON[u.weapon]) || enemyDry(u) || condOn(u, 'disarmed') ? 'melee' : 'shot');
-/** The PCs an enemy would attack now, best first: its Taunter, standing before Downed, the most hurt, the likeliest hit. */
+/** Rules 1.23: how hard this unit turns on whoever is mending the other side (its tier's `healer_focus` in
+ * enemies.json: 0 never looks, 0.5 the healer counts as hurt by half its max HP more, 1 the healer comes first). */
+export const healerFocus = (u: Unit): number => (u.charId || u.companion || !u.tier ? 0 : Number((ENEMY[u.tier] as any)?.healer_focus) || 0);
+/** Rules 1.23: the one this enemy goes for as the other side's healer, or null. It is whoever of the other side has
+ * healed and shielded OTHERS the most over this round and the last (effects/mending.ts tendedLately; spells, prayers,
+ * Outbursts, the medic's kit, a perk: anything that goes through healUnit or grantShield), as long as that is worth
+ * noticing, the healer is standing, is not Hidden, and somebody on this enemy's side sees it now. Deterministic. */
+export function healerMark(cb: Combat, u: Unit): Unit | null {
+  if (!healerFocus(u)) return null;
+  let best: Unit | null = null, bn = 0;
+  for (const t of cb.units) {
+    if (t.side === u.side || !alive(t) || t.hidden) continue;
+    const n = tendedLately(cb, t); if (n <= bn || n < Math.max(1, Math.floor(TEND_NOTICE * t.maxHp))) continue;
+    if (!sideSees(cb, u.side, t, u)) continue;
+    best = t; bn = n;
+  }
+  return best;
+}
+/** The PCs an enemy would attack now, best first: its Taunter, standing before Downed, the most hurt (rules 1.23: the
+ * squad's healer counts as hurt by a share of its max HP more, the tier's healer_focus, unless this enemy's chance to
+ * hit it is under half its best chance on anyone: a healer behind good cover is not worth the rounds), the likeliest
+ * hit. `healer` is set on the entry the healer weight was given to. */
 function enemyTargets(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[]) {
   const tauntBy = condSource(u, 'taunted');
   const ownerOf = (t: Unit) => (t as any).ghostOf || t.id;
-  return order === 'hold' || order === 'flee' ? [] : pcs
-    .map((t) => ({ t, pv: previewAttack(cb, u, t, mode) }))
-    .filter((x) => x.pv.ok)
-    .sort((a, b) => (ownerOf(b.t) === tauntBy ? 1 : 0) - (ownerOf(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || a.t.hp - b.t.hp || b.pv.pct - a.pv.pct);
+  if (order === 'hold' || order === 'flee') return [];
+  const list = pcs.map((t) => ({ t, pv: previewAttack(cb, u, t, mode), healer: false })).filter((x) => x.pv.ok);
+  const mark = list.length ? healerMark(cb, u) : null, focus = healerFocus(u), bestPct = Math.max(0, ...list.map((x) => x.pv.pct));
+  if (mark) for (const x of list) if (ownerOf(x.t) === mark.id && !x.t.downed && x.pv.pct * 2 >= bestPct) x.healer = true;
+  const key = (x: { t: Unit; healer: boolean }) => x.t.hp - (x.healer ? focus * x.t.maxHp : 0);
+  return list.sort((a, b) => (ownerOf(b.t) === tauntBy ? 1 : 0) - (ownerOf(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || b.pv.pct - a.pv.pct);
+}
+/** Rules 1.23, the hunt: an enemy that puts the healer first (healer_focus 1: an Elite, a Boss), holds a gun and has no
+ * shot at the healer from where it stands takes the shortest walk to a tile that has one, if it can still fire this
+ * turn after it. Never a melee enemy (it does not run through the squad), never when Taunted, ordered or afraid of
+ * the healer, once a turn. Pure: the tile, or null. */
+function enemyHuntTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], targets: { t: Unit; healer: boolean }[], stood?: Set<string>): { tile: string; mark: Unit } | null {
+  if (mode !== 'shot' || healerFocus(u) < 1 || condSource(u, 'taunted') || moveBlock(u)) return null;
+  const mark = healerMark(cb, u); if (!mark || !pcs.includes(mark)) return null; // (a False Image it was fooled by stands in pcs in the healer's place: it shoots that)
+  if (targets.some((x) => x.t === mark)) return null; // it has the shot already (or the healer is too well covered to be worth it: then it stays on its target)
+  if (condSource(u, 'fear') === mark.id || u.call?.cowed?.by === mark.id) return null;
+  const w = WEAPON[u.weapon], P = paths(cb, u.pos, u.id), walls = sightBlockers(cb), left = u.ap - attackApCost(w, 'shot');
+  const eyes = cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, mark.pos)) ? Infinity : (litAt(cb, mark.pos) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2));
+  const reach = Math.min(effectiveRange(w), eyes), taken = new Set(pcs.map((t) => t.pos));
+  let best: string | null = null, bs = Infinity;
+  for (const [k, tiles] of Object.entries(P.dist)) {
+    if (k === u.pos || taken.has(k) || stood?.has(k) || tiles <= 0 || apForTiles(tiles, u.bank, u.movement) > left) continue;
+    if (dist(k, mark.pos) > reach || !lineOfSight(cb, k, mark.pos, false, walls)) continue;
+    const sc = tiles + aiRouteRisk(cb, u, P, k); if (sc < bs || (sc === bs && best != null && k < best)) { bs = sc; best = k; }
+  }
+  return best ? { tile: best, mark } : null;
+}
+/** The fight log says it once a round for each healer the enemies turn on (rules 1.23: the player is told why). */
+function noteHealerHunt(cb: Combat, u: Unit, t: Unit) {
+  const seen = (((cb as any).healerHunt ||= {}) as Record<string, number>), id = (t as any).ghostOf || t.id;
+  if (seen[id] === cb.round) return; seen[id] = cb.round;
+  cb.log.push(u.name + ' turns on ' + t.name + ': the enemy has seen who is mending the squad.');
 }
 /** Where an enemy closes in: the reachable tile that is nearest a living PC and has line of sight to one (Afraid: never
  * nearer the source; fleeing: the tile farthest from every PC). 'ai_move_risk' {u, from, to, risk} lets items add to a
@@ -2102,7 +2155,7 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
 /** What an enemy means to do on its next turn (the Trickster's Read): the first thing enemyTurn would do, read with a
  * fresh turn's AP and nothing rolled or changed. Sigil and Soul casters are named as weighing a spell (their planners
  * keep per-turn state), with the weapon choice that follows if they don't cast. */
-export interface Intent { kind: 'none' | 'lost' | 'order' | 'recover' | 'scuff' | 'spell' | 'outburst' | 'reload' | 'attack' | 'move' | 'wait'; text: string; targetId?: string; to?: string; image?: string }
+export interface Intent { kind: 'none' | 'lost' | 'order' | 'recover' | 'scuff' | 'spell' | 'outburst' | 'reload' | 'attack' | 'move' | 'wait'; text: string; targetId?: string; to?: string; image?: string; /** rules 1.23: it goes for this target because it is mending the squad */ why?: 'healer' }
 export function enemyIntent(cb: Combat, u: Unit): Intent {
   if (u.dead || u.downed || u.surrendered) return { kind: 'none', text: 'nothing: it is out of the fight' };
   if (condOn(u, 'stunned')) return { kind: 'lost', text: 'nothing: Stunned, it loses the turn' };
@@ -2111,6 +2164,8 @@ export function enemyIntent(cb: Combat, u: Unit): Intent {
   try { return intentInner(cb, u); } finally { u.ap = save.ap; u.bank = save.bank; u.shotsThisTurn = save.shots; u.moved = save.moved; }
 }
 const AP_BASE = 6;
+/** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
+export const HEALER_WHY = ': it goes for whoever is mending the squad';
 function intentInner(cb: Combat, u: Unit): Intent {
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
   if (order) return { kind: 'order', text: 'obey its order (' + order.split(':')[0] + ')' };
@@ -2127,10 +2182,12 @@ function intentInner(cb: Combat, u: Unit): Intent {
   const mode = enemyMode(u), pcs = perceivedFoes(cb, u), targets = enemyTargets(cb, u, mode, order, pcs);
   let out: Intent;
   const step = ENEMY_STEPS.map((s) => s.plan(cb, u)).find(Boolean);
-  if (step) out = { kind: 'attack', text: step.text, ...(step.targetId ? { targetId: step.targetId } : {}) };
+  const hunt = step ? null : enemyHuntTile(cb, u, mode, pcs, targets);
+  if (step) out = { kind: 'attack', text: step.text + (step.why === 'healer' ? HEALER_WHY : ''), ...(step.targetId ? { targetId: step.targetId } : {}), ...(step.why ? { why: step.why } : {}) };
+  else if (hunt) out = { kind: 'move', text: 'move to ' + refOf(hunt.tile) + ' for a shot at ' + hunt.mark.name + HEALER_WHY, to: hunt.tile, targetId: hunt.mark.id, why: 'healer' };
   else if (targets.length) {
     const t = targets[0].t, ghost = isGhost(t), owner = ghost ? cb.units.find((x) => x.id === (t as any).ghostOf) : t;
-    out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name), targetId: owner!.id, ...(ghost ? { image: t.id } : {}) };
+    out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name) + (targets[0].healer ? HEALER_WHY : ''), targetId: owner!.id, ...(ghost ? { image: t.id } : {}), ...(targets[0].healer ? { why: 'healer' as const } : {}) };
   } else if (moveBlock(u) || !pcs.length) out = { kind: 'wait', text: 'hold where it is' };
   else {
     const best = enemyCloseTile(cb, u, mode, order, pcs);

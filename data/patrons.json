@@ -213,12 +213,12 @@
     {
       "id": "health",
       "name": "Health",
-      "text": "You or an ally you can see heals 2.5 × your Blessing power. The heal grows with your level, like all healing and shields from prayer.",
+      "text": "You or an ally you can see heals 5 × your Blessing power. The heal grows with your level, like all healing and shields from prayer.",
       "target": "self_or_ally",
       "effects": [
         {
           "op": "heal",
-          "value": 2.5
+          "value": 5
         }
       ],
       "scales_with": "blessing_power",
@@ -228,12 +228,12 @@
     {
       "id": "protection",
       "name": "Protection",
-      "text": "You or an ally you can see gains a shield of 3 × your Blessing power. The shield grows with your level, like all healing and shields from prayer.",
+      "text": "You or an ally you can see gains a shield of 6 × your Blessing power. The shield grows with your level, like all healing and shields from prayer.",
       "target": "self_or_ally",
       "effects": [
         {
           "op": "shield",
-          "value": 3
+          "value": 6
         }
       ],
       "scales_with": "blessing_power",
@@ -295,13 +295,13 @@
     {
       "id": "rebuke",
       "name": "Rebuke",
-      "text": "An enemy you can see takes 7 Soul damage × your Blessing power. There is no roll, and armour doesn't lower it.",
+      "text": "An enemy you can see takes 20 Soul damage × your Blessing power. There is no roll, and armour doesn't lower it.",
       "target": "enemy",
       "effects": [
         {
           "op": "stat_mod",
           "stat": "hp",
-          "value": -7,
+          "value": -20,
           "damage_type": "soul"
         }
       ],
@@ -374,7 +374,7 @@
     "farewell",
     "grant"
   ],
-  "notes": "Rules 1.6 (8 Nov 2026). Every number is provisional (spec section 14). Lines are picked by the engine (seeded), never written by the Narrator. Rules 1.20 (the heal and shield pass, 12 Nov 2026): prayer heals and shields were fitted to one Soldier's turn (Health 5, Protection 6, Warm Hands 10, Saint's Shield 12, Absolution 7, Hearthlight 4, Coin for the Ferry 5, Everyone Home's shield 17, Mother Ember's intervention 10 + 3 × Devotion) and grow with the devoted's level (rules.json mending); the engine reads these values. Rules 1.22 (Faith, round 2, 12 Nov 2026): the Whisper is the every-turn prayer and the weakest steady action there is (Rebuke 7, Health 2.5, Protection 3); the Hymn is the set-piece on a cooldown that Faith lowers (prayer.hymn.cooldown_rule) and its numbers are refitted to that (Lightning Rod 110 and 40, Judgement 110, Thunderclap 50, Warm Hands 32, Saint's Shield 38, Absolution 22, Hearthlight 6, Coin for the Ferry 15, Foreknowing 4, Lucky Break 4, Feed the Fire +3 AP); Hold the Gate has a wait of its own (own_cooldown); each vow has a moment that fulfils it in a fight (fulfilled_when).",
+  "notes": "Rules 1.6 (8 Nov 2026). Every number is provisional (spec section 14). Lines are picked by the engine (seeded), never written by the Narrator. Rules 1.20 (the heal and shield pass, 12 Nov 2026): prayer heals and shields were fitted to one Soldier's turn (Health 5, Protection 6, Warm Hands 10, Saint's Shield 12, Absolution 7, Hearthlight 4, Coin for the Ferry 5, Everyone Home's shield 17, Mother Ember's intervention 10 + 3 × Devotion) and grow with the devoted's level (rules.json mending); the engine reads these values. Rules 1.22 (Faith, round 2, 12 Nov 2026): the Whisper is the every-turn prayer and the weakest steady action there is (Rebuke 20, Health 5, Protection 6); the Hymn is the set-piece on a cooldown that Faith lowers (prayer.hymn.cooldown_rule) and its numbers are refitted to that (Lightning Rod 42 and 17, Judgement 42, Thunderclap 20, Warm Hands 13, Saint's Shield 16, Absolution 9, Hearthlight 4, Coin for the Ferry 5, Foreknowing 2, Lucky Break 2, Feed the Fire +2 AP); Hold the Gate has a wait of its own (own_cooldown); each vow has a moment that fulfils it in a fight (fulfilled_when).",
   "items": [
     {
       "id": "nerukhan",
@@ -456,12 +456,12 @@
           "id": "saints_shield",
           "name": "Saint's Shield",
           "tier": 1,
-          "text": "You or an ally you can see gains a shield of 38 × your Blessing power. The shield grows with your level.",
+          "text": "You or an ally you can see gains a shield of 16 × your Blessing power. The shield grows with your level.",
           "target": "ally",
           "effects": [
             {
               "op": "shield",
-              "value": 38
+              "value": 16
             }
           ],
           "scales_with": "blessing_power",
@@ -472,13 +472,13 @@
           "id": "judgement",
           "name": "Judgement",
           "tier": 2,
-          "text": "An enemy you can see takes 110 Soul damage × your Blessing power. It takes 30% more if it harmed a surrendered or Downed creature this fight.",
+          "text": "An enemy you can see takes 42 Soul damage × your Blessing power. It takes 30% more if it harmed a surrendered or Downed creature this fight.",
           "target": "enemy",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -110,
+              "value": -42,
               "damage_type": "soul"
             },
             {
@@ -495,7 +495,7 @@
           "id": "absolution",
           "name": "Absolution",
           "tier": 3,
-          "text": "You or an ally you can see loses every harmful condition and heals 22 × your Blessing power. The heal grows with your level.",
+          "text": "You or an ally you can see loses every harmful condition and heals 9 × your Blessing power. The heal grows with your level.",
           "target": "ally",
           "effects": [
             {
@@ -504,7 +504,7 @@
             },
             {
               "op": "heal",
-              "value": 22
+              "value": 9
             }
           ],
           "scales_with": "blessing_power",
@@ -952,14 +952,14 @@
           "id": "lucky_break",
           "name": "Lucky Break",
           "tier": 1,
-          "text": "Pick yourself or an ally you can see. Their next 4 failed attack rolls are each rerolled at +5. Outside a fight, it is +5 on their next check instead.",
+          "text": "Pick yourself or an ally you can see. Their next 2 failed attack rolls are each rerolled at +5. Outside a fight, it is +5 on their next check instead.",
           "target": "ally",
           "effects": [
             {
               "op": "reroll",
               "on": "fail",
               "bonus": 5,
-              "uses": 4
+              "uses": 2
             }
           ],
           "scales_with": "blessing_power",
@@ -1167,12 +1167,12 @@
           "id": "coin_for_the_ferry",
           "name": "Coin for the Ferry",
           "tier": 1,
-          "text": "A Downed ally you can see is stabilised and stands up with 15 HP × your Blessing power. The number grows with your level.",
+          "text": "A Downed ally you can see is stabilised and stands up with 5 HP × your Blessing power. The number grows with your level.",
           "target": "downed_ally",
           "effects": [
             {
               "op": "heal",
-              "value": 15,
+              "value": 5,
               "revive": true
             }
           ],
@@ -1375,12 +1375,12 @@
           "id": "warm_hands",
           "name": "Warm Hands",
           "tier": 1,
-          "text": "You or an ally you can see heals 32 × your Blessing power. The heal grows with your level.",
+          "text": "You or an ally you can see heals 13 × your Blessing power. The heal grows with your level.",
           "target": "ally",
           "effects": [
             {
               "op": "heal",
-              "value": 32
+              "value": 13
             }
           ],
           "scales_with": "blessing_power",
@@ -1391,7 +1391,7 @@
           "id": "hearthlight",
           "name": "Hearthlight",
           "tier": 2,
-          "text": "Pick a 3 × 3 area you can see. For 3 rounds, each ally who starts a turn in it heals 6 × your Blessing power. The heal grows with your level.",
+          "text": "Pick a 3 × 3 area you can see. For 3 rounds, each ally who starts a turn in it heals 4 × your Blessing power. The heal grows with your level.",
           "target": "tile",
           "effects": [
             {
@@ -1401,7 +1401,7 @@
               "effects": [
                 {
                   "op": "heal",
-                  "value": 6,
+                  "value": 4,
                   "when": "turn_start",
                   "scope": "allies"
                 }
@@ -1416,13 +1416,13 @@
           "id": "feed_the_fire",
           "name": "Feed the Fire",
           "tier": 3,
-          "text": "You or an ally you can see gets +3 AP right now, up to the limit of 9 AP, and loses Weakened and Slowed.",
+          "text": "You or an ally you can see gets +2 AP right now, up to the limit of 9 AP, and loses Weakened and Slowed.",
           "target": "ally",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "ap",
-              "value": 3
+              "value": 2
             },
             {
               "op": "cleanse",
@@ -1602,13 +1602,13 @@
           "id": "thunderclap",
           "name": "Thunderclap",
           "tier": 1,
-          "text": "Pick a tile you can see. Each enemy within 2 tiles of it takes 50 lightning damage × your Blessing power, is pushed 1 tile away, and is Shaken unless it passes a Heart save.",
+          "text": "Pick a tile you can see. Each enemy within 2 tiles of it takes 20 lightning damage × your Blessing power, is pushed 1 tile away, and is Shaken unless it passes a Heart save.",
           "target": "tile",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -50,
+              "value": -20,
               "damage_type": "lightning",
               "radius": 2
             },
@@ -1632,20 +1632,20 @@
           "id": "lightning_rod",
           "name": "Lightning Rod",
           "tier": 2,
-          "text": "An enemy you can see takes 110 lightning damage × your Blessing power. It chains to 1 more enemy within 2 tiles for 40 × your Blessing power.",
+          "text": "An enemy you can see takes 42 lightning damage × your Blessing power. It chains to 1 more enemy within 2 tiles for 17 × your Blessing power.",
           "target": "enemy",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -110,
+              "value": -42,
               "damage_type": "lightning"
             },
             {
               "op": "chain_damage",
               "jumps": 1,
               "range": 2,
-              "value": 40
+              "value": 17
             }
           ],
           "scales_with": "blessing_power",
@@ -2053,13 +2053,13 @@
           "id": "foreknowing",
           "name": "Foreknowing",
           "tier": 1,
-          "text": "The next 4 attacks against you or an ally you can see miss.",
+          "text": "The next 2 attacks against you or an ally you can see miss.",
           "target": "ally",
           "effects": [
             {
               "op": "state",
               "state": "foreknown",
-              "uses": 4
+              "uses": 2
             }
           ],
           "scales_with": "blessing_power",

@@ -24,10 +24,9 @@ export const mendFactorOf = (u: Unit | null | undefined): number => (u && u.side
 export const TENDING: any = MENDING.tending || {};
 /** How many rounds back the count looks (this round and the ones before it). */
 export const TEND_ROUNDS: number = TENDING.rounds ?? 2;
-/** Under this share of the giver's own max HP, what it gave is not worth turning a gun for. */
-export const TEND_NOTICE: number = TENDING.notice_share_of_max_hp ?? 0.08;
-/** How strongly each tier turns on the healer: the share of a target's max HP its healing outweighs (0: it never looks). */
-export const TEND_PULL: Record<string, number> = TENDING.pull_by_tier || { vermin: 0, minion: 0, soldier: 0.25, elite: 0.5, boss: 0.5 };
+/** Under this share of the giver's own max HP, what it gave is not worth turning a gun for. (How hard each tier
+ * turns on the healer is its `healer_focus` in enemies.json: combat.ts healerFocus.) */
+export const TEND_NOTICE: number = TENDING.notice_share_of_max_hp ?? 0.1;
 /** Note HP restored or a shield given by `by` to someone else of its side (never to itself: self-healing is not the
  * healer the squad leans on). Kept on the giver, round by round, for the fight. */
 export function noteTended(cb: Combat | null, by: Unit | null | undefined, t: Unit, n: number) {
@@ -41,3 +40,12 @@ export function tendedLately(cb: Combat, u: Unit): number {
   const log = (u as any).tended as { r: number; n: number }[] | undefined; if (!log) return 0;
   let n = 0; for (const e of log) if (e.r > cb.round - TEND_ROUNDS) n += e.n; return n;
 }
+
+// ---------- rules 1.23: the medic's kit ----------
+export const MEDIC: any = MENDING.medic || {};
+/** Triage (2 AP), a stim and Stim Throw (1 AP), Rally (2 AP, each ally), a Field Repair on an ally (per point of
+ * Improvisation): each × Healing given × the level factor of the giver. */
+export const TRIAGE_HEAL: number = MEDIC.triage ?? 8;
+export const STIM_HEAL: number = MEDIC.stim ?? 12;
+export const RALLY_HEAL: number = MEDIC.rally ?? 5;
+export const FIELD_REPAIR_HEAL: number = MEDIC.field_repair_per_point ?? 3;

@@ -1256,23 +1256,33 @@
         "outburst heal",
         "outburst shield",
         "prayer heal",
-        "prayer shield"
+        "prayer shield",
+        "the medic's kit (rules 1.23)"
       ]
     },
     "round_limit": {
-      "share_of_max_hp": 0.5,
-      "kinds": [
-        "sigil",
-        "soul",
-        "leech",
-        "thread",
-        "blessing"
-      ],
-      "miracles_exempt": true
+      "withdrawn": "rules 1.23 (Leon, 12 Nov 2026): there is no round limit. Rules 1.20 held spells and prayers to half of a creature's max HP a round; healing is priced in AP now, and the enemies go for whoever mends the most."
+    },
+    "medic": {
+      "rules": "1.23",
+      "provisional": true,
+      "level_factor": true,
+      "triage": 8,
+      "stim": 12,
+      "rally": 5,
+      "field_repair_per_point": 3,
+      "note": "The medic's kit, each × Healing given × the level factor of the giver's level: Triage (2 AP, next to you, once an ally a turn, no supplies), a stim and Stim Throw (1 AP, a stim or a Supply), Rally (2 AP, every ally within 4, once a scene), a Field Repair on an ally (2 AP, a spare-parts charge, per point of Improvisation)."
+    },
+    "tending": {
+      "rules": "1.23",
+      "provisional": true,
+      "rounds": 2,
+      "notice_share_of_max_hp": 0.1,
+      "note": "The enemy AI's healer weight. What a unit has healed and shielded for others over this round and the last is counted; under a tenth of the giver's own max HP it is not noticed. How hard each tier turns on the healer is its healer_focus in enemies.json (0: never; 0.5: the healer counts as hurt by half its max HP more; 1: the healer comes first, and a shooter steps for a line on it)."
     },
     "shield_over_heal": 1.2,
     "area_share": 0.4,
-    "text": "Healing and shields from Sigil magic, Outbursts and prayers grow with the caster's level, by the same factor that raises what enemies deal (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). In one round, spells and prayers together can't restore more than half of a creature's max HP; a Miracle is not held to that. In an area shape a healing or shielding Outburst gives each ally ×0.4."
+    "text": "Healing and shields from Sigil magic, Outbursts, prayers and the medic's kit grow with the giver's level, by the same factor that raises what enemies deal (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). Nothing limits how much a creature can be healed in a round. Enemies notice who is mending the squad and turn on them: Soldiers lean that way, Elites and Bosses go for the healer first. In an area shape a healing or shielding Outburst gives each ally ×0.4."
   },
   "social": {
     "disposition_tn": {

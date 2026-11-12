@@ -36,7 +36,7 @@
 import {
   previewAttack, previewTechnique, techniquePad, paths, apForTiles, dist, alive, WEAPON, isMelee, bindGame,
   previewOutburst, previewPump, previewOutburstPlan, heartReach, planEvoke, glyphCost, glyphApOf, groundCap, freeTile, dir8, SIGIL,
-  previewPrayer, patronOf, WHISPERS, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING, weaponBraces,
+  previewPrayer, patronOf, fulfilVow, WHISPERS, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING, weaponBraces,
 } from '../../src';
 
 export type StepKind = 'attack' | 'technique' | 'move' | 'reload' | 'setup' | 'spell' | 'prayer' | 'call' | 'other';
