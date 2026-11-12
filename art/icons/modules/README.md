@@ -10,5 +10,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-homing.png`: a curved arrow bending onto a target ring
 - `module-swift.png`: a dot with three speed lines behind it
 - `module-ether.png`: a dot passing through a dashed wall
+- `module-right.png`: an arrow curving to the right
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

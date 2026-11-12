@@ -1929,6 +1929,52 @@
           "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-right.png",
+      "sha256": "2469c610bfe926498ab8eb18fe7735e2dae2f3c6778cad2eb5b3133fe422f979",
+      "id": "module-right",
+      "family": "modules",
+      "action": "an arrow curving to the right",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-right.png",
+        "sha256": "6c3f632433fc1c15552a5d482a2013df0328be906e18817dff81b2defb7c0a63"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-right.png",
+        "sha256": "2469c610bfe926498ab8eb18fe7735e2dae2f3c6778cad2eb5b3133fe422f979"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-right.txt",
+        "sha256": "a1fb8eb8991094939de5c17c999eb0cf7cee945e67da94dbcaa933a966727cb2"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-right.png",
+        "128": "art/icons/modules/exports/128/module-right.png",
+        "64": "art/icons/modules/exports/64/module-right.png",
+        "56": "art/icons/modules/exports/56/module-right.png",
+        "48": "art/icons/modules/exports/48/module-right.png",
+        "44": "art/icons/modules/exports/44/module-right.png",
+        "40": "art/icons/modules/exports/40/module-right.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
     }
   ]
 }
