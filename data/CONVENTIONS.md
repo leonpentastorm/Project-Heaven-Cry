@@ -104,6 +104,7 @@ Every rule-bearing item carries both:
 - `rules` is the shared ladder: `ap` 2, `cheap_at` 5 points for `cheap_ap` 1, `free_at` 10 points for `free_per_turn` 1 free Call, `range_base` 4 + `range_per_point` 1, `reaction_at` 9 points (`reactions_per_round` 1, `reaction_ap` 0), `save_tn` 12 (+ the speaker's strength with the skill), `helping_per_round` and `hindering_per_round` 1, `mark_rounds` (how long a Spot, Warn or Cue can outlive its round), and `enemy` (`per_turn`, and the score a Call must beat: a plain attack's 5).
 - `adjudication: "engine"` and `provisional: true` on every Call.
 - Enemy tiers in `enemies.json`: `calls` (a list of Call ids, empty for a tier that never Calls) and `call_level` (0 to 10: it stands in for the skill points an enemy doesn't have, and sets its cost, reach and step).
+- Enemy tiers in `enemies.json`: `healer_focus` (rules 1.23): how hard the tier turns on whoever is mending the other side. 0: it never looks. Between 0 and 1: when it sorts whom to attack by HP left, the healer counts as having that share of their max HP less. 1: the healer comes first, and with a gun it steps to a tile with a shot at them. The count it reads and its window are `rules.json` `mending.tending`; the medic's kit numbers are `mending.medic`.
 
 ## Requirements
 `requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,

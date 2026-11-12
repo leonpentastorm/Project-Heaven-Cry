@@ -361,7 +361,7 @@
       "sigil_core_saving": "floor(brain_power/3) per spell; spell cost min 1",
       "sigil_range_bonus_tiles": "0.5*brain_power",
       "sigil_duration_bonus_rounds": "0.5*brain_power",
-      "max_mp": "100 + 100*(virtue-1)",
+      "max_mp": "50*soul_core + 50*determination (rules 1.24; it was 100 + 100*(virtue-1))",
       "soul_cast_ap": "2 (Begin; Swift 1; rules 1.5)",
       "free_pumps_per_round": "1 from empathy 3 (rules 1.19: one free Pump a turn at most; empathy 7: a swell adds no Strain)",
       "soul_cost_pct": "-5*(insight-1)",
@@ -1226,6 +1226,7 @@
       "cycle": {
         "begin_ap": 2,
         "pump_ap": 1,
+        "pump_mp": "5 * the stage reached (5, 10, 15, 20) * band soul_cost_mult * (1 + soul_cost_pct/100), min 1; rules 1.24, provisional (soul_modules.json cycle.pump_mp)",
         "release_ap": 1,
         "stage_mult": [
           0.8,

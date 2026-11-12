@@ -2926,7 +2926,7 @@ An enemy's numbers are its tier's row at level 1, raised by its level's row (`da
 | Minion | 70 | 0 | 10 | +1 | ×1.0 | 1.5 | 1 | 1 |
 | Soldier | 140 | 5 | 11 | +3 | ×0.78 | 1.5 | 3 | 2 |
 | Elite | 240 | 10 | 12 | +5 | ×1.05 | 2 | 5 | 3 |
-| Boss | 960 | 10 | 13 | +6 | ×1.2 | 2 | 7 | 4 |
+| Boss | 960 *(820 since rules 1.23)* | 10 | 13 | +6 | ×1.2 | 2 | 7 | 4 |
 
 **What a level adds**
 
@@ -3705,6 +3705,152 @@ Witnessed gave +2 to attack rolls "that would carry a liked tag", and a liked ki
 4. **The six patrons with no damage Hymn** were not refitted beyond the heals and shields above. On a turn with a support Hymn they deal 44 to 85% of a rifle; what the Hymn is worth is priced in the 1.21 report and is now there one turn in two or three, not every turn: Foreknowing, Lucky Break, Cut Short, Covering Fire, Sweet Nothings, Resupply and the rest are worth less a fight than rules 1.21 priced them.
 5. **The Miracles** were not looked at. The Saints' Verdict (130 an enemy) is now about three Judgements on each enemy in sight.
 6. No browser suite was run; the screen data was not regenerated.
+
+## Rules revision 1.23 (the defence step): no round limit, the enemies go for the healer, the medic's kit, the Boss
+
+Built on 12 Nov 2026 from Leon's rulings of that day (`docs/design/proposals/2026-11-balance-pass.md`, section 16, items 9 to 11): "refit boss hp and do the medic pass. No round limit, just balance ap for healing accordingly; also if a tank is unkillable because a healer is healing them dedicatedly, let them have it, in real combat just make AI focus the unit that are dishing out the most heals." **Every number here is provisional (section 14, items 1300 to 1322).** The measurements, the inventory and the questions are in `docs/design/handoffs/defence-step.md`. Where this section and an older one disagree (rules 1.20 section 7; the Boss's row and the damage factors of the rules 1.15 table; the enemy's Burst in rules 1.18; Triage, the stim, Stim Throw, Rally and Field Surgeon wherever they are written), this one is the rule. Prayer numbers are not touched (rules 1.22). Gun, Sigil and Outburst damage are not touched.
+
+### 1. No round limit
+
+1. **The round limit of rules 1.20 (section 7) is withdrawn.** Nothing limits how much a creature can be healed in a round but its max HP. A Downed creature gets up with the whole heal.
+2. **Healing is priced in AP.** A turn of healing costs the healer the turn: section 5 lists what every action restores for its AP.
+3. **A tank kept up by a healer who does nothing else is allowed.** The answer to it is the enemy, not a limit (section 2).
+4. **One amount changes, because nothing caps it now: Split.** A Split heal or shield is divided: your target and the second ally each get ×0.8 (it was each in full: twice the heal for one slot, over the area band of 1.6 of rules 1.20). With nobody near to take the second share your target still gets ×0.8. Split on a harmful Outburst is unchanged. An enemy caster's Split is unchanged.
+
+### 2. The enemies go for whoever is mending the squad
+
+1. **What is counted.** Each time a creature restores HP to someone else on its side, or gives someone else a shield, the amount is noted against the giver: HP actually restored (overhealing is nothing), and what a shield actually added (a smaller shield over a bigger one is nothing). Spells, prayers, Outbursts, Triage, a stim, Rally, a perk, a class move: anything. What you do for yourself is not counted.
+2. **For how long.** This round and the one before it. A healer who stops is forgotten a full round later, and when two heal, the enemies turn on whoever is doing the most now. (A count over the whole fight would keep them on a healer who has run dry and off the second healer.)
+3. **Who is the healer.** For an enemy: whoever of your side has the highest count, as long as (a) the count is at least a tenth of that character's own max HP, (b) they are standing, (c) they are not Hidden, and (d) somebody on the enemy's side sees them right now. A healer nobody sees is not known.
+4. **How hard each tier turns** (`healer_focus` on the tier, `data/enemies.json`):
+
+| Tier | What it does |
+|---|---|
+| Vermin, Minion | Nothing. They attack as before. |
+| Soldier | Leans: when it chooses whom to attack, the healer counts as hurt by **half of their max HP more** than they are. A Soldier still finishes someone badly hurt first. |
+| Elite, Boss | Hunts: among those it can attack, **the healer comes first**. With a gun and no shot at the healer, it walks the shortest way to a tile that has one, if it can still fire this turn after the walk (at most once a turn). |
+
+5. **What still stands.** An enemy only attacks whom it could attack anyway: reach, range, line of sight and sight are unchanged. **Taunt comes first**, as before. A Commanded enemy obeys. An enemy afraid of the healer, or Threatened by them, does not walk toward them. **Cover counts:** if its chance to hit the healer is under half of its best chance on anyone it can attack, the healer gets no weight (a healer behind good cover is not worth the rounds). **A melee enemy never leaves its fight to run for the healer:** it turns on the healer only when the healer is already within its reach. An enemy fooled by a False Image of the healer attacks the image.
+6. **Techniques and Calls.** A technique keeps its own choice of whether to be used; between targets it wants equally it now tries the healer first, by the same weight as a plain attack. Enemy Calls and enemy casters' spells are not changed (section 14, item 1304).
+7. **The player is told.** The fight log says "*(the enemy)* turns on *(the healer)*: the enemy has seen who is mending the squad." once a round for each healer. An enemy's intent, where it is shown (the Trickster's Read), ends in ": it goes for whoever is mending the squad". The AI Narrator is told the rule.
+8. Deterministic: it reads the fight's state only. A fight saved before this rule has no counts and starts them at its next heal.
+
+### 3. The medic's kit
+
+The yardstick and the level factor are those of rules 1.20: one Soldier's turn (13% of the plain rifleman's max HP at every level), and the damage column of the enemy table at the giver's level (×1.00 at level 1, ×1.13 at 6, ×1.38 at 12, ×1.82 at 20). Before this revision the medic's kit had no level factor: a Triage by a medic was 173% of a Soldier-turn at level 1 and 96% at level 20; a stim 259% and 145%.
+
+| Action | Cost | Before | Now |
+|---|---|---|---|
+| **Triage** (Bard I) | 2 AP, next to you, once an ally a turn, no supplies | heals 20 × Healing given | heals **5** × Healing given × the level factor |
+| Triage out of a fight | once an ally a scene | 20 × Healing given | **three times a fight's Triage** (15 × Healing given × the level factor): there is time to work |
+| **A stim** (anyone) | 1 AP, next to you, one stim | 30 × Healing given | **6** × Healing given × the level factor. Stabilising a Downed ally at 1 HP and stopping Bleeding are unchanged |
+| **Stim Throw** (Bard II) | 1 AP, within 4 tiles, 1 Supply | 30 × Healing given | **6** × Healing given × the level factor |
+| **Rally** (Bard III) | 2 AP, every ally within 4 tiles, once a scene | 20 × Healing given each | **6** × Healing given × the level factor each |
+| **Field Repair on an ally** (Field Surgeon) | 2 AP, next to you, a spare-parts charge | 10 × Improvisation × Healing given | **3** × Improvisation × Healing given × the level factor |
+
+1. **The bands.** Triage is the medic's every-turn heal and costs nothing but AP: **a bit under the same character's magic for the AP** (measured: 42 to 50% of a Soldier-turn for 2 AP in a medic's hands, 21 to 25% an AP; the same character's steady Outburst heal is 25 to 30% an AP). **A dose** (a stim, a thrown stim) is paid for from the kit, so it may be about **twice magic's rate for its AP**: 49 to 61% for 1 AP in a medic's hands, 17 to 32% in anyone's (Healing given ×1). Rally gives every ally in reach a dose's worth, once a scene.
+2. **What bounds it is the kit, not a cooldown.** A medic's kit holds 3 stims; a Bard has 3 Supplies and 1 more for every 2 points of Improvisation, back at a rest; a stim is 80 credits. With one dose a turn a medic heals about 100% of a Soldier-turn for 3 AP and keeps 3 AP for the weapon, for as many turns as the doses last (6 to 11 between rests).
+3. A medic has no set-up and no MP, Strain, charge or Flux to mind, and Triage needs no line of sight beyond standing next to the ally. That, and stabilising the Downed for 1 AP, is what the class is for.
+4. **Not changed:** stabilising (1 AP for a Bard, 2 AP for anyone else, at 1 HP); Field Surgery (out of a fight, a Supply); a machine's own Field Repair (10 a point of Improvisation, Factory Made) and the drone patch of Jury-Rig II (a share of max HP); the perks that shield their holder by a share of max HP (Shrug It Off, Clean Hands, Last Charge); a rest. The shelved classes' heals and shields (the banner, Sweep, Bulwark of Will, Adamantile Plate, the Warden's Ward) are not fitted until those classes return (section 14, item 1310).
+
+### 4. The Boss, and the enemy's Burst
+
+1. **The Boss has 820 HP at level 1** (it was 960). Its level row is unchanged (×1.81 at level 20: 1,484 HP). 960 was fitted in rules 1.15 against a squad whose gun dealt 200% of the plain rifle; rules 1.18 took a third off that gun. A Boss still takes 23 to 27 of the yardstick's hits (it was 27 to 31). The Elite/Boss guard of rules 1.17 (one Evoke leaves a full-HP Elite or Boss on 1 HP) is unchanged.
+2. **Elite and Soldier HP are unchanged** (240 and 140).
+3. **The damage factors are unchanged** (Soldier ×0.78, Elite ×1.05, Boss ×1.2), and so is the level column. Measured again where enemies close in and fire back (an enemy 13 or 14 tiles off with a long gun used to stand still; fixed on 12 Nov 2026): on the 26 × 26 ground the yardstick lasts 3.3 rounds under two Soldiers at levels 1 and 3 (target 3). From level 6 the plain rifleman of the measurements is a Marksman with Duck and Roll, and at the edge of an enemy's sight (12 tiles) one tile back is out of sight: he lasts 5.4 to 5.7 rounds. The same rifleman without that move lasts 3.5, 4.1, 3.8 and 3.0 at levels 6, 9, 12 and 20 (section 14, item 1314).
+4. **An enemy's Burst stays its own** (three rolls with an Auto weapon, each later one −1 more; two rolls at 0 and −2 with any other): the open question of rules 1.18. Measured with the characters' Burst (two rolls, the second at −4) and the factors raised to keep the three rounds (Soldier ×0.88, Elite ×1.08, Boss ×1.3): the yardstick lasts 3.0 to 3.4 rounds under two Soldiers at levels 1, 3, 6 and 20 and **4.0 and 4.2 at levels 9 and 12**. One factor a tier does not hold the table at every level, so it is not built (section 14, item 1316).
+
+### 5. What healing costs (the AP price list)
+
+Percent of one Soldier-turn restored on one ally, for a caster with a normal share of points; the numbers are those of rules 1.20 (nothing here was changed but Split and the medic's kit), set against their AP.
+
+| Action | AP | Restores | For one AP |
+|---|---|---|---|
+| Sigil: MEND · SEEK (2 glyphs) | about 4 | 88 to 102% | 22 to 26% |
+| Sigil: MEND · CONDENSE · SEEK (3 glyphs) | about 5.5 | 132 to 153% | 24 to 28% |
+| Sigil: the full MEND Line (4 glyphs) | about 6.5, over 1.1 to 1.6 turns | 237 to 276% in one heal | 36 to 42% (157 to 208% a turn) |
+| Sigil: MEND · SPREAD · SEEK | about 5.5 | 53 to 61% each (four allies: 2.2 Soldier-turns) | 10 to 11% each |
+| Sigil: WARD · SEEK (a shield) | about 4 | 105 to 123% | 26 to 31% |
+| Sigil: the full WARD Line | about 6.5, over 1.1 to 1.6 turns | 284 to 331% in one shield | 44 to 51% |
+| Outburst: the quick heal (stage 1) | 3 | 43 to 53% | 14 to 18% |
+| Outburst: a steady turn (Rage and Love) | 6 | 109 to 132% | 18 to 22% |
+| Outburst: the same by a healer (Bard, Empathy first) | 6 | 151 to 179% | 25 to 30% |
+| Outburst: the same with the Bard's Mend | 6 | 195 to 230% | 33 to 38% |
+| Outburst: the biggest heal | 6, 6 Strain, 8 HP | 139 to 170% | 23 to 28% |
+| Outburst: a steady heal in an Aura | 6 | 43 to 53% each | 7 to 9% each |
+| Outburst: a Split heal (rules 1.23) | 6 | ×0.8 each of two | ×1.6 in all |
+| Outburst: Inverse shield, steady | 6 | 148 to 168% | 25 to 28% |
+| Triage (a medic) | 2 | 42 to 50% | 21 to 25% |
+| A dose (a medic) | 1 and a stim or a Supply | 49 to 61% | 49 to 61% |
+| A dose (anyone) | 1 and a stim | 17 to 32% | 17 to 32% |
+| Rally (a medic, level 12 on) | 2, once a scene | 51 to 61% each | |
+
+1. **No action heals more than about a Soldier-turn and a half for a turn's AP, except** the full Sigil Lines (a third of the rifleman's HP in one heal, after a turn or more of drawing), a healer built for it (Empathy first: about 1.5 to 2.3 Soldier-turns), and doses (bounded by the kit). All in passes these by about half, as all-in damage does.
+2. Nothing else was changed for the missing limit. Two healers on one ally heal twice one healer for two characters' whole turns; that is allowed, and it is what the enemies answer (section 2). What the fights show is in section 6.
+
+### 6. Measured
+
+**The medic's kit.** HP · **percent of one Soldier-turn** (in brackets: before this revision).
+
+| Who | Action | Level 1 | Level 3 | Level 6 | Level 9 | Level 12 | Level 20 |
+|---|---|---|---|---|---|---|---|
+| Anyone (Healing given ×1.0) | Triage, 2 AP | 5 · **27%** (20 · 108%) | 5 · **23%** (20 · 93%) | 5 · **20%** (20 · 79%) | 6 · **19%** (20 · 62%) | 6 · **16%** (20 · 53%) | 9 · **15%** (20 · 33%) |
+| | a dose, 1 AP (a stim, a thrown stim) | 6 · **32%** (30 · 162%) | 6 · **28%** (30 · 140%) | 6 · **24%** (30 · 118%) | 7 · **22%** (30 · 93%) | 8 · **21%** (30 · 79%) | 10 · **17%** (30 · 50%) |
+| A medic (Bard, Empathy first: Healing given ×1.6 to ×2.9) | Triage, 2 AP | 8 · **43%** (32 · 173%) | 9 · **42%** (38 · 177%) | 12 · **47%** (44 · 173%) | 15 · **46%** (50 · 154%) | 19 · **50%** (56 · 148%) | 26 · **43%** (58 · 96%) |
+| | a dose, 1 AP (a stim, a thrown stim) | 9 · **49%** (48 · 259%) | 11 · **51%** (57 · 265%) | 14 · **55%** (66 · 260%) | 18 · **56%** (75 · 231%) | 23 · **61%** (84 · 222%) | 31 · **51%** (87 · 145%) |
+| | Triage for one AP · the same character's steady Outburst heal for one AP | 21.5% · 25.2% | 21% · 27% | 23.5% · 28.5% | 23% · 27.8% | 25% · 29.8% | 21.5% · 25.5% |
+
+**Whole fights.** The squad of four of the rules 1.15 fit (optimised gun, tank, Sigil caster, Calls leader) on the 26 × 26 ground, 10 fights a cell, enemies of the squad's level. "Before" is the game as it was on the morning of 12 Nov 2026 (the Boss at 960 HP).
+
+| Fight (rounds to win, open ground · ground with cover) | Level 1 | Level 3 | Level 6 | Level 9 | Level 12 | Level 20 | Target |
+|---|---|---|---|---|---|---|---|
+| Standard (3 Soldiers, 1 Elite), before | 5.3 · 7.2 | 4.9 · 6.8 | 5.2 · 6.6 | 5.7 · 7.5 | 4.7 · 6.9 | 4.7 · 5.7 | 4 to 6 |
+| Standard (3 Soldiers, 1 Elite), **now** | **5.3 · 6.3** | **5.3 · 7.2** | **4.6 · 6.6** | **5.1 · 7.6** | **5.5 · 6.1** | **4.4 · 5.9** | |
+| Elite (2 Elites, 2 Soldiers), before | 6.0 · 7.0 | 5.9 · 7.6 | 6.3 · 7.1 | 6.2 · 8.4 | 6.8 · 8.4 | 5.7 · 6.1 | 6 to 8 |
+| Elite (2 Elites, 2 Soldiers), **now** | **5.7 · 6.8** | **5.5 · 7.5** | **5.5 · 8.0** | **5.5 · 9.0** | **6.1 · 7.4** | **4.8 · 6.0** | |
+| Boss (1 Boss, 2 Soldiers), before | 8.9 · 11.3 | 6.9 · 13.8 | 9.1 · 12.2 | 8.2 · 12.9 | 8.6 · 12.3 | 7.4 · 10.6 | 8 to 10 |
+| Boss (1 Boss, 2 Soldiers), **now** | **7.6 · 11.4** | **6.3 · 11.7** | **6.3 · 11.5** | **7.2 · 10.2** | **7.1 · 10.9** | **7.7 · 8.9** | |
+
+1. **The Boss fight cannot be inside 8 to 10 rounds on both grounds with one number.** It is 6.3 to 7.7 rounds on open ground (average 7.0) and 8.9 to 11.7 on ground with cover (average 10.8); before, 6.9 to 9.1 and 10.6 to 13.8 (averages 8.2 and 12.2). 820 puts the average of the two grounds at 9. On ground with cover the simulator's Sigil caster and its gun lose their lines for whole turns (the caster deals 10 to 60 a turn there against 150 to 210 in the open), so that number is the top of what a player will see, and open ground is the bottom.
+2. The elite fight is 4.8 to 6.1 rounds in the open and 6.0 to 9.0 with cover (target 6 to 8); the standard fight 4.4 to 5.5 and 5.9 to 7.6 (target 4 to 6). Both are long on ground with cover, as they were before this revision; nothing in them was changed (section 14, item 1313).
+
+**The pair under fire, with the enemies going for the healer.** The plain rifleman and one more character on the 16 × 11 ground under Soldiers that never fall, 10 fights a cell, at most 10 rounds, as in rules 1.20 (section 8). Each cell: the rounds played before the first of them went Down (in round brackets: the share of fights in which nobody did); in square brackets, how often the supporter was the first Down; then the same with the healer weight off, or what rules 1.20 measured.
+
+| The second character | L1, 2 Soldiers | L1, 3 Soldiers | L6, 2 Soldiers | L6, 3 Soldiers | L12, 2 Soldiers | L12, 3 Soldiers | L20, 2 Soldiers | L20, 3 Soldiers |
+|---|---|---|---|---|---|---|---|---|
+| standing idle (the control) | 4.7 | 2.6 | 4.8 | 2.8 | 4.6 | 2.2 | 4.1 | 2.0 |
+| a Soul healer (Bard, Empathy first), healing | 2.4 [100%] · off 7.4 | 2.7 [60%] · off 4.1 | 6.1 [50%] · off 8.2 | 2.8 [90%] · off 5.0 | 7.9 (20%) [10%] · off 8.4 | 4.3 [50%] · off 5.1 | 7.9 (10%) [30%] · off 8.7 | 2.4 [80%] · off 4.2 |
+| the Outburst caster (Channeler), healing | 3.0 [100%] · 1.20: 8.6 | 2.6 [50%] · 1.20: 3.4 | 6.2 [50%] · 1.20: 8.9 | 2.9 [70%] · 1.20: 3.8 | 6.0 [70%] · 1.20: 7.9 | 3.4 [60%] · 1.20: 3.7 | 5.3 [60%] · 1.20: 9.4 | 2.0 [80%] · 1.20: 3.1 |
+| the Outburst caster, Inverse shields | 3.4 [100%] · 1.20: 9.8 | 2.6 [80%] · 1.20: 4.6 | 6.8 (20%) [80%] · 1.20: 9.8 | 3.0 [90%] · 1.20: 6 | 7.3 (10%) [90%] · 1.20: 9.9 | 3.5 [90%] · 1.20: 6.3 | 6.2 (20%) [70%] · 1.20: 10 | 2.1 [100%] · 1.20: 5.6 |
+| the Sigil caster, MEND · SEEK every turn | 2.2 [100%] · 1.20: 9.8 | 2.2 [80%] · 1.20: 4 | 3.4 [100%] · 1.20: 9.1 | 2.2 [90%] · 1.20: 4.4 | 4.8 [100%] · 1.20: 8.6 | 2.7 [80%] · 1.20: 4.9 | 4.5 [100%] · 1.20: 8.8 | 2.2 [80%] · 1.20: 3.9 |
+| the Sigil caster, the full MEND Line | 2.4 [100%] · 1.20: 9.9 | 2.8 [70%] · 1.20: 4 | 4.9 [90%] · 1.20: 9.8 | 3.8 [70%] · 1.20: 5.7 | 5.2 [100%] · 1.20: 9.4 | 2.9 [80%] · 1.20: 7.2 | 5.2 [100%] · 1.20: 9.9 | 3.0 [80%] · 1.20: 6.6 |
+| the medic: Triage and one dose a turn (no magic; at level 1 no class yet: three stims) | 6.5 (20%) [60%] · off 7.1 | 3.9 [30%] · off 4.3 | 4.2 [100%] · off 8.3 | 3.1 [90%] · off 5.0 | 5.4 [100%] · off 8.7 | 3.6 [100%] · off 6.4 | 5.1 [100%] · off 9.0 | 3.3 [100%] · off 4.4 |
+| the medic: Triage only (level 1: nothing to give) | 7.4 (10%) [40%] | 3.3 [10%] | 5.9 [70%] | 4.1 [60%] | 6.5 (20%) [50%] | 4.3 [20%] | 7.1 (20%) [60%] | 3.5 [30%] |
+
+The rifleman and two more:
+
+| The second character | L1, 2 Soldiers | L1, 3 Soldiers | L1, 4 Soldiers | L6, 2 Soldiers | L6, 3 Soldiers | L6, 4 Soldiers | L12, 2 Soldiers | L12, 3 Soldiers | L12, 4 Soldiers | L20, 2 Soldiers | L20, 3 Soldiers | L20, 4 Soldiers |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| two Soul healers standing idle (the control) | 6.7 | 3.3 | 1.5 | 5.8 | 3.4 | 1.9 | 6.0 | 2.6 | 2.0 | 6.1 | 2.1 | 1.6 |
+| two Soul healers, healing | 6.3 (20%) [60%] · off 9.8 | 2.4 [100%] · off 6.3 | 1.7 [100%] · off 3.6 | 9.0 (50%) [20%] · off 9.4 | 3.5 [90%] · off 7.7 | 1.7 [100%] · off 5.9 | 9.2 (70%) [10%] · off 9.8 | 4.3 (10%) [70%] · off 8.8 | 2.3 [100%] · off 7.4 | 9.1 (70%) [10%] · off 10.0 | 5.7 [70%] · off 8.3 | 1.5 [100%] · off 6.5 |
+| two all-in Soul healers | 7.3 (50%) [30%] · 1.20: 9.7 | 2.8 [100%] · 1.20: 7.8 | 1.3 [100%] · 1.20: 5.4 | 8.3 (60%) [30%] · 1.20: 9.7 | 3.1 (10%) [90%] · 1.20: 8.3 | 1.5 [100%] · 1.20: 6.7 | 5.8 (40%) [60%] · 1.20: 9.8 | 1.2 [100%] · 1.20: 8.4 | 1.5 [100%] · 1.20: 6.3 | 3.1 (10%) [90%] · 1.20: 10 | 1.1 [100%] · 1.20: 7.6 | 1.3 [100%] · 1.20: 5.1 |
+| a Soul healer and an Inverse shielder | 7.0 (40%) [60%] · off 10.0 | 2.9 [90%] · off 9.3 | 1.5 [100%] · off 5.4 | 10.0 (100%) · off 10.0 | 4.2 [90%] · off 9.7 | 2.1 [100%] · off 7.6 | 10.0 (100%) · off 10.0 | 4.5 (30%) [70%] · off 10.0 | 2.5 [100%] · off 8.7 | 9.2 (90%) [10%] · off 10.0 | 3.4 (10%) [90%] · off 10.0 | 1.0 [100%] · off 8.5 |
+
+The tank in the rifleman's place (it walks up and fights; the healer stays behind it):
+
+| The second character | L1, 2 Soldiers | L1, 3 Soldiers | L6, 2 Soldiers | L6, 3 Soldiers | L12, 2 Soldiers | L12, 3 Soldiers | L20, 2 Soldiers | L20, 3 Soldiers |
+|---|---|---|---|---|---|---|---|---|
+| the tank and an idle Soul healer (the control) | 8.6 (40%) | 5.2 | 9.2 (40%) | 7.1 (20%) | 8.2 (20%) | 6.4 | 9.9 (90%) | 7.5 |
+| the tank and a dedicated Soul healer | 8.7 (40%) [50%] · off 9.5 | 5.1 [60%] · off 6.7 | 10.0 (100%) · off 10.0 | 7.5 (20%) [80%] · off 8.7 | 10.0 (100%) · off 10.0 | 9.0 (80%) [20%] · off 10.0 | 10.0 (100%) · off 10.0 | 8.0 (50%) [50%] · off 10.0 |
+
+1. **In the open, with nothing between them and the enemy, a healer is now the first one Down.** Under two Soldiers a pair with a healer lasts 2.2 to 7.9 rounds (it was 7 to 10 in rules 1.20; an idle pair lasts 4.1 to 4.8); under three, 2.0 to 4.3. At level 1 a Soul healer who heals in the open is Down in 2.4 rounds: she has 115 HP and Class 1 armour, and a Soldier's turn on her is twice what it is on the rifleman.
+2. **Two healers, or a healer and a shielder, no longer hold three Soldiers:** 1.1 to 5.7 rounds under three (rules 1.20: 6.7 to 10), 1.0 to 2.5 under four. Rules 1.20 flagged the healer and Inverse shielder pair as the nearest thing to an unkillable squad (item 1243): with the weight off it still is (9.3 to 10.0 rounds under three); with it on it is not.
+3. **Behind a tank it works as Leon ruled:** the tank and a dedicated healer hold two Soldiers for 8.7 to 10.0 rounds (all ten, in every fight, from level 6) and three for 5.1 to 9.0.
+4. What the measurement leaves out is everything a player does about it: cover, standing out of sight (a healer nobody sees is not known), a Taunt, a shield on the healer. Whole fights with a healer in the squad are in the report (section 3.3): the healer goes Down in 0 to 4 fights of 10, with the weight on or off.
+
+### Not in this step
+
+Prayer heals and shields, the Hymn cooldown and Hold the Gate (rules 1.22). The standard and elite fights' length on ground with cover (the Soldier's and the Elite's HP are held by the hits-to-kill targets of rules 1.15). Armour by level and how unkillable a tank may be (Equipment 2.0). Enemy healers. Enemy Calls and enemy spells do not look for the healer. A mark on the grid for the hunted healer (the log and the intent say it; no icon). No art changes its meaning.
 
 ## Maps (rules 1.16)
 
@@ -6375,3 +6521,26 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1294. **Not refitted (rules 1.22):** the support Hymns with no number (Foreknowing, Lucky Break, Feed the Fire, Cut Short, Covering Fire, Dig In, Resupply, Red Thread, Sweet Nothings, Together, Switcheroo, Pratfall, Unravel, Gather the Clouds, Last Crossing) and all eight Miracles. With a Hymn one turn in two or three they are worth less a fight than rules 1.21 priced them.
 1295. **The story (rules 1.22):** the Hymn cooldown and Hold the Gate's own wait count story rounds out of a fight; vows are sworn in fights only, so nothing shortens a wait in the story.
 1296. **Not done in this step (rules 1.22):** no browser suite was run (none pins a number this revision changes; `faith-pg.mjs` resets the limits before each Hymn); the screen data was not regenerated; interventions, the Miracles and real vow moments were not run in the simulator; the old `faith` policy of the step-1 simulator was not re-run.
+1300. **No round limit (rules 1.23; Leon, 12 Nov 2026):** item 1240 is withdrawn. Nothing limits a round's healing but max HP; a Downed creature gets up with the whole heal. `healUnit` still takes the old `noLimit` option and ignores it. *Data: `rules.json` `mending.round_limit.withdrawn`.*
+1301. **Who is the healer (rules 1.23):** HP restored to others and shield added to others, counted on the giver over this round and the last; not noticed under a tenth of the giver's own max HP; the highest count is the healer. The two rounds and the tenth are PROVISIONAL (`mending.tending`). Chosen over a whole-fight count so that a healer who stops is let go and a second healer is found.
+1302. **How hard each tier turns (rules 1.23):** `healer_focus` on the tier: Vermin 0, Minion 0, Soldier 0.5 (the healer counts as hurt by half of their max HP more), Elite 1, Boss 1 (the healer first). PROVISIONAL. Because enemies already choose by HP left, not by the share of it, a healer with less HP than the rest of the squad is first for a Soldier at any weight above 0; the half matters for a sturdy healer (Leon's call: the report's question 1).
+1303. **The hunt, and cover (rules 1.23):** an Elite or a Boss with a gun and no shot at the healer walks to the nearest tile with one if it can still fire, once a turn; no melee enemy does. No weight when the chance to hit the healer is under half the best chance on anyone. PROVISIONAL (the half).
+1304. **What does not look for the healer (rules 1.23):** enemy Calls; an enemy Sigil or Soul caster's spells (they pick their own targets); reactions and held fire. A technique only breaks ties toward the healer. Not measured: an enemy caster against a squad with a healer.
+1305. **Split on a heal or a shield, ×0.8 each (rules 1.23):** it was each in full (item 1244). The share applies whether or not a second ally is near. PROVISIONAL. *Data: `soul_modules.json` `split.boon_mult`.*
+1306. **Triage 5 (rules 1.23):** × Healing given × the level factor; it was 20 × Healing given. In a medic's hands 42 to 50% of a Soldier-turn for 2 AP. Out of a fight (the story, the area map) three times that, once an ally a scene (`triage_out_of_fight_mult`): the 3 is a number of this revision. PROVISIONAL.
+1307. **A stim and Stim Throw 6 (rules 1.23):** × Healing given × the level factor; it was 30 × Healing given. 49 to 61% for 1 AP in a medic's hands, 17 to 32% in anyone's. A stim used out of a fight heals the same 6: resting is where HP comes back. PROVISIONAL.
+1308. **Rally 6 (rules 1.23):** each ally within 4 tiles, × Healing given × the level factor; it was 20. PROVISIONAL.
+1309. **Field Repair on an ally, 3 a point of Improvisation (rules 1.23):** × Healing given × the level factor; it was 10. Field Surgeon only. PROVISIONAL.
+1310. **Not fitted (rules 1.23):** a machine's own Field Repair (10 a point, Factory Made) and the drone patch (a share of max HP); the shelved classes' heals and shields (the rally banner 10, Sweep 10, Bulwark of Will 20, Adamantile Plate 10 a Guard, the Warden's Ward 10 a charge: none has a level factor); the Grand forms.
+1311. **The Boss, 820 HP (rules 1.23):** it was 960 (item 1015 on). Chosen so that the boss fight's length averages 9 rounds over the two grounds. PROVISIONAL.
+1312. **The Boss fight on each ground (rules 1.23):** about 7 rounds on open ground and about 11 on ground with cover (10 fights a cell): neither is inside 8 to 10. The dial is one number: at 700 the two would be about 6.2 and 10.5, at 960 they were 8.2 and 12.2. Leon's call (the report's question 2).
+1313. **Standard and elite fights on ground with cover (rules 1.23, measured and left):** 5.9 to 7.6 rounds (target 4 to 6) and 6.0 to 9.0 (target 6 to 8). In the open they are inside or a little under. Soldier and Elite HP are at the top of the hits-to-kill targets; what is long is the cover ground, where the simulator's squad loses its lines.
+1314. **The yardstick on the 26 × 26 ground (rules 1.23):** with enemies closing in and firing, the plain rifleman lasts 3.3 rounds under two Soldiers at levels 1 and 3. From level 6 he is a Marksman with Duck and Roll, and a tile back at 12 tiles is out of the enemy's sight: 5.4 to 5.7 rounds. Without the move: 3.5, 4.1, 3.8 and 3.0 at levels 6, 9, 12 and 20. The rules 1.15 damage numbers stand; Duck and Roll at the edge of sight is flagged, not changed.
+1315. **A technique's target (found in rules 1.23, not changed):** an enemy technique (a Burst is most of a Soldier's fire) is used on the first character in the fight's list that it can be used on, not on the most hurt; only a plain attack sorts by HP. With a healer marked the technique goes at the healer.
+1316. **The enemy's Burst (rules 1.23; the question of item 1079):** measured with the characters' two rolls: at Soldier ×0.88, Elite ×1.08 the yardstick lasts 3.0 to 3.4 rounds at levels 1, 3, 6 and 20 and 4.0 to 4.2 at levels 9 and 12; at ×0.96 it lasts 2.6 to 2.7 at levels 1 and 6. Not built. The engine has the switch (`burst.numbers.enemy_same`, unset). Recommended when the level column is next fitted: one Burst for everyone (the report's question 3).
+1317. **Under fire with the healer weight (rules 1.23):** measured on open ground with no cover and nobody between the healer and the Soldiers: the healer is the first Down. A pair with a healer lasts 2.2 to 7.9 rounds under two Soldiers (4.1 to 4.8 idle; 7 to 10 in rules 1.20). Not measured: a healer played with cover and line of sight.
+1318. **The medic's supplies (rules 1.23, counted, not changed):** a medic's kit has 3 stims and the other kits none; more are bought (80 credits each), found or handed out by the Narrator, and they do not come back at a rest (the Proving Ground's refill brings anyone up to 3). A Bard has 3 Supplies + 1 for every 2 points of Improvisation, back at a rest. A Field Repair uses a spare-parts charge.
+1319. **The level 1 medic (rules 1.23):** a class is earned at level 3, so at levels 1 and 2 nobody has Triage; a medic kit's three stims are the whole kit.
+1320. **Reading "the most heals" (rules 1.23):** shields count with heals; lifesteal and anything given to oneself do not; a Miracle's heal counts like any other.
+1321. **Side effects not chased (rules 1.23):** the music traits' "big heal" (30 HP or more, as rules 1.20 noted) is further out of a medic's reach at low levels; the AI Narrator's prompt has one new line (the enemies and the healer) and was not checked for old numbers.
+1322. **Not done in this step (rules 1.23):** no browser suite was run and none was edited (none pins a number this revision changes, by search); the screen data (`protodata.json`) was not regenerated and still shows the old Triage, Stim Throw and Rally texts; no icon marks the hunted healer on the grid; whole fights were 10 a cell.

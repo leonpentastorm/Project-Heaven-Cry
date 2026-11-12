@@ -200,7 +200,7 @@
       "derived": [
         {
           "stat": "mult_heal_given",
-          "formula": "1 + 0.1 × (Insight − 1) + 0.1 × Camaraderie",
+          "formula": "1 + 0.1 × (Insight − 1) + 0.1 × Empathy",
           "per_point_above_1": 0.1
         },
         {
@@ -222,13 +222,19 @@
       "derived": [
         {
           "stat": "mult_soul",
-          "formula": "1 + 0.1 × (Determination − 1) + 0.15 × Will Power",
-          "per_point_above_1": 0.1
+          "formula": "1 + 0.05 × (Determination − 1) + 0.1 × Will Power",
+          "per_point_above_1": 0.05
         },
         {
           "stat": "mana_syphon_pct",
           "formula": "+10% × (Determination − 1) + 10% × Will Power",
           "per_point_above_1": 10
+        },
+        {
+          "stat": "mp_max",
+          "formula": "50 × Soul Core + 50 × Determination (rules 1.24; it was 100 + 100 × (Virtue − 1))",
+          "per_point_above_1": 50,
+          "provisional": true
         }
       ]
     },
@@ -242,11 +248,6 @@
         "gamma": "authority"
       },
       "derived": [
-        {
-          "stat": "mp_max",
-          "formula": "100 + 100 × (Virtue − 1)",
-          "per_point_above_1": 100
-        },
         {
           "stat": "prayer_cooldown",
           "formula": "9 rounds − 0.75 × Faith − 0.25 × Virtue, rounded up, never under 3 (rules 1.22)",
