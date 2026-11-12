@@ -18,7 +18,7 @@
 // player's saved turn-card picks and the two-key hotkeys keep working.
 import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit } from './combat';
+import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf } from './combat';
 import { kindOf } from './objects';
 import { basicActions, loadPlan, moveOptions, pullFreeTargets, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun } from './preview';
@@ -131,6 +131,8 @@ export interface ActionSystem {
   list: (x: DescCtx) => ActionDescriptor[];
   send: (x: DescCtx, d: ActionDescriptor, p: Picks) => Action | null;
   preview?: (x: DescCtx, d: ActionDescriptor, p: Picks, action: Action | null) => { lines?: PreviewLine[]; marks?: Partial<GridMarks>; ap?: number; ok?: boolean; why?: string | null } | null;
+  /** Whether an id is this system's (so a preview asks only the system that owns it). Absent: it is asked. */
+  owns?: (id: string) => boolean;
   /** The choices of a step worked out only when it comes up (a move's tiles). */
   choices?: (x: DescCtx, d: ActionDescriptor, step: PickStep, p: Picks) => string[] | undefined;
 }
@@ -339,6 +341,7 @@ const TOGGLE_ON: Record<string, string> = { shot: 'combat/attack', aimed: 'comba
 /** The weapon rows, the basic actions and the technique pads: the Move, Attack and Utility tabs. */
 const PHYSICAL: ActionSystem = {
   id: 'physical',
+  owns: (id) => !/^(pk|cl|pr):/.test(id) && !(id in MAGIC_SEND),
   list(x) {
     const { cb, u, c, g } = x, w: any = WEAPON[u.weapon], melee = w ? isMelee(w) : false, modes = (w && w.modes) || [];
     const wa = safe(() => weaponActions(u, cb), [] as any[]), W = (id: string) => wa.find((a: any) => a.id === id);
@@ -411,12 +414,38 @@ const PHYSICAL: ActionSystem = {
       const tg = x.cb.units.find((v) => v.id === p.targetId); if (!tg || d.id === 'paired') return null;
       const pv: any = safe(() => withGame(x.g, () => previewAttack(x.cb, x.u, tg, (d.id === 'skill' ? 'shot' : d.id) as AttackMode)), null);
       if (!pv) return null;
-      return { lines: pv.ok ? [{ k: 'odds', text: tg.name + ': ' + pv.pct + '% to hit' + (tg.side === x.u.side ? ' (FRIENDLY FIRE)' : '') }] : [], ...(pv.ok ? {} : { ok: false, why: pv.why }), marks: { units: [{ id: tg.id, tag: pv.ok ? pv.pct + '%' : '', tone: 'target' }] } };
+      const say = basicSay(x, d, p);
+      return { lines: pv.ok ? [{ k: 'odds', text: tg.name + ': ' + pv.pct + '% to hit' }, ...(say ? [{ k: 'note' as const, text: say }] : [])] : [], ...(pv.ok ? { ap: pv.ap } : {}), ...(pv.ok ? {} : { ok: false, why: pv.why }), marks: { units: [{ id: tg.id, tag: pv.ok ? pv.pct + '%' : '', tone: 'target' }] } };
     }
+    { const say = basicSay(x, d, p); if (say) return { lines: [{ k: 'note', text: say }], marks: p.targetId ? { units: [{ id: p.targetId, tag: '', tone: 'target' }] } : {} }; }
     if (['move', 'sprint', 'disengage'].includes(d.id) && p.tile) { const mo: any = safe(() => moveOptions(x.g, x.cb, x.u.id, d.id as any, { mods: p.mods || null }), null); const tl = mo && mo.tiles[p.tile]; return tl ? { ap: tl.ap, lines: [{ k: 'cost', text: tl.ap + ' AP for ' + tl.tiles + (tl.tiles === 1 ? ' tile' : ' tiles') }] } : null; }
     void action; return null;
   },
 };
+/** What Confirm will do, in words, for a basic action with these picks (the panel's line under the name). */
+function basicSay(x: DescCtx, d: ActionDescriptor, p: Picks): string | null {
+  const u = x.u, w: any = WEAPON[u.weapon], unitW = (w && w.reload_unit) || 'magazine', rounds = u.ammo + (u.ammo === 1 ? ' round' : ' rounds');
+  const t = p.targetId ? x.cb.units.find((v) => v.id === p.targetId) : null, obj = p.tile ? objectsOf(x.seen).find((o: any) => o.pos === p.tile) as any : null;
+  switch (d.id) {
+    case 'reload': return d.name.endsWith('(speed)') ? 'Confirm: a speed reload, ' + d.cost.ap + ' AP. The ' + unitW + ' in the gun (' + rounds + ') drops into the pile on your tile, ' + refOf(u.pos) + '.' : 'Confirm to reload.';
+    case 'reload-tac': return 'Confirm: a tactical reload, ' + d.cost.ap + ' AP. The ' + unitW + ' in the gun (' + rounds + ') goes back in your pack.';
+    case 'reload2': return 'Confirm to reload both guns: the old magazines drop into the pile on your tile.';
+    case 'reload2-tac': return 'Confirm to reload both guns: the old magazines go back in your pack.';
+    case 'hide': return 'Confirm to go to ground.'; case 'extinguish': return 'Confirm to put out the fire.'; case 'escape': return 'Confirm to strain against the hold.'; case 'recover': return 'Confirm to get your weapon back up.';
+    case 'clear': return 'Confirm to clear the jam.'; case 'repair': return 'Confirm to repair your weapon.'; case 'song': return 'Confirm to play your song for the room.';
+    case 'prone': return 'Confirm to ' + (u.prone ? 'stand up' : 'drop prone') + '.'; case 'brace': return 'Confirm to brace your weapon.'; case 'overwatch': return 'Confirm to hold a shot on overwatch.';
+    case 'stim': return t ? 'Target: ' + t.name + '. Confirm to use a stim.' : null;
+    case 'shove': return t ? 'Shove ' + t.name + '. Confirm.' : null;
+    case 'paired': return t ? 'Both hands at ' + t.name + '. Confirm.' : null;
+    case 'pullfree': return t ? 'Pull ' + (t.id === u.id ? 'yourself' : t.name) + ' free. Confirm.' : null;
+    case 'cover': return obj && obj.hp > 0 ? 'Target: ' + obj.name + ', HP ' + obj.hp + '. Confirm to shoot it.' : null;
+    case 'door': return obj && kindOf(obj).door ? (obj.open ? 'Close' : 'Open') + ' the door at ' + refOf(obj.pos) + '. Confirm.' : null;
+    case 'load': { const li = safe(() => loadPlan(x.g, x.cb, u), null); return li ? 'Confirm to load ' + li.rounds + ' rounds for ' + li.ap + ' AP.' : 'Nothing to load: you need loose rounds and a part-empty magazine.'; }
+    case 'analyze': return t ? ((t as any).analyzedBy ? t.name + ' is already analyzed.' : 'Target: ' + t.name + '. Click a hostile to change. Confirm to analyze.') : null;
+    case 'shot': case 'aimed': case 'melee': case 'burst': case 'auto': case 'skill': return t ? (t.side === u.side ? 'FRIENDLY FIRE: you are attacking ' + t.name + '. Confirm if you mean it.' : 'Click a hostile to change target. Confirm to attack.') : null;
+  }
+  return null;
+}
 /** The technique rows: each held weapon's plain attack (Cut, Shot), its Techniques pad and its chips, the both-hands
  * block, and Hold a shot with its Watches. Ids as techView always had them. */
 function techRows(x: DescCtx): ActionDescriptor[] {
@@ -484,6 +513,7 @@ function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string 
 
 const PERKS: ActionSystem = {
   id: 'perks',
+  owns: (id) => id.startsWith(PK),
   list(x) {
     return perkEntriesOf(x).map((e) => {
       const st = perkState(e), picks: PickStep[] = [];
@@ -511,6 +541,7 @@ const PERKS: ActionSystem = {
 
 const CALLS: ActionSystem = {
   id: 'calls',
+  owns: (id) => id.startsWith('cl:'),
   list(x) {
     if (x.u.side !== 'pc' || x.u.companion) return [];
     return safe(() => callPad(x.cb, x.u, x.g), [] as any[]).map((e: any) => {
@@ -547,6 +578,7 @@ const CALLS: ActionSystem = {
 
 const FAITH: ActionSystem = {
   id: 'faith',
+  owns: (id) => id.startsWith(PR),
   list(x) {
     const { g, u, c } = x;
     if (!c || u.side !== 'pc' || u.companion) return [];
@@ -593,6 +625,7 @@ const MAGIC_SEND: Record<string, (x: DescCtx, p: Picks) => any> = {
 const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
 const MAGIC: ActionSystem = {
   id: 'magic',
+  owns: (id) => id in MAGIC_SEND,
   list(x) {
     const { cb, u, c } = x, mg: any = u.mg; if (!mg) return [];
     const words: string[] = mg.words || [], designs: any[] = mg.designs || [];
@@ -668,7 +701,7 @@ export function actionsFor(g: GameState, unitId: string, viewer?: string | null)
   return GROUP_ORDER.flatMap((gr) => kept.filter((d) => d.group === gr)).concat(kept.filter((d) => !GROUP_ORDER.includes(d.group)));
 }
 function find(x: DescCtx, id: string): { d: ActionDescriptor; s: ActionSystem } | null {
-  for (const s of systems()) { const d = safe(() => s.list(x), [] as ActionDescriptor[]).find((y) => y.id === id); if (d) return { d, s }; }
+  for (const s of systems()) { if (s.owns && !s.owns(id)) continue; const d = safe(() => s.list(x), [] as ActionDescriptor[]).find((y) => y.id === id); if (d) return { d, s }; }
   return null;
 }
 /** Does this step apply with these picks? */
@@ -684,12 +717,21 @@ export const stepOn = (st: PickStep, p: Picks) => {
 export function nextStep(d: ActionDescriptor, p: Picks, o: { required?: boolean } = {}): PickStep | null {
   return d.picks.find((st) => stepOn(st, p) && (p[st.key] == null || (Array.isArray(p[st.key]) && !p[st.key].length)) && (!o.required || !st.optional)) || null;
 }
+/** The switches items put on this action (Ricochet, Heart Surge…) with the player's choices (picks.mods: ids, and
+ * '!id' for one that is on by default and turned off), and the picks with the mods the action carries. */
+function withMods(x: DescCtx, d: ActionDescriptor, picks: Picks): { toggles: ToggleEntry[]; picks: Picks } {
+  if (!d.toggleOn) { const { mods: _m, ...rest } = picks; void _m; return { toggles: [], picks: rest }; }
+  const tg = safe(() => withGame(x.g, () => togglesFor({ u: x.u, c: x.c, cb: x.cb, g: x.g }, d.toggleOn!, { action: d.id, target: picks.targetId ? x.cb.units.find((v) => v.id === picks.targetId) : null }, picks.mods || [])), [] as ToggleEntry[]);
+  const mods = tg.filter((t) => t.on && !t.why).map((t) => t.id).concat(tg.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
+  return { toggles: tg, picks: { ...picks, mods } };
+}
 /** The reducer action Confirm sends for these picks (null: a required pick is missing, or no such action). */
 export function sendDescriptor(g: GameState, unitId: string, id: string, picks: Picks = {}, viewer?: string | null): Action | null {
   const x = ctxOf(g, unitId, viewer); if (!x) return null;
   const f = find(x, id); if (!f || f.d.pad) return null;
   if (nextStep(f.d, picks, { required: true })) return null;
-  return safe(() => f.s.send(x, f.d, picks), null);
+  const P = withMods(x, f.d, picks).picks;
+  return safe(() => f.s.send(x, f.d, P), null);
 }
 /** The engine's preview of a descriptor with the picks so far: the next pick (with its legal choices), the verdict, the
  * cost, the lines and the grid marks. Asks the reducer itself (previewAction) once every required pick is made. */
@@ -697,7 +739,7 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   const x = ctxOf(g, unitId, viewer); if (!x) return null;
   const f = find(x, id); if (!f) return null;
   const { d, s } = f;
-  const toggles = d.toggleOn ? safe(() => withGame(g, () => togglesFor({ u: x.u, c: x.c, cb: x.cb, g }, d.toggleOn!, { action: id, target: picks.targetId ? x.cb.units.find((v) => v.id === picks.targetId) : null }, picks.mods || [])), [] as ToggleEntry[]) : [];
+  const tm = withMods(x, d, picks), toggles = tm.toggles; picks = tm.picks;
   let next = nextStep(d, picks); const need = nextStep(d, picks, { required: true });
   if (next) { const ch = s.choices ? safe(() => s.choices!(x, d, next!, picks), undefined) : undefined; if (ch) next = { ...next, choices: ch }; }
   const out: DescriptorPreview = { id, ok: d.available, why: d.why, ask: need ? need.prompt : null, next, ap: d.cost.ap, cost: d.cost.text, lines: [], marks: { units: [], tiles: [] }, toggles, action: null };
