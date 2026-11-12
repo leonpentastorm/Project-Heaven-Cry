@@ -182,26 +182,45 @@ export async function openGround(page, name = 'Leon') {
  *  pointer onto SETTINGS. Both are sent as raw pointer input at places read beforehand, with nothing waited for between
  *  them, and a watcher in the page (started before the press) notes the moment SETTINGS is the lit row while CHARACTERS
  *  is the pressed one: the hello is too short to be asked about from this script on a busy machine.
- *  Returns { seen: { on, pressed, bubble, act } | null, before, colour } (the SETTINGS label's colour before and lit). */
+ *  Returns { seen: { on, pressed, bubble, act } | null, before, colour, tries } (the SETTINGS label's colour before and lit). */
 export async function titleHoverDuringHello(page) {
-  const pt = await page.evaluate(() => {
-    const mid = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
-    const label = () => { const l = document.querySelector('[data-item="settings"] .phc-label'); return l ? getComputedStyle(l).color : ''; };
-    const W = (window.__hello = { seen: null, before: label(), colour: '', done: false });
-    const look = () => {
-      const on = document.querySelector('.phc-item.on')?.getAttribute('data-item'), pressed = document.querySelector('.phc-item.pressed')?.getAttribute('data-item');
-      if (on !== 'settings' || pressed !== 'chars' || W.seen) return;
-      W.seen = { on, pressed, bubble: document.querySelectorAll('.phc-bubble').length, act: document.querySelector('.phc-wick')?.getAttribute('data-act') };
-      // the lit colour, once its transition has run (read each frame for as long as the row stays lit, 400 ms at most)
-      const t0 = performance.now(); const tick = () => { const lit = document.querySelector('.phc-item.on')?.getAttribute('data-item') === 'settings', c = label();
-        if (lit && c !== W.before) W.colour = c;
-        if (lit && performance.now() - t0 < 600) requestAnimationFrame(tick); else { W.done = true; if (!W.colour) W.colour = c; } }; tick();
-    };
-    new MutationObserver(look).observe(document.documentElement, { subtree: true, childList: true, attributes: true });
-    return { chars: mid('[data-item="chars"]'), settings: mid('[data-item="settings"]') };
-  });
-  await page.mouse.click(pt.chars.x, pt.chars.y);
-  await page.mouse.move(pt.settings.x, pt.settings.y, { steps: 2 });
-  await page.waitForFunction(() => window.__hello.seen && window.__hello.done, null, { timeout: 8000 }).catch(() => {});
-  return page.evaluate(() => window.__hello);
+  const once = async () => {
+    const pt = await page.evaluate(() => {
+      const mid = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
+      const label = () => { const l = document.querySelector('[data-item="settings"] .phc-label'); return l ? getComputedStyle(l).color : ''; };
+      window.__helloObs?.disconnect();
+      const W = (window.__hello = { seen: null, before: label(), colour: '', done: false, moved: false, intime: false });
+      const look = () => {
+        const on = document.querySelector('.phc-item.on')?.getAttribute('data-item'), pressed = document.querySelector('.phc-item.pressed')?.getAttribute('data-item');
+        if (on !== 'settings' || pressed !== 'chars' || W.seen) return;
+        W.seen = { on, pressed, bubble: document.querySelectorAll('.phc-bubble').length, act: document.querySelector('.phc-wick')?.getAttribute('data-act') };
+        // the lit colour, once its transition has run (read each frame for as long as the row stays lit, 600 ms at most)
+        const t0 = performance.now(); const tick = () => { const lit = document.querySelector('.phc-item.on')?.getAttribute('data-item') === 'settings', c = label();
+          if (lit && c !== W.before) W.colour = c;
+          if (lit && performance.now() - t0 < 600) requestAnimationFrame(tick); else { W.done = true; if (!W.colour) W.colour = c; } }; tick();
+      };
+      window.__helloObs = new MutationObserver(look); window.__helloObs.observe(document.documentElement, { subtree: true, childList: true, attributes: true });
+      // did the pointer reach SETTINGS while CHARACTERS was still the pressed row (the hello still on)?
+      const moved = (e) => { const el = document.elementFromPoint(e.clientX, e.clientY); if (el && el.closest('[data-item="settings"]')) { W.moved = true; if (document.querySelector('.phc-item.pressed')) W.intime = true; } };
+      window.addEventListener('pointermove', moved, { capture: true }); setTimeout(() => window.removeEventListener('pointermove', moved, { capture: true }), 5000);
+      return { chars: mid('[data-item="chars"]'), settings: mid('[data-item="settings"]') };
+    });
+    await page.mouse.click(pt.chars.x, pt.chars.y);
+    await page.mouse.move(pt.settings.x, pt.settings.y, { steps: 2 });
+    await page.waitForFunction(() => (window.__hello.seen && window.__hello.done) || (window.__hello.moved && !window.__hello.intime), null, { timeout: 8000 }).catch(() => {});
+    return page.evaluate(() => window.__hello);
+  };
+  // The pointer has to reach SETTINGS inside the hello, which lasts under a second: on a busy machine it can arrive after
+  // the menu has gone. That try says nothing about the game: back to the menu (Escape) and once more, four times at most.
+  // A pointer that DID arrive in time and lit nothing is the failure, and is returned at once.
+  let r = null;
+  for (let i = 1; i <= 4; i++) {
+    r = { ...(await once()), tries: i };
+    if (r.seen || r.intime || i === 4) break;
+    await page.waitForSelector('text=Your characters', { timeout: 30000 }).catch(() => {});
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('nav[aria-label="Main menu"]', { timeout: 30000 }).catch(() => {});
+    await settle(page, 400);
+  }
+  return r;
 }

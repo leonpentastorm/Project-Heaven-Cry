@@ -47,7 +47,7 @@ const settle = () => p.waitForFunction(() => !document.querySelector('[data-fx="
  *  and title, the count, the old magazine's centre, the pack and pile glyphs, and (once, at probeAt ms) what is on top
  *  at the card's centre and at its old magazine's. */
 const watch = (start, ms = 2200, step = 30, probeAt = 260) => p.evaluate(async ({ start, ms, step, probeAt }) => {
-  const seen = [], t0 = performance.now(); let probe = null, countProbe = null;
+  const seen = [], t0 = performance.now(); let probe = null, countProbe = null, loops = 0;
   if (start.act) window.__phc.act(start.act); else window.__phcFx.playFx(start.fx);
   const rc = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, l: r.left, t: r.top, r: r.right, b: r.bottom }; };
   // (for `ms`, and then for as long as the card is still up, to four times that: on a busy machine the card's own timers
@@ -56,7 +56,8 @@ const watch = (start, ms = 2200, step = 30, probeAt = 260) => p.evaluate(async (
     const card = document.querySelector('[data-fx="reload"]');
     if (card) {
       const t = Math.round(performance.now() - t0), old = card.querySelector('[data-reload-old]');
-      seen.push({ t, box: rc(card), mode: card.getAttribute('data-reload-mode'), title: card.querySelector('[data-reload-title]')?.textContent, op: Number(getComputedStyle(card).opacity),
+      // (`late`: how far this sampler's own timers have fallen behind by now: what a busy machine has cost every timer on the page)
+      seen.push({ t, late: Math.max(0, Math.round(t - loops * step)), box: rc(card), mode: card.getAttribute('data-reload-mode'), title: card.querySelector('[data-reload-title]')?.textContent, op: Number(getComputedStyle(card).opacity),
         counts: [...card.querySelectorAll('[data-reload-count]')].map((c) => c.textContent), done: card.querySelectorAll('[data-reload-done]').length,
         guns: [...card.querySelectorAll('[data-reload-gun]')].map((c) => c.getAttribute('data-reload-gun')),
         old: old ? { ...rc(old), op: Number(getComputedStyle(old).opacity), out: old.getAttribute('data-reload-old') } : null,
@@ -86,7 +87,7 @@ const watch = (start, ms = 2200, step = 30, probeAt = 260) => p.evaluate(async (
         card.style.pointerEvents = 'none';
       }
     }
-    await new Promise((res) => setTimeout(res, step));
+    await new Promise((res) => setTimeout(res, step)); loops++;
   }
   return { seen, probe, countProbe };
 }, { start, ms, step, probeAt });
@@ -128,11 +129,11 @@ const cs = s.map((x) => x.counts[0]); const lastCount = s.filter((x) => x.done).
 ok('the count shows what was left, empties, then runs up to what the gun holds: ' + [...new Set(cs)].join(' ') + ' (the gun: ' + mine(g).ammo + ')', cs[0] !== '0/24' && cs.includes('0/24') && lastCount.startsWith(mine(g).ammo + '/') && new Set(cs).size >= 5);
 ok('the pile on the tile now holds the dropped magazine too (' + pileCount(g) + ')', pileCount(g) === 2);
 ok('the old magazine falls behind the count: the count stays readable where it crosses (' + JSON.stringify(w.countProbe) + ')', !w.countProbe || w.countProbe.onTop);
-const bIn = s.find((x) => x.badgeOp > 0.5)?.t;
-// WALL CLOCK, on purpose: the +1 comes as the magazine leaves (about 0.3 s in), not at the end of the reload. A sample
-// sees it late by at most the wait since the sample before it, so that wait (30 ms idle, more when busy) is allowed for.
-const bGap = (() => { const i = s.findIndex((x) => x.badgeOp > 0.5); return i > 0 ? s[i].t - s[i - 1].t : i === 0 ? s[0].t : 0; })();
-ok('the card\'s PILE +1 shows as the old one leaves, in step with the tile\'s pile count (first seen at ' + bIn + ' ms, ' + bGap + ' ms after the sample before)', bIn != null && bIn - bGap < 420);
+const bAt = s.find((x) => x.badgeOp > 0.5), bIn = bAt?.t;
+// WALL CLOCK, on purpose: the +1 comes as the magazine leaves (about 0.3 s in), not at the end of the reload. On a busy
+// machine every timer on the page runs late, the card's and this sampler's alike: the sampler's own lateness at that
+// moment (`late`, 0 on an idle machine) is taken off before the time is judged.
+ok('the card\'s PILE +1 shows as the old one leaves, in step with the tile\'s pile count (first seen at ' + bIn + ' ms; the page\'s timers were ' + (bAt?.late || 0) + ' ms late by then)', bIn != null && bIn - (bAt.late || 0) < 420);
 ok('a speed reload drops its magazine under the portrait, to the pile (' + Math.max(...s.map((x) => x.brassMags)) + ')', s.some((x) => x.brassMags > 0));
 const spLook = s.at(-1);
 await pause(p, 100);
@@ -146,9 +147,14 @@ ok('a tactical reload shows its card: TACTICAL RELOAD (' + s[0]?.title + ', mode
 ok('on top as well (' + w.probe?.what + ')', !!w.probe?.onTop);
 ok('the tactical card has the pack glyph and no drop arrow', !!s[0].pack && !s[0].drop);
 // (measured once the card has popped in: it grows from its pointer, so its glyphs move while it does)
-const steady = s.filter((x) => x.t > 230), pk = steady[0].pack, oldT = steady.filter((x) => x.old && x.old.op > 0.3);
-ok('the old magazine slides into the pack (' + Math.round(oldT[0]?.old.x) + ',' + Math.round(oldT[0]?.old.y) + ' → ' + Math.round(oldT.at(-1)?.old.x) + ',' + Math.round(oldT.at(-1)?.old.y) + '; the pack at ' + Math.round(pk.x) + ',' + Math.round(pk.y) + ')',
-  oldT.length > 2 && oldT.at(-1).old.x > oldT[0].old.x + 8 && Math.hypot(oldT.at(-1).old.x - pk.x, oldT.at(-1).old.y - pk.y) < Math.hypot(oldT[0].old.x - pk.x, oldT[0].old.y - pk.y) * 0.6 && oldT.every((x) => x.old.y < s[0].box.b));
+// (the slide is followed by the sampler, as the fall above: when its samples do not show the whole slide, the same card
+// is played again from the reload's own effect event, three times at most)
+const slideOf = (ss) => { const steady = ss.filter((x) => x.t > 230); return { pk: steady[0]?.pack, oldT: steady.filter((x) => x.old && x.old.op > 0.3), bottom: ss[0]?.box.b }; };
+const slid = ({ pk, oldT, bottom }) => !!pk && oldT.length > 2 && oldT.at(-1).old.x > oldT[0].old.x + 8 && Math.hypot(oldT.at(-1).old.x - pk.x, oldT.at(-1).old.y - pk.y) < Math.hypot(oldT[0].old.x - pk.x, oldT[0].old.y - pk.y) * 0.6 && oldT.every((x) => x.old.y < bottom);
+let sl = slideOf(s), slideRuns = 1; const tacFx = (g.combat.fx || []).filter((e) => e.k === 'reload').at(-1);
+for (; slideRuns < 4 && !slid(sl) && tacFx; slideRuns++) { await settle(); sl = slideOf((await watch({ fx: tacFx })).seen); }
+const pk = sl.pk || slideOf(s).pk, oldT = sl.oldT;
+ok('the old magazine slides into the pack (' + Math.round(oldT[0]?.old.x) + ',' + Math.round(oldT[0]?.old.y) + ' → ' + Math.round(oldT.at(-1)?.old.x) + ',' + Math.round(oldT.at(-1)?.old.y) + '; the pack at ' + Math.round(pk?.x) + ',' + Math.round(pk?.y) + '; ' + oldT.length + ' samples, run ' + slideRuns + ')', slid(sl));
 ok('the pack keeps a +1 (' + s.at(-1).badge + ')', s.at(-1).badge === '+1');
 const lastT = s.filter((x) => x.done).at(-1)?.counts[0] || '';
 ok('the count ends at what the gun holds (' + lastT + ', the gun ' + mine(g).ammo + ')', lastT.startsWith(mine(g).ammo + '/'));

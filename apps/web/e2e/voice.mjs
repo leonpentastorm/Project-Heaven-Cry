@@ -95,10 +95,19 @@ ok('the speed slider is saved (' + await p.evaluate(() => JSON.parse(localStorag
 // Install Kokoro: progress, a failure with its reason and Retry, then Installing… and Ready.
 await sec.locator('[data-voice-select="Narrator voice"]').selectOption('af_heart');
 await p.evaluate(() => { window.__voiceFail = 'all'; window.__voiceStepMs = 150; });
+// (the download's line changes every 150 ms and ends in a failure: a watcher in the page keeps the first moment it shows
+// a part of the whole 326 MB with its bar moving; a look from here 350 ms in found the first tick, 0%, on a busy machine)
+await p.evaluate(() => {
+  window.__dl = null;
+  const look = () => { const sec = document.querySelector('[data-phc-voice-settings]'), bar = sec && sec.querySelector('[role="progressbar"]'), t = sec ? sec.textContent : '';
+    const v = bar ? Number(bar.getAttribute('aria-valuenow')) : 0;
+    if (!window.__dl && /Downloading… \d+% · [\d.]+ \/ 326\.0 MB/.test(t) && v > 0 && v < 100) { window.__dl = { text: t, bar: String(v) }; mo.disconnect(); } };
+  const mo = new MutationObserver(look); mo.observe(document.documentElement, { childList: true, subtree: true, attributes: true, characterData: true }); look();
+});
 await sec.locator('[data-voice-install]').click();
 await sec.locator('[data-voice-status="loading"]').waitFor({ timeout: 30000 });
-await settle(p, 350);
-const dl = await sec.textContent(), bar = await sec.locator('[role="progressbar"]').getAttribute('aria-valuenow');
+const seenDl = await p.waitForFunction(() => window.__dl, null, { timeout: 30000 }).then((h) => h.jsonValue(), () => null);
+const dl = seenDl ? seenDl.text : await sec.textContent(), bar = seenDl ? seenDl.bar : await sec.locator('[role="progressbar"]').getAttribute('aria-valuenow').catch(() => null);
 ok('downloading: a progress bar with MB and a percentage (' + (dl.match(/Downloading… \d+% · [\d.]+ \/ [\d.]+ MB/) || ['?'])[0] + ', bar ' + bar + ')', /Downloading… \d+% · [\d.]+ \/ 326\.0 MB/.test(dl) && Number(bar) > 0 && Number(bar) < 100);
 if (SHOTS) await sec.screenshot({ path: SHOTS + '/voice-downloading.png' });
 await sec.locator('[data-voice-status="failed"]').waitFor({ timeout: 30000 });

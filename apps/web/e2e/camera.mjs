@@ -57,10 +57,14 @@ ok(`a drag moved the view (${Math.round(c.frame.x - s0.x)}, ${Math.round(c.frame
 ok('and did not act: your unit has not moved and has spent nothing', meNow(after).pos === me.pos && meNow(after).ap === meNow(before).ap && after.combat.log.length === before.combat.log.length);
 // a plain click still acts (Move is picked: a click on a tile in reach moves there)
 const near = (mx + 1) + ',' + my, nb = await tileBox(near);
-await p.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2); await pause(p, 250);
+await p.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2);
 const confirm = p.getByRole('button', { name: 'Confirm', exact: true }).first();
-if (await confirm.isEnabled().catch(() => false)) await confirm.click();
-await p.waitForFunction((a) => window.__phc.getState().game.combat.units.find((u) => u.id === a.id).pos === a.to, { id: me.id, to: near }, { timeout: 6000 }).catch(() => {});
+// (until the click has done its work: the unit is there already, or Confirm has lit up for the picked tile. A look at
+// Confirm a quarter of a second after the click found it still grey on a busy machine, and nothing was pressed.)
+const there = (a) => window.__phc.getState().game.combat.units.find((u) => u.id === a.id).pos === a.to;
+await p.waitForFunction((a) => { const b = [...document.querySelectorAll('button')].find((x) => (x.textContent || '').trim() === 'Confirm'); return window.__phc.getState().game.combat.units.find((u) => u.id === a.id).pos === a.to || (!!b && !b.disabled); }, { id: me.id, to: near }, { timeout: 20000 }).catch(() => {});
+if (!(await p.evaluate(there, { id: me.id, to: near })) && await confirm.isEnabled().catch(() => false)) await confirm.click();
+await p.waitForFunction(there, { id: me.id, to: near }, { timeout: 20000 }).catch(() => {});
 after = await G();
 ok('a click without a drag still acts (the unit walked to ' + ref(near) + ')', meNow(after).pos === near);
 await pause(p, 700);

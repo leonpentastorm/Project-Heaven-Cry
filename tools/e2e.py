@@ -6,8 +6,8 @@
     npm run e2e -- rules                 every suite that checks rules and screens (they play fights at the test pace)
     npm run e2e -- anim                  the suites that look at animation or time (they run at real speed)
     npm run e2e -- all                   rules + anim: every suite in the folder
-    npm run e2e -- sweep                 fx-sweep's whole table, every weapon × technique (about 17 minutes; `all` plays
-                                         only its real-speed, fog and glyph parts)
+    npm run e2e -- sweep                 fx-sweep's whole table, every weapon × technique (about 17 minutes; everywhere
+                                         else fx-sweep plays only its real-speed, fog and glyph parts)
     npm run e2e -- --list                the groups, and nothing run
     options:  --no-build   use the build that is already in apps/web/dist
               --jobs N     suites at once (default 3; each is its own room, so they don't meet)
@@ -27,9 +27,13 @@ ALONE` (exit code 0): it is not a bug in the game, but it is a suite that cannot
 the suite to fix (apps/web/e2e/README.md, "A suite that does not flake"). If it fails alone too, it is `FAIL`, the run
 is red (exit code 1), and a red run means a real bug. A suite never gets a second retry.
 
+**The room server.** `wrangler dev` has stopped by itself in the middle of a long run on a busy machine. The runner
+checks it before every suite and starts it again; a suite that lost it is run again and that run is the one that
+counts (`ok … run again: the room server had stopped under its first run`). The last line of the run says so.
+
 Logs: .check/e2e/<suite>.log (and <suite>.first.log for the failed first run of a retried suite).
 """
-import json, os, re, subprocess, sys, time, urllib.request
+import json, os, re, subprocess, sys, threading, time, urllib.error, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,7 +42,7 @@ G = json.load(open(os.path.join(E2E, 'groups.json')))
 # `anim` runs at real speed: those suites check animation or time. `rules` plays fights at the test pace (FAST=1).
 ANIM, RULES = G['anim'], G['rules']
 GROUPS = {'smoke': G['smoke'], 'anim': ANIM, 'rules': RULES, 'all': RULES + ANIM, 'sweep': ['fx-sweep']}
-# fx-sweep inside a group plays these parts; asked for by name or as `sweep`, it plays everything (the table too).
+# fx-sweep plays these parts; asked for as `sweep`, it plays everything (the table too).
 SWEEP_SHORT = 'real,fog,glyphs'
 
 def group_errors():
@@ -68,12 +72,22 @@ for a in asked: names += GROUPS.get(a, [a])
 names = list(dict.fromkeys(names))
 missing = [n for n in names if not os.path.exists(os.path.join(E2E, n + '.mjs'))]
 if missing: sys.exit('no such suite: ' + ', '.join(missing))
-# the whole table only when it was asked for by name or as `sweep`
-sweep_full = 'sweep' in asked or 'fx-sweep' in asked
+# fx-sweep's whole table only when it was asked for as `sweep`
+sweep_full = 'sweep' in asked
 
 def up(url):
     try: urllib.request.urlopen(url, timeout=2); return True
     except Exception: return False
+
+def down(url):
+    """Is the server gone (the connection is refused)? A slow answer on a busy machine is not "gone"."""
+    for _ in range(2):
+        try: urllib.request.urlopen(url, timeout=10); return False
+        except urllib.error.HTTPError: return False
+        except Exception as e:
+            if 'refused' not in str(e).lower(): return False
+        time.sleep(1)
+    return True
 
 def warm(url):
     """Ask for the page and its scripts once, so the first suite doesn't pay for the server's cold start."""
@@ -82,7 +96,30 @@ def warm(url):
         for src in re.findall(r'(?:src|href)="(/[^"]+\.(?:js|css))"', html): urllib.request.urlopen(url.rstrip('/') + src, timeout=60).read()
     except Exception: pass
 
-started = None
+started = None; ours = not base; server_starts = 0; server_lock = threading.Lock()
+def start_server():
+    """Start the room server and wait for it. Its log: .check/e2e/server.log (the one before it, if it died: server.N.log)."""
+    global started, server_starts
+    os.makedirs(os.path.join(ROOT, '.check/e2e'), exist_ok=True)
+    log = os.path.join(ROOT, '.check/e2e/server.log')
+    if server_starts and os.path.exists(log): os.replace(log, os.path.join(ROOT, f'.check/e2e/server.{server_starts}.log'))
+    subprocess.run('pkill -f "wrangler dev"; pkill -f workerd', shell=True); time.sleep(1)
+    started = subprocess.Popen(['npm', 'run', 'dev', '-w', '@phc/server'], cwd=ROOT, stdout=open(log, 'w'), stderr=subprocess.STDOUT, start_new_session=True)
+    server_starts += 1
+    for _ in range(240):
+        if up(base): break
+        time.sleep(0.5)
+    else: sys.exit('the room server did not come up (see .check/e2e/server.log)')
+    warm(base)
+def ensure_server():
+    """The room server (wrangler dev) has died under a long run before (its bundler stopped with "all goroutines are
+    asleep"). That is not the game's fault nor a suite's: when it is ours and it is down, it is started again, and the
+    suites that lost it are run again. True when it had to be started again."""
+    if not ours: return False
+    with server_lock:
+        if not down(base): return False
+        print(f'note  the room server had stopped (.check/e2e/server.log); starting it again', flush=True)
+        start_server(); return True
 if not base:
     base = 'http://127.0.0.1:8787'
     if not no_build:
@@ -93,29 +130,35 @@ if not base:
         print(f'built ({time.time() - t0:.0f}s)', flush=True)
         subprocess.run('pkill -f "wrangler dev"; pkill -f workerd', shell=True)  # a server from before would serve the old build's worker
         time.sleep(1)
-    if not up(base):
-        os.makedirs(os.path.join(ROOT, '.check/e2e'), exist_ok=True)
-        started = subprocess.Popen(['npm', 'run', 'dev', '-w', '@phc/server'], cwd=ROOT, stdout=open(os.path.join(ROOT, '.check/e2e/server.log'), 'w'), stderr=subprocess.STDOUT, start_new_session=True)
-        for _ in range(120):
-            if up(base): break
-            time.sleep(0.5)
-        else: sys.exit('the room server did not come up (see .check/e2e/server.log)')
-    warm(base)
+    if not up(base): start_server()
+    else: ours = False; warm(base)  # a server someone else started (npm run dev -w @phc/server): used as it is, never restarted
 
 ANSI = re.compile(r'\x1b\[[0-9;]*m')
 def run(name, tag=''):
     env = dict(os.environ, BASE=base, SHOTS=os.path.join(ROOT, '.check/e2e/shots') + '/')
     if not slow and name not in ANIM: env['FAST'] = '1'
-    if name == 'fx-sweep' and not sweep_full and 'PARTS' not in os.environ: env['PARTS'] = SWEEP_SHORT
+    # PARTS means one thing to fx-sweep and another to coop-stall: a PARTS given to the whole run reaches a suite only
+    # when it is the one suite asked for (set for a run of many, it made coop-stall run none of its parts).
+    if len(names) > 1: env.pop('PARTS', None)
+    if name == 'fx-sweep' and 'PARTS' not in env and not sweep_full: env['PARTS'] = SWEEP_SHORT
+    ensure_server()
     t0 = time.time(); log = os.path.join(ROOT, '.check/e2e', name + tag + '.log')
-    try: p = subprocess.run(['node', 'apps/web/e2e/' + name + '.mjs'], cwd=ROOT, capture_output=True, text=True, env=env, timeout=1800); out, code = p.stdout + p.stderr, p.returncode
-    except subprocess.TimeoutExpired as e: out, code = (e.stdout.decode(errors='replace') if isinstance(e.stdout, bytes) else (e.stdout or '')) + '\nTIMED OUT after 30 minutes', 124
+    # (its own process group: a suite that runs out of time is stopped with its browsers, which were left behind before)
+    p = subprocess.Popen(['node', 'apps/web/e2e/' + name + '.mjs'], cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env, start_new_session=True)
+    try: out, _ = p.communicate(timeout=3600 if name == 'fx-sweep' and sweep_full else 1800); code = p.returncode
+    except subprocess.TimeoutExpired:
+        try: os.killpg(os.getpgid(p.pid), 9)
+        except Exception: p.kill()
+        out, _ = p.communicate(); out = (out or '') + '\nTIMED OUT (30 minutes a suite; an hour for the whole sweep)'; code = 124
     out = ANSI.sub('', out); open(log, 'w').write(out)
     oks = len(re.findall(r'^ok ', out, re.M)); bad = [l for l in out.split('\n') if l.startswith('FAIL')]
     crashed = code != 0 and not bad
     # a suite that looked at nothing proves nothing: a green line must mean something was checked
     empty = code == 0 and not bad and oks == 0
-    return {'name': name, 'oks': oks, 'bad': bad, 'crashed': crashed, 'empty': empty, 'out': out, 'secs': time.time() - t0, 'good': not bad and not crashed and not empty}
+    good = not bad and not crashed and not empty
+    # a suite that failed with the room server down under it did not fail: it lost its server
+    lost = (not good) and ours and ('ERR_CONNECTION_REFUSED' in out or down(base))
+    return {'name': name, 'oks': oks, 'bad': bad, 'crashed': crashed, 'empty': empty, 'out': out, 'secs': time.time() - t0, 'good': good, 'lost': lost}
 
 def why(r):
     """The lines that say what went wrong, short."""
@@ -127,13 +170,14 @@ def line(word, r, extra=''):
     print(f"{word:<6}{r['name']:<18} {r['oks']} checks" + (f", {len(r['bad'])} failed" if r['bad'] else '') + (' · the script stopped on an error' if r['crashed'] else '') + extra + f"  ({r['secs']:.0f}s)", flush=True)
 
 os.makedirs(os.path.join(ROOT, '.check/e2e/shots'), exist_ok=True)
-failed, flaky, again = [], [], []
+failed, flaky, again, rerun = [], [], [], []
 t_all = time.time()
 try:
     parallel = max(1, jobs) > 1 and len(names) > 1
     with ThreadPoolExecutor(max_workers=max(1, jobs)) as ex:
         for r in ex.map(run, names):
             if r['good']: line('ok', r); continue
+            if r['lost']: again.append(r); line('lost', r, ' · the room server stopped under it; it runs again at the end'); continue
             if parallel and not no_retry: again.append(r); line('retry', r, ' · failed beside the others, it runs again alone at the end'); continue
             failed.append(r['name']); line('FAIL', r)
             for l in why(r): print('     ' + l)
@@ -143,7 +187,12 @@ try:
         try: os.replace(os.path.join(ROOT, '.check/e2e', n + '.log'), os.path.join(ROOT, '.check/e2e', n + '.first.log'))
         except OSError: pass
         r = run(n)
-        if r['good']:
+        # (the server can die under the second run too: that run does not count either, three times at most)
+        for _ in range(3):
+            if not r['lost']: break
+            r = run(n)
+        if r['good'] and first['lost']: rerun.append(n); line('ok', r, ' · run again: the room server had stopped under its first run')
+        elif r['good']:
             flaky.append(n); line('FLAKY', r, ' · passed alone; beside the others it failed:')
             for l in why(first): print('     ' + l)
             print(f'     the failed run: .check/e2e/{n}.first.log')
@@ -160,4 +209,5 @@ mins = f'  ({(time.time() - t_all) / 60:.1f} min)'
 if failed: print(f'{len(failed)} of {len(names)} FAILED: ' + ' '.join(failed) + (f' · and {len(flaky)} passed only alone: ' + ' '.join(flaky) if flaky else '') + mins)
 elif flaky: print(f'GREEN, BUT {len(flaky)} PASSED ONLY ALONE (a suite that cannot share the machine; fix the suite): ' + ' '.join(flaky) + mins)
 else: print(f'ALL GREEN: {len(names)} suites' + mins)
+if server_starts > 1: print(f'(the room server stopped {server_starts - 1} time(s) and was started again; run again for it: ' + (' '.join(rerun) or 'nothing') + ')')
 sys.exit(1 if failed else 0)

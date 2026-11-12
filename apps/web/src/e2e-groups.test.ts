@@ -3,7 +3,7 @@
 //   1. every suite is in a group (`rules` or `anim` in apps/web/e2e/groups.json): a suite nobody runs rots;
 //   2. every suite prints named checks, and has an entry in the README;
 //   3. no suite sleeps on this script's clock (page.waitForTimeout): the count is 0 and stays 0;
-//   4. a wait that fails when its time runs out is given at least 15 s (a shorter one is a wall-clock assertion in
+//   4. a wait that fails when its time runs out is given at least 30 s (a shorter one is a wall-clock assertion in
 //      disguise, and fails on a busy machine).
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
@@ -40,12 +40,12 @@ describe('the browser suites (apps/web/e2e)', () => {
     const sleepers = [...SUITES, 'lib'].map((n) => [n, (src(n).match(/\.waitForTimeout\(/g) || []).length] as const).filter(([, c]) => c > 0);
     expect(sleepers, 'use until() for a state, settle() after a click, pause() inside an animation').toEqual([]);
   });
-  it('a wait that fails when its time runs out has at least 15 s (an optional wait, followed by .catch, may be shorter)', () => {
+  it('a wait that fails when its time runs out has at least 30 s (an optional wait, followed by .catch, may be shorter)', () => {
     const short: string[] = [];
     for (const n of SUITES) {
       const s = src(n);
       for (const m of s.matchAll(/timeout: (\d+) \}\)/g)) {
-        if (Number(m[1]) < 15000 && !s.slice(m.index! + m[0].length, m.index! + m[0].length + 7).startsWith('.catch(')) short.push(n + ': timeout ' + m[1]);
+        if (Number(m[1]) < 30000 && !s.slice(m.index! + m[0].length, m.index! + m[0].length + 7).startsWith('.catch(')) short.push(n + ': timeout ' + m[1]);
       }
     }
     expect(short).toEqual([]);

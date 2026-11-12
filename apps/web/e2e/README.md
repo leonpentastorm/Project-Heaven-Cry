@@ -27,7 +27,8 @@ a suite, and stops the server. Logs: `.check/e2e/<suite>.log`. Options: `--jobs 
   about 25 times faster (`game/combatSpeed.ts`, the hidden `test` speed).
 - `anim`: suites that look at an animation part-way through, or at how long something takes. They run at the
   player's real speed.
-- `all` is `rules` + `anim`. `smoke` is a few of them. `sweep` is `fx-sweep` with its whole table.
+- `all` is `rules` + `anim`. `smoke` is a few of them. `sweep` is `fx-sweep` with its whole table (everywhere else
+  `fx-sweep` plays its real-speed, fog and glyph parts).
 
 **Every suite must be in `rules` or in `anim`.** `tools/e2e.py` refuses to run when a `.mjs` file here is in neither,
 and `npm run check` fails for the same reason (`apps/web/src/e2e-groups.test.ts`). A suite nobody runs rots: on 12 Nov
@@ -51,10 +52,11 @@ Read it before you write or change a suite; `apps/web/src/e2e-groups.test.ts` en
 1. **Never sleep on the script's clock.** `page.waitForTimeout(ms)` is not used in this folder (the count is 0 and a
    test keeps it there). It waits a number of milliseconds in THIS script, while the game runs in another process: on a
    busy machine the game is not ready when the sleep ends.
-2. **Wait for the state, with a long timeout.** `await until(page, () => <what you wait for>)` (lib.mjs; 15 s). A
-   timeout only costs time when the thing never comes, and then the suite is red for a reason. A wait that fails
-   when its time runs out gets at least 15 s; shorter is a wall-clock assertion in disguise. (A wait followed by
-   `.catch(() => {})` is an optional wait, "if it comes", and may be shorter.)
+2. **Wait for the state, with a long timeout.** `await until(page, () => <what you wait for>)` (lib.mjs). A timeout
+   only costs time when the thing never comes, and then the suite is red for a reason. A wait that fails when its
+   time runs out gets at least 30 s; shorter is a wall-clock assertion in disguise (a page reload took 20 s beside two
+   other suites on a busy machine). A wait followed by `.catch(() => {})` is an optional wait, "if it comes", and may
+   be shorter. `page.goto` and `page.reload` on a page from `player()` already wait for the game's first screen.
 3. **After a click or an action, when you can't name the state: `await settle(page, ms)`.** It waits `ms` on the PAGE's
    clock, then until the effects queue has nothing left and two frames pass with nothing added to the page. In a fight,
    `await fxIdle(page)` waits until every effect has played and the input hold is over.
@@ -81,8 +83,8 @@ Read it before you write or change a suite; `apps/web/src/e2e-groups.test.ts` en
     sides start 10 to 14 tiles apart and hostiles out of sight are Hidden. Find a free tile beside your unit in the
     page; check the set-up with its own `ok` line (a hostile in sight, a clear lane) so a stale set-up reads as one.
 11. **Nothing reaches the outside.** Stub every provider address the suite could call (`page.route`).
-12. **Run it three times beside something heavy before you call it done:**
-    `npx vitest run --root packages/engine & npm run e2e -- <suite> <suite> <suite>`.
+12. **Run it beside something heavy before you call it done,** three times:
+    `npx vitest run --root packages/engine & npm run e2e -- <your suite> tabs perks`. `FLAKY` is not done.
 
 ## Running one by hand
 
@@ -93,9 +95,10 @@ FAST=1 node apps/web/e2e/tabs.mjs               # a `rules` suite, as the runner
 BASE=https://project-heaven-cry.leonpentastorm.workers.dev node apps/web/e2e/reconnect.mjs
 ```
 
-`PARTS` means one thing to `fx-sweep` (`real,table,fog,glyphs`) and another to `coop-stall` (`ABC`): set it only when you
-run that one suite. (Set for a whole run, it made `coop-stall` run none of its parts and print `RESULT OK`; a suite
-that prints no `ok` line now fails.)
+`PARTS` means one thing to `fx-sweep` (`real,table,fog,glyphs`) and another to `coop-stall` (`ABC`). The runner passes
+a `PARTS` you set only when you ask for ONE suite (`PARTS=table npm run e2e -- fx-sweep`, `PARTS=BC npm run e2e --
+coop-stall`). (Set for a whole run, it once made `coop-stall` run none of its parts and print `RESULT OK`; a suite that
+prints no `ok` line now fails.)
 
 **Proxies:** with `BASE` and `HTTPS_PROXY` both set, `lib.mjs` sends Chromium through `HTTPS_PROXY` (an agent sandbox's only way to the live site), with loopback bypassed. A `BASE` on this machine (`127.0.0.1` or any `127.x`, `localhost`, `::1`) never goes through the proxy, so a local `wrangler dev` runs the same with `HTTPS_PROXY` set or not (such a proxy only takes CONNECT to the outside, and every local test used to stop at the title):
 
