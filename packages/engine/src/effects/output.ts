@@ -161,12 +161,11 @@ export function amountOf(spec: AmountSpec, by: Unit | null, ctx: AmountCtx = {})
  *   mult     the ammunition's armour multiplier (hollow-point: ×2), before the pierce
  *   pierce   armour this hit ignores (a weapon's property, a technique)
  *   ignore   it ignores all of it
- *   floor0   never under 0 (a weapon attack; see the head of this file) */
-export function armourAgainst(target: Unit, kind: ArmourKind = 'full', o: { mult?: number; pierce?: number; ignore?: boolean; floor0?: boolean } = {}): number {
+ * Never under 0, for every source (step a7, spec item 1422: armour taken below 0, or pierced past it, adds no damage). */
+export function armourAgainst(target: Unit, kind: ArmourKind = 'full', o: { mult?: number; pierce?: number; ignore?: boolean } = {}): number {
   if (o.ignore || kind === 'none') return 0;
-  if (kind === 'half') return Math.floor(target.armour / 2);
-  const a = o.mult != null || o.pierce != null ? target.armour * (o.mult ?? 1) - (o.pierce ?? 0) : target.armour;
-  return o.floor0 ? Math.max(0, a) : a;
+  if (kind === 'half') return Math.max(0, Math.floor(target.armour / 2));
+  return Math.max(0, o.mult != null || o.pierce != null ? target.armour * (o.mult ?? 1) - (o.pierce ?? 0) : target.armour);
 }
 /** What lands of an amount after armour: never under 1 (armour does not stop a hit outright). */
 export const landed = (amount: number, armour: number): number => Math.max(1, Math.floor(amount) - armour);

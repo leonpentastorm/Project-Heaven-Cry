@@ -105,9 +105,15 @@ describe('armour: one function', () => {
     expect(armourAgainst(t(15))).toBe(15); expect(armourAgainst(t(15), 'full')).toBe(15); expect(armourAgainst(t(15), 'half')).toBe(7); expect(armourAgainst(t(15), 'none')).toBe(0);
     expect(armourAgainst(t(15), 'full', { ignore: true })).toBe(0); expect(armourAgainst(t(15), 'half', { ignore: true })).toBe(0);
   });
-  it('the ammunition\'s multiplier, then the pierce; a weapon attack never meets less than 0', () => {
-    expect(armourAgainst(t(10), 'full', { mult: 2 })).toBe(20); expect(armourAgainst(t(10), 'full', { mult: 2, pierce: 5 })).toBe(15); expect(armourAgainst(t(6), 'full', { pierce: 10, floor0: true })).toBe(0);
-    expect(armourAgainst(t(6), 'full', { pierce: 10 })).toBe(-4); // not clamped unless asked: only the attack path clamps today
+  it('the ammunition\'s multiplier, then the pierce; armour is never under 0, for every source (step a7, item 1422)', () => {
+    expect(armourAgainst(t(10), 'full', { mult: 2 })).toBe(20); expect(armourAgainst(t(10), 'full', { mult: 2, pierce: 5 })).toBe(15); expect(armourAgainst(t(6), 'full', { pierce: 10 })).toBe(0);
+    expect(armourAgainst(t(-4))).toBe(0); expect(armourAgainst(t(-4), 'full')).toBe(0); expect(armourAgainst(t(-5), 'half')).toBe(0); // armour taken below 0 adds no damage
+  });
+  it('a spell, a blast and a trap on a unit whose armour was taken below 0 land their number, not more', () => {
+    const f = fightWith([{}, {}], [{ tier: 'soldier', at: 'F6', classic: true }]), foe = f.foe, [a] = f.pcs; foe.maxHp = 500; foe.shield = 0;
+    for (const hit of [() => harm(f.cb, f.g.rng, a, foe, 30, 'sigil'), () => harm(f.cb, f.g.rng, a, foe, 30, 'elemental', 'fire'), () => hurtUnit(foe, 30, false, f.cb, 'explosion', a), () => hurtUnit(foe, 30, false, f.cb, 'trap', null)]) {
+      foe.hp = 500; foe.armour = -6; withGame(f.g, hit); expect(foe.hp).toBe(470);
+    }
   });
   it('what lands: floor, less armour, never under 1', () => { expect(landed(43.9, 5)).toBe(38); expect(landed(3, 10)).toBe(1); expect(landed(0, 0)).toBe(1); expect(landed(50, -4)).toBe(54); });
 });
