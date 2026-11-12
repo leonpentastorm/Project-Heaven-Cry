@@ -631,6 +631,28 @@ export function recordSpecial(T: Table) {
     for (const [name, b] of BENDS) for (const n of [30, 45, 77, 110]) for (const [type, dt] of [['sigil', undefined], ['elemental', 'fire'], ['soul', undefined]] as const)
       T['special/order/spell/' + type + '/' + n + '/' + name] = bend(b, () => run(g, (g2, cb) => { A.harm(cb, g2.rng, pcs(g2)[0], foes(g2)[0], n, type, dt); return null; }).line);
   }
+  // the stand-in item on REAL spells (step a7, leak 3: what an item adds, and what it multiplies by, on a Line, an
+  // Outburst and a prayer as the engine casts them; the lines above hand harm a finished number)
+  {
+    const REAL: [string, any][] = [['flat-10', { add: 10 }], ['flat-10+mult-1.2', { add: 10, mults: [1.2] }], ['mult-1.2+vs-0.15', { mults: [1.2], vs: [0.15] }], ['mults-1.2-1.1', { mults: [1.2, 1.1] }], ['vs-0.15', { vs: [0.15] }], ['flat-negative-50', { add: -50 }]];
+    const gs = fightSpec([{ ...CASTER }, { ...SHOOTER }], [{ tier: 'soldier' }, { tier: 'elite' }], { level: 6, seed: 'real' }), us = pcs(gs)[0];
+    us.mg.words = Object.keys(A.SIGIL); us.mg.maxWords = 4; us.mg.evoker = true; place(gs, [[us, '5,5'], [foes(gs)[0], '9,5'], [foes(gs)[1], '9,7']]); turn(gs, us, 99);
+    for (const [name, b] of REAL) for (const words of [['fire', 'seek'], ['shock', 'condense', 'seek'], ['stone', 'fire', 'condense', 'seek']]) for (const [k, d, seed] of [['hit', HIT, 4242], ['crit', { spell: true }, rollState(20)]] as const)
+      T['special/flat/line/' + words.join('+') + '/' + name + '/' + k] = bend(b, () => line(gs, us.id, words, foes(gs)[0].pos, d, seed));
+    const gh = heartFight({ ...HEART }, [{ tier: 'soldier' }, { tier: 'elite' }], { level: 6, seed: 'real' }), uh = pcs(gh)[0];
+    place(gh, [[uh, '5,5'], [foes(gh)[0], '9,5'], [foes(gh)[1], '9,7']]); turn(gh, uh, 99);
+    for (const [dn, dd] of [['raw', { school: 'damage' }], ['stone', { school: 'damage', tone: 'stone' }], ['fire-burst', { school: 'damage', tone: 'fire', modules: ['burst'] }]] as const) uh.mg.designs.push({ id: 'real_' + dn, name: 'Golden ' + dn, modules: [], ...dd });
+    for (const [name, b] of REAL) for (const dn of ['raw', 'stone', 'fire-burst']) for (const st of [0, 2, 4]) for (const [k, d, seed] of [['hit', HIT, 4242], ['crit', { spell: true }, rollState(20)]] as const)
+      T['special/flat/outburst/' + dn + '/stage' + st + '/' + name + '/' + k] = bend(b, () => outburst(gh, uh.id, 'real_' + dn, st, foes(gh)[0].pos, [], d, seed));
+    for (const pid of ['nerukhan', 'old_overcast']) {
+      const gp = fightSpec([{ name: 'Priest', level: 6, skills: { faith: 7 }, attrs: { virtue: 7 } }, { name: 'Ally', level: 6 }], [{ tier: 'soldier', level: 6 }, { tier: 'elite', level: 6 }], { level: 6, seed: 'real/' + pid });
+      const up = pcs(gp)[0], c = charOf(gp, up); c.belief = { kind: 'faithful', patron: pid }; c.patron = pid; c.devotion = 10; if (A.setDevotionXp && A.devotionThreshold) A.setDevotionXp(c, A.devotionThreshold(10));
+      place(gp, [[up, '5,5'], [pcs(gp)[1], '5,6'], [foes(gp)[0], '8,5'], [foes(gp)[1], '9,5']]); turn(gp, up, 9);
+      const T2: Table = {};
+      for (const [name, b] of REAL) { bend(b, () => prayers(T2, 'special/flat/prayer/' + pid + '/' + name, gp, up.id, foes(gp)[0].id, { hymn: 3, miracle: true })); }
+      for (const [k, v] of Object.entries(T2)) if (/\bi:F\d/.test(v)) T[k] = v; // the prayers that hurt someone
+    }
+  }
   // Breaching Strike: a pushed enemy stopped by a body takes half the hit again (II: the body too)
   for (const tier of ['I', 'II']) for (const wid of ['maul', 'adamantile_greatsword']) {
     const g = fightSpec([{ ...SHOOTER, weapon: wid, perks: { breaching_strike: tier } }], [{ tier: 'soldier' }, { tier: 'elite' }], { level: 6, seed: 'breach' }), u = pcs(g)[0], [f, n] = foes(g);
