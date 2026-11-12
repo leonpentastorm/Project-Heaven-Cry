@@ -1855,7 +1855,7 @@
         "name": "Barrage",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "The damage words FIRE, FREEZE, SHOCK, STONE and ACID cost {=effects.0.value|abs} charge less to draw: 1 instead of 2. SPARK and GALE already cost {=effects.0.value|abs} and stay there, because no glyph costs less than 1 charge.",
+        "text": "The damage words FIRE, FREEZE, SHOCK, STONE and ACID cost {=effects.0.value|abs} charge less to draw: 1 instead of 2. SPARK and GALE already cost the least a glyph can and stay there, because no glyph costs less than 1 charge.",
         "effects": [
           {
             "op": "word_cost",
@@ -2180,7 +2180,7 @@
         "name": "Blind and Slow",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "You learn the condition words BLIND, SLOW and MUDDLE (Left Brain Debuff) if you don't know them yet. MUDDLE costs you 1 charge less to draw: 1 instead of 2. BLIND and SLOW already cost {=effects.3.value|abs}, and no glyph costs less than 1 charge.",
+        "text": "You learn the condition words BLIND, SLOW and MUDDLE (Left Brain Debuff) if you don't know them yet. MUDDLE costs you 1 charge less to draw: 1 instead of 2. BLIND and SLOW already cost the least a glyph can, and no glyph costs less than 1 charge.",
         "effects": [
           {
             "op": "unlock_word",
@@ -2224,13 +2224,12 @@
         "name": "Rewrite",
         "ap_cost": 3,
         "uses": "per_turn",
-        "text": "Costs {=ap_cost} AP and 3 charge, once per turn, and adds 1 Flux. An enemy you can see within 8 tiles (plus your Sigil range bonus) makes a Brain save against 12 + your strength with Brain Power. If it fails, one helpful state on it flips into its opposite until it would have ended: Braced becomes Prone, +2 to hit becomes −2, a shield becomes damage (at most 30 × your Sigil multiplier, and armour applies; the rest of the shield is gone), Hidden becomes revealed and Marked. The engine also flips Overwatch, Guarded, Withdrawing, Inspired, Quickened and Sharpened. The Narrator decides the flip for a state the game doesn't track.",
+        "text": "Costs {=ap_cost} AP and 3 charge, once per turn, and adds 1 Flux. An enemy you can see within 8 tiles (plus your Sigil range bonus) makes a Brain save against 12 + your strength with Brain Power. If it fails, one helpful state on it flips into its opposite until it would have ended: Braced becomes Prone, +2 to hit becomes −2, a shield becomes damage (at most {=amounts.shield_turned.base} × your Sigil multiplier, and armour applies; the rest of the shield is gone), Hidden becomes revealed and Marked. The engine also flips Overwatch, Guarded, Withdrawing, Inspired, Quickened and Sharpened. The Narrator decides the flip for a state the game doesn't track.",
         "effects": [
           {
             "op": "convert_condition",
             "target": "target",
-            "when": "on_use",
-            "shield_damage_cap": "30 * sigil_mult"
+            "when": "on_use"
           },
           {
             "op": "narrator",

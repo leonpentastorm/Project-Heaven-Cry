@@ -2,6 +2,7 @@
 // and knowledge pieces, conversion (Open and Jealous), apostasy, Witnessed, tags, vows, interventions, rites, voice lines,
 // story prayers, old saves and the Proving Ground's faith tool. Every rule goes through apply() (the reducer), the same
 // path a player's click takes; interventions on an enemy's blow call the damage chokepoint with the game bound.
+import { condTurnEnd } from '../src/magic';
 import { describe, expect, it } from 'vitest';
 import {
   apply, previewPrayer, faithView, beliefOf, patronLine, diceHymns, FAITH_PATRONS, FAITH_PATRON, WHISPERS, VOWS, GATE,
@@ -223,6 +224,19 @@ const CASES: Record<string, Case[]> = {
     { id: 'rewoven', kind: 'miracle', args: () => ({}), check: (h, b) => expect(h.cb.order.length).toBe(b.order + 2) },
   ],
 };
+describe('Together lasts until the caster\'s next turn (item 615; truth pass 3)', () => {
+  it('the ally who acts after the caster keeps +2 Defense through the enemies\' turns; it ends when the caster\'s turn starts', () => {
+    const h = holy({ patron: 'the_matchmaker', devotion: 10, faith: 9 });
+    h.pray('hymn', 'together', { targetId: h.me.id, targetId2: h.ally.id });
+    expect(condOn(h.ally, 'guarded')).toBe(true);
+    h.f.turn(h.ally); h.bound(() => condTurnEnd(h.cb, h.ally)); // the ally acts after the caster: its own turn ends
+    expect(condOn(h.ally, 'guarded')).toBe(true); expect(condOn(h.ally, 'inspired')).toBe(true); // it held a 1-round condition before: gone here
+    h.f.turn(h.foe); h.bound(() => condTurnEnd(h.cb, h.foe));
+    expect(condOn(h.ally, 'guarded')).toBe(true);
+    h.f.turn(h.me); // the caster's next turn starts
+    for (const u of [h.me, h.ally]) { expect(condOn(u, 'guarded')).toBe(false); expect(condOn(u, 'inspired')).toBe(false); }
+  });
+});
 describe('every patron\'s Hymns and Miracle', () => {
   it('the eight launch patrons each have 3 Hymns (tiers 1-3) and a Miracle, and every one is tested here', () => {
     expect(FAITH_PATRONS.length).toBe(8);

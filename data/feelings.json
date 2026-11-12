@@ -308,7 +308,7 @@
       },
       "trigger": {
         "event": "nat1",
-        "text": "You roll a natural {=residue.roll|abs}, or a vow breaks."
+        "text": "You roll a natural 1, or a vow breaks."
       },
       "pour": {
         "text": "+0.5 to the multiplier. It deals {=pour.self_damage} damage to you at the Release; armour and shields don't stop it.",

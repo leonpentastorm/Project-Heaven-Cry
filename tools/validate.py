@@ -756,6 +756,13 @@ if "actions" in data:
         if aid == "pickup" and (data.get("world_play", {}).get("ap") or {}).get("pickup") not in (None, a.get("ap")):
             errors.append("actions: pickup.ap disagrees with world_play ap.pickup")
 
+# Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
+# prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
+_wit = next((o for o in items("conditions") if o.get("id") == "witnessed"), None)
+_wb = ((data.get("patrons", {}).get("prayer") or {}).get("witnessed") or {}).get("like_bonus")
+if _wit and _wb is not None and ((_wit.get("effects") or [{}])[0].get("value") != _wb):
+    errors.append("conditions: witnessed effects[0].value (the card's +2) disagrees with patrons.json prayer.witnessed.like_bonus (the engine's)")
+
 # Rules 1.10 (Sigil 1.5): the sigil_mark kind's Investigate numbers, and the marks the campaigns place
 _mk = next((o for o in items("objects") if o.get("id") == "sigil_mark"), None)
 if _mk is None:

@@ -298,7 +298,7 @@
           ]
         },
         "3": {
-          "text": "Burning for {=stages.2.riders.0.rounds} rounds.",
+          "text": "Burning for {=stages.3.riders.0.rounds} rounds.",
           "riders": [
             {
               "rider": "cond",
@@ -309,7 +309,7 @@
           ]
         },
         "4": {
-          "text": "Burning for {=stages.2.riders.0.rounds} rounds. The fire spreads to enemies next to the target, and the ground under it burns.",
+          "text": "Burning for {=stages.4.riders.0.rounds} rounds. The fire spreads to enemies next to the target, and the ground under it burns.",
           "riders": [
             {
               "rider": "cond",
@@ -366,7 +366,7 @@
           ]
         },
         "3": {
-          "text": "Ignores half cover. Chains to 1 more enemy within {=stages.2.riders.1.range} tiles for half damage.",
+          "text": "Ignores half cover. Chains to 1 more enemy within {=stages.3.riders.1.range} tiles for half damage.",
           "riders": [
             {
               "rider": "ignore_cover"
@@ -380,7 +380,7 @@
           ]
         },
         "4": {
-          "text": "Ignores half cover. Chains to 2 more enemies within {=stages.2.riders.1.range} tiles for half damage. Each one hit is Shaken unless it passes a Heart save.",
+          "text": "Ignores half cover. Chains to 2 more enemies within {=stages.4.riders.1.range} tiles for half damage. Each one hit is Shaken unless it passes a Heart save.",
           "riders": [
             {
               "rider": "ignore_cover"
@@ -573,7 +573,7 @@
           ]
         },
         "3": {
-          "text": "Pushes the target {=stages.2.riders.0.tiles} tiles.",
+          "text": "Pushes the target {=stages.3.riders.0.tiles} tiles.",
           "riders": [
             {
               "rider": "push",
@@ -582,7 +582,7 @@
           ]
         },
         "4": {
-          "text": "Pushes the target {=stages.2.riders.0.tiles} tiles, and everyone else within {=stages.4.riders.1.radius} tile of it {=stages.1.riders.0.tiles} tiles.",
+          "text": "Pushes the target {=stages.4.riders.0.tiles} tiles, and everyone else within {=stages.4.riders.1.radius} tile of it {=stages.4.riders.1.tiles} tiles.",
           "riders": [
             {
               "rider": "push",

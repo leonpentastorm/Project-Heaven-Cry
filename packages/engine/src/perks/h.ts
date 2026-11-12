@@ -12,7 +12,7 @@ import type { Character } from '../character';
 import { mod, packOf, maxHp, maxMp, hasEmanator, restockResources } from '../character';
 import { unitFromCharacter } from '../combat';
 import { condFamily, endCond, MANA_START } from '../magic';
-import { SKILL, ITEM, MANA_BANDS } from '../data';
+import { SKILL, ITEM, MANA_BANDS, TRAITS } from '../data';
 import { storyConds, zoneTags, karmaBand, sideRollMod } from '../game';
 import { applyMemOp } from '../memory';
 import { overworld, say } from '../kit';
@@ -248,9 +248,16 @@ const bothOils = (h: Holder) => has(h.c || h.u || null, 'oil_in_my_mind') && has
 function paperStat(h: Holder, stat: string): number {
   if (!paperOwner(h)) return 0;
   const m = /^skill:(.+)$/.exec(stat); if (m && PAPER[m[1]]) return -1;
-  if (stat === 'hp_per_level') return -2;
-  if (stat === 'elemental_taken' || stat === 'heal_received') return -0.1;
+  const d = paperDerived();
+  if (stat === 'hp_per_level') return d.hp_per_level ?? -2;
+  if (stat === 'elemental_taken') return -(d.elemental_taken_pct ?? 10) / 100; // it takes that much MORE: a negative reduction
+  if (stat === 'heal_received') return (d.heal_received_pct ?? -10) / 100;
   return 0;
+}
+/** Paper's derived numbers, read from the card (traits.json oil_in_my_mind, the shared penalty's `derived`). */
+function paperDerived(): { hp_per_level?: number; elemental_taken_pct?: number; heal_received_pct?: number } {
+  const t: any = TRAITS.find((x) => x.id === 'oil_in_my_mind');
+  return (t?.effects || []).find((e: any) => e.op === 'shared_penalty')?.derived || {};
 }
 const MP = 'masterpiece';
 function inspired(c: Character | null | undefined) { return (ro(c)[MP] as { n: number; by: string; used?: string } | undefined); }

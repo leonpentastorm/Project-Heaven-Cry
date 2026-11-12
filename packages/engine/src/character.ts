@@ -196,7 +196,8 @@ export const fmt = (m: number) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m)
  * names now: nobody spends Core points (`core` is 0 and kept so old callers read a number). */
 export const BUDGET = { skill: 10, attr: 10, core: 0, trade: 0, cap: 10, attrCap: (RULES.character.creation?.attributes as any)?.cap_at_creation ?? 7 };
 /** Mind Without Fog's extra points at creation: 2 Attribute points (rules 1.13; Leon, 10 Nov 2026: its price, no gear
- * bonuses, is steep now that weapons give so much. It was 1 Core point). */
+ * bonuses, is steep now that weapons give so much. It was 1 Core point. That price bites on nothing today: no item carries a
+ * bonus to Attributes or Skills, item 249). */
 export const FOG_CORE = 2;
 /** The creation rules' revision a new sheet is stamped with (rules 1.13). */
 export const SHEET_REV = 113;
@@ -652,7 +653,7 @@ export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power') + ((c as 
 /** Begin's AP (rules 1.5): 2 for everyone (Swift: 1). Empathy no longer lowers it (it gives free Pumps instead). Kept
  * under its 1.2 name for the class moves priced "Soul cast AP". */
 export const soulCastAp = (c: Character) => { void c; return 2; };
-/** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3, 2 from Empathy 7. PROVISIONAL. */
+/** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3 (rules 1.19: no second from Empathy 7; a held Outburst swells without Strain instead). PROVISIONAL. */
 /** Empathy's free Pump each round (rules 1.19: one from Empathy 3; Empathy 7 no longer gives a second: see swellFree).
  * The table is soul_modules.json cycle.free_pumps; whatever items add, a character takes one free Pump a turn at most
  * (magic.ts FREE_PER_TURN). */
@@ -791,7 +792,7 @@ export const counterBonus = (c: Character) => Math.max(0, fx(c, 'counter', mod(P
 /** Throwing range: 6 + 0.5 × Dexterity tiles (the Derived stats formula; spec item 17). */
 export const throwRange = (c: Character) => Math.floor(fx(c, 'throw_range', 6 + 0.5 * P(c, 'dexterity')));
 /** Ambush multiplier: 1.5 + 0.05 × Ingenuity. */
-export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1.5 + 0.05 * P(c, 'ingenuity'));
+export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1.5 + ((SKILL.ingenuity as any).per_point?.ambush_per_point ?? 0.05) * P(c, 'ingenuity')); // the card's number (skills.json Ingenuity per_point)
 /** Blessing power: 1 + 0.1 × Faith. */
 export const blessingPower = (c: Character) => fx(c, 'blessing_power', statOf('blessing', c));
 /** The Hymn cooldown's numbers (rules 1.22; patrons.json prayer.hymn.cooldown_rule; PROVISIONAL). */

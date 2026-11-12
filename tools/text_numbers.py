@@ -37,6 +37,15 @@ WHAT IS CHECKED (check(), called by validate.py)
                                      by hand, or a rewrite that slips a new number in, goes over it and is an error.
        A key is "<file>:<id>[/<nested id>]:<path to the text>:<number as written>".
 
+    4. the binding (truth pass 3, binding_errors()): a placeholder in a text held by a nested object (a Call's step, a
+       module's stage, a skill's per_point or unlock, an Overreach, a feeling's trigger) may not read into ANOTHER object
+       that has a text of its own (another step, another stage, the Overreach, another unlock, the residue); it reads its
+       own object, an ancestor, or a plain data block (`numbers`, `effects`, `amounts`; a feeling's `step`, which is the
+       number its pour adds). And by kind: "costs N" never reads a negative field (a discount) unless the text says
+       "less" or the field is a spent resource; "a natural N" is never bound (a die face has no field).
+       `--selftest-bindings` runs the rules on the shapes the review found.
+       An allow entry admits one copy of its number ({"why": ..., "n": 2} for more).
+
 To fix an error, in order: bind the number to its field with a placeholder; add the field the engine should be
 reading and bind to it; or allow it with a reason. Never add to the baseline by hand.
 """
@@ -130,6 +139,64 @@ def resolve_file(obj):
     """One parsed data file, in place (build.py loads the files one at a time)."""
     resolve_pack({"file": obj}); return obj
 
+def home_of(holder, path):
+    """The path of the object a text belongs to: the dict that holds it (a string in a list: the dict holding the list)."""
+    parts = path.split(".")
+    return ".".join(parts[:-2] if isinstance(holder, list) else parts[:-1])
+
+# A cost may not read a discount: "costs {=x|abs} AP" over a negative field is a −1 read as a price of 1.
+COST_BEFORE = re.compile(r"\bcosts?\s+(?:you\s+|it\s+|only\s+)?$", re.I)
+LESS_AFTER = re.compile(r"^\s*(?:AP|MP|Echo|charges?)?\s*(?:less|fewer|lower|off)\b", re.I)
+# A die face is a die face: "a natural {=...}" reads a modifier or a threshold that only happens to be 1 or 20.
+NATURAL_BEFORE = re.compile(r"\bnatural\s+$", re.I)
+
+def foreign_text_object(item, ref, home):
+    """The first object on the way to `ref` that has a text of its own and is not the text's own object or one of its
+    ancestors (another Call step, another stage, the Overreach, another unlock), or None."""
+    node, walked = item, []
+    for part in ref.split(".")[:-1]:
+        try: node = node[int(part)] if isinstance(node, list) else node[part]
+        except (KeyError, IndexError, ValueError, TypeError): return None
+        walked.append(part); here = ".".join(walked)
+        if part == "step": continue  # a feeling's step is the number its pour adds: the pour's text may read it
+        if isinstance(node, dict) and any(isinstance(node.get(k), str) for k in TEXT_KEYS) and not (home == here or home.startswith(here + ".")):
+            return here
+    return None
+
+def allowed_n(allow, k):
+    """How many copies an allow entry admits: 1 for a reason string, or {\"why\": ..., \"n\": count}."""
+    v = allow.get(k)
+    return 0 if v is None else int(v.get("n", 1)) if isinstance(v, dict) else 1
+
+def binding_errors(data, errors):
+    """Third pass (12 Nov 2026): a placeholder must read a field of the SAME object as its text, and of the same kind.
+    1. Scope: a text held by a nested object (a Call's step, a module's stage, a skill's per_point or unlock, an
+       Overreach) reads only that object's own fields: its path starts with the text's own object (a text at the top
+       of the item reads anything of the item). A Call step's text reading another step's numbers, a stage reading
+       another stage's riders, a per_point line reading the Overreach threshold: each is an error.
+    2. Kind: a cost ("costs N AP") never reads a negative field (a discount); a die face ("a natural N") is never bound."""
+    for stem in sorted(data):
+        for chain, item in items(data[stem]):
+            for holder, key, path, s in strings(item):
+                if "{=" not in s: continue
+                home = home_of(holder, path); where = f"{stem}.json {'/'.join(chain)} {path}"
+                for m in PH.finditer(s):
+                    ref = m.group(1)
+                    if not ref.startswith(".") and home:
+                        other = foreign_text_object(item, ref, home)
+                        if other: errors.append(f"text numbers: {where} placeholder {m.group(0)} reads {other}, an object with its own text (this text belongs to {home}): bind it to a field of {home} or of the item, add the field there, or unbind it")
+                    before, after = s[:m.start()], s[m.end():m.end() + 14]
+                    try: v = lookup(holder, ref[1:]) if ref.startswith(".") else lookup(item, ref)
+                    except (KeyError, IndexError, ValueError, TypeError): v = None
+                    parent = None
+                    try: parent = lookup(holder, ref[1:].rsplit(".", 1)[0]) if ref.startswith(".") and "." in ref[1:] else lookup(item, ref.rsplit(".", 1)[0]) if "." in ref else item
+                    except (KeyError, IndexError, ValueError, TypeError): pass
+                    spent = isinstance(parent, dict) and parent.get("op") == "resource"  # a resource's negative value IS what it costs
+                    if COST_BEFORE.search(before) and isinstance(v, (int, float)) and v < 0 and not spent and not LESS_AFTER.search(after):
+                        errors.append(f"text numbers: {where} placeholder {m.group(0)} states a cost but reads a discount ({v})")
+                    if NATURAL_BEFORE.search(before):
+                        errors.append(f"text numbers: {where} placeholder {m.group(0)} binds a die face (a natural roll has no field)")
+
 def bare_numbers(text):
     """{number as written: count} for the digits typed into a text (placeholders taken out first)."""
     out = {}
@@ -157,6 +224,7 @@ def scan(data, errors=None):
 def check(data, errors, argv=()):
     """Called by validate.py with the RAW pack: appends the errors and returns the one-line summary."""
     bare, bound, read = scan(data, errors)
+    binding_errors(data, errors)
     book = json.loads(FILE.read_text(encoding="utf8")) if FILE.exists() else {"allow": {}, "baseline": {}}
     allow, base = book.get("allow", {}), dict(book.get("baseline", {}))
     ceiling = book.get("ceiling")
@@ -172,10 +240,11 @@ def check(data, errors, argv=()):
                 "ceiling": ceiling, "allow": dict(sorted(allow.items())), "baseline": dict(sorted(base.items()))}
         FILE.write_text(json.dumps(book, indent=1, ensure_ascii=False) + "\n", encoding="utf8")
     for k, why in allow.items():
-        if not str(why).strip(): errors.append(f"text numbers: allow entry {k} has no reason")
+        if not str(why.get("why", "") if isinstance(why, dict) else why).strip(): errors.append(f"text numbers: allow entry {k} has no reason")
     if ceiling is None or sum(base.values()) > ceiling:  # a key added by hand, or a baseline rewritten around a new bare number
         errors.append(f"text numbers: the baseline holds {sum(base.values())} bare numbers and its ceiling is {ceiling}: the baseline only shrinks, a number is never added to it (bind it or allow it with a reason)")
-    new = sorted(k for k, n in bare.items() if k not in allow and n > base.get(k, 0))
+    # An allowed key allows ONE copy of its number (a second copy typed into the same text is new: truth pass 3).
+    new = sorted(k for k, n in bare.items() if n > base.get(k, 0) + allowed_n(allow, k))
     gone = sorted(k for k, n in base.items() if bare.get(k, 0) < n) + sorted(k for k in allow if k not in bare)
     for k in new[:40]:
         stem, ids, path, shown = k.split(":", 3)
@@ -214,7 +283,7 @@ def mutation(data):
                 for typed in [s + " 987"] + ([s + " " + next(iter(have)).lstrip("×")] if have else []):
                     out["typed"] += 1
                     now = bare_numbers(typed)
-                    caught = any(f"{where}:{shown}" not in allow and n > base.get(f"{where}:{shown}", 0) for shown, n in now.items())
+                    caught = any(n > base.get(f"{where}:{shown}", 0) + allowed_n(allow, f"{where}:{shown}") for shown, n in now.items())
                     if not caught: out["typed_missed"].append(where)
     return out
 
@@ -224,6 +293,21 @@ if __name__ == "__main__":
     import sys
     root = pathlib.Path(__file__).resolve().parent.parent / "data"
     pack = {p.stem: json.loads(p.read_text(encoding="utf8")) for p in sorted(root.glob("*.json"))}
+    if "--selftest-bindings" in sys.argv:
+        # The binding rules on the shapes the review found (truth pass 3): each must be an error, and the right form not.
+        bad = {"t": {"items": [
+            {"id": "call", "steps": [{"text": "gains {=steps.0.numbers.ap} AP", "numbers": {"ap": 1}}, {"text": "gains {=steps.0.numbers.ap} AP", "numbers": {"ap": 1}}]},
+            {"id": "skill", "per_point": {"text": "+{=overreach.from_points}% ambush"}, "overreach": {"from_points": 5, "text": "Indulge."}},
+            {"id": "acuity", "per_point": {"text": "it costs {=effects.0.value|abs} AP"}, "effects": [{"op": "stat_mod", "value": -1}]},
+            {"id": "shame", "trigger": {"text": "a natural {=roll|abs}"}, "roll": -1}]}}
+        good = {"t": {"items": [
+            {"id": "call", "steps": [{"text": "gains {=steps.0.numbers.ap} AP", "numbers": {"ap": 1}}, {"text": "gains {=steps.1.numbers.ap} AP", "numbers": {"ap": 1}}]},
+            {"id": "riposte", "text": "Costs {=effects.0.value|abs} Momentum", "effects": [{"op": "resource", "value": -1}]},
+            {"id": "reload", "text": "Reloading costs {=effects.0.value|abs} AP less.", "effects": [{"op": "stat_mod", "value": -1}]},
+            {"id": "feel", "step": {"range": 3, "text": "+0.2"}, "pour": {"text": "within {=step.range} tiles"}}]}}
+        e1, e2 = [], []; binding_errors(bad, e1); binding_errors(good, e2)
+        print(json.dumps({"bad": len(e1), "good": len(e2), "errors": e1 + e2}))
+        sys.exit(0 if len(e1) == 4 and not e2 else 1)
     if "--render" in sys.argv:
         raw = {}
         for stem in sorted(pack):

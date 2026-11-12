@@ -26,6 +26,15 @@ describe('truth pass 2', () => {
     f.g.characters[me.charId!].patron = other.id; f.g.characters[ally.charId!].patron = lum.id;
     hp = me.hp; withGame(f.g, () => blessing(f.cb, rng(), ally, me, { ...lumHymn, effects: [] }, 1));
     expect(hp - me.hp).toBe(10);
+    // Truth pass 3 (the review): the case item 114 is about, where the one who prays is NOT sworn to the Blessing's
+    // patron (an Atheist by dice, a knowledge piece, a Heretic). Sworn elsewhere, praying the Lumeri Hymn: it burns.
+    f.g.characters[me.charId!].patron = other.id; f.g.characters[ally.charId!].patron = other.id;
+    hp = me.hp; withGame(f.g, () => blessing(f.cb, rng(), ally, me, { ...lumHymn, effects: [] }, 1));
+    expect(hp - me.hp).toBe(10);
+    // ...and the pray-er sworn to the Lumeri patron, praying another patron's Hymn: no burn.
+    f.g.characters[ally.charId!].patron = lum.id;
+    hp = me.hp; withGame(f.g, () => blessing(f.cb, rng(), ally, me, { ...otherHymn, effects: [] }, 1));
+    expect(hp - me.hp).toBe(0);
   });
   it('Finish It (the combat knife) counts a Stunned target, as the spec\'s line does', () => {
     const f = fightWith([{ weapon: 'combat_knife' }], [{ at: 'C6' }]);

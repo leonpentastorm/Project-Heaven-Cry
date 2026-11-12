@@ -14,7 +14,7 @@
 //    tile it can walk to this turn, at the highest stage its AP buys (Pumps cost AP only; free Pumps first), and scores
 //    the plan by expected damage on visible players (the roll's chance, armour, saves) less 1.5 × what it does to its
 //    own side, plus the HP a Buff heals on hurt allies;
-//  · a snap cast (stage 0) only on two or more players, a heal, or in desperation: one target at ×0.6 is the weapon's job;
+//  · a snap cast (stage 0) only on two or more players, a heal, or in desperation: one target at stage 0's multiplier (STAGE_MULT[0]) is the weapon's job;
 //  · a big release goes now: two or more players in the area, stage 3+, a player next to it, a heal for an ally
 //    under half HP, holding no longer safe, or desperate. A small one (one player, a low stage) is held instead;
 //  · holding: free Pumps, then Pump with the AP it doesn't need to walk, and Heart Overwatch on (a Bolt always; an area
@@ -141,7 +141,7 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
         for (const aim of aimsFor(cb, u, d, t.k)) {
           const pv = previewOutburstPlan(cb, u, src, aim, { stage }); if (!pv.ok) continue;
           const v = heartPlanValue(cb, u, pv); if (!(v.score > 0)) continue;
-          // A snap cast (stage 0, ×0.6 for 3 AP) only on a cluster or in desperation: one target is the weapon's job.
+          // A snap cast (stage 0, STAGE_MULT[0] for 3 AP) only on a cluster or in desperation: one target is the weapon's job.
           if (src !== 'held' && stage < 1 && v.foes < 2 && !v.heal && !desperate(u)) continue;
           // The walk costs stage (fewer Pumps) and risk: a little less for every AP walked, so standing wins a tie.
           const score = v.score - 0.5 * t.ap;

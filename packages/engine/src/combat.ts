@@ -1881,6 +1881,7 @@ export function brace(cb: Combat, u: Unit): string | null {
   // its bearer sets only themself, for Guard and for the class moves that ask for the braced stance (rules 1.13).
   u.ap -= 1; u.braced = true; if (weaponBraces(u)) delete u.guardBrace; else u.guardBrace = true; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' }); cb.log.push(u.name + ' braces.');
   braceHook.f?.(cb, u); // a unit with a Guard pool gains Guard as it sets itself
+  emit(cb, 'protect_act', { u, how: 'brace', cb }); // 'protect_act' {u, how}: a Brace or an Interpose (the patrons' protect tag, item 600)
   return null;
 }
 
@@ -1937,7 +1938,8 @@ export function fieldRepair(cb: Combat, u: Unit): string | null {
   if ((u.dur ?? u.maxDur) >= u.maxDur) return 'Already in full repair.';
   const cost = actionAp({ u }, 'field_repair', 2).ap;
   if (u.ap < cost) return 'Needs ' + cost + ' AP.';
-  const add = Math.ceil(u.maxDur * (0.1 + 0.05 * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
+  const fr: any = (SKILL.proficiency as any).unlocks?.['3']?.effects?.[0] || {}; // the card's numbers (skills.json Field Repair)
+  const add = Math.ceil(u.maxDur * ((fr.repair_base ?? 0.1) + (fr.repair_per_point ?? 0.05) * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
   u.ap -= cost; u.parts = (u.parts || 0) - 1; u.dur = Math.min(u.maxDur, (u.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, at: u.pos, dur: 1400 });
   cb.log.push(u.name + ' patches the weapon: +' + add + ' durability (' + u.dur + '/' + u.maxDur + ').'); return null;
 }

@@ -441,7 +441,7 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const mg = caster?.mg, sm = mg?.sigilMult || 1, hm = mg?.healMult || 1;
   let el = 0, sg = 0, hl = 0, sh = 0;
   for (const p of sigilParts(sp.subjects, sp.infl)) { if (p.type === 'elemental') el += p.n; else sg += p.n; }
-  const foe = !!caster && !caster.charId && !caster.ctrl; // a character's caster, whatever side it stands on (Team B in the Proving Ground); rules 1.20: an enemy caster keeps the bases the enemy table was fitted with
+  const foe = !!caster && caster.side !== 'pc' && !caster.charId && !caster.ctrl; // an enemy caster (rules 1.20: it keeps the bases the enemy table was fitted with). A character casts at a character's bases on either side (Team B in the Proving Ground), and so does an allied caster that is not a character (truth pass 3: the first fix moved it onto the enemy bases)
   for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; const dh = foe ? d.heal_enemy ?? d.heal : d.heal, ds = foe ? d.shield_enemy ?? d.shield : d.shield; if (dh) hl += dh * (1 + iv(sp, w, 'heal_pct') / 100); if (ds) sh += ds * (1 + iv(sp, w, 'shield_pct') / 100); }
   const sharp = caster && condOn(caster, 'sharpened') && roll ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
   const hook = (kind: string): number => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1);

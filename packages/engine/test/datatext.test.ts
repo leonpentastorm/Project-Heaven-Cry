@@ -8,6 +8,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import { renderText, resolveTexts, fmtNumber, PERK, WEAPON, TRAIT } from '../src';
+import * as SRC from '../src';
 
 const ROOT = join(__dirname, '..', '..', '..');
 const py = (...args: string[]) => execFileSync('python3', [join(ROOT, 'tools', 'text_numbers.py'), ...args], { encoding: 'utf8', maxBuffer: 64 << 20 });
@@ -49,7 +50,18 @@ describe('texts read their numbers', () => {
     const left: string[] = [];
     const scan = (o: any, at: string) => { if (typeof o === 'string') { if (o.includes('{=')) left.push(at); } else if (o && typeof o === 'object') for (const k of Object.keys(o)) scan(o[k], at + '.' + k); };
     scan(PERK, 'PERK'); scan(WEAPON, 'WEAPON'); scan(TRAIT, 'TRAIT');
+    // truth pass 3 (the review): every table the engine exports from data, not three of them
+    for (const [k, v] of Object.entries(SRC)) if (/^[A-Z][A-Z_]+$/.test(k) && v && typeof v === 'object') scan(v, k);
     expect(left).toEqual([]);
+  });
+  it('every engine file that imports a data JSON imports datatext first (else its texts could reach the screen unfilled)', () => {
+    const bad: string[] = [];
+    const walk = (dir: string) => { for (const f of readdirSync(dir, { withFileTypes: true })) { const p = join(dir, f.name); if (f.isDirectory()) walk(p); else if (/\.ts$/.test(f.name) && f.name !== 'datatext.ts') {
+      const src = readFileSync(p, 'utf8'), d = src.search(/^import [^\n]*data\/[a-z_]+\.json'/m); if (d < 0) continue;
+      const t = src.search(/^import '\.{1,2}\/(?:\.\.\/)*datatext';/m); if (t < 0 || t > d) bad.push(p.slice(ROOT.length + 1));
+    } } };
+    walk(join(ROOT, 'packages', 'engine', 'src'));
+    expect(bad).toEqual([]);
   });
   it('filling is in place and filling twice changes nothing', () => {
     const item = { id: 'x', text: 'Deals +{=effect.mult|more}% for {=ap} AP; {name} stays.', effect: { mult: 1.5 }, ap: 2 };

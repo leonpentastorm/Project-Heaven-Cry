@@ -14,7 +14,9 @@ import { mod, packOf } from '../character';
 import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, type AttackMode } from '../combat';
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength, saveAgainst , saveTn } from '../magic';
 import { tendHook } from '../effects/damage';
-import { WEAPON } from '../data';
+import { WEAPON, PERK } from '../data';
+/** Case Closed's two numbers, read from its card (perks.json effects[1] and [2]): the Defense and the damage. */
+const CASE_CLOSED: any[] = (PERK.case_closed as any)?.effects || [];
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
 import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
 import { cdFire, cdTick, landsNext } from './cooldown';
@@ -341,15 +343,15 @@ function closeCase(h: Holder, t: Unit) {
   t.weakPoint = true;
   const conds = debuffsOf(t);
   say(h.cb, 'Case Closed on ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + ', ' + (t.kind || 'human') + ((t.tags || []).length ? ' (' + t.tags!.join(', ') + ')' : '') +
-    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · read: it deals 15% less to the squad, the squad has +2 Defense against it and deals 20% more to it · motive: for the Narrator.');
+    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · read: it deals 15% less to the squad, the squad has +' + Math.abs(CASE_CLOSED[1]?.value ?? -2) + ' Defense against it and deals ' + Math.round(((CASE_CLOSED[2]?.value ?? 1.2) - 1) * 100) + '% more to it · motive: for the Narrator.');
   note(h, h.u!.name + ' read ' + t.name + ' completely: say what it wants, in the report.');
 }
 register({
   id: 'case_closed', claims: 'all',
   on: {
     analyze: (ctx, h) => { if (ctx.u === h.u && ctx.t) closeCase(h, ctx.t); },
-    attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: -2, label: 'Case Closed' }); },
-    damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: 1.2, label: 'Case Closed' }); },
+    attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: CASE_CLOSED[1]?.value ?? -2, label: 'Case Closed' }); },
+    damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: CASE_CLOSED[2]?.value ?? 1.2, label: 'Case Closed' }); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !ctx.roll?.ok || !ctx.ck.skills?.includes('analysis') || !h.g || !h.c) return;
       pendRuling(h.g, h.c, h.key, 'Case Closed: the Acuity check succeeded; tell ' + h.c.name + ' (a private perkLine) what ' + (ctx.ck.target || 'the subject') + ' wants most.');

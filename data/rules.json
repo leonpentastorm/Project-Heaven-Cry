@@ -633,9 +633,9 @@
         "id": "pray",
         "ap": "by the prayer (patrons.json prayer): a Whisper 1, a Hymn 3, a Miracle 3",
         "requires": {
-          "patron": true,
           "faith_min": 3
-        }
+        },
+        "note": "an Atheist prays too, by dice, with no patron (rules 1.6: Atheists and pilgrims)"
       },
       {
         "id": "speak",
@@ -1493,11 +1493,10 @@
       "nat20 benefit and nat1 complication",
       "granting the Achieved perks whose deeds the engine cannot watch (it grants the nine fight deeds itself, rules 1.14; any may still be granted by hand) and recording deeds",
       "awarding XP by source",
-      "judging on-theme vs off-theme while Witnessed",
-      "designing Miracles",
       "setting the starting meter by location",
       "Legendary Deeds",
       "keeping the Veil and the Knowing",
+      "Faith (rules 1.6): pacts, knowledge pieces, Narrator rites, Devotion XP moves for deeds (-6 to +5) and the day counter; the engine owns the tags, vows, Witnessed, interventions and the Miracles",
       "trait and perk effects flagged narrator"
     ]
   },

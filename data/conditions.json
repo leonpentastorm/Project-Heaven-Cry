@@ -537,7 +537,7 @@
       "kind": "state",
       "family": null,
       "save": false,
-      "text": "Your patron is watching you. Your attacks that carry a tag your patron likes get +2 to hit, and a taboo action costs double Devotion XP. You become Witnessed, if you have Faith 5, when a Hymn of your own patron succeeds or you work a Miracle. It lasts until the fight ends or your patron intervenes.",
+      "text": "Your patron is watching you. Your attacks that carry a tag your patron likes get +2 to hit (a kill is not such a tag: for a patron that likes kills, a kill made while Witnessed earns +{=effects.0.value} on your next attack roll, kept after Witnessed ends), and a taboo action costs double Devotion XP. You become Witnessed, if you have Faith 5, when a Hymn of your own patron succeeds or you work a Miracle. It lasts until the fight ends or your patron intervenes.",
       "effects": [
         {
           "op": "attack_mod",

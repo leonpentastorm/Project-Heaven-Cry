@@ -51,7 +51,7 @@ export interface MagicUnit {
   mp: number; mpMax: number; strain: number; held: HeldOutburst | null;
   /** Rules 1.5: this turn the heart was worked (Begin, Pump or Feed; class casts set it too): no stillness at the turn's end. */
   cast: boolean;
-  /** Free Pumps left this round and per round (Empathy 3: 1, 7: 2); the calming ways used this turn; Strain owed on the next Begin. */
+  /** Free Pumps left this round and per round (Empathy 3: 1; rules 1.19: no second from Empathy 7); the calming ways used this turn; Strain owed on the next Begin. */
   freePumps?: number; freePumpsMax?: number; calmFight?: boolean; calmTend?: boolean; debt?: number;
   /** Rules 1.19: the free stages taken this turn (a character takes FREE_PER_TURN at most, whatever gives them); from
    * Empathy 7 a swell adds no Strain. */
@@ -115,7 +115,7 @@ const CONDS: Record<string, CondDef> = {
   quickened: { name: 'Quickened', fam: 'body', rounds: 99, noTick: true, boon: true, text: '+2 AP on your next turn (within the ceiling of 9).' },
   sharpened: { name: 'Sharpened', fam: 'body', rounds: 1, boon: true, text: 'Your next attack: +3 to hit and ×1.25 damage (until that attack, or the end of your next turn).' },
   // Rules 1.6.3 (item 738): until the fight ends or the patron intervenes (faith.ts ends it), so it never ticks.
-  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 99, noTick: true, boon: true, text: 'Your patron is watching until the fight ends or it intervenes: attack rolls carrying a tag your patron likes +2; taboo actions cost double Devotion XP.' },
+  witnessed: { name: 'Witnessed', fam: 'heart', rounds: 99, noTick: true, boon: true, text: 'Your patron is watching until the fight ends or it intervenes: attack rolls carrying a tag your patron likes +2 (a kill is not one: for a patron that likes kills, a kill made while Witnessed gives +2 on your next attack roll); taboo actions cost double Devotion XP.' },
   smitten: { name: 'Smitten', fam: 'heart', rounds: 1, text: 'You can\'t attack the one who smote you, or the allies linked to them (Sweet Nothings).' },
   hopeful: { name: 'Hopeful (+2)', fam: 'heart', rounds: 1, boon: true, text: 'Your next attack or spell roll gets +2 (Hope).' },
   scorned: { name: 'Scorned', fam: 'heart', rounds: 2, noSave: true, text: '−2 to attack the one who scorned you (Contempt).' },
@@ -200,7 +200,7 @@ export function magicToCharacter(c: Character, u: Unit) {
     m.cores = want; m.coresMade = 0;
   }
 }
-/** Saves (spec: Conditions and saves): a PC's d20 + mod(Guts | Charisma | Composure) + items, from the unit (u.sv,
+/** Saves (spec: Conditions and saves): a PC's d20 + mod(Guts | Rumination | Composure) + items, from the unit (u.sv,
  * fixed when the unit is built, so every PC has it, casters or not); enemies by tier (+0 / +1 / +2 / +3). Shaken is −2
  * on Heart saves. unitSave is the one collector (lanes add through 'cond_apply' saveAdd or stat 'save_<family>'). */
 /** Is a condition a boon (Guarded, Inspired, Witnessed…)? (Unravel ends them; rules 1.6.) */
@@ -314,7 +314,7 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
   const f: Fam = ca.fam || fam || def.fam;
   // The log shows every save, failed ones too (spec: Sigils 9, Afterwards: "every target, roll, save and number").
   let saved = '';
-  // Rules 1.8: Defiance poured in, no saves against the release (NOSAVE_BY); Defiance's "your next save passes".
+  // Defiance poured in: every save against the release is DEFY_PEN harder (rules 1.19; rules 1.8 had no save at all, NOSAVE_BY); Defiance's "your next save passes".
   if (NOSAVE_BY && by === NOSAVE_BY && t !== by) { if (DEFY_PEN > 0) ca.tnAdd = (ca.tnAdd || 0) + DEFY_PEN; else ca.skipSave = true; } // rules 1.19: 4 harder to resist (it was: no save)
   if (!BOOST.has(id) && !def.noSave && !ca.skipSave) {
     // the one save (rolls.ts): 'cond_apply' was fired above, so its context is handed over (ca). Defiance's "your next save passes" is settled there.
@@ -561,7 +561,7 @@ export function enemyScuff(cb: Combat, u: Unit): boolean {
 /** The spell being cast now, for the damage it deals (Drink It In gains the real MP cost or 10 per Sigil word). */
 let SPELL: { mp?: number; words?: number } | null = null;
 
-/** Rules 1.8 release state: whose release skips saves (Defiance), whose damage Downs instead of killing (Mercy). */
+/** Rules 1.8 release state: whose release is harder to save against (Defiance: rules 1.19), whose damage Downs instead of killing (Mercy). */
 let NOSAVE_BY: Unit | null = null, NONLETHAL_BY: Unit | null = null;
 /** Rules 1.19, Defiance: what its Release adds to every save's TN (0: the old rule, no save at all). */
 const DEFY_PEN: number = Number((FEELING.defiance?.pour as any)?.save_penalty || 0);

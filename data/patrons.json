@@ -115,8 +115,7 @@
       "ends_witnessed": true,
       "amount": {
         "base": 20,
-        "per_devotion": 4,
-        "scales_with": "blessing_power"
+        "per_devotion": 4
       },
       "text": "While you are Witnessed, your patron acts on its own when its trigger happens, and then Witnessed ends. It can happen once a fight, or twice from Devotion 7. Its damage is 20 + 4 × your Devotion, × your Blessing power; Mother Ember's healing is 10 + 3 × your Devotion, × your Blessing power."
     },
@@ -221,7 +220,6 @@
           "value": 5
         }
       ],
-      "scales_with": "blessing_power",
       "adjudication": "engine",
       "provisional": true
     },
@@ -236,7 +234,6 @@
           "value": 6
         }
       ],
-      "scales_with": "blessing_power",
       "adjudication": "engine",
       "provisional": true
     },
@@ -305,7 +302,6 @@
           "damage_type": "soul"
         }
       ],
-      "scales_with": "blessing_power",
       "adjudication": "engine",
       "provisional": true
     }
@@ -437,7 +433,6 @@
         "trigger": "enemy_harms_helpless",
         "text": "When an enemy damages a surrendered or Downed creature, that enemy takes 20 + {=intervention.effects.0.per_devotion|abs} × your Devotion Soul damage, × your Blessing power.",
         "scale": "devotion",
-        "scales_with": "blessing_power",
         "effects": [
           {
             "op": "stat_mod",
@@ -464,7 +459,6 @@
               "value": 16
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -487,7 +481,6 @@
               "mult": 1.3
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -507,7 +500,6 @@
               "value": 9
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         }
@@ -545,7 +537,6 @@
             "target": "harmed_helpless"
           }
         ],
-        "scales_with": "blessing_power",
         "adjudication": "engine",
         "provisional": true
       },
@@ -721,7 +712,6 @@
               "value": 1
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -742,7 +732,6 @@
               "state": "braced"
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -761,7 +750,6 @@
               "area": "3x3"
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         }
@@ -813,7 +801,6 @@
             "scope": "squad"
           }
         ],
-        "scales_with": "blessing_power",
         "adjudication": "engine",
         "provisional": true
       },
@@ -962,7 +949,6 @@
               "uses": 2
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -979,7 +965,6 @@
               "save": "brain"
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -1001,7 +986,6 @@
               "save": "with_prone"
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         }
@@ -1026,7 +1010,6 @@
             "target": "enemies_in_sight"
           }
         ],
-        "scales_with": "blessing_power",
         "adjudication": "engine",
         "provisional": true
       },
@@ -1176,7 +1159,6 @@
               "revive": true
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -1195,7 +1177,6 @@
               "scope": "allies_in_sight"
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true,
           "own_cooldown": 6
@@ -1214,7 +1195,6 @@
               "boss_damage": 40
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         }
@@ -1233,7 +1213,6 @@
             "scope": "allies_fallen"
           }
         ],
-        "scales_with": "blessing_power",
         "adjudication": "engine",
         "provisional": true
       },
@@ -1358,7 +1337,6 @@
         "trigger": "ally_below_quarter",
         "text": "When an ally drops below a quarter of their HP, they heal {=intervention.effects.0.value} + {=intervention.effects.0.per_devotion} × your Devotion, × your Blessing power.",
         "scale": "devotion",
-        "scales_with": "blessing_power",
         "effects": [
           {
             "op": "heal",
@@ -1383,7 +1361,6 @@
               "value": 13
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -1408,7 +1385,6 @@
               ]
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -1432,7 +1408,6 @@
               ]
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         }
@@ -1460,7 +1435,6 @@
             "target": "allies"
           }
         ],
-        "scales_with": "blessing_power",
         "adjudication": "engine",
         "provisional": true
       },
@@ -1583,7 +1557,6 @@
         "trigger": "you_kill",
         "text": "When you kill an enemy, the nearest other enemy takes {=intervention.effects.0.value|abs} + {=intervention.effects.0.per_devotion|abs} × your Devotion lightning damage, × your Blessing power.",
         "scale": "devotion",
-        "scales_with": "blessing_power",
         "effects": [
           {
             "op": "stat_mod",
@@ -1624,7 +1597,6 @@
               "radius": 2
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -1648,7 +1620,6 @@
               "value": 23
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -1666,7 +1637,6 @@
               "scope": "allies"
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         }
@@ -1701,7 +1671,6 @@
             "filter": "enemies"
           }
         ],
-        "scales_with": "blessing_power",
         "adjudication": "engine",
         "provisional": true
       },
@@ -1851,7 +1820,6 @@
               "rounds": 2
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -1869,7 +1837,6 @@
               "rounds": 1
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -1889,7 +1856,6 @@
               "value": 2
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         }
@@ -1916,7 +1882,6 @@
             "target": "boss_in_sight"
           }
         ],
-        "scales_with": "blessing_power",
         "adjudication": "engine",
         "provisional": true
       },
@@ -2062,7 +2027,6 @@
               "uses": 2
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -2078,7 +2042,6 @@
               "scope": "buffs_and_shield"
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         },
@@ -2101,7 +2064,6 @@
               }
             }
           ],
-          "scales_with": "blessing_power",
           "adjudication": "engine",
           "provisional": true
         }
@@ -2123,7 +2085,6 @@
             "scope": "allies"
           }
         ],
-        "scales_with": "blessing_power",
         "adjudication": "engine",
         "provisional": true
       },

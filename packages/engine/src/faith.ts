@@ -63,6 +63,8 @@ export const GATE = { whisper: 0, 1: PJ.devotion?.gates?.hymn_1 ?? 3, 2: PJ.devo
 /** What a Miracle costs: whole Devotion levels, after its effect (rules 1.6.2, item 725: 10 → 5). */
 export const MIRACLE_COST_LEVELS: number = PR.miracle?.devotion_cost_levels ?? 5;
 /** Witnessed's bonus on an attack roll (item 595; rules 1.22 item 1288). */
+/** Together's conditions are held until the caster's next turn starts (ended there), never by the bearer's own clock. */
+const TOGETHER_HOLD = 99;
 export const WITNESS_BONUS: number = PR.witnessed?.like_bonus ?? 2;
 export const FAITH_MIN = PR.faith_min ?? 3, WITNESS_FAITH = PR.witnessed?.faith_min ?? 5, MIRACLE_FAITH = PR.miracle?.faith_min ?? 7;
 export const AP_COST = { whisper: PR.whisper?.ap ?? 1, hymn: PR.hymn?.ap ?? 3, miracle: PR.miracle?.ap ?? 3 };
@@ -698,6 +700,7 @@ export function registerFaithHooks() {
   onHook('heal_given', (ctx, cb) => { const by: Unit | null = ctx.by, t: Unit = ctx.t; if (by && t !== by && t.side === by.side && (ctx.n > 0 || ctx.revived)) { faithTag(cb, by, 'heal'); if (ctx.kind === 'stim') faithTag(cb, by, 'supply'); if (ctx.revived && vowOn(by, 'no_one_behind')) fulfilVow(cb, by, t.name + ' is back on their feet'); } });
   onHook('shield_grant', (ctx, cb) => { const by: Unit | null = ctx.by, t: Unit = ctx.t; if (by && t !== by && t.side === by.side && ctx.n > 0) faithTag(cb, by, 'protect'); });
   onHook('braced', (ctx, cb) => faithTag(cb, ctx.u, 'protect'));
+  onHook('protect_act', (ctx, cb) => faithTag(cb, ctx.u, 'protect')); // the general Brace and an Interpose (item 600; truth pass 3)
   onHook('on_surrender', (ctx, cb) => { if (ctx.by) { faithTag(cb, ctx.by, 'mercy'); if (vowOn(ctx.by, 'mercy') && ctx.t && ctx.t.side !== ctx.by.side) fulfilVow(cb, ctx.by, ctx.t.name + (ctx.why === 'subdued' ? ' is spared' : ' yields to them')); } });
   onHook('hide', (ctx, cb) => faithTag(cb, ctx.u, 'trick'));
   onHook('gift', (ctx, cb) => { const by: Unit | null = ctx.by || ctx.from || ctx.u; if (by) faithTag(cb, by, 'supply'); });
@@ -722,7 +725,11 @@ export function registerFaithHooks() {
     // Expiring "until your next turn" effects cast by this unit.
     const x: any = cb; if (x.faithGates) x.faithGates = x.faithGates.filter((gt: any) => gt.by !== u.id);
     if (x.faithClouds) x.faithClouds = x.faithClouds.filter((cl: any) => cl.by !== u.id);
-    // Hearthlight: allies starting a turn in it heal 10 × power.
+    if (x.faithTogether) { // Together ends now: the pair's Inspired and Guarded from this caster
+      for (const tg of x.faithTogether.filter((t: any) => t.by === u.id)) for (const id of tg.ids) { const v = cb.units.find((w) => w.id === id); if (!v) continue; for (const k of ['inspired', 'guarded']) if (condSource(v, k) === u.id) endCond(v, k, cb); }
+      x.faithTogether = x.faithTogether.filter((t: any) => t.by !== u.id);
+    }
+    // Hearthlight: allies starting a turn in it heal the zone's amount (patrons.json; × power × the level factor).
     for (const z of x.faithZones || []) if (z.until >= cb.round && z.side === u.side && z.tiles.includes(u.pos) && !u.dead) cb.log.push('Hearthlight: ' + u.name + healLine(cb, cb.units.find((v) => v.id === z.by) || null, u, z.heal));
   });
   onHook('turn_end', (ctx, cb) => {
@@ -788,7 +795,7 @@ export function registerFaithHooks() {
     if (tgt && att.side !== tgt.side) { if (vowOn(tgt, 'stand')) fs(tgt).standHit = true; for (const w of cb.units) if (w !== tgt && w.side === tgt.side && vowOn(w, 'shield') && (w.vow!.allyId === tgt.id || (!!tgt.charId && w.vow!.allyId === tgt.charId))) fs(w).shieldAtk = att.id; }
     if (tgt?.faith?.foreknown && att.side !== tgt.side) { const left = (tgt.faith.foreknown === true ? 1 : Number(tgt.faith.foreknown) || 1) - 1; if (left > 0) tgt.faith.foreknown = left; else delete tgt.faith.foreknown; rc.hit = false; cb.log.push('Foreknowing: the attack on ' + tgt.name + ' misses.'); return; }
     if (vowOn(att, 'bare') && !isMelee(WEAPON[att.weapon]) && rc.mode !== 'melee') breakVow(cb, att, 'attacked with a gun');
-    // Lucky Break: the next failed attack roll is rerolled at +5.
+    // Lucky Break: the next failed attack rolls (its `uses`, 2 since rules 1.21) are each rerolled at +5.
     if (att.faith?.luckyBreak && rc.hit !== true) {
       const fails = !attackHits({ ...rc, hit: undefined });
       if (fails) { const left = (att.faith.luckyBreak === true ? 1 : Number(att.faith.luckyBreak) || 1) - 1; if (left > 0) att.faith.luckyBreak = left; else delete att.faith.luckyBreak; const r = rerollAttack(rc, rc.rng || rngOf(), 5); cb.log.push('Lucky Break: ' + att.name + ' rerolls (d20 ' + r + ' +5).'); }
@@ -1131,7 +1138,12 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     // The Matchmaker
     case 'red_thread': { const [x, y] = two; ((cb as any).faithLinks ||= []).push({ a: x.id, b: y.id, until: cb.round + 1, by: u.id }); return ' · ' + x.name + ' and ' + y.name + ' are bound by a red thread for 2 rounds'; }
     case 'sweet_nothings': return applyCond(cb, rng, u, one!, 'smitten', 1, 'heart');
-    case 'together': { const [x, y] = two; return applyCond(cb, rng, u, x, 'inspired', 1, undefined, { skipSave: true }) + applyCond(cb, rng, u, x, 'guarded', 1, undefined, { skipSave: true }) + applyCond(cb, rng, u, y, 'inspired', 1, undefined, { skipSave: true }) + applyCond(cb, rng, u, y, 'guarded', 1, undefined, { skipSave: true }); }
+    case 'together': {
+      // Until the caster's next turn (the card; item 615): held on the fight and ended at the caster's turn_start, as Hold
+      // the Gate is. A 1-round condition ended at each bearer's own turn end instead (truth pass 3).
+      const [x, y] = two; ((cb as any).faithTogether ||= []).push({ by: u.id, ids: [x.id, y.id] });
+      return applyCond(cb, rng, u, x, 'inspired', TOGETHER_HOLD, undefined, { skipSave: true }) + applyCond(cb, rng, u, x, 'guarded', TOGETHER_HOLD, undefined, { skipSave: true }) + applyCond(cb, rng, u, y, 'inspired', TOGETHER_HOLD, undefined, { skipSave: true }) + applyCond(cb, rng, u, y, 'guarded', TOGETHER_HOLD, undefined, { skipSave: true });
+    }
     case 'love_conquers': { // rules 1.6.2 (item 733): non-boss enemies in sight surrender, no save; who can't yield: Heart save or Commanded (hold)
       let out = '';
       for (const v of enemiesInSight(cb, u)) {

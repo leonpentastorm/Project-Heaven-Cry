@@ -83,7 +83,7 @@
         },
         {
           "at": 3,
-          "text": "An ally gains {=steps.0.numbers.ap} AP and loses {=steps.1.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
+          "text": "An ally gains {=steps.1.numbers.ap} AP and loses {=steps.1.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "numbers": {
             "ap": 1,
             "pressure": 1
@@ -91,7 +91,7 @@
         },
         {
           "at": 7,
-          "text": "An ally gains {=steps.2.numbers.ap} AP and loses {=steps.1.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
+          "text": "An ally gains {=steps.2.numbers.ap} AP and loses {=steps.2.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "numbers": {
             "ap": 2,
             "pressure": 1
@@ -280,7 +280,7 @@
         },
         {
           "at": 7,
-          "text": "Just before the next weapon attack on an ally is rolled, they step up to {=steps.1.numbers.tiles} tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. That attack is at {=steps.2.numbers.hit} to hit, and it is wasted if it can no longer reach them. It lasts until the start of your next turn.",
+          "text": "Just before the next weapon attack on an ally is rolled, they step up to {=steps.2.numbers.tiles} tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. That attack is at {=steps.2.numbers.hit} to hit, and it is wasted if it can no longer reach them. It lasts until the start of your next turn.",
           "numbers": {
             "tiles": 2,
             "hit": -2
@@ -309,7 +309,7 @@
         },
         {
           "at": 3,
-          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses {=steps.0.numbers.ap_loss} AP on its next turn and can't move toward you on that turn.",
+          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses {=steps.1.numbers.ap_loss} AP on its next turn and can't move toward you on that turn.",
           "numbers": {
             "ap_loss": 1,
             "no_approach": 1

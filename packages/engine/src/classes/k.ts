@@ -528,7 +528,7 @@ register({
   brief: () => null,
 });
 // Love Made Manifest (K12, PROVISIONAL, audit 1-4; rules 1.5): once per fight, a toggle on Begin: a Beloved Outburst
-// Begins at stage 4, the heart full at once (×2.2 and the tone's stage-4 rider; a snap cast releases at stage 4). Its
+// Begins at stage 4, the heart full at once (stage 4's multiplier, STAGE_MULT[4], and the tone's stage-4 rider; a snap cast releases at stage 4). Its
 // Begin Strain is paid as usual. 1.2's ×3 is gone: on 1.5's stage table it would reach ×6.6 (item 527).
 register({
   id: 'devoted.love_made_manifest', claims: 'all', priority: 200,
@@ -1444,7 +1444,7 @@ register({
 // =============================================================================================== VESSEL
 // Inner Charge (K28, PROVISIONAL, audit 1-6; rules 1.5, item 531): Begin's 2 AP, 20 MP (× the air's cost band; from the
 // air without an Emanator, +2 Strain), 1 Strain (2 in Flooded air): take a body form and hold it like an Outburst. A
-// form starts at stage 1 and reads the 1.5 stage table (×1, ×1.4, ×1.8, ×2.2 at stage 4); it swells a stage at your
+// form starts at stage 1 and reads the stage table (magic.ts STAGE_MULT, stages 1 to 4); it swells a stage at your
 // turn start and strains you 1 each (2 Flooded). "Pump a form" (1 AP, or one of Empathy's free Pumps) adds a stage to
 // one form. Iron armour +10, Surge melee and unarmed damage +15, Swift Movement +2, Steady no Prone or push and +2 Body
 // saves, Heartbeat heal 10 at turn start: each × its stage multiplier. Pain to Power: +1 AP next turn per 20 damage
@@ -1552,8 +1552,8 @@ register({
 });
 // Release (K29, PROVISIONAL, audit 1-4; rules 1.5, item 532): 1 AP (a melee attack roll with your fists or melee
 // weapon), or free with a melee hit (a toggle on the attack): every form ends in one strike. Each form adds 15 Soul
-// damage × its stage multiplier (stage 1 ×1 … stage 4 ×2.2), summed, × your Soul multiplier, armour ignored (1.2's
-// +15 a stage capped at 8 stages is gone: two stage-4 forms are 66 before the multiplier). The forms end on a miss too.
+// damage × its stage multiplier (magic.ts STAGE_MULT), summed, × your Soul multiplier, armour ignored (1.2's
+// +15 a stage capped at 8 stages is gone: two stage-4 forms are 2 × 15 × STAGE_MULT[4] before the multiplier). The forms end on a miss too.
 const releaseSum = (h: Holder) => formsOf(h).reduce((a, x) => a + itemAmount('class:vessel.release_strike', 'damage', [term(vesselMult(x.stage), 'stage')]), 0);
 function releaseRider(h: Holder, t: Unit, rng: Rng): string {
   const u = h.u!, cb = h.cb!, fs = formsOf(h); if (!fs.length) return '';
