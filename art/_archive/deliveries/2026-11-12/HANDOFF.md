@@ -2,13 +2,13 @@
 
 **Destination: `art/briefs-complete`; keep develop and the implementer branch untouched.** The prompt file was found on `claude/charming-gauss-hbq4n0` at `dd35e4b8`; it was safely fast-forwarded into this art branch. No force pushes. Fetch current refs and preserve any subsequent implementer work before continuing.
 
-Actual delivered: **21/21**. Every delivered image was generated with image_gen, shown in chat, technically exported, validated, committed and pushed before the next render. New art is review-candidate with production_approved:false. The exact delivered list is progress.json; production selections and source/reference hashes are manifest.json.
+Actual delivered: **22/77**. Every delivered image was generated with image_gen, shown in chat, technically exported, validated, committed and pushed before the next render. New art is review-candidate with production_approved:false. The exact delivered list is progress.json; production selections and source/reference hashes are manifest.json.
 
 ## Next work
 
-The current 21-job stage is fully drawn. Await Leon’s Outburst test verdict before the remaining glyphs/modules.
+Next image: **`feeling-shame`**.
 
-Remaining ordered queue: none in the current stage.
+Remaining ordered queue: `feeling-shame`, `feeling-pride`, `feeling-despair`, `feeling-hope`, `feeling-mercy`, `feeling-cruelty`, `feeling-loneliness`, `feeling-belonging`, `feeling-dread`, `feeling-awe`, `feeling-longing`, `feeling-relief`, `feeling-contempt`, `feeling-guilt`, `feeling-jealousy`, `feeling-wonder`, `feeling-defiance`, `feeling-abandon`, `module-move`, `module-homing`, `module-swift`, `module-ether`, `module-right`, `module-left`, `module-time`, `module-inverse`, `module-size`, `module-random`, `module-at_once`, `module-wave`, `module-burst`, `module-aura`, `module-lance`, `module-fuse`, `module-return`, `module-volley`, `module-bloom`, `module-anchor`, `module-lure`, `module-shell`, `module-linger`, `module-quiet`, `module-silent`, `module-thread`, `module-cascade`, `module-tether`, `module-siphon`, `module-phantom`, `module-volatile`, `module-bastion`, `module-judgement_mark`, `module-halo`, `ui-revert`, `ui-practice`, `ui-felt`.
 
 Read `art/AGENTS.md`, `art/README.md`, `art/style-guide/PHC-Style-Guide.md`, `art/icons/STYLE-LOCK.md`, `art/briefs/GPT-PROMPTS-2026-11-12.md` and its linked current request/rules documents. Read queue.json in this folder: it contains exact prompts, reference paths and delivered flags. **Do not skip Both Hands just because its id exists:** its replacement is already delivered here and its stand-in is preserved in art/_archive/icons/perks/2026-11-12/. Do not rely on the Wick section heading13: the table and ART-REQUESTS enumerate11 (Rebuke, Both Hands, nine Calls).
 
@@ -21,7 +21,7 @@ Read `art/AGENTS.md`, `art/README.md`, `art/style-guide/PHC-Style-Guide.md`, `ar
 
 ## Review gates and final handoff
 
-The current stage is11 Wick icons plus6 feelings (Rage, Grief, Fear, Love, Joy, Calm) and4 modules (Split, Ricochet, Orbit, Echo). The brief explicitly requires Leon’s verdict on that ten-icon Outburst test set before the rest. Do not call the full25/38/UI-mark commission complete. An async question asks which optional map layouts are approved: no answer is recorded yet. Generate current tile guides before any map painting; Proving Ground additionally needs its playtest gate. Do not start M813/sketch maps or equipment paintings, which are on hold. No title-screen, 3D Narrator, completed animation or old180-icon redraws.
+The complete icon queue is11 Wick icons,25 feeling glyphs,38 module icons and3 UI marks,77 total. Leon explicitly approved both ten-icon test-set styles and said to continue. No further initial-test approval is pending. Keep individual art production_approved:false. Do not claim the full commission complete until all77 are actually delivered. An async question asks which optional map layouts are approved: no answer is recorded yet. Generate current tile guides before any map painting; Proving Ground additionally needs its playtest gate. Do not start M813/sketch maps or equipment paintings, which are on hold. No title-screen, 3D Narrator, completed animation or old180-icon redraws.
 
 At the stage end update ART-REQUESTS statuses and this handoff accurately, refresh hashes with `python3 tools/rehash_art_checksums.py`, run `python3 tools/validate_art.py` and `git diff --check`, push final handoff and verify clean worktree and matching remote. Build asset exports if appropriate; Calls still require implementer UI wiring (do not alter gameplay).
 

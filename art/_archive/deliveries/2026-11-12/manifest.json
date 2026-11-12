@@ -859,6 +859,52 @@
           "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
         }
       ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-spite.png",
+      "sha256": "d3e9c1a2b22aff103313378db7c51cfe595c1fb20c3b33d5c963bbddcc335704",
+      "id": "feeling-spite",
+      "family": "feelings",
+      "action": "Spite: a hooked ribbon turning back on itself like a barb.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-spite.png",
+        "sha256": "ac5819ba0c7ddee9af6f8d8734a69ad576ab5e8862a6d4e5f8ff7e70e0057b17"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-spite.png",
+        "sha256": "d3e9c1a2b22aff103313378db7c51cfe595c1fb20c3b33d5c963bbddcc335704"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-spite.txt",
+        "sha256": "b4dbb3ba9b3d62864f0774e7d408795dcbf6ce11645ed42af6e7da96cbfdc059"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-spite.png",
+        "128": "art/icons/feelings/exports/128/feeling-spite.png",
+        "64": "art/icons/feelings/exports/64/feeling-spite.png",
+        "56": "art/icons/feelings/exports/56/feeling-spite.png",
+        "48": "art/icons/feelings/exports/48/feeling-spite.png",
+        "44": "art/icons/feelings/exports/44/feeling-spite.png",
+        "40": "art/icons/feelings/exports/40/feeling-spite.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
     }
   ]
 }

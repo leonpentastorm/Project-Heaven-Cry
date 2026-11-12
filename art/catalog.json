@@ -10424,6 +10424,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-calm.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-calm.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-spite": {
+      "id": "feeling-spite",
+      "label": "Spite: a hooked ribbon turning back on itself like a barb",
+      "path": "art/icons/feelings/feeling-spite.png",
+      "sha256": "d3e9c1a2b22aff103313378db7c51cfe595c1fb20c3b33d5c963bbddcc335704",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-spite.png",
+        "128": "art/icons/feelings/exports/128/feeling-spite.png",
+        "64": "art/icons/feelings/exports/64/feeling-spite.png",
+        "56": "art/icons/feelings/exports/56/feeling-spite.png",
+        "48": "art/icons/feelings/exports/48/feeling-spite.png",
+        "44": "art/icons/feelings/exports/44/feeling-spite.png",
+        "40": "art/icons/feelings/exports/40/feeling-spite.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-spite.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-spite.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {

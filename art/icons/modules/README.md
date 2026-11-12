@@ -7,4 +7,4 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-orbit.png`: a dot circling a centre dot on a ring path
 - `module-echo.png`: one shape and a fainter (thinner-lined) double of it beside it
 
-Test set only. Await Leon’s verdict before the rest, as requested in the Outburst brief.
+Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

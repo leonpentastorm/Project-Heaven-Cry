@@ -79,7 +79,7 @@ def reviews(manifest):
             text += 'Sources, exact prompts, reference hashes, delivery manifest and 40/44/64px reviews are in `art/_archive/deliveries/2026-11-12/`.\n\n'
             text += '\n'.join(f'- `{a["id"]}.png`: {a["action"]}' for a in items) + '\n'
             if family in ['feelings', 'modules']:
-                text += '\nTest set only. Await Leon’s verdict before the rest, as requested in the Outburst brief.\n'
+                text += '\nLeon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.\n'
             readme.write_text(text)
 
 
@@ -151,20 +151,20 @@ def export(id, source):
     (BASE / 'README.md').write_text('# 12 November art delivery\n\nReview candidates; production_approved:false. '
         'Source branch: claude/charming-gauss-hbq4n0, dd35e4b8. Destination: art/briefs-complete. '
         'The brief heading says13 Wick icons, but its table and ART-REQUESTS enumerate11. '
-        'This run covers those11 plus the6-feeling/4-module test set; remaining Outburst art awaits Leon’s verdict. '
+        'This run covers those11 plus25 feelings,38 modules and3 UI marks. Leon approved both test-set styles for continued production. '
         'Optional maps require current tile guides. No planned equipment or campaign maps are drawn.\n\n'
-        + f'Delivered: {len(progress["delivered"])}/21. See progress.json, manifest.json, queue.json, prompts/, sources/, masters/v1/ and reviews/.\n')
+        + f'Delivered: {len(progress["delivered"])}/{len(queue)}. See progress.json, manifest.json, queue.json, prompts/, sources/, masters/v1/ and reviews/.\n')
     remaining = progress['remaining_now']
     (BASE / 'HANDOFF.md').write_text(
         '# Continue the 12 November art brief\n\n'
         '**Destination: `art/briefs-complete`; keep develop and the implementer branch untouched.** '
         'The prompt file was found on `claude/charming-gauss-hbq4n0` at `dd35e4b8`; it was safely fast-forwarded into this art branch. '
         'No force pushes. Fetch current refs and preserve any subsequent implementer work before continuing.\n\n'
-        f'Actual delivered: **{len(progress["delivered"])}/21**. '
+        f'Actual delivered: **{len(progress["delivered"])}/{len(queue)}**. '
         'Every delivered image was generated with image_gen, shown in chat, technically exported, validated, committed and pushed before the next render. '
         'New art is review-candidate with production_approved:false. The exact delivered list is progress.json; production selections and source/reference hashes are manifest.json.\n\n'
         '## Next work\n\n'
-        + ('Next image: **`' + remaining[0] + '`**.\n\n' if remaining else 'The current 21-job stage is fully drawn. Await Leon’s Outburst test verdict before the remaining glyphs/modules.\n\n')
+        + ('Next image: **`' + remaining[0] + '`**.\n\n' if remaining else 'The full requested icon queue is drawn; finish validation and the handoff. Optional maps still require confirmed layout guides.\n\n')
         + 'Remaining ordered queue: ' + (', '.join('`' + x + '`' for x in remaining) or 'none in the current stage') + '.\n\n'
         'Read `art/AGENTS.md`, `art/README.md`, `art/style-guide/PHC-Style-Guide.md`, `art/icons/STYLE-LOCK.md`, '
         '`art/briefs/GPT-PROMPTS-2026-11-12.md` and its linked current request/rules documents. '
@@ -182,8 +182,8 @@ def export(id, source):
         'Check their exit status before committing. Commit only this art/tooling work and push `git push origin art/briefs-complete`; wait for successful push before next image. '
         'On a push conflict safely sync and push the existing render; do not redraw.\n\n'
         '## Review gates and final handoff\n\n'
-        'The current stage is11 Wick icons plus6 feelings (Rage, Grief, Fear, Love, Joy, Calm) and4 modules (Split, Ricochet, Orbit, Echo). '
-        'The brief explicitly requires Leon’s verdict on that ten-icon Outburst test set before the rest. Do not call the full25/38/UI-mark commission complete. '
+        'The complete icon queue is11 Wick icons,25 feeling glyphs,38 module icons and3 UI marks,77 total. '
+        'Leon explicitly approved both ten-icon test-set styles and said to continue. No further initial-test approval is pending. Keep individual art production_approved:false. Do not claim the full commission complete until all77 are actually delivered. '
         'An async question asks which optional map layouts are approved: no answer is recorded yet. Generate current tile guides before any map painting; Proving Ground additionally needs its playtest gate. '
         'Do not start M813/sketch maps or equipment paintings, which are on hold. No title-screen, 3D Narrator, completed animation or old180-icon redraws.\n\n'
         'At the stage end update ART-REQUESTS statuses and this handoff accurately, refresh hashes with `python3 tools/rehash_art_checksums.py`, '
@@ -194,7 +194,7 @@ def export(id, source):
     sys.path.insert(0, str(ROOT / 'tools'))
     from rehash_art_checksums import main
     main()
-    print(f'Exported {id}; {len(progress["delivered"])}/21')
+    print(f'Exported {id}; {len(progress["delivered"])}/{len(queue)}')
 
 
 def validate_delivery(selected=None):
@@ -218,7 +218,8 @@ def validate_delivery(selected=None):
             assert all((r, g, b) == (255, 255, 255) for r, g, b, alpha in im.get_flattened_data() if alpha), path + ' white ink'
             box = im.getbbox()
             assert box and box[0] > 0 and box[1] > 0 and box[2] < im.width and box[3] < im.height, path + ' margins'
-    print(f'OK: 12 November delivery {len(manifest["icons"])}/21; source/master/catalog hashes, candidate status and white RGBA exports ({selected or "all"}).')
+    target = len(json.loads((BASE / 'queue.json').read_text()))
+    print(f'OK: 12 November delivery {len(manifest["icons"])}/{target}; source/master/catalog hashes, candidate status and white RGBA exports ({selected or "all"}).')
 
 
 if __name__ == '__main__':

@@ -8,5 +8,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `feeling-love.png`: Love: two ribbons wrap around each other into one knot.
 - `feeling-joy.png`: Joy: the ribbon leaps in a high arc with a small spark at the peak.
 - `feeling-calm.png`: Calm: one long level stroke over two or three still circles, like a horizon over water.
+- `feeling-spite.png`: Spite: a hooked ribbon turning back on itself like a barb.
 
-Test set only. Await Leon’s verdict before the rest, as requested in the Outburst brief.
+Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
