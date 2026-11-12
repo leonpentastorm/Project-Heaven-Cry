@@ -707,6 +707,44 @@
           "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-split.png",
+      "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3",
+      "id": "module-split",
+      "family": "modules",
+      "action": "one line forking into two",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-split.png",
+        "sha256": "e9d6474a62e9c37b296a8c73834451318b0346cf7025b310beb9afd01cd2aac4"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-split.png",
+        "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-split.txt",
+        "sha256": "97f9db9078ce9ee7321fba3b5db1f2f8cddec5079bcd946a48aef0591c7f74c5"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-split.png",
+        "128": "art/icons/modules/exports/128/module-split.png",
+        "64": "art/icons/modules/exports/64/module-split.png",
+        "56": "art/icons/modules/exports/56/module-split.png",
+        "48": "art/icons/modules/exports/48/module-split.png",
+        "44": "art/icons/modules/exports/44/module-split.png",
+        "40": "art/icons/modules/exports/40/module-split.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
     }
   ]
 }

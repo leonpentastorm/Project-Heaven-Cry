@@ -10425,5 +10425,32 @@
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-calm.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
+  },
+  "modules": {
+    "module-split": {
+      "id": "module-split",
+      "label": "one line forking into two",
+      "path": "art/icons/modules/module-split.png",
+      "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-split.png",
+        "128": "art/icons/modules/exports/128/module-split.png",
+        "64": "art/icons/modules/exports/64/module-split.png",
+        "56": "art/icons/modules/exports/56/module-split.png",
+        "48": "art/icons/modules/exports/48/module-split.png",
+        "44": "art/icons/modules/exports/44/module-split.png",
+        "40": "art/icons/modules/exports/40/module-split.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-split.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-split.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    }
   }
 }
