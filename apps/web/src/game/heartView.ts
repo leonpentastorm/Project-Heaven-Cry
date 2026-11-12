@@ -8,7 +8,7 @@
 import { inverseShield, outburstHeal, SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
   previewOutburst, previewOutburstPlan, previewPump, pumpsMp, togglesFor, dryRun, fightWith, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
-import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, markIconSrc, type FeelingBtn } from './feelingsView';
+import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, markIconSrc, iconStyle, type FeelingBtn } from './feelingsView';
 import { hasPaintedArt, heartMarkKey } from './heartIcons';
 import { heldOutburstOf } from './resources';
 import { OPT_LABEL, optValue } from './actionPickers';
@@ -316,7 +316,7 @@ export function heartStyles(p: HeartPanel) {
 export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: { open?: boolean; query?: string; toggle?: () => void; search?: (e: any) => void } = {}) {
   if (!p) return { show: false };
   // A refused button shows its reason in place of its cost (✕ Needs 1 AP), the whole reason in its title: one line each.
-  const b = (x: HeartBtn, primary?: boolean, cost = x.cost) => ({ key: x.id, label: x.id === 'revert' && revertArt ? 'Revert' : x.label, hasIcon: x.id === 'revert' && revertArt, icon: x.id === 'revert' && revertArt ? markIconSrc('revert') : '', cost: x.why ? '✕ ' + x.why.replace(/\.$/, '') : cost, title: x.why ? x.label + ': ' + x.why : x.title, off: !x.ok, why: x.why, hasWhy: false, style: S.btn(x, primary), pick: () => { if (x.ok) run(x.id); },
+  const b = (x: HeartBtn, primary?: boolean, cost = x.cost) => ({ key: x.id, label: x.id === 'revert' && revertArt ? 'Revert' : x.label, hasIcon: x.id === 'revert' && revertArt, icon: x.id === 'revert' && revertArt ? markIconSrc('revert') : '', iconStyle: x.id === 'revert' && revertArt ? iconStyle(markIconSrc('revert'), '#E7EBF3') : '', cost: x.why ? '✕ ' + x.why.replace(/\.$/, '') : cost, title: x.why ? x.label + ': ' + x.why : x.title, off: !x.ok, why: x.why, hasWhy: false, style: S.btn(x, primary), pick: () => { if (x.ok) run(x.id); },
     costStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; font-weight: 700; color: ' + (x.why ? MUTED : cost === 'FREE' || /^FREE/.test(cost) || /^0 AP/.test(cost) || cost === 'ARMED' ? GREEN : '#C9D3E3') });
   const S = heartStyles(p);
   const revertArt = hasPaintedArt(heartMarkKey('revert')); // painted Revert mark: it replaces the ↶ glyph, same box
@@ -332,7 +332,7 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
     doesText: [...p.does, ...(p.multNotes || []), ...(p.resonance ? [(p.multNotes || []).length ? 'allies +' + p.resonance : 'Resonance +' + p.resonance] : [])].join(' · '), hasDoes: p.does.length > 0 || !!p.resonance || (p.multNotes || []).length > 0,
     doesStyle: 'min-width: 0; white-space: normal; overflow-wrap: anywhere; font-size: 11.5px; line-height: 1.25; font-weight: 700; letter-spacing: 0.06em; color: ' + (p.does.length ? doesInk : p.ink),
     multKey: 'm' + r2(p.mult) + '-' + p.felt.length, multCls: 'phc-mult-shake phc-mult-s' + Math.min(4, p.stage),
-    stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', glyphFx: s.now ? 'filter: invert(1);' : '', label: 'Stage ' + s.n + ' ×' + s.mult + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
+    stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', glyphStyle: s.feeling ? iconStyle(feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3'), s.now ? '#0A0D13' : '#E7EBF3') : '', label: 'Stage ' + s.n + ' ×' + s.mult + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
     feel: { ...fr, toggle: fo.toggle || (() => {}), onSearch: fo.search || (() => {}), query: fo.query || '', openStr: fr.open ? 'true' : 'false',
       searchStyle: 'min-height: 26px; padding: 0 8px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 11px' },
     freeShort: p.freePumps == null ? '' : p.freePumps + ' FREE PUMP' + (p.freePumps === 1 ? '' : 'S'),

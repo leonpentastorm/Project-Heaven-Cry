@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { beforeEach, afterEach, describe, expect, it } from 'vitest';
 import { FEELING_PATHS, MODULE_PATHS, HEART_MARK_PATHS, COMING_SOON_SLOTS, feelingIcon, moduleIcon, heartMark, feelingUri, moduleUri, heartMarkUri,
-  comingSoon, setHeartArt, hasPaintedArt, feelingKey, moduleKey, heartMarkKey } from './heartIcons';
+  comingSoon, paintedStyle, setHeartArt, hasPaintedArt, feelingKey, moduleKey, heartMarkKey } from './heartIcons';
 
 const ids = (file: string): string[] => JSON.parse(readFileSync(fileURLToPath(new URL(`../../../../data/${file}`, import.meta.url)), 'utf8')).items.map((i: { id: string }) => i.id);
 const FEELINGS = ids('feelings.json'), MODULES = ids('soul_modules.json');
@@ -54,9 +54,9 @@ describe('Outburst 4.0 icons', () => {
     expect(feelingKey('rage')).toBe('feeling-rage'); expect(moduleKey('ricochet')).toBe('module-ricochet'); expect(heartMarkKey('revert')).toBe('heart-ui-revert');
     setHeartArt({ 'feeling-rage': '/assets/feeling-rage.webp', 'feeling-rage-lg': '/assets/feeling-rage-lg.webp', 'module-ricochet': '/assets/module-ricochet.webp',
       'module-at-once': '/assets/module-at-once.webp', 'heart-ui-revert': '/assets/heart-ui-revert.webp' });
-    expect(feelingIcon('rage', 40)).toMatch(/^<img src="\/assets\/feeling-rage.webp" width="40" height="40" alt="" aria-hidden="true"/);
+    expect(feelingIcon('rage', 40)).toMatch(/^<span aria-hidden="true" class="heart-icon heart-icon-feeling" data-icon-src="\/assets\/feeling-rage.webp" style="[^"]*mask-image: url\(&quot;\/assets\/feeling-rage.webp&quot;\)[^"]*width: 40px; height: 40px"><\/span>/);
     expect(feelingIcon('rage', 128)).toMatch(/feeling-rage-lg.webp/);
-    expect(moduleIcon('ricochet')).toMatch(/^<img src="\/assets\/module-ricochet.webp"/);
+    expect(moduleIcon('ricochet')).toMatch(/^<span [^>]*data-icon-src="\/assets\/module-ricochet.webp"/);
     expect(moduleIcon('at_once')).toMatch(/module-at-once.webp/); // a hyphenated file name matches an underscored id
     expect(heartMark('revert')).toMatch(/heart-ui-revert.webp/);
     expect(feelingUri('rage')).toBe('/assets/feeling-rage.webp'); expect(heartMarkUri('revert')).toBe('/assets/heart-ui-revert.webp');
@@ -65,6 +65,19 @@ describe('Outburst 4.0 icons', () => {
     expect(feelingIcon('grief')).toMatch(/^<svg/); expect(moduleIcon('split')).toMatch(/^<svg/); expect(heartMark('felt')).toMatch(/^<svg/);
     setHeartArt({});
     expect(feelingIcon('rage')).toMatch(/^<svg/);
+  });
+  it('a painted icon takes the ink it is asked for (a mask over a background colour); a drawn one is untouched', () => {
+    setHeartArt({ 'feeling-rage': '/assets/feeling-rage.webp', 'module-split': '/assets/module-split.webp' });
+    const rage = feelingIcon('rage', 24, '#FF6A3D');
+    expect(rage).toMatch(/background-color: #FF6A3D/); expect(rage).toMatch(/mask-image: url\(&quot;\/assets\/feeling-rage.webp&quot;\)/); expect(rage).toMatch(/aria-hidden="true"/);
+    expect(feelingIcon('rage')).toMatch(/background-color: currentColor/); // no colour asked: the surrounding ink
+    expect(moduleIcon('split', 22, '#7F8BA1')).toMatch(/background-color: #7F8BA1/); // a locked or unknown module: the grey
+    const st = paintedStyle(feelingUri('rage', '#FF6A3D'), '#FF6A3D'); // the URL helper plus the style helper, as the view models use them
+    expect(st).toMatch(/^display: inline-block; background-color: #FF6A3D;.*-webkit-mask-image: url\("\/assets\/feeling-rage.webp"\).*mask-size: contain.*mask-repeat: no-repeat.*mask-position: center/);
+    // the drawn fallback keeps its own ink and is a plain background, no mask
+    expect(feelingIcon('grief', 24, '#7FA7FF')).toMatch(/^<svg[^>]*stroke="#7FA7FF"/);
+    const drawn = paintedStyle(feelingUri('grief', '#7FA7FF'), '#7FA7FF');
+    expect(drawn).not.toMatch(/mask/); expect(drawn).toMatch(/background: url\("data:image\/svg\+xml,.*7FA7FF/);
   });
   it('COMING SOON: muted ink on a raised panel, the name escaped; the slot list is filled in', () => {
     const h = comingSoon('Grief <card>', 'unlock card illustration');
