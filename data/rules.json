@@ -1235,7 +1235,7 @@
           1.6
         ],
         "swell": "+1 stage and +1 Strain (+2 Flooded) at each of your turn starts while holding",
-        "note": "rules 1.19: x0.8 at stage 0, +0.2 a stage; the Damage base is 36 for a character and 24 for an enemy caster (soul_modules.json damage); one free Pump a turn; each feeling once in an Outburst"
+        "note": "rules 1.19: x0.8 at stage 0, +0.2 a stage; the Damage base is 40 for a character (36 before Leon's ruling of 12 Nov 2026) and 24 for an enemy caster (soul_modules.json damage); one free Pump a turn; each feeling once in an Outburst"
       }
     },
     "prayer": {

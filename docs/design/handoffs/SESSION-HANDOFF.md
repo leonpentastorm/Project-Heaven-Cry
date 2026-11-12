@@ -52,6 +52,16 @@ turn and the blow played before the step it interrupts. Known and not fixed: the
 wrong on the 26 x 26 simulator ground (an enemy 13 tiles off never fires); whether real fights have that gap is
 unchecked. Nothing of this is live.
 
+**12 Nov, later.** Also built: rules 1.20, the heal and shield pass (`heal-shield-pass.md`: heals were far too high
+and flat; now measured in Soldier-turns, with a level factor; eight questions), rules 1.21, the Faith fit
+(`faith-fit.md`: prayer was not a way to fight; Old Overcast and Nerukhan now about 135%; eight questions), the
+Outburst's Damage base 36 to 40 (Leon: steady 135%, peak 165%; spec item 1222), and an AI fix: an enemy 13 or 14
+tiles off with a long gun never moved or fired (`test/ai-sight-range.test.ts`). Leon's rulings of the day are in
+balance-pass section 16 (Weapon Arts break the ceiling as a charged ultimate, counted in the average). `npm run check`
+green (engine 3,204, web 985). Open: `faith-pg` failed on cut-in timing while agents loaded the machine (re-run it
+alone), the medic's kit (Triage and stims have no level factor), Boss HP (fitted against the old 200% gun), the
+stale suites `soul`, `heart`, `feelings40`, `sigil15`, `magic`, the version bump. Nothing of this is live.
+
 ## 1. What is live
 
 **0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music

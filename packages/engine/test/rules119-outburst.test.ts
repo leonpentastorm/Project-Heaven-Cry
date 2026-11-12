@@ -49,8 +49,8 @@ describe('rules 1.19: the stage table and the Damage base', () => {
     for (let s = 1; s <= 4; s++) expect(Math.round((stageMult(s) - stageMult(s - 1)) * 100) / 100).toBe(PLAIN_STEP);
     expect((SOUL_RULES as any).cycle.provisional).toBe(true);
   });
-  it('a character\'s Damage base is 36; an enemy caster\'s is 24', () => {
-    expect(SOUL_DAMAGE).toBe(36); expect(SOUL_DAMAGE_ENEMY).toBe(24); expect((SOUL_RULES as any).damage.provisional).toBe(true);
+  it('a character\'s Damage base is 40 (36 until Leon\'s ruling of 12 Nov 2026: steady 135%, peak 165%); an enemy caster\'s is 24', () => {
+    expect(SOUL_DAMAGE).toBe(40); expect(SOUL_DAMAGE_ENEMY).toBe(24); expect((SOUL_RULES as any).damage.provisional).toBe(true);
     const f = heart(); const foe = f.foe; foe.mg = heartMagic(foe, HEART_CASTERS[0]); expect(foe.mg!.soulBase).toBeUndefined();
   });
 });

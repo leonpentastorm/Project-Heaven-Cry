@@ -81,7 +81,7 @@
     ]
   },
   "damage": {
-    "base": 36,
+    "base": 40,
     "enemy_base": 24,
     "soul_mult": "1 + 0.05*(determination-1) + 0.1*will_power",
     "critical": {
@@ -169,8 +169,8 @@
       "id": "damage",
       "name": "Damage",
       "base_cost": 20,
-      "text": "Deals 36 damage × your Soul multiplier × the stage multiplier. Pick how it strikes: Strike (the full damage), Finish (×0.8, or ×1.4 against a target at half its HP or less), Brand (×0.8, and the target is Marked for your side) or Drain (×0.8, and you heal for a quarter of the HP it takes). A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
-      "damage": 36,
+      "text": "Deals 40 damage × your Soul multiplier × the stage multiplier. Pick how it strikes: Strike (the full damage), Finish (×0.8, or ×1.4 against a target at half its HP or less), Brand (×0.8, and the target is Marked for your side) or Drain (×0.8, and you heal for a quarter of the HP it takes). A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
+      "damage": 40,
       "hit": "will_power_vs_defense",
       "options": [
         "strike",

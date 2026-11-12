@@ -2070,8 +2070,12 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   // every step, so an enemy with nothing to attack walked back and forth between two equal tiles), and it never walks
   // back onto a tile it already stood on this turn.
   const walls = sightBlockers(cb), reach = mode === 'melee' ? 1 : effectiveRange(w); // (once for the whole map, not once a tile)
+  // A shot needs eyes on the target as well as a weapon that reaches (the attack is refused otherwise): from a tile, its
+  // own sight (halved into the dark), unless someone else on its side already sees the target. Without this an enemy
+  // 13 or 14 tiles off with a long gun counted its own tile as a firing position, was refused the shot, and never moved.
+  const eyes = new Map(pcs.map((t) => [t.id, cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, t.pos)) ? Infinity : (litAt(cb, t.pos) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2))] as [string, number]));
   const score0 = (k: string, tiles: number) => { const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
-    const sees = pcs.some((t) => dist(k, t.pos) <= reach && lineOfSight(cb, k, t.pos, false, walls));
+    const sees = pcs.some((t) => dist(k, t.pos) <= Math.min(reach, eyes.get(t.id)!) && lineOfSight(cb, k, t.pos, false, walls));
     // (a tile with a line on someone is as good as any other such tile: a shooter doesn't creep closer with its spare AP)
     return order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100 + near) + tiles * 0.1; };
   let best: string | null = null, bestScore = score0(u.pos, 0) - 0.05;
