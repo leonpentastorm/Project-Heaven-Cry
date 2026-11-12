@@ -1386,7 +1386,7 @@ export class CombatLogic extends DCLogic {
     // speaker has, its save and TN; greyed with the engine's reason when it can't be made now.
     const callRow = (a) => { const c = a.key.startsWith(CL) ? cChips.find((x) => x.action === a.key) : null; if (!c) return { isCall: false, notCall: true, call: null };
       const on = a.pressed === 'true';
-      return { isCall: true, notCall: false, call: { ...c, hasWhy: !c.ok, hasSave: !!c.save, disabled: c.ok ? 'false' : 'true', meta: c.apText + ' · ' + c.reach, to: 'TO ' + c.aimWord.toUpperCase() + ' · ' + c.skillName.toUpperCase() + ' · ' + c.stepText,
+      return { isCall: true, notCall: false, call: { ...c, hasIcon: !!c.icon, hasWhy: !c.ok, hasSave: !!c.save, disabled: c.ok ? 'false' : 'true', meta: c.apText + ' · ' + c.reach, to: 'TO ' + c.aimWord.toUpperCase() + ' · ' + c.skillName.toUpperCase() + ' · ' + c.stepText,
         aria: c.name + ', ' + c.apText + ', within ' + c.reach + ', to ' + c.aimWord + (c.ok ? '' : ', not now: ' + c.why.replace(/\.$/, '')),
         style: 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; min-height: 44px; padding: 7px 10px; border-radius: 8px; text-align: left; font-family: inherit; cursor: pointer; '
           + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #E7EBF3' : c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1') } }; };

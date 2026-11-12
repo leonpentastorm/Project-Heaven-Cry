@@ -7,7 +7,8 @@
 import type { FxEvent } from '@engine';
 import { type Sfx, reducedMotion } from '../sfx';
 import { type Pt, after, anim, burst, floatText, particle, ring, slow } from './dom';
-import { FEELING_INK, FEELING_MOTIF, feelingIconSrc, feelingName, feltCardText } from '../feelingsView';
+import { FEELING_INK, FEELING_MOTIF, feelingIconSrc, feelingName, feltCardText, markIconSrc } from '../feelingsView';
+import { hasPaintedArt, heartMarkKey } from '../heartIcons';
 
 export interface FeelKit {
   at: (k: string | null | undefined) => Pt | null;
@@ -68,7 +69,7 @@ export function feltCard(feeling: string) {
   const col = ink(feeling), d = document.createElement('div');
   d.setAttribute('role', 'status'); d.setAttribute('data-felt-card', feeling);
   d.style.cssText = 'position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:14px;background:#120E1E;border:1px solid ' + col + ';box-shadow:0 0 24px ' + col + '55;color:#E7EBF3;font-family:"Chakra Petch",sans-serif;pointer-events:none';
-  d.innerHTML = '<img alt="" src="' + feelingIconSrc(feeling, col, 40) + '" style="width:40px;height:40px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:10px;font-weight:700;letter-spacing:.18em;color:' + col + '">A NEW FEELING · ' + feelingName(feeling).toUpperCase() + '</span><span style="font-family:Spectral,serif;font-size:17px;line-height:1.3">' + feltCardText(feeling) + '</span></div>';
+  d.innerHTML = '<img alt="" src="' + feelingIconSrc(feeling, col, 40) + '" style="width:40px;height:40px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:10px;font-weight:700;letter-spacing:.18em;color:' + col + '">' + (hasPaintedArt(heartMarkKey('felt')) ? '<img alt="" data-heart-mark="felt" src="' + markIconSrc('felt', col, 16) + '" style="width:12px;height:12px;vertical-align:-1px;margin-right:5px">' : '') + 'A NEW FEELING · ' + feelingName(feeling).toUpperCase() + '</span><span style="font-family:Spectral,serif;font-size:17px;line-height:1.3">' + feltCardText(feeling) + '</span></div>';
   document.body.appendChild(d);
   anim(d, reducedMotion() ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-50%) translateY(-10px) scale(.96)' }, { opacity: 1, transform: 'translateX(-50%) translateY(0) scale(1)' }], { duration: 320, easing: 'ease-out', fill: 'both' });
   // plain timers (not after(): the card must go even if the effects are cleared meanwhile), at the pace like its anim()s

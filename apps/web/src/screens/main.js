@@ -9,7 +9,8 @@ import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, checkMod, fmt, tabNavIndex, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
   ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls } from './shared';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER , STAGE_MULT , DESIGN_TEMPLATES, soulPicksLeft, gatedBy, FEELINGS } from '@engine';
-import { practiceView, feelingCodex, moduleGroups } from '../game/feelingsView';
+import { practiceView, feelingCodex, moduleGroups, markIconSrc } from '../game/feelingsView';
+import { hasPaintedArt, heartMarkKey } from '../game/heartIcons';
 import { startOf } from '../game/starts';
 import { voiceState, speak, stopVoice, coreVoice, voiceChip, voicePrefs } from '../game/voice';
 import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, previewAttack, routeHazards, PICKUP_AP, moveOptions, reachOf, reachTiles, dryRun, withGame, analyzeCost } from '@engine';
@@ -272,7 +273,7 @@ function magicVals(self, g, c) {
           pick: () => { if (via) act({ type: 'magic/pick', charId: c.id, module: md.id, via }); },
           style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 1px 8px; align-items: center; padding: 5px 8px; border-radius: 8px; background: #10151F; border: 1px solid ' + (md.known ? '#3A2E5C' : '#1C2536') + (md.known || md.ok ? '' : '; opacity: 0.6'),
           stateStyle: 'grid-column: 2; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: ' + (md.known ? '#6FEA77' : md.ok ? '#C9D3E3' : '#A3AEC2') }; }) })),
-    hasPractice: !!pv, practiceText: pv ? pv.text : '', practiceHint: pv ? pv.hint + (left.mastered.length ? ' · free picks from Mastered ' + left.mastered.map((sk) => SKILL[sk]?.name || sk).join(', ') : '') : '',
+    hasPractice: !!pv, hasPracticeIcon: hasPaintedArt(heartMarkKey('practice')), practiceIcon: markIconSrc('practice'), practiceText: pv ? pv.text : '', practiceHint: pv ? pv.hint + (left.mastered.length ? ' · free picks from Mastered ' + left.mastered.map((sk) => SKILL[sk]?.name || sk).join(', ') : '') : '',
     practiceFill: 'height: 100%; width: ' + (pv ? pv.pct : 0) + '%; background: #AE9BFF',
     templates: DESIGN_TEMPLATES().map((t) => { const ok = designRoom && (known.schools || []).includes(t.school) && (t.modules || []).every((x) => (known.modules || []).includes(x));
       return { key: t.id, name: t.name, text: t.text || '', icon: formIconUri((t.modules || []).find((x) => isShape(x)) || 'bolt'), off: !ok,
