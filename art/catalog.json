@@ -11601,6 +11601,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-quiet.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-quiet.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-silent": {
+      "id": "module-silent",
+      "label": "a dot inside a circle with a slash through the circle",
+      "path": "art/icons/modules/module-silent.png",
+      "sha256": "a297df334a43b2eae1c9de70d541c5bd54b38048ef1fb99e27b25695cd6db01f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-silent.png",
+        "128": "art/icons/modules/exports/128/module-silent.png",
+        "64": "art/icons/modules/exports/64/module-silent.png",
+        "56": "art/icons/modules/exports/56/module-silent.png",
+        "48": "art/icons/modules/exports/48/module-silent.png",
+        "44": "art/icons/modules/exports/44/module-silent.png",
+        "40": "art/icons/modules/exports/40/module-silent.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-silent.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-silent.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

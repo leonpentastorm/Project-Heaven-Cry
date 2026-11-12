@@ -30,5 +30,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-shell.png`: a dome over a dot
 - `module-linger.png`: a square patch of dotted ground
 - `module-quiet.png`: a heart with one soft lowered line under it
+- `module-silent.png`: a dot inside a circle with a slash through the circle
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

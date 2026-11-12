@@ -70,12 +70,12 @@
     "module-lure",
     "module-shell",
     "module-linger",
-    "module-quiet"
+    "module-quiet",
+    "module-silent"
   ],
   "awaiting_after_test": "Test styles approved; optional map layout/playtest confirmation still pending",
   "production_approved": false,
   "remaining_now": [
-    "module-silent",
     "module-thread",
     "module-cascade",
     "module-tether",
@@ -89,7 +89,7 @@
     "ui-practice",
     "ui-felt"
   ],
-  "updated_utc": "2026-11-12T04:11:30.632692+00:00",
+  "updated_utc": "2026-11-12T04:12:47.841036+00:00",
   "outburst_test_verdict": "Leon: Approve both styles and continue",
   "pending_after_test_approval": false
 }
