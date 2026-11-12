@@ -212,10 +212,14 @@ Both wrappers keep their own log lines and effects events; only the number is `d
 8. **The two crashes (Overclock, Will Shield with no magic): fixed**, three tests.
 9. **Golden tables:** 4,881 lines in 12 tables before; **5,466 lines in 14 tables** now (two tables and 186 lines were
    added, each recorded on the unmodified code and committed before the change it guards).
-10. `npm run check`: validator 0 errors; engine types clean; web types clean; **engine 3,388 passed**; **web 989
-    passed**. (The machine was shared with other agents' browser suites while this ran: the web suite passed all 989
-    but twice reported timer errors after teardown or 5-second timeouts under a load average of 20 to 30; no file under
-    `apps/web` is touched by this branch. Run `npm run check` once on a quiet machine before merging.)
+10. `npm run check` on the final tree: validator 0 errors; engine types clean; web types clean; **engine 3,388
+    passed**; **web 989 passed**. The machine was shared with other agents' browser suites (load average 10 to 36), so
+    the two suites went green in two runs a few minutes apart, not in one: in the full run the web suite was green and
+    one engine test hit its 5-second timeout (`balance-sim`, "every build is legal"); the engine half run again at once
+    printed ALL GREEN. Under that load the timed tests fail on the engine as it was before this branch too (measured:
+    `sigil14-ai` "weighs a full warden turn quickly", 1.9 to 2.3 s before, 1.6 to 2.2 s after, against its 1.5 s
+    limit; three runs each, alternating: no slowdown that the noise lets one see). Run `npm run check` once on a quiet
+    machine before merging.
 
 Commits on the branch, in order: `a4 and a5` · `golden extended before a6` · `a6` · `the two crashes` · `a7 (1)` ·
 `a7 (2)` · `golden extended before a7 (3)` · `a7 (3)` · `a7 (4) and the spec` · `this hand-off`.
