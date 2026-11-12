@@ -10299,6 +10299,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-rage.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-rage.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-grief": {
+      "id": "feeling-grief",
+      "label": "Grief: the ribbon falls and pools at the bottom like rain running off",
+      "path": "art/icons/feelings/feeling-grief.png",
+      "sha256": "561437ccf7b3463842110a5d85fd2ab6abb32ac99285123b78671f616ff873e1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-grief.png",
+        "128": "art/icons/feelings/exports/128/feeling-grief.png",
+        "64": "art/icons/feelings/exports/64/feeling-grief.png",
+        "56": "art/icons/feelings/exports/56/feeling-grief.png",
+        "48": "art/icons/feelings/exports/48/feeling-grief.png",
+        "44": "art/icons/feelings/exports/44/feeling-grief.png",
+        "40": "art/icons/feelings/exports/40/feeling-grief.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-grief.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-grief.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
