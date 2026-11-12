@@ -10799,6 +10799,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-guilt.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-guilt.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-jealousy": {
+      "id": "feeling-jealousy",
+      "label": "Jealousy: two ribbons, one curling to snatch the other's spark",
+      "path": "art/icons/feelings/feeling-jealousy.png",
+      "sha256": "e9178fb62fb5c81464ca510d68ac15b872a8a875d0588ffa97fa6e8b94f4d165",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-jealousy.png",
+        "128": "art/icons/feelings/exports/128/feeling-jealousy.png",
+        "64": "art/icons/feelings/exports/64/feeling-jealousy.png",
+        "56": "art/icons/feelings/exports/56/feeling-jealousy.png",
+        "48": "art/icons/feelings/exports/48/feeling-jealousy.png",
+        "44": "art/icons/feelings/exports/44/feeling-jealousy.png",
+        "40": "art/icons/feelings/exports/40/feeling-jealousy.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-jealousy.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-jealousy.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {

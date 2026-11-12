@@ -23,5 +23,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `feeling-relief.png`: Relief: a knot coming loose into a soft breath-like curl.
 - `feeling-contempt.png`: Contempt: the ribbon turned away with a lifted, chin-like tilt.
 - `feeling-guilt.png`: Guilt: the ribbon drags a small weight behind it.
+- `feeling-jealousy.png`: Jealousy: two ribbons, one curling to snatch the other's spark.
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

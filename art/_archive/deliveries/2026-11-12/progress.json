@@ -42,12 +42,12 @@
     "feeling-longing",
     "feeling-relief",
     "feeling-contempt",
-    "feeling-guilt"
+    "feeling-guilt",
+    "feeling-jealousy"
   ],
   "awaiting_after_test": "Test styles approved; optional map layout/playtest confirmation still pending",
   "production_approved": false,
   "remaining_now": [
-    "feeling-jealousy",
     "feeling-wonder",
     "feeling-defiance",
     "feeling-abandon",
@@ -89,7 +89,7 @@
     "ui-practice",
     "ui-felt"
   ],
-  "updated_utc": "2026-11-12T03:16:15.474484+00:00",
+  "updated_utc": "2026-11-12T03:19:36.098610+00:00",
   "outburst_test_verdict": "Leon: Approve both styles and continue",
   "pending_after_test_approval": false
 }
