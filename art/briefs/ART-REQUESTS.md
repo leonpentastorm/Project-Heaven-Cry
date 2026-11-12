@@ -35,6 +35,8 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 
 ## Open requests
 
+**Ready-to-paste prompts for an image generator** (12 Nov 2026): [`GPT-PROMPTS-2026-11-12.md`](GPT-PROMPTS-2026-11-12.md) covers W1 to W3, F1, F2 and the two maps whose layouts are set (M1, M6).
+
 ### 1. Wick icons (white flat ink, 1024 × 1024, transparent; the STYLE-LOCK applies)
 
 | # | For | Status | What it must show | Direction | Goes to |
