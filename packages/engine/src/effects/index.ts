@@ -16,7 +16,7 @@ import { holdersOf } from './hooks';
 import { keyOf } from './collect';
 
 export * from './types';
-export { register, emit, emitStory, anyOn, holdersOf, holderOf, statQuery, checkQuery, genericEffects, bindGame, boundGame, handlerOf, registered, ownerOf, heldOfChar, heldOfUnit, charOfUnit, setRankRule, _unregisterAll, _snapshotRegistry, _restoreRegistry, type Owner, type GenericOp, registerGeneric, genericOf } from './hooks';
+export { addItems, clearAddedItems, register, emit, emitStory, anyOn, holdersOf, holderOf, statQuery, checkQuery, genericEffects, bindGame, boundGame, handlerOf, registered, ownerOf, heldOfChar, heldOfUnit, charOfUnit, setRankRule, _unregisterAll, _snapshotRegistry, _restoreRegistry, type Owner, type GenericOp, registerGeneric, genericOf } from './hooks';
 export { itemInfo, itemsOf, effectsOfHeld, allItems, perkEffects, keyOf as itemKey, splitKey, classMove, classMoveKeys, ADVANCED, BASE_CLASS, advancedActive, _setAdvancedLive, _setRevision2Classes, revision2Classes, REV2_CLASSES, SKILL_ITEMS, skillItemsOf, type Held } from './collect';
 export { uses, scopeOf, stampOf, usesLabel, sessionN, restN, dayOf, roundNow, SCOPES, type Uses } from './uses';
 export { turnAp, grantPerkAp, bankAp, apDebt, pushAp, refusedGift, AP_BASE, AP_MAX, AP_MIN, PERK_AP_CAP, AP_DEBT_CAP, type ApLine } from './ap';
@@ -51,4 +51,5 @@ export function stateOf(h: { key: string; u?: Unit | null; c?: Character | null;
   return h.u ? ((h.u.ps ||= {})[h.key] ||= {}) : {};
 }
 export * from './stats';
+export { num } from './num';
 export { price, priced, bill, costOf, hasCost, whyNot, canPay, pay, refund, spend, needs, poolWhyNot, grantAp, loseAp, setAp, freely, withAp, apFor, apMeter, actionName, resWhyNot, resPay, creditFor, lend, settleCredit, unlend, resLeft, RESOURCES, type Cost, type Priced, type Credit } from './cost';

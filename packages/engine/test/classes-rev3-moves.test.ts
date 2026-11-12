@@ -35,7 +35,7 @@ describe('the 20 new moves are handled', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
     expect(NEW.length).toBe(20);
     for (const m of NEW as any[]) {
-      const info = itemInfo(m.key)!; expect(handlerOf(info.key), m.key).toBeTruthy();
+      const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic'), m.key).toBe(true); // a handler, or data only (engine foundations 3)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);
     }
   });

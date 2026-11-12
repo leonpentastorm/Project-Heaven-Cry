@@ -663,12 +663,7 @@ interface SigilNums { brain: number; sigilMult: number; elemMult: number; healMu
 // The 2-charge damage words cost 1 charge less (the data's word_cost, run by the generic op): FIRE, SHOCK, FREEZE, STONE
 // (PROVISIONAL: the fourth 2-charge damage word) and, under 1.4, ACID (item 486, PROVISIONAL); SPARK and GALE already
 // cost 1, the floor, so they gain nothing. Each glyph still costs at least 1 charge ("a spell" read as each glyph).
-const BARRAGE = ['fire', 'shock', 'freeze', 'stone', 'acid'];
-register({
-  id: 'mage.barrage', claims: (e) => e?.op !== 'word_cost',
-  on: { glyph_cost: (ctx, h) => { if (ctx.u !== h.u || !BARRAGE.includes(ctx.word)) return; ctx.charge = Math.max(1, ctx.charge); } },
-  brief: () => null,
-});
+// Barrage's charge floor is data (engine foundations 3: a cost_mod on glyph_cost).
 
 // ---------- Overcharge (rank II; once a fight, once a scene on the area map) ----------
 // Rules 1.4 (spec: Grammar 2; item 437): your next glyph is drawn for no charge and no AP and may go one word past your
@@ -1115,11 +1110,7 @@ register({
 // ---------- Blind and Slow (rank II, passive) ----------
 // BLIND, SLOW and MUDDLE are learned (outside the cap) and cost 1 charge less (the data, generic). GAMEBREAKING: BLIND
 // and SLOW would be free; a glyph's draw costs at least 1 charge (PROVISIONAL), so only MUDDLE really gets cheaper.
-register({
-  id: 'trickster.blind_and_slow', claims: (e) => e?.op !== 'word_cost' && e?.op !== 'unlock_word',
-  on: { glyph_cost: (ctx, h) => { if (ctx.u === h.u && ['blind', 'slow', 'muddle'].includes(ctx.word)) ctx.charge = Math.max(1, ctx.charge); } },
-  brief: () => null,
-});
+// Blind and Slow's charge floor is data (engine foundations 3: a cost_mod on glyph_cost).
 
 // ---------- Rewrite (rank III, 3 AP, once a turn) ----------
 // Spend 3 charge (+1 Flux, PROVISIONAL): an enemy within 8 + your Sigil range bonus you can see (PROVISIONAL) makes a

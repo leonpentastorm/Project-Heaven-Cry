@@ -427,19 +427,9 @@ register({
 // next turn, within the floor of 2). Outside the city (a zone marked in_city: false): −2 Guts, which reaches Body saves;
 // the generic skill mod covers story checks, this handler the fight (no zone tags reach combat rolls).
 register({
-  id: 'central_city_kid', kind: 'trait', claims: ['start_item', 'roll_bonus', 'stat_mod'],
+  id: 'central_city_kid', kind: 'trait', claims: ['start_item', 'roll_bonus'], // Soft Hands is data (engine foundations 3)
   checkMod: (h, ck) => ((ck.tags || []).some((t: string) => t === 'official' || t === 'merchant') && (ck.skills || []).some((s: string) => SOCIAL.has(s)) ? [{ add: 2, label: 'Plugged In' }] : []),
   stat: (h, stat, ctx) => (stat === 'skill:guts' && !(ctx && Array.isArray(ctx.tags)) && outsideCity(h.g) ? -2 : 0),
-  on: {
-    on_damaged: (ctx, h) => {
-      if (ctx.t !== h.u || !(ctx.dmg > 0) || ctx.src?.by === h.u) return;
-      const st = stateOf(h); if (st.wounded) return; st.wounded = true;
-      const cb = h.cb!, u = h.u!, mine = cb.units.find((x) => x.id === cb.order[cb.turn]) === u && !cb.window;
-      if (mine) { loseAp(u, 2); say(cb, u.name + ' reels from the first wound: −2 AP (Soft Hands).'); }
-      else { st.shock = true; say(cb, u.name + ' reels from the first wound: −2 AP next turn (Soft Hands).'); }
-    },
-    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const st = stateOf(h); if (st.shock) { st.shock = false; ctx.penalties.push({ n: 2, why: 'Soft Hands' }); } },
-  },
   brief: () => 'city services open; tag checks with officials or merchants "official" / "merchant"',
 });
 

@@ -382,13 +382,8 @@
               "uses": "at_will",
               "text": "Your first reload each turn costs 1 AP less, but never less than 1 AP. It doesn't apply to your off-hand gun or to reloading two guns at once.",
               "effects": [
-                {
-                  "op": "action_cost",
-                  "action": "reload",
-                  "value": -1,
-                  "min": 1,
-                  "uses": "per_turn"
-                }
+                {"op": "cost_mod", "value": -1, "min": 1, "when": "cost", "if": {"action": ["reload"], "hand": ["main"]}, "limit": {"per": "per_turn", "n": 1, "peek": true}},
+                {"op": "use", "when": "reload", "if": {"hand": ["main"]}, "limit": {"per": "per_turn", "n": 1}}
               ],
               "adjudication": "engine",
               "provisional": true,
@@ -1857,17 +1852,8 @@
         "uses": "at_will",
         "text": "The damage words FIRE, FREEZE, SHOCK, STONE and ACID cost {=effects.0.value|abs} charge less to draw: 1 instead of 2. SPARK and GALE already cost the least a glyph can and stay there, because no glyph costs less than 1 charge.",
         "effects": [
-          {
-            "op": "word_cost",
-            "words": [
-              "fire",
-              "shock",
-              "freeze",
-              "stone",
-              "acid"
-            ],
-            "value": -1
-          }
+          {"op": "word_cost", "words": ["fire", "shock", "freeze", "stone", "acid"], "value": -1},
+          {"op": "cost_mod", "res": "charge", "at_least": 1, "when": "glyph_cost", "if": {"word": ["fire", "shock", "freeze", "stone", "acid"]}}
         ],
         "adjudication": "engine",
         "provisional": true,
@@ -2182,27 +2168,11 @@
         "uses": "at_will",
         "text": "You learn the condition words BLIND, SLOW and MUDDLE (Left Brain Debuff) if you don't know them yet. MUDDLE costs you 1 charge less to draw: 1 instead of 2. BLIND and SLOW already cost the least a glyph can, and no glyph costs less than 1 charge.",
         "effects": [
-          {
-            "op": "unlock_word",
-            "word": "blind"
-          },
-          {
-            "op": "unlock_word",
-            "word": "slow"
-          },
-          {
-            "op": "unlock_word",
-            "word": "muddle"
-          },
-          {
-            "op": "word_cost",
-            "words": [
-              "blind",
-              "slow",
-              "muddle"
-            ],
-            "value": -1
-          }
+          {"op": "unlock_word", "word": "blind"},
+          {"op": "unlock_word", "word": "slow"},
+          {"op": "unlock_word", "word": "muddle"},
+          {"op": "word_cost", "words": ["blind", "slow", "muddle"], "value": -1},
+          {"op": "cost_mod", "res": "charge", "at_least": 1, "when": "glyph_cost", "if": {"word": ["blind", "slow", "muddle"]}}
         ],
         "adjudication": "engine",
         "provisional": true,
@@ -4159,19 +4129,9 @@
           "name": "Unbroken",
           "ap_cost": 0,
           "uses": "per_combat",
-          "text": "Once per fight, the first time damage would drop you to 0 HP, you stay at 1 HP instead and gain {=effects.1.value} Guard.",
+          "text": "Once per fight, the first time damage would drop you to 0 HP, you stay at 1 HP instead and gain {=effects.0.and.0.value} Guard.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "hp_floor_once",
-              "value": 1
-            },
-            {
-              "op": "resource",
-              "resource": "guard",
-              "value": 3,
-              "when": "would_drop_to_0"
-            }
+            {"op": "floor", "value": 1, "when": "would_drop", "if": {"open": true, "self_hp_above": 0}, "limit": {"per": "per_combat", "n": 1}, "priority": 30, "and": [{"op": "resource", "resource": "guard", "value": 3}], "say": "{self} is Unbroken: {=.value} HP, +{gain} Guard ({res:guard}/{resmax:guard})."}
           ],
           "adjudication": "engine",
           "provisional": true,

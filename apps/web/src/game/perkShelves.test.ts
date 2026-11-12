@@ -210,7 +210,10 @@ describe('the live line of Always on', () => {
     for (const c of chars) { const f = fight(c), sh = perkShelves(f.g, f.cb, f.u, c);
       for (const r of sh.always) { if (r.button) continue; if (r.state === 'ready') ready.add(r.key); if (PRIVATE_COUNT.includes(r.key)) limited.add(r.key); } }
     expect([...ready].length).toBeGreaterThan(0);
-    for (const key of ready) expect(blockOf(key), key).toMatch(/uses\(h\)\.take\('per_\w+'(, 1)?\)|\.used = true/);
+    // an item written in data (engine foundations 3) counts through its effect's `limit`, under its own key: the runner's uses(h).take
+    const dataLimit = (key: string) => [...(PERKS as any[]).filter((p) => 'perk:' + p.id === key), ...(TRAITS as any[]).filter((t) => 'trait:' + t.id === key)]
+      .some((x: any) => [...(x.effects || []), ...Object.values(x.tiers || {}).flatMap((t: any) => t.effects || [])].some((e: any) => e?.limit?.per && !e.limit.key && !e.limit.peek));
+    for (const key of ready) if (!dataLimit(key)) expect(blockOf(key), key).toMatch(/uses\(h\)\.take\('per_\w+'(, 1)?\)|\.used = true/);
     expect([...limited].sort()).toEqual([...PRIVATE_COUNT].sort()); // each named one is really a limited passive on this shelf
     for (const key of limited) expect(blockOf(key), key).not.toMatch(/uses\(h\)\.take\('per_\w+'(, 1)?\)|\.used = true/);
   });

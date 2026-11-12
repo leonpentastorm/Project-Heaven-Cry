@@ -20,6 +20,8 @@ export interface CharSpec {
   /** Perks by id: tier ('I' | 'II' | 'mastered' | 'achieved' | 'ultimate'); a list of ids means Tier I (or the perk's own tier). */
   perks?: Record<string, string> | string[];
   traits?: string[];
+  /** Relics carried (items added at run time with addItems('relic', …); engine foundations 3). */
+  relics?: string[];
   classId?: string | null; advancedClass?: string | null;
   /** Skill points to set after creation (legality is not checked: tests build what they need). */
   skills?: Record<string, number>; attrs?: Record<string, number>;
@@ -36,6 +38,7 @@ export function equipSpec(c: Character, spec: CharSpec) {
     ? spec.perks.map((id) => ({ id, tier: (PERKS[id]?.tier === 'acquired' ? 'I' : PERKS[id]?.tier || 'I') as any }))
     : Object.entries(spec.perks).map(([id, tier]) => ({ id, tier: tier as any }));
   if (spec.traits) c.traits = [...spec.traits];
+  if (spec.relics) c.relics = [...spec.relics];
   if (spec.skills) Object.assign(c.skills, spec.skills);
   if (spec.attrs) Object.assign(c.attrs, spec.attrs);
   if (spec.classId !== undefined) c.classId = spec.classId;

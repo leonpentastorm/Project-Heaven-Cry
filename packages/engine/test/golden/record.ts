@@ -19,6 +19,7 @@
 //             with it held, and each action it puts on the pad
 //   flat      thrown items, blasts, barrels, traps, hazards, damage over time, the medic's kit
 import { buildCharacter, BUILDS, LEVELS, VARIANTS } from '../balance/builds';
+import { TRIGGERS } from '../../src/effects/triggers';
 import { A, W, act, run, tryAct, strike, useTech, copy, bend, HIT, CRIT, rollState, fightOf, fightSpec, place, turn, units, pcs, foes, charOf, TIERS, isMeleeW , ALSO } from './harness';
 
 export type Table = Record<string, string>;
@@ -367,7 +368,11 @@ export const tiersOf = (p: any): string[] => (p.tiers ? Object.keys(p.tiers) : [
 export function hooksOf(key: string, tier?: string): Set<string> {
   const info = A.itemInfo(key, tier), hd = A.handlerOf(key), H = new Set<string>(Object.keys(hd?.on || {}));
   if (hd?.stat) H.add('stat');
-  if (info) info.effects.forEach((e: any, i: number) => { if (A.ownerOf(info, i) !== 'generic') return; const gop = A.genericOf(e.op); for (const k of Object.keys(gop?.on || {})) H.add(k); if (gop?.stat) H.add('stat'); });
+  if (info) info.effects.forEach((e: any, i: number) => {
+    if (A.ownerOf(info, i) !== 'generic') return;
+    if (TRIGGERS[e?.when]) { H.add(TRIGGERS[e.when].hook); return; } // an item op (engine foundations 3): its trigger's hook
+    const gop = A.genericOf(e.op); for (const k of Object.keys(gop?.on || {})) H.add(k); if (gop?.stat) H.add('stat');
+  });
   return H;
 }
 // One sheet for every holder (every skill and attribute 5, level 6), so a line that differs from the same sheet

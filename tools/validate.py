@@ -1691,6 +1691,83 @@ for c in items("conditions"):
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 
+# ---------- item ops (engine foundations 3; packages/engine/src/effects/triggers.ts): the closed lists ----------
+# An effect whose `when` is a single word is a trigger: it must be in effect_ops.json item_ops.triggers, its op (and
+# every op in `and`) must take that trigger, every `if` key must be a predicate with the right kind of value, and the
+# `limit` must be { per, n } or { cooldown }. A `when` with spaces is the old prose scope (the item's handler or the
+# Narrator reads it). Legacy single-word scopes still claimed by an item's own handler are listed and may only shrink.
+IOPS = (data.get("effect_ops") or {}).get("item_ops") or {}
+TRIG, PRED, TOPS = IOPS.get("triggers", {}), IOPS.get("predicates", {}), IOPS.get("ops", {})
+LIMIT_SCOPES = set(IOPS.get("limit_scopes", []))
+# The legacy single-word scopes (prose in a token's clothing, read by the item's own handler or the Narrator). This list
+# may only SHRINK: a converted item uses a trigger, never a new word here.
+LEGACY_WHEN = {"on_use", "remove", "would_drop_to_0", "on_hit", "on_kill", "on_reaction", "on_analyze", "on_cast",
+               "hp_floor_triggered", "long_rest", "vent", "on_downed", "in_combat",
+               "adjacent_enemy_moves_away_after_turn_start", "after_release", "cast_fear", "cast_outburst", "companion_destroyed_until_rebuilt",
+               "companion_dies_rest_of_arc", "duration+1", "first_pump_each_turn", "full_auto_cone_hit_or_miss", "hands_empty", "hit_by:emp:2_turns",
+               "hit_by:emp|lightning", "hit_marked_below_25pct", "next_hit", "next_release_this_turn", "next_turn", "on_brace",
+               "on_failed_save_before_initiative", "on_failed_threat", "on_overclock", "on_vanish", "on_vent", "once_per_scene:wreck_plan_or_property",
+               "per_3_guard_lost", "reaction:enemy_spell_hits_your_shield", "reaction:melee_miss_against_self", "rest:each_special_type",
+               "rest_of_session", "scene_start", "session_start", "stitch_16_20", "supreme_command", "turn_start_save"}
+REL = {"self", "ally", "side", "foe", "other", "none", "any"}
+def check_pred(k, v, w):
+    p = PRED.get(k)
+    if not p: errors.append(f"{w}: unknown predicate '{k}' in `if` (item_ops.predicates)"); return
+    a, vals = p["arg"], v if isinstance(v, list) else [v]
+    if a == "rel" and not all(x in REL for x in vals): errors.append(f"{w}: `if.{k}` must be one of {sorted(REL)}")
+    elif a == "number" and not (isinstance(v, (int, float)) and not isinstance(v, bool)): errors.append(f"{w}: `if.{k}` must be a number")
+    elif a == "bool" and not isinstance(v, bool): errors.append(f"{w}: `if.{k}` must be true or false")
+    elif a == "ids" and not all(isinstance(x, str) and x in known["condition"] for x in vals): errors.append(f"{w}: `if.{k}` names a condition that is not in conditions.json")
+    elif a in ("words", "string") and not all(isinstance(x, str) for x in vals): errors.append(f"{w}: `if.{k}` must be words")
+def check_trigger_effect(e, w):
+    t = e.get("when")
+    if t not in TRIG:
+        if t not in LEGACY_WHEN: errors.append(f"{w}: unknown trigger '{t}' (item_ops.triggers; prose with spaces is the old free-text scope)")
+        return
+    for x in [e] + list(e.get("and") or []):
+        o = TOPS.get(x.get("op"))
+        if not o: errors.append(f"{w}: op '{x.get('op')}' does not run on a trigger (item_ops.ops)"); continue
+        if t not in o["on"]: errors.append(f"{w}: op '{x.get('op')}' does not run on '{t}' (it runs on {o['on'][:6]}…)")
+        if x.get("target") not in (None, "self", "actor", "target"): errors.append(f"{w}: an item op's target is self, actor or target")
+        for f in ("value", "value_pct", "max", "add", "set", "min", "tiles", "rounds"):
+            if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)): errors.append(f"{w}: '{f}' must be a number in data, never a word")
+        if x.get("op") in ("damage_mult", "damage_vs", "roll_mod", "grant_ap", "resource", "floor") and not isinstance(x.get("value"), (int, float)): errors.append(f"{w}: op '{x.get('op')}' needs a numeric value")
+        if x.get("op") == "condition" and x.get("condition") not in known["condition"]: errors.append(f"{w}: condition '{x.get('condition')}' is not in conditions.json")
+    cond = e.get("if")
+    if cond is not None:
+        if not isinstance(cond, dict): errors.append(f"{w}: `if` must be an object of predicates")
+        else:
+            for k, v in cond.items(): check_pred(k, v, w)
+    lim = e.get("limit")
+    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
+        errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }} or {{ cooldown: rounds }}")
+def walk_triggers(o, w):
+    if isinstance(o, dict):
+        if isinstance(o.get("op"), str) and isinstance(o.get("when"), str) and " " not in o["when"] and ";" not in o["when"]:
+            check_trigger_effect(o, w)
+        for v in o.values(): walk_triggers(v, w)
+    elif isinstance(o, list):
+        for v in o: walk_triggers(v, w)
+# an item's own `numbers` (effects/num.ts num(h, key): what a handler that is not data yet reads) are numbers
+def check_numbers(o, w):
+    n = o.get("numbers") if isinstance(o, dict) else None
+    if n is not None and (not isinstance(n, dict) or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in n.values())):
+        errors.append(f"{w}: `numbers` must map names to numbers (effects/num.ts)")
+for _n in ("perks", "traits"):
+    for _x in items(_n):
+        check_numbers(_x, f"{_n}:{_x.get('id')}")
+        for _t in (_x.get("tiers") or {}).values(): check_numbers(_t, f"{_n}:{_x.get('id')}")
+for _m in [m for b in base for r in (b.get("ranks") or {}).values() for m in r.get("moves", [])] + pool + [m for a in adv for m in a.get("moves", [])]:
+    check_numbers(_m, f"classes:{_m.get('origin', '')}.{_m.get('id')}")
+if TRIG:
+    for _n in ("perks", "traits"):
+        for _x in items(_n): walk_triggers(_x, f"{_n}:{_x.get('id')}")
+    for _x in base + adv: walk_triggers(_x, f"classes:{_x.get('id')}")
+    for _m in pool: walk_triggers(_m, f"classes:pool.{_m.get('origin')}.{_m.get('id')}")
+    for _x in items("skills"): walk_triggers(_x.get("unlocks"), f"skills:{_x.get('id')}")
+else:
+    errors.append("effect_ops.json: no item_ops block (the closed lists of item ops)")
+
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:
     _want = {k["slot"]: k["id"] for k in data["skills"]["items"] if k["attribute"] == _a["id"]}
