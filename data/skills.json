@@ -1447,7 +1447,7 @@
           "name": "Quick Read",
           "category": "AP Mod",
           "mastery": 1,
-          "text": "Analyze costs {=unlocks.3.effects.0.value|abs} AP.",
+          "text": "Analyze costs 1 AP.",
           "effects": [
             {
               "op": "stat_mod",

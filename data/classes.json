@@ -4834,7 +4834,7 @@
           "name": "Foundation",
           "ap_cost": 0,
           "uses": "per_scene",
-          "text": "Once per scene: this turn, glyphs you draw within 2 tiles of your Keystone cost {=ap_cost} AP.",
+          "text": "Once per scene: this turn, glyphs you draw within 2 tiles of your Keystone cost 0 AP.",
           "effects": [
             {
               "op": "action_cost",

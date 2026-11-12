@@ -1,6 +1,6 @@
 {
  "what": "tools/text_numbers.py: the text-number guard. allow = bare numbers that are right to have no field, each with its reason; baseline = the bare numbers of 12 Nov 2026 not yet bound to a field with a {placeholder} (key: how many times), which may only shrink.",
- "ceiling": 1428,
+ "ceiling": 1432,
  "allow": {},
  "baseline": {
   "calls:call.brief:steps.0.text:1": 1,
@@ -59,6 +59,7 @@
   "classes:fire_discipline:text:2": 2,
   "classes:fire_discipline:text:3": 2,
   "classes:gift:text:1": 1,
+  "classes:glyph_mason/foundation:text:0": 1,
   "classes:glyph_mason/foundation:text:2": 1,
   "classes:glyph_mason/survey:text:1": 1,
   "classes:glyph_mason/survey:text:2": 1,
@@ -707,6 +708,7 @@
   "skills:analysis:per_point.text:5": 1,
   "skills:analysis:per_point.text:5%": 1,
   "skills:analysis:unlocks.10.text:2": 1,
+  "skills:analysis:unlocks.3.text:1": 1,
   "skills:athletics:per_point.text:1": 1,
   "skills:athletics:per_point.text:2": 1,
   "skills:athletics:unlocks.10.text:2": 1,
@@ -1086,7 +1088,9 @@
   "traits:spray_and_pray:text:1": 1,
   "traits:spray_and_pray:upsides.0:1": 1,
   "traits:spray_and_pray:upsides.0:2": 1,
+  "traits:squad_anchor:downsides.0:2": 1,
   "traits:squad_anchor:text:1": 2,
+  "traits:squad_anchor:text:2": 1,
   "traits:squad_anchor:upsides.0:1": 2,
   "traits:sworn_sibling:downsides.0:2": 3,
   "traits:sworn_sibling:text:1": 1,

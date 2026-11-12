@@ -2900,11 +2900,11 @@
         "Hold Fast: allies within {=effects.0.range_tiles} tiles of you get +1 on all saves and +1 Defense. If you haven't moved this turn, the range is {=effects.0.range_if_stationary} tiles."
       ],
       "downsides": [
-        "Fixed Point: on a turn when you move more than {=effects.0.range_tiles} tiles, the effect stops until your next turn, and you have {=effects.1.penalty.value|abs} AP less on that turn."
+        "Fixed Point: on a turn when you move more than 2 tiles, the effect stops until your next turn, and you have {=effects.1.penalty.value|abs} AP less on that turn."
       ],
       "notes": [],
       "narrator_hook": "the fight that won't stay in one place.",
-      "text": "Someone has to hold the line so everyone else can move.\n+ Hold Fast: allies within {=effects.0.range_tiles} tiles of you get +1 on all saves and +1 Defense. If you haven't moved this turn, the range is {=effects.0.range_if_stationary} tiles.\n− Fixed Point: on a turn when you move more than {=effects.0.range_tiles} tiles, the effect stops until your next turn, and you have {=effects.1.penalty.value|abs} AP less on that turn.",
+      "text": "Someone has to hold the line so everyone else can move.\n+ Hold Fast: allies within {=effects.0.range_tiles} tiles of you get +1 on all saves and +1 Defense. If you haven't moved this turn, the range is {=effects.0.range_if_stationary} tiles.\n− Fixed Point: on a turn when you move more than 2 tiles, the effect stops until your next turn, and you have {=effects.1.penalty.value|abs} AP less on that turn.",
       "effects": [
         {
           "op": "aura",
