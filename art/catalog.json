@@ -5510,10 +5510,10 @@
       }
     },
     "both-hands": {
-      "label": "Wick — Both Hands",
-      "collection": "wick-production-v1",
+      "label": "Both Hands",
+      "collection": "2026-11-12-art-requests",
       "path": "art/icons/perks/both-hands.png",
-      "sha256": "8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2",
+      "sha256": "01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -5523,7 +5523,7 @@
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
-      "note": "0.19: the Hot Swap figure with a sword drawn into its open hand (tools/art/both_hands_icon.py); replaces Origami Hands, now in art/_archive/perks/wick/replaced/",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only.",
       "exports": {
         "256": "art/icons/perks/exports/256/both-hands.png",
         "128": "art/icons/perks/exports/128/both-hands.png",
@@ -5532,7 +5532,11 @@
         "48": "art/icons/perks/exports/48/both-hands.png",
         "44": "art/icons/perks/exports/44/both-hands.png",
         "40": "art/icons/perks/exports/40/both-hands.png"
-      }
+      },
+      "id": "both-hands",
+      "source": "art/_archive/deliveries/2026-11-12/sources/both-hands.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/both-hands.txt",
+      "previous_path": "art/_archive/icons/perks/2026-11-12/both-hands.png"
     },
     "running-reload": {
       "label": "Wick — Running Reload",

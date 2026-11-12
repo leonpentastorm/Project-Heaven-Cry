@@ -123,10 +123,11 @@ fd90a1199fab581246e6a304a47e9e82887d7965a2ac8146a6070ab7702b8ea4  art/_archive/c
 9f01b2fda4f16639aff967fc68c5447e9af36d03bfd16126e7e00a9f8117b9be  art/_archive/character-portraits/patrons/v1/source-renders/the_matchmaker-native.png
 33357380b1f5f672428f390434217bdf2ba48b0ab849cccac021948cc4fc9b98  art/_archive/character-portraits/patrons/v1/source-renders/the_quartermaster-native.png
 26658bcc4b6fe3516eb2312ef25df38efbffca447a8fd23e4b2f3501a94832bd  art/_archive/character-portraits/patrons/v1/source-renders/the_toll_keeper-native.png
-0693360096ec81f825e05d4bc985119f33853e7fe49fa47cf8367023be308aa9  art/_archive/deliveries/2026-11-12/README.md
-71bb96eb88b77c2faa0cbe291ab0cfc8b31094e9d36e5e17ea4c77239517e048  art/_archive/deliveries/2026-11-12/manifest.json
+f4afe9e5029857b08d38b24d157618e90db8c2826cc44a53739dbe79c31f0eb9  art/_archive/deliveries/2026-11-12/README.md
+744627d657fdb282b8591a93bc68ec1067b5cb8e8a2c7fba6d7c2ce173881a8b  art/_archive/deliveries/2026-11-12/manifest.json
+01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c  art/_archive/deliveries/2026-11-12/masters/v1/both-hands.png
 5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0  art/_archive/deliveries/2026-11-12/masters/v1/whisper-rebuke.png
-56be0e18cd0bcb96b4e0ab867c2dcda360a169f1a3a57a348ed36c71d0357e00  art/_archive/deliveries/2026-11-12/progress.json
+46e3cd511002ed1946a514e08c3add61257832981ffde9741f8d7407beb00223  art/_archive/deliveries/2026-11-12/progress.json
 10a70cc1081ca4e054d8f039b0196009b6c892ab9ad05745729fed6f6fb062fc  art/_archive/deliveries/2026-11-12/prompts/both-hands.txt
 853cb54ab9b5c838b7720d5d4ae856a5a767b88c4bcf4154fdf69958e3ed351b  art/_archive/deliveries/2026-11-12/prompts/brief.txt
 706af9c3f8eac898591e6a1afa045d3a15fe25184199da0d7b63f671ee26fd92  art/_archive/deliveries/2026-11-12/prompts/cue.txt
@@ -148,10 +149,14 @@ a11a4d1407e904a650fa994d47205f332fc94b0306d982f01a21422e7fdd9bc9  art/_archive/d
 cf191c186c26b147b3e780df4c3e6e0600adaac67722a9d2d82aec2b113e8944  art/_archive/deliveries/2026-11-12/prompts/threaten.txt
 4038c7a747c0a3f2a05f67caa01f126f04548241d4bcc7b923dba48d03222d61  art/_archive/deliveries/2026-11-12/prompts/warn.txt
 fc0ebb8cf9e8fb31426e205cba04b988a0f1f13fa87e46825519b695cb2cfe79  art/_archive/deliveries/2026-11-12/prompts/whisper-rebuke.txt
-f98c40faadcbac7a9fdc907b5faddbdefb432a480d860eedaa66afd316944aea  art/_archive/deliveries/2026-11-12/queue.json
+58bc3b836c51cc4d07e3d1cda84c0e728e008ab974e84e75d2ea1e8455d0b66e  art/_archive/deliveries/2026-11-12/queue.json
+fc970ac6ef6ec743b8807265b787b12e5385bfec7782a4d7d27df366bf33a1cf  art/_archive/deliveries/2026-11-12/reviews/perks-40px.png
+cf50a56a20c45a6cfa443aeb19d4a8c5c774d235ada323af7fe35e8177421f90  art/_archive/deliveries/2026-11-12/reviews/perks-44px.png
+f04adbd17992bae0a7505be8d6529a0b8d81f6e74fa1991287b8be0ebe52c527  art/_archive/deliveries/2026-11-12/reviews/perks-64px.png
 8e42c830f2dd12b5550e240ac4b28edb3efe28af8835449df6215e7d8c69ea1c  art/_archive/deliveries/2026-11-12/reviews/prayers-40px.png
 04fb596069556dd042b37dd82a56185d76ed59da362110116d6b7e3bf10fe2cd  art/_archive/deliveries/2026-11-12/reviews/prayers-44px.png
 6381fd76e15d380040e31173c274c7d8a717bc38e70d607937d02fabc15899a1  art/_archive/deliveries/2026-11-12/reviews/prayers-64px.png
+83dd14f4f4727d1c0a9aafbfa3dfc53aa7555d154988ea2e2d191c1984d1b9f6  art/_archive/deliveries/2026-11-12/sources/both-hands.png
 c1a53675348140f0f12a9373605dff85200a83922fda80a83131e8d68c776ae7  art/_archive/deliveries/2026-11-12/sources/whisper-rebuke.png
 fcea4c4ab03f3721a713acb33d0631a2772f909677ff8fd631900be65aa76dbf  art/_archive/emblems/README.md
 ce6b06bceede23d241c97cd179574dd80d31e49d30bb41db3802f566381844f3  art/_archive/emblems/patrons/v1/README.md
@@ -159,6 +164,14 @@ bdf7f5ba1e015b7397881bd3e9eecc12f96977743faa57da81877285a40a6971  art/_archive/e
 93cea24ec7a2405cf8527c08337d5e5ca0618ace59d6431fb7d9fb7169ad9bd1  art/_archive/emblems/patrons/v1/manifest.json
 749963c502c372e747a941325c2c104ceda0ebffe3a270c8b54d16bb953e8391  art/_archive/emblems/patrons/v1/review-sheet.jpg
 81cfa6e354e9c60b899efaf31a6a7fecb9dbe6d1a7471c2d6010e92b536b2de3  art/_archive/emblems/patrons/v1/source-atlases/exec-309ba56e-bda3-4412-96b3-7fcd667a2307.png
+8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/_archive/icons/perks/2026-11-12/both-hands.png
+bee60137688c6ac3615d3935ce9aadbb1937bc223cbcb791fa92572044cf2380  art/_archive/icons/perks/2026-11-12/exports/128/both-hands.png
+97cd6b0da1b3ba216fd374b114e5c0d403031407319cf465fc28e3ca1b39e4f6  art/_archive/icons/perks/2026-11-12/exports/256/both-hands.png
+ca9bc6fbd2d0fa58cf3dad7fcc41ebfa24c85824d8749ca314dead43cc5a7af6  art/_archive/icons/perks/2026-11-12/exports/40/both-hands.png
+45e482b5e39220d7324c0e923700fd1c400a6f562574ccf7631e62194b1e2704  art/_archive/icons/perks/2026-11-12/exports/44/both-hands.png
+82edea8aafdaaba59a06d1038183cf8f8ade6e0a9afc88b00a411e62146579ed  art/_archive/icons/perks/2026-11-12/exports/48/both-hands.png
+8f3fe7d6af111a5002f82c040f731efb42cc137579985cbf276352672ac1c13b  art/_archive/icons/perks/2026-11-12/exports/56/both-hands.png
+960c20516b5036012a86cf7c2746d3b4c768cc3bafbff1392f2f720fff0009e7  art/_archive/icons/perks/2026-11-12/exports/64/both-hands.png
 908f8aa3c8811962cb857b45bc557626ad6e1717c2ea4ebd15530628cc7b23fd  art/_archive/illustrations/m813/v1/README.md
 9b8581789d8fa746b473c9c765d7d92a2477c3aeb1296080beadabd96ca5aeb5  art/_archive/illustrations/m813/v1/manifest.json
 41a31397b8652bc30d2e6407610e950938bfc7f536ed39d1a6ffa83bef2ca2ec  art/_archive/illustrations/m813/v1/previews/opening-safe.png
@@ -874,7 +887,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 fd9fd865d5891d7e7880b1def9c8b3fb60cbe6697d91b5afe36cc91a20af0961  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-75bbf7a9c347ac86ab4073fa3c2166c4e92ce0032ebd974e0ca877765e6962ef  art/catalog.json
+67642e338c0363104b41b22581c1a8ceb6162c89003813743cba943f4d2f6134  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 79a8fdcfaf94dfbd8fabd5492492ddae430bb3f773cc2826712103ad667c8347  art/emblems/patrons/mother_ember.png
@@ -907,6 +920,7 @@ e35b3f1fc56ee1e0f2bd7701b541a091de3b2c73768c3949a0d3478bfb18ff9c  art/icons/armo
 a1b159d8a5fe8191b766d27e3b75ec96a5d6026baa0637fca0b9ed108307bfe5  art/icons/armour/work_gloves.svg
 ea053edc5d4105a821b68e964185a89b21f8e39f0181750d6b24349f8a860dfa  art/icons/focus/emanator.svg
 d29029c501d9cf3b4804fed5177b7c2fe030e7668a9dcd8b69d5322c7aa01434  art/icons/focus/evoker.svg
+7bfbe232cee6ea3be8b7b84b451e733ea58ea984f629aa36b3396a5d69a74f4a  art/icons/perks/README.md
 ae83c21110ccff715cae106a9dbfbd19d2ce283fbed804326a8bdb9066a8f6c6  art/icons/perks/angel-of-the-trenches.png
 88698e6aa1c10ffebf8bc0c8020088a44f00a4887e723094d43d1afce831cc9a  art/icons/perks/bedside-manner.png
 7a1b47f867faed3a0b0758f47f96b97111a33780be0c933fc4094b5732462be1  art/icons/perks/before-the-blink.png
@@ -914,7 +928,7 @@ ae83c21110ccff715cae106a9dbfbd19d2ce283fbed804326a8bdb9066a8f6c6  art/icons/perk
 7eeeee539d0e962b68d8b5be28c1406084ce6a114ef49b2e5b332f6ac98e6ac4  art/icons/perks/bite-the-bullet.png
 c8502dd54eab14e50b0d65f5c055863cb886eb5c526500733c5d9ce5ab86cc3e  art/icons/perks/blueprint.png
 00576be483b0cc19ce0caa8e0f4168cf27e9dc987b8ccb476df5ecf4b3d18ff4  art/icons/perks/bone-talk.png
-8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/icons/perks/both-hands.png
+01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c  art/icons/perks/both-hands.png
 dc64b9b975d5ad5e7d8d2e5cea0e5f36a9366ca72b672969356dce6e7be149b5  art/icons/perks/breaching-strike.png
 cfd23b5e5064c3acbadc95e2adf1c1fdaa82054e704752ea36c1655075780902  art/icons/perks/bulwark.png
 3ddae6b09d2c6a3a650ef861a5e54bcf1368b47603b6fde8582c19bd05962369  art/icons/perks/burden-of-proof.png
@@ -942,7 +956,7 @@ e3341fb661b2846f22d694e4120f48874ea11f24cc6344e3ff270820ef79ee60  art/icons/perk
 8f54d005d1797582e8334c35f0f4a4935e57c772a3c366a23f65c6ff3d17f61f  art/icons/perks/exports/128/bite-the-bullet.png
 fdff6811e0f6ee40e5656760bd5c6d3c51fbae334311c1cef9704da6090bfff1  art/icons/perks/exports/128/blueprint.png
 64ed2289abe1b5a9b380a083478d4d1af1531a41ac5bc16b2305a57f88ef6c46  art/icons/perks/exports/128/bone-talk.png
-bee60137688c6ac3615d3935ce9aadbb1937bc223cbcb791fa92572044cf2380  art/icons/perks/exports/128/both-hands.png
+a39c4852c0a67364f141b12a1ebcc677928254b9a1038d1f745ff43f1757be5b  art/icons/perks/exports/128/both-hands.png
 bd073b3a09aa12c5ef4a99c2d90fe1b370118ebb0bd4e6a91027e35fdf96c2fd  art/icons/perks/exports/128/breaching-strike.png
 6b74892ec64df4547dc775cca95bd4f50f00bfeec1897eac9fc38dad31a61678  art/icons/perks/exports/128/bulwark.png
 f7852fd8538d514d765880248f7d09008ffef98aeb1d5fcbed95f9332674c7aa  art/icons/perks/exports/128/burden-of-proof.png
@@ -1048,7 +1062,7 @@ fe5c1b552fb7489a24ac3b8eb0b376a793f1b3f1aef88cb09b5ffa38493d5e92  art/icons/perk
 8383184fd1c0b59bcfeababcb72cc53d554d41473eda124a20dbb3f653184619  art/icons/perks/exports/256/bite-the-bullet.png
 23852cdaafebc42334786947b21703dfa99c07011d5a595f33bef5ccd8c9355a  art/icons/perks/exports/256/blueprint.png
 5cb299c1daabe5e7184b5a14a268602eb1ec8abf02e5572e48585f79b1eb7992  art/icons/perks/exports/256/bone-talk.png
-97cd6b0da1b3ba216fd374b114e5c0d403031407319cf465fc28e3ca1b39e4f6  art/icons/perks/exports/256/both-hands.png
+f90ae6df26216682d1be04c85d78020d15c116434c301556e35f200e2776f0a3  art/icons/perks/exports/256/both-hands.png
 05497304988d59fbcc484abf29cc2bea4f91f0b6416d80605699f99fb05cacf5  art/icons/perks/exports/256/breaching-strike.png
 c1d386aaf4833fa3c7620e55b3f78801cc10216ff982392a9fb0ac66089e1974  art/icons/perks/exports/256/bulwark.png
 7bc09d2402a630358517ad513a4ecd58d3813a5a65f9f39511f4026361f85193  art/icons/perks/exports/256/burden-of-proof.png
@@ -1154,7 +1168,7 @@ eaa2fcacb7568683ad199954099189844604106cf5d636ef51c22d99f11819de  art/icons/perk
 b676f2410619cb3f3398a1b403390dd0a62f3f47e6d6ab639c00b14686207166  art/icons/perks/exports/40/bite-the-bullet.png
 14d239dc4c7d19c77de5a6fff3b8b988e86b707e616400a6b4ee9424a280105c  art/icons/perks/exports/40/blueprint.png
 bb7ddd726cf4f99e8c779eb1a39f6c6e5c6e9b9fe31f07414af39588e06be301  art/icons/perks/exports/40/bone-talk.png
-ca9bc6fbd2d0fa58cf3dad7fcc41ebfa24c85824d8749ca314dead43cc5a7af6  art/icons/perks/exports/40/both-hands.png
+a04010367c113ba5def9366c6c5457f5fa3f702e5cbb8ede29193a0c42f7a62f  art/icons/perks/exports/40/both-hands.png
 b54db3006b6d723a2a88ad5cd691bc94406cf0be47fa206cc85e99397e196f46  art/icons/perks/exports/40/breaching-strike.png
 aa950f200f0102fb9484f7fccacf86f96dd59d9c1982eb01e18a22bde3a8eecb  art/icons/perks/exports/40/bulwark.png
 7f934bdb381474771409a15a0ca979b0e9d6b4a52698949cd080e3998e50d3b6  art/icons/perks/exports/40/burden-of-proof.png
@@ -1260,7 +1274,7 @@ c6d22da5f755eeb8f42cd788c9d6eba2c95815524e1bf7c922ed1219c7258150  art/icons/perk
 7f8015f711275851acb2bdf58da1bd728af64e58cd909475a4875c1026732d4e  art/icons/perks/exports/44/bite-the-bullet.png
 760d564cd79d769efc3e8545c02de49def406e5973b56efb03acf3ba28fe5e34  art/icons/perks/exports/44/blueprint.png
 7801b94c45784abe846e649ff90dace88b16c28607e82b554535f92e9ea28e7d  art/icons/perks/exports/44/bone-talk.png
-45e482b5e39220d7324c0e923700fd1c400a6f562574ccf7631e62194b1e2704  art/icons/perks/exports/44/both-hands.png
+65510c5a348a9c04a3dd062fcdca5c193bce614e938e1294b49ff231a31ab6d0  art/icons/perks/exports/44/both-hands.png
 042570742a54957f0bb1067ebdc2af8b574a0553e1a18873e93f1ce44cd3e9c6  art/icons/perks/exports/44/breaching-strike.png
 146b43a22e883051b1b90151d2262142072c9f50f2c833bd377a8d5acca96fc9  art/icons/perks/exports/44/bulwark.png
 20e14b1544374848484fe3d7529378f85f7d42354db497ec1939daf1363e5d78  art/icons/perks/exports/44/burden-of-proof.png
@@ -1366,7 +1380,7 @@ a0a2d046e1293c6ca6bfcac3ba4ed404ab3042405c5d441a293b687dcbd9c6d9  art/icons/perk
 7472fec74ec0ea0eb41a3d8e4ecf7840290579a346b1b267978a6d53309bdb0c  art/icons/perks/exports/48/bite-the-bullet.png
 53e1ef6c79f95ca0dfbfd3d52664d5f9b0f3dd7ede98e982859787de72764f5d  art/icons/perks/exports/48/blueprint.png
 567a48a3efd4d2bf0b4e8f009c4e0fca3e132a52ffed3008b6834f55336557dd  art/icons/perks/exports/48/bone-talk.png
-82edea8aafdaaba59a06d1038183cf8f8ade6e0a9afc88b00a411e62146579ed  art/icons/perks/exports/48/both-hands.png
+7b98a42aef4b5e280f900b22dc75acfe4dd7337382488a7f2955694086ff3bdc  art/icons/perks/exports/48/both-hands.png
 5ca7d9209b62d17251a05964cedbbf6317b86d9d4f0b96bc3bfa2fee38eb9877  art/icons/perks/exports/48/breaching-strike.png
 4090ebb0a587c21a39a2b7f19e3960a52b765be56fb2cbd9e844bec1ad5c4c6e  art/icons/perks/exports/48/bulwark.png
 84ee77604e0ace21cc56e62156180841372019b464eb129571156c412998646a  art/icons/perks/exports/48/burden-of-proof.png
@@ -1472,7 +1486,7 @@ e404f581a72ec8ce0a2b923b71a8c369a9d239955ee4c986d4df1dd605866cae  art/icons/perk
 1658d8e4db106ac971fa7a59b6cc6a4e4c23b8e54e4089f593488af8e49231a0  art/icons/perks/exports/56/bite-the-bullet.png
 5862e7cacda7eedf59d504886fae89792c1465ba42ed3d70f5aac2da2e4288ef  art/icons/perks/exports/56/blueprint.png
 368bf3d2c5d1310d9fa78d6749944ec429825dbfaf556c24d199861b9ccd7163  art/icons/perks/exports/56/bone-talk.png
-8f3fe7d6af111a5002f82c040f731efb42cc137579985cbf276352672ac1c13b  art/icons/perks/exports/56/both-hands.png
+f80b052b64b1f6f498aa092de35ad330b9a5e2d593f2de794219513c84d5a0e7  art/icons/perks/exports/56/both-hands.png
 bd0e78b3c212c218ecdfa2d4c3e502565e4722f152d844ddc88bd5e08f19a4c2  art/icons/perks/exports/56/breaching-strike.png
 b8f51dbb5053025cc5473c041ddb360cf0c71dae8d0089092bcc6c43f184bd91  art/icons/perks/exports/56/bulwark.png
 f6af9c4897769080aadec076c6c16e650990cd5f7df93a190c4b8eb17b0edffc  art/icons/perks/exports/56/burden-of-proof.png
@@ -1578,7 +1592,7 @@ d04eb203739b45d1826113f9cd50fe9bafa743f17a21e8d9c960cbdaa0caf45b  art/icons/perk
 b9e2e4eb0bc66b1ccca02cea39c12c349b5bdf01fa5e565fa9ffbef15d1f0e9f  art/icons/perks/exports/64/bite-the-bullet.png
 ef7705894fc3bd14505474a6c628997993e24507fdc705ffafae2cddbdf458d7  art/icons/perks/exports/64/blueprint.png
 dd921e89ea1d82b2b35833a1d2e2cd81052345f6b1bcb9ca4064110a018048e0  art/icons/perks/exports/64/bone-talk.png
-960c20516b5036012a86cf7c2746d3b4c768cc3bafbff1392f2f720fff0009e7  art/icons/perks/exports/64/both-hands.png
+c775bf1c9b357148746bb9489198c9f935579c47760b932c269f23e3c1edb28f  art/icons/perks/exports/64/both-hands.png
 a28202b02c998a9f89083a29bcdd3a3cfb9a9b724874a11831c4fc3443d9fe20  art/icons/perks/exports/64/breaching-strike.png
 cf3145a1462daceebaac4ffdbcedada2d206bffa11d41baa63b5e74a3e95f17e  art/icons/perks/exports/64/bulwark.png
 e76e526f6bba2229d3c2eefbd9bdd319b26151266fb1f1bb39ae883bf9f24612  art/icons/perks/exports/64/burden-of-proof.png

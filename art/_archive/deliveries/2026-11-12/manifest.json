@@ -51,6 +51,48 @@
           "sha256": "b658beca2579608a875b63c1f2f14fd211a74c79151fda1778b4103247bf377b"
         }
       ]
+    },
+    {
+      "path": "art/icons/perks/both-hands.png",
+      "sha256": "01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c",
+      "id": "both-hands",
+      "family": "perks",
+      "action": "Both Hands. Wick fighting with a sword in one hand and a pistol in the other at the same moment: mid-strike with the blade swept across his body, the pistol in the other hand already levelled straight ahead. A grounded lunge, not a spin. The sword and pistol are simple invented shapes, not real-world models.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/both-hands.png",
+        "sha256": "83dd14f4f4727d1c0a9aafbfa3dfc53aa7555d154988ea2e2d191c1984d1b9f6"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/both-hands.png",
+        "sha256": "01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/both-hands.txt",
+        "sha256": "10a70cc1081ca4e054d8f039b0196009b6c892ab9ad05745729fed6f6fb062fc"
+      },
+      "exports": {
+        "256": "art/icons/perks/exports/256/both-hands.png",
+        "128": "art/icons/perks/exports/128/both-hands.png",
+        "64": "art/icons/perks/exports/64/both-hands.png",
+        "56": "art/icons/perks/exports/56/both-hands.png",
+        "48": "art/icons/perks/exports/48/both-hands.png",
+        "44": "art/icons/perks/exports/44/both-hands.png",
+        "40": "art/icons/perks/exports/40/both-hands.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
     }
   ]
 }
