@@ -51,6 +51,14 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   with the characters, perks, skills and enemies you name, through the real reducer. Every rules test starts here.
 - `packages/engine/test/perk-audit.test.ts`: every perk and trait through a fight (`PERK_AUDIT_OUT=<file>` writes the
   report).
+- **The golden tables** (`packages/engine/test/golden-damage*.test.ts`, inside `npm run check`): what about 5,300 fixed
+  actions produce and land, exact, against `packages/engine/test/golden/*.json` (every weapon, technique, reference
+  build, a Line for every Subject word, the Outburst by school, stage and feeling, every prayer, blasts, traps, hazards,
+  ticks; `record.ts` lists them, each file's `#coverage` line says what gave no number). They fail when ANY number of
+  the damage engine moves, and print the action, what it was and what it is. A change that is meant to leave numbers
+  alone (a refactor, a re-expression of the formula) must leave them green. When a number was meant to move, record
+  on purpose and say so in the commit: `GOLDEN_RECORD=1 npm test -w @phc/engine -- golden-damage`. No enemy AI runs in
+  them (every action is a fixed attacker on a fixed target), so a change to whom an enemy picks does not touch them.
 - `packages/engine/test/balance-baseline.test.ts`: the plain attack of sample weapons against each enemy tier
   (`BALANCE_OUT=<file>`).
 - `window.__phc` in the browser: `getState()`, `act(action)`, `setNarrator({ scripted: true })` (a Narrator that
