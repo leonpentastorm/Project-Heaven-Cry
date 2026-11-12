@@ -20,7 +20,8 @@ import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
 import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility } from './combat';
 import { kindOf } from './objects';
-import { basicActions, loadPlan, moveOptions, pullFreeTargets, type BasicAction } from './actions';
+import { apFor } from './effects/cost';
+import { basicActions, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun } from './preview';
 import type { Action, GameState } from './game';
 import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView } from './physical/core';
@@ -97,7 +98,7 @@ export interface GridMarks {
   /** Units the action would touch (fogged: only units the viewer sees). tone: harm, help, spared, or the picked target. */
   units: { id: string; tag: string; tone: 'harm' | 'help' | 'spared' | 'target' }[];
   /** Tiles: the area it covers, the picked tile, the tiles that may be picked next. */
-  tiles: { tile: string; kind: 'area' | 'pick' | 'choice' | 'reach' }[];
+  tiles: { tile: string; kind: 'area' | 'pick' | 'choice' | 'reach'; /** a reach's range band (0: no penalty) */ band?: number }[];
 }
 export interface DescriptorPreview {
   id: string;
@@ -112,6 +113,8 @@ export interface DescriptorPreview {
   lines: PreviewLine[];
   marks: GridMarks;
   toggles: ToggleEntry[];
+  /** Each roll's own to-hit preview, by the unit it is against (the target card prints its terms). */
+  rolls?: { unit: string; pv: any }[];
   /** The action Confirm sends (null: not ready). */
   action: Action | null;
 }
@@ -130,7 +133,7 @@ export interface ActionSystem {
   id: string;
   list: (x: DescCtx) => ActionDescriptor[];
   send: (x: DescCtx, d: ActionDescriptor, p: Picks) => Action | null;
-  preview?: (x: DescCtx, d: ActionDescriptor, p: Picks, action: Action | null) => { lines?: PreviewLine[]; marks?: Partial<GridMarks>; ap?: number; ok?: boolean; why?: string | null } | null;
+  preview?: (x: DescCtx, d: ActionDescriptor, p: Picks, action: Action | null) => { lines?: PreviewLine[]; marks?: Partial<GridMarks>; ap?: number; ok?: boolean; why?: string | null; rolls?: { unit: string; pv: any }[] } | null;
   /** Whether an id is this system's (so a preview asks only the system that owns it). Absent: it is asked. */
   owns?: (id: string) => boolean;
   /** The choices of a step worked out only when it comes up (a move's tiles). */
@@ -176,6 +179,7 @@ export const techId = (hand: string, id: string, item?: string | number | null) 
 export function parseTechId(a: string | null | undefined): { hand: 'main' | 'off' | 'both'; id: string; item?: string | number } | null {
   if (!a || !a.startsWith(TQ)) return null;
   const [hand, rest] = [a.slice(TQ.length).split(':')[0], a.slice(TQ.length).split(':').slice(1).join(':')];
+  if (!['main', 'off', 'both'].includes(hand) || !rest) return null;
   const at = rest.indexOf('@'), id = at >= 0 ? rest.slice(0, at) : rest, itemS = at >= 0 ? rest.slice(at + 1) : null;
   return { hand: hand as any, id, ...(itemS != null ? { item: /^\d+$/.test(itemS) ? Number(itemS) : itemS } : {}) };
 }
@@ -495,6 +499,7 @@ function techRows(x: DescCtx): ActionDescriptor[] {
   void heatLimit; void physView;
   return out;
 }
+const PRESS_STATE: Record<string, string> = { pressed: 'Pressed', suppressed: 'Suppressed', broken: 'Broken', under_fire: 'Under fire', '': '' };
 /** A technique's preview: the verdict from the whole fight, the units it names and marks from what the side sees. */
 function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string | number }, p: Picks) {
   const args: any = { hand: t.hand, ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.tile ? { tile: p.tile } : {}), ...(p.allyId ? { allyId: p.allyId } : {}), ...(p.line ? { line: p.line } : {}), ...(t.item != null ? { item: t.item } : {}) };
@@ -503,12 +508,29 @@ function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string 
   const whole = run(x.cb), pv: any = safe(() => previewSeenBy(x.cb, x.side, run, ['attacks', 'pressure', 'saves', 'moves', 'notes', 'area'] as any, whole), whole);
   const name = (id: string) => x.seen.units.find((v) => v.id === id)?.name || id;
   const lines: PreviewLine[] = [];
-  for (const a of pv.attacks || []) if (a.pv && a.pv.ok) lines.push({ k: 'odds', text: name(a.target) + ': ' + a.pv.pct + '% to hit' });
+  for (const a of pv.attacks || []) { const q: any = a.pv; if (q) lines.push({ k: 'odds', text: name(a.target) + ': ' + (q.ok ? 'hit ' + q.pct + '% · need ' + q.need + (q.dmg && q.dmg.total != null ? ' · ' + q.dmg.total + ' damage' : '') : q.why || 'can\'t attack') }); }
   for (const n of pv.notes || []) lines.push({ k: 'note', text: n });
-  if (pv.momentum) lines.push({ k: 'meter', text: 'Momentum ' + pv.momentum.now + ' → ' + pv.momentum.after });
-  for (const s of pv.saves || []) lines.push({ k: 'save', text: name(s.unit) + ' saves against TN ' + s.tn });
-  const units = [...new Set([...(pv.attacks || []).map((a: any) => a.target), ...(pv.pressure || []).map((q: any) => q.unit)])].map((id) => ({ id: id as string, tag: '', tone: 'harm' as const }));
-  return { lines, ap: whole.ap || undefined, ok: !!whole.ok, why: whole.ok ? null : whole.why || 'Not now.', marks: { units, tiles: [...(pv.area || []), ...(pv.moves || []).map((m: any) => m.to)].map((k: string) => ({ tile: k, kind: 'area' as const })) } };
+  if (pv.momentum) lines.push({ k: 'meter', text: 'Momentum ' + pv.momentum.now + ' → ' + pv.momentum.after + (pv.ends ? ' · ends your chain' : '') });
+  if (pv.guard) lines.push({ k: 'meter', text: 'Guard ' + pv.guard.now + ' → ' + pv.guard.after });
+  for (const q of pv.pressure || []) lines.push({ k: 'meter', text: name(q.unit) + ': Pressure ' + (q.add >= 0 ? '+' : '') + q.add + ' → ' + q.after + (q.state ? ' (' + (PRESS_STATE[q.state] ?? q.state) + ')' : '') + (q.onHit ? ' on a hit' : '') });
+  for (const s of pv.saves || []) lines.push({ k: 'save', text: name(s.unit) + ' saves with ' + (s.skills || []).map((k: string) => k.replace(/_/g, ' ')).join(' or ') + ' vs TN ' + s.tn });
+  const pct = (id: string) => { const a = (pv.attacks || []).find((y: any) => y.target === id); return a && a.pv && a.pv.ok ? a.pv.pct + '%' : ''; };
+  const units = [...new Set([...(pv.attacks || []).map((a: any) => a.target), ...(pv.pressure || []).map((q: any) => q.unit)])].map((id) => ({ id: id as string, tag: pct(id as string), tone: 'harm' as const }));
+  const tiles: GridMarks['tiles'] = [...(pv.area || []), ...(pv.moves || []).map((m: any) => m.to)].map((k: string) => ({ tile: k, kind: 'area' as const }));
+  for (const [k, band] of techReach(x, t)) tiles.push({ tile: k, kind: 'reach', band });
+  return { lines, ap: whole.ap || undefined, ok: !!whole.ok, why: whole.ok ? null : whole.why || 'Not now.', rolls: (pv.attacks || []).filter((a: any) => a.pv).map((a: any) => ({ unit: a.target, pv: a.pv })), marks: { units, tiles } };
+}
+/** Where a technique aimed at an enemy can strike from here (the red area): its weapon's reach, a shield's Bash next to
+ * you, and a melee technique that moves first further (Lunge's step, Charge's run on the AP left after the strike). */
+function techReach(x: DescCtx, t: { hand: string; id: string }): Map<string, number> {
+  const aim = aimOf(t.id); if (!(aim === 'enemy' || aim.startsWith('enemy'))) return new Map();
+  const u = x.u, w: any = WEAPON[u.weapon], shield = t.hand === 'off' && !u.offWeapon && !!safe(() => shieldOf(u), null);
+  const wid = t.hand === 'off' ? u.offWeapon : u.weapon, melee = shield || (wid ? weaponSystem(wid) === 'melee' : true);
+  const mode: any = melee ? 'melee' : t.id === 'aimed' ? 'aimed' : 'shot';
+  const props: string[] = ((((mode === 'melee' && !(w && isMelee(w))) || shield ? WEAPON.fists : w) as any)?.phys?.props) || [];
+  const ap0 = safe(() => techniquePad(x.cb, u, (t.hand === 'off' ? 'off' : 'main'), x.g).flatMap((gr: any) => gr.entries).find((e: any) => e.id === t.id)?.ap, 2) ?? 2;
+  const step = !melee ? 0 : t.id === 'lunge' ? (props.includes('reach') ? 2 : 1) : t.id === 'charge' ? Math.floor(Math.max(0, apFor(x.cb, u) - ap0) * (u.movement || 1) + (u.bank || 0)) : 0;
+  return safe(() => reachTiles(x.cb, u, mode, { step, fists: shield }), new Map());
 }
 
 const PERKS: ActionSystem = {
@@ -757,7 +779,7 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   if (!d.available) return out;
   const action = need ? null : safe(() => s.send(x, d, picks), null);
   const extra = s.preview ? safe(() => s.preview!(x, d, picks, action), null) : null;
-  if (extra) { if (extra.lines) out.lines.push(...extra.lines); if (extra.marks) out.marks = { units: extra.marks.units || [], tiles: extra.marks.tiles || [] }; if (typeof extra.ap === 'number') out.ap = extra.ap; if (extra.ok === false) { out.ok = false; out.why = extra.why || 'Not now.'; } }
+  if (extra) { if (extra.rolls) out.rolls = extra.rolls; if (extra.lines) out.lines.push(...extra.lines); if (extra.marks) out.marks = { units: extra.marks.units || [], tiles: extra.marks.tiles || [] }; if (typeof extra.ap === 'number') out.ap = extra.ap; if (extra.ok === false) { out.ok = false; out.why = extra.why || 'Not now.'; } }
   if (next && next.choices) out.marks.tiles.push(...(next.kind === 'tile' ? next.choices.map((k) => ({ tile: k, kind: 'choice' as const })) : []));
   if (picks.tile) out.marks.tiles.push({ tile: picks.tile, kind: 'pick' });
   if (action && out.ok) {

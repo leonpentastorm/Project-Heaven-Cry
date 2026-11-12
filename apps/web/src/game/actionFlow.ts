@@ -14,7 +14,7 @@ import { previewDescriptor, actionsFor, stepOn, type ActionDescriptor, type Desc
 
 /** The descriptor previews that run on this flow. A system not listed keeps its own screen code (Sigils and Outbursts:
  *  the glyph keyboard and the HEART panel; a Move's hover route), until it moves here. */
-export const FLOW_PREVIEWS = new Set(['basic', 'attack', 'perk', 'call', 'prayer']);
+export const FLOW_PREVIEWS = new Set(['basic', 'attack', 'perk', 'call', 'prayer', 'technique']);
 /** Ids that stay with their own screen code even though their system is on the flow. */
 const OWN = new Set(['move', 'sprint', 'disengage']);
 
@@ -40,8 +40,10 @@ export interface FlowView {
   chips: FlowChip[];
   /** Units to ring (a prayer's picks) and the preview's area and targets (a technique, a perk). */
   ring: Set<string>; area: string[]; targets: string[];
-  /** The tiles it reaches from the unit (a Call's range), to shade. */
-  reach: Set<string>;
+  /** The tiles it reaches from the unit (a Call's range; a technique's red area, by range band), to shade. */
+  reach: Map<string, number>;
+  /** The engine's preview of the same picks against another unit (the hover chip over a unit). */
+  peek: (unitId: string) => DescriptorPreview | null;
   ready: boolean; action: any | null;
   /** What a grid click does: a state patch for the screen, or null (the screen's own default runs). */
   click: (u: { id: string; side: string } | null, k: string) => Record<string, any> | null;
@@ -109,7 +111,7 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
     const steps = d.picks.filter((st) => stepOn(st, picks));
     if (u && u.id) {
       const fits = steps.filter((st) => UNIT_KINDS.includes(st.kind) && (!st.choices || st.choices.includes(u.id)));
-      if (!fits.length) return null;
+      if (!fits.length) { const t = steps.find((st) => st.kind === 'tile' && (!st.choices || st.choices.includes(k))); return t ? { tile: S.tile === k && t.optional ? null : k } : null; }
       // two at once (a prayer for two): a click adds or takes one away
       const two = fits.find((st) => st.key === 'targetId2');
       if (two) { const now = [S.target, S.target2].filter((x) => x && x !== u.id && (!two.choices || two.choices.includes(x))); const sel = [S.target, S.target2].includes(u.id) ? now : [...now, u.id].slice(-2); return { target: sel[0] || null, target2: sel[1] || null }; }
@@ -119,7 +121,8 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
     if (!tile) return null;
     return { tile: S.tile === k && tile.optional ? null : k };
   };
-  const reach = new Set(pv.marks.tiles.filter((t) => t.kind === 'reach').map((t) => t.tile));
-  return { d, pv, picks, cost: pv.ap, reach, sel: { name: (d.preview === 'prayer' ? (d.id.startsWith('pr:miracle:') ? '✦ MIRACLE · ' : d.id.startsWith('pr:hymn:') ? 'HYMN · ' : 'WHISPER · ') : '') + d.name.replace(/^✦ /, '').replace(/ · (MIRACLE|HYMN [IV]+|BY DICE · TN \d+)$/, '') + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, ready: !!action, action, click,
+  const reach = new Map(pv.marks.tiles.filter((t) => t.kind === 'reach').map((t) => [t.tile, t.band || 0] as [string, number]));
+  const peek = (unitId: string) => { const pk = { ...picks, targetId: unitId }; return cached(g, 'pv|' + cur.id + '|' + me + '|' + d.id + '|' + JSON.stringify(pk), () => { try { return previewDescriptor(g, cur.id, d.id, pk, me); } catch { return null; } }); };
+  return { d, pv, picks, cost: pv.ap, reach, peek, sel: { name: (d.preview === 'prayer' ? (d.id.startsWith('pr:miracle:') ? '✦ MIRACLE · ' : d.id.startsWith('pr:hymn:') ? 'HYMN · ' : 'WHISPER · ') : '') + d.name.replace(/^✦ /, '').replace(/ · (MIRACLE|HYMN [IV]+|BY DICE · TN \d+)$/, '') + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, ready: !!action, action, click,
     after: { tile: null, picks: null, ...(d.preview === 'prayer' ? { target: null, target2: null } : {}) } };
 }

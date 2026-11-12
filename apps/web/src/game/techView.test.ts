@@ -2,9 +2,9 @@
 // blocks and pads, the picked technique's preview in words, Pressure pips and Watches, the effects' words, the ARMS
 // tab's values. Built on real fights through the engine (the lead's physFight helper); the screen works out no number.
 import { describe, expect, it, vi } from 'vitest';
-import { phys } from '@engine';
+import { phys, previewDescriptor, TECHNIQUE } from '@engine';
 import { physFight, rig } from '../../../../packages/engine/test/helpers/physfight';
-import { weaponBlocks, blockItems, padView, padOf, parseTech, techAction, padAction, TWATCH, techPreview, previewLines, techPrompt, pressureLook, physLines, physChips, watchMarks, lineTiles, physOf, legacyAttack, isTechId } from './techView';
+import { weaponBlocks, blockItems, padView, padOf, parseTech, techAction, padAction, TWATCH, pressureLook, physLines, physChips, watchMarks, lineTiles, physOf, legacyAttack, isTechId } from './techView';
 import { physWord, physBeat, isBigTechnique } from './fx/physical';
 
 vi.mock('./store', () => ({ act: () => {}, toast: () => {}, getState: () => ({}) }));
@@ -52,11 +52,14 @@ describe('the Attack tab as weapon blocks (part 2)', () => {
   it('the picked technique: what to click next, then the engine\'s preview in words (odds, Momentum)', () => {
     const f = physFight([{ weapon: 'combat_knife', known: ['lunge'] }], [{ at: 'D5' }]);
     f.put(f.pc, 'B5'); f.turn(f.pc);
-    expect(techPrompt('lunge', {})).toBe('Click an enemy on the map.'); expect(techPrompt('deny', {})).toBe('Click a tile on the map.'); expect(techPrompt('cover_me', {})).toBe('Click an ally on the map.');
-    expect(techPrompt('lunge', { target: f.foe })).toBeNull();
-    const pv = f.bound(() => techPreview(f.g, f.cb, f.unit(f.pc.id), { hand: 'main', id: 'lunge' }, { targetId: f.foe.id }))!;
-    const L = previewLines(f.cb, pv);
-    if (pv.ok) { expect(L.odds[0]).toMatch(/: hit \d+% · need \d+/); expect(L.meters.join(' ')).toMatch(/^Momentum \d+ → \d+/); }
+    // (on the one action flow: the descriptor's steps ask, the engine's preview says it in words)
+    const ask = (id: string, picks: any = {}) => previewDescriptor(f.g, f.pc.id, 'tq:main:' + id, picks, 'host')?.ask ?? null;
+    const step = (id: string) => (TECHNIQUE as any)[id].aim;
+    expect(ask('lunge')).toBe('Click an enemy on the map.'); expect(step('deny')).toBe('tile'); expect(step('cover_me')).toBe('ally');
+    expect(ask('lunge', { targetId: f.foe.id })).toBeNull();
+    const pv = previewDescriptor(f.g, f.pc.id, 'tq:main:lunge', { targetId: f.foe.id }, 'host')!;
+    const L = (k: string) => pv.lines.filter((l) => l.k === k).map((l) => l.text);
+    if (pv.ok) { expect(L('odds')[0]).toMatch(/: hit \d+% · need \d+/); expect(L('meter').join(' ')).toMatch(/^Momentum \d+ → \d+/); }
     else expect(pv.why).toBeTruthy();
   });
 });
@@ -159,15 +162,14 @@ describe('a shield in the off hand: its own block, and Guard as its meter', () =
     expect(pad.groups.flatMap((gr: any) => gr.chips).find((c: any) => c.id === 'shield_bash').action).toBe('tq:off:shield_bash');
   });
   it('Raise Shield: 1, 2 or all (all when nothing is picked), previewed as Momentum → Guard by the engine', async () => {
-    const { TECH_OPTS, techOptOf } = await import('./techView');
+    const { TECH_OPTIONS: TECH_OPTS, techOpt: techOptOf } = await import('@engine');
     expect(TECH_OPTS.raise_shield.map((o) => o[1])).toEqual(['TURN 1', 'TURN 2', 'ALL']);
     expect(techOptOf('raise_shield', null)).toBeNull(); expect(techOptOf('raise_shield', '1')).toBe('1'); expect(techOptOf('raise_shield', '2')).toBe('2'); expect(techOptOf('raise_shield', '')).toBeNull();
     expect(techOptOf('called_shot', null)).toBe('leg'); expect(techOptOf('bash', null)).toBeNull(); // the others keep their defaults
     const f = shieldFight({ dur: 5, guard: 0, m: 3 });
-    const u = f.unit(f.pc.id), sel = { hand: 'off' as const, id: 'raise_shield' };
-    const one = f.bound(() => techPreview(f.g, f.cb, u, sel, { opt: techOptOf('raise_shield', '1') }))!, all = f.bound(() => techPreview(f.g, f.cb, u, sel, { opt: techOptOf('raise_shield', null) }))!;
-    expect(one.ok).toBe(true); expect((one as any).guard).toEqual({ now: 0, after: 1 }); expect((all as any).guard).toEqual({ now: 0, after: 3 });
-    expect(previewLines(f.cb, one).meters).toEqual(['Momentum 3 → 2', 'Guard 0 → 1']);
+    const one = previewDescriptor(f.g, f.pc.id, 'tq:off:raise_shield', { opt: '1' }, 'host')!, all = previewDescriptor(f.g, f.pc.id, 'tq:off:raise_shield', {}, 'host')!;
+    const meters = (p: any) => p.lines.filter((l: any) => l.k === 'meter').map((l: any) => l.text);
+    expect(one.ok).toBe(true); expect(meters(one)).toEqual(['Momentum 3 → 2', 'Guard 0 → 1']); expect(meters(all)).toContain('Guard 0 → 3');
     expect(f.tech('raise_shield', { hand: 'off', opt: '2' } as any)).toBeNull();
     expect(f.unit(f.pc.id).res!.guard).toBe(2); expect(f.momentum(f.pc)).toBe(1);
   });
