@@ -61,7 +61,7 @@ export const TECH_FX: Record<string, TechRow> = {
   bash: row([p('jab', { count: 2 })], [p('chevrons', { n: 1 }), p('ring', { r: 0.35 })], [p('deflect')]),
   sunder: row([p('weapon', { move: 'chop' }), p('chop', { w: 0.1 })], [p('crack', { n: 3 })], [p('deflect')]),
   flurry: row([p('slash', { arc: 70, w: 0.07, draw: 60 })], [p('pips'), p('cross', { n: 1, size: 0.18 })], [p('pips'), p('whiff')]),
-  hamstring: row([p('slash', { arc: 60, tilt: 70, r: 0.4, off: -0.15 })], [p('drops', { n: 2 }), p('brand', { shape: 'chevron', up: -0.55 })], [p('whiff', { side: 1 })]),
+  hamstring: row([p('slash', { arc: 70, r: 0.38, low: 0.3, w: 0.09 })], [p('drops', { n: 2 }), p('brand', { shape: 'chevron', up: -0.45, side: 0 })], [p('whiff', { side: 1 })]),
   bind: use([p('hook', { w: 0.07 })], [p('bracket', { r: 0.42 })], [p('deflect', { side: 1 })]),
   half_sword: row([p('thrust', { w: 0.05, len: 0.45, draw: 60 })], [p('crack', { n: 1 })], [p('deflect', { side: -1 })]),
   throw: row([p('aim', { dash: '6 5', short: 0.3 })], [p('cross', { n: 1, size: 0.24 })], [p('wide')]),
@@ -92,7 +92,7 @@ export const TECH_FX: Record<string, TechRow> = {
   // ----- ranged: fire -----
   shot: row([p('tracer')], [p('cross', { n: 1, size: 0.16 })], [p('wide')]),
   snap_shot: row([p('tracer', { draw: 40 })], [p('cross', { n: 1, size: 0.2 }), p('ring', { r: 0.3 })], [p('wide', { side: -1 })]),
-  burst: row([p('tracer', { w: 0.04 })], [p('cross', { n: 1, size: 0.14 }), p('ticks', { n: 2, r: 0.4 })], [p('wide')]),
+  burst: row([p('tracer', { w: 0.04, hold: 240 })], [p('cross', { n: 1, size: 0.14 }), p('ticks', { n: 2, r: 0.4 })], [p('wide')]),
   aimed_shot: row([p('aim'), p('tracer', { t: 120 })], [p('cross', { n: 2, size: 0.18 })], [p('wide')], [p('star', { n: 10 })]),
   called_shot: row([p('aim', { dash: '2 3' }), p('tracer')], [p('brand', { shape: 'target', up: 0, size: 0.16 })], [p('wide', { side: -1 })]),
   walking_fire: row([p('dashes', { len: 0.9 }), p('tracer')], [p('cross', { n: 1, size: 0.18 })], [p('wide')]),
@@ -100,9 +100,9 @@ export const TECH_FX: Record<string, TechRow> = {
   lob: row([p('ring', { r: 0.8, dash: '4 4', from: 1.3 })], [p('stomp', { rings: 3 })], [p('wide')]),
   heavy_bolt: row([p('heavy', { w: 0.2 })], [p('crack', { n: 2 }), p('chevrons', { n: 1 })], [p('wide')]),
   // ----- ranged: press -----
-  suppress: row([p('ticks', { n: 4 })], [p('brand', { shape: 'chevron' })], [p('wide'), p('ticks', { n: 2, color: '#A3AEC2', r: 0.8 })]),
+  suppress: row([p('ticks', { n: 4 })], [p('brand', { shape: 'chevron', up: -0.5, side: 0 })], [p('wide'), p('ticks', { n: 2, color: '#A3AEC2', r: 0.8 })]),
   rake: row([p('cone', { span: 50 })], [p('cross', { n: 1, size: 0.18 })], [p('wide', { side: -1 })]),
-  warning_shot: row([p('tracer', { over: 0.45 })], [p('brand', { shape: 'bar', up: 0.75 })], [p('wide', { side: 1 })], [], { noRoll: true }),
+  warning_shot: row([p('tracer', { over: 0.45 })], [p('brand', { shape: 'bar', up: 0.8, side: -0.6 })], [p('wide', { side: 1 })], [], { noRoll: true }),
   flush: row([p('tracer', { draw: 60 })], [p('crack', { n: 2 }), p('streak', { n: 2 })], [p('wide')], [], { noRoll: true }),
   mag_dump: row([p('cone', { span: 24 }), p('ticks', { n: 6, gap: 35 })], [p('cross', { n: 2, size: 0.22 })], [p('wide')]),
   crossfire: row([p('aim', { dash: '5 3' }), p('tracer')], [p('brand', { shape: 'cross' })], [p('wide')]),
@@ -116,7 +116,7 @@ export const TECH_FX: Record<string, TechRow> = {
   head_down: use([p('stomp', { rings: 1 })], [p('ring', { at: 'a', r: 0.5, from: 1.4, to: 0.7 })], []),
   // ----- ranged: take -----
   dead_centre: row([p('aim'), p('heavy', { w: 0.1, past: 0.3 })], [p('brand', { shape: 'target', up: 0 }), p('cross', { n: 2, size: 0.2 })], [p('wide')], [p('star', { n: 12 })]),
-  pin_down: row([p('tracer')], [p('brand', { shape: 'bar' }), p('stomp', { rings: 1 })], [p('wide')]),
+  pin_down: row([p('tracer')], [p('brand', { shape: 'bar', up: -0.5, side: 0 }), p('stomp', { rings: 1 })], [p('wide')]),
   rout: row([p('tracer', { over: 0.5 })], [p('streak', { n: 3, len: 0.9 })], [p('wide')], [], { noRoll: true }),
   stopping_shot: row([p('tracer', { w: 0.05 })], [p('chevrons', { n: 2 }), p('streak', { n: 2 })], [p('wide')]),
   storm: row([p('dashes', { len: 1.2 }), p('tracer')], [p('cross', { n: 1, size: 0.2 }), p('ring', { r: 0.4 })], [p('wide')]),
@@ -240,12 +240,14 @@ function record(key: string, outcome: string) {
 }
 
 /** Play a row's attack now and its result at `land` ms. */
-export function playRow(key: string, r: TechRow, c0: Omit<PartCtx, 'scale' | 'outcome' | 'delay'>, outcome: PartCtx['outcome'], land: number, o: { attack?: boolean } = {}) {
+export function playRow(key: string, r: TechRow, c0: Omit<PartCtx, 'scale' | 'outcome' | 'delay'>, outcome: PartCtx['outcome'], land: number, o: { attack?: boolean; wide?: boolean } = {}) {
   const crit = outcome === 'crit', c: PartCtx = { ...c0, delay: 0, outcome, scale: crit ? 1.35 : 1 };
-  const go = (parts: PartRef[], t0: number, k: Partial<PartCtx> = {}) => {
-    for (const [n, params] of parts) { const t = t0 + (typeof params.t === 'number' ? params.t : 0), cc = { ...c, ...k }; if (t > 0) after(() => playPart(n, cc, params), t); else playPart(n, cc, params); }
+  // a melee miss: the stroke itself goes past (a third of a tile to the side), so the swing reads as a miss before its word
+  const ca: PartCtx = o.wide ? { ...c, b: { ...c.b, x: c.b.x - c.dir.y * c.s * 0.38, y: c.b.y + c.dir.x * c.s * 0.38 } } : c;
+  const go = (parts: PartRef[], t0: number, k: Partial<PartCtx> = {}, base = c) => {
+    for (const [n, params] of parts) { const t = t0 + (typeof params.t === 'number' ? params.t : 0), cc = { ...base, ...k }; if (t > 0) after(() => playPart(n, cc, params), t); else playPart(n, cc, params); }
   };
-  if (o.attack !== false) go(r.attack, 0);
+  if (o.attack !== false) go(r.attack, 0, {}, ca);
   const res = outcome === 'miss' ? r.miss : r.hit;
   go(res, land, crit ? { ink: WHITE } : {});
   if (crit) go(r.crit, land);
@@ -261,7 +263,7 @@ export function wrapTechFx(H: Record<string, H>, K: TechKit) {
     const ink = key.startsWith('move:lumeri') ? VIRTUE : inkOf(e.weapon, !melee);
     const vi = Number(e.vi) || 0, first = !(r.once && vi > 0);
     const land = melee ? 120 : Math.max(60, K.landsIn(e));
-    playRow(key, r, { a, b, dir: unitDir(a, b), s: b.s, ink, weapon: e.weapon, strikes: Number(e.strikes) || vi + 1 }, outcome, land, { attack: first });
+    playRow(key, r, { a, b, dir: unitDir(a, b), s: b.s, ink, weapon: e.weapon, strikes: Number(e.strikes) || vi + 1 }, outcome, land, { attack: first, wide: melee && outcome === 'miss' });
   };
   H.melee = (e: any) => { base.melee(e); try { strike(e, true); } catch { /* never breaks the queue */ } };
   H.shot = (e: any) => {
@@ -274,8 +276,8 @@ export function wrapTechFx(H: Record<string, H>, K: TechKit) {
     if (e.refused) return;
     const key = rowKey(e); const r = key ? TECH_FX[key] : null; if (!r || !key) return;
     try {
-      const a = K.sawThen(e) ? K.at(e.at) : null, tk = e.target ? K.posOf(e.target) : e.tile || null, b = (tk ? K.at(tk) : null) || a;
-      if (!b) return;
+      const a = K.sawThen(e) ? K.at(e.at) : null, tk = e.target ? K.posOf(e.target) : e.tile || null, bt = tk ? K.at(tk) : null, b = bt || a;
+      if (!b || (tk && !bt && TECH_FX[key].miss.length)) return; // its target out of sight: nothing drawn round the user instead
       const outcome = e._out === 'miss' ? 'miss' : e._out === 'hit' ? 'hit' : 'use';
       playRow(key, r, { a, b, dir: a && b !== a ? unitDir(a, b) : { x: 1, y: 0 }, s: b.s, ink: inkOf(e.weapon, e.system === 'ranged'), weapon: e.weapon }, outcome, 150);
     } catch { /* never */ }
@@ -305,6 +307,9 @@ export function wrapTechFx(H: Record<string, H>, K: TechKit) {
       const end = e.hit ? { x: toP.x + (Math.random() - 0.5) * toP.s * 0.25, y: toP.y + (Math.random() - 0.5) * toP.s * 0.25 } : K.missPoint(from, toP);
       K.projectile(m, end, Math.max(60, Math.min(320, Math.hypot(end.x - m.x, end.y - m.y) / 2.2)), g.look === 'pellets' ? 'bullet' : g.look, toP.s, g.color);
       if (tok && br.when === 'shot') ejectShell(whoOf(tok), br.shell, aim);
+      // its own trail in the technique's ink (the row's attack), so each round of the volley shows
+      const key = rowKey(e), r = key ? TECH_FX[key] : null, b = K.at(e.to);
+      if (r && b) for (const [n2, q] of r.attack) if (n2 === 'tracer') playPart(n2, { a: from, b, dir: { x: Math.cos(aim), y: Math.sin(aim) }, s: b.s, ink: inkOf(e.weapon, true), scale: 1, delay: 0, outcome: e.hit ? 'hit' : 'miss' }, { ...q, side: i % 2 ? -1 : 1 });
     }, i * LOOSE_GAP);
   }
 }

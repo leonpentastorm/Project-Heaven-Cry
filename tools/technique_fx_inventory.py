@@ -56,7 +56,7 @@ def tech_rows():
         return {}
     rows = {}
     for line in m.group(1).splitlines():
-        lm = re.match(r"\s*'?([a-z_.:]+)'?\s*:\s*(row\(.*\)),?\s*(//.*)?$", line)
+        lm = re.match(r"\s*'?([a-z_.:]+)'?\s*:\s*((?:row|use)\(.*\)|\{ attack:.*\}),?\s*(//.*)?$", line)
         if lm:
             rows[lm.group(1)] = lm.group(2)
     return rows

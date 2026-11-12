@@ -11,13 +11,13 @@ row in `TECH_FX` (UNIQUE when no other row is the same). Every row has an attack
 | | UNIQUE | SHARED | GENERIC | total |
 | --- | --- | --- | --- | --- |
 | before | 56 | 4 | 12 | 72 |
-| now | 49 | 0 | 23 | 72 |
+| now | 72 | 0 | 0 | 72 |
 
 | technique | kind | group | before | played before | now | parts now | taught by |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Lunge (`lunge`) | melee | opener | UNIQUE | melee_fx force | UNIQUE | cross · dashes · thrust · whiff | kemizuchi_duelling_blade ("Lunge") |
 | Charge (`charge`) | melee | opener | UNIQUE | melee_fx charge (+ Prone fall) | UNIQUE | chevrons · dashes · deflect · ring · star · thrust | lance ("Charge") |
-| Feint (`feint`) | melee | opener | UNIQUE | melee_fx feint | GENERIC |  |  |
+| Feint (`feint`) | melee | opener | UNIQUE | melee_fx feint | UNIQUE | bracket · deflect · jab |  |
 | Draw Cut (`draw_cut`) | melee | opener | UNIQUE | melee_fx draw | UNIQUE | cross · slash · whiff |  |
 | Ambush (`ambush`) | melee | opener | UNIQUE | melee_fx ambush | UNIQUE | brand · cross · star · thrust · whiff |  |
 | Cut (`cut`) | melee | strike | SHARED | plain swing (slash sprite) | UNIQUE | cross · slash · whiff |  |
@@ -26,21 +26,21 @@ row in `TECH_FX` (UNIQUE when no other row is the same). Every row has an attack
 | Sunder (`sunder`) | melee | strike | UNIQUE | melee_fx sunder | UNIQUE | chop · crack · deflect · weapon | war_axe ("Bite the Plate") |
 | Flurry (`flurry`) | melee | strike | UNIQUE | melee_fx flurry | UNIQUE | cross · pips · slash · whiff | throwing_knives ("Fan of Knives") |
 | Hamstring (`hamstring`) | melee | strike | GENERIC | lunge + name (+ Prone fall) | UNIQUE | brand · drops · slash · whiff | ork_rip_saw ("Rip") |
-| Bind (`bind`) | melee | strike | UNIQUE | melee_fx bind | GENERIC |  | fists ("Grapple") |
+| Bind (`bind`) | melee | strike | UNIQUE | melee_fx bind | UNIQUE | bracket · deflect · hook | fists ("Grapple") |
 | Half-Sword (`half_sword`) | melee | strike | UNIQUE | melee_fx thrust | UNIQUE | crack · deflect · thrust |  |
 | Throw (`throw`) | melee | strike | UNIQUE | melee_fx throw (+ Prone fall) | UNIQUE | aim · cross · wide | hatchet ("Splitter") |
-| Pull Out (`pull_out`) | melee | strike | UNIQUE | melee_fx throw | GENERIC |  |  |
-| Sidestep (`sidestep`) | melee | link | UNIQUE | melee_fx sidestep | GENERIC |  |  |
-| Guard (`guard`) | melee | link | UNIQUE | melee_fx guard | GENERIC |  |  |
-| Shove (`shove`) | melee | link | UNIQUE | melee_fx force (+ Prone fall) | GENERIC |  |  |
-| Trip (`trip`) | melee | link | GENERIC | name only (+ Prone fall) | GENERIC |  |  |
-| Drag (`drag`) | melee | link | UNIQUE | melee_fx force | GENERIC |  |  |
+| Pull Out (`pull_out`) | melee | strike | UNIQUE | melee_fx throw | UNIQUE | deflect · drops · hook |  |
+| Sidestep (`sidestep`) | melee | link | UNIQUE | melee_fx sidestep | UNIQUE | dashes · ring |  |
+| Guard (`guard`) | melee | link | UNIQUE | melee_fx guard | UNIQUE | guard · ring |  |
+| Shove (`shove`) | melee | link | UNIQUE | melee_fx force (+ Prone fall) | UNIQUE | bash · chevrons · deflect · stomp · streak |  |
+| Trip (`trip`) | melee | link | GENERIC | name only (+ Prone fall) | UNIQUE | deflect · hook · stomp · wide |  |
+| Drag (`drag`) | melee | link | UNIQUE | melee_fx force | UNIQUE | chevrons · deflect · hook · streak |  |
 | Coup (`coup`) | melee | finisher | GENERIC | lunge + name | UNIQUE | chop · crack · cross · deflect · star | combat_knife ("Finish It") |
 | Cleave (`cleave`) | melee | finisher | UNIQUE | melee_fx arc | UNIQUE | cross · slash · whiff | ork_machete ("Chop Through") |
 | Break (`break`) | melee | finisher | UNIQUE | melee_fx break | UNIQUE | chop · crack · deflect · star | maul ("Knockdown") |
 | Run Through (`run_through`) | melee | finisher | UNIQUE | melee_fx pin | UNIQUE | cross · drops · thrust · whiff |  |
-| Throw Down (`throw_down`) | melee | finisher | UNIQUE | melee_fx slam | GENERIC |  | hellraiser_servo_fist ("Haymaker") |
-| Parry (`parry`) | melee | answer | UNIQUE | melee_fx parry | GENERIC |  | legion_gladius ("Shield Partner") |
+| Throw Down (`throw_down`) | melee | finisher | UNIQUE | melee_fx slam | UNIQUE | deflect · hook · stomp | hellraiser_servo_fist ("Haymaker") |
+| Parry (`parry`) | melee | answer | UNIQUE | melee_fx parry | UNIQUE | deflect · guard · ring · whiff | legion_gladius ("Shield Partner") |
 | Riposte (`riposte`) | melee | answer | GENERIC | lunge + name | UNIQUE | cross · guard · slash · whiff | sabre ("Riposte") |
 | Keep Back (`keep_back`) | melee | answer | UNIQUE | melee_fx halt (+ Prone fall) | UNIQUE | bracket · chevrons · thrust · whiff | glaive ("Keep Back") |
 | Shot (`shot`) | ranged | fire | SHARED | plain shot (tracer) | UNIQUE | cross · tracer · wide |  |
@@ -58,13 +58,13 @@ row in `TECH_FX` (UNIQUE when no other row is the same). Every row has an attack
 | Flush (`flush`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | crack · streak · tracer · wide | lumeri_scattergun ("Door Key"), breacher_tube ("Bunker Buster") |
 | Mag Dump (`mag_dump`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | cone · cross · ticks · wide | drifter_revolver ("Fan the Hammer"), coach_gun ("Both Barrels") |
 | Crossfire (`crossfire`) | ranged | press | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand · tracer · wide | parlour_pistol ("Ace in the Sleeve") |
-| Bead (`bead`) | ranged | set | UNIQUE | fx/ranged.ts case | GENERIC |  | long_rifle ("One Breath") |
-| Spot (`spot`) | ranged | set | UNIQUE | fx/ranged.ts case | GENERIC |  | whisper_smg ("Quiet Work") |
-| Brace (`brace`) | ranged | set | UNIQUE | fx/ranged.ts case | GENERIC |  | hellraiser_lmg ("Emplace") |
-| Load Special (`load_special`) | ranged | set | UNIQUE | fx/ranged.ts case | GENERIC |  |  |
-| Shift (`shift`) | ranged | set | UNIQUE | fx/ranged.ts case | GENERIC |  | legion_bullpup ("Shoot and Scoot") |
-| Vent (`vent`) | ranged | set | UNIQUE | fx/ranged.ts case | GENERIC |  |  |
-| Head Down (`head_down`) | ranged | set | UNIQUE | fx/ranged.ts case | GENERIC |  | smoke_grenade ("Cover Me") |
+| Bead (`bead`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | aim · bracket | long_rifle ("One Breath") |
+| Spot (`spot`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand | whisper_smg ("Quiet Work") |
+| Brace (`brace`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | guard · stomp | hellraiser_lmg ("Emplace") |
+| Load Special (`load_special`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | ring |  |
+| Shift (`shift`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | dashes · ring | legion_bullpup ("Shoot and Scoot") |
+| Vent (`vent`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | ring · ticks |  |
+| Head Down (`head_down`) | ranged | set | UNIQUE | fx/ranged.ts case | UNIQUE | ring · stomp | smoke_grenade ("Cover Me") |
 | Dead Centre (`dead_centre`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand · cross · heavy · star · wide | blackpoint_700 ("Through and Through") |
 | Pin Down (`pin_down`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | brand · stomp · tracer · wide | recurve_bow ("Nock and Loose") |
 | Rout (`rout`) | ranged | take | UNIQUE | fx/ranged.ts case | UNIQUE | streak · tracer · wide | frag_grenade ("Cook It") |
@@ -76,13 +76,13 @@ row in `TECH_FX` (UNIQUE when no other row is the same). Every row has an attack
 | Cover Me (`cover_me`) | ranged | watch | UNIQUE | fx/ranged.ts case | UNIQUE | cross · ticks · tracer · wide |  |
 | Dead to Rights (`dead_to_rights`) | ranged | watch | UNIQUE | fx/ranged.ts case | UNIQUE | aim · brand · tracer · wide | longbow ("Arc") |
 | Shield Bash (`shield_bash`) | melee | strike | UNIQUE | melee_fx force | UNIQUE | bash · chevrons · deflect · ring |  |
-| Raise Shield (`raise_shield`) | melee | link | UNIQUE | melee_fx guard | GENERIC |  |  |
-| Grapple (`grapple`) | melee | link | UNIQUE | melee_fx bind | GENERIC |  |  |
-| Shield Wall (`shield_wall`) | melee | answer | GENERIC | name only | GENERIC |  |  |
-| Interpose (`interpose`) | melee | answer | GENERIC | name only | GENERIC |  |  |
-| Anchor (`move:defender.anchor`) | class (Defender) | move | GENERIC | plain swing | GENERIC |  |  |
+| Raise Shield (`raise_shield`) | melee | link | UNIQUE | melee_fx guard | UNIQUE | guard · ring |  |
+| Grapple (`grapple`) | melee | link | UNIQUE | melee_fx bind | UNIQUE | bracket · deflect · hook |  |
+| Shield Wall (`shield_wall`) | melee | answer | GENERIC | name only | UNIQUE | guard · ring |  |
+| Interpose (`interpose`) | melee | answer | GENERIC | name only | UNIQUE | dashes · guard · ring |  |
+| Anchor (`move:defender.anchor`) | class (Defender) | move | GENERIC | plain swing | UNIQUE | bracket · deflect · guard · ring |  |
 | Lunge (`move:fighter.lunge`) | class (Fighter) | move | GENERIC | plain swing | UNIQUE | cross · dashes · ring · thrust · whiff |  |
-| Shove (`move:fighter.shove`) | class (Fighter) | move | SHARED | shove slide | GENERIC |  |  |
+| Shove (`move:fighter.shove`) | class (Fighter) | move | SHARED | shove slide | UNIQUE | bash · chevrons · deflect · ring |  |
 | Riposte (`move:fighter.riposte`) | class (Fighter) | move | GENERIC | plain swing | UNIQUE | cross · guard · slash · whiff |  |
 | Finisher (`move:fighter.finisher`) | class (Fighter) | move | GENERIC | plain swing | UNIQUE | chop · crack · cross · deflect · star |  |
 | Called Shot (`move:gunslinger.called_shot`) | class (Marksman) | move | GENERIC | plain attack | UNIQUE | aim · brand · cross · tracer · wide |  |

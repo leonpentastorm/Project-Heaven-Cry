@@ -109,6 +109,23 @@ ok('the Evoker throws its spent core out behind, away from its last Evoke (' + M
 s = await watch({ k: 'core', unit: me.id, at: me.pos, dur: 1000, focus: 'grand_staff' }, 600);
 ok('a grand staff throws its orb', by(s, 'core:staff').length > 2);
 await pause(p, 1500);
+// 10. A character's Burst (rules 1.18: three rounds, two rolls): three tracers in rhythm and three casings, not two
+//     (Leon, 12 Nov 2026). The engine's volley says the round with no roll (`loose`); the queue puts it on the last roll.
+const burst = await p.evaluate(async ({ id, pos, to }) => {
+  window.__phcFxTrace = [];
+  const n = 900000 + Math.floor(Math.random() * 1000), W = { unit: id, from: pos, to, weapon: 'hellraiser_service_rifle', cat: 'rifle', target: null };
+  window.__phcFx.queueFx([
+    { k: 'technique', n, unit: id, id: 'burst', group: 'fire', system: 'ranged', target: null, at: pos, weapon: W.weapon },
+    { k: 'volley', n: n + 1, ...W, mode: 'burst', shots: 3, loose: 1 },
+    { k: 'shot', n: n + 2, ...W, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, tech: 'burst', vi: 0, chain: true },
+    { k: 'shot', n: n + 3, ...W, mode: 'shot', hit: false, crit: false, fumble: false, dmg: 0, killed: false, tech: 'burst', vi: 1, chain: true, step: -4 },
+  ], 'e2e-brass-burst');
+  await new Promise((r) => setTimeout(r, 2600));
+  const T = window.__phcFxTrace; window.__phcFxTrace = undefined;
+  return { rounds: T.filter((x) => x.w === 'round').length, shells: T.filter((x) => x.w === 'shell').length, proj: T.filter((x) => x.w === 'proj').length };
+}, { id: me.id, pos: me.pos, to: right });
+ok('a character\'s Burst draws three rounds for its two rolls (' + burst.rounds + '), three tracers (' + burst.proj + ') and three casings (' + burst.shells + ')', burst.rounds === 3 && burst.proj === 3 && burst.shells === 3);
+await pause(p, 1200);
 ok('nothing left on the layer afterwards', (await p.locator('[data-fx-piece]').count()) === 0);
 ok('no page errors', p.errors.length === 0);
 if (p.errors.length) console.log(p.errors);

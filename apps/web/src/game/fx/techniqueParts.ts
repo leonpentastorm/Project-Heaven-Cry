@@ -83,7 +83,7 @@ export const PARTS: Record<string, PartFn> = {
    *  in tiles; count: cuts, each gap ms apart, alternating; off: tiles the centre sits short of the target. */
   slash(c, o) {
     const n = Math.max(1, num(o, 'count', 1)), gap = num(o, 'gap', 70), r = c.s * num(o, 'r', 0.55) * c.scale, w = Math.max(2.5, c.s * num(o, 'w', 0.12) * c.scale);
-    const centre = add(c.b, c.dir, -c.s * num(o, 'off', 0.1)), half = (num(o, 'arc', 110) * Math.PI) / 360, tilt = (num(o, 'tilt', 0) * Math.PI) / 180;
+    const centre = add(add(c.b, c.dir, -c.s * num(o, 'off', 0.1)), { x: 0, y: c.s * num(o, 'low', 0) }), half = (num(o, 'arc', 110) * Math.PI) / 360, tilt = (num(o, 'tilt', 0) * Math.PI) / 180;
     for (let i = 0; i < n; i++) {
       const turn = (num(o, 'turn', 1) * (i % 2 ? -1 : 1)), base = angOf(c.dir) + Math.PI + tilt + (i % 2 ? 0.5 : 0) * (n > 1 ? 1 : 0);
       // the arc faces the attacker: centred behind the target, sweeping across its front
@@ -110,12 +110,13 @@ export const PARTS: Record<string, PartFn> = {
   },
   /** An overhead blow coming down onto the target from above, ending in a flat impact bar. h: height in tiles. */
   chop(c, o) {
-    const w = Math.max(3, c.s * num(o, 'w', 0.14) * c.scale), h = c.s * num(o, 'h', 0.95), lean = c.dir.x >= 0 ? 1 : -1;
-    const top = { x: c.b.x - lean * c.s * 0.28, y: c.b.y - h }, low = { x: c.b.x + lean * c.s * 0.05, y: c.b.y + c.s * 0.05 };
-    const bar = [{ x: low.x - c.s * 0.3 * c.scale, y: low.y + c.s * 0.08 }, { x: low.x + c.s * 0.3 * c.scale, y: low.y + c.s * 0.08 }];
+    const w = Math.max(3, c.s * num(o, 'w', 0.14) * c.scale), h = c.s * num(o, 'h', 0.95);
+    // it comes down from the attacker's side of the target's head (clear of the number, which rises from the centre)
+    const top = add({ x: c.b.x, y: c.b.y - h * 0.75 }, c.dir, -c.s * 0.5), low = add({ x: c.b.x, y: c.b.y + c.s * 0.12 }, c.dir, c.s * 0.05);
+    const bar = [{ x: low.x - c.s * 0.3 * c.scale, y: low.y + c.s * 0.14 }, { x: low.x + c.s * 0.3 * c.scale, y: low.y + c.s * 0.14 }];
     const { s } = stage([top, low, ...bar], w + 4, 520 + c.delay, 'chop');
-    const ln = stroke(s, [top, { x: (top.x + low.x) / 2 - lean * c.s * 0.06, y: (top.y + low.y) / 2 }, low], str(o, 'color', '') || c.ink, w);
-    drawOn(ln, h * 1.05, num(o, 'draw', 90), 80, 240, c.delay);
+    const mid = add({ x: (top.x + low.x) / 2, y: (top.y + low.y) / 2 }, c.dir, -c.s * 0.08), ln = stroke(s, [top, mid, low], str(o, 'color', '') || c.ink, w);
+    drawOn(ln, lenOf([top, mid, low]), num(o, 'draw', 90), 40, 170, c.delay);
     const b2 = stroke(s, bar, WHITE, Math.max(2, w * 0.4)); drawOn(b2, c.s * 0.6, 60, 90, 200, c.delay + num(o, 'draw', 90));
   },
   /** A wide arc around the attacker (a sweep, a spinning stroke). span: degrees; r: radius in tiles (0: to the target). */
@@ -180,9 +181,9 @@ export const PARTS: Record<string, PartFn> = {
   tracer(c, o) {
     if (!c.a) return;
     const nn = nrm(c.dir), from = add(c.a, c.dir, c.s * 0.45), lift = num(o, 'over', 0) * c.s;
-    const end = c.outcome === 'miss' ? add(add(c.b, c.dir, c.s * 0.8), nn, c.s * 0.5) : lift ? add({ x: c.b.x, y: c.b.y - lift }, c.dir, c.s * 0.9) : nearSide(c, 0.3);
-    const { s } = stage([from, end], 6, 360, 'tracer');
-    drawOn(stroke(s, [from, end], str(o, 'color', '') || c.ink, Math.max(1.5, c.s * num(o, 'w', 0.03)), { opacity: 0.85 }), lenOf([from, end]), num(o, 'draw', 70), 60, 200, c.delay);
+    const end = c.outcome === 'miss' ? add(add(c.b, c.dir, c.s * 0.8), nn, c.s * 0.5 * num(o, 'side', 1)) : lift ? add({ x: c.b.x, y: c.b.y - lift }, c.dir, c.s * 0.9) : nearSide(c, 0.3);
+    const { s } = stage([from, end], 6, 300 + num(o, 'hold', 60), 'tracer');
+    drawOn(stroke(s, [from, end], str(o, 'color', '') || c.ink, Math.max(1.5, c.s * num(o, 'w', 0.03)), { opacity: 0.85 }), lenOf([from, end]), num(o, 'draw', 70), num(o, 'hold', 60), 200, c.delay);
   },
   /** A heavy line: a thick white core in the ink, from the muzzle through the target (a bolt, a heavy round). */
   heavy(c, o) {
@@ -214,7 +215,8 @@ export const PARTS: Record<string, PartFn> = {
   },
   /** A glyph stamped over the target (a mark): diamond, cross, eye, target, chevron, bar, clock. */
   brand(c, o) {
-    const shape = str(o, 'shape', 'diamond'), z = c.s * num(o, 'size', 0.22) * c.scale, p = { x: c.b.x, y: c.b.y - c.s * num(o, 'up', 0.62) };
+    // on the target's shoulder, clear of the damage number (which rises from the centre); side 0 puts it on the centre line
+    const shape = str(o, 'shape', 'diamond'), z = c.s * num(o, 'size', 0.22) * c.scale, p = { x: c.b.x + c.s * num(o, 'side', 0.62), y: c.b.y - c.s * num(o, 'up', 0.42) };
     const { s, box } = stage([{ x: p.x - z, y: p.y - z }, { x: p.x + z, y: p.y + z }], 6, 620 + c.delay, 'brand');
     const ink = str(o, 'color', '') || c.ink, w = Math.max(2, c.s * 0.055);
     const P = (dx: number, dy: number) => ({ x: p.x + dx * z, y: p.y + dy * z });
@@ -270,7 +272,7 @@ export const PARTS: Record<string, PartFn> = {
     const node: HTMLElement = c.weapon && hasGearIcon(c.weapon) ? (() => { const i = document.createElement('img'); i.src = gearIconUri(c.weapon, ink); i.alt = ''; i.style.cssText = 'width:100%;height:100%;display:block;filter:' + CASING; return i; })()
       : (() => { const d = document.createElement('div'); d.style.cssText = 'width:100%;height:' + Math.max(3, size * 0.1) + 'px;margin-top:' + size * 0.45 + 'px;background:' + ink + ';border-radius:2px;box-shadow:0 0 3px #000'; return d; })();
     const hit = nearSide(c, 0.45), base = (angOf(c.dir) * 180) / Math.PI, back = add(hit, c.dir, -c.s * 0.55);
-    const box = put(node, hit, size, size, 520 + c.delay); box.setAttribute('data-tech-fx', 'weapon'); box.style.zIndex = '3';
+    const box = put(node, hit, size, size, 520 + c.delay); box.setAttribute('data-tech-fx', 'weapon'); box.style.zIndex = '2'; // under the floating number (z 3)
     const T = (p: XY, deg: number, k = 1) => 'translate(' + f1(p.x - hit.x) + 'px,' + f1(p.y - hit.y) + 'px) rotate(' + f1(deg) + 'deg) scale(' + k + ')';
     const frames: Keyframe[] = rm() ? [{ transform: T(hit, base + 45), opacity: 0 }, { opacity: 1, offset: 0.2 }, { opacity: 0 }]
       : move === 'thrust' ? [{ transform: T(back, base + 45, 0.9), opacity: 0 }, { transform: T(back, base + 45, 0.9), opacity: 1, offset: 0.15 }, { transform: T(add(hit, c.dir, c.s * 0.2), base + 45), opacity: 1, offset: 0.4 }, { transform: T(hit, base + 45), opacity: 1, offset: 0.7 }, { opacity: 0 }]
@@ -281,9 +283,10 @@ export const PARTS: Record<string, PartFn> = {
   /** Dashes beside the attacker along a step (a sidestep, a shift, a storm), length in tiles. */
   dashes(c, o) {
     const p = c.a; if (!p) return;
+    // speed lines behind the token, the way it moves (side: which way the middle one leans)
     const nn = nrm(c.dir), side = num(o, 'side', 1);
     for (let i = 0; i < 3; i++) {
-      const st = add(add(p, nn, side * p.s * (0.3 + i * 0.12)), c.dir, -p.s * 0.4), end = add(st, c.dir, p.s * num(o, 'len', 0.6));
+      const end = add(add(p, nn, (i - 1) * p.s * 0.2 + side * p.s * 0.04), c.dir, -p.s * 0.5), st = add(end, c.dir, -p.s * num(o, 'len', 0.6) * (i === 1 ? 1 : 0.7));
       const { s } = stage([st, end], 6, 360 + c.delay + i * 40, 'dashes');
       drawOn(stroke(s, [st, end], str(o, 'color', '') || c.ink, 2), p.s * 0.6, 80, 60, 180, c.delay + i * 40);
     }
@@ -309,10 +312,11 @@ export const PARTS: Record<string, PartFn> = {
   },
   /** A crit's starburst: radial lines flaring out from the target. n: lines. */
   star(c, o) {
-    const n = Math.max(4, num(o, 'n', 8)), r0 = c.s * 0.45, r1 = c.s * 0.85 * c.scale;
-    const pts: XY[][] = Array.from({ length: n }, (_, i) => { const a = (i * 2 * Math.PI) / n + 0.2; return [{ x: c.b.x + Math.cos(a) * r0, y: c.b.y + Math.sin(a) * r0 }, { x: c.b.x + Math.cos(a) * r1, y: c.b.y + Math.sin(a) * r1 }]; });
+    // radial flares round the lower two thirds: the top is where the damage number rises, and it stays clear
+    const n = Math.max(4, num(o, 'n', 8)), r0 = c.s * 0.5, r1 = c.s * 0.88, a0 = -Math.PI / 6, span = (Math.PI * 4) / 3;
+    const pts: XY[][] = Array.from({ length: n }, (_, i) => { const a = a0 + (span * (i + 0.5)) / n; return [{ x: c.b.x + Math.cos(a) * r0, y: c.b.y + Math.sin(a) * r0 }, { x: c.b.x + Math.cos(a) * r1, y: c.b.y + Math.sin(a) * r1 }]; });
     const { s, box } = stage(pts.flat(), 6, 440 + c.delay, 'star');
-    for (const p of pts) stroke(s, p, str(o, 'color', '') || WHITE, Math.max(2, c.s * 0.05));
+    for (const p of pts) stroke(s, p, str(o, 'color', '') || WHITE, Math.max(2, c.s * 0.045));
     popBox(box, 420, c.delay, 0.5, 1.15);
   },
   /** A miss in melee: the stroke carries on past the target, muted and dashed, with a swish tick beyond it. */
