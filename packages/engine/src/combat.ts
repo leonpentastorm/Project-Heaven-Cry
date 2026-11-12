@@ -898,7 +898,8 @@ export function sightFx(cb: Combat, skip?: string | null, why: Record<string, 'h
 /** Note every hostile the party sees now in cb.sighted (it only grows; old saves start it here). */
 export function noteSighted(cb: Combat) {
   if (cb.over) return;
-  const seen = visibility(cb, 'pc').seen, had = cb.sighted || [], add = [...seen].filter((id) => !had.includes(id));
+  // seenIds: the same hostiles, in the same order, as visibility(cb, 'pc').seen, without walking every tile of the map
+  const seen = seenIds(cb, 'pc'), had = cb.sighted || [], add = seen.filter((id) => !had.includes(id));
   if (add.length || !cb.sighted) cb.sighted = [...had, ...add];
 }
 /** Does anyone on the attacker's side see the target? */
