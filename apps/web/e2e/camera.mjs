@@ -56,6 +56,9 @@ const meNow = (gg) => gg.combat.units.find((u) => u.id === me.id);
 ok(`a drag moved the view (${Math.round(c.frame.x - s0.x)}, ${Math.round(c.frame.y - s0.y)} px)`, c.frame.x - s0.x > 100 && c.frame.y - s0.y > 50);
 ok('and did not act: your unit has not moved and has spent nothing', meNow(after).pos === me.pos && meNow(after).ap === meNow(before).ap && after.combat.log.length === before.combat.log.length);
 // a plain click still acts (Move is picked: a click on a tile in reach moves there)
+// (the view has come to rest after the drag before a tile's place on screen is read: read while it still glided, the
+// click landed on the tile beside it)
+await settle();
 const near = (mx + 1) + ',' + my, nb = await tileBox(near);
 await p.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2);
 const confirm = p.getByRole('button', { name: 'Confirm', exact: true }).first();

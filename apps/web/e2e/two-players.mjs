@@ -80,7 +80,9 @@ for (let i = 0; i < 6000; i++) {
     if (await p.evaluate(() => !!(document.querySelector('.phc-cb-dock') || { getAttribute: () => 'none' }).getAttribute('data-lock'))) continue;
     await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
     const conf = p.getByRole('button', { name: 'Confirm', exact: true });
-    if (await conf.isEnabled()) await conf.click(); else await p.getByRole('button', { name: 'End turn', exact: true }).click();
+    // (a button that can't be pressed this moment, because the panel is still sliding or has just locked, is looked at
+    // again on the next pass, as a player would; the fight standing still is what fails, 45 s below)
+    if (await conf.isEnabled().catch(() => false)) await conf.click({ timeout: 5000 }).catch(() => {}); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 5000 }).catch(() => {});
     await pause(p, 60);
   }
   if (i % 100 === 0) console.log('loop', i, states.join(','));

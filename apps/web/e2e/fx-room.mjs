@@ -63,12 +63,14 @@ await pause(p, 800);
 const res = await p.evaluate(async ({ meId, foeId }) => {
   const fx = []; const on = (ev) => { const d = ev.detail; if (d && d.n) fx.push({ n: d.n, k: d.k }); };
   window.addEventListener('phc-fx', on);
-  let last = 0, n = 0;
+  let last = 0, n = 0; const why = [];
   for (; n < 40; n++) {
     const s = window.__phc.getState().game; if (!s.combat || s.combat.over || s.phase !== 'combat') break;
     last = s.combat.fxSeq || 0;
-    try { window.__phc.act({ type: 'combat/attack', unitId: meId, targetId: foeId }); }
-    catch (e) { const m = String(e.message || e); try { window.__phc.act({ type: /jam/.test(m) ? 'combat/clear' : /AP|turn/.test(m) ? 'combat/end-turn' : 'combat/reload', unitId: meId }); } catch { /* */ } }
+    // (a refusal is thrown, or shown as a toast: either way it is the engine's reason, and it says what to do next)
+    const tryAct = (a) => { const was = window.__phc.getState().toast; try { window.__phc.act(a); } catch (e) { return String(e.message || e); } const t = window.__phc.getState().toast; return t && t !== was && !t.ok ? String(t.text) : null; };
+    const m = tryAct({ type: 'combat/attack', unitId: meId, targetId: foeId });
+    if (m) { why.push(m); tryAct({ type: /jam/i.test(m) ? 'combat/clear' : /\bAP\b|turn|action point/i.test(m) ? 'combat/end-turn' : 'combat/reload', unitId: meId }); }
     // Until the blow has played and it is this fighter's turn again (or the fight is over): the state and the effects
     // queue say so. (This waited 2.2 s a blow; on a busy machine the hostile's turn was still playing when the next
     // attack was sent, it was refused, and forty tries ran out with the fight not won.)
@@ -86,10 +88,10 @@ const res = await p.evaluate(async ({ meId, foeId }) => {
   window.removeEventListener('phc-fx', on);
   const s = window.__phc.getState().game, cb = s.combat;
   const final = (cb?.fx || []).filter((e) => e.n > last).map((e) => ({ n: e.n, k: e.k }));
-  return { over: cb?.over, final, played: fx.filter((e) => e.n > last).map((e) => e.n), tries: n };
+  return { over: cb?.over, final, played: fx.filter((e) => e.n > last).map((e) => e.n), tries: n, why: [...new Set(why)].slice(0, 4) };
 }, { meId: m2.id, foeId: foe.id });
 const missing = res.final.filter((e) => !res.played.includes(e.n));
-ok('the fight was won (' + res.over + ', ' + res.tries + ' actions)', res.over === 'win');
+ok('the fight was won (' + res.over + ', ' + res.tries + ' actions' + (res.why.length ? '; refused on the way: ' + res.why.join(' | ') : '') + ')', res.over === 'win');
 ok('the last blow: ' + res.final.map((e) => e.k).join(' ') + '; every one of its effects played' + (missing.length ? ' (missing: ' + missing.map((e) => e.k).join(' ') + ')' : ''), res.final.length > 0 && missing.length === 0);
 ok('no page errors: ' + errors.join(' | ').slice(0, 300), errors.length === 0);
 await browser.close();

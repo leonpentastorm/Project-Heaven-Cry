@@ -2,7 +2,9 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 export const BASE = process.env.BASE || 'http://127.0.0.1:8787';
-export const OUT = new URL('./shots/', import.meta.url).pathname;
+// Where pictures go: SHOTS when it is set (the runner gives every suite its own folder and empties it when the suite
+// passes), else apps/web/e2e/shots/.
+export const OUT = process.env.SHOTS ? process.env.SHOTS.replace(/\/?$/, '/') : new URL('./shots/', import.meta.url).pathname;
 export async function player(browser, name) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, ignoreHTTPSErrors: true, deviceScaleFactor: Number(process.env.DSF) || 1 }); // DSF=2: sharper screenshots
   // The Narrator's voice holds new lines until it is ready; tests read the text, so they start with auto-read off (and no tips).
@@ -14,7 +16,10 @@ export async function player(browser, name) {
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
-  page.on('console', (m) => { if (m.type() === 'error' && !/Permissions policy violation/.test(m.text())) errors.push('console: ' + m.text()); });
+  // (a resource ANOTHER site refused is not a page error of ours: the Music panel's video host answers 403 through a
+  // sandbox's proxy. A resource our own server refuses still is.)
+  const foreign = (m) => { try { const u = m.location().url; return /^Failed to load resource/.test(m.text()) && !!u && new URL(u).origin !== new URL(BASE).origin; } catch { return false; } };
+  page.on('console', (m) => { if (m.type() === 'error' && !/Permissions policy violation/.test(m.text()) && !foreign(m)) errors.push('console: ' + m.text()); });
   page.errors = errors; page.pname = name;
   // Every suite starts with page.goto(BASE) and then reaches for a button. The game's first screen takes 2 s to come
   // up on an idle machine and has taken over 30 s beside two other suites on a busy one: goto() and reload() here

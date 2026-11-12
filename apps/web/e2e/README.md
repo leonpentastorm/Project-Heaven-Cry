@@ -17,8 +17,8 @@ npm run e2e -- sweep              # fx-sweep's whole table (about 17 minutes)
 npm run e2e -- --list             # the groups
 ```
 
-`tools/e2e.py` builds the game, starts the room server on port 8787, runs the suites three at a time, prints one line
-a suite, and stops the server. Logs: `.check/e2e/<suite>.log`. Options: `--jobs N`, `--no-build`, `--slow`,
+`tools/e2e.py` builds the game, starts the room server on port 8787 (and starts it again if it dies), runs the suites
+three at a time, prints one line a suite, and stops the server. Logs: `.check/e2e/<suite>.log`. Options: `--jobs N`, `--no-build`, `--slow`,
 `--no-retry`, `--base URL`.
 
 **The groups** are in `groups.json`, and nowhere else:
@@ -41,8 +41,10 @@ and `npm run check` fails for the same reason (`apps/web/src/e2e-groups.test.ts`
 | `ok` | passed | nothing |
 | `FLAKY … passed alone` | it failed beside the others and passed alone. The run still ends green (`GREEN, BUT n PASSED ONLY ALONE`) | not a bug in the game: a fault in the SUITE (it cannot share a machine). Fix the suite with the checklist below. The first run's log is `.check/e2e/<suite>.first.log` |
 | `FAIL … alone too` | it failed twice, the second time with the machine to itself | a real bug, in the game or in a stale suite. The run is red |
+| `ok … run again: the room server had stopped` | `wrangler dev` died in the middle of the run (it has, on a busy machine). The runner started it again and ran the suite again; that run counts | nothing; the run's last line says how often it happened |
 
-A suite never gets a second retry, and a suite that prints no `ok` line fails ("nothing was checked").
+A suite never gets a second retry, and a suite that prints no `ok` line fails ("nothing was checked"). A suite that
+runs for 30 minutes is stopped with its browsers and fails.
 
 ## A suite that does not flake: the checklist
 
@@ -106,7 +108,14 @@ prints no `ok` line now fails.)
 BASE=http://127.0.0.1:8797 node apps/web/e2e/ground.mjs   # HTTPS_PROXY may stay set
 ```
 
-Screenshots land in `apps/web/e2e/shots/` (or `SHOTS=<dir>`; the runner uses `.check/e2e/shots/`). Playwright is loaded with `require('playwright')`.
+Screenshots land in `apps/web/e2e/shots/`, or in `SHOTS=<dir>` when it is set (`OUT` in lib.mjs follows it). The runner
+gives every suite its own folder, `.check/e2e/shots/<suite>/`, and empties it when the suite passes (`KEEP_SHOTS=1`
+keeps them): a full run's pictures are 200 MB. Playwright is loaded with `require('playwright')`.
+
+**Disk.** A full disk fails every suite within seconds ("Target crashed", then the room server stops): three suites'
+browsers write a few hundred MB of profiles and cache while they run. The runner refuses to start on a nearly full
+disk, puts the browsers' temp folder on the memory disk (`/dev/shm`) when the disk has under 4 GB free, and runs a
+suite again when the disk was full under it.
 
 ## The suites
 

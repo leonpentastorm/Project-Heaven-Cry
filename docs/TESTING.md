@@ -58,6 +58,8 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   - `FAIL <suite> … alone too`: red. A real bug in the game, or a suite gone stale after a rules change; either way it
     is fixed before the merge. A suite gets one retry, never two.
   - A suite that prints no `ok` line fails ("nothing was checked").
+  - `ok … run again: the room server had stopped under its first run`: `wrangler dev` died mid-run (seen on a busy
+    machine); the runner started it again and ran the suite again. Not the suite's fault and not the game's.
 - **Timing.** A suite judges ORDER and PRESENCE from the effects layer's own plan (`window.__phcFxTrace`: each thing
   drawn or heard, with `t`, when it was due, the same on any machine) or from a watcher inside the page; a wall-clock
   length is asserted only where the length is the thing under test, measured in the page, with the plan as the lower

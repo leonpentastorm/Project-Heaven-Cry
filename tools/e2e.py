@@ -31,9 +31,10 @@ is red (exit code 1), and a red run means a real bug. A suite never gets a secon
 checks it before every suite and starts it again; a suite that lost it is run again and that run is the one that
 counts (`ok … run again: the room server had stopped under its first run`). The last line of the run says so.
 
-Logs: .check/e2e/<suite>.log (and <suite>.first.log for the failed first run of a retried suite).
+Logs: .check/e2e/<suite>.log (and <suite>.first.log for the failed first run of a retried suite). Pictures:
+.check/e2e/shots/<suite>/, kept only for a suite that failed (KEEP_SHOTS=1 keeps them all).
 """
-import json, os, re, subprocess, sys, threading, time, urllib.error, urllib.request
+import json, os, re, shutil, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -79,6 +80,17 @@ def up(url):
     try: urllib.request.urlopen(url, timeout=2); return True
     except Exception: return False
 
+def free_mb(): return shutil.disk_usage(ROOT).free // (1024 * 1024)
+# Under this much free disk a browser tab dies ("Target crashed") and the room server's bundler stops: every suite then
+# fails within seconds for no reason of its own (12 Nov 2026: 61 of 61, with 113 MB free on a machine shared by a dozen
+# checkouts). A suite that failed while the disk was this full did not fail: it is run again, and the run says so.
+DISK_LOW_MB = 150
+# Three suites' browsers write about 300 MB of profiles and cache to the temp folder while they run. Where the disk
+# has less than 4 GB free and the machine has a memory disk (/dev/shm, Linux), they are given a folder there instead.
+SUITE_TMP = None
+if free_mb() < 4096 and os.path.isdir('/dev/shm') and os.access('/dev/shm', os.W_OK) and shutil.disk_usage('/dev/shm').free > 2 * 1024 ** 3:
+    SUITE_TMP = tempfile.mkdtemp(prefix='phc-e2e-', dir='/dev/shm')
+
 def down(url):
     """Is the server gone (the connection is refused)? A slow answer on a busy machine is not "gone"."""
     for _ in range(2):
@@ -104,7 +116,10 @@ def start_server():
     log = os.path.join(ROOT, '.check/e2e/server.log')
     if server_starts and os.path.exists(log): os.replace(log, os.path.join(ROOT, f'.check/e2e/server.{server_starts}.log'))
     subprocess.run('pkill -f "wrangler dev"; pkill -f workerd', shell=True); time.sleep(1)
-    started = subprocess.Popen(['npm', 'run', 'dev', '-w', '@phc/server'], cwd=ROOT, stdout=open(log, 'w'), stderr=subprocess.STDOUT, start_new_session=True)
+    # (warnings and errors only: a line for every file served was 120,000 lines a run. On a nearly full disk the rooms'
+    # saved state goes to the memory disk with the browsers' files: the server stops when it cannot write it.)
+    cmd = ['npm', 'run', 'dev', '-w', '@phc/server', '--', '--log-level', 'warn'] + (['--persist-to', os.path.join(SUITE_TMP, 'wrangler')] if SUITE_TMP else [])
+    started = subprocess.Popen(cmd, cwd=ROOT, stdout=open(log, 'w'), stderr=subprocess.STDOUT, start_new_session=True)
     server_starts += 1
     for _ in range(240):
         if up(base): break
@@ -135,7 +150,10 @@ if not base:
 
 ANSI = re.compile(r'\x1b\[[0-9;]*m')
 def run(name, tag=''):
-    env = dict(os.environ, BASE=base, SHOTS=os.path.join(ROOT, '.check/e2e/shots') + '/')
+    shots = os.path.join(ROOT, '.check/e2e/shots', name)
+    shutil.rmtree(shots, ignore_errors=True); os.makedirs(shots, exist_ok=True)
+    env = dict(os.environ, BASE=base, SHOTS=shots + '/')
+    if SUITE_TMP: env['TMPDIR'] = SUITE_TMP
     if not slow and name not in ANIM: env['FAST'] = '1'
     # PARTS means one thing to fx-sweep and another to coop-stall: a PARTS given to the whole run reaches a suite only
     # when it is the one suite asked for (set for a run of many, it made coop-stall run none of its parts).
@@ -156,8 +174,11 @@ def run(name, tag=''):
     # a suite that looked at nothing proves nothing: a green line must mean something was checked
     empty = code == 0 and not bad and oks == 0
     good = not bad and not crashed and not empty
+    # a suite's pictures (.check/e2e/shots/<suite>/) are kept when it fails, for the person who reads the failure; a
+    # full run's pictures are 200 MB, and a full disk fails every suite (KEEP_SHOTS=1 keeps them all)
+    if good and not os.environ.get('KEEP_SHOTS'): shutil.rmtree(shots, ignore_errors=True)
     # a suite that failed with the room server down under it did not fail: it lost its server
-    lost = (not good) and ours and ('ERR_CONNECTION_REFUSED' in out or down(base))
+    lost = (not good) and ((ours and ('ERR_CONNECTION_REFUSED' in out or down(base))) or free_mb() < DISK_LOW_MB or ('Target crashed' in out and free_mb() < 2 * DISK_LOW_MB))
     return {'name': name, 'oks': oks, 'bad': bad, 'crashed': crashed, 'empty': empty, 'out': out, 'secs': time.time() - t0, 'good': good, 'lost': lost}
 
 def why(r):
@@ -169,7 +190,12 @@ def why(r):
 def line(word, r, extra=''):
     print(f"{word:<6}{r['name']:<18} {r['oks']} checks" + (f", {len(r['bad'])} failed" if r['bad'] else '') + (' · the script stopped on an error' if r['crashed'] else '') + extra + f"  ({r['secs']:.0f}s)", flush=True)
 
+# the pictures of the run before are the runner's own: they go, so that a run never fills the disk by itself
+shutil.rmtree(os.path.join(ROOT, '.check/e2e/shots'), ignore_errors=True)
 os.makedirs(os.path.join(ROOT, '.check/e2e/shots'), exist_ok=True)
+if free_mb() < (DISK_LOW_MB if SUITE_TMP else 1024):
+    if SUITE_TMP: shutil.rmtree(SUITE_TMP, ignore_errors=True)
+    sys.exit(f'the disk is nearly full ({free_mb()} MB free; three suites at once write about 300 MB while they run): free some space first')
 failed, flaky, again, rerun = [], [], [], []
 t_all = time.time()
 try:
@@ -177,7 +203,7 @@ try:
     with ThreadPoolExecutor(max_workers=max(1, jobs)) as ex:
         for r in ex.map(run, names):
             if r['good']: line('ok', r); continue
-            if r['lost']: again.append(r); line('lost', r, ' · the room server stopped under it; it runs again at the end'); continue
+            if r['lost']: again.append(r); line('lost', r, f" · the room server stopped under it, or the disk was full ({free_mb()} MB free); it runs again at the end"); continue
             if parallel and not no_retry: again.append(r); line('retry', r, ' · failed beside the others, it runs again alone at the end'); continue
             failed.append(r['name']); line('FAIL', r)
             for l in why(r): print('     ' + l)
@@ -190,8 +216,9 @@ try:
         # (the server can die under the second run too: that run does not count either, three times at most)
         for _ in range(3):
             if not r['lost']: break
+            if free_mb() < DISK_LOW_MB: print(f'note  the disk is full ({free_mb()} MB free): waiting a minute for space', flush=True); time.sleep(60)
             r = run(n)
-        if r['good'] and first['lost']: rerun.append(n); line('ok', r, ' · run again: the room server had stopped under its first run')
+        if r['good'] and first['lost']: rerun.append(n); line('ok', r, ' · run again: the room server had stopped under its first run (or the disk was full)')
         elif r['good']:
             flaky.append(n); line('FLAKY', r, ' · passed alone; beside the others it failed:')
             for l in why(first): print('     ' + l)
@@ -201,6 +228,7 @@ try:
             for l in why(r): print('     ' + l)
             print(f'     full log: .check/e2e/{n}.log (the first run: {n}.first.log)')
 finally:
+    if SUITE_TMP: shutil.rmtree(SUITE_TMP, ignore_errors=True)
     if started:
         try: os.killpg(os.getpgid(started.pid), 15)
         except Exception: pass
@@ -209,5 +237,6 @@ mins = f'  ({(time.time() - t_all) / 60:.1f} min)'
 if failed: print(f'{len(failed)} of {len(names)} FAILED: ' + ' '.join(failed) + (f' · and {len(flaky)} passed only alone: ' + ' '.join(flaky) if flaky else '') + mins)
 elif flaky: print(f'GREEN, BUT {len(flaky)} PASSED ONLY ALONE (a suite that cannot share the machine; fix the suite): ' + ' '.join(flaky) + mins)
 else: print(f'ALL GREEN: {len(names)} suites' + mins)
+if rerun and server_starts <= 1: print('(run again because the disk was full under them: ' + ' '.join(rerun) + ')')
 if server_starts > 1: print(f'(the room server stopped {server_starts - 1} time(s) and was started again; run again for it: ' + (' '.join(rerun) or 'nothing') + ')')
 sys.exit(1 if failed else 0)
