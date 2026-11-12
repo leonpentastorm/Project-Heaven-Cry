@@ -9,3 +9,4 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `cue.png`: Cue. Wick giving a cue: one arm raised with the hand about to drop in a sharp "now!" chop, a single short curved motion line under the hand, his head turned over his shoulder toward someone behind him.
 - `spot.png`: Spot. Wick pointing out a target: one arm fully extended with a pointing finger, his other hand shading his eyes, and far along the pointing line a small target ring.
 - `warn.png`: Warn. Wick shouting a warning: both hands cupped around his mouth, body twisted toward someone at his side, and a small sharp zig-zag danger mark above and behind him. Urgent.
+- `threaten.png`: Threaten. Wick threatening an enemy: leaning forward and looming, shoulders up, one hand drawn across in a slow cutting gesture at chest height, capelet flared. Menacing but still Wick. No weapon.

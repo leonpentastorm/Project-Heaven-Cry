@@ -395,6 +395,48 @@
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
+    },
+    {
+      "path": "art/icons/calls/threaten.png",
+      "sha256": "5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0",
+      "id": "threaten",
+      "family": "calls",
+      "action": "Threaten. Wick threatening an enemy: leaning forward and looming, shoulders up, one hand drawn across in a slow cutting gesture at chest height, capelet flared. Menacing but still Wick. No weapon.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/threaten.png",
+        "sha256": "5955eeef19b88b4a304a983ec06adb8732d4ed592ab8ecf9d6656fdb6c072423"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/threaten.png",
+        "sha256": "5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/threaten.txt",
+        "sha256": "3467da7dfcb3aaae9ac7d4a80ce4ccdd4415bd519a09550b23ed2029f8ed1f52"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/threaten.png",
+        "128": "art/icons/calls/exports/128/threaten.png",
+        "64": "art/icons/calls/exports/64/threaten.png",
+        "56": "art/icons/calls/exports/56/threaten.png",
+        "48": "art/icons/calls/exports/48/threaten.png",
+        "44": "art/icons/calls/exports/44/threaten.png",
+        "40": "art/icons/calls/exports/40/threaten.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
     }
   ]
 }

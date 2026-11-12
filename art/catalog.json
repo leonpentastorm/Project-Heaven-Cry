@@ -10222,6 +10222,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/warn.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/warn.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "threaten": {
+      "id": "threaten",
+      "label": "Threaten",
+      "path": "art/icons/calls/threaten.png",
+      "sha256": "5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/calls/exports/256/threaten.png",
+        "128": "art/icons/calls/exports/128/threaten.png",
+        "64": "art/icons/calls/exports/64/threaten.png",
+        "56": "art/icons/calls/exports/56/threaten.png",
+        "48": "art/icons/calls/exports/48/threaten.png",
+        "44": "art/icons/calls/exports/44/threaten.png",
+        "40": "art/icons/calls/exports/40/threaten.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/threaten.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/threaten.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
