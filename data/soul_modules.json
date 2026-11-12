@@ -94,7 +94,7 @@
       "max": 2.0
     },
     "provisional": true,
-    "text": "A character's Damage school starts from {=base} (rules 1.26; 40 on 12 Nov, 28 in rules 1.17, 20 before). An enemy caster's starts from 24, so that with the flatter stage table its Outbursts deal about what the enemy table was fitted with. A natural 20 on a Bolt's or Lance's roll is a critical: ×1.5 damage, up to ×2.0 with everything on your sheet and gear.",
+    "text": "A character's Damage school starts from 31 (rules 1.26; 40 on 12 Nov, 28 in rules 1.17, 20 before). An enemy caster's starts from 24, so that with the flatter stage table its Outbursts deal about what the enemy table was fitted with. A natural 20 on a Bolt's or Lance's roll is a critical: ×1.5 damage, up to ×2.0 with everything on your sheet and gear.",
     "modes": {
       "finish": {
         "mult": 0.8,

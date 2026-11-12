@@ -96,7 +96,7 @@ describe('an amount: base, per-point parts, flat, Stat, Level, own multipliers, 
   it('amountOf: the raw product and its floor, every term named', () => {
     const c = withStats({ intelligence: 6 }, { brain_power: 6 });
     const r = amountOf({ kind: 'damage', base: 30, profile: 'sigil' }, null, { who: c, flat: 2, mults: [{ v: 1.7, label: 'Line' }], vs: [{ v: 0.15, label: 'True Name' }] });
-    expect(r.raw).toBe((30 + 2) * statOf('sigil', c) * 1.7 * (1 + 0.15)); expect(r.amount).toBe(Math.floor(r.raw)); expect(r.terms.map((t) => t.label)).toEqual(['sigil', 'Line']); // no level given, no unit: no Level term expect(r.vs).toEqual([{ v: 0.15, label: 'True Name' }]);
+    expect(r.raw).toBe((30 + 2) * statOf('sigil', c) * 1.7 * (1 + 0.15)); expect(r.amount).toBe(Math.floor(r.raw)); expect(r.terms.map((t) => t.label)).toEqual(['sigil', 'Line']); expect(r.vs).toEqual([{ v: 0.15, label: 'True Name' }]); // no level given, no unit: no Level term
   });
   it('one order for everything (step a7, item 1421): the base times each multiplier in turn, then the target bonus', () => {
     const mk = (base: number, ms: number[], v: number) => closeAmount({ spec: { kind: 'damage', base }, base, add: 0, mults: ms.map((x) => ({ v: x, label: 'm' })), vs: [{ v, label: 'v' }] });
