@@ -188,7 +188,7 @@ describe('the facing rule (spec: Evoking)', () => {
     const { cb, u, rng } = setup(['mend', 'condense', 'push', 'fire']); u.hp = 100;
     draw(cb, rng, u, ['mend', 'condense'], ['3,5', '2,5']);
     const pv = previewEvoke(cb, u, '2,5', u.pos); expect(pv.ok).toBe(true); expect(pv.affected.map((a) => a.unit)).toEqual([u.id]);
-    expect(evoke(cb, rng, u, '2,5', u.pos)).toBeNull(); expect(u.hp).toBe(100 + Math.round(25 * 1.5));
+    expect(evoke(cb, rng, u, '2,5', u.pos)).toBeNull(); expect(u.hp).toBe(100 + Math.round(10 * 1.5));
     const t = setup(['fire', 'push']); draw(t.cb, t.rng, t.u, ['fire', 'push'], ['3,5', '2,5']);
     expect(previewEvoke(t.cb, t.u, '2,5', t.u.pos).why).toMatch(/PUSH is refused/);
   });
@@ -355,10 +355,10 @@ describe('Subjects (spec: the words)', () => {
     evoke(h.cb, h.rng, h.u, '3,5', h.e.pos); expect(h.e.condArg!.commanded).toBe('halt');
     h.e.ap = 9; expect(moveUnit(h.cb, h.e, '8,5', h.rng)).toMatch(/halt/);
   });
-  it('WARD 30 shield; MEND 25 × Healing given', () => {
+  it('WARD 12 shield; MEND 10 × Healing given (rules 1.20)', () => {
     const { cb, u, allies, rng } = setup(['ward', 'mend', 'seek'], [{ at: '15,15' }], { allies: ['7,5'] });
-    draw(cb, rng, u, ['ward', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].shield).toBe(30);
-    allies[0].hp = 100; draw(cb, rng, u, ['mend', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].hp).toBe(125);
+    draw(cb, rng, u, ['ward', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].shield).toBe(12);
+    allies[0].hp = 100; draw(cb, rng, u, ['mend', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].hp).toBe(110);
     expect(fx(cb, 'boon').map((x) => x.word)).toEqual(['ward', 'mend']);
   });
   it('QUICKEN: +2 AP on the target\'s next turn (to 9 at most), once per target per round, never on yourself', () => {

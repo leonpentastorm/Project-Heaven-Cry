@@ -2343,11 +2343,11 @@
         "name": "Will Shield",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "A Buff-school cast: it costs your Soul cast AP and 20 MP (before the ambient mana is counted), and adds Strain like any cast. You, or an ally you can see within Soul reach, gains a shield of 30 × your Healing given until the fight ends. If they already have a bigger shield, that one stays.",
+        "text": "A Buff-school cast: it costs your Soul cast AP and 20 MP (before the ambient mana is counted), and adds Strain like any cast. You, or an ally you can see within Soul reach, gains a shield of 12 × your Healing given until the fight ends. It grows with your level, like healing. If they already have a bigger shield, that one stays.",
         "effects": [
           {
             "op": "shield",
-            "value": 30,
+            "value": 12,
             "target": "ally_in_range",
             "scale": "healing_given",
             "duration": "combat"
@@ -2470,11 +2470,11 @@
         "name": "Mend",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Your healing Outbursts (Buff school) heal from a base of 40 instead of 30, before your Healing given, the stage and the ambient mana are counted. Healing is stronger where the ambient mana is Rich or Flooded.",
+        "text": "Your healing Outbursts (Buff school) heal from a base of 9 instead of 7, before your Healing given, the stage, your level and the ambient mana are counted. Healing is stronger where the ambient mana is Rich or Flooded.",
         "effects": [
           {
             "op": "heal",
-            "value": 40,
+            "value": 9,
             "target": "ally_in_range",
             "scale": "healing_given*ambient_healing"
           }
@@ -2490,7 +2490,8 @@
         "attributes": [
           "insight"
         ],
-        "status": "active"
+        "status": "active",
+        "heal_base": 9
       },
       {
         "id": "gift",

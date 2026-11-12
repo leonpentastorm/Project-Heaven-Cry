@@ -181,11 +181,11 @@ describe('the second school: a rider at half strength with its own option (secti
     const f = rig(); const d = give(f.pc, { school2: 'control', option2: 'push' });
     begin(f, d); pump(f); release(f, '6,5'); expect(lost(f.foe)).toBe(20); expect(f.foe.pos).toBe('7,5');
   });
-  it('Buff (heal) + Damage with Inverse on an ally: the heal, then a shield of half the damage (Inverse: ×0.7 of it, rules 1.17)', () => {
+  it('Buff (heal) + Damage with Inverse on an ally: the heal, then the Inverse shield at half (rules 1.20: 7 and 10)', () => {
     const f = rig(['12,5'], ['4,5']); const ally = f.pcs[1]; ally.hp = 100;
     const d = give(f.pc, { school: 'buff', option: 'heal', school2: 'damage', modules: ['inverse'] });
     begin(f, d); pump(f); release(f, '4,5');
-    expect(f.unit(ally.id).hp).toBe(130); expect(f.unit(ally.id).shield).toBe(Math.floor(20 * 1 * 0.5 * 0.7));
+    expect(f.unit(ally.id).hp).toBe(107); expect(f.unit(ally.id).shield).toBe(Math.floor(10 * 1 * 0.5));
   });
   it('Control (Pinned) + Damage: Pinned, and half damage with no roll', () => {
     const f = rig(); const d = give(f.pc, { school: 'control', option: 'pinned', school2: 'damage' });
@@ -276,7 +276,7 @@ describe('shapes: Bolt, Wave, Burst, Aura, Lance, with their areas (section 7)',
     const f = rig(['6,5'], ['6,6']); const b = give(f.pc, { modules: ['burst'] });
     begin(f, b); pump(f); release(f, '6,5'); expect(lost(f.unit(f.pcs[1].id))).toBe(14);
     const g = rig(['6,5'], ['6,6']); g.foe.hp = 100; g.unit(g.pcs[1].id).hp = 100; const h = give(g.pc, { school: 'buff', option: 'heal', modules: ['burst'] });
-    begin(g, h); pump(g); release(g, '6,5'); expect(g.foe.hp).toBe(100); expect(g.unit(g.pcs[1].id).hp).toBe(130);
+    begin(g, h); pump(g); release(g, '6,5'); expect(g.foe.hp).toBe(100); expect(g.unit(g.pcs[1].id).hp).toBe(100 + Math.floor(7 * 0.4)); // rules 1.20: in a shape each ally heals ×0.4
   });
 });
 

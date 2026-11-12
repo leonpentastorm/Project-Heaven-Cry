@@ -1,8 +1,8 @@
 {
   "$schema_version": "2.0",
   "kind": "soul_modules",
-  "revision": 20,
-  "source": "PHC Core Rules v1.0, rules revision 1.19 (the Outburst rework, round 2; 11 Nov 2026), on rules 1.17, rules 1.8 (Outburst 4.0; docs/design/outburst-4.0-spec.md) and rules 1.5 (Outburst 2.0; docs/design/outburst-2.0-proposal.md). Module names from the 2020 Recovered Design Notes.",
+  "revision": 21,
+  "source": "PHC Core Rules v1.0, rules revision 1.20 (the heal and shield pass; 12 Nov 2026), on rules 1.19 (the Outburst rework, round 2; 11 Nov 2026), on rules 1.17, rules 1.8 (Outburst 4.0; docs/design/outburst-4.0-spec.md) and rules 1.5 (Outburst 2.0; docs/design/outburst-2.0-proposal.md). Module names from the 2020 Recovered Design Notes.",
   "cycle": {
     "begin_ap": 2,
     "swift_begin_ap": 1,
@@ -163,7 +163,7 @@
     "ready_designs": "max(3, 2 + floor(empathy/2)): at least 3",
     "tones": "one at Lore Master 1; more from tutors or plates"
   },
-  "notes": "Every number from rules 1.5 on is provisional. Rules 1.19 (the Outburst rework, round 2): the stage table is ×0.8 +0.2 a stage; the Damage base is 36 for characters and 24 for enemy casters; one free Pump a turn at most; Empathy 7 makes swells cost no Strain; every school reads the stage, the Damage school has four ways to strike, Control can Swap and Status can Silence; a design's own school a second time is defined and shelved. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead.",
+  "notes": "Every number from rules 1.5 on is provisional. Rules 1.19 (the Outburst rework, round 2): the stage table is ×0.8 +0.2 a stage; the Damage base is 36 for characters and 24 for enemy casters; one free Pump a turn at most; Empathy 7 makes swells cost no Strain; every school reads the stage, the Damage school has four ways to strike, Control can Swap and Status can Silence; a design's own school a second time is defined and shelved. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead. Rules 1.20 (the heal and shield pass): the Buff school's heal is 7 (an enemy caster's stays 30) and grows with the caster's level; Inverse and Shell have shield bases of their own (10 and 4, × the Soul multiplier × the stage multiplier) and no longer read the Damage base; in a shape a heal or a flipped shield gives each ally ×0.4; Love heals a share of the Buff school's heal.",
   "schools": [
     {
       "id": "damage",
@@ -198,18 +198,20 @@
       "id": "buff",
       "name": "Buff",
       "base_cost": 20,
-      "text": "Works on allies. Pick one: heal 30 × your Healing given × the stage multiplier, or make them Inspired (+2 to hit) or Guarded (+2 Defense) for 2 rounds, 3 rounds from stage 2 and 4 rounds at stage 4.",
+      "text": "Works on allies. Pick one: heal 7 × your Healing given × the stage multiplier, or make them Inspired (+2 to hit) or Guarded (+2 Defense) for 2 rounds, 3 rounds from stage 2 and 4 rounds at stage 4. The heal grows with your level (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). In a shape (Wave, Burst, Aura or Lance) it heals each ally it reaches for ×0.4 of that.",
       "options": [
         "to_hit_2",
         "defense_2",
         "heal_30"
       ],
       "duration_rounds": 2,
-      "heal": 30,
+      "heal": 7,
       "hit": "auto",
       "provisional": true,
       "identity": "The school that keeps your side standing.",
-      "stack": "Shelved. Twice in one design: the same way heals half again as much, or lasts half again as long; a second way rides at half strength."
+      "stack": "Shelved. Twice in one design: the same way heals half again as much, or lasts half again as long; a second way rides at half strength.",
+      "heal_enemy": 30,
+      "area_mult": 0.4
     },
     {
       "id": "control",
@@ -803,7 +805,7 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of ×0.7 its damage, and it skips enemies in the area. The Narrator decides what a flipped debuff does.",
+      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of 10 × your Soul multiplier × the stage multiplier, and it skips enemies in the area. The shield grows with your level, like healing. In a shape (Wave, Burst, Aura or Lance) each ally gets ×0.4 of it. The Narrator decides what a flipped debuff does.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "adjudication": "hybrid",
@@ -811,7 +813,8 @@
         "skill": "camaraderie",
         "points": 2
       },
-      "shield_mult": 0.7
+      "shield": 10,
+      "shield_mult_enemy": 0.7
     },
     {
       "id": "size",
@@ -1081,15 +1084,16 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "When you Release, you gain a shield equal to a third of the Outburst's damage.",
+      "text": "When you Release, you gain a shield of 4 × your Soul multiplier × the stage multiplier. It grows with your level, like healing.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
-      "shield_of_power": 0.35,
       "gate": {
         "skill": "camaraderie",
         "points": 2
-      }
+      },
+      "shield": 4,
+      "shield_of_power_enemy": 0.35
     },
     {
       "id": "linger",

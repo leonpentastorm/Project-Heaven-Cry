@@ -21,7 +21,9 @@ import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
   classResources, migrateDesign,
 } from '../character';
-import { WEAPON, SIGIL, SCHOOL, SOUL_REV } from '../data';
+import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
+import { mendFactorOf } from '../effects/mending';
+import { BUFF_HEAL } from '../magic';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitStrength, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
   grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil, strokeOfGlyph, tidyStrokes,
@@ -1313,18 +1315,20 @@ register({
 const shieldBy = (h: Holder): Record<string, boolean> => (stateOf(h).shields ||= {});
 
 // ---------- Will Shield (rank I; a Buff-school cast: Soul cast AP, 20 MP base, 1 Strain) ----------
-// An ally in Soul reach (4 + range bonus) you can see, or you (PROVISIONAL), gains a shield of 30 × your Healing given
+// Rules 1.20: 12 × Healing given × the level factor (it was 30 × Healing given).
+// An ally in Soul reach (4 + range bonus) you can see, or you (PROVISIONAL), gains a shield of 12 × your Healing given
 // (× their Healing received) until the fight ends; the higher shield stands. A class cast, so every Guardian has it
 // without a design (PROVISIONAL: the plan's Buff option 'shield' for designs needs the design builder; see the notes).
+const WILL_SHIELD: number = ((CLASS_MOVE_POOL['guardian.will_shield'] as any)?.effects || []).find((e: any) => e.op === 'shield')?.value ?? 12;
 const willShield = (self: boolean): ActionDef => ({
   id: self ? 'will_shield_self' : 'will_shield', label: 'Will Shield' + (self ? ' (yourself)' : ''), scope: ['combat'], target: self ? 'none' : 'ally',
   ap: (h) => (h.u?.mg ? soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20).ap : 2),
-  text: 'Put a shield of 30 × your Healing given on ' + (self ? 'yourself' : 'an ally in Soul reach that you can see') + '. It lasts until the fight ends. It costs MP and Strain like a Buff Outburst.',
+  text: 'Put a shield of ' + WILL_SHIELD + ' × your Healing given on ' + (self ? 'yourself' : 'an ally in Soul reach that you can see') + '. It grows with your level and lasts until the fight ends. It costs MP and Strain like a Buff Outburst.',
   available: (h) => { const e = soulReady(h); if (e) return e; const p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20); if (h.u!.mg!.emanator && h.u!.mg!.mp < p.mp) return 'Needs ' + p.mp + ' MP.'; return true; },
-  preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (!t) return {}; const p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20); const e = soulAim(h, t.pos, p.range); return e ? { ok: false, why: e } : { lines: ['Will Shield on ' + t.name + ': about ' + Math.floor(30 * healMultOf(h) * (t.healRecv || 1)) + ' (' + p.mp + ' MP, ' + p.strain + ' Strain).'] }; },
+  preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (!t) return {}; const p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20); const e = soulAim(h, t.pos, p.range); return e ? { ok: false, why: e } : { lines: ['Will Shield on ' + t.name + ': about ' + Math.floor(WILL_SHIELD * healMultOf(h) * mendFactorOf(h.u) * (t.shieldRecv || 1)) + ' (' + p.mp + ' MP, ' + p.strain + ' Strain).'] }; },
   run: (h, args, rng) => {
     const cb = h.cb!, u = h.u!, t = self ? u : unitById(cb, args.targetId)!, p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20);
-    const v = grantShield(cb, t, 30 * healMultOf(h), u); shieldBy(h)[t.id] = true;
+    const v = grantShield(cb, t, WILL_SHIELD * healMultOf(h) * mendFactorOf(u), u); shieldBy(h)[t.id] = true;
     emitFx(cb, 'release', { unit: u.id, at: u.pos, to: t.pos, school: 'buff', option: 'shield', stage: 1, wild: false, area: 0, targets: [t.id] });
     say(cb, u.name + ' casts Will Shield on ' + (t === u ? 'themself' : t.name) + ': a ' + v + ' shield (' + p.mp + ' MP' + (u.mg!.emanator ? '' : ' from the air') + ')' + soulPay(h, rng as Rng, p) + '.');
   },
@@ -1450,11 +1454,12 @@ register({
 // (PROVISIONAL). The data's AP 0 is the Soul cast AP. Out of combat the area map's casts use the same numbers.
 const GIFT_AP = SOUL_AP.begin + SOUL_AP.release, GIFT_STAGE = 1;
 const isHealDesign = (d: any) => !!d && (d.school === 'buff' || d.school2 === 'buff') && (!d.option || d.option === 'heal');
+const BARD_MEND: number = (CLASS_MOVE_POOL['bard.mend'] as any)?.heal_base ?? 9;
 register({
   id: 'bard.mend', claims: 'all',
   on: {
     outburst_release: (ctx, h) => { if (ctx.u === h.u && isHealDesign(ctx.design)) markRelease(h, ctx, 'mend'); },
-    heal_in: (ctx, h) => { if (ctx.by === h.u && ctx.kind === 'soul' && releasing(h, 'mend')) ctx.n = ctx.n * 40 / 30; },
+    heal_in: (ctx, h) => { if (ctx.by === h.u && ctx.kind === 'soul' && releasing(h, 'mend')) ctx.n = ctx.n * BARD_MEND / BUFF_HEAL; }, // rules 1.20: a base of 9 in place of the Buff school's 7
   },
   brief: () => null,
 });

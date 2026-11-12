@@ -40,6 +40,8 @@ describe('Blessing art placeholders', () => {
       for (const n of [1, 2, 3]) expect(prayerIconUri('hymn', 'x', id, n)).toMatch(/\/assets\/prayer-hymn-/);
     }
     for (const w of ['luck', 'health', 'protection', 'courage', 'guidance', 'safe_passage']) expect(prayerIconUri('whisper', w)).toMatch(/\/assets\/prayer-whisper-/);
+    // Rules 1.21: Rebuke, the seventh Whisper, has no painted icon yet (art/briefs/ART-REQUESTS.md, W3): its own line mark shows.
+    expect(prayerIconUri('whisper', 'rebuke')).toMatch(/^data:image\/svg\+xml,/); expect(WHISPER_PATHS.rebuke.length).toBeGreaterThan(0); expect(WHISPER_IDS).toContain('rebuke');
   });
   it('colours: Virtue ink for words, gold light, each patron light for effects; the data wins when it gives one', () => {
     expect(FAITH_INK).toBe('#D36A90'); expect(FAITH_GOLD).toBe('#F2C46A');

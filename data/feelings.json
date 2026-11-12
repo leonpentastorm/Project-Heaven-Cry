@@ -1,7 +1,7 @@
 {
   "$schema_version": "2.0",
   "kind": "feelings",
-  "revision": 20,
+  "revision": 21,
   "source": "PHC Core Rules v1.0, rules revision 1.19 (the Outburst rework, round 2; 11 Nov 2026), on rules 1.17 and rules 1.8 (Outburst 4.0; docs/design/outburst-4.0-spec.md section 3). Engine: packages/engine/src/feelings.ts and magic.ts.",
   "plain_step": 0.2,
   "max_feelings_per_hold": 4,
@@ -21,7 +21,7 @@
     "wild": "the heart off its leash",
     "holy": "stillness and the high"
   },
-  "notes": "Rules 1.19: a plain Pump adds +0.2 (the stage table climbs 0.2 a stage from x0.8). A feeling Pump has its own step instead: a Release's multiplier is the stage table's plus (step - 0.2) for each feeling Pump. Each feeling goes into an Outburst once. A feeling that buys the multiplier pays for it (1 Strain or 8 HP for +0.3 above the plain +0.2); a feeling that changes what the Release does steps +0.3; a strong one steps +0.2, 0 or -0.2: the multiplier going down is its price. No feeling does what a school, a module or an element already does, except where its text says why. Residue: the strongest feeling poured in (ties to the latest) on every tile the Release covered, for residue_rounds. Every number is provisional (spec 14, items 801, 1050 and 1100 on).",
+  "notes": "Rules 1.19: a plain Pump adds +0.2 (the stage table climbs 0.2 a stage from x0.8). A feeling Pump has its own step instead: a Release's multiplier is the stage table's plus (step - 0.2) for each feeling Pump. Each feeling goes into an Outburst once. A feeling that buys the multiplier pays for it (1 Strain or 8 HP for +0.3 above the plain +0.2); a feeling that changes what the Release does steps +0.3; a strong one steps +0.2, 0 or -0.2: the multiplier going down is its price. No feeling does what a school, a module or an element already does, except where its text says why. Residue: the strongest feeling poured in (ties to the latest) on every tile the Release covered, for residue_rounds. Every number is provisional (spec 14, items 801, 1050 and 1100 on). Rules 1.20: Love heals a share of the Buff school's heal at the Release's multiplier (a quarter in the shape, 0.15 for the lone heal), not a share of the damage.",
   "items": [
     {
       "id": "rage",
@@ -155,15 +155,15 @@
         "text": "You heal or shield an ally."
       },
       "pour": {
-        "text": "+0.3. Allies in the shape are spared its damage and healed for a third of it. If it reaches no ally, the most wounded ally within its reach (or you) heals for a fifth of it.",
-        "heal_of_power": 0.35,
-        "lone_heal_of_power": 0.2,
+        "text": "+0.3. Allies in the shape are spared its damage and healed for ×0.25 of what a healing Outburst of yours would give at this stage. If it reaches no ally, the most wounded ally within its reach (or you) heals for ×0.15 of it. On a healing or shielding Outburst, each ally it reaches heals ×0.25 more.",
         "effects": [
           {
             "op": "feeling_pour",
             "feeling": "love"
           }
-        ]
+        ],
+        "heal_share": 0.25,
+        "lone_heal_share": 0.15
       },
       "residue": {
         "kind": "helps",

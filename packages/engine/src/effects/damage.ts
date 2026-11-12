@@ -13,6 +13,7 @@
 // and 'on_kill' {victim, by, src} when kill credit is given.
 import type { Combat, Unit } from '../combat';
 import { emit } from './hooks';
+import { MEND_KINDS, mendRoom, noteMended } from './mending';
 
 /** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
 export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };
@@ -107,17 +108,21 @@ function dropped(cb: Combat | null, t: Unit, src: DamageSrc, res: DamageResult, 
 
 /** Healing a unit through the hooks: 'heal_in' {t, by, n, kind} may change n, then HP; 'heal_given' after. Returns HP
  * actually restored (a Downed unit is brought back up at max(1, n)). */
-export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string): { restored: number; revived: boolean } {
+export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string, o: { /** a Miracle: not held to the round limit */ noLimit?: boolean } = {}): { restored: number; revived: boolean; /** the round limit cut it (rules 1.20) */ limited?: boolean } {
   if (t.dead) return { restored: 0, revived: false };
   // Healing received: +10% × Camaraderie (rules 1.13).
   const ctx: any = { t, by, n: Math.floor(n * (t.healRecv || 1)), kind, cb };
   if (cb) { emit(cb, 'heal_in', ctx); ctx.n = Math.max(0, Math.floor(ctx.n)); }
+  // Rules 1.20, the round limit: spells and prayers together restore at most half of a creature's max HP a round.
+  let limited = false;
+  if (cb && !o.noLimit && MEND_KINDS.includes(kind)) { const room = mendRoom(cb, t); if (ctx.n > room) { ctx.n = room; limited = true; } }
   let restored = 0, revived = false;
   if (t.downed) { t.downed = false; t.saves = { ok: 0, fail: 0 }; t.hp = Math.min(t.maxHp, Math.max(1, ctx.n)); restored = t.hp; revived = true; }
   else { const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + ctx.n); restored = t.hp - was; }
+  if (cb && !o.noLimit && MEND_KINDS.includes(kind)) noteMended(cb, t, restored);
   if (cb) emit(cb, 'heal_given', { t, by, n: restored, kind, revived, cb });
   if (cb && by && (restored > 0 || revived)) tendHook.f?.(cb, by, t);
-  return { restored, revived };
+  return { restored, revived, limited };
 }
 /** Give a shield through the hooks ('shield_grant' {by, t, n} may change n). Shields don't stack: the larger stands. */
 export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | null, stack = false): number {

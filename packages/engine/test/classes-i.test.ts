@@ -10,7 +10,7 @@ import {
 } from '../src';
 import { fightWith, storyWith, withGame, rng, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
-import { CLASS_MOVE_POOL, REV2_CLASSES } from '../src';
+import { CLASS_MOVE_POOL, REV2_CLASSES, mendFactor } from '../src';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
@@ -409,13 +409,13 @@ describe('Channeler', () => {
 
 // ======================================================================================================== GUARDIAN
 describe('Guardian', () => {
-  it('Will Shield: a Buff cast, a shield of 30 × Healing given on an ally in reach; MP and Strain paid', () => {
+  it('Will Shield: a Buff cast, a shield of 12 × Healing given on an ally in reach (rules 1.20); MP and Strain paid', () => {
     const f = fightWith([cls('guardian', 1, SOUL), {}], [{}]);
     const [gd, ally] = f.pcs; line(f, [gd, 3], [ally, 5], [f.foe, 13]);
     const u = f.turn(gd), mp = u.mg!.mp;
     act(f, u, { type: 'combat/perk', id: 'class:guardian.will_shield', actionId: 'will_shield', targetId: ally.id });
     const mult = healingMult(f.g.characters[gd.charId!]);
-    expect(f.unit(ally.id).shield).toBe(Math.floor(Math.floor(30 * mult) * (f.unit(ally.id).healRecv || 1)));
+    expect(f.unit(ally.id).shield).toBe(Math.floor(Math.floor(12 * mult * mendFactor(f.g.characters[gd.charId!].level)) * (f.unit(ally.id).shieldRecv || 1)));
     expect(f.unit(gd.id).mg!.mp).toBeLessThan(mp); expect(f.unit(gd.id).mg!.strain).toBe(1);
   });
   it('Drink It In: an enemy spell on your shield feeds your Emanator (one reaction a round)', () => {
@@ -465,14 +465,14 @@ describe('Bard', () => {
     s.act({ type: 'check/roll', checkId: ck.id }, s.g.characters[ally.id].owner);
     expect(s.g.story.entries.filter((e) => e.kind === 'check').at(-1)!.head).toMatch(/\+2 Encouraged by/);
   });
-  it('Mend: a Bard\'s Buff heal heals 40, not 30 (× Healing given × the air)', () => {
+  it('Mend: a Bard\'s Buff heal heals from 9, not 7 (× Healing given × the level factor × the air)', () => {
     const f = fightWith([cls('bard', 2, SOUL), {}], [{}]);
     const [bd, ally] = f.pcs; line(f, [bd, 3], [ally, 5], [f.foe, 13]);
     const u = f.turn(bd), d = designOf(f.unit(bd.id), 'buff', 'heal'); f.unit(ally.id).hp = 10;
     // Rules 1.5: Begin, Pump to stage 1 (×1.2 since rules 1.17), Release.
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/release', aim: '5,2' });
     const hm = f.unit(bd.id).mg!.healMult, recv = f.unit(ally.id).healRecv || 1;
-    expect(f.unit(ally.id).hp - 10).toBe(Math.floor(Math.floor(30 * 1 * hm * recv) * 40 / 30));
+    expect(f.unit(ally.id).hp - 10).toBe(Math.floor(Math.floor(7 * 1 * hm * (f.unit(bd.id).mg!.mend ?? 1) * recv) * 9 / 7)); // rules 1.20: a base of 9 in place of 7, and the level factor
   });
   it('Gift: out of combat, once a rest, a design handed to an ally (the Narrator is told)', () => {
     const s = storyWith([cls('bard', 3, SOUL), {}]);

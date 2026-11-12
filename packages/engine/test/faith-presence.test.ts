@@ -112,10 +112,10 @@ describe('the numbers scale with Devotion, × Blessing power (item 741)', () => 
     const h = holy({ patron: 'nerukhan', devotion: 7 }); hymnAgain(h); kickDowned(h);
     expect(fx(h.cb, FAITH_FX.intervention)[0]).toMatchObject({ unit: h.me.id, patron: 'nerukhan', trigger: 'enemy_harms_helpless', target: h.foe.id, amount: Math.round(48 * h.me.blessPower!) });
   });
-  it('Mother Ember at Devotion 10 heals 60 × power; Old Overcast at 10 throws 60 × power Storm', () => {
+  it('Mother Ember at Devotion 10 heals 40 × power (rules 1.20: 10 + 3 × Devotion); Old Overcast at 10 throws 60 × power Storm', () => {
     const m = holy({ patron: 'mother_ember', devotion: 10 }); m.me.conds = { witnessed: 99 } as any; const mx = m.ally.maxHp;
     m.ally.maxHp = 1000; m.ally.hp = 1000; m.bound(() => applyDamage(m.cb, m.ally, 800, { by: m.foe, type: 'physical' } as any));
-    expect(m.ally.hp).toBe(200 + Math.round(60 * m.me.blessPower!)); void mx;
+    expect(m.ally.hp).toBe(200 + Math.round(40 * m.me.blessPower!)); void mx;
     const o = holy({ patron: 'old_overcast', devotion: 10 }); o.me.conds = { witnessed: 99 } as any; o.foe2.maxHp = o.foe2.hp = 2000;
     o.bound(() => applyDamage(o.cb, o.foe, 9999, { by: o.me, type: 'physical', credit: 'hp' } as any));
     const e = fx(o.cb, FAITH_FX.intervention)[0]; expect(e).toMatchObject({ trigger: 'you_kill', target: o.foe2.id, amount: Math.round(60 * o.me.blessPower!) });

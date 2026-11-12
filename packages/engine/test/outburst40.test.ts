@@ -72,7 +72,7 @@ describe('feelings poured in (section 3; steps and behaviours as rules 1.19 set 
     const d = give(f.pc, { modules: ['burst'] }); begin(f, d); pump(f, 'love');
     expect(fx(f.cb, 'pump').at(-1).does).toBe('now HEALS');
     release(f, '6,5');
-    expect(lost(f.foe)).toBe(Math.floor(20 * 1.1 * 0.7)); expect(f.unit(ally.id).hp).toBe(400 + Math.floor(20 * 1.1 * 0.7 * 0.35)); // Love's step +0.3; the ally heals ×0.35 of it
+    expect(lost(f.foe)).toBe(Math.floor(20 * 1.1 * 0.7)); expect(f.unit(ally.id).hp).toBe(400 + Math.floor(7 * 1.1 * 0.25)); // Love's step +0.3; the ally heals ×0.25 of the Buff school's heal at that multiplier (rules 1.20)
   });
   it('Joy no longer chains: a Bolt is a critical from 18 up. Calm no longer lands by itself: two rolls, the better kept, at −0.4, and no critical', () => {
     const f = rig(['6,5', '7,6']); const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'joy'); release(f, '6,5');
@@ -191,7 +191,7 @@ describe('the new modules (section 4)', () => {
     const f = rig(['8,5']); const d = give(f.pc, { modules: ['burst', 'bloom'] }); begin(f, d); pump(f); pump(f); release(f, '6,5'); expect(lost(f.foe)).toBeGreaterThan(0);
     const g = rig(['6,5']); const e = give(g.pc, { modules: ['anchor', 'at_once'] }); begin(g, e, g.pc, { aim: '6,5' }); expect(g.foe.conds?.pinned).toBeGreaterThan(0);
     const h = rig(['7,5']); const k = give(h.pc, { modules: ['lure', 'at_once'] }); begin(h, k, h.pc, { aim: '7,5' }); expect(h.foe.pos).toBe('5,5');
-    const i = rig(); const s = give(i.pc, { modules: ['shell'] }); begin(i, s, i.pc, { aim: '6,5' }); expect(me(i).shield).toBe(Math.floor(16 * 0.35)); // a third of the Release (it was half)
+    const i = rig(); const s = give(i.pc, { modules: ['shell'] }); begin(i, s, i.pc, { aim: '6,5' }); expect(me(i).shield).toBe(Math.floor(4 * 0.8)); // rules 1.20: 4 × the Soul multiplier × the stage multiplier (stage 0)
   });
   it('Quiet halves the hold\'s Strain (rounded down) and deals ×0.8', () => {
     const f = rig(); const d = give(f.pc, { modules: ['quiet', 'at_once'] }); begin(f, d); expect(me(f).mg!.strain).toBe(0);

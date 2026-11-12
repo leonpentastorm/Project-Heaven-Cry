@@ -1,7 +1,7 @@
 {
   "$schema_version": "1.0",
   "kind": "sigils",
-  "source": "PHC Core Rules v1.0, rules revision 1.4 (Sigil magic; docs/design/sigil-1.4-proposal.md and decision 98)",
+  "source": "PHC Core Rules v1.0, rules revision 1.4 (Sigil magic; docs/design/sigil-1.4-proposal.md and decision 98) Rules 1.20 (the heal and shield pass): MEND 10, WARD 12, both growing with the caster's level.",
   "grammar": {
     "revision": "1.4",
     "groups": {
@@ -780,8 +780,8 @@
       "class": "subject_boon",
       "charge": 2,
       "flux": 1,
-      "text": "The target gains a shield of 30 × your Sigil multiplier × your Healing given, until the end of the fight. Shields don't add up: the bigger one stays.",
-      "shield": 30,
+      "text": "The target gains a shield of 12 × your Sigil multiplier × your Healing given, until the end of the fight. It grows with your level, like healing. Shields don't add up: the bigger one stays.",
+      "shield": 12,
       "new": false,
       "grand": "Dome. Each ally who starts a turn in the area gets +2 Defense and a shield of 20. The shield doesn't add to one they already have.",
       "max_copies": null,
@@ -797,7 +797,8 @@
           }
         ],
         "provisional": true
-      }
+      },
+      "shield_enemy": 30
     },
     {
       "id": "mend",
@@ -807,8 +808,8 @@
       "class": "subject_boon",
       "charge": 3,
       "flux": 1,
-      "text": "Heals the target for 25 × your Sigil multiplier × your Healing given.",
-      "heal": 25,
+      "text": "Heals the target for 10 × your Sigil multiplier × your Healing given. It grows with your level (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20).",
+      "heal": 10,
       "new": false,
       "grand": "Spring. Each ally who starts a turn in the area heals 10 × your Healing given.",
       "max_copies": null,
@@ -824,7 +825,8 @@
           }
         ],
         "provisional": true
-      }
+      },
+      "heal_enemy": 25
     },
     {
       "id": "quicken",

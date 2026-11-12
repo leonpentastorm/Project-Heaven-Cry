@@ -1244,6 +1244,36 @@
       "data": "patrons.json"
     }
   },
+  "mending": {
+    "provisional": true,
+    "rules": "1.20",
+    "level_factor": {
+      "from": "enemies.json levels.table damage_mult, at the caster's level",
+      "who": "characters and the units that fight for them; an enemy caster's healing and shields grow through its own multipliers (rules 1.15)",
+      "applies_to": [
+        "sigil heal",
+        "sigil shield",
+        "outburst heal",
+        "outburst shield",
+        "prayer heal",
+        "prayer shield"
+      ]
+    },
+    "round_limit": {
+      "share_of_max_hp": 0.5,
+      "kinds": [
+        "sigil",
+        "soul",
+        "leech",
+        "thread",
+        "blessing"
+      ],
+      "miracles_exempt": true
+    },
+    "shield_over_heal": 1.2,
+    "area_share": 0.4,
+    "text": "Healing and shields from Sigil magic, Outbursts and prayers grow with the caster's level, by the same factor that raises what enemies deal (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). In one round, spells and prayers together can't restore more than half of a creature's max HP; a Miracle is not held to that. In an area shape a healing or shielding Outburst gives each ally ×0.4."
+  },
   "social": {
     "disposition_tn": {
       "friendly": 8,

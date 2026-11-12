@@ -23,6 +23,7 @@ import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitStrength, wi
 import { actionAp, pushAway } from './effects/core';
 import { sessionN, dayOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
+import { mendFactor, mendFactorOf } from './effects/mending';
 import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
@@ -87,6 +88,16 @@ export const INTERVENTION = {
 export const interventionLimit = (c: Character) => (devotionNow(c) >= INTERVENTION.highFrom ? INTERVENTION.perFightHigh : INTERVENTION.perFight);
 /** A Devotion-scaled intervention's number: (20 + 4 × Devotion) × Blessing power, rounded (item 741). */
 export const interventionAmount = (c: Character, power = 1) => Math.round((INTERVENTION.base + INTERVENTION.perDevotion * devotionNow(c)) * power);
+// ---------- rules 1.20 (the heal and shield pass): prayer heals and shields ----------
+/** A prayer's heal or shield base, read from its data entry (patrons.json; `fallback` only for data without one). */
+const effVal = (entry: any, op: 'heal' | 'shield', fallback: number): number => {
+  const find = (list: any[]): number | null => { for (const e of list || []) { if (e.op === op && typeof e.value === 'number') return e.value; const n = find(e.effects); if (n != null) return n; } return null; };
+  return find(entry?.effects) ?? fallback;
+};
+const hymnEntry = (id: string): any => { for (const p of FAITH_PATRONS) for (const h of p.hymns || []) if (h.id === id) return h; return null; };
+/** Mother Ember's healing intervention: (10 + 3 × Devotion) × Blessing power. Its own numbers, not the damage
+ * interventions' 20 + 4 × Devotion; no level factor (Devotion is what it grows with). */
+export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_PATRON.mother_ember?.intervention?.effects || [])[0] || {}; return Math.round(((e.value ?? 10) + (e.per_devotion ?? 3) * devotionNow(c)) * power); };
 
 /** FX events (emitFx kinds) the faith rules put on a fight's or the story's fx list, with their payloads. */
 export const FAITH_FX = {
@@ -233,6 +244,7 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
     if (u.ap < ap) return no('Needs ' + ap + ' AP.', out);
     if (kind === 'whisper' && u.faith?.whisperTurn === turnKey(cb)) return no('One Whisper a turn.', out);
     if (kind === 'hymn') { const cd = prayerCooldown(c); if (u.prayedRound != null && cb.round - u.prayedRound < cd) return no('Your last Hymn was ' + (cb.round - u.prayedRound) + ' round(s) ago: wait ' + cd + '.', out); }
+    if (kind === 'hymn' && pe.entry.id === 'cut_short' && args.targetId) { const why = cutShortWhy(cb, cb.units.find((x) => x.id === args.targetId), pe.entry); if (why) return no(why, out); }
   } else {
     const st = storyFaith(g, c);
     if (kind === 'whisper' && st.whisperRound === g.story.round) return no('One Whisper a round.', out);
@@ -609,7 +621,7 @@ export function registerFaithHooks() {
   });
   onHook('on_damaged', (ctx, cb) => { // Mother Ember: an ally drops below a quarter HP
     const t: Unit = ctx.t; if (t.dead || t.hp <= 0 || ctx.prevHp < t.maxHp / 4 || t.hp >= t.maxHp / 4) return;
-    for (const f of intervening(cb, 'mother_ember')) { if (f.side !== t.side) continue; const n = scaled(f); intervene(cb, f, 'ally_below_quarter', t, n, () => ': ' + t.name + healLine(cb, f, t, n)); break; }
+    for (const f of intervening(cb, 'mother_ember')) { if (f.side !== t.side) continue; const fc = unitChar(f), n = fc ? interventionHeal(fc, f.blessPower || blessingPower(fc)) : 0; intervene(cb, f, 'ally_below_quarter', t, n, () => ': ' + t.name + healLine(cb, f, t, n)); break; }
   });
   onHook('on_downed', (ctx, cb) => {
     const v: Unit = ctx.victim, by: Unit | null = ctx.by;
@@ -709,12 +721,12 @@ export function registerFaithHooks() {
   onHook('attack_roll', (rc, cb) => {
     const att: Unit = rc.att, tgt: Unit = rc.tgt;
     if (att.faith?.luck) delete att.faith.luck;
-    if (tgt?.faith?.foreknown && att.side !== tgt.side) { delete tgt.faith.foreknown; rc.hit = false; cb.log.push('Foreknowing: the attack on ' + tgt.name + ' misses.'); return; }
+    if (tgt?.faith?.foreknown && att.side !== tgt.side) { const left = (tgt.faith.foreknown === true ? 1 : Number(tgt.faith.foreknown) || 1) - 1; if (left > 0) tgt.faith.foreknown = left; else delete tgt.faith.foreknown; rc.hit = false; cb.log.push('Foreknowing: the attack on ' + tgt.name + ' misses.'); return; }
     if (vowOn(att, 'bare') && !isMelee(WEAPON[att.weapon]) && rc.mode !== 'melee') breakVow(cb, att, 'attacked with a gun');
     // Lucky Break: the next failed attack roll is rerolled at +5.
     if (att.faith?.luckyBreak && rc.hit !== true) {
       const fails = rc.die === 1 || (rc.die < rc.critMin && rc.die + rc.toHit < rc.need);
-      if (fails) { delete att.faith.luckyBreak; const r = d20(rc.rng || rngOf()); rc.die = r; rc.hit = r !== 1 && (r >= rc.critMin || r + rc.toHit + 5 >= rc.need); cb.log.push('Lucky Break: ' + att.name + ' rerolls (d20 ' + r + ' +5).'); }
+      if (fails) { const left = (att.faith.luckyBreak === true ? 1 : Number(att.faith.luckyBreak) || 1) - 1; if (left > 0) att.faith.luckyBreak = left; else delete att.faith.luckyBreak; const r = d20(rc.rng || rngOf()); rc.die = r; rc.hit = r !== 1 && (r >= rc.critMin || r + rc.toHit + 5 >= rc.need); cb.log.push('Lucky Break: ' + att.name + ' rerolls (d20 ' + r + ' +5).'); }
     }
     if (!tgt || att.side === tgt.side) return;
     for (const f of intervening(cb, 'counting_weaver')) { if (f !== tgt || !(rc.die === 20 || rc.die >= rc.critMin)) continue; intervene(cb, f, 'enemy_crits_you', att, null, () => ': the critical becomes a normal hit'); rc.die = 19; rc.critMin = 21; rc.hit = true; break; }
@@ -931,6 +943,16 @@ export function encoreAfter(cb: Combat, u: Unit, x: { credit: number; before: nu
   const key = u.faith?.encore?.key || ''; if (u.faith) delete u.faith.encore;
   cb.log.push('Encore: ' + u.name + ' repeats ' + actionWords(key) + (spent > x.credit ? ' (' + (spent - x.credit) + ' AP more than before)' : ', free') + '.');
 }
+// ---------- rules 1.21 (the Faith fit, item 1269): a prayer's damage and counts are read from its data entry ----------
+/** The first effect of an entry with this op (and passing this test), or null. */
+const fxOf = (entry: any, op: string, ok: (f: any) => boolean = () => true): any => (entry?.effects || []).find((f: any) => f.op === op && ok(f)) || null;
+/** A prayer's damage base before Blessing power (patrons.json: a stat_mod on hp below 0); `fallback` only for data without one. */
+export const prayerDamage = (entry: any, fallback = 0): number => { const f = fxOf(entry, 'stat_mod', (q) => q.stat === 'hp' && Number(q.value) < 0); return f ? -Number(f.value) : fallback; };
+/** Cut Short (item 1268): an enemy it has just cost a turn can't be Cut Short again until `again_after_rounds` rounds have gone by. */
+export function cutShortWhy(cb: Combat, v: Unit | null | undefined, entry: any): string | null {
+  const n = Number(fxOf(entry, 'condition')?.again_after_rounds ?? 2), last = v?.faith?.cutShortRound;
+  return v && last != null && cb.round - last < n ? v.name + ' has just been Cut Short: not again until round ' + (last + n) + '.' : null;
+}
 /** Run a Whisper, Hymn or Miracle's effect (spec 1.6 §3 and §8; items 607-617; rules 1.6.2's Miracles, items 727-734). */
 /** What a prayer puts on someone is delivered by Faith (rules 1.13). */
 function runEntry(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { entry: any; patron: any }, t: Target, a: CombatPrayArgs, power: number): string {
@@ -944,8 +966,8 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     const x = one || u;
     switch (id) {
       case 'luck': fs(x).luck = 2; return ' · ' + x.name + ': +2 on the next roll';
-      case 'health': return land(cb, rng, u, x, e, power, (pw) => ' · ' + x.name + healLine(cb, u, x, 15 * pw));
-      case 'protection': return land(cb, rng, u, x, e, power, (pw) => ' · ' + x.name + ' gains a ' + grantShield(cb, x, 15 * pw, u) + ' shield');
+      case 'health': return land(cb, rng, u, x, e, power, (pw) => ' · ' + x.name + healLine(cb, u, x, effVal(e, 'heal', 5) * pw * mendFactorOf(u)));
+      case 'protection': return land(cb, rng, u, x, e, power, (pw) => ' · ' + x.name + ' gains a ' + grantShield(cb, x, effVal(e, 'shield', 6) * pw * mendFactorOf(u), u) + ' shield');
       case 'courage': { const had = ['fear', 'shaken'].filter((k) => condOn(x, k)); for (const k of had) endCond(x, k, cb); return ' · ' + x.name + (had.length ? ' steadies (' + had.join(', ') + ' ended)' : ' was already steady'); }
       case 'guidance': {
         let out = '';
@@ -954,17 +976,18 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
         fs(u).guidance = true; return out + ' · +2 on your next spotting roll';
       }
       case 'safe_passage': fs(u).safePassage = turnKey(cb); return ' · your next move this turn draws no opportunity attacks';
+      case 'rebuke': return one && one.side !== u.side ? land(cb, rng, u, one, e, power, (pw) => harmLine(cb, u, one, prayerDamage(e, 15) * pw, 'soul')) : ''; // rules 1.21, item 1260
     }
     return '';
   }
   switch (id) {
     // Holy Father Nerukhan
-    case 'saints_shield': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + ' gains a ' + grantShield(cb, one!, 40 * pw, u) + ' shield');
-    case 'judgement': return land(cb, rng, u, one!, e, power, (pw) => harmLine(cb, u, one!, 40 * pw * (one!.faith?.harmedHelpless ? 2 : 1), 'soul') + (one!.faith?.harmedHelpless ? ' (×2: it harmed the helpless)' : ''));
-    case 'absolution': return land(cb, rng, u, one!, e, power, (pw) => { const ids = Object.keys(one!.conds || {}).filter((k) => !condIsBoon(k) && condOn(one!, k)); for (const k of ids) endCond(one!, k, cb); return ' · ' + one!.name + ' is absolved' + (ids.length ? ' (' + ids.join(', ') + ')' : '') + ' and' + healLine(cb, u, one!, 30 * pw); });
+    case 'saints_shield': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + ' gains a ' + grantShield(cb, one!, effVal(e, 'shield', 24) * pw * mendFactorOf(u), u) + ' shield');
+    case 'judgement': return land(cb, rng, u, one!, e, power, (pw) => { const hm = one!.faith?.harmedHelpless ? Number(fxOf(e, 'vs_status_damage')?.mult ?? 1.5) : 1; return harmLine(cb, u, one!, prayerDamage(e, 40) * pw * hm, 'soul') + (hm !== 1 ? ' (×' + hm + ': it harmed the helpless)' : ''); });
+    case 'absolution': return land(cb, rng, u, one!, e, power, (pw) => { const ids = Object.keys(one!.conds || {}).filter((k) => !condIsBoon(k) && condOn(one!, k)); for (const k of ids) endCond(one!, k, cb); return ' · ' + one!.name + ' is absolved' + (ids.length ? ' (' + ids.join(', ') + ')' : '') + ' and' + healLine(cb, u, one!, effVal(e, 'heal', 15) * pw * mendFactorOf(u)); });
     case 'saints_verdict': { // rules 1.6.2 (item 727): every enemy in sight; double and 2 rounds for those that harmed the helpless
       let out = '';
-      for (const v of enemiesInSight(cb, u)) { const hh = !!v.faith?.harmedHelpless; out += land(cb, rng, u, v, e, power, (pw) => harmLine(cb, u, v, 100 * pw * (hh ? 2 : 1), 'soul') + (hh ? ' (×2: it harmed the helpless)' : '') + applyCond(cb, rng, u, v, 'stunned', hh ? 2 : 1, undefined, { skipSave: true })); }
+      for (const v of enemiesInSight(cb, u)) { const hh = !!v.faith?.harmedHelpless; out += land(cb, rng, u, v, e, power, (pw) => harmLine(cb, u, v, prayerDamage(e, 130) * pw * (hh ? Number(fxOf(e, 'damage_mult')?.value ?? 2) : 1), 'soul') + (hh ? ' (×' + Number(fxOf(e, 'damage_mult')?.value ?? 2) + ': it harmed the helpless)' : '') + applyCond(cb, rng, u, v, 'stunned', hh ? 2 : 1, undefined, { skipSave: true })); }
       return out || ' · no enemy in sight';
     }
     // The Quartermaster
@@ -977,7 +1000,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       return out + ' · every ally +3 AP next turn (banked: within the +3 a turn and the ceiling of 9)';
     }
     // The Laughing Mask
-    case 'lucky_break': fs(one!).luckyBreak = true; return ' · ' + one!.name + '\'s next failed attack roll is rerolled at +5';
+    case 'lucky_break': { const n = Math.max(1, Number(fxOf(e, 'reroll')?.uses ?? 2)); fs(one!).luckyBreak = n; return ' · ' + one!.name + '\'s next ' + (n > 1 ? n + ' failed attack rolls are each' : 'failed attack roll is') + ' rerolled at +5'; } // item 1265
     case 'switcheroo': {
       const [x, y] = two; for (const v of [x, y]) if (v.side !== u.side) { const s = rollSaveVs(rng, u, v, 'brain'); if (s.ok) return ' · ' + v.name + ' resists (' + s.text + ')'; }
       const px = x.pos; x.pos = y.pos; y.pos = px; faithTag(cb, u, 'trick'); return ' · ' + x.name + ' and ' + y.name + ' swap places';
@@ -995,7 +1018,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       return out;
     }
     // The Toll-Keeper
-    case 'coin_for_the_ferry': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, 10 * pw));
+    case 'coin_for_the_ferry': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, effVal(e, 'heal', 5) * pw * mendFactorOf(u)));
     case 'hold_the_gate': { const ids = allies.filter((v) => v === u || unitSees(cb, u, v.pos)).map((v) => v.id); ((cb as any).faithGates ||= []).push({ by: u.id, side: u.side, ids }); return ' · ' + ids.length + ' allies can\'t drop below 1 HP until your next turn'; }
     case 'last_crossing': {
       const v = one!; if (v.hp > v.maxHp / 4) return ' · ' + v.name + ' is not near enough to the shore (above a quarter HP)';
@@ -1015,21 +1038,21 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       return out || ' · nobody has crossed or fallen';
     }
     // Mother Ember
-    case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, 40 * pw));
-    case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: area3(a.tile!), until: cb.round + 2, heal: P(10) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
-    case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { one!.ap = Math.min(AP_MAX, one!.ap + 1); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +1 AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
+    case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, effVal(e, 'heal', 20) * pw * mendFactorOf(u)));
+    case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: area3(a.tile!), until: cb.round + 2, heal: Math.round(effVal(e, 'heal', 4) * power * mendFactorOf(u)) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
+    case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { const n = Number(fxOf(e, 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2), was = one!.ap; one!.ap = Math.min(AP_MAX, one!.ap + n); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +' + (one!.ap - was) + ' AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
     case 'everyone_home': { // rules 1.6.2 (item 731): full HP, the Downed stand, every harmful condition ends, a 40 shield each
       let out = '';
       for (const v of cb.units.filter((x) => x.side === u.side && !x.dead)) out += land(cb, rng, u, v, e, power, (pw) => {
-        const up = v.downed; healUnit(cb, v, v.maxHp, u, 'blessing'); v.hp = v.maxHp; // to full whatever trims a heal
+        const up = v.downed; healUnit(cb, v, v.maxHp, u, 'blessing', { noLimit: true }); v.hp = v.maxHp; // to full whatever trims a heal
         const ended = cleanseHarmful(cb, v);
-        return ' · ' + v.name + (up ? ' stands at full HP' : ' heals to full') + (ended.length ? ', cleansed (' + ended.join(', ') + ')' : '') + ', a ' + grantShield(cb, v, 40 * pw, u) + ' shield';
+        return ' · ' + v.name + (up ? ' stands at full HP' : ' heals to full') + (ended.length ? ', cleansed (' + ended.join(', ') + ')' : '') + ', a ' + grantShield(cb, v, effVal(e, 'shield', 24) * pw * mendFactorOf(u), u) + ' shield';
       });
       return out;
     }
     // Old Overcast
-    case 'thunderclap': { let out = ''; const from = { pos: a.tile } as any as Unit; for (const v of cb.units.filter((x) => x.side !== u.side && !x.dead && dist(x.pos, a.tile!) <= 2)) out += pushAway(cb, from, v, 1) + applyCond(cb, rng, u, v, 'shaken', undefined, 'heart'); return out || ' · nobody there'; }
-    case 'lightning_rod': return land(cb, rng, u, one!, e, power, (pw) => { let out = harmLine(cb, u, one!, 50 * pw, 'elemental', 'lightning'); const n = cb.units.filter((x) => x.side !== u.side && alive(x) && x !== one && dist(x.pos, one!.pos) <= 2).sort((p, q) => dist(p.pos, one!.pos) - dist(q.pos, one!.pos))[0]; if (n) out += ' · it chains to ' + n.name + harmLine(cb, u, n, 25 * pw, 'elemental', 'lightning'); return out; });
+    case 'thunderclap': { let out = ''; const from = { pos: a.tile } as any as Unit; const dmg = prayerDamage(e, 0); for (const v of cb.units.filter((x) => x.side !== u.side && !x.dead && !x.surrendered && dist(x.pos, a.tile!) <= 2)) { if (dmg > 0) out += harmLine(cb, u, v, P(dmg), 'elemental', 'lightning'); if (v.dead || v.downed) continue; out += pushAway(cb, from, v, 1) + applyCond(cb, rng, u, v, 'shaken', undefined, 'heart'); } return out || ' · nobody there'; } // item 1261: the thunder hurts
+    case 'lightning_rod': return land(cb, rng, u, one!, e, power, (pw) => { let out = harmLine(cb, u, one!, prayerDamage(e, 45) * pw, 'elemental', 'lightning'); const n = cb.units.filter((x) => x.side !== u.side && alive(x) && x !== one && dist(x.pos, one!.pos) <= 2).sort((p, q) => dist(p.pos, one!.pos) - dist(q.pos, one!.pos))[0]; if (n) out += ' · it chains to ' + n.name + harmLine(cb, u, n, Number(fxOf(e, 'chain_damage')?.value ?? 15) * pw, 'elemental', 'lightning'); return out; });
     case 'gather_the_clouds': ((cb as any).faithClouds ||= []).push({ by: u.id, side: u.side }); return ' · until your next turn, your side\'s Storm riders count a stage higher';
     case 'the_sky_answers': { // rules 1.6.2 (item 732): a 5×5 in sight; the sky picks: enemies only; 150 Storm, Stunned 1, Shaken
       let out = ''; const tiles = areaOf(a.tile!, 2);
@@ -1049,9 +1072,9 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       return out || ' · nobody here to win over';
     }
     // The Counting Weaver
-    case 'foreknowing': fs(one!).foreknown = true; return ' · the next attack on ' + one!.name + ' will miss';
+    case 'foreknowing': { const n = Math.max(1, Number(fxOf(e, 'state', (q) => q.state === 'foreknown')?.uses ?? 2)); fs(one!).foreknown = n; return ' · the next ' + (n > 1 ? n + ' attacks' : 'attack') + ' on ' + one!.name + ' will miss'; } // item 1266
     case 'unravel': { const v = one!; const ids = Object.keys(v.conds || {}).filter((k) => condIsBoon(k) && condOn(v, k)); for (const k of ids) endCond(v, k, cb); const had = !!v.shield; v.shield = 0; v.braced = false; dropHeldShot(cb, v, 'Unravel'); if (v.hidden) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; } return ' · ' + v.name + ' is unravelled' + (ids.length || had ? ' (' + [...ids, ...(had ? ['shield'] : [])].join(', ') + ')' : ''); }
-    case 'cut_short': { const v = one!; if (v.tier === 'boss') { apDebt(v, 2); return ' · ' + v.name + ' loses 2 AP on its next turn (a boss)'; } return applyCond(cb, rng, u, v, 'stunned', 1, 'heart'); }
+    case 'cut_short': { const v = one!; if (v.tier === 'boss') { apDebt(v, 2); return ' · ' + v.name + ' loses 2 AP on its next turn (a boss)'; } const out = applyCond(cb, rng, u, v, 'stunned', 1, 'heart'); if (condOn(v, 'stunned') || (v as any).stunnedNext) fs(v).cutShortRound = cb.round; return out; } // item 1268: not the same enemy two rounds running
     case 'rewoven': { // rules 1.6.2 (item 734): HP back to the round's start where that was higher (the Downed stand), then a full turn each
       const x: any = cb, snap: Record<string, number> = x.faithRoundHp || {}; let out = '';
       for (const v of allies) { const was = snap[v.id]; if (was == null || was <= v.hp) continue;
@@ -1351,16 +1374,16 @@ function storyEffect(g: GameState, c: Character, t: Character, kind: PrayerKind,
   const st = (x: Character): any => storyFaith(g, x);
   if (kind === 'whisper') switch (id) {
     case 'luck': st(t).luck = 2; return ' · ' + t.name + ': +2 on the next check';
-    case 'health': return heal(t, 15 * power);
+    case 'health': return heal(t, effVal(WHISPER.health, 'heal', 5) * power * mendFactor(c.level));
     case 'courage': { const e = endConds(t, ['fear', 'shaken']); return ' · ' + t.name + (e.length ? ' steadies (' + e.join(', ') + ' ended)' : ' was already steady'); }
     case 'guidance': st(c).guidance = true; return null; // +2 on the next notice check; what it reveals is the Narrator's
     default: return null; // Protection and Safe Passage only mean something in a fight
   }
   switch (id) {
-    case 'absolution': { const e = endConds(t, null); return ' · ' + t.name + ' is absolved' + (e.length ? ' (' + e.join(', ') + ')' : '') + ' and' + heal(t, 30 * power).replace(' · ' + t.name, ''); }
-    case 'warm_hands': return heal(t, 40 * power);
-    case 'coin_for_the_ferry': return t.hp > 0 ? ' · ' + t.name + ' is not down' : heal(t, 10 * power);
-    case 'feed_the_fire': { const e = endConds(t, ['weakened', 'slowed']); if (g.story.await === 'players') (g.story.ap ||= {})[t.id] = B!.apLeft(g, t) + 1; return ' · ' + t.name + ' +1 AP' + (e.length ? ', ' + e.join(' and ') + ' ended' : ''); }
+    case 'absolution': { const e = endConds(t, null); return ' · ' + t.name + ' is absolved' + (e.length ? ' (' + e.join(', ') + ')' : '') + ' and' + heal(t, effVal(hymnEntry('absolution'), 'heal', 15) * power * mendFactor(c.level)).replace(' · ' + t.name, ''); }
+    case 'warm_hands': return heal(t, effVal(hymnEntry('warm_hands'), 'heal', 20) * power * mendFactor(c.level));
+    case 'coin_for_the_ferry': return t.hp > 0 ? ' · ' + t.name + ' is not down' : heal(t, effVal(hymnEntry('coin_for_the_ferry'), 'heal', 5) * power * mendFactor(c.level));
+    case 'feed_the_fire': { const e = endConds(t, ['weakened', 'slowed']); if (g.story.await === 'players') (g.story.ap ||= {})[t.id] = B!.apLeft(g, t) + Number(fxOf(hymnEntry('feed_the_fire'), 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2); return ' · ' + t.name + ' +' + Number(fxOf(hymnEntry('feed_the_fire'), 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2) + ' AP' + (e.length ? ', ' + e.join(' and ') + ' ended' : ''); }
     case 'lucky_break': st(t).luckyBreak = true; return ' · ' + t.name + ': +5 on the next check';
     // Rules 1.6.2 (item 735): the squad's HP and story conditions are the engine's; a fight's shield is nothing out of one.
     case 'everyone_home': { let out = ''; for (const x of Object.values(g.characters)) if (!x.dead) { const e = endConds(x, null); out += heal(x, maxHpOf(x)) + (e.length ? ' (' + e.join(', ') + ' ended)' : ''); } return out; }

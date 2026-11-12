@@ -9,6 +9,7 @@ import {
   type Combat, type GameState, type Unit, type Character, type Action,
 } from '../src';
 import { emit } from '../src/effects/hooks';
+import { mendFactor } from '../src/effects/mending'; // rules 1.20: prayer heals and shields grow with level
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
@@ -71,12 +72,12 @@ describe('the gate and the price (items 724-725)', () => {
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('the eight Miracles in a fight (items 727-734)', () => {
-  it('Nerukhan, The Saints\' Verdict: every enemy in sight takes 100 Soul and is Stunned 1; the cruel take 200 and 2 rounds; the Hidden are spared', () => {
+  it('Nerukhan, The Saints\' Verdict: every enemy in sight takes 130 Soul (rules 1.21, item 1264; it was 100) and is Stunned 1; the cruel take 260 and 2 rounds; the Hidden are spared', () => {
     const h = miracle({ patron: 'nerukhan', foes: [{}, {}, {}] }); for (let i = 0; i < 3; i++) big(h.foe(i));
     h.foe(1).faith = { harmedHelpless: true }; h.foe(2).hidden = true;
     const pw = h.me.blessPower!; h.pray('saints_verdict');
-    expect(h.foe(0).hp).toBe(2000 - Math.round(100 * pw)); expect(h.foe(0).conds!.stunned).toBe(1);
-    expect(h.foe(1).hp).toBe(2000 - Math.round(200 * pw)); expect(h.foe(1).conds!.stunned).toBe(2);
+    expect(h.foe(0).hp).toBe(2000 - Math.round(130 * pw)); expect(h.foe(0).conds!.stunned).toBe(1);
+    expect(h.foe(1).hp).toBe(2000 - Math.round(260 * pw)); expect(h.foe(1).conds!.stunned).toBe(2);
     expect(h.foe(2).hp).toBe(2000); expect(condOn(h.foe(2), 'stunned')).toBe(false);
     expect(logHas(h.cb, /×2: it harmed the helpless/)).toBe(true);
   });
@@ -138,11 +139,11 @@ describe('the eight Miracles in a fight (items 727-734)', () => {
     for (const i of [0, 1]) { const a = h.ally(i); expect(a.dead).toBe(false); expect(a.downed).toBe(false); expect(a.hp).toBe(Math.ceil(a.maxHp / 2)); expect(a.saves).toEqual({ ok: 0, fail: 0 }); }
     expect(h.g.characters[h.ally(0).charId!].dead).toBe(false); expect(logHas(h.cb, /\(crossed\) is turned back at the shore/)).toBe(true);
   });
-  it('Mother Ember, Everyone Home: full HP, the Downed stand, harmful conditions end (boons stay), a 40 shield each', () => {
+  it('Mother Ember, Everyone Home: full HP, the Downed stand, harmful conditions end (boons stay), a 24 shield each (rules 1.20)', () => {
     const h = miracle({ patron: 'mother_ember', allies: 2 }), pw = h.me.blessPower!;
     Object.assign(h.ally(0), { hp: 0, downed: true }); h.ally(1).hp = 9; h.ally(1).conds = { shaken: 2, weakened: 1, inspired: 1 } as any; h.ally(1).prone = true; h.ally(1).bleed = 2; h.me.hp = 30;
     h.pray('everyone_home');
-    for (const u of [h.me, h.ally(0), h.ally(1)]) { expect(u.hp).toBe(u.maxHp); expect(u.downed).toBe(false); expect(u.shield).toBe(Math.floor(40 * pw)); }
+    for (const u of [h.me, h.ally(0), h.ally(1)]) { expect(u.hp).toBe(u.maxHp); expect(u.downed).toBe(false); expect(u.shield).toBe(Math.floor(24 * pw * mendFactor(h.me.level))); }
     const b = h.ally(1); expect(condOn(b, 'shaken') || condOn(b, 'weakened') || !!b.prone || (b.bleed || 0) > 0).toBe(false); expect(condOn(b, 'inspired')).toBe(true);
   });
   it('Old Overcast, The Sky Answers: a 5×5 in sight, enemies only: 150 Storm, Stunned 1 and Shaken; outside the 5×5 nothing', () => {

@@ -58,10 +58,10 @@ describe('Sigil: the Line multiplier (rules 1.17)', () => {
     const pv = previewEvoke(c.cb, c.u, '2,5', c.e.pos); expect(pv.affected[0].dmg).toBe(Math.round(35 * 1.5 * 1.8) + Math.round(15 * 1.5 * 1.8));
     const hp = c.e.hp; expect(evoke(c.cb, c.rng, c.u, '2,5', c.e.pos)).toBeNull(); expect(hp - c.e.hp).toBe(pv.affected[0].dmg);
   });
-  it('damage only: a heal and a shield are what they were', () => {
+  it('damage only: the Line multiplier does not touch a heal (MEND 10 since rules 1.20)', () => {
     const s = sigil(['mend', 'seek'], [{ at: '15,5' }], '9,5'); s.ally!.hp = 100;
     draw(s.cb, s.rng, s.u, ['mend', 'seek'], ['5,5', '4,5']); expect(evoke(s.cb, s.rng, s.u, '4,5', '9,5')).toBeNull();
-    expect(s.ally!.hp).toBe(125);
+    expect(s.ally!.hp).toBe(110);
   });
   it('an enemy caster\'s Line takes no multiplier: its damage comes from the enemy table', () => {
     const s = sigil(['fire', 'seek'], [{ at: '9,5', sigils: ['fire', 'seek'] }]), sp = compileSpell(['fire', 'seek']);
@@ -153,13 +153,13 @@ describe('Outburst: what rules 1.17 set and still stands', () => {
     const even = withGame(g.g, () => previewOutburstPlan(g.cb, me(g), e, '6,5')).affected[0].roll!.bonus;
     g.foe.level = 9; expect(withGame(g.g, () => previewOutburstPlan(g.cb, me(g), e, '6,5')).affected[0].roll!.bonus).toBe(even - 3);
   });
-  it('Love with no ally in the shape heals the most wounded ally in reach, or you, for a fifth of the Release', () => {
-    const love = Math.floor(SOUL_DAMAGE * heldMult(null, heart().pc, { stage: 1, felt: ['love'] }) * 0.8 * 0.2);
-    const f = heart(); me(f).hp = 400; const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'love');
+  it('Love with no ally in the shape heals the most wounded ally in reach, or you (rules 1.20: ×0.15 of the Buff school\'s heal at that multiplier)', () => {
+    const love = Math.floor(7 * 10 * heldMult(null, heart().pc, { stage: 1, felt: ['love'] }) * 0.15); // Healing given ×10 here, so the number is readable
+    const f = heart(); me(f).mg!.healMult = 10; me(f).hp = 400; const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'love');
     const plan = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
     expect(plan.affected.find((a) => a.unit === f.pc.id)!.heal).toBe(love);
     release(f); expect(me(f).hp).toBe(400 + love);
-    const g = heart(['6,5'], ['3,6']); me(g).hp = 450; g.unit(g.pcs[1].id).hp = 300; const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'love'); release(g);
+    const g = heart(['6,5'], ['3,6']); me(g).mg!.healMult = 10; me(g).hp = 450; g.unit(g.pcs[1].id).hp = 300; const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'love'); release(g);
     expect(g.unit(g.pcs[1].id).hp).toBe(300 + love); expect(me(g).hp).toBe(450); // the ally was hurt worse
   });
   it('each card opens with its step in plain words and names no rule', () => {
@@ -178,13 +178,13 @@ describe('Outburst: the modules that were repriced (rules 1.17)', () => {
     expect(migrateDesign({ id: 'o', name: 'Old', school: 'damage', modules: ['impact', 'move'] } as any).modules).toEqual(['move']);
     expect(SOUL_RULES.gates.skills.will_power).not.toContain('impact');
   });
-  it('At Once ×0.8, Return\'s second hit ×0.3, Shell a shield of ×0.35, Inverse a shield of ×0.7, Quiet +5 MP', () => {
+  it('At Once ×0.8, Return\'s second hit ×0.3, Quiet +5 MP (Shell and Inverse have shield bases of their own since rules 1.20)', () => {
     expect((MODULE.at_once as any).damage_mult).toBe(0.8); expect((MODULE.return as any).second_mult).toBe(0.3);
-    expect((MODULE.shell as any).shield_of_power).toBe(0.35); expect((MODULE.inverse as any).shield_mult).toBe(0.7); expect(MODULE.quiet.cost).toBe(5);
+    expect((MODULE.shell as any).shield).toBe(4); expect((MODULE.inverse as any).shield).toBe(10); expect(MODULE.quiet.cost).toBe(5);
     const a = heart(); begin(a, give(a.pc, { modules: ['at_once'] }), { aim: '6,5' }); expect(lost(a.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 0.8));
     const r = heart(); begin(r, give(r.pc, { modules: ['return'] }), { aim: '6,5' }); expect(lost(r.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8) + Math.floor(SOUL_DAMAGE * 0.8 * 0.3));
     const pr = heart(); const dr = give(pr.pc, { modules: ['return'] }); expect(withGame(pr.g, () => previewOutburstPlan(pr.cb, me(pr), dr, '6,5')).affected[0].dmg).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 1.3));
-    const s = heart(); begin(s, give(s.pc, { modules: ['shell'] }), { aim: '6,5' }); expect(me(s).shield).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 0.35));
-    const i = heart(['12,5'], ['4,5']); begin(i, give(i.pc, { modules: ['inverse'] }), { aim: '4,5' }); expect(i.unit(i.pcs[1].id).shield).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 0.7));
+    const s = heart(); begin(s, give(s.pc, { modules: ['shell'] }), { aim: '6,5' }); expect(me(s).shield).toBe(Math.floor(4 * 0.8)); // rules 1.20: 4 × the Soul multiplier × the stage multiplier
+    const i = heart(['12,5'], ['4,5']); begin(i, give(i.pc, { modules: ['inverse'] }), { aim: '4,5' }); expect(i.unit(i.pcs[1].id).shield).toBe(Math.floor(10 * 0.8)); // rules 1.20: 10 × the Soul multiplier × the stage multiplier
   });
 });

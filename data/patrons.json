@@ -107,7 +107,7 @@
         "per_devotion": 4,
         "scales_with": "blessing_power"
       },
-      "text": "While you are Witnessed, your patron acts on its own when its trigger happens, and then Witnessed ends. It can happen once a fight, or twice from Devotion 7. Its damage and healing are 20 + 4 × your Devotion, × your Blessing power."
+      "text": "While you are Witnessed, your patron acts on its own when its trigger happens, and then Witnessed ends. It can happen once a fight, or twice from Devotion 7. Its damage is 20 + 4 × your Devotion, × your Blessing power; Mother Ember's healing is 10 + 3 × your Devotion, × your Blessing power."
     },
     "provisional": true
   },
@@ -202,12 +202,12 @@
     {
       "id": "health",
       "name": "Health",
-      "text": "You or an ally you can see heals 15 × your Blessing power.",
+      "text": "You or an ally you can see heals 5 × your Blessing power. The heal grows with your level, like all healing and shields from prayer.",
       "target": "self_or_ally",
       "effects": [
         {
           "op": "heal",
-          "value": 15
+          "value": 5
         }
       ],
       "scales_with": "blessing_power",
@@ -217,12 +217,12 @@
     {
       "id": "protection",
       "name": "Protection",
-      "text": "You or an ally you can see gains a shield of 15 × your Blessing power.",
+      "text": "You or an ally you can see gains a shield of 6 × your Blessing power. The shield grows with your level, like all healing and shields from prayer.",
       "target": "self_or_ally",
       "effects": [
         {
           "op": "shield",
-          "value": 15
+          "value": 6
         }
       ],
       "scales_with": "blessing_power",
@@ -278,6 +278,23 @@
           "duration": "turn"
         }
       ],
+      "adjudication": "engine",
+      "provisional": true
+    },
+    {
+      "id": "rebuke",
+      "name": "Rebuke",
+      "text": "An enemy you can see takes 15 Soul damage × your Blessing power. There is no roll, and armour doesn't lower it.",
+      "target": "enemy",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "hp",
+          "value": -15,
+          "damage_type": "soul"
+        }
+      ],
+      "scales_with": "blessing_power",
       "adjudication": "engine",
       "provisional": true
     }
@@ -340,7 +357,7 @@
     "farewell",
     "grant"
   ],
-  "notes": "Rules 1.6 (8 Nov 2026). Every number is provisional (spec section 14). Lines are picked by the engine (seeded), never written by the Narrator.",
+  "notes": "Rules 1.6 (8 Nov 2026). Every number is provisional (spec section 14). Lines are picked by the engine (seeded), never written by the Narrator. Rules 1.20 (the heal and shield pass, 12 Nov 2026): prayer heals and shields were fitted to one Soldier's turn (Health 5, Protection 6, Warm Hands 20, Saint's Shield 24, Absolution 15, Hearthlight 4, Coin for the Ferry 5, Everyone Home's shield 24, Mother Ember's intervention 10 + 3 × Devotion) and grow with the devoted's level (rules.json mending); the engine reads these values.",
   "items": [
     {
       "id": "nerukhan",
@@ -422,12 +439,12 @@
           "id": "saints_shield",
           "name": "Saint's Shield",
           "tier": 1,
-          "text": "You or an ally you can see gains a shield of 40 × your Blessing power.",
+          "text": "You or an ally you can see gains a shield of 24 × your Blessing power. The shield grows with your level.",
           "target": "ally",
           "effects": [
             {
               "op": "shield",
-              "value": 40
+              "value": 24
             }
           ],
           "scales_with": "blessing_power",
@@ -438,7 +455,7 @@
           "id": "judgement",
           "name": "Judgement",
           "tier": 2,
-          "text": "An enemy you can see takes 40 Soul damage × your Blessing power. The damage is doubled if that enemy harmed a surrendered or Downed creature this fight.",
+          "text": "An enemy you can see takes 40 Soul damage × your Blessing power. It takes half as much again if it harmed a surrendered or Downed creature this fight.",
           "target": "enemy",
           "effects": [
             {
@@ -450,7 +467,7 @@
             {
               "op": "vs_status_damage",
               "status": "harmed_helpless",
-              "mult": 2
+              "mult": 1.5
             }
           ],
           "scales_with": "blessing_power",
@@ -461,7 +478,7 @@
           "id": "absolution",
           "name": "Absolution",
           "tier": 3,
-          "text": "You or an ally you can see loses every harmful condition and heals 30 × your Blessing power.",
+          "text": "You or an ally you can see loses every harmful condition and heals 15 × your Blessing power. The heal grows with your level.",
           "target": "ally",
           "effects": [
             {
@@ -470,7 +487,7 @@
             },
             {
               "op": "heal",
-              "value": 30
+              "value": 15
             }
           ],
           "scales_with": "blessing_power",
@@ -481,13 +498,13 @@
       "miracle": {
         "id": "saints_verdict",
         "name": "The Saints' Verdict",
-        "text": "Every enemy in sight takes 100 Soul damage × your Blessing power and is Stunned for 1 round. Enemies that harmed a surrendered or Downed creature this fight take double and are Stunned for 2 rounds.",
+        "text": "Every enemy in sight takes 130 Soul damage × your Blessing power and is Stunned for 1 round. Enemies that harmed a surrendered or Downed creature this fight take double and are Stunned for 2 rounds.",
         "target": "none",
         "effects": [
           {
             "op": "stat_mod",
             "stat": "hp",
-            "value": -100,
+            "value": -130,
             "damage_type": "soul",
             "target": "enemies_in_sight"
           },
@@ -918,14 +935,14 @@
           "id": "lucky_break",
           "name": "Lucky Break",
           "tier": 1,
-          "text": "The next attack roll that you or an ally you can see fails is rerolled at +5. Outside a fight, it is +5 on their next check instead.",
+          "text": "Pick yourself or an ally you can see. Their next 2 failed attack rolls are each rerolled at +5. Outside a fight, it is +5 on their next check instead.",
           "target": "ally",
           "effects": [
             {
               "op": "reroll",
               "on": "fail",
               "bonus": 5,
-              "uses": 1
+              "uses": 2
             }
           ],
           "scales_with": "blessing_power",
@@ -1133,12 +1150,12 @@
           "id": "coin_for_the_ferry",
           "name": "Coin for the Ferry",
           "tier": 1,
-          "text": "A Downed ally you can see is stabilised and stands up with 10 HP × your Blessing power.",
+          "text": "A Downed ally you can see is stabilised and stands up with 5 HP × your Blessing power. The number grows with your level.",
           "target": "downed_ally",
           "effects": [
             {
               "op": "heal",
-              "value": 10,
+              "value": 5,
               "revive": true
             }
           ],
@@ -1321,14 +1338,14 @@
       ],
       "intervention": {
         "trigger": "ally_below_quarter",
-        "text": "When an ally drops below a quarter of their HP, they heal 20 + 4 × your Devotion, × your Blessing power.",
+        "text": "When an ally drops below a quarter of their HP, they heal 10 + 3 × your Devotion, × your Blessing power.",
         "scale": "devotion",
         "scales_with": "blessing_power",
         "effects": [
           {
             "op": "heal",
-            "value": 20,
-            "per_devotion": 4,
+            "value": 10,
+            "per_devotion": 3,
             "target": "trigger_ally"
           }
         ],
@@ -1340,12 +1357,12 @@
           "id": "warm_hands",
           "name": "Warm Hands",
           "tier": 1,
-          "text": "You or an ally you can see heals 40 × your Blessing power.",
+          "text": "You or an ally you can see heals 20 × your Blessing power. The heal grows with your level.",
           "target": "ally",
           "effects": [
             {
               "op": "heal",
-              "value": 40
+              "value": 20
             }
           ],
           "scales_with": "blessing_power",
@@ -1356,7 +1373,7 @@
           "id": "hearthlight",
           "name": "Hearthlight",
           "tier": 2,
-          "text": "Pick a 3 × 3 area you can see. For 3 rounds, each ally who starts a turn in it heals 10 × your Blessing power.",
+          "text": "Pick a 3 × 3 area you can see. For 3 rounds, each ally who starts a turn in it heals 4 × your Blessing power. The heal grows with your level.",
           "target": "tile",
           "effects": [
             {
@@ -1366,7 +1383,7 @@
               "effects": [
                 {
                   "op": "heal",
-                  "value": 10,
+                  "value": 4,
                   "when": "turn_start",
                   "scope": "allies"
                 }
@@ -1381,13 +1398,13 @@
           "id": "feed_the_fire",
           "name": "Feed the Fire",
           "tier": 3,
-          "text": "You or an ally you can see gets +1 AP right now, up to the limit of 9 AP, and loses Weakened and Slowed.",
+          "text": "You or an ally you can see gets +2 AP right now, up to the limit of 9 AP, and loses Weakened and Slowed.",
           "target": "ally",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "ap",
-              "value": 1
+              "value": 2
             },
             {
               "op": "cleanse",
@@ -1405,7 +1422,7 @@
       "miracle": {
         "id": "everyone_home",
         "name": "Everyone Home",
-        "text": "The whole squad heals to full HP, Downed allies stand up, every harmful condition ends, and everyone gains a shield of 40 × your Blessing power.",
+        "text": "The whole squad heals to full HP, Downed allies stand up, every harmful condition ends, and everyone gains a shield of 24 × your Blessing power. The shield grows with your level.",
         "target": "none",
         "effects": [
           {
@@ -1421,7 +1438,7 @@
           },
           {
             "op": "shield",
-            "value": 40,
+            "value": 24,
             "target": "allies"
           }
         ],
@@ -1567,9 +1584,16 @@
           "id": "thunderclap",
           "name": "Thunderclap",
           "tier": 1,
-          "text": "Pick a tile you can see. Each enemy within 2 tiles of it is pushed 1 tile away, and is Shaken unless it passes a Heart save.",
+          "text": "Pick a tile you can see. Each enemy within 2 tiles of it takes 20 lightning damage × your Blessing power, is pushed 1 tile away, and is Shaken unless it passes a Heart save.",
           "target": "tile",
           "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "hp",
+              "value": -20,
+              "damage_type": "lightning",
+              "radius": 2
+            },
             {
               "op": "knockback",
               "tiles": 1,
@@ -1590,20 +1614,20 @@
           "id": "lightning_rod",
           "name": "Lightning Rod",
           "tier": 2,
-          "text": "An enemy you can see takes 50 lightning damage × your Blessing power. It chains to 1 more enemy within 2 tiles for half.",
+          "text": "An enemy you can see takes 45 lightning damage × your Blessing power. It chains to 1 more enemy within 2 tiles for 15 × your Blessing power.",
           "target": "enemy",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -50,
+              "value": -45,
               "damage_type": "lightning"
             },
             {
               "op": "chain_damage",
               "jumps": 1,
               "range": 2,
-              "mult": 0.5
+              "value": 15
             }
           ],
           "scales_with": "blessing_power",
@@ -2011,13 +2035,13 @@
           "id": "foreknowing",
           "name": "Foreknowing",
           "tier": 1,
-          "text": "The next attack against you or an ally you can see misses.",
+          "text": "The next 2 attacks against you or an ally you can see miss.",
           "target": "ally",
           "effects": [
             {
               "op": "state",
               "state": "foreknown",
-              "uses": 1
+              "uses": 2
             }
           ],
           "scales_with": "blessing_power",
@@ -2044,7 +2068,7 @@
           "id": "cut_short",
           "name": "Cut Short",
           "tier": 3,
-          "text": "An enemy you can see must pass a Heart save or be Stunned and lose its next turn. A boss loses 2 AP on its next turn instead, with no save.",
+          "text": "An enemy you can see must pass a Heart save or be Stunned and lose its next turn. A boss loses 2 AP on its next turn instead, with no save. An enemy that Cut Short has just cost a turn can't be Cut Short again in the round after.",
           "target": "enemy",
           "effects": [
             {
@@ -2052,6 +2076,7 @@
               "condition": "stunned",
               "save": "heart",
               "rounds": 1,
+              "again_after_rounds": 2,
               "boss": {
                 "op": "ap_loss",
                 "value": 2

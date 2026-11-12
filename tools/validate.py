@@ -948,8 +948,8 @@ if isinstance(pat, dict) and pat.get("tags"):
         for m in re.finditer(r"[+\-−]\s?\d+ Devotion(?! XP)", t):
             errors.append(f"{path}: '{m.group(0)}' gives Devotion in levels; rules 1.6.1 moves Devotion XP ('{m.group(0)} XP')")
     cond_kinds = {c.get("id"): c.get("adjudication") for c in items("conditions")}
-    if len(pat.get("whispers") or []) != 6:
-        errors.append("patrons: there should be 6 Whispers")
+    if len(pat.get("whispers") or []) != 7:
+        errors.append("patrons: there should be 7 Whispers (rules 1.21: Rebuke is the seventh)")
     for w in pat.get("whispers") or []:
         for f in ("id", "name", "text", "target", "effects"):
             if f not in w:
@@ -1009,6 +1009,8 @@ if isinstance(pat, dict) and pat.get("tags"):
             if not nums:
                 errors.append(f"patrons:{pid}: a Devotion-scaled intervention needs an effect with a value and per_devotion")
             for e in nums:
+                if e.get("op") == "heal":
+                    continue  # rules 1.20: a healing intervention carries its own numbers (fitted to a Soldier's turn)
                 sign = -1 if e["value"] < 0 else 1
                 if abs(e["value"]) != amt.get("base") or e["per_devotion"] != sign * (amt.get("per_devotion") or 0):
                     errors.append(f"patrons:{pid}: intervention effect {e.get('op')} must be {amt.get('base')} + {amt.get('per_devotion')} × Devotion (prayer.intervention.amount)")

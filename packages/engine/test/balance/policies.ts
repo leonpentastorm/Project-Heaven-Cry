@@ -30,12 +30,13 @@
 //              techniques with a gun in each hand, a spare AP to Vent (guns-measure.test.ts; opts there).
 //   faith      the highest Hymn that deals damage, whenever the engine allows it; plain attacks between. peak: the
 //              Miracle when the engine allows it.
+//   prayer     prayer-led play (faith-measure.ts): the Miracle on the peak turn, a Hymn, a Whisper, then the weapon.
 //   calls      Rally, Spot, Brief, Threaten, in that order, each when the engine allows it, at most 2 Calls a turn; then
 //              the sidearm. Rally and Brief go to the ally with the hardest-hitting weapon.
 import {
   previewAttack, previewTechnique, techniquePad, paths, apForTiles, dist, alive, WEAPON, isMelee, bindGame,
   previewOutburst, previewPump, previewOutburstPlan, heartReach, planEvoke, glyphCost, glyphApOf, groundCap, freeTile, dir8, SIGIL,
-  previewPrayer, patronOf, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING, weaponBraces,
+  previewPrayer, patronOf, WHISPERS, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING, weaponBraces,
 } from '../../src';
 
 export type StepKind = 'attack' | 'technique' | 'move' | 'reload' | 'setup' | 'spell' | 'prayer' | 'call' | 'other';
@@ -405,6 +406,40 @@ export const faith: Policy = (x) => {
   return plain(x);
 };
 
+// ---------- Prayer-led play (the Faith measurements, faith-measure.ts; rules 1.21) ----------
+/** Does this Hymn, Whisper or Miracle deal damage (read from its data effects, not from its text)? */
+export const prayerHarms = (e: any) => (e?.effects || []).some((f: any) => (f.op === 'stat_mod' && f.stat === 'hp' && Number(f.value) < 0) || f.op === 'execute');
+/** A character who leads with prayer: the Miracle on the peak turn, then a Hymn, then a Whisper, then the weapon.
+ *   opts.hymn     'damage' (default): the highest Hymn within standing that deals damage; 'any': the highest Hymn within
+ *                 standing whatever it does (a support Hymn goes on the praying character: the AP is spent as a
+ *                 prayer-led turn spends it, its worth is not damage); 'none'; or one Hymn's id
+ *   opts.whisper  the Whisper prayed each turn (default 'rebuke' when the data has it); 'none'
+ *   opts.order    'weapon' : the weapon first, a Whisper only with the AP the weapon left (the dabbler); default: prayers first
+ * It never asks above its Devotion and never prays by dice. */
+export const prayer: Policy = (x) => {
+  const o = x.opts || {}, p = W(x.g, () => patronOf(x.c));
+  const tgts = [...x.foes].sort((a, b) => dist(x.u.pos, a.pos) - dist(x.u.pos, b.pos));
+  const pray = (kind: string, id: string, e: any, label: string): Step | null => {
+    const tk = e.target || 'none', cands: any[] = tk === 'enemy' || tk === 'tile' ? tgts.map((t) => ({ targetId: t.id, tile: t.pos })) : tk === 'two_allies' || tk === 'two_units' || tk === 'downed_ally' ? [] : [{ targetId: x.u.id }];
+    for (const a of cands) {
+      const pv = W(x.g, () => previewPrayer(x.g, x.c.id, kind as any, id, a));
+      if (!pv.ok || pv.mode !== 'standing') continue;
+      const s = allowed(x, { action: { type: 'combat/pray', kind, id, ...(tk === 'none' || tk === 'self' ? {} : a) }, kind: 'prayer', label });
+      if (s) return s;
+    }
+    return null;
+  };
+  if (o.order === 'weapon') { const s = plain(x); if (s && s.kind === 'attack') return s; }
+  if (p && x.peak && p.miracle) { const s = pray('miracle', p.miracle.id, p.miracle, 'Miracle: ' + p.miracle.name); if (s) return s; }
+  if (p && o.hymn !== 'none') {
+    const hs = [...(p.hymns || [])].reverse().filter((h) => (o.hymn && o.hymn !== 'damage' && o.hymn !== 'any' ? h.id === o.hymn : o.hymn === 'any' || prayerHarms(h)));
+    for (const h of hs) { const s = pray('hymn', p.id + '.' + h.id, h, 'Hymn: ' + h.name); if (s) return s; }
+  }
+  const wid = o.whisper || 'rebuke';
+  if (wid !== 'none') { const w = (WHISPERS as any[]).find((q) => q.id === wid); if (w) { const s = pray('whisper', w.id, w, 'Whisper: ' + w.name); if (s) return s; } }
+  return plain(x);
+};
+
 // ---------- Calls (rules 1.13): a fixed order of the Calls that help a squad deal or avoid damage ----------
 /** The Calls the leader makes, in this order, at most CALLS_A_TURN a turn; then the sidearm. Each is checked with the
  * engine's previewCall. Rally and Brief go to the ally holding the hardest-hitting weapon (then the next one); Spot and
@@ -468,7 +503,7 @@ export const gunner: Policy = (x) => {
   return fixOrMove(x, p.whys);
 };
 
-export const POLICIES: Record<string, Policy> = { plain, optimised, gunner, tank, sigil, outburst, faith, calls };
+export const POLICIES: Record<string, Policy> = { plain, optimised, gunner, tank, sigil, outburst, faith, prayer, calls };
 /** What the policies do not play (the report prints this list as it stands). */
 export const NOT_PLAYED = [
   'Reaction choices: a reaction window offered to a player is declined; Answers, Interpose, Duck and Roll and the other automatic reactions still fire by themselves.',

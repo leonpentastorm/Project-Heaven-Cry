@@ -5,7 +5,7 @@
 // Nothing here works a rule out: every cost, refusal, number and tile comes from the engine (previewOutburstPlan,
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
-import { SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
+import { inverseShield, outburstHeal, SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
   previewOutburst, previewOutburstPlan, previewPump, togglesFor, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
 import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, type FeelingBtn } from './feelingsView';
@@ -42,7 +42,7 @@ export const formIconUri = (form: string, ink = SOUL_INK) => 'data:image/svg+xml
 
 // ---------- a design in words ----------
 const DEFAULT_OPT: Record<string, string> = { buff: 'heal', control: 'push', status: 'shaken' };
-/** A school's option in words ('Heal 30', 'Push 3 tiles'); the engine's default when none is set. */
+/** A school's option in words ('Heal', 'Push 3 tiles'); the engine's default when none is set. */
 export function optionName(school: string, v?: string): string {
   const o0 = v || DEFAULT_OPT[school] || ''; if (!o0) return '';
   const o = ((SCHOOL as any)[school]?.options || []).find((x: string) => optValue(x) === o0 || x === o0);
@@ -80,15 +80,15 @@ export function designInfo(m: any, d0: any, mana?: number): DesignInfo {
 /** One school's effect at a stage multiplier, in words with its numbers (f: 1 primary, the second school's strength). */
 function schoolEffect(m: any, d: any, school: string, opt: string | undefined, sm: number, f: number): string {
   const S: any = (SCHOOL as any)[school] || {}, o = opt || DEFAULT_OPT[school] || '';
-  // Inverse (rules 1.17): the shield is the damage × the module's own share (the engine's number).
+  // Inverse (rules 1.20): the shield has its own base (the engine's number, inverseShield).
   if (school === 'damage') {
     const inv = d.modules.includes('inverse'), raw = outburstDamage(m, d, sm) * f;
-    if (inv) return 'a shield of ' + Math.floor(raw * ((MODULE as any).inverse?.shield_mult ?? 1)) + ' on an ally';
+    if (inv) return 'a shield of ' + Math.floor(inverseShield(m, d, sm) * f) + ' on ' + (formOf(d) === 'bolt' ? 'an ally' : 'each ally');
     // Rules 1.19: the way it strikes, with the engine's own numbers (soul_modules.json damage.modes).
     const md: any = (SOUL_RULES as any).damage?.modes?.[o] || null, n = Math.floor(raw * damageModeMult(o));
     return n + ' damage' + (!md ? '' : md.mult_low != null ? ' (Finish: ' + Math.floor(raw * md.mult_low) + ' against a target at half its HP or less)' : md.condition ? ', and the target is Marked for your side (Brand)' : md.heal_of_damage ? ', and you heal for a quarter of the HP it takes (Drain)' : '');
   }
-  if (school === 'buff') return o === 'heal' ? 'heals ' + Math.floor((S.heal ?? 30) * (m.healMult ?? 1) * sm * f) : optionName(school, o) + (f < 1 ? ' (half)' : '');
+  if (school === 'buff') return o === 'heal' ? 'heals ' + Math.floor(outburstHeal(m, d, sm) * f) + (formOf(d) === 'bolt' ? '' : ' each') : optionName(school, o) + (f < 1 ? ' (half)' : '');
   // Rules 1.19: these read the stage too (a harder save every 2 stages, longer from stage 3).
   if (school === 'control') return optionName(school, o) + (f < 1 ? ' (half)' : '') + (o === 'swap' ? ' (Body save; an ally doesn\'t resist)' : ' (Body save; harder to resist as the stage rises)');
   if (school === 'status') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (a save; harder to resist as the stage rises)';

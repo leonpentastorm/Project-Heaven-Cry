@@ -60,7 +60,7 @@ ok('the meter says its words to a screen reader too', /DEVOTION 3 · 0\/25 XP/.t
   if (up) { await lb.getByRole('button', { name: 'Close the enlarged image' }).click(); await lb.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {}); } }
 ok('the gate marks are faith light (var(--faith-light) = #F2C46A)', await panel.evaluate((el) => { const s = [...el.querySelectorAll('[role="meter"] span')].find((x) => x.textContent === 'HYMN I'); return !!s && getComputedStyle(s).color === 'rgb(242, 196, 106)'; }));
 ok('likes and taboos, in words with their marks', /✓ HEAL/.test(txt) && /✕ BETRAY/.test(txt));
-ok('6 Whispers, 3 Hymns, the Miracle', (await panel.locator('[data-prayer^="whisper:"]').count()) === 6 && (await panel.locator('[data-prayer^="hymn:"]').count()) === 3 && (await panel.locator('[data-prayer^="miracle:"]').count()) === 1);
+ok('7 Whispers (rules 1.21: Rebuke is the seventh), 3 Hymns, the Miracle', (await panel.locator('[data-prayer^="whisper:"]').count()) === 7 && (await panel.locator('[data-prayer^="hymn:"]').count()) === 3 && (await panel.locator('[data-prayer^="miracle:"]').count()) === 1);
 ok('a Hymn shows AP, gate and odds', /3 AP · HYMN I · DEVOTION 3 · SURE/.test(await panel.locator('[data-prayer^="hymn:"]').first().textContent()));
 ok('an overreach shows its TN and the cost in Devotion XP', /OVERREACH · TN \d+/.test(txt) && /a miss costs 3 Devotion XP/.test(txt));
 ok('the Miracle is disabled with its reason', /✕ A Miracle needs Faith 7/.test(await panel.locator('[data-prayer^="miracle:"]').textContent()));
@@ -125,7 +125,7 @@ const ftab = p.locator('[role="tab"][data-tab="faith"]');
 ok('the FAITH tab is there', (await ftab.count()) === 1);
 await ftab.click();
 const panelC = p.locator('[role="tabpanel"]');
-ok('it lists the Whispers, the Hymns and the Miracle', (await panelC.locator('[data-act^="pr:whisper:"]').count()) === 6 && (await panelC.locator('[data-act^="pr:hymn:"]').count()) === 3 && (await panelC.locator('[data-act^="pr:miracle:"]').count()) === 1);
+ok('it lists the Whispers, the Hymns and the Miracle', (await panelC.locator('[data-act^="pr:whisper:"]').count()) === 7 && (await panelC.locator('[data-act^="pr:hymn:"]').count()) === 3 && (await panelC.locator('[data-act^="pr:miracle:"]').count()) === 1);
 await panelC.locator('[data-act="pr:whisper:health"]').click(); await p.waitForTimeout(300);
 const selTxt = async () => (await p.locator('aside').first().textContent()) || '';
 ok('choosing Health asks for the target', /WHISPER · Health · 1 AP · SURE/.test(await selTxt()) && /Click yourself or an ally/.test(await selTxt()));

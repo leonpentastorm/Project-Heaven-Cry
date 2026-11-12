@@ -22,6 +22,7 @@ import { emit, boundGame, onHook } from './effects/hooks';
 import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTION_STATS, STUDY, masteredWords as masteredOf } from './sigilgrowth';
 import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
+import { mendFactorOf } from './effects/mending';
 import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
 import { ENEMY_LEVELS } from './data';
@@ -410,10 +411,12 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const mg = caster?.mg, sm = mg?.sigilMult || 1, hm = mg?.healMult || 1;
   let el = 0, sg = 0, hl = 0, sh = 0;
   for (const p of sigilParts(sp.subjects, sp.infl)) { if (p.type === 'elemental') el += p.n; else sg += p.n; }
-  for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; if (d.heal) hl += d.heal * (1 + iv(sp, w, 'heal_pct') / 100); if (d.shield) sh += d.shield * (1 + iv(sp, w, 'shield_pct') / 100); }
+  const foe = !!caster && caster.side !== 'pc'; // rules 1.20: an enemy caster keeps the bases the enemy table was fitted with
+  for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; const dh = foe ? d.heal_enemy ?? d.heal : d.heal, ds = foe ? d.shield_enemy ?? d.shield : d.shield; if (dh) hl += dh * (1 + iv(sp, w, 'heal_pct') / 100); if (ds) sh += ds * (1 + iv(sp, w, 'shield_pct') / 100); }
   const sharp = caster && condOn(caster, 'sharpened') && roll ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
   const hook = (kind: string, v: number) => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1) * v;
   const lm = lineMultFor(caster, sp); // rules 1.17: the Line multiplier (damage only; a character's Lines)
+  const lf = caster?.mg?.mend ?? mendFactorOf(caster); // rules 1.20: healing and shields grow with the caster's level (a character's; not an enemy caster's)
   const [E, S] = [Math.round(hook('damage', el * m * lm * sigilPower(mg, 'elemental') * sharp)), Math.round(hook('damage', sg * m * lm * sigilPower(mg, 'sigil') * sharp))];
   const arm = (S ? Math.max(1, S - t.armour) : 0) + (E ? Math.max(1, E - Math.floor(t.armour / 2)) : 0);
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
@@ -421,7 +424,7 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const saves: Affected['saves'] = [];
   for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: 12 + unitStrength(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
   if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: 12 + unitStrength(caster, 'brain_power') });
-  return { dmg: E + S, dmgAfterArmour: arm, heal: Math.round(hook('heal', hl * m * sm * hm)), shield: Math.round(hook('shield', sh * m * sm * hm)),
+  return { dmg: E + S, dmgAfterArmour: arm, heal: Math.round(hook('heal', hl * m * sm * hm * lf)), shield: Math.round(hook('shield', sh * m * sm * hm * lf)),
     roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
 }
 /** Who a spell affects on a set of tiles, with every one it spares or skips flagged (spec: Filter KIN; Grammar 9). */

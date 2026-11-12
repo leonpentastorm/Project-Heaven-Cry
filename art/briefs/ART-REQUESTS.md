@@ -41,6 +41,7 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 | --- | --- | --- | --- | --- | --- |
 | W1 | **The nine Calls:** Order, Rally, Brief, Name It, Cue, Spot, Warn, Threaten, Taunt (`data/calls.json`) | Wanted: the Calls tab has no pictures | One icon a Call: Wick calling out across a fight. Each must read as a shout with a different purpose (an order to a squadmate, a rallying cry, a quick briefing, naming a fear out loud, a cue, a pointed finger at a target, a warning, a threat, a goad) | Same Wick, same line weight as the perk set. A small speech mark, sound lines or a pointing hand may carry the idea; no text in the image. They sit side by side, so the nine silhouettes must differ at 44 px | `art/icons/calls/<name>.png` (new folder; `order.png`, `name-it.png`, …) |
 | W2 | **Both Hands** (perk: a blade in one hand, a gun in the other; a melee hit steadies the next shot) | Stand-in: the Hot Swap Wick with a sword patched into his open hand (`art/icons/perks/both-hands.png`, made by `tools/art/both_hands_icon.py`) | Wick fighting with a sword and a pistol at once | A fresh pose, not the Hot Swap spin: mid-strike with the blade, the pistol already levelled. The old Origami Hands icon it replaced is in `art/_archive/perks/wick/replaced/` | `art/icons/perks/both-hands.png` |
+| W3 | **Rebuke**, the seventh Whisper (rules 1.21, 12 Nov 2026: a short prayer that hurts one enemy; `data/patrons.json` `whispers`) | Stand-in: a code-drawn line mark (a ray coming down on a bowed head; `apps/web/src/game/faithArt.ts` `WHISPER_PATHS.rebuke`) | Wick rebuking: one hand raised flat toward someone out of frame, a single hard ray of light leaving it. It must read as a scolding word that lands, not as a spell | The six Whisper icons are the set to match (`art/icons/prayers/whisper-*.png`): same Wick, same line weight, one small light source. No colour; every patron uses it | `art/icons/prayers/whisper-rebuke.png` (then `npm run assets`) |
 
 ### 2. Outburst feelings and modules
 
@@ -118,6 +119,7 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
+- **12 Nov 2026:** W3 opened: Rebuke, a seventh Whisper (rules 1.21, the Faith fit). Thunderclap now also deals lightning damage and Lightning Rod's numbers moved; their icons (`hymn-old_overcast-1`, `-2`) still fit.
 - **11 Nov 2026:** maps built to rules 1.16: M1 and M6 have their 26 × 26 layouts; the four M813 paintings moved to `art/_archive/maps/m813/retired-2026-11/` and left the catalog.
 - **11 Nov 2026:** maps: the rule (26 × 26 at most, the Proving Ground at full size, smaller allowed per campaign) and one row a map, M1 to M9.
 - **11 Nov 2026:** E1 added (Heavenprint artwork for all equipment, planned with Equipment 2.0).

@@ -28,7 +28,7 @@ describe('faith views', () => {
     // Rules 1.6.1: the level and the XP toward the next; a new character starts at the level-3 threshold.
     expect(p.devotionText).toBe('DEVOTION 3 · 0/25 XP'); expect(p.xpFill).toBe(0); expect(p.xpNextText).toBe('TO DEVOTION 4'); expect(p.dayText).toBe('DAY 1'); expect(p.cooldown).toBeNull(); expect(p.grudge).toBeNull();
     const b = prayerButtons(v);
-    expect(b.whispers.map((x) => x.id)).toEqual(['luck', 'health', 'protection', 'courage', 'guidance', 'safe_passage']);
+    expect(b.whispers.map((x) => x.id)).toEqual(['luck', 'health', 'protection', 'courage', 'guidance', 'safe_passage', 'rebuke']); // rules 1.21: Rebuke is the seventh
     expect(b.whispers[0]).toMatchObject({ ap: '1 AP', gate: 'ANYONE' });
     expect(b.hymns.map((x) => x.gate)).toEqual(['HYMN I · DEVOTION 3', 'HYMN II · DEVOTION 5', 'HYMN III · DEVOTION 7']);
     expect(b.hymns[1].odds).toMatch(/^OVERREACH · TN \d+/); expect(b.hymns[1].warn).toMatch(/a miss costs 3 Devotion XP/);

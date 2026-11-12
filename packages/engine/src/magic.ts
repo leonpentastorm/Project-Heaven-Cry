@@ -15,6 +15,7 @@ import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep,
 import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
+import { mendFactor, MENDING } from './effects/mending';
 import { canReact, useReaction, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
@@ -56,6 +57,7 @@ export interface MagicUnit {
   feelings?: string[]; firstUsed?: boolean; pumps?: PumpRec[];
   brain: number; will: number; sigilMult: number; soulMult: number; elemMult: number; healMult: number;
   /** Rules 1.17: the Damage school's base for this heart (a character's; unset on an enemy: the enemy base). */ soulBase?: number;
+  /** Rules 1.20: the level factor on what this caster heals and shields (a character's; unset on an enemy: ×1). */ mend?: number;
   maxWords: number; glyphAp: number; coreSave: number; rangeBonus: number; durBonus: number;
   /** Begin's AP (2; the 1.2 'Soul cast AP' name). */ soulAp: number; costSave: number; soulRange: number; syphon: number; strainLimit: number;
   saves: Record<Fam, number>; /** Debuff strength by delivering skill (a PC's table; an enemy caster's tier number is under '*'). */ debuff: Record<string, number>;
@@ -167,7 +169,7 @@ export function magicOf(c: Character): MagicUnit | undefined {
   return {
     words: [...words], designs: designs.map((d) => migrateDesign({ ...d, modules: [...(d.modules || [])] })), evoker, emanator, feelings: [...(c.feelings || [])],
     charge: evoChargeNow(c), cores: coresCarried(c), coresMade: 0, flux: 0, mp: mpNow(c), mpMax: maxMp(c), strain: 0, held: null, cast: false, freePumps: freePumps(c), freePumpsMax: freePumps(c), freeUsed: 0, swellFree: swellFree(c),
-    brain: mod(c.skills.brain_power || 0), will: mod(c.skills.will_power || 0), sigilMult: sigilMult(c), soulMult: soulMult(c), soulBase: SOUL_DAMAGE, elemMult: elementalMult(c), healMult: healingMult(c),
+    brain: mod(c.skills.brain_power || 0), will: mod(c.skills.will_power || 0), sigilMult: sigilMult(c), soulMult: soulMult(c), soulBase: SOUL_DAMAGE, mend: mendFactor(c.level), elemMult: elementalMult(c), healMult: healingMult(c),
     maxWords: maxSigilWords(c), glyphAp: glyphAp(c), coreSave: sigilCoreSaving(c), rangeBonus: sigilRangeBonus(c), durBonus: sigilDurationBonus(c),
     soulAp: soulCastAp(c), costSave: soulCostSaving(c), soulRange: soulRangeBonus(c), syphon: syphonMult(c), strainLimit: strainLimit(c),
     saves: { body: saveBonus(c, 'body'), brain: saveBonus(c, 'brain'), heart: saveBonus(c, 'heart') },
@@ -453,7 +455,7 @@ export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null, ki
   // The air's Healing given multiplier (spec: the meter bands) applies to magical healing.
   const r = healUnit(cb || null, t, n * (cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1), by, kind);
   if (r.revived) { if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
-  if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored }); return ' · ' + t.name + ' heals ' + r.restored;
+  if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored }); return ' · ' + t.name + ' heals ' + r.restored + (r.limited ? ' (the most spells and prayers can mend in a round)' : '');
 }
 /** Magic forced movement (GALE, PULL, Control push and pull): knockback immunity and the 'forced_move' hook
  * {u, by, tiles, how: 'magic', cancel} can stop it (hooks gap A3). */
@@ -662,6 +664,7 @@ function heart(u: Unit): MagicUnit | undefined {
   }
   if (m.freePumps == null) m.freePumps = m.freePumpsMax;
   if (m.soulBase == null && u.charId && !u.companion) m.soulBase = SOUL_DAMAGE; // a fight saved before rules 1.17
+  if (m.mend == null && u.charId && !u.companion) m.mend = mendFactor(u.level); // a fight saved before rules 1.20
   return m;
 }
 const flooded = (cb: Combat) => manaBand(manaOf(cb)).id === 'flooded';
@@ -1104,6 +1107,25 @@ const rolls = (d: OutburstDesign) => (formOf(d) === 'bolt' || formOf(d) === 'lan
 const formMult = (d: OutburstDesign) => { const f = formOf(d); return f === 'bolt' ? 1 : (MODULE[f] as any)?.damage_mult ?? 1; };
 /** The damage one school deals at a multiplier before armour (rules 1.5): 20 × Soul multiplier × stage × shape. */
 export const outburstDamage = (m: MagicUnit, d: OutburstDesign, sm: number) => (m.soulBase ?? SOUL_DAMAGE_ENEMY) * m.soulMult * sm * formMult(d) * (d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.5 : 1);
+// ---------- rules 1.20: what an Outburst heals and shields with ----------
+// Their own bases, never the Damage base (moving one must not move the other): the Buff school's `heal`, Inverse's and
+// Shell's `shield` (soul_modules.json). A character's grow with its level (mendFactor). In an area shape a heal or a
+// flipped shield gives each ally `area_mult` (×0.4) in place of the shape's damage multiplier. An enemy caster keeps
+// the numbers the enemy table was fitted with (`heal_enemy`; Inverse and Shell as a share of its damage).
+const ofChar = (m: MagicUnit) => m.soulBase != null || m.mend != null;
+const mendOf = (m: MagicUnit) => m.mend ?? 1;
+export const BUFF_HEAL: number = (SCHOOL.buff as any)?.heal ?? 7;
+export const BUFF_HEAL_ENEMY: number = (SCHOOL.buff as any)?.heal_enemy ?? 30;
+export const BOON_AREA: number = (SCHOOL.buff as any)?.area_mult ?? MENDING.area_share ?? 0.4;
+const boonArea = (m: MagicUnit, d?: OutburstDesign | null) => (d && ofChar(m) && formOf(d) !== 'bolt' ? BOON_AREA : 1);
+/** The Buff school's heal on one ally at a multiplier (before the air's Healing given and what the target receives). */
+export const outburstHeal = (m: MagicUnit, d: OutburstDesign | null | undefined, sm: number) => (ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY) * m.healMult * sm * mendOf(m) * boonArea(m, d);
+/** Inverse: the shield a flipped Damage Outburst gives one ally. */
+export const inverseShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? ((MODULE.inverse as any)?.shield ?? 10) * m.soulMult * sm * mendOf(m) * boonArea(m, d) : outburstDamage(m, d, sm) * ((MODULE.inverse as any)?.shield_mult_enemy ?? 0.7);
+/** Shell: the shield a Release leaves on its caster. */
+export const shellShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? ((MODULE.shell as any)?.shield ?? 4) * m.soulMult * sm * mendOf(m) : outburstDamage(m, d, sm) * ((MODULE.shell as any)?.shield_of_power_enemy ?? 0.35);
+/** Love's heal: a share of what the Buff school would heal at this multiplier (in the shape, or the lone share). */
+export const loveHeal = (m: MagicUnit, d: OutburstDesign, sm: number, lone = false, area = false) => (ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY) * m.healMult * sm * mendOf(m) * (area ? boonArea(m, d) : 1) * (lone ? (FEELING.love?.pour as any)?.lone_heal_share ?? 0.15 : (FEELING.love?.pour as any)?.heal_share ?? 0.25);
 /** Calm's multiplier on the whole Release (rules 1.17: ×0.75). Rules 1.19: none (Calm steps −0.2 instead); kept for data that sets `release_mult`. */
 export const calmMult = (d: OutburstDesign | null | undefined, felt?: string[] | null): number => (d && (felt || []).includes('calm') && rolls(d) ? (FEELING.calm?.pour as any)?.release_mult ?? 1 : 1);
 const armourKind = (tone: string, rs: number): 'none' | 'half' | 'full' => tone === 'raw' ? 'none' : toneRiders(tone, rs).riders.some((r) => r.rider === 'armour_full') ? 'full' : 'half';
@@ -1119,7 +1141,7 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
   if (school === 'damage') {
     const mode = has('inverse') ? undefined : option, md: any = mode ? DMODE[mode] : null;
     const base = outburstDamage(m, d, sm) * f * damageModeMult(mode, t);
-    if (has('inverse')) { if (t.side !== u.side) return { landed: false, crit: false, line: '' }; const s = grantShield(cb, t, base * ((MODULE.inverse as any)?.shield_mult ?? 1), u); out.push(t.name + ' is shielded (' + s + ')'); return { landed: true, crit: false, line: '' }; }
+    if (has('inverse')) { if (t.side !== u.side) return { landed: false, crit: false, line: '' }; const s = grantShield(cb, t, inverseShield(m, d, sm) * f, u); out.push(t.name + ' is shielded (' + s + ')'); return { landed: true, crit: false, line: '' }; }
     const ign = toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover');
     let crit = false; const hp0 = t.hp;
     if (primary && rolls(d) && REL?.calm && (FEELING.calm?.pour as any)?.no_miss) out.push('strikes ' + t.name + ' (Calm: no roll)' + withElement(toneElement(tone), () => harm(cb, rng, u, t, base + bonusDmg(tone, rs), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
@@ -1141,7 +1163,7 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
     if (t.side !== u.side) return { landed: false, crit: false, line: '' };
     if (opt === 'defense') out.push(applyCond(cb, rng, u, t, 'guarded', rounds(2 + stageBoonRounds(stage))).replace(/^ · /, ''));
     else if (opt === 'hit') out.push(applyCond(cb, rng, u, t, 'inspired', rounds(2 + stageBoonRounds(stage))).replace(/^ · /, ''));
-    else out.push(heal(t, ((SCHOOL.buff as any)?.heal ?? 30) * m.healMult * sm * f, cb, u).replace(/^ · /, ''));
+    else out.push(heal(t, outburstHeal(m, d, sm) * f, cb, u).replace(/^ · /, ''));
     return { landed: true, crit: false, line: '' };
   }
   if (school === 'control') {
@@ -1293,10 +1315,10 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
       if (t.side !== u.side && !t.dead) { const fl = pourOn(cb, rng, u, d, t, F, aim); if (fl) line.push(fl.replace(/^ · /, '')); }
     }
     // Love: the allies inside are healed by the release's power × 0.5.
-    for (const a of loved) if (!a.dead) line.push(heal(a, outburstDamage(m, d, sm) * (FP('love').heal_of_power ?? 0.5), cb, u).replace(/^ · /, '') + ' (Love)');
+    for (const a of loved) if (!a.dead) line.push(heal(a, loveHeal(m, d, sm), cb, u).replace(/^ · /, '') + ' (Love)');
     // Love with no ally in the shape (rules 1.17): the most wounded ally within the design's reach, or you, heals a fifth of it.
-    if (F.has('love') && hostile && !loved.length) { const a = loneLove(cb, u, m, d); if (a) line.push(heal(a, outburstDamage(m, d, sm) * (FP('love').lone_heal_of_power ?? 0.2), cb, u).replace(/^ · /, '') + ' (Love)'); }
-    if (F.has('love') && !hostile) for (const a of hits) if (!a.dead && a.side === u.side) line.push(heal(a, outburstDamage(m, d, sm) * (FP('love').heal_of_power ?? 0.5), cb, u).replace(/^ · /, '') + ' (Love)');
+    if (F.has('love') && hostile && !loved.length) { const a = loneLove(cb, u, m, d); if (a) line.push(heal(a, loveHeal(m, d, sm, true), cb, u).replace(/^ · /, '') + ' (Love)'); }
+    if (F.has('love') && !hostile) for (const a of hits) if (!a.dead && a.side === u.side) line.push(heal(a, loveHeal(m, d, sm, false, true), cb, u).replace(/^ · /, '') + ' (Love)');
     // Storm's chains: from the first enemy hit, to the nearest other enemies within range, at half (no roll).
     const ch = toneRiders(tone, rs).riders.find((r) => r.rider === 'chain');
     const chainFrom = (n: number, range: number, mult: number, why: string, withRiders: boolean) => {
@@ -1307,7 +1329,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
         emitFx(cb, 'chain', { unit: u.id, from: from.pos, to: next.pos, target: next.id, element: toneElement(tone), ...(why ? { feeling: why } : {}) });
         line.push('it chains to ' + next.name + (why ? ' (' + FEELING[why].name + ')' : '') + withElement(toneElement(tone), () => harm(cb, rng, u, next, outburstDamage(m, d, smOf(next)) * mult, harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
         if (withRiders) { const sh = toneRiders(tone, rs).riders.filter((r) => r.rider === 'cond'); for (const r of sh) if (!next.dead) line.push(applyCond(cb, rng, u, next, r.condition!, r.rounds, undefined, { skipSave: !r.save }).replace(/^ · /, '')); }
-        if (F.has('love')) for (const a of cb.units.filter((v) => !v.dead && v.side === u.side && dist(v.pos, next.pos) <= 1)) line.push(heal(a, outburstDamage(m, d, sm) * (FP('love').heal_of_power ?? 0.5) * 0.5, cb, u).replace(/^ · /, '') + ' (Love, along the chain)');
+        if (F.has('love')) for (const a of cb.units.filter((v) => !v.dead && v.side === u.side && dist(v.pos, next.pos) <= 1)) line.push(heal(a, loveHeal(m, d, sm) * 0.5, cb, u).replace(/^ · /, '') + ' (Love, along the chain)');
         hitFoes.push(next); from = next;
       }
     };
@@ -1396,7 +1418,7 @@ function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<stri
   if (F.has('relief')) { const n = FP('relief').strain_back != null ? FP('relief').strain_back * felt.filter((x) => x === 'relief').length : held?.strainIn || 0, back = n > 0 ? easeStrain(cb, u, n, 'relief') : 0; if (back) out.push(u.name + "'s Strain −" + back + ' (Relief)'); }
   if (F.has('defiance')) (u as any).feelSaveNext = true;
   // Modules after the release (rules 1.8): Shell shields you; Thread links two allies; Linger leaves a field.
-  if (has('shell') && !u.dead) out.push(clean(grantShield(cb, u, outburstDamage(m, d, sm) * ((MODULE.shell as any)?.shield_of_power ?? 0.5), u) + '') ? u.name + ' is shelled (' + Math.floor(outburstDamage(m, d, sm) * ((MODULE.shell as any)?.shield_of_power ?? 0.5)) + ')' : '');
+  if (has('shell') && !u.dead) { const sh = grantShield(cb, u, shellShield(m, d, sm), u); out.push(u.name + ' is shelled (' + sh + ')'); }
   if (has('thread') && d.school === 'buff') { const two = hits.filter((v) => v.side === u.side && !v.dead).slice(0, 2); if (two.length === 2) { (two[0] as any).thread = two[1].id; (two[1] as any).thread = two[0].id; emitFx(cb, 'thread', { unit: u.id, a: two[0].id, b: two[1].id }); out.push(two[0].name + ' and ' + two[1].name + ' are threaded'); } }
   if (has('linger') && tiles.length) { (cb.zones ||= []).push({ id: 'lz' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'linger' as any, tiles: [...tiles], words: [], by: u.id, side: u.side, left: (MODULE.linger as any)?.rounds ?? 2, mult: 1, who: u.name, element: toneElement(toneOf(d)), linger: { school: d.school, tone: toneOf(d), hostile: d.school !== 'buff' } } as any); emitFx(cb, 'linger', { unit: u.id, tiles, tone: toneOf(d), element: toneElement(toneOf(d)) }); }
   void felt;
@@ -1594,14 +1616,14 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
     const one = (school: string, option: string | undefined, f: number, primary: boolean) => {
       if (school === 'damage') {
         // Love on a hostile design (rules 1.8): an ally inside is healed by the power × 0.5, not harmed.
-        if (F.has('love') && hostile && t.side === u.side) { if (primary) a.heal += Math.floor(outburstDamage(m, d, sm) * ((FEELING.love?.pour as any)?.heal_of_power ?? 0.5)); return; }
+        if (F.has('love') && hostile && t.side === u.side) { if (primary) a.heal += Math.floor(loveHeal(m, d, sm) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); return; }
         const raw = outburstDamage(m, d, smT) * f * (primary ? strikes : 1) * (d.modules.includes('inverse') ? 1 : damageModeMult(option, t)); // rules 1.19: the way it strikes
-        if (d.modules.includes('inverse')) { if (t.side === u.side) a.shield += Math.floor(raw * ((MODULE.inverse as any)?.shield_mult ?? 1)); return; }
+        if (d.modules.includes('inverse')) { if (t.side === u.side) { a.shield += Math.floor(inverseShield(m, d, smT) * f); if (primary && F.has('love')) a.heal += Math.floor(loveHeal(m, d, sm, false, true) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); } return; }
         // Floored as harm() floors it, so the chip reads the engine's number.
         const n = Math.floor(raw + (primary ? bonusDmg(tone, rs) : 0)), ak = armourKind(tone, rs), arm = ak === 'full' ? t.armour : ak === 'half' ? Math.floor(t.armour / 2) : 0;
         a.dmg += n; a.dmgAfterArmour += Math.max(1, n - arm);
         if (primary && rolls(d) && !(F.has('calm') && (FEELING.calm?.pour as any)?.no_miss)) { a.roll = rollFor(cb, u, d, t, toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover') || bankShot(cb, d, at)); if (F.has('calm')) a.roll.pct = twiceBetter(a.roll.pct); } // Calm (rules 1.19): the better of two rolls
-      } else if (school === 'buff') { if (optOf('buff', option) === 'heal' && t.side === u.side) a.heal += Math.floor(((SCHOOL.buff as any)?.heal ?? 30) * m.healMult * sm * f * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); }
+      } else if (school === 'buff') { if (optOf('buff', option) === 'heal' && t.side === u.side) a.heal += Math.floor((outburstHeal(m, d, sm) * f + (primary && F.has('love') ? loveHeal(m, d, sm, false, true) : 0)) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); }
       else if (school === 'control') { const o = optOf('control', option); if (!(o === 'swap' && t.side === u.side)) a.saves.push({ cond: o, fam: 'body', tn: 12 + unitStrength(u, 'will_power') + stageSaveTn(stage) + defy }); }
       else if (school === 'status') { const o = optOf('status', option), fam: Fam = d.modules.includes('left') ? 'brain' : d.modules.includes('right') ? 'heart' : (condFamily(OPT_COND[o] || o) || 'heart'); a.saves.push({ cond: OPT_COND[o] || o, fam, tn: 12 + unitStrength(u, 'will_power') + stageSaveTn(stage) + defy }); }
     };
@@ -1632,7 +1654,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
       add({ ...blankAffected(u, v, 'push'), rider: 'pushed ' + pushAll.tiles + ' tiles away from ' + t.name + ' (' + TONE[tone].name + ')' });
   }
   // Love with no ally in the shape (rules 1.17): who it heals instead, and by how much.
-  if (F.has('love') && hostile && !targets.some((t) => t.side === u.side)) { const a = loneLove(cb, u, m, d); if (a) add({ ...blankAffected(u, a, 'area'), heal: Math.floor(outburstDamage(m, d, sm) * ((FEELING.love?.pour as any)?.lone_heal_of_power ?? 0.2)), rider: 'healed by Love' }); }
+  if (F.has('love') && hostile && !targets.some((t) => t.side === u.side)) { const a = loneLove(cb, u, m, d); if (a) add({ ...blankAffected(u, a, 'area'), heal: Math.floor(loveHeal(m, d, sm, true) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)), rider: 'healed by Love' }); }
   emit(cb, 'outburst_plan', { u, design: d, stage, mult: sm, riderStage: rs, aim: at, area, targets, affected, add, preview: true, cb });
   // Rules 1.8: where the residue of the strongest feeling would lie.
   const top = strongestFeeling(felt);

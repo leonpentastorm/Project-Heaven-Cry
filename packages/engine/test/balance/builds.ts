@@ -36,6 +36,8 @@ export interface BuildDef {
   /** perk steps: 'none' (a plain build takes none), or the perks preferred, in order (else the first one offered) */ perks: 'none' | string[];
   /** techniques: 'default' (the engine's starting four) or the list preferred, best first (creation picks, then drill picks) */ techniques: 'default' | string[];
   belief?: any; sigils?: string[]; words?: string[];
+  /** Devotion by level, when it is not DEVOTION_AT's (faith-measure.ts) */ devotionAt?: (level: number) => number;
+  /** A last change to the finished character that the rules did not make (an "as if": the report says so wherever it is used) */ tweak?: (c: any, level: number) => void;
   policy: string; note: string;
 }
 
@@ -229,7 +231,8 @@ export function buildCharacter(id: string, variant: Variant, level: number): Bui
       const picks = WORD_PICKS_AT(level); if (picks > 0) addStudy(c, Math.max(0, thresholdN(picks) - growthOf(c).study), 'reference build');
       for (const w of def.words) { if ((c.sigils || []).length >= wordsKnownCap(c)) break; if (learnStudied(c, w)) break; }
     }
-    if (def.belief) setDevotionXp(c, devotionThreshold(DEVOTION_AT(level)));
+    if (def.tweak) def.tweak(c, level);
+    if (def.belief) setDevotionXp(c, devotionThreshold((def.devotionAt || DEVOTION_AT)(level)));
     c.hp = maxHp(c);
   } finally { bindGame(was); }
   g = apply(g, { type: 'story/pass', charId: cid }, 'host'); // one more pass through the reducer: its migrations and checks see the finished character
