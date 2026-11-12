@@ -16,5 +16,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `feeling-mercy.png`: Mercy: an open cupped curve, lowered, like a hand let down.
 - `feeling-cruelty.png`: Cruelty: the ribbon tightens into a loop with thorns.
 - `feeling-loneliness.png`: Loneliness: one small knot far from a wide empty ring.
+- `feeling-belonging.png`: Belonging: several small knots joined along one line.
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

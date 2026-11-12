@@ -10624,6 +10624,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-loneliness.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-loneliness.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-belonging": {
+      "id": "feeling-belonging",
+      "label": "Belonging: several small knots joined along one line",
+      "path": "art/icons/feelings/feeling-belonging.png",
+      "sha256": "f963d20b97a50cc43deb82b80136a4bb91f20f53c55d76231ccfc9462edfcf65",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-belonging.png",
+        "128": "art/icons/feelings/exports/128/feeling-belonging.png",
+        "64": "art/icons/feelings/exports/64/feeling-belonging.png",
+        "56": "art/icons/feelings/exports/56/feeling-belonging.png",
+        "48": "art/icons/feelings/exports/48/feeling-belonging.png",
+        "44": "art/icons/feelings/exports/44/feeling-belonging.png",
+        "40": "art/icons/feelings/exports/40/feeling-belonging.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-belonging.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-belonging.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {
