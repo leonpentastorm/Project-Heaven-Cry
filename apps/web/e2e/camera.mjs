@@ -226,8 +226,12 @@ await act({ type: 'sandbox/ai', on: false }); await calm();
 //    its turn moves the camera nowhere and raises no arrow.
 await act({ type: 'sandbox/clear' }); await pause(p, 300); await myTurn().catch(() => {});
 await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'combat_knife', at: 'X3', name: 'Unseen One' }); await pause(p, 500);
-g = await G(); const un = g.combat.units.find((u) => u.name === 'Unseen One');
-const unseenNow = () => p.evaluate((id) => { const d = document.querySelector('[data-init="' + id + '"] [data-init-show]'); return !!d && d.disabled; }, un.id);
+// (the unit is read from the host's truth: since the fog in the engine the player's view does not hold an unseen
+// hostile, and its card in the turn bar is keyed by its opaque mark in the view's order, '?N')
+const T = () => p.evaluate(() => window.__phc.truth().combat);
+const un = (await T()).units.find((u) => u.name === 'Unseen One');
+const unseenNow = () => p.evaluate((id) => { const T = window.__phc.truth().combat, V = window.__phc.getState().game.combat; const mark = V.order[T.order.indexOf(id)];
+  const d = document.querySelector('[data-init="' + mark + '"] [data-init-show]'); return !V.units.some((u) => u.id === id) && !!d && d.disabled; }, un.id);
 const redDots = () => p.evaluate(() => { const cv = document.querySelector('.phc-cam-mini-map canvas'); if (!cv) return -1; const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data; let n = 0; for (let i = 0; i < d.length; i += 4) if (d[i] > 220 && d[i + 1] < 110 && d[i + 2] < 110) n++; return n; });
 ok('a hostile stands at X3, out of your sight: its portrait cannot be clicked', !!un && await unseenNow());
 ok('and the small map shows no dot for it', (await redDots()) === 0);
@@ -235,7 +239,7 @@ await p.mouse.move(5, 500); await p.mouse.click(5, 500); await p.keyboard.press(
 await act({ type: 'sandbox/ai', on: true }); await watchCam();
 await act({ type: 'combat/end-turn', unitId: me.id }); await pause(p, 1500); await myTurn().catch(() => {}); await pause(p, 500);
 w7 = await readCam(); g = await G();
-const un2 = g.combat.units.find((u) => u.id === un.id), stillUnseen = await unseenNow();
+const un2 = (await T()).units.find((u) => u.id === un.id), stillUnseen = await unseenNow();
 if (stillUnseen) {
   ok('it took its turn out of sight (it is at ' + ref(un2.pos) + ' now, was at X3)', un2.pos !== un.pos);
   ok('and that moved your camera nowhere (' + w7.frames.length + ' position seen)', w7.frames.length <= 1);

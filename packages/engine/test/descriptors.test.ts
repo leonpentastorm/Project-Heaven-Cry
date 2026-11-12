@@ -121,6 +121,17 @@ describe('actionsFor: every action, through one door', () => {
     expect(previewDescriptor(f.g, u.id, 'shove', {})!.ask).toBe('Click an adjacent enemy.');
   });
 
+  it('a refused action asks for no pick: a second Whisper in a turn says why (the first full browser run, 12 Nov)', () => {
+    const f = fightWith([{ archetype: 'confessor' }], [{ at: 'F6' }]); const u = f.turn(f.pc);
+    const w = actionsFor(f.g, u.id, 'host').filter((d) => d.id.startsWith('pr:whisper:') && d.available && d.picks.some((st) => st.key === 'targetId'));
+    expect(w.length).toBeGreaterThan(1);
+    const first = autoPicks(f.g, u, w[0])!; f.act(sendDescriptor(f.g, u.id, w[0].id, first, 'host')!);
+    const second = actionsFor(f.g, u.id, 'host').find((d) => d.id === w[1].id)!;
+    expect(second.available).toBe(false); expect(second.why).toBe('One Whisper a turn.');
+    const pv = previewDescriptor(f.g, u.id, second.id, {}, 'host')!;
+    expect(pv.ok).toBe(false); expect(pv.why).toBe('One Whisper a turn.'); expect(pv.ask).toBeNull();
+  });
+
   it('Order: the tile is asked only once MOVE is picked', () => {
     const d = { picks: [{ key: 'opt', kind: 'option' }, { key: 'tile', kind: 'tile', when: { key: 'opt', has: 'move' } }] } as any;
     expect(stepOn(d.picks[1], { opt: ['reload'] })).toBe(false); expect(stepOn(d.picks[1], { opt: ['move'] })).toBe(true); expect(stepOn(d.picks[1], { opt: 'reload+move' })).toBe(true);

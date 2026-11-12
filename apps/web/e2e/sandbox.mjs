@@ -106,7 +106,7 @@ await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', 
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
 await p.waitForSelector('div[aria-live="polite"] >> text=/WAVE\\s*1/', { timeout: 30000 }).then(() => ok('the WAVE 1 banner', true), () => ok('the WAVE 1 banner', false));
 g = await G();
-ok('wave 1 is on: ' + g.combat.units.filter((u) => u.side === 'foe').length + ' drill units, ' + g.combat.name, g.sandbox.state === 'fighting' && g.combat.name === 'Proving Ground · Wave 1');
+ok('wave 1 is on: ' + (await p.evaluate(() => window.__phc.truth().combat.units.filter((u) => u.side === 'foe').length)) + ' drill units, ' + g.combat.name, g.sandbox.state === 'fighting' && g.combat.name === 'Proving Ground · Wave 1');
 ok('the gear came into the fight: ' + g.combat.units.find((u) => u.charId === me.id).weapon, g.combat.units.find((u) => u.charId === me.id).weapon === 'drifter_revolver');
 await settle(p, 300); await snap('03-wave1');
 await settle(p, 2300); await dismissCut();
@@ -141,7 +141,9 @@ await settle(p, 300); await snap('05-gear-up-again');
 await drawer.getByRole('button', { name: /^⚔ Start the fight/ }).click();
 await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.sandbox?.wave === 2 && g.sandbox.state === 'fighting'; }, null, { timeout: 30000 });
 g = await G();
-ok('Start the fight brings wave 2: ' + g.combat.units.filter((u) => u.side === 'foe' && !u.dead).map((u) => u.name).join(', '), g.combat.units.some((u) => u.side === 'foe' && !u.dead));
+// (the wave from the host's truth: it may stand out of the player's sight, and the view holds no unseen hostile)
+const w2 = (await p.evaluate(() => window.__phc.truth().combat.units)).filter((u) => u.side === 'foe' && !u.dead);
+ok('Start the fight brings wave 2: ' + w2.map((u) => u.name).join(', '), w2.length > 0);
 await settle(p, 2600); await dismissCut();
 for (let i = 0; i < 12; i++) { g = await G(); const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]); if (cur?.charId === me.id) break; if (cur?.side === 'pc') await act({ type: 'combat/end-turn', unitId: cur.id }); await settle(p, 200); }
 g = await G();

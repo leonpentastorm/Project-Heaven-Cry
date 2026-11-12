@@ -778,7 +778,9 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   if (next) { const ch = s.choices ? safe(() => s.choices!(x, d, next!, picks), undefined) : undefined; if (ch) next = { ...next, choices: ch }; }
   const out: DescriptorPreview = { id, ok: d.available, why: d.why, ask: need ? need.prompt : null, next, ap: d.cost.ap, cost: d.cost.text, lines: [], marks: { units: [], tiles: [] }, toggles, action: null };
   if (d.pad) return { ...out, ok: false, why: d.why, ask: 'Pick one in the pad.' };
-  if (!d.available) return out;
+  // a refused action asks for nothing: the refusal is the answer (a second Whisper says "One Whisper a turn.", not
+  // "Click yourself or an ally")
+  if (!d.available) return { ...out, ask: null };
   const action = need ? null : safe(() => s.send(x, d, picks), null);
   const extra = s.preview ? safe(() => s.preview!(x, d, picks, action), null) : null;
   if (extra) { if (extra.rolls) out.rolls = extra.rolls; if (extra.lines) out.lines.push(...extra.lines); if (extra.marks) out.marks = { units: extra.marks.units || [], tiles: extra.marks.tiles || [] }; if (typeof extra.ap === 'number') out.ap = extra.ap; if (extra.ok === false) { out.ok = false; out.why = extra.why || 'Not now.'; } }

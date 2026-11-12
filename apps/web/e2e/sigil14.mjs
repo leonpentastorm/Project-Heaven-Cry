@@ -75,8 +75,9 @@ async function field(tiles, o = {}) {
   const free = await freeSet(), far = ['15,0', '15,11', '0,11', '0,0', '14,0', '15,1'].find((k) => free.includes(k));
   if (far && !o.alone) await must({ type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: ref(far) }, 'far boss');
   await pause(p, 250);
-  const s = await st();
-  return out.map((k) => s.cb.units.find((u) => u.pos === k && u.side === 'foe' && !u.dead)).filter(Boolean);
+  // from the host's truth: a unit spawned out of the player's sight is not in the player's view (fog in the engine)
+  const units = await p.evaluate(() => (window.__phc.truth() || window.__phc.getState().game).combat.units);
+  return out.map((k) => units.find((u) => u.pos === k && u.side === 'foe' && !u.dead)).filter(Boolean);
 }
 /** Clear the field, then find a lane of n free tiles. */
 const clearLane = async (n) => { await must({ type: 'sandbox/clear' }); return findLane(n); };

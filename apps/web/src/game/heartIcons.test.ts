@@ -36,17 +36,22 @@ describe('Outburst 4.0 icons', () => {
     const all = [...Object.values(FEELING_PATHS), ...Object.values(MODULE_PATHS), ...Object.values(HEART_MARK_PATHS)].map((p) => p.join('|'));
     expect(new Set(all).size).toBe(all.length);
   });
+  // (the code drawings, with no painted art: the 12 Nov art hand-off painted the feelings, which then win)
   it('every feeling carries the heart-knot (a solid shape); modules are lines', () => {
+    setHeartArt({});
     for (const f of FEELINGS) expect(FEELING_PATHS[f].some((d) => d.startsWith('*')), f).toBe(true);
     for (const f of FEELINGS) expect(feelingIcon(f)).toMatch(/fill="currentColor"/);
+    setHeartArt(null);
   });
   it('outputs are clean SVG strings with no text', () => {
+    setHeartArt({});
     for (const f of FEELINGS) expectCleanSvg(feelingIcon(f));
     for (const m of [...MODULES, 'bolt']) expectCleanSvg(moduleIcon(m, 40), 40);
     for (const k of MARKS) expectCleanSvg(heartMark(k, 64), 64);
     expectCleanSvg(feelingIcon('a_future_feeling')); expectCleanSvg(moduleIcon('a_future_module'));
     const u = decodeURIComponent(moduleUri('ricochet').replace('data:image/svg+xml,', ''));
     expect(u).toMatch(/stroke="#FFFFFF"/); expect(u).not.toMatch(/<text/);
+    setHeartArt(null);
   });
   it('painted art wins when assets.json has the key', () => {
     expect(feelingKey('rage')).toBe('feeling-rage'); expect(moduleKey('ricochet')).toBe('module-ricochet'); expect(heartMarkKey('revert')).toBe('heart-ui-revert');
@@ -61,8 +66,9 @@ describe('Outburst 4.0 icons', () => {
     expect(hasPaintedArt('module-ricochet')).toBe(true); expect(hasPaintedArt('module-split')).toBe(false);
     // the rest still draw
     expect(feelingIcon('grief')).toMatch(/^<svg/); expect(moduleIcon('split')).toMatch(/^<svg/); expect(heartMark('felt')).toMatch(/^<svg/);
-    setHeartArt(null);
+    setHeartArt({});
     expect(feelingIcon('rage')).toMatch(/^<svg/);
+    setHeartArt(null);
   });
   it('COMING SOON: muted ink on a raised panel, the name escaped; the slot list is filled in', () => {
     const h = comingSoon('Grief <card>', 'unlock card illustration');

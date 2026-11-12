@@ -1,6 +1,6 @@
 // The Proving Ground's entry points: the title opens a room and goes straight in; nothing waits on a Narrator.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, CLASS } from '@engine';
+import { ARCHETYPES, CLASS, UNSEEN } from '@engine';
 
 const calls: any[] = [];
 let role: string | null = null, phase = 'story';
@@ -11,7 +11,7 @@ vi.mock('./store', () => ({
 vi.mock('./charfile', () => ({ importCharacter: async () => null }));
 vi.mock('./fx/FxLayer', () => ({ fxBusyUntil: () => 0 }));
 vi.mock('./sfx', () => ({ sfx: () => {}, reducedMotion: () => false }));
-const { startProvingGround, openProvingGround, QUICK_ARCHETYPES, provingGroundWhy, leaveProvingGround, sandboxClassOptions, sandboxClassHelp } = await import('./sandbox');
+const { startProvingGround, openProvingGround, QUICK_ARCHETYPES, provingGroundWhy, leaveProvingGround, sandboxClassOptions, sandboxClassHelp, enemiesLeft } = await import('./sandbox');
 
 describe('opening the Proving Ground', () => {
   it('from the title: a fresh room, then sandbox/start in the same tick', () => {
@@ -56,5 +56,17 @@ describe('the Proving Ground class menu (Class Roster Revision 3)', () => {
     expect(sandboxClassHelp({ classId: 'marksman' } as any)).toBe('Rank reads Agility and your level: rank II at Agility 5 and level 6, rank III at 8 and level 12; picking II or III raises both that far. Advanced classes are being rebuilt.');
     expect(sandboxClassHelp({ classId: null } as any)).toMatch(/rank II at 5 and level 6, rank III at 8 and level 12/);
     expect(sandboxClassHelp({ classId: 'bard' } as any)).not.toMatch(/signature|13|18\b/);
+  });
+});
+
+describe('Clear all enemies counts what the view can count', () => {
+  it('in a fight, the hostiles out of sight count by their marks in the turn order (fog in the engine; first full browser run, 12 Nov)', () => {
+    const view: any = { phase: 'combat', story: { npcs: [] }, combat: {
+      units: [{ id: 'pc-0', side: 'pc' }, { id: 'foe-0', side: 'foe' }, { id: 'foe-1', side: 'foe', dead: true }],
+      order: ['pc-0', 'foe-0', UNSEEN + '2', UNSEEN + '3'] } };
+    expect(enemiesLeft(view)).toBe(3);
+    // the whole wave out of sight: the button is not at (0)
+    expect(enemiesLeft({ ...view, combat: { units: [view.combat.units[0]], order: ['pc-0', UNSEEN + '1', UNSEEN + '2'] } })).toBe(2);
+    expect(enemiesLeft({ phase: 'story', story: { npcs: [{ side: 'hostile' }, { side: 'friendly' }] } } as any)).toBe(1);
   });
 });

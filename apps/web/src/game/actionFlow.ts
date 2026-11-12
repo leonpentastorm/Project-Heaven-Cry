@@ -95,8 +95,11 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
   for (const st of d.picks) {
     if (st.kind !== 'option' || st.renderer || !stepOn(st, picks)) continue;
     const cur0 = own[st.key], list: string[] = Array.isArray(cur0) ? cur0 : cur0 != null ? [cur0] : [];
-    for (const o of st.options || []) {
-      const on = !!(list.includes(o.id)) || (cur0 == null && st.optional && st.key === 'line' && o === st.options![0]) || (cur0 == null && st.optional && st.key === 'opt' && o.id === '') || false;
+    // with nothing picked, the chip the engine sends anyway is shown picked: a property line's first, a technique's ''
+    // choice or else its first (techOpt: Called Shot's LEG); Order's things (max > 1) have no default
+    const opts = st.options || [], dflt = cur0 == null && st.optional && !(st.max && st.max > 1) ? (st.key === 'line' ? opts[0] : st.key === 'opt' ? opts.find((x) => x.id === '') || opts[0] : null) : null;
+    for (const o of opts) {
+      const on = list.includes(o.id) || o === dflt;
       const next = st.max && st.max > 1 ? (list.includes(o.id) ? list.filter((x) => x !== o.id) : [...list, o.id].slice(-st.max)) : on && st.optional ? null : o.id;
       chips.push({ key: st.key + '-' + (o.id || 'plain'), label: o.label, title: (o.text || o.label) + (o.why ? ' · ' + o.why : ''), on, off: !!o.why, pick: { picks: { ...own, __id: d.id, [st.key]: next }, ...(st.key === 'opt' && d.preview === 'call' ? { tile: null } : {}) } });
     }

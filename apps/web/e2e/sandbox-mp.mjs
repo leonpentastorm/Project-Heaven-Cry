@@ -11,6 +11,8 @@ const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const snap = (p, n) => p.screenshot({ path: OUT + 'sandbox-mp-' + n + '.png' });
 const G = (p) => p.evaluate(() => window.__phc.getState().game);
+/** The host's whole game (fog in the engine: a player's view holds no hostile its side can't see). */
+const T = (p) => p.evaluate(() => window.__phc.truth());
 const screen = (p) => p.evaluate(() => window.__phc.getState().screen);
 const act = (p, a) => p.evaluate((a) => window.__phc.act(a), a);
 const until = (p, f, arg, t = 15000) => p.waitForFunction(f, arg, { timeout: t });
@@ -167,9 +169,12 @@ for (const c of Object.values(g.characters)) await act(pages[c.owner], { type: '
 await act(host, { type: 'sandbox/fight' });
 await until(ona, () => window.__phc.getState().game.phase === 'combat');
 await until(ona, () => window.__phc.getState().screen === 'combat');
-const vOna = await G(ona), vHost = await G(host);
+const vOna = await G(ona), vHost = await G(host), tHost = await T(host);
 const onaUnit = vOna.combat.units.find((u) => vOna.characters[u.charId]?.owner === onaId);
-ok('Team B sees its own fighter as the squad, the host sees it as hostile', onaUnit.side === 'pc' && vHost.combat.units.find((u) => u.id === onaUnit.id).side === 'foe');
+// the host's view holds Ona's fighter only while Team A sees it (else it is an unseen hostile, absent); either way the
+// host's game has it on the other side
+const onaForHost = vHost.combat.units.find((u) => u.id === onaUnit.id);
+ok('Team B sees its own fighter as the squad, the host sees it as hostile (' + (onaForHost ? 'in sight' : 'unseen') + ')', onaUnit.side === 'pc' && (!onaForHost || onaForHost.side === 'foe') && tHost.combat.units.find((u) => u.id === onaUnit.id).side === 'foe');
 const xy = (k) => k.split(',').map(Number);
 /** The shortest path (tile keys, from the unit's own tile) to a tile next to the target, around walls, cover, objects
  *  and other units; hazards are avoided when there is another way. */
@@ -193,9 +198,10 @@ function pathTo(cb, from, to) {
   }
   return [from.pos];
 }
+// (the loop reads the host's truth: whose turn it is and where the other team stands, seen or not)
 let winner = null;
 for (let i = 0; i < 240 && !winner; i++) {
-  g = await G(host);
+  g = await T(host);
   if (g.phase !== 'combat') { winner = g.sandbox.lastWin; break; }
   const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]);
   const p = cur && cur.charId ? await ownerPage(g, cur) : null;
@@ -205,22 +211,22 @@ for (let i = 0; i < 240 && !winner; i++) {
   if (!foe) { await pause(host, 250); continue; }
   const before = JSON.stringify([cur.ap, cur.pos, cur.ammo]);
   if (cur.ap >= 2 && cur.ammo > 0) { await act(p, { type: 'combat/attack', unitId: cur.id, targetId: foe.id, mode: 'shot' }); await pause(p, 350); }
-  let now = (await G(host)).combat?.units.find((u) => u.id === cur.id);
-  if (now && cur.ammo === 0 && cur.ap >= 2) { await act(p, { type: 'combat/reload', unitId: cur.id }); await pause(p, 300); now = (await G(host)).combat?.units.find((u) => u.id === cur.id); }
+  let now = (await T(host)).combat?.units.find((u) => u.id === cur.id);
+  if (now && cur.ammo === 0 && cur.ap >= 2) { await act(p, { type: 'combat/reload', unitId: cur.id }); await pause(p, 300); now = (await T(host)).combat?.units.find((u) => u.id === cur.id); }
   if (now && JSON.stringify([now.ap, now.pos, now.ammo]) === before && now.ap >= 1) {
     // Out of reach or sight: walk the shortest open path toward the other team (a search over the map the view carries).
     const path = pathTo(g.combat, cur, foe);
     for (let k = Math.min(4, path.length - 1); k >= 1; k--) {
       await act(p, { type: 'combat/move', unitId: cur.id, to: path[k] });
       await pause(p, 200);
-      const moved = (await G(host)).combat?.units.find((u) => u.id === cur.id);
+      const moved = (await T(host)).combat?.units.find((u) => u.id === cur.id);
       if (!moved || moved.pos !== cur.pos) break;
     }
-    const now2 = (await G(host)).combat?.units.find((u) => u.id === cur.id);
+    const now2 = (await T(host)).combat?.units.find((u) => u.id === cur.id);
     if (now2 && now2.ap >= 2) { const adj = Math.max(Math.abs(xy(now2.pos)[0] - xy(foe.pos)[0]), Math.abs(xy(now2.pos)[1] - xy(foe.pos)[1])) <= 1; await act(p, { type: 'combat/attack', unitId: cur.id, targetId: foe.id, mode: adj ? 'melee' : 'shot' }); await pause(p, 300); }
   }
-  if (i % 20 === 19) { const x = (await G(host)).combat; if (x) console.log('  team fight round ' + x.round + ': ' + x.units.filter((u) => u.charId).map((u) => u.name + ' ' + u.hp + ' HP at ' + u.pos).join(' · ')); }
-  g = await G(host); if (g.phase !== 'combat') { winner = g.sandbox.lastWin; break; }
+  if (i % 20 === 19) { const x = (await T(host)).combat; if (x) console.log('  team fight round ' + x.round + ': ' + x.units.filter((u) => u.charId).map((u) => u.name + ' ' + u.hp + ' HP at ' + u.pos).join(' · ')); }
+  g = await T(host); if (g.phase !== 'combat') { winner = g.sandbox.lastWin; break; }
   const c2 = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]);
   if (c2 && c2.id === cur.id) await act(p, { type: 'combat/end-turn', unitId: cur.id });
   await pause(p, 200);
