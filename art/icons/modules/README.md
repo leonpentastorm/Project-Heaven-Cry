@@ -7,5 +7,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-orbit.png`: a dot circling a centre dot on a ring path
 - `module-echo.png`: one shape and a fainter (thinner-lined) double of it beside it
 - `module-move.png`: an arrow carrying a dot
+- `module-homing.png`: a curved arrow bending onto a target ring
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

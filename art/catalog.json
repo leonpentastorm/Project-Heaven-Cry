@@ -11026,6 +11026,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-move.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-move.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-homing": {
+      "id": "module-homing",
+      "label": "a curved arrow bending onto a target ring",
+      "path": "art/icons/modules/module-homing.png",
+      "sha256": "41da449492ecddf57099b52e24c3fae59207c6996799f02921daef25ec0694b9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-homing.png",
+        "128": "art/icons/modules/exports/128/module-homing.png",
+        "64": "art/icons/modules/exports/64/module-homing.png",
+        "56": "art/icons/modules/exports/56/module-homing.png",
+        "48": "art/icons/modules/exports/48/module-homing.png",
+        "44": "art/icons/modules/exports/44/module-homing.png",
+        "40": "art/icons/modules/exports/40/module-homing.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-homing.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-homing.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
