@@ -86,7 +86,7 @@
     ]
   },
   "damage": {
-    "base": 40,
+    "base": 31,
     "enemy_base": 24,
     "soul_mult": "1 + 0.05*(determination-1) + 0.1*will_power",
     "critical": {

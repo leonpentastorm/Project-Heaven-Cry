@@ -19,8 +19,8 @@ import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { itemAmount, amountMult } from './effects/amounts';
-import { mendFactor, MENDING } from './effects/mending';
-import { deal, mend, amountOf, term, armourAgainst, type Term } from './effects/output';
+import { mendFactor, MENDING, flatLevelOf } from './effects/mending';
+import { deal, mend, amountOf, term, armourAgainst, levelFactor, statOf, type Term } from './effects/output';
 import { canReact, useReaction, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
@@ -65,6 +65,10 @@ export interface MagicUnit {
   brain: number; will: number; sigilMult: number; soulMult: number; elemMult: number; healMult: number;
   /** Rules 1.17: the Damage school's base for this heart (a character's; unset on an enemy: the enemy base). */ soulBase?: number;
   /** Rules 1.20: the level factor on what this caster heals and shields (a character's; unset on an enemy: ×1). */ mend?: number;
+  /** Rules 1.26 (the re-fit): the Stat term of this caster's Sigil boons (MEND, WARD) and Soul shields (Inverse, Shell): the landed
+   * profiles sigil_mend and soul_mend (a heal or a shield always lands, so it keeps a slope); unset (an enemy, a test's hand-made heart): the Sigil or Soul multiplier. */
+  sigilBoon?: number; soulBoon?: number;
+  /** Rules 1.26 (the re-fit): the level factor on what this caster deals (output.level.deal; a character's; unset on an enemy, whose level is in its tier: ×1). */ deal?: number;
   maxWords: number; glyphAp: number; coreSave: number; rangeBonus: number; durBonus: number;
   /** Begin's AP (2; the 1.2 'Soul cast AP' name). */ soulAp: number; costSave: number; soulRange: number; syphon: number; strainLimit: number;
   saves: Record<Fam, number>; /** Debuff strength by delivering skill (a PC's table; an enemy caster's tier number is under '*'). */ debuff: Record<string, number>;
@@ -136,7 +140,7 @@ export function magicOf(c: Character): MagicUnit | undefined {
   return {
     words: [...words], designs: designs.map((d) => migrateDesign({ ...d, modules: [...(d.modules || [])] })), evoker, emanator, feelings: [...(c.feelings || [])],
     charge: evoChargeNow(c), cores: coresCarried(c), coresMade: 0, flux: 0, mp: mpNow(c), mpMax: maxMp(c), strain: 0, held: null, cast: false, freePumps: freePumps(c), freePumpsMax: freePumps(c), freeUsed: 0, swellFree: swellFree(c),
-    brain: mod(c.skills.brain_power || 0), will: mod(c.skills.will_power || 0), sigilMult: sigilMult(c), soulMult: soulMult(c), soulBase: SOUL_DAMAGE, mend: mendFactor(c.level), elemMult: elementalMult(c), healMult: healingMult(c),
+    brain: mod(c.skills.brain_power || 0), will: mod(c.skills.will_power || 0), sigilMult: sigilMult(c), soulMult: soulMult(c), sigilBoon: statOf('sigil_mend', c), soulBoon: statOf('soul_mend', c), soulBase: SOUL_DAMAGE, mend: mendFactor(c.level), deal: levelFactor('deal', c.level), elemMult: elementalMult(c), healMult: healingMult(c),
     maxWords: maxSigilWords(c), glyphAp: glyphAp(c), coreSave: sigilCoreSaving(c), rangeBonus: sigilRangeBonus(c), durBonus: sigilDurationBonus(c),
     soulAp: soulCastAp(c), costSave: soulCostSaving(c), soulRange: soulRangeBonus(c), syphon: syphonMult(c), strainLimit: strainLimit(c),
     saves: { body: saveBonus(c, 'body'), brain: saveBonus(c, 'brain'), heart: saveBonus(c, 'heart') },
@@ -433,7 +437,7 @@ export function bleedTick(cb: Combat, u: Unit): boolean {
   if (!u.bleed || u.dead || u.downed) return false;
   rawBleed(u, u.bleed - 1);
   const by = u.lastHitBy ? cb.units.find((x) => x.id === u.lastHitBy) || null : null; // kill credit: whoever opened the wound
-  const r = applyDamage(cb, u, itemAmount('condition:bleeding', 'tick'), { type: 'bleed', by, shield: false, credit: 'hp' });
+  const r = applyDamage(cb, u, Math.floor(itemAmount('condition:bleeding', 'tick', [term(flatLevelOf(by, cb), 'level')])), { type: 'bleed', by, shield: false, credit: 'hp' });
   emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'bleed', killed: u.hp === 0 }); if (u.hp === 0) fxFell(cb, u);
   cb.log.push(u.name + ' bleeds: ' + r.dealt + ' damage' + (u.hp === 0 ? (u.side === 'foe' ? ' · down for good' : ' · Downed') : ''));
   if (u.hp === 0) { rawBleed(u, 0); return true; }
@@ -537,7 +541,7 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
   noteDeaths(cb, rng);
   // Burning burns at the start of each turn (spec: 10, until put out; it ignores armour). Timed conditions tick at the
   // end of the bearer's turn (condTurnEnd, rules 1.3).
-  if (condOn(u, 'burning') && !u.downed) { const by = condSource(u, 'burning'); cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, itemAmount('condition:burning', 'tick'), 'true', 'fire'))); }
+  if (condOn(u, 'burning') && !u.downed) { const by = condSource(u, 'burning'); cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, Math.floor(itemAmount('condition:burning', 'tick', [term(flatLevelOf(by ? cb.units.find((x) => x.id === by) || null : null, cb), 'level')])), 'true', 'fire'))); }
   if (u.mg && !u.downed) heartTurnStart(cb, rng, u); // rules 1.5: Strain −1, the swell, the aura, free Pumps
   feelTurnStart(cb, rng, u); // rules 1.8: residue underfoot, fuses, Linger
   sigilTurnStart(cb, rng, u); // Quickened, Corroded, fields and traps underfoot, the unit's turrets (rules 1.4)
@@ -1204,7 +1208,7 @@ const soulAmount = (kind: 'damage' | 'heal' | 'shield', base: number, mults: { v
   amountOf({ kind, base, profile: kind === 'heal' ? 'mend' : 'soul', round: 'none' }, null, { level: null, mults }).raw;
 export const outburstDamage = (m: MagicUnit, d: OutburstDesign, sm: number) => { const a = outburstTerms(m, d, sm); return soulAmount('damage', a.base, a.mults); };
 /** The same amount with its terms open, as harm takes it (step a7: what an item adds goes in beside the base). */
-export const outburstTerms = (m: MagicUnit, d: OutburstDesign, sm: number): SpellAmount => ({ base: m.soulBase ?? SOUL_DAMAGE_ENEMY, mults: [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.8 : 1, 'at once')] });
+export const outburstTerms = (m: MagicUnit, d: OutburstDesign, sm: number): SpellAmount => ({ base: m.soulBase ?? SOUL_DAMAGE_ENEMY, mults: [term(m.soulMult, 'stat: soul'), term(m.deal ?? 1, 'level'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.8 : 1, 'at once')] });
 // ---------- rules 1.20: what an Outburst heals and shields with ----------
 // Their own bases, never the Damage base (moving one must not move the other): the Buff school's `heal`, Inverse's and
 // Shell's `shield` (soul_modules.json). A character's grow with its level (mendFactor). In an area shape a heal or a
@@ -1221,9 +1225,9 @@ const boonArea = (m: MagicUnit, d?: OutburstDesign | null) => (!d || !ofChar(m) 
 /** The Buff school's heal on one ally at a multiplier (before the air's Healing given and what the target receives). */
 export const outburstHeal = (m: MagicUnit, d: OutburstDesign | null | undefined, sm: number) => soulAmount('heal', ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY, [term(m.healMult, 'stat: healing given'), term(sm, 'stage'), term(mendOf(m), 'level'), term(boonArea(m, d), 'shape')]);
 /** Inverse: the shield a flipped Damage Outburst gives one ally. */
-export const inverseShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? soulAmount('shield', (MODULE.inverse as any)?.shield ?? 10, [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(mendOf(m), 'level'), term(boonArea(m, d), 'shape')]) : outburstDamage(m, d, sm) * ((MODULE.inverse as any)?.shield_mult_enemy ?? 0.7);
+export const inverseShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? soulAmount('shield', (MODULE.inverse as any)?.shield ?? 10, [term(m.soulBoon ?? m.soulMult, 'stat: soul'), term(sm, 'stage'), term(mendOf(m), 'level'), term(boonArea(m, d), 'shape')]) : outburstDamage(m, d, sm) * ((MODULE.inverse as any)?.shield_mult_enemy ?? 0.7);
 /** Shell: the shield a Release leaves on its caster. */
-export const shellShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? soulAmount('shield', (MODULE.shell as any)?.shield ?? 4, [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(mendOf(m), 'level')]) : outburstDamage(m, d, sm) * ((MODULE.shell as any)?.shield_of_power_enemy ?? 0.35);
+export const shellShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? soulAmount('shield', (MODULE.shell as any)?.shield ?? 4, [term(m.soulBoon ?? m.soulMult, 'stat: soul'), term(sm, 'stage'), term(mendOf(m), 'level')]) : outburstDamage(m, d, sm) * ((MODULE.shell as any)?.shield_of_power_enemy ?? 0.35);
 /** Love's heal: a share of what the Buff school would heal at this multiplier (in the shape, or the lone share). */
 export const loveHeal = (m: MagicUnit, d: OutburstDesign, sm: number, lone = false, area = false) => soulAmount('heal', ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY, [term(m.healMult, 'stat: healing given'), term(sm, 'stage'), term(mendOf(m), 'level'), term(area ? boonArea(m, d) : 1, 'shape'), term(lone ? (FEELING.love?.pour as any)?.lone_heal_share ?? 0.15 : (FEELING.love?.pour as any)?.heal_share ?? 0.25, 'share')]);
 /** Calm's multiplier on the whole Release (rules 1.17: ×0.75). Rules 1.19: none (Calm steps −0.4 instead); kept for data that sets `release_mult`. */

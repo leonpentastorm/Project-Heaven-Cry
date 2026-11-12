@@ -12,7 +12,7 @@
 // Every number is provisional (spec section 14, items 1230 on and 1300 on).
 import type { Combat, Unit } from '../combat';
 import { RULES } from '../data';
-import { levelFactor, amountOf, term, type Term } from './output';
+import { levelFactor, levelOf, amountOf, term, type Term } from './output';
 
 export const MENDING: any = (RULES as any).mending || {};
 /** The level factor (×1.00 at level 1 … ×1.82 at level 20): enemies.json levels.table damage_mult. No level: ×1. */
@@ -21,6 +21,17 @@ export const mendFactor = (level: number | null | undefined): number => levelFac
 /** The factor for what this unit gives: a character's and its side's units' (a companion, a turret: their own level,
  * which is their owner's). An enemy's is ×1: an enemy caster's spells already grow through its multipliers (rules 1.15). */
 export const mendFactorOf = (u: Unit | null | undefined): number => (u && u.side === 'pc' ? mendFactor(u.level) : 1);
+/** Rules 1.26 (the re-fit): the Level term on what a squad member deals (output.level.deal); ×1 for an enemy, whose level is in its tier. */
+export const dealFactorOf = (u: Unit | null | undefined): number => (u && u.side === 'pc' ? levelFactor('deal', u.level) : 1);
+/** Rules 1.26 (step b7, Leon: flat things grow with level): the Level term of a flat thing (a grenade, a blast, a
+ * splash, a trap, a tick, a hazard, a barrel). Made by a character: its level through the 'flat' profile
+ * (output.level.deal). Made by an enemy or a companion: its own tier and level (lvlDmg, rules 1.15), as its weapon.
+ * Made by nobody (a hazard, a map trap, a barrel nobody set off): the fight's level through the enemy table's damage
+ * column, as enemies grow. */
+export function flatLevelOf(by: Unit | null | undefined, cb: Combat | null | undefined): number {
+  if (by) return by.lvlDmg ? by.lvlDmg : by.charId && !by.companion ? levelOf('flat', by.level) : 1;
+  return cb?.level ? levelFactor('mend', cb.level) : 1;
+}
 
 // ---------- rules 1.23: who has been mending (the enemy AI's healer weight) ----------
 export const TENDING: any = MENDING.tending || {};
