@@ -21,7 +21,7 @@ import { WEAPON } from './data';
 import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility } from './combat';
 import { kindOf } from './objects';
 import { apFor } from './effects/cost';
-import { basicActions, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
+import { basicActions, reloadOffRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun } from './preview';
 import type { Action, GameState } from './game';
 import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView } from './physical/core';
@@ -91,6 +91,12 @@ export interface ActionDescriptor {
   pad?: boolean;
   /** Who adjudicates it: the engine runs it all, or part goes to the Narrator. */
   engine?: boolean;
+  /** The weapon hand this action belongs to (the Attack tab's areas: a weapon's shots and techniques, its reload, its
+   * unjam, shooting an object with it): 'main', 'off', or 'both' for what uses both hands (the paired attack, Reload
+   * both). Absent: no one weapon (Shove, Brace, Hold a shot). */
+  hand?: 'main' | 'off' | 'both';
+  /** A technique's text in parts (techParts), for a hover card that lays it out a line each. */
+  parts?: TechParts;
 }
 export type Picks = Record<string, any>;
 export interface PreviewLine { k: 'odds' | 'note' | 'meter' | 'save' | 'cost' | 'ask'; text: string }
@@ -213,12 +219,19 @@ function needsText(id: string): string {
   if (n.stowed) out.push('Used with a weapon in your pack, not the one in your hand.');
   return out.length ? out.join(' ') + ' ' : '';
 }
-/** A pad entry's card text, as the pad shows it: what it needs, its text, its line with this weapon, the property. */
-export function techHelp(e: { id: string; text: string; line?: string | null }): string {
+/** A pad entry's card text in parts (the hover card lays them out a line each; Leon, live 0.23.0): what it needs, what it
+ * does, its line with this weapon, and the weapon's properties behind that line (each with the glossary's words). */
+export interface TechParts { needs: string; text: string; line: string; traits: { label: string; text: string }[] }
+export function techParts(e: { id: string; text: string; line?: string | null }): TechParts {
   const full = (t: string) => (/[.!?:)]$/.test(t.trim()) ? t.trim() : t.trim() + '.');
   const ln = e.line ? (((TECHNIQUE as any)[e.id]?.lines) || []).find((l: any) => l.text === e.line) : null;
-  const why1 = ln ? ln.props.map((p: string) => (propText(p) ? p.charAt(0).toUpperCase() + p.slice(1) + ': ' + propText(p) : '')).filter(Boolean).join(' ') : '';
-  return needsText(e.id) + full(e.text) + (e.line ? ' With this weapon: ' + full(e.line) : '') + (why1 ? ' (' + why1.trim() + ')' : '');
+  const traits = ln ? ln.props.filter((p: string) => !!propText(p)).map((p: string) => ({ label: p.charAt(0).toUpperCase() + p.slice(1), text: propText(p) })) : [];
+  return { needs: needsText(e.id).trim(), text: full(e.text), line: e.line ? full(e.line) : '', traits };
+}
+/** A pad entry's card text, as the pad shows it: what it needs, its text, its line with this weapon, the property. */
+export function techHelp(e: { id: string; text: string; line?: string | null }): string {
+  const t = techParts(e), why1 = t.traits.map((x) => x.label + ': ' + x.text).join(' ');
+  return (t.needs ? t.needs + ' ' : '') + t.text + (t.line ? ' With this weapon: ' + t.line : '') + (why1 ? ' (' + why1 + ')' : '');
 }
 /** A technique's pick steps by what it aims at, then its line and its options. */
 function techPicks(x: DescCtx, e: { id: string; choices?: { prop: string; text: string }[] }): PickStep[] {
@@ -307,6 +320,8 @@ const BASIC_SEND: Record<string, (x: DescCtx, p: Picks) => any> = {
   'reload-tac': (x) => ({ type: 'combat/reload', unitId: x.u.id, tactical: true }),
   reload2: (x) => ({ type: 'combat/reload', unitId: x.u.id, hand: 'both' }),
   'reload2-tac': (x) => ({ type: 'combat/reload', unitId: x.u.id, hand: 'both', tactical: true }),
+  'reload-off': (x) => ({ type: 'combat/reload', unitId: x.u.id, hand: 'off' }),
+  'reload-off-tac': (x) => ({ type: 'combat/reload', unitId: x.u.id, hand: 'off', tactical: true }),
   clear: (x) => ({ type: 'combat/clear', unitId: x.u.id }),
   brace: (x) => ({ type: 'combat/brace', unitId: x.u.id }),
   repair: (x) => ({ type: 'combat/repair', unitId: x.u.id }),
@@ -358,16 +373,18 @@ const PHYSICAL: ActionSystem = {
     const dual = pads.some((d) => d.id === TPAD + 'both' || d.id === 'paired');
     const gunTab = (!!w && !melee && w.id !== 'fists') || (!!offW && !isMelee(offW));
     const wRow = (id: string, group: DescGroup, o: Partial<ActionDescriptor> & { label?: string; cost?: string; text?: string } = {}) => { const a: any = W(id); return a ? [D(id, group, o.label || a.label, a.ap, o.cost || apT(a.ap), o.text || a.text, a.why, { picks: basicPicks(x, id), ...o })] : []; };
-    const clear = (group: DescGroup) => wRow('clear', group);
+    const clear = (group: DescGroup) => wRow('clear', group, { hand: 'main' });
     const reloads = (group: DescGroup): ActionDescriptor[] => {
       const R: any = W('reload'); if (!R) return [];
       const unit = (w && w.reload_unit) || 'magazine', now = w && w.magazine != null ? ' ' + u.ammo + ' / ' + w.magazine + ' loaded now.' : '';
-      if (!R.tactical) return [D('reload', group, R.label, R.ap, apT(R.ap), R.text + now, R.why)];
+      if (!R.tactical) return [D('reload', group, R.label, R.ap, apT(R.ap), R.text + now, R.why, { hand: 'main' })];
       const nm = /^(Swap magazine|Reload)$/.test(R.label) ? 'Reload' : R.label;
-      return [D('reload', group, nm + ' (speed)', R.ap, R.ap + ' AP · the ' + unit + ' drops', 'Swap in your fullest spare ' + unit + ' (' + (u.mags || []).length + ' left). The one in the gun drops onto your tile with its rounds still in it. You can pick it up later and refill it with Load.' + now, R.why),
-        D('reload-tac', group, nm + ' (tactical)', R.tactical.ap, R.tactical.ap + ' AP · the ' + unit + ' goes in your pack', 'Swap in your fullest spare ' + unit + ' for ' + PILE.tactical_reload_extra_ap + ' AP more. The one in the gun goes back in your pack with its rounds still in it.' + now, R.tactical.why)];
+      return [D('reload', group, nm + ' (speed)', R.ap, R.ap + ' AP · the ' + unit + ' drops', 'Swap in your fullest spare ' + unit + ' (' + (u.mags || []).length + ' left). The one in the gun drops onto your tile with its rounds still in it. You can pick it up later and refill it with Load.' + now, R.why, { hand: 'main' }),
+        D('reload-tac', group, nm + ' (tactical)', R.tactical.ap, R.tactical.ap + ' AP · the ' + unit + ' goes in your pack', 'Swap in your fullest spare ' + unit + ' for ' + PILE.tactical_reload_extra_ap + ' AP more. The one in the gun goes back in your pack with its rounds still in it.' + now, R.tactical.why, { hand: 'main' })];
     };
-    const bothRows = B('reload2', 'reload2-tac');
+    const bothRows = B('reload2', 'reload2-tac').map((d) => ({ ...d, hand: 'both' as const }));
+    // the off-hand gun's own reload (its own AP): reloading one gun never blocks the other
+    const offRows = (group: DescGroup): ActionDescriptor[] => safe(() => withGame(g, () => reloadOffRows(cb, u, { c, g })), [] as any[]).map((r: any) => D(r.id, group, r.label, r.ap, r.cost, r.text, r.why, { hand: 'off' }));
     const out: ActionDescriptor[] = [...B('move', 'sprint', 'disengage', 'prone')];
     // ----- attack -----
     const atk: ActionDescriptor[] = [];
@@ -389,15 +406,15 @@ const PHYSICAL: ActionSystem = {
       const both = dual ? bothRows.map((d) => ({ ...d, group: 'attack' as DescGroup })) : [];
       let at = pads.findIndex((d) => d.id === TPAD + 'both'); if (at < 0) at = pads.findIndex((d) => d.id === 'paired');
       atk.push(...(at < 0 || !both.length ? pads : [...pads.slice(0, at + 1), ...both, ...pads.slice(at + 1)]));
-      if (w && !melee) atk.push(D('melee', 'attack', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee'), apT(attackApCost(WEAPON.fists, 'melee')), 'Hit an enemy next to you with the gun itself: d20 + Raw Power against Defense, for the damage of a bare-hand strike. It uses no round and adds no Heat.', null, { picks: basicPicks(x, 'melee'), toggleOn: 'combat/attack', preview: 'attack' }));
+      if (w && !melee) atk.push(D('melee', 'attack', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee'), apT(attackApCost(WEAPON.fists, 'melee')), 'Hit an enemy next to you with the gun itself: d20 + Raw Power against Defense, for the damage of a bare-hand strike. It uses no round and adds no Heat.', null, { picks: basicPicks(x, 'melee'), toggleOn: 'combat/attack', preview: 'attack', hand: 'main' }));
     }
-    if (offW && !dual) atk.push(D('paired', 'attack', 'Both hands (' + offW.name + ')', 0, 'AP +1', 'Attack with both weapons in one action. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.', null, { picks: basicPicks(x, 'paired'), preview: 'attack' }));
-    if (gunTab) atk.push(...reloads('attack').filter((d) => !dual || !d.id.startsWith('reload2')), ...clear('attack'));
-    atk.push(...B('shove'), ...wRow('brace', 'attack'), ...B('cover'));
+    if (offW && !dual) atk.push(D('paired', 'attack', 'Both hands (' + offW.name + ')', 0, 'AP +1', 'Attack with both weapons in one action. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.', null, { picks: basicPicks(x, 'paired'), preview: 'attack', hand: 'both' }));
+    if (gunTab) atk.push(...reloads('attack'), ...offRows('attack'), ...clear('attack'));
+    atk.push(...B('shove'), ...wRow('brace', 'attack'), ...B('cover').map((d) => (w ? { ...d, hand: 'main' as const } : d)));
     out.push(...atk);
     // ----- utility -----
     const L: any = W('load'), li = L && !L.why ? safe(() => loadPlan(g, cb, u), null) : null;
-    out.push(...B('pullfree'), ...(gunTab ? [] : reloads('utility')),
+    out.push(...B('pullfree'), ...(gunTab ? [] : [...reloads('utility'), ...offRows('utility')]),
       ...(L ? [D('load', 'utility', L.label, li ? li.ap : L.ap, li ? li.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', li ? 'Load ' + li.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : L.text, L.why)] : []),
       ...(gunTab ? [] : clear('utility')),
       ...wRow('repair', 'utility', { label: 'Field Repair', text: 'Needs Improvisation 3 and one spare-parts charge (' + (u.parts || 0) + ' left). Your weapon regains 10% durability, plus 5% for each Improvisation point above 3. Weapon durability: ' + (u.maxDur ? (u.dur ?? u.maxDur) + '/' + u.maxDur : 'n/a') + '.' }),
@@ -437,6 +454,8 @@ function basicSay(x: DescCtx, d: ActionDescriptor, p: Picks): string | null {
     case 'reload-tac': return 'Confirm: a tactical reload, ' + d.cost.ap + ' AP. The ' + unitW + ' in the gun (' + rounds + ') goes back in your pack.';
     case 'reload2': return 'Confirm to reload both guns: the old magazines drop into the pile on your tile.';
     case 'reload2-tac': return 'Confirm to reload both guns: the old magazines go back in your pack.';
+    case 'reload-off': return 'Confirm to reload the off-hand gun' + (d.cost.text.includes('drops') ? ': the old ' + ((WEAPON as any)[u.offWeapon as string]?.reload_unit || 'magazine') + ' drops into the pile on your tile.' : '.');
+    case 'reload-off-tac': return 'Confirm: a tactical reload of the off-hand gun, ' + d.cost.ap + ' AP. The old ' + ((WEAPON as any)[u.offWeapon as string]?.reload_unit || 'magazine') + ' goes back in your pack.';
     case 'hide': return 'Confirm to go to ground.'; case 'extinguish': return 'Confirm to put out the fire.'; case 'escape': return 'Confirm to strain against the hold.'; case 'recover': return 'Confirm to get your weapon back up.';
     case 'clear': return 'Confirm to clear the jam.'; case 'repair': return 'Confirm to repair your weapon.'; case 'song': return 'Confirm to play your song for the room.';
     case 'prone': return 'Confirm to ' + (u.prone ? 'stand up' : 'drop prone') + '.'; case 'brace': return 'Confirm to brace your weapon.'; case 'overwatch': return 'Confirm to hold a shot on overwatch.';
@@ -459,7 +478,7 @@ function techRows(x: DescCtx): ActionDescriptor[] {
   const shield = !u.offWeapon ? safe(() => shieldOf(u), null) : null;
   const hands: ('main' | 'off')[] = ['main', ...((u.offWeapon && WEAPON[u.offWeapon]) || shield ? ['off' as const] : [])];
   const watch: ActionDescriptor[] = [], seenW = new Set<string>();
-  const chip = (hand: string, e: any, parent: string | undefined, item?: string | number) => D(techId(hand, e.id, item), 'attack', e.name, priceOf(e), apT(priceOf(e)), techHelp(e), e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.', { parent, picks: techPicks(x, e), toggleOn: 'combat/attack', preview: 'technique', hidden: !!parent });
+  const chip = (hand: string, e: any, parent: string | undefined, item?: string | number) => D(techId(hand, e.id, item), 'attack', e.name, priceOf(e), apT(priceOf(e)), techHelp(e), e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.', { parent, picks: techPicks(x, e), toggleOn: 'combat/attack', preview: 'technique', hidden: !!parent, hand: hand as any, parts: techParts(e) });
   const sys: Record<string, string> = {};
   for (const hand of hands) {
     let pad: any[] = safe(() => techniquePad(cb, u, hand, g), []);
@@ -469,7 +488,7 @@ function techRows(x: DescCtx): ActionDescriptor[] {
       if (more.length) pad = [...pad, { group: 'answer', label: 'Answers', entries: more }];
       const chips = pad.filter((gr: any) => gr.group !== 'watch' && gr.group !== 'answer').flatMap((gr: any) => gr.entries.filter((e: any) => !e.plain));
       const usable = chips.filter((e: any) => e.ok).length, name = 'Shield';
-      out.push(D(TPAD + hand, 'attack', 'Shield techniques · ' + usable, 0, chips.length ? usable + ' of ' + chips.length + ' now' : '', 'What you can do with the ' + name + '. Pick Shield Bash or Raise Shield in the pad. Its reactions happen by themselves.', chips.length ? null : 'No shield techniques.', { pad: true, preview: 'none' }));
+      out.push(D(TPAD + hand, 'attack', 'Shield techniques · ' + usable, 0, chips.length ? usable + ' of ' + chips.length + ' now' : '', 'What you can do with the ' + name + '. Pick Shield Bash or Raise Shield in the pad. Its reactions happen by themselves.', chips.length ? null : 'No shield techniques.', { pad: true, preview: 'none', hand }));
       for (const e of chips) out.push(chip(hand, e, TPAD + hand));
       sys[hand] = 'melee'; continue;
     }
@@ -480,17 +499,17 @@ function techRows(x: DescCtx): ActionDescriptor[] {
     const chips = pad.filter((gr: any) => gr.group !== 'watch' && gr.group !== 'answer').flatMap((gr: any) => gr.entries.filter((e: any) => !e.plain).map((e: any) => [e, undefined] as [any, any]));
     if (hand === 'main') for (const pk of safe(() => packPad(cb, u, g), [] as any[])) for (const e of pk.entries) chips.push([e, pk.item]);
     const usable = chips.filter(([e]) => e.ok).length;
-    out.push(D(TPAD + hand, 'attack', 'Techniques · ' + usable, 0, chips.length ? usable + ' of ' + chips.length + ' now' : '', 'What you can do with the ' + ((hand === 'main' ? (u as any).weaponName : null) || w.name) + '. Pick one in the pad, then its target.', chips.length ? null : 'No techniques ready for this weapon.', { pad: true, preview: 'none' }));
+    out.push(D(TPAD + hand, 'attack', 'Techniques · ' + usable, 0, chips.length ? usable + ' of ' + chips.length + ' now' : '', 'What you can do with the ' + ((hand === 'main' ? (u as any).weaponName : null) || w.name) + '. Pick one in the pad, then its target.', chips.length ? null : 'No techniques ready for this weapon.', { pad: true, preview: 'none', hand }));
     for (const [e, item] of chips) out.push(chip(hand, e, TPAD + hand, item));
     for (const e of pad.find((gr: any) => gr.group === 'watch')?.entries || []) if (!seenW.has(e.id)) { seenW.add(e.id); watch.push(chip(hand, e, TWATCH)); }
   }
   // two weapons of one kind: the both-hands block (the paired attack, then the techniques made with each in turn)
   if (hands.length === 2 && !shield && sys.main && sys.main === sys.off) {
     const pe: any[] = safe(() => pairedPad(cb, u, g), []);
-    out.push(D('paired', 'attack', sys.main === 'melee' ? 'Strike with both' : 'Fire both', 0, 'AP +1', 'Make one attack with each weapon at the same target. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.', null, { picks: basicPicks(x, 'paired'), preview: 'attack' }));
+    out.push(D('paired', 'attack', sys.main === 'melee' ? 'Strike with both' : 'Fire both', 0, 'AP +1', 'Make one attack with each weapon at the same target. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.', null, { picks: basicPicks(x, 'paired'), preview: 'attack', hand: 'both' }));
     if (pe.length) {
       const usable = pe.filter((e) => e.ok).length;
-      out.push(D(TPAD + 'both', 'attack', 'Techniques · ' + usable, 0, usable + ' of ' + pe.length + ' now', 'Use one technique with each weapon in turn, the main hand at −1 to hit and the off hand at −3, for 1 AP more. Pick one in the pad, then its target.', null, { pad: true, preview: 'none' }));
+      out.push(D(TPAD + 'both', 'attack', 'Techniques · ' + usable, 0, usable + ' of ' + pe.length + ' now', 'Use one technique with each weapon in turn, the main hand at −1 to hit and the off hand at −3, for 1 AP more. Pick one in the pad, then its target.', null, { pad: true, preview: 'none', hand: 'both' }));
       for (const e of pe) out.push(chip('both', e, TPAD + 'both'));
     }
   }

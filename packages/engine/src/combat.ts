@@ -2130,13 +2130,16 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
  * Each gun takes its own spares (the same pack entry when both hands hold the same model). */
 /** Reload both guns' speed price (Two guns: 3 AP, items may change it); the tactical one is this + 1. */
 export const reloadBothAp = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'reload_both').ap;
+/** Reload the off-hand gun alone: its speed price (the gun's reload_ap, else a reload's, priced as the off hand's); the
+ *  tactical one is this + 1. */
+export const reloadOffAp = (u: Unit, cb?: Combat | null) => { const ow: any = u.offWeapon ? WEAPON[u.offWeapon] : null; return price({ cb, u }, 'reload', (ow && ow.reload_ap) ?? costOf('reload'), { hand: 'off' }).ap; };
 export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical = false): string | null {
   { const no = (hand === 'both' ? reloadRefused(u, u.weapon, cb) : null) || reloadRefused(u, u.offWeapon, cb); if (no) return no; }
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!ow || ow.magazine == null || !ow.reload) return 'Your off hand holds no gun to reload.';
   if (tactical && ow.reload === 'loose') return 'Loaded round by round: there is only one reload.';
   // The off-hand gun is priced as a reload, but it isn't the main hand's: Speed Loader leaves it alone (spec item 564).
-  const ap = (hand === 'both' ? reloadBothAp(u, cb) : price({ cb, u }, 'reload', ow.reload_ap ?? costOf('reload'), { hand: 'off' }).ap) + (tactical ? PILE.tactical_reload_extra_ap : 0);
+  const ap = (hand === 'both' ? reloadBothAp(u, cb) : reloadOffAp(u, cb)) + (tactical ? PILE.tactical_reload_extra_ap : 0);
   { const no = whyNot(cb, u, ap); if (no) return no; }
   const pc = !!u.charId, shared = ow.id === u.weapon, have = u.offAmmo ?? 0, offFull = have >= ow.magazine;
   // A character's off-hand gun reloads only from what it carries (review fix: with no spares entry it reloaded free);

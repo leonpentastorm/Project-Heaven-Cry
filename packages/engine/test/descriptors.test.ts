@@ -18,6 +18,7 @@ function oldAction(u: any, cb: any, id: string, p: Picks): any {
     case 'move': case 'sprint': case 'disengage': return { type: 'combat/move', ...U, to: p.tile, how: id, ...mods };
     case 'reload': return { type: 'combat/reload', ...U }; case 'reload-tac': return { type: 'combat/reload', ...U, tactical: true };
     case 'reload2': return { type: 'combat/reload', ...U, hand: 'both' }; case 'reload2-tac': return { type: 'combat/reload', ...U, hand: 'both', tactical: true };
+    case 'reload-off': return { type: 'combat/reload', ...U, hand: 'off' }; case 'reload-off-tac': return { type: 'combat/reload', ...U, hand: 'off', tactical: true }; // (added 12 Nov 2026: the off-hand gun's own reload)
     case 'pullfree': { const ts = pullFreeTargets(cb, u), x = ts.find((v) => v.id === p.targetId) || ts[0]; return { type: 'combat/pull-free', ...U, targetId: x.id }; }
     case 'overwatch': return { type: 'combat/overwatch', ...U, mode: isMelee(WEAPON[u.weapon]) ? 'melee' : 'shot' };
     case 'shove': return { type: 'combat/shove', ...U, targetId: p.targetId };
