@@ -34,7 +34,11 @@ describe('painted feelings, modules and UI marks', () => {
   it('the unlock card carries the feeling glyph and the Felt mark', () => {
     feltCard('rage');
     const card = document.querySelector('[data-felt-card="rage"]')!;
-    expect(card.querySelector('img')!.getAttribute('src')).toBe(A['feeling-rage']);
-    expect(card.querySelector('img[data-heart-mark="felt"]')!.getAttribute('src')).toBe(A['heart-ui-felt']);
+    // painted art is white ink: the card tints it with a mask over the feeling's colour (rage: #FF6A3D), never an <img>
+    expect(card.querySelector('img')).toBeNull();
+    const g = card.querySelector('span[aria-hidden="true"]')!.getAttribute('style')!;
+    expect(g).toContain(A['feeling-rage']); expect(g).toMatch(/background-color: #FF6A3D/); expect(g).toMatch(/mask-image: url\("/);
+    const mk = card.querySelector('[data-heart-mark="felt"]')!.getAttribute('style')!;
+    expect(mk).toContain(A['heart-ui-felt']); expect(mk).toMatch(/background-color: #FF6A3D/);
   });
 });

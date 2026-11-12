@@ -3,7 +3,7 @@
 // residue tiles' tint, the unlock card, and the practice bar. The engine is the one source of numbers (previewPump,
 // previewOutburstPlan, practiceOf); this file only words and styles them.
 import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, MODULE, SKILL } from '@engine';
-import { feelingIcon, moduleIcon, heartMark } from './heartIcons';
+import { feelingIcon, moduleIcon, heartMark, paintedStyle } from './heartIcons';
 
 /** Each feeling's light (a proposal for Leon; docs/design/handoffs/outburst-4.0-HANDOFF.md). Light and particles only,
  *  never body text, and always beside the feeling's word: 25 hues can't carry meaning alone (colour-system.md). Kept
@@ -30,18 +30,20 @@ export const FEELING_MOTIF: Record<string, string> = {
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
 const rgba = (hex: string, a: number) => { const h = hex.replace('#', ''), n = parseInt(h.length === 3 ? h.split('').map((x) => x + x).join('') : h, 16); return 'rgba(' + (n >> 16 & 255) + ', ' + (n >> 8 & 255) + ', ' + (n & 255) + ', ' + a + ')'; };
-/** An icon's markup as an <img> source: painted art's URL, or the SVG drawing tinted with the ink. */
+/** An icon's markup as an image source: painted art's URL (white ink: tint it with `iconStyle`, never as an <img>), or the SVG drawing tinted with the ink. */
 export function iconSrc(markup: string, ink: string): string {
-  const m = /<img[^>]*src="([^"]+)"/.exec(markup); if (m) return m[1];
+  const m = /<img[^>]*src="([^"]+)"/.exec(markup) || /data-icon-src="([^"]+)"/.exec(markup); if (m) return m[1].replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
   return 'data:image/svg+xml,' + encodeURIComponent(markup.replace(/currentColor/g, ink).replace('<svg', markup.includes('xmlns=') ? '<svg' : '<svg xmlns="http://www.w3.org/2000/svg"'));
 }
+/** The style of the empty element that shows an icon `src` (from the *IconSrc functions) in `ink`: a mask for painted art, the drawing as it is otherwise. Give the element its width and height. */
+export const iconStyle = (src: string, ink: string) => paintedStyle(src, ink);
 export const feelingIconSrc = (id: string, ink = feelingInk(id), size = 24) => iconSrc(feelingIcon(id, size), ink);
 export const moduleIconSrc = (id: string, ink = '#E7EBF3', size = 24) => iconSrc(moduleIcon(id, size), ink);
 export const markIconSrc = (id: 'revert' | 'practice' | 'felt', ink = '#E7EBF3', size = 24) => iconSrc(heartMark(id, size), ink);
 
 /** How many feeling buttons show before they collapse into "Feelings ▸" (the design's open item 3: 6 proposed). */
 export const FEELINGS_OPEN_MAX = 6;
-export interface FeelingBtn { id: string; name: string; ink: string; icon: string; ok: boolean; why: string; step: number; mult: number; stepText: string; effect: string; cost: string; free: boolean; does: string }
+export interface FeelingBtn { id: string; name: string; ink: string; icon: string; iconStyle: string; ok: boolean; why: string; step: number; mult: number; stepText: string; effect: string; cost: string; free: boolean; does: string }
 /** One button per feeling the unit knows: its step and multiplier after, its effect, and why it can't be poured now. */
 export function feelingButtons(cb: any, u: any): FeelingBtn[] {
   const m = u?.mg; if (!m || !m.held) return [];
@@ -49,7 +51,7 @@ export function feelingButtons(cb: any, u: any): FeelingBtn[] {
   return FEELINGS.filter((f: any) => known.includes(f.id)).map((f: any) => {
     const p = previewPump(cb, u, f.id), ink = feelingInk(f.id);
     const step = p.step ?? (f.step?.base ?? PLAIN_STEP);
-    return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: (step >= 0 ? '+' : '−') + Math.abs(r2(step)).toFixed(1), // rules 1.19: Calm and Relief take the multiplier down
+    return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), iconStyle: iconStyle(feelingIconSrc(f.id, ink), ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: (step >= 0 ? '+' : '−') + Math.abs(r2(step)).toFixed(1), // rules 1.19: Calm and Relief take the multiplier down
       effect: f.pour?.text || '', cost: p.ok ? (p.mp ? (p.free ? '0 AP' : p.ap + ' AP') + ' · ' + p.mp + ' MP' : p.free ? 'FREE' : p.ap + ' AP') : '', free: !!(p.ok && p.free), does: '' }; // rules 1.24: a Pump's MP
   });
 }
@@ -61,7 +63,7 @@ export function feelingRows(btns: FeelingBtn[], open: boolean, query: string, ru
   return {
     has: btns.length > 0, many, open: show, count: btns.length, canSearch: many && show,
     toggleLabel: (show ? 'Feelings ▾' : 'Feelings ▸') + ' (' + btns.length + ')',
-    rows: list.map((b) => ({ key: b.id, name: b.name, icon: b.icon, ink: b.ink, off: !b.ok, cost: b.ok ? b.cost : '✕ ' + b.why.replace(/\.$/, ''), step: b.stepText, effect: b.effect,
+    rows: list.map((b) => ({ key: b.id, name: b.name, icon: b.icon, iconStyle: b.iconStyle, ink: b.ink, off: !b.ok, cost: b.ok ? b.cost : '✕ ' + b.why.replace(/\.$/, ''), step: b.stepText, effect: b.effect,
       title: b.name + ' (step ' + b.stepText + ', ×' + b.mult + ' after): ' + b.effect + (b.why ? ' · ' + b.why : ''), pick: () => { if (b.ok) run('pump:' + b.id); },
       style: 'display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0 6px; align-items: center; min-height: 34px; padding: 3px 7px; border-radius: 8px; text-align: left; font-family: inherit; color: #E7EBF3; cursor: ' + (b.ok ? 'pointer' : 'default') + '; border: 1px solid ' + rgba(b.ink, b.ok ? 0.75 : 0.3) + '; background: ' + rgba(b.ink, b.ok ? 0.12 : 0.04) + (b.ok ? '' : '; opacity: 0.55'),
       nameStyle: 'font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
@@ -117,23 +119,23 @@ export { gatedBy };
 /** The gate skills in the order the workshop groups modules (soul_modules.json gates). */
 export const GATE_ORDER = ['lore_master', 'will_power', 'empathy', 'camaraderie', 'implication', 'composure'];
 const GATE_BLURB: Record<string, string> = { lore_master: 'structure and the strange', will_power: 'power and Strain', empathy: 'the design itself', camaraderie: 'ally modules', implication: 'status modules', composure: 'precision' };
-export interface CodexModule { id: string; name: string; icon: string; known: boolean; ok: boolean; why: string; locked: boolean; cls: string | null; text: string; cost: number; gate: string }
+export interface CodexModule { id: string; name: string; icon: string; iconStyle: string; known: boolean; ok: boolean; why: string; locked: boolean; cls: string | null; text: string; cost: number; gate: string }
 export interface CodexGroup { key: string; label: string; blurb: string; modules: CodexModule[] }
 /** Every module, grouped by its gate skill (and the advanced classes' own), marked known, learnable now or locked. */
 export function moduleGroups(c: any): CodexGroup[] {
   const known: string[] = c?.soulKnown?.modules || [];
-  const mk = (m: any): CodexModule => { const why = c ? moduleGateError(c, m.id) : ''; return { id: m.id, name: m.name, icon: moduleIconSrc(m.id, known.includes(m.id) ? '#E7EBF3' : '#7F8BA1'), known: known.includes(m.id), ok: !why, why: why || '', locked: !!m.locked, cls: moduleClass(m.id), text: m.text || '', cost: m.cost || 0, gate: m.gate ? ((SKILL as any)[m.gate.skill]?.name || m.gate.skill) + ' ' + m.gate.points : '' }; };
+  const mk = (m: any): CodexModule => { const why = c ? moduleGateError(c, m.id) : '', ink = known.includes(m.id) ? '#E7EBF3' : '#7F8BA1'; return { id: m.id, name: m.name, icon: moduleIconSrc(m.id, ink), iconStyle: iconStyle(moduleIconSrc(m.id, ink), ink), known: known.includes(m.id), ok: !why, why: why || '', locked: !!m.locked, cls: moduleClass(m.id), text: m.text || '', cost: m.cost || 0, gate: m.gate ? ((SKILL as any)[m.gate.skill]?.name || m.gate.skill) + ' ' + m.gate.points : '' }; };
   const all = Object.values(MODULE) as any[], used = new Set<string>(), out: CodexGroup[] = [];
   for (const sk of GATE_ORDER) { const ms = gatedBy(sk).map((id: string) => (MODULE as any)[id]).filter((m: any) => m && !m.locked); ms.forEach((m: any) => used.add(m.id)); if (ms.length) out.push({ key: sk, label: ((SKILL as any)[sk]?.name || sk), blurb: GATE_BLURB[sk] || '', modules: ms.map(mk) }); }
   const free = all.filter((m) => !used.has(m.id) && !m.locked); if (free.length) out.push({ key: 'free', label: 'No gate', blurb: 'anyone may learn these', modules: free.map(mk) });
   const adv = all.filter((m) => m.locked); if (adv.length) out.push({ key: 'advanced', label: 'Advanced classes', blurb: 'only with the class, when its batch returns', modules: adv.map(mk) });
   return out;
 }
-export interface CodexFeeling { id: string; name: string; icon: string; ink: string; known: boolean; step: string; effect: string; residue: string; trigger: string }
+export interface CodexFeeling { id: string; name: string; icon: string; iconStyle: string; ink: string; known: boolean; step: string; effect: string; residue: string; trigger: string }
 /** Every feeling: known ones with their step, effect and residue; the rest locked, with what unlocks them. */
 export function feelingCodex(c: any): CodexFeeling[] {
   const known: string[] = c?.feelings || [];
-  return FEELINGS.map((f: any) => { const k = known.includes(f.id), ink = feelingInk(f.id), s = f.step || {};
+  return FEELINGS.map((f: any) => { const k = known.includes(f.id), ink = feelingInk(f.id), shown = k ? ink : '#7F8BA1', s = f.step || {};
     const step = s.text || (s.base != null ? '+' + s.base : ''); // the step in words, from the data ("+0.2; +0.5 against whoever last hurt you")
-    return { id: f.id, name: f.name, icon: feelingIconSrc(f.id, k ? ink : '#7F8BA1'), ink, known: k, step, effect: f.pour?.text || '', residue: f.residue?.kind === 'none' ? 'No residue.' : 'Residue (' + f.residue.kind + '): ' + f.residue.text, trigger: 'Felt first when: ' + (f.trigger?.text || '') }; });
+    return { id: f.id, name: f.name, icon: feelingIconSrc(f.id, shown), iconStyle: iconStyle(feelingIconSrc(f.id, shown), shown), ink, known: k, step, effect: f.pour?.text || '', residue: f.residue?.kind === 'none' ? 'No residue.' : 'Residue (' + f.residue.kind + '): ' + f.residue.text, trigger: 'Felt first when: ' + (f.trigger?.text || '') }; });
 }

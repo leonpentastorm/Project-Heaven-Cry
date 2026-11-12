@@ -5,6 +5,7 @@
 // Action id: cl:<call id>   (the engine's descriptor id)
 import { callPad, type CallPadEntry } from '@engine';
 import { assetFor } from './faithArt';
+import { paintedStyle } from './heartIcons';
 
 export const CL = 'cl:';
 const callAction = (id: string) => CL + id;
@@ -22,6 +23,7 @@ export interface CallChip {
   /** a hindering Call's save and its TN from this speaker ('' when it has none) */ save: string;
   /** the next step and the points it opens at ('' at the last) */ next: string; reaction: boolean; free: boolean;
   /** the painted icon's URL ('' when there is none) */ icon: string;
+  /** the style that shows it in the chip's own ink (`currentColor`: the chip's text colour, grey when it can't be made) */ iconStyle: string;
   /** everything, for the hover */ title: string;
 }
 const chipOf = (e: CallPadEntry): CallChip => {
@@ -30,7 +32,7 @@ const chipOf = (e: CallPadEntry): CallChip => {
   const nx = e.steps.find((s) => !s.has), next = nx ? 'At ' + nx.at + ' ' + e.skillName + ': ' + nx.text : '';
   const apText = e.free ? 'free' : e.ap + ' AP', reach = tiles(e.range);
   return { key: e.id, id: e.id, action: callAction(e.id), name: e.name, skillName: e.skillName, ap: e.ap, apText, range: e.range, reach, step: e.step, stepText: 'STEP ' + e.step, text: e.text, ok: e.ok, why,
-    icon: callIcon(e.id), aim: e.aim, aimWord: AIM_WORD[e.aim] || e.aim, kind: e.kind, save, next, reaction: e.reaction, free: e.free,
+    icon: callIcon(e.id), iconStyle: callIcon(e.id) ? paintedStyle(callIcon(e.id), 'currentColor') : '', aim: e.aim, aimWord: AIM_WORD[e.aim] || e.aim, kind: e.kind, save, next, reaction: e.reaction, free: e.free,
     title: e.name + ' (' + e.skillName + ') · ' + apText + ' · within ' + reach + ' · to ' + (AIM_WORD[e.aim] || e.aim) + '. ' + e.text + (save ? ' ' + save + '.' : '') + (next ? ' ' + next : '') + (why ? ' (' + why + ')' : '') };
 };
 /** The Calls this unit can make (one chip per Call it has a point for), as the engine lists them. Empty: no Calls tab. */

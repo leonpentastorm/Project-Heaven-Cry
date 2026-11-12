@@ -19,7 +19,8 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
-import { moduleGroups, feelingInk, feelingIconSrc } from './feelingsView';
+import { moduleGroups, feelingInk, feelingIconSrc, iconStyle } from './feelingsView';
+import { parseStyle } from '../dc/runtime';
 import { OPT_LABEL, optValue } from './actionPickers';
 import { gearIconUri } from './gearIcons';
 import { Groups, GroupList, GroupSearch, sigilWordGroups, isOpen, setOpen as setGroupOpen, useOpenTick } from './workshopGroups';
@@ -862,14 +863,14 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
           <button type="button" style={{ ...btn, minHeight: 28, fontSize: 12 }} onClick={() => FEELINGS.forEach((f) => { if (!(c.feelings || []).includes(f.id)) act({ type: 'sandbox/learn', charId: c.id, feeling: f.id }); })}>Feel them all</button>
           {FEELINGS.map((f) => { const on = (c.feelings || []).includes(f.id), ink = feelingInk(f.id); return <button key={f.id} type="button" data-feeling={f.id} aria-pressed={on} title={f.name + ': ' + f.pour.text + ' · ' + f.trigger.text}
             style={{ ...btn, minHeight: 28, fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted }}
-            onClick={() => act({ type: 'sandbox/learn', charId: c.id, feeling: f.id, ...(on ? { forget: true } : {}) })}><img src={feelingIconSrc(f.id, on ? ink : '#7F8BA1')} alt="" width={16} height={16} />{f.name}</button>; })}
+            onClick={() => act({ type: 'sandbox/learn', charId: c.id, feeling: f.id, ...(on ? { forget: true } : {}) })}><span aria-hidden="true" style={{ ...parseStyle(iconStyle(feelingIconSrc(f.id, on ? ink : '#7F8BA1'), on ? ink : '#7F8BA1')), width: 16, height: 16 }} />{f.name}</button>; })}
         </div>
         : g.key === 'practice' ? <div style={row}>
           {[5, 15, -5].map((n) => <button key={n} type="button" style={{ ...btn, minHeight: 28, fontSize: 12 }} onClick={() => act({ type: 'sandbox/practice', charId: c.id, n })}>{n > 0 ? '+' + n : n} practice</button>)}
         </div>
         : <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {FEELINGS.map((f) => { const ink = feelingInk(f.id), me = playerUnitPos(c.id); return <div key={f.id} data-fx-test={f.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-            <img src={feelingIconSrc(f.id, ink)} alt="" width={18} height={18} /><span style={{ width: 90, color: ink, fontWeight: 700 }}>{f.name}</span>
+            <span aria-hidden="true" style={{ ...parseStyle(iconStyle(feelingIconSrc(f.id, ink), ink)), width: 18, height: 18 }} /><span style={{ width: 90, color: ink, fontWeight: 700 }}>{f.name}</span>
             {(['pump', 'release', 'residue'] as const).map((w) => <button key={w} type="button" style={{ ...btn, minHeight: 26, fontSize: 11, padding: '0 8px' }} onClick={() => testFeelingFx(f.id, f.family, w, me)}>{w}</button>)}
           </div>; })}
         </div>} /></Box>
