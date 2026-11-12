@@ -9,7 +9,7 @@
 //                                          the full tables, printed: the yardstick, every source before and after, the
 //                                          pairs under fire (levels 1, 6, 12, 20)
 //   HEAL_MEASURE_N=20                      fights a row (default 12)        HEAL_MEASURE_LEVELS=6,12
-//   HEAL_MEASURE_PARTS=yard,inv,fire       only these parts
+//   HEAL_MEASURE_PARTS=yard,inv,fire       only these parts        HEAL_MEASURE_ROWS=Faith   only the pairs whose name matches
 import { describe, it, expect } from 'vitest';
 import { inventory, invTable, invNums, underFire, fireLine, soldierTurn, SOLDIER_TURN, RIFLEMAN_HP, H_LEVELS } from './heal-measure';
 import { SIGIL, BUFF_HEAL, BOON_AREA, MEND_ROUND_SHARE, mendFactor } from '../../src';
@@ -56,7 +56,7 @@ describe('the heal and shield bands hold (rules 1.20)', () => {
       const o = inventory('outburst_s', 'normal', lv), ratio = row(o, /Inverse shield, steady/).now / row(o, /steady \(Rage and Love/).now;
       expect(ratio, 'Inverse against the steady heal, level ' + lv).toBeGreaterThan(1.0); expect(ratio).toBeLessThan(1.45);
       const f = inventory('faith_s', 'normal', lv), pr = row(f, /Saint's Shield/).now / row(f, /Warm Hands/).now;
-      expect(pr).toBeGreaterThan(1.1); expect(pr).toBeLessThan(1.3);
+      expect(pr).toBeGreaterThan(1.1); expect(pr).toBeLessThan(1.35);
     }
   });
   it('riders stay small, and an area gives all its allies together at most about 1.6 times the single heal', () => {
@@ -67,11 +67,11 @@ describe('the heal and shield bands hold (rules 1.20)', () => {
     }
     expect(BOON_AREA * 4).toBeCloseTo(1.6, 5);
   });
-  it('prayer: a Whisper is 28 to 45% of a Soldier-turn, a healing Hymn 115 to 155%, the intervention 120 to 180%', () => {
+  it('prayer: a Whisper is 28 to 45% of a Soldier-turn, a healing Hymn 55 to 80%, the intervention 120 to 180%', () => {
     for (const lv of [1, 6, 20]) {
       const f = inventory('faith_s', 'normal', lv);
       for (const w of [/Whisper: Health/, /Whisper: Protection/]) { expect(row(f, w).pctNow, String(w) + ' level ' + lv).toBeGreaterThanOrEqual(28); expect(row(f, w).pctNow).toBeLessThanOrEqual(45); }
-      expect(row(f, /Warm Hands/).pctNow).toBeGreaterThanOrEqual(115); expect(row(f, /Warm Hands/).pctNow).toBeLessThanOrEqual(155);
+      expect(row(f, /Warm Hands/).pctNow).toBeGreaterThanOrEqual(55); expect(row(f, /Warm Hands/).pctNow).toBeLessThanOrEqual(80);
       expect(row(f, /intervention/).pctNow).toBeGreaterThanOrEqual(120); expect(row(f, /intervention/).pctNow).toBeLessThanOrEqual(180);
     }
   });
@@ -112,7 +112,8 @@ describe('the heal and shield pass, measured', () => {
         ['two Soul healers', [SUPPORT.heal, SUPPORT.heal]], ['two Soul healers standing idle (the control)', [idleOf(SUPPORT.heal), idleOf(SUPPORT.heal)]],
         ['a Soul healer and a shielder', [SUPPORT.heal, SUPPORT.shield]], ['two all-in Soul healers', [SUPPORT.healAllIn, SUPPORT.healAllIn]],
       ];
-      for (const lv of fl) for (const [w, s] of rows) for (const k of Array.isArray(s) ? [2, 3, 4] : [1, 2, 3]) console.log('[fire] ' + fireLine(underFire(w, s, lv, k, N)));
+      const only = process.env.HEAL_MEASURE_ROWS ? new RegExp(process.env.HEAL_MEASURE_ROWS, 'i') : null;
+      for (const lv of fl) for (const [w, s] of rows) { if (only && !only.test(w)) continue; for (const k of Array.isArray(s) ? [2, 3, 4] : [1, 2, 3]) console.log('[fire] ' + fireLine(underFire(w, s, lv, k, N))); }
     }
     expect(true).toBe(true);
   }, 7200000);

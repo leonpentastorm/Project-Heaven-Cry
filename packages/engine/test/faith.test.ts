@@ -102,7 +102,7 @@ describe('prayer in a fight (faith/pray through combat/pray)', () => {
   it('a Hymn by standing lands; Witnessed at Faith 5; the patron speaks; then the cooldown', () => {
     const h = holy({ devotion: 3, faith: 5 });
     h.pray('hymn', 'saints_shield', { targetId: h.ally.id });
-    expect(h.ally.shield).toBe(Math.floor(24 * h.me.blessPower! * mendFactor(h.me.level))); expect(h.me.ap).toBe(3);
+    expect(h.ally.shield).toBe(Math.floor(12 * h.me.blessPower! * mendFactor(h.me.level))); expect(h.me.ap).toBe(3);
     expect(condOn(h.me, 'witnessed')).toBe(true); expect(fx(h.cb, FAITH_FX.witnessed).length).toBe(1);
     expect(fx(h.cb, FAITH_FX.patron_line).some((e) => e.event === 'answered')).toBe(true);
     expect(() => h.pray('hymn', 'saints_shield', { targetId: h.ally.id })).toThrow(/wait/);
@@ -175,8 +175,8 @@ type Case = { id: string; kind?: 'hymn' | 'miracle'; setup?: (h: H) => void; arg
 const ALLY = (h: H) => ({ targetId: h.ally.id }), FOE = (h: H) => ({ targetId: h.foe.id });
 const CASES: Record<string, Case[]> = {
   nerukhan: [
-    { id: 'saints_shield', args: ALLY, check: (h) => expect(h.ally.shield).toBe(Math.floor(24 * h.me.blessPower! * mendFactor(h.me.level))) },
-    { id: 'judgement', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: FOE, check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(logHas(h.cb, /×1\.5: it harmed the helpless/)).toBe(true); } }, // rules 1.21, item 1263: half again (it was double)
+    { id: 'saints_shield', args: ALLY, check: (h) => expect(h.ally.shield).toBe(Math.floor(12 * h.me.blessPower! * mendFactor(h.me.level))) },
+    { id: 'judgement', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: FOE, check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(logHas(h.cb, /×1\.3: it harmed the helpless/)).toBe(true); } }, // rules 1.21, item 1263: 30% more (it was double)
     { id: 'absolution', setup: (h) => { h.ally.hp = 40; h.ally.conds = { shaken: 2 } as any; }, args: ALLY, check: (h) => { expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.hp).toBeGreaterThan(40); } },
     { id: 'saints_verdict', kind: 'miracle', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: () => ({}), check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(h.foe2.hp).toBeLessThan(b.foe2Hp); expect(logHas(h.cb, /×2: it harmed the helpless/)).toBe(true); } },
   ],
@@ -199,10 +199,10 @@ const CASES: Record<string, Case[]> = {
     { id: 'turned_back', kind: 'miracle', setup: (h) => { Object.assign(h.ally, { hp: 0, dead: true, downed: false }); }, args: () => ({}), check: (h) => { expect(h.ally.dead).toBe(false); expect(h.ally.hp).toBe(Math.ceil(h.ally.maxHp / 2)); } },
   ],
   mother_ember: [
-    { id: 'warm_hands', setup: (h) => { h.ally.hp = 30; }, args: ALLY, check: (h) => expect(h.ally.hp).toBe(Math.min(h.ally.maxHp, 30 + Math.round(20 * h.me.blessPower! * mendFactor(h.me.level)))) },
+    { id: 'warm_hands', setup: (h) => { h.ally.hp = 30; }, args: ALLY, check: (h) => expect(h.ally.hp).toBe(Math.min(h.ally.maxHp, 30 + Math.round(10 * h.me.blessPower! * mendFactor(h.me.level)))) },
     { id: 'hearthlight', setup: (h) => { h.ally.hp = 30; }, args: (h) => ({ tile: h.ally.pos }), check: (h) => { expect(((h.cb as any).faithZones || []).length).toBe(1); h.f.turn(h.ally); expect(h.ally.hp).toBeGreaterThan(30); } },
     { id: 'feed_the_fire', setup: (h) => { h.ally.ap = 0; h.ally.conds = { weakened: 2 } as any; }, args: ALLY, check: (h) => { expect(h.ally.ap).toBe(2); expect(condOn(h.ally, 'weakened')).toBe(false); } }, // rules 1.21, item 1267: +2 AP
-    { id: 'everyone_home', kind: 'miracle', setup: (h) => { h.ally.hp = 5; h.me.hp = 20; h.ally.conds = { shaken: 2 } as any; }, args: () => ({}), check: (h) => { expect(h.ally.hp).toBe(h.ally.maxHp); expect(h.me.hp).toBe(h.me.maxHp); expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.shield).toBe(Math.floor(24 * h.me.blessPower! * mendFactor(h.me.level))); } },
+    { id: 'everyone_home', kind: 'miracle', setup: (h) => { h.ally.hp = 5; h.me.hp = 20; h.ally.conds = { shaken: 2 } as any; }, args: () => ({}), check: (h) => { expect(h.ally.hp).toBe(h.ally.maxHp); expect(h.me.hp).toBe(h.me.maxHp); expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.shield).toBe(Math.floor(17 * h.me.blessPower! * mendFactor(h.me.level))); } },
   ],
   old_overcast: [
     { id: 'thunderclap', seed: [1, 1], args: () => ({ tile: '4,5' }), check: (h) => expect(condOn(h.foe, 'shaken') || condOn(h.foe2, 'shaken')).toBe(true) },

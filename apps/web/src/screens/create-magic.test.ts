@@ -62,7 +62,7 @@ describe('starting magic on the Create screen', () => {
     let v = l.renderVals();
     expect(v.slotChip).toBe('ONE MODULE TO START · 2 SLOTS FOR DESIGNS IN PLAY');
     v.schoolCards.find((c: any) => c.name === 'BUFF').pick(); v = l.renderVals();
-    expect(v.obOpts.map((o: any) => o.name)).toEqual(['+2 to hit', '+2 Defense', 'Heal 30']);
+    expect(v.obOpts.map((o: any) => o.name)).toEqual(['+2 to hit', '+2 Defense', 'Heal']);
     v.obOpts[1].pick(); v = l.renderVals();
     const mod = (n: string) => v.modGroups.flatMap((g: any) => g.mods).find((m: any) => m.name === n);
     mod('Swift').pick(); v = l.renderVals(); mod('Homing').pick(); v = l.renderVals(); // each pick replaces the one module

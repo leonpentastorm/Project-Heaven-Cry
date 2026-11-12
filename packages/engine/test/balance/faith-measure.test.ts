@@ -10,7 +10,7 @@
 //     FAITH_MEASURE_VARIANTS=normal     (default normal,allin)
 //     FAITH_MEASURE_PATRONS=old_overcast,nerukhan
 import { describe, it, expect } from 'vitest';
-import { F_LEVELS, PATRON_IDS, DEVOTION_BY_LEVEL, SESSION_AT, faithBuild, dabblerBuild, faithSheet, rifleTurn, prayerRow, fline, soldierTurn, inventory, supportWorth } from './faith-measure';
+import { F_LEVELS, PATRON_IDS, DEVOTION_BY_LEVEL, SESSION_AT, SOLDIER_TURN, faithBuild, dabblerBuild, faithSheet, rifleTurn, prayerRow, fline, soldierTurn, inventory, supportWorth } from './faith-measure';
 import { prayerHarms } from './policies';
 import { FAITH_PATRON, WHISPER, DEVOTION_XP, TAG_CAPS } from '../../src';
 
@@ -26,16 +26,22 @@ const FIRE: Record<number, any> = {}, fire = (lv: number) => (FIRE[lv] ??= soldi
 const hymnsAt = (patron: string, dv: number) => (FAITH_PATRON[patron].hymns || []).filter((h) => dv >= [0, 3, 5, 7][h.tier]);
 
 describe('the Faith targets hold (rules 1.21)', () => {
-  const n = 4, lv = 6, y = rifleTurn(lv, 12);
-  it('a prayer-led character sworn to a damage patron is about level with the Outburst\'s steady play, and is not above the Hymn peak', () => {
+  const n = 6, lv = 6, y = rifleTurn(lv, 30);
+  // Leon, 12 Nov 2026 (balance pass, section 16): the Outburst is steady about 135% and its peak about 165%, and a prayer-led
+  // build is about level with it.
+  it('a prayer-led character sworn to a damage patron is about level with the Outburst\'s steady play (135%), and the Hymn\'s peak is about 165%', () => {
     for (const p of ['old_overcast', 'nerukhan']) {
       const r = prayerRow('prayer-led', faithBuild(p), 'normal', lv, n, y);
       console.log('[targets] ' + fline(r));
       expect(r.errors).toBe(0);
       if (!HAS_REBUKE) continue; // the tree before rules 1.21: measured, not held to the target
-      expect(r.pctRifle, p + ', percent of the rifle').toBeGreaterThanOrEqual(105); expect(r.pctRifle).toBeLessThanOrEqual(155);
+      expect(r.pctRifle, p + ', percent of the rifle').toBeGreaterThanOrEqual(110); expect(r.pctRifle).toBeLessThanOrEqual(160);
       expect(r.hymns).toBeGreaterThan(0.3); expect(r.whispers).toBeGreaterThan(0.8);
     }
+    // the Hymn's peak: Lightning Rod with a second enemy inside its chain
+    const two = prayerRow('two targets', faithBuild('old_overcast'), 'normal', lv, n, y, { foes: 2 });
+    console.log('[targets] ' + fline(two)); expect(two.errors).toBe(0);
+    if (HAS_REBUKE) { expect(two.pctRifle, 'two targets, percent of the rifle').toBeGreaterThanOrEqual(140); expect(two.pctRifle).toBeLessThanOrEqual(185); }
   }, 120000);
   it('a patron with no Hymn that deals damage still has the Whisper and the rifle: not under half a rifle, not over one', () => {
     const r = prayerRow('prayer-led', faithBuild('mother_ember'), 'normal', lv, n, y, { opts: { hymn: 'any' } });
@@ -44,8 +50,8 @@ describe('the Faith targets hold (rules 1.21)', () => {
     if (HAS_REBUKE) { expect(r.pctRifle).toBeGreaterThanOrEqual(40); expect(r.pctRifle).toBeLessThanOrEqual(100); }
   }, 120000);
   it('the gunner who dabbles (Faith 3 given free, Devotion 3) gains little', () => {
-    const base = prayerRow('rifle only', dabblerBuild(), 'normal', lv, n, y, { opts: { hymn: 'none', whisper: 'none' } });
-    const best = Math.max(...[{ hymn: 'none', order: 'weapon' }, { hymn: 'none' }, { hymn: 'damage' }].map((o) => prayerRow('dabbler', dabblerBuild(), 'normal', lv, n, y, { opts: o }).perTurn));
+    const nd = 16, base = prayerRow('rifle only', dabblerBuild(), 'normal', lv, nd, y, { opts: { hymn: 'none', whisper: 'none' } });
+    const best = Math.max(...[{ hymn: 'none', order: 'weapon' }, { hymn: 'none' }, { hymn: 'damage' }].map((o) => prayerRow('dabbler', dabblerBuild(), 'normal', lv, nd, y, { opts: o }).perTurn));
     console.log('[targets] the dabbler: rifle only ' + base.perTurn + ' a turn, the best with prayer ' + best);
     expect(best).toBeLessThanOrEqual(base.perTurn * 1.15);
   }, 120000);
@@ -88,11 +94,11 @@ describe('the Faith measurements', () => {
       md += '\n**' + (v === 'normal' ? 'Normal share' : 'All in') + '.** Each cell: the best Hymn within standing, its worth when it is needed, as a percent of a plain rifle\'s turn (ESTIMATE; the rule is in faith-measure.ts `supportWorth`)\n\n| Patron | ' + LEVELS.map((l) => 'Level ' + l).join(' | ') + ' |\n|---|' + LEVELS.map(() => '---').join('|') + '|\n';
       const ctl = LEVELS.map((lv) => prayerRow('control', faithBuild('counting_weaver'), v, lv, N, yard(lv), { opts: { hymn: lv >= 9 ? 'cut_short' : 'none', whisper: 'none' } }));
       for (const p of PATRONS) {
-        md += '| ' + FAITH_PATRON[p].name + ' | ' + LEVELS.map((lv, i) => { const s = faithSheet(p, v, lv), x = { S: fire(lv).taken, R: yard(lv), P: s.power, fail: (ctl[i].saveFailPct ?? 60) / 100 };
+        md += '| ' + FAITH_PATRON[p].name + ' | ' + LEVELS.map((lv, i) => { const s = faithSheet(p, v, lv), x = { S: SOLDIER_TURN[lv] ?? fire(lv).taken, R: yard(lv), P: s.power, fail: (ctl[i].saveFailPct ?? 60) / 100, level: lv };
           const ws = hymnsAt(p, s.devotion).map((h) => ({ h, w: supportWorth(h.id, x) })).filter((q) => q.w); if (!ws.length) return '–';
           const b = ws.reduce((a, c) => (c.w.pct > a.w.pct ? c : a)); return b.h.name + ' **' + b.w.pct + '%**'; }).join(' | ') + ' |\n';
       }
-      md += '| Whisper: Health or Protection | ' + LEVELS.map((lv) => { const s = faithSheet('mother_ember', v, lv); return supportWorth('health', { S: fire(lv).taken, R: yard(lv), P: s.power, fail: 0.6 }).pct + '%'; }).join(' | ') + ' |\n';
+      md += '| Whisper: Health · Protection | ' + LEVELS.map((lv) => { const s = faithSheet('mother_ember', v, lv); return supportWorth('health', { S: SOLDIER_TURN[lv] ?? fire(lv).taken, R: yard(lv), P: s.power, fail: 0.6, level: lv }).pct + '% · ' + supportWorth('protection', { S: SOLDIER_TURN[lv] ?? fire(lv).taken, R: yard(lv), P: s.power, fail: 0.6, level: lv }).pct + '%'; }).join(' | ') + ' |\n';
       md += '| a Soldier fails a save against these prayers | ' + ctl.map((r) => (r.saveFailPct == null ? '–' : r.saveFailPct + '%')).join(' | ') + ' |\n';
     }
     console.log(md);

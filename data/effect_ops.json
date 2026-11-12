@@ -3690,7 +3690,7 @@
         "op": "chain_damage",
         "jumps": 1,
         "range": 2,
-        "value": 15
+        "value": 20
       }
     },
     {

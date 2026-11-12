@@ -254,7 +254,7 @@ function stackLine(words, skills = {}) {
 }
 // A school's options as the engine stores them (buff to_hit_2 → hit, control push_3 → push, status as they are).
 const optId = (o) => o.replace(/^to_/, '').replace(/_\d+$/, '');
-const OPT_NAME = { hit: '+2 to hit', defense: '+2 Defense', heal: 'Heal 30', push: 'Push 3 tiles', pull: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed', fear: 'Fear', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff',
+const OPT_NAME = { hit: '+2 to hit', defense: '+2 Defense', heal: 'Heal', push: 'Push 3 tiles', pull: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed', fear: 'Fear', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff',
   strike: 'Strike', finish: 'Finish', brand: 'Brand', drain: 'Drain', swap: 'Swap places', silenced: 'Silenced' }; // rules 1.19
 const ENGINE_OPT = { damage: 'strike', buff: 'heal', control: 'push', status: 'shaken' }; // what the engine uses when no option is set
 const obOf = (S) => { const o = S.ob || DEFAULT_OB, opts = (SCHOOL[o.school]?.options || []).map(optId);

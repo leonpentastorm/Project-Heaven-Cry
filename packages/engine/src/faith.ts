@@ -982,9 +982,9 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
   }
   switch (id) {
     // Holy Father Nerukhan
-    case 'saints_shield': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + ' gains a ' + grantShield(cb, one!, effVal(e, 'shield', 24) * pw * mendFactorOf(u), u) + ' shield');
-    case 'judgement': return land(cb, rng, u, one!, e, power, (pw) => { const hm = one!.faith?.harmedHelpless ? Number(fxOf(e, 'vs_status_damage')?.mult ?? 1.5) : 1; return harmLine(cb, u, one!, prayerDamage(e, 40) * pw * hm, 'soul') + (hm !== 1 ? ' (×' + hm + ': it harmed the helpless)' : ''); });
-    case 'absolution': return land(cb, rng, u, one!, e, power, (pw) => { const ids = Object.keys(one!.conds || {}).filter((k) => !condIsBoon(k) && condOn(one!, k)); for (const k of ids) endCond(one!, k, cb); return ' · ' + one!.name + ' is absolved' + (ids.length ? ' (' + ids.join(', ') + ')' : '') + ' and' + healLine(cb, u, one!, effVal(e, 'heal', 15) * pw * mendFactorOf(u)); });
+    case 'saints_shield': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + ' gains a ' + grantShield(cb, one!, effVal(e, 'shield', 12) * pw * mendFactorOf(u), u) + ' shield');
+    case 'judgement': return land(cb, rng, u, one!, e, power, (pw) => { const hm = one!.faith?.harmedHelpless ? Number(fxOf(e, 'vs_status_damage')?.mult ?? 1.3) : 1; return harmLine(cb, u, one!, prayerDamage(e, 50) * pw * hm, 'soul') + (hm !== 1 ? ' (×' + hm + ': it harmed the helpless)' : ''); });
+    case 'absolution': return land(cb, rng, u, one!, e, power, (pw) => { const ids = Object.keys(one!.conds || {}).filter((k) => !condIsBoon(k) && condOn(one!, k)); for (const k of ids) endCond(one!, k, cb); return ' · ' + one!.name + ' is absolved' + (ids.length ? ' (' + ids.join(', ') + ')' : '') + ' and' + healLine(cb, u, one!, effVal(e, 'heal', 7) * pw * mendFactorOf(u)); });
     case 'saints_verdict': { // rules 1.6.2 (item 727): every enemy in sight; double and 2 rounds for those that harmed the helpless
       let out = '';
       for (const v of enemiesInSight(cb, u)) { const hh = !!v.faith?.harmedHelpless; out += land(cb, rng, u, v, e, power, (pw) => harmLine(cb, u, v, prayerDamage(e, 130) * pw * (hh ? Number(fxOf(e, 'damage_mult')?.value ?? 2) : 1), 'soul') + (hh ? ' (×' + Number(fxOf(e, 'damage_mult')?.value ?? 2) + ': it harmed the helpless)' : '') + applyCond(cb, rng, u, v, 'stunned', hh ? 2 : 1, undefined, { skipSave: true })); }
@@ -1038,7 +1038,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       return out || ' · nobody has crossed or fallen';
     }
     // Mother Ember
-    case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, effVal(e, 'heal', 20) * pw * mendFactorOf(u)));
+    case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, effVal(e, 'heal', 10) * pw * mendFactorOf(u)));
     case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: area3(a.tile!), until: cb.round + 2, heal: Math.round(effVal(e, 'heal', 4) * power * mendFactorOf(u)) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
     case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { const n = Number(fxOf(e, 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2), was = one!.ap; one!.ap = Math.min(AP_MAX, one!.ap + n); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +' + (one!.ap - was) + ' AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
     case 'everyone_home': { // rules 1.6.2 (item 731): full HP, the Downed stand, every harmful condition ends, a 40 shield each
@@ -1046,13 +1046,13 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       for (const v of cb.units.filter((x) => x.side === u.side && !x.dead)) out += land(cb, rng, u, v, e, power, (pw) => {
         const up = v.downed; healUnit(cb, v, v.maxHp, u, 'blessing', { noLimit: true }); v.hp = v.maxHp; // to full whatever trims a heal
         const ended = cleanseHarmful(cb, v);
-        return ' · ' + v.name + (up ? ' stands at full HP' : ' heals to full') + (ended.length ? ', cleansed (' + ended.join(', ') + ')' : '') + ', a ' + grantShield(cb, v, effVal(e, 'shield', 24) * pw * mendFactorOf(u), u) + ' shield';
+        return ' · ' + v.name + (up ? ' stands at full HP' : ' heals to full') + (ended.length ? ', cleansed (' + ended.join(', ') + ')' : '') + ', a ' + grantShield(cb, v, effVal(e, 'shield', 17) * pw * mendFactorOf(u), u) + ' shield';
       });
       return out;
     }
     // Old Overcast
     case 'thunderclap': { let out = ''; const from = { pos: a.tile } as any as Unit; const dmg = prayerDamage(e, 0); for (const v of cb.units.filter((x) => x.side !== u.side && !x.dead && !x.surrendered && dist(x.pos, a.tile!) <= 2)) { if (dmg > 0) out += harmLine(cb, u, v, P(dmg), 'elemental', 'lightning'); if (v.dead || v.downed) continue; out += pushAway(cb, from, v, 1) + applyCond(cb, rng, u, v, 'shaken', undefined, 'heart'); } return out || ' · nobody there'; } // item 1261: the thunder hurts
-    case 'lightning_rod': return land(cb, rng, u, one!, e, power, (pw) => { let out = harmLine(cb, u, one!, prayerDamage(e, 45) * pw, 'elemental', 'lightning'); const n = cb.units.filter((x) => x.side !== u.side && alive(x) && x !== one && dist(x.pos, one!.pos) <= 2).sort((p, q) => dist(p.pos, one!.pos) - dist(q.pos, one!.pos))[0]; if (n) out += ' · it chains to ' + n.name + harmLine(cb, u, n, Number(fxOf(e, 'chain_damage')?.value ?? 15) * pw, 'elemental', 'lightning'); return out; });
+    case 'lightning_rod': return land(cb, rng, u, one!, e, power, (pw) => { let out = harmLine(cb, u, one!, prayerDamage(e, 50) * pw, 'elemental', 'lightning'); const n = cb.units.filter((x) => x.side !== u.side && alive(x) && x !== one && dist(x.pos, one!.pos) <= 2).sort((p, q) => dist(p.pos, one!.pos) - dist(q.pos, one!.pos))[0]; if (n) out += ' · it chains to ' + n.name + harmLine(cb, u, n, Number(fxOf(e, 'chain_damage')?.value ?? 20) * pw, 'elemental', 'lightning'); return out; });
     case 'gather_the_clouds': ((cb as any).faithClouds ||= []).push({ by: u.id, side: u.side }); return ' · until your next turn, your side\'s Storm riders count a stage higher';
     case 'the_sky_answers': { // rules 1.6.2 (item 732): a 5×5 in sight; the sky picks: enemies only; 150 Storm, Stunned 1, Shaken
       let out = ''; const tiles = areaOf(a.tile!, 2);
@@ -1380,8 +1380,8 @@ function storyEffect(g: GameState, c: Character, t: Character, kind: PrayerKind,
     default: return null; // Protection and Safe Passage only mean something in a fight
   }
   switch (id) {
-    case 'absolution': { const e = endConds(t, null); return ' · ' + t.name + ' is absolved' + (e.length ? ' (' + e.join(', ') + ')' : '') + ' and' + heal(t, effVal(hymnEntry('absolution'), 'heal', 15) * power * mendFactor(c.level)).replace(' · ' + t.name, ''); }
-    case 'warm_hands': return heal(t, effVal(hymnEntry('warm_hands'), 'heal', 20) * power * mendFactor(c.level));
+    case 'absolution': { const e = endConds(t, null); return ' · ' + t.name + ' is absolved' + (e.length ? ' (' + e.join(', ') + ')' : '') + ' and' + heal(t, effVal(hymnEntry('absolution'), 'heal', 7) * power * mendFactor(c.level)).replace(' · ' + t.name, ''); }
+    case 'warm_hands': return heal(t, effVal(hymnEntry('warm_hands'), 'heal', 10) * power * mendFactor(c.level));
     case 'coin_for_the_ferry': return t.hp > 0 ? ' · ' + t.name + ' is not down' : heal(t, effVal(hymnEntry('coin_for_the_ferry'), 'heal', 5) * power * mendFactor(c.level));
     case 'feed_the_fire': { const e = endConds(t, ['weakened', 'slowed']); if (g.story.await === 'players') (g.story.ap ||= {})[t.id] = B!.apLeft(g, t) + Number(fxOf(hymnEntry('feed_the_fire'), 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2); return ' · ' + t.name + ' +' + Number(fxOf(hymnEntry('feed_the_fire'), 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2) + ' AP' + (e.length ? ', ' + e.join(' and ') + ' ended' : ''); }
     case 'lucky_break': st(t).luckyBreak = true; return ' · ' + t.name + ': +5 on the next check';

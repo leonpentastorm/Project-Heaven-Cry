@@ -357,7 +357,7 @@
     "farewell",
     "grant"
   ],
-  "notes": "Rules 1.6 (8 Nov 2026). Every number is provisional (spec section 14). Lines are picked by the engine (seeded), never written by the Narrator. Rules 1.20 (the heal and shield pass, 12 Nov 2026): prayer heals and shields were fitted to one Soldier's turn (Health 5, Protection 6, Warm Hands 20, Saint's Shield 24, Absolution 15, Hearthlight 4, Coin for the Ferry 5, Everyone Home's shield 24, Mother Ember's intervention 10 + 3 × Devotion) and grow with the devoted's level (rules.json mending); the engine reads these values.",
+  "notes": "Rules 1.6 (8 Nov 2026). Every number is provisional (spec section 14). Lines are picked by the engine (seeded), never written by the Narrator. Rules 1.20 (the heal and shield pass, 12 Nov 2026): prayer heals and shields were fitted to one Soldier's turn (Health 5, Protection 6, Warm Hands 10, Saint's Shield 12, Absolution 7, Hearthlight 4, Coin for the Ferry 5, Everyone Home's shield 17, Mother Ember's intervention 10 + 3 × Devotion) and grow with the devoted's level (rules.json mending); the engine reads these values.",
   "items": [
     {
       "id": "nerukhan",
@@ -439,12 +439,12 @@
           "id": "saints_shield",
           "name": "Saint's Shield",
           "tier": 1,
-          "text": "You or an ally you can see gains a shield of 24 × your Blessing power. The shield grows with your level.",
+          "text": "You or an ally you can see gains a shield of 12 × your Blessing power. The shield grows with your level.",
           "target": "ally",
           "effects": [
             {
               "op": "shield",
-              "value": 24
+              "value": 12
             }
           ],
           "scales_with": "blessing_power",
@@ -455,19 +455,19 @@
           "id": "judgement",
           "name": "Judgement",
           "tier": 2,
-          "text": "An enemy you can see takes 40 Soul damage × your Blessing power. It takes half as much again if it harmed a surrendered or Downed creature this fight.",
+          "text": "An enemy you can see takes 50 Soul damage × your Blessing power. It takes 30% more if it harmed a surrendered or Downed creature this fight.",
           "target": "enemy",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -40,
+              "value": -50,
               "damage_type": "soul"
             },
             {
               "op": "vs_status_damage",
               "status": "harmed_helpless",
-              "mult": 1.5
+              "mult": 1.3
             }
           ],
           "scales_with": "blessing_power",
@@ -478,7 +478,7 @@
           "id": "absolution",
           "name": "Absolution",
           "tier": 3,
-          "text": "You or an ally you can see loses every harmful condition and heals 15 × your Blessing power. The heal grows with your level.",
+          "text": "You or an ally you can see loses every harmful condition and heals 7 × your Blessing power. The heal grows with your level.",
           "target": "ally",
           "effects": [
             {
@@ -487,7 +487,7 @@
             },
             {
               "op": "heal",
-              "value": 15
+              "value": 7
             }
           ],
           "scales_with": "blessing_power",
@@ -1357,12 +1357,12 @@
           "id": "warm_hands",
           "name": "Warm Hands",
           "tier": 1,
-          "text": "You or an ally you can see heals 20 × your Blessing power. The heal grows with your level.",
+          "text": "You or an ally you can see heals 10 × your Blessing power. The heal grows with your level.",
           "target": "ally",
           "effects": [
             {
               "op": "heal",
-              "value": 20
+              "value": 10
             }
           ],
           "scales_with": "blessing_power",
@@ -1422,7 +1422,7 @@
       "miracle": {
         "id": "everyone_home",
         "name": "Everyone Home",
-        "text": "The whole squad heals to full HP, Downed allies stand up, every harmful condition ends, and everyone gains a shield of 24 × your Blessing power. The shield grows with your level.",
+        "text": "The whole squad heals to full HP, Downed allies stand up, every harmful condition ends, and everyone gains a shield of 17 × your Blessing power. The shield grows with your level.",
         "target": "none",
         "effects": [
           {
@@ -1438,7 +1438,7 @@
           },
           {
             "op": "shield",
-            "value": 24,
+            "value": 17,
             "target": "allies"
           }
         ],
@@ -1614,20 +1614,20 @@
           "id": "lightning_rod",
           "name": "Lightning Rod",
           "tier": 2,
-          "text": "An enemy you can see takes 45 lightning damage × your Blessing power. It chains to 1 more enemy within 2 tiles for 15 × your Blessing power.",
+          "text": "An enemy you can see takes 50 lightning damage × your Blessing power. It chains to 1 more enemy within 2 tiles for 20 × your Blessing power.",
           "target": "enemy",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -45,
+              "value": -50,
               "damage_type": "lightning"
             },
             {
               "op": "chain_damage",
               "jumps": 1,
               "range": 2,
-              "value": 15
+              "value": 20
             }
           ],
           "scales_with": "blessing_power",

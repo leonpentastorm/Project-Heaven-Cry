@@ -16,6 +16,7 @@ import { runCell, runFight, MAP_ID, TIER_WEAPON } from './sim';
 import { BUILD, BUILDS, buildCharacter } from './builds';
 import { prayerHarms } from './policies';
 import { FAITH_PATRONS, FAITH_PATRON, WHISPERS, MAPS, ENEMY, blessingPower, prayerCooldown, devotionNow, maxHp, bindGame, newGame } from '../../src';
+import * as ENGINE from '../../src';
 
 export const F_LEVELS = [1, 3, 6, 9, 12, 20];
 export const PATRON_IDS: string[] = FAITH_PATRONS.map((p) => p.id);
@@ -121,50 +122,62 @@ export function inventory(): InvRow[] {
 }
 
 // ---------- what a prayer that is not damage is worth (ESTIMATES; the rules are these lines) ----------
-/** In percent of a plain rifle's turn at the same level. `S` is what a same-level Soldier deals to a character in one of
- * its turns, `R` what the plain rifle deals in a turn, `P` the praying character's Blessing power, `fail` the chance a
- * Soldier fails a save against this character's prayers (measured), `shot` one plain shot's expected damage (R ÷ 3).
- * THE EXCHANGE: damage a Soldier does not get to deal, or HP given back, is set against the Soldier's turn S, and one
- * Soldier's turn kept off the squad counts as one plain rifle's turn of damage (R): both are "one fighter's turn". So
- * a heal of S HP is 100%. Nothing here is counted when there is nobody to use it on: these are the worth of the prayer
- * WHEN IT IS NEEDED (an ally is hurt, an enemy is shooting, an ally is about to fire). */
-export function supportWorth(id: string, x: { S: number; R: number; P: number; fail: number }): { pct: number; why: string } | null {
-  const { S, R, P, fail } = x, hp = (n: number) => pct(n, S), shot = R / 3;
+/** One Soldier-turn, the heal and shield pass's yardstick (docs/design/handoffs/heal-shield-pass.md, section 1.1: what
+ * one Soldier of the fight's level takes off the plain rifleman in one of its turns, two Soldiers firing, 60 fights a
+ * level). `soldierTurn` above is this file's own cross-check of it (one Soldier, fewer fights: it reads lower). */
+export const SOLDIER_TURN: Record<number, number> = { 1: 18.5, 3: 21.5, 6: 25.4, 9: 32.4, 12: 37.8, 20: 60.2 };
+/** Rules 1.20: prayer heals and shields grow with the caster's level (×1 when the engine has no such rule). */
+const mend = (level: number): number => (typeof (ENGINE as any).mendFactor === 'function' ? (ENGINE as any).mendFactor(level) : 1);
+const entryOf = (id: string): any => (WHISPERS as any[]).find((w) => w.id === id) || (FAITH_PATRONS as any[]).flatMap((p) => p.hymns || []).find((h) => h.id === id);
+const num = (id: string, what: string): number => (amounts(entryOf(id) || {}).find((a) => a.what === what)?.base ?? 0);
+const usesOf = (id: string, op: string): number => Number((entryOf(id)?.effects || []).find((f: any) => f.op === op)?.uses ?? 1);
+/** In percent of a plain rifle's turn at the same level. `S` is one Soldier-turn, `R` what the plain rifle deals in a
+ * turn, `P` the praying character's Blessing power, `level` its level, `fail` the chance a Soldier fails a save against
+ * this character's prayers (measured), `shot` one plain shot's expected damage (R ÷ 3).
+ * THE EXCHANGE: HP given back, or damage a Soldier does not get to deal, is set against the Soldier-turn S, and one
+ * Soldier-turn kept off the squad counts as one plain rifle's turn of damage (R): both are "one fighter's turn". So a
+ * heal of S HP reads 100%. An ally's attack that a prayer makes land counts as that ally's shot (the plain rifle's: a
+ * third of R; an optimised gunner's shot is worth half again). Nothing is counted when there is nobody to use it on:
+ * this is the worth of the prayer WHEN IT IS NEEDED (an ally is hurt, an enemy is shooting, an ally is about to fire).
+ * Heal and shield numbers are read from the data as it stands, with the level factor of rules 1.20. */
+export function supportWorth(id: string, x: { S: number; R: number; P: number; fail: number; level?: number }): { pct: number; why: string } | null {
+  const { S, R, P, fail } = x, m = mend(x.level || 1), hp = (n: number) => pct(n, S), shot = R / 3, H = (what: string) => num(id, what) * P * m;
   switch (id) {
     // Whispers
-    case 'health': return { pct: hp(15 * P), why: 'heals ' + Math.round(15 * P) };
-    case 'protection': return { pct: hp(15 * P), why: 'a ' + Math.round(15 * P) + ' shield' };
+    case 'health': return { pct: hp(H('heal')), why: 'heals ' + Math.round(H('heal')) };
+    case 'protection': return { pct: hp(H('shield')), why: 'a ' + Math.round(H('shield')) + ' shield' };
     case 'luck': return { pct: pct(0.1 * shot, R), why: '+2 on one roll: a tenth of a shot' };
+    case 'rebuke': return { pct: pct(num(id, 'damage') * P, R), why: Math.round(num(id, 'damage') * P) + ' Soul damage, no roll' };
     // Nerukhan
-    case 'saints_shield': return { pct: hp(40 * P), why: 'a ' + Math.round(40 * P) + ' shield' };
-    case 'absolution': return { pct: hp(30 * P), why: 'heals ' + Math.round(30 * P) + ' (the cleanse is not counted)' };
+    case 'saints_shield': return { pct: hp(H('shield')), why: 'a ' + Math.round(H('shield')) + ' shield' };
+    case 'absolution': return { pct: hp(H('heal')), why: 'heals ' + Math.round(H('heal')) + ' (the cleanse is not counted)' };
     // The Quartermaster
     case 'resupply': return { pct: pct(shot, R), why: 'a reload saved (2 AP: one shot); the Supply is not counted' };
-    case 'dig_in': return { pct: Math.round(100 * 0.3), why: 'half cover and Braced: about 3 in 10 of a Soldier\'s hits on that ally miss, while they stay' };
+    case 'dig_in': return { pct: 30, why: 'half cover and Braced: about 3 in 10 of a Soldier\'s hits on that ally miss, each round they stay' };
     case 'covering_fire': return { pct: Math.round(100 * fail * 0.4), why: 'Pinned (no move, −2 to hit): about 4 tenths of a turn lost, when the save fails; one enemy counted' };
     // The Laughing Mask
-    case 'lucky_break': return { pct: pct(0.35 * shot, R), why: 'one missed shot in three rerolled at +5' };
+    case 'lucky_break': { const n = usesOf(id, 'reroll'); return { pct: pct(n * 0.85 * shot, R), why: n + ' missed shot' + (n > 1 ? 's' : '') + ' rerolled at +5 (each lands about 85% of the time)' }; }
     case 'switcheroo': return { pct: 0, why: 'position only: not priced' };
     case 'pratfall': return { pct: Math.round(100 * fail * 0.5), why: 'Prone and Disarmed: 3 of 6 AP to stand and pick the weapon up, when the save fails' };
     // The Toll-Keeper
     case 'coin_for_the_ferry': return { pct: 100, why: 'a Downed ally stands: one fighter\'s turn back (only when someone is Downed)' };
     case 'hold_the_gate': return { pct: 0, why: 'nobody drops for a round: not priced (worth a fighter when it saves one)' };
-    case 'last_crossing': return { pct: 0, why: 'counted as damage by the simulator when the target is at a quarter HP' };
+    case 'last_crossing': return { pct: 0, why: 'an enemy at a quarter HP dies: worth up to a quarter of its HP; not priced' };
     // Mother Ember
-    case 'warm_hands': return { pct: hp(40 * P), why: 'heals ' + Math.round(40 * P) };
-    case 'hearthlight': return { pct: hp(10 * P), why: 'heals ' + Math.round(10 * P) + ' a turn for 3 rounds to each ally who stays in it (one ally, one turn counted: ×3 over its life)' };
-    case 'feed_the_fire': return { pct: pct(shot / 2, R), why: '+1 AP: half a shot' };
+    case 'warm_hands': return { pct: hp(H('heal')), why: 'heals ' + Math.round(H('heal')) };
+    case 'hearthlight': return { pct: hp(H('heal')), why: 'heals ' + Math.round(H('heal')) + ' a turn for 3 rounds to each ally who stays in it (one ally, one turn counted: ×3 over its life)' };
+    case 'feed_the_fire': { const n = Number((entryOf(id)?.effects || []).find((f: any) => f.op === 'stat_mod')?.value ?? 1); return { pct: pct((n / 2) * shot, R), why: '+' + n + ' AP: ' + (n / 2) + ' of a shot' }; }
     // Old Overcast
-    case 'thunderclap': return { pct: Math.round(100 * fail * 0.05), why: 'Shaken (−2 Heart saves) and a 1-tile push: little by itself' };
+    case 'thunderclap': return { pct: Math.round(100 * fail * 0.05), why: 'Shaken (−2 Heart saves) and a 1-tile push: little by itself (its damage is in the simulator\'s rows)' };
     case 'gather_the_clouds': return { pct: 0, why: 'only with Storm-tone Outbursts in the squad: not priced' };
     // The Matchmaker
     case 'red_thread': return { pct: 0, why: 'damage is shared, not prevented: not priced' };
     case 'sweet_nothings': return { pct: Math.round(100 * fail * 0.5), why: 'one enemy can\'t attack you or your linked allies for a round, when the save fails (it can still attack others: half a turn)' };
-    case 'together': return { pct: pct(2 * 0.3 * shot, R) + Math.round(100 * 0.1 * 2), why: 'two allies: +2 to hit (3 tenths of a shot each over three shots) and +2 Defense (a tenth of a Soldier\'s turn each)' };
+    case 'together': return { pct: pct(2 * 0.3 * shot, R) + 20, why: 'two allies: +2 to hit (3 tenths of a shot each over three shots) and +2 Defense (a tenth of a Soldier-turn each)' };
     // The Counting Weaver
-    case 'foreknowing': return { pct: 33, why: 'one attack misses: a third of a Soldier\'s turn' };
+    case 'foreknowing': { const n = usesOf(id, 'state'); return { pct: Math.round((100 * n) / 3.6), why: n + ' attack' + (n > 1 ? 's miss' : ' misses') + ': a Soldier rolls 3.6 times a turn' }; }
     case 'unravel': return { pct: 0, why: 'ends an enemy\'s boons and shield: worth what was on it; not priced' };
-    case 'cut_short': return { pct: Math.round(100 * fail), why: 'a Soldier loses its turn, when the save fails' };
+    case 'cut_short': return { pct: Math.round(100 * fail * 0.5), why: 'a Soldier loses its turn when the save fails; the same enemy at most every other round (rules 1.21), so half a Soldier-turn a round on one enemy' };
   }
   return null;
 }

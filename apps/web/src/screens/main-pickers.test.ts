@@ -72,7 +72,7 @@ describe('the Perks strip opens an action\'s own panel', () => {
     expect(slots[0].effects).toMatch(/^At stage 1: \d+ damage/);
     // Slot 2: Buff, its option (the school's first is preset; pick +2 Defense); slot 3: Control.
     slots[1].schools[1].pick(); await tick();
-    slots = L.renderVals().stripPick.fields[0].slots; expect(slots[1].options.map((o: any) => o.label)).toEqual(['+2 to hit', '+2 Defense', 'Heal 30']);
+    slots = L.renderVals().stripPick.fields[0].slots; expect(slots[1].options.map((o: any) => o.label)).toEqual(['+2 to hit', '+2 Defense', 'Heal']);
     slots[1].options[1].pick(); await tick();
     L.renderVals().stripPick.fields[0].slots[2].schools[2].pick(); await tick();
     P = L.renderVals().stripPick;

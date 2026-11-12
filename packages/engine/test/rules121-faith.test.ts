@@ -2,8 +2,8 @@
 // file pins, each from a sentence of the spec:
 //   Rebuke            the seventh Whisper: 1 AP, an enemy in sight takes 15 Soul × Blessing power, no roll, armour does
 //                     not lower it, one Whisper a turn; an Atheist prays it by dice; it never makes you Witnessed
-//   the damage Hymns  Judgement 40 (half again against one that harmed the helpless: it was double); Lightning Rod 45
-//                     and 15 to one more (50 and 25); Thunderclap hurts: 20 lightning to each enemy within 2
+//   the damage Hymns  Judgement 50 (it was 40), 30% more against one that harmed the helpless (it was double); Lightning
+//                     Rod 50 and 20 to one more (the chain was 25); Thunderclap hurts: 20 lightning to each enemy within 2
 //   the Miracle       The Saints' Verdict 130 (100); the double for the cruel stays
 //   the others        Lucky Break rerolls two failed attack rolls, Foreknowing turns two attacks, Feed the Fire gives
 //                     +2 AP, Cut Short can't cost the same enemy two turns running
@@ -47,9 +47,9 @@ describe('the data (rules 1.21): the numbers the spec gives', () => {
     expect(WHISPERS.length).toBe(7);
     const r = WHISPER.rebuke; expect(r.target).toBe('enemy'); expect(prayerDamage(r)).toBe(15); expect(eff(r, 'stat_mod').damage_type).toBe('soul'); expect(r.scales_with).toBe('blessing_power');
   });
-  it('Judgement 40 and ×1.5; Lightning Rod 45 and 15; Thunderclap 20 within 2; The Saints\' Verdict 130 and ×2', () => {
-    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(40); expect(eff(j, 'vs_status_damage').mult).toBe(1.5);
-    const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(45); expect(eff(l, 'chain_damage').value).toBe(15); expect(eff(l, 'chain_damage').range).toBe(2);
+  it('Judgement 50 and ×1.3; Lightning Rod 50 and 20; Thunderclap 20 within 2; The Saints\' Verdict 130 and ×2', () => {
+    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(50); expect(eff(j, 'vs_status_damage').mult).toBe(1.3);
+    const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(50); expect(eff(l, 'chain_damage').value).toBe(20); expect(eff(l, 'chain_damage').range).toBe(2);
     const t = hymn('old_overcast', 'thunderclap'); expect(prayerDamage(t)).toBe(20); expect(eff(t, 'stat_mod').radius).toBe(2); expect(eff(t, 'stat_mod').damage_type).toBe('lightning');
     const v = FAITH_PATRON.nerukhan.miracle; expect(prayerDamage(v)).toBe(130); expect(eff(v, 'damage_mult').value).toBe(2);
   });
@@ -61,8 +61,8 @@ describe('the data (rules 1.21): the numbers the spec gives', () => {
   });
   it('every card says its own number', () => {
     expect(WHISPER.rebuke.text).toMatch(/15 Soul damage/);
-    expect(hymn('nerukhan', 'judgement').text).toMatch(/40 Soul damage.*half as much again/);
-    expect(hymn('old_overcast', 'lightning_rod').text).toMatch(/45 lightning damage.*for 15 ×/);
+    expect(hymn('nerukhan', 'judgement').text).toMatch(/50 Soul damage.*30% more/);
+    expect(hymn('old_overcast', 'lightning_rod').text).toMatch(/50 lightning damage.*for 20 ×/);
     expect(hymn('old_overcast', 'thunderclap').text).toMatch(/takes 20 lightning damage/);
     expect(FAITH_PATRON.nerukhan.miracle.text).toMatch(/130 Soul damage/);
     expect(hymn('the_laughing_mask', 'lucky_break').text).toMatch(/next 2 failed attack rolls/);
@@ -74,7 +74,7 @@ describe('the data (rules 1.21): the numbers the spec gives', () => {
 
 describe('Rebuke, the seventh Whisper (item 1260)', () => {
   it('1 AP; an enemy in sight takes 15 Soul × Blessing power; no roll; armour does not lower it; the mana meter −5', () => {
-    const h = holy(); const pw = h.me.blessPower!, ap = h.me.ap, mana = h.cb.mana;
+    const h = holy(); const pw = h.me.blessPower!, ap = h.me.ap, mana = h.cb.mana ?? 0;
     expect(pw).toBeCloseTo(1.7, 5);
     h.pray('whisper', 'rebuke', { targetId: h.foe.id });
     expect(h.foe.hp).toBe(2000 - Math.round(15 * pw)); // 26 at Faith 7, with 12 armour on the target
@@ -117,15 +117,15 @@ describe('Rebuke, the seventh Whisper (item 1260)', () => {
 });
 
 describe('the damage Hymns (items 1261 to 1263)', () => {
-  it('Judgement: 40 Soul × Blessing power; half again (60) against one that harmed the helpless', () => {
+  it('Judgement: 50 Soul × Blessing power; 30% more (65) against one that harmed the helpless', () => {
     const h = holy({ patron: 'nerukhan' }); const pw = h.me.blessPower!; h.pray('hymn', 'judgement', { targetId: h.foe.id });
-    expect(h.foe.hp).toBe(2000 - Math.round(40 * pw));
+    expect(h.foe.hp).toBe(2000 - Math.round(50 * pw));
     const k = holy({ patron: 'nerukhan' }); k.foe.faith = { harmedHelpless: true }; k.pray('hymn', 'judgement', { targetId: k.foe.id });
-    expect(k.foe.hp).toBe(2000 - Math.floor(40 * pw * 1.5)); expect(logHas(k.cb, /×1\.5: it harmed the helpless/)).toBe(true);
+    expect(k.foe.hp).toBe(2000 - Math.round(50 * pw * 1.3)); expect(logHas(k.cb, /×1\.3: it harmed the helpless/)).toBe(true);
   });
-  it('Lightning Rod: 45 lightning × Blessing power, then 15 × Blessing power to one more within 2 (armour takes half its number off lightning)', () => {
+  it('Lightning Rod: 50 lightning × Blessing power, then 20 × Blessing power to one more within 2 (armour takes half its number off lightning)', () => {
     const h = holy({ patron: 'old_overcast' }); const pw = h.me.blessPower!; h.pray('hymn', 'lightning_rod', { targetId: h.foe.id });
-    expect(h.foe.hp).toBe(2000 - (Math.round(45 * pw) - 6)); expect(h.foe2.hp).toBe(2000 - (Math.round(15 * pw) - 6));
+    expect(h.foe.hp).toBe(2000 - (Math.round(50 * pw) - 6)); expect(h.foe2.hp).toBe(2000 - (Math.round(20 * pw) - 6));
     const far = holy({ patron: 'old_overcast' }); far.foe2.pos = '9,5'; far.pray('hymn', 'lightning_rod', { targetId: far.foe.id }); expect(far.foe2.hp).toBe(2000); // 4 tiles off: no chain
   });
   it('Thunderclap: each enemy within 2 of the tile takes 20 lightning × Blessing power, then is pushed 1 and saves or is Shaken; one further off is untouched; your own side is never hit', () => {
