@@ -354,8 +354,9 @@ Short rules. Each has a lint or a test that fails with a sentence telling you wh
 
 ## Problems found in review and what was done
 
-A reviewer attacked the branch (12 Nov 2026) and reported nine problems. Each was reproduced with a failing test before
-it was fixed. The pin for the fixes was made first, as the plan asks: the three tables above were written against the
+A reviewer attacked the branch (12 Nov 2026) and reported nine problems. Each was reproduced before it was fixed:
+problems 1 and 2 by the credit table failing on the first version's code, the others by a test that fails when its fix
+is undone (the mutation run below undoes each one). The pin for the fixes was made first, as the plan asks: the three tables above were written against the
 test harness only, **recorded on the main line's engine** (the one before this work), committed, and only then played
 on this branch. 303 of the first 2,155 credit lines differed. The fixes brought 19 lines back; the 284 left differ for
 two reasons only (the turn's total under a Brief and an Encore together, 280; float noise, 4) and were re-recorded on
@@ -373,7 +374,7 @@ differed.
 | 6 | The pin and the tests missed two of six mutations; the test of listed bug fix 5 was vacuous | Right, and more: **the listed bug fix 5 described something that cannot happen.** An enemy with a breacher tube never asks for a reload (see What is left, 8), so "tried six times" was never true of a shipped enemy; even given a spare magazine by hand, the enemy stands still either way (six refused shots instead of six refused reloads). What the change does is the 1 AP reload | The three tables. The enemy test now asserts what the fix makes true (a quick-release reload with 1 AP left; a tube with a spare: not at 2 AP, done at 3). Row 5 of the F3 table and spec item 1524 were corrected | The mutation run below |
 | 7 | The lint missed most ways round the primitives (10 of the 11 it injected) | Right | Reads of a unit's `.ap` are a ratchet (any operator); writes cover `--`, `++`, `*=`, `Object.assign`; the resource ratchet covers every resource and a subtraction written as an assignment; a second F8 ratchet covers a cooldown by subtraction or addition and a turn stamp | All eleven fail now, and two more spellings: `u.ap <= 1`, `u.ap--`, `!(u.ap > 2)`, `Object.assign(u, { ap: … })`, `const left = u.ap - 2`, `res.supplies -= 1`, `mg.mp = mg.mp - 5`, `mg.charge = Math.max(0, mg.charge - 2)`, `cb.round - st.last < 3`, `st.t === cb.round + ':' + cb.turn`, `v.ap = left`, `--u.ap`, and the price without a fight |
 | 8 | The save note was incomplete; the counts were off | Right | "Behaviour changes of F8" 1 and spec item 1527 list every limit an old mid-fight save forgets. `costs` has 15 entries (the table said 17) | Read |
-| 9 | The web suite could not be verified in the reviewer's sparse checkout | An environment limit, not a defect | `npm run check` was run whole on this full checkout (below) | The run |
+| 9 | The web suite could not be verified in the reviewer's sparse checkout | An environment limit, not a defect | `npm run check` was run whole on this full checkout, after the second merge: validator 0 errors, spec tables, screen data, both type checks, engine tests 3,662 passed, web tests 1,014 passed | The run |
 
 **Two more things the new tables showed, neither asked for:**
 
@@ -408,4 +409,14 @@ boundary 2 fog): twenty files conflicted, eleven of them only on an import line.
 (`setBraced`, `setProne`, `setNailed`, `setDowned`, `rawHidden`, `bleedTick`, `endCond`) were kept with this work's
 `price` / `whyNot` / `pay` / `setAp` around them; the condition table stays out of `magic.ts` and `SPELL_AP` stays read
 from data. After it all seventeen costs tables passed with no line moved, and the costs lint needed one name added to
-its list of things that are not units (`condtable.ts` `m`, a condition's modifiers).
+its list of things that are not units (`condtable.ts` `m`, a condition's modifiers). Three things the main line's own
+guards asked of this work: `cost.ts` imports `datatext` before its data; two comments in tests were reworded for the
+dead-assertion lint; and Sweet Talker's test, which wipes the holder's item state to start clean, wipes the sting's
+cooldown cell too (it is a `uses()` cell now).
+
+**The whole-game replays** (performance 1's guard: 24 seeded games with the enemy AI on, `test/replay-hash.test.ts`)
+were played on the main line's engine and on this one and their last states compared field by field. Every game sends
+the same actions and has the same stream at every mark. 16 of the 24 end in a state that differs, and only in where
+a counter is kept: `call.turn` and `call.react`, `prayedRound`, `ps.<item>.cd` are `uses` cells, and a read no longer
+leaves an empty `uses: {}` behind. `replays.json` was re-recorded on purpose for that (the state hashes; no stream
+hash and no action count moved). The two 0.22.0 save fixtures load as before.
