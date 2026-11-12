@@ -21,7 +21,7 @@ import { WEAPON } from './data';
 import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility } from './combat';
 import { kindOf } from './objects';
 import { apFor } from './effects/cost';
-import { basicActions, reloadOffRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
+import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun } from './preview';
 import type { Action, GameState } from './game';
 import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView } from './physical/core';
@@ -323,6 +323,8 @@ const BASIC_SEND: Record<string, (x: DescCtx, p: Picks) => any> = {
   'reload-off': (x) => ({ type: 'combat/reload', unitId: x.u.id, hand: 'off' }),
   'reload-off-tac': (x) => ({ type: 'combat/reload', unitId: x.u.id, hand: 'off', tactical: true }),
   clear: (x) => ({ type: 'combat/clear', unitId: x.u.id }),
+  'clear-off': (x) => ({ type: 'combat/clear', unitId: x.u.id, hand: 'off' }),
+  'cover-off': (x, p) => p.tile && { type: 'combat/shoot-cover', unitId: x.u.id, tile: p.tile, hand: 'off' },
   brace: (x) => ({ type: 'combat/brace', unitId: x.u.id }),
   repair: (x) => ({ type: 'combat/repair', unitId: x.u.id }),
   load: (x) => ({ type: 'combat/load', unitId: x.u.id }),
@@ -346,7 +348,7 @@ function basicPicks(x: DescCtx, id: string): PickStep[] {
   switch (id) {
     case 'move': case 'sprint': case 'disengage': return [{ key: 'tile', kind: 'tile', prompt: 'Hover a highlighted tile to see the path and its AP cost; click to move.', auto: true }];
     case 'shove': return [{ key: 'targetId', kind: 'unit', prompt: 'Click an adjacent enemy.', choices: others(x) }];
-    case 'cover': return [{ key: 'tile', kind: 'tile', prompt: 'Click an object with HP.', choices: objectsOf(x.seen).filter((o: any) => o.hp != null && o.hp > 0 && !(o.rig && o.side && o.side !== x.side)).map((o: any) => o.pos) }];
+    case 'cover': case 'cover-off': return [{ key: 'tile', kind: 'tile', prompt: 'Click an object with HP.', choices: objectsOf(x.seen).filter((o: any) => o.hp != null && o.hp > 0 && !(o.rig && o.side && o.side !== x.side)).map((o: any) => o.pos) }];
     case 'door': return [{ key: 'tile', kind: 'tile', prompt: 'Click an adjacent door.', choices: objectsOf(x.seen).filter((o: any) => kindOf(o).door && dist(x.u.pos, o.pos) <= 1).map((o: any) => o.pos) }];
     case 'pickup': return [{ key: 'tile', kind: 'tile', prompt: 'Click a pile next to you.', optional: true, choices: pileTiles(x) }, { key: 'take', kind: 'custom', renderer: 'pile', prompt: 'Untick what to leave on the ground.', optional: true }];
     case 'stim': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an adjacent ally.', choices: allyIds(x, true) }];
@@ -385,6 +387,8 @@ const PHYSICAL: ActionSystem = {
     const bothRows = B('reload2', 'reload2-tac').map((d) => ({ ...d, hand: 'both' as const }));
     // the off-hand gun's own reload (its own AP): reloading one gun never blocks the other
     const offRows = (group: DescGroup): ActionDescriptor[] => safe(() => withGame(g, () => reloadOffRows(cb, u, { c, g })), [] as any[]).map((r: any) => D(r.id, group, r.label, r.ap, r.cost, r.text, r.why, { hand: 'off' }));
+    // the off-hand weapon's own Clear jam and Shoot an object (its jam, rounds, range and damage)
+    const offHand = (id: string): ActionDescriptor[] => safe(() => withGame(g, () => offHandRows(cb, u, { c, g })), [] as any[]).filter((r: any) => r.id === id).map((r: any) => D(r.id, 'attack', r.label, r.ap, r.cost, r.text, r.why, { hand: 'off', picks: basicPicks(x, r.id) }));
     const out: ActionDescriptor[] = [...B('move', 'sprint', 'disengage', 'prone')];
     // ----- attack -----
     const atk: ActionDescriptor[] = [];
@@ -409,8 +413,8 @@ const PHYSICAL: ActionSystem = {
       if (w && !melee) atk.push(D('melee', 'attack', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee'), apT(attackApCost(WEAPON.fists, 'melee')), 'Hit an enemy next to you with the gun itself: d20 + Raw Power against Defense, for the damage of a bare-hand strike. It uses no round and adds no Heat.', null, { picks: basicPicks(x, 'melee'), toggleOn: 'combat/attack', preview: 'attack', hand: 'main' }));
     }
     if (offW && !dual) atk.push(D('paired', 'attack', 'Both hands (' + offW.name + ')', 0, 'AP +1', 'Attack with both weapons in one action. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.', null, { picks: basicPicks(x, 'paired'), preview: 'attack', hand: 'both' }));
-    if (gunTab) atk.push(...reloads('attack'), ...offRows('attack'), ...clear('attack'));
-    atk.push(...B('shove'), ...wRow('brace', 'attack'), ...B('cover').map((d) => (w ? { ...d, hand: 'main' as const } : d)));
+    if (gunTab) atk.push(...reloads('attack'), ...offRows('attack'), ...clear('attack'), ...offHand('clear-off'));
+    atk.push(...B('shove'), ...wRow('brace', 'attack'), ...B('cover').map((d) => (w ? { ...d, hand: 'main' as const } : d)), ...offHand('cover-off'));
     out.push(...atk);
     // ----- utility -----
     const L: any = W('load'), li = L && !L.why ? safe(() => loadPlan(g, cb, u), null) : null;
@@ -457,13 +461,13 @@ function basicSay(x: DescCtx, d: ActionDescriptor, p: Picks): string | null {
     case 'reload-off': return 'Confirm to reload the off-hand gun' + (d.cost.text.includes('drops') ? ': the old ' + ((WEAPON as any)[u.offWeapon as string]?.reload_unit || 'magazine') + ' drops into the pile on your tile.' : '.');
     case 'reload-off-tac': return 'Confirm: a tactical reload of the off-hand gun, ' + d.cost.ap + ' AP. The old ' + ((WEAPON as any)[u.offWeapon as string]?.reload_unit || 'magazine') + ' goes back in your pack.';
     case 'hide': return 'Confirm to go to ground.'; case 'extinguish': return 'Confirm to put out the fire.'; case 'escape': return 'Confirm to strain against the hold.'; case 'recover': return 'Confirm to get your weapon back up.';
-    case 'clear': return 'Confirm to clear the jam.'; case 'repair': return 'Confirm to repair your weapon.'; case 'song': return 'Confirm to play your song for the room.';
+    case 'clear': return 'Confirm to clear the jam.'; case 'clear-off': return 'Confirm to clear the off-hand gun\'s jam.'; case 'repair': return 'Confirm to repair your weapon.'; case 'song': return 'Confirm to play your song for the room.';
     case 'prone': return 'Confirm to ' + (u.prone ? 'stand up' : 'drop prone') + '.'; case 'brace': return 'Confirm to brace your weapon.'; case 'overwatch': return 'Confirm to hold a shot on overwatch.';
     case 'stim': return t ? 'Target: ' + t.name + '. Confirm to use a stim.' : null;
     case 'shove': return t ? 'Shove ' + t.name + '. Confirm.' : null;
     case 'paired': return t ? 'Both hands at ' + t.name + '. Confirm.' : null;
     case 'pullfree': return t ? 'Pull ' + (t.id === u.id ? 'yourself' : t.name) + ' free. Confirm.' : null;
-    case 'cover': return obj && obj.hp > 0 ? 'Target: ' + obj.name + ', HP ' + obj.hp + '. Confirm to shoot it.' : null;
+    case 'cover': case 'cover-off': return obj && obj.hp > 0 ? 'Target: ' + obj.name + ', HP ' + obj.hp + '. Confirm to shoot it' + (d.id === 'cover-off' ? ' with the off-hand weapon' : '') + '.' : null;
     case 'door': return obj && kindOf(obj).door ? (obj.open ? 'Close' : 'Open') + ' the door at ' + refOf(obj.pos) + '. Confirm.' : null;
     case 'load': { const li = safe(() => loadPlan(x.g, x.cb, u), null); return li ? 'Confirm to load ' + li.rounds + ' rounds for ' + li.ap + ' AP.' : 'Nothing to load: you need loose rounds and a part-empty magazine.'; }
     case 'analyze': return t ? ((t as any).analyzedBy ? t.name + ' is already analyzed.' : 'Target: ' + t.name + '. Click a hostile to change. Confirm to analyze.') : null;

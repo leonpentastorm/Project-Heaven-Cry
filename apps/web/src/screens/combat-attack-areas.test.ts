@@ -75,11 +75,16 @@ describe('the Attack tab in areas', () => {
     expect(a.map((x) => x.sep)).toEqual([false, true, true, true]);
     expect(a[0].head).toMatch(/^MAIN HAND · SERVICE PISTOL/); expect(a[1].head).toMatch(/^OFF HAND · SERVICE PISTOL/); expect(a[2].head).toBe('BOTH');
     expect(a[0].ids).toEqual(expect.arrayContaining(['tq:main:shot', 'reload', 'reload-tac', 'cover']));
-    expect(a[1].ids).toEqual(expect.arrayContaining(['tq:off:shot', 'reload-off', 'reload-off-tac']));
+    expect(a[1].ids).toEqual(expect.arrayContaining(['tq:off:shot', 'reload-off', 'reload-off-tac', 'clear-off', 'cover-off'])); // the off-hand gun's own Clear jam and Shoot an object
+    expect(a[0].ids).toEqual(expect.arrayContaining(['clear'])); expect(a[0].ids).not.toContain('clear-off');
     expect(a[2].ids).toEqual(expect.arrayContaining(['paired', 'reload2', 'reload2-tac']));
     // each row is where its descriptor says
     const hand = Object.fromEntries(actionsFor(G, u.id, ME).map((d) => [d.id, d.hand || 'other']));
     for (const x of a) for (const id of x.ids) expect(hand[id], id).toBe(x.area);
+    // every row has its code, past the ninth too: a 0 per nine (201 the tenth row of tab 2), in the order shown
+    const shown = Array.from(el.querySelectorAll('[role="tabpanel"] button[data-act]')).filter((b) => b.querySelector('.phc-key-code'));
+    expect(shown.length).toBeGreaterThan(9);
+    shown.forEach((b, i) => expect(b.querySelector('.phc-key-code')!.getAttribute('data-code'), b.getAttribute('data-act')!).toBe('2' + '0'.repeat(Math.floor(i / 9)) + ((i % 9) + 1)));
     await React.act(async () => root.unmount()); el.remove();
   });
 
@@ -93,6 +98,19 @@ describe('the Attack tab in areas', () => {
     await click(row('reload-off')); expect(confirmBtn(el).disabled).toBe(false); await click(confirmBtn(el));
     expect(sent.at(-1)).toMatchObject({ type: 'combat/reload', hand: 'off' });
     expect(G.combat!.units.find((x) => x.id === u.id)!.offAmmo).toBe(12);
+    await React.act(async () => root.unmount()); el.remove();
+  });
+
+  it('two guns: the off-hand gun\'s own Clear jam clears its jam, and a paged code (2 0 n) picks a row past the ninth', async () => {
+    const { u } = fight(true); u.offJammed = true; snap = view(); const { el, root } = await mount(); await toAttack(el);
+    const b = el.querySelector('button[data-act="clear-off"]') as HTMLButtonElement; expect(b).toBeTruthy();
+    const code = b.querySelector('.phc-key-code')!.getAttribute('data-code')!;
+    expect(code.length).toBeGreaterThan(2); // past the ninth row with two guns
+    for (const k of code) await React.act(async () => { window.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true })); });
+    expect(el.querySelector('button[data-act="clear-off"]')!.getAttribute('aria-pressed')).toBe('true');
+    await click(confirmBtn(el));
+    expect(sent.at(-1)).toMatchObject({ type: 'combat/clear', hand: 'off' });
+    expect(G.combat!.units.find((x) => x.id === u.id)!.offJammed).toBeFalsy();
     await React.act(async () => root.unmount()); el.remove();
   });
 

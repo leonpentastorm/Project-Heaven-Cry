@@ -65,7 +65,7 @@ function volley(t: Tech, rolls: Roll[], o: { burn: number; cool: number }): stri
   chained(() => {
     for (let i = 0; i < rolls.length; i++) {
       const tg = rolls[i].target;
-      if ((t.hand === 'main' && u.jammed) || (usesRounds(t) && loaded(t) <= 0) || !alive(u)) break;
+      if ((t.hand === 'off' ? u.offJammed : u.jammed) || (usesRounds(t) && loaded(t) <= 0) || !alive(u)) break;
       if (!alive(tg)) continue;
       const r = roll(i, made > 0);
       if (!r.ok || r.cancelled) break; // the preview refuses it now (pushed out of sight, the gun broke), or it was answered before it came: the burst ends
