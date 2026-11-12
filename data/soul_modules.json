@@ -1,8 +1,8 @@
 {
   "$schema_version": "2.0",
   "kind": "soul_modules",
-  "revision": 18,
-  "source": "PHC Core Rules v1.0, rules revision 1.8 (Outburst 4.0, accepted direction 9 Nov 2026; docs/design/outburst-4.0-spec.md), on rules 1.5 (Outburst 2.0, accepted 8 Nov 2026; docs/design/outburst-2.0-proposal.md). Module names from the 2020 Recovered Design Notes.",
+  "revision": 21,
+  "source": "PHC Core Rules v1.0, rules revision 1.24 (the MP rework: a Pump costs MP; 12 Nov 2026), on rules revision 1.20 (the heal and shield pass; 12 Nov 2026), on rules 1.19 (the Outburst rework, round 2; 11 Nov 2026), on rules 1.17, rules 1.8 (Outburst 4.0; docs/design/outburst-4.0-spec.md) and rules 1.5 (Outburst 2.0; docs/design/outburst-2.0-proposal.md). Module names from the 2020 Recovered Design Notes.",
   "cycle": {
     "begin_ap": 2,
     "swift_begin_ap": 1,
@@ -13,10 +13,10 @@
     "max_stage": 4,
     "stage_mult": [
       0.8,
-      1,
+      1.0,
+      1.2,
       1.4,
-      1.8,
-      2.2
+      1.6
     ],
     "begin_strain": 1,
     "swell_strain": 1,
@@ -26,15 +26,22 @@
       {
         "empathy": 3,
         "pumps": 1
-      },
-      {
-        "empathy": 7,
-        "pumps": 2
       }
     ],
     "provisional": true,
-    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1, ×1.4, ×1.8 or ×2.2 for stages 0 to 4. If you are still holding it at the start of your next turn it swells: +1 stage for free and +1 Strain (+2 in Flooded air). Your first Pump of each fight is free; Empathy 3 gives 1 free Pump a round and Empathy 7 gives 2. Revert Pump (0 AP) undoes the last Pump you made this turn.",
-    "first_pump_free": true
+    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP, and a tenth of the Begin's MP for each stage it reaches) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1.0, ×1.2, ×1.4 or ×1.6 for stages 0 to 4: every plain Pump adds +0.2, and a feeling adds its own step instead. If you are still holding it at the start of your next turn it swells: +1 stage for no AP and no MP, and +1 Strain (+2 in Flooded air); from Empathy 7 a swell adds no Strain. One Pump a turn can be free of AP (its MP is still owed), never more: your first Pump of a fight, or from Empathy 3 one every round. Revert Pump (0 AP) undoes the last Pump you made this turn.",
+    "first_pump_free": true,
+    "free_pumps_per_turn": 1,
+    "swell_no_strain": {
+      "empathy": 7
+    },
+    "feeling_pump_ap_extra": 0,
+    "pump_ap_after_second": null,
+    "pump_mp": {
+      "share_per_stage": 0.1,
+      "provisional": true,
+      "text": "A Pump costs MP as well as AP: a tenth of what the Begin cost you, for each stage it reaches. Reaching stage 1 costs 10% of the Begin's MP, stage 2 costs 20%, stage 3 costs 30% and stage 4 costs 40%, so filling a heart from stage 0 costs the Begin's MP once more. It is 1 MP at least. A free Pump is free of AP only: its MP is still owed. A swell costs no MP. If you can't pay, you can't Pump: Syphon, or Release what you hold. Revert Pump gives the MP back. An Outburst you began for no MP pumps for no MP, and so does a heart that draws on the air (no Emanator in hand)."
+    }
   },
   "strain": {
     "limit": "3 + floor(will_power/2)",
@@ -48,22 +55,22 @@
       {
         "id": "turn",
         "strain": -1,
-        "text": "At the start of each of your turns you lose 1 Strain, before any swell."
+        "text": "At the start of each of your turns you lose {=strain|abs} Strain, before any swell."
       },
       {
         "id": "still",
         "strain": -1,
-        "text": "A still turn: end a turn in which you didn't Begin, Pump or Feed and are holding no Outburst, and you lose 1 more Strain."
+        "text": "A still turn: end a turn in which you didn't Begin, Pump or Feed and are holding no Outburst, and you lose {=strain|abs} more Strain."
       },
       {
         "id": "fight",
         "strain": -1,
-        "text": "Fighting it out: your first weapon attack each turn, melee or ranged, removes 1 Strain."
+        "text": "Fighting it out: your first weapon attack each turn, melee or ranged, removes {=strain|abs} Strain."
       },
       {
         "id": "tend",
         "strain": -1,
-        "text": "Tending others: the first time each turn you heal, stim, shield or cleanse an ally, you lose 1 Strain."
+        "text": "Tending others: the first time each turn you heal, stim, shield or cleanse an ally, you lose {=strain|abs} Strain."
       },
       {
         "id": "letgo",
@@ -74,14 +81,35 @@
         "id": "steady",
         "strain": -1,
         "ap": 1,
-        "text": "Steady the heart (1 AP, only while holding an Outburst): you lose 1 Strain, and the Outburst doesn't swell at the start of your next turn."
+        "text": "Steady the heart ({=ap} AP, only while holding an Outburst): you lose {=strain|abs} Strain, and the Outburst doesn't swell at the start of your next turn."
       }
     ]
   },
   "damage": {
-    "base": 20,
-    "soul_mult": "1 + 0.05*(determination-1) + 0.1*will_power",
-    "provisional": true
+    "base": 31,
+    "enemy_base": 24,
+    "soul_mult": "1.55 x Level.deal (rules 1.26: the aimed profile; rules.json output.profiles.soul)",
+    "critical": {
+      "mult": 1.5,
+      "max": 2.0
+    },
+    "provisional": true,
+    "text": "A character's Damage school starts from 31 (rules 1.26; 40 on 12 Nov, 28 in rules 1.17, 20 before). An enemy caster's starts from 24, so that with the flatter stage table its Outbursts deal about what the enemy table was fitted with. A natural 20 on a Bolt's or Lance's roll is a critical: ×1.5 damage, up to ×2.0 with everything on your sheet and gear.",
+    "modes": {
+      "finish": {
+        "mult": 0.8,
+        "mult_low": 1.4,
+        "low_hp": 0.5
+      },
+      "brand": {
+        "mult": 0.8,
+        "condition": "marked"
+      },
+      "drain": {
+        "mult": 0.8,
+        "heal_of_damage": 0.25
+      }
+    }
   },
   "aura": {
     "tick_damage": 5,
@@ -111,7 +139,12 @@
     "strength": 0.5,
     "cost": 10,
     "text": "A second school rides along with its own option, at half strength, and takes effect after the first. It needs Will Power 5 and costs 10 MP more.",
-    "provisional": true
+    "provisional": true,
+    "same_school": {
+      "shelved": true,
+      "text": "Taking a design's own school a second time is not open yet: it will come with an advanced class. The second copy rides at half strength like any second school. With a different way of the school it adds that way at half. With the same way it deepens it: half again the damage or the healing, half again the push or pull (rounded down, at least 1 tile more), half again the rounds.",
+      "provisional": true
+    }
   },
   "default_form": {
     "id": "bolt",
@@ -127,78 +160,104 @@
     "thin": -1,
     "text": "An element's stage effects count 1 stage higher in Flooded air and 1 stage lower in Thin air, never below stage 0 or above stage 4."
   },
-  "cost_rules": "A design's MP cost is its school's base cost, plus its modules, plus 10 for a second school, plus its tone. That total is multiplied by the Soul cost of the current mana level and reduced by 5% for each point of Insight above 1, down to 5 MP at least. A Right Brain Debuff adds 20%. You pay it when you Begin.",
+  "cost_rules": "A design's MP cost is its school's base cost, plus its modules, plus 10 for a second school, plus its tone. That total is multiplied by the Soul cost of the current mana level and reduced by 5% for each point of Insight above 1, down to 5 MP at least. A Right Brain Debuff adds 20%. You pay it when you Begin. Each Pump then costs MP of its own: a tenth of what that Begin cost, for each stage the Pump reaches (10%, 20%, 30%, 40%), 1 MP at least.",
   "limits": {
     "module_slots": "1 + floor(will_power/3)",
     "forms_per_design": 1,
     "two_schools_from_will_power": 5,
-    "ready_designs": "max(3, 2 + floor(empathy/2)): at least 3",
+    "ready_designs": "max(3, 2 + floor(will_power/2)): at least 3",
     "tones": "one at Lore Master 1; more from tutors or plates"
   },
-  "notes": "Every number from rules 1.5 is provisional until the damage balance pass. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead.",
+  "notes": "Every number from rules 1.5 on is provisional. Rules 1.19 (the Outburst rework, round 2): the stage table is ×0.8 +0.2 a stage; the Damage base is 40 for characters (36 when the revision was first fitted) and 24 for enemy casters; one free Pump a turn at most; Empathy 7 makes swells cost no Strain; every school reads the stage, the Damage school has four ways to strike, Control can Swap and Status can Silence; a design's own school a second time is defined and shelved. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead. Rules 1.20 (the heal and shield pass): the Buff school's heal is 7 (an enemy caster's stays 30) and grows with the caster's level; Inverse and Shell have shield bases of their own (10 and 4, × the Soul multiplier × the stage multiplier) and no longer read the Damage base; in a shape a heal or a flipped shield gives each ally ×0.4; Love heals a share of the Buff school's heal.",
   "schools": [
     {
       "id": "damage",
       "name": "Damage",
       "base_cost": 20,
-      "text": "Deals 20 damage × your Soul multiplier × the stage multiplier. A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
-      "damage": 20,
+      "text": "Deals {=damage} damage × your Soul multiplier × the stage multiplier. Pick how it strikes: Strike (the full damage), Finish (×0.8, or ×1.4 against a target at half its HP or less), Brand (×0.8, and the target is Marked for your side) or Drain (×0.8, and you heal for a quarter of the HP it takes). A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
+      "damage": 40,
       "hit": "will_power_vs_defense",
-      "options": [],
+      "options": [
+        "strike",
+        "finish",
+        "brand",
+        "drain"
+      ],
       "effects": [
         {
           "op": "narrator",
           "note": "engine: magic.ts Outburst 2.0"
         }
       ],
-      "provisional": true
+      "provisional": true,
+      "identity": "The school that ends a fight.",
+      "option_text": {
+        "strike": "Strike: the full damage.",
+        "finish": "Finish: ×0.8 damage, or ×1.4 against a target at half its HP or less.",
+        "brand": "Brand: ×0.8 damage, and a target it hits is Marked: your side gets +1 to hit it and it can't hide.",
+        "drain": "Drain: ×0.8 damage, and you heal for a quarter of the HP it takes."
+      },
+      "stack": "Shelved. Twice in one design: the same way deals half again its damage; a second way rides at half strength."
     },
     {
       "id": "buff",
       "name": "Buff",
       "base_cost": 20,
-      "text": "Works on allies. Pick one: heal 30 × your Healing given × the stage multiplier, or make them Inspired (+2 to hit) or Guarded (+2 Defense) for 2 rounds.",
+      "text": "Works on allies. Pick one: heal {=heal} × your Healing given × the stage multiplier, or make them Inspired (+2 to hit) or Guarded (+2 Defense) for {=duration_rounds} rounds, 3 rounds from stage 2 and 4 rounds at stage 4. The heal grows with your level (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). In a shape (Wave, Burst, Aura or Lance) it heals each ally it reaches for ×0.4 of that.",
       "options": [
         "to_hit_2",
         "defense_2",
         "heal_30"
       ],
       "duration_rounds": 2,
-      "heal": 30,
+      "heal": 7,
       "hit": "auto",
-      "provisional": true
+      "provisional": true,
+      "identity": "The school that keeps your side standing.",
+      "stack": "Shelved. Twice in one design: the same way heals half again as much, or lasts half again as long; a second way rides at half strength.",
+      "heal_enemy": 30,
+      "area_mult": 0.4
     },
     {
       "id": "control",
       "name": "Control",
       "base_cost": 25,
-      "text": "Pick one: push the target 3 tiles, pull it 3 tiles, or make it Pinned or Slowed for 2 rounds. The target resists with a Body save.",
+      "text": "Pick one: push the target {=push_tiles} tiles, pull it {=push_tiles} tiles, make it Pinned or Slowed for {=duration_rounds} rounds, or swap places with it. The target resists with a Body save; an ally you swap with doesn't resist. The stage counts: the save is 1 harder for every 2 stages, a push or pull is 1 tile longer from stage 2 and 2 longer at stage 4, and Pinned and Slowed last 1 round longer from stage 3.",
       "options": [
         "push_3",
         "pull_3",
         "pinned",
-        "slowed"
+        "slowed",
+        "swap"
       ],
       "save": "body",
       "duration_rounds": 2,
       "push_tiles": 3,
-      "provisional": true
+      "provisional": true,
+      "identity": "The school that moves the fight.",
+      "option_text": {
+        "swap": "Swap: you and the first creature it reaches trade places. A Bolt only."
+      },
+      "stack": "Shelved. Twice in one design: the same way pushes or pulls half again as far, or lasts half again as long; a second way rides at half strength."
     },
     {
       "id": "status",
       "name": "Status",
       "base_cost": 20,
-      "text": "Pick one: Fear, Shaken, Confused, a Left Brain Debuff or a Right Brain Debuff, for 2 rounds. The target resists with a Heart save or a Brain save, depending on the condition.",
+      "text": "Pick one: Fear, Shaken, Confused, a Left Brain Debuff or a Right Brain Debuff for {=duration_rounds} rounds, or Silenced for 1 round. The target resists with a Heart save or a Brain save, depending on the condition. The stage counts: the save is 1 harder for every 2 stages, and the condition lasts 1 round longer from stage 3.",
       "options": [
         "fear",
         "shaken",
         "confused",
         "left_brain_debuff",
-        "right_brain_debuff"
+        "right_brain_debuff",
+        "silenced"
       ],
       "save": "heart_or_brain_by_condition",
       "duration_rounds": 2,
-      "provisional": true
+      "provisional": true,
+      "identity": "The school that gets inside their heads.",
+      "stack": "Shelved. Twice in one design: the same way lasts half again as long; a second way rides at half strength."
     }
   ],
   "tones": [
@@ -228,7 +287,7 @@
           "riders": []
         },
         "2": {
-          "text": "Burning for 2 rounds.",
+          "text": "Burning for {=stages.2.riders.0.rounds} rounds.",
           "riders": [
             {
               "rider": "cond",
@@ -239,7 +298,7 @@
           ]
         },
         "3": {
-          "text": "Burning for 2 rounds.",
+          "text": "Burning for {=stages.3.riders.0.rounds} rounds.",
           "riders": [
             {
               "rider": "cond",
@@ -250,7 +309,7 @@
           ]
         },
         "4": {
-          "text": "Burning for 2 rounds. The fire spreads to enemies next to the target, and the ground under it burns.",
+          "text": "Burning for {=stages.4.riders.0.rounds} rounds. The fire spreads to enemies next to the target, and the ground under it burns.",
           "riders": [
             {
               "rider": "cond",
@@ -293,7 +352,7 @@
           ]
         },
         "2": {
-          "text": "Ignores half cover. Chains to 1 more enemy within 2 tiles for half damage.",
+          "text": "Ignores half cover. Chains to 1 more enemy within {=stages.2.riders.1.range} tiles for half damage.",
           "riders": [
             {
               "rider": "ignore_cover"
@@ -307,7 +366,7 @@
           ]
         },
         "3": {
-          "text": "Ignores half cover. Chains to 1 more enemy within 2 tiles for half damage.",
+          "text": "Ignores half cover. Chains to 1 more enemy within {=stages.3.riders.1.range} tiles for half damage.",
           "riders": [
             {
               "rider": "ignore_cover"
@@ -321,7 +380,7 @@
           ]
         },
         "4": {
-          "text": "Ignores half cover. Chains to 2 more enemies within 2 tiles for half damage. Each one hit is Shaken unless it passes a Heart save.",
+          "text": "Ignores half cover. Chains to 2 more enemies within {=stages.4.riders.1.range} tiles for half damage. Each one hit is Shaken unless it passes a Heart save.",
           "riders": [
             {
               "rider": "ignore_cover"
@@ -384,7 +443,7 @@
           ]
         },
         "4": {
-          "text": "Slowed, and Pinned for 1 round, with no save.",
+          "text": "Slowed, and Pinned for {=stages.4.riders.1.rounds} round, with no save.",
           "riders": [
             {
               "rider": "cond",
@@ -496,7 +555,7 @@
       "text": "Elemental wind damage: armour counts half.",
       "stages": {
         "1": {
-          "text": "Pushes the target 2 tiles.",
+          "text": "Pushes the target {=stages.1.riders.0.tiles} tiles.",
           "riders": [
             {
               "rider": "push",
@@ -505,7 +564,7 @@
           ]
         },
         "2": {
-          "text": "Pushes the target 3 tiles.",
+          "text": "Pushes the target {=stages.2.riders.0.tiles} tiles.",
           "riders": [
             {
               "rider": "push",
@@ -514,7 +573,7 @@
           ]
         },
         "3": {
-          "text": "Pushes the target 3 tiles.",
+          "text": "Pushes the target {=stages.3.riders.0.tiles} tiles.",
           "riders": [
             {
               "rider": "push",
@@ -523,7 +582,7 @@
           ]
         },
         "4": {
-          "text": "Pushes the target 3 tiles, and everyone else within 1 tile of it 2 tiles.",
+          "text": "Pushes the target {=stages.4.riders.0.tiles} tiles, and everyone else within {=stages.4.riders.1.radius} tile of it {=stages.4.riders.1.tiles} tiles.",
           "riders": [
             {
               "rider": "push",
@@ -637,6 +696,11 @@
       "id": "mastery",
       "becomes": null,
       "why": "Retired: the engine never counted casts; stages do the growing."
+    },
+    {
+      "id": "impact",
+      "becomes": null,
+      "why": "Retired in rules 1.17: every Outburst already takes effect when it lands, so the module did nothing and took a slot."
     }
   ],
   "items": [
@@ -646,7 +710,7 @@
       "family": "behaviour",
       "cost": 5,
       "strain_extra": 0,
-      "text": "Far: the Outburst reaches 8 tiles instead of 4, plus your Soul range bonus. It only changes a Bolt or a Burst; a Wave, Lance or Aura keeps its own length.",
+      "text": "Far: the Outburst reaches {=range_tiles} tiles instead of 4, plus your Soul range bonus. It only changes a Bolt or a Burst; a Wave, Lance or Aura keeps its own length.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "range_tiles": 8,
@@ -731,7 +795,7 @@
       "family": "augment",
       "cost": 15,
       "strain_extra": 0,
-      "text": "Conditions from the Outburst's school, and from its second school, last 2 rounds longer. An element's stage effects keep their own durations.",
+      "text": "Conditions from the Outburst's school, and from its second school, last {=extra_rounds} rounds longer. An element's stage effects keep their own durations.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "extra_rounds": 2,
@@ -746,14 +810,16 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of the same size, and it skips enemies in the area. The Narrator decides what a flipped debuff does.",
+      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of {=shield} × your Soul multiplier × the stage multiplier, and it skips enemies in the area. The shield grows with your level, like healing. In a shape (Wave, Burst, Aura or Lance) each ally gets ×0.4 of it. The Narrator decides what a flipped debuff does.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "adjudication": "hybrid",
       "gate": {
         "skill": "camaraderie",
         "points": 2
-      }
+      },
+      "shield": 10,
+      "shield_mult_enemy": 0.7
     },
     {
       "id": "size",
@@ -786,30 +852,16 @@
       }
     },
     {
-      "id": "impact",
-      "name": "Impact",
-      "family": "trigger",
-      "cost": 0,
-      "strain_extra": 0,
-      "text": "The effect happens when the Outburst lands. Every Outburst already works this way, so it changes nothing.",
-      "provisional": true,
-      "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
-      "gate": {
-        "skill": "will_power",
-        "points": 2
-      }
-    },
-    {
       "id": "at_once",
       "name": "At Once",
       "family": "trigger",
       "cost": 10,
       "strain_extra": 0,
-      "text": "A Bolt or Lance hits without a roll, for half damage. The area shapes never roll anyway.",
+      "text": "A Bolt or Lance hits without a roll, for ×{=damage_mult} damage. The area shapes never roll anyway.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "no_roll": true,
-      "damage_mult": 0.5,
+      "damage_mult": 0.8,
       "gate": {
         "skill": "empathy",
         "points": 2
@@ -828,7 +880,7 @@
         "from": "caster"
       },
       "damage_mult": 0.7,
-      "text": "Shape: a cone 3 tiles long from you toward your aim (4 with Size). It hits everyone in it without a roll, for ×0.7 damage.",
+      "text": "Shape: a cone 3 tiles long from you toward your aim (4 with Size). It hits everyone in it without a roll, for ×{=damage_mult} damage.",
       "provisional": true,
       "look": "a violet crescent rolling off your chest",
       "adjudication": "engine",
@@ -850,7 +902,7 @@
         "at": "aim"
       },
       "damage_mult": 0.7,
-      "text": "Shape: every tile within 1 of the tile you aim at (within 2 with Size). It hits everyone in it without a roll, for ×0.7 damage.",
+      "text": "Shape: every tile within 1 of the tile you aim at (within 2 with Size). It hits everyone in it without a roll, for ×{=damage_mult} damage.",
       "provisional": true,
       "look": "a heart-shaped bloom opening at the aim",
       "adjudication": "engine",
@@ -872,7 +924,7 @@
         "at": "caster"
       },
       "damage_mult": 0.6,
-      "text": "Shape: every tile within 1 of you, all at once (within 2 with Size). You don't aim it. It never touches you, unless it is a Buff. It deals ×0.6 damage.",
+      "text": "Shape: every tile within 1 of you, all at once (within 2 with Size). You don't aim it. It never touches you, unless it is a Buff. It deals ×{=damage_mult} damage.",
       "provisional": true,
       "look": "a ring of violet heat breaking off you",
       "adjudication": "engine",
@@ -894,7 +946,7 @@
         "from": "caster"
       },
       "damage_mult": 0.8,
-      "text": "Shape: a straight line 4 tiles long from you toward your aim, in any of the 8 directions (6 tiles with Size). It pierces everyone on the line, but walls stop it. You roll against each target, for ×0.8 damage.",
+      "text": "Shape: a straight line 4 tiles long from you toward your aim, in any of the 8 directions (6 tiles with Size). It pierces everyone on the line, but walls stop it. You roll against each target, for ×{=damage_mult} damage.",
       "provisional": true,
       "look": "a narrow violet spear of light",
       "adjudication": "engine",
@@ -909,7 +961,8 @@
       "family": "behaviour",
       "cost": 15,
       "strain_extra": 0,
-      "text": "Bolt only. It also hits the nearest other creature within 2 tiles of your target that the school can affect, at full strength.",
+      "text": "Bolt only. It also hits the nearest other creature within 2 tiles of your target that the school can affect, at full strength. A heal or a shield is divided instead: your target and the second ally each get ×{=boon_mult} (your target still gets ×{=boon_mult} when nobody is near to take the second share).",
+      "boon_mult": 0.8,
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -924,7 +977,7 @@
       "family": "behaviour",
       "cost": 15,
       "strain_extra": 0,
-      "text": "A Bolt bounces off walls and cover. If there is a wall or cover within 2 tiles of your target, it needs no line of sight and ignores half cover.",
+      "text": "A Bolt bounces off walls and cover. If there is a wall or cover within {=bank_radius} tiles of your target, it needs no line of sight and ignores half cover.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -955,14 +1008,15 @@
       "family": "behaviour",
       "cost": 20,
       "strain_extra": 0,
-      "text": "A Bolt or Lance goes out and comes back, hitting each target twice. Each hit rolls on its own.",
+      "text": "A Bolt or Lance goes out and comes back: each target is hit a second time for ×{=second_mult} damage. Each hit rolls on its own.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
       "gate": {
         "skill": "lore_master",
         "points": 4
-      }
+      },
+      "second_mult": 0.3
     },
     {
       "id": "volley",
@@ -970,7 +1024,7 @@
       "family": "behaviour",
       "cost": 15,
       "strain_extra": 0,
-      "text": "A Bolt becomes 3 small bolts at the same target. Each rolls on its own and deals ×0.4 damage.",
+      "text": "A Bolt becomes {=bolts} small bolts at the same target. Each rolls on its own and deals ×{=bolt_mult} damage.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1003,7 +1057,7 @@
       "family": "augment",
       "cost": 15,
       "strain_extra": 0,
-      "text": "Each target hit is Pinned for 1 round unless it passes a Body save.",
+      "text": "Each target hit is Pinned for {=rounds} round unless it passes a Body save.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1036,15 +1090,16 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "When you Release, you gain a shield equal to half the Outburst's damage.",
+      "text": "When you Release, you gain a shield of {=shield} × your Soul multiplier × the stage multiplier. It grows with your level, like healing.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
-      "shield_of_power": 0.5,
       "gate": {
         "skill": "camaraderie",
         "points": 2
-      }
+      },
+      "shield": 4,
+      "shield_of_power_enemy": 0.35
     },
     {
       "id": "linger",
@@ -1052,7 +1107,7 @@
       "family": "trigger",
       "cost": 15,
       "strain_extra": 0,
-      "text": "The area stays as a field for 2 rounds. A Damage field deals 5 damage and the element's stage 1 effect to each enemy that starts its turn there; a Buff field heals each ally that starts their turn there for 5.",
+      "text": "The area stays as a field for {=rounds} rounds. The field of a design that harms (Damage, Control or Status) deals 5 damage and the element's stage 1 effect to each enemy that starts its turn there; a Buff field heals each ally that starts their turn there for 5. A Damage design with Inverse leaves no field.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1067,9 +1122,9 @@
       "id": "quiet",
       "name": "Quiet",
       "family": "augment",
-      "cost": -5,
+      "cost": 5,
       "strain_extra": 0,
-      "text": "Holding the Outburst adds half the usual Strain, rounded down, from Begin, swells and feelings. In return the Release is at ×0.8 strength.",
+      "text": "Holding the Outburst adds half the usual Strain, rounded down, from Begin, swells and feelings. In return the Release is at ×{=damage_mult} strength.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1289,7 +1344,6 @@
         "phantom"
       ],
       "will_power": [
-        "impact",
         "size",
         "bloom",
         "volley",
@@ -1409,6 +1463,20 @@
   "residue": {
     "rounds": 2,
     "text": "The strongest feeling poured into an Outburst leaves its residue on every tile the Release covered, for 2 rounds.",
+    "provisional": true
+  },
+  "stage_riders": {
+    "save_tn_per_2_stages": 1,
+    "extra_round_at": 3,
+    "extra_tile_at": [
+      2,
+      4
+    ],
+    "boon_round_at": [
+      2,
+      4
+    ],
+    "text": "Control, Status and the Buff school's Inspired and Guarded read the stage too. For every 2 stages the target's save is 1 harder. From stage 3 a condition lasts 1 round longer. A push or pull is 1 tile longer from stage 2 and 2 tiles longer at stage 4. Inspired and Guarded last 1 round longer from stage 2 and 2 rounds longer at stage 4.",
     "provisional": true
   }
 }

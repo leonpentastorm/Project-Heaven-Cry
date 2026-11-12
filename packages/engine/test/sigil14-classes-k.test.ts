@@ -5,6 +5,7 @@
 // Burst, KIN), the Keystone cut on your own tile and joining a Line, Survey's 2-tile reach with the facing rule read from
 // where you stand, Foundation's 0-AP draws through the ordinary Draw, and the Grand forms of the 17 words new in 1.4.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { SIGIL, d20, condOn, endTurn, glyphCost, previewEvoke, previewAttack, resolveAttack, applyDamage, moveUnit, objectsOf, emit, type Unit, type Combat, strokePick, type Character
 } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -25,7 +26,7 @@ const charOf = (f: { g: any }, u: Unit): Character => f.g.characters[u.charId!];
 /** Give a unit an Evoker (with words) and an Emanator with one damage design. */
 function caster(u: Unit, words: string[], extra: any = {}) {
   u.mg = { words, designs: [{ id: 'o1', name: 'Damage Outburst', school: 'damage', modules: ['move'] }], evoker: true, emanator: true, charge: 10, cores: 2, coresMade: 0, flux: 0, mp: 300, mpMax: 300, strain: 0, held: null, cast: false,
-    brain: 3, will: 3, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
+    brain: 3, will: 3, sigilMult: 1, sigilBoon: 1, soulMult: 1, soulBoon: 1, deal: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
     saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any;
   return u;
 }

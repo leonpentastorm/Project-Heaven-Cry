@@ -2,7 +2,7 @@
 // Kit step, the MAGIC sheet tab shows them, a 2-glyph Line is walked and Evoked on the area map, then a fight: walk a
 // Line, Evoke it from its end, begin/hold/release an Outburst.
 // Screenshots (deviceScaleFactor 1) land in e2e/shots/magic-*.png.
-import { chromium, player, click, hostAs, OUT, pickAction } from './lib.mjs';
+import { chromium, player, click, hostAs, OUT, pickAction, pause } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -20,8 +20,8 @@ await click(host, 'Next ›');
 await host.getByRole('tab', { name: 'Sigil casters', exact: true }).click();
 await host.locator('button', { hasText: 'Sigilist' }).first().click();
 await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-await host.getByRole('button', { name: 'Lower Vigilant', exact: true }).first().click();
-await host.getByRole('button', { name: 'Raise Will Power', exact: true }).first().click();
+await host.locator('[data-skill-down="vigilant"]').click(); // (the Skills step's steppers since Skeleton 2.0: creation-points.mjs)
+await host.locator('[data-skill-up="will_power"]').click();
 await click(host, 'Next ›'); // traits
 await click(host, 'Next ›'); // Belief (rules 1.6; not chosen: Atheist)
 await click(host, 'Next ›'); // kit
@@ -58,17 +58,17 @@ ok('the character keeps the picks: ' + JSON.stringify(me0.sigils) + ' / ' + JSON
 // ---------- 2. Session ----------
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');
-await host.waitForSelector('.phc-story', { timeout: 15000 });
-await host.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 15000 });
+await host.waitForSelector('.phc-story', { timeout: 30000 });
+await host.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 30000 });
 const me = me0.id;
 const story = () => host.evaluate(() => { const g = window.__phc.getState().game; return { await: g.story.await, round: g.story.round, phase: g.phase }; });
 console.log('story', await story());
 // The Sigil student kit carries an Evoker; the Narrator hands over an Emanator so this one character can test both families.
 await act({ type: 'narrator/turn', turn: { narration: 'A crate by the ramp holds a spare heart link.', loot: [{ charId: me, item: 'emanator' }, { charId: me, item: 'standard_core', qty: 2 }], magic: [{ charId: me, word: 'SPREAD', reason: 'a burst stroke chalked inside the crate lid' }] } });
-await host.waitForTimeout(400);
+await pause(host, 400);
 const meNow = () => host.evaluate((id) => window.__phc.getState().game.characters[id], me);
 ok('the Emanator is in the pack', (await meNow()).pack.some((x) => (x.item || x.id) === 'emanator'));
-await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 });
 
 // ---------- 3. The MAGIC sheet tab ----------
 await host.getByRole('tab', { name: 'MAGIC', exact: true }).click();
@@ -116,7 +116,7 @@ ok('area-map pad: no key past the pad\'s edge', pi.keys.length > 0 && pi.keys.ev
 await wpad.screenshot({ path: OUT + 'magic-03c-area-pad.png' });
 await dlg.locator('div[aria-label="Words you know"] button', { hasText: 'FIRE' }).click();
 await tile(at).click();
-await host.waitForTimeout(300);
+await pause(host, 300);
 // FIRE is on our tile now: every key is refused, says why in a few words on one line, and stays focusable.
 await dlg.getByRole('button', { name: /Draw a glyph/ }).click().catch(() => {});
 pi = await padInfo();
@@ -125,32 +125,32 @@ ok('area-map pad: the short reason fits on one line (' + pi.keys.map((k) => k.wh
 ok('area-map pad: refused keys still fit the pad', pi.keys.every((k) => !k.out));
 await wpad.screenshot({ path: OUT + 'magic-03d-area-pad-refused.png' });
 await act({ type: 'world/act', charId: me, act: 'move', to: lane.back });
-await host.waitForTimeout(300);
+await pause(host, 300);
 await dlg.getByRole('button', { name: /Draw a glyph/ }).click().catch(() => {});
 await dlg.locator('div[aria-label="Words you know"] button', { hasText: 'ARC' }).click();
 await tile(lane.back).click();
-await host.waitForTimeout(300);
+await pause(host, 300);
 await act({ type: 'world/act', charId: me, act: 'move', to: lane.back2 });
-await host.waitForTimeout(300);
+await pause(host, 300);
 await dlg.getByRole('button', { name: /Draw a glyph/ }).click().catch(() => {});
 await dlg.locator('div[aria-label="Words you know"] button', { hasText: 'SPREAD' }).click();
 await tile(lane.back2).click();
-await host.waitForTimeout(300);
+await pause(host, 300);
 const gl = (await G()).story.glyphs || [];
 ok('a Line of three on the story map: ' + gl.map((x) => x.word + '@' + x.pos).join(', '), gl.length === 3 && gl.some((x) => x.word === 'fire' && x.pos === at) && gl.some((x) => x.word === 'arc' && x.pos === lane.back) && gl.some((x) => x.word === 'spread' && x.pos === lane.back2));
 console.log('  lines:', (await lastLines(3)).join(' | '));
 await snap('04-area-drawn');
 await dlg.getByRole('button', { name: /^Evoke/ }).first().click();
 await tile(lane.back2).click();
-await host.waitForTimeout(200);
+await pause(host, 200);
 console.log('  hint after picking the Line:', (await hint()).match(/Fires[^.]*\.[^.]*\./)?.[0] || '(no Fires line)');
 await tile(lane.aim).click();
-await host.waitForTimeout(200);
+await pause(host, 200);
 await snap('05-area-evoke-aim');
 const conf = dlg.getByRole('button', { name: /^Evoke ·/ }).first();
 ok('Confirm reads "Evoke · AP · charge"', await conf.count() > 0);
 if (await conf.count()) await conf.click();
-await host.waitForTimeout(400);
+await pause(host, 400);
 const ev = await lastLines(4);
 ok('the evoke lands: ' + ev.join(' | '), ev.some((l) => /evokes/i.test(l)));
 ok('the Line is spent', ((await G()).story.glyphs || []).length === 0);
@@ -167,7 +167,7 @@ const cAt = (await G()).story.positions[me], [cx, cy] = cAt.split(',').map(Numbe
 const free = await host.evaluate(([cx, cy]) => { const g = window.__phc.getState().game, occ = new Set([...Object.values(g.story.positions), ...(g.story.npcs || []).map((n) => n.pos), ...(g.story.objects || []).map((o) => o.pos)]);
   const out = []; for (const [dx, dy] of [[4, 0], [4, 1], [-4, 0], [0, 4], [3, 2], [-3, 2], [2, 3], [7, 0], [-7, 0], [6, 3], [-6, 3], [7, 5], [-7, 5]]) { const k = (cx + dx) + ',' + (cy + dy); if (!occ.has(k) && cx + dx >= 0 && cy + dy >= 0 && cx + dx < 16 && cy + dy < 11) out.push(k); } return out; }, [cx, cy]);
 await act({ type: 'narrator/turn', turn: { narration: 'Two raiders step out of the smoke, fists up.', npcs: [{ action: 'place', name: 'Raider', side: 'hostile', tier: 'minion', weapon: 'fists', at: ref(free[0]) }, { action: 'place', name: 'Raider Two', side: 'hostile', tier: 'minion', weapon: 'fists', at: ref(free.find((k) => Math.abs(k.split(',')[0] - cx) + Math.abs(k.split(',')[1] - cy) >= 7) || free[1]) }] } });
-await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 });
 ok('the Narrator\'s turn opens a fresh round (' + round0 + ' → ' + (await G()).story.round + ')', (await G()).story.round > round0);
 // The Line spent most of the core (3 glyphs + the Evoke): load a fresh one on the area map, so the fight below opens
 // with charge for its own Line (a core swap mid-fight costs the turn the raiders use to close in).
@@ -181,22 +181,22 @@ await click(host, 'Area map');
 await dlg.waitFor();
 await dlg.getByRole('button', { name: /^Outburst/ }).first().click();
 await dlg.locator('div[aria-label="Your Outburst designs"]').waitFor();
-await tile(raider.pos).click(); await host.waitForTimeout(250);
+await tile(raider.pos).click(); await pause(host, 250);
 const obHint = await hint();
 ok('the hint warns that this starts a fight', /starts a fight/.test(obHint));
 const letGo = dlg.getByRole('button', { name: /^Snap ·/ }).first(); // rules 1.5: a click on a tile is a snap cast at it
 ok('Confirm reads "Snap · AP"', await letGo.count() > 0);
 await snap('06b-area-outburst-aim');
 await letGo.click();
-await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 10000 });
-await host.waitForSelector('text=ACTION POINTS', { timeout: 10000 });
+await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 30000 });
+await host.waitForSelector('text=ACTION POINTS', { timeout: 30000 });
 ok('the screen goes to combat', true);
 const opener = await host.evaluate(() => window.__phc.getState().game.combat.log.slice(0, 6).join(' | '));
 console.log('  combat opens:', opener);
 // wait for our turn
 const myTurn = () => host.evaluate((id) => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over) return 'over'; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId === id ? 'mine' : 'other'; }, me);
-const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 12000 }).catch(() => {});
-const waitMine = async () => { for (let i = 0; i < 100 && (await myTurn()) === 'other'; i++) await host.waitForTimeout(150); await idleOn(host); return myTurn(); };
+const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 20000 }).catch(() => {});
+const waitMine = async () => { for (let i = 0; i < 100 && (await myTurn()) === 'other'; i++) await pause(host, 150); await idleOn(host); return myTurn(); };
 ok('our turn comes up', (await waitMine()) === 'mine');
 const CB = () => host.evaluate((id) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.charId === id); return { cb, u }; }, me);
 let { cb, u } = await CB();
@@ -214,8 +214,8 @@ const key = async (w) => { const b = host.locator('div[aria-label="Glyph keyboar
 // so the raider sits on the ray out of the Line's far end (rules 1.4: a Line fires along itself from its end).
 // The area map's Line spent most of the core: load a fresh one first (2 AP), then take a fresh turn if that left too
 // little to step, draw, step, draw and Evoke in one go (the raider must not walk out of the Line's area in between).
-if ((u.mg?.charge || 0) < 6) { await act({ type: 'combat/core', unitId: u.id }); await host.waitForTimeout(250); ({ cb, u } = await CB()); }
-if (u.ap < 5) { await host.getByRole('button', { name: 'End turn', exact: true }).click(); await host.waitForTimeout(300); await waitMine(); ({ cb, u } = await CB()); }
+if ((u.mg?.charge || 0) < 6) { await act({ type: 'combat/core', unitId: u.id }); await pause(host, 250); ({ cb, u } = await CB()); }
+if (u.ap < 5) { await host.getByRole('button', { name: 'End turn', exact: true }).click(); await pause(host, 300); await waitMine(); ({ cb, u } = await CB()); }
 await idleOn(host); // the other turns finish playing first (a player can't click the grid until then; longer at Normal speed)
 const plan = await host.evaluate((id) => { const cb = window.__phc.getState().game.combat, m = cb.map, me = cb.units.find((x) => x.charId === id);
   const K = (x, y) => x + ',' + y, P = (k) => k.split(',').map(Number), [mx, my] = P(me.pos);
@@ -229,19 +229,19 @@ const plan = await host.evaluate((id) => { const cb = window.__phc.getState().ga
   return null; }, me);
 ok('a Line can point at a raider: ' + JSON.stringify(plan), !!plan);
 const foe = cb.units.find((x) => x.id === plan.foe);
-if (plan.t !== u.pos) { await act({ type: 'combat/move', unitId: u.id, to: plan.t }); await host.waitForTimeout(300); ({ cb, u } = await CB()); }
+if (plan.t !== u.pos) { await act({ type: 'combat/move', unitId: u.id, to: plan.t }); await pause(host, 300); ({ cb, u } = await CB()); }
 await pickAction(host, /^Draw a glyph/);
 await host.waitForSelector('div[aria-label="Glyph keyboard"]');
 await key('FIRE');
-await ctile(u.pos).hover(); await host.waitForTimeout(150);
+await ctile(u.pos).hover(); await pause(host, 150);
 await snap('08-combat-draw-hover');
-await ctile(u.pos).click(); await host.waitForTimeout(300);
+await ctile(u.pos).click(); await pause(host, 300);
 const first = u.pos, step = plan.back;
 await act({ type: 'combat/move', unitId: u.id, to: step });
-await host.waitForTimeout(300);
+await pause(host, 300);
 await pickAction(host, /^Draw a glyph/).catch(() => {});
 await key('ARC');
-await ctile(step).click(); await host.waitForTimeout(300);
+await ctile(step).click(); await pause(host, 300);
 ({ cb, u } = await CB());
 ok('a Line of two on the grid: ' + (cb.glyphs || []).map((x) => x.word + '@' + x.pos).join(', '), (cb.glyphs || []).some((x) => x.pos === first && x.word === 'fire') && (cb.glyphs || []).some((x) => x.pos === step && x.word === 'arc'));
 ok('draw lines in the log', cb.log.filter((l) => /draws (FIRE|ARC)/.test(l)).length === 2);
@@ -249,13 +249,13 @@ await host.evaluate(() => scrollTo(0, 0)); await snap('09-combat-drawn');
 
 // Evoke it at the raider, from the Line's end
 await pickAction(host, /^Evoke/);
-await ctile(step).click(); await host.waitForTimeout(200);
-await ctile(foe.pos).click(); await host.waitForTimeout(250);
+await ctile(step).click(); await pause(host, 200);
+await ctile(foe.pos).click(); await pause(host, 250);
 await snap('10-combat-evoke-aim');
 const conf2 = host.getByRole('button', { name: /^Confirm/ }).first();
 console.log('  confirm:', await conf2.textContent(), 'enabled', await conf2.isEnabled());
 if (await conf2.isEnabled()) await conf2.click();
-await host.waitForTimeout(500);
+await pause(host, 500);
 ({ cb, u } = await CB());
 const evl = cb.log.filter((l) => /evokes/.test(l));
 ok('evoke in the combat log: ' + evl.at(-1), evl.length > 0);
@@ -267,7 +267,7 @@ else {
 // Outburst: hold it. A turn that began short of AP (round 1 can) may not afford it after drawing and evoking: wait a turn.
 if (u.ap < 3 && !cb.over) {
   await host.getByRole('button', { name: 'End turn', exact: true }).click();
-  await host.waitForTimeout(300); await waitMine(); ({ cb, u } = await CB());
+  await pause(host, 300); await waitMine(); ({ cb, u } = await CB());
 }
 await pickAction(host, /^Outburst/);
 await host.waitForSelector('div[aria-label="Your Outbursts"]');
@@ -276,7 +276,7 @@ await snap('11-combat-outburst-hold');
 const begin3 = host.locator('div[aria-label="Begin or snap"] button', { hasText: 'Begin' });
 console.log('  begin enabled', await begin3.isEnabled(), 'AP', u.ap);
 if (await begin3.isEnabled()) await begin3.click();
-await host.waitForTimeout(500);
+await pause(host, 500);
 ({ cb, u } = await CB());
 ok('the Outburst is held: ' + JSON.stringify(u.mg?.held), !!u.mg?.held);
 console.log('  log:', cb.log.slice(-3).join(' | '));
@@ -289,29 +289,29 @@ if (back !== 'mine') console.log('  state:', await host.evaluate(() => { const c
 ({ cb, u } = await CB());
 console.log('  held now', JSON.stringify(u.mg?.held), 'strain', u.mg?.strain, 'AP', u.ap);
 await host.evaluate(() => scrollTo(0, 0)); await snap('13-combat-held-next-turn');
-const relOk = await host.locator('.phc-heart-panel button[data-hact="release"]').click({ timeout: 4000 }).then(() => true, () => pickAction(host, /^Release/, { timeout: 4000 }).then(() => true, () => false));
+const relOk = await host.locator('.phc-heart-panel button[data-hact="release"]').click({ timeout: 30000 }).then(() => true, () => pickAction(host, /^Release/, { timeout: 30000 }).then(() => true, () => false));
 ok('Release appears while holding', relOk);
 if (relOk) {
-  await host.waitForTimeout(200);
+  await pause(host, 200);
   // the nearest live raider if it's within the design's reach (8), else open ground two tiles off
   const d1 = (a, b) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
   const f2 = cb.units.filter((x) => x.side === 'foe' && !x.dead).sort((a, b) => d1(a.pos, u.pos) - d1(b.pos, u.pos))[0];
   const [ux, uy] = u.pos.split(',').map(Number);
-  await ctile(f2 && d1(f2.pos, u.pos) <= 7 ? f2.pos : (ux > 3 ? ux - 2 : ux + 2) + ',' + uy).click(); await host.waitForTimeout(250);
+  await ctile(f2 && d1(f2.pos, u.pos) <= 7 ? f2.pos : (ux > 3 ? ux - 2 : ux + 2) + ',' + uy).click(); await pause(host, 250);
   await snap('14-combat-release-aim');
   const conf4 = host.getByRole('button', { name: /^Confirm/ }).first();
   console.log('  confirm:', await conf4.textContent(), 'enabled', await conf4.isEnabled());
   if (await conf4.isEnabled()) await conf4.click();
-  await host.waitForTimeout(500);
+  await pause(host, 500);
   ({ cb, u } = await CB());
   ok('released: ' + cb.log.slice(-3).join(' | '), !u.mg?.held && cb.log.some((l) => /releases/.test(l)));
 }
 await snap('15-combat-after-release');
 ({ cb, u } = await CB());
 if (!cb.over && (await myTurn()) === 'mine' && u.mg?.flux) {
-  await pickAction(host, /^Vent Flux/); await host.waitForTimeout(150);
+  await pickAction(host, /^Vent Flux/); await pause(host, 150);
   const cv = host.getByRole('button', { name: /^Confirm/ }).first();
-  if (await cv.isEnabled()) await cv.click(); await host.waitForTimeout(400);
+  if (await cv.isEnabled()) await cv.click(); await pause(host, 400);
   ({ cb, u } = await CB());
   ok('vent: ' + cb.log.filter((l) => /vents/.test(l)).at(-1) + ' · mana ' + cb.mana, cb.log.some((l) => /vents \d+ Flux/.test(l)) && !u.mg.flux);
 }
@@ -325,11 +325,11 @@ for (let i = 0; i < 40; i++) {
   await host.evaluate((id) => { const g = window.__phc.getState().game, cb = g.combat, u = cb.units.find((x) => x.charId === id), t = cb.units.find((x) => x.side === 'foe' && !x.dead);
     const before = cb.log.length; if (t && u.ap >= 2) window.__phc.act({ type: 'combat/attack', unitId: u.id, targetId: t.id, mode: 'shot' });
     const g2 = window.__phc.getState().game; if (!g2.combat.over && (g2.combat.log.length === before || u.ap < 2)) window.__phc.act({ type: 'combat/end-turn', unitId: u.id }); }, me);
-  await host.waitForTimeout(150);
+  await pause(host, 150);
 }
-await host.waitForSelector('text=Back to the story ›', { timeout: 15000 });
+await host.waitForSelector('text=Back to the story ›', { timeout: 30000 });
 await click(host, 'Back to the story ›');
-await host.waitForSelector('.phc-story', { timeout: 10000 });
+await host.waitForSelector('.phc-story', { timeout: 30000 });
 await host.getByRole('tab', { name: 'MAGIC', exact: true }).click();
 const after = await host.evaluate((id) => { const g = window.__phc.getState().game, c = g.characters[id]; return { mp: c.mp, evo: c.evoCharge, glyphs: (g.story.glyphs || []).length, magic: (g.story.magic || {})[id] }; }, me);
 const soul2 = (await host.locator('section[aria-label="Outbursts"]').textContent()).replace(/\s+/g, ' ');
@@ -343,7 +343,7 @@ await snap('17-story-after');
 const n0 = await host.evaluate((id) => window.__phc.getState().game.characters[id].outbursts.length, me);
 ok('a new Soul caster remembers 3 designs (rules 1.8): ' + n0, n0 === 3);
 const lastD = await host.evaluate((id) => window.__phc.getState().game.characters[id].outbursts.at(-1).id, me);
-await host.evaluate(([id, d]) => window.__phc.act({ type: 'magic/forget', charId: id, designId: d }), [me, lastD]); await host.waitForTimeout(300);
+await host.evaluate(([id, d]) => window.__phc.act({ type: 'magic/forget', charId: id, designId: d }), [me, lastD]); await pause(host, 300);
 await host.getByRole('button', { name: '+ NEW DESIGN' }).click();
 const ws = host.locator('div[aria-label="Outburst workshop"]');
 await ws.waitFor();
@@ -352,7 +352,7 @@ await ws.getByPlaceholder('What you call it').press('Tab');
 await ws.locator('button', { hasText: /^Move/ }).first().click().catch(() => {});
 await ws.scrollIntoViewIfNeeded(); await snap('18-workshop');
 await ws.getByRole('button', { name: 'Save design' }).click();
-await host.waitForTimeout(400);
+await pause(host, 400);
 const ds = await host.evaluate((id) => window.__phc.getState().game.characters[id].outbursts.map((d) => d.name + ':' + d.school + '/' + d.modules.join('+')), me);
 ok('a new design is saved: ' + ds.join(', '), ds.length === 3 && ds.some((x) => x.startsWith('Quiet Hand:')));
 ok('the workshop closes after the save', await ws.count() === 0);

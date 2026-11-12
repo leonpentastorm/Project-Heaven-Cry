@@ -1,6 +1,7 @@
 // Regression tests for the defects found in the review of the perks, traits and class moves pass (7 Nov 2026). One
 // test per defect, through the reducer where the player would reach it.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { d20, beginTurn, applyDamage, attackDamage, harm, emit, checkOver, previewAttack, perkActionsFor, pendingPerkSteps, CLASS, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -46,7 +47,7 @@ describe('3 Sworn Sibling: one AP a round for the pair, even when both hold it',
   it('both siblings bonded each way: 7 then 6', () => {
     const s = storyWith([{ traits: ['sworn_sibling'] }, { traits: ['sworn_sibling'] }]);
     perk(s, s.chars[0], 'sworn_sibling', { choice: s.chars[1].name }); perk(s, s.chars[1], 'sworn_sibling', { choice: s.chars[0].name });
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'P6' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'P6' }] } } } as any);
     const cb = () => s.g.combat!, u = (i: number) => cb().units.filter((x) => x.side === 'pc')[i];
     cb().map = { ...cb().map, cover: [], full: [], solid: [], difficult: [] } as any; u(0).pos = '2,5'; u(1).pos = '3,5';
     const start = (x: Unit) => { const c = cb(); c.turn = c.order.indexOf(x.id); delete c.window; withGame(s.g, () => beginTurn(c, s.g.rng)); return c.units.find((y) => y.id === x.id)!; };
@@ -258,7 +259,7 @@ describe('25 story conditions in a fight', () => {
   it('a story Stun stays in the story; a Shaken comes in for its own rounds', () => {
     const s = storyWith([{}]); const c = s.chars[0];
     turn(s, { conditions: [{ target: c.id, id: 'stunned', scope: 'scene' }, { target: c.id, id: 'shaken', scope: 'scene' }] });
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'P6' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'P6' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.charId === c.id)!;
     expect(condOn(u, 'stunned')).toBe(false);
     expect(u.conds?.shaken).toBeLessThanOrEqual(3);

@@ -8,6 +8,67 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.23.0 — 12 November 2026
+
+The balance pass and the engine foundation: rules 1.15 to 1.26. Everything in it is new to players (live stops at rules 1.14). The full list of what changed against 0.22.0, system by system, is `docs/design/handoffs/PATCH-TALLY.md`; what to try by hand is `docs/PLAYTEST-CHECKLIST.md`.
+
+**The balance pass (rules 1.15 to 1.26).**
+
+- **Enemies grow with you** (1.15): HP, damage, to-hit and defence by tier and level, about 65% to hit at equal level, a Vermin tier that dies in one hit, criticals ×1.5 (to ×2.0 with Perception and Dexterity), no one-hit kills of Elites and Bosses by a level gap, a 3-turn cooldown on conditional AP perks.
+- **Maps and camera** (1.16): up to 26 × 26, a camera that follows the play, overview on M, edge arrows; plain colour until the M813 rewrite. Two-key hotkeys (11 move, 42 Evoke).
+- **Ceilings** (what an all-in build reaches, percent of the normal-share plain rifle; a normal share sits at ceiling ÷ 1.25):
+
+  | System | Ceiling |
+  | --- | --- |
+  | Best gun, steady | 145 |
+  | Melee (the Defender lower) | 165 |
+  | Outburst, steady / biggest Release | 135 / 165 |
+  | Sigil full Line | 150 to 200 |
+  | Faith, a Whisper turn / a Hymn turn | 80 / 150 |
+  | A healer's turn | 1.25 Soldier-turns |
+
+  Guns, melee, Sigil, the Outburst, healing and Faith were each re-fitted to their line with one dial in data (`docs/design/balance-contract.md`, and its guard in `npm run check`). Detail and before-and-after: `balance-refit.md`.
+- **Guns** (1.18, 1.26): a Burst is 3 rounds and 2 rolls, Mag Dump 3 rolls at most, the long rifle's Shot costs 3 AP; Masterwork, Relic and Celestial add accuracy and durability, no damage; grenades and charges a character throws ×0.7. Enemies keep the old three-roll Burst for now.
+- **Sigil** (1.17): a Line multiplies its damage for 2 / 3 / 4 glyphs; one Evoke leaves a full-HP Elite or Boss on 1 HP.
+- **Outburst** (1.17, 1.19): a plain Pump is +0.2, each feeling goes into an Outburst once, one free stage a turn, the schools read the stage (Damage: Strike, Finish, Brand, Drain).
+- **MP** (1.24): Max MP is 100 + 75 × (Determination − 1) + 25 × (Insight − 1); a Pump costs MP; seven archetypes re-spread; old saves migrate.
+- **Faith** (1.21, 1.22): a seventh Whisper (Rebuke); the Hymn waits 9 − 0.75 × Faith − 0.25 × Virtue rounds (never under 3), and a vow fulfilled in the fight takes a round off; Witnessed's +2 is earned by a kill.
+- **Healing** (1.20, 1.23): sized in Soldier-turns, a level factor so it keeps pace, no round limit on healing, the medic's kit re-sized; enemies go for whoever is mending the squad. Boss HP is 820 at level 1 (was one flat 200 row, now it grows with level).
+- **Fire doctrine** (1.25): Minions take the nearest, Soldiers spread their fire from the front, Elites and Bosses go for the wounded and hunt the healer.
+
+**The engine foundation** (nothing in play was meant to move; golden tables pin it).
+
+- **One damage formula** for weapons, Sigil, the Outburst, prayers and heals; saves in one place; one rule for forced movement; costs and counters through one price; the condition table read from `data/conditions.json`.
+- **Fog of war in the engine**: a guest's view holds only what its side sees, and now the fight log too: a line that hits you from the fog reads "Something unseen shoots Cy from somewhere unseen".
+- **Action descriptors**: one client flow for all seven action systems (571 client lines gone).
+- **Item ops, first pass**: closed lists of triggers, predicates and ops; **20 of 310 handlers moved to data** (289 still code); a lint stops the number growing.
+- **Text numbers from data**: a number in a card text is a `{=placeholder}` that reads a field of its own item; 306 text mismatches fixed.
+- **Performance**: the engine about 3 times faster with identical whole-game results, and a replay guard.
+
+**Bugs fixed** (from Leon's playtest of 0.22.0, `BUGLIST-0.22.md`, and the first full browser run).
+
+- An element's area effects now happen when the hit kills: Storm chains, fire spreads and burns the ground, rubble rises, the gale throws the others (found by Leon on live).
+- Called Shot showed no part ticked while Confirm sent LEG.
+- A second Whisper in a turn asked for a target before saying "One Whisper a turn."
+- Clear all enemies counted a wave out of sight as 0 and was disabled.
+- A glyph vanished before its Evoke played; Edge Word fired on an opportunity attack; the step out played before the blow that interrupted it; an enemy 13 or 14 tiles off never moved or fired; a shield did not stop a grenade or a trap.
+- A fight's last blow, a new wave's opening, portraits changing, Lob, Suppress and Thumper effects, and enemies shown in the fog by an area preview.
+
+**Art.** The artist's 77 icons (the modules, the 25 feelings, the Calls, Revert, Practice, Felt) are merged and shown in the game; painted icons take the same ink as the drawn ones through one mask.
+
+**Tests.** The 61 browser suites are in groups, wait on state not sleeps, and the runner retries a failure once alone; eight suites that failed on the merged tree were repaired (three were game bugs). Golden tables pin every damage, heal, cost, condition and item-op number, and are re-recorded only on purpose; lints keep new code on the foundation primitives; the balance contract has a guard in `npm run check`.
+
+**Not done, known.**
+
+- 289 item handlers are still code (a second pass is planned after live); the combat screen is not split; Preview is not yet a dry run; character, unit and story state are not one table; rooms and the Narrator prompt are not refactored.
+- The spec's revisions 1.14 to 1.26 are not folded into its body: read the revisions.
+- Class moves, perks, Mastered perks, special rounds, Calls, reactions and armour are unmeasured and have no ceiling.
+- Boss fights run 5 to 8 rounds against 8 to 10 aimed (the enemy table is the lever).
+- A fight-log line that names a unit by another word can still reach everyone.
+- Not yet run on a quiet machine: the final `npm run check` and `npm run e2e -- all`. Nothing has been played by a person.
+
+**Calls made for Leon** (each built at the lead's recommendation; he can reverse any): the numbered list is in `docs/PLAYTEST-CHECKLIST.md`, section 14, and in `PICKUP.md` section 6.
+
 ## 0.22.0 — 11 November 2026
 
 Branch `music/new-tracks`: **eight new fight songs and Gearing Up** (decision 114; spec, Music: "The fight's song" and "The Proving Ground").

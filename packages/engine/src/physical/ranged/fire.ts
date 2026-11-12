@@ -1,8 +1,9 @@
 // Physical 2.0, ranged Fire: damage. Shot and Aimed Shot are the lead's references; the ranged lane builds Snap Shot,
 // Burst, Called Shot, Walking Fire and Punch Through here (Lob lives in thrown.ts: its Blast line is the grenade code).
 import { technique, strike, addPressure, spendRounds, save, cond, stop, stepsWithin, standingAt, stepUser, turnStamp, onHook, type Tech } from './shared';
-import { alive, dist, xy, key, emitFx, chained, coverTileFor, objectsAt, damageObject, weaponDamage, moveUnit, moveBlock, paths, effectiveRange, attackDamage, hurtUnit, sightBlockers, refOf, type Unit } from '../../combat';
+import { say, alive, dist, xy, key, emitFx, chained, burstRolls, burstCool, coverTileFor, objectsAt, damageObject, weaponDamage, moveUnit, moveBlock, paths, effectiveRange, attackDamage, hurtUnit, sightBlockers, refOf, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
+import { landed } from '../../effects/output';
 import { physicalMult } from '../../character';
 
 // 0. Shot: one shot. Everyone knows it. Precise: +1 if you haven't moved this turn. Loud: a miss gives +1 Pressure.
@@ -97,28 +98,29 @@ technique({
   ai: (t) => (t.tgt ? 5 : 0),
 });
 
-// 2. Burst: two rolls at one target, the second at −2 (3 rounds). Auto: three rolls (today's burst: each later one −1
-//    more, the barrel cools 1 after), and it may split between two adjacent targets. Quick: no −2.
+// 2. Burst (rules 1.18): three rounds, TWO rolls at one target, the second at −4. Auto: the two rolls may split between
+//    two adjacent targets. Quick: the second roll is at −3. Heavy, while Braced (or Prone, or Emplaced): −1.
+//    Heat is one a roll (2, as before). An enemy's Burst is the one its table was fitted with (three rolls, cools 1).
 //    A split names the target of each roll in targetIds (repeats allowed); rolls past the list go at its last one.
+//    The numbers are burstRolls' (combat.ts), which the plain burst action reads too.
 technique({
   id: 'burst',
   run(t) {
-    const p = t.line('auto', 'quick'), auto = p === 'auto';
+    const auto = t.holds('auto') && !!t.line('auto');
     const ids = t.args.targetIds?.length ? t.args.targetIds : t.args.targetId ? [t.args.targetId] : [];
     if (!ids.length) return 'Pick a target.';
     const list = ids.map((id) => unitById(t, id));
     if (list.some((x) => !x)) return 'Pick a target.';
     if (list.some((x) => x === t.u)) return 'Pick someone else.';
-    const n = auto ? t.num('auto_rolls', 3) : t.num('rolls', 2), targets = [...new Set(list as Unit[])];
+    const steps = burstRolls(t.u, t.w), n = steps.length, targets = [...new Set(list as Unit[])];
     if (list.length > n) return 'A burst is ' + n + ' rolls.';
     if (targets.length > 1) {
       if (!auto) return 'Only an automatic weapon splits a burst.';
       if (targets.length > t.num('auto_split_targets', 2)) return 'A burst splits between two targets at most.';
       if (dist(targets[0].pos, targets[1].pos) > t.num('auto_split_range', 1)) return 'The two targets must stand next to each other.';
     }
-    const rolls: Roll[] = [];
-    for (let i = 0; i < n; i++) rolls.push({ target: list[Math.min(i, list.length - 1)]!, extra: auto ? -t.num('auto_step', 1) * i : i && p !== 'quick' ? -t.num('later_penalty', 2) : 0 });
-    return volley(t, rolls, { burn: Math.max(0, (t.def.rounds as number) - n), cool: auto ? t.num('auto_heat_cool', 1) : 0 });
+    const rolls: Roll[] = steps.map((extra, i) => ({ target: list[Math.min(i, list.length - 1)]!, extra }));
+    return volley(t, rolls, { burn: Math.max(0, (t.def.rounds as number) - n), cool: burstCool(t.u, auto) });
   },
   ai: (t) => (!t.tgt ? 0 : t.line('auto') ? 6 : 4),
 });
@@ -187,8 +189,8 @@ technique({
     }
     const shoot = (): string | null => {
       if (!auto) { const r = strike(t); return r.ok ? null : r.why || 'Can\'t attack that.'; }
-      const rolls: Roll[] = []; for (let i = 0; i < t.num('auto_rolls', 3); i++) rolls.push({ target: tgt, extra: -t.num('auto_step', 1) * i });
-      return volley(t, rolls, { burn: Math.max(0, need - rolls.length), cool: t.num('auto_heat_cool', 1) });
+      const rolls: Roll[] = burstRolls(u, t.w).map((extra) => ({ target: tgt, extra })); // rules 1.18: the Burst's own rolls
+      return volley(t, rolls, { burn: Math.max(0, need - rolls.length), cool: burstCool(u, true) });
     };
     if (t.preview) {
       if (route.length) stepUser(t, route);
@@ -196,11 +198,11 @@ technique({
       return standingAt(t, points[at], shoot);
     }
     if (at > 0) { const err = walk(t, points[at], quick); if (err) return err; } // the first change: a refusal here costs nothing
-    if (alive(u) && !u.downed) { const e = shoot(); if (e) t.cb.log.push('  ' + u.name + ' has no shot: ' + e); } // a walk cut short still fires, from where it stopped
+    if (alive(u) && !u.downed) { const e = shoot(); if (e) say(t.cb, '  ' + u.name + ' has no shot: ' + e); } // a walk cut short still fires, from where it stopped
     if (at < points.length - 1 && alive(u) && !u.downed && u.pos === points[at] && !moveBlock(u)) {
       const left = n - (paths(t.cb, points[0], u.id).dist[u.pos] ?? 0), P = paths(t.cb, u.pos, u.id);
-      if ((P.dist[dest] ?? 99) <= left) { const err = walk(t, dest, quick); if (err) t.cb.log.push('  ' + u.name + ' can\'t move on: ' + err); }
-      else t.cb.log.push('  ' + u.name + ' can\'t move on to ' + refOf(dest) + ': the way is blocked.');
+      if ((P.dist[dest] ?? 99) <= left) { const err = walk(t, dest, quick); if (err) say(t.cb, '  ' + u.name + ' can\'t move on: ' + err); }
+      else say(t.cb, '  ' + u.name + ' can\'t move on to ' + refOf(dest) + ': the way is blocked.');
     }
     return null;
   },
@@ -227,7 +229,7 @@ function nextInLine(t: Tech, past: Unit): Unit | null {
 function carryDamage(t: Tech, next: Unit, crit: boolean): number {
   const u = t.u, w0 = u.weapon, a0 = u.ammoType;
   if (t.hand === 'off') { u.weapon = t.weaponId; u.ammoType = (u as any).offAmmoType ?? null; }
-  try { const d = attackDamage(t.cb, u, next, 'shot', t.c, { crit, preview: true }); return Math.max(1, Math.floor(d.total * t.num('heavy_carry_mult', 0.5)) - d.armour); } finally { u.weapon = w0; u.ammoType = a0; }
+  try { const d = attackDamage(t.cb, u, next, 'shot', t.c, { crit, preview: true }); return landed(d.total * t.num('heavy_carry_mult', 0.5), d.armour); } finally { u.weapon = w0; u.ammoType = a0; }
 }
 /** The carried round is a ranged hit on the next target (rules 1.12, Pressure rule 4): it marks the hit (Crossfire,
  * drill on a kill) and gives the ordinary Pressure only if it is the user's first ranged hit on that target this turn,
@@ -240,18 +242,18 @@ function carriedHit(t: Tech, next: Unit, dmg: number): string {
   if (!pt.ids.includes(next.id)) { pt.ids.push(next.id); if (alive(next)) addPressure(t, next, t.num('heavy_carry_pressure', 1), 'a round through ' + (t.tgt?.name || 'cover')); }
   return line;
 }
-// 31. Heavy Bolt (the crossbow's signature; Leon, 10 Nov 2026): one bolt at +50% damage that ignores 10 armour; on a
+// 31. Heavy Bolt (the crossbow's signature; Leon, 10 Nov 2026): one bolt at +40% damage (rules 1.18) that ignores 10 armour; on a
 //     hit, a Body save or pushed 1 tile. Precise: +2 to hit. Quick (the repeating crossbow): 1 AP less (the data line).
 technique({
   id: 'heavy_bolt',
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
     const precise = t.line('precise', 'quick') === 'precise';
-    const r = strike(t, { mult: 1 + t.num('damage_pct', 50) / 100, ignoreArmour: t.num('pierce', 10), extra: precise ? t.num('precise_hit', 2) : 0, label: 'Heavy Bolt' });
+    const r = strike(t, { mult: 1 + t.num('damage_pct', 40) / 100, ignoreArmour: t.num('pierce', 10), extra: precise ? t.num('precise_hit', 2) : 0, label: 'Heavy Bolt' });
     if (!r.ok) return r.why || 'Can\'t attack that.';
     const v = r.target || tgt;
     if (t.preview) t.note('On a hit: a Body save or pushed ' + t.num('push', 1) + ' tile.');
-    if (t.preview || (r.hit && alive(v))) stop(t, v, 'push', { tiles: t.num('push', 1) });
+    if (t.preview || (r.hit && alive(v))) stop(t, v, 'push', { tiles: t.num('push', 1), save: ['body'] });
     return null;
   },
   ai(t) { return t.tgt && t.tgt.armour >= 5 ? 7 : 0; }, // worth its AP against armour; a plain shot otherwise
@@ -272,10 +274,10 @@ technique({
       return null;
     }
     const obj = ct ? objectsAt(cb, ct).find((o) => o.hp != null && o.hp > 0) : null;
-    if (ct && obj) cb.log.push('  The round punches through the ' + obj.name.toLowerCase() + damageObject(cb, ct, wreck ? obj.hp! : coverDmg, 0, u) + '.');
+    if (ct && obj) say(cb, '  The round punches through the ' + obj.name.toLowerCase() + damageObject(cb, ct, wreck ? obj.hp! : coverDmg, 0, u) + '.');
     if (next && r.hit && alive(next)) {
       emitFx(cb, 'carry', { unit: u.id, from: tgt.pos, to: next.pos, target: next.id, tech: t.def.id });
-      cb.log.push('  The round carries on into ' + next.name + carriedHit(t, next, carryDamage(t, next, r.crit)) + '.');
+      say(cb, '  The round carries on into ' + next.name + carriedHit(t, next, carryDamage(t, next, r.crit)) + '.');
     }
     return null;
   },

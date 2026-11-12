@@ -19,7 +19,7 @@ function rig(words: string[], perks: Record<string, string> = {}, spec: any = { 
   const c = f.g.characters[f.pc.charId!]; c.sigils = [...words]; c.skills.brain_power = 10;
   (c as any).sigilGrowth = { study: 0, picksUsed: 0, free: 0, paid: [...ALL_PAID], toStudy: [], uses: {} };
   const u = f.turn(f.pc); u.ap = 60;
-  Object.assign(u.mg!, { evoker: true, words: [...words], charge: 999, cores: 5, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, inflect: [], mp: 500 });
+  Object.assign(u.mg!, { evoker: true, words: [...words], charge: 999, cores: 5, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, inflect: [], mp: 500 });
   f.g.rng.state = calm();
   return f;
 }

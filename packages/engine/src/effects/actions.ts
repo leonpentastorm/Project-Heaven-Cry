@@ -1,3 +1,4 @@
+import { say } from '../log';
 // Active items become actions (plan 2.7). One action type per surface:
 //   combat/perk {unitId, id, actionId?, targetId?, targetIds?, tile?, choice?, text?, arm?}   (combat Perks and Class tabs)
 //   world/act  {act:'perk', charId, id, actionId?, targetId?, tile?, choice?}                  (the area map)
@@ -16,6 +17,8 @@ import { keyOf } from './collect';
 import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
+import { overworld } from '../kit';
+import { price, whyNot, pay, setAp, resWhyNot, resPay, type Priced } from './cost';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
 export function apFromData(ap: any, u?: Unit | null): number {
@@ -56,7 +59,7 @@ function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: numb
   }
   const who = h.u?.name || h.c?.name || 'Someone', tgt = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) : null;
   const what = who + ' uses ' + h.info.name + (tgt ? ' on ' + tgt.name : '') + (args.text ? ': "' + args.text.slice(0, 200) + '"' : '') + line + '.';
-  if (h.cb) h.cb.log.push(what);
+  if (h.cb) say(h.cb, what);
   const ask = (tgt ? 'on ' + tgt.name + '. ' : '') + (args.npc ? 'with ' + args.npc + '. ' : '') + (args.text ? '"' + args.text.slice(0, 160) + '" ' : '') + h.info.text;
   if (!h.cb) { const eid = postStory(h, (args.npc ? args.npc + ': ' : '') + (args.text || 'uses ' + h.info.name + '.')); const g = h.g ?? boundGame(); if (g && h.c) pendRuling(g, h.c, h.key, ask, eid || undefined); }
   else if (rest || !effs.length) note(h, ask);
@@ -69,6 +72,20 @@ export function actionDefs(info: ItemInfo): ActionDef[] {
   return lane.length ? lane : hd?.noDefaultActions ? [] : defaultActions(info);
 }
 
+/** The data's AP for an item's action: the `ap` of the grant_action that names it, else the item's own (ap_cost). An
+ * ActionDef that says `ap: 'data'` for an item whose data has no number is a missing line of data: it throws. */
+export function dataAp(info: ItemInfo, actionId: string): number | string {
+  const grants = info.effects.filter((e) => e?.op === 'grant_action'), g = grants.find((x, i) => (x.action || 'use' + i) === actionId);
+  const ap = g?.ap ?? info.ap;
+  if (ap == null) throw new Error(info.key + '#' + actionId + " says ap: 'data', but its data gives no AP (ap_cost).");
+  return ap;
+}
+/** What an item's action costs this holder: its `ap` and `res` (numbers or functions of the arguments), through the
+ * one price (effects/cost.ts: the `cost` hook sees it as '<item key>#<action id>'). */
+function costOf(h: Holder, d: ActionDef, args: ActionArgs): Priced {
+  const ap = typeof d.ap === 'function' ? d.ap(h, args) : d.ap === 'data' ? apFromData(dataAp(h.info, d.id), h.u) : d.ap, res = typeof d.res === 'function' ? d.res(h, args) : d.res;
+  return price({ cb: h.cb, u: h.u, c: h.c }, h.key + '#' + d.id, { ap, res: res || undefined }, { item: h.key });
+}
 /** One action as the UI shows it. */
 export interface PerkActionEntry {
   /** What combat/perk, world/act perk and story/perk take as id (item key), plus actionId when an item has several. */
@@ -86,7 +103,6 @@ export interface PerkActionEntry {
   options?: { id: string; label: string }[]; pickMulti?: number; pickLabel?: string;
 }
 type Who = { u?: Unit | null; c?: Character | null; cb?: Combat | null; g?: any };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 
 /** Every action a holder's items give on this surface, available or greyed (hidden ones left out). */
 export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {
@@ -125,16 +141,15 @@ const USED_WHY: Partial<Record<UseScope, string>> = { per_rest: 'Used until the 
 function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry | null {
   if (!d.scope.includes(scope)) return null;
   const av = d.available ? d.available(h) : true; if (av === false) return null;
-  const ap = typeof d.ap === 'function' ? d.ap(h, {}) : d.ap, per = d.uses?.per || 'at_will', n = d.uses?.n ?? 1;
+  const cost = costOf(h, d, {}), ap = cost.ap, per = d.uses?.per || 'at_will', n = d.uses?.n ?? 1;
   const left = uses(h).left(per, n, h.key + '#' + d.id);
   let why: string | null = typeof av === 'string' ? av : null;
   if (!why && left <= 0) why = USED_WHY[per] || 'Used (' + usesLabel(per, n, 0) + ').';
   if (!why && per === 'out_of_combat' && h.cb && !overworld(h.cb)) why = 'Out of combat only.';
   if (!why && h.u && (h.u.downed || h.u.dead)) why = 'Downed.';
-  // Encore (items 729, 737): repeating the perk the Laughing Mask's Miracle named is lent its AP (encoreCredit's rule,
-  // inlined: this module sits under combat.ts); not inside the reducer's own action, which lent it already.
-  const en = h.u?.faith?.encore, lend = en && !(h.cb as any)?.acting && en.key === 'combat/perk:' + h.key ? en.ap || 0 : 0;
-  if (!why && scope !== 'story' && h.u && h.u.ap + lend < ap) why = 'Needs ' + ap + ' AP.';
+  // The AP and every resource the action declares, with the credit a repeat carries (Encore, items 729 and 737; a Brief).
+  if (!why && scope !== 'story' && h.u) why = whyNot(h.cb, h.u, cost, { as: { type: 'combat/perk', id: h.key }, c: h.c });
+  else if (!why) why = resWhyNot(cost.res, null, h.c); // no unit pays here (a story action): what the character holds (stims, Echo) is still asked for
   const lane = handlerOf(h.key)?.actions?.some((a) => a.id === d.id);
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
     target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: h.kind === 'class' ? 'class' : 'perks', cls: h.info.classId,
@@ -198,15 +213,18 @@ export function runPerkAction(x: Who, id: string, args: ActionArgs & { actionId?
   if (d.arm || args.arm) {
     if (!h.u) return 'Arm it in a fight.';
     const armed = (h.u.armed ||= {});
-    if (armed[h.key] && (args.choice == null || armed[h.key].choice === args.choice)) { delete armed[h.key]; if (h.cb) h.cb.log.push(h.u.name + ' stands down ' + h.info.name + '.'); return null; }
+    if (armed[h.key] && (args.choice == null || armed[h.key].choice === args.choice)) { delete armed[h.key]; if (h.cb) say(h.cb, h.u.name + ' stands down ' + h.info.name + '.'); return null; }
     const e0 = entryOf(h, d, sc); if (!e0) return 'Not here.'; if (e0.why && !/^Needs \d/.test(e0.why)) return e0.why;
     armed[h.key] = { choice: args.choice ?? true, round: h.cb?.round ?? 0, targetId: args.targetId };
-    if (h.cb) h.cb.log.push(h.u.name + ' readies ' + h.info.name + (args.choice ? ' (' + args.choice + ')' : '') + '.');
+    if (h.cb) say(h.cb, h.u.name + ' readies ' + h.info.name + (args.choice ? ' (' + args.choice + ')' : '') + '.');
     return null;
   }
   const pv = previewPerkAction(x, id, args, sc); if (!pv.ok) return pv.why || 'Not now.';
   const per = d.uses?.per || 'at_will', n = d.uses?.n ?? 1;
-  if (h.u && sc !== 'story') h.u.ap = Math.round((h.u.ap - pv.ap) * 10) / 10;
+  // THE payment: the previewed AP, and what the action declares of charge, MP, Supplies… for these arguments.
+  const cost = { ...costOf(h, d, args), ap: pv.ap };
+  if (h.u && sc !== 'story') { const no = whyNot(h.cb, h.u, { ...cost, ap: 0 }, { c: h.c }); if (no) return no; pay(h.cb, h.u, cost, { c: h.c }); }
+  else { const no = resWhyNot(cost.res, null, h.c); if (no) return no; resPay(cost.res, null, h.c); } // a story action: no AP and no unit, but its declared resources are refused and taken all the same
   if (!uses(h).take(per, n, h.key + '#' + d.id)) return 'Used.';
   const g = h.g ?? boundGame(), had = g?.story?.rulings?.length || 0;
   const wasActing = actingAs(d.label); let err: string | null | void;
@@ -248,9 +266,9 @@ export function openWindow(cb: Combat, kind: string, entries: WindowEntry[], by?
   const queue = entries.filter((e) => cb.units.some((u) => u.id === e.unitId && !u.dead && !u.downed));
   if (!queue.length) return;
   const saved: Record<string, number> = {};
-  for (const e of queue) { const u = cb.units.find((x) => x.id === e.unitId)!; saved[u.id] = u.ap; if (e.ap != null) u.ap = e.ap; }
+  for (const e of queue) { const u = cb.units.find((x) => x.id === e.unitId)!; saved[u.id] = u.ap; if (e.ap != null) setAp(u, e.ap); }
   cb.window = { kind, queue, saved, by };
-  cb.log.push(kind + ': ' + queue.map((e) => cb.units.find((u) => u.id === e.unitId)!.name).join(', ') + (queue.length === 1 ? ' acts now.' : ' act now.'));
+  say(cb, kind + ': ' + queue.map((e) => cb.units.find((u) => u.id === e.unitId)!.name).join(', ') + (queue.length === 1 ? ' acts now.' : ' act now.'));
 }
 /** After an action in a window: count it, and move on when the unit is done. */
 export function windowStep(cb: Combat, declined = false) {
@@ -259,7 +277,7 @@ export function windowStep(cb: Combat, declined = false) {
   head.done = (head.done || 0) + 1;
   const u = cb.units.find((x) => x.id === head.unitId);
   if (declined || !u || u.dead || u.downed || head.done >= (head.limit ?? 1) || u.ap <= 0) {
-    if (u && head.ap != null) u.ap = w.saved[u.id] ?? u.ap; // a pool given for the window is not kept
+    if (u && head.ap != null) setAp(u, w.saved[u.id] ?? u.ap); // a pool given for the window is not kept
     w.queue.shift();
   }
   if (!w.queue.length) closeWindow(cb);

@@ -3,6 +3,7 @@
   "kind": "weapon_mastery",
   "source": "PHC Core Rules v1.0, Weapons: Weapon mastery (added after 1.1; the 2020 sheet's Weapons Mastery table: weapon type, kills, level, roll bonus, perk tier)",
   "rules": {
+    "retired": "Rules 1.12 (spec section 7, item 947): the kills table, its attack bonus and these weapon perks are retired. Nothing loads this file; no text in it is true in play. Kept for the record.",
     "tracked_by": "kills, per family",
     "kill": "your attack with a weapon of the family takes a hostile out of the fight (dead or downed)",
     "boss_kill_counts": 3,
@@ -786,5 +787,6 @@
         }
       ]
     }
-  ]
+  ],
+  "retired": true
 }

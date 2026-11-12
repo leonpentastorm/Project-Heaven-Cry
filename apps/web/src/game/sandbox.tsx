@@ -19,7 +19,8 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { designInfo, designVerdict, toneChips, toneInk, formIconUri, isShape, SHAPE_MODULES } from './heartView';
-import { moduleGroups, feelingInk, feelingIconSrc } from './feelingsView';
+import { moduleGroups, feelingInk, feelingIconSrc, iconStyle } from './feelingsView';
+import { parseStyle } from '../dc/runtime';
 import { OPT_LABEL, optValue } from './actionPickers';
 import { gearIconUri } from './gearIcons';
 import { Groups, GroupList, GroupSearch, sigilWordGroups, isOpen, setOpen as setGroupOpen, useOpenTick } from './workshopGroups';
@@ -29,7 +30,7 @@ import { glyphKeyNav } from './glyphKeys';
 import { askConfirm } from './dialog';
 import {
   magicOf, FEELINGS, practiceOf, nextPickAt, type GameState, type Character, type Rarity, type Sheet, sandboxReady, sandboxTeam, WEAPONS, WEAPON, ITEM, CLASSES, CLASS, ATTR, SIGILS, SCHOOLS, SCHOOL, MODULES, MODULE, SKILLS, SKILL,
-  ENEMIES, MANA_BANDS, SANDBOX_TIERS, sigilGrowthView, MARK, markTn, WORD_MASTERY, TONE, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
+  ENEMIES, enemyStats, squadLevel, MANA_BANDS, SANDBOX_TIERS, sigilGrowthView, MARK, markTn, WORD_MASTERY, TONE, PERKS, PERK, TRAITS, ARCHETYPES, packOf, classRank, maxHp, RARITY, sandboxNext, sandboxWave, refOf, carriesEvoker, carriesEmanator, focusHand, MAGIC_KIT, CASTERS, CASTER, REST_INFO,
 } from '@engine';
 import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, toast } from './store';
 import { FAITH_PATRONS, FAITH_PATRON, VOWS, beliefOf, devotionNow, devotionXpOf, devotionWords, GATE, moduleShelved } from '@engine';
@@ -40,7 +41,7 @@ import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
 import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
-import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys } from '@engine';
+import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys, isUnseenId } from '@engine';
 const ITEMS = Object.values(ITEM);
 import { ART, zoneOf } from '../screens/shared';
 
@@ -401,7 +402,7 @@ function FightBar({ game, isHost, meId, wide }: { game: GameState; isHost: boole
   const [hint, setHint] = React.useState(() => { try { return localStorage.getItem(HINT) !== '1'; } catch { return true; } });
   const hide = () => { setHint(false); try { localStorage.setItem(HINT, '1'); } catch { /* */ } };
   if (!gearing) return <div style={{ ...row, padding: '10px 16px', borderBottom: '1px solid ' + C.line }}>
-    <span style={{ flex: 1, fontSize: 13, color: C.muted }}>Wave {sb.wave}{sb.attempt > 1 ? ' · attempt ' + sb.attempt : ''} is on. Gear changes here work mid-fight too.</span>
+    <span style={{ flex: 1, fontSize: 13, color: C.muted }}>{sb.fx ? 'Effect testing: the dummy can\'t die and never acts, and your AP comes back after every action. Stop the fight to leave.' : 'Wave ' + sb.wave + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' is on. Gear changes here work mid-fight too.'}</span>
     {isHost && <button type="button" style={btn} onClick={() => act({ type: 'sandbox/stop' })} title="End the fight now and go back to gearing up; the enemies stay where they stand">■ Stop the fight</button>}
   </div>;
   return <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: wide ? 0 : '12px 16px', borderBottom: wide ? 0 : '1px solid ' + C.line }}>
@@ -420,6 +421,7 @@ function FightBar({ game, isHost, meId, wide }: { game: GameState; isHost: boole
       {!onMap && !wide && <EmptyLine game={game} />}
       {(isHost || sb.spawnAll) && <button type="button" style={small} onClick={() => act({ type: 'sandbox/stage', wave: n })}>{onMap ? 'Reset to wave ' + n : 'Place wave ' + n + ' on the map'}</button>}
       {(isHost || (sb.state === 'fallen' && sb.guestRetry !== false)) && sb.wave > 1 && <button type="button" style={small} onClick={() => act({ type: 'sandbox/retry', restart: true })}>Restart from wave 1</button>}
+      {isHost && <button type="button" style={small} title="A room for looking at effects: one dummy that can't die and never acts, and your AP comes back after every action. Stop the fight to leave." onClick={() => act({ type: 'sandbox/fxtest' })}>Effect testing</button>}
     </div>}
     </div>
   </div>;
@@ -861,14 +863,14 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
           <button type="button" style={{ ...btn, minHeight: 28, fontSize: 12 }} onClick={() => FEELINGS.forEach((f) => { if (!(c.feelings || []).includes(f.id)) act({ type: 'sandbox/learn', charId: c.id, feeling: f.id }); })}>Feel them all</button>
           {FEELINGS.map((f) => { const on = (c.feelings || []).includes(f.id), ink = feelingInk(f.id); return <button key={f.id} type="button" data-feeling={f.id} aria-pressed={on} title={f.name + ': ' + f.pour.text + ' · ' + f.trigger.text}
             style={{ ...btn, minHeight: 28, fontSize: 12, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted }}
-            onClick={() => act({ type: 'sandbox/learn', charId: c.id, feeling: f.id, ...(on ? { forget: true } : {}) })}><img src={feelingIconSrc(f.id, on ? ink : '#7F8BA1')} alt="" width={16} height={16} />{f.name}</button>; })}
+            onClick={() => act({ type: 'sandbox/learn', charId: c.id, feeling: f.id, ...(on ? { forget: true } : {}) })}><span aria-hidden="true" style={{ ...parseStyle(iconStyle(feelingIconSrc(f.id, on ? ink : '#7F8BA1'), on ? ink : '#7F8BA1')), width: 16, height: 16 }} />{f.name}</button>; })}
         </div>
         : g.key === 'practice' ? <div style={row}>
           {[5, 15, -5].map((n) => <button key={n} type="button" style={{ ...btn, minHeight: 28, fontSize: 12 }} onClick={() => act({ type: 'sandbox/practice', charId: c.id, n })}>{n > 0 ? '+' + n : n} practice</button>)}
         </div>
         : <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {FEELINGS.map((f) => { const ink = feelingInk(f.id), me = playerUnitPos(c.id); return <div key={f.id} data-fx-test={f.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
-            <img src={feelingIconSrc(f.id, ink)} alt="" width={18} height={18} /><span style={{ width: 90, color: ink, fontWeight: 700 }}>{f.name}</span>
+            <span aria-hidden="true" style={{ ...parseStyle(iconStyle(feelingIconSrc(f.id, ink), ink)), width: 18, height: 18 }} /><span style={{ width: 90, color: ink, fontWeight: 700 }}>{f.name}</span>
             {(['pump', 'release', 'residue'] as const).map((w) => <button key={w} type="button" style={{ ...btn, minHeight: 26, fontSize: 11, padding: '0 8px' }} onClick={() => testFeelingFx(f.id, f.family, w, me)}>{w}</button>)}
           </div>; })}
         </div>} /></Box>
@@ -970,8 +972,10 @@ function useTilePick(armed: boolean, pick: (ref: string) => void) {
 }
 function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
   const sb = game.sandbox!, gearing = game.phase === 'story', cb = gearing ? null : game.combat;
-  const [tier, setTier] = React.useState('minion'), [weapon, setWeapon] = React.useState(SANDBOX_TIERS.minion.weapons[0]), [armed, setArmed] = React.useState(false), [ref, setRef] = React.useState(''), [jump, setJump] = React.useState(sandboxNext(sb)), [caster, setCaster] = React.useState('');
-  const spawn = (at: string) => act({ type: 'sandbox/spawn', tier, weapon, at, ...(caster ? { caster } : {}) } as any);
+  const [tier, setTier] = React.useState('minion'), [weapon, setWeapon] = React.useState(SANDBOX_TIERS.minion.weapons[0]), [armed, setArmed] = React.useState(false), [ref, setRef] = React.useState(''), [jump, setJump] = React.useState(sandboxNext(sb)), [caster, setCaster] = React.useState(''), [lvl, setLvl] = React.useState('');
+  // The level of the unit to spawn: empty is the squad's level as it is now.
+  const squadLvl = squadLevel(game), spawnLvl = lvl.trim() && Number.isFinite(Number(lvl)) ? Math.max(1, Math.min(20, Math.floor(Number(lvl)))) : squadLvl;
+  const spawn = (at: string) => act({ type: 'sandbox/spawn', tier, weapon, at, ...(caster ? { caster } : {}), ...(lvl.trim() && Number.isFinite(Number(lvl)) ? { level: spawnLvl } : {}) } as any);
   // A tool search that names an enemy tier or a Sigil caster picks it (as the Squad tab's menus do).
   const q = React.useContext(WideCtx).q;
   React.useEffect(() => {
@@ -982,11 +986,12 @@ function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
   useTilePick(armed, (r) => spawn(r));
   React.useEffect(() => { if (!armed) return; const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.stopPropagation(); setArmed(false); } }; window.addEventListener('keydown', k, true); return () => window.removeEventListener('keydown', k, true); }, [armed]);
   const mana = cb?.mana ?? game.story.mana ?? 15, band = MANA_BANDS.find((b) => mana >= b.min && mana <= b.max);
-  const foes = gearing ? (game.story.npcs || []).filter((n) => n.side === 'hostile').length : (cb?.units || []).filter((u) => u.side === 'foe' && !u.dead).length;
+  const foes = enemiesLeft(game);
   return <>
     <Section title={gearing ? 'SPAWN A DRILL UNIT ON THE MAP (IDLE UNTIL THE FIGHT)' : 'SPAWN AN ENEMY INTO THE FIGHT'} keys={FIND.spawn}>
       <div style={row}>
-        <select value={tier} onChange={(e) => { setTier(e.target.value); if (CASTER[caster] && CASTER[caster].tier !== e.target.value) setCaster(''); setWeapon(SANDBOX_TIERS[e.target.value]?.weapons[0] || weapon); }} aria-label="Enemy tier" style={field}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.hp} HP</option>)}</select>
+        <select value={tier} onChange={(e) => { setTier(e.target.value); if (CASTER[caster] && CASTER[caster].tier !== e.target.value) setCaster(''); setWeapon(SANDBOX_TIERS[e.target.value]?.weapons[0] || weapon); }} aria-label="Enemy tier" style={field}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name} · {enemyStats(t.id, spawnLvl).hp} HP</option>)}</select>
+        <input value={lvl} onChange={(e) => setLvl(e.target.value.replace(/[^0-9]/g, '').slice(0, 2))} placeholder={'Lv ' + squadLvl} inputMode="numeric" aria-label="Enemy level" title={'The level of the unit you spawn, 1 to 20. Leave it empty for your squad\'s level (' + squadLvl + ').'} style={{ ...field, width: 64 }} />
         <select value={weapon} onChange={(e) => setWeapon(e.target.value)} aria-label="Enemy weapon" style={{ ...field, flex: 1 }}>{WEAPONS.filter((w) => w.category !== 'thrown').map((w) => <option key={w.id} value={w.id}>{w.name}</option>)}</select>
       </div>
       <div style={row}>
@@ -1251,6 +1256,16 @@ function TeamEnd({ game, meId, isHost }: { game: GameState; meId: string; isHost
 }
 
 /** For the room: whether the Proving Ground can open, and why not. */
+/** How many enemies "Clear all enemies" would take away: while gearing up the hostile drill units on the map; in a fight
+ *  the hostiles standing, the ones out of sight counted by their opaque marks in the turn order (fog in the engine: the
+ *  view holds no unseen hostile; the first full browser run, 12 Nov 2026, found the button disabled at "(0)" while a
+ *  whole wave stood out of sight). */
+export function enemiesLeft(game: GameState): number {
+  if (game.phase === 'story') return (game.story.npcs || []).filter((n) => n.side === 'hostile').length;
+  const cb = game.combat; if (!cb) return 0;
+  return cb.units.filter((u) => u.side === 'foe' && !u.dead).length + cb.order.filter((id) => isUnseenId(id)).length;
+}
+
 export function provingGroundWhy(g: GameState | null, isHost: boolean): string | null {
   if (!g) return 'Connecting…';
   if (!isHost) return 'The host opens the Proving Ground.';

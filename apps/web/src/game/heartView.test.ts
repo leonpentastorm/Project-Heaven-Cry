@@ -1,7 +1,7 @@
 // Outburst 2.0 on screen (game/heartView.ts): design cards with a shape icon and their line, the HEART panel's costs
 // and refusals (the engine's), the grid preview that tells an area from a bolt, and the cut-in's top commands.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, type Sheet, newCharacter, startCombat, beginOutburst, pumpOutburst, releaseOutburst } from '@engine';
+import { ARCHETYPES, type Sheet, newCharacter, startCombat, beginOutburst, pumpOutburst, releaseOutburst, previewPump } from '@engine';
 import { formIconSvg, designInfo, designCards, heartPanel, heartVals, aimOverlay, idleOverlay, overlayTileStyle, designVerdict, toneChips, FORMS } from './heartView';
 import { smartCommands, actionGroups } from './commands';
 
@@ -47,7 +47,7 @@ describe('design cards', () => {
   it('the workshop verdict names both effects with numbers, and the tone\'s rider', () => {
     const { u } = fight();
     const v = designVerdict(u.mg, DESIGNS[2]);
-    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap ×0.8 \d+, stage 4 ×2.2 \d+\); then Push 3 tiles \(half\)/);
+    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap ×0.8 \d+, stage 4 ×1.6 \d+\); then Push 3 tiles \(half\)/); // rules 1.19: the table tops out at ×1.6
     expect(designVerdict(u.mg, DESIGNS[0]).rider).toMatch(/^Fire: armour counts half; stage 2–3 Burning/);
     expect(toneChips([], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: true });
     expect(toneChips(['storm'], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: false });
@@ -60,13 +60,13 @@ describe('the HEART panel', () => {
     expect(beginOutburst(cb, rng, u, 'fb', undefined, true)).toBeNull();
     let p = heartPanel(cb, u)!;
     expect(p).toMatchObject({ name: 'Heartfire', stage: 0, tone: 'fire', form: 'burst' });
-    expect(p.stages.map((s) => s.mult)).toEqual([0.8, 1, 1.4, 1.8, 2.2]);
+    expect(p.stages.map((s) => s.mult)).toEqual([0.8, 1, 1.2, 1.4, 1.6]);
     expect(p.pump.ok).toBe(true);
     expect(p.pump.cost).toBe(u.mg.freePumps > 0 ? 'FREE' : '1 AP');
     expect(p.feedShow).toBe(false); // no glyph on your tile
     for (let i = 0; i < 3; i++) expect(pumpOutburst(cb, rng, u)).toBeNull();
     p = heartPanel(cb, u)!;
-    expect(p.stage).toBe(3); expect(p.mult).toBe(1.8);
+    expect(p.stage).toBe(3); expect(p.mult).toBe(1.4);
     expect(p.letgo.strainOff).toBe(0); // pumped stages give no Strain back (spec item 541)
     u.mg.held.paid = 2; expect(heartPanel(cb, u)!.letgo.strainOff).toBe(Math.min(2, u.mg.strain)); p = heartPanel(cb, u)!;
     const v: any = heartVals(p, () => {});
@@ -166,7 +166,8 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     expect(p.overdraw).toMatch(/^Overdraw is ready this turn\. This Pump adds 2 stages\. Your first Overdraw of the fight costs no Strain\.$/);
     expect(p.pump.title).toMatch(/^A plain Pump: stage 0 → 1 .*Overdraw is ready this turn/);
     p = heartPanel(cb, u, [OD])!;
-    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP' }); expect(p.pump.title).toMatch(/^An Overdraw Pump: stage 0 → 2 \(×1\.4\)\. Overdraw: 2 stages\. No Strain: your first Overdraw of the fight\.$/);
+    // rules 1.24: both of its stages cost MP (10% + 20% of the Begin's 17: 5)
+    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP · 5 MP', mp: 5 }); expect(p.pump.title).toMatch(/^An Overdraw Pump: stage 0 → 2 \(×1\.2\)\. It takes 5 MP \(you have 383\)\. Overdraw: 2 stages\. No Strain: your first Overdraw of the fight\.$/);
     expect(p.stages.find((x) => x.next)!.n).toBe(2); // the meter marks the stage this Pump reaches
     // Used this turn: the panel says why it isn't there; next turn it is ready again, now for 1 Strain.
     cb.mods = [OD]; pumpOutburst(cb, rng, u); delete cb.mods; u.mg.held.stage = 1;
@@ -175,9 +176,47 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     expect(heartPanel(cb, u)!.overdraw).toMatch(/^Overdraw is ready this turn\. This Pump adds 2 stages\. You take 1 Strain after it\.$/);
     expect(heartPanel(cb, u, [OD])!.pump.title).toMatch(/stage 1 → 3 .*You take 1 Strain after it\./);
   });
+  it('rules 1.24: the Pump button shows the MP the Pump will take, from the engine; a free Pump still owes it; short of MP it says so', () => {
+    const { cb, u } = withPerks({}, 2); beginOutburst(cb, rng, u, 'sb', undefined, true); // Soul Bolt: 17 MP for this caster
+    let p = heartPanel(cb, u)!;
+    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP · 2 MP', mp: previewPump(cb, u).mp }); expect(p.pump.mp).toBe(2);
+    expect(p.pump.title).toBe('A plain Pump: stage 0 → 1 (×1). It takes 2 MP (you have 383).');
+    u.mg.freePumps = 1; u.mg.freePumpsMax = 1; // Empathy's free Pump: no AP, the MP is still owed
+    p = heartPanel(cb, u)!;
+    expect(p.pump).toMatchObject({ ok: true, free: true, cost: '0 AP · 2 MP' }); expect(p.pump.title).toBe('A plain Pump: stage 0 → 1 (×1). This is your free Pump for this turn: it costs no AP, and 2 MP (you have 383).');
+    expect(heartVals(p, () => {}).btns!.find((b: any) => b.key === 'pump')!.cost).toBe('0 AP · 2 MP');
+    expect(p.feelings.every((f) => !f.ok || f.cost === '0 AP · 2 MP')).toBe(true); // a feeling Pump costs the same
+    pumpOutburst(cb, rng, u); expect(u.mg.mp).toBe(381);
+    expect(heartPanel(cb, u)!.pump).toMatchObject({ cost: '1 AP · 3 MP', mp: 3 }); // stage 2: 20% of the Begin
+    u.mg.mp = 2;
+    p = heartPanel(cb, u)!;
+    expect(p.pump).toMatchObject({ ok: false, why: 'A Pump to stage 2 needs 3 MP (2): Syphon first, or Release what you hold.' });
+    expect(heartVals(p, () => {}).btns!.find((b: any) => b.key === 'pump')!.cost).toMatch(/^✕ A Pump to stage 2 needs 3 MP/);
+    expect(p.revert.title).toMatch(/the AP, MP and Strain it cost/);
+    u.mg.emanator = false; u.mg.mp = 0; // no Emanator in hand: the heart draws on the air, and a Pump takes no MP
+    expect(heartPanel(cb, u)!.pump).toMatchObject({ ok: true, cost: '1 AP', mp: 0 });
+  });
   it('a character without Overdraw has no Overdraw line', () => {
     const { cb, u } = withPerks({}, 2); beginOutburst(cb, rng, u, 'sb', undefined, true);
     expect(heartPanel(cb, u)!.overdraw).toBe(''); expect(heartPanel(cb, u)!.pump.title).not.toMatch(/Overdraw/);
+  });
+  it('a preview never writes on the fight it is given: the switches ride on the engine\'s copy (engine review 4, finding 2)', () => {
+    // The old client set cb.mods on the live fight for the length of a preview. Here a write to the live fight's mods
+    // is caught, and the fight is deeply equal after every preview.
+    const writes: string[] = [];
+    const trap = (cb: any) => Object.defineProperty(cb, 'mods', { configurable: true, enumerable: false, get: () => undefined, set: (v) => { writes.push(JSON.stringify(v)); } });
+    const a = withPerks({ heart_overload: 'I' }); fire(a.cb, a.u, 2); a.u.ap = 0;
+    a.u.uses ||= {};
+    const wasA = JSON.stringify(a.cb); trap(a.cb);
+    expect(designCards(a.cb, a.u).find((x) => x.id === 'sb')).toMatchObject({ beginAp: 0 }); // (the card that asks with Heart Overload's switch off)
+    expect(JSON.stringify(a.cb)).toBe(wasA);
+    const b = withPerks({}); beginOutburst(b.cb, rng, b.u, 'sb', undefined, true);
+    b.u.uses ||= {}; // (the engine makes a unit's empty counter bag the first time anything reads a counter)
+    const wasB = JSON.stringify(b.cb); trap(b.cb);
+    const p = heartPanel(b.cb, b.u, [OD])!;
+    expect(p.pump).toMatchObject({ ok: true, mp: 5 }); expect(p.steadyBtn).toBeTruthy(); expect(p.letgo).toBeTruthy(); // (the Overdraw Pump, read with its switch on)
+    expect(JSON.stringify(b.cb)).toBe(wasB);
+    expect(writes).toEqual([]);
   });
   it('Heart Overload: after a Release at stage 2 the same design\'s card offers Begin again for 0 AP; the others don\'t', () => {
     const { cb, u } = withPerks({ heart_overload: 'I' }); fire(cb, u, 2); u.ap = 0;
@@ -203,10 +242,10 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     const { cb, u } = withPerks({ resonance: 'I' }); fire(cb, u, 1);
     beginOutburst(cb, rng, u, 'sb', undefined, true); u.mg.held.stage = 2; u.ap = 9;
     const p = heartPanel(cb, u)!;
-    expect(p.multNotes).toEqual(['Resonance +10%']); expect(p.mult).toBe(1.54); // ×1.4 at stage 2, +10%
-    expect(p.release.title).toMatch(/^Fire it at stage 2 \(×1\.54\)\. Resonance \+10% is in that number/);
+    expect(p.multNotes).toEqual(['Resonance +10%']); expect(p.mult).toBe(1.32); // ×1.2 at stage 2 (rules 1.19), +10%
+    expect(p.release.title).toMatch(/^Fire it at stage 2 \(×1\.32\)\. Resonance \+10% is in that number/);
     const v: any = heartVals(p, () => {});
-    expect(v.multText).toBe('×1.54'); expect(v.hasDoes).toBe(true); expect(v.doesText).toBe('Resonance +10%');
+    expect(v.multText).toBe('×1.32'); expect(v.hasDoes).toBe(true); expect(v.doesText).toBe('Resonance +10%');
     const o = aimOverlay(cb, u, 'held', '4,5');
     expect(o.summary[0]).toBe('Resonance +10% to this Release, built by the Releases before it.');
     // A snap cast of a design shows it too.

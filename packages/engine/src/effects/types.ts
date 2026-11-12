@@ -6,7 +6,9 @@ import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 
 /** Where an item comes from. Class moves are keyed "class:<classId>.<moveId>". */
-export type ItemKind = 'perk' | 'trait' | 'class' | 'skill';
+/** 'relic': an item a holder carries that is neither a perk nor a trait (engine foundations 3: a roguelike's relics),
+ * loaded with addItems('relic', [...]); written in data only. */
+export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic';
 /** The tier an item is held at: a perk's I or II, a granted perk's kind, 'trait', or a class move's rank ('adv' for an advanced class). */
 export type Tier = 'I' | 'II' | 'mastered' | 'achieved' | 'ultimate' | 'trait' | 'III' | 'adv';
 
@@ -31,6 +33,9 @@ export interface ItemInfo {
   /** Class moves: the class, and the rank that unlocks the move. */
   classId?: string; rank?: string;
   provisional?: boolean;
+  /** Which damage this item's 'damage_out' speaks about besides weapon attacks and spells (data `damage_kinds`:
+   * 'blast' = a blast, a splash, a trap and a thrown item someone made; or one of 'explosion', 'trap', 'thrown'). */
+  damageKinds?: string[];
 }
 
 /** One effect a holder has right now. */
@@ -49,14 +54,14 @@ export type HookName =
   | 'move_cost' | 'move_step' | 'moved' | 'forced_move'
   | 'attack_preview' | 'attack_target' | 'attack_roll' | 'damage_out' | 'on_hit' | 'on_miss'
   | 'damage_in' | 'on_damaged' | 'on_downed' | 'on_kill'
-  | 'cond_apply' | 'cond_landed' | 'cond_end'
+  | 'cond_apply' | 'save' | 'cond_landed' | 'cond_end' | 'displaced'
   | 'heal_given' | 'heal_in' | 'shield_grant'
   | 'reaction_window' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
   | 'reload' | 'jam_clear' | 'swap'
   // Physical 2.0 (rules 1.12): after a prone unit stands up {u} (Dead to Rights)
   | 'stood_up'
   | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release' | 'outburst_after' | 'outburst_plan'
-  | 'analyze' | 'action_cost' | 'combat_end'
+  | 'analyze' | 'combat_end'
   // hooks gap (rules 1.3): after an Evoke, a held release's price, holding Strain, Strain added, death saves, injuries,
   // a unit built from its character, every reducer action done, before a stim, an ammo spend, weapon actions listed
   | 'evoked' | 'release_cost' | 'outburst_hold' | 'outburst_pump' | 'strain_change' | 'held_turn_start' | 'strain' | 'death_save' | 'injury' | 'unit_built' | 'action_done'
@@ -71,25 +76,30 @@ export type HookName =
   | 'scene_change' | 'session_start' | 'rest' | 'xp_grant'
   | 'notice' | 'stay_hidden' | 'world_move_cost' | 'karma_award'
   | 'action_refuse' | 'evoke_reach' | 'spell_roll' | 'session_heal' | 'story_blessing' | 'ap_gift' | 'npc_moved' | 'npc_sense' | 'zone_enter' | 'story_harm'
-  | 'stay_hidden_result' | 'ruling_answered' | 'braced' | 'plate_spent' | 'round_ap' | 'world_round_start' | 'story_cond_apply' | 'gift'
+  | 'stay_hidden_result' | 'ruling_answered' | 'braced' | 'protect_act' | 'plate_spent' | 'round_ap' | 'world_round_start' | 'story_cond_apply' | 'gift'
   // Class Roster Rev 3 (classes/rev3.ts): a Vent's extra Flux into the air; an enemy's walk priced by items
   | 'vent' | 'ai_move_risk'
   // rules 1.8 (feelings.ts): a condition's save passed {by, t, id}
   | 'cond_resisted'
   // Calls (rules 1.13, calls/core.ts): a Call about to be made {u, t, id, kind, step, react, tnAdd, cancel}; its AP {u, id, ap, react}
-  | 'call' | 'call_cost';
+  | 'call' | 'call_cost'
+  // engine foundations 2 (effects/cost.ts): EVERY priced action {u, c, cb, action, base, ap, res, min, free, labels}
+  | 'cost';
 
 /** A hook handler. ctx is the hook's payload (fields documented at each emit site and in effects/hooks.ts); mutable
  * fields may be changed. Return nothing. */
 export type HookFn = (ctx: any, h: Holder) => void;
 
 /** A stat query's answer: a number to add, or { add, mult }. */
+export type { StatId, CostSite } from './stats';
+import type { StatId } from './stats';
 export type StatAnswer = number | { add?: number; mult?: number } | void | null | undefined;
 
 /** A modifier to a d20 check (story or combat), with the label shown in the check's head. */
 export interface CheckMod { add: number; label: string }
 
-export type UseScope = 'at_will' | 'per_turn' | 'per_round' | 'per_combat' | 'per_scene' | 'per_session' | 'per_rest' | 'per_campaign' | 'reaction' | 'out_of_combat';
+/** When a limit is fresh again (the table: effects/uses.ts SCOPES). 'cooldown' is taken with uses(h).cool(turns), not take(). */
+export type UseScope = 'at_will' | 'per_turn' | 'per_round' | 'per_combat' | 'per_scene' | 'per_session' | 'per_rest' | 'per_campaign' | 'reaction' | 'out_of_combat' | 'cooldown';
 export type ActionScope = 'combat' | 'world' | 'story';
 export type ActionTarget = 'none' | 'self' | 'ally' | 'enemy' | 'unit' | 'tile' | 'object' | 'npc' | 'check' | 'text';
 
@@ -103,7 +113,12 @@ export interface ActionPreview { ok: boolean; why?: string; ap: number; lines: s
 /** An action an item grants (combat Perks or Class tab, the area map, the story panel). */
 export interface ActionDef {
   id: string; label: string; scope: ActionScope[];
-  ap: number | ((h: Holder, args: ActionArgs) => number);
+  /** Its AP before items. 'data': the item's own number in data/*.json (the action's `ap` in its grant_action, else the
+   * item's ap_cost): write that, not a literal that repeats the data. A function: a cost that depends on the holder. */
+  ap: number | 'data' | ((h: Holder, args: ActionArgs) => number);
+  /** What it costs besides AP, by resource id (data/actions.json `resources`: charge, mp, cores, momentum, guard,
+   * supplies, toxins, parts, stims, echo). The runtime checks it ("Needs 2 charge.") and pays it: run() never subtracts. */
+  res?: Record<string, number> | ((h: Holder, args: ActionArgs) => Record<string, number> | null | undefined);
   uses?: { per: UseScope; n: number };
   target: ActionTarget;
   range?: number; needsSight?: boolean;
@@ -147,7 +162,7 @@ export interface ItemHandler {
   narrator?: 'all' | number[] | string[] | ((e: any, index: number, tier: string) => boolean);
   /** Lower runs first among handlers on the same hook (default 100). Use it for orders the rules fix (drop-to-0). */
   priority?: number;
-  stat?(h: Holder, stat: string, ctx: any): StatAnswer;
+  stat?(h: Holder, stat: StatId, ctx: any): StatAnswer;
   on?: Partial<Record<HookName, HookFn>>;
   checkMod?(h: Holder, ck: any, ctx: any): CheckMod[] | void;
   actions?: ActionDef[];

@@ -8,13 +8,19 @@
 // heal, condition, knockback, Echo. See run()/runs().
 import { SKILL, SKILLS, PERK } from '../data';
 import type { Character } from '../character';
+import { healingMult } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { Holder, ItemInfo } from './types';
 import { registerGeneric, genericEffects, statQuery, charOfUnit } from './hooks';
-import { applyCond, endCond, isCondition, condFamily } from '../magic';
-import { moveBlockers, key, xy, dist } from '../combat';
+import { COST_SITES, type CostSite } from './stats';
+import type { Rng } from '../rng';
+import { applyCond, endCond, isCondition, condFamily, debuffsOf, condId } from '../magic';
+import { moveBlockers, key, xy, dist, displace } from '../combat';
 import { grantShield, healUnit, tendHook } from './damage';
 import { gainEcho } from './echo';
+import { deal, mend, type AmountSpec } from './output';
+import { amountBlock, type AmountBlock } from './amounts';
+import './triggers'; // item ops: the runner of triggered effects registers itself with the hooks (engine foundations 3)
 
 // ---------- the scope vocabulary ----------
 const GATES = ['when', 'duration', 'limit', 'uses', 'requires_state', 'per', 'trigger', 'count', 'area'];
@@ -59,14 +65,14 @@ const STAT_MAP: Record<string, string> = {
   hp: 'hp', hp_max: 'hp', move: 'move', defense: 'defense', dodge: 'defense', init: 'init', armor: 'armor', armour: 'armor',
   crit_damage: 'crit_damage', max_sigil_words: 'max_sigil_words', strain_limit: 'strain_limit', outburst_range: 'soul_range', soul_spell_range: 'soul_range',
   module_slots: 'module_slots', ready_designs: 'ready_designs', vision: 'vision', carry: 'carry', injury_resist: 'injury_resist', mp_max: 'mp_max',
-  hp_per_level: 'hp_per_level', glyph_ap: 'glyph_ap', attack: 'attack', ap: 'ap',
+  hp_per_level: 'hp_per_level', glyph_ap: 'glyph_ap', attack: 'attack', ap: 'ap', shove_guard: 'shove_guard', one_hand_heavy: 'one_hand_heavy', throw_range: 'throw_range',
 };
-const MULT_MAP: Record<string, string> = { hp_max: 'hp', hp: 'hp', move: 'move', carry: 'carry', mp_max: 'mp_max' };
+const MULT_MAP: Record<string, string> = { hp_max: 'hp', hp: 'hp', move: 'move', carry: 'carry', mp_max: 'mp_max', field_repair_amount: 'field_repair_amount' };
 
 registerGeneric({
   op: 'stat_mod',
   claim: (e) => plainOrTagged(e) && !!STAT_MAP[e.stat] && typeof e.value === 'number',
-  stat: (h, e, stat, ctx) => (STAT_MAP[e.stat] === stat && stat !== 'ap' && contextHolds(e, h, ctx) ? e.value : 0),
+  stat: (h, e, stat, ctx) => (STAT_MAP[e.stat] === stat && contextHolds(e, h, ctx) ? e.value : 0),
   on: { turn_start_pre: (ctx, h, e) => { if (STAT_MAP[e.stat] === 'ap' && ctx.u === h.u && contextHolds(e, h, ctx)) (e.value >= 0 ? ctx.grants : ctx.penalties).push({ n: e.value, why: h.info.name }); } },
 });
 registerGeneric({
@@ -94,7 +100,7 @@ export function skillRollMod(x: { c?: Character | null; u?: Unit | null }, skill
   const h0: any = { c: x.c ?? charOfUnit(x.u), u: x.u };
   for (const { e, info } of genericEffects(x, 'skill_mod')) if (e.skill === skill && contextHolds(e, { ...h0, info } as Holder, ctx)) labels.push({ add: e.value, label: info.name });
   for (const { e, info } of genericEffects(x, 'skill_mod_tag')) if (skillHasTag(skill, e.tag) && contextHolds(e, { ...h0, info } as Holder, ctx)) labels.push({ add: e.value, label: info.name });
-  const q = statQuery(x, 'skill:' + skill, ctx); if (q.add) labels.push({ add: q.add, label: 'perks' });
+  const q = statQuery(x, `skill:${skill}`, ctx); if (q.add) labels.push({ add: q.add, label: 'perks' });
   return { add: labels.reduce((t, l) => t + l.add, 0), labels };
 }
 registerGeneric({ op: 'save_mod', claim: (e) => isPlain(e) && typeof e.value === 'number' && (['body', 'brain', 'heart', 'all', 'any'].includes(e.family) || e.save != null),
@@ -116,7 +122,7 @@ function immuneMatch(words: string[], what: string, fam?: string): boolean {
  * 'opportunity_attack'? Returns the item's name, or null. */
 export function immune(x: { u?: Unit | null; c?: Character | null }, what: string, fam?: string): string | null {
   for (const { e, info } of genericEffects(x, 'immunity')) if (immuneMatch(immWords(e), what, fam ?? (isCondition(what) ? condFamily(what) : undefined))) return info.name;
-  const q = statQuery(x, 'immune:' + what); return q.add ? 'perk' : null;
+  const q = statQuery(x, `immune:${what}`); return q.add ? 'perk' : null;
 }
 
 // ---------- damage ----------
@@ -143,18 +149,19 @@ registerGeneric({
 
 // ---------- AP costs and forbidden actions ----------
 /** Action ids whose AP the engine asks actionAp() for (see combat.ts). */
-export const COST_SITES = new Set(['field_repair', 'sprint', 'clear_jam', 'disengage', 'heal', 'stim', 'stabilise', 'analyze', 'reload', 'throw', 'set_explosive', 'move', 'load', 'brace', 'overwatch', 'shove', 'swap']);
+
 registerGeneric({ op: 'action_cost', claim: (e) => isPlain(e) && COST_SITES.has(e.action) && (typeof e.value === 'number' || typeof e.set === 'number') });
 /** The AP an action costs this unit: the base, then items' set (lowest wins) and value changes, never below 0
  * (lanes give their own floors, e.g. Field Medic's 1). Labels say why. */
-export function actionAp(x: { u?: Unit | null; c?: Character | null }, action: string, base: number, extra: Record<string, unknown> = {}): { ap: number; labels: string[] } {
+export function actionAp(x: { u?: Unit | null; c?: Character | null }, action: CostSite, base: number, extra: Record<string, unknown> = {}): { ap: number; labels: string[] } {
   let ap = base, set: number | null = null; const labels: string[] = [];
   for (const { e, info } of genericEffects(x, 'action_cost')) {
     if (e.action !== action && !(action === 'stim' && e.action === 'heal') && !(action === 'stabilise' && e.action === 'heal')) continue;
     if (typeof e.set === 'number') { set = set == null ? e.set : Math.min(set, e.set); labels.push(info.name + ' (' + e.set + ' AP)'); }
-    else { ap += e.value; labels.push(info.name + ' (' + (e.value > 0 ? '+' : '') + e.value + ')'); }
+    else { const was = ap; ap += e.value; if (typeof e.min === 'number' && e.value < 0) ap = Math.max(Math.min(was, e.min), ap); // the effect's own floor ("never below 1")
+      labels.push(info.name + ' (' + (e.value > 0 ? '+' : '') + e.value + ')'); }
   }
-  const q = statQuery(x, 'ap_cost:' + action, { ...extra, base }); ap += q.add; if (q.add) labels.push('perks');
+  const q = statQuery(x, `ap_cost:${action}`, { ...extra, base }); ap += q.add; if (q.add) labels.push('perks');
   return { ap: Math.max(0, set != null ? Math.min(set, ap) : ap), labels };
 }
 const FORBID_SITES = new Set(['disengage', 'sprint', 'reload', 'stim', 'analyze']);
@@ -196,9 +203,11 @@ const T_OK = (e: any) => !e.target || ['self', 'target', 'ally', 'enemy', 'one_e
 registerGeneric({
   op: 'cleanse', claim: () => false, runs: (e) => actPlain(e) && T_OK(e),
   run: (h, e, args) => {
-    const t = targetUnit(h, e, args); if (!t || !t.conds) return null;
-    const ids = Object.keys(t.conds).filter((id) => (e.condition ? id === e.condition : e.family ? condFamily(id) === e.family && !['guarded', 'inspired'].includes(id) : true));
-    const gone = ids.slice(0, e.count || 1); for (const id of gone) endCond(t, id);
+    const t = targetUnit(h, e, args); if (!t) return null;
+    // what it can end: the one named, a family's debuffs, or any debuff (never a boon), the flag conditions included
+    // (Bleeding, Dazed, Prone: magic.ts debuffsOf is the one list)
+    const ids = e.condition ? debuffsOf(t).filter((id) => id === condId(e.condition)) : debuffsOf(t, e.family || undefined);
+    const gone = ids.slice(0, e.count || 1); for (const id of gone) endCond(t, id, h.cb);
     if (gone.length && h.cb && h.u) tendHook.f?.(h.cb, h.u, t); // tending others (rules 1.5, section 3.3)
     return gone.length ? ' · ' + t.name + ' shakes off ' + gone.join(', ') : ' · nothing to shake off';
   },
@@ -207,9 +216,42 @@ registerGeneric({
   op: 'shield', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && typeof e.value === 'number',
   run: (h, e, args) => { const t = targetUnit(h, e, args); if (!t) return null; const n = e.basis === 'hp_max' || (e.value > 0 && e.value < 1) ? e.value * t.maxHp : e.value; const v = grantShield(h.cb || null, t, n, h.u || null); return ' · ' + t.name + ' gains a ' + v + ' shield'; },
 });
+/** A heal's `scale` (effect_ops.json: "healing_given", "healing_given*ambient_healing"): × the healer's Healing given.
+ * It was read and then multiplied by 1 either way (bug sweep, 12 Nov 2026). The ambient part needs nothing here:
+ * healUnit's callers that mean it go through magic.ts, and no item that reaches this generic op names it. */
+const healScale = (h: Holder, scale: unknown): number =>
+  (typeof scale === 'string' && scale.split('*').map((x) => x.trim()).includes('healing_given') ? (h.c ? healingMult(h.c) : h.u?.mg?.healMult || 1) : 1);
 registerGeneric({
   op: 'heal', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && typeof e.value === 'number',
-  run: (h, e, args) => { const t = targetUnit(h, e, args); if (!t) return null; const n = e.value > 0 && e.value < 1 ? e.value * t.maxHp : e.value * (e.scale === 'healing_given' && h.c ? 1 : 1); const r = healUnit(h.cb || null, t, n, h.u || null, 'perk'); return ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored); },
+  run: (h, e, args) => { const t = targetUnit(h, e, args); if (!t) return null; const n = e.value > 0 && e.value < 1 ? e.value * t.maxHp : e.value * healScale(h, e.scale); const r = healUnit(h.cb || null, t, n, h.u || null, 'perk'); return ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored); },
+});
+// ---------- 'deal' and 'mend' (step a6 of the damage-formula migration): an AMOUNT from data, on the one formula ----------
+// { "op": "deal", "amount": "<a name in the item's amounts>" | { an amount block }, "target": … }: damage through deal()
+// (the 'damage_out' hook, armour by the block's type, the sink). { "op": "mend", … }: a heal through healUnit or a shield
+// through grantShield, by the block's kind. The Stat term is the block's profile read from the holder's sheet; the
+// Level term its profile's column. With these an item that only deals, heals or shields a number needs no code.
+const blockOf = (h: Holder, e: any): AmountBlock | null => {
+  if (e.amount && typeof e.amount === 'object' && typeof e.amount.base === 'number') return e.amount as AmountBlock;
+  if (typeof e.amount === 'string') { try { return amountBlock(h.key, e.amount); } catch { return null; } }
+  return null;
+};
+const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none' });
+registerGeneric({
+  op: 'deal', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && !!e.amount,
+  run: (h, e, args) => {
+    const t = targetUnit(h, e, args), b = blockOf(h, e); if (!t || !h.cb || !b || b.kind !== 'damage') return null;
+    const type = b.type || 'true', src: any = { by: h.u || null, type, dmgType: type, shield: type !== 'true', credit: 'hp', item: h.key };
+    const r = deal(h.cb, h.u || null, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !!h.u }, { who: h.c || null, counts: (args as any)?.counts, src, hookCtx: { mode: 'item', src } });
+    return r.amount > 0 ? ' · ' + r.amount + ' damage to ' + t.name + (t.hp === 0 ? (t.side === 'foe' ? ', down for good' : ', Downed') : '') : ' · ' + t.name + ' takes no damage';
+  },
+});
+registerGeneric({
+  op: 'mend', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && !!e.amount,
+  run: (h, e, args) => {
+    const t = targetUnit(h, e, args), b = blockOf(h, e); if (!t || !b || b.kind === 'damage') return null;
+    const r = mend(h.cb || null, h.u || null, t, { ...specOf(b), kind: b.kind }, { who: h.c || null, counts: (args as any)?.counts, healKind: 'perk' });
+    return b.kind === 'shield' ? ' · ' + t.name + ' gains a ' + r.shield + ' shield' : ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored);
+  },
 });
 registerGeneric({
   op: 'condition', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && isCondition(e.condition || e.id) && !e.choose,
@@ -225,15 +267,9 @@ registerGeneric({
   run: (h, e) => { if (!h.c) return null; const n = gainEcho(h.c, e.value, h.info.name); return ' · ' + h.c.name + ' ' + (n >= 0 ? '+' : '') + n + ' Echo'; },
 });
 /** Push a unit straight away from another, tile by tile, until blocked (knockback). Respects immunity. */
-export function pushAway(cb: Combat, from: Unit, t: Unit, tiles: number): string {
-  if (immune({ u: t }, 'knockback')) return ' · ' + t.name + ' holds its ground';
-  const [ax, ay] = xy(from.pos); let moved = 0;
-  for (let i = 0; i < tiles; i++) {
-    const [tx, ty] = xy(t.pos), to = key(tx + Math.sign(tx - ax), ty + Math.sign(ty - ay)), [nx, ny] = xy(to);
-    if (nx < 0 || ny < 0 || nx >= cb.map.w || ny >= cb.map.h || moveBlockers(cb).has(to) || cb.units.some((v) => !v.dead && v.pos === to)) break;
-    t.pos = to; moved++;
-  }
-  void dist;
-  return moved ? ' · ' + t.name + ' is knocked back ' + moved + (moved === 1 ? ' tile' : ' tiles') : '';
+export function pushAway(cb: Combat, from: Unit, t: Unit, tiles: number, rng?: Rng | null): string {
+  const mv = displace(cb, rng, t, { away: from.pos, tiles }, { by: from, how: 'push', source: 'knockback' });
+  if (mv.stoppedBy === 'immune' || mv.stoppedBy === 'nailed' || mv.stoppedBy === 'held') return ' · ' + t.name + ' holds its ground';
+  return mv.moved ? ' · ' + t.name + ' is knocked back ' + mv.moved + (mv.moved === 1 ? ' tile' : ' tiles') + mv.text : '';
 }
 export type { ItemInfo };

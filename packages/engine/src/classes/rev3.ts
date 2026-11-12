@@ -11,31 +11,30 @@
 // (False Image, Sleight), 'turn_start_pre' (Silver Tongue), the stat 'rider_stage' (magic.ts riderBonus) and the
 // 'strain' hook (Eye of the Storm), 'trap_sprung' (Sabotage's rig), the new 'ai_move_risk' (Anchor in the enemy AI).
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import { tendHook } from '../effects/damage';
+import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
 import {
-  dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, moveUnit,
-  previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike,
+  dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, stepsFrom, moveUnit,
+  previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike, displace, swapUnits
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
-import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana } from '../magic';
+import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana, saveAgainst , saveTn } from '../magic';
+import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
 type Fam = 'body' | 'brain' | 'heart';
-import { d20, type Rng } from '../rng';
+import { type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, hide, seenByFoes, HEARING } from '../tactics';
 import { addImage, dropImage, imageOfOwner, imageTurnStart, imagesOf, type FalseImage } from '../illusion';
 import { makeObject, kindOf } from '../objects';
+import { setBraced, setDowned } from '../unitstate';
+import { condNotFresh } from '../magic';
 
 // =================================================================================================== helpers
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const myTurn = (h: Holder) => !!h.cb && !!h.u && h.cb.order[h.cb.turn] === h.u.id && !h.cb.window;
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const unitById = (cb: Combat, id?: string | null) => (id ? cb.units.find((x) => x.id === id) || null : null);
 const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
-const free = (cb: Combat, k: string, not?: Unit) => standable(cb.map, k) && !moveBlockers(cb).has(k) && !cb.units.some((v) => v !== not && !v.dead && v.pos === k);
 /** The fight a stat query is asked in (statQuery's holder has no fight when actionAp is called with {u} alone). */
 const fightOf = (h: Holder): Combat | null => h.cb || (h.g?.combat && h.u && h.g.combat.units.includes(h.u) ? h.g.combat : null);
 /** An off-turn policy set for the fight with a 0-AP action (as lane I's Riposte and Interpose). */
@@ -48,11 +47,10 @@ const policyAction = (id: string, label: string, value: string, text: string): A
 /** A family save against this unit's move: 'cond_apply' {id, fam} first (an immunity cancels it, items add to the
  * save or its TN), then d20 + the target's save against 12 + the mover's strength with the skill that delivers the move (`via`, rules 1.13). */
 function famSave(cb: Combat, rng: Rng, by: Unit, t: Unit, id: string, fam: Fam, via: string): { ok: boolean; cancel: string | null; line: string } {
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
-  if (ca.cancel) return { ok: true, cancel: ca.why || 'immune', line: t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '') };
-  if (ca.skipSave) return { ok: false, cancel: null, line: 'no save' };
-  const r = d20(rng), m = unitSave(t, fam) + (ca.saveAdd || 0), tn = 12 + unitStrength(by, via) + (ca.tnAdd || 0), ok = r === 20 || (r !== 1 && r + m >= tn);
-  return { ok, cancel: null, line: fam + ' save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : r === 20 ? ', natural 20' : '') };
+  const sv = saveAgainst(cb, rng, by, t, fam, id, { via }); // the one save (rolls.ts): this only shapes its answer for the moves below
+  if (sv.skipped === 'immune') return { ok: true, cancel: sv.why || 'immune', line: t.name + ' is untouched' + (sv.why ? ' (' + sv.why + ')' : '') };
+  if (sv.skipped === 'no_save') return { ok: false, cancel: null, line: 'no save' };
+  return { ok: sv.ok, cancel: null, line: sv.text };
 }
 /** The tile one step on from `from` past `t` (a push), or null off the map. */
 function pushTile(cb: Combat, from: Unit, t: Unit): string | null {
@@ -115,7 +113,7 @@ register({
     attack_target: (ctx, h) => { if (ctx.tgt === h.u && inFight(h)) stateOf(h).pre = { braced: anchored(h.u), prone: !!h.u!.prone }; },
     on_hit: (ctx, h) => {
       if (ctx.tgt !== h.u) return; const st = stateOf(h), pre = st.pre; st.pre = null;
-      if (pre?.braced && !pre.prone && h.u!.prone && !h.u!.dead && !h.u!.downed) { h.u!.prone = false; h.u!.braced = true; emitFx(h.cb!, 'anchor', { unit: h.u!.id, at: h.u!.pos, what: 'prone' }); say(h.cb, h.u!.name + ' is Anchored: stays on their feet.'); }
+      if (pre?.braced && !pre.prone && h.u!.prone && !h.u!.dead && !h.u!.downed) { endCond(h.u!, 'prone', h.cb); setBraced(h.u!, true, !!h.u!.guardBrace); emitFx(h.cb!, 'anchor', { unit: h.u!.id, at: h.u!.pos, what: 'prone' }); say(h.cb, h.u!.name + ' is Anchored: stays on their feet.'); }
     },
     turn_start: (ctx, h) => { const me = h.u!, u: Unit = ctx.u; if (!inFight(h) || !u || u.side === me.side) return; (stateOf(h).adj ||= {})[u.id] = alive(me) && dist(u.pos, me.pos) <= 1 ? h.cb!.round : -1; },
     move_step: (ctx, h) => {
@@ -146,14 +144,14 @@ register({
 register({
   id: 'fighter.shove', claims: 'all',
   actions: [{
-    id: 'class_shove', label: 'Shove', scope: ['combat'], target: 'enemy', ap: 1, range: 1, pick: ['push', 'prone'], pickLabel: 'Push it back, or knock it down',
+    id: 'class_shove', label: 'Shove', scope: ['combat'], target: 'enemy', ap: 'data', range: 1, pick: ['push', 'prone'], pickLabel: 'Push it back, or knock it down',
     text: 'Push an enemy next to you 1 tile straight back, or knock it Prone: your choice. It makes a Body save against 12 + your strength with Raw Power, and nothing happens if it succeeds.',
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
       const how = args.choice === 'prone' ? 'prone' : 'push';
       if (how === 'prone' && t.prone) return { ok: false, why: t.name + ' is already prone.' };
-      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !free(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] }; }
-      return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] };
+      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !canStand(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (saveTn(u, 'raw_power')) + ').'] }; }
+      return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (saveTn(u, 'raw_power')) + ').'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, how = args.choice === 'prone' ? 'prone' : 'push', was = t.pos;
@@ -162,17 +160,18 @@ register({
       const s = famSave(cb, rng as Rng, u, t, how === 'prone' ? 'prone' : 'shoved', 'body', 'raw_power');
       if (s.ok) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': ' + (s.cancel ? s.line : 'holds firm (' + s.line + ')') + '.'); return; }
       if (how === 'push') {
-        const to = pushTile(cb, u, t);
-        const fm: any = to && free(cb, to, t) ? emit(cb, 'forced_move', { u: t, by: u, tiles: 1, to, how: 'shove', cancel: false, cb, rng }) : { cancel: true };
-        if (fm.cancel || !to) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': holds firm.'); return; }
-        t.pos = to; t.braced = false;
-        emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to, ok: true });
-        say(cb, u.name + ' shoves ' + t.name + ' back to ' + refOf(to) + ' (' + s.line + ').'); sightCheck(cb); return;
+        const mv = displace(cb, rng as Rng, t, { away: u.pos, tiles: 1 }, { by: u, how: 'push', source: 'shove' }); // the one forced move (combat.ts)
+        if (!mv.moved) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': holds firm.'); return; }
+        say(cb, u.name + ' shoves ' + t.name + ' back to ' + refOf(mv.to) + ' (' + s.line + ')' + mv.text + '.'); sightCheck(cb); return;
       }
-      t.prone = true; t.braced = false; (t.condAt ||= {}).prone = (cb.condSeq = (cb.condSeq || 0) + 1);
-      emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: true, prone: true });
-      say(cb, u.name + ' knocks ' + t.name + ' Prone (' + s.line + ').');
-      emit(cb, 'cond_landed', { by: u, t, id: 'prone', rounds: 0, cb, rng });
+      // the save above was the save: the condition lands with none (and every item is asked once more, as for any condition)
+      // the line is said as it lands, before 'cond_landed' (applyCond tells it once): Shrug It Off's line reads after it
+      let fell = false;
+      const pr = applyCond(cb, rng as Rng, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'raw_power', onLand: () => {
+        fell = true; emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: true, prone: true });
+        say(cb, u.name + ' knocks ' + t.name + ' Prone (' + s.line + ').');
+      } });
+      if (!fell) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + (pr.startsWith(' · ' + t.name + ' ') ? ', who' + pr.slice(3 + t.name.length) : ': ' + pr.replace(/^ · /, '')) + '.'); }
     },
   }],
   brief: () => null,
@@ -181,14 +180,14 @@ register({
 // ---------- Unstoppable (rank III, 1 AP, once a scene) ----------
 // Until your next turn starts: Fear, Shaken, Slowed and Pinned don't touch you (new ones are cancelled; ones you carry
 // are set aside and come back at your next turn start with the rounds they would have had), no opportunity attack is
-// taken against you (the 'opportunity_attack' immunity), and you gain 2 Momentum. Momentum still empties at the end of a
-// turn with no attack (the class rule). Combat only.
+// taken against you (the 'opportunity_attack' immunity), and you gain 2 Momentum. Momentum carries from turn to turn
+// (nothing drops it at a turn's end). Combat only.
 const UNSTOP = ['fear', 'shaken', 'slowed', 'pinned'];
 const unstoppable = (h: Holder) => !!stateOf(h).on;
 register({
   id: 'fighter.unstoppable', claims: 'all',
   actions: [{
-    id: 'unstoppable', label: 'Unstoppable', scope: ['combat'], target: 'none', ap: 1, uses: { per: 'per_scene', n: 1 },
+    id: 'unstoppable', label: 'Unstoppable', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: until your next turn starts, Fear, Shaken, Slowed and Pinned don\'t affect you, and nobody gets an opportunity attack on you. You also gain 2 Momentum.',
     run: (h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h); st.on = true; st.stash = {};
@@ -208,7 +207,7 @@ register({
       for (const [id, v] of Object.entries(st.stash || {}) as [string, any][]) {
         const n = v.n - 1; if (n <= 0 || u.dead) continue; // the tick it would have had at the end of the turn you used it
         applyCond(cb, rngOf(h, ctx), unitById(cb, v.by), u, id, n, undefined, { skipSave: true, ...(v.arg ? { arg: v.arg } : {}), ...(v.via ? { via: v.via } : {}) });
-        if (u.condFresh) u.condFresh = u.condFresh.filter((x) => x !== id); back.push(id);
+        condNotFresh(u, id); back.push(id);
       }
       st.stash = {};
       say(cb, u.name + ' is no longer Unstoppable' + (back.length ? ': ' + back.join(', ') + ' back' : '') + '.');
@@ -218,21 +217,7 @@ register({
 });
 
 // ======================================================================================================== MARKSMAN
-// ---------- Speed Loader (rank I, passive) ----------
-// Your first main-hand reload each turn costs 1 AP less, never below 1 (stat 'ap_cost:reload'; a Special Ammo load is a
-// reload). The turn's first reload spends it even when it was already 1 AP (a quick-release magazine). The off-hand gun
-// (priced with ctx.hand 'off') and the reload of both guns at once (3 AP, its own price) neither get it nor spend it; a
-// refused reload (full, nothing to load) spends nothing either (spec item 564).
-register({
-  id: 'marksman.speed_loader', claims: 'all',
-  stat: (h, stat, ctx) => {
-    if (stat !== 'ap_cost:reload' || ctx?.hand === 'off') return 0; const cb = fightOf(h); if (!cb || overworld(cb) || !h.u) return 0;
-    if (uses({ ...h, cb }).left('per_turn', 1, h.key) <= 0) return 0;
-    return -Math.min(1, Math.max(0, (ctx?.base ?? 2) - 1));
-  },
-  on: { reload: (ctx, h) => { if (ctx.u === h.u && !ctx.both && ctx.hand !== 'off' && inFight(h)) uses(h).take('per_turn', 1, h.key); } }, // the off-hand gun's reload isn't its (spec item 564)
-  brief: () => null,
-});
+// ---------- Speed Loader (rank I, passive): written in data only (data/classes.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Duck and Roll (rank II, reaction) ----------
 // A ranged weapon attack targets you (the first shot of a volley): before it is rolled, you step 1 tile (free, your
@@ -242,11 +227,11 @@ register({
 // and Overwatch apply). No step that helps: no reaction. Policy: on (default) or off. Spells aren't weapon attacks.
 let ducking: Unit | null = null;
 function duckTile(cb: Combat, me: Unit, att: Unit, mode: string): { k: string; out: boolean } | null {
-  const P = paths(cb, me.pos, me.id), home = me.pos;
+  const home = me.pos, next = stepsFrom(cb, me.pos, me.id); // the tiles paths() puts 1 away, without searching the whole map for them
   const covered = (() => { const pv = previewAttack(cb, att, me, mode as any, { free: true }); return pv.ok && !!pv.coverTile; })();
   let best: { k: string; out: boolean } | null = null;
   try {
-    for (const k of Object.keys(P.dist).filter((x) => P.dist[x] === 1).sort()) {
+    for (const k of next) {
       if (objectsAt(cb, k).some((o) => !!kindOf(o).hazard)) continue;
       me.pos = k;
       const pv = previewAttack(cb, att, me, mode as any, { free: true });
@@ -291,7 +276,7 @@ register({
 register({
   id: 'infiltrator.vanish', claims: 'all',
   actions: [{
-    id: 'vanish', label: 'Vanish', scope: ['combat'], target: 'none', ap: 1, uses: { per: 'per_turn', n: 1 },
+    id: 'vanish', label: 'Vanish', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_turn', n: 1 },
     text: 'Once a turn: if no enemy can see you right now (fog, smoke, full cover, darkness), you become Hidden. You can\'t Vanish while you are Marked.',
     available: (h) => { const u = h.u; if (!u || !h.cb) return false; if (u.hidden) return 'Already Hidden.'; if (condOn(u, 'marked')) return 'Marked: you can\'t hide.'; if (seenByFoes(h.cb, u)) return 'An enemy can see you. Get out of sight first.'; return true; },
     run: (h) => { const u = h.u!, cb = h.cb!; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' }); say(cb, u.name + ' vanishes' + hide(cb, u, 'Vanish') + '.'); },
@@ -311,7 +296,7 @@ function fixable(t: Unit): string[] {
 register({
   id: 'infiltrator.field_fix', claims: 'all',
   actions: [{
-    id: 'field_fix', label: 'Field Fix', scope: ['combat'], target: 'ally', ap: 2, range: 1, pick: [...FIX], pickLabel: 'What to fix',
+    id: 'field_fix', label: 'Field Fix', scope: ['combat'], target: 'ally', ap: 'data', range: 1, pick: [...FIX], pickLabel: 'What to fix',
     text: 'Do one thing for an ally next to you: clear their jammed weapon, restore some of their weapon\'s durability, or repair a robot, drone, turret or machine for 20 HP.',
     preview: (h, args) => {
       const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Field Fix works on a squadmate. For your own jammed weapon, use Clear Jam.' };
@@ -329,7 +314,7 @@ register({
         say(cb, u.name + ' fixes ' + t.name + '\'s weapon: +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return;
       }
       // A repair, not a heal (as Field Repair): exactly 20, no healing multipliers, not halved by Factory Made's Plug.
-      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + 20); if (up) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
+      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + itemAmount('class:infiltrator.field_fix', 'repair')); if (up) setDowned(t, false);
       emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
       say(cb, u.name + ' repairs ' + t.name + ': +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
     },
@@ -349,7 +334,7 @@ register({
   // Three actions, one for each way (each its own grid pick): a machine token, a barricade or turret tile, your tile.
   actions: [
     {
-      id: 'sabotage', label: 'Sabotage: disable a machine', scope: ['combat'], target: 'enemy', ap: 2, range: 1,
+      id: 'sabotage', label: 'Sabotage: disable a machine', scope: ['combat'], target: 'enemy', ap: 'data', range: 1,
       text: 'Disable an enemy machine, turret or drone next to you for 2 rounds. It takes no turns and no reactions.',
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (!machineLike(t)) return { ok: false, why: t.name + ' isn\'t a machine, turret or drone.' }; return { targets: [t.id], lines: ['Disable ' + t.name + ' for 2 rounds.'] }; },
       run: (h, args, rng) => {
@@ -360,7 +345,7 @@ register({
       },
     },
     {
-      id: 'sabotage_object', label: 'Sabotage: a barricade or turret', scope: ['combat'], target: 'tile', ap: 2,
+      id: 'sabotage_object', label: 'Sabotage: a barricade or turret', scope: ['combat'], target: 'tile', ap: 'data',
       text: 'Pick a barricade or an emplaced turret next to you. For 2 rounds, the barricade stops blocking the way, or the turret is disabled.',
       preview: (h, args) => {
         const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
@@ -377,14 +362,14 @@ register({
       },
     },
     {
-      id: 'rig', label: 'Sabotage: rig your tile', scope: ['combat'], target: 'none', ap: 2,
+      id: 'rig', label: 'Sabotage: rig your tile', scope: ['combat'], target: 'none', ap: 'data',
       text: 'Rig your own tile. The next enemy to step on it takes 30 damage and makes a Body save or is Pinned.',
       preview: (h) => { const cb = h.cb!, u = h.u!; if (objectsAt(cb, u.pos).some((o) => !!kindOf(o).trap && !o.resolved && !((o as any).rig === h.key && (o as any).owner === u.id))) return { ok: false, why: 'There is already a trap here.' }; return { tiles: [u.pos], lines: ['Rig ' + refOf(u.pos) + '. The next enemy to step on it takes 30 damage and makes a Body save or is Pinned.'] }; },
       run: (h) => {
         const cb = h.cb!, u = h.u!;
         cb.objects = objectsOf(cb).filter((o) => !((o as any).rig === h.key && (o as any).owner === u.id));
         const id = 'rig' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
-        cb.objects.push(makeObject(id, 'trap', u.pos, { name: 'Rigged tile', text: 'Rigged by ' + u.name + '.', damage: 30, owner: u.id, side: u.side, rig: h.key, hidden: false } as any));
+        cb.objects.push(makeObject(id, 'trap', u.pos, { name: 'Rigged tile', text: 'Rigged by ' + u.name + '.', damage: itemAmount('class:infiltrator.sabotage', 'damage'), owner: u.id, side: u.side, rig: h.key, hidden: false } as any));
         emitFx(cb, 'rig', { unit: u.id, at: u.pos, id, only: u.side });
         say(cb, u.name + ' rigs ' + refOf(u.pos) + ' (Sabotage).');
       },
@@ -410,21 +395,14 @@ register({
 });
 
 // ======================================================================================================== MAGE
-// ---------- Core Change (rank I, passive) ----------
-// Swapping a spent mana core costs 1 AP less, never below 1 (stat 'ap_cost:swap_core'; magic.ts coreAp: 2 → 1).
-register({
-  id: 'mage.core_change', claims: 'all',
-  stat: (h, stat, ctx) => (stat === 'ap_cost:swap_core' ? -Math.min(1, Math.max(0, (ctx?.base ?? 2) - 1)) : 0),
-  brief: () => null,
-});
+// ---------- Core Change (rank I, passive): written in data only (data/classes.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Bleed the Flux (rank II, passive) ----------
-// Venting costs 1 AP less, never below 0 (stat 'ap_cost:vent'; magic.ts ventAp: 1 → 0), and vents 1 more Flux: a Vent
+// Venting costs 1 AP less, never below 0 (data: the generic action_cost; magic.ts ventAp: 1 → 0), and vents 1 more Flux: a Vent
 // already empties the Evoker, so the one more is the next Flux you take: the next glyph you draw adds 1 Flux less
 // (TWICE 1, not 2), and that point goes into the air then (the meter +1). The credit doesn't stack and lasts the fight.
 register({
-  id: 'mage.bleed_the_flux', claims: 'all',
-  stat: (h, stat, ctx) => (stat === 'ap_cost:vent' ? -Math.min(1, Math.max(0, ctx?.base ?? 1)) : 0),
+  id: 'mage.bleed_the_flux', claims: [1], // effect 0 (the Vent's AP) is the generic action_cost (engine foundations 3)
   on: {
     vent: (ctx, h) => { if (ctx.u !== h.u) return; const st = stateOf(h); if (!st.credit) { st.credit = 1; say(h.cb, h.u!.name + ' bleeds the Flux: the next glyph adds 1 Flux less.'); } },
     glyph_cost: (ctx, h) => { if (ctx.u === h.u && stateOf(h).credit && (ctx.flux || 0) > 0) { ctx.flux -= 1; if (!ctx.preview) stateOf(h).spend = true; } },
@@ -472,7 +450,7 @@ function evokerWhy(h: Holder): string | null {
 register({
   id: 'trickster.false_image', claims: 'all',
   actions: [{
-    id: 'false_image', label: 'False Image', scope: ['combat'], target: 'tile', ap: 2,
+    id: 'false_image', label: 'False Image', scope: ['combat'], target: 'tile', ap: 'data',
     text: 'Costs 1 charge. Needs an Evoker in hand. A decoy of you appears on a free tile you can see within 8 tiles (plus your Sigil range bonus) and lasts 2 rounds. Every enemy that can see it makes a Brain save, and those who fail treat the decoy as you. It fades when it is attacked or when you go down.',
     available: (h) => { if (!h.u) return false; const e = evokerWhy(h); if (e) return e; if ((h.u.mg!.charge || 0) < 1) return 'Needs 1 charge. Swap in a fresh core.'; return true; },
     preview: (h, args) => {
@@ -480,8 +458,8 @@ register({
       if (k === u.pos) return { ok: false, why: 'Put it on another tile.' };
       if (dist(u.pos, k) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' };
       if (!unitSees(cb, u, k)) return { ok: false, why: 'You can\'t see that tile.' };
-      if (!free(cb, k) || imagesOf(cb).some((i) => i.pos === k)) return { ok: false, why: 'That tile isn\'t free.' };
-      return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (12 + unitStrength(u, 'brain_power')) + ').'] };
+      if (!canStand(cb, k) || imagesOf(cb).some((i) => i.pos === k)) return { ok: false, why: 'That tile isn\'t free.' };
+      return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (saveTn(u, 'brain_power')) + ').'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!; u.mg!.charge -= 1; u.mg!.cast = true;
@@ -511,9 +489,9 @@ register({
 register({
   id: 'trickster.silver_tongue', claims: 'all',
   actions: [{
-    id: 'silver_tongue', label: 'Silver Tongue', scope: ['combat'], target: 'enemy', ap: 2, range: 6,
+    id: 'silver_tongue', label: 'Silver Tongue', scope: ['combat'], target: 'enemy', ap: 'data', range: 6,
     text: 'An enemy within 6 tiles that can hear you makes a Brain save. If it fails, it loses 2 AP on its next turn. A boss or a Celestial loses 1 AP instead. It doesn\'t work on machines, turrets or drones.',
-    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (12 + unitStrength(h.u!, 'charisma')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
+    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (saveTn(h.u!, 'charisma')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, s = famSave(cb, rng as Rng, u, t, 'silver_tongue', 'brain', 'charisma'), n = isBoss(t) ? 1 : 2;
       emitFx(cb, 'silver_tongue', { unit: u.id, target: t.id, from: u.pos, to: t.pos, ok: !s.ok, ap: s.ok ? 0 : n });
@@ -538,22 +516,21 @@ register({
   // Two actions (a squadmate token, or your image: a button), one use a scene between them.
   actions: [
     {
-      id: 'sleight', label: 'Sleight: swap with a squadmate', scope: ['combat'], target: 'ally', ap: 1, range: 6,
+      id: 'sleight', label: 'Sleight: swap with a squadmate', scope: ['combat'], target: 'ally', ap: 'data', range: 6,
       text: 'Once a scene: swap places with a standing ally within 6 tiles. This shares its one use a scene with the False Image swap.',
       available: sleightLeft,
       preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === u) return { ok: false, why: 'Pick a squadmate.' }; if (!alive(t)) return { ok: false, why: t.name + ' is Downed and can\'t swap.' }; return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, from = u.pos, to = t.pos; uses(h).take('per_scene', 1, h.key);
-        u.pos = to; t.pos = from; u.braced = false; t.braced = false;
-        emitFx(cb, 'swap', { unit: u.id, target: t.id, from, to });
-        say(cb, u.name + ' and ' + t.name + ' swap places.');
+        const sw = swapUnits(cb, rng as Rng, u, t, { by: u, source: 'sleight', willing: [u, t], drawn: () => { emitFx(cb, 'swap', { unit: u.id, target: t.id, from, to }); say(cb, u.name + ' and ' + t.name + ' swap places.'); } }); // both chose it
+        if (sw.text) say(cb, sw.text.replace(/^ · /, '') + '.');
         emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
         emit(cb, 'moved', { u: t, from: to, to: from, tiles: dist(from, to), how: 'swap', forced: false, route: [from], stopped: null, cb, rng });
         sightCheck(cb);
       },
     },
     {
-      id: 'sleight_image', label: 'Sleight: swap with your False Image', scope: ['combat'], target: 'none', ap: 1,
+      id: 'sleight_image', label: 'Sleight: swap with your False Image', scope: ['combat'], target: 'none', ap: 'data',
       text: 'Once a scene: swap places with your False Image within 6 tiles. This shares its one use a scene with the squadmate swap.',
       available: (h) => { const l = sleightLeft(h); if (l !== true) return l; return h.cb && h.u && imageOfOwner(h.cb, h.u.id) ? true : 'You have no False Image out.'; },
       preview: (h) => {
@@ -562,9 +539,8 @@ register({
         return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; },
       run: (h, _args, rng) => {
         const cb = h.cb!, u = h.u!, img = imageOfOwner(cb, u.id)!, from = u.pos, to = img.pos; uses(h).take('per_scene', 1, h.key);
-        u.pos = to; img.pos = from; u.braced = false;
-        emitFx(cb, 'swap', { unit: u.id, target: img.id, from, to, image: true });
-        say(cb, u.name + ' swaps places with the False Image (' + refOf(to) + ').');
+        const sw = displace(cb, rng as Rng, u, { tile: to }, { by: u, how: 'swap', source: 'sleight', willing: true, fx: false, drawn: () => { img.pos = from; emitFx(cb, 'swap', { unit: u.id, target: img.id, from, to, image: true }); say(cb, u.name + ' swaps places with the False Image (' + refOf(to) + ').'); } }); // an image is not a unit: the caster lands on its tile and the image is put where the caster stood
+        if (sw.text) say(cb, sw.text.replace(/^ · /, '') + '.');
         emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
         sightCheck(cb);
       },
@@ -575,21 +551,22 @@ register({
 
 // ======================================================================================================== BARD
 // ---------- Rally (rank III, 2 AP, once a scene) ----------
-// Every squadmate within 4 tiles (not you; Downed ones aren't standing to rally) heals 20 × your Healing given (×
+// Every squadmate within 4 tiles (not you; Downed ones aren't standing to rally) heals 6 × your Healing given × the
+// level factor (rules 1.23; it was 20 × Healing given) (×
 // their Healing received) and loses Fear and Shaken. Tending others calms your heart once a turn (rules 1.5). No
 // Emanator or Supplies needed. Refused with nobody in reach. Combat only.
 const rallied = (cb: Combat, u: Unit) => cb.units.filter((t) => t !== u && t.side === u.side && alive(t) && dist(t.pos, u.pos) <= 4);
 register({
   id: 'bard.rally', claims: 'all',
   actions: [{
-    id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 2, uses: { per: 'per_scene', n: 1 },
-    text: 'Once a scene: every ally within 4 tiles heals 20 HP × your Healing given and loses Fear and Shaken.',
-    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(20 * (h.c ? healingMult(h.c) : 1)) + ' HP each, and their Fear and Shaken end.'] }; },
+    id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
+    text: 'Once a scene: every ally within 4 tiles heals 6 HP × your Healing given, more as you level, and loses Fear and Shaken.',
+    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(kitHeal(RALLY_HEAL, h.c ? healingMult(h.c) : 1, mendFactorOf(h.u))) + ' HP each, and their Fear and Shaken end.'] }; },
     run: (h) => {
       const cb = h.cb!, u = h.u!, mult = h.c ? healingMult(h.c) : 1, ts = rallied(cb, u), parts: string[] = [];
       emitFx(cb, 'rally', { unit: u.id, at: u.pos, radius: 4, targets: ts.map((t) => t.id) });
       for (const t of ts) {
-        const r = healUnit(cb, t, 20 * mult, u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
+        const r = healUnit(cb, t, kitHeal(RALLY_HEAL, mult, mendFactorOf(u)), u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
         for (const id of gone) endCond(t, id, cb);
         if (gone.length && !r.restored) tendHook.f?.(cb, u, t);
         emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored });
@@ -615,7 +592,7 @@ const ELEMENT_TONES = () => Object.values(TONE).filter((t: any) => t.element).ma
 register({
   id: 'channeler.occult_library', claims: [0],
   actions: [{
-    id: 'occult_tone', label: 'Occult Library: learn a tone', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_campaign', n: 1 }, pick: ELEMENT_TONES(), pickLabel: 'The tone',
+    id: 'occult_tone', label: 'Occult Library: learn a tone', scope: ['story'], target: 'none', ap: 'data', uses: { per: 'per_campaign', n: 1 }, pick: ELEMENT_TONES(), pickLabel: 'The tone',
     text: 'Once only, out of a fight: learn one more Outburst tone of your choice. It counts as the one new thing you can learn this scene.',
     available: (h) => { const c = h.c; if (!c) return false; const kt = c.soulKnown?.tones || []; return ELEMENT_TONES().some((t) => !kt.includes(t)) ? true : 'You know every tone.'; },
     preview: (h, args) => { const c = h.c!, kt = c.soulKnown?.tones || []; if (!args.choice) return { ok: false, why: 'Pick a tone.' }; if (!ELEMENT_TONES().includes(args.choice)) return { ok: false, why: 'No such tone.' }; if (kt.includes(args.choice)) return { ok: false, why: 'You know that tone.' };
@@ -638,7 +615,7 @@ const eyeArmed = (h: Holder) => { const a = stateOf(h).armed, cb = h.cb || fight
 register({
   id: 'channeler.eye_of_the_storm', claims: 'all',
   actions: [{
-    id: 'eye_of_the_storm', label: 'Eye of the Storm', scope: ['combat'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
+    id: 'eye_of_the_storm', label: 'Eye of the Storm', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene, on your turn: your next Release this turn adds no Strain, and its tone\'s rider counts as one stage higher.',
     available: (h) => { if (!h.u) return false; if (!h.u.mg || !(h.u.mg.designs || []).length) return 'You have no Outbursts.'; if (!myTurn(h)) return 'Only on your turn.'; if (eyeArmed(h)) return 'Already armed.'; return true; },
     run: (h) => { const u = h.u!, cb = h.cb!; stateOf(h).armed = { round: cb.round }; emitFx(cb, 'eye_storm', { unit: u.id, at: u.pos }); say(cb, u.name + ' finds the eye of the storm: the next Release adds no Strain, its rider a stage higher.'); },
@@ -665,7 +642,7 @@ const authorityOf = (h: Holder) => h.c?.skills?.authority || 0;
 register({
   id: 'guardian.command', claims: 'all',
   actions: [{
-    id: 'command', label: 'Command', scope: ['combat'], target: 'ally', ap: 1, range: 6, uses: { per: 'per_turn', n: 1 }, pickLabel: 'The squadmate, then the tile',
+    id: 'command', label: 'Command', scope: ['combat'], target: 'ally', ap: 'data', range: 6, uses: { per: 'per_turn', n: 1 }, pickLabel: 'The squadmate, then the tile',
     text: 'Once a turn: an ally within 6 tiles moves up to 2 tiles to a tile you pick, right now and for none of their AP. It is a normal move, so it can draw opportunity attacks. Needs 1 point of Authority.',
     available: (h) => (!h.u ? false : authorityOf(h) < 1 ? 'Needs 1 point of Authority.' : true),
     preview: (h, args) => {

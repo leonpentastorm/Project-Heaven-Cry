@@ -38,12 +38,27 @@ Every rule-bearing item carries both:
   - `{"op":"condition","condition":"<id>","target":"<self|target|ally|area>","when":"<trigger>"}`
   - `{"op":"narrator","note":"<what the Narrator must judge>"}` for anything the engine can't adjudicate
 - The full op list lives in `effect_ops.json`. "core" ops (50) are generic and the engine must implement them;
-  "bespoke" ops (about 80, about 10% of all effect uses) belong to one or two items. Implement a bespoke op as a hook on that item,
+  "bespoke" ops (113, about 14% of all effect uses) belong to one or two items; the weapon (17), item (11) and Sigil (1) tiers are the ops of weapon skills, items and Sigil words. Implement a bespoke op as a hook on that item,
   or until then hand the item's `text` to the Narrator. An op the engine doesn't recognise always falls back to
   the Narrator; it is never silently ignored.
 - Effects may also carry `when`, `context`, `duration`, `target`, `uses`, `limit` keys to scope them.
 - A condition reference may be a list plus `"choose": 1`, or `"family:<body|brain|heart>"` for any condition of that family.
 - If an effect is pure judgement, `effects` is `[{"op":"narrator","note":"..."}]`.
+- **Item ops (engine foundations 3).** An effect whose `when` is a single word from `effect_ops.json` `item_ops.triggers`
+  is run by the engine's generic runner (`packages/engine/src/effects/triggers.ts`), with no code for the item:
+  `{"op": "<item_ops.ops>", "when": "<trigger>", "if": {"<predicate>": value, …}, "limit": {"per": "per_turn", "n": 1},
+  …the op's fields, "and": [more ops under the same trigger, test and limit], "say": "{self} … {=.value} …", "label": "…",
+  "priority": 100, "fx": {"k": "<fx kind>", …}}`. The trigger fixes whose event it is (`self`: the holder is the actor of
+  `hit`, the target of `taking`) unless `if` names that role. `limit` is `{per, n, key?, each?: "target", peek?: true}` or
+  `{cooldown: rounds}`; `peek` reads a limit that another effect spends (op `use`). An op's `target` is `self` (default),
+  `actor` or `target`. `say` names units with `{self}` `{actor}` `{target}`, a resource with `{gain}` `{res:id}`
+  `{resmax:id}`, the op's own sentence with `{then}`, and its numbers with `{=.field}`. The validator refuses an unknown
+  trigger, predicate or op, a word where a number belongs, and a new single-word `when` that is not a trigger (the old
+  ones it still knows, `LEGACY_WHEN`, only shrink). A `when` with spaces is the old prose scope.
+- `brief` (an item, optional): the Narrator's line for an item written in data only (what its handler's `brief()` was).
+- `numbers` (an item or a perk's tier, optional): `{"name": n}`, the numbers a handler that is not data yet reads with
+  `num(h, 'name')` (`packages/engine/src/effects/num.ts`); never an amount of damage, healing or shield (those are
+  `amounts`).
 - `adjudication`: `"engine"` (fully automatable), `"hybrid"`, or `"narrator"`.
 
 ## Weapon handling (weapons.json)
@@ -67,6 +82,23 @@ Every rule-bearing item carries both:
   `movement`, `weapon`), used by a character's `companions: [{id, kind, name, hp?}]`.
 - `objects.json` `electronic: true` marks devices (terminal, lamp, camera, alarm, turret).
 - Condition ids the engine runs are the ones in conditions.json (the long Brain-debuff ids are accepted for `ldebuff`/`rdebuff`).
+- **Conditions (conditions.json) are THE table** (engine foundations 2, 12 Nov 2026): the engine has no other. `packages/engine/src/condtable.ts`
+  is its one loader; `tools/validate.py` checks every field below; `packages/engine/test/lint-conditions.test.ts` fails on a condition id
+  in code that has no row, and on a row nothing uses. A row:
+  - `engine`: how the engine keeps it. `"table"` (in a unit's conditions with its rounds left; `applyCond` puts it on, `endCond` ends it),
+    `"flag"` (a field of the unit: Bleeding, Dazed, Prone, Hidden, Injured; still only through `applyCond` / `endCond`), or `"state"` (a unit
+    state with its own rule and setter in `unitstate.ts`: Braced, Overwatch, Downed; `applyCond` does not put it on).
+  - `kind`: `"debuff"` (has a `family`) or `"state"`. `family`: `body` / `brain` / `heart`, or `null`. `save`: `true` (the target rolls its
+    family's save unless the source says there is none) or `false`. `boon: true`: a help; never saved against; no family.
+  - `duration`: exactly one of `{"rounds": N}` (ONE unit: the ends of the bearer's own turns; one put on during the bearer's own turn does not
+    lose a round at that turn's end) or `{"until": "<word>"}` (it lasts until its rule ends it: `put_out`, `next_turn`, `stand`, `revealed`,
+    `source`, `moved`, `fight_end`, `stabilised`, `escape`, `recovered`, `treated`, `repaired`, `raised`). `ends_on` stays prose.
+  - `key`: the name it is stored under in a unit's conditions when that is not the id (`ldebuff`, `rdebuff`: saved fights hold them).
+    `aliases`: other ids the engine answers to. `label`: the word in "X is <label>" when it is not the `name` ("Afraid", "Guarded (+2 Defense)").
+  - The numbers the engine applies are read from `effects`, so they are written once: `stat_mod` with `stat` `defense`, `move_mult`, `vision`,
+    `ap`, `save_<family>`, `damage_dealt_pct`, `sigil_ap`, `soul_cost_pct`; `skill_mod_tag` (`core:<core>`, `attr:<attribute>`); `attack_mod` with
+    `context` `own_attacks` (default), `next_attack`, `not_vs_source`, `vs_source`, `marker_squad_vs_self`, `melee_vs_self`, `ranged_vs_self`;
+    `damage_mult` with `context: "next_attack"`. A to-hit change is always `attack_mod` (not `tn_mod`). Damage each turn is `amounts.tick`.
 - Campaign zones may carry `tags`, `terrain`, `in_city`, `urban`, `fear`, `upper_realm`, `faction`; zone NPCs `kind` and `tags`.
 
 ## Sigil words (sigils.json, rules 1.4 and 1.10)
@@ -104,11 +136,32 @@ Every rule-bearing item carries both:
 - `rules` is the shared ladder: `ap` 2, `cheap_at` 5 points for `cheap_ap` 1, `free_at` 10 points for `free_per_turn` 1 free Call, `range_base` 4 + `range_per_point` 1, `reaction_at` 9 points (`reactions_per_round` 1, `reaction_ap` 0), `save_tn` 12 (+ the speaker's strength with the skill), `helping_per_round` and `hindering_per_round` 1, `mark_rounds` (how long a Spot, Warn or Cue can outlive its round), and `enemy` (`per_turn`, and the score a Call must beat: a plain attack's 5).
 - `adjudication: "engine"` and `provisional: true` on every Call.
 - Enemy tiers in `enemies.json`: `calls` (a list of Call ids, empty for a tier that never Calls) and `call_level` (0 to 10: it stands in for the skill points an enemy doesn't have, and sets its cost, reach and step).
+- Enemy tiers in `enemies.json`: `healer_focus` (rules 1.23): how hard the tier turns on whoever is mending the other side. 0: it never looks. Between 0 and 1: when it sorts whom to attack by HP left, the healer counts as having that share of their max HP less. 1: the healer comes first, and with a gun it steps to a tile with a shot at them. The count it reads and its window are `rules.json` `mending.tending`; the medic's kit numbers are `mending.medic`.
+- Enemy tiers in `enemies.json`: the fire doctrine (rules 1.25): how the tier chooses among the targets it could attack. Every tier takes the most hurt (HP as a share of max, in tenths) and bends it with two numbers, each a share of the target's max HP from 0 to 1: `fire_spread`, by which a target counts as less hurt for each other enemy that has attacked it this round (1: one each before anybody doubles up), and `fire_near`, the same for each tile the target stands further off than the nearest one (1: always the nearest). `doctrine` names the result and is what the player is told: `nearest` (needs `fire_near`), `spread` (needs `fire_spread`) or `focus`. The healer weight (`healer_focus`) is taken off the same sum, and the healer's place is not moved by distance. Taunt, reach, sight and orders come before all of it.
+
+## The one formula (rules.json `output`; unified damage, stage (a))
+- `rules.json` `output` holds the terms of the formula every amount of damage, healing and shield is built from (`packages/engine/src/effects/output.ts`): `profiles` (`k`, `attr`, `skill`: the slopes of a Stat term; `level`: the Level column it reads, `"deal"`, `"mend"` or `null`; `pair`), `pairs` (`attrs`, `skills`: what a Stat term reads; a weapon's own pair comes from its `phys` block) and `level` (`deal`: 20 numbers, one a level; `mend`: the path of the enemy table's damage column, read and not copied).
+- A system is re-fitted by changing its profile or the Level table here. Do not add a multiplier in code for it.
+- A weapon mod in `items.json` that changes damage carries the number: `damage` (the blow it gives: the bayonet) or `damage_add` (what it adds to the weapon's: the weighted head +3, the suppressor −2).
+- **Amount blocks (step a6).** Every number an item deals, heals or shields with is in the item's data, never in TypeScript: `"amounts": { "<name>": { "kind": "damage" | "heal" | "shield", "base": 10, "per": [{ "of": "improvisation", "value": 3 }], "profile": "flat", "type": "elemental", "armour": "half", "mults": { "share": 0.5 }, "provisional": true } }`. `base` is a number (a formula is `base` plus `per` parts: `10 + kg / 4` is `base 10, per kg 0.25`; "10% of max HP" is `base 0, per max_hp 0.1`); `mults` are the item's own named multipliers; `profile` is one of `rules.json output.profiles`. The engine reads a block with `itemAmount('<kind>:<id>', '<name>', multipliers)` (`packages/engine/src/effects/amounts.ts`); blocks that belong to no item are in `rules.json output.amounts`. A prayer's, a condition's or the medic's own heal / shield / hp effect with a numeric `value` is also the number (the kit's are `rules.json mending.medic`). The validator checks every block and that a heal or shield effect written as text has a block; `packages/engine/test/amount-literals.test.ts` fails on a new number handed to a damage, heal or shield sink from code.
+- **`deal` and `mend` ops.** `{ "op": "deal", "amount": "<block name>" | { a block }, "target": … }` deals the amount (the `damage_out` hook, armour by the block's `type`, the sink); `{ "op": "mend", … }` heals or shields by the block's `kind`. An item that only deals, heals or shields a number needs no code.
+- `rules.json output.systems` names, for each system (a Sigil Line, an Outburst, a prayer, the kit), its base, its Stat term and its own multipliers in the order they apply, and the data field each lives in.
+- After any change here, the golden tables (`packages/engine/test/golden/`) say which actions moved. Record them anew only when a number was meant to move (`GOLDEN_RECORD=1`, see `docs/TESTING.md`).
 
 ## Requirements
-`requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,
+`requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`,
 `{"perk":"<id>"}`, `{"class":"<id>"}`, `{"deed":"<free text the Narrator checks>"}`, `{"patron":true}`.
 `excludes`: array of ids this can't be taken with.
 
 ## Text
+**Texts read their numbers (12 Nov 2026).** A number in a rules text (`text`, a trait's `upsides` and `downsides`, a Sigil word's `grand`) is not typed: it is a placeholder that names the field of the same item it comes from, so the card can never disagree with the field.
+
+- `{=path}`: keys and list indexes joined by dots, from the item (the nearest enclosing object with an `id`): `{=effects.0.value}`, `{=tiers.II.ap_cost}`, `{=numbers.push}`. A leading dot starts at the object that holds the text: `{=.ap}`. The path must end at a number.
+- `{=path|format}`: `abs` (no sign), `signed` (+2, −2), `pct` (0.25 → 25), `more` (a multiplier 1.25 → 25), `less` (0.75 → 25). With no format a negative field prints its own minus sign: write `{=effects.2.value} Athletics`, not `−{=...|abs}`.
+- The `=` keeps them apart from the engine's own templates (`{name}` in a patron's lines).
+- They are filled when the data is loaded: `packages/engine/src/datatext.ts` (the engine; every file that imports a data JSON imports it first), and `tools/text_numbers.py` (the validator, and `design/canvas-build/build.py` for the web's `protodata.json`). A test holds the two equal.
+- `tools/validate.py` refuses a digit typed into a text unless it is in `tools/text_numbers.json`: `allow` (with a reason) or the `baseline` of numbers not yet bound, which only shrinks. When a number has no field, **add the field the engine reads** and bind to it; do not add a mirror field that nothing reads.
+- `ap_cost` is the AP a card's chip shows. When the cost is not a fixed number it is `null` and `ap_cost_is` names it: `weapon_attack` (the AP of your weapon's attack), `twice_shot`, `reload`, `soul_cast_ap`.
+- A move's `uses` may also be `reaction` (it spends your reaction; the engine counts it as at will) and `per_combat`.
+
 English, in-universe where the doc is in-universe. No pop-culture references. Keep numbers exactly as the source doc states them; if the source conflicts with the Core Rules spec, the spec wins and you log the conflict in your report.

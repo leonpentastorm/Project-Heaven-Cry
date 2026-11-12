@@ -8,7 +8,7 @@
 //
 // Painted art wins with no code change: drop art/icons/feelings/feeling-<id>.png or art/icons/modules/module-<id>.png
 // (or ui-<mark>.png in either folder) and run `npm run assets`; tools/build_web_assets.py writes them to assets.json as
-// feeling-<id>, module-<id> and heart-ui-<mark>, and the resolvers below return an <img> of it instead of the SVG.
+// feeling-<id>, module-<id> and heart-ui-<mark>, and the resolvers below return it (as a mask in the caller's ink, see paintedStyle) instead of the SVG.
 import ASSETS from './assets.json';
 
 type P = [number, number];
@@ -194,7 +194,6 @@ export const MODULE_PATHS: Record<string, string[]> = {
   // crossing paths: the engine picks the aim
   random: ['M3 6.5 H6.5 C11 6.5 13 17.5 17.5 17.5 H19.5', head(20.6, 17.5, 0, 3), 'M3 17.5 H6.5 C8.6 17.5 9.8 15 10.8 12.6 M13.2 11.4 C14.2 9 15.4 6.5 17.5 6.5 H19.5', head(20.6, 6.5, 0, 3)],
   // a dot hitting a line, with burst marks
-  impact: ['M12 2.5 V13.6', head(12, 13.6, 90, 3.4), 'M3 19.4 A9 2.6 0 0 0 21 19.4', '~M6.4 19.4 A5.6 1.4 0 0 0 17.6 19.4', '~M3 19.4 A9 2.6 0 0 1 7 17.2 M17 17.2 A9 2.6 0 0 1 21 19.4'],
   // three arrows leaving one point together
   at_once: [dot(3.8, 12, 2), arrow([6.4, 10.4], [19.4, 4.4]), arrow([6.6, 12], [20.6, 12]), arrow([6.4, 13.6], [19.4, 19.6])],
   // shapes: a cone of three arcs
@@ -295,7 +294,18 @@ function painted(prefix: string, id: string, large = false): string | null {
   return null;
 }
 const esc = (s: string) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-const img = (src: string, size: number, kind: string) => `<img src="${esc(src)}" width="${size}" height="${size}" alt="" aria-hidden="true" class="heart-icon heart-icon-${kind}" draggable="false">`;
+/**
+ * The inline style that shows an icon file in an ink. A painted icon is white-ink art, so it is drawn as a CSS mask over a
+ * `background-color` of the ink (`currentColor` by default): one rule for every painted icon, whatever colour the call
+ * site asked for. A drawn SVG (a `data:` URI, its ink already baked in) is a plain background image, as an <img> showed it.
+ * Put it on an empty element and give the element its own width and height.
+ */
+export function paintedStyle(src: string, ink = 'currentColor'): string {
+  const u = `url("${src}")`;
+  if (src.startsWith('data:')) return `display: inline-block; background: ${u} center / contain no-repeat`;
+  return `display: inline-block; background-color: ${ink}; -webkit-mask-image: ${u}; mask-image: ${u}; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center`;
+}
+const img = (src: string, size: number, kind: string, ink: string) => `<span aria-hidden="true" class="heart-icon heart-icon-${kind}" data-icon-src="${esc(src)}" style="${esc(paintedStyle(src, ink))}; width: ${size}px; height: ${size}px"></span>`;
 const uri = (svg: string) => 'data:image/svg+xml,' + encodeURIComponent(svg);
 
 /** The asset key a painted feeling glyph is built under (art/icons/feelings/feeling-<id>.png). */
@@ -305,22 +315,23 @@ export const moduleKey = (id: string) => 'module-' + id;
 /** The asset key a painted UI mark is built under (ui-<mark>.png in either folder). */
 export const heartMarkKey = (id: HeartMarkId) => 'heart-ui-' + id;
 
-/** A feeling's glyph as HTML: the painted <img> when built, else the inline SVG. */
-export function feelingIcon(id: string, size = 24): string {
-  const p = painted('feeling-', id, size > 64); return p ? img(p, size, 'feeling') : heartSvg(FEELING_PATHS[id] || UNKNOWN, size);
+/** A feeling's glyph as HTML: the painted file as a mask in `color` when built, else the inline SVG (also in `color`). */
+export function feelingIcon(id: string, size = 24, color = 'currentColor'): string {
+  const p = painted('feeling-', id, size > 64); return p ? img(p, size, 'feeling', color) : heartSvg(FEELING_PATHS[id] || UNKNOWN, size, color);
 }
-/** A module's (or shape's) icon as HTML: the painted <img> when built, else the inline SVG. */
-export function moduleIcon(id: string, size = 24): string {
-  const p = painted('module-', id, size > 64); return p ? img(p, size, 'module') : heartSvg(MODULE_PATHS[id] || UNKNOWN, size);
+/** A module's (or shape's) icon as HTML: the painted file as a mask in `color` when built, else the inline SVG. */
+export function moduleIcon(id: string, size = 24, color = 'currentColor'): string {
+  const p = painted('module-', id, size > 64); return p ? img(p, size, 'module', color) : heartSvg(MODULE_PATHS[id] || UNKNOWN, size, color);
 }
 /** A UI mark (revert, practice, felt) as HTML. */
-export function heartMark(id: HeartMarkId, size = 24): string {
-  const p = painted('heart-ui-', id, size > 64); return p ? img(p, size, 'mark') : heartSvg(HEART_MARK_PATHS[id] || UNKNOWN, size);
+export function heartMark(id: HeartMarkId, size = 24, color = 'currentColor'): string {
+  const p = painted('heart-ui-', id, size > 64); return p ? img(p, size, 'mark', color) : heartSvg(HEART_MARK_PATHS[id] || UNKNOWN, size, color);
 }
-/** The same as a URL for <img src> (painted file, else an SVG data URI in `color`, white by default). */
-export const feelingUri = (id: string, color = '#FFFFFF') => painted('feeling-', id) || uri(heartSvg(FEELING_PATHS[id] || UNKNOWN, 24, color));
-export const moduleUri = (id: string, color = '#FFFFFF') => painted('module-', id) || uri(heartSvg(MODULE_PATHS[id] || UNKNOWN, 24, color));
-export const heartMarkUri = (id: HeartMarkId, color = '#FFFFFF') => painted('heart-ui-', id) || uri(heartSvg(HEART_MARK_PATHS[id] || UNKNOWN, 24, color));
+/** The same as a URL (painted file, else an SVG data URI in `color`, white by default). A painted file is white ink:
+ *  it takes a colour only through `paintedStyle(url, color)` on an empty element, never as an <img src>. */
+export const feelingUri = (id: string, color = '#FFFFFF', size = 24) => painted('feeling-', id, size > 64) || uri(heartSvg(FEELING_PATHS[id] || UNKNOWN, 24, color));
+export const moduleUri = (id: string, color = '#FFFFFF', size = 24) => painted('module-', id, size > 64) || uri(heartSvg(MODULE_PATHS[id] || UNKNOWN, 24, color));
+export const heartMarkUri = (id: HeartMarkId, color = '#FFFFFF', size = 24) => painted('heart-ui-', id, size > 64) || uri(heartSvg(HEART_MARK_PATHS[id] || UNKNOWN, 24, color));
 /** Is there painted art for this slot yet (so a caller can drop a COMING SOON block)? */
 export const hasPaintedArt = (key: string) => !!(ART[key] || ART[key.replace(/_/g, '-')]);
 

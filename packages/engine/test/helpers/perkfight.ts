@@ -7,15 +7,21 @@
 //   act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'shot' });
 //   withGame(g, () => …)                           // call engine functions directly with the game bound (h.c, h.g)
 import {
-  ARCHETYPES, PERK, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register,
+  ARCHETYPES, PERK, FIGHT_TOOLS, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register,
   type Action, type Character, type Combat, type GameState, type ItemHandler, type Sheet, type Unit,
 } from '../../src';
+import './yard16';
+
+// Tests may pin an enemy's numbers (`classic`, `fixed`); the game itself never lets a fight do that (rules 1.15).
+FIGHT_TOOLS.pinned = true;
 
 export interface CharSpec {
   name?: string; archetype?: string; kit?: string;
   /** Perks by id: tier ('I' | 'II' | 'mastered' | 'achieved' | 'ultimate'); a list of ids means Tier I (or the perk's own tier). */
   perks?: Record<string, string> | string[];
   traits?: string[];
+  /** Relics carried (items added at run time with addItems('relic', …); engine foundations 3). */
+  relics?: string[];
   classId?: string | null; advancedClass?: string | null;
   /** Skill points to set after creation (legality is not checked: tests build what they need). */
   skills?: Record<string, number>; attrs?: Record<string, number>;
@@ -32,6 +38,7 @@ export function equipSpec(c: Character, spec: CharSpec) {
     ? spec.perks.map((id) => ({ id, tier: (PERKS[id]?.tier === 'acquired' ? 'I' : PERKS[id]?.tier || 'I') as any }))
     : Object.entries(spec.perks).map(([id, tier]) => ({ id, tier: tier as any }));
   if (spec.traits) c.traits = [...spec.traits];
+  if (spec.relics) c.relics = [...spec.relics];
   if (spec.skills) Object.assign(c.skills, spec.skills);
   if (spec.attrs) Object.assign(c.attrs, spec.attrs);
   if (spec.classId !== undefined) c.classId = spec.classId;
@@ -55,12 +62,20 @@ export function storyWith(specs: CharSpec[] = [{}], seed = 'PERKS1'): { g: GameS
   return { get g() { return box.g; }, set g(v) { box.g = v; }, chars: ids.map((id) => box.g.characters[id]), act } as any;
 }
 
-export interface FoeSpec { name?: string; tier?: string; weapon?: string; at?: string }
-/** A fight with these characters against these foes, on the yard map unless given. Returns live getters (the state is
+/** level: this enemy's own level (rules 1.15; default: the fight's, which is the squad's average). classic: the fixed
+ * numbers every tier had before rules 1.15, at any level, for a test that only needs a target that holds still. */
+export interface FoeSpec { name?: string; tier?: string; weapon?: string; at?: string; level?: number; classic?: boolean }
+/** The tiers' numbers before rules 1.15 (no level, weapon damage with no factor): a fixed target for tests about something else. */
+export const CLASSIC: Record<string, { hp: number; defense: number; attack_bonus: number; armour: number }> = {
+  minion: { hp: 30, defense: 10, attack_bonus: 1, armour: 0 }, soldier: { hp: 60, defense: 12, attack_bonus: 3, armour: 5 },
+  elite: { hp: 100, defense: 13, attack_bonus: 5, armour: 10 }, boss: { hp: 200, defense: 14, attack_bonus: 6, armour: 10 },
+};
+/** A fight with these characters against these foes, on the 16 × 11 practice square (helpers/yard16.ts) unless given. Returns live getters (the state is
  * replaced by every act). turn(u) makes it that unit's turn (its AP and turn_start hooks run). */
-export function fightWith(specs: CharSpec[] = [{}], foes: FoeSpec[] = [{}], o: { map?: string; seed?: string } = {}) {
+export function fightWith(specs: CharSpec[] = [{}], foes: FoeSpec[] = [{}], o: { map?: string; seed?: string; /** the fight's level (default: the squad's) */ level?: number; /** every foe with the old fixed numbers */ classic?: boolean } = {}) {
   const s = storyWith(specs, o.seed);
-  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: o.map || 'yard', difficulty: 'standard', enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: f.weapon || 'service_pistol', at: f.at || '' })) } } } as any);
+  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: o.map || 'yard16', difficulty: 'standard', ...(o.level != null ? { level: o.level } : {}),
+    enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: f.weapon || 'service_pistol', at: f.at || '', ...(f.level != null ? { level: f.level } : {}), ...((f.classic ?? o.classic) ? { fixed: CLASSIC[f.tier || 'soldier'] || CLASSIC.minion } : {}) })) } } } as any);
   const box: any = s;
   const api = {
     get g(): GameState { return box.g; },

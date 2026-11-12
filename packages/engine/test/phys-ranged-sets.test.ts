@@ -307,7 +307,7 @@ describe('Load Special (17)', () => {
     const f = gunFight('brigade_auto_shotgun', ['load_special', 'burst'], { foeAt: 'F5' }); give(f, 'hollow_point', 1); rig({ hit: false, die: 3 });
     expect(f.pv('burst', { targetId: f.foe.id }).rounds).toBe(3);
     expect(f.tech('load_special', { ammo: 'hollow_point' })).toBeNull();
-    const pv = f.pv('burst', { targetId: f.foe.id }); expect(pv.attacks.length).toBe(3); expect(pv.rounds).toBe(2);
+    const pv = f.pv('burst', { targetId: f.foe.id }); expect(pv.attacks.length).toBe(2); expect(pv.rounds).toBe(2); // rules 1.18: a Burst is two rolls
     expect(pv.attacks.every((a) => a.pv.dmg!.mults.some((m) => m.label === 'hollow-point rounds'))).toBe(true);
     const a0 = f.pc.ammo; expect(f.tech('burst', { targetId: f.foe.id })).toBeNull(); expect(f.pc.ammo).toBe(a0 - 2);
   });

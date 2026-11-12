@@ -4,7 +4,8 @@
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, FEELINGS, type Sheet, newCharacter, startCombat, beginOutburst, pumpOutburst, releaseOutburst } from '@engine';
 import { heartPanel, heartVals } from './heartView';
-import { FEELING_INK, feelingButtons, feelingRows, FEELINGS_OPEN_MAX, residueTiles, residueTileStyle, practiceView, moduleGroups, feelingCodex, iconSrc } from './feelingsView';
+import { FEELING_INK, feelingButtons, feelingRows, FEELINGS_OPEN_MAX, residueTiles, residueTileStyle, practiceView, moduleGroups, feelingCodex, iconSrc, iconStyle } from './feelingsView';
+import { setHeartArt } from './heartIcons';
 import { placedView } from './sigilView';
 
 const sheetFrom = (name = 'Test'): Sheet => {
@@ -26,12 +27,12 @@ describe('the feeling buttons (rules 1.8 section 7)', () => {
     const { cb, u } = fight(); expect(beginOutburst(cb, rng, u, 'bb', undefined, true)).toBeNull();
     const fb = feelingButtons(cb, u);
     expect(fb.map((b) => b.id)).toEqual(['rage', 'love', 'joy']);
-    expect(fb.find((b) => b.id === 'rage')).toMatchObject({ ok: true, step: 0.5, mult: 1.1, stepText: '+0.5' });
+    expect(fb.find((b) => b.id === 'rage')).toMatchObject({ ok: true, step: 0.5, mult: 1.3, stepText: '+0.5' }); // rules 1.19: Rage +0.5 on ×0.8
     expect(pumpOutburst(cb, rng, u, 'love')).toBeNull();
     const p = heartPanel(cb, u)!;
     expect(p.felt).toEqual(['love']); expect(p.does).toEqual(['now HEALS']); expect(p.stages[1].feeling).toBe('love');
     const v: any = heartVals(p, () => {}); // the counter short; what the feelings change on its own wrapping line
-    expect(v.multText).toBe('×0.9'); expect(v.doesText).toBe('now HEALS'); expect(v.doesStyle).toMatch(/white-space: normal/); expect(v.stages[1].glyph).toMatch(/^data:image\/svg\+xml|^\/assets/);
+    expect(v.multText).toBe('×1.1'); expect(v.doesText).toBe('now HEALS'); expect(v.doesStyle).toMatch(/white-space: normal/); expect(v.stages[1].glyph).toMatch(/^data:image\/svg\+xml|^\/assets/);
     expect(v.btns.map((b: any) => b.key)).toContain('revert'); // a pump this turn can be taken back
   });
   it('a refused feeling shows why; past six they collapse under "Feelings ▸" with a search', () => {
@@ -66,5 +67,24 @@ describe('residue, practice and the codex', () => {
   it('iconSrc: painted art\'s URL wins; an SVG drawing is tinted into a data URI', () => {
     expect(iconSrc('<img src="/assets/feeling-rage.webp" alt="">', '#fff')).toBe('/assets/feeling-rage.webp');
     expect(iconSrc('<svg viewBox="0 0 24 24"><path stroke="currentColor" d="M0 0"/></svg>', '#FF6A3D')).toMatch(/^data:image\/svg\+xml,.*%23FF6A3D/);
+  });
+});
+
+describe('painted icons take the ink the drawn ones took', () => {
+  it('a feeling button, the codex and the stage glyph carry the feeling colour (or the grey / dark ink) on the painted file', () => {
+    setHeartArt({ 'feeling-rage': '/assets/feeling-rage.webp', 'feeling-love': '/assets/feeling-love.webp', 'module-burst': '/assets/module-burst.webp', 'module-split': '/assets/module-split.webp' });
+    try {
+      const { cb, u, c } = fight(); expect(beginOutburst(cb, rng, u, 'bb', undefined, true)).toBeNull();
+      const b = feelingButtons(cb, u).find((x) => x.id === 'rage')!;
+      expect(b.iconStyle).toContain('background-color: ' + FEELING_INK.rage); expect(b.iconStyle).toContain('/assets/feeling-rage.webp');
+      const row = feelingRows([b], true, '', () => {}).rows[0]; expect(row.iconStyle).toBe(b.iconStyle);
+      const cx = feelingCodex({ feelings: ['rage'] });
+      expect(cx.find((f) => f.id === 'rage')!.iconStyle).toContain('background-color: ' + FEELING_INK.rage);
+      expect(cx.find((f) => f.id === 'love')!.iconStyle).toContain('background-color: #7F8BA1'); // not felt yet: grey
+      const mods = moduleGroups({ ...c, soulKnown: { schools: ['damage'], modules: ['burst'], tones: [] } }).flatMap((g) => g.modules);
+      expect(mods.find((m) => m.id === 'burst')!.iconStyle).toContain('background-color: #E7EBF3'); // known: the plain ink
+      expect(mods.find((m) => m.id === 'split')!.iconStyle).toContain('background-color: #7F8BA1'); // unknown: grey
+      expect(iconStyle('/assets/feeling-rage.webp', '#0A0D13')).toContain('background-color: #0A0D13'); // the lit stage segment's dark ink
+    } finally { setHeartArt(null); }
   });
 });

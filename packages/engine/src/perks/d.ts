@@ -12,13 +12,14 @@ import {
   register, stateOf, uses, stampOf, note, pendRuling, postStory, grantPerkAp, modOn, boundGame, charOfUnit, holderOf, type Holder,
 } from '../effects';
 import { SKILLS, SCHOOL } from '../data';
-import {
+import { say,
   type Combat, type Unit, dist, xy, key, refOf, alive, active, unitSees, lineOfSight, moveUnit, coverTileFor, objectsOf, standable, emitFx,
 } from '../combat';
 import {
   applyCond, condOn, condFamily, isBoon, debuffsOf, previewEvoke, previewOutburst, releaseOutburst, spellTargets, crystallise, manaBand, manaOf, harm, heal,
   condSkillMod, condHit, SPELL_AP, unitSave, groundCap, evokeMarks, addStrain, outburstArea, formOf, riderStage, stageMult, SECOND_SCHOOL, SHORT_AT_OVER,
   RESONANCE_BONUS, resonates, fadePattern, evokeGrowth, practiceOnce, type Affected,
+  takeFreeStage, freeStageLeft,
 } from '../magic';
 import { asBolt, schoolRider, resonanceExtra } from '../classes/soul';
 import { blessing, PATRON, PATRONS, reveal, HEARING } from '../tactics';
@@ -27,19 +28,20 @@ import { type Character, mod, prayerCooldown, maxSigilWords, migrateDesign } fro
 import { songMod, musicTraitOf, startSong } from '../music';
 import { makeObject } from '../objects';
 import { applyMemOp } from '../memory';
-import { d20, die, type Rng } from '../rng';
+import { die, type Rng } from '../rng';
 import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
+import { rngOf, tilesLine, foesOf, alliesOf } from '../kit';
+import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
+import { pay, refund, canPay, bill } from '../effects/cost';
+import { setCondRounds } from '../magic';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const gameOf = (h: Holder): any => h.g ?? boundGame();
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || gameOf(h)?.rng || { state: 1 };
 const me = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id === h.u.id;
 const charOf = (h: Holder): Character | null => h.c || charOfUnit(h.u) || null;
-const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
+const log = (cb: Combat | null | undefined, s: string) => { if (cb) say(cb, s); };
 const turnStamp = (h: Holder) => stampOf('per_turn', { cb: h.cb, g: gameOf(h) });
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v) && !v.companion);
-const alliesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side === u.side && alive(v));
 /** Outburst damage (rules 1.5): Soul damage, or an elemental Outburst's (told from a Sigil's by the MP it carries). */
 const outburstHit = (src: any) => !!src && (src.type === 'soul' || (src.type === 'elemental' && src.spellMp != null));
 /** Whose glyph this is (a 1.3 save's Hold the Stroke tagged pooled glyphs "<unitId>#pool"; rules 1.4 asks 'ground_cap'). */
@@ -107,7 +109,7 @@ register({
       if (!s.left || !placedStanding(cb, h.u!)) return;
       const d = Math.min(s.left, ctx.ap); if (d <= 0) return;
       ctx.ap -= d;
-      if (!ctx.preview && h.u!.ap >= ctx.ap && (h.u!.mg?.charge ?? 0) >= ctx.charge) { s.left = Math.round((s.left - d) * 10) / 10; s.spent = true; log(cb, h.u!.name + ' thinks in parallel: the glyph costs ' + d + ' AP less (Parallel Thought).'); }
+      if (!ctx.preview && canPay(cb, h.u!, bill('draw', ctx.ap, { charge: ctx.charge }))) { s.left = Math.round((s.left - d) * 10) / 10; s.spent = true; log(cb, h.u!.name + ' thinks in parallel: the glyph costs ' + d + ' AP less (Parallel Thought).'); }
     },
     // planEvoke is pure (every evoke_cost is a preview): the discount is shown here and taken up at 'evoked'.
     evoke_cost: (ctx, h) => {
@@ -155,16 +157,16 @@ let hoAsking = false;
 function hoBlood(h: Holder): number {
   const id = hoOffer(h), m = h.u?.mg, d: any = (m?.designs || []).find((x: any) => x.id === id); if (!m || !d || mends(migrateDesign(d))) return 0;
   if (hoAsking) return 0;
-  const c: any = h.cb, had = 'mods' in c, was = c.mods; c.mods = ['!' + h.key + '#pay_hp']; hoAsking = true;
-  try { const pv = previewOutburst(h.cb!, h.u!, d.id, undefined, false); return m.mp < pv.cost ? pv.cost * HO_HP_PER_MP : 0; }
-  finally { hoAsking = false; if (had) c.mods = was; else delete c.mods; }
+  hoAsking = true; // (asked on the fight with the switch set: a copy of its top level, the fight itself is not written)
+  try { const pv = previewOutburst({ ...h.cb!, mods: ['!' + h.key + '#pay_hp'] }, h.u!, d.id, undefined, false); return m.mp < pv.cost ? pv.cost * HO_HP_PER_MP : 0; }
+  finally { hoAsking = false; }
 }
 register({
   id: 'heart_overload', claims: 'all', priority: 300, noDefaultActions: true, // used from Begin (its switches)
   toggles: [{
     id: 'again', label: 'Heart Overload: Begin again for 0 AP', on: ['combat/outburst'], defaultOn: true,
     available: (h) => !!hoOffer(h), // only right after the Release that earned it
-    preview: (h) => 'Begin ' + hoName(h) + ' again now for 0 AP. You pay its mana and Strain as usual. It holds at stage ' + (h.tier === 'II' ? 1 : 0) + '. Once a turn.',
+    preview: (h) => 'Begin ' + hoName(h) + ' again now for 0 AP. You pay its mana and Strain as usual. It holds at stage ' + (h.tier === 'II' && h.u && freeStageLeft(h.u) ? 1 : 0) + '. Once a turn.',
   }, {
     id: 'pay_hp', label: 'Heart Overload: pay the mana in HP', on: ['combat/outburst'], defaultOn: true,
     available: (h) => hoBlood(h) > 0, // only for the free Begin, and only when the mana is short
@@ -190,6 +192,7 @@ register({
     strain: (ctx, h) => {
       const s = stateOf(h), m = h.u?.mg; if (!me(h, ctx.u) || ctx.why !== 'begin' || !s.raise) return;
       const id = s.raise; s.raise = null; if (!m?.held || m.held.design !== id || m.held.stage >= 1) return;
+      if (!takeFreeStage(h.u!)) return; // rules 1.19: one free stage a turn; if a free Pump took it, this Begin holds at stage 0
       m.held.stage = 1;
       emitFx(ctx.cb, 'pump', { unit: h.u!.id, at: h.u!.pos, stage: 1, mult: stageMult(1), free: true, max: false, tone: m.held.tone || 'raw', overload: true });
       log(ctx.cb, 'Heart Overload: it holds at stage 1 (×' + stageMult(1) + ').');
@@ -296,8 +299,8 @@ register({
     available: (h) => (!h.u?.mg?.emanator ? false : true),
     run: (h) => {
       const u = h.u!, cb = h.cb!;
-      u.ap += SPELL_AP.crystallise; // the runtime took the reduced cost; crystallise() takes its full 3
-      const err = crystallise(cb, u); if (err) { u.ap -= SPELL_AP.crystallise; return err; }
+      refund(cb, u, SPELL_AP.crystallise); // the runtime took the reduced cost; crystallise() takes its full 3
+      const err = crystallise(cb, u); if (err) { pay(cb, u, SPELL_AP.crystallise); return err; }
       return null;
     },
   }],
@@ -397,7 +400,6 @@ register({
 // release's stage multiplier and rider stage (the 1.5 maths: magic.ts outburstArea and outburstDamage). It lands after
 // the primary hit, the second school and the tone's riders (the 'outburst_after' hook), on whoever is still standing.
 // =====================================================================================================================
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 function extraSchool(cb: Combat, rng: Rng, u: Unit, d: any, school: string, option: string | undefined, sm: number, stage: number, aim: string): string {
   const dd = migrateDesign(d), tiles = new Set(outburstArea(cb, u, dd, formOf(dd) === 'aura' ? u.pos : aim)), rs = riderStage(cb, stage);
   const targets = cb.units.filter((v) => !v.dead && (tiles.has(v.pos) || (school === 'buff' && formOf(dd) === 'aura' && v === u)) && (school === 'buff' ? v.side === u.side : v !== u));
@@ -514,7 +516,7 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
         // Rules 1.5: the Sigil decides the area, so each creature takes the held Outburst as a Bolt (its shape, Size,
         // Random and Far set aside; Ether implied: classes/soul.ts asBolt).
         m.held = { ...held };
-        u.ap += SPELL_AP.release; const err = asBolt(u, d, () => releaseOutburst(cb, rng, u, t.pos)); if (err) { u.ap -= SPELL_AP.release; break; }
+        refund(cb, u, SPELL_AP.release); const err = asBolt(u, d, () => releaseOutburst(cb, rng, u, t.pos)); if (err) { pay(cb, u, SPELL_AP.release); break; }
         released++;
       }
     }, () => (released ? 1 + Math.max(0, (held.stage ?? 0) - 1) + (held.felt || []).length : 0));
@@ -533,21 +535,21 @@ function fusedCast(h: Holder, args: any, rng: Rng): string | null {
 // Verse of War (Achieved: Implication 5 + Will Power 5). An Outburst cast while you speak in verse: +1 tile of range,
 // ×1.1 Soul damage. Player-declared (plan 4.3: the Narrator is never called per cast): Say the line (free), then Begin
 // or Release with the "In verse" toggle (in a fight that chip is its only button: Leon, 9 Nov 2026, no Confirm when the
-// move already has a use button); the line goes to the fight notes for the Narrator to audit after the fight. On the
-// area map, "Release in verse" (the Perks list there): the line is this round's Say (story/speak), and the audit is a
-// pending ruling.
+// move already has a use button); the line goes to the fight notes so the Narrator knows it was said. Nothing checks
+// that it was verse (rules 1.14, spec item 1111: the audit had no consequence and is gone). On the area map, "Release
+// in verse" (the Perks list there): the line is this round's Say (story/speak).
 // =====================================================================================================================
-function verseNote(h: Holder) { const l = sayLine(h); note(h, 'cast an Outburst in verse' + (l ? ': "' + l.slice(0, 160) + '"' : ' (no line said)') + '. Audit whether it was verse (+1 range, ×1.1 damage given).'); }
+function verseNote(h: Holder) { const l = sayLine(h); note(h, 'cast an Outburst in verse' + (l ? ': "' + l.slice(0, 160) + '"' : ' (no line said)') + ' (+1 range, ×1.1 damage given).'); }
 register({
-  id: 'verse_of_war', claims: [0, 1],
+  id: 'verse_of_war', claims: 'all',
   toggles: [{
     id: 'verse', label: 'In verse', on: ['combat/outburst'],
     available: (h) => (!h.u?.mg ? false : sayLine(h) ? true : 'Say your verse first (Say).'),
-    preview: () => '+1 tile of range, ×1.1 damage; the Narrator audits the line.',
+    preview: () => '+1 tile of range, ×1.1 damage.',
   }, {
     id: 'verse', label: 'In verse', on: ['combat/release'],
     available: (h) => (!h.u?.mg?.held ? false : sayLine(h) ? true : 'Say your verse first (Say).'),
-    preview: () => '+1 tile of range, ×1.1 damage; the Narrator audits the line.',
+    preview: () => '+1 tile of range, ×1.1 damage.',
   }],
   actions: [{
     id: 'release', label: 'Release in verse', scope: ['world'], ap: 0, target: 'tile',
@@ -582,7 +584,7 @@ register({
     },
     damage_in: (ctx, h) => { const s = stateOf(h); if (ctx.phase === 'reduce' && me(h, ctx.src?.by) && outburstHit(ctx.src) && s.verseAt != null && s.verseAt === ctx.cb?.log.length) ctx.dmg *= 1.1; },
   },
-  brief: () => 'Narrator: audit after the fight whether the declared lines were verse.',
+  brief: () => null,
 });
 
 // =====================================================================================================================
@@ -595,7 +597,7 @@ register({
   id: 'fire_sermon', claims: 'all',
   actions: [
     {
-      id: 'preach', label: 'Preach', scope: ['combat'], ap: 2, target: 'none',
+      id: 'preach', label: 'Preach', scope: ['combat'], ap: 'data', target: 'none',
       text: 'Preach until your next turn: your Blessings also leave enemies within 4 tiles Shaken (Heart save).',
       available: (h) => (h.u && condOn(h.u, 'silenced') ? 'Silenced.' : stateOf(h).preach ? 'Already preaching.' : true),
       run: (h, args) => { stateOf(h).preach = true; log(h.cb, h.u!.name + ' preaches' + (args.text ? ': "' + String(args.text).slice(0, 160) + '"' : '') + ' (Fire Sermon).'); },
@@ -616,7 +618,7 @@ register({
     blessing_in: (ctx, h) => {
       const u = h.u, cb: Combat = ctx.cb; if (!u || !me(h, ctx.u) || !stateOf(h).preach) return;
       let line = '';
-      for (const e of foesOf(cb, u)) if (dist(e.pos, u.pos) <= 4) line += applyCond(cb, rngOf(h, ctx), u, e, 'shaken', undefined, undefined, { via: 'faith' });
+      for (const e of foesOf(cb, u, { companions: false })) if (dist(e.pos, u.pos) <= 4) line += applyCond(cb, rngOf(h, ctx), u, e, 'shaken', undefined, undefined, { via: 'faith' });
       if (line) log(cb, 'The sermon burns (Fire Sermon)' + line + '.');
     },
   },
@@ -633,12 +635,12 @@ register({
   id: 'litany', claims: 'all',
   actions: [
     {
-      id: 'litany', label: 'Litany', scope: ['combat'], ap: 2, target: 'none',
+      id: 'litany', label: 'Litany', scope: ['combat'], ap: 'data', target: 'none',
       text: 'A spoken prayer: allies within 3 tiles, you included, get a bonus on every save until your next turn.',
       available: (h) => (h.u && condOn(h.u, 'silenced') ? 'Silenced: no prayers.' : true),
       run: (h) => {
         const u = h.u!, cb = h.cb!, v = tiles(h), got: string[] = [];
-        for (const t of alliesOf(cb, u)) {
+        for (const t of alliesOf(cb, u, { self: true })) {
           if (dist(t.pos, u.pos) > 3) continue;
           const st = litOf(h.key, { u: t, cb, g: gameOf(h) });
           if (st.lit && st.lit.v > v) continue;
@@ -686,7 +688,7 @@ register({
 // voice from above (the Narrator speaks).
 // =====================================================================================================================
 const isUpper = (v: { kind?: string; tags?: string[] } | null | undefined) => !!v && (v.kind === 'upper_realm' || (v.tags || []).includes('upper_realm'));
-const upperFoes = (cb: Combat, u: Unit) => foesOf(cb, u).filter(isUpper);
+const upperFoes = (cb: Combat, u: Unit) => foesOf(cb, u, { companions: false }).filter(isUpper);
 /** The area map: upper-realm tokens within 10 tiles of the holder, once a scene each (a line; a lurker is revealed). */
 function owSenseUpper(h: Holder, at?: string) {
   const g = gameOf(h), c = charOf(h); if (!g || !c || c.dead) return; at ||= positionsOf(g)[c.id]; if (!at) return;
@@ -828,7 +830,7 @@ register({
         return;
       }
       if (u.hidden) reveal(cb, u, 'Echo Chamber: the Outburst is loud');
-      const near = foesOf(cb, u).filter((v) => dist(v.pos, u.pos) <= 10);
+      const near = foesOf(cb, u, { companions: false }).filter((v) => dist(v.pos, u.pos) <= 10);
       for (const v of near) (((cb.lastSeen ||= {})[v.side] ||= {}))[u.id] = u.pos;
       if (near.length) (cb.notes ||= []).push('TRAIT Hollow Heart (' + u.name + ', r' + cb.round + '): the Outburst is loud: ' + near.map((v) => v.name).join(', ') + ' know where ' + u.name + ' is until their next turn — yours to rule');
     },
@@ -839,7 +841,7 @@ register({
 
 // =====================================================================================================================
 // Heretic (trait). Stolen Fire: pray and use Blessings without Faith or a pact: the Perks action prays to any patron
-// for one of its Blessings with Will Power in Faith's place (the 3/5/7 gates, the roll, the cooldown), and Blessing
+// for one of its Blessings as an Atheist prays a learned Hymn (rules 1.6, item 628: d20 + Will Power against 14 / 16 / 18, no Witnessed), and Blessing
 // Power is 1 + 0.1 × Will Power (provisional reading, plan 6a). Excommunicated: an ally's Blessing on you fails on a
 // d6 of 1-2; at the first session start the Lumeri Church is Hostile (standing −40); which other faiths count is the
 // Narrator's.
@@ -875,8 +877,8 @@ register({
         const c = charOf(h), g = gameOf(h); if (!c || !g) return 'Pray in the story.';
         const pick = stolenPick(args.choice); if (!pick) return 'Name a Blessing to steal.';
         if ((c.skills.will_power || 0) < 3) return 'Stolen Fire needs Will Power 3.';
-        const r = d20(rng), m = mod(c.skills.will_power || 0), tn = ATHEIST_TN[pick.bl.tier || 1] ?? 14, ok = r === 20 || (r !== 1 && r + m >= tn); // rules 1.6: by dice
-        const eid = postStory(h, 'steals a prayer to ' + pick.p.name + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + (ok ? ' · heard' : ' · silence') + (args.text ? ' ("' + String(args.text).slice(0, 160) + '")' : ''));
+        const rv = rollVs(null, rng, { mod: mod(c.skills.will_power || 0), tn: ATHEIST_TN[pick.bl.tier || 1] ?? 14 }), ok = rv.ok; // rules 1.6: by dice
+        const eid = postStory(h, 'steals a prayer to ' + pick.p.name + ': ' + rv.text + (ok ? ' · heard' : ' · silence') + (args.text ? ' ("' + String(args.text).slice(0, 160) + '")' : ''));
         if (ok) pendRuling(g, c, h.key, c.name + ' stole a prayer and was heard: ' + pick.p.name + ' answers with ' + pick.bl.name + ' × ' + (1 + 0.1 * (c.skills.will_power || 0)).toFixed(1) + ' (Heretic: the patron may resent it).', eid || undefined);
         return null;
       },
@@ -897,7 +899,7 @@ register({
 });
 
 // =====================================================================================================================
-// True Believer (trait). Unshaken: prayer cooldown 1 turn shorter (minimum 1). Once per session your prayer is
+// True Believer (trait). Unshaken: the wait between Hymns is 1 round shorter, never under 2 rounds (rules 1.22). Once per session your prayer is
 // answered with a small miracle (a story button: the Narrator grants it). Rites: every day you can't keep them, −1 on
 // Faith and Will Power rolls until amends; the Narrator keeps the count in traitState rites_missed (capped at −3, plan
 // 6a, provisional).
@@ -905,7 +907,8 @@ register({
 const ritesMissed = (c: Character | null | undefined) => Math.max(0, Math.min(3, Number(c?.state?.rites_missed ?? c?.state?.true_believer?.rites_missed ?? 0) || 0));
 register({
   id: 'true_believer', claims: [0, 2],
-  stat: (h, stat) => ((stat === 'skill:faith' || stat === 'skill:will_power') ? -ritesMissed(charOf(h)) : 0),
+  // 'hymn_wait' (rules 1.22): the wait between Hymns is 1 round shorter (faith.ts hymnWait holds it at 2 rounds or more).
+  stat: (h, stat) => (stat === 'hymn_wait' ? -1 : (stat === 'skill:faith' || stat === 'skill:will_power') ? -ritesMissed(charOf(h)) : 0),
   actions: [{
     id: 'miracle', label: 'Ask for a miracle', scope: ['story', 'world'], ap: 0, uses: { per: 'per_session', n: 1 }, target: 'text',
     text: 'Once a session your prayer is answered: the Narrator grants a small miracle.',
@@ -916,14 +919,6 @@ register({
       return null;
     },
   }],
-  on: {
-    turn_start: (ctx, h) => {
-      const u = h.u, c = charOf(h); if (!me(h, ctx.u) || !c || u!.prayedRound == null) return; const s = stateOf(h);
-      if (s.adj === u!.prayedRound) return;
-      if (prayerCooldown(c) > 1) u!.prayedRound = u!.prayedRound - 1;
-      s.adj = u!.prayedRound;
-    },
-  },
   brief: (h) => 'Narrator: track missed rites (traitState rites_missed: +1 a day, 0 on amends)' + (ritesMissed(charOf(h)) ? '; now −' + ritesMissed(charOf(h)) : '') + '.',
 });
 
@@ -948,8 +943,8 @@ register({
   on: {
     combat_start: (ctx, h) => {
       const u = h.u, cb: Combat = ctx.cb, c = charOf(h); if (!u || !c || ow(cb) || !upperFoes(cb, u).length) return;
-      const r = d20(rngOf(h, ctx)), m = mod(c.skills.faith || 0) + (u.sk?.faith || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
-      log(cb, u.name + ' faces Heaven\'s own: Faith d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs 12 · ' + (ok ? 'steady' : 'hesitates (−2 AP on the first turn)') + ' (Heaven\'s Faithful).');
+      const rv = rollVs(cb, rngOf(h, ctx), { by: u, mod: mod(c.skills.faith || 0) + (u.sk?.faith || 0), tn: TN.standard, why: 'faith' }), ok = rv.ok;
+      log(cb, u.name + ' faces Heaven\'s own: Faith ' + rv.text + ' · ' + (ok ? 'steady' : 'hesitates (−2 AP on the first turn)') + ' (Heaven\'s Faithful).');
       if (!ok) stateOf(h).hesitate = true;
     },
     turn_start_pre: (ctx, h) => { if (!me(h, ctx.u)) return; const s = stateOf(h); if (s.hesitate) { ctx.penalties.push({ n: 2, why: 'Treason: hesitation' }); s.hesitate = false; } },
@@ -1038,7 +1033,7 @@ register({
 register({
   id: 'shared_breath', claims: 'all',
   actions: [{
-    id: 'link', label: 'Shared Breath', scope: ['combat'], ap: 2, target: 'ally', range: 3,
+    id: 'link', label: 'Shared Breath', scope: ['combat'], ap: 'data', target: 'ally', range: 3,
     text: 'Link with an ally: the next Heart debuff on either of you is split between you, each at half its duration.',
     preview: (h, args) => { const t = h.cb?.units.find((x) => x.id === args.targetId); if (t && (me(h, t))) return { ok: false, why: 'Link with someone else.' }; if (t && h.u && !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' }; },
     run: (h, args) => {
@@ -1054,7 +1049,7 @@ register({
       const partnerId = me(h, t) ? s.link.b : t.id === s.link.b ? u.id : null; if (!partnerId) return;
       const p = cb.units.find((x) => x.id === partnerId); if (!p || p.dead) { s.link = null; return; }
       const full = t.conds?.[ctx.id] ?? ctx.rounds, timed = full < 99, half = timed ? Math.max(1, Math.ceil(full / 2)) : undefined;
-      if (timed && t.conds) t.conds[ctx.id] = half!;
+      if (timed && t.conds) setCondRounds(t, ctx.id, half!);
       s.busy = true;
       try { log(cb, 'Shared Breath: ' + t.name + ' and ' + p.name + ' share it' + (half ? ' (' + half + ' round' + (half === 1 ? '' : 's') + ' each)' : '') + applyCond(cb, rngOf(h, ctx), ctx.by || null, p, ctx.id, half, undefined, { skipSave: true, ...(ctx.via ? { via: ctx.via } : {}) }) + '.'); }
       finally { s.busy = false; }
@@ -1078,13 +1073,6 @@ interface Proj { id: string; kind: 'wall' | 'figure' | 'sound'; tile: string; le
 const MIR_KEY = 'perk:mirage';
 const mirState = (u: Unit, cb: Combat | null | undefined, g?: any) => stateOf({ key: MIR_KEY, u, cb, g } as any);
 const visMod = (c: Character | null | undefined) => mod(c?.skills?.visualization || 0);
-/** Tiles on the line between two tiles (excluding the ends). */
-function lineTiles(a: string, b: string): string[] {
-  let [x0, y0] = xy(a); const [x1, y1] = xy(b), out: string[] = [];
-  const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1; let err = dx + dy;
-  while (!(x0 === x1 && y0 === y1)) { const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } const k = key(x0, y0); if (k !== b) out.push(k); }
-  return out;
-}
 /** Every live projection on the field, with its caster. */
 function projections(cb: Combat): { by: Unit; p: Proj }[] {
   const out: { by: Unit; p: Proj }[] = [];
@@ -1094,17 +1082,17 @@ function projections(cb: Combat): { by: Unit; p: Proj }[] {
 const believes = (e: Unit, p: Proj) => p.believers.includes(e.id);
 function disprove(by: Unit, e: Unit, p: Proj) { p.believers = p.believers.filter((x) => x !== e.id); const s = by.ps![MIR_KEY]; if (!(s.disproved ||= []).includes(e.id)) s.disproved.push(e.id); }
 function castMirage(h: Holder, rng: Rng, specs: { kind: Proj['kind']; tile: string }[]): string {
-  const u = h.u!, cb = h.cb!, c = charOf(h), s = mirState(u, cb, gameOf(h)), tn = 12 + visMod(c), left = h.tier === 'II' ? 2 : 1;
+  const u = h.u!, cb = h.cb!, c = charOf(h), s = mirState(u, cb, gameOf(h)), tn = SAVE_TN + visMod(c), left = h.tier === 'II' ? 2 : 1;
   s.proj = []; // one cast at a time: a new one replaces the old
   const lines: string[] = [];
   for (const sp of specs) {
     const p: Proj = { id: 'mi' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: sp.kind, tile: sp.tile, left, believers: [] };
     const rolls: string[] = [];
-    for (const e of foesOf(cb, u)) {
+    for (const e of foesOf(cb, u, { companions: false })) {
       const aware = sp.kind === 'sound' ? dist(e.pos, sp.tile) <= HEARING : unitSees(cb, e, sp.tile); if (!aware) continue;
-      const m = TIER_SAVE[e.tier || 'minion'] ?? 0, plus = (s.disproved || []).includes(e.id) ? 5 : 0, r = d20(rng), ok = r === 20 || (r !== 1 && r + m + plus >= tn);
+      const plus = (s.disproved || []).includes(e.id) ? 5 : 0, rv = rollVs(cb, rng, { by: e, mod: [{ add: tierSave(e.tier), label: 'tier' }, { add: plus, label: 'disproved' }], tn, why: 'mirage' }), ok = rv.ok;
       if (!ok) p.believers.push(e.id);
-      rolls.push(e.name + ' ' + (r + m + plus) + (ok ? ' sees through it' : ' believes'));
+      rolls.push(e.name + ' ' + rv.total + (ok ? ' sees through it' : ' believes'));
     }
     s.proj.push(p);
     lines.push('a ' + sp.kind + ' at ' + refOf(sp.tile) + (rolls.length ? ' (Acuity vs ' + tn + ': ' + rolls.join(', ') + ')' : ' (no one sees it)'));
@@ -1128,7 +1116,7 @@ register({
   id: 'mirage', claims: 'all',
   actions: [
     {
-      id: 'mirage', label: 'Mirage', scope: ['combat'], ap: 2, target: 'tile',
+      id: 'mirage', label: 'Mirage', scope: ['combat'], ap: 'data', target: 'tile',
       text: 'Project a false wall, figure or sound onto a tile in range. Enemies who fail an Acuity check believe it.',
       preview: (h, args) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return { ok: false, why: sp }; return { tiles: sp.map((x) => x.tile), lines: ['A ' + sp.map((x) => x.kind).join(' and a ') + ' (Acuity vs ' + (12 + visMod(charOf(h))) + ')'] }; },
       run: (h, args, rng) => { const sp = mirSpecs(h, args); if (typeof sp === 'string') return sp; log(h.cb, castMirage(h, rng, sp)); return null; },
@@ -1139,7 +1127,7 @@ register({
       text: 'Project a false wall, figure or sound to distract or misdirect. The engine rolls the NPCs\' Acuity; the Narrator plays them.',
       run: (h, args, rng) => {
         const c = charOf(h), g = gameOf(h); if (!c || !g) return 'Project in the story.';
-        const tn = 12 + visMod(c), rolls = npcsOf(g).filter((n: any) => n.side === 'hostile' && !n.dead).slice(0, 8).map((n: any) => { const r = d20(rng), m = TIER_SAVE[n.tier || 'minion'] ?? 0, ok = r === 20 || (r !== 1 && r + m >= tn); return n.name + ' ' + (r + m) + (ok ? ' sees through it' : ' believes'); });
+        const tn = SAVE_TN + visMod(c), rolls = npcsOf(g).filter((n: any) => n.side === 'hostile' && !n.dead).slice(0, 8).map((n: any) => { const rv = rollVs(null, rng, { mod: tierSave(n.tier), tn }), ok = rv.ok; return n.name + ' ' + rv.total + (ok ? ' sees through it' : ' believes'); });
         const t = String(args.text || '').trim().slice(0, 200), eid = postStory(h, 'projects ' + t + ' (Mirage; Acuity vs ' + tn + (rolls.length ? ': ' + rolls.join(', ') : '') + ').');
         pendRuling(g, c, h.key, 'Mirage: ' + c.name + ' projects ' + t + '. The engine rolled: ' + (rolls.join(', ') || 'no hostile NPCs nearby') + '. Play what the fooled NPCs do.', eid || undefined);
         return null;
@@ -1160,7 +1148,7 @@ register({
     },
     attack_preview: (ctx, h) => {
       const a: Unit = ctx.att; if (!h.u || !a || a.side === h.u.side || ctx.fail || ctx.melee) return;
-      const line = lineTiles(a.pos, ctx.tgt.pos);
+      const line = tilesLine(a.pos, ctx.tgt.pos, { end: false });
       for (const p of (mirState(h.u, ctx.cb).proj || []) as Proj[]) if (p.kind === 'wall' && !p.solid && believes(a, p) && line.includes(p.tile)) { ctx.fail = 'A wall stands in the way (or so they believe).'; return; }
     },
     attack_roll: (ctx, h) => {

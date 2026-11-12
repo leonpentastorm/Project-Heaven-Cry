@@ -1,6 +1,7 @@
 // The completeness pass (rules 1.3): the items' area-map and story sides and the hooks they needed (sight, lurking NPCs,
 // NPC movement, story damage, area-map strikes, the Narrator's fromTalk). Every test goes through the reducer (apply).
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { makeObject, apply, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, visibility, previewAttack, apLeft, d20, type GameState, type Combat, type Unit } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -125,7 +126,7 @@ describe('Talks Broke Down: the Narrator says whether the fight came from the ta
     s.act({ type: 'narrator/turn', turn: { narration: 'Talk.', checks: [{ charId: c.id, skills: ['charisma'], tn: 8, stakes: 'Calm them', tags: ['dialogue'] }] } } as any);
     s.g.rng.state = rngFor(19).state; const ck = s.g.checks.find((k) => !k.done)!; s.act({ type: 'check/roll', checkId: ck.id }); s.act({ type: 'check/accept', checkId: ck.id } as any);
     for (let i = 0; i < rounds; i++) s.g.story.round++;
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', ...(fromTalk === undefined ? {} : { fromTalk }), enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', ...(fromTalk === undefined ? {} : { fromTalk }), enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     return s;
   };
   it('fromTalk false: an unrelated fight in the same scene gets nothing; true: a talk 3 rounds back still counts', () => {

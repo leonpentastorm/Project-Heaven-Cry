@@ -236,8 +236,10 @@ function endingOf(g: GameState, ms: MissionState, m: Mission, next: Mission | nu
 export function placeBoardNpc(g: GameState) {
   const c: any = g.campaign, b: BoardNpc | undefined = c?.board_npc; if (!b) return;
   const z = (c.zones || []).find((x: any) => x.id === b.zone); if (!z) return;
-  z.npcs = z.npcs || [];
-  if (!z.npcs.some((n: any) => n.name === b.name)) z.npcs.push({ name: b.name, side: 'neutral', tier: 'soldier', weapon: 'service_pistol', at: b.at, ...(b.portrait ? { portrait: b.portrait } : {}), tags: ['job_board'] });
+  if ((z.npcs || []).some((n: any) => n.name === b.name)) return;
+  // The campaign is shared between states (game.ts workingCopy): a new campaign with a new zone, never a push in place.
+  const npc = { name: b.name, side: 'neutral', tier: 'soldier', weapon: 'service_pistol', at: b.at, ...(b.portrait ? { portrait: b.portrait } : {}), tags: ['job_board'] };
+  g.campaign = { ...c, zones: c.zones.map((x: any) => (x === z ? { ...z, npcs: [...(z.npcs || []), npc] } : x)) };
 }
 
 // ---------- the Narrator's view (the per-turn MISSION block) ----------

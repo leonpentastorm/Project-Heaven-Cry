@@ -604,7 +604,6 @@
         }
       },
       "art": {
-        "map": "map-m813-shield-line",
         "banner": "ill-m813-shield-line"
       }
     },
@@ -885,7 +884,6 @@
         }
       },
       "art": {
-        "map": "map-m813-rear-pad",
         "banner": "ill-m813-rear-pad-loading"
       },
       "npcs": [
@@ -1232,7 +1230,6 @@
         }
       },
       "art": {
-        "map": "map-m813-outpost",
         "banner": "ill-m813-outpost-hangar"
       }
     },
@@ -1457,7 +1454,6 @@
         }
       },
       "art": {
-        "map": "map-m813-outpost-1",
         "banner": "ill-m813-outpost-1"
       },
       "npcs": [

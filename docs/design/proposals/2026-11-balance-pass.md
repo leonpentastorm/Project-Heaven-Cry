@@ -321,3 +321,190 @@ That is 14 of 19 the engine can own, and 5 that are judgement by nature.
    stated in one plain sentence on the card). An item is `hybrid` only if a real judgement is left.
 3. A `narrator` item with no judgement left in it is a rule nobody runs: it becomes `engine` or is rewritten.
 4. The count above is printed again at the end of the pass.
+
+## 12. Stage A is measured; Leon's answers (11 Nov 2026)
+
+The baseline is `docs/design/handoffs/balance-sim-baseline.md`; the action prices `action-price-list.md`; the engine
+and Narrator split `adjudication-split.md`; the 38 questions and Leon's answers `balance-questions.md` (all in
+`docs/design/handoffs/`). The answers that change the targets above:
+
+1. **Guns sit a bit under 150% optimised.** The full 150% is for weapons whose price is ludicrously expensive
+   ammunition (a rocket launcher). Blades and other physical builds keep 150%.
+2. **A ranged technique beats the plain shot by 10 to 25% when its condition is met.**
+3. **Burst deals more than the Shot for its AP and is worse to hit.**
+4. **A hit costs Momentum at most once a round.**
+5. **"3 turns of focus"** is 3 rounds under fire from half the enemies of a standard fight for four.
+6. **The engine target** is "no rule is ever left to the Narrator", not a share of labels.
+
+## 13. Outburst needs a full rework in the damage step (Leon, 11 Nov 2026)
+
+Leon, from play on 0.22.0: "we need to rebalance the Outburst hugely. Rage adds Strain but does not make the
+multiplier bigger; Shame deals 5 damage to you and does nothing else. Everything in the Outburst module needs a look."
+
+This is part of the damage step, not a later pass. To do, in order:
+
+1. **Audit every one of the 25 feelings** (rules 1.8): for each, what the card says, what the engine does, what it
+   costs (Strain, HP, AP) and what it gives (step size, behaviour, residue). A feeling that costs and gives nothing
+   back is a bug in the numbers. Rage and Shame are the first two named; check them in the engine before trusting
+   the report (not reproduced yet).
+2. **Audit every module, school, tone and shape** the same way, and the stage multipliers (×0.8 / 1 / 1.4 / 1.8 / 2.2).
+3. **Price them with the same instruments as weapons**: the fight simulator and the action price list, against the
+   targets in sections 5, 8 and 12 (Outburst steady at 125% of a plain weapon; the peak rule in section 10).
+4. **Rule for every feeling:** a Pump with a feeling must be better than a plain Pump in one clear way, and its cost
+   must be in proportion. Draft the new numbers as one table for Leon, flagged provisional, spec first.
+
+**Checked in the data (11 Nov 2026), Leon is right.** A plain Pump adds +0.4 to the multiplier. Rage adds +0.5, so
+it buys +0.1 for its Strain. Shame adds +0.6, so it buys +0.2 for 5 damage to yourself. Worse: 17 of the 25
+feelings step at 0.2 or 0.3, less than a plain Pump, so pouring them makes the Release *weaker* and the behaviour
+they add has to carry the whole price. Only Abandon (+0.8), Spite against the one who last hurt you (+0.8), and the
+scaling ones (Pride, Despair, Belonging, Loneliness alone) can clearly beat a plain Pump.
+
+## 14. Sigil: the biggest hit in the game (Leon, 11 Nov 2026)
+
+Leon: "increase the Sigil damage cap to about 150% to 200%. Let them spend 2 turns setting up, just make the hit the
+biggest in the game. That system needs way too much fiddling to use; if the damage is not good it is a dead system."
+
+This replaces the earlier Sigil ceiling in the damage step:
+
+1. **Target:** a full Line (4 glyphs, about 2 turns of drawing and walking) Evoked lands at **150% to 200%** of a
+   plain weapon's damage over the same turns, the highest single hit of any school. *Provisional until the table is
+   drafted:* where in that band each Line length sits (2, 3 and 4 glyphs).
+2. Guns stay a bit under 150% (rocket-class ammo excepted), Outburst steady at 125%: Sigil is slow and biggest,
+   Outburst steady, weapons immediate.
+3. Measure setup cost honestly in the simulator: AP to draw, AP to walk the Line, the turn spent not attacking, and
+   the risk of being hit off it.
+
+## 15. Fewer button presses for Sigil users: two-key hotkeys (Leon, 11 Nov 2026)
+
+Leon: "Sigilists have to press way too many buttons, switching tab 1 - 4 - 1 - 4 constantly. Make the UI have double
+hotkeys so they can press 11 to move, 12 to sprint, then 41 to draw, 42 to evoke."
+
+Not a balance number, a fight-screen change; build it with the bug list (it touches `apps/web/src/screens/combat.js`):
+
+1. First digit picks the tab, second digit picks the action in that tab, in the order shown. The tab does not have
+   to be open first, and the screen switches to it so the player sees what was picked.
+2. Every action button shows its two-digit code on the button. A lone digit still opens the tab as today; a second
+   digit within a short moment completes the code (*provisional:* about 1 second).
+3. Works for every class, not only Sigil users. Add it to the keys list on the help screen.
+
+**Ruling (Leon, 11 Nov 2026):** the Sigil peak stands as the class's peak move (Elites and Bosses stay out of
+one-hit range). **Outburst gets a peak too: 150% at the biggest Pump possible** (stage 4, held and pumped all the
+way); below that it stays the steady 125% school. So the peaks are: Sigil 150% to 200% after two turns of set-up,
+Outburst 150% at full Pump, guns a bit under 150% (rocket-class ammo at 150%).
+
+## 16. Rulings, 12 Nov 2026 (Leon)
+
+1. **The Outburst goes up: steady about 135% of the plain rifle, the biggest Release about 165%.** With the best gun
+   at about 145% every turn and no set-up (rules 1.18), an Outburst whose two-turn peak was 150% felt weak. It now sits
+   between a gun and a full Sigil Line (150 to 200%). Built after the heal and shield pass (rules 1.20) lands, through
+   the damage base.
+2. **Weapon Arts break the ceiling, as a charged ultimate.** A physical class's Art is its big moment and is allowed
+   over 150%; it has to be charged, and what it deals is **counted in the build's average**: the ceiling of rules 1.18
+   is on the average over a fight with the Art in it, not on the Art's own hit. So when Arts are built, a gun or blade
+   build's steady output comes down by what its Art adds over the turns it takes to charge. "Big moment deserve to be
+   big."
+3. The peaks, in order: a full Sigil Line 150 to 200% (two turns of drawing), a charged Art (to be set with the
+   Arts), the Outburst's biggest Release 165%, the best gun's steady 145%, the Outburst's steady 135%, a prayer-led
+   build about level with the Outburst (rules 1.21, being measured), the plain rifle 100%.
+
+### Faith (Leon, 12 Nov 2026, after rules 1.21)
+
+4. **The Whisper is the every-turn prayer and is weaker than every combat system**, because anyone can pray one on top
+   of what they already do. There is a Whisper that hurts.
+5. **A Hymn is always better, per cast, than a standard spell or an Outburst**; its price is the cooldown, which is
+   long when Faith is low and comes down with Faith. Faith-boosting items come later and are what lowers it further; a
+   Hymn is not prayed every turn without them. (Rules 1.21 had fitted an every-turn Hymn: the cooldown formula reached
+   its floor of 1 round at Virtue 4 and Faith 3.)
+6. **A vow fulfilled in combat takes 1 round off the Hymn cooldown.** Balance around that.
+7. A prayer-led build averages a little under the Outburst (about 120 to 125%); Devotion 3 may sit under the rifle.
+8. Witnessed's +2 to hit for Old Overcast's devoted is for a kill, not every attack.
+
+Built as rules 1.22 (hand-off `faith-round-2.md`).
+
+### Defence (Leon, 12 Nov 2026, after rules 1.20)
+
+9. **No round limit on healing.** The half-max-HP limit of rules 1.20 is withdrawn; healing is balanced by its AP
+   price. A tank kept up by a healer who does nothing else is allowed: "let them have it".
+10. **The enemies go for whoever heals the most.** That is the answer to the dedicated healer, not a cap.
+11. **Refit Boss HP** (it was fitted against the old 200% gun) and **a medic pass** (Triage and stims with the level
+    factor).
+12. **Hold the Gate** is a Hymn: it gets a long cooldown of its own.
+13. **Faith's damage range** (Leon's correction): a turn with only a Whisper is about 80% of the plain rifle, a turn
+    with a Hymn about 125%; both go up with Faith items later. This replaces the 120 to 125% average of ruling 7.
+
+Built as rules 1.23 (hand-off `defence-step.md`) and in rules 1.22.
+
+## 17. The capstone (Leon, 12 Nov 2026)
+
+"Do the things you think this balance patch needed, this will be the floor any future class/addition/combat system
+base themselves around, so capstone it." And: "is the damage engine unified? Each action that deals dmg should have
+something like base+attribute+level, since we have had to patch in level scaling several times now."
+
+The lead's plan, in order. Each step ends with `npm run check` green and its numbers in a hand-off.
+
+1. **Finish what is in flight:** rules 1.22 (Faith round 2) and 1.23 (the defence step).
+2. **One damage formula** (`proposals/2026-11-unified-damage.md`, being written from an audit of every source):
+   every action that deals damage, heals or shields declares base + attribute term + level term in data and goes
+   through one engine function and one sink. A re-expression, not a re-balance: the tables of rules 1.17 to 1.23 must
+   not move.
+3. **Many targets:** the simulator fights groups; area, blasts and shapes get a price per target (tally section 10,
+   row 1). This moves other numbers, so it comes before the rest.
+4. **A yardstick for control** (a turn taken away, a Slow, a Mark, damage over time), then the conditions and the
+   Sigil fields, traps and turrets against it.
+5. **What was left out:** class moves (a ceiling per rank), melee beyond one build, thrown, mana arms, special rounds
+   and mods, reactions and held actions, stealth openers, Calls and squad buffs.
+6. **The all-in builds. Ruled (Leon, 12 Nov): "you kinda need all in builds to achieve any of the ceiling listed".**
+   The ceilings are what an **all-in** build reaches; a normal-share build sits under them. Rules 1.17 to 1.21 were
+   fitted the other way (normal share on the ceiling, all-in at 148 to 270%), so every system is re-fitted: all-in
+   lands on its ceiling, and the gap between all-in and normal share is one ratio for every system, set by the
+   attribute term of the unified formula (step 2). The lead's starting ratio: all-in about 1.25 times normal share.
+   The plain rifle at a normal share stays the 100% line the enemy table is fitted to.
+7. **The floor, written down and enforced:** a budget rule for new content (cost in AP, resource, cooldown, set-up,
+   targets, reach, reliability gives the output allowed), in `docs/design/balance-contract.md`; and a guard in
+   `npm run check` that fails when a reference build or a data item goes over its ceiling.
+8. **Close the patch:** the stale browser suites repaired or retired, every suite green, the tally's live column
+   checked against `main`, the version and changelog. Deploy on Leon's word only.
+
+Left for their own systems, with the budget rule to hold them: Weapon Arts, armour (Equipment 2.0), enemy casters and
+the enemy table refit, Faith items.
+
+### MP (Leon, 12 Nov 2026)
+
+14. **The gap between an all-in build and a normal share is 1.25** (step 6 of the capstone).
+15. **MP comes off Virtue.** A Faith build uses no MP, a physical build that takes Virtue for prayer gets MP for
+    nothing, and a pure Outburst mage needs Virtue it has no reason to have. Max MP is 100 + 100 × (Virtue − 1) today.
+16. **Pumps cost MP, gently**, and the pool is brought into proportion with the costs (an endgame character has about
+    a thousand MP against designs that cost 20 to 25).
+
+Built as rules 1.24 (hand-off `mp-rework.md`).
+
+### Cost (Leon, 12 Nov 2026)
+
+17. **Balance the cost as well as the number.** "We are kinda balancing numbers without cost. Only system in here
+    with legit no cost or setup is faith." Guns: Heat, reloads, ammunition to buy, all of it AP. Blades: closing in and
+    keeping Momentum. The Outburst: Strain and MP. Sigil: moving to place glyphs, charge and cores, Flux to vent.
+    So the unified damage proposal carries a **cost ledger** per system (what the simulator's tables already count and
+    what they don't: closing distance, being hit in reach, credits, session-long MP and cores, a target that moves
+    off a Line), and the budget rule for new content prices cost classes explicitly: AP, a resource inside a fight, a
+    resource across a session, set-up turns, exposure, reliability, targets, reach.
+
+## 18. The engine review (Leon, 12 Nov 2026)
+
+"Use this chance to do a code review then optimize the engine, this is our last chance to do it reasonably before
+more system get pile on [the roguelike mode]. The fact that we worked this far with no unified dmg formula terrified
+me... find more of this type of fuck up and optimize them too, prevent catastrophe later."
+
+Four read-only reviews, written to `docs/design/proposals/2026-11-engine-review/`:
+
+1. `1-duplication.md`: one concept implemented more than once in the engine (costs, limits, targets and areas,
+   rolls and saves, conditions, movement, preview against execution, the enemy's version, story against combat,
+   logs and effects events, the bespoke per-item code).
+2. `2-performance.md`: measured hot paths (the reaction dispatch is about 40% of an action), state cloning, sight and
+   paths, the simulator's cost, what a long run needs.
+3. `3-data-text-tests.md`: numbers that live in more than one place, rules numbers in code, the validator's gaps, how
+   brittle the tests are and what they cost each revision, the browser suites, the docs.
+4. `4-client-boundary.md`: rules computed in the client, one picker per system, the effects layer's timing, the
+   size of the combat screen, the Narrator prompt.
+
+The lead turns them into one ordered plan (what to unify first, each with what must be pinned before it moves) and
+runs it with the damage migration, before the re-fit.

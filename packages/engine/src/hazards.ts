@@ -4,11 +4,13 @@
 // minefield still sets a mine off. Hidden hazards are found by passive Vigilant, by stepping in, or by a reveal.
 // Every hazard carries two approaches the engine writes itself: find a safe path (a lane that doesn't trigger for the
 // squad) and disarm (removes it; failing gives the actor one tile of the hazard). Deterministic: dice from the rng.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
-import { type Combat, type Unit, hurtUnit, emitFx, dist, refOf } from './combat';
-import { applyCond, unitSave } from './magic';
+import { say, type Combat, type Unit, hurtUnit, emitFx, dist, refOf } from './combat';
+import { applyCond, saveAgainst } from './magic';
 import { passiveVigilance } from './character';
-import { type Rng, d20 } from './rng';
+import { SKILL } from './data';
+import { type Rng } from './rng';
 import type { Approach } from './objects';
 
 export type HazardKind = 'minefield' | 'fire' | 'radiation' | 'gas' | 'collapse';
@@ -65,10 +67,10 @@ function immuneTo(u: Unit, kind: string): boolean { const im = u.hazardImmune ||
 export function hazardHit(cb: Combat, rng: Rng, u: Unit, h: Hazard, k: string, attempt = false): string {
   const d = HAZARD[h.kind]; if (!d || u.dead) return '';
   if (h.hidden) { h.hidden = false; emitFx(cb, 'hazard_spotted', { id: h.id, kind: h.kind, at: k, tiles: [...h.tiles], by: u.id, how: 'stepped' }); }
-  if (immuneTo(u, h.kind)) { cb.log.push(u.name + ' crosses the ' + (h.name || d.name).toLowerCase() + ' at ' + refOf(k) + ' unharmed (gear).'); emitFx(cb, 'hazard', { target: u.id, at: k, id: h.id, kind: h.kind, severity: h.severity, dmg: 0, immune: true }); return ''; }
+  if (immuneTo(u, h.kind)) { say(cb, u.name + ' crosses the ' + (h.name || d.name).toLowerCase() + ' at ' + refOf(k) + ' unharmed (gear).'); emitFx(cb, 'hazard', { target: u.id, at: k, id: h.id, kind: h.kind, severity: h.severity, dmg: 0, immune: true }); return ''; }
   const tn = hazardTn(h), sev = h.severity;
   let dmg = d.damage[sev] || 0, line = '', saved: boolean | null = null, cond = '';
-  if (d.save) { const r = d20(rng), m = unitSave(u, fam(d.save)), ok = r === 20 || (r !== 1 && r + m >= tn); saved = ok; line += ' (' + d.save + ' save ' + (r + m) + ' vs ' + tn + (ok ? ', saved' : '') + ')'; }
+  if (d.save) { const sv = saveAgainst(cb, rng, null, u, fam(d.save), 'hazard', { tn }), ok = sv.ok; saved = ok; line += ' (' + sv.text + (ok ? ', saved' : '') + ')'; }
   if (d.save_halves && saved) dmg = Math.floor(dmg / 2);
   if (dmg > 0) line += hurtUnit(u, dmg, !d.armour, cb, h.kind === 'minefield' ? 'explosion' : 'hazard');
   // The condition: Burning and Prone always; radiation's Weakened from the third tile; a save (gas) stops it.
@@ -80,7 +82,7 @@ export function hazardHit(cb: Combat, rng: Rng, u: Unit, h: Hazard, k: string, a
   }
   if (h.kind === 'minefield' && !attempt) { (h.spent ||= []).includes(k) || h.spent!.push(k); }
   emitFx(cb, 'hazard', { target: u.id, at: k, id: h.id, kind: h.kind, severity: sev, dmg, ...(saved != null ? { saved } : {}), ...(cond ? { cond } : {}), ...(attempt ? { attempt: true } : {}), ...(h.kind === 'minefield' && !attempt ? { spent: true } : {}) });
-  cb.log.push(u.name + (attempt ? ' fails to deal with the ' : ' sets off the ') + (h.name || d.name).toLowerCase() + ' at ' + refOf(k) + line + '.');
+  say(cb, u.name + (attempt ? ' fails to deal with the ' : ' sets off the ') + (h.name || d.name).toLowerCase() + ' at ' + refOf(k) + line + '.');
   (cb.hazardHits ||= []).push({ id: h.id, kind: h.kind, unit: u.id, charId: u.charId, name: u.name, at: k, dmg, cond: cond || undefined, attempt: attempt || undefined });
   if (u.dead || u.downed) return 'down';
   if (attempt) return '';
@@ -106,6 +108,6 @@ export function spotHazards(cb: Combat, u: Unit) {
     if (!near || passive < hazardTn(h)) continue;
     h.hidden = false;
     emitFx(cb, 'hazard_spotted', { id: h.id, kind: h.kind, at: h.tiles[0], tiles: [...h.tiles], by: u.id, how: 'vigilant' });
-    cb.log.push(u.name + ' spots a ' + (h.name || HAZARD[h.kind]?.name || h.kind).toLowerCase() + ' at ' + refOf(h.tiles[0]) + (h.tiles.length > 1 ? ' (+' + (h.tiles.length - 1) + ' tiles)' : '') + ' (Vigilant ' + passive + ' vs ' + hazardTn(h) + ').');
+    say(cb, u.name + ' spots a ' + (h.name || HAZARD[h.kind]?.name || h.kind).toLowerCase() + ' at ' + refOf(h.tiles[0]) + (h.tiles.length > 1 ? ' (+' + (h.tiles.length - 1) + ' tiles)' : '') + ' (' + SKILL.vigilant.name + ' ' + passive + ' vs ' + hazardTn(h) + ').');
   }
 }

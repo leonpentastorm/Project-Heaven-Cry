@@ -6,7 +6,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { refOf, ARCHETYPES, newCharacter, startCombat } from '@engine';
+import { refOf, ARCHETYPES, newCharacter, startCombat, fogFight } from '@engine';
 import { setLayer } from './dom';
 import { playFx, queueFx, setContext, clearFx, combatTempoInfo } from './play';
 import { tagOf, looseKind, stepDown, partOf, tilesWithin, quietEnd, rangedBeat, resetRanged, rangedBatch, smokeTiles, EVENTS_FOR_THE_LEAD, EVENTS_SENT, ROUND_WORD } from './ranged';
@@ -342,9 +342,12 @@ describe('review: a technique\'s record ends with its action', () => {
     const c = newCharacter('a', 'p1', { name: 'Vel', portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...ar.preset }, attrs: { ...ar.attributes }, cores: { ...ar.cores }, identity: {} } as any);
     const cb = startCombat('t', 'yard', [{ c, pos: '1,3' }], [{ name: 'Raider', tier: 'minion', weapon: 'service_pistol', at: refOf('6,3') }] as any, 'easy', { state: 4 } as any, []);
     const foe = cb.units.find((u: any) => u.side === 'foe')!; foe.id = 'f1'; foe.pos = '6,3'; (foe as any).hidden = true;
-    setContext({ code: 'X', characters: { a: c }, story: { positions: {}, npcs: [] }, combat: cb } as any, 'combat');
     const evs = [{ k: 'watch_end', n: n(), unit: 'f1', at: '6,3', id: 'overwatch', why: 'Smoke grenade' }, { k: 'bead', n: n(), unit: 'f1', at: '6,3', target: 'pc-a', to: '1,3' }, { k: 'heat', n: n(), unit: 'f1', at: '6,3', now: 2, was: 6, why: 'vent' }];
-    for (const e of evs) { playFx(e as any); expect(rangedBeat(e as any)).toBe(0); }
+    // what the player is sent (viewFor's fog, fog.ts): the Hidden foe is not in the view, and its events don't name it
+    const seen = fogFight(null, { ...cb, fx: evs } as any, { ...cb, fx: evs } as any, 'pc');
+    expect(seen.units.some((u: any) => u.id === 'f1')).toBe(false); expect(JSON.stringify(seen.fx)).not.toContain('f1');
+    setContext({ code: 'X', characters: { a: c }, story: { positions: {}, npcs: [] }, combat: seen } as any, 'combat');
+    for (const e of seen.fx!) { playFx(e as any); expect(rangedBeat(e as any)).toBe(0); }
     vi.advanceTimersByTime(300);
     expect(rfx(layer, 'break')).toBe(0); expect(rfx(layer, 'heat')).toBe(0); expect(text(layer)).not.toMatch(/WATCH LOST|SIGHTS HELD|HEAT/);
     (foe as any).hidden = false; setContext({ code: 'X', characters: { a: c }, story: { positions: {}, npcs: [] }, combat: cb } as any, 'combat');

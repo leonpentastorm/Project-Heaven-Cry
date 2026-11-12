@@ -14,6 +14,8 @@ import type { Rng } from '../rng';
 import type { Call } from './types';
 import { CALL } from './data';
 import { call, callMarks, callLevel, giveAp, hinder } from './core';
+import { grantAp, setAp } from '../effects/cost';
+import { asStanding } from '../unitstate';
 
 const plural = (n: number, w: string) => n + ' ' + w + (n === 1 ? '' : 's');
 
@@ -44,8 +46,8 @@ function thingWhy(t: Call, th: Thing, stood: boolean): string | null {
   if (th === 'pickup') return !a.charId ? 'Only a character picks things up.' : pileNear(cb, a) ? null : 'Nothing for ' + a.name + ' to pick up there.';
   if (!t.num('move')) return 'Ordering a move needs 3 points of Authority.';
   if (!t.args.tile) return 'Pick the tile ' + a.name + ' moves to.';
-  const was = a.prone; if (stood) a.prone = false; // read as if the stand-up before it had happened (put back at once)
-  const blk = moveBlock(a); a.prone = was; if (blk) return a.name + ': ' + blk;
+  const blk = stood ? asStanding(a, () => moveBlock(a)) : moveBlock(a); // read as if the stand-up before it had happened
+  if (blk) return a.name + ': ' + blk;
   const d = paths(cb, a.pos, a.id).dist[t.args.tile];
   if (d === undefined || d < 1) return a.name + ' can\'t reach that tile.';
   if (d > orderMoveTiles(a)) return 'Too far: ' + a.name + ' moves ' + plural(orderMoveTiles(a), 'tile') + ' on an order.';
@@ -56,9 +58,9 @@ function doThing(t: Call, th: Thing): string | null {
   const a = t.tgt, cb = t.cb;
   if (th === 'reload') return reload(cb, a, { free: true });
   if (th === 'move') return moveUnit(cb, a, t.args.tile!, t.rng, 'move', { free: true, oa: true, shortest: true });
-  const before = a.ap; a.ap = before + 10;
+  const before = a.ap; grantAp(cb, a, 10, { max: Infinity });
   const err = th === 'stand' ? toggleProne(cb, a) : pickUp(cb, a, pileNear(cb, a) || a.pos, null, charOfUnit(a));
-  a.ap = Math.max(before, a.ap - 10); // what the action cost is waived; AP an item gave on it is kept
+  setAp(a, Math.max(before, a.ap - 10)); // what the action cost is waived; AP an item gave on it is kept
   return err;
 }
 call({
@@ -70,6 +72,7 @@ call({
     if (new Set(th).size !== th.length) return 'Order two different things.';
     if (th.length > max) return max > 1 ? 'An Order is two things at most.' : 'One thing an Order (two from 7 points of Authority).';
     if (condOn(a, 'stunned')) return a.name + ' is Stunned and can\'t follow an order.';
+    if (condOn(a, 'suppressed') || isSuppressed(a)) return a.name + ' is Suppressed and has no reaction to act on.';
     if (!canReact(t.cb, a)) return a.name + ' has no reaction left to act on.';
     let stood = false;
     for (const x of th as Thing[]) { const no = thingWhy(t, x, stood); if (no) return no; if (x === 'stand') stood = true; }
@@ -114,7 +117,7 @@ call({
   },
 });
 
-// ---------- Name It (Lore Master): cancels AP the unit would lose next turn ----------
+// ---------- Name It (Lore Master): a bonus on saves, a fresh save, and Shaken and Afraid end (it no longer touches Threaten's AP loss) ----------
 call({
   id: 'call.name_it',
   // You tell them what it is, so it can't get into their head (Leon, 10 Nov 2026: a Call that just gives the ally

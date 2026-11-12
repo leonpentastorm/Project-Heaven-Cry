@@ -72,14 +72,14 @@ describe('the Perks strip opens an action\'s own panel', () => {
     expect(slots[0].effects).toMatch(/^At stage 1: \d+ damage/);
     // Slot 2: Buff, its option (the school's first is preset; pick +2 Defense); slot 3: Control.
     slots[1].schools[1].pick(); await tick();
-    slots = L.renderVals().stripPick.fields[0].slots; expect(slots[1].options.map((o: any) => o.label)).toEqual(['+2 to hit', '+2 Defense', 'Heal 30']);
+    slots = L.renderVals().stripPick.fields[0].slots; expect(slots[1].options.map((o: any) => o.label)).toEqual(['+2 to hit', '+2 Defense', 'Heal']);
     slots[1].options[1].pick(); await tick();
     L.renderVals().stripPick.fields[0].slots[2].schools[2].pick(); await tick();
     P = L.renderVals().stripPick;
     expect(P.cantConfirm).toBe(false); expect(P.verdict).toMatch(/^The twin: /);
     P.confirm(); await tick();
     const tw = (G.characters[c.id] as any).state.twin;
-    expect(tw.designs.map((d: any) => [d.school, d.modules, d.option || ''])).toEqual([['damage', ['homing', 'burst'], ''], ['buff', [], 'defense'], ['control', [], 'push']]);
+    expect(tw.designs.map((d: any) => [d.school, d.modules, d.option || ''])).toEqual([['damage', ['homing', 'burst'], 'strike'], ['buff', [], 'defense'], ['control', [], 'push']]);
     expect(G.story.entries.some((e: any) => /twin leans through for the first time/.test(e.text))).toBe(true);
     expect(sp().off).toBe(true);
   });
@@ -96,7 +96,7 @@ describe('the Perks strip opens an action\'s own panel', () => {
     // Same side: Damage pairs with Control (both on foes), not Buff.
     expect(slot().schools2.map((o: any) => o.label)).toEqual(['+ Control']);
     slot().schools2[0].pick(); await tick();
-    expect(slot().hasOptions2).toBe(true); expect(slot().options2.map((o: any) => o.label)).toEqual(['Push 3 tiles', 'Pull 3 tiles', 'Pinned', 'Slowed']);
+    expect(slot().hasOptions2).toBe(true); expect(slot().options2.map((o: any) => o.label)).toEqual(['Push 3 tiles', 'Pull 3 tiles', 'Pinned', 'Slowed', 'Swap places']);
     slot().options2.find((o: any) => o.label === 'Pull 3 tiles').pick(); await tick();
     // Tones: Raw, the known Frost; the others locked (Frost is known, so no free first tone).
     expect(slot().tones.find((t: any) => t.key === 'frost').locked).toBe(false); expect(slot().tones.find((t: any) => t.key === 'fire').locked).toBe(true);

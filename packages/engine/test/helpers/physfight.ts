@@ -25,7 +25,7 @@ export const rig = (r: { hit?: boolean; die?: number } | null = null) => { RIG =
 
 export function physFight(specs: PhysSpec[] = [{}], foes: FoeSpec[] = [{}], o: { map?: string; seed?: string } = {}) {
   rig(null);
-  const f = fightWith(specs.map((s) => ({ archetype: 'sharpshooter', ...s })), foes, { map: o.map || 'yard', seed: o.seed });
+  const f = fightWith(specs.map((s) => ({ archetype: 'sharpshooter', ...s })), foes, { map: o.map || 'yard16', seed: o.seed });
   // Techniques, drill and the off hand go on after creation (legality isn't checked: tests build what they need).
   f.pcs.forEach((u, i) => {
     const s = specs[i] || {}, c = f.g.characters[u.charId!];

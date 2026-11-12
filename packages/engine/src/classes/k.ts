@@ -10,11 +10,13 @@ import {
   register, emit, stateOf, uses, note, has, modOn, applyDamage, grantShield, healUnit, pendRuling, postStory, holderOf,
   type Holder, type ActionDef, type ActionArgs,
 } from '../effects';
+import { itemAmount, amountMult } from '../effects/amounts';
+import { term } from '../effects/output';
 import type { Combat, Unit, Term } from '../combat';
 import type { Character, OutburstDesign } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, standable, lineOfSight, resolveAttack, previewAttack, isMelee, emitFx, fxFell,
-  checkOver, unitSees, sideSees, objectsOf, unitFromEnemy,
+  checkOver, unitSees, sideSees, objectsOf, unitFromEnemy, displace
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
 import { mod, devotionXpOf, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns } from '../character';
@@ -22,35 +24,32 @@ import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
   flux as engineFlux, FLUX_MAX, CORE_CHARGE, isBoon, groundCap, glyphsPerTile, newestCondition, destroyPlaced, SIGIL_REV, MAX_GLYPHS,
-  pumpOutburst, formOf, MAX_STAGE, SOUL_AP, unitSave, unitStrength, strengthFor, withVia,
+  pumpOutburst, formOf, MAX_STAGE, SOUL_AP, unitSave, unitStrength, strengthFor, withVia, saveAgainst,
   type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';
 import { castAt, compileSpell, evokeMarks, strokePick, tidyStrokes, fadePattern } from '../sigil';
-import { d20, die } from '../rng';
+import { die } from '../rng';
+import { rollVs, rollD20 } from '../rolls';
 import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, reveal } from '../tactics';
 import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } from '../faith';
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
+import { overworld, say, unitById, tileOf, rngOf, tilesAround, foesOf, canStand, tilesLine } from '../kit';
+import { bill, whyNot, pay, grantAp, freely } from '../effects/cost';
+import { setDowned } from '../unitstate';
+import { hideAgain, setCondRounds } from '../magic';
 
 // =============================================================================================== helpers
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const onGrid = (h: Holder) => !!h.cb && !!h.u;
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const unitById = (cb: Combat, id: string | null | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
-const tileOf = (cb: Combat, t?: string | null) => (!t ? null : /^-?\d+,-?\d+$/.test(t) ? t : refKey(t, cb.map));
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? (((c as any).state ||= {}) as Record<string, any>) : {});
 /** Item state on the character without creating it (previews and stat queries must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};
 const sceneOf = (h: { g?: any }) => h.g?.story?.scene?.n ?? 0;
 const W = (u: Unit) => WEAPON[u.weapon];
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
-const around = (k: string, r: number) => { const [x, y] = xy(k), out: string[] = []; for (let i = -r; i <= r; i++) for (let j = -r; j <= r; j++) out.push(key(x + i, y + j)); return out; };
-const free = (cb: Combat, k: string, self?: Unit) => standable(cb.map, k) && !cb.units.some((v) => v !== self && !v.dead && v.pos === k) && !objectsOf(cb).some((o) => o.pos === k && /crate|pillar|barricade|low_wall|container|turret|barrel/.test(o.kind) && (o.hp == null || o.hp > 0));
 /** Do something with the AP check out of the way (the AP was paid by the action): AP is put back after. */
-function freeAp<T>(u: Unit, f: () => T): T { const keep = u.ap; u.ap = 99; try { return f(); } finally { u.ap = keep; } }
+const freeAp = freely;
 /** A target unit from the action's targetId, or a tile from choice/text/tile. */
 const aimOf = (cb: Combat, a: ActionArgs, field: 'aim' | 'tile' = 'aim'): string | null => {
   if (field === 'tile') return tileOf(cb, a.tile);
@@ -64,13 +63,8 @@ const handsEmpty = (u: Unit) => W(u)?.category === 'unarmed' && !u.offWeapon;
 /** Move a unit n tiles toward (n > 0) or away from (n < 0) a tile, stopping at anything in the way. */
 function nudge(cb: Combat, t: Unit, toward: string, n: number): string {
   if (t.dead || !n) return '';
-  const was = t.pos; let [x, y] = xy(t.pos); const [cx, cy] = xy(toward);
-  let dx = Math.sign(cx - x), dy = Math.sign(cy - y); if (n < 0) { dx = -dx; dy = -dy; } if (!dx && !dy) return '';
-  let moved = 0;
-  for (let i = 0; i < Math.abs(n); i++) { const k = key(x + dx, y + dy); if (!free(cb, k, t)) break; x += dx; y += dy; moved++; }
-  if (!moved) return '';
-  t.pos = key(x, y); emitFx(cb, 'shove', { target: t.id, from: was, to: t.pos, ok: true, magic: true });
-  return ' · ' + t.name + (n > 0 ? ' is pulled' : ' is thrown') + ' to ' + refOf(t.pos);
+  const mv = displace(cb, null, t, n > 0 ? { toward, tiles: n } : { away: toward, tiles: -n }, { by: null, how: n > 0 ? 'pull' : 'push', source: 'magic', fx: { magic: true } }); // the one forced move (combat.ts)
+  return mv.moved ? ' · ' + t.name + (n > 0 ? ' is pulled' : ' is thrown') + ' to ' + refOf(t.pos) + mv.text : '';
 }
 /** Flux on an Evoker (the engine's own rule, magic.ts flux): over 6 the Evoker overloads. MISSING EXPORT: flux(). */
 /** Flux through the engine's own rule (magic.ts flux, exported for class moves: hooks gap K1). */
@@ -123,7 +117,7 @@ register({
       if (!st.killed) { st.wasHidden = false; return; } st.killed = false; st.wasHidden = false;
       if (u.hidden) { say(cb, u.name + ' stays in the dark (Silent Kill).'); return; }
       if (loud(u, !!ctx.melee)) { say(cb, u.name + '\'s shot is too loud to stay hidden (Silent Kill needs a quiet weapon).'); note(h, u.name + ' killed from Hidden with a loud gun: who heard it?'); return; }
-      u.hidden = true; say(cb, u.name + ' kills without a sound and stays Hidden (Silent Kill; no new ambush until you hide again).');
+      if (!hideAgain(cb, rngOf(h, ctx), u)) return; say(cb, u.name + ' kills without a sound and stays Hidden (Silent Kill; no new ambush until you hide again).');
     },
     spot: (ctx, h) => { if (ctx.u !== h.u || !inFight(h)) return; const st = stateOf(h); if (st.kr === h.cb!.round && st.kn) ctx.tn -= 2 * st.kn; },
   },
@@ -199,16 +193,16 @@ register({
   id: 'lumeri_templar.blessed_shells', claims: 'all',
   toggles: [{ id: 'load', label: 'Blessed Shells: load the Blessing into your weapon', on: ['combat/pray'], available: (h) => !!h.c?.patron }],
   actions: [{
-    id: 'bless_shell', label: 'Bless a shell', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
+    id: 'bless_shell', label: 'Bless a shell', scope: ['story'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: pray over a shell. A Hymn above your standing with your patron is an overreach. If the prayer succeeds, the shell carries the Hymn into the next fight this scene.',
     available: (h) => (!h.c?.patron || !PATRON[h.c.patron] ? 'You have no patron.' : (h.c.skills.faith || 0) < 3 ? 'Prayer needs Faith 3.' : true),
     run: (h, a, rng) => {
       const c = h.c!, p = PATRON[c.patron!], bl = (p.blessings || []).find((b: any) => b.id === a.choice) || (p.blessings || [])[0];
       // Rules 1.6 (item 619): by standing (no roll) when Devotion reaches the Hymn's gate, else an overreach (a miss: −3 XP, item 716).
       const gate = (GATE as any)[bl.tier || 1] ?? 3, dv = devotionNow(c), m = mod(c.skills.faith || 0);
-      const tn = dv >= gate ? 0 : OVERREACH.base + OVERREACH.step * (gate - dv), r = tn ? d20(rng as any) : 0, ok = !tn || r === 20 || (r !== 1 && r + m >= tn);
+      const tn = dv >= gate ? 0 : OVERREACH.base + OVERREACH.step * (gate - dv), rv = tn ? rollVs(h.cb || null, rng as any, { by: h.u || null, mod: m, tn, why: 'pray' }) : null, ok = !rv || rv.ok;
       if (!ok) shiftDevotion(h.g || null, null, c, OVERREACH.miss, 'a failed overreach');
-      const line = c.name + ' prays over a shell to ' + p.name + (tn ? ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −' + -OVERREACH.miss + ' Devotion XP.');
+      const line = c.name + ' prays over a shell to ' + p.name + (rv ? ': ' + rv.text + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −' + -OVERREACH.miss + ' Devotion XP.');
       if (ok) charState(c).blessedShell = { id: bl.id, scene: sceneOf(h), power: blessPower(null, c) };
       postStory(h, line); if (h.g) pendRuling(h.g, c, h.key, line + ' Describe how the patron answers (or doesn\'t).');
       return null;
@@ -262,7 +256,7 @@ register({
 });
 function eyeNote(ctx: any, h: Holder) {
   const u = h.u; if (!u || !inFight(h) || ctx.att === u || ctx.att.side !== u.side || !condOn(u, 'witnessed') || dist(ctx.att.pos, u.pos) > 3) return;
-  const st = stateOf(h); if (st.noted === h.cb!.round) return; st.noted = h.cb!.round;
+  if (!uses(h).take('per_round', 1, h.key + '#noted')) return; // one note a round
   note(h, 'Under the Eye: allies near ' + u.name + ' got +2 to hit this round as on-theme for ' + (PATRON[h.c?.patron || '']?.name || 'the patron') + '; rule if it was off-theme.');
 }
 
@@ -273,7 +267,7 @@ const shotgun = (u: Unit) => W(u)?.category === 'shotgun' || /scattergun|censer/
 register({
   id: 'lumeri_templar.judgement', claims: 'all',
   actions: [{
-    id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 4, uses: { per: 'per_combat', n: 1 },
+    id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 'data', uses: { per: 'per_combat', n: 1 },
     text: 'Once a fight, for ' + DEVOTION_XP.judgement + ' Devotion XP: make one melee or scattergun attack whose damage is multiplied by 1 + your Blessing power. The Devotion XP is spent whether you hit or miss.',
     available: (h) => (!h.u || !h.c ? false : !h.c.patron ? 'You have no patron.' : devotionXpOf(h.c) < DEVOTION_XP.judgement ? 'Needs ' + DEVOTION_XP.judgement + ' Devotion XP.' : !(isMelee(W(h.u)) || shotgun(h.u)) ? 'Needs a melee weapon or a scattergun.' : true),
     preview: (h, a) => {
@@ -348,7 +342,7 @@ function halfWhy(cb: Combat, u: Unit, t: string | null): string | null {
 register({
   id: 'stroke_gambler.half_sigil', claims: 'all',
   actions: [{
-    id: 'half_sigil', label: 'Half-Sigil', scope: ['combat', 'world'], target: 'none', ap: 1,
+    id: 'half_sigil', label: 'Half-Sigil', scope: ['combat', 'world'], target: 'none', ap: 'data',
     text: 'Draw a random word you know as a half-glyph on your own tile. Costs 1 charge and adds 1 Flux. Two half-glyphs on one tile make a Stack for Stitch.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (!h.u.mg!.words.length ? 'You know no words.' : true)),
     preview: (h, a) => {
@@ -405,7 +399,7 @@ function backlash(cb: Combat, rng: Rng, u: Unit, v: Unit, p: Pattern): string {
 register({
   id: 'stroke_gambler.stitch', claims: 'all',
   actions: [{
-    id: 'stitch', label: 'Stitch', scope: ['combat', 'world'], target: 'tile', ap: 0,
+    id: 'stitch', label: 'Stitch', scope: ['combat', 'world'], target: 'tile', ap: 'data',
     text: 'Evoke a pattern of half-glyphs and roll a d20 for the gamble. On 1–5 the spell lands on you or your nearest ally. On 16–20 its damage doubles.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || true),
     preview: (h, a) => {
@@ -422,13 +416,13 @@ register({
       if (grammarError(p.words, u.mg!.maxWords)) { const ids = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !ids.has(g.id)); tidyStrokes(cb.glyphs); for (const g of p.glyphs) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'fizzle' }); say(cb, u.name + '\'s Stitch fizzles: ' + p.words.map((w) => w.toUpperCase()).join(' · ') + ' make no spell, and the strokes fade.'); return null; }
       let pv; STITCHING = u.id; try { pv = previewEvoke(cb, u, t, aim, opts); } finally { STITCHING = null; }
       if (!pv.ok) return pv.why || 'Can\'t fire that.';
-      let g = d20(rng as any); const first = g;
+      let g = rollD20(rng as any).die; const first = g; // the Stitch is a bare d20 read off a table, not a roll against a number
       const he = holderOf({ u, cb }, 'stroke_gambler.house_edge');
-      if (g <= 5 && he && modOn({ ...he, cb, g: h.g }, 'reroll') && uses({ ...he, cb, g: h.g }).take('per_combat', 1)) { g = d20(rng as any); say(cb, 'House Edge: ' + u.name + ' rerolls the Stitch (' + first + ' → ' + g + ').'); }
+      if (g <= 5 && he && modOn({ ...he, cb, g: h.g }, 'reroll') && uses({ ...he, cb, g: h.g }).take('per_combat', 1)) { g = rollD20(rng as any).die; say(cb, 'House Edge: ' + u.name + ' rerolls the Stitch (' + first + ' → ' + g + ').'); }
       say(cb, 'STITCH d20 ' + g + (g <= 5 ? ': it turns on its maker' : g >= 16 ? ': the house pays double' : ': it holds'));
       const st = stateOf(h);
       if (g <= 5) {
-        u.ap = Math.round((u.ap - pv.ap) * 10) / 10; u.mg!.charge -= pv.charge; u.mg!.cast = true;
+        pay(cb, u, bill('evoke', pv.ap, { charge: pv.charge })); u.mg!.cast = true;
         fadePattern(cb, p);
         const v = backlashTarget(cb, u);
         emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: p.shape, tiles: p.tiles, src: p.tiles[0], impact: v.pos, targets: [v.id], targetAt: [v.pos], words: p.words, element: p.words.find((w) => wordCls(w) === 'subject_element') || null, side: u.side, backlash: true });
@@ -489,7 +483,7 @@ function checkDesign(c: Character, d: Partial<OutburstDesign> | null, extra: num
 register({
   id: 'devoted.beloved_spells', claims: 'all',
   actions: [
-    { id: 'beloved', label: 'Mark a design Beloved', pick: 'designs', pickLabel: 'The design', scope: ['world', 'story'], target: 'none', ap: 0,
+    { id: 'beloved', label: 'Mark a design Beloved', pick: 'designs', pickLabel: 'The design', scope: ['world', 'story'], target: 'none', ap: 'data',
       text: 'Mark one of your ready designs as Beloved, or remove the mark. A Beloved design costs 30% less MP and has 1 more module slot. You can have 3 Beloved designs.',
       available: (h) => (!h.c?.outbursts?.length ? 'You have no designs.' : true),
       preview: (h, a) => {
@@ -505,7 +499,7 @@ register({
         if (h.cb) say(h.cb, line); else postStory(h, line, { private: true });
         return null;
       } },
-    { id: 'beloved_design', label: 'Design a Beloved spell', scope: ['world', 'story'], target: 'text', ap: 0,
+    { id: 'beloved_design', label: 'Design a Beloved spell', scope: ['world', 'story'], target: 'text', ap: 'data',
       text: 'Make a new Beloved design: a school and its modules, with one module more than your slots allow.',
       run: (h, a) => {
         const c = h.c!, list: string[] = cs(c).beloved || []; if (list.length >= 3) return 'Three designs are Beloved already.';
@@ -537,7 +531,7 @@ register({
   brief: () => null,
 });
 // Love Made Manifest (K12, PROVISIONAL, audit 1-4; rules 1.5): once per fight, a toggle on Begin: a Beloved Outburst
-// Begins at stage 4, the heart full at once (×2.2 and the tone's stage-4 rider; a snap cast releases at stage 4). Its
+// Begins at stage 4, the heart full at once (stage 4's multiplier, STAGE_MULT[4], and the tone's stage-4 rider; a snap cast releases at stage 4). Its
 // Begin Strain is paid as usual. 1.2's ×3 is gone: on 1.5's stage table it would reach ×6.6 (item 527).
 register({
   id: 'devoted.love_made_manifest', claims: 'all', priority: 200,
@@ -567,7 +561,7 @@ register({
 register({
   id: 'circuit_mage.closed_loop', claims: 'all',
   actions: [{
-    id: 'vent_heart', label: 'Vent into your heart (Closed Loop)', scope: ['combat', 'world'], target: 'none', ap: 1,
+    id: 'vent_heart', label: 'Vent into your heart (Closed Loop)', scope: ['combat', 'world'], target: 'none', ap: 'data',
     text: 'Vent your Flux into your own Emanator: you gain 10 MP per Flux, and none of it goes into the air.',
     available: (h) => { const m = h.u?.mg; return !h.u ? false : !m?.evoker ? 'Needs an Evoker in hand.' : !m.emanator ? 'Needs an Emanator in hand.' : !m.flux ? 'No Flux to vent.' : true; },
     preview: (h) => { const m = h.u!.mg!; return { lines: [m.flux + ' Flux → +' + Math.min(m.mpMax - m.mp, 10 * m.flux) + ' MP (' + m.mp + '/' + m.mpMax + ').'] }; },
@@ -588,7 +582,7 @@ const selfLeft = (h: Holder) => uses(h).left('per_rest', selfCap(h.c), h.key + '
 register({
   id: 'circuit_mage.self_crystallise', claims: 'all',
   actions: [
-    { id: 'self_crystallise', label: 'Self-Crystallise', scope: ['combat', 'world'], target: 'none', ap: 3,
+    { id: 'self_crystallise', label: 'Self-Crystallise', scope: ['combat', 'world'], target: 'none', ap: 'data',
       text: 'Spend 100 MP from your Emanator to make one standard core, whatever the ambient mana is. You can make as many cores per long rest as your Virtue. These cores can\'t be sold.',
       available: (h) => { const m = h.u?.mg; return !h.u ? false : !m?.emanator ? 'Needs an Emanator in hand.' : m.mp < 100 ? 'Needs 100 MP. You have ' + Math.floor(m.mp) + '.' : selfLeft(h) <= 0 ? 'You already made ' + selfCap(h.c) + (selfCap(h.c) === 1 ? ' core' : ' cores') + ' this rest. Your Virtue sets the limit.' : true; },
       run: (h) => {
@@ -621,7 +615,7 @@ register({
 // covers (and its multipliers), TWICE more missiles, CHAIN its jumps, KIN who is spared, PULL drags each one it reached
 // toward you afterwards, LEECH heals you from the Outburst's damage. STAY, WAIT and WATCH are refused: no standing
 // Outbursts. Every creature the plan affects takes the Outburst's school as a Bolt (its own shape is the Sigil's now)
-// at stage 0 (rules 1.5: a snap, ×0.6; or its held stage: Begin and Pump first, then fuse it), at the plan's
+// at stage 0 (a snap, ×0.8 since rules 1.8; or its held stage: Begin and Pump first, then fuse it), at the plan's
 // multiplier for that creature. You pay everything a normal pattern costs (the draws, then the Evoke's AP and charge)
 // plus the Outburst's MP, Soul cast AP and Strain, plus +1 Strain and +2 Flux. Every Fusion is a fight note for the
 // Narrator (a Knowing risk).
@@ -645,7 +639,7 @@ function fusionCheck(h: Holder, a: ActionArgs): { ok: false; why: string } | { o
   if (!pl.ok) return no(pl.why || 'Can\'t fire that.');
   let ap = pl.ap, cost = 0, strain = 1;
   if (!held) { const pv = previewOutburst(cb, u, d.id, undefined, false); if (!pv.ok) return no(pv.why || 'Can\'t cast that.'); ap += pv.ap; cost = pv.cost; strain += pv.strain; }
-  if (u.ap < ap) return no('Needs ' + ap + ' AP.');
+  { const n0 = whyNot(cb, u, ap); if (n0) return no(n0); }
   return { ok: true, p, d, aim, ap, charge: pl.charge, held, cost, strain, plan: pl };
 }
 register({
@@ -669,7 +663,7 @@ register({
       emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: r.p.shape, tiles: r.p.tiles, words: r.p.words, element: null, side: u.side, facing: pl.facing?.mode, dir: pl.facing?.dir, area: pl.area,
         src: pl.missiles[0]?.origin, impact: pl.missiles[0]?.impact ?? null, targets: pl.targets, targetAt: pl.targets.map((id) => unitById(cb, id)?.pos), fusion: r.d.id,
         missiles: pl.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: null })) });
-      // Rules 1.5: a fresh Outburst is fused at stage 0 (a snap, ×0.6); a held one at the stage it reached (item 528).
+      // Rules 1.5: a fresh Outburst is fused at stage 0 (a snap, ×0.8); a held one at the stage it reached (item 528).
       let stage = m.held?.stage ?? 0, cost = m.held?.cost || 0;
       if (!r.held) {
         const e = freeAp(u, () => beginOutburst(cb, rng, u, r.d.id, undefined, true)); if (e) return e;
@@ -741,7 +735,7 @@ function ksWhy(cb: Combat, u: Unit, t: string | null, w: string): string | null 
 register({
   id: 'glyph_mason.keystone', claims: 'all',
   actions: [{
-    id: 'keystone', label: 'Cut a Keystone', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 2,
+    id: 'keystone', label: 'Cut a Keystone', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 'data',
     text: 'Cut a word you know into your own tile as a Keystone. Costs 2 AP and 1 spare core. It never fades, can\'t be scuffed and stays after it is Evoked. You can have one Keystone at a time.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (h.u.mg!.cores < 1 ? 'Needs a spare standard core.' : true)),
     preview: (h, a) => {
@@ -785,7 +779,7 @@ function surveyWhy(cb: Combat, u: Unit, tile: string): string | null {
 register({
   id: 'glyph_mason.survey', claims: 'all',
   actions: [{
-    id: 'survey_evoke', label: 'Evoke from afar (Survey)', scope: ['combat', 'world'], target: 'tile', ap: 0,
+    id: 'survey_evoke', label: 'Evoke from afar (Survey)', scope: ['combat', 'world'], target: 'tile', ap: 'data',
     text: 'Evoke a pattern that includes your Keystone from up to 2 tiles away. It costs 1 charge less.',
     available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (!ksOf(h.cb!, h.u) ? 'Cut a Keystone first.' : true)),
     preview: (h, a) => {
@@ -819,11 +813,11 @@ const foundOn = (h: Holder) => { const st = stateOf(h); return !!h.cb && st.foun
 register({
   id: 'glyph_mason.foundation', claims: 'all',
   actions: [
-    { id: 'foundation', label: 'Foundation', scope: ['combat', 'world'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
+    { id: 'foundation', label: 'Foundation', scope: ['combat', 'world'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
       text: 'Once a scene: for the rest of this turn, glyphs you draw within 2 tiles of your Keystone cost 0 AP.',
       available: (h) => (!h.u ? false : !ksOf(h.cb!, h.u) ? 'Cut a Keystone first.' : foundOn(h) ? 'Already laid this turn.' : true),
       run: (h) => { stateOf(h).found = h.cb!.round + '.' + h.cb!.turn; say(h.cb, h.u!.name + ' lays the Foundation: glyphs near the Keystone cost no AP this turn.'); return null; } },
-    { id: 'foundation_draw', label: 'Draw near the Keystone (0 AP)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 0,
+    { id: 'foundation_draw', label: 'Draw near the Keystone (0 AP)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'none', ap: 'data',
       text: 'Draw a word on your own tile, within 2 tiles of your Keystone, for 0 AP. You still pay its charge and Flux.',
       available: (h) => (!h.u || !h.cb ? false : foundOn(h) && ksOf(h.cb, h.u) ? true : false),
       preview: (h, a) => {
@@ -868,9 +862,8 @@ function clearGrand(h: Holder) {
 }
 /** A Grand form's save: the target's save (unitSave: Shaken, residue and all) against 12 + the Brain Power strength
  * the form was laid with (rules 1.13; the caller's withVia holds it). */
-function bodySave(rng: Rng, o: Unit, t: Unit, fam: 'body' | 'brain' | 'heart' = 'body'): boolean {
-  const r = d20(rng), m = unitSave(t, fam), tn = 12 + strengthFor(o, null);
-  return r === 20 || (r !== 1 && r + m >= tn);
+function bodySave(cb: Combat, rng: Rng, o: Unit, t: Unit, fam: 'body' | 'brain' | 'heart' = 'body'): boolean {
+  return saveAgainst(cb, rng, o, t, fam, 'grand_form').ok; // the one save (rolls.ts), at the strength the form was laid with
 }
 /** Everything a Grand form does is a Sigil's, at the strength stored when it was laid. */
 const inGrand = <T,>(o: Unit, z: Zone, fn: () => T): T => withVia(o, 'brain_power', fn, (z as any).str ?? undefined);
@@ -886,23 +879,23 @@ function fogSync(cb: Combat) {
 function grandTurnStart(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, g: any): string {
   const w = zWord(z), ally = t.side === o.side, me = earthed(o, t);
   switch (w) {
-    case 'fire': return me ? '' : ' · lava burns ' + t.name + harm(cb, rng, o, t, 10, 'elemental', 'fire') + (t.dead ? '' : bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
-    case 'shock': { if (me) return ''; let s = armoured(t, g) ? ' · the storm arcs to ' + t.name + harm(cb, rng, o, t, 15, 'elemental', 'lightning') : ''; if (isRobot(t) && !t.dead) s += applyCond(cb, rng, o, t, 'stunned', 1); return s; }
-    case 'ward': return ally ? applyCond(cb, rng, o, t, 'guarded', 1, undefined, { skipSave: true }) + ' · the dome shields ' + t.name + ' (' + grantShield(cb, t, 20, o) + ')' : '';
-    case 'mend': return ally ? heal(t, 10 * (o.mg?.healMult || 1), cb, o) : '';
+    case 'fire': return me ? '' : ' · lava burns ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'lava'), 'elemental', 'fire') + (t.dead ? '' : bodySave(cb, rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
+    case 'shock': { if (me) return ''; let s = armoured(t, g) ? ' · the storm arcs to ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'storm'), 'elemental', 'lightning') : ''; if (isRobot(t) && !t.dead) s += applyCond(cb, rng, o, t, 'stunned', 1); return s; }
+    case 'ward': return ally ? applyCond(cb, rng, o, t, 'guarded', 1, undefined, { skipSave: true }) + ' · the dome shields ' + t.name + ' (' + grantShield(cb, t, itemAmount('class:grand_sigilist.enlarge', 'dome'), o) + ')' : '';
+    case 'mend': return ally ? heal(t, itemAmount('class:grand_sigilist.enlarge', 'mend', [term(o.mg?.healMult || 1, 'stat: healing given')]), cb, o) : '';
     // CONDENSE (Crush): enemies inside pressed against another creature take 10.
-    case 'condense': return me || ally || !cb.units.some((x) => x !== t && !x.dead && dist(x.pos, t.pos) === 1) ? '' : ' · the Crush grinds ' + t.name + harm(cb, rng, o, t, 10, 'sigil');
+    case 'condense': return me || ally || !cb.units.some((x) => x !== t && !x.dead && dist(x.pos, t.pos) === 1) ? '' : ' · the Crush grinds ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'crush'), 'sigil');
     // PUSH (Gust): enemies starting a turn inside are blown 1 tile outward.
     case 'push': { if (ally || t.pos === zCentre(z)) return ''; const [cx, cy] = xy(zCentre(z)), [x, y] = xy(t.pos); return nudge(cb, t, key(cx + (x - cx) * 9, cy + (y - cy) * 9), 1).replace('is pulled', 'is blown') || ''; }
-    case 'muddle': { if (me || bodySave(rng, o, t, 'brain')) return ''; const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]], [dx, dy] = dirs[die(rng, 8) - 1], [x, y] = xy(t.pos); return nudge(cb, t, key(x + dx * 2, y + dy * 2), 1).replace('is pulled', 'staggers') || ' · ' + t.name + ' staggers in place'; }
+    case 'muddle': { if (me || bodySave(cb, rng, o, t, 'brain')) return ''; const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]], [dx, dy] = dirs[die(rng, 8) - 1], [x, y] = xy(t.pos); return nudge(cb, t, key(x + dx * 2, y + dy * 2), 1).replace('is pulled', 'staggers') || ' · ' + t.name + ' staggers in place'; }
     case 'dread': return !ally ? applyCond(cb, rng, o, t, 'shaken', undefined, 'heart') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
     case 'light': return t.hidden && !ally ? reveal(cb, t, 'the Noon form') : '';
-    case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
+    case 'veil': if (!t.hidden && hideAgain(cb, rng, t)) return ' · ' + t.name + ' vanishes in the smoke'; return '';
     // The 1.4 words (item 468).
     // COMMAND (Parade ground): a Brain save, or halt: Pinned for the turn (no moving; it can still act).
-    case 'command': return ally || condOn(t, 'pinned') || bodySave(rng, o, t, 'brain') ? '' : ' · the Parade ground halts ' + t.name + applyCond(cb, rng, o, t, 'pinned', 1, undefined, { skipSave: true });
-    case 'quicken': { if (!ally || t === o) return ''; const was = t.ap; t.ap = Math.min(9, t.ap + 1); return t.ap > was ? ' · ' + t.name + ' quickens (+1 AP)' : ''; }
+    case 'command': return ally || condOn(t, 'pinned') || bodySave(cb, rng, o, t, 'brain') ? '' : ' · the Parade ground halts ' + t.name + applyCond(cb, rng, o, t, 'pinned', 1, undefined, { skipSave: true });
+    case 'quicken': { if (!ally || t === o) return ''; const was = t.ap; grantAp(cb, t, 1); return t.ap > was ? ' · ' + t.name + ' quickens (+1 AP)' : ''; }
     case 'cleanse': { if (!ally) return ''; const id = newestCondition(t); if (!id) return ''; endCond(t, id, cb); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'cleanse', cond: id }); return ' · clear water washes ' + id + ' off ' + t.name; }
   }
   return '';
@@ -912,13 +905,13 @@ function grandEnter(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, ms: any): s
   const w = zWord(z), me = earthed(o, t); if (me) return '';
   const hit = ((z as any).hit ||= {}); if (hit[t.id] === cb.round + ':' + w) return ''; hit[t.id] = cb.round + ':' + w;
   switch (w) {
-    case 'fire': return ' · lava burns ' + t.name + harm(cb, rng, o, t, 10, 'elemental', 'fire') + (t.dead || bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
+    case 'fire': return ' · lava burns ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'lava'), 'elemental', 'fire') + (t.dead || bodySave(cb, rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
     case 'bind': { const l = applyCond(cb, rng, o, t, 'pinned', undefined, 'body'); if (condOn(t, 'pinned')) ms.stop = 'tar'; return ' · tar' + l; }
     case 'gale': { ms.stop = 'cyclone'; const [cx, cy] = xy(zCentre(z)), [x, y] = xy(t.pos); return nudge(cb, t, key(cx - (x - cx) * 9, cy - (y - cy) * 9), 2).replace('is pulled', 'is thrown') || ' · the cyclone batters ' + t.name; }
     case 'light': return t.hidden && t.side !== o.side ? reveal(cb, t, 'the Noon form') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
-    case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
-    case 'wait': if (t.side === o.side) return ''; ms.stop = 'tripwire'; return ' · a tripwire catches ' + t.name + harm(cb, rng, o, t, 10, 'sigil');
+    case 'veil': if (!t.hidden && hideAgain(cb, rng, t)) return ' · ' + t.name + ' vanishes in the smoke'; return '';
+    case 'wait': if (t.side === o.side) return ''; ms.stop = 'tripwire'; return ' · a tripwire catches ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'tripwire'), 'sigil');
   }
   return '';
 }
@@ -950,7 +943,7 @@ function etch(cb: Combat, o: Unit, z: Zone): string {
 function mortarTile(cb: Combat, o: Unit, z: Zone): string | null {
   const foes = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && !x.hidden);
   let best: string | null = null, score = 0;
-  for (const f of foes) for (const k of around(f.pos, 1)) {
+  for (const f of foes) for (const k of tilesAround(f.pos, 1)) {
     if (dist(k, zCentre(z)) > 6) continue;
     const sc = foes.reduce((n, x) => n + (x.pos === k ? 3 : dist(x.pos, k) === 1 ? 1 : 0), 0);
     if (sc > score || (sc === score && best && k < best)) { best = k; score = sc; }
@@ -961,21 +954,16 @@ function mortar(cb: Combat, rng: Rng, o: Unit, z: Zone): string {
   const k = mortarTile(cb, o, z); if (!k) return '';
   emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: null, at: k, side: o.side, grand: true, lob: true });
   let line = ' · the Mortar pit shells ' + refOf(k);
-  for (const v of cb.units.filter((x) => !x.dead && x.side !== o.side && (x.pos === k || dist(x.pos, k) === 1))) line += harm(cb, rng, o, v, v.pos === k ? 15 : 5, 'sigil');
+  for (const v of cb.units.filter((x) => !x.dead && x.side !== o.side && (x.pos === k || dist(x.pos, k) === 1))) line += harm(cb, rng, o, v, v.pos === k ? itemAmount('class:grand_sigilist.enlarge', 'mortar') : itemAmount('class:grand_sigilist.enlarge', 'mortar_splash'), 'sigil');
   return line;
 }
 let ARCING = false;
 /** Tiles a straight shot crosses (for GALE's -5). */
-function segTiles(a: string, b: string): string[] {
-  const [x0, y0] = xy(a), [x1, y1] = xy(b), n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)), out: string[] = [];
-  for (let i = 1; i < n; i++) out.push(key(Math.round(x0 + ((x1 - x0) * i) / n), Math.round(y0 + ((y1 - y0) * i) / n)));
-  return out;
-}
 const GRAND_STONE = 4, GRAND_WALLS = 8;
 register({
   id: 'grand_sigilist.enlarge', claims: 'all',
   actions: [
-    { id: 'enlarge', label: 'Enlarge (Grand form)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'tile', ap: 3, uses: { per: 'per_combat', n: 1 },
+    { id: 'enlarge', label: 'Enlarge (Grand form)', pick: 'words', pickLabel: 'The word', scope: ['combat', 'world'], target: 'tile', ap: 'data', uses: { per: 'per_combat', n: 1 },
       text: 'Costs 3 charge. Plant your staff and enlarge a word you know into its Grand form, which covers every tile within 2 tiles. It lasts 3 rounds, plus your duration bonus. You can\'t draw or Evoke while it stands.',
       available: (h) => (!h.u ? false : sigilBlock(h.cb!, h.u) || (staffOf(h) ? 'The staff is already planted.' : h.u.mg!.charge < 3 ? 'Needs 3 charge. Swap in a fresh core.' : true)),
       preview: (h, a) => {
@@ -984,10 +972,10 @@ register({
         if (!t || dist(u.pos, t) > 1 || !standable(cb.map, t)) return { ok: false, why: 'Plant it on your tile or one next to you.' };
         return { lines: [SIGIL[w].word + ': ' + SIGIL[w].grand] };
       },
-      run: (h, a) => {
+      run: (h, a, rng) => {
         const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, w = a.choice!, m = u.mg!, left = 3 + m.durBonus;
         m.charge -= 3; m.cast = true;
-        const tiles = around(t, 2).filter((k) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; });
+        const tiles = tilesAround(t, 2).filter((k) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; });
         const seq = () => 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
         const z: any = { id: seq(), kind: 'grand', tiles, words: [w], by: u.id, side: u.side, left, mult: 1, who: u.name, centre: t, str: unitStrength(u, 'brain_power') };
         const extra: string[] = []; cb.zones = [...(cb.zones || []), z];
@@ -998,19 +986,19 @@ register({
         if (w === 'stone') {
           const want = (a.text || '').split(/[\s,]+/).map((x) => tileOf(cb, x)).filter((k): k is string => !!k && tiles.includes(k));
           const diag = (k: string) => (xy(k)[0] - xy(t)[0]) !== 0 && (xy(k)[1] - xy(t)[1]) !== 0;
-          const auto = around(t, 1).filter((k) => k !== t).sort((a, b) => Number(diag(b)) - Number(diag(a)));
+          const auto = tilesAround(t, 1).filter((k) => k !== t).sort((a, b) => Number(diag(b)) - Number(diag(a)));
           const placed: string[] = [];
-          for (const k of [...want, ...auto]) { if (placed.length >= GRAND_STONE) break; if (placed.includes(k) || !free(cb, k)) continue; cb.objects = [...objectsOf(cb), makeObject('earthwork_' + k.replace(',', '_') + '_' + cb.round, 'crate', k, { name: 'Earthwork pillar' })]; placed.push(k); }
+          for (const k of [...want, ...auto]) { if (placed.length >= GRAND_STONE) break; if (placed.includes(k) || !canStand(cb, k)) continue; cb.objects = [...objectsOf(cb), makeObject('earthwork_' + k.replace(',', '_') + '_' + cb.round, 'crate', k, { name: 'Earthwork pillar' })]; placed.push(k); }
           line = placed.length ? ' · earthworks rise at ' + placed.map(refOf).join(', ') : ' · no room for earthworks';
         }
         if (w === 'light') for (const x of cb.units) if (x.hidden && x.side !== u.side && inZ(z, x.pos)) line += reveal(cb, x, 'the Noon form');
-        if (w === 'veil') for (const x of cb.units) if (!x.dead && inZ(z, x.pos) && !x.hidden && !condOn(x, 'marked')) { x.hidden = true; line += ' · ' + x.name + ' vanishes in the smoke'; }
+        if (w === 'veil') for (const x of cb.units) if (!x.dead && inZ(z, x.pos) && !x.hidden && hideAgain(cb, rng, x)) line += ' · ' + x.name + ' vanishes in the smoke';
         if (w === 'null') line += cleanGround(cb, z);
         // RAISE (Ramparts): up to 8 wall segments on the edge ring, every other tile, never on anyone; they fall with the form.
         if (w === 'raise') {
           const ring = tiles.filter((k) => dist(k, t) === 2).sort((a, b) => Math.atan2(xy(a)[1] - xy(t)[1], xy(a)[0] - xy(t)[0]) - Math.atan2(xy(b)[1] - xy(t)[1], xy(b)[0] - xy(t)[0]));
           const walls: string[] = [];
-          ring.forEach((k, i) => { if (i % 2 || walls.length >= GRAND_WALLS || !free(cb, k)) return; cb.objects = [...objectsOf(cb), makeObject('gw' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), 'sigil_wall', k, { hp: 30, max: 30, by: u.id, side: u.side, left, who: u.name, sigilWall: true, grandWall: true } as any)]; walls.push(k); });
+          ring.forEach((k, i) => { if (i % 2 || walls.length >= GRAND_WALLS || !canStand(cb, k)) return; cb.objects = [...objectsOf(cb), makeObject('gw' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), 'sigil_wall', k, { hp: 30, max: 30, by: u.id, side: u.side, left, who: u.name, sigilWall: true, grandWall: true } as any)]; walls.push(k); });
           line += walls.length ? ' · ramparts rise at ' + walls.map(refOf).join(', ') : ' · no room for ramparts';
         }
         if (w === 'sense') for (const x of cb.units) if (x.hidden && !x.dead && x.side !== u.side && dist(x.pos, t) <= 4) line += reveal(cb, x, 'Second sight');
@@ -1039,7 +1027,7 @@ register({
       for (const z of grandZones(cb, o)) {
         if (zWord(z) === 'pull') { if (t.side !== o.side && dist(t.pos, zCentre(z)) <= 4) line += nudge(cb, t, zCentre(z), 1); continue; }
         if (zWord(z) === 'sense') { for (const x of cb.units) if (x.hidden && !x.dead && x.side !== o.side && dist(x.pos, zCentre(z)) <= 4) line += reveal(cb, x, 'Second sight'); continue; }
-        if (zWord(z) === 'watch') { if (t === o) { const v = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos)).sort((a, b) => dist(a.pos, zCentre(z)) - dist(b.pos, zCentre(z)))[0]; if (v) { emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: v.id, at: v.pos, side: o.side, grand: true }); line += ' · the Sentinel strikes ' + v.name + harm(cb, rngOf(h, ctx), o, v, 15, 'sigil'); } } continue; }
+        if (zWord(z) === 'watch') { if (t === o) { const v = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos)).sort((a, b) => dist(a.pos, zCentre(z)) - dist(b.pos, zCentre(z)))[0]; if (v) { emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: v.id, at: v.pos, side: o.side, grand: true }); line += ' · the Sentinel strikes ' + v.name + harm(cb, rngOf(h, ctx), o, v, itemAmount('class:grand_sigilist.enlarge', 'sentinel'), 'sigil'); } } continue; }
         if (zWord(z) === 'arc') { if (t === o) line += mortar(cb, rngOf(h, ctx), o, z); continue; }
         if (inZ(z, t.pos)) line += inGrand(o, z, () => grandTurnStart(cb, rngOf(h, ctx), o, z, t, h.g));
       }
@@ -1054,7 +1042,7 @@ register({
       for (const z of grandZones(cb, o)) if (zWord(z) === 'watch' && t.side !== o.side && inZ(z, ctx.from) && !inZ(z, ctx.at)) {
         const left = ((z as any).left_hit ||= {}); if (left[t.id] === cb.round) continue; left[t.id] = cb.round;
         emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: t.id, at: ctx.at, side: o.side, grand: true });
-        line += ' · the Sentinel strikes ' + t.name + ' as it leaves' + harm(cb, rngOf(h, ctx), o, t, 10, 'sigil');
+        line += ' · the Sentinel strikes ' + t.name + ' as it leaves' + harm(cb, rngOf(h, ctx), o, t, itemAmount('class:grand_sigilist.enlarge', 'sentinel_leaving'), 'sigil');
       }
       if (line) say(cb, t.name + ' enters the Grand form' + line + '.');
     },
@@ -1063,7 +1051,7 @@ register({
       fogSync(cb);
       // FREEZE (ice sheet): a Body save each move through it, or fall Prone.
       if (earthed(o, t)) return;
-      for (const z of grandZones(cb, o)) if (zWord(z) === 'freeze' && (ctx.route || []).some((k: string) => inZ(z, k)) && !t.prone) inGrand(o, z, () => { if (!bodySave(rngOf(h, ctx), o, t)) say(cb, t.name + ' slips on the ice' + applyCond(cb, rngOf(h, ctx), o, t, 'prone') + '.'); });
+      for (const z of grandZones(cb, o)) if (zWord(z) === 'freeze' && (ctx.route || []).some((k: string) => inZ(z, k)) && !t.prone) inGrand(o, z, () => { if (!bodySave(cb, rngOf(h, ctx), o, t)) say(cb, t.name + ' slips on the ice' + applyCond(cb, rngOf(h, ctx), o, t, 'prone') + '.'); });
     },
     move_cost: (ctx, h) => {
       const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || !stateOf(h).staff) return;
@@ -1078,7 +1066,7 @@ register({
       for (const z of grandZones(cb, o)) {
         const w = zWord(z), aIn = inZ(z, att.pos), tIn = inZ(z, tgt.pos);
         if (w === 'light' && aIn && att.side !== o.side) ctx.terms.push({ v: -2, label: 'Noon (Grand LIGHT)' });
-        if (w === 'gale' && !ctx.melee && att !== o && (aIn || tIn || segTiles(att.pos, tgt.pos).some((k) => inZ(z, k)))) ctx.terms.push({ v: -5, label: 'Cyclone (Grand GALE)' });
+        if (w === 'gale' && !ctx.melee && att !== o && (aIn || tIn || tilesLine(att.pos, tgt.pos, { end: false }).some((k) => inZ(z, k)))) ctx.terms.push({ v: -5, label: 'Cyclone (Grand GALE)' });
         if (w === 'seek' && tIn && att.side === o.side && tgt.side !== o.side) ctx.ignoreCover = true;
         // ACID (Etching ground): enemies inside have -2 Defense (your side hits them more easily).
         if (w === 'acid' && tIn && tgt.side !== o.side && att.side === o.side) ctx.terms.push({ v: 2, label: 'Etched (Grand ACID)' });
@@ -1118,7 +1106,7 @@ register({
       for (const z of grandZones(cb, o)) {
         if (zWord(z) !== 'leech' || !inZ(z, t.pos) || by.dead || by.downed) continue;
         const fed = ((z as any).fed ||= {}), k = by.id + '>' + t.id; if (fed[k] === cb.round) continue; fed[k] = cb.round;
-        const r = healUnit(cb, by, 5, o, 'leech'); if (r.restored) { emitFx(cb, 'leech', { unit: by.id, to: by.pos, from: [t.pos], amount: r.restored, element: null }); say(cb, 'Bloodwell (Grand LEECH): ' + by.name + ' drinks ' + r.restored + ' HP from ' + t.name + '.'); }
+        const r = healUnit(cb, by, itemAmount('class:grand_sigilist.enlarge', 'bloodwell'), o, 'leech'); if (r.restored) { emitFx(cb, 'leech', { unit: by.id, to: by.pos, from: [t.pos], amount: r.restored, element: null }); say(cb, 'Bloodwell (Grand LEECH): ' + by.name + ' drinks ' + r.restored + ' HP from ' + t.name + '.'); }
       }
       if (ARCING) return;
       for (const z of grandZones(cb, o)) {
@@ -1127,7 +1115,7 @@ register({
         const v = cb.units.filter((x) => x !== t && !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos) && dist(x.pos, t.pos) <= 3 && arced[x.id] !== cb.round).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0];
         if (!v) continue; arced[v.id] = cb.round;
         emitFx(cb, 'chain', { from: t.pos, to: v.pos, target: v.id, jump: 1, mult: 1, element: 'shock', grand: true });
-        ARCING = true; let l = ''; try { l = harm(cb, rngOf(h, ctx), o, v, 10, 'elemental', 'lightning'); } finally { ARCING = false; }
+        ARCING = true; let l = ''; try { l = harm(cb, rngOf(h, ctx), o, v, itemAmount('class:grand_sigilist.enlarge', 'arc'), 'elemental', 'lightning'); } finally { ARCING = false; }
         say(cb, 'Conductor (Grand CHAIN): the hit on ' + t.name + ' arcs to ' + v.name + l + '.');
       }
     },
@@ -1136,7 +1124,7 @@ register({
       // STAY (stasis): conditions inside don't tick down (one landed this turn wasn't going to tick anyway).
       if (!grandZones(cb, o).some((z) => zWord(z) === 'stay' && inZ(z, t.pos))) { if (condOn(t, 'silenced') && t.condBy?.silenced === o.id && !grandZones(cb, o).some((z) => zWord(z) === 'silence' && inZ(z, t.pos))) endCond(t, 'silenced', cb); return; }
       const fresh = new Set(t.condFresh || []);
-      for (const id of Object.keys(t.conds)) if (t.conds[id] > 0 && t.conds[id] < 99 && !fresh.has(id)) t.conds[id]++;
+      for (const id of Object.keys(t.conds)) if (t.conds[id] > 0 && t.conds[id] < 99 && !fresh.has(id)) setCondRounds(t, id, t.conds[id] + 1);
     },
     round_start: (ctx, h) => {
       if (!h.u || !onGrid(h) || !staffOf(h)) return;
@@ -1151,7 +1139,7 @@ register({
       for (const z of grandZones(cb, o)) {
         if (!inZ(z, ctx.impact)) continue;
         // Bloom: every enemy inside the spell missed takes 10.
-        if (zWord(z) === 'spread') { let l = ''; for (const v of cb.units.filter((x) => !x.dead && !x.downed && x.side !== o.side && inZ(z, x.pos) && !hitIds.has(x.id))) l += harm(cb, rng, o, v, 10, 'sigil'); if (l) say(cb, 'Bloom (Grand SPREAD): the spell blooms through the form' + l + '.'); }
+        if (zWord(z) === 'spread') { let l = ''; for (const v of cb.units.filter((x) => !x.dead && !x.downed && x.side !== o.side && inZ(z, x.pos) && !hitIds.has(x.id))) l += harm(cb, rng, o, v, itemAmount('class:grand_sigilist.enlarge', 'bloom'), 'sigil'); if (l) say(cb, 'Bloom (Grand SPREAD): the spell blooms through the form' + l + '.'); }
         // Echo field: the first spell each round echoes on the enemies it hit, at half its damage per target (5 at least).
         if (zWord(z) === 'twice' && (z as any).echoed !== cb.round && ctx.dealt > 0) {
           const foes = (ctx.targets || []).filter((x: Unit) => !x.dead && x.side !== o.side); if (!foes.length) continue;
@@ -1253,11 +1241,11 @@ const isTwin = (u: Unit | null | undefined) => !!u && !!(u as any).twinOf;
 register({
   id: 'heartfed.four_hearts', claims: 'all',
   actions: [
-    { id: 'key_design', label: 'Key a design to a gauge', pickLabel: 'The design\'s id, a colon, then rage, grief, fear or devotion', scope: ['world', 'story'], target: 'none', ap: 0,
+    { id: 'key_design', label: 'Key a design to a gauge', pickLabel: 'The design\'s id, a colon, then rage, grief, fear or devotion', scope: ['world', 'story'], target: 'none', ap: 'data',
       text: 'Key one of your designs to a gauge: Rage, Grief, Fear or Devotion. Points in that gauge can then feed the design.',
       preview: (h, a) => { const [id, k] = String(a.choice || '').split(':'); return !(h.c?.outbursts || []).some((d) => d.id === id) || !GAUGES.includes(k as Gauge) ? { ok: false, why: 'Type the design\'s id, a colon, then rage, grief, fear or devotion.' } : {}; },
       run: (h, a) => { const [id, k] = String(a.choice).split(':'); (charState(h.c).heartKeys ||= {})[id] = k; const d = h.c!.outbursts!.find((x) => x.id === id)!; const line = d.name + ' is keyed to ' + k + '.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } },
-    { id: 'gauge_story', label: 'Let it fill a gauge', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
+    { id: 'gauge_story', label: 'Let it fill a gauge', scope: ['story'], target: 'text', ap: 'data', uses: { per: 'per_scene', n: 1 },
       text: 'Once a scene: say what this scene made you feel. The Narrator decides which gauge fills, and by how much.',
       run: (h, a) => { postStory(h, (a.text || '').slice(0, 200), { private: true }); if (h.g && h.c) pendRuling(h.g, h.c, h.key, h.c.name + ' feels it: "' + (a.text || '').slice(0, 160) + '". Add gauge points with traitState heartfed_add {rage|grief|fear|devotion: n}.'); return null; } },
   ],
@@ -1287,8 +1275,8 @@ const heldKey = (h: Holder): Gauge | null => { const hd = h.u?.mg?.held; return 
 register({
   id: 'heartfed.fed', claims: 'all', priority: 20,
   actions: [{
-    id: 'feed_feeling', label: 'Feed a feeling (a free Pump)', scope: ['combat', 'world'], target: 'none', ap: 0,
-    text: 'Spend 1 point from the gauge your held Outburst is keyed to: Pump it for 0 AP. Twice a turn at most.',
+    id: 'feed_feeling', label: 'Feed a feeling (a free Pump)', scope: ['combat', 'world'], target: 'none', ap: 'data',
+    text: 'Spend 1 point from the gauge your held Outburst is keyed to: Pump it. Twice a turn at most; the first is free (one free stage a turn), the second costs the Pump\'s AP.',
     available: (h) => {
       const m = h.u?.mg; if (!m?.held) return 'Hold a keyed Outburst first.'; const k = heldKey(h); if (!k) return 'The held Outburst isn\'t keyed to a gauge.';
       if ((gauges(h)[k] || 0) < 1) return 'Your ' + k + ' is empty.'; if (uses(h).left('per_turn', FEEL_PER_TURN, h.key + '#feel') <= 0) return 'Used twice this turn already.';
@@ -1307,7 +1295,7 @@ register({
   on: {
     outburst_cost: (ctx, h) => { if (ctx.u !== h.u || !h.c) return; const k = keyOfDesign(h.c, ctx.design?.id); if (!k) return; const n = (cs(h.c).heartfed?.scene === sceneOf(h) ? cs(h.c).heartfed[k] : 0) || 0; if (n && ctx.mp > 0) ctx.mp = Math.max(5, ctx.mp * (1 - 0.1 * n)); },
     // A fed Pump: no AP, and not one of Empathy's free Pumps either.
-    outburst_pump: (ctx, h) => { if (ctx.u === h.u && FEEDING === h.u!.id) { ctx.ap = 0; ctx.free = false; } },
+    outburst_pump: (ctx, h) => { if (ctx.u === h.u && FEEDING === h.u!.id && ctx.capLeft !== false) { ctx.ap = 0; ctx.free = false; } }, // rules 1.19: one free stage a turn (a fed Pump is one)
     outburst_release: (ctx, h) => {
       if (ctx.u !== h.u || !h.c) return; const k = keyOfDesign(h.c, ctx.design?.id); if (!k) return; const g = gauges(h), n = g[k] || 0; if (!n) return;
       g[k] = 0; say(ctx.cb, 'Fed: ' + ctx.design.name + ' takes the rest of the ' + k + ' with it (' + n + ' lost).');
@@ -1354,7 +1342,7 @@ function addLink(h: Holder, id: string) {
 register({
   id: 'heartbinder.link', claims: 'all',
   actions: [
-    { id: 'link', label: 'Link', scope: ['combat', 'world'], target: 'ally', ap: 1, range: 6,
+    { id: 'link', label: 'Link', scope: ['combat', 'world'], target: 'ally', ap: 'data', range: 6,
       text: 'Bind your heart to an ally within 6 tiles that you can see, for the scene. You hold one link, or two from Will Power 5. A new link past that replaces your oldest.',
       preview: (h, a) => { const t = unitById(h.cb!, a.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Link to someone else.' }; if (!unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: [links(h).length >= maxLinks(h.c) ? 'Replaces your oldest link.' : 'Linked for the scene.'] }; },
       run: (h, a) => { const t = unitById(h.cb!, a.targetId)!; addLink(h, linkId(t)); emitFx(h.cb!, 'stance', { unit: h.u!.id, at: h.u!.pos, what: 'link', target: t.id }); say(h.cb, h.u!.name + ' binds their heart to ' + t.name + ' (Link).'); return null; } },
@@ -1368,7 +1356,7 @@ register({
 });
 let MIRROR = false, SHARING = false;
 // Through (K26, PROVISIONAL, audit 1-3; rules 1.5): your Outbursts can go off from a linked ally's place: "Cast through
-// a link" is a snap cast (Begin and Release at once, 3 AP, ×0.6) and "Release through a link" lets your held Outburst
+// a link" is a snap cast (Begin and Release at once, 3 AP, ×0.8) and "Release through a link" lets your held Outburst
 // go at the stage it reached (1 AP). Range, sight and the shape (a Wave's cone, a Lance's line, an Aura around them)
 // all run from the ally's tile, as if you stood there; the ally is never in its own Aura. Heals, shields and the
 // Guarded or Inspired boons you receive (whatever their source) reach every linked ally at half (a boon for half its
@@ -1382,17 +1370,17 @@ function fromLink<T>(u: Unit, f0: Unit, f: () => T): T { const was = u.pos; u.po
 register({
   id: 'heartbinder.through', claims: 'all',
   actions: [
-    { id: 'begin_through', label: 'Cast through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
-      text: 'Snap-cast an Outburst from a linked ally\'s tile instead of your own. A snap cast is Begin and Release in one go, at ×0.6.',
+    { id: 'begin_through', label: 'Cast through a link', scope: ['combat', 'world'], target: 'tile', ap: 'data',
+      text: 'Snap-cast an Outburst from a linked ally\'s tile instead of your own. A snap cast is Begin and Release in one go, at ×' + stageMult(0) + '.',
       available: (h) => (!h.u?.mg?.designs?.length ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, f = linkFrom(h, a); if (typeof f === 'string') return { ok: false, why: f };
         const d = u.mg!.designs.find((x) => x.id === a.choice); if (!d) return { ok: false, why: 'Pick a design.' };
         const aim = aimOf(cb, a, 'tile'); if (!aim) return { ok: false, why: 'Pick a target tile.' };
-        const pv = fromLink(u, f, () => previewOutburst(cb, u, d.id, aim, true)); return pv.ok ? { lines: ['From ' + f.name + ': ' + pv.ap + ' AP, ' + pv.cost + ' MP, ×0.6.'] } : { ok: false, why: pv.why };
+        const pv = fromLink(u, f, () => previewOutburst(cb, u, d.id, aim, true)); return pv.ok ? { lines: ['From ' + f.name + ': ' + pv.ap + ' AP, ' + pv.cost + ' MP, ×' + stageMult(0) + '.'] } : { ok: false, why: pv.why };
       },
       run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit, d = u.mg!.designs.find((x) => x.id === a.choice)!; say(cb, u.name + ' casts through ' + f.name + '.'); const e = fromLink(u, f, () => beginOutburst(cb, rng, u, d.id, aimOf(cb, a, 'tile')!, false)); if (!e) checkOver(cb); return e; } },
-    { id: 'release_through', label: 'Release through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
+    { id: 'release_through', label: 'Release through a link', scope: ['combat', 'world'], target: 'tile', ap: 'data',
       text: 'Release your held Outburst from a linked ally\'s tile instead of your own, at the stage it reached.',
       available: (h) => (!h.u?.mg?.held ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
@@ -1403,8 +1391,8 @@ register({
       run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit; say(cb, u.name + ' releases through ' + f.name + '.'); const e = fromLink(u, f, () => releaseOutburst(cb, rng, u, aimOf(cb, a, 'tile') || f.pos)); if (!e) checkOver(cb); return e; } },
   ],
   on: {
-    heal_given: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link' + heal(x, Math.floor(ctx.n / 2), ctx.cb, h.u!) + '.'); } finally { MIRROR = false; } },
-    shield_grant: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link, ' + x.name + ' is shielded (' + grantShield(ctx.cb, x, Math.floor(ctx.n / 2), ctx.by) + ').'); } finally { MIRROR = false; } },
+    heal_given: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link' + heal(x, Math.floor(ctx.n * amountMult('class:heartbinder.through', 'mirror', 'share')), ctx.cb, h.u!) + '.'); } finally { MIRROR = false; } },
+    shield_grant: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link, ' + x.name + ' is shielded (' + grantShield(ctx.cb, x, Math.floor(ctx.n * amountMult('class:heartbinder.through', 'mirror', 'share')), ctx.by) + ').'); } finally { MIRROR = false; } },
     cond_landed: (ctx, h) => {
       if (MIRROR || ctx.t !== h.u || !['guarded', 'inspired'].includes(ctx.id) || !onGrid(h)) return; MIRROR = true;
       try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link' + applyCond(ctx.cb, rngOf(h, ctx), ctx.by || h.u!, x, ctx.id, Math.max(1, Math.floor((ctx.rounds || 2) / 2)), undefined, { skipSave: true, ...(ctx.via ? { via: ctx.via } : {}) }) + '.'); } finally { MIRROR = false; }
@@ -1438,7 +1426,7 @@ register({
       ctx.n -= n; SHARING = true; try { say(ctx.cb, u.name + ' takes ' + n + ' of ' + t.name + '\'s Strain through the link (Share)' + strainUp(ctx.cb, rngOf(h, ctx), u, n, 'shared through a link') + '.'); } finally { SHARING = false; }
     },
   },
-  actions: [{ id: 'share_mode', label: 'Share: always / never', pick: ['always', 'never'], pickLabel: 'Always or never', scope: ['combat', 'world', 'story'], target: 'none', ap: 0,
+  actions: [{ id: 'share_mode', label: 'Share: always / never', pick: ['always', 'never'], pickLabel: 'Always or never', scope: ['combat', 'world', 'story'], target: 'none', ap: 'data',
     text: 'Choose always or never. On always, you automatically take half of every wound a linked ally suffers, and any Strain that would push them over their limit.',
     preview: (h, a) => (['always', 'never'].includes(a.choice || '') ? { lines: ['Share: ' + a.choice + '.'] } : { ok: false, why: 'Choose always or never.' }),
     run: (h, a) => { charState(h.c).shareMode = a.choice; const line = (h.c?.name || '') + ' will ' + (a.choice === 'never' ? 'not ' : '') + 'share their links\' wounds.'; if (h.cb) say(h.cb, line); else postStory(h, line, { private: true }); return null; } },
@@ -1459,7 +1447,7 @@ register({
 // =============================================================================================== VESSEL
 // Inner Charge (K28, PROVISIONAL, audit 1-6; rules 1.5, item 531): Begin's 2 AP, 20 MP (× the air's cost band; from the
 // air without an Emanator, +2 Strain), 1 Strain (2 in Flooded air): take a body form and hold it like an Outburst. A
-// form starts at stage 1 and reads the 1.5 stage table (×1, ×1.4, ×1.8, ×2.2 at stage 4); it swells a stage at your
+// form starts at stage 1 and reads the stage table (magic.ts STAGE_MULT, stages 1 to 4); it swells a stage at your
 // turn start and strains you 1 each (2 Flooded). "Pump a form" (1 AP, or one of Empathy's free Pumps) adds a stage to
 // one form. Iron armour +10, Surge melee and unarmed damage +15, Swift Movement +2, Steady no Prone or push and +2 Body
 // saves, Heartbeat heal 10 at turn start: each × its stage multiplier. Pain to Power: +1 AP next turn per 20 damage
@@ -1533,7 +1521,7 @@ register({
         say(cb, u.name + ' pumps the heart into ' + FORMS[x.form] + ': stage ' + x.stage + ' (×' + vesselMult(x.stage) + ')' + (free ? ', a free Pump (Empathy)' : '') + '.');
         return null;
       } },
-    { id: 'inner_charge_story', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['story'], target: 'none', ap: 0,
+    { id: 'inner_charge_story', label: 'Inner Charge', pick: Object.keys(FORMS), pickLabel: 'The body form', scope: ['story'], target: 'none', ap: 'data',
       text: 'Costs 20 MP. Take a body form before trouble starts. It lasts the scene and carries into a fight.',
       preview: (h, a) => (!FORMS[a.choice as Form] ? { ok: false, why: 'Choose a form.' } : formsOf(h).length >= MAX_FORMS ? { ok: false, why: TOO_MANY } : formsOf(h).some((x) => x.form === a.choice) ? { ok: false, why: FORMS[a.choice as Form] + ' is already held.' } : (h.c!.mp ?? 0) < 20 ? { ok: false, why: 'Needs 20 MP.' } : {}),
       run: (h, a) => { const c = h.c!, f = a.choice as Form; c.mp = (c.mp ?? 0) - 20; setForms(h, [...formsOf(h), { form: f, stage: 1 }]); postStory(h, c.name + ' takes ' + FORMS[f] + ' into the body.'); if (h.g) pendRuling(h.g, c, h.key, c.name + ' holds ' + FORMS[f] + ' (a body form): rule what it does in the scene (Iron against a falling crate, Steady against a shove).'); return null; } },
@@ -1549,7 +1537,7 @@ register({
       const grown = fs.map((x) => ({ ...x, stage: Math.min(MAX_STAGE, x.stage + 1) })); setForms(h, grown); vSync(h);
       emitFx(cb, 'swell', { unit: u.id, at: u.pos, stage: Math.max(...grown.map((x) => x.stage)), mult: vesselMult(Math.max(...grown.map((x) => x.stage))), tone: 'raw', forms: grown.map((x) => x.form) });
       const hb = fm(h, 'heartbeat'); let line = u.name + '\'s forms grow (' + grown.map((x) => FORMS[x.form] + ' ' + x.stage).join(', ') + ')';
-      if (hb) line += heal(u, 10 * hb * (u.mg?.healMult || 1), cb, u);
+      if (hb) line += heal(u, itemAmount('class:vessel.inner_charge', 'heartbeat', [term(u.mg?.healMult || 1, 'stat: healing given')], { forms: hb }), cb, u);
       say(cb, line + '.' + strainUp(cb, rngOf(h, ctx), u, grown.length * (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1), 'holding body forms'));
     },
     // Pain to Power counts what you take. Rules 1.5: no slipping (a hit no longer loosens a form).
@@ -1567,9 +1555,9 @@ register({
 });
 // Release (K29, PROVISIONAL, audit 1-4; rules 1.5, item 532): 1 AP (a melee attack roll with your fists or melee
 // weapon), or free with a melee hit (a toggle on the attack): every form ends in one strike. Each form adds 15 Soul
-// damage × its stage multiplier (stage 1 ×1 … stage 4 ×2.2), summed, × your Soul multiplier, armour ignored (1.2's
-// +15 a stage capped at 8 stages is gone: two stage-4 forms are 66 before the multiplier). The forms end on a miss too.
-const releaseSum = (h: Holder) => formsOf(h).reduce((a, x) => a + 15 * vesselMult(x.stage), 0);
+// damage × its stage multiplier (magic.ts STAGE_MULT), summed, × your Soul multiplier, armour ignored (1.2's
+// +15 a stage capped at 8 stages is gone: two stage-4 forms are 2 × 15 × STAGE_MULT[4] before the multiplier). The forms end on a miss too.
+const releaseSum = (h: Holder) => formsOf(h).reduce((a, x) => a + itemAmount('class:vessel.release_strike', 'damage', [term(vesselMult(x.stage), 'stage')]), 0);
 function releaseRider(h: Holder, t: Unit, rng: Rng): string {
   const u = h.u!, cb = h.cb!, fs = formsOf(h); if (!fs.length) return '';
   const sum = releaseSum(h), n = fs.length; setForms(h, []); vSync(h);
@@ -1581,7 +1569,7 @@ register({
   id: 'vessel.release_strike', claims: 'all',
   toggles: [{ id: 'release', label: 'Release every body form on a hit (+15 Soul damage × each form\'s stage multiplier)', on: ['combat/attack'], available: (h) => (formsOf(h).length ? true : false) }],
   actions: [{
-    id: 'release_strike', label: 'Release', scope: ['combat', 'world'], target: 'enemy', ap: 1,
+    id: 'release_strike', label: 'Release', scope: ['combat', 'world'], target: 'enemy', ap: 'data',
     text: 'Make a melee attack that ends every body form you hold. On a hit, each form adds 15 Soul damage × its stage multiplier.',
     available: (h) => (!formsOf(h).length ? 'Hold a body form first.' : true),
     preview: (h, a) => { const t = unitById(h.cb!, a.targetId); if (!t) return {}; const pv = previewAttack(h.cb!, h.u!, t, 'melee', { free: true }); return pv.ok ? { lines: [pv.pct + '% to hit; +' + Math.round(releaseSum(h) * (h.u!.mg?.soulMult || 1)) + ' Soul damage on a hit.'] } : { ok: false, why: pv.why }; },
@@ -1634,7 +1622,7 @@ const twinOwner = (cb: Combat, t: Unit) => unitById(cb, (t as any).twinOf);
 register({
   id: 'twinbound.manifest', claims: 'all',
   actions: [{
-    id: 'manifest', label: 'Manifest the twin', scope: ['story', 'world'], target: 'text', ap: 0, uses: { per: 'per_campaign', n: 1 },
+    id: 'manifest', label: 'Manifest the twin', scope: ['story', 'world'], target: 'text', ap: 'data', uses: { per: 'per_campaign', n: 1 },
     text: 'Once only: design your twin\'s three built-in Outbursts from the schools and modules you know. They can\'t be changed for the rest of the campaign.',
     available: (h) => (!h.c ? false : cs(h.c).twin ? 'The twin is already manifest.' : h.cb && !overworld(h.cb) ? 'Only out of a fight.' : true),
     preview: (h, a) => { const r = twinDesigns(h.c!, a.text); return typeof r === 'string' ? { ok: false, why: r } : { lines: ['The twin: ' + r.designs.map((d) => d.name).join(', ') + '.'] }; },
@@ -1669,10 +1657,10 @@ const twinHeld = { perks: [], traits: [], cls: null, rank: 1, adv: 'twinbound' }
 register({
   id: 'twinbound.call', claims: 'all',
   actions: [
-    { id: 'call', label: 'Call the twin', scope: ['combat'], target: 'tile', ap: 2,
+    { id: 'call', label: 'Call the twin', scope: ['combat'], target: 'tile', ap: 'data',
       text: 'Your twin appears on a free tile within 3 tiles of you. It acts right after you each round, with 4 AP.',
       available: (h) => (!h.u || isTwin(h.u) ? false : !cs(h.c).twin ? 'Manifest the twin first. You do that out of a fight.' : twinOf(h.cb!, h.u) ? 'The twin is already here.' : cs(h.c).twinLost === sceneOf(h) ? 'Your twin fell this scene. You can call it again next scene.' : true),
-      preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !free(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },
+      preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !canStand(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },
       run: (h, a, rng) => {
         const u = h.u!, cb = h.cb!, c = h.c!, t = aimOf(cb, a, 'tile')!, tw = cs(c).twin;
         const id = 'tw-' + u.id;
@@ -1689,10 +1677,10 @@ register({
     // The area map (the audit's proposal, PROVISIONAL): a token next to you, with its own 4 AP a round spent only on moves
     // (world/act move with its unit id), never more than 6 tiles from you. A fight opened on the area map starts with it
     // beside you as the called twin (combat_start below); in the story its presence is narration.
-    { id: 'call_world', label: 'Call the twin', scope: ['world'], target: 'tile', ap: 2,
+    { id: 'call_world', label: 'Call the twin', scope: ['world'], target: 'tile', ap: 'data',
       text: 'Your twin appears on a free tile within 3 tiles of you, with 4 AP of its own each round. Out of a fight it can only move. If a fight starts, it is already called.',
       available: (h) => (!h.u || !h.c || isTwin(h.u) ? false : !cs(h.c).twin ? 'Manifest the twin first.' : (h.c.companions || []).some((k) => k.kind === 'twin') ? 'The twin is already here.' : cs(h.c).twinLost === sceneOf(h) ? 'Your twin fell this scene. You can call it again next scene.' : true),
-      preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !free(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },
+      preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !canStand(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },
       run: (h, a) => {
         const u = h.u!, c = h.c!, g = h.g, t = aimOf(h.cb!, a, 'tile')!, tw = cs(c).twin, hp = Math.floor(0.5 * maxHp(c));
         c.companions = [...(c.companions || []).filter((k) => k.kind !== 'twin'), { id: 'twin', kind: 'twin', name: TWIN_NAME, hp, maxHp: hp, ...(tw.portrait ? { img: tw.portrait } : {}) }];
@@ -1710,12 +1698,12 @@ register({
         return null;
       } },
     { id: 'twin_cast', label: 'The twin casts', scope: ['combat'], target: 'tile', ap: (h, a) => { const d = twinDesign(h, a), m = h.u?.mg; return m && d ? designAp(m, d) + (a.tile ? 1 : 0) : 2; },
-      text: 'Your twin casts one of its three Outbursts from its own tile. You pay the MP and the Strain. With a target, it is a snap cast: Begin and Release in one go, at ×0.6. Without a target, the twin Begins the Outburst and holds it, and can Pump and Release it later.',
+      text: 'Your twin casts one of its three Outbursts from its own tile. You pay the MP and the Strain. With a target, it is a snap cast: Begin and Release in one go, at ×' + stageMult(0) + '. Without a target, the twin Begins the Outburst and holds it, and can Pump and Release it later.',
       available: (h) => (!h.u || !isTwin(h.u) ? false : !h.u.mg || !twinOwner(h.cb!, h.u)?.mg ? 'Your heart has no magic to lend.' : h.u.mg.held ? 'The twin is already holding an Outburst. Pump or Release it.' : true),
       preview: (h, a) => {
         const d = twinDesign(h, a); if (!d) return { ok: false, why: 'Pick one of the twin\'s three Outbursts: tw1, tw2 or tw3.' };
         const tw = h.u!, aim = aimOf(h.cb!, a, 'tile') || undefined;
-        const pv = freeAp(tw, () => previewOutburst(h.cb!, tw, d.id, aim, !!aim)); return pv.ok ? { lines: [d.name + ': ' + pv.cost + ' MP from ' + (twinOwner(h.cb!, tw)?.name || 'you') + ', +' + pv.strain + ' Strain to them' + (aim ? ', ×0.6 now.' : ', held at stage 0.')] } : { ok: false, why: pv.why };
+        const pv = freeAp(tw, () => previewOutburst(h.cb!, tw, d.id, aim, !!aim)); return pv.ok ? { lines: [d.name + ': ' + pv.cost + ' MP from ' + (twinOwner(h.cb!, tw)?.name || 'you') + ', +' + pv.strain + ' Strain to them' + (aim ? ', ×' + stageMult(0) + ' now.' : ', held at stage 0.')] } : { ok: false, why: pv.why };
       },
       run: (h, a, rng) => { const d = twinDesign(h, a)!, tw = h.u!, aim = aimOf(h.cb!, a, 'tile') || undefined; say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + (aim ? ' casts ' : ' begins ') + d.name + ' from ' + refOf(tw.pos) + '.');
         const e = freeAp(tw, () => beginOutburst(h.cb!, rng, tw, d.id, aim, !aim)); if (!e) checkOver(h.cb!); return e; } },
@@ -1763,8 +1751,8 @@ register({
     },
     moved: (ctx, h) => {
       const u = h.u; if (!u || isTwin(u) || ctx.u !== u || !h.cb) return; const tw = twinOf(h.cb, u); if (!tw || dist(tw.pos, u.pos) <= 6) return;
-      const spot = around(u.pos, 6).filter((k) => free(h.cb!, k, tw)).sort((a, b) => dist(a, tw.pos) - dist(b, tw.pos))[0];
-      if (spot) { tw.pos = spot; say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' follows to ' + refOf(spot) + '.'); }
+      const spot = tilesAround(u.pos, 6).filter((k) => canStand(h.cb!, k, tw)).sort((a, b) => dist(a, tw.pos) - dist(b, tw.pos))[0];
+      if (spot) { displace(h.cb!, null, tw, { tile: spot }, { by: null, how: 'teleport', source: 'twin', willing: true, fx: false }); say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' follows to ' + refOf(spot) + '.'); }
     },
     on_downed: (ctx, h) => {
       const u = h.u; if (!u || isTwin(u) || ctx.victim !== u || !h.cb) return; const tw = twinOf(h.cb, u); if (!tw) return;
@@ -1777,7 +1765,7 @@ function twinDesign(h: Holder, a: ActionArgs): OutburstDesign | null {
   return (h.u?.mg?.designs || []).find((d) => d.id === a.choice) || null;
 }
 function vanish(cb: Combat, tw: Unit) {
-  tw.dead = true; tw.downed = false; tw.hp = 0; (cb.deadSeen ||= []).includes(tw.id) || cb.deadSeen!.push(tw.id); // a twin's loss isn't a death: no bots
+  tw.dead = true; setDowned(tw, false); tw.hp = 0; (cb.deadSeen ||= []).includes(tw.id) || cb.deadSeen!.push(tw.id); // a twin's loss isn't a death: no bots
   emitFx(cb, 'down', { unit: tw.id, at: tw.pos, dead: true, vanish: true });
 }
 // Bond (K33, PROVISIONAL, audit 1-3): if the twin would drop to 0 HP it vanishes instead (not Downed; no bots on the

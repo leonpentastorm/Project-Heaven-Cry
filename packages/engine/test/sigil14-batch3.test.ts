@@ -3,6 +3,7 @@
 // Sigil magister: enemies.json `casters`, the Proving Ground's champion waves, the boss tier's default words). Enemy
 // turns run through apply() (combat/end-turn hands the round to the enemies), and the player obeys on its own turn.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   d20, armFoe, aiCommandOrder, casterCombos, CASTER, CASTERS, condOn, sandboxWave, enemyMagic, startCombat, newCharacter, MAPS, refOf, ARCHETYPES,
   apply, newGame, wikiLookup, type Combat, type Unit, type GameState, type Sheet,
@@ -100,14 +101,14 @@ describe('item 491: the boss-tier caster (Sigil magister)', () => {
     expect(wikiLookup('enemy:casters')!.text).toMatch(/Sigil magister \(boss\): FIRE/); // the Narrator's wiki names it
     const a = ARCHETYPES.find((x: any) => x.id === 'sigilist')!;
     const sheet: Sheet = { name: 'P', portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} };
-    const cb = startCombat('t', MAPS.yard, [{ c: newCharacter('c0', 'p1', sheet), pos: '2,5' }], [{ name: 'Champion', tier: 'boss', weapon: 'hellraiser_lmg', at: refOf('15,5'), sigils: true }], 'boss', { state: 3 }, []);
+    const cb = startCombat('t', MAPS.yard16, [{ c: newCharacter('c0', 'p1', sheet), pos: '2,5' }], [{ name: 'Champion', tier: 'boss', weapon: 'hellraiser_lmg', at: refOf('15,5'), sigils: true }], 'boss', { state: 3 }, []);
     const boss = cb.units.find((u) => u.side === 'foe')!;
     expect(boss.mg!.words).toEqual(nine); expect(boss.mg!.maxWords).toBe(4);
     expect(enemyMagic(boss, CASTER.sigil_magister.sigils).maxWords).toBe(4);
   });
   it('a Narrator encounter may name the magister for a boss foe (through apply): Evoker, its words, Max Sigil words 4, spell bias 1.2', () => {
     const s = storyWith([{ archetype: 'sigilist', kit: 'sigil' }]);
-    s.act({ type: 'narrator/turn', turn: { narration: 'The champion writes.', combat: { name: 'Boss', map: 'yard', difficulty: 'boss', enemies: [{ name: 'The Magister', tier: 'boss', weapon: 'magistrate_pistol', caster: 'sigil_magister', at: '' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'The champion writes.', combat: { name: 'Boss', map: 'yard16', difficulty: 'boss', enemies: [{ name: 'The Magister', tier: 'boss', weapon: 'magistrate_pistol', caster: 'sigil_magister', at: '' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.side === 'foe')!;
     expect(u.mg!.evoker).toBe(true); expect(u.mg!.words).toEqual(CASTER.sigil_magister.sigils); expect(u.mg!.maxWords).toBe(4);
     expect((u.mg as any).aiBias).toBe(1.2); expect((u as any).caster).toBe('sigil_magister');

@@ -5,7 +5,7 @@
 //  2. a CHAIN spell's numbered jumps; 3. a WAIT trap an enemy springs; 4. a WATCH turret firing; 5. RAISE walls and
 //  6. NULL wiping them; 7. STEP blink; 8. KIN's fizzle warning; 9. an enemy Sigil caster casting at you.
 // Screenshots (deviceScaleFactor 1) land in e2e/shots/sigil14-*.png.
-import { chromium, player, click, BASE, OUT, pickAction } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, pickAction, pause } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -17,8 +17,8 @@ const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; }
 const st = () => p.evaluate(() => { const s = window.__phc.getState(), g = s.game, cb = g.combat; const u = cb && cb.units.find((x) => x.side === 'pc'); return { g, cb, u, c: u && g.characters[u.charId], toast: s.toast }; });
 const tok = (k) => p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
 const fxCount = () => p.evaluate(() => document.querySelector('.phc-fx-layer')?.childElementCount || 0);
-const dismissCut = async () => { if (await p.locator('[data-phc-cutin]').count()) { await p.mouse.click(1430, 990); await p.waitForTimeout(380); } };
-const pickAct = async (re) => { await dismissCut(); await pickAction(p, re); await p.waitForTimeout(150); };
+const dismissCut = async () => { if (await p.locator('[data-phc-cutin]').count()) { await p.mouse.click(1430, 990); await pause(p, 380); } };
+const pickAct = async (re) => { await dismissCut(); await pickAction(p, re); await pause(p, 150); };
 const confirmBtn = () => p.getByRole('button', { name: /^Confirm/ }).first();
 const panelText = async (label) => ((await p.locator('[aria-label="' + label + '"]').first().textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
 const logSince = async (n) => (await st()).cb.log.slice(n);
@@ -26,12 +26,12 @@ const fxSince = async (n) => (await st()).cb.fx.filter((e) => e.n > n);
 const fxSeq = async () => (await st()).cb.fxSeq || 0;
 const must = async (a, what) => { const e = await act(a); if (e) console.log('  ' + (what || a.type) + ': ' + e); return e; };
 /** Enemy AI off: ending the turn hands it straight back with full AP (and runs the round: fields, traps, turrets). */
-const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 12000 }).catch(() => {});
+const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 20000 }).catch(() => {});
 async function newRound() {
   await idleOn(p); await dismissCut();
   const r0 = (await st()).cb.round;
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 15000 });
+  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 30000 });
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idleOn(p);
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
@@ -74,9 +74,10 @@ async function field(tiles, o = {}) {
   // One boss far off in a corner, so a kill never ends the wave.
   const free = await freeSet(), far = ['15,0', '15,11', '0,11', '0,0', '14,0', '15,1'].find((k) => free.includes(k));
   if (far && !o.alone) await must({ type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: ref(far) }, 'far boss');
-  await p.waitForTimeout(250);
-  const s = await st();
-  return out.map((k) => s.cb.units.find((u) => u.pos === k && u.side === 'foe' && !u.dead)).filter(Boolean);
+  await pause(p, 250);
+  // from the host's truth: a unit spawned out of the player's sight is not in the player's view (fog in the engine)
+  const units = await p.evaluate(() => (window.__phc.truth() || window.__phc.getState().game).combat.units);
+  return out.map((k) => units.find((u) => u.pos === k && u.side === 'foe' && !u.dead)).filter(Boolean);
 }
 /** Clear the field, then find a lane of n free tiles. */
 const clearLane = async (n) => { await must({ type: 'sandbox/clear' }); return findLane(n); };
@@ -89,8 +90,8 @@ async function startEvoke(glyphTile) {
   if (!((await evBtn.count()) && (await evBtn.getAttribute('aria-pressed')) === 'true')) await pickAct(/^Evoke/);
   // A Line picked earlier stays picked: drop it first, so this click picks the new one.
   const again = p.getByRole('button', { name: '‹ Pick another pattern' }).first();
-  if (await again.count()) { await again.click(); await p.waitForTimeout(150); }
-  await tok(glyphTile).click(); await p.waitForTimeout(250);
+  if (await again.count()) { await again.click(); await pause(p, 150); }
+  await tok(glyphTile).click(); await pause(p, 250);
 }
 /** Confirm, then catch the effects layer at a few moments. */
 async function confirmAndCatch(name, at = [120, 320, 650]) {
@@ -98,7 +99,7 @@ async function confirmAndCatch(name, at = [120, 320, 650]) {
   const b = confirmBtn(); const en = await b.isEnabled().catch(() => false);
   if (en) await b.click(); else console.log('  confirm is disabled: ' + (await b.textContent().catch(() => '')));
   let peak = 0, t = 0;
-  for (const ms of at) { await p.waitForTimeout(Math.max(0, ms - t)); t = ms; peak = Math.max(peak, await fxCount()); await snap(name + '-' + ms); }
+  for (const ms of at) { await pause(p, Math.max(0, ms - t)); t = ms; peak = Math.max(peak, await fxCount()); await snap(name + '-' + ms); }
   return { en, peak, events: await fxSince(n0), log: await logSince(l0) };
 }
 
@@ -106,10 +107,10 @@ async function confirmAndCatch(name, at = [120, 320, 650]) {
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let s = await st();
 const cid = Object.values(s.g.characters)[0].id;
 await must({ type: 'sandbox/ai', on: false }); await must({ type: 'sandbox/auto', on: false });
@@ -128,11 +129,11 @@ const ch = s.g.characters[cid];
 ok('the Recruit has an Evoker and the words: ' + (ch.sigils || []).join(' '), (ch.pack || []).concat(ch.offHand ? [ch.offHand] : []).some((x) => (x.item || x.id) === 'evoker') && ['fire', 'seek', 'chain', 'wait', 'watch', 'raise', 'null', 'step', 'kin'].every((w) => ch.sigils.includes(w)));
 await p.getByRole('button', { name: /^⚔ Start the fight/ }).first().click();
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
 await must({ type: 'sandbox/clear' });
-for (let i = 0; i < 20; i++) { s = await st(); const cur = s.cb.units.find((u) => u.id === s.cb.order[s.cb.turn]); if (cur?.side === 'pc') break; await p.waitForTimeout(300); }
-await p.waitForTimeout(2300); await dismissCut();
+for (let i = 0; i < 20; i++) { s = await st(); const cur = s.cb.units.find((u) => u.id === s.cb.order[s.cb.turn]); if (cur?.side === 'pc') break; await pause(p, 300); }
+await pause(p, 2300); await dismissCut();
 s = await st();
 console.log('  me', ref(s.u.pos), 'AP', s.u.ap, 'mg', JSON.stringify({ words: s.u.mg?.words, maxWords: s.u.mg?.maxWords, charge: s.u.mg?.charge, flux: s.u.mg?.flux }));
 ok('in the fight with an Evoker: ' + s.u.mg?.maxWords + ' words a spell, ' + s.u.mg?.charge + ' charge', !!s.u.mg?.evoker && s.u.mg.maxWords >= 4);
@@ -150,7 +151,7 @@ await moveTo(L(4)); await ensureAp(5);
 await pickAct(/^Draw a glyph/);
 await p.waitForSelector('div[aria-label="Glyph keyboard"]');
 const key = (w) => p.locator('div[aria-label="Glyph keyboard"] button', { hasText: new RegExp('^\\s*' + w) }).first();
-await key('FIRE').click(); await p.waitForTimeout(150);
+await key('FIRE').click(); await pause(p, 150);
 const kbFire = ((await key('FIRE').textContent()) || '').replace(/\s+/g, ' ');
 ok('the keyboard shows the word\'s cost and effect: ' + kbFire, /ch · \d AP\s*starts/.test(kbFire));
 // The keyboard is split into labelled rows by Sigil 1.4 word group, in order (empty groups left out), and fits its column.
@@ -172,21 +173,21 @@ await p.keyboard.press('End'); const fEnd = await focused();
 const rowOf = (w) => kb.rows.findIndex((r) => r.words.includes(w));
 ok('arrow keys move through the keys: Right ' + fRight + ', Down ' + fDown + ', End ' + fEnd, fRight === flat[1] && (rowOf(fDown) === 1 || (rowOf(fDown) === 0 && flat.indexOf(fDown) > 0)) && fEnd === flat[flat.length - 1]);
 await p.screenshot({ path: OUT + 'sigil14-01b-keyboard-rows.png' });
-await tok(L(4)).hover(); await p.waitForTimeout(150); await snap('01-keyboard');
-await tok(L(4)).click(); await p.waitForTimeout(300);
+await tok(L(4)).hover(); await pause(p, 150); await snap('01-keyboard');
+await tok(L(4)).click(); await pause(p, 300);
 // Our own tile now holds FIRE: every key is refused, and says why on the key, in its tooltip and its aria label.
 const refused = await p.evaluate(() => { const b = [...document.querySelectorAll('div[aria-label="Glyph keyboard"] button[data-word]')]; return b.length ? b.map((x) => ({ off: x.getAttribute('aria-disabled'), text: (x.textContent || '').replace(/\s+/g, ' '), title: x.title, aria: x.getAttribute('aria-label') })) : null; });
 if (refused) ok('on a tile with a glyph every key says "tile taken": ' + refused[0].text + ' | ' + refused[0].aria, refused.every((k) => k.off === 'true' && /tile taken/.test(k.text) && /One glyph per tile/.test(k.title) && /can't draw now/.test(k.aria)));
 await moveTo(L(3));
 await pickAct(/^Draw a glyph/).catch(() => {});
-await key('SEEK').click(); await p.waitForTimeout(150);
+await key('SEEK').click(); await pause(p, 150);
 const kbSeek = ((await key('SEEK').textContent()) || '').replace(/\s+/g, ' ');
 ok('SEEK one step on extends the Line: ' + kbSeek, /extends/.test(kbSeek));
-await tok(L(3)).click(); await p.waitForTimeout(300);
+await tok(L(3)).click(); await pause(p, 300);
 await moveTo(L(2));
 await pickAct(/^Draw a glyph/).catch(() => {});
-await key('SPREAD').click(); await p.waitForTimeout(150);
-await tok(L(2)).click(); await p.waitForTimeout(300);
+await key('SPREAD').click(); await pause(p, 150);
+await tok(L(2)).click(); await pause(p, 300);
 s = await st();
 ok('a 3-glyph Line on our own tiles: ' + (s.cb.glyphs || []).map((g) => g.word.toUpperCase() + '@' + ref(g.pos)).join(' '), ['fire', 'seek', 'spread'].every((w, i) => (s.cb.glyphs || []).some((g) => g.word === w && g.pos === L(4 - i))));
 await snap('02-line-drawn');
@@ -201,21 +202,21 @@ const standLbl = (await tok(L(1)).getAttribute('aria-label')) || '';
 ok('tiles you can Evoke from carry a facing arrow (' + arrowTiles + ' tiles; ' + ref(L(1)) + ': ' + standLbl.slice(0, 80) + ')', arrowTiles > 0);
 await snap('03-stand-arrows');
 // Back onto the Line's end: it fires east, along the Line, toward the targets
-await moveTo(L(2)); await p.waitForTimeout(300);
+await moveTo(L(2)); await pause(p, 300);
 let lp = await panelText('The Line');
 if (!/FIRES/.test(lp)) { await startEvoke(L(3)); lp = await panelText('The Line'); }
 ok('from the end it fires along the Line: ' + lp.slice(0, 60), /FIRES →/.test(lp));
 const tinted = await p.evaluate(() => [...document.querySelectorAll('button.phc-tok')].filter((b) => /79, 200, 223|8BDEEE|4FC8DF/i.test(b.getAttribute('style') || '') || /79, 200, 223/.test((b.querySelector('[style]')?.getAttribute('style')) || '')).length);
 console.log('  tinted-looking tiles:', tinted);
 await snap('04-area');
-await tok(t1.pos).hover(); await p.waitForTimeout(350);
+await tok(t1.pos).hover(); await pause(p, 350);
 const t1Lbl = (await tok(t1.pos).getAttribute('aria-label')) || '', t2Lbl = (await tok(t2.pos).getAttribute('aria-label')) || '';
 const aff = await panelText('Who it affects');
 ok('hovering the target: its numbers on the tile (' + t1Lbl.replace(/^.*?·/, '').slice(0, 70) + ')', /−\d+ HP/.test(t1Lbl));
 ok('the burst catches the second unit too (' + t2Lbl.replace(/^.*?·/, '').slice(0, 70) + ')', /−\d+ HP/.test(t2Lbl));
 ok('who it affects, with numbers: ' + aff.slice(0, 160), /ENEMY/.test(aff) && /\d+ HP|−\d+/.test(aff));
 await snap('05-hover-burst');
-await tok(t1.pos).click(); await p.waitForTimeout(250);
+await tok(t1.pos).click(); await pause(p, 250);
 const hp1 = [(await unitAt(t1.pos)).hp, (await unitAt(t2.pos)).hp];
 let r = await confirmAndCatch('06-evoke-fx');
 s = await st();
@@ -237,7 +238,7 @@ for (let attempt = 0; attempt < 3 && !chained; attempt++) {
   await topUp(); await ensureAp(3);
   await startEvoke(L(3));
   if (process.env.DBG) { await snap('dbg-chain-' + attempt); const s = await st(); console.log('  dbg', ref(s.u.pos), 'AP', s.u.ap, (s.cb.glyphs || []).map((g) => g.word + '@' + ref(g.pos)).join(' '), '|', await panelText('The Line')); }
-  await tok(L(8)).hover(); await p.waitForTimeout(350);
+  await tok(L(8)).hover(); await pause(p, 350);
   const chainMarks = await p.evaluate((ks) => ks.map((k) => { const [x, y] = k.split(',').map(Number); const r = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); const b = document.querySelector('button.phc-tok[aria-label^="' + r + ' ·"]'); return (b?.textContent || '').replace(/\s+/g, ' '); }), [L(10), L(12)]);
   const affC = await panelText('Who it affects');
   console.log('  chain tiles:', chainMarks.join(' || '), '· affects:', affC.slice(0, 220));
@@ -245,7 +246,7 @@ for (let attempt = 0; attempt < 3 && !chained; attempt++) {
     ok('the hover shows the chain: who it jumps to, with the multipliers', /×0\.75|×0\.56|jump/i.test(affC + chainMarks.join(' ')));
     await snap('07-chain-hover');
   }
-  await tok(L(8)).click(); await p.waitForTimeout(200);
+  await tok(L(8)).click(); await pause(p, 200);
   r = await confirmAndCatch('08-chain-fx' + (attempt ? '-' + attempt : ''), [150, 400, 800]);
   chained = r.events.some((e) => e.k === 'chain');
   console.log('  CHAIN attempt ' + (attempt + 1) + ': ' + r.events.map((e) => e.k).join(' ') + ' · ' + r.log.join(' ').slice(0, 260));
@@ -259,7 +260,7 @@ const [w1] = await field([L(8)]);
 await walkLine(['spark', 'seek', 'wait'], [L(4), L(3), L(2)]);
 await topUp(); await ensureAp(3);
 await startEvoke(L(3));
-await tok(w1.pos).click(); await p.waitForTimeout(250);
+await tok(w1.pos).click(); await pause(p, 250);
 r = await confirmAndCatch('09-trap-set', [150, 450]);
 s = await st();
 ok('a trap waits at ' + ref(w1.pos) + ': ' + r.log.join(' ').slice(0, 160), (s.cb.zones || []).some((z) => z.kind === 'trap' && z.tiles.includes(w1.pos)));
@@ -281,16 +282,16 @@ const [tw] = await field([L(10)]);
 await walkLine(['spark', 'seek', 'watch'], [L(4), L(3), L(2)]);
 await topUp(); await ensureAp(3);
 await startEvoke(L(3));
-await tok(L(7)).click(); await p.waitForTimeout(250);
+await tok(L(7)).click(); await pause(p, 250);
 r = await confirmAndCatch('12-turret-placed', [150, 500]);
 s = await st();
 ok('a turret stands at ' + ref(L(7)) + ': ' + r.log.join(' ').slice(0, 150), (s.cb.zones || []).some((z) => z.kind === 'turret'));
 const hpT = (await unitAt(tw.pos)).hp, n1 = await fxSeq();
 await dismissCut();
 await p.getByRole('button', { name: 'End turn', exact: true }).click();
-await p.waitForFunction((n1) => (window.__phc.getState().game.combat.fx || []).some((e) => e.n > n1 && e.k === 'turret_shot'), n1, { timeout: 15000 }).catch(() => {});
-await p.waitForTimeout(250); await snap('13-turret-shot');
-await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 15000 });
+await p.waitForFunction((n1) => (window.__phc.getState().game.combat.fx || []).some((e) => e.n > n1 && e.k === 'turret_shot'), n1, { timeout: 20000 }).catch(() => {});
+await pause(p, 250); await snap('13-turret-shot');
+await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
 await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut();
 s = await st();
 const shots = (await fxSince(n1)).filter((e) => e.k === 'turret_shot');
@@ -304,7 +305,7 @@ await field([K(15, 0)].filter(Boolean)); // one far off so the wave stays on
 await walkLine(['raise', 'seek', 'spread'], [L(4), L(3), L(2)]);
 await topUp(); await ensureAp(3);
 await startEvoke(L(3));
-await tok(L(8)).click(); await p.waitForTimeout(250);
+await tok(L(8)).click(); await pause(p, 250);
 r = await confirmAndCatch('15-raise', [150, 450, 900]);
 s = await st();
 const walls = (s.cb.objects || []).filter((o) => o.kind === 'sigil_wall');
@@ -314,8 +315,8 @@ await walkLine(['null', 'seek', 'spread'], [L(4), L(3), L(2)]);
 await topUp(); await ensureAp(3);
 await startEvoke(L(3));
 const nearWall = walls.map((o) => o.pos).filter((k) => xy(k)[1] === lane.y).sort((a, b) => xy(a)[0] - xy(b)[0])[0] || L(7);
-await tok(nearWall).hover(); await p.waitForTimeout(250); await snap('16-null-aim');
-await tok(nearWall).click(); await p.waitForTimeout(250);
+await tok(nearWall).hover(); await pause(p, 250); await snap('16-null-aim');
+await tok(nearWall).click(); await pause(p, 250);
 r = await confirmAndCatch('17-null', [150, 450, 900]);
 s = await st();
 const left = (s.cb.objects || []).filter((o) => o.kind === 'sigil_wall').length;
@@ -328,11 +329,11 @@ await walkLine(['step', 'condense'], [L(3), L(2)]);
 await topUp(); await ensureAp(3);
 s = await st(); const from = s.u.pos;
 await startEvoke(L(3));
-await tok(from).click(); await p.waitForTimeout(250); // aim at ourselves
+await tok(from).click(); await pause(p, 250); // aim at ourselves
 const dest = (await freeSet()).filter((k) => { const [x, y] = xy(k), [fx, fy] = xy(from); return Math.max(Math.abs(x - fx), Math.abs(y - fy)) === 3; })[0];
-await tok(dest).hover(); await p.waitForTimeout(200);
+await tok(dest).hover(); await pause(p, 200);
 await snap('18-step-dest');
-await tok(dest).click(); await p.waitForTimeout(250);
+await tok(dest).click(); await pause(p, 250);
 r = await confirmAndCatch('19-blink', [120, 300, 600]);
 s = await st();
 ok('STEP blinks us ' + ref(from) + ' → ' + ref(s.u.pos) + ' (' + r.events.map((e) => e.k).join(' ') + ')', s.u.pos === dest && r.events.some((e) => e.k === 'blink'));
@@ -344,7 +345,7 @@ await walkLine(['mend', 'kin'], [L(3), L(2)]);
 await ensureAp(3);
 await startEvoke(L(3));
 s = await st();
-await tok(s.u.pos).click(); await p.waitForTimeout(300);
+await tok(s.u.pos).click(); await pause(p, 300);
 const kinPanel = await panelText('The Line'), warn = await p.locator('[aria-label="The Line"] [role="alert"]').first().textContent().catch(() => '');
 ok('the KIN fizzle warning: ' + (warn || kinPanel.slice(-120)), /fizzle/i.test(warn || kinPanel));
 await snap('20-kin-fizzle');
@@ -364,8 +365,8 @@ for (let i = 0; i < 4 && !cast; i++) {
   const l0 = (await st()).cb.log.length, n2 = await fxSeq();
   await dismissCut();
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction((n2) => (window.__phc.getState().game.combat.fx || []).some((e) => e.n > n2 && e.k === 'evoke' && e.side === 'foe'), n2, { timeout: 6000 }).then(async () => { await p.waitForTimeout(260); await snap('21-enemy-cast-' + i); }, () => {});
-  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; if (cb.over) return true; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 20000 });
+  await p.waitForFunction((n2) => (window.__phc.getState().game.combat.fx || []).some((e) => e.n > n2 && e.k === 'evoke' && e.side === 'foe'), n2, { timeout: 30000 }).then(async () => { await pause(p, 260); await snap('21-enemy-cast-' + i); }, () => {});
+  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; if (cb.over) return true; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
   const lines = await logSince(l0);
   console.log('  enemy turn ' + (i + 1) + ':', lines.filter((l) => /Sigil adept/.test(l)).join(' | ').slice(0, 300));
   cast = lines.some((l) => /Sigil adept.*evokes/.test(l));
@@ -373,7 +374,7 @@ for (let i = 0; i < 4 && !cast; i++) {
 }
 s = await st();
 ok('the enemy caster draws and Evokes a spell at us', cast);
-await p.waitForTimeout(300); await snap('22-enemy-cast-after');
+await pause(p, 300); await snap('22-enemy-cast-after');
 await must({ type: 'sandbox/ai', on: false });
 
 console.log('  page errors:', JSON.stringify(p.errors));

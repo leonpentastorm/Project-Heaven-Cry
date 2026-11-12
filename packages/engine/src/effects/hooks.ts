@@ -5,7 +5,8 @@
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
-import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf } from './collect';
+import type { StatId } from './stats';
+import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, _addRawItems, _clearRawItems } from './collect';
 
 // ---------- the bound game (set by apply() for the length of one action) ----------
 let G: any = null;
@@ -33,6 +34,11 @@ export const registered = () => [...REG.keys()];
 /** For tests: take a copy of the lane registrations, and put a copy back (test helpers isolate runtime tests from lanes). */
 export const _snapshotRegistry = () => new Map(REG);
 export function _restoreRegistry(snap: Map<string, ItemHandler>) { REG.clear(); for (const [k, v] of snap) REG.set(k, v); dirty(); }
+/** Add items at run time (engine foundations 3): a mode's relics or new perks, a test's fixtures; plain data in the
+ * shape of perks.json / traits.json items. They run on the generic runners only (no handler). */
+export function addItems(kind: 'perk' | 'trait' | 'relic', items: any[]) { _addRawItems(kind, items); dirty(); }
+/** For tests: forget the items added with addItems. */
+export function clearAddedItems() { _clearRawItems(); dirty(); }
 /** For tests: forget every lane registration (generic handlers stay). */
 export function _unregisterAll(keep: (key: string) => boolean = () => false) { for (const k of [...REG.keys()]) if (!keep(k)) REG.delete(k); dirty(); }
 
@@ -40,7 +46,7 @@ export function _unregisterAll(keep: (key: string) => boolean = () => false) { f
 export interface GenericOp {
   op: string;
   claim(e: any, info: ItemInfo): boolean;
-  stat?(h: Holder, e: any, stat: string, ctx: any): StatAnswer;
+  stat?(h: Holder, e: any, stat: StatId, ctx: any): StatAnswer;
   on?: Partial<Record<HookName, (ctx: any, h: Holder, e: any) => void>>;
   checkMod?(h: Holder, e: any, ck: any, ctx: any): CheckMod[] | void;
   /** Run as part of an action's own effects (cleanse, shield, heal, condition…). Returns a log suffix, or null. */
@@ -49,6 +55,13 @@ export interface GenericOp {
   runs?(e: any, info: ItemInfo): boolean;
 }
 const GEN = new Map<string, GenericOp>();
+
+// ---------- item ops: triggered effects (engine foundations 3, effects/triggers.ts sets this at load) ----------
+interface TriggerRunner { isTriggered(e: any): boolean; problem(e: any): string | null; hookOf(e: any): HookName | null; run(ctx: any, h: Holder, e: any): void }
+let TR: TriggerRunner | null = null;
+export function setTriggerRunner(r: TriggerRunner) { TR = r; dirty(); }
+/** Does this effect run as a triggered item op (its `when` names a trigger and it is well formed)? */
+const triggered = (e: any): boolean => !!TR && TR.isTriggered(e) && !TR.problem(e);
 export function registerGeneric(op: GenericOp) { GEN.set(op.op, op); dirty(); }
 export const genericOf = (op: string) => GEN.get(op);
 
@@ -63,6 +76,7 @@ export function ownerOf(info: ItemInfo, i: number): Owner {
   if (h && sel(h.claims, e, i, t)) return 'handler';
   if (h && sel(h.narrator, e, i, t)) return 'narrator';
   if (!e || e.op === 'narrator') return 'narrator';
+  if (TR && TR.isTriggered(e)) return TR.problem(e) ? 'gap' : 'generic'; // an item op: the runner runs it, standing, even on an action item
   if (e.op === 'grant_action') return h?.actions?.length ? 'handler' : 'action';
   const g = GEN.get(e.op);
   if (info.bound) {
@@ -78,8 +92,33 @@ export function ownerOf(info: ItemInfo, i: number): Owner {
 interface Slot { info: ItemInfo; fn: (ctx: any, h: Holder) => void; prio: number }
 const indexCache = new Map<string, Record<string, Slot[]>>();
 let version = 0;
-function dirty() { version++; indexCache.clear(); }
+function dirty() { version++; indexCache.clear(); listened.clear(); TH = null; }
+const listened = new Map<string, boolean>();
+/** Does anything at all listen on this hook (an item's handler, a generic op, an engine system)? A hook that every
+ * action passes through (the `cost` hook) asks this first, so it costs nothing until somebody uses it. */
+export function hookUsed(name: HookName): boolean {
+  let v = listened.get(name);
+  if (v == null) {
+    v = !!GLOBAL_HOOKS[name]?.length;
+    if (!v) for (const h of REG.values()) if (h.on && (h.on as any)[name]) { v = true; break; }
+    if (!v) for (const g of GEN.values()) if (g.on && (g.on as any)[name]) { v = true; break; }
+    if (!v && TR) v = triggerHooks().has(name);
+    listened.set(name, v);
+  }
+  return v;
+}
 export const registryVersion = () => version;
+/** The hooks the data's item ops listen on (every item, and any added by addItems). */
+let TH: Set<string> | null = null;
+function triggerHooks(): Set<string> {
+  if (TH) return TH;
+  TH = new Set();
+  for (const info of allItemsHook ? allItemsHook() : []) for (const e of info.effects) { const k = TR?.isTriggered(e) ? TR.hookOf(e) : null; if (k) TH.add(k); }
+  return TH;
+}
+let allItemsHook: (() => ItemInfo[]) | null = null;
+/** collect.ts gives the registry its list of every item (kept there to avoid an import cycle). */
+export const setAllItems = (f: () => ItemInfo[]) => { allItemsHook = f; TH = null; listened.clear(); };
 
 function buildIndex(held: Held): Record<string, Slot[]> {
   const k = heldKey(held), hit = indexCache.get(k); if (hit) return hit;
@@ -88,9 +127,11 @@ function buildIndex(held: Held): Record<string, Slot[]> {
   for (const info of itemsOf(held)) {
     const h = REG.get(info.key);
     if (h?.on) for (const [name, fn] of Object.entries(h.on)) if (fn) add(name, { info, fn: fn as any, prio: h.priority ?? 100 });
+    // item ops (effects/triggers.ts): on their trigger's hook, at the effect's priority (default 100, a handler's)
+    info.effects.forEach((e, i) => { if (triggered(e) && ownerOf(info, i) === 'generic') add(TR!.hookOf(e)!, { info, fn: (ctx, hh) => TR!.run(ctx, hh, e), prio: typeof e.priority === 'number' ? e.priority : 100 }); });
     if (info.bound) continue; // an action's own effects run with the action, not as standing passives
     info.effects.forEach((e, i) => {
-      if (ownerOf(info, i) !== 'generic') return;
+      if (ownerOf(info, i) !== 'generic' || triggered(e)) return;
       const g = GEN.get(e.op); if (!g?.on) return;
       for (const [name, fn] of Object.entries(g.on)) if (fn) add(name, { info, fn: (ctx, hh) => (fn as any)(ctx, hh, e), prio: 200 });
     });
@@ -105,7 +146,7 @@ function buildIndex(held: Held): Record<string, Slot[]> {
 export function heldOfChar(c: Character | null | undefined): Held {
   if (!c) return { perks: [], traits: [] };
   const sk = skillItemsOf(c.skills);
-  return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank: rankHook ? rankHook(c) : 1, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}) };
+  return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank: rankHook ? rankHook(c) : 1, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}), ...(c.relics?.length ? { relics: [...c.relics] } : {}) };
 }
 let rankHook: ((c: Character) => number) | null = null;
 /** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */
@@ -129,15 +170,28 @@ export function holderOf(x: { u?: Unit | null; c?: Character | null; cb?: Combat
 
 // ---------- emit ----------
 /** Fire a combat hook: every unit's handlers in cb.units order (an ally's or an enemy's items may react). */
+/** Step a7 (leak 4): a blast, a splash, a trap and a thrown item fire 'damage_out' too when someone made them
+ * (ctx.blast, ctx.kind: 'explosion' | 'trap' | 'thrown'), but an item speaks about them only when its data says so
+ * (`damage_kinds`): every item written before then keeps meaning weapon attacks and spells, so nothing moved by itself. */
+const speaksOfBlast = (info: ItemInfo, kind: string): boolean => { const k = info.damageKinds; return !!k && (k.includes('blast') || k.includes('all') || k.includes(kind)); };
 export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): any {
   if (!cb) return ctx;
+  const blast = name === 'damage_out' && !!ctx?.blast;
   for (const u of cb.units) {
     const held = heldOfUnit(u); if (!heldAny(held)) continue;
     const list = buildIndex(held)[name]; if (!list) continue;
     const c = charOfUnit(u);
-    for (const s of list) { s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
+    for (const s of list) { if (blast && !speaksOfBlast(s.info, ctx.kind)) continue; s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
   }
   const gl = GLOBAL_HOOKS[name]; if (gl) for (const f of gl) { f(ctx, cb); if (ctx && ctx.stop) return ctx; }
+  return ctx;
+}
+/** Fire a hook for ONE unit's own items, with no fight in reach (a price asked for a row before a fight is known). */
+export function emitOwn(u: Unit, name: HookName, ctx: any): any {
+  const held = heldOfUnit(u); if (!heldAny(held)) return ctx;
+  const list = buildIndex(held)[name]; if (!list) return ctx;
+  const c = charOfUnit(u);
+  for (const s of list) { s.fn(ctx, holder(s.info, c, u, null)); if (ctx && ctx.stop) return ctx; }
   return ctx;
 }
 // ---------- engine systems that aren't items (rules 1.6: faith.ts) ----------
@@ -147,8 +201,8 @@ type GlobalHook = (ctx: any, cb: Combat) => void;
 const GLOBAL_HOOKS: Partial<Record<HookName, GlobalHook[]>> = {};
 const GLOBAL_STATS: Record<string, ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number)[]> = {};
 const GLOBAL_CHECKS: ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[])[] = [];
-export function onHook(name: HookName, fn: GlobalHook) { (GLOBAL_HOOKS[name] ||= []).push(fn); }
-export function onStat(stat: string, fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number) { (GLOBAL_STATS[stat] ||= []).push(fn); }
+export function onHook(name: HookName, fn: GlobalHook) { (GLOBAL_HOOKS[name] ||= []).push(fn); listened.delete(name); }
+export function onStat(stat: StatId, fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number) { (GLOBAL_STATS[stat] ||= []).push(fn); }
 export function onCheck(fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[]) { GLOBAL_CHECKS.push(fn); }
 /** A story hook for an engine system (no item): runs after the characters' items, with the game. */
 const GLOBAL_STORY: Partial<Record<HookName, ((ctx: any, g: any) => void)[]>> = {};
@@ -173,7 +227,7 @@ export function anyOn(cb: Combat | null | undefined, name: HookName): boolean {
 
 // ---------- stat and check queries ----------
 /** Sum of every item's answer to a stat query (stat handlers, then generic stat effects). mult multiplies. */
-export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: string, ctx: any = {}): { add: number; mult: number } {
+export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: StatId, ctx: any = {}): { add: number; mult: number } {
   let add = 0, mult = 1;
   for (const f of GLOBAL_STATS[stat] || []) add += f(x, ctx) || 0; // engine systems (faith.ts)
   const c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c);
@@ -182,7 +236,7 @@ export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Comba
     const h = REG.get(info.key), hh = holder(info, c, x.u || null, x.cb || null);
     if (h?.stat) take(h.stat(hh, stat, ctx));
     if (info.bound) continue;
-    info.effects.forEach((e, i) => { const g = GEN.get(e?.op); if (g?.stat && ownerOf(info, i) === 'generic') take(g.stat(hh, e, stat, ctx)); });
+    info.effects.forEach((e, i) => { const g = GEN.get(e?.op); if (g?.stat && ownerOf(info, i) === 'generic' && !triggered(e)) take(g.stat(hh, e, stat, ctx)); });
   }
   return { add, mult };
   function take(r: StatAnswer) { if (r == null) return; if (typeof r === 'number') add += r; else { add += r.add || 0; mult *= r.mult ?? 1; } }
@@ -195,14 +249,14 @@ export function checkQuery(x: { u?: Unit | null; c?: Character | null; cb?: Comb
     const h = REG.get(info.key), hh = holder(info, c, x.u || null, x.cb || null);
     if (h?.checkMod) out.push(...(h.checkMod(hh, ck, ctx) || []));
     if (info.bound) continue;
-    info.effects.forEach((e, i) => { const g = GEN.get(e?.op); if (g?.checkMod && ownerOf(info, i) === 'generic') out.push(...(g.checkMod(hh, e, ck, ctx) || [])); });
+    info.effects.forEach((e, i) => { const g = GEN.get(e?.op); if (g?.checkMod && ownerOf(info, i) === 'generic' && !triggered(e)) out.push(...(g.checkMod(hh, e, ck, ctx) || [])); });
   }
   return out.filter((m) => m && m.add);
 }
 /** Every effect of every item a holder has whose owner is a generic op (for the generic handlers' own queries). */
 export function genericEffects(x: { u?: Unit | null; c?: Character | null }, op: string): { e: any; info: ItemInfo }[] {
   const c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c), out: { e: any; info: ItemInfo }[] = [];
-  for (const info of itemsOf(held)) { if (info.bound) continue; info.effects.forEach((e, i) => { if (e?.op === op && ownerOf(info, i) === 'generic') out.push({ e, info }); }); }
+  for (const info of itemsOf(held)) { if (info.bound) continue; info.effects.forEach((e, i) => { if (e?.op === op && ownerOf(info, i) === 'generic' && !triggered(e)) out.push({ e, info }); }); }
   return out;
 }
 export type { ActiveEffect };

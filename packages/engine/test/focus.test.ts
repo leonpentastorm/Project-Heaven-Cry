@@ -1,6 +1,7 @@
 // A magic focus counts only when it is held in a hand (spec: Hands 2; items 630-635; decision 103). Every rule goes
 // through apply(), the path a player's click takes.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, newGame, newCharacter, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, focusHand, packOf, positionsOf, migrateCharacterFocus,
   ARCHETYPES, KITS, refOf, type Action, type Character, type GameState, type Unit,
@@ -19,7 +20,7 @@ function fight(setup: (sig: Character, soul: Character) => void, foes: any[] = [
   const [a, b] = s.chars.map((c) => s.g.characters[c.id]);
   a.sigils = ['fire', 'seek']; a.evoCharge = 10;
   setup(a, b);
-  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Focus test', map: 'yard', difficulty: 'standard', enemies: foes } } } as any);
+  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Focus test', map: 'yard16', difficulty: 'standard', enemies: foes } } } as any);
   const api = {
     get g(): GameState { return s.g; },
     unit: (c: Character): Unit => s.g.combat!.units.find((u) => u.charId === c.id)!,

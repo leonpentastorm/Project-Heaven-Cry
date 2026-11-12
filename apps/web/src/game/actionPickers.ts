@@ -35,8 +35,10 @@ export interface Args { choice?: string; npc?: string; text?: string; targetId?:
 export interface PickCtx { g: any; c: any; how: 'story' | 'world' | 'combat'; cb?: any; u?: any }
 
 // ---------- the Soul schools' options (the Outburst workshop on the MAGIC tab uses the same) ----------
-export const OPT_LABEL: Record<string, string> = { to_hit_2: '+2 to hit', defense_2: '+2 Defense', heal_30: 'Heal 30', push_3: 'Push 3 tiles', pull_3: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed',
-  fear: 'Afraid', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff' };
+export const OPT_LABEL: Record<string, string> = { to_hit_2: '+2 to hit', defense_2: '+2 Defense', heal_30: 'Heal', push_3: 'Push 3 tiles', pull_3: 'Pull 3 tiles', pinned: 'Pinned', slowed: 'Slowed',
+  fear: 'Afraid', shaken: 'Shaken', confused: 'Confused', left_brain_debuff: 'Left Brain Debuff', right_brain_debuff: 'Right Brain Debuff',
+  // rules 1.19: the Damage school's ways to strike, Control's Swap, Status' Silenced
+  strike: 'Strike', finish: 'Finish', brand: 'Brand', drain: 'Drain', swap: 'Swap places', silenced: 'Silenced' };
 /** The option value the engine reads on release (data 'push_3' → 'push', 'to_hit_2' → 'hit'). */
 export const optValue = (o: string) => o.replace(/^to_/, '').replace(/_\d+$/, '');
 /** Module slots of one design: your Will Power slots, plus the action's extra (Beloved: +1). The engine's checkDesign rule. */

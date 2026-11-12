@@ -1,6 +1,7 @@
 // The completeness pass, part C: lanes B-H items whose story, area-map or reducer-path side was missing or untested.
 // Everything goes through the reducer (apply): story/perk, world/act, combat/*, narrator/turn, check/roll, char/add.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, newGame, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, apLeft, d20, previewAttack, packOf, makeObject, ARCHETYPES, memoryOf,
   togglesFor, storyCb, WEAPONS, ITEM, maxHp, PATRON, sideSees,
@@ -143,7 +144,7 @@ describe('The Old Blood, Machine-Faced, The Brightest Light, Ghost Soldier', () 
     const s2 = fightWith([{ traits: ['the_brightest_light'] }], [{ at: 'O10' }]);
     void s2; // the crash is read when the unit is built: start a fight with it set
     const s = storyWith([{ traits: ['the_brightest_light'] }]); s.g.characters[s.chars[0].id].state = { crashed: true };
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     const cb = s.g.combat!, u = cb.units.find((x) => x.side === 'pc')!, foe = cb.units.find((x) => x.side === 'foe')!; u.ap = 6; u.pos = '2,2'; foe.pos = '5,2';
     const crashed = withGame(s.g, () => previewAttack(cb, u, foe, 'shot')).toHit;
     expect(crashed).toBe(base - 2);
@@ -253,6 +254,7 @@ describe('Insomniac, Rival, Rabbit\'s Foot, Company Man, Upper-Touched, Sworn Si
 describe('Lowland Born, Raised by Orks, Oil in My Mind, start items', () => {
   it('Lowland Born: −2 Vigilant on a story check in an open zone', () => {
     const s = storyWith([{ traits: ['lowland_born'] }]); const c = s.chars[0];
+    s.g.campaign = JSON.parse(JSON.stringify(s.g.campaign)); // shared between states: change a copy
     const z = (s.g.campaign as any).zones.find((x: any) => x.id === zoneMap(s.g).id); z.tags = [...(z.tags || []), 'terrain:open'];
     const ck = storyCheck(s, c.id, ['vigilant'], [], 10);
     expect(JSON.stringify(ck.roll) + JSON.stringify(s.g.story.entries.at(-1))).toMatch(/Lowland|Open Sky|−2/);

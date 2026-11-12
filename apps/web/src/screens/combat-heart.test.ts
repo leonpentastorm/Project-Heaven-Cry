@@ -94,7 +94,7 @@ describe('the Outbursts tab (rules 1.5)', () => {
     expect(tp.items.map((a: any) => a.key)).not.toContain('pump'); // the panel holds them
     for (let i = 0; i < 3; i++) { r = L.renderVals(); r.turnPanels[0].tabPanel[0].hv.btns[0].pick(); }
     expect(G.combat!.units.find((v) => v.id === u.id)!.mg!.held!.stage).toBe(3);
-    r = L.renderVals(); expect(r.turnPanels[0].tabPanel[0].hv.multText).toMatch(/^×1.8/);
+    r = L.renderVals(); expect(r.turnPanels[0].tabPanel[0].hv.multText).toMatch(/^×1\.4/); // stage 3 is ×1.4 (rules 1.19)
     // Release: aim at a foe, the preview shows them, Confirm fires it.
     const foe = G.combat!.units.find((v) => v.side === 'foe')!;
     L.pickAction('release'); L.setState({ aim: foe.pos }); r = L.renderVals();

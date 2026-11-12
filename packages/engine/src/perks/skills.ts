@@ -13,8 +13,8 @@ import { register, stateOf, uses, modOn, emit, boundGame, type Holder, type Acti
 import { type Combat, type Unit, dist, emitFx } from '../combat';
 import { compileSpell, MAX_GLYPHS, MAX_STAGE, SHORT_AT_OVER, stageMult, addStrain, isBoon, type Spell } from '../magic';
 import type { Rng } from '../rng';
+import { say, rngOf } from '../kit';
 
-const say = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
 const mine = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id === h.u.id;
 const evokerWhy = (h: Holder): string | true => (!h.u?.mg ? 'Needs Sigil magic.' : !h.u.mg.evoker ? 'Needs an Evoker in hand.' : true);
 const W = (s: string) => s.toUpperCase();
@@ -40,7 +40,7 @@ const overclock = (scope: 'combat' | 'world'): ActionDef => ({
     if (m.maxWords - (m.ocBump ? 1 : 0) >= MAX_GLYPHS) return 'Your Max Sigil words is already ' + MAX_GLYPHS + ': a spell holds no more.';
     return true;
   },
-  preview: (h) => ({ lines: ['Max Sigil words ' + h.u!.mg!.maxWords + ' → ' + Math.min(MAX_GLYPHS, h.u!.mg!.maxWords + 1) + ' until the next glyph you draw leaves the ground; that glyph costs +' + OC_CHARGE + ' charge.'] }),
+  preview: (h) => (!h.u?.mg ? {} : { lines: ['Max Sigil words ' + h.u!.mg!.maxWords + ' → ' + Math.min(MAX_GLYPHS, h.u!.mg!.maxWords + 1) + ' until the next glyph you draw leaves the ground; that glyph costs +' + OC_CHARGE + ' charge.'] }), // (no magic: the button is greyed with the reason; nothing to preview)
   run: (h) => { const st = stateOf(h); st.armed = true; ocSync(st, h.u, h.cb); say(h.cb, h.u!.name + ' overclocks: the next glyph may go one word past Max Sigil words (+' + OC_CHARGE + ' charge).'); },
 });
 register({
@@ -166,7 +166,7 @@ register({
     },
     action_done: (ctx, h) => {
       const st = stateOf(h), u = h.u; if (!mine(h, ctx.u) || !u || !st.owed || !h.cb) return; const n = st.owed; st.owed = 0;
-      say(h.cb, 'Overdraw: the heart pays (+' + n + ' Strain)' + addStrain(h.cb, (ctx.rng || boundGame()?.rng || { state: 1 }) as Rng, u, n, 'Overdraw') + '.');
+      say(h.cb, 'Overdraw: the heart pays (+' + n + ' Strain)' + addStrain(h.cb, rngOf(null, ctx), u, n, 'Overdraw') + '.');
     },
   },
   brief: () => null,

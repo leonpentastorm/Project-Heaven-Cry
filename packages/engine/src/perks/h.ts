@@ -12,15 +12,15 @@ import type { Character } from '../character';
 import { mod, packOf, maxHp, maxMp, hasEmanator, restockResources } from '../character';
 import { unitFromCharacter } from '../combat';
 import { condFamily, endCond, MANA_START } from '../magic';
-import { d20 } from '../rng';
-import { SKILL, ITEM, MANA_BANDS } from '../data';
+import { SKILL, ITEM, MANA_BANDS, TRAITS } from '../data';
 import { storyConds, zoneTags, karmaBand, sideRollMod } from '../game';
 import { applyMemOp } from '../memory';
+import { overworld, say } from '../kit';
+import { rollVs, TN } from '../rolls';
+import { loseAp, setAp } from '../effects/cost';
 
 // ---------- small helpers ----------
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 const cst = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read-only item state (stat queries and previews must not change state). */
 const ro = (c: Character | null | undefined): Record<string, any> => c?.state || {};
@@ -78,7 +78,7 @@ function bandAward(h: Holder, ctx: any, b: Band) {
 }
 
 // ---------- Mind Without Fog ----------
-// +1 Core point at creation (rules 1.11, item 929; FOG_CORE in character.ts reads the trait). Heart Debuffs never affect it: the generic immunity cancels
+// +2 Attribute points at creation (rules 1.13; FOG_CORE in character.ts reads the trait). Heart Debuffs never affect it: the generic immunity cancels
 // Heart-family conditions in a fight; here, a Heart condition carried in is dropped, a story Heart condition never takes
 // (Shaken's −2 is cancelled and the condition removed), and a story Heart save, or a check the Narrator tags
 // 'heart_debuff', succeeds on its own. Unmoving: gear bonuses to Attributes and Skills don't apply (no item grants one
@@ -203,7 +203,7 @@ register({
 
 // ---------- The Mask ----------
 // Masked: +2 Composure and Authority (the generic skill mods; they reach checks, passives and the Heart save). Bare: −3.
-// The mask is worn and taken off through the sheet (free out of a fight, not in one). Two Faces: the brief tells the
+// The mask is worn and taken off through the sheet (free out of a fight; 1 AP in one, as any light piece: rules 1.9, item 685). Two Faces: the brief tells the
 // Narrator which face the character shows now; recognition is the Narrator's.
 register({
   id: 'the_mask', kind: 'trait', claims: ['start_item'], narrator: ['narrator'],
@@ -211,7 +211,7 @@ register({
 });
 
 // ---------- Bottle Butts for Eyes ----------
-// +2 Rumination; glasses on: +1 Proficiency and Ingenuity, off: −4 (the generic skill mods). A critical hit that lands
+// +2 Rumination; glasses on: +1 Acuity (analysis) and Ingenuity, off: −4 (the generic skill mods). A critical hit that lands
 // a head injury (Dazed) knocks the glasses off (PROVISIONAL, plan 6 Bottle Butts 4): −4 at once, back in the pack after
 // the fight. In the story the Narrator knocks them off with traitState {key:'glasses', value:'off'}; the player puts
 // them back on from the sheet.
@@ -249,9 +249,16 @@ const bothOils = (h: Holder) => has(h.c || h.u || null, 'oil_in_my_mind') && has
 function paperStat(h: Holder, stat: string): number {
   if (!paperOwner(h)) return 0;
   const m = /^skill:(.+)$/.exec(stat); if (m && PAPER[m[1]]) return -1;
-  if (stat === 'hp_per_level') return -2;
-  if (stat === 'elemental_taken' || stat === 'heal_received') return -0.1;
+  const d = paperDerived();
+  if (stat === 'hp_per_level') return d.hp_per_level ?? -2;
+  if (stat === 'elemental_taken') return -(d.elemental_taken_pct ?? 10) / 100; // it takes that much MORE: a negative reduction
+  if (stat === 'heal_received') return (d.heal_received_pct ?? -10) / 100;
   return 0;
+}
+/** Paper's derived numbers, read from the card (traits.json oil_in_my_mind, the shared penalty's `derived`). */
+function paperDerived(): { hp_per_level?: number; elemental_taken_pct?: number; heal_received_pct?: number } {
+  const t: any = TRAITS.find((x) => x.id === 'oil_in_my_mind');
+  return (t?.effects || []).find((e: any) => e.op === 'shared_penalty')?.derived || {};
 }
 const MP = 'masterpiece';
 function inspired(c: Character | null | undefined) { return (ro(c)[MP] as { n: number; by: string; used?: string } | undefined); }
@@ -364,8 +371,8 @@ register({
       poured(h);
       const c = h.c; if (!c) return; const l: Lunar | undefined = ro(c).lunar; if (!l || !l.drinks) return;
       if (l.drinks >= 3) {
-        const tn = 12 + l.today, m = sideRollMod(h.g, c, 'will_power'), die = d20(h.g.rng), ok = die === 20 || (die !== 1 && die + m >= tn);
-        sys(h, 'The Slope: WILL POWER · d20 ' + die + ' ' + sgn(m) + ' = ' + (die + m) + ' vs ' + tn + ' · ' + (ok ? '✓ ' + c.name + ' puts the glass down; the drinks wear off.' : '✕ ' + c.name + ' keeps drinking: ' + (l.drinks + 1) + ' drinks.'));
+        const tn = TN.standard + l.today, rv = rollVs(null, h.g.rng, { mod: sideRollMod(h.g, c, 'will_power'), tn }), ok = rv.ok;
+        sys(h, 'The Slope: WILL POWER · ' + rv.text + ' · ' + (ok ? '✓ ' + c.name + ' puts the glass down; the drinks wear off.' : '✕ ' + c.name + ' keeps drinking: ' + (l.drinks + 1) + ' drinks.'));
         if (ok) l.drinks = 0; else { l.drinks++; l.today++; }
       } else l.drinks = 0;
     },
@@ -420,19 +427,9 @@ register({
 // next turn, within the floor of 2). Outside the city (a zone marked in_city: false): −2 Guts, which reaches Body saves;
 // the generic skill mod covers story checks, this handler the fight (no zone tags reach combat rolls).
 register({
-  id: 'central_city_kid', kind: 'trait', claims: ['start_item', 'roll_bonus', 'stat_mod'],
+  id: 'central_city_kid', kind: 'trait', claims: ['start_item', 'roll_bonus'], // Soft Hands is data (engine foundations 3)
   checkMod: (h, ck) => ((ck.tags || []).some((t: string) => t === 'official' || t === 'merchant') && (ck.skills || []).some((s: string) => SOCIAL.has(s)) ? [{ add: 2, label: 'Plugged In' }] : []),
   stat: (h, stat, ctx) => (stat === 'skill:guts' && !(ctx && Array.isArray(ctx.tags)) && outsideCity(h.g) ? -2 : 0),
-  on: {
-    on_damaged: (ctx, h) => {
-      if (ctx.t !== h.u || !(ctx.dmg > 0) || ctx.src?.by === h.u) return;
-      const st = stateOf(h); if (st.wounded) return; st.wounded = true;
-      const cb = h.cb!, u = h.u!, mine = cb.units.find((x) => x.id === cb.order[cb.turn]) === u && !cb.window;
-      if (mine) { u.ap = Math.max(0, u.ap - 2); say(cb, u.name + ' reels from the first wound: −2 AP (Soft Hands).'); }
-      else { st.shock = true; say(cb, u.name + ' reels from the first wound: −2 AP next turn (Soft Hands).'); }
-    },
-    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const st = stateOf(h); if (st.shock) { st.shock = false; ctx.penalties.push({ n: 2, why: 'Soft Hands' }); } },
-  },
   brief: () => 'city services open; tag checks with officials or merchants "official" / "merchant"',
 });
 
@@ -454,8 +451,8 @@ register({
 });
 
 // ---------- Company Man ----------
-// Company Card: RTC gear at cost. The data's −100% would make it free (GAMEBREAKING, plan 6 Company Man 1): PROVISIONAL
-// −40% (60% of list). No shops exist yet, so the price is the Narrator's, told in the brief. Once a campaign RTC extracts
+// Company Card: RTC gear at cost. The data carries −40% (60% of list; PROVISIONAL, item 260:
+// the first −100% would have made it free). No shops exist yet, so the price is the Narrator's, told in the brief. Once a campaign RTC extracts
 // them from anywhere: in the story a pending ruling (where they land); in a fight they leave it (conscious only), take
 // no part in its XP, and the fight goes on without them. Contract jobs: Narrator.
 const RTC_PRICE = 0.6;
@@ -468,7 +465,7 @@ register({
     run: (h) => {
       if (inFight(h)) {
         const u = h.u!, cb = h.cb!; if (u.downed) return 'Only while conscious.';
-        u.surrendered = true; u.ap = 0; (u as any).extracted = true; if (h.c) cst(h.c).rtcFight = true;
+        u.surrendered = true; setAp(u, 0); (u as any).extracted = true; if (h.c) cst(h.c).rtcFight = true;
         say(cb, 'An RTC extraction team pulls ' + u.name + ' out of the fight (Company Man).');
         if (!cb.units.some((v) => v.side === 'pc' && !v.companion && !v.dead && !v.downed && !v.surrendered) && cb.units.some((v) => v.side === 'foe' && !v.dead && !v.downed && !v.surrendered)) cb.over = 'loss';
         note(h, u.name + ' was extracted by RTC mid-fight: say where they land and what RTC wants for it.');
@@ -554,7 +551,7 @@ register({
       },
     },
     {
-      id: 'ward_area', label: 'Ward Area', scope: ['world', 'story'], target: 'none', ap: 0, uses: { per: 'out_of_combat', n: 1 },
+      id: 'ward_area', label: 'Ward Area', scope: ['world', 'story'], target: 'none', ap: 'data', uses: { per: 'out_of_combat', n: 1 },
       text: 'Out of a fight: spend 10 minutes to ward this place against the supernatural.',
       run: (h) => {
         const eid = postStory(h, 'spends ten minutes warding the area.');

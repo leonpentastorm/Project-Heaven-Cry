@@ -7,11 +7,13 @@
 // Every recommended fix for a flagged design (the audit's classes.json "problems") is marked PROVISIONAL here and listed
 // with its number in the spec (section 14, tags J…) and docs/design/perk-runtime.md.
 import { register, stateOf, uses, note, has, modOn, emit, applyDamage, healUnit, grantShield, pendRuling, postStory, type Holder, type ActionDef, type ToggleDef } from '../effects';
+import { itemAmount, amountMult } from '../effects/amounts';
+import { term } from '../effects/output';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, isMelee, emitFx, checkOver,
-  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode,
+  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode, displace
 } from '../combat';
 import { WEAPON, SIGIL } from '../data';
 import { dropToPile } from '../combat';
@@ -19,18 +21,18 @@ import { magItem } from '../containers';
 import { mod, healingMult, magazineSize } from '../character';
 import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, magicOf, flux, withElement, CORE_CHARGE, applyToneRiders } from '../magic';
 import { castAt, glyphCost, sigilReady } from '../sigil';
-import { d20, die } from '../rng';
+import { die } from '../rng';
+import { rollVs } from '../rolls';
 import { resOf, resGain, resSpend, canReact, useReaction , dropHeldShot } from '../tactics';
 import { makeObject } from '../objects';
+import { overworld, say, unitById, tileOf, rngOf, foesOf } from '../kit';
+import { pay, refund, grantAp, freely, spend } from '../effects/cost';
+import { AP_MAX } from '../effects/ap';
+import { setBraced } from '../unitstate';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^-?\d+,-?\d+$/.test(t) ? t : refKey(t, cb.map));
-const unitById = (cb: Combat, id: string | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? ((c as any).state ||= {}) : {});
 /** Item state on the character without creating it (previews and stat queries must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};
@@ -40,7 +42,6 @@ const isRanged = (u: Unit) => { const w = W(u); return !!w && !isMelee(w) && w.c
 const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
 const adj = (a: string, b: string) => dist(a, b) <= 1;
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
 /** Run f with the weapon's state put back afterwards (a shot paid for elsewhere: no ammo, Heat, recoil count, wear). */
 function quiet<T>(u: Unit, f: () => T): T {
   const s = { ammo: u.ammo, heat: u.heat, jammed: u.jammed, shots: u.shotsThisTurn, dur: u.dur, fs: u.firstShotDone, ft: u.firstShotTurn, at: u.attackedTurn, mom: u.res?.momentum };
@@ -51,7 +52,7 @@ function quiet<T>(u: Unit, f: () => T): T {
   }
 }
 /** Do something with the AP check out of the way (the AP was paid by the action): AP is put back after. */
-function freeAp<T>(u: Unit, f: () => T): T { const keep = u.ap; u.ap = 99; try { return f(); } finally { u.ap = keep; } }
+const freeAp = freely;
 
 // Labelled to-hit terms for attacks a move makes (the transparent breakdown names them), keyed by attacker id.
 const TERMS: { att: string; v: number; label: string }[] = [];
@@ -94,7 +95,7 @@ register({
 register({
   id: 'gunslinger.six_for_six', claims: 'all',
   actions: [{
-    id: 'fan_fire', label: 'Six for Six', scope: ['combat'], ap: 4, uses: { per: 'per_scene', n: 1 }, target: 'enemy', range: 4,
+    id: 'fan_fire', label: 'Six for Six', scope: ['combat'], ap: 'data', uses: { per: 'per_scene', n: 1 }, target: 'enemy', range: 4,
     text: 'Fire up to six single shots from a pistol or revolver at enemies within 4 tiles. Recoil and Heat apply to each shot.',
     available: (h) => (!h.u ? false : !isHandgun(h.u) ? 'Needs a pistol or revolver.' : h.u.jammed ? 'Your gun is jammed.' : W(h.u).magazine != null && h.u.ammo <= 0 ? 'Your gun is empty. Reload first.' : true),
     preview: (h, a) => {
@@ -122,20 +123,10 @@ register({
 // shot). choice: head, arm (left/right: 'arm' hits the target's main hand, or 'arm:left') or leg. On a hit the named
 // injury applies without a critical, but the target's Injury resistance still rolls (PROVISIONAL, audit 2). Story: a
 // disabling shot in a standoff is the Narrator's to call; the engine rolls it.
-function calledInjury(rng: Rng, t: Unit, loc: string, side0?: string): string {
-  const resist = t.injResist || 0;
-  if (resist > 0) { const r = die(rng as any, 100); if (r <= resist) return ' · called ' + loc + ' resisted (d100 ' + r + ' ≤ ' + resist + '%)'; }
-  const inj = (t.injuries ||= []);
-  if (loc === 'head') { t.dazedNext = 1; return ' · CALLED SHOT: head, Dazed'; }
-  const side = (side0 === 'left' || side0 === 'right' ? side0 : t.hand || 'right') as 'left' | 'right';
-  if (loc === 'arm') { inj.push({ loc: 'arm', side }); return ' · CALLED SHOT: ' + side + ' arm, −2 to attacks with it'; }
-  if (!inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
-  inj.push({ loc: 'leg', side }); return ' · CALLED SHOT: ' + side + ' leg, half Movement';
-}
 register({
   id: 'gunslinger.called_shot', claims: 'all',
   actions: [
-    { id: 'called_shot', label: 'Called Shot', pick: ['head', 'arm', 'leg'], pickLabel: 'Head, arm or leg', scope: ['combat', 'world'], ap: 3, target: 'enemy',
+    { id: 'called_shot', label: 'Called Shot', pick: ['head', 'arm', 'leg'], pickLabel: 'Head, arm or leg', scope: ['combat', 'world'], ap: 'data', target: 'enemy',
       text: 'Name the head, an arm or a leg and shoot at −2 to hit. A head hit leaves the target Dazed, an arm hit gives −2 to attacks with that arm, and a leg hit halves its Movement. The target still rolls to resist the injury.',
       available: (h) => (!h.u ? false : !isRanged(h.u) ? 'Needs a gun or a bow.' : true),
       preview: (h, a) => {
@@ -148,7 +139,7 @@ register({
         const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!, [loc, side] = String(a.choice).split(':');
         const r = withTerm(u, -2, 'Called Shot', () => resolveAttack(cb, rng, u, t, 'shot', null, { free: true }));
         if (r.refused) return r.refused;
-        if (r.hit && !t.dead && !t.surrendered) say(cb, t.name + calledInjury(rng, t, loc, side) + '.');
+        if (r.hit && !t.dead && !t.surrendered) say(cb, t.name + rollInjury(rng, t, cb, u, { loc: loc === 'head' || loc === 'arm' ? loc : 'leg', side }) + '.'); // the one injury table (combat.ts), with the place named
         checkOver(cb); return null;
       } },
     { id: 'called_shot_story', label: 'Called Shot (a standoff)', scope: ['story'], ap: 0, target: 'text', uses: { per: 'per_scene', n: 1 },
@@ -174,13 +165,13 @@ function unEmplace(h: Holder, why: string) {
 register({
   id: 'hellraiser_heavy.emplace', claims: 'all',
   actions: [{
-    id: 'emplace', label: 'Emplace', scope: ['combat'], ap: 2, target: 'none',
+    id: 'emplace', label: 'Emplace', scope: ['combat'], ap: 'data', target: 'none',
     text: 'Set the gun down. Until you move you are Emplaced: no recoil, no heavy-weapon penalty, and +5 armour.',
     available: (h) => (!h.u ? false : !EMPLACE_CATS.includes(W(h.u)?.category || '') ? 'Needs a heavy weapon or a rifle.' : condOn(h.u, 'emplaced') ? 'Already Emplaced.' : true),
     run: (h, _a, rng) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h);
       say(cb, u.name + ' digs in and emplaces the ' + W(u).name + applyCond(cb, rng, u, u, 'emplaced', undefined, undefined, { skipSave: true }) + ' · +5 armour.');
-      u.braced = true; delete u.guardBrace; if (!st.armour) { st.armour = 5; u.armour += 5; }
+      setBraced(u, true); if (!st.armour) { st.armour = 5; u.armour += 5; }
       emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
       return null;
     },
@@ -191,7 +182,7 @@ register({
       ctx.noRecoil = true; // attack_preview's noRecoil (hooks gap J10): no recoil term at all, free shots included
     },
     cond_end: (ctx, h) => { if (ctx.u === h.u && ctx.id === 'emplaced') unEmplace(h, 'moved'); },
-    forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel && condOn(h.u!, 'emplaced')) { endCond(h.u!, 'emplaced', h.cb!); h.u!.braced = false; } },
+    forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel && condOn(h.u!, 'emplaced')) { endCond(h.u!, 'emplaced', h.cb!); setBraced(h.u!, false); } },
   },
   priority: 900,
   brief: () => null,
@@ -215,7 +206,7 @@ function suppressShot(h: Holder, t: Unit, why: string, rng: Rng) {
 register({
   id: 'hellraiser_heavy.suppression', claims: 'all',
   actions: [{
-    id: 'suppression', label: 'Suppression', scope: ['combat'], ap: 4, target: 'tile',
+    id: 'suppression', label: 'Suppression', scope: ['combat'], ap: 'data', target: 'tile',
     text: 'While Emplaced: fire full auto into a 3×3 area. Until your next turn, any enemy there that moves or attacks takes one attack from you. If it hits, the enemy makes a Body save or is Pinned.',
     available: (h) => (!h.u ? false : !(W(h.u).modes || []).includes('auto') ? false : !condOn(h.u, 'emplaced') ? 'Emplace first.' : h.u.jammed ? 'Your gun is jammed.' : W(h.u).magazine != null && h.u.ammo <= 0 ? 'Your gun is empty. Reload first.' : true),
     preview: (h, a) => {
@@ -277,7 +268,7 @@ register({
   id: 'ccec_ballistician.case_file', claims: 'all',
   stat: (h, stat, ctx) => (stat === 'ap_cost:analyze' ? 1 - (ctx?.base ?? 2) : 0),
   actions: [
-    { id: 'case_file', label: 'Case File', scope: ['combat'], ap: 1, target: 'enemy',
+    { id: 'case_file', label: 'Case File', scope: ['combat'], ap: 'data', target: 'enemy',
       text: 'Analyze a target for 1 AP and Mark it. A target that is already Analyzed is Marked again.',
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId); if (!t) return {};
@@ -287,7 +278,7 @@ register({
       },
       run: (h, a, rng) => {
         const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!;
-        if (!t.analyzedBy) { u.ap += 1; const e = analyze(cb, u, t); if (e) { u.ap -= 1; return e; } return null; } // the 'analyze' hook marks it
+        if (!t.analyzedBy) { refund(cb, u, 1); const e = analyze(cb, u, t); if (e) { pay(cb, u, 1); return e; } return null; } // the 'analyze' hook marks it
         say(cb, u.name + ' adds ' + t.name + ' to the case file' + markTarget(h, t, rng) + '.'); return null;
       } },
     { id: 'case_file_story', label: 'Open a case file', scope: ['story'], ap: 0, target: 'npc', uses: { per: 'per_scene', n: 1 },
@@ -345,7 +336,7 @@ register({
 register({
   id: 'ccec_ballistician.one_shot', claims: 'all',
   actions: [{
-    id: 'one_shot', label: 'One Shot', scope: ['combat'], ap: 4, uses: { per: 'per_combat', n: 1 }, target: 'enemy',
+    id: 'one_shot', label: 'One Shot', scope: ['combat'], ap: 'data', uses: { per: 'per_combat', n: 1 }, target: 'enemy',
     text: 'If you haven\'t moved this turn: take an Aimed shot at a Marked target for triple damage. Against a Boss or a Celestial it deals double damage.',
     available: (h) => (!h.u ? false : !isRanged(h.u) ? 'Needs a gun or a bow.' : h.u.moved ? 'You moved this turn.' : true),
     preview: (h, a) => {
@@ -386,7 +377,7 @@ const bannerOf = (h: Holder) => { const b = stateOf(h).banner; if (!b || !h.cb) 
 register({
   id: 'banner_dancer.rally_banner', claims: 'all',
   actions: [{
-    id: 'plant_banner', label: 'Rally Banner', scope: ['combat'], ap: 2, uses: { per: 'per_scene', n: 1 }, target: 'tile',
+    id: 'plant_banner', label: 'Rally Banner', scope: ['combat'], ap: 'data', uses: { per: 'per_scene', n: 1 }, target: 'tile',
     text: 'Plant a banner on your tile or next to you. While you stay within 3 tiles of it, each ally who starts their turn within 2 tiles of it gains a shield of 10.',
     preview: (h, a) => {
       const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {};
@@ -404,7 +395,7 @@ register({
     turn_start: (ctx, h) => {
       const u = h.u, t: Unit = ctx.u; if (!u || !inFight(h) || t.side !== u.side || !alive(t) || !alive(u)) return;
       const b = bannerOf(h); if (!b || dist(t.pos, b.pos) > 2 || dist(u.pos, b.pos) > 3) return;
-      const n = Math.round(10 * (h.c ? healingMult(h.c) : 1)), had = t.shield || 0, got = grantShield(h.cb!, t, n, u);
+      const n = Math.round(itemAmount('class:banner_dancer.rally_banner', 'shield', [term(h.c ? healingMult(h.c) : 1, 'stat: healing given')])), had = t.shield || 0, got = grantShield(h.cb!, t, n, u);
       if ((t.shield || 0) > had) { emitFx(h.cb!, 'shield', { target: t.id, at: t.pos, absorbed: 0 }); say(h.cb, t.name + ' takes heart under the banner: shield ' + t.shield + '.'); }
       void got;
     },
@@ -422,7 +413,7 @@ let SWEEP: string | null = null;
 register({
   id: 'banner_dancer.sweep', claims: 'all',
   actions: [{
-    id: 'banner_sweep', label: 'Sweep', scope: ['combat'], ap: 3, target: 'tile',
+    id: 'banner_sweep', label: 'Sweep', scope: ['combat'], ap: 'data', target: 'tile',
     text: 'Costs 3 Momentum. Move up to 3 tiles, strike each enemy you pass next to, and heal each ally you pass for 10 HP.',
     available: (h) => (!h.u ? false : resOf(h.u, 'momentum') < 3 ? 'Needs 3 Momentum. You have ' + resOf(h.u, 'momentum') + '.' : moveBlock(h.u) || true),
     preview: (h, a) => {
@@ -453,7 +444,7 @@ register({
           if (previewAttack(cb, u, v, mode, { free: true }).ok) resolveAttack(cb, rng, u, v, mode, null, { free: true });
           if (u.res) u.res.momentum = mom; // no Momentum from Sweep's own hits
         } else if (v.side === u.side && !v.dead && !st.healed.includes(v.id) && v.hp < v.maxHp) {
-          st.healed.push(v.id); const r = healUnit(cb, v, 10 * (h.c ? healingMult(h.c) : 1), u, 'class');
+          st.healed.push(v.id); const r = healUnit(cb, v, itemAmount('class:banner_dancer.sweep', 'heal', [term(h.c ? healingMult(h.c) : 1, 'stat: healing given')]), u, 'class');
           emitFx(cb, 'heal', { target: v.id, at: v.pos, amount: r.restored }); say(cb, u.name + ' passes ' + v.name + ': +' + r.restored + ' HP (Sweep).');
         }
       }
@@ -482,7 +473,7 @@ const SIGNAL = 'Only where the Company has signal (no drops underground, in jamm
 register({
   id: 'rtc_contractor.supply_drop', claims: 'all',
   actions: [
-    { id: 'supply_drop', label: 'Supply Drop', scope: ['combat'], ap: 2, target: 'tile', range: 6,
+    { id: 'supply_drop', label: 'Supply Drop', scope: ['combat'], ap: 'data', target: 'tile', range: 6,
       text: 'Costs 100 credits. Next turn a crate lands on a tile you pick within 6 tiles. It holds 4 picks, and each pick is 1 Supply or a magazine and costs 1 AP to take.',
       available: (h) => (stateOf(h).due ? 'A drop is already inbound.' : needCredits(h, 100)),
       preview: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {}; return dist(h.u!.pos, t) > 6 ? { ok: false, why: 'Pick a tile within 6 tiles.' } : !standable(cb.map, t) || moveBlockers(cb).has(t) ? { ok: false, why: 'The crate needs open ground.' } : { tiles: [t] }; },
@@ -536,7 +527,7 @@ function stepOut(cb: Combat, v: Unit, tiles: string[]): string | null {
 register({
   id: 'rtc_contractor.strike_call', claims: ['resource'],
   actions: [
-    { id: 'strike_call', label: 'Strike Call', scope: ['combat'], ap: 3, uses: { per: 'per_scene', n: 1 }, target: 'tile',
+    { id: 'strike_call', label: 'Strike Call', scope: ['combat'], ap: 'data', uses: { per: 'per_scene', n: 1 }, target: 'tile',
       text: 'Costs 300 credits. At the start of your next turn, a 3×3 area takes 50 Physical damage. Anyone inside can spend their reaction to step 1 tile out first.',
       available: (h) => needCredits(h, 300),
       preview: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {}; const seen = cb.units.some((v) => v.side === h.u!.side && unitSees(cb, v, t)); return !seen ? { ok: false, why: 'The squad has to see the tile.' } : { tiles: area3(t), lines: ['50 Physical damage to everyone within 1 tile of ' + refOf(t) + ', at the start of your next turn.'] }; },
@@ -554,8 +545,8 @@ register({
       let line = 'The Company strike hits ' + refOf(at);
       for (const v of cb.units) {
         if (v.dead || !tiles.includes(v.pos)) continue;
-        if (alive(v) && canReact(cb, v)) { const out = stepOut(cb, v, tiles); if (out) { useReaction(cb, v); emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); v.pos = out; continue; } }
-        line += hurtUnit(v, 50, false, cb, 'explosion', u);
+        if (alive(v) && canReact(cb, v)) { const out = stepOut(cb, v, tiles); if (out) { useReaction(cb, v); emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); displace(cb, null, v, { tile: out }, { by: v, how: 'teleport', source: 'dive', willing: true, fx: false }); continue; } }
+        line += hurtUnit(v, itemAmount('class:rtc_contractor.strike_call', 'damage'), false, cb, 'explosion', u);
       }
       for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) line += damageObject(cb, o.pos, 50, 0, u);
       say(cb, line + '.'); checkOver(cb);
@@ -572,7 +563,7 @@ register({
 register({
   id: 'rtc_contractor.extraction', claims: ['resource'],
   actions: [
-    { id: 'extraction', label: 'Extraction', scope: ['combat'], ap: 4, uses: { per: 'per_session', n: 1 }, target: 'tile',
+    { id: 'extraction', label: 'Extraction', scope: ['combat'], ap: 'data', uses: { per: 'per_session', n: 1 }, target: 'tile',
       text: 'Costs 500 credits. A Company flyer lands on the tile you pick in 2 rounds and lifts out everyone within 2 tiles of it.',
       available: (h) => (stateOf(h).lz ? 'A flyer is already inbound.' : needCredits(h, 500)),
       preview: (h, a) => { const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {}; return !standable(cb.map, t) ? { ok: false, why: 'The flyer needs open ground.' } : !cb.units.some((v) => v.side === h.u!.side && unitSees(cb, v, t)) ? { ok: false, why: 'The squad has to see the tile.' } : { tiles: [t] }; },
@@ -685,7 +676,7 @@ register({
 register({
   id: 'blade_scribe.three_cut_script', claims: 'all',
   actions: [{
-    id: 'three_cut_script', label: 'Three-Cut Script', pick: 'words', pickMulti: 3, pickLabel: 'Three words', scope: ['combat'], ap: 6, uses: { per: 'per_scene', n: 1 }, target: 'enemy', range: 1,
+    id: 'three_cut_script', label: 'Three-Cut Script', pick: 'words', pickMulti: 3, pickLabel: 'Three words', scope: ['combat'], ap: 'data', uses: { per: 'per_scene', n: 1 }, target: 'enemy', range: 1,
     text: 'Make three melee strikes, each one cutting a word you chose. After the third cut, the three words go off as one spell on the last target, delivered by Touch.',
     available: (h) => (!h.u ? false : evokerReady(h.u)),
     preview: (h, a) => {
@@ -755,7 +746,7 @@ function syncBarricades(h: Holder) {
 register({
   id: 'siege_engineer.deploy_cover', claims: 'all',
   actions: [
-    { id: 'deploy_cover', label: 'Deploy Cover', scope: ['combat'], ap: 2, target: 'tile',
+    { id: 'deploy_cover', label: 'Deploy Cover', scope: ['combat'], ap: 'data', target: 'tile',
       text: 'Set a portable barricade on a tile next to you. It is half cover with 40 HP. A STAY glyph on a tile next to it makes it full cover. You can have three out at once.',
       preview: (h, a) => {
         const cb = h.cb!, t = tileOf(cb, a.tile); if (!t) return {};
@@ -789,7 +780,7 @@ function turretOf(h: Holder): Unit | null { const id = stateOf(h).turret; return
 register({
   id: 'siege_engineer.sentry_turret', claims: 'all',
   actions: [{
-    id: 'sentry_turret', label: 'Sentry Turret', scope: ['combat'], ap: 3, target: 'tile',
+    id: 'sentry_turret', label: 'Sentry Turret', scope: ['combat'], ap: 'data', target: 'tile',
     text: 'Costs 2 charge. Deploy a turret on a tile next to you. It has 40 HP and Defense 10, and once a round it fires at the nearest enemy at +4 to hit for 20 damage. You can have one turret out at a time.',
     available: (h) => (!h.u ? false : !h.u.mg?.evoker ? 'Needs an Evoker in hand with 2 charge.' : (h.u.mg.charge || 0) < 2 ? 'Needs 2 charge.' : turretOf(h) ? 'Your turret is still up.' : true),
     preview: (h, a) => {
@@ -812,9 +803,9 @@ register({
     turn_end: (ctx, h) => {
       const u = h.u, tu = turretOf(h), cb = h.cb; if (ctx.u !== u || !tu || !cb || !u) return;
       const t = foesOf(cb, tu).filter((v) => !v.hidden && unitSees(cb, tu, v.pos)).sort((a, b) => dist(a.pos, tu.pos) - dist(b.pos, tu.pos) || a.hp - b.hp)[0]; if (!t) return;
-      const rng = rngOf(h, ctx), r = d20(rng as any), cover = coverTileFor(cb, tu.pos, t.pos) ? 5 : 0, tot = r + 4 - cover, hit = r === 20 || (r !== 1 && tot >= t.def);
+      const rng = rngOf(h, ctx), cover = coverTileFor(cb, tu.pos, t.pos) ? 5 : 0, sr = rollVs(cb, rng as any, { by: tu, mod: [{ add: 4, label: 'turret' }, { add: -cover, label: 'cover' }], tn: t.def, why: 'turret shot' }), r = sr.die, hit = sr.ok;
       emitFx(cb, 'shot', { unit: tu.id, target: t.id, from: tu.pos, to: t.pos, weapon: 'service_pistol', cat: 'pistol', mode: 'shot', hit, crit: false, fumble: r === 1, dmg: 0, killed: false });
-      say(cb, 'The sentry turret fires at ' + t.name + ': d20 ' + r + ' +4' + (cover ? ' −5 cover' : '') + ' = ' + tot + ' vs ' + t.def + (hit ? harm(cb, rng as any, u, t, 20, 'physical') : ' · miss') + '.');
+      say(cb, 'The sentry turret fires at ' + t.name + ': ' + sr.text + (cover ? ' (−5 cover)' : '') + (hit ? harm(cb, rng as any, u, t, itemAmount('class:siege_engineer.sentry_turret', 'damage'), 'physical') : ' · miss') + '.');
       checkOver(cb);
     },
     on_downed: (ctx, h) => { const id = stateOf(h).turret; if (h.cb && ctx.victim.id === id) { const seen = (h.cb.deadSeen ||= []); if (!seen.includes(id)) seen.push(id); say(h.cb, 'The sentry turret is wrecked.'); } },
@@ -835,7 +826,7 @@ function bulwarkEnd(h: Holder) {
 register({
   id: 'siege_engineer.bulwark_line', claims: 'all',
   actions: [{
-    id: 'bulwark_line', label: 'Bulwark Line', scope: ['combat'], ap: 4, uses: { per: 'per_scene', n: 1 }, target: 'none',
+    id: 'bulwark_line', label: 'Bulwark Line', scope: ['combat'], ap: 'data', uses: { per: 'per_scene', n: 1 }, target: 'none',
     text: 'Until your next turn, every piece of cover within 3 tiles of you that has an ally beside it counts as full cover and gains 20 HP.',
     run: (h) => {
       const cb = h.cb!, u = h.u!, list: { id: string; kind: string; max: number }[] = [];
@@ -876,7 +867,7 @@ function rider(cb: Combat, rng: Rng, u: Unit, t: Unit, word: string): string {
 register({
   id: 'spellslinger.inscribed_rounds', claims: 'all',
   actions: [{
-    id: 'inscribe_rounds', label: 'Inscribed Rounds', pick: 'words', pickLabel: 'The word', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
+    id: 'inscribe_rounds', label: 'Inscribed Rounds', pick: 'words', pickLabel: 'The word', scope: ['world', 'story'], ap: 'data', uses: { per: 'per_rest', n: 1 }, target: 'none',
     text: 'Out of a fight: inscribe up to 6 rounds with an Element or an Affliction word. Costs 1 charge per round.',
     available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker in hand.' : true; },
     preview: (h, a) => {
@@ -910,7 +901,7 @@ register({
       if (!t.dead) {
         if (w.class === 'subject_element') {
           const elem = w.damage_type === 'elemental';
-          line += withElement(ins.word, () => harm(cb, rng as any, u, t, Math.floor((w.damage || 0) / 2) * (elem ? u.mg?.elemMult || 1 : u.mg?.sigilMult || 1), elem ? 'elemental' : 'sigil', DMG_OF[ins.word]));
+          line += withElement(ins.word, () => harm(cb, rng as any, u, t, Math.floor((w.damage || 0) * amountMult('class:spellslinger.inscribed_rounds', 'damage', 'word_share')) * (elem ? u.mg?.elemMult || 1 : u.mg?.sigilMult || 1), elem ? 'elemental' : 'sigil', DMG_OF[ins.word]));
         }
         line += rider(cb, rng, u, t, ins.word);
       }
@@ -938,7 +929,7 @@ const smCost = (m: { wordCost?: Record<string, number>; coreSave: number }, word
 register({
   id: 'spellslinger.spell_magazine', claims: 'all',
   actions: [
-    { id: 'spell_magazine', label: 'Spell Magazine', pick: 'words', pickMulti: 4, pickLabel: 'The words', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
+    { id: 'spell_magazine', label: 'Spell Magazine', pick: 'words', pickMulti: 4, pickLabel: 'The words', scope: ['world', 'story'], ap: 'data', uses: { per: 'per_rest', n: 1 }, target: 'none',
       text: 'Out of a fight: store a whole Sigil spell in a magazine. You pay its charge now.',
       available: (h) => { const m = h.c ? magicOf(h.c) : null; return !m?.evoker ? 'Needs an Evoker in hand.' : true; },
       preview: (h, a) => {
@@ -1025,7 +1016,7 @@ const infusionOf = (h: Holder) => cs(h.c)['class:storm_hand.gauntlet_infusion']?
 register({
   id: 'storm_hand.gauntlet_infusion', claims: 'all',
   actions: [{
-    id: 'infuse', label: 'Gauntlet Infusion', pick: ['fire', 'freeze', 'shock', 'spark'], pickLabel: 'The element', scope: ['world', 'story'], ap: 0, uses: { per: 'per_rest', n: 1 }, target: 'none',
+    id: 'infuse', label: 'Gauntlet Infusion', pick: ['fire', 'freeze', 'shock', 'spark'], pickLabel: 'The element', scope: ['world', 'story'], ap: 'data', uses: { per: 'per_rest', n: 1 }, target: 'none',
     text: 'Choose the element your melee hits carry until your next rest: fire, freeze, shock or spark.',
     preview: (_h, a) => (INFUSE.includes(String(a.choice || '').toLowerCase()) ? { lines: ['Infused: ' + String(a.choice).toUpperCase() + '.'] } : { ok: false, why: 'Pick fire, freeze, shock or spark.' }),
     run: (h, a) => { const el = String(a.choice).toLowerCase(); charState(h.c)[h.key] = { element: el }; const line = 'infuses the gauntlet with ' + el.toUpperCase() + '.'; if (h.cb) say(h.cb, h.c!.name + ' ' + line); else postStory(h, line, { private: true }); return null; },
@@ -1038,17 +1029,17 @@ register({
       const u = h.u, el = infusionOf(h); if (ctx.att !== u || !u || !el || !ctx.melee || !modOn(h, 'infusion')) return;
       if (!u.mg?.emanator || (u.mg.mp || 0) < 5) return;
       // A hit that killed on its own: only Spark still has work (its +1 AP on a kill, 5 MP: PROVISIONAL).
-      if (ctx.tgt.dead) { if (el === 'spark' && u.ap < 9) { u.mg.mp -= 5; u.ap = Math.min(9, u.ap + 1); emitFx(h.cb!, 'infusion', { unit: u.id, target: ctx.tgt.id, at: ctx.tgt.pos, element: el }); say(h.cb, 'Infusion: SPARK (5 MP) · +1 AP (Spark).'); } return; }
-      u.mg.mp -= 5;
+      if (ctx.tgt.dead) { if (el === 'spark' && u.ap < AP_MAX) { spend(u, 'mp', 5); grantAp(h.cb, u, 1); emitFx(h.cb!, 'infusion', { unit: u.id, target: ctx.tgt.id, at: ctx.tgt.pos, element: el }); say(h.cb, 'Infusion: SPARK (5 MP) · +1 AP (Spark).'); } return; }
+      spend(u, 'mp', 5);
       // Rules 1.5: the element's stage-1 rider rides the hit (PROVISIONAL): Fire Burning 1 round on a critical, else +5;
       // Shock chains to one enemy next to the target for half; Freeze Slowed (Body save); Spark +1 AP on a kill.
-      const cb = h.cb!, rng = rngOf(h, ctx) as any, t = ctx.tgt, fireExtra = el === 'fire' && !ctx.crit ? 5 : 0;
-      let line = 'Infusion: ' + el.toUpperCase() + ' (5 MP)' + withElement(el, () => harm(cb, rng, u, t, (10 + fireExtra) * (u.mg!.elemMult || 1), 'elemental', DMG_T[el]));
+      const cb = h.cb!, rng = rngOf(h, ctx) as any, t = ctx.tgt, fireExtra = el === 'fire' && !ctx.crit ? itemAmount('class:storm_hand.gauntlet_infusion', 'fire_extra') : 0;
+      let line = 'Infusion: ' + el.toUpperCase() + ' (5 MP)' + withElement(el, () => harm(cb, rng, u, t, (itemAmount('class:storm_hand.gauntlet_infusion', 'damage') + fireExtra) * (u.mg!.elemMult || 1), 'elemental', DMG_T[el]));
       emitFx(cb, 'infusion', { unit: u.id, target: t.id, at: t.pos, element: el });
       if (el === 'fire' && ctx.crit && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'burning', 1, undefined, { skipSave: true, via: 'brain_power' }));
       if (el === 'freeze' && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'slowed', undefined, undefined, { via: 'brain_power' }));
-      if (el === 'shock') { const v = cb.units.find((x) => x !== t && x !== u && x.side !== u.side && alive(x) && adj(x.pos, t.pos)); if (v) { emitFx(cb, 'chain', { unit: u.id, from: t.pos, to: v.pos, target: v.id, element: 'shock' }); line += ' · it arcs to ' + v.name + withElement(el, () => harm(cb, rng, u, v, 5 * (u.mg!.elemMult || 1), 'elemental', DMG_T[el])); } }
-      if (el === 'spark' && (t.dead || ctx.killed) && u.ap < 9) { u.ap = Math.min(9, u.ap + 1); line += ' · +1 AP (Spark)'; }
+      if (el === 'shock') { const v = cb.units.find((x) => x !== t && x !== u && x.side !== u.side && alive(x) && adj(x.pos, t.pos)); if (v) { emitFx(cb, 'chain', { unit: u.id, from: t.pos, to: v.pos, target: v.id, element: 'shock' }); line += ' · it arcs to ' + v.name + withElement(el, () => harm(cb, rng, u, v, itemAmount('class:storm_hand.gauntlet_infusion', 'arc', [term(u.mg!.elemMult || 1, 'stat: elemental')]), 'elemental', DMG_T[el])); } }
+      if (el === 'spark' && (t.dead || ctx.killed) && u.ap < AP_MAX) { grantAp(cb, u, 1); line += ' · +1 AP (Spark)'; }
       say(cb, line + '.');
     },
   },
@@ -1086,7 +1077,7 @@ register({
       const el = infusionOf(h), tone = ({ fire: 'fire', shock: 'storm', freeze: 'frost' } as Record<string, string>)[el || ''] || 'raw';
       emitFx(cb, 'explode', { at, radius: 1, what: 'discharge', element: el || null, charges: n, shake: true });
       for (const v of [...cb.units]) if (v !== ctx.tgt && v !== u && v.side !== u.side && alive(v) && adj(v.pos, at)) {
-        line += withElement(el || null, () => harm(cb, rng as any, u, v, 20 * n * (u.mg?.elemMult || 1), 'elemental', DMG_T[el || 'shock'] || 'lightning'));
+        line += withElement(el || null, () => harm(cb, rng as any, u, v, itemAmount('class:storm_hand.discharge', 'damage', [term(u.mg?.elemMult || 1, 'stat: elemental')], { charge: n }), 'elemental', DMG_T[el || 'shock'] || 'lightning'));
         if (tone !== 'raw' && !v.dead) line += withElement(el || null, () => applyToneRiders(cb, rng as any, u, v, tone, Math.min(4, n), at, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']));
       }
       say(cb, line + '.');
@@ -1111,7 +1102,7 @@ function braceEnd(h: Holder, why: string) { const st = stateOf(h), u = h.u!; if 
 function bulwarkShield(h: Holder) {
   const u = h.u!, kn = h.c;
   if (!has(u, 'adamantile_knight.bulwark_of_will')) return '';
-  const was = u.shield || 0, n = grantShield(h.cb!, u, 20 * (kn ? healingMult(kn) : 1), u);
+  const was = u.shield || 0, n = grantShield(h.cb!, u, itemAmount('class:adamantile_knight.bulwark_of_will', 'shield', [term(kn ? healingMult(kn) : 1, 'stat: healing given')]), u);
   if ((u.shield || 0) > was) emitFx(h.cb!, 'shield', { target: u.id, at: u.pos, absorbed: 0 });
   return ' · Bulwark of Will: shield ' + Math.max(u.shield || 0, n);
 }
@@ -1123,7 +1114,7 @@ register({
     available: (h) => (!h.u || has(h.u, DEF_BRACE) ? false : true),
     run: (h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h), n = Math.max(1, 1 + mod(h.c?.skills?.durability || 0)), got = resGain(u, 'guard', n);
-      u.braced = true; delete u.guardBrace; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
+      setBraced(u, true); if (!st.braceDef) { st.braceDef = true; u.def += 2; }
       emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
       say(cb, u.name + ' braces behind the plate: +' + got + ' Guard (' + resOf(u, 'guard') + '/5), +2 Defense' + bulwarkShield(h) + '.');
       return null;
@@ -1146,7 +1137,7 @@ function plateShare(h: Holder, k: number) {
   if (!has(h.u!, 'adamantile_knight.adamantile_plate')) return '';
   const u = h.u!, cb = h.cb!, ally = cb.units.filter((v) => v !== u && v.side === u.side && alive(v) && adj(v.pos, u.pos)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
   if (!ally) return '';
-  grantShield(cb, ally, 10 * k, u); emitFx(cb, 'shield', { target: ally.id, at: ally.pos, absorbed: 0 });
+  grantShield(cb, ally, itemAmount('class:adamantile_knight.adamantile_plate', 'shield', [], { guard: k }), u); emitFx(cb, 'shield', { target: ally.id, at: ally.pos, absorbed: 0 });
   return ' · the shed plate shields ' + ally.name + ' (' + ally.shield + ')';
 }
 register({
@@ -1186,21 +1177,7 @@ register({
   brief: () => null,
 });
 
-// ---------- Unbroken ----------
-// Once per fight (the data's per_scene is the fight: audit), the first time you would drop to 0 HP from any source,
-// you drop to 1 instead and gain 3 Guard (max 5). After Last Wall and Bite the Bullet (priority 30).
-register({
-  id: 'adamantile_knight.unbroken', claims: 'all', priority: 30,
-  on: {
-    damage_in: (ctx, h) => {
-      const u = h.u; if (ctx.t !== u || !u || ctx.phase !== 'would_drop_to_0' || ctx.floor != null || u.hp <= 0) return;
-      if (!uses(h).take('per_combat', 1)) return;
-      ctx.floor = 1; const g = resGain(u, 'guard', 3);
-      say(h.cb, u.name + ' is Unbroken: 1 HP, +' + g + ' Guard (' + resOf(u, 'guard') + '/5).');
-    },
-  },
-  brief: () => null,
-});
+// ---------- Unbroken: written in data only (data/classes.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 void ownTurn; void sideSees; void emit; void xy;
 export type { ActionDef };

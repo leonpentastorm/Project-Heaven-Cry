@@ -70,7 +70,7 @@ const brawl = (enemies: { name: string; tier: string; weapon: string }[], name =
 describe('musicFor in a fight', () => {
   it('plays the OST, never the campaign\'s generic combat track', () => {
     const r = room();
-    r.g.campaign!.music = { ...(r.g.campaign!.music || {}), combat: { yt: 'bbbbbbbbbbb', title: 'Old fight', artist: '' } };
+    r.g.campaign = { ...r.g.campaign!, music: { ...(r.g.campaign!.music || {}), combat: { yt: 'bbbbbbbbbbb', title: 'Old fight', artist: '' } } }; // shared between states: replaced, not written in place
     r.act(brawl([{ name: 'E', tier: 'minion', weapon: 'service_pistol' }]));
     const song = r.g.combat!.song!;
     expect(FIGHT_POOL).toContain(song);
@@ -112,7 +112,7 @@ describe('musicFor in a fight', () => {
   });
   it('a campaign\'s theme for a named encounter keeps its fight, until Last Rounds', () => {
     const r = room();
-    const camp = r.g.campaign!;
+    const camp = (r.g.campaign = JSON.parse(JSON.stringify(r.g.campaign)))!; // shared between states: change a copy
     camp.encounters = [...(camp.encounters || []), { name: 'The ramp', zone: camp.zones[0].id, when: '', difficulty: 'hard', music: { yt: 'ccccccccccc', title: 'Red', artist: 'Someone' }, enemies: [] }];
     r.act(brawl([{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }], 'The ramp'));
     expect(musicFor(r.g)).toMatchObject({ layer: 'encounter', track: { title: 'Red' } });
@@ -124,8 +124,10 @@ describe('musicFor in a fight', () => {
     g = apply(g, { type: 'char/add', sheet: sheetFrom('sharpshooter', 'Vel') }, 'host');
     g = apply(g, { type: 'sandbox/start' }, 'host');
     // Gearing up (the story phase on the Proving Ground map) plays Gearing Up; a wave on plays the fight music.
-    if (g.phase !== 'combat') { expect(musicFor(g)).toMatchObject({ layer: 'ambient', track: OST.gearing_up }); g = JSON.parse(JSON.stringify(g)); g.phase = 'combat'; }
-    if (!g.combat) return;
+    expect(g.phase).not.toBe('combat'); expect(musicFor(g)).toMatchObject({ layer: 'ambient', track: OST.gearing_up });
+    // truth pass 3: there is no fight until a wave is called (the early return here never let the combat half run)
+    g = apply(g, { type: 'sandbox/fight' } as any, 'host');
+    expect(g.combat).toBeTruthy();
     expect(musicFor(g)).toMatchObject({ layer: 'combat', track: { artist: 'Project Heaven Cry OST' } });
   });
 });

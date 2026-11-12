@@ -401,7 +401,7 @@
         "op": "damage_mult",
         "value": 0.2,
         "per": "momentum_spent",
-        "max": 1.0
+        "max": 1
       }
     },
     {
@@ -924,6 +924,47 @@
         "family": "body",
         "count": 1,
         "target": "self"
+      }
+    },
+    {
+      "id": "deal",
+      "tier": "core",
+      "summary": "Deal an amount of damage from data on the one formula (rules.json output): the item's amount block by name, or a block written here. The 'damage_out' hook, armour by the block's type, then the sink.",
+      "count": 0,
+      "params": [
+        "amount",
+        "target"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "deal",
+        "amount": {
+          "kind": "damage",
+          "base": 30,
+          "profile": "flat",
+          "type": "physical"
+        },
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "mend",
+      "tier": "core",
+      "summary": "Give an amount of healing or a shield from data on the one formula (rules.json output), by the block's kind: the item's amount block by name, or a block written here. Then the heal sink or the shield sink.",
+      "count": 0,
+      "params": [
+        "amount",
+        "target"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "mend",
+        "amount": {
+          "kind": "heal",
+          "base": 5,
+          "profile": "mend"
+        },
+        "target": "ally"
       }
     },
     {
@@ -3676,12 +3717,12 @@
     {
       "id": "chain_damage",
       "tier": "bespoke",
-      "summary": "Old Overcast's Lightning Rod: after the hit, the damage jumps to more enemies within a range, at a multiplier.",
+      "summary": "Old Overcast's Lightning Rod: after the hit, a set amount of damage (value, × Blessing power) jumps to more enemies within a range.",
       "count": 1,
       "params": [
         "jumps",
         "range",
-        "mult"
+        "value"
       ],
       "used_by": [
         "patrons:old_overcast.lightning_rod"
@@ -3690,7 +3731,7 @@
         "op": "chain_damage",
         "jumps": 1,
         "range": 2,
-        "mult": 0.5
+        "value": 20
       }
     },
     {
@@ -3828,6 +3869,1029 @@
       "used_by": [
         "feelings:*"
       ]
+    },
+    {
+      "id": "damage_vs",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): a bonus against this target (added with the other target bonuses). Runs on a trigger (`when`): dealing.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [],
+      "example": null
+    },
+    {
+      "id": "roll_mod",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): a to-hit term on an attack; on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\"). Runs on a trigger (`when`): attack, cond_incoming, save.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "roll",
+        "say",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [],
+      "example": null
+    },
+    {
+      "id": "grant_ap",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): AP: at turn_ap, to this turn (a negative value takes); elsewhere perk AP now (bank: true, next turn). Runs on a trigger (`when`): turn_ap, combat_start, combat_end, round_start, turn_start, turn_end, attack, attack_roll ….",
+      "count": 0,
+      "params": [
+        "and",
+        "bank",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [],
+      "example": null
+    },
+    {
+      "id": "cond_rounds",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): change the rounds of the condition being put on: at most max, or add. Runs on a trigger (`when`): cond_incoming.",
+      "count": 0,
+      "params": [
+        "add",
+        "and",
+        "if",
+        "label",
+        "limit",
+        "max",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": null
+    },
+    {
+      "id": "cancel",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): stop it: the condition, the forced move or the injury does not happen; an attack is refused (why: the reason shown). Runs on a trigger (`when`): cond_incoming, forced_move, injury, attack.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when",
+        "why"
+      ],
+      "used_by": [],
+      "example": null
+    },
+    {
+      "id": "floor",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): the blow leaves the unit at this many HP. Runs on a trigger (`when`): would_drop.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [],
+      "example": null
+    },
+    {
+      "id": "displace",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): push the target away from the holder (how: push) or pull it closer (pull). Runs on a trigger (`when`): combat_start, combat_end, round_start, turn_ap, turn_start, turn_end, attack, attack_roll ….",
+      "count": 0,
+      "params": [
+        "and",
+        "how",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "tiles",
+        "when"
+      ],
+      "used_by": [],
+      "example": null
+    },
+    {
+      "id": "mark",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): set (or with clear: true, clear) one of the item's own flags, for a later trigger's flag / no_flag. Runs on a trigger (`when`): combat_start, combat_end, round_start, turn_ap, turn_start, turn_end, attack, attack_roll ….",
+      "count": 0,
+      "params": [
+        "and",
+        "clear",
+        "flag",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": null
+    },
+    {
+      "id": "use",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): nothing but its limit: spends one use (for a limit another effect reads with peek). Runs on a trigger (`when`): combat_start, combat_end, round_start, turn_ap, turn_start, turn_end, attack, attack_roll ….",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": null
     }
-  ]
+  ],
+  "item_ops": {
+    "about": "The closed lists of item ops (engine foundations 3): an effect whose `when` is one of these triggers is run by the engine's generic runner (packages/engine/src/effects/triggers.ts). `if` keys are predicates, `op` and every `and` op must take the trigger, `limit` is { per, n, key?, each? } or { cooldown }. Written from the code by test/item-ops.test.ts (ITEM_OPS_WRITE=1); tools/validate.py checks the data against it.",
+    "triggers": {
+      "combat_start": {
+        "hook": "combat_start",
+        "self": null,
+        "about": "the fight begins"
+      },
+      "combat_end": {
+        "hook": "combat_end",
+        "self": null,
+        "about": "the fight ends"
+      },
+      "round_start": {
+        "hook": "round_start",
+        "self": null,
+        "about": "a new round begins"
+      },
+      "turn_ap": {
+        "hook": "turn_start_pre",
+        "self": "actor",
+        "about": "a unit's turn is about to begin: its AP are being counted (grant_ap adds to or takes from this turn)"
+      },
+      "turn_start": {
+        "hook": "turn_start",
+        "self": "actor",
+        "about": "a unit's turn has begun"
+      },
+      "turn_end": {
+        "hook": "turn_end",
+        "self": "actor",
+        "about": "a unit's turn ends"
+      },
+      "attack": {
+        "hook": "attack_preview",
+        "self": "actor",
+        "about": "an attack is being sized up (to-hit terms, its AP, a refusal); also every preview"
+      },
+      "attack_roll": {
+        "hook": "attack_roll",
+        "self": "actor",
+        "about": "an attack's d20 is rolled"
+      },
+      "hit": {
+        "hook": "on_hit",
+        "self": "actor",
+        "about": "an attack hit"
+      },
+      "miss": {
+        "hook": "on_miss",
+        "self": "actor",
+        "about": "an attack missed"
+      },
+      "dealing": {
+        "hook": "damage_out",
+        "self": "actor",
+        "about": "an amount of damage is being made (before armour)"
+      },
+      "taking": {
+        "hook": "damage_in",
+        "phase": "reduce",
+        "self": "target",
+        "about": "damage is about to land (after armour, before the shield)"
+      },
+      "would_drop": {
+        "hook": "damage_in",
+        "phase": "would_drop_to_0",
+        "self": "target",
+        "about": "a blow would drop a unit to 0 HP"
+      },
+      "damaged": {
+        "hook": "on_damaged",
+        "self": "target",
+        "about": "a unit lost HP"
+      },
+      "downed": {
+        "hook": "on_downed",
+        "self": "target",
+        "about": "a unit went down (Downed or dead)"
+      },
+      "kill": {
+        "hook": "on_kill",
+        "self": "actor",
+        "about": "a unit was dropped by an enemy"
+      },
+      "cond_incoming": {
+        "hook": "cond_apply",
+        "self": "target",
+        "about": "a condition is about to be put on a unit (its save, its rounds, a refusal)"
+      },
+      "cond_landed": {
+        "hook": "cond_landed",
+        "self": "target",
+        "about": "a condition landed"
+      },
+      "cond_ended": {
+        "hook": "cond_end",
+        "self": "target",
+        "about": "a condition ended"
+      },
+      "save": {
+        "hook": "save",
+        "self": "target",
+        "about": "a save is rolled"
+      },
+      "moved": {
+        "hook": "moved",
+        "self": "actor",
+        "about": "a unit finished a move of its own"
+      },
+      "forced_move": {
+        "hook": "forced_move",
+        "self": "target",
+        "about": "a unit is about to be pushed, pulled, thrown or teleported"
+      },
+      "heal": {
+        "hook": "heal_in",
+        "self": "target",
+        "about": "a unit is about to be healed"
+      },
+      "heal_given": {
+        "hook": "heal_given",
+        "self": "actor",
+        "about": "a heal landed"
+      },
+      "shield": {
+        "hook": "shield_grant",
+        "self": "target",
+        "about": "a shield is about to be given"
+      },
+      "cost": {
+        "hook": "cost",
+        "self": "actor",
+        "about": "an action is priced (every priced action)"
+      },
+      "reload": {
+        "hook": "reload",
+        "self": "actor",
+        "about": "a reload is made"
+      },
+      "swap": {
+        "hook": "swap",
+        "self": "actor",
+        "about": "a weapon swap is priced"
+      },
+      "injury": {
+        "hook": "injury",
+        "self": "target",
+        "about": "an injury is about to be rolled on a unit"
+      },
+      "glyph_cost": {
+        "hook": "glyph_cost",
+        "self": "actor",
+        "about": "a Sigil glyph is priced (its AP, charge and Flux; also every preview)"
+      }
+    },
+    "predicates": {
+      "actor": {
+        "arg": "rel",
+        "about": "the event's actor is (self | ally | side | foe | other | none | any; a list: any of them)"
+      },
+      "target": {
+        "arg": "rel",
+        "about": "the event's target is (as actor)"
+      },
+      "self_hp_below": {
+        "arg": "number",
+        "about": "self's HP is under this share of its max"
+      },
+      "self_hp_above": {
+        "arg": "number",
+        "about": "self's HP is over this share of its max"
+      },
+      "self_hp_at_most": {
+        "arg": "number",
+        "about": "self's HP is at most this share of its max"
+      },
+      "self_has": {
+        "arg": "ids",
+        "about": "self has one of these conditions"
+      },
+      "self_lacks": {
+        "arg": "ids",
+        "about": "self has none of these conditions"
+      },
+      "self_tier": {
+        "arg": "words",
+        "about": "self's tier is one of these (vermin, minion, soldier, elite, boss)"
+      },
+      "self_not_tier": {
+        "arg": "words",
+        "about": "self's tier is none of these"
+      },
+      "self_kind": {
+        "arg": "words",
+        "about": "self's kind is one of these (human, robot, crawler, ork…)"
+      },
+      "self_not_kind": {
+        "arg": "words",
+        "about": "self's kind is none of these"
+      },
+      "actor_hp_below": {
+        "arg": "number",
+        "about": "actor's HP is under this share of its max"
+      },
+      "actor_hp_above": {
+        "arg": "number",
+        "about": "actor's HP is over this share of its max"
+      },
+      "actor_hp_at_most": {
+        "arg": "number",
+        "about": "actor's HP is at most this share of its max"
+      },
+      "actor_has": {
+        "arg": "ids",
+        "about": "actor has one of these conditions"
+      },
+      "actor_lacks": {
+        "arg": "ids",
+        "about": "actor has none of these conditions"
+      },
+      "actor_tier": {
+        "arg": "words",
+        "about": "actor's tier is one of these (vermin, minion, soldier, elite, boss)"
+      },
+      "actor_not_tier": {
+        "arg": "words",
+        "about": "actor's tier is none of these"
+      },
+      "actor_kind": {
+        "arg": "words",
+        "about": "actor's kind is one of these (human, robot, crawler, ork…)"
+      },
+      "actor_not_kind": {
+        "arg": "words",
+        "about": "actor's kind is none of these"
+      },
+      "actor_within": {
+        "arg": "number",
+        "about": "actor stands within this many tiles of the holder"
+      },
+      "actor_sees_self": {
+        "arg": "bool",
+        "about": "actor can (or cannot) see the holder"
+      },
+      "target_hp_below": {
+        "arg": "number",
+        "about": "target's HP is under this share of its max"
+      },
+      "target_hp_above": {
+        "arg": "number",
+        "about": "target's HP is over this share of its max"
+      },
+      "target_hp_at_most": {
+        "arg": "number",
+        "about": "target's HP is at most this share of its max"
+      },
+      "target_has": {
+        "arg": "ids",
+        "about": "target has one of these conditions"
+      },
+      "target_lacks": {
+        "arg": "ids",
+        "about": "target has none of these conditions"
+      },
+      "target_tier": {
+        "arg": "words",
+        "about": "target's tier is one of these (vermin, minion, soldier, elite, boss)"
+      },
+      "target_not_tier": {
+        "arg": "words",
+        "about": "target's tier is none of these"
+      },
+      "target_kind": {
+        "arg": "words",
+        "about": "target's kind is one of these (human, robot, crawler, ork…)"
+      },
+      "target_not_kind": {
+        "arg": "words",
+        "about": "target's kind is none of these"
+      },
+      "target_within": {
+        "arg": "number",
+        "about": "target stands within this many tiles of the holder"
+      },
+      "target_sees_self": {
+        "arg": "bool",
+        "about": "target can (or cannot) see the holder"
+      },
+      "melee": {
+        "arg": "bool",
+        "about": "the attack or damage is (true) or is not (false) melee"
+      },
+      "crit": {
+        "arg": "bool",
+        "about": "the attack is (or is not) a critical"
+      },
+      "mode": {
+        "arg": "words",
+        "about": "the attack's mode is one of these (shot, aimed, burst, auto, melee, thrown, paired)"
+      },
+      "damage": {
+        "arg": "words",
+        "about": "the damage is of one of these kinds (melee, ranged, explosive, outburst, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true)"
+      },
+      "by_hit": {
+        "arg": "bool",
+        "about": "the damage came (or did not come) from someone's blow, not a hazard, trap, Bleeding or Burning"
+      },
+      "self_harm": {
+        "arg": "bool",
+        "about": "the damage is (or is not) the unit's own doing (a Mana Short, an overload, Strain, Flux)"
+      },
+      "hostile": {
+        "arg": "bool",
+        "about": "the actor and the target are (or are not) on different sides"
+      },
+      "cond": {
+        "arg": "ids",
+        "about": "the condition is one of these"
+      },
+      "cond_family": {
+        "arg": "words",
+        "about": "the condition's family is one of these (body, brain, heart)"
+      },
+      "action": {
+        "arg": "words",
+        "about": "the priced action (its cost site) is one of these"
+      },
+      "word": {
+        "arg": "words",
+        "about": "the Sigil word being drawn is one of these"
+      },
+      "hand": {
+        "arg": "words",
+        "about": "the hand is one of these (main, off, both)"
+      },
+      "how": {
+        "arg": "words",
+        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport)"
+      },
+      "ap_above": {
+        "arg": "number",
+        "about": "the event's AP (a price, a swap) is over this"
+      },
+      "own_turn": {
+        "arg": "bool",
+        "about": "it is (or is not) the holder's own turn"
+      },
+      "flag": {
+        "arg": "string",
+        "about": "the item's flag is set (the mark op sets it)"
+      },
+      "no_flag": {
+        "arg": "string",
+        "about": "the item's flag is not set"
+      },
+      "self_alive": {
+        "arg": "bool",
+        "about": "the holder is (or is not) up: not Downed, dead or surrendered"
+      },
+      "open": {
+        "arg": "bool",
+        "about": "nothing has stopped it yet: not cancelled, and (would_drop) not floored"
+      },
+      "amount_above": {
+        "arg": "number",
+        "about": "the event's amount (damage, a heal) is over this"
+      },
+      "amount_share_below": {
+        "arg": "number",
+        "about": "the event's amount is under this share of the holder's max HP"
+      }
+    },
+    "ops": {
+      "damage_mult": {
+        "on": [
+          "dealing",
+          "taking"
+        ],
+        "fields": [
+          "value"
+        ],
+        "changes_state": false,
+        "about": "multiply the amount being dealt or taken"
+      },
+      "damage_mod": {
+        "on": [
+          "dealing",
+          "taking"
+        ],
+        "fields": [
+          "value",
+          "value_pct"
+        ],
+        "changes_state": false,
+        "about": "add to the amount (value), or change it by a percentage (value_pct)"
+      },
+      "damage_vs": {
+        "on": [
+          "dealing"
+        ],
+        "fields": [
+          "value"
+        ],
+        "changes_state": false,
+        "about": "a bonus against this target (added with the other target bonuses)"
+      },
+      "roll_mod": {
+        "on": [
+          "attack",
+          "cond_incoming",
+          "save"
+        ],
+        "fields": [
+          "value",
+          "roll"
+        ],
+        "changes_state": false,
+        "about": "a to-hit term on an attack; on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\")"
+      },
+      "cost_mod": {
+        "on": [
+          "cost",
+          "swap",
+          "reload",
+          "attack",
+          "glyph_cost"
+        ],
+        "fields": [
+          "value",
+          "set",
+          "min",
+          "at_least",
+          "res"
+        ],
+        "changes_state": false,
+        "about": "change the AP (or with res, a resource: charge, flux…) of the action: add value, or set it; min is the floor a cut stops at; at_least raises it to that"
+      },
+      "grant_ap": {
+        "on": [
+          "turn_ap",
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost"
+        ],
+        "fields": [
+          "value",
+          "bank"
+        ],
+        "changes_state": true,
+        "about": "AP: at turn_ap, to this turn (a negative value takes); elsewhere perk AP now (bank: true, next turn)"
+      },
+      "resource": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost"
+        ],
+        "fields": [
+          "resource",
+          "value"
+        ],
+        "changes_state": true,
+        "about": "give (or take) a class resource (guard, momentum…) or Echo"
+      },
+      "condition": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost"
+        ],
+        "fields": [
+          "condition",
+          "rounds",
+          "skip_save"
+        ],
+        "changes_state": true,
+        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save"
+      },
+      "cleanse": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost"
+        ],
+        "fields": [
+          "condition",
+          "family",
+          "count"
+        ],
+        "changes_state": true,
+        "about": "end conditions: the ones named, or a family's debuffs, or any debuff (count: how many)"
+      },
+      "cond_rounds": {
+        "on": [
+          "cond_incoming"
+        ],
+        "fields": [
+          "max",
+          "add"
+        ],
+        "changes_state": false,
+        "about": "change the rounds of the condition being put on: at most max, or add"
+      },
+      "skip_save": {
+        "on": [
+          "cond_incoming"
+        ],
+        "fields": [],
+        "changes_state": false,
+        "about": "the condition being put on gets no save"
+      },
+      "cancel": {
+        "on": [
+          "cond_incoming",
+          "forced_move",
+          "injury",
+          "attack"
+        ],
+        "fields": [
+          "why"
+        ],
+        "changes_state": false,
+        "about": "stop it: the condition, the forced move or the injury does not happen; an attack is refused (why: the reason shown)"
+      },
+      "floor": {
+        "on": [
+          "would_drop"
+        ],
+        "fields": [
+          "value"
+        ],
+        "changes_state": false,
+        "about": "the blow leaves the unit at this many HP"
+      },
+      "deal": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost"
+        ],
+        "fields": [
+          "amount"
+        ],
+        "changes_state": true,
+        "about": "deal an amount block (amounts) to the self, actor or target"
+      },
+      "mend": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost"
+        ],
+        "fields": [
+          "amount"
+        ],
+        "changes_state": true,
+        "about": "heal or shield by an amount block"
+      },
+      "displace": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost"
+        ],
+        "fields": [
+          "tiles",
+          "how"
+        ],
+        "changes_state": true,
+        "about": "push the target away from the holder (how: push) or pull it closer (pull)"
+      },
+      "use": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost"
+        ],
+        "fields": [],
+        "changes_state": true,
+        "about": "nothing but its limit: spends one use (for a limit another effect reads with peek)"
+      },
+      "mark": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost"
+        ],
+        "fields": [
+          "flag",
+          "clear"
+        ],
+        "changes_state": true,
+        "about": "set (or with clear: true, clear) one of the item's own flags, for a later trigger's flag / no_flag"
+      }
+    },
+    "limit_scopes": [
+      "per_turn",
+      "per_round",
+      "per_combat",
+      "per_scene",
+      "per_session",
+      "per_rest"
+    ]
+  }
 }

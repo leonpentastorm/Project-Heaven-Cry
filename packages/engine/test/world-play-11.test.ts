@@ -3,6 +3,7 @@
 // hidden piles, persistence across fights, zones and saves, the Narrator's ground[] and loot[] ammo, old saves'
 // floors, the click-path around revealed hazards, and the write-back bugs fixed on the way.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, type Sheet, type GameState, type Action, type NarratorTurn, type MapObject, type Character, newGame, apply, RuleError, positionsOf, storyObjects, keyOf, zoneMap,
   viewFor, packOf, active, newCharacter, startCombat, reload, reloadHands, pickUp, weaponActions, unitFromEnemy, magsOf, roundsOf, plotItem, WEAPON,
@@ -93,7 +94,7 @@ describe('the container module (items 671–673)', () => {
 });
 
 describe('speed and tactical reloads (items 679, 680)', () => {
-  const medic = () => { const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id)); const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 }); const u = cb.units[0]; u.ap = 6; return { c, cb, u }; };
+  const medic = () => { const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id)); const cb = startCombat('t', 'yard16', [{ c }], [], 'easy', { state: 3 }); const u = cb.units[0]; u.ap = 6; return { c, cb, u }; };
   it('a speed reload drops the old magazine into the pile, rounds and type kept; the fresh one sets the loaded type', () => {
     const { cb, u } = medic(); u.ammo = 4; u.ammoType = 'hollow_point';
     expect(reload(cb, u)).toBeNull(); expect(u.ap).toBe(4); expect(u.ammoType).toBeNull();
@@ -118,7 +119,7 @@ describe('speed and tactical reloads (items 679, 680)', () => {
     expect([...u.mags!].sort((a, b) => a - b)).toEqual([2, 3]); expect(labels(pileOn(cb.objects, u.pos)).length).toBe(1);
   });
   it('enemies speed-reload: their magazines feed the piles', () => {
-    const cb = startCombat('t', 'yard', [], [], 'easy', { state: 3 }), e = unitFromEnemy('foe-0', 'Raider', 'soldier', 'service_pistol', '6,6', { state: 4 });
+    const cb = startCombat('t', 'yard16', [], [], 'easy', { state: 3 }), e = unitFromEnemy('foe-0', 'Raider', 'soldier', 'service_pistol', '6,6', { state: 4 });
     cb.units.push(e); e.ap = 6; e.ammo = 1;
     expect(reload(cb, e)).toBeNull(); expect(labels(pileOn(cb.objects, '6,6'))).toEqual(['Service pistol magazine 1/12']);
   });

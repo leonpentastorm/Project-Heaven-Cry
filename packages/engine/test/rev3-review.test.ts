@@ -25,7 +25,7 @@ describe('Sleight: the image swap needs the image\'s tile free (spec item 575)',
 
 describe('a fooled enemy never ends its walk on the False Image (spec item 573)', () => {
   it('a melee foe closes on the image and stops next to it', () => {
-    const f = fightWith([cls('trickster', 8, { archetype: 'sigilist', kit: 'sigil' })], [{ at: 'P11', weapon: 'maul' }]);
+    const f = fightWith([cls('trickster', 8, { archetype: 'sigilist', kit: 'sigil' })], [{ at: 'P11', weapon: 'maul' }], { classic: true });
     open(f.cb);
     const u = f.turn(f.pc); f.unit(u.id).pos = '2,4'; const foe = f.unit(f.foe.id); foe.pos = '9,4'; (foe as any).sv = { body: -50, brain: -50, heart: -50 };
     f.cb.order = [u.id, foe.id];

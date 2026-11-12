@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   PORTRAIT_MAX, SHEET_REV,
   ARCHETYPES, FOG_CORE, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
@@ -86,7 +87,7 @@ describe('grid references and the story map', () => {
     expect(refOf('0,0')).toBe('A1'); expect(refOf('15,10')).toBe('P11'); expect(refOf('26,0')).toBe('AA1');
     expect(keyOf('c7')).toBe('2,6'); expect(keyOf('Q1', MAPS.rear_pad)).toBeNull(); expect(keyOf('nonsense')).toBeNull();
     expect(mapBrief(MAPS.rear_pad)).toContain('L3–L5: Stacked platinum crates');
-    expect(notesAt(MAPS.rear_pad, keyOf('L4')!)[0]).toMatch(/crates/); expect(notesAt(MAPS.yard, keyOf('H2')!)[0]).toMatch(/half cover/);
+    expect(notesAt(MAPS.rear_pad, keyOf('L4')!)[0]).toMatch(/crates/); expect(notesAt(MAPS.yard16, keyOf('H2')!)[0]).toMatch(/half cover/);
   });
   it('players move themselves; the Narrator moves them; fights start where they stand', () => {
     let g: GameState = newGame('ROOM', { id: 'host', name: 'Leon' }, 's');
@@ -160,7 +161,7 @@ describe('campaigns', () => {
 describe('vision, stances and reactions', () => {
   const setup = (dark = false) => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    const map = { ...MAPS.yard, dark, cover: [], full: [] };
+    const map = { ...MAPS.yard16, dark, cover: [], full: [] };
     const cb = startCombat('t', map, [{ c, pos: '1,5' }], [{ name: 'E', tier: 'soldier', weapon: 'hellraiser_service_rifle', at: 'J6' }], 'easy', { state: 5 }, []);
     const u = cb.units.find((x) => x.side === 'pc')!; u.weapon = 'hellraiser_service_rifle'; u.ammo = 24; u.ap = 9;
     return { c, cb, u, e: cb.units.find((x) => x.side === 'foe')! };
@@ -205,7 +206,7 @@ describe('weapons v2', () => {
     expect(equip(c, packOf(c).findIndex((x) => x.id === 'magistrate_pistol'), 'main')).toBeNull(); expect(c.weapon).toBe('magistrate_pistol');
     expect(packOf(c).some((x) => x.weapon === 'service_pistol')).toBe(true); // the old pistol went back to the pack
     expect(fitMod(c, packOf(c).findIndex((x) => x.id === 'mod_quick_release'))).toBeNull();
-    const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
+    const cb = startCombat('t', 'yard16', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
     const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
     expect(u.armour).toBe(10 + 2); expect(u.attack).toBe(mod(c.skills.dexterity || 0) + 2); // medium armour + helmet; masterwork +2
     u.ap = 9; u.ammo = 0; u.mags = [7]; expect(reload(cb, u)).toBeNull(); expect(u.ap).toBe(8); // quick-release: 1 AP
@@ -215,7 +216,7 @@ describe('weapons v2', () => {
   });
   it('weapon skill actions and paired attacks', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'C5' }, { name: 'F', tier: 'boss', weapon: 'service_pistol', at: 'C6' }], 'easy', { state: 4 }, []);
+    const cb = startCombat('t', 'yard16', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'C5' }, { name: 'F', tier: 'boss', weapon: 'service_pistol', at: 'C6' }], 'easy', { state: 4 }, []);
     const u = cb.units.find((x) => x.side === 'pc')!, [e, f] = cb.units.filter((x) => x.side === 'foe');
     u.weapon = 'drifter_revolver'; u.ammo = 6; u.ap = 9; const before = cb.log.length;
     expect(useWeaponSkill(cb, { state: 8 }, u, e, c)).toBeNull(); expect(u.ap).toBe(6); expect(cb.log.slice(before).filter((l) => /fires at/.test(l)).length).toBe(3); // Fan the Hammer
@@ -237,7 +238,7 @@ describe('weapons v2', () => {
 describe('map objects and points of interest', () => {
   it('traps spring, barrels explode, doors block until opened', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    const cb = startCombat('t', 'yard', [{ c, pos: '1,1' }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol', at: 'P1' }], 'easy', { state: 3 },
+    const cb = startCombat('t', 'yard16', [{ c, pos: '1,1' }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol', at: 'P1' }], 'easy', { state: 3 },
       [makeObject('t1', 'trap', '3,1'), makeObject('b1', 'barrel', '13,1'), makeObject('d1', 'door', '1,3')]);
     const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
     u.ap = 9; u.vigilant = 0; const hp = u.hp;
@@ -287,7 +288,7 @@ describe('combat', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
     const seen = new Set<string>();
     for (let seed = 1; seed < 400 && seen.size < 4; seed++) {
-      const cb = startCombat('t', 'yard', [{ c }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }], 'easy', { state: 7 });
+      const cb = startCombat('t', 'yard16', [{ c }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }], 'easy', { state: 7 });
       const u = cb.units.find((x) => x.side === 'foe')!, mv = u.movement;
       const line = rollInjury({ state: seed }, u);
       if (/head/.test(line)) { expect(u.dazedNext).toBe(1); seen.add('head'); }
@@ -296,7 +297,7 @@ describe('combat', () => {
       if (/leg/.test(line)) { expect(u.movement).toBe(mv / 2); rollInjury({ state: seed }, u); expect(u.movement).toBe(mv / 2); seen.add('leg'); }
     }
     expect(seen.size).toBe(4);
-    const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
+    const cb = startCombat('t', 'yard16', [{ c }], [], 'easy', { state: 3 });
     const u = cb.units[0];
     u.injuries = [{ loc: 'arm', side: 'left' }];
     expect(armPenalty(u, WEAPON.service_pistol)).toBe(0); // pistol in the right hand
@@ -313,7 +314,7 @@ describe('combat', () => {
   it('reloading uses up magazines and drops the one in the gun, rounds and all', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id)); // medic kit: pistol, 2 spare magazines
     expect(spareMags(c)).toEqual([12, 12]);
-    const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
+    const cb = startCombat('t', 'yard16', [{ c }], [], 'easy', { state: 3 });
     const u = cb.units[0]; u.ap = 6;
     u.ammo = 5; expect(reload(cb, u)).toBeNull();
     // Rules 1.9: a speed reload drops the old magazine into the pile on the tile, rounds kept (cb.floor is retired).
@@ -331,7 +332,7 @@ describe('combat', () => {
   });
   it('cover: half is −5 and can be shot to rubble; full blocks sight', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    const cb = startCombat('t', 'yard', [{ c }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }], 'easy', { state: 3 });
+    const cb = startCombat('t', 'yard16', [{ c }], [{ name: 'E', tier: 'minion', weapon: 'service_pistol' }], 'easy', { state: 3 });
     const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
     u.ap = 9; u.pos = '1,3'; e.pos = '6,3'; // half cover at 5,3 sits between them
     const open = previewAttack(cb, u, { ...e, pos: '6,1' } as any, 'shot'), behind = previewAttack(cb, u, e, 'shot');
@@ -345,7 +346,7 @@ describe('combat', () => {
   });
   it('picking up and loading magazines', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    const cb = startCombat('t', 'yard', [{ c }], [], 'easy', { state: 3 });
+    const cb = startCombat('t', 'yard16', [{ c }], [], 'easy', { state: 3 });
     const u = cb.units[0]; u.ap = 6; u.ammo = 0;
     reload(cb, u); expect(u.mags).toEqual([12]);
     u.ap = 6; expect(pickUp(cb, u, u.pos, null, c)).toBeNull(); expect(u.mags).toEqual([12, 0]); expect(u.ap).toBe(5);
@@ -357,7 +358,7 @@ describe('combat', () => {
   });
   it('Analyze: 2 AP, range 4 + Analysis, line of sight, shared with the squad', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    const cb = startCombat('t', 'yard', [{ c }], [{ name: 'E', tier: 'soldier', weapon: 'service_pistol' }], 'easy', { state: 3 });
+    const cb = startCombat('t', 'yard16', [{ c }], [{ name: 'E', tier: 'soldier', weapon: 'service_pistol' }], 'easy', { state: 3 });
     const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
     u.ap = 6; u.analysis = 0; u.pos = '1,5'; e.pos = '9,5';
     expect(analyze(cb, u, e)).toMatch(/range/);
@@ -396,7 +397,7 @@ function play(seed: string) {
   act({ type: 'narrator/turn', turn: { narration: 'Guns come up.', combat: { name: 'Rear pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }, { name: 'Keel', tier: 'soldier', weapon: 'drifter_revolver' }] } } });
   expect(g.phase).toBe('combat');
   // Players: shoot the nearest hostile they can, else close in, else end the turn.
-  for (let i = 0; i < 400 && g.phase === 'combat'; i++) {
+  for (let i = 0; i < 1500 && g.phase === 'combat'; i++) { // rules 1.15: enemies of the squad's level take more shots than the old fixed tiers
     const cb = g.combat!, u = active(cb)!, owner = g.characters[u.charId!].owner;
     const foe = cb.units.find((t) => t.side === 'foe' && !t.dead && !t.downed);
     try { act({ type: 'combat/attack', unitId: u.id, targetId: foe!.id, mode: 'shot' }, owner); continue; } catch { /* fall through */ }
@@ -415,10 +416,10 @@ describe('a full session', () => {
     expect(g.phase).toBe('story');
     expect(g.combat?.over).toBeTruthy();
     expect(g.story.work?.kind).toBe('combat_end');
-  });
+  }, 20000); // a whole fight against enemies of the squad's level (rules 1.15): about 3 s alone, more when the suite is busy
   it('is deterministic: same seed, same log', () => {
     expect(JSON.stringify(play('seed-2').g)).toBe(JSON.stringify(play('seed-2').g));
-  });
+  }, 20000);
   it('keeps voices private', () => {
     const { g } = play('seed-3');
     const voices = g.story.entries.filter((e) => e.kind === 'voice');
@@ -448,6 +449,7 @@ describe('music (spec: Music)', () => {
   });
   it('area music comes from the zone, else the campaign; a fight switches to the game\'s fight music', () => {
     const r = room();
+    r.g.campaign = JSON.parse(JSON.stringify(r.g.campaign)); // shared between states: change a copy
     for (const z of r.g.campaign!.zones) delete z.music;
     r.g.campaign!.music = { ambient: { yt: 'aaaaaaaaaaa', title: 'Camp' }, combat: { yt: 'bbbbbbbbbbb', title: 'Fight' } } as any;
     expect(musicFor(r.g).track!.title).toBe('Camp');
@@ -529,10 +531,10 @@ describe('campaign art (spec: Campaigns, art)', () => {
     g = apply(g, { type: 'char/add', sheet: sheetFrom('field_medic', 'MPAT') }, 'host');
     return apply(g, { type: 'session/start' }, 'host');
   };
-  it('built-in campaigns validate; every M813 zone has its map and banner', () => {
+  it('built-in campaigns validate; every M813 zone has its banner, and no map painting (plain colour until the rewrite: rules 1.16)', () => {
     for (const c of BUILT_IN_CAMPAIGNS) expect(validateCampaign(c), c.id).toEqual([]);
     const m = BUILT_IN_CAMPAIGNS.find((c) => c.id === 'm813')!;
-    for (const z of m.zones) { expect(z.art?.map, z.id).toMatch(/^map-m813/); expect(z.art?.banner, z.id).toMatch(/^ill-m813/); }
+    for (const z of m.zones) { expect((z.art as any)?.map, z.id).toBeUndefined(); expect(z.art?.banner, z.id).toMatch(/^ill-m813/); }
   });
   it('objects keep their sprite, box and portrait on the map', () => {
     const g = start(), objs = storyObjects(g);
@@ -764,11 +766,13 @@ describe('anyone is a target (spec: Anyone is a target)', () => {
   it('a resumed save from before the art gets it, without losing what play changed', () => {
     let { g } = two('old');
     // make it look like a pre-art save
+    g.campaign = JSON.parse(JSON.stringify(g.campaign)); // shared between states: change a copy
     for (const z of g.campaign!.zones) { delete (z as any).art; delete (z as any).npcs; for (const o of z.objects || []) { delete (o as any).sprite; delete (o as any).portrait; } }
     delete (g.campaign as any).sprites; for (const o of g.story.objects!) { delete o.sprite; delete o.portrait; }
     const nine = g.story.objects!.find((o) => o.name === 'Sergeant Nine-Nine')!; nine.approaches[0].tries.push({ charId: 'x', name: 'X', ok: true, total: 15, scene: 1 });
     g = apply(g, { type: 'campaign/refresh' }, 'host');
-    expect(g.campaign!.zones[0].art?.map).toBe('map-m813-shield-line');
+    expect(g.campaign!.zones[0].art?.banner).toBe('ill-m813-shield-line');
+    expect((g.campaign!.zones[0].art as any)?.map).toBeUndefined(); // the map paintings are retired (rules 1.16)
     const n2 = g.story.objects!.find((o) => o.name === 'Sergeant Nine-Nine')!;
     expect(n2.portrait).toBe('char-m813-nine-nine'); expect(n2.approaches[0].tries).toHaveLength(1);
     expect(g.story.objects!.find((o) => o.name === 'Enemy drop pod')!.sprite).toBe('sprite-obj-drop-pod');
@@ -777,6 +781,7 @@ describe('anyone is a target (spec: Anyone is a target)', () => {
   it('a resumed save from before the sigil marks gets them in zones not yet entered (objects only added are no layout change)', () => {
     let { g } = two('marks');
     const cur = g.story.zone;
+    g.campaign = JSON.parse(JSON.stringify(g.campaign)); // shared between states: change a copy
     for (const z of g.campaign!.zones) z.objects = (z.objects || []).filter((o: any) => o.kind !== 'sigil_mark');
     g = apply(g, { type: 'campaign/refresh' }, 'host');
     const withMarks = g.campaign!.zones.filter((z) => (z.objects || []).some((o: any) => o.kind === 'sigil_mark')).map((z) => z.id);
@@ -854,7 +859,9 @@ describe('anyone is a target: review fixes', () => {
     let { g, a } = two('stray');
     const before = npcsOf(g).length;
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', actions: [{ charId: a, act: 'attack', objId: storyObjects(g).find((o) => o.name === 'Sergeant Nine-Nine')!.id, mode: 'melee' }] } as any }, 'host');
-    if (g.phase === 'story') expect(npcsOf(g).length).toBe(before);
+    // truth pass 3: this seed's queued attack starts the fight, so the `if (g.phase === 'story')` guard here never let the
+    // expect run. Either way no token may be left behind: the story's NPC list is what it was.
+    expect(npcsOf(g).length).toBe(before);
   });
 });
 

@@ -160,15 +160,17 @@ COMBO PERKS (deeds)
 - A Legendary Deed is rarer still: an act the campaign will be remembered for, not a good roll or a won fight. Add legends[] (character, the deed in one sentence); the engine gives +1 Attribute point. Most sessions see none.
 
 FIGHTS
-- When violence breaks out, start a fight with combat: give it a name, a map (a zone id from the campaign, usually the current zone; yard is a generic open map), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier (minion, soldier, elite, boss) and a weapon id. The engine runs the whole fight on the grid and tells you how it ended; you then narrate the aftermath.
-- Enemy tiers, weakest to strongest: minion (fodder), soldier (trained), elite (a veteran or a specialist), boss (the fight's centre). The engine sets their numbers.
+- When violence breaks out, start a fight with combat: give it a name, a map (a zone id from the campaign, usually the current zone; yard is a generic open map), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier and a weapon id. The engine runs the fight on the grid and tells you how it ended; you then narrate the aftermath.
+- Enemy tiers, weakest to strongest: vermin (a swarm; one hit kills one), minion (fodder), soldier (trained), elite (a veteran or a specialist), boss (the fight's centre). You name the tier; the engine sets every number from the fight's level, which is the squad's average level.
+- The engine picks every enemy's target. Enemies turn on whoever is healing the squad; the fight log says when.
+- level_shift moves that level: 0 for a fair fight, -1 to -3 for an easier one, +1 or +2 for a deadly one.
 - Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
 
 MAGIC (the engine runs every number)
 - Sigil magic (Mind; needs an Evoker and mana cores). Words (id = the word in lower case): ${SIGIL_GROUPS}.
-- A spell is a Line of 2 to 4 glyphs: a Subject and another word, at most one Reach word (none = Touch, 1 tile). The caster draws one glyph on their own tile, steps, draws again; Evoke fires the Line from where they stand: from an end it fires along, from beside it across. It hits friends unless KIN is in it. Anyone may scuff a glyph, enemies too. Firing builds Flux; vent clears it (raising the mana meter). Details: sigil:grammar and each word's entry.
+- A spell is a Line of 2 to 4 glyphs: a Subject and another word, at most one Reach word (none = Touch, 1 tile). The caster draws one glyph on their own tile, steps, draws again; Evoke fires the Line from where they stand: from an end it fires along, from beside it across. It hits friends unless KIN is in it. Anyone may scuff a glyph, enemies too. Drawing a glyph builds Flux (Evoking adds none); vent clears it (raising the mana meter). Details: sigil:grammar and each word's entry.
 - Describe Sigils as cyan, square, snapping strokes, each element as its entry says; describe fields, traps and turrets as the engine reports them. Never decide a hit, a number or who a spell touched.
-- Soul magic (Soul; an Emanator and MP; rules 1.8): an Outburst is a ready design (school, modules, a tone: raw, fire, storm, frost, stone, gale or acid). Begin holds it at stage 0, pump adds a stage (to 4; may carry a feeling), revert undoes one, release fires it; held past a turn it swells a stage. The heart glows as it fills: violet heat, a rising heartbeat, blooming into the tone's colour. Details: soul:heart, tone:<id>, form:<id>.
+- Soul magic (Soul; an Emanator and MP; rules 1.8): an Outburst is a ready design (school, modules, a tone: raw, fire, storm, frost, stone, gale or acid). Begin holds it at stage 0, pump adds a stage (to 4; may carry a feeling; costs MP too), revert undoes one, release fires it; held past a turn it swells a stage. The heart glows as it fills: violet heat, a rising heartbeat, blooming into the tone's colour. Details: soul:heart, tone:<id>, form:<id>.
 - Strain rises with each Begin and held turn; over the limit the heart burns (it Downs, never kills); 3 over is a Mana Short (Stunned, the held one goes off wild). No vent: it falls each turn and by calming the heart (a still turn, fighting, tending an ally, letgo, steady). Syphon draws mana into MP; crystallise turns 10 mana into a core.
 - Players' spell words map to actions[]: draw (word, on their own tile), evoke (tile: a glyph of the Line, aim; aims for TWICE, dest for STEP, order and orderTo for COMMAND), read (tile: an enemy glyph or a scuffed glyph's trace; the Analyze action aimed at it: +2 study and the word on the known-to-study list), scuff, vent, core, outburst (design id, aim, hold), pump, release (aim), letgo, steady, feed, heartwatch, syphon, crystallise. tile and aim are grid references (aim may be a token id). A spell aimed at someone outside a fight starts the fight, like an attack.
 - The mana meter (0 to 40; thin, normal, rich, flooded) is in PARTY CONDITION. Deaths, venting and Grand forms raise it; Soul casting, syphon and crystallise lower it. Set mana only when the story changes the place itself (a ley spring, a dead zone); null otherwise. Flooded places strain Soul casters; thin places starve them.
@@ -474,6 +476,7 @@ export function turnSchema(g: GameState) {
     combat: { anyOf: [{ type: 'null' }, obj({
       name: { type: 'string' }, map: { type: 'string', enum: [...(campaignOf(g)?.zones.map((z) => z.id) || []), 'yard'] }, difficulty: { type: 'string', enum: ['easy', 'standard', 'hard', 'boss'] },
       enemies: { type: 'array', items: obj({ name: { type: 'string' }, tier: { type: 'string', enum: ENEMIES.map((e: any) => e.id) }, weapon: { type: 'string' }, at: { type: 'string' } }) },
+      level_shift: { type: 'integer', minimum: -3, maximum: 2, description: 'Enemy levels above or below the squad (0: equal)' },
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
@@ -533,7 +536,7 @@ export function submitTool(g: GameState) {
   schema.properties.npcs = { type: 'array', description: 'Place, move, update or remove people and enemies on the map; carry or drop someone (empty when nothing changes)', items: { type: 'object', properties: {
     action: { type: 'string', enum: ['place', 'move', 'update', 'remove', 'carry', 'drop'] }, charId: { type: 'string', description: 'carry, drop: the carrier' },
     avatar: ST, wants: ST, knows: { type: 'object', properties: { objective: ST, hint: ST } }, talk: { type: 'array', items: APPROACH }, id: { type: 'string', description: 'The token id, for move, update and remove' }, name: { type: 'string' },
-    side: { type: 'string', enum: ['hostile', 'neutral'] }, tier: { type: 'string', enum: ['minion', 'soldier', 'elite', 'boss'] }, weapon: { type: 'string', description: 'A weapon id' }, at: { type: 'string', description: 'A grid reference, for place and move' },
+    side: { type: 'string', enum: ['hostile', 'neutral'] }, tier: { type: 'string', enum: ['vermin', 'minion', 'soldier', 'elite', 'boss'] }, weapon: { type: 'string', description: 'A weapon id' }, at: { type: 'string', description: 'A grid reference, for place and move' },
     hidden: { type: 'boolean', description: 'Lurking: unseen by the players until spotted (place, update)' },
   }, required: ['action'] } };
   schema.properties.actions = { type: 'array', description: 'Mechanical actions players declared in words, run as their own actions when the next round opens (empty otherwise)', items: { type: 'object', properties: {

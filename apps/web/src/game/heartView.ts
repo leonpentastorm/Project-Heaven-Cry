@@ -5,10 +5,11 @@
 // Nothing here works a rule out: every cost, refusal, number and tile comes from the engine (previewOutburstPlan,
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
-import { SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
-  previewOutburst, previewOutburstPlan, previewPump, togglesFor, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START,
+import { inverseShield, outburstHeal, SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
+  previewOutburst, previewOutburstPlan, previewPump, pumpsMp, togglesFor, dryRun, fightWith, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
-import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, type FeelingBtn } from './feelingsView';
+import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, markIconSrc, iconStyle, type FeelingBtn } from './feelingsView';
+import { hasPaintedArt, heartMarkKey } from './heartIcons';
 import { heldOutburstOf } from './resources';
 import { OPT_LABEL, optValue } from './actionPickers';
 
@@ -42,7 +43,7 @@ export const formIconUri = (form: string, ink = SOUL_INK) => 'data:image/svg+xml
 
 // ---------- a design in words ----------
 const DEFAULT_OPT: Record<string, string> = { buff: 'heal', control: 'push', status: 'shaken' };
-/** A school's option in words ('Heal 30', 'Push 3 tiles'); the engine's default when none is set. */
+/** A school's option in words ('Heal', 'Push 3 tiles'); the engine's default when none is set. */
 export function optionName(school: string, v?: string): string {
   const o0 = v || DEFAULT_OPT[school] || ''; if (!o0) return '';
   const o = ((SCHOOL as any)[school]?.options || []).find((x: string) => optValue(x) === o0 || x === o0);
@@ -80,41 +81,48 @@ export function designInfo(m: any, d0: any, mana?: number): DesignInfo {
 /** One school's effect at a stage multiplier, in words with its numbers (f: 1 primary, the second school's strength). */
 function schoolEffect(m: any, d: any, school: string, opt: string | undefined, sm: number, f: number): string {
   const S: any = (SCHOOL as any)[school] || {}, o = opt || DEFAULT_OPT[school] || '';
-  if (school === 'damage') return (d.modules.includes('inverse') ? 'a shield of ' : '') + Math.floor(outburstDamage(m, d, sm) * f) + (d.modules.includes('inverse') ? ' on an ally' : ' damage');
-  if (school === 'buff') return o === 'heal' ? 'heals ' + Math.floor((S.heal ?? 30) * (m.healMult ?? 1) * sm * f) : optionName(school, o) + (f < 1 ? ' (half)' : '');
-  if (school === 'control') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (Body save)';
-  if (school === 'status') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (a save)';
+  // Inverse (rules 1.20): the shield has its own base (the engine's number, inverseShield).
+  if (school === 'damage') {
+    const inv = d.modules.includes('inverse'), raw = outburstDamage(m, d, sm) * f;
+    if (inv) return 'a shield of ' + Math.floor(inverseShield(m, d, sm) * f) + ' on ' + (formOf(d) === 'bolt' ? 'an ally' : 'each ally');
+    // Rules 1.19: the way it strikes, with the engine's own numbers (soul_modules.json damage.modes).
+    const md: any = (SOUL_RULES as any).damage?.modes?.[o] || null, n = Math.floor(raw * damageModeMult(o));
+    return n + ' damage' + (!md ? '' : md.mult_low != null ? ' (Finish: ' + Math.floor(raw * md.mult_low) + ' against a target at half its HP or less)' : md.condition ? ', and the target is Marked for your side (Brand)' : md.heal_of_damage ? ', and you heal for a quarter of the HP it takes (Drain)' : '');
+  }
+  if (school === 'buff') return o === 'heal' ? 'heals ' + Math.floor(outburstHeal(m, d, sm) * f) + (formOf(d) === 'bolt' ? '' : ' each') : optionName(school, o) + (f < 1 ? ' (half)' : '');
+  // Rules 1.19: these read the stage too (a harder save every 2 stages, longer from stage 3).
+  if (school === 'control') return optionName(school, o) + (f < 1 ? ' (half)' : '') + (o === 'swap' ? ' (Body save; an ally doesn\'t resist)' : ' (Body save; harder to resist as the stage rises)');
+  if (school === 'status') return optionName(school, o) + (f < 1 ? ' (half)' : '') + ' (a save; harder to resist as the stage rises)';
   return S.name || school;
 }
 /** The workshop's verdict: both effects with numbers at stage 1, the snap and full heart, the tone's rider, the cost. */
 export function designVerdict(m: any, d0: any, mana?: number): { effects: string; rider: string; line: string } {
-  const d = migrateDesign(d0), mm = { soulMult: 1, healMult: 1, costSave: 0, soulRange: 0, debuff: { body: 0, brain: 0, heart: 0 }, ...(m || {}) };
-  const one = schoolEffect(mm, d, d.school, d.option, 1, 1), two = d.school2 && d.school2 !== d.school ? schoolEffect(mm, d, d.school2, d.option2, 1, SECOND_SCHOOL.strength) : '';
+  // soulBase: the workshop is a character's (rules 1.17: the Damage base a character's heart carries); the stage 1 multiplier is the table's.
+  const d = migrateDesign(d0), mm = { soulMult: 1, healMult: 1, costSave: 0, soulRange: 0, soulBase: SOUL_DAMAGE, debuff: { body: 0, brain: 0, heart: 0 }, ...(m || {}) }, s1 = STAGE_MULT[1];
+  if (mm.soulBase == null) mm.soulBase = SOUL_DAMAGE;
+  const one = schoolEffect(mm, d, d.school, d.option, s1, 1), two = d.school2 && d.school2 !== d.school ? schoolEffect(mm, d, d.school2, d.option2, s1, SECOND_SCHOOL.strength) : '';
   const dmgRange = d.school === 'damage' && !d.modules.includes('inverse') ? ' (snap ×' + STAGE_MULT[0] + ' ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[0])) + ', stage 4 ×' + STAGE_MULT[MAX_STAGE] + ' ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[MAX_STAGE])) + ')' : '';
   const tone = toneOf(d), rider = tone === 'raw' ? 'Raw: Soul damage that ignores armour. No rider.' : toneName(tone) + ': armour counts half; stage 2–3 ' + toneRiders(tone, 2).text + ' Stage 4: ' + toneRiders(tone, MAX_STAGE).text;
   return { effects: 'At stage 1: ' + one + dmgRange + (two ? '; then ' + two : '') + '.', rider, line: designInfo(mm, d, mana).line };
 }
 
 // ---------- a dry run of a cycle action (its refusal, and what it does to Strain) ----------
+/** The engine's own dry run (preview.ts dryRun): it owns the copy of the fight, so nothing a cycle action keeps on a
+ * unit can leak out of a preview. */
 export function dryHeart(cb: any, uid: string, fn: (c: any, u: any) => string | null): { err: string | null; u: any } {
-  const units = cb.units.map((x: any) => ({ ...x, conds: x.conds ? { ...x.conds } : x.conds, mg: x.mg ? { ...x.mg, held: x.mg.held ? { ...x.mg.held } : null } : x.mg }));
-  const c = { ...cb, units, log: [], notes: [], fx: [], glyphs: [...(cb.glyphs || [])], zones: (cb.zones || []).map((z: any) => ({ ...z, hit: { ...(z.hit || {}) } })), mana: cb.mana ?? MANA_START };
-  const u = units.find((x: any) => x.id === uid);
-  let err: string | null = null;
-  try { err = u ? fn(c, u) : 'No unit.'; } catch (e: any) { err = String(e?.message || e); }
-  return { err, u };
+  const r = dryRun(null, cb.mana == null ? { ...cb, mana: MANA_START } : cb, uid, fn);
+  return { err: r.err, u: r.u };
 }
 
 // ---------- the combat Outbursts tab, not holding: design cards with Begin and Snap ----------
 export interface DesignCard extends DesignInfo { beginAp: number; snapAp: number; beginWhy: string; snapWhy: string; canBegin: boolean; costText: string;
+  /** Rules 1.24: the MP of the Begin and four Pumps (a full heart); the Begin's alone when Pumps take none. */ fullMp: number;
   /** Heart Overload (rules 1.14): right after a Release at stage 2 or higher, this design may Begin again for 0 AP.
    * `again` is the card's line for it ('' when it isn't offered here); `bloodHp` the HP the Begin costs when the mana is short. */
   again: string; bloodHp: number }
-/** A preview with these switches set on the action (as the click would carry them), read on the live fight. */
-function withMods<T>(cb: any, mods: string[], fn: () => T): T {
-  const had = 'mods' in cb, was = cb.mods; cb.mods = mods;
-  try { return fn(); } finally { if (had) cb.mods = was; else delete cb.mods; }
-}
+/** A preview with these switches set on the action (as the click would carry them). The fight the screen holds is
+ * never written: the engine hands back the fight with the switches on it (preview.ts fightWith). */
+const withMods = <T>(cb: any, mods: string[], fn: (cb: any) => T): T => fn(fightWith(cb, mods));
 /** The switches items put on an action of this unit's ('combat/outburst', 'combat/pump'), or none. */
 function switches(cb: any, u: any, on: string): { id: string; itemKey: string; why: string | null; on: boolean; preview: string | null }[] {
   try { return togglesFor({ u, cb } as any, on, {}, cb?.mods || []); } catch { return []; }
@@ -130,12 +138,15 @@ export function designCards(cb: any, u: any): DesignCard[] {
     const info = designInfo(mg, d, mana), b = previewOutburst(cb, u, d.id, undefined, false), sn = previewOutburstPlan(cb, u, d.id, undefined);
     const snapWhy = sn.ok || /Pick a|direction/.test(sn.why || '') ? '' : sn.why || '';
     const plainAp = d.modules.includes('swift') ? SOUL_AP.swiftBegin : SOUL_AP.begin;
-    const free = offered && b.ap === 0 && withMods(cb, ['!' + HO_AGAIN], () => previewOutburst(cb, u, d.id, undefined, false)).ap > 0;
+    const free = offered && b.ap === 0 && withMods(cb, ['!' + HO_AGAIN], (c) => previewOutburst(c, u, d.id, undefined, false)).ap > 0;
     const beginAp = free ? 0 : b.ap || plainAp, snapAp = sn.ap || plainAp + SOUL_AP.release, bloodHp = free ? b.hp || 0 : 0;
+    const fullMp = bloodHp ? 0 : (b.cost || 0) + pumpsMp(u, MAX_STAGE, 0, b.cost || 0);
     const again = free ? 'Heart Overload: Begin ' + info.name + ' again for 0 AP' + (bloodHp ? '. You don\'t have the mana: it costs ' + bloodHp + ' HP, and it can\'t heal or shield' : '') + '.' : '';
     return { ...info, mp: bloodHp ? 0 : b.cost || info.mp, beginAp, snapAp, beginWhy: b.ok ? '' : b.why || 'Not now.', snapWhy, canBegin: !!b.ok, again, bloodHp,
       costText: (free ? 'Heart Overload: Begin again 0 AP' + (bloodHp ? ' · ' + bloodHp + ' HP for the mana' : '') : 'Begin ' + beginAp + ' AP' + (d.modules.includes('swift') ? ' (Swift)' : ''))
-        + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain' };
+        + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain'
+        // rules 1.24: what a full heart of it comes to (the Begin and its four Pumps), when Pumps take MP
+        + (fullMp > (b.cost || 0) ? ' · full heart ' + fullMp + ' MP' : ''), fullMp };
   });
 }
 
@@ -153,8 +164,11 @@ export interface HeartPanel {
   felt: string[]; does: string[]; feelings: FeelingBtn[]; revert: HeartBtn;
   freePumps: number | null; strain: number; limit: number; warn: string; warnLevel: '' | 'caution' | 'alert'; swell: string;
   watch: boolean; steady: boolean; rider: string; feedShow: boolean;
-  pump: HeartBtn & { ap: number }; release: HeartBtn; steadyBtn: HeartBtn; letgo: HeartBtn & { strainOff: number }; feed: HeartBtn; watchBtn: HeartBtn;
+  pump: HeartBtn & { ap: number; /** rules 1.24: the MP this Pump takes */ mp: number }; release: HeartBtn; steadyBtn: HeartBtn; letgo: HeartBtn & { strainOff: number }; feed: HeartBtn; watchBtn: HeartBtn;
 }
+/** A Pump's price as its button shows it (rules 1.24): "1 AP · 4 MP"; a free Pump with MP owed "0 AP · 4 MP"; "FREE"
+ * only when it takes neither (a heart that draws on the air, or one begun for no MP). */
+export const pumpCost = (pp: { ap: number; mp?: number; free?: boolean }): string => (pp.mp ? (pp.free ? '0 AP' : pp.ap + ' AP') + ' · ' + pp.mp + ' MP' : pp.free ? 'FREE' : pp.ap + ' AP');
 /** mods: the toggles on the release being planned (Heart Surge…), as the action would carry them. */
 export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null {
   const m = u?.mg; if (!m || !m.held) return null;
@@ -163,7 +177,7 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   const info = d ? designInfo(m, d, cb?.mana) : null;
   const plan = previewOutburstPlan(cb, u, 'held', undefined, mods ? { mods } : {});
   // The Pump as it would go with the switches set on it (Overdraw: 2 stages), and Overdraw's own state this turn.
-  const pp = mods ? withMods(cb, mods, () => previewPump(cb, u)) : previewPump(cb, u);
+  const pp = mods ? withMods(cb, mods, (c) => previewPump(c, u)) : previewPump(cb, u);
   const od = switches(cb, u, 'combat/pump').find((t) => t.id === OVERDRAW);
   const overdraw = !od ? '' : od.why ? 'Overdraw: ' + od.why : 'Overdraw is ready this turn. ' + (od.preview || '');
   const notes: string[] = plan.multNotes || [];
@@ -184,11 +198,13 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
     stage, maxStage, mult: plan.mult || STAGE_MULT[stage], resonance: plan.resonanceBonus || 0, multNotes: notes, overdraw,
     stages: STAGE_MULT.slice(0, maxStage + 1).map((x, n) => ({ n, mult: x, on: n <= stage, now: n === stage, next: pp.ok && n === pp.stage, feeling: n <= stage ? fAt(n) : null })),
     felt, does: plan.does || [], feelings: feelingButtons(cb, u),
-    revert: { id: 'revert', label: '↶ Revert', cost: 'FREE', ok: rv.ok, why: rv.ok ? '' : rv.why, title: 'Take back your last Pump this turn: its stage, its feeling, and the AP and Strain it cost.' },
+    revert: { id: 'revert', label: '↶ Revert', cost: 'FREE', ok: rv.ok, why: rv.ok ? '' : rv.why, title: 'Take back your last Pump this turn: its stage, its feeling, and the AP, MP and Strain it cost.' },
     freePumps: freeLeft, strain: H.strain, limit: H.limit, warn, warnLevel: plan.shortWarning || plan.burnWarning > 0 ? 'alert' : warn ? 'caution' : '', swell,
     watch: !!m.held.watch, steady: !!m.held.steady, rider: plan.riderText, feedShow: glyphHere,
-    pump: { id: 'pump', label: 'Pump', ap: pp.ap, cost: pp.ok ? (pp.free ? 'FREE' : pp.ap + ' AP') : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
-      title: pp.ok ? (pp.note ? 'An Overdraw Pump' : 'A plain Pump') + ': stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight.' : pp.free ? '. This is a free Pump from Empathy: ' + freeLeft + ' left this round.' : '.')
+    // Rules 1.24: a Pump takes MP too (the engine's number). A free Pump is free of AP only, so with MP owed it reads "0 AP · 4 MP".
+    pump: { id: 'pump', label: 'Pump', ap: pp.ap, mp: pp.mp || 0, cost: pp.ok ? pumpCost(pp) : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
+      title: pp.ok ? (pp.note ? 'An Overdraw Pump' : 'A plain Pump') + ': stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight' : pp.free ? '. This is your free Pump for this turn' : '')
+        + (pp.mp ? (pp.free ? ': it costs no AP, and ' : '. It takes ') + pp.mp + ' MP (you have ' + Math.floor(m.mp) + ').' : '.')
         + (pp.note ? ' ' + pp.note : overdraw && !od?.why ? ' ' + overdraw : '') : pp.why || '' },
     release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + (plan.stage ?? stage) + ' (×' + (plan.mult || STAGE_MULT[stage]) + ')' + ((plan.stage ?? stage) !== stage ? ' (surged from stage ' + stage + ')' : '') + (notes.length ? '. ' + notes.join(', ') + ' is in that number, built by the Releases before this one' : '') + (info?.form === 'aura' ? '. It goes off all around you, with no aim.' : '. Pick the aim on the grid.') },
     steadyBtn: { id: 'steady', label: 'Steady', cost: SOUL_AP.steady + ' AP', ok: !st.err, why: st.err || '', title: 'Lose 1 Strain, and the Outburst doesn\'t swell at the start of your next turn.' },
@@ -300,9 +316,10 @@ export function heartStyles(p: HeartPanel) {
 export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: { open?: boolean; query?: string; toggle?: () => void; search?: (e: any) => void } = {}) {
   if (!p) return { show: false };
   // A refused button shows its reason in place of its cost (✕ Needs 1 AP), the whole reason in its title: one line each.
-  const b = (x: HeartBtn, primary?: boolean, cost = x.cost) => ({ key: x.id, label: x.label, cost: x.why ? '✕ ' + x.why.replace(/\.$/, '') : cost, title: x.why ? x.label + ': ' + x.why : x.title, off: !x.ok, why: x.why, hasWhy: false, style: S.btn(x, primary), pick: () => { if (x.ok) run(x.id); },
-    costStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; font-weight: 700; color: ' + (x.why ? MUTED : cost === 'FREE' || /^FREE/.test(cost) || cost === 'ARMED' ? GREEN : '#C9D3E3') });
+  const b = (x: HeartBtn, primary?: boolean, cost = x.cost) => ({ key: x.id, label: x.id === 'revert' && revertArt ? 'Revert' : x.label, hasIcon: x.id === 'revert' && revertArt, icon: x.id === 'revert' && revertArt ? markIconSrc('revert') : '', iconStyle: x.id === 'revert' && revertArt ? iconStyle(markIconSrc('revert'), '#E7EBF3') : '', cost: x.why ? '✕ ' + x.why.replace(/\.$/, '') : cost, title: x.why ? x.label + ': ' + x.why : x.title, off: !x.ok, why: x.why, hasWhy: false, style: S.btn(x, primary), pick: () => { if (x.ok) run(x.id); },
+    costStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; font-weight: 700; color: ' + (x.why ? MUTED : cost === 'FREE' || /^FREE/.test(cost) || /^0 AP/.test(cost) || cost === 'ARMED' ? GREEN : '#C9D3E3') });
   const S = heartStyles(p);
+  const revertArt = hasPaintedArt(heartMarkKey('revert')); // painted Revert mark: it replaces the ↶ glyph, same box
   const btns = [b(p.pump, true), b(p.release, true), b(p.steadyBtn), b(p.letgo, false, 'FREE' + (p.letgo.strainOff ? ' · −' + p.letgo.strainOff + ' STRAIN' : '')), ...(p.feedShow ? [b(p.feed)] : []), b(p.watchBtn), ...(p.revert.ok ? [b(p.revert)] : [])];
   const fr = feelingRows(p.feelings, !!fo.open, fo.query || '', run);
   const doesInk = p.felt.length ? feelingInk(p.felt[p.felt.length - 1]) : p.ink;
@@ -315,11 +332,11 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
     doesText: [...p.does, ...(p.multNotes || []), ...(p.resonance ? [(p.multNotes || []).length ? 'allies +' + p.resonance : 'Resonance +' + p.resonance] : [])].join(' · '), hasDoes: p.does.length > 0 || !!p.resonance || (p.multNotes || []).length > 0,
     doesStyle: 'min-width: 0; white-space: normal; overflow-wrap: anywhere; font-size: 11.5px; line-height: 1.25; font-weight: 700; letter-spacing: 0.06em; color: ' + (p.does.length ? doesInk : p.ink),
     multKey: 'm' + r2(p.mult) + '-' + p.felt.length, multCls: 'phc-mult-shake phc-mult-s' + Math.min(4, p.stage),
-    stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', label: 'Stage ' + s.n + ' ×' + s.mult + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
+    stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', glyphStyle: s.feeling ? iconStyle(feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3'), s.now ? '#0A0D13' : '#E7EBF3') : '', label: 'Stage ' + s.n + ' ×' + s.mult + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
     feel: { ...fr, toggle: fo.toggle || (() => {}), onSearch: fo.search || (() => {}), query: fo.query || '', openStr: fr.open ? 'true' : 'false',
       searchStyle: 'min-height: 26px; padding: 0 8px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 11px' },
     freeShort: p.freePumps == null ? '' : p.freePumps + ' FREE PUMP' + (p.freePumps === 1 ? '' : 'S'),
-    free: p.freePumps == null ? 'No free Pumps. Empathy 3 gives one each round.' : p.freePumps + ' free Pump' + (p.freePumps === 1 ? '' : 's') + ' left this round',
+    free: p.freePumps == null ? 'No free Pumps. Empathy 3 gives one each round.' : p.freePumps + ' free Pump' + (p.freePumps === 1 ? '' : 's') + ' left this round (one a turn at most)',
     strainText: 'STRAIN ' + p.strain + ' / ' + p.limit, strainTrack: S.strainTrack, strainFill: S.strainFill, strainMark: S.strainMark,
     warn: p.warn, hasWarn: !!p.warn, warnStyle: S.warnStyle, swell: p.swell, rider: p.rider,
     btns, cols, gridStyle: 'display: grid; grid-template-columns: repeat(' + cols + ', minmax(0, 1fr)); gap: 4px', kickerStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: ' + p.ink,

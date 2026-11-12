@@ -22,10 +22,10 @@ describe('starting magic on the Create screen', () => {
     expect(v.canSigil && v.canSoul && v.hasMagic).toBe(true);
     expect(v.sigilVerdict).toMatch(/^✓ SPARK \+ SEEK: SPARK, a bolt, range 8/);
     expect(v.resetSigilsLabel).toBe('Back to SPARK + SEEK');
-    expect(v.obVerdict).toMatch(/^✓ Damage Outburst: Damage · Move/);
+    expect(v.obVerdict).toMatch(/^✓ Damage Outburst: Damage · Strike · Move/);
     const s = l.sheet();
     expect(s.sigils).toEqual(['spark', 'seek']);
-    expect(s.outburst).toEqual({ school: 'damage', modules: ['move'] });
+    expect(s.outburst).toEqual({ school: 'damage', modules: ['move'], option: 'strike' }) // rules 1.19: the Damage school's plain way;
   });
   it('the summary reads the range from the engine: SEEK reach plus this build\'s range bonus', () => {
     const l = screen({ brain_power: 3, rumination: 2 }, 'sigil');
@@ -62,7 +62,7 @@ describe('starting magic on the Create screen', () => {
     let v = l.renderVals();
     expect(v.slotChip).toBe('ONE MODULE TO START · 2 SLOTS FOR DESIGNS IN PLAY');
     v.schoolCards.find((c: any) => c.name === 'BUFF').pick(); v = l.renderVals();
-    expect(v.obOpts.map((o: any) => o.name)).toEqual(['+2 to hit', '+2 Defense', 'Heal 30']);
+    expect(v.obOpts.map((o: any) => o.name)).toEqual(['+2 to hit', '+2 Defense', 'Heal']);
     v.obOpts[1].pick(); v = l.renderVals();
     const mod = (n: string) => v.modGroups.flatMap((g: any) => g.mods).find((m: any) => m.name === n);
     mod('Swift').pick(); v = l.renderVals(); mod('Homing').pick(); v = l.renderVals(); // each pick replaces the one module

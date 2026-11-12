@@ -3,6 +3,8 @@
 // fizzle, what stays (fields, traps, turrets, walls), the previews the screen reads, the fx events, enemy casters,
 // the area map and old saves.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, apply, newGame, positionsOf, viewFor, magicTurnStart, magicRoundTick, moveUnit, endTurn, active,
   drawGlyph, previewDraw, evoke, previewEvoke, planEvoke, findPattern, evokeOrigins, patternAt, placedMagic, grammarError, compileSpell, scuff, strikeTurret,
@@ -12,7 +14,7 @@ import {
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
 const sheet = (archId: string, name: string, extra: Partial<Sheet> = {}): Sheet => { const a = arch(archId); return { name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {}, ...extra }; };
-const open = (w = 20, h = 20): MapDef => ({ ...MAPS.yard, w, h, cover: [], full: [], solid: [], difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
+const open = (w = 20, h = 20): MapDef => ({ ...MAPS.yard16, w, h, cover: [], full: [], solid: [], difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
 /** A seed whose next n d20 rolls are all 2–19 (no criticals, no natural 1s). */
 function seed(n = 16, from = 1): { state: number } { for (let s = from; s < 200000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return { state: s }; } throw new Error('no seed'); }
 /** A seed whose next d20 is n. */
@@ -25,7 +27,7 @@ function setup(words: string[], foes: FoeAt[] = [{ at: '9,5' }], o: { map?: MapD
   const cb = startCombat('t', o.map || open(), [{ c, pos: '2,5' }, ...extra], foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'minion', weapon: f.weapon || 'service_pistol', at: refOf(f.at), ...(f.sigils ? { sigils: f.sigils } : {}) })), 'easy', { state: 7 }, []);
   cb.objects = [];
   const u = cb.units.find((x) => x.charId === 'c1')!, es = cb.units.filter((x) => x.side === 'foe'), allies = cb.units.filter((x) => x.side === 'pc' && x !== u);
-  for (const x of [u, ...allies]) { x.ap = 99; x.mg!.words = [...words]; x.mg!.maxWords = 4; x.mg!.charge = 999; x.mg!.flux = -99; x.mg!.sigilMult = 1; x.mg!.elemMult = 1; x.mg!.healMult = 1; x.mg!.rangeBonus = 0; x.mg!.durBonus = 0; x.mg!.coreSave = 0; x.mg!.glyphAp = 1; x.hp = x.maxHp = 500; x.armour = 0; x.def = 10; }
+  for (const x of [u, ...allies]) { x.ap = 99; x.mg!.words = [...words]; x.mg!.maxWords = 4; x.mg!.charge = 999; x.mg!.flux = -99; x.mg!.sigilMult = 1; x.mg!.sigilBoon = 1; x.mg!.deal = 1; x.mg!.elemMult = 1; x.mg!.healMult = 1; x.mg!.rangeBonus = 0; x.mg!.durBonus = 0; x.mg!.coreSave = 0; x.mg!.glyphAp = 1; x.hp = x.maxHp = 500; x.armour = 0; x.def = 10; }
   for (const e of es) { e.def = -99; e.hp = e.maxHp = 500; e.armour = 0; e.sv = { body: -99, brain: -99, heart: -99 }; }
   cb.mana = 15; // Normal air: Healing given ×1
   return { cb, u, e: es[0], es, allies, rng: seed() };
@@ -186,7 +188,7 @@ describe('the facing rule (spec: Evoking)', () => {
     const { cb, u, rng } = setup(['mend', 'condense', 'push', 'fire']); u.hp = 100;
     draw(cb, rng, u, ['mend', 'condense'], ['3,5', '2,5']);
     const pv = previewEvoke(cb, u, '2,5', u.pos); expect(pv.ok).toBe(true); expect(pv.affected.map((a) => a.unit)).toEqual([u.id]);
-    expect(evoke(cb, rng, u, '2,5', u.pos)).toBeNull(); expect(u.hp).toBe(100 + Math.round(25 * 1.5));
+    expect(evoke(cb, rng, u, '2,5', u.pos)).toBeNull(); expect(u.hp).toBe(100 + Math.round(10 * 1.5));
     const t = setup(['fire', 'push']); draw(t.cb, t.rng, t.u, ['fire', 'push'], ['3,5', '2,5']);
     expect(previewEvoke(t.cb, t.u, '2,5', t.u.pos).why).toMatch(/PUSH is refused/);
   });
@@ -306,7 +308,7 @@ describe('Burst (spec: Burst)', () => {
 
 // ---------- Subjects ----------
 describe('Subjects (spec: the words)', () => {
-  it('FIRE 30 (a critical sets Burning); FREEZE 25 + Slowed; STONE 35 Sigil (full armour); SPARK 15; GALE 15 and 2 tiles away', () => {
+  it('FIRE 30 (a critical is ×1.5 since rules 1.17, and sets Burning); FREEZE 25 + Slowed; STONE 35 Sigil (full armour); SPARK 15; GALE 15 and 2 tiles away', () => {
     for (const [w, dmg] of [['fire', 30], ['freeze', 25], ['stone', 35], ['spark', 15], ['gale', 15]] as const) {
       const { cb, u, e, rng } = setup([w, 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, [w, 'condense'], ['4,5', '3,5']);
       const hp = e.hp; evoke(cb, rng, u, '3,5', e.pos); expect(hp - e.hp).toBe(Math.round(dmg * 1.5));
@@ -318,7 +320,7 @@ describe('Subjects (spec: the words)', () => {
     expect(previewEvoke(a.cb, a.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(53 - 10);
     expect(previewEvoke(f.cb, f.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(45 - 5);
     const c = setup(['fire', 'condense'], [{ at: '5,5' }]); draw(c.cb, c.rng, c.u, ['fire', 'condense'], ['4,5', '3,5']);
-    const hp = c.e.hp; evoke(c.cb, rollIs(20), c.u, '3,5', '5,5'); expect(hp - c.e.hp).toBe(90); expect(condOn(c.e, 'burning')).toBe(true);
+    const hp = c.e.hp; evoke(c.cb, rollIs(20), c.u, '3,5', '5,5'); expect(hp - c.e.hp).toBe(68); expect(condOn(c.e, 'burning')).toBe(true); // 30 × 1.5 (CONDENSE) × 1.5 (critical) = 67.5 → 68
   });
   it('ACID: 15 Elemental and Corroded (no save): 5 at the start of each turn, Defense −2, a Body save at the end of each turn ends it', () => {
     const { cb, u, e, rng } = setup(['acid', 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, ['acid', 'condense'], ['4,5', '3,5']);
@@ -353,10 +355,10 @@ describe('Subjects (spec: the words)', () => {
     evoke(h.cb, h.rng, h.u, '3,5', h.e.pos); expect(h.e.condArg!.commanded).toBe('halt');
     h.e.ap = 9; expect(moveUnit(h.cb, h.e, '8,5', h.rng)).toMatch(/halt/);
   });
-  it('WARD 30 shield; MEND 25 × Healing given', () => {
+  it('WARD 12 shield; MEND 10 × Healing given (rules 1.20)', () => {
     const { cb, u, allies, rng } = setup(['ward', 'mend', 'seek'], [{ at: '15,15' }], { allies: ['7,5'] });
-    draw(cb, rng, u, ['ward', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].shield).toBe(30);
-    allies[0].hp = 100; draw(cb, rng, u, ['mend', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].hp).toBe(125);
+    draw(cb, rng, u, ['ward', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].shield).toBe(12);
+    allies[0].hp = 100; draw(cb, rng, u, ['mend', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].hp).toBe(110);
     expect(fx(cb, 'boon').map((x) => x.word)).toEqual(['ward', 'mend']);
   });
   it('QUICKEN: +2 AP on the target\'s next turn (to 9 at most), once per target per round, never on yourself', () => {

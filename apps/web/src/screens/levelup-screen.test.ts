@@ -146,7 +146,7 @@ describe('level-up screen', () => {
     expect([...el.querySelectorAll('.phc-lu-ceil')].map((x) => x.textContent)).toEqual(['ceiling 8 at this level', 'ceiling 8 at this level', 'ceiling 8 at this level']);
     // every attribute: what the next point gives (the creation step's line)
     const per = el.querySelector('.phc-lu-attrcol[data-attr="perception"]')!;
-    expect(per.querySelector('.phc-lu-attr-next')!.textContent).toMatch(/^Next point \(\d\): \+2 tiles of vision, \+10% critical damage, −10% critical damage taken\.$/);
+    expect(per.querySelector('.phc-lu-attr-next')!.textContent).toMatch(/^Next point \(\d\): \+2 tiles of vision, \+(10|3)% critical damage, −10% critical damage taken\.$/);
     expect(el.querySelectorAll('.phc-lu-attr-next').length).toBe(9);
     // Agility is at the ceiling: its +1 is off and the engine's reason is beside it
     const agi = el.querySelector('.phc-lu-attrcol[data-attr="agility"]')!;

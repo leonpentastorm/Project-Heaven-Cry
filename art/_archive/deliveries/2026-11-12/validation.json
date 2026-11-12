@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "delivered": 77,
+  "checks": {
+    "per_icon_art_validator": "passed for all 77 before their pushes",
+    "per_icon_diff_check": "passed for all 77 before their pushes",
+    "data_coverage": "25 feelings, 38 modules and 9 Calls match current data; latest upstream 38 module ids also match",
+    "assets_build": "passed: 1035 total assets",
+    "delivered_web_assets": "passed: 154 WebPs, expected 128/512 sizes and transparency, keys and replacement cache hashes",
+    "final_library_validator": "passed: all icon pixels, metadata, exports, palette, source/master/catalog/reference hashes, legacy packages",
+    "patron_validator": "passed: 8 portraits and native sources, palettes, bindings and hashes",
+    "final_diff_check": "passed"
+  },
+  "production_approved": false,
+  "completed_utc": "2026-11-12T07:11:11.013393+00:00",
+  "evidence": [
+    "art/_archive/deliveries/2026-11-12/validation/art-validator.txt",
+    "art/_archive/deliveries/2026-11-12/validation/patron-validator.txt",
+    "art/_archive/deliveries/2026-11-12/validation/assets-build.txt"
+  ]
+}

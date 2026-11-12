@@ -1,0 +1,15 @@
+{
+ "smoke": ["old-save", "creation-points", "perks", "two-players", "turn-order"],
+ "rules": [
+  "old-save", "creation-points", "creation-layout", "skeleton-screens", "rules114", "perks", "classes", "classes-moves", "pg-levelup",
+  "physical", "physical-pack", "gear-icons", "combat-fixes", "tabs", "sandbox", "ground", "world-play", "right-panels",
+  "music-pool", "coop-stall", "faith", "layout", "mana-forecast", "mapzoom", "missions", "pg-art", "playscreen",
+  "playtest-tools", "reconnect", "shell-guest", "ui-shell", "voice", "vote"
+ ],
+ "anim": [
+  "two-players", "turn-order", "camera", "fx-room", "fx-sweep", "melee-fx", "reload", "brass", "clarity",
+  "cutins", "combat-speed", "faith-pg", "combat-portraits", "heart", "feelings40", "magic", "sigil14", "sigil15",
+  "sigil15-strokes", "sigil15-growth", "sandbox-mp", "slate", "slate-music", "slate-stamp", "slate-title", "title", "resources",
+  "turn-card-side"
+ ]
+}

@@ -5,8 +5,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { ARCHETYPES, newCharacter, startCombat, MAPS, PERKS, TRAITS, SKILLS, holdersOf, stateOf, bindGame, hurtUnit, uses, type Character } from '@engine';
-import { perkShelves, shelfOf, triggerOf, turnMark, _resetTurnMarks, CORE_WIRED, PRIVATE_COUNT, LOG_LOOKBACK, SHELF_LABEL, SHELF_ORDER } from './perkShelves';
+import { ARCHETYPES, newCharacter, startCombat, MAPS, PERKS, TRAITS, SKILLS, holdersOf, stateOf, bindGame, hurtUnit, uses, PERK_CARDS, cardTrigger, cardText, allItems, type Character } from '@engine';
+import { perkShelves, shelfOf, turnMark, _resetTurnMarks, LOG_LOOKBACK, SHELF_LABEL, SHELF_ORDER } from './perkShelves';
+// The two lists the card can't work out are data now (data/perk_cards.json): the engine reads them, and so do these tests.
+const CORE_WIRED: string[] = PERK_CARDS.core_wired, PRIVATE_COUNT: string[] = PERK_CARDS.private_count;
 
 const charWith = (o: Partial<Character> = {}, id = 'c1', name = 'Tester'): Character => {
   const a = ARCHETYPES.find((x: any) => x.id === 'sharpshooter') || ARCHETYPES[0];
@@ -208,7 +210,10 @@ describe('the live line of Always on', () => {
     for (const c of chars) { const f = fight(c), sh = perkShelves(f.g, f.cb, f.u, c);
       for (const r of sh.always) { if (r.button) continue; if (r.state === 'ready') ready.add(r.key); if (PRIVATE_COUNT.includes(r.key)) limited.add(r.key); } }
     expect([...ready].length).toBeGreaterThan(0);
-    for (const key of ready) expect(blockOf(key), key).toMatch(/uses\(h\)\.take\('per_\w+'(, 1)?\)|\.used = true/);
+    // an item written in data (engine foundations 3) counts through its effect's `limit`, under its own key: the runner's uses(h).take
+    const dataLimit = (key: string) => [...(PERKS as any[]).filter((p) => 'perk:' + p.id === key), ...(TRAITS as any[]).filter((t) => 'trait:' + t.id === key)]
+      .some((x: any) => [...(x.effects || []), ...Object.values(x.tiers || {}).flatMap((t: any) => t.effects || [])].some((e: any) => e?.limit?.per && !e.limit.key && !e.limit.peek));
+    for (const key of ready) if (!dataLimit(key)) expect(blockOf(key), key).toMatch(/uses\(h\)\.take\('per_\w+'(, 1)?\)|\.used = true/);
     expect([...limited].sort()).toEqual([...PRIVATE_COUNT].sort()); // each named one is really a limited passive on this shelf
     for (const key of limited) expect(blockOf(key), key).not.toMatch(/uses\(h\)\.take\('per_\w+'(, 1)?\)|\.used = true/);
   });
@@ -221,11 +226,24 @@ describe('the live line of Always on', () => {
     expect(r.line).toBe('Waiting: the first time you are hit in each fight');
     expect(r.text.toLowerCase()).toContain('the first time you are hit in each fight');
   });
-  it('the trigger is read from the card\'s first sentence only, never from the fine print', () => {
-    expect(triggerOf('When combat starts, pick one enemy. You lose it when you fall.')).toBe('when combat starts');
-    expect(triggerOf('Each Release gives +10%. You lose it when you end a turn without one.')).toBe('');
-    expect(triggerOf('+3 on saves against chemicals.')).toBe('');
-    expect(triggerOf('The first time each round an ally within 5 tiles takes a condition, your next save is at +2: you have seen worse.')).toBe('the first time each round an ally within 5 tiles takes a condition');
+  it('the trigger is DATA (data/perk_cards.json), by item and tier; nothing reads it out of the card\'s prose', () => {
+    expect(cardTrigger('perk:used_to_the_pain', 'I')).toEqual({ trigger: 'the first time you are hit in each fight', standing: false });
+    expect(cardTrigger('trait:pain_eater')).toEqual({ trigger: 'while you are below half your max HP', standing: true });
+    expect(cardTrigger('perk:bulwark', 'I')).toEqual({ trigger: '', standing: false }); // no entry: nothing to wait for
+    // every declared trigger is in its item's own card text at that tier (the data can't drift from the card)
+    const infos = new Map((allItems() as any[]).filter(Boolean).map((x) => [x.key + '@' + (x.kind === 'perk' ? x.tier : ''), x]));
+    expect(PERK_CARDS.items.length).toBeGreaterThan(50);
+    for (const r of PERK_CARDS.items) {
+      const info: any = infos.get(r.id + '@' + (r.tier || '')); expect(info, r.id + ' ' + (r.tier || '')).toBeTruthy();
+      const text = (cardText({ kind: info.kind, itemId: info.id, tier: info.tier, info }) + ' ' + info.text).toLowerCase().replace(/\s+/g, ' ');
+      expect(text, r.id).toContain(r.trigger.toLowerCase());
+      expect(r.trigger, r.id).toMatch(/^[a-z]/); expect(r.trigger, r.id).not.toMatch(/\.$/);
+    }
+  });
+  it('the module holds no registry lookup and no pattern over card text', async () => {
+    const { readFileSync: read } = await import('node:fs');
+    const src = read(fileURLToPath(new URL('./perkShelves.ts', import.meta.url)), 'utf8');
+    for (const banned of ['handlerOf', 'genericOf', 'actionDefs', 'holdersOf', 'bindGame', 'RegExp(', '.exec(', 'TRIGGER']) expect(src.includes(banned), banned).toBe(false);
   });
   it('a card that names no trigger never guesses one: it says "Active all fight"', () => {
     // Bulwark listens when damage is dealt, but "Waiting: you deal damage" would be wrong: it guards allies behind you.
@@ -239,11 +257,8 @@ describe('the live line of Always on', () => {
     const r = row(shelves(perk('wind_on_the_skin')).sh, 'perk:wind_on_the_skin');
     expect(r).toMatchObject({ state: 'active', line: 'Works when a fight starts' });
   });
-  it('a trigger with a list in it is read to the end of the list', () => {
-    expect(triggerOf('When one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it, the target takes the hit again at half damage.'))
-      .toBe('when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it');
-    expect(triggerOf('When an attack against you misses, move 1 tile for free.')).toBe('when an attack against you misses');
-    expect(triggerOf('When an enemy or a hazard drops an ally to 0 HP, every other ally, you included, takes 15% less damage.')).toBe('when an enemy or a hazard drops an ally to 0 HP');
+  it('a trigger with a list in it is whole (it is data, not a pattern match)', () => {
+    expect(cardTrigger('perk:breaching_strike', 'I').trigger).toBe('when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it');
   });
   it('a plain standing bonus with no moment says "Active all fight"', () => {
     expect(row(shelves(charWith({ traits: ['born_performer'] })).sh, 'trait:born_performer')).toMatchObject({ state: 'active', line: 'Active all fight' });

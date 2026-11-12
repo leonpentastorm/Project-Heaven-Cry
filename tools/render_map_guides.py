@@ -6,7 +6,8 @@ The guide shows, on a 100 px-per-tile grid with letter columns and number rows:
   - object tiles (crates, doors, terminals, POIs...): leave as plain floor in the background; the game draws a sprite there;
   - start tiles (party: green, enemies: red) and the zone's notes, for context.
 
-Usage: python3 tools/render_map_guides.py data/campaigns/m813.json art/_archive/briefs/m813-tutorial/maps
+Usage: python3 tools/render_map_guides.py data/campaigns/proving.json art/briefs/maps/proving
+(maps are at most 26 x 26; a zone's "layout" picture is expanded by tools/maplayout.py: rules 1.16)
 """
 import json, re, sys, pathlib
 from PIL import Image, ImageDraw, ImageFont
@@ -104,6 +105,12 @@ def render(zone, path):
 if __name__ == '__main__':
     camp, out = json.load(open(sys.argv[1])), pathlib.Path(sys.argv[2])
     out.mkdir(parents=True, exist_ok=True)
+    # Rules 1.16: a zone may draw its ground as rows of characters ("layout"); it is read into the plain lists first.
+    import maplayout
+    maps = maplayout.load_maps(pathlib.Path(__file__).resolve().parent.parent / 'data')
     for z in camp['zones']:
+        z, errs = maplayout.expand_zone(maps, z)
+        for e in errs:
+            print('  problem in', z.get('id'), ':', e)
         render(z, out / (z['id'] + '-layout.png'))
         print('rendered', out / (z['id'] + '-layout.png'))

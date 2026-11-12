@@ -5,13 +5,16 @@
 // game.ts owns the actions and validates and applies the Narrator's answer (the engine keeps every number).
 import type { Combat, Unit } from './combat';
 import type { Holder } from './effects';
+import { costOf, whyNot } from './effects/cost';
+import { condDef } from './condtable';
 
 /** PROVISIONAL (item 1008): an attempt's AP. */
-export const ATTEMPT_AP = 1;
+export const ATTEMPT_AP: number = costOf('attempt');
 /** PROVISIONAL (item 1009): the only conditions the Narrator may put on a unit in a fight, for one round each. */
 export const FIGHT_CONDS = ['shaken', 'taunted', 'lowered', 'hesitates'] as const;
 export type FightCond = (typeof FIGHT_CONDS)[number];
-export const FIGHT_COND_NAME: Record<FightCond, string> = { shaken: 'Shaken', taunted: 'Taunted', lowered: 'Weapon lowered', hesitates: 'Hesitates' };
+/** Their names: the condition table's (data/conditions.json); Hesitates is not a condition (it is Staggered: 1 AP off the next turn). */
+export const FIGHT_COND_NAME = Object.fromEntries(FIGHT_CONDS.map((c) => [c, c === 'hesitates' ? 'Hesitates' : condDef(c)!.title])) as Record<FightCond, string>;
 /** PROVISIONAL (item 1009): how long such a condition lasts. */
 export const FIGHT_COND_ROUNDS = 1;
 
@@ -56,7 +59,7 @@ export function attemptWhy(g: any, cb: Combat | null | undefined, u: Unit | null
   if (!u.charId || u.companion) return 'Only a character can attempt something.';
   if (t.attempted?.[u.id] === cb.round) return 'You already made an attempt this turn.';
   const off = narratorOff(g); if (off) return off;
-  if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  { const no = whyNot(cb, u, ap); if (no) return no; }
   return null;
 }
 /** Open the pending fight ruling (the caller has checked attemptWhy and paid the AP). */

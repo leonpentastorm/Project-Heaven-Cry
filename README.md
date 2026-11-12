@@ -23,7 +23,7 @@ A revived 2020 tabletop RPG (a Disco Elysium-style skill web with tactical squad
 | Skill portraits — POC 4 / palette v3 | The player's own skills: faceless brush figures | [27 PNGs](art/icons/skills/) |
 | Character portraits | People in the world: the EPCCG cast, the NPC pool, 46 archetype player cards, the M813 cast and the eight patrons | [art/portraits/](art/portraits/) |
 | Trait, perk and prayer icons | Wick in pure white ink; the approved master is Mind Without Fog | [art/icons/](art/icons/) · [the lock](art/icons/STYLE-LOCK.md) |
-| M813 one-shot | Banners, story moments, maps and object sprites | [illustrations](art/illustrations/m813/) · [maps](art/maps/m813/) · [sprites](art/sprites/objects/) |
+| M813 one-shot | Banners, story moments, maps and object sprites | [illustrations](art/illustrations/m813/) · [maps, retired to plain colour](art/_archive/maps/m813/retired-2026-11/) · [sprites](art/sprites/objects/) |
 | Style guide v1.3 | The one guide for all future art | [PHC-Style-Guide.md](art/style-guide/PHC-Style-Guide.md) · [v1.2 illustrated PDF](art/_archive/style-guide/v1.2/PHC-Heavenprint-and-Wick-Style-Bible.pdf) |
 | Briefs | Art direction for each art job | [art/briefs/](art/briefs/) |
 

@@ -22,62 +22,33 @@
       "id": "open_ground",
       "name": "Open ground",
       "summary": "Whatever the Narrator says this place is.",
-      "w": 16,
-      "h": 11,
-      "difficult": [
-        "H6–I6",
-        "H7"
-      ],
-      "start": [
-        "B5",
-        "B7",
-        "C6",
-        "B9",
-        "C3",
-        "B3"
-      ],
-      "enemyStart": [
-        "O6",
-        "O4",
-        "O8",
-        "N5",
-        "N7",
-        "P6"
-      ],
+      "w": 26,
+      "h": 26,
+      "layout": "open_ground",
       "notes": [
         {
-          "at": "A1–P11",
+          "at": "A1–Z26",
           "text": "Open ground. Whatever the Narrator says this place is."
-        }
-      ],
-      "objects": [
-        {
-          "kind": "crate",
-          "at": "F4",
-          "name": "Debris"
         },
         {
-          "kind": "crate",
-          "at": "F5",
-          "name": "Debris"
+          "at": "M10–N17",
+          "text": "A broken mass in the middle: nobody walks or sees through it. The two thick pillars in it can be shot down."
         },
         {
-          "kind": "crate",
-          "at": "H2",
-          "name": "Debris"
+          "at": "A1–Z9",
+          "text": "The north lane: open, with low walls and debris to move between."
         },
         {
-          "kind": "crate",
-          "at": "I10",
-          "name": "Debris"
+          "at": "A18–Z26",
+          "text": "The south lane: pillars and debris, and rough ground in the middle of it."
         },
         {
-          "kind": "pillar",
-          "at": "K7"
+          "at": "L19–O20, D2–E3, V2–W3",
+          "text": "Rough ground: slow going."
         },
         {
-          "kind": "pillar",
-          "at": "K8"
+          "at": "C23–D24, W23–X24",
+          "text": "A rock outcrop: solid."
         }
       ]
     }

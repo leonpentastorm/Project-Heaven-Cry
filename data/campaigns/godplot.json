@@ -23,45 +23,76 @@
       "id": "shrine_camp",
       "name": "The mining camp",
       "summary": "An extraction camp on a Thousand-Planet world; the shrine at its centre.",
-      "w": 16,
-      "h": 11,
-      "solid": [
-        "A1–C2",
-        "N1–P2"
+      "w": 26,
+      "h": 26,
+      "layout": [
+        "###....................###",
+        "###....................###",
+        "..........................",
+        "......c............c......",
+        "......c...ww..ww...c......",
+        "..........................",
+        "...P..................P...",
+        ".........c......c.........",
+        "..........................",
+        "........w........w........",
+        "........w........w........",
+        ".....SS.....##.....EE.....",
+        ".....SS...c.##.c...EE.....",
+        ".....SS...c.##.c...EE.....",
+        ".....SS.....##.....EE.....",
+        "........w........w........",
+        "........w........w........",
+        "..........................",
+        "....~~~~~~~~~~~~~~~~~~....",
+        "...~~~~P~~~~~~~~~~P~~~~...",
+        "...~~~~~~~~~~~~~~~~~~~~...",
+        "....~~~~~~~~~~~~~~~~~~....",
+        "..........................",
+        ".........c......c.........",
+        "..........................",
+        ".........................."
       ],
-      "difficult": [
-        "E9–K11"
-      ],
-      "start": [
-        "B6",
-        "B7",
-        "C6",
-        "C7",
-        "B8",
-        "C8"
-      ],
-      "enemyStart": [
-        "O6",
-        "O7",
-        "N6",
-        "N7",
-        "O8",
-        "N8"
-      ],
+      "legend": {
+        "c": {
+          "kind": "crate",
+          "name": "Ore carts"
+        },
+        "w": {
+          "kind": "low_wall",
+          "name": "Camp fence"
+        },
+        "P": {
+          "kind": "pillar",
+          "name": "Pit prop"
+        }
+      },
       "notes": [
         {
-          "at": "E9–K11",
-          "text": "Spoil heaps from the mine."
+          "at": "M11–N15",
+          "text": "The shrine: old stone, taller than the huts. Nobody walks or sees through it."
         },
         {
-          "at": "H5",
-          "text": "The shrine."
+          "at": "D19–W22",
+          "text": "Spoil heaps from the mine: slow going."
+        },
+        {
+          "at": "A1–C2, X1–Z2",
+          "text": "The cut rock walls of the pit."
+        },
+        {
+          "at": "A1–Z18",
+          "text": "The camp: ore carts and fence lines to move between."
+        },
+        {
+          "at": "A23–Z26",
+          "text": "The haul road south of the spoil heaps: open, and the long way round."
         }
       ],
       "objects": [
         {
           "kind": "poi",
-          "at": "H5",
+          "at": "M11",
           "name": "The shrine",
           "text": "A Celestial's leftover: a shrine that still demands worship at every shift change, and gets it.",
           "approaches": [
@@ -86,26 +117,6 @@
               "success": ""
             }
           ]
-        },
-        {
-          "kind": "crate",
-          "at": "F3",
-          "name": "Ore carts"
-        },
-        {
-          "kind": "crate",
-          "at": "J3",
-          "name": "Ore carts"
-        },
-        {
-          "kind": "low_wall",
-          "at": "E7",
-          "name": "Camp fence"
-        },
-        {
-          "kind": "low_wall",
-          "at": "K7",
-          "name": "Camp fence"
         }
       ]
     }

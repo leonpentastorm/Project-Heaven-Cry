@@ -1,11 +1,24 @@
 // Collecting a holder's active effects (plan 2.2): traits, perks at their tier (Mastered, Achieved and Ultimate
 // included), and class moves by rank (base classes) or all at once (an advanced class). Built like gearEffects in
 // character.ts; memoised per holder on what it holds.
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { PERK, PERKS, TRAITS, CLASSES, SKILL, CLASS_MOVE_POOL } from '../data';
 import classesJ from '../../../../data/classes.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';
 
 const TRAIT: Record<string, any> = Object.fromEntries(TRAITS.map((t) => [t.id, t]));
+// ---------- items added at run time (engine foundations 3) ----------
+// A mode's own items (a roguelike's relics and its new perks) and a test's fixtures: plain data in the same shape as
+// perks.json / traits.json items (a relic is shaped like a trait: id, name, text, effects). They are written in data
+// only: their effects run through the generic runners (effects/triggers.ts for `when`). hooks.ts addItems() is the door
+// (it also tells the dispatch that the list changed).
+const EXTRA: Record<'perk' | 'trait' | 'relic', Record<string, any>> = { perk: {}, trait: {}, relic: {} };
+/** Add (or replace) items of a kind. Use effects/hooks.ts addItems, which also refreshes the dispatch. */
+export function _addRawItems(kind: 'perk' | 'trait' | 'relic', items: any[]) { for (const x of items) EXTRA[kind][x.id] = x; infoCache.clear(); itemsCache.clear(); }
+/** Forget every item added at run time (tests). */
+export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof typeof EXTRA)[]) EXTRA[k] = {}; infoCache.clear(); itemsCache.clear(); }
+const perkData = (id: string): any => (PERK as any)[id] || EXTRA.perk[id];
+const traitData = (id: string): any => TRAIT[id] || EXTRA.trait[id];
 const ADV: any[] = (classesJ as any).advanced || [];
 export const ADVANCED: Record<string, any> = Object.fromEntries(ADV.map((a) => [a.id, a]));
 export const BASE_CLASS: Record<string, any> = Object.fromEntries(CLASSES.map((k) => [k.id, k]));
@@ -44,7 +57,7 @@ const isAction = (effects: any[], ap: any, perkType?: string | null) =>
 
 /** What a held perk's tier gives: Tier I, or Tier II alone when it replaces Tier I, else I then II. */
 export function perkEffects(id: string, tier: string): { effects: any[]; effTier: string[] } {
-  const p: any = PERK[id]; if (!p) return { effects: [], effTier: [] };
+  const p: any = perkData(id); if (!p) return { effects: [], effTier: [] };
   if (!p.tiers) return { effects: [...(p.effects || [])], effTier: (p.effects || []).map(() => tier) };
   const I = p.tiers.I?.effects || [], II = p.tiers.II?.effects || [];
   if (tier === 'II') return p.tiers.II?.replaces_tier_I ? { effects: [...II], effTier: II.map(() => 'II') } : { effects: [...I, ...II], effTier: [...I.map(() => 'I'), ...II.map(() => 'II')] };
@@ -55,18 +68,25 @@ const infoCache = new Map<string, ItemInfo | null>();
 /** One item at one tier, from the data. key: "perk:<id>", "trait:<id>", "class:<classId>.<moveId>". */
 export function itemInfo(key: string, tier?: Tier | string): ItemInfo | null {
   const ck = key + '@' + (tier || ''); if (infoCache.has(ck)) return infoCache.get(ck)!;
-  const out = buildInfo(key, tier); infoCache.set(ck, out); return out;
+  const out = buildInfo(key, tier);
+  if (out) { const dk = rawItem(key)?.damage_kinds; if (Array.isArray(dk)) out.damageKinds = dk.map(String); }
+  infoCache.set(ck, out); return out;
 }
 function buildInfo(key: string, tier?: string): ItemInfo | null {
   const [kind, id] = splitKey(key);
   if (kind === 'perk') {
-    const p: any = PERK[id]; if (!p) return null;
+    const p: any = perkData(id); if (!p) return null;
     const t = (tier || (p.tier === 'acquired' ? 'I' : p.tier)) as Tier, { effects, effTier } = perkEffects(id, t);
     const ap = (t === 'II' ? p.tiers?.II?.ap_cost : p.tiers?.I?.ap_cost) ?? p.ap_cost ?? null;
     return { key, kind, id, name: p.name, tier: t, effects, effTier, text: p.text || '', adjudication: p.adjudication || 'engine', active: isAction(effects, ap, p.perk_type), bound: isAction(effects, ap, p.perk_type), ap, uses: p.uses || 'at_will', provisional: !!p.provisional };
   }
+  if (kind === 'relic') {
+    const x = EXTRA.relic[id]; if (!x) return null;
+    const effects = [...(x.effects || [])];
+    return { key, kind, id, name: x.name, tier: 'trait', effects, effTier: effects.map(() => 'relic'), text: x.text || '', adjudication: x.adjudication || 'engine', active: false, bound: false, ap: null, uses: 'at_will', provisional: !!x.provisional };
+  }
   if (kind === 'trait') {
-    const x = TRAIT[id]; if (!x) return null;
+    const x = traitData(id); if (!x) return null;
     const effects = [...(x.effects || [])];
     const text = [...(x.upsides || []).map((s: string) => '+ ' + s), ...(x.downsides || []).map((s: string) => '− ' + s)].join(' ') || x.text || '';
     return { key, kind, id, name: x.name, tier: 'trait', effects, effTier: effects.map(() => 'trait'), text, adjudication: x.adjudication || 'engine', active: isAction(effects, null), bound: false, ap: null, uses: 'at_will', provisional: !!x.provisional };
@@ -96,17 +116,27 @@ export function classMove(cls: string, mv: string): { move: any; rank: string } 
   const p = CLASS_MOVE_POOL[cls + '.' + mv]; if (p) return { move: p, rank: ADVANCED[cls] ? 'adv' : p.origin_rank || 'I' };
   return null;
 }
+/** The data object behind an item's key (perks.json, traits.json, a skill's unlock, a class move), or null. */
+export function rawItem(key: string): any | null {
+  const [kind, id] = splitKey(key);
+  if (kind === 'perk') return perkData(id) || null;
+  if (kind === 'trait') return traitData(id) || null;
+  if (kind === 'relic') return EXTRA.relic[id] || null;
+  if (kind === 'skill') { const [sid, lvl] = id.split('.'); return (SKILL[sid] as any)?.unlocks?.[lvl] || null; }
+  if (kind === 'class') { const [cls, mv] = id.split('.'); return classMove(cls, mv)?.move || null; }
+  return null;
+}
 export function splitKey(key: string): [ItemKind, string] {
   const i = key.indexOf(':'); if (i < 0) return [guessKind(key), key];
   return [key.slice(0, i) as ItemKind, key.slice(i + 1)];
 }
-const guessKind = (id: string): ItemKind => (PERK[id] ? 'perk' : TRAIT[id] ? 'trait' : SKILL_ITEMS.includes(id) ? 'skill' : id.includes('.') ? 'class' : 'perk');
+const guessKind = (id: string): ItemKind => (perkData(id) ? 'perk' : traitData(id) ? 'trait' : EXTRA.relic[id] ? 'relic' : SKILL_ITEMS.includes(id) ? 'skill' : id.includes('.') ? 'class' : 'perk');
 /** "bulwark" → "perk:bulwark"; "gambler" → "trait:gambler"; "marksman.killzone" → "class:marksman.killzone"; keys pass through. */
 export const keyOf = (idOrKey: string, kind?: ItemKind) => (idOrKey.includes(':') ? idOrKey : (kind || guessKind(idOrKey)) + ':' + idOrKey);
 
 /** What a holder holds, the compact form a Unit carries (u.fx) and the collector reads. skills: the skill unlocks it has
  * reached ("brain_power.3"), only those in SKILL_ITEMS. */
-export interface Held { perks: { id: string; tier: string }[]; traits: string[]; cls?: string | null; rank?: number; adv?: string | null; skills?: string[] }
+export interface Held { perks: { id: string; tier: string }[]; traits: string[]; cls?: string | null; rank?: number; adv?: string | null; skills?: string[]; relics?: string[] }
 /** Skill Mastery unlocks the runtime runs as items (perk-runtime H4): key "skill:<skillId>.<points>". The rest of the
  * skills' unlocks are perk steps (perk_choice) or the Narrator's (their text reaches it through the skill's card). */
 export const SKILL_ITEMS = ['brain_power.3', 'brain_power.5', 'rumination.5', 'visualization.5', 'will_power.3', 'will_power.5',
@@ -116,7 +146,7 @@ export const SKILL_ITEMS = ['brain_power.3', 'brain_power.5', 'rumination.5', 'v
 export const skillItemsOf = (skills: Record<string, number> | null | undefined): string[] =>
   SKILL_ITEMS.filter((k) => { const [sid, lvl] = k.split('.'); return (skills?.[sid] || 0) >= +lvl; });
 /** Does a holder hold anything at all (a quick skip for dispatch)? */
-export const heldAny = (h: Held) => !!(h.perks.length || h.traits.length || h.cls || advancedActive(h.adv) || h.skills?.length);
+export const heldAny = (h: Held) => !!(h.perks.length || h.traits.length || h.cls || advancedActive(h.adv) || h.skills?.length || h.relics?.length);
 
 /** Class moves a holder has: base class moves up to its rank, and every move of its advanced class. */
 export function classMoveKeys(h: Held): { key: string; rank: string }[] {
@@ -142,12 +172,22 @@ export function itemsOf(h: Held): ItemInfo[] {
   for (const p of h.perks || []) { const i = itemInfo('perk:' + p.id, p.tier as Tier); if (i) out.push(i); }
   for (const m of classMoveKeys(h)) { const i = itemInfo(m.key, m.rank as Tier); if (i) out.push(i); }
   for (const k of h.skills || []) { const i = itemInfo('skill:' + k); if (i) out.push(i); }
+  for (const k of h.relics || []) { const i = itemInfo('relic:' + k); if (i) out.push(i); }
   if (itemsCache.size > 400) itemsCache.clear();
   itemsCache.set(k, out);
   return out;
 }
 const itemsCache = new Map<string, ItemInfo[]>();
-export const heldKey = (h: Held) => JSON.stringify([rev2, h.perks || [], h.traits || [], h.cls || null, h.rank || 0, advancedActive(h.adv) ? h.adv : null, h.skills || []]);
+/** A cache key for what a unit holds: everything itemsOf() reads (each perk's id and tier, the traits, the class, its
+ * rank, the advanced class, the skill items), in order. Built by hand: it is asked for every unit on every hook. */
+export const heldKey = (h: Held) => {
+  let s = (rev2 ? '1|' : '0|') + (h.cls || '') + '|' + (h.rank || 0) + '|' + (advancedActive(h.adv) ? h.adv : '') + '|';
+  for (const p of h.perks || []) s += p.id + '\t' + p.tier + '\n'; s += '|';
+  for (const t of h.traits || []) s += t + '\n'; s += '|';
+  for (const k of h.skills || []) s += k + '\n';
+  if (h.relics?.length) { s += '|'; for (const k of h.relics) s += k + '\n'; }
+  return s;
+};
 
 /** Every effect of every item, flat (plan 2.2: effectsOf). */
 export function effectsOfHeld(h: Held): ActiveEffect[] {
@@ -168,5 +208,9 @@ export function allItems(): ItemInfo[] {
   for (const b of CLASSES as any[]) for (const r of RANKS) for (const m of b.ranks?.[r]?.moves || []) if (!seen.has(m.key)) { seen.add(m.key); out.push(itemInfo(m.key)!); }
   for (const k of Object.keys(CLASS_MOVE_POOL)) if (!seen.has('class:' + k)) { seen.add('class:' + k); out.push(itemInfo('class:' + k)!); }
   for (const k of SKILL_ITEMS) out.push(itemInfo('skill:' + k)!);
+  // items added at run time (a mode's relics, a test's fixtures)
+  for (const id of Object.keys(EXTRA.perk)) { const p = EXTRA.perk[id]; for (const t of p.tiers ? Object.keys(p.tiers) : [p.tier === 'acquired' ? 'I' : p.tier || 'I']) out.push(itemInfo('perk:' + id, t)!); }
+  for (const id of Object.keys(EXTRA.trait)) out.push(itemInfo('trait:' + id)!);
+  for (const id of Object.keys(EXTRA.relic)) out.push(itemInfo('relic:' + id)!);
   return out.filter(Boolean);
 }

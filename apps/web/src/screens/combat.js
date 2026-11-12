@@ -5,13 +5,14 @@ import { DCLogic } from '../dc/runtime';
 import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss, tabNavIndex } from './shared';
 import { reducedMotion, sfx } from '../game/sfx';
 import { fightPace } from '../game/combatSpeed';
-import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt,
+import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, fightSight, isUnseenId, litAt,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
-  designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
-  lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions, routeHazards, reloadBothAp, PILE, PICKUP_AP, STAGE_MULT, encoreCredit, FAITH_PATRON,
-  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
+  designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
+  togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
+  moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
+  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor } from '@engine';
 import { act as actNow, getState, go, toast } from '../game/store';
-import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
+import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
  *  they have played, your actions wait (you can still talk). Never longer than the effects layer's cap. */
 const act = (a) => {
@@ -21,6 +22,8 @@ const act = (a) => {
   return actNow(a);
 };
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
+import { CameraView, CAMERA_CSS } from '../game/cameraView';
+import { usualScale, overviewScale, naturalSize, fitsWhole, panKey, REF_W } from '../game/camera';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
 import { forecastVals } from '../game/manaForecast';
 import { echoView } from '../game/echoView';
@@ -32,20 +35,20 @@ import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
-import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, parseTech, padAction, techAction, TWATCH, TPAD, techPreview, TECH_OPTS, techOptOf, previewLines, techPrompt, needsEnemy, needsTile, needsAlly, aimOf, ATTACK_MODES, isAttackMode } from '../game/techView';
+import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode } from '../game/techView';
 import { gearIconUri, hasGearIcon, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
-import { parseCall, callChips, callTile, callTakes, callPrompt, callPreviewOf, callLines, callReach, ORDER_THINGS, orderOpt, orderPicks, orderToggle, orderMax, CL } from '../game/callView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, pullFreeTargets, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState, parsePray, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
+import { callChips, CL } from '../game/callView';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
+import { flowView } from '../game/actionFlow';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
-import { prayerView, vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
-import { FAITH_GOLD } from '../game/faithView';
+import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
+import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 
 /** Confirm lines for the self-only actions of rules 1.3 (reload both, hide, put out a fire, break free, recover). */
-const SELF_TEXT = { reload2: 'Confirm to reload both guns: the old magazines drop into the pile on your tile.', 'reload2-tac': 'Confirm to reload both guns: the old magazines go back in your pack.', hide: 'Confirm to go to ground.', extinguish: 'Confirm to put out the fire.', escape: 'Confirm to strain against the hold.', recover: 'Confirm to get your weapon back up.' };
 const ARROWS = { '1,0': '→', '-1,0': '←', '0,1': '↓', '0,-1': '↑', '1,1': '↘', '-1,1': '↙', '1,-1': '↗', '-1,-1': '↖' };
 
 // ---------- magic (spec: Mana, rules 1.2; look: docs/design/magic-presentation.md) ----------
@@ -83,20 +86,14 @@ export function sigilPad(evV, S, set) {
     sgHasJunction: (evV.junction || []).length > 1,
   };
 }
-/** Try an engine action on a throwaway copy of the fight: the engine's own refusal (or null), and the unit afterwards.
- *  How the UI learns costs and reasons without computing any rule itself. */
-function dryRun(cb, uid, fn) {
-  const deep = (v) => (v ? JSON.parse(JSON.stringify(v)) : v); // item state (uses, per-fight state, armed presets) must not leak out of a dry run
-  const units = cb.units.map((x) => ({ ...x, saves: { ...x.saves }, conds: x.conds ? { ...x.conds } : x.conds, mg: x.mg ? { ...x.mg, held: x.mg.held ? { ...x.mg.held } : null } : x.mg, uses: deep(x.uses), ps: deep(x.ps), armed: deep(x.armed) }));
-  const c = { ...cb, units, log: [], notes: [], fx: [], glyphs: [...(cb.glyphs || [])], zones: (cb.zones || []).map((z) => ({ ...z, hit: { ...(z.hit || {}) } })), mana: cb.mana ?? MANA_START };
-  const u = units.find((x) => x.id === uid);
-  let err = null;
-  try { err = u ? fn(c, u, { state: 1 }) : 'No unit.'; } catch (e) { err = String((e && e.message) || e); }
-  return { err, u, cb: c };
-}
+/** Try an engine action on a throwaway copy of the fight: the engine's own refusal (or null), the unit afterwards and
+ *  the AP it took. The copy, the bound game and the dice are the engine's (preview.ts dryRun); the screen copies nothing. */
+const dryRun = (g, cb, uid, fn) => engineDryRun(g, cb, uid, fn);
 export { dryRun as _dryRun };
 /** Encore's key in words (items 729, 737): "combat/attack:shot" → "Attack (shot)". */
 export const encoreWords = (key) => { const [t, what] = String(key || '').split(':'); const n = t.replace('combat/', ''); return (n.charAt(0).toUpperCase() + n.slice(1)).replace('-', ' ') + (what ? ' (' + what + ')' : ''); };
+/** The switches an action carries (its mods): the ones set and usable, and a default-on one turned off as "!id". */
+const modsOf = (tgls) => tgls.filter((t) => t.on && !t.why).map((t) => t.id).concat(tgls.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
 const sgn = (v) => (v >= 0 ? '+' : '−') + Math.abs(Math.round(v * 100) / 100);
 /** The to-hit sum and damage chain in words: "d20 +4 skill +2 aimed −2 range · dmg 20 ×1.2 Strength and Raw Power". */
 export function hitBreakdown(pv) {
@@ -123,6 +120,7 @@ const COMBAT_CSS = [
   '.phc-yt{transform:skewX(-14deg);animation:phcYtIn calc(.42s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both}.phc-yt>*{transform:skewX(14deg)}',
   '.phc-yt::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:phcYtShine calc(.9s * var(--phc-k, 1)) ease-out calc(.35s * var(--phc-k, 1)) both;pointer-events:none}',
   '.phc-cb-act{transition:transform .12s ease-out,box-shadow .12s ease-out,background-color .12s}',
+  '.phc-key-code::before{content:attr(data-code)}', // (the two-key code is drawn, not text: a button's name stays its name)
   '.phc-cb-act:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.18)}',
   '.phc-cb-act:not(:disabled):active{transform:translateY(1px) scale(.985);box-shadow:none;transition-duration:.04s}',
   '@keyframes phcCurRing{0%{transform:scale(1);opacity:.95}100%{transform:scale(1.32);opacity:0}}.phc-cur-ring{animation:phcCurRing calc(1.3s * var(--phc-k, 1)) ease-out infinite}',
@@ -153,6 +151,10 @@ const COMBAT_CSS = [
   // the tab panel that gives up the room, the footer). Nothing above the footer scrolls the Say row away.
   // The cap leaves the turn box what it needs (about 520 px: YOUR TURN, AP, tabs, a usable tab panel, the footer).
   '.phc-cb-aside.phc-mine>.phc-cb-top{max-height:min(42%, calc(100% - 520px))}.phc-cb-top:empty{display:none}',
+  // A tall footer (a target behind cover under two rows of tabs) used to push Confirm off the column's end and squeeze
+  // the action list to nothing. Beside the map (1000 px and wider) the list keeps a usable height, the dock scrolls
+  // inside itself when it must, and Confirm and End turn stay at its foot.
+  '@media (min-width:1000px){.phc-cb-aside .phc-cb-dock{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-cb-aside .phc-cb-tabpanel{min-height:84px}.phc-cb-aside .phc-cb-confirm{position:sticky;bottom:0;z-index:4;background:#0A0D13;padding-top:6px;margin-top:-6px}}',
   '.phc-cb-hide,.phc-cb-link,.phc-cb-show{transition:background-color .12s,color .12s,border-color .12s}.phc-cb-hide:hover,.phc-cb-link:hover,.phc-cb-show:hover{background:#1C2536!important;color:#FFFFFF!important;border-color:#A3AEC2!important}',
   '.phc-cb-hide:focus-visible,.phc-cb-link:focus-visible,.phc-cb-show:focus-visible,.phc-cb-mini button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   // Short windows (1280×720): You shrinks to one line in the bar, and on your turn the squad list steps aside (the
@@ -178,24 +180,39 @@ ensureStyle('phc-combat-motion', COMBAT_CSS);
 ensureStyle('phc-combat-layout', LAYOUT_CSS);
 ensureStyle('phc-resources', RES_CSS);
 ensureStyle('phc-combat-mapzoom', ZOOM_CSS);
+ensureStyle('phc-camera', CAMERA_CSS);
+/** The fight's camera (roadmap 2c; game/cameraView.ts): the map's window keeps the usual tile size and follows the play.
+ *  Local to this browser: every player in a room has their own. */
+const CAM = new CameraView('fight');
+/** Room kept free beside the map for the small map, so the tiles in that corner can be scrolled out from under it. */
+/** Two-key codes: how long after the first number the second still counts (provisional; balance pass section 15). */
+const CHORD_MS = 1000;
+const MINI_SLACK = 172;
 
 /** The mounted combat screen's logic (one at a time), for the window events below. */
 let LIVE = null;
 const onScreen = () => typeof document !== 'undefined' && !!document.querySelector('.phc-grid');
-/** Bring a tile into view on the grid: scroll it to the middle; on your own turn, a short zoom on it, then settle.
- *  Driven by the turn intro's phc:focus-tile, which follows the shared turn order, so every screen does the same. */
+/** A narrow window scrolls the whole page: bring the map's window back into it (the jump-back key and button). */
+function pageToMap() {
+  const box = typeof document !== 'undefined' ? document.querySelector('.phc-grid-scroll') : null; if (!box || !box.scrollIntoView) return;
+  const r = box.getBoundingClientRect();
+  if (r.top < 0 || r.bottom > (window.innerHeight || 0)) box.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' });
+}
+/** A turn starts on a tile: the camera goes to it (your own turn: centred on your unit, with a short zoom on it, then
+ *  settle). Driven by the turn intro's phc:focus-tile, which follows the shared turn order, so every screen does the
+ *  same; the effects queue moves the camera for everything else (game/fx/play.ts runQueue). */
 export function focusTile(key, mine) {
   if (typeof document === 'undefined' || !key) return;
-  const grid = document.querySelector('.phc-grid'), scroller = grid && grid.closest('.phc-grid-scroll');
+  const grid = document.querySelector('.phc-grid');
   const tile = grid && grid.querySelector('button.phc-tok[aria-label^="' + refOf(key) + ' ·"]');
   if (!grid || !tile) return;
-  const rm = reducedMotion(), tr = tile.getBoundingClientRect();
-  if (scroller && scroller.scrollWidth > scroller.clientWidth + 1 && scroller.scrollTo) {
-    const sr = scroller.getBoundingClientRect();
-    scroller.scrollTo({ left: Math.max(0, scroller.scrollLeft + (tr.left + tr.width / 2) - (sr.left + sr.width / 2)), behavior: rm ? 'auto' : 'smooth' });
-  }
-  if ((tr.top < 0 || tr.bottom > (window.innerHeight || 0)) && tile.scrollIntoView) tile.scrollIntoView({ block: 'center', inline: 'nearest', behavior: rm ? 'auto' : 'smooth' });
-  if (!mine || rm || document.hidden || !grid.animate) return;
+  const rm = reducedMotion();
+  CAM.follow([key], mine ? 'turn-mine' : 'turn');
+  // A narrow window scrolls the whole map zone: bring the map itself into the window.
+  // (With a camera the tile is brought into the map's window by the camera; the page only has to show that window.)
+  const tr = tile.getBoundingClientRect(), box = CAM.scrolls() ? document.querySelector('.phc-grid-scroll') : tile, br = box ? box.getBoundingClientRect() : tr;
+  if (box && (br.top < 0 || br.bottom > (window.innerHeight || 0)) && box.scrollIntoView) box.scrollIntoView({ block: box === tile ? 'center' : 'nearest', inline: 'nearest', behavior: rm ? 'auto' : 'smooth' });
+  if (!mine || rm || document.hidden || !grid.animate || CAM.overview) return;
   const gr = grid.getBoundingClientRect(), o = Math.round(tr.left + tr.width / 2 - gr.left) + 'px ' + Math.round(tr.top + tr.height / 2 - gr.top) + 'px';
   grid.animate([{ transform: 'scale(1)', transformOrigin: o }, { transform: 'scale(1.09)', transformOrigin: o, offset: 0.35 }, { transform: 'scale(1)', transformOrigin: o }], { duration: 900, easing: 'cubic-bezier(.2,.8,.2,1)' });
 }
@@ -205,7 +222,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   // Every turn: bring the acting unit's tile into view (and zoom on it when it is yours).
   window.addEventListener('phc:focus-tile', (e) => { const d = (e && e.detail) || {}; if (onScreen()) focusTile(d.key, !!d.mine); });
   // Keys 1–9 flip the action tabs on your turn (the row wraps onto a second line when the tabs don't fit); a resize refits the grid beside the pinned action column.
-  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); } });
+  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); LIVE.camKey(e); } });
   // Ctrl or ⌘ with the wheel over the map sizes the map (not the page). Non-passive, so the page zoom is held back there.
   window.addEventListener('wheel', (e) => { if (!LIVE || !onScreen() || !(e.ctrlKey || e.metaKey) || !e.target || typeof e.target.closest !== 'function' || !e.target.closest('.phc-grid-scroll, .phc-mapzoom')) return;
     e.preventDefault(); const now = Date.now(); if (now - (LIVE._wheelAt || 0) < 90) return; LIVE._wheelAt = now; LIVE.zoomBy(e.deltaY < 0 ? 'in' : 'out'); }, { passive: false });
@@ -427,17 +444,26 @@ export class CombatLogic extends DCLogic {
       if (c && !c.off) { e.preventDefault(); this.pickAction(c.action); sfx('tab'); }
       return;
     }
+    // Two-key codes (Leon, 11 Nov 2026): the first number is the tab, the second the action in it, in the order shown:
+    // 11 the first tab's first action, 42 the fourth tab's second. The tab doesn't have to be open. A second number that
+    // names no action there is read as a tab, as a lone number always is.
+    const now = Date.now(), chord = this._chord; this._chord = null;
+    if (chord && now - chord.at <= CHORD_MS) {
+      const k2 = ((this._tabItems || [])[chord.tab] || [])[Number(e.key) - 1];
+      if (k2) { e.preventDefault(); this.pickAction(k2); sfx('tab'); return; }
+    }
     // Inside the Attack tab (a pad open, or the keyboard in the tab's panel): 1 the first weapon's plain attack, 2 its
     // Techniques, 3 and 4 the second weapon's, 5 Hold a shot. Elsewhere the numbers switch tabs, as before.
     if (this.state.tab === 'attack' && this._attackKeys) {
       const ae = document.activeElement, inPanel = !!ae && typeof ae.closest === 'function' && !!ae.closest('.phc-cb-tabpanel');
       if (padOf(this.state.action) || inPanel) {
         const k = this._attackKeys[Number(e.key) - 1];
-        if (k) { e.preventDefault(); this.setState({ action: k, techLine: null, techOpt: null, tile: null }); this.revealAction(); sfx('tab'); return; }
+        if (k) { e.preventDefault(); this.setState({ action: k, tile: null }); this.revealAction(); sfx('tab'); return; }
       }
     }
     const id = (this._tabs || [])[Number(e.key) - 1];
     if (!id) return;
+    this._chord = { tab: Number(e.key) - 1, at: now };
     // Focus follows into the tab bar when it is there, or when it sits in the tab panel that is about to be replaced
     // (an action, a glyph or a design button), so a keyboard player never drops back to the page.
     const ae = document.activeElement, inTabs = !!ae && ae.getAttribute && ae.getAttribute('role') === 'tab';
@@ -507,10 +533,13 @@ export class CombatLogic extends DCLogic {
     if (to < panel.scrollTop - 1 && panel.scrollTo) panel.scrollTo({ top: to, behavior: reducedMotion() ? 'auto' : 'smooth' });
     return true;
   }
-  /** The map's size: a step in or out (Manual from then on), back to Auto, or 100%. */
+  /** The map's size: a step in or out (your own size from then on), back to the usual size, or 100%. Any of them
+   *  leaves the overview. */
   zoomBy(what) {
+    const back = !!this._overview; this._overview = false; CAM.overview = false;
     ZOOM = normaliseZoom(zoomAction(ZOOM, this._zoom || 1, what)); saveZoom(ZOOM);
     this._fitKey = null; this.fitGrid(); this.setState({});
+    if (back) this.camAfter(() => CAM.follow([CAM.home].filter(Boolean), 'ask', true));
   }
   /** − and + (= too) size the map; not while typing, not under a dialog or the turn card. */
   zoomKey(e) {
@@ -519,13 +548,57 @@ export class CombatLogic extends DCLogic {
     if (!getState().game?.combat) return;
     e.preventDefault(); this.zoomBy(e.key === '-' ? 'out' : 'in');
   }
+  /** Run f once the page has laid the map out again (two frames: the render, then the measure). */
+  camAfter(f) { if (typeof requestAnimationFrame === 'undefined') return; requestAnimationFrame(() => requestAnimationFrame(() => { if (LIVE === this) { this.camSync(); f(); } })); }
+  /** The overview: the whole map fitted to the window, and back to the camera (centred on a tile when one is given,
+   *  else on your unit). Nothing to switch when the whole map already fits at the usual size. */
+  toggleOverview(key) {
+    if (!this._overview && !this._camNeeded) return false;
+    this._overview = !this._overview; CAM.overview = this._overview;
+    this._fitKey = null; this.fitGrid(); this.setState({});
+    if (!this._overview) this.camAfter(() => CAM.follow([key || CAM.home].filter(Boolean), 'ask', true));
+    return true;
+  }
+  /** The camera's keys: M the whole map and back, Home back to your unit, the arrows and WASD move the view. Not
+   *  while typing, not under a dialog, the backpack or the turn card, and not on a control that uses the arrows itself. */
+  camKey(e) {
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    const t = e.target;
+    if (typingIn(t) || typingIn(document.activeElement) || this.state.bp || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
+    if (!getState().game?.combat) return;
+    if (e.key === 'm' || e.key === 'M') { if (!e.repeat && this.toggleOverview()) e.preventDefault(); return; }
+    if (e.key === 'Home') { if (e.repeat) return; e.preventDefault(); if (this._overview) this.toggleOverview(); else CAM.goHome(); pageToMap(); return; }
+    const d = panKey(e.key); if (!d) return;
+    if (t && typeof t.closest === 'function' && t.closest('[role="tablist"], [role="slider"], [role="separator"], [role="radiogroup"], [role="listbox"], [role="menu"], .phc-grip, select')) return;
+    if (CAM.pan(d)) e.preventDefault();
+  }
+  /** After a render: the camera binds to the map's window, gets the small map's picture, and on a new fight starts on
+   *  your unit. */
+  camSync() {
+    if (typeof document === 'undefined') return;
+    const g = getState().game, cb = g && g.combat, sc = document.querySelector('.phc-grid-scroll'), ov = document.querySelector('.phc-cam-over[data-phc-cam="fight"]');
+    if (!cb || !sc) return;
+    const key = (g.code || '') + '|' + cb.name + '|' + (cb.log[0] || '');
+    if (!CAM.live()) this._camFight = null; // the map's window is new (the screen was left and came back): start on your unit again
+    const fresh = this._camFight !== key;
+    CAM.onMini = () => { if (LIVE === this) { this._fitKey = null; this.setState({}); } };
+    CAM.attach(sc, ov, cb.map.w, cb.map.h); CAM.setMini(this._mini || null);
+    // (Only once the map has its size and scrolls: on the way back from the level-up screen the first look comes before
+    // the layout, and the camera was left in the map's top-left corner with the player's unit out of view.)
+    if (fresh && CAM.grid() && (CAM.scrolls() || CAM.fits)) { this._camFight = key; if (CAM.home) CAM.follow([CAM.home], 'ask', true); }
+    const mini = CAM.miniShown(); if (mini !== !!this._miniOn) { this._miniOn = mini; this.setState({}); }
+  }
   /** The map toolbar's bindings. */
   zoomVals() {
-    const z = this._zoom || 1, auto = ZOOM.mode === 'auto';
-    return { label: zoomLabel(z), auto: auto ? 'true' : 'false', manual: auto ? 'false' : 'true',
+    const z = this._zoom || 1, over = !!this._overview, auto = ZOOM.mode === 'auto' && !over, can = !!this._camNeeded || over;
+    return { label: zoomLabel(z), auto: auto ? 'true' : 'false', manual: auto || over ? 'false' : 'true',
       out: () => this.zoomBy('out'), in: () => this.zoomBy('in'), toAuto: () => this.zoomBy('auto'), reset: () => this.zoomBy('reset'),
-      cantOut: !auto && ZOOM.scale <= ZOOM_MIN, cantIn: !auto && ZOOM.scale >= ZOOM_MAX,
-      pctTitle: auto ? 'Auto: the map fits its zone (' + zoomLabel(z) + '). Click for 100%.' : 'Click for 100%', autoTitle: 'Auto: fit the map to its zone at any screen size' };
+      cantOut: !auto && !over && ZOOM.scale <= ZOOM_MIN, cantIn: !auto && !over && ZOOM.scale >= ZOOM_MAX,
+      pctTitle: auto ? 'The usual size (' + zoomLabel(z) + '). Click for 100%.' : 'Click for 100%', autoTitle: 'The usual size: the tiles stay as big as they always were, and the view follows the fight',
+      whole: over ? 'true' : 'false', toggleWhole: () => { this.toggleOverview(); }, cantWhole: !can,
+      wholeTitle: over ? 'Back to the fight (M). Or click a tile to go there.' : can ? 'See the whole map (M)' : 'The whole map is already on screen',
+      home: () => { if (this._overview) this.toggleOverview(); else CAM.goHome(); pageToMap(); }, homeTitle: 'Back to your unit (Home)',
+      hint: over ? 'Whole map: click a tile to go there.' : can ? 'Drag the map, or use the arrow keys.' : '', hasHint: over || can };
   }
   /** A new layout (a panel dropped, the splitter let go, Reset): saved for this browser, then the grid refits. */
   setLayout(l) {
@@ -587,20 +660,41 @@ export class CombatLogic extends DCLogic {
     const mapP = sec.querySelector(':scope > [data-phc-panel="map"]'), mapOrd = mapP ? Number(getComputedStyle(mapP).order) || 0 : 0, gap = parseFloat(getComputedStyle(sec).rowGap) || 0;
     const panelsAboveH = [...sec.querySelectorAll(':scope > [data-phc-panel]')].filter((p) => p !== mapP && (Number(getComputedStyle(p).order) || 0) < mapOrd).reduce((t, p) => t + p.offsetHeight + gap, 0);
     const availW = narrow ? rowW : sized ? sec.clientWidth - 34 : rowW - (PANEL_HIDDEN ? 44 : ASIDE_MIN + 34), availH = (narrow ? window.innerHeight * 0.55 : sec.clientHeight - 18) - toolH - panelsAboveH;
-    // Manual: the player's own size (the map scrolls inside its zone when bigger).
-    if (ZOOM.mode === 'manual') { if (ZOOM.scale !== (this._zoom || 1)) { this._zoom = ZOOM.scale; this.setState({}); } return; }
-    // Auto: the largest size that fits, growing past 100% on big screens (up to the manual maximum).
-    let fit = Math.min(ZOOM_MAX, availW / natW, availH / natH);
-    // Panel hidden: the grid sits on the left and stays clear of the turn mini-bar in the bottom-right corner, either
-    // beside it or above it (whichever leaves the bigger map), so no tile hides under it.
+    // The room for the map's window. Panel hidden: the window stays clear of the turn mini-bar in the bottom-right corner,
+    // either beside it or above it (whichever leaves the bigger tiles, then the bigger window), so no tile hides under it.
+    let aW = Math.max(120, availW), aH = Math.max(120, availH);
+    const w = cb.map.w, h = cb.map.h;
     if (PANEL_HIDDEN && !narrow) {
       const r = sec.getBoundingClientRect(), miniRight = getState().game?.sandbox ? 64 : 20;
-      const besideW = window.innerWidth - miniRight - Math.min(380, window.innerWidth - 32) - 16 - (r.left + 2);
-      const aboveH = window.innerHeight - 16 - MINI_H - 12 - (r.top + 16) - panelsAboveH;
-      fit = Math.max(Math.min(fit, besideW / natW), Math.min(fit, aboveH / natH));
+      const besideW = Math.min(aW, window.innerWidth - miniRight - Math.min(380, window.innerWidth - 32) - 16 - (r.left + 2));
+      const aboveH = Math.min(aH, window.innerHeight - 16 - MINI_H - 12 - (r.top + 16) - panelsAboveH);
+      const zb = usualScale(besideW, aH, w, h), za = usualScale(aW, aboveH, w, h);
+      if (zb > za || (zb === za && besideW * aH >= aW * aboveH)) aW = Math.max(120, besideW); else aH = Math.max(120, aboveH);
     }
-    const z = Math.floor(Math.max(narrow ? 0.6 : 0.5, fit) * 100) / 100;
-    if (z !== (this._zoom || 1)) { this._zoom = z; this.setState({}); }
+    // The usual size (game/camera.ts): what a 16 x 11 map fitted to this room came to, so the tiles are as big as they
+    // always were and a bigger map scrolls in its window (the camera). The overview fits the whole map; a size the
+    // player picked is theirs.
+    const usual = usualScale(aW, aH, w, h, narrow), needed = !fitsWhole(aW, aH, w, h, usual);
+    if (!needed && this._overview) { this._overview = false; CAM.overview = false; }
+    const z = this._overview ? overviewScale(aW, aH, w, h, narrow) : ZOOM.mode === 'manual' ? ZOOM.scale : usual;
+    // The window: as wide as the map people know (16 tiles) unless the player sized the zone, hid the column or picked
+    // a size; as tall as the room allows.
+    const wide = sized || PANEL_HIDDEN || narrow, whole = this._overview || ZOOM.mode === 'manual';
+    const vw = Math.floor(wide ? aW : Math.min(aW, Math.ceil(naturalSize(whole ? w : Math.min(w, REF_W), 1).w * z) + (needed && !this._overview ? 14 : 2))), vh = Math.floor(aH);
+    // The overview keeps the map zone as wide as the usual view made it (the smaller map sits in the middle of it), so
+    // the action column beside it does not jump wider and back each time the player looks at the whole map.
+    const col = this._overview ? Math.floor(wide ? aW : Math.min(aW, Math.ceil(naturalSize(Math.min(w, REF_W), 1).w * usual) + 14)) : vw;
+    const v0 = this._view || {};
+    if (z !== (this._zoom || 1) || vw !== v0.w || vh !== v0.h || col !== v0.col || needed !== !!this._camNeeded) {
+      // The map is laid out anew (the first fit of this screen, a resized window, a size the player picked): the camera
+      // keeps what it was looking at. The first time that is the player's own unit (back from the level-up screen in the
+      // middle of a fight, the view was left in the map's top-left corner); after that, the tile in the middle of the view.
+      const first = !this._view, t = !first && CAM.live() && CAM.scrolls() ? CAM.tiles() : null, mid = t ? Math.round((t.x0 + t.x1) / 2) + ',' + Math.round((t.y0 + t.y1) / 2) : null;
+      this._zoom = z; this._view = { w: vw, h: vh, col }; this._camNeeded = needed; this.setState({});
+      if (!this._overview && (first || mid)) this.camAfter(() => { const k = first ? CAM.home : mid; if (k && !CAM.overview) CAM.follow([k], 'ask', true); });
+    }
+    CAM.fits = !this._overview && fitsWhole(aW, aH, w, h, z);
+    CAM.sync();
   }
 
   renderVals() {
@@ -627,55 +721,49 @@ export class CombatLogic extends DCLogic {
     const w = cur ? WEAPON[cur.weapon] : null, melee = w ? isMelee(w) : false;
     const P = mineTurn ? paths(cb, cur.pos, cur.id) : { dist: {}, prev: {} };
     const MOVES = ['move', 'sprint', 'disengage'], isMove = MOVES.includes(S.action);
-    const moveCost = (k) => (S.action === 'sprint' ? 2 : S.action === 'disengage' ? 1 : apForTiles(P.dist[k], cur.bank, cur.movement));
+    // Where the picked move may end and what each tile costs is the engine's answer (actions.ts moveOptions: the route,
+    // the items' price, one Sprint a turn, Fear, Threatened, an item's ban, Encore's lend), asked once per state and
+    // action, not on every mouse move. A tile lights up only if the engine would take the move.
+    const moveMods = mineTurn && isMove ? (() => { try { return modsOf(withGame(g, () => togglesFor({ u: cur, c: ch, cb, g }, 'combat/move', { action: S.action, target: null }, S.mods || []))); } catch { return []; } })() : []; // the switches set on the move (they price it)
+    const moveKey = mineTurn && isMove ? [cur.id, cur.pos, cur.ap, S.action, moveMods.join(',')].join('|') : '';
+    if (!moveKey) this._move = null;
+    else if (!this._move || this._move.g !== g || this._move.key !== moveKey) { let mo; try { mo = moveOptions(g, cb, cur.id, S.action, { mods: moveMods }); } catch { mo = { tiles: {}, why: 'Not now.', lend: 0 }; } this._move = { g, key: moveKey, ...mo }; }
+    const MO = this._move, moveCost = (k) => (MO && MO.tiles[k] ? MO.tiles[k].ap : 0);
     // Encore (items 729, 737): a move that repeats the Laughing Mask's Encore is lent the AP it cost before.
-    const moveLend = mineTurn && isMove ? encoreCredit(cur, { type: 'combat/move', how: S.action }) : 0;
-    const reach = (k) => mineTurn && P.dist[k] !== undefined && k !== cur.pos && !cur.prone && moveCost(k) <= cur.ap + moveLend
-      && (S.action === 'sprint' ? !cur.noSprint && P.dist[k] <= Math.floor(3 * cur.movement) : S.action === 'disengage' ? P.dist[k] === 1 : true);
+    const moveLend = MO ? MO.lend : 0;
+    const reach = (k) => !!(MO && MO.tiles[k]);
     const hv = isMove && S.hover && reach(S.hover) ? S.hover : null;
-    const vis = visibility(cb, 'pc'), seenFoe = (u) => u.side === 'pc' || vis.seen.has(u.id);
+    // Fog of war is the engine's (fog.ts): the view holds only what this player's side sees (the human Narrator: all of
+    // it), and vis is its sight (tiles seen, tiles sensed) for shading. Nothing here filters units by sight.
+    const vis = fightSight(cb);
     const route = {}; let moveAp = 0;
     // Rules 1.9 (item 683): the route a click takes goes around revealed hazards when it can (the engine's movePaths), and
     // the preview marks every revealed hazard tile it still crosses ("Path crosses: …").
     const arrowsOf = (rr, from) => { rr.forEach((k, i) => { const p = i ? rr[i - 1] : from, [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; }); };
-    const hvRoute = hv && mineTurn ? routeHazards(cb, cur, hv, S.action) : null, hvTiles = hvRoute ? hvRoute.tiles : hv ? P.dist[hv] : 0;
+    const hvRoute = hv && mineTurn ? routeHazards(cb, cur, hv, S.action) : null, hvTiles = hv ? MO.tiles[hv].tiles : 0;
     let crossing = hvRoute ? hvRoute.crosses : [];
-    if (hv) { moveAp = S.action === 'sprint' || S.action === 'disengage' ? moveCost(hv) : apForTiles(hvTiles, cur.bank, cur.movement); if (hvRoute) arrowsOf(hvRoute.route, cur.pos); else { let k = hv; while (P.prev[k]) { const p = P.prev[k]; const [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } } }
+    if (hv) { moveAp = moveCost(hv); if (hvRoute) arrowsOf(hvRoute.route, cur.pos); else { let k = hv; while (P.prev[k]) { const p = P.prev[k]; const [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } } }
     const foes = cb.units.filter((u) => u.side === 'foe' && !u.dead);
-    const tgtUnit = cb.units.find((u) => u.id === S.target && !u.dead && (!cur || u.id !== cur.id) && (u.side === 'pc' || seenFoe(u))) || foes.find((u) => !u.downed && seenFoe(u)) || null;
+    const tgtUnit = cb.units.find((u) => u.id === S.target && !u.dead && (!cur || u.id !== cur.id)) || foes.find((u) => !u.downed) || null;
     const ATTACKS = ATTACK_MODES; // the old attack rows (a companion, a puppet or the drone keeps them: game/techView.ts)
     const attackMode = ATTACKS.includes(S.action) ? S.action : 'shot';
     const pv = mineTurn && tgtUnit && ATTACKS.includes(S.action) ? previewAttack(cb, cur, tgtUnit, attackMode) : null;
     // ---------- Physical 2.0 (rules 1.12; game/techView.ts): the weapon blocks, the open pad, the picked technique ----------
     // Everything below is the engine's (techniquePad, previewTechnique, physView): the screen works out no number.
     const blocks = mineTurn && !isLegacyUnit(cur) ? weaponBlocks(g, cb, cur) : [];
-    const tsel = mineTurn ? parseTech(S.action) : null, tpadOpen = mineTurn ? padOf(S.action) : null, tId = tsel ? tsel.id : null;
-    const tBlock = tsel ? blocks.find((b) => b.hand === tsel.hand) || null : null;
-    const tChip = tBlock ? [tBlock.plain, ...tBlock.groups.flatMap((gr) => gr.chips), ...tBlock.watch].find((c) => c && c.id === tId && c.item == tsel.item) || null : null;
-    const tIsPlain = !!(tBlock && tBlock.plain && tBlock.plain.id === tId), tIsWatch = !!(tBlock && tBlock.watch.some((c) => c.id === tId));
-    const tAlly = tsel && needsAlly(tId) ? cb.units.find((u) => u.id === S.target && u.side === 'pc' && !u.dead && u.id !== cur.id) || null : null;
-    const tTgt = tsel && needsEnemy(tId) ? tgtUnit : null, tTile = tsel && needsTile(tId) ? S.tile || null : null;
-    const tPv = tsel ? techPreview(g, cb, cur, tsel, { targetId: tTgt ? tTgt.id : undefined, tile: tTile, allyId: tAlly ? tAlly.id : undefined, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) }) : null;
-    const tAsk = tsel ? techPrompt(tId, { target: tTgt, tile: tTile, ally: tAlly }) : null;
-    /** The row a picked technique belongs to: its own (the plain attack), its weapon's Techniques row, or Hold a shot. */
-    const rowSel = !tsel || tIsPlain ? S.action : tIsWatch ? TWATCH : padAction(tsel.hand);
-    this._tech = tsel ? { sel: tsel, tgt: tTgt, ally: tAlly, tile: tTile, pv: tPv, ask: tAsk, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) } : null;
+    const tpadOpen = mineTurn ? padOf(S.action) : null; // an open pad (a technique picked from it is on the flow)
+    // Fog of war: what a preview SHOWS never tells of a unit this side can't see (preview.ts; the flow's previews are
+    // fogged in the engine). seenCb is the fight as this side sees it, for the magic previews still worked out here.
+    const seenCb = fightSeenBy(cb, 'pc'), inSight = seenCb === cb ? null : new Set(seenCb.units.map((u) => u.id));
+    /** The fight as this side sees it, for a preview that works out who is affected (an Evoke's plan, an Outburst's aim):
+     *  the units out of sight aren't there. */
+    const fogged = (c) => (inSight ? fightSeenBy(c, 'pc') : c);
     // ---------- Calls (the talking skills' actions in a fight; game/callView.ts) ----------
     // A Call picked on the Calls tab: its target by its aim (an enemy, an ally, or yourself when nobody is picked), the
     // tile some take (Order's move; Cue's and Warn's named step), Order's things, and the engine's preview of it all.
-    const cId = mineTurn ? parseCall(S.action) : null, cChips = mineTurn ? callChips(g, cb, cur) : [], cChip = cId ? cChips.find((c) => c.id === cId) || null : null;
-    const cOpt = cChip && cId === 'call.order' ? orderOpt(S.callOpt, cChip.step) : '';
-    const cPick = cChip ? (cChip.aim === 'enemy' ? (tgtUnit && callTakes('enemy', cur, tgtUnit) ? tgtUnit : null) : cb.units.find((u) => u.id === S.target && callTakes(cChip.aim, cur, u)) || null) : null;
-    const cTgt = cChip ? cPick || (cChip.aim === 'self-or-ally' ? cur : null) : null;
-    const cTileKind = cChip ? callTile(cId, cChip.step, cOpt) : null, cTile = cTileKind ? S.tile || null : null;
-    const cAsk = cChip ? callPrompt(cChip, { target: cTgt, tile: cTile }, cOpt) : null;
-    const cPv = cChip && cTgt ? callPreviewOf(g, cb, cur, cId, { targetId: cTgt.id, tile: cTile, opt: cOpt }) : null;
-    const cReach = cChip ? callReach(cb, cur, cChip.range) : null;
-    this._call = cChip ? { id: cId, chip: cChip, tgt: cTgt, tile: cTile, tileKind: cTileKind, opt: cOpt, pv: cPv, ask: cAsk } : null;
+    const cChips = mineTurn ? callChips(g, cb, cur) : []; // the Calls tab's chips (their look: the aim, the skill, the step)
     const allies = cb.units.filter((u) => u.side === 'pc' && !u.dead && cur && u.id !== cur.id);
-    const stimTarget = cb.units.find((u) => u.id === S.target && u.side === 'pc' && !u.dead);
-    const covers = coverOf(cb), allObjs = objectsOf(cb).filter((o) => !(o.rig && o.side && o.side !== 'pc')), shootable = (k) => allObjs.some((o) => o.pos === k && o.hp != null && o.hp > 0), doorAt = (k) => allObjs.find((o) => o.pos === k && kindOf(o).door);
-    const coverSel = S.action === 'cover' && shootable(S.tile) ? S.tile : null, doorSel = S.action === 'door' && doorAt(S.tile) ? S.tile : null;
+    const covers = coverOf(cb), allObjs = objectsOf(cb).filter((o) => !(o.rig && o.side && o.side !== 'pc'))
     let pickSel = null;
     // Rules 1.9: piles on the ground (the view holds only those the party can see). Pick up takes the clicked pile, or the
     // one in reach (your own tile first); a pile out of reach shows the way there and what it crosses.
@@ -687,16 +775,20 @@ export class CombatLogic extends DCLogic {
     const pickFar = pickPile && !pickSel ? routeHazards(cb, cur, pickPile.pos) : null;
     if (pickFar) { arrowsOf(pickFar.route, cur.pos); crossing = pickFar.crosses; }
     const crossAt = new Set(crossing.map((c) => c.tile));
-    const loadInfo = (() => { if (!cur || !w || w.reload !== 'magazine' || !cur.mags) return null; const cap = w.magazine || 0, open = cur.mags.filter((n) => n < cap).sort((a, b) => b - a); if (!open.length || !cur.loose) return null; const r = Math.min(cap - open[0], cur.loose, cur.ap * ROUNDS_PER_AP); return { rounds: r, ap: Math.ceil(r / ROUNDS_PER_AP) }; })();
-    const sk = w && w.grants, skFx = (sk && sk.effect) || {}, skRuns = ['multi_shot', 'sweep'].includes(skFx.op), skWhy = !skRuns || !cur ? null : cur.jammed && skFx.op === 'multi_shot' ? 'Weapon jammed: clear it (2 AP).' : skFx.op === 'multi_shot' && w.magazine != null && cur.ammo <= 0 ? 'Empty: reload (2 AP).' : cur.ap < (skFx.ap || 0) ? 'Needs ' + skFx.ap + ' AP.' : null, skPassive = sk && !skRuns && skFx.op !== 'narrator';
+    // ---------- perks, traits and class moves: the form a move asks for beyond its grid target (game/actionPickers.ts) ----------
+    // Option chips, a second click on the grid, a prose box only for words: the bespoke panel of a perk's 'form' pick.
+    const pkSel = parsePk(S.action), pkE = pkSel && mineTurn ? perkEntries(g, cb, cur, ch, 'combat').find((e) => e.id === pkSel.id && e.actionId === pkSel.actionId) || null : null;
+    const pkX = pkE ? { g, c: ch, how: 'combat', cb, u: cur } : null, pkP = pkE ? pickerFor(pkE, pkX) : null;
+    const pkV = pkP && S.pkForm && S.pkForm.key === S.action ? S.pkForm.v : {};
+    const pkBuilt = pkP ? buildArgs(pkP, pkV, pkX) : {}, pkMissing = typeof pkBuilt === 'string' ? pkBuilt : '';
+    const sk = w && w.grants, skFx = (sk && sk.effect) || {}, skRuns = ['multi_shot', 'sweep'].includes(skFx.op);
     // ---------- magic: what this unit can cast, previews and refusals straight from the engine ----------
     const mg = cur && cur.mg, words = mg ? mg.words : [], designs = mg ? mg.designs : [];
     const hasMagic = !!(mg && (words.length || designs.length || mg.evoker || mg.emanator)), isMagic = MAGIC.includes(S.action) && hasMagic;
     const mana = cb.mana ?? MANA_START, band = manaBand(mana), pcb = cb.mana == null ? { ...cb, mana } : cb;
-    const tryIt = (fn) => (mineTurn && mg ? dryRun(pcb, cur.id, fn) : { err: cb.over ? 'The fight is over.' : 'Not your turn.' });
     // Draw (rules 1.4: on your own tile only): each word as the engine would draw it now, with its cost and whether it
     // starts or extends a Line, and the stroke it goes into (rules 1.10: the picker; spec: Mana, Sigils 9.1; game/sigilView.ts).
-    const strip = S.action === 'draw' && mineTurn && mg ? (() => { const was = bindGame(g); try { return drawStrip(pcb, cur, S.stroke); } finally { bindGame(was); } })() : { tile: '', words: [], stroke: null };
+    const strip = S.action === 'draw' && mineTurn && mg ? withGame(g, () => drawStrip(pcb, cur, S.stroke)) : { tile: '', words: [], stroke: null };
     const wordInfo = {}; for (const dw of strip.words) wordInfo[dw.id] = dw;
     const WM = wordMasteryChips(cur && cur.charId && !cur.companion ? g.characters[cur.charId] : null); // rules 1.10: use counts and stars on the keys
     const word = S.word && words.includes(S.word) ? S.word : (strip.words.find((dw) => dw.ok) || {}).id || words[0] || null;
@@ -705,9 +797,9 @@ export class CombatLogic extends DCLogic {
     // Evoke (rules 1.4): the Line picked, where to stand, the area and the hovered next pick (spec 9.2–9.8). Only glyphs
     // this side can see start a pattern (hostile ones hide in the fog, as on the grid); words you know are readable.
     const readable = new Set(cb.units.filter((u) => u.side === 'pc' && owner(u) === me && u.mg).flatMap((u) => u.mg.words)), knows = (w) => readable.has(w);
-    const seenGlyph = (k) => !!k && glyphsAt(pcb, k).some((gl) => gl.side === 'pc' || vis.tiles.has(k));
+    const seenGlyph = (k) => !!k && glyphsAt(pcb, k).length > 0; // the view holds only the glyphs this side sees
     const evTile = S.action === 'evoke' && S.glyphTile && seenGlyph(S.glyphTile) ? S.glyphTile : null;
-    const evV = mineTurn && mg && evTile ? evokeView(pcb, cur, evTile, S.evc || {}, S.hover, knows) : null;
+    const evV = mineTurn && mg && evTile ? evokeView(fogged(pcb), cur, evTile, S.evc || {}, S.hover, knows) : null; // (fog: who is affected, as this side sees the fight)
     const hoverPanel = S.action === 'evoke' && !evTile && mineTurn && seenGlyph(S.hover) ? patternPanel(pcb, S.hover, cur, knows) : null;
     // Outburst (rules 1.5, game/heartView.ts): not holding, a design and Begin (hold at stage 0) or Snap (Begin and
     // Release at once, aimed); holding, the HEART panel (Pump, Release, Steady, Let go, Feed, Heart Overwatch). Every cost,
@@ -716,37 +808,47 @@ export class CombatLogic extends DCLogic {
     const dsel = designs.find((d) => d.id === S.design) || designs[0] || null, obMode = S.obMode === 'snap' ? 'snap' : 'begin';
     const cards = mineTurn && mg && !held && (S.action === 'outburst' || S.tab === 'outbursts') ? designCards(pcb, cur) : [];
     const card = dsel ? cards.find((x) => x.id === dsel.id) || null : null;
+    // ---------- the one action flow (game/actionFlow.ts): the picked action's descriptor, picks and the engine's preview ----------
+    // A bespoke panel adds what it picked: the pile's checklist (Pick up), a perk's form. Reading a glyph with Analyze keeps its own path.
+    const flowExtra = S.action === 'pickup' && pickPile && pickSel ? (() => { const take = pileTake(pickPile, pickUntick); return take ? { take } : {}; })() : pkE && !pkMissing ? { form: pkBuilt }
+      // the magic panels' picks: the glyph keyboard's word and stroke (drawn on your own tile), the Evoke planner's plan,
+      // the design card and Begin or Snap with its aim, the Release's aim
+      : S.action === 'draw' && word ? { word, ...(strip.stroke ? { stroke: strip.stroke } : {}) } : S.action === 'evoke' && evV && evV.payload ? { evoke: evV.payload }
+      : S.action === 'outburst' && dsel ? { design: dsel.id, mode: obMode, ...(S.aim ? { aim: S.aim } : {}) } : S.action === 'release' && S.aim ? { aim: S.aim } : {};
+    const flow = mineTurn && !(S.action === 'analyze' && S.readTile) ? flowView(g, me, cur, S, flowExtra) : null;
+    this._flow = flow;
+    this._pk = pkE ? { e: pkE, P: pkP, V: pkV, target: flow && flow.picks.targetId } : null;
+    /** The row a picked action belongs to: its own, or its parent's (a technique's pad row, Hold a shot). */
+    const rowSel = flow && flow.d.parent ? flow.d.parent : S.action;
+    const tFlow = flow && flow.d.preview === 'technique' ? flow : null;
     // Toggles items put on the chosen action (Ricochet, Nonlethal, Heart Surge…): chips under the action; their ids ride
     // as mods (and into the Outburst preview, so a surged release shows its stage).
     const TOGGLE_ON = { shot: 'combat/attack', aimed: 'combat/attack', melee: 'combat/attack', burst: 'combat/attack', auto: 'combat/attack', move: 'combat/move', sprint: 'combat/move', disengage: 'combat/move', outburst: 'combat/outburst', release: 'combat/release', pump: 'combat/pump', evoke: 'combat/evoke' };
-    const tglOn = TOGGLE_ON[S.action] || (tsel ? 'combat/attack' : null); // a technique is an attack: its toggles (Ricochet, Spare, Nonlethal…) show with it
-    const tgls = mineTurn && tglOn ? (() => { const was = bindGame(g); try { return togglesFor({ u: cur, c: ch, cb, g }, tglOn, { action: S.action, target: tgtUnit }, S.mods || []); } catch { return []; } finally { bindGame(was); } })() : [];
-    this._mods = tgls.filter((t) => t.on && !t.why).map((t) => t.id).concat(tgls.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
+    const tglOn = TOGGLE_ON[S.action] || null; // (on the flow, the descriptor's own: a technique's are an attack's)
+    const tgls = flow ? flow.pv.toggles : mineTurn && tglOn ? (() => { try { return withGame(g, () => togglesFor({ u: cur, c: ch, cb, g }, tglOn, { action: S.action, target: tgtUnit }, S.mods || [])); } catch { return []; } })() : [];
+    this._mods = modsOf(tgls);
     const hp = mineTurn && held ? heartPanel(pcb, cur, this._mods) : null;
     // The grid preview: aimed (a Snap, a Release) on the aim once picked, else on the hovered tile; while holding, your
     // reach ring faintly and the aura's tiles; a design picked to Begin shows its reach.
     let hz = noOverlay(), hzPlan = null;
     if (mineTurn && mg) {
       const at = S.aim || S.hover || null;
-      if (S.action === 'outburst' && dsel && !held) { hz = aimOverlay(pcb, cur, dsel.id, obMode === 'snap' ? at : null, this._mods); if (obMode !== 'snap') hz = { ...hz, mode: 'idle', area: new Set(), marks: new Map(), chip: '' }; hzPlan = obMode === 'snap' ? aimOverlay(pcb, cur, dsel.id, S.aim, this._mods).plan : null; }
-      else if (S.action === 'release' && held) { hz = aimOverlay(pcb, cur, 'held', at, this._mods); hzPlan = aimOverlay(pcb, cur, 'held', S.aim, this._mods).plan; }
+      if (S.action === 'outburst' && dsel && !held) { hz = aimOverlay(fogged(pcb), cur, dsel.id, obMode === 'snap' ? at : null, this._mods); if (obMode !== 'snap') hz = { ...hz, mode: 'idle', area: new Set(), marks: new Map(), chip: '' }; hzPlan = obMode === 'snap' ? aimOverlay(fogged(pcb), cur, dsel.id, S.aim, this._mods).plan : null; }
+      else if (S.action === 'release' && held) { hz = aimOverlay(fogged(pcb), cur, 'held', at, this._mods); hzPlan = aimOverlay(fogged(pcb), cur, 'held', S.aim, this._mods).plan; }
       else if (held && (HEART_ACTS.includes(S.action) || S.tab === 'outbursts')) hz = idleOverlay(pcb, cur);
     }
-    const SIMPLE = { scuff: scuffGlyph, vent: ventFlux, core: swapCore, syphon: syphonMp, crystallise: crystalliseCore };
-    const simpleTry = isMagic && SIMPLE[S.action] ? tryIt((c, u) => SIMPLE[S.action](c, u)) : null;
     // Where the chosen spell reaches and whom it would touch (for the grid overlay).
     // A prayer (Blessing 2.0; screens/faithCombat.js): its targets picked on the grid, the engine's preview as the verdict.
-    const prSel = mineTurn ? parsePray(S.action) : null, pr = prSel ? prayerView(g, cb, cur, prSel, S, vis.tiles) : null;
-    this._pr = pr;
+    const pr = flow && flow.d.preview === 'prayer' ? flow : null; // a prayer (on the flow): its picks ring in Virtue ink
     const soulAct = S.action === 'outburst' || S.action === 'release' || S.action === 'syphon' || S.action === 'crystallise' || HEART_ACTS.includes(S.action);
-    const famInk = pr ? pr.ink : soulAct ? SOUL_INK : SIGIL_GLOW;
+    const famInk = pr ? FAITH_INK : soulAct ? SOUL_INK : SIGIL_GLOW;
     // A hostile pattern shows only its tiles in sight, and only the words this side can read.
     let mReach = new Set(), tgtIds = [], patTiles = new Set(), aimTile = null;
     if (isMagic && mineTurn) {
       if (S.action === 'draw') mReach = drawReach;
-      if (S.action === 'evoke' && hoverPanel) hoverPanel.tiles.filter((k) => hoverPanel.ours || vis.tiles.has(k)).forEach((k) => patTiles.add(k)); // the rest is evV's overlay
+      if (S.action === 'evoke' && hoverPanel) hoverPanel.tiles.forEach((k) => patTiles.add(k)); // the rest is evV's overlay
     }
-    if (pr) { tgtIds.push(...pr.chosen); if (pr.tile) aimTile = pr.tile; }
+    if (pr) { tgtIds.push(...pr.ring); if (pr.picks.tile) aimTile = pr.picks.tile; }
     const tgtSet = new Set(tgtIds);
     /** The little tag over the hovered tile while aiming a spell. */
     const magicTag = (k) => {
@@ -765,32 +867,19 @@ export class CombatLogic extends DCLogic {
       return '';
     };
     this._mg = { word, design: dsel ? dsel.id : null, evTile, seenGlyph, evV, stroke: strip.stroke };
-    // ---------- perks, traits and class moves (engine effects/actions.ts): the entry, its target and the engine's preview ----------
-    const pkSel = parsePk(S.action), pkList = mineTurn ? perkEntries(g, cb, cur, ch, 'combat') : [];
-    const pkE = pkSel ? pkList.find((e) => e.id === pkSel.id && e.actionId === pkSel.actionId) || null : null;
-    const pkT = pkE ? (pkE.target === 'ally' ? cb.units.find((u) => u.id === S.target && u.side === 'pc' && !u.dead) || null : ['unit', 'enemy', 'npc'].includes(pkE.target) ? cb.units.find((u) => u.id === S.target && !u.dead && u.id !== cur.id) || tgtUnit : null) : null;
-    // What the move asks for beyond its grid target (game/actionPickers.ts): option chips, a second click on the grid,
-    // a prose box only for words. The picks build the args the engine reads; its preview is the verdict.
-    const pkX = pkE ? { g, c: ch, how: 'combat', cb, u: cur } : null, pkP = pkE ? pickerFor(pkE, pkX) : null;
-    const pkV = pkP && S.pkForm && S.pkForm.key === S.action ? S.pkForm.v : {};
-    const pkBuilt = pkP ? buildArgs(pkP, pkV, pkX) : {}, pkMissing = typeof pkBuilt === 'string' ? pkBuilt : '';
-    const pkArgs = pkE ? { actionId: pkE.actionId, ...(pkT ? { targetId: pkT.id } : {}), ...(pkE.target === 'tile' && S.tile ? { tile: S.tile } : {}), ...(pkMissing ? {} : pkBuilt) } : null;
-    const pkPv = pkE ? (pkMissing ? { ok: false, why: pkMissing, ap: pkE.ap, lines: [] } : (() => { const was = bindGame(g); try { return previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, pkArgs, 'combat'); } catch (e) { return { ok: false, why: String(e && e.message || e), ap: pkE.ap, lines: [] }; } finally { bindGame(was); } })()) : null;
-    this._pk = pkE ? { e: pkE, args: pkArgs, target: pkT, P: pkP, V: pkV } : null;
-    const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obMode === 'snap' ? (hzPlan ? hzPlan.ap : card ? card.snapAp : 0) : card ? card.beginAp : 0) : S.action === 'release' ? (hzPlan ? hzPlan.ap : SPELL_AP.release) : S.action === 'pump' ? (hp ? hp.pump.ap : SPELL_AP.pump) : S.action === 'letgo' || S.action === 'heartwatch' ? 0 : S.action === 'vent' || S.action === 'core' ? magicAp(cur, S.action) : SPELL_AP[S.action] || 0;
-    const waCost = cur && S.action === 'pullfree' ? ((pullFreeTargets(cb, cur)[0] || {}).nailed || {}).ap
-      : cur && ['reload', 'clear', 'brace', 'repair', 'overwatch'].includes(S.action) ? (weaponActions(cur).find((x) => x.id === S.action) || {}).ap
-      : cur && S.action === RELOAD_TAC ? ((weaponActions(cur).find((x) => x.id === 'reload') || {}).tactical || {}).ap
-      : cur && (S.action === 'reload2' || S.action === RELOAD2_TAC) ? reloadBothAp(cur) + (S.action === RELOAD2_TAC ? PILE.tactical_reload_extra_ap : 0) : undefined; // the weapon's own AP (rules 1.9: speed or tactical)
-    const cost = cChip ? (cPv && cPv.ap ? cPv.ap : cChip.ap) : tsel ? (tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0) : pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' ? PICKUP_AP : S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
+    // The AP the picked action takes is always the engine's number: on the flow, its preview (the reducer's dry run, after
+    // the items and anything lent: the lend is added back here so the pips can show it as lent); else the system's own.
+    const flowLend = flow && flow.action ? encoreCredit(cur, flow.action) : 0;
+    const cost = flow ? flow.cost + flowLend : isMove ? moveAp : 0;
     // Encore (items 729, 737): the selected action repeats the Miracle's named one: the engine lends its AP (previewAttack and
     // the perk previews already count it); the cost shown is what is left to pay, and the panel says it is free.
-    const encoreLend = !mineTurn ? 0 : encoreCredit(cur, cChip ? { type: 'combat/call', id: cId } : tsel ? { type: 'combat/technique', id: tId } /* rules 1.12: Shot, Aimed Shot and Cut repeat the plain attack they stand for; any other technique repeats itself */ : pkE ? { type: 'combat/perk', id: pkE.id } : isMove ? { type: 'combat/move', how: S.action } : ATTACKS.includes(S.action) ? { type: 'combat/attack', mode: attackMode } : null);
+    const encoreLend = !mineTurn ? 0 : flow ? flowLend : encoreCredit(cur, isMove ? { type: 'combat/move', how: S.action } : null);
     const encoreWaiting = mineTurn && cur.faith && cur.faith.encore ? cur.faith.encore : null;
-    const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x >= cb.map.w / 2, up: y >= cb.map.h / 2 }; };
+    const VT0 = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 };
+    const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x - VT0.x0 >= (VT0.x1 - VT0.x0 + 1) / 2, up: y - VT0.y0 >= (VT0.y1 - VT0.y0 + 1) / 2 }; };
     const condWord = (u) => (u.dead ? 'dead' : u.downed ? 'down' : u.hp >= u.maxHp ? 'unhurt' : u.hp > u.maxHp / 2 ? 'wounded' : 'badly hurt');
 
-    const at = {}; cb.units.filter((u) => !u.dead && seenFoe(u)).forEach((u) => { at[u.pos] = u; });
+    const at = {}; cb.units.filter((u) => !u.dead).forEach((u) => { at[u.pos] = u; });
     // Combat clarity (fx/play.ts): a unit whose walk or coming-into-sight has not played yet (or is playing now) is drawn
     // see-through where the state already has it; the effects layer walks a copy of it there. The layer also learns
     // every unit's token look, to draw a walk whose unit has no token on screen (it fell at the end of it).
@@ -803,33 +892,24 @@ export class CombatLogic extends DCLogic {
         chip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #FFFFFF', fill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + hpPct + '%; background: #F65157' + (known ? '' : '; opacity: 0.6') };
     };
     setTokenLooks(cb.units.map((u) => { const kb = u.side === 'foe' ? kindBadge(u.kind, true) : null; return { id: u.id, src: faceOf(u) || '', style: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid #F65157'), kind: kb && kb.has ? { text: kb.text, style: kb.style } : null, hp: hpLook(u) }; }));
-    const sensedAt = {}; cb.units.filter((u) => vis.sensed.has(u.id)).forEach((u) => { sensedAt[u.pos] = u; });
+    const sensedAt = {}; vis.sensed.forEach((k) => { sensedAt[k] = true; }); // a presence, no unit (spec: Vision, Sensory)
     const solid = new Set(cb.map.solid), diff = difficultOf(cb);
     // ---------- the chosen attack's reach in red (as on the area map): where it can land from here, as the engine allows ----------
     const RED_ACTS = [...ATTACK_MODES, 'paired', 'overwatch', 'shove', 'analyze', 'cover'];
-    // A technique aimed at an enemy shows its weapon's reach too (melee: its reach; ranged: the range bands).
-    const tShield = !!(tsel && tsel.hand === 'off' && !cur.offWeapon && blocks.some((b) => b.shield)); // a shield's technique (Shield Bash): next to you
-    const tSys = tsel && needsEnemy(tId) ? (tShield ? 'melee' : WEAPON[tsel.hand === 'off' ? cur.offWeapon : cur.weapon] && isMelee(WEAPON[tsel.hand === 'off' ? cur.offWeapon : cur.weapon]) ? 'melee' : tId === 'aimed' ? 'aimed' : 'shot') : null;
-    const redOn = !!(mineTurn && w && !isMagic && (RED_ACTS.includes(S.action) || (S.action === 'skill' && skRuns) || !!tSys));
+    // A technique aimed at an enemy shows its red area too: the engine's (the flow's preview: its weapon's reach and range
+    // bands, a shield's Bash next to you, Lunge's step and Charge's run).
+    const tReach = tFlow && tFlow.reach.size ? tFlow.reach : null;
+    const redOn = !!(mineTurn && w && !isMagic && (RED_ACTS.includes(S.action) || (S.action === 'skill' && skRuns) || !!tReach));
     let red = new Map();
-    if (redOn) {
-      const mode = tSys ? tSys : S.action === 'skill' ? (skFx.op === 'sweep' ? 'melee' : 'shot') : ['overwatch', 'cover', 'paired', 'analyze'].includes(S.action) ? (melee ? 'melee' : 'shot') : S.action === 'shove' ? 'melee' : S.action;
-      const useW = (mode === 'melee' && !melee) || tShield ? WEAPON.fists : w, isM = mode === 'melee' && S.action !== 'analyze';
-      // Optics only help against units (previewAttack); shooting an object (shootCover) has no optic term: 3 bands flat.
-      const mods = cur.mods || [], optic = S.action !== 'cover' && (mods.includes('mod_red_dot') || (mods.includes('mod_scope') && mode === 'aimed')) ? 1 : 0;
-      const reachM = S.action === 'shove' || (S.action === 'skill' && skFx.op === 'sweep') ? 1 : (useW.properties || []).includes('reach_2') || useW.id === 'lance' || (useW === w && skFx.op === 'reach') ? (skFx.op === 'reach' && useW === w ? skFx.value : 2) : 1;
-      // A melee technique that moves you first reaches further than the weapon: Lunge's step (2 with a Reach weapon),
-      // Charge's run (as far as the AP left after the strike lets you walk). The red shows who it can reach, not the blade.
-      const tProps = (useW.phys && useW.phys.props) || [], tApLeft = Math.max(0, cur.ap - (tChip ? tChip.ap : 2));
-      const moveR = !tsel || !isM ? 0 : tId === 'lunge' ? (tProps.includes('reach') ? 2 : 1) : tId === 'charge' ? Math.floor(tApLeft * (cur.movement || 1) + (cur.bank || 0)) : 0;
-      const maxR = S.action === 'analyze' ? 4 + (cur.analysis || 0) : isM ? reachM + moveR : effectiveRange(useW) * (3 + optic);
-      const memo = [cur.id, cur.pos, cur.weapon, S.action, maxR, cb.round, cb.log.length].join('|');
-      if (!this._red || this._red.key !== memo) {
-        // By range band (spec: −2 to hit per band past the first): the first band reads strongest, the far ones fade.
-        const set = new Map(), band = isM || S.action === 'analyze' ? 0 : effectiveRange(useW);
-        for (let y = 0; y < cb.map.h; y++) for (let x = 0; x < cb.map.w; x++) { const k = x + ',' + y; if (k === cur.pos || solid.has(k)) continue; const d = dist(cur.pos, k); if (d <= maxR && (isM || lineOfSight(cb, cur.pos, k))) set.set(k, band ? Math.max(0, Math.ceil(d / band) - 1) : 0); }
-        this._red = { key: memo, set };
-      }
+    if (tReach) { red = tReach; this._red = { key: 'flow', set: tReach }; }
+    else if (redOn) {
+      const mode = S.action === 'skill' ? (skFx.op === 'sweep' ? 'melee' : 'shot') : ['overwatch', 'cover', 'paired', 'analyze'].includes(S.action) ? (melee ? 'melee' : 'shot') : S.action === 'shove' ? 'melee' : S.action;
+      const isM = mode === 'melee' && S.action !== 'analyze';
+      // How far it reaches from here is the engine's rule (actions.ts reachTiles: previewAttack's own melee reach, the
+      // Reach property included; the range bands and the optic; Analyze's range; a Shove's one tile).
+      const what = S.action === 'analyze' ? 'analyze' : S.action === 'shove' || (S.action === 'skill' && skFx.op === 'sweep') ? 'shove' : S.action === 'cover' ? 'cover' : mode;
+      const memo = [cur.id, cur.pos, cur.weapon, cur.offWeapon || '', (cur.mods || []).join(','), S.action, what, cb.round, cb.log.length].join('|');
+      if (!this._red || this._red.key !== memo) this._red = { key: memo, set: reachTiles(cb, cur, what) };
       red = this._red.set;
     }
     /** The chip over a hovered unit while an attack is chosen: the engine's odds and AP, or its reason. */
@@ -837,11 +917,11 @@ export class CombatLogic extends DCLogic {
       if (!redOn || k !== S.hover || !u || u.id === cur.id) return null;
       const short = (why) => String(why || 'Not now').split(/[:.]/)[0].toUpperCase();
       if (S.action === 'analyze') return u.analyzedBy ? { ok: false, text: 'ANALYZED' } : red.has(k) ? { ok: true, text: 'ANALYZE · ' + analyzeCost(cur) + ' AP' } : { ok: false, text: 'OUT OF RANGE' };
-      if (S.action === 'shove') return red.has(k) ? { ok: true, text: 'SHOVE · 2 AP' } : { ok: false, text: 'GET NEXT TO IT' };
+      if (S.action === 'shove') return red.has(k) ? { ok: true, text: 'SHOVE · ' + cost + ' AP' } : { ok: false, text: 'GET NEXT TO IT' };
       if (S.action === 'skill' && skFx.op === 'multi_shot') { const p = previewAttack(cb, cur, u, 'shot', { extra: skFx.extra || 0, free: true }); return p.ok ? { ok: true, text: (skFx.shots || 1) + '× ' + p.pct + '% · ' + skFx.ap + ' AP' } : { ok: false, text: short(p.why) }; }
       if (ATTACKS.includes(S.action)) { const p = previewAttack(cb, cur, u, attackMode); return p.ok ? { ok: true, text: 'HIT ' + p.pct + '% · ' + p.ap + ' AP' } : { ok: false, text: short(p.why) }; }
-      if (tSys) { const p = techPreview(g, cb, cur, tsel, { targetId: u.id, tile: tTile, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) }), a0 = p && (p.attacks || []).find((a) => a.target === u.id);
-        return p && p.ok ? { ok: true, text: (a0 && a0.pv && a0.pv.ok ? 'HIT ' + a0.pv.pct + '% · ' : '') + p.ap + ' AP' } : { ok: false, text: short(p && p.why) }; }
+      if (tReach) { const p = tFlow.peek(u.id), m = p && p.marks.units.find((x) => x.id === u.id);
+        return p && p.ok ? { ok: true, text: (m && m.tag ? 'HIT ' + m.tag + ' · ' : '') + p.ap + ' AP' } : { ok: false, text: short(p && p.why) }; }
       return null;
     };
     // The zone's map painting under the grid (spec: Campaigns, art): each tile shows its slice, colours become tints.
@@ -849,7 +929,10 @@ export class CombatLogic extends DCLogic {
     const paint = (k, col) => (mapArt && !String(col).startsWith('rgba(255') ? tileBg(mapArt, k, cb.map.w, cb.map.h, TINT[col] || (String(col).startsWith('rgba') ? col : 'rgba(10, 13, 19, 0.1)')) : col);
     // The glyph layer: glyphs and standing zones by tile. Hostile glyphs show only where you can see, and only as words
     // your side can read (the rest are scratches).
-    const glyphAt = {}; (cb.glyphs || []).forEach((gl) => { (glyphAt[gl.pos] ||= []).push(gl); });
+    // Glyphs follow the effects too (fx/play.ts fxShownGlyphs): a Line drawn and Evoked in one step (a hostile caster's
+    // turn) lies on its tiles from its draw until its Evoke plays. For the picture only: the rules read cb.glyphs.
+    const glyphsShown = [...(cb.glyphs || []), ...fxShownGlyphs(g)];
+    const glyphAt = {}; glyphsShown.forEach((gl) => { (glyphAt[gl.pos] ||= []).push(gl); });
     const glyphName = (gl) => glyphMark(gl, 'pc', knows).title;
     // Rules 1.10: a scuffed glyph's trace stays 2 rounds, faint; Analyze aimed at it (or at a hostile glyph) reads it.
     const traceAt = {}; (cb.traces || []).forEach((t) => { (traceAt[t.pos] ||= []).push(t); });
@@ -859,15 +942,15 @@ export class CombatLogic extends DCLogic {
     // Rules 1.10 strokes (game/sigilView.ts strokeLayer): a faint line joins each stroke's glyphs; the hovered glyph lights
     // its whole stroke and names its words; while drawing, the stroke the glyph would make shows as a dashed line.
     const dwSel = S.action === 'draw' && word ? wordInfo[word] : null;
-    const SL = strokeLayer(cb.glyphs || [], { side: 'pc', seen: (k) => vis.tiles.has(k), hover: S.hover, knows, preview: dwSel && dwSel.ok ? [dwSel.joins, dwSel.joins2] : [] });
+    const SL = strokeLayer(glyphsShown, { side: 'pc', hover: S.hover, knows, preview: dwSel && dwSel.ok ? [dwSel.joins, dwSel.joins2] : [] });
     // Placed magic (spec 9.9: fields tinted by element, your traps, spotted enemy traps, turrets, RAISE walls, smoke,
     // light) under the Evoke plan's overlay; outside the area is dimmed while aiming (spec 9.4).
     // Class Roster Revision 3's standing marks (game/classMarks.ts): False Images, Read's intents, rigged and sabotaged tiles.
-    const placed0 = placedView(pcb, 'pc', vis.tiles), placed = { ...placed0, tiles: mergeTiles(placed0.tiles, classMarks(cb, 'pc', { seen: vis.tiles, imgOf: (x) => ART(x.img) || x.img || '' })) }, evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
+    const placed0 = placedView(pcb, 'pc'), placed = { ...placed0, tiles: mergeTiles(placed0.tiles, classMarks(cb, 'pc', { imgOf: (x) => ART(x.img) || x.img || '' })) }, evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
     // A class move or perk that casts (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell…) paints its
     // engine preview on the grid too: the area, the tiles it covers, who it affects (spec 9; item 489 c).
-    const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, pkPv, cur.side) : null;
-    const tTiles = tPv && ((tPv.area || []).length || (tPv.moves || []).length || new Set([...(tPv.attacks || []).map((a) => a.target), ...(tPv.pressure || []).map((p) => p.unit)]).size > 1) ? actionPreviewTiles(cb, { tiles: [...(tPv.area || []), ...(tPv.moves || []).map((m) => m.to)], targets: (() => { const ids = [...new Set([...(tPv.attacks || []).map((a) => a.target), ...(tPv.pressure || []).map((p) => p.unit)])]; return ids.length > 1 ? ids : []; })() }, cur.side) : null; // (one target: the target card names it; its pips stay readable)
+    const pkTiles = flow && flow.d.preview === 'perk' && (flow.area.length || flow.targets.length) ? actionPreviewTiles(cb, { tiles: flow.area, targets: flow.targets }, cur.side) : null; // (the engine's marks: only the units this side sees)
+    const tTiles = tFlow && (tFlow.area.length || tFlow.targets.length) ? actionPreviewTiles(cb, { tiles: tFlow.area, targets: tFlow.targets }, cur.side) : null; // (one target: the target card names it; its pips stay readable)
     const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(placed.tiles, pkTiles) : tTiles ? mergeTiles(placed.tiles, tTiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
     const markStyle = (k, u) => {
       if (hz.on) { if (u && hz.marks.has(u.id)) return overlayRingStyle({ ...hz, ink: hz.marks.get(u.id).ink }); const st = overlayTileStyle(hz, k); if (st) return st; }
@@ -881,13 +964,18 @@ export class CombatLogic extends DCLogic {
     // World Play 1.7 (game/worldView.ts): the fight's hazards per tile, caches with their count, carried people a Downed
     // carrier dropped (lying on the floor until the fight ends).
     const myCharC = (cur && cur.charId && g.characters[cur.charId]?.owner === me ? cur.charId : Object.values(g.characters).find((x) => x.owner === me)?.id), WLc = worldLayer(g, true, myCharC), dropAt = {}; (cb.dropped || []).forEach((d) => { dropAt[d.at] = d; });
-    const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text });
+    // The letters and numbers stay at the window's edge while the map scrolls under them (the camera).
+    const AXIS = 'display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1; background: #05070B; box-shadow: 0 0 0 2px #05070B; position: sticky; ';
+    const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text, style: AXIS + (key === 'h-' ? 'top: 0; left: 0; z-index: 7' : key[0] === 'h' ? 'top: 0; z-index: 6' : 'left: 0; z-index: 6') });
+    // Tooltips near an edge turn inward: the edge is the camera's window, not the map's (vx, vy: a tile's place in it).
+    const VT = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 }, vW = Math.max(1, VT.x1 - VT.x0 + 1), vH = Math.max(1, VT.y1 - VT.y0 + 1);
+    const vxOf = (x) => Math.max(0, Math.min(vW - 1, x - VT.x0)), vyOf = (y) => Math.max(0, Math.min(vH - 1, y - VT.y0));
     tiles.push(axis('h-', '')); for (let x = 0; x < cb.map.w; x++) tiles.push(axis('h' + x, refOf(x + ',0').replace(/\d+$/, '')));
     const WMk = watchMarks(g, cb, 'pc');
     for (let y = 0; y < cb.map.h; y++) for (let x = -1; x < cb.map.w; x++) {
       if (x < 0) { tiles.push(axis('r' + y, String(y + 1))); continue; }
       const k = x + ',' + y, u = at[k], inRange = isMove && !u && reach(k), note = notesAt(cb.map, k)[0];
-      const gls = (glyphAt[k] || []).filter((gl) => gl.side === 'pc' || vis.tiles.has(k)), trs = vis.tiles.has(k) ? traceAt[k] || [] : [], sgT = sgTiles[k], mk = markStyle(k, u), mTag = magicTag(k);
+      const gls = glyphAt[k] || [], trs = traceAt[k] || [], sgT = sgTiles[k], mk = markStyle(k, u), mTag = magicTag(k);
       const sgLayer = [sgT && sgT.layer, sgDim && !evV.area.has(k) && !evV.pickable.has(k) && !evV.stepTo.has(k) && !evV.orderTo.has(k) && k !== cur.pos ? 'background: rgba(5, 7, 11, 0.5)' : ''].filter(Boolean).join('; ');
       const magicNote = (gls.length ? ' · glyphs: ' + gls.map(glyphName).join(', ') : '') + (trs.length ? ' · ' + trs.map((t) => traceMark(t, knows).title).join(', ') : '') + (sgT && sgT.note ? ' · ' + sgT.note : '') + (u && u.mg && u.mg.held ? ' · holding an Outburst (stage ' + u.mg.held.stage + ')' : '') + (u && (u.side === 'pc' || u.analyzedBy) ? condChips(u, g).map((c) => ' · ' + c.k.toLowerCase()).join('') : '');
       let bg = '#0D1119', border = '1px solid #151C29';
@@ -895,15 +983,16 @@ export class CombatLogic extends DCLogic {
       const cv = covers[k], ob = allObjs.find((o) => o.pos === k && !(cv && (o.kind === 'crate' || o.kind === 'pillar')) && o.kind !== 'rubble' && o.kind !== 'pile');
       if (cv) { bg = cv.kind === 'full' ? '#4A3A20' : '#2A2113'; border = (cv.kind === 'full' ? '2px solid #8C6F3A' : '1px solid #4A3A20'); }
       const spr = allObjs.filter((o) => o.pos === k && spriteOf(g, o)).sort((a, b) => (a.kind === 'rubble') - (b.kind === 'rubble'))[0];
-      if (k === coverSel || k === pickSel || k === doorSel || (pickPile && k === pickPile.pos)) border = '2px solid #FFFFFF';
+      if ((flow && flow.picks.tile === k && (S.action === 'cover' || S.action === 'door')) || k === pickSel || (pickPile && k === pickPile.pos)) border = '2px solid #FFFFFF';
       if (ob && kindOf(ob).door && !ob.open) { bg = '#3A2E1A'; }
       if (diff.has(k) && !u) { bg = '#161C28'; }
-      const aTag = u && seenFoe(u) ? atkTag(k, u) : null;
+      const aTag = u ? atkTag(k, u) : null;
       // Physical 2.0 (part 3): Pressure pips over every token (public), Stopped once and a held Watch in its hover card
       // and aria-label; held Watches your side can see, tinted on their tiles with a dotted line from the watcher.
-      const uPhys = u && seenFoe(u) ? physOf(g, cb, u, 'pc') : null, pLook = pressureLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
-      const wc = WLc.cells.get(k) || {}, kb = u && u.side === 'foe' && seenFoe(u) ? kindBadge(u.kind, true) : null, dr = !u ? dropAt[k] : null;
+      const uPhys = u ? physOf(g, cb, u, 'pc') : null, pLook = pressureLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
+      const wc = WLc.cells.get(k) || {}, kb = u && u.side === 'foe' ? kindBadge(u.kind, true) : null, dr = !u ? dropAt[k] : null;
       const pileHere = pileReach.some((o) => o.pos === k);
+      const cReach = flow && flow.d.preview === 'call' && flow.reach.size ? flow.reach : null, cTile = cReach ? flow.picks.tile || null : null;
       const planStyle = inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : cReach ? (cReach.has(k) ? (cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : 'background: rgba(231, 235, 243, 0.07); border: 1px dashed rgba(231, 235, 243, 0.5)') : cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : '') : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
       const isHeld = !!(u && fxHeld.has(u.id));
       const known = u && (u.side === 'pc' || u.analyzedBy), hpPct = !u ? 0 : u.dead || u.downed ? 0 : known ? Math.max(0, Math.min(100, u.hp / Math.max(1, u.maxHp) * 100)) : u.hp >= u.maxHp ? 100 : u.hp > u.maxHp / 2 ? 66 : 33;
@@ -915,7 +1004,7 @@ export class CombatLogic extends DCLogic {
         key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.shield > 0 ? ' · Shield ' + u.shield + ' (damage takes it first)' : '') + (u.res && u.res.guard > 0 ? ' · Guard ' + u.res.guard : '') + (u.downed ? ' · Downed' : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
         worldNote: (wc.hz ? ' · ' + wc.hz.title : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (wc.pile ? ' · ' + wc.pile.title.replace(/:\n/, ': ').replace(/\n/g, ', ') : '') + (dr ? ' · ' + dr.npc.name + ' lies here' : '') + (crossAt.has(k) ? ' · your path crosses this hazard' : ''),
         hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
-        hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, x, y, cb.map.w, !!u) : '',
+        hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, vxOf(x), vyOf(y), vW, !!u) : '',
         hasCross: crossAt.has(k), crossStyle: CROSS_STYLE, crossChipStyle: CROSS_CHIP_STYLE,
         unseen: !vis.tiles.has(k), sensed: !!sensedAt[k], dark: !!cb.map.dark && !litAt(cb, k),
         hasHzd: !!wc.hz, hzdLayer: wc.hz ? wc.hz.layer : '', hzdGlyph: wc.hz ? wc.hz.glyph : '', hzdGlyphStyle: wc.hz ? wc.hz.glyphStyle : '', hzdKind: wc.hz ? wc.hz.kind + (wc.hz.safe ? ' safe' : '') : '',
@@ -929,13 +1018,13 @@ export class CombatLogic extends DCLogic {
         // long, Leon 10 Nov 2026): a long reason wraps, and near an edge the chip slides inward; on the top row it sits
         // under the tile. It is drawn over every token and overlay of the grid.
         costStyle: (() => { const txt = String(mTag || (aTag ? aTag.text : '') || ''), wrap = !!aTag && !aTag.ok && txt.length > 26, wPx = Math.min(wrap ? 230 : 400, txt.length * 7.2 + 16), half = wPx / 2;
-          const right = (cb.map.w - 1 - x) * 48 + 23 + 6, left = x * 48 + 23 + 22, dx = Math.round(Math.max(0, half - left) - Math.max(0, half - right));
-          return 'position: absolute; left: 50%; ' + (y === 0 ? 'top: calc(100% - 6px)' : 'bottom: calc(100% - 10px)') + '; transform: translateX(calc(-50% + ' + dx + 'px)); z-index: 30; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; pointer-events: none; '
+          const right = (vW - 1 - vxOf(x)) * 48 + 23 + 6, left = vxOf(x) * 48 + 23 + 22, dx = Math.round(Math.max(0, half - left) - Math.max(0, half - right));
+          return 'position: absolute; left: 50%; ' + (vyOf(y) === 0 ? 'top: calc(100% - 6px)' : 'bottom: calc(100% - 10px)') + '; transform: translateX(calc(-50% + ' + dx + 'px)); z-index: 30; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; pointer-events: none; '
             + (wrap ? 'white-space: normal; width: max-content; max-width: 230px; text-align: center; line-height: 1.25; ' : 'white-space: nowrap; '); })()
           + (aTag ? (aTag.ok ? 'background: #F65157; color: #0A0D13' : 'background: #1C2536; color: #F65157; border: 1px solid #F65157') : 'background: #FFFFFF; color: #0A0D13'),
         hasPlan: !!planStyle, planStyle: 'position: absolute; inset: 0; z-index: 1; border-radius: 4px; pointer-events: none; box-sizing: border-box; ' + planStyle,
         hasRing: !!isCur && !cb.over && !isHeld, ringCls: mineTurn ? 'phc-cur-ring' : '', ringStyle: 'position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; z-index: 3; pointer-events: none; box-sizing: border-box; border-radius: ' + (u && u.side === 'pc' ? '50%' : '6px') + '; border: 2px solid ' + (mineTurn ? '#FFFFFF' : u ? ring(u) : '#FFFFFF'),
-        hasTgtRing: !!(u && redOn && u.id !== cur.id && seenFoe(u) && red.has(k) && !u.downed) && !isHeld, tgtRingStyle: 'position: absolute; inset: 1px; z-index: 3; pointer-events: none; box-sizing: border-box; border-radius: 4px; border: 2px solid #F65157; box-shadow: 0 0 10px rgba(246, 81, 87, 0.6)',
+        hasTgtRing: !!(u && redOn && u.id !== cur.id && red.has(k) && !u.downed) && !isHeld, tgtRingStyle: 'position: absolute; inset: 1px; z-index: 3; pointer-events: none; box-sizing: border-box; border-radius: 4px; border: 2px solid #F65157; box-shadow: 0 0 10px rgba(246, 81, 87, 0.6)',
         // What stands in front of the HP, on the token itself (Leon, 11 Nov 2026): a shield as a pale bar over the HP bar
         // (its share of max HP), Guard as pips over that. Both read in the tile's label too.
         ...(() => { const sh = u && !isHeld ? Math.max(0, u.shield || 0) : 0, gd = u && !isHeld ? Math.max(0, (u.res && u.res.guard) || 0) : 0;
@@ -949,7 +1038,7 @@ export class CombatLogic extends DCLogic {
         // A preview line ends under the caster's token: while drawing, the joins sit above the token (and below the tip).
         joinStyle: 'position: absolute; left: -26px; top: -26px; width: 96px; height: 96px; pointer-events: none; z-index: ' + (SL.tiles[k] && SL.tiles[k].some((x) => x.kind === 'preview') ? 4 : 2),
         hasStrokeHot: SL.hot.has(k), strokeHotStyle: 'position: absolute; inset: 0; z-index: 2; border-radius: 4px; pointer-events: none; box-sizing: border-box; border: 1px solid ' + SIGIL_INK + '; box-shadow: inset 0 0 8px rgba(139, 222, 238, 0.35)',
-        hasStrokeTip: k === S.hover && !!SL.hotText, strokeTip: SL.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (x >= cb.map.w / 2 ? 'right: 0' : 'left: 0') + '; z-index: 5; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
+        hasStrokeTip: k === S.hover && !!SL.hotText, strokeTip: SL.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (vxOf(x) >= vW / 2 ? 'right: 0' : 'left: 0') + '; z-index: 5; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
         hasGlyphs: gls.length + trs.length > 0, glyphs: [...gls.map((gl) => ({ key: gl.id, title: glyphName(gl), src: glyphMark(gl, 'pc', knows).src,
           style: 'width: 16px; height: 16px; border-radius: 3px; background: rgba(5, 7, 11, 0.55); ' + (gl.side === 'pc' ? 'box-shadow: 0 0 6px rgba(79, 200, 223, 0.6)' : 'opacity: 0.85; box-shadow: 0 0 0 1px rgba(246, 81, 87, 0.5)') })),
           ...trs.map((t) => { const tm = traceMark(t, knows); return { key: 'tr-' + t.id, title: tm.title, src: tm.src, style: tm.style }; })],
@@ -969,17 +1058,23 @@ export class CombatLogic extends DCLogic {
     }
     for (const t of tiles) if (t.worldNote) t.label += t.worldNote;
     // The strip turns over: the acting unit first, then who comes next (each slides to its new place).
-    const ordU = cb.order.map((id) => cb.units.find((u) => u.id === id)).filter((u) => u && !u.dead), ci = Math.max(0, ordU.findIndex((u) => cur && u.id === cur.id));
+    // An unseen hostile's place in the order is an opaque mark (the engine's fog): a card with nothing on it.
+    const ordU = cb.order.map((id) => cb.units.find((u) => u.id === id) || (isUnseenId(id) ? { id, side: 'foe', unseen: true, hp: 1, maxHp: 1 } : null)).filter((u) => u && !u.dead), actId = cur ? cur.id : cb.window?.queue[0]?.unitId ?? cb.order[cb.turn], ci = Math.max(0, ordU.findIndex((u) => u.id === actId));
     const rotU = [...ordU.slice(ci), ...ordU.slice(0, ci)];
     this.flipInit(rotU.map((u) => u.id).join(','));
+    const sn = (u) => !u.unseen;
     const initiative = rotU.map((u, idx) => ({ tag: cb.over ? '' : idx === 0 ? 'NOW' : idx === 1 ? 'NEXT' : '', hasTag: !cb.over && idx < 2,
       tagStyle: 'font-size: 9px; font-weight: 700; letter-spacing: 0.16em; color: ' + (idx === 0 ? '#FFFFFF' : '#A3AEC2'),
       ...(() => { const kn = u.side === 'pc' || u.analyzedBy, pct = u.downed ? 0 : kn ? Math.max(0, Math.min(100, u.hp / Math.max(1, u.maxHp) * 100)) : u.hp >= u.maxHp ? 100 : u.hp > u.maxHp / 2 ? 66 : 33;
         return { hpBox: 'position: relative; display: block; width: 64px; height: 4px; border-radius: 2px; overflow: hidden; background: #1C2536' + (kn ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.45)'),
           hpChip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: #FFFFFF', hpFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: #F65157' + (kn ? '' : '; opacity: 0.6') }; })(),
       // an unseen hostile keeps its face and its initials to itself (the turn card's '?', below; review fix: the bar showed them)
-      ...(() => { const sn = seenFoe(u), fc = sn ? faceOf(u) : ''; return { zoom: zoomer(this, fc, sn ? u.name : 'Unseen hostile', 'portrait'), hasImg: !!fc, noImg: !fc, img: fc, short: sn ? u.short : '?' }; })(),
-      key: u.id, name: seenFoe(u) ? u.name + (u.downed ? ' (down)' : u.surrendered ? ' (surrendered)' : '') : 'Unseen hostile', init: u.init,
+      ...(() => { const sn = !u.unseen, fc = sn ? faceOf(u) : ''; return { zoom: zoomer(this, fc, sn ? u.name : 'Unseen hostile', 'portrait'), hasImg: !!fc, noImg: !fc, img: fc, short: sn ? u.short : '?' }; })(),
+      key: u.id, name: sn(u) ? u.name + (u.downed ? ' (down)' : u.surrendered ? ' (surrendered)' : '') : 'Unseen hostile', init: u.init,
+      // A click on a portrait shows that unit on the map (the camera goes there); an unseen hostile gives nothing away.
+      show: () => { if (!sn(u) || u.dead) return; if (this._overview) this.toggleOverview(u.pos); else CAM.follow([u.pos], 'ask'); },
+      showLabel: sn(u) ? 'Show ' + u.name + ' on the map' : 'Unseen hostile: not on the map', cantShow: !sn(u) || !!u.dead,
+      showBtn: 'padding: 0; border: 0; background: transparent; font-family: inherit; line-height: 0; border-radius: 6px; cursor: ' + (sn(u) && !u.dead ? 'pointer' : 'default'),
       imgStyle: 'width: 36px; height: 36px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (u.surrendered ? '#A3AEC2' : '#F65157')) + (u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : ''),
       badgeStyle: 'display: grid; place-items: center; width: 36px; height: 36px; border-radius: ' + (u.side === 'pc' ? '50%' : '4px') + '; border: 2px solid ' + ring(u) + '; color: ' + ring(u) + '; font-size: 11px; font-weight: 700',
       style: 'display: flex; gap: 8px; align-items: center; padding: 6px 12px 6px 6px; border-radius: 999px; flex: none; ' + (cur && u.id === cur.id && !cb.over ? 'border: 1px solid #FFFFFF; background: #1C2536; box-shadow: 0 0 0 1px #FFFFFF, 0 0 14px rgba(255, 255, 255, 0.25)' : 'border: 1px solid #232D3F'),
@@ -1003,26 +1098,24 @@ export class CombatLogic extends DCLogic {
     let pkShelfMemo = null; const pkShelves = () => pkShelfMemo || (pkShelfMemo = perkShelves(g, cb, cur, ch, { since: pkSince }));
     const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 11px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: items.map(([id, label, costText, text, why]) => ({
       // A move that can't be used now still opens (its footer says why); its reason is on the button too.
-      name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { techLine: null, techOpt: null, tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
+      name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
       costStyle: 'font-size: 12px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
         (why && rowSel !== id ? 'opacity: 0.62; ' : '') + (rowSel === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));
-    const actName = { skill: sk ? sk.name : 'Weapon skill', paired: 'Both hands', repair: 'Field Repair', song: 'Play my song', sprint: 'Sprint', disengage: 'Disengage', prone: cur && cur.prone ? 'Stand up' : 'Drop prone', burst: 'Burst', auto: 'Full auto', shove: 'Shove', overwatch: 'Overwatch', brace: 'Brace', move: 'Move', shot: 'Shot', aimed: 'Aimed shot', melee: 'Melee', reload: (weaponActions(cur || {}).find((x) => x.id === 'reload') || {}).tactical ? 'Reload (speed)' : 'Reload', [RELOAD_TAC]: 'Reload (tactical)', reload2: 'Reload both guns', [RELOAD2_TAC]: 'Reload both (tactical)', clear: 'Clear a jam', stim: 'Stim an ally', analyze: 'Analyze', cover: 'Shoot an object', door: 'Open or close a door', pickup: 'Pick up', load: 'Load a magazine',
+    const actName = { move: 'Move', sprint: 'Sprint', disengage: 'Disengage', analyze: 'Analyze', pickup: 'Pick up',
       draw: 'Draw a glyph', evoke: 'Evoke', scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', outburst: 'Outburst', release: 'Release', syphon: 'Syphon', crystallise: 'Crystallise',
       pump: 'Pump', steady: 'Steady the heart', letgo: 'Let it go', feed: 'Feed the glyph', heartwatch: 'Heart Overwatch' }[S.action] || '';
-    const sel = { name: actName + (isMove ? ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + ' tiles') : pv ? ' · ' + pv.ap + ' AP' : ''),
-      text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? 'Hover a highlighted tile to see the path and its AP cost; click to move.' : S.action === 'stim' ? (stimTarget ? 'Target: ' + stimTarget.name + '. Confirm to use a stim.' : 'Click an adjacent ally.') : S.action === 'skill' ? (skRuns ? (skWhy ? skWhy : skFx.op === 'multi_shot' ? (tgtUnit ? sk.name + ' at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : 'Confirm to strike every adjacent enemy.') : skPassive ? 'Always on: it applies to every attack you make.' : 'Not run by the engine yet: use Say, and the Narrator rules it.') : S.action === 'paired' ? (tgtUnit ? 'Both hands at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : S.action === 'reload' ? 'Confirm to reload.' : SELF_TEXT[S.action] ? SELF_TEXT[S.action] : S.action === 'clear' ? 'Confirm to clear the jam.' : S.action === 'repair' ? 'Confirm to repair your weapon.' : S.action === 'song' ? 'Confirm to play your song for the room.' : ['prone', 'brace', 'overwatch'].includes(S.action) ? 'Confirm to ' + ({ prone: cur.prone ? 'stand up' : 'drop prone', brace: 'brace your weapon', overwatch: 'hold a shot on overwatch' }[S.action]) + '.' : S.action === 'shove' ? (tgtUnit ? 'Shove ' + tgtUnit.name + (Math.max(Math.abs(+tgtUnit.pos.split(',')[0] - +cur.pos.split(',')[0]), Math.abs(+tgtUnit.pos.split(',')[1] - +cur.pos.split(',')[1])) > 1 ? ': get next to it first.' : '. Confirm.') : 'Click an adjacent enemy.') : S.action === 'cover' ? (coverSel ? 'Target: ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).name + ', HP ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).hp + '. Confirm to shoot it.' : 'Click an object with HP.') : S.action === 'door' ? (doorSel ? (doorAt(doorSel).open ? 'Close' : 'Open') + ' the door at ' + refOf(doorSel) + '. Confirm.' : 'Click an adjacent door.') : S.action === 'pickup' ? '' : S.action === 'load' ? (loadInfo ? 'Confirm to load ' + loadInfo.rounds + ' rounds for ' + loadInfo.ap + ' AP.' : 'Nothing to load: you need loose rounds and a part-empty magazine.') : S.action === 'analyze' ? (readSel ? readText : tgtUnit ? (tgtUnit.analyzedBy ? tgtUnit.name + ' is already analyzed.' : 'Target: ' + tgtUnit.name + '. Click a hostile to change. Confirm to analyze.') : 'Click a hostile, or a glyph or trace to read (dashed).') : pv ? (pv.ok ? (tgtUnit && tgtUnit.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgtUnit.name + '. Confirm if you mean it.' : 'Click a hostile to change target. Confirm to attack.') : pv.why) : 'Click a hostile to target it.',
-      hasPick: false, pickFields: [], extra: mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
+    // The selected action's panel: on the flow, the descriptor's name and cost and the engine's preview in words.
+    const sel = { name: isMove ? actName + ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + ' tiles') : flow ? flow.sel.name : actName,
+      text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? (MO && MO.why ? MO.why : 'Hover a highlighted tile to see the path and its AP cost; click to move.')
+        : flow ? flow.sel.text : S.action === 'analyze' && readSel ? readText : S.action === 'pickup' ? '' : 'Click a hostile to target it.',
+      hasPick: false, pickFields: [], extra: flow ? flow.sel.extra : mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
     // Rules 1.9: the two reloads, the pick-up checklist and the path's hazards, in words (the costs are the engine's).
-    sel.hasPile = false; sel.pileRows = []; this._pick = null;
+    sel.hasPile = false; sel.pileRows = [];
     if (mineTurn) {
-      const RA = weaponActions(cur).find((x) => x.id === 'reload') || {}, unitW = (w && w.reload_unit) || 'magazine';
-      if (S.action === 'reload' && RA.tactical) sel.text = RA.why || 'Confirm: a speed reload, ' + RA.ap + ' AP. The ' + unitW + ' in the gun (' + cur.ammo + (cur.ammo === 1 ? ' round' : ' rounds') + ') drops into the pile on your tile, ' + refOf(cur.pos) + '.';
-      if (S.action === RELOAD_TAC) sel.text = (RA.tactical && RA.tactical.why) || 'Confirm: a tactical reload, ' + (RA.tactical ? RA.tactical.ap : '') + ' AP. The ' + unitW + ' in the gun (' + cur.ammo + (cur.ammo === 1 ? ' round' : ' rounds') + ') goes back in your pack.';
       if (isMove && hv) { const ct = crossesText(crossing); if (ct) sel.text = ct + ' Click to walk it anyway, or pick another tile.'; else if (hvRoute && hvTiles > P.dist[hv]) sel.text = 'The path goes around the revealed hazards (' + (hvTiles - P.dist[hv]) + (hvTiles - P.dist[hv] === 1 ? ' tile' : ' tiles') + ' longer). Click to move.'; }
       if (S.action === 'pickup') {
         const rows = pileRows(pickPile, pickUntick), d = pickPile ? dist(cur.pos, pickPile.pos) : 0;
-        sel.name = actName + ' · ' + PICKUP_AP + ' AP';
         sel.text = !pickPile ? (piles.size ? 'Nothing on the ground next to you. Click a pile (the stack with a count) to see the way there.' : 'Nothing on the ground in sight.')
           : !pickSel ? 'The pile at ' + refOf(pickPile.pos) + ' is ' + d + ' tiles away: walk next to it first. ' + (crossesText(pickFar && pickFar.crosses) || 'The way there crosses no known hazard.')
           : pickWhy || pickupLabel(pickPile, pickUntick) + ' from ' + (pickPile.pos === cur.pos ? 'your tile' : refOf(pickPile.pos)) + '. Untick what to leave on the ground.';
@@ -1031,7 +1124,6 @@ export class CombatLogic extends DCLogic {
           sel.hasPile = true; sel.pileHead = 'THE PILE AT ' + refOf(tile) + ' · ' + rows.length + (rows.length === 1 ? ' THING' : ' THINGS') + (pickSel ? '' : ' · OUT OF REACH');
           sel.pileRows = rows.map((r) => ({ ...r, off: !pickSel, icon: pickSel ? r.icon : r.iconOff, toggle: () => setKeys(toggleUntick(pickUntick, r.key)) }));
           sel.pileAll = () => setKeys([]); sel.pileNone = () => setKeys(rows.map((r) => r.key));
-          if (pickSel) this._pick = { tile, take: pileTake(pickPile, pickUntick) };
         }
       }
     }
@@ -1040,7 +1132,7 @@ export class CombatLogic extends DCLogic {
       const hits = (ids) => (ids.length ? ' It touches ' + names(ids).join(', ') + '.' : ' Nobody is there.');
       const meter = 'Charge ' + mg.charge + '/' + CORE_CHARGE + ' · Flux ' + mg.flux + '/' + FLUX_MAX + ' · ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores');
       const heart = (mg.emanator ? 'MP ' + Math.round(mg.mp) + '/' + mg.mpMax + ' · ' : 'No Emanator: Outbursts draw on the air · ') + 'Strain ' + mg.strain + '/' + mg.strainLimit;
-      const simpleWhy = simpleTry && simpleTry.err;
+      const simpleWhy = flow && !flow.pv.ok ? flow.pv.why : null;
       const VERB = { scuff: 'scuff out the glyphs under you', vent: 'vent ' + mg.flux + ' Flux into the air', core: 'load a fresh core', syphon: 'syphon MP from the air', crystallise: 'crystallise a mana core' };
       if (S.action === 'draw') {
         const dw = word && wordInfo[word], okd = !!(dw && dw.ok);
@@ -1056,7 +1148,7 @@ export class CombatLogic extends DCLogic {
       } else if (S.action === 'outburst') {
         const pl = hzPlan, aura = card && card.form === 'aura';
         sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP ×' + STAGE_MULT[0] : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
-        sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×0.6). Pump it (1 AP a stage, to ×2.2) and Release it (1 AP). Confirm to begin.' : card.beginWhy)
+        sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×' + STAGE_MULT[0] + '). Pump it (1 AP a stage, to ×' + STAGE_MULT[STAGE_MULT.length - 1] + ') and Release it (1 AP). Confirm to begin.' : card.beginWhy)
           : !S.aim && !aura ? (card.snapWhy || (hz.aim && hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Snap: hover to preview, click a tile to aim (' + card.line + ').' + (hz.summary.length ? ' ' + hz.summary.join(' ') : ''))) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
         sel.extra = card ? card.line + ' · ' + heart : heart;
       } else if (S.action === 'release') {
@@ -1070,41 +1162,24 @@ export class CombatLogic extends DCLogic {
         sel.text = !hp ? 'You hold no Outburst: Begin one first.' : B.ok ? B.title + ' Confirm (or use the HEART panel).' : B.why;
         sel.extra = hp ? 'Stage ' + hp.stage + ' ×' + hp.mult + ' · Strain ' + hp.strain + '/' + hp.limit + (hp.warn ? ' · ' + hp.warn : '') : heart;
       } else {
-        sel.name = actName + ' · ' + (S.action === 'vent' || S.action === 'core' ? magicAp(cur, S.action) : SPELL_AP[S.action] || 0) + ' AP';
         sel.text = simpleWhy ? simpleWhy : 'Confirm to ' + VERB[S.action] + '.';
         sel.extra = S.action === 'syphon' || S.action === 'crystallise' ? 'Mana ' + mana + ' (' + BAND_NAME[band.id] + ') · ' + heart : S.action === 'scuff' ? ((glyphAt[cur.pos] || []).length ? 'Under you: ' + glyphAt[cur.pos].map(glyphName).join(', ') + '.' : 'No glyphs under you.') : meter;
       }
     }
     if (pkE && mineTurn) {
-      sel.name = pkE.label + ' · ' + (pkPv ? pkPv.ap : pkE.ap) + ' AP' + (pkE.uses.label ? ' · ' + pkE.uses.label : '') + (pkE.tab === 'class' ? ' · class move' : '');
-      const need = pkE.target === 'ally' ? (pkT ? 'Target: ' + pkT.name + '. ' : 'Click an ally. ') : ['unit', 'enemy'].includes(pkE.target) ? (pkT ? 'Target: ' + pkT.name + '. ' : 'Click a target. ') : pkE.target === 'tile' ? (S.tile ? 'Tile ' + refOf(S.tile) + '. ' : 'Click a tile. ') : '';
-      const stWhy = pkState(pkE).why; // an on/off pair or Eye of the Storm read as their state ("in force now", "armed")
-      sel.text = need + (pkPv && !pkPv.ok ? (pkE.why && pkPv.why === pkE.why ? stWhy : pkPv.why) : (pkPv && pkPv.lines.length ? pkPv.lines.join(' ') : pkE.text) + (pkE.arm ? (pkE.armed ? ' Armed: confirm to stand it down.' : ' Confirm to arm it: the engine uses it when its moment comes.') : ' Confirm to use it.'));
-      sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (stWhy ? ' ' + stWhy : '');
-      // Each single choice previewed as the engine would take it (once the move's own target is picked).
-      const whyOpt = pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!pkT)) ? (id) => { const was = bindGame(g); try { const r = previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, { ...pkArgs, choice: id }, 'combat'); return r && !r.ok ? r.why || 'Not now.' : ''; } catch { return ''; } finally { bindGame(was); } } : null;
+      // The panel's words are the flow's; the form says what it still needs, and the class move's standing state.
+      if (pkMissing && flow && flow.d.available) sel.text = pkMissing;
+      sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (pkState(pkE).why ? ' ' + pkState(pkE).why : '');
+      // each single choice previewed as the engine would take it (the descriptor's form pick, once the target is picked)
+      const whyOpt = flow && pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!flow.picks.targetId)) ? (id) => { const r = flow.peekWith({ form: { choice: id } }); return r && !r.ok ? r.why || 'Not now.' : ''; } : null;
       Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
     }
     // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.
     const pkiE = isPerkInfo(S.action) && mineTurn ? (() => { const sh = pkShelves(); return [...sh.rides, ...sh.always].find((r) => PKI + r.key === S.action) || null; })() : null;
     if (pkiE) { sel.name = pkiE.name + ' · ' + SHELF_LABEL[pkiE.shelf]; sel.text = pkiE.detail; sel.extra = 'Nothing to confirm: this one is here to read.'; }
-    if (pr) Object.assign(sel, pr.sel);
     // A technique (rules 1.12): its name and cost, what to pick next, then the engine's preview in words: each roll's
     // odds and damage, its notes, Momentum now → after, each unit's Pressure and state, any save and its TN.
-    if (tsel) {
-      const L = previewLines(cb, tPv), nm = tChip ? tChip.name : tId, ap = tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0;
-      sel.name = nm + ' · ' + ap + ' AP' + (tChip && tChip.rounds ? ' · ' + tChip.rounds : '');
-      sel.text = tAsk ? tAsk + (tChip ? ' ' + tChip.help : '') : tPv && !tPv.ok ? (tPv.why || 'Not now.') : [...L.odds, ...L.notes].join(' · ') || (tChip ? tChip.help : '');
-      sel.extra = tAsk ? '' : [...L.meters, ...L.saves].join(' · '); // (while asking for a pick, the engine's "Name a tile." says the same)
-    }
     // A Call: its name, cost and reach; what to pick next; then the engine's preview: its notes, the save and its TN.
-    if (cChip) {
-      const L = callLines(cb, cPv), who = cTgt ? (cTgt.id === cur.id ? 'To yourself. ' : 'To ' + cTgt.name + '. ') : '';
-      sel.name = cChip.name + ' · ' + cChip.apText + ' · within ' + cChip.reach;
-      sel.text = !cChip.ok ? cChip.why + ' ' + cChip.text : cAsk ? cAsk + ' ' + cChip.text : cPv && !cPv.ok ? who + (cPv.why || 'Not now.') : who + (L.notes.join(' ') || cChip.text);
-      const may = cTileKind === 'may' && !cTile ? (cId === 'call.cue' ? 'You may also click a free tile next to them: they step there.' : 'You may also click the tile they step to.') : cTile ? 'Tile ' + refOf(cTile) + '.' : '';
-      sel.extra = [L.save || cChip.save, L.gives, may, cChip.skillName + ' · step ' + cChip.step + ' of 3'].filter(Boolean).join(' · ');
-    }
     if (tpadOpen) {
       const n = tpadOpen.kind === 'watch' ? 'Hold a shot' : 'Techniques · ' + ((blocks.find((b) => b.hand === tpadOpen.hand) || {}).name || '');
       sel.name = n; sel.text = 'Pick one in the pad (arrow keys move, Enter picks), then its target on the map.'; sel.extra = '';
@@ -1114,17 +1189,10 @@ export class CombatLogic extends DCLogic {
       style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (t.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (t.why ? '; opacity: 0.45' : '') }));
     // A technique whose weapon has two of the properties it reads: the player picks which line applies (args.line).
     // what the technique's text lets you choose beyond the property line (Called Shot's part, Run Through's weapon left in…)
-    if (tsel && TECH_OPTS[tsel.id]) { const cur0 = techOptOf(tsel.id, S.techOpt) || ''; sel.toggles = [...sel.toggles, ...TECH_OPTS[tsel.id].map(([v, label, title]) => { const on = cur0 === v;
-      return { key: 'opt-' + (v || 'plain'), label: label + (on ? ' ✓' : ''), pressed: on ? 'true' : 'false', title, off: false, pick: () => this.setState({ techOpt: v }),
-        style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') }; })]; }
-    if (tsel && tChip && tChip.choices.length > 1) sel.toggles = [...sel.toggles, ...tChip.choices.map((c, i) => { const on = (S.techLine || tChip.choices[0].prop) === c.prop;
-      return { key: 'line-' + c.prop, label: c.prop.toUpperCase() + (on ? ' ✓' : ''), pressed: on ? 'true' : 'false', title: c.text, off: false, pick: () => this.setState({ techLine: i === 0 && !S.techLine ? null : c.prop }),
-        style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') }; })];
-    // Order's things: reload, stand up, pick up, and move from 3 points; one thing, two at 7 points.
-    if (cChip && cId === 'call.order') { const picks = orderPicks(S.callOpt, cChip.step); sel.toggles = [...sel.toggles, ...ORDER_THINGS.map(([id, label, title, at]) => { const on = picks.includes(id), locked = cChip.step < at;
-      return { key: 'order-' + id, label: label + (on ? ' ✓' : ''), pressed: on ? 'true' : 'false', title: locked ? 'From 3 points of ' + cChip.skillName + '.' : title + (orderMax(cChip.step) > 1 ? ' Two things an Order.' : ' One thing an Order (two from 7 points).'), off: locked,
-        pick: () => this.setState({ callOpt: orderToggle(this.state.callOpt, id, cChip.step), tile: null }),
-        style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (locked ? '; opacity: 0.45' : '') }; })]; }
+    // The flow's option steps as chips (Order's things, a technique's line and its options): the engine's choices.
+    if (flow && flow.chips.length) sel.toggles = [...sel.toggles, ...flow.chips.map((c) => ({ key: c.key, label: c.label + (c.on ? ' ✓' : ''), pressed: c.on ? 'true' : 'false', title: c.title, off: c.off,
+      pick: () => { if (!c.off) this.setState(c.pick); },
+      style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; ' + (c.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (c.off ? '; opacity: 0.45' : '') }))];
     sel.hasToggles = sel.toggles.length > 0;
     // The target's face exactly as its token draws it (an art library name resolved, never the raw id: a raw id was a
     // broken image on a black square), else its initials in the token's red frame.
@@ -1214,7 +1282,7 @@ export class CombatLogic extends DCLogic {
           stats: d.costText, hasWhy: !d.canBegin, why: d.beginWhy, lineStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: ' + d.ink,
           style: 'display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 8px 10px; border-radius: 8px; font-family: inherit; text-align: left; cursor: pointer; color: #E7EBF3; '
             + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
-      begin: () => { if (card && card.canBegin) { act({ type: 'combat/outburst', unitId: cur.id, design: card.id, hold: true, ...(this._mods && this._mods.length ? { mods: this._mods } : {}) }); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
+      begin: () => { if (card && card.canBegin) { const a = sendDescriptor(g, cur.id, 'outburst', { design: card.id, mode: 'begin', ...(S.mods && S.mods.length ? { mods: S.mods } : {}) }, me); if (a) act(a); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
       snap: () => this.setState({ obMode: 'snap', aim: null }),
       beginLabel: 'Begin' + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×' + STAGE_MULT[0],
       beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×' + STAGE_MULT[0] + ': hover to preview, click a tile to aim, then Confirm.',
@@ -1234,8 +1302,6 @@ export class CombatLogic extends DCLogic {
       style: 'min-height: 24px; padding: 0 8px; border-radius: 6px; font-family: inherit; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; '
         + (b.on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; color: #E7EBF3; box-shadow: 0 0 6px rgba(79, 200, 223, 0.4)' : b.ok ? 'border: 1px solid #1F4A55; background: transparent; color: #8BDEEE' : 'border: 1px dashed #2A3A48; background: transparent; color: #A3AEC2') }));
     sel.strokeBtns = pad.strokeBtns;
-    const hpB = hp ? { pump: hp.pump, steady: hp.steadyBtn, letgo: hp.letgo, feed: hp.feed, heartwatch: hp.watchBtn } : {};
-    const magicCant = !isMagic ? false : S.action === 'draw' ? true : S.action === 'evoke' ? !evV || !evV.ok : S.action === 'outburst' ? (obMode === 'snap' ? !hzPlan || !hzPlan.ok : !card || !card.canBegin) : S.action === 'release' ? !hzPlan || !hzPlan.ok : HEART_ACTS.includes(S.action) ? !hpB[S.action] || !hpB[S.action].ok : !simpleTry || !!simpleTry.err;
     // The HEART panel at the top of the Outbursts tab while holding: its buttons run the moves at once (Release picks the aim).
     if (encoreLend > 0) { sel.name += ' · FREE · ENCORE'; sel.extra = ((sel.extra || '') + ' Encore: this repeat is lent ' + encoreLend + ' AP.').trim(); }
     else if (encoreWaiting) sel.extra = ((sel.extra || '') + ' Encore: ' + encoreWords(encoreWaiting.key) + ' is free once (' + encoreWaiting.ap + ' AP lent)' + (encoreWaiting.started ? ' this turn.' : '.')).trim();
@@ -1247,9 +1313,9 @@ export class CombatLogic extends DCLogic {
     const bM = blocks.find((b) => b.hand === 'main'), bO = blocks.find((b) => b.hand === 'off');
     this._attackKeys = blocks.length ? [bM && bM.plain ? techAction('main', bM.plain.id) : null, bM ? padAction('main') : null, bO && bO.plain ? techAction('off', bO.plain.id) : null, bO ? padAction('off') : null, this._ids.has(TWATCH) ? TWATCH : null] : null;
     // ---------- the turn panel: your actions (YOUR TURN), or a compact card for whoever is acting ----------
-    const hasTarget = !!target && ([...ATTACKS, 'shove', 'analyze', 'paired'].includes(S.action) || (S.action === 'skill' && skFx.op === 'multi_shot') || !!(tsel && tTgt));
+    const hasTarget = !!target && ([...ATTACKS, 'shove', 'analyze', 'paired'].includes(S.action) || (S.action === 'skill' && skFx.op === 'multi_shot') || !!(tFlow && tFlow.picks.targetId));
     // A technique's target card reads the technique's own roll (its to-hit and terms), not a plain attack's.
-    if (target && tsel && tTgt && tPv) { const a0 = (tPv.attacks || []).find((a) => a.target === tTgt.id); if (a0 && a0.pv) { target.odds = a0.pv.ok ? 'Hit ' + a0.pv.pct + '% · need ' + a0.pv.need + ' (you roll d20 ' + fmt(a0.pv.toHit) + ')' + (a0.pv.rangePenalty ? ' · range ' + a0.pv.rangePenalty : '') + (a0.pv.cover ? ' · behind half cover −5' : '') : a0.pv.why; target.breakdown = a0.pv.ok ? hitBreakdown(a0.pv) : ''; } else if (!tPv.ok) { target.odds = tPv.why || 'Not now'; target.breakdown = ''; } }
+    if (target && tFlow && tFlow.picks.targetId) { const a0 = (tFlow.pv.rolls || []).find((a) => a.unit === tFlow.picks.targetId); if (a0 && a0.pv) { target.odds = a0.pv.ok ? 'Hit ' + a0.pv.pct + '% · need ' + a0.pv.need + ' (you roll d20 ' + fmt(a0.pv.toHit) + ')' + (a0.pv.rangePenalty ? ' · range ' + a0.pv.rangePenalty : '') + (a0.pv.cover ? ' · behind half cover −5' : '') : a0.pv.why; target.breakdown = a0.pv.ok ? hitBreakdown(a0.pv) : ''; } else if (!tFlow.pv.ok) { target.odds = tFlow.pv.why || 'Not now'; target.breakdown = ''; } }
     const tp = this.pres('tgt', hasTarget ? { ...target, id: tgtUnit.id } : null);
     const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs ? pad : null);
     // The technique pad (a weapon's Techniques, or Hold a shot): opens inside its row, as the glyph keyboard does; one at
@@ -1258,16 +1324,14 @@ export class CombatLogic extends DCLogic {
       + (c.reaction ? 'border: 1px dotted ' + (c.ok ? '#7F8BA1' : '#2E3A50') + '; background: transparent; color: ' + (c.ok ? '#C9D3E3' : '#7F8BA1') : c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1');
     const pt = this.pres('padT', padTV ? { ...padTV, groups: padTV.groups.map((gr) => ({ ...gr, chips: gr.chips.map((c) => ({ ...c, style: CHIP(c), disabled: c.ok ? 'false' : 'true', hasWhy: !c.ok, hasLine: !!c.line, hasMark: !!c.mark, hasRounds: !!c.rounds,
       reaction: c.reaction ? 'true' : 'false', aria: c.name + ', ' + (c.reaction ? 'a reaction' : c.apText) + (c.rounds ? ', ' + c.rounds : '') + (c.ok ? '' : ', not now: ' + c.why.replace(/\.$/, '')) + (c.markTitle ? '. ' + c.markTitle : ''), onKey: glyphKeyNav,
-      pick: () => { if (c.reaction) return toast(c.name + ' is a reaction: it happens by itself. ' + (c.why || c.help)); if (!c.ok) return toast(c.why); sfx('toggle'); this.setState({ action: c.action, techLine: null, techOpt: null, tile: null, target: needsAlly(c.id) ? null : this.state.target }); this.revealAction(); } })) })) } : null);
-    // A reload row the engine refuses (already full, no spare, AP short) can be read but not confirmed (review fix: a
-    // full magazine was dropped for 2 AP, or put back for 3).
-    const reloadWhy = ['reload', RELOAD_TAC, 'reload2', RELOAD2_TAC].includes(S.action) ? ((ITEMS.flatMap((gr) => gr[1]).find((it) => it[0] === S.action) || [])[4] || '') : '';
-    const cantConfirm = !!tpadOpen || (cId ? !cChip || !cChip.ok || !cPv || !cPv.ok || !!cAsk : false) || (tsel ? !tPv || !tPv.ok || !!tAsk : false) || isPerkInfo(S.action) || !!reloadWhy || !mineTurn || isMove || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (isMagic ? false : (pv && !pv.ok) || (S.action === 'stim' && !stimTarget) || (S.action === 'cover' && !coverSel) || (S.action === 'door' && !doorSel) || (S.action === 'pickup' && (!pickSel || !!pickWhy)) || (S.action === 'load' && !loadInfo) || (S.action === 'analyze' && !readSel && (!tgtUnit || !!tgtUnit.analyzedBy)) || (S.action === 'shove' && !tgtUnit) || (S.action === 'skill' && (!skRuns || !!skWhy || (skFx.op === 'multi_shot' && !tgtUnit))) || (S.action === 'paired' && !tgtUnit) || (ATTACKS.includes(S.action) && !pv));
+      pick: () => { if (c.reaction) return toast(c.name + ' is a reaction: it happens by itself. ' + (c.why || c.help)); if (!c.ok) return toast(c.why); sfx('toggle'); this.setState({ action: c.action, tile: null, target: needsAlly(c.id) ? null : this.state.target }); this.revealAction(); } })) })) } : null);
+    // On the flow, Confirm is the engine's verdict (the descriptor's preview, through the reducer); else the system's own.
+    const cantConfirm = !mineTurn || (flow ? !flow.ready : !(S.action === 'analyze' && readSel)); // the flow's verdict (the engine's); reading a glyph has its own
     const costNet = Math.max(0, cost - encoreLend);
     const apNow = mineTurn ? (ap - costNet < 0 ? 'needs ' + costNet + ' · ' + ap + ' left' : Math.round((ap - costNet) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
-    const seenCur = !!cur && seenFoe(cur), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
-    const wait = { kicker: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : !cur ? 'WAITING' : cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING FOR ' + String(curOwner ? curOwner.name : 'a player').toUpperCase(),
-      name: cb.over ? cb.name : !cur ? '' : seenCur ? cur.name : 'Unseen hostile', line: cb.over ? 'The fight is over.' : !cur ? '' : cur.side === 'foe' ? (seenCur ? 'Round ' + cb.round + ' · it moves' : 'Something moves out of sight') : 'Round ' + cb.round + ' · ' + (cur.downed ? 'Downed' : cur.ap + ' AP') + (curOwner && curOwner.id !== me ? ' · their move' : ''),
+    const seenCur = !!cur, unseenNow = !cur && !cb.over && isUnseenId(cb.window?.queue[0]?.unitId ?? cb.order[cb.turn]), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
+    const wait = { kicker: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : unseenNow ? 'HOSTILES ACTING' : !cur ? 'WAITING' : cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING FOR ' + String(curOwner ? curOwner.name : 'a player').toUpperCase(),
+      name: cb.over ? cb.name : unseenNow ? 'Unseen hostile' : !cur ? '' : seenCur ? cur.name : 'Unseen hostile', line: cb.over ? 'The fight is over.' : unseenNow ? 'Something moves out of sight' : !cur ? '' : cur.side === 'foe' ? (seenCur ? 'Round ' + cb.round + ' · it moves' : 'Something moves out of sight') : 'Round ' + cb.round + ' · ' + (cur.downed ? 'Downed' : cur.ap + ' AP') + (curOwner && curOwner.id !== me ? ' · their move' : ''),
       hasImg: !!(cur && seenCur && faceOf(cur)) && !cb.over, img: cur && seenCur ? faceOf(cur) : '', noImg: !(cur && seenCur && faceOf(cur)) || !!cb.over, short: cb.over ? (won ? '✓' : '✕') : cur && seenCur ? cur.short : '?',
       kickerStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: ' + curInk,
       imgStyle: 'width: 48px; height: 48px; object-fit: cover; background: #000; flex: none; ' + (cur && cur.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + curInk : 'border-radius: 6px; border: 2px solid ' + curInk),
@@ -1280,13 +1344,13 @@ export class CombatLogic extends DCLogic {
     // ---------- the action tabs (Move · Attack · Utility · Sigils · Outbursts): one family at a time, each scrolling on its
     // own inside the pinned column, so the grid (and every effect on it) stays in view whatever you pick ----------
     const tabOf = {}; groups.forEach((gr) => gr.items.forEach((a) => { tabOf[a.key] = gr.id; }));
-    if (tsel && tabOf[rowSel]) tabOf[S.action] = tabOf[rowSel]; // a technique picked from a pad lives in its row's tab
+    if (rowSel !== S.action && tabOf[rowSel]) tabOf[S.action] = tabOf[rowSel]; // a technique picked from a pad lives in its row's tab
     // Each weapon block's header (on its plain attack's row): the weapon's icon and name, and its meter.
     const headOf = {}; blocks.forEach((b) => { if (!b.plain && b.hand !== 'both' && !b.shield) return; headOf[b.hand === 'both' ? 'paired' : b.plain ? techAction(b.hand, b.plain.id) : padAction(b.hand)] = { hand: b.hand, name: b.name.toUpperCase() + (b.hand === 'both' ? '' : blocks.length > 1 ? ' · ' + (b.hand === 'main' ? 'MAIN HAND' : 'OFF HAND') : ''), icon: b.icon, hasIcon: !!b.icon,
       meter: b.meter, hint: b.meterHint, hasHint: !!b.meterHint, pips: b.pips.map((p) => ({ key: p.key, on: p.on ? 'true' : 'false', style: b.meterKind === 'guard' ? 'width: 8px; height: 11px; border-radius: 2px 2px 5px 5px; box-sizing: border-box; ' + (p.on ? 'background: #E7EBF3' : 'border: 1px solid #5B6577') : 'width: 9px; height: 9px; border-radius: 2px; transform: rotate(45deg); ' + (p.on ? 'background: #F68A38' : 'border: 1px solid #5B6577') })), hasPips: b.pips.length > 0, pipKind: b.meterKind || '' }; });
     const tabIds = groups.map((gr) => gr.id);
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
-      const seenHostile = foes.some((u) => !u.downed && vis.seen.has(u.id));
+      const seenHostile = foes.some((u) => !u.downed);
       // Holding an Outburst (rules 1.5): the turn opens on the heart (the swell has just landed; Pump or Release).
       S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
       this._tabAction = S.action; this._tabShown = S.tab; this._tabCls = '';
@@ -1296,6 +1360,9 @@ export class CombatLogic extends DCLogic {
     if (!tabIds.includes(S.tab)) S.tab = tabOf[S.action] || tabIds[0];
     if (mineTurn) tabMem(cur.charId, S.tab);
     this._tabs = tabIds; this._tabOf = tabOf;
+    // The two-key codes: each tab's actions in the order shown (the read-only perk rows have none).
+    this._tabItems = groups.map((gr) => gr.items.filter((x) => !isPerkInfo(x.key)).map((x) => x.key));
+    { const codeOf = {}; this._tabItems.forEach((ks, ti) => ks.forEach((k, ki) => { if (ti < 9 && ki < 9) codeOf[k] = String(ti + 1) + (ki + 1); })); this._codeOf = codeOf; }
     if (S.tab !== this._tabShown) { // flipping: the new tab's actions slide in from the side it sits on
       this._tabCls = this._tabShown == null ? '' : tabIds.indexOf(S.tab) > tabIds.indexOf(this._tabShown) ? 'phc-slide-in-right' : 'phc-slide-in-left'; this._tabShown = S.tab;
     }
@@ -1319,7 +1386,7 @@ export class CombatLogic extends DCLogic {
     // speaker has, its save and TN; greyed with the engine's reason when it can't be made now.
     const callRow = (a) => { const c = a.key.startsWith(CL) ? cChips.find((x) => x.action === a.key) : null; if (!c) return { isCall: false, notCall: true, call: null };
       const on = a.pressed === 'true';
-      return { isCall: true, notCall: false, call: { ...c, hasWhy: !c.ok, hasSave: !!c.save, disabled: c.ok ? 'false' : 'true', meta: c.apText + ' · ' + c.reach, to: 'TO ' + c.aimWord.toUpperCase() + ' · ' + c.skillName.toUpperCase() + ' · ' + c.stepText,
+      return { isCall: true, notCall: false, call: { ...c, hasIcon: !!c.icon, hasWhy: !c.ok, hasSave: !!c.save, disabled: c.ok ? 'false' : 'true', meta: c.apText + ' · ' + c.reach, to: 'TO ' + c.aimWord.toUpperCase() + ' · ' + c.skillName.toUpperCase() + ' · ' + c.stepText,
         aria: c.name + ', ' + c.apText + ', within ' + c.reach + ', to ' + c.aimWord + (c.ok ? '' : ', not now: ' + c.why.replace(/\.$/, '')),
         style: 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline; min-height: 44px; padding: 7px 10px; border-radius: 8px; text-align: left; font-family: inherit; cursor: pointer; '
           + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #E7EBF3' : c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1') } }; };
@@ -1330,7 +1397,7 @@ export class CombatLogic extends DCLogic {
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
       // Rules 1.14, the perk card in a fight: three shelves. USE NOW is the buttons below; the other two are lists to read.
       ...(tabG.id === 'perks' ? perkShelfVals(pkShelves(), tabG.items, rowSel) : { hasUse: false, useLabel: '', useHelp: '', shelves: [] }),
-      items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
+      items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), code: this._codeOf[a.key] || '', hasCode: !!this._codeOf[a.key], padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
     // Leon (8 Nov 2026): the whole action panel greys out until it is really your turn: someone else's turn, or the
     // enemies' moves still playing on screen after the engine has handed the turn back (Say stays usable).
     const holdUntil = mineTurn && typeof performance !== 'undefined' ? turnsBusyUntil() : 0, holding = holdUntil > performance.now();
@@ -1363,10 +1430,19 @@ export class CombatLogic extends DCLogic {
       padTCls: 'phc-a-rise' + pt.cls, padT: pt.val || { groups: [] }, padWShow: pw.show, padWCls: 'phc-a-rise' + pw.cls, padW: pw.val || {}, padDShow: pd.show, padDCls: 'phc-a-rise' + pd.cls, padD: pd.val || {},
       tgtList: tp.show ? [{ ...tp.val, key: 'tgt-' + tp.val.id, cls: 'phc-a-right' + tp.cls }] : [],
       cantConfirm, noConfirm: isPerkInfo(S.action), confirmText: S.action === 'draw' && isMagic ? 'Click a tile to draw' : S.action === 'pickup' && pickPile && pickSel ? pickupLabel(pickPile, pickUntick) : 'Confirm', confirmSfx: isMagic ? 'none' : undefined,
-      confirm: () => this.confirm(tgtUnit, attackMode, stimTarget), endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,
+      confirm: () => this.confirm(), endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn,
     };
     // The grid fits the room beside the pinned column (fitGrid measures; it runs again on resize and when the map changes).
     const zoom = this._zoom || 1, fitKey = cb.map.w + 'x' + cb.map.h;
+    // The camera: whose turn the screen shows, where this player's unit is, and the small map's picture; it binds to
+    // the page after the render.
+    { const mineU = (cur && cur.side === 'pc' && owner(cur) === me && !cur.dead ? cur : null) || cb.units.find((u) => u.side === 'pc' && owner(u) === me && !u.dead) || cb.units.find((u) => u.side === 'pc' && !u.dead);
+      CAM.myTurn = !!mineTurn; CAM.home = mineU ? mineU.pos : null; CAM.overview = !!this._overview;
+      const shown = cb.units.filter((u) => !u.dead), nPc = shown.filter((u) => u.side === 'pc').length, nFoe = shown.length - nPc;
+      this._mini = { solid: cb.map.solid || [], full: Object.keys(covers).filter((k) => covers[k].kind === 'full'), half: Object.keys(covers).filter((k) => covers[k].kind !== 'full'),
+        dots: shown.map((u) => ({ key: u.pos, color: ring(u), me: !!mineU && u.id === mineU.id, square: u.side !== 'pc' })),
+        label: nPc + (nPc === 1 ? ' squad member' : ' squad members') + ', ' + nFoe + (nFoe === 1 ? ' hostile' : ' hostiles') + ' in sight' };
+      if (typeof requestAnimationFrame !== 'undefined' && !this._camRaf) this._camRaf = requestAnimationFrame(() => { this._camRaf = 0; if (LIVE === this) this.camSync(); }); }
     if (fitKey !== this._fitKey && typeof requestAnimationFrame !== 'undefined') { this._fitKey = fitKey; requestAnimationFrame(() => this.fitGrid()); }
     // ---------- the column hidden: a mini-bar keeps the turn playable ----------
     const hidden = PANEL_HIDDEN;
@@ -1385,13 +1461,16 @@ export class CombatLogic extends DCLogic {
     return {
       ...lightboxVals(this), zoomPc: zoomer(this, who.img, who.name, 'portrait'), who, legend, turnPanels,
       gridLeave: () => { if (this.state.hover != null) this.setState({ hover: null }); }, // the stroke tip and lit stroke go with the cursor
-      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (hidden ? '; margin: 0 auto 0 0' : ''),
+      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (this._camNeeded && !this._overview && !CAM.miniHidden ? '; margin-right: ' + Math.round(MINI_SLACK / zoom) + 'px' : ''),
+      // The map's window (the camera): the grid scrolls inside it when it is bigger.
+      camStyle: 'flex: none; max-width: ' + (this._view ? this._view.w + 'px' : '100%') + (this._view ? '; max-height: ' + this._view.h + 'px' : ''),
+      camLabel: 'The map. Drag it, or use the arrow keys or W A S D, to look around; Home goes back to your unit; M shows the whole map.',
       // The Proving Ground's tools tab sits on the right edge: keep the action column clear of it.
       rowStyle: 'flex: 1 1 auto; min-height: 0; display: flex; padding: 0 ' + (g.sandbox ? 60 : 24) + 'px 12px 24px' + (lay.swap ? '; flex-direction: row-reverse' : ''), lay,
       // Room around the grid inside its scrolling column (top and right) for the hover chips over edge tiles.
       mz: this.zoomVals(),
       // A big Manual size never pushes the action zone below its minimum: the map scrolls inside its zone instead.
-      leftStyle: (hidden || LAYOUT.width ? '' : 'max-width: calc(100% - ' + (ASIDE_MIN + 12) + 'px); ') + 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : Math.ceil((48 * cb.map.w + 36) * zoom + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
+      leftStyle: (hidden || LAYOUT.width ? '' : 'max-width: calc(100% - ' + (ASIDE_MIN + 12) + 'px); ') + 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : ((this._view ? this._view.col || this._view.w : Math.ceil((48 * Math.min(cb.map.w, REF_W) + 36) * zoom)) + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
       // On your turn the turn box takes the room under the Say row (its tab panel is what shrinks); the You card above
       // it is capped (CSS .phc-mine) and scrolls on its own, so the Say row, YOUR TURN and Confirm never scroll away.
       // With a panel moved into the action column (the forecast, the legend or the log) the turn box keeps a floor of
@@ -1429,67 +1508,49 @@ export class CombatLogic extends DCLogic {
   }
 
   tileClick(k) {
+    // In the overview a click on a tile goes back to the camera, centred there; it never acts.
+    if (this._overview) { this.toggleOverview(k); return; }
     const S = this.state, g = getState().game, cb = castFight(g, g.combat, ART), cur = active(cb);
     if (MAGIC.includes(S.action) && cur && cur.mg) return this.magicClick(k, cur);
     const u = cb.units.find((x) => x.pos === k && !x.dead);
     // A perk action that wants a target or a tile takes the click (an ally, anyone, or the tile itself).
     // Its own target first; then a picker's grid field (a second tile, another unit); else the click re-aims the target.
     if (this._vow && this._vow.click(u)) return;
-    if (this._pr && cur) { const patch = this._pr.click(u, k); if (patch) return this.setState(patch); }
-    if (this._pk && cur) {
-      const p = this._pk, t = p.e.target, other = !!u && u.id !== cur.id, primary = other && (t === 'unit' || t === 'enemy' || t === 'npc' || (t === 'ally' && u.side === 'pc'));
-      if (primary && !p.target) return this.setState({ target: u.id });
-      if (t === 'tile' && !S.tile) return this.setState({ tile: k });
-      if (p.P) { const nv = gridPick(p.P, p.V, other ? { id: u.id, side: u.side } : null, k); if (nv) return this.setState({ pkForm: { key: S.action, v: nv } }); }
-      if (primary) return this.setState({ target: u.id });
-      if (t === 'tile') return this.setState({ tile: k });
+    // A perk's form takes a grid click for its own fields (a second tile, another unit) once the move's target is picked.
+    if (this._pk && this._pk.P && cur && (this._pk.target || this._pk.e.target === 'none' || (this._pk.e.target === 'tile' && S.tile))) {
+      const p = this._pk, other = !!u && u.id !== cur.id, nv = gridPick(p.P, p.V, other ? { id: u.id, side: u.side } : null, k);
+      if (nv) return this.setState({ pkForm: { key: S.action, v: nv } });
     }
     // Rules 1.10: Analyze aimed at a tile holding a hostile glyph or a trace reads it (combat/read).
     if (S.action === 'analyze' && !(u && u.side === 'foe') && this._readHere && this._readHere(k).length) return this.setState({ readTile: k, target: null });
-    // A technique (rules 1.12) takes the click by what it aims at: an enemy, a tile, an ally (enemy+tile: the enemy first).
-    const tq = parseTech(S.action);
-    if (tq && cur) {
-      const other = !!u && u.id !== cur.id;
-      if (needsAlly(tq.id)) { if (other && u.side === cur.side) this.setState({ target: u.id }); return; }
-      if (needsEnemy(tq.id) && other && (!needsTile(tq.id) || u.side !== cur.side || !S.target)) return this.setState({ target: u.id, readTile: null });
-      if (needsTile(tq.id)) return this.setState({ tile: k });
-      return;
-    }
-    // A Call takes the click by its aim: an enemy, an ally or yourself; an empty tile where the Call takes one.
-    const cl = this._call;
-    if (cl && cur && parseCall(S.action)) {
-      if (u && callTakes(cl.chip.aim, cur, u)) return this.setState({ target: u.id === cur.id ? null : u.id, tile: null, readTile: null });
-      if (!u && cl.tileKind) return this.setState({ tile: S.tile === k ? null : k });
-      return;
-    }
+    // The flow (game/actionFlow.ts): the click is the descriptor's next pick (a unit, a tile), if it is one of its choices.
+    if (this._flow && cur) { const patch = this._flow.click(u ? { id: u.id, side: u.side } : null, k); if (patch) return this.setState(patch); }
     // With a pad open, a foe clicked is the target the technique will take (the pad stays open).
     if (padOf(S.action) && u && u.side === 'foe') return this.setState({ target: u.id });
     if (u && u.side === 'foe') { const a = [...ATTACK_MODES, 'shove', 'analyze', 'skill', 'paired'].includes(S.action) ? S.action : plainAction(cur); this.setState({ target: u.id, readTile: null, action: a, ...this.tabFor(a) }); return; }
-    if (u && u.side === 'pc' && S.action === 'stim') { this.setState({ target: u.id }); return; }
-    // Anyone is a target (spec: Anyone is a target): an ally under an attack action is friendly fire.
-    if (u && u.side === 'pc' && cur && u.id !== cur.id && [...ATTACK_MODES, 'shove', 'paired'].includes(S.action)) { this.setState({ target: u.id }); return; }
-    if (S.action === 'cover' || S.action === 'pickup' || S.action === 'door') { this.setState({ tile: k }); return; }
+    if (S.action === 'pickup') { this.setState({ tile: k }); return; } // a pile out of reach: its way there is shown
     if (objectsOf(cb).some((o) => o.pos === k && o.hp > 0) && isAttackMode(S.action)) { this.setState({ action: 'cover', tile: k, ...this.tabFor('cover') }); return; }
     if (!['move', 'sprint', 'disengage'].includes(S.action) || !cur) return;
-    act({ type: 'combat/move', unitId: cur.id, to: k, how: S.action, ...(this._mods && this._mods.length ? { mods: this._mods } : {}) });
+    // A move's tile is its descriptor's one pick, sent at once (the engine builds the action and its switches).
+    const mv = sendDescriptor(g, cur.id, S.action, { tile: k, ...(S.mods && S.mods.length ? { mods: S.mods } : {}) }, getState().me.id);
+    if (mv) act(mv);
     this.setState({ hover: null });
   }
 
   /** A held heart's move (rules 1.5): Pump, Steady, Let go, Feed, Heart Overwatch on or off. */
   heartAct(id) {
-    const cb = getState().game?.combat, cur = cb && active(cb); if (!cur || !cur.mg) return;
-    if (id === 'heartwatch') return act({ type: 'combat/heartwatch', unitId: cur.id, on: !(cur.mg.held && cur.mg.held.watch) });
-    // Rules 1.8: a feeling pump ('pump:<feeling>') and Revert Pump.
-    if (id.startsWith('pump:') || ['pump', 'steady', 'feed', 'revert'].includes(id)) this.revealHeart(); // what changed, in view
-    if (id.startsWith('pump:')) return act({ type: 'combat/pump', unitId: cur.id, feeling: id.slice(5), ...(this._mods && this._mods.length ? { mods: this._mods } : {}) });
-    if (id === 'revert') return act({ type: 'combat/revert', unitId: cur.id });
-    if (['pump', 'steady', 'letgo', 'feed'].includes(id)) act({ type: 'combat/' + id, unitId: cur.id, ...(id === 'pump' && this._mods && this._mods.length ? { mods: this._mods } : {}) });
-    if (id === 'letgo') this.setState({ action: 'outburst', aim: null, obMode: 'begin' });
+    const g = getState().game, cb = g?.combat, cur = cb && active(cb); if (!cur || !cur.mg) return;
+    // Rules 1.8: a feeling pump ('pump:<feeling>') and Revert Pump. What each sends is the engine's descriptor.
+    const [aid, feeling] = id.startsWith('pump:') ? ['pump', id.slice(5)] : [id, null];
+    if (aid !== 'heartwatch' && aid !== 'letgo') this.revealHeart(); // what changed, in view
+    const a = sendDescriptor(g, cur.id, aid, { ...(feeling ? { feeling } : {}), ...(this.state.mods && this.state.mods.length ? { mods: this.state.mods } : {}) }, getState().me.id);
+    if (a) act(a);
+    if (aid === 'letgo') this.setState({ action: 'outburst', aim: null, obMode: 'begin' });
   }
   /** A tile click while a spell is chosen: draw there, pick a pattern, or aim. */
   magicClick(k, cur) {
     const S = this.state, m = this._mg || {}, g = getState().game, cb = g.combat;
-    if (S.action === 'draw') { if (m.word) { act({ type: 'combat/draw', unitId: cur.id, word: m.word, tile: k, ...(m.stroke ? { stroke: m.stroke } : {}) }); if (S.stroke) this.setState({ stroke: null }); } return; }
+    if (S.action === 'draw') { if (m.word) { const a = sendDescriptor(g, cur.id, 'draw', { word: m.word, tile: k, ...(m.stroke ? { stroke: m.stroke } : {}) }, getState().me.id); if (a) act(a); if (S.stroke) this.setState({ stroke: null }); } return; }
     if (S.action === 'evoke') {
       const r = evokeClick(m.evTile ? m.evV || null : null, cb, cur, k, S.evc || {});
       if (r.pattern !== undefined) return (m.seenGlyph && m.seenGlyph(r.pattern)) ? this.setState({ glyphTile: r.pattern, evc: {}, sgToast: '' }) : undefined; // only a glyph you can see picks a pattern
@@ -1500,61 +1561,23 @@ export class CombatLogic extends DCLogic {
     if (S.action === 'release') return this.setState({ aim: k });
   }
 
-  confirm(tgt, mode, stimTarget) {
+  confirm() {
     const cur = active(getState().game.combat), a = this.state.action, S = this.state, m = this._mg || {};
     if (isPerkInfo(a)) return; // a row to read: nothing to run (and never an attack on the picked target)
-    // Physical 2.0: a pad row runs nothing (pick a technique first); a technique sends combat/technique with what was
-    // picked, and never falls through to a plain attack below (code map, trap 1).
+    // The flow: Confirm sends the engine's action for the picks (null: not ready; the panel says why).
+    if (this._flow) {
+      const f = this._flow; if (!f.action) return;
+      if (HEART_ACTS.includes(a) && a !== 'heartwatch' && a !== 'letgo') this.revealHeart();
+      act(f.action);
+      // what each panel clears once its action is sent (the Evoke planner, the Outburst's aim; a Begin goes on to Pump)
+      const after = a === 'evoke' ? { glyphTile: null, aim: null, evc: null, sgToast: '' } : a === 'outburst' ? { aim: null, obMode: 'begin', ...(S.obMode === 'snap' ? {} : { action: 'pump' }) }
+        : a === 'release' ? { aim: null } : a === 'letgo' ? { action: 'outburst', aim: null, obMode: 'begin' } : {};
+      return this.setState({ ...f.after, pickUntick: null, ...after });
+    }
+    // Physical 2.0: a pad row runs nothing (pick a technique first).
     if (padOf(a)) return;
-    if (parseCall(a)) {
-      const c = this._call; if (!cur || !c || !c.chip.ok || !c.tgt || !c.pv || !c.pv.ok || c.ask) return;
-      act({ type: 'combat/call', unitId: cur.id, id: c.id, targetId: c.tgt.id, ...(c.tile ? { tile: c.tile } : {}), ...(c.opt ? { opt: c.opt } : {}) });
-      return this.setState({ tile: null });
-    }
-    const tq = parseTech(a);
-    if (tq) {
-      const t = this._tech; if (!cur || !t || !t.pv || !t.pv.ok || t.ask) return;
-      act({ type: 'combat/technique', unitId: cur.id, id: tq.id, hand: tq.hand, ...(tq.item != null ? { item: tq.item } : {}), ...(t.tgt ? { targetId: t.tgt.id } : {}), ...(t.ally ? { allyId: t.ally.id } : {}), ...(t.tile ? { tile: t.tile } : {}), ...(t.line ? { line: t.line } : {}), ...(t.opt ? { opt: t.opt } : {}), ...(this._mods && this._mods.length ? { mods: this._mods } : {}) });
-      return this.setState({ tile: null });
-    }
-    if (MAGIC.includes(a) && cur && cur.mg) {
-      if (a === 'evoke') { if (m.evV && m.evV.payload) act({ type: 'combat/evoke', unitId: cur.id, ...m.evV.payload }); return this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }); }
-      const mx = this._mods && this._mods.length ? { mods: this._mods } : {};
-      if (a === 'outburst') { if (m.design) act(S.obMode === 'snap' ? { type: 'combat/outburst', unitId: cur.id, design: m.design, aim: S.aim || cur.pos, hold: false, ...mx } : { type: 'combat/outburst', unitId: cur.id, design: m.design, hold: true, ...mx }); return this.setState({ aim: null, obMode: 'begin', ...(S.obMode === 'snap' ? {} : { action: 'pump' }) }); }
-      if (HEART_ACTS.includes(a)) return this.heartAct(a);
-      if (a === 'release') { act({ type: 'combat/release', unitId: cur.id, aim: S.aim || undefined, ...mx }); return this.setState({ aim: null }); }
-      if (['scuff', 'vent', 'core', 'syphon', 'crystallise'].includes(a)) return act({ type: 'combat/' + a, unitId: cur.id });
-      return;
-    }
     if (MAGIC.includes(a)) return; // a spell for a unit with no magic is never an attack
-    if (parsePray(a)) { const p = this._pr; if (p && p.ready) act(p.payload); return this.setState({ target: null, target2: null, tile: null }); }
-    const pk = parsePk(a);
-    if (pk) { const p = this._pk; act({ type: 'combat/perk', unitId: cur.id, id: pk.id, ...(p && p.args ? p.args : { actionId: pk.actionId }), ...(p && p.e.arm ? { arm: true } : {}) }); return this.setState({ pkForm: null }); }
-    if (a === 'reload') return act({ type: 'combat/reload', unitId: cur.id });
-    if (a === RELOAD_TAC) return act({ type: 'combat/reload', unitId: cur.id, tactical: true });
-    if (a === 'reload2') return act({ type: 'combat/reload', unitId: cur.id, hand: 'both' });
-    if (a === RELOAD2_TAC) return act({ type: 'combat/reload', unitId: cur.id, hand: 'both', tactical: true });
-    if (a === 'hide') return act({ type: 'combat/hide', unitId: cur.id });
-    if (a === 'extinguish') return act({ type: 'combat/extinguish', unitId: cur.id });
-    if (a === 'escape') return act({ type: 'combat/escape', unitId: cur.id });
-    if (a === 'recover') return act({ type: 'combat/recover', unitId: cur.id });
-    if (a === 'prone') return act({ type: 'combat/prone', unitId: cur.id });
-    if (a === 'skill') return act({ type: 'combat/skill', unitId: cur.id, targetId: tgt ? tgt.id : undefined });
-    if (a === 'paired') return tgt && act({ type: 'combat/paired', unitId: cur.id, targetId: tgt.id });
-    if (a === 'repair') return act({ type: 'combat/repair', unitId: cur.id });
-    if (a === 'song') return act({ type: 'combat/song', unitId: cur.id });
-    if (a === 'brace') return act({ type: 'combat/brace', unitId: cur.id });
-    if (a === 'pullfree') { const ts = pullFreeTargets(getState().game.combat, cur), t = (tgt && ts.find((x) => x.id === tgt.id)) || ts[0]; return t && act({ type: 'combat/pull-free', unitId: cur.id, targetId: t.id }); }
-    if (a === 'overwatch') { const w = WEAPON[cur.weapon]; return act({ type: 'combat/overwatch', unitId: cur.id, mode: isMelee(w) ? 'melee' : 'shot' }); }
-    if (a === 'shove') return tgt && act({ type: 'combat/shove', unitId: cur.id, targetId: tgt.id });
-    if (a === 'clear') return act({ type: 'combat/clear', unitId: cur.id });
+    // Rules 1.10: Analyze aimed at a glyph or a trace reads it (its own path: the descriptor's pick is a unit).
     if (a === 'analyze' && S.readTile) { act({ type: 'combat/read', unitId: cur.id, tile: S.readTile }); return this.setState({ readTile: null }); }
-    if (a === 'analyze') return tgt && act({ type: 'combat/analyze', unitId: cur.id, targetId: tgt.id });
-    if (a === 'cover') return act({ type: 'combat/shoot-cover', unitId: cur.id, tile: this.state.tile });
-    if (a === 'door') return act({ type: 'combat/door', unitId: cur.id, tile: this.state.tile });
-    if (a === 'pickup') { const pk = this._pick; if (!pk) return; act({ type: 'combat/pickup', unitId: cur.id, tile: pk.tile, ...(pk.take ? { take: pk.take } : {}) }); return this.setState({ pickUntick: null, tile: null }); }
-    if (a === 'load') return act({ type: 'combat/load', unitId: cur.id });
-    if (a === 'stim') return stimTarget && act({ type: 'combat/stim', unitId: cur.id, targetId: stimTarget.id });
-    if (tgt) act({ type: 'combat/attack', unitId: cur.id, targetId: tgt.id, mode, ...(this._mods && this._mods.length ? { mods: this._mods } : {}) });
   }
 }

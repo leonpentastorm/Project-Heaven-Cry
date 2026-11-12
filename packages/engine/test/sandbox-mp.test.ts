@@ -2,7 +2,7 @@
 // Retry for all, leaving, team fights, and never any Narrator work.
 import { describe, expect, it } from 'vitest';
 import {
-  ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, sandboxScale, sandboxReady, viewFor, maxHp, npcsOf, SANDBOX_PORTRAIT, active, visibility, standable, zoneMap,
+  ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, sandboxScale, sandboxReady, viewFor, maxHp, npcsOf, SANDBOX_PORTRAIT, active, visibility, standable, zoneMap, dist,
 } from '../src';
 
 const sheetFrom = (archId: string, name: string, kit = 'soldier'): Sheet => {
@@ -202,12 +202,16 @@ describe('team fight', () => {
     expect(g.phase).toBe('combat'); quiet(g);
     const a = g.combat!.units.find((u) => g.characters[u.charId!]?.owner === HOST)!, b = g.combat!.units.find((u) => g.characters[u.charId!]?.owner === P2)!;
     expect(a.side).toBe('pc'); expect(b.side).toBe('foe'); expect(b.charId).toBeTruthy();
-    expect(Number(a.pos.split(',')[0])).toBeLessThan(4); expect(Number(b.pos.split(',')[0])).toBeGreaterThan(11);
+    expect(Number(a.pos.split(',')[0])).toBeLessThan(8); expect(Number(b.pos.split(',')[0])).toBeGreaterThan(17); // west and east of the 26 × 26 yard (rules 1.16)
+    expect(dist(a.pos, b.pos)).toBeGreaterThanOrEqual(10); expect(dist(a.pos, b.pos)).toBeLessThanOrEqual(14);
     // The active unit is a player's (no enemy AI ran Team B).
     expect(active(g.combat!)!.charId).toBeTruthy();
     const vb = viewFor(g, P2), va = viewFor(g, HOST);
-    expect(vb.combat!.units.find((u) => u.id === b.id)!.side).toBe('pc'); expect(vb.combat!.units.find((u) => u.id === a.id)!.side).toBe('foe');
-    expect(va.combat!.units.find((u) => u.id === b.id)!.side).toBe('foe');
+    // Each team's view holds the other team only where it sees it (fog of war in the engine, fog.ts, 12 Nov 2026).
+    const bSeesA = visibility(g.combat!, 'foe').seen.has(a.id), aSeesB = visibility(g.combat!, 'pc').seen.has(b.id);
+    expect(vb.combat!.units.find((u) => u.id === b.id)!.side).toBe('pc'); expect(vb.combat!.units.find((u) => u.id === a.id)?.side).toBe(bSeesA ? 'foe' : undefined);
+    expect(va.combat!.units.find((u) => u.id === b.id)?.side).toBe(aSeesB ? 'foe' : undefined);
+    if (!bSeesA) expect(JSON.stringify({ ...vb.combat, log: [] })).not.toContain('"' + a.id + '"');
     // Fog per team: Team B's eyes are its own units.
     const vis = visibility(vb.combat!, 'pc'); expect(vis.tiles.has(b.pos)).toBe(true);
     // Team B's player acts on their own turn; Team A's player can't move Team B.

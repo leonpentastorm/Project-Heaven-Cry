@@ -18,18 +18,20 @@ import { isTrap } from '../objects';
 import { HEARING } from '../tactics';
 import { applyCond } from '../magic';
 import { SKILL, WEAPON } from '../data';
-import { d20 } from '../rng';
 import { npcsOf, sideRollMod } from '../game';
 import { foreseeVote } from '../game';
 import './briefs';
+import { overworld, say } from '../kit';
+import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
+import { loseAp } from '../effects/cost';
+import { stagger } from '../unitstate';
+import { restoreConds } from '../magic';
 
 // ---------- small helpers ----------
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
 const gOf = (h: Holder): any => h.g ?? boundGame();
 const sceneN = (h: Holder) => gOf(h)?.story?.scene?.n ?? 0;
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 const clip = (s: any, n = 120) => String(s ?? '').replace(/\s+/g, ' ').trim().slice(0, n);
 /** The item's story state (engine-only; kept on g.story.ps[charId], fights included, so a scene's use reaches its fight). */
 function sst(h: Holder): Record<string, any> {
@@ -185,14 +187,23 @@ register({
 });
 
 // ---------- Crowd Pleaser (Charisma 3/5): one roll for a whole crowd at +2; II: turn it against one named person ----------
-// Story: +2 Charisma on a check tagged crowd (or applies crowd_pleaser); the one roll is the Narrator's (one check).
-// Combat (PROVISIONAL): a Persuade or Threaten heard by 3+ enemies is one roll for all of them, its save TN +2.
+// Story: +2 Charisma on a check made to a crowd; the one roll is the Narrator's (one check). A crowd (rules 1.14, spec
+// item 1108, PROVISIONAL) is 3 or more listeners within 8 tiles: the engine counts the people on the area map around
+// the speaker (hostile or neutral, not hidden) by itself; with no map the Narrator tags the check crowd (or applies
+// crowd_pleaser). Combat (PROVISIONAL): a Persuade or Threaten heard by 3+ enemies is one roll for all of them, its save TN +2.
+const CROWD = 3;
+/** Is the holder talking to a crowd: the Narrator said so, or 3 or more people on the area map are within earshot. Read only. */
+function crowdHere(ctx: any, h: Holder): boolean {
+  if (tagsOf(ctx).includes('crowd') || appliesTo(ctx.ck, 'crowd_pleaser')) return true;
+  const g = gOf(h), at = h.c ? g?.story?.positions?.[h.c.id] : null; if (!at || g?.phase === 'combat') return false;
+  return ((g.story.npcs || []) as any[]).filter((n) => n && n.pos && !n.hidden && dist(at, n.pos) <= HEARING).length >= CROWD;
+}
 register({
   id: 'crowd_pleaser',
   claims: ['skill_mod'], narrator: ['narrator'],
   on: {
-    check_mod: (ctx, h) => { if (ctx.c === h.c && hasSkill(ctx.ck, 'charisma') && (tagsOf(ctx).includes('crowd') || appliesTo(ctx.ck, 'crowd_pleaser'))) addOnce(ctx, 2, 'Crowd Pleaser'); },
-    check_result: (ctx, h) => { if (ctx.c === h.c && tierII(h) && ctx.roll?.ok && (tagsOf(ctx).includes('crowd') || appliesTo(ctx.ck, 'crowd_pleaser'))) ruling(h, 'Crowd Pleaser II: the crowd is won; ' + h.c!.name + ' may turn it against one named person (ask or let them say who).'); },
+    check_mod: (ctx, h) => { if (ctx.c === h.c && hasSkill(ctx.ck, 'charisma') && crowdHere(ctx, h)) addOnce(ctx, 2, 'Crowd Pleaser'); },
+    check_result: (ctx, h) => { if (ctx.c === h.c && tierII(h) && ctx.roll?.ok && hasSkill(ctx.ck, 'charisma') && crowdHere(ctx, h)) ruling(h, 'Crowd Pleaser II: the crowd is won; ' + h.c!.name + ' may turn it against one named person (ask or let them say who).'); },
     parley: (ctx, h) => {
       if (ctx.u !== h.u || !h.cb || (ctx.kind !== 'persuade' && ctx.kind !== 'threaten')) return;
       const crowd = h.cb.units.filter((t) => t.side !== h.u!.side && alive(t) && !t.surrendered && dist(h.u!.pos, t.pos) <= HEARING);
@@ -262,7 +273,7 @@ register({
     turn_start: (ctx, h) => { if (ctx.u === h.u && h.u?.ps?.[h.key]) delete (h.u.ps[h.key] as any).hint; },
     enemy_action_start: (ctx, h) => {
       const st = h.u?.ps?.[h.key] as any; if (!st?.fooled || ctx.u.id !== st.fooled) return;
-      delete st.fooled; ctx.skip = true; ctx.u.ap = Math.max(0, ctx.u.ap - 2);
+      delete st.fooled; ctx.skip = true; loseAp(ctx.u, 2);
       say(h.cb, ctx.u.name + ' acts on the false meaning and loses its first action (Double Meaning).');
     },
   },
@@ -272,7 +283,8 @@ register({
 // ---------- Old Tongue (Lore Master 3/5): read any ancient or upper-realm script; II: speak it, one parley per being ----------
 // Story: a check tagged ancient_script (or applies old_tongue) is an automatic success for the holder: they read it.
 // II: 'Speak the Old Tongue' (story, and in a fight against an upper-realm being): once per being, it parleys. In a
-// fight (PROVISIONAL) it holds its next turn's attacks while it listens; the words go to the Narrator. It gives parley
+// fight (PROVISIONAL) it holds its next turn's attacks while it listens (rules 1.14, spec item 1109: no attack, spell
+// or technique on that turn, but it may move; it used to lose the whole turn); the words go to the Narrator. It gives parley
 // when met, never summons a Celestial (the Accords), and what scripts reveal stays inside the Veil.
 const parleyed = (h: Holder): string[] => (sro(h).beings || []);
 register({
@@ -302,8 +314,11 @@ register({
       },
       run: (h, a) => {
         const t = h.cb!.units.find((x) => x.id === a.targetId)!; (sst(h).beings ||= []).push(t.npcId || t.name);
+        // Holding its attacks is the 'hold' order of Commanded (the enemy's turn: no attack, spell or technique; it may
+        // move), put on with no save and by nobody's Heart magic, so nothing that stops a condition stops the parley.
+        restoreConds(t, { commanded: Math.max(t.conds?.commanded || 0, 1) }, undefined, undefined, { commanded: 'hold' });
         stateOf(h).listening = t.id;
-        say(h.cb, h.u!.name + ' speaks to ' + t.name + ' in the old tongue (Old Tongue): it stops to listen.');
+        say(h.cb, h.u!.name + ' speaks to ' + t.name + ' in the old tongue (Old Tongue): it holds its attacks on its next turn and listens.');
         note(h, t.name + ' (upper-realm) parleys with ' + h.u!.name + (a.text ? ': "' + clip(a.text, 160) + '"' : '') + '. Rule what it agrees to.');
       },
     },
@@ -314,7 +329,7 @@ register({
     check_post: (ctx, h) => { if (ctx.c === h.c && (tagsOf(ctx).includes('ancient_script') || appliesTo(ctx.ck, 'old_tongue')) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('OLD TONGUE'); } },
     enemy_action_start: (ctx, h) => {
       const st = h.u?.ps?.[h.key] as any; if (!st?.listening || ctx.u.id !== st.listening) return;
-      delete st.listening; ctx.skip = true; ctx.u.ap = 0; say(h.cb, ctx.u.name + ' holds its attacks and listens (Old Tongue).');
+      delete st.listening; say(h.cb, ctx.u.name + ' holds its attacks and listens (Old Tongue).');
     },
   },
   brief: (h) => 'reads any ancient or upper-realm script (tag such checks ancient_script)' + (tierII(h) ? '; speaks it: one parley per being' : '') + '; within the Veil',
@@ -428,7 +443,6 @@ register({
 // a named, important or supernatural listener on the map (an elite or boss, or upper-realm or cursed) makes a Heart save,
 // d20 + its tier's save vs 12 + your Insinuation strength, rolled by the engine; Celestials are immune (the Accords).
 // A directly self-harmful suggestion is refused (the use comes back).
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 register({
   id: 'their_own_idea',
   narrator: 'all',
@@ -449,8 +463,8 @@ register({
       const who = t ? t.name : r!.name, n: any = t ? { tier: t.tier, kind: t.kind } : r!.npc;
       let save = '';
       if (n && (['elite', 'boss'].includes(n.tier) || ['upper_realm', 'cursed'].includes(n.kind || ''))) {
-        const die = d20(rng), m = TIER_SAVE[n.tier] ?? 0, tn = 12 + (h.c ? strengthOf(h.c, 'implication') : 0), ok = die === 20 || (die !== 1 && die + m >= tn);
-        save = ' · ' + who + ' HEART SAVE d20 ' + die + ' +' + m + ' = ' + (die + m) + ' vs ' + tn + (ok ? ': resists' : ': takes it');
+        const rv = rollVs(null, rng, { mod: tierSave(n.tier), tn: SAVE_TN + (h.c ? strengthOf(h.c, 'implication') : 0), lead: 'HEART SAVE' }), ok = rv.ok;
+        save = ' · ' + who + ' ' + rv.text + (ok ? ': resists' : ': takes it');
         if (ok) { if (inFight(h)) say(h.cb, h.u!.name + ' plants an idea in ' + who + save + '.'); else entry(g, { kind: 'check', charId: h.c!.id, ok: false, to: h.c!.owner, head: 'THEIR OWN IDEA · ' + save.slice(3).toUpperCase(), text: who + ' doesn\'t take the bait.' }); return; }
       }
       if (inFight(h)) { say(h.cb, h.u!.name + ' plants an idea in ' + who + ' (Their Own Idea)' + save + '.'); return raiseWords(h, { text: textArg(a), ask: 'Their Own Idea: ' + who + ' believes this is their own idea and acts on it. Refuse if it would harm them directly (the use comes back).', targetId: a.targetId, private: true, per: 'per_scene', actionId: 'suggest' }); }
@@ -586,7 +600,7 @@ register({
       const hit = ctx.hit ?? (!fumble && (crit || ctx.die + ctx.toHit >= ctx.need));
       const w = WEAPON[h.u!.weapon], melee = !w || isMelee(w) || ctx.mode === 'melee';
       if (hit) { ctx.critMin = Math.min(ctx.critMin, ctx.die); ctx.hit = true; say(h.cb, h.u!.name + ' goes double or nothing: the hit is a critical (Gambler).'); }
-      else { ctx.hit = false; if (!melee && canJam(w)) h.u!.jammed = true; else h.u!.stunnedNext = 1; say(h.cb, h.u!.name + ' goes double or nothing and loses: ' + (!melee && canJam(w) ? 'the gun jams' : '−1 AP next turn') + ' (Gambler).'); }
+      else { ctx.hit = false; if (!melee && canJam(w)) h.u!.jammed = true; else stagger(h.u!); say(h.cb, h.u!.name + ' goes double or nothing and loses: ' + (!melee && canJam(w) ? 'the gun jams' : '−1 AP next turn') + ' (Gambler).'); }
     },
   },
   brief: () => 'In Debt: Smetanita Conjunction collectors turn up when you decide',
@@ -721,8 +735,8 @@ register({
     check_build: (ctx, h) => {
       if (ctx.c !== h.c || !tagsOf(ctx).includes('unglamorous') || hasSkill(ctx.ck, 'visualization') || !h.c) return;
       const g = gOf(h), rng = g?.rng; if (!rng) return;
-      const m = sideRollMod(g, h.c, 'visualization'), die = d20(rng), ok = die === 20 || (die !== 1 && die + m >= 12);
-      entry(g, { kind: 'check', charId: h.c.id, ok, head: 'VISUALIZATION · LEADING ROLE · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs 12 · ' + (ok ? '✓ SUCCESS' : '✕ FAILURE'), text: h.c.name + ' pictures it as a scene worth filming' + (ok ? '.' : ': they refuse, or do it at −3.') });
+      const rv = rollVs(null, rng, { mod: sideRollMod(g, h.c, 'visualization'), tn: TN.standard }), ok = rv.ok;
+      entry(g, { kind: 'check', charId: h.c.id, ok, head: 'VISUALIZATION · LEADING ROLE · ' + rv.text + ' · ' + (ok ? '✓ SUCCESS' : '✕ FAILURE'), text: h.c.name + ' pictures it as a scene worth filming' + (ok ? '.' : ': they refuse, or do it at −3.') });
       if (!ok) (ctx.ck as any).leadingRole = -3;
     },
     attack_preview: (ctx, h) => { const n = (h.u?.ps?.[h.key] as any)?.next; if (n && ctx.att === h.u && n.turn === h.cb!.round + '.' + h.cb!.turn) ctx.terms.push({ v: 3, label: 'Dramatic Timing' }); },

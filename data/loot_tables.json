@@ -21,6 +21,7 @@
     "beast_bite"
   ],
   "rolls_by_tier": {
+    "vermin": 0,
     "minion": 1,
     "soldier": 1,
     "elite": 2,

@@ -2,15 +2,17 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced } from '../combat';
+import { say, unsay, type Combat, type Unit, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
-import { actionAp } from '../effects/core';
+import { price, priced, whyNot, pay, refund } from '../effects/cost';
+import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, useReaction } from '../tactics';
-import { d20, type Rng } from '../rng';
+import { type Rng } from '../rng';
+import { rollSave } from '../rolls';
 import { mod } from '../character';
 import type { Character } from '../character';
 import { packOf } from '../character';
@@ -18,15 +20,23 @@ import { packRef } from '../gear';
 import type { Tech, TechArgs, TechDef, TechHandler, TechPreview, StrikeOpts, StrikeResult, PadGroup, PadEntry, TechLine, WatchSpec, HeldWatch } from './types';
 import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, weaponSystem, weaponTeaches, readyTechniques, groupsOf, groupName } from './data';
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
+import { setBraced, setNailed, bracedAs } from '../unitstate';
+import { condsAside } from '../magic';
 
 // ---------- the registry ----------
 const HANDLERS: Record<string, TechHandler> = {};
 /** Register a technique's handler (one per id; a second registration replaces the first: tests). */
 export function technique(h: TechHandler): void {
-  HANDLERS[h.id] = h;
+  HANDLERS[h.id] = h; for (const k of Object.keys(ANSWERS)) delete ANSWERS[k];
   for (const name of Object.keys(h.react || {})) if (!DISPATCHED.has(name)) { DISPATCHED.add(name); onHook(name as HookName, (ctx, cb) => dispatch(name as HookName, ctx, cb)); }
 }
 const DISPATCHED = new Set<string>();
+/** The Answers that listen on a hook, in the registry's order: listed once per hook and again after a registration
+ * (dispatch runs on every hook of every action, so it must not walk every technique for every unit each time). */
+const ANSWERS: Record<string, { id: string; def: TechDef; fn: (ctx: any, t: Tech) => void }[]> = {};
+function answersOn(name: string) {
+  return (ANSWERS[name] ||= Object.values(HANDLERS).flatMap((h) => { const def = TECHNIQUE[h.id], fn = h.react?.[name as HookName]; return fn && def?.group === 'answer' ? [{ id: h.id, def, fn: fn as any }] : []; }));
+}
 /** Held Watches and ready Answers hear the fight's hooks through their handler's `react`. A Watch's handler is called
  * for the unit holding it; an Answer's for every unit that has it usable. Never in a preview. */
 function dispatch(name: HookName, ctx: any, cb: Combat): void {
@@ -39,10 +49,14 @@ function dispatch(name: HookName, ctx: any, cb: Combat): void {
     // chosen when it was held, every named ally (Cover Me's Auto names two) and the arrow it names go with it; a step no
     // held Watch hears (ctx.noWatch: Shift) wakes none.
     if (w && TECHNIQUE[w.id] && !ctx.noWatch) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) unheld(u, () => fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId, ...(w.allyIds ? { allyIds: w.allyIds } : {}), ...(w.line ? { line: w.line } : {}), ...(w.ammo ? { ammo: w.ammo } : {}) }, rng, false))); }
-    for (const h of Object.values(HANDLERS)) {
-      const def = TECHNIQUE[h.id], fn = h.react?.[name]; if (!fn || def?.group !== 'answer' || !alive(u)) continue;
-      const hand = hasUsable(u, 'main', h.id) ? 'main' : hasUsable(u, 'off', h.id) ? 'off' : null; if (!hand) continue;
-      unheld(u, () => fn(ctx, buildTech(cb, u, def, { hand }, rng, false)));
+    // What the unit has usable in each hand is worked out once, and again only after one of its reactions ran (the
+    // reaction may have changed what it holds or can use): the same answer as asking for every Answer in turn.
+    let sets: { main: Set<string>; off: Set<string> } | null = null;
+    for (const a of answersOn(name)) {
+      if (!alive(u)) break;
+      if (!sets) sets = { main: new Set(usable(null, u, 'main').map((x) => x.id)), off: new Set(usable(null, u, 'off').map((x) => x.id)) };
+      const hand = sets.main.has(a.id) ? 'main' : sets.off.has(a.id) ? 'off' : null; if (!hand) continue;
+      unheld(u, () => a.fn(ctx, buildTech(cb, u, a.def, { hand }, rng, false))); sets = null;
     }
   }
 }
@@ -192,17 +206,20 @@ function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, 
 }
 
 // ---------- cost and who may use what ----------
+/** Does this technique fire a round of the weapon (a ranged technique that lists rounds)? A Set fires none. */
+const firesRound = (def: TechDef) => def.system === 'ranged' && (def.rounds === 'all' || Number(def.rounds) > 0);
 /** A technique's AP with this weapon and line. */
 export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?: Unit | null): number {
   const w = WEAPON[weaponId] || WEAPON.fists;
   const fx: any = (w as any).grants?.effect || {};
   const base = def.ap.base === 'reaction' ? 0 : def.id === 'aimed_shot' && fx.op === 'aimed_ap' ? fx.value // the crossbow's Bolt Rest
     : def.id === 'shot' ? Math.max(def.ap.value || 0, attackApCost(w, 'shot')) // a weapon whose shot costs more than 2 (the crossbow: 3, the next bolt loaded with it)
-    : def.ap.base === 'flat' ? def.ap.value || 0 : attackApCost(w, isMelee(w) ? 'melee' : 'shot') + (def.ap.add || 0);
+    : def.ap.base === 'flat' ? (def.ap.value || 0) + (firesRound(def) ? cycleAp(w) : 0) // rules 1.18: a hand-worked action (the long rifle's bolt) adds its AP to every technique that fires a round
+    : attackApCost(w, isMelee(w) ? 'melee' : 'shot') + (def.ap.add || 0);
   const lf = linesFor(def, weaponId, choice, u);
   return Math.max(0, base + [lf.main, ...lf.stack].reduce((n, l) => n + (l?.ap || 0), 0));
 }
-const AP_BY_NAME = new Set(['shove', 'break']);
+const AP_BY_NAME: ReadonlySet<string> = new Set<CostSite>(['shove', 'break']);
 /** A technique's AP for this unit now: its own cost, then what the unit's items do to an attack's AP (Southern Fist's
  * +1 with a weapon, Fire Discipline's first burst), asked the way the engine's own attacks ask ('attack_preview' with
  * the cost and a mode). Weapon-priced techniques ask as a melee strike or a shot; a flat one asks only when the data
@@ -210,11 +227,11 @@ const AP_BY_NAME = new Set(['shove', 'break']);
 export function apFor(cb: Combat, u: Unit, def: TechDef, hand: 'main' | 'off', choice?: string, tgt?: Unit | null): number {
   const weaponId = hand === 'off' && offHeld(u) ? offHeld(u)! : u.weapon, own0 = techniqueAp(def, weaponId, choice, u);
   // the techniques a perk prices by name (Siege Engine: Shove and Break 1 AP less, never below 1): the old actions' path
-  const own = AP_BY_NAME.has(def.id) ? actionAp({ u }, def.id, own0).ap : own0;
+  const own = AP_BY_NAME.has(def.id) ? price({ cb, u }, def.id, own0).ap : own0;
   const mode = (def.ap as any).mode || (def.ap.base === 'weapon' ? (def.system === 'melee' ? 'melee' : 'shot') : null);
-  if (!mode || hand === 'off' || def.ap.base === 'reaction') return own;
+  if (!mode || hand === 'off' || def.ap.base === 'reaction') return priced({ cb, u }, 'technique:' + def.id, own, undefined, { tech: def.id }).ap;
   const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', tech: def.id, ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
-  emit(cb, 'attack_preview', hk); return Math.max(0, hk.ap);
+  emit(cb, 'attack_preview', hk); return priced({ cb, u }, 'technique:' + def.id, Math.max(0, hk.ap), undefined, { tech: def.id, mode }).ap;
 }
 /** The techniques a unit may use with the weapon in this hand, and how it has each: free, lent by the weapon, coming
  * with a property, or ready. A unit with no character (an enemy, a companion) has the free ones, what its weapon lends
@@ -233,7 +250,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     // Rules 1.13. A technique a skill gives (Interpose at Durability 3) is everyone's who has the points, whatever is in
     // the hands: it is listed with the main hand. A shield's techniques are the off hand's while it holds the shield,
     // and that hand offers nothing else. Neither is ever learned, readied or lent.
-    if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, 'technique:' + d.id).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
+    if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.system !== sys) continue;
@@ -252,7 +269,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
 const hasUsable = (u: Unit, hand: 'main' | 'off', id: string, wield?: 'stowed' | 'throwable') => usable(null, u, hand, wield).some((x) => x.id === id);
 /** The Momentum a Finisher needs to start (2 unless its data says otherwise), less what the unit's items take off it
  * ('momentum_needed:<id>': Iron Grip II's Throw Down on a held target needs none). It still spends all there is. */
-export const finisherNeed = (cb: Combat, u: Unit, def: TechDef): number => Math.max(0, (def.needs.momentum || 2) + statQuery({ u, cb }, 'momentum_needed:' + def.id).add);
+export const finisherNeed = (cb: Combat, u: Unit, def: TechDef): number => Math.max(0, (def.needs.momentum || 2) + statQuery({ u, cb }, `momentum_needed:${def.id}`).add);
 /** Why this unit can't start this technique now, before any target is looked at (null: it can). */
 function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null {
   const hand: 'main' | 'off' = args.hand === 'off' && offHeld(u) ? 'off' : 'main', weaponId = hand === 'off' ? offHeld(u)! : u.weapon;
@@ -280,7 +297,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.needs.hidden && !u.hidden) return 'Only while you are Hidden.';
   const pair = (args as any)._pair as PairMark | undefined;
   const ap = pair ? pair.ap : apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null);
-  if (u.ap + encoreCredit(u, { type: 'combat/technique', id: def.id }, cb) < ap) return 'Needs ' + ap + ' AP.'; // Encore lends a repeat its AP (items 729, 737)
+  { const no = whyNot(cb, u, ap, { as: { type: 'combat/technique', id: def.id } }); if (no) return no; } // a repeat's credit counts (Encore, items 729, 737)
   const w = WEAPON[weaponId];
   if (wield === 'throwable') { const need = def.rounds === 'all' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
@@ -418,6 +435,7 @@ onHook('attack_roll', (ctx: any) => {
   if (a.o.critOnHit && ctx.die !== 1 && ctx.die + ctx.toHit >= ctx.need) ctx.critMin = Math.min(ctx.critMin, ctx.die);
 });
 onHook('damage_out', (ctx: any) => {
+  if (ctx.blast) return; // a blast's splash is not the strike (step a7: it fires the hook now; a technique's multiplier never reached it)
   const a = cur(ctx.att); if (!a) return;
   if (a.o.mult != null && a.o.mult !== 1) ctx.mults.push({ v: a.o.mult, label: a.o.label || a.t.def.name });
   // armour this strike ignores, against the unit really struck (nobody's armour is changed)
@@ -464,11 +482,19 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
   const c = target.companion ? null : charOfUnit(target);
   const FAM: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', rumination: 'brain', composure: 'heart', body: 'body', brain: 'brain', heart: 'heart' };
   const bonus = Math.max(...skills.map((s) => (FAM[s] && (s === FAM[s] || !c) ? unitSave(target, FAM[s]) : c ? mod((c.skills as any)[s] || 0) : target.attack ?? 0)));
-  const r = d20(t.rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
-  t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + skills.join(' or ') + ' ' + (r + bonus) + ' vs ' + tn + ').');
+  // the one save (rolls.ts): items that change saves are asked; the family is the first one named (a skill save: Body)
+  const sv = rollSave(t.cb, t.rng, { by: t.u, target, fam: skills.map((x) => FAM[x]).find(Boolean) || 'body', id: 'stop', via: techVia(t), tn, mod: bonus, lead: skills.join(' or ') + ' save' }), ok = sv.ok;
+  say(t.cb, target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + sv.text + ').');
   // the save for the screen (HOLDS / STEADY); kept to the target's side when the user's side can't see it
-  emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
+  emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sv.skipped ? {} : { die: sv.die, mod: sv.mod, total: sv.total, tn: sv.tn }), ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
   return ok;
+}
+/** A Body save forced by a technique AFTER its own use (Guard with Reach on a mover's step, a Bound unit walking away):
+ * `by` set it, `who` saves against `tn` (techSaveTn of `by` with the skill it was set with). True: it saved. */
+export function saveOutside(cb: Combat, rng: Rng, by: Unit | null, who: Unit, against: string, tn: number, via?: string): boolean {
+  const sv = rollSave(cb, rng, { by, target: who, fam: 'body', id: 'stop', via, tn, mod: unitSave(who, 'body') });
+  say(cb, who.name + (sv.ok ? ' saves' : ' fails the save') + ' against ' + against + ' (' + sv.text + ').');
+  return sv.ok;
 }
 /** The skill a technique's conditions and saves are delivered by (rules 1.13): the one its weapon hits with. */
 export const techVia = (t: Tech): string => hitsWith(t.weaponId) || 'raw_power';
@@ -476,7 +502,7 @@ export const techVia = (t: Tech): string => hitsWith(t.weaponId) || 'raw_power';
 export function cond(t: Tech, target: Unit, id: string, rounds?: number, opts: { save?: boolean; tnAdd?: number; arg?: any } = {}): boolean {
   if (t.preview) { t.note(target.name + ': ' + id.replace(/_/g, ' ') + (rounds ? ' ' + rounds + (rounds === 1 ? ' round' : ' rounds') : '') + (opts.save ? ' (save)' : '') + '.'); return true; }
   const s = applyCond(t.cb, t.rng, t.u, target, id, rounds, undefined, { skipSave: !opts.save, tnAdd: opts.tnAdd, arg: opts.arg, via: techVia(t) });
-  if (s) t.cb.log.push(target.name + s.replace(/^ · /, ': ') + '.');
+  if (s) say(t.cb, target.name + s.replace(/^ · /, ': ') + '.');
   return !/resists|untouched|shrugs/.test(s);
 }
 const stoppedNow = (u: Unit) => ((u as any).stopped || 0) > 0;
@@ -502,10 +528,10 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
     if (h === 'pinned' && opts.untilAp) {
       // a weapon an earlier nail left in the target: a second weapon knocks it to the ground, a nail without one keeps it in
       const old = target.nailed; if (old?.weapon && opts.weapon) dropNailed(t.cb, target);
-      target.nailed = { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : old?.weapon ? { weapon: old.weapon, ...(old.item ? { item: old.item } : {}), by: old.by } : {}) };
+      setNailed(target, { by: t.u.id, id: t.def.id, ap: opts.untilAp, ...(opts.weapon ? { weapon: opts.weapon } : old?.weapon ? { weapon: old.weapon, ...(old.item ? { item: old.item } : {}), by: old.by } : {}) });
     }
     else if (h === 'pinned') applyCond(t.cb, t.rng, t.u, target, 'pinned', opts.rounds || 1, 'body', { skipSave: true, via: techVia(t) });
-    else if (h === 'prone') { if (!target.prone) { target.prone = true; target.braced = false; emitFx(t.cb, 'stance', { unit: target.id, at: target.pos, what: 'prone' }); } }
+    else if (h === 'prone') { if (!target.prone) { applyCond(t.cb, t.rng, t.u, target, 'prone', undefined, undefined, { skipSave: true, via: techVia(t) }); if (target.prone) emitFx(t.cb, 'stance', { unit: target.id, at: target.pos, what: 'prone' }); else took.pop(); } }
   }
   if (opts.apLoss) apDebt(target, opts.apLoss);
   if (!took.length && !opts.apLoss) return false;
@@ -514,44 +540,29 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
   if (ranged) (target as any).stopped = active(t.cb) === target ? 2 : 1;
   if (!took.length) return true; // only the AP loss landed
   emitFx(t.cb, 'stopped', { unit: target.id, how: took.join('+'), by: t.u.id, ...(opts.apLoss ? { apLoss: opts.apLoss } : {}), ...(opts.untilAp && took.includes('pinned') ? { untilAp: opts.untilAp } : {}) });
-  t.cb.log.push(target.name + ' is ' + took.map((h) => (h === 'push' ? 'pushed' : h === 'halt' ? 'stopped' : h)).join(' and ') + ' (' + t.def.name + ').');
+  say(t.cb, target.name + ' is ' + took.map((h) => (h === 'push' ? 'pushed' : h === 'halt' ? 'stopped' : h)).join(' and ') + ' (' + t.def.name + ').');
   return true;
 }
 export type StopHow = 'pinned' | 'push' | 'prone' | 'halt';
-/** Move a unit against its will, tile by tile, so held Watches and Overwatch fire. dir: 'away' from or 'toward' the user
- * (or opts.from), or a tile to move onto. Returns the tiles moved (0: blocked or it held firm). */
+/** Move a unit against its will: the one forced move (combat.ts displace). dir: 'away' from or 'toward' the user (or
+ * opts.from), or a tile to move toward. Nobody reacts to it (no held Watch, no Overwatch: the unit did not choose to
+ * move); the tiles it enters act on it. Returns the tiles moved (0: blocked or it held firm). */
 export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string, tiles: number, opts: { from?: string; how?: string } = {}): number {
   const cb = t.cb, origin = opts.from || t.u.pos;
-  if (target.nailed) { if (t.preview) t.note(target.name + ' is nailed in place and can\'t be moved.'); return 0; } // nailed in place: nothing moves it until it is pulled free
-  const stepTo = (from: string): string | null => {
-    const [x, y] = xy(from);
-    if (dir !== 'away' && dir !== 'toward') { const [dx, dy] = xy(dir); return x === dx && y === dy ? null : key(x + Math.sign(dx - x), y + Math.sign(dy - y)); }
-    const [ox, oy] = xy(origin), s = dir === 'away' ? 1 : -1, nx = x + s * Math.sign(x - ox), ny = y + s * Math.sign(y - oy);
-    return nx === x && ny === y ? null : key(nx, ny);
-  };
   // Heavy Hands (Raw Power 3): a melee technique's push away goes 1 tile further (the card, the preview and the push agree)
   if (dir === 'away') tiles += statQuery({ u: t.u, cb }, 'push_tiles', { tech: t.def.id, system: t.def.system }).add;
-  if (t.preview) { let at = target.pos, n = 0; const blocked = moveBlockers(cb); for (; n < tiles; n++) { const to = stepTo(at); if (!to || bad(cb, to, blocked, target)) break; at = to; } if (n) (t.pv.moves ||= []).push({ unit: target.id, to: at }); return n; }
-  let moved = 0; const blocked = moveBlockers(cb);
-  for (let i = 0; i < tiles && alive(target); i++) {
-    const to = stepTo(target.pos); if (!to) break;
-    if (bad(cb, to, blocked, target)) { // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
-      if (dir === 'away') pushBlocked(t, target, to, opts.how);
-      break;
-    }
-    const fm: any = emit(cb, 'forced_move', { u: target, by: t.u, tiles: 1, to, how: opts.how || t.def.id, cancel: false, cb, rng: t.rng }); if (fm.cancel) break;
-    const stopNow = unheld(t.u, () => {
-    const was = target.pos; target.pos = to; target.braced = false; moved++;
-    emitFx(cb, 'shove', { unit: t.u.id, target: target.id, from: was, to, ok: true });
-    // The walk a held shot is waiting for: the new Watches listen on move_step, the old Overwatch on its own call.
-    const ms: any = emit(cb, 'move_step', { u: target, from: was, at: to, i, route: [was, to], how: 'forced', stop: false, cb, rng: t.rng, forced: true });
-    if (alive(target)) triggerOverwatch(cb, t.rng, target);
-    return !!ms.stop;
-    });
-    if (stopNow) break;
+  const to = dir === 'away' ? { away: origin, tiles } : { toward: dir === 'toward' ? origin : dir, tiles };
+  const o = { by: t.u, how: (dir === 'away' ? 'push' : 'pull') as DisplaceHow, source: opts.how || t.def.id };
+  if (t.preview) {
+    const pv = displace(cb, null, target, to, { ...o, preview: true });
+    if (pv.stoppedBy === 'nailed') t.note(target.name + ' is nailed in place and can\'t be moved.');
+    if (pv.moved) (t.pv.moves ||= []).push({ unit: target.id, to: pv.to });
+    return pv.moved;
   }
-  if (moved) cb.log.push(target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ').');
-  return moved;
+  const mv = displace(cb, t.rng, target, to, o);
+  if (mv.blockedAt && dir === 'away') pushBlocked(t, target, mv.blockedAt, opts.how); // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
+  if (mv.moved) say(cb, target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ')' + mv.text + '.');
+  return mv.moved;
 }
 /** Breaching Strike's rule for a push that is blocked, bound by perks/skeleton.ts (that file imports this one). */
 let SLAM: ((cb: Combat, by: Unit, target: Unit, into: 'wall' | Unit, how: string) => void) | null = null;
@@ -562,7 +573,6 @@ export function pushBlocked(t: Tech, target: Unit, to: string | null, how?: stri
   if (!SLAM || t.preview || t.def.system !== 'melee' || !alive(target)) return;
   SLAM(t.cb, t.u, target, (to && t.cb.units.find((v) => v !== target && !v.dead && v.pos === to)) || 'wall', how || t.def.id);
 }
-const bad = (cb: Combat, to: string, blocked: Set<string>, mover: Unit) => { const [x, y] = xy(to); return x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h || blocked.has(to) || cb.units.some((v) => v !== mover && !v.dead && v.pos === to); };
 /** Rounds a technique burns beyond its rolls. False (with a note) if the weapon can't pay. */
 export function spendRounds(t: Tech, n: number): boolean {
   if (t.wield === 'throwable' && n > 0) { // a grenade is the ammunition: one from what the user carries
@@ -641,12 +651,11 @@ const HOLDS: { u: Unit; keep: Record<string, any>; out: boolean }[] = [];
 function holding<T>(u: Unit, wi: Wield, fn: () => T): T {
   const c = u.companion ? null : charOfUnit(u), w = WEAPON[wi.weaponId];
   const keep: Record<string, any> = {}; for (const k of HELD_FIELDS) keep[k] = (u as any)[k];
-  let braced: boolean | undefined, disarmed: number | undefined, lowered: number | undefined, drew = false;
+  let braced: boolean | undefined, putBack: (() => void) | null = null, drew = false;
   if (wi.kind === 'stowed' && wi.as) {
-    drew = true; braced = u.braced; disarmed = u.conds?.disarmed;
-    putFields(u, wi.as); if (wi.as.weapon !== keep.weapon) u.braced = false;
-    if (disarmed != null) delete u.conds!.disarmed;
-    lowered = u.conds?.lowered; if (lowered != null) delete u.conds!.lowered;
+    drew = true; braced = u.braced;
+    putFields(u, wi.as); if (wi.as.weapon !== keep.weapon) bracedAs(u, false);
+    putBack = condsAside(u, ['disarmed', 'lowered']);
   } else {
     const pts = (c?.skills as any)?.[w.skill];
     putFields(u, { weapon: w.id, ammo: wi.ammo, maxDur: 0, dur: undefined, mods: wi.entry?.mods || [], ammoType: wi.entry?.ammoType ?? null, jammed: false, dmgMult: 1 });
@@ -655,7 +664,7 @@ function holding<T>(u: Unit, wi: Wield, fn: () => T): T {
   const hold = { u, keep, out: false }; HOLDS.push(hold);
   try { return fn(); } finally {
     HOLDS.splice(HOLDS.indexOf(hold), 1); putFields(u, keep);
-    if (drew) { if (braced === undefined) delete u.braced; else u.braced = braced; if (disarmed != null) (u.conds ||= {}).disarmed = disarmed; if (lowered != null) (u.conds ||= {}).lowered = lowered; }
+    if (drew) { bracedAs(u, braced); putBack?.(); }
   }
 }
 /** Run fn with a unit's real weapon back in its hand, if it is in the middle of a technique used with something else
@@ -692,7 +701,7 @@ export function loseWeaponInto(t: Tech, target: Unit): void {
   if (t.c && GEAR) item = GEAR.lose(t.cb, u, t.hand, null);
   else { if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; } }
   (target.stuck ||= []).push({ by: u.id, weapon: id, ...(item ? { item } : {}) });
-  t.cb.log.push('  The ' + (WEAPON[id]?.name || id).toLowerCase() + ' is stuck in ' + target.name + '.');
+  say(t.cb, '  The ' + (WEAPON[id]?.name || id).toLowerCase() + ' is stuck in ' + target.name + '.');
 }
 /** Take a weapon entry straight into a free hand of the unit (a character: the reducer's gear change; a unit with no
  * sheet: its empty main hand). False when it has no free hand. */
@@ -757,7 +766,7 @@ export function holdWatch(t: Tech, spec: WatchSpec): void {
 export function endWatch(cb: Combat, u: Unit, why: string): void {
   const w = (u as any).watch as HeldWatch | undefined; if (!w) return;
   delete (u as any).watch; emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: w.id, why, ...ownSideOnly(cb, u) });
-  if (why !== 'replaced' && why !== 'fired' && why !== 'turn') cb.log.push(u.name + ' loses the held shot (' + why + ').');
+  if (why !== 'replaced' && why !== 'fired' && why !== 'turn') say(cb, u.name + ' loses the held shot (' + why + ').');
 }
 /** A held Watch's trigger has happened: spend the reaction and run fn (the strikes). False when the user can't react
  * now (Pressed, no reaction left, an item cancels it): the Watch stays held. kind 'overwatch' keeps the old Overwatch's
@@ -769,7 +778,7 @@ export function fireWatch(t: Tech, ctx: any, target: Unit, fn: () => void, kind:
   ctx?.flush?.(); // the mover's walk so far plays before the shot
   useReaction(cb, u); delete (u as any).watch;
   emitFx(cb, kind === 'overwatch' ? 'overwatch' : 'watch_fire', { unit: u.id, target: target.id, from: u.pos, at: target.pos, id: w.id, mode: 'shot', ...fx });
-  cb.log.push(u.name + (kind === 'overwatch' ? ' fires from overwatch.' : ' fires the held shot (' + t.def.name + ').'));
+  say(cb, u.name + (kind === 'overwatch' ? ' fires from overwatch.' : ' fires the held shot (' + t.def.name + ').'));
   fn(); checkOver(cb);
   return true;
 }
@@ -780,7 +789,7 @@ export function answer(t: Tech, against: Unit | null, fn: () => void): boolean {
   const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: against, kind: 'answer', id: t.def.id, cancel: false, at: u.pos, cb, rng: t.rng }); if (rw.cancel) return false;
   useReaction(cb, u);
   emitFx(cb, 'technique', { unit: u.id, id: t.def.id, group: 'answer', system: t.def.system, target: against?.id || null, hand: t.hand, at: u.pos, reaction: true });
-  cb.log.push(u.name + ' answers with ' + t.def.name + '.');
+  say(cb, u.name + ' answers with ' + t.def.name + '.');
   fn(); checkOver(cb);
   return true;
 }
@@ -864,7 +873,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   const p = prepare(cb, u, id, args, rng, false); if (!p.t || p.why) return p.why || 'Not now.';
   const t = p.t, ap = t.pv.ap, heat0 = u.heat;
   ensureMomentum(u);
-  u.ap -= ap;
+  pay(cb, u, ap);
   // a Strike or an Opener spends its Momentum as it is used (given back with the AP if the handler refuses)
   const mCost = momentumCost(u, def, args), mWas = momentumOf(u), opener0 = u.openerUsed;
   if (mCost && u.res) { u.res.momentum = Math.max(0, mWas - mCost); momentumFx(cb, u, mWas); }
@@ -876,10 +885,10 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   const more = p.h!.fx?.(t) || {};
   const ev = emitFx(cb, 'technique', { unit: u.id, id, group: def.group, system: def.system, target: t.tgt?.id || null, tile: args.tile || null, hand: t.hand, at: u.pos,
     line: lineProp(def, t.weaponId, args.line, u), opt: args.opt ?? null, ammo: args.ammo ?? (t.wield === 'throwable' && args.item != null ? String(args.item) : null), weapon: t.weaponId, ...more });
-  const logAt = cb.log.length; cb.log.push(u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
+  const logAt = cb.log.length; say(cb, u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
   const err = withVia(u, techVia(t), () => p.h!.run(t));
   if (err) { // a handler must refuse before it changes anything: the cost comes back
-    u.ap += ap; u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true;
+    refund(cb, u, ap); u.heat = heat0; unsay(cb, logAt); (ev as any).refused = true;
     if (mCost && u.res) { const now = momentumOf(u); u.res.momentum = Math.min(u.resMax?.momentum ?? now + mCost, now + mCost); momentumFx(cb, u, now); }
     if (opener0) u.openerUsed = opener0; else delete u.openerUsed;
     if (gCost) addGuard(cb, u, gCost);
@@ -888,9 +897,9 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) {
     u.heat += 1;
     // the Press's own Heat can jam the gun (Leon's ruling, 10 Nov 2026), as a shot's does (the main hand's gun)
-    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !neverJams(cb, u) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; cb.log.push(u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
+    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !neverJams(cb, u) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; say(cb, u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
   } // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
-  for (const n of t.pv.notes) cb.log.push('  ' + n);
+  for (const n of t.pv.notes) say(cb, '  ' + n);
   const st = scratch(t);
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique
   if (def.system === 'melee') { const ch = chainFor(cb, u); ch.n++; ch.last = id; if (def.group === 'finisher') ch.ended = true; }
@@ -993,7 +1002,7 @@ export function pairedPad(cb: Combat, u: Unit, g?: any): PadEntry[] {
   if (g) return withG(g, () => pairedPad(cb, u));
   if (!u.offWeapon || !WEAPON[u.offWeapon] || weaponSystem(u.weapon) !== weaponSystem(u.offWeapon)) return [];
   return PAIRED_TECHNIQUES.map((id) => TECHNIQUE[id]).filter((def) => def && !pairedWhy(u, def)).map((def): PadEntry => {
-    const ap = pairedAp(cb, u, def, {}), why = u.ap < ap ? 'Needs ' + ap + ' AP.' : gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
+    const ap = pairedAp(cb, u, def, {}), why = whyNot(cb, u, ap) || gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
     const lf = linesFor(def, u.weapon, undefined, u);
     return { id: def.id, name: def.name, group: def.group, ap, rounds: def.rounds, ok: !why, why: why || null, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null, lent: false, signature: false, plain: false, built: true };
   });
@@ -1002,7 +1011,7 @@ function previewPaired(cb: Combat, u: Unit, id: string, args: TechArgs): TechPre
   const def = TECHNIQUE[id], blank = (why: string, ap = 0): TechPreview => ({ ok: false, why, id, ap, rounds: 0, attacks: [], notes: [] });
   if (!def) return blank('No such technique.');
   const no = pairedWhy(u, def); if (no) return blank(no);
-  const ap = pairedAp(cb, u, def, args); if (u.ap < ap) return blank('Needs ' + ap + ' AP.', ap);
+  const ap = pairedAp(cb, u, def, args); { const no = whyNot(cb, u, ap); if (no) return blank(no, ap); }
   const m = previewTechnique(cb, u, id, { ...args, hand: 'main', _pair: { hit: -1, ap } } as any); if (!m.ok) return { ...m, ap };
   const o = previewTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
   const notes = [...m.notes, ...(o.ok ? o.notes.filter((n) => !m.notes.includes(n)) : ['Off hand: ' + (o.why || 'can\'t.')]), 'Both hands: main hand −1, off hand ' + offHandPenalty(u) + ', +1 AP.'];
@@ -1010,12 +1019,12 @@ function previewPaired(cb: Combat, u: Unit, id: string, args: TechArgs): TechPre
 }
 function usePaired(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng): string | null {
   const pv = previewPaired(cb, u, id, args); if (!pv.ok) return pv.why || 'Not now.';
-  cb.log.push(u.name + ' uses both hands.');
+  say(cb, u.name + ' uses both hands.');
   const e = useTechnique(cb, u, id, { ...args, hand: 'main', _pair: { hit: -1, ap: pv.ap } } as any, rng); if (e) { cb.log.pop(); return e; }
   if (u.dead || u.downed || cb.over) return null;
   const tgt = args.targetId ? cb.units.find((x) => x.id === args.targetId) : null;
   if (tgt && (tgt.dead || tgt.downed)) return null; // the first weapon ended it
   const e2 = useTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any, rng);
-  if (e2) cb.log.push('  (off hand: ' + e2 + ')');
+  if (e2) say(cb, '  (off hand: ' + e2 + ')');
   return null;
 }

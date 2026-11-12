@@ -33,7 +33,7 @@ function rig(words: string[], foes: string[] = ['14,9'], allies: string[] = []) 
 }
 function arm(u: Unit, words: string[]) {
   u.ap = 60; const m = u.mg!;
-  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, inflect: [] });
+  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, inflect: [] });
 }
 type F = ReturnType<typeof rig>;
 const charOf = (f: F, u: Unit = f.pc): Character => f.g.characters[f.unit(u.id).charId!];
@@ -287,13 +287,13 @@ describe('word mastery and inflections (items 915-916)', () => {
     uses(f, 'seek', 30);
     expect(previewEvoke(f.cb, f.unit(f.pc.id), '4,5').range).toBe(9);
   });
-  it('WARD: the shield is 10% bigger (30 to 33)', () => {
+  it('WARD: the shield is 10% bigger (12 to 13)', () => {
     const f = rig(['ward', 'seek']);
     draw(f, f.pc, ['ward', 'seek'], ['5,5', '4,5']); evoke(f, f.pc, '4,5', '4,5');
-    expect(f.unit(f.pc.id).shield).toBe(30);
+    expect(f.unit(f.pc.id).shield).toBe(12);
     uses(f, 'ward', 30); f.unit(f.pc.id).shield = 0;
     draw(f, f.pc, ['ward', 'seek'], ['5,5', '4,5']); evoke(f, f.pc, '4,5', '4,5');
-    expect(f.unit(f.pc.id).shield).toBe(33);
+    expect(f.unit(f.pc.id).shield).toBe(13);
   });
   it('STEP: a teleport of 5 tiles is refused until STEP is Mastered (+1 tile)', () => {
     const f = rig(['step', 'seek'], ['8,5']);

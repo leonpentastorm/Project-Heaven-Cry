@@ -3,6 +3,7 @@
 // Boon notes, COMMAND's move tiles), QUICKEN's log and KIN's refused aims. Every spell is drawn and Evoked with
 // apply() (combat/draw, combat/evoke with aim, aims, dest, order and orderTo), the same path a player's click takes.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { d20, previewEvoke, placedMagic, condOn, applyCond, objectsOf, type Combat, type Unit } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 
@@ -29,7 +30,7 @@ function rig(words: string[], foes: string[] = ['14,9'], allies: string[] = []) 
 }
 function arm(u: Unit, words: string[]) {
   u.ap = 60; const m = u.mg!;
-  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0 });
+  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0 });
 }
 type F = ReturnType<typeof rig>;
 /** Walk a Line through the reducer: each word drawn on its own tile in order; the caster ends on the last tile. */
@@ -70,9 +71,9 @@ describe('gap 1: the 29 words no reducer test drew, each drawn and Evoked throug
     const k = rig(['command', 'seek'], ['8,5']); line(k, ['command', 'seek'], L2); evoke(k, '3,5', '8,5', { order: 'kneel' });
     expect(k.foe.condArg?.commanded).toBe('kneel');
   });
-  it('Boons: WARD 30 shield on an ally; CLEANSE · SEEK ends the newest condition (the preview names it)', () => {
+  it('Boons: WARD 12 shield on an ally; CLEANSE · SEEK ends the newest condition (the preview names it)', () => {
     const f = rig(['ward', 'seek', 'cleanse'], ['14,9'], ['8,5']); line(f, ['ward', 'seek'], L2);
-    evoke(f, '3,5', '8,5'); expect(f.pcs[1].shield).toBe(30);
+    evoke(f, '3,5', '8,5'); expect(f.pcs[1].shield).toBe(12);
     withGame(f.g, () => { applyCond(f.cb, f.g.rng, null, f.pcs[1], 'slowed', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, null, f.pcs[1], 'pinned', 2, undefined, { skipSave: true }); });
     line(f, ['cleanse', 'seek'], L2);
     const pv = plan(f, '3,5', '8,5'); expect(pv.affected[0].notes).toEqual(['ends Pinned']);
@@ -130,19 +131,20 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
     f.turn(f.pc);
     expect(f.foes.map((e) => 500 - e.hp)).toEqual([15, 11]); expect(f.pcs[1].hp).toBe(500);
   });
-  it('Healing post, MEND · WATCH: heals whoever stands next to it 13 a round (25 × 0.5 = 12.5, rounded to the nearest: item 456)', () => {
+  it('Healing post, MEND · WATCH: heals whoever stands next to it 5 a round (10 × 0.5; rules 1.20)', () => {
     const f = rig(['mend', 'watch'], ['14,9'], ['6,5']); f.pcs[1].hp = 400; line(f, ['mend', 'watch'], L2);
     const pv = plan(f, '3,5', '5,5'); expect(pv.missiles[0].turret).toMatchObject({ range: 1, next: [f.pcs[1].id] });
     evoke(f, '3,5', '5,5');
     f.turn(f.pc);
-    expect(f.pcs[1].hp).toBe(413); expect(logHas(f.cb, /Tester 2 heals 13/)).toBe(true);
+    expect(f.pcs[1].hp).toBe(405); expect(logHas(f.cb, /Tester 2 heals 5/)).toBe(true);
   });
   it('Acid rain, ACID · ARC · STAY · SPREAD: strikes once (15 × 0.8 × 0.6 = 7), then a 5 × 5 field; the one it struck, starting a turn in it, takes × 0.5 = 4 (+ 5 Corroded)', () => {
     const f = rig(['acid', 'arc', 'stay', 'spread'], ['9,6']); line(f, ['acid', 'arc', 'stay', 'spread'], L4);
     evoke(f, '3,5', '9,5');
     const z = f.cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(f.foe.hp).toBe(493);
     f.cb.round++; f.turn(f.foe); // the next round: the strike counted as this round's bite
-    expect(493 - f.foe.hp).toBe(4 + 5); // the field ×0.5, and Corroded (from the strike) bites 5 expect(condOn(f.foe, 'corroded')).toBe(true); expect(logHas(f.cb, /caught in .*ACID field/)).toBe(true);
+    expect(493 - f.foe.hp).toBe(4 + 5); // the field ×0.5, and Corroded (from the strike) bites 5
+    expect(condOn(f.foe, 'corroded')).toBe(true); expect(logHas(f.cb, /caught in .*ACID field/)).toBe(true);
   });
   it('Swap a friend, STEP · RELAY: your relay jumps to the tile you pick (no save for your side)', () => {
     const f = rig(['step', 'relay'], ['14,9'], ['7,5']); line(f, ['step', 'relay'], L2);

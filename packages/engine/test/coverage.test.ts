@@ -3,14 +3,13 @@
 // Narrator gets the item's text, but the engine runs nothing. This file lists the gaps.
 //
 // - The ratchet test fails if gaps ever grow past the baseline (lanes only ever shrink it).
-// - The strict test (PHC_COVERAGE_STRICT=1, run by the integration lane) fails while any gap is left, listing them all.
+// - The strict test fails while any gap is left, listing them all (it runs in every suite since the lanes finished; it was opt-in by PHC_COVERAGE_STRICT).
 import { describe, expect, it } from 'vitest';
 import { coverageGaps, coverageReport, coverageSummary, allItems } from '../src';
 
 /** Gaps when the runtime landed (lane 0A): 369; 373 after lane 0B's perk_type fixes. Every lane and the hooks-gap pass
  * have closed theirs: the baseline is 0, so a new item or effect nobody runs fails this test. */
 const BASELINE = 0;
-const strict = !!(globalThis as any).process?.env?.PHC_COVERAGE_STRICT;
 
 const listGaps = () => {
   const by: Record<string, string[]> = {};
@@ -33,7 +32,7 @@ describe('coverage of perks, traits and class moves', () => {
     expect(n).toBeLessThanOrEqual(BASELINE);
     expect(coverageSummary().effects).toBeGreaterThan(600);
   });
-  it.skipIf(!strict)('no gaps (todo until the lanes finish; PHC_COVERAGE_STRICT=1): every effect is engine-run or explicitly Narrator-ruled', () => {
+  it('no gaps: every effect is engine-run or explicitly Narrator-ruled (the lanes finished; it was opt-in by PHC_COVERAGE_STRICT)', () => {
     const gaps = coverageGaps();
     if (gaps.length) throw new Error(gaps.length + ' effects nobody runs yet:\n' + listGaps());
   });

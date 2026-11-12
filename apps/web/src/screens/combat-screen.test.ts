@@ -141,6 +141,7 @@ describe('combat screen', () => {
     const tabEl = document.createElement('button'); tabEl.id = 'phc-tab-attack'; tabEl.setAttribute('role', 'tab');
     const panel = document.createElement('div'); panel.className = 'phc-cb-tabpanel'; const inside = document.createElement('button'); panel.appendChild(inside);
     document.body.append(tabEl, panel); inside.focus();
+    L._chord = null; // (a second number inside a second is a two-key code; this press is a lone one)
     L.numKey(key('2', inside)); r = L.renderVals(); expect(sel(r)).toBe('attack'); expect(document.activeElement).toBe(tabEl);
     tabEl.remove(); panel.remove();
     L.setTab('move'); r = L.renderVals();
@@ -207,9 +208,11 @@ describe('combat screen', () => {
       expect(r.mini.cmds[1].action).toBe('move');
       expect(r.mini.pips.length).toBe(r.apPips.length);
       const key = (k: string, target: any = document.body) => ({ key: k, target, preventDefault() {}, defaultPrevented: false });
-      const third = r.mini.cmds[2];
+      const third = r.mini.cmds[2], was = L.state.action;
       L.numKey(key('3')); r = L.renderVals();
-      if (!third.off) expect(L.state.action).toBe(third.action === 'shot' ? 'shot' : third.action);
+      // truth pass 3: the fixture's third command is off (a speed reload with a full magazine), so the old
+      // `if (!third.off)` never asserted anything. Both arms are stated: an off command leaves the action as it was.
+      expect(L.state.action).toBe(third.off ? was : third.action === 'shot' ? 'shot' : third.action);
       L.numKey(key('2')); r = L.renderVals(); expect(L.state.action).toBe('move');
       expect(r.mini.cmds[1].pressed).toBe('true');
       // H toggles, but not while typing.
@@ -280,8 +283,10 @@ describe('combat screen', () => {
     // number, which stalled the next turn card for ~6 s.
     const { _dryRun } = await import('./combat.js');
     const cb: any = { units: [{ id: 'u1', saves: {}, conds: {}, mg: null }], fx: [{ n: 1, k: 'turn' }], fxSeq: 1, glyphs: [], zones: [] };
-    const r = _dryRun(cb, 'u1', (c: any) => { (c.fx ||= []).push({ n: (c.fxSeq = (c.fxSeq || 0) + 1), k: 'draw' }); return null; });
-    expect(r.err).toBeNull();
+    const before = JSON.stringify(cb);
+    // (the dry run is the engine's now, preview.ts: it owns the copy; the game is the first argument)
+    const r = _dryRun(null, cb, 'u1', (c: any, u: any) => { (c.fx ||= []).push({ n: (c.fxSeq = (c.fxSeq || 0) + 1), k: 'draw' }); u.conds.burning = 2; (u.uses ||= {}).x = { s: 'c', n: 1 }; return null; });
+    expect(r.err).toBeNull(); expect(JSON.stringify(cb)).toBe(before); // nothing of the live fight is written: deeply equal
     expect(cb.fx).toEqual([{ n: 1, k: 'turn' }]);
     expect(cb.fxSeq).toBe(1);
   });

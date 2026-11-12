@@ -21,7 +21,7 @@ import type { StrikeOpts } from '../types';
 import { strikingWith, loseWeapon } from '../core';
 import { weaponPhys, TECHNIQUE } from '../data';
 import { WEAPON } from '../../data';
-import { type Combat, type Unit, alive, dist, xy, key, keyOf, refOf, moveBlockers, dropToPile } from '../../combat';
+import { say, type Combat, type Unit, alive, dist, xy, key, keyOf, refOf, moveBlockers, dropToPile } from '../../combat';
 import { condOn, condSource, endCond } from '../../magic';
 import { handEntry, emptyHand, mod, type PackItem } from '../../character';
 
@@ -117,12 +117,12 @@ function breakArmour(t: Tech, tgt: Unit): void {
   const s = techState(tgt, 'break');
   s.cut = (s.cut || 0) + Math.max(0, tgt.armour); tgt.armour = 0;
   s.by = t.u.id; s.until = t.cb.round + t.num('armour_rounds', 1);
-  t.cb.log.push(tgt.name + '\'s armour is broken: 0 until ' + t.u.name + '\'s next turn (Break).');
+  say(t.cb, tgt.name + '\'s armour is broken: 0 until ' + t.u.name + '\'s next turn (Break).');
 }
 function mendArmour(cb: Combat, v: Unit): void {
   const s = v.tech?.break; if (!s || s.cut == null) return;
   v.armour += s.cut; delete v.tech!.break;
-  cb.log.push(v.name + '\'s armour holds again.');
+  say(cb, v.name + '\'s armour holds again.');
 }
 onHook('turn_start', (ctx: any, cb: Combat) => {
   for (const v of cb.units) {
@@ -163,7 +163,7 @@ technique({
         meleeFx(t, 'pin', { target: v.id, to: v.pos, line: [t.u.pos, v.pos, ...(p === 'point' ? [beyond] : [])], weapon: leave ? t.weaponId : null, behind: b ? b.id : null }); }
       stop(t, v, 'pinned', { save: false, untilAp: t.num('pull_free_ap', 2), ...(leave ? { weapon: t.weaponId } : {}) });
       if (t.preview) t.note(v.name + ' stays Pinned until ' + t.num('pull_free_ap', 2) + ' AP is spent to pull free.');
-      if (leave) { if (!t.preview) t.cb.log.push(t.u.name + ' leaves the ' + t.w.name + ' in ' + v.name + '.'); loseWeapon(t, null); }
+      if (leave) { if (!t.preview) say(t.cb, t.u.name + ' leaves the ' + t.w.name + ' in ' + v.name + '.'); loseWeapon(t, null); }
     }
     spendMomentum(t);
     return null;

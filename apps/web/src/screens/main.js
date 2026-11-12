@@ -2,20 +2,24 @@
 // the sheet is your character, the stream is the session, voices and Overreach are the engine's private entries,
 // the dice table rolls the checks the Narrator called (the engine rolls; Echo rerolls), and Send speaks in turn.
 import { resourcesOf, resView, RES_CSS } from '../game/resources';
+import { CameraView, CAMERA_CSS } from '../game/cameraView';
+import { panKey, REF_W, REF_H } from '../game/camera';
+import { ZOOM_CSS } from '../game/mapZoom';
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, checkMod, fmt, tabNavIndex, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
   ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls } from './shared';
-import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, visibility, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER , STAGE_MULT , DESIGN_TEMPLATES, soulPicksLeft, gatedBy, FEELINGS } from '@engine';
-import { practiceView, feelingCodex, moduleGroups } from '../game/feelingsView';
+import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER , STAGE_MULT , DESIGN_TEMPLATES, soulPicksLeft, gatedBy, FEELINGS } from '@engine';
+import { practiceView, feelingCodex, moduleGroups, markIconSrc, iconStyle } from '../game/feelingsView';
+import { hasPaintedArt, heartMarkKey } from '../game/heartIcons';
 import { startOf } from '../game/starts';
 import { voiceState, speak, stopVoice, coreVoice, voiceChip, voicePrefs } from '../game/voice';
-import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, apForTiles, previewAttack, lineOfSight, effectiveRange, routeHazards, PICKUP_AP } from '@engine';
+import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, previewAttack, routeHazards, PICKUP_AP, moveOptions, reachOf, reachTiles, dryRun, withGame, analyzeCost } from '@engine';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
 import { derivedLines } from '../game/derived';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
-import { previewPerkAction, bindGame, phys } from '@engine';
+import { previewPerkAction, phys } from '@engine';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
@@ -49,6 +53,13 @@ const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) =
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
 // Main-screen extras: the dice verdict lands after the die does; the area map's planning marks breathe a little.
 ensureStyle('phc-resources', RES_CSS);
+ensureStyle('phc-camera', CAMERA_CSS);
+ensureStyle('phc-combat-mapzoom', ZOOM_CSS); // the area map's view buttons share the fight map toolbar's look
+/** The area map's camera (roadmap 2c; game/cameraView.ts): a map bigger than the one people know (16 x 11) keeps its
+ *  tile size and scrolls in its window, as the fight's does. Local to this browser. */
+const AREA_CAM = new CameraView('area');
+let AREA_LIVE = null;
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('keydown', (e) => { if (AREA_LIVE && AREA_LIVE.state.area && AREA_CAM.live()) AREA_LIVE.areaKey(e); });
 ensureStyle('phc-story-panels', STORY_PANELS_CSS); // the right column's movable modules (game/storyPanels.ts)
 // The UI pass (docs/design/ui-pass-shell.md 3, 4): Echo's flare when one is gained or spent, a new quest row's white
 // flash, and the minimap kept short enough that the quest board keeps its room on a short window.
@@ -113,15 +124,8 @@ function magicNow(g, c) {
     charge: cu?.mg ? cu.mg.charge : c ? evoChargeNow(c) : 0, cores: cu?.mg ? cu.mg.cores || 0 : c ? coresCarried(c) : 0, /* Swap core loads only mg.cores; crystallised ones join after the fight */ mp: cu?.mg ? Math.round(cu.mg.mp) : c ? mpNow(c) : 0 };
 }
 /** Try an engine magic action on a throwaway copy of the story map's fight: the engine's refusal (or null) and the
- *  unit afterwards. The UI learns reasons and costs from the engine without computing a rule itself. */
-function dryMagic(cbx, uid, fn) {
-  const units = cbx.units.map((x) => ({ ...x, conds: x.conds ? { ...x.conds } : x.conds, mg: x.mg ? { ...x.mg, held: x.mg.held ? { ...x.mg.held } : null } : x.mg }));
-  const c = { ...cbx, units, log: [], notes: [], fx: [], glyphs: [...(cbx.glyphs || [])], zones: (cbx.zones || []).map((z) => ({ ...z, hit: { ...(z.hit || {}) } })) };
-  const u = units.find((x) => x.id === uid);
-  let err = null;
-  try { err = u ? fn(c, u, { state: 1 }) : 'No unit.'; } catch (e) { err = String((e && e.message) || e); }
-  return { err, u };
-}
+ *  unit afterwards. The copy, the bound game and the dice are the engine's (preview.ts dryRun). */
+const dryMagic = (g, cbx, uid, fn) => dryRun(g, cbx, uid, fn);
 /** Story and log lines about magic take their family's ink (paired with a ✧ or ♥ mark in the stream). */
 const SIG_LINE = /draws [A-Z]+ at|evokes [A-Z]|scuffs out|vents \d+ Flux|loads a fresh core|OVERLOAD|Sigil word|fades? at /, SOUL_LINE = /Outburst|releases [^:]+:|lets .+ go \(|syphons \d+ MP|crystallises a mana core|MANA SHORT|holds the Strain/;
 const magicInk = (t) => (SIG_LINE.test(t || '') ? SIGIL_INK : SOUL_LINE.test(t || '') ? SOUL_INK : '');
@@ -269,7 +273,7 @@ function magicVals(self, g, c) {
           pick: () => { if (via) act({ type: 'magic/pick', charId: c.id, module: md.id, via }); },
           style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 1px 8px; align-items: center; padding: 5px 8px; border-radius: 8px; background: #10151F; border: 1px solid ' + (md.known ? '#3A2E5C' : '#1C2536') + (md.known || md.ok ? '' : '; opacity: 0.6'),
           stateStyle: 'grid-column: 2; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: ' + (md.known ? '#6FEA77' : md.ok ? '#C9D3E3' : '#A3AEC2') }; }) })),
-    hasPractice: !!pv, practiceText: pv ? pv.text : '', practiceHint: pv ? pv.hint + (left.mastered.length ? ' · free picks from Mastered ' + left.mastered.map((sk) => SKILL[sk]?.name || sk).join(', ') : '') : '',
+    hasPractice: !!pv, hasPracticeIcon: hasPaintedArt(heartMarkKey('practice')), practiceIcon: markIconSrc('practice'), practiceIconStyle: iconStyle(markIconSrc('practice'), '#E7EBF3'), practiceText: pv ? pv.text : '', practiceHint: pv ? pv.hint + (left.mastered.length ? ' · free picks from Mastered ' + left.mastered.map((sk) => SKILL[sk]?.name || sk).join(', ') : '') : '',
     practiceFill: 'height: 100%; width: ' + (pv ? pv.pct : 0) + '%; background: #AE9BFF',
     templates: DESIGN_TEMPLATES().map((t) => { const ok = designRoom && (known.schools || []).includes(t.school) && (t.modules || []).every((x) => (known.modules || []).includes(x));
       return { key: t.id, name: t.name, text: t.text || '', icon: formIconUri((t.modules || []).find((x) => isShape(x)) || 'bolt'), off: !ok,
@@ -314,6 +318,40 @@ export class MainLogic extends DCLogic {
     if (this.state.area) { if (!fromButton) closeAnim(this, 'area', () => this.setState({ area: false, wTarget: null })); return; }
     if (!fromButton && typeof document !== 'undefined' && document.querySelector('[role="dialog"][aria-modal="true"]')) return;
     this.setState({ area: true, shNarr: false });
+  }
+  /** The area map's whole-map view and back (centred on a tile when one is given, else on your character). */
+  areaWhole(on, key) {
+    this.setState({ areaWhole: !!on });
+    if (!on && typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(() => requestAnimationFrame(() => { this.areaSync(); AREA_CAM.follow([key || AREA_CAM.home].filter(Boolean), 'ask', true); }));
+  }
+  /** The area map's camera keys: the arrows and WASD move the view, Home goes back to your character. Not while typing
+   *  and not on a control that uses the arrows itself. */
+  areaKey(e) {
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    const t = e.target, typing = (x) => !!x && (/^(INPUT|TEXTAREA|SELECT)$/.test(x.tagName || '') || !!x.isContentEditable);
+    if (typing(t) || typing(document.activeElement) || document.querySelector('[data-phc-dialog], [data-phc-cutin]')) return;
+    if (e.key === 'Home') { if (e.repeat) return; e.preventDefault(); if (this.state.areaWhole) this.areaWhole(false); else AREA_CAM.goHome(); return; }
+    const d = panKey(e.key); if (!d) return;
+    if (t && typeof t.closest === 'function' && t.closest('[role="tablist"], [role="slider"], [role="separator"], [role="radiogroup"], [role="listbox"], [role="menu"], select')) return;
+    if (AREA_CAM.pan(d)) e.preventDefault();
+  }
+  /** After a render with the area map open: the tile size people know (what a 16 x 11 map came to in this window), the
+   *  camera bound to the map's window, the small map's picture; it opens on your character and follows them. */
+  areaSync() {
+    if (typeof document === 'undefined' || !this.state.area) return;
+    const sc = document.querySelector('.phc-area-scroll'), ov = document.querySelector('.phc-cam-over[data-phc-cam="area"]'), A = this._area;
+    if (!sc || !A) return;
+    const box = sc.parentElement && sc.parentElement.parentElement, innerW = box ? box.clientWidth - 16 : 800;
+    const T = Math.max(28, Math.min(80, Math.floor((Math.min(innerW, (window.innerHeight - 260) * (REF_W + 0.4) / (REF_H + 0.4)) - 18 - 2 * REF_W) / REF_W)));
+    if (T !== this._areaT) { this._areaT = T; this.setState({}); return; }
+    AREA_CAM.onMini = () => this.setState({});
+    AREA_CAM.overview = !A.cam; AREA_CAM.myTurn = false;
+    const fresh = !AREA_CAM.live() || this._areaKey !== A.key, was = AREA_CAM.home;
+    AREA_CAM.home = A.home; AREA_CAM.attach(sc, ov, A.w, A.h); AREA_CAM.setMini(A.mini);
+    if (!A.cam || !AREA_CAM.grid()) return;
+    if (fresh) { this._areaKey = A.key; if (A.home) AREA_CAM.follow([A.home], 'ask', true); }
+    else if (A.home && was && A.home !== was) AREA_CAM.follow([A.home], 'beat');
+    const mini = AREA_CAM.miniShown(); if (mini !== !!this._areaMiniOn) { this._areaMiniOn = mini; this.setState({}); }
   }
   /** The right column's four modules (game/storyPanels.ts): each one's place (CSS order), its grip's handlers, the
    *  reset link, and the player card's styles. `seats`: how many the player card keeps room for (four players and the
@@ -444,7 +482,7 @@ export class MainLogic extends DCLogic {
       outer: c.armourClass ? [kitDef.armourName + ' (Class ' + ROMAN[c.armourClass] + ')', 'Armour ' + (ARMOUR[c.armourClass]?.value || 0)] : null,
       off: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] ? 'Paired attacks · ' + armsLine(c.offHand.id) : (ITEM[c.offHand.id]?.text || '').slice(0, 80)] : null } : {};
     if (c) for (const [slot, id] of Object.entries(c.worn || {})) if (WORN_SLOT[slot]) worn[WORN_SLOT[slot]] = [ITEM[id]?.name || id, (ITEM[id]?.text || '').replace(/^[^:]+: /, '')];
-    const pack = c ? [...(c.stims ? [{ id: 'stim', item: 'stim_injector', name: 'Stim injector', qty: c.stims, kind: 'med', note: 'Heals 30 × Healing given; stabilises the Downed; stops Bleeding' }] : []), ...packOf(c),
+    const pack = c ? [...(c.stims ? [{ id: 'stim', item: 'stim_injector', name: 'Stim injector', qty: c.stims, kind: 'med', note: 'Heals 6 × Healing given, more as you level; stabilises the Downed; stops Bleeding' }] : []), ...packOf(c),
       ...(c.essence ? [{ id: 'eoe', item: 'essence_of_experience', name: 'Essence of Experience', qty: c.essence, kind: 'loot', note: 'Sells for 300' }] : [])] : [];
     worn.pack = c ? ['Pack', pack.length + (pack.length === 1 ? ' item' : ' items')] : null;
     const hotParts = S.hotSlot ? (S.hotSlot === 'main' ? [side === 'left' ? 'lHand' : 'rHand'] : SLOT_PARTS[S.hotSlot] || []) : [];
@@ -697,8 +735,8 @@ export class MainLogic extends DCLogic {
     // ---------- the zone: the story's map (or the fight's), with grid references (spec: Grid references) ----------
     const cb = castFight(g, g.combat, ART), inFight = g.phase === 'combat', taken = takenCards(g), map = inFight && cb ? cb.map : zoneMap(g);
     const pos = inFight ? {} : positionsOf({ ...g, story: { ...g.story, positions: { ...(g.story.positions || {}) } } });
-    const seenNow = inFight && cb ? visibility(cb, 'pc').seen : null;
-    const units = inFight ? cb.units.filter((u) => !(u.dead && u.side === 'foe') && (u.side === 'pc' || seenNow.has(u.id)))
+    // In a fight the view holds only what this side sees (the engine's fog, fog.ts): nothing is filtered here.
+    const units = inFight ? cb.units.filter((u) => !(u.dead && u.side === 'foe'))
       : Object.values(g.characters).filter((x) => !x.dead && pos[x.id]).map((x) => ({ id: 'pc-' + x.id, side: 'pc', charId: x.id, name: x.name, short: x.name.slice(0, 2).toUpperCase(), img: x.portrait,
         pos: pos[x.id], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }))
         .concat((() => { const ns = npcsOf({ ...g, story: { ...g.story } }).filter((n) => !n.hidden);
@@ -759,7 +797,7 @@ export class MainLogic extends DCLogic {
       else if (W === 'draw') {
         // Rules 1.4: on your own tile only; the engine says the cost and whether it starts, extends or breaks a Line.
         if (myAt) { mHi.reach.add(myAt); mHi.reachCol = SIG_CYAN; }
-        const was = bindGame(g), strip = (() => { try { return drawStrip(cbx, u, S.wStroke); } finally { bindGame(was); } })(); drawAll = strip.words; drawStroke = strip.stroke; const dw = wordSel ? drawAll.find((x) => x.id === wordSel) : null; drawInfo = dw;
+        const strip = withGame(g, () => drawStrip(cbx, u, S.wStroke)); drawAll = strip.words; drawStroke = strip.stroke; const dw = wordSel ? drawAll.find((x) => x.id === wordSel) : null; drawInfo = dw;
         mHint = !dw ? (myWords.length ? 'Pick a word.' : 'You know no Sigil words yet: learn one from an ally or a Sigil plate.') : !dw.ok ? 'Draw ' + dw.word + ': ' + dw.why
           : 'Click your own tile (' + refOf(myAt) + ') to draw ' + dw.word + ' (' + dw.cost.charge + ' charge, ' + dw.cost.ap + ' AP): it ' + dw.effectText + '.' + (dw.fades ? ' ' + dw.fades + ' fades (your cap).' : '')
             + ' The Evoker holds ' + MN.charge + ' charge. A spell is a straight Line of 2–4 glyphs: step to the next tile and draw again.' + (dw.overload ? ' WARNING: this glyph overloads your Evoker.' : '');
@@ -801,7 +839,7 @@ export class MainLogic extends DCLogic {
         mReady = !!(B && B.ok); mLabel = (B ? B.label + ' · ' + B.cost : 'Confirm');
         mHint = !wHp ? 'You hold no Outburst.' : B.ok ? B.title : B.label + ': ' + B.why;
       } else if (M_INSTANT.includes(W)) {
-        const run = { scuff: mgScuff, vent: mgVent, core: mgSwapCore, syphon: mgSyphon, crystallise: mgCrystallise }[W], why = dryMagic(cbx, u.id, (cc, uu) => run(cc, uu)).err;
+        const run = { scuff: mgScuff, vent: mgVent, core: mgSwapCore, syphon: mgSyphon, crystallise: mgCrystallise }[W], why = dryMagic(g, cbx, u.id, (cc, uu) => run(cc, uu)).err;
         const say = { scuff: 'Wipe out the glyphs on your own tile (1 AP).', vent: 'Let ' + MN.flux + ' Flux out of the Evoker into the air (1 AP): it thickens the mana.', core: 'Load a fresh core: charge back to ' + CORE_CHARGE + ' (2 AP, ' + MN.cores + ' spare).',
           syphon: 'Pull MP from the air (1 AP): about ' + Math.round(MN.band.syphon_mp * (u.mg?.syphon || 1)) + ' MP in ' + bandName(MN.band) + ' air; the air thins by 2.', crystallise: 'Crystallise a mana core out of the air (3 AP): needs mana 10 or more, and drops it by 10.' }[W];
         mHint = say + (why ? ' Not now: ' + why : ''); mReady = !why; mLabel = { scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', syphon: 'Syphon', crystallise: 'Crystallise' }[W] + ' · ' + { scuff: 1, vent: 1, core: 2, syphon: 1, crystallise: 3 }[W] + ' AP';
@@ -874,7 +912,7 @@ export class MainLogic extends DCLogic {
     // Move, Sprint and Sneak show the tiles you can reach this round (dashed) and, on hover, the path and its AP cost.
     // Shot, Aimed shot and Melee show the weapon's reach as a red grid around you: targets in it are outlined in red, the
     // rest dimmed, and hovering one shows the engine's hit chance and AP. All of it comes from the engine (paths,
-    // apForTiles, previewAttack, lineOfSight) on the story map as a throwaway fight; nothing here is a rule of its own.
+    // moveOptions, reachTiles, previewAttack) on the story map as a throwaway fight; nothing here is a rule of its own.
     const plan = { reach: new Set(), route: {}, hv: null, cost: '', red: new Map(), tgt: {}, info: '', isMove: false, isAtk: false, cross: new Set(), pile: null };
     const arrowsOf = (rr, from) => { rr.forEach((k, i) => { const p = i ? rr[i - 1] : from, [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); plan.route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; }); };
     const planOn = !!(S.area && mover && mover.hp > 0 && myAt && g.story.await === 'players' && !(g.story.ended || {})[mover.id]);
@@ -883,13 +921,16 @@ export class MainLogic extends DCLogic {
       if (cbx && u && ['move', 'sprint', 'sneak', 'drone', 'beast', 'twin'].includes(W)) {
         plan.isMove = true;
         if (!u.prone) {
-          const P = paths(cbx, u.pos, u.id), mvv = u.movement;
-          const costOf = (k) => (W === 'sprint' ? 2 : apForTiles(P.dist[k], 0, mvv) + (W === 'sneak' ? P.dist[k] : 0));
-          for (const k of Object.keys(P.dist)) { if (k === u.pos || (W === 'sprint' && (u.noSprint || P.dist[k] > Math.floor(3 * mvv)))) continue; if (costOf(k) <= u.ap) plan.reach.add(k); }
+          // Where the move may end and what each tile costs is the engine's answer (actions.ts moveOptions: the route,
+          // a Sprint's price and distance, the sneak's extra AP a tile, the items), asked once per state and action.
+          const how = W === 'sprint' ? 'sprint' : W === 'sneak' ? 'sneak' : 'move', mk = [u.id, u.pos, u.ap, W].join('|');
+          if (!this._wMove || this._wMove.g !== g || this._wMove.key !== mk) { let mo; try { mo = moveOptions(g, cbx, u.id, how, { world: ['move', 'sprint', 'sneak'].includes(W) }); } catch { mo = { tiles: {}, why: null, lend: 0 }; } this._wMove = { g, key: mk, ...mo }; }
+          const MO = this._wMove;
+          for (const k of Object.keys(MO.tiles)) plan.reach.add(k);
           const hv = S.hoverTile && plan.reach.has(S.hoverTile) ? S.hoverTile : null;
           // Rules 1.9 (item 683): the route the click takes goes around revealed hazards when it can (movePaths); the
           // preview marks every revealed hazard tile it still crosses, and says so.
-          if (hv) { const rh = routeHazards(cbx, u, hv, W === 'sprint' ? 'sprint' : W === 'sneak' ? 'sneak' : 'move'), tl = rh ? rh.tiles : P.dist[hv], cst = W === 'sprint' ? 2 : apForTiles(tl, 0, mvv) + (W === 'sneak' ? tl : 0), ct = crossesText(rh && rh.crosses);
+          if (hv) { const P = paths(cbx, u.pos, u.id), rh = routeHazards(cbx, u, hv, how), tl = MO.tiles[hv].tiles, cst = MO.tiles[hv].ap, ct = crossesText(rh && rh.crosses);
             plan.hv = hv; plan.cost = '−' + cst + ' AP · ' + tl + (tl === 1 ? ' tile' : ' tiles') + (ct ? ' · ⚠ HAZARD' : '');
             plan.info = (W === 'sprint' ? 'Sprint' : W === 'sneak' ? 'Sneak' : W === 'drone' ? 'The drone flies' : W === 'beast' ? 'The beast pads' : W === 'twin' ? 'The twin steps' : 'Move') + ' to ' + refOf(hv) + ': ' + tl + (tl === 1 ? ' tile' : ' tiles') + ', ' + cst + ' AP (' + u.ap + ' left).'
               + (ct ? ' ' + ct : rh && tl > P.dist[hv] ? ' The path goes around the revealed hazards (' + (tl - P.dist[hv]) + (tl - P.dist[hv] === 1 ? ' tile' : ' tiles') + ' longer).' : '');
@@ -900,13 +941,11 @@ export class MainLogic extends DCLogic {
         plan.isAtk = true;
         const mode = W, w0 = WEAPON[u.weapon] || WEAPON.fists, melee = isMelee(w0) || mode === 'melee', useW = mode === 'melee' && !isMelee(w0) ? WEAPON.fists : w0, fx = (w0.grants && w0.grants.effect) || {};
         // The reach the engine allows (previewAttack): melee 1 (2 for reach weapons); a gun out to three range bands (four with an optic).
-        const memoKey = g.v + '|' + mode + '|' + u.pos + '|' + u.weapon;
+        const memoKey = g.v + '|' + mode + '|' + u.pos + '|' + u.weapon + '|' + (u.mods || []).join(',');
         if (!this._redMemo || this._redMemo.key !== memoKey) {
-          const reachM = useW.properties?.includes('reach_2') || useW.id === 'lance' || (useW === w0 && fx.op === 'reach') ? (fx.op === 'reach' && useW === w0 ? fx.value : 2) : 1;
-          const optic = (u.mods || []).includes('mod_red_dot') || ((u.mods || []).includes('mod_scope') && mode === 'aimed') ? 1 : 0;
-          const maxR = melee ? reachM : effectiveRange(useW) * (3 + optic), red = new Map(), bandW = melee ? 0 : effectiveRange(useW);
-          // By range band: the first band reads strongest, the far ones fade (−2 to hit per band past the first).
-          for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = x + ',' + y; if (k === u.pos || solid.has(k)) continue; const d = dist(u.pos, k); if (d <= maxR && (melee || lineOfSight(cbx, u.pos, k))) red.set(k, bandW ? Math.max(0, Math.ceil(d / bandW) - 1) : 0); }
+          // By range band: the first band reads strongest, the far ones fade (−2 to hit per band past the first). How far
+          // it reaches is the engine's rule (actions.ts reachTiles: melee reach, the range bands, the optic).
+          const red = reachTiles(cbx, u, mode);
           this._redMemo = { key: memoKey, red };
         }
         plan.red = this._redMemo.red;
@@ -918,7 +957,7 @@ export class MainLogic extends DCLogic {
         const pvText = (t) => (!t ? '' : t.pv ? (t.pv.ok ? 'Hit ' + t.pv.pct + '% · need ' + t.pv.need + ' (you roll d20 ' + fmt(t.pv.toHit) + ') · ' + t.pv.ap + ' AP' + (t.pv.rangePenalty ? ' · range ' + t.pv.rangePenalty : '') + (t.pv.cover ? ' · behind half cover −5' : '') : t.pv.why) : t.inRange ? 'In reach: ' + attackApCost(useW, melee ? 'melee' : mode === 'aimed' ? 'aimed' : 'shot') + ' AP.' : 'Out of reach.');
         if (ht) { plan.hv = S.hoverTile; plan.cost = ht.pv && ht.pv.ok ? ht.pv.pct + '% · ' + ht.pv.ap + ' AP' : ht.inRange ? 'IN REACH' : 'OUT OF REACH'; plan.info = ht.name + ': ' + pvText(ht); }
         plan.selText = (k) => pvText(plan.tgt[k]);
-        plan.reachText = (melee ? 'Melee reach' : (useW.name || 'Weapon') + ' reach') + ': ' + (melee ? (plan.red.size ? 'the tiles next to you' : 'none') : 'up to ' + Math.round(effectiveRange(useW) * (3 + ((u.mods || []).includes('mod_red_dot') || ((u.mods || []).includes('mod_scope') && mode === 'aimed') ? 1 : 0))) + ' tiles in sight (−2 to hit per range band past ' + effectiveRange(useW) + ')') + '.';
+        const R = reachOf(cbx, u, mode); plan.reachText = (R.melee ? 'Melee reach' : (useW.name || 'Weapon') + ' reach') + ': ' + (R.melee ? (plan.red.size ? (R.max > 1 ? 'the tiles within ' + R.max + ' of you' : 'the tiles next to you') : 'none') : 'up to ' + Math.round(R.max) + ' tiles in sight (−2 to hit per range band past ' + R.band + ')') + '.';
       }
     }
     // Rules 1.9: Pick up on the area map. The clicked pile (or the one in reach, your own tile first) opens its checklist; a
@@ -934,8 +973,14 @@ export class MainLogic extends DCLogic {
     const pdOn = !!(S.putDown && c && !inFight && (c.carried || []).some((x) => x.npc.id === S.putDown)), pdSet = pdOn ? new Set(putDownTiles(g, c.id)) : new Set();
     if (S.putDown && !pdOn) queueMicrotask(() => this.setState({ putDown: null }));
     const sgTiles = evW ? mergeTiles((placedW && placedW.tiles) || {}, evW.tiles) : (placedW && placedW.tiles) || {};
+    // The area map's camera (roadmap 2c): a map bigger than 16 x 11 scrolls in its window at the usual tile size; the
+    // whole-map view is the old fitted grid. Tooltips near an edge turn inward from the window's edge, not the map's.
+    const areaBig = map.w > REF_W || map.h > REF_H, areaCamOn = areaBig && !S.areaWhole;
+    const AVT = S.area && areaCamOn && AREA_CAM.live() && AREA_CAM.id === 'area' ? AREA_CAM.tiles() : { x0: 0, y0: 0, x1: map.w - 1, y1: map.h - 1 };
     const cellsFor = (labels, onClick) => {
-      const out = [], lab = (key, text) => ({ key, isLabel: true, isTile: false, text, style: 'display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #7F8BA1' });
+      const vx = (x) => (labels ? x - AVT.x0 : x), vy = (y) => (labels ? y - AVT.y0 : y), vW = labels ? AVT.x1 - AVT.x0 + 1 : map.w, vH = labels ? AVT.y1 - AVT.y0 + 1 : map.h;
+      const out = [], lab = (key, text) => ({ key, isLabel: true, isTile: false, text, style: 'display: grid; place-items: center; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: #7F8BA1'
+        + (labels && areaCamOn ? '; background: #05070B; box-shadow: 0 0 0 2px #05070B; position: sticky; ' + (key === 'h-' ? 'top: 0; left: 0; z-index: 9' : key[0] === 'h' ? 'top: 0; z-index: 8; min-height: 16px' : 'left: 0; z-index: 8') : '') });
       if (labels) { out.push(lab('h-', '')); for (let x = 0; x < map.w; x++) out.push(lab('h' + x, refOf(x + ',0').replace(/\d+$/, ''))); }
       for (let y = 0; y < map.h; y++) {
         if (labels) out.push(lab('r' + y, String(y + 1)));
@@ -975,11 +1020,11 @@ export class MainLogic extends DCLogic {
             costStyle: 'position: absolute; left: 50%; top: -12px; transform: translateX(-50%); z-index: 6; padding: 2px 6px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; pointer-events: none; '
               + (plan.isAtk ? 'background: ' + RANGE_RED + '; color: #0A0D13' : 'background: #FFFFFF; color: #0A0D13'), isLabel: false, isTile: true, has: !!u, glyph, hasGlyph: !!glyph, hasSprite: !!spr, sprite: spr, spriteStyle: o ? spriteStyle(o) : '', glyphStyle: 'position: absolute; inset: 0; display: grid; place-items: center; font-size: ' + (labels ? 18 : 9) + 'px; line-height: 1; color: ' + (o && (o.approaches.some((a) => !a.tries.length) || o.kind === 'poi') && !o.resolved ? '#FFFFFF' : o && (kindOf(o).hazard || o.kind === 'trap') ? '#F65157' : '#C9D3E3'),
             click: labels && pdOn ? onClick(k) : u && u.npc && labels && W === 'move' ? () => openTalk(u.id) : interesting(o) && labels && W === 'move' ? () => openObj(o) : onClick(k), hover: () => { if (this.state.hoverTile !== k) this.setState({ hoverTile: k }); },
-            t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : u.npc ? u.npc.side.toUpperCase() + ' · ' + u.npc.tier.toUpperCase() : '', color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : '#F65157', inFight, right: x >= map.w / 2, up: y >= map.h / 2 }) : null,
+            t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : u.npc ? u.npc.side.toUpperCase() + ' · ' + u.npc.tier.toUpperCase() : '', color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : '#F65157', inFight, right: vx(x) >= vW / 2, up: vy(y) >= vH / 2 }) : null,
             hasTrail: !!trailAt[k] && !u, trailStyle: trailAt[k] ? 'position: absolute; left: 50%; top: 50%; width: ' + (labels ? 10 : 5) + 'px; height: ' + (labels ? 10 : 5) + 'px; margin: -' + (labels ? 5 : 2.5) + 'px 0 0 -' + (labels ? 5 : 2.5) + 'px; border-radius: 50%; z-index: 2; pointer-events: none; background: ' + trailAt[k] + '; box-shadow: 0 0 0 2px rgba(5, 7, 11, 0.6)' : '',
             picked: S.wTarget && u && u.id === S.wTarget,
             hasJoin: labels && !!(SLw.tiles[k] && SLw.tiles[k].length), join: labels && SLw.tiles[k] ? joinUri(SLw.tiles[k], { size: 100, pad: 60, anchor: [25, 25], pitch: 104 }) : '',
-            hasStrokeHot: labels && SLw.hot.has(k), hasStrokeTip: labels && k === S.hoverTile && !!SLw.hotText, strokeTip: SLw.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (x >= map.w / 2 ? 'right: 0' : 'left: 0') + '; z-index: 7; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
+            hasStrokeHot: labels && SLw.hot.has(k), hasStrokeTip: labels && k === S.hoverTile && !!SLw.hotText, strokeTip: SLw.hotText, strokeTipStyle: 'position: absolute; top: -17px; ' + (vx(x) >= vW / 2 ? 'right: 0' : 'left: 0') + '; z-index: 7; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0B1519; color: #8BDEEE; border: 1px solid #8BDEEE',
             glyphs: gl.slice(0, 2).map((x, i) => { const ours = x.side === 'pc';
               return { key: x.id, src: glyphMark(x, 'pc', knowsW).src,
                 style: 'position: absolute; z-index: 3; width: 44%; height: 44%; pointer-events: none; ' + (i ? 'right: 3%; bottom: 3%' : 'left: 3%; top: 3%') + (ours ? '; filter: drop-shadow(0 0 2px ' + SIG_CYAN + ')' : '; opacity: 0.7') }; })
@@ -1112,7 +1157,15 @@ export class MainLogic extends DCLogic {
       if (W === 'beast') { const b = myBeast(); if (!b) return toast('Your beast is gone.'); act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: 'move', unit: b.id }); }
       if (W === 'twin') { const t = myTwin(); if (!t) return toast('The twin isn\'t here: call it from the Class tab.'); act({ type: 'world/act', charId: mover.id, act: 'move', to: k, how: 'move', unit: t.id }); }
     };
-    const areaCells = cellsFor(true, worldClick);
+    // In the whole-map view of a big map a click on a tile goes back to the camera, centred there; it never acts.
+    const areaCells = cellsFor(true, areaBig && S.areaWhole ? (k) => () => this.areaWhole(false, k) : worldClick);
+    AREA_LIVE = this;
+    { const myU = c ? units.find((u) => u.charId === c.id) : null, shown = units.filter((u) => !u.dead), nPc = shown.filter((u) => u.side === 'pc').length;
+      this._area = { key: (g.code || '') + '|' + map.name + '|' + map.w + 'x' + map.h + '|' + (S.area ? 1 : 0), w: map.w, h: map.h, cam: areaCamOn, home: myU ? myU.pos : null,
+        mini: { solid: map.solid || [], full: Object.keys(cov).filter((k) => cov[k].kind === 'full'), half: Object.keys(cov).filter((k) => cov[k].kind !== 'full'),
+          dots: shown.map((u) => { const p = u.side === 'pc' ? playerOf(charOf(u.charId)?.owner) : null; return { key: u.pos, color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : u.side === 'pc' ? '#7FD4FF' : '#F65157', me: !!myU && u === myU, square: u.side !== 'pc' }; }),
+          label: nPc + (nPc === 1 ? ' squad member' : ' squad members') + ' and ' + (shown.length - nPc) + ' others in sight' } };
+      if (S.area && typeof requestAnimationFrame !== 'undefined' && !this._areaRaf) this._areaRaf = requestAnimationFrame(() => { this._areaRaf = 0; this.areaSync(); }); }
     // ---------- buffs and debuffs (the Status tab) ----------
     const fxList = (() => {
       if (!c) return [];
@@ -1157,12 +1210,12 @@ export class MainLogic extends DCLogic {
     const wPk = wu ? perkEntries(g, scb(), wu, c, 'world') : [], wPkSel = parsePk(W), wPkE = wPkSel ? wPk.find((e) => e.id === wPkSel.id && e.actionId === wPkSel.actionId) || null : null;
     const wKlass = classOf(c);
     // Rules 1.9: a magazine gun's two reloads (speed: the magazine drops into the pile here; tactical: it goes in the pack) at the engine's costs.
-    const W_UTIL = wWa ? [...reloadItems(wu), ...['load', 'clear', 'repair'].map((id) => wWA(id)).filter(Boolean).map((a) => [a.id, a.label, a.ap + ' AP']), ...reloadBothItems(wu)].map((a) => [a[0], a[1], String(a[2]).replace(/ · the \w+ drops?$/, ' · drops').replace(/ · the \w+ goe?s? in your pack$/, ' · to your pack')]) // the narrow panel: short words (the hint says the rest)
+    const W_UTIL = wWa ? [...reloadItems(wu), ...['load', 'clear', 'repair'].map((id) => wWA(id)).filter(Boolean).map((a) => [a.id, a.label, a.ap + ' AP']), ...reloadBothItems(wu, scb(), g)].map((a) => [a[0], a[1], String(a[2]).replace(/ · the \w+ drops?$/, ' · drops').replace(/ · the \w+ goe?s? in your pack$/, ' · to your pack')]) // the narrow panel: short words (the hint says the rest)
       : [['reload', 'Reload', '2 AP'], ['load', 'Load a magazine', 'AP by rounds'], ['clear', 'Clear a jam', '2 AP'], ['repair', 'Field Repair', '2 AP']];
     const W_ITEMS = [
       ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile'],
         ...(myDrone() ? [['drone', 'Move the drone', myDrone().ap + ' AP left']] : []), ...(myBeast() ? [['beast', 'Move the beast', myBeast().ap + ' AP left']] : []), ...(myTwin() ? [['twin', 'Move the twin', myTwin().ap + ' AP left']] : [])]],
-      ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : wW && wW.id !== 'fists' ? 'Strike (weapon\'s butt)' : 'Strike (bare hand)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', '2 AP']]],
+      ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : wW && wW.id !== 'fists' ? 'Strike (weapon\'s butt)' : 'Strike (bare hand)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', (wu ? analyzeCost(wu) : 2) + ' AP']]],
       ['UTILITY', [...W_UTIL, ['pickup', 'Pick up', PICKUP_AP + ' AP'], ['stim', 'Stim an ally', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
       ...(wPk.some((e) => e.tab === 'perks') ? [['PERKS & TRAITS', wPk.filter((e) => e.tab === 'perks').map((e) => [pkId(e), e.label, pkCost(e)])]] : []),
       ...(wPk.some((e) => e.tab === 'class') ? [['CLASS · ' + (wKlass ? wKlass.name.toUpperCase() : 'MOVES'), wPk.filter((e) => e.tab === 'class').map((e) => [pkId(e), e.label, pkCost(e)]), wKlass ? wKlass.ink : null]] : []),
@@ -1187,7 +1240,7 @@ export class MainLogic extends DCLogic {
       : W === 'twin' ? 'Click an open tile: the twin goes there on its own AP (4 a round), never more than 6 tiles from you.'
       : ['move', 'sprint', 'sneak'].includes(W) ? 'Click an open tile.' + (W === 'sneak' ? ' Sneaking hides you until a hostile notices you (Ingenuity to stay hidden).' : '')
       : isMagicW ? mHint
-      : W === 'analyze' && readT ? 'Read ' + readableAt(GLY, TRC, readT, 'pc', knowsW, c && c.id).map((x) => (knowsW(x.word) ? x.word.toUpperCase() : 'the') + (x.trace ? ' trace' : ' glyph')).join(' and ') + ' at ' + refOf(readT) + ' (2 AP): +2 study for each, and the word goes on your known-to-study list.'
+      : W === 'analyze' && readT ? 'Read ' + readableAt(GLY, TRC, readT, 'pc', knowsW, c && c.id).map((x) => (knowsW(x.word) ? x.word.toUpperCase() : 'the') + (x.trace ? ' trace' : ' glyph')).join(' and ') + ' at ' + refOf(readT) + ' (' + (wu ? analyzeCost(wu) : 2) + ' AP): +2 study for each, and the word goes on your known-to-study list.'
       : TARGETED.includes(W) ? (tgt ? (W === 'stim' ? 'Stim ' + tgt.name + '.' : W === 'analyze' ? 'Read ' + tgt.name + ': its HP and armour, for everyone.' : (tgt.obj ? 'Attack ' + (tgt.person ? tgt.name + ': a person; this starts a fight.' : 'the ' + tgt.name.toLowerCase() + (tgt.obj.hp != null ? ' (' + tgt.obj.hp + ' HP).' : ': the Narrator rules what happens.')) : tgt.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgt.name + '. It resolves on the map; no fight starts. Confirm if you mean it.' : 'Attack ' + tgt.name + ': this starts a fight. ' + (hiddenNow ? 'You are hidden: an ambush, your turn first' + ' (from its front: Ingenuity first).' : 'You are seen: you act from round 2.'))) : W === 'stim' ? 'Click an adjacent ally.' : 'Click a person or enemy on the map.')
       : W === 'pickup' ? (!wPick ? (pilesW.size ? 'Nothing on the ground next to you. Click a pile (the stack with a count) to see the way there.' : 'Nothing on the ground in sight.')
         : dist(myAt, wPick.pos) > 1 ? 'The pile at ' + refOf(wPick.pos) + ' is ' + dist(myAt, wPick.pos) + ' tiles away: walk next to it first. ' + (crossesText(plan.pile && plan.pile.crosses) || 'The way there crosses no known hazard.')
@@ -1233,9 +1286,9 @@ export class MainLogic extends DCLogic {
       act(how === 'world' ? { type: 'world/act', charId: c.id, act: 'perk', id: e.id, actionId: e.actionId, ...args } : { type: 'story/perk', charId: c.id, id: e.id, actionId: e.actionId, ...args });
       this.setState({ pkOpen: null, pkForm: null, ...(S.wAct && parsePk(S.wAct) ? { wAct: null } : {}) }); };
     /** The engine's verdict on the action with these args (the same truth the reducer uses). */
-    const pvOf = (e, how, args) => { const was = bindGame(g);
-      try { return how === 'world' ? previewPerkAction({ u: wu, c, cb: scb(), g }, e.id, { ...args, actionId: e.actionId }, 'world') : previewPerkAction({ c, g }, e.id, { ...args, actionId: e.actionId }, 'story'); }
-      catch (err) { return { ok: false, why: String((err && err.message) || err), lines: [] }; } finally { bindGame(was); } };
+    const pvOf = (e, how, args) => {
+      try { return withGame(g, () => (how === 'world' ? previewPerkAction({ u: wu, c, cb: scb(), g }, e.id, { ...args, actionId: e.actionId }, 'world') : previewPerkAction({ c, g }, e.id, { ...args, actionId: e.actionId }, 'story'))); }
+      catch (err) { return { ok: false, why: String((err && err.message) || err), lines: [] }; } };
     const verbOf = (e) => (/^[a-z]+$/.test(e.actionId) ? e.actionId.charAt(0).toUpperCase() + e.actionId.slice(1) : e.label);
     const pkBtn = (on, off) => 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.45; ' : 'pointer; ') + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3');
     const soulChip = (on, off) => chipStyle(SOUL_VIOLET, on) + (off ? '; opacity: 0.45; cursor: default' : '');
@@ -1412,7 +1465,12 @@ export class MainLogic extends DCLogic {
       areaCells, hereText: (() => { const k = S.hoverTile; if (!k || !areaCells.some((c) => c.key === k)) return 'Hover a tile to see what is there.';
         const cell = areaCells.find((c) => c.key === k); return (plan.info && plan.hv === k ? plan.info + ' · ' : '') + cell.label; })(),
       areaHint: pdOn ? pdHint : mOpen && mHint ? mHint : plan.isAtk ? (plan.reachText || '') + ' Red: in reach. Hover a target for the odds.' : plan.isMove ? 'Dashed tiles are in reach this round: hover one for the path and its AP, click to go.' : mover ? 'Click an open tile to move ' + mover.name + ' there. Hover any tile for what is at it.' : 'Hover any tile for what is at it.',
-      areaGrid: 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
+      areaGrid: areaCamOn ? 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', ' + (this._areaT || 48) + 'px); gap: 2px; width: max-content' + (AREA_CAM.miniHidden ? '' : '; margin-right: 172px')
+        : 'display: grid; grid-template-columns: 18px repeat(' + map.w + ', minmax(0, 1fr)); gap: 2px; margin: 0 auto; width: min(100%, calc((100vh - 260px) * ' + ((map.w + 0.4) / (map.h + 0.4)).toFixed(3) + '))',
+      areaCamWrap: areaCamOn ? '' : 'width: 100%', areaCamStyle: areaCamOn ? 'max-width: 100%; max-height: calc(100vh - 260px)' : 'overflow: visible',
+      areaCamLabel: 'The area map. Drag it, or use the arrow keys or W A S D, to look around; Home goes back to your character.',
+      areaView: { big: areaBig, whole: areaBig && S.areaWhole ? 'true' : 'false', toggle: () => this.areaWhole(!S.areaWhole), home: () => { if (S.areaWhole) this.areaWhole(false); else AREA_CAM.goHome(); },
+        wholeTitle: S.areaWhole ? 'Back to the usual size. Or click a tile to go there.' : 'See the whole map', hint: S.areaWhole ? 'Whole map: click a tile to go there.' : 'Drag the map, or use the arrow keys.' },
       areaTitle: 'AREA MAP · ' + (SB ? 'PROVING GROUND' : st0.short.toUpperCase() + ' · ' + map.name.toUpperCase()), inFight,
       hud: (() => { if (!c) return { has: false, bars: [], res: resView([]), magic: [] };
         const ap = apNow;

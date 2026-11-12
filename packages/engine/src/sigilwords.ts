@@ -1,5 +1,6 @@
 // Sigil words and grammar, rules revision 1.4 (spec: Mana, Sigils 1-2; data/sigils.json). Pure: data only, so the
 // character sheet, the validator side and the resolver all share it without import cycles.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import sigilsJ from '../../../data/sigils.json';
 import { SIGIL, type SigilDef } from './data';
 
@@ -14,6 +15,11 @@ export const SIGIL_REV = 14;
 export const MAX_GLYPHS: number = G.max_glyphs ?? 4;
 export const MIN_GLYPHS: number = G.min_glyphs ?? 2;
 export const REPEAT_MULT: number = G.repeats?.mult_per_repeated_glyph ?? 0.9;
+/** Rules 1.17, the Line multiplier: a character's Line multiplies its direct damage by its length (2 glyphs ×1.7,
+ * 3 ×1.75, 4 ×1.8; sigils.json grammar.line_mult). Damage only (never healing, shields, ranges or conditions), and
+ * only for characters and the units fighting for them: an enemy caster's damage comes from the enemy table. */
+export const LINE_MULT: Record<string, number> = G.line_mult?.by_glyphs || {};
+export const lineMult = (glyphs: number): number => (glyphs >= MIN_GLYPHS ? LINE_MULT[String(Math.min(MAX_GLYPHS, glyphs))] ?? 1 : 1);
 export const LIM = { traps: G.limits?.traps_per_caster ?? 2, turrets: G.limits?.turrets_per_caster ?? 1 };
 
 // ---------- words ----------

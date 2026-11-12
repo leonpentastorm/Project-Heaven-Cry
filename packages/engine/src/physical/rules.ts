@@ -9,16 +9,16 @@
 //   a turn's start: the held Watch ends; an enemy Suppressed loses 1 AP, Broken 2
 //   a turn's end: Pressure falls by 1 (2 in cover and unseen, or closer to the nearest enemy than the turn began)
 //   reactions: Pressed holds no Watch; Suppressed takes no opportunity attack either
-import { type Combat, type Unit, alive, dist, unitSees, emitFx, strikeWeapon } from '../combat';
+import { say, type Combat, type Unit, alive, dist, unitSees, emitFx, strikeWeapon } from '../combat';
 import { onHook, charOfUnit } from '../effects/hooks';
 import { condOn } from '../magic';
 import { WEAPON } from '../data';
 import { PHYS_RULES, TECHNIQUE, addDrill, drillMult } from './data';
 import { pressureOf, pressureState, addPressureTo, lowerPressureOf, isPressed, isSuppressed, onPressureState, hitPressure, coveredUnseen } from './pressure';
 import { ensureMomentum, momentumOf, loseMomentum, guardUp, strikeNoPressure, turnStamp, endWatch } from './core';
+import { foesOf } from '../kit';
 
 const P = () => PHYS_RULES.pressure;
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
 const nearestFoe = (cb: Combat, u: Unit): number => foesOf(cb, u).reduce((m, v) => Math.min(m, dist(u.pos, v.pos)), 99);
 /** Every weapon an attacker has damaged a unit with this fight (drill is paid for each on the kill). */
 function hitWith(tgt: Unit, attId: string, weaponId: string) { const l = ((tgt.hitWith ||= {})[attId] ||= []); if (!l.includes(weaponId)) l.push(weaponId); }
@@ -79,7 +79,7 @@ onHook('on_kill', (ctx: any, cb) => {
     const u = cb.units.find((x) => x.id === id), c = u && !u.companion && u.side === 'pc' ? charOfUnit(u) : null; if (!u || !c || !WEAPON[weaponId]) continue;
     const r = addDrill(c, weaponId, base * drillMult(c));
     emitFx(cb, 'drill', { unit: u.id, at: u.pos, weapon: weaponId, add: r.add, total: r.total, mark: r.mark, learned: r.learned });
-    if (r.mark) cb.log.push(u.name + ' reaches drill mark ' + 'I'.repeat(r.mark) + ' with the ' + WEAPON[weaponId].name + (r.learned ? ': ' + (TECHNIQUE[r.learned]?.name || r.learned) + ' learned' : ': a technique to pick') + '.');
+    if (r.mark) say(cb, u.name + ' reaches drill mark ' + 'I'.repeat(r.mark) + ' with the ' + WEAPON[weaponId].name + (r.learned ? ': ' + (TECHNIQUE[r.learned]?.name || r.learned) + ' learned' : ': a technique to pick') + '.');
   }
 });
 
@@ -120,5 +120,5 @@ onHook('reaction_window', (ctx: any) => {
 onPressureState((cb, u, was, now) => {
   if (was || !now) return;
   endWatch(cb, u, 'Pressed');
-  if (u.overwatch && u.overwatch !== 'melee') { u.overwatch = null; u.owShots = 0; cb.log.push(u.name + ' loses the held shot (Pressed).'); emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: 'overwatch', why: 'Pressed' }); }
+  if (u.overwatch && u.overwatch !== 'melee') { u.overwatch = null; u.owShots = 0; say(cb, u.name + ' loses the held shot (Pressed).'); emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: 'overwatch', why: 'Pressed' }); }
 });

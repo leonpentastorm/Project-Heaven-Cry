@@ -22,201 +22,145 @@
   {
    "id": "proving_ground",
    "name": "The Proving Ground",
-   "summary": "An open drill yard with mixed cover, a blockhouse, fuel drums and a rubble field.",
-   "w": 16,
-   "h": 12,
-   "solid": [
-    "G1–G4",
-    "K1",
-    "K3–K4",
-    "H4",
-    "J4"
+   "summary": "A wide drill yard with a blockhouse, a barricade line across the middle, sandbags, fuel drums and a rubble field.",
+   "w": 26,
+   "h": 26,
+   "layout": [
+    "..........................",
+    "..........................",
+    "..........######..........",
+    "...~~.....#.LT.#.....~~...",
+    "...~~.....D....D.....~~...",
+    "..........#....#..........",
+    "..........######......f...",
+    ".........P......P.........",
+    "............o.............",
+    "........c..B.....c........",
+    ".....SS.c..B.....c.EE.....",
+    ".....SS....B..o....EE.....",
+    ".....SS....B..B....EE.....",
+    ".....SS....B..B....EE.....",
+    ".....SS....o..B....EE.....",
+    ".....SS.c.....B..c.EE.....",
+    "........c.....B..c........",
+    ".............o............",
+    "..........................",
+    "...x.....www..www.........",
+    "............m.............",
+    "..........................",
+    "..........~~PP~~..........",
+    "...A......~~~~~~..........",
+    "..........~~~~~~..........",
+    ".........................."
    ],
-   "difficult": [
-    "H11–J12"
-   ],
-   "start": [
-    "A5",
-    "A7",
-    "B6",
-    "A9",
-    "B4",
-    "B8"
-   ],
-   "enemyStart": [
-    "P3",
-    "P5",
-    "P7",
-    "P9",
-    "O4",
-    "O6",
-    "O8",
-    "O10",
-    "P11"
-   ],
-   "notes": [
-    {
-     "at": "A1–P12",
-     "text": "The Proving Ground: packed sand under floodlights. The squad comes in from the west; drill units from the east."
+   "legend": {
+    "c": {
+     "kind": "crate",
+     "name": "Sandbags"
     },
-    {
-     "at": "G1–K4",
-     "text": "The blockhouse: concrete walls, a door to the south (I4) and one to the east (K2). Full cover from everything outside."
+    "w": {
+     "kind": "low_wall",
+     "name": "Low wall"
     },
-    {
-     "at": "D3–D4, D9, L10–M10",
-     "text": "Sandbag crates: half cover (30 HP)."
+    "P": {
+     "kind": "pillar",
+     "name": "Concrete pillar"
     },
-    {
-     "at": "G9–I9",
-     "text": "A low wall: half cover (60 HP)."
+    "B": {
+     "kind": "barricade",
+     "name": "Barricade"
     },
-    {
-     "at": "F5, K7",
-     "text": "Concrete pillars: full cover, blocks sight (80 HP)."
+    "o": {
+     "kind": "barrel",
+     "name": "Fuel drum"
     },
-    {
-     "at": "M3–M4",
-     "text": "A barricade: full cover (60 HP)."
-    },
-    {
-     "at": "E7, I6, N8",
-     "text": "Fuel drums: half cover until they go up (40 damage, 2 tiles)."
-    },
-    {
-     "at": "G11",
-     "text": "A marked practice mine: step on it and it bites (25 damage)."
-    },
-    {
-     "at": "L5",
-     "text": "A burning drum fire: 10 damage to anyone who starts a turn in it; it lights the yard."
-    },
-    {
-     "at": "B12",
-     "text": "Spilled coolant: 8 damage to anyone who starts a turn in it."
-    },
-    {
-     "at": "H11–J12",
-     "text": "A rubble field: slow going."
-    }
-   ],
-   "objects": [
-    {
+    "D": {
      "kind": "door",
-     "at": "I4",
-     "name": "Blockhouse door (south)"
+     "name": "Blockhouse door"
     },
-    {
-     "kind": "door",
-     "at": "K2",
-     "name": "Blockhouse door (east)"
-    },
-    {
+    "L": {
      "kind": "lamp",
-     "at": "H2",
      "name": "Blockhouse lamp"
     },
-    {
+    "T": {
      "kind": "terminal",
-     "at": "J1",
      "name": "Range terminal",
      "text": "Logs every wave. Nobody reads it."
     },
-    {
-     "kind": "crate",
-     "at": "D3",
-     "name": "Sandbags"
-    },
-    {
-     "kind": "crate",
-     "at": "D4",
-     "name": "Sandbags"
-    },
-    {
-     "kind": "crate",
-     "at": "D9",
-     "name": "Sandbags"
-    },
-    {
-     "kind": "crate",
-     "at": "L10",
-     "name": "Sandbags"
-    },
-    {
-     "kind": "crate",
-     "at": "M10",
-     "name": "Sandbags"
-    },
-    {
-     "kind": "low_wall",
-     "at": "G9",
-     "name": "Low wall"
-    },
-    {
-     "kind": "low_wall",
-     "at": "H9",
-     "name": "Low wall"
-    },
-    {
-     "kind": "low_wall",
-     "at": "I9",
-     "name": "Low wall"
-    },
-    {
-     "kind": "pillar",
-     "at": "F5",
-     "name": "Concrete pillar"
-    },
-    {
-     "kind": "pillar",
-     "at": "K7",
-     "name": "Concrete pillar"
-    },
-    {
-     "kind": "barricade",
-     "at": "M3",
-     "name": "Barricade"
-    },
-    {
-     "kind": "barricade",
-     "at": "M4",
-     "name": "Barricade"
-    },
-    {
-     "kind": "barrel",
-     "at": "E7",
-     "name": "Fuel drum"
-    },
-    {
-     "kind": "barrel",
-     "at": "I6",
-     "name": "Fuel drum"
-    },
-    {
-     "kind": "barrel",
-     "at": "N8",
-     "name": "Fuel drum"
-    },
-    {
+    "A": {
      "kind": "container",
-     "at": "C11",
      "name": "Ammo locker"
     },
-    {
+    "m": {
      "kind": "trap",
-     "at": "G11",
      "name": "Practice mine",
      "hidden": false
     },
-    {
+    "f": {
      "kind": "fire",
-     "at": "L5",
      "name": "Drum fire"
     },
-    {
+    "x": {
      "kind": "toxic",
-     "at": "B12",
      "name": "Spilled coolant"
+    }
+   },
+   "notes": [
+    {
+     "at": "A1–Z26",
+     "text": "The Proving Ground: packed sand under floodlights. The squad comes in from the west; drill units from the east."
+    },
+    {
+     "at": "K3–P7",
+     "text": "The blockhouse: concrete walls, a door to the west (K5) and one to the east (P5). Full cover from everything outside."
+    },
+    {
+     "at": "L10–L14, O13–O17",
+     "text": "The barricade line: two staggered rows across the middle. Full cover, and it blocks sight (60 HP a section). The way through is between them."
+    },
+    {
+     "at": "I10–I11, I16–I17, R10–R11, R16–R17",
+     "text": "Sandbags: half cover (30 HP)."
+    },
+    {
+     "at": "J20–L20, O20–Q20",
+     "text": "Low walls: half cover (60 HP)."
+    },
+    {
+     "at": "J8, Q8, M23–N23",
+     "text": "Concrete pillars: full cover, blocks sight (80 HP)."
+    },
+    {
+     "at": "M9, O12, L15, N18",
+     "text": "Fuel drums: half cover until they go up (40 damage, 2 tiles)."
+    },
+    {
+     "at": "M21",
+     "text": "A marked practice mine: step on it and it bites (25 damage)."
+    },
+    {
+     "at": "W7",
+     "text": "A burning drum fire: 10 damage to anyone who starts a turn in it; it lights the yard."
+    },
+    {
+     "at": "D20",
+     "text": "Spilled coolant: 8 damage to anyone who starts a turn in it."
+    },
+    {
+     "at": "K23–P25",
+     "text": "A rubble field: slow going."
+    },
+    {
+     "at": "D4–E5, V4–W5",
+     "text": "Churned sand: slow going."
+    },
+    {
+     "at": "A1–Z2",
+     "text": "The north flank: open ground behind the blockhouse."
+    },
+    {
+     "at": "A24–Z26",
+     "text": "The south flank: open, past the rubble."
     }
    ],
    "music": {

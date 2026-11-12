@@ -2,6 +2,8 @@
 // is an action or rides on one, else with the game bound and the engine's own functions (moveUnit, resolveAttack,
 // applyDamage, emit), the same calls the reducer and the enemy AI make.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { apply, defense, moveUnit, resolveAttack, previewAttack, applyDamage, applyCond, condOn, d20, emit, emitStory, refOf, objectsOf, endTurn, healingMult, type Unit, type Combat, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -16,7 +18,7 @@ const charOf = (g: any, u: Unit): Character => g.characters[u.charId!];
 const tough = (u: Unit, def = 0) => { u.hp = u.maxHp = 999; u.def = def; u.armour = 0; u.injResist = 0; return u; };
 const cls = (adv: string, extra: any = {}) => ({ advancedClass: adv, ...extra });
 const mk = (id: string, t: string) => 'class:' + id + '#' + t;
-const evoker = (u: Unit, words: string[], extra: any = {}) => { u.mg = { words, designs: [], evoker: true, emanator: false, charge: 10, cores: 0, coresMade: 0, flux: 0, mp: 0, mpMax: 0, strain: 0, held: null, cast: false, brain: 2, will: 0, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 3, saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any; return u; };
+const evoker = (u: Unit, words: string[], extra: any = {}) => { u.mg = { words, designs: [], evoker: true, emanator: false, charge: 10, cores: 0, coresMade: 0, flux: 0, mp: 0, mpMax: 0, strain: 0, held: null, cast: false, brain: 2, will: 0, sigilMult: 1, sigilBoon: 1, soulMult: 1, soulBoon: 1, deal: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 3, saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any; return u; };
 
 // ============================================================ Gunslinger
 describe('Gunslinger', () => {
@@ -157,7 +159,7 @@ describe('CCEC Ballistician', () => {
     expect((s.g.story.rulings || []).some((r: any) => /Case File on Vex/.test(r.text))).toBe(true);
     emitStory(s.g, 'check_result', { c: s.g.characters[c.id], ck: { skills: ['analysis'], roll: { ok: true } }, g: s.g });
     expect(s.g.characters[c.id].state!['class:ccec_ballistician.case_file'].files).toContain('Vex');
-    s.act({ type: 'narrator/turn', turn: { narration: 'Vex draws.', combat: { name: 'Vex', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Vex', tier: 'soldier', weapon: 'service_pistol', at: 'O6' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Vex draws.', combat: { name: 'Vex', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Vex', tier: 'soldier', weapon: 'service_pistol', at: 'O6' }] } } } as any);
     const vex = s.g.combat!.units.find((u) => u.name === 'Vex')!;
     expect(condOn(vex, 'marked')).toBe(true);
   });
@@ -196,7 +198,7 @@ describe('Banner Dancer', () => {
   it('Banner Thread: no torso armour gives +2 Defense and +1 Movement; an inner torso plate takes it away', () => {
     const base = fightWith([{}], [{ at: 'O10' }]).pc, bare = fightWith([cls('banner_dancer')], [{ at: 'O10' }]);
     const c = charOf(bare.g, bare.pc);
-    if ((c.armourClass || 0) === 0 && !c.worn?.inner_torso && !c.worn?.lower_torso) { expect(bare.pc.def).toBe(base.def + 2); expect(bare.pc.movement).toBe(base.movement + 1); }
+    expect(c.armourClass || 0).toBeGreaterThan(0); // the fixture wears armour: the bare case is pinned below with it stripped (truth pass 3: the two expects here never ran)
     const s = storyWith([cls('banner_dancer')]), ch = s.g.characters[s.chars[0].id];
     ch.armourClass = 0; ch.worn = {}; const def0 = withGame(s.g, () => defense(ch));
     ch.worn = { inner_torso: 'trauma_plate' }; const def1 = withGame(s.g, () => defense(ch));

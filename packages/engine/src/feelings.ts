@@ -1,20 +1,25 @@
 // Feelings (rules 1.8, Outburst 4.0; spec: Soul magic section 12; data/feelings.json). A feeling is poured into a held
-// Outburst with a Pump: +1 stage with its own step on the multiplier instead of the plain +0.4, and its behaviour joins
+// Outburst with a Pump: +1 stage with its own step on the multiplier instead of the plain +0.2 (rules 1.19), and its behaviour joins
 // the release. A feeling unlocks the first time its trigger happens to the character (the engine watches the hooks and
 // the effects stream below); the Narrator may grant one too. This file holds the data, the steps, the unlocking and the
 // triggers, and residue lookups; what a feeling does at a release (and residue's effects) runs in magic.ts beside the
 // conditions, harm and heals. Everything is deterministic. Every number is provisional (spec 14, items 801 on).
+// Rules 1.19 (the Outburst rework, round 2): a plain Pump is +0.2; each feeling goes into an Outburst once; a feeling
+// that buys the multiplier pays for it (1 Strain or 8 HP for +0.3 above a plain Pump), one that changes the Release
+// steps +0.3, and a strong one steps +0.2, 0 or below 0 (Calm, Relief: the multiplier going down is the price).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import feelJ from '../../../data/feelings.json';
 import { SOUL_RULES } from './data';
 import type { Character } from './character';
-import { type Combat, type Unit, dist, lineOfSight } from './combat';
+import { say, type Combat, type Unit, dist, lineOfSight } from './combat';
 import { fxTaps } from './fxtap';
 import { onHook, onStoryHook, boundGame, charOfUnit } from './effects/hooks';
 import { emitFx } from './combat';
 
 export interface FeelingDef {
   id: string; name: string; n: number; family: string;
-  step: { base?: number; vs_last_hurt?: number; per_stage?: number; per_10pct_missing?: number; alone_extra?: number; alone_range?: number; per_ally?: number; range?: number; max?: number };
+  /** Rules 1.17: `base` is the step (+0.2 is a plain Pump's since rules 1.19); the rest are what a few feelings add to it; `text` says it in words. */
+  step: { base?: number; text?: string; vs_last_hurt?: number; fallen?: number; per_stage_past?: number; from_stage?: number; per_20pct_missing?: number; alone_extra?: number; alone_range?: number; per_ally?: number; range?: number; max?: number };
   trigger: { event: string; text: string };
   pour: Record<string, any> & { text: string };
   residue: Record<string, any> & { kind: 'helps' | 'harms' | 'none'; text: string };
@@ -22,8 +27,13 @@ export interface FeelingDef {
 const FJ: any = feelJ;
 export const FEELINGS: FeelingDef[] = FJ.items;
 export const FEELING: Record<string, FeelingDef> = Object.fromEntries(FEELINGS.map((f) => [f.id, f]));
-/** A plain Pump's step on the multiplier (the stage table climbs 0.4 a stage from stage 1). */
-export const PLAIN_STEP: number = FJ.plain_step ?? 0.4;
+/** A plain Pump's step on the multiplier (rules 1.19: the stage table climbs 0.2 a stage from stage 0; 0.4 in rules 1.17). */
+export const PLAIN_STEP: number = FJ.plain_step ?? 0.2;
+/** Rules 1.19: each feeling goes into an Outburst once (data `once_each`; a single feeling's own `pour.once` still works). */
+export const ONCE_EACH: boolean = !!FJ.once_each;
+/** A feeling's own price at the Pump or after the Release, for previews and the simulator: Strain now, Strain after a
+ * Release that takes nobody down (Pride), HP at the Release. */
+export const feelingCost = (id: string): { strain: number; strainAfter: number; hp: number } => { const p: any = FEELING[id]?.pour || {}; return { strain: Number(p.strain || 0), strainAfter: Number(p.strain_unless_down || 0), hp: Number(p.self_damage || 0) }; };
 export const START_FEELINGS: string[] = FJ.start_default || ['rage', 'love'];
 export const START_FEELING_COUNT: number = FJ.start_count ?? 2;
 export const RESIDUE_ROUNDS: number = FJ.residue_rounds ?? 2;
@@ -54,7 +64,7 @@ export function feelChar(g: any, c: Character | null | undefined, id: string, wh
   if (cb) {
     let unit: string | null = null;
     for (const v of cb.units) if (v.charId === c.id && v.mg) { const fl = (v.mg.feelings ||= []); if (!fl.includes(id)) fl.push(id); unit ||= v.id; }
-    cb.log.push(text);
+    say(cb, text);
     emitFx(cb, 'felt', { unit, char: c.id, feeling: id, name: f.name, family: f.family, why });
     if (cb.overworld && g && storyNote) storyNote(g, c, text);
   } else if (g && storyNote) storyNote(g, c, text);
@@ -70,21 +80,25 @@ export function feelUnit(cb: Combat, u: Unit | null | undefined, id: string, why
 const alliesNear = (cb: Combat, u: Unit, r: number) => cb.units.filter((v) => v !== u && v.side === u.side && !v.dead && !v.downed && !v.surrendered && dist(v.pos, u.pos) <= r).length;
 /** Whoever last hurt this unit (an enemy), for Spite. */
 export const lastHurtBy = (u: Unit): string | null => (u as any).feelHurtBy || null;
-/** One feeling pump's step on the multiplier, read at the release (Pride by the stage reached, Despair by HP missing,
- * Loneliness and Belonging by allies near, Spite by the target). */
+/** Has an ally of this unit gone Down or died in this fight (Grief, rules 1.19)? Companions count; the unit itself doesn't. */
+export const allyFallen = (cb: Combat, u: Unit) => cb.units.some((v) => v !== u && v.side === u.side && (v.dead || v.downed));
+/** One feeling pump's step on the multiplier, read at the release (rules 1.19: every feeling has its `base`; Grief
+ * steps more once an ally has fallen, Despair by HP missing, Loneliness with no ally near, Belonging by allies near,
+ * Spite against whoever last hurt you). */
 export function feelingStep(cb: Combat | null, u: Unit, id: string, stage: number, t?: Unit | null): number {
   const f = FEELING[id]; if (!f) return PLAIN_STEP;
-  const s = f.step || {};
+  const s: any = f.step || {}, base: number = s.base ?? PLAIN_STEP, r2 = (n: number) => Math.round(n * 100) / 100;
   switch (id) {
-    case 'pride': return (s.per_stage ?? 0.2) * Math.max(0, stage);
-    case 'despair': { const miss = u.maxHp > 0 ? Math.max(0, (u.maxHp - u.hp) / u.maxHp) : 0; return (s.per_10pct_missing ?? 0.1) * Math.floor(miss * 10 + 1e-9); }
-    case 'loneliness': return (s.base ?? 0.2) + (cb && !alliesNear(cb, u, s.alone_range ?? 3) ? s.alone_extra ?? 0.3 : 0);
-    case 'belonging': return cb ? Math.min(s.max ?? 0.5, (s.per_ally ?? 0.1) * alliesNear(cb, u, s.range ?? 3)) : 0;
-    case 'spite': return t && lastHurtBy(u) === t.id ? s.vs_last_hurt ?? 0.8 : s.base ?? 0.4;
-    default: return s.base ?? PLAIN_STEP;
+    case 'pride': return r2(base + (s.per_stage_past ?? 0) * Math.max(0, stage - (s.from_stage ?? 2)));
+    case 'grief': return cb && s.fallen != null && allyFallen(cb, u) ? s.fallen : base;
+    case 'despair': { const miss = u.maxHp > 0 ? Math.max(0, (u.maxHp - u.hp) / u.maxHp) : 0; return r2(Math.min(s.max ?? 0.6, base + (s.per_20pct_missing ?? 0.1) * Math.floor(miss * 5 + 1e-9))); }
+    case 'loneliness': return r2(base + (cb && !alliesNear(cb, u, s.alone_range ?? 3) ? s.alone_extra ?? 0.3 : 0));
+    case 'belonging': return cb ? r2(Math.min(s.max ?? 0.5, base + (s.per_ally ?? 0.1) * alliesNear(cb, u, s.range ?? 3))) : base;
+    case 'spite': return t && lastHurtBy(u) === t.id ? s.vs_last_hurt ?? 0.5 : base;
+    default: return base;
   }
 }
-/** What the feeling pumps add to the stage table's multiplier: the sum of (step − 0.4) (item 804). */
+/** What the feeling pumps add to the stage table's multiplier: the sum of (step − a plain Pump's step) (item 804). */
 export function feelDelta(cb: Combat | null, u: Unit, felt: string[] | undefined, stage: number, t?: Unit | null): number {
   let n = 0; for (const f of felt || []) n += feelingStep(cb, u, f, stage, t) - PLAIN_STEP;
   return Math.round(n * 100) / 100;
@@ -209,7 +223,7 @@ function registerFeelingTriggers() {
   });
 }
 registerFeelingTriggers();
-/** Story triggers game.ts calls: resisting or indulging an Overreach, a new zone reached, a vow broken (faith.ts). */
+/** Story triggers game.ts calls: resisting or indulging an Overreach, a new zone reached. A broken vow unlocks Shame from faith.ts (breakVow). */
 export function feelOverreach(g: any, c: Character, choice: 'indulge' | 'resist') { feelChar(g, c, choice === 'resist' ? 'defiance' : 'abandon', choice === 'resist' ? 'resisted an Overreach' : 'indulged an Overreach'); }
 export function feelNewZone(g: any, c: Character) { feelChar(g, c, 'wonder', 'a new place'); }
 export const SOUL_PRACTICE: any = (SOUL_RULES as any).practice || {};

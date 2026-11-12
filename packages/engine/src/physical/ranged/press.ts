@@ -1,14 +1,17 @@
 // Physical 2.0, ranged Press: Pressure with little or no damage (+1 Heat on top of what it fires: the core adds it).
 // Suppress is the lead's reference; the ranged lane builds Rake, Warning Shot, Flush, Mag Dump and Crossfire here.
 import { technique, strike, canStrike, spendRounds, addPressure, addPressureTo, onHook, save, hitByAlly, ownSideOnly, stepsWithin, stepUser, standingAt, turnStamp, atCover, flanksCover, hitPressure, pressureOf, isPressed, type Tech, type StrikeResult } from './shared';
-import { alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, neverJams, attackApCost, refOf, type Combat, type Unit } from '../../combat';
+import { say, alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, neverJams, attackApCost, refOf, type Combat, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { applyDamage } from '../../effects/damage';
+import { landed } from '../../effects/output';
 import { reveal } from '../../tactics';
 import { physicalMult } from '../../character';
 import { PHYS_RULES } from '../data';
 import { pressureCap } from '../pressure';
 import { bracedSuppress } from './sets';
+import { canPay } from '../../effects/cost';
+import { unitsIn } from '../../kit';
 
 // 8. Suppress: 3 rounds, one roll at +2. A hit is half damage and 2 Pressure in all; a miss is 1.
 //    Auto: enemies within 1 tile of the target also gain 1. Heavy, Braced: it holds until your next turn, and any enemy
@@ -94,7 +97,7 @@ function inWeapon<T>(t: Tech, fn: () => T): T {
 export function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): void {
   if (t.preview) return;
   const u = t.u, w = t.w;
-  if (heatsUp(t)) { u.heat += 1; if (t.hand === 'main' && canJam(w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, w)) { u.jammed = true; t.cb.log.push(u.name + '\'s weapon jams (Heat).'); } }
+  if (heatsUp(t)) { u.heat += 1; if (t.hand === 'main' && canJam(w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, w)) { u.jammed = true; say(t.cb, u.name + '\'s weapon jams (Heat).'); } }
   u.shotsThisTurn = (u.shotsThisTurn || 0) + 1; u.firstShotDone = true; u.firstShotTurn = true; u.attackedTurn = true;
   if (t.hand === 'main' && u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1);
   emitFx(t.cb, 'shot', { unit: u.id, target: null, from: u.pos, to, weapon: w.id, cat: w.category, mode: 'shot', hit: false, crit: false, fumble: false, dmg: 0, killed: false, ...(u.jammed && t.hand === 'main' ? { jam: true } : {}), tech: t.def.id, vi: 0, ...fx });
@@ -105,12 +108,12 @@ export function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): v
  * Returns the damage (what it would be, in a preview). */
 function noRollHit(t: Tech, target: Unit, mult: number, label: string): number {
   const d = inWeapon(t, () => attackDamage(t.cb, t.u, target, 'shot', t.c, { preview: t.preview }));
-  const dmg = Math.max(1, Math.floor(d.total * mult) - d.armour);
+  const dmg = landed(d.total * mult, d.armour);
   if (t.preview) { t.note(target.name + ' takes ' + dmg + ' (' + label + ', no roll).'); return dmg; }
   const r = applyDamage(t.cb, target, dmg, { ...d.src, shield: true, credit: 'all' } as any);
   emitFx(t.cb, 'hurt', { target: target.id, at: target.pos, dmg: r.amount, why: 'weapon', killed: r.killed, by: t.u.id });
   if (r.killed) fxFell(t.cb, target);
-  t.cb.log.push(target.name + ' takes ' + r.amount + ' (' + t.def.name + ', ' + label + ')' + (r.killed ? (target.side === 'foe' ? ' · down for good' : ' · Downed') : '') + '.');
+  say(t.cb, target.name + ' takes ' + r.amount + ' (' + t.def.name + ', ' + label + ')' + (r.killed ? (target.side === 'foe' ? ' · down for good' : ' · Downed') : '') + '.');
   return r.amount;
 }
 /** What the ordinary Pressure of a ranged hit would give this target now (rules.ts's on_hit, read without changing
@@ -136,8 +139,7 @@ function burnRest(t: Tech, total: number, fired: number, ammo0: number): void {
 function coneTargets(t: Tech, tgt: Unit): Unit[] {
   const u = t.u, [ax, ay] = xy(u.pos), [tx, ty] = xy(tgt.pos), len = Math.hypot(tx - ax, ty - ay) || 1;
   const fx: any = (t.w as any).grants?.effect || {}, width = fx.op === 'auto_width' ? fx.value + 0.5 : t.num('auto_cone_width', 1.5);
-  const near = (v: Unit) => { const [vx, vy] = xy(v.pos), along = ((vx - ax) * (tx - ax) + (vy - ay) * (ty - ay)) / len; return along > 0 && Math.abs((vx - ax) * (ty - ay) - (vy - ay) * (tx - ax)) / len <= width; };
-  return t.cb.units.filter((v) => enemyOf(t, v) && alive(v) && near(v) && canStrike(t, v));
+  return unitsIn(t.cb, { shape: 'band', from: u.pos, toward: tgt.pos, width }).filter((v) => enemyOf(t, v) && canStrike(t, v));
 }
 /** The 3-target Rake's targets: the ones the player named (args.targetIds; the main target first), or else the main
  * target and the enemies nearest it that can be shot, every pair within the spread. A refusal is a string. */
@@ -172,7 +174,7 @@ technique({
     if (!canStrike(t, tgt)) return refused(strike(t, { target: tgt })); // the shot can't be made: nothing is spent
     if (p === 'auto') {
       const list = coneTargets(t, tgt), total = t.num('auto_rounds', 10), dur0 = u.dur, w = t.w;
-      if (!t.preview) { cb.log.push(u.name + ' opens up on full auto.'); emitFx(cb, 'volley', { unit: u.id, target: tgt.id, from: u.pos, to: tgt.pos, weapon: w.id, cat: w.category, mode: 'auto', shots: total }); }
+      if (!t.preview) { say(cb, u.name + ' opens up on full auto.'); emitFx(cb, 'volley', { unit: u.id, target: tgt.id, from: u.pos, to: tgt.pos, weapon: w.id, cat: w.category, mode: 'auto', shots: total }); }
       let fired = 0;
       // one full-auto volley, as fireAuto makes it (Spray and Pray and the items read the volley), one roll a target
       chained(() => {
@@ -230,13 +232,13 @@ technique({
     const tgt = t.tgt!, loud = t.line('loud') === 'loud', tn = loud ? t.num('loud_save_tn', 2) : 0;
     if (!spendRounds(t, t.def.rounds as number)) return 'Needs ' + t.def.rounds + ' round.';
     looseRound(t, tgt.pos, { warning: true });
-    if (!t.preview) t.cb.log.push(t.u.name + ' fires a warning shot past ' + tgt.name + '.');
+    if (!t.preview) say(t.cb, t.u.name + ' fires a warning shot past ' + tgt.name + '.');
     if (!save(t, tgt, 'heart', tn)) addPressure(t, tgt, t.num('pressure', 1), 'a warning shot');
     if (t.preview) t.note('No attack: ' + tgt.name + ' makes a Heart save' + (tn ? ' at −' + tn : '') + ' or gains +' + t.num('pressure', 1) + ' Pressure.');
     return null;
   },
   // cheap: when the enemy can't afford a shot, a warning shot still leans on its target
-  ai: (t) => (t.tgt && enemyOf(t, t.tgt) && t.u.ap < attackApCost(t.w, 'shot') && pressureOf(t.tgt) < pressureCap(t.tgt) && canStrike(t, t.tgt) ? 6 : 1),
+  ai: (t) => (t.tgt && enemyOf(t, t.tgt) && !canPay(t.cb, t.u, attackApCost(t.w, 'shot')) && pressureOf(t.tgt) < pressureCap(t.tgt) && canStrike(t, t.tgt) ? 6 : 1),
 });
 
 // 11. Flush: 3 AP, 1 round. Hit the target's cover (no roll; the cover takes the weapon's damage, as shooting cover does
@@ -257,7 +259,7 @@ technique({
     if (!spendRounds(t, t.def.rounds as number)) return 'Needs ' + t.def.rounds + ' round.';
     if (p === 'arc') {
       looseRound(t, tgt.pos, { flush: true });
-      if (!t.preview) cb.log.push(u.name + ' drops a round over ' + tgt.name + '\'s cover.');
+      if (!t.preview) say(cb, u.name + ' drops a round over ' + tgt.name + '\'s cover.');
       noRollHit(t, tgt, t.num('arc_damage_mult', 0.5), 'half damage over the cover');
     } else {
       const tile = coverTileFor(cb, u.pos, tgt.pos)!, c = coverOf(cb)[tile], name = (c?.name || 'cover').toLowerCase();
@@ -266,7 +268,7 @@ technique({
       const dmg = raw * (p === 'spread' || p === 'blast' ? t.num('cover_mult', 2) : 1);
       t.pv.area = [tile];
       if (t.preview) t.note('The ' + name + ' at ' + refOf(tile) + ' takes ' + Math.max(1, Math.floor(dmg)) + (c ? ' (' + c.hp + ' HP left)' : '') + '.');
-      else { looseRound(t, tile, { object: true, flush: true }); cb.log.push(u.name + ' flushes ' + tgt.name + ': the ' + name + ' at ' + refOf(tile) + damageObject(cb, tile, dmg, 0, u) + '.'); }
+      else { looseRound(t, tile, { object: true, flush: true }); say(cb, u.name + ' flushes ' + tgt.name + ': the ' + name + ' at ' + refOf(tile) + damageObject(cb, tile, dmg, 0, u) + '.'); }
     }
     addPressure(t, tgt, t.num('pressure', 2), 'flushed');
     return null;
@@ -275,12 +277,12 @@ technique({
 });
 
 // 12. Mag Dump (particular: Auto, Quick, Spread). 4 AP, every round. Empty the weapon at one target: one roll per 3
-//     rounds left (at least one, at most 4), each at −1 more than the last; +1 Pressure per hit (in place of the
+//     rounds left (at least one, at most 3), each at −4 more than the last (rules 1.18); +1 Pressure per hit (in place of the
 //     ordinary +1). Heat goes to one under the limit. Auto: +1 Pressure per roll, hit or miss. Quick and Precise: no
 //     growing penalty. Spread: both barrels, one roll, at double damage within 4 tiles. Drawn: not available (the core).
 const dumpRolls = (t: Tech): number => {
   const have = loaded(t), n = Number.isFinite(have) ? have : t.w.magazine ?? t.num('per_roll', 3);
-  return Math.min(t.num('max_rolls', 4), Math.max(1, Math.floor(n / t.num('per_roll', 3))));
+  return Math.min(t.num('max_rolls', 3), Math.max(1, Math.floor(n / t.num('per_roll', 3))));
 };
 technique({
   id: 'mag_dump',
@@ -297,7 +299,7 @@ technique({
       if (t.preview) { addPressure(t, tgt, press, 'a mag dump'); onHitOnly(t); if (!close) t.note('Double damage only within ' + t.num('spread_range', 4) + ' tiles.'); }
       else if (r.hit) addPressure(t, tgt, press, 'a mag dump');
     } else {
-      const rolls = dumpRolls(t), step = p === 'quick' ? 0 : t.num('step', 1);
+      const rolls = dumpRolls(t), step = p === 'quick' ? 0 : t.num('step', 4);
       const vev = t.preview ? null : volleyFx(t, tgt, 'dump', Number.isFinite(ammo0) ? ammo0 : rolls, { rolls });
       // the rolls chained for the screen only (no volley name: no item reads it as a burst or full auto)
       const out = chained((): string | null | undefined => {
@@ -359,7 +361,7 @@ technique({
     }
     if (step) { stepUser(t, step.route); if (!alive(t.u) || t.u.pos !== step.to) return null; } // a held shot stopped the step: the shot is lost
     const r = strike(t, o);
-    if (!r.ok) { if (step) { t.cb.log.push('  The shot can\'t be made from there.'); return null; } return refused(r); }
+    if (!r.ok) { if (step) { say(t.cb, '  The shot can\'t be made from there.'); return null; } return refused(r); }
     if (r.hit && alive(r.target || tgt)) addPressure(t, r.target || tgt, extra, 'crossfire'); // the unit really struck
     return null;
   },
