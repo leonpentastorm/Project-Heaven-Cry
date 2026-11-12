@@ -11276,6 +11276,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-at_once.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-at_once.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-wave": {
+      "id": "module-wave",
+      "label": "a cone made of three arcs",
+      "path": "art/icons/modules/module-wave.png",
+      "sha256": "a8f6fc2a99f57ccc818168140463b741e1e5224def3adfe0f535c43d624d2f36",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-wave.png",
+        "128": "art/icons/modules/exports/128/module-wave.png",
+        "64": "art/icons/modules/exports/64/module-wave.png",
+        "56": "art/icons/modules/exports/56/module-wave.png",
+        "48": "art/icons/modules/exports/48/module-wave.png",
+        "44": "art/icons/modules/exports/44/module-wave.png",
+        "40": "art/icons/modules/exports/40/module-wave.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-wave.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-wave.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

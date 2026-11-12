@@ -17,5 +17,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-size.png`: a small circle inside a large one
 - `module-random.png`: three scattered dots and one loose curl (no question mark)
 - `module-at_once.png`: three arrows leaving one point together
+- `module-wave.png`: a cone made of three arcs
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
