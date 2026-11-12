@@ -37,6 +37,7 @@ export const FAITH_EVENTS: any[] = [
   { k: 'grudge', char: 'c1', patron: 'old_overcast', sessions: 3, condition: 'dazed', at: '2,5', unit: 'u' },
   { k: 'grudge', char: 'c1', patron: 'nerukhan', sessions: 3, condition: 'marked' },
   { k: 'vow', unit: 'u', id: 'shield', state: 'sworn', at: '2,5' }, { k: 'vow', unit: 'u', id: 'shield', state: 'kept', at: '2,5' }, { k: 'vow', unit: 'u', id: 'stand', state: 'broken', at: '2,5' },
+  { k: 'vow', unit: 'u', id: 'stand', state: 'fulfilled', why: 'held their ground under attack', cut: 1, left: 1, at: '2,5' }, // rules 1.22
   { k: 'patron_line', patron: 'mother_ember', event: 'answered', text: 'There you are, love.', unit: 'u' },
 ];
 
@@ -58,6 +59,11 @@ describe('the faith effects (Blessing 2.0)', () => {
     vi.advanceTimersByTime(3000);
     expect(warn).not.toHaveBeenCalled();
     expect(layer.childElementCount).toBe(0);
+  });
+  it('a vow fulfilled in the fight says what it bought (rules 1.22), and is not read as a vow sworn', () => {
+    ctx(); const layer = document.body.lastElementChild as HTMLElement;
+    playFx({ k: 'vow', unit: 'u', id: 'stand', state: 'fulfilled', why: 'held their ground under attack', cut: 1, left: 1, at: '2,5' } as any); vi.advanceTimersByTime(400);
+    expect(layer.textContent).toMatch(/VOW FULFILLED · HYMN 1 ROUND SOONER/); expect(layer.textContent).not.toMatch(/VOW SWORN/);
   });
   it('Devotion floats its XP ("+1 DEVOTION XP · HEAL") and a level change says the level ("DEVOTION 5")', () => {
     ctx(); const layer = document.body.lastElementChild as HTMLElement;

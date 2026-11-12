@@ -2,7 +2,7 @@
 // pickers, the payload, the Belief step's patron cards; read from a real game through the engine's faithView.
 import { describe, expect, it } from 'vitest';
 import { ARCHETYPES, apply, newGame, faithView, FAITH_PATRONS, type Sheet } from '@engine';
-import { oddsOf, oddsText, prayerButtons, prayAction, pickerFor, faithPanel, patronCards, BELIEF_TEXT, devotionLabel, cooldownText, grudgeText, tagCapsText } from './faithView';
+import { oddsOf, oddsText, prayerButtons, prayAction, pickerFor, faithPanel, patronCards, BELIEF_TEXT, devotionLabel, cooldownText, grudgeText, tagCapsText, hymnHeadText } from './faithView';
 
 const sheet = (name: string, belief: any): Sheet => { const a = ARCHETYPES[0]; return { name, portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {}, belief } as any; };
 function game(belief: any, faith = 5) {
@@ -12,6 +12,18 @@ function game(belief: any, faith = 5) {
   return { g, c };
 }
 describe('faith views', () => {
+  it('rules 1.22: the Hymns\' heading says how often a Hymn comes, when the next one does and what the vow did; every vow says what fulfils it', () => {
+    const cd = { hymnRoundsLeft: 0, whisperUsed: false, miracleUsed: false, hymnWait: 3, hymnCooldown: 3, vowCut: false, vowBanked: false };
+    expect(hymnHeadText(cd)).toBe('HYMNS · EVERY 3 ROUNDS · READY');
+    expect(hymnHeadText({ ...cd, hymnRoundsLeft: 2 })).toBe('HYMNS · EVERY 3 ROUNDS · NEXT IN 2 ROUNDS');
+    expect(hymnHeadText({ ...cd, hymnWait: 2, hymnRoundsLeft: 1, vowCut: true })).toBe('HYMNS · EVERY 2 ROUNDS · NEXT IN 1 ROUND · YOUR VOW: 1 ROUND SOONER');
+    expect(hymnHeadText({ ...cd, vowBanked: true })).toBe('HYMNS · EVERY 3 ROUNDS · READY · YOUR VOW: THE NEXT WAIT 1 ROUND SHORTER');
+    expect(hymnHeadText(null)).toBe('HYMNS');
+    const { g, c } = game({ kind: 'faithful', patron: 'mother_ember' }, 5); c.attrs = { ...c.attrs, virtue: 5 };
+    const v = faithView(g, c.id)!, p = faithPanel(v)!;
+    expect(v.cooldowns.hymnCooldown).toBe(4); expect(p.hymnText).toBe('HYMNS · EVERY 4 ROUNDS · READY'); // Faith 5 and Virtue 5: 9 − 3.75 − 1.25
+    expect(v.vows.length).toBe(6); for (const x of v.vows) expect(x.fulfilledWhen.length, x.id).toBeGreaterThan(10);
+  });
   it('odds: a d20 plus a modifier against a TN; a 1 always misses, a 20 always hits', () => {
     expect(oddsOf(12, 2)).toBe(55); expect(oddsOf(30, 0)).toBe(5); expect(oddsOf(2, 9)).toBe(95);
     expect(oddsText({ mode: 'standing' } as any)).toBe('SURE');
