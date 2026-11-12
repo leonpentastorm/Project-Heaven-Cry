@@ -46,12 +46,12 @@
     "feeling-jealousy",
     "feeling-wonder",
     "feeling-defiance",
-    "feeling-abandon"
+    "feeling-abandon",
+    "module-move"
   ],
   "awaiting_after_test": "Test styles approved; optional map layout/playtest confirmation still pending",
   "production_approved": false,
   "remaining_now": [
-    "module-move",
     "module-homing",
     "module-swift",
     "module-ether",
@@ -89,7 +89,7 @@
     "ui-practice",
     "ui-felt"
   ],
-  "updated_utc": "2026-11-12T03:24:32.003116+00:00",
+  "updated_utc": "2026-11-12T03:27:55.965640+00:00",
   "outburst_test_verdict": "Leon: Approve both styles and continue",
   "pending_after_test_approval": false
 }

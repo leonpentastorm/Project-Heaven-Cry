@@ -11001,6 +11001,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-echo.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-echo.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-move": {
+      "id": "module-move",
+      "label": "an arrow carrying a dot",
+      "path": "art/icons/modules/module-move.png",
+      "sha256": "0bb087997ce3ad8464e05b367fd0d0d4f54995aed4cac6d6d1e599262457d1e4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-move.png",
+        "128": "art/icons/modules/exports/128/module-move.png",
+        "64": "art/icons/modules/exports/64/module-move.png",
+        "56": "art/icons/modules/exports/56/module-move.png",
+        "48": "art/icons/modules/exports/48/module-move.png",
+        "44": "art/icons/modules/exports/44/module-move.png",
+        "40": "art/icons/modules/exports/40/module-move.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-move.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-move.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
