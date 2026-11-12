@@ -230,6 +230,9 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   sightPos?: Record<string, Record<string, string>>;
   /** Why a unit's sight is about to change (a Hidden condition from a spell): consumed by the next sightFx. */
   sightWhy?: Record<string, 'hide' | 'reveal'>;
+  /** Rules 1.25, the fire doctrine: who of each side's AI has attacked whom this round (target id -> attacker ids), and
+   * the doctrine lines the log has already said this fight. */
+  fire?: { round: number; on: Record<string, string[]> }; doctrineSaid?: Record<string, true>;
   /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id. */
   lastSeen?: Record<string, Record<string, string>>;
   /** The Narrator's start_fight flag: the place itself is frightening (dark, a nightmare; perks read it). */
@@ -2059,7 +2062,7 @@ export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? action
  * acting (the Trickster's Read). */
 /** Steps an engine system outside this file gives the enemy AI (physical/ai.ts: a technique), tried where the plain
  * attack would be. plan says what it would do now, changing nothing (the intent line); act does it and returns true. */
-export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId?: string; why?: 'healer' } | null; act(cb: Combat, rng: Rng, u: Unit): boolean }
+export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId?: string; why?: AimWhy } | null; act(cb: Combat, rng: Rng, u: Unit): boolean }
 const ENEMY_STEPS: EnemyStep[] = [];
 /** first: tried before the steps already registered (a Call comes before a technique: calls/ai.ts). */
 export const enemyStep = (s: EnemyStep, first = false) => { if (first) ENEMY_STEPS.unshift(s); else ENEMY_STEPS.push(s); };
@@ -2095,7 +2098,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     const targets = enemyTargets(cb, u, mode, order, pcs);
     // Rules 1.23, the hunt: an Elite or a Boss with a gun and no shot at the squad's healer steps to where it has one.
     if (!order && !hunted) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; checkOver(cb); continue; } }
-    if (targets.length) { const t = targets[0].t; if (targets[0].healer) noteHealerHunt(cb, u, t); if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
+    if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
     if (!pcs.length) break;
@@ -2124,38 +2127,73 @@ export function healerMark(cb: Combat, u: Unit): Unit | null {
   }
   return best;
 }
-/** The PCs an enemy would attack now, best first: its Taunter, standing before Downed, the most hurt (rules 1.23: the
- * squad's healer counts as hurt by a share of its max HP more, the tier's healer_focus, unless this enemy's chance to
- * hit it is under half its best chance on anyone: a healer behind good cover is not worth the rounds), the likeliest
- * hit. `healer` is set on the entry the healer weight was given to. */
 /** How hurt a target looks to an enemy: its HP as a share of its max, in tenths (12 Nov 2026). It was the bare HP left,
- * which made every enemy open on whoever has the smallest pool (the caster, the healer) from round 1; the enemy table
- * of rules 1.15 was fitted to fire that spread. In tenths, so a scratch doesn't pull the whole line's fire: among the
- * equally hurt the likeliest hit decides. */
+ * which made every enemy open on whoever has the smallest pool (the caster, the healer) from round 1. In tenths, so a
+ * scratch doesn't pull the whole line's fire: among the equally hurt the likeliest hit decides. */
 const hurtShare = (t: Unit) => Math.round((10 * Math.max(0, t.hp)) / Math.max(1, t.maxHp)) / 10;
-function enemyTargets(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[]) {
-  const tauntBy = condSource(u, 'taunted');
-  const ownerOf = (t: Unit) => (t as any).ghostOf || t.id;
-  if (order === 'hold' || order === 'flee') return [];
-  const list = pcs.map((t) => ({ t, pv: previewAttack(cb, u, t, mode), healer: false })).filter((x) => x.pv.ok);
-  const mark = list.length ? healerMark(cb, u) : null, focus = healerFocus(u), bestPct = Math.max(0, ...list.map((x) => x.pv.pct));
-  if (mark) for (const x of list) if (ownerOf(x.t) === mark.id && !x.t.downed && x.pv.pct * 2 >= bestPct) x.healer = true;
-  const key = (x: { t: Unit; healer: boolean }) => hurtShare(x.t) - (x.healer ? focus : 0);
-  return list.sort((a, b) => (ownerOf(b.t) === tauntBy ? 1 : 0) - (ownerOf(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || b.pv.pct - a.pv.pct);
+/** Rules 1.25, the fire doctrine: how a tier chooses among the targets it could attack (enemies.json `doctrine`).
+ *   nearest  the one in front of it: the nearest first, then the most hurt (Vermin, Minions)
+ *   spread   one each: a target counts as less hurt by `fire_spread` of its max HP for each OTHER unit of this enemy's
+ *            side that has attacked it this round, so a line lays its fire across the squad and doubles up only on
+ *            somebody that much worse off (Soldiers)
+ *   focus    the most hurt (Elites, Bosses; and anything with no tier: a companion, a turned character)
+ * Under all three: its Taunter first, standing before Downed, the healer weight of rules 1.23, the likeliest hit last. */
+export type Doctrine = 'nearest' | 'spread' | 'focus';
+export const doctrineOf = (u: Unit): { id: Doctrine; spread: number; near: number } => {
+  const e: any = u.charId || u.companion || !u.tier ? null : ENEMY[u.tier], id: Doctrine = e?.doctrine === 'nearest' || e?.doctrine === 'spread' ? e.doctrine : 'focus';
+  return { id, spread: Math.max(0, Number(e?.fire_spread) || 0), near: Math.max(0, Number(e?.fire_near) || 0) };
+};
+/** Why an enemy takes the target it takes, when its doctrine (or the healer weight) decided between two it could have
+ * had: shown on its intent and said once in the fight log. */
+export type AimWhy = 'healer' | 'spread' | 'wounded' | 'nearest';
+const aimOwner = (t: Unit): string => (t as any).ghostOf || t.id;
+/** How many other units of u's side have attacked this target this round (rules 1.25). */
+function alliesOn(cb: Combat, u: Unit, t: Unit): number {
+  const f = cb.fire; if (!f || f.round !== cb.round) return 0;
+  return (f.on[aimOwner(t)] || []).filter((id) => id !== u.id && cb.units.find((x) => x.id === id)?.side === u.side).length;
 }
-/** The same choice for anything else an enemy aims (a technique: physical/ai.ts): the given enemies of it in the
- * order a plain attack would take them (its Taunter, standing before Downed, the most hurt with the healer's weight,
- * the likeliest hit). Nobody is dropped: one a plain attack can't reach now keeps its place by HP, after the equal
- * ones it can. `healer`: the one the healer weight was given to, when it comes first. Pure. */
-export function enemyPreference(cb: Combat, u: Unit, pcs: Unit[]): { order: Unit[]; healer: Unit | null } {
-  const tauntBy = condSource(u, 'taunted'), mode = enemyMode(u);
-  const ownerOf = (t: Unit) => (t as any).ghostOf || t.id;
-  const list = pcs.map((t) => ({ t, pv: previewAttack(cb, u, t, mode), healer: false }));
+/** An enemy has aimed an attack (a plain one, a technique) at t: its side's fire this round remembers it (the spread
+ * doctrine reads it), and the fight log says why it chose, once a fight for each doctrine reason and once a round for
+ * each healer turned on (rules 1.23 and 1.25: the player is told why). */
+export function noteEnemyAim(cb: Combat, u: Unit, t: Unit, why?: AimWhy) {
+  if (!cb.fire || cb.fire.round !== cb.round) cb.fire = { round: cb.round, on: {} };
+  const on = (cb.fire.on[aimOwner(t)] ||= []); if (!on.includes(u.id)) on.push(u.id);
+  if (why === 'healer') { noteHealerHunt(cb, u, t); return; }
+  if (!why || (cb.doctrineSaid ||= {})[why]) return; cb.doctrineSaid[why] = true;
+  cb.log.push(u.name + (why === 'spread' ? ' takes a target nobody else is shooting at: the enemy spreads its fire.' : why === 'wounded' ? ' picks out ' + t.name + ': the enemy goes for the wounded.' : ' goes at ' + t.name + ': it takes whoever is nearest.'));
+}
+/** The one choice of target behind an enemy's plain attack (enemyTargets) and anything else it aims (enemyPreference:
+ * a technique): the given enemies of it, best first, by its Taunter, standing before Downed, its doctrine (rules 1.25),
+ * the most hurt (rules 1.23: the squad's healer counts as hurt by a share of its max HP more, the tier's healer_focus,
+ * unless this enemy's chance to hit it is under half its best chance on anyone: a healer behind good cover is not worth
+ * the rounds), the likeliest hit. reachOnly: only those a plain attack reaches now; otherwise nobody is dropped, and
+ * one it can't reach keeps its place after the equal ones it can. `healer` is set on the entry the healer weight was
+ * given to; `why` on the first, when the choice was a choice. Pure. */
+interface Aim { t: Unit; pv: AttackPreview; healer: boolean; fire: number; far: number; why?: AimWhy }
+function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], reachOnly: boolean): Aim[] {
+  const tauntBy = condSource(u, 'taunted'), d = doctrineOf(u);
+  let list: Aim[] = pcs.map((t) => ({ t, pv: previewAttack(cb, u, t, mode), healer: false, fire: d.spread ? alliesOn(cb, u, t) : 0, far: d.near ? dist(u.pos, t.pos) : 0 }));
+  if (reachOnly) list = list.filter((x) => x.pv.ok);
   const mark = list.length ? healerMark(cb, u) : null, focus = healerFocus(u), bestPct = Math.max(0, ...list.filter((x) => x.pv.ok).map((x) => x.pv.pct));
-  if (mark) for (const x of list) if (ownerOf(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
-  const key = (x: { t: Unit; healer: boolean }) => hurtShare(x.t) - (x.healer ? focus : 0), pct = (x: { pv: any }) => (x.pv.ok ? x.pv.pct : -1);
-  list.sort((a, b) => (ownerOf(b.t) === tauntBy ? 1 : 0) - (ownerOf(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || pct(b) - pct(a));
-  return { order: list.map((x) => x.t), healer: list[0]?.healer ? list[0].t : null };
+  if (mark) for (const x of list) if (aimOwner(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
+  const key = (x: Aim) => hurtShare(x.t) - (x.healer ? focus : 0) + d.spread * x.fire + d.near * x.far, pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
+  list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || pct(b) - pct(a));
+  const top = list[0];
+  if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {
+    const rest = list.filter((x) => !x.t.downed && aimOwner(x.t) !== aimOwner(top.t));
+    top.why = top.healer ? 'healer' : d.id === 'nearest' && rest.some((x) => x.far > top.far) ? 'nearest' : d.id === 'spread' && rest.some((x) => x.fire > top.fire) ? 'spread' : rest.some((x) => hurtShare(x.t) > hurtShare(top.t)) ? 'wounded' : undefined;
+    if (!top.why) delete top.why;
+  }
+  return list;
+}
+function enemyTargets(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[]): Aim[] {
+  return order === 'hold' || order === 'flee' ? [] : enemyRank(cb, u, mode, pcs, true);
+}
+/** The same choice for anything else an enemy aims (a technique: physical/ai.ts). `healer`: the one the healer weight
+ * was given to, when it comes first; `why`: the reason for the first, as an intent gives it. Pure. */
+export function enemyPreference(cb: Combat, u: Unit, pcs: Unit[]): { order: Unit[]; healer: Unit | null; why?: AimWhy } {
+  const list = enemyRank(cb, u, enemyMode(u), pcs, false);
+  return { order: list.map((x) => x.t), healer: list[0]?.healer ? list[0].t : null, ...(list[0]?.why ? { why: list[0].why } : {}) };
 }
 /** Rules 1.23, the hunt: an enemy that puts the healer first (healer_focus 1: an Elite, a Boss), holds a gun and has no
  * shot at the healer from where it stands takes the shortest walk to a tile that has one, if it can still fire this
@@ -2230,7 +2268,7 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
 /** What an enemy means to do on its next turn (the Trickster's Read): the first thing enemyTurn would do, read with a
  * fresh turn's AP and nothing rolled or changed. Sigil and Soul casters are named as weighing a spell (their planners
  * keep per-turn state), with the weapon choice that follows if they don't cast. */
-export interface Intent { kind: 'none' | 'lost' | 'order' | 'recover' | 'scuff' | 'spell' | 'outburst' | 'reload' | 'attack' | 'move' | 'wait'; text: string; targetId?: string; to?: string; image?: string; /** rules 1.23: it goes for this target because it is mending the squad */ why?: 'healer' }
+export interface Intent { kind: 'none' | 'lost' | 'order' | 'recover' | 'scuff' | 'spell' | 'outburst' | 'reload' | 'attack' | 'move' | 'wait'; text: string; targetId?: string; to?: string; image?: string; /** why this target, when it was a choice: rules 1.23 'healer' (it is mending the squad); rules 1.25, its doctrine: 'spread' (nobody else is shooting at it), 'wounded' (the most hurt), 'nearest' */ why?: AimWhy }
 export function enemyIntent(cb: Combat, u: Unit): Intent {
   if (u.dead || u.downed || u.surrendered) return { kind: 'none', text: 'nothing: it is out of the fight' };
   if (condOn(u, 'stunned')) return { kind: 'lost', text: 'nothing: Stunned, it loses the turn' };
@@ -2241,6 +2279,8 @@ export function enemyIntent(cb: Combat, u: Unit): Intent {
 const AP_BASE = 6;
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
 export const HEALER_WHY = ': it goes for whoever is mending the squad';
+/** Rules 1.25: the reason an intent gives for each way an enemy chooses its target. */
+export const AIM_WHY: Record<AimWhy, string> = { healer: HEALER_WHY, spread: ': it spreads its fire', wounded: ': it goes for the wounded', nearest: ': it takes the nearest' };
 function intentInner(cb: Combat, u: Unit): Intent {
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
   if (order) return { kind: 'order', text: 'obey its order (' + order.split(':')[0] + ')' };
@@ -2258,11 +2298,11 @@ function intentInner(cb: Combat, u: Unit): Intent {
   let out: Intent;
   const step = ENEMY_STEPS.map((s) => s.plan(cb, u)).find(Boolean);
   const hunt = step ? null : enemyHuntTile(cb, u, mode, pcs, targets);
-  if (step) out = { kind: 'attack', text: step.text + (step.why === 'healer' ? HEALER_WHY : ''), ...(step.targetId ? { targetId: step.targetId } : {}), ...(step.why ? { why: step.why } : {}) };
+  if (step) out = { kind: 'attack', text: step.text + (step.why ? AIM_WHY[step.why] : ''), ...(step.targetId ? { targetId: step.targetId } : {}), ...(step.why ? { why: step.why } : {}) };
   else if (hunt) out = { kind: 'move', text: 'move to ' + refOf(hunt.tile) + ' for a shot at ' + hunt.mark.name + HEALER_WHY, to: hunt.tile, targetId: hunt.mark.id, why: 'healer' };
   else if (targets.length) {
     const t = targets[0].t, ghost = isGhost(t), owner = ghost ? cb.units.find((x) => x.id === (t as any).ghostOf) : t;
-    out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name) + (targets[0].healer ? HEALER_WHY : ''), targetId: owner!.id, ...(ghost ? { image: t.id } : {}), ...(targets[0].healer ? { why: 'healer' as const } : {}) };
+    out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name) + (targets[0].why ? AIM_WHY[targets[0].why] : ''), targetId: owner!.id, ...(ghost ? { image: t.id } : {}), ...(targets[0].why ? { why: targets[0].why } : {}) };
   } else if (moveBlock(u) || !pcs.length) out = { kind: 'wait', text: 'hold where it is' };
   else {
     const best = enemyCloseTile(cb, u, mode, order, pcs);

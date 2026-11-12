@@ -97,7 +97,7 @@ describe('4. an enemy technique goes at the target a plain attack would choose',
     withGame(f.g, () => { c.hp = Math.floor(c.maxHp / 2); grantShield(f.cb, b, 40, c); c.hp = c.maxHp; }); // c has shielded an ally: it is the healer
     const pref = withGame(f.g, () => enemyPreference(f.cb, foe, f.pcs));
     expect(pref.healer?.id).toBe(c.id); expect(pref.order[0].id).toBe(c.id);
-    const p = pick(f, foe)!; expect(p.target?.id).toBe(c.id); expect(p.healer).toBe(true);
+    const p = pick(f, foe)!; expect(p.target?.id).toBe(c.id); expect(p.why).toBe('healer');
   });
 });
 

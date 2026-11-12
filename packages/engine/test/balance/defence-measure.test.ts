@@ -14,6 +14,10 @@
 //       DEFENCE_PARTS=burst DEFENCE_BURST=old,0.9/1.08/1.3   the enemy's Burst as the characters', with trial damage
 //                                              factors for Soldier/Elite/Boss (not in the default parts)
 //       DEFENCE_FOCUS=off                      whole fights with the enemy AI's healer weight off (the control)
+//       DEFENCE_DOCTRINE=soldier=spread:0.5:0.1,elite=focus   a trial fire doctrine (rules 1.25) for the named tiers
+//                                              (tier=doctrine:fire_spread:fire_near);
+//                                              soldier=focus,elite=focus,boss=focus,minion=focus,vermin=focus is the
+//                                              build before rules 1.25 (every enemy on the most hurt)
 //       DEFENCE_OUT=<file>                     every line is also appended here as it is measured (vitest prints
 //                                              nothing until the run ends)
 import { describe, it, expect } from 'vitest';
@@ -78,6 +82,8 @@ describe('the defence step, measured', () => {
   (FULL ? it : it.skip)('the medic\'s kit, the yardstick on both grounds, whole fights, the pairs under fire', () => {
     if (process.env.DEFENCE_TABLE) { const t = process.env.DEFENCE_TABLE; useTable(JSON.parse(t.trim().startsWith('{') ? t : readFileSync(t, 'utf8'))); say('[table] ' + JSON.stringify({ boss: ENEMY.boss.hp, elite: ENEMY.elite.hp, soldier: ENEMY.soldier.hp, dmg: [ENEMY.soldier.damage, ENEMY.elite.damage, ENEMY.boss.damage] })); }
     const levels = LV.length ? LV : D_LEVELS;
+    // A trial fire doctrine (rules 1.25) laid over the loaded one: DEFENCE_DOCTRINE=soldier=spread:0.5,elite=focus
+    for (const q of list('DEFENCE_DOCTRINE', '')) { const [t, v] = q.split('='), [d, w, nr] = v.split(':'); for (const id of [t, 'sim_bag_' + t]) if (ENEMY[id]) { ENEMY[id].doctrine = d; ENEMY[id].fire_spread = Number(w) || 0; ENEMY[id].fire_near = Number(nr) || 0; } say('[doctrine] ' + t + ': ' + d + ' spread ' + (Number(w) || 0) + ' near ' + (Number(nr) || 0)); }
     if (PARTS.includes('medic')) for (const [who, b, v] of [['anyone (Healing given ×1)', 'plain_gun', 'normal'], ['the medic (Bard, Empathy first)', 'mender', 'normal'], ['the medic all in', 'mender', 'allin']]) for (const lv of D_LEVELS) say('[medic] ' + medicLine(medicRow(who, b, v, lv)));
     if (PARTS.includes('yard')) for (const lv of levels) for (const [map, build] of [['old', 'plain_gun'], ['open', 'plain_gun'], ['open', 'plain_gun_f']]) { const y = yardFire(lv, Math.max(N, 20), { map, build });
       say('[yard] L' + lv + ' ' + (map === 'old' ? '16 × 11' : '26 × 26') + ' ' + build + ': lasts ' + y.lasted + ' rounds under two Soldiers (Down by round 3 in ' + y.by3 + '%) · ' + y.perFoeTurn + ' HP a Soldier-turn · ' + y.rolls + ' rolls a turn · hit ' + y.hit + '%'); }
