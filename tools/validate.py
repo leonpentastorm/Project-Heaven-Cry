@@ -672,6 +672,45 @@ if wp:
     if "light_armour" in acts and gr.get("light_armour_max_kg") is not None and acts["light_armour"].get("max_kg") != gr.get("light_armour_max_kg"):
         errors.append("rules: action light_armour max_kg disagrees with world_play gear.light_armour_max_kg")
 
+# The basic actions of a fight (data/actions.json; engine review 4, finding 1): the rows the engine hands the client.
+# Each needs a name, a text, a tab and an action type; its base AP is a whole number of 0 or more (or null where it is
+# not one number), and agrees with the same action in rules.json combat.actions when `rule` names one.
+if "actions" in data:
+    _rule_acts = {a.get("id"): a for a in ((data.get("rules", {}).get("combat", {}) or {}).get("actions") or []) if isinstance(a, dict)}
+    _seen_acts = set()
+    for a in items("actions"):
+        aid = a.get("id")
+        if not aid or aid in _seen_acts:
+            errors.append(f"actions: missing or repeated id {aid}")
+        _seen_acts.add(aid)
+        for k in ("name", "text", "type"):
+            if not isinstance(a.get(k), str) or not a.get(k):
+                errors.append(f"actions: {aid} needs {k}")
+        if a.get("tab") not in ("move", "attack", "utility"):
+            errors.append(f"actions: {aid}: tab must be move, attack or utility")
+        if not str(a.get("type", "")).startswith("combat/"):
+            errors.append(f"actions: {aid}: type must be a combat action")
+        if a.get("adjudication") != "engine":
+            errors.append(f"actions: {aid}: a basic action is the engine's (adjudication: engine)")
+        for k in [k for k in a if k == "ap" or k.startswith("ap_")]:
+            v = a.get(k)
+            if not (v is None and k == "ap") and not (isinstance(v, int) and not isinstance(v, bool) and v >= 0):
+                errors.append(f"actions: {aid}.{k} must be a whole number of 0 or more")
+        if a.get("ap") is None and "{" not in str(a.get("cost", "")) and aid not in ("cover", "pullfree"):
+            errors.append(f"actions: {aid} has no ap: it needs a cost text")
+        for rk, apk in (("rule", "ap"), ("rule_downed", "ap_downed")):
+            r = a.get(rk)
+            if r is None:
+                continue
+            if r not in _rule_acts:
+                errors.append(f"actions: {aid}.{rk} names {r}, which is not in rules.json combat.actions")
+            elif isinstance(_rule_acts[r].get("ap"), int) and a.get(apk) != _rule_acts[r].get("ap"):
+                errors.append(f"actions: {aid} costs {a.get(apk)} AP but rules.json {r} says {_rule_acts[r].get('ap')}")
+        if aid == "stim" and "stabilise" in _rule_acts and a.get("ap_downed_medic") != _rule_acts["stabilise"].get("ap_combat_medic"):
+            errors.append("actions: stim.ap_downed_medic disagrees with rules.json stabilise.ap_combat_medic")
+        if aid == "pickup" and (data.get("world_play", {}).get("ap") or {}).get("pickup") not in (None, a.get("ap")):
+            errors.append("actions: pickup.ap disagrees with world_play ap.pickup")
+
 # Rules 1.10 (Sigil 1.5): the sigil_mark kind's Investigate numbers, and the marks the campaigns place
 _mk = next((o for o in items("objects") if o.get("id") == "sigil_mark"), None)
 if _mk is None:
