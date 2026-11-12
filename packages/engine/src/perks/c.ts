@@ -319,9 +319,9 @@ register({
 // permanent extra mod slot, once per item: a second slot of a type it already has (plan 6b: the player picks the type
 // by the mod they fit; PROVISIONAL).
 register({
-  id: 'overhaul', claims: 'all',
-  // The data's action_cost carries set: 1 (Field Repair costs 1 AP); the lane answers it: 2 → 1.
-  stat: (h, stat, ctx) => (stat === 'field_repair_amount' ? { mult: 2 } : stat === 'ap_cost:field_repair' ? 1 - (ctx?.base ?? 2) : 0),
+  // Field Repair's 1 AP and its doubled amount are the data's generic action_cost (set: 1) and stat_mult (engine
+  // foundations 3); the lane keeps the bench repair and the extra slot (effect 2).
+  id: 'overhaul', claims: [2],
   actions: [
     { id: 'bench_repair', label: 'Bench repair', scope: ['story', 'world'], ap: 0, target: 'none',
       text: 'Out of a fight: spend one spare-parts charge to bring your weapon back to full durability.',

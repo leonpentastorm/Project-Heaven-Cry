@@ -1212,45 +1212,15 @@
       "narrator_hook": "stealth missions, tight corridors, and the rope bridge.",
       "text": "Born on a high-gravity world. Your mother has never forgiven you, the bullies at school never forgot you, and doorframes still don't fit you.\n+ Dense: you count as one size larger. You can't be Shoved, your carry weight doubles, you can use heavy weapons one-handed, and you have +{=effects.4.value} Intimidation.\n− Too Big: {=effects.5.value} Athletics and −0.5 Movement. Attacks against you have +{=effects.7.value} to hit. You can't hide on a lit tile, you eat double rations, and vents, crawlspaces, small doors, lifts and light vehicles can't take you.",
       "effects": [
-        {
-          "op": "size_mod",
-          "value": 1
-        },
-        {
-          "op": "immunity",
-          "to": "shove"
-        },
-        {
-          "op": "carry_weight_mult",
-          "value": 2
-        },
-        {
-          "op": "narrator",
-          "note": "heavy weapons usable one-handed"
-        },
-        {
-          "op": "skill_mod",
-          "skill": "intimidation",
-          "value": 2
-        },
-        {
-          "op": "skill_mod",
-          "skill": "athletics",
-          "value": -3
-        },
-        {
-          "op": "stat_mod",
-          "stat": "move",
-          "value": -0.5
-        },
-        {
-          "op": "to_hit_against_self",
-          "value": 2
-        },
-        {
-          "op": "narrator",
-          "note": "can't hide in light, double rations; vents, crawlspaces, small doors, lifts and light vehicles can't take you"
-        }
+        {"op": "size_mod", "value": 1},
+        {"op": "immunity", "to": "shove"},
+        {"op": "stat_mult", "stat": "carry", "value": 2},
+        {"op": "stat_mod", "stat": "one_hand_heavy", "value": 1},
+        {"op": "skill_mod", "skill": "intimidation", "value": 2},
+        {"op": "skill_mod", "skill": "athletics", "value": -3},
+        {"op": "stat_mod", "stat": "move", "value": -0.5},
+        {"op": "roll_mod", "value": 2, "when": "attack", "if": {"actor": "any", "target": "self"}, "label": "big target (Heavyworlder)"},
+        {"op": "narrator", "note": "can't hide in light, double rations; vents, crawlspaces, small doors, lifts and light vehicles can't take you"}
       ],
       "adjudication": "hybrid",
       "excludes": [],
@@ -1849,37 +1819,19 @@
         "Plugged In: you start with a city ID and a bank card. +{=effects.2.value} on social checks with officials and merchants, and city services are open to you."
       ],
       "downsides": [
-        "Soft Hands: the first time you lose HP in each fight, you lose {=effects.3.value|abs} AP from the shock. Outside the city, {=effects.4.value} Guts."
+        "Soft Hands: the first time you lose HP in each fight, you lose {=effects.3.value|abs} AP from the shock. Outside the city, {=effects.6.value} Guts."
       ],
       "notes": [],
       "narrator_hook": "the frontier, where your card is worth a rock.",
-      "text": "Bank cards, shock batons, and somebody else to do the dirty work. Outside the walls, nobody is impressed.\n+ Plugged In: you start with a city ID and a bank card. +{=effects.2.value} on social checks with officials and merchants, and city services are open to you.\n− Soft Hands: the first time you lose HP in each fight, you lose {=effects.3.value|abs} AP from the shock. Outside the city, {=effects.4.value} Guts.",
+      "text": "Bank cards, shock batons, and somebody else to do the dirty work. Outside the walls, nobody is impressed.\n+ Plugged In: you start with a city ID and a bank card. +{=effects.2.value} on social checks with officials and merchants, and city services are open to you.\n− Soft Hands: the first time you lose HP in each fight, you lose {=effects.3.value|abs} AP from the shock. Outside the city, {=effects.6.value} Guts.",
       "effects": [
-        {
-          "op": "start_item",
-          "item": "city_id"
-        },
-        {
-          "op": "start_item",
-          "item": "bank_card"
-        },
-        {
-          "op": "roll_bonus",
-          "value": 2,
-          "context": "social_vs_official_or_merchant"
-        },
-        {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": -2,
-          "context": "first_wound_each_combat"
-        },
-        {
-          "op": "skill_mod",
-          "skill": "guts",
-          "value": -2,
-          "context": "outside_city"
-        }
+        {"op": "start_item", "item": "city_id"},
+        {"op": "start_item", "item": "bank_card"},
+        {"op": "roll_bonus", "value": 2, "context": "social_vs_official_or_merchant"},
+        {"op": "grant_ap", "value": -2, "when": "damaged", "if": {"actor": ["other", "none"], "amount_above": 0, "no_flag": "wounded", "own_turn": true}, "and": [{"op": "mark", "flag": "wounded"}], "say": "{self} reels from the first wound: {=.value} AP (Soft Hands)."},
+        {"op": "mark", "flag": "shock", "when": "damaged", "if": {"actor": ["other", "none"], "amount_above": 0, "no_flag": "wounded", "own_turn": false}, "and": [{"op": "mark", "flag": "wounded"}], "say": "{self} reels from the first wound: {=effects.3.value} AP next turn (Soft Hands)."},
+        {"op": "grant_ap", "value": -2, "when": "turn_ap", "if": {"flag": "shock"}, "and": [{"op": "mark", "flag": "shock", "clear": true}], "label": "Soft Hands"},
+        {"op": "skill_mod", "skill": "guts", "value": -2, "context": "outside_city"}
       ],
       "adjudication": "engine",
       "excludes": [],

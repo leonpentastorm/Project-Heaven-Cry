@@ -147,6 +147,8 @@
 "cool/ap/trait/headbanger/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/heavens_faithful/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/heavens_faithful/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
+"cool/ap/trait/heavyworlder/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
+"cool/ap/trait/heavyworlder/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/hollow_heart/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/hollow_heart/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/live_to_fight_another_day/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",

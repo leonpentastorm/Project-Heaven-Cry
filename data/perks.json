@@ -789,16 +789,9 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Nausea and Fear last at most {=effects.0.rounds} round on you. II: You are immune to Nausea and Fear.",
+      "text": "I: Nausea and Fear last at most {=effects.0.max} round on you. II: You are immune to Nausea and Fear.",
       "effects": [
-        {
-          "op": "duration_cap",
-          "conditions": [
-            "nausea",
-            "fear"
-          ],
-          "rounds": 1
-        }
+        {"op": "cond_rounds", "max": 1, "when": "cond_incoming", "if": {"cond": ["nausea", "fear"]}}
       ],
       "tiers": {
         "I": {
@@ -809,16 +802,9 @@
             }
           ],
           "ap_cost": null,
-          "text": "Nausea and Fear last at most {=tiers.I.effects.0.rounds} round on you.",
+          "text": "Nausea and Fear last at most {=tiers.I.effects.0.max} round on you.",
           "effects": [
-            {
-              "op": "duration_cap",
-              "conditions": [
-                "nausea",
-                "fear"
-              ],
-              "rounds": 1
-            }
+            {"op": "cond_rounds", "max": 1, "when": "cond_incoming", "if": {"cond": ["nausea", "fear"]}}
           ]
         },
         "II": {
@@ -4538,16 +4524,8 @@
       "flavour": "Hurt is information. You've read it all before.",
       "text": "Injuries never cost you AP or Movement: a head injury doesn't Daze you and a leg injury doesn't slow you. While you are below half your max HP, you take {=effects.1.value_pct}% less damage.",
       "effects": [
-        {
-          "op": "immunity",
-          "to": "injury_ap_and_move_penalties"
-        },
-        {
-          "op": "damage_reduction",
-          "value_pct": 20,
-          "target": "self",
-          "when": "hp below half"
-        }
+        {"op": "immunity", "to": "injury_ap_and_move_penalties"},
+        {"op": "damage_mod", "value_pct": -20, "when": "taking", "if": {"self_hp_below": 0.5, "self_alive": true, "amount_above": 0}}
       ],
       "adjudication": "engine",
       "recovered": null,
@@ -4671,22 +4649,11 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "You've already met the worst thing. It blinked first.",
-      "text": "You are immune to Fear. Allies within {=effects.1.radius} tiles who can see you can't be made Afraid, and an ally who starts a turn there stops being Afraid.",
+      "text": "You are immune to Fear. Allies within {=effects.1.if.target_within} tiles who can see you can't be made Afraid, and an ally who starts a turn there stops being Afraid.",
       "effects": [
-        {
-          "op": "immunity",
-          "to": "condition:fear"
-        },
-        {
-          "op": "aura",
-          "radius": 3,
-          "target": "allies",
-          "when": "ally can see you",
-          "effect": {
-            "op": "immunity",
-            "to": "condition:fear"
-          }
-        }
+        {"op": "immunity", "to": "condition:fear"},
+        {"op": "cancel", "when": "cond_incoming", "if": {"cond": ["fear"], "target": "ally", "target_within": 3, "self_alive": true, "target_sees_self": true}, "why": "{self} is there (Nothing Left to Fear)"},
+        {"op": "cleanse", "condition": ["fear"], "target": "actor", "when": "turn_start", "if": {"actor": "ally", "actor_has": ["fear"], "actor_within": 3, "self_alive": true, "actor_sees_self": true}, "say": "{actor} steadies beside {self}: no longer Afraid (Nothing Left to Fear)."}
       ],
       "adjudication": "engine",
       "recovered": null,

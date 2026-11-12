@@ -35,7 +35,6 @@ const isHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].in
 /** Self-inflicted damage (Mana Short, an Evoker's overload, Strain) never triggers the drop-to-0 savers (plan 6, Last Wall 1). */
 const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
 const magicSrc = (src: any) => ['sigil', 'soul', 'elemental'].includes(src?.type);
-const bloodied = (u: Unit) => u.hp * 2 < u.maxHp;
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read a character's item state without creating it (stat queries and previews must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => c?.state || {};
@@ -153,9 +152,8 @@ register({
 const FEARISH = ['fear', 'nausea', 'gore', 'horror', 'disgust'];
 const storyShake = (h: Holder, ids: string[]) => { if (!h.c || !h.g) return; for (const id of storyConds(h.g, h.c)) if (ids.includes(id)) setStoryCond(h.g, h.c, id, 'scene', true); };
 register({
-  id: 'iron_stomach', claims: (e, i, t) => t === 'I',
+  id: 'iron_stomach', // Tier I's one round is data (engine foundations 3); the story's checks stay here
   on: {
-    cond_apply: (ctx, h) => { if (ctx.t === h.u && (ctx.id === 'fear' || ctx.id === 'nausea') && !tierII(h)) ctx.rounds = Math.min(ctx.rounds || 1, 1); },
     check_build: (ctx, h) => { if (ctx.c === h.c && tierII(h)) storyShake(h, ['fear', 'nausea']); },
     check_post: (ctx, h) => { if (ctx.c !== h.c || !tierII(h)) return; const tg: string[] = ctx.ck.tags || []; if (tg.some((x) => FEARISH.includes(x)) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('Iron Stomach'); } },
     check_result: (ctx, h) => { if (ctx.c === h.c) storyShake(h, ['fear', 'nausea']); },
@@ -214,7 +212,6 @@ register({
 // Injuries never cost you AP or Movement: a head injury doesn't Daze you, a leg injury doesn't halve Movement (in a
 // fight, from a critical or the Injured condition, and on the area map). The injury is still recorded; torso Bleeding
 // and the arm's −2 still apply. Below half max HP you take 20% less damage (rules 1.13; PROVISIONAL, spec 14).
-const WW_LESS = 0.2;
 const wwSnap = (h: Holder) => { const st = stateOf(h); st.snap = { daz: h.u!.dazedNext || 0, mv: h.u!.movement, legs: (h.u!.injuries || []).filter((i) => i.loc === 'leg').length }; };
 function wwUndo(h: Holder, line: string) {
   const u = h.u!, st = stateOf(h), s = st.snap; if (!s) return; st.snap = null;
@@ -223,7 +220,7 @@ function wwUndo(h: Holder, line: string) {
   if (legs > s.legs && u.movement < s.mv) { u.movement = s.mv; if (u.baseMove != null) u.baseMove = Math.max(u.baseMove, s.mv); say(h.cb, u.name + ' walks on the bad leg (Walking Wounded).'); }
 }
 register({
-  id: 'walking_wounded', claims: 'all',
+  id: 'walking_wounded', claims: [0], // effect 1 (20% less while Bloodied) is data (engine foundations 3)
   stat: (h, stat) => (stat === 'move' && h.c && legInjured(h.c) ? baseMove(h.c) * 0.5 : 0),
   on: {
     // A critical's injury: the 'injury' hook keeps the wound but not its Daze or the halved Movement.
@@ -234,7 +231,6 @@ register({
     },
     cond_apply: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'injured') wwSnap(h); },
     cond_landed: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'injured') { const st = stateOf(h); if (st.snap) { const legs = (h.u!.injuries || []).filter((i) => i.loc === 'leg').length; wwUndo(h, h.u!.dazedNext && !st.snap.daz ? 'head, Dazed' : legs > st.snap.legs ? 'leg' : ''); } } },
-    damage_in: (ctx, h) => { if (ctx.phase === 'reduce' && ctx.t === h.u && !h.u!.downed && bloodied(h.u!) && ctx.dmg > 0) ctx.dmg = ctx.dmg * (1 - WW_LESS); },
   },
   brief: () => 'injuries never slow this character down',
 });
@@ -243,12 +239,9 @@ register({
 // Immune to Fear (the generic immunity). Allies within 3 tiles who can see you can't be made Afraid (no save), and an
 // ally already Afraid who starts its turn in the aura loses it (PROVISIONAL, plan 6). Story: this character can't be
 // frightened (Fear-tagged checks auto-pass; a story Fear ends at once).
-const inAura = (cb: Combat, g: Unit, t: Unit) => t !== g && t.side === g.side && alive(g) && dist(g.pos, t.pos) <= 3 && unitSees(cb, t, g.pos);
 register({
-  id: 'nothing_left_to_fear', claims: [1],
+  id: 'nothing_left_to_fear', // the aura in a fight is data (engine foundations 3); the story's fear stays here
   on: {
-    cond_apply: (ctx, h) => { if (ctx.id === 'fear' && h.u && h.cb && inAura(h.cb, h.u, ctx.t)) { ctx.cancel = true; ctx.why = h.u.name + ' is there (Nothing Left to Fear)'; } },
-    turn_start: (ctx, h) => { if (h.u && h.cb && condOn(ctx.u, 'fear') && inAura(h.cb, h.u, ctx.u)) { endCond(ctx.u, 'fear', h.cb); say(h.cb, ctx.u.name + ' steadies beside ' + h.u.name + ': no longer Afraid (Nothing Left to Fear).'); } },
     story_cond_apply: (ctx, h) => { if (ctx.c === h.c && ctx.id === 'fear') { ctx.cancel = true; ctx.why = 'Nothing Left to Fear'; } },
     check_build: (ctx, h) => { if (ctx.c === h.c) storyShake(h, ['fear']); },
     check_post: (ctx, h) => { if (ctx.c !== h.c) return; const tg: string[] = ctx.ck.tags || []; if ((tg.includes('fear') || tg.includes('horror')) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('Nothing Left to Fear'); } },
@@ -377,10 +370,10 @@ register({
 // −0.5 Movement (PROVISIONAL like Right of Way), attacks against them +2 to hit, and they can't hide in light: Hide on a
 // lit tile is undone, and the story's stay-hidden roll fails when they aren't in the dark.
 register({
-  id: 'heavyworlder', claims: [2, 3, 6, 7], narrator: [0],
-  stat: (h, stat) => (stat === 'carry' ? { mult: 2 } : stat === 'move' ? -0.5 : stat === 'one_hand_heavy' ? 1 : 0), // heavies in one hand (character.ts twoHands); 'one size larger' is the Narrator's (no stat: nothing asks a size)
+  // carry ×2, −0.5 Movement, heavies in one hand (character.ts twoHands) and +2 to hit it are data (engine foundations 3);
+  // 'one size larger' is the Narrator's (no stat: nothing asks a size). The light and the dark stay here.
+  id: 'heavyworlder', narrator: [0],
   on: {
-    attack_preview: (ctx, h) => { if (ctx.tgt === h.u) ctx.terms.push({ v: 2, label: 'big target (Heavyworlder)' }); },
     hide: (ctx, h) => { if (ctx.u === h.u && h.cb && litAt(h.cb, h.u!.pos)) reveal(h.cb, h.u!, 'too big to hide in the light'); },
     notice: (ctx, h) => { if (ctx.c === h.c) stateOf(h).dark = !!ctx.dark; },
     stay_hidden: (ctx, h) => { if (ctx.c === h.c && !stateOf(h).dark) ctx.auto = 'fail'; },

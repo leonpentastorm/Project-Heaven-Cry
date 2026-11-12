@@ -19,7 +19,7 @@ import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems } from './collect';
 import { overworld, rngOf } from '../kit';
-import { dist, displace, emitFx } from '../combat';
+import { dist, displace, emitFx, unitSees } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf } from '../magic';
 import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
@@ -65,6 +65,7 @@ export const TRIGGERS: Record<string, Trigger> = {
   reload: { hook: 'reload', actor: u_, self: 'actor', about: 'a reload is made' },
   swap: { hook: 'swap', actor: u_, self: 'actor', about: 'a weapon swap is priced' },
   injury: { hook: 'injury', actor: by, target: t_, self: 'target', about: 'an injury is about to be rolled on a unit' },
+  glyph_cost: { hook: 'glyph_cost', actor: u_, self: 'actor', about: 'a Sigil glyph is priced (its AP, charge and Flux; also every preview)' },
 };
 
 // ============================================================================================== the event
@@ -118,6 +119,7 @@ for (const who of ['self', 'actor', 'target'] as Who[]) {
   P(who + '_kind', 'words', who + '\'s kind is one of these (human, robot, crawler, ork…)', (ev, v) => { const u = unitOf(ev, who); return !!u && list(v).includes((u as any).kind || 'human'); });
   P(who + '_not_kind', 'words', who + '\'s kind is none of these', (ev, v) => { const u = unitOf(ev, who); return !!u && !list(v).includes((u as any).kind || 'human'); });
   if (who !== 'self') P(who + '_within', 'number', who + ' stands within this many tiles of the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && !!u.pos && dist(u.pos, ev.self.pos) <= v; });
+  if (who !== 'self') P(who + '_sees_self', 'bool', who + ' can (or cannot) see the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && unitSees(ev.cb, u, ev.self.pos) === v; });
 }
 P('melee', 'bool', 'the attack or damage is (true) or is not (false) melee', (ev, v) => !!(ev.ctx.melee ?? ev.ctx.src?.melee) === v);
 P('crit', 'bool', 'the attack is (or is not) a critical', (ev, v) => !!(ev.ctx.crit ?? ev.ctx.src?.crit) === v);
@@ -129,6 +131,7 @@ P('hostile', 'bool', 'the actor and the target are (or are not) on different sid
 P('cond', 'ids', 'the condition is one of these', (ev, v) => list(v).map(condId).includes(condId(ev.ctx.id)));
 P('cond_family', 'words', 'the condition\'s family is one of these (body, brain, heart)', (ev, v) => list(v).includes(ev.ctx.fam));
 P('action', 'words', 'the priced action (its cost site) is one of these', (ev, v) => list(v).includes(ev.ctx.action));
+P('word', 'words', 'the Sigil word being drawn is one of these', (ev, v) => list(v).includes(ev.ctx.word));
 P('hand', 'words', 'the hand is one of these (main, off, both)', (ev, v) => list(v).includes(ev.ctx.hand || (ev.ctx.both ? 'both' : 'main')));
 P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
 P('ap_above', 'number', 'the event\'s AP (a price, a swap) is over this', (ev, v) => (ev.ctx.ap ?? 0) > v);
@@ -139,6 +142,13 @@ P('self_alive', 'bool', 'the holder is (or is not) up: not Downed, dead or surre
 P('open', 'bool', 'nothing has stopped it yet: not cancelled, and (would_drop) not floored', (ev, v) => (!ev.ctx.cancel && ev.ctx.floor == null) === v);
 P('amount_above', 'number', 'the event\'s amount (damage, a heal) is over this', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) > v);
 P('amount_share_below', 'number', 'the event\'s amount is under this share of the holder\'s max HP', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) / ev.self.maxHp < v);
+
+/** A `say` line's words: {self} {actor} {target} (names), {gain} (what the last resource op really gave), {res:<id>}
+ * and {resmax:<id>} (the holder's resource now, and its most). Numbers from the data go in as {=.field} placeholders. */
+function fill(s: string, ev: Ev): string {
+  return s.replace(/\{(self|actor|target)\}/g, (_m, w) => unitOf(ev, w as Who)?.name || '')
+  .replace(/\{gain\}/g, () => String((ev as any).gain ?? 0)).replace(/\{res:([a-z_]+)\}/g, (_m, id) => String(ev.self.res?.[id] ?? 0)).replace(/\{resmax:([a-z_]+)\}/g, (_m, id) => String(ev.self.resMax?.[id] ?? 0));
+}
 
 // ============================================================================================== the ops
 /** The closed list of ops a triggered effect may run, with the triggers each one understands. */
@@ -160,12 +170,12 @@ O('roll_mod', ['attack', 'cond_incoming', 'save'], false, ['value', 'roll'], 'a 
   if (ev.trig.hook === 'attack_preview') ev.ctx.terms.push({ v: e.value, label });
   else if (e.roll === 'tn') ev.ctx.tnAdd = (ev.ctx.tnAdd || 0) + e.value; else ev.ctx.saveAdd = (ev.ctx.saveAdd || 0) + e.value;
 });
-O('cost_mod', ['cost', 'swap', 'reload', 'attack'], false, ['value', 'set', 'min', 'res'], 'change the AP (or with res, a resource) of the action: add value, or set it; min is the floor a cut stops at', (ev, e) => {
-  const c = ev.ctx, r = e.res, cur = r ? (c.res?.[r] ?? 0) : c.ap;
+O('cost_mod', ['cost', 'swap', 'reload', 'attack', 'glyph_cost'], false, ['value', 'set', 'min', 'at_least', 'res'], 'change the AP (or with res, a resource: charge, flux…) of the action: add value, or set it; min is the floor a cut stops at; at_least raises it to that', (ev, e) => {
+  const c = ev.ctx, r = e.res, box = r && ev.trig.hook === 'cost' ? (c.res ||= {}) : c, f = r || 'ap', cur = box[f] ?? 0;
   let n = typeof e.set === 'number' ? e.set : cur + (e.value || 0);
   if (typeof e.min === 'number' && n < cur) n = Math.max(Math.min(cur, e.min), n);
-  n = Math.max(0, n);
-  if (r) (c.res ||= {})[r] = n; else c.ap = n;
+  if (typeof e.at_least === 'number') n = Math.max(e.at_least, n);
+  box[f] = Math.max(0, n);
 });
 O('grant_ap', ['turn_ap', ...ANY.filter((t) => t !== 'turn_ap')], true, ['value', 'bank'], 'AP: at turn_ap, to this turn (a negative value takes); elsewhere perk AP now (bank: true, next turn)', (ev, e, label) => {
   const u = pick(ev, e)!; if (!u) return;
@@ -193,8 +203,8 @@ O('cond_rounds', ['cond_incoming'], false, ['max', 'add'], 'change the rounds of
 });
 O('skip_save', ['cond_incoming'], false, [], 'the condition being put on gets no save', (ev) => { ev.ctx.skipSave = true; });
 O('cancel', ['cond_incoming', 'forced_move', 'injury', 'attack'], false, ['why'], 'stop it: the condition, the forced move or the injury does not happen; an attack is refused (why: the reason shown)', (ev, e, label) => {
-  if (ev.trig.hook === 'attack_preview') { if (!ev.ctx.fail) ev.ctx.fail = e.why || label; return; }
-  ev.ctx.cancel = true; ev.ctx.why = e.why || label;
+  if (ev.trig.hook === 'attack_preview') { if (!ev.ctx.fail) ev.ctx.fail = e.why ? fill(e.why, ev) : label; return; }
+  ev.ctx.cancel = true; ev.ctx.why = e.why ? fill(e.why, ev) : label;
 });
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
 O('deal', ANY, true, ['amount'], 'deal an amount block (amounts) to the self, actor or target', (ev, e) => {
@@ -240,10 +250,6 @@ function limitOk(ev: Ev, lim: any, take: boolean): boolean {
 }
 
 // ============================================================================================== the runner
-/** A `say` line's words: {self} {actor} {target} (names), {gain} (what the last resource op really gave), {res:<id>}
- * and {resmax:<id>} (the holder's resource now, and its most). Numbers from the data go in as {=.field} placeholders. */
-const fill = (s: string, ev: Ev) => s.replace(/\{(self|actor|target)\}/g, (_m, w) => unitOf(ev, w as Who)?.name || '')
-  .replace(/\{gain\}/g, () => String((ev as any).gain ?? 0)).replace(/\{res:([a-z_]+)\}/g, (_m, id) => String(ev.self.res?.[id] ?? 0)).replace(/\{resmax:([a-z_]+)\}/g, (_m, id) => String(ev.self.resMax?.[id] ?? 0));
 /** Is this effect a triggered one (its `when` names a trigger)? */
 export const isTriggered = (e: any): boolean => !!e && typeof e.when === 'string' && !!TRIGGERS[e.when];
 /** Why a triggered effect can't run (null: it can): the op is unknown or doesn't take this trigger, a predicate is

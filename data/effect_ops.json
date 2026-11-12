@@ -4195,6 +4195,11 @@
         "hook": "injury",
         "self": "target",
         "about": "an injury is about to be rolled on a unit"
+      },
+      "glyph_cost": {
+        "hook": "glyph_cost",
+        "self": "actor",
+        "about": "a Sigil glyph is priced (its AP, charge and Flux; also every preview)"
       }
     },
     "predicates": {
@@ -4282,6 +4287,10 @@
         "arg": "number",
         "about": "actor stands within this many tiles of the holder"
       },
+      "actor_sees_self": {
+        "arg": "bool",
+        "about": "actor can (or cannot) see the holder"
+      },
       "target_hp_below": {
         "arg": "number",
         "about": "target's HP is under this share of its max"
@@ -4322,6 +4331,10 @@
         "arg": "number",
         "about": "target stands within this many tiles of the holder"
       },
+      "target_sees_self": {
+        "arg": "bool",
+        "about": "target can (or cannot) see the holder"
+      },
       "melee": {
         "arg": "bool",
         "about": "the attack or damage is (true) or is not (false) melee"
@@ -4361,6 +4374,10 @@
       "action": {
         "arg": "words",
         "about": "the priced action (its cost site) is one of these"
+      },
+      "word": {
+        "arg": "words",
+        "about": "the Sigil word being drawn is one of these"
       },
       "hand": {
         "arg": "words",
@@ -4455,16 +4472,18 @@
           "cost",
           "swap",
           "reload",
-          "attack"
+          "attack",
+          "glyph_cost"
         ],
         "fields": [
           "value",
           "set",
           "min",
+          "at_least",
           "res"
         ],
         "changes_state": false,
-        "about": "change the AP (or with res, a resource) of the action: add value, or set it; min is the floor a cut stops at"
+        "about": "change the AP (or with res, a resource: charge, flux…) of the action: add value, or set it; min is the floor a cut stops at; at_least raises it to that"
       },
       "grant_ap": {
         "on": [
@@ -4496,7 +4515,8 @@
           "cost",
           "reload",
           "swap",
-          "injury"
+          "injury",
+          "glyph_cost"
         ],
         "fields": [
           "value",
@@ -4535,7 +4555,8 @@
           "cost",
           "reload",
           "swap",
-          "injury"
+          "injury",
+          "glyph_cost"
         ],
         "fields": [
           "resource",
@@ -4574,7 +4595,8 @@
           "cost",
           "reload",
           "swap",
-          "injury"
+          "injury",
+          "glyph_cost"
         ],
         "fields": [
           "condition",
@@ -4614,7 +4636,8 @@
           "cost",
           "reload",
           "swap",
-          "injury"
+          "injury",
+          "glyph_cost"
         ],
         "fields": [
           "condition",
@@ -4696,7 +4719,8 @@
           "cost",
           "reload",
           "swap",
-          "injury"
+          "injury",
+          "glyph_cost"
         ],
         "fields": [
           "amount"
@@ -4734,7 +4758,8 @@
           "cost",
           "reload",
           "swap",
-          "injury"
+          "injury",
+          "glyph_cost"
         ],
         "fields": [
           "amount"
@@ -4772,7 +4797,8 @@
           "cost",
           "reload",
           "swap",
-          "injury"
+          "injury",
+          "glyph_cost"
         ],
         "fields": [
           "tiles",
@@ -4811,7 +4837,8 @@
           "cost",
           "reload",
           "swap",
-          "injury"
+          "injury",
+          "glyph_cost"
         ],
         "fields": [],
         "changes_state": true,
@@ -4847,7 +4874,8 @@
           "cost",
           "reload",
           "swap",
-          "injury"
+          "injury",
+          "glyph_cost"
         ],
         "fields": [
           "flag",
