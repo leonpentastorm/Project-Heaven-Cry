@@ -437,6 +437,48 @@
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
+    },
+    {
+      "path": "art/icons/calls/taunt.png",
+      "sha256": "791c582f2fe0aecdaa80e4fca31b4b0548e304f47842481aa1c52448453e8dbd",
+      "id": "taunt",
+      "family": "calls",
+      "action": "Taunt. Wick goading an enemy: weight on his back foot, one hand beckoning \"come on then\" with curled fingers, the other hand on his hip, head tilted. Cocky.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/taunt.png",
+        "sha256": "455add3a6e5911991a0f3299fe90016c22c7d36fbeed888230787d0a4b1e0257"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/taunt.png",
+        "sha256": "791c582f2fe0aecdaa80e4fca31b4b0548e304f47842481aa1c52448453e8dbd"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/taunt.txt",
+        "sha256": "1f600fbdb5d9b49f2f041375b45d282a0f092bb697983699bdb2723daa177292"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/taunt.png",
+        "128": "art/icons/calls/exports/128/taunt.png",
+        "64": "art/icons/calls/exports/64/taunt.png",
+        "56": "art/icons/calls/exports/56/taunt.png",
+        "48": "art/icons/calls/exports/48/taunt.png",
+        "44": "art/icons/calls/exports/44/taunt.png",
+        "40": "art/icons/calls/exports/40/taunt.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
     }
   ]
 }

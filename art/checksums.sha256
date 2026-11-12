@@ -123,8 +123,8 @@ fd90a1199fab581246e6a304a47e9e82887d7965a2ac8146a6070ab7702b8ea4  art/_archive/c
 9f01b2fda4f16639aff967fc68c5447e9af36d03bfd16126e7e00a9f8117b9be  art/_archive/character-portraits/patrons/v1/source-renders/the_matchmaker-native.png
 33357380b1f5f672428f390434217bdf2ba48b0ab849cccac021948cc4fc9b98  art/_archive/character-portraits/patrons/v1/source-renders/the_quartermaster-native.png
 26658bcc4b6fe3516eb2312ef25df38efbffca447a8fd23e4b2f3501a94832bd  art/_archive/character-portraits/patrons/v1/source-renders/the_toll_keeper-native.png
-9e900c3695a1c330f3d1b94bf5a8dcd4966ed8e5682a27479847361f624324d0  art/_archive/deliveries/2026-11-12/README.md
-0c1379b3a670c60c90482549ccf87d69380580e9c85da6ba6645d1bab7e43778  art/_archive/deliveries/2026-11-12/manifest.json
+2e446a3461041d682062c53fac5538c97648456c158029c8814bc7aaf654682e  art/_archive/deliveries/2026-11-12/README.md
+070e2be7bb76e49029bab21f0814785f5fc760369e1717cb29de669bee543c0b  art/_archive/deliveries/2026-11-12/manifest.json
 01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c  art/_archive/deliveries/2026-11-12/masters/v1/both-hands.png
 27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb  art/_archive/deliveries/2026-11-12/masters/v1/brief.png
 7cd857a156cb03b78836c3cccaeb0b447c1f76084eb4e77013f977399c2f4845  art/_archive/deliveries/2026-11-12/masters/v1/cue.png
@@ -132,10 +132,11 @@ fd90a1199fab581246e6a304a47e9e82887d7965a2ac8146a6070ab7702b8ea4  art/_archive/c
 92bf01b08148a8f65dba67a7a3052d340fe25277e6e2a02b02cd5a335503ab75  art/_archive/deliveries/2026-11-12/masters/v1/order.png
 ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566  art/_archive/deliveries/2026-11-12/masters/v1/rally.png
 98f33caa406789930bc9f1940e329d979ede1e3318dd082fea4ae9aff56cea53  art/_archive/deliveries/2026-11-12/masters/v1/spot.png
+791c582f2fe0aecdaa80e4fca31b4b0548e304f47842481aa1c52448453e8dbd  art/_archive/deliveries/2026-11-12/masters/v1/taunt.png
 5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0  art/_archive/deliveries/2026-11-12/masters/v1/threaten.png
 f4bcfd657520e61ccd84200f617a8e243bd9d44bfacf50ad0f4094f830a615c9  art/_archive/deliveries/2026-11-12/masters/v1/warn.png
 5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0  art/_archive/deliveries/2026-11-12/masters/v1/whisper-rebuke.png
-b4ee3e6c78d0487121ec02fe3abf836c38393d66177637ddacfcaa45a62746ff  art/_archive/deliveries/2026-11-12/progress.json
+f645480f01f87081015abef22c8367097c9f46f9110fc2599f7b0151c24178c1  art/_archive/deliveries/2026-11-12/progress.json
 10a70cc1081ca4e054d8f039b0196009b6c892ab9ad05745729fed6f6fb062fc  art/_archive/deliveries/2026-11-12/prompts/both-hands.txt
 853cb54ab9b5c838b7720d5d4ae856a5a767b88c4bcf4154fdf69958e3ed351b  art/_archive/deliveries/2026-11-12/prompts/brief-attempt-1.txt
 ebcd21f5284814bd05fe5d38d026710bf14fb3b4ff9fac31e1d7d4d8d4890876  art/_archive/deliveries/2026-11-12/prompts/brief.txt
@@ -159,10 +160,10 @@ f7ec56482efcee72106b1a7a0cbb34854457647606e5ea6b23826d96e5c3517d  art/_archive/d
 3467da7dfcb3aaae9ac7d4a80ce4ccdd4415bd519a09550b23ed2029f8ed1f52  art/_archive/deliveries/2026-11-12/prompts/threaten.txt
 fa7a5c9eabfd85350b9af09bae13530c4192f829a0cb0dbb15a6b6658c85315e  art/_archive/deliveries/2026-11-12/prompts/warn.txt
 fc0ebb8cf9e8fb31426e205cba04b988a0f1f13fa87e46825519b695cb2cfe79  art/_archive/deliveries/2026-11-12/prompts/whisper-rebuke.txt
-534b6f7c54866044d80c0518fd06a23fe656d68cbfcc1c81c6430d6935b0d4ee  art/_archive/deliveries/2026-11-12/queue.json
-df14d6027c14a8530b048c975f68a0062a6e833334212b3fbb4fa86905b8ba27  art/_archive/deliveries/2026-11-12/reviews/calls-40px.png
-3d74a23705ad20c0514e75789edce07cc16d3fccfa071ac3361fb6fa6d79289d  art/_archive/deliveries/2026-11-12/reviews/calls-44px.png
-1daf1d0acd2f8eed5800a4de2b682cd0d4361b5b7e2e77b734fe1781075371d9  art/_archive/deliveries/2026-11-12/reviews/calls-64px.png
+72b7a07bcca600db90c5260310bf7b345e0d9821f64a4e85d2908ba8e9ce322e  art/_archive/deliveries/2026-11-12/queue.json
+3636b1ba464d94ea9cb212447683e9fc9841aa4eb516de520c92a0a2c0e46b21  art/_archive/deliveries/2026-11-12/reviews/calls-40px.png
+4900d0e3a62bee1a83750153eb4e1f599e3a361f44f73b2329b3e2ceb29ba4ba  art/_archive/deliveries/2026-11-12/reviews/calls-44px.png
+e8d2e8474476681cb92963990fe9f929f59e78dbb1019add6fd68a1677e1663c  art/_archive/deliveries/2026-11-12/reviews/calls-64px.png
 fc970ac6ef6ec743b8807265b787b12e5385bfec7782a4d7d27df366bf33a1cf  art/_archive/deliveries/2026-11-12/reviews/perks-40px.png
 cf50a56a20c45a6cfa443aeb19d4a8c5c774d235ada323af7fe35e8177421f90  art/_archive/deliveries/2026-11-12/reviews/perks-44px.png
 f04adbd17992bae0a7505be8d6529a0b8d81f6e74fa1991287b8be0ebe52c527  art/_archive/deliveries/2026-11-12/reviews/perks-64px.png
@@ -178,6 +179,7 @@ ed409fae50891bc219e3dfabb026317bd9058ce4bd58e1c3bee8036b6fb92edc  art/_archive/d
 4f1c3b150b018be0743e1abf809afe8fb6bb14570ce54edafdab3e359c78d190  art/_archive/deliveries/2026-11-12/sources/order.png
 bd12799bccfb275bb96b6c89d306520d056373dc39997bfa3cc350268c100a77  art/_archive/deliveries/2026-11-12/sources/rally.png
 719f53bbd08d3119a87854a7e4f275e15ff46b0ab333992c31ed393219985d3f  art/_archive/deliveries/2026-11-12/sources/spot.png
+455add3a6e5911991a0f3299fe90016c22c7d36fbeed888230787d0a4b1e0257  art/_archive/deliveries/2026-11-12/sources/taunt.png
 5955eeef19b88b4a304a983ec06adb8732d4ed592ab8ecf9d6656fdb6c072423  art/_archive/deliveries/2026-11-12/sources/threaten.png
 4c7312fca953597e9f74fca036d4de676ebd49c74a09b01e0b64db46b143fcc7  art/_archive/deliveries/2026-11-12/sources/warn.png
 c1a53675348140f0f12a9373605dff85200a83922fda80a83131e8d68c776ae7  art/_archive/deliveries/2026-11-12/sources/whisper-rebuke.png
@@ -910,7 +912,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 fd9fd865d5891d7e7880b1def9c8b3fb60cbe6697d91b5afe36cc91a20af0961  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-79ba44fd905eb970d496a982018ad3d206ca559a492292071d462ef1307b23d3  art/catalog.json
+fb660388eb76deae9ed4a680476e338415b933228674031e5e8470278a5f54d1  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 79a8fdcfaf94dfbd8fabd5492492ddae430bb3f773cc2826712103ad667c8347  art/emblems/patrons/mother_ember.png
@@ -941,7 +943,7 @@ e35b3f1fc56ee1e0f2bd7701b541a091de3b2c73768c3949a0d3478bfb18ff9c  art/icons/armo
 1625e06151f4158e3a941fe6e49b3ccaef74be7b6b9a116094547591cb4e94dc  art/icons/armour/trauma_plate.svg
 43591e21444507fe5a56f0d6fcb652a94f1c75b164c430999931ec29e65c7f71  art/icons/armour/utility_belt.svg
 a1b159d8a5fe8191b766d27e3b75ec96a5d6026baa0637fca0b9ed108307bfe5  art/icons/armour/work_gloves.svg
-9f2eecc3137d6a94532d09a675aaa2aceb3a27716f11425f16dced48b01ed9b2  art/icons/calls/README.md
+e77f6e8a99de44eaa0f0e21c320cf1b57dd94d2cdc6f9a58a50108748e1e80d3  art/icons/calls/README.md
 27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb  art/icons/calls/brief.png
 7cd857a156cb03b78836c3cccaeb0b447c1f76084eb4e77013f977399c2f4845  art/icons/calls/cue.png
 c6c9796f66fcfc7e060fbe99e6ebf60b520fa40742faabf5d361aaa4c2d5ee87  art/icons/calls/exports/128/brief.png
@@ -950,6 +952,7 @@ c6c9796f66fcfc7e060fbe99e6ebf60b520fa40742faabf5d361aaa4c2d5ee87  art/icons/call
 f4ee2f17dd285eef53598a0a31baf2033681c60b93facd2fc1a92fb619840dc3  art/icons/calls/exports/128/order.png
 a55414e53dbe86068a27849b7b298d0d28630a131ce28b127c68ddf330d70ca2  art/icons/calls/exports/128/rally.png
 11c90e034669cb3965786e7114fc24e51fcb193a332bbd4c0811b4944833bdb9  art/icons/calls/exports/128/spot.png
+37f7d287a461c82d7541692e4465b975009179751c1e3a32f4e2a6c0e15c5f18  art/icons/calls/exports/128/taunt.png
 8986bf8dc4a7842d730995a2b10d43f0f13caa03674aaf0e5289da9192fb1d7c  art/icons/calls/exports/128/threaten.png
 343b2711c79ac7e45a786e7a91385f69bc889e22794f42474b602815b79910be  art/icons/calls/exports/128/warn.png
 fdbaf190487a9f878e000e8c0dc6827d2ee40b1d6d1c737cb0b5473aacf59d7e  art/icons/calls/exports/256/brief.png
@@ -958,6 +961,7 @@ b1b84803989a4957de7982f349ae0344111ff1bef06b6591ded1a205c8016e76  art/icons/call
 086af5aeba84d1ed805c4242a58462deb0160ce4a03ca2b2e117277581283dea  art/icons/calls/exports/256/order.png
 3b22bc620c1c2889488a72953a81e106a9598b6fa047e84fd9c3d7caa68d5d45  art/icons/calls/exports/256/rally.png
 a8b9e77bf79bc16008f08f1f18fac25fd3d43e41d4e3d82b2f99a95fa0d82caf  art/icons/calls/exports/256/spot.png
+be24f3ad97f46f067f6cc9af7781585a99e3ee1072b0ede0c09704156224aa1d  art/icons/calls/exports/256/taunt.png
 15c6e6557676d5bf1d31c9908e61b94cf83745106687ac23b1f117ffad81dd47  art/icons/calls/exports/256/threaten.png
 d0e2dc5513e8090922e4881a64388b1f16d184f6266eb99037d9313f1d1dc4cd  art/icons/calls/exports/256/warn.png
 e2f89504aaed8ba64105d4c7512e48e91a8a96b2a658ce2790c5d0b60f4eacd9  art/icons/calls/exports/40/brief.png
@@ -966,6 +970,7 @@ e2f89504aaed8ba64105d4c7512e48e91a8a96b2a658ce2790c5d0b60f4eacd9  art/icons/call
 e9a97831fffc5d70394d7196fcf78049ee739b835bffa8fec77bcfc413e54309  art/icons/calls/exports/40/order.png
 c61770abe1a3ced75ffce668633bb44ac0a5537e53cbb93b7a5f0533f6bb9225  art/icons/calls/exports/40/rally.png
 dc49c5e8dd6d64a43e88f321d19824950458135e3d732dca95246dda6f2a2648  art/icons/calls/exports/40/spot.png
+9f85d8a4f6df05b3810e1d6a23a23512ccd9775aa556b55400d159458423ea8d  art/icons/calls/exports/40/taunt.png
 b1f0afb207a2490b460933e4e629e95e46203b36d97a41a22a89d59f1b69d2da  art/icons/calls/exports/40/threaten.png
 6c61a71a4bf6f55775b730c9cf82ac914be9b953cc2375fc176b96f32214461a  art/icons/calls/exports/40/warn.png
 e2fd1f578f4b3a63ffce9d8ce26d7eb9f801f7edb49dfbabed9b90ddca792a2a  art/icons/calls/exports/44/brief.png
@@ -974,6 +979,7 @@ e2fd1f578f4b3a63ffce9d8ce26d7eb9f801f7edb49dfbabed9b90ddca792a2a  art/icons/call
 6f29ffb4e160334aa776f2cb9203726f6ab0c87c4ba7561fe1a14f582ead96e1  art/icons/calls/exports/44/order.png
 1790b3057a31dbe8a6e9b03976ddcfa7e33eb853c19ead78db1daa2bab32d289  art/icons/calls/exports/44/rally.png
 5fae65d05f663dd6c38453bf7ee9ec459fb45306afdd733cd4b43facdd14fa54  art/icons/calls/exports/44/spot.png
+e65a1a7c65b1d48492340d0ad58c3edc4da8d9bbb282ea4416a75fff1d5c7b59  art/icons/calls/exports/44/taunt.png
 7bc5d18f7f44050adef934b585e8e1412234ec9863c20126265a1f636033d48c  art/icons/calls/exports/44/threaten.png
 d641f119cc388301f77db27f9df8d6d2fb8b8329bb861cd7dbd2a933360bb225  art/icons/calls/exports/44/warn.png
 8a29095f24e2ed688ee1587b68666700a815e5f9263b540e38c7bf149ebe4dac  art/icons/calls/exports/48/brief.png
@@ -982,6 +988,7 @@ d641f119cc388301f77db27f9df8d6d2fb8b8329bb861cd7dbd2a933360bb225  art/icons/call
 86352e03352f3998c44562fbc00c7d478c12aa3b57c9a6e056bd186565fb27ff  art/icons/calls/exports/48/order.png
 7ef7d963de25655d12f62dcee14f0fb6e9068be716822713152bc4140a0d834f  art/icons/calls/exports/48/rally.png
 4411aec1bbf2024a2719e4ee0e9f88099c29583154106bfec8a161ae1b2837b3  art/icons/calls/exports/48/spot.png
+3543822bb725f538dc1df27713f1d8b882c113c60eda65cbff1657d497a34131  art/icons/calls/exports/48/taunt.png
 edbff7813e506e6800fb1e6c0bdc7189ace93d9d9b4188472f1751de9579fb09  art/icons/calls/exports/48/threaten.png
 5b9f292a786e264b3225c2d2148d080172826ebb72589250d12a24a7501e92ae  art/icons/calls/exports/48/warn.png
 23dc6a7717780e2e1d0abacf91920c88260c969edd7f540d9516a6e198d02ee9  art/icons/calls/exports/56/brief.png
@@ -990,6 +997,7 @@ a0e62f7378fc7b9261fc140db1b627c83c25b23fe01a272f07dddbe04a465532  art/icons/call
 ffc5567555300f2f9ffc8a9f777e37f523acd096327eb8f7f72c416b8419b678  art/icons/calls/exports/56/order.png
 414aac5c9e9def0a7ac88510838a39c2bd63c2e13a6f5204bffd24a1f0fe46d6  art/icons/calls/exports/56/rally.png
 7b9d34b63a1acf077e6cf7126e123c21fbaaa68205c469fe6554f187cb3d36eb  art/icons/calls/exports/56/spot.png
+83974cbe43c34207568ee51aed7f1758e1b20b263ba8cb8b4ceb0f93e8b924b8  art/icons/calls/exports/56/taunt.png
 079540231a86107ce7d1bb7eb332b5cec2ad5c244324e8f504855e11c9d23988  art/icons/calls/exports/56/threaten.png
 9acfeff51882dfe8586bbde0a8415a7ddf0896d808dd9864fd50aff6c1cd42c9  art/icons/calls/exports/56/warn.png
 51c52e1f8940147eeedd1aa03e4a2ec5aecda7ce24e844ec8049a1d7cb0d6d98  art/icons/calls/exports/64/brief.png
@@ -998,12 +1006,14 @@ a3143a643129690285042aa34da2b5a6d46f8e5d85dc7f97541e026c2221f19a  art/icons/call
 58db6d02d5695ac1f4e101dee2d1bed744474897bd787ee903d206bf84585c24  art/icons/calls/exports/64/order.png
 aeb2e57368824d7d7ea8b1119b74a7f90133f6a26218d822d7ee907b1575c9ff  art/icons/calls/exports/64/rally.png
 5a7db09a76ec6d5dc5af7d336517a4d2382a57b251245a2e3e18fbe927e8fd75  art/icons/calls/exports/64/spot.png
+c04e01bfcdda93477f5fa809ccdd1e20b8670eae85a040caa39eb5d5b2b10962  art/icons/calls/exports/64/taunt.png
 fe34ad324324abc6e0464afcee97b9003b758b485a558baed365140045640cc7  art/icons/calls/exports/64/threaten.png
 88b892a6b702eb70621ac6486b19d5ad8354267d059c212027643f3e120f0128  art/icons/calls/exports/64/warn.png
 7a827cf7f9fb5f6e5dbe3dbc6fef57ed8b8a401ac0eabda2721f07158a33050f  art/icons/calls/name-it.png
 92bf01b08148a8f65dba67a7a3052d340fe25277e6e2a02b02cd5a335503ab75  art/icons/calls/order.png
 ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566  art/icons/calls/rally.png
 98f33caa406789930bc9f1940e329d979ede1e3318dd082fea4ae9aff56cea53  art/icons/calls/spot.png
+791c582f2fe0aecdaa80e4fca31b4b0548e304f47842481aa1c52448453e8dbd  art/icons/calls/taunt.png
 5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0  art/icons/calls/threaten.png
 f4bcfd657520e61ccd84200f617a8e243bd9d44bfacf50ad0f4094f830a615c9  art/icons/calls/warn.png
 ea053edc5d4105a821b68e964185a89b21f8e39f0181750d6b24349f8a860dfa  art/icons/focus/emanator.svg

@@ -10247,6 +10247,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/threaten.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/threaten.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "taunt": {
+      "id": "taunt",
+      "label": "Taunt",
+      "path": "art/icons/calls/taunt.png",
+      "sha256": "791c582f2fe0aecdaa80e4fca31b4b0548e304f47842481aa1c52448453e8dbd",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/calls/exports/256/taunt.png",
+        "128": "art/icons/calls/exports/128/taunt.png",
+        "64": "art/icons/calls/exports/64/taunt.png",
+        "56": "art/icons/calls/exports/56/taunt.png",
+        "48": "art/icons/calls/exports/48/taunt.png",
+        "44": "art/icons/calls/exports/44/taunt.png",
+        "40": "art/icons/calls/exports/40/taunt.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/taunt.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/taunt.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

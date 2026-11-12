@@ -16,12 +16,12 @@
     "cue",
     "spot",
     "warn",
-    "threaten"
+    "threaten",
+    "taunt"
   ],
   "awaiting_after_test": "Leon verdict before remaining feeling/module production; map guides before optional maps",
   "production_approved": false,
   "remaining_now": [
-    "taunt",
     "feeling-rage",
     "feeling-grief",
     "feeling-fear",
@@ -33,5 +33,5 @@
     "module-orbit",
     "module-echo"
   ],
-  "updated_utc": "2026-11-12T02:27:46.689505+00:00"
+  "updated_utc": "2026-11-12T02:29:34.547829+00:00"
 }
