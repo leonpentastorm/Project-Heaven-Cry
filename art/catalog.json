@@ -10499,6 +10499,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-pride.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-pride.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-despair": {
+      "id": "feeling-despair",
+      "label": "Despair: the ribbon unravels downward into loose threads",
+      "path": "art/icons/feelings/feeling-despair.png",
+      "sha256": "6882ae7504c91c2449025d0ed0e99f05d47285c35b6e7afe2318e1628a46849e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-despair.png",
+        "128": "art/icons/feelings/exports/128/feeling-despair.png",
+        "64": "art/icons/feelings/exports/64/feeling-despair.png",
+        "56": "art/icons/feelings/exports/56/feeling-despair.png",
+        "48": "art/icons/feelings/exports/48/feeling-despair.png",
+        "44": "art/icons/feelings/exports/44/feeling-despair.png",
+        "40": "art/icons/feelings/exports/40/feeling-despair.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-despair.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-despair.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {

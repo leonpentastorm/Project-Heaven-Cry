@@ -997,6 +997,52 @@
           "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
         }
       ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-despair.png",
+      "sha256": "6882ae7504c91c2449025d0ed0e99f05d47285c35b6e7afe2318e1628a46849e",
+      "id": "feeling-despair",
+      "family": "feelings",
+      "action": "Despair: the ribbon unravels downward into loose threads.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-despair.png",
+        "sha256": "c2a48ef157c6b9802c9832756a009a485d748c20aeb0f0d9cf9d411906e3e313"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-despair.png",
+        "sha256": "6882ae7504c91c2449025d0ed0e99f05d47285c35b6e7afe2318e1628a46849e"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-despair.txt",
+        "sha256": "91d9fa4bda4082e0a24def6e6b4c53c0a802cff0090630edbf1e8d2407dd267d"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-despair.png",
+        "128": "art/icons/feelings/exports/128/feeling-despair.png",
+        "64": "art/icons/feelings/exports/64/feeling-despair.png",
+        "56": "art/icons/feelings/exports/56/feeling-despair.png",
+        "48": "art/icons/feelings/exports/48/feeling-despair.png",
+        "44": "art/icons/feelings/exports/44/feeling-despair.png",
+        "40": "art/icons/feelings/exports/40/feeling-despair.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
     }
   ]
 }
