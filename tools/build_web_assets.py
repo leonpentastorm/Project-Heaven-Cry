@@ -37,8 +37,8 @@ for cid, a in C["characters"].items():
 for fam, prefix in (("traits", "wick-trait-"), ("perks", "wick-perk-")):
     for iid, a in C[fam].items():
         small = ROOT / a.get("exports", {}).get("128", a["path"])
-        emit(prefix + iid, small, (128, 128), None, 90)
-        emit(prefix + iid, ROOT / a["path"], None, (512, 512), 90)
+        emit(prefix + iid, small, (128, 128), None, 90, versioned=iid == "both-hands")
+        emit(prefix + iid, ROOT / a["path"], None, (512, 512), 90, versioned=iid == "both-hands")
         # A renamed item keeps its art file (rules 1.13: Grapple is Iron Grip, Origami Hands is Both Hands): the catalog
         # entry's `data_id` names the item it belongs to now, and the same images also answer to that name, which is
         # the one the screens ask for ("wick-perk-" + the data id with hyphens). No second copy is written.
@@ -73,6 +73,9 @@ for src in sorted((ROOT / "art/emblems/patrons").glob("*.png")):
     emit("patron-mark-" + src.stem, src, (128, 128), (512, 512), 90)
 for src in sorted((ROOT / "art/icons/prayers").glob("*.png")):
     emit("prayer-" + src.stem, src, (128, 128), (512, 512), 90)
+# Calls are delivered in the catalog; the Calls tab can use call-<kebab-case id>.
+for iid, a in C.get("calls", {}).items():
+    emit("call-" + iid, ROOT / a["path"], (128, 128), (512, 512), 90)
 # Outburst 4.0 (docs/design/handoffs/outburst-4.0-art-brief.md): feeling glyphs and module icons, picked up by file name
 # the same way (game/heartIcons.ts draws SVG for anything missing). Either folder may be absent.
 #   art/icons/feelings/feeling-<id>.png -> feeling-<id>

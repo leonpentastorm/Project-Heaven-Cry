@@ -839,10 +839,9 @@
     "family": "modules",
     "path": "art/icons/modules/module-shell.png",
     "action": "a dome over a dot",
-    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a dome over a dot\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "prompt": "Clean up the first icon into an immaculate flat geometric white diagram on transparency, matching the smooth even construction of the last two references. Shell: one thick semicircular dome with flat horizontal base and ONE solid circular dot centered safely inside. Remove ALL splashes, speckles, scratches, distressing, white residue, texture, extra shapes. The entire empty interior around the dot MUST be fully transparent. White dome and white dot only. Smooth bold vectorlike edges, no glow, no gray, no shadow, no text. Center in square with generous margin. Keep a clear transparent gap all around the dot.",
     "references": [
-      "art/icons/prayers/whisper-luck.png",
-      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/_archive/deliveries/2026-11-12/sources/module-shell-attempt-1.png",
       "art/icons/modules/module-split.png",
       "art/icons/modules/module-orbit.png"
     ],

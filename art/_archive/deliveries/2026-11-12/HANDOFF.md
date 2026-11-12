@@ -1,28 +1,38 @@
-# Continue the 12 November art brief
+# 12 November icon delivery handoff
 
-**Destination: `art/briefs-complete`; keep develop and the implementer branch untouched.** The prompt file was found on `claude/charming-gauss-hbq4n0` at `dd35e4b8`; it was safely fast-forwarded into this art branch. No force pushes. Fetch current refs and preserve any subsequent implementer work before continuing.
+**77/77 icons delivered on `art/briefs-complete`.** Every selected drawing was generated with image_gen, shown in chat, exported, validated, committed and pushed before drawing the next icon. No image usage limit interrupted this run. Individual artwork remains **review-candidate**, `production_approved:false`.
 
-Actual delivered: **77/77**. Every delivered image was generated with image_gen, shown in chat, technically exported, validated, committed and pushed before the next render. New art is review-candidate with production_approved:false. The exact delivered list is progress.json; production selections and source/reference hashes are manifest.json.
+Leon approved the six-feeling/four-module test set: “Approve both styles and continue.” This is family-style approval; individual production approval is still pending.
 
-## Next work
+## Delivered
 
-The full requested icon queue is drawn; finish validation and the handoff. Optional maps still require confirmed layout guides.
+| Family | Count | Production files | Asset keys |
+| --- | ---: | --- | --- |
+| Rebuke | 1 | `art/icons/prayers/whisper-rebuke.png` | `prayer-whisper-rebuke` |
+| Both Hands replacement | 1 | `art/icons/perks/both-hands.png` | `wick-perk-both-hands` |
+| Calls | 9 | `art/icons/calls/<name>.png` | `call-<name>` (kebab case) |
+| Feelings | 25 | `art/icons/feelings/feeling-<id>.png` | `feeling-<id>` (data id preserved) |
+| Modules | 38 | `art/icons/modules/module-<id>.png` | `module-<id>` (data id preserved) |
+| UI marks | 3 | `art/icons/modules/ui-{revert,practice,felt}.png` | `heart-ui-{revert,practice,felt}` |
 
-Remaining ordered queue: none in the current stage.
+The source prompt heading says 13 Wick icons, but its table and ART-REQUESTS enumerate 11. All 11 are delivered; there are no invented extra jobs. Impact is retired and has no icon. The 25 feelings, 38 active modules and nine Calls were reconciled with their actual data ids. Calls use data ids such as `call.name_it`; their filenames/asset keys use `name-it`.
 
-Read `art/AGENTS.md`, `art/README.md`, `art/style-guide/PHC-Style-Guide.md`, `art/icons/STYLE-LOCK.md`, `art/briefs/GPT-PROMPTS-2026-11-12.md` and its linked current request/rules documents. Read queue.json in this folder: it contains exact prompts, reference paths and delivered flags. **Do not skip Both Hands just because its id exists:** its replacement is already delivered here and its stand-in is preserved in art/_archive/icons/perks/2026-11-12/. Do not rely on the Wick section heading13: the table and ART-REQUESTS enumerate11 (Rebuke, Both Hands, nine Calls).
+Every icon has a 1024px RGBA white-ink master and 256/128/64/56/48/44/40px PNG exports. The delivery `manifest.json` records selected source/master/prompt/reference hashes and export paths. `queue.json` has the ordered jobs, actual selected prompts and delivered flags; `progress.json` has the full delivered list and no remaining icon jobs. `sources/` retains native renders and rejected attempts; `masters/v1/` preserves the selected masters. Replaced Both Hands production files and exports are preserved at `art/_archive/icons/perks/2026-11-12/`; its catalog entry records `previous_path`.
 
-## Per-image workflow
+## Reviews and integration
 
-1. Select the next pending job in queue.json. Inspect its reference images, attach them, and call image_gen with transparency and the exact prompt. No parallel renders. Avoid copying the master’s bowl/arrows; Order and Brief first attempts are retained as rejected sources.
-2. Show the generated image in chat immediately. Copy/checkpoint its source without deleting the generated original. If reviewing an edit, preserve every attempt and prompt. Creative revisions must use image_gen; Python is only for technical separation, sizing and contact sheets.
-3. From repository root run `python3 tools/art/export_nov12_icons.py --id ID --source /absolute/generated.png`. This retains source/master/prompt, archives replaced production files, writes1024 RGBA +256/128/64/56/48/44/40 exports, catalog, progress and reviews. It refuses delivered ids and conflicting sources; use versioned revisions for corrections.
-4. Inspect the corresponding40/44/64px reviews. Run `python3 tools/validate_art.py --asset ID` and `git diff --check`. Check their exit status before committing. Commit only this art/tooling work and push `git push origin art/briefs-complete`; wait for successful push before next image. On a push conflict safely sync and push the existing render; do not redraw.
+`reviews/` contains complete Calls, feelings and modules contact sheets at 40/44/64px, plus six production batches at 40/64px. They were inspected in chat. Calls differ in pose; feelings use gestural heart-knotted ribbons; modules use clean geometric diagrams. Rejected attempts that copied reference ornaments remain archived. Translucent source haze is removed by the technical ink separation; exports contain only white RGB ink with alpha edges.
 
-## Review gates and final handoff
+`npm run assets` exports all selected files to the web asset map. The builder now exports the nine Calls as `call-<id>` and versions the replacement Both Hands URL to refresh old caches. Existing prayer and Outburst image lookups already use the delivered names. **The implementer still needs to wire the Calls tab to the new images**; no gameplay/UI implementation was changed in this art delivery. The generated asset map is included; generated WebPs follow the repository's existing ignored-build-output policy.
 
-The complete icon queue is11 Wick icons,25 feeling glyphs,38 module icons and3 UI marks,77 total. Leon explicitly approved both ten-icon test-set styles and said to continue. No further initial-test approval is pending. Keep individual art production_approved:false. Do not claim the full commission complete until all77 are actually delivered. An async question asks which optional map layouts are approved: no answer is recorded yet. Generate current tile guides before any map painting; Proving Ground additionally needs its playtest gate. Do not start M813/sketch maps or equipment paintings, which are on hold. No title-screen, 3D Narrator, completed animation or old180-icon redraws.
+## Scope and branch
 
-At the stage end update ART-REQUESTS statuses and this handoff accurately, refresh hashes with `python3 tools/rehash_art_checksums.py`, run `python3 tools/validate_art.py` and `git diff --check`, push final handoff and verify clean worktree and matching remote. Build asset exports if appropriate; Calls still require implementer UI wiring (do not alter gameplay).
+The brief was found on `claude/charming-gauss-hbq4n0` at `dd35e4b8`, safely fast-forwarded into this separate art branch. The final upstream check reached `cb40e922`; later commits concern engine/rules work and add no art requirements. Their active module list still contains the same 38 ids. They were left on the implementer's branch for its normal integration flow. No force pushes; develop, main and the implementer's branch are untouched.
 
-If image quota returns a limit, save its **exact returned reset timestamp and response** in progress.json and a checkpoint file, record next pending id and remaining work here, commit/push the handoff, and do not retry before reset. Leon explicitly requested a handoff so another GPT can continue if usage is exhausted.
+The optional two maps were not painted. Leon has not answered the tile-guide/layout question; Proving Ground also requires his playtest. Generate current guides with `tools/render_map_guides.py` before painting, and follow the current map-size rules. Equipment 2.0, M813/sketch maps, title-screen work, 3D Narrator, completed animations and the prior 180-icon library are outside this delivery.
+
+## Validation
+
+Each icon passed `python3 tools/validate_art.py --asset ID` and `git diff --check` before its push. Final handoff checks are the complete art validator, patron validator, `npm run assets`, delivered-key/PNG/WebP consistency checks and `git diff --check`. **All final checks passed.** See `validation.json` and `validation/` for outcomes and captured command output.
+
+No icon generation remains. Future requested revisions must preserve these sources and masters in a new versioned folder, retain `production_approved:false` until Leon approves, and use image_gen for creative changes. If a future run encounters an image limit, save the exact returned reset timestamp/error and next pending job in progress, commit/push the handoff and never retry before reset.
