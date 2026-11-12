@@ -1043,6 +1043,52 @@
           "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
         }
       ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-hope.png",
+      "sha256": "8cef29a0cc0c1b25d9af65724009bd916c34b97a7bec741ef0bce77352bdfd1e",
+      "id": "feeling-hope",
+      "family": "feelings",
+      "action": "Hope: a small flame-shaped ribbon rising from a low flat line.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-hope.png",
+        "sha256": "a545ade9a9bbd1b5496daa98149846fe44a9fa62364869e3524d6943761ca909"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-hope.png",
+        "sha256": "8cef29a0cc0c1b25d9af65724009bd916c34b97a7bec741ef0bce77352bdfd1e"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-hope.txt",
+        "sha256": "62e83741951bc8f1e3fa0c6a41e3b9223d35b191a638a313cf1f04aca8ff3210"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-hope.png",
+        "128": "art/icons/feelings/exports/128/feeling-hope.png",
+        "64": "art/icons/feelings/exports/64/feeling-hope.png",
+        "56": "art/icons/feelings/exports/56/feeling-hope.png",
+        "48": "art/icons/feelings/exports/48/feeling-hope.png",
+        "44": "art/icons/feelings/exports/44/feeling-hope.png",
+        "40": "art/icons/feelings/exports/40/feeling-hope.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
     }
   ]
 }
