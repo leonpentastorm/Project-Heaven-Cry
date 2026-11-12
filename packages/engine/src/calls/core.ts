@@ -3,7 +3,7 @@
 // it. previewCall and useCall are one code path: a preview builds the same Call with `preview: true`, and a handler
 // then describes what it would do and changes nothing.
 //
-// The shared ladder, by the speaker's points in the Call's skill (calls.json `rules`): 2 AP and 5 tiles + 1 a point;
+// The shared ladder, by the speaker's points in the Call's skill (calls.json `rules`): 2 AP and 4 tiles + 1 a point;
 // step 2 at 3 points; 1 AP from 5; step 3 at 7; as a reaction once a round from 9; the first Call of a turn free at 10.
 import { type Combat, type Unit, alive, emitFx, checkOver, active, dist, sideSees, encoreCredit } from '../combat';
 import { charOfUnit, emit, bindGame } from '../effects/hooks';

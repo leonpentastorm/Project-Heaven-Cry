@@ -8,7 +8,7 @@
 // Rules revision 1.10 (Sigil 1.5, strokes): a Line is a stroke, the glyphs drawn as one (each glyph's strokeId; see
 // strokeRuns, strokePick); glyphs of other strokes never join, poison or block it. Old glyphs with no strokeId keep the
 // 1.4 touching-group reading (groupAt) until they fade.
-import { WEAPON, type SigilDef } from './data';
+import { WEAPON, SKILL, type SigilDef } from './data';
 import {
   type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT, lineMult,
 } from './sigilwords';
@@ -1298,7 +1298,7 @@ export function sigilRoundTick(cb: Combat) {
 }
 const x2fx = (k: string) => (k === 'turret' ? 'turret_destroyed' : k === 'trap' ? 'trap_gone' : k === 'field' || k === 'wall' ? 'field_gone' : k + '_gone');
 /** Spotting hidden Sigil traps and turrets (spec: WAIT, "like any hidden trap"): a unit of the other side within the
- * trap object's detect range spots it on a passive of 10 + Vigilant − 1 (a PC) or 10 + its tier's notice (an enemy)
+ * trap object's detect range spots it on a passive of 10 + Vigilance (a gamma: its full points; a PC) or 10 + its tier's notice (an enemy)
  * against the trap's TN. */
 export function sigilSpot(cb: Combat, u: Unit) {
   if (u.dead || u.downed) return;
@@ -1308,7 +1308,7 @@ export function sigilSpot(cb: Combat, u: Unit) {
     const zz: any = z; if (z.side === u.side || !(z.kind === 'trap' || (z.kind === 'turret' && zz.hidden))) continue;
     if ((zz.spotted ||= []).includes(u.side) || dist(z.tiles[0], u.pos) > tr.range || passive < tr.tn) continue;
     zz.spotted.push(u.side); emitFx(cb, 'trap_spotted', { id: z.id, tile: z.tiles[0], by: u.id, side: u.side, only: u.side, kind: z.kind });
-    cb.log.push(u.name + ' spots a hidden ' + (z.kind === 'turret' ? 'turret' : 'Sigil trap') + ' at ' + refOf(z.tiles[0]) + ' (' + (u.side === 'pc' ? 'Vigilant ' : 'notice ') + passive + ' vs ' + tr.tn + ').');
+    cb.log.push(u.name + ' spots a hidden ' + (z.kind === 'turret' ? 'turret' : 'Sigil trap') + ' at ' + refOf(z.tiles[0]) + ' (' + (u.side === 'pc' ? SKILL.vigilant.name + ' ' : 'notice ') + passive + ' vs ' + tr.tn + ').');
   }
 }
 /** The placed Sigil magic a side can see (spec: Mana, Sigils 9.9): fields, traps, turrets, smoke, light and RAISE walls,

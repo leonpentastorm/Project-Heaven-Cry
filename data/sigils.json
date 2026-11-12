@@ -85,7 +85,7 @@
       "blocked": false
     },
     "self_target": "You can always target your own tile, whatever the Reach. PUSH can't land there, and QUICKEN doesn't affect you.",
-    "range_bonus": "Half your Rumination, rounded down, plus any perks. It is added once to a Reach word's range, and never to Touch.",
+    "range_bonus": "Half your Brain Power, rounded down, plus any perks. It is added once to a Reach word's range, and never to Touch.",
     "one_reach_word": true,
     "repeats": {
       "allowed": true,

@@ -652,7 +652,6 @@ export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power') + ((c as 
 /** Begin's AP (rules 1.5): 2 for everyone (Swift: 1). Empathy no longer lowers it (it gives free Pumps instead). Kept
  * under its 1.2 name for the class moves priced "Soul cast AP". */
 export const soulCastAp = (c: Character) => { void c; return 2; };
-/** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3, 2 from Empathy 7. PROVISIONAL. */
 /** Empathy's free Pump each round (rules 1.19: one from Empathy 3; Empathy 7 no longer gives a second: see swellFree).
  * The table is soul_modules.json cycle.free_pumps; whatever items add, a character takes one free Pump a turn at most
  * (magic.ts FREE_PER_TURN). */
@@ -775,7 +774,7 @@ export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'pa
 // ---------- derived stats the damage chain and the shared subsystems read (spec: Derived stats; rules 1.3) ----------
 /** Percentage reductions are capped at 60% (spec: Derived stats). Each returns the fraction NOT taken off (0..0.6). */
 const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
-/** Critical damage taken: −10% × (Perception − 1) − 5% × Durability. */
+/** Critical damage taken: −10% × (Perception − 1) − 5% × Acuity (the skill with the id 'analysis'). */
 export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'analysis'))); // rules 1.13: Acuity's (the skill with the id 'analysis'); it was Durability's
 /** Elemental damage taken: −10% × Pain Threshold. Below 0 it is damage taken extra (Paper, Oil in My Mind: +10% at
  * Pain Threshold 0), so only the 60% cap applies, not the floor. */
@@ -815,7 +814,7 @@ export function levelForXp(xp: number): number {
 export const xpForLevel = (l: number) => XP_TOTAL[String(Math.min(20, Math.max(1, l)))];
 
 /** What reaching `level` gives (spec table "On reaching a level"; rules 1.11, item 924): odd levels 2 Skill points,
- * even levels 1 Skill point and 1 Attribute point, a Core point every 3rd level up to 18. Read from rules.json
+ * even levels 1 Skill point and 1 Attribute point; no Core points since rules 1.13 (amount 0). Read from rules.json
  * `character.levels.gains`, so the numbers live in the data. */
 export function levelGains(level: number): { skill: number; attr: number; core: number } {
   const G = RULES.character.levels.gains || {};
@@ -854,7 +853,6 @@ const CAP_BY_LEVEL: [number, number][] = Object.entries(((RULES.character.creati
 export const attrCapAt = (level: number): number => CAP_BY_LEVEL.reduce((cap, [l, v]) => (level >= l ? v : cap), CAP_BY_LEVEL[0][1]);
 /** The level at which an attribute may first reach this value. */
 export const attrCapLevel = (value: number): number => (CAP_BY_LEVEL.find(([, v]) => v >= value) || CAP_BY_LEVEL[CAP_BY_LEVEL.length - 1])[0];
-/** After creation the caps work normally: a skill can't pass its Attribute, an Attribute can't pass its Core. */
 /** A Legendary Deed (rules 1.13, item 1006): each one lets one Attribute point stand 1 above the level's ceiling (never above
  * 10). Room left = deeds held minus the points standing above the ceiling now (a ceiling that rises frees the room again). */
 export function legendRoom(c: Character): number {

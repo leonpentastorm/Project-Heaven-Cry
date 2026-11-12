@@ -227,7 +227,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Sigil range bonus | +0.5 tile × Brain Power, rounded down; added once to a Reach word's range, never to Touch (rules 1.13: it was Rumination) |
 | Sigil duration bonus | +0.5 round × Brain Power |
 | Max MP (Emanator charge) | 100 + 75 × (Determination − 1) + 25 × (Insight − 1) (rules 1.24; it was 100 + 100 × (Virtue − 1)) |
-| Soul cast AP | 2 (rules 1.5: Begin, and class moves cast like an Outburst; Swift 1). Empathy instead gives free Pumps: 1 a round from Empathy 3, 2 from 7 |
+| Soul cast AP | 2 (rules 1.5: Begin, and class moves cast like an Outburst; Swift 1). Empathy instead gives free Pumps: 1 a round from Empathy 3, 2 from 7 *(Superseded by rules 1.19: one free Pump a turn at most; from Empathy 7 a held Outburst swells without Strain instead.)* |
 | Soul mana cost | −5% × (Insight − 1) |
 | Soul range bonus | +0.5 tile × Will Power (rules 1.13: it was Lore Master) |
 | Ready designs | 2 + floor(Will Power ÷ 2), at least 3 (rules 1.13: it was Empathy) |
@@ -259,7 +259,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Visualization | Expression | alpha | +5% elemental damage. |
 | Acuity | Perception | beta | −5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point. |
 | Charisma | Expression | gamma | An offer of terms is harder to refuse. Your Rally Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
-| Empathy | Insight | alpha | +10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two. |
+| Empathy | Insight | alpha | +10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two. *(Superseded by rules 1.19: from 7 there is no second free Pump; a held Outburst swells without Strain.)* |
 | Camaraderie | Insight | beta | +10% healing received. |
 | Insinuation | Insight | gamma | Your Taunt Call reaches 1 tile further and is harder to shake off. On a check it rolls 1 better than its points say. |
 | Will Power | Determination | alpha | +10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against. |
@@ -351,9 +351,9 @@ The Guardian's Under the Eye, Blessed Shells and Judgement need a patron and pra
 
 ## Combat on the grid
 
-**The map.** Square tiles, 1.5 m each. Line of sight runs centre to centre; anything solid in between blocks it. A character on higher ground gets +1 to hit targets below.
+**The map.** Square tiles, 1.5 m each. Line of sight runs centre to centre; anything solid in between blocks it. A character on higher ground gets +1 to hit targets below. *(Not built: maps carry no height, so the engine never gives this +1. Open, item 1500.)*
 
-**Order.** At the start of combat everyone rolls initiative: d20 + Initiative bonus. Highest goes first; ties go to higher Agility. If one side ambushes the other, the ambushers get a **surprise round**: each acts once with up to 3 AP, and the surprised side can't act unless a perk says so.
+**Order.** At the start of combat everyone rolls initiative: d20 + Initiative bonus. Highest goes first; ties go to higher Agility. If one side ambushes the other, the ambushers get a **surprise round**: each acts once with up to 3 AP, and the surprised side can't act unless a perk says so. *(Superseded by the later rules, pending Leon's sign-off (item 1501): there is no surprise round. An enemy that is unaware when the fight starts loses round 1 (Stealth and awareness; item 92), and an ambush from hiding opens on the attacker's own turn with the AP it has left.)*
 
 **A turn.**
 
@@ -419,7 +419,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 | Ranged shot, or loose an arrow | 2 |
 | Aimed shot (+2 to hit) | 3 |
 | Burst: 3 rounds at one target, two rolls, the second at −4 to hit (rules 1.18; it was three rolls, −1 for each round after the first) | 3 |
-| Full auto: a 3-tile cone, 10 rounds, one roll per target at −2 | 4 |
+| Full auto: a 3-tile cone, 10 rounds, one roll per target at −2 *(As built it is a corridor, not a cone: every enemy ahead of the shooter within 1.5 tiles of the line to the target, at any range the weapon reaches. Which one is right is open, item 1502.)* | 4 |
 | Speed reload a magazine (the old one drops into the pile on your tile), or swap an Evoker core | 2 |
 | Tactical reload a magazine (the old one goes back in your pack; rules 1.9) | the reload's cost + 1 (3) |
 | Clear a jam | 2 |
@@ -494,7 +494,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 | Situation | Modifier |
 |---|---|
 | Aimed shot | +2 |
-| Higher ground | +1 |
+| Higher ground *(not built: item 1500)* | +1 |
 | Weapon Heat | −1 per 2 Heat |
 | Recoil: each earlier shot this turn | −1 each, reduced by floor(Dexterity ÷ 2) |
 | Beyond effective range | −2 per range band past it, out to 2 bands |
@@ -1711,7 +1711,7 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 3. **Release** (1 AP): it fires at the stage reached. **Stage multipliers (rules 1.17): 0 → ×0.8, 1 → ×1.2, 2 → ×1.6, 3 → ×2.0, 4 → ×2.4**: every plain Pump adds +0.4. (Rules 1.5 to 1.16: ×0.8 (×0.6 before rules 1.8), ×1, ×1.4, ×1.8, ×2.2, where the first Pump added only +0.2.) The multiplier scales damage and healing; conditions keep their durations.
 4. **A snap cast** is Begin and Release at once (3 AP, ×0.8). A full turn (Begin, Pump × 3, Release) is ×2.0. Begin one turn, carry it, and the swell + Pump × 2 + Release next turn reaches ×2.4.
 5. **Holding past your turn keeps the stage.** At the start of each of your next turns the held Outburst **swells**: +1 stage for free and +1 Strain (+2 in Flooded air). While holding you can move, shoot, Syphon, Steady or Feed, but not Begin another.
-6. **Empathy** gives **free Pumps each round**: 1 from Empathy 3, a second from Empathy 7. They come back at the start of each of your turns. Empathy no longer lowers any AP; it still sets your ready designs (2 + floor(Empathy ÷ 2)).
+6. **Empathy** gives **free Pumps each round**: 1 from Empathy 3, a second from Empathy 7. They come back at the start of each of your turns. Empathy no longer lowers any AP; it still sets your ready designs (2 + floor(Empathy ÷ 2)). *(Superseded by rules 1.19: no second free Pump from Empathy 7; a held Outburst swells without Strain instead. Superseded by rules 1.13: ready designs are Will Power's, 2 + floor(Will Power ÷ 2), at least 3.)*
 7. **Every Pump has its heartbeat** (section 9): pumping must feel like the heart filling.
 8. **Silenced:** no Begin, Pump, Feed or Release.
 9. **No slipping.** Taking damage while holding no longer makes the Outburst slip (1.2's check is gone): the Strain is the risk now.
@@ -1935,7 +1935,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 |---|---|
 | Lore Master | structure and the strange: the shapes (Wave, Burst, Aura, Lance), Time, Ether, Fuse, Return, Ricochet (and Phantom) |
 | Will Power | power and Strain: Size, Bloom, Volley, Quiet (Impact until rules 1.17) |
-| Empathy | the design itself: Move, Random, At Once, Split (and ready designs, as now) |
+| Empathy | the design itself: Move, Random, At Once, Split (and ready designs, as now) *(Superseded by rules 1.13: ready designs are Will Power's.)* |
 | Camaraderie | ally modules: Inverse, Thread, Shell |
 | Implication | status modules: Anchor, Lure, Linger |
 | Composure | precision: Homing, Swift, Left, Right, Silent |
@@ -6740,3 +6740,6 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1422. **Armour under 0 (kept as it was):** a weapon attack never meets less than 0 armour; a spell, a blast, a trap and a hazard take the armour as it stands. Nothing in the game takes armour under 0 today, so no number differs; if something ever does, the two would part. Proposed: never under 0 for everything.
 1423. **The weapon mods' numbers are the mods' own (data/items.json):** the bayonet's blow 15 (`damage`), the weighted head +3 and the suppressor −2 (`damage_add`). The same numbers as before, now read from the items.
 1424. **Not yet through the one formula (the next steps of stage (a)):** what a Sigil Line and an Outburst work out before they deal it (step a4), prayers and the medic's kit (a5), the flat numbers written into class moves, perks, conditions and hazards (a6), and the places where healing or damage does not use the shared way in (a7: each one a ruling).
+1500. **Higher ground is not built (text and number truth pass, 12 Nov 2026; needs a ruling):** the spec gives +1 to hit from higher ground (The map; the to-hit table) and `data/rules.json` states it twice, but no map, zone or tile carries a height and the engine has no such term. Either maps gain height, or the two lines and the two keys go. Until then `combat.grid.high_ground_built` is false.
+1501. **The surprise round (needs Leon's sign-off):** the 3 AP surprise round of rules 1.0 (Order) was never built, and the later rules describe something else: an unaware enemy loses round 1 (item 92) and a Hidden attacker opens on its own turn with the AP it has left. No revision withdraws the 3 AP round in words, so the body line carries a note and `data/rules.json` `combat.initiative` now states the later rule. Proposed: strike the surprise round.
+1502. **Full auto: cone or corridor (needs a ruling):** the spec says "a 3-tile cone" (Actions; the weapon and perk texts that speak of "the cone"), and one weapon line and half of another speak of "the line". The engine fires a corridor: every enemy ahead of the shooter within 1.5 tiles of the line to the target (a weapon with Wide Spray: its `auto_width` + 0.5), at any range the weapon reaches; the client's card says the same. The engine was left as it is; `data/rules.json` `full_auto.area_built` records it.

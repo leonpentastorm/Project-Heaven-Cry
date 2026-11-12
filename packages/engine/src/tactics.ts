@@ -357,7 +357,6 @@ export function applyFoeTraits(u: Unit, f: FoeTraits | undefined) {
   if (f?.unaware) u.waitRound = Math.max(u.waitRound || 0, 2);
   if (f?.hidden) { u.hidden = true; u.hideEntry = 1; }
 }
-/** Mana from a death (spec: the meter): +5 a person or beast, +2 a robot, machine, turret or drone. */
 /** The bots one death releases (spec: the meter; rules.json mana.meter.events): a robot or machine +2, a beast or monster
  * +3, a person +5. */
 export const deathMana = (u: Unit): number => {

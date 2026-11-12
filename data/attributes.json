@@ -123,7 +123,7 @@
       "core": "mind",
       "skills": {
         "alpha": "ingenuity",
-        "beta": "proficiency",
+        "beta": "analysis",
         "gamma": "vigilant"
       },
       "derived": [
@@ -134,7 +134,7 @@
         },
         {
           "stat": "crit_damage_taken_pct",
-          "formula": "−10% × (Perception − 1) − 5% × Durability",
+          "formula": "−10% × (Perception − 1) − 5% × Acuity",
           "per_point_above_1": -10
         },
         {
@@ -172,19 +172,19 @@
       "core": "mind",
       "skills": {
         "alpha": "visualization",
-        "beta": "analysis",
+        "beta": "proficiency",
         "gamma": "charisma"
       },
       "derived": [
         {
           "stat": "mult_elemental",
-          "formula": "1 + 0.2 × (Expression − 1) + 0.1 × Visualization",
-          "per_point_above_1": 0.2
+          "formula": "1 + 0.1 × (Expression − 1) + 0.05 × Visualization",
+          "per_point_above_1": 0.1
         },
         {
-          "stat": "sigil_ap_per_word",
-          "formula": "1 per word − 0.5 × (Expression − 1), minimum 1",
-          "per_point_above_1": -0.5
+          "stat": "glyph_ap",
+          "formula": "1 − 0.1 × (Expression − 1) AP for each glyph drawn, minimum 0.5",
+          "per_point_above_1": -0.1
         }
       ]
     },
@@ -222,8 +222,8 @@
       "core": "soul",
       "skills": {
         "alpha": "will_power",
-        "beta": "lore_master",
-        "gamma": "composure"
+        "beta": "composure",
+        "gamma": "lore_master"
       },
       "derived": [
         {

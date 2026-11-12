@@ -165,10 +165,10 @@
     "module_slots": "1 + floor(will_power/3)",
     "forms_per_design": 1,
     "two_schools_from_will_power": 5,
-    "ready_designs": "max(3, 2 + floor(empathy/2)): at least 3",
+    "ready_designs": "max(3, 2 + floor(will_power/2)): at least 3",
     "tones": "one at Lore Master 1; more from tutors or plates"
   },
-  "notes": "Every number from rules 1.5 on is provisional. Rules 1.19 (the Outburst rework, round 2): the stage table is ×0.8 +0.2 a stage; the Damage base is 36 for characters and 24 for enemy casters; one free Pump a turn at most; Empathy 7 makes swells cost no Strain; every school reads the stage, the Damage school has four ways to strike, Control can Swap and Status can Silence; a design's own school a second time is defined and shelved. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead. Rules 1.20 (the heal and shield pass): the Buff school's heal is 7 (an enemy caster's stays 30) and grows with the caster's level; Inverse and Shell have shield bases of their own (10 and 4, × the Soul multiplier × the stage multiplier) and no longer read the Damage base; in a shape a heal or a flipped shield gives each ally ×0.4; Love heals a share of the Buff school's heal.",
+  "notes": "Every number from rules 1.5 on is provisional. Rules 1.19 (the Outburst rework, round 2): the stage table is ×0.8 +0.2 a stage; the Damage base is 40 for characters (36 when the revision was first fitted) and 24 for enemy casters; one free Pump a turn at most; Empathy 7 makes swells cost no Strain; every school reads the stage, the Damage school has four ways to strike, Control can Swap and Status can Silence; a design's own school a second time is defined and shelved. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead. Rules 1.20 (the heal and shield pass): the Buff school's heal is 7 (an enemy caster's stays 30) and grows with the caster's level; Inverse and Shell have shield bases of their own (10 and 4, × the Soul multiplier × the stage multiplier) and no longer read the Damage base; in a shape a heal or a flipped shield gives each ally ×0.4; Love heals a share of the Buff school's heal.",
   "schools": [
     {
       "id": "damage",

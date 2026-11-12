@@ -5,7 +5,7 @@
   "rules": {
     "acquired": "Each Mastery level in the skill (3, 5, 7, 9 points) gives one perk step: one of its two perks at Tier I, or an upgrade of one you hold to Tier II (Tier I first). At 9 points both are at Tier II. Tier II replaces Tier I effects.",
     "mastered": "10 points: the skill's Mastered perk, granted automatically. One per skill.",
-    "achieved": "Combo perks. Mastery 2 (5 points) in every listed skill plus the deed. Narrator grants; engine checks skills and records the deed.",
+    "achieved": "Combo perks. Mastery 2 (5 points) in every listed skill plus the deed. The engine grants the nine whose deeds it can watch in a fight (rules 1.14); the Narrator grants the other ten and may grant any by hand. The engine checks the skills and records the deed.",
     "ultimate": "Granted automatically when both named Achieved perks are held. Secret: never listed, hinted or tracked in any UI until granted.",
     "ap_ceiling": {
       "turn_max": 9,

@@ -8,6 +8,7 @@ import wpJ from '../../../data/world_play.json';
 import { type Combat, type Unit, hurtUnit, emitFx, dist, refOf } from './combat';
 import { applyCond, unitSave } from './magic';
 import { passiveVigilance } from './character';
+import { SKILL } from './data';
 import { type Rng, d20 } from './rng';
 import type { Approach } from './objects';
 
@@ -96,7 +97,7 @@ export function hazardStep(cb: Combat, rng: Rng | undefined, u: Unit, k: string)
   return stop;
 }
 
-/** After a PC moves: hidden hazards within 2 tiles fall to passive Vigilant (10 + modifier) against their TN. */
+/** After a PC moves: hidden hazards within 2 tiles fall to passive Vigilance (10 + its points: a gamma) against their TN. */
 export function spotHazards(cb: Combat, u: Unit) {
   if (u.side !== 'pc' || !cb.hazards?.length) return;
   const passive = passiveVigilance(u.vigilant || 0);
@@ -106,6 +107,6 @@ export function spotHazards(cb: Combat, u: Unit) {
     if (!near || passive < hazardTn(h)) continue;
     h.hidden = false;
     emitFx(cb, 'hazard_spotted', { id: h.id, kind: h.kind, at: h.tiles[0], tiles: [...h.tiles], by: u.id, how: 'vigilant' });
-    cb.log.push(u.name + ' spots a ' + (h.name || HAZARD[h.kind]?.name || h.kind).toLowerCase() + ' at ' + refOf(h.tiles[0]) + (h.tiles.length > 1 ? ' (+' + (h.tiles.length - 1) + ' tiles)' : '') + ' (Vigilant ' + passive + ' vs ' + hazardTn(h) + ').');
+    cb.log.push(u.name + ' spots a ' + (h.name || HAZARD[h.kind]?.name || h.kind).toLowerCase() + ' at ' + refOf(h.tiles[0]) + (h.tiles.length > 1 ? ' (+' + (h.tiles.length - 1) + ' tiles)' : '') + ' (' + SKILL.vigilant.name + ' ' + passive + ' vs ' + hazardTn(h) + ').');
   }
 }

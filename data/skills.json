@@ -49,13 +49,16 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "hp_per_level",
-            "value": 2
+            "stat": "guard_max",
+            "value": 1,
+            "max": 5
           },
           {
             "op": "stat_mod",
-            "stat": "crit_damage_taken_pct",
-            "value": -5
+            "stat": "guard_gain",
+            "value": 1,
+            "from_points": 2,
+            "base": 1
           }
         ]
       },
@@ -148,9 +151,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "defender"
-      ],
       "tags": [
         "alpha",
         "core:body",
@@ -204,6 +204,11 @@
             "op": "stat_mod",
             "stat": "elemental_damage_taken_pct",
             "value": -10
+          },
+          {
+            "op": "stat_mod",
+            "stat": "hp_per_level",
+            "value": 2
           }
         ]
       },
@@ -292,9 +297,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "defender"
-      ],
       "tags": [
         "beta",
         "core:body",
@@ -346,8 +348,13 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "heal_received_pct",
-            "value": 10
+            "stat": "sense_unseen",
+            "value": 1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "call_range",
+            "value": 1
           }
         ]
       },
@@ -441,9 +448,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "medic"
-      ],
       "tags": [
         "gamma",
         "core:body",
@@ -596,9 +600,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "fighter"
-      ],
       "tags": [
         "alpha",
         "core:body",
@@ -739,10 +740,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "fighter",
-        "defender"
-      ],
       "tags": [
         "beta",
         "core:body",
@@ -898,10 +895,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "assassin",
-        "hexer"
-      ],
       "tags": [
         "gamma",
         "core:body",
@@ -951,6 +944,11 @@
       "per_point": {
         "text": "+1 to hit with guns, light blades and thrown weapons. +2% critical damage. You throw half a tile further. Your shots' techniques are harder to save against.",
         "effects": [
+          {
+            "op": "stat_mod",
+            "stat": "mult_critical",
+            "value": 0.02
+          },
           {
             "op": "stat_mod",
             "stat": "throw_range",
@@ -1054,9 +1052,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "marksman"
-      ],
       "tags": [
         "alpha",
         "core:body",
@@ -1202,9 +1197,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "fighter"
-      ],
       "tags": [
         "beta",
         "core:body",
@@ -1256,8 +1248,13 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "ambush_damage_taken_pct",
-            "value": -10
+            "stat": "init",
+            "value": 1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "call_range",
+            "value": 1
           }
         ]
       },
@@ -1347,10 +1344,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "marksman",
-        "assassin"
-      ],
       "tags": [
         "gamma",
         "core:body",
@@ -1511,9 +1504,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "assassin"
-      ],
       "tags": [
         "alpha",
         "core:mind",
@@ -1570,8 +1560,27 @@
         "effects": [
           {
             "op": "stat_mod",
+            "stat": "crit_damage_taken_pct",
+            "value": -5
+          },
+          {
+            "op": "stat_mod",
             "stat": "analyze_range",
             "value": 1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "analyze_ap",
+            "value": 1,
+            "from_points": 3,
+            "once": true
+          },
+          {
+            "op": "stat_mod",
+            "stat": "analyze_weak_point",
+            "value": 1,
+            "from_points": 5,
+            "once": true
           }
         ]
       },
@@ -1660,10 +1669,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "warden",
-        "trickster"
-      ],
       "tags": [
         "beta",
         "core:mind",
@@ -1727,6 +1732,16 @@
           {
             "op": "stat_mod",
             "stat": "detection",
+            "value": 1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "detection_range",
+            "value": 1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "call_range",
             "value": 1
           }
         ]
@@ -1814,10 +1829,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "marksman",
-        "mage"
-      ],
       "tags": [
         "gamma",
         "core:mind",
@@ -1874,8 +1885,23 @@
           },
           {
             "op": "stat_mod",
+            "stat": "sigil_words_known",
+            "value": 1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "sigil_range",
+            "value": 0.5
+          },
+          {
+            "op": "stat_mod",
             "stat": "sigil_duration",
             "value": 0.5
+          },
+          {
+            "op": "stat_mod",
+            "stat": "sigil_core_saving",
+            "value": 0.3334
           }
         ]
       },
@@ -1974,9 +2000,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "mage"
-      ],
       "tags": [
         "alpha",
         "core:mind",
@@ -2027,8 +2050,8 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "sigil_range",
-            "value": 0.5
+            "stat": "save_brain",
+            "basis": "skill_mod"
           }
         ]
       },
@@ -2128,10 +2151,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "warden",
-        "scribe"
-      ],
       "tags": [
         "beta",
         "core:mind",
@@ -2282,10 +2301,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "scribe",
-        "trickster"
-      ],
       "tags": [
         "gamma",
         "core:mind",
@@ -2338,7 +2353,7 @@
           {
             "op": "stat_mod",
             "stat": "mult_elemental",
-            "value": 0.1
+            "value": 0.05
           }
         ]
       },
@@ -2430,10 +2445,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "mage",
-        "channeler"
-      ],
       "tags": [
         "alpha",
         "core:mind",
@@ -2485,8 +2496,14 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "sigil_core_saving",
-            "value": 0.3334
+            "stat": "ambush_damage_taken_pct",
+            "value": -10
+          },
+          {
+            "op": "stat_mod",
+            "stat": "field_repair_pct",
+            "value": 5,
+            "from_points": 3
           }
         ]
       },
@@ -2576,10 +2593,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "medic",
-        "scribe"
-      ],
       "tags": [
         "beta",
         "core:mind",
@@ -2633,8 +2646,8 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "save_brain",
-            "basis": "skill_mod"
+            "stat": "call_range",
+            "value": 1
           }
         ]
       },
@@ -2727,9 +2740,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "trickster"
-      ],
       "tags": [
         "gamma",
         "core:mind",
@@ -2776,17 +2786,26 @@
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
       "per_point": {
-        "text": "+10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two.",
+        "text": "+10% healing given. From 3 points, one Pump of an Outburst each round is free. From 7 points, a held Outburst swells without Strain.",
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "soul_cast_ap",
-            "value": -0.5
+            "stat": "mult_heal_given",
+            "value": 0.1
           },
           {
             "op": "stat_mod",
-            "stat": "soul_designs_ready",
-            "value": 0.5
+            "stat": "free_pumps_per_round",
+            "value": 1,
+            "from_points": 3,
+            "once": true
+          },
+          {
+            "op": "stat_mod",
+            "stat": "swell_no_strain",
+            "value": 1,
+            "from_points": 7,
+            "once": true
           }
         ]
       },
@@ -2878,9 +2897,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "channeler"
-      ],
       "tags": [
         "alpha",
         "core:soul",
@@ -2935,8 +2951,8 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "mult_heal_given",
-            "value": 0.1
+            "stat": "heal_received_pct",
+            "value": 10
           }
         ]
       },
@@ -3033,10 +3049,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "medic",
-        "bard"
-      ],
       "tags": [
         "beta",
         "core:soul",
@@ -3179,10 +3191,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "bard",
-        "hexer"
-      ],
       "tags": [
         "gamma",
         "core:soul",
@@ -3237,7 +3245,7 @@
           {
             "op": "stat_mod",
             "stat": "mult_soul",
-            "value": 0.15
+            "value": 0.1
           },
           {
             "op": "stat_mod",
@@ -3247,6 +3255,16 @@
           {
             "op": "stat_mod",
             "stat": "strain_limit",
+            "value": 0.5
+          },
+          {
+            "op": "stat_mod",
+            "stat": "soul_range",
+            "value": 0.5
+          },
+          {
+            "op": "stat_mod",
+            "stat": "ready_designs",
             "value": 0.5
           },
           {
@@ -3356,9 +3374,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "channeler"
-      ],
       "tags": [
         "alpha",
         "core:soul",
@@ -3506,9 +3521,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "warden"
-      ],
       "tags": [
         "gamma",
         "core:soul",
@@ -3560,8 +3572,8 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "soul_range",
-            "value": 0.5
+            "stat": "call_range",
+            "value": 1
           }
         ]
       },
@@ -3656,10 +3668,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "guardian",
-        "hexer"
-      ],
       "tags": [
         "beta",
         "core:soul",
@@ -3816,9 +3824,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "guardian"
-      ],
       "tags": [
         "alpha",
         "core:soul",
@@ -3873,8 +3878,8 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "karma_per_award",
-            "value": 1
+            "stat": "shield_received_pct",
+            "value": 10
           }
         ]
       },
@@ -3965,9 +3970,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "guardian"
-      ],
       "tags": [
         "beta",
         "core:soul",
@@ -4019,7 +4021,12 @@
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "reputation_per_award",
+            "stat": "karma_per_award",
+            "value": 1
+          },
+          {
+            "op": "stat_mod",
+            "stat": "call_range",
             "value": 1
           }
         ]
@@ -4107,9 +4114,6 @@
         "resist": "spend Echo (1 at Mastery 2–4, 2 when Mastered)",
         "once_per_scene": true
       },
-      "signature_of": [
-        "bard"
-      ],
       "tags": [
         "gamma",
         "core:soul",
