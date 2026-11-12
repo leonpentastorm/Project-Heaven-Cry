@@ -737,14 +737,15 @@
     "family": "modules",
     "path": "art/icons/modules/module-lance.png",
     "action": "one long straight line through two dots",
-    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: one long straight line through two dots\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: one long straight line through two dots\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nEDIT FIRST ATTACHED IMAGE: The beam must pass THROUGH both dots and extend far BEYOND them on BOTH sides. The existing picture incorrectly ends at its dots. Draw one long horizontal white line, with TWO solid dots centred ON the line at about40percent and65percent of its length. Leave substantial line continuing to the left of the first dot and to the right of the second. Both dots sit well inside the beam’s span, not at its ends. Exactly one straight line, exactly two interior dots; no arrowhead, no ring or frame. This is a piercing Lance, not Thread connecting two endpoints.",
     "references": [
+      "art/_archive/deliveries/2026-11-12/sources/module-lance-attempt-1.png",
       "art/icons/prayers/whisper-luck.png",
       "art/icons/prayers/hymn-mother_ember-1.png",
       "art/icons/modules/module-split.png",
       "art/icons/modules/module-orbit.png"
     ],
-    "status": "pending"
+    "status": "delivered"
   },
   {
     "id": "module-fuse",

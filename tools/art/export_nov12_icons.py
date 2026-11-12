@@ -230,7 +230,12 @@ def validate_delivery(selected=None):
         for size, path in [('1024', a['path']), *a['exports'].items()]:
             im = Image.open(ROOT / path)
             assert im.mode == 'RGBA' and im.size == (int(size), int(size)), path
-            assert im.getchannel('A').getextrema() == (0, 255), path + ' transparency'
+            low, high = im.getchannel('A').getextrema()
+            # A narrow line can be entirely edge coverage at40px. Its RGB stays
+            # pure white; normal antialiasing need not leave an alpha255 sample.
+            assert low == 0 and high >= 200, path + ' transparency/visible ink'
+            if size == '1024':
+                assert high == 255, path + ' solid master ink'
             assert all((r, g, b) == (255, 255, 255) for r, g, b, alpha in im.get_flattened_data() if alpha), path + ' white ink'
             box = im.getbbox()
             assert box and box[0] > 0 and box[1] > 0 and box[2] < im.width and box[3] < im.height, path + ' margins'

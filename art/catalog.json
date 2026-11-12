@@ -11351,6 +11351,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-aura.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-aura.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-lance": {
+      "id": "module-lance",
+      "label": "one long straight line through two dots",
+      "path": "art/icons/modules/module-lance.png",
+      "sha256": "69c36c63368d5b65d4010f6e3d9cb42abd7d49a7d66aa6a8a57cb8243f79b074",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-lance.png",
+        "128": "art/icons/modules/exports/128/module-lance.png",
+        "64": "art/icons/modules/exports/64/module-lance.png",
+        "56": "art/icons/modules/exports/56/module-lance.png",
+        "48": "art/icons/modules/exports/48/module-lance.png",
+        "44": "art/icons/modules/exports/44/module-lance.png",
+        "40": "art/icons/modules/exports/40/module-lance.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-lance.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-lance.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
