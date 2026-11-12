@@ -195,9 +195,13 @@ No state line of any golden table moved; the replays play the same stream. What 
 1. **Internal marks** (re-recorded on purpose, read): `costs-items-perks.marks`, `costs-items-traits-classes.marks`
    (Last Wall, Used to the Pain and Central City Kid keep their marks as `flags` and `uses` cells now);
    `replays.json` (the same internal bookkeeping in the final state; the stream is identical in all 29 games).
-2. **Selection, not behaviour:** `costs-cooldowns` gained 6 NEW lines (Siege Engine, Right of Way, Heavyworlder: they
-   now hold a generic `stat_mod`, whose listener list the cooldown sweep selects on; their lines equal the plain
-   sheet's).
+2. **Selection, not behaviour:** `costs-cooldowns` gained 8 NEW lines (Siege Engine, Right of Way, Heavyworlder,
+   Grenadier's Arm: they now hold a generic `stat_mod`, whose listener list the cooldown sweep selects on; their lines
+   equal the plain sheet's).
+2b. **Caught by the full check and fixed:** Walking Wounded's card read "−20% less" (its effect's `value_pct` is negative
+   now); it reads `|abs`. The web's screen data (`protodata.json`) is byte for byte what it was, so no card text moved.
+   The perk card's shelf (`perkcard.ts` `registryOf`) and two tests that read handler sources (`perkShelves.test.ts`,
+   `classes-rev3-moves.test.ts`) learnt that an item may be data only.
 3. **Labels (display only):** a cost cut that is a generic `action_cost` now names the item on the price's label
    ("Siege Engine (−1)", "Overhaul (1 AP)", "Core Change (−1)", "Bleed the Flux (−1)") where the handler's said "perks".
 4. **Order, for two items at once (spec item 1660 c):** Speed Loader's cut is a `cost_mod` on the price, so it comes
