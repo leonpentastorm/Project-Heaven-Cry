@@ -11551,6 +11551,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-shell.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-shell.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-linger": {
+      "id": "module-linger",
+      "label": "a square patch of dotted ground",
+      "path": "art/icons/modules/module-linger.png",
+      "sha256": "58687ca10a097eb210252346b981887636a1b3c79c9e726706c6205250711085",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-linger.png",
+        "128": "art/icons/modules/exports/128/module-linger.png",
+        "64": "art/icons/modules/exports/64/module-linger.png",
+        "56": "art/icons/modules/exports/56/module-linger.png",
+        "48": "art/icons/modules/exports/48/module-linger.png",
+        "44": "art/icons/modules/exports/44/module-linger.png",
+        "40": "art/icons/modules/exports/40/module-linger.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-linger.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-linger.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

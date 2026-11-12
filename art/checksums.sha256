@@ -123,9 +123,9 @@ fd90a1199fab581246e6a304a47e9e82887d7965a2ac8146a6070ab7702b8ea4  art/_archive/c
 9f01b2fda4f16639aff967fc68c5447e9af36d03bfd16126e7e00a9f8117b9be  art/_archive/character-portraits/patrons/v1/source-renders/the_matchmaker-native.png
 33357380b1f5f672428f390434217bdf2ba48b0ab849cccac021948cc4fc9b98  art/_archive/character-portraits/patrons/v1/source-renders/the_quartermaster-native.png
 26658bcc4b6fe3516eb2312ef25df38efbffca447a8fd23e4b2f3501a94832bd  art/_archive/character-portraits/patrons/v1/source-renders/the_toll_keeper-native.png
-fbddee6a9f40006cb327df8793a5ed10f43bd396f948ef083d5767d797f6fbed  art/_archive/deliveries/2026-11-12/HANDOFF.md
-e505839d5c190f72e3867a6dd44324d4e5a9a6444c2e7b9777e57f859d781a83  art/_archive/deliveries/2026-11-12/README.md
-4ef8a688ef5d3c54ee89217dac0eff461d893fe1115d58a33eca6e873e33b40a  art/_archive/deliveries/2026-11-12/manifest.json
+7a87f831e4cf62efe7aa3ac277a29221a7406b865d53aaaf0b464398bbfca375  art/_archive/deliveries/2026-11-12/HANDOFF.md
+b7e0b69a7ff6beb128c46f115eceb5d7009dfb5b259a9ed70b789e5066da00eb  art/_archive/deliveries/2026-11-12/README.md
+b70c6232802ad8e1a20ca34bb9ff44e74abde0b4e14499a47cd5404977b2a1ca  art/_archive/deliveries/2026-11-12/manifest.json
 01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c  art/_archive/deliveries/2026-11-12/masters/v1/both-hands.png
 27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb  art/_archive/deliveries/2026-11-12/masters/v1/brief.png
 7cd857a156cb03b78836c3cccaeb0b447c1f76084eb4e77013f977399c2f4845  art/_archive/deliveries/2026-11-12/masters/v1/cue.png
@@ -166,6 +166,7 @@ cbba8052a1fc985c35573b0dd3e1a0a904f20d78e81cc2743739c349cc275f9f  art/_archive/d
 411b7f0418cdb8176e494263a695d61084811f1f692d9a8682f2107eb2e1a51d  art/_archive/deliveries/2026-11-12/masters/v1/module-inverse.png
 69c36c63368d5b65d4010f6e3d9cb42abd7d49a7d66aa6a8a57cb8243f79b074  art/_archive/deliveries/2026-11-12/masters/v1/module-lance.png
 8a8253362977180cdf546cb0a682da8569b3bdd00cb5d0b64a6ec78e8a39d745  art/_archive/deliveries/2026-11-12/masters/v1/module-left.png
+58687ca10a097eb210252346b981887636a1b3c79c9e726706c6205250711085  art/_archive/deliveries/2026-11-12/masters/v1/module-linger.png
 d334bfc8fc42b7631fbfe83b2d27b0bcc1c86bd8ed1ccaa270c2f8a48016ecf2  art/_archive/deliveries/2026-11-12/masters/v1/module-lure.png
 0bb087997ce3ad8464e05b367fd0d0d4f54995aed4cac6d6d1e599262457d1e4  art/_archive/deliveries/2026-11-12/masters/v1/module-move.png
 29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3  art/_archive/deliveries/2026-11-12/masters/v1/module-orbit.png
@@ -188,7 +189,7 @@ ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566  art/_archive/d
 5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0  art/_archive/deliveries/2026-11-12/masters/v1/threaten.png
 f4bcfd657520e61ccd84200f617a8e243bd9d44bfacf50ad0f4094f830a615c9  art/_archive/deliveries/2026-11-12/masters/v1/warn.png
 5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0  art/_archive/deliveries/2026-11-12/masters/v1/whisper-rebuke.png
-329a97939c9c7133bae5873cfda82b0ab58f3c0bc143222a630089ff8f4fd452  art/_archive/deliveries/2026-11-12/progress.json
+049efa621cdd67d4ca83da60526df816a3b146090ec0826f15292aea15fb3695  art/_archive/deliveries/2026-11-12/progress.json
 10a70cc1081ca4e054d8f039b0196009b6c892ab9ad05745729fed6f6fb062fc  art/_archive/deliveries/2026-11-12/prompts/both-hands.txt
 853cb54ab9b5c838b7720d5d4ae856a5a767b88c4bcf4154fdf69958e3ed351b  art/_archive/deliveries/2026-11-12/prompts/brief-attempt-1.txt
 ebcd21f5284814bd05fe5d38d026710bf14fb3b4ff9fac31e1d7d4d8d4890876  art/_archive/deliveries/2026-11-12/prompts/brief.txt
@@ -276,7 +277,7 @@ c6cd2ee1e0fad3004e6df8c5c740919a063d653be10a7b5f12a8e48522adef2d  art/_archive/d
 86aa1aea5f6d340431228e7779a27d0fce62971be2a796e5ed5ecb8f7c040c58  art/_archive/deliveries/2026-11-12/prompts/ui-revert.txt
 fa7a5c9eabfd85350b9af09bae13530c4192f829a0cb0dbb15a6b6658c85315e  art/_archive/deliveries/2026-11-12/prompts/warn.txt
 fc0ebb8cf9e8fb31426e205cba04b988a0f1f13fa87e46825519b695cb2cfe79  art/_archive/deliveries/2026-11-12/prompts/whisper-rebuke.txt
-3c873ed317b05240ad7be4d1daa19c3a8c3553d3d7e66ccd83f6f308b0daf3ef  art/_archive/deliveries/2026-11-12/queue.json
+ce9a464f7e2a1e23f6835d79c522551ef63c124980fe5442482100ab6c77c4d9  art/_archive/deliveries/2026-11-12/queue.json
 3ecedace2d30877e5b8eef4ec2cfc58f32521db2f894a27a2ad53a315d39d444  art/_archive/deliveries/2026-11-12/reviews/batch-01-40px.png
 6c0e74ba59dde6bd9e3d3aa87f425525011a9de692914678c1255f27a7f7bf16  art/_archive/deliveries/2026-11-12/reviews/batch-01-64px.png
 006bd8eb3ea298fc95a1293490a51b2613aced8f541b2112df47f44287b054ae  art/_archive/deliveries/2026-11-12/reviews/batch-02-40px.png
@@ -285,17 +286,17 @@ f4abf5caf06ad41a4067223981179f7419a78b9c11b5c91d8c6c43efcf3469b5  art/_archive/d
 cacf41f0a97c55623049069be7a67d48296e1d867adade5ebaae12394599b275  art/_archive/deliveries/2026-11-12/reviews/batch-03-64px.png
 f00c53bd8ed2c8caf7801aa5434693c392b10007bde7cba3bab12551cb083b87  art/_archive/deliveries/2026-11-12/reviews/batch-04-40px.png
 2423419f2cc3fccc1eaf13ca82f594d93affc74c1ccb30cdbd4bf6cf9cf8fac2  art/_archive/deliveries/2026-11-12/reviews/batch-04-64px.png
-8af92e3a6c6ca254e81a06cbe49695f42cca81244fcca2efc5e17629b44424c8  art/_archive/deliveries/2026-11-12/reviews/batch-05-40px.png
-91bd0f247e41e55fcd85ea590d5519ca459b96425ebce1de7f0d392d1dc6b79f  art/_archive/deliveries/2026-11-12/reviews/batch-05-64px.png
+c8931fd62b73b4933fa818f5c23172b8f3366033a8aa1cb95710123e2a1d7a20  art/_archive/deliveries/2026-11-12/reviews/batch-05-40px.png
+c487e17cb5c0c5cf282b304d8176495f48dc195d497210a32c0c4a7e093418c0  art/_archive/deliveries/2026-11-12/reviews/batch-05-64px.png
 3636b1ba464d94ea9cb212447683e9fc9841aa4eb516de520c92a0a2c0e46b21  art/_archive/deliveries/2026-11-12/reviews/calls-40px.png
 4900d0e3a62bee1a83750153eb4e1f599e3a361f44f73b2329b3e2ceb29ba4ba  art/_archive/deliveries/2026-11-12/reviews/calls-44px.png
 e8d2e8474476681cb92963990fe9f929f59e78dbb1019add6fd68a1677e1663c  art/_archive/deliveries/2026-11-12/reviews/calls-64px.png
 80ccbd1241650cda05e95ac65e7b18addfbed67cfd9b0cc2f6c2a42f9f4376fe  art/_archive/deliveries/2026-11-12/reviews/feelings-40px.png
 56d5908774dac4550aa526517e83ed1dab2bf371dc7f527b159c9c04c09cc0fd  art/_archive/deliveries/2026-11-12/reviews/feelings-44px.png
 f41a626b666385281276d0edff10fa9d30f2642de11b6d7968182fda59abd9ac  art/_archive/deliveries/2026-11-12/reviews/feelings-64px.png
-e88a1f22b7f07657b1e9a381799b73d293f3c3bc5c6798cc26c7badd39f3fa4d  art/_archive/deliveries/2026-11-12/reviews/modules-40px.png
-96c4498d4a436be189dfbccfb4bb732844f539e9c3eddb7fa2580a6d7c3e00af  art/_archive/deliveries/2026-11-12/reviews/modules-44px.png
-39f7c90261a49d8375802440845b0e67a2aa038ffebad084c9db4d838eda07c2  art/_archive/deliveries/2026-11-12/reviews/modules-64px.png
+7121f3c3b7094190890976afc69fc3c9958b51e6edf9656d8a30dfa0d103d1c1  art/_archive/deliveries/2026-11-12/reviews/modules-40px.png
+fc5b0dbbf64faf3c9358649170b1ad5095c16bf38cbe3bcdc8b20d18f0089544  art/_archive/deliveries/2026-11-12/reviews/modules-44px.png
+8dced4d7c5f47d4aa2036b595afa1e35e36880f8b31ef8e8940f10501b94bc4c  art/_archive/deliveries/2026-11-12/reviews/modules-64px.png
 fc970ac6ef6ec743b8807265b787b12e5385bfec7782a4d7d27df366bf33a1cf  art/_archive/deliveries/2026-11-12/reviews/perks-40px.png
 cf50a56a20c45a6cfa443aeb19d4a8c5c774d235ada323af7fe35e8177421f90  art/_archive/deliveries/2026-11-12/reviews/perks-44px.png
 f04adbd17992bae0a7505be8d6529a0b8d81f6e74fa1991287b8be0ebe52c527  art/_archive/deliveries/2026-11-12/reviews/perks-64px.png
@@ -348,6 +349,7 @@ bbf01535f5fb02a87bd5ad7f3bdbd33788ce74c00190ed016ae7ebb461239d55  art/_archive/d
 bd24be870dcf10686af3319225ac8870710947ca916c6458f04678ddad0455ef  art/_archive/deliveries/2026-11-12/sources/module-lance-attempt-1.png
 0cb5f9947428650f095b9e9f69e1872dd3c134d44ff2848ae221391ef0b694c6  art/_archive/deliveries/2026-11-12/sources/module-lance.png
 89a6aaaae7f5ddfbd9e992e2a59cbf953f5a382c1a3c8566f408c5ec64823bc4  art/_archive/deliveries/2026-11-12/sources/module-left.png
+8e95010f3842762db132e2647eb4dc7b7a601d70a75561859d2dd13232b4349f  art/_archive/deliveries/2026-11-12/sources/module-linger.png
 c3993c196485048ff0cacfd63e490f910c9cbfe48fb2b0a8bd9ddb8a6f87fc6e  art/_archive/deliveries/2026-11-12/sources/module-lure-attempt-1.png
 8d2a4b77c5e8a145a1b68dd9795fdda893ba02a847917111cf466fc418ee71cf  art/_archive/deliveries/2026-11-12/sources/module-lure.png
 65669afb12ac4375f950a5c1066799ab9acc8f93bfd63e8bd613a9f039648ff2  art/_archive/deliveries/2026-11-12/sources/module-move-attempt-1.png
@@ -1103,7 +1105,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 fd9fd865d5891d7e7880b1def9c8b3fb60cbe6697d91b5afe36cc91a20af0961  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-8feb9721453f2d9605c44cd401e896e256c7f99f2cacbccae10ef42a8b778b7e  art/catalog.json
+db6d5b49df8b6e74bec0eeef498073fc51d8415dfefa21656cc8ebd6417de3be  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 79a8fdcfaf94dfbd8fabd5492492ddae430bb3f773cc2826712103ad667c8347  art/emblems/patrons/mother_ember.png
@@ -1410,7 +1412,7 @@ d3e9c1a2b22aff103313378db7c51cfe595c1fb20c3b33d5c963bbddcc335704  art/icons/feel
 c600e91bbc9812b2df9f11024aae8a85e5191e5f394c22c7d42eed0e38c38d01  art/icons/feelings/feeling-wonder.png
 ea053edc5d4105a821b68e964185a89b21f8e39f0181750d6b24349f8a860dfa  art/icons/focus/emanator.svg
 d29029c501d9cf3b4804fed5177b7c2fe030e7668a9dcd8b69d5322c7aa01434  art/icons/focus/evoker.svg
-7893cf7fcfe233489fa531c333c16a8bccf1d61d67537d320451021031589762  art/icons/modules/README.md
+bca3a3503e771ce71c12a795afb4bc8eaffc3c79e29181152d4ffbe0f9f4ede6  art/icons/modules/README.md
 013474857238abee2b8d64082fec3f896d10eb268ff34fcccb40c6669523db5a  art/icons/modules/exports/128/module-anchor.png
 fdfd5ff99cf4d25802e604a3bf3ae90863e6bc574c5b367e2183c99d3e70a8e3  art/icons/modules/exports/128/module-at_once.png
 3a647fdb2ebde471d3f0c52eade0b2c04f9a963db5e039b5988401424e23a07a  art/icons/modules/exports/128/module-aura.png
@@ -1423,6 +1425,7 @@ bfee95e1ac81d8947a215541cdbc02c72a8729581030118fa7251344ac272248  art/icons/modu
 df6c2578d3b59c8f015a42e1a118151b7cc5769ae82db16cbbbe8f0bb68e7675  art/icons/modules/exports/128/module-inverse.png
 fa70ea556f2361beeccbf8371db14edb911daaa1e5f1f00e001433fd0f8752e0  art/icons/modules/exports/128/module-lance.png
 9e1a69bf47b639d148133081a9a22bb1da32ada3a6c62cd1d6e442ce480081ba  art/icons/modules/exports/128/module-left.png
+d2ac658cba26c4caa1472219f0b4d1bd469b54375de6f335f5af900ce990497e  art/icons/modules/exports/128/module-linger.png
 e5694c9969cc51b6e73820ef03e4ba4997001195d670093951d95b84f10a4f76  art/icons/modules/exports/128/module-lure.png
 50502c9193fd837e46670f7fe303b7310c9e5d961deb1eb309693a6f06f45808  art/icons/modules/exports/128/module-move.png
 2904f1bdc6aabf3f604a29c3131621922794660fb12d2313d3ccf6f76b220e41  art/icons/modules/exports/128/module-orbit.png
@@ -1449,6 +1452,7 @@ dc95937b36e05b7ebcdf959c2e4c0a0acd7e5ec59f047dd6be12f21bea1b6e77  art/icons/modu
 7e95a2a0cb01cb4bc5ed4854ee3d2c6cda9c42c95294351c690b66481d6787a8  art/icons/modules/exports/256/module-inverse.png
 0f83302b55ea960091e987bf4572da38f98ae5a954868abcc3a277a33442bac6  art/icons/modules/exports/256/module-lance.png
 a093d9744e1116504af844e3badbc776f6c7654c0d51745b5efe8d4f1facf722  art/icons/modules/exports/256/module-left.png
+c7cdcc9294b0ac697ec6bc1f8ba4987f8c207c4e39dc89d93ca1bc410f091681  art/icons/modules/exports/256/module-linger.png
 275289323a0ebd4483823500ef8a553c5e0aaa858bdbd137f036917f1f85559f  art/icons/modules/exports/256/module-lure.png
 7ddb0585cc7d8480fc1dfce4d7f85299d93bd569f928f5197100879b908a4ac9  art/icons/modules/exports/256/module-move.png
 00fcac4b6f2f940a372cc776d15c933ced1ba372fe206cf464ceffd15a2a38a4  art/icons/modules/exports/256/module-orbit.png
@@ -1475,6 +1479,7 @@ a3c8a119c891249f886f69289b1791a0fd5adc4729039fff91d3bf4655d913cc  art/icons/modu
 f833d83e32a8bfd840c1d1fcf22135a6c1923a12c302235a0ea656d1dc6d2f78  art/icons/modules/exports/40/module-inverse.png
 2468527c504dac5fb4fd6ca21c3cbf9ca693d7bb8fc6a039be217ebe75de280c  art/icons/modules/exports/40/module-lance.png
 dcb2a081e57105a642cdf3a6bebd8d7e204230604b7093723dda8a688c286bf6  art/icons/modules/exports/40/module-left.png
+654146255f6697de0626bb3c35606be779605546f107473eef91fb0b7204a46e  art/icons/modules/exports/40/module-linger.png
 cbf95e7ba29d1c4c89def8a88b64a9eca60fd789f2a94b4e7537e19f6dc5abc1  art/icons/modules/exports/40/module-lure.png
 0b3409f26935c01495ba28b7f1b0a393be07f7401816ff7030d808cc0816eb89  art/icons/modules/exports/40/module-move.png
 bc07bb3ed125cdc215bf81c3044c3c4e9130ac19aa5738f0ac45b10c8bfd2c33  art/icons/modules/exports/40/module-orbit.png
@@ -1501,6 +1506,7 @@ b400a1dac62e44fb9d9148b20e015758aedcb134beaf63c4490616364eb51822  art/icons/modu
 7c8c982916eb4995fbc44fffafc68d032b48b9a385f5bdf09bc841e0e3487dbe  art/icons/modules/exports/44/module-inverse.png
 d844372e9080fca47a2adaa3bc3ad25e24c40e76da48a842747088b897cff1a0  art/icons/modules/exports/44/module-lance.png
 887ec86c0fe701019dff6ec3404e695990f4419fa7e0d0231dc23dab47970b90  art/icons/modules/exports/44/module-left.png
+21bc404f4aed01eedc8ef1fafa3e37f0d8fbc1f8859dc04e857476963fd4e2c4  art/icons/modules/exports/44/module-linger.png
 488e3c01f46472bf575edbfff090653d313a4815b37aa658b19b2dd660e6b4a4  art/icons/modules/exports/44/module-lure.png
 9e1cf1d730dec4889bea62484470277c6e3b1eb62fa2e7c1fabe77c7b1fa3ada  art/icons/modules/exports/44/module-move.png
 eed7439ff434b028d654c90bc605f49e4e68588ea5bae51e05cb12ef46d69405  art/icons/modules/exports/44/module-orbit.png
@@ -1527,6 +1533,7 @@ bb5cfcc83f9d4385b9a59f1cc10896ea2d6fde1b55c637302bb0a7146b68a2cc  art/icons/modu
 c61a17f35cfd99c2735ef5cff9b49e6f802c4b380637f476fba06559c10262ff  art/icons/modules/exports/48/module-inverse.png
 f57c0a73e081dbf3b0f042c9570985c8d4dc8449230ed2f213ea00f54050f5a0  art/icons/modules/exports/48/module-lance.png
 d58f147665857924f101af9cfff2ba98d90c89e00d1ad5b5cb20453692f91dd2  art/icons/modules/exports/48/module-left.png
+89e7dd6161145bfd3db8208412430d5ba11fd53071500a4de81805b47c1ddc0f  art/icons/modules/exports/48/module-linger.png
 3e38e3bb06df2e10379cba0e2bc25911d298a50f67cac56fd25212be6a26e2a6  art/icons/modules/exports/48/module-lure.png
 a767e90fc4bfc4a1d0bd8fb44fb4815bf013d85bc91cd7dd6dd793e7902095db  art/icons/modules/exports/48/module-move.png
 f9c3fbd0d002fb4e401cc448cbeaa7f098cfd5a0054f6bf291fc9505e6efbed6  art/icons/modules/exports/48/module-orbit.png
@@ -1553,6 +1560,7 @@ bfd617c24d053d33d614176c3540e504cc8ea1f13696263352738b82eef9289f  art/icons/modu
 a3344aaf78e3bf258092c7bb6709bb25d964d40c22b2da1c15fb11b3ac97c11d  art/icons/modules/exports/56/module-inverse.png
 bdadeb9ab5da32c1639b5387cdbd254a7a19f504540bf37d6202a59b643ba157  art/icons/modules/exports/56/module-lance.png
 876282fe3fa0608b35621404ef20a30f3757d95ddaf08d2f5ab416f1068373e3  art/icons/modules/exports/56/module-left.png
+a8c3ba7c8fbf712da556e069cff37757b17acfbb9d35bbf3b3a17f16c906d860  art/icons/modules/exports/56/module-linger.png
 bd21c10c04cf08d3e383f278d1291e31bd649dc1e12c7f4bf02732f6f7772623  art/icons/modules/exports/56/module-lure.png
 3873015399d45192804de4adf820f1d9c56940f038ba3d8eef534b693afbd5ff  art/icons/modules/exports/56/module-move.png
 6d67ea41d33a9d342fdf12ec67f6c0065c29e54c752618fcb29c7407d52cc26e  art/icons/modules/exports/56/module-orbit.png
@@ -1579,6 +1587,7 @@ f4a7dfe566b88f81c68256b67dfeafa8e4cff39c1b6e7c6203ca887275146055  art/icons/modu
 e3f0be9c2dd02e70d32f529aa6174ab82582ff734e2e2ea7fe7b6b3ce340ef53  art/icons/modules/exports/64/module-inverse.png
 2bcc5c1e8d67e622644ab2d60c6dcaa7a7d0ea83dfc0eca34232af2c8ae8ffda  art/icons/modules/exports/64/module-lance.png
 99143e91dbd43883114e09769464ee16e8c00bb4bfee561ffef8774c625037e6  art/icons/modules/exports/64/module-left.png
+63cc17a429601e454a6f0c5ec1b6989868b4c6f5bcff04fa962214f803677a5d  art/icons/modules/exports/64/module-linger.png
 f0b3cb800829018f0696ad81e49805c10f77a1547a853c19cb67557db0c6f71b  art/icons/modules/exports/64/module-lure.png
 edee64034c43e135e740a2491375a749ae056bbd53e9154cd7ea2288b92029cc  art/icons/modules/exports/64/module-move.png
 61debac8abe7e166832b797b517b5fd4b9332e661bc5d057281c27225b43134b  art/icons/modules/exports/64/module-orbit.png
@@ -1605,6 +1614,7 @@ cbba8052a1fc985c35573b0dd3e1a0a904f20d78e81cc2743739c349cc275f9f  art/icons/modu
 411b7f0418cdb8176e494263a695d61084811f1f692d9a8682f2107eb2e1a51d  art/icons/modules/module-inverse.png
 69c36c63368d5b65d4010f6e3d9cb42abd7d49a7d66aa6a8a57cb8243f79b074  art/icons/modules/module-lance.png
 8a8253362977180cdf546cb0a682da8569b3bdd00cb5d0b64a6ec78e8a39d745  art/icons/modules/module-left.png
+58687ca10a097eb210252346b981887636a1b3c79c9e726706c6205250711085  art/icons/modules/module-linger.png
 d334bfc8fc42b7631fbfe83b2d27b0bcc1c86bd8ed1ccaa270c2f8a48016ecf2  art/icons/modules/module-lure.png
 0bb087997ce3ad8464e05b367fd0d0d4f54995aed4cac6d6d1e599262457d1e4  art/icons/modules/module-move.png
 29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3  art/icons/modules/module-orbit.png
