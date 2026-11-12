@@ -596,7 +596,6 @@ export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp:
   for (const o of objectsOf(cb)) { const c = coverKind(o); if (c) out[o.pos] = { kind: c, hp: o.hp ?? 0, max: o.max ?? 0, id: o.id, name: o.name }; }
   return out;
 }
-const coverKeys = (cb: Combat, kind?: 'half' | 'full') => Object.entries(coverOf(cb)).filter(([, c]) => !kind || c.kind === kind).map(([k]) => k);
 export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...objectsOf(cb).filter(isDifficult).map((o) => o.pos)]);
 export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
 export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb)]);
@@ -743,6 +742,28 @@ export function paths(cb: Combat, from: string, self: string, avoid?: Set<string
   for (const o of objectsOf(cb)) if ((o as any).sabotaged && kindOf(o).blocks_move && o.pos !== from) delete d[o.pos];
   return { dist: d, prev };
 }
+/** The tiles one step from `from` that paths(cb, from, self) puts at distance 1, sorted: the same rules for one step
+ * (a wall, a known trap, someone standing there, the squeeze between two walls, rough ground costing 2 so not a 1-tile
+ * step, what the unit's items open, tiles nobody may stop on), without searching the whole map. For a reaction that
+ * only ever steps one tile (Duck and Roll). test/paths-order.test.ts holds it to paths(): change them together. */
+export function stepsFrom(cb: Combat, from: string, self: string): string[] {
+  const { w, h } = cb.map, me = cb.units.find((u) => u.id === self), diff = difficultOf(cb), opt = pathOpts(cb, me);
+  const solid = new Set([...moveBlockers(cb), ...objectsOf(cb).filter((o) => isTrap(o) && trapKnown(o, me?.side || 'pc')).map((o) => o.pos)]);
+  for (const k of opt.runnable) solid.delete(k);
+  const [x, y] = xy(from), out: string[] = [];
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+    if (!dx && !dy) continue;
+    const nx = x + dx, ny = y + dy, n = key(nx, ny);
+    if (nx < 0 || ny < 0 || nx >= w || ny >= h || solid.has(n)) continue;
+    if (cb.units.some((u) => u.id !== self && !u.dead && u.pos === n)) continue; // someone stands there (one you may pass through is never a place to stop)
+    if (dx && dy && solid.has(key(x + dx, y)) && solid.has(key(x, y + dy))) continue;
+    if (diff.has(n) && !opt.ignoreDifficult) continue;
+    if (opt.noStop?.has(n)) continue;
+    if (objectsOf(cb).some((o) => o.pos === n && (o as any).sabotaged && kindOf(o).blocks_move)) continue;
+    out.push(n);
+  }
+  return out.sort();
+}
 /** The revealed hazard tiles that would go off for this side (rules 1.9: not hidden, not spent, not on its safe path). */
 export function revealedHazardTiles(cb: Combat, side: 'pc' | 'foe'): Map<string, Hazard> {
   const out = new Map<string, Hazard>();
@@ -804,11 +825,18 @@ export function lineOfSight(cb: Combat, a: string, b: string, ignoreVeil = false
 }
 /** The half-cover tile protecting a target: next to it and between it and the attacker (spec: Cover). */
 export function coverTileFor(cb: Combat, from: string, to: string): string | null {
-  const [tx, ty] = xy(to);
-  for (const c of coverKeys(cb, 'half')) {
-    const [cx, cy] = xy(c);
-    if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && dist(from, c) < dist(from, to)) return c;
+  // The same answer as walking coverOf(cb) in its order (tiles in the order their first cover object was placed; a
+  // tile's cover is its LAST cover object's), looking only at the eight tiles round the target: this is asked by every
+  // attack preview, and the enemy asks for a preview of every target.
+  const [tx, ty] = xy(to); let near: { k: string; kind: 'half' | 'full' }[] | null = null;
+  for (const o of objectsOf(cb)) {
+    const c = coverKind(o); if (!c) continue;
+    const [cx, cy] = xy(o.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) !== 1) continue;
+    const e = near && near.find((q) => q.k === o.pos); if (e) e.kind = c; else (near ||= []).push({ k: o.pos, kind: c });
   }
+  if (!near) return null;
+  const far = dist(from, to);
+  for (const e of near) if (e.kind === 'half' && dist(from, e.k) < far) return e.k;
   return null;
 }
 export const coverBonus = (cb: Combat, from: string, to: string) => (coverTileFor(cb, from, to) ? 5 : 0);

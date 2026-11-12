@@ -7,7 +7,7 @@
 // If you change paths() in combat.ts, change it so that this still passes. If a rule of movement changes on purpose
 // (a new cost, a new blocker), change both and say so in the commit; the replay guard will then move too.
 import { describe, expect, it } from 'vitest';
-import { paths, pathOpts, difficultOf, moveBlockers, objectsOf, trapKnown, xy, key, bindGame, type Combat } from '../src';
+import { paths, stepsFrom, coverTileFor, coverOf, dist, pathOpts, difficultOf, moveBlockers, objectsOf, trapKnown, xy, key, bindGame, type Combat } from '../src';
 import { isTrap, kindOf, makeObject } from '../src/objects';
 import { onHook } from '../src/effects/hooks';
 import { lobby, fightTurn, type Pc } from './helpers/replay';
@@ -44,6 +44,16 @@ function plainPaths(cb: Combat, from: string, self: string, avoid?: Set<string>)
   return { dist: d, prev };
 }
 
+/** coverTileFor as it was written first: the dictionary of all cover, walked in its order. The oracle for the one in combat.ts. */
+function plainCoverTileFor(cb: Combat, from: string, to: string): string | null {
+  const [tx, ty] = xy(to);
+  for (const c of Object.entries(coverOf(cb)).filter(([, v]) => v.kind === 'half').map(([k]) => k)) {
+    const [cx, cy] = xy(c);
+    if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && dist(from, c) < dist(from, to)) return c;
+  }
+  return null;
+}
+
 // what an item may open for a mover (Wall Run, Make Way, augmented legs…): set per trial, answered through the real hook
 let OPTS: any = null;
 onHook('path_opts', (o: any) => { if (!OPTS) return; if (OPTS.jump) o.jump = true; if (OPTS.ignoreDifficult) o.ignoreDifficult = true; for (const k of OPTS.runnable || []) o.runnable.add(k); for (const id of OPTS.pass || []) o.pass.add(id); if (OPTS.noStop) o.noStop = new Set(OPTS.noStop); });
@@ -67,10 +77,10 @@ describe('paths(): the heap search finds what the plain search finds, in the sam
     for (const m of ['open', 'cover'] as const) { const g = fight(m), cb = g.combat!, was = bindGame(g);
       try { for (const u of cb.units) same(paths(cb, u.pos, u.id), plainPaths(cb, u.pos, u.id), m + ' ' + u.id); } finally { bindGame(was); } }
   });
-  it('on 300 random grounds: walls, rough ground, traps, a sabotaged barricade, crowds, jumps, ways through people, tiles to avoid', () => {
+  it('on 300 random grounds: walls, rough ground, traps, a sabotaged barricade, crowds, jumps, ways through people, tiles to avoid; and one step (stepsFrom) and the cover tile (coverTileFor) agree with the plain versions', () => {
     const base = fight('cover'), r = rnd(20261112);
     const pick = <T>(xs: T[]) => xs[Math.floor(r() * xs.length)];
-    let reached = 0, ties = 0;
+    let reached = 0, ties = 0, steps = 0, covers = 0;
     for (let t = 0; t < 300; t++) {
       const g = JSON.parse(JSON.stringify(base)), cb: Combat = g.combat, w = 6 + Math.floor(r() * 21), h = 6 + Math.floor(r() * 21);
       const tiles: string[] = []; for (let x = 0; x < w; x++) for (let y = 0; y < h; y++) tiles.push(x + ',' + y);
@@ -80,6 +90,8 @@ describe('paths(): the heap search finds what the plain search finds, in the sam
         ...some(0.03).map((k, i) => makeObject('t' + i, 'trap', k, { hidden: r() < 0.5 })),
         ...some(0.03).map((k, i) => ({ ...makeObject('b' + i, 'barricade', k), ...(r() < 0.5 ? { sabotaged: 9 } : {}) })),
         ...some(0.03).map((k, i) => makeObject('c' + i, 'crate', k)), ...some(0.02).map((k, i) => makeObject('d' + i, 'door', k, r() < 0.5 ? { open: true } : {})),
+        // cover, some of it two to a tile (the last one placed is the tile's cover) and some of it broken
+        ...some(0.08).map((k, i) => makeObject('w' + i, pick(['low_wall', 'crate', 'pillar', 'barrel']), k, r() < 0.15 ? { hp: 0 } : {})), ...some(0.04).map((k, i) => makeObject('x' + i, pick(['low_wall', 'pillar', 'crate']), k)),
       ];
       const free = tiles.filter((k) => !cb.map.solid.includes(k));
       for (const u of cb.units) { u.pos = pick(free.length ? free : tiles); if (r() < 0.15) u.dead = true; }
@@ -92,10 +104,15 @@ describe('paths(): the heap search finds what the plain search finds, in the sam
       try {
         const a = paths(cb, from, me.id, avoid), b = plainPaths(cb, from, me.id, avoid);
         same(a, b, 'trial ' + t + ' (' + w + ' × ' + h + ', from ' + from + ')');
+        // one step: the tiles paths() puts at distance 1, in sorted order (Duck and Roll's choice of tile)
+        if (from !== '-5,40') expect(stepsFrom(cb, from, me.id), 'trial ' + t + ': one step from ' + from).toEqual(Object.keys(b.dist).filter((k) => b.dist[k] === 1).sort());
+        steps += stepsFrom(cb, me.pos, me.id).length;
+        // the half cover between an attacker and a target: the same tile as the first one in coverOf's order
+        for (const u of others) { const got = coverTileFor(cb, u.pos, me.pos); expect(got, 'trial ' + t + ': cover for ' + me.pos + ' from ' + u.pos).toBe(plainCoverTileFor(cb, u.pos, me.pos)); if (got) covers++; }
         reached += Object.keys(a.dist).length; const seen = new Set(Object.values(a.dist)); ties += Object.keys(a.dist).length - seen.size;
       } finally { bindGame(was); OPTS = null; }
     }
     // the trials really walked somewhere, and really had equal distances to order
-    expect(reached).toBeGreaterThan(20000); expect(ties).toBeGreaterThan(15000);
+    expect(reached).toBeGreaterThan(20000); expect(ties).toBeGreaterThan(15000); expect(steps).toBeGreaterThan(600); expect(covers).toBeGreaterThan(150);
   });
 });
