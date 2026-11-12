@@ -11876,6 +11876,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/ui-revert.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/ui-revert.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "ui-practice": {
+      "id": "ui-practice",
+      "label": "a small heart with exactly four separated tally lines",
+      "path": "art/icons/modules/ui-practice.png",
+      "sha256": "a204962a920110b89b5c076ba2bece9e9409a98727c8473219d5edc7e3df6de8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/ui-practice.png",
+        "128": "art/icons/modules/exports/128/ui-practice.png",
+        "64": "art/icons/modules/exports/64/ui-practice.png",
+        "56": "art/icons/modules/exports/56/ui-practice.png",
+        "48": "art/icons/modules/exports/48/ui-practice.png",
+        "44": "art/icons/modules/exports/44/ui-practice.png",
+        "40": "art/icons/modules/exports/40/ui-practice.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/ui-practice.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/ui-practice.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

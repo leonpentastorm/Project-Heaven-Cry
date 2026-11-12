@@ -41,5 +41,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-judgement_mark.png`: a target ring with a heavy downward bar landing on it
 - `module-halo.png`: a ring of light over a small heart
 - `ui-revert.png`: a curved rewind arrow
+- `ui-practice.png`: a small heart with exactly four separated tally lines
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
