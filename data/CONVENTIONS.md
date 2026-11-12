@@ -44,6 +44,21 @@ Every rule-bearing item carries both:
 - Effects may also carry `when`, `context`, `duration`, `target`, `uses`, `limit` keys to scope them.
 - A condition reference may be a list plus `"choose": 1`, or `"family:<body|brain|heart>"` for any condition of that family.
 - If an effect is pure judgement, `effects` is `[{"op":"narrator","note":"..."}]`.
+- **Item ops (engine foundations 3).** An effect whose `when` is a single word from `effect_ops.json` `item_ops.triggers`
+  is run by the engine's generic runner (`packages/engine/src/effects/triggers.ts`), with no code for the item:
+  `{"op": "<item_ops.ops>", "when": "<trigger>", "if": {"<predicate>": value, …}, "limit": {"per": "per_turn", "n": 1},
+  …the op's fields, "and": [more ops under the same trigger, test and limit], "say": "{self} … {=.value} …", "label": "…",
+  "priority": 100, "fx": {"k": "<fx kind>", …}}`. The trigger fixes whose event it is (`self`: the holder is the actor of
+  `hit`, the target of `taking`) unless `if` names that role. `limit` is `{per, n, key?, each?: "target", peek?: true}` or
+  `{cooldown: rounds}`; `peek` reads a limit that another effect spends (op `use`). An op's `target` is `self` (default),
+  `actor` or `target`. `say` names units with `{self}` `{actor}` `{target}`, a resource with `{gain}` `{res:id}`
+  `{resmax:id}`, the op's own sentence with `{then}`, and its numbers with `{=.field}`. The validator refuses an unknown
+  trigger, predicate or op, a word where a number belongs, and a new single-word `when` that is not a trigger (the old
+  ones it still knows, `LEGACY_WHEN`, only shrink). A `when` with spaces is the old prose scope.
+- `brief` (an item, optional): the Narrator's line for an item written in data only (what its handler's `brief()` was).
+- `numbers` (an item or a perk's tier, optional): `{"name": n}`, the numbers a handler that is not data yet reads with
+  `num(h, 'name')` (`packages/engine/src/effects/num.ts`); never an amount of damage, healing or shield (those are
+  `amounts`).
 - `adjudication`: `"engine"` (fully automatable), `"hybrid"`, or `"narrator"`.
 
 ## Weapon handling (weapons.json)

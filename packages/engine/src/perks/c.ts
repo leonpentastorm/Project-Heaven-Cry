@@ -654,8 +654,7 @@ const landing = (cb: Combat, tile: string, self: Unit): string | null => {
   return null;
 };
 register({
-  id: 'grenadiers_arm', claims: [0],
-  stat: (h, stat) => (stat === 'throw_range' ? 2 : 0),
+  id: 'grenadiers_arm', // +2 throw range is the data's generic stat_mod (engine foundations 3); the throw of a body stays here
   actions: [{
     id: 'hurl', label: 'Throw someone', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u, h.cb) : 3), target: 'unit', range: 1,
     text: 'Throw an ally or enemy next to you to a tile in range. They must weigh less than you can carry. The one thrown and whoever they land on take damage by weight.',
