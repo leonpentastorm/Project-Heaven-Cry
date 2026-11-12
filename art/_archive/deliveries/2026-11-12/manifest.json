@@ -1135,6 +1135,52 @@
           "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
         }
       ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-cruelty.png",
+      "sha256": "d7ef57bef3860edc7c0c3e4ec0b768014b2db49a512d1b93ccf8ce4189069ddd",
+      "id": "feeling-cruelty",
+      "family": "feelings",
+      "action": "Cruelty: the ribbon tightens into a loop with thorns.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-cruelty.png",
+        "sha256": "a32e356f5aaa6c70599c90ba6c1c31aef43f870a36314c631361efa9256dc9d5"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-cruelty.png",
+        "sha256": "d7ef57bef3860edc7c0c3e4ec0b768014b2db49a512d1b93ccf8ce4189069ddd"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-cruelty.txt",
+        "sha256": "ddeff261f99c7519797d4e4769af8682dd1418d4a48012ef106038aec5c03b80"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-cruelty.png",
+        "128": "art/icons/feelings/exports/128/feeling-cruelty.png",
+        "64": "art/icons/feelings/exports/64/feeling-cruelty.png",
+        "56": "art/icons/feelings/exports/56/feeling-cruelty.png",
+        "48": "art/icons/feelings/exports/48/feeling-cruelty.png",
+        "44": "art/icons/feelings/exports/44/feeling-cruelty.png",
+        "40": "art/icons/feelings/exports/40/feeling-cruelty.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
     }
   ]
 }

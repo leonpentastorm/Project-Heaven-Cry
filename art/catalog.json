@@ -10574,6 +10574,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-mercy.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-mercy.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-cruelty": {
+      "id": "feeling-cruelty",
+      "label": "Cruelty: the ribbon tightens into a loop with thorns",
+      "path": "art/icons/feelings/feeling-cruelty.png",
+      "sha256": "d7ef57bef3860edc7c0c3e4ec0b768014b2db49a512d1b93ccf8ce4189069ddd",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-cruelty.png",
+        "128": "art/icons/feelings/exports/128/feeling-cruelty.png",
+        "64": "art/icons/feelings/exports/64/feeling-cruelty.png",
+        "56": "art/icons/feelings/exports/56/feeling-cruelty.png",
+        "48": "art/icons/feelings/exports/48/feeling-cruelty.png",
+        "44": "art/icons/feelings/exports/44/feeling-cruelty.png",
+        "40": "art/icons/feelings/exports/40/feeling-cruelty.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-cruelty.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-cruelty.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {
