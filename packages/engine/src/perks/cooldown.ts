@@ -7,6 +7,7 @@
 // landed (stateOf(h).cd[side], on the unit, so every fight starts with every cooldown ready). AP given on the holder's
 // own turn lands now; AP banked for the next turn lands in the round that turn comes in.
 // The area map is not covered (its items keep their own once-a-round limits).
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import perksJ from '../../../../data/perks.json';
 import { stateOf, type Holder } from '../effects';
 import type { Combat, Unit } from '../combat';

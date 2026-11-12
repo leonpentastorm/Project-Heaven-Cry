@@ -2,6 +2,7 @@
 // Narrator can look up by key ("weapon:service_pistol", "condition:bleeding") when a moment needs it, instead of
 // carrying all of it in every prompt. Entries describe what a thing is and does in words; the engine still owns
 // every number in play, so entries carry only the few numbers that help the Narrator describe it.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL, ATTR, SIGILS, SCHOOLS, MODULES, TONES, SOUL_RULES } from './data';
 import { OBJECT_KINDS } from './objects';
 import { RANK_ATTR, RANK_LEVEL } from './character';

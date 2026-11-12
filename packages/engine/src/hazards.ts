@@ -4,6 +4,7 @@
 // minefield still sets a mine off. Hidden hazards are found by passive Vigilant, by stepping in, or by a reveal.
 // Every hazard carries two approaches the engine writes itself: find a safe path (a lane that doesn't trigger for the
 // squad) and disarm (removes it; failing gives the actor one tile of the hazard). Deterministic: dice from the rng.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
 import { type Combat, type Unit, hurtUnit, emitFx, dist, refOf } from './combat';
 import { applyCond, unitSave } from './magic';

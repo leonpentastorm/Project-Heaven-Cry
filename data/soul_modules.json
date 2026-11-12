@@ -55,22 +55,22 @@
       {
         "id": "turn",
         "strain": -1,
-        "text": "At the start of each of your turns you lose 1 Strain, before any swell."
+        "text": "At the start of each of your turns you lose {=strain|abs} Strain, before any swell."
       },
       {
         "id": "still",
         "strain": -1,
-        "text": "A still turn: end a turn in which you didn't Begin, Pump or Feed and are holding no Outburst, and you lose 1 more Strain."
+        "text": "A still turn: end a turn in which you didn't Begin, Pump or Feed and are holding no Outburst, and you lose {=strain|abs} more Strain."
       },
       {
         "id": "fight",
         "strain": -1,
-        "text": "Fighting it out: your first weapon attack each turn, melee or ranged, removes 1 Strain."
+        "text": "Fighting it out: your first weapon attack each turn, melee or ranged, removes {=strain|abs} Strain."
       },
       {
         "id": "tend",
         "strain": -1,
-        "text": "Tending others: the first time each turn you heal, stim, shield or cleanse an ally, you lose 1 Strain."
+        "text": "Tending others: the first time each turn you heal, stim, shield or cleanse an ally, you lose {=strain|abs} Strain."
       },
       {
         "id": "letgo",
@@ -81,7 +81,7 @@
         "id": "steady",
         "strain": -1,
         "ap": 1,
-        "text": "Steady the heart (1 AP, only while holding an Outburst): you lose 1 Strain, and the Outburst doesn't swell at the start of your next turn."
+        "text": "Steady the heart ({=ap} AP, only while holding an Outburst): you lose {=strain|abs} Strain, and the Outburst doesn't swell at the start of your next turn."
       }
     ]
   },
@@ -174,7 +174,7 @@
       "id": "damage",
       "name": "Damage",
       "base_cost": 20,
-      "text": "Deals 40 damage × your Soul multiplier × the stage multiplier. Pick how it strikes: Strike (the full damage), Finish (×0.8, or ×1.4 against a target at half its HP or less), Brand (×0.8, and the target is Marked for your side) or Drain (×0.8, and you heal for a quarter of the HP it takes). A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
+      "text": "Deals {=damage} damage × your Soul multiplier × the stage multiplier. Pick how it strikes: Strike (the full damage), Finish (×0.8, or ×1.4 against a target at half its HP or less), Brand (×0.8, and the target is Marked for your side) or Drain (×0.8, and you heal for a quarter of the HP it takes). A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
       "damage": 40,
       "hit": "will_power_vs_defense",
       "options": [
@@ -203,7 +203,7 @@
       "id": "buff",
       "name": "Buff",
       "base_cost": 20,
-      "text": "Works on allies. Pick one: heal 7 × your Healing given × the stage multiplier, or make them Inspired (+2 to hit) or Guarded (+2 Defense) for 2 rounds, 3 rounds from stage 2 and 4 rounds at stage 4. The heal grows with your level (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). In a shape (Wave, Burst, Aura or Lance) it heals each ally it reaches for ×0.4 of that.",
+      "text": "Works on allies. Pick one: heal {=heal} × your Healing given × the stage multiplier, or make them Inspired (+2 to hit) or Guarded (+2 Defense) for {=duration_rounds} rounds, 3 rounds from stage 2 and 4 rounds at stage 4. The heal grows with your level (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). In a shape (Wave, Burst, Aura or Lance) it heals each ally it reaches for ×0.4 of that.",
       "options": [
         "to_hit_2",
         "defense_2",
@@ -222,7 +222,7 @@
       "id": "control",
       "name": "Control",
       "base_cost": 25,
-      "text": "Pick one: push the target 3 tiles, pull it 3 tiles, make it Pinned or Slowed for 2 rounds, or swap places with it. The target resists with a Body save; an ally you swap with doesn't resist. The stage counts: the save is 1 harder for every 2 stages, a push or pull is 1 tile longer from stage 2 and 2 longer at stage 4, and Pinned and Slowed last 1 round longer from stage 3.",
+      "text": "Pick one: push the target {=push_tiles} tiles, pull it {=push_tiles} tiles, make it Pinned or Slowed for {=duration_rounds} rounds, or swap places with it. The target resists with a Body save; an ally you swap with doesn't resist. The stage counts: the save is 1 harder for every 2 stages, a push or pull is 1 tile longer from stage 2 and 2 longer at stage 4, and Pinned and Slowed last 1 round longer from stage 3.",
       "options": [
         "push_3",
         "pull_3",
@@ -244,7 +244,7 @@
       "id": "status",
       "name": "Status",
       "base_cost": 20,
-      "text": "Pick one: Fear, Shaken, Confused, a Left Brain Debuff or a Right Brain Debuff for 2 rounds, or Silenced for 1 round. The target resists with a Heart save or a Brain save, depending on the condition. The stage counts: the save is 1 harder for every 2 stages, and the condition lasts 1 round longer from stage 3.",
+      "text": "Pick one: Fear, Shaken, Confused, a Left Brain Debuff or a Right Brain Debuff for {=duration_rounds} rounds, or Silenced for 1 round. The target resists with a Heart save or a Brain save, depending on the condition. The stage counts: the save is 1 harder for every 2 stages, and the condition lasts 1 round longer from stage 3.",
       "options": [
         "fear",
         "shaken",
@@ -287,7 +287,7 @@
           "riders": []
         },
         "2": {
-          "text": "Burning for 2 rounds.",
+          "text": "Burning for {=stages.2.riders.0.rounds} rounds.",
           "riders": [
             {
               "rider": "cond",
@@ -298,7 +298,7 @@
           ]
         },
         "3": {
-          "text": "Burning for 2 rounds.",
+          "text": "Burning for {=stages.2.riders.0.rounds} rounds.",
           "riders": [
             {
               "rider": "cond",
@@ -309,7 +309,7 @@
           ]
         },
         "4": {
-          "text": "Burning for 2 rounds. The fire spreads to enemies next to the target, and the ground under it burns.",
+          "text": "Burning for {=stages.2.riders.0.rounds} rounds. The fire spreads to enemies next to the target, and the ground under it burns.",
           "riders": [
             {
               "rider": "cond",
@@ -352,7 +352,7 @@
           ]
         },
         "2": {
-          "text": "Ignores half cover. Chains to 1 more enemy within 2 tiles for half damage.",
+          "text": "Ignores half cover. Chains to 1 more enemy within {=stages.2.riders.1.range} tiles for half damage.",
           "riders": [
             {
               "rider": "ignore_cover"
@@ -366,7 +366,7 @@
           ]
         },
         "3": {
-          "text": "Ignores half cover. Chains to 1 more enemy within 2 tiles for half damage.",
+          "text": "Ignores half cover. Chains to 1 more enemy within {=stages.2.riders.1.range} tiles for half damage.",
           "riders": [
             {
               "rider": "ignore_cover"
@@ -380,7 +380,7 @@
           ]
         },
         "4": {
-          "text": "Ignores half cover. Chains to 2 more enemies within 2 tiles for half damage. Each one hit is Shaken unless it passes a Heart save.",
+          "text": "Ignores half cover. Chains to 2 more enemies within {=stages.2.riders.1.range} tiles for half damage. Each one hit is Shaken unless it passes a Heart save.",
           "riders": [
             {
               "rider": "ignore_cover"
@@ -443,7 +443,7 @@
           ]
         },
         "4": {
-          "text": "Slowed, and Pinned for 1 round, with no save.",
+          "text": "Slowed, and Pinned for {=stages.4.riders.1.rounds} round, with no save.",
           "riders": [
             {
               "rider": "cond",
@@ -555,7 +555,7 @@
       "text": "Elemental wind damage: armour counts half.",
       "stages": {
         "1": {
-          "text": "Pushes the target 2 tiles.",
+          "text": "Pushes the target {=stages.1.riders.0.tiles} tiles.",
           "riders": [
             {
               "rider": "push",
@@ -564,7 +564,7 @@
           ]
         },
         "2": {
-          "text": "Pushes the target 3 tiles.",
+          "text": "Pushes the target {=stages.2.riders.0.tiles} tiles.",
           "riders": [
             {
               "rider": "push",
@@ -573,7 +573,7 @@
           ]
         },
         "3": {
-          "text": "Pushes the target 3 tiles.",
+          "text": "Pushes the target {=stages.2.riders.0.tiles} tiles.",
           "riders": [
             {
               "rider": "push",
@@ -582,7 +582,7 @@
           ]
         },
         "4": {
-          "text": "Pushes the target 3 tiles, and everyone else within 1 tile of it 2 tiles.",
+          "text": "Pushes the target {=stages.2.riders.0.tiles} tiles, and everyone else within {=stages.4.riders.1.radius} tile of it {=stages.1.riders.0.tiles} tiles.",
           "riders": [
             {
               "rider": "push",
@@ -710,7 +710,7 @@
       "family": "behaviour",
       "cost": 5,
       "strain_extra": 0,
-      "text": "Far: the Outburst reaches 8 tiles instead of 4, plus your Soul range bonus. It only changes a Bolt or a Burst; a Wave, Lance or Aura keeps its own length.",
+      "text": "Far: the Outburst reaches {=range_tiles} tiles instead of 4, plus your Soul range bonus. It only changes a Bolt or a Burst; a Wave, Lance or Aura keeps its own length.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "range_tiles": 8,
@@ -795,7 +795,7 @@
       "family": "augment",
       "cost": 15,
       "strain_extra": 0,
-      "text": "Conditions from the Outburst's school, and from its second school, last 2 rounds longer. An element's stage effects keep their own durations.",
+      "text": "Conditions from the Outburst's school, and from its second school, last {=extra_rounds} rounds longer. An element's stage effects keep their own durations.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "extra_rounds": 2,
@@ -810,7 +810,7 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of 10 × your Soul multiplier × the stage multiplier, and it skips enemies in the area. The shield grows with your level, like healing. In a shape (Wave, Burst, Aura or Lance) each ally gets ×0.4 of it. The Narrator decides what a flipped debuff does.",
+      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of {=shield} × your Soul multiplier × the stage multiplier, and it skips enemies in the area. The shield grows with your level, like healing. In a shape (Wave, Burst, Aura or Lance) each ally gets ×0.4 of it. The Narrator decides what a flipped debuff does.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "adjudication": "hybrid",
@@ -857,7 +857,7 @@
       "family": "trigger",
       "cost": 10,
       "strain_extra": 0,
-      "text": "A Bolt or Lance hits without a roll, for ×0.8 damage. The area shapes never roll anyway.",
+      "text": "A Bolt or Lance hits without a roll, for ×{=damage_mult} damage. The area shapes never roll anyway.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "no_roll": true,
@@ -880,7 +880,7 @@
         "from": "caster"
       },
       "damage_mult": 0.7,
-      "text": "Shape: a cone 3 tiles long from you toward your aim (4 with Size). It hits everyone in it without a roll, for ×0.7 damage.",
+      "text": "Shape: a cone 3 tiles long from you toward your aim (4 with Size). It hits everyone in it without a roll, for ×{=damage_mult} damage.",
       "provisional": true,
       "look": "a violet crescent rolling off your chest",
       "adjudication": "engine",
@@ -902,7 +902,7 @@
         "at": "aim"
       },
       "damage_mult": 0.7,
-      "text": "Shape: every tile within 1 of the tile you aim at (within 2 with Size). It hits everyone in it without a roll, for ×0.7 damage.",
+      "text": "Shape: every tile within 1 of the tile you aim at (within 2 with Size). It hits everyone in it without a roll, for ×{=damage_mult} damage.",
       "provisional": true,
       "look": "a heart-shaped bloom opening at the aim",
       "adjudication": "engine",
@@ -924,7 +924,7 @@
         "at": "caster"
       },
       "damage_mult": 0.6,
-      "text": "Shape: every tile within 1 of you, all at once (within 2 with Size). You don't aim it. It never touches you, unless it is a Buff. It deals ×0.6 damage.",
+      "text": "Shape: every tile within 1 of you, all at once (within 2 with Size). You don't aim it. It never touches you, unless it is a Buff. It deals ×{=damage_mult} damage.",
       "provisional": true,
       "look": "a ring of violet heat breaking off you",
       "adjudication": "engine",
@@ -946,7 +946,7 @@
         "from": "caster"
       },
       "damage_mult": 0.8,
-      "text": "Shape: a straight line 4 tiles long from you toward your aim, in any of the 8 directions (6 tiles with Size). It pierces everyone on the line, but walls stop it. You roll against each target, for ×0.8 damage.",
+      "text": "Shape: a straight line 4 tiles long from you toward your aim, in any of the 8 directions (6 tiles with Size). It pierces everyone on the line, but walls stop it. You roll against each target, for ×{=damage_mult} damage.",
       "provisional": true,
       "look": "a narrow violet spear of light",
       "adjudication": "engine",
@@ -961,7 +961,7 @@
       "family": "behaviour",
       "cost": 15,
       "strain_extra": 0,
-      "text": "Bolt only. It also hits the nearest other creature within 2 tiles of your target that the school can affect, at full strength. A heal or a shield is divided instead: your target and the second ally each get ×0.8.",
+      "text": "Bolt only. It also hits the nearest other creature within 2 tiles of your target that the school can affect, at full strength. A heal or a shield is divided instead: your target and the second ally each get ×{=boon_mult} (your target still gets ×{=boon_mult} when nobody is near to take the second share).",
       "boon_mult": 0.8,
       "provisional": true,
       "rules": "1.8",
@@ -977,7 +977,7 @@
       "family": "behaviour",
       "cost": 15,
       "strain_extra": 0,
-      "text": "A Bolt bounces off walls and cover. If there is a wall or cover within 2 tiles of your target, it needs no line of sight and ignores half cover.",
+      "text": "A Bolt bounces off walls and cover. If there is a wall or cover within {=bank_radius} tiles of your target, it needs no line of sight and ignores half cover.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1008,7 +1008,7 @@
       "family": "behaviour",
       "cost": 20,
       "strain_extra": 0,
-      "text": "A Bolt or Lance goes out and comes back: each target is hit a second time for ×0.3 damage. Each hit rolls on its own.",
+      "text": "A Bolt or Lance goes out and comes back: each target is hit a second time for ×{=second_mult} damage. Each hit rolls on its own.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1024,7 +1024,7 @@
       "family": "behaviour",
       "cost": 15,
       "strain_extra": 0,
-      "text": "A Bolt becomes 3 small bolts at the same target. Each rolls on its own and deals ×0.4 damage.",
+      "text": "A Bolt becomes {=bolts} small bolts at the same target. Each rolls on its own and deals ×{=bolt_mult} damage.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1057,7 +1057,7 @@
       "family": "augment",
       "cost": 15,
       "strain_extra": 0,
-      "text": "Each target hit is Pinned for 1 round unless it passes a Body save.",
+      "text": "Each target hit is Pinned for {=rounds} round unless it passes a Body save.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1090,7 +1090,7 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "When you Release, you gain a shield of 4 × your Soul multiplier × the stage multiplier. It grows with your level, like healing.",
+      "text": "When you Release, you gain a shield of {=shield} × your Soul multiplier × the stage multiplier. It grows with your level, like healing.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1107,7 +1107,7 @@
       "family": "trigger",
       "cost": 15,
       "strain_extra": 0,
-      "text": "The area stays as a field for 2 rounds. A Damage field deals 5 damage and the element's stage 1 effect to each enemy that starts its turn there; a Buff field heals each ally that starts their turn there for 5.",
+      "text": "The area stays as a field for {=rounds} rounds. The field of a design that harms (Damage, Control or Status) deals 5 damage and the element's stage 1 effect to each enemy that starts its turn there; a Buff field heals each ally that starts their turn there for 5. A Damage design with Inverse leaves no field.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",
@@ -1124,7 +1124,7 @@
       "family": "augment",
       "cost": 5,
       "strain_extra": 0,
-      "text": "Holding the Outburst adds half the usual Strain, rounded down, from Begin, swells and feelings. In return the Release is at ×0.8 strength.",
+      "text": "Holding the Outburst adds half the usual Strain, rounded down, from Begin, swells and feelings. In return the Release is at ×{=damage_mult} strength.",
       "provisional": true,
       "rules": "1.8",
       "adjudication": "engine",

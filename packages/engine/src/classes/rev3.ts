@@ -182,8 +182,8 @@ register({
 // ---------- Unstoppable (rank III, 1 AP, once a scene) ----------
 // Until your next turn starts: Fear, Shaken, Slowed and Pinned don't touch you (new ones are cancelled; ones you carry
 // are set aside and come back at your next turn start with the rounds they would have had), no opportunity attack is
-// taken against you (the 'opportunity_attack' immunity), and you gain 2 Momentum. Momentum still empties at the end of a
-// turn with no attack (the class rule). Combat only.
+// taken against you (the 'opportunity_attack' immunity), and you gain 2 Momentum. Momentum carries from turn to turn
+// (nothing drops it at a turn's end). Combat only.
 const UNSTOP = ['fear', 'shaken', 'slowed', 'pinned'];
 const unstoppable = (h: Holder) => !!stateOf(h).on;
 register({
@@ -586,7 +586,7 @@ register({
   actions: [{
     id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 2, uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: every ally within 4 tiles heals 6 HP × your Healing given, more as you level, and loses Fear and Shaken.',
-    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(20 * (h.c ? healingMult(h.c) : 1)) + ' HP each, and their Fear and Shaken end.'] }; },
+    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(RALLY_HEAL * (h.c ? healingMult(h.c) : 1) * mendFactorOf(h.u!)) + ' HP each, and their Fear and Shaken end.'] }; },
     run: (h) => {
       const cb = h.cb!, u = h.u!, mult = h.c ? healingMult(h.c) : 1, ts = rallied(cb, u), parts: string[] = [];
       emitFx(cb, 'rally', { unit: u.id, at: u.pos, radius: 4, targets: ts.map((t) => t.id) });

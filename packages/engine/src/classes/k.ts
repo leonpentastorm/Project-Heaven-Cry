@@ -621,7 +621,7 @@ register({
 // covers (and its multipliers), TWICE more missiles, CHAIN its jumps, KIN who is spared, PULL drags each one it reached
 // toward you afterwards, LEECH heals you from the Outburst's damage. STAY, WAIT and WATCH are refused: no standing
 // Outbursts. Every creature the plan affects takes the Outburst's school as a Bolt (its own shape is the Sigil's now)
-// at stage 0 (rules 1.5: a snap, ×0.6; or its held stage: Begin and Pump first, then fuse it), at the plan's
+// at stage 0 (a snap, ×0.8 since rules 1.8; or its held stage: Begin and Pump first, then fuse it), at the plan's
 // multiplier for that creature. You pay everything a normal pattern costs (the draws, then the Evoke's AP and charge)
 // plus the Outburst's MP, Soul cast AP and Strain, plus +1 Strain and +2 Flux. Every Fusion is a fight note for the
 // Narrator (a Knowing risk).
@@ -669,7 +669,7 @@ register({
       emitFx(cb, 'evoke', { unit: u.id, at: u.pos, shape: r.p.shape, tiles: r.p.tiles, words: r.p.words, element: null, side: u.side, facing: pl.facing?.mode, dir: pl.facing?.dir, area: pl.area,
         src: pl.missiles[0]?.origin, impact: pl.missiles[0]?.impact ?? null, targets: pl.targets, targetAt: pl.targets.map((id) => unitById(cb, id)?.pos), fusion: r.d.id,
         missiles: pl.missiles.map((x) => ({ origin: x.origin, kind: x.kind, path: x.path, blockedAt: x.blockedAt, impact: x.impact, arc: x.arc, hops: x.hops, burst: x.burst.tiles, core: x.burst.core, chain: x.chain, placed: null })) });
-      // Rules 1.5: a fresh Outburst is fused at stage 0 (a snap, ×0.6); a held one at the stage it reached (item 528).
+      // Rules 1.5: a fresh Outburst is fused at stage 0 (a snap, ×0.8); a held one at the stage it reached (item 528).
       let stage = m.held?.stage ?? 0, cost = m.held?.cost || 0;
       if (!r.held) {
         const e = freeAp(u, () => beginOutburst(cb, rng, u, r.d.id, undefined, true)); if (e) return e;
@@ -1288,7 +1288,7 @@ register({
   id: 'heartfed.fed', claims: 'all', priority: 20,
   actions: [{
     id: 'feed_feeling', label: 'Feed a feeling (a free Pump)', scope: ['combat', 'world'], target: 'none', ap: 0,
-    text: 'Spend 1 point from the gauge your held Outburst is keyed to: Pump it for 0 AP. Twice a turn at most.',
+    text: 'Spend 1 point from the gauge your held Outburst is keyed to: Pump it. Twice a turn at most; the first is free (one free stage a turn), the second costs the Pump\'s AP.',
     available: (h) => {
       const m = h.u?.mg; if (!m?.held) return 'Hold a keyed Outburst first.'; const k = heldKey(h); if (!k) return 'The held Outburst isn\'t keyed to a gauge.';
       if ((gauges(h)[k] || 0) < 1) return 'Your ' + k + ' is empty.'; if (uses(h).left('per_turn', FEEL_PER_TURN, h.key + '#feel') <= 0) return 'Used twice this turn already.';
@@ -1368,7 +1368,7 @@ register({
 });
 let MIRROR = false, SHARING = false;
 // Through (K26, PROVISIONAL, audit 1-3; rules 1.5): your Outbursts can go off from a linked ally's place: "Cast through
-// a link" is a snap cast (Begin and Release at once, 3 AP, ×0.6) and "Release through a link" lets your held Outburst
+// a link" is a snap cast (Begin and Release at once, 3 AP, ×0.8) and "Release through a link" lets your held Outburst
 // go at the stage it reached (1 AP). Range, sight and the shape (a Wave's cone, a Lance's line, an Aura around them)
 // all run from the ally's tile, as if you stood there; the ally is never in its own Aura. Heals, shields and the
 // Guarded or Inspired boons you receive (whatever their source) reach every linked ally at half (a boon for half its
@@ -1383,13 +1383,13 @@ register({
   id: 'heartbinder.through', claims: 'all',
   actions: [
     { id: 'begin_through', label: 'Cast through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,
-      text: 'Snap-cast an Outburst from a linked ally\'s tile instead of your own. A snap cast is Begin and Release in one go, at ×0.6.',
+      text: 'Snap-cast an Outburst from a linked ally\'s tile instead of your own. A snap cast is Begin and Release in one go, at ×' + stageMult(0) + '.',
       available: (h) => (!h.u?.mg?.designs?.length ? false : !linkedUnits(h).length ? 'Link to an ally first.' : true),
       preview: (h, a) => {
         const u = h.u!, cb = h.cb!, f = linkFrom(h, a); if (typeof f === 'string') return { ok: false, why: f };
         const d = u.mg!.designs.find((x) => x.id === a.choice); if (!d) return { ok: false, why: 'Pick a design.' };
         const aim = aimOf(cb, a, 'tile'); if (!aim) return { ok: false, why: 'Pick a target tile.' };
-        const pv = fromLink(u, f, () => previewOutburst(cb, u, d.id, aim, true)); return pv.ok ? { lines: ['From ' + f.name + ': ' + pv.ap + ' AP, ' + pv.cost + ' MP, ×0.6.'] } : { ok: false, why: pv.why };
+        const pv = fromLink(u, f, () => previewOutburst(cb, u, d.id, aim, true)); return pv.ok ? { lines: ['From ' + f.name + ': ' + pv.ap + ' AP, ' + pv.cost + ' MP, ×' + stageMult(0) + '.'] } : { ok: false, why: pv.why };
       },
       run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit, d = u.mg!.designs.find((x) => x.id === a.choice)!; say(cb, u.name + ' casts through ' + f.name + '.'); const e = fromLink(u, f, () => beginOutburst(cb, rng, u, d.id, aimOf(cb, a, 'tile')!, false)); if (!e) checkOver(cb); return e; } },
     { id: 'release_through', label: 'Release through a link', scope: ['combat', 'world'], target: 'tile', ap: 0,

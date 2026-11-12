@@ -37,7 +37,7 @@
         "text": "You take 25% of your max HP or more in one hit."
       },
       "pour": {
-        "text": "+0.5 to the multiplier (a plain Pump gives +0.2). +1 Strain when you pour it in.",
+        "text": "+0.5 to the multiplier (a plain Pump gives +0.2). +{=pour.strain} Strain when you pour it in.",
         "strain": 1,
         "effects": [
           {
@@ -48,7 +48,7 @@
       },
       "residue": {
         "kind": "harms",
-        "text": "5 Soul damage a turn.",
+        "text": "{=residue.damage} Soul damage a turn.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -69,7 +69,7 @@
       "step": {
         "base": 0.2,
         "fallen": 0.5,
-        "text": "+0.2; +0.5 once an ally has fallen"
+        "text": "+0.2; +{=step.fallen} once an ally has fallen"
       },
       "trigger": {
         "event": "ally_down",
@@ -167,7 +167,7 @@
       },
       "residue": {
         "kind": "helps",
-        "text": "Heal 5 a turn.",
+        "text": "Heal {=residue.heal} a turn.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -205,7 +205,7 @@
       },
       "residue": {
         "kind": "helps",
-        "text": "+1 to rolls while you stand there.",
+        "text": "+{=residue.roll} to rolls while you stand there.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -244,7 +244,7 @@
       },
       "residue": {
         "kind": "helps",
-        "text": "Strain -1 on entry.",
+        "text": "Strain -{=residue.strain|abs} on entry.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -265,14 +265,14 @@
       "step": {
         "base": 0.2,
         "vs_last_hurt": 0.5,
-        "text": "+0.2; +0.5 against whoever last hurt you"
+        "text": "+0.2; +{=step.vs_last_hurt} against whoever last hurt you"
       },
       "trigger": {
         "event": "hurt_by_enemy",
         "text": "An enemy damages you."
       },
       "pour": {
-        "text": "+0.2, or +0.5 against whoever last hurt you.",
+        "text": "+0.2, or +{=step.vs_last_hurt} against whoever last hurt you.",
         "effects": [
           {
             "op": "feeling_pour",
@@ -282,7 +282,7 @@
       },
       "residue": {
         "kind": "harms",
-        "text": "5 Soul damage a turn to whoever hurt the caster last.",
+        "text": "{=residue.damage} Soul damage a turn to whoever hurt the caster last.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -307,10 +307,10 @@
       },
       "trigger": {
         "event": "nat1",
-        "text": "You roll a natural 1, or a vow breaks."
+        "text": "You roll a natural {=residue.roll|abs}, or a vow breaks."
       },
       "pour": {
-        "text": "+0.5 to the multiplier. It deals 8 damage to you at the Release; armour and shields don't stop it.",
+        "text": "+0.5 to the multiplier. It deals {=pour.self_damage} damage to you at the Release; armour and shields don't stop it.",
         "self_damage": 8,
         "per_pour": true,
         "effects": [
@@ -322,7 +322,7 @@
       },
       "residue": {
         "kind": "harms",
-        "text": "-1 to rolls while you stand there.",
+        "text": "-{=residue.roll|abs} to rolls while you stand there.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -349,7 +349,7 @@
         "text": "You take down an Elite or Boss."
       },
       "pour": {
-        "text": "+0.6 to the multiplier. If the Release takes nobody down, you take 2 Strain after it.",
+        "text": "+0.6 to the multiplier. If the Release takes nobody down, you take {=pour.strain_unless_down} Strain after it.",
         "strain_unless_down": 2,
         "effects": [
           {
@@ -374,7 +374,7 @@
         "base": 0.2,
         "per_20pct_missing": 0.1,
         "max": 0.6,
-        "text": "+0.2, +0.1 more per 20% of your HP missing"
+        "text": "+0.2, +{=step.per_20pct_missing} more per 20% of your HP missing"
       },
       "trigger": {
         "event": "low_hp",
@@ -431,7 +431,7 @@
       },
       "residue": {
         "kind": "helps",
-        "text": "+2 to saves while you stand there.",
+        "text": "+{=residue.save} to saves while you stand there.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -533,14 +533,14 @@
         "base": 0.2,
         "alone_extra": 0.2,
         "alone_range": 3,
-        "text": "+0.2; +0.4 with no ally within 3 tiles"
+        "text": "+0.2; +0.4 with no ally within {=step.alone_range} tiles"
       },
       "trigger": {
         "event": "last_standing",
         "text": "You are the last of your side standing."
       },
       "pour": {
-        "text": "+0.2, or +0.4 with no ally within 3 tiles of you.",
+        "text": "+0.2, or +0.4 with no ally within {=step.alone_range} tiles of you.",
         "effects": [
           {
             "op": "feeling_pour",
@@ -565,14 +565,14 @@
         "per_ally": 0.1,
         "range": 3,
         "max": 0.5,
-        "text": "+0.2, +0.1 more per ally within 3 tiles"
+        "text": "+0.2, +0.1 more per ally within {=step.range} tiles"
       },
       "trigger": {
         "event": "together",
         "text": "You stand with 3 or more allies within 2."
       },
       "pour": {
-        "text": "+0.2, and +0.1 more for each ally within 3 tiles of you (up to +0.5). This Release counts twice for your allies' Resonance this round.",
+        "text": "+0.2, and +0.1 more for each ally within {=step.range} tiles of you (up to +0.5). This Release counts twice for your allies' Resonance this round.",
         "resonance": 2,
         "effects": [
           {
@@ -583,7 +583,7 @@
       },
       "residue": {
         "kind": "helps",
-        "text": "+1 Defense while you stand there.",
+        "text": "+{=residue.defense} Defense while you stand there.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -648,7 +648,7 @@
         "text": "A Miracle or a Grand form happens in your sight."
       },
       "pour": {
-        "text": "+0: this Pump adds a stage but nothing to the multiplier. In return targets hit have 1 AP less on their next turn (no save).",
+        "text": "+0: this Pump adds a stage but nothing to the multiplier. In return targets hit have {=pour.ap_loss} AP less on their next turn (no save).",
         "ap_loss": 1,
         "effects": [
           {
@@ -678,7 +678,7 @@
         "text": "A scene starts with your linked ally gone (or the Narrator grants it)."
       },
       "pour": {
-        "text": "+0.3. The Release reaches 2 tiles further.",
+        "text": "+0.3. The Release reaches {=pour.reach} tiles further.",
         "reach": 2,
         "effects": [
           {
@@ -708,7 +708,7 @@
         "text": "A fight you win ends with no ally Down."
       },
       "pour": {
-        "text": "−0.2: the multiplier goes down. In return it takes 2 Strain off you at the Release.",
+        "text": "−0.2: the multiplier goes down. In return it takes {=pour.strain_back} Strain off you at the Release.",
         "strain_back": 2,
         "effects": [
           {
@@ -719,7 +719,7 @@
       },
       "residue": {
         "kind": "helps",
-        "text": "Strain -1 on entry.",
+        "text": "Strain -{=residue.strain|abs} on entry.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -746,7 +746,7 @@
         "text": "An enemy gives up while you were its last attacker."
       },
       "pour": {
-        "text": "+0.3. Targets hit have −2 to attack you for 2 rounds (Scorned; no save).",
+        "text": "+0.3. Targets hit have −2 to attack you for {=pour.rounds} rounds (Scorned; no save).",
         "condition": "scorned",
         "rounds": 2,
         "effects": [
@@ -758,7 +758,7 @@
       },
       "residue": {
         "kind": "harms",
-        "text": "-2 to attacks while you stand there.",
+        "text": "-{=residue.attack|abs} to attacks while you stand there.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -798,7 +798,7 @@
       },
       "residue": {
         "kind": "helps",
-        "text": "Heal 5 a turn.",
+        "text": "Heal {=residue.heal} a turn.",
         "effects": [
           {
             "op": "feeling_residue",
@@ -893,7 +893,7 @@
         "text": "You resist an Overreach, or pass a save against Afraid."
       },
       "pour": {
-        "text": "+0.2, like a plain Pump. Everything this Release makes a target save against is 4 harder to resist: its conditions, pushes and element effects. Your own next save passes.",
+        "text": "+0.2, like a plain Pump. Everything this Release makes a target save against is {=pour.save_penalty} harder to resist: its conditions, pushes and element effects. Your own next save passes.",
         "save_penalty": 4,
         "next_save": true,
         "effects": [
@@ -932,7 +932,7 @@
         "text": "You indulge an Overreach."
       },
       "pour": {
-        "text": "+0.8 to the multiplier, the biggest step there is. +2 Strain when you pour it in.",
+        "text": "+0.8 to the multiplier, the biggest step there is. +{=pour.strain} Strain when you pour it in.",
         "strain": 2,
         "effects": [
           {

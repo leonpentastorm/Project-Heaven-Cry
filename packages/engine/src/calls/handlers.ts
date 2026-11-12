@@ -70,6 +70,7 @@ call({
     if (new Set(th).size !== th.length) return 'Order two different things.';
     if (th.length > max) return max > 1 ? 'An Order is two things at most.' : 'One thing an Order (two from 7 points of Authority).';
     if (condOn(a, 'stunned')) return a.name + ' is Stunned and can\'t follow an order.';
+    if (condOn(a, 'suppressed') || isSuppressed(a)) return a.name + ' is Suppressed and has no reaction to act on.';
     if (!canReact(t.cb, a)) return a.name + ' has no reaction left to act on.';
     let stood = false;
     for (const x of th as Thing[]) { const no = thingWhy(t, x, stood); if (no) return no; if (x === 'stand') stood = true; }

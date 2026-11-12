@@ -1,5 +1,6 @@
 {
   "condition:injured:missing-in-spec": "Injured is ruled in the spec's Injuries section, not in the Conditions table. Add a row or leave it there: Leon's call.",
   "condition:lowered:missing-in-spec": "Weapon lowered is described inside the Disarmed row (rules 1.9), with no row of its own.",
-  "condition:smitten:missing-in-spec": "Smitten is the Love feeling's condition (rules 1.8, Outburst 4.0); the Conditions table was not extended."
+  "condition:smitten:missing-in-spec": "Smitten is the Love feeling's condition (rules 1.8, Outburst 4.0); the Conditions table was not extended.",
+  "condition:scorned:missing-in-spec": "Scorned is the Contempt feeling's condition (rules 1.8); the Conditions table was not extended. It is a debuff like Smitten (its kind said 'condition', the only one that did)."
 }

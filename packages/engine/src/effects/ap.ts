@@ -2,6 +2,7 @@
 // Dazed), then any debt (On My Mark) comes off after the floor, at most 4. Perk AP gained in one turn is capped at +3
 // in all (banked AP from earlier, turn-start grants and mid-turn gifts together), and a turn's total never passes 9.
 // Out-of-turn pools (Supreme Command, Between Heartbeats, a window's AP) are not perk AP: they don't count.
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import perksJ from '../../../../data/perks.json';
 import type { Combat, Unit } from '../combat';
 import { emit } from './hooks';

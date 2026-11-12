@@ -3,6 +3,7 @@
 // mid-fight; throwing and blasts; special ammo and damage types; the target-specific damage bucket; prayer and
 // Blessings; companions; class resources; Burning put out, grapples broken, weapons recovered.
 // Every number here is provisional (spec 14, items 82 onward). Deterministic: dice come from the rng passed in.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { WEAPON, RULES, ENEMY, type WeaponDef } from './data';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';

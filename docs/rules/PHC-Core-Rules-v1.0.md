@@ -300,7 +300,7 @@ The 54 moves:
 
 - **Shrug It Off** (reaction, 1 Guard): Bleeding, Slowed, Weakened or Prone ends the moment you gain it (on or off for the fight).
 - **Anchor:** while Braced, nothing pushes, pulls, shoves or knocks you Prone. An enemy that started its turn next to you and leaves your reach draws your opportunity attack even when it Disengages.
-- **Shove** (1 AP): an adjacent enemy is pushed 1 tile or knocked Prone (your choice) on a failed Body save against 12 + your Body debuff strength. A blocked push is refused before anything is spent.
+- **Shove** (1 AP): an adjacent enemy is pushed 1 tile or knocked Prone (your choice) on a failed Body save against 12 + your Body debuff strength *(Superseded by rules 1.13: 12 + your strength with Raw Power, the skill that delivers it)*. A blocked push is refused before anything is spent.
 - **Unstoppable** (1 AP, once a scene): until your next turn, Fear, Shaken, Slowed and Pinned are set aside and refused, no opportunity attack is taken against you, and you gain 2 Momentum.
 - **Speed Loader:** the turn's first reload costs 1 AP less (at least 1).
 - **Duck and Roll** (reaction): when a ranged weapon attack targets you, step 1 tile first: out of sight, the attack isn't taken; into cover, it is at −2 (instead of half cover's −5).
@@ -312,7 +312,7 @@ The 54 moves:
 - **False Image** (2 AP, 1 charge): a decoy within 8 + your Sigil range bonus. Enemies who see it make a Brain save; those who fail attack and close on it instead of you. It scatters when attacked and fades after 2 rounds.
 - **Silver Tongue** (2 AP): an enemy within 6 makes a Brain save or loses 2 AP on its next turn (a Boss 1).
 - **Sleight** (1 AP, once a scene): swap places with your False Image or a squadmate within 6.
-- **Rally** (2 AP, once a scene): every squadmate within 4 heals 20 × your Healing given and loses Fear and Shaken.
+- **Rally** (2 AP, once a scene): every squadmate within 4 heals 20 × your Healing given *(Superseded by rules 1.23 (item 1308): 6 × Healing given × the level factor)* and loses Fear and Shaken.
 - **Iron Heart:** Strain limit +1. **Occult Library:** one more ready design, and one tone learned once, out of a fight.
 - **Eye of the Storm** (once a scene): your next Release this turn adds no Strain and its tone's riders count a stage higher.
 - **Command** (1 AP, once a turn; Authority 1): a squadmate within 6 walks up to 2 tiles now, for no AP.
@@ -720,7 +720,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 
 Ammo types multiply the price: armour-piercing ×3, hollow-point ×2, incendiary ×3. Enhanced rounds cost 15 each (one core makes 10). Empty magazines cost 30 (pistol), 40 (rifle), 25 (speedloader), 60 (drum or box).
 
-#### 7. The roster: 65 types (58 weapons in 11 families, plus 7 off-hand items)
+#### 7. The roster: 65 types (58 weapons in 11 families, plus 7 off-hand items) *(counted again 12 Nov 2026: 66 types, 59 weapons in 11 families and 7 off-hand items; the beast's bite makes 60 in data)*
 
 Range is in tiles. Mag is the magazine (or "loose", for loading round by round). Heat is the heat limit. Weight is in kg; price is in credits at Standard.
 
@@ -799,7 +799,7 @@ Weapon skills and lore:
 | Smetanita thumper (grenade launcher) | 40, radius 2 | 14 | 6 grenades (loose) | 4 | 4.5 | 1,800 | |
 | Breacher tube (rocket launcher) | 110 on the tile, 60 radius 1 | 16 | 1 rocket (loose) | none | 8 | 3,000 | 3 AP to reload |
 | Purifier flamer | 20 + Burning, 3-tile cone | 3 | fuel canister (10 bursts) | none | 12 | 2,200 | flame ignores half cover |
-| Satchel charge | 120, radius 2 | placed adjacent | consumable | none | 3 | 600 | 2 AP to place; 1 AP to detonate (or a 1–3 round timer) |
+| Satchel charge | 120, radius 2 | placed adjacent | consumable | none | 3 | 600 | 2 AP to place; 1 AP to detonate (or a 1–3 round timer) *(Superseded by rules 1.3 (item 95) as built: placing it sets it off at once)* |
 
 - **LMG · Emplace:** 1 AP to set up: no −2, +1 to hit, and you can't move until you pack up (1 AP). *"The Hellraisers' favourite sentence: 'hold here.'"*
 - **Rotary · Spin Up:** the first full auto each fight costs +1 AP; after that, full auto costs 3. *"Ground near it stops being ground."*
@@ -874,14 +874,14 @@ Weapon skills and lore:
 - **Knuckledusters · Rabbit Punch:** 1 AP jab for half damage. *"A bar argument that brought friends."*
 - **Servo-fist · Haymaker:** a hit pushes the target 2 tiles; if it hits a wall or cover, +20 damage to it. *"A mining tool the Hellraisers misread."*
 
-##### 7.10 Thrown: 5 types (1H, Dexterity; range 6 + Raw Power tiles; consumable)
+##### 7.10 Thrown: 5 types (1H, Dexterity; range 6 + Raw Power tiles *(Superseded by rules 1.3 (item 95): Throwing range is 6 + 0.5 × Dexterity)*; consumable)
 
 | Type | Effect | Kg | Price |
 |---|---|---|---|
 | ✓ Frag grenade | 40, radius 2 | 0.5 | 120 |
 | ✓ Smoke grenade | blocks sight, radius 3, 2 rounds | 0.5 | 60 |
 | ✓ Flashbang | Blinded 1 round, radius 2 (Body save) | 0.5 | 90 |
-| Incendiary grenade | 15 + Burning, radius 2; the ground burns 2 rounds | 0.6 | 150 |
+| Incendiary grenade | 15 + Burning, radius 2; the ground burns 2 rounds *(Superseded by rules 1.3 (item 95): only its centre tile burns)* | 0.6 | 150 |
 | Bot-scrambler | Robots Stunned 1 turn; mana arms jam; Sigils in the radius cost +1 AP for 2 rounds | 0.5 | 200 |
 
 - **Frag · Cook It:** spend 1 AP more; the blast radius is 3. *"Pull, count, apologise."*
@@ -902,7 +902,7 @@ Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. T
 | Emanator gauntlet | 1H | 18 + one element | 1 | counts as an Emanator | 1.5 | 2,200 | Will Power 3 |
 | Lumeri censer gun | 2H | 30 / 18 (shotgun) | 8 | shells, or blessed shells | 4.5 | 2,000 | Faith 3 |
 | Bot-thread banner | 2H | 24 | 2 | none | 3 | 1,800 | Empathy 3 (rules 1.13; was Camaraderie 3) |
-| Grand staff | 2H | 24 | 1 | counts as an Evoker | 2.5 | 2,400 | Brain Power 3 |
+| Grand staff | 2H | 24 | 1  *(its melee strike reaches 2: the Reach property, rules 1.12)*| counts as an Evoker | 2.5 | 2,400 | Brain Power 3 |
 
 Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanced rounds.
 
@@ -917,8 +917,8 @@ Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanc
 
 | Item | Effect | Kg | Price | Durability or HP |
 |---|---|---|---|---|
-| Buckler | +1 Defense. **Parry** (reaction): +3 Defense against one melee attack | 2 | 200 | 150 |
-| Legion riot shield | +2 Defense. You count as behind half cover against shots from the front three directions. −0.5 Movement. **Shield Wall:** an adjacent ally behind you counts as behind half cover | 7 | 700 | HP 60: shots stopped by its −5 hit the shield (like cover) |
+| Buckler | +1 Defense. **Parry** (reaction): +3 Defense against one melee attack *(Not built: the Parry technique of rules 1.12 gives a shield +2 on the parry roll instead; needs a ruling, item 1506)* | 2 | 200 | 150 |
+| Legion riot shield | +2 Defense. You count as behind half cover against shots from the front three directions. −0.5 Movement. **Shield Wall:** an adjacent ally behind you counts as behind half cover *(Superseded by rules 1.12 (item 1001): the Raise Shield and Shield Wall techniques replace the frontal cover and the old Shield Wall; the shield's HP is not used)* | 7 | 700 | HP 60: shots stopped by its −5 hit the shield (like cover) |
 | Pavise | Carried, it does nothing. **Plant** (2 AP): becomes a full-cover tile in front of you (80 HP). Picking it back up is 2 AP | 10 | 1,200 | HP 80 |
 | Torch | Light radius 4 (see Vision). Melee 12 Elemental (Unarmed). **Ignite:** a hit on 15+ sets the target Burning; 1 AP to light something flammable | 0.6 | 10 | burns 30 minutes |
 | Flare | Light radius 6 for 3 rounds; reveals Hidden in it. Can be thrown | 0.3 | 25 | consumable |
@@ -983,7 +983,7 @@ Anyone can pick up any weapon and mix the techniques they know with it, the way 
 - **Melee owns the sequence.** Techniques chain inside your turn around **Momentum**, a meter on you: the plain attack builds it, Strikes and Openers spend it, Finishers spend all of it. *(Rules 1.12 built it by chaining different techniques; superseded by the rework in "Melee: Momentum and the chain".)*
 - **Ranged owns Pressure,** a meter on the target, built by fire and spent by Takes.
 
-Design: `docs/design/proposals/2026-11-melee-techniques.md` and `2026-11-ranged-techniques.md`. Data: `data/techniques.json` (58 techniques and the shared numbers) and the `phys` block on each weapon in `data/weapons.json`. Engine: `packages/engine/src/physical/`. **Every number in this section is a placeholder for the balance pass** (section 14, items 932 on).
+Design: `docs/design/proposals/2026-11-melee-techniques.md` and `2026-11-ranged-techniques.md`. Data: `data/techniques.json` (58 techniques and the shared numbers) *(65 on 12 Nov 2026: 33 melee with Pull Out, the three shield techniques, Interpose and Grapple; 32 ranged with Shot and Heavy Bolt)* and the `phys` block on each weapon in `data/weapons.json`. Engine: `packages/engine/src/physical/`. **Every number in this section is a placeholder for the balance pass** (section 14, items 932 on).
 
 #### Weapon properties
 
@@ -1087,7 +1087,7 @@ Guard is a pool of points that takes hits for you. Anyone with Durability has on
    - Each melee hit of yours removes 1 from you.
 6. **A Take** needs its target Pressed, is one a turn per shooter, and lowers the target's Pressure by 2 after its effect. Its own hit adds none. If the target was Suppressed when the Take began, the Take's stronger line applies.
 7. **A Watch** (a held shot) is paid for on your turn with its trigger, and fires as your reaction with no prompt. It ends when it fires or at the start of your next turn. It can't be set while you are Pressed, and becoming Pressed ends one you hold.
-8. **Stopped once.** A unit that a ranged technique has Pinned, pushed, knocked Prone or halted can't be stopped by another ranged technique until the end of its next turn. Where a stop allows a save it is the better of Guts and Athletics against TN 12. Melee techniques neither set nor check this.
+8. **Stopped once.** A unit that a ranged technique has Pinned, pushed, knocked Prone or halted can't be stopped by another ranged technique until the end of its next turn. Where a stop allows a save it is the better of Guts and Athletics against TN 12. *(Superseded by Leon's ruling of 10 Nov 2026 (rule 8 above): 12 + half the user's strength with the weapon's skill, rounded up, plus the technique's step.)* Melee techniques neither set nor check this.
 9. **A Press** adds 1 Heat on top of what it fires. A **Set** costs 1 AP, never fires and adds no Heat. Every technique lists its rounds beside its AP; a technique the magazine can't pay for is refused with the count.
 10. **The quiver.** A Drawn weapon has a quiver, filled out of a fight from the arrows you carry, in any mix of types up to the weapon's capacity. Each shot names its arrow type. A quiver can't be refilled in a fight.
 11. **Thrown weapons.** A technique that throws the held weapon makes a ranged attack at throwing range, with line of sight and cover, aimed with Dexterity whatever the weapon hits with. It burns no rounds and adds no Heat or Recoil. A hit gives Pressure as any ranged hit does. *(Rules 1.12 added "and Momentum when the technique is a melee one"; superseded by the Momentum rework: only the plain attack, Cut, gives Momentum.)* The weapon lands in the pile on the target's tile.
@@ -1134,7 +1134,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 |---|---|---|---|---|
 | 15 | **Sidestep** | 1 | Move 1 tile to another tile next to the same enemy. No opportunity attack. Your next Strike against it this turn ignores a carried shield and counts as flanking. | **Light:** 2 tiles. |
 | 16 | **Guard** | 1 | +2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. With Durability you also gain Guard points (Guard, rule 2). | **Reach:** enemies must make a Body save to step next to you. **Heavy:** the +2 also applies to ranged attacks from the front. |
-| 17 | **Shove** | 1 | Push an enemy next to you 1 tile, or knock it Prone if it can't move back. | **Blunt or Heavy:** 2 tiles. **Reach:** from 2 tiles away. |
+| 17 | **Shove** | 1 | Push an enemy next to you 1 tile, or knock it Prone if it can't move back. *(As the 2 AP Shove: on d20 + your Raw Power modifier against 10 + the better of its Raw Power and Athletics)* | **Blunt or Heavy:** 2 tiles. **Reach:** from 2 tiles away. |
 | 18 | **Trip** | 1 | The target makes a Body save or falls Prone. | **Hook or Reach:** the save is at −2. **Bare:** you may go Prone with it and it is Grappled. |
 | 19 | **Drag** | 1 | Pull an adjacent or reached target 1 tile toward you, or swap tiles with it (Body save). | **Hook:** you pull from 2 tiles away (3 with Reach), up to 2 tiles. **Bare:** you may move 1 tile and bring it with you. |
 
@@ -1377,7 +1377,7 @@ An enemy has no skill points. A tier lists the Calls it has and one level that s
 | Burning | Body | 10 damage at the start of each turn | until someone spends 1 AP to put it out |
 | Weakened | Body | −25% damage dealt | 2 rounds |
 | Slowed | Body | half Movement | 2 rounds |
-| Silenced | Brain | no Sigils, Outbursts or prayers (rules 1.2, provisional) | 1 round |
+| Silenced | Brain | no Sigils, Outbursts or prayers (rules 1.2, provisional) *(rules 1.13: no Calls either)* | 1 round |
 | Nausea | Body | −1 AP | 2 rounds |
 | Pinned | Body | can't move; −2 to hit | until the end of your next turn |
 | Stunned | Body | lose your next turn | 1 turn |
@@ -1392,7 +1392,7 @@ An enemy has no skill points. A tier lists the Calls it has and one level that s
 | Grappled | Body | held by an adjacent enemy: you can't move; −2 to attacks against anyone but the grappler. Break free: 2 AP, d20 + the better of your Raw Power and Athletics modifiers against the grappler's | until you break free, or the grappler is down or not adjacent |
 | Suppressed | Body | −1 AP and no reactions (lighter than Pinned; item 83) | 1 round |
 | Taunted | Heart | your attacks must go at the one who taunted you while you can see them | 1 round, or until you attack them |
-| Commanded | Heart | you obey one short order on your next turn. Against an enemy the engine runs the order from a menu: halt, hold (no attacks), drop (Disarmed), kneel (prone), flee; anything else goes to the Narrator | 1 round |
+| Commanded | Heart | you obey one short order on your next turn. Against an enemy the engine runs the order from a menu: halt, hold (no attacks), drop (Disarmed), kneel (prone), flee; anything else goes to the Narrator *(the Sigil word COMMAND has its own four orders: halt, kneel, drop your weapon, or a move of up to 3 tiles (rules 1.4))* | 1 round |
 | Puppeted | Brain | the caster's player runs your next turn (your AP); you can't be made to harm yourself | 1 round |
 | Disarmed | Heart | your weapon is down: you strike with your fists until you recover it (2 AP) or draw another (rules 1.9, item 687: the downed one stays in the pile). **Weapon lowered** is the light version: 1 AP to raise it | until recovered |
 | Augment Offline | Body | one augment, prosthetic or implant gives nothing and its actions are unavailable | until repaired |
@@ -1577,7 +1577,7 @@ Every word answers one question:
 2. **A spell holds at most 4 glyphs**, whatever it holds. Below that, your **Max Sigil words** (2 + floor((Intelligence − 1) ÷ 2)) limits you: 2 at Intelligence 1–2, 3 at 3–4, 4 from 5. Rules that add a word past Max Sigil words (Brain Power's Overclock, the Mage's Overcharge) never pass 4.
 3. **Glyphs on the ground.** You can have at most your Max Sigil words glyphs on the ground at once (Hold the Stroke adds to it); drawing one more fades your oldest. Above Intelligence 5 it no longer grows a spell, but it still grows this number, so a high-Intelligence caster keeps more Lines and traps ready.
 4. **Cost.** Drawing a glyph costs the Glyph AP (Derived stats), **the word's charge** from your Evoker's core, and **1 Flux** (TWICE: 2). Evoking costs **1 AP** and **1 charge per glyph** in the spell, minus your Sigil Core saving, minimum 1.
-5. **Repeats** (Leon). **Any word may repeat**, Subjects too, except KIN and a second Reach word of another kind. A repeated non-Subject word gives its "each extra copy" line. Repeated Subjects add up: their damage, healing and shields sum, and each copy's rider applies once (a condition never stacks: a second BIND adds nothing). **Every repeated glyph** (each copy past the first of a word) **multiplies the spell's final numbers by ×0.9**. FIRE · CONDENSE · CONDENSE · CONDENSE: 30 × 2.5 × 0.9 × 0.9 = **61** (raw 75; about 20% weaker). FIRE · FIRE · CONDENSE: (30 + 15) × 1.5 × 0.9 = **61** (one main element, item 589). The final numbers are the spell's direct damage, healing and shields; never ranges, tiles, rounds, AP, HP of walls and turrets, or the numbers of the conditions it sets (Burning's 10, Corroded's 5).
+5. **Repeats** (Leon). **Any word may repeat**, Subjects too, except KIN and a second Reach word of another kind. A repeated non-Subject word gives its "each extra copy" line. Repeated Subjects add up: their damage, healing and shields sum, *(for damage see rule 6 and items 588 and 589: the strongest damaging glyph in full, every other at half; healing and shields do sum)* and each copy's rider applies once (a condition never stacks: a second BIND adds nothing). **Every repeated glyph** (each copy past the first of a word) **multiplies the spell's final numbers by ×0.9**. FIRE · CONDENSE · CONDENSE · CONDENSE: 30 × 2.5 × 0.9 × 0.9 = **61** (raw 75; about 20% weaker). FIRE · FIRE · CONDENSE: (30 + 15) × 1.5 × 0.9 = **61** (one main element, item 589). The final numbers are the spell's direct damage, healing and shields; never ranges, tiles, rounds, AP, HP of walls and turrets, or the numbers of the conditions it sets (Burning's 10, Corroded's 5).
 6. **One main element** (balance pass, item 589, provisional): the strongest damaging Subject glyph counts in full; every other damaging glyph (another Element, or a repeat) adds half its damage. **The multipliers stack by product:** the Subjects' sum × the Reach multiplier × the Burst multiplier × the Delivery multiplier (field or turret ×0.5, each CHAIN jump ×0.75) × 0.9 per repeated glyph × the Sigil multiplier (× the Elemental multiplier for Elemental damage; × Healing given for MEND and WARD) × a critical. Elemental damage takes the Sigil and Elemental bonuses **added**, 1 + (Sigil − 1) + (Elemental − 1), not their product (item 588). **The Line multiplier (rules 1.17):** a character's Line then multiplies its direct damage by its length: **×1.7 for 2 glyphs, ×1.75 for 3, ×1.8 for 4** (damage only, never healing, shields, ranges or conditions; an enemy caster's Line takes none: item 1050). The worked numbers in sections 1 to 10 are before it. **No ceiling (rules 1.17):** 350 a hit and 500 on a critical are the targets the maths is balanced around, not a limit; the engine no longer scales a spell down to them (it did until rules 1.17: item 590). Then armour (Sigil damage takes full armour, Elemental half). **Elites and Bosses (rules 1.17):** one Evoke never takes an Elite or a Boss of your level or higher from full HP to nothing: it is left on 1 HP (item 1053).
 7. **Hitting.** A spell that deals damage rolls Brain Power against each target's Defense (a natural 20 is a critical: **×1.5, to ×2.0 at most**, the weapon's rule, since rules 1.17; a natural 1 misses). The roll reads the level gap like a weapon's: ±1 for each level between you and an enemy, to 5 levels (rules 1.17). Conditions a damage word sets (FREEZE's Slowed) still call for their save on a hit. Afflictions don't roll to hit: the target saves against 12 + your debuff strength. Boons and Workings neither roll nor allow a save, except STEP on an enemy (Body save).
 8. **Fizzle.** A spell that goes off but finds nothing it may affect **fizzles**: nothing happens, and the charge, AP and Flux are still spent and its glyphs fade. The screen says so before you confirm.
@@ -1709,8 +1709,8 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 
 1. **Begin** (2 AP; **Swift**: 1 AP): open a ready design. Pay its MP (cost below) and take **1 Strain** (2 in Flooded air). It is now **held at stage 0**: your heart glows and everyone can see it. You hold one Outburst at a time.
 2. **Pump** (1 AP each): +1 stage, up to **stage 4**. Every AP you don't spend moving or shooting can go into the heart. Pumping adds no Strain. *Rules 1.24: a Pump also costs MP, a tenth of the Begin's MP for each stage it reaches (see "Rules revision 1.24", section 2).*
-3. **Release** (1 AP): it fires at the stage reached. **Stage multipliers (rules 1.17): 0 → ×0.8, 1 → ×1.2, 2 → ×1.6, 3 → ×2.0, 4 → ×2.4**: every plain Pump adds +0.4. (Rules 1.5 to 1.16: ×0.8 (×0.6 before rules 1.8), ×1, ×1.4, ×1.8, ×2.2, where the first Pump added only +0.2.) The multiplier scales damage and healing; conditions keep their durations.
-4. **A snap cast** is Begin and Release at once (3 AP, ×0.8). A full turn (Begin, Pump × 3, Release) is ×2.0. Begin one turn, carry it, and the swell + Pump × 2 + Release next turn reaches ×2.4.
+3. **Release** (1 AP): it fires at the stage reached. **Stage multipliers (rules 1.17): 0 → ×0.8, 1 → ×1.2, 2 → ×1.6, 3 → ×2.0, 4 → ×2.4**: every plain Pump adds +0.4. *(Superseded by rules 1.19: ×0.8, ×1.0, ×1.2, ×1.4, ×1.6; a plain Pump adds +0.2, and every school reads the stage.)* (Rules 1.5 to 1.16: ×0.8 (×0.6 before rules 1.8), ×1, ×1.4, ×1.8, ×2.2, where the first Pump added only +0.2.) The multiplier scales damage and healing; conditions keep their durations.
+4. **A snap cast** is Begin and Release at once (3 AP, ×0.8). A full turn (Begin, Pump × 3, Release) is ×2.0. Begin one turn, carry it, and the swell + Pump × 2 + Release next turn reaches ×2.4. *(Superseded by rules 1.19: ×1.4 and ×1.6.)*
 5. **Holding past your turn keeps the stage.** At the start of each of your next turns the held Outburst **swells**: +1 stage for free and +1 Strain (+2 in Flooded air). While holding you can move, shoot, Syphon, Steady or Feed, but not Begin another.
 6. **Empathy** gives **free Pumps each round**: 1 from Empathy 3, a second from Empathy 7. They come back at the start of each of your turns. Empathy no longer lowers any AP; it still sets your ready designs (2 + floor(Empathy ÷ 2)). *(Superseded by rules 1.19: no second free Pump from Empathy 7; a held Outburst swells without Strain instead. Superseded by rules 1.13: ready designs are Will Power's, 2 + floor(Will Power ÷ 2), at least 3.)*
 7. **Every Pump has its heartbeat** (section 9): pumping must feel like the heart filling.
@@ -1719,8 +1719,8 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 
 #### 2. Damage
 
-1. **Damage school base 28** (rules 1.17; it was 20; an enemy caster's is 18: item 1056) × the **Soul multiplier** (1 + 0.05 × (Determination − 1) + 0.1 × Will Power; 2.45 maxed) × the stage multiplier × the shape's multiplier.
-2. Maxed (2.45): a snap cast 54, a full turn's stage 3 137, a stage 4 164, before feelings. Outburst is the steady school: about 125% of a plain rifle in normal play, about 150% with the biggest Pump possible (rules 1.17).
+1. **Damage school base 28** (rules 1.17; it was 20; an enemy caster's is 18: item 1056) *(Superseded by rules 1.19 (item 1222): 40 for a character, 24 for an enemy caster)* × the **Soul multiplier** (1 + 0.05 × (Determination − 1) + 0.1 × Will Power; 2.45 maxed) × the stage multiplier × the shape's multiplier.
+2. Maxed (2.45): a snap cast 54, a full turn's stage 3 137, a stage 4 164, before feelings. *(Superseded by rules 1.19: with base 40 and the ×0.8 to ×1.6 table a snap cast is 78, a stage 3 137, a stage 4 157.)* Outburst is the steady school: about 125% of a plain rifle in normal play, about 150% with the biggest Pump possible (rules 1.17).
 3. **Raw** (no tone): Soul damage, **armour ignored**. **An element:** Elemental damage, **armour counts half** (Stone from stage 1: in full).
 4. **Hitting.** A **Bolt** and a **Lance** roll Will Power against each target's Defense (half cover −5; a natural 20 is a critical, **×1.5 to ×2.0 at most** since rules 1.17; a natural 1 misses; the roll reads the level gap, ±1 a level). **Wave, Burst and Aura don't roll**: everyone in the area is hit. **At Once** makes a Bolt or Lance land with no roll at half damage. Control and Status call for saves (12 + your debuff strength), as before.
 
@@ -1741,13 +1741,13 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 #### 4. Designs, schools and the second school
 
 1. **Design out of combat** from one **school** plus **modules** (soul_modules.json) and a **tone**. Module slots: 1 + floor(Will Power ÷ 3). **One shape a design** (a shape is a module and takes a slot); a tone takes no slot.
-2. **The second school** (from Will Power 5): a design has a **primary school** (full effect) and may add a **secondary school** with **its own option** at **half strength**, as a rider after the first. They must be different schools, **working on the same side** (item 542): Buff, and Damage with Inverse (a shield), work on allies; Damage, Control and Status on foes. So Buff pairs only with Inverse Damage, and the hostile schools with each other; the workshop refuses the rest (a Buff design's heal would otherwise carry a push, a Status or damage onto the ally it healed). Damage + Control (push) = damage, then a 1-tile push; Damage + Status (Shaken) = the damage, then Shaken 1 round; Buff (heal) + Damage with Inverse = the heal, then a shield of half the damage; Control (Pinned) + Damage = Pinned and half damage (no roll). The rider lands only where the primary did (item 543): a Bolt that misses, a push the target saves against (it holds its ground) and a condition it resists or is immune to carry nothing. Half strength: half damage or healing, half the push (rounded down, at least 1), half the rounds (at least 1).
+2. **The second school** (from Will Power 5): a design has a **primary school** (full effect) and may add a **secondary school** with **its own option** at **half strength**, as a rider after the first. They must be different schools, **working on the same side** (item 542): Buff, and Damage with Inverse (a shield), work on allies; Damage, Control and Status on foes. So Buff pairs only with Inverse Damage, and the hostile schools with each other; the workshop refuses the rest (a Buff design's heal would otherwise carry a push, a Status or damage onto the ally it healed). Damage + Control (push) = damage, then a 1-tile push; Damage + Status (Shaken) = the damage, then Shaken 1 round; Buff (heal) + Damage with Inverse = the heal, then a shield of half the damage *(Superseded by rules 1.20: Inverse is a shield of 10 × Soul multiplier × the stage multiplier × the level factor (half of that as a second school); no shield reads the Damage base)*; Control (Pinned) + Damage = Pinned and half damage (no roll). The rider lands only where the primary did (item 543): a Bolt that misses, a push the target saves against (it holds its ground) and a condition it resists or is immune to carry nothing. Half strength: half damage or healing, half the push (rounded down, at least 1), half the rounds (at least 1).
 3. **Cost** (paid at Begin): school base + modules + 10 for a second school + the tone's cost (an element 5, Raw 0), × the meter band's Soul cost, × (1 − 5% × (Insight − 1)), minimum 5; +20% under a Right Brain Debuff. Pumps cost no MP. *Rules 1.24: they do: 10%, 20%, 30% and 40% of this cost to reach stages 1 to 4, whatever paid the Pump's AP; the swell costs none.*
 4. **Learning.** Schools, modules and tones come from tutors, plates (a **Heart plate** holds one Outburst lesson, used up: item 546) and the Narrator's grants after a moment that shakes you. **Tones:** one at Lore Master 1 (rules 1.8; was Visualization 1), picked with the starting design or with your first toned design; more from tutors or plates.
 
 | School | Base cost | Effect (at ×1) |
 |---|---|---|
-| Damage | 20 | 20 damage × the Soul multiplier |
+| Damage | 20 | 20 damage × the Soul multiplier | *(Superseded by rules 1.19: the base is 40, an enemy caster's 24)*
 | Buff | 20 | allies: heal 7 × Healing multiplier (30 before rules 1.20; it grows with your level; ×0.4 each in a shape), or Inspired (+2 to hit), or Guarded (+2 Defense), 2 rounds |
 | Control | 25 | push or pull 3 tiles (Body save), or Pinned, or Slowed, 2 rounds |
 | Status | 20 | Fear, Shaken, Confused, or a Left or Right Brain Debuff, 2 rounds (Heart or Brain save) |
@@ -1804,7 +1804,7 @@ The same element ids, riders and effects as Sigil 1.4 (sigils.json `elements`), 
 | Size | changed: a shape +1 (Lance +2); a Bolt can't take it |
 | Random | survives: the aim picked among creatures within reach |
 | Impact | survives (no effect: the default); retired in rules 1.17 |
-| At Once | survives: a Bolt or Lance with no roll, half damage |
+| At Once | survives: a Bolt or Lance with no roll, half damage | *(Superseded by rules 1.17: ×0.8, not half)*
 | **Wave, Burst, Aura, Lance** | **new: the shapes** |
 | Rain | **replaced by Burst** (Rain + Size → Burst + Size) |
 | Size alone on a single target | **becomes Burst** |
@@ -1835,9 +1835,9 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 
 | Move | Rules 1.5 |
 |---|---|
-| **Shape** (Channeler I) | Your first Pump each turn that would cost AP is free, on a Damage design. Empathy's free Pumps go first. |
-| **Storm Front** (Channeler II) | +10 MP at Begin, once a turn: once a Damage **Bolt or Lance** has landed, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit (else the first in its area, else the aim; outside its area), at the release's multiplier, one roll each (At Once: none, half), with the tone's rider. Wave, Burst and Aura can't take it. |
-| **Heart Surge** (Channeler III) | Once a turn, a toggle on a Release or a snap: it fires **one stage higher** (a held one's stage really rises, rider too; past stage 4 ×2.6; a snap ×1). Double Strain: the Begin's Strain again (1, Flooded 2) once the release has landed. |
+| **Shape** (Channeler I) | Your first Pump each turn that would cost AP is free, on a Damage design. Empathy's free Pumps go first. *(Superseded by rules 1.19: Shape adds no free Pump to Empathy's; it gives the turn's one free Pump even without Empathy 3, and that Pump steps +0.1 more.)* |
+| **Storm Front** (Channeler II) | +10 MP at Begin, once a turn: once a Damage **Bolt or Lance** has landed, it arcs on to up to 2 more enemies within 2 tiles of the first creature it hit (else the first in its area, else the aim; outside its area), at the release's multiplier, one roll each (At Once: none, half) *(since rules 1.17: ×0.8)*, with the tone's rider. Wave, Burst and Aura can't take it. |
+| **Heart Surge** (Channeler III) | Once a turn, a toggle on a Release or a snap: it fires **one stage higher** (a held one's stage really rises, rider too; past stage 4 ×2.6; a snap ×1) *(Superseded by rules 1.19: past stage 4 is one more step of the table, ×1.8)*. Double Strain: the Begin's Strain again (1, Flooded 2) once the release has landed. |
 | **Sanctuary** (Guardian III) | Halves all damage to allies inside but your own heart's burn. |
 | **Drink It In** (Guardian II) | An elemental Outburst feeds its MP price like a Raw one (it is told from a Sigil by the MP it carries). |
 | **Gift** (Bard III) | The ally pays 3 AP (Begin and Release); it goes off at **stage 1** on the Bard's MP (the design's full price) and a Begin's Strain (+2 without an Emanator). |
@@ -1845,7 +1845,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 | **Overflow** (Heartfed) | The keyed Begin is held at stage 2 at once (no Strain on it). |
 | **Through** (Heartbinder) | Snap-cast or Release from a linked ally's tile: range, sight and the shape (cone, line, aura) run from there. |
 | **Share** (Heartbinder) | Also: Strain that would take a linked ally over their limit comes to you (as far as your own limit allows); **Take their Strain** (1 AP, once a turn) moves up to 2. |
-| **Inner Charge** (Vessel) | 2 AP, 20 MP, 1 Strain. Forms start at stage 1 and read the 1.5 table (×1 / ×1.4 / ×1.8 / ×2.2), swell each turn (1 Strain each) and can be **Pumped** (1 AP or an Empathy free Pump). No slipping. |
+| **Inner Charge** (Vessel) | 2 AP, 20 MP, 1 Strain. Forms start at stage 1 and read the 1.5 table (×1 / ×1.4 / ×1.8 / ×2.2) *(Superseded by rules 1.17 and 1.19: the Vessel's forms follow the stage table, ×1.0 / ×1.2 / ×1.4 / ×1.6)*, swell each turn (1 Strain each) and can be **Pumped** (1 AP or an Empathy free Pump). No slipping. |
 | **Release** (Vessel) | 15 Soul × each form's stage multiplier, summed, × the Soul multiplier (no 8-stage cap). |
 | **Call** (Twinbound) | The twin has **its own heart**: it Begins, Pumps, holds (swelling on its own turn) and Releases its three designs with the engine's Soul actions, at its own stage. Your MP, your Strain (a Short of yours darkens its held one). You may each hold one. You and the twin don't resonate with each other. |
 | **Heart's Own** (Devoted) | The +2 limit lasts while a Beloved spell is begun or held; the plain limit is back at your turn's end once it is gone. |
@@ -1872,13 +1872,13 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 **2. The stage table and the snap cast.** Stage 0 is now **×0.8** (was ×0.6): **0 → ×0.8, 1 → ×1, 2 → ×1.4, 3 → ×1.8, 4 → ×2.2** (rules 1.17: ×0.8, ×1.2, ×1.6, ×2.0, ×2.4). A snap cast (Begin and Release at once, 3 AP) and a Begin released straight away are the same thing at ×0.8 (item 803).
 
 **3. Feelings.**
-1. **Pouring one in.** While you hold an Outburst, each **Pump** (1 AP, or a free one) is **plain** (+1 stage, as before) or a **feeling pump**: +1 stage and one feeling you know. A feeling pump has **its own step** on the multiplier instead of the plain +0.4: the release's multiplier is the stage table's, plus (step − 0.4) for each feeling pump (item 804). Stages from the swell, Feeding, Overdraw and Heart Surge are plain. Up to stage 4, as now. Feelings stack with themselves (Rage, Rage, Rage is three Rage steps) and combine freely with each other, the tone and the modules, each rider by its own rules ("lightning love" heals the allies it touches and chains by Storm's rule, healing along the chain).
-2. **Behaviour changes are real.** A feeling's behaviour joins the spell at the release (the table): Love on a Damage design also heals the allies inside its shape, and spares them the damage; Joy chains; Calm can't miss. A feeling poured in twice applies its behaviour once (its step counts twice) (item 806).
+1. **Pouring one in.** While you hold an Outburst, each **Pump** (1 AP, or a free one) is **plain** (+1 stage, as before) or a **feeling pump**: +1 stage and one feeling you know. A feeling pump has **its own step** on the multiplier instead of the plain +0.4 *(rules 1.19: the plain step is +0.2, and each feeling goes into an Outburst once)*: the release's multiplier is the stage table's, plus (step − 0.4) for each feeling pump (item 804). Stages from the swell, Feeding, Overdraw and Heart Surge are plain. Up to stage 4, as now. Feelings stack with themselves (Rage, Rage, Rage is three Rage steps) and combine freely with each other, the tone and the modules, each rider by its own rules ("lightning love" heals the allies it touches and chains by Storm's rule, healing along the chain).
+2. **Behaviour changes are real.** A feeling's behaviour joins the spell at the release (the table): Love on a Damage design also heals the allies inside its shape, and spares them the damage; Joy chains; Calm can't miss. A feeling poured in twice applies its behaviour once (its step counts twice) (item 806). *(Superseded by rules 1.19: a feeling goes in once; Joy widens the critical (18 to 20), Calm rolls twice and keeps the better.)*
 3. **Residue.** On a Release, the **strongest feeling poured in** (the most pumps; ties go to the latest) leaves **residue** on every tile the release covered (a Bolt: the tile it struck) **for 2 rounds**. **Helping** residue (Love, Hope, Belonging, Calm, Relief, Mercy, Joy, Guilt, Wonder, Defiance) works for the caster's side only. **Harming** residue (Rage, Grief, Fear, Spite, Shame, Despair, Cruelty, Dread, Contempt, Abandon) works on **anyone** who stands there, the caster's side too. "A turn" effects land at the start of the turn of whoever stands on the tile; "on entry" effects when a creature steps in; the rest hold while it stands there. A tile holds one residue; a newer one replaces it (item 807).
 4. **Revert Pump** (0 AP): undoes your **last pump this turn**, refunding its AP, the free Pump it used and the Strain it added. Repeat to undo more, back to the start of your turn. It can't undo the swell, a Feed, or a pump that set off a Mana Short (item 808).
 5. **Learning them: you feel it first.** A feeling **unlocks the first time its trigger happens to you** (the table); the engine detects every trigger, and the Narrator may grant one at a story moment as a bonus. Every Soul caster **starts with 2 feelings** of their choice (default Rage and Love). Unlocks are permanent: a log line and a card say "You have felt Grief. You can pour it in now." Only characters who can cast Outbursts (a design or a known school) feel (item 809).
 
-**The steps and what each feeling does when poured in were reworked in rules 1.17: the table in "Rules revision 1.17" replaces the Step and "Poured in" columns below.** The triggers and the residue are unchanged.
+**The steps and what each feeling does when poured in were reworked in rules 1.17: the table in "Rules revision 1.17" replaces the Step and "Poured in" columns below.** *(Superseded in turn by rules 1.19: its table is the one that stands.)* The triggers and the residue are unchanged.
 
 | # | Feeling | Unlocked when the engine sees… | Step | Poured in, it… | Residue |
 |---|---|---|---|---|---|
@@ -1917,12 +1917,12 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 | Split | Empathy 2 | a Bolt also strikes the nearest other creature it can reach within 2 of the aim (the same side rule), at full power |
 | Ricochet | Lore Master 4 | a Bolt needs no line of sight and ignores half cover when a wall or cover tile lies within 2 of the aim (a bank shot) |
 | Fuse | Lore Master 4 | the release lands and waits: it goes off at the start of your next turn, or when a creature steps into its area, whichever is first |
-| Return | Lore Master 4 | a Bolt or Lance goes out and comes back: each target is struck twice (each strike rolls) |
+| Return | Lore Master 4 | a Bolt or Lance goes out and comes back: each target is struck twice (each strike rolls) | *(rules 1.17: the second strike is ×0.3)*
 | Volley | Will Power 4 | a Bolt becomes 3 small bolts at the aim, each ×0.4, each rolling |
 | Bloom | Will Power 4 | a Burst or Aura grows +1 radius a stage reached |
 | Anchor | Implication 2 | targets hit are Pinned 1 round (Body save) |
 | Lure | Implication 2 | targets hit are pulled 2 toward you |
-| Shell | Camaraderie 2 | you gain a shield of the release's power × 0.5 as it leaves |
+| Shell | Camaraderie 2 | you gain a shield of the release's power × 0.5 as it leaves | *(Superseded by rules 1.20: 4 × Soul multiplier × the stage multiplier × the level factor)*
 | Linger | Implication 2 | the area stays as a field for 2 rounds: a creature of the side it works on that starts its turn there takes 5 (Damage, + the tone's stage-1 rider) or heals 5 (Buff) |
 | Quiet | Will Power 2 | the hold's Strain (Begin, swells, feelings) is halved, rounded down; the release ×0.8 |
 | Silent | Composure 2 | Begin, Pump and Release don't reveal you while Hidden |
@@ -1949,7 +1949,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 *Pen and paper (later):* the tabletop version replaces practice with one module pick per level-up for Soul casters, alongside the Mastery picks. Not built.
 
 **6. Low level: no more three sessions of "magic bolt 1"** (item 813).
-- A new Soul caster starts with **3 remembered designs**: the starting kit's **Heart Bolt** (Damage, Bolt, Move: reach 8), **Mend** (Buff heal, Bolt) and **Heart Wave** (Control push, Wave); a design picked at creation takes the first one's place. They know the Damage, Buff and Control schools, the shape Wave and the module Move (the old default cantrip's), and the module they picked. Ready designs are at least 3 (3, or 2 + floor(Empathy ÷ 2) when that is more).
+- A new Soul caster starts with **3 remembered designs**: the starting kit's **Heart Bolt** (Damage, Bolt, Move: reach 8), **Mend** (Buff heal, Bolt) and **Heart Wave** (Control push, Wave); a design picked at creation takes the first one's place. They know the Damage, Buff and Control schools, the shape Wave and the module Move (the old default cantrip's), and the module they picked. Ready designs are at least 3 (3, or 2 + floor(Empathy ÷ 2) when that is more). *(Superseded by rules 1.13: 2 + floor(Will Power ÷ 2), at least 3.)*
 - **2 feelings** of their choice, **one tone** at Lore Master 1.
 - **Snap cast ×0.8.**
 - **The first Pump each fight is free**, before Empathy's free Pumps.
@@ -2013,7 +2013,7 @@ Every Grand form is drawn on the grid for everyone: its word's ground look and t
 - **Share** (your reaction): when a linked ally takes damage, take up to half of it yourself. Heals you send through a link are ×1.25. If a linked ally is Downed, you take 2 Strain.
 
 **Vessel** (Channeler + Defender; tutor: Kemizuchi). *"The heart only knows one spell: me."* Can't design or cast Outbursts. Keeps MP, Syphon and Strain, and charges the body instead.
-- **Inner Charge** (Begin's 2 AP, 20 MP, 1 Strain): take one body form and hold it like an Outburst. It starts at stage 1 and reads the 1.5 stage table (×1, ×1.4, ×1.8, ×2.2), swells a stage at the start of each of your turns (1 Strain each) and can be **Pumped** (1 AP a stage, or an Empathy free Pump), up to stage 4. Forms: **Iron** (armour +10), **Surge** (melee and unarmed damage +15), **Swift** (+2 Movement), **Pain to Power** (+1 AP next turn per 20 damage taken, up to +2), **Steady** (can't be knocked Prone or pushed; +2 Body saves), **Heartbeat** (heal 10 at turn start). The form's number × its stage multiplier. Hold **at most 2 forms** at once, whatever your Will Power (item 550).
+- **Inner Charge** (Begin's 2 AP, 20 MP, 1 Strain): take one body form and hold it like an Outburst. It starts at stage 1 and reads the 1.5 stage table (×1, ×1.4, ×1.8, ×2.2) *(Superseded by rules 1.19: ×1.0, ×1.2, ×1.4, ×1.6)*, swells a stage at the start of each of your turns (1 Strain each) and can be **Pumped** (1 AP a stage, or an Empathy free Pump), up to stage 4. Forms: **Iron** (armour +10), **Surge** (melee and unarmed damage +15), **Swift** (+2 Movement), **Pain to Power** (+1 AP next turn per 20 damage taken, up to +2), **Steady** (can't be knocked Prone or pushed; +2 Body saves), **Heartbeat** (heal 10 at turn start). The form's number × its stage multiplier. Hold **at most 2 forms** at once, whatever your Will Power (item 550).
 - **Release** (1 AP, or free with a melee hit): end every form at once in one strike: +15 Soul damage × each form's stage multiplier, summed, × your Soul multiplier (rules 1.5; no cap).
 - **Empty Hand:** unarmed strikes deal 20 Physical for 2 AP.
 
@@ -2223,7 +2223,7 @@ figure of a living religion.
 | Patron | Likes | Taboos | Rule | Hymn I (Devotion 3) | Hymn II (5) | Hymn III (7) | Miracle (Devotion 10; rules 1.6.2) | Intervention |
 |---|---|---|---|---|---|---|---|---|
 | **Holy Father Nerukhan** (judge-saint) | judge, mercy, protect | betray, desecrate | Jealous | Saint's Shield: an ally gains a 16 shield (rules 1.22; 12 in rules 1.20, 40 before) | Judgement: an enemy takes 56 Soul (12 Nov 2026; 42 in rules 1.22, 50 in rules 1.21); ×1.3 if it harmed the helpless (rules 1.21; it was 40 and ×2) | Absolution: an ally is cleansed of every condition and heals 9 (rules 1.22; 7 in rules 1.20, 30 before) | The Saints' Verdict: every enemy in sight takes 130 Soul (rules 1.21; it was 100) and is Stunned 1 round; those that harmed the helpless this fight take double and are Stunned 2 rounds | an enemy damages a surrendered or Downed creature: it takes 20 + 4 × Devotion Soul |
-| **The Quartermaster** (logistics god) | supply, hold, protect | flee, desecrate | Open | Resupply: an ally reloads every weapon free and regains 1 Supply | Dig In: an ally is dug in (half cover) until they move, and Braced | Covering Fire: a 3×3 area; enemies in it make a Body save or are Pinned 1 round | Requisition Approved: the whole squad is fully restocked (ammo, Supplies, throwables), gets 2 standard cores each, all gear repaired to full, jams and heat cleared, and +3 AP next turn | you reload (any reload): it is free, its AP comes back; your Evoker's core runs dry (charge 0): a fresh core slots in, free; your MP runs out (0): 25% of your max MP back |
+| **The Quartermaster** (logistics god) | supply, hold, protect | flee, desecrate | Open | Resupply: an ally reloads every weapon free and regains 1 Supply *(up to their maximum)* | Dig In: an ally is dug in (half cover) until they move, and Braced | Covering Fire: a 3×3 area; enemies in it make a Body save or are Pinned 1 round | Requisition Approved: the whole squad is fully restocked (ammo, Supplies, throwables), gets 2 standard cores each, all gear repaired to full, jams and heat cleared, and +3 AP next turn | you reload (any reload): it is free, its AP comes back; your Evoker's core runs dry (charge 0): a fresh core slots in, free; your MP runs out (0): 25% of your max MP back |
 | **The Laughing Mask** (trickster) | trick, burn, flee | cower, mercy | Open | Lucky Break: an ally's next 2 failed attack rolls are each rerolled at +5 (rules 1.21; it was 1) | Switcheroo: swap two units in sight within 6 of you (an enemy gets a Brain save) | Pratfall: an enemy makes a Body save or falls Prone and drops its weapon | Encore: every ally may repeat the last action they took this round for free, and every enemy in sight is Confused 1 round | an enemy misses you: it falls Prone |
 | **The Toll-Keeper** (ferryman of the dead) | mercy, heal, hold | kill (of the surrendered or Downed), desecrate | Jealous | Coin for the Ferry: a Downed ally stands at 10 HP | Hold the Gate: until your next turn, allies in sight can't drop below 1 HP; not again for 6 rounds (rules 1.22) | Last Crossing: an enemy at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul) | Turned Back at the Shore: every ally who died or fell (Downed) this fight stands at half HP | an ally would drop to 0 HP: they stay at 1 HP |
 | **Mother Ember** (hearth-mother) | heal, protect, supply | betray, cower | Open | Warm Hands: an ally heals 13 (rules 1.22; 10 in rules 1.20, 40 before) | Hearthlight: a 3×3 area; allies starting a turn in it heal 4 (10 before rules 1.20), for 3 rounds | Feed the Fire: an ally gets +2 AP now (rules 1.21; it was +1) (ceiling applies) and loses Weakened and Slowed | Everyone Home: the whole squad heals to full, the Downed stand, every harmful condition is cleared, and each gets a 40 shield | an ally drops below a quarter HP: they heal 20 + 4 × Devotion |
@@ -2256,7 +2256,7 @@ Hymn's or Miracle's AP); the prayer traits; and the Factory Made and The Old Blo
 
 - **Acquired:** every skill has two. Each Mastery level in the skill (3, 5, 7 and 9 points) gives one **perk step** in it: take one of its perks at Tier I, or upgrade one you hold to Tier II (Tier I always comes first). The order is the choice: at 5 points you hold both at Tier I or one at Tier II; at 7 you hold three of the four steps; at 9 you hold both at Tier II. Tier II replaces Tier I.
 - **Mastered:** every skill has one Mastered perk, granted automatically at 10 points. It's the capstone only a specialist reaches; nothing else gives it.
-- **Achieved** (combo perks, 19): each joins two or three skills. They need **Mastery 2 (5 points) in every skill listed**, plus a deed done in play. The Narrator grants them; the engine checks the skill requirement and records the deed. Every skill is in at least one combo.
+- **Achieved** (combo perks, 19): each joins two or three skills. They need **Mastery 2 (5 points) in every skill listed**, plus a deed done in play. The Narrator grants them; the engine checks the skill requirement and records the deed. *(Superseded by rules 1.14, Deeds the engine sees: the engine grants the nine deeds it can see in a fight; the Narrator grants the other ten.)* Every skill is in at least one combo.
 - **Ultimate** (6): granted automatically when you hold both of the Achieved perks it names. **They're secret:** no screen lists them, hints at them or shows progress toward them until one is granted, which gets its own award screen. The AI Narrator never mentions an Ultimate the player doesn't hold.
 - Every AP gain from perks obeys the AP ceiling: +3 per turn at most, 9 AP at most, 2 AP at least.
 - **Only a gamma's perk gives or takes AP inside a turn** (rules 1.13). An alpha's or a beta's perk may make its own skill's action cheaper, and nothing more; the perks that used to hand AP out are listed in "The perk, unlock and trait pass" below.
@@ -2269,7 +2269,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Damage types.** Physical by default. Each weapon names its type (weapons.json `damage_type`): the flamer and incendiary rounds deal fire, the core rifle and Enhanced rounds Elemental, SHOCK and SPARK lightning, the bot-scrambler emp. Fire and lightning count as Elemental for *Elemental damage taken*. Grenades, launchers, satchels and barrels are **explosive**. The derived reductions apply in the chain: Elemental damage taken −10% × Pain Threshold, Ambush damage taken −10% × Reaction Speed, Critical damage taken −10% × (Perception − 1) − 5% × Durability (it shrinks the critical multiplier's bonus), each capped at 60%. Healing and shields received get +10% × Sensory. The air's Healing given multiplier applies to magical healing.
 
-**Stacking damage bonuses.** Bonuses against one particular target (True Name, Judgement Day, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel; Case Closed and Weak Point left this list with rules 1.13) **add together**, and in all they can at most double the damage (×2.0). Situational multipliers on yourself (Pain Eater, The Brightest Light, the Ambush multiplier, Weakened) multiply as before.
+**Stacking damage bonuses.** Bonuses against one particular target (True Name, Judgement Day, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel; Case Closed and Weak Point left this list with rules 1.13 *(Case Closed is back on it: Leon, 10 Nov 2026, item 1503)*) **add together**, and in all they can at most double the damage (×2.0). Situational multipliers on yourself (Pain Eater, The Brightest Light, the Ambush multiplier, Weakened) multiply as before.
 
 **Special ammo.** A magazine holds one type (rules.json `ammo_types`): armour-piercing ignores armour at −20% damage; hollow-point +30% damage, armour counts double; incendiary −10% damage and the target is Burning (no save); Enhanced ignores armour, deals Elemental damage, and each hit puts +1 on the meter. Special rounds are carried as items and loaded into the gun out of combat; each spare magazine keeps its own type.
 
@@ -2357,11 +2357,11 @@ Written 7 Nov 2026, when every perk, trait and class move was built into the eng
   - **On a success:** you stay Hidden, but in the same Hidden entry, so no second ambush.
 
 **Got You in My Sight.**
-- **I:** an enemy you see hiding, or an enemy leaving your own sight, gives +2 AP. Once a round, and it counts toward the +3 perk AP cap.
+- **I:** an enemy you see hiding, or an enemy leaving your own sight, gives +2 AP. Once a round, and it counts toward the +3 perk AP cap. *(Superseded by rules 1.14: in a fight once every 3 of your turns; once a round stays on the area map.)*
   - **On your turn:** the AP comes at once.
   - **If your turn is still to come this round:** it is banked for that turn.
   - **If your turn has already passed this round:** nothing.
-  - **The penalty:** a sneak attack that hits you costs 2 AP next turn. A sneak attack is an ambush, meaning the first attack from a Hidden entry.
+  - **The penalty:** a sneak attack that hits you costs 2 AP next turn. *(Rules 1.14: in a fight this too is once every 3 turns.)* A sneak attack is an ambush, meaning the first attack from a Hidden entry.
 - **II:** no penalty. The squad keeps the last position of an enemy that left your sight (`cb.lastSeen`).
 - **On the area map:** an NPC token the holder could see (12 tiles, a line) that moves out of sight, hides or leaves
   gives +2 AP on the next overworld round, once a round. Tier II marks its last-seen tile (`story.lastSeen`). Item 379.
@@ -2416,7 +2416,7 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 - **Narrator:** crowds part.
 
 **War Footing.**
-- **Combat:** an enemy that ends a move next to you loses 2 AP at once. This applies once per enemy a turn, and not to a Disengage or a forced move.
+- **Combat:** an enemy that ends a move next to you loses 2 AP at once. This applies once per enemy a turn *(Superseded by rules 1.14 (item 1104): in a fight one enemy loses 2 AP, then nothing for your next 2 turns; once per enemy a turn stays on the area map only)*, and not to a Disengage or a forced move.
 - **Story:** a failed Intimidation check costs nothing. There is no complication, and a natural 1 counts as an ordinary failure. The engine sets `roll.fumble = false` and `roll.noCost = true` and tells the Narrator. The same target can't be intimidated again that scene: the check fails automatically.
 
 **Last Charge.**
@@ -2506,7 +2506,7 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
   enemies or the campaign's zone NPCs.
 - **Verse** is declared by the player: Say the line in the fight (free), then Begin with "In verse" (or Release a held
   Outburst with the same "In verse" chip; on the area map, "Release in verse"). The Narrator audits it after the fight,
-  never per cast.
+  never per cast. *(Superseded by rules 1.14 (item 1111): nothing audits the verse.)*
 - **The music traits' modifier** reaches every d20 that uses the skill: story checks, asks and stealth (music.ts), voice
   passives and initiative, and in a fight the weapon attack, Sigil and Soul strikes, prayer, shoves, spotting and the
   three saves. It never reaches derived stats. A shield of 30 or more you give starts your song, the same as a big heal.
@@ -2642,7 +2642,7 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
     and its stakes say why.
   - A Composure check made with Composure alone, or a Heart save in dialogue, succeeds with no roll.
   - Combined checks roll normally.
-- **Glasses and masks** are worn and taken off through the sheet: free outside a fight, not possible in one.
+- **Glasses and masks** are worn and taken off through the sheet: free outside a fight, not possible in one *(Superseded by rules 1.9 (item 685): glasses and the smiling mask are light pieces, changed in a fight for 1 AP; needs Leon's confirmation, item 1505)*.
   - In the story, the Narrator knocks glasses off with `traitState {key:'glasses', value:'off'}`. The engine moves them
     to the pack at the next check or scene change.
 - **Lunarshine.**
@@ -2681,10 +2681,10 @@ Shove and Break are techniques everyone can learn (the Shove Link, the Break Fin
 | **Breaching Strike** I/II | Raw Power | A passive (the 3 AP strike is gone). **I:** when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it, it takes the hit again at half damage: half the damage of the hit that pushed it, or half a plain blow with the weapon in hand when the push had no hit (Shove). **II:** the enemy it was pushed into takes the same. |
 | **Quick Draw** (unlock at 5) | Dexterity | Once per combat, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs 0 AP. |
 | **Read Them** (unlock at 5; was Weak Point) | Acuity | Enemies you've analyzed deal 15% less damage to your whole squad. Named Read Them because Read is a class move. |
-| **Case Closed** (Mastered) | Acuity | Analyze reveals everything at once, as before. You and your allies have +2 Defense against an enemy you've analyzed (its attacks on your side are at −2). The +2 to hit and the +20% damage are gone. |
+| **Case Closed** (Mastered) | Acuity | Analyze reveals everything at once, as before. You and your allies have +2 Defense against an enemy you've analyzed (its attacks on your side are at −2). The +2 to hit and the +20% damage are gone. *(Superseded by Leon's ruling of 10 Nov 2026 (item 1503): the squad's +20% damage on the analyzed target is back, with the +2 Defense; the +2 to hit stays gone.)* |
 | **Nothing Gets Past** (Mastered) | Vigilance | Every enemy that moves in your sight is Spotted for free: the mark your Spot Call would leave at your level, with no AP, no reaction and no Call slot used; once a round for each enemy. The every-mover Overwatch is gone (the Marksman's Killzone holds several shots). |
 | **Still Water** (Mastered) | Composure | Its original text stands: immune to Brain debuffs, and nothing reads you. Composure is a beta again, and a defence is its job. |
-| **Stand Still** (unlock at 5) | Composure | Until you first move, attack or use an ability in a combat, your Calls cost 1 AP less (never below 0). Making a Call is not acting. |
+| **Stand Still** (unlock at 5) | Composure | Until you first move, attack or use an ability in a combat, your Calls cost 1 AP less (never below 0). Making a Call is not acting. *(Superseded by Leon's ruling of 10 Nov 2026 (item 1503): Stand Still is back to its original: until you first act in a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it, once a combat.)* |
 | **Proven Formula** (unlock at 5) | Rumination | +3 on your saves against a spell or condition that has already hit you this combat. Engine reading: a condition that has taken hold on you once this fight is saved against at +3 from then on. |
 | **Tuned** (unlock at 5) | Improvisation | The weapon in your main hand never jams and never breaks. The +10% damage is gone. |
 | **Roll With It** II | Athletics | 2 free tiles, and nothing else. |
@@ -4458,7 +4458,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 18. **Free shots and the reaction limit.** Dance of Iron and Catch give free shots. Do they use the one reaction per round? *Suggested: yes, unless the text says "free reaction".*
 19. **No dodge action.** Riposte now triggers when a melee attack against you misses.
 20. **Last Charge.** 7 m is not a whole number of tiles; *data uses 5 tiles*. Its shield of 100 × Armour Class is off the HP scale.
-21. **Mind Without Fog.** It locks Karma permanently and gives +1 Core point at creation (7 instead of 6; rules 1.11, item 929: it was +2, which allowed a 9/1/1 start). Confirm both.
+21. **Mind Without Fog.** It locks Karma permanently and gives +1 Core point at creation (7 instead of 6; rules 1.11, item 929: it was +2, which allowed a 9/1/1 start). Confirm both. *(Superseded by rules 1.13 and Leon's ruling of 10 Nov 2026 (item 1504): no Core points are spent at creation; the trait gives +2 Attribute points (12 instead of 10).)*
 22. ~~Undefined actions.~~ *Written 7 Nov 2026 (see Analyze and the actions perks rely on); provisional, item 60.*
 23. **Perk type labels.** Origami Hands, Hold the Stroke and Pattern Lock carry type labels that don't match their effects. Soulmate scales by Mastery inside Tier I.
 24. **Bone Talk** calls Shaken a body debuff; Shaken is in the heart family.
@@ -4682,7 +4682,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 129. *(B9)* **Never There:** the narrow reading (−4 only during your own later moves).
 130. *(B10)* **Vanishing Act:** any attack reveals, even a silent one (the perk wins over the silent-weapon rule). Touched means an enemy ends a move next to you.
 131. *(B11)* **Charge!:** at most 3 AP free (the +3 cap, GAMEBREAKING fix). "At an enemy" means ending next to a visible enemy that the move closed on.
-132. *(B12)* **War Footing:** not on a Disengage; once per enemy a turn; the Intimidation target is unmoved for the scene (anti-retry). The data says `adjudication: engine`; it should be `hybrid` (data change).
+132. *(B12)* **War Footing:** not on a Disengage; once per enemy a turn; the Intimidation target is unmoved for the scene (anti-retry). The data says `adjudication: engine`; it should be `hybrid` (data change). *(Superseded by rules 1.14 (item 1104) for a fight: one enemy, then nothing for your next 2 turns.)*
 133. *(B13)* **Last Charge:** the shield is once a fight (the fix for the every-turn loop, GAMEBREAKING). ×1.5 melee applies for the rest of the charge turn. 5 tiles.
 134. *(B14)* **Just the Repairman:** the `toolbox` item only. Spare parts and the field kit don't count.
 135. *(B15)* **Silent Partner:** the nearest ally (in combat), the first by id (on the area map). The partner pays the sneak cost.
@@ -4795,8 +4795,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - Ammo Hog doubles every round, single shots included, as the text says.
     - Aimed shots are at −2.
     - PROVISIONAL.
-157. *(C16)* **One Shot (6b).**
-    - The critical multiplier is ×1.5 the multiplier, so 2.0 becomes 3.0.
+157. *(C16)* **One Shot (6b).** *(The critical line is superseded by rules 1.15 (item 1022): +25%, inside the ×2.0 ceiling.)*
+    - The critical multiplier is ×1.5 the multiplier, so 2.0 becomes 3.0. *(Superseded by rules 1.15 (item 1022): Breath Held is +25% on that shot's critical, inside the ×2.0 ceiling.)*
     - "First shot" means the first shot of the turn.
     - It ignores half cover only.
     - Tunnel Vision: Vigilant checks fail, Vigilant voice lines stay silent and the holder spots no Hidden enemies.
@@ -4904,14 +4904,14 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - +10% on the Soul damage you deal.
     - Echo Chamber: casting reveals you, and you can't hide that turn. The Narrator is told that the enemies within 10
       tiles know where you are. On the area map it ends your sneak.
-177. *(D16)* **Heretic** (PROVISIONAL reading).
+177. *(D16)* **Heretic** (PROVISIONAL reading). *(Superseded by rules 1.6 (item 628): a stolen Hymn is an Atheist's prayer by dice, d20 + Will Power against 14 / 16 / 18, no Witnessed.)*
     - Stolen Fire: pray to any patron for any of its Blessings, with no pact. Will Power stands in for Faith in the
       gates (3 / 5 / 7), the roll and the cooldown, and Devotion is never changed.
     - Blessing Power = 1 + 0.1 × Will Power.
     - Excommunicated: an ally's Blessing on you fails on a d6 of 1–2. At the campaign's first session start the Lumeri
       Church is set to −40 (Hostile). The Narrator decides which other faiths count.
-178. *(D17)* **True Believer** (PROVISIONAL).
-    - The cooldown is 1 turn shorter, never below 1.
+178. *(D17)* **True Believer** (PROVISIONAL). *(Superseded by rules 1.22 (item 1292).)*
+    - The cooldown is 1 turn shorter, never below 1. *(Superseded by rules 1.22 (item 1292): 1 round off the Hymn's wait, never under 2 rounds.)*
     - The miracle is a story button, once per session.
     - Missed rites are `traitState rites_missed` (set by the Narrator). Each one is −1 on Faith and Will Power rolls,
       capped at −3.
@@ -5302,9 +5302,9 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - A Heart save in dialogue succeeds on its own (problem 3).
     - A dialogue check left with no skill fails on its own.
     - Charisma and Implication voices keep speaking (problem 4).
-253. *(H5)* **Bottle Butts.** A critical hit that lands a head injury (Dazed) knocks the glasses off at once (problem 4).
+253. *(H5)* **Bottle Butts.** A critical hit that lands a head injury (Dazed) knocks the glasses off at once (problem 4). *(Rules 1.9 (item 685): they go back on in the same fight for 1 AP; see item 1505.)*
     They go to the pack; the player puts them back on after the fight.
-254. *(H6)* **Oil in My Mind / Oil in My Soul, Paper.** One point's worth comes off what those skills derive, on top of −1 on
+254. *(H6)* **Oil in My Mind / Oil in My Soul, Paper.** One point's worth comes off what those skills derive, on top of −1 on *(The engine takes 2 HP a level, +10% Elemental damage taken and −10% healing received, and the card now says so. Since rules 1.13 HP per level is Pain Threshold's and healing received is Camaraderie's, so 'what those skills derive' no longer maps skill by skill: to re-derive (item 1507).)*
     their rolls, applied once with both Oils (plan 6 Oil in My Mind 1):
     - −2 HP per level (Durability);
     - Elemental damage taken −10% (Pain Threshold), so the character takes 10% more;
@@ -5327,16 +5327,16 @@ The data pack handles each of these provisionally, as noted, so the engine can b
       don't count (problem 5).
     - The −2 AP comes off now on the character's own turn, otherwise off the next turn, within the floor of 2.
     - "Outside the city" means a campaign zone marked `in_city: false`. Unmarked zones are neither in nor out.
-258. *(H10)* **Insomniac.**
+258. *(H10)* **Insomniac.** *(Session start does give Wired its half now.)*
     - Wired gives back half of what the rest would (problem 2):
       - a short rest: 12.5% of max HP;
       - a long rest: half the missing HP and half the missing MP.
     - Always Up applies in a rest-camp fight: hidden enemies' ambush gets no 19–20 critical and no Ambush multiplier
       against the Insomniac.
-    - Session start isn't a rest for Wired yet (hooks gap 2).
+    - Session start isn't a rest for Wired yet (hooks gap 2). *(Superseded: the session start gives Wired half its rest (the `session_heal` hook).)*
 259. *(H11)* **Wanted.** Officials' hostility is party-wide, as memory factions are (problem 2): "Central City officials",
     standing −40, seeded once.
-260. *(H12)* **Company Man, GAMEBREAKING.** The data's `price_mod buy_pct -100` makes RTC gear free. Recommended: −40 (60% of
+260. *(H12)* **Company Man, GAMEBREAKING.** The data's `price_mod buy_pct -100` makes RTC gear free. Recommended: −40 (60% of *(The data carries −40 now (PROVISIONAL), not −100.)*
     list), or a number from Leon.
     - No shops exist, so the price is only in the brief.
     - Extraction from a fight works only while conscious (problem 4). The character leaves the fight and gets no XP from
@@ -5535,7 +5535,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     - It works on attacks, saves, story checks, and Sigil and Soul strike rolls (the `spell_roll` hook).
     - It refreshes and never stacks. Not on yourself.
     - Without an Emanator it costs +2 Strain in a fight.
-301. *(I37)* **Mend.** Every Buff heal the Bard makes heals 40 (not 30). The data's `ap_cost: 0` should read `soul_cast_ap`.
+301. *(I37)* **Mend.** Every Buff heal the Bard makes heals 40 (not 30). The data's `ap_cost: 0` should read `soul_cast_ap`. *(Superseded by rules 1.20: a base of 9 (not 7) × the level factor; the data records the AP as `ap_cost_is: soul_cast_ap` on the moves that cost it.)*
 302. *(I38)* **Gift.** *(Superseded by rules 1.5: item 526.)*
     - The ally casts with their own Soul cast AP and the Bard's design and numbers, on the Bard's MP and Strain.
     - It releases at once.
@@ -5900,7 +5900,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     its opening move (the Evoke AP from the character's AP); otherwise it runs on the area map. PROVISIONAL.
 392. **Weapon wear out of a fight.** A strike or shot at an object on the area map wears the weapon 1, as an attack
     action does in a fight (spec: Weapons v2); breaking cover in a fight wears 1 too. The Brightest Light doubles it.
-393. **The drone on the area map (Drone Handler).** The drone is a token of its own next to its owner (keyed by its unit
+393. **The drone on the area map (Drone Handler).** The drone is a token of its own next to its owner (keyed by its unit *(The stat block was settled at 30 HP (Leon, 7 Nov 2026; items 230 and 370); the last sentence is stale.)*
     id in the story's positions), with 3 AP each overworld round (as in a fight), spent only on moves (world/act
     move with `unit`); the owner's AP is untouched. It starts a fight opened on the area map where its token stood and
     stays where it ended after the fight. A destroyed drone leaves the map. What it sees is the Narrator's (the brief
@@ -6084,7 +6084,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 
 522. **Shape:** the first Pump a turn that would cost AP is free (Damage designs, either school). Empathy's free Pumps are spent first. Flag: with Empathy 7, a Begin reaches stage 3 for 2 AP (Begin + 2 free + Shape).
 523. **Storm Front:** Bolt and Lance only; after the release has landed (the `outburst_after` hook), 2 arcs within 2 tiles of the first creature hit (else the first in the area, else the aim), outside the release's area, at the release's multiplier (stage + Resonance) and rider stage, one roll each; +10 MP flat.
-524. **Heart Surge:** +1 stage at release (held: the stage itself; past 4: ×2.6; a snap: ×1), once a turn; +1 Strain (2 Flooded) after the release. Replaces 1.2's ×2 and doubled durations and pushes (items 296, 401). Flag: much weaker than 1.2's ×2; Leon to confirm.
+524. **Heart Surge:** +1 stage at release (held: the stage itself; past 4: ×2.6; a snap: ×1), once a turn; +1 Strain (2 Flooded) after the release. Replaces 1.2's ×2 and doubled durations and pushes (items 296, 401). Flag: much weaker than 1.2's ×2; Leon to confirm. *(Superseded by rules 1.19: past stage 4 is ×1.8.)*
 525. **Sanctuary:** your own burn ('strain' damage) isn't halved (was "your own Mana Short", item 299).
 526. **Gift:** the ally's 3 AP, stage 1, the Bard's full design price and a Begin's Strain (item 302).
 527. **Love Made Manifest:** Begins at stage 4 once a fight (item 346's ×3 retired).
@@ -6367,7 +6367,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 807. **Residue** is a zone (`kind: 'residue'`) on the release's area for 2 rounds (counted down with the round, like a field). Helping residue works for the caster's side only, harming residue for anyone. Per-turn effects land at the start of the stander's turn; on-entry effects when it steps in (a turn started there is not an entry). A tile holds one residue; the newest replaces it.
 808. **Revert Pump** keeps an undo stack for the turn: each entry the AP paid, the free Pump used (the fight's first, Empathy's or an item's), the feeling and the Strain added. Anything that ends the hold (a Release, Let go, a Mana Short) clears it; Feeding and the swell are not pumps and can't be reverted.
 809. **Who feels:** player characters who can cast Outbursts (an Outburst design, or a known school). Enemies and companions don't. Characters made before rules 1.8 get Rage and Love once, when their Soul magic is next read (`soulRev` 18).
-810. **The 13 new modules' numbers and readings:** Split at full power on the second target (Bolt only; a Lance or an area ignores it); Ricochet's bank shot within 2 of the aim; Fuse waits until your next turn's start or an entry into its area (the fuse is lost if you are Downed first); Return's second strike rolls again; Volley ×0.4 per bolt; Bloom on Burst and Aura only; Anchor Pinned 1 round with a Body save; Lure 2 tiles; Shell the release's power × 0.5 as a shield; Linger 5 a turn for 2 rounds; Quiet half the hold's Strain and ×0.8; Silent keeps you Hidden through Begin, Pump and Release: under rules 1.8 a hostile release reveals a Hidden caster, as a harmful Sigil does (Outbursts revealed nobody before); Thread once. Module costs: Split 15, Ricochet 15, Fuse 10, Return 20, Volley 15, Bloom 20, Anchor 15, Lure 10, Shell 10, Linger 15, Quiet −5, Silent 10, Thread 10 MP.
+810. **The 13 new modules' numbers and readings:** Split at full power on the second target (Bolt only; a Lance or an area ignores it); Ricochet's bank shot within 2 of the aim; Fuse waits until your next turn's start or an entry into its area (the fuse is lost if you are Downed first); Return's second strike rolls again; Volley ×0.4 per bolt; Bloom on Burst and Aura only; Anchor Pinned 1 round with a Body save; Lure 2 tiles; Shell the release's power × 0.5 as a shield; Linger 5 a turn for 2 rounds; Quiet half the hold's Strain and ×0.8; Silent keeps you Hidden through Begin, Pump and Release: under rules 1.8 a hostile release reveals a Hidden caster, as a harmful Sigil does (Outbursts revealed nobody before); Thread once. Module costs: Split 15, Ricochet 15, Fuse 10, Return 20, Volley 15, Bloom 20, Anchor 15, Lure 10, Shell 10, Linger 15, Quiet −5, Silent 10, Thread 10 MP. *(Since: Split a heal or shield at ×0.8 each (rules 1.23), Return's second strike ×0.3 (rules 1.17), Shell 4 × Soul multiplier × stage × level factor (rules 1.20).)*
 811. **What the gates gate:** learning (practice picks, Mastered picks, Heart plates, an ally or tutor teaching), not designing with a module already known. Move, Random, At Once and Split sit under Empathy (the design spec leaves them unassigned; Empathy "gates the design itself"). The Narrator's grants and the Proving Ground's tools ignore the gates.
 812. **Mastery's practice and picks** read the six gate skills only (Lore Master, Will Power, Empathy, Camaraderie, Implication, Composure), since those are the skills Soul magic is built on; Faith, Conscience and Authority (Virtue) feed the Blessings. Practice from Mastery is derived from your points, so it is never lost or doubled; practice from releases is kept on the character.
 813. **The starting designs:** Heart Bolt (Damage), Mend (Buff, heal) and Heart Wave (Control, push, Wave). A picked starting design replaces Heart Bolt; ready designs are at least 3. A character made before rules 1.8 keeps its designs and gains the missing templates while it has room (`soulRev` 18).
@@ -6413,9 +6413,9 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 926. **Left as it was:** the XP table and the 20 levels (`docs/design/proposals/2026-11-skeleton.md`, section 6).
 927. **The advanced class gates** (item 557: a hybrid at 6 and 5 across two Cores, a squared class at its attribute 9, from level 7) are unchanged and become reachable near level 7 to 9 under 1.11 (before: level 15 at the earliest for a hybrid).
 928. **No Core-for-Attribute trade at creation (rules 1.11).** Every Core point is placed in a Core and the Attribute budget is 10. Before: an unspent Core point became 2 Attribute points; trading two or more was never legal (the Attribute points had nowhere to go) and trading one swapped a point worth several levels for two worth less. rules.json drops `unspent_core_point_trades_for_attribute_points`; the engine's `BUDGET.trade` is 0. Every archetype already spent all 6.
-929. **Mind Without Fog gives +1 Core point** at creation (it was +2): `FOG_CORE` in the engine, traits.json `creation_points` value 1. A character made with 8 Core points before 1.11 keeps them (item 931).
+929. **Mind Without Fog gives +1 Core point** at creation (it was +2): `FOG_CORE` in the engine, traits.json `creation_points` value 1. A character made with 8 Core points before 1.11 keeps them (item 931). *(Superseded: item 1504 (+2 Attribute points).)*
 930. **Class ranks need a level too (rules 1.11):** rank II at the class attribute 5 and level 6, rank III at 8 and level 12 (classes.json `assignment.rank_levels`; engine `RANK_LEVEL`, `classRank`). The Proving Ground's rank tool raises the level to the rank's as well as the attribute. A saved character below the level drops to the rank its level allows until it gets there, in a fight saved in progress too. A rank that arrives with a level is announced like one that arrives with an Attribute point ("reaches Fighter II: Riposte, Lingering Dread"), and the character's units in a running fight hold it at once. *Leon to confirm 6 and 12.*
-931. **Characters made before 1.11 stay legal.** A sheet locked in under 1.11 is stamped (`rulesRev`, engine `SHEET_REV`) and must fit today's budgets. A sheet with no stamp was made before: when today's budgets don't fit it, the budgets of its day are used (a Core point for 2 Attribute points; Mind Without Fog's 2 Core points), so a saved character or a character file from before 1.11 can still be brought into a room (engine `sheetDerive`). Reopening one in creation and locking it in again makes it a 1.11 sheet. *Leon to confirm, or ask for old sheets to be refused with a reason instead.*
+931. **Characters made before 1.11 stay legal.** A sheet locked in under 1.11 is stamped (`rulesRev`, engine `SHEET_REV`) and must fit today's budgets. A sheet with no stamp was made before: when today's budgets don't fit it, the budgets of its day are used (a Core point for 2 Attribute points; Mind Without Fog's 2 Core points), so a saved character or a character file from before 1.11 can still be brought into a room (engine `sheetDerive`). Reopening one in creation and locking it in again makes it a 1.11 sheet. *Leon to confirm, or ask for old sheets to be refused with a reason instead.* *(Superseded: item 1504. No older budget is tried; a sheet with no stamp is read by today's budgets.)*
 932. **Momentum (rules 1.12):** 0 to 3 for everyone holding a melee weapon, 5 for a Fighter; +1 for each melee strike that hits; +1 more once per technique when it differs from the last one this turn; the first technique of a turn earns no variety bonus; a Finisher needs 2 and spends all (techniques.json `rules.momentum`). *(Superseded by the rework of 10 Nov 2026, "Melee: Momentum and the chain": only the plain attack gives Momentum; a Strike or an Opener spends 1; there is no variety bonus; a fight starts with 1. The Finisher rule stands.)*
 933. **Pressure's states and caps:** 0 to 4; Pressed at 2, Suppressed at 3, Broken at 4 (enemies only); players stop at 3, elites at 3, bosses at 2 (`rules.pressure`).
 934. **What the states cost:** Pressed −1 to hit with ranged attacks only, and no Watch; Suppressed −1 AP for an enemy and never for a player, and no reactions that attack or move; Broken −2 AP. Protective reactions always work (Leon, 10 Nov 2026). *Not built yet: the Broken enemy's forced first action, and the Heart save to leave cover the proposal gives Suppressed.*
@@ -6467,10 +6467,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 980. **Both Hands' tiers:** I is the shot with no Recoil; II adds the Momentum. The proposal's second half read "counts as different for Momentum", which was the variety bonus the Momentum rework removed. Its reading under the new rule: a shot that hits gives 1 Momentum, once a turn, to a holder with a melee weapon in a hand. To confirm.
 981. **Iron Grip II** read "earns the variety bonus" in the proposal. Its reading under the new rule: each melee technique that hits a held target gives 1 Momentum, once a technique, never a Finisher (which ends the hold). To confirm. "Held" is Grappled by you or Bound by you, next to you. The drag is one held target, into the tile you leave; what can't be moved (nailed, an item that holds it) stays behind.
 982. **Read Them** is the name of Weak Point's replacement: "Read" is a class move. It applies to whoever is on the other side of the analysed unit, by weapon or spell.
-983. **Case Closed** gives no bonus to hit or damage any more: the proposal names only the +2 to hit, and the +20% damage went with it as offence on a beta.
+983. **Case Closed** gives no bonus to hit or damage any more: the proposal names only the +2 to hit, and the +20% damage went with it as offence on a beta. *(Superseded by Leon's ruling of 10 Nov 2026 (item 1503): the +20% damage is back.)*
 984. **Many Hands** now widens Hand-Off's Defense loan to 3 tiles. The proposal only says the AP gift goes; the old perk's 3-tile reach was kept for the new Hand-Off.
 985. **Hand-Off** is automatic: the first enemy attack roll each round against an ally in reach whose Defense is lower than the holder's. A preview shows it and spends nothing. Rival's Petty check and Humanity First's refusal of AP no longer touch it (no AP moves); Humanity First still refuses AP from a Call.
-986. **Stand Still** is built as Leon's 15.5 ruling (Calls 1 AP cheaper until you first act). Composure became a beta after that ruling, and its old text (−2 to be hit until you first act) is a defence that would fit a beta: to confirm which stands.
+986. **Stand Still** is built as Leon's 15.5 ruling (Calls 1 AP cheaper until you first act). Composure became a beta after that ruling, and its old text (−2 to be hit until you first act) is a defence that would fit a beta: to confirm which stands. *(Settled by Leon, 10 Nov 2026 (item 1503): the original stands (−2 to be hit until you first act; the first miss gives a free attack, once a combat).)*
 987. **Tuned:** "the weapon you maintain" is read as the weapon in your main hand. A jam is cleared the moment the attack is over, and wear stops at 1 point of Durability.
 988. **Nothing Gets Past** leaves the Spot mark of the holder's own level (at 10 points: two allies, +1 to hit, not Hidden to them), takes no Call slot on the enemy, and doesn't replace a Spot the enemy already carries. Not while the holder is Silenced or Stunned.
 989. **Into the Dark I** is once a fight: from the first walk onto a tile your side hasn't seen until your next turn starts. II is round 1 of a fight in a place that causes Fear. The area-map discount of item 121 is gone with the AP.

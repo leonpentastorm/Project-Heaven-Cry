@@ -249,8 +249,8 @@ register({
 });
 
 // ======================================================================================================== FIGHTER
-// Momentum (0-5): +1 per melee hit (combat.ts), reset after a turn with no attack (closeTurn) and after the fight (units
-// are rebuilt). Lunge's handler adds the other half: +1 per tile closed on the target since the turn began, counted at
+// Momentum (0-5): +1 per melee hit (combat.ts); it carries from turn to turn, a Finisher spends it, and it is gone after
+// the fight (units are rebuilt). Lunge's handler adds the other half: +1 per tile closed on the target since the turn began, counted at
 // the first melee attack, at most +2 a turn (PROVISIONAL reading of "toward a target"); Lunge's own tiles don't count.
 const reachOf = (u: Unit) => { const w: any = WEAPON[u.weapon]; if (!w || !isMelee(w)) return 1; return (w.properties || []).includes('reach_2') || w.id === 'lance' || w.grants?.effect?.op === 'reach' ? (w.grants?.effect?.op === 'reach' ? w.grants.effect.value : 2) : 1; };
 const meleeAp = (u: Unit) => attackApCost(isMelee(WEAPON[u.weapon]) ? WEAPON[u.weapon] : WEAPON.fists, 'melee');
@@ -1280,7 +1280,7 @@ register({
 
 // ---------- Heart Surge (rank III; a toggle on Release or a snap cast; once a turn; rules 1.5) ----------
 // The release fires one stage higher: a held Outburst's stage really rises (its tone's rider too); past stage 4, and on a
-// snap cast, the multiplier reads one step higher (stage 4: ×2.8, the table's 0.4 step continued; a snap: ×1.2, stage 1).
+// snap cast, the multiplier reads one step higher (past stage 4: one more step of the table, ×1.8 under rules 1.19; a snap: stage 1, ×1.0).
 // For double the Strain: the Begin's Strain again (1, 2 in Flooded air), added once the release has landed (it can burn
 // and short like any Strain). Item 524, PROVISIONAL (1.2's ×2 for +1 Strain is gone: 1.5 already pays for holding).
 const SURGE_PAST = Math.round((stageMult(MAX_STAGE) + (stageMult(MAX_STAGE) - stageMult(MAX_STAGE - 1))) * 100) / 100; // one more step of the stage table past its top (rules 1.19: ×1.8; rules 1.17: ×2.8)
@@ -1454,7 +1454,7 @@ register({
 });
 
 // ---------- Mend (rank II) ----------
-// Your Buff-school heals heal 40 (not 30) × your Healing given × the stage × the air's Healing multiplier (Thin ×0.75,
+// Your Buff-school heals use a base of 9 (not 7; rules 1.20) × the level factor × your Healing given × the stage × the air's Healing multiplier (Thin ×0.75,
 // Normal ×1, Rich and Flooded ×1.25; heal() applies the air): an upgrade of every Bard Buff heal, not a separate design
 // (PROVISIONAL). The data's AP 0 is the Soul cast AP. Out of combat the area map's casts use the same numbers.
 const GIFT_AP = SOUL_AP.begin + SOUL_AP.release, GIFT_STAGE = 1;

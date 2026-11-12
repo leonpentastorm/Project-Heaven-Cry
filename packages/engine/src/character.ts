@@ -1,5 +1,6 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import patronsJ from '../../../data/patrons.json';
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effects/collect';
@@ -15,8 +16,7 @@ import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from '.
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
   /** The creation rules this sheet was locked in under (SHEET_REV; rules 1.11, item 931). A sheet without it was made
-   * before 1.11 and is read by the budgets of its day (a Core point could buy 2 Attribute points; Mind Without Fog
-   * gave 2 Core points), so characters made then stay legal. */
+   * before 1.11; it is read by today's budgets all the same (no older budget is tried: item 1504). */
   rulesRev?: number;
   /** An uploaded portrait's eye line for the spotlight cut-in's torn strip (y from the top, 0.05–0.70; decision 113).
    * Presentation only; the art library's portraits carry their own (art/catalog.json eye_line). */
@@ -199,7 +199,7 @@ export const BUDGET = { skill: 10, attr: 10, core: 0, trade: 0, cap: 10, attrCap
 export const FOG_CORE = 2;
 /** The creation rules' revision a new sheet is stamped with (rules 1.13). */
 export const SHEET_REV = 113;
-/** The budgets before rules 1.11, for sheets locked in then (no rulesRev): item 931. */
+/** The budgets before rules 1.11. Nothing reads this: sheetDerive tries today's budgets only (item 1504). */
 export const LEGACY_BUDGET = { trade: 2, fog: 2 };
 
 /** Port of the prototype's derive(): what a set of skill points and hand-placed stats spend. */
@@ -230,8 +230,7 @@ export function traitGainError(have: string[] | null | undefined, id: string): s
 
 /** A sheet is legal to lock in: every budget spent, tree caps hold, 0–2 traits, a name, an origin, a kit. */
 /** A sheet's creation spend by the rules it was made under. A sheet stamped with rules 1.11 (rulesRev) is read by
- * today's budgets only. One with no stamp was locked in before 1.11: if today's budgets don't fit it, the budgets of
- * its day are tried (the Core-for-Attribute trade at 2; Mind Without Fog's 2 Core points), so it stays legal (item 931). */
+ * today's budgets only, and so is one with no stamp (no older budget is tried: item 1504). */
 export function sheetDerive(s: Pick<Sheet, 'skills' | 'attrs' | 'cores' | 'traits' | 'rulesRev'>) {
   const fog = (s.traits || []).includes('mind_without_fog');
   return deriveCreation(s.skills, s.attrs, s.cores, fog ? FOG_CORE : 0);

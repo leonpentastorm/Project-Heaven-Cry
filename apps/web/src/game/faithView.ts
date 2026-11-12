@@ -143,7 +143,7 @@ export function faithPanel(v: FaithView | null): FaithPanel | null {
     vow: v.vow ? { icon: vowIconUri(v.vow.id), label: vowLabel(v.vow, v.vows), state: v.vow.state } : null,
     hymnText: hymnHeadText(v.cooldowns),
     rites: v.rites.map((r) => ({ id: r.id, name: r.name, text: r.text, kept: r.keptThisSession, engine: r.engine, available: r.available, why: r.why })),
-    likes: (p?.likes || []).map((t) => t.name.toUpperCase()), taboos: (p?.taboos || []).map((t) => t.name.toUpperCase()), rule: v.rule === 'jealous' ? 'JEALOUS: no other god\'s Hymns' : v.rule === 'open' ? 'OPEN: other gods\' Hymns are kept' : '',
+    likes: (p?.likes || []).map((t) => t.name.toUpperCase()), taboos: (p?.taboos || []).map((t: any) => t.name.toUpperCase() + (t.note ? ' (' + t.note + ')' : '')), rule: v.rule === 'jealous' ? 'JEALOUS: no other god\'s Hymns' : v.rule === 'open' ? 'OPEN: other gods\' Hymns are kept' : '',
     pieces, learned: v.hymns.filter((h) => h.source !== 'patron').map((h) => ({ name: h.name, patronName: h.patronName, tn: h.preview.roll?.tn ?? null })),
     closed: v.faith < FAITH_MIN ? 'Praying needs Faith ' + FAITH_MIN + ' (you have ' + v.faith + ').' : undefined,
   };
@@ -155,7 +155,7 @@ export interface PatronCard { id: string; name: string; archetype: string; costu
   likes: string[]; taboos: string[]; rule: 'open' | 'jealous'; ruleText: string; hymns: string[]; miracle: string }
 export function patronCards(): PatronCard[] {
   return FAITH_PATRONS.map((p: any) => ({ id: p.id, name: p.name, archetype: p.archetype || '', costume: p.costume || '', mark: patronMarkUri(p.id), portrait: null, accent: accentOf(p.id, p.accent),
-    likes: (p.likes || []).map((t: string) => t.toUpperCase()), taboos: (p.taboos || []).map((t: string) => t.toUpperCase()), rule: p.rule === 'jealous' ? 'jealous' : 'open',
+    likes: (p.likes || []).map((t: string) => t.toUpperCase()), taboos: (p.taboos || []).map((t: string) => t.toUpperCase() + (p.taboo_notes?.[t] ? ' (' + p.taboo_notes[t] + ')' : '')), rule: p.rule === 'jealous' ? 'jealous' : 'open',
     ruleText: p.rule === 'jealous' ? 'JEALOUS: no other god\'s Hymns' : 'OPEN: keeps other gods\' Hymns', hymns: (p.hymns || []).map((h: any) => h.name), miracle: p.miracle?.name || '' }));
 }
 export const BELIEF_TEXT = {

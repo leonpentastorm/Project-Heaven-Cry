@@ -7,6 +7,7 @@
 // Rules 1.19 (the Outburst rework, round 2): a plain Pump is +0.2; each feeling goes into an Outburst once; a feeling
 // that buys the multiplier pays for it (1 Strain or 8 HP for +0.3 above a plain Pump), one that changes the Release
 // steps +0.3, and a strong one steps +0.2, 0 or below 0 (Calm, Relief: the multiplier going down is the price).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import feelJ from '../../../data/feelings.json';
 import { SOUL_RULES } from './data';
 import type { Character } from './character';

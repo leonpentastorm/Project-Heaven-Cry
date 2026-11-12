@@ -95,12 +95,12 @@ const CONDS: Record<string, CondDef> = {
   confused: { name: 'Confused', fam: 'brain', rounds: 1, text: 'Each attack has a 50% chance to go at someone at random.' },
   ldebuff: { name: 'Left Brain Debuff', fam: 'brain', rounds: 2, text: '−2 on Mind skill rolls; Sigils cost +1 AP.' },
   rdebuff: { name: 'Right Brain Debuff', fam: 'brain', rounds: 2, text: '−2 on Expression and Soul skill rolls; Soul spells cost +20% MP.' },
-  silenced: { name: 'Silenced', fam: 'brain', rounds: 1, text: 'No Sigils, Outbursts or prayers.' },
+  silenced: { name: 'Silenced', fam: 'brain', rounds: 1, text: 'No Sigils, Outbursts, prayers or Calls.' },
   puppeted: { name: 'Puppeted', fam: 'brain', rounds: 1, text: 'The caster\'s player runs your next turn (no self-harm).' },
   shaken: { name: 'Shaken', fam: 'heart', rounds: 3, text: '−2 on Heart saves and social checks.' },
   fear: { name: 'Afraid', fam: 'heart', rounds: 2, text: 'Can\'t move toward or attack the source; −2 to hit anyone else.' },
   taunted: { name: 'Taunted', fam: 'heart', rounds: 1, text: 'Your next attack must go at the one who taunted you, if you can see them.' },
-  commanded: { name: 'Commanded', fam: 'heart', rounds: 1, text: 'You obey one short order on your next turn (halt, kneel, drop your weapon, or move up to 3 tiles).' },
+  commanded: { name: 'Commanded', fam: 'heart', rounds: 1, text: 'You obey one short order on your next turn (an enemy: halt, hold, drop, kneel or flee; COMMAND: halt, kneel, drop your weapon, or move up to 3 tiles).' },
   corroded: { name: 'Corroded', fam: 'body', rounds: 3, text: '5 damage at the start of each turn; Defense −2. A Body save at the end of each of your turns ends it.' },
   disarmed: { name: 'Disarmed', fam: 'heart', rounds: 99, noTick: true, text: 'Your weapon is down: no attacks with it until you recover it (2 AP).' },
   lowered: { name: 'Weapon lowered', fam: 'heart', rounds: 99, noTick: true, text: 'Your weapon is lowered: raise it (1 AP) to attack with it.' },
@@ -337,7 +337,7 @@ function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: string, ro
   if (t.dead) return '';
   const fam: Fam = 'body', noSave = id === 'bleeding' || id === 'injured' || id === 'hidden' || id === 'prone';
   const via = viaOf(by, opts.via);
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || 1, skipSave: noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, cb, rng });
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || (id === 'bleeding' ? 3 : 1), skipSave: noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, cb, rng });
   if (ca.cancel) return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '');
   let saved = '';
   if (!ca.skipSave) { const r = d20(rng), m = saveOf(t, fam) + (ca.saveAdd || 0), tn = 12 + (opts.str ?? strengthFor(by, opts.via)) + (ca.tnAdd || 0);
@@ -1454,7 +1454,7 @@ function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<stri
   // Modules after the release (rules 1.8): Shell shields you; Thread links two allies; Linger leaves a field.
   if (has('shell') && !u.dead) { const sh = grantShield(cb, u, shellShield(m, d, sm), u); out.push(u.name + ' is shelled (' + sh + ')'); }
   if (has('thread') && d.school === 'buff') { const two = hits.filter((v) => v.side === u.side && !v.dead).slice(0, 2); if (two.length === 2) { (two[0] as any).thread = two[1].id; (two[1] as any).thread = two[0].id; emitFx(cb, 'thread', { unit: u.id, a: two[0].id, b: two[1].id }); out.push(two[0].name + ' and ' + two[1].name + ' are threaded'); } }
-  if (has('linger') && tiles.length) { (cb.zones ||= []).push({ id: 'lz' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'linger' as any, tiles: [...tiles], words: [], by: u.id, side: u.side, left: (MODULE.linger as any)?.rounds ?? 2, mult: 1, who: u.name, element: toneElement(toneOf(d)), linger: { school: d.school, tone: toneOf(d), hostile: d.school !== 'buff' } } as any); emitFx(cb, 'linger', { unit: u.id, tiles, tone: toneOf(d), element: toneElement(toneOf(d)) }); }
+  if (has('linger') && tiles.length && !(d.school === 'damage' && has('inverse'))) { /* an Inverse Damage design strikes nobody: no damaging field (item 1510) */ (cb.zones ||= []).push({ id: 'lz' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'linger' as any, tiles: [...tiles], words: [], by: u.id, side: u.side, left: (MODULE.linger as any)?.rounds ?? 2, mult: 1, who: u.name, element: toneElement(toneOf(d)), linger: { school: d.school, tone: toneOf(d), hostile: d.school !== 'buff' } } as any); emitFx(cb, 'linger', { unit: u.id, tiles, tone: toneOf(d), element: toneElement(toneOf(d)) }); }
   void felt;
   return out.filter(Boolean);
 }

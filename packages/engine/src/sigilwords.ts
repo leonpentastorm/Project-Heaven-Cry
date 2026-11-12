@@ -1,5 +1,6 @@
 // Sigil words and grammar, rules revision 1.4 (spec: Mana, Sigils 1-2; data/sigils.json). Pure: data only, so the
 // character sheet, the validator side and the resolver all share it without import cycles.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import sigilsJ from '../../../data/sigils.json';
 import { SIGIL, type SigilDef } from './data';
 

@@ -12,7 +12,7 @@
       "start_quantity": 1,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Experience sealed in mana, worth 100 XP. Cracking it takes 10 minutes outside a fight, and someone with Brain Power 5 and an Evoker, or Will Power 5 and an Emanator. They choose who absorbs it: themselves or a party member who is present. A character can absorb one per long rest. It also sells well.",
+      "text": "Experience sealed in mana, worth {=effects.0.value} XP. Cracking it takes 10 minutes outside a fight, and someone with Brain Power 5 and an Evoker, or Will Power 5 and an Emanator. They choose who absorbs it: themselves or a party member who is present. A character can absorb one per long rest. It also sells well.",
       "requires_to_use": [
         {
           "any_of": [
@@ -57,7 +57,7 @@
       "weight_kg": 1.5,
       "adjudication": "narrator",
       "provisional": true,
-      "text": "Bandages, splints and a suture set. What a Medic treats injuries with.",
+      "text": "Bandages, splints and a suture set. What a Bard treats injuries with.",
       "price_credits": 120
     },
     {
@@ -99,7 +99,7 @@
       "text": "A slate with one Sigil word cut into it. Study it for a scene to learn the word; the plate crumbles. Its note in your pack says which word it holds.",
       "adjudication": "engine",
       "provisional": true,
-      "price": 400
+      "price_credits": 400
     },
     {
       "id": "heart_plate",
@@ -109,7 +109,7 @@
       "text": "A violet-veined slate that holds one Outburst lesson: a tone (fire, storm, frost, stone, gale or acid), a school or a module. Study it for a scene to learn it; the plate crumbles. Its note in your pack says what it teaches.",
       "adjudication": "engine",
       "provisional": true,
-      "price": 400
+      "price_credits": 400
     },
     {
       "id": "chalk_and_wax",
@@ -150,7 +150,7 @@
       "price_credits": 200,
       "adjudication": "engine",
       "provisional": true,
-      "text": "+1 Defense. Parry (reaction): +3 Defense against one melee attack. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and Brace and the Guard technique give 1 more Guard.",
+      "text": "+{=effects.0.value} Defense. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, +2 on a Parry roll, and Brace and the Guard technique give 1 more Guard.",
       "slot": "off_hand",
       "effects": [
         {
@@ -173,7 +173,7 @@
       "price_credits": 700,
       "adjudication": "engine",
       "provisional": true,
-      "text": "+2 Defense, and you count as behind half cover against shots from the front. −0.5 Movement. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and Brace and the Guard technique give 1 more Guard.",
+      "text": "+{=effects.0.value} Defense. {=effects.1.value} Movement. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and Brace and the Guard technique give 1 more Guard.",
       "slot": "off_hand",
       "effects": [
         {
@@ -186,7 +186,6 @@
         }
       ],
       "durability": 150,
-      "hp": 60,
       "phys": {
         "props": [
           "shield"
@@ -199,7 +198,7 @@
       "category": "shield",
       "weight_kg": 10,
       "price_credits": 1200,
-      "adjudication": "engine",
+      "adjudication": "narrator",
       "provisional": true,
       "text": "Carried, it does nothing. Plant it for 2 AP and it becomes a tile of full cover in front of you, with 80 HP. Picking it back up costs 2 AP.",
       "slot": "off_hand",
@@ -210,7 +209,8 @@
         }
       ],
       "durability": 150,
-      "hp": 80
+      "hp": 80,
+      "built": false
     },
     {
       "id": "torch",
@@ -218,7 +218,7 @@
       "category": "light",
       "weight_kg": 0.6,
       "price_credits": 10,
-      "adjudication": "engine",
+      "adjudication": "hybrid",
       "provisional": true,
       "text": "Lights 4 tiles around you, so darkness doesn't halve your sight there. As a weapon it hits for 12 Elemental damage (Unarmed), and a hit on a roll of 15 or more sets the target Burning. It burns for 30 minutes.",
       "slot": "off_hand",
@@ -227,7 +227,8 @@
           "op": "light",
           "value": 4
         }
-      ]
+      ],
+      "built": "light only"
     },
     {
       "id": "flare",
@@ -235,7 +236,7 @@
       "category": "light",
       "weight_kg": 0.3,
       "price_credits": 25,
-      "adjudication": "engine",
+      "adjudication": "hybrid",
       "provisional": true,
       "text": "Thrown or held, it lights 6 tiles for 3 rounds and reveals anyone Hidden there. It is used up.",
       "slot": "off_hand",
@@ -244,7 +245,8 @@
           "op": "light",
           "value": 6
         }
-      ]
+      ],
+      "built": "light only"
     },
     {
       "id": "spare_parts",
@@ -303,7 +305,7 @@
       "price_credits": 400,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Muzzle: shots don't reveal you while you are Hidden. −2 damage.",
+      "text": "Muzzle: shots don't reveal you while you are Hidden. {=damage_add} damage.",
       "effects": [
         {
           "op": "mod",
@@ -369,7 +371,7 @@
       "category": "mod",
       "weight_kg": 0.2,
       "price_credits": 150,
-      "adjudication": "engine",
+      "adjudication": "narrator",
       "provisional": true,
       "text": "Underbarrel: the first burst each turn ignores Recoil.",
       "effects": [
@@ -378,7 +380,8 @@
           "slot": "underbarrel"
         }
       ],
-      "mod_slot": "underbarrel"
+      "mod_slot": "underbarrel",
+      "built": false
     },
     {
       "id": "mod_bayonet",
@@ -389,7 +392,7 @@
       "price_credits": 120,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Underbarrel: melee attacks with the gun deal 15 damage (Athletics) instead of your fists' damage.",
+      "text": "Underbarrel: melee attacks with the gun deal {=damage} damage (Dexterity) instead of your fists' damage.",
       "effects": [
         {
           "op": "mod",
@@ -441,7 +444,7 @@
       "price_credits": 200,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Edge: +3 damage.",
+      "text": "Edge: +{=damage_add} damage.",
       "effects": [
         {
           "op": "mod",
@@ -456,7 +459,7 @@
       "category": "mod",
       "weight_kg": 0.1,
       "price_credits": 80,
-      "adjudication": "engine",
+      "adjudication": "narrator",
       "provisional": true,
       "text": "Grip: you can't be Disarmed while you hold this weapon.",
       "effects": [
@@ -465,7 +468,8 @@
           "slot": "grip"
         }
       ],
-      "mod_slot": "grip"
+      "mod_slot": "grip",
+      "built": false
     },
     {
       "id": "mod_sigil_magazine",
@@ -492,7 +496,7 @@
       "price_credits": 120,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Head: +10% Injury resistance.",
+      "text": "Head: +{=effects.0.value}% Injury resistance.",
       "slot": "head",
       "effects": [
         {
@@ -509,7 +513,7 @@
       "price_credits": 350,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Head: +2 armour.",
+      "text": "Head: +{=effects.0.value} armour.",
       "slot": "head",
       "effects": [
         {
@@ -559,7 +563,7 @@
       "price_credits": 80,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Inner torso: +1 armour.",
+      "text": "Inner torso: +{=effects.0.value} armour.",
       "slot": "inner_torso",
       "effects": [
         {
@@ -576,7 +580,7 @@
       "price_credits": 400,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Inner torso: +3 armour.",
+      "text": "Inner torso: +{=effects.0.value} armour.",
       "slot": "inner_torso",
       "effects": [
         {
@@ -593,7 +597,7 @@
       "price_credits": 90,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Lower torso: +3 kg carry limit.",
+      "text": "Lower torso: +{=effects.0.value} kg carry limit.",
       "slot": "lower_torso",
       "effects": [
         {
@@ -610,7 +614,7 @@
       "price_credits": 200,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Lower torso: +1 armour.",
+      "text": "Lower torso: +{=effects.0.value} armour.",
       "slot": "lower_torso",
       "effects": [
         {
@@ -627,7 +631,7 @@
       "price_credits": 300,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Legs: +2 armour; −0.5 Movement.",
+      "text": "Legs: +{=effects.0.value} armour; {=effects.1.value} Movement.",
       "slot": "legs",
       "effects": [
         {
@@ -648,7 +652,7 @@
       "price_credits": 180,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Legs: +0.5 Movement.",
+      "text": "Legs: +{=effects.0.value} Movement.",
       "slot": "legs",
       "effects": [
         {
@@ -665,7 +669,7 @@
       "price_credits": 40,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Hands: +2 Unarmed damage.",
+      "text": "Hands: +{=effects.0.value} Unarmed damage.",
       "slot": "hands",
       "effects": [
         {
@@ -682,7 +686,7 @@
       "price_credits": 220,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Hands: +1 armour.",
+      "text": "Hands: +{=effects.0.value} armour.",
       "slot": "hands",
       "effects": [
         {
@@ -715,7 +719,7 @@
       "price_credits": 200,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Footwear: +1 armour; +10% Injury resistance.",
+      "text": "Footwear: +{=effects.0.value} armour; +{=effects.1.value}% Injury resistance.",
       "slot": "footwear",
       "effects": [
         {

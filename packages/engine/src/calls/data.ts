@@ -1,4 +1,5 @@
 // Calls (rules 1.13): the data. Nine Calls, one per gamma skill, and the shared ladder (data/calls.json `rules`).
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import callsJ from '../../../../data/calls.json';
 import { SKILL } from '../data';
 import type { CallDef } from './types';

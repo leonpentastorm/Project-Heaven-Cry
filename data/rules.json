@@ -1143,7 +1143,7 @@
         "effect": "all flux to the air"
       },
       "hit": "damage spells: brain_power vs defense; Afflictions: the target saves against 12 + the caster's strength with Brain Power; Boons and Workings: no roll",
-      "damage": "Subjects' damage summed x Reach x Burst x Delivery multipliers x 0.9 per repeated glyph x the Line multiplier (rules 1.17: 1.7 for 2 glyphs, 1.75 for 3, 1.8 for 4; a character's Lines only) x sigil multiplier x elemental multiplier (elemental damage); a critical x1.5, to x2.0 at most; no ceiling",
+      "damage": "the strongest damaging Subject in full + half of every other damaging glyph (items 588, 589) x Reach x Burst x Delivery multipliers x 0.9 per repeated glyph x the Line multiplier (rules 1.17: 1.7 for 2 glyphs, 1.75 for 3, 1.8 for 4; a character's Lines only) x (1 + the Sigil bonus + the Elemental bonus for elemental damage: added, not multiplied); a critical x1.5, to x2.0 at most; no ceiling",
       "example": {
         "words": [
           "spark",

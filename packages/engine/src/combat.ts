@@ -1,4 +1,5 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
 import { MAP_LAYOUTS, readLayout, nearestFree } from './maplayout';
 import { ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
@@ -1075,7 +1076,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   if (o.ambush) M(att.ambushMult || 1.5, 'ambush');
   if (condOn(att, 'weakened')) M(0.75, 'Weakened');
   if (condOn(att, 'sharpened')) M(1.25, 'Sharpened'); // SHARPEN (rules 1.4)
-  if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
+  if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (fx.statuses.includes('stunned') && condOn(tgt, 'stunned')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
   const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null };
   // pierce / ignoreArmour: armour this attack ignores, set by a listener (a technique's strike, rules 1.12)
   const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0 };
@@ -1237,7 +1238,7 @@ export function coneUnits(cb: Combat, from: string, toward: string, n: number): 
  * the shooter (rules 1.3; provisional): the hit's damage before the target's armour, less each one's armour. */
 function splash(cb: Combat, att: Unit, tgt: Unit, w: WeaponDef, dealt: number): string {
   // An enemy's splash grows with its tier and level as its direct hit does (rules 1.15; attackDamage's 'tier and level' term).
-  const r = radiusOf(w), raw = weaponDamage(w, dist(att.pos, tgt.pos)) * (!att.charId && att.lvlDmg ? att.lvlDmg : 1); let out = '';
+  const r = radiusOf(w), raw = ((w as any).splash_damage ?? weaponDamage(w, dist(att.pos, tgt.pos))) * (!att.charId && att.lvlDmg ? att.lvlDmg : 1); let out = '';
   for (const v of cb.units) if (v !== tgt && !v.dead && !v.surrendered && dist(v.pos, tgt.pos) <= r) out += hurtUnit(v, raw, false, cb, 'explosion', att);
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && dist(o.pos, tgt.pos) <= r) out += damageObject(cb, o.pos, raw * (((w as any).grants?.effect?.op === 'cover_damage_mult') ? (w as any).grants.effect.value : 1), 0, att);
   void dealt;
@@ -2382,7 +2383,7 @@ export function weaponActions(u: Unit): WeaponAction[] {
   if (u.maxDur) { const c = actionAp({ u }, 'field_repair', 2).ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
   const owAp = attackApCost(w, melee ? 'melee' : 'shot');
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });
-  for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? 4 : 3, why: null, text: '' });
+  for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? ((w as any).grants?.effect?.op === 'auto_ap' ? (w as any).grants.effect.value : 4) : 3, why: null, text: '' });
   // An item may replace the weapon's own skill (stat 'hide_weapon_skill' > 0: Old School's Fan the Hammer: hooks gap C6).
   if (w.grants && !((u.charId || u.held) && statQuery({ u }, 'hide_weapon_skill', { weapon: w.id, skill: w.grants.name }).add > 0)) add({ id: 'skill', label: w.grants.name + (w.grants.effect?.op === 'narrator' ? ' (Narrator)' : ''), ap: w.grants.effect?.ap || 0, why: null, text: w.grants.text || '' });
   // A unit with a fixed action list (the drone: move and shoot, item 370) has none of the weapon's other actions.

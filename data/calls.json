@@ -75,7 +75,7 @@
       "steps": [
         {
           "at": 1,
-          "text": "An ally gains 1 AP: this turn if they have not acted yet this round, on their next turn if they have.",
+          "text": "An ally gains {=steps.0.numbers.ap} AP: this turn if they have not acted yet this round, on their next turn if they have.",
           "numbers": {
             "ap": 1,
             "pressure": 0
@@ -83,7 +83,7 @@
         },
         {
           "at": 3,
-          "text": "An ally gains 1 AP and loses 1 Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
+          "text": "An ally gains {=steps.0.numbers.ap} AP and loses {=steps.1.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "numbers": {
             "ap": 1,
             "pressure": 1
@@ -91,7 +91,7 @@
         },
         {
           "at": 7,
-          "text": "An ally gains 2 AP and loses 1 Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
+          "text": "An ally gains {=steps.2.numbers.ap} AP and loses {=steps.1.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "numbers": {
             "ap": 2,
             "pressure": 1
@@ -147,7 +147,7 @@
       "steps": [
         {
           "at": 1,
-          "text": "You or an ally gets +2 on all saves until the start of your next turn.",
+          "text": "You or an ally gets +{=steps.0.numbers.saves} on all saves until the start of your next turn.",
           "numbers": {
             "saves": 2,
             "fresh_save": 0,
@@ -156,7 +156,7 @@
         },
         {
           "at": 3,
-          "text": "You or an ally gets +3 on all saves until the start of your next turn, and rolls a new save right now against one condition they have.",
+          "text": "You or an ally gets +{=steps.1.numbers.saves} on all saves until the start of your next turn, and rolls a new save right now against one condition they have.",
           "numbers": {
             "saves": 3,
             "fresh_save": 1,
@@ -165,7 +165,7 @@
         },
         {
           "at": 7,
-          "text": "You or an ally gets +4 on all saves until the start of your next turn, rolls a new save right now against one condition they have, and stops being Shaken and Afraid.",
+          "text": "You or an ally gets +{=steps.2.numbers.saves} on all saves until the start of your next turn, rolls a new save right now against one condition they have, and stops being Shaken and Afraid.",
           "numbers": {
             "saves": 4,
             "fresh_save": 1,
@@ -243,7 +243,7 @@
         },
         {
           "at": 7,
-          "text": "The next two allies to attack this enemy ignore its cover, get +1 to hit and can target it even if it is Hidden. You can Spot a Hidden enemy if you can see its tile. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
+          "text": "The next two allies to attack this enemy ignore its cover, get +{=steps.2.numbers.hit} to hit and can target it even if it is Hidden. You can Spot a Hidden enemy if you can see its tile. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
           "numbers": {
             "allies": 2,
             "unhide": 1,
@@ -272,7 +272,7 @@
         },
         {
           "at": 3,
-          "text": "Just before the next weapon attack on an ally is rolled, they step up to 2 tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. It lasts until the start of your next turn.",
+          "text": "Just before the next weapon attack on an ally is rolled, they step up to {=steps.1.numbers.tiles} tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. It lasts until the start of your next turn.",
           "numbers": {
             "tiles": 2,
             "hit": 0
@@ -280,7 +280,7 @@
         },
         {
           "at": 7,
-          "text": "Just before the next weapon attack on an ally is rolled, they step up to 2 tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. That attack is at −2 to hit, and it is wasted if it can no longer reach them. It lasts until the start of your next turn.",
+          "text": "Just before the next weapon attack on an ally is rolled, they step up to {=steps.1.numbers.tiles} tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. That attack is at {=steps.2.numbers.hit} to hit, and it is wasted if it can no longer reach them. It lasts until the start of your next turn.",
           "numbers": {
             "tiles": 2,
             "hit": -2
@@ -301,7 +301,7 @@
       "steps": [
         {
           "at": 1,
-          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds and loses 1 AP on its next turn.",
+          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds and loses {=steps.0.numbers.ap_loss} AP on its next turn.",
           "numbers": {
             "ap_loss": 1,
             "no_approach": 0
@@ -309,7 +309,7 @@
         },
         {
           "at": 3,
-          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses 1 AP on its next turn and can't move toward you on that turn.",
+          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses {=steps.0.numbers.ap_loss} AP on its next turn and can't move toward you on that turn.",
           "numbers": {
             "ap_loss": 1,
             "no_approach": 1
@@ -317,7 +317,7 @@
         },
         {
           "at": 7,
-          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses 2 AP on its next turn and can't move toward you on that turn.",
+          "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses {=steps.2.numbers.ap_loss} AP on its next turn and can't move toward you on that turn.",
           "numbers": {
             "ap_loss": 2,
             "no_approach": 1
@@ -345,14 +345,14 @@
         },
         {
           "at": 3,
-          "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it 1 AP more.",
+          "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it {=steps.1.numbers.attack_ap} AP more.",
           "numbers": {
             "attack_ap": 1
           }
         },
         {
           "at": 7,
-          "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it 2 AP more.",
+          "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it {=steps.2.numbers.attack_ap} AP more.",
           "numbers": {
             "attack_ap": 2
           }

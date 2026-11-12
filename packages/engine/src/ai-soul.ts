@@ -21,6 +21,7 @@
 //    only with no ally of its own near enough to be caught), so the first player into reach draws the release;
 //  · nothing to aim at yet: Begin and hold (when the Strain allows and it can still act), Syphon when the MP is short,
 //    and leave the walking and shooting to the enemy turn's weapon code (a shot or a hit also calms the heart).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
 import { type OutburstDesign } from './character';
 import { type Combat, type Unit, dist, paths, apForTiles, moveUnit } from './combat';

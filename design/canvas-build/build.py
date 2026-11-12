@@ -21,8 +21,10 @@ WEB = "--web" in sys.argv
 BLOBS = json.loads(((ROOT / "apps/web/src/game/assets.json") if WEB else (BUILD / "blobs.json")).read_text())
 PAL = json.loads((ROOT / "art/style-guide/palette.json").read_text())
 
+sys.path.insert(0, str(ROOT / "tools"))
+import text_numbers  # texts read their numbers: {=path} placeholders are filled from the item's own fields, as the engine does
 def load(name):
-    return json.loads((ROOT / "data" / name).read_text())
+    return text_numbers.resolve_file(json.loads((ROOT / "data" / name).read_text()))
 
 INK = {k: v["ui_ink"] for k, v in PAL["attributes"].items()}
 CORE = PAL["ui"]["cores"]
