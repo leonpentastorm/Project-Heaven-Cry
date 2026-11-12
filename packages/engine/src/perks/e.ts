@@ -251,7 +251,8 @@ register({
 // Rules 1.13 (a beta gives no AP). I: when an ally drops to 0 HP (Downed or killed) by an enemy, a hazard or an enemy's
 // effect (not friendly fire or your own side's magic), every other ally, the holder included, takes 15% less damage
 // until their own next turn starts; II: 25%. Several drops or holders don't stack (the best counts). PROVISIONAL.
-const RALLY = { I: 0.15, II: 0.25 };
+// The share is its data's (engine foundations 3): the held tier's effects[0].value_pct.
+const rallyLess = (h: Holder) => h.info.effects[0].value_pct / 100;
 register({
   id: 'rally_cry', claims: 'all',
   on: {
@@ -259,7 +260,7 @@ register({
       const v = ctx.victim as Unit, u = h.u, cb = h.cb; if (!u || !cb || v.side !== u.side || v.companion) return;
       if (ctx.by && ctx.by.side === v.side) return; // friendly fire, or your own Mana Short
       if (ctx.dead && v.downed) return; // finished off while already Downed: they dropped to 0 once, not twice
-      const n = tierII(h) ? RALLY.II : RALLY.I, got: string[] = [];
+      const n = rallyLess(h), got: string[] = [];
       for (const a of cb.units) {
         if (a === v || a.side !== u.side || a.dead || a.downed || a.companion) continue;
         const as = unitState(h, a); if ((as.less || 0) >= n) continue;

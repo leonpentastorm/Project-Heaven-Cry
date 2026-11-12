@@ -126,19 +126,23 @@ register({
 // Each wound (a hit that takes HP) this combat: +5% Elemental damage reduction, up to 25% (II: 40%). The total with the
 // derived Elemental damage taken stays within the 60% cap (spec: Derived stats). II, PROVISIONAL (plan 6, Scar Tissue 2):
 // "limb damage" is Injury resistance: each stack adds +5 points to the d100 injury resistance, up to +40.
+// Its numbers are its data's (engine foundations 3): each stack is effects[0].value, up to effects[0].max (the count of
+// stacks is max / value); II's Injury resistance per stack is effects[1].value in points of the d100.
+const scarStack = (h: Holder) => h.info.effects[0] as { value: number; max: number };
 register({
   id: 'scar_tissue', claims: 'all',
   on: {
     on_damaged: (ctx, h) => {
       if (ctx.t !== h.u || !isHit(ctx.src) || !inFight(h)) return;
-      const st = stateOf(h), cap = tierII(h) ? 8 : 5; if ((st.n || 0) >= cap) return;
+      const { value, max } = scarStack(h), st = stateOf(h), cap = Math.round(max / value); if ((st.n || 0) >= cap) return;
       st.n = (st.n || 0) + 1;
-      if (tierII(h)) { st.base ??= h.u!.injResist || 0; h.u!.injResist = st.base + 5 * st.n; }
+      const inj = h.info.effects[1]; if (inj?.type === 'limb') { st.base ??= h.u!.injResist || 0; h.u!.injResist = st.base + Math.round(inj.value * 100) * st.n; }
     },
     damage_in: (ctx, h) => {
       if (ctx.phase !== 'reduce' || ctx.t !== h.u || !ELEMENTAL_TYPES.has(ctx.src?.dmgType || '')) return;
       const n = stateOf(h).n || 0; if (!n) return;
-      const e = Math.min(0.6, h.u!.elemTaken || 0), room = Math.max(0, 1 - 0.4 / (1 - e)), s = Math.min(n * 0.05, tierII(h) ? 0.4 : 0.25, room);
+      const { value, max } = scarStack(h);
+      const e = Math.min(0.6, h.u!.elemTaken || 0), room = Math.max(0, 1 - 0.4 / (1 - e)), s = Math.min(n * value, max, room); // 0.6 and 0.4: the 60% cap of the spec's Derived stats
       ctx.dmg = ctx.dmg * (1 - s);
     },
   },
