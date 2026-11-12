@@ -10849,6 +10849,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-wonder.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-wonder.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-defiance": {
+      "id": "feeling-defiance",
+      "label": "Defiance: the ribbon stands straight against slanted lines pushing at it",
+      "path": "art/icons/feelings/feeling-defiance.png",
+      "sha256": "4d1999fad96c1ac5ba483ce4fa9122525ed2bcc681c98f1f4931fea2b5fdd4ce",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-defiance.png",
+        "128": "art/icons/feelings/exports/128/feeling-defiance.png",
+        "64": "art/icons/feelings/exports/64/feeling-defiance.png",
+        "56": "art/icons/feelings/exports/56/feeling-defiance.png",
+        "48": "art/icons/feelings/exports/48/feeling-defiance.png",
+        "44": "art/icons/feelings/exports/44/feeling-defiance.png",
+        "40": "art/icons/feelings/exports/40/feeling-defiance.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-defiance.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-defiance.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {
