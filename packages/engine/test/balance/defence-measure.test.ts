@@ -77,7 +77,7 @@ describe('the defence step, measured', () => {
     if (PARTS.includes('fire')) {
       const only = process.env.DEFENCE_ROWS ? new RegExp(process.env.DEFENCE_ROWS, 'i') : null;
       for (const lv of LV.length ? LV : [1, 6, 12, 20]) for (const [k, p] of Object.entries(PAIRS)) { if (only && !only.test(k)) continue;
-        for (const n of p.seconds.length > 1 ? [2, 3, 4] : [2, 3]) for (const focus of [true, false]) { if (!focus && /idle/i.test(k)) continue; say('[fire] ' + pairLine(pairFire(p.label, p.seconds, lv, n, N, { focus, first: p.first }))); } }
+        for (const n of p.seconds.length > 1 ? [2, 3, 4] : [2, 3]) for (const focus of [true, false]) { if (!focus && !OFF_TOO.includes(k)) continue; say('[fire] ' + pairLine(pairFire(p.label, p.seconds, lv, n, N, { focus, first: p.first }))); } }
     }
     // The open question of rules 1.18: an enemy's Burst as the characters' (two rolls, the second at −4), with the
     // Soldier's, Elite's and Boss's damage factors tried at DEFENCE_BURST=<soldier>/<elite>/<boss>[,…] ("old": as built).
@@ -95,6 +95,8 @@ describe('the defence step, measured', () => {
     expect(true).toBe(true);
   }, 14400000);
 });
+/** The pairs also measured with the healer weight off (the control: what rules 1.20 measured). */
+const OFF_TOO = (process.env.DEFENCE_OFF_ROWS || 'mender,medic,pair,mender2,tank').split(',');
 /** The Boss's HP at level 1 (data/enemies.json; rules 1.23: refitted from 960). */
 const BOSS_HP = 820;
 void SOLDIER_TURN; void FIGHTS;

@@ -3853,7 +3853,7 @@
           "*heavy metal plays*"
         ],
         "intro": "Faith is your ability to place your trust in higher powers. In a world where anything can happen, plenty of people face life's cruelty on the strength of belief. And unlike real life, here the odds of a prayer coming true are better than 1%.",
-        "effect": "+10% Blessing power. Prayers come back half a turn sooner. Your Blessings' conditions are harder to save against.",
+        "effect": "+10% Blessing power. Hymns come back sooner: each point takes three quarters of a round off the wait, down to 3 rounds. Your Blessings' conditions are harder to save against.",
         "high_levels": "your bond with your faith tightens and amplifies everything your religion gives you. Everyone else sees an insufferable zealot, or worse, a heretic.",
         "good_for": "crusaders, divine classes, cultists, missionaries.",
         "bad_for": "atheists, scientists, smartasses.",

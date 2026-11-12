@@ -265,7 +265,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Will Power | Determination | alpha | +10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against. |
 | Lore Master | Determination | gamma | Your Name It Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
 | Composure | Determination | beta | +1 on Heart saves (fear, despair, losing your nerve). |
-| Faith | Virtue | alpha | +10% Blessing power. Prayers come back half a turn sooner. Your Blessings' conditions are harder to save against. |
+| Faith | Virtue | alpha | +10% Blessing power. Hymns come back sooner: each point takes three quarters of a round off the wait, down to 3 rounds. Your Blessings' conditions are harder to save against. |
 | Conscience | Virtue | beta | +10% to every shield you are given. |
 | Authority | Virtue | gamma | Karma moves 1 further each time it changes: more when it is awarded, more when it is taken. Your Order Call reaches 1 tile further. On a check it rolls 1 better than its points say. |
 

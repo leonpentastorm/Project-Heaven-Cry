@@ -477,3 +477,13 @@ the enemy table refit, Faith items.
     a thousand MP against designs that cost 20 to 25).
 
 Built as rules 1.24 (hand-off `mp-rework.md`).
+
+### Cost (Leon, 12 Nov 2026)
+
+17. **Balance the cost as well as the number.** "We are kinda balancing numbers without cost. Only system in here
+    with legit no cost or setup is faith." Guns: Heat, reloads, ammunition to buy, all of it AP. Blades: closing in and
+    keeping Momentum. The Outburst: Strain and MP. Sigil: moving to place glyphs, charge and cores, Flux to vent.
+    So the unified damage proposal carries a **cost ledger** per system (what the simulator's tables already count and
+    what they don't: closing distance, being hit in reach, credits, session-long MP and cores, a target that moves
+    off a Line), and the budget rule for new content prices cost classes explicitly: AP, a resource inside a fight, a
+    resource across a session, set-up turns, exposure, reliability, targets, reach.
