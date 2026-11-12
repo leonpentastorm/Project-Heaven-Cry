@@ -12,7 +12,8 @@
 //   ob          the Outburst, steady play with the early feelings; obPeak: the biggest Release (all 25 felt) in one turn
 //   whisper     Faith (Old Overcast): a turn with only a Whisper; hymn: a turn with a Hymn (faith-measure.ts prayerRow)
 //   heal        the Soul healer's steady Buff heal (6 AP: one turn) in Soldier-turns (heal-measure.ts inventory), ×100
-import { runCell } from './sim';
+import { runCell, runFight } from './sim';
+import { SQUAD, FIGHTS } from './report';
 import { gunBuild, gunRow, ROTATIONS } from './guns-measure';
 import { pattern } from './magic-measure';
 import { faithBuild, prayerRow } from './faith-measure';
@@ -53,4 +54,19 @@ export function measure(level: number, variant: string, n: number, which: string
   }
   out.errors = errors;
   return out;
+}
+
+// ---------- (a) many targets: the cluster yardstick ----------
+const chebyshev = (a: string, b: string) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
+/** How many enemies an area catches when it is aimed at one of them: fights of the reference squad (report.ts SQUAD,
+ * its own policies, the enemy AI on) against a group, sampled after every action from round 2 on, for every living
+ * enemy: the living enemies (itself included) within r tiles of it, for r = 1, 2, 3 (a Burst's radius), and 2 when
+ * another enemy stands within 3 tiles (a chain's jump), else 1. The mean is the number an area of that size is worth. */
+export function cluster(level: number, n: number, fight = 'standard', map: 'open' | 'cover' = 'open') {
+  const sum: Record<string, number> = { r1: 0, r2: 0, r3: 0, chain3: 0 }; let k = 0;
+  for (let i = 0; i < n; i++) runFight({ pcs: SQUAD.map((b) => ({ build: b, variant: 'normal' as any, level })), foes: FIGHTS[fight].foes.map((t) => ({ tier: t })), map, seed: ['CLUSTER', fight, map, level, i].join('-'), maxRounds: 6 }, {
+    watch: (cb: any) => { if ((cb?.round || 0) < 2) return; const live = cb.units.filter((u: any) => u.side === 'foe' && !u.dead && !u.downed); if (live.length < 2) return;
+      for (const u of live) { k++; for (const r of [1, 2, 3]) sum['r' + r] += live.filter((v: any) => chebyshev(v.pos, u.pos) <= r).length; sum.chain3 += live.some((v: any) => v !== u && chebyshev(v.pos, u.pos) <= 3) ? 2 : 1; } },
+  });
+  return Object.fromEntries(Object.entries(sum).map(([q, v]) => [q, k ? Math.round((v / k) * 100) / 100 : 0])) as Record<string, number>;
 }

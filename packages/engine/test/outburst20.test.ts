@@ -4,8 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   d20, stageMult, outburstArea, previewOutburstPlan, migrateDesign, migrateHeld, freePumps, condOn, objectsOf, moveUnit, healUnit,
-  apply, STAGE_MULT, soulMult, heartMagic, HEART_CASTERS, beginOutburst, pumpOutburst, releaseOutburst, type Combat, type Unit, type OutburstDesign,
-} from '../src';
+  apply, STAGE_MULT, soulMult, heartMagic, HEART_CASTERS, beginOutburst, pumpOutburst, releaseOutburst, type Combat, type Unit, type OutburstDesign, PROFILES } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 /** A seed whose next n d20 rolls are all 2-19 (no criticals, no natural 1s). */
@@ -31,7 +30,7 @@ function rig(foes: string[] = ['6,5'], allies: string[] = [], mana = 15) {
 function arm(u: Unit) {
   if (!u.mg) throw new Error('no magic');
   // firstUsed: rules 1.8's free first Pump of the fight is spent, so these 1.5 tests price every Pump (outburst40.test.ts covers it).
-  Object.assign(u.mg, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, debuff: { body: 0, brain: 0, heart: 0 } });
+  Object.assign(u.mg, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBoon: 1, deal: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, debuff: { body: 0, brain: 0, heart: 0 } });
   u.sk = {}; u.dbf = {};
 }
 type F = ReturnType<typeof rig>;
@@ -75,11 +74,10 @@ describe('the heart cycle: Begin, Pump, Release (rules 1.5, section 1)', () => {
     expect(() => begin(f, d2)).toThrow(/holding/);
     me(f).conds = { ...(me(f).conds || {}), silenced: 1 }; expect(() => pump(f)).toThrow(/Silenced/);
   });
-  it('the Soul multiplier is 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (2.45 maxed)', () => {
+  it('the Soul multiplier is the soul profile\'s k at every sheet (rules 1.26: an Outburst rolls; skill buys accuracy, level buys damage)', () => {
     const s = storyWith([{ archetype: 'stormcaller', kit: 'soul' }]); const c = s.g.characters[s.chars[0].id];
     c.attrs.determination = 10; c.skills.will_power = 10;
-    expect(soulMult(c)).toBeCloseTo(2.45);
-    expect(Math.round(20 * 2.45 * 0.6)).toBe(29); expect(Math.round(20 * 2.45 * 1.8)).toBe(88); expect(Math.round(20 * 2.45 * 2.2)).toBe(108);
+    expect(soulMult(c)).toBe(PROFILES.soul.k); c.attrs.determination = 1; c.skills.will_power = 0; expect(soulMult(c)).toBe(PROFILES.soul.k);
   });
 });
 

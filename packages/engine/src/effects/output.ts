@@ -62,6 +62,8 @@ export const PROFILES: Record<string, Profile> = Object.fromEntries(Object.entri
  * from weapons.json `phys` (each `scales_with` Attribute; the skill it hits with): character.ts weaponMult. */
 export const PAIRS: Record<string, Pair> = Object.fromEntries(Object.entries(OUT.pairs || {}).filter(([, p]: [string, any]) => p && Array.isArray(p.attrs) && Array.isArray(p.skills)).map(([id, p]: [string, any]) => [id, { attrs: [...p.attrs], skills: [...p.skills] }]));
 export const profileOf = (id: string | null | undefined): Profile => PROFILES[id || ''] || FLAT;
+/** Rules 1.26 (the re-fit): a system's own named multiplier (data/rules.json output.factors: melee, thrown). Throws when the data has none: never a silent ×1. */
+export function factorOf(name: string): number { const v = Number(OUT.factors?.[name]); if (!Number.isFinite(v)) throw new Error('data/rules.json output.factors.' + name + ' is missing'); return v; }
 const FLAT: Profile = { k: 1, attr: 0, skill: 0, level: null };
 export const pairOf = (id: string | null | undefined): Pair => PAIRS[id || ''] || PAIRS[profileOf(id).pair || ''] || { attrs: [], skills: [] };
 

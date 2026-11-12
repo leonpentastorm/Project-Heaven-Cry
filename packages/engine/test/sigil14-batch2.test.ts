@@ -29,7 +29,7 @@ function rig(words: string[], foes: string[] = ['14,9'], o: { skills?: Record<st
 }
 function arm(u: Unit, words: string[], maxWords = 4) {
   u.ap = 60; const m = u.mg!;
-  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords, flux: -99, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0 });
+  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords, flux: -99, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0 });
 }
 type F = ReturnType<typeof rig>;
 function line(f: F, words: string[], tiles: string[]) { words.forEach((w, i) => { f.pc.pos = tiles[i]; f.act({ type: 'combat/draw', unitId: f.pc.id, word: w, tile: tiles[i] }); }); }

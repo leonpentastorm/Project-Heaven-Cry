@@ -8,6 +8,7 @@ import './helpers/yard16'; // the 16 × 11 practice square these tests name tile
 import {
   apply, condOn, applyCond, applyDamage, resolveAttack, previewAttack, previewEvoke, previewOutburst, d20, endTurn, glyphCost, manaOf,
   coverageOf, itemInfo, ADVANCED, perkActionsFor, emit, statQuery, objectsOf, moveUnit, heal, beginTurn, noteDeaths, condTurnEnd, type Unit, type Combat, type Character,
+  PROFILES, factorOf, levelFactor,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -29,7 +30,7 @@ const charOf = (f: { g: any }, u: Unit): Character => f.g.characters[u.charId!];
 /** Give a unit both an Evoker (with words) and an Emanator. */
 function caster(u: Unit, words: string[], extra: any = {}) {
   u.mg = { words, designs: [{ id: 'o1', name: 'Damage Outburst', school: 'damage', modules: ['move'] }], evoker: true, emanator: true, charge: 10, cores: 2, coresMade: 0, flux: 0, mp: 300, mpMax: 300, strain: 0, held: null, cast: false,
-    brain: 3, will: 3, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
+    brain: 3, will: 3, sigilMult: 1, sigilBoon: 1, soulMult: 1, soulBoon: 1, deal: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
     saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any;
   return u;
 }
@@ -374,7 +375,8 @@ describe('Vessel', () => {
     perk(f, f.pc, 'vessel.release_strike', { targetId: foe.id });
     expect(logHas(f.cb, /RELEASE \(1 form, 15\)/)).toBe(true);
     // fists 10 + Surge 15 × 1.0 (stage 1, ×1.0 since rules 1.19; past Empty Hand's floor of 20) + the release 15 × 1.0 × the Soul multiplier, armour 0
-    expect(999 - f.unit(foe.id).hp).toBe(10 + 15 + Math.floor(15 * f.pc.mg!.soulMult));
+    // rules 1.26: the fists and Surge's 15 go in together and take the weapon profile's k, the melee factor and the Level term (a7: an item's flat is multiplied)
+    expect(999 - f.unit(foe.id).hp).toBe(Math.floor((10 + 15) * PROFILES.weapon.k * factorOf('melee') * levelFactor('deal', f.pc.level)) + Math.floor(15 * f.pc.mg!.soulMult));
     expect((charOf(f, f.pc) as any).state.vessel.forms).toEqual([]);
   });
 });

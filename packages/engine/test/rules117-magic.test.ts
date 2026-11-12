@@ -29,7 +29,7 @@ function sigil(words: string[], foes: { at: string; tier?: string; sigils?: stri
   const cb = startCombat('t', open(), [{ c, pos: '2,5' }, ...ally], foes.map((f, i) => ({ name: 'Foe ' + (i + 1), tier: f.tier || 'minion', weapon: 'service_pistol', at: refOf(f.at), ...(f.sigils ? { sigils: f.sigils } : {}) })), 'easy', { state: 7 }, []);
   cb.objects = [];
   const u = cb.units.find((x) => x.charId === 'c1')!, es = cb.units.filter((x) => x.side === 'foe'), al = cb.units.find((x) => x.charId === 'a1');
-  for (const x of cb.units.filter((q) => q.side === 'pc')) { x.ap = 99; x.mg!.words = [...words]; x.mg!.maxWords = 4; x.mg!.charge = 999; x.mg!.flux = -99; x.mg!.sigilMult = 1; x.mg!.elemMult = 1; x.mg!.healMult = 1; x.mg!.rangeBonus = 0; x.mg!.durBonus = 0; x.mg!.coreSave = 0; x.mg!.glyphAp = 1; x.hp = x.maxHp = 500; x.armour = 0; x.def = 10; }
+  for (const x of cb.units.filter((q) => q.side === 'pc')) { x.ap = 99; x.mg!.words = [...words]; x.mg!.maxWords = 4; x.mg!.charge = 999; x.mg!.flux = -99; x.mg!.sigilMult = 1; x.mg!.sigilBoon = 1; x.mg!.deal = 1; x.mg!.elemMult = 1; x.mg!.healMult = 1; x.mg!.rangeBonus = 0; x.mg!.durBonus = 0; x.mg!.coreSave = 0; x.mg!.glyphAp = 1; x.hp = x.maxHp = 500; x.armour = 0; x.def = 10; }
   for (const e of es) { e.def = -99; e.hp = e.maxHp = 500; e.armour = 0; e.sv = { body: -99, brain: -99, heart: -99 }; }
   cb.mana = 15;
   return { cb, u, e: es[0], es, ally: al, rng: seed() };
@@ -45,17 +45,17 @@ function cast(s: ReturnType<typeof sigil>, words: string[], rng = s.rng, t: Unit
 }
 
 describe('Sigil: the Line multiplier (rules 1.17)', () => {
-  it('the data: ×1.7 for 2 glyphs, ×1.75 for 3, ×1.8 for 4; nothing under 2 glyphs', () => {
-    expect(LINE_MULT).toEqual({ 2: 1.7, 3: 1.75, 4: 1.8 }); expect([1, 2, 3, 4, 5].map(lineMult)).toEqual([1, 1.7, 1.75, 1.8, 1.8]);
+  it('the data: ×1.87 for 2 glyphs, ×1.93 for 3, ×1.98 for 4 (rules 1.26, the re-fit; ×1.7 / 1.75 / 1.8 in rules 1.17); nothing under 2 glyphs', () => {
+    expect(LINE_MULT).toEqual({ 2: 1.87, 3: 1.93, 4: 1.98 }); expect([1, 2, 3, 4, 5].map(lineMult)).toEqual([1, 1.87, 1.93, 1.98, 1.98]);
     expect(SIGIL_GRAMMAR.line_mult.provisional).toBe(true);
   });
   it('a character\'s Line multiplies its damage by its length, in the preview and in the hit', () => {
-    const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(Math.round(30 * 1.7)); // 51
-    const b = sigil(['fire', 'condense', 'seek']); expect(cast(b, ['fire', 'condense', 'seek'])).toBe(Math.round(30 * 1.5 * 1.75)); // 79
+    const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(Math.round(30 * LINE_MULT[2])); // 56
+    const b = sigil(['fire', 'condense', 'seek']); expect(cast(b, ['fire', 'condense', 'seek'])).toBe(Math.round(30 * 1.5 * LINE_MULT[3])); // 87
     // 4 glyphs: STONE 35 in full (Sigil), FIRE at half (Elemental), CONDENSE ×1.5, the Line ×1.8
     const c = sigil(['stone', 'fire', 'condense', 'seek']);
     draw(c.cb, c.rng, c.u, ['stone', 'fire', 'condense', 'seek'], ['5,5', '4,5', '3,5', '2,5']);
-    const pv = previewEvoke(c.cb, c.u, '2,5', c.e.pos); expect(pv.affected[0].dmg).toBe(Math.round(35 * 1.5 * 1.8) + Math.round(15 * 1.5 * 1.8));
+    const pv = previewEvoke(c.cb, c.u, '2,5', c.e.pos); expect(pv.affected[0].dmg).toBe(Math.round(35 * 1.5 * LINE_MULT[4]) + Math.round(15 * 1.5 * LINE_MULT[4]));
     const hp = c.e.hp; expect(evoke(c.cb, c.rng, c.u, '2,5', c.e.pos)).toBeNull(); expect(hp - c.e.hp).toBe(pv.affected[0].dmg);
   });
   it('damage only: the Line multiplier does not touch a heal (MEND 10 since rules 1.20)', () => {
@@ -65,12 +65,12 @@ describe('Sigil: the Line multiplier (rules 1.17)', () => {
   });
   it('an enemy caster\'s Line takes no multiplier: its damage comes from the enemy table', () => {
     const s = sigil(['fire', 'seek'], [{ at: '9,5', sigils: ['fire', 'seek'] }]), sp = compileSpell(['fire', 'seek']);
-    expect(lineMultFor(s.u, sp)).toBe(1.7); expect(lineMultFor(s.e, sp)).toBe(1); expect(lineMultFor(null, sp)).toBe(1);
+    expect(lineMultFor(s.u, sp)).toBe(LINE_MULT[2]); expect(lineMultFor(s.e, sp)).toBe(1); expect(lineMultFor(null, sp)).toBe(1);
   });
   it('no ceiling: a spell is never scaled down to 350 (the targets stay targets)', () => {
     expect(capParts([400, 300], false)).toEqual([400, 300]);
     const s = sigil(['fire', 'seek']); s.u.mg!.sigilMult = 10; s.e.hp = s.e.maxHp = 5000;
-    expect(cast(s, ['fire', 'seek'])).toBe(Math.round(30 * 1.7 * 10)); // 510
+    expect(cast(s, ['fire', 'seek'])).toBe(Math.round(30 * LINE_MULT[2] * 10)); // 561
   });
 });
 
@@ -78,7 +78,7 @@ describe('Sigil: a critical, the level gap, and the Elite and Boss guard (rules 
   it('a critical is ×1.5 (the caster\'s own critical multiplier, never past ×2.0), not ×2', () => {
     const s = sigil(['fire', 'seek']); const cm = spellCritMult(s.cb, s.u, s.e);
     expect(cm).toBeGreaterThanOrEqual(CRIT_BASE); expect(cm).toBeLessThanOrEqual(CRIT_MAX); expect(cm).toBeLessThan(2);
-    expect(cast(s, ['fire', 'seek'], rollIs(20))).toBe(Math.round(30 * 1.7 * cm));
+    expect(cast(s, ['fire', 'seek'], rollIs(20))).toBe(Math.round(30 * LINE_MULT[2] * cm));
     const half = sigil(['fire', 'seek']); half.e.critTaken = 0.5; // the target's Critical damage taken cuts the part above ×1
     expect(spellCritMult(half.cb, half.u, half.e)).toBeCloseTo(1 + (cm - 1) / 2);
     s.u.critTaken = 0; expect(spellCritMult(s.cb, s.e, s.u)).toBe(CRIT_BASE); // an enemy's
@@ -119,7 +119,7 @@ function heart(foes: string[] = ['6,5'], allies: string[] = []) {
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pcs.forEach((p, i) => { p.pos = i ? allies[i - 1] : '3,5'; }); f.foes.forEach((e, i) => { e.pos = foes[i]; });
   for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; (x as any).elemTaken = 0; (x as any).healRecv = 1; }
-  for (const p of f.pcs) { Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } }); p.sk = {}; p.dbf = {}; }
+  for (const p of f.pcs) { Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBoon: 1, deal: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } }); p.sk = {}; p.dbf = {}; }
   const u = f.turn(f.pc); u.ap = 60; f.g.rng.state = SEED;
   return f;
 }

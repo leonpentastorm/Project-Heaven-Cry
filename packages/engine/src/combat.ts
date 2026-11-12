@@ -19,7 +19,7 @@ import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { itemAmount } from './effects/amounts';
-import { openAmount, closeAmount, armourAgainst, landed, deal, term } from './effects/output';
+import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal, flatLevelOf } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
 import { skillRollMod, immune, forbids } from './effects/core';
@@ -36,7 +36,7 @@ import { condMods, condDef } from './condtable';
 
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
 /** Rules 1.26 (the re-fit): what a character's melee blow is multiplied by, melee's identity (data/rules.json output.factors.melee). */
-const MELEE_FACTOR: number = (() => { const v = Number((RULES as any).output?.factors?.melee); if (!Number.isFinite(v)) throw new Error('data/rules.json output.factors.melee is missing'); return v; })();
+const MELEE_FACTOR: number = factorOf('melee');
 export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[];
   /** What is where, by grid reference (spec: Grid references): shown on hover and given to the Narrator. */
   notes?: { at: string; text: string }[];
@@ -1305,8 +1305,9 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
 /** An explosive weapon's hit splashes everyone else within its radius of the target, and the cover there, credited to
  * the shooter (rules 1.3; provisional): the hit's damage before the target's armour, less each one's armour. */
 function splash(cb: Combat, att: Unit, tgt: Unit, w: WeaponDef, dealt: number): string {
-  // An enemy's splash grows with its tier and level as its direct hit does (rules 1.15; attackDamage's 'tier and level' term).
-  const r = radiusOf(w), raw = ((w as any).splash_damage ?? weaponDamage(w, dist(att.pos, tgt.pos))) * (!att.charId && att.lvlDmg ? att.lvlDmg : 1); let out = '';
+  // An enemy's splash grows with its tier and level as its direct hit does (rules 1.15), a character's with its level
+  // (rules 1.26 b7): both in hurtUnit (effects/mending.ts flatLevelOf).
+  const r = radiusOf(w), raw = (w as any).splash_damage ?? weaponDamage(w, dist(att.pos, tgt.pos)); let out = '';
   for (const v of unitsIn(cb, { shape: 'burst', at: tgt.pos, r }, { downed: true, not: [tgt] })) out += hurtUnit(v, raw, false, cb, 'explosion', att);
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && dist(o.pos, tgt.pos) <= r) out += damageObject(cb, o.pos, raw * (((w as any).grants?.effect?.op === 'cover_damage_mult') ? (w as any).grants.effect.value : 1), 0, att);
   void dealt;

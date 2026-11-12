@@ -28,7 +28,7 @@ function heart(foes: string[] = ['6,5'], allies: string[] = [], spec: CharSpec =
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pcs.forEach((p, i) => { p.pos = i ? allies[i - 1] : '3,5'; }); f.foes.forEach((e, i) => { e.pos = foes[i]; });
   for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: o.saves ?? -99, brain: o.saves ?? -99, heart: o.saves ?? -99 } as any; x.hidden = false; (x as any).healRecv = 1; }
-  for (const p of f.pcs) { Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, freeUsed: 0, swellFree: false, firstUsed: true, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } }); p.sk = {}; p.dbf = {}; }
+  for (const p of f.pcs) { Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBoon: 1, deal: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, freeUsed: 0, swellFree: false, firstUsed: true, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } }); p.sk = {}; p.dbf = {}; }
   const u = f.turn(f.pc); u.ap = 60;
   return f;
 }
@@ -49,8 +49,8 @@ describe('rules 1.19: the stage table and the Damage base', () => {
     for (let s = 1; s <= 4; s++) expect(Math.round((stageMult(s) - stageMult(s - 1)) * 100) / 100).toBe(PLAIN_STEP);
     expect((SOUL_RULES as any).cycle.provisional).toBe(true);
   });
-  it('a character\'s Damage base is 40 (36 until Leon\'s ruling of 12 Nov 2026: steady 135%, peak 165%); an enemy caster\'s is 24', () => {
-    expect(SOUL_DAMAGE).toBe(40); expect(SOUL_DAMAGE_ENEMY).toBe(24); expect((SOUL_RULES as any).damage.provisional).toBe(true);
+  it('a character\'s Damage base is 31 (rules 1.26, the re-fit: all in on the ceiling, steady 135%, peak 165%; 40 from 12 Nov, 36 before); an enemy caster\'s is 24', () => {
+    expect(SOUL_DAMAGE).toBe(31); expect(SOUL_DAMAGE_ENEMY).toBe(24); expect((SOUL_RULES as any).damage.provisional).toBe(true);
     const f = heart(); const foe = f.foe; foe.mg = heartMagic(foe, HEART_CASTERS[0]); expect(foe.mg!.soulBase).toBeUndefined();
   });
 });

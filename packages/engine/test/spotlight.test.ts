@@ -268,7 +268,7 @@ describe('spotlight: a party crit in a fight (decision 113)', () => {
     for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 5000; x.armour = 0; x.hidden = false; x.conds = {}; }
     const c = f.g.characters[f.pc.charId!]; c.sigils = ['fire', 'seek'];
     const u = f.turn(f.pc); u.ap = 60;
-    Object.assign(u.mg!, { evoker: true, words: ['fire', 'seek'], charge: 999, cores: 5, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, inflect: [] });
+    Object.assign(u.mg!, { evoker: true, words: ['fire', 'seek'], charge: 999, cores: 5, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, inflect: [] });
     f.act({ type: 'combat/draw', unitId: u.id, word: 'fire', tile: '3,5' } as any);
     f.unit(u.id).pos = '4,5'; f.unit(u.id).ap = 60;
     f.act({ type: 'combat/draw', unitId: u.id, word: 'seek', tile: '4,5' } as any);
@@ -338,7 +338,7 @@ describe('spotlight: Storm Front\'s rolled arcs (soulStrike) note their crit lik
     const f = fightWith([{ archetype: 'stormcaller', kit: 'soul' } as any], [{ tier: 'soldier' }] as any);
     const g = clone(f.g), cb = g.combat!, u = cb.units.find((x) => x.side === 'pc')!, t = cb.units.find((x) => x.side === 'foe')!;
     t.hp = t.maxHp = 5000; t.armour = 0; t.def = 5; t.conds = {};
-    Object.assign(u.mg!, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, healMult: 1, will: 0 });
+    Object.assign(u.mg!, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, soulBoon: 1, deal: 1, healMult: 1, will: 0 });
     const d = { id: 'x1', name: 'Arc', school: 'damage', modules: [] } as any;
     cb.actFrom = (cb.fxSeq || 0) + 1;
     const line = withGame(g, () => soulStrike(cb, { state: rngFor(20) }, u, d, t, 1, 0, true));

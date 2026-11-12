@@ -215,15 +215,15 @@ describe('Witnessed and a patron that likes kills (item 1288)', () => {
 
 describe('the refitted prayers land their numbers (items 1281, 1285, 1286)', () => {
   it('Rebuke 20 × Blessing power; Judgement 56 ×; Lightning Rod 56 and 23 to one more', () => {
-    const h = holy(); const bp = h.bound(() => blessingPower(h.c)); let was = h.foe.hp;
+    const h = holy(); const bp = h.me.blessPower!; let was = h.foe.hp; // the fight's own Blessing power (rules 1.26: it reads Virtue, which the helper raises after the fight began)
     h.pray('whisper', 'rebuke', { targetId: h.foe.id }); expect(was - h.foe.hp).toBe(Math.round(20 * bp)); was = h.foe.hp;
     h.pray('hymn', 'judgement', { targetId: h.foe.id }); expect(was - h.foe.hp).toBe(Math.round(56 * bp));
     const o = holy({ patron: 'old_overcast' }); for (const u of [o.foe, o.foe2]) u.armour = 0; const w1 = o.foe.hp, w2 = o.foe2.hp;
     o.pray('hymn', 'lightning_rod', { targetId: o.foe.id }); expect(w1 - o.foe.hp).toBe(Math.round(56 * bp)); expect(w2 - o.foe2.hp).toBe(Math.round(23 * bp));
   });
   it('Warm Hands heals 13 × Blessing power × the level factor; Saint\'s Shield is 16 ×', () => {
-    const h = holy({ patron: 'mother_ember' }); const bp = h.bound(() => blessingPower(h.c)), m = mendFactor(h.c.level);
+    const h = holy({ patron: 'mother_ember' }); const bp = h.me.blessPower!, m = mendFactor(h.c.level); // the fight's own Blessing power
     h.ally.hp = 1000; h.pray('hymn', 'warm_hands', { targetId: h.ally.id }); expect(h.ally.hp - 1000).toBe(Math.round(13 * bp * m));
-    const n = holy(); n.pray('hymn', 'saints_shield', { targetId: n.ally.id }); expect(n.ally.shield).toBe(Math.round(16 * bp * m));
+    const n = holy(); n.pray('hymn', 'saints_shield', { targetId: n.ally.id }); expect(n.ally.shield).toBe(Math.floor(16 * n.me.blessPower! * m)); // the shield sink floors
   });
 });

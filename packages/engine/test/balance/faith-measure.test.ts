@@ -40,7 +40,7 @@ describe('the Faith targets hold (rules 1.22)', () => {
       console.log('[targets] ' + fline(r));
       expect(r.errors).toBe(0);
       expect(r.pctHymnTurn, p + ', a Hymn turn, percent of the rifle').toBeGreaterThanOrEqual(125); expect(r.pctHymnTurn).toBeLessThanOrEqual(175);
-      expect(r.pctQuietTurn, p + ', a quiet turn, percent of the rifle').toBeGreaterThanOrEqual(45); expect(r.pctQuietTurn).toBeLessThanOrEqual(95);
+      expect(r.pctQuietTurn, p + ', a quiet turn, percent of the rifle').toBeGreaterThanOrEqual(45); expect(r.pctQuietTurn).toBeLessThanOrEqual(110); // the rifle half rises with the plain rifle's Level term (rules 1.26)
       expect(r.hymns).toBeGreaterThanOrEqual(0.3); expect(r.hymns).toBeLessThanOrEqual(0.55); expect(r.whispers).toBeGreaterThan(0.8);
     }
     // without the vow the wait is 3 rounds at Faith 6: Hymns on turns 1, 4 and 7 of 8

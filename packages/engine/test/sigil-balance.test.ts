@@ -4,13 +4,14 @@ import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { elementalMult, sigilMult, SIGIL, type Character } from '../src';
 import { sigilPower, sigilParts, capParts, SIGIL_CAP, SIGIL_CAP_CRIT } from '../src/sigil';
+import { PROFILES } from '../src';
 
 const maxed = { sigilMult: 1 + 0.1 * 9 + 0.1 * 10, elemMult: 1 + 0.1 * 9 + 0.05 * 10 }; // Intelligence 10, Brain Power 10, Expression 10, Visualization 10
 
 describe('Sigil balance', () => {
-  it('Elemental power follows the Physical slope, and adds to Sigil power instead of multiplying', () => {
+  it('Elemental power adds to Sigil power instead of multiplying; since rules 1.26 neither has a slope (a Line rolls: skill buys accuracy, level buys damage)', () => {
     const c = { attrs: { expression: 10, intelligence: 10 }, skills: { visualization: 10, brain_power: 10 }, perks: [], traits: [] } as unknown as Character;
-    expect(elementalMult(c)).toBeCloseTo(2.4); expect(sigilMult(c)).toBeCloseTo(2.9);
+    expect(elementalMult(c)).toBe(PROFILES.elemental.k); expect(sigilMult(c)).toBe(PROFILES.sigil.k);
     expect(sigilPower(maxed, 'elemental')).toBeCloseTo(1 + 1.9 + 1.4); expect(sigilPower(maxed, 'sigil')).toBeCloseTo(2.9);
     expect(sigilPower(null, 'elemental')).toBe(1);
   });

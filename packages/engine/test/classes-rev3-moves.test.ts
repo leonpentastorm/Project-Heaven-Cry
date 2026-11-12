@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CLASS, d20, healingMult, applyCond, condOn, moveUnit, beginTurn, objectsOf, manaOf, strainLimit, readyDesigns, enemyIntent, coverageOf, itemInfo, handlerOf, paths,
   type Unit, type Combat, type Character,
-  mendFactor,
+  mendFactor, levelFactor,
 } from '../src';
 import { makeObject } from '../src/objects';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -226,7 +226,7 @@ describe('Infiltrator', () => {
     f.turn(p); expect(() => act(f, f.unit(p.id), { type: 'combat/move', to: '4,2' })).toThrow(/Can't reach/); // your side knows it and walks round it
     const foe = tough(saves(at(f, f.foe, '6,2'), -50)); foe.armour = 0;
     f.turn(foe); seed(f, 5); withGame(f.g, () => moveUnit(f.cb, f.unit(foe.id), '4,2', f.g.rng));
-    expect(f.unit(foe.id).hp).toBe(999 - 30); expect(condOn(f.unit(foe.id), 'pinned')).toBe(true);
+    expect(f.unit(foe.id).hp).toBe(999 - Math.floor(30 * levelFactor('deal', f.unit(i.id).level))); expect(condOn(f.unit(foe.id), 'pinned')).toBe(true); // rules 1.26 b7: a trap a character set grows with its level
     expect(objectsOf(f.cb).some((o: any) => o.rig)).toBe(false);
   });
   it('Sabotage: a barricade stops blocking the way for 2 rounds (a way through, not a place to stop: item 568)', () => {

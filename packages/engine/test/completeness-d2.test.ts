@@ -135,7 +135,7 @@ describe('Humanity First in a fight, through combat/* (item 42)', () => {
       return f.unit(h.id).hp - 10;
     };
     const full = heal([]), half = heal(['factory_made']);
-    expect(full).toBeGreaterThan(0); expect(half).toBe(Math.round(full * 0.5));
+    expect(full).toBeGreaterThan(0); expect(Math.abs(half - full * 0.5)).toBeLessThanOrEqual(0.5); // half, made whole by the heal sink
   });
 });
 

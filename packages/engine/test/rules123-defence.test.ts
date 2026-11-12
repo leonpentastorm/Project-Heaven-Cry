@@ -174,13 +174,13 @@ describe('rules 1.23: the medic\'s kit', () => {
 describe('rules 1.23: Split on a heal or a shield', () => {
   it('a Split heal or shield is divided: the Bolt and its split each give ×0.8 (×1.6 in all)', () => {
     expect(SPLIT_BOON).toBe(0.8); expect((MODULE.split as any).boon_mult).toBe(0.8);
-    const m: any = { soulBase: 40, soulMult: 1, healMult: 1, mend: 1 };
+    const m: any = { soulBase: 40, soulMult: 1, soulBoon: 1, deal: 1, healMult: 1, mend: 1 };
     const bolt: any = { id: 'a', school: 'buff', option: 'heal', modules: [] }, split: any = { ...bolt, modules: ['split'] }, aura: any = { ...bolt, modules: ['aura'] };
     expect(outburstHeal(m, split, 1) / outburstHeal(m, bolt, 1)).toBeCloseTo(0.8, 5);
     expect(outburstHeal(m, aura, 1) / outburstHeal(m, bolt, 1)).toBeCloseTo(0.4, 5);
     const inv: any = { id: 'b', school: 'damage', modules: ['inverse'] }, invSplit: any = { ...inv, modules: ['inverse', 'split'] };
     expect(inverseShield(m, invSplit, 1) / inverseShield(m, inv, 1)).toBeCloseTo(0.8, 5);
-    const foe: any = { soulMult: 1, healMult: 1 }; // an enemy caster keeps what it had
+    const foe: any = { soulMult: 1, soulBoon: 1, deal: 1, healMult: 1 }; // an enemy caster keeps what it had
     expect(outburstHeal(foe, split, 1)).toBe(outburstHeal(foe, bolt, 1));
   });
 });

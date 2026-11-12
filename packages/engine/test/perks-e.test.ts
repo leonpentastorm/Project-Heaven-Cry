@@ -442,7 +442,7 @@ describe('Field Surgeon', () => {
     f.turn(f.unit(me.id));
     pcAct(f, { type: 'combat/perk', id: 'field_surgeon', actionId: 'repair_ally', targetId: ally.id }, me);
     expect(f.unit(me.id).ap).toBe(4); expect(f.unit(me.id).parts).toBe(1);
-    expect(f.unit(ally.id).hp).toBeGreaterThanOrEqual(10 + 15); expect(f.unit(ally.id).hp).toBeLessThan(60);
+    expect(f.unit(ally.id).hp).toBeGreaterThanOrEqual(10 + 12); expect(f.unit(ally.id).hp).toBeLessThan(60); // 3 × 5 × Healing given (the landed profile since rules 1.26: about ×0.87 at a bare sheet)
   });
   it('a Factory Made ally is healed at full power (the Plug halving undone)', () => {
     const run = (perk: boolean) => {

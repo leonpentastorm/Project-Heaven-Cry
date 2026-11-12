@@ -26,7 +26,7 @@ function rig(foes: string[] = ['6,5'], allies: string[] = [], mana = 15) {
   f.pcs.forEach((p, i) => { p.pos = i ? allies[i - 1] : '3,5'; });
   f.foes.forEach((e, i) => { e.pos = foes[i]; });
   for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; (x as any).elemTaken = 0; (x as any).healRecv = 1; }
-  for (const p of f.pcs) Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, debuff: { body: 0, brain: 0, heart: 0 } });
+  for (const p of f.pcs) Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBoon: 1, deal: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, debuff: { body: 0, brain: 0, heart: 0 } });
   for (const p of f.pcs) { p.sk = {}; p.dbf = {}; }
   const u = f.turn(f.pc); u.ap = 60;
   f.g.rng.state = SEED;
@@ -172,7 +172,7 @@ describe('the preview lists everyone a release would reach, past its area too (s
     const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', classId: 'channeler', level: 5, skills: { [SIG('channeler')[0]]: 5, [SIG('channeler')[1]]: 4, [SIG('channeler')[2]]: 4 } }], [{}, {}, {}, {}]);
     const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = [];
     for (const x of cb.units) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.hidden = false; }
-    Object.assign(f.pc.mg!, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, soulBase: 20, will: 0, soulRange: 0, strain: 0, strainLimit: 20, freePumps: 0, freePumpsMax: 0 });
+    Object.assign(f.pc.mg!, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, soulBoon: 1, deal: 1, soulBase: 20, will: 0, soulRange: 0, strain: 0, strainLimit: 20, freePumps: 0, freePumpsMax: 0 });
     const u = f.turn(f.pc); u.ap = 9; f.unit(u.id).pos = '2,2'; const [a, b, c, far] = f.foes; f.unit(a.id).pos = '6,2'; f.unit(b.id).pos = '7,2'; f.unit(c.id).pos = '6,3'; f.unit(far.id).pos = '12,8';
     const d = give(f.unit(u.id), {}), mods = ['class:channeler.storm_front#storm'];
     const no = withG(f, () => previewOutburstPlan(f.cb, f.unit(u.id), d, '6,2')); expect(ids(no, 'arc')).toEqual([]);

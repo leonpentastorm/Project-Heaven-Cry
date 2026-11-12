@@ -1307,7 +1307,9 @@
     },
     "factors": {
       "note": "Rules 1.26 (the re-fit): a system's own named multiplier where it has no number of its own to carry its identity. melee: every melee blow a character strikes (Leon, 12 Nov 2026: melee's all-in ceiling is 165% of the plain rifle, the gun's 145% plus the price of standing in reach). PROVISIONAL (spec item 1702)",
-      "melee": 1.35
+      "melee": 1.35,
+      "thrown": 0.7,
+      "thrown_note": "thrown: every grenade, thrown or placed charge a character sets off (frag, incendiary, satchel): on the measured cluster an area of radius 2 catches 2.8 enemies, and an area is allowed its single-target worth plus half for each extra target; a frag at 40 was 1.5 times that (spec item 1710). PROVISIONAL"
     },
     "pairs": {
       "physical": { "attrs": ["strength"], "skills": ["raw_power"] },

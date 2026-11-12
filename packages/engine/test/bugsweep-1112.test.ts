@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   WEAPON, WEAPONS, ENEMY, ENEMY_LEVELS, weaponDamage, damageFormula, resolveAttack, hurtUnit, applyDamage, grantShield, blast, damageObject, objectsOf,
-  enemyStats, healingMult, harm, attackDamage, applyCond, condOn, endCond, phys, enemyPreference, BOSS_GUARD, unguarded, guardNextAction, pastShields, apply, type Unit,
+  enemyStats, healingMult, levelFactor, harm, attackDamage, applyCond, condOn, endCond, phys, enemyPreference, BOSS_GUARD, unguarded, guardNextAction, pastShields, apply, type Unit,
 } from '../src';
 import { genericOf } from '../src/effects/hooks';
 import { fightWith, withGame } from './helpers/perkfight';
@@ -49,18 +49,18 @@ describe('2. an enemy\'s blast splash grows with its tier and level, as its dire
     expect(r.hit).toBe(true);
     expect(b.maxHp - b.hp).toBe(Math.floor(40 * factor));
   });
-  it('a character\'s splash is the weapon\'s own number (no enemy factor)', () => {
+  it('a character\'s splash is the weapon\'s own number times the character\'s Level term (rules 1.26 b7: flat things grow with level; no enemy factor)', () => {
     const f = fightWith([{ weapon: 'smetanita_thumper', level: 12 }], [{ tier: 'soldier', level: 12 }, { tier: 'soldier', level: 12 }]);
     const pc = f.pc, [x, y] = f.foes; bag(x); bag(y); put(pc, 3, 5); put(x, 9, 5); put(y, 9, 6); pc.attack = 60;
     let r: any; withGame(f.g, () => { for (let i = 0; i < 6 && !(r && r.hit); i++) { y.hp = y.maxHp; pc.ap = 6; pc.ammo = 3; r = resolveAttack(f.cb, f.g.rng, pc, x, 'shot', f.g.characters[pc.charId!]); } });
-    expect(r.hit).toBe(true); expect(y.maxHp - y.hp).toBe(40);
+    expect(r.hit).toBe(true); expect(y.maxHp - y.hp).toBe(Math.floor(40 * levelFactor('deal', 12)));
   });
 });
 
 describe('3. the generic heal op honours its scale', () => {
   it('scale: healing_given multiplies by the healer\'s Healing given; no scale does not', () => {
     const f = fightWith([{ skills: { empathy: 5 }, attrs: { insight: 5 } }, {}], [{}]);
-    const [me, ally] = f.pcs, c = f.g.characters[me.charId!], hg = healingMult(c); expect(hg).toBeGreaterThan(1.5);
+    const [me, ally] = f.pcs, c = f.g.characters[me.charId!], hg = healingMult(c); expect(hg).toBeGreaterThan(1.2); // rules 1.26: the landed profile, k 0.87
     const op = genericOf('heal')!, h: any = { cb: f.cb, u: me, c, g: f.g, info: { name: 'Test heal' } };
     bag(ally, 1000); ally.healRecv = 1;
     withGame(f.g, () => {

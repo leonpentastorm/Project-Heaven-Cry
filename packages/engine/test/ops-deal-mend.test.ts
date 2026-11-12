@@ -2,7 +2,7 @@
 // An effect that names an AMOUNT (a block written in the effect, or the name of a block in its item's `amounts`) deals
 // damage, heals or shields on the one formula (effects/output.ts), with no code of its own.
 import { describe, it, expect } from 'vitest';
-import { healingMult, physicalMult, mendFactor, type Unit } from '../src';
+import { healingMult, physicalMult, mendFactor, levelFactor, type Unit } from '../src';
 import { genericOf } from '../src/effects/hooks';
 import { fightWith, withGame } from './helpers/perkfight';
 
@@ -29,11 +29,11 @@ describe('the generic deal and mend ops', () => {
     const [me, ally] = f.pcs, c = f.g.characters[me.charId!], hg = healingMult(c), op = genericOf('mend')!, h: any = { key: 'perk:test', cb: f.cb, u: me, c, g: f.g, info: { name: 'Test' } };
     bag(ally, 1000); ally.healRecv = 1; ally.shieldRecv = 1;
     withGame(f.g, () => {
-      ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'flat' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(110);
+      ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'flat' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(100 + Math.floor(10 * levelFactor('deal', 6))); // rules 1.26: the flat profile reads the deal column
       ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'healing' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(100 + Math.floor(10 * hg));
       // the `mend` profile reads the Level term too (the level factor of rules 1.20, at the giver's level)
       ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'mend' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(100 + Math.floor(10 * hg * mendFactor(me.level)));
-      ally.shield = 0; op.run!(h, { op: 'mend', amount: { kind: 'shield', base: 12, profile: 'flat' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.shield).toBe(12);
+      ally.shield = 0; op.run!(h, { op: 'mend', amount: { kind: 'shield', base: 12, profile: 'flat' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.shield).toBe(Math.floor(12 * levelFactor('deal', 6)));
       ally.shield = 0; op.run!({ ...h, key: 'class:guardian.will_shield' }, { op: 'mend', amount: 'shield', target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.shield).toBe(Math.floor(12 * hg * mendFactor(me.level)));
     });
   });

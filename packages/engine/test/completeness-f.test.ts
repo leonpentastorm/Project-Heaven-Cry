@@ -28,7 +28,7 @@ const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 const MIND = { archetype: 'sigilist', kit: 'sigil' } as const;
 function caster(u: Unit, words: string[], extra: any = {}) {
   u.mg = { words, designs: [{ id: 'o1', name: 'Damage Outburst', school: 'damage', modules: [] }], evoker: true, emanator: true, charge: 30, cores: 2, coresMade: 0, flux: 0, mp: 300, mpMax: 300, strain: 0, held: null, cast: false,
-    brain: 3, will: 3, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 9,
+    brain: 3, will: 3, sigilMult: 1, sigilBoon: 1, soulMult: 1, soulBoon: 1, deal: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 9,
     saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any;
   return u;
 }

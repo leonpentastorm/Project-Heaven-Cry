@@ -26,7 +26,7 @@ const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 const MIND = { archetype: 'sigilist', kit: 'sigil' } as const;
 function caster(u: Unit, words: string[], extra: any = {}) {
   u.mg = { words, designs: [{ id: 'o1', name: 'Damage Outburst', school: 'damage', modules: [] }], evoker: true, emanator: true, charge: 10, cores: 2, coresMade: 0, flux: 0, mp: 300, mpMax: 300, strain: 0, held: null, cast: false,
-    brain: 3, will: 3, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
+    brain: 3, will: 3, sigilMult: 1, sigilBoon: 1, soulMult: 1, soulBoon: 1, deal: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
     saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any;
   return u;
 }
@@ -189,7 +189,7 @@ describe('class story actions', () => {
     const s = storyWith([cls('scribe', 3, MIND)]); const c = s.chars[0];
     const st = withGame(s.g, () => stampOf('per_rest', { g: s.g }));
     (((s.g.story as any).ps ||= {})[c.id] ||= { items: {} }).items ||= {};
-    (s.g.story as any).ps[c.id].items['class:scribe.stored_spell'] = { spells: [{ words: ['fire'], shape: 'stack', nums: { brain: 3, sigilMult: 1 }, debuff: { body: 0 }, stamp: st }] };
+    (s.g.story as any).ps[c.id].items['class:scribe.stored_spell'] = { spells: [{ words: ['fire'], shape: 'stack', nums: { brain: 3, sigilMult: 1, sigilBoon: 1, deal: 1 }, debuff: { body: 0 }, stamp: st }] };
     s.act({ type: 'story/perk', charId: c.id, id: 'class:scribe.stored_spell', actionId: 'trigger_story', text: 'the door ward' } as any);
     expect(rulingHas(s.g, /Stored spell fire \(stack\) set off out of combat/)).toBe(true);
   });
