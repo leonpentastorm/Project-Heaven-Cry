@@ -2,6 +2,8 @@
 
 PHC began in 2020 as a Vietnamese tabletop RPG by Leon ("Romantic B0ss") and friends. It adapts Disco Elysium's skill web (27 skills that are also inner voices) to tactical squad combat. In Nov 2026 it was revived, translated to English, rebalanced and turned into a game-ready rules spec and data pack. **The goal now is a web game**: play immersively in the browser with an AI Narrator (bring-your-own API key, any provider), or with a human Narrator, solo or co-op with up to 4 players in a room.
 
+**Picking this up mid-mission (Nov 2026: the engine foundation and the balance pass)? Read `docs/design/handoffs/PICKUP.md` first:** what is merged, what is in flight, how to take a branch in, what is left in order.
+
 This file is the hand-off from the design sessions in claude.ai. Read it first, then `docs/rules/PHC-Core-Rules-v1.0.md`.
 
 ## Source of truth (in this order)
