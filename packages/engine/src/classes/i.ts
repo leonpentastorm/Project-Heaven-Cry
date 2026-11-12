@@ -1386,7 +1386,7 @@ register({
       },
     },
     {
-      id: 'sanctuary_story', label: 'Sanctuary', scope: ['story'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
+      id: 'sanctuary_story', label: 'Sanctuary', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
       text: 'Once a scene, for 60 MP: raise a sanctuary around the party. The Narrator decides what it keeps out.',
       available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'Needs an Emanator in hand.'),
       run: (h, args) => { const c = h.c!; c.mp = mpNow(c) - 60; const eid = postStory(h, c.name + ' raises a Sanctuary' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '.'));
