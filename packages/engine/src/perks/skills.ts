@@ -40,7 +40,7 @@ const overclock = (scope: 'combat' | 'world'): ActionDef => ({
     if (m.maxWords - (m.ocBump ? 1 : 0) >= MAX_GLYPHS) return 'Your Max Sigil words is already ' + MAX_GLYPHS + ': a spell holds no more.';
     return true;
   },
-  preview: (h) => ({ lines: ['Max Sigil words ' + h.u!.mg!.maxWords + ' → ' + Math.min(MAX_GLYPHS, h.u!.mg!.maxWords + 1) + ' until the next glyph you draw leaves the ground; that glyph costs +' + OC_CHARGE + ' charge.'] }),
+  preview: (h) => (!h.u?.mg ? {} : { lines: ['Max Sigil words ' + h.u!.mg!.maxWords + ' → ' + Math.min(MAX_GLYPHS, h.u!.mg!.maxWords + 1) + ' until the next glyph you draw leaves the ground; that glyph costs +' + OC_CHARGE + ' charge.'] }), // (no magic: the button is greyed with the reason; nothing to preview)
   run: (h) => { const st = stateOf(h); st.armed = true; ocSync(st, h.u, h.cb); say(h.cb, h.u!.name + ' overclocks: the next glyph may go one word past Max Sigil words (+' + OC_CHARGE + ' charge).'); },
 });
 register({

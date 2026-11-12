@@ -110,6 +110,7 @@ function soulReady(h: Holder): string | null {
  * Debuff), priced through 'outburst_cost' so items see it (a synthetic design: id "class:<move>"). */
 function soulPrice(h: Holder, school: string, baseMp: number, extraStrain = 0): { mp: number; ap: number; range: number; strain: number } {
   const u = h.u!, m = u.mg!, cb = h.cb!;
+  if (!m) return { mp: 0, ap: 2, range: SOUL_REACH, strain: 0 }; // no magic: the move is greyed with the reason (soulReady); a preview asked anyway must not throw
   const d: any = { id: 'class:' + h.itemId, name: h.info.name, school, modules: [] };
   const mp0 = Math.max(5, Math.round(baseMp * manaBand(manaOf(cb)).soul_cost_mult * (1 - (m.costSave || 0)))) * (condOn(u, 'rdebuff') ? 1.2 : 1);
   const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: mp0, ap: Math.max(1, m.soulAp || 2), range: SOUL_REACH + (m.soulRange || 0), strain: (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2) + extraStrain, hp: 0, release: true, preview: true, cb, classMove: true });
