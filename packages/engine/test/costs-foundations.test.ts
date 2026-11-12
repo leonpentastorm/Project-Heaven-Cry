@@ -6,8 +6,9 @@ import './helpers/yard16';
 import {
   price, priced, costOf, hasCost, whyNot, canPay, pay, refund, spend, needs, poolWhyNot, grantAp, loseAp, setAp, freely, withAp, apFor, creditFor, lend, settleCredit,
   resLeft, RESOURCES, AP_MAX, previewAttack, moveOptions, uses, SCOPES, scopeOf, register, perkActionsFor, previewPerkAction, basicActions, previewAction, loadMagazine, enemyTurn, apply, type Unit,
+  apMeter, actionName, resWhyNot, weaponActions, reloadAp, analyzeCost, ventAp, coreAp, stimAp, basicCost, runPerkAction,
 } from '../src';
-import { fightWith, withGame, onlyHandlers } from './helpers/perkfight';
+import { fightWith, storyWith, withGame, onlyHandlers } from './helpers/perkfight';
 import ACTIONS from '../../../data/actions.json';
 
 const fight = (spec: any = {}) => { const f = fightWith([spec, {}], [{ at: 'F6', classic: true }]); f.turn(f.pc); return f; };
@@ -98,6 +99,14 @@ describe('AP that is given, lost or set', () => {
     expect(freely(u, () => { expect(canPay(f.cb, u, 9)).toBe(true); pay(f.cb, u, 5); return 'done'; })).toBe('done'); expect(u.ap).toBe(1);
     expect(withAp(u, 6, () => u.ap)).toBe(6); expect(u.ap).toBe(1);
   });
+  it('freely(): the inner action draws on no credit either: the action it is part of still finds its Brief', () => {
+    const f = fight(), u = f.pc; u.ap = 2; u.apGained = 0; u.apTurnTotal = 6; u.call = { brief: { cuts: [1] } } as any;
+    const loan = lend(f.cb, u, { type: 'combat/reload', hand: 'both' })!; (f.cb as any).acting = true;
+    freely(u, () => pay(f.cb, u, 2));                                    // the inner reload of "Reload both"
+    expect(loan.briefUsed).toBe(0); expect(u.ap).toBe(2);
+    expect(whyNot(f.cb, u, 3)).toBeNull(); expect(pay(f.cb, u, 3)).toBe(2); expect(u.ap).toBe(0); // the outer price: 1 from the Brief, 2 of its own
+    delete (f.cb as any).acting; expect(settleCredit(f.cb, loan)).toMatchObject({ brief: 1, spent: 3 });
+  });
 });
 
 describe('credit: Encore\'s repeat and a Brief\'s cut are drawn on by pay(), never added to the AP', () => {
@@ -131,12 +140,17 @@ describe('two bugs found by reading, fixed by going through the primitive', () =
     const f = fight({ weapon: 'hellraiser_service_rifle' }), u = f.pc; u.ap = 1.4; u.mags = [0, 0]; u.loose = 30;
     expect(withGame(f.g, () => loadMagazine(f.cb, u))).toBeNull(); expect(u.ap).toBe(0.4); expect(u.mags[0] + u.mags[1]).toBe(5);
   });
-  it('an enemy whose reload costs more than 2 AP does not burn its turn trying with 2', () => {
-    const f = fightWith([{}], [{ at: 'F6', weapon: 'breacher_tube', classic: true }]), e = f.foe; f.turn(e);
-    const cost = withGame(f.g, () => price({ cb: f.cb, u: e }, 'reload', 3).ap); expect(cost).toBe(3);
-    e.ap = 2; e.ammo = 0; const log0 = f.cb.log.length;
-    withGame(f.g, () => enemyTurn(f.cb, f.g.rng)); void log0;
-    expect(e.ammo).toBe(0); // it could not reload, and it knew: no six refused tries
+  it('an enemy asks its weapon\'s own reload price, not a typed 2 AP (a 1 AP reload with 1 AP; a 3 AP reload not with 2)', () => {
+    // Review: the first version of this test only said "the ammo stays 0", true with or without the fix. What can be
+    // seen: a quick-release magazine reloads for 1 AP, and an enemy with 1 AP left now does it (the typed 2 refused it).
+    const quick = (ap: number) => { const f = fightWith([{}], [{ at: 'F6', weapon: 'hellraiser_service_rifle', classic: true }]), e = f.foe; f.cb.round = 2; f.turn(e); e.mods = ['mod_quick_release']; e.ap = ap; e.ammo = 0;
+      expect(withGame(f.g, () => reloadAp(e, f.cb))).toBe(1); withGame(f.g, () => enemyTurn(f.cb, f.g.rng)); return e; };
+    { const e = quick(1); expect(e.ammo).toBeGreaterThan(0); expect(e.ap).toBe(0); }
+    // The breacher tube reloads for 3 AP: with 2 it is not tried, with 3 it is done. (No shipped enemy gets here: a gun
+    // loaded round by round has no spare magazine, so its bearer counts as dry and never asks. This one is given one.)
+    const tube = (ap: number) => { const f = fightWith([{}], [{ at: 'F6', weapon: 'breacher_tube', classic: true }]), e = f.foe; f.cb.round = 2; f.turn(e); e.ap = ap; e.ammo = 0; e.mags = [1]; e.loose = 2;
+      expect(withGame(f.g, () => reloadAp(e, f.cb))).toBe(3); withGame(f.g, () => enemyTurn(f.cb, f.g.rng)); return e; };
+    expect(tube(2).ammo).toBe(0); { const e = tube(3); expect(e.ammo).toBe(1); expect(e.ap).toBe(0); }
   });
 });
 
@@ -180,4 +194,122 @@ describe('uses(): limits, firsts, per-target counters and cooldowns in one store
     uses(h).take('per_scene'); expect(Object.keys(c.uses || {})).toContain('perk:x|per_scene'); expect(Object.keys(u.uses || {})).not.toContain('perk:x|per_scene');
   });
   void register; void basicActions;
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// The review of engine foundations 2 (hand-off, "Problems found in review and what was done"): each problem as a test
+// that failed before its fix. The credit, enemy and cooldown TABLES are test/golden-costs-review.test.ts.
+describe('review: an action under a Brief or an Encore pays as the same action without one, less the credit', () => {
+  const two = () => { const f = fightWith([{ weapon: 'service_pistol' }, {}], [{ at: 'F6', classic: true }]); f.turn(f.pc); const u = f.pc; u.offWeapon = 'service_pistol'; u.offAmmo = 0; u.ammo = 1; u.mags = [8, 8, 8]; (f.g.characters[u.charId!] as any).offHand = { id: 'service_pistol' }; return f; };
+  const after = (g: any, id: string) => g.combat!.units.find((y: Unit) => y.id === id)!;
+  it('problem 1: a Briefed "Reload both" (3 AP) takes 2 from the unit, never more than it has', () => {
+    for (const [ap, left] of [[2, 0], [3, 1], [6, 4]]) {
+      const f = two(), u = f.pc; u.ap = ap; u.apGained = 0; u.apTurnTotal = ap; u.call = { brief: { cuts: [1] } } as any;
+      const g2 = apply(f.g, { type: 'combat/reload', unitId: u.id, hand: 'both' } as any, 'host'), v = after(g2, u.id);
+      expect(v.ap, 'from ' + ap).toBe(left); expect(v.ammo).toBe(8); expect(v.offAmmo).toBe(8); expect(v.call?.brief).toBeUndefined();
+    }
+    const f = two(), u = f.pc; u.ap = 1; u.apGained = 0; u.apTurnTotal = 1; u.call = { brief: { cuts: [1] } } as any;
+    expect(() => apply(f.g, { type: 'combat/reload', unitId: u.id, hand: 'both' } as any, 'host')).toThrow(/Needs 3 AP/);
+  });
+  it('problem 1: an Encore of "Reload both" pays its 2 AP of it; the third is the unit\'s', () => {
+    const f = two(), u = f.pc; u.ap = 1; u.faith = { encore: { key: 'combat/reload:both', ap: 2, started: true } } as any;
+    const v = after(apply(f.g, { type: 'combat/reload', unitId: u.id, hand: 'both' } as any, 'host'), u.id);
+    expect(v.ap).toBe(0); expect(v.offAmmo).toBe(8); expect(v.faith?.encore).toBeUndefined();
+  });
+  it('problem 2: a Briefed Load loads for the AP the action can draw on (the unit\'s and the Brief\'s), never 0 rounds', () => {
+    const load = (ap: number) => { const f = fightWith([{ weapon: 'hellraiser_service_rifle' }, {}], [{ at: 'F6', classic: true }]); f.turn(f.pc); const u = f.pc; u.ap = ap; u.mags = [0, 0]; u.loose = 30; u.apGained = 0; u.apTurnTotal = ap; u.call = { brief: { cuts: [1] } } as any;
+      return after(apply(f.g, { type: 'combat/load', unitId: u.id } as any, 'host'), u.id); };
+    { const v = load(0); expect(v.mags![0] + v.mags![1]).toBe(5); expect(v.ap).toBe(0); expect(v.call?.brief).toBeUndefined(); }
+    { const v = load(2); expect(v.mags![0] + v.mags![1]).toBe(15); expect(v.ap).toBe(0); }
+  });
+  it('problem 2: what an action took in all is read with apMeter (a credit pays first, so `ap0 - u.ap` leaves it out); a refund goes back to the credit', () => {
+    const f = fight(), u = f.pc; u.ap = 4; u.apGained = 0; u.apTurnTotal = 4; u.call = { brief: { cuts: [1] } } as any;
+    const loan = lend(f.cb, u, { type: 'combat/perk', id: 'x' })!; (f.cb as any).acting = true;
+    const taken = apMeter(f.cb, u); pay(f.cb, u, 3);
+    expect(u.ap).toBe(2); expect(taken()).toBe(3);                     // 1 of the Brief's, 2 of its own
+    refund(f.cb, u, 3); expect(u.ap).toBe(4); expect(loan.briefUsed).toBe(0); expect(taken()).toBe(0); // all of it back where it came from: the Brief is not used up
+    pay(f.cb, u, 1); delete (f.cb as any).acting;
+    refund(f.cb, u, 1); expect(u.ap).toBe(5);                           // the action is over: a later refund (a ruling) is the unit's
+    settleCredit(f.cb, loan);
+  });
+});
+
+describe('review, problem 3: in a fight every price passes the fight, so another unit\'s item hears the `cost` hook', () => {
+  const FREE = ['prone', 'reload', 'analyze', 'stim', 'stabilise', 'vent', 'swap_core', 'brace', 'load', 'clear_jam', 'field_repair', 'overwatch', 'throw', 'reload_both'];
+  const ally = { id: 'chain_smoker', kind: 'trait', on: { cost: (ctx: any, h: any) => { if (ctx.u && ctx.u !== h.u && ctx.u.side === h.u.side && FREE.includes(ctx.action)) ctx.free = true; } } } as any;
+  it('the action: an ally\'s item makes Prone AND Reload free (Reload was priced without the fight and still cost 2)', () => {
+    onlyHandlers([ally], () => {
+      const f = fightWith([{ weapon: 'hellraiser_service_rifle' }, { traits: ['chain_smoker'] }], [{ at: 'F6', classic: true }]); f.turn(f.pc); const u = f.pc; u.ap = 6; u.ammo = 1;
+      const at = (g: any) => g.combat!.units.find((y: Unit) => y.id === u.id)!;
+      expect(at(apply(f.g, { type: 'combat/prone', unitId: u.id } as any, 'host')).ap).toBe(6);
+      const r = at(apply(f.g, { type: 'combat/reload', unitId: u.id } as any, 'host')); expect(r.ap).toBe(6); expect(r.ammo).toBeGreaterThan(1);
+    });
+  });
+  it('the helper prices and the weapon\'s rows, given the fight: reload, analyze, a stim, vent, a core change, Overwatch', () => {
+    onlyHandlers([ally], () => {
+      const f = fightWith([{ weapon: 'hellraiser_service_rifle', kit: 'sigil', classId: 'mage' }, { traits: ['chain_smoker'] }], [{ at: 'F6', classic: true }]); f.turn(f.pc); const u = f.pc, cb = f.cb;
+      withGame(f.g, () => {
+        expect([reloadAp(u, cb), analyzeCost(u, cb), ventAp(u, cb), coreAp(u, cb), stimAp(u, f.pcs[1], false, cb), stimAp(u, { ...f.pcs[1], downed: true } as Unit, false, cb)]).toEqual([0, 0, 0, 0, 0, 0]);
+        const rows = weaponActions(u, cb);
+        for (const id of ['reload', 'overwatch']) expect(rows.find((x) => x.id === id)?.ap, id).toBe(0);
+        // with no fight given (a card outside a fight) only the unit's own items are asked: the documented exception
+        expect(reloadAp(u)).toBe(costOf('reload'));
+      });
+    });
+  });
+});
+
+describe('review, problem 4: a verb reaches the `cost` hook under ONE name (its site), from its row and from its action', () => {
+  it('every row whose id is not its site is priced under the site, by either name, with the same floor', () => {
+    const rows = ((ACTIONS as any).items as any[]).filter((a) => a.site && a.site !== a.id);
+    expect(rows.map((a) => a.id).sort()).toEqual(['cover', 'pullfree', 'reload2']);
+    const seen: string[] = [];
+    onlyHandlers([{ id: 'chain_smoker', kind: 'trait', on: { cost: (ctx: any, h: any) => { if (ctx.u === h.u) seen.push(ctx.action + '<' + ctx.row); } } } as any], () => {
+      const f = fight({ traits: ['chain_smoker'] }), u = f.pc;
+      withGame(f.g, () => { for (const a of rows) { expect(actionName(a.id)).toBe(a.site); expect(price({ cb: f.cb, u }, a.id, 2).action).toBe(a.site); expect(price({ cb: f.cb, u }, a.site, 2)).toEqual(price({ cb: f.cb, u }, a.id, 2)); } });
+      for (const a of rows) { expect(seen).toContain(a.site + '<' + a.id); expect(seen).toContain(a.site + '<' + a.site); expect(seen.some((x) => x.startsWith(a.id + '<'))).toBe(false); }
+    });
+  });
+  it('Pull free: a handler on `pull_free` changes the row and the action alike (the row showed 2 AP, the action took 3)', () => {
+    onlyHandlers([{ id: 'chain_smoker', kind: 'trait', on: { cost: (ctx: any, h: any) => { if (ctx.u === h.u && ctx.action === 'pull_free') ctx.ap += 1; } } } as any], () => {
+      const f = fight({ traits: ['chain_smoker'] }), u = f.pc; u.ap = 6; u.nailed = { by: f.foe.id, id: 'run_through', ap: 2 } as any;
+      const row = withGame(f.g, () => basicActions(f.cb, u, { g: f.g }).find((r) => r.id === 'pullfree')!);
+      expect(row.ap).toBe(3); expect(withGame(f.g, () => basicCost(f.cb, u, 'pullfree', {}, { g: f.g }))).toBe(3);
+      const v = apply(f.g, { type: 'combat/pull-free', unitId: u.id } as any, 'host').combat!.units.find((y) => y.id === u.id)!;
+      expect(v.ap).toBe(6 - row.ap);
+    });
+  });
+  it('Reload both: the row and the action ask the same name', () => {
+    onlyHandlers([{ id: 'chain_smoker', kind: 'trait', on: { cost: (ctx: any, h: any) => { if (ctx.u === h.u && ctx.action === 'reload_both') ctx.ap -= 1; } } } as any], () => {
+      const f = fightWith([{ weapon: 'service_pistol', traits: ['chain_smoker'] }, {}], [{ at: 'F6', classic: true }]); f.turn(f.pc); const u = f.pc;
+      u.offWeapon = 'service_pistol'; u.offAmmo = 0; u.ammo = 1; u.mags = [8, 8, 8]; (f.g.characters[u.charId!] as any).offHand = { id: 'service_pistol' }; u.ap = 6;
+      const row = withGame(f.g, () => basicActions(f.cb, u, { g: f.g }).find((r) => r.id === 'reload2')!);
+      expect(row.ap).toBe(costOf('reload2') - 1);
+      const v = apply(f.g, { type: 'combat/reload', unitId: u.id, hand: 'both' } as any, 'host').combat!.units.find((y) => y.id === u.id)!;
+      expect(v.ap).toBe(6 - row.ap);
+    });
+  });
+});
+
+describe('review, problem 5: a declared `res` is refused and paid in a story too', () => {
+  let RAN = 0;
+  const act = (res: any) => ({ id: 'chain_smoker', kind: 'trait', actions: [{ id: 'burn', label: 'Burn', scope: ['story'], target: 'none', ap: 0, res, run: () => { RAN++; return null; } }] } as any);
+  it('what the character holds (Echo, stims): "Needs 1 Echo." with none, taken with one', () => {
+    onlyHandlers([act({ echo: 1 })], () => {
+      const s = storyWith([{ traits: ['chain_smoker'] }]), c = s.chars[0], x = { c, g: s.g }; RAN = 0;
+      c.echo = 0;
+      expect(withGame(s.g, () => perkActionsFor(x, 'story').find((e) => e.id === 'trait:chain_smoker')!.why)).toBe('Needs 1 Echo.');
+      expect(withGame(s.g, () => runPerkAction(x, 'trait:chain_smoker', {}, { state: 7 }, 'story'))).toBe('Needs 1 Echo.'); expect(RAN).toBe(0);
+      c.echo = 1;
+      expect(withGame(s.g, () => perkActionsFor(x, 'story').find((e) => e.id === 'trait:chain_smoker')!.why)).toBeNull();
+      expect(withGame(s.g, () => runPerkAction(x, 'trait:chain_smoker', {}, { state: 7 }, 'story'))).toBeNull(); expect(RAN).toBe(1); expect(c.echo).toBe(0);
+    });
+  });
+  it('what only a unit holds (charge, MP, Supplies) can\'t be paid where there is no unit: refused, never run for nothing', () => {
+    onlyHandlers([act({ charge: 2 })], () => {
+      const s = storyWith([{ traits: ['chain_smoker'] }]), c = s.chars[0], x = { c, g: s.g }; RAN = 0;
+      expect(withGame(s.g, () => runPerkAction(x, 'trait:chain_smoker', {}, { state: 7 }, 'story'))).toBe('Only in a fight (it costs 2 charge).'); expect(RAN).toBe(0);
+      expect(resWhyNot({ charge: 2 }, null, c)).toMatch(/Only in a fight/); expect(resWhyNot({}, null, c)).toBeNull();
+    });
+  });
 });
