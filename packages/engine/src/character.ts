@@ -4,6 +4,7 @@ import patronsJ from '../../../data/patrons.json';
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effects/collect';
 import { statQuery, setRankRule } from './effects/hooks';
+import type { StatId } from './effects/stats';
 import feelJ from '../../../data/feelings.json';
 import worldPlayJ from '../../../data/world_play.json';
 import techniquesJ from '../../../data/techniques.json';
@@ -582,7 +583,7 @@ export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP nex
 const P = (c: Character, id: string) => c.skills[id] || 0;
 const A = (c: Character, id: string) => c.attrs[id] || 1;
 /** A derived stat after items (plan 2.4): + the items' adds, × their multipliers (effects/hooks.ts statQuery). */
-const fx = (c: Character, stat: string, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass) return base; const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
+const fx = (c: Character, stat: StatId, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass) return base; const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
 export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dodge: 0 }, { value: 10, move: 0, dodge: 0 }, { value: 15, move: -0.5, dodge: 0 }, { value: 20, move: -0.5, dodge: -1 }, { value: 25, move: -1, dodge: 0 }];
 // Skeleton 2.0 (rules 1.13): defence numbers sit on the betas. HP a level reads Pain Threshold (it was Durability).
 export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'pain_threshold'));
@@ -729,7 +730,7 @@ export function soulPickError(c: Character, id: string, via: string): string | n
 /** Save bonuses and debuff strength (spec: Conditions and saves). */
 /** The skill behind each save (rules 1.13): the betas. Body Guts, Brain Rumination (it was Charisma), Heart Composure. */
 export const SAVE_SKILL_OF: Record<'body' | 'brain' | 'heart', string> = { body: 'guts', brain: 'rumination', heart: 'composure' };
-export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = SAVE_SKILL_OF[fam]; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
+export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = SAVE_SKILL_OF[fam]; return fx(c, `save_${fam}`, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
 /** Debuff strength (rules 1.13, Skeleton 2.0): how hard a condition is to save against is the modifier of the skill
  * that delivered it (`via`), floor 0. Always points − 1: a gamma that sets a TN never counts its full points. */
 export const strengthOf = (c: Character, via: string) => Math.max(0, mod(P(c, via)));
@@ -771,7 +772,7 @@ export const checkMod = (c: Character, skill: string) => checkModOf(skill, P(c, 
 /** Passive Vigilance from a unit's points (traps, hidden piles, hazards, Sigil traps): 10 + the check modifier, the same
  * rule as a voice hook's passive (rules 1.13, ruling 5). The opposed roll to spot the Hidden in a fight is not this. */
 export const passiveVigilance = (points: number) => 10 + checkModOf('vigilant', points || 0);
-export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'passive:' + skill, 10 + checkMod(c, skill) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
+export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, `passive:${skill}`, 10 + checkMod(c, skill) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
 // ---------- derived stats the damage chain and the shared subsystems read (spec: Derived stats; rules 1.3) ----------
 /** Percentage reductions are capped at 60% (spec: Derived stats). Each returns the fraction NOT taken off (0..0.6). */
 const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));

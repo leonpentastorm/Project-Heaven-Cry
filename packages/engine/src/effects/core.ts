@@ -12,6 +12,7 @@ import { healingMult } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { Holder, ItemInfo } from './types';
 import { registerGeneric, genericEffects, statQuery, charOfUnit } from './hooks';
+import { COST_SITES, type CostSite } from './stats';
 import { applyCond, endCond, isCondition, condFamily } from '../magic';
 import { moveBlockers, key, xy, dist } from '../combat';
 import { grantShield, healUnit, tendHook } from './damage';
@@ -67,7 +68,7 @@ const MULT_MAP: Record<string, string> = { hp_max: 'hp', hp: 'hp', move: 'move',
 registerGeneric({
   op: 'stat_mod',
   claim: (e) => plainOrTagged(e) && !!STAT_MAP[e.stat] && typeof e.value === 'number',
-  stat: (h, e, stat, ctx) => (STAT_MAP[e.stat] === stat && stat !== 'ap' && contextHolds(e, h, ctx) ? e.value : 0),
+  stat: (h, e, stat, ctx) => (STAT_MAP[e.stat] === stat && contextHolds(e, h, ctx) ? e.value : 0),
   on: { turn_start_pre: (ctx, h, e) => { if (STAT_MAP[e.stat] === 'ap' && ctx.u === h.u && contextHolds(e, h, ctx)) (e.value >= 0 ? ctx.grants : ctx.penalties).push({ n: e.value, why: h.info.name }); } },
 });
 registerGeneric({
@@ -95,7 +96,7 @@ export function skillRollMod(x: { c?: Character | null; u?: Unit | null }, skill
   const h0: any = { c: x.c ?? charOfUnit(x.u), u: x.u };
   for (const { e, info } of genericEffects(x, 'skill_mod')) if (e.skill === skill && contextHolds(e, { ...h0, info } as Holder, ctx)) labels.push({ add: e.value, label: info.name });
   for (const { e, info } of genericEffects(x, 'skill_mod_tag')) if (skillHasTag(skill, e.tag) && contextHolds(e, { ...h0, info } as Holder, ctx)) labels.push({ add: e.value, label: info.name });
-  const q = statQuery(x, 'skill:' + skill, ctx); if (q.add) labels.push({ add: q.add, label: 'perks' });
+  const q = statQuery(x, `skill:${skill}`, ctx); if (q.add) labels.push({ add: q.add, label: 'perks' });
   return { add: labels.reduce((t, l) => t + l.add, 0), labels };
 }
 registerGeneric({ op: 'save_mod', claim: (e) => isPlain(e) && typeof e.value === 'number' && (['body', 'brain', 'heart', 'all', 'any'].includes(e.family) || e.save != null),
@@ -117,7 +118,7 @@ function immuneMatch(words: string[], what: string, fam?: string): boolean {
  * 'opportunity_attack'? Returns the item's name, or null. */
 export function immune(x: { u?: Unit | null; c?: Character | null }, what: string, fam?: string): string | null {
   for (const { e, info } of genericEffects(x, 'immunity')) if (immuneMatch(immWords(e), what, fam ?? (isCondition(what) ? condFamily(what) : undefined))) return info.name;
-  const q = statQuery(x, 'immune:' + what); return q.add ? 'perk' : null;
+  const q = statQuery(x, `immune:${what}`); return q.add ? 'perk' : null;
 }
 
 // ---------- damage ----------
@@ -144,18 +145,19 @@ registerGeneric({
 
 // ---------- AP costs and forbidden actions ----------
 /** Action ids whose AP the engine asks actionAp() for (see combat.ts). */
-export const COST_SITES = new Set(['field_repair', 'sprint', 'clear_jam', 'disengage', 'heal', 'stim', 'stabilise', 'analyze', 'reload', 'throw', 'set_explosive', 'move', 'load', 'brace', 'overwatch', 'shove', 'swap']);
+
 registerGeneric({ op: 'action_cost', claim: (e) => isPlain(e) && COST_SITES.has(e.action) && (typeof e.value === 'number' || typeof e.set === 'number') });
 /** The AP an action costs this unit: the base, then items' set (lowest wins) and value changes, never below 0
  * (lanes give their own floors, e.g. Field Medic's 1). Labels say why. */
-export function actionAp(x: { u?: Unit | null; c?: Character | null }, action: string, base: number, extra: Record<string, unknown> = {}): { ap: number; labels: string[] } {
+export function actionAp(x: { u?: Unit | null; c?: Character | null }, action: CostSite, base: number, extra: Record<string, unknown> = {}): { ap: number; labels: string[] } {
   let ap = base, set: number | null = null; const labels: string[] = [];
   for (const { e, info } of genericEffects(x, 'action_cost')) {
     if (e.action !== action && !(action === 'stim' && e.action === 'heal') && !(action === 'stabilise' && e.action === 'heal')) continue;
     if (typeof e.set === 'number') { set = set == null ? e.set : Math.min(set, e.set); labels.push(info.name + ' (' + e.set + ' AP)'); }
-    else { ap += e.value; labels.push(info.name + ' (' + (e.value > 0 ? '+' : '') + e.value + ')'); }
+    else { const was = ap; ap += e.value; if (typeof e.min === 'number' && e.value < 0) ap = Math.max(Math.min(was, e.min), ap); // the effect's own floor ("never below 1")
+      labels.push(info.name + ' (' + (e.value > 0 ? '+' : '') + e.value + ')'); }
   }
-  const q = statQuery(x, 'ap_cost:' + action, { ...extra, base }); ap += q.add; if (q.add) labels.push('perks');
+  const q = statQuery(x, `ap_cost:${action}`, { ...extra, base }); ap += q.add; if (q.add) labels.push('perks');
   return { ap: Math.max(0, set != null ? Math.min(set, ap) : ap), labels };
 }
 const FORBID_SITES = new Set(['disengage', 'sprint', 'reload', 'stim', 'analyze']);

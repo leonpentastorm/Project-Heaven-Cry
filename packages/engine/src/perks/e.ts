@@ -943,7 +943,7 @@ const healDesign = (d: any) => d?.option === 'heal' || d?.school === 'heal' || d
 register({
   id: 'field_medic', claims: 'all', narrator: [2],
   stat: (h, stat, ctx) => {
-    if (!['ap_cost:stabilise', 'ap_cost:stim', 'ap_cost:heal', 'ap_cost:triage'].includes(stat)) return 0;
+    if (stat !== 'ap_cost:stabilise' && stat !== 'ap_cost:stim' && stat !== 'ap_cost:triage') return 0;
     const base = ctx?.base ?? 1; return base > 1 ? -1 : 0;
   },
   actions: [{

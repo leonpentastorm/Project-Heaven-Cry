@@ -446,7 +446,7 @@ register({ id: 'right_of_way', claims: [3], stat: (h, stat) => (stat === 'move' 
 // lit tile is undone, and the story's stay-hidden roll fails when they aren't in the dark.
 register({
   id: 'heavyworlder', claims: [2, 3, 6, 7], narrator: [0],
-  stat: (h, stat) => (stat === 'carry' ? { mult: 2 } : stat === 'move' ? -0.5 : stat === 'size' ? 1 : stat === 'one_hand_heavy' ? 1 : 0), // heavies in one hand (character.ts twoHands)
+  stat: (h, stat) => (stat === 'carry' ? { mult: 2 } : stat === 'move' ? -0.5 : stat === 'one_hand_heavy' ? 1 : 0), // heavies in one hand (character.ts twoHands); 'one size larger' is the Narrator's (no stat: nothing asks a size)
   on: {
     attack_preview: (ctx, h) => { if (ctx.tgt === h.u) ctx.terms.push({ v: 2, label: 'big target (Heavyworlder)' }); },
     hide: (ctx, h) => { if (ctx.u === h.u && h.cb && litAt(h.cb, h.u!.pos)) reveal(h.cb, h.u!, 'too big to hide in the light'); },

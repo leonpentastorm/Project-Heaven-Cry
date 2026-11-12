@@ -5,6 +5,7 @@
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
+import type { StatId } from './stats';
 import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf } from './collect';
 
 // ---------- the bound game (set by apply() for the length of one action) ----------
@@ -40,7 +41,7 @@ export function _unregisterAll(keep: (key: string) => boolean = () => false) { f
 export interface GenericOp {
   op: string;
   claim(e: any, info: ItemInfo): boolean;
-  stat?(h: Holder, e: any, stat: string, ctx: any): StatAnswer;
+  stat?(h: Holder, e: any, stat: StatId, ctx: any): StatAnswer;
   on?: Partial<Record<HookName, (ctx: any, h: Holder, e: any) => void>>;
   checkMod?(h: Holder, e: any, ck: any, ctx: any): CheckMod[] | void;
   /** Run as part of an action's own effects (cleanse, shield, heal, condition…). Returns a log suffix, or null. */
@@ -148,7 +149,7 @@ const GLOBAL_HOOKS: Partial<Record<HookName, GlobalHook[]>> = {};
 const GLOBAL_STATS: Record<string, ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number)[]> = {};
 const GLOBAL_CHECKS: ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[])[] = [];
 export function onHook(name: HookName, fn: GlobalHook) { (GLOBAL_HOOKS[name] ||= []).push(fn); }
-export function onStat(stat: string, fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number) { (GLOBAL_STATS[stat] ||= []).push(fn); }
+export function onStat(stat: StatId, fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number) { (GLOBAL_STATS[stat] ||= []).push(fn); }
 export function onCheck(fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[]) { GLOBAL_CHECKS.push(fn); }
 /** A story hook for an engine system (no item): runs after the characters' items, with the game. */
 const GLOBAL_STORY: Partial<Record<HookName, ((ctx: any, g: any) => void)[]>> = {};
@@ -173,7 +174,7 @@ export function anyOn(cb: Combat | null | undefined, name: HookName): boolean {
 
 // ---------- stat and check queries ----------
 /** Sum of every item's answer to a stat query (stat handlers, then generic stat effects). mult multiplies. */
-export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: string, ctx: any = {}): { add: number; mult: number } {
+export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: StatId, ctx: any = {}): { add: number; mult: number } {
   let add = 0, mult = 1;
   for (const f of GLOBAL_STATS[stat] || []) add += f(x, ctx) || 0; // engine systems (faith.ts)
   const c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c);
