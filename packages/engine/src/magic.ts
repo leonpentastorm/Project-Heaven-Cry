@@ -1313,7 +1313,9 @@ export function applyToneRiders(cb: Combat, rng: Rng, by: Unit | null, t: Unit, 
 function toneRidersInner(cb: Combat, rng: Rng, by: Unit | null, t: Unit, tone: string, stage: number, from: string | undefined, skip: string[]): string {
   let out = ''; const at0 = t.pos; // where it struck (the pushes around it read from there, not from where the push left it)
   for (const r of toneRiders(tone, stage).riders) {
-    if (t.dead || skip.includes(r.rider)) continue;
+    // what an element does AROUND the creature it struck still happens when the strike killed it (fire spreads and the
+    // ground burns, rubble rises, the gale throws the others); only what it does TO that creature is lost with it
+    if (skip.includes(r.rider) || (t.dead && !['spread', 'ground', 'ground_around', 'push_around'].includes(r.rider))) continue;
     if (r.rider === 'cond' && r.condition) {
       const s = applyCond(cb, rng, by, t, r.condition, r.rounds, undefined, { skipSave: !r.save, ...(r.deep ? { arg: 'deep' } : {}) }); out += s;
       if (r.deep && condOn(t, 'corroded') && !(t as any).acidDeep) { (t as any).acidDeep = true; t.def -= 2; out += ' (Defense −2 more)'; }
@@ -1418,7 +1420,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
       for (let i = 0; i < strikes && !t.dead; i++) { const h = schoolOn(cb, rng, u, d, t, d.school, d.option, smOf(t) * per * (i > 0 ? back : 1), 1, true, rs, tone, line); landed ||= h.landed; }
       if (landed) hits.push(t);
       // a hit that kills still chains (Storm leaps from where it struck: live 0.22.0 lost the chain on a kill, and the preview showed it)
-      if (landed && t.dead && tone !== 'raw' && t.side !== u.side) hitFoes.push(t);
+      if (landed && t.dead && tone !== 'raw' && t.side !== u.side) { const rr = applyToneRiders(cb, rng, u, t, tone, rs, form === 'burst' ? aim : u.pos, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']); if (rr) line.push(rr.replace(/^ · /, '')); hitFoes.push(t); }
       if (!landed || t.dead) continue;
       if (s2 && !deepen) schoolOn(cb, rng, u, d, t, s2, d.option2, smOf(t), half, false, rs, tone, line);
       if (tone !== 'raw' && t.side !== u.side && !t.dead) { const rr = applyToneRiders(cb, rng, u, t, tone, rs, form === 'burst' ? aim : u.pos, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']); if (rr) line.push(rr.replace(/^ · /, '')); hitFoes.push(t); }

@@ -220,6 +220,12 @@ describe('tones: Raw and the six elements, riders by stage (section 5)', () => {
     const f = rig(['6,5', '7,5']); f.foes[0].hp = 1; const d = give(f.pc, { tone: 'storm' }); begin(f, d); pump(f, 2); release(f, '6,5');
     expect(f.foes[0].dead).toBe(true); expect(lost(f.foes[1])).toBeGreaterThan(0); expect(fx(f.cb, 'chain').length).toBe(1);
   });
+  it('what an element does around its target still happens when the hit kills it: fire spreads and the ground burns, rubble rises, the gale throws the others', () => {
+    const kill = (tone: string, foes: string[]) => { const f = rig(foes); f.foes[0].hp = 1; const d = give(f.pc, { tone }); begin(f, d); pump(f, 4); release(f, '6,5'); expect(f.foes[0].dead).toBe(true); return f; };
+    const fire = kill('fire', ['6,5', '7,5']); expect(condOn(fire.foes[1], 'burning')).toBe(true); expect(objectsOf(fire.cb).some((o) => o.kind === 'fire' && o.pos === '6,5')).toBe(true);
+    expect(objectsOf(kill('stone', ['6,5']).cb).filter((o) => o.kind === 'rubble').length).toBeGreaterThanOrEqual(6);
+    expect(kill('gale', ['6,5', '6,6']).foes[1].pos).not.toBe('6,6');
+  });
   it('Frost: Slowed (save) at 1; Slowed (no save) at 2–3; Slowed and Pinned 1 round at 4', () => {
     expect(condOn(hit('frost', 1).foe, 'slowed')).toBe(true);
     const f = rig(); f.foe.sv = { body: 99, brain: 0, heart: 0 } as any; const d = give(f.pc, { tone: 'frost' }); begin(f, d); pump(f, 1); release(f, '6,5');
