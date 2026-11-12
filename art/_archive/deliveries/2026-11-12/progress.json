@@ -14,12 +14,12 @@
     "brief",
     "name-it",
     "cue",
-    "spot"
+    "spot",
+    "warn"
   ],
   "awaiting_after_test": "Leon verdict before remaining feeling/module production; map guides before optional maps",
   "production_approved": false,
   "remaining_now": [
-    "warn",
     "threaten",
     "taunt",
     "feeling-rage",
@@ -33,5 +33,5 @@
     "module-orbit",
     "module-echo"
   ],
-  "updated_utc": "2026-11-12T02:24:24.948694+00:00"
+  "updated_utc": "2026-11-12T02:26:05.774680+00:00"
 }

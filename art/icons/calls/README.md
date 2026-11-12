@@ -8,3 +8,4 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `name-it.png`: Name It. Wick naming a fear out loud so it loses its hold: standing firm, one open hand held out palm-up as if presenting something, and in front of that hand a small jagged shape with a simple ring drawn around it, as if circled and labelled. Steady, reassuring.
 - `cue.png`: Cue. Wick giving a cue: one arm raised with the hand about to drop in a sharp "now!" chop, a single short curved motion line under the hand, his head turned over his shoulder toward someone behind him.
 - `spot.png`: Spot. Wick pointing out a target: one arm fully extended with a pointing finger, his other hand shading his eyes, and far along the pointing line a small target ring.
+- `warn.png`: Warn. Wick shouting a warning: both hands cupped around his mouth, body twisted toward someone at his side, and a small sharp zig-zag danger mark above and behind him. Urgent.
