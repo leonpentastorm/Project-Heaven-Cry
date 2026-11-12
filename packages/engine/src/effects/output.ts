@@ -1,4 +1,5 @@
-// THE ONE FORMULA (docs/design/proposals/2026-11-unified-damage.md, part 2; stage (a): a re-expression, no number moves).
+// THE ONE FORMULA (docs/design/proposals/2026-11-unified-damage.md, part 2; stage (a): a re-expression; steps a0 to a6
+// moved no number, step a7 closed the leaks listed in docs/design/handoffs/unified-damage-stage-a.md).
 //
 //   amount = (base + flat) × Stat × Level × own multipliers × (1 + target bonuses, capped at +100%)      amountOf
 //   dealt  = max(1, floor(amount) − armour(target, how this source meets armour))                        armourAgainst, landed
@@ -17,7 +18,13 @@
 //           conditions, perks): they multiply
 //   target  "against this target" bonuses: fractions that ADD together, capped at +100% (VS_CAP)
 //
-// WHO GOES THROUGH IT TODAY (stage (a), steps a1 to a3):
+// ONE ORDER FOR EVERYTHING (step a7, spec item 1421): the base (with what items add) times each multiplier in turn, in
+// the order the source lists them, then the bonus against this target: ((base + flat) × m1) × m2 … × target. A weapon
+// attack used to multiply its multipliers and the target bonus together first; in floating point that lands a point
+// lower here and there (30 × (1.5 × 1.2) is 53.99…, (30 × 1.5) × 1.2 is 54). The sum (base + flat) is never under 0.
+// ARMOUR IS NEVER UNDER 0 (step a7, spec item 1422), for every source.
+//
+// WHO GOES THROUGH IT (stage (a)):
 //   character.ts     the derived multipliers (Physical, a weapon's, Sigil, Elemental, Soul, Healing given, Blessing
 //                    power) are the Stat term of their profile: statTerm
 //   effects/mending  mendFactor is levelFactor('mend')
@@ -26,17 +33,11 @@
 //   magic.ts         harm is deal()
 //   and every site that takes armour off a number calls armourAgainst / landed (the carried round, Flush, Interpose,
 //   Breaching Strike, the Sigil preview).
-// Still their own formulas, for the later steps: what a Sigil Line and an Outburst hand to harm (a4), prayers and the
-// medic's kit (a5), the literals in class moves and perks (a6).
-//
-// TWO THINGS KEPT EXACTLY AS THEY WERE, on purpose, because changing either moves numbers by 1 here and there (they
-// are listed for a ruling in docs/design/handoffs/unified-damage-stage-a.md):
-//   1. The order of the multiplication. A weapon attack multiplies its own multipliers and the target bonus together
-//      and then the base by that ('stack'); a spell multiplies the base by its multipliers and then by the target
-//      bonus ('base'). In floating point those differ in the last place (30 × (1.5 × 1.2) is 53.99…, (30 × 1.5) × 1.2
-//      is 54), and the floor that follows turns that into a point of damage. AmountSpec.order says which.
-//   2. A weapon attack never meets less than 0 armour (it clamps after the ammunition's multiplier and the pierce);
-//      harm and hurtUnit take the armour as it stands. armourAgainst's `floor0` says which.
+//   sigil.ts         a Line's damage parts, MEND and WARD (sigilDamage, sigilBoon: the preview and the resolve)      a4
+//   magic.ts         the Outburst's damage, heal and shields (outburstDamage and its kin); heal() is mend()          a4, a5
+//   faith.ts         prayers and interventions (prayerAmount)                                                        a5
+//   effects/mending  the medic's kit (kitHeal)                                                                       a5
+//   effects/amounts  the numbers items deal, heal and shield with, from their data (itemAmount)                      a6
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import { RULES, enemyLevelRow, clampEnemyLevel } from '../data';
@@ -111,9 +112,12 @@ export interface AmountSpec {
   /** Per-point parts that add to the base: { of: 'devotion', value: 4 } with ctx.counts.devotion. */ per?: { of: string; value: number }[];
   /** data/rules.json output.profiles (absent: no Stat and no Level term: the caller's number is already whole). */ profile?: string;
   /** The pair the Stat term reads, when it is not the profile's own (a weapon's `phys`). */ pair?: Pair;
-  /** 'stack': (base + flat) × (own × target), a weapon attack's order. 'base': ((base + flat) × own) × target, a
-   * spell's (and the sum is never under 0). See the head of this file. */
-  order?: 'stack' | 'base';
+  /** A rider's own flat amount on the same hit (an Outburst tone's bonus damage): added after the source's own
+   * multipliers, before what items multiply by and the bonus against this target. Not `flat` (which is multiplied). */
+  plus?: number;
+  /** How the amount is made whole: 'floor' (default), 'round' (a Sigil Line rounds each of its parts), 'none'
+   * (the caller goes on with the raw number: an Outburst adds its critical and its tone's riders before harm floors it). */
+  round?: 'floor' | 'round' | 'none';
   /** Marked for spec section 14. */ provisional?: boolean;
 }
 export interface AmountCtx {
@@ -124,8 +128,11 @@ export interface AmountCtx {
   flat?: number; mults?: Term[]; vs?: Term[];
 }
 /** An amount being built: the Stat and Level terms are already in `mults` (first), a hook may add to add, mults and vs. */
-export interface Amount { spec: AmountSpec; base: number; add: number; mults: Term[]; vs: Term[] }
+export interface Amount { spec: AmountSpec; base: number; add: number; mults: Term[]; vs: Term[];
+  /** spec.plus, and how many of `mults` are the source's own (it is added after those). */ plus?: number; plusAt?: number }
 const push = (list: Term[], v: number, label: string) => { if (v !== 1) list.push({ v, label }); };
+/** A named multiplier for an amount's `mults` (a term of exactly ×1 is dropped when the amount is opened). */
+export const term = (v: number, label: string): Term => ({ v, label });
 /** Open an amount: the base with its per-point parts, then the Stat term and the Level term as the first multipliers
  * (a term of exactly ×1 is not listed, as everywhere). The caller adds its own multipliers and closes it. */
 export function openAmount(spec: AmountSpec, by: Unit | null, ctx: AmountCtx = {}): Amount {
@@ -135,13 +142,17 @@ export function openAmount(spec: AmountSpec, by: Unit | null, ctx: AmountCtx = {
   else if (spec.profile && ctx.who) push(mults, statOf(spec.profile, ctx.who, spec.pair), spec.profile);
   if (spec.profile) push(mults, levelOf(spec.profile, ctx.level !== undefined ? ctx.level : by?.level), 'level');
   for (const m of ctx.mults || []) push(mults, m.v, m.label);
-  return { spec, base, add: ctx.flat || 0, mults, vs: [...(ctx.vs || [])] };
+  return { spec, base, add: ctx.flat || 0, mults, vs: [...(ctx.vs || [])], ...(spec.plus ? { plus: spec.plus, plusAt: mults.length } : {}) };
 }
-/** Close an amount: the stacking rule, then the product in the spec's order. `raw` is the number before the floor. */
+/** Close an amount: the base (with what items added; never under 0) times each multiplier in turn, then the bonus
+ * against this target (the stacking rule). One order for every source (step a7). `raw` is the number before it is made whole. */
 export function closeAmount(a: Amount): { raw: number; amount: number; mult: number; vsMult: number; total: number } {
   const st = stackDamage(a.mults, a.vs);
-  const raw = a.spec.order === 'base' ? Math.max(0, a.base + a.add) * st.mult * st.vsMult : (a.base + a.add) * st.total;
-  return { raw, amount: Math.floor(raw), ...st };
+  let x = Math.max(0, a.base + a.add);
+  if (a.plus) { const at = Math.min(a.plusAt ?? a.mults.length, a.mults.length); a.mults.forEach((m, i) => { if (i === at) x += a.plus!; x *= m.v; }); if (at >= a.mults.length) x += a.plus; }
+  else for (const m of a.mults) x *= m.v;
+  const raw = x * st.vsMult;
+  return { raw, amount: a.spec.round === 'round' ? Math.round(raw) : a.spec.round === 'none' ? raw : Math.floor(raw), ...st };
 }
 /** The amount of a source in one call (no hook in between): what it produces before armour or the receiver's
  * multipliers, with every term named. */
@@ -157,12 +168,11 @@ export function amountOf(spec: AmountSpec, by: Unit | null, ctx: AmountCtx = {})
  *   mult     the ammunition's armour multiplier (hollow-point: ×2), before the pierce
  *   pierce   armour this hit ignores (a weapon's property, a technique)
  *   ignore   it ignores all of it
- *   floor0   never under 0 (a weapon attack; see the head of this file) */
-export function armourAgainst(target: Unit, kind: ArmourKind = 'full', o: { mult?: number; pierce?: number; ignore?: boolean; floor0?: boolean } = {}): number {
+ * Never under 0, for every source (step a7, spec item 1422: armour taken below 0, or pierced past it, adds no damage). */
+export function armourAgainst(target: Unit, kind: ArmourKind = 'full', o: { mult?: number; pierce?: number; ignore?: boolean } = {}): number {
   if (o.ignore || kind === 'none') return 0;
-  if (kind === 'half') return Math.floor(target.armour / 2);
-  const a = o.mult != null || o.pierce != null ? target.armour * (o.mult ?? 1) - (o.pierce ?? 0) : target.armour;
-  return o.floor0 ? Math.max(0, a) : a;
+  if (kind === 'half') return Math.max(0, Math.floor(target.armour / 2));
+  return Math.max(0, o.mult != null || o.pierce != null ? target.armour * (o.mult ?? 1) - (o.pierce ?? 0) : target.armour);
 }
 /** What lands of an amount after armour: never under 1 (armour does not stop a hit outright). */
 export const landed = (amount: number, armour: number): number => Math.max(1, Math.floor(amount) - armour);

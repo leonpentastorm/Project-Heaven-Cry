@@ -390,7 +390,7 @@ describe('Squad Anchor', () => {
     const term = () => withGame(f.g, () => previewAttack(f.cb, f.foe, f.unit(ally.id), 'shot', { free: true })).terms!.some((t) => /Squad Anchor/.test(t.label));
     expect(term()).toBe(true);
     const save = (seed: number) => withGame(f.g, () => { const a = f.unit(ally.id); delete a.conds?.pinned; return applyCond(f.cb, rng(seed), f.foe, a, 'pinned'); });
-    const num = (s: string) => Number(/save (-?\d+) vs/.exec(s)?.[1] ?? NaN);
+    const num = (s: string) => Number(/save d20 \d+ [+−]\d+ = (-?\d+) vs/.exec(s)?.[1] ?? NaN);
     let compared = 0;
     for (let seed = 1; seed < 30; seed++) {
       const near = num(save(seed)); at(f, me, '1,10'); const far = num(save(seed)); at(f, me, '1,4');

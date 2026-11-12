@@ -174,19 +174,19 @@ describe('Shove (17)', () => {
     f.tech('shove', { targetId: f.foes[0].id }); expect(at(f, f.foes[0])).toBe(f.tile('F7')); expect(f.momentum(f.pc)).toBe(1);
     f.tech('shove', { targetId: f.foes[1].id }); expect(f.momentum(f.pc)).toBe(1); // Shove after Shove
   });
-  it('a moved enemy sets off a held Watch', () => {
+  it('a moved enemy does NOT set off a held Watch: nobody reacts to forced movement (engine foundations 1; it used to fire)', () => {
     const f = fight('sabre', { pcs: [{ weapon: 'hellraiser_service_rifle' }] }); f.put(f.pcs[1], 'C10'); weakShove(f, f.foe);
     f.turn(f.pcs[1]); expect(f.tech('overwatch')).toBeNull(); f.turn(f.pc); rig({ hit: true, die: 12 }); const hp = f.foe.hp;
     f.tech('shove', { targetId: f.foe.id });
-    expect(f.unit(f.pcs[1].id).watch).toBeUndefined(); expect(f.unit(f.foe.id).hp).toBeLessThan(hp);
+    expect(f.unit(f.pcs[1].id).watch).toBeDefined(); expect(f.unit(f.foe.id).hp).toBe(hp);
   });
-  it('a Deny lane halts the push (a ranged Stopped once); a melee push is not bound by Stopped once', () => {
+  it('a Deny lane does not halt a push (a held Watch does not answer forced movement; it used to); a melee push is not bound by Stopped once', () => {
     const f = fight('maul', { pcs: [{ weapon: 'ccec_marksman_rifle', known: ['deny'] }] }); f.put(f.pcs[1], 'C10'); weakShove(f, f.foe);
     f.turn(f.pcs[1]); expect(f.tech('deny', { tile: 'E7' })).toBeNull(); f.turn(f.pc); rig({ hit: true, die: 12 });
     f.tech('shove', { targetId: f.foe.id });
-    expect(at(f, f.foe)).toBe(f.tile('E7')); // 2 tiles, halted on the first by Deny
-    expect(f.unit(f.foe.id).stopped).toBeGreaterThan(0);
-    f.put(f.pc, 'D7'); expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('H7'));
+    expect(at(f, f.foe)).toBe(f.tile('G7')); // the whole push (Heavy 2 + Heavy Hands 1): the Deny lane on its first tile does not see a forced move
+    expect(f.unit(f.foe.id).stopped || 0).toBe(0); expect(f.unit(f.pcs[1].id).watch).toBeDefined();
+    f.put(f.pc, 'F7'); expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('J7'));
   });
 });
 
@@ -270,10 +270,10 @@ describe('Drag (19)', () => {
     const f = fight('sabre', { foes: [{ at: 'E7' }], pcs: [{ weapon: 'sabre' }] }); f.put(f.pcs[1], 'C8');
     expect(f.tech('drag', { targetId: f.foe.id })).toMatch(/next to you/); expect(f.tech('drag', { targetId: f.pcs[1].id })).toMatch(/not an ally/); expect(f.pc.ap).toBe(6);
   });
-  it('a pulled enemy sets off a held Watch', () => {
+  it('a pulled enemy does NOT set off a held Watch (forced movement; it used to)', () => {
     const f = fight('bot_thread_banner', { foes: [{ at: 'E7' }], pcs: [{ weapon: 'hellraiser_service_rifle' }] }); f.put(f.pcs[1], 'C10'); weak(f, f.foe);
     f.turn(f.pcs[1]); f.tech('overwatch'); f.turn(f.pc); rig({ hit: true, die: 12 }); const hp = f.foe.hp;
-    f.tech('drag', { targetId: f.foe.id }); expect(f.unit(f.pcs[1].id).watch).toBeUndefined(); expect(f.unit(f.foe.id).hp).toBeLessThan(hp);
+    f.tech('drag', { targetId: f.foe.id }); expect(f.unit(f.pcs[1].id).watch).toBeDefined(); expect(f.unit(f.foe.id).hp).toBe(hp);
   });
 });
 

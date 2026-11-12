@@ -1396,6 +1396,7 @@ const beatOf = (e: FxEvent): number => { const b = baseBeat(e); return b ? b * f
 function baseBeat(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
   if (e.k === 'spotlight') return 0; // the cut-in is the queue's gate (below), not a beat
+  if (e.k === 'roll') return 0; // a roll's numbers (engine rolls.ts): data for the dice read-out, no beat of its own
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;

@@ -5,6 +5,7 @@
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
+import type { StatId } from './stats';
 import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf } from './collect';
 
 // ---------- the bound game (set by apply() for the length of one action) ----------
@@ -40,7 +41,7 @@ export function _unregisterAll(keep: (key: string) => boolean = () => false) { f
 export interface GenericOp {
   op: string;
   claim(e: any, info: ItemInfo): boolean;
-  stat?(h: Holder, e: any, stat: string, ctx: any): StatAnswer;
+  stat?(h: Holder, e: any, stat: StatId, ctx: any): StatAnswer;
   on?: Partial<Record<HookName, (ctx: any, h: Holder, e: any) => void>>;
   checkMod?(h: Holder, e: any, ck: any, ctx: any): CheckMod[] | void;
   /** Run as part of an action's own effects (cleanse, shield, heal, condition…). Returns a log suffix, or null. */
@@ -129,13 +130,18 @@ export function holderOf(x: { u?: Unit | null; c?: Character | null; cb?: Combat
 
 // ---------- emit ----------
 /** Fire a combat hook: every unit's handlers in cb.units order (an ally's or an enemy's items may react). */
+/** Step a7 (leak 4): a blast, a splash, a trap and a thrown item fire 'damage_out' too when someone made them
+ * (ctx.blast, ctx.kind: 'explosion' | 'trap' | 'thrown'), but an item speaks about them only when its data says so
+ * (`damage_kinds`): every item written before then keeps meaning weapon attacks and spells, so nothing moved by itself. */
+const speaksOfBlast = (info: ItemInfo, kind: string): boolean => { const k = info.damageKinds; return !!k && (k.includes('blast') || k.includes('all') || k.includes(kind)); };
 export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): any {
   if (!cb) return ctx;
+  const blast = name === 'damage_out' && !!ctx?.blast;
   for (const u of cb.units) {
     const held = heldOfUnit(u); if (!heldAny(held)) continue;
     const list = buildIndex(held)[name]; if (!list) continue;
     const c = charOfUnit(u);
-    for (const s of list) { s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
+    for (const s of list) { if (blast && !speaksOfBlast(s.info, ctx.kind)) continue; s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
   }
   const gl = GLOBAL_HOOKS[name]; if (gl) for (const f of gl) { f(ctx, cb); if (ctx && ctx.stop) return ctx; }
   return ctx;
@@ -148,7 +154,7 @@ const GLOBAL_HOOKS: Partial<Record<HookName, GlobalHook[]>> = {};
 const GLOBAL_STATS: Record<string, ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number)[]> = {};
 const GLOBAL_CHECKS: ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[])[] = [];
 export function onHook(name: HookName, fn: GlobalHook) { (GLOBAL_HOOKS[name] ||= []).push(fn); }
-export function onStat(stat: string, fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number) { (GLOBAL_STATS[stat] ||= []).push(fn); }
+export function onStat(stat: StatId, fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number) { (GLOBAL_STATS[stat] ||= []).push(fn); }
 export function onCheck(fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[]) { GLOBAL_CHECKS.push(fn); }
 /** A story hook for an engine system (no item): runs after the characters' items, with the game. */
 const GLOBAL_STORY: Partial<Record<HookName, ((ctx: any, g: any) => void)[]>> = {};
@@ -173,7 +179,7 @@ export function anyOn(cb: Combat | null | undefined, name: HookName): boolean {
 
 // ---------- stat and check queries ----------
 /** Sum of every item's answer to a stat query (stat handlers, then generic stat effects). mult multiplies. */
-export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: string, ctx: any = {}): { add: number; mult: number } {
+export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: StatId, ctx: any = {}): { add: number; mult: number } {
   let add = 0, mult = 1;
   for (const f of GLOBAL_STATS[stat] || []) add += f(x, ctx) || 0; // engine systems (faith.ts)
   const c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c);

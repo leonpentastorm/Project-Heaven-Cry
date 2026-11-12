@@ -7,11 +7,13 @@
 // Every recommended fix for a flagged design (the audit's classes.json "problems") is marked PROVISIONAL here and listed
 // with its number in the spec (section 14, tags J…) and docs/design/perk-runtime.md.
 import { register, stateOf, uses, note, has, modOn, emit, applyDamage, healUnit, grantShield, pendRuling, postStory, type Holder, type ActionDef, type ToggleDef } from '../effects';
+import { itemAmount, amountMult } from '../effects/amounts';
+import { term } from '../effects/output';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, isMelee, emitFx, checkOver,
-  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode,
+  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode, displace
 } from '../combat';
 import { WEAPON, SIGIL } from '../data';
 import { dropToPile } from '../combat';
@@ -19,18 +21,15 @@ import { magItem } from '../containers';
 import { mod, healingMult, magazineSize } from '../character';
 import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, magicOf, flux, withElement, CORE_CHARGE, applyToneRiders } from '../magic';
 import { castAt, glyphCost, sigilReady } from '../sigil';
-import { d20, die } from '../rng';
+import { die } from '../rng';
+import { rollVs } from '../rolls';
 import { resOf, resGain, resSpend, canReact, useReaction , dropHeldShot } from '../tactics';
 import { makeObject } from '../objects';
+import { overworld, say, unitById, tileOf, rngOf, foesOf } from '../kit';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^-?\d+,-?\d+$/.test(t) ? t : refKey(t, cb.map));
-const unitById = (cb: Combat, id: string | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? ((c as any).state ||= {}) : {});
 /** Item state on the character without creating it (previews and stat queries must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};
@@ -40,7 +39,6 @@ const isRanged = (u: Unit) => { const w = W(u); return !!w && !isMelee(w) && w.c
 const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
 const adj = (a: string, b: string) => dist(a, b) <= 1;
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
 /** Run f with the weapon's state put back afterwards (a shot paid for elsewhere: no ammo, Heat, recoil count, wear). */
 function quiet<T>(u: Unit, f: () => T): T {
   const s = { ammo: u.ammo, heat: u.heat, jammed: u.jammed, shots: u.shotsThisTurn, dur: u.dur, fs: u.firstShotDone, ft: u.firstShotTurn, at: u.attackedTurn, mom: u.res?.momentum };
@@ -404,7 +402,7 @@ register({
     turn_start: (ctx, h) => {
       const u = h.u, t: Unit = ctx.u; if (!u || !inFight(h) || t.side !== u.side || !alive(t) || !alive(u)) return;
       const b = bannerOf(h); if (!b || dist(t.pos, b.pos) > 2 || dist(u.pos, b.pos) > 3) return;
-      const n = Math.round(10 * (h.c ? healingMult(h.c) : 1)), had = t.shield || 0, got = grantShield(h.cb!, t, n, u);
+      const n = Math.round(itemAmount('class:banner_dancer.rally_banner', 'shield', [term(h.c ? healingMult(h.c) : 1, 'stat: healing given')])), had = t.shield || 0, got = grantShield(h.cb!, t, n, u);
       if ((t.shield || 0) > had) { emitFx(h.cb!, 'shield', { target: t.id, at: t.pos, absorbed: 0 }); say(h.cb, t.name + ' takes heart under the banner: shield ' + t.shield + '.'); }
       void got;
     },
@@ -453,7 +451,7 @@ register({
           if (previewAttack(cb, u, v, mode, { free: true }).ok) resolveAttack(cb, rng, u, v, mode, null, { free: true });
           if (u.res) u.res.momentum = mom; // no Momentum from Sweep's own hits
         } else if (v.side === u.side && !v.dead && !st.healed.includes(v.id) && v.hp < v.maxHp) {
-          st.healed.push(v.id); const r = healUnit(cb, v, 10 * (h.c ? healingMult(h.c) : 1), u, 'class');
+          st.healed.push(v.id); const r = healUnit(cb, v, itemAmount('class:banner_dancer.sweep', 'heal', [term(h.c ? healingMult(h.c) : 1, 'stat: healing given')]), u, 'class');
           emitFx(cb, 'heal', { target: v.id, at: v.pos, amount: r.restored }); say(cb, u.name + ' passes ' + v.name + ': +' + r.restored + ' HP (Sweep).');
         }
       }
@@ -554,8 +552,8 @@ register({
       let line = 'The Company strike hits ' + refOf(at);
       for (const v of cb.units) {
         if (v.dead || !tiles.includes(v.pos)) continue;
-        if (alive(v) && canReact(cb, v)) { const out = stepOut(cb, v, tiles); if (out) { useReaction(cb, v); emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); v.pos = out; continue; } }
-        line += hurtUnit(v, 50, false, cb, 'explosion', u);
+        if (alive(v) && canReact(cb, v)) { const out = stepOut(cb, v, tiles); if (out) { useReaction(cb, v); emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); displace(cb, null, v, { tile: out }, { by: v, how: 'teleport', source: 'dive', willing: true, fx: false }); continue; } }
+        line += hurtUnit(v, itemAmount('class:rtc_contractor.strike_call', 'damage'), false, cb, 'explosion', u);
       }
       for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) line += damageObject(cb, o.pos, 50, 0, u);
       say(cb, line + '.'); checkOver(cb);
@@ -812,9 +810,9 @@ register({
     turn_end: (ctx, h) => {
       const u = h.u, tu = turretOf(h), cb = h.cb; if (ctx.u !== u || !tu || !cb || !u) return;
       const t = foesOf(cb, tu).filter((v) => !v.hidden && unitSees(cb, tu, v.pos)).sort((a, b) => dist(a.pos, tu.pos) - dist(b.pos, tu.pos) || a.hp - b.hp)[0]; if (!t) return;
-      const rng = rngOf(h, ctx), r = d20(rng as any), cover = coverTileFor(cb, tu.pos, t.pos) ? 5 : 0, tot = r + 4 - cover, hit = r === 20 || (r !== 1 && tot >= t.def);
+      const rng = rngOf(h, ctx), cover = coverTileFor(cb, tu.pos, t.pos) ? 5 : 0, sr = rollVs(cb, rng as any, { by: tu, mod: [{ add: 4, label: 'turret' }, { add: -cover, label: 'cover' }], tn: t.def, why: 'turret shot' }), r = sr.die, hit = sr.ok;
       emitFx(cb, 'shot', { unit: tu.id, target: t.id, from: tu.pos, to: t.pos, weapon: 'service_pistol', cat: 'pistol', mode: 'shot', hit, crit: false, fumble: r === 1, dmg: 0, killed: false });
-      say(cb, 'The sentry turret fires at ' + t.name + ': d20 ' + r + ' +4' + (cover ? ' −5 cover' : '') + ' = ' + tot + ' vs ' + t.def + (hit ? harm(cb, rng as any, u, t, 20, 'physical') : ' · miss') + '.');
+      say(cb, 'The sentry turret fires at ' + t.name + ': ' + sr.text + (cover ? ' (−5 cover)' : '') + (hit ? harm(cb, rng as any, u, t, itemAmount('class:siege_engineer.sentry_turret', 'damage'), 'physical') : ' · miss') + '.');
       checkOver(cb);
     },
     on_downed: (ctx, h) => { const id = stateOf(h).turret; if (h.cb && ctx.victim.id === id) { const seen = (h.cb.deadSeen ||= []); if (!seen.includes(id)) seen.push(id); say(h.cb, 'The sentry turret is wrecked.'); } },
@@ -910,7 +908,7 @@ register({
       if (!t.dead) {
         if (w.class === 'subject_element') {
           const elem = w.damage_type === 'elemental';
-          line += withElement(ins.word, () => harm(cb, rng as any, u, t, Math.floor((w.damage || 0) / 2) * (elem ? u.mg?.elemMult || 1 : u.mg?.sigilMult || 1), elem ? 'elemental' : 'sigil', DMG_OF[ins.word]));
+          line += withElement(ins.word, () => harm(cb, rng as any, u, t, Math.floor((w.damage || 0) * amountMult('class:spellslinger.inscribed_rounds', 'damage', 'word_share')) * (elem ? u.mg?.elemMult || 1 : u.mg?.sigilMult || 1), elem ? 'elemental' : 'sigil', DMG_OF[ins.word]));
         }
         line += rider(cb, rng, u, t, ins.word);
       }
@@ -1042,12 +1040,12 @@ register({
       u.mg.mp -= 5;
       // Rules 1.5: the element's stage-1 rider rides the hit (PROVISIONAL): Fire Burning 1 round on a critical, else +5;
       // Shock chains to one enemy next to the target for half; Freeze Slowed (Body save); Spark +1 AP on a kill.
-      const cb = h.cb!, rng = rngOf(h, ctx) as any, t = ctx.tgt, fireExtra = el === 'fire' && !ctx.crit ? 5 : 0;
-      let line = 'Infusion: ' + el.toUpperCase() + ' (5 MP)' + withElement(el, () => harm(cb, rng, u, t, (10 + fireExtra) * (u.mg!.elemMult || 1), 'elemental', DMG_T[el]));
+      const cb = h.cb!, rng = rngOf(h, ctx) as any, t = ctx.tgt, fireExtra = el === 'fire' && !ctx.crit ? itemAmount('class:storm_hand.gauntlet_infusion', 'fire_extra') : 0;
+      let line = 'Infusion: ' + el.toUpperCase() + ' (5 MP)' + withElement(el, () => harm(cb, rng, u, t, (itemAmount('class:storm_hand.gauntlet_infusion', 'damage') + fireExtra) * (u.mg!.elemMult || 1), 'elemental', DMG_T[el]));
       emitFx(cb, 'infusion', { unit: u.id, target: t.id, at: t.pos, element: el });
       if (el === 'fire' && ctx.crit && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'burning', 1, undefined, { skipSave: true, via: 'brain_power' }));
       if (el === 'freeze' && !t.dead) line += withElement(el, () => applyCond(cb, rng, u, t, 'slowed', undefined, undefined, { via: 'brain_power' }));
-      if (el === 'shock') { const v = cb.units.find((x) => x !== t && x !== u && x.side !== u.side && alive(x) && adj(x.pos, t.pos)); if (v) { emitFx(cb, 'chain', { unit: u.id, from: t.pos, to: v.pos, target: v.id, element: 'shock' }); line += ' · it arcs to ' + v.name + withElement(el, () => harm(cb, rng, u, v, 5 * (u.mg!.elemMult || 1), 'elemental', DMG_T[el])); } }
+      if (el === 'shock') { const v = cb.units.find((x) => x !== t && x !== u && x.side !== u.side && alive(x) && adj(x.pos, t.pos)); if (v) { emitFx(cb, 'chain', { unit: u.id, from: t.pos, to: v.pos, target: v.id, element: 'shock' }); line += ' · it arcs to ' + v.name + withElement(el, () => harm(cb, rng, u, v, itemAmount('class:storm_hand.gauntlet_infusion', 'arc', [term(u.mg!.elemMult || 1, 'stat: elemental')]), 'elemental', DMG_T[el])); } }
       if (el === 'spark' && (t.dead || ctx.killed) && u.ap < 9) { u.ap = Math.min(9, u.ap + 1); line += ' · +1 AP (Spark)'; }
       say(cb, line + '.');
     },
@@ -1086,7 +1084,7 @@ register({
       const el = infusionOf(h), tone = ({ fire: 'fire', shock: 'storm', freeze: 'frost' } as Record<string, string>)[el || ''] || 'raw';
       emitFx(cb, 'explode', { at, radius: 1, what: 'discharge', element: el || null, charges: n, shake: true });
       for (const v of [...cb.units]) if (v !== ctx.tgt && v !== u && v.side !== u.side && alive(v) && adj(v.pos, at)) {
-        line += withElement(el || null, () => harm(cb, rng as any, u, v, 20 * n * (u.mg?.elemMult || 1), 'elemental', DMG_T[el || 'shock'] || 'lightning'));
+        line += withElement(el || null, () => harm(cb, rng as any, u, v, itemAmount('class:storm_hand.discharge', 'damage', [term(u.mg?.elemMult || 1, 'stat: elemental')], { charge: n }), 'elemental', DMG_T[el || 'shock'] || 'lightning'));
         if (tone !== 'raw' && !v.dead) line += withElement(el || null, () => applyToneRiders(cb, rng as any, u, v, tone, Math.min(4, n), at, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']));
       }
       say(cb, line + '.');
@@ -1111,7 +1109,7 @@ function braceEnd(h: Holder, why: string) { const st = stateOf(h), u = h.u!; if 
 function bulwarkShield(h: Holder) {
   const u = h.u!, kn = h.c;
   if (!has(u, 'adamantile_knight.bulwark_of_will')) return '';
-  const was = u.shield || 0, n = grantShield(h.cb!, u, 20 * (kn ? healingMult(kn) : 1), u);
+  const was = u.shield || 0, n = grantShield(h.cb!, u, itemAmount('class:adamantile_knight.bulwark_of_will', 'shield', [term(kn ? healingMult(kn) : 1, 'stat: healing given')]), u);
   if ((u.shield || 0) > was) emitFx(h.cb!, 'shield', { target: u.id, at: u.pos, absorbed: 0 });
   return ' · Bulwark of Will: shield ' + Math.max(u.shield || 0, n);
 }
@@ -1146,7 +1144,7 @@ function plateShare(h: Holder, k: number) {
   if (!has(h.u!, 'adamantile_knight.adamantile_plate')) return '';
   const u = h.u!, cb = h.cb!, ally = cb.units.filter((v) => v !== u && v.side === u.side && alive(v) && adj(v.pos, u.pos)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
   if (!ally) return '';
-  grantShield(cb, ally, 10 * k, u); emitFx(cb, 'shield', { target: ally.id, at: ally.pos, absorbed: 0 });
+  grantShield(cb, ally, itemAmount('class:adamantile_knight.adamantile_plate', 'shield', [], { guard: k }), u); emitFx(cb, 'shield', { target: ally.id, at: ally.pos, absorbed: 0 });
   return ' · the shed plate shields ' + ally.name + ' (' + ally.shield + ')';
 }
 register({

@@ -35,7 +35,7 @@
 //              the sidearm. Rally and Brief go to the ally with the hardest-hitting weapon.
 import {
   previewAttack, previewTechnique, techniquePad, paths, apForTiles, dist, alive, WEAPON, isMelee, bindGame,
-  previewOutburst, previewPump, previewOutburstPlan, heartReach, planEvoke, glyphCost, glyphApOf, groundCap, freeTile, dir8, SIGIL,
+  previewOutburst, previewPump, previewOutburstPlan, heartReach, planEvoke, glyphCost, glyphApOf, groundCap, canStand, dir8, SIGIL,
   previewPrayer, patronOf, fulfilVow, WHISPERS, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING, weaponBraces,
 } from '../../src';
 
@@ -214,7 +214,7 @@ export const sigil: Policy = (x) => {
     // the Line from which the Evoke reaches a target (the engine's own preview, tried from each tile one step away).
     if (!bestA && !/charge|core/i.test(whyNot) && M.sideStep !== x.cb.round + ':' + x.cb.turn && apForTiles(1, u.bank || 0, u.movement) + 1 <= u.ap) {
       let bestS: any = null; const p0 = u.pos;
-      for (const d of DIRS) { const k = stepK(p0, d); if (!standable(x.cb.map, k) || !W(x.g, () => freeTile(x.cb, k, u)) || (x.cb.glyphs || []).some((gl: any) => gl.pos === k)) continue;
+      for (const d of DIRS) { const k = stepK(p0, d); if (!standable(x.cb.map, k) || !W(x.g, () => canStand(x.cb, k, u)) || (x.cb.glyphs || []).some((gl: any) => gl.pos === k)) continue;
         u.pos = k; try { for (const t of x.foes) { const pv = W(x.g, () => planEvoke(x.cb, u, plan.tiles[0], t.pos)); if (!pv.ok || pv.fizzle) continue;
           const v = (pv.affected || []).filter((a: any) => !a.ally).reduce((n: number, a: any) => n + (a.roll ? a.dmgAfterArmour * a.roll.pct / 100 : a.dmgAfterArmour), 0); if (v > 0 && (!bestS || v > bestS.v)) bestS = { v, k }; } } finally { u.pos = p0; } }
       if (bestS) { const s = allowed(x, { action: { type: 'combat/move', to: bestS.k }, kind: 'setup', label: 'step beside the Line', seq: 'part' }); if (s) { M.sideStep = x.cb.round + ':' + x.cb.turn; return s; } }
@@ -265,7 +265,7 @@ export const sigil: Policy = (x) => {
     if ((!dx && !dy) || !(dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy))) return null;
     const d = [Math.sign(dx), Math.sign(dy)], tiles = [k];
     if ((x.cb.glyphs || []).some((gl: any) => gl.pos === k)) return null;
-    for (let i = 1; i < n; i++) { const q = stepK(k, d, i); if (!standable(x.cb.map, q) || !W(x.g, () => freeTile(x.cb, q, u)) || (x.cb.glyphs || []).some((gl: any) => gl.pos === q)) return null; tiles.push(q); }
+    for (let i = 1; i < n; i++) { const q = stepK(k, d, i); if (!standable(x.cb.map, q) || !W(x.g, () => canStand(x.cb, q, u)) || (x.cb.glyphs || []).some((gl: any) => gl.pos === q)) return null; tiles.push(q); }
     return tiles;
   };
   // Across the way to the target (the facing rule: fired from beside it, one lane a glyph): the Line runs along the
@@ -277,7 +277,7 @@ export const sigil: Policy = (x) => {
     if (depth < 2 || depth > range || Math.abs(off) > n - 1) return null;
     for (const sgn of off > 0 ? [1] : off < 0 ? [-1] : [1, -1]) {
       const d = horiz ? [0, sgn] : [sgn, 0], tiles = [k]; let ok = !(x.cb.glyphs || []).some((gl: any) => gl.pos === k);
-      for (let i = 1; i < n && ok; i++) { const q = stepK(k, d, i); if (!standable(x.cb.map, q) || !W(x.g, () => freeTile(x.cb, q, u)) || (x.cb.glyphs || []).some((gl: any) => gl.pos === q)) ok = false; else tiles.push(q); }
+      for (let i = 1; i < n && ok; i++) { const q = stepK(k, d, i); if (!standable(x.cb.map, q) || !W(x.g, () => canStand(x.cb, q, u)) || (x.cb.glyphs || []).some((gl: any) => gl.pos === q)) ok = false; else tiles.push(q); }
       if (ok) return tiles;
     }
     return null;

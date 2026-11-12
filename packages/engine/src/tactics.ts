@@ -9,8 +9,9 @@ import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import { type Character, mod, prayerCooldown } from './character';
 import { type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
-import { type Rng, d20 } from './rng';
-import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength } from './magic';
+import { type Rng } from './rng';
+import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
+import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst } from './magic';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit } from './effects/hooks';
 import { grantShield, tendHook } from './effects/damage';
 import { actionAp } from './effects/core';
@@ -18,6 +19,7 @@ import { note } from './effects/narrator';
 import { sessionN } from './effects/uses';
 import { makeObject } from './objects';
 import { residueFlag } from './feelings';
+import { tilesAround } from './kit';
 
 // ---------- damage types, special ammo, the damage bucket ----------
 export interface AmmoType { id: string; damage_mult?: number; ignores_armor?: boolean; armor_mult?: number; applies?: string; damage_type?: string; meter_per_hit?: number }
@@ -109,10 +111,15 @@ export function reveal(cb: Combat, u: Unit, why: string): string {
   return ' · revealed';
 }
 /** The Hide action (2 AP, provisional): only out of every enemy's sight, never while Marked. */
-export function hideAction(cb: Combat, u: Unit): string | null {
+/** Why this unit can't Hide now, whatever its AP (or null): the Hide action and its row in the action list both ask. */
+export function hideBlock(cb: Combat, u: Unit): string | null {
   if (u.hidden) return 'Already Hidden.';
   if (condOn(u, 'marked')) return 'Marked: you can\'t hide.';
   if (seenByFoes(cb, u)) return 'An enemy can see you: get out of sight first.';
+  return null;
+}
+export function hideAction(cb: Combat, u: Unit): string | null {
+  { const no = hideBlock(cb, u); if (no) return no; }
   const ap = actionAp({ u }, 'hide', 2).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   u.ap -= ap; cb.log.push(u.name + ' goes to ground' + hide(cb, u) + '.'); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' });
   return null;
@@ -129,10 +136,10 @@ export function spotHidden(cb: Combat, rng: Rng, by: Unit) {
     if (dist(u.pos, by.pos) <= 1) { reveal(cb, u, by.name + ' is right next to them'); continue; }
     if (!unitSees(cb, by, u.pos)) continue;
     const m = by.side === 'foe' ? TIER_NOTICE[by.tier || 'minion'] ?? 0 : mod(by.vigilant || 0) + (by.sk?.vigilant || 0);
-    const ctx: any = emit(cb, 'spot', { by, u, die: d20(rng), mod: m, tn: 10 + (u.ingMod ?? -2) + (u.stealth || 0) + (u.sk?.ingenuity || 0), cancel: false, cb, rng });
+    const ctx: any = emit(cb, 'spot', { by, u, die: rollD20(rng).die, mod: m, tn: CONTEST_BASE + (u.ingMod ?? -2) + (u.stealth || 0) + (u.sk?.ingenuity || 0), cancel: false, cb, rng });
     if (ctx.cancel) continue;
-    const ok = ctx.die === 20 || (ctx.die !== 1 && ctx.die + ctx.mod >= ctx.tn);
-    cb.log.push(by.name + ' looks for ' + u.name + ': d20 ' + ctx.die + ' ' + (ctx.mod >= 0 ? '+' : '−') + Math.abs(ctx.mod) + ' vs ' + ctx.tn + (ok ? ' · spotted' : ' · nothing'));
+    const sr = judge('roll', { die: ctx.die }, ctx.mod, ctx.tn), ok = sr.ok; rollFx(cb, sr, by, { why: 'spot' }); // the hook may have changed the die, the modifier or the TN
+    cb.log.push(by.name + ' looks for ' + u.name + ': ' + sr.text + (ok ? ' · spotted' : ' · nothing'));
     if (ok) reveal(cb, u, 'spotted by ' + by.name);
   }
 }
@@ -157,8 +164,8 @@ export function trySurrender(cb: Combat, rng: Rng, by: Unit, t: Unit, tnAdd = 0,
   const alone = !cb.units.some((v) => v !== t && v.side === t.side && alive(v));
   if (t.hp > t.maxHp / 2 && !alone) return ' · ' + t.name + ' isn\'t beaten enough to listen';
   t.surrenderTried = true;
-  const r = d20(rng), m = unitSave(t, 'heart'), tn = 12 + unitStrength(by, via) + tnAdd, held = r === 20 || (r !== 1 && r + m >= tn);
-  const roll = ' (Heart save d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + ')';
+  const sv = saveAgainst(cb, rng, by, t, 'heart', 'surrender', { via, tnAdd }), held = sv.ok;
+  const roll = ' (' + sv.text + ')';
   return held ? ' · ' + t.name + ' refuses' + roll : surrender(cb, t, by, 'talked down' + roll);
 }
 /** A non-lethal blow that takes the last HP subdues a foe instead of killing it (damage src.nonlethal). */
@@ -214,7 +221,6 @@ export function throwItem(cb: Combat, rng: Rng, u: Unit, item: string, tile: str
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + w.name.toLowerCase());
   return null;
 }
-const tilesWithin = (cb: Combat, at: string, r: number) => { const [x0, y0] = xy(at), out: string[] = []; for (let x = x0 - r; x <= x0 + r; x++) for (let y = y0 - r; y <= y0 + r; y++) if (x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h) out.push(key(x, y)); return out; };
 /** A thrown item goes off on a tile (credited to the thrower: kills, bleed, the barrels it sets off). */
 export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item: string, radius = radiusOf(WEAPON[item])): string {
   const w = WEAPON[item], who = cb.units.filter((v) => !v.dead && !v.surrendered && dist(v.pos, tile) <= radius);
@@ -225,7 +231,7 @@ export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item:
   let out = '';
   switch (item) {
     case 'smoke_grenade': {
-      cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'veil', tiles: tilesWithin(cb, tile, radius), words: ['smoke'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
+      cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'veil', tiles: tilesAround(tile, radius, cb), words: ['smoke'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
       return ' · smoke fills ' + radius + ' tiles around ' + refOf(tile) + ' for 2 rounds';
     }
     case 'flashbang': for (const v of who) out += applyCond(cb, rng, by, v, 'blinded', 1, 'body', { via: 'dexterity' }); return out || ' · nobody caught in it';
@@ -234,7 +240,7 @@ export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item:
         if (['robot', 'machine', 'turret', 'drone'].includes(v.kind || '') || v.companion === 'drone') out += applyCond(cb, rng, by, v, 'stunned', 1, 'body', { skipSave: true, via: 'dexterity' });
         if (WEAPON[v.weapon]?.category === 'mana') { v.jammed = true; out += ' · ' + v.name + '\'s mana arm jams'; }
       }
-      cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'scramble' as any, tiles: tilesWithin(cb, tile, radius), words: ['scramble'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
+      cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'scramble' as any, tiles: tilesAround(tile, radius, cb), words: ['scramble'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
       return (out || ' · nothing electronic caught in it') + ' · Sigils cost +1 AP there for 2 rounds';
     }
     default: {
@@ -294,9 +300,9 @@ export function escapeGrapple(cb: Combat, rng: Rng, u: Unit): string | null {
   u.ap -= ap;
   const by = cb.units.find((x) => x.id === condSource(u, 'grappled'));
   const mine = Math.max(u.strength ?? 0, mod(u.athleticsPts || 0)), theirs = by ? Math.max(by.strength ?? 0, mod(by.athleticsPts || 0)) : 0;
-  const a = d20(rng) + mine, b = d20(rng) + theirs, ok = a > b || !by;
+  const ct = contest(cb, rng, { by: u, mod: mine }, { by: by || null, mod: theirs }, 'escape'), ok = ct.won || !by; // the higher total; the holder keeps a tie
   if (ok) endCond(u, 'grappled', cb);
-  cb.log.push(u.name + ' strains against the hold: ' + a + ' vs ' + b + (ok ? ' · breaks free' : ' · still held') + '.');
+  cb.log.push(u.name + ' strains against the hold: ' + ct.text + (ok ? ' · breaks free' : ' · still held') + '.');
   return null;
 }
 /** Recover a dropped or lowered weapon: 2 AP (1 for a lowered one). */

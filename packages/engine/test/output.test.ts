@@ -17,10 +17,10 @@ const sheet = (): Sheet => { const a = ARCHETYPES[0]; return { name: 'Tester', p
 const withStats = (attrs: Record<string, number>, skills: Record<string, number>) => { const c = newCharacter('c1', 'p1', sheet()); Object.assign(c.attrs, attrs); Object.assign(c.skills, skills); c.perks = []; c.traits = []; c.classId = null as any; return c; };
 
 describe('the data (rules.json output): today\'s numbers, nothing moved', () => {
-  it('one profile a system with the slopes each derived multiplier always had; only `mend` reads a level column', () => {
+  it('one profile a system with the slopes each derived multiplier always had; only `mend` and `blessing_mend` (the heal or shield of a prayer) read a level column', () => {
     const slopes = Object.fromEntries(Object.entries(PROFILES).map(([id, p]) => [id, [p.k, p.attr, p.skill, p.level]]));
     expect(slopes).toEqual({ physical: [1, 0.1, 0.05, null], weapon: [1, 0.1, 0.05, null], sigil: [1, 0.1, 0.1, null], elemental: [1, 0.1, 0.05, null], soul: [1, 0.05, 0.1, null],
-      blessing: [1, 0, 0.1, null], healing: [1, 0.1, 0.1, null], mend: [1, 0.1, 0.1, 'mend'], flat: [1, 0, 0, null] });
+      blessing: [1, 0, 0.1, null], healing: [1, 0.1, 0.1, null], mend: [1, 0.1, 0.1, 'mend'], blessing_mend: [1, 0, 0.1, 'mend'], flat: [1, 0, 0, null] });
     expect((RULES as any).output.provisional).toBe(true);
   });
   it('the pairs: which Attribute and Skill each Stat term reads', () => {
@@ -87,15 +87,15 @@ describe('an amount: base, per-point parts, flat, Stat, Level, own multipliers, 
   it('amountOf: the raw product and its floor, every term named', () => {
     const c = withStats({ intelligence: 6 }, { brain_power: 6 });
     const r = amountOf({ kind: 'damage', base: 30, profile: 'sigil' }, null, { who: c, flat: 2, mults: [{ v: 1.7, label: 'Line' }], vs: [{ v: 0.15, label: 'True Name' }] });
-    expect(r.raw).toBe((30 + 2) * ((1 + 0.1 * 5 + 0.1 * 6) * 1.7 * (1 + 0.15))); expect(r.amount).toBe(Math.floor(r.raw)); expect(r.terms.map((t) => t.label)).toEqual(['sigil', 'Line']); expect(r.vs).toEqual([{ v: 0.15, label: 'True Name' }]);
+    expect(r.raw).toBe((30 + 2) * (1 + 0.1 * 5 + 0.1 * 6) * 1.7 * (1 + 0.15)); expect(r.amount).toBe(Math.floor(r.raw)); expect(r.terms.map((t) => t.label)).toEqual(['sigil', 'Line']); expect(r.vs).toEqual([{ v: 0.15, label: 'True Name' }]);
   });
-  it('the two orders are kept as they were: a weapon multiplies the stack first, a spell the base first (they part by a point)', () => {
-    const mk = (order: 'stack' | 'base', base: number, m: number, v: number) => closeAmount({ spec: { kind: 'damage', base, order }, base, add: 0, mults: [{ v: m, label: 'm' }], vs: [{ v, label: 'v' }] });
-    expect(mk('stack', 30, 1.5, 0.2).raw).toBe(30 * (1.5 * (1 + 0.2))); expect(mk('base', 30, 1.5, 0.2).raw).toBe(30 * 1.5 * (1 + 0.2));
-    expect(mk('stack', 30, 1.5, 0.2).amount).toBe(53); expect(mk('base', 30, 1.5, 0.2).amount).toBe(54); // the same terms, a point apart: why neither was changed in a re-expression
-    // a spell's sum is never under 0 before it is multiplied; a weapon's has no such floor (its caller's minimum of 1 after armour catches it)
-    expect(closeAmount({ spec: { kind: 'damage', base: 10, order: 'base' }, base: 10, add: -50, mults: [], vs: [] }).amount).toBe(0);
-    expect(closeAmount({ spec: { kind: 'damage', base: 10, order: 'stack' }, base: 10, add: -50, mults: [], vs: [] }).amount).toBe(-40);
+  it('one order for everything (step a7, item 1421): the base times each multiplier in turn, then the target bonus', () => {
+    const mk = (base: number, ms: number[], v: number) => closeAmount({ spec: { kind: 'damage', base }, base, add: 0, mults: ms.map((x) => ({ v: x, label: 'm' })), vs: [{ v, label: 'v' }] });
+    expect(mk(30, [1.5], 0.2).raw).toBe(30 * 1.5 * (1 + 0.2)); expect(mk(30, [1.5], 0.2).amount).toBe(54);
+    expect(30 * (1.5 * (1 + 0.2))).toBeLessThan(54); // what a weapon attack did before a7: the multipliers and the target bonus together first, a point lower
+    expect(mk(30, [1.5, 1.1, 1.25], 0.15).raw).toBe(30 * 1.5 * 1.1 * 1.25 * (1 + 0.15));
+    // the sum (base + what items add) is never under 0 before it is multiplied, for every source
+    expect(closeAmount({ spec: { kind: 'damage', base: 10 }, base: 10, add: -50, mults: [{ v: 2, label: 'm' }], vs: [] }).amount).toBe(0);
   });
 });
 
@@ -105,9 +105,15 @@ describe('armour: one function', () => {
     expect(armourAgainst(t(15))).toBe(15); expect(armourAgainst(t(15), 'full')).toBe(15); expect(armourAgainst(t(15), 'half')).toBe(7); expect(armourAgainst(t(15), 'none')).toBe(0);
     expect(armourAgainst(t(15), 'full', { ignore: true })).toBe(0); expect(armourAgainst(t(15), 'half', { ignore: true })).toBe(0);
   });
-  it('the ammunition\'s multiplier, then the pierce; a weapon attack never meets less than 0', () => {
-    expect(armourAgainst(t(10), 'full', { mult: 2 })).toBe(20); expect(armourAgainst(t(10), 'full', { mult: 2, pierce: 5 })).toBe(15); expect(armourAgainst(t(6), 'full', { pierce: 10, floor0: true })).toBe(0);
-    expect(armourAgainst(t(6), 'full', { pierce: 10 })).toBe(-4); // not clamped unless asked: only the attack path clamps today
+  it('the ammunition\'s multiplier, then the pierce; armour is never under 0, for every source (step a7, item 1422)', () => {
+    expect(armourAgainst(t(10), 'full', { mult: 2 })).toBe(20); expect(armourAgainst(t(10), 'full', { mult: 2, pierce: 5 })).toBe(15); expect(armourAgainst(t(6), 'full', { pierce: 10 })).toBe(0);
+    expect(armourAgainst(t(-4))).toBe(0); expect(armourAgainst(t(-4), 'full')).toBe(0); expect(armourAgainst(t(-5), 'half')).toBe(0); // armour taken below 0 adds no damage
+  });
+  it('a spell, a blast and a trap on a unit whose armour was taken below 0 land their number, not more', () => {
+    const f = fightWith([{}, {}], [{ tier: 'soldier', at: 'F6', classic: true }]), foe = f.foe, [a] = f.pcs; foe.maxHp = 500; foe.shield = 0;
+    for (const hit of [() => harm(f.cb, f.g.rng, a, foe, 30, 'sigil'), () => harm(f.cb, f.g.rng, a, foe, 30, 'elemental', 'fire'), () => hurtUnit(foe, 30, false, f.cb, 'explosion', a), () => hurtUnit(foe, 30, false, f.cb, 'trap', null)]) {
+      foe.hp = 500; foe.armour = -6; withGame(f.g, hit); expect(foe.hp).toBe(470);
+    }
   });
   it('what lands: floor, less armour, never under 1', () => { expect(landed(43.9, 5)).toBe(38); expect(landed(3, 10)).toBe(1); expect(landed(0, 0)).toBe(1); expect(landed(50, -4)).toBe(54); });
 });
@@ -132,9 +138,9 @@ describe('deal and mend: the one way in', () => {
     const { f, foe, a } = setup(); const seen: any[] = [];
     let on = true; onHook('damage_out', (ctx: any) => { if (!on || ctx.src?.type !== 'golden-test') return; seen.push([ctx.base, ctx.mode, ctx.spell, ctx.spec?.kind]); ctx.add += 2; ctx.mults.push({ v: 1.5, label: 'x' }); ctx.vs.push({ v: 0.2, label: 'y' }); });
     const src = { type: 'golden-test', shield: true, credit: 'hp' as const };
-    const r = withGame(f.g, () => deal(f.cb, a, foe, { kind: 'damage', base: 28, order: 'base', armour: 'none', hook: true }, { src, hookCtx: { mode: 'spell', spell: true } }));
+    const r = withGame(f.g, () => deal(f.cb, a, foe, { kind: 'damage', base: 28, armour: 'none', hook: true }, { src, hookCtx: { mode: 'spell', spell: true } }));
     expect(seen).toEqual([[28, 'spell', true, 'damage']]); expect(r.produced).toBe(Math.floor((28 + 2) * 1.5 * 1.2)); expect(r.produced).toBe(54);
-    const st = withGame(f.g, () => deal(f.cb, a, foe, { kind: 'damage', base: 28, order: 'stack', armour: 'none', hook: true }, { src })); expect(st.produced).toBe(53);
+    const st = withGame(f.g, () => deal(f.cb, a, foe, { kind: 'damage', base: 28, armour: 'none', hook: true }, { src })); expect(st.produced).toBe(54); // one order (a7): it was 53 in a weapon attack's order
     withGame(f.g, () => deal(f.cb, a, foe, { kind: 'damage', base: 28, armour: 'none' }, { src })); withGame(f.g, () => deal(f.cb, null, foe, { kind: 'damage', base: 28, armour: 'none', hook: true }, { src }));
     expect(seen.length).toBe(2); on = false;
   });

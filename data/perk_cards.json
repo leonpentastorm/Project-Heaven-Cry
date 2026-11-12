@@ -1,0 +1,361 @@
+{
+  "$schema_version": "1.0",
+  "kind": "perk_cards",
+  "source": "PHC Core Rules v1.0, rules 1.14: the perk card in a fight. Engine review 4, finding 9 (12 Nov 2026): what the Perks tab says about a held item is declared here, not read out of its card text.",
+  "adjudication": "engine",
+  "notes": "One entry per perk (at each tier), trait or skill perk that names the moment it works. `trigger` is that moment in the card's own words, lower case, with no full stop (\"when combat starts\"); the Perks tab shows it as \"Waiting: <trigger>\". `standing: true` marks a trigger that is a state or the fight's own start (\"while your song plays\"): the tab says \"Works <trigger>\", since there is nothing to wait for. An item with no entry has no moment to wait for (\"Active all fight\"). `core_wired` lists items the core rules look for by id, with no handler of their own for a fight: passives all the same. `private_count` lists limited passives that keep their count where the card cannot read it: they show their limit, never \"Ready\". The validator checks every id is a real item; packages/engine/test/perkcard.test.ts checks each trigger is in its card's text and that the two lists are complete.",
+  "core_wired": [
+    "breaching_strike",
+    "many_hands"
+  ],
+  "private_count": [
+    "skill:composure.5"
+  ],
+  "items": [
+    {
+      "id": "perk:used_to_the_pain",
+      "tier": "I",
+      "trigger": "the first time you are hit in each fight"
+    },
+    {
+      "id": "perk:used_to_the_pain",
+      "tier": "II",
+      "trigger": "the first time you are hit in each fight"
+    },
+    {
+      "id": "perk:wind_on_the_skin",
+      "tier": "I",
+      "trigger": "when a fight starts",
+      "standing": true
+    },
+    {
+      "id": "perk:wind_on_the_skin",
+      "tier": "II",
+      "trigger": "when a fight starts",
+      "standing": true
+    },
+    {
+      "id": "perk:breaching_strike",
+      "tier": "I",
+      "trigger": "when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it"
+    },
+    {
+      "id": "perk:breaching_strike",
+      "tier": "II",
+      "trigger": "when one of your melee techniques pushes a target and a wall, a solid object or another enemy stops it"
+    },
+    {
+      "id": "perk:into_the_dark",
+      "tier": "I",
+      "trigger": "the first time in a fight you move onto ground your squad hasn't seen"
+    },
+    {
+      "id": "perk:into_the_dark",
+      "tier": "II",
+      "trigger": "the first time in a fight you move onto ground your squad hasn't seen"
+    },
+    {
+      "id": "perk:grim_reaper",
+      "tier": "II",
+      "trigger": "when you kill or knock out an enemy on your own turn"
+    },
+    {
+      "id": "perk:roll_with_it",
+      "tier": "I",
+      "trigger": "when an attack against you misses"
+    },
+    {
+      "id": "perk:roll_with_it",
+      "tier": "II",
+      "trigger": "when an attack against you misses"
+    },
+    {
+      "id": "perk:both_hands",
+      "tier": "I",
+      "trigger": "after one of your melee techniques hits"
+    },
+    {
+      "id": "perk:both_hands",
+      "tier": "II",
+      "trigger": "after one of your melee techniques hits"
+    },
+    {
+      "id": "perk:rounding_up",
+      "tier": "I",
+      "trigger": "when a cost leaves you with a fraction of an AP"
+    },
+    {
+      "id": "perk:rounding_up",
+      "tier": "II",
+      "trigger": "when a cost leaves you with a fraction of an AP"
+    },
+    {
+      "id": "perk:catch",
+      "tier": "I",
+      "trigger": "when a grenade or a thrown weapon is thrown at you or at an ally next to you"
+    },
+    {
+      "id": "perk:catch",
+      "tier": "II",
+      "trigger": "when a grenade or a thrown weapon is thrown at you or at an ally next to you"
+    },
+    {
+      "id": "perk:shadow_step",
+      "tier": "I",
+      "trigger": "while you are Hidden",
+      "standing": true
+    },
+    {
+      "id": "perk:shadow_step",
+      "tier": "II",
+      "trigger": "while you are Hidden",
+      "standing": true
+    },
+    {
+      "id": "perk:got_you_in_my_sight",
+      "tier": "I",
+      "trigger": "when an enemy you can see hides or leaves your sight"
+    },
+    {
+      "id": "perk:got_you_in_my_sight",
+      "tier": "II",
+      "trigger": "when an enemy you can see hides or leaves your sight"
+    },
+    {
+      "id": "perk:parallel_thought",
+      "tier": "I",
+      "trigger": "while one of your placed spells still stands",
+      "standing": true
+    },
+    {
+      "id": "perk:parallel_thought",
+      "tier": "II",
+      "trigger": "while one of your placed spells still stands",
+      "standing": true
+    },
+    {
+      "id": "perk:overruled",
+      "tier": "I",
+      "trigger": "while an enemy carries a Left Brain Debuff you inflicted",
+      "standing": true
+    },
+    {
+      "id": "perk:overruled",
+      "tier": "II",
+      "trigger": "while an enemy carries a Left or Right Brain Debuff you inflicted",
+      "standing": true
+    },
+    {
+      "id": "perk:burden_of_proof",
+      "tier": "I",
+      "trigger": "when someone accuses you or your squad"
+    },
+    {
+      "id": "perk:burden_of_proof",
+      "tier": "II",
+      "trigger": "when someone accuses you or your squad"
+    },
+    {
+      "id": "perk:talks_broke_down",
+      "tier": "I",
+      "trigger": "when a fight breaks out of a talk your squad won"
+    },
+    {
+      "id": "perk:talks_broke_down",
+      "tier": "II",
+      "trigger": "when a fight breaks out of a talk your squad won"
+    },
+    {
+      "id": "perk:crowd_pleaser",
+      "tier": "I",
+      "trigger": "when you talk to a crowd"
+    },
+    {
+      "id": "perk:crowd_pleaser",
+      "tier": "II",
+      "trigger": "when you talk to a crowd"
+    },
+    {
+      "id": "perk:rally_cry",
+      "tier": "I",
+      "trigger": "when an enemy or a hazard drops an ally to 0 HP"
+    },
+    {
+      "id": "perk:rally_cry",
+      "tier": "II",
+      "trigger": "when an enemy or a hazard drops an ally to 0 HP"
+    },
+    {
+      "id": "perk:heart_overload",
+      "tier": "I",
+      "trigger": "after you Release an Outburst at stage 2 or higher"
+    },
+    {
+      "id": "perk:heart_overload",
+      "tier": "II",
+      "trigger": "after you Release an Outburst at stage 2 or higher"
+    },
+    {
+      "id": "perk:you_get_used_to_it",
+      "tier": "I",
+      "trigger": "the first time each round an ally within 5 tiles takes a Brain or Heart condition"
+    },
+    {
+      "id": "perk:you_get_used_to_it",
+      "tier": "II",
+      "trigger": "the first time each round an ally within 5 tiles takes a Brain or Heart condition"
+    },
+    {
+      "id": "perk:flat_line",
+      "tier": "I",
+      "trigger": "when a fight starts",
+      "standing": true
+    },
+    {
+      "id": "perk:flat_line",
+      "tier": "II",
+      "trigger": "when a fight starts",
+      "standing": true
+    },
+    {
+      "id": "perk:clean_hands",
+      "tier": "I",
+      "trigger": "when you spare an enemy or protect an innocent"
+    },
+    {
+      "id": "perk:clean_hands",
+      "tier": "II",
+      "trigger": "when you spare an enemy or protect an innocent"
+    },
+    {
+      "id": "perk:the_name_they_whisper",
+      "tier": "mastered",
+      "trigger": "when a fight starts",
+      "standing": true
+    },
+    {
+      "id": "perk:open_hand",
+      "tier": "mastered",
+      "trigger": "when an enemy you can see drops to a quarter of its HP or less"
+    },
+    {
+      "id": "perk:the_twin_pays",
+      "tier": "mastered",
+      "trigger": "when you Begin an Outburst"
+    },
+    {
+      "id": "perk:foreseen",
+      "tier": "mastered",
+      "trigger": "after a major decision goes wrong"
+    },
+    {
+      "id": "perk:charge",
+      "tier": "achieved",
+      "trigger": "when you move 3 or more tiles in a straight line and end next to an enemy you can see"
+    },
+    {
+      "id": "perk:just_the_repairman",
+      "tier": "achieved",
+      "trigger": "while you carry a toolbox",
+      "standing": true
+    },
+    {
+      "id": "perk:cultured",
+      "tier": "achieved",
+      "trigger": "whenever the talk turns to art"
+    },
+    {
+      "id": "perk:dance_of_iron",
+      "tier": "achieved",
+      "trigger": "when an attack against you misses"
+    },
+    {
+      "id": "perk:cold_read",
+      "tier": "achieved",
+      "trigger": "whenever you Analyze someone"
+    },
+    {
+      "id": "perk:silent_partner",
+      "tier": "achieved",
+      "trigger": "when you hide"
+    },
+    {
+      "id": "perk:between_heartbeats",
+      "tier": "achieved",
+      "trigger": "when an enemy you can see starts an action"
+    },
+    {
+      "id": "perk:dead_signal",
+      "tier": "achieved",
+      "trigger": "while you are Hidden or no enemy can see you",
+      "standing": true
+    },
+    {
+      "id": "perk:bite_the_bullet",
+      "tier": "achieved",
+      "trigger": "when you would drop to 0 HP"
+    },
+    {
+      "id": "perk:last_charge",
+      "tier": "ultimate",
+      "trigger": "when you charge 5 or more tiles in a straight line at an enemy"
+    },
+    {
+      "id": "perk:angel_of_the_trenches",
+      "tier": "ultimate",
+      "trigger": "when an ally you could reach with 1 AP of movement would drop to 0 HP"
+    },
+    {
+      "id": "perk:twin_discipline",
+      "tier": "ultimate",
+      "trigger": "while you hold a begun Outburst",
+      "standing": true
+    },
+    {
+      "id": "trait:southern_fist",
+      "trigger": "while you fight with nothing but gloves or bare fists",
+      "standing": true
+    },
+    {
+      "id": "trait:forlorn_hope",
+      "trigger": "when you end your turn closer to the nearest enemy than you started it"
+    },
+    {
+      "id": "trait:pain_eater",
+      "trigger": "while you are below half your max HP",
+      "standing": true
+    },
+    {
+      "id": "trait:the_soundscape_of_the_soul",
+      "trigger": "while your song plays",
+      "standing": true
+    },
+    {
+      "id": "trait:headbanger",
+      "trigger": "while your song plays",
+      "standing": true
+    },
+    {
+      "id": "trait:underground_sound",
+      "trigger": "while your song plays",
+      "standing": true
+    },
+    {
+      "id": "trait:hollow_heart",
+      "trigger": "when the burn of your own Strain Downs you"
+    },
+    {
+      "id": "trait:insomniac",
+      "trigger": "while the squad rests",
+      "standing": true
+    },
+    {
+      "id": "skill:raw_power.5",
+      "trigger": "when a Finisher of yours takes its target out"
+    },
+    {
+      "id": "skill:camaraderie.3",
+      "trigger": "when an ally next to you is attacked"
+    }
+  ]
+}

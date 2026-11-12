@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "python3 ../../design/canvas-build/build.py --web --check",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run"

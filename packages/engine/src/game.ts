@@ -12,7 +12,8 @@ import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, 
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
 import { levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
-import { type Rng, d20, seedFrom } from './rng';
+import { type Rng, seedFrom } from './rng';
+import { rollD20, rollVs, judge } from './rolls';
 import { CALL, useCall, callView, briefBefore, briefAfter, type CallArgs } from './calls';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap, expandCampaign } from './campaign';
 import { nearestFree } from './maplayout';
@@ -28,13 +29,14 @@ import { isCache, isPile, packAdd, lootToPack, itemLabel, magItem, dropOnTile, P
 import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
+import { itemAmount } from './effects/amounts';
 import { actionAp } from './effects/core';
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
 import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
 import { deedGrant } from './deeds';
-import { condSkillMod } from './magic';
+import { condSkillMod, STORY_CARRY } from './magic';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
@@ -668,7 +670,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (asked.filter((x) => x === a.skill).length >= al.limit) fail(al.limit === 1 ? 'Once per scene per skill.' : al.limit + ' times per scene per skill.');
       asked.push(a.skill);
       const hook = g.story.scene.hooks.filter((h) => h.skill === a.skill && !g.story.scene.revealed.includes(c!.id + ':' + h.id)).sort((x, y) => x.tn - y.tn)[0];
-      const m = checkMod(c!, a.skill) + songMod(g, c!, a.skill) + skillRollMod({ c: c! }, a.skill, { roll: 'ask', tags: zoneTags(g) }).add, die = d20(g.rng), total = die + m, ok = !!hook && total >= hook.tn;
+      const m = checkMod(c!, a.skill) + songMod(g, c!, a.skill) + skillRollMod({ c: c! }, a.skill, { roll: 'ask', tags: zoneTags(g) }).add, rd0 = rollD20(g.rng), die = rd0.die, total = die + m, ok = !!hook && judge('roll', rd0, m, hook.tn, { nat: false }).ok; // asking a voice: the total against the hook's TN (no natural 1 or 20: spec 14, item 1473)
       const head = sk.name.toUpperCase() + ' · YOU ASKED · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + total + (hook ? ' vs ' + hook.tn : '') + ' · ' + (ok ? '✓ SPEAKS' : '✕ NOTHING TO SAY');
       if (ok) g.story.scene.revealed.push(c!.id + ':' + hook!.id);
       push(g, { kind: 'voice', skill: a.skill, charId: c!.id, to: by, head, text: ok ? hook!.line : sk.name + ' has nothing to say about this.', ok });
@@ -1022,9 +1024,9 @@ function rollCheck(g: GameState, ck: Check, c: Character, reroll: boolean) {
   const tn = Math.max(TN_LADDER[0], Math.min(TN_LADDER[TN_LADDER.length - 1] + 4, cm.tn ?? ck.tn));
   // 'check_post' {c, ck, die, total, tn, ok, crit, fumble, auto, double}: auto 'success'/'fail', a floor, a reroll.
   // noFumble: a natural 1 is just a low roll (War Footing: hooks gap B11).
-  const d0 = d20(g.rng), cp: any = emitStory(g, 'check_post', { c, ck, die: d0, mod: m, tn, auto: (ck.auto || null) as null | 'success' | 'fail', labels: [] as string[], noFumble: false, g });
+  const d0 = rollD20(g.rng).die, cp: any = emitStory(g, 'check_post', { c, ck, die: d0, mod: m, tn, auto: (ck.auto || null) as null | 'success' | 'fail', labels: [] as string[], noFumble: false, g });
   const die = cp.die, total = die + m, crit = die === 20 && cp.auto !== 'fail', fumble = die === 1 && cp.auto !== 'success' && !cp.noFumble;
-  const ok = cp.auto === 'success' ? true : cp.auto === 'fail' ? false : crit || (die !== 1 && total >= tn); // a natural 1 always fails
+  const ok = cp.auto === 'success' ? true : cp.auto === 'fail' ? false : judge('roll', { die }, m, tn).ok; // a natural 20 passes, a natural 1 always fails (noFumble only drops the complication)
   const first = reroll ? ck.roll!.die : undefined;
   ck.roll = { die, mod: m, total, ok, crit, fumble, rerolled: reroll, first };
   ck.mods = itemMods.filter((x) => x.add);
@@ -1046,7 +1048,6 @@ export function zoneTags(g: GameState): string[] {
 const SOCIAL_TAGS = ['dialogue', 'crowd', 'official', 'merchant', 'military', 'underworld'];
 const SOCIAL_SKILLS = new Set(['charisma', 'eloquence', 'implication', 'intimidation', 'empathy', 'authority']);
 /** Story conditions that come into a fight as combat conditions (spec: Conditions in the story; the rest stay story-side). */
-const STORY_CARRY = new Set(['shaken', 'fear', 'ldebuff', 'rdebuff', 'left_brain_debuff', 'right_brain_debuff', 'weakened', 'nausea', 'injured', 'augment_offline', 'bleeding']);
 /** A character's story conditions now (persistent ones whose scope still holds). */
 export function storyConds(g: GameState, c: Character): string[] {
   return (c.persistentConds || []).filter((p) => p.scope === 'arc' || (p.scope === 'session' && (p.session ?? 1) === (g.sessionN ?? 1)) || (p.scope === 'scene' && p.scene === g.story.scene.n)).map((p) => p.id);
@@ -1647,8 +1648,8 @@ function fightRuling(g: GameState, a: FightAnswer) {
       else did = r!.perk!.name + ' accepted';
     } else if ('check' in eff && c) {
       // The same dice as a story check: d20 + the speaker's modifier against the Narrator's TN; a natural 20 succeeds, a natural 1 fails.
-      const sk = eff.check.skill, m = sideRollMod(g, c, sk) + condSkillMod(u, sk), die = d20(g.rng), total = die + m, tn = eff.check.tn;
-      const crit = die === 20, fumble = die === 1, ok = crit || (!fumble && total >= tn);
+      const sk = eff.check.skill, m = sideRollMod(g, c, sk) + condSkillMod(u, sk), tn = eff.check.tn, rv = rollVs(cb!, g.rng, { by: u, mod: m, tn, why: 'check' }), die = rv.die, total = rv.total;
+      const crit = rv.nat === 20, fumble = rv.nat === 1, ok = rv.ok;
       const won = ok && eff.check.onSuccess ? applyFightOutcome(g, cb!, u, eff.check.onSuccess) : '';
       cb!.log.push(u.name + ' · ' + SKILL[sk].name.toUpperCase() + ' CHECK · d20 ' + die + ' ' + (m >= 0 ? '+' : '−') + ' ' + Math.abs(m) + ' = ' + total + ' vs ' + tn + ' · ' + (crit ? '✓ CRITICAL' : fumble ? '✕ CRITICAL FAIL' : ok ? '✓ SUCCESS' : '✕ FAILURE') + won + '.');
       did = SKILL[sk].name + ' check ' + total + ' vs ' + tn + (ok ? ', a success' : ', a failure') + won;
@@ -2458,7 +2459,7 @@ function stayHidden(g: GameState, c: Character, n: Npc, why: string): boolean {
   // sh.auto 'success' | 'fail' settles it with no roll; 'stay_hidden_result' {c, npc, ok, die} may then change ok
   // (Every Lie Is a Door, Just the Repairman, Silent Partner: hooks gap B5/B6/G2).
   const auto = sh.auto as 'success' | 'fail' | undefined;
-  const die = auto ? 0 : d20(g.rng), m = sh.mod, tn = sh.tn, ok0 = auto ? auto === 'success' : die === 20 || (die !== 1 && die + m >= tn);
+  const die = auto ? 0 : rollD20(g.rng).die, m = sh.mod, tn = sh.tn, ok0 = auto ? auto === 'success' : judge('roll', { die }, m, tn).ok;
   const sr: any = emitStory(g, 'stay_hidden_result', { c, npc: n, ok: ok0, die, auto: auto || null, labels: [] as string[], g }), ok = !!sr.ok;
   push(g, { kind: 'check', charId: c.id, ok, head: 'INGENUITY · STAY HIDDEN · ' + (auto ? 'AUTO' : 'd20 ' + die + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (die + m) + ' vs ' + tn) + (sr.labels.length ? ' · ' + sr.labels.join(', ') : '') + ' · ' + (ok ? '✓ SUCCESS' : '✗ FAILURE'),
     text: n.name + ' ' + why + ' ' + c.name + (ok ? '; ' + c.name + ' stays hidden.' : ' and spots them.') });
@@ -2636,7 +2637,7 @@ function repairAlly(cb: Combat, u: Combat['units'][number], t: Combat['units'][n
   if (!(u.parts || 0)) return 'No spare-parts charges.';
   if (t.hp >= t.maxHp) return t.name + ' is already whole.';
   const cost = actionAp({ u }, 'field_repair', 2).ap; if (u.ap < cost) return 'Needs ' + cost + ' AP.';
-  const was = t.hp; u.ap -= cost; u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + 10 * (u.proficiency || 0)); if (t.downed && t.hp > 0) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
+  const was = t.hp; u.ap -= cost; u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 })); if (t.downed && t.hp > 0) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
   emitFx(cb, 'repair', { unit: u.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was });
   cb.log.push(u.name + ' patches ' + t.name + '\'s chassis: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
 }

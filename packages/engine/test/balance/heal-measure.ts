@@ -17,7 +17,7 @@ import { runFight, MAP_ID, TIER_WEAPON } from './sim';
 import { BUILD, BUILDS, LEVELS } from './builds';
 import { POLICIES, plain, type Ctx, type Step, type Policy } from './policies';
 import {
-  MAPS, ENEMY, SIGIL, MODULE, SCHOOL, FEELING, STAGE_MULT, WHISPERS, FAITH_PATRON, bindGame, dist, paths, apForTiles, lineOfSight, standable, freeTile,
+  MAPS, ENEMY, SIGIL, MODULE, SCHOOL, FEELING, STAGE_MULT, WHISPERS, FAITH_PATRON, bindGame, dist, paths, apForTiles, lineOfSight, standable, canStand,
   previewOutburst, heartReach, planEvoke, glyphCost, previewPrayer, patronOf, blessingPower, devotionNow,
   mendFactor, outburstHeal, inverseShield, shellShield, loveHeal, interventionHeal, BUFF_HEAL, BOON_AREA, CLASS_MOVE_POOL,
 } from '../../src';
@@ -149,7 +149,7 @@ export const sigilBoon: Policy = (x) => {
     const [kx, ky] = k.split(',').map(Number), [tx, ty] = t.pos.split(',').map(Number), dx = kx - tx, dy = ky - ty;
     if ((!dx && !dy) || !(dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy)) || glyphAt(k)) return null;
     const d = [Math.sign(dx), Math.sign(dy)], tiles = [k];
-    for (let i = 1; i < n; i++) { const q = (kx + d[0] * i) + ',' + (ky + d[1] * i); if (!standable(x.cb.map, q) || !W(x.g, () => freeTile(x.cb, q, u)) || glyphAt(q)) return null; tiles.push(q); }
+    for (let i = 1; i < n; i++) { const q = (kx + d[0] * i) + ',' + (ky + d[1] * i); if (!standable(x.cb.map, q) || !W(x.g, () => canStand(x.cb, q, u)) || glyphAt(q)) return null; tiles.push(q); }
     return dist(tiles[n - 1], t.pos) <= range ? tiles : null;
   };
   const here = fit(u.pos);

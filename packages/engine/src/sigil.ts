@@ -15,23 +15,27 @@ import {
 export * from './sigilwords';
 import {
   type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
-  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction,
+  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction, displace
 } from './combat';
-import { type Rng, d20 } from './rng';
+import { type Rng } from './rng';
+import { rollD20, rollVs, judge, rollFx, tierSave, tierStrength, CONTEST_BASE } from './rolls';
 import { emit, boundGame, onHook } from './effects/hooks';
 import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTION_STATS, STUDY, masteredWords as masteredOf } from './sigilgrowth';
 import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
+import { itemAmount } from './effects/amounts';
 import { mendFactorOf } from './effects/mending';
-import { armourAgainst, landed } from './effects/output';
+import { armourAgainst, landed, amountOf, term, type AmountSpec } from './effects/output';
 import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
 import { ENEMY_LEVELS } from './data';
 import {
-  type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, strengthFor, withVia,
+  type Glyph, type Zone, type SpellAmount, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, saveAgainst, strengthFor, withVia,
   SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
+  saveTn,
 } from './magic';
 import { makeObject, OBJ } from './objects';
+import { tilesAround, canStand, inBounds } from './kit';
 
 type Fam = SigilFam;
 /** Enemy notice by tier (tactics.ts TIER_NOTICE; copied here so this module doesn't import tactics, which reads magic.ts
@@ -92,7 +96,6 @@ export interface Pattern {
   strokeId?: string; strokeSrc?: string; junctions?: string[];
 }
 const add = (k: string, d: Dir, n = 1) => { const [x, y] = xy(k); return key(x + d[0] * n, y + d[1] * n); };
-const onMap = (cb: Combat, k: string) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; };
 const neg = (d: Dir): Dir => [d[0] ? -d[0] : 0, d[1] ? -d[1] : 0];
 const sgn = (n: number) => (n > 0 ? 1 : n < 0 ? -1 : 0);
 /** Old glyphs only (rules 1.10 item 904): the 1.4 reading, for glyphs with no strokeId. Group the old glyphs of one side
@@ -241,14 +244,13 @@ const laneOffsets = (n: number) => { const lo = n % 2 ? -(n - 1) / 2 : -(n / 2 -
 /** The tiles a caster may aim at (the area), for a pattern, a facing and a depth. */
 function areaTiles(cb: Combat, p: Pattern, f: Facing, depth: number, from?: string): { tiles: string[]; lane: Record<string, string> } {
   const tiles: string[] = [], lane: Record<string, string> = {};
-  const put = (k: string, origin: string) => { if (onMap(cb, k) && !lane[k]) { tiles.push(k); lane[k] = origin; } };
+  const put = (k: string, origin: string) => { if (inBounds(cb, k) && !lane[k]) { tiles.push(k); lane[k] = origin; } };
   // A Stack (spec: the facing rule): "all around you, out to the range, in sight": centred on the caster, not the Stack.
-  if (f.mode === 'stack') { const s = from || p.tiles[0]; for (const k of around(s, depth)) if (k !== s && onMap(cb, k) && lineOfSight(cb, s, k)) put(k, s); return { tiles, lane }; }
+  if (f.mode === 'stack') { const s = from || p.tiles[0]; for (const k of tilesAround(s, depth)) if (k !== s && inBounds(cb, k) && lineOfSight(cb, s, k)) put(k, s); return { tiles, lane }; }
   if (f.mode === 'along') { const ls = laneStep(f.dir); for (let k = 1; k <= depth; k++) { const c = add(f.far!, f.dir, k); for (const j of laneOffsets(p.tiles.length)) put(add(c, ls, j), f.far!); } return { tiles, lane }; }
   for (let k = 1; k <= depth; k++) for (const g of p.tiles) put(add(g, f.dir, k), g);
   return { tiles, lane };
 }
-export const around = (k: string, r: number) => { const [x, y] = xy(k), out: string[] = []; for (let i = -r; i <= r; i++) for (let j = -r; j <= r; j++) out.push((x + i) + ',' + (y + j)); return out; };
 /** The spell's depth: the Reach word's range + the caster's range bonus (once), or 1 for Touch (spec: Reach). Items
  * may change it ('evoke_area' {u, spell, pattern, depth}). */
 export function spellRange(cb: Combat, u: Unit, sp: Spell, p?: Pattern | null): number {
@@ -261,7 +263,7 @@ export function spellRange(cb: Combat, u: Unit, sp: Spell, p?: Pattern | null): 
 const liveAt = (cb: Combat, k: string, not?: Unit) => cb.units.find((x) => x.pos === k && !x.dead && x !== not);
 /** Does a tile stop a SEEK bolt (full cover, a wall, a solid tile, a RAISE wall, a closed door)? */
 function stopsBolt(cb: Combat, k: string): boolean {
-  if (!onMap(cb, k) || cb.map.solid.includes(k) || (cb.map.full || []).includes(k)) return true;
+  if (!inBounds(cb, k) || cb.map.solid.includes(k) || (cb.map.full || []).includes(k)) return true;
   return objectsAt(cb, k).some((o) => (o.hp == null || o.hp > 0) && !(o as any).open && ((o as any).sigilWall || ['pillar', 'barricade', 'door', 'sigil_wall'].includes(o.kind)));
 }
 function line(a: string, b: string): string[] {
@@ -293,12 +295,12 @@ export function dir8(a: string, b: string): Dir {
  * faced: a cone from the landing tile, as long as its length and widening like the full-auto cone. */
 export function burstTiles(cb: Combat, sp: Spell, impact: string, f: Dir): { tiles: string[]; mult: Record<string, number>; core: string } {
   const mult: Record<string, number> = {};
-  const put = (k: string, m: number) => { if (!onMap(cb, k)) return; mult[k] = Math.max(mult[k] ?? 0, m); };
+  const put = (k: string, m: number) => { if (!inBounds(cb, k)) return; mult[k] = Math.max(mult[k] ?? 0, m); };
   if (!sp.burst) put(impact, 1);
-  if (sp.spread) for (const k of around(impact, sp.radius)) put(k, sp.radiusMult);
+  if (sp.spread) for (const k of tilesAround(impact, sp.radius)) put(k, sp.radiusMult);
   if (sp.push) {
     const apex = add(impact, f, -1), [px, py] = xy(apex), fl = Math.hypot(f[0], f[1]) || 1;
-    for (const k of around(apex, sp.coneLen)) { const [x, y] = xy(k), ax = x - px, ay = y - py, l = Math.hypot(ax, ay); if (!l || dist(apex, k) > sp.coneLen) continue; if ((ax * f[0] + ay * f[1]) / (l * fl) >= 0.7) put(k, sp.coneMult); }
+    for (const k of tilesAround(apex, sp.coneLen)) { const [x, y] = xy(k), ax = x - px, ay = y - py, l = Math.hypot(ax, ay); if (!l || dist(apex, k) > sp.coneLen) continue; if ((ax * f[0] + ay * f[1]) / (l * fl) >= 0.7) put(k, sp.coneMult); }
     put(impact, sp.coneMult);
   }
   if (sp.condense) mult[impact] = Math.max(mult[impact] ?? 0, sp.coreMult);
@@ -407,6 +409,33 @@ export function evokeGrowth(cb: Combat, u: Unit, words: string[], glyphs: number
   if (grew.length) emitFx(cb, 'sigil_growth', { unit: u.id, at: u.pos, study: (c as any).sigilGrowth?.study || 0, mastered: now });
   return grew;
 }
+// ---------- a spell's amounts on the one formula (effects/output.ts; step a4 of the damage-formula migration) ----------
+// What a Line hands to harm, a heal or a shield is an amount like any other: the words' base, the Stat term (Sigil
+// power: the caster's Sigil multiplier, with the Elemental bonus added for Elemental damage; the unit's own cached
+// number, never the sheet read again) and the spell's own named multipliers, each from data:
+//   shape      the Burst's or the placed spell's multiplier on this creature (sigils.json: spread, chain, arc, twice, placed)
+//   line       the Line multiplier by glyph count (sigils.json grammar.line_mult; damage only, a character's Lines)
+//   sharpened  SHARPEN on the caster (sigils.json sharpen.damage_mult; a rolled spell)
+//   items      what perks and traits say on 'spell_mult'
+//   critical   a natural 20 (rules 1.17: ×1.5 to ×2.0)
+//   healing    Healing given, and  level  the level factor of rules 1.20 (MEND and WARD)
+// The preview (numbersFor) and the resolve (applyToInner) share these two functions. A Sigil part is ROUNDED (not
+// floored), each damage type apart, in the order base × shape × line × Stat × the rest: as it always was.
+const SIGIL_DAMAGE: AmountSpec = { kind: 'damage', base: 0, profile: 'sigil', round: 'round' };
+/** One damage part of a spell (all its Sigil-type glyphs, or all its Elemental ones) on one creature, before armour. */
+export function sigilDamage(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): number {
+  const a = sigilDamageTerms(mg, type, base, shape, line, sharp, items, crit);
+  return amountOf({ ...SIGIL_DAMAGE, base: a.base }, null, { level: null, mults: a.mults }).amount;
+}
+/** The same part with its terms open, as harm takes it (step a7: what an item adds goes in beside the base). */
+export function sigilDamageTerms(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): SpellAmount {
+  return { base, round: 'round', mults: [term(shape, 'shape'), term(line, 'line'), term(sigilPower(mg, type), type === 'elemental' ? 'stat: sigil + elemental' : 'stat: sigil'), term(sharp, 'sharpened'), term(items, 'items'), term(crit, 'critical')] };
+}
+/** What MEND heals or WARD shields on one creature: the word's base × shape × Sigil multiplier × Healing given × the
+ * level factor (two Stat terms: the second is an own multiplier with a name). */
+export function sigilBoon(kind: 'heal' | 'shield', base: number, shape: number, sigil: number, healing: number, level: number, items: number): number {
+  return amountOf({ kind, base, profile: 'mend', round: 'round' }, null, { level: null, mults: [term(shape, 'shape'), term(sigil, 'stat: sigil'), term(healing, 'healing given'), term(level, 'level'), term(items, 'items')] }).amount;
+}
 /** The numbers a spell would put on one creature, after multipliers (spec: Grammar 6). */
 function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: number, roll: boolean, origin: string | null): Pick<Affected, 'dmg' | 'dmgAfterArmour' | 'heal' | 'shield' | 'roll' | 'saves'> {
   const mg = caster?.mg, sm = mg?.sigilMult || 1, hm = mg?.healMult || 1;
@@ -415,17 +444,17 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const foe = !!caster && !caster.charId && !caster.ctrl; // a character's caster, whatever side it stands on (Team B in the Proving Ground); rules 1.20: an enemy caster keeps the bases the enemy table was fitted with
   for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; const dh = foe ? d.heal_enemy ?? d.heal : d.heal, ds = foe ? d.shield_enemy ?? d.shield : d.shield; if (dh) hl += dh * (1 + iv(sp, w, 'heal_pct') / 100); if (ds) sh += ds * (1 + iv(sp, w, 'shield_pct') / 100); }
   const sharp = caster && condOn(caster, 'sharpened') && roll ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
-  const hook = (kind: string, v: number) => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1) * v;
+  const hook = (kind: string): number => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1);
   const lm = lineMultFor(caster, sp); // rules 1.17: the Line multiplier (damage only; a character's Lines)
   const lf = caster?.mg?.mend ?? mendFactorOf(caster); // rules 1.20: healing and shields grow with the caster's level (a character's; not an enemy caster's)
-  const [E, S] = [Math.round(hook('damage', el * m * lm * sigilPower(mg, 'elemental') * sharp)), Math.round(hook('damage', sg * m * lm * sigilPower(mg, 'sigil') * sharp))];
+  const [E, S] = [sigilDamage(mg, 'elemental', el, m, lm, sharp, hook('damage'), 1), sigilDamage(mg, 'sigil', sg, m, lm, sharp, hook('damage'), 1)];
   const arm = (S ? landed(S, armourAgainst(t, 'full')) : 0) + (E ? landed(E, armourAgainst(t, 'half')) : 0); // as harm will take it: Sigil damage meets armour in full, Elemental half
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
   const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') + spellGapToHit(cb, caster, t) : 0;
   const saves: Affected['saves'] = [];
-  for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: 12 + unitStrength(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
-  if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: 12 + unitStrength(caster, 'brain_power') });
-  return { dmg: E + S, dmgAfterArmour: arm, heal: Math.round(hook('heal', hl * m * sm * hm * lf)), shield: Math.round(hook('shield', sh * m * sm * hm * lf)),
+  for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: saveTn(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
+  if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: saveTn(caster, 'brain_power') });
+  return { dmg: E + S, dmgAfterArmour: arm, heal: sigilBoon('heal', hl, m, sm, hm, lf, hook('heal')), shield: sigilBoon('shield', sh, m, sm, hm, lf, hook('shield')),
     roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
 }
 /** Who a spell affects on a set of tiles, with every one it spares or skips flagged (spec: Filter KIN; Grammar 9). */
@@ -477,17 +506,11 @@ function chainJumps(cb: Combat, sp: Spell, side: 'pc' | 'foe', source: string, f
 }
 /** Where a forced move would leave a creature (preview only; magicShove does the real one). */
 function shoveEnd(cb: Combat, t: Unit, from: string, n: number): string {
-  const [fx, fy] = xy(from); let [x, y] = xy(t.pos); let dx = sgn(x - fx), dy = sgn(y - fy); if (n < 0) { dx = -dx; dy = -dy; } if (!dx && !dy) return t.pos;
-  for (let i = 0; i < Math.abs(n); i++) { const k = key(x + dx, y + dy); if (!standable(cb.map, k) || cb.units.some((u) => u !== t && !u.dead && u.pos === k) || objectsAt(cb, k).some((o) => o.hp == null ? false : o.hp > 0 && ['pillar', 'barricade', 'door', 'crate', 'sigil_wall'].includes(o.kind) && !o.open)) break; x += dx; y += dy; }
-  return key(x, y);
-}
-/** A free tile a creature may land on (STEP): standable, nobody there, nothing blocking. */
-export function freeTile(cb: Combat, k: string, not?: Unit): boolean {
-  return onMap(cb, k) && standable(cb.map, k) && !cb.units.some((u) => u !== not && !u.dead && u.pos === k) && !objectsAt(cb, k).some((o) => (o.hp == null || o.hp > 0) && !(o as any).open && ['crate', 'low_wall', 'pillar', 'barricade', 'door', 'hole', 'barrel', 'container', 'terminal', 'turret', 'sigil_wall'].includes(o.kind));
+  return displace(cb, null, t, n > 0 ? { away: from, tiles: n } : { toward: from, tiles: -n }, { by: null, how: n > 0 ? 'push' : 'pull', source: 'magic', preview: true }).to;
 }
 /** Is a tile empty for RAISE: no creature, object, glyph or placed Sigil magic. */
 function emptyForRaise(cb: Combat, k: string): boolean {
-  return onMap(cb, k) && standable(cb.map, k) && !cb.units.some((u) => !u.dead && u.pos === k) && !objectsAt(cb, k).length && !(cb.glyphs || []).some((g) => g.pos === k)
+  return inBounds(cb, k) && standable(cb.map, k) && !cb.units.some((u) => !u.dead && u.pos === k) && !objectsAt(cb, k).length && !(cb.glyphs || []).some((g) => g.pos === k)
     && !(cb.zones || []).some((z) => PLACED.has(z.kind) && z.tiles.includes(k));
 }
 const PLACED = new Set(['field', 'trap', 'turret', 'wall']);
@@ -562,8 +585,8 @@ export function evokeOrigins(cb: Combat, u: Unit, p: Pattern | string): { tile: 
   const pat = typeof p === 'string' ? findPattern(cb, p, u.pos) : p; if (typeof pat === 'string') return [];
   const er: any = emit(cb, 'evoke_reach', { u, pattern: pat, reach: 1, cb }), reach = Math.max(1, er.reach || 1), out: { tile: string; ok: boolean; why?: string; mode?: Facing['mode']; dir?: Dir }[] = [];
   const seen = new Set<string>();
-  for (const g of pat.tiles) for (const k of around(g, reach)) {
-    if (seen.has(k) || !onMap(cb, k)) continue; seen.add(k);
+  for (const g of pat.tiles) for (const k of tilesAround(g, reach)) {
+    if (seen.has(k) || !inBounds(cb, k)) continue; seen.add(k);
     const d = Math.min(...pat.tiles.map((t) => dist(t, k)));
     if (d > 1 && !pat.tiles.some((t) => dist(t, k) <= reach && lineOfSight(cb, k, t))) continue;
     const blocked = !standable(cb.map, k) || cb.units.some((x) => x !== u && !x.dead && x.pos === k);
@@ -602,7 +625,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   let area: string[] = [], laneOf: Record<string, string> = {}, relays: { ally: Unit; hops: string[] }[] = [];
   if (sp.missile === 'relay') {
     relays = relayChains(cb, u, sp, depth);
-    for (const r of relays) for (const k of around(r.ally.pos, 1)) if (onMap(cb, k) && !laneOf[k]) { area.push(k); laneOf[k] = r.ally.pos; }
+    for (const r of relays) for (const k of tilesAround(r.ally.pos, 1)) if (inBounds(cb, k) && !laneOf[k]) { area.push(k); laneOf[k] = r.ally.pos; }
   } else { const a = areaTiles(cb, p, facing, depth, u.pos); area = a.tiles; laneOf = a.lane; }
   const emptyOk = !!(sp.spread || sp.push || sp.workings.length || sp.stay || sp.wait || sp.watch);
   // KIN (spec: Filter): you and your allies can't be picked; your own tile is the one exception (the self-target rule).
@@ -699,8 +722,8 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   if (sp.pull) for (const a of live) { const t = cb.units.find((x) => x.id === a.unit)!; if (t === caster) continue; const to = shoveEnd(cb, t, c.source, -sp.pull); if (to !== t.pos) plan.pull.push({ unit: t.id, from: t.pos, to }); }
   // Workings (spec: Workings; with a Burst they widen).
   const tiles = bt.tiles;
-  if (sp.workings.includes('veil')) plan.veil = [...new Set([...around(c.impact, (W('veil') as any)?.blocks_sight_radius ?? 1), ...(sp.burst ? tiles : [])])].filter((k) => onMap(cb, k));
-  if (sp.workings.includes('light')) plan.light = [...new Set([...around(c.impact, ((W('light') as any)?.reveals_hidden_radius ?? 4) + iv(sp, 'light', 'radius')), ...(sp.burst ? tiles : [])])].filter((k) => onMap(cb, k));
+  if (sp.workings.includes('veil')) plan.veil = [...new Set([...tilesAround(c.impact, (W('veil') as any)?.blocks_sight_radius ?? 1), ...(sp.burst ? tiles : [])])].filter((k) => inBounds(cb, k));
+  if (sp.workings.includes('light')) plan.light = [...new Set([...tilesAround(c.impact, ((W('light') as any)?.reveals_hidden_radius ?? 4) + iv(sp, 'light', 'radius')), ...(sp.burst ? tiles : [])])].filter((k) => inBounds(cb, k));
   if (sp.workings.includes('raise')) plan.raise = (sp.burst ? tiles : [c.impact]).filter((k) => emptyForRaise(cb, k));
   if (sp.workings.includes('null')) {
     const T = sp.burst ? tiles : [c.impact], n = nullCatch(cb, T), S = new Set(T); plan.nulls = n.glyphs.length + n.zones.length + n.walls.length;
@@ -719,13 +742,13 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   if (sp.workings.includes('step')) {
     const movers = live.map((a) => cb.units.find((x) => x.id === a.unit)!).filter(Boolean);
     const dest = c.opts.dest, max = ((W('step') as any)?.teleport_tiles ?? 4) + iv(sp, 'step', 'teleport_tiles');
-    plan.stepTo = movers.length ? around(sp.burst ? c.impact : (main ? main.pos : c.impact), max).filter((k) => freeTile(cb, k, sp.burst ? undefined : main || undefined)) : [];
+    plan.stepTo = movers.length ? tilesAround(sp.burst ? c.impact : (main ? main.pos : c.impact), max).filter((k) => canStand(cb, k, sp.burst ? undefined : main || undefined)) : [];
     if (!dest && movers.length) plan.why = 'Pick where STEP lands them: a free tile up to ' + max + ' away.';
     if (dest && movers.length) {
       const anchor = sp.burst ? c.impact : (main ? main.pos : c.impact), [ax, ay] = xy(anchor), [dx, dy] = xy(dest), off: Dir = [dx - ax, dy - ay];
       if (Math.max(Math.abs(off[0]), Math.abs(off[1])) > max) plan.why = 'STEP moves at most ' + max + ' tiles: pick a landing tile closer.';
-      else if (!sp.burst && !freeTile(cb, dest, main || undefined)) plan.why = 'That landing tile isn\'t free.';
-      else for (const t of movers) { const to = add(t.pos, off); if (to !== t.pos && freeTile(cb, to, t)) plan.step.push({ unit: t.id, from: t.pos, to }); }
+      else if (!sp.burst && !canStand(cb, dest, main || undefined)) plan.why = 'That landing tile isn\'t free.';
+      else for (const t of movers) { const to = add(t.pos, off); if (to !== t.pos && canStand(cb, to, t)) plan.step.push({ unit: t.id, from: t.pos, to }); }
     }
   }
   return { plan, affected: aff };
@@ -1001,16 +1024,16 @@ function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe',
   if (sp.damaging && harmOk) {
     let crit = false, r = 0;
     if (o.roll && by) {
-      r = d20(rng); const add = (emit(cb, 'spell_roll', { u: by, t, die: r, add: 0, kind: 'sigil', cb }) as any).add || 0, tot = r + (a.roll?.bonus ?? 0) + add;
-      crit = r === 20;
-      if (r === 1 || (!crit && tot < t.def)) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: sp.element }); line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (a.roll?.cover ? ', cover' : '') + ')'; return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt, missed: true }; }
+      r = rollD20(rng).die; const add = (emit(cb, 'spell_roll', { u: by, t, die: r, add: 0, kind: 'sigil', cb }) as any).add || 0, sr = judge('roll', { die: r }, (a.roll?.bonus ?? 0) + add, t.def), tot = sr.total;
+      crit = r === 20; rollFx(cb, sr, by, { why: 'sigil' });
+      if (!sr.ok) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: sp.element }); line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (a.roll?.cover ? ', cover' : '') + ')'; return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt, missed: true }; }
     }
     const hp0 = t.hp + (t.shield || 0), sharp = by && condOn(by, 'sharpened') && o.roll && !['turret', 'trap', 'field'].includes(a.via) ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
     const parts = sigilParts(sp.subjects, sp.infl);
     line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + (r ? ' hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')' : ' catches ' + t.name);
     const lm = lineMultFor(by, sp), cm = crit ? spellCritMult(cb, by, t) : 1; // rules 1.17: the Line multiplier; a critical ×1.5 to ×2.0
     const raws = parts.map((p) => { const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
-      return Math.round(p.n * a.mult * lm * sigilPower(by?.mg, p.type) * sharp * hk * cm); });
+      return sigilDamageTerms(by?.mg, p.type, p.n, a.mult, lm, sharp, hk, cm); });
     // Rules 1.17: one Evoke never takes an Elite or a Boss of the caster's level (or higher) from full HP to nothing.
     const direct = !['field', 'turret', 'trap'].includes(a.via), guard = direct && (EVOKE_GUARDED.has(t) || lineGuards(by, t, cb)), wasGuard = LINE_GUARD; if (guard) { LINE_GUARD = t; EVOKE_GUARDED.add(t); }
     try {
@@ -1089,11 +1112,13 @@ function strikeInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', 
   }
   for (const pl of mp.pull) { const t = cb.units.find((x) => x.id === pl.unit); if (t && !t.dead) line += magicShove(cb, t, o.source, -sp.pull, by); }
   for (const st of mp.step) {
-    const t = cb.units.find((x) => x.id === st.unit); if (!t || t.dead || !freeTile(cb, st.to, t)) continue;
+    const t = cb.units.find((x) => x.id === st.unit); if (!t || t.dead || !canStand(cb, st.to, t)) continue;
     let failed = '';
     if (by && t.side !== by.side) { const sv = teleportSave(cb, rng, by, t); if (sv.held) { line += sv.line; continue; } failed = sv.line; }
-    const from = t.pos; t.pos = st.to; emitFx(cb, 'blink', { target: t.id, from, to: st.to, element: 'step' }); line += ' · ' + t.name + ' steps to ' + refOf(st.to) + failed;
-    ENTER_HOOK(cb, rng, t, st.to); // magic.ts zoneEnter: fields and traps, and Outburst residue on entry (rules 1.8)
+    // the one forced move (combat.ts displace): the caster's own side steps willingly; an enemy that failed its save is moved by force
+    const from = t.pos, mv = displace(cb, rng, t, { tile: st.to }, { by, how: 'teleport', source: 'step', willing: !by || t.side === by.side, fx: false, drawn: () => { emitFx(cb, 'blink', { target: t.id, from, to: st.to, element: 'step' }); } });
+    if (!mv.moved) { if (mv.stoppedBy === 'nailed' || mv.stoppedBy === 'immune' || mv.stoppedBy === 'held') line += ' · ' + t.name + ' can\'t be moved' + (mv.why ? ' (' + mv.why + ')' : ''); continue; }
+    line += ' · ' + t.name + ' steps to ' + refOf(st.to) + failed + mv.text;
   }
   if (mp.veil.length) { addZone(cb, { kind: 'veil', tiles: mp.veil, words: ['veil'], by: by?.id || '', side, left: ((W('veil') as any)?.lasts_rounds ?? 2) + Math.floor(by?.mg?.durBonus || 0) + iv(sp, 'veil', 'lasts_rounds'), mult: 1, who: by?.name || '' }); emitFx(cb, 'veil', { at: mp.impact, tiles: mp.veil, side }); line += ' · smoke-bots fill ' + refOf(mp.impact); }
   if (mp.light.length) { addZone(cb, { kind: 'light', tiles: mp.light, words: ['light'], by: by?.id || '', side, left: 99, mult: 1, who: by?.name || '' }); emitFx(cb, 'light', { at: mp.impact, tiles: mp.light, side }); for (const v of cb.units) if (v.hidden && mp.light.includes(v.pos)) line += revealUnit(cb, v, 'LIGHT') && ' · LIGHT reveals ' + v.name; line += ' · light floods around ' + refOf(mp.impact); }
@@ -1104,12 +1129,10 @@ function strikeInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', 
 /** STEP on someone of the other side: a Body save resists. held: it stays (the line says why); else the line is the
  * failed save, for the log (spec 9.11: every save). */
 function teleportSave(cb: Combat, rng: Rng, by: Unit, t: Unit): { held: boolean; line: string } {
-  const ca: any = emit(cb, 'cond_apply', { by, t, id: 'teleport', fam: 'body', rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
-  if (ca.cancel) return { held: true, line: ' · ' + t.name + ' can\'t be moved' + (ca.why ? ' (' + ca.why + ')' : '') };
-  if (ca.skipSave) return { held: false, line: '' };
-  const r = d20(rng), m = unitSave(t, 'body') + (ca.saveAdd || 0), tn = 12 + strengthFor(by, null) + (ca.tnAdd || 0);
-  return r === 20 || (r !== 1 && r + m >= tn) ? { held: true, line: ' · ' + t.name + ' holds its place (body save ' + (r + m) + ' vs ' + tn + ')' }
-    : { held: false, line: ' (body save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : '') + ')' };
+  const sv = saveAgainst(cb, rng, by, t, 'body', 'teleport');
+  if (sv.skipped === 'immune') return { held: true, line: ' · ' + t.name + ' can\'t be moved' + (sv.why ? ' (' + sv.why + ')' : '') };
+  if (sv.skipped === 'no_save') return { held: false, line: '' };
+  return sv.ok ? { held: true, line: ' · ' + t.name + ' holds its place (' + sv.text + ')' } : { held: false, line: ' (' + sv.text + ')' };
 }
 
 // ---------- what stays: fields, traps, turrets, walls ----------
@@ -1233,7 +1256,7 @@ function turretFire(cb: Combat, rng: Rng, z: Zone) {
 export function turretAim(cb: Combat, sp: Spell, at: string, side: 'pc' | 'foe', by: Unit | null): { range: number; reach: string[]; targets: Unit[] } {
   const range = sp.reach && sp.missile !== 'relay' ? sp.range + (by?.mg?.rangeBonus || 0) : 1;
   const sees = (k: string) => dist(at, k) <= range && (sp.missile === 'appear' || dist(at, k) <= 1 || lineOfSight(cb, at, k));
-  const reach = around(at, range).filter((k) => k !== at && onMap(cb, k) && sees(k));
+  const reach = tilesAround(at, range).filter((k) => k !== at && inBounds(cb, k) && sees(k));
   const targets = cb.units.map((v, i) => ({ v, i })).filter(({ v }) => !v.dead && v.pos !== at && !(sp.kin && v.side === side) && !(sp.harmful && (v.downed || v.surrendered) && !sp.subjects.some(isBoonWord)) && !(v.hidden && v.side !== side) && sees(v.pos))
     .sort((a, b) => dist(at, a.v.pos) - dist(at, b.v.pos) || a.v.hp - b.v.hp || a.i - b.i).slice(0, sp.missiles).map((x) => x.v);
   return { range, reach, targets };
@@ -1245,15 +1268,11 @@ export function strikeTurret(cb: Combat, rng: Rng, u: Unit, tile: string): strin
   const w = WEAPON[u.weapon], melee = !w || isMelee(w), ap = attackApCost(w || WEAPON.fists, melee ? 'melee' : 'shot');
   if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   if (melee ? dist(u.pos, tile) > 1 : dist(u.pos, tile) > effectiveRange(w) * 3 || !lineOfSight(cb, u.pos, tile)) return melee ? 'Walk up to it first.' : 'Out of range or no line of sight.';
-  u.ap -= ap; const r = d20(rng), tot = r + (u.attack || 0), def = (z as any).def ?? 10, hit = r === 20 || (r !== 1 && tot >= def);
+  u.ap -= ap; const def = (z as any).def ?? CONTEST_BASE, sr = rollVs(cb, rng, { by: u, mod: u.attack || 0, tn: def, why: 'turret' }), r = sr.die, tot = sr.total, hit = sr.ok;
   emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: u.weapon, cat: w?.category, mode: melee ? 'melee' : 'shot', hit, crit: r === 20, fumble: r === 1, dmg: 0, killed: hit, object: true });
   if (hit) destroyPlaced(cb, z, u.name + ' hits it (d20 ' + r + ' → ' + tot + ' vs ' + def + ')'); else cb.log.push(u.name + ' misses the turret at ' + refOf(tile) + ' (d20 ' + r + ' → ' + tot + ' vs ' + def + ').');
   return null;
 }
-/** What entering a tile runs after a STEP: sigilEnter here, until magic.ts registers zoneEnter (which adds the
- * Outburst residue on entry) at load. sigil.ts can't import magic.ts without a cycle. */
-let ENTER_HOOK: (cb: Combat, rng: Rng, u: Unit, k: string) => boolean = (cb, rng, u, k) => sigilEnter(cb, rng, u, k);
-export function setEnterHook(fn: (cb: Combat, rng: Rng, u: Unit, k: string) => boolean) { ENTER_HOOK = fn; }
 /** Moving onto a tile: fields bite, traps of the other side go off (spec: STAY, WAIT). Called on each step of a walk and
  * after a teleport. */
 export function sigilEnter(cb: Combat, rng: Rng, u: Unit, k: string): boolean {
@@ -1272,7 +1291,7 @@ export function sigilTurnStart(cb: Combat, rng: Rng, u: Unit) {
   migrateSigil(cb);
   if (u.dead) return;
   if (condOn(u, 'quickened')) { const add = (W('quicken') as any)?.ap ?? 2, was = u.ap; if (!cb.overworld) u.ap = Math.min(AP_MAX, u.ap + add); endCond(u, 'quickened', cb); cb.log.push(u.name + ' is Quickened: +' + (u.ap - was) + ' AP this turn.'); }
-  if (condOn(u, 'corroded') && !u.downed) { const by = u.condBy?.corroded; cb.log.push(u.name + ' corrodes' + withElement('acid', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, 5, 'true', 'acid'))); }
+  if (condOn(u, 'corroded') && !u.downed) { const by = u.condBy?.corroded; cb.log.push(u.name + ' corrodes' + withElement('acid', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, itemAmount('condition:corroded', 'tick'), 'true', 'acid'))); }
   for (const z of [...(cb.zones || [])]) {
     if (u.dead || !z.tiles.includes(u.pos)) continue;
     if (z.kind === 'field' || z.kind === 'wall') fieldBite(cb, rng, z, u);
@@ -1387,12 +1406,10 @@ export const glyphsAt = (cb: Combat, k: string) => (cb.glyphs || []).filter((g) 
 export const enemyDefaultWords = (tier: string): string[] => [...(ENEMY_AI.default_words?.[tier] || ENEMY_AI.default_words?.minion || STARTING_DEFAULT)];
 /** Max Sigil words for an enemy by tier (sigils.json enemy_ai.max_words; spec item 453, provisional). */
 export const ENEMY_MAX_WORDS: Record<string, number> = ENEMY_AI.max_words || { minion: 2, soldier: 3, elite: 4, boss: 4 };
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
-const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 2 };
 /** An enemy's Evoker and words (FoeSpec.sigils: its words, or true for its tier's default set). */
 export function enemyMagic(u: Unit, words: string[] | true): NonNullable<Unit['mg']> {
   const tier = u.tier || 'minion', list = (words === true ? enemyDefaultWords(tier) : words).filter((w) => W(w));
-  const s = TIER_SAVE[tier] ?? 0, d = TIER_DEBUFF[tier] ?? 0;
+  const s = tierSave(tier), d = tierStrength(tier);
   return { words: list, designs: [], evoker: true, emanator: false, charge: CORE_CHARGE, cores: 2, coresMade: 0, flux: 0, mp: 0, mpMax: 0, strain: 0, held: null, cast: false,
     brain: u.attack || 0, will: 0, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: ENEMY_MAX_WORDS[tier] ?? 2, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0,
     soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5, saves: { body: s, brain: s, heart: s }, debuff: { '*': d } } as any;
@@ -1456,7 +1473,7 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
     for (const t of pool.slice(0, 6)) {
       const self = t === u, f = self ? ([0, 1] as Dir) : dir8(u.pos, t.pos), tiles = [u.pos];
       for (let i = 1; i < L; i++) tiles.push(add(u.pos, f, -i));
-      if (tiles.slice(1).some((k, i) => !freeTile(cb, k, u) || (cb.glyphs || []).some((g) => g.pos === k) || P.dist[k] === undefined || P.dist[k] > i + 1)) continue;
+      if (tiles.slice(1).some((k, i) => !canStand(cb, k, u) || (cb.glyphs || []).some((g) => g.pos === k) || P.dist[k] === undefined || P.dist[k] > i + 1)) continue;
       const pv = tryLine(cb, u, words, tiles, t.pos); if (!pv || pv.fizzle) continue;
       const s = scorePlan(cb, u, pv); if (!(s > 0)) continue;
       if (!best || s / cost > best.score / best.cost) best = { score: s, words, tiles, aim: t.pos, cost, pre: needVent ? 'vent' : needCore ? 'core' : null };

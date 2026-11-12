@@ -99,6 +99,7 @@
     },
     {
       "id": "shrug_it_off",
+      "amounts": {"shield": {"kind": "shield", "base": 0, "per": [{"of": "max_hp", "value": 0.1}], "profile": "flat", "text": "Tier II", "provisional": true}},
       "name": "Shrug It Off",
       "tier": "acquired",
       "perk_type": "active_skill",
@@ -507,6 +508,7 @@
     },
     {
       "id": "breaching_strike",
+      "amounts": {"slam": {"kind": "damage", "base": 0, "profile": "flat", "mults": {"share": 0.5}, "text": "a share of the hit", "provisional": true}},
       "name": "Breaching Strike",
       "tier": "acquired",
       "perk_type": "combat_interaction",
@@ -4262,6 +4264,7 @@
     },
     {
       "id": "clean_hands",
+      "amounts": {"shield": {"kind": "shield", "base": 0, "profile": "flat", "mults": {"pct_of_max_hp_I": 15, "pct_of_max_hp_II": 25}, "provisional": true}},
       "name": "Clean Hands",
       "tier": "acquired",
       "perk_type": "passive",
@@ -4809,6 +4812,7 @@
     },
     {
       "id": "trick_shot",
+      "amounts": {"ricochet": {"kind": "damage", "base": 0, "profile": "flat", "mults": {"share": 0.5}, "text": "a share of the hit", "provisional": true}},
       "name": "Trick Shot",
       "tier": "mastered",
       "perk_type": "combat_interaction",
@@ -5163,6 +5167,7 @@
     },
     {
       "id": "case_closed",
+      "damage_kinds": ["blast"],
       "name": "Case Closed",
       "tier": "mastered",
       "perk_type": "combat_interaction",
@@ -5413,6 +5418,7 @@
     },
     {
       "id": "true_name",
+      "damage_kinds": ["blast"],
       "name": "True Name",
       "tier": "mastered",
       "perk_type": "active_skill",
@@ -5857,6 +5863,7 @@
     },
     {
       "id": "field_surgeon",
+      "amounts": {"patch": {"kind": "heal", "base": 0, "per": [{"of": "max_hp", "value": 0.5}], "profile": "flat", "text": "out of a fight", "provisional": true}},
       "name": "Field Surgeon",
       "tier": "achieved",
       "perk_type": null,
@@ -6543,6 +6550,7 @@
     },
     {
       "id": "last_charge",
+      "amounts": {"shield": {"kind": "shield", "base": 15, "profile": "flat", "text": "at least this", "provisional": true}, "shield_by_armour": {"kind": "shield", "base": 0, "per": [{"of": "armour_class", "value": 15}], "profile": "flat", "provisional": true}},
       "name": "Last Charge",
       "tier": "ultimate",
       "perk_type": null,

@@ -7,10 +7,10 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
 import { type Combat, type Unit, hurtUnit, emitFx, dist, refOf } from './combat';
-import { applyCond, unitSave } from './magic';
+import { applyCond, saveAgainst } from './magic';
 import { passiveVigilance } from './character';
 import { SKILL } from './data';
-import { type Rng, d20 } from './rng';
+import { type Rng } from './rng';
 import type { Approach } from './objects';
 
 export type HazardKind = 'minefield' | 'fire' | 'radiation' | 'gas' | 'collapse';
@@ -70,7 +70,7 @@ export function hazardHit(cb: Combat, rng: Rng, u: Unit, h: Hazard, k: string, a
   if (immuneTo(u, h.kind)) { cb.log.push(u.name + ' crosses the ' + (h.name || d.name).toLowerCase() + ' at ' + refOf(k) + ' unharmed (gear).'); emitFx(cb, 'hazard', { target: u.id, at: k, id: h.id, kind: h.kind, severity: h.severity, dmg: 0, immune: true }); return ''; }
   const tn = hazardTn(h), sev = h.severity;
   let dmg = d.damage[sev] || 0, line = '', saved: boolean | null = null, cond = '';
-  if (d.save) { const r = d20(rng), m = unitSave(u, fam(d.save)), ok = r === 20 || (r !== 1 && r + m >= tn); saved = ok; line += ' (' + d.save + ' save ' + (r + m) + ' vs ' + tn + (ok ? ', saved' : '') + ')'; }
+  if (d.save) { const sv = saveAgainst(cb, rng, null, u, fam(d.save), 'hazard', { tn }), ok = sv.ok; saved = ok; line += ' (' + sv.text + (ok ? ', saved' : '') + ')'; }
   if (d.save_halves && saved) dmg = Math.floor(dmg / 2);
   if (dmg > 0) line += hurtUnit(u, dmg, !d.armour, cb, h.kind === 'minefield' ? 'explosion' : 'hazard');
   // The condition: Burning and Prone always; radiation's Weakened from the third tile; a save (gas) stops it.

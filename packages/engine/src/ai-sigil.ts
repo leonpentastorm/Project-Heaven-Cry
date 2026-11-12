@@ -24,11 +24,12 @@ import { type Combat, type Unit, dist, xy, key, paths, moveUnit, apForTiles, pre
 import { type Rng } from './rng';
 import {
   type EvokePreview, type EvokeOpts, type Affected, type Dir, type Spell,
-  planEvoke, drawGlyph, evoke, findPattern, glyphCost, sigilReady, freeTile, dir8, secretFrom, scuff, strikeTurret, compileSpell, grammarError,
-  enemyMagic, W, isElement, isAffliction, isBoonWord, around, MAX_GLYPHS, SIGIL_REV, sigilPower,
+  planEvoke, drawGlyph, evoke, findPattern, glyphCost, sigilReady,  dir8, secretFrom, scuff, strikeTurret, compileSpell, grammarError,
+  enemyMagic, W, isElement, isAffliction, isBoonWord,  MAX_GLYPHS, SIGIL_REV, sigilPower,
 } from './sigil';
 import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, unitSave, condOn, ventAp, coreAp } from './magic';
 import { fooledBy } from './illusion';
+import { tilesAround, canStand, foesOf } from './kit';
 
 // ---------- caster archetypes (data/enemies.json `casters`) ----------
 export interface CasterDef { id: string; name: string; tier: string; weapon: string; sigils: string[]; spell_bias?: number; text?: string; provisional?: boolean }
@@ -74,7 +75,7 @@ export function aiRouteRisk(cb: Combat, u: Unit, P: { prev: Record<string, strin
   return r;
 }
 // A False Image's fooled enemy doesn't know where its owner really is (illusion.ts): it aims no spell at them.
-const players = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side !== u.side && live(t) && !t.hidden && !fooledBy(cb, u, t));
+const players = (cb: Combat, u: Unit) => foesOf(cb, u, { hidden: false }).filter((t) => !fooledBy(cb, u, t));
 const friendsOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side === u.side && !t.dead);
 
 // ---------- every enemy: avoid, and clear what blocks ----------
@@ -251,8 +252,8 @@ function nullValue(cb: Combat, u: Unit, tiles: string[]): number {
 function blinkDest(cb: Combat, u: Unit, from: string): string | null {
   const pcs = players(cb, u), max = (W('step') as any)?.teleport_tiles ?? 4, shoots = !!WEAPON[u.weapon] && !isMelee(WEAPON[u.weapon]);
   let best: string | null = null, bs = -Infinity;
-  for (const k of around(from, max)) {
-    if (k === from || !freeTile(cb, k, u) || aiTileRisk(cb, u, k) > 0) continue;
+  for (const k of tilesAround(from, max)) {
+    if (k === from || !canStand(cb, k, u) || aiTileRisk(cb, u, k) > 0) continue;
     const md = pcs.length ? Math.min(...pcs.map((t) => dist(t.pos, k))) : 9; if (md <= 1) continue;
     const s = Math.min(md, 6) + (shoots && pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= effectiveRange(WEAPON[u.weapon])) ? 5 : 0) - dist(from, k) * 0.1;
     if (s > bs) { bs = s; best = k; }
@@ -348,7 +349,7 @@ function lineTiles(cb: Combat, u: Unit, n: number, d: Dir, P: { dist: Record<str
   if ((cb.glyphs || []).some((g) => g.pos === u.pos)) return null;
   for (let i = 1; i < n; i++) {
     const k = step(u.pos, d, i);
-    if (!freeTile(cb, k, u) || (cb.glyphs || []).some((g) => g.pos === k) || P.dist[k] === undefined || P.dist[k] > i || aiTileRisk(cb, u, k) > 0) return null;
+    if (!canStand(cb, k, u) || (cb.glyphs || []).some((g) => g.pos === k) || P.dist[k] === undefined || P.dist[k] > i || aiTileRisk(cb, u, k) > 0) return null;
     out.push(k);
   }
   return out;
@@ -404,10 +405,10 @@ export function aiSigilCast(cb: Combat, rng: Rng, u: Unit): boolean {
   for (const o of objectsOf(cb)) if (o.kind === 'sigil_wall' && (o as any).side !== u.side) magicTiles.push(o.pos);
   for (const g of cb.glyphs || []) if (g.side !== u.side) magicTiles.push(g.pos);
   const trapTiles: string[] = [];
-  for (const t of nearPcs.slice(0, 3)) { const f = own.filter(live).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0]; if (!f) continue; const d = dir8(t.pos, f.pos); for (const k of [step(t.pos, d, 1), step(t.pos, d, 2)]) if (freeTile(cb, k) && !trapTiles.includes(k)) trapTiles.push(k); }
+  for (const t of nearPcs.slice(0, 3)) { const f = own.filter(live).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0]; if (!f) continue; const d = dir8(t.pos, f.pos); for (const k of [step(t.pos, d, 1), step(t.pos, d, 2)]) if (canStand(cb, k) && !trapTiles.includes(k)) trapTiles.push(k); }
   const adjPcs = pcs.filter((t) => dist(t.pos, u.pos) <= 1);
   const turretTiles: string[] = [];
-  if (nearPcs[0]) { const d = dir8(u.pos, nearPcs[0].pos); for (const n of [2, 3]) { const k = step(u.pos, d, n); if (freeTile(cb, k) && dist(k, nearPcs[0].pos) >= 2) turretTiles.push(k); } }
+  if (nearPcs[0]) { const d = dir8(u.pos, nearPcs[0].pos); for (const n of [2, 3]) { const k = step(u.pos, d, n); if (canStand(cb, k) && dist(k, nearPcs[0].pos) >= 2) turretTiles.push(k); } }
   for (const c of casterCombos(m.words, m.maxWords)) {
     const L = c.words.length;
     const aims: string[] = c.kind === 'harm' ? nearPcs.map((t) => t.pos) : c.kind === 'boon' ? [...new Set([...hurt, ...(c.sp.uniqueSubjects.some((w) => w === 'ward') ? threatened : [])].map((t) => t.pos))]

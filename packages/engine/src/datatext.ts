@@ -5,6 +5,7 @@
 //   {=path}         keys and list indexes joined by dots, from the item (the nearest enclosing object with an id);
 //                   a leading dot starts at the object that holds the text
 //   {=path|format}  abs, signed, pct (0.25 -> 25), more (1.25 -> 25), less (0.75 -> 25)
+import actionsJ from '../../../data/actions.json';
 import callsJ from '../../../data/calls.json';
 import classesJ from '../../../data/classes.json';
 import conditionsJ from '../../../data/conditions.json';
@@ -64,4 +65,4 @@ function walk(node: any) {
 /** Fill every placeholder under a parsed data file, in place. Filling twice changes nothing. */
 export function resolveTexts<T>(root: T): T { walk(root); return root; }
 
-for (const j of [callsJ, classesJ, conditionsJ, enemiesJ, feelingsJ, itemsJ, objectsJ, patronsJ, perksJ, rulesJ, sigilsJ, skillsJ, soulJ, techniquesJ, traitsJ, weaponsJ, worldJ]) resolveTexts(j);
+for (const j of [actionsJ, callsJ, classesJ, conditionsJ, enemiesJ, feelingsJ, itemsJ, objectsJ, patronsJ, perksJ, rulesJ, sigilsJ, skillsJ, soulJ, techniquesJ, traitsJ, weaponsJ, worldJ]) resolveTexts(j);

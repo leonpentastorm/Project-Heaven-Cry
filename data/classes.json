@@ -543,6 +543,7 @@
             },
             {
               "id": "field_fix",
+              "amounts": {"repair": {"kind": "heal", "base": 20, "profile": "flat", "text": "a repair, not a heal: no healing multipliers", "provisional": true}},
               "name": "Field Fix",
               "ap_cost": 2,
               "uses": "at_will",
@@ -591,6 +592,7 @@
             },
             {
               "id": "sabotage",
+              "amounts": {"damage": {"kind": "damage", "base": 30, "profile": "flat", "type": "physical", "provisional": true}},
               "name": "Sabotage",
               "ap_cost": 2,
               "uses": "at_will",
@@ -1976,6 +1978,7 @@
       },
       {
         "id": "ward",
+        "amounts": {"shield": {"kind": "shield", "base": 0, "per": [{"of": "charge", "value": 10}], "profile": "healing", "provisional": true}},
         "name": "Ward",
         "ap_cost": 2,
         "uses": "at_will",
@@ -2217,6 +2220,7 @@
       },
       {
         "id": "rewrite",
+        "amounts": {"shield_turned": {"kind": "damage", "base": 30, "profile": "sigil", "type": "sigil", "text": "at most the shield it had", "provisional": true}},
         "name": "Rewrite",
         "ap_cost": 3,
         "uses": "per_turn",
@@ -2345,6 +2349,7 @@
       },
       {
         "id": "will_shield",
+        "amounts": {"shield": {"kind": "shield", "base": 12, "profile": "mend", "provisional": true}},
         "name": "Will Shield",
         "ap_cost": null,
         "uses": "at_will",
@@ -2478,6 +2483,7 @@
       },
       {
         "id": "mend",
+        "amounts": {"heal": {"kind": "heal", "base": 9, "profile": "mend", "text": "in place of the Buff school's base", "provisional": true}},
         "name": "Mend",
         "ap_cost": 0,
         "uses": "at_will",
@@ -3430,6 +3436,7 @@
         },
         {
           "id": "rally_banner",
+          "amounts": {"shield": {"kind": "shield", "base": 10, "profile": "healing", "provisional": true}},
           "name": "Rally Banner",
           "ap_cost": 2,
           "uses": "per_scene",
@@ -3459,6 +3466,7 @@
         },
         {
           "id": "sweep",
+          "amounts": {"heal": {"kind": "heal", "base": 10, "profile": "healing", "provisional": true}},
           "name": "Sweep",
           "ap_cost": 3,
           "uses": "at_will",
@@ -3547,6 +3555,7 @@
         },
         {
           "id": "strike_call",
+          "amounts": {"damage": {"kind": "damage", "base": 50, "profile": "flat", "type": "physical", "provisional": true}},
           "name": "Strike Call",
           "ap_cost": 3,
           "uses": "per_scene",
@@ -3775,6 +3784,7 @@
         },
         {
           "id": "sentry_turret",
+          "amounts": {"damage": {"kind": "damage", "base": 20, "profile": "flat", "type": "physical", "provisional": true}},
           "name": "Sentry Turret",
           "ap_cost": 3,
           "uses": "at_will",
@@ -3857,6 +3867,7 @@
       "moves": [
         {
           "id": "inscribed_rounds",
+          "amounts": {"damage": {"kind": "damage", "base": 0, "profile": "sigil", "mults": {"word_share": 0.5}, "text": "the inscribed word's own damage, at this share", "provisional": true}},
           "name": "Inscribed Rounds",
           "ap_cost": 0,
           "uses": "per_rest",
@@ -3967,6 +3978,7 @@
       "moves": [
         {
           "id": "gauntlet_infusion",
+          "amounts": {"damage": {"kind": "damage", "base": 10, "profile": "elemental", "type": "elemental", "provisional": true}, "fire_extra": {"kind": "damage", "base": 5, "profile": "elemental", "type": "elemental", "text": "Fire, when the hit is not a critical", "provisional": true}, "arc": {"kind": "damage", "base": 5, "profile": "elemental", "type": "elemental", "text": "Shock, to one enemy next to the target", "provisional": true}},
           "name": "Gauntlet Infusion",
           "ap_cost": 0,
           "uses": "at_will",
@@ -4031,6 +4043,7 @@
         },
         {
           "id": "discharge",
+          "amounts": {"damage": {"kind": "damage", "base": 0, "per": [{"of": "charge", "value": 20}], "profile": "elemental", "type": "elemental", "provisional": true}},
           "name": "Discharge",
           "ap_cost": 0,
           "uses": "at_will",
@@ -4085,6 +4098,7 @@
       "moves": [
         {
           "id": "adamantile_plate",
+          "amounts": {"shield": {"kind": "shield", "base": 0, "per": [{"of": "guard", "value": 10}], "profile": "flat", "provisional": true}},
           "name": "Adamantile Plate",
           "ap_cost": 0,
           "uses": "at_will",
@@ -4113,6 +4127,7 @@
         },
         {
           "id": "bulwark_of_will",
+          "amounts": {"shield": {"kind": "shield", "base": 20, "profile": "healing", "provisional": true}},
           "name": "Bulwark of Will",
           "ap_cost": 0,
           "uses": "at_will",
@@ -4885,6 +4900,7 @@
       "moves": [
         {
           "id": "enlarge",
+          "amounts": {"lava": {"kind": "damage", "base": 10, "profile": "flat", "type": "elemental", "provisional": true}, "storm": {"kind": "damage", "base": 15, "profile": "flat", "type": "elemental", "provisional": true}, "dome": {"kind": "shield", "base": 20, "profile": "flat", "provisional": true}, "mend": {"kind": "heal", "base": 10, "profile": "healing", "provisional": true}, "crush": {"kind": "damage", "base": 10, "profile": "flat", "type": "sigil", "provisional": true}, "tripwire": {"kind": "damage", "base": 10, "profile": "flat", "type": "sigil", "provisional": true}, "mortar": {"kind": "damage", "base": 15, "profile": "flat", "type": "sigil", "provisional": true}, "mortar_splash": {"kind": "damage", "base": 5, "profile": "flat", "type": "sigil", "provisional": true}, "sentinel": {"kind": "damage", "base": 15, "profile": "flat", "type": "sigil", "provisional": true}, "sentinel_leaving": {"kind": "damage", "base": 10, "profile": "flat", "type": "sigil", "provisional": true}, "bloodwell": {"kind": "heal", "base": 5, "profile": "flat", "provisional": true}, "arc": {"kind": "damage", "base": 10, "profile": "flat", "type": "elemental", "provisional": true}, "bloom": {"kind": "damage", "base": 10, "profile": "flat", "type": "sigil", "provisional": true}},
           "name": "Enlarge",
           "ap_cost": 3,
           "uses": "per_combat",
@@ -5130,6 +5146,7 @@
         },
         {
           "id": "through",
+          "amounts": {"mirror": {"kind": "heal", "base": 0, "profile": "flat", "mults": {"share": 0.5}, "text": "a share of the heal or shield you received, to each linked ally", "provisional": true}},
           "name": "Through",
           "ap_cost": 0,
           "uses": "at_will",
@@ -5214,6 +5231,7 @@
       "moves": [
         {
           "id": "inner_charge",
+          "amounts": {"heartbeat": {"kind": "heal", "base": 0, "per": [{"of": "forms", "value": 10}], "profile": "healing", "provisional": true}},
           "name": "Inner Charge",
           "ap_cost": 0,
           "uses": "at_will",
@@ -5243,6 +5261,7 @@
         },
         {
           "id": "release_strike",
+          "amounts": {"damage": {"kind": "damage", "base": 15, "profile": "soul", "type": "soul", "text": "each form, times its stage multiplier", "provisional": true}},
           "name": "Release",
           "ap_cost": 1,
           "uses": "at_will",

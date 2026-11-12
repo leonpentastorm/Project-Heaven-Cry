@@ -5,10 +5,11 @@ import { DCLogic } from '../dc/runtime';
 import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss, tabNavIndex } from './shared';
 import { reducedMotion, sfx } from '../game/sfx';
 import { fightPace } from '../game/combatSpeed';
-import { WEAPON, musicTraitOf, songOf, active, apForTiles, paths, previewAttack, isMelee, attackApCost, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt,
+import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, attackApCost, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, visibility, litAt,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, scuff as scuffGlyph, vent as ventFlux, swapCore, syphon as syphonMp, crystallise as crystalliseCore, releaseOutburst,
-  lineOfSight, effectiveRange, togglesFor, previewPerkAction, bindGame, weaponActions, routeHazards, reloadBothAp, PILE, PICKUP_AP, STAGE_MULT, encoreCredit, FAITH_PATRON,
+  togglesFor, previewPerkAction, weaponActions, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
+  basicCost, moveOptions, reachTiles, loadPlan, weaponSystem, pairedAttack, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
   attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER } from '@engine';
 import { act as actNow, getState, go, toast } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
@@ -85,20 +86,14 @@ export function sigilPad(evV, S, set) {
     sgHasJunction: (evV.junction || []).length > 1,
   };
 }
-/** Try an engine action on a throwaway copy of the fight: the engine's own refusal (or null), and the unit afterwards.
- *  How the UI learns costs and reasons without computing any rule itself. */
-function dryRun(cb, uid, fn) {
-  const deep = (v) => (v ? JSON.parse(JSON.stringify(v)) : v); // item state (uses, per-fight state, armed presets) must not leak out of a dry run
-  const units = cb.units.map((x) => ({ ...x, saves: { ...x.saves }, conds: x.conds ? { ...x.conds } : x.conds, mg: x.mg ? { ...x.mg, held: x.mg.held ? { ...x.mg.held } : null } : x.mg, uses: deep(x.uses), ps: deep(x.ps), armed: deep(x.armed) }));
-  const c = { ...cb, units, log: [], notes: [], fx: [], glyphs: [...(cb.glyphs || [])], zones: (cb.zones || []).map((z) => ({ ...z, hit: { ...(z.hit || {}) } })), mana: cb.mana ?? MANA_START };
-  const u = units.find((x) => x.id === uid);
-  let err = null;
-  try { err = u ? fn(c, u, { state: 1 }) : 'No unit.'; } catch (e) { err = String((e && e.message) || e); }
-  return { err, u, cb: c };
-}
+/** Try an engine action on a throwaway copy of the fight: the engine's own refusal (or null), the unit afterwards and
+ *  the AP it took. The copy, the bound game and the dice are the engine's (preview.ts dryRun); the screen copies nothing. */
+const dryRun = (g, cb, uid, fn) => engineDryRun(g, cb, uid, fn);
 export { dryRun as _dryRun };
 /** Encore's key in words (items 729, 737): "combat/attack:shot" → "Attack (shot)". */
 export const encoreWords = (key) => { const [t, what] = String(key || '').split(':'); const n = t.replace('combat/', ''); return (n.charAt(0).toUpperCase() + n.slice(1)).replace('-', ' ') + (what ? ' (' + what + ')' : ''); };
+/** The switches an action carries (its mods): the ones set and usable, and a default-on one turned off as "!id". */
+const modsOf = (tgls) => tgls.filter((t) => t.on && !t.why).map((t) => t.id).concat(tgls.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
 const sgn = (v) => (v >= 0 ? '+' : '−') + Math.abs(Math.round(v * 100) / 100);
 /** The to-hit sum and damage chain in words: "d20 +4 skill +2 aimed −2 range · dmg 20 ×1.2 Strength and Raw Power". */
 export function hitBreakdown(pv) {
@@ -726,20 +721,26 @@ export class CombatLogic extends DCLogic {
     const w = cur ? WEAPON[cur.weapon] : null, melee = w ? isMelee(w) : false;
     const P = mineTurn ? paths(cb, cur.pos, cur.id) : { dist: {}, prev: {} };
     const MOVES = ['move', 'sprint', 'disengage'], isMove = MOVES.includes(S.action);
-    const moveCost = (k) => (S.action === 'sprint' ? 2 : S.action === 'disengage' ? 1 : apForTiles(P.dist[k], cur.bank, cur.movement));
+    // Where the picked move may end and what each tile costs is the engine's answer (actions.ts moveOptions: the route,
+    // the items' price, one Sprint a turn, Fear, Threatened, an item's ban, Encore's lend), asked once per state and
+    // action, not on every mouse move. A tile lights up only if the engine would take the move.
+    const moveMods = mineTurn && isMove ? (() => { try { return modsOf(withGame(g, () => togglesFor({ u: cur, c: ch, cb, g }, 'combat/move', { action: S.action, target: null }, S.mods || []))); } catch { return []; } })() : []; // the switches set on the move (they price it)
+    const moveKey = mineTurn && isMove ? [cur.id, cur.pos, cur.ap, S.action, moveMods.join(',')].join('|') : '';
+    if (!moveKey) this._move = null;
+    else if (!this._move || this._move.g !== g || this._move.key !== moveKey) { let mo; try { mo = moveOptions(g, cb, cur.id, S.action, { mods: moveMods }); } catch { mo = { tiles: {}, why: 'Not now.', lend: 0 }; } this._move = { g, key: moveKey, ...mo }; }
+    const MO = this._move, moveCost = (k) => (MO && MO.tiles[k] ? MO.tiles[k].ap : 0);
     // Encore (items 729, 737): a move that repeats the Laughing Mask's Encore is lent the AP it cost before.
-    const moveLend = mineTurn && isMove ? encoreCredit(cur, { type: 'combat/move', how: S.action }) : 0;
-    const reach = (k) => mineTurn && P.dist[k] !== undefined && k !== cur.pos && !cur.prone && moveCost(k) <= cur.ap + moveLend
-      && (S.action === 'sprint' ? !cur.noSprint && P.dist[k] <= Math.floor(3 * cur.movement) : S.action === 'disengage' ? P.dist[k] === 1 : true);
+    const moveLend = MO ? MO.lend : 0;
+    const reach = (k) => !!(MO && MO.tiles[k]);
     const hv = isMove && S.hover && reach(S.hover) ? S.hover : null;
     const vis = visibility(cb, 'pc'), seenFoe = (u) => u.side === 'pc' || vis.seen.has(u.id);
     const route = {}; let moveAp = 0;
     // Rules 1.9 (item 683): the route a click takes goes around revealed hazards when it can (the engine's movePaths), and
     // the preview marks every revealed hazard tile it still crosses ("Path crosses: …").
     const arrowsOf = (rr, from) => { rr.forEach((k, i) => { const p = i ? rr[i - 1] : from, [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; }); };
-    const hvRoute = hv && mineTurn ? routeHazards(cb, cur, hv, S.action) : null, hvTiles = hvRoute ? hvRoute.tiles : hv ? P.dist[hv] : 0;
+    const hvRoute = hv && mineTurn ? routeHazards(cb, cur, hv, S.action) : null, hvTiles = hv ? MO.tiles[hv].tiles : 0;
     let crossing = hvRoute ? hvRoute.crosses : [];
-    if (hv) { moveAp = S.action === 'sprint' || S.action === 'disengage' ? moveCost(hv) : apForTiles(hvTiles, cur.bank, cur.movement); if (hvRoute) arrowsOf(hvRoute.route, cur.pos); else { let k = hv; while (P.prev[k]) { const p = P.prev[k]; const [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } } }
+    if (hv) { moveAp = moveCost(hv); if (hvRoute) arrowsOf(hvRoute.route, cur.pos); else { let k = hv; while (P.prev[k]) { const p = P.prev[k]; const [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; k = p; } } }
     const foes = cb.units.filter((u) => u.side === 'foe' && !u.dead);
     const tgtUnit = cb.units.find((u) => u.id === S.target && !u.dead && (!cur || u.id !== cur.id) && (u.side === 'pc' || seenFoe(u))) || foes.find((u) => !u.downed && seenFoe(u)) || null;
     const ATTACKS = ATTACK_MODES; // the old attack rows (a companion, a puppet or the drone keeps them: game/techView.ts)
@@ -754,19 +755,18 @@ export class CombatLogic extends DCLogic {
     const tIsPlain = !!(tBlock && tBlock.plain && tBlock.plain.id === tId), tIsWatch = !!(tBlock && tBlock.watch.some((c) => c.id === tId));
     const tAlly = tsel && needsAlly(tId) ? cb.units.find((u) => u.id === S.target && u.side === 'pc' && !u.dead && u.id !== cur.id) || null : null;
     const tTgt = tsel && needsEnemy(tId) ? tgtUnit : null, tTile = tsel && needsTile(tId) ? S.tile || null : null;
-    const tPv = tsel ? techPreview(g, cb, cur, tsel, { targetId: tTgt ? tTgt.id : undefined, tile: tTile, allyId: tAlly ? tAlly.id : undefined, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) }) : null;
+    const tArgs = tsel ? { targetId: tTgt ? tTgt.id : undefined, tile: tTile, allyId: tAlly ? tAlly.id : undefined, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) } : null;
+    const tPv = tsel ? techPreview(g, cb, cur, tsel, tArgs) : null;
     const tAsk = tsel ? techPrompt(tId, { target: tTgt, tile: tTile, ally: tAlly }) : null;
     // Fog of war (Leon, 11 Nov 2026: aiming a Lob into the fog marked and named the enemies standing in it). What a
-    // preview SHOWS never tells of a unit this side can't see: not marked on the grid, not counted, not named. The
-    // engine's own preview (tPv: the cost, whether it can be done) is untouched; tPvShown is what is drawn and written.
-    const seenId = (id) => { const x = cb.units.find((y) => y.id === id); return !x || seenFoe(x); };
-    const unseenNames = cb.units.filter((u) => !u.dead && !seenFoe(u)).map((u) => u.name).filter((n) => n && !cb.units.some((u) => u.name === n && seenFoe(u)));
-    const fogPv = (pv) => (!pv ? pv : { ...pv, attacks: (pv.attacks || []).filter((a) => seenId(a.target)), pressure: (pv.pressure || []).filter((x) => seenId(x.unit)), saves: (pv.saves || []).filter((x) => seenId(x.unit)),
-      moves: (pv.moves || []).filter((m) => !m.unit || seenId(m.unit)), notes: (pv.notes || []).filter((n) => !unseenNames.some((nm) => String(n).includes(nm))) });
-    const tPvShown = fogPv(tPv);
+    // preview SHOWS never tells of a unit this side can't see: not marked on the grid, not counted, not named. The fog is
+    // the engine's (preview.ts): seenCb is the fight as this side sees it, and tPvShown takes everything that tells of
+    // units from the preview worked out on it. The verdict (tPv: the cost, whether it can be done) is the whole fight's.
+    const seenCb = fightSeenBy(cb, 'pc'), inSight = seenCb === cb ? null : new Set(seenCb.units.map((u) => u.id));
+    const tPvShown = !tPv || !inSight ? tPv : previewSeenBy(cb, 'pc', (c) => techPreview(g, c, cur, tsel, tArgs), ['attacks', 'pressure', 'saves', 'moves', 'notes', 'area'], tPv);
     /** The fight as this side sees it, for a preview that works out who is affected (an Evoke's plan, an Outburst's aim):
      *  the units out of sight aren't there. */
-    const fogCb = (c) => (c.units.every(seenFoe) ? c : { ...c, units: c.units.filter((u) => u.dead || seenFoe(u)) });
+    const fogged = (c) => (inSight ? fightSeenBy(c, 'pc') : c);
     /** The row a picked technique belongs to: its own (the plain attack), its weapon's Techniques row, or Hold a shot. */
     const rowSel = !tsel || tIsPlain ? S.action : tIsWatch ? TWATCH : padAction(tsel.hand);
     this._tech = tsel ? { sel: tsel, tgt: tTgt, ally: tAlly, tile: tTile, pv: tPv, ask: tAsk, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) } : null;
@@ -797,16 +797,16 @@ export class CombatLogic extends DCLogic {
     const pickFar = pickPile && !pickSel ? routeHazards(cb, cur, pickPile.pos) : null;
     if (pickFar) { arrowsOf(pickFar.route, cur.pos); crossing = pickFar.crosses; }
     const crossAt = new Set(crossing.map((c) => c.tile));
-    const loadInfo = (() => { if (!cur || !w || w.reload !== 'magazine' || !cur.mags) return null; const cap = w.magazine || 0, open = cur.mags.filter((n) => n < cap).sort((a, b) => b - a); if (!open.length || !cur.loose) return null; const r = Math.min(cap - open[0], cur.loose, cur.ap * ROUNDS_PER_AP); return { rounds: r, ap: Math.ceil(r / ROUNDS_PER_AP) }; })();
+    const loadInfo = mineTurn && S.action === 'load' ? loadPlan(g, cb, cur) : null; // how many rounds go in now and the AP: the engine's
     const sk = w && w.grants, skFx = (sk && sk.effect) || {}, skRuns = ['multi_shot', 'sweep'].includes(skFx.op), skWhy = !skRuns || !cur ? null : cur.jammed && skFx.op === 'multi_shot' ? 'Weapon jammed: clear it (2 AP).' : skFx.op === 'multi_shot' && w.magazine != null && cur.ammo <= 0 ? 'Empty: reload (2 AP).' : cur.ap < (skFx.ap || 0) ? 'Needs ' + skFx.ap + ' AP.' : null, skPassive = sk && !skRuns && skFx.op !== 'narrator';
     // ---------- magic: what this unit can cast, previews and refusals straight from the engine ----------
     const mg = cur && cur.mg, words = mg ? mg.words : [], designs = mg ? mg.designs : [];
     const hasMagic = !!(mg && (words.length || designs.length || mg.evoker || mg.emanator)), isMagic = MAGIC.includes(S.action) && hasMagic;
     const mana = cb.mana ?? MANA_START, band = manaBand(mana), pcb = cb.mana == null ? { ...cb, mana } : cb;
-    const tryIt = (fn) => (mineTurn && mg ? dryRun(pcb, cur.id, fn) : { err: cb.over ? 'The fight is over.' : 'Not your turn.' });
+    const tryIt = (fn) => (mineTurn && mg ? dryRun(g, pcb, cur.id, fn) : { err: cb.over ? 'The fight is over.' : 'Not your turn.' });
     // Draw (rules 1.4: on your own tile only): each word as the engine would draw it now, with its cost and whether it
     // starts or extends a Line, and the stroke it goes into (rules 1.10: the picker; spec: Mana, Sigils 9.1; game/sigilView.ts).
-    const strip = S.action === 'draw' && mineTurn && mg ? (() => { const was = bindGame(g); try { return drawStrip(pcb, cur, S.stroke); } finally { bindGame(was); } })() : { tile: '', words: [], stroke: null };
+    const strip = S.action === 'draw' && mineTurn && mg ? withGame(g, () => drawStrip(pcb, cur, S.stroke)) : { tile: '', words: [], stroke: null };
     const wordInfo = {}; for (const dw of strip.words) wordInfo[dw.id] = dw;
     const WM = wordMasteryChips(cur && cur.charId && !cur.companion ? g.characters[cur.charId] : null); // rules 1.10: use counts and stars on the keys
     const word = S.word && words.includes(S.word) ? S.word : (strip.words.find((dw) => dw.ok) || {}).id || words[0] || null;
@@ -817,7 +817,7 @@ export class CombatLogic extends DCLogic {
     const readable = new Set(cb.units.filter((u) => u.side === 'pc' && owner(u) === me && u.mg).flatMap((u) => u.mg.words)), knows = (w) => readable.has(w);
     const seenGlyph = (k) => !!k && glyphsAt(pcb, k).some((gl) => gl.side === 'pc' || vis.tiles.has(k));
     const evTile = S.action === 'evoke' && S.glyphTile && seenGlyph(S.glyphTile) ? S.glyphTile : null;
-    const evV = mineTurn && mg && evTile ? evokeView(fogCb(pcb), cur, evTile, S.evc || {}, S.hover, knows) : null; // (fog: who is affected, as this side sees the fight)
+    const evV = mineTurn && mg && evTile ? evokeView(fogged(pcb), cur, evTile, S.evc || {}, S.hover, knows) : null; // (fog: who is affected, as this side sees the fight)
     const hoverPanel = S.action === 'evoke' && !evTile && mineTurn && seenGlyph(S.hover) ? patternPanel(pcb, S.hover, cur, knows) : null;
     // Outburst (rules 1.5, game/heartView.ts): not holding, a design and Begin (hold at stage 0) or Snap (Begin and
     // Release at once, aimed); holding, the HEART panel (Pump, Release, Steady, Let go, Feed, Heart Overwatch). Every cost,
@@ -830,16 +830,16 @@ export class CombatLogic extends DCLogic {
     // as mods (and into the Outburst preview, so a surged release shows its stage).
     const TOGGLE_ON = { shot: 'combat/attack', aimed: 'combat/attack', melee: 'combat/attack', burst: 'combat/attack', auto: 'combat/attack', move: 'combat/move', sprint: 'combat/move', disengage: 'combat/move', outburst: 'combat/outburst', release: 'combat/release', pump: 'combat/pump', evoke: 'combat/evoke' };
     const tglOn = TOGGLE_ON[S.action] || (tsel ? 'combat/attack' : null); // a technique is an attack: its toggles (Ricochet, Spare, Nonlethal…) show with it
-    const tgls = mineTurn && tglOn ? (() => { const was = bindGame(g); try { return togglesFor({ u: cur, c: ch, cb, g }, tglOn, { action: S.action, target: tgtUnit }, S.mods || []); } catch { return []; } finally { bindGame(was); } })() : [];
-    this._mods = tgls.filter((t) => t.on && !t.why).map((t) => t.id).concat(tgls.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
+    const tgls = mineTurn && tglOn ? (() => { try { return withGame(g, () => togglesFor({ u: cur, c: ch, cb, g }, tglOn, { action: S.action, target: tgtUnit }, S.mods || [])); } catch { return []; } })() : [];
+    this._mods = modsOf(tgls);
     const hp = mineTurn && held ? heartPanel(pcb, cur, this._mods) : null;
     // The grid preview: aimed (a Snap, a Release) on the aim once picked, else on the hovered tile; while holding, your
     // reach ring faintly and the aura's tiles; a design picked to Begin shows its reach.
     let hz = noOverlay(), hzPlan = null;
     if (mineTurn && mg) {
       const at = S.aim || S.hover || null;
-      if (S.action === 'outburst' && dsel && !held) { hz = aimOverlay(fogCb(pcb), cur, dsel.id, obMode === 'snap' ? at : null, this._mods); if (obMode !== 'snap') hz = { ...hz, mode: 'idle', area: new Set(), marks: new Map(), chip: '' }; hzPlan = obMode === 'snap' ? aimOverlay(fogCb(pcb), cur, dsel.id, S.aim, this._mods).plan : null; }
-      else if (S.action === 'release' && held) { hz = aimOverlay(fogCb(pcb), cur, 'held', at, this._mods); hzPlan = aimOverlay(fogCb(pcb), cur, 'held', S.aim, this._mods).plan; }
+      if (S.action === 'outburst' && dsel && !held) { hz = aimOverlay(fogged(pcb), cur, dsel.id, obMode === 'snap' ? at : null, this._mods); if (obMode !== 'snap') hz = { ...hz, mode: 'idle', area: new Set(), marks: new Map(), chip: '' }; hzPlan = obMode === 'snap' ? aimOverlay(fogged(pcb), cur, dsel.id, S.aim, this._mods).plan : null; }
+      else if (S.action === 'release' && held) { hz = aimOverlay(fogged(pcb), cur, 'held', at, this._mods); hzPlan = aimOverlay(fogged(pcb), cur, 'held', S.aim, this._mods).plan; }
       else if (held && (HEART_ACTS.includes(S.action) || S.tab === 'outbursts')) hz = idleOverlay(pcb, cur);
     }
     const SIMPLE = { scuff: scuffGlyph, vent: ventFlux, core: swapCore, syphon: syphonMp, crystallise: crystalliseCore };
@@ -885,14 +885,19 @@ export class CombatLogic extends DCLogic {
     const pkV = pkP && S.pkForm && S.pkForm.key === S.action ? S.pkForm.v : {};
     const pkBuilt = pkP ? buildArgs(pkP, pkV, pkX) : {}, pkMissing = typeof pkBuilt === 'string' ? pkBuilt : '';
     const pkArgs = pkE ? { actionId: pkE.actionId, ...(pkT ? { targetId: pkT.id } : {}), ...(pkE.target === 'tile' && S.tile ? { tile: S.tile } : {}), ...(pkMissing ? {} : pkBuilt) } : null;
-    const pkPv = pkE ? (pkMissing ? { ok: false, why: pkMissing, ap: pkE.ap, lines: [] } : (() => { const was = bindGame(g); try { return previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, pkArgs, 'combat'); } catch (e) { return { ok: false, why: String(e && e.message || e), ap: pkE.ap, lines: [] }; } finally { bindGame(was); } })()) : null;
+    const pkPv = pkE ? (pkMissing ? { ok: false, why: pkMissing, ap: pkE.ap, lines: [] } : (() => { try { return withGame(g, () => previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, pkArgs, 'combat')); } catch (e) { return { ok: false, why: String(e && e.message || e), ap: pkE.ap, lines: [] }; } })()) : null;
     this._pk = pkE ? { e: pkE, args: pkArgs, target: pkT, P: pkP, V: pkV } : null;
     const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obMode === 'snap' ? (hzPlan ? hzPlan.ap : card ? card.snapAp : 0) : card ? card.beginAp : 0) : S.action === 'release' ? (hzPlan ? hzPlan.ap : SPELL_AP.release) : S.action === 'pump' ? (hp ? hp.pump.ap : SPELL_AP.pump) : S.action === 'letgo' || S.action === 'heartwatch' ? 0 : S.action === 'vent' || S.action === 'core' ? magicAp(cur, S.action) : SPELL_AP[S.action] || 0;
-    const waCost = cur && S.action === 'pullfree' ? ((pullFreeTargets(cb, cur)[0] || {}).nailed || {}).ap
-      : cur && ['reload', 'clear', 'brace', 'repair', 'overwatch'].includes(S.action) ? (weaponActions(cur).find((x) => x.id === S.action) || {}).ap
-      : cur && S.action === RELOAD_TAC ? ((weaponActions(cur).find((x) => x.id === 'reload') || {}).tactical || {}).ap
-      : cur && (S.action === 'reload2' || S.action === RELOAD2_TAC) ? reloadBothAp(cur) + (S.action === RELOAD2_TAC ? PILE.tactical_reload_extra_ap : 0) : undefined; // the weapon's own AP (rules 1.9: speed or tactical)
-    const cost = cChip ? (cPv && cPv.ap ? cPv.ap : cChip.ap) : tsel ? (tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0) : pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0) : S.action === 'repair' || S.action === 'song' ? 2 : S.action === 'shove' || S.action === 'hide' || S.action === 'escape' ? 2 : S.action === 'reload2' ? 3 : S.action === 'extinguish' ? 1 : S.action === 'recover' ? (cur && cur.conds && cur.conds.disarmed > 0 ? 2 : 1) : S.action === 'prone' || S.action === 'brace' ? 1 : S.action === 'overwatch' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : S.action === 'stim' ? 1 : S.action === 'reload' || S.action === 'clear' ? 2 : S.action === 'analyze' ? (cur ? analyzeCost(cur) : 2) : S.action === 'pickup' ? PICKUP_AP : S.action === 'door' ? 1 : S.action === 'load' ? (loadInfo ? loadInfo.ap : 0) : S.action === 'cover' ? (w ? attackApCost(w, melee ? 'melee' : 'shot') : 2) : pv ? pv.ap : 0;
+    // The AP the picked action takes is always the engine's number: a weapon's own action (weaponActions), a basic
+    // action with what is picked for it (actions.ts basicCost: a stim on a Downed ally, the unit to pull free, the rounds
+    // to load), an attack's preview. Nothing is priced here.
+    const waCost = cur && ['reload', 'clear', 'brace', 'repair', 'overwatch'].includes(S.action) ? (weaponActions(cur).find((x) => x.id === S.action) || {}).ap
+      : cur && S.action === RELOAD_TAC ? ((weaponActions(cur).find((x) => x.id === 'reload') || {}).tactical || {}).ap : undefined; // the weapon's own AP (rules 1.9: speed or tactical)
+    const basicAp = cur && waCost == null && !isMagic && !isMove ? (() => { try { return withGame(g, () => basicCost(cb, cur, S.action, { targetId: S.action === 'stim' ? (stimTarget ? stimTarget.id : null) : S.target }, { c: ch, g })); } catch { return null; } })() : null;
+    // Both hands at once (a unit that keeps the old rows): what the engine takes for it, tried on a copy against the target.
+    const pairedAp = mineTurn && S.action === 'paired' && tgtUnit ? dryRun(g, cb, cur.id, (c, u, rng) => pairedAttack(c, rng, u, c.units.find((x) => x.id === tgtUnit.id), null, ch)).ap : 0;
+    const cost = cChip ? (cPv && cPv.ap ? cPv.ap : cChip.ap) : tsel ? (tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0) : pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : waCost != null ? waCost : isMagic ? magicCost : isMove ? moveAp : S.action === 'skill' ? (skFx.ap || 0)
+      : basicAp != null ? basicAp : S.action === 'paired' ? pairedAp : pv ? pv.ap : ATTACKS.includes(S.action) && w ? attackApCost(S.action === 'melee' && !melee ? WEAPON.fists : w, S.action === 'aimed' ? 'aimed' : melee || S.action === 'melee' ? 'melee' : 'shot') : 0;
     // Encore (items 729, 737): the selected action repeats the Miracle's named one: the engine lends its AP (previewAttack and
     // the perk previews already count it); the cost shown is what is left to pay, and the panel says it is free.
     const encoreLend = !mineTurn ? 0 : encoreCredit(cur, cChip ? { type: 'combat/call', id: cId } : tsel ? { type: 'combat/technique', id: tId } /* rules 1.12: Shot, Aimed Shot and Cut repeat the plain attack they stand for; any other technique repeats itself */ : pkE ? { type: 'combat/perk', id: pkE.id } : isMove ? { type: 'combat/move', how: S.action } : ATTACKS.includes(S.action) ? { type: 'combat/attack', mode: attackMode } : null);
@@ -920,27 +925,21 @@ export class CombatLogic extends DCLogic {
     const RED_ACTS = [...ATTACK_MODES, 'paired', 'overwatch', 'shove', 'analyze', 'cover'];
     // A technique aimed at an enemy shows its weapon's reach too (melee: its reach; ranged: the range bands).
     const tShield = !!(tsel && tsel.hand === 'off' && !cur.offWeapon && blocks.some((b) => b.shield)); // a shield's technique (Shield Bash): next to you
-    const tSys = tsel && needsEnemy(tId) ? (tShield ? 'melee' : WEAPON[tsel.hand === 'off' ? cur.offWeapon : cur.weapon] && isMelee(WEAPON[tsel.hand === 'off' ? cur.offWeapon : cur.weapon]) ? 'melee' : tId === 'aimed' ? 'aimed' : 'shot') : null;
+    const tSys = tsel && needsEnemy(tId) ? (tShield ? 'melee' : weaponSystem(tsel.hand === 'off' ? cur.offWeapon : cur.weapon) === 'melee' ? 'melee' : tId === 'aimed' ? 'aimed' : 'shot') : null; // (the engine says which weapons strike in melee: the grand staff and the banner do, though they are not melee weapons by category)
     const redOn = !!(mineTurn && w && !isMagic && (RED_ACTS.includes(S.action) || (S.action === 'skill' && skRuns) || !!tSys));
     let red = new Map();
     if (redOn) {
       const mode = tSys ? tSys : S.action === 'skill' ? (skFx.op === 'sweep' ? 'melee' : 'shot') : ['overwatch', 'cover', 'paired', 'analyze'].includes(S.action) ? (melee ? 'melee' : 'shot') : S.action === 'shove' ? 'melee' : S.action;
-      const useW = (mode === 'melee' && !melee) || tShield ? WEAPON.fists : w, isM = mode === 'melee' && S.action !== 'analyze';
-      // Optics only help against units (previewAttack); shooting an object (shootCover) has no optic term: 3 bands flat.
-      const mods = cur.mods || [], optic = S.action !== 'cover' && (mods.includes('mod_red_dot') || (mods.includes('mod_scope') && mode === 'aimed')) ? 1 : 0;
-      const reachM = S.action === 'shove' || (S.action === 'skill' && skFx.op === 'sweep') ? 1 : (useW.properties || []).includes('reach_2') || useW.id === 'lance' || (useW === w && skFx.op === 'reach') ? (skFx.op === 'reach' && useW === w ? skFx.value : 2) : 1;
+      const isM = mode === 'melee' && S.action !== 'analyze';
       // A melee technique that moves you first reaches further than the weapon: Lunge's step (2 with a Reach weapon),
       // Charge's run (as far as the AP left after the strike lets you walk). The red shows who it can reach, not the blade.
-      const tProps = (useW.phys && useW.phys.props) || [], tApLeft = Math.max(0, cur.ap - (tChip ? tChip.ap : 2));
+      const tProps = (((mode === 'melee' && !melee) || tShield ? WEAPON.fists : w).phys || {}).props || [], tApLeft = Math.max(0, cur.ap - (tChip ? tChip.ap : 2));
       const moveR = !tsel || !isM ? 0 : tId === 'lunge' ? (tProps.includes('reach') ? 2 : 1) : tId === 'charge' ? Math.floor(tApLeft * (cur.movement || 1) + (cur.bank || 0)) : 0;
-      const maxR = S.action === 'analyze' ? 4 + (cur.analysis || 0) : isM ? reachM + moveR : effectiveRange(useW) * (3 + optic);
-      const memo = [cur.id, cur.pos, cur.weapon, S.action, maxR, cb.round, cb.log.length].join('|');
-      if (!this._red || this._red.key !== memo) {
-        // By range band (spec: −2 to hit per band past the first): the first band reads strongest, the far ones fade.
-        const set = new Map(), band = isM || S.action === 'analyze' ? 0 : effectiveRange(useW);
-        for (let y = 0; y < cb.map.h; y++) for (let x = 0; x < cb.map.w; x++) { const k = x + ',' + y; if (k === cur.pos || solid.has(k)) continue; const d = dist(cur.pos, k); if (d <= maxR && (isM || lineOfSight(cb, cur.pos, k))) set.set(k, band ? Math.max(0, Math.ceil(d / band) - 1) : 0); }
-        this._red = { key: memo, set };
-      }
+      // How far it reaches from here is the engine's rule (actions.ts reachTiles: previewAttack's own melee reach, the
+      // Reach property included; the range bands and the optic; Analyze's range; a Shove's one tile).
+      const what = S.action === 'analyze' ? 'analyze' : S.action === 'shove' || (S.action === 'skill' && skFx.op === 'sweep') ? 'shove' : S.action === 'cover' ? 'cover' : mode;
+      const memo = [cur.id, cur.pos, cur.weapon, cur.offWeapon || '', (cur.mods || []).join(','), S.action, what, moveR, tShield ? 1 : 0, cb.round, cb.log.length].join('|');
+      if (!this._red || this._red.key !== memo) this._red = { key: memo, set: reachTiles(cb, cur, what, { step: moveR, fists: tShield }) };
       red = this._red.set;
     }
     /** The chip over a hovered unit while an attack is chosen: the engine's odds and AP, or its reason. */
@@ -948,7 +947,7 @@ export class CombatLogic extends DCLogic {
       if (!redOn || k !== S.hover || !u || u.id === cur.id) return null;
       const short = (why) => String(why || 'Not now').split(/[:.]/)[0].toUpperCase();
       if (S.action === 'analyze') return u.analyzedBy ? { ok: false, text: 'ANALYZED' } : red.has(k) ? { ok: true, text: 'ANALYZE · ' + analyzeCost(cur) + ' AP' } : { ok: false, text: 'OUT OF RANGE' };
-      if (S.action === 'shove') return red.has(k) ? { ok: true, text: 'SHOVE · 2 AP' } : { ok: false, text: 'GET NEXT TO IT' };
+      if (S.action === 'shove') return red.has(k) ? { ok: true, text: 'SHOVE · ' + cost + ' AP' } : { ok: false, text: 'GET NEXT TO IT' };
       if (S.action === 'skill' && skFx.op === 'multi_shot') { const p = previewAttack(cb, cur, u, 'shot', { extra: skFx.extra || 0, free: true }); return p.ok ? { ok: true, text: (skFx.shots || 1) + '× ' + p.pct + '% · ' + skFx.ap + ' AP' } : { ok: false, text: short(p.why) }; }
       if (ATTACKS.includes(S.action)) { const p = previewAttack(cb, cur, u, attackMode); return p.ok ? { ok: true, text: 'HIT ' + p.pct + '% · ' + p.ap + ' AP' } : { ok: false, text: short(p.why) }; }
       if (tSys) { const p = techPreview(g, cb, cur, tsel, { targetId: u.id, tile: tTile, line: S.techLine || null, opt: techOptOf(tsel.id, S.techOpt) }), a0 = p && (p.attacks || []).find((a) => a.target === u.id);
@@ -980,7 +979,7 @@ export class CombatLogic extends DCLogic {
     const placed0 = placedView(pcb, 'pc', vis.tiles), placed = { ...placed0, tiles: mergeTiles(placed0.tiles, classMarks(cb, 'pc', { seen: vis.tiles, imgOf: (x) => ART(x.img) || x.img || '' })) }, evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
     // A class move or perk that casts (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell…) paints its
     // engine preview on the grid too: the area, the tiles it covers, who it affects (spec 9; item 489 c).
-    const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, { ...pkPv, targets: (pkPv.targets || []).filter(seenId) }, cur.side) : null; // (fog: only the units in sight are marked)
+    const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, { ...pkPv, targets: (pkPv.targets || []).filter((id) => !inSight || inSight.has(id) || !cb.units.some((u) => u.id === id)) }, cur.side) : null; // (fog: only the units in sight are marked)
     const tTiles = tPvShown && ((tPvShown.area || []).length || (tPvShown.moves || []).length || new Set([...(tPvShown.attacks || []).map((a) => a.target), ...(tPvShown.pressure || []).map((p) => p.unit)]).size > 1) ? actionPreviewTiles(cb, { tiles: [...(tPvShown.area || []), ...(tPvShown.moves || []).map((m) => m.to)], targets: (() => { const ids = [...new Set([...(tPvShown.attacks || []).map((a) => a.target), ...(tPvShown.pressure || []).map((p) => p.unit)])]; return ids.length > 1 ? ids : []; })() }, cur.side) : null; // (one target: the target card names it; its pips stay readable)
     const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(placed.tiles, pkTiles) : tTiles ? mergeTiles(placed.tiles, tTiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
     const markStyle = (k, u) => {
@@ -1134,7 +1133,7 @@ export class CombatLogic extends DCLogic {
       draw: 'Draw a glyph', evoke: 'Evoke', scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', outburst: 'Outburst', release: 'Release', syphon: 'Syphon', crystallise: 'Crystallise',
       pump: 'Pump', steady: 'Steady the heart', letgo: 'Let it go', feed: 'Feed the glyph', heartwatch: 'Heart Overwatch' }[S.action] || '';
     const sel = { name: actName + (isMove ? ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + ' tiles') : pv ? ' · ' + pv.ap + ' AP' : ''),
-      text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? 'Hover a highlighted tile to see the path and its AP cost; click to move.' : S.action === 'stim' ? (stimTarget ? 'Target: ' + stimTarget.name + '. Confirm to use a stim.' : 'Click an adjacent ally.') : S.action === 'skill' ? (skRuns ? (skWhy ? skWhy : skFx.op === 'multi_shot' ? (tgtUnit ? sk.name + ' at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : 'Confirm to strike every adjacent enemy.') : skPassive ? 'Always on: it applies to every attack you make.' : 'Not run by the engine yet: use Say, and the Narrator rules it.') : S.action === 'paired' ? (tgtUnit ? 'Both hands at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : S.action === 'reload' ? 'Confirm to reload.' : SELF_TEXT[S.action] ? SELF_TEXT[S.action] : S.action === 'clear' ? 'Confirm to clear the jam.' : S.action === 'repair' ? 'Confirm to repair your weapon.' : S.action === 'song' ? 'Confirm to play your song for the room.' : ['prone', 'brace', 'overwatch'].includes(S.action) ? 'Confirm to ' + ({ prone: cur.prone ? 'stand up' : 'drop prone', brace: 'brace your weapon', overwatch: 'hold a shot on overwatch' }[S.action]) + '.' : S.action === 'shove' ? (tgtUnit ? 'Shove ' + tgtUnit.name + (Math.max(Math.abs(+tgtUnit.pos.split(',')[0] - +cur.pos.split(',')[0]), Math.abs(+tgtUnit.pos.split(',')[1] - +cur.pos.split(',')[1])) > 1 ? ': get next to it first.' : '. Confirm.') : 'Click an adjacent enemy.') : S.action === 'cover' ? (coverSel ? 'Target: ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).name + ', HP ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).hp + '. Confirm to shoot it.' : 'Click an object with HP.') : S.action === 'door' ? (doorSel ? (doorAt(doorSel).open ? 'Close' : 'Open') + ' the door at ' + refOf(doorSel) + '. Confirm.' : 'Click an adjacent door.') : S.action === 'pickup' ? '' : S.action === 'load' ? (loadInfo ? 'Confirm to load ' + loadInfo.rounds + ' rounds for ' + loadInfo.ap + ' AP.' : 'Nothing to load: you need loose rounds and a part-empty magazine.') : S.action === 'analyze' ? (readSel ? readText : tgtUnit ? (tgtUnit.analyzedBy ? tgtUnit.name + ' is already analyzed.' : 'Target: ' + tgtUnit.name + '. Click a hostile to change. Confirm to analyze.') : 'Click a hostile, or a glyph or trace to read (dashed).') : pv ? (pv.ok ? (tgtUnit && tgtUnit.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgtUnit.name + '. Confirm if you mean it.' : 'Click a hostile to change target. Confirm to attack.') : pv.why) : 'Click a hostile to target it.',
+      text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? (MO && MO.why ? MO.why : 'Hover a highlighted tile to see the path and its AP cost; click to move.') : S.action === 'stim' ? (stimTarget ? 'Target: ' + stimTarget.name + '. Confirm to use a stim.' : 'Click an adjacent ally.') : S.action === 'skill' ? (skRuns ? (skWhy ? skWhy : skFx.op === 'multi_shot' ? (tgtUnit ? sk.name + ' at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : 'Confirm to strike every adjacent enemy.') : skPassive ? 'Always on: it applies to every attack you make.' : 'Not run by the engine yet: use Say, and the Narrator rules it.') : S.action === 'paired' ? (tgtUnit ? 'Both hands at ' + tgtUnit.name + '. Confirm.' : 'Click a hostile.') : S.action === 'reload' ? 'Confirm to reload.' : SELF_TEXT[S.action] ? SELF_TEXT[S.action] : S.action === 'clear' ? 'Confirm to clear the jam.' : S.action === 'repair' ? 'Confirm to repair your weapon.' : S.action === 'song' ? 'Confirm to play your song for the room.' : ['prone', 'brace', 'overwatch'].includes(S.action) ? 'Confirm to ' + ({ prone: cur.prone ? 'stand up' : 'drop prone', brace: 'brace your weapon', overwatch: 'hold a shot on overwatch' }[S.action]) + '.' : S.action === 'shove' ? (tgtUnit ? 'Shove ' + tgtUnit.name + (Math.max(Math.abs(+tgtUnit.pos.split(',')[0] - +cur.pos.split(',')[0]), Math.abs(+tgtUnit.pos.split(',')[1] - +cur.pos.split(',')[1])) > 1 ? ': get next to it first.' : '. Confirm.') : 'Click an adjacent enemy.') : S.action === 'cover' ? (coverSel ? 'Target: ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).name + ', HP ' + allObjs.find((o) => o.pos === coverSel && o.hp > 0).hp + '. Confirm to shoot it.' : 'Click an object with HP.') : S.action === 'door' ? (doorSel ? (doorAt(doorSel).open ? 'Close' : 'Open') + ' the door at ' + refOf(doorSel) + '. Confirm.' : 'Click an adjacent door.') : S.action === 'pickup' ? '' : S.action === 'load' ? (loadInfo ? 'Confirm to load ' + loadInfo.rounds + ' rounds for ' + loadInfo.ap + ' AP.' : 'Nothing to load: you need loose rounds and a part-empty magazine.') : S.action === 'analyze' ? (readSel ? readText : tgtUnit ? (tgtUnit.analyzedBy ? tgtUnit.name + ' is already analyzed.' : 'Target: ' + tgtUnit.name + '. Click a hostile to change. Confirm to analyze.') : 'Click a hostile, or a glyph or trace to read (dashed).') : pv ? (pv.ok ? (tgtUnit && tgtUnit.side === 'pc' ? 'FRIENDLY FIRE: you are attacking ' + tgtUnit.name + '. Confirm if you mean it.' : 'Click a hostile to change target. Confirm to attack.') : pv.why) : 'Click a hostile to target it.',
       hasPick: false, pickFields: [], extra: mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
     // Rules 1.9: the two reloads, the pick-up checklist and the path's hazards, in words (the costs are the engine's).
     sel.hasPile = false; sel.pileRows = []; this._pick = null;
@@ -1145,7 +1144,7 @@ export class CombatLogic extends DCLogic {
       if (isMove && hv) { const ct = crossesText(crossing); if (ct) sel.text = ct + ' Click to walk it anyway, or pick another tile.'; else if (hvRoute && hvTiles > P.dist[hv]) sel.text = 'The path goes around the revealed hazards (' + (hvTiles - P.dist[hv]) + (hvTiles - P.dist[hv] === 1 ? ' tile' : ' tiles') + ' longer). Click to move.'; }
       if (S.action === 'pickup') {
         const rows = pileRows(pickPile, pickUntick), d = pickPile ? dist(cur.pos, pickPile.pos) : 0;
-        sel.name = actName + ' · ' + PICKUP_AP + ' AP';
+        sel.name = actName + ' · ' + cost + ' AP';
         sel.text = !pickPile ? (piles.size ? 'Nothing on the ground next to you. Click a pile (the stack with a count) to see the way there.' : 'Nothing on the ground in sight.')
           : !pickSel ? 'The pile at ' + refOf(pickPile.pos) + ' is ' + d + ' tiles away: walk next to it first. ' + (crossesText(pickFar && pickFar.crosses) || 'The way there crosses no known hazard.')
           : pickWhy || pickupLabel(pickPile, pickUntick) + ' from ' + (pickPile.pos === cur.pos ? 'your tile' : refOf(pickPile.pos)) + '. Untick what to leave on the ground.';
@@ -1205,7 +1204,7 @@ export class CombatLogic extends DCLogic {
       sel.text = need + (pkPv && !pkPv.ok ? (pkE.why && pkPv.why === pkE.why ? stWhy : pkPv.why) : (pkPv && pkPv.lines.length ? pkPv.lines.join(' ') : pkE.text) + (pkE.arm ? (pkE.armed ? ' Armed: confirm to stand it down.' : ' Confirm to arm it: the engine uses it when its moment comes.') : ' Confirm to use it.'));
       sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (stWhy ? ' ' + stWhy : '');
       // Each single choice previewed as the engine would take it (once the move's own target is picked).
-      const whyOpt = pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!pkT)) ? (id) => { const was = bindGame(g); try { const r = previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, { ...pkArgs, choice: id }, 'combat'); return r && !r.ok ? r.why || 'Not now.' : ''; } catch { return ''; } finally { bindGame(was); } } : null;
+      const whyOpt = pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!pkT)) ? (id) => { try { const r = withGame(g, () => previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, { ...pkArgs, choice: id }, 'combat')); return r && !r.ok ? r.why || 'Not now.' : ''; } catch { return ''; } } : null;
       Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
     }
     // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.

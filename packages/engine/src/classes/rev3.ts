@@ -11,32 +11,28 @@
 // (False Image, Sleight), 'turn_start_pre' (Silver Tongue), the stat 'rider_stage' (magic.ts riderBonus) and the
 // 'strain' hook (Eye of the Storm), 'trap_sprung' (Sabotage's rig), the new 'ai_move_risk' (Anchor in the enemy AI).
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import { tendHook } from '../effects/damage';
-import { RALLY_HEAL, mendFactorOf } from '../effects/mending';
+import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, moveUnit,
-  previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike,
+  previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike, displace, swapUnits
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
-import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana } from '../magic';
+import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana, saveAgainst , saveTn } from '../magic';
+import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
 type Fam = 'body' | 'brain' | 'heart';
-import { d20, type Rng } from '../rng';
+import { type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, hide, seenByFoes, HEARING } from '../tactics';
 import { addImage, dropImage, imageOfOwner, imageTurnStart, imagesOf, type FalseImage } from '../illusion';
 import { makeObject, kindOf } from '../objects';
 
 // =================================================================================================== helpers
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const myTurn = (h: Holder) => !!h.cb && !!h.u && h.cb.order[h.cb.turn] === h.u.id && !h.cb.window;
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const unitById = (cb: Combat, id?: string | null) => (id ? cb.units.find((x) => x.id === id) || null : null);
 const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
-const free = (cb: Combat, k: string, not?: Unit) => standable(cb.map, k) && !moveBlockers(cb).has(k) && !cb.units.some((v) => v !== not && !v.dead && v.pos === k);
 /** The fight a stat query is asked in (statQuery's holder has no fight when actionAp is called with {u} alone). */
 const fightOf = (h: Holder): Combat | null => h.cb || (h.g?.combat && h.u && h.g.combat.units.includes(h.u) ? h.g.combat : null);
 /** An off-turn policy set for the fight with a 0-AP action (as lane I's Riposte and Interpose). */
@@ -49,11 +45,10 @@ const policyAction = (id: string, label: string, value: string, text: string): A
 /** A family save against this unit's move: 'cond_apply' {id, fam} first (an immunity cancels it, items add to the
  * save or its TN), then d20 + the target's save against 12 + the mover's strength with the skill that delivers the move (`via`, rules 1.13). */
 function famSave(cb: Combat, rng: Rng, by: Unit, t: Unit, id: string, fam: Fam, via: string): { ok: boolean; cancel: string | null; line: string } {
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: 0, skipSave: false, cancel: false, why: '', tnAdd: 0, saveAdd: 0, cb, rng });
-  if (ca.cancel) return { ok: true, cancel: ca.why || 'immune', line: t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '') };
-  if (ca.skipSave) return { ok: false, cancel: null, line: 'no save' };
-  const r = d20(rng), m = unitSave(t, fam) + (ca.saveAdd || 0), tn = 12 + unitStrength(by, via) + (ca.tnAdd || 0), ok = r === 20 || (r !== 1 && r + m >= tn);
-  return { ok, cancel: null, line: fam + ' save ' + (r + m) + ' vs ' + tn + (r === 1 ? ', natural 1' : r === 20 ? ', natural 20' : '') };
+  const sv = saveAgainst(cb, rng, by, t, fam, id, { via }); // the one save (rolls.ts): this only shapes its answer for the moves below
+  if (sv.skipped === 'immune') return { ok: true, cancel: sv.why || 'immune', line: t.name + ' is untouched' + (sv.why ? ' (' + sv.why + ')' : '') };
+  if (sv.skipped === 'no_save') return { ok: false, cancel: null, line: 'no save' };
+  return { ok: sv.ok, cancel: null, line: sv.text };
 }
 /** The tile one step on from `from` past `t` (a push), or null off the map. */
 function pushTile(cb: Combat, from: Unit, t: Unit): string | null {
@@ -153,8 +148,8 @@ register({
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
       const how = args.choice === 'prone' ? 'prone' : 'push';
       if (how === 'prone' && t.prone) return { ok: false, why: t.name + ' is already prone.' };
-      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !free(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] }; }
-      return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] };
+      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !canStand(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (saveTn(u, 'raw_power')) + ').'] }; }
+      return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (saveTn(u, 'raw_power')) + ').'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, how = args.choice === 'prone' ? 'prone' : 'push', was = t.pos;
@@ -163,12 +158,9 @@ register({
       const s = famSave(cb, rng as Rng, u, t, how === 'prone' ? 'prone' : 'shoved', 'body', 'raw_power');
       if (s.ok) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': ' + (s.cancel ? s.line : 'holds firm (' + s.line + ')') + '.'); return; }
       if (how === 'push') {
-        const to = pushTile(cb, u, t);
-        const fm: any = to && free(cb, to, t) ? emit(cb, 'forced_move', { u: t, by: u, tiles: 1, to, how: 'shove', cancel: false, cb, rng }) : { cancel: true };
-        if (fm.cancel || !to) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': holds firm.'); return; }
-        t.pos = to; t.braced = false;
-        emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to, ok: true });
-        say(cb, u.name + ' shoves ' + t.name + ' back to ' + refOf(to) + ' (' + s.line + ').'); sightCheck(cb); return;
+        const mv = displace(cb, rng as Rng, t, { away: u.pos, tiles: 1 }, { by: u, how: 'push', source: 'shove' }); // the one forced move (combat.ts)
+        if (!mv.moved) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': holds firm.'); return; }
+        say(cb, u.name + ' shoves ' + t.name + ' back to ' + refOf(mv.to) + ' (' + s.line + ')' + mv.text + '.'); sightCheck(cb); return;
       }
       t.prone = true; t.braced = false; (t.condAt ||= {}).prone = (cb.condSeq = (cb.condSeq || 0) + 1);
       emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: true, prone: true });
@@ -330,7 +322,7 @@ register({
         say(cb, u.name + ' fixes ' + t.name + '\'s weapon: +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return;
       }
       // A repair, not a heal (as Field Repair): exactly 20, no healing multipliers, not halved by Factory Made's Plug.
-      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + 20); if (up) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
+      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + itemAmount('class:infiltrator.field_fix', 'repair')); if (up) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
       emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
       say(cb, u.name + ' repairs ' + t.name + ': +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
     },
@@ -385,7 +377,7 @@ register({
         const cb = h.cb!, u = h.u!;
         cb.objects = objectsOf(cb).filter((o) => !((o as any).rig === h.key && (o as any).owner === u.id));
         const id = 'rig' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
-        cb.objects.push(makeObject(id, 'trap', u.pos, { name: 'Rigged tile', text: 'Rigged by ' + u.name + '.', damage: 30, owner: u.id, side: u.side, rig: h.key, hidden: false } as any));
+        cb.objects.push(makeObject(id, 'trap', u.pos, { name: 'Rigged tile', text: 'Rigged by ' + u.name + '.', damage: itemAmount('class:infiltrator.sabotage', 'damage'), owner: u.id, side: u.side, rig: h.key, hidden: false } as any));
         emitFx(cb, 'rig', { unit: u.id, at: u.pos, id, only: u.side });
         say(cb, u.name + ' rigs ' + refOf(u.pos) + ' (Sabotage).');
       },
@@ -481,8 +473,8 @@ register({
       if (k === u.pos) return { ok: false, why: 'Put it on another tile.' };
       if (dist(u.pos, k) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' };
       if (!unitSees(cb, u, k)) return { ok: false, why: 'You can\'t see that tile.' };
-      if (!free(cb, k) || imagesOf(cb).some((i) => i.pos === k)) return { ok: false, why: 'That tile isn\'t free.' };
-      return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (12 + unitStrength(u, 'brain_power')) + ').'] };
+      if (!canStand(cb, k) || imagesOf(cb).some((i) => i.pos === k)) return { ok: false, why: 'That tile isn\'t free.' };
+      return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (saveTn(u, 'brain_power')) + ').'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!; u.mg!.charge -= 1; u.mg!.cast = true;
@@ -514,7 +506,7 @@ register({
   actions: [{
     id: 'silver_tongue', label: 'Silver Tongue', scope: ['combat'], target: 'enemy', ap: 2, range: 6,
     text: 'An enemy within 6 tiles that can hear you makes a Brain save. If it fails, it loses 2 AP on its next turn. A boss or a Celestial loses 1 AP instead. It doesn\'t work on machines, turrets or drones.',
-    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (12 + unitStrength(h.u!, 'charisma')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
+    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (machineLike(t)) return { ok: false, why: t.name + ' doesn\'t listen to talk.' }; if (dist(h.u!.pos, t.pos) > Math.min(6, HEARING)) return { ok: false, why: 'Too far to be heard.' }; return { lines: [t.name + ': Brain save vs ' + (saveTn(h.u!, 'charisma')) + ', or −' + (isBoss(t) ? 1 : 2) + ' AP next turn.'] }; },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, s = famSave(cb, rng as Rng, u, t, 'silver_tongue', 'brain', 'charisma'), n = isBoss(t) ? 1 : 2;
       emitFx(cb, 'silver_tongue', { unit: u.id, target: t.id, from: u.pos, to: t.pos, ok: !s.ok, ap: s.ok ? 0 : n });
@@ -545,9 +537,8 @@ register({
       preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === u) return { ok: false, why: 'Pick a squadmate.' }; if (!alive(t)) return { ok: false, why: t.name + ' is Downed and can\'t swap.' }; return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, from = u.pos, to = t.pos; uses(h).take('per_scene', 1, h.key);
-        u.pos = to; t.pos = from; u.braced = false; t.braced = false;
-        emitFx(cb, 'swap', { unit: u.id, target: t.id, from, to });
-        say(cb, u.name + ' and ' + t.name + ' swap places.');
+        const sw = swapUnits(cb, rng as Rng, u, t, { by: u, source: 'sleight', willing: [u, t], drawn: () => { emitFx(cb, 'swap', { unit: u.id, target: t.id, from, to }); say(cb, u.name + ' and ' + t.name + ' swap places.'); } }); // both chose it
+        if (sw.text) say(cb, sw.text.replace(/^ · /, '') + '.');
         emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
         emit(cb, 'moved', { u: t, from: to, to: from, tiles: dist(from, to), how: 'swap', forced: false, route: [from], stopped: null, cb, rng });
         sightCheck(cb);
@@ -563,9 +554,8 @@ register({
         return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; },
       run: (h, _args, rng) => {
         const cb = h.cb!, u = h.u!, img = imageOfOwner(cb, u.id)!, from = u.pos, to = img.pos; uses(h).take('per_scene', 1, h.key);
-        u.pos = to; img.pos = from; u.braced = false;
-        emitFx(cb, 'swap', { unit: u.id, target: img.id, from, to, image: true });
-        say(cb, u.name + ' swaps places with the False Image (' + refOf(to) + ').');
+        const sw = displace(cb, rng as Rng, u, { tile: to }, { by: u, how: 'swap', source: 'sleight', willing: true, fx: false, drawn: () => { img.pos = from; emitFx(cb, 'swap', { unit: u.id, target: img.id, from, to, image: true }); say(cb, u.name + ' swaps places with the False Image (' + refOf(to) + ').'); } }); // an image is not a unit: the caster lands on its tile and the image is put where the caster stood
+        if (sw.text) say(cb, sw.text.replace(/^ · /, '') + '.');
         emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
         sightCheck(cb);
       },
@@ -586,12 +576,12 @@ register({
   actions: [{
     id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 2, uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: every ally within 4 tiles heals 6 HP × your Healing given, more as you level, and loses Fear and Shaken.',
-    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(RALLY_HEAL * (h.c ? healingMult(h.c) : 1) * mendFactorOf(h.u!)) + ' HP each, and their Fear and Shaken end.'] }; },
+    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(kitHeal(RALLY_HEAL, h.c ? healingMult(h.c) : 1, mendFactorOf(h.u))) + ' HP each, and their Fear and Shaken end.'] }; },
     run: (h) => {
       const cb = h.cb!, u = h.u!, mult = h.c ? healingMult(h.c) : 1, ts = rallied(cb, u), parts: string[] = [];
       emitFx(cb, 'rally', { unit: u.id, at: u.pos, radius: 4, targets: ts.map((t) => t.id) });
       for (const t of ts) {
-        const r = healUnit(cb, t, RALLY_HEAL * mult * mendFactorOf(u), u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
+        const r = healUnit(cb, t, kitHeal(RALLY_HEAL, mult, mendFactorOf(u)), u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
         for (const id of gone) endCond(t, id, cb);
         if (gone.length && !r.restored) tendHook.f?.(cb, u, t);
         emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored });

@@ -4,7 +4,7 @@ spec-table and screen-data checks, both type checks and both unit suites, run to
 
     npm run check            everything (about 1 to 2 minutes)
     npm run check -- engine  only what touches the engine (validator, engine tsc, engine tests)
-    npm run check -- web     only the client (web tsc, web tests)
+    npm run check -- web     only the client (web tsc, the screen data's freshness, web tests)
     npm run check -- -t "Heart Overload"     both suites, only tests whose name matches
 
 Exit code 0 when all pass. Full logs are kept in .check/ (ignored by git) when something fails.
@@ -20,7 +20,9 @@ vt = (['--', '-t', pat] if pat else [])
 JOBS = [
     ('data', 'validator', ['python3', 'tools/validate.py', 'data']),
     ('data', 'spec tables', ['python3', 'tools/check_spec_tables.py']),  # the spec's weapon, enemy and condition tables against data
-    ('data', 'screen data', ['python3', 'design/canvas-build/build.py', '--web', '--check']),  # protodata.json is what the data builds today
+    # The creation and sheet screens' card texts (apps/web/src/game/protodata.json) are generated from data/*.json: this
+    # fails when the committed file is stale against the data (engine review 4, finding 6). Nothing is written.
+    ('data', 'screen data', ['python3', 'design/canvas-build/build.py', '--web', '--check']),
     ('engine', 'engine types', ['npx', 'tsc', '--noEmit', '-p', 'packages/engine']),
     ('web', 'web types', ['npx', 'tsc', '--noEmit', '-p', 'apps/web']),
     ('engine', 'engine tests', ['npm', 'test', '-w', '@phc/engine'] + vt),

@@ -5,9 +5,9 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 
 | You changed… | Run | Takes | It tells you |
 | --- | --- | --- | --- |
-| Anything, before you say "done" | `npm run check` | 1 to 2 min | The data validator (with the text-number guard), the spec tables and the screen data against the data pack, both type checks and both unit suites (the test lint is in the engine's): one line each, only failures printed |
+| Anything, before you say "done" | `npm run check` | 1 to 2 min | The data validator (with the text-number guard), the spec tables, the screen data's freshness, both type checks and both unit suites (the test lint is in the engine's): one line each, only failures printed |
 | Only the engine or the data | `npm run check -- engine` | under 1 min | Validator, engine types, engine tests |
-| Only the client | `npm run check -- web` | about 1.5 min | Web types, web tests |
+| Only the client | `npm run check -- web` | about 1.5 min | Web types, the screen data's freshness (`protodata.json` against `data/*.json`; when it says STALE, run `python3 design/canvas-build/build.py --web`), web tests |
 | One rule, and you want only its tests | `npm run check -- -t "Heart Overload"` | seconds | Both suites, only tests whose name matches |
 | A number or a rule, and you want to SEE what the game does | `npm run try -- '<scenario>'` | 3 s | A fight played through the real rules: the log lines and every unit's HP, AP, meters and conditions after each step. No browser, no new test file. `npm run try -- --help` has the fields and examples |
 | A screen, a button, anything a player clicks | `npm run e2e -- <suite>` | 1 to 3 min a suite | The suite's checks in a real browser. It builds, starts and stops the server itself |
@@ -58,14 +58,30 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   with the characters, perks, skills and enemies you name, through the real reducer. Every rules test starts here.
 - `packages/engine/test/perk-audit.test.ts`: every perk and trait through a fight (`PERK_AUDIT_OUT=<file>` writes the
   report).
-- **The golden tables** (`packages/engine/test/golden-damage*.test.ts`, inside `npm run check`): what about 5,300 fixed
-  actions produce and land, exact, against `packages/engine/test/golden/*.json` (every weapon, technique, reference
+- **The rules tables** (`packages/engine/test/golden-rules.test.ts`, inside `npm run check`; engine foundations 1): the same
+  actions read a second way: how many dice were rolled and what changed on each unit that is not an amount (tile,
+  conditions, Prone, Braced, Nailed…), each from five seeds, in `test/golden/rules-<section>.json`; and every forced
+  mover against 29 cases in `test/golden/moves.json`. A state line that moves is a change of rules. The words (log
+  lines, roll events) are in `*.log.json`: when only wording changed, `GOLDEN_RECORD=log npm test -w @phc/engine -- golden-rules`.
+- **The foundation lint** (`packages/engine/test/lint-foundations.test.ts`, inside `npm run check`): reads the engine's
+  source and fails on a raw `d20(`, a hand-written pass/fail, a new `unit.pos =`, a private copy of a `kit.ts` helper,
+  a fixed-seed rng, or a stat id that is answered and never asked. Each failure says what to call instead.
+- **The roll digest** (opt-in: `cd packages/engine && ROLL_DIGEST=record npx vitest run --config vitest.digest.config.ts`
+  before a refactor, `ROLL_DIGEST=compare …` after): every die of every test, counted and hashed; a test whose dice
+  moved fails by name. For refactors that must not change what is rolled.
+- **The golden tables** (`packages/engine/test/golden-damage*.test.ts`, inside `npm run check`): what about 5,900 fixed
+  actions (5,466 lines in 14 tables) produce and land, exact, against `packages/engine/test/golden/*.json` (every weapon, technique, reference
   build, a Line for every Subject word, the Outburst by school, stage and feeling, every prayer, blasts, traps, hazards,
   ticks; `record.ts` lists them, each file's `#coverage` line says what gave no number). They fail when ANY number of
   the damage engine moves, and print the action, what it was and what it is. A change that is meant to leave numbers
   alone (a refactor, a re-expression of the formula) must leave them green. When a number was meant to move, record
   on purpose and say so in the commit: `GOLDEN_RECORD=1 npm test -w @phc/engine -- golden-damage`. No enemy AI runs in
   them (every action is a fixed attacker on a fixed target), so a change to whom an enemy picks does not touch them.
+- `packages/engine/test/amount-literals.test.ts` (inside `npm run check`, under a second): the numbers items deal, heal and
+  shield with live in data (`amounts` blocks, `data/CONVENTIONS.md`). It fails when a number is handed to `harm`,
+  `hurtUnit`, `heal`, `healUnit`, `grantShield` or `applyDamage` from code, when HP or a shield is written with one in
+  `classes/` or `perks/`, when the source asks for a block the data does not have, and when a block no longer holds the
+  number its ledger line says (a re-fit changes the data and that line together).
 - `packages/engine/test/balance-baseline.test.ts`: the plain attack of sample weapons against each enemy tier
   (`BALANCE_OUT=<file>`).
 - `window.__phc` in the browser: `getState()`, `act(action)`, `setNarrator({ scripted: true })` (a Narrator that

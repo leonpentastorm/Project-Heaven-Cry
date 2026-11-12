@@ -152,6 +152,7 @@
     },
     {
       "id": "the_brightest_light",
+      "damage_kinds": ["blast"],
       "number": 2,
       "name": "The Brightest Light",
       "category": "Combat",
@@ -281,6 +282,7 @@
     },
     {
       "id": "grenadiers_arm",
+      "amounts": {"damage": {"kind": "damage", "base": 10, "per": [{"of": "kg", "value": 0.25}], "profile": "physical", "type": "physical", "provisional": true}},
       "number": 5,
       "name": "Grenadier's Arm",
       "category": "Combat",
@@ -422,6 +424,7 @@
     },
     {
       "id": "pain_eater",
+      "damage_kinds": ["blast"],
       "number": 8,
       "name": "Pain Eater",
       "category": "Combat",
@@ -1726,6 +1729,7 @@
     },
     {
       "id": "factory_made",
+      "amounts": {"repair": {"kind": "heal", "base": 0, "per": [{"of": "improvisation", "value": 10}], "profile": "flat", "text": "Field Repair: a repair, not a heal", "provisional": true}},
       "number": 29,
       "name": "Factory Made",
       "category": "Origin",
@@ -2689,6 +2693,7 @@
     },
     {
       "id": "humanity_first",
+      "damage_kinds": ["blast"],
       "number": 48,
       "name": "Humanity First",
       "category": "Bond",
@@ -3454,6 +3459,7 @@
     },
     {
       "id": "drone_handler",
+      "amounts": {"repair": {"kind": "heal", "base": 0, "per": [{"of": "mastery", "value": 10}], "profile": "flat", "provisional": true}},
       "number": 64,
       "name": "Drone Handler",
       "category": "Tech",
@@ -3727,6 +3733,7 @@
     },
     {
       "id": "crawler_blooded",
+      "amounts": {"chitin": {"kind": "heal", "base": 0, "per": [{"of": "damage", "value": 0.3}], "profile": "flat", "text": "of a critical hit that injures a limb", "provisional": true}, "blessing_burn": {"kind": "damage", "base": 10, "profile": "flat", "type": "true", "provisional": true}},
       "number": 69,
       "name": "Crawler-Blooded",
       "category": "Body and blood",

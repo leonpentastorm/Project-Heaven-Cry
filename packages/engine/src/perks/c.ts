@@ -7,35 +7,33 @@
 // section 6) are marked PROVISIONAL and listed in the spec (section 14, tags C…) and docs/design/perk-runtime.md.
 import { isPressed } from '../physical/pressure';
 import { register, stateOf, uses, note, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
+import { itemAmount, amountMult } from '../effects/amounts';
+import { term } from '../effects/output';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   key, xy, dist, alive, refOf, keyOf as refKey, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, reload, clearJam,
-  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees,
+  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees, displace
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf } from '../character';
 import { applyCond, condOn } from '../magic';
-import { d20 } from '../rng';
 import { throwItem, blast, radiusOf, canReact, useReaction, refundReaction, throwRangeOf } from '../tactics';
 import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
 import { callMarks, callLevel } from '../calls/core';
 import { CALL, callStepAt } from '../calls/data';
 import { positionsOf } from '../game';
+import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
+import { rollVs } from '../rolls';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 /** A tile from a grid reference ("F6") or a key ("5,5"). */
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? ((c as any).state ||= {}) : {});
 /** Read a character's item state without creating it (stat queries and previews must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};
-const unitById = (cb: Combat, id: string | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
 /** Do something with the AP check out of the way (a free reload, clear or repair): the AP is given back after. */
 function free<T>(u: Unit, f: () => T): T { const keep = u.ap; u.ap = 99; try { return f(); } finally { u.ap = keep; } }
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
@@ -320,7 +318,7 @@ register({
     on_hit: (ctx, h) => {
       const cb = h.cb; if (ctx.att !== h.u || ctx.melee || !cb || !modOn(h, 'ricochet') || !uses(h).take('per_turn')) return;
       const t2 = ricochetTarget(cb, ctx.att, ctx.tgt); if (!t2) { say(cb, '(Ricochet: nobody within 2 tiles of ' + ctx.tgt.name + '.)'); return; }
-      const n = Math.max(1, Math.floor((ctx.dmg || 0) / 2)), r = applyDamage(cb, t2, n, { by: ctx.att, type: 'weapon', ranged: true, shield: true, credit: 'all', weapon: ctx.att.weapon });
+      const n = Math.max(1, Math.floor((ctx.dmg || 0) * amountMult('perk:trick_shot', 'ricochet', 'share'))), r = applyDamage(cb, t2, n, { by: ctx.att, type: 'weapon', ranged: true, shield: true, credit: 'all', weapon: ctx.att.weapon });
       emitFx(cb, 'shot', { unit: ctx.att.id, target: t2.id, from: ctx.tgt.pos, to: t2.pos, weapon: ctx.att.weapon, cat: WEAPON[ctx.att.weapon]?.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: r.amount, killed: r.killed, chain: true, ricochet: true });
       say(cb, 'The round ricochets into ' + t2.name + ' (Trick Shot): ' + r.amount + ' damage' + (r.killed ? (t2.side === 'foe' ? ' · down for good' : ' · Downed') : '') + '.');
       checkOver(cb);
@@ -665,7 +663,7 @@ const objLanding = (cb: Combat, tile: string, o: any): string | null => {
   return null;
 };
 const landing = (cb: Combat, tile: string, self: Unit): string | null => {
-  const free = (k: string) => standable(cb.map, k) && !moveBlockers(cb).has(k) && !cb.units.some((v) => v !== self && !v.dead && v.pos === k);
+  const free = (k: string) => canStand(cb, k, self);
   if (free(tile)) return tile;
   const [x, y] = xy(tile); for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]]) { const k = key(x + dx, y + dy); if (free(k)) return k; }
   return null;
@@ -687,16 +685,15 @@ register({
       if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + range + ' tiles for ' + kg + ' kg.' };
       if (!lineOfSight(cb, u.pos, k)) return { ok: false, why: 'No line of sight to throw there.' };
       if (!landing(cb, k, t)) return { ok: false, why: 'No room to land there.' };
-      return { lines: [t.name + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1)) + ' damage to it and to anyone there.'] };
+      return { lines: [t.name + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })) + ' damage to it and to anyone there.'] };
     },
     run: (h, args) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId)!, k = tileOf(cb, args.tile)!, kg = weightOf(t);
-      const fm: any = emit(cb, 'forced_move', { u: t, by: u, tiles: dist(t.pos, k), to: k, how: 'throw', cancel: false, cb });
-      if (fm.cancel) { say(cb, t.name + ' won\'t be thrown.'); return null; }
-      const hit = cb.units.find((v) => v !== t && !v.dead && v.pos === k) || null, land = landing(cb, k, t)!, was = t.pos;
-      const dmg = Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1));
-      t.pos = land; t.braced = false; emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: land, ok: true });
-      say(cb, u.name + ' throws ' + t.name + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + hurtUnit(t, dmg, false, cb, 'thrown', u) + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + '.');
+      const hit = cb.units.find((v) => v !== t && !v.dead && v.pos === k) || null, land = landing(cb, k, t)!;
+      const mv = displace(cb, null, t, { tile: land }, { by: u, how: 'throw', source: 'throw' }); // the one forced move (combat.ts): it lands, and the tile acts on it
+      if (!mv.moved) { say(cb, t.name + ' won\'t be thrown' + (mv.why ? ' (' + mv.why + ')' : '') + '.'); return null; }
+      const dmg = Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg }));
+      say(cb, u.name + ' throws ' + t.name + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + hurtUnit(t, dmg, false, cb, 'thrown', u) + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + mv.text + '.');
       checkOver(cb); return null;
     },
   }, {
@@ -717,11 +714,11 @@ register({
       if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + range + ' tiles for ' + kg + ' kg.' };
       if (!lineOfSight(cb, u.pos, k)) return { ok: false, why: 'No line of sight to throw there.' };
       if (!objLanding(cb, k, o)) return { ok: false, why: 'No room to land there.' };
-      return { tiles: [k], lines: ['The ' + o.name.toLowerCase() + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1)) + ' damage to whoever is there, and to it.'] };
+      return { tiles: [k], lines: ['The ' + o.name.toLowerCase() + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })) + ' damage to whoever is there, and to it.'] };
     },
     run: (h, args) => {
       const u = h.u!, cb = h.cb!, k0 = tileOf(cb, args.tile)!, o = objectsOf(cb).find((x) => x.pos === k0 && THROW_KG[x.kind] != null)!, k = tileOf(cb, args.choice)!, kg = THROW_KG[o.kind];
-      const dmg = Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1)), hit = cb.units.find((v) => !v.dead && v.pos === k) || null, land = objLanding(cb, k, o)!, was = o.pos;
+      const dmg = Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })), hit = cb.units.find((v) => !v.dead && v.pos === k) || null, land = objLanding(cb, k, o)!, was = o.pos;
       o.pos = land; emitFx(cb, 'shove', { unit: u.id, target: null, from: was, to: land, ok: true, object: o.id });
       say(cb, u.name + ' hurls the ' + o.name.toLowerCase() + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + (o.hp != null && o.hp > 0 ? damageObject(cb, land, dmg, 0, u) : '') + '.');
       checkOver(cb); return null;
@@ -854,8 +851,8 @@ register({
       preview: (h, args) => { const d = deviceAt(h, args); if (typeof d === 'string') return { ok: false, why: d }; const m = unitMod(h.u!, 'analysis'); return { lines: [d.name + ': d20 ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + d.tn + ' (' + Math.max(5, Math.min(95, (21 - (d.tn - m)) * 5)) + '%).'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, d = deviceAt(h, args); if (typeof d === 'string') return d;
-        const r = d20(rng), m = unitMod(u, 'analysis'), ok = r === 20 || (r !== 1 && r + m >= d.tn);
-        let line = u.name + ' backdoors the ' + d.name.toLowerCase() + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs ' + d.tn;
+        const rv = rollVs(cb, rng, { by: u, mod: unitMod(u, 'analysis'), tn: d.tn, why: 'slicer' }), ok = rv.ok;
+        let line = u.name + ' backdoors the ' + d.name.toLowerCase() + ': ' + rv.text;
         if (!ok) { say(cb, line + ' · locked out (Slicer).'); return null; }
         const st = stateOf(h), list: any[] = (st.devices ||= []);
         if (d.unit) { line += ' · it\'s yours until your next turn' + applyCond(cb, rng, u, d.unit, 'puppeted', 1, undefined, { skipSave: true, via: 'ingenuity' }); say(cb, line + '.'); return null; }

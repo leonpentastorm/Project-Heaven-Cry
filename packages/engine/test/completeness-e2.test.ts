@@ -278,7 +278,7 @@ describe('Oil in My Mind: Paper\'s derived penalties and the Masterpiece save (i
       if (gift) { f.turn(artist); f.act({ type: 'combat/perk', unitId: artist.id, id: 'oil_in_my_mind', actionId: 'masterpiece', targetId: ally.id } as any); }
       f.g.rng.state = rngFor(17).state;
       const line = withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.unit(ally.id), 'shaken', 2, 'heart'));
-      return { total: +(/save (-?\d+) vs/.exec(line) || [0, NaN])[1], ok: /resists/.test(line), f, ally };
+      return { total: +(/= (-?\d+) vs/.exec(line) || [0, NaN])[1], ok: /resists/.test(line), f, ally };
     };
     const a = save(true), b = save(false);
     expect(a.total - b.total).toBe(2);

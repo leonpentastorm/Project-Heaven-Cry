@@ -235,7 +235,7 @@ describe('Assassin', () => {
     act(f, u, { type: 'combat/perk', id: 'class:assassin.toxin', actionId: 'toxin_weakened' });
     expect(f.unit(u.id).res!.toxins).toBe(doses - 1);
     act(f, f.unit(u.id), { type: 'combat/attack', targetId: f.foe.id, mode: 'melee' });
-    expect(logHas(f.cb, /The toxin on .*Body save d20/)).toBe(true);
+    expect(logHas(f.cb, /The toxin on .*body save d20/)).toBe(true);
     const s = storyWith([cls('assassin', 2, { weapon: 'combat_knife' })]);
     s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'class:assassin.toxin', actionId: 'story_bleeding' });
     expect(s.g.story.ps![s.chars[0].id].items['class:assassin.toxin'].coat).toBe('bleeding');
@@ -500,7 +500,7 @@ describe('Hexer', () => {
       const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 5]);
       const d = designOf(f.unit(u.id), 'status', 'shaken');
       act(f, f.unit(u.id), { type: 'combat/outburst', design: d, aim: '5,2' });
-      const l = f.cb.log.find((x) => /resists \(heart save \d+ vs \d+\)/.test(x)); if (l) seen = l.match(/vs (\d+)\)/)![1] + '|' + (12 + (f.pc.dbf?.will_power ?? 0) + 2); // rules 1.13: an Outburst's conditions read Will Power
+      const l = f.cb.log.find((x) => /resists \(heart save d20 [^)]* vs \d+/.test(x)); if (l) seen = l.match(/vs (\d+)/)![1] + '|' + (12 + (f.pc.dbf?.will_power ?? 0) + 2); // rules 1.13: an Outburst's conditions read Will Power
     }
     const [got, want] = seen.split('|'); expect(got).toBe(want);
   });

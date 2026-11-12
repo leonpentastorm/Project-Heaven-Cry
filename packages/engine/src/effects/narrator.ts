@@ -8,9 +8,9 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import type { Holder, ItemInfo, PendingRuling } from './types';
 import { handlerOf, ownerOf, holdersOf, boundGame } from './hooks';
+import { overworld } from '../kit';
 
 const KIND_TAG: Record<string, string> = { perk: 'PERK', trait: 'TRAIT', class: 'CLASS', skill: 'SKILL' };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const short = (s: string, n = 220) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 const whoOf = (h: Holder) => h.c?.name || h.u?.name || 'someone';
 

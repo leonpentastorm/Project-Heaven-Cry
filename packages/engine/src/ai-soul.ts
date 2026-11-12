@@ -32,6 +32,8 @@ import {
 } from './magic';
 import { aiRouteRisk } from './ai-sigil';
 import { fooledBy } from './illusion';
+import { foesOf } from './kit';
+import { tierSave, tierStrength } from './rolls';
 
 // ---------- Soul caster archetypes (data/enemies.json `soul_casters`) ----------
 export interface HeartCasterDef {
@@ -40,13 +42,11 @@ export interface HeartCasterDef {
 }
 export const HEART_CASTERS: HeartCasterDef[] = ((enemiesJ as any).soul_casters || []) as HeartCasterDef[];
 export const HEART_CASTER: Record<string, HeartCasterDef> = Object.fromEntries(HEART_CASTERS.map((c) => [c.id, c]));
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
-const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 2 };
 
 /** A Soul caster's heart (an Emanator, its designs, MP and Strain limit). Will Power for its rolls is its tier's attack
  * bonus; saves and debuff strength by tier, as a Sigil caster's. */
 export function heartMagic(u: Unit, c: HeartCasterDef): MagicUnit {
-  const tier = u.tier || c.tier, s = TIER_SAVE[tier] ?? 0, d = TIER_DEBUFF[tier] ?? 0;
+  const tier = u.tier || c.tier, s = tierSave(tier), d = tierStrength(tier);
   return {
     words: [], designs: c.designs.map((x) => ({ ...x, modules: [...(x.modules || [])] })), evoker: false, emanator: true,
     charge: 0, cores: 0, coresMade: 0, flux: 0, mp: c.mp, mpMax: c.mp, strain: 0, held: null, cast: false, freePumps: c.free_pumps || 0, freePumpsMax: c.free_pumps || 0,
@@ -67,7 +67,7 @@ const live = (t: Unit) => !t.dead && !t.downed && !t.surrendered;
 const isHeart = (u: Unit) => !!u.mg && !u.mg.evoker && u.mg.emanator && u.mg.designs.length > 0 && u.side === 'foe';
 const blocked = (u: Unit) => u.dead || u.downed || condOn(u, 'silenced');
 const desperate = (u: Unit) => u.hp <= 0.3 * u.maxHp;
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side !== u.side && live(t) && !t.hidden && !fooledBy(cb, u, t)); // a False Image's fooled enemy (illusion.ts)
+const seenFoes = (cb: Combat, u: Unit) => foesOf(cb, u, { hidden: false }).filter((t) => !fooledBy(cb, u, t)); // a False Image's fooled enemy (illusion.ts)
 const hostile = (d: OutburstDesign) => d.school !== 'buff' && !(d.school === 'damage' && d.modules.includes('inverse'));
 
 /** A plan's worth to the caster: expected damage on the players it can see (after armour, × the roll's chance), 6 a
@@ -95,7 +95,7 @@ export function heartPlanValue(cb: Combat, u: Unit, pv: OutburstPlan): { score: 
 function aimsFor(cb: Combat, u: Unit, d: OutburstDesign, at: string): string[] {
   const f = formOf(d); if (f === 'aura') return [at];
   const reach = heartReach(u.mg!, d) + 1;
-  const pts = hostile(d) ? foesOf(cb, u).map((t) => t.pos) : cb.units.filter((t) => t.side === u.side && live(t) && t.hp < t.maxHp).map((t) => t.pos);
+  const pts = hostile(d) ? seenFoes(cb, u).map((t) => t.pos) : cb.units.filter((t) => t.side === u.side && live(t) && t.hp < t.maxHp).map((t) => t.pos);
   const out = new Set<string>();
   for (const p of pts) {
     if (f !== 'wave' && f !== 'lance' && dist(at, p) > reach + (f === 'burst' ? 1 : 0)) continue;
@@ -122,7 +122,7 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
   const tiles: { k: string; ap: number }[] = [{ k: u.pos, ap: 0 }];
   if (opts.move && !condOn(u, 'pinned') && !condOn(u, 'rooted')) {
     const P = paths(cb, u.pos, u.id), fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
-    const foes = foesOf(cb, u), maxReach = Math.max(...srcs.map((s) => heartReach(m, s.d))) + 2;
+    const foes = seenFoes(cb, u), maxReach = Math.max(...srcs.map((s) => heartReach(m, s.d))) + 2;
     const cand = Object.entries(P.dist).map(([k, n]) => ({ k, ap: apForTiles(n, u.bank, u.movement) }))
       .filter(({ k, ap }) => k !== u.pos && ap >= 1 && ap <= u.ap - SOUL_AP.release && aiRouteRisk(cb, u, P, k) <= 0
         && !(fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) && foes.some((t) => dist(k, t.pos) <= maxReach))
@@ -179,7 +179,7 @@ const holdSafe = (cb: Combat, u: Unit) => { const m = u.mg!; if (m.held?.steady)
 function bigEnough(cb: Combat, u: Unit, c: HeartChoice): boolean {
   if (c.foes >= 2 || c.stage >= 3 || desperate(u)) return true;
   if (c.heal > 0 && cb.units.some((t) => t.side === u.side && live(t) && t.hp < 0.5 * t.maxHp)) return true;
-  if (foesOf(cb, u).some((t) => dist(t.pos, u.pos) <= 1)) return true;
+  if (seenFoes(cb, u).some((t) => dist(t.pos, u.pos) <= 1)) return true;
   if (u.mg!.held && !holdSafe(cb, u)) return true;
   return false;
 }
@@ -229,13 +229,13 @@ export function aiSoulStep(cb: Combat, rng: Rng, u: Unit): boolean {
     }
     const d = m.designs.find((x) => x.id === m.held!.design);
     if (m.held.stage < MAX_STAGE && (m.freePumps || 0) > 0 && !pumpOutburst(cb, rng, u)) { watch(cb, u); return true; }
-    const near = d ? foesOf(cb, u).some((t) => dist(t.pos, u.pos) <= heartReach(m, d) + 3) : false;
+    const near = d ? seenFoes(cb, u).some((t) => dist(t.pos, u.pos) <= heartReach(m, d) + 3) : false;
     if (m.held.stage < MAX_STAGE && u.ap >= SOUL_AP.pump && (near || st.moved) && !m.held.steady && !pumpOutburst(cb, rng, u)) { watch(cb, u); return true; }
     watch(cb, u);
     return false; // walk or shoot (the weapon code); a hit calms the heart
   }
   // 4. Nothing worth releasing yet: Syphon if the MP is short, else Begin and hold for what is coming.
-  if (!foesOf(cb, u).length) return false;
+  if (!seenFoes(cb, u).length) return false;
   const pick = cd && !m.held && canBeginHold(cb, u, cd) ? cd : beginPick(cb, u); if (!pick) return false;
   const pv = previewOutburst(cb, u, pick.id, undefined, false);
   if (!pv.ok) {
