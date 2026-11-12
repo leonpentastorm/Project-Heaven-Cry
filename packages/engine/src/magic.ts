@@ -593,7 +593,7 @@ export const RESONANCE_MAX: number = SR.resonance?.max_bonus ?? 0.4;
 export const SECOND_SCHOOL = { fromWill: SR.second_school?.from_will_power ?? 5, strength: SR.second_school?.strength ?? 0.5, cost: SR.second_school?.cost ?? 10 };
 /** The Damage school's base (rules 1.19: a character's 40, an enemy caster's 24; rules 1.17 had 28 and 18), so that with the new
  * stage table its Outbursts deal what the enemy table was fitted with. A unit's heart carries its own (`soulBase`). */
-export const SOUL_DAMAGE: number = SR.damage?.base ?? SCHOOL.damage?.damage ?? 20;
+export const SOUL_DAMAGE: number = SR.damage?.base ?? SCHOOL.damage?.damage ?? 40; // the fallback is rules 1.19's base (it said the rules 1.5 20)
 export const SOUL_DAMAGE_ENEMY: number = SR.damage?.enemy_base ?? SOUL_DAMAGE;
 /** Rules 1.19: a character takes one free stage a turn at most (the fight's first Pump, Empathy's, Shape's, a fed
  * feeling, Heart Overload II's stage 1), whatever gives it. Enemy casters keep their own free Pumps (the enemy table
@@ -1151,7 +1151,7 @@ const soulAmount = (kind: 'damage' | 'heal' | 'shield', base: number, mults: { v
   amountOf({ kind, base, profile: kind === 'heal' ? 'mend' : 'soul', round: 'none' }, null, { level: null, mults }).raw;
 export const outburstDamage = (m: MagicUnit, d: OutburstDesign, sm: number) => { const a = outburstTerms(m, d, sm); return soulAmount('damage', a.base, a.mults); };
 /** The same amount with its terms open, as harm takes it (step a7: what an item adds goes in beside the base). */
-export const outburstTerms = (m: MagicUnit, d: OutburstDesign, sm: number): SpellAmount => ({ base: m.soulBase ?? SOUL_DAMAGE_ENEMY, mults: [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.5 : 1, 'at once')] });
+export const outburstTerms = (m: MagicUnit, d: OutburstDesign, sm: number): SpellAmount => ({ base: m.soulBase ?? SOUL_DAMAGE_ENEMY, mults: [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.8 : 1, 'at once')] });
 // ---------- rules 1.20: what an Outburst heals and shields with ----------
 // Their own bases, never the Damage base (moving one must not move the other): the Buff school's `heal`, Inverse's and
 // Shell's `shield` (soul_modules.json). A character's grow with its level (mendFactor). In an area shape a heal or a

@@ -198,7 +198,7 @@ describe('Banner Dancer', () => {
   it('Banner Thread: no torso armour gives +2 Defense and +1 Movement; an inner torso plate takes it away', () => {
     const base = fightWith([{}], [{ at: 'O10' }]).pc, bare = fightWith([cls('banner_dancer')], [{ at: 'O10' }]);
     const c = charOf(bare.g, bare.pc);
-    if ((c.armourClass || 0) === 0 && !c.worn?.inner_torso && !c.worn?.lower_torso) { expect(bare.pc.def).toBe(base.def + 2); expect(bare.pc.movement).toBe(base.movement + 1); }
+    expect(c.armourClass || 0).toBeGreaterThan(0); // the fixture wears armour: the bare case is pinned below with it stripped (truth pass 3: the two expects here never ran)
     const s = storyWith([cls('banner_dancer')]), ch = s.g.characters[s.chars[0].id];
     ch.armourClass = 0; ch.worn = {}; const def0 = withGame(s.g, () => defense(ch));
     ch.worn = { inner_torso: 'trauma_plate' }; const def1 = withGame(s.g, () => defense(ch));

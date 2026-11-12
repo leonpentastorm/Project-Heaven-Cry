@@ -856,7 +856,9 @@ describe('anyone is a target: review fixes', () => {
     let { g, a } = two('stray');
     const before = npcsOf(g).length;
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', actions: [{ charId: a, act: 'attack', objId: storyObjects(g).find((o) => o.name === 'Sergeant Nine-Nine')!.id, mode: 'melee' }] } as any }, 'host');
-    if (g.phase === 'story') expect(npcsOf(g).length).toBe(before);
+    // truth pass 3: this seed's queued attack starts the fight, so the `if (g.phase === 'story')` guard here never let the
+    // expect run. Either way no token may be left behind: the story's NPC list is what it was.
+    expect(npcsOf(g).length).toBe(before);
   });
 });
 

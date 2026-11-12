@@ -22,11 +22,11 @@ import { fightWith, withGame, type FoeSpec } from './helpers/perkfight';
 
 /** Two characters side by side at 3,4 and 3,6 and one enemy at 9,5 on bare ground: both are 6 tiles off, in plain
  * sight, as easy to hit as each other. Everyone has 200 HP and no armour; the enemy's turn is read, not rolled. */
-function rig(foe: FoeSpec = { tier: 'soldier', weapon: 'hellraiser_service_rifle' }, o: { level?: number } = {}) {
-  const f = fightWith([{ name: 'Ada', ...(o.level ? { level: o.level } : {}) }, { name: 'Bo', ...(o.level ? { level: o.level } : {}) }], [foe]);
+function rig(foe: FoeSpec = { tier: 'soldier', weapon: 'hellraiser_service_rifle' }, o: { level?: number; also?: FoeSpec[] } = {}) {
+  const f = fightWith([{ name: 'Ada', ...(o.level ? { level: o.level } : {}) }, { name: 'Bo', ...(o.level ? { level: o.level } : {}) }], [foe, ...(o.also || [])]);
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = [];
   f.pcs[0].pos = '3,4'; f.pcs[1].pos = '3,6'; f.foe.pos = '9,5';
-  for (const x of [...f.pcs, f.foe]) { x.hp = x.maxHp = 200; x.armour = 0; (x as any).healRecv = 1; (x as any).shieldRecv = 1; x.shield = 0; }
+  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 200; x.armour = 0; (x as any).healRecv = 1; (x as any).shieldRecv = 1; x.shield = 0; }
   f.foe.techs = []; f.foe.calls = []; // plain attacks, so the choice read is the target choice
   return f;
 }
@@ -118,13 +118,14 @@ describe('rules 1.23: the enemies go for the healer', () => {
     G(f, () => { const it = enemyIntent(f.cb, f.foe); expect(it.targetId).toBe(ada(f).id); expect(it.why).toBeUndefined(); });
   });
   it('the hunt: an Elite with a gun and no shot at the healer steps to where it has one; a blade does not run through the squad', () => {
-    const f = rig({ tier: 'elite', weapon: 'hellraiser_service_rifle' });
+    // truth pass 3: the spotter is real now (the test used to have none, so nobody saw Bo and it returned early)
+    const f = rig({ tier: 'elite', weapon: 'hellraiser_service_rifle' }, { also: [{ tier: 'minion', weapon: 'fists' }] });
     // Ada stands in the open at 6,5; Bo mends from behind a wall the enemy's ally can see round (so the side sees Bo)
-    ada(f).pos = '6,5'; bo(f).pos = '3,8'; f.foe.pos = '11,5'; f.cb.map = { ...f.cb.map, solid: ['5,7', '6,7', '7,7', '8,7', '9,7', '4,7'] } as any;
+    ada(f).pos = '6,5'; bo(f).pos = '3,8'; f.foe.pos = '11,5'; f.foes[1].pos = '2,10'; f.cb.map = { ...f.cb.map, solid: ['5,7', '6,7', '7,7', '8,7', '9,7', '4,7'] } as any;
     mend(f, 40);
     G(f, () => {
       const m = healerMark(f.cb, f.foe);
-      if (!m) { expect(enemyIntent(f.cb, f.foe).targetId).toBe(ada(f).id); return; } // nobody sees Bo: nothing to hunt (pinned above)
+      expect(m).toBe(bo(f)); // the spotter sees Bo: the side knows the healer
       const it = enemyIntent(f.cb, f.foe); expect(it.kind).toBe('move'); expect(it.why).toBe('healer'); expect(it.targetId).toBe(bo(f).id); expect(it.text).toMatch(/^move to \S+ for a shot at Bo: it goes for whoever is mending the squad$/);
     });
     // a melee Elite next to Ada stays on Ada

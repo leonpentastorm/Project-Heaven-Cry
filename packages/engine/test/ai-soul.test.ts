@@ -120,8 +120,9 @@ describe('enemy Soul casters choose by situation (rules 1.5)', () => {
     const b = fight(['10,5'], [{ at: '13,5', caster: 'heartfire_elite' }, { at: '10,4', tier: 'soldier', name: 'G1' }, { at: '10,6', tier: 'soldier', name: 'G2' }, { at: '11,5', tier: 'soldier', name: 'G3' }]);
     b.e.mg!.designs = b.e.mg!.designs.filter((d) => d.id === 'heartfire_burst');
     const c = heartBestRelease(b.cb, b.e); b.cb.turn = b.cb.order.indexOf(b.e.id); b.e.ap = 6;
+    expect(c === null || c.own <= c.foes).toBe(true); // the planner offers no such release (it offered none here: null)
+    turn(b.cb, b.e); // truth pass 3: the caster takes its turn (the loop below had nothing to read before)
     for (const r of fx(b.cb, 'release', b.e)) expect(r.targets.filter((t: string) => t !== b.p.id).length).toBeLessThanOrEqual(1);
-    if (c) expect(c.own).toBeLessThanOrEqual(c.foes);
   });
 });
 
