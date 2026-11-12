@@ -418,6 +418,16 @@ export const prayerHarms = (e: any) => (e?.effects || []).some((f: any) => (f.op
  * It never asks above its Devotion and never prays by dice. */
 export const prayer: Policy = (x) => {
   const o = x.opts || {}, p = W(x.g, () => patronOf(x.c));
+  // Rules 1.22: the vow. opts.vow: the chance a round that the vow's moment comes (0 to 1; default 0: no vow sworn).
+  // The range's target never acts, so no moment can come by itself there: the policy swears Stand on its first turn
+  // and, once a round at that chance (a seeded coin of its own, not the game's dice), calls the engine's fulfilVow, the
+  // same function the real moments call.
+  const rate = Number(o.vow) || 0;
+  if (rate > 0 && p) {
+    if (!x.u.vow && x.cb.round === 1 && !x.memo.vowTried) { x.memo.vowTried = true; const s = allowed(x, { action: { type: 'faith/vow', id: 'stand' }, kind: 'other', label: 'Vow: Stand' }); if (s) return s; }
+    if (x.memo.vowStamp !== x.cb.round) { x.memo.vowStamp = x.cb.round; let h = (x.memo.vowSeed ??= ((x.g.rng?.state || 1) * 2654435761) >>> 0); h = (Math.imul(h ^ (h >>> 15), 2246822519) + x.cb.round * 374761393) >>> 0; x.memo.vowSeed = h; x.memo.vowDue = (h % 1000) / 1000 < rate; }
+    if (x.memo.vowDue && x.u.vow?.state === 'sworn') { x.memo.vowDue = false; W(x.g, () => fulfilVow(x.cb, x.u, 'measured')); }
+  }
   const tgts = [...x.foes].sort((a, b) => dist(x.u.pos, a.pos) - dist(x.u.pos, b.pos));
   const pray = (kind: string, id: string, e: any, label: string): Step | null => {
     const tk = e.target || 'none', cands: any[] = tk === 'enemy' || tk === 'tile' ? tgts.map((t) => ({ targetId: t.id, tile: t.pos })) : tk === 'two_allies' || tk === 'two_units' || tk === 'downed_ally' ? [] : [{ targetId: x.u.id }];

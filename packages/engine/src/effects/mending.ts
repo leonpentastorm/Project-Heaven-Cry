@@ -1,9 +1,15 @@
-// Rules revision 1.20 (the heal and shield pass; spec: "Rules revision 1.20"; data/rules.json `mending`).
-//   mendFactor     healing and shields from Sigil, the Outburst and prayer grow with the caster's level, by the level
-//                  row of the enemy table's damage column: the number that raises what an enemy deals. One Soldier's
-//                  turn then costs a character the same share of a heal at level 20 as at level 1.
-//   mendRoom       the round limit: spells and prayers together restore at most half of a creature's max HP a round.
-// Every number is provisional (spec section 14, items 1230 on).
+// Rules revision 1.20 (the heal and shield pass; spec: "Rules revision 1.20"; data/rules.json `mending`), as changed by
+// rules 1.23 (the defence step; spec: "Rules revision 1.23").
+//   mendFactor     healing and shields grow with the giver's level, by the level row of the enemy table's damage column:
+//                  the number that raises what an enemy deals. One Soldier's turn then costs a character the same share
+//                  of a heal at level 20 as at level 1. Rules 1.20: Sigil, the Outburst and prayer. Rules 1.23: the
+//                  medic's kit too (a stim, Triage, Stim Throw, Rally, a Field Repair on an ally).
+//   noteTended     rules 1.23: what a unit has healed and shielded for OTHERS in this fight, round by round. The enemy
+//                  AI reads it (combat.ts enemyTargets): the enemies go for whoever mends the most.
+// THE ROUND LIMIT of rules 1.20 (spells and prayers restored at most half of a creature's max HP a round) IS WITHDRAWN
+// (Leon, 12 Nov 2026: "No round limit, just balance ap for healing accordingly"). Nothing caps a heal now but the
+// target's max HP.
+// Every number is provisional (spec section 14, items 1230 on and 1300 on).
 import type { Combat, Unit } from '../combat';
 import { RULES, enemyLevelRow } from '../data';
 
@@ -13,15 +19,25 @@ export const mendFactor = (level: number | null | undefined): number => (level =
 /** The factor for what this unit gives: a character's and its side's units' (a companion, a turret: their own level,
  * which is their owner's). An enemy's is ×1: an enemy caster's spells already grow through its multipliers (rules 1.15). */
 export const mendFactorOf = (u: Unit | null | undefined): number => (u && u.side === 'pc' ? mendFactor(u.level) : 1);
-/** The kinds of healing the round limit counts: spells and prayers (not a stim, Triage, a rest, a perk). */
-export const MEND_KINDS: string[] = MENDING.round_limit?.kinds || ['sigil', 'soul', 'leech', 'thread', 'blessing'];
-export const MEND_ROUND_SHARE: number = MENDING.round_limit?.share_of_max_hp ?? 0.5;
-/** What spells and prayers may still restore on this creature this round. */
-export function mendRoom(cb: Combat | null, t: Unit): number {
-  const cap = Math.floor(t.maxHp * MEND_ROUND_SHARE), m = (t as any).mended as { r: number; n: number } | undefined;
-  return !cb ? cap : Math.max(0, cap - (m && m.r === cb.round ? m.n : 0));
+
+// ---------- rules 1.23: who has been mending (the enemy AI's healer weight) ----------
+export const TENDING: any = MENDING.tending || {};
+/** How many rounds back the count looks (this round and the ones before it). */
+export const TEND_ROUNDS: number = TENDING.rounds ?? 2;
+/** Under this share of the giver's own max HP, what it gave is not worth turning a gun for. */
+export const TEND_NOTICE: number = TENDING.notice_share_of_max_hp ?? 0.08;
+/** How strongly each tier turns on the healer: the share of a target's max HP its healing outweighs (0: it never looks). */
+export const TEND_PULL: Record<string, number> = TENDING.pull_by_tier || { vermin: 0, minion: 0, soldier: 0.25, elite: 0.5, boss: 0.5 };
+/** Note HP restored or a shield given by `by` to someone else of its side (never to itself: self-healing is not the
+ * healer the squad leans on). Kept on the giver, round by round, for the fight. */
+export function noteTended(cb: Combat | null, by: Unit | null | undefined, t: Unit, n: number) {
+  if (!cb || !by || by === t || n <= 0 || by.side !== t.side || by.dead) return;
+  const log = (((by as any).tended ||= []) as { r: number; n: number }[]), last = log[log.length - 1];
+  if (last && last.r === cb.round) last.n += n; else log.push({ r: cb.round, n });
+  while (log.length && log[0].r <= cb.round - TEND_ROUNDS - 1) log.shift();
 }
-export function noteMended(cb: Combat | null, t: Unit, n: number) {
-  if (!cb || n <= 0) return; const m = (t as any).mended as { r: number; n: number } | undefined;
-  (t as any).mended = { r: cb.round, n: (m && m.r === cb.round ? m.n : 0) + n };
+/** What this unit healed and shielded for others in the last TEND_ROUNDS rounds (this one included). */
+export function tendedLately(cb: Combat, u: Unit): number {
+  const log = (u as any).tended as { r: number; n: number }[] | undefined; if (!log) return 0;
+  let n = 0; for (const e of log) if (e.r > cb.round - TEND_ROUNDS) n += e.n; return n;
 }

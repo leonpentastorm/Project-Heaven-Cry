@@ -147,6 +147,7 @@ export function runFight(spec: FightSpec, opts: { log?: boolean } = {}): FightRe
     let next: any;
     try { next = apply(g, action, 'host'); } catch (e: any) { return String(e?.message || e); }
     g = next; const cb = g.combat; if (!cb) return 'the fight did not start';
+    if (actor && P[actor] && step && /^Hymn: /.test(step.label || '') && P[actor].turnDmg.length) (P[actor].hymnTurns ||= {})[P[actor].turnDmg.length - 1] = true; // rules 1.22: which turns held a Hymn
     if (!Object.keys(sideOf).length) for (const q of cb.units) { sideOf[q.id] = q.side; tierOf[q.id] = q.tier || ''; }
     const after = snap(g), endTurn = action.type === 'combat/end-turn' || !before0;
     // the step that opens the fight has no "before": everyone came in at full HP, with the meters the fight gave them
@@ -273,6 +274,7 @@ export function addResult(cell: Cell | null, r: FightResult, i = 0, key = ''): C
   c.lostRun = Math.max(c.lostRun, p.lostRun); addInto(c.apSpent, p.apSpent); addInto(c.apOverWhy, p.apOverWhy); addInto(c.actions, p.actions);
   if (p.bigHit > c.bigHit) { c.bigHit = p.bigHit; c.bigHitWhat = p.bigHitWhat; }
   const pk = Math.max(0, ...p.turnDmg); c.peakTurn = Math.max(c.peakTurn, pk); c.peakTurnSum += pk;
+  p.turnDmg.forEach((d: number, t: number) => { const h = !!(p as any).hymnTurns?.[t]; (c as any).hymnTurnDmg = ((c as any).hymnTurnDmg || 0) + (h ? d : 0); (c as any).hymnTurnN = ((c as any).hymnTurnN || 0) + (h ? 1 : 0); (c as any).quietTurnDmg = ((c as any).quietTurnDmg || 0) + (h ? 0 : d); (c as any).quietTurnN = ((c as any).quietTurnN || 0) + (h ? 0 : 1); });
   // the first four turns on their own: a fight of the target length (4 to 6 rounds), before a limited supply runs out
   c.first4Dmg = (c.first4Dmg || 0) + p.turnDmg.slice(0, 4).reduce((a, b) => a + b, 0); c.first4Turns = (c.first4Turns || 0) + Math.min(4, p.turnDmg.length);
   if (p.bigAction && (!c.bigAction || p.bigAction.dmg > c.bigAction.dmg)) c.bigAction = p.bigAction;

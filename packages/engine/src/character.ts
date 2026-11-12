@@ -772,8 +772,13 @@ export const throwRange = (c: Character) => Math.floor(fx(c, 'throw_range', 6 + 
 export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1.5 + 0.05 * P(c, 'ingenuity'));
 /** Blessing power: 1 + 0.1 × Faith. */
 export const blessingPower = (c: Character) => fx(c, 'blessing_power', 1 + 0.1 * P(c, 'faith'));
-/** Prayer cooldown in turns: 4 − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1 (rounded up). */
-export const prayerCooldown = (c: Character) => Math.max(1, Math.ceil(4 - 0.5 * (A(c, 'virtue') - 1) - 0.5 * P(c, 'faith')));
+/** The Hymn cooldown's numbers (rules 1.22; patrons.json prayer.hymn.cooldown_rule; PROVISIONAL). */
+const HCR: any = (patronsJ as any).prayer?.hymn?.cooldown_rule || {};
+export const HYMN_COOLDOWN = { base: HCR.base ?? 9, perFaith: HCR.per_faith ?? 0.75, perVirtue: HCR.per_virtue ?? 0.25, floor: HCR.floor ?? 3, minWait: HCR.min_wait ?? 2, vowCut: HCR.vow_cut ?? 1 };
+/** The Hymn cooldown in rounds (rules 1.22): 9 − 0.75 × Faith − 0.25 × Virtue, rounded up, never under 3. Faith counts
+ * three times what Virtue does. The floor of 3 is where a character without items stops; a vow fulfilled (or True
+ * Believer) takes 1 round off a wait, never under 2 rounds (faith.ts hymnWait). */
+export const prayerCooldown = (c: Character) => Math.max(HYMN_COOLDOWN.floor, Math.ceil(HYMN_COOLDOWN.base - HYMN_COOLDOWN.perFaith * P(c, 'faith') - HYMN_COOLDOWN.perVirtue * A(c, 'virtue') - 1e-9));
 /** Detection range 2 + Vigilant; Stealth 0.5 × Ingenuity (subtracted from enemies' Detection range against you). */
 export const detectionRange = (c: Character) => 2 + P(c, 'vigilant');
 export const stealthOf = (c: Character) => Math.floor(0.5 * P(c, 'ingenuity'));

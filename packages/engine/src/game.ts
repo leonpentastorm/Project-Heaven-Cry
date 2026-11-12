@@ -3466,7 +3466,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (a.reset) { c.miracleSession = undefined; c.ritesKept = {}; delete c.faithTally; const st: any = c.state; if (st?.faith) st.faith = {}; }
       });
       const u = cb?.units.find((x) => x.charId === c.id);
-      if (u && a.reset) { u.prayedRound = undefined; if (u.faith) { delete u.faith.whisperTurn; delete u.faith.intervened; delete u.faith.interventions; u.faith.liked = 0; } }
+      if (u && a.reset) { u.prayedRound = undefined; if (u.faith) { delete u.faith.whisperTurn; delete u.faith.hymnCut; delete u.faith.vowBank; delete u.faith.ownHymn; delete u.faith.intervened; delete u.faith.interventions; u.faith.liked = 0; } }
       if (a.vow !== undefined) {
         const v = a.vow ? VOW[a.vow] : null, al = v?.needs_ally ? cb?.units.find((x) => (x.id === a.allyId || x.charId === a.allyId) && x.side === u?.side && x !== u) : null;
         if (v?.needs_ally && u && !al) fail('Name the ally to shield.');

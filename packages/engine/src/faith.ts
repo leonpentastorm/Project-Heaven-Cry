@@ -16,15 +16,15 @@
 // Like missions.ts, this file imports only types from game.ts; game.ts binds the few helpers it needs (bindFaith).
 import patronsJ from '../../../data/patrons.json';
 import type { GameState, Entry } from './game';
-import { type Character, type Belief, type Vow, mod, prayerCooldown, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
+import { type Character, type Belief, type Vow, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
 import { emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor, encoreKey } from './combat';
-import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitStrength, withVia, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
+import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitStrength, withVia, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { actionAp, pushAway } from './effects/core';
 import { sessionN, dayOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { mendFactor, mendFactorOf } from './effects/mending';
-import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory } from './effects/hooks';
+import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory, statQuery } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
 import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing , dropHeldShot } from './tactics';
@@ -57,6 +57,8 @@ const PR = PJ.prayer || {};
 export const GATE = { whisper: 0, 1: PJ.devotion?.gates?.hymn_1 ?? 3, 2: PJ.devotion?.gates?.hymn_2 ?? 5, 3: PJ.devotion?.gates?.hymn_3 ?? 7, miracle: PJ.devotion?.gates?.miracle ?? PR.miracle?.devotion_min ?? 10 } as const;
 /** What a Miracle costs: whole Devotion levels, after its effect (rules 1.6.2, item 725: 10 → 5). */
 export const MIRACLE_COST_LEVELS: number = PR.miracle?.devotion_cost_levels ?? 5;
+/** Witnessed's bonus on an attack roll (item 595; rules 1.22 item 1288). */
+export const WITNESS_BONUS: number = PR.witnessed?.like_bonus ?? 2;
 export const FAITH_MIN = PR.faith_min ?? 3, WITNESS_FAITH = PR.witnessed?.faith_min ?? 5, MIRACLE_FAITH = PR.miracle?.faith_min ?? 7;
 export const AP_COST = { whisper: PR.whisper?.ap ?? 1, hymn: PR.hymn?.ap ?? 3, miracle: PR.miracle?.ap ?? 3 };
 export const OVERREACH = { base: PR.overreach?.tn_base ?? 12, step: PR.overreach?.tn_per_step ?? 2, miss: -(PJ.devotion?.loss?.overreach_miss ?? 3) };
@@ -99,6 +101,19 @@ const hymnEntry = (id: string): any => { for (const p of FAITH_PATRONS) for (con
  * interventions' 20 + 4 × Devotion; no level factor (Devotion is what it grows with). */
 export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_PATRON.mother_ember?.intervention?.effects || [])[0] || {}; return Math.round(((e.value ?? 10) + (e.per_devotion ?? 3) * devotionNow(c)) * power); };
 
+// ---------- rules 1.22 (Faith, round 2): the Hymn's wait ----------
+/** Rounds a character waits between Hymns: the cooldown (character.ts prayerCooldown), less 1 for True Believer (the
+ * 'hymn_wait' stat) and less 1 when the vow was fulfilled for this Hymn (`cut`), never under HYMN_COOLDOWN.minWait (2):
+ * nothing but an item takes it lower, and there are none yet (item 1282). */
+export function hymnWait(c: Character, u?: Unit | null): number {
+  const base = prayerCooldown(c), q = c.perks?.length || c.traits?.length ? statQuery({ c }, 'hymn_wait').add : 0;
+  return Math.max(Math.min(base, HYMN_COOLDOWN.minWait), base + q - (u?.faith?.hymnCut || 0));
+}
+/** Rounds left before this fighter may pray a Hymn again (0: now). */
+export const hymnLeft = (cb: Combat, c: Character, u: Unit): number => (u.prayedRound != null ? Math.max(0, hymnWait(c, u) - (cb.round - u.prayedRound)) : 0);
+/** A Hymn with a wait of its own (Hold the Gate, item 1287): its `own_cooldown` rounds, or 0. */
+export const ownCooldown = (entry: any): number => Math.max(0, Number(entry?.own_cooldown) || 0);
+
 /** FX events (emitFx kinds) the faith rules put on a fight's or the story's fx list, with their payloads. */
 export const FAITH_FX = {
   prayer: 'prayer', // {unit, kind, id, patron, at, target, ok}
@@ -108,7 +123,7 @@ export const FAITH_FX = {
   devotion: 'devotion', // {char, delta (XP), xp (the total), reason, tag?, now (the level), was (the level before), level? (when it changed)}
   leave: 'leave', // {char, patron, to, letGo, roll?: {die, mod, total, tn}}
   grudge: 'grudge', // {char, patron, sessions, condition, at?, unit?} (set on a switch; at a fight's start, on the unit)
-  vow: 'vow', // {unit, char, id, state: 'sworn' | 'kept' | 'broken', allyId?}
+  vow: 'vow', // {unit, char, id, state: 'sworn' | 'kept' | 'broken' | 'fulfilled', allyId?}; fulfilled (rules 1.22) also carries {why, cut (rounds off the Hymn's wait), left (rounds until the next Hymn), banked?, at}
   patron_line: 'patron_line', // {patron, event, text, char}
   miracle: 'miracle', // {patron, id, at, area, unit, char, name, text, line, summary} (rules 1.6.3, item 746)
 } as const;
@@ -243,12 +258,14 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
     if (cb.order[cb.turn] !== u.id) return no('Pray on your turn.', out);
     if (u.ap < ap) return no('Needs ' + ap + ' AP.', out);
     if (kind === 'whisper' && u.faith?.whisperTurn === turnKey(cb)) return no('One Whisper a turn.', out);
-    if (kind === 'hymn') { const cd = prayerCooldown(c); if (u.prayedRound != null && cb.round - u.prayedRound < cd) return no('Your last Hymn was ' + (cb.round - u.prayedRound) + ' round(s) ago: wait ' + cd + '.', out); }
+    if (kind === 'hymn') { const cd = hymnWait(c, u); if (u.prayedRound != null && cb.round - u.prayedRound < cd) return no('Your last Hymn was ' + (cb.round - u.prayedRound) + ' round(s) ago: wait ' + cd + '.', out); }
+    if (kind === 'hymn' && ownCooldown(pe.entry)) { const last = u.faith?.ownHymn?.[pe.entry.id], n = ownCooldown(pe.entry); if (last != null && cb.round - last < n) return no((pe.entry.name || id) + ' was prayed in round ' + last + ': not again until round ' + (last + n) + '.', out); }
     if (kind === 'hymn' && pe.entry.id === 'cut_short' && args.targetId) { const why = cutShortWhy(cb, cb.units.find((x) => x.id === args.targetId), pe.entry); if (why) return no(why, out); }
   } else {
     const st = storyFaith(g, c);
     if (kind === 'whisper' && st.whisperRound === g.story.round) return no('One Whisper a round.', out);
-    if (kind === 'hymn' && st.hymnRound != null && g.story.round - st.hymnRound < prayerCooldown(c)) return no('Your last Hymn was ' + (g.story.round - st.hymnRound) + ' round(s) ago: wait ' + prayerCooldown(c) + '.', out);
+    if (kind === 'hymn' && st.hymnRound != null && g.story.round - st.hymnRound < hymnWait(c)) return no('Your last Hymn was ' + (g.story.round - st.hymnRound) + ' round(s) ago: wait ' + hymnWait(c) + '.', out);
+    if (kind === 'hymn' && ownCooldown(pe.entry)) { const last = (st as any).own?.[pe.entry.id], n = ownCooldown(pe.entry); if (last != null && g.story.round - last < n) return no((pe.entry.name || id) + ' was prayed ' + (g.story.round - last) + ' round(s) ago: wait ' + n + '.', out); }
   }
   return { ...out, ok: true };
 }
@@ -290,10 +307,12 @@ export interface FaithView {
   miracle: { id: string; name: string; text: string; usedThisSession: boolean; preview: PrayerPreview } | null;
   pieces: Record<string, number>;
   /** The vow sworn this fight (null out of a fight). */
-  vow: Vow | null; vows: { id: string; name: string; words: string; brokenWhen: string; needsAlly: boolean }[];
+  vow: Vow | null; vows: { id: string; name: string; words: string; brokenWhen: string; /** Rules 1.22: the moment in a fight that fulfils it (1 round off the Hymn's wait). */ fulfilledWhen: string; needsAlly: boolean }[];
   rites: { id: string; name: string; text: string; engine: boolean; keptThisSession: boolean; available: boolean; why?: string }[];
   rule: 'open' | 'jealous' | null;
-  cooldowns: { hymnRoundsLeft: number; whisperUsed: boolean; miracleUsed: boolean };
+  cooldowns: { hymnRoundsLeft: number; whisperUsed: boolean; miracleUsed: boolean;
+    /** Rules 1.22: the rounds between Hymns for this character now (the vow's cut counted), the cooldown before any cut, whether the vow has shortened this wait, and whether a fulfilment is banked for the next Hymn. */
+    hymnWait: number; hymnCooldown: number; vowCut: boolean; vowBanked: boolean };
   /** Liked-tag Devotion XP gained this fight (of the fight's cap), in a fight. */
   likedThisFight: number;
   /** Rules 1.6.1: Devotion XP (Faithful only): the total, the level, the XP into this level and the step to the next
@@ -316,7 +335,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
   const hymns: FaithView['hymns'] = [];
   if (p) for (const h of hymnsOf(p)) hymns.push({ key: p.id + '.' + h.id, patron: p.id, patronName: p.name, id: h.id, name: h.name, tier: h.tier, text: h.text, source: 'patron', preview: previewPrayer(g, who, 'hymn', p.id + '.' + h.id) });
   for (const k of diceHymns(c)) { const x = hymnByKey(c, k); if (x) hymns.push({ key: x.key, patron: x.patron.id, patronName: x.patron.name, id: x.hymn.id, name: x.hymn.name, tier: x.hymn.tier, text: x.hymn.text, source: belief.kind === 'atheist' ? 'learned' : 'kept', preview: previewPrayer(g, who, 'hymn', x.key) }); }
-  const cd = prayerCooldown(c), sf = storyFaith(g, c), tv = tallyView(g, c, cb), cdl = pactCooldownLeft(g, c), gr = grudgeOf(g, c);
+  const cd = hymnWait(c, cb && u ? u : null), sf = storyFaith(g, c), tv = tallyView(g, c, cb), cdl = pactCooldownLeft(g, c), gr = grudgeOf(g, c);
   const hymnLeft = cb && u ? (u.prayedRound != null ? Math.max(0, cd - (cb.round - u.prayedRound)) : 0) : (sf.hymnRound != null ? Math.max(0, cd - (g.story.round - sf.hymnRound)) : 0);
   return {
     belief, patron: p ? { id: p.id, name: p.name, costume: p.costume, archetype: p.archetype, accent: p.accent, rule: p.rule, likes: (p.likes || []).map(tag), taboos: (p.taboos || []).map(tag) } : null,
@@ -327,10 +346,10 @@ export function faithView(g: GameState, charId: string): FaithView | null {
     hymns,
     miracle: p?.miracle ? { id: p.miracle.id, name: p.miracle.name, text: p.miracle.text, usedThisSession: c.miracleSession === sessionN(g), preview: previewPrayer(g, who, 'miracle', p.miracle.id) } : null,
     pieces: { ...(c.faithPieces || {}) },
-    vow: u?.vow || null, vows: VOWS.map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, needsAlly: !!v.needs_ally })),
+    vow: u?.vow || null, vows: VOWS.map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, fulfilledWhen: v.fulfilled_when || '', needsAlly: !!v.needs_ally })),
     rites: (p?.rites || []).map((r: any) => ({ id: r.id, name: r.name, text: r.text, engine: !!r.engine, keptThisSession: c.ritesKept?.[p.id + '.' + r.id] === sessionN(g), ...riteState(g, c, r) })),
     rule: p?.rule || null,
-    cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: cb && u ? u.faith?.whisperTurn === turnKey(cb) : sf.whisperRound === g.story.round, miracleUsed: c.miracleSession === sessionN(g) },
+    cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: cb && u ? u.faith?.whisperTurn === turnKey(cb) : sf.whisperRound === g.story.round, miracleUsed: c.miracleSession === sessionN(g), hymnWait: cd, hymnCooldown: prayerCooldown(c), vowCut: !!(cb && u && u.faith?.hymnCut), vowBanked: !!(cb && u && u.faith?.vowBank) },
     likedThisFight: tv.fight,
     devotionXp: belief.kind === 'faithful' ? (() => { const total = devotionXpOf(c), lv = devotionLevelOf(total), at = devotionThreshold(lv), next = lv < DEVOTION_MAX_LEVEL ? devotionThreshold(lv + 1) : null; return { total, level: lv, into: total - at, step: next != null ? next - at : null, next }; })() : null,
     tagXp: { fight: tv.fight, scene: tv.scene, session: tv.session, caps: { ...TAG_CAPS, session: (g as any).sandbox ? null : TAG_CAPS.session }, where: cb && !isOverworld(cb) ? 'fight' : 'scene' }, narratorXp: { session: tv.narr, cap: NARRATOR_XP.sessionCap },
@@ -520,6 +539,25 @@ function breakVow(cb: Combat, u: Unit, why: string) {
   const p = patronOf(c); if (p) speak(G(), cb, rngOf(), c, p, 'vow_broken');
 }
 const vowOn = (u: Unit | null | undefined, id: string) => !!u?.vow && u.vow.state === 'sworn' && u.vow.id === id;
+/** Rules 1.22 (items 1283-1284): a vow's moment came in the fight. The Hymn this fighter is waiting for comes 1 round
+ * sooner (each wait is shortened once, never under 2 rounds); with no Hymn waiting, the fulfilment is kept for the next
+ * one (one kept at most). At most one a round; a moment that could change nothing is not spent and says nothing. The
+ * vow stays sworn: it is still kept or broken at the fight's end. Returns whether it counted. */
+export function fulfilVow(cb: Combat, u: Unit, why: string): boolean {
+  const v = u.vow; if (!v || v.state !== 'sworn' || u.dead || u.downed) return false;
+  const c = unitChar(u); if (!c || isOverworld(cb)) return false; const st = fs(u);
+  if (st.vowRound === cb.round) return false;
+  const waiting = hymnLeft(cb, c, u) > 0; let banked = false;
+  if (waiting) { if (st.hymnCut) return false; const was = hymnWait(c, u); st.hymnCut = HYMN_COOLDOWN.vowCut; if (hymnWait(c, u) >= was) { delete st.hymnCut; return false; } }
+  else { if (st.vowBank) return false; st.vowBank = HYMN_COOLDOWN.vowCut; banked = true; }
+  st.vowRound = cb.round; st.vowFulfilled = (st.vowFulfilled || 0) + 1;
+  const left = hymnLeft(cb, c, u), n = HYMN_COOLDOWN.vowCut;
+  emitFx(cb, FAITH_FX.vow, { unit: u.id, char: c.id, id: v.id, state: 'fulfilled', why, cut: n, left, at: u.pos, ...(banked ? { banked: true } : {}), ...(v.allyId ? { allyId: v.allyId } : {}) });
+  cb.log.push(u.name + ' fulfils the vow "' + (VOW[v.id]?.words || v.id) + '" (' + why + '): ' + (banked ? 'the wait after the next Hymn will be ' + n + ' round shorter' : 'the next Hymn comes ' + n + ' round sooner (' + (left > 0 ? 'in ' + left + (left === 1 ? ' round' : ' rounds') : 'ready now') + ')') + '.');
+  // The patron speaks the first time in a fight (its vow_kept bank; the fight's end speaks it again when the vow is kept).
+  if (st.vowFulfilled === 1) { const p = patronOf(c); if (p) speak(G(), cb, rngOf(), c, p, 'vow_kept'); }
+  return true;
+}
 
 // ---------- interventions (spec 1.6 §8; item 603; rules 1.6.3, items 739-744) ----------
 /** Interventions this fighter's patron made this fight (an old save's flag counts as one; item 740). */
@@ -632,16 +670,23 @@ export function registerFaithHooks() {
   onHook('on_kill', (ctx, cb) => {
     const v: Unit = ctx.victim, by: Unit = ctx.by;
     faithTag(cb, by, 'kill', { victimHelpless: !!(v.surrendered || v.downed) });
+    // Rules 1.22 (item 1288): Witnessed's +2 for a patron that likes kills is earned by a kill (read here, before the
+    // kill's own intervention ends Witnessed): the next attack roll at an enemy. Not for the patron's own act, nor for
+    // finishing the helpless.
+    if (by?.charId && !ACTING.includes(by) && condOn(by, 'witnessed') && !(v.surrendered || v.downed) && (patronOf(unitChar(by) || ({} as Character))?.likes || []).includes('kill')) fs(by).killEdge = true;
+    // Rules 1.22: the vows' moments. Bare Hands: an enemy falls to your melee attack. No Magic but Theirs: to your prayer.
+    if (by && vowOn(by, 'bare') && ctx.src?.type === 'weapon' && ctx.src?.melee) fulfilVow(cb, by, v.name + ' falls to their hands');
+    if (by && vowOn(by, 'unarmed_faith') && (ACTING.includes(by) || viaOf(by) === 'faith')) fulfilVow(cb, by, v.name + ' falls to a prayer');
     for (const f of intervening(cb, 'old_overcast')) {
       if (f !== by) continue;
       const n = cb.units.filter((x) => x.side !== f.side && alive(x) && x !== v).sort((a, b) => dist(a.pos, v.pos) - dist(b.pos, v.pos))[0]; if (!n) break;
       const amt = scaled(f); intervene(cb, f, 'you_kill', n, amt, () => harmLine(cb, f, n, amt, 'elemental', 'lightning')); break;
     }
   });
-  onHook('heal_given', (ctx, cb) => { const by: Unit | null = ctx.by, t: Unit = ctx.t; if (by && t !== by && t.side === by.side && (ctx.n > 0 || ctx.revived)) { faithTag(cb, by, 'heal'); if (ctx.kind === 'stim') faithTag(cb, by, 'supply'); } });
+  onHook('heal_given', (ctx, cb) => { const by: Unit | null = ctx.by, t: Unit = ctx.t; if (by && t !== by && t.side === by.side && (ctx.n > 0 || ctx.revived)) { faithTag(cb, by, 'heal'); if (ctx.kind === 'stim') faithTag(cb, by, 'supply'); if (ctx.revived && vowOn(by, 'no_one_behind')) fulfilVow(cb, by, t.name + ' is back on their feet'); } });
   onHook('shield_grant', (ctx, cb) => { const by: Unit | null = ctx.by, t: Unit = ctx.t; if (by && t !== by && t.side === by.side && ctx.n > 0) faithTag(cb, by, 'protect'); });
   onHook('braced', (ctx, cb) => faithTag(cb, ctx.u, 'protect'));
-  onHook('on_surrender', (ctx, cb) => { if (ctx.by) faithTag(cb, ctx.by, 'mercy'); });
+  onHook('on_surrender', (ctx, cb) => { if (ctx.by) { faithTag(cb, ctx.by, 'mercy'); if (vowOn(ctx.by, 'mercy') && ctx.t && ctx.t.side !== ctx.by.side) fulfilVow(cb, ctx.by, ctx.t.name + (ctx.why === 'subdued' ? ' is spared' : ' yields to them')); } });
   onHook('hide', (ctx, cb) => faithTag(cb, ctx.u, 'trick'));
   onHook('gift', (ctx, cb) => { const by: Unit | null = ctx.by || ctx.from || ctx.u; if (by) faithTag(cb, by, 'supply'); });
   onHook('cond_landed', (ctx, cb) => {
@@ -671,10 +716,15 @@ export function registerFaithHooks() {
   onHook('turn_end', (ctx, cb) => {
     const u: Unit = ctx.u;
     if (u.faith?.encore?.started) { delete u.faith.encore; cb.log.push('Encore: ' + u.name + '\'s repeat is gone.'); }
+    // Rules 1.22, the Shield vow's moment: this unit attacked the ally someone named, its turn is over and the ally stands.
+    for (const w of cb.units) { if (w.faith?.shieldAtk !== u.id) continue; delete w.faith.shieldAtk; if (!vowOn(w, 'shield')) continue; const al = cb.units.find((x) => x.id === w.vow!.allyId || (!!x.charId && x.charId === w.vow!.allyId)); if (al && alive(al) && !al.downed) fulfilVow(cb, w, al.name + ' was attacked and still stands'); }
     if (!u.charId) return;
     if (u.braced || u.overwatch || u.watch || condOn(u, 'anchored')) faithTag(cb, u, 'hold'); // a held Watch technique is holding too (rules 1.12)
     if (u.hidden && cb.units.some((v) => v.side === u.side && v !== u && v.downed && !v.dead)) faithTag(cb, u, 'cower');
     if (u.vow?.state === 'sworn' && u.vow.id === 'stand' && fs(u).standFrom != null && nearestEnemy(cb, u) > fs(u).standFrom) breakVow(cb, u, 'ended the turn farther from the enemy');
+    // Rules 1.22, the Stand vow's moment: attacked since your last turn, and the turn ends with no ground given.
+    if (vowOn(u, 'stand') && fs(u).standHit) fulfilVow(cb, u, 'held their ground under attack');
+    if (u.faith?.standHit) delete u.faith.standHit;
   });
   // A fight starts: its id for the tag tally (item 704); a grudge's condition on each grudged fighter, no save (item 713).
   onHook('combat_start', (ctx, cb) => {
@@ -716,11 +766,14 @@ export function registerFaithHooks() {
     if (condOn(att, 'smitten')) { const src = condSource(att, 'smitten'); const linked = (cb as any).faithLinks?.some((l: any) => l.until >= cb.round && [l.a, l.b].includes(tgt.id) && [l.a, l.b].includes(src)); if (src && (tgt.id === src || linked)) hk.fail = 'Smitten: you can\'t attack them.'; }
     if (tgt.faith?.dugIn === tgt.pos && !hk.melee) hk.terms.push({ v: -5, label: 'Dug in (half cover)' });
     if (att.faith?.luck) hk.terms.push({ v: att.faith.luck, label: 'Luck (Whisper)' });
-    if (att.charId && condOn(att, 'witnessed') && tgt.side !== att.side && likedAttack(cb, att, tgt)) hk.terms.push({ v: 2, label: 'Witnessed' });
+    if (att.charId && tgt.side !== att.side && ((condOn(att, 'witnessed') && likedAttack(cb, att, tgt)) || att.faith?.killEdge)) hk.terms.push({ v: WITNESS_BONUS, label: att.faith?.killEdge ? 'Witnessed (your kill)' : 'Witnessed' });
   });
   onHook('attack_roll', (rc, cb) => {
     const att: Unit = rc.att, tgt: Unit = rc.tgt;
     if (att.faith?.luck) delete att.faith.luck;
+    if (att.faith?.killEdge && tgt && tgt.side !== att.side) delete att.faith.killEdge; // spent by the roll, hit or miss (item 1288)
+    // Rules 1.22: an enemy's attack on a Stand vow's swearer, or on the ally a Shield vow names, is remembered.
+    if (tgt && att.side !== tgt.side) { if (vowOn(tgt, 'stand')) fs(tgt).standHit = true; for (const w of cb.units) if (w !== tgt && w.side === tgt.side && vowOn(w, 'shield') && (w.vow!.allyId === tgt.id || (!!tgt.charId && w.vow!.allyId === tgt.charId))) fs(w).shieldAtk = att.id; }
     if (tgt?.faith?.foreknown && att.side !== tgt.side) { const left = (tgt.faith.foreknown === true ? 1 : Number(tgt.faith.foreknown) || 1) - 1; if (left > 0) tgt.faith.foreknown = left; else delete tgt.faith.foreknown; rc.hit = false; cb.log.push('Foreknowing: the attack on ' + tgt.name + ' misses.'); return; }
     if (vowOn(att, 'bare') && !isMelee(WEAPON[att.weapon]) && rc.mode !== 'melee') breakVow(cb, att, 'attacked with a gun');
     // Lucky Break: the next failed attack roll is rerolled at +5.
@@ -778,7 +831,8 @@ const nearestOf = (cb: Combat, u: Unit, at: string) => cb.units.filter((v) => v.
 function likedAttack(cb: Combat, att: Unit, tgt: Unit): boolean {
   const p = patronOf(unitChar(att) || ({} as Character)); if (!p) return false; const likes: string[] = p.likes || [];
   const dt = (WEAPON[att.weapon] as any)?.damage_type || 'physical';
-  return likes.includes('kill') || (likes.includes('judge') && !!tgt.faith?.harmedHelpless) || (likes.includes('burn') && dt === 'fire') || (likes.includes('storm') && dt === 'lightning');
+  // 'kill' is not here (rules 1.22, item 1288): that +2 is earned by a kill (killEdge), not carried by every attack.
+  return (likes.includes('judge') && !!tgt.faith?.harmedHelpless) || (likes.includes('burn') && dt === 'fire') || (likes.includes('storm') && dt === 'lightning');
 }
 function harmLine(cb: Combat, by: Unit, t: Unit, n: number, type: 'soul' | 'elemental', dmgType?: string): string {
   return harm(cb, rngOf(), by, t, Math.round(n), type, dmgType);
@@ -805,7 +859,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   // The target.
   const t = pickTarget(cb, u, pv, a); if (typeof t === 'string') return t;
   u.ap -= pv.ap;
-  if (kind === 'whisper') fs(u).whisperTurn = turnKey(cb); else if (kind === 'hymn') u.prayedRound = cb.round;
+  if (kind === 'whisper') fs(u).whisperTurn = turnKey(cb); else if (kind === 'hymn') { u.prayedRound = cb.round; const st = fs(u); if (st.vowBank) { st.hymnCut = st.vowBank; delete st.vowBank; } else delete st.hymnCut; if (ownCooldown(pe.entry)) (st.ownHymn ||= {})[pe.entry.id] = cb.round; }
   if (kind === 'miracle') { c.miracleSession = sessionN(g); }
   shiftMana(cb, PRAYER_MANA, 'a prayer');
   const name = (pe.entry.name || id) + (patron && kind !== 'whisper' ? ' (' + patron.name + ')' : '');
@@ -1329,7 +1383,7 @@ function storyPray(g: GameState, c: Character, a: Extract<FaithAction, { type: '
   }
   if (rounds) B!.spendAp(g, c, pv.ap);
   const sf = storyFaith(g, c);
-  if (kind === 'whisper') sf.whisperRound = g.story.round; else if (kind === 'hymn') sf.hymnRound = g.story.round; else c.miracleSession = sessionN(g);
+  if (kind === 'whisper') sf.whisperRound = g.story.round; else if (kind === 'hymn') { sf.hymnRound = g.story.round; if (ownCooldown(pe.entry)) (((sf as any).own ||= {}) as Record<string, number>)[pe.entry.id] = g.story.round; } else c.miracleSession = sessionN(g);
   g.story.mana = Math.max(0, (g.story.mana ?? MANA_START) + PRAYER_MANA);
   const text = String(a.text || '').trim().slice(0, 300), rng = g.rng as Rng;
   const name = (pe.entry.name || id) + (patron && kind !== 'whisper' ? ' (' + patron.name + ')' : '');

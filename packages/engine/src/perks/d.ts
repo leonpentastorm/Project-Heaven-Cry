@@ -907,7 +907,8 @@ register({
 const ritesMissed = (c: Character | null | undefined) => Math.max(0, Math.min(3, Number(c?.state?.rites_missed ?? c?.state?.true_believer?.rites_missed ?? 0) || 0));
 register({
   id: 'true_believer', claims: [0, 2],
-  stat: (h, stat) => ((stat === 'skill:faith' || stat === 'skill:will_power') ? -ritesMissed(charOf(h)) : 0),
+  // 'hymn_wait' (rules 1.22): the wait between Hymns is 1 round shorter (faith.ts hymnWait holds it at 2 rounds or more).
+  stat: (h, stat) => (stat === 'hymn_wait' ? -1 : (stat === 'skill:faith' || stat === 'skill:will_power') ? -ritesMissed(charOf(h)) : 0),
   actions: [{
     id: 'miracle', label: 'Ask for a miracle', scope: ['story', 'world'], ap: 0, uses: { per: 'per_session', n: 1 }, target: 'text',
     text: 'Once a session your prayer is answered: the Narrator grants a small miracle.',
@@ -918,14 +919,6 @@ register({
       return null;
     },
   }],
-  on: {
-    turn_start: (ctx, h) => {
-      const u = h.u, c = charOf(h); if (!me(h, ctx.u) || !c || u!.prayedRound == null) return; const s = stateOf(h);
-      if (s.adj === u!.prayedRound) return;
-      if (prayerCooldown(c) > 1) u!.prayedRound = u!.prayedRound - 1;
-      s.adj = u!.prayedRound;
-    },
-  },
   brief: (h) => 'Narrator: track missed rites (traitState rites_missed: +1 a day, 0 on amends)' + (ritesMissed(charOf(h)) ? '; now −' + ritesMissed(charOf(h)) : '') + '.',
 });
 

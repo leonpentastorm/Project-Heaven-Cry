@@ -21,7 +21,7 @@ export { itemInfo, itemsOf, effectsOfHeld, allItems, perkEffects, keyOf as itemK
 export { uses, scopeOf, stampOf, usesLabel, sessionN, restN, dayOf } from './uses';
 export { turnAp, grantPerkAp, bankAp, apDebt, pushAp, refusedGift, AP_BASE, AP_MAX, AP_MIN, PERK_AP_CAP, AP_DEBT_CAP, type ApLine } from './ap';
 export { applyDamage, healUnit, grantShield, hostileSrc, type DamageSrc, type DamageResult } from './damage';
-export { MENDING, mendFactor, mendFactorOf, mendRoom, MEND_KINDS, MEND_ROUND_SHARE } from './mending';
+export { MENDING, mendFactor, mendFactorOf, noteTended, tendedLately, TEND_ROUNDS, TEND_NOTICE, TEND_PULL } from './mending';
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';
 export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';
 export { coverageReport, coverageGaps, coverageOf, verdictOf, verdictFor, coverageSummary, type CoverageRow, type Verdict } from './coverage';
