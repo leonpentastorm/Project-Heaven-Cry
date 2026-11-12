@@ -688,28 +688,52 @@ export function paths(cb: Combat, from: string, self: string, avoid?: Set<string
   const solid = new Set([...moveBlockers(cb), ...objectsOf(cb).filter((o) => isTrap(o) && trapKnown(o, me?.side || 'pc')).map((o) => o.pos)]);
   for (const k of opt.runnable) solid.delete(k);
   const blocked = new Set(cb.units.filter((u) => u.id !== self && !u.dead && !opt.pass.has(u.id)).map((u) => u.pos));
-  const d: Record<string, number> = { [from]: 0 }, prev: Record<string, string> = {}, open = [from];
-  const stand = (k: string) => !solid.has(k) && !blocked.has(k);
-  while (open.length) {
-    // The nearest open tile, the earliest found among equals (what a stable sort of the whole list gave, without
-    // sorting it at every step: a 26 × 26 map has 676 tiles to visit).
-    let bi = 0; for (let i = 1; i < open.length; i++) if (d[open[i]] < d[open[bi]]) bi = i;
-    const k = open.splice(bi, 1)[0], [x, y] = xy(k);
-    if (avoid && k !== from && avoid.has(k)) continue; // reachable, but no way through
+  // The search: the nearest open tile first, the EARLIEST FOUND among equals; `dist` and `prev` list tiles in the order
+  // they were first found. Callers depend on both (the first best tile of Object.entries(dist); which of two equal
+  // routes is walked, and so which hazard, Overwatch or opportunity attack it meets), so this order is part of the
+  // rules: test/paths-order.test.ts holds the plain version of this loop (strings and a scan of the open list) and
+  // compares the two tile for tile and key for key. Here the same search runs on number arrays with an indexed heap
+  // ordered by (distance now, when first found); a tile whose distance is lowered moves up and keeps its place in line.
+  // The grid is padded by one tile all round so that a start just off the map behaves as it always did.
+  const H = h + 2, N = (w + 2) * H, at = (x: number, y: number) => (x + 1) * H + (y + 1);
+  const solidA = new Uint8Array(N), blockA = new Uint8Array(N), diffA = new Uint8Array(N), avoidA = avoid ? new Uint8Array(N) : null;
+  const mark = (set: Iterable<string>, a: Uint8Array) => { for (const k of set) { const [x, y] = xy(k); if (x >= -1 && y >= -1 && x <= w && y <= h) a[at(x, y)] = 1; } };
+  mark(solid, solidA); mark(blocked, blockA); if (!opt.ignoreDifficult) mark(diff, diffA); if (avoid && avoidA) mark(avoid, avoidA);
+  const dd = new Float64Array(N).fill(-1), pv = new Int32Array(N).fill(-1), seq = new Int32Array(N), hp = new Int32Array(N).fill(-1), heap: number[] = [], found: number[] = [];
+  let counter = 0;
+  const less = (a: number, b: number) => dd[a] < dd[b] || (dd[a] === dd[b] && seq[a] < seq[b]);
+  const up = (i: number) => { const v = heap[i]; while (i > 0) { const p = (i - 1) >> 1; if (!less(v, heap[p])) break; heap[i] = heap[p]; hp[heap[i]] = i; i = p; } heap[i] = v; hp[v] = i; };
+  const down = (i: number) => { const v = heap[i], n = heap.length; for (;;) { let c = 2 * i + 1; if (c >= n) break; if (c + 1 < n && less(heap[c + 1], heap[c])) c++; if (!less(heap[c], v)) break; heap[i] = heap[c]; hp[heap[i]] = i; i = c; } heap[i] = v; hp[v] = i; };
+  const relax = (n: number, nd: number, k: number) => {
+    if (dd[n] >= 0 && !(nd < dd[n] - 1e-9)) return;
+    if (dd[n] < 0) found.push(n);
+    dd[n] = nd; pv[n] = k;
+    if (hp[n] >= 0) up(hp[n]); else { seq[n] = counter++; heap.push(n); up(heap.length - 1); }
+  };
+  const [fx0, fy0] = xy(from), onGrid = fx0 >= -1 && fy0 >= -1 && fx0 <= w && fy0 <= h, src = onGrid ? at(fx0, fy0) : -1;
+  if (onGrid) { dd[src] = 0; found.push(src); seq[src] = counter++; heap.push(src); hp[src] = 0; }
+  while (heap.length) {
+    const k = heap[0], last = heap.pop()!; hp[k] = -2; if (heap.length && last !== k) { heap[0] = last; down(0); }
+    if (avoidA && k !== src && avoidA[k]) continue; // reachable, but no way through
+    const x = ((k / H) | 0) - 1, y = k - (x + 1) * H - 1;
     for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
       if (!dx && !dy) continue;
-      const nx = x + dx, ny = y + dy, n = key(nx, ny);
+      const nx = x + dx, ny = y + dy;
       if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
-      if (!stand(n)) {
+      const n = at(nx, ny);
+      if (solidA[n] || blockA[n]) {
         // A jump clears one blocked tile in a straight line (2 tiles of movement), landing on a free one.
-        if (opt.jump) { const jx = nx + dx, jy = ny + dy, j = key(jx, jy); if (jx >= 0 && jy >= 0 && jx < w && jy < h && stand(j)) { const nd = d[k] + 2; if (d[j] === undefined || nd < d[j] - 1e-9) { d[j] = nd; prev[j] = k; open.push(j); } } }
+        if (opt.jump) { const jx = nx + dx, jy = ny + dy; if (jx >= 0 && jy >= 0 && jx < w && jy < h) { const j = at(jx, jy); if (!solidA[j] && !blockA[j]) relax(j, dd[k] + 2, k); } }
         continue;
       }
-      if (dx && dy && solid.has(key(x + dx, y)) && solid.has(key(x, y + dy))) continue; // no squeezing diagonally between two walls
-      const nd = d[k] + (diff.has(n) && !opt.ignoreDifficult ? 2 : 1) + (dx && dy ? 0.001 : 0);
-      if (d[n] === undefined || nd < d[n] - 1e-9) { d[n] = nd; prev[n] = k; open.push(n); }
+      if (dx && dy && solidA[at(x + dx, y)] && solidA[at(x, y + dy)]) continue; // no squeezing diagonally between two walls
+      relax(n, dd[k] + (diffA[n] ? 2 : 1) + (dx && dy ? 0.001 : 0), k);
     }
   }
+  const kOf = (i: number) => { const x = ((i / H) | 0) - 1; return key(x, i - (x + 1) * H - 1); };
+  const d: Record<string, number> = {}, prev: Record<string, string> = {};
+  if (!onGrid) d[from] = 0;
+  for (const i of found) { const k = i === src ? from : kOf(i); d[k] = dd[i]; if (pv[i] >= 0) prev[k] = pv[i] === src ? from : kOf(pv[i]); }
   for (const k of Object.keys(d)) d[k] = Math.round(d[k]);
   // A tile someone you pass through stands on is a way through, never a place to stop.
   for (const u of cb.units) if (u.id !== self && !u.dead && opt.pass.has(u.id)) delete d[u.pos];
