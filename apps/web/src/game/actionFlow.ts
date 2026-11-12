@@ -44,6 +44,8 @@ export interface FlowView {
   reach: Map<string, number>;
   /** The engine's preview of the same picks against another unit (the hover chip over a unit). */
   peek: (unitId: string) => DescriptorPreview | null;
+  /** The engine's preview with some picks changed (a perk form's single choice, each option's verdict). */
+  peekWith: (more: Picks) => DescriptorPreview | null;
   ready: boolean; action: any | null;
   /** What a grid click does: a state patch for the screen, or null (the screen's own default runs). */
   click: (u: { id: string; side: string } | null, k: string) => Record<string, any> | null;
@@ -122,7 +124,8 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
     return { tile: S.tile === k && tile.optional ? null : k };
   };
   const reach = new Map(pv.marks.tiles.filter((t) => t.kind === 'reach').map((t) => [t.tile, t.band || 0] as [string, number]));
+  const peekWith = (more: Picks) => { const pk = { ...picks, ...more }; return cached(g, 'pv|' + cur.id + '|' + me + '|' + d.id + '|' + JSON.stringify(pk), () => { try { return previewDescriptor(g, cur.id, d.id, pk, me); } catch { return null; } }); };
   const peek = (unitId: string) => { const pk = { ...picks, targetId: unitId }; return cached(g, 'pv|' + cur.id + '|' + me + '|' + d.id + '|' + JSON.stringify(pk), () => { try { return previewDescriptor(g, cur.id, d.id, pk, me); } catch { return null; } }); };
-  return { d, pv, picks, cost: pv.ap, reach, peek, sel: { name: (d.preview === 'prayer' ? (d.id.startsWith('pr:miracle:') ? '✦ MIRACLE · ' : d.id.startsWith('pr:hymn:') ? 'HYMN · ' : 'WHISPER · ') : '') + d.name.replace(/^✦ /, '').replace(/ · (MIRACLE|HYMN [IV]+|BY DICE · TN \d+)$/, '') + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, ready: !!action, action, click,
+  return { d, pv, picks, cost: pv.ap, reach, peek, peekWith, sel: { name: (d.preview === 'prayer' ? (d.id.startsWith('pr:miracle:') ? '✦ MIRACLE · ' : d.id.startsWith('pr:hymn:') ? 'HYMN · ' : 'WHISPER · ') : '') + d.name.replace(/^✦ /, '').replace(/ · (MIRACLE|HYMN [IV]+|BY DICE · TN \d+)$/, '') + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, ready: !!action, action, click,
     after: { tile: null, picks: null, ...(d.preview === 'prayer' ? { target: null, target2: null } : {}) } };
 }

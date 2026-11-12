@@ -8,7 +8,7 @@ import { fightPace } from '../game/combatSpeed';
 import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, fightSight, isUnseenId, litAt,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
-  togglesFor, previewPerkAction, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
+  togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
   attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor } from '@engine';
 import { act as actNow, getState, go, toast } from '../game/store';
@@ -39,7 +39,7 @@ import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, p
 import { gearIconUri, hasGearIcon, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, magicAp, pkState } from '../game/commands';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
@@ -873,7 +873,7 @@ export class CombatLogic extends DCLogic {
     const cost = flow ? flow.cost + flowLend : isMove ? moveAp : 0;
     // Encore (items 729, 737): the selected action repeats the Miracle's named one: the engine lends its AP (previewAttack and
     // the perk previews already count it); the cost shown is what is left to pay, and the panel says it is free.
-    const encoreLend = !mineTurn ? 0 : flow ? flowLend : encoreCredit(cur, isMove ? { type: 'combat/move', how: S.action } : ATTACKS.includes(S.action) ? { type: 'combat/attack', mode: attackMode } : null);
+    const encoreLend = !mineTurn ? 0 : flow ? flowLend : encoreCredit(cur, isMove ? { type: 'combat/move', how: S.action } : null);
     const encoreWaiting = mineTurn && cur.faith && cur.faith.encore ? cur.faith.encore : null;
     const VT0 = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 };
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x - VT0.x0 >= (VT0.x1 - VT0.x0 + 1) / 2, up: y - VT0.y0 >= (VT0.y1 - VT0.y0 + 1) / 2 }; };
@@ -1162,7 +1162,6 @@ export class CombatLogic extends DCLogic {
         sel.text = !hp ? 'You hold no Outburst: Begin one first.' : B.ok ? B.title + ' Confirm (or use the HEART panel).' : B.why;
         sel.extra = hp ? 'Stage ' + hp.stage + ' ×' + hp.mult + ' · Strain ' + hp.strain + '/' + hp.limit + (hp.warn ? ' · ' + hp.warn : '') : heart;
       } else {
-        sel.name = actName + ' · ' + (S.action === 'vent' || S.action === 'core' ? magicAp(cur, S.action) : SPELL_AP[S.action] || 0) + ' AP';
         sel.text = simpleWhy ? simpleWhy : 'Confirm to ' + VERB[S.action] + '.';
         sel.extra = S.action === 'syphon' || S.action === 'crystallise' ? 'Mana ' + mana + ' (' + BAND_NAME[band.id] + ') · ' + heart : S.action === 'scuff' ? ((glyphAt[cur.pos] || []).length ? 'Under you: ' + glyphAt[cur.pos].map(glyphName).join(', ') + '.' : 'No glyphs under you.') : meter;
       }
@@ -1171,8 +1170,8 @@ export class CombatLogic extends DCLogic {
       // The panel's words are the flow's; the form says what it still needs, and the class move's standing state.
       if (pkMissing && flow && flow.d.available) sel.text = pkMissing;
       sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (pkState(pkE).why ? ' ' + pkState(pkE).why : '');
-      // Each single choice previewed as the engine would take it (once the move's own target is picked).
-      const whyOpt = pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!(flow && flow.picks.targetId))) ? (id) => { try { const r = withGame(g, () => previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, { actionId: pkE.actionId, ...(flow && flow.picks.targetId ? { targetId: flow.picks.targetId } : {}), ...(pkE.target === 'tile' && S.tile ? { tile: S.tile } : {}), choice: id }, 'combat')); return r && !r.ok ? r.why || 'Not now.' : ''; } catch { return ''; } } : null;
+      // each single choice previewed as the engine would take it (the descriptor's form pick, once the target is picked)
+      const whyOpt = flow && pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!flow.picks.targetId)) ? (id) => { const r = flow.peekWith({ form: { choice: id } }); return r && !r.ok ? r.why || 'Not now.' : ''; } : null;
       Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
     }
     // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.
