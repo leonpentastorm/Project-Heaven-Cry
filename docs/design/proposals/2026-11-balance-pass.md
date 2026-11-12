@@ -429,7 +429,7 @@ Built as rules 1.22 (hand-off `faith-round-2.md`).
 11. **Refit Boss HP** (it was fitted against the old 200% gun) and **a medic pass** (Triage and stims with the level
     factor).
 12. **Hold the Gate** is a Hymn: it gets a long cooldown of its own.
-13. Faith's damage: "100-165 fluctuate with pumps and perks". Read as: about 100% on a quiet turn, about 165% on a
-    Hymn turn, averaging 120 to 125%. To be confirmed by Leon.
+13. **Faith's damage range** (Leon's correction): a turn with only a Whisper is about 80% of the plain rifle, a turn
+    with a Hymn about 125%; both go up with Faith items later. This replaces the 120 to 125% average of ruling 7.
 
 Built as rules 1.23 (hand-off `defence-step.md`) and in rules 1.22.
