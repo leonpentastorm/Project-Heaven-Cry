@@ -11301,6 +11301,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-wave.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-wave.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-burst": {
+      "id": "module-burst",
+      "label": "a ring with short radiating marks",
+      "path": "art/icons/modules/module-burst.png",
+      "sha256": "2761ce4842fc314a407a373fa2b2e768a1269ab6e683cc27ee9debd0095aef81",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-burst.png",
+        "128": "art/icons/modules/exports/128/module-burst.png",
+        "64": "art/icons/modules/exports/64/module-burst.png",
+        "56": "art/icons/modules/exports/56/module-burst.png",
+        "48": "art/icons/modules/exports/48/module-burst.png",
+        "44": "art/icons/modules/exports/44/module-burst.png",
+        "40": "art/icons/modules/exports/40/module-burst.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-burst.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-burst.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
