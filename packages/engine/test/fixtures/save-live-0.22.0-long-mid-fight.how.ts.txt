@@ -1,0 +1,48 @@
+// @ts-nocheck
+// Run with the LIVE engine (origin/main, 651ad63, version 0.22.0): writes what a long campaign's save looks like there.
+// A room of four characters made the way the client makes them (char/add with an archetype's sheet), a story of about 900
+// lines (so the archive holds the lines past the 400th), a rest, then a fight played into its second round and saved there.
+import { it, expect } from 'vitest';
+import { writeFileSync } from 'node:fs';
+import { apply, newGame, ARCHETYPES, previewAttack, alive, dist } from '../src';
+
+it('writes the fixtures', () => {
+  let g = newGame('LIVE-0.22.0-LONG', { id: 'host', name: 'Host' });
+  const act = (a, by = 'host') => { g = apply(g, a, by); };
+  const picks = [ARCHETYPES[0], ARCHETYPES.find((a) => /blade|sword|duel/i.test(a.id + a.name)) || ARCHETYPES[5], ARCHETYPES.find((a) => /sigil|scribe|mage/i.test(a.id + a.name)) || ARCHETYPES[10], ARCHETYPES.find((a) => /medic|heal|shield|guard/i.test(a.id + a.name)) || ARCHETYPES[15]];
+  act({ type: 'player/join', id: 'p2', name: 'Guest' });
+  picks.forEach((a, i) => act({ type: 'char/add', sheet: { name: ['Ash', 'Brin', 'Cole', 'Dara'][i], portrait: '', origin: 'Thousand-Planet frontier', kit: i === 2 ? 'sigil' : i === 3 ? 'medic' : 'soldier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } }, i < 2 ? 'host' : 'p2'));
+  console.log('archetypes: ' + picks.map((a) => a.id).join(', '));
+  act({ type: 'session/start' });
+  act({ type: 'narrator/turn', turn: { narration: 'The long road begins.', sceneTitle: 'The long road' } });
+  for (let i = 0; i < 300; i++) {
+    act({ type: 'story/speak', text: 'Day ' + i + ': we keep walking.' }); try { act({ type: 'story/speak', text: 'Day ' + i + ': and I keep count.' }, 'p2'); } catch {}
+    act({ type: 'narrator/turn', turn: { narration: 'The road answers day ' + i + ' with dust.' } });
+  }
+  expect(g.story.entries.length).toBeLessThanOrEqual(400);
+  expect(g.archive.length).toBeGreaterThan(400);
+
+  act({ type: 'narrator/turn', turn: { narration: 'They were waiting at the bridge.', combat: { name: 'The bridge', difficulty: 'standard', enemies: [
+    { name: 'Raider 1', tier: 'minion', weapon: 'service_pistol', no_surrender: true }, { name: 'Raider 2', tier: 'soldier', weapon: 'hellraiser_service_rifle', no_surrender: true },
+    { name: 'Raider 3', tier: 'soldier', weapon: 'sabre', no_surrender: true }, { name: 'Raider 4', tier: 'elite', weapon: 'legion_bullpup', no_surrender: true }, { name: 'Raider 5', tier: 'minion', weapon: 'combat_knife', no_surrender: true }] } } });
+  expect(g.phase).toBe('combat');
+  // into round 2: each player's unit attacks whatever it can (a plain shot or blow), else walks a step towards the nearest enemy
+  let sent = 0, hit = 0;
+  for (let guard = 0; guard < 400 && g.phase === 'combat' && !g.combat.over && (g.combat.round < 2 || g.combat.turn < 3); guard++) {
+    const cb = g.combat, id = cb.window?.queue?.[0]?.unitId ?? cb.order[cb.turn], u = cb.units.find((q) => q.id === id), by = (u.charId && g.characters[u.charId]?.owner) || 'host';
+    if (cb.window) { try { act({ type: 'combat/decline', unitId: id }, by); } catch { act({ type: 'combat/end-turn', unitId: id }, by); } continue; }
+    if (u.side === 'pc' && alive(u)) {
+      const foes = cb.units.filter((q) => q.side === 'foe' && alive(q)).sort((a, b) => dist(a.pos, u.pos) - dist(b.pos, u.pos));
+      for (let k = 0; k < 3; k++) {
+        const me = g.combat.units.find((q) => q.id === id); if (!me || !alive(me) || g.combat.over || g.combat.order[g.combat.turn] !== id) break;
+        let done = false;
+        for (const f of foes) for (const mode of ['shot', 'melee']) { if (done) break; try { act({ type: 'combat/attack', unitId: id, targetId: f.id, mode }, by); sent++; hit++; done = true; } catch { sent++; } }
+        if (!done) break;
+      }
+    }
+    if (g.phase === 'combat' && !g.combat.over && g.combat.order[g.combat.turn] === id && !g.combat.window) act({ type: 'combat/end-turn', unitId: id }, by);
+  }
+  console.log('fight: round ' + g.combat.round + ', over ' + g.combat.over + ', attacks accepted ' + hit + ' of ' + sent + ', log ' + g.combat.log.length + ', archive ' + g.archive.length + ', entries ' + g.story.entries.length + ', bytes ' + JSON.stringify(g).length);
+  expect(g.phase).toBe('combat'); expect(g.combat.over).toBeFalsy(); expect(hit).toBeGreaterThan(3);
+  writeFileSync(process.env.OUT + '/save-live-0.22.0-long-mid-fight.json', JSON.stringify(g));
+}, 600000);
