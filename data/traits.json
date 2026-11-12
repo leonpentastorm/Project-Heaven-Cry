@@ -443,16 +443,8 @@
       "narrator_hook": "the medic has to decide whether healing you helps.",
       "text": "Pain is the only thing that makes you sharp. Theirs or yours, it doesn't matter.\n+ Bloodied: while you are below half your max HP, you deal +50% damage.\n− Fresh: while you are above half your max HP, you take +50% damage.",
       "effects": [
-        {
-          "op": "damage_mod",
-          "value_pct": 50,
-          "context": "self_below_half_hp"
-        },
-        {
-          "op": "damage_taken_mod",
-          "value_pct": 50,
-          "context": "self_above_half_hp"
-        }
+        {"op": "damage_mod", "value_pct": 50, "when": "dealing", "if": {"self_hp_below": 0.5}, "label": "Pain Eater (Bloodied)"},
+        {"op": "damage_mod", "value_pct": 50, "when": "taking", "if": {"self_hp_above": 0.5}}
       ],
       "adjudication": "engine",
       "excludes": [
@@ -636,6 +628,7 @@
     {
       "id": "right_of_way",
       "number": 12,
+      "brief": "tag checks vs_blocker_or_interrupter when someone blocks or interrupts them",
       "name": "Right of Way",
       "category": "Skill and state",
       "tags": [

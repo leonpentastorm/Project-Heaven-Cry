@@ -279,23 +279,7 @@ register({
   brief: () => 'story: a broken device works one more time when it counts (once per breakage)',
 });
 
-// ---------- Hot-Swap (Proficiency β) ----------
-// I: a hand's gear change mid-fight (draw, put away, swap main and off hand, a two-handed draw's 2 AP too) or fitting a
-// mod costs 0 AP, once per turn (plan 6b; rules 1.9, item 686: never armour, and a drop is 0 AP anyway). II: twice per
-// turn. Out of combat gear changes are already free.
-register({
-  id: 'hot_swap', claims: 'all',
-  on: {
-    swap: (ctx, h) => {
-      if (ctx.u !== h.u || !inFight(h) || !(ctx.ap > 0)) return;
-      const n = tierII(h) ? 2 : 1; if (!uses(h).take('per_turn', n)) return;
-      ctx.ap = 0; say(h.cb, h.u!.name + ' swaps without missing a beat (Hot-Swap: 0 AP).');
-    },
-  },
-  brief: () => null,
-});
-
-// Origami Hands was replaced by Both Hands (rules 1.13: perks/skeleton.ts); its traps wait for the stealth list.
+// ---------- Hot-Swap (Proficiency β): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Trick Shot (Dexterity Mastered) ----------
 // Once per turn, a ranged attack can ricochet (the Ricochet toggle on Attack): it ignores half cover (no −5, never

@@ -82,7 +82,7 @@ describe('a6: every amount block the source asks for is in the data', () => {
       for (const m of f.text.matchAll(/\b(itemAmount|amountBlock)\('([^']+)', '([^']+)'/g)) { expect(() => amountBlock(m[2], m[3]), f.rel + ': ' + m[0]).not.toThrow(); n++; }
       for (const m of f.text.matchAll(/\bamountMult\('([^']+)', '([^']+)', '([^']+)'/g)) { expect(() => amountMult(m[1], m[2], m[3]), f.rel + ': ' + m[0]).not.toThrow(); n++; }
       // a key or a name that is not a plain string cannot be checked here: write them out
-      for (const m of f.text.matchAll(/\b(itemAmount|amountBlock|amountMult)\((?!')[^)]{0,40}/g)) if (f.rel !== 'effects/amounts.ts' && f.rel !== 'effects/core.ts' /* the generic deal / mend ops: the name comes from data, which the validator checks */) expect.fail(f.rel + ': ' + m[0] + ' (write the key and the name as plain strings, so that this test can check them)');
+      for (const m of f.text.matchAll(/\b(itemAmount|amountBlock|amountMult)\((?!')[^)]{0,40}/g)) if (f.rel !== 'effects/amounts.ts' && f.rel !== 'effects/core.ts' && f.rel !== 'effects/triggers.ts' /* the generic deal / mend ops (and the item ops' deal / mend): the name comes from data, which the validator checks */) expect.fail(f.rel + ': ' + m[0] + ' (write the key and the name as plain strings, so that this test can check them)');
     }
     expect(n).toBeGreaterThan(50);
   });

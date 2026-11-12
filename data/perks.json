@@ -215,14 +215,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit against you deals {=effects.0.value_pct}% less damage. A heavier first hit gives you nothing. II: The first time you are hit in each fight: if that hit took less than 30% of your max HP, the next hit against you deals 40% less damage. A heavier first hit gives you nothing.",
+      "text": "I: The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit against you deals {=effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing. II: The first time you are hit in each fight: if that hit took less than 30% of your max HP, the next hit against you deals 40% less damage. A heavier first hit gives you nothing.",
       "effects": [
-        {
-          "op": "damage_reduction",
-          "value_pct": 25,
-          "target": "self",
-          "when": "the next hit after the first hit of a combat, if that first hit took less than 20% of max HP"
-        }
+        {"op": "damage_mod", "value_pct": -25, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
+        {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.2}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=effects.0.value_pct|abs}% less."},
+        {"op": "mark", "flag": "seen", "when": "damaged", "if": {"by_hit": true, "actor": "foe"}}
       ],
       "tiers": {
         "I": {
@@ -233,14 +230,11 @@
             }
           ],
           "ap_cost": null,
-          "text": "The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit against you deals {=tiers.I.effects.0.value_pct}% less damage. A heavier first hit gives you nothing.",
+          "text": "The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit against you deals {=tiers.I.effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing.",
           "effects": [
-            {
-              "op": "damage_reduction",
-              "value_pct": 25,
-              "target": "self",
-              "when": "the next hit after the first hit of a combat, if that first hit took less than 20% of max HP"
-            }
+            {"op": "damage_mod", "value_pct": -25, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
+            {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.2}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=tiers.I.effects.0.value_pct|abs}% less."},
+            {"op": "mark", "flag": "seen", "when": "damaged", "if": {"by_hit": true, "actor": "foe"}}
           ]
         },
         "II": {
@@ -251,14 +245,11 @@
             }
           ],
           "ap_cost": null,
-          "text": "The first time you are hit in each fight: if that hit took less than 30% of your max HP, the next hit against you deals {=tiers.II.effects.0.value_pct}% less damage. A heavier first hit gives you nothing.",
+          "text": "The first time you are hit in each fight: if that hit took less than 30% of your max HP, the next hit against you deals {=tiers.II.effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing.",
           "effects": [
-            {
-              "op": "damage_reduction",
-              "value_pct": 40,
-              "target": "self",
-              "when": "the next hit after the first hit of a combat, if that first hit took less than 30% of max HP"
-            }
+            {"op": "damage_mod", "value_pct": -40, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
+            {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.3}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=tiers.II.effects.0.value_pct|abs}% less."},
+            {"op": "mark", "flag": "seen", "when": "damaged", "if": {"by_hit": true, "actor": "foe"}}
           ],
           "replaces_tier_I": true,
           "after": "I"
@@ -1776,12 +1767,7 @@
       "uses": "at_will",
       "text": "I: Once per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't. II: Twice per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't.",
       "effects": [
-        {
-          "op": "cost_mod",
-          "action": "swap_weapon_or_mod",
-          "value": "zero",
-          "limit": "once_per_turn"
-        }
+        {"op": "cost_mod", "set": 0, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 1}, "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."}
       ],
       "tiers": {
         "I": {
@@ -1794,12 +1780,7 @@
           "ap_cost": null,
           "text": "Once per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't.",
           "effects": [
-            {
-              "op": "cost_mod",
-              "action": "swap_weapon_or_mod",
-              "value": "zero",
-              "limit": "once_per_turn"
-            }
+            {"op": "cost_mod", "set": 0, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 1}, "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."}
           ]
         },
         "II": {
@@ -1812,12 +1793,7 @@
           "ap_cost": null,
           "text": "Twice per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't.",
           "effects": [
-            {
-              "op": "cost_mod",
-              "action": "swap_weapon_or_mod",
-              "value": "zero",
-              "limit": "twice_per_turn"
-            }
+            {"op": "cost_mod", "set": 0, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 2}, "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."}
           ],
           "replaces_tier_I": true,
           "after": "I"
@@ -4508,6 +4484,7 @@
     },
     {
       "id": "last_wall",
+      "brief": "once a fight a lethal blow leaves them at 1 HP and untouchable to their next turn",
       "name": "Last Wall",
       "tier": "mastered",
       "perk_type": "passive",
@@ -4527,20 +4504,10 @@
       "flavour": "The wall doesn't fall. The wall decides when it's done.",
       "text": "Once per fight, a hit that would drop you to 0 HP leaves you at 1 HP instead, and you take no damage at all until your next turn starts. Damage you do to yourself doesn't trigger it.",
       "effects": [
-        {
-          "op": "state",
-          "state": "hp_floor",
-          "value": 1,
-          "when": "would_drop_to_0",
-          "uses": "per_combat"
-        },
-        {
-          "op": "damage_reduction",
-          "type": "all",
-          "value": 1.0,
-          "duration": "until_your_next_turn",
-          "when": "hp_floor_triggered"
-        }
+        {"op": "floor", "value": 1, "when": "would_drop", "if": {"open": true, "self_harm": false, "self_hp_above": 0}, "limit": {"per": "per_combat", "n": 1}, "priority": 10, "and": [{"op": "mark", "flag": "guard"}], "fx": {"k": "shield", "amount": 0}, "say": "{self} refuses to fall (Last Wall): {=.value} HP, and nothing gets through until their next turn."},
+        {"op": "damage_mult", "value": 0, "when": "taking", "if": {"flag": "guard", "amount_above": 0}, "priority": 10, "say": "Last Wall: nothing gets through to {self}."},
+        {"op": "mark", "flag": "guard", "clear": true, "when": "turn_ap", "priority": 10},
+        {"op": "cancel", "when": "injury", "if": {"flag": "guard"}, "priority": 10, "say": "Last Wall: no injury gets through."}
       ],
       "adjudication": "engine",
       "recovered": null,
@@ -6181,6 +6148,7 @@
     },
     {
       "id": "siege_engine",
+      "brief": "can't be knocked back or off their feet in a story scuffle",
       "name": "Siege Engine",
       "tier": "achieved",
       "perk_type": null,
@@ -6207,23 +6175,11 @@
       "deed": "break through a wall to win a fight.",
       "text": "Shove and the Break Finisher cost you 1 AP less, never below 1 AP. A Shove that moves its target gives you 1 Guard. Nothing can push you or knock you back.",
       "effects": [
-        {
-          "op": "action_cost",
-          "action": "shove",
-          "value": -1
-        },
-        {
-          "op": "action_cost",
-          "action": "break",
-          "value": -1
-        },
-        {
-          "op": "immunity",
-          "conditions": [
-            "knockback"
-          ],
-          "target": "self"
-        }
+        {"op": "action_cost", "action": "shove", "value": -1, "min": 1},
+        {"op": "action_cost", "action": "break", "value": -1, "min": 1},
+        {"op": "immunity", "conditions": ["knockback"], "target": "self"},
+        {"op": "stat_mod", "stat": "shove_guard", "value": 1},
+        {"op": "cancel", "when": "forced_move", "if": {"open": true}, "say": "{self} doesn't move an inch (Siege Engine)."}
       ],
       "adjudication": "engine",
       "recovered": null,

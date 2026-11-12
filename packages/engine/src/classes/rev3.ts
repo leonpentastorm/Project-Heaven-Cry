@@ -217,21 +217,7 @@ register({
 });
 
 // ======================================================================================================== MARKSMAN
-// ---------- Speed Loader (rank I, passive) ----------
-// Your first main-hand reload each turn costs 1 AP less, never below 1 (stat 'ap_cost:reload'; a Special Ammo load is a
-// reload). The turn's first reload spends it even when it was already 1 AP (a quick-release magazine). The off-hand gun
-// (priced with ctx.hand 'off') and the reload of both guns at once (3 AP, its own price) neither get it nor spend it; a
-// refused reload (full, nothing to load) spends nothing either (spec item 564).
-register({
-  id: 'marksman.speed_loader', claims: 'all',
-  stat: (h, stat, ctx) => {
-    if (stat !== 'ap_cost:reload' || ctx?.hand === 'off') return 0; const cb = fightOf(h); if (!cb || overworld(cb) || !h.u) return 0;
-    if (uses({ ...h, cb }).left('per_turn', 1, h.key) <= 0) return 0;
-    return -Math.min(1, Math.max(0, (ctx?.base ?? 2) - 1));
-  },
-  on: { reload: (ctx, h) => { if (ctx.u === h.u && !ctx.both && ctx.hand !== 'off' && inFight(h)) uses(h).take('per_turn', 1, h.key); } }, // the off-hand gun's reload isn't its (spec item 564)
-  brief: () => null,
-});
+// ---------- Speed Loader (rank I, passive): written in data only (data/classes.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Duck and Roll (rank II, reaction) ----------
 // A ranged weapon attack targets you (the first shot of a volley): before it is rolled, you step 1 tile (free, your
@@ -409,21 +395,14 @@ register({
 });
 
 // ======================================================================================================== MAGE
-// ---------- Core Change (rank I, passive) ----------
-// Swapping a spent mana core costs 1 AP less, never below 1 (stat 'ap_cost:swap_core'; magic.ts coreAp: 2 → 1).
-register({
-  id: 'mage.core_change', claims: 'all',
-  stat: (h, stat, ctx) => (stat === 'ap_cost:swap_core' ? -Math.min(1, Math.max(0, (ctx?.base ?? 2) - 1)) : 0),
-  brief: () => null,
-});
+// ---------- Core Change (rank I, passive): written in data only (data/classes.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Bleed the Flux (rank II, passive) ----------
-// Venting costs 1 AP less, never below 0 (stat 'ap_cost:vent'; magic.ts ventAp: 1 → 0), and vents 1 more Flux: a Vent
+// Venting costs 1 AP less, never below 0 (data: the generic action_cost; magic.ts ventAp: 1 → 0), and vents 1 more Flux: a Vent
 // already empties the Evoker, so the one more is the next Flux you take: the next glyph you draw adds 1 Flux less
 // (TWICE 1, not 2), and that point goes into the air then (the meter +1). The credit doesn't stack and lasts the fight.
 register({
-  id: 'mage.bleed_the_flux', claims: 'all',
-  stat: (h, stat, ctx) => (stat === 'ap_cost:vent' ? -Math.min(1, Math.max(0, ctx?.base ?? 1)) : 0),
+  id: 'mage.bleed_the_flux', claims: [1], // effect 0 (the Vent's AP) is the generic action_cost (engine foundations 3)
   on: {
     vent: (ctx, h) => { if (ctx.u !== h.u) return; const st = stateOf(h); if (!st.credit) { st.credit = 1; say(h.cb, h.u!.name + ' bleeds the Flux: the next glyph adds 1 Flux less.'); } },
     glyph_cost: (ctx, h) => { if (ctx.u === h.u && stateOf(h).credit && (ctx.flux || 0) > 0) { ctx.flux -= 1; if (!ctx.preview) stateOf(h).spend = true; } },

@@ -382,13 +382,8 @@
               "uses": "at_will",
               "text": "Your first reload each turn costs 1 AP less, but never less than 1 AP. It doesn't apply to your off-hand gun or to reloading two guns at once.",
               "effects": [
-                {
-                  "op": "action_cost",
-                  "action": "reload",
-                  "value": -1,
-                  "min": 1,
-                  "uses": "per_turn"
-                }
+                {"op": "cost_mod", "value": -1, "min": 1, "when": "cost", "if": {"action": ["reload"], "hand": ["main"]}, "limit": {"per": "per_turn", "n": 1, "peek": true}},
+                {"op": "use", "when": "reload", "if": {"hand": ["main"]}, "limit": {"per": "per_turn", "n": 1}}
               ],
               "adjudication": "engine",
               "provisional": true,
@@ -4159,19 +4154,9 @@
           "name": "Unbroken",
           "ap_cost": 0,
           "uses": "per_combat",
-          "text": "Once per fight, the first time damage would drop you to 0 HP, you stay at 1 HP instead and gain {=effects.1.value} Guard.",
+          "text": "Once per fight, the first time damage would drop you to 0 HP, you stay at 1 HP instead and gain {=effects.0.and.0.value} Guard.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "hp_floor_once",
-              "value": 1
-            },
-            {
-              "op": "resource",
-              "resource": "guard",
-              "value": 3,
-              "when": "would_drop_to_0"
-            }
+            {"op": "floor", "value": 1, "when": "would_drop", "if": {"open": true, "self_hp_above": 0}, "limit": {"per": "per_combat", "n": 1}, "priority": 30, "and": [{"op": "resource", "resource": "guard", "value": 3}], "say": "{self} is Unbroken: {=.value} HP, +{gain} Guard ({res:guard}/{resmax:guard})."}
           ],
           "adjudication": "engine",
           "provisional": true,

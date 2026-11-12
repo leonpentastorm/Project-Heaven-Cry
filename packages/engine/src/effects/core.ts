@@ -65,7 +65,7 @@ const STAT_MAP: Record<string, string> = {
   hp: 'hp', hp_max: 'hp', move: 'move', defense: 'defense', dodge: 'defense', init: 'init', armor: 'armor', armour: 'armor',
   crit_damage: 'crit_damage', max_sigil_words: 'max_sigil_words', strain_limit: 'strain_limit', outburst_range: 'soul_range', soul_spell_range: 'soul_range',
   module_slots: 'module_slots', ready_designs: 'ready_designs', vision: 'vision', carry: 'carry', injury_resist: 'injury_resist', mp_max: 'mp_max',
-  hp_per_level: 'hp_per_level', glyph_ap: 'glyph_ap', attack: 'attack', ap: 'ap',
+  hp_per_level: 'hp_per_level', glyph_ap: 'glyph_ap', attack: 'attack', ap: 'ap', shove_guard: 'shove_guard',
 };
 const MULT_MAP: Record<string, string> = { hp_max: 'hp', hp: 'hp', move: 'move', carry: 'carry', mp_max: 'mp_max' };
 

@@ -19,7 +19,7 @@ import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems } from './collect';
 import { overworld, rngOf } from '../kit';
-import { dist, displace } from '../combat';
+import { dist, displace, emitFx } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf } from '../magic';
 import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
@@ -30,7 +30,8 @@ import { amountBlock, type AmountBlock } from './amounts';
 
 // ============================================================================================== the triggers
 /** A trigger: the hook it listens on (and the hook's phase), who the event's ACTOR and TARGET are, and whose event it
- * is by default (`self`): with no `actor` or `target` in `if`, the holder must be that role. */
+ * is by default (`self`): unless `if` names that role (`if.target` for a trigger whose `self` is 'target'), the holder
+ * must be it. So `taking` with `if: { actor: 'foe' }` is still damage the HOLDER takes, from an enemy. */
 export interface Trigger { hook: HookName; phase?: string; actor?: (ctx: any) => Unit | null | undefined; target?: (ctx: any) => Unit | null | undefined; self: 'actor' | 'target' | null; about: string }
 const att = (c: any) => c.att, tgt = (c: any) => c.tgt, u_ = (c: any) => c.u, by = (c: any) => c.by, t_ = (c: any) => c.t, srcBy = (c: any) => c.src?.by, victim = (c: any) => c.victim;
 /** The closed list. Derived from the hooks the 310 lane handlers use, by count (the hand-off has the table). */
@@ -135,7 +136,9 @@ P('own_turn', 'bool', 'it is (or is not) the holder\'s own turn', (ev, v) => (ev
 P('flag', 'string', 'the item\'s flag is set (the mark op sets it)', (ev, v) => !!flags(ev)[v]);
 P('no_flag', 'string', 'the item\'s flag is not set', (ev, v) => !flags(ev)[v]);
 P('self_alive', 'bool', 'the holder is (or is not) up: not Downed, dead or surrendered', (ev, v) => (!ev.self.dead && !ev.self.downed && !ev.self.surrendered) === v);
-P('floor_open', 'bool', 'nothing has floored this blow yet (would_drop)', (ev, v) => (ev.ctx.floor == null && ev.self.hp > 0) === v);
+P('open', 'bool', 'nothing has stopped it yet: not cancelled, and (would_drop) not floored', (ev, v) => (!ev.ctx.cancel && ev.ctx.floor == null) === v);
+P('amount_above', 'number', 'the event\'s amount (damage, a heal) is over this', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) > v);
+P('amount_share_below', 'number', 'the event\'s amount is under this share of the holder\'s max HP', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) / ev.self.maxHp < v);
 
 // ============================================================================================== the ops
 /** The closed list of ops a triggered effect may run, with the triggers each one understands. */
@@ -173,7 +176,7 @@ O('grant_ap', ['turn_ap', ...ANY.filter((t) => t !== 'turn_ap')], true, ['value'
 O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource (guard, momentum…) or Echo', (ev, e, label) => {
   const u = pick(ev, e); if (!u) return;
   if (e.resource === 'echo') { if (ev.h.c) gainEcho(ev.h.c, e.value, label); return; }
-  resGain(u, e.resource, e.value);
+  (ev as any).gain = resGain(u, e.resource, e.value);
 });
 O('condition', ANY, true, ['condition', 'rounds', 'skip_save'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
@@ -208,6 +211,7 @@ O('displace', ANY, true, ['tiles', 'how'], 'push the target away from the holder
   const how = e.how === 'pull' ? 'pull' : 'push', to = how === 'pull' ? { toward: ev.self.pos, tiles: e.tiles } : { away: ev.self.pos, tiles: e.tiles };
   return displace(ev.cb, rngOf(ev.h, ev.ctx), t, to, { by: ev.self, how, source: ev.h.key }).text || '';
 });
+O('use', ANY, true, [], 'nothing but its limit: spends one use (for a limit another effect reads with peek)', () => undefined);
 O('mark', ANY, true, ['flag', 'clear'], 'set (or with clear: true, clear) one of the item\'s own flags, for a later trigger\'s flag / no_flag', (ev, e) => {
   const st: any = ((ev.self.ps ||= {}) as any)[ev.h.key] ||= {}; const f = (st.flags ||= {});
   if (e.clear) delete f[e.flag]; else f[e.flag] = true;
@@ -230,12 +234,16 @@ function limitOk(ev: Ev, lim: any, take: boolean): boolean {
   const h = { ...ev.h, u: ev.self, cb: ev.cb }, key = lim.key ? ev.h.key + '#' + lim.key : undefined;
   const who = lim.each === 'target' ? ev.target : lim.each === 'actor' ? ev.actor : null;
   const U = who ? uses(h).on(who) : uses(h);
+  if (lim.peek) take = false; // read only: another effect (op use) spends it
   if (typeof lim.cooldown === 'number') return take ? U.cool(lim.cooldown, key) : U.ready(lim.cooldown, key);
   return take ? U.take(lim.per, lim.n ?? 1, key) : U.left(lim.per, lim.n ?? 1, key) > 0;
 }
 
 // ============================================================================================== the runner
-const fill = (s: string, ev: Ev) => s.replace(/\{(self|actor|target)\}/g, (_m, w) => unitOf(ev, w as Who)?.name || '');
+/** A `say` line's words: {self} {actor} {target} (names), {gain} (what the last resource op really gave), {res:<id>}
+ * and {resmax:<id>} (the holder's resource now, and its most). Numbers from the data go in as {=.field} placeholders. */
+const fill = (s: string, ev: Ev) => s.replace(/\{(self|actor|target)\}/g, (_m, w) => unitOf(ev, w as Who)?.name || '')
+  .replace(/\{gain\}/g, () => String((ev as any).gain ?? 0)).replace(/\{res:([a-z_]+)\}/g, (_m, id) => String(ev.self.res?.[id] ?? 0)).replace(/\{resmax:([a-z_]+)\}/g, (_m, id) => String(ev.self.resMax?.[id] ?? 0));
 /** Is this effect a triggered one (its `when` names a trigger)? */
 export const isTriggered = (e: any): boolean => !!e && typeof e.when === 'string' && !!TRIGGERS[e.when];
 /** Why a triggered effect can't run (null: it can): the op is unknown or doesn't take this trigger, a predicate is
@@ -257,15 +265,16 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   if (trig.phase && ctx.phase !== trig.phase) return;
   const ev: Ev = { ctx, trig, h, self, cb, actor: trig.actor?.(ctx) || null, target: trig.target?.(ctx) || null, preview: !!ctx.preview };
   const cond = e.if || {};
-  if (trig.self && cond.actor == null && cond.target == null && unitOf(ev, trig.self) !== self) return;
+  if (trig.self && cond[trig.self] == null && unitOf(ev, trig.self) !== self) return; // whose event: the trigger's own role is the holder unless `if` names it
   for (const k of Object.keys(cond)) if (!PREDICATES[k]?.test(ev, cond[k])) return;
   const all = [e, ...(Array.isArray(e.and) ? e.and : [])], changes = all.some((x) => OPS[x.op]?.state);
   if (ev.preview && changes) return; // a preview changes nothing
   if (!limitOk(ev, e.limit, !ev.preview)) return;
-  const label = e.label || h.info.name;
-  let line = e.say && !ev.preview ? fill(e.say, ev) : '';
-  for (const x of all) { const r = OPS[x.op].run(ev, x, x.label || label); if (typeof r === 'string' && r && line) line += r; }
-  if (line) cb.log.push(line);
+  const label = e.label || h.info.name, parts: string[] = [];
+  for (const x of all) { const r = OPS[x.op].run(ev, x, x.label || label); if (typeof r === 'string' && r) parts.push(r); }
+  if (ev.preview) return;
+  if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
+  if (e.say) cb.log.push(fill(e.say, ev).replace('{then}', parts.join('')));
 }
 /** The hooks any data effect listens on (hooks.ts hookUsed asks, so a hook that is skipped when nobody listens, the
  * `cost` hook, still fires for a data item). */

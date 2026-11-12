@@ -36,7 +36,6 @@ const isHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].in
 const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
 const magicSrc = (src: any) => ['sigil', 'soul', 'elemental'].includes(src?.type);
 const bloodied = (u: Unit) => u.hp * 2 < u.maxHp;
-const fresh = (u: Unit) => u.hp * 2 > u.maxHp;
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read a character's item state without creating it (stat queries and previews must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => c?.state || {};
@@ -122,29 +121,7 @@ register({
   brief: () => 'out of combat: ends a narrated Body condition (Narrator judges)',
 });
 
-// ---------- Used to the Pain (Pain Threshold β) ----------
-// Rules 1.13 (a beta gives no AP): the first hit that takes HP each combat (a shield-only hit doesn't count; hazards,
-// bleeding and burning don't). I: under 20% of max HP, the next hit against you deals 25% less; a heavier one gives
-// nothing. II: under 30%, 40% less. Numbers PROVISIONAL (spec 14).
-const UTP = { I: { cut: 0.2, less: 25 }, II: { cut: 0.3, less: 40 } };
-register({
-  id: 'used_to_the_pain', claims: 'all',
-  on: {
-    damage_in: (ctx, h) => {
-      if (ctx.phase !== 'reduce' || ctx.t !== h.u || !isHit(ctx.src) || ctx.src.by?.side === h.u!.side || ctx.dmg <= 0) return;
-      const st = stateOf(h); if (!st.hard) return;
-      const less = st.hard; st.hard = 0; ctx.dmg = ctx.dmg * (1 - less / 100);
-      say(h.cb, h.u!.name + ' was ready for that one (Used to the Pain): ' + less + '% less.');
-    },
-    on_damaged: (ctx, h) => {
-      if (ctx.t !== h.u || !isHit(ctx.src) || ctx.src.by?.side === h.u!.side) return;
-      const st = stateOf(h); if (st.seen) return; st.seen = true;
-      const k = tierII(h) ? UTP.II : UTP.I;
-      if (ctx.dmg / h.u!.maxHp < k.cut) { st.hard = k.less; say(h.cb, h.u!.name + ' takes it in stride (Used to the Pain): the next hit deals ' + k.less + '% less.'); }
-    },
-  },
-  brief: () => null,
-});
+// ---------- Used to the Pain (Pain Threshold β): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Scar Tissue (Pain Threshold β) ----------
 // Each wound (a hit that takes HP) this combat: +5% Elemental damage reduction, up to 25% (II: 40%). The total with the
@@ -231,28 +208,7 @@ register({
   brief: () => 'out of a fight, once a scene: smashes floor, walls or cover in reach (you rule what breaks)',
 });
 
-// ---------- Last Wall (Durability Mastered) ----------
-// Once per combat, damage from any hostile or outside source (not self-inflicted) that would take you from 1+ HP to 0
-// leaves you at 1, and you take no damage at all until the start of your next turn (Bleeding and Burning ticks too).
-// If it fires on your own turn, the guard lasts until your next turn starts (PROVISIONAL, plan 6 Last Wall 2).
-register({
-  id: 'last_wall', claims: 'all', priority: 10,
-  on: {
-    damage_in: (ctx, h) => {
-      if (ctx.t !== h.u) return;
-      const st = stateOf(h);
-      if (ctx.phase === 'reduce' && st.guard && ctx.dmg > 0) { ctx.dmg = 0; say(h.cb, 'Last Wall: nothing gets through to ' + h.u!.name + '.'); return; }
-      if (ctx.phase !== 'would_drop_to_0' || ctx.floor != null || selfHarm(ctx) || h.u!.hp <= 0 || st.used) return;
-      st.used = true; st.guard = true; ctx.floor = 1;
-      if (h.cb) { emitFx(h.cb, 'shield', { target: h.u!.id, at: h.u!.pos, amount: 0 }); say(h.cb, h.u!.name + ' refuses to fall (Last Wall): 1 HP, and nothing gets through until their next turn.'); }
-    },
-    turn_start_pre: (ctx, h) => { if (ctx.u === h.u) stateOf(h).guard = false; },
-    // Nothing gets through means no injury either: a critical on the guarded holder rolls none (else a torso Bleeding
-    // from a blow that did nothing would Down them at their next turn start; PROVISIONAL, spec 14).
-    injury: (ctx, h) => { if (ctx.t === h.u && stateOf(h).guard) { ctx.cancel = true; say(h.cb, 'Last Wall: no injury gets through.'); } },
-  },
-  brief: () => 'once a fight a lethal blow leaves them at 1 HP and untouchable to their next turn',
-});
+// ---------- Last Wall (Durability Mastered): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Walking Wounded (Pain Threshold Mastered) ----------
 // Injuries never cost you AP or Movement: a head injury doesn't Daze you, a leg injury doesn't halve Movement (in a
@@ -338,35 +294,11 @@ register({
   brief: () => null,
 });
 
-// ---------- Siege Engine (Raw Power + Durability, Achieved) ----------
-// The Shove Link and the Break Finisher cost 1 AP less, never below 1 (so a 1 AP Shove stays 1): the stat
-// 'ap_cost:shove' / 'ap_cost:break', asked by the technique AP path (physical/core.ts apFor) and by the old Shove. Nothing knocks you back: shoves, knockback
-// (generic immunity), Breaching Strike; Prone from a blocked shove still lands.
-register({
-  id: 'siege_engine', claims: [0, 1],
-  // The Break Finisher costs 1 AP less; a Shove that moves its target gives 1 Guard (Leon, 10 Nov 2026: the Shove Link is 1 AP already, so its discount gave nothing)
-  stat: (h, stat, ctx) => ((stat === 'ap_cost:shove' || stat === 'ap_cost:break') && (ctx?.base ?? 2) > 1 ? -1 : stat === 'shove_guard' ? 1 : 0),
-  on: { forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel) { ctx.cancel = true; say(h.cb, h.u!.name + ' doesn\'t move an inch (Siege Engine).'); } } },
-  brief: () => 'can\'t be knocked back or off their feet in a story scuffle',
-});
+// ---------- Siege Engine (Raw Power + Durability, Achieved): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ======================================================================================================== TRAITS
 
-// ---------- Pain Eater ----------
-// Bloodied (below half max HP): ×1.5 damage dealt (weapons; Sigil, Soul and Elemental damage too, through harm()'s
-// damage_out, before armour). Fresh (above half):
-// ×1.5 damage taken from every source, after armour. At exactly half, neither.
-register({
-  id: 'pain_eater', claims: [0, 1],
-  on: {
-    damage_out: (ctx, h) => { if (ctx.att === h.u && bloodied(h.u!)) ctx.mults.push({ v: 1.5, label: 'Pain Eater (Bloodied)' }); },
-    damage_in: (ctx, h) => {
-      if (ctx.phase !== 'reduce') return;
-      if (ctx.t === h.u && fresh(h.u!)) ctx.dmg *= 1.5;
-    },
-  },
-  brief: () => null,
-});
+// ---------- Pain Eater: written in data only (data/traits.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Factory Made ----------
 // Machine Body: immune to poison (the toxic spill hazard; a poison condition if one is ever applied), bleed (generic)
@@ -437,11 +369,7 @@ register({
   brief: () => null,
 });
 
-// ---------- Right of Way ----------
-// Can't be Shoved (generic immunity; weapon knockback and PUSH still move them). +2 Intimidation and Authority on
-// checks tagged vs_blocker_or_interrupter (generic). Old Injury: −2 Reaction Speed (generic; Initiative too) and
-// −0.5 Movement instead of −1 (PROVISIONAL, plan 6 Right of Way 1: −1 halves Movement at Agility 1).
-register({ id: 'right_of_way', claims: [3], stat: (h, stat) => (stat === 'move' ? -0.5 : 0), brief: () => 'tag checks vs_blocker_or_interrupter when someone blocks or interrupts them' });
+// ---------- Right of Way: written in data only (data/traits.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Heavyworlder ----------
 // Dense: can't be Shoved (generic), carry ×2, +2 Intimidation (generic); counts one size larger (no size rules: the

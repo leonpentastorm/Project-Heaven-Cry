@@ -1,3 +1,4 @@
+// @ts-nocheck (it reads data/effect_ops.json: node's fs, which the engine's tsconfig does not know)
 // Item ops (engine foundations 3: docs/design/handoffs/engine-foundations-3-item-ops.md).
 // 1. The closed lists in effects/triggers.ts and data/effect_ops.json `item_ops` (what tools/validate.py checks
 //    against) are the same. ITEM_OPS_WRITE=1 writes the data block from the code.

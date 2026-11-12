@@ -4026,6 +4026,24 @@
       ],
       "used_by": [],
       "example": null
+    },
+    {
+      "id": "use",
+      "tier": "core",
+      "summary": "Item op (engine foundations 3): nothing but its limit: spends one use (for a limit another effect reads with peek). Runs on a trigger (`when`): combat_start, combat_end, round_start, turn_ap, turn_start, turn_end, attack, attack_roll ….",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": null
     }
   ],
   "item_ops": {
@@ -4372,9 +4390,17 @@
         "arg": "bool",
         "about": "the holder is (or is not) up: not Downed, dead or surrendered"
       },
-      "floor_open": {
+      "open": {
         "arg": "bool",
-        "about": "nothing has floored this blow yet (would_drop)"
+        "about": "nothing has stopped it yet: not cancelled, and (would_drop) not floored"
+      },
+      "amount_above": {
+        "arg": "number",
+        "about": "the event's amount (damage, a heal) is over this"
+      },
+      "amount_share_below": {
+        "arg": "number",
+        "about": "the event's amount is under this share of the holder's max HP"
       }
     },
     "ops": {
@@ -4754,6 +4780,42 @@
         ],
         "changes_state": true,
         "about": "push the target away from the holder (how: push) or pull it closer (pull)"
+      },
+      "use": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury"
+        ],
+        "fields": [],
+        "changes_state": true,
+        "about": "nothing but its limit: spends one use (for a limit another effect reads with peek)"
       },
       "mark": {
         "on": [

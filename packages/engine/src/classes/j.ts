@@ -1177,21 +1177,7 @@ register({
   brief: () => null,
 });
 
-// ---------- Unbroken ----------
-// Once per fight (the data's per_scene is the fight: audit), the first time you would drop to 0 HP from any source,
-// you drop to 1 instead and gain 3 Guard (max 5). After Last Wall and Bite the Bullet (priority 30).
-register({
-  id: 'adamantile_knight.unbroken', claims: 'all', priority: 30,
-  on: {
-    damage_in: (ctx, h) => {
-      const u = h.u; if (ctx.t !== u || !u || ctx.phase !== 'would_drop_to_0' || ctx.floor != null || u.hp <= 0) return;
-      if (!uses(h).take('per_combat', 1)) return;
-      ctx.floor = 1; const g = resGain(u, 'guard', 3);
-      say(h.cb, u.name + ' is Unbroken: 1 HP, +' + g + ' Guard (' + resOf(u, 'guard') + '/5).');
-    },
-  },
-  brief: () => null,
-});
+// ---------- Unbroken: written in data only (data/classes.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 void ownTurn; void sideSees; void emit; void xy;
 export type { ActionDef };

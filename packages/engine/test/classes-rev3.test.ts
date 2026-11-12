@@ -228,7 +228,8 @@ describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-mov
       expect(info, k).toBeTruthy(); expect(info.text.length, k).toBeGreaterThan(10); expect(info.provisional, k).toBe(true);
       expect(coverageOf(info).filter((r) => r.owner === 'gap'), k).toEqual([]);
       expect(coverageOf(info).filter((r) => r.owner === 'narrator'), k).toEqual([]); // the engine runs every part now
-      expect(handlerOf(info.key), k).toBeTruthy();
+      // a handler, or (engine foundations 3) written in data only: every effect run by the generic runner
+      expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic'), k).toBe(true);
     }
   });
   it('an active one is a lane action under the data\'s action id', () => {
