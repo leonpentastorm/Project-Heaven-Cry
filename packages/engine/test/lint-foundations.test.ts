@@ -78,3 +78,20 @@ describe('F14: stat ids are declared, asked and answered', () => {
     expect([...immuneAsked].filter((w) => !(IMMUNE_IDS as readonly string[]).includes(w) && !isCondition(w))).toEqual([]);
   });
 });
+
+// ============================================================================================ F6: the kit
+describe('F6: the kit is the only home of the lane helpers (src/kit.ts)', () => {
+  const notKit = (rel: string) => rel === 'kit.ts';
+  it('no private copy of a kit helper: import it from kit.ts', () => {
+    const copies = hits(/^(?:export )?(?:const|function) (?:overworld|isOverworld|rngOf|foesOf|alliesOf|around|tilesWithin|areaOf|lineTiles|segTiles|freeTile|onMap|tileOf|inBounds|canStand|tilesAround|tilesLine)\b/m, notKit);
+    expect(copies.filter((c) => !/perks\/f\.ts:\d+\s+const onMap/.test(c) /* a story NPC lookup that shares the name */ && !/classes\/i\.ts:\d+\s+const freeTile/.test(c) /* "an EMPTY tile to place an object on", not "can a unit stand" */ && !/ai-sigil\.ts:\d+\s+function lineTiles/.test(c) /* the caster AI's walkable Line */)).toEqual([]);
+  });
+  it('no lane writes its own say() or unitById(): they are in kit.ts', () => {
+    expect(hits(/^const (?:say|unitById) = \((?:cb: Combat)/m, notKit)).toEqual([]);
+  });
+  it('nothing rolls on a fixed seed: { state: 1 } is only the scratch rng of a preview', () => {
+    const allowed: Record<string, number> = { 'calls/core.ts': 2, 'physical/core.ts': 2, 'perks/h.ts': 1 };
+    const found: Record<string, number> = {}; for (const h of hits(/\{ state: 1 \}/)) { const f = h.split(':')[0]; found[f] = (found[f] || 0) + 1; }
+    expect(found, 'a new { state: 1 }: use rngOf(h, ctx) from kit.ts (it throws when no rng is in reach); a preview that must not move the dice is the one exception, and is counted here').toEqual(allowed);
+  });
+});

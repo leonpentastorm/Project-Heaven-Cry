@@ -26,6 +26,7 @@ import { immune } from '../../effects/core';
 import { unitSave } from '../../magic';
 import { resOf } from '../../tactics';
 import { d20, type Rng } from '../../rng';
+import { canStand } from '../../kit';
 
 // ---------- small helpers ----------
 /** The weapon's melee reach for a Link: 2 with a Reach weapon, else 1. */
@@ -38,10 +39,6 @@ function enemyCheck(t: Tech, verb: string): string | null {
   if (!alive(tgt)) return tgt.name + ' is out of the fight.';
   return null;
 }
-/** Is a tile free to stand on (on the map, not blocked, nobody there but `mover`)? */
-const freeTile = (cb: Combat, k: string, mover: Unit | null, blocked = moveBlockers(cb)) => {
-  const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h && !blocked.has(k) && !cb.units.some((v) => v !== mover && !v.dead && v.pos === k);
-};
 /** The tile one step from `at` directly away from `from` (null when they share a tile). */
 function awayFrom(from: string, at: string): string | null {
   const [ox, oy] = xy(from), [x, y] = xy(at), sx = Math.sign(x - ox), sy = Math.sign(y - oy);
@@ -204,13 +201,13 @@ technique({
     const { range } = shoveLine(t), tgt = t.tgt!;
     if (dist(t.u.pos, tgt.pos) > range) return range > 1 ? 'Shove someone within ' + range + ' tiles.' : 'Shove someone next to you.';
     const to = awayFrom(t.u.pos, tgt.pos);
-    if ((!to || !freeTile(t.cb, to, tgt)) && tgt.prone) return tgt.name + ' is already Prone and has nowhere to go.';
+    if ((!to || !canStand(t.cb, to, tgt)) && tgt.prone) return tgt.name + ' is already Prone and has nowhere to go.';
     return null;
   },
   run(t) {
     const tgt = t.tgt!, { tiles } = shoveLine(t);
     const im = immune({ u: tgt }, 'shove'); if (im) { t.note(tgt.name + ' doesn\'t budge (' + im + ').'); return null; }
-    const to = awayFrom(t.u.pos, tgt.pos), blocked = !to || !freeTile(t.cb, to, tgt);
+    const to = awayFrom(t.u.pos, tgt.pos), blocked = !to || !canStand(t.cb, to, tgt);
     // today's opposed roll (combat.ts shove): d20 + Strength + Raw Power against 10 + the target's better of Raw Power
     // and Athletics. Nothing is rolled in a preview: the roll is listed as the target's save against that number.
     const u = t.u, bonus = (u.strength ?? 0) + (u.sk?.raw_power || 0);
@@ -279,7 +276,7 @@ function dragPlan(t: Tech): { how: 'pull' | 'swap' | 'carry'; why?: string } {
   if (how === 'pull') {
     const [ux, uy] = xy(t.u.pos), [x, y] = xy(tgt.pos), to = key(x - Math.sign(x - ux), y - Math.sign(y - uy));
     if (near || to === t.u.pos) return { how, why: 'It is already next to you: swap tiles with it' + (t.line('hook', 'bare') === 'bare' ? ', or take it with you' : '') + '.' };
-    if (!freeTile(t.cb, to, tgt)) return { how, why: 'Something is in the way.' };
+    if (!canStand(t.cb, to, tgt)) return { how, why: 'Something is in the way.' };
   }
   if (how === 'swap' && !near) return { how, why: 'Swap tiles with someone next to you.' };
   if (how === 'swap') { const blk = moveBlock(t.u); if (blk) return { how, why: blk }; } // the swap is a step for the user
@@ -287,7 +284,7 @@ function dragPlan(t: Tech): { how: 'pull' | 'swap' | 'carry'; why?: string } {
     if (t.line('hook', 'bare') !== 'bare') return { how, why: 'Taking it with you needs a Bare weapon.' };
     if (!near) return { how, why: 'Take someone next to you.' };
     const blk = moveBlock(t.u); if (blk) return { how, why: blk };
-    if (!t.args.tile || dist(t.args.tile, t.u.pos) !== 1 || !freeTile(t.cb, t.args.tile, t.u)) return { how, why: 'Pick a free tile next to you to step to.' };
+    if (!t.args.tile || dist(t.args.tile, t.u.pos) !== 1 || !canStand(t.cb, t.args.tile, t.u)) return { how, why: 'Pick a free tile next to you to step to.' };
   }
   return { how };
 }
@@ -328,7 +325,7 @@ technique({
     else if (how === 'swap') worked = swap(t, tgt);
     else {
       const from = t.u.pos, to = t.args.tile!, [fx, fy] = xy(from), [x, y] = xy(to), [tx, ty] = xy(tgt.pos);
-      const keep = key(tx + x - fx, ty + y - fy), dest = keep !== to && freeTile(t.cb, keep, tgt) ? keep : from; // beside you as it was, else where you stood
+      const keep = key(tx + x - fx, ty + y - fy), dest = keep !== to && canStand(t.cb, keep, tgt) ? keep : from; // beside you as it was, else where you stood
       if (t.preview) { stepUser(t, [to]); (t.pv.moves ||= []).push({ unit: tgt.id, to: dest }); worked = true; }
       else if (stepUser(t, [to]) && alive(t.u) && alive(tgt)) worked = forceMove(t, tgt, dest, 1) > 0;
     }

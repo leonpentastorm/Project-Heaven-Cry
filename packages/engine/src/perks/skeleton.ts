@@ -23,7 +23,7 @@ import { condSource } from '../magic';
 import { die } from '../rng';
 import { TECHNIQUE } from '../physical/data';
 import { strikingWith, ensureMomentum, turnStamp, setSlam } from '../physical/core';
-import { overworld, say } from '../kit';
+import { overworld, say, standBlocker } from '../kit';
 
 const tierII = (h: Holder) => h.tier === 'II';
 /** An item's per-fight state, read without creating it (previews and stat queries change nothing). */
@@ -75,8 +75,7 @@ onHook('action_done', (_ctx: any, cb) => {
 });
 /** What stands on a tile for a pushed unit: 'wall' (off the map, a solid tile, a blocking object), a unit, or null. */
 function blockerAt(cb: Combat, k: string, mover: Unit): 'wall' | Unit | null {
-  const [x, y] = xy(k); if (x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h || moveBlockers(cb).has(k)) return 'wall';
-  return cb.units.find((v) => v !== mover && !v.dead && v.pos === k) || null;
+  const b = standBlocker(cb, k, mover); return b === 'edge' || b === 'object' ? 'wall' : b;
 }
 /** Breaching Strike: `t`, pushed by `by`, is stopped by a wall or by the unit `into`. Half the hit again (II: the enemy
  * it hit takes the same). Nothing for a holder without the perk, or when `into` is on the pusher's side. */

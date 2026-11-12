@@ -17,7 +17,7 @@ import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../o
 import { d20, die, type Rng } from '../rng';
 import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game';
 import { cdFire, cdTick, landsNext } from './cooldown';
-import { rngOf } from '../kit';
+import { rngOf, foesOf } from '../kit';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -25,7 +25,6 @@ const gameOf = (h: Holder): any => h.g ?? boundGame();
 const turnKey = (cb: Combat) => cb.round + '.' + cb.turn;
 const myTurn = (cb: Combat, u: Unit | null | undefined) => !!u && active(cb) === u && !cb.window;
 const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v) && !v.companion);
 /** The zone the story stands in carries this tag (terrain:open, urban, fear…; campaign zones set them). */
 const zoneHas = (g: any, ...tags: string[]) => { if (!g?.story) return false; try { const z = zoneTags(g); return tags.some((t) => z.includes(t)); } catch { return false; } };
 /** Is this overworld unit a hostile NPC (storyCb makes every NPC a 'foe' unit)? In a fight every foe is hostile. */
@@ -241,7 +240,7 @@ register({
     spotted: (ctx, h) => {
       if (h.tier !== 'II' || ctx.u !== h.u || ctx.why !== 'attacked' || !h.u || h.u.dead) return;
       const cb: Combat = ctx.cb, rng = rngOf(h); if (!rng) return;
-      const eyes = foesOf(cb, h.u).filter((v) => unitSees(cb, v, h.u!.pos)), s = stateOf(h);
+      const eyes = foesOf(cb, h.u, { companions: false }).filter((v) => unitSees(cb, v, h.u!.pos)), s = stateOf(h);
       const best = eyes.reduce((m, v) => Math.max(m, TIER_NOTICE[v.tier || 'minion'] ?? 0), 0), tn = 10 + best + 2 * (s.stayed || 0);
       const m = (h.u.ingMod ?? (h.c ? mod(h.c.skills.ingenuity || 0) : -2)) + (h.u.sk?.ingenuity || 0);
       let ok = true, line = '';
@@ -270,7 +269,7 @@ function gotYou(h: Holder, cb: Combat, foe: Unit, at: string) {
   const mine = cb.order.indexOf(u.id);
   if (mine > cb.turn && cdFire(h, 'gain', cb.round)) { uses(h).take('per_round'); bankAp(u, 2, 'Got You in My Sight: ' + foe.name, cb); }
 }
-function sightSnap(h: Holder, cb: Combat): Record<string, string> { const out: Record<string, string> = {}; for (const f of foesOf(cb, h.u!)) if (!f.hidden && unitSees(cb, h.u!, f.pos)) out[f.id] = f.pos; return out; }
+function sightSnap(h: Holder, cb: Combat): Record<string, string> { const out: Record<string, string> = {}; for (const f of foesOf(cb, h.u!, { companions: false })) if (!f.hidden && unitSees(cb, h.u!, f.pos)) out[f.id] = f.pos; return out; }
 register({
   id: 'got_you_in_my_sight', claims: 'all',
   on: {
@@ -340,7 +339,7 @@ register({
     combat_start: (ctx, h) => {
       const cb: Combat = ctx.cb, u = h.u; if (!u || ow(cb) || !alive(u)) return;
       const seen = visibility(cb, u.side).seen, range = u.vision || 12;
-      const cand = foesOf(cb, u).filter((f) => !seen.has(f.id) && dist(u.pos, f.pos) <= range).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos));
+      const cand = foesOf(cb, u, { companions: false }).filter((f) => !seen.has(f.id) && dist(u.pos, f.pos) <= range).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos));
       const pick = h.tier === 'II' ? cand : cand.slice(0, 1); if (!pick.length) return;
       const ls = ((cb.lastSeen ||= {})[u.side] ||= {}); for (const f of pick) ls[f.id] = f.pos;
       log(cb, u.name + ' feels the air move (Wind on the Skin): ' + pick.map((f) => 'an enemy at ' + refOf(f.pos)).join(', ') + '.');
@@ -745,7 +744,7 @@ register({
 // (banked: it shares the +3 cap). No Way Back: no Disengage (the generic forbid), no Retreat; armour past Class I
 // gives nothing (the unit's armour is capped at Class I's 5, slot pieces included; see the notes for equip).
 // =====================================================================================================================
-const nearestFoe = (cb: Combat, u: Unit) => foesOf(cb, u).reduce((m, f) => Math.min(m, dist(u.pos, f.pos)), Infinity);
+const nearestFoe = (cb: Combat, u: Unit) => foesOf(cb, u, { companions: false }).reduce((m, f) => Math.min(m, dist(u.pos, f.pos)), Infinity);
 register({
   id: 'forlorn_hope', kind: 'trait', claims: [0, 1, 2],
   stat: (h, stat) => {
@@ -793,7 +792,7 @@ register({
     available: (h) => (h.u && has(h.u, 'forlorn_hope') ? 'No Way Back: you can\'t retreat.' : h.u?.sprinted ? 'You already Sprinted this turn.' : true),
     preview: (h, a) => {
       if (!h.cb || !h.u || !a.tile) return {}; const k = /,/.test(a.tile) ? a.tile : refKey(a.tile, h.cb.map); if (!k) return { ok: false, why: 'Pick a tile.' };
-      const seen = foesOf(h.cb, h.u).filter((f) => sideSees(h.cb!, h.u!.side, f)), bad = seen.find((f) => dist(k, f.pos) <= dist(h.u!.pos, f.pos));
+      const seen = foesOf(h.cb, h.u, { companions: false }).filter((f) => sideSees(h.cb!, h.u!.side, f)), bad = seen.find((f) => dist(k, f.pos) <= dist(h.u!.pos, f.pos));
       if (bad) return { ok: false, why: 'A retreat must end farther from every enemy you can see (' + bad.name + ').' };
       return { lines: ['Retreat to ' + refOf(k) + ' for 0 AP. No opportunity attacks, then +2 Defense.'] };
     },

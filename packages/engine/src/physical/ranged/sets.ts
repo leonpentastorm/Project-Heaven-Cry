@@ -19,11 +19,10 @@ import { WEAPON } from '../../data';
 import { packOf } from '../../character';
 import { AMMO_TYPES, ammoId } from '../../tactics';
 import { TECHNIQUE, weaponProps } from '../data';
+import { foesOf, alliesOf } from '../../kit';
 
 /** A technique's number outside a Tech (the hooks): the same key its handler's t.num reads. */
 function num(id: string, k: string, fb: number): number { const v = TECHNIQUE[id]?.numbers?.[k]; return typeof v === 'number' ? v : fb; }
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
-const alliesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v !== u && v.side === u.side && alive(v));
 /** A standing cover tile of this kind next to a tile. */
 function coverNext(cb: Combat, at: string, kind: 'half' | 'full'): boolean {
   const cov = coverOf(cb), [x, y] = xy(at);

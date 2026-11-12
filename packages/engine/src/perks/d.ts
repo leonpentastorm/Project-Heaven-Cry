@@ -30,7 +30,7 @@ import { makeObject } from '../objects';
 import { applyMemOp } from '../memory';
 import { d20, die, type Rng } from '../rng';
 import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
-import { rngOf } from '../kit';
+import { rngOf, tilesLine, foesOf, alliesOf } from '../kit';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -39,8 +39,6 @@ const me = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id === h
 const charOf = (h: Holder): Character | null => h.c || charOfUnit(h.u) || null;
 const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
 const turnStamp = (h: Holder) => stampOf('per_turn', { cb: h.cb, g: gameOf(h) });
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v) && !v.companion);
-const alliesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side === u.side && alive(v));
 /** Outburst damage (rules 1.5): Soul damage, or an elemental Outburst's (told from a Sigil's by the MP it carries). */
 const outburstHit = (src: any) => !!src && (src.type === 'soul' || (src.type === 'elemental' && src.spellMp != null));
 /** Whose glyph this is (a 1.3 save's Hold the Stroke tagged pooled glyphs "<unitId>#pool"; rules 1.4 asks 'ground_cap'). */
@@ -618,7 +616,7 @@ register({
     blessing_in: (ctx, h) => {
       const u = h.u, cb: Combat = ctx.cb; if (!u || !me(h, ctx.u) || !stateOf(h).preach) return;
       let line = '';
-      for (const e of foesOf(cb, u)) if (dist(e.pos, u.pos) <= 4) line += applyCond(cb, rngOf(h, ctx), u, e, 'shaken', undefined, undefined, { via: 'faith' });
+      for (const e of foesOf(cb, u, { companions: false })) if (dist(e.pos, u.pos) <= 4) line += applyCond(cb, rngOf(h, ctx), u, e, 'shaken', undefined, undefined, { via: 'faith' });
       if (line) log(cb, 'The sermon burns (Fire Sermon)' + line + '.');
     },
   },
@@ -640,7 +638,7 @@ register({
       available: (h) => (h.u && condOn(h.u, 'silenced') ? 'Silenced: no prayers.' : true),
       run: (h) => {
         const u = h.u!, cb = h.cb!, v = tiles(h), got: string[] = [];
-        for (const t of alliesOf(cb, u)) {
+        for (const t of alliesOf(cb, u, { self: true })) {
           if (dist(t.pos, u.pos) > 3) continue;
           const st = litOf(h.key, { u: t, cb, g: gameOf(h) });
           if (st.lit && st.lit.v > v) continue;
@@ -688,7 +686,7 @@ register({
 // voice from above (the Narrator speaks).
 // =====================================================================================================================
 const isUpper = (v: { kind?: string; tags?: string[] } | null | undefined) => !!v && (v.kind === 'upper_realm' || (v.tags || []).includes('upper_realm'));
-const upperFoes = (cb: Combat, u: Unit) => foesOf(cb, u).filter(isUpper);
+const upperFoes = (cb: Combat, u: Unit) => foesOf(cb, u, { companions: false }).filter(isUpper);
 /** The area map: upper-realm tokens within 10 tiles of the holder, once a scene each (a line; a lurker is revealed). */
 function owSenseUpper(h: Holder, at?: string) {
   const g = gameOf(h), c = charOf(h); if (!g || !c || c.dead) return; at ||= positionsOf(g)[c.id]; if (!at) return;
@@ -830,7 +828,7 @@ register({
         return;
       }
       if (u.hidden) reveal(cb, u, 'Echo Chamber: the Outburst is loud');
-      const near = foesOf(cb, u).filter((v) => dist(v.pos, u.pos) <= 10);
+      const near = foesOf(cb, u, { companions: false }).filter((v) => dist(v.pos, u.pos) <= 10);
       for (const v of near) (((cb.lastSeen ||= {})[v.side] ||= {}))[u.id] = u.pos;
       if (near.length) (cb.notes ||= []).push('TRAIT Hollow Heart (' + u.name + ', r' + cb.round + '): the Outburst is loud: ' + near.map((v) => v.name).join(', ') + ' know where ' + u.name + ' is until their next turn — yours to rule');
     },
@@ -1073,13 +1071,6 @@ interface Proj { id: string; kind: 'wall' | 'figure' | 'sound'; tile: string; le
 const MIR_KEY = 'perk:mirage';
 const mirState = (u: Unit, cb: Combat | null | undefined, g?: any) => stateOf({ key: MIR_KEY, u, cb, g } as any);
 const visMod = (c: Character | null | undefined) => mod(c?.skills?.visualization || 0);
-/** Tiles on the line between two tiles (excluding the ends). */
-function lineTiles(a: string, b: string): string[] {
-  let [x0, y0] = xy(a); const [x1, y1] = xy(b), out: string[] = [];
-  const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1; let err = dx + dy;
-  while (!(x0 === x1 && y0 === y1)) { const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } const k = key(x0, y0); if (k !== b) out.push(k); }
-  return out;
-}
 /** Every live projection on the field, with its caster. */
 function projections(cb: Combat): { by: Unit; p: Proj }[] {
   const out: { by: Unit; p: Proj }[] = [];
@@ -1095,7 +1086,7 @@ function castMirage(h: Holder, rng: Rng, specs: { kind: Proj['kind']; tile: stri
   for (const sp of specs) {
     const p: Proj = { id: 'mi' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: sp.kind, tile: sp.tile, left, believers: [] };
     const rolls: string[] = [];
-    for (const e of foesOf(cb, u)) {
+    for (const e of foesOf(cb, u, { companions: false })) {
       const aware = sp.kind === 'sound' ? dist(e.pos, sp.tile) <= HEARING : unitSees(cb, e, sp.tile); if (!aware) continue;
       const m = TIER_SAVE[e.tier || 'minion'] ?? 0, plus = (s.disproved || []).includes(e.id) ? 5 : 0, r = d20(rng), ok = r === 20 || (r !== 1 && r + m + plus >= tn);
       if (!ok) p.believers.push(e.id);
@@ -1155,7 +1146,7 @@ register({
     },
     attack_preview: (ctx, h) => {
       const a: Unit = ctx.att; if (!h.u || !a || a.side === h.u.side || ctx.fail || ctx.melee) return;
-      const line = lineTiles(a.pos, ctx.tgt.pos);
+      const line = tilesLine(a.pos, ctx.tgt.pos, { end: false });
       for (const p of (mirState(h.u, ctx.cb).proj || []) as Proj[]) if (p.kind === 'wall' && !p.solid && believes(a, p) && line.includes(p.tile)) { ctx.fail = 'A wall stands in the way (or so they believe).'; return; }
     },
     attack_roll: (ctx, h) => {

@@ -17,6 +17,7 @@ import { note } from './effects/narrator';
 import { sessionN } from './effects/uses';
 import { makeObject } from './objects';
 import { residueFlag } from './feelings';
+import { tilesAround } from './kit';
 
 // ---------- damage types, special ammo, the damage bucket ----------
 export interface AmmoType { id: string; damage_mult?: number; ignores_armor?: boolean; armor_mult?: number; applies?: string; damage_type?: string; meter_per_hit?: number }
@@ -213,7 +214,6 @@ export function throwItem(cb: Combat, rng: Rng, u: Unit, item: string, tile: str
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + w.name.toLowerCase());
   return null;
 }
-const tilesWithin = (cb: Combat, at: string, r: number) => { const [x0, y0] = xy(at), out: string[] = []; for (let x = x0 - r; x <= x0 + r; x++) for (let y = y0 - r; y <= y0 + r; y++) if (x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h) out.push(key(x, y)); return out; };
 /** A thrown item goes off on a tile (credited to the thrower: kills, bleed, the barrels it sets off). */
 export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item: string, radius = radiusOf(WEAPON[item])): string {
   const w = WEAPON[item], who = cb.units.filter((v) => !v.dead && !v.surrendered && dist(v.pos, tile) <= radius);
@@ -224,7 +224,7 @@ export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item:
   let out = '';
   switch (item) {
     case 'smoke_grenade': {
-      cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'veil', tiles: tilesWithin(cb, tile, radius), words: ['smoke'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
+      cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'veil', tiles: tilesAround(tile, radius, cb), words: ['smoke'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
       return ' · smoke fills ' + radius + ' tiles around ' + refOf(tile) + ' for 2 rounds';
     }
     case 'flashbang': for (const v of who) out += applyCond(cb, rng, by, v, 'blinded', 1, 'body', { via: 'dexterity' }); return out || ' · nobody caught in it';
@@ -233,7 +233,7 @@ export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item:
         if (['robot', 'machine', 'turret', 'drone'].includes(v.kind || '') || v.companion === 'drone') out += applyCond(cb, rng, by, v, 'stunned', 1, 'body', { skipSave: true, via: 'dexterity' });
         if (WEAPON[v.weapon]?.category === 'mana') { v.jammed = true; out += ' · ' + v.name + '\'s mana arm jams'; }
       }
-      cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'scramble' as any, tiles: tilesWithin(cb, tile, radius), words: ['scramble'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
+      cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'scramble' as any, tiles: tilesAround(tile, radius, cb), words: ['scramble'], by: by?.id || '', side: by?.side || 'pc', left: 2, mult: 1, who: by?.name || '' }];
       return (out || ' · nothing electronic caught in it') + ' · Sigils cost +1 AP there for 2 rounds';
     }
     default: {

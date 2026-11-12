@@ -31,7 +31,7 @@ import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing 
 import { d20, die, type Rng } from './rng';
 import { spotlight } from './spotlight';
 import { WEAPON, SKILL, ITEM } from './data';
-import { rngOf, overworld } from './kit';
+import { rngOf, overworld, tilesAround, foesOf } from './kit';
 
 export type { Belief, Vow } from './character';
 
@@ -879,7 +879,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   // The Miracle's fx (item 746) goes on the list before its effects (the cut-in plays first); once they have run it is
   // given the grant line (item 745: picked after them, so the line never moves the Miracle's own dice) and the summary
   // of what they did: the web needs no engine call.
-  const mfx = kind === 'miracle' ? emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? areaOf(a.tile, pe.entry.id === 'the_sky_answers' ? 2 : 1) : null, unit: u.id, char: c.id, name: pe.entry.name || id, text: pe.entry.text || '', line: null as string | null, summary: '' }) : null;
+  const mfx = kind === 'miracle' ? emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? tilesAround(a.tile, pe.entry.id === 'the_sky_answers' ? 2 : 1) : null, unit: u.id, char: c.id, name: pe.entry.name || id, text: pe.entry.text || '', line: null as string | null, summary: '' }) : null;
   // A Miracle is past the Elite and Boss guard (bug sweep, 12 Nov 2026: it may exceed the ceilings, once a session, for five levels of Devotion).
   const did = kind === 'miracle' ? unguarded(() => runEntry(cb, rng, u, kind, pe, t, a, power)) : runEntry(cb, rng, u, kind, pe, t, a, power);
   line += did;
@@ -924,8 +924,6 @@ function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs): 
   }
 }
 /** The square of tiles within r of a tile (r 1: 3×3; r 2: 5×5). */
-const areaOf = (tile: string, r = 1) => { const [x, y] = tile.split(',').map(Number), out: string[] = []; for (let i = -r; i <= r; i++) for (let j = -r; j <= r; j++) out.push((x + i) + ',' + (y + j)); return out; };
-const area3 = (tile: string) => areaOf(tile, 1);
 /** A Blessing lands on a unit: 'blessing_in' first (Blessed Shells may load it; Factory Made and The Old Blood change the
  * power), then the effect. */
 function land(cb: Combat, rng: Rng, u: Unit, t: Unit, entry: any, power: number, run: (power: number) => string): string {
@@ -933,13 +931,13 @@ function land(cb: Combat, rng: Rng, u: Unit, t: Unit, entry: any, power: number,
   if (ctx.handled) return ctx.out || '';
   return run(Math.max(0, ctx.power ?? power));
 }
-const enemiesIn = (cb: Combat, u: Unit, tiles: string[]) => cb.units.filter((v) => v.side !== u.side && !v.dead && !v.surrendered && tiles.includes(v.pos));
+const enemiesIn = (cb: Combat, u: Unit, tiles: string[]) => foesOf(cb, u, { downed: true }).filter((v) => tiles.includes(v.pos)); // a Downed enemy in the area counts
 function rollSaveVs(rng: Rng, by: Unit, t: Unit, fam: 'body' | 'brain' | 'heart'): { ok: boolean; text: string } {
   const r = d20(rng), m = unitSave(t, fam), tn = 12 + unitStrength(by, 'faith'), ok = r === 20 || (r !== 1 && r + m >= tn);
   return { ok, text: fam + ' save ' + (r + m) + ' vs ' + tn };
 }
 /** Enemies the praying unit sees (not Hidden, not out of the fight): a Miracle's "every enemy in sight". */
-const enemiesInSight = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v) && !v.hidden && unitSees(cb, u, v.pos));
+const enemiesInSight = (cb: Combat, u: Unit) => foesOf(cb, u, { hidden: false, seenBy: u });
 /** Would this enemy yield to Love Conquers: not a boss, not a machine, not no_surrender (a refused parley doesn't matter). */
 const canYield = (v: Unit) => v.side === 'foe' && v.tier !== 'boss' && !['machine', 'robot', 'turret', 'drone'].includes(v.kind || '') && !(v.tags || []).includes('no_surrender');
 /** End every harmful condition on a unit (Everyone Home): the non-boon conditions, and Prone, Bleeding, Dazed and a
@@ -1047,7 +1045,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     // The Quartermaster
     case 'resupply': return land(cb, rng, u, one!, e, power, () => { const r = freeReload(cb, one!); const res = (one!.res ||= {}); if (res.supplies != null) res.supplies += 1; return r + (res.supplies != null ? ' · +1 Supply' : ''); });
     case 'dig_in': return land(cb, rng, u, one!, e, power, () => { fs(one!).dugIn = one!.pos; one!.braced = true; delete one!.guardBrace; return ' · ' + one!.name + ' digs in (half cover until they move) and is Braced'; });
-    case 'covering_fire': { let out = ''; for (const v of enemiesIn(cb, u, area3(a.tile!))) out += applyCond(cb, rng, u, v, 'pinned', 1, 'body'); return out || ' · nobody in the area'; }
+    case 'covering_fire': { let out = ''; for (const v of enemiesIn(cb, u, tilesAround(a.tile!, 1))) out += applyCond(cb, rng, u, v, 'pinned', 1, 'body'); return out || ' · nobody in the area'; }
     case 'requisition_approved': { // rules 1.6.2 (item 728): the whole squad (characters), restocked, repaired, cleared, +3 AP banked
       let out = ''; const squad = cb.units.filter((x) => x.side === u.side && x.charId && !x.companion && !x.dead);
       for (const v of squad) { out += ' · ' + v.name + restock(cb, v); bankAp(v, 3, 'Requisition Approved', cb, u); }
@@ -1093,7 +1091,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     }
     // Mother Ember
     case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, effVal(e, 'heal', 10) * pw * mendFactorOf(u)));
-    case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: area3(a.tile!), until: cb.round + 2, heal: Math.round(effVal(e, 'heal', 4) * power * mendFactorOf(u)) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
+    case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: tilesAround(a.tile!, 1), until: cb.round + 2, heal: Math.round(effVal(e, 'heal', 4) * power * mendFactorOf(u)) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
     case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { const n = Number(fxOf(e, 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2), was = one!.ap; one!.ap = Math.min(AP_MAX, one!.ap + n); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +' + (one!.ap - was) + ' AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
     case 'everyone_home': { // rules 1.6.2 (item 731): full HP, the Downed stand, every harmful condition ends, a 40 shield each
       let out = '';
@@ -1109,7 +1107,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     case 'lightning_rod': return land(cb, rng, u, one!, e, power, (pw) => { let out = harmLine(cb, u, one!, prayerDamage(e, 50) * pw, 'elemental', 'lightning'); const n = cb.units.filter((x) => x.side !== u.side && alive(x) && x !== one && dist(x.pos, one!.pos) <= 2).sort((p, q) => dist(p.pos, one!.pos) - dist(q.pos, one!.pos))[0]; if (n) out += ' · it chains to ' + n.name + harmLine(cb, u, n, Number(fxOf(e, 'chain_damage')?.value ?? 20) * pw, 'elemental', 'lightning'); return out; });
     case 'gather_the_clouds': ((cb as any).faithClouds ||= []).push({ by: u.id, side: u.side }); return ' · until your next turn, your side\'s Storm riders count a stage higher';
     case 'the_sky_answers': { // rules 1.6.2 (item 732): a 5×5 in sight; the sky picks: enemies only; 150 Storm, Stunned 1, Shaken
-      let out = ''; const tiles = areaOf(a.tile!, 2);
+      let out = ''; const tiles = tilesAround(a.tile!, 2);
       for (const v of cb.units.filter((x) => x.side !== u.side && alive(x) && tiles.includes(x.pos))) out += harmLine(cb, u, v, P(150), 'elemental', 'lightning') + applyCond(cb, rng, u, v, 'stunned', 1, undefined, { skipSave: true }) + applyCond(cb, rng, u, v, 'shaken', undefined, undefined, { skipSave: true });
       return out || ' · the sky strikes empty ground';
     }

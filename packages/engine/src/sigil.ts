@@ -32,6 +32,7 @@ import {
   SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
 } from './magic';
 import { makeObject, OBJ } from './objects';
+import { tilesAround, canStand, inBounds } from './kit';
 
 type Fam = SigilFam;
 /** Enemy notice by tier (tactics.ts TIER_NOTICE; copied here so this module doesn't import tactics, which reads magic.ts
@@ -92,7 +93,6 @@ export interface Pattern {
   strokeId?: string; strokeSrc?: string; junctions?: string[];
 }
 const add = (k: string, d: Dir, n = 1) => { const [x, y] = xy(k); return key(x + d[0] * n, y + d[1] * n); };
-const onMap = (cb: Combat, k: string) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; };
 const neg = (d: Dir): Dir => [d[0] ? -d[0] : 0, d[1] ? -d[1] : 0];
 const sgn = (n: number) => (n > 0 ? 1 : n < 0 ? -1 : 0);
 /** Old glyphs only (rules 1.10 item 904): the 1.4 reading, for glyphs with no strokeId. Group the old glyphs of one side
@@ -241,14 +241,13 @@ const laneOffsets = (n: number) => { const lo = n % 2 ? -(n - 1) / 2 : -(n / 2 -
 /** The tiles a caster may aim at (the area), for a pattern, a facing and a depth. */
 function areaTiles(cb: Combat, p: Pattern, f: Facing, depth: number, from?: string): { tiles: string[]; lane: Record<string, string> } {
   const tiles: string[] = [], lane: Record<string, string> = {};
-  const put = (k: string, origin: string) => { if (onMap(cb, k) && !lane[k]) { tiles.push(k); lane[k] = origin; } };
+  const put = (k: string, origin: string) => { if (inBounds(cb, k) && !lane[k]) { tiles.push(k); lane[k] = origin; } };
   // A Stack (spec: the facing rule): "all around you, out to the range, in sight": centred on the caster, not the Stack.
-  if (f.mode === 'stack') { const s = from || p.tiles[0]; for (const k of around(s, depth)) if (k !== s && onMap(cb, k) && lineOfSight(cb, s, k)) put(k, s); return { tiles, lane }; }
+  if (f.mode === 'stack') { const s = from || p.tiles[0]; for (const k of tilesAround(s, depth)) if (k !== s && inBounds(cb, k) && lineOfSight(cb, s, k)) put(k, s); return { tiles, lane }; }
   if (f.mode === 'along') { const ls = laneStep(f.dir); for (let k = 1; k <= depth; k++) { const c = add(f.far!, f.dir, k); for (const j of laneOffsets(p.tiles.length)) put(add(c, ls, j), f.far!); } return { tiles, lane }; }
   for (let k = 1; k <= depth; k++) for (const g of p.tiles) put(add(g, f.dir, k), g);
   return { tiles, lane };
 }
-export const around = (k: string, r: number) => { const [x, y] = xy(k), out: string[] = []; for (let i = -r; i <= r; i++) for (let j = -r; j <= r; j++) out.push((x + i) + ',' + (y + j)); return out; };
 /** The spell's depth: the Reach word's range + the caster's range bonus (once), or 1 for Touch (spec: Reach). Items
  * may change it ('evoke_area' {u, spell, pattern, depth}). */
 export function spellRange(cb: Combat, u: Unit, sp: Spell, p?: Pattern | null): number {
@@ -261,7 +260,7 @@ export function spellRange(cb: Combat, u: Unit, sp: Spell, p?: Pattern | null): 
 const liveAt = (cb: Combat, k: string, not?: Unit) => cb.units.find((x) => x.pos === k && !x.dead && x !== not);
 /** Does a tile stop a SEEK bolt (full cover, a wall, a solid tile, a RAISE wall, a closed door)? */
 function stopsBolt(cb: Combat, k: string): boolean {
-  if (!onMap(cb, k) || cb.map.solid.includes(k) || (cb.map.full || []).includes(k)) return true;
+  if (!inBounds(cb, k) || cb.map.solid.includes(k) || (cb.map.full || []).includes(k)) return true;
   return objectsAt(cb, k).some((o) => (o.hp == null || o.hp > 0) && !(o as any).open && ((o as any).sigilWall || ['pillar', 'barricade', 'door', 'sigil_wall'].includes(o.kind)));
 }
 function line(a: string, b: string): string[] {
@@ -293,12 +292,12 @@ export function dir8(a: string, b: string): Dir {
  * faced: a cone from the landing tile, as long as its length and widening like the full-auto cone. */
 export function burstTiles(cb: Combat, sp: Spell, impact: string, f: Dir): { tiles: string[]; mult: Record<string, number>; core: string } {
   const mult: Record<string, number> = {};
-  const put = (k: string, m: number) => { if (!onMap(cb, k)) return; mult[k] = Math.max(mult[k] ?? 0, m); };
+  const put = (k: string, m: number) => { if (!inBounds(cb, k)) return; mult[k] = Math.max(mult[k] ?? 0, m); };
   if (!sp.burst) put(impact, 1);
-  if (sp.spread) for (const k of around(impact, sp.radius)) put(k, sp.radiusMult);
+  if (sp.spread) for (const k of tilesAround(impact, sp.radius)) put(k, sp.radiusMult);
   if (sp.push) {
     const apex = add(impact, f, -1), [px, py] = xy(apex), fl = Math.hypot(f[0], f[1]) || 1;
-    for (const k of around(apex, sp.coneLen)) { const [x, y] = xy(k), ax = x - px, ay = y - py, l = Math.hypot(ax, ay); if (!l || dist(apex, k) > sp.coneLen) continue; if ((ax * f[0] + ay * f[1]) / (l * fl) >= 0.7) put(k, sp.coneMult); }
+    for (const k of tilesAround(apex, sp.coneLen)) { const [x, y] = xy(k), ax = x - px, ay = y - py, l = Math.hypot(ax, ay); if (!l || dist(apex, k) > sp.coneLen) continue; if ((ax * f[0] + ay * f[1]) / (l * fl) >= 0.7) put(k, sp.coneMult); }
     put(impact, sp.coneMult);
   }
   if (sp.condense) mult[impact] = Math.max(mult[impact] ?? 0, sp.coreMult);
@@ -481,13 +480,9 @@ function shoveEnd(cb: Combat, t: Unit, from: string, n: number): string {
   for (let i = 0; i < Math.abs(n); i++) { const k = key(x + dx, y + dy); if (!standable(cb.map, k) || cb.units.some((u) => u !== t && !u.dead && u.pos === k) || objectsAt(cb, k).some((o) => o.hp == null ? false : o.hp > 0 && ['pillar', 'barricade', 'door', 'crate', 'sigil_wall'].includes(o.kind) && !o.open)) break; x += dx; y += dy; }
   return key(x, y);
 }
-/** A free tile a creature may land on (STEP): standable, nobody there, nothing blocking. */
-export function freeTile(cb: Combat, k: string, not?: Unit): boolean {
-  return onMap(cb, k) && standable(cb.map, k) && !cb.units.some((u) => u !== not && !u.dead && u.pos === k) && !objectsAt(cb, k).some((o) => (o.hp == null || o.hp > 0) && !(o as any).open && ['crate', 'low_wall', 'pillar', 'barricade', 'door', 'hole', 'barrel', 'container', 'terminal', 'turret', 'sigil_wall'].includes(o.kind));
-}
 /** Is a tile empty for RAISE: no creature, object, glyph or placed Sigil magic. */
 function emptyForRaise(cb: Combat, k: string): boolean {
-  return onMap(cb, k) && standable(cb.map, k) && !cb.units.some((u) => !u.dead && u.pos === k) && !objectsAt(cb, k).length && !(cb.glyphs || []).some((g) => g.pos === k)
+  return inBounds(cb, k) && standable(cb.map, k) && !cb.units.some((u) => !u.dead && u.pos === k) && !objectsAt(cb, k).length && !(cb.glyphs || []).some((g) => g.pos === k)
     && !(cb.zones || []).some((z) => PLACED.has(z.kind) && z.tiles.includes(k));
 }
 const PLACED = new Set(['field', 'trap', 'turret', 'wall']);
@@ -562,8 +557,8 @@ export function evokeOrigins(cb: Combat, u: Unit, p: Pattern | string): { tile: 
   const pat = typeof p === 'string' ? findPattern(cb, p, u.pos) : p; if (typeof pat === 'string') return [];
   const er: any = emit(cb, 'evoke_reach', { u, pattern: pat, reach: 1, cb }), reach = Math.max(1, er.reach || 1), out: { tile: string; ok: boolean; why?: string; mode?: Facing['mode']; dir?: Dir }[] = [];
   const seen = new Set<string>();
-  for (const g of pat.tiles) for (const k of around(g, reach)) {
-    if (seen.has(k) || !onMap(cb, k)) continue; seen.add(k);
+  for (const g of pat.tiles) for (const k of tilesAround(g, reach)) {
+    if (seen.has(k) || !inBounds(cb, k)) continue; seen.add(k);
     const d = Math.min(...pat.tiles.map((t) => dist(t, k)));
     if (d > 1 && !pat.tiles.some((t) => dist(t, k) <= reach && lineOfSight(cb, k, t))) continue;
     const blocked = !standable(cb.map, k) || cb.units.some((x) => x !== u && !x.dead && x.pos === k);
@@ -602,7 +597,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   let area: string[] = [], laneOf: Record<string, string> = {}, relays: { ally: Unit; hops: string[] }[] = [];
   if (sp.missile === 'relay') {
     relays = relayChains(cb, u, sp, depth);
-    for (const r of relays) for (const k of around(r.ally.pos, 1)) if (onMap(cb, k) && !laneOf[k]) { area.push(k); laneOf[k] = r.ally.pos; }
+    for (const r of relays) for (const k of tilesAround(r.ally.pos, 1)) if (inBounds(cb, k) && !laneOf[k]) { area.push(k); laneOf[k] = r.ally.pos; }
   } else { const a = areaTiles(cb, p, facing, depth, u.pos); area = a.tiles; laneOf = a.lane; }
   const emptyOk = !!(sp.spread || sp.push || sp.workings.length || sp.stay || sp.wait || sp.watch);
   // KIN (spec: Filter): you and your allies can't be picked; your own tile is the one exception (the self-target rule).
@@ -699,8 +694,8 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   if (sp.pull) for (const a of live) { const t = cb.units.find((x) => x.id === a.unit)!; if (t === caster) continue; const to = shoveEnd(cb, t, c.source, -sp.pull); if (to !== t.pos) plan.pull.push({ unit: t.id, from: t.pos, to }); }
   // Workings (spec: Workings; with a Burst they widen).
   const tiles = bt.tiles;
-  if (sp.workings.includes('veil')) plan.veil = [...new Set([...around(c.impact, (W('veil') as any)?.blocks_sight_radius ?? 1), ...(sp.burst ? tiles : [])])].filter((k) => onMap(cb, k));
-  if (sp.workings.includes('light')) plan.light = [...new Set([...around(c.impact, ((W('light') as any)?.reveals_hidden_radius ?? 4) + iv(sp, 'light', 'radius')), ...(sp.burst ? tiles : [])])].filter((k) => onMap(cb, k));
+  if (sp.workings.includes('veil')) plan.veil = [...new Set([...tilesAround(c.impact, (W('veil') as any)?.blocks_sight_radius ?? 1), ...(sp.burst ? tiles : [])])].filter((k) => inBounds(cb, k));
+  if (sp.workings.includes('light')) plan.light = [...new Set([...tilesAround(c.impact, ((W('light') as any)?.reveals_hidden_radius ?? 4) + iv(sp, 'light', 'radius')), ...(sp.burst ? tiles : [])])].filter((k) => inBounds(cb, k));
   if (sp.workings.includes('raise')) plan.raise = (sp.burst ? tiles : [c.impact]).filter((k) => emptyForRaise(cb, k));
   if (sp.workings.includes('null')) {
     const T = sp.burst ? tiles : [c.impact], n = nullCatch(cb, T), S = new Set(T); plan.nulls = n.glyphs.length + n.zones.length + n.walls.length;
@@ -719,13 +714,13 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   if (sp.workings.includes('step')) {
     const movers = live.map((a) => cb.units.find((x) => x.id === a.unit)!).filter(Boolean);
     const dest = c.opts.dest, max = ((W('step') as any)?.teleport_tiles ?? 4) + iv(sp, 'step', 'teleport_tiles');
-    plan.stepTo = movers.length ? around(sp.burst ? c.impact : (main ? main.pos : c.impact), max).filter((k) => freeTile(cb, k, sp.burst ? undefined : main || undefined)) : [];
+    plan.stepTo = movers.length ? tilesAround(sp.burst ? c.impact : (main ? main.pos : c.impact), max).filter((k) => canStand(cb, k, sp.burst ? undefined : main || undefined)) : [];
     if (!dest && movers.length) plan.why = 'Pick where STEP lands them: a free tile up to ' + max + ' away.';
     if (dest && movers.length) {
       const anchor = sp.burst ? c.impact : (main ? main.pos : c.impact), [ax, ay] = xy(anchor), [dx, dy] = xy(dest), off: Dir = [dx - ax, dy - ay];
       if (Math.max(Math.abs(off[0]), Math.abs(off[1])) > max) plan.why = 'STEP moves at most ' + max + ' tiles: pick a landing tile closer.';
-      else if (!sp.burst && !freeTile(cb, dest, main || undefined)) plan.why = 'That landing tile isn\'t free.';
-      else for (const t of movers) { const to = add(t.pos, off); if (to !== t.pos && freeTile(cb, to, t)) plan.step.push({ unit: t.id, from: t.pos, to }); }
+      else if (!sp.burst && !canStand(cb, dest, main || undefined)) plan.why = 'That landing tile isn\'t free.';
+      else for (const t of movers) { const to = add(t.pos, off); if (to !== t.pos && canStand(cb, to, t)) plan.step.push({ unit: t.id, from: t.pos, to }); }
     }
   }
   return { plan, affected: aff };
@@ -1089,7 +1084,7 @@ function strikeInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', 
   }
   for (const pl of mp.pull) { const t = cb.units.find((x) => x.id === pl.unit); if (t && !t.dead) line += magicShove(cb, t, o.source, -sp.pull, by); }
   for (const st of mp.step) {
-    const t = cb.units.find((x) => x.id === st.unit); if (!t || t.dead || !freeTile(cb, st.to, t)) continue;
+    const t = cb.units.find((x) => x.id === st.unit); if (!t || t.dead || !canStand(cb, st.to, t)) continue;
     let failed = '';
     if (by && t.side !== by.side) { const sv = teleportSave(cb, rng, by, t); if (sv.held) { line += sv.line; continue; } failed = sv.line; }
     const from = t.pos; t.pos = st.to; emitFx(cb, 'blink', { target: t.id, from, to: st.to, element: 'step' }); line += ' · ' + t.name + ' steps to ' + refOf(st.to) + failed;
@@ -1233,7 +1228,7 @@ function turretFire(cb: Combat, rng: Rng, z: Zone) {
 export function turretAim(cb: Combat, sp: Spell, at: string, side: 'pc' | 'foe', by: Unit | null): { range: number; reach: string[]; targets: Unit[] } {
   const range = sp.reach && sp.missile !== 'relay' ? sp.range + (by?.mg?.rangeBonus || 0) : 1;
   const sees = (k: string) => dist(at, k) <= range && (sp.missile === 'appear' || dist(at, k) <= 1 || lineOfSight(cb, at, k));
-  const reach = around(at, range).filter((k) => k !== at && onMap(cb, k) && sees(k));
+  const reach = tilesAround(at, range).filter((k) => k !== at && inBounds(cb, k) && sees(k));
   const targets = cb.units.map((v, i) => ({ v, i })).filter(({ v }) => !v.dead && v.pos !== at && !(sp.kin && v.side === side) && !(sp.harmful && (v.downed || v.surrendered) && !sp.subjects.some(isBoonWord)) && !(v.hidden && v.side !== side) && sees(v.pos))
     .sort((a, b) => dist(at, a.v.pos) - dist(at, b.v.pos) || a.v.hp - b.v.hp || a.i - b.i).slice(0, sp.missiles).map((x) => x.v);
   return { range, reach, targets };
@@ -1456,7 +1451,7 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
     for (const t of pool.slice(0, 6)) {
       const self = t === u, f = self ? ([0, 1] as Dir) : dir8(u.pos, t.pos), tiles = [u.pos];
       for (let i = 1; i < L; i++) tiles.push(add(u.pos, f, -i));
-      if (tiles.slice(1).some((k, i) => !freeTile(cb, k, u) || (cb.glyphs || []).some((g) => g.pos === k) || P.dist[k] === undefined || P.dist[k] > i + 1)) continue;
+      if (tiles.slice(1).some((k, i) => !canStand(cb, k, u) || (cb.glyphs || []).some((g) => g.pos === k) || P.dist[k] === undefined || P.dist[k] > i + 1)) continue;
       const pv = tryLine(cb, u, words, tiles, t.pos); if (!pv || pv.fizzle) continue;
       const s = scorePlan(cb, u, pv); if (!(s > 0)) continue;
       if (!best || s / cost > best.score / best.cost) best = { score: s, words, tiles, aim: t.pos, cost, pre: needVent ? 'vent' : needCore ? 'core' : null };

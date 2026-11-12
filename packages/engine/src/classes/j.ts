@@ -22,7 +22,7 @@ import { castAt, glyphCost, sigilReady } from '../sigil';
 import { d20, die } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction , dropHeldShot } from '../tactics';
 import { makeObject } from '../objects';
-import { overworld, say, unitById, tileOf, rngOf } from '../kit';
+import { overworld, say, unitById, tileOf, rngOf, foesOf } from '../kit';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -36,7 +36,6 @@ const isRanged = (u: Unit) => { const w = W(u); return !!w && !isMelee(w) && w.c
 const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
 const adj = (a: string, b: string) => dist(a, b) <= 1;
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
 /** Run f with the weapon's state put back afterwards (a shot paid for elsewhere: no ammo, Heat, recoil count, wear). */
 function quiet<T>(u: Unit, f: () => T): T {
   const s = { ammo: u.ammo, heat: u.heat, jammed: u.jammed, shots: u.shotsThisTurn, dur: u.dur, fs: u.firstShotDone, ft: u.firstShotTurn, at: u.attackedTurn, mom: u.res?.momentum };

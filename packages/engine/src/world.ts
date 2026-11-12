@@ -19,6 +19,7 @@ import { type Where, missionsOf, markObjective, objectiveOf, objectiveStatus, op
 import { KINDS } from './tactics';
 import { canon } from './memory';
 import { type GameState, type Npc, type Check, type NarratorTurn, RuleError, _world, storyCb, positionsOf, npcsOf, storyObjects, zoneMap, apLeft, campaignOf, portraitFor, setStoryCond } from './game';
+import { tilesLine } from './kit';
 
 const WP: any = WORLD_PLAY;
 const fail = (m: string): never => { throw new RuleError(m); };
@@ -663,7 +664,7 @@ export function walkStory(g: GameState, c: Character, k: string): boolean {
   const cb = storyCb(g), u = cb.units.find((x) => x.charId === c.id); if (!u) return false;
   const P = paths(cb, u.pos, u.id);
   if (P.dist[k] === undefined || k === u.pos) {
-    const crosses = lineTiles(u.pos, k).some((t) => zoneHazards(g).some((h) => hazardLiveAt(h, t, 'pc')));
+    const crosses = tilesLine(u.pos, k).some((t) => zoneHazards(g).some((h) => hazardLiveAt(h, t, 'pc')));
     if (crosses) { W().push(g, { kind: 'system', text: c.name + ' can\'t get to ' + refOf(k) + ' without crossing the hazard.', ooc: true }); return false; }
     positionsOf(g)[c.id] = k; W().push(g, { kind: 'system', text: c.name + ' moves to ' + refOf(k) + '.' }); return true;
   }
@@ -676,11 +677,6 @@ export function walkStory(g: GameState, c: Character, k: string): boolean {
   writeBack(g, cb, c);
   enterTriggers(g, c, route);
   return true;
-}
-function lineTiles(a: string, b: string): string[] {
-  const [x0, y0] = a.split(',').map(Number), [x1, y1] = b.split(',').map(Number), n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)), out: string[] = [];
-  for (let i = 1; i <= n; i++) out.push(Math.round(x0 + ((x1 - x0) * i) / n) + ',' + Math.round(y0 + ((y1 - y0) * i) / n));
-  return out;
 }
 
 // ---------- after every action ----------

@@ -21,7 +21,7 @@ import {
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
 import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana } from '../magic';
-import { overworld, say, unitById, tileOf, rngOf } from '../kit';
+import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
 type Fam = 'body' | 'brain' | 'heart';
 import { d20, type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, hide, seenByFoes, HEARING } from '../tactics';
@@ -32,7 +32,6 @@ import { makeObject, kindOf } from '../objects';
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const myTurn = (h: Holder) => !!h.cb && !!h.u && h.cb.order[h.cb.turn] === h.u.id && !h.cb.window;
 const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
-const free = (cb: Combat, k: string, not?: Unit) => standable(cb.map, k) && !moveBlockers(cb).has(k) && !cb.units.some((v) => v !== not && !v.dead && v.pos === k);
 /** The fight a stat query is asked in (statQuery's holder has no fight when actionAp is called with {u} alone). */
 const fightOf = (h: Holder): Combat | null => h.cb || (h.g?.combat && h.u && h.g.combat.units.includes(h.u) ? h.g.combat : null);
 /** An off-turn policy set for the fight with a 0-AP action (as lane I's Riposte and Interpose). */
@@ -149,7 +148,7 @@ register({
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
       const how = args.choice === 'prone' ? 'prone' : 'push';
       if (how === 'prone' && t.prone) return { ok: false, why: t.name + ' is already prone.' };
-      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !free(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] }; }
+      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !canStand(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] }; }
       return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (12 + unitStrength(u, 'raw_power')) + ').'] };
     },
     run: (h, args, rng) => {
@@ -160,7 +159,7 @@ register({
       if (s.ok) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': ' + (s.cancel ? s.line : 'holds firm (' + s.line + ')') + '.'); return; }
       if (how === 'push') {
         const to = pushTile(cb, u, t);
-        const fm: any = to && free(cb, to, t) ? emit(cb, 'forced_move', { u: t, by: u, tiles: 1, to, how: 'shove', cancel: false, cb, rng }) : { cancel: true };
+        const fm: any = to && canStand(cb, to, t) ? emit(cb, 'forced_move', { u: t, by: u, tiles: 1, to, how: 'shove', cancel: false, cb, rng }) : { cancel: true };
         if (fm.cancel || !to) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': holds firm.'); return; }
         t.pos = to; t.braced = false;
         emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to, ok: true });
@@ -477,7 +476,7 @@ register({
       if (k === u.pos) return { ok: false, why: 'Put it on another tile.' };
       if (dist(u.pos, k) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' };
       if (!unitSees(cb, u, k)) return { ok: false, why: 'You can\'t see that tile.' };
-      if (!free(cb, k) || imagesOf(cb).some((i) => i.pos === k)) return { ok: false, why: 'That tile isn\'t free.' };
+      if (!canStand(cb, k) || imagesOf(cb).some((i) => i.pos === k)) return { ok: false, why: 'That tile isn\'t free.' };
       return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (12 + unitStrength(u, 'brain_power')) + ').'] };
     },
     run: (h, args, rng) => {

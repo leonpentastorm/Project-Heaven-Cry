@@ -22,7 +22,7 @@ import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
 import { callMarks, callLevel } from '../calls/core';
 import { CALL, callStepAt } from '../calls/data';
 import { positionsOf } from '../game';
-import { overworld, say, unitById, tileOf, rngOf } from '../kit';
+import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -662,7 +662,7 @@ const objLanding = (cb: Combat, tile: string, o: any): string | null => {
   return null;
 };
 const landing = (cb: Combat, tile: string, self: Unit): string | null => {
-  const free = (k: string) => standable(cb.map, k) && !moveBlockers(cb).has(k) && !cb.units.some((v) => v !== self && !v.dead && v.pos === k);
+  const free = (k: string) => canStand(cb, k, self);
   if (free(tile)) return tile;
   const [x, y] = xy(tile); for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]]) { const k = key(x + dx, y + dy); if (free(k)) return k; }
   return null;
