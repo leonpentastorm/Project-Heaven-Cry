@@ -746,3 +746,20 @@ once whether the reference moved.
 4. The generic `heal` op ignores `scale` (`effects/core.ts:212`).
 5. CLAUDE.md says 82 bespoke ops; `effect_ops.json` has 113 (192 in all).
 6. An enemy's blast splash is not scaled by its tier or level (`combat.ts:1173`).
+
+
+## Leon's answers (12 Nov 2026)
+
+1. **No damage slope on rolled attacks** (skill buys accuracy, level buys damage): **yes.**
+5. **Melee's all-in ceiling goes up to 165%: yes, "but tanks is melee too so consider that".** The exposure allowance
+   is for standing in reach; a Defender already has the armour, Guard and HP to stand there, so the tank's own melee
+   must not also take the full allowance. To be settled in step b2 with the tank build measured: the lead's starting
+   rule is that the allowance shrinks as the build's own protection grows, so the heavy-melee damage dealer reaches
+   165% and the Defender sits lower.
+7. **A shield stops blasts, traps and hazards** (everything but damage over time and true damage): **yes.**
+8. **Flat things grow with level: yes.** "Standardize the formula will do this, balance everything around added
+   multipliers so in the future changing things is just switching a number." Every system's identity is therefore a
+   named multiplier in data on top of the shared formula; nothing is fitted by a number in code.
+9. **The Elite and Boss guard covers every action: yes.**
+
+The other questions stand at their recommendations.

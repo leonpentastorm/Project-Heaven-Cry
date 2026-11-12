@@ -182,10 +182,32 @@ Finisher); a gun in each hand (123 to 144%).
 **Order suggested:** 1 (many targets) first, because it changes every other number; then 9 (a yardstick for control),
 5 (class moves), 2 to 4 (the weapons left out), 6 to 8, and the rest with Weapon Arts and armour.
 
+## 11. Bugs found by the audits and fixed (Leon, 12 Nov: "autofix everything you consider bug and add to the tally")
+
+| Bug | On live | State |
+| --- | --- | --- |
+| An enemy 13 or 14 tiles off with a long gun never moved or fired | Hidden by the small maps | Fixed |
+| A drawn glyph vanished before its Evoke played | Yes | Fixed |
+| Edge Word triggered on an opportunity attack | Yes | Fixed |
+| The step out played before the opportunity attack that interrupted it | Yes | Fixed |
+| The longbow deals a flat 20 (its formula is text the engine doesn't read) | Yes | Being fixed |
+| An enemy's blast splash ignores its tier and level | Yes | Being fixed |
+| The generic heal effect ignores its scale | Yes | Being fixed |
+| An enemy technique (most Bursts) goes at the first character in the list, not the chosen target | Yes | Being fixed |
+| A shield stops a bullet or a spell but not a grenade, a trap or a hazard | Yes | Being fixed (ruled: it stops them) |
+| The Elite and Boss guard covered Sigil only | New in this patch | Being widened to every action |
+| Card texts with old numbers (the Outburst base, Triage, Stim Throw, Rally) | New in this patch | Being fixed |
+| The Narrator prompt 45 tokens over its cap | New in this patch | Being fixed |
+
 ## Still moving (12 Nov)
 
-- **Rules 1.22**, Faith round 2: being built.
-- **Rules 1.23**, the defence step (no round limit, the healer hunted, the medic pass, Boss HP): being built.
+- **Rules 1.22**, Faith round 2: built; the Hymn turn is being raised from 125% to 150% (Leon).
+- **Rules 1.23**, the defence step: built (no round limit, enemies go for the healer, the medic's kit with the level
+  factor, Boss HP 960 to 820); to be verified.
+- **Rules 1.24**, MP off Virtue and Pumps that cost MP: being built.
+- **The capstone** (balance pass section 17): one damage formula (`proposals/2026-11-unified-damage.md`), then the
+  re-fit so that an **all-in** build reaches each ceiling and a normal share sits at ceiling ÷ 1.25; many targets;
+  a yardstick for control; the balance contract and its guard.
 - Open with Leon: bug 12 (which action shows no AP cost); the questions in each hand-off not yet answered.
 - Not done: the version bump and changelog, the stale suites (`soul`, `heart`, `feelings40`, `sigil15`, `magic`),
   a playtest of any of it. **Nothing here is live.**
