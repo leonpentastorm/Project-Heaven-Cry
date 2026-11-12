@@ -10549,6 +10549,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-hope.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-hope.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-mercy": {
+      "id": "feeling-mercy",
+      "label": "Mercy: an open cupped curve, lowered, like a hand let down",
+      "path": "art/icons/feelings/feeling-mercy.png",
+      "sha256": "c4f91123710ede6d39e9bad266ac5957b211d8137ee2127ce20ad8792686933c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-mercy.png",
+        "128": "art/icons/feelings/exports/128/feeling-mercy.png",
+        "64": "art/icons/feelings/exports/64/feeling-mercy.png",
+        "56": "art/icons/feelings/exports/56/feeling-mercy.png",
+        "48": "art/icons/feelings/exports/48/feeling-mercy.png",
+        "44": "art/icons/feelings/exports/44/feeling-mercy.png",
+        "40": "art/icons/feelings/exports/40/feeling-mercy.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-mercy.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-mercy.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {

@@ -13,5 +13,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `feeling-pride.png`: Pride: the ribbon rises into a tall straight spire.
 - `feeling-despair.png`: Despair: the ribbon unravels downward into loose threads.
 - `feeling-hope.png`: Hope: a small flame-shaped ribbon rising from a low flat line.
+- `feeling-mercy.png`: Mercy: an open cupped curve, lowered, like a hand let down.
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
