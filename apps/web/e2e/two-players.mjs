@@ -58,6 +58,20 @@ const myTurn = (p) => p.evaluate(() => { const s = window.__phc.getState(), g = 
 const books = (p) => p.evaluate(() => { const s = window.__phc.getState(), cb = s.game && s.game.combat, dock = document.querySelector('.phc-cb-dock');
   return { v: s.game && s.game.v, round: cb && cb.round, unit: cb && cb.order[cb.turn], lock: dock && dock.getAttribute('data-lock'), fx: window.__phcFxDebug && window.__phcFxDebug(), net: window.__phc.net && window.__phc.net() }; });
 const version = (p) => p.evaluate(() => { const g = window.__phc.getState().game; return g ? g.v : -1; });
+// Fog of war is the engine's (fog.ts; docs/design/handoffs/client-boundary-2-fog.md): a guest's view holds no living hostile
+// its side doesn't see, nowhere but in the effects of the moment it was seen and the log (the known gap); every hostile
+// it does hold stands on a tile the view's own sight (cb.fog) says is seen.
+let fogChecks = 0;
+const fogLeaks = async () => {
+  const truth = await host.evaluate(() => { const g = window.__phc.truth(); return g && g.combat ? JSON.stringify(g.combat.units.map((u) => ({ id: u.id, side: u.side, dead: u.dead }))) : null; });
+  const view = await guest.evaluate(() => { const cb = window.__phc.getState().game?.combat; return cb ? JSON.stringify({ ...cb, log: [], fx: [] }) : null; });
+  if (!truth || !view) return [];
+  const T = JSON.parse(truth), V = JSON.parse(view), inView = new Set(V.units.map((u) => u.id)), out = [];
+  if (!V.fog) out.push('no fog in the view');
+  for (const u of T) if (u.side === 'foe' && !u.dead && !inView.has(u.id) && view.includes('"' + u.id + '"')) out.push('unseen ' + u.id + ' named');
+  for (const u of V.units) if (u.side === 'foe' && !u.dead && V.fog && !V.fog.tiles.includes(u.pos)) out.push(u.id + ' on an unseen tile ' + u.pos);
+  fogChecks++; return out;
+};
 let lastKey = '', lastChange = Date.now();
 for (let i = 0; i < 6000; i++) {
   const states = [await myTurn(host), await myTurn(guest)];
@@ -75,6 +89,7 @@ for (let i = 0; i < 6000; i++) {
     if (await conf.isEnabled()) await conf.click(); else await p.getByRole('button', { name: 'End turn', exact: true }).click();
     await p.waitForTimeout(60);
   }
+  if (i % 20 === 0) { const leaks = await fogLeaks(); if (leaks.length) { log('FAIL fog: the guest\'s view holds what its side can\'t see:', leaks.join(', ')); process.exitCode = 1; } }
   if (i % 100 === 0) console.log('loop', i, states.join(','));
   await host.waitForTimeout(80);
 }
@@ -85,6 +100,8 @@ log('guest saw', gs.banners.length, 'banners, peak', gs.fx, 'fx nodes, cut-in', 
 if (!gs.banners.length || !gs.fx || !hs.banners.length || !hs.fx) { log('FAIL a player missed the banners or the effects'); process.exitCode = 1; }
 const named = (l) => l.filter((t) => /HOSTILE/.test(t)).length;
 if (named(gs.banners) === 0 || named(hs.banners) === 0) { log('FAIL a player saw no hostile-turn banner'); process.exitCode = 1; }
+log('fog checks', fogChecks);
+if (!fogChecks) { log('FAIL fog: never checked'); process.exitCode = 1; }
 log('combat over dialog', await host.locator('text=Back to the story ›').count(), await guest.locator('text=Back to the story ›').count());
 await click(host, 'Back to the story ›'); await click(guest, 'Back to the story ›');
 await host.waitForSelector('text=The pad goes quiet', { timeout: 10000 });
