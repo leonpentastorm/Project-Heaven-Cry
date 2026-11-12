@@ -6,5 +6,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `feeling-grief.png`: Grief: the ribbon falls and pools at the bottom like rain running off.
 - `feeling-fear.png`: Fear: the ribbon recoils outward from an empty centre, in broken ring fragments.
 - `feeling-love.png`: Love: two ribbons wrap around each other into one knot.
+- `feeling-joy.png`: Joy: the ribbon leaps in a high arc with a small spark at the peak.
 
 Test set only. Await Leon’s verdict before the rest, as requested in the Outburst brief.

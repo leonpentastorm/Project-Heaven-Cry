@@ -10374,6 +10374,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-love.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-love.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-joy": {
+      "id": "feeling-joy",
+      "label": "Joy: the ribbon leaps in a high arc with a small spark at the peak",
+      "path": "art/icons/feelings/feeling-joy.png",
+      "sha256": "cbef1a7ef71e54bb6c40004f9655655eeb3b9b7fd35643c62bc07b653e99d708",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-joy.png",
+        "128": "art/icons/feelings/exports/128/feeling-joy.png",
+        "64": "art/icons/feelings/exports/64/feeling-joy.png",
+        "56": "art/icons/feelings/exports/56/feeling-joy.png",
+        "48": "art/icons/feelings/exports/48/feeling-joy.png",
+        "44": "art/icons/feelings/exports/44/feeling-joy.png",
+        "40": "art/icons/feelings/exports/40/feeling-joy.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-joy.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-joy.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

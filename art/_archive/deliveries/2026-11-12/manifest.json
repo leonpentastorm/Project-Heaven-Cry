@@ -631,6 +631,44 @@
           "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
         }
       ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-joy.png",
+      "sha256": "cbef1a7ef71e54bb6c40004f9655655eeb3b9b7fd35643c62bc07b653e99d708",
+      "id": "feeling-joy",
+      "family": "feelings",
+      "action": "Joy: the ribbon leaps in a high arc with a small spark at the peak.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-joy.png",
+        "sha256": "e529a3ba8df2dc9196d55b2328968d754ed608f5ea7c01663687d4ecacb2c4c8"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-joy.png",
+        "sha256": "cbef1a7ef71e54bb6c40004f9655655eeb3b9b7fd35643c62bc07b653e99d708"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-joy.txt",
+        "sha256": "61877a39e51fa47a25ebdf363c565da7b75e45e2c2d459e3a405e9cb0c6057f1"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-joy.png",
+        "128": "art/icons/feelings/exports/128/feeling-joy.png",
+        "64": "art/icons/feelings/exports/64/feeling-joy.png",
+        "56": "art/icons/feelings/exports/56/feeling-joy.png",
+        "48": "art/icons/feelings/exports/48/feeling-joy.png",
+        "44": "art/icons/feelings/exports/44/feeling-joy.png",
+        "40": "art/icons/feelings/exports/40/feeling-joy.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
     }
   ]
 }
