@@ -25,6 +25,7 @@ import { CALL, callStepAt } from '../calls/data';
 import { positionsOf } from '../game';
 import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
 import { rollVs } from '../rolls';
+import { price, costOf, freely } from '../effects/cost';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -35,7 +36,7 @@ const charState = (c: Character | null | undefined): Record<string, any> => (c ?
 /** Read a character's item state without creating it (stat queries and previews must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};
 /** Do something with the AP check out of the way (a free reload, clear or repair): the AP is given back after. */
-function free<T>(u: Unit, f: () => T): T { const keep = u.ap; u.ap = 99; try { return f(); } finally { u.ap = keep; } }
+const free = freely;
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
 const isMachine = (x: { kind?: string; name?: string } | null | undefined) => !!x && (['robot', 'machine', 'turret', 'drone'].includes(x.kind || '') || /robot|drone|automaton|\bbot\b|turret/i.test(x.name || ''));
 const isGun = (w: any) => !!w && !isMelee(w) && w.category !== 'thrown' && w.category !== 'bow' && w.magazine != null;
@@ -260,7 +261,7 @@ register({
         u.dur = 0; if (h.c) charState(h.c).juryUsed = true; else stateOf(h).juryUsed = true;
         checkOver(cb); return null;
       } },
-    { id: 'repair_drone', label: 'Patch the drone', scope: ['combat', 'world'], ap: (h) => (h.u ? actionAp({ u: h.u }, 'field_repair', 2).ap : 2), target: 'ally', range: 1,
+    { id: 'repair_drone', label: 'Patch the drone', scope: ['combat', 'world'], ap: (h) => (h.u ? price({ cb: h.cb, u: h.u }, 'field_repair').ap : costOf('field_repair')), target: 'ally', range: 1,
       text: 'Repair a drone next to you at double strength: it regains 20% of its max HP, plus 10% for each Improvisation point above 3. Uses one spare-parts charge. Needs Improvisation 3.',
       available: (h) => { if (!tierII(h) || !h.u || !h.cb) return false; if (!h.cb.units.some((v) => v.companion === 'drone' && !v.dead && v.side === h.u!.side)) return false; return (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare parts.' : true; },
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); return !t || t.companion !== 'drone' ? { ok: false, why: 'Pick a drone next to you.' } : t.hp >= t.maxHp ? { ok: false, why: 'Already in full repair.' } : {}; },
@@ -467,7 +468,7 @@ const holyFoe = (t: Unit) => ['upper_realm', 'cursed', 'crawler', 'celestial'].i
 register({
   id: 'holy_ordnance', claims: 'all',
   actions: [{
-    id: 'bless', label: 'Bless a magazine', scope: ['combat', 'world'], ap: 3, target: 'ally', range: 1,
+    id: 'bless', label: 'Bless a magazine', scope: ['combat', 'world'], ap: 'data', target: 'ally', range: 1,
     text: 'Bless the magazine in your gun, or in the gun of an ally next to you. I: its rounds deal +20% damage to upper-realm and cursed beings. II: +40%, and the next magazine loaded is blessed too.',
     preview: (h, args) => { const t = unitById(h.cb!, args.targetId); return !t ? {} : !blessable(t) ? { ok: false, why: t.name + ' holds no gun with a magazine.' } : { lines: [t.name + '\'s ' + (WEAPON[t.weapon]?.name || 'gun') + ': +' + (tierII(h) ? 40 : 20) + '% vs upper-realm and cursed beings' + (tierII(h) ? ', two magazines' : '') + '.'] }; },
     run: (h, args) => {
@@ -652,7 +653,7 @@ register({
 // bosses can't be thrown; plan 6b; PROVISIONAL) to a tile within throwing range − 1 per 20 kg, for the throw's AP. It
 // and anyone it lands on take 10 + kg ÷ 4 physical damage × Strength (PROVISIONAL). Objects and story throws: Narrator.
 const weightOf = (t: Unit) => (t.tier === 'boss' ? Infinity : t.companion === 'drone' ? 15 : t.companion ? 40 : t.tier === 'elite' ? 100 : 80);
-const throwCost = (u: Unit) => actionAp({ u }, 'throw', 2).ap;
+const throwCost = (u: Unit) => price({ u }, 'throw').ap;
 /** What an object weighs when thrown (PROVISIONAL, spec 14): the light, loose ones; walls, doors and fixtures can't be. */
 const THROW_KG: Record<string, number> = { crate: 25, barrel: 30, lamp: 5, camera: 3, alarm: 3, terminal: 20, container: 60 };
 /** Where a thrown object comes down: the tile, unless a unit or something solid is there (then the nearest free one). */
@@ -757,7 +758,7 @@ const parseCharge = (choice?: string) => { const p = String(choice || 'circle').
 register({
   id: 'demolitionist', claims: [4],
   actions: [
-    { id: 'set_explosive', label: 'Set explosive', scope: ['combat'], ap: (h) => (h.u ? actionAp({ u: h.u }, 'set_explosive', 2).ap : 2), target: 'tile',
+    { id: 'set_explosive', label: 'Set explosive', scope: ['combat'], ap: (h) => (h.u ? price({ cb: h.cb, u: h.u }, 'set_explosive', 2).ap : 2), target: 'tile',
       text: 'Place a charge on your tile or next to you and shape its blast: a circle, or a line or cone that points away from you. It goes off at once, or waits until you Detonate.',
       available: (h) => (!h.u ? false : explosiveOf(h.u) ? true : 'No explosive in your kit.'),
       preview: (h, args) => {
@@ -846,7 +847,7 @@ function deviceAt(h: Holder, args: { tile?: string; targetId?: string }): Device
 register({
   id: 'slicer', claims: [2, 3],
   actions: [
-    { id: 'backdoor', label: 'Backdoor', scope: ['combat', 'world'], ap: 2, target: 'tile',
+    { id: 'backdoor', label: 'Backdoor', scope: ['combat', 'world'], ap: 'data', target: 'tile',
       text: 'Take over a door, terminal, camera, alarm or emplaced turret within 5 tiles until your next turn: Acuity against its tier. A door: open, close or lock it.',
       preview: (h, args) => { const d = deviceAt(h, args); if (typeof d === 'string') return { ok: false, why: d }; const m = unitMod(h.u!, 'analysis'); return { lines: [d.name + ': d20 ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + d.tn + ' (' + Math.max(5, Math.min(95, (21 - (d.tn - m)) * 5)) + '%).'] }; },
       run: (h, args, rng) => {

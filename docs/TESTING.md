@@ -67,6 +67,13 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 - **The foundation lint** (`packages/engine/test/lint-foundations.test.ts`, inside `npm run check`): reads the engine's
   source and fails on a raw `d20(`, a hand-written pass/fail, a new `unit.pos =`, a private copy of a `kit.ts` helper,
   a fixed-seed rng, or a stat id that is answered and never asked. Each failure says what to call instead.
+- **The costs tables** (`packages/engine/test/golden-costs*.test.ts`, inside `npm run check`; engine foundations 2): AP
+  and every resource before and after every action a unit can take (6,230 lines in `test/golden/costs-<section>.json`),
+  each also with no AP (the refusal), a second time, next turn and three rounds on, and the pad again for every holder
+  of an item that changes a cost. A state line that moves is a change of cost or of a limit. Where a counter is kept is
+  in `*.marks.json`: when a counter moved to `uses()`, `GOLDEN_RECORD=marks npm test -w @phc/engine -- golden-costs`.
+- **The cost and counter lint** (`packages/engine/test/lint-costs.test.ts`): fails on a hand-written AP check, a direct
+  write to a unit's AP, a typed `'Needs n AP.'`, a resource paid by hand or a round number kept by hand that is new.
 - **The roll digest** (opt-in: `cd packages/engine && ROLL_DIGEST=record npx vitest run --config vitest.digest.config.ts`
   before a refactor, `ROLL_DIGEST=compare …` after): every die of every test, counted and hashed; a test whose dice
   moved fails by name. For refactors that must not change what is rolled.

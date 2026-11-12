@@ -2,11 +2,11 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
+import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
-import { actionAp } from '../effects/core';
+import { price, priced, whyNot, pay, refund } from '../effects/cost';
 import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
@@ -225,11 +225,11 @@ const AP_BY_NAME: ReadonlySet<string> = new Set<CostSite>(['shove', 'break']);
 export function apFor(cb: Combat, u: Unit, def: TechDef, hand: 'main' | 'off', choice?: string, tgt?: Unit | null): number {
   const weaponId = hand === 'off' && offHeld(u) ? offHeld(u)! : u.weapon, own0 = techniqueAp(def, weaponId, choice, u);
   // the techniques a perk prices by name (Siege Engine: Shove and Break 1 AP less, never below 1): the old actions' path
-  const own = AP_BY_NAME.has(def.id) ? actionAp({ u }, def.id as CostSite, own0).ap : own0;
+  const own = AP_BY_NAME.has(def.id) ? price({ cb, u }, def.id, own0).ap : own0;
   const mode = (def.ap as any).mode || (def.ap.base === 'weapon' ? (def.system === 'melee' ? 'melee' : 'shot') : null);
-  if (!mode || hand === 'off' || def.ap.base === 'reaction') return own;
+  if (!mode || hand === 'off' || def.ap.base === 'reaction') return priced({ cb, u }, 'technique:' + def.id, own, undefined, { tech: def.id }).ap;
   const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', tech: def.id, ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
-  emit(cb, 'attack_preview', hk); return Math.max(0, hk.ap);
+  emit(cb, 'attack_preview', hk); return priced({ cb, u }, 'technique:' + def.id, Math.max(0, hk.ap), undefined, { tech: def.id, mode }).ap;
 }
 /** The techniques a unit may use with the weapon in this hand, and how it has each: free, lent by the weapon, coming
  * with a property, or ready. A unit with no character (an enemy, a companion) has the free ones, what its weapon lends
@@ -295,7 +295,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (def.needs.hidden && !u.hidden) return 'Only while you are Hidden.';
   const pair = (args as any)._pair as PairMark | undefined;
   const ap = pair ? pair.ap : apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null);
-  if (u.ap + encoreCredit(u, { type: 'combat/technique', id: def.id }, cb) < ap) return 'Needs ' + ap + ' AP.'; // Encore lends a repeat its AP (items 729, 737)
+  { const no = whyNot(cb, u, ap, { as: { type: 'combat/technique', id: def.id } }); if (no) return no; } // a repeat's credit counts (Encore, items 729, 737)
   const w = WEAPON[weaponId];
   if (wield === 'throwable') { const need = def.rounds === 'all' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
@@ -872,7 +872,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   const p = prepare(cb, u, id, args, rng, false); if (!p.t || p.why) return p.why || 'Not now.';
   const t = p.t, ap = t.pv.ap, heat0 = u.heat;
   ensureMomentum(u);
-  u.ap -= ap;
+  pay(cb, u, ap);
   // a Strike or an Opener spends its Momentum as it is used (given back with the AP if the handler refuses)
   const mCost = momentumCost(u, def, args), mWas = momentumOf(u), opener0 = u.openerUsed;
   if (mCost && u.res) { u.res.momentum = Math.max(0, mWas - mCost); momentumFx(cb, u, mWas); }
@@ -887,7 +887,7 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   const logAt = cb.log.length; cb.log.push(u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
   const err = withVia(u, techVia(t), () => p.h!.run(t));
   if (err) { // a handler must refuse before it changes anything: the cost comes back
-    u.ap += ap; u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true;
+    refund(cb, u, ap); u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true;
     if (mCost && u.res) { const now = momentumOf(u); u.res.momentum = Math.min(u.resMax?.momentum ?? now + mCost, now + mCost); momentumFx(cb, u, now); }
     if (opener0) u.openerUsed = opener0; else delete u.openerUsed;
     if (gCost) addGuard(cb, u, gCost);
@@ -1001,7 +1001,7 @@ export function pairedPad(cb: Combat, u: Unit, g?: any): PadEntry[] {
   if (g) return withG(g, () => pairedPad(cb, u));
   if (!u.offWeapon || !WEAPON[u.offWeapon] || weaponSystem(u.weapon) !== weaponSystem(u.offWeapon)) return [];
   return PAIRED_TECHNIQUES.map((id) => TECHNIQUE[id]).filter((def) => def && !pairedWhy(u, def)).map((def): PadEntry => {
-    const ap = pairedAp(cb, u, def, {}), why = u.ap < ap ? 'Needs ' + ap + ' AP.' : gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
+    const ap = pairedAp(cb, u, def, {}), why = whyNot(cb, u, ap) || gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
     const lf = linesFor(def, u.weapon, undefined, u);
     return { id: def.id, name: def.name, group: def.group, ap, rounds: def.rounds, ok: !why, why: why || null, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null, lent: false, signature: false, plain: false, built: true };
   });
@@ -1010,7 +1010,7 @@ function previewPaired(cb: Combat, u: Unit, id: string, args: TechArgs): TechPre
   const def = TECHNIQUE[id], blank = (why: string, ap = 0): TechPreview => ({ ok: false, why, id, ap, rounds: 0, attacks: [], notes: [] });
   if (!def) return blank('No such technique.');
   const no = pairedWhy(u, def); if (no) return blank(no);
-  const ap = pairedAp(cb, u, def, args); if (u.ap < ap) return blank('Needs ' + ap + ' AP.', ap);
+  const ap = pairedAp(cb, u, def, args); { const no = whyNot(cb, u, ap); if (no) return blank(no, ap); }
   const m = previewTechnique(cb, u, id, { ...args, hand: 'main', _pair: { hit: -1, ap } } as any); if (!m.ok) return { ...m, ap };
   const o = previewTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
   const notes = [...m.notes, ...(o.ok ? o.notes.filter((n) => !m.notes.includes(n)) : ['Off hand: ' + (o.why || 'can\'t.')]), 'Both hands: main hand −1, off hand ' + offHandPenalty(u) + ', +1 AP.'];

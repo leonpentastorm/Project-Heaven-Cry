@@ -198,7 +198,7 @@ register({
   id: 'earthbreaker', claims: 'all',
   actions: [
     {
-      id: 'earthbreaker', label: 'Earthbreaker', scope: ['combat'], target: 'tile', ap: 4, uses: { per: 'per_combat', n: 1 },
+      id: 'earthbreaker', label: 'Earthbreaker', scope: ['combat'], target: 'tile', ap: 'data', uses: { per: 'per_combat', n: 1 },
       preview: (h, a) => {
         if (!h.cb || !h.u) return; const k = tileOf(h.cb, a.tile); if (!k) return { ok: false, why: 'Pick a tile.' };
         if (dist(h.u.pos, k) > reachOf(h.u)) return { ok: false, why: 'Out of reach: your reach is ' + reachOf(h.u) + '.' };

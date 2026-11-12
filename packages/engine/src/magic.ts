@@ -22,7 +22,8 @@ import { deal, mend, amountOf, term, armourAgainst, type Term } from './effects/
 import { canReact, useReaction, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
-import { itemWords, wordCostMods, immune, actionAp } from './effects/core';
+import { itemWords, wordCostMods, immune } from './effects/core';
+import { price, priced, costOf, whyNot, canPay, pay, refund, apFor } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
 
 type Fam = 'body' | 'brain' | 'heart';
@@ -77,7 +78,6 @@ export const MANA_START = 15;
 export const FLUX_MAX = 6;
 export const CORE_CHARGE = 10;
 export const SOUL_REACH = 4;
-export const SPELL_AP = { evoke: 1, scuff: 1, vent: 1, core: 2, begin: 2, pump: 1, release: 1, steady: 1, feed: 1, syphon: 1, crystallise: 3 };
 /** Conditions (spec: Conditions and saves; rules 1.3 shared subsystems). rounds counts the bearer's turn ends (a
  * condition put on you during your own turn doesn't lose a round at that turn's end); noTick: it lasts until something
  * ends it (Burning until put out, Grappled until you break free, Disarmed until you recover the weapon); boon: no save;
@@ -510,6 +510,7 @@ export {
   lineMult, LINE_MULT, lineMultFor, spellCritMult, spellGapToHit, lineGuards, capParts, SIGIL_CAP, SIGIL_CAP_CRIT,
 } from './sigil';
 import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS, spellCritMult, spellGapToHit } from './sigil';
+import { work } from './kit';
 /** The element of the spell resolving now, carried on its damage, miss and condition fx events (the FX layer reads it). */
 let FX_ELEMENT: string | null = null;
 /** Where a Sigil spell's damage comes from (the missile's origin: a Line glyph, SEEK's far glyph, a chain's last target,
@@ -530,15 +531,15 @@ export function flux(cb: Combat, rng: Rng, u: Unit, n: number): string {
 }
 /** Vent's and a core swap's AP (1 and 2), through the items (stat 'ap_cost:vent' / 'ap_cost:swap_core': the Mage's
  * Bleed the Flux and Core Change, Class Roster Rev 3). The UI and the enemy planner read these. */
-export const ventAp = (u: Unit) => actionAp({ u }, 'vent', SPELL_AP.vent).ap;
-export const coreAp = (u: Unit) => actionAp({ u }, 'swap_core', SPELL_AP.core).ap;
+export const ventAp = (u: Unit) => price({ u }, 'vent').ap;
+export const coreAp = (u: Unit) => price({ u }, 'swap_core').ap;
 /** Vent (1 AP): all the Flux goes into the air. 'vent' {u, flux, extra} (extra mutable: more goes into the air with it,
  * Bleed the Flux) after the Flux is gone. */
 export function vent(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return NEEDS_EVOKER;
   const ap = ventAp(u);
-  if (u.ap < ap) return 'Needs ' + ap + ' AP.'; if (!m.flux) return 'No Flux to vent.';
-  u.ap -= ap; const n = m.flux; m.flux = 0;
+  { const no = whyNot(cb, u, ap); if (no) return no; } if (!m.flux) return 'No Flux to vent.';
+  pay(cb, u, ap); const n = m.flux; m.flux = 0;
   const vc: any = emit(cb, 'vent', { u, flux: n, extra: 0, cb });
   const all = n + Math.max(0, vc.extra || 0);
   emitFx(cb, 'vent', { unit: u.id, at: u.pos, flux: all }); cb.log.push(u.name + ' vents ' + n + ' Flux into the air' + (all > n ? ' (' + (all - n) + ' more with it)' : '') + (ap !== SPELL_AP.vent ? ' (' + ap + ' AP)' : '') + '.'); shiftMana(cb, all, 'vented Flux');
@@ -547,15 +548,15 @@ export function vent(cb: Combat, u: Unit): string | null {
 export function swapCore(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.evoker) return NEEDS_EVOKER;
   const ap = coreAp(u);
-  if (u.ap < ap) return 'Needs ' + ap + ' AP.'; if (m.cores < 1) return 'No spare cores.';
+  { const no = whyNot(cb, u, ap); if (no) return no; } if (m.cores < 1) return 'No spare cores.';
   // focus: which Evoker throws out the spent core (an Evoker blade, a grand staff, else the off-hand Evoker), for the picture
   const focus = [u.weapon, u.offWeapon].find((id) => id && ((WEAPON as any)[id]?.properties || []).includes('counts_as_evoker')) || 'evoker';
-  u.ap -= ap; m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000, focus }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
+  pay(cb, u, ap); m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000, focus }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
   return null;
 }
 /** Enemies scuff a glyph of the other side they stand on (spec: Sigils, Drawing 7). */
 export function enemyScuff(cb: Combat, u: Unit): boolean {
-  if (u.ap < SPELL_AP.scuff || !(cb.glyphs || []).some((g) => g.pos === u.pos && g.side !== u.side && !(g as any).keystone)) return false;
+  if (!canPay(cb, u, SPELL_AP.scuff) || !(cb.glyphs || []).some((g) => g.pos === u.pos && g.side !== u.side && !(g as any).keystone)) return false;
   return !scuffS(cb, u);
 }
 /** The spell being cast now, for the damage it deals (Drink It In gains the real MP cost or 10 per Sigil word). */
@@ -584,6 +585,8 @@ export const STAGE_MULT: number[] = CYC.stage_mult || [0.8, 1.0, 1.2, 1.4, 1.6];
 export const MAX_STAGE: number = CYC.max_stage ?? 4;
 export const stageMult = (stage: number) => STAGE_MULT[Math.max(0, Math.min(MAX_STAGE, Math.round(stage)))] ?? 1;
 export const SOUL_AP = { begin: CYC.begin_ap ?? 2, swiftBegin: CYC.swift_begin_ap ?? 1, pump: CYC.pump_ap ?? 1, release: CYC.release_ap ?? 1, steady: CYC.steady_ap ?? 1, feed: CYC.feed_ap ?? 1 };
+/** Magic's verbs before items (data/actions.json `costs`; the heart's are SOUL_AP's, from the Outburst cycle's data). */
+export const SPELL_AP = { evoke: costOf('evoke'), scuff: costOf('scuff'), vent: costOf('vent'), core: costOf('swap_core'), begin: SOUL_AP.begin, pump: SOUL_AP.pump, release: SOUL_AP.release, steady: SOUL_AP.steady, feed: SOUL_AP.feed, syphon: costOf('syphon'), crystallise: costOf('crystallise') };
 export const STRAIN_BURN: number = SR.strain?.burn_per_point ?? 8;
 export const SHORT_AT_OVER: number = SR.strain?.short_at_over ?? 3;
 export const AURA_TICK: number = SR.aura?.tick_damage ?? 5;
@@ -884,9 +887,9 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
   // (pay HP instead of MP, a free cast, more reach). ap is the Begin's; a snap cast adds the Release (1 AP).
   const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? 1.2 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.begin_strain ?? 1) + (m.emanator ? 0 : CYC.no_emanator_strain ?? 2), hp: 0, release, preview: true, fail: '', relMult: 1, relAll: 1, relNotes: [] as string[], cb });
   if (oc.fail) return no(oc.fail);
-  const cost = Math.max(0, Math.round(oc.mp)), ap = Math.max(0, oc.ap) + (release ? SOUL_AP.release : 0), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
+  const cost = Math.max(0, Math.round(oc.mp)), ap = priced({ cb, u }, 'begin', Math.max(0, oc.ap), undefined, { design: d.id }).ap + (release ? SOUL_AP.release : 0), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
   if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 0, hp };
-  if (u.ap < ap) return { ok: false, why: 'Needs ' + ap + ' AP.', cost, ap, range, strain, stage: 0, hp };
+  { const no = whyNot(cb, u, ap); if (no) return { ok: false, why: no, cost, ap, range, strain, stage: 0, hp }; }
   if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP (' + m.mp + '): Syphon first.', cost, ap, range, strain, stage: 0, hp };
   const relMult = release ? oc.relMult || 1 : 1, relAll = release ? oc.relAll || 1 : 1, relNotes: string[] = release ? oc.relNotes || [] : [];
   if (release) { const why = aimError(cb, u, d, aim, range); if (why) return { ok: false, why, cost, ap, range, strain, stage: 0, hp, relMult, relAll, relNotes }; }
@@ -899,7 +902,7 @@ export interface BeginOpts { /** Heart Overwatch on from the start. */ watch?: b
 export function beginOutburst(cb: Combat, rng: Rng, u: Unit, designId: string, aim: string | undefined, hold: boolean, opts: BeginOpts = {}): string | null {
   const pv = previewOutburst(cb, u, designId, aim, !hold); if (!pv.ok) return pv.why || 'Can\'t.';
   const m = heart(u)!, d = findDesign(m, designId)!;
-  u.ap -= pv.ap - (hold ? 0 : SOUL_AP.release); if (m.emanator) m.mp -= pv.cost; m.cast = true;
+  pay(cb, u, pv.ap - (hold ? 0 : SOUL_AP.release)); if (m.emanator) m.mp -= pv.cost; m.cast = true;
   if (pv.hp) applyDamage(cb, u, pv.hp, { by: u, type: 'heart', shield: false, credit: 'none' });
   emit(cb, 'outburst_begin', { u, design: d, hold, cost: pv.cost, hp: pv.hp || 0, stage: 0, cb, rng }); // 'outburst_begin' {u, design, hold, cost, hp, stage}
   shiftMana(cb, -Math.ceil(pv.cost / 10));
@@ -907,7 +910,7 @@ export function beginOutburst(cb: Combat, rng: Rng, u: Unit, designId: string, a
   emitFx(cb, 'outburst', { unit: u.id, at: u.pos, design: d.id, school: d.school, form: formOf(d), tone: toneOf(d), element: toneElement(toneOf(d)), hold, stage: 0, watch: !!opts.watch });
   cb.log.push(u.name + ' begins ' + d.name + ' (' + pv.cost + ' MP' + (m.emanator ? '' : ' from the air') + ', ' + (pv.ap - (hold ? 0 : SOUL_AP.release)) + ' AP): the heart lights.');
   holdStrain(cb, rng, u, pv.strain + (m.debt || 0), 'begin'); m.debt = 0; m.pumps = [];
-  if (!hold && m.held && !u.dead && !u.downed) { u.ap -= SOUL_AP.release; releaseAt(cb, rng, u, d, aim!, false); }
+  if (!hold && m.held && !u.dead && !u.downed) { pay(cb, u, SOUL_AP.release); releaseAt(cb, rng, u, d, aim!, false); }
   return null;
 }
 export interface PumpPreview { ok: boolean; why?: string; ap: number; free: boolean; stage: number; mult: number;
@@ -942,11 +945,11 @@ export function previewPump(cb: Combat, u: Unit, feeling?: string | null): PumpP
   const capLeft = freeStageLeft(u), first = capLeft && firstFree(cb, m, u), emp = capLeft && (m.freePumps || 0) > 0, free = first || emp;
   const op: any = emit(cb, 'outburst_pump', { u, design: d, stage: m.held.stage, ap: free ? 0 : pumpBaseAp(m, feeling), free, capLeft, fail: '', preview: true, feeling: feeling || null, stages: 1, note: '', mpMult: 1, cb });
   if (op.fail) return no(op.fail);
-  const ap = Math.max(0, op.ap), next = { design: m.held.design, stage: Math.min(MAX_STAGE, m.held.stage + Math.max(1, Math.round(op.stages || 1))), felt: [...(m.held.felt || []), ...(feeling ? [feeling] : [])], plus: (m.held.plus || 0) + (op.plus || 0) };
+  const ap = priced({ cb, u }, 'pump', Math.max(0, op.ap), undefined, { feeling: feeling || null }).ap, next = { design: m.held.design, stage: Math.min(MAX_STAGE, m.held.stage + Math.max(1, Math.round(op.stages || 1))), felt: [...(m.held.felt || []), ...(feeling ? [feeling] : [])], plus: (m.held.plus || 0) + (op.plus || 0) };
   const step = feeling ? feelingStep(cb, u, feeling, next.stage) : PLAIN_STEP;
   // Rules 1.24: the MP of the stages this Pump adds (the engine's own number: the HEART panel shows it before the click).
   const mp = pumpMp(u, m.held.stage, next.stage - m.held.stage, op.mpMult ?? 1);
-  if (u.ap < ap) return { ok: false, why: 'Needs ' + ap + ' AP.', ap, mp, free, stage: m.held.stage, mult: heldMult(cb, u, m.held), ...(feeling ? { feeling, step } : {}) };
+  { const n0 = whyNot(cb, u, ap); if (n0) return { ok: false, why: n0, ap, mp, free, stage: m.held.stage, mult: heldMult(cb, u, m.held), ...(feeling ? { feeling, step } : {}) }; }
   if (mp > m.mp) return { ok: false, why: 'A Pump to stage ' + next.stage + ' needs ' + mp + ' MP (' + Math.floor(m.mp) + '): Syphon first, or Release what you hold.', ap, mp, free, stage: m.held.stage, mult: heldMult(cb, u, m.held), ...(feeling ? { feeling, step } : {}) };
   const isFree = !!op.free && ap === 0, freeKind = !isFree ? (ap === 0 ? 'item' : null) : first ? 'first' : emp ? 'empathy' : 'item';
   return { ok: true, ap, mp, free: isFree, stage: next.stage, mult: heldMult(cb, u, next), ...(feeling ? { feeling, step } : {}), freeKind: ap === 0 ? freeKind : null, ...(op.note ? { note: String(op.note) } : {}) };
@@ -957,7 +960,7 @@ export function pumpOutburst(cb: Combat, rng: Rng, u: Unit, feeling?: string | n
   const pv = previewPump(cb, u, feeling); if (!pv.ok) return pv.why || 'Can\'t.';
   const m = heart(u)!, h = m.held!, d = findDesign(m, h.design)!;
   const rec: PumpRec = { design: h.design, stage0: h.stage, ap: pv.ap, free: pv.freeKind || null, strain: 0, felt0: (h.felt || []).length, ...(feeling ? { feeling } : {}) };
-  u.ap -= pv.ap; m.cast = true;
+  pay(cb, u, pv.ap); m.cast = true;
   if (pv.freeKind === 'first') m.firstUsed = true; else if (pv.freeKind === 'empathy') m.freePumps = Math.max(0, (m.freePumps || 0) - 1);
   if (pv.freeKind && capped(u)) m.freeUsed = (m.freeUsed || 0) + 1; // rules 1.19: this turn's free stage is taken
   const plus0 = h.plus || 0;
@@ -990,7 +993,7 @@ export function revertPump(cb: Combat, u: Unit): string | null {
   const r = (m.pumps || []).at(-1); if (!r || r.design !== m.held.design) return 'No pump to undo this turn.';
   m.pumps!.pop();
   const h = m.held; h.stage = r.added != null ? Math.max(0, h.stage - r.added) : r.stage0; if (h.felt) h.felt = h.felt.slice(0, r.felt0); if (h.feltAt) h.feltAt = h.feltAt.slice(0, r.felt0);
-  u.ap += r.ap;
+  refund(cb, u, r.ap);
   if (r.mp) { m.mp = Math.min(m.mpMax, m.mp + r.mp); h.pumpMp = Math.max(0, (h.pumpMp || 0) - r.mp); } // rules 1.24: the Pump's MP comes back
   if (r.free === 'first') m.firstUsed = false; else if (r.free === 'empathy') m.freePumps = Math.min(m.freePumpsMax || 0, (m.freePumps || 0) + 1);
   if (r.free && capped(u)) m.freeUsed = Math.max(0, (m.freeUsed || 0) - 1);
@@ -1026,10 +1029,10 @@ export function releaseOutburst(cb: Combat, rng: Rng, u: Unit, aim?: string): st
   const longing = (m.held.felt || []).includes('longing') ? (FEELING.longing?.pour as any)?.reach ?? 2 : 0;
   const pc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d) + longing, fail: '', preview: true, cb });
   if (pc.fail) return pc.fail;
-  const pap = Math.max(0, pc.ap); if (u.ap < pap) return 'Needs ' + pap + ' AP.';
+  const pap = priced({ cb, u }, 'release', Math.max(0, pc.ap)).ap; { const no = whyNot(cb, u, pap); if (no) return no; }
   const why = aimError(cb, u, d, aim, pc.range); if (why) return why;
   const rc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d), fail: '', cb });
-  u.ap -= Math.min(u.ap, Math.max(0, rc.ap));
+  pay(cb, u, Math.min(apFor(cb, u), priced({ cb, u }, 'release', Math.max(0, rc.ap)).ap));
   releaseAt(cb, rng, u, d, formOf(d) === 'aura' ? u.pos : aim!, false);
   return null;
 }
@@ -1053,8 +1056,8 @@ export function steadyHeart(cb: Combat, u: Unit): string | null {
   const m = u.mg ? heart(u) : undefined; if (!m || !m.held) return 'Steady the heart only while holding an Outburst.';
   if (u.dead || u.downed) return 'Downed.';
   if (m.held.steady) return 'The heart is already steadied this turn.';
-  if (u.ap < SOUL_AP.steady) return 'Needs ' + SOUL_AP.steady + ' AP.';
-  u.ap -= SOUL_AP.steady; m.held.steady = true; (m as any).steadied = true; // rules 1.8: Calm's trigger
+  const ap = price({ cb, u }, 'steady', SOUL_AP.steady).ap; { const no = whyNot(cb, u, ap); if (no) return no; }
+  pay(cb, u, ap); m.held.steady = true; (m as any).steadied = true; // rules 1.8: Calm's trigger
   const by = easeStrain(cb, u, 1, 'steady');
   emitFx(cb, 'steady', { unit: u.id, at: u.pos, by, strain: m.strain, stage: m.held.stage });
   if (by) emitFx(cb, 'calm', { unit: u.id, at: u.pos, way: 'steady', by, strain: m.strain });
@@ -1068,8 +1071,8 @@ export function feedOutburst(cb: Combat, u: Unit): string | null {
   const e = canCast(u, cb); if (e) return e;
   if (m.held.stage >= MAX_STAGE) return 'The heart is full (stage ' + MAX_STAGE + ').';
   const g = (cb.glyphs || []).find((x) => x.pos === u.pos && !(x as any).keystone); if (!g) return 'No glyph on your tile to feed it.';
-  if (u.ap < SOUL_AP.feed) return 'Needs ' + SOUL_AP.feed + ' AP.';
-  u.ap -= SOUL_AP.feed; m.cast = true;
+  const ap = price({ cb, u }, 'feed', SOUL_AP.feed).ap; { const no = whyNot(cb, u, ap); if (no) return no; }
+  pay(cb, u, ap); m.cast = true;
   cb.glyphs = (cb.glyphs || []).filter((x) => x !== g); tidyStrokesS(cb.glyphs); // rules 1.10 (item 903): a fed middle glyph splits its stroke
   m.held.stage++;
   emitFx(cb, 'feed', { unit: u.id, at: u.pos, word: g.word, glyph: g.id, stage: m.held.stage, mult: stageMult(m.held.stage) });
@@ -1607,6 +1610,7 @@ export interface OutburstPlan {
  * at its stage (or at opts.stage: "if I pump twice"): AP, MP, Strain after and the warnings, the multiplier, the reach
  * ring, the tinted area, everyone affected with their expected numbers, saves and this stage's rider, resonance. */
 export function previewOutburstPlan(cb: Combat, u: Unit, src: string | 'held', aim?: string, opts: { stage?: number; mods?: string[] } = {}): OutburstPlan {
+  work('outburstPlan');
   // The toggles on the action being planned (Heart Surge, Verse…) are read as the real action reads them (cb.mods).
   if (!opts.mods) return planInner(cb, u, src, aim, opts);
   // (on the fight with the switches set: a copy of its top level, so the fight a screen holds is never written)
@@ -1633,7 +1637,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
     const rc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d) + longing, fail: '', preview: true, surge: 0, mult: 1, notes: [] as string[], cb });
     ap = Math.max(0, rc.ap) + pumpsAp(cb, u, d, Math.max(0, stage - stage0), stage0); range = rc.range;
     mp = pumpsMp(u, Math.max(0, stage - stage0), stage0); // rules 1.24: the Pumps still to make cost MP
-    if (rc.fail) why ||= rc.fail; else if (u.ap < ap) why ||= 'Needs ' + ap + ' AP.'; else if (mp > m.mp) why ||= 'The Pumps need ' + mp + ' MP (' + Math.floor(m.mp) + ').';
+    if (rc.fail) why ||= rc.fail; else if (!canPay(cb, u, ap)) why ||= whyNot(cb, u, ap)!; else if (mp > m.mp) why ||= 'The Pumps need ' + mp + ' MP (' + Math.floor(m.mp) + ').';
     if (!why) why = aimError(cb, u, d, form === 'aura' ? u.pos : aim, rc.range) || undefined;
     if (rc.surge) { if (stage < MAX_STAGE) stage++; else itemMult = typeof rc.surge === 'number' ? rc.surge / stageMult(MAX_STAGE) : 1; }
     itemMult *= rc.mult || 1; multNotes = rc.notes || [];
@@ -1642,7 +1646,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
     ap = pv.ap + pumpsAp(cb, u, d, stage, 0); mp = pv.cost + (pv.hp ? 0 : pumpsMp(u, stage, 0, pv.cost)); strain = pv.strain + (m.debt || 0); if (pv.range) range = pv.range;
     // a snap cast's item multiplier (Heart Surge's snap); with Pumps planned, only what holds at any stage (Resonance)
     itemMult = stage ? pv.relAll || 1 : pv.relMult || 1; multNotes = pv.relNotes || [];
-    if (!pv.ok) why = pv.why; else if (u.ap < ap) why = 'Needs ' + ap + ' AP.'; else if (m.emanator && !pv.hp && mp > m.mp) why = 'Needs ' + mp + ' MP (' + Math.floor(m.mp) + ') with its Pumps: Syphon first.';
+    if (!pv.ok) why = pv.why; else if (!canPay(cb, u, ap)) why = whyNot(cb, u, ap)!; else if (m.emanator && !pv.hp && mp > m.mp) why = 'Needs ' + mp + ' MP (' + Math.floor(m.mp) + ') with its Pumps: Syphon first.';
   }
   // Rules 1.8: the held feelings' steps (Spite per target, below), Quiet ×0.8.
   const felt = held && m.held ? [...(m.held.felt || [])] : [], F = new Set(felt), quiet = d.modules.includes('quiet') ? (MODULE.quiet as any)?.damage_mult ?? 0.8 : 1;
@@ -1731,17 +1735,17 @@ export function planStrike(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, sm: 
 /** Syphon (1 AP): MP from the air by the band, × the Syphon bonus; the meter drops 2. */
 export function syphon(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return NEEDS_EMANATOR;
-  if (u.ap < SPELL_AP.syphon) return 'Needs 1 AP.'; if (m.mp >= m.mpMax) return 'Your Emanator is full.';
-  u.ap -= SPELL_AP.syphon; const gain = Math.round(manaBand(manaOf(cb)).syphon_mp * m.syphon), was = m.mp; m.mp = Math.min(m.mpMax, m.mp + gain);
+  const ap = price({ cb, u }, 'syphon').ap; { const no = whyNot(cb, u, ap); if (no) return no; } if (m.mp >= m.mpMax) return 'Your Emanator is full.';
+  pay(cb, u, ap); const gain = Math.round(manaBand(manaOf(cb)).syphon_mp * m.syphon), was = m.mp; m.mp = Math.min(m.mpMax, m.mp + gain);
   emitFx(cb, 'syphon', { unit: u.id, at: u.pos, mp: m.mp - was }); shiftMana(cb, -2); cb.log.push(u.name + ' syphons ' + (m.mp - was) + ' MP from the air (' + m.mp + '/' + m.mpMax + ').');
   return null;
 }
 /** Crystallise (3 AP, the meter at 10+): the meter drops 10 and you make one standard core. */
 export function crystallise(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return NEEDS_EMANATOR;
-  const cap = actionAp({ u }, 'crystallise', SPELL_AP.crystallise).ap; // items price it (hooks gap D8)
-  if (u.ap < cap) return 'Needs ' + cap + ' AP.'; if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
-  u.ap -= cap; m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); cb.log.push(u.name + ' crystallises a mana core from the air.');
+  const cap = price({ cb, u }, 'crystallise').ap; // items price it (hooks gap D8)
+  { const no = whyNot(cb, u, cap); if (no) return no; } if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
+  pay(cb, u, cap); m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); cb.log.push(u.name + ' crystallises a mana core from the air.');
   return null;
 }
 /** Who a spell would affect, hit or miss (used to decide whether a spell on the story map starts a fight). */

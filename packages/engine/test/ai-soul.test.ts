@@ -8,6 +8,10 @@ import {
   HEART_CASTER, HEART_CASTERS, heartBestRelease, heartPlanValue, previewOutburstPlan, SCHOOL, MODULE, TONE, WEAPON,
   type Sheet, type Combat, type Unit, type MapDef,
 } from '../src';
+import { counted } from '../src/kit';
+// The planners' work, counted (src/kit.ts work / counted), with a quarter of slack over what was measured on 12 Nov 2026: three
+// Sigil casters' turn 2,811 planEvoke calls; ten rounds of three hearts 2,933 Outburst plans; twelve enemy turns on the yard 61 path searches.
+const WORK_MAX = { sigil: 3500, soul: 3700, yard: 80 };
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
 const sheet = (archId: string, name: string): Sheet => { const a = arch(archId); return { name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
@@ -155,7 +159,7 @@ describe('the Narrator\'s wiki: the heart, tones, forms and the Soul casters', (
 describe('a whole fight with every Soul caster', () => {
   it('ten rounds of the three casters against four players: no Short, no burn, it acts, and it stays quick', () => {
     const { cb, es, ps } = fight(['4,5', '4,7', '5,6', '3,9'], [{ at: '12,5', caster: 'heart_adept' }, { at: '12,8', caster: 'heartfire_elite' }, { at: '14,6', caster: 'heart_sovereign' }, { at: '13,10', tier: 'soldier', name: 'Guard', weapon: 'service_pistol' }]);
-    const t0 = Date.now();
+    const { work } = counted(() => {
     for (let r = 1; r <= 10; r++) {
       cb.round = r;
       for (const e of es) if (!e.dead && !e.downed) {
@@ -166,7 +170,9 @@ describe('a whole fight with every Soul caster', () => {
       }
       for (const p of ps) if (!p.dead && !p.downed) { cb.turn = cb.order.indexOf(p.id); p.ap = 6; const [x, y] = p.pos.split(',').map(Number); moveUnit(cb, p, Math.min(19, x + 1) + ',' + y, seed()); }
     }
-    expect(Date.now() - t0).toBeLessThan(8000);
+    });
+    // work, not milliseconds: the plans the casters weighed over ten rounds
+    expect(work.outburstPlan).toBeLessThan(WORK_MAX.soul);
     expect(cb.log.some((l) => /MANA SHORT/.test(l))).toBe(false);
     for (const e of es.slice(0, 3)) { expect(fx(cb, 'burn', e), e.name).toHaveLength(0); expect(cb.log.some((l) => l.startsWith(e.name + ' releases ')), e.name).toBe(true); } // (the log, not the effects list: that one is capped, and a long fight drops its early events)
     expect(ps.some((p) => p.hp < 500)).toBe(true);

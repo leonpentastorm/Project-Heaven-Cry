@@ -18,7 +18,7 @@ import { keyOf } from './collect';
 export * from './types';
 export { register, emit, emitStory, anyOn, holdersOf, holderOf, statQuery, checkQuery, genericEffects, bindGame, boundGame, handlerOf, registered, ownerOf, heldOfChar, heldOfUnit, charOfUnit, setRankRule, _unregisterAll, _snapshotRegistry, _restoreRegistry, type Owner, type GenericOp, registerGeneric, genericOf } from './hooks';
 export { itemInfo, itemsOf, effectsOfHeld, allItems, perkEffects, keyOf as itemKey, splitKey, classMove, classMoveKeys, ADVANCED, BASE_CLASS, advancedActive, _setAdvancedLive, _setRevision2Classes, revision2Classes, REV2_CLASSES, SKILL_ITEMS, skillItemsOf, type Held } from './collect';
-export { uses, scopeOf, stampOf, usesLabel, sessionN, restN, dayOf } from './uses';
+export { uses, scopeOf, stampOf, usesLabel, sessionN, restN, dayOf, roundNow, SCOPES, type Uses } from './uses';
 export { turnAp, grantPerkAp, bankAp, apDebt, pushAp, refusedGift, AP_BASE, AP_MAX, AP_MIN, PERK_AP_CAP, AP_DEBT_CAP, type ApLine } from './ap';
 export { applyDamage, healUnit, grantShield, hostileSrc, PAST_SHIELDS, pastShields, type DamageSrc, type DamageResult } from './damage';
 // the one formula (output.ts): amounts, armour, the one way in (the stacking rule is re-exported by tactics.ts, as before)
@@ -28,7 +28,7 @@ export { MENDING, mendFactor, mendFactorOf, noteTended, tendedLately, TEND_ROUND
 // amount blocks (step a6): the numbers items deal, heal and shield with, from their data
 export { itemAmount, amountMult, amountBlock, amountSpecOf, amountHome, type AmountBlock } from './amounts';
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';
-export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';
+export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, dataAp, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';
 export { coverageReport, coverageGaps, coverageOf, verdictOf, verdictFor, coverageSummary, type CoverageRow, type Verdict } from './coverage';
 export { skillRollMod, actionAp, immune, forbids, xpAfter, itemWords, wordCostMods, wearing, contextHolds, pushAway, TAG_VOCAB } from './core';
 export { gainEcho, ECHO_MAX } from './echo';
@@ -51,3 +51,4 @@ export function stateOf(h: { key: string; u?: Unit | null; c?: Character | null;
   return h.u ? ((h.u.ps ||= {})[h.key] ||= {}) : {};
 }
 export * from './stats';
+export { price, priced, bill, costOf, hasCost, whyNot, canPay, pay, refund, spend, needs, poolWhyNot, grantAp, loseAp, setAp, freely, withAp, apFor, creditFor, lend, settleCredit, unlend, resLeft, RESOURCES, type Cost, type Priced, type Credit } from './cost';

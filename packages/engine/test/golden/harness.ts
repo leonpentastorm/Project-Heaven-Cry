@@ -46,7 +46,7 @@ export function bend<T>(b: { add?: number; mults?: number[]; vs?: number[] }, f:
 /** A second reading of the same actions (the rules tables of engine foundations 1: test/golden/rules.ts). When set,
  * act() and run() return its line in place of the damage line: `snap` before the action, `line` after it (`again`
  * replays the action from another seed), `one` reads one replay. Unset (the default), nothing here changes. */
-export const ALSO: { /** the seed of a replay (record.ts's own closures set the seed themselves) */ seed?: number; snap?: (cb: any) => any; line?: (before: any, cb: any, seed: number, rngAfter: number, again: (seed: number) => string) => string; one?: (before: any, cb: any, seed: number, rngAfter: number) => string } = {};
+export const ALSO: { /** the costs tables (test/golden/costs.ts): a reducer action read whole (act), an engine call read whole (ran) */ act?: (before: any, g0: any, g1: any, action: any, d: any, seed: number) => string; ran?: (before: any, g: any) => string; /** the seed of a replay (record.ts's own closures set the seed themselves) */ seed?: number; snap?: (cb: any, g?: any) => any; line?: (before: any, cb: any, seed: number, rngAfter: number, again: (seed: number) => string) => string; one?: (before: any, cb: any, seed: number, rngAfter: number) => string } = {};
 // ---------- the tap ----------
 let TAP: string[] | null = null, TAP_CB: any = null;
 const n3 = (v: any) => (typeof v === 'number' && Number.isFinite(v) ? String(Math.round(v * 1000) / 1000) : String(v));
@@ -99,11 +99,12 @@ export function copy(g: any): any { const { campaign, ...rest } = g; const c = J
 export function act(g: any, action: any, d: any = HIT, seed = 4242): { line: string; g: any; ok: boolean } {
   const g0 = g; g0.rng.state = seed; // apply() copies the state it is given: g is not changed
   const before = snap(g0.combat); let g1: any = null, err = '';
-  const also = ALSO.snap ? ALSO.snap(g0.combat) : null;
+  const also = ALSO.snap ? ALSO.snap(g0.combat, g0) : null;
   TAP = [];
   try { g1 = dice(d, () => A.apply(g0, action, 'host')); } catch (e: any) { err = (isRule(e) ? 'REFUSED ' : 'THREW ') + short(e); }
   const tap = TAP; TAP = null;
   if (!g1) return { line: err, g: g0, ok: false };
+  if (ALSO.act) return { line: ALSO.act(also, g0, g1, action, d, seed), g: g1, ok: true };
   if (ALSO.line) return { line: ALSO.line(also, g1.combat, seed, g1.rng.state, (s2) => { g0.rng.state = s2; const a2 = ALSO.snap!(g0.combat); try { const g2 = dice(d, () => A.apply(g0, action, 'host')); return ALSO.one!(a2, g2.combat, s2, g2.rng.state); } catch (e: any) { return 'X ' + short(e, 40); } finally { g0.rng.state = seed; } }), g: g1, ok: true };
   // the units of the new state, matched to the old ones by id
   const b2 = before.map((b) => ({ ...b }));
@@ -113,12 +114,13 @@ export function act(g: any, action: any, d: any = HIT, seed = 4242): { line: str
 export function run(g: any, f: (g: any, cb: any) => any, d: any = HIT, seed = 4242): { line: string; g: any; ok: boolean; ret?: any } {
   const g0 = copy(g); g0.rng.state = seed;
   const before = snap(g0.combat); let err = '', ret: any;
-  const also = ALSO.snap ? ALSO.snap(g0.combat) : null;
+  const also = ALSO.snap ? ALSO.snap(g0.combat, g0) : null;
   TAP = [];
   try { ret = dice(d, () => W(g0, () => f(g0, g0.combat))); } catch (e: any) { err = (isRule(e) ? 'REFUSED ' : 'THREW ') + short(e); }
   const tap = TAP; TAP = null;
   if (err) return { line: err, g: g0, ok: false };
   if (typeof ret === 'string' && ret) return { line: 'REFUSED ' + short(ret), g: g0, ok: false, ret };
+  if (ALSO.ran) return { line: ALSO.ran(also, g0), g: g0, ok: true, ret };
   if (ALSO.line) return { line: ALSO.line(also, g0.combat, seed, g0.rng.state, (s2) => { const g2 = copy(g); g2.rng.state = s2; const a2 = ALSO.snap!(g2.combat); ALSO.seed = s2; try { const r2 = dice(d, () => W(g2, () => f(g2, g2.combat))); return typeof r2 === 'string' && r2 ? 'X ' + short(r2, 40) : ALSO.one!(a2, g2.combat, s2, g2.rng.state); } catch (e: any) { return 'X ' + short(e, 40); } finally { delete ALSO.seed; } }), g: g0, ok: true, ret };
   return { line: (tap.join(' ') + ' => ' + delta(before, g0.combat).join(', ')).trim(), g: g0, ok: true, ret };
 }

@@ -18,7 +18,7 @@ const open = (cb: Combat) => { cb.map = { ...cb.map, cover: [], full: [], solid:
 function rngFor(n: number): { state: number } { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return { state: s }; } throw new Error('no seed'); }
 /** The holder's turn in round r (round 1 starts with every cooldown ready, as a fight does). */
 function turnIn(f: { cb: Combat; g: any; unit: (id: string) => Unit }, u: Unit, r: number, key?: string): Unit {
-  if (r === 1 && key && f.unit(u.id).ps?.[key]) delete f.unit(u.id).ps![key].cd;
+  if (r === 1 && key) { const us = f.unit(u.id).uses; if (us) { delete us[key + '#ap-gain|cooldown']; delete us[key + '#ap-pen|cooldown']; } }
   f.cb.round = r; f.cb.turn = f.cb.order.indexOf(u.id); delete f.cb.window;
   withGame(f.g, () => beginTurn(f.cb, f.g.rng));
   return f.unit(u.id);

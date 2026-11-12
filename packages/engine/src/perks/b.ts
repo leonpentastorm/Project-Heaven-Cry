@@ -20,6 +20,7 @@ import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game'
 import { cdFire, cdTick, landsNext } from './cooldown';
 import { rngOf, foesOf } from '../kit';
 import { rollVs, rollD20, judge, TN } from '../rolls';
+import { refund, loseAp } from '../effects/cost';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -169,7 +170,7 @@ register({
     },
     run: (h, a, rng) => {
       const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId);
-      u.ap = Math.round((u.ap + strikeAp(h)) * 10) / 10; // the shown AP back: the attack below takes its own
+      refund(cb, u, strikeAp(h)); // the shown AP back: the attack below takes its own
       const k = a.tile && (/,/.test(a.tile) ? a.tile : refKey(a.tile, cb.map)); if (!k || !t) return 'Pick a tile and a target.';
       const end = a.choice ? (/,/.test(a.choice) ? a.choice : refKey(a.choice, cb.map)) : null;
       const s = stateOf(h); s.mid = true; s.carry = 0;
@@ -238,7 +239,7 @@ register({
       if (ow(cb)) s.refund = ctx.tiles - half; // the sneak surcharge is 1 AP a tile: half the tiles, half the surcharge
       log(cb, h.u!.name + ' slips from cover to cover (Shadow Step: half the tiles).');
     },
-    moved: (ctx, h) => { fixBank(h, ctx); const s = stateOf(h); if (ctx.u === h.u && s.refund) { h.u!.ap += s.refund; s.refund = 0; } if (ctx.u === h.u) s.owHow = null; },
+    moved: (ctx, h) => { fixBank(h, ctx); const s = stateOf(h); if (ctx.u === h.u && s.refund) { refund(h.cb, h.u!, s.refund); s.refund = 0; } if (ctx.u === h.u) s.owHow = null; },
     spotted: (ctx, h) => {
       if (h.tier !== 'II' || ctx.u !== h.u || ctx.why !== 'attacked' || !h.u || h.u.dead) return;
       const cb: Combat = ctx.cb, rng = rngOf(h); if (!rng) return;
@@ -472,13 +473,13 @@ register({
   },
   actions: [
     {
-      id: 'vanishing_act', label: 'Vanishing Act', scope: ['combat'], ap: 2, uses: { per: 'per_combat', n: 1 }, target: 'none',
+      id: 'vanishing_act', label: 'Vanishing Act', scope: ['combat'], ap: 'data', uses: { per: 'per_combat', n: 1 }, target: 'none',
       text: 'Once a fight: drop out of sight where you stand, even in plain view. You stay Hidden until you attack or someone touches you.',
       available: (h) => (h.u?.hidden ? 'Already Hidden.' : h.u && condOn(h.u, 'marked') ? 'Marked: you can\'t hide.' : true),
       run: (h) => { const cb = h.cb!, u = h.u!; const out = hide(cb, u, 'Vanishing Act'); if (!u.hidden) return 'You can\'t hide now.'; stateOf(h).entry = u.hideEntry; log(cb, u.name + ' is simply gone' + out + '.'); return null; },
     },
     {
-      id: 'vanish', label: 'Vanishing Act', scope: ['world'], ap: 2, uses: { per: 'per_scene', n: 1 }, target: 'none',
+      id: 'vanish', label: 'Vanishing Act', scope: ['world'], ap: 'data', uses: { per: 'per_scene', n: 1 }, target: 'none',
       text: 'Once a scene: vanish in plain view. You are sneaking and Hidden, and only someone who walks up to you can notice you.',
       run: (h) => {
         const g = gameOf(h), c = h.c; if (!g || !c) return 'Not here.';
@@ -540,7 +541,7 @@ register({
       const u = h.u, m: Unit = ctx.u; if (!u || !alive(u) || m.side === u.side || ctx.how === 'disengage' || ctx.forced || dist(ctx.to, u.pos) > 1) return;
       if (m.ap <= 0) return; // nothing to lose: the cooldown isn't spent on it
       if (ow(ctx.cb) ? !uses(h).take('per_turn', 1, h.key + '|' + m.id) : !cdFire(h, 'gain', ctx.cb.round)) return; // the area map keeps once per enemy a turn
-      const lost = Math.min(2, Math.max(0, m.ap)); m.ap = Math.max(0, m.ap - 2);
+      const lost = loseAp(m, 2);
       log(ctx.cb, m.name + ' steps into ' + u.name + '\'s reach and falters: −' + lost + ' AP (War Footing).');
     },
     turn_start_pre: (ctx, h) => { if (ctx.u === h.u) cdTick(h); },
@@ -718,7 +719,7 @@ function deviceAt(h: Holder, a: any): MapObject | null {
 register({
   id: 'dead_signal', claims: 'all',
   actions: [{
-    id: 'disable_device', label: 'Dead Signal', scope: ['combat', 'world'], ap: 1, target: 'object', range: 3,
+    id: 'disable_device', label: 'Dead Signal', scope: ['combat', 'world'], ap: 'data', target: 'object', range: 3,
     text: 'While you are in stealth: silently disable one electronic device within 3 tiles.',
     available: (h) => inStealth(h),
     preview: (h, a) => {

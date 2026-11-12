@@ -22,13 +22,14 @@ import { itemAmount } from './effects/amounts';
 import { openAmount, closeAmount, armourAgainst, landed, deal } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
-import { skillRollMod, actionAp, immune, forbids } from './effects/core';
+import { skillRollMod, immune, forbids } from './effects/core';
+import { price, priced, costOf, whyNot, canPay, pay, setAp, withAp, creditFor } from './effects/cost';
 import { statQuery } from './effects/hooks';
 import { noteFallbacks } from './effects/narrator';
 import { windowStep } from './effects/actions';
 import { type Hazard, hazardStep, spotHazards, hazardLiveAt, HAZARD } from './hazards';
-import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PICKUP_AP, PILE } from './containers';
-import { canStand, standBlocker, inBounds } from './kit';
+import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PILE } from './containers';
+import { canStand, standBlocker, inBounds, work } from './kit';
 
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
 export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[];
@@ -114,7 +115,7 @@ export interface Unit {
   hidden?: boolean; hideEntry?: number; ambushUsed?: number;
   /** Sigil 1.4: MASK's rounds left (and set on the bearer's own turn), the round it was last Quickened, when each
    * condition landed (CLEANSE ends the newest). */
-  maskLeft?: number; maskFresh?: boolean; quickRound?: number; condAt?: Record<string, number>;
+  maskLeft?: number; maskFresh?: boolean; condAt?: Record<string, number>;
   /** What it is (human, robot, crawler, ork, upper_realm, cursed, beast, machine, turret, celestial…) and its tags
    * (military, hunter, humanoid, unaware, no_surrender, lawful, prisoner…). */
   kind?: string; tags?: string[];
@@ -174,8 +175,6 @@ export interface Unit {
   /** weapons thrown into this unit and still in it (rules 1.12, Throw): they fall where it falls; Pull Out takes one back */
   stuck?: { by: string; weapon: string; item?: PackItem }[];
   nailed?: { by: string; id: string; ap: number; weapon?: string; /** the weapon's own entry (rarity, wear, mods, name), kept so it comes back as it was */ item?: PackItem }; pressedThis?: { t: string; ids: string[] }; nearFoe0?: number; noWatch?: number;
-  /** Prayer (spec: Patrons and prayer): the round of the last prayer (cooldown). */
-  prayedRound?: number;
   /** Rules 1.6 (faith.ts): the vow sworn for this fight, and the faith state of the fight (tags seen per action, the
    * liked-tag gain so far, the Whisper's turn, the intervention used, Lucky Break and the like). */
   vow?: import('./character').Vow | null; faith?: Record<string, any>;
@@ -344,7 +343,7 @@ export function asChain<T>(f: () => T): T { return chained(f); }
  * Discipline: hooks gap A6/I2). */
 function volleyAp(cb: Combat, u: Unit, t: Unit | null, mode: string, base: number): number {
   const hk: any = { att: u, tgt: t || u, mode, melee: false, ap: base, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
-  emit(cb, 'attack_preview', hk); return Math.max(0, hk.ap);
+  emit(cb, 'attack_preview', hk); return priced({ cb, u }, 'attack', Math.max(0, hk.ap), undefined, { mode, tgt: t, volley: true }).ap;
 }
 
 export const key = (x: number, y: number) => x + ',' + y;
@@ -667,8 +666,8 @@ export function toggleDoor(cb: Combat, u: Unit, tile: string): string | null {
   if (dist(u.pos, tile) > 1) return 'Stand next to it.';
   if (o.locked) return 'Locked.';
   if (o.open && cb.units.some((x) => !x.dead && x.pos === tile)) return 'Someone is in the doorway.';
-  if (u.ap < 1) return 'Needs 1 AP.';
-  u.ap -= 1; o.open = !o.open; emitFx(cb, 'door', { unit: u.id, at: tile, open: !!o.open });
+  const ap = price({ cb, u }, 'door').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
+  pay(cb, u, ap); o.open = !o.open; emitFx(cb, 'door', { unit: u.id, at: tile, open: !!o.open });
   cb.log.push(u.name + (o.open ? ' opens ' : ' closes ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(tile) + '.');
   return null;
 }
@@ -692,6 +691,7 @@ export function pathOpts(cb: Combat, me: Unit | undefined): PathOpts {
 }
 /** avoid: tiles a route may end on but never pass through (revealed hazards, for a player's click-path: movePaths). */
 export function paths(cb: Combat, from: string, self: string, avoid?: Set<string>) {
+  work('paths');
   const { w, h } = cb.map, me = cb.units.find((u) => u.id === self), diff = difficultOf(cb), opt = pathOpts(cb, me);
   const solid = new Set([...moveBlockers(cb), ...objectsOf(cb).filter((o) => isTrap(o) && trapKnown(o, me?.side || 'pc')).map((o) => o.pos)]);
   for (const k of opt.runnable) solid.delete(k);
@@ -790,7 +790,7 @@ export type MoveHow = 'move' | 'sprint' | 'disengage' | 'sneak';
 export function canAffordTiles(u: Unit, tiles: number, how: MoveHow = 'move'): boolean {
   if (how === 'sprint') return tiles <= Math.floor(3 * u.movement);
   if (how === 'disengage') return tiles <= 1;
-  return apForTiles(tiles, u.bank || 0, u.movement) + (how === 'sneak' ? tiles : 0) <= u.ap;
+  return canPay(null, u, apForTiles(tiles, u.bank || 0, u.movement) + (how === 'sneak' ? tiles : 0));
 }
 /** The paths a move to `to` uses (rules 1.9, item 683): a player's unit (a character or a companion) goes around every
  * revealed hazard tile when that route is at most PILE.route_slack_tiles longer than the shortest AND the unit can still
@@ -1013,26 +1013,7 @@ export const cycleAp = (w: WeaponDef | null | undefined): number => (w && !isMel
 export const attackApCost = (w: WeaponDef, mode: string) => (isMelee(w) ? (w.category.startsWith('heavy') ? 3 : 2) : mode === 'aimed' ? Number((w.ap_cost as any).aimed) || 3 : (w.ap_cost.single ?? 2));
 export const effectiveRange = (w: WeaponDef) => (typeof w.range_tiles === 'number' ? w.range_tiles : 8);
 
-const ENCORE_PLAIN: Record<string, string> = { shot: 'combat/attack:shot', aimed_shot: 'combat/attack:aimed', cut: 'combat/attack:melee', overwatch: 'combat/overwatch' };
-/** Encore's key for an action: its type and what it is (a perk's id, an attack's mode, a move's kind…), never its
- * target. Prayers, ending the turn and declining a window can't be repeated (null). */
-export function encoreKey(a: any): string | null {
-  const t = String(a?.type || ''); if (!t.startsWith('combat/') || ['combat/pray', 'combat/end-turn', 'combat/decline'].includes(t)) return null;
-  // Rules 1.12: a free technique is the plain action it stands for (Shot is the shot, Aimed Shot the aimed shot, Cut the
-  // melee attack, Overwatch the overwatch), so either one repeats the other. Any other technique is itself, by its id.
-  if (t === 'combat/technique') { const plain = ENCORE_PLAIN[String(a.id)]; return plain || 'combat/technique:' + String(a.id || ''); }
-  const what = t === 'combat/attack' ? a.mode || 'shot' : t === 'combat/move' ? a.how || 'move' : a.id ?? a.word ?? a.design ?? a.item ?? a.kind ?? a.hand ?? '';
-  return t + (what ? ':' + what : '');
-}
-/** Encore's lend for an action not yet taken (item 729; item 737): the AP the unit may count on top of its own when
- * this action repeats its Encore (0 otherwise). The previews (attacks here, moves and perks in the client) add it, so a
- * repeat with too little AP isn't shown as "Needs N AP". Never inside the reducer's own action (cb.acting): there
- * encoreBefore has already lent it, and a perk's inner attack mustn't borrow it. */
-export function encoreCredit(u: Unit | null | undefined, a: any, cb?: Combat | null): number {
-  if ((cb as any)?.acting) return 0;
-  const brief = a?.type === 'combat/end-turn' ? 0 : briefCredit(u, cb); // rules 1.13: a Brief's discount is lent the same way (calls/rules.ts)
-  const en = u?.faith?.encore; if (!en || encoreKey(a) !== en.key) return brief; return (en.ap || 0) + brief;
-}
+export { encoreKey, creditFor as encoreCredit } from './effects/cost';
 /** One term of a to-hit sum or a damage chain, for the transparent breakdown (spec: dice are transparent). */
 export interface Term { v: number; label: string }
 export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: number; need: number; pct: number; cover: number; coverTile?: string | null; rangePenalty: number;
@@ -1063,7 +1044,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   // terms (ctx.terms), or a refusal (ctx.fail). ctx.preview is true: handlers must not change state here.
   const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [], seeVeil: false, noLos: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false, bandsLess: 0 };
   emit(cb, 'attack_preview', hk);
-  const ap = opts.free ? 0 : Math.max(0, hk.ap);
+  const ap = opts.free ? 0 : priced({ cb, u: att }, 'attack', Math.max(0, hk.ap), undefined, { mode, tgt }).ap; // the one `cost` hook (effects/cost.ts)
   const fail = (why: string): AttackPreview => ({ ok: false, why, ap, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 });
   if (!alive(tgt) && !tgt.downed) return fail(tgt.surrendered ? tgt.name + ' has surrendered.' : 'Target is out of the fight.');
   if (hk.fail) return fail(hk.fail);
@@ -1073,7 +1054,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   { const ts = condSource(att, 'taunted'), tu = ts ? cb.units.find((x) => x.id === ts) : null; if (tu && tu.id !== tgt.id && !hk.ignoreTaunt && alive(tu) && sideSees(cb, att.side, tu)) return fail('Taunted: your attack must go at ' + tu.name + '.'); }
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && useW !== WEAPON.fists && !isMelee(useW)) return fail(condOn(att, 'disarmed') ? 'Disarmed: recover your weapon (2 AP), or strike with your fists.' : 'Your weapon is lowered: raise it (1 AP).');
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && isMelee(useW) && useW !== WEAPON.fists && mode !== 'melee') return fail('Disarmed: recover your weapon first.');
-  if (att.ap + encoreCredit(att, { type: 'combat/attack', mode }, cb) < ap) return fail('Needs ' + ap + ' AP.'); // Encore lends it (item 737)
+  { const no = whyNot(cb, att, ap, { as: { type: 'combat/attack', mode } }); if (no) return fail(no); } // a repeat's credit counts (Encore, item 737)
   if ((mode === 'burst' || mode === 'auto') && !(w.modes || []).includes(mode)) return fail('This weapon has no ' + (mode === 'auto' ? 'full auto' : 'burst') + '.');
   // An ally (friendly fire) needs this unit's own sight; the squad's shared sight covers the other side.
   if (tgt.side === att.side ? !(unitSees(cb, att, tgt.pos) || (sightHooked(cb) && seesHook(cb, att.side, tgt, att, false, false).seen)) : !sideSees(cb, att.side, tgt, att)) return fail('You can\'t see it.');
@@ -1204,7 +1185,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // A reaction to the attack being called (a held shot that lands first: 'attack_target' may set ctx.cancel, or take the
   // attacker out) ends it here: its AP is spent, nothing is rolled.
   if (at.cancel || att.dead || att.downed || att.surrendered) {
-    if (alive(att) && !opts.free && !opts.noAp) { const pv0 = previewAttack(cb, att, tgt, mode, { extra: opts.extra }); if (pv0.ok) att.ap -= pv0.ap; }
+    if (alive(att) && !opts.free && !opts.noAp) { const pv0 = previewAttack(cb, att, tgt, mode, { extra: opts.extra }); if (pv0.ok) pay(cb, att, pv0.ap); }
     const line = '(' + att.name + '\'s attack on ' + tgt.name + ' never comes' + (at.why ? ': ' + at.why : '') + '.)'; cb.log.push(line);
     return { roll: 0, total: 0, vs: 0, hit: false, crit: false, fumble: false, damage: 0, line, killed: false, cancelled: true };
   }
@@ -1220,7 +1201,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   }
   const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const attAt = att.pos, tgtAt = tgt.pos;
-  att.ap -= pv.ap;
+  pay(cb, att, pv.ap);
   if (att.mg) calmFight(cb, att); // rules 1.5, calming the heart: the first weapon attack of your turn eases 1 Strain
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? (att.dur ?? att.maxDur) <= att.maxDur * 0.25 : false;
@@ -1411,23 +1392,23 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const pens = [...(condOn(u, 'nausea') ? [{ n: 1, why: 'Nausea' }] : []), ...(condOn(u, 'suppressed') ? [{ n: 1, why: 'Suppressed' }] : [])];
   const pre: any = emit(cb, 'turn_start_pre', { u, grants: [], penalties: pens, cb, rng });
   const t = turnAp(u, pre.grants || [], pre.penalties || []);
-  u.ap = t.ap; for (const l of t.lines) cb.log.push(l);
+  setAp(u, t.ap); for (const l of t.lines) cb.log.push(l);
   if (u.dazedNext) cb.log.push(u.name + ' is Dazed: −2 AP this turn.');
   u.stunnedNext = 0; u.dazedNext = 0; u.overwatch = null; u.owShots = 0; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - (heatPair(u) ? 4 : 2)); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
   // Stunned (spec): the turn is lost; the engine passes it (endTurn).
-  if (condOn(u, 'stunned') && !u.downed) { u.ap = 0; u.skipTurn = true; cb.log.push(u.name + ' is Stunned and loses the turn.'); }
+  if (condOn(u, 'stunned') && !u.downed) { setAp(u, 0); u.skipTurn = true; cb.log.push(u.name + ' is Stunned and loses the turn.'); }
   emitFx(cb, 'turn', { unit: u.id, side: u.side, at: u.pos, round: cb.round });
   // Magic upkeep (spec: Mana): conditions, a held Outburst growing, Strain, wall zones.
-  magicTurnStart(cb, rng, u); if (u.dead) { u.ap = 0; return; }
+  magicTurnStart(cb, rng, u); if (u.dead) { setAp(u, 0); return; }
   const hzObj = objectsAt(cb, u.pos).find((o) => hazardOf(o) && !(u.hazardImmune || []).includes(o.kind)), hz = hzObj ? hazardOf(hzObj) : null;
-  if (hz && !u.dead) { cb.log.push(u.name + ' starts the turn in ' + (objectsAt(cb, u.pos).find((o) => hazardOf(o))!.name.toLowerCase()) + hurtUnit(u, hz.damage, true, cb, 'hazard')); if (u.downed || u.dead) { u.ap = 0; return; } }
+  if (hz && !u.dead) { cb.log.push(u.name + ' starts the turn in ' + (objectsAt(cb, u.pos).find((o) => hazardOf(o))!.name.toLowerCase()) + hurtUnit(u, hz.damage, true, cb, 'hazard')); if (u.downed || u.dead) { setAp(u, 0); return; } }
   if (u.bleed && !u.dead && !u.downed) {
     u.bleed--;
     const by = u.lastHitBy ? cb.units.find((x) => x.id === u.lastHitBy) || null : null; // kill credit: whoever opened the wound
     const r = applyDamage(cb, u, itemAmount('condition:bleeding', 'tick'), { type: 'bleed', by, shield: false, credit: 'hp' });
     emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'bleed', killed: u.hp === 0 }); if (u.hp === 0) fxFell(cb, u);
     cb.log.push(u.name + ' bleeds: ' + r.dealt + ' damage' + (u.hp === 0 ? (u.side === 'foe' ? ' · down for good' : ' · Downed') : ''));
-    if (u.hp === 0) { u.bleed = 0; u.ap = 0; return; }
+    if (u.hp === 0) { u.bleed = 0; setAp(u, 0); return; }
   }
   if (u.downed && !u.dead) {
     // Items may add to death saves (stat 'death_save', rules 1.3; Still Standing, Bite the Bullet…).
@@ -1439,7 +1420,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
     cb.log.push(u.name + ' is Downed: death save d20 ' + r0 + (dm ? (dm > 0 ? ' +' : ' −') + Math.abs(dm) : '') + (dsr.ok ? ' · success (' + u.saves.ok + '/3)' : ' · failure (' + u.saves.fail + '/3)'));
     if (u.saves.ok >= 3) { u.downed = false; u.hp = 1; u.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stabilises at 1 HP.'); }
     else if (u.saves.fail >= 3) { u.dead = true; cb.log.push(u.name + ' dies.'); fxFell(cb, u); }
-    u.ap = 0;
+    setAp(u, 0);
   }
   // Commanded (spec; rules 1.3 engine menu): an enemy obeys the order it was given: halt (no moving), hold (no
   // attacks), drop (Disarmed), kneel (prone), flee (it spends the turn getting away). Anything else goes to the Narrator.
@@ -1525,20 +1506,20 @@ export function pullFree(cb: Combat, u: Unit, target: Unit = u, take?: (it: Pack
   const other = target !== u && target.side !== u.side, wid = n.weapon && WEAPON[n.weapon] ? n.weapon : null;
   if (target !== u && dist(u.pos, target.pos) > 1) return other && wid ? 'Stand next to ' + target.name + ' to pull the weapon out.' : 'Stand next to an ally to pull them free.';
   if (other && !wid) return 'Stand next to an ally to pull them free.';
-  if (u.ap < n.ap) return 'Needs ' + n.ap + ' AP.';
+  const ap = price({ cb, u }, 'pull_free', n.ap).ap; { const no = whyNot(cb, u, ap); if (no) return no; }
   if (other) {
     const it = n.item || gearEntry(wid!)!;
-    u.ap -= n.ap; delete target.nailed;
+    pay(cb, u, ap); delete target.nailed;
     emitFx(cb, 'pull_free', { unit: u.id, target: target.id, at: target.pos, weapon: wid });
     let took = !!take && take(it);
     if (!took && !u.charId && !u.companion && !u.allowedActions && u.weapon === 'fists') { u.weapon = wid!; u.ammo = 0; u.jammed = false; took = true; } // no sheet: straight into the empty hand
     if (!took) dropToPile(cb, target.pos, [it], 'drop');
-    cb.log.push(u.name + ' pulls the ' + WEAPON[wid!].name.toLowerCase() + ' out of ' + target.name + ' (' + n.ap + ' AP)' + (took ? ' and keeps it in hand' : ': it drops at ' + refOf(target.pos)) + '. ' + target.name + ' is free.');
+    cb.log.push(u.name + ' pulls the ' + WEAPON[wid!].name.toLowerCase() + ' out of ' + target.name + ' (' + ap + ' AP)' + (took ? ' and keeps it in hand' : ': it drops at ' + refOf(target.pos)) + '. ' + target.name + ' is free.');
     return null;
   }
-  u.ap -= n.ap; dropNailed(cb, target);
+  pay(cb, u, ap); dropNailed(cb, target);
   emitFx(cb, 'pull_free', { unit: u.id, target: target.id, at: target.pos });
-  cb.log.push(u.name + (target === u ? ' pulls free' : ' pulls ' + target.name + ' free') + ' (' + n.ap + ' AP)' + (n.weapon && WEAPON[n.weapon] ? ': the ' + WEAPON[n.weapon].name.toLowerCase() + ' drops at ' + refOf(target.pos) : '') + '.');
+  cb.log.push(u.name + (target === u ? ' pulls free' : ' pulls ' + target.name + ' free') + ' (' + ap + ' AP)' + (n.weapon && WEAPON[n.weapon] ? ': the ' + WEAPON[n.weapon].name.toLowerCase() + ' drops at ' + refOf(target.pos) : '') + '.');
   return null;
 }
 export function moveBlock(u: Unit): string | null {
@@ -1586,9 +1567,9 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   let ap: number;
   { const no = moveHowBlock(u, how); if (no) return no; }
   if (how === 'sprint') {
-    if (tiles > sprintTiles(u)) return 'Too far to sprint (' + sprintTiles(u) + ' tiles).'; ap = actionAp({ u }, 'sprint', 2).ap;
+    if (tiles > sprintTiles(u)) return 'Too far to sprint (' + sprintTiles(u) + ' tiles).'; ap = price({ cb, u }, 'sprint').ap;
   }
-  else if (how === 'disengage') { if (tiles > 1) return 'Disengage moves 1 tile.'; ap = actionAp({ u }, 'disengage', 1).ap; }
+  else if (how === 'disengage') { if (tiles > 1) return 'Disengage moves 1 tile.'; ap = price({ cb, u }, 'disengage').ap; }
   else ap = apForTiles(tiles, u.bank, u.movement);
   const route: string[] = []; for (let k = to; k !== u.pos && P.prev[k]; k = P.prev[k]) route.unshift(k);
   // Items price the move before it is paid: 'move_cost' {u, from, to, route, tiles, how, ap, skipOA, skipOW, free}
@@ -1596,15 +1577,15 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   const ap0 = ap; // the move's own price, before a free step or an item changes it
   if (o.free) ap = 0;
   const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: !!o.free && !o.oa, skipOW: false, free: !!o.free, cb, mods: cb.mods || [], ...(o.preview ? { preview: true } : {}) });
-  ap = o.free ? 0 : Math.max(0, mc.ap); // a free step stays free whatever the ground adds (the items were told it is free before they priced it)
-  if (ap > u.ap) return 'Needs ' + ap + ' AP.';
+  ap = o.free ? 0 : how === 'move' ? priced({ cb, u }, 'move', Math.max(0, mc.ap), undefined, { to, tiles }).ap : Math.max(0, mc.ap); // (a Sprint and a Disengage passed the `cost` hook when they were priced above) a free step stays free whatever the ground adds (the items were told it is free before they priced it)
+  { const no = whyNot(cb, u, ap, { as: { type: 'combat/move', how } }); if (no) return no; }
   return { ap, ap0, tiles, route, mc, P };
 }
 export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: MoveOpts = {}): string | null {
   const pl = movePlan(cb, u, to, how, o); if (typeof pl === 'string') return pl;
   const { ap, ap0, tiles, route, mc, P } = pl;
   const from = u.pos, bank0 = u.bank;
-  u.ap -= ap; if (how === 'sprint') u.sprinted = true; u.braced = false; u.moved = true;
+  pay(cb, u, ap); if (how === 'sprint') u.sprinted = true; u.braced = false; u.moved = true;
   if (condOn(u, 'emplaced')) endCond(u, 'emplaced', cb);
   // A Hidden mover draws no reactions (nobody sees it go).
   const reacts = !!rng && !u.hidden;
@@ -1701,9 +1682,9 @@ export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit, seg?: string
   }
 }
 export function setOverwatch(cb: Combat, u: Unit, mode: 'shot' | 'aimed' | 'melee'): string | null {
-  const w = WEAPON[u.weapon], cost = attackApCost(isMelee(w) ? w : w, mode);
-  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
-  u.ap -= cost; u.overwatch = mode; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); cb.log.push(u.name + ' holds a shot on overwatch.'); return null;
+  const w = WEAPON[u.weapon], cost = price({ cb, u }, 'overwatch', attackApCost(isMelee(w) ? w : w, mode)).ap;
+  { const no = whyNot(cb, u, cost); if (no) return no; }
+  pay(cb, u, cost); u.overwatch = mode; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); cb.log.push(u.name + ' holds a shot on overwatch.'); return null;
 }
 /** Burst (spec, rules 1.18): 3 AP, 3 rounds at one target, two rolls (burstRolls below). Full auto: 4 AP, 10 rounds, one roll at −2 per enemy near the line. */
 /** The rolls of a Burst (rules 1.18; techniques.json burst.numbers), as the to-hit step of each roll. A character's
@@ -1729,7 +1710,7 @@ export const burstCool = (u: Unit, auto: boolean): number => (!auto ? 0 : !u.cha
 export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
   const rolls = burstRolls(u, WEAPON[u.weapon]), mag = WEAPON[u.weapon].magazine;
-  u.ap -= pv.ap; cb.log.push(u.name + ' fires a burst' + (pv.ap !== 3 ? ' (' + pv.ap + ' AP)' : '') + '.');
+  pay(cb, u, pv.ap); cb.log.push(u.name + ' fires a burst' + (pv.ap !== 3 ? ' (' + pv.ap + ' AP)' : '') + '.');
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: WEAPON[u.weapon].category, mode: 'burst', shots: 3 });
   // resolveAttack refuses (and ends the burst on) any round the preview won't allow: broken gun, target pushed out of sight.
   let made = 0;
@@ -1743,7 +1724,7 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
   const [ax, ay] = xy(u.pos), [tx, ty] = xy(t.pos), len = Math.hypot(tx - ax, ty - ay) || 1;
   const near = (v: Unit) => { const [vx, vy] = xy(v.pos), along = ((vx - ax) * (tx - ax) + (vy - ay) * (ty - ay)) / len; return along > 0 && Math.abs((vx - ax) * (ty - ay) - (vy - ay) * (tx - ax)) / len <= (((WEAPON[u.weapon] as any).grants?.effect?.op === 'auto_width') ? (WEAPON[u.weapon] as any).grants.effect.value + 0.5 : 1.5); };
   const hits = cb.units.filter((v) => v.side !== u.side && !v.dead && near(v) && previewAttack(cb, u, v, 'auto', { free: true }).ok);
-  u.ap -= pv.ap; cb.log.push(u.name + ' opens up on full auto' + (pv.ap !== 4 ? ' (' + pv.ap + ' AP)' : '') + '.');
+  pay(cb, u, pv.ap); cb.log.push(u.name + ' opens up on full auto' + (pv.ap !== 4 ? ' (' + pv.ap + ' AP)' : '') + '.');
   const w = WEAPON[u.weapon], startAmmo = u.ammo;
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
   // The line is worked out once; each target is checked again as it comes up (resolveAttack refuses a shot it can't
@@ -1896,9 +1877,9 @@ export function swapUnits(cb: Combat, rng0: Rng | null | undefined, a: Unit, b: 
 /** Shove (spec): 2 AP, adjacent; d20 + Raw Power vs 10 + the target's best of Raw Power and Athletics; pushed 1 tile, or prone if blocked. */
 export function shove(cb: Combat, rng: Rng, u: Unit, t: Unit): string | null {
   if (dist(u.pos, t.pos) > 1 || t.dead) return 'Shove someone next to you.';
-  const cost = actionAp({ u }, 'shove', 2).ap;
-  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
-  u.ap -= cost;
+  const cost = price({ cb, u }, 'shove').ap;
+  { const no = whyNot(cb, u, cost); if (no) return no; }
+  pay(cb, u, cost);
   { const im = immune({ u: t }, 'shove'); if (im) { cb.log.push(u.name + ' shoves ' + t.name + ', who doesn\'t budge (' + im + ').'); emitFx(cb, 'shove', { unit: u.id, target: t.id, from: t.pos, to: t.pos, ok: false }); return null; } }
   // Item Raw Power mods reach the shove's d20 (the global ruling); the target defends with its better of Raw Power and Athletics.
   const need = CONTEST_BASE + Math.max((t.strength ?? 0) + (t.sk?.raw_power || 0), t.athleticsPts != null ? mod(t.athleticsPts) + (t.sk?.athletics || 0) : 0, 0);
@@ -1913,8 +1894,8 @@ export function shove(cb: Combat, rng: Rng, u: Unit, t: Unit): string | null {
   cb.log.push(line + '.'); return null;
 }
 export function toggleProne(cb: Combat, u: Unit): string | null {
-  if (u.ap < 1) return 'Needs 1 AP.';
-  u.ap -= 1; u.prone = !u.prone; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: u.prone ? 'prone' : 'stand' }); cb.log.push(u.name + (u.prone ? ' drops prone.' : ' stands up.'));
+  const ap = price({ cb, u }, 'prone').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
+  pay(cb, u, ap); u.prone = !u.prone; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: u.prone ? 'prone' : 'stand' }); cb.log.push(u.name + (u.prone ? ' drops prone.' : ' stands up.'));
   if (!u.prone) emit(cb, 'stood_up', { u, cb }); // 'stood_up' {u}: after standing (a held shot waits for it: Dead to Rights)
   return null;
 }
@@ -1934,10 +1915,10 @@ export const braceHook: { f: ((cb: Combat, u: Unit) => void) | null } = { f: nul
 export function brace(cb: Combat, u: Unit): string | null {
   if (!weaponActions(u).some((x) => x.id === 'brace')) return 'This weapon has nothing to brace.';
   if (u.braced) return 'Already braced.';
-  if (u.ap < 1) return 'Needs 1 AP.';
+  const ap = price({ cb, u }, 'brace').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
   // A weapon that has the Brace action of its own is set (Recoil halved, its penalties gone). Any other weapon is not:
   // its bearer sets only themself, for Guard and for the class moves that ask for the braced stance (rules 1.13).
-  u.ap -= 1; u.braced = true; if (weaponBraces(u)) delete u.guardBrace; else u.guardBrace = true; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' }); cb.log.push(u.name + ' braces.');
+  pay(cb, u, ap); u.braced = true; if (weaponBraces(u)) delete u.guardBrace; else u.guardBrace = true; emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' }); cb.log.push(u.name + ' braces.');
   braceHook.f?.(cb, u); // a unit with a Guard pool gains Guard as it sets itself
   emit(cb, 'protect_act', { u, how: 'brace', cb }); // 'protect_act' {u, how}: a Brace or an Interpose (the patrons' protect tag, item 600)
   return null;
@@ -1962,11 +1943,11 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
   const w = WEAPON[u.weapon], fx: any = (w as any).grants?.effect || {};
   if (fx.op === 'multi_shot') {
     if (!t) return 'Pick a target.';
-    const sap = volleyAp(cb, u, t, 'skill', fx.ap); if (u.ap < sap) return 'Needs ' + sap + ' AP.';
+    const sap = volleyAp(cb, u, t, 'skill', fx.ap); { const no = whyNot(cb, u, sap); if (no) return no; }
     const pv = previewAttack(cb, u, t, 'shot', { free: true }); if (!pv.ok) return pv.why!;
     const rounds = fx.rounds || 1;
     if (w.magazine != null && u.ammo < rounds) return 'Not enough rounds loaded.';
-    u.ap -= sap; cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
+    pay(cb, u, sap); cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
     emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: w.id, cat: w.category, mode: 'skill', name: (w as any).grants.name, shots: fx.shots });
     // Each shot after the first is checked again: one that can no longer be taken (the target fell or dropped out of
     // sight, the gun broke) ends the volley; it is never rolled against a refused preview.
@@ -1978,10 +1959,10 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
     emit(cb, 'volley_end', { u, mode: 'skill', target: t, cb, rng }); checkOver(cb); return null;
   }
   if (fx.op === 'sweep') {
-    const sap = volleyAp(cb, u, null, 'skill', fx.ap); if (u.ap < sap) return 'Needs ' + sap + ' AP.';
+    const sap = volleyAp(cb, u, null, 'skill', fx.ap); { const no = whyNot(cb, u, sap); if (no) return no; }
     const near = cb.units.filter((v) => v.side !== u.side && !v.dead && dist(v.pos, u.pos) <= 1 && sideSees(cb, u.side, v));
     if (!near.length) return 'Nobody next to you.';
-    u.ap -= sap; cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
+    pay(cb, u, sap); cb.log.push(u.name + ' uses ' + (w as any).grants.name + '.');
     emitFx(cb, 'volley', { unit: u.id, from: u.pos, weapon: w.id, cat: w.category, mode: 'sweep', name: (w as any).grants.name, shots: near.length });
     chained(() => { for (const v of near) resolveAttack(cb, rng, u, v, 'melee', who, { noAp: true }); }, 'skill');
     emit(cb, 'volley_end', { u, mode: 'skill', cb, rng }); checkOver(cb); return null;
@@ -1994,11 +1975,11 @@ export function fieldRepair(cb: Combat, u: Unit): string | null {
   if ((u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
   if (!(u.parts || 0)) return 'No spare-parts charges.';
   if ((u.dur ?? u.maxDur) >= u.maxDur) return 'Already in full repair.';
-  const cost = actionAp({ u }, 'field_repair', 2).ap;
-  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  const cost = price({ cb, u }, 'field_repair').ap;
+  { const no = whyNot(cb, u, cost); if (no) return no; }
   const fr: any = (SKILL.proficiency as any).unlocks?.['3']?.effects?.[0] || {}; // the card's numbers (skills.json Field Repair)
   const add = Math.ceil(u.maxDur * ((fr.repair_base ?? 0.1) + (fr.repair_per_point ?? 0.05) * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
-  u.ap -= cost; u.parts = (u.parts || 0) - 1; u.dur = Math.min(u.maxDur, (u.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, at: u.pos, dur: 1400 });
+  pay(cb, u, cost); u.parts = (u.parts || 0) - 1; u.dur = Math.min(u.maxDur, (u.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, at: u.pos, dur: 1400 });
   cb.log.push(u.name + ' patches the weapon: +' + add + ' durability (' + u.dur + '/' + u.maxDur + ').'); return null;
 }
 /** Paired attack (spec: Hands): both weapons in one action. AP = the higher cost + 1; main −1, off −3 (better by 1 per 3 skill points, to −1). */
@@ -2006,10 +1987,10 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   if (!u.offWeapon) return 'Nothing in your off hand to attack with.';
   const mw = WEAPON[u.weapon], ow = WEAPON[u.offWeapon];
   const cost = volleyAp(cb, u, t, 'paired', Math.max(attackApCost(mw, isMelee(mw) ? 'melee' : 'shot'), attackApCost(ow, isMelee(ow) ? 'melee' : 'shot')) + 1);
-  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  { const no = whyNot(cb, u, cost); if (no) return no; }
   const offTarget = t2 || t, mainMode = isMelee(mw) ? 'melee' : 'shot';
   const pv = previewAttack(cb, u, t, mainMode, { free: true }); if (!pv.ok) return pv.why!;
-  u.ap -= cost; cb.log.push(u.name + ' attacks with both hands.');
+  pay(cb, u, cost); cb.log.push(u.name + ' attacks with both hands.');
   emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: mw.id, cat: mw.category, mode: 'paired', shots: 2 });
   fxChain++; const wasV = VOLLEY; VOLLEY = 'paired';
   try {
@@ -2065,7 +2046,7 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
   if (o.tactical && w.reload === 'loose') return 'Loaded round by round: there is only one reload.';
   const tactical = !!o.tactical && !!u.mags && w.reload !== 'loose';
   const rAp = free ? 0 : reloadAp(u) + (tactical ? PILE.tactical_reload_extra_ap : 0);
-  if (u.ap < rAp) return 'Needs ' + rAp + ' AP.';
+  { const no = whyNot(cb, u, rAp); if (no) return no; }
   // Every refusal comes before the hook: a refused reload is no reload (Speed Loader's use stays; spec item 564).
   // A full magazine isn't swapped (review fix: a speed reload dropped a full one, a tactical one cost 3 AP for nothing).
   if (w.reload === 'magazine' && u.ammo >= (magazineSize(w.id, u.mods) ?? w.magazine) && !u.jammed) return 'Already full.';
@@ -2076,12 +2057,12 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
   const rDur = (how: string) => (rAp === 1 ? 800 : how === 'loose' ? 1400 : 1200);
   // The event's counts are for the picture only (the reload card, fx/reload.ts): what was in the gun, what is in it now, its size.
   // Unlimited spares (a companion's, a twin's: no mags) drop nothing in the pile: noDrop tells the card and the portrait not to show one falling.
-  if (!u.mags) { const was = u.ammo; u.ap -= rAp; u.ammo = w.magazine; u.jammed = false; emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: w.reload === 'loose' ? 'loose' : 'mag', dur: rDur(w.reload === 'loose' ? 'loose' : 'mag'), left: was, ammo: u.ammo, cap: w.magazine, noDrop: true }); cb.log.push(u.name + ' reloads.'); return null; }
+  if (!u.mags) { const was = u.ammo; pay(cb, u, rAp); u.ammo = w.magazine; u.jammed = false; emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: w.reload === 'loose' ? 'loose' : 'mag', dur: rDur(w.reload === 'loose' ? 'loose' : 'mag'), left: was, ammo: u.ammo, cap: w.magazine, noDrop: true }); cb.log.push(u.name + ' reloads.'); return null; }
   if (w.reload === 'loose') {
     const room = w.magazine - u.ammo, take = Math.min(room, u.loose || 0);
     if (room <= 0) return 'Already full.';
     if (!take) return 'No rounds left to load.';
-    u.ap -= rAp; u.ammo += take; u.loose = (u.loose || 0) - take; u.jammed = false;
+    pay(cb, u, rAp); u.ammo += take; u.loose = (u.loose || 0) - take; u.jammed = false;
     emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: 'loose', rounds: take, dur: rDur('loose'), ammo: u.ammo, cap: w.magazine });
     cb.log.push(u.name + ' loads ' + take + (take === 1 ? ' round' : ' rounds') + ' (' + u.loose + ' loose left).');
     return null;
@@ -2093,7 +2074,7 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
   const what = left ? 'the ' + unit + ' with ' + left + (left === 1 ? ' round' : ' rounds') + ' still in it' : 'the empty ' + unit;
   if (tactical) { u.mags.push(left); if (types) types.push(leftType); }
   if (types) u.magTypes = types;
-  u.ap -= rAp; u.ammo = fresh; u.ammoType = freshType; u.jammed = false;
+  pay(cb, u, rAp); u.ammo = fresh; u.ammoType = freshType; u.jammed = false;
   emitFx(cb, 'reload', { unit: u.id, at: u.pos, weapon: w.id, cat: w.category, how: 'mag', dur: rDur('mag'), left, ammo: fresh, cap: magazineSize(w.id, u.mods) ?? w.magazine, ...(tactical ? { tactical: true } : {}) });
   if (tactical) cb.log.push(u.name + ' reloads (tactical) and puts ' + what + ' back in the pack (' + u.mags.length + ' spare).');
   else { cb.log.push(u.name + ' reloads and drops ' + what + ' (' + u.mags.length + ' spare left).'); dropToPile(cb, u.pos, [magItem(u.weapon, left, leftType)]); } // no tile in the log: the pile shows it, under fog (review fix)
@@ -2102,15 +2083,15 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
 /** Reload the off-hand gun (2 AP), or both guns at once (3 AP; spec: Weapons v2, Two guns); tactical +1 (item 679).
  * Each gun takes its own spares (the same pack entry when both hands hold the same model). */
 /** Reload both guns' speed price (Two guns: 3 AP, items may change it); the tactical one is this + 1. */
-export const reloadBothAp = (u: Unit) => actionAp({ u }, 'reload_both', 3).ap;
+export const reloadBothAp = (u: Unit) => price({ u }, 'reload2').ap;
 export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical = false): string | null {
   { const no = (hand === 'both' ? reloadRefused(u, u.weapon, cb) : null) || reloadRefused(u, u.offWeapon, cb); if (no) return no; }
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!ow || ow.magazine == null || !ow.reload) return 'Your off hand holds no gun to reload.';
   if (tactical && ow.reload === 'loose') return 'Loaded round by round: there is only one reload.';
   // The off-hand gun is priced as a reload, but it isn't the main hand's: Speed Loader leaves it alone (spec item 564).
-  const ap = (hand === 'both' ? reloadBothAp(u) : actionAp({ u }, 'reload', ow.reload_ap ?? 2, { hand: 'off' }).ap) + (tactical ? PILE.tactical_reload_extra_ap : 0);
-  if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  const ap = (hand === 'both' ? reloadBothAp(u) : price({ cb, u }, 'reload', ow.reload_ap ?? costOf('reload'), { hand: 'off' }).ap) + (tactical ? PILE.tactical_reload_extra_ap : 0);
+  { const no = whyNot(cb, u, ap); if (no) return no; }
   const pc = !!u.charId, shared = ow.id === u.weapon, have = u.offAmmo ?? 0, offFull = have >= ow.magazine;
   // A character's off-hand gun reloads only from what it carries (review fix: with no spares entry it reloaded free);
   // an enemy's never runs out (until stat blocks list it).
@@ -2124,7 +2105,7 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
     if (offFull) return 'The off-hand gun is full: reload the main gun alone.';
     if (u.ammo >= w.magazine && w.reload === 'magazine') return 'The main gun is full: reload the off-hand gun alone.';
     // The main gun first, as before (a refusal throws in the reducer, so nothing it did stays).
-    const keep = u.ap, seq = cb.fxSeq || 0; u.ap = 99; const e = reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' }); u.ap = keep; if (e && e !== 'Already full.') return e;
+    const seq = cb.fxSeq || 0, e = withAp(u, 99, () => reload(cb, u, { both: true, tactical: tactical && w.reload !== 'loose' })); if (e && e !== 'Already full.') return e; // the two guns' one price is paid below
     if (u.dead || u.downed) return null; // a held shot felled it as it reached for the magazines (Dead to Rights): no reload, nothing spent
     mainFx = (cb.fx || []).find((f) => f.n > seq && f.k === 'reload' && f.unit === u.id) || null;
   }
@@ -2146,7 +2127,7 @@ export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical 
   }
   const left = have, leftType = u.offAmmoType ?? null, unit = ow.reload_unit || 'magazine';
   if (ow.reload === 'loose' && pc) { if (ow.ammo === WEAPON[u.weapon]?.ammo) u.loose = (u.loose || 0) - looseTake; else u.offLoose = (u.offLoose || 0) - looseTake; }
-  u.offAmmo = fresh; u.offAmmoType = ow.reload === 'loose' ? leftType : freshType; u.ap -= ap;
+  u.offAmmo = fresh; u.offAmmoType = ow.reload === 'loose' ? leftType : freshType; pay(cb, u, ap);
   const kept = !!pool && ow.reload !== 'loose';
   if (kept && tactical) { pool!.push(left); pushType(u, shared, leftType, pool!.length - 1); }
   // The log names no tile (review fix: the pile shows where it fell, under fog).
@@ -2200,9 +2181,9 @@ export function pickUp(cb: Combat, u: Unit, tile: string, take?: (string | numbe
   const objs = objectsOf(cb), p = pileAt(objs, tile);
   if (!p || p.hidden || !p.items?.length) return 'Nothing to pick up there.';
   if (!u.charId || !c) return 'Only a character picks things up.';
-  if (u.ap < PICKUP_AP) return 'Needs ' + PICKUP_AP + ' AP.';
+  const pAp = price({ cb, u }, 'pickup').ap; { const no = whyNot(cb, u, pAp); if (no) return no; }
   const sel = selectEntries(p, take); if (!sel.length) return 'None of that is there now.';
-  u.ap -= PICKUP_AP;
+  pay(cb, u, pAp);
   takeEntries(objs, p, sel);
   const names: string[] = [];
   for (const e of sel) for (const it of entryPack(e)) { names.push(itemLabel(it)); intoUnit(u, c, it); }
@@ -2212,16 +2193,16 @@ export function pickUp(cb: Combat, u: Unit, tile: string, take?: (string | numbe
   return null;
 }
 /** Load a spare magazine from loose rounds (spec: Loading): 1 AP per 5 rounds; part-loads when AP runs short. */
-export const ROUNDS_PER_AP = 5;
+export const ROUNDS_PER_AP: number = costOf('load', 'rounds');
 export function loadMagazine(cb: Combat, u: Unit): string | null {
   const w = WEAPON[u.weapon];
   if (!w || w.reload !== 'magazine' || !u.mags || !weaponActions(u).some((x) => x.id === 'load')) return 'Nothing to load.';
   const cap = w.magazine || 0, open = u.mags.map((n, i) => [n, i]).filter(([n]) => n < cap).sort((a, b) => b[0] - a[0]);
   if (!open.length) return 'Every spare ' + (w.reload_unit || 'magazine') + ' is full.';
   if (!u.loose) return 'No loose rounds to load.';
-  if (u.ap < 1) return 'Needs 1 AP.';
-  const [n, i] = open[0], rounds = Math.min(cap - n, u.loose, u.ap * ROUNDS_PER_AP), cost = Math.ceil(rounds / ROUNDS_PER_AP);
-  u.mags[i] = n + rounds; u.loose -= rounds; u.ap -= cost; emitFx(cb, 'load', { unit: u.id, at: u.pos, rounds, dur: Math.min(2000, 900 + 250 * cost) });
+  const per = price({ cb, u }, 'load').ap; { const no = whyNot(cb, u, per); if (no) return no; }
+  const [n, i] = open[0], rounds = Math.min(cap - n, u.loose, Math.floor(u.ap / per) * ROUNDS_PER_AP), cost = Math.ceil(rounds / ROUNDS_PER_AP) * per;
+  u.mags[i] = n + rounds; u.loose -= rounds; pay(cb, u, cost); emitFx(cb, 'load', { unit: u.id, at: u.pos, rounds, dur: Math.min(2000, 900 + 250 * cost) });
   cb.log.push(u.name + ' loads ' + rounds + (rounds === 1 ? ' round' : ' rounds') + ' into a ' + (w.reload_unit || 'magazine') + ' (' + u.mags[i] + '/' + cap + ') for ' + cost + ' AP.');
   return null;
 }
@@ -2229,8 +2210,8 @@ export function loadMagazine(cb: Combat, u: Unit): string | null {
 export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | null): string | null {
   const c = objectsAt(cb, tile).find((x) => x.hp != null && x.hp > 0); if (!c) return 'Nothing there to shoot.';
   // Breaking cover is priced through the items ('ap_cost:break'; Siege Engine: hooks gap A1), at least 1 AP.
-  const w = WEAPON[u.weapon], melee = isMelee(w), ap = Math.max(1, actionAp({ u }, 'break', attackApCost(w, melee ? 'melee' : 'shot')).ap);
-  if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  const w = WEAPON[u.weapon], melee = isMelee(w), ap = Math.max(1, price({ cb, u }, 'break', attackApCost(w, melee ? 'melee' : 'shot')).ap);
+  { const no = whyNot(cb, u, ap); if (no) return no; }
   const r = dist(u.pos, tile);
   if (melee) { if (r > 1) return 'Out of melee reach.'; }
   else {
@@ -2240,7 +2221,7 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
     if (Math.ceil(r / effectiveRange(w)) - 1 > 2) return 'Out of range.';
     if (w.magazine != null && !u.infiniteAmmo) u.ammo--; if (!u.infiniteAmmo) u.heat += 1;
   }
-  u.ap -= ap;
+  pay(cb, u, ap);
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1); // an attack action wears 1 (spec: Weapons v2)
   const fx: any = (w as any).grants?.effect || {};
   emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: w.id, cat: w.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true });
@@ -2248,28 +2229,28 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
   return null;
 }
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
-export const analyzeCost = (u: Unit) => actionAp({ u }, 'analyze', (u.analysis || 0) >= 3 ? 1 : 2).ap;
+export const analyzeCost = (u: Unit) => price({ u }, 'analyze', costOf('analyze', (u.analysis || 0) >= costOf('analyze', 'quick_at') ? 'ap_quick' : 'ap')).ap;
 /** How far Analyze reads: 4 tiles + Analysis. */
 export const analyzeRange = (u: Unit) => 4 + (u.analysis || 0);
 export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   if (t.side !== 'foe' || t.dead) return 'Pick a living enemy.';
   if (t.analyzedBy) return t.name + ' is already analyzed.';
   const cost = analyzeCost(u), range = analyzeRange(u);
-  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  { const no = whyNot(cb, u, cost); if (no) return no; }
   if (dist(u.pos, t.pos) > range) return 'Out of Analyze range (' + range + ' tiles).';
   if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';
-  u.ap -= cost; t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos }); t.weakPoint = (u.analysis || 0) >= 5;
+  pay(cb, u, cost); t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos }); t.weakPoint = (u.analysis || 0) >= 5;
   emit(cb, 'analyze', { u, t, ap: cost, cb });
   cb.log.push(u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
   return null;
 }
 export function clearJam(cb: Combat, u: Unit): string | null {
   if (!u.jammed) return 'Not jammed.';
-  const cost = actionAp({ u }, 'clear_jam', 2).ap;
-  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  const cost = price({ cb, u }, 'clear_jam').ap;
+  { const no = whyNot(cb, u, cost); if (no) return no; }
   // 'jam_clear' {u, ap, keepHeat}: an item may keep the Heat (Gun Nut's free clear doesn't reset it, plan 6a-29).
   const jc: any = emit(cb, 'jam_clear', { u, ap: cost, keepHeat: false, cb });
-  u.ap -= cost; u.jammed = false; if (!jc.keepHeat) u.heat = 0; emitFx(cb, 'clear', { unit: u.id, at: u.pos, dur: 1000 });
+  pay(cb, u, cost); u.jammed = false; if (!jc.keepHeat) u.heat = 0; emitFx(cb, 'clear', { unit: u.id, at: u.pos, dur: 1000 });
   cb.log.push(u.name + ' clears the jam.');
   return null;
 }
@@ -2281,12 +2262,12 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   if (dist(u.pos, t.pos) > 1) return 'Must be adjacent.';
   if (t.dead) return 'Too late.';
   const cost = stimAp(u, t, isMedic);
-  if (u.ap < cost) return 'Needs ' + cost + ' AP.';
+  { const no = whyNot(cb, u, cost); if (no) return no; }
   if (forbids({ u }, 'stim')) return forbids({ u }, 'stim') + ': no stims.';
   // 'stim_start' {u, t, cb, cancel, why}: an item may stop the stim before anything is spent, revive included (Rival's
   // Petty). It is not a refusal (the item's own rolls stand): nothing is used and the line says why.
   { const ss: any = emit(cb, 'stim_start', { u, t, cb, cancel: false, why: '' }); if (ss.cancel) { cb.log.push(u.name + ' doesn\'t stim ' + t.name + (ss.why ? ' (' + ss.why + ')' : '') + '.'); return null; } }
-  u.ap -= cost; who.stims--;
+  pay(cb, u, cost); who.stims--;
   const hpWas = t.hp, wasDown = t.downed;
   if (t.bleed) { t.bleed = 0; cb.log.push('The stim stops ' + t.name + '\'s bleeding.'); }
   if (t.downed) { t.downed = false; t.hp = 1; t.saves = { ok: 0, fail: 0 }; cb.log.push(u.name + ' stims ' + t.name + ': stabilised at 1 HP.'); emit(cb, 'heal_given', { t, by: u, n: 1, kind: 'stim', revived: true, cb }); calmTend(cb, u, t); }
@@ -2296,7 +2277,7 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
 }
 
 /** A stim's AP: stabilising a Downed ally 2 (1 for a Medic), healing 1; then items ('stabilise' / 'stim' costs). */
-export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? actionAp({ u }, 'stabilise', isMedic ? 1 : 2).ap : actionAp({ u }, 'stim', 1).ap);
+export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? price({ u }, 'stabilise', costOf('stim', isMedic ? 'ap_downed_medic' : 'ap_downed')).ap : price({ u }, 'stim').ap);
 
 /** Enemy turn: shoot the PC its tier's fire doctrine picks among those in sight and range (rules 1.25, enemyRank: the
  * nearest, one each, or the most hurt; rules 1.23: with a weight for whoever is mending the squad,
@@ -2324,12 +2305,12 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     const ea: any = emit(cb, 'enemy_action_start', { u, step, skip: false, cb, rng });
     if (cb.window || u.dead || u.downed || u.surrendered) break;
     if (ea.skip) continue; // the handler took the action away (and its AP)
-    if (condOn(u, 'burning') && u.ap >= 1) { extinguishSelf(cb, u); continue; }
-    if (condOn(u, 'grappled') && u.ap >= 2) { escapeHold(cb, rng, u); continue; }
-    if (u.nailed && u.ap >= u.nailed.ap) { pullFree(cb, u); continue; } // rules 1.12
-    if ((condOn(u, 'disarmed') && u.ap >= 2) || (condOn(u, 'lowered') && u.ap >= 1)) { recoverHeld(cb, u); continue; }
-    if (u.prone && u.ap >= 1 && order !== 'kneel') { toggleProne(cb, u); continue; }
-    if (u.jammed && u.ap >= 2) { clearJam(cb, u); continue; }
+    if (condOn(u, 'burning') && affords(cb, u, 'extinguish')) { extinguishSelf(cb, u); continue; }
+    if (condOn(u, 'grappled') && affords(cb, u, 'escape')) { escapeHold(cb, rng, u); continue; }
+    if (u.nailed && canPay(cb, u, price({ cb, u }, 'pull_free', u.nailed.ap))) { pullFree(cb, u); continue; } // rules 1.12
+    if ((condOn(u, 'disarmed') && affords(cb, u, 'recover')) || (condOn(u, 'lowered') && affords(cb, u, 'recover', 'ap_lowered'))) { recoverHeld(cb, u); continue; }
+    if (u.prone && affords(cb, u, 'prone') && order !== 'kneel') { toggleProne(cb, u); continue; }
+    if (u.jammed && affords(cb, u, 'clear_jam')) { clearJam(cb, u); continue; }
     if (enemyScuff(cb, u)) continue;
     // Sigil casters (rules 1.4): step out of a hostile field, scuff a turret underfoot, then weigh a spell against the weapon.
     // Sigil magic (rules 1.4, ai-sigil.ts): any enemy steps out of a field of yours and scuffs a turret underfoot; a caster
@@ -2338,7 +2319,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     // Soul casters (rules 1.5, ai-soul.ts): Begin, Pump, hold for the big release, watch with the heart, calm the Strain.
     if (!order && aiSoulStep(cb, rng, u)) { checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
-    if (enemyNeedsReload(u) && u.ap >= 2) { reload(cb, u); continue; }
+    if (enemyNeedsReload(u) && canPay(cb, u, reloadAp(u))) { reload(cb, u); continue; }
     if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
     const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
     const targets = enemyTargets(cb, u, mode, order, pcs);
@@ -2497,7 +2478,7 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
     return order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100 + near) + tiles * 0.1; };
   let best: string | null = null, bestScore = score0(u.pos, 0) - 0.05;
   for (const [k, tiles] of Object.entries(P.dist)) {
-    if (k === u.pos || imaged.has(k) || stood?.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap - (u.ap > 2 ? 2 : 0)) continue;
+    if (k === u.pos || imaged.has(k) || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement) + (u.ap > 2 ? 2 : 0))) continue;
     if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
     if (fu2 && dist(k, fu2.pos) < dist(u.pos, fu2.pos)) continue;
     let score = score0(k, tiles) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
@@ -2510,7 +2491,7 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
     let goal: string | null = null, gd = Infinity;
     for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || tiles >= gd || score0(k, 0) >= 100) continue; if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue; gd = tiles; goal = k; }
     if (goal) { const G = paths(cb, goal, u.id); let bd = G.dist[u.pos] ?? Infinity;
-      for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || stood?.has(k) || apForTiles(tiles, u.bank, u.movement) > u.ap) continue; const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd) { bd = d; best = k; } } }
+      for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement))) continue; const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd) { bd = d; best = k; } } }
   }
   if (!best) return null;
   const b = best;
@@ -2523,10 +2504,10 @@ export interface Intent { kind: 'none' | 'lost' | 'order' | 'recover' | 'scuff' 
 export function enemyIntent(cb: Combat, u: Unit): Intent {
   if (u.dead || u.downed || u.surrendered) return { kind: 'none', text: 'nothing: it is out of the fight' };
   if (condOn(u, 'stunned')) return { kind: 'lost', text: 'nothing: Stunned, it loses the turn' };
-  const save = { ap: u.ap, bank: u.bank, shots: u.shotsThisTurn, moved: u.moved };
+  const save = { bank: u.bank, shots: u.shotsThisTurn, moved: u.moved };
   // the AP its next turn will really have: Stunned's 1 and Dazed's 2 come off, as turnAp takes them (review bug 10)
-  u.ap = Math.max(AP_MIN, AP_BASE - (u.stunnedNext ? 1 : 0) - (u.dazedNext ? 2 : 0)); u.bank = 0; u.shotsThisTurn = 0; u.moved = false;
-  try { return intentInner(cb, u); } finally { u.ap = save.ap; u.bank = save.bank; u.shotsThisTurn = save.shots; u.moved = save.moved; }
+  u.bank = 0; u.shotsThisTurn = 0; u.moved = false;
+  try { return withAp(u, Math.max(AP_MIN, AP_BASE - (u.stunnedNext ? 1 : 0) - (u.dazedNext ? 2 : 0)), () => intentInner(cb, u)); } finally { u.bank = save.bank; u.shotsThisTurn = save.shots; u.moved = save.moved; }
 }
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
 export const HEALER_WHY = ': it goes for whoever is mending the squad';
@@ -2536,12 +2517,12 @@ function intentInner(cb: Combat, u: Unit): Intent {
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
   if (order) return { kind: 'order', text: 'obey its order (' + order.split(':')[0] + ')' };
   // the same AP gates as enemyTurn's ladder (review bug 10: the intent named recoveries the turn could not pay for)
-  if (condOn(u, 'burning') && u.ap >= 1) return { kind: 'recover', text: 'beat out the flames on it' };
-  if (condOn(u, 'grappled') && u.ap >= 2) return { kind: 'recover', text: 'break the grapple' };
-  if (u.nailed && u.ap >= u.nailed.ap) return { kind: 'recover', text: 'pull itself free' };
-  if ((condOn(u, 'disarmed') && u.ap >= 2) || (condOn(u, 'lowered') && u.ap >= 1)) return { kind: 'recover', text: 'recover its weapon' };
-  if (u.prone && u.ap >= 1) return { kind: 'recover', text: 'stand up' };
-  if (u.jammed && u.ap >= 2) return { kind: 'recover', text: 'clear its jammed weapon' };
+  if (condOn(u, 'burning') && affords(cb, u, 'extinguish')) return { kind: 'recover', text: 'beat out the flames on it' };
+  if (condOn(u, 'grappled') && affords(cb, u, 'escape')) return { kind: 'recover', text: 'break the grapple' };
+  if (u.nailed && canPay(cb, u, price({ cb, u }, 'pull_free', u.nailed.ap))) return { kind: 'recover', text: 'pull itself free' };
+  if ((condOn(u, 'disarmed') && affords(cb, u, 'recover')) || (condOn(u, 'lowered') && affords(cb, u, 'recover', 'ap_lowered'))) return { kind: 'recover', text: 'recover its weapon' };
+  if (u.prone && affords(cb, u, 'prone')) return { kind: 'recover', text: 'stand up' };
+  if (u.jammed && affords(cb, u, 'clear_jam')) return { kind: 'recover', text: 'clear its jammed weapon' };
   if ((cb.glyphs || []).some((g) => g.pos === u.pos && g.side !== u.side && !(g as any).keystone)) return { kind: 'scuff', text: 'scuff the glyph under its feet' };
   const caster = u.mg?.evoker && (u.mg.words || []).length ? 'spell' : u.mg && !u.mg.evoker && u.mg.emanator && (u.mg.designs || []).length ? 'outburst' : null;
   let then = '';
@@ -2563,7 +2544,9 @@ function intentInner(cb: Combat, u: Unit): Intent {
   if (caster) { then = out.text; return { ...out, kind: caster, text: (caster === 'spell' ? 'weigh a Sigil spell against its weapon' : u.mg!.held ? 'hold or release its Outburst (stage ' + u.mg!.held.stage + ')' : 'begin an Outburst') + '; otherwise ' + then }; }
   return out;
 }
-const extinguishSelf = (cb: Combat, u: Unit): boolean => { u.ap -= 1; endCond(u, 'burning', cb); cb.log.push(u.name + ' beats out the flames.'); return true; };
+/** Can the unit pay for this verb now (its price for this unit: data/actions.json, then the items)? */
+const affords = (cb: Combat, u: Unit, action: string, field = 'ap'): boolean => canPay(cb, u, price({ cb, u }, action, costOf(action, field)));
+const extinguishSelf = (cb: Combat, u: Unit): boolean => { pay(cb, u, price({ cb, u }, 'extinguish')); endCond(u, 'burning', cb); cb.log.push(u.name + ' beats out the flames.'); return true; };
 function escapeHold(cb: Combat, rng: Rng, u: Unit) { escapeGrappleT(cb, rng, u); }
 function recoverHeld(cb: Combat, u: Unit) { recoverWeaponT(cb, u); }
 
@@ -2582,7 +2565,7 @@ export function canJam(w: WeaponDef | undefined): boolean {
   return w.heat_limit != null;
 }
 /** Reload AP: the weapon's reload_ap (default 2; the breacher tube 3), 1 with a quick-release magazine, then items. */
-export const reloadAp = (u: Unit) => { const w: any = WEAPON[u.weapon] || {}; return actionAp({ u }, 'reload', hasMod(u.mods, 'mod_quick_release') ? 1 : w.reload_ap ?? 2).ap; };
+export const reloadAp = (u: Unit) => { const w: any = WEAPON[u.weapon] || {}; return price({ u }, 'reload', hasMod(u.mods, 'mod_quick_release') ? costOf('reload', 'ap_quick_release') : w.reload_ap ?? costOf('reload')).ap; };
 const RELOAD_LABEL: Record<string, string> = { magazine: 'Swap magazine', speedloader: 'Speedloader', drum: 'Swap drum', belt: 'Feed belt' };
 const LOOSE_LABEL: Record<string, string> = { arrow: 'Nock an arrow', bolt: 'Load a bolt', 'fuel canister': 'Swap canister', 'core charge': 'Charge', rocket: 'Load a rocket', shell: 'Load shells', '40 mm grenade': 'Load a grenade' };
 export interface WeaponAction { id: 'reload' | 'load' | 'clear' | 'brace' | 'repair' | 'overwatch' | 'burst' | 'auto' | 'skill'; label: string; ap: number; why: string | null; text: string;
@@ -2594,7 +2577,7 @@ export function weaponActions(u: Unit): WeaponAction[] {
   const w: any = WEAPON[u.weapon]; if (!w) return [];
   const hd = w.handling || {}, deny = new Set<string>(hd.deny || []), grant = new Set<string>(hd.grant || []);
   const out: WeaponAction[] = [], add = (a: WeaponAction) => { if (!deny.has(a.id)) out.push(a); };
-  const melee = isMelee(w), ap = u.ap ?? 0, need = (n: number) => (ap < n ? 'Needs ' + n + ' AP.' : null);
+  const melee = isMelee(w), need = (n: number) => whyNot(null, u, n);
   if (w.magazine != null && w.reload) {
     const r = reloadAp(u), unit = w.reload_unit || 'magazine';
     const label = w.reload === 'loose' ? LOOSE_LABEL[w.ammo] || 'Load rounds' : RELOAD_LABEL[w.reload_unit] || 'Reload';
@@ -2605,16 +2588,16 @@ export function weaponActions(u: Unit): WeaponAction[] {
   }
   if (w.reload === 'magazine' && u.mags && u.mags.length) {
     const cap = w.magazine || 0, open = u.mags.filter((n) => n < cap), unit = w.reload_unit || 'magazine';
-    const why = !open.length ? 'Every spare ' + unit + ' is full.' : !u.loose ? 'No loose rounds to load.' : need(1);
-    add({ id: 'load', label: unit === 'magazine' ? 'Load a magazine' : 'Fill a ' + unit, ap: 1, why, text: 'Load loose rounds into your fullest part-empty ' + unit + ', 1 AP per ' + ROUNDS_PER_AP + ' rounds.' });
+    const lAp = price({ u }, 'load').ap, why = !open.length ? 'Every spare ' + unit + ' is full.' : !u.loose ? 'No loose rounds to load.' : need(lAp);
+    add({ id: 'load', label: unit === 'magazine' ? 'Load a magazine' : 'Fill a ' + unit, ap: lAp, why, text: 'Load loose rounds into your fullest part-empty ' + unit + ', 1 AP per ' + ROUNDS_PER_AP + ' rounds.' });
   }
-  if (canJam(w) || grant.has('clear')) { const c = actionAp({ u }, 'clear_jam', 2).ap; add({ id: 'clear', label: 'Clear jam', ap: c, why: !u.jammed ? 'Not jammed.' : need(c), text: 'A jammed gun can\'t fire until cleared. Clearing resets Heat.' }); }
+  if (canJam(w) || grant.has('clear')) { const c = price({ u }, 'clear_jam').ap; add({ id: 'clear', label: 'Clear jam', ap: c, why: !u.jammed ? 'Not jammed.' : need(c), text: 'A jammed gun can\'t fire until cleared. Clearing resets Heat.' }); }
   const braces = weaponBraces(u);
   // Rules 1.13: anyone with a Guard pool (Durability 1+) may Brace, whatever the weapon: it is how Guard is gained.
   const pool = u.resMax?.guard != null;
-  if (braces || pool) add({ id: 'brace', label: 'Brace', ap: 1, why: u.braced ? 'Already braced.' : need(1), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (pool ? ' You gain ' + (GUARD_RULES().brace_gain ?? 2) + ' Guard (' + ((GUARD_RULES().brace_gain ?? 2) + (GUARD_RULES().brace_shield_gain ?? 1)) + ' with a shield).' : '') + ' Moving ends it.' });
-  if (u.maxDur) { const c = actionAp({ u }, 'field_repair', 2).ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
-  const owAp = attackApCost(w, melee ? 'melee' : 'shot');
+  if (braces || pool) add({ id: 'brace', label: 'Brace', ap: price({ u }, 'brace').ap, why: u.braced ? 'Already braced.' : need(price({ u }, 'brace').ap), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (pool ? ' You gain ' + (GUARD_RULES().brace_gain ?? 2) + ' Guard (' + ((GUARD_RULES().brace_gain ?? 2) + (GUARD_RULES().brace_shield_gain ?? 1)) + ' with a shield).' : '') + ' Moving ends it.' });
+  if (u.maxDur) { const c = price({ u }, 'field_repair').ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
+  const owAp = price({ u }, 'overwatch', attackApCost(w, melee ? 'melee' : 'shot')).ap;
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });
   for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? ((w as any).grants?.effect?.op === 'auto_ap' ? (w as any).grants.effect.value : 4) : 3, why: null, text: '' });
   // An item may replace the weapon's own skill (stat 'hide_weapon_skill' > 0: Old School's Fan the Hammer: hooks gap C6).

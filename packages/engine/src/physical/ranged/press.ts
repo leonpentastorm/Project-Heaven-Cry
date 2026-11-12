@@ -10,6 +10,7 @@ import { physicalMult } from '../../character';
 import { PHYS_RULES } from '../data';
 import { pressureCap } from '../pressure';
 import { bracedSuppress } from './sets';
+import { canPay } from '../../effects/cost';
 
 // 8. Suppress: 3 rounds, one roll at +2. A hit is half damage and 2 Pressure in all; a miss is 1.
 //    Auto: enemies within 1 tile of the target also gain 1. Heavy, Braced: it holds until your next turn, and any enemy
@@ -237,7 +238,7 @@ technique({
     return null;
   },
   // cheap: when the enemy can't afford a shot, a warning shot still leans on its target
-  ai: (t) => (t.tgt && enemyOf(t, t.tgt) && t.u.ap < attackApCost(t.w, 'shot') && pressureOf(t.tgt) < pressureCap(t.tgt) && canStrike(t, t.tgt) ? 6 : 1),
+  ai: (t) => (t.tgt && enemyOf(t, t.tgt) && !canPay(t.cb, t.u, attackApCost(t.w, 'shot')) && pressureOf(t.tgt) < pressureCap(t.tgt) && canStrike(t, t.tgt) ? 6 : 1),
 });
 
 // 11. Flush: 3 AP, 1 round. Hit the target's cover (no roll; the cover takes the weapon's damage, as shooting cover does

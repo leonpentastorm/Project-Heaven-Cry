@@ -10,6 +10,7 @@ import { WEAPON, ITEM } from './data';
 import { type Character, packOf, twoHands, isPlotItem, isAmmoEntry, AMMO_WHY } from './character';
 import type { Combat, Unit } from './combat';
 import { holderOf, uses } from './effects';
+import { whyNot } from './effects/cost';
 
 /** The gear costs (PROVISIONAL, items 684, 685). */
 export const GEAR: { hand_ap: number; two_handed_draw_ap: number; swap_hands_ap: number; put_away_ap_per_hand: number; drop_ap: number; light_armour_ap: number; light_armour_max_kg: number; second_weapon_skill_extra?: number } = (wpJ as any).gear;
@@ -129,5 +130,5 @@ export function gearCost(cb: Combat, u: Unit, c: Character, op: GearOp): GearPla
   const plan = gearPlan(c, op, { disarmed: (u.conds?.disarmed ?? 0) > 0 });
   if (plan.why) return { ...plan, free: false };
   const free = plan.hand && plan.ap > 0 && hotSwapLeft(cb, u) > 0, ap = free ? 0 : plan.ap;
-  return { ...plan, ap, free, why: u.ap < ap ? 'Needs ' + ap + ' AP.' : null };
+  return { ...plan, ap, free, why: whyNot(cb, u, ap) };
 }

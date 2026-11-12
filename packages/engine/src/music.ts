@@ -7,6 +7,7 @@ import type { Character } from './character';
 import { type Combat, visibility } from './combat';
 import { SKILL, TRAITS } from './data';
 import { seedFrom } from './rng';
+import { costOf } from './effects/cost';
 
 /** The game's own fight music (spec: Music): files the web client ships (apps/web/public/music). */
 export type OstId = 'gunline' | 'heaven_falls' | 'last_rounds'
@@ -93,7 +94,7 @@ export interface MusicState {
 }
 
 export const PIN_AREAS = 2;
-export const SONG_AP = 2;
+export const SONG_AP: number = costOf('song');
 const START_SILENT = 2;
 
 /** The YouTube video id in a link ("youtu.be/…", "watch?v=…", "embed/…", "shorts/…") or a bare id. */

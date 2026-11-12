@@ -133,7 +133,7 @@ describe('Talks Broke Down', () => {
   const talk = (tier: string, ok: boolean) => fightAfter([{ perks: { talks_broke_down: tier } }], [{ at: 'P6' }, { at: 'P8' }], (s) => storyCheck(s, s.chars[0].id, ['charisma'], { auto: ok ? 'success' : 'fail' }));
   // Rules 1.14 (the AP perks' cooldown): +2 on the first turn and then once every 3 turns (it was every turn).
   /** The holder's turn in round r (the fight may have opened on their turn already: the cooldown starts fresh). */
-  const turnIn = (f: ReturnType<typeof talk>, r: number) => { if (r === 1) delete f.unit(f.pc.id).ps!['perk:talks_broke_down'].cd; f.cb.round = r; return f.turn(f.pc).ap; };
+  const turnIn = (f: ReturnType<typeof talk>, r: number) => { if (r === 1) { const us = f.unit(f.pc.id).uses || {}; delete us['perk:talks_broke_down#ap-gain|cooldown']; delete us['perk:talks_broke_down#ap-pen|cooldown']; } f.cb.round = r; return f.turn(f.pc).ap; };
   it('I: a won argument before the fight, +2 AP on turns 1, 4 and 7; a lost one, −2 on the same turns', () => {
     const w = talk('I', true); expect([1, 2, 3, 4, 5, 6, 7].map((r) => turnIn(w, r))).toEqual([8, 6, 6, 8, 6, 6, 8]);
     const l = talk('I', false); expect([1, 2, 3, 4].map((r) => turnIn(l, r))).toEqual([4, 6, 6, 4]);

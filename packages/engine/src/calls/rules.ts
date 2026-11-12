@@ -6,6 +6,7 @@ import { onHook } from '../effects/hooks';
 import { briefCredit } from '../effects/ap';
 import { condSource } from '../magic';
 import { CALL_RULES } from './data';
+import { pay, apFor } from '../effects/cost';
 
 /** A mark made in round r still stands: through that round and the next, until its speaker's next turn starts
  * (cleared there); the round bound is for a speaker who never gets that turn. */
@@ -62,7 +63,7 @@ onHook('attack_target', (ctx: any, cb) => {
     cb.log.push('(' + tgt.name + ' was warned and steps clear.)');
     if (alive(tgt) && !previewAttack(cb, att, tgt, ctx.mode, { free: true }).ok) {
       ctx.cancel = true; ctx.why = tgt.name + ' was warned and is no longer there';
-      if (!ctx.free && paid.ok && alive(att)) att.ap = Math.max(0, att.ap - paid.ap); // the attack was made at where they stood: its AP is spent
+      if (!ctx.free && paid.ok && alive(att)) pay(cb, att, Math.min(apFor(cb, att), paid.ap)); // the attack was made at where they stood: its AP is spent
     }
   }
 });
@@ -111,18 +112,10 @@ onHook('round_start', (_ctx: any, cb) => {
   const now = new Set(cb.order); cb.order = [...keep.filter((id) => now.has(id)), ...cb.order.filter((id) => !keep.includes(id))];
 });
 
-// ---------- Brief: the reducer lends the discount before the action and settles it after (as Encore does) ----------
-/** Before a briefed unit's action: lend the AP its Brief takes off (inside the +3 cap and the turn's 9). */
-export function briefBefore(cb: Combat, u: Unit, a: { type: string }): { credit: number; before: number } | null {
-  if (cb.window || a.type === 'combat/end-turn' || a.type === 'combat/decline') return null;
-  const credit = briefCredit(u, cb); if (!credit) return null;
-  const before = u.ap; u.ap += credit; return { credit, before };
-}
-/** After it: the action cost up to `credit` less; an action that cost nothing leaves the Brief for the next one. */
-export function briefAfter(cb: Combat, u: Unit, x: { credit: number; before: number } | null) {
-  if (!x) return;
-  const spent = Math.round((x.before + x.credit - u.ap) * 10) / 10, used = Math.min(x.credit, Math.max(0, spent));
-  u.ap -= x.credit - used; // what wasn't used goes back
+// ---------- Brief: a credit on the briefed unit's next action (effects/cost.ts lend / settle) ----------
+/** After a briefed unit's action: `used` AP of its Brief paid for it. An action that cost nothing leaves the Brief for
+ * the next one. AP from a Call counts in the turn's +3. */
+export function briefUsed(cb: Combat, u: Unit, used: number) {
   if (used <= 0) return;
   u.apGained = (u.apGained || 0) + used; u.apTurnTotal = (u.apTurnTotal ?? u.ap) + used; // AP from a Call counts in the turn's +3
   const b = u.call?.brief; if (b) { b.cuts.shift(); if (!b.cuts.length) delete u.call!.brief; }

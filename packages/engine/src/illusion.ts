@@ -8,6 +8,7 @@ import type { Combat, Unit } from './combat';
 import { emitFx, previewAttack, isMelee, refOf } from './combat';
 import { WEAPON } from './data';
 import { calmFight } from './magic';
+import { pay } from './effects/cost';
 
 export interface FalseImage {
   id: string; owner: string; pos: string; side: 'pc' | 'foe';
@@ -57,7 +58,7 @@ export function strikeImage(cb: Combat, att: Unit, ghost: Unit, mode: 'melee' | 
   const pv = previewAttack(cb, att, ghost, mode);
   if (!pv.ok || !img) { cb.log.push('(' + att.name + ' can\'t attack the image: ' + (pv.why || 'gone') + ')'); return; }
   const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee';
-  att.ap -= pv.ap;
+  pay(cb, att, pv.ap);
   if (att.mg) calmFight(cb, att);
   if (!melee) { if (w.magazine != null && !att.infiniteAmmo) att.ammo = Math.max(0, att.ammo - 1); if (w.heat_limit && !att.infiniteAmmo) att.heat += 1; att.shotsThisTurn++; }
   att.firstShotDone = true; att.firstShotTurn = true; att.attackedTurn = true;

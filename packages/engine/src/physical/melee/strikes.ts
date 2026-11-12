@@ -22,6 +22,7 @@ import { PHYS_RULES, weaponPhys } from '../data';
 import { save, stop, forceMove, setUp, momentumOf, chainOf, canStrike, loseWeapon } from '../core';
 import { meleeFx, fxMark, movedSince, refuseFx, upto } from './shared';
 import type { Tech } from './shared';
+import { refund } from '../../effects/cost';
 
 /** args.tile as a tile key ("x,y"); the reducer already turns a map reference into one, a direct call may not. */
 const tileArg = (t: Tech): string | null => (!t.args.tile ? null : /^\d+,\d+$/.test(t.args.tile) ? t.args.tile : keyOf(t.args.tile, t.cb.map));
@@ -33,7 +34,7 @@ const unitAt = (cb: Combat, k: string): Unit | null => cb.units.find((v) => aliv
 function lineDiscount(t: Tech, prop: string, n: number): void {
   const l = t.def.lines.find((x) => x.props.includes(prop)); if (!l || l.ap != null || n <= 0) return;
   const back = Math.min(n, t.pv.ap); if (!back) return;
-  t.pv.ap -= back; if (!t.preview) t.u.ap += back;
+  t.pv.ap -= back; if (!t.preview) refund(t.cb, t.u, back);
 }
 // 7. Sweep: strike up to 3 enemies in an arc in front of you, each at ×0.7, one roll each. Reach: the arc is 2 tiles
 //    out. Heavy: all adjacent enemies, not just the arc. Edge: each one hit bleeds on a critical. Friendly fire applies:
