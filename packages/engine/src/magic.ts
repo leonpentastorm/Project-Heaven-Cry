@@ -627,27 +627,30 @@ export function pumpBaseAp(m: MagicUnit | undefined, feeling?: string | null, pa
   const paid = paidBefore ?? (m?.pumps || []).filter((r) => r.ap > 0).length;
   return (CYC.pump_ap_after_second != null && paid >= 2 ? Number(CYC.pump_ap_after_second) : SOUL_AP.pump) + (feeling ? Number(CYC.feeling_pump_ap_extra || 0) : 0);
 }
-/** Rules 1.24 (items 1342 to 1347; PROVISIONAL): a Pump costs MP as well as AP. Each stage it adds costs
- * `cycle.pump_mp.per_stage` (5) × the stage reached (5, 10, 15, 20: 50 for a full heart from stage 0), × the air's
- * Soul cost and the Insight saving (as a Begin), +20% under a Right Brain Debuff, 1 MP at least. Whatever pays the
- * Pump's AP (1 AP, the turn's free Pump, Shape, a fed feeling), the MP is owed. Only a character's own heart with an
- * Emanator in a hand pays it: a heart that draws on the air (no Emanator in hand: the Begin's +2 Strain is its price),
- * a companion's (the Twin) and an enemy caster's Pump as before. Stages that are not Pumps (the swell, a fed glyph,
- * Heart Overload II's stage, Heart Surge) cost no MP. A Pump's MP does not move the mana meter. */
+/** Rules 1.24 (items 1342 to 1347; PROVISIONAL): a Pump costs MP as well as AP: a tenth of what the Begin cost, for
+ * each stage it reaches (`cycle.pump_mp.share_per_stage`: 10%, 20%, 30%, 40%; a full heart from stage 0 costs the
+ * Begin's price again). It reads the price the Begin really paid (the hold's `cost`), so the air's band, Insight, a
+ * Right Brain Debuff and every item that changes a design's price (Beloved, Fed, Storm Front, a Seal) are in it already,
+ * and a Begin that cost no MP (The Twin Pays, Heart Overload paid in blood) pumps for none. 1 MP at least when the Begin
+ * cost any. Whatever pays the Pump's AP (1 AP, the turn's free Pump, Shape, a fed feeling), the MP is owed. Only a
+ * character's own heart with an Emanator in a hand pays it: a heart that draws on the air (no Emanator in hand: the
+ * Begin's +2 Strain is its price), a companion's (the Twin) and an enemy caster's Pump as before. Stages that are not
+ * Pumps (the swell, a fed glyph, Heart Overload II's stage, Heart Surge) cost no MP. A Pump's MP does not move the meter. */
 const PUMP_MP: any = CYC.pump_mp || {};
-export const PUMP_MP_PER_STAGE: number = Number(PUMP_MP.per_stage ?? 5);
+export const PUMP_MP_SHARE: number = Number(PUMP_MP.share_per_stage ?? 0.1);
 /** Does this unit's heart pay MP for a Pump? */
-export const paysPumpMp = (u: Unit | null | undefined): boolean => !!u && capped(u) && !!u.mg?.emanator && PUMP_MP_PER_STAGE > 0;
-/** The MP of a Pump that takes the held Outburst from `stage0` up `stages` stages (1; Overdraw: 2), for this unit now.
- * `mult` is what items say ('outburst_pump' mpMult). 0 for a heart that pays none. */
-export function pumpMp(cb: Combat, u: Unit, stage0: number, stages = 1, mult = 1): number {
+export const paysPumpMp = (u: Unit | null | undefined): boolean => !!u && capped(u) && !!u.mg?.emanator && PUMP_MP_SHARE > 0;
+/** The MP of a Pump that takes an Outburst from `stage0` up `stages` stages (1; Overdraw: 2), for this unit.
+ * `begin` is the Begin's price (the held Outburst's, unless given: a plan from a design); `mult` what items say
+ * ('outburst_pump' mpMult). 0 for a heart that pays none. */
+export function pumpMp(u: Unit, stage0: number, stages = 1, mult = 1, begin?: number): number {
   if (!paysPumpMp(u) || stages <= 0) return 0;
-  let base = 0; for (let s = stage0 + 1; s <= Math.min(MAX_STAGE, stage0 + stages); s++) base += PUMP_MP_PER_STAGE * s;
-  if (base <= 0) return 0;
-  return Math.max(1, Math.round(base * manaBand(manaOf(cb)).soul_cost_mult * (1 - (u.mg!.costSave || 0)) * (condOn(u, 'rdebuff') ? 1.2 : 1) * Math.max(0, mult)));
+  const cost = Math.max(0, begin ?? u.mg!.held?.cost ?? 0); if (cost <= 0) return 0;
+  let n = 0; for (let s = stage0 + 1; s <= Math.min(MAX_STAGE, stage0 + stages); s++) n += s;
+  return n <= 0 ? 0 : Math.max(1, Math.round(cost * PUMP_MP_SHARE * n * Math.max(0, mult)));
 }
 /** The MP of n plain Pumps from stage0, one stage each (the plan's "if I pump twice", the policies' sums). */
-export function pumpsMp(cb: Combat, u: Unit, n: number, stage0: number): number { let t = 0; for (let i = 0; i < n; i++) t += pumpMp(cb, u, stage0 + i, 1); return t; }
+export function pumpsMp(u: Unit, n: number, stage0: number, begin?: number): number { let t = 0; for (let i = 0; i < n; i++) t += pumpMp(u, stage0 + i, 1, 1, begin); return t; }
 export type OutburstForm = 'bolt' | 'wave' | 'burst' | 'aura' | 'lance';
 export const FORMS: OutburstForm[] = ['bolt', 'wave', 'burst', 'aura', 'lance'];
 /** The held Outburst (rules 1.5). v: 15 (a 1.2 hold has none and is read as it is: its stage 1–4 keeps its number). */
@@ -945,7 +948,7 @@ export function previewPump(cb: Combat, u: Unit, feeling?: string | null): PumpP
   const ap = Math.max(0, op.ap), next = { design: m.held.design, stage: Math.min(MAX_STAGE, m.held.stage + Math.max(1, Math.round(op.stages || 1))), felt: [...(m.held.felt || []), ...(feeling ? [feeling] : [])], plus: (m.held.plus || 0) + (op.plus || 0) };
   const step = feeling ? feelingStep(cb, u, feeling, next.stage) : PLAIN_STEP;
   // Rules 1.24: the MP of the stages this Pump adds (the engine's own number: the HEART panel shows it before the click).
-  const mp = pumpMp(cb, u, m.held.stage, next.stage - m.held.stage, op.mpMult ?? 1);
+  const mp = pumpMp(u, m.held.stage, next.stage - m.held.stage, op.mpMult ?? 1);
   if (u.ap < ap) return { ok: false, why: 'Needs ' + ap + ' AP.', ap, mp, free, stage: m.held.stage, mult: heldMult(cb, u, m.held), ...(feeling ? { feeling, step } : {}) };
   if (mp > m.mp) return { ok: false, why: 'A Pump to stage ' + next.stage + ' needs ' + mp + ' MP (' + Math.floor(m.mp) + '): Syphon first, or Release what you hold.', ap, mp, free, stage: m.held.stage, mult: heldMult(cb, u, m.held), ...(feeling ? { feeling, step } : {}) };
   const isFree = !!op.free && ap === 0, freeKind = !isFree ? (ap === 0 ? 'item' : null) : first ? 'first' : emp ? 'empathy' : 'item';
@@ -966,7 +969,7 @@ export function pumpOutburst(cb: Combat, rng: Rng, u: Unit, feeling?: string | n
   emit(cb, 'outburst_pump', { u, design: d, stage: h.stage, ap: pv.ap, free: pv.free, freeKind: pv.freeKind || null, fail: '', preview: false, feeling: feeling || null, cb, rng });
   rec.added = h.stage - rec.stage0; if ((h.plus || 0) !== plus0) rec.plus = Math.round(((h.plus || 0) - plus0) * 100) / 100;
   // Rules 1.24: the MP of the stages it really added (Overdraw's second stage is in by now), never more than the preview said.
-  const paid = Math.min(pv.mp, Math.max(0, m.mp), rec.added === pv.stage - rec.stage0 ? pv.mp : pumpMp(cb, u, rec.stage0, rec.added));
+  const paid = Math.min(pv.mp, Math.max(0, m.mp), rec.added === pv.stage - rec.stage0 ? pv.mp : pumpMp(u, rec.stage0, rec.added));
   if (paid > 0) { m.mp -= paid; rec.mp = paid; h.pumpMp = (h.pumpMp || 0) + paid; }
   const f = feeling ? FEELING[feeling] : null, mult = heldMult(cb, u, h);
   emitFx(cb, 'pump', { unit: u.id, at: u.pos, stage: h.stage, mult, free: pv.free, max: h.stage >= MAX_STAGE, tone: h.tone || 'raw', ...(paid ? { mp: paid } : {}), ...(f ? { feeling: f.id, family: f.family, step: pv.step, does: feelingWord(d, f.id) } : {}) });
@@ -1614,14 +1617,14 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
     const longing = (m.held.felt || []).includes('longing') ? (FEELING.longing?.pour as any)?.reach ?? 2 : 0; // rules 1.8
     const rc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d) + longing, fail: '', preview: true, surge: 0, mult: 1, notes: [] as string[], cb });
     ap = Math.max(0, rc.ap) + pumpsAp(cb, u, d, Math.max(0, stage - stage0), stage0); range = rc.range;
-    mp = pumpsMp(cb, u, Math.max(0, stage - stage0), stage0); // rules 1.24: the Pumps still to make cost MP
+    mp = pumpsMp(u, Math.max(0, stage - stage0), stage0); // rules 1.24: the Pumps still to make cost MP
     if (rc.fail) why ||= rc.fail; else if (u.ap < ap) why ||= 'Needs ' + ap + ' AP.'; else if (mp > m.mp) why ||= 'The Pumps need ' + mp + ' MP (' + Math.floor(m.mp) + ').';
     if (!why) why = aimError(cb, u, d, form === 'aura' ? u.pos : aim, rc.range) || undefined;
     if (rc.surge) { if (stage < MAX_STAGE) stage++; else itemMult = typeof rc.surge === 'number' ? rc.surge / stageMult(MAX_STAGE) : 1; }
     itemMult *= rc.mult || 1; multNotes = rc.notes || [];
   } else {
     const pv = previewOutburst(cb, u, d.id, form === 'aura' ? u.pos : aim, true);
-    ap = pv.ap + pumpsAp(cb, u, d, stage, 0); mp = pv.cost + pumpsMp(cb, u, stage, 0); strain = pv.strain + (m.debt || 0); if (pv.range) range = pv.range;
+    ap = pv.ap + pumpsAp(cb, u, d, stage, 0); mp = pv.cost + (pv.hp ? 0 : pumpsMp(u, stage, 0, pv.cost)); strain = pv.strain + (m.debt || 0); if (pv.range) range = pv.range;
     // a snap cast's item multiplier (Heart Surge's snap); with Pumps planned, only what holds at any stage (Resonance)
     itemMult = stage ? pv.relAll || 1 : pv.relMult || 1; multNotes = pv.relNotes || [];
     if (!pv.ok) why = pv.why; else if (u.ap < ap) why = 'Needs ' + ap + ' AP.'; else if (m.emanator && !pv.hp && mp > m.mp) why = 'Needs ' + mp + ' MP (' + Math.floor(m.mp) + ') with its Pumps: Syphon first.';

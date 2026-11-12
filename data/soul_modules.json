@@ -29,7 +29,7 @@
       }
     ],
     "provisional": true,
-    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP, and 5 MP for each stage it reaches: 5, 10, 15, 20) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1.0, ×1.2, ×1.4 or ×1.6 for stages 0 to 4: every plain Pump adds +0.2, and a feeling adds its own step instead. If you are still holding it at the start of your next turn it swells: +1 stage for no AP and no MP, and +1 Strain (+2 in Flooded air); from Empathy 7 a swell adds no Strain. One Pump a turn can be free of AP (its MP is still owed), never more: your first Pump of a fight, or from Empathy 3 one every round. Revert Pump (0 AP) undoes the last Pump you made this turn.",
+    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP, and a tenth of the Begin's MP for each stage it reaches) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1.0, ×1.2, ×1.4 or ×1.6 for stages 0 to 4: every plain Pump adds +0.2, and a feeling adds its own step instead. If you are still holding it at the start of your next turn it swells: +1 stage for no AP and no MP, and +1 Strain (+2 in Flooded air); from Empathy 7 a swell adds no Strain. One Pump a turn can be free of AP (its MP is still owed), never more: your first Pump of a fight, or from Empathy 3 one every round. Revert Pump (0 AP) undoes the last Pump you made this turn.",
     "first_pump_free": true,
     "free_pumps_per_turn": 1,
     "swell_no_strain": {
@@ -38,9 +38,9 @@
     "feeling_pump_ap_extra": 0,
     "pump_ap_after_second": null,
     "pump_mp": {
-      "per_stage": 5,
+      "share_per_stage": 0.1,
       "provisional": true,
-      "text": "A Pump costs MP as well as AP: 5 MP for each stage it reaches (5 to reach stage 1, 10 for stage 2, 15 for stage 3, 20 for stage 4; 50 for a full heart). Thin air raises that price and rich air lowers it, as for a Begin, and each point of Insight above 1 takes 5% off. A free Pump is free of AP only: its MP is still owed. A swell costs no MP. If you can't pay, you can't Pump: Syphon, or Release what you hold. Revert Pump gives the MP back. A heart that draws on the air (no Emanator in hand) pays no MP for a Pump."
+      "text": "A Pump costs MP as well as AP: a tenth of what the Begin cost you, for each stage it reaches. Reaching stage 1 costs 10% of the Begin's MP, stage 2 costs 20%, stage 3 costs 30% and stage 4 costs 40%, so filling a heart from stage 0 costs the Begin's MP once more. It is 1 MP at least. A free Pump is free of AP only: its MP is still owed. A swell costs no MP. If you can't pay, you can't Pump: Syphon, or Release what you hold. Revert Pump gives the MP back. An Outburst you began for no MP pumps for no MP, and so does a heart that draws on the air (no Emanator in hand)."
     }
   },
   "strain": {
@@ -160,7 +160,7 @@
     "thin": -1,
     "text": "An element's stage effects count 1 stage higher in Flooded air and 1 stage lower in Thin air, never below stage 0 or above stage 4."
   },
-  "cost_rules": "A design's MP cost is its school's base cost, plus its modules, plus 10 for a second school, plus its tone. That total is multiplied by the Soul cost of the current mana level and reduced by 5% for each point of Insight above 1, down to 5 MP at least. A Right Brain Debuff adds 20%. You pay it when you Begin. Each Pump then costs MP of its own: 5 for each stage it reaches (5, 10, 15, 20), changed by the mana level, Insight and a Right Brain Debuff in the same way, 1 MP at least.",
+  "cost_rules": "A design's MP cost is its school's base cost, plus its modules, plus 10 for a second school, plus its tone. That total is multiplied by the Soul cost of the current mana level and reduced by 5% for each point of Insight above 1, down to 5 MP at least. A Right Brain Debuff adds 20%. You pay it when you Begin. Each Pump then costs MP of its own: a tenth of what that Begin cost, for each stage the Pump reaches (10%, 20%, 30%, 40%), 1 MP at least.",
   "limits": {
     "module_slots": "1 + floor(will_power/3)",
     "forms_per_design": 1,

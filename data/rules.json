@@ -1226,7 +1226,7 @@
       "cycle": {
         "begin_ap": 2,
         "pump_ap": 1,
-        "pump_mp": "5 * the stage reached (5, 10, 15, 20) * band soul_cost_mult * (1 + soul_cost_pct/100), min 1; rules 1.24, provisional (soul_modules.json cycle.pump_mp)",
+        "pump_mp": "10% of the Begin's MP * the stage reached (10%, 20%, 30%, 40%), min 1; rules 1.24, provisional (soul_modules.json cycle.pump_mp)",
         "release_ap": 1,
         "stage_mult": [
           0.8,
