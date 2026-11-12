@@ -59,6 +59,20 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   alone (a refactor, a re-expression of the formula) must leave them green. When a number was meant to move, record
   on purpose and say so in the commit: `GOLDEN_RECORD=1 npm test -w @phc/engine -- golden-damage`. No enemy AI runs in
   them (every action is a fixed attacker on a fixed target), so a change to whom an enemy picks does not touch them.
+- **The replay guard** (`packages/engine/test/replay-hash.test.ts`, inside `npm run check`): whole seeded games with
+  the **enemy AI on** (story fights on both 26 × 26 grounds, the Proving Ground at 4 v 10 and across a change of wave,
+  a story-to-fight-to-story round trip, every reference build, casters on both sides), each reduced to a hash of the
+  final state and a hash of the ordered stream (every action, refusal, effect, log line and story line), against
+  `packages/engine/test/golden/replays.json`. It is what proves that a change meant to move nothing (performance, a
+  refactor, a cache) moved nothing: a path tie broken another way, a reaction in another order or one more die
+  changes the hash. A failure names the game and the 25 actions in which the change began. Before merging engine work
+  run the larger set: `REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash` (20 games). When a rule, a number, a
+  simulator policy or the saved shape was changed on purpose, record on purpose and say what moved in the commit:
+  `REPLAY_RECORD=1 REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash`. To see what moved, dump the last states on
+  the old code and the new and diff them: `REPLAY_DUMP=<dir> npm test -w @phc/engine -- replay-hash`.
+- **Old saves** (`packages/engine/test/old-save.test.ts`): two whole saves written by 0.22.0
+  (`packages/engine/test/fixtures/`, never regenerated) are loaded and played on. A change to the saved shape adds a
+  migration and a new fixture beside them.
 - `packages/engine/test/balance-baseline.test.ts`: the plain attack of sample weapons against each enemy tier
   (`BALANCE_OUT=<file>`).
 - `window.__phc` in the browser: `getState()`, `act(action)`, `setNarrator({ scripted: true })` (a Narrator that
