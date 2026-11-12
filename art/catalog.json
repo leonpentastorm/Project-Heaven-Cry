@@ -10449,6 +10449,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-spite.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-spite.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-shame": {
+      "id": "feeling-shame",
+      "label": "Shame: the ribbon folds inward and hides its own end",
+      "path": "art/icons/feelings/feeling-shame.png",
+      "sha256": "0373416db5b351e04e7a564d1109b712192dd0ad63e8f1172a7a3ca26579d560",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-shame.png",
+        "128": "art/icons/feelings/exports/128/feeling-shame.png",
+        "64": "art/icons/feelings/exports/64/feeling-shame.png",
+        "56": "art/icons/feelings/exports/56/feeling-shame.png",
+        "48": "art/icons/feelings/exports/48/feeling-shame.png",
+        "44": "art/icons/feelings/exports/44/feeling-shame.png",
+        "40": "art/icons/feelings/exports/40/feeling-shame.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-shame.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-shame.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {

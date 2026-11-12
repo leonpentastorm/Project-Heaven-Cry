@@ -9,5 +9,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `feeling-joy.png`: Joy: the ribbon leaps in a high arc with a small spark at the peak.
 - `feeling-calm.png`: Calm: one long level stroke over two or three still circles, like a horizon over water.
 - `feeling-spite.png`: Spite: a hooked ribbon turning back on itself like a barb.
+- `feeling-shame.png`: Shame: the ribbon folds inward and hides its own end.
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
