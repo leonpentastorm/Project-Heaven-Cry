@@ -2585,6 +2585,52 @@
           "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-bloom.png",
+      "sha256": "24a5c93960b840d5496e8b9af7ad34063d768586a081c19d22a2338ded65a014",
+      "id": "module-bloom",
+      "family": "modules",
+      "action": "nested rings growing outward",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-bloom.png",
+        "sha256": "f5ccee86cea2e9b67fddc5ef341b5a8f8d9c89ab320055b45e62fdb43ac57a37"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-bloom.png",
+        "sha256": "24a5c93960b840d5496e8b9af7ad34063d768586a081c19d22a2338ded65a014"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-bloom.txt",
+        "sha256": "7fede6741ae1d222bdf765b3355228c34be9d08da036f3f94c719c523c77bd33"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-bloom.png",
+        "128": "art/icons/modules/exports/128/module-bloom.png",
+        "64": "art/icons/modules/exports/64/module-bloom.png",
+        "56": "art/icons/modules/exports/56/module-bloom.png",
+        "48": "art/icons/modules/exports/48/module-bloom.png",
+        "44": "art/icons/modules/exports/44/module-bloom.png",
+        "40": "art/icons/modules/exports/40/module-bloom.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
     }
   ]
 }

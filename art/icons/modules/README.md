@@ -24,5 +24,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-fuse.png`: a dot on a ground line with a short burning line leading to it
 - `module-return.png`: a loop going out and coming back
 - `module-volley.png`: three small parallel dashes
+- `module-bloom.png`: nested rings growing outward
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

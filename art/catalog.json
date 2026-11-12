@@ -11451,6 +11451,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-volley.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-volley.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-bloom": {
+      "id": "module-bloom",
+      "label": "nested rings growing outward",
+      "path": "art/icons/modules/module-bloom.png",
+      "sha256": "24a5c93960b840d5496e8b9af7ad34063d768586a081c19d22a2338ded65a014",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-bloom.png",
+        "128": "art/icons/modules/exports/128/module-bloom.png",
+        "64": "art/icons/modules/exports/64/module-bloom.png",
+        "56": "art/icons/modules/exports/56/module-bloom.png",
+        "48": "art/icons/modules/exports/48/module-bloom.png",
+        "44": "art/icons/modules/exports/44/module-bloom.png",
+        "40": "art/icons/modules/exports/40/module-bloom.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-bloom.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-bloom.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
