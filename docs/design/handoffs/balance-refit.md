@@ -182,6 +182,6 @@ to `rules.json balance` and its row to the guard.
   `balance/heal-measure.ts`, the balance bands brought to rules 1.26 (`defence-measure`, `faith-measure`,
   `heal-measure`, `magic-measure`), and about 30 rules tests whose numbers were the old slopes (each now reads the
   number from data or a neutral caster, `deal: 1`).
-- Docs: the spec (rules 1.26, items 1700 to 1724), `balance-contract.md` (new), this hand-off, `PATCH-TALLY.md`, the
+- Docs: the spec (rules 1.26, items 1700 to 1725), `balance-contract.md` (new), this hand-off, `PATCH-TALLY.md`, the
   hand-offs README. Tools: `tools/golden_diff.py` (new).
 - Not touched: versions, the changelog, `PICKUP.md`, `CLAUDE.md`, the web client.

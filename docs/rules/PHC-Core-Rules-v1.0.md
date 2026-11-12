@@ -4038,7 +4038,7 @@ Chosen so the rules 1.15 and 1.23 measurements come back without changing the ta
 
 ## Rules revision 1.26 (the re-fit): every ceiling is what an all-in build reaches; skill buys accuracy, level buys damage
 
-Built on 12 Nov 2026, stage (b) of `docs/design/proposals/2026-11-unified-damage.md` on the one damage formula of stage (a). Leon's rulings, binding: the ceilings are what an **all-in** build reaches and a normal-share build sits at ceiling ÷ 1.25; **no damage slope on a rolled attack** (skill buys accuracy, level buys damage); flat things grow with level; every system's identity is a **named multiplier in data**. The contract that holds all of it is `docs/design/balance-contract.md` and `data/rules.json` `balance`; the guard is `packages/engine/test/balance-contract.test.ts`. Every number below is **PROVISIONAL** (items 1700 to 1724).
+Built on 12 Nov 2026, stage (b) of `docs/design/proposals/2026-11-unified-damage.md` on the one damage formula of stage (a). Leon's rulings, binding: the ceilings are what an **all-in** build reaches and a normal-share build sits at ceiling ÷ 1.25; **no damage slope on a rolled attack** (skill buys accuracy, level buys damage); flat things grow with level; every system's identity is a **named multiplier in data**. The contract that holds all of it is `docs/design/balance-contract.md` and `data/rules.json` `balance`; the guard is `packages/engine/test/balance-contract.test.ts`. Every number below is **PROVISIONAL** (items 1700 to 1725).
 
 ### 1. The three shapes of the Stat term
 
