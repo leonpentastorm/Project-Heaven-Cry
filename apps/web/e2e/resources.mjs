@@ -5,7 +5,7 @@
 // The Proving Ground starts each build with real actions (class, kit, gear); the state a test needs (ammo, charge,
 // Flux, Strain…) is written into the host's own save and the page reloads it, as a returning host would.
 // Screenshots: e2e/shots/resources-*.png (deviceScaleFactor 1, 1440×900 and 1280×720).
-import { chromium, click, BASE, OUT } from './lib.mjs';
+import { chromium, click, BASE, OUT, pause } from './lib.mjs';
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
 await ctx.addInitScript(() => { try { localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); sessionStorage.setItem('phc.pressedAnyKey', '1'); } catch { /* */ } });
@@ -15,8 +15,8 @@ p.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const G = () => p.evaluate(() => window.__phc.getState().game);
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
-const snap = async (n, size) => { if (size) { await p.setViewportSize(size); await settle(); } await p.waitForTimeout(350); await p.screenshot({ path: OUT + 'resources-' + n + '.png' }); };
-const dismissCut = async () => { for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await p.waitForTimeout(450); } };
+const snap = async (n, size) => { if (size) { await p.setViewportSize(size); await settle(); } await pause(p, 350); await p.screenshot({ path: OUT + 'resources-' + n + '.png' }); };
+const dismissCut = async () => { for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await pause(p, 450); } };
 
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
@@ -31,15 +31,15 @@ let me = Object.values(g.characters)[0].id;
  *  turn, with the cut-in dismissed. The drill units pass their turns (AI off), so nothing changes under the test. */
 async function build(steps) {
   g = await G();
-  if (g.sandbox) { await act({ type: 'sandbox/end' }); await p.waitForFunction(() => !window.__phc.getState().game.sandbox, null, { timeout: 8000 }); }
+  if (g.sandbox) { await act({ type: 'sandbox/end' }); await p.waitForFunction(() => !window.__phc.getState().game.sandbox, null, { timeout: 15000 }); }
   await act({ type: 'sandbox/start', standalone: true });
-  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 });
+  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
   g = await G(); me = Object.values(g.characters)[0].id;
   await act({ type: 'sandbox/ai', on: false });
   for (const a of steps) { const e = await act({ ...a, charId: me }); if (e) console.log('  (' + a.type + ': ' + e + ')'); }
   await act({ type: 'sandbox/fight' });
-  await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.combat; }, null, { timeout: 10000 });
-  for (let i = 0; i < 30; i++) { g = await G(); const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]); if (cur && cur.charId === me) break; if (cur) await act({ type: 'combat/end-turn', unitId: cur.id }); await p.waitForTimeout(200); }
+  await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.combat; }, null, { timeout: 15000 });
+  for (let i = 0; i < 30; i++) { g = await G(); const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]); if (cur && cur.charId === me) break; if (cur) await act({ type: 'combat/end-turn', unitId: cur.id }); await pause(p, 200); }
   await settle();
 }
 /** Let the banners and the cut-in come and go (any key plays on), so screenshots show the screen itself. */
@@ -48,7 +48,7 @@ async function settle() {
   let clear = 0;
   for (let i = 0; i < 40 && clear < 8; i++) { // until no cut-in for ~2 s (banners come and go first)
     if (await cut.count()) { clear = 0; await p.keyboard.press('Escape'); } else clear++;
-    await p.waitForTimeout(250);
+    await pause(p, 250);
   }
   await p.mouse.move(1435, 895);
 }
@@ -77,12 +77,12 @@ g = await G();
 await act({ type: 'combat/end-turn', unitId: g.combat.units.find((u) => u.charId === me && !u.ctrl).id });
 const cut = p.locator('[data-phc-cutin]');
 await cut.waitFor({ timeout: 10000 }).catch(() => {});
-await p.waitForTimeout(700);
+await pause(p, 700);
 if (await cut.count()) {
   const ct = (await cut.textContent()) || '';
   ok('the turn cut-in lists the ammo with RELOAD: ' + (ct.match(/AMMO.{0,40}/) || [''])[0], /AMMO/i.test(ct) && /RELOAD/.test(ct));
   await snap('turn-card-gunner');
-  await dismissCut(); await p.waitForTimeout(1200); await p.mouse.move(1435, 895);
+  await dismissCut(); await pause(p, 1200); await p.mouse.move(1435, 895);
 } else ok('the turn cut-in came up after the reload (it shows for a turn of yours)', false);
 let t = await rowText('ammo');
 ok('gunner: ammo in words, loaded / capacity and spares, RELOAD: ' + t, /AMMO/.test(t) && /3 \/ \d+ loaded/.test(t) && /spare/.test(t) && /RELOAD/.test(t));
@@ -95,7 +95,7 @@ ok('readable: labels ≥ 13 px, values ≥ 15 px, bars ≥ 8 px, near the card\'
 await snap('gunner-1440');
 // Hover shows the hint.
 await youCard().locator('[data-res="ammo"]').first().hover();
-await p.waitForTimeout(200);
+await pause(p, 200);
 ok('hovering a row shows its hint (what to do)', await youCard().locator('[data-res="ammo"] .phc-res-hint').first().isVisible());
 await snap('gunner-hover-1440');
 // 1280×720: the full card steps aside; the 2–3 most urgent rows sit under the bar.
@@ -104,11 +104,11 @@ const urg = p.locator('.phc-me-urgent');
 ok('1280×720: the urgent rows show in the mini-bar: ' + ((await urg.textContent()) || '').replace(/\s+/g, ' ').slice(0, 80), (await urg.isVisible()) && /RELOAD/.test((await urg.textContent()) || ''));
 await snap('gunner-1280');
 // The collapsed panel's mini card.
-await p.keyboard.press('h'); await p.waitForTimeout(400);
+await p.keyboard.press('h'); await pause(p, 400);
 const mini = p.locator('.phc-cb-mini');
 ok('collapsed panel: the mini card carries the urgent rows', (await mini.count()) > 0 && /RELOAD/.test((await mini.textContent()) || ''));
 await snap('gunner-collapsed-1280');
-await p.keyboard.press('h'); await p.waitForTimeout(300);
+await p.keyboard.press('h'); await pause(p, 300);
 await p.setViewportSize(BIG);
 
 // 2. The Sigil caster: an empty core with spares → RELOAD CORE, Flux 5 → OVERLOAD SOON.
@@ -118,7 +118,7 @@ t = await rowText('charge');
 ok('Sigil: Evoker charge / 10 and spare cores, RELOAD CORE: ' + t, /EVOKER CHARGE/.test(t) && /0 \/ 10/.test(t) && /2 spare cores/.test(t) && /RELOAD CORE/.test(t));
 t = await rowText('flux');
 ok('Sigil: Flux 5 / 6 OVERLOAD SOON: ' + t, /FLUX/.test(t) && /5 \/ 6/.test(t) && /OVERLOAD SOON/.test(t));
-await youCard().locator('[data-res="charge"]').first().hover(); await p.waitForTimeout(150);
+await youCard().locator('[data-res="charge"]').first().hover(); await pause(p, 150);
 ok('Sigil: the hint says swap core (2 AP)', /Swap core \(2 AP\)/i.test((await youCard().locator('[data-res="charge"] .phc-res-hint').first().textContent()) || ''));
 await p.mouse.move(5, 5);
 await snap('sigil-1440');
@@ -161,13 +161,13 @@ await snap('stormhand-1280', SMALL); await p.setViewportSize(BIG);
 // 6. The area-map HUD (out of the fight): the same block under HP and AP, with the gun and the Evoker.
 await build([{ type: 'sandbox/kit', kind: 'both' }, { type: 'sandbox/give', item: 'hellraiser_service_rifle', equip: true }]);
 await act({ type: 'sandbox/stop' });
-await p.waitForFunction(() => window.__phc.getState().game.phase !== 'combat', null, { timeout: 8000 });
-await p.waitForTimeout(500);
+await p.waitForFunction(() => window.__phc.getState().game.phase !== 'combat', null, { timeout: 15000 });
+await pause(p, 500);
 // (the tools first, then the area map: the map is a modal over the whole screen, and the tools' button is under it)
 const closeTools = p.getByRole('button', { name: 'Close the tools' });
-if (await closeTools.count()) { await closeTools.first().click(); await p.waitForTimeout(400); }
+if (await closeTools.count()) { await closeTools.first().click(); await pause(p, 400); }
 const mapBtn = p.getByRole('button', { name: /area map/i }).first();
-if (await mapBtn.count()) { await mapBtn.click().catch(() => {}); await p.waitForTimeout(500); }
+if (await mapBtn.count()) { await mapBtn.click().catch(() => {}); await pause(p, 500); }
 const hud = p.locator('[aria-label="Your status"] [aria-label="Your resources"]').first();
 const ht = ((await hud.textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
 ok('area-map HUD: the resources block under HP: ' + ht.slice(0, 120), (await hud.count()) > 0 && /AMMO/.test(ht) && /loaded/.test(ht) && /EVOKER CHARGE/.test(ht));

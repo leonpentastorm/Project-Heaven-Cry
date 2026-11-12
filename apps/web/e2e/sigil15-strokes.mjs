@@ -3,12 +3,12 @@
 // "new Line"), the dashed joining line of the preview, the faint joins on the grid (no join between the two rows), the
 // hovered stroke lit and named, each Line Evoked on its own reading (touching glyphs no longer poison), and a junction
 // drawn with both of its joins. Screenshots (deviceScaleFactor 1): e2e/shots/sigil15-*.png, or SHOTS=dir.
-import { chromium, player, click, BASE, OUT as OUT0, pickAction } from './lib.mjs';
+import { chromium, player, click, BASE, OUT as OUT0, pickAction, pause } from './lib.mjs';
 const OUT = process.env.SHOTS ? process.env.SHOTS.replace(/\/?$/, '/') : OUT0;
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
-const dismissCut = async () => { if (await p.locator('[data-phc-cutin]').count()) { await p.mouse.click(1430, 990); await p.waitForTimeout(380); } };
+const dismissCut = async () => { if (await p.locator('[data-phc-cutin]').count()) { await p.mouse.click(1430, 990); await pause(p, 380); } };
 const snap = async (n) => { await dismissCut(); return p.screenshot({ path: OUT + 'sigil15-' + n + '.png' }); };
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 const K = (x, y) => x + ',' + y;
@@ -25,20 +25,20 @@ async function newRound() {
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idle();
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
-const moveTo = async (k) => { const s = await st(); if (s.u.pos === k) return null; await ensureAp(3); const e = await must({ type: 'combat/move', unitId: s.u.id, to: k }, 'move to ' + ref(k)); await p.waitForTimeout(250); await idle(); return e; };
+const moveTo = async (k) => { const s = await st(); if (s.u.pos === k) return null; await ensureAp(3); const e = await must({ type: 'combat/move', unitId: s.u.id, to: k }, 'move to ' + ref(k)); await pause(p, 250); await idle(); return e; };
 const glyphs = async () => (await st()).cb.glyphs || [];
 const sidAt = async (k) => (await glyphs()).find((g) => g.pos === k)?.strokeId;
 /** Pick Draw (once) and a word on the keyboard. */
 async function word(w) {
   await dismissCut();
   const key = p.locator('[data-glyph-keyboard] button[data-word="' + w + '"]').first();
-  if (!(await key.count())) { await pickAction(p, /^Draw a glyph/); await p.waitForTimeout(200); }
-  await key.click(); await p.waitForTimeout(150);
+  if (!(await key.count())) { await pickAction(p, /^Draw a glyph/); await pause(p, 200); }
+  await key.click(); await pause(p, 150);
 }
 const picker = async () => (await p.locator('[data-stroke-picker] button').allTextContents()).map((t) => t.trim());
 const note = async () => ((await p.locator('.phc-cb-seltext').first().getAttribute('title').catch(() => '')) || '').trim();
-const pick = async (label) => { const re = new RegExp('^\\s*(✓ )?' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$'); await p.locator('[data-stroke-picker] button', { hasText: re }).first().click(); await p.waitForTimeout(150); };
-async function drawHere() { await ensureAp(2); const s = await st(); await tok(s.u.pos).click(); await p.waitForTimeout(300); await idle(); }
+const pick = async (label) => { const re = new RegExp('^\\s*(✓ )?' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$'); await p.locator('[data-stroke-picker] button', { hasText: re }).first().click(); await pause(p, 150); };
+async function drawHere() { await ensureAp(2); const s = await st(); await tok(s.u.pos).click(); await pause(p, 300); await idle(); }
 
 // ---------- the Proving Ground, Solo; a Mage with an Evoker and four words ----------
 await p.goto(BASE);
@@ -66,8 +66,8 @@ await p.mouse.move(1430, 990);
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
 await must({ type: 'sandbox/clear' });
-for (let i = 0; i < 20; i++) { s = await st(); const cur = s.cb.units.find((u) => u.id === s.cb.order[s.cb.turn]); if (cur?.side === 'pc') break; await p.waitForTimeout(300); }
-await p.waitForTimeout(2300); await dismissCut();
+for (let i = 0; i < 20; i++) { s = await st(); const cur = s.cb.units.find((u) => u.id === s.cb.order[s.cb.turn]); if (cur?.side === 'pc') break; await pause(p, 300); }
+await pause(p, 2300); await dismissCut();
 // A far boss so the wave never ends.
 await must({ type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: 'P1' }, 'far boss');
 // Two free rows of four, side by side.
@@ -119,22 +119,22 @@ ok('the grid joins each Line: ' + await p.locator('[data-stroke-join]').count() 
 // ---------- 4. hover lights a stroke and names its words ----------
 await moveTo(K(x0 + 3, y + 1));
 await p.locator('[role="tabpanel"]').getByRole('button', { name: /^Draw a glyph/ }).first().click().catch(() => {}); // put Draw down
-await tok(A).hover(); await p.waitForTimeout(250);
+await tok(A).hover(); await pause(p, 250);
 const tip = ((await p.locator('[data-stroke-tip]').first().textContent().catch(() => '')) || '').trim();
 ok('hovered FIRE: "' + tip + '", ' + await p.locator('[data-stroke-hot]').count() + ' tiles lit', tip === 'FIRE · SEEK' && (await p.locator('[data-stroke-hot]').count()) === 2);
 await snap('5-hover-fire-seek');
-await tok(D).hover(); await p.waitForTimeout(250);
+await tok(D).hover(); await pause(p, 250);
 ok('hovered ARC: SPARK · ARC', ((await p.locator('[data-stroke-tip]').first().textContent().catch(() => '')) || '').trim() === 'SPARK · ARC');
 await snap('6-hover-spark-arc');
 
 // ---------- 5. Evoke reads each Line on its own ----------
-await pickAction(p, /^Evoke/); await p.waitForTimeout(200);
-await tok(A).click(); await p.waitForTimeout(300);
+await pickAction(p, /^Evoke/); await pause(p, 200);
+await tok(A).click(); await pause(p, 300);
 const line = ((await p.locator('[aria-label="The Line"]').first().textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
 ok('Evoke panel: FIRE · SEEK is a spell (' + line.slice(0, 90) + ')', /FIRE/.test(line) && /SEEK/.test(line) && !/SPARK/.test(line) && /✓ A spell/.test(line));
 await snap('7-evoke-fire-seek');
-await p.getByRole('button', { name: '‹ Pick another pattern' }).first().click().catch(() => {}); await p.waitForTimeout(150);
-await tok(C).click(); await p.waitForTimeout(300);
+await p.getByRole('button', { name: '‹ Pick another pattern' }).first().click().catch(() => {}); await pause(p, 150);
+await tok(C).click(); await pause(p, 300);
 const line2 = ((await p.locator('[aria-label="The Line"]').first().textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
 ok('Evoke panel: SPARK · ARC is a spell', /SPARK/.test(line2) && /ARC/.test(line2) && !/FIRE/.test(line2) && /✓ A spell/.test(line2));
 await p.getByRole('button', { name: '‹ Pick another pattern' }).first().click().catch(() => {});
@@ -155,12 +155,12 @@ const jg = (await glyphs()).find((g) => g.pos === J);
 ok('the junction glyph lies in two strokes', !!jg && !!jg.strokeId2 && jg.strokeId2 !== jg.strokeId);
 await moveTo(K(x0 + 3, y + 1));
 await p.locator('[role="tabpanel"]').getByRole('button', { name: /^Draw a glyph/ }).first().click().catch(() => {});
-await tok(J).hover(); await p.waitForTimeout(250);
+await tok(J).hover(); await pause(p, 250);
 const jt = ((await p.locator('[data-stroke-tip]').first().textContent().catch(() => '')) || '').trim();
 ok('hovered junction names both Lines: "' + jt + '"', jt === 'FIRE · SEEK · SPREAD / SPREAD · SEEK');
 await snap('9-junction-hover');
-await pickAction(p, /^Evoke/); await p.waitForTimeout(200);
-await tok(J).click(); await p.waitForTimeout(300);
+await pickAction(p, /^Evoke/); await pause(p, 200);
+await tok(J).click(); await pause(p, 300);
 const jp = await p.locator('[data-junction-pick] button').allTextContents();
 ok('Evoke on the junction offers both Lines: ' + jp.join(' | '), jp.length === 2);
 await snap('10-junction-evoke');

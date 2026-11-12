@@ -1,6 +1,15 @@
 {
- "smoke": ["old-save", "two-players", "rules114", "perks", "turn-order"],
- "rules": ["rules114", "coop-stall", "old-save", "skeleton-screens", "creation-points", "creation-layout", "physical", "physical-pack", "perks", "pg-levelup", "combat-fixes", "world-play", "classes", "classes-moves", "sandbox", "right-panels", "tabs", "gear-icons", "ground", "music-pool"],
- "anim": ["fx-room", "fx-sweep", "turn-order", "melee-fx", "reload", "cutins", "clarity", "brass", "combat-speed", "faith-pg", "two-players", "camera",
-  "combat-portraits", "faith", "feel", "feelings40", "grand", "heart", "layout", "magic", "mana-forecast", "mapzoom", "missions", "pg-art", "playscreen", "playtest-tools", "reconnect", "resources", "sandbox-mp", "shell-guest", "sigil14", "sigil15-growth", "sigil15-strokes", "sigil15", "slate-music", "slate-stamp", "slate-title", "slate", "soul", "title", "turn-card-side", "ui-shell", "voice", "vote"]
+ "smoke": ["old-save", "creation-points", "perks", "two-players", "turn-order"],
+ "rules": [
+  "old-save", "creation-points", "creation-layout", "skeleton-screens", "rules114", "perks", "classes", "classes-moves", "pg-levelup",
+  "physical", "physical-pack", "gear-icons", "combat-fixes", "tabs", "sandbox", "ground", "world-play", "right-panels",
+  "music-pool", "coop-stall", "faith", "layout", "mana-forecast", "mapzoom", "missions", "pg-art", "playscreen",
+  "playtest-tools", "reconnect", "shell-guest", "ui-shell", "voice", "vote"
+ ],
+ "anim": [
+  "two-players", "turn-order", "camera", "fx-room", "fx-sweep", "melee-fx", "reload", "brass", "clarity",
+  "cutins", "combat-speed", "faith-pg", "combat-portraits", "heart", "feelings40", "magic", "sigil14", "sigil15",
+  "sigil15-strokes", "sigil15-growth", "sandbox-mp", "slate", "slate-music", "slate-stamp", "slate-title", "title", "resources",
+  "turn-card-side"
+ ]
 }

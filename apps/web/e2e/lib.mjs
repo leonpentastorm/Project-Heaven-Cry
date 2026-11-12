@@ -16,6 +16,13 @@ export async function player(browser, name) {
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
   page.on('console', (m) => { if (m.type() === 'error' && !/Permissions policy violation/.test(m.text())) errors.push('console: ' + m.text()); });
   page.errors = errors; page.pname = name;
+  // Every suite starts with page.goto(BASE) and then reaches for a button. The game's first screen takes 2 s to come
+  // up on an idle machine and has taken over 30 s beside two other suites on a busy one: goto() and reload() here
+  // return when the game has drawn its first button (or the title's "press any key"), within two minutes.
+  const ready = () => page.waitForFunction(() => !!document.querySelector('#root button, .phc-press'), null, { timeout: 120000 }).catch(() => {});
+  const goto = page.goto.bind(page), reload = page.reload.bind(page);
+  page.goto = async (url, o) => { const r = await goto(url, o); await ready(); return r; };
+  page.reload = async (o) => { const r = await reload(o); await ready(); return r; };
   return page;
 }
 /** Host a room from the title screen: NEW GAME, then your name, then Open a room. */
@@ -168,4 +175,30 @@ export async function openGround(page, name = 'Leon') {
   await Promise.race([nm.waitFor({ timeout: 15000 }).catch(() => {}), page.waitForFunction(() => !!window.__phc?.getState().game?.sandbox, null, { timeout: 15000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill(name); await click(page, 'Solo ›'); }
   await page.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
+}
+
+/** The title screen: press CHARACTERS and, while Wick says hello (under a second, then the menu slides away), move the
+ *  pointer onto SETTINGS. Both are sent as raw pointer input at places read beforehand, with nothing waited for between
+ *  them, and a watcher in the page (started before the press) notes the moment SETTINGS is the lit row while CHARACTERS
+ *  is the pressed one: the hello is too short to be asked about from this script on a busy machine.
+ *  Returns { seen: { on, pressed, bubble, act } | null, before, colour } (the SETTINGS label's colour before and lit). */
+export async function titleHoverDuringHello(page) {
+  const pt = await page.evaluate(() => {
+    const mid = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
+    const label = () => { const l = document.querySelector('[data-item="settings"] .phc-label'); return l ? getComputedStyle(l).color : ''; };
+    const W = (window.__hello = { seen: null, before: label(), colour: '' });
+    const look = () => {
+      const on = document.querySelector('.phc-item.on')?.getAttribute('data-item'), pressed = document.querySelector('.phc-item.pressed')?.getAttribute('data-item');
+      if (on !== 'settings' || pressed !== 'chars' || W.seen) return;
+      W.seen = { on, pressed, bubble: document.querySelectorAll('.phc-bubble').length, act: document.querySelector('.phc-wick')?.getAttribute('data-act') };
+      // the lit colour, once its transition has run (read each frame for as long as the row stays lit, 400 ms at most)
+      const t0 = performance.now(); const tick = () => { if (document.querySelector('.phc-item.on')?.getAttribute('data-item') === 'settings') { W.colour = label(); if (performance.now() - t0 < 400) requestAnimationFrame(tick); } }; tick();
+    };
+    new MutationObserver(look).observe(document.documentElement, { subtree: true, childList: true, attributes: true });
+    return { chars: mid('[data-item="chars"]'), settings: mid('[data-item="settings"]') };
+  });
+  await page.mouse.click(pt.chars.x, pt.chars.y);
+  await page.mouse.move(pt.settings.x, pt.settings.y, { steps: 2 });
+  await page.waitForFunction(() => window.__hello.seen && window.__hello.colour, null, { timeout: 5000 }).catch(() => {});
+  return page.evaluate(() => window.__hello);
 }

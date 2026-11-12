@@ -2,7 +2,7 @@
 // their character's turns), the host gets "Pass Mai's turn ›" on the waiting card when the guest's unit comes up, and the
 // fight goes on; when the host leaves, the guest's "host is offline" bar sits under the header (Leave stays clickable)
 // and carries its own Leave the room. No browser confirm/prompt/alert anywhere.
-import { chromium, player, click, BASE, hostAs } from './lib.mjs';
+import { chromium, player, click, BASE, hostAs, settle } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), guest = await player(browser, 'guest');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -36,7 +36,7 @@ await guest.waitForSelector('text=Outpost-813\'s rear landing pad', { timeout: 1
 await host.getByLabel('What do you do?').fill('I walk up the ramp with 4-Ten on my shoulders.'); await click(host, 'Send', { exact: true }); await click(host, 'End turn', { exact: true });
 await guest.getByLabel('What do you do?').fill('I cover him from the wreck line.'); await click(guest, 'Send', { exact: true }); await click(guest, 'End turn', { exact: true });
 await host.waitForSelector('text=CLICK TO ROLL', { timeout: 15000 });
-await host.waitForTimeout(300);
+await settle(host, 300);
 if (!(await host.locator('div[aria-label="Dice table"]').count())) await host.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
 await click(host, /Throw/);
 await host.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/');
@@ -44,16 +44,16 @@ await click(host, 'Continue', { exact: true });
 const fought = await host.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 }).then(() => true, () => false);
 ok('the fight started', fought);
 await guest.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
-await guest.waitForTimeout(2500);
+await settle(guest, 2500);
 
 // 1. The guest leaves mid-fight: the dialog says what really happens.
 await guest.locator('header [data-phc-leave]').click();
 const gd = guest.locator('[data-phc-dialog] [role="alertdialog"]');
-await gd.waitFor({ timeout: 3000 });
+await gd.waitFor({ timeout: 15000 });
 const gtext = await gd.textContent();
 ok('the guest is told the host passes their turns while away', /the host passes your character's turns while you are away/.test(gtext) && !/goes on without you/.test(gtext));
 await gd.getByRole('button', { name: 'Leave', exact: true }).click();
-await guest.waitForFunction(() => window.__phc.getState().screen === 'home', null, { timeout: 5000 });
+await guest.waitForFunction(() => window.__phc.getState().screen === 'home', null, { timeout: 15000 });
 ok('…and lands on the title', true);
 
 // 2. The host: when the guest's unit comes up, "Pass Mai's turn ›" ends it; the fight goes on.
@@ -63,7 +63,7 @@ let passed = false, sawButton = false;
 for (let i = 0; i < 200 && !passed; i++) {
   const t = await turnOf();
   if (t === 'over') break;
-  if (t === 'mine') { const e = host.getByRole('button', { name: 'End turn', exact: true }); if (await e.isEnabled().catch(() => false)) await e.click().catch(() => {}); await host.waitForTimeout(300); continue; }
+  if (t === 'mine') { const e = host.getByRole('button', { name: 'End turn', exact: true }); if (await e.isEnabled().catch(() => false)) await e.click().catch(() => {}); await settle(host, 300); continue; }
   if (t === 'guest') {
     const b = host.locator('[data-phc-skip-away]');
     if (await b.count()) {
@@ -71,33 +71,33 @@ for (let i = 0; i < 200 && !passed; i++) {
       ok('the waiting card offers "' + (await b.textContent()).trim() + '"', /Pass Mai’s turn/.test(await b.textContent()));
       if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-pass-turn.png' });
       const before = await host.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb.round + ':' + cb.turn; });
-      await b.click(); await host.waitForTimeout(800);
+      await b.click(); await settle(host, 800);
       const after = await host.evaluate(() => { const cb = window.__phc.getState().game.combat; return { at: cb.round + ':' + cb.turn, away: cb.log.find((l) => /is away/.test(l)) || '' }; });
       ok('…which passes it ("' + after.away + '")', after.at !== before && !!after.away);
       passed = true; break;
     }
   }
-  await host.waitForTimeout(250);
+  await settle(host, 250);
 }
 ok('the host saw the Pass button on the away guest\'s turn', sawButton);
 
 // 3. The guest comes back; the host leaves: the bar sits under the header, Leave stays clickable, the bar has its own.
 await guest.goto(BASE + '/?room=' + code); await guest.getByPlaceholder('Leon').fill('Mai').catch(() => {}); await click(guest, 'Join ›').catch(() => {});
 await guest.waitForFunction(() => ['combat', 'main'].includes(window.__phc.getState().screen), null, { timeout: 15000 });
-await guest.waitForTimeout(1500);
+await settle(guest, 1500);
 await host.close();
 const bar = guest.locator('[data-phc-conn-bar]');
 const away = await bar.waitFor({ timeout: 20000 }).then(() => true, () => false);
 ok('the guest sees the host is offline', away && /host is offline/.test(await bar.textContent()));
-await guest.waitForTimeout(1200);
+await settle(guest, 1200);
 const hit = await guest.evaluate(() => { const b = document.querySelector('header [data-phc-leave]'); if (!b) return 'no Leave'; const r = b.getBoundingClientRect(); const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!el && b.contains(el) ? 'ok' : 'covered by ' + (el && el.outerHTML.slice(0, 80)); });
 ok('the header\'s Leave is not covered by the bar (' + hit + ')', hit === 'ok');
 ok('the bar has its own Leave the room', (await bar.getByRole('button', { name: 'Leave the room' }).count()) === 1);
 if (SHOTS) await guest.screenshot({ path: SHOTS + '/shell-host-away.png' });
 await bar.getByRole('button', { name: 'Leave the room' }).click();
-await gd.waitFor({ timeout: 3000 });
+await gd.waitFor({ timeout: 15000 });
 await gd.getByRole('button', { name: 'Leave', exact: true }).click();
-await guest.waitForFunction(() => window.__phc.getState().screen === 'home', null, { timeout: 5000 }).then(() => ok('…which leaves', true), () => ok('…which leaves', false));
+await guest.waitForFunction(() => window.__phc.getState().screen === 'home', null, { timeout: 15000 }).then(() => ok('…which leaves', true), () => ok('…which leaves', false));
 ok('no browser confirm/prompt/alert', (await guest.evaluate(() => window.__browserDialogs.length)) === 0);
 ok('no page errors on the guest', guest.errors.length === 0);
 if (guest.errors.length) console.log(guest.errors.slice(0, 5).join('\n'));

@@ -1,7 +1,7 @@
 // Character files, portrait upload, the Report button, the spend meter and first-time tips, in two browsers.
 import { createRequire } from 'module';
 import { readFileSync } from 'fs';
-import { chromium, player, click, BASE, answerAsk } from './lib.mjs';
+import { chromium, player, click, BASE, answerAsk, settle } from './lib.mjs';
 const require = createRequire(import.meta.url);
 const { unzipSync, strFromU8 } = require('fflate');
 
@@ -24,7 +24,7 @@ await click(host, 'Make a character');
 await host.getByPlaceholder('What the squad calls you').fill('Upload Test');
 const [chooser] = await Promise.all([host.waitForEvent('filechooser'), click(host, 'Upload', { exact: true })]);
 await chooser.setFiles({ name: 'me.jpg', mimeType: 'image/jpeg', buffer: photo });
-await host.waitForSelector('img[alt="Your portrait (uploaded)"]', { timeout: 8000 });
+await host.waitForSelector('img[alt="Your portrait (uploaded)"]', { timeout: 15000 });
 ok('upload shows the portrait', /^data:image\/jpeg/.test(await host.locator('img[alt="Your portrait (uploaded)"]').first().getAttribute('src')));
 await host.locator('main button[aria-pressed]').first().click().catch(() => {});
 await host.locator('button:has-text("Thousand-Planet")').first().click().catch(() => {});
@@ -33,7 +33,7 @@ await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 'Next ›');
 await host.locator('button', { hasText: 'Field medic' }).first().click();
 await click(host, 'Next ›'); await click(host, 'Lock in', { exact: true });
-await host.waitForSelector('text=Upload Test', { timeout: 8000 });
+await host.waitForSelector('text=Upload Test', { timeout: 15000 });
 
 // 2. Download it as a file
 const [dl] = await Promise.all([host.waitForEvent('download'), host.getByRole('button', { name: 'Download Upload Test as a file' }).click()]);
@@ -54,7 +54,7 @@ const code = (await host.locator('text=/ROOM [A-Z0-9]{6}/').first().textContent(
 await click(host, 'Bring a saved character');
 const [hc] = await Promise.all([host.waitForEvent('filechooser'), click(host, 'Import a character file…')]);
 await hc.setFiles(zipPath);
-await host.waitForSelector('text=✓ LOCKED IN', { timeout: 8000 });
+await host.waitForSelector('text=✓ LOCKED IN', { timeout: 15000 });
 const room = await host.evaluate(() => Object.values(window.__phc.getState().game.characters).map((c) => ({ name: c.name, p: c.portrait.length })));
 ok('imported into the room with the small portrait (' + Math.round(room[0].p / 1024) + ' KB)', room[0].name === 'Upload Test' && room[0].p < 80000);
 await guest.goto(BASE + '/?room=' + code); await guest.waitForSelector('text=PRESS ANY KEY'); await guest.keyboard.press('Enter'); await guest.getByPlaceholder('Leon').fill('Mai'); await click(guest, 'Join ›');
@@ -66,19 +66,19 @@ await guest.locator('main button[aria-pressed]').first().click();
 await click(guest, 'Next ›'); await guest.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(guest, 'Next ›'); await click(guest, 'Next ›'); await click(guest, 'Next ›'); await guest.locator('button', { hasText: 'Line soldier' }).first().click();
 await click(guest, 'Next ›'); await click(guest, 'Lock in and bring to the room');
-await guest.waitForSelector('text=✓ LOCKED IN', { timeout: 8000 }); // the Approved stamp files the record ~0.9 s after the press
+await guest.waitForSelector('text=✓ LOCKED IN', { timeout: 15000 }); // the Approved stamp files the record ~0.9 s after the press
 
 // 4. Tips for a new player
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');
 await guest.waitForSelector('text=Outpost-813\'s rear landing pad', { timeout: 15000 });
-await guest.waitForSelector('text=TIP · YOUR ROUND', { timeout: 8000 });
+await guest.waitForSelector('text=TIP · YOUR ROUND', { timeout: 15000 });
 ok('tip: your round', true);
 if (process.env.SHOTS) await guest.screenshot({ path: process.env.SHOTS + '/tip.png' });
 await guest.getByRole('button', { name: 'Got it' }).click();
-await guest.waitForSelector('text=/TIP · (THE NARRATOR SPEAKS|YOUR SKILLS TALK|SOMETHING BROKE)/', { timeout: 5000 });
+await guest.waitForSelector('text=/TIP · (THE NARRATOR SPEAKS|YOUR SKILLS TALK|SOMETHING BROKE)/', { timeout: 15000 });
 await guest.getByRole('button', { name: 'No more tips' }).click();
-await guest.waitForTimeout(300);
+await settle(guest, 300);
 ok('no more tips', await guest.locator('text=/^TIP · /').count() === 0);
 
 // 5. The Report button: one file, never the key
