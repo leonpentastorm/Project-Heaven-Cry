@@ -173,7 +173,9 @@ export function blockItems(blocks: WeaponBlock[]): [string, string, string, stri
     out.push([padAction(b.hand), 'Techniques · ' + b.usable, b.total ? b.usable + ' of ' + b.total + ' now' : '', (b.hand === 'both' ? 'Use one technique with each weapon in turn, the main hand at −1 to hit and the off hand at −3, for 1 AP more' : 'What you can do with the ' + b.name) + '. Pick one in the pad, then its target.', b.total ? null : 'No techniques ready for this weapon.']);
   }
   const watch = watchChips(blocks);
-  if (watch.length) out.push([TWATCH, 'Hold a shot', '', 'Hold a shot until its trigger happens: Overwatch, Deny, Cover Me or Dead to Rights. It fires on the enemy\'s turn, as your reaction.', watch.some((c) => c.ok) ? null : watch[0].why]);
+  // Its cost is its Watches' (the engine's AP on each chip): one number, or the range ("2–3 AP"). No row is without a price.
+  const wAp = watch.map((c) => c.ap).filter((n) => typeof n === 'number'), wLo = Math.min(...wAp), wHi = Math.max(...wAp);
+  if (watch.length) out.push([TWATCH, 'Hold a shot', !wAp.length ? '' : wLo === wHi ? wLo + ' AP' : wLo + '–' + wHi + ' AP', 'Hold a shot until its trigger happens: Overwatch, Deny, Cover Me or Dead to Rights. It fires on the enemy\'s turn, as your reaction.', watch.some((c) => c.ok) ? null : watch[0].why]);
   return out;
 }
 /** The Watches of every ranged weapon held, each with its hand (the first ranged hand that offers it). */

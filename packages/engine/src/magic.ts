@@ -1592,8 +1592,8 @@ export interface OutburstPlan {
 export function previewOutburstPlan(cb: Combat, u: Unit, src: string | 'held', aim?: string, opts: { stage?: number; mods?: string[] } = {}): OutburstPlan {
   // The toggles on the action being planned (Heart Surge, Verse…) are read as the real action reads them (cb.mods).
   if (!opts.mods) return planInner(cb, u, src, aim, opts);
-  const c: any = cb, had = 'mods' in c, was = c.mods; c.mods = opts.mods;
-  try { return planInner(cb, u, src, aim, opts); } finally { if (had) c.mods = was; else delete c.mods; }
+  // (on the fight with the switches set: a copy of its top level, so the fight a screen holds is never written)
+  return planInner({ ...cb, mods: [...opts.mods] }, u, src, aim, opts);
 }
 function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | undefined, opts: { stage?: number }): OutburstPlan {
   const m = u.mg ? heart(u) : undefined;

@@ -200,6 +200,24 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     const { cb, u } = withPerks({}, 2); beginOutburst(cb, rng, u, 'sb', undefined, true);
     expect(heartPanel(cb, u)!.overdraw).toBe(''); expect(heartPanel(cb, u)!.pump.title).not.toMatch(/Overdraw/);
   });
+  it('a preview never writes on the fight it is given: the switches ride on the engine\'s copy (engine review 4, finding 2)', () => {
+    // The old client set cb.mods on the live fight for the length of a preview. Here a write to the live fight's mods
+    // is caught, and the fight is deeply equal after every preview.
+    const writes: string[] = [];
+    const trap = (cb: any) => Object.defineProperty(cb, 'mods', { configurable: true, enumerable: false, get: () => undefined, set: (v) => { writes.push(JSON.stringify(v)); } });
+    const a = withPerks({ heart_overload: 'I' }); fire(a.cb, a.u, 2); a.u.ap = 0;
+    a.u.uses ||= {};
+    const wasA = JSON.stringify(a.cb); trap(a.cb);
+    expect(designCards(a.cb, a.u).find((x) => x.id === 'sb')).toMatchObject({ beginAp: 0 }); // (the card that asks with Heart Overload's switch off)
+    expect(JSON.stringify(a.cb)).toBe(wasA);
+    const b = withPerks({}); beginOutburst(b.cb, rng, b.u, 'sb', undefined, true);
+    b.u.uses ||= {}; // (the engine makes a unit's empty counter bag the first time anything reads a counter)
+    const wasB = JSON.stringify(b.cb); trap(b.cb);
+    const p = heartPanel(b.cb, b.u, [OD])!;
+    expect(p.pump).toMatchObject({ ok: true, mp: 5 }); expect(p.steadyBtn).toBeTruthy(); expect(p.letgo).toBeTruthy(); // (the Overdraw Pump, read with its switch on)
+    expect(JSON.stringify(b.cb)).toBe(wasB);
+    expect(writes).toEqual([]);
+  });
   it('Heart Overload: after a Release at stage 2 the same design\'s card offers Begin again for 0 AP; the others don\'t', () => {
     const { cb, u } = withPerks({ heart_overload: 'I' }); fire(cb, u, 2); u.ap = 0;
     const cards = designCards(cb, u), sb = cards.find((x) => x.id === 'sb')!, fb = cards.find((x) => x.id === 'fb')!;

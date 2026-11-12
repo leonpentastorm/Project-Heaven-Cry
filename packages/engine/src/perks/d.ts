@@ -156,9 +156,9 @@ let hoAsking = false;
 function hoBlood(h: Holder): number {
   const id = hoOffer(h), m = h.u?.mg, d: any = (m?.designs || []).find((x: any) => x.id === id); if (!m || !d || mends(migrateDesign(d))) return 0;
   if (hoAsking) return 0;
-  const c: any = h.cb, had = 'mods' in c, was = c.mods; c.mods = ['!' + h.key + '#pay_hp']; hoAsking = true;
-  try { const pv = previewOutburst(h.cb!, h.u!, d.id, undefined, false); return m.mp < pv.cost ? pv.cost * HO_HP_PER_MP : 0; }
-  finally { hoAsking = false; if (had) c.mods = was; else delete c.mods; }
+  hoAsking = true; // (asked on the fight with the switch set: a copy of its top level, the fight itself is not written)
+  try { const pv = previewOutburst({ ...h.cb!, mods: ['!' + h.key + '#pay_hp'] }, h.u!, d.id, undefined, false); return m.mp < pv.cost ? pv.cost * HO_HP_PER_MP : 0; }
+  finally { hoAsking = false; }
 }
 register({
   id: 'heart_overload', claims: 'all', priority: 300, noDefaultActions: true, // used from Begin (its switches)

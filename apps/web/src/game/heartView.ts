@@ -6,7 +6,7 @@
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
 import { inverseShield, outburstHeal, SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
-  previewOutburst, previewOutburstPlan, previewPump, pumpsMp, togglesFor, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
+  previewOutburst, previewOutburstPlan, previewPump, pumpsMp, togglesFor, dryRun, fightWith, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
 import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, type FeelingBtn } from './feelingsView';
 import { heldOutburstOf } from './resources';
@@ -106,13 +106,11 @@ export function designVerdict(m: any, d0: any, mana?: number): { effects: string
 }
 
 // ---------- a dry run of a cycle action (its refusal, and what it does to Strain) ----------
+/** The engine's own dry run (preview.ts dryRun): it owns the copy of the fight, so nothing a cycle action keeps on a
+ * unit can leak out of a preview. */
 export function dryHeart(cb: any, uid: string, fn: (c: any, u: any) => string | null): { err: string | null; u: any } {
-  const units = cb.units.map((x: any) => ({ ...x, conds: x.conds ? { ...x.conds } : x.conds, mg: x.mg ? { ...x.mg, held: x.mg.held ? { ...x.mg.held } : null } : x.mg }));
-  const c = { ...cb, units, log: [], notes: [], fx: [], glyphs: [...(cb.glyphs || [])], zones: (cb.zones || []).map((z: any) => ({ ...z, hit: { ...(z.hit || {}) } })), mana: cb.mana ?? MANA_START };
-  const u = units.find((x: any) => x.id === uid);
-  let err: string | null = null;
-  try { err = u ? fn(c, u) : 'No unit.'; } catch (e: any) { err = String(e?.message || e); }
-  return { err, u };
+  const r = dryRun(null, cb.mana == null ? { ...cb, mana: MANA_START } : cb, uid, fn);
+  return { err: r.err, u: r.u };
 }
 
 // ---------- the combat Outbursts tab, not holding: design cards with Begin and Snap ----------
@@ -121,11 +119,9 @@ export interface DesignCard extends DesignInfo { beginAp: number; snapAp: number
   /** Heart Overload (rules 1.14): right after a Release at stage 2 or higher, this design may Begin again for 0 AP.
    * `again` is the card's line for it ('' when it isn't offered here); `bloodHp` the HP the Begin costs when the mana is short. */
   again: string; bloodHp: number }
-/** A preview with these switches set on the action (as the click would carry them), read on the live fight. */
-function withMods<T>(cb: any, mods: string[], fn: () => T): T {
-  const had = 'mods' in cb, was = cb.mods; cb.mods = mods;
-  try { return fn(); } finally { if (had) cb.mods = was; else delete cb.mods; }
-}
+/** A preview with these switches set on the action (as the click would carry them). The fight the screen holds is
+ * never written: the engine hands back the fight with the switches on it (preview.ts fightWith). */
+const withMods = <T>(cb: any, mods: string[], fn: (cb: any) => T): T => fn(fightWith(cb, mods));
 /** The switches items put on an action of this unit's ('combat/outburst', 'combat/pump'), or none. */
 function switches(cb: any, u: any, on: string): { id: string; itemKey: string; why: string | null; on: boolean; preview: string | null }[] {
   try { return togglesFor({ u, cb } as any, on, {}, cb?.mods || []); } catch { return []; }
@@ -141,7 +137,7 @@ export function designCards(cb: any, u: any): DesignCard[] {
     const info = designInfo(mg, d, mana), b = previewOutburst(cb, u, d.id, undefined, false), sn = previewOutburstPlan(cb, u, d.id, undefined);
     const snapWhy = sn.ok || /Pick a|direction/.test(sn.why || '') ? '' : sn.why || '';
     const plainAp = d.modules.includes('swift') ? SOUL_AP.swiftBegin : SOUL_AP.begin;
-    const free = offered && b.ap === 0 && withMods(cb, ['!' + HO_AGAIN], () => previewOutburst(cb, u, d.id, undefined, false)).ap > 0;
+    const free = offered && b.ap === 0 && withMods(cb, ['!' + HO_AGAIN], (c) => previewOutburst(c, u, d.id, undefined, false)).ap > 0;
     const beginAp = free ? 0 : b.ap || plainAp, snapAp = sn.ap || plainAp + SOUL_AP.release, bloodHp = free ? b.hp || 0 : 0;
     const fullMp = bloodHp ? 0 : (b.cost || 0) + pumpsMp(u, MAX_STAGE, 0, b.cost || 0);
     const again = free ? 'Heart Overload: Begin ' + info.name + ' again for 0 AP' + (bloodHp ? '. You don\'t have the mana: it costs ' + bloodHp + ' HP, and it can\'t heal or shield' : '') + '.' : '';
@@ -180,7 +176,7 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   const info = d ? designInfo(m, d, cb?.mana) : null;
   const plan = previewOutburstPlan(cb, u, 'held', undefined, mods ? { mods } : {});
   // The Pump as it would go with the switches set on it (Overdraw: 2 stages), and Overdraw's own state this turn.
-  const pp = mods ? withMods(cb, mods, () => previewPump(cb, u)) : previewPump(cb, u);
+  const pp = mods ? withMods(cb, mods, (c) => previewPump(c, u)) : previewPump(cb, u);
   const od = switches(cb, u, 'combat/pump').find((t) => t.id === OVERDRAW);
   const overdraw = !od ? '' : od.why ? 'Overdraw: ' + od.why : 'Overdraw is ready this turn. ' + (od.preview || '');
   const notes: string[] = plan.multNotes || [];
