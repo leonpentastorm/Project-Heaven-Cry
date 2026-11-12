@@ -2,6 +2,7 @@
 // pick the Narrator's and the skill voices (Kokoro, Edge's natural voices, the browser's voices), wait for Kokoro or
 // not, and test the voice (the device and the time to the first audio). Buttons and selects only.
 import React from 'react';
+import { tipProps } from './actionTip';
 import {
   voicePrefs, setVoicePrefs, voiceState, onVoice, installVoice, loadVoice, setVoiceDevice, voiceRender, testVoice, voiceGroups, browserVoices, browserKey, isBrowserKey, isKokoroKey,
   waitForKokoro, bestVoice, SPEED_MIN, SPEED_MAX, voiceScore, probeVoice, EDGE_NOTE, MODEL_MB, CORES, CORE_VOICE, type BVoice,
@@ -54,8 +55,8 @@ export function VoiceSettings({ compact = false }: { compact?: boolean }) {
   const seg = (on: boolean, off: boolean): React.CSSProperties => ({ ...btn(on), flex: '1 1 0', opacity: off ? 0.45 : 1, cursor: off ? 'not-allowed' : 'pointer' });
   const renderRow = s.status !== 'loading' && s.status !== 'installing' && <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
     <div role="group" aria-label="Render the voice on" style={{ ...row, flexWrap: 'nowrap' }}>
-      <button type="button" data-voice-render="gpu" data-failed={gpuFailed ? '1' : undefined} aria-pressed={active === 'gpu'} disabled={busy || noGpu} title={noGpu ? 'No GPU here: ' + s.gpu : gpuFailed ? 'Your GPU made noise, not speech: press to try it again.' : 'Faster to start each line. If your GPU makes noise instead of speech, the CPU takes over.'} style={{ ...seg(active === 'gpu', busy || noGpu), ...(gpuFailed ? { borderColor: C.bad, color: C.muted } : {}) }} onClick={() => { if (active !== 'gpu') setVoiceDevice('gpu'); }}>{active === 'gpu' ? '✓ ' : gpuFailed ? '✕ ' : ''}Render by GPU{gpuFailed ? ' · failed here' : ''}</button>
-      <button type="button" data-voice-render="cpu" aria-pressed={active === 'cpu'} disabled={busy} title="Works on every computer; a little slower to start each line." style={seg(active === 'cpu', busy)} onClick={() => { if (render !== 'cpu') setVoiceDevice('cpu'); }}>{active === 'cpu' ? '✓ ' : ''}Render by CPU</button>
+      <button type="button" data-voice-render="gpu" data-failed={gpuFailed ? '1' : undefined} aria-pressed={active === 'gpu'} disabled={busy || noGpu} {...tipProps(noGpu ? 'No GPU here: ' + s.gpu : gpuFailed ? 'Your GPU made noise, not speech: press to try it again.' : 'Faster to start each line. If your GPU makes noise instead of speech, the CPU takes over.')} style={{ ...seg(active === 'gpu', busy || noGpu), ...(gpuFailed ? { borderColor: C.bad, color: C.muted } : {}) }} onClick={() => { if (active !== 'gpu') setVoiceDevice('gpu'); }}>{active === 'gpu' ? '✓ ' : gpuFailed ? '✕ ' : ''}Render by GPU{gpuFailed ? ' · failed here' : ''}</button>
+      <button type="button" data-voice-render="cpu" aria-pressed={active === 'cpu'} disabled={busy} {...tipProps("Works on every computer; a little slower to start each line.")} style={seg(active === 'cpu', busy)} onClick={() => { if (render !== 'cpu') setVoiceDevice('cpu'); }}>{active === 'cpu' ? '✓ ' : ''}Render by CPU</button>
     </div>
     <span style={note}>{noGpu ? 'No GPU voice in this browser: ' + s.gpu + '.' : gpuFailed ? 'Your GPU made noise, not speech, so the CPU reads. Press Render by GPU to try it again (after a driver or browser update).' : active === 'gpu' ? 'GPU: faster. If it sounds like buzzing, pick the CPU.' : 'CPU: works on every computer.'}</span>
   </div>;
@@ -99,7 +100,7 @@ export function VoiceSettings({ compact = false }: { compact?: boolean }) {
     <div style={row}>
       <button type="button" aria-pressed={p.auto} data-voice-auto="" style={btn(p.auto)} onClick={() => { setVoicePrefs({ auto: !p.auto }); }}>{p.auto ? '✓ ' : ''}Read new lines aloud</button>
       <button type="button" aria-pressed={waitForKokoro(p)} data-voice-wait="" style={btn(waitForKokoro(p))} onClick={() => setVoicePrefs({ wait: !waitForKokoro(p) })}
-        title="A line waits for Kokoro instead of the browser voice taking it. If Kokoro is late, the text shows and the voice follows.">{waitForKokoro(p) ? '✓ ' : ''}Wait for Kokoro (no browser voice)</button>
+        {...tipProps("A line waits for Kokoro instead of the browser voice taking it. If Kokoro is late, the text shows and the voice follows.")}>{waitForKokoro(p) ? '✓ ' : ''}Wait for Kokoro (no browser voice)</button>
     </div>
     {!compact && <span style={note}>Waiting is on by default once Kokoro is installed. A late line shows its text at once; the voice follows.</span>}
 

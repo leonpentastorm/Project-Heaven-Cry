@@ -77,3 +77,22 @@ describe('the client asks the engine; it does not go round it', () => {
     expect(imp.sort()).toEqual(['ActionDescriptor', 'DescriptorPreview', 'PickStep', 'Picks', 'actionsFor', 'previewDescriptor', 'stepOn']);
   });
 });
+
+// One hover card everywhere (Leon, live 0.24.0: "we have this nice hover panel why not use it everywhere?"). A native
+// title would pop the browser's own box beside (or on top of) the game's card, so no element carries one: a template
+// writes tip="…", React spreads tipProps(text), a hand-made element calls setTip(el, text) (game/actionTip.ts;
+// docs/design/handoffs/hover-card.md). <svg><title> inside art is an element, not this attribute, and stays.
+describe('no native tooltips: every hover text goes through the one card', () => {
+  const TEMPLATES = walk(join(SRC, 'templates')).filter((p) => p.endsWith('.html'));
+  // Allowed: none today. A line here needs a reason (an element the card cannot reach, e.g. inside a third-party widget).
+  const ALLOW: string[] = [];
+  const lines = (ps: string[], re: RegExp) => ps.flatMap((p) => read(p).split('\n').map((l, i) => (re.test(l) ? rel(p) + ':' + (i + 1) : '')).filter(Boolean)).filter((h) => !ALLOW.includes(h));
+  it('no template has a title attribute', () => {
+    expect(lines(TEMPLATES, /\stitle\s*=/)).toEqual([]);
+  });
+  it('no screen, game file or component sets a native title (JSX title= on a DOM element, .title =, setAttribute)', () => {
+    // a JSX title= on a lowercase (DOM) element; components' own title props (<Section title=…>, askConfirm) are fine
+    expect(lines(FILES, /<[a-z][\w-]*\b[^<>]*\stitle=[{"']/)).toEqual([]);
+    expect(lines(FILES, /\.title\s*=[^=]|setAttribute\(\s*['"]title['"]/)).toEqual([]);
+  });
+});

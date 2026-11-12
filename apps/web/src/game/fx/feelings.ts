@@ -63,17 +63,32 @@ export function shakeCounter(stage: number, col?: string) {
     anim(el, [{ transform: 'translate(0,0) scale(1)' }, { transform: 'translate(' + a + 'px,' + (-a / 2) + 'px) scale(1.18)' }, { transform: 'translate(' + (-a) + 'px,' + (a / 2) + 'px) scale(1.1)' }, { transform: 'translate(' + (a / 2) + 'px,0) scale(1.05)' }, { transform: 'translate(0,0) scale(1)' }], { duration: 260 + 40 * stage, easing: 'ease-out' });
   }
 }
-/** The unlock card: "You have felt X. You can pour it in now." with the feeling's glyph, in its colour. */
+/** The unlock card: "You have felt X. You can pour it in now." with the feeling's glyph, in its colour. ONE card at a
+ *  time (Leon, live 0.24.0: "the popup for emotion … stack on top each other"): a feeling felt while the card is up
+ *  joins it ("A NEW FEELING · RAGE" becomes "2 NEW FEELINGS · RAGE, GRIEF") and its time starts again. */
+let felt: { el: HTMLElement; ids: string[]; timer: any } | null = null;
 export function feltCard(feeling: string) {
   if (typeof document === 'undefined') return;
-  const col = ink(feeling), d = document.createElement('div');
-  d.setAttribute('role', 'status'); d.setAttribute('data-felt-card', feeling);
-  d.style.cssText = 'position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:14px;background:#120E1E;border:1px solid ' + col + ';box-shadow:0 0 24px ' + col + '55;color:#E7EBF3;font-family:"Chakra Petch",sans-serif;pointer-events:none';
-  d.innerHTML = '<span aria-hidden="true" style="' + iconStyle(feelingIconSrc(feeling, col, 40), col).replace(/"/g, '&quot;') + ';width:40px;height:40px"></span><div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:10px;font-weight:700;letter-spacing:.18em;color:' + col + '">' + (hasPaintedArt(heartMarkKey('felt')) ? '<span aria-hidden="true" data-heart-mark="felt" style="' + iconStyle(markIconSrc('felt', col, 16), col).replace(/"/g, '&quot;') + ';width:12px;height:12px;vertical-align:-1px;margin-right:5px"></span>' : '') + 'A NEW FEELING · ' + feelingName(feeling).toUpperCase() + '</span><span style="font-family:Spectral,serif;font-size:17px;line-height:1.3">' + feltCardText(feeling) + '</span></div>';
-  document.body.appendChild(d);
-  anim(d, reducedMotion() ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-50%) translateY(-10px) scale(.96)' }, { opacity: 1, transform: 'translateX(-50%) translateY(0) scale(1)' }], { duration: 320, easing: 'ease-out', fill: 'both' });
+  const fresh = !felt || !felt.el.isConnected;
+  if (fresh) {
+    const d = document.createElement('div');
+    d.setAttribute('role', 'status');
+    document.body.appendChild(d);
+    felt = { el: d, ids: [], timer: null };
+  }
+  const F = felt!, d = F.el;
+  if (!F.ids.includes(feeling)) F.ids.push(feeling);
+  const last = F.ids[F.ids.length - 1], col = ink(last), many = F.ids.length > 1;
+  d.setAttribute('data-felt-card', F.ids.join(' '));
+  d.style.cssText = 'position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:14px;background:#120E1E;border:1px solid ' + col + ';box-shadow:0 0 24px ' + col + '55;color:#E7EBF3;font-family:"Chakra Petch",sans-serif;pointer-events:none;max-width:min(560px,92vw)';
+  const names = F.ids.map((x) => feelingName(x));
+  const kicker = (many ? F.ids.length + ' NEW FEELINGS · ' : 'A NEW FEELING · ') + names.join(', ').toUpperCase();
+  const body = many ? 'You have felt ' + names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] + '. You can pour them in now.' : feltCardText(last);
+  d.innerHTML = '<span aria-hidden="true" style="' + iconStyle(feelingIconSrc(last, col, 40), col).replace(/"/g, '&quot;') + ';width:40px;height:40px;flex:none"></span><div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:10px;font-weight:700;letter-spacing:.18em;color:' + col + '">' + (hasPaintedArt(heartMarkKey('felt')) ? '<span aria-hidden="true" data-heart-mark="felt" style="' + iconStyle(markIconSrc('felt', col, 16), col).replace(/"/g, '&quot;') + ';width:12px;height:12px;vertical-align:-1px;margin-right:5px"></span>' : '') + kicker + '</span><span style="font-family:Spectral,serif;font-size:17px;line-height:1.3">' + body + '</span></div>';
+  if (fresh) anim(d, reducedMotion() ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: 'translateX(-50%) translateY(-10px) scale(.96)' }, { opacity: 1, transform: 'translateX(-50%) translateY(0) scale(1)' }], { duration: 320, easing: 'ease-out', fill: 'both' });
   // plain timers (not after(): the card must go even if the effects are cleared meanwhile), at the pace like its anim()s
-  setTimeout(() => { anim(d, [{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'both' }); setTimeout(() => d.remove(), slow(420)); }, slow(3200));
+  clearTimeout(F.timer);
+  F.timer = setTimeout(() => { anim(d, [{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: 'both' }); setTimeout(() => { d.remove(); if (felt === F) felt = null; }, slow(420)); }, slow(3200));
 }
 
 export function feelingHandlers(K: FeelKit): Record<string, (e: FxEvent) => void> {

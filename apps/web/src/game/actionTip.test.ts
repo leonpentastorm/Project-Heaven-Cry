@@ -2,7 +2,7 @@
 // The action hover card (Leon, live 0.23.0): one helper lays out every action's hover text as lines.
 import { describe, expect, it } from 'vitest';
 import { techParts } from '@engine';
-import { actionTip, sentences, tipText, tipElement, mountActionTips, tipAttrs } from './actionTip';
+import { actionTip, sentences, tipText, tipElement, mountActionTips, tipAttrs, proseTip, placeTip } from './actionTip';
 
 // The tooltip Leon quoted, as the engine wrote it then (one prose string).
 const HEAVY_BOLT = 'One bolt at +40% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile. With this weapon: costs 1 AP less. (Quick: Handy. Firing next to an enemy doesn\'t provoke; moving costs no accuracy.)';
@@ -49,5 +49,46 @@ describe('actionTip: the name and cost, a line per sentence, the weapon line, th
     expect(shown).toBeTruthy(); expect(shown!.querySelectorAll('.phc-atip-l').length).toBe(2);
     document.dispatchEvent(new Event('pointerdown', { bubbles: true }));
     expect(document.querySelector('.phc-atip')).toBeNull();
+  });
+});
+
+describe('the one hover card everywhere (Leon, live 0.24.0)', () => {
+  it('proseTip: a line a sentence, " · " parts apart, "Label: text" and a parenthesised note labelled', () => {
+    const t = proseTip('Next turn it swells: +1 stage (×1) and +1 Strain. Raw: Soul damage, armour ignored; no rider.');
+    expect(t.name).toBe('');
+    expect(t.lines.map((l) => [l.label, l.text])).toEqual([['Next turn it swells', '+1 stage (×1) and +1 Strain.'], ['Raw', 'Soul damage, armour ignored; no rider.']]);
+    expect(proseTip('Pressure 3 / 5 · Steady').lines.map((l) => l.text)).toEqual(['Pressure 3 / 5', 'Steady']);
+    expect(proseTip('Hide the tools (the tab on the right brings them back)').lines.map((l) => l.text)).toEqual(['Hide the tools (the tab on the right brings them back)']);
+    expect(tipText(proseTip('One. Two.'))).toBe('One.\nTwo.');
+  });
+  it('placeTip: beside the element, inside the window, never over the element', () => {
+    const r = { left: 900, top: 100, right: 1000, bottom: 130 };
+    expect(placeTip(r, { width: 300, height: 80 }, 1024, 768)).toEqual({ x: 594, y: 100 }); // left of it
+    const l = { left: 10, top: 100, right: 110, bottom: 130 };
+    expect(placeTip(l, { width: 300, height: 80 }, 1024, 768)).toEqual({ x: 116, y: 100 }); // no room left: right
+    const wide = { left: 0, top: 700, right: 1024, bottom: 740 };
+    const p = placeTip(wide, { width: 300, height: 80 }, 1024, 768);
+    expect(p.y + 80).toBeLessThanOrEqual(700); // above a full-width row at the bottom
+  });
+  it('one card at a time: a second element replaces the first; a removed element takes its card with it', async () => {
+    mountActionTips(document);
+    const mk = (text: string) => { const b = document.createElement('button'); b.setAttribute('data-tip-text', text); b.textContent = text; document.body.appendChild(b); return b; };
+    const a = mk('First one.'), b = mk('Second one.');
+    a.dispatchEvent(new Event('pointerover', { bubbles: true })); await new Promise((r) => setTimeout(r, 400));
+    expect(document.querySelectorAll('.phc-atip').length).toBe(1);
+    b.dispatchEvent(new Event('pointerover', { bubbles: true })); await new Promise((r) => setTimeout(r, 400));
+    expect(document.querySelectorAll('.phc-atip').length).toBe(1);
+    expect(document.querySelector('.phc-atip')!.textContent).toBe('Second one.');
+    b.remove(); await new Promise((r) => setTimeout(r, 300));
+    expect(document.querySelectorAll('.phc-atip').length).toBe(0);
+    a.remove();
+  });
+  it('a template\'s tip="…" becomes the card and words for assistive tech; an icon-only control is named by it', async () => {
+    const { parseTemplate, renderTemplate } = await import('../dc/runtime');
+    const { renderToStaticMarkup } = await import('react-dom/server');
+    const html = renderToStaticMarkup(renderTemplate(parseTemplate('<button tip="{{t}}">Go</button><button tip="Close the panel"><svg></svg></button>'), { t: 'Go now.' }) as any);
+    expect(html).toContain('data-tip-text="Go now." aria-description="Go now."');
+    expect(html).toContain('data-tip-text="Close the panel" aria-label="Close the panel"');
+    expect(html).not.toContain('title=');
   });
 });

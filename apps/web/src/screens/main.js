@@ -262,8 +262,7 @@ function magicVals(self, g, c) {
   const viaFor = (id) => (left.practice > 0 ? 'practice' : left.mastered.find((sk) => gatedBy(sk).includes(id)) || null);
   const codex = {
     feltCount: (c.feelings || []).length + ' / ' + FEELINGS.length + ' FELT',
-    feelings: feelingCodex(c).map((f) => ({ key: f.id, name: f.name, icon: f.icon, line: f.known ? f.step + ' · ' + f.effect : f.trigger, sub: f.known ? f.residue : '', known: f.known,
-      title: f.name + (f.known ? '' : ' (not felt yet)') + ': ' + f.effect + ' ' + f.residue + ' ' + f.trigger,
+    feelings: feelingCodex(c).map((f) => ({ key: f.id, name: f.name, icon: f.icon, step: f.known ? f.step : '', line: f.known ? f.effect : f.trigger, sub: f.known ? f.residue : '', known: f.known, tip: f.tip, tipText: f.tipText,
       style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 1px 8px; align-items: start; padding: 6px 8px; border-radius: 8px; background: #10151F; border: 1px solid ' + (f.known ? epRgba(f.ink, 0.55) : '#1C2536') + (f.known ? '' : '; opacity: 0.65'),
       nameStyle: 'font-size: 12px; font-weight: 700; color: ' + (f.known ? f.ink : '#A3AEC2') })),
     groups: moduleGroups(c).map((gr) => ({ key: gr.key, label: gr.label.toUpperCase() + ' · ' + gr.blurb, count: gr.modules.filter((x) => x.known).length + ' / ' + gr.modules.length,
