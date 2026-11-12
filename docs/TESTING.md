@@ -62,17 +62,24 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   them (every action is a fixed attacker on a fixed target), so a change to whom an enemy picks does not touch them.
 - **The replay guard** (`packages/engine/test/replay-hash.test.ts`, inside `npm run check`): whole seeded games with
   the **enemy AI on** (story fights on both 26 × 26 grounds, the Proving Ground at 4 v 10 and across a change of wave,
-  a story-to-fight-to-story round trip, every reference build, casters on both sides), each reduced to a hash of the
-  final state and a hash of the ordered stream (every action, refusal, effect, log line and story line), against
+  a story-to-fight-to-story round trip, every reference build, casters on both sides, and two scripted games: doors,
+  hiding, held shots and hazards; walking out of an enemy's reach), each reduced to hashes of the state and of the
+  ordered stream (every action, refusal, effect, log line and story line) at the end and every 25 actions, against
   `packages/engine/test/golden/replays.json`. It is what proves that a change meant to move nothing (performance, a
-  refactor, a cache) moved nothing: a path tie broken another way, a reaction in another order or one more die
-  changes the hash. A failure names the game and the 25 actions in which the change began. Before merging engine work
-  run the larger set: `REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash` (20 games). When a rule, a number, a
-  simulator policy or the saved shape was changed on purpose, record on purpose and say what moved in the commit:
-  `REPLAY_RECORD=1 REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash`. To see what moved, dump the last states on
-  the old code and the new and diff them: `REPLAY_DUMP=<dir> npm test -w @phc/engine -- replay-hash`.
-- **Old saves** (`packages/engine/test/old-save.test.ts`): two whole saves written by 0.22.0
-  (`packages/engine/test/fixtures/`, never regenerated) are loaded and played on. A change to the saved shape adds a
+  refactor, a cache) moved nothing: a reaction in another order, a unit sighted a turn later or one more die changes
+  a hash. A failure names the game and the 25 actions in which the change began. It hands its policies a copy of the
+  game (a preview writes into the state it reads) and checks what it claims to play (`REPLAY_COVER=1` prints it).
+  Before merging engine work run the larger set: `REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash` (24 games).
+  When a rule, a number, a simulator policy or the saved shape was changed on purpose, record on purpose and say what
+  moved in the commit: `REPLAY_RECORD=1 REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash`. To see what moved, dump
+  the last states on the old code and the new and diff them: `REPLAY_DUMP=<dir> npm test -w @phc/engine -- replay-hash`.
+- **The oracles beside it**: `paths-order.test.ts` (the plain path search: the pin for `paths()` and its tie order),
+  `sight-order.test.ts` (`visibility()`: the pin for who is sighted), `shared-state.test.ts` (what `apply` shares
+  instead of copying gives the deep-copy result and leaves its input alone), `phys-dispatch-answers.test.ts` (the
+  hand an Answer is called with).
+- **Old saves** (`packages/engine/test/old-save.test.ts`): three whole saves (`packages/engine/test/fixtures/`, never
+  regenerated; the test's header says which commit wrote each: one by the live 0.22.0 build with a 511-line archive,
+  two by `develop` the day before the performance work) are loaded and played on. A change to the saved shape adds a
   migration and a new fixture beside them.
 - **The balance simulator** (`packages/engine/test/balance/*.test.ts`): its targets are in the engine's default run
   (and so in `npm run check`). Its three "quick run" smoke fights are not: `npm run balance` runs the folder with
