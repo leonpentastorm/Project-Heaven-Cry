@@ -97,7 +97,6 @@ describe('actionsFor: every action, through one door', () => {
       tally[same(g, a, old, 'host')]++;
     }
     expect(tally.ok, JSON.stringify(tally)).toBeGreaterThan(3);
-    if (process.env.PEEK) console.log(name, JSON.stringify(tally), list.map((d) => d.id + (d.available ? '' : '(x)')).join(' '));
   });
 
   it('the groups come in tab order and every row prints a cost', () => {

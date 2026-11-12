@@ -14,7 +14,7 @@ import { previewDescriptor, actionsFor, stepOn, type ActionDescriptor, type Desc
 
 /** The descriptor previews that run on this flow. A system not listed keeps its own screen code (Sigils and Outbursts:
  *  the glyph keyboard and the HEART panel; a Move's hover route), until it moves here. */
-export const FLOW_PREVIEWS = new Set(['basic', 'attack']);
+export const FLOW_PREVIEWS = new Set(['basic', 'attack', 'perk']);
 /** Ids that stay with their own screen code even though their system is on the flow. */
 const OWN = new Set(['move', 'sprint', 'disengage']);
 

@@ -797,11 +797,18 @@ export class CombatLogic extends DCLogic {
     const pickFar = pickPile && !pickSel ? routeHazards(cb, cur, pickPile.pos) : null;
     if (pickFar) { arrowsOf(pickFar.route, cur.pos); crossing = pickFar.crosses; }
     const crossAt = new Set(crossing.map((c) => c.tile));
+    // ---------- perks, traits and class moves: the form a move asks for beyond its grid target (game/actionPickers.ts) ----------
+    // Option chips, a second click on the grid, a prose box only for words: the bespoke panel of a perk's 'form' pick.
+    const pkSel = parsePk(S.action), pkE = pkSel && mineTurn ? perkEntries(g, cb, cur, ch, 'combat').find((e) => e.id === pkSel.id && e.actionId === pkSel.actionId) || null : null;
+    const pkX = pkE ? { g, c: ch, how: 'combat', cb, u: cur } : null, pkP = pkE ? pickerFor(pkE, pkX) : null;
+    const pkV = pkP && S.pkForm && S.pkForm.key === S.action ? S.pkForm.v : {};
+    const pkBuilt = pkP ? buildArgs(pkP, pkV, pkX) : {}, pkMissing = typeof pkBuilt === 'string' ? pkBuilt : '';
     // ---------- the one action flow (game/actionFlow.ts): the picked action's descriptor, picks and the engine's preview ----------
-    // A bespoke panel adds what it picked: the pile's checklist (Pick up). Reading a glyph with Analyze keeps its own path.
-    const flowExtra = S.action === 'pickup' && pickPile && pickSel ? (() => { const take = pileTake(pickPile, pickUntick); return take ? { take } : {}; })() : {};
+    // A bespoke panel adds what it picked: the pile's checklist (Pick up), a perk's form. Reading a glyph with Analyze keeps its own path.
+    const flowExtra = S.action === 'pickup' && pickPile && pickSel ? (() => { const take = pileTake(pickPile, pickUntick); return take ? { take } : {}; })() : pkE && !pkMissing ? { form: pkBuilt } : {};
     const flow = mineTurn && !(S.action === 'analyze' && S.readTile) ? flowView(g, me, cur, S, flowExtra) : null;
     this._flow = flow;
+    this._pk = pkE ? { e: pkE, P: pkP, V: pkV, target: flow && flow.picks.targetId } : null;
     const sk = w && w.grants, skFx = (sk && sk.effect) || {}, skRuns = ['multi_shot', 'sweep'].includes(skFx.op);
     // ---------- magic: what this unit can cast, previews and refusals straight from the engine ----------
     const mg = cur && cur.mg, words = mg ? mg.words : [], designs = mg ? mg.designs : [];
@@ -879,26 +886,14 @@ export class CombatLogic extends DCLogic {
       return '';
     };
     this._mg = { word, design: dsel ? dsel.id : null, evTile, seenGlyph, evV, stroke: strip.stroke };
-    // ---------- perks, traits and class moves (engine effects/actions.ts): the entry, its target and the engine's preview ----------
-    const pkSel = parsePk(S.action), pkList = mineTurn ? perkEntries(g, cb, cur, ch, 'combat') : [];
-    const pkE = pkSel ? pkList.find((e) => e.id === pkSel.id && e.actionId === pkSel.actionId) || null : null;
-    const pkT = pkE ? (pkE.target === 'ally' ? cb.units.find((u) => u.id === S.target && u.side === 'pc' && !u.dead) || null : ['unit', 'enemy', 'npc'].includes(pkE.target) ? cb.units.find((u) => u.id === S.target && !u.dead && u.id !== cur.id) || tgtUnit : null) : null;
-    // What the move asks for beyond its grid target (game/actionPickers.ts): option chips, a second click on the grid,
-    // a prose box only for words. The picks build the args the engine reads; its preview is the verdict.
-    const pkX = pkE ? { g, c: ch, how: 'combat', cb, u: cur } : null, pkP = pkE ? pickerFor(pkE, pkX) : null;
-    const pkV = pkP && S.pkForm && S.pkForm.key === S.action ? S.pkForm.v : {};
-    const pkBuilt = pkP ? buildArgs(pkP, pkV, pkX) : {}, pkMissing = typeof pkBuilt === 'string' ? pkBuilt : '';
-    const pkArgs = pkE ? { actionId: pkE.actionId, ...(pkT ? { targetId: pkT.id } : {}), ...(pkE.target === 'tile' && S.tile ? { tile: S.tile } : {}), ...(pkMissing ? {} : pkBuilt) } : null;
-    const pkPv = pkE ? (pkMissing ? { ok: false, why: pkMissing, ap: pkE.ap, lines: [] } : (() => { try { return withGame(g, () => previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, pkArgs, 'combat')); } catch (e) { return { ok: false, why: String(e && e.message || e), ap: pkE.ap, lines: [] }; } })()) : null;
-    this._pk = pkE ? { e: pkE, args: pkArgs, target: pkT, P: pkP, V: pkV } : null;
     const magicCost = !isMagic || !mineTurn ? 0 : S.action === 'draw' ? (drawDiff(S.hover) || {}).ap || (drawReach.size ? glyphApOf(cur) : 0) : S.action === 'evoke' ? (evV ? evV.ap : 0) : S.action === 'outburst' ? (obMode === 'snap' ? (hzPlan ? hzPlan.ap : card ? card.snapAp : 0) : card ? card.beginAp : 0) : S.action === 'release' ? (hzPlan ? hzPlan.ap : SPELL_AP.release) : S.action === 'pump' ? (hp ? hp.pump.ap : SPELL_AP.pump) : S.action === 'letgo' || S.action === 'heartwatch' ? 0 : S.action === 'vent' || S.action === 'core' ? magicAp(cur, S.action) : SPELL_AP[S.action] || 0;
     // The AP the picked action takes is always the engine's number: on the flow, its preview (the reducer's dry run, after
     // the items and anything lent: the lend is added back here so the pips can show it as lent); else the system's own.
     const flowLend = flow && flow.action ? encoreCredit(cur, flow.action) : 0;
-    const cost = flow ? flow.cost + flowLend : cChip ? (cPv && cPv.ap ? cPv.ap : cChip.ap) : tsel ? (tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0) : pr ? pr.ap : pkE ? (pkPv ? pkPv.ap : pkE.ap) : isMagic ? magicCost : isMove ? moveAp : 0;
+    const cost = flow ? flow.cost + flowLend : cChip ? (cPv && cPv.ap ? cPv.ap : cChip.ap) : tsel ? (tPv && tPv.ap ? tPv.ap : tChip ? tChip.ap : 0) : pr ? pr.ap : isMagic ? magicCost : isMove ? moveAp : 0;
     // Encore (items 729, 737): the selected action repeats the Miracle's named one: the engine lends its AP (previewAttack and
     // the perk previews already count it); the cost shown is what is left to pay, and the panel says it is free.
-    const encoreLend = !mineTurn ? 0 : flow ? flowLend : encoreCredit(cur, cChip ? { type: 'combat/call', id: cId } : tsel ? { type: 'combat/technique', id: tId } /* rules 1.12: Shot, Aimed Shot and Cut repeat the plain attack they stand for; any other technique repeats itself */ : pkE ? { type: 'combat/perk', id: pkE.id } : isMove ? { type: 'combat/move', how: S.action } : ATTACKS.includes(S.action) ? { type: 'combat/attack', mode: attackMode } : null);
+    const encoreLend = !mineTurn ? 0 : flow ? flowLend : encoreCredit(cur, cChip ? { type: 'combat/call', id: cId } : tsel ? { type: 'combat/technique', id: tId } /* rules 1.12: Shot, Aimed Shot and Cut repeat the plain attack they stand for; any other technique repeats itself */ : isMove ? { type: 'combat/move', how: S.action } : ATTACKS.includes(S.action) ? { type: 'combat/attack', mode: attackMode } : null);
     const encoreWaiting = mineTurn && cur.faith && cur.faith.encore ? cur.faith.encore : null;
     const VT0 = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 };
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x - VT0.x0 >= (VT0.x1 - VT0.x0 + 1) / 2, up: y - VT0.y0 >= (VT0.y1 - VT0.y0 + 1) / 2 }; };
@@ -977,7 +972,7 @@ export class CombatLogic extends DCLogic {
     const placed0 = placedView(pcb, 'pc'), placed = { ...placed0, tiles: mergeTiles(placed0.tiles, classMarks(cb, 'pc', { imgOf: (x) => ART(x.img) || x.img || '' })) }, evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
     // A class move or perk that casts (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell…) paints its
     // engine preview on the grid too: the area, the tiles it covers, who it affects (spec 9; item 489 c).
-    const pkTiles = pkE && pkPv && (pkPv.area || pkPv.tiles || pkPv.targets) ? actionPreviewTiles(cb, { ...pkPv, targets: (pkPv.targets || []).filter((id) => !inSight || inSight.has(id) || !cb.units.some((u) => u.id === id)) }, cur.side) : null; // (fog: only the units in sight are marked)
+    const pkTiles = flow && flow.d.preview === 'perk' && (flow.area.length || flow.targets.length) ? actionPreviewTiles(cb, { tiles: flow.area, targets: flow.targets }, cur.side) : null; // (the engine's marks: only the units this side sees)
     const tTiles = tPvShown && ((tPvShown.area || []).length || (tPvShown.moves || []).length || new Set([...(tPvShown.attacks || []).map((a) => a.target), ...(tPvShown.pressure || []).map((p) => p.unit)]).size > 1) ? actionPreviewTiles(cb, { tiles: [...(tPvShown.area || []), ...(tPvShown.moves || []).map((m) => m.to)], targets: (() => { const ids = [...new Set([...(tPvShown.attacks || []).map((a) => a.target), ...(tPvShown.pressure || []).map((p) => p.unit)])]; return ids.length > 1 ? ids : []; })() }, cur.side) : null; // (one target: the target card names it; its pips stay readable)
     const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(placed.tiles, pkTiles) : tTiles ? mergeTiles(placed.tiles, tTiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
     const markStyle = (k, u) => {
@@ -1195,13 +1190,11 @@ export class CombatLogic extends DCLogic {
       }
     }
     if (pkE && mineTurn) {
-      sel.name = pkE.label + ' · ' + (pkPv ? pkPv.ap : pkE.ap) + ' AP' + (pkE.uses.label ? ' · ' + pkE.uses.label : '') + (pkE.tab === 'class' ? ' · class move' : '');
-      const need = pkE.target === 'ally' ? (pkT ? 'Target: ' + pkT.name + '. ' : 'Click an ally. ') : ['unit', 'enemy'].includes(pkE.target) ? (pkT ? 'Target: ' + pkT.name + '. ' : 'Click a target. ') : pkE.target === 'tile' ? (S.tile ? 'Tile ' + refOf(S.tile) + '. ' : 'Click a tile. ') : '';
-      const stWhy = pkState(pkE).why; // an on/off pair or Eye of the Storm read as their state ("in force now", "armed")
-      sel.text = need + (pkPv && !pkPv.ok ? (pkE.why && pkPv.why === pkE.why ? stWhy : pkPv.why) : (pkPv && pkPv.lines.length ? pkPv.lines.join(' ') : pkE.text) + (pkE.arm ? (pkE.armed ? ' Armed: confirm to stand it down.' : ' Confirm to arm it: the engine uses it when its moment comes.') : ' Confirm to use it.'));
-      sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (stWhy ? ' ' + stWhy : '');
+      // The panel's words are the flow's; the form says what it still needs, and the class move's standing state.
+      if (pkMissing && flow && flow.d.available) sel.text = pkMissing;
+      sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (pkState(pkE).why ? ' ' + pkState(pkE).why : '');
       // Each single choice previewed as the engine would take it (once the move's own target is picked).
-      const whyOpt = pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!pkT)) ? (id) => { try { const r = withGame(g, () => previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, { ...pkArgs, choice: id }, 'combat')); return r && !r.ok ? r.why || 'Not now.' : ''; } catch { return ''; } } : null;
+      const whyOpt = pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!(flow && flow.picks.targetId))) ? (id) => { try { const r = withGame(g, () => previewPerkAction({ u: cur, c: ch, cb, g }, pkE.id, { actionId: pkE.actionId, ...(flow && flow.picks.targetId ? { targetId: flow.picks.targetId } : {}), ...(pkE.target === 'tile' && S.tile ? { tile: S.tile } : {}), choice: id }, 'combat')); return r && !r.ok ? r.why || 'Not now.' : ''; } catch { return ''; } } : null;
       Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
     }
     // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.
@@ -1379,7 +1372,7 @@ export class CombatLogic extends DCLogic {
       reaction: c.reaction ? 'true' : 'false', aria: c.name + ', ' + (c.reaction ? 'a reaction' : c.apText) + (c.rounds ? ', ' + c.rounds : '') + (c.ok ? '' : ', not now: ' + c.why.replace(/\.$/, '')) + (c.markTitle ? '. ' + c.markTitle : ''), onKey: glyphKeyNav,
       pick: () => { if (c.reaction) return toast(c.name + ' is a reaction: it happens by itself. ' + (c.why || c.help)); if (!c.ok) return toast(c.why); sfx('toggle'); this.setState({ action: c.action, techLine: null, techOpt: null, tile: null, target: needsAlly(c.id) ? null : this.state.target }); this.revealAction(); } })) })) } : null);
     // On the flow, Confirm is the engine's verdict (the descriptor's preview, through the reducer); else the system's own.
-    const cantConfirm = !mineTurn || (flow ? !flow.ready : !!tpadOpen || (cId ? !cChip || !cChip.ok || !cPv || !cPv.ok || !!cAsk : false) || (tsel ? !tPv || !tPv.ok || !!tAsk : false) || isPerkInfo(S.action) || isMove || magicCant || (pr ? !pr.ready : false) || (pkSel ? !pkPv || !!pkMissing || (!pkPv.ok && !(pkE && pkE.arm)) : false) || (MAGIC.includes(S.action) && !isMagic) || (cId || tsel || pr || pkSel || isMagic ? false : S.action === 'analyze' ? !readSel : true));
+    const cantConfirm = !mineTurn || (flow ? !flow.ready : !!tpadOpen || (cId ? !cChip || !cChip.ok || !cPv || !cPv.ok || !!cAsk : false) || (tsel ? !tPv || !tPv.ok || !!tAsk : false) || isPerkInfo(S.action) || isMove || magicCant || (pr ? !pr.ready : false) || (MAGIC.includes(S.action) && !isMagic) || (cId || tsel || pr || isMagic ? false : S.action === 'analyze' ? !readSel : true));
     const costNet = Math.max(0, cost - encoreLend);
     const apNow = mineTurn ? (ap - costNet < 0 ? 'needs ' + costNet + ' · ' + ap + ' left' : Math.round((ap - costNet) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
     const seenCur = !!cur, unseenNow = !cur && !cb.over && isUnseenId(cb.window?.queue[0]?.unitId ?? cb.order[cb.turn]), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
@@ -1570,13 +1563,10 @@ export class CombatLogic extends DCLogic {
     // Its own target first; then a picker's grid field (a second tile, another unit); else the click re-aims the target.
     if (this._vow && this._vow.click(u)) return;
     if (this._pr && cur) { const patch = this._pr.click(u, k); if (patch) return this.setState(patch); }
-    if (this._pk && cur) {
-      const p = this._pk, t = p.e.target, other = !!u && u.id !== cur.id, primary = other && (t === 'unit' || t === 'enemy' || t === 'npc' || (t === 'ally' && u.side === 'pc'));
-      if (primary && !p.target) return this.setState({ target: u.id });
-      if (t === 'tile' && !S.tile) return this.setState({ tile: k });
-      if (p.P) { const nv = gridPick(p.P, p.V, other ? { id: u.id, side: u.side } : null, k); if (nv) return this.setState({ pkForm: { key: S.action, v: nv } }); }
-      if (primary) return this.setState({ target: u.id });
-      if (t === 'tile') return this.setState({ tile: k });
+    // A perk's form takes a grid click for its own fields (a second tile, another unit) once the move's target is picked.
+    if (this._pk && this._pk.P && cur && (this._pk.target || this._pk.e.target === 'none' || (this._pk.e.target === 'tile' && S.tile))) {
+      const p = this._pk, other = !!u && u.id !== cur.id, nv = gridPick(p.P, p.V, other ? { id: u.id, side: u.side } : null, k);
+      if (nv) return this.setState({ pkForm: { key: S.action, v: nv } });
     }
     // Rules 1.10: Analyze aimed at a tile holding a hostile glyph or a trace reads it (combat/read).
     if (S.action === 'analyze' && !(u && u.side === 'foe') && this._readHere && this._readHere(k).length) return this.setState({ readTile: k, target: null });
@@ -1664,8 +1654,6 @@ export class CombatLogic extends DCLogic {
     }
     if (MAGIC.includes(a)) return; // a spell for a unit with no magic is never an attack
     if (parsePray(a)) { const p = this._pr; if (p && p.ready) act(p.payload); return this.setState({ target: null, target2: null, tile: null }); }
-    const pk = parsePk(a);
-    if (pk) { const p = this._pk; act({ type: 'combat/perk', unitId: cur.id, id: pk.id, ...(p && p.args ? p.args : { actionId: pk.actionId }), ...(p && p.e.arm ? { arm: true } : {}) }); return this.setState({ pkForm: null }); }
     // Rules 1.10: Analyze aimed at a glyph or a trace reads it (its own path: the descriptor's pick is a unit).
     if (a === 'analyze' && S.readTile) { act({ type: 'combat/read', unitId: cur.id, tile: S.readTile }); return this.setState({ readTile: null }); }
   }
