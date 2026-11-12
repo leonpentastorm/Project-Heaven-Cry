@@ -3,6 +3,7 @@
 // every death), and puts it in the pile on the tile where the enemy died (containers.ts through dropToPile).
 // Three layers, the most specific winning: the engine's defaults (data/loot_tables.json), a campaign's own tables and
 // `drops` on its zone people and encounter enemies, and the Narrator's `drops` on combat.enemies[] and npcs[].
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import ltJ from '../../../data/loot_tables.json';
 import { WEAPON, ITEM, CALIBRE_NAME, SIGIL, TONE, SCHOOL, MODULE } from './data';
 import { type PackItem, type Rarity, maxDurOf, plotItem, roundsOf, moduleShelved } from './character';

@@ -16,6 +16,7 @@
 // Stop, a hazard, a Hymn, a class move, a perk), the same items change it. rollSave fires 'cond_apply' for every save
 // (the 28 item handlers that add to a save, make it harder, pass it or cancel it listen there), so an item that says
 // "+2 to Heart saves" is +2 to every Heart save.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import rulesJ from '../../../data/rules.json';
 import type { Combat, Unit } from './combat';
 import { emitFx } from './combat';

@@ -13,7 +13,7 @@
 // the plate and its policy (this soak stands aside), and one that holds the Defender's Brace Interposes by the class
 // move and its policy (the general Interpose stands aside).
 import { type Combat, type Unit, alive, dist, emitFx, fxFell, attackDamage, rollInjury, braceHook } from '../combat';
-import { onHook, charOfUnit, statQuery } from '../effects/hooks';
+import { onHook, emit, charOfUnit, statQuery } from '../effects/hooks';
 import { applyDamage } from '../effects/damage';
 import { landed } from '../effects/output';
 import { PHYS_RULES } from './data';
@@ -80,6 +80,7 @@ technique({
         interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
         emitFx(cb, 'shove', { unit: me.id, target: v.id, from: me.pos, to: me.pos, ok: true, interpose: true });
         cb.log.push(me.name + ' interposes for ' + v.name + ' (' + cost + ' Guard) and takes ' + r.amount + ' damage' + (me.hp === 0 ? ' · Downed' : '') + '.');
+        emit(cb, 'protect_act', { u: me, how: 'interpose', t: v, cb }); // the patrons' protect tag (item 600)
         if (me.hp === 0) fxFell(cb, me);
         covered = { t: v.id, me: me.id };
       });

@@ -14,6 +14,7 @@
 // the action's own function uses; test/actions.test.ts runs every action through the reducer and fails when the AP it
 // took is not the AP its row showed. THE CLIENT HOLDS NO COST, NO RANGE AND NO LEGALITY OF ITS OWN: a new basic action
 // is an entry in data/actions.json and a row here (docs/design/handoffs/client-boundary-1.md, "How to add an action").
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import actionsJ from '../../../data/actions.json';
 import type { Character } from './character';
 import { isMedicChar } from './character';

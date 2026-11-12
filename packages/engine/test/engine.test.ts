@@ -449,6 +449,7 @@ describe('music (spec: Music)', () => {
   });
   it('area music comes from the zone, else the campaign; a fight switches to the game\'s fight music', () => {
     const r = room();
+    r.g.campaign = JSON.parse(JSON.stringify(r.g.campaign)); // shared between states: change a copy
     for (const z of r.g.campaign!.zones) delete z.music;
     r.g.campaign!.music = { ambient: { yt: 'aaaaaaaaaaa', title: 'Camp' }, combat: { yt: 'bbbbbbbbbbb', title: 'Fight' } } as any;
     expect(musicFor(r.g).track!.title).toBe('Camp');
@@ -765,6 +766,7 @@ describe('anyone is a target (spec: Anyone is a target)', () => {
   it('a resumed save from before the art gets it, without losing what play changed', () => {
     let { g } = two('old');
     // make it look like a pre-art save
+    g.campaign = JSON.parse(JSON.stringify(g.campaign)); // shared between states: change a copy
     for (const z of g.campaign!.zones) { delete (z as any).art; delete (z as any).npcs; for (const o of z.objects || []) { delete (o as any).sprite; delete (o as any).portrait; } }
     delete (g.campaign as any).sprites; for (const o of g.story.objects!) { delete o.sprite; delete o.portrait; }
     const nine = g.story.objects!.find((o) => o.name === 'Sergeant Nine-Nine')!; nine.approaches[0].tries.push({ charId: 'x', name: 'X', ok: true, total: 15, scene: 1 });
@@ -779,6 +781,7 @@ describe('anyone is a target (spec: Anyone is a target)', () => {
   it('a resumed save from before the sigil marks gets them in zones not yet entered (objects only added are no layout change)', () => {
     let { g } = two('marks');
     const cur = g.story.zone;
+    g.campaign = JSON.parse(JSON.stringify(g.campaign)); // shared between states: change a copy
     for (const z of g.campaign!.zones) z.objects = (z.objects || []).filter((o: any) => o.kind !== 'sigil_mark');
     g = apply(g, { type: 'campaign/refresh' }, 'host');
     const withMarks = g.campaign!.zones.filter((z) => (z.objects || []).some((o: any) => o.kind === 'sigil_mark')).map((z) => z.id);
@@ -856,7 +859,9 @@ describe('anyone is a target: review fixes', () => {
     let { g, a } = two('stray');
     const before = npcsOf(g).length;
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'x', actions: [{ charId: a, act: 'attack', objId: storyObjects(g).find((o) => o.name === 'Sergeant Nine-Nine')!.id, mode: 'melee' }] } as any }, 'host');
-    if (g.phase === 'story') expect(npcsOf(g).length).toBe(before);
+    // truth pass 3: this seed's queued attack starts the fight, so the `if (g.phase === 'story')` guard here never let the
+    // expect run. Either way no token may be left behind: the story's NPC list is what it was.
+    expect(npcsOf(g).length).toBe(before);
   });
 });
 

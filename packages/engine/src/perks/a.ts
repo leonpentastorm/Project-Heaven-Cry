@@ -6,7 +6,7 @@
 // Every item runs both tiers in combat and its story part (checks, story conditions, rest, session start) where it has
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags A…) and docs/design/perk-runtime.md.
-import { register, stateOf, uses, pendRuling, postStory, applyDamage, grantShield, gainEcho, pushAway, immune, emit, type Holder } from '../effects';
+import { register, charOfUnit, stateOf, uses, pendRuling, postStory, applyDamage, grantShield, gainEcho, pushAway, immune, emit, type Holder } from '../effects';
 import { itemAmount } from '../effects/amounts';
 import { ELEMENTAL_TYPES } from '../effects/damage';
 import type { Combat, Unit } from '../combat';
@@ -480,7 +480,7 @@ register({
     },
     blessing_in: (ctx, h) => {
       if (ctx.t !== h.u || !h.cb) return;
-      const p = PATRON[h.c?.patron || ''] || Object.values(PATRON).find((x: any) => (x.blessings || []).includes(ctx.blessing));
+      const bid = ctx.blessing?.id, p = Object.values(PATRON).find((x: any) => !!bid && (x.blessings || []).some((b: any) => b.id === bid)) || PATRON[charOfUnit(ctx.u)?.patron || '']; // the Blessing's patron (item 114), never the holder's own
       if ((p as any)?.faction !== 'lumeri') return;
       const r = applyDamage(h.cb, h.u!, itemAmount('trait:crawler_blooded', 'blessing_burn'), { by: null, type: 'true', dmgType: 'true', shield: false, credit: 'none' });
       say(h.cb, 'The Lumeri light burns ' + h.u!.name + ' for ' + r.dealt + ' (Crawler-Blooded).');

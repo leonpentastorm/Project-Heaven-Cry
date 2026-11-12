@@ -671,8 +671,8 @@ register({
 });
 
 // ---------- Field Surgeon (Proficiency + Camaraderie, Achieved) ----------
-// Field Repair reaches an adjacent ally: 2 AP, Proficiency 3+, one spare-parts charge: a living ally heals 10 ×
-// Proficiency points × your Healing given (PROVISIONAL, plan 6: the Factory Made number); a Downed ally is brought back.
+// Field Repair reaches an adjacent ally: 2 AP, Proficiency 3+, one spare-parts charge: a living ally heals 3 ×
+// Improvisation points × your Healing given × the level factor (rules 1.23); a Downed ally is brought back.
 // Your heals on robotic allies (Factory Made, machines) work at full power (Factory Made's Plug halving is undone).
 // Out of a fight (area map or story), 10 minutes and a charge patch a squadmate for 50% of their max HP (PROVISIONAL).
 // Rules 1.23: 3 a point (it was 10) × Healing given × the level factor, as the rest of the medic's kit.

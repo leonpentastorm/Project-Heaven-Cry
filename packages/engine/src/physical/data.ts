@@ -1,4 +1,5 @@
 // Physical 2.0 (rules 1.12): the technique data, weapon properties, and what a character knows, readies and drills.
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import techniquesJ from '../../../../data/techniques.json';
 import { WEAPON, type WeaponDef } from '../data';
 import type { Character } from '../character';

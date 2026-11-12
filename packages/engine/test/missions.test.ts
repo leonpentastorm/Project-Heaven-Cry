@@ -222,6 +222,7 @@ describe('missions', () => {
 describe('old saves and other campaigns', () => {
   it('a save without missions loads and plays; a refresh starts the board', () => {
     let g = started();
+    g.campaign = JSON.parse(JSON.stringify(g.campaign)); // shared between states: change a copy
     delete g.story.missions; delete (g.campaign as any).missions;
     g = turn(g, { missions: done('the_shield_line', 'reach_nine_nine'), side: [{ id: 'x', title: 'X' }], missionNext: 'the_ramp', ooc: 'Hi.' });
     expect(g.story.missions).toBeUndefined();

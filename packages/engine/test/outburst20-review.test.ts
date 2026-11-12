@@ -199,7 +199,8 @@ describe('the release preview (the same standard as Sigil\'s)', () => {
     const mods = ['class:channeler.heart_surge#surge'], v = f.unit(u.id);
     expect(withGame(f.g, () => previewOutburstPlan(f.cb, v, 'held', f.foe.pos)).stage).toBe(2);
     const p = withGame(f.g, () => previewOutburstPlan(f.cb, v, 'held', f.foe.pos, { mods }));
-    expect(p.stage).toBe(3); expect(p.mult).toBeCloseTo(stageMult(3) + (v.mg!.held!.plus || 0)); // Shape's +0.1 on the turn's free Pump (rules 1.19) expect((f.cb as any).mods).toBeUndefined();
+    expect(p.stage).toBe(3); expect(p.mult).toBeCloseTo(stageMult(3) + (v.mg!.held!.plus || 0)); // Shape's +0.1 on the turn's free Pump (rules 1.19)
+    expect((f.cb as any).mods).toBeUndefined();
     expect(() => f.act({ type: 'combat/release', unitId: u.id, aim: '40,40', mods } as any)).toThrow();
     expect(f.unit(u.id).mg!.held!.stage).toBe(2);
     f.act({ type: 'combat/release', unitId: u.id, aim: f.foe.pos, mods } as any);

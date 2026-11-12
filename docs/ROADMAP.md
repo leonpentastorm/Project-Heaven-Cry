@@ -1,4 +1,4 @@
-# Roadmap: what's next, and everything planned but not built (as of v0.0.1, 9 Nov 2026)
+# Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept up to date since)
 
 This is a list of leads, not a spec. Each item says where its design lives. Before building anything, read
 `CLAUDE.md` and `docs/HANDOFF.md`. Leon decides the order; the top section is the suggested one.
@@ -67,7 +67,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    - a trigger where an ambush belongs.
 
    Objective-givers speak plainly. Spec: `docs/design/world-play-spec.md`. Campaign: `data/campaigns/m813.json`.
-4. **The balance pass** (next up; the full draft with every angle, the AP economy included, is
+4. **The balance pass** (done in large part as rules 1.15 and 1.17 to 1.25: the enemy table, magic, guns, the Outburst, heals and shields, Faith, defence, MP, the fire doctrine; a full Sigil Line is 150 to 200%, the Outburst about 135% steady and 165% at its biggest, an optimised gun a bit under 150%, and there are no hard caps since rules 1.17. The simulator is `packages/engine/test/balance/`. Left: the weapon step's leftovers, Equipment 2.0, XP by level. The original brief follows; the full draft with every angle, the AP economy included, is
    `docs/design/proposals/2026-11-balance-pass.md`), against `docs/design/balance-targets.md`:
    - weapons are the 100% baseline;
    - Sigil is about 150% at most;
@@ -75,7 +75,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    - optimised physical is 150% (110% without ideal gear);
    - caps of 350 per hit for a full build and 500 on a mega crit.
 
-   Weapons already go over the caps (spec item 591), so a damage simulator would help. Every number in section 14
+   *(The targets and caps above are the brief's; rules 1.17 removed the caps and rules 1.19 set the Outburst's.)* Every number in section 14
    is provisional.
 4a. ~~**Skeleton 2.0**~~ (rules 1.13): live as 0.19.0 on 10 Nov 2026. Plan and log `docs/design/handoffs/skeleton-2.0-PLAN.md`.
    **Next up is item 4, the number balance pass** (Leon, 10 Nov 2026: balance first, so everything added later has a
@@ -132,7 +132,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
   - each rank as one fixed move plus a pick of three (more choice inside a class, the D&D/Pathfinder comparison);
   - a mechanic (Proficiency) move for the Infiltrator;
   - more for a Guardian with no patron;
-  - a combat capstone for the Bard (Rally Banner instead of Gift).
+  - ~~a combat capstone for the Bard (Rally Banner instead of Gift)~~: done, Rally is the Bard's rank III move (rules 1.23).
 - **Provisional numbers to confirm in play:** ranks at attribute 5 and 8 and, since rules 1.11, level 6 and 12 (spec item 930); the rules 1.11 level gains (item 924); two moves per rank at level 3.
 
 ## World Play gaps (from `docs/design/handoffs/world-play-A-HANDOFF.md` and `-B-HANDOFF.md`)
@@ -176,10 +176,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
 - The two-glyph hook (spec item 586): nobody has it yet.
 - Grand forms (spec items 582–585) are built but shelved with the Grand Sigilist (batch 1).
-- Outburst numbers awaiting the balance pass:
-  - Heart Surge (flagged as much weaker than 1.2);
-  - Empathy's free Pumps with the swell;
-  - Resonance caps.
+- ~~Outburst numbers awaiting the balance pass~~: Heart Surge and Empathy's free Pumps were settled in rules 1.19, the Resonance caps rewritten in rules 1.14.
 
 ## Small engine oddities (Leon: not urgent)
 
@@ -194,8 +191,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
 ## Product and world (from `CLAUDE.md` "Next steps" and the tech plan)
 
-- Leon's decisions in `docs/design/tech-plan.md` section 10.
-- Starter mode: creation → story scene → one fight, solo with the AI Narrator.
+- ~~Leon's decisions in `docs/design/tech-plan.md` section 10~~ and ~~starter mode~~: built (decision 62; the live game).
 - Settle the open items in spec section 14 through playtests.
 - Races (after origin, in character creation).
 - Sectors beyond Earth.

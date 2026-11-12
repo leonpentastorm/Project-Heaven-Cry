@@ -62,6 +62,19 @@ green (engine 3,204, web 985). Open: `faith-pg` failed on cut-in timing while ag
 alone), the medic's kit (Triage and stims have no level factor), Boss HP (fitted against the old 200% gun), the
 stale suites `soul`, `heart`, `feelings40`, `sigil15`, `magic`, the version bump. Nothing of this is live.
 
+**12 Nov, the foundation.** Read `docs/design/proposals/2026-11-engine-review/PLAN.md` first: it is the plan in
+force (four reviews, waves of refactors each pinned by golden tables, then the balance pass resumes). Merged on this
+branch: rules 1.15 to 1.25, the unified damage formula stage a (`unified-damage-stage-a.md`), client boundary 1
+(`client-boundary-1.md`), engine foundations 1 (`engine-foundations-1.md`). **In flight, each in its own git worktree
+branch (`git worktree list`, `git branch --list 'worktree-*'`): performance 1, the text-number sweep (second pass),
+the browser suites clean-up, and wave 2 (costs and counters, conditions, fog in the engine).** A branch whose agent
+died is still good work if its last commit passes `npm run check`: read its hand-off in the branch, merge it
+(`git merge --no-ff <branch>`), resolve by keeping both sides' intent (the damage amounts from one side, the new
+primitive's call from the other), re-record a golden table only when the diff is new lines or a listed ruling.
+On a loaded machine tests time out: re-run the file alone with `--testTimeout 300000` before believing a failure.
+Worktrees are created from stale `main`: an agent must fast-forward to this branch first. Nothing ships to live until
+everything under "What ships together" in the plan is merged and checked clean; Leon decides the deploy.
+
 ## 1. What is live
 
 **0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music

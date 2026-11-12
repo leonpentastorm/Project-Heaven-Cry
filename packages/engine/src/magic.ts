@@ -54,7 +54,7 @@ export interface MagicUnit {
   mp: number; mpMax: number; strain: number; held: HeldOutburst | null;
   /** Rules 1.5: this turn the heart was worked (Begin, Pump or Feed; class casts set it too): no stillness at the turn's end. */
   cast: boolean;
-  /** Free Pumps left this round and per round (Empathy 3: 1, 7: 2); the calming ways used this turn; Strain owed on the next Begin. */
+  /** Free Pumps left this round and per round (Empathy 3: 1; rules 1.19: no second from Empathy 7); the calming ways used this turn; Strain owed on the next Begin. */
   freePumps?: number; freePumpsMax?: number; calmFight?: boolean; calmTend?: boolean; debt?: number;
   /** Rules 1.19: the free stages taken this turn (a character takes FREE_PER_TURN at most, whatever gives them); from
    * Empathy 7 a swell adds no Strain. */
@@ -161,7 +161,7 @@ export function magicToCharacter(c: Character, u: Unit) {
     m.cores = want; m.coresMade = 0;
   }
 }
-/** Saves (spec: Conditions and saves): a PC's d20 + mod(Guts | Charisma | Composure) + items, from the unit (u.sv,
+/** Saves (spec: Conditions and saves): a PC's d20 + mod(Guts | Rumination | Composure) + items, from the unit (u.sv,
  * fixed when the unit is built, so every PC has it, casters or not); enemies by tier (+0 / +1 / +2 / +3). Shaken is −2
  * on Heart saves. unitSave is the one collector (lanes add through 'cond_apply' saveAdd or stat 'save_<family>'). */
 /** Is a condition a boon (Guarded, Inspired, Witnessed…)? (Unravel ends them; rules 1.6.) */
@@ -295,7 +295,7 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
   const f: Fam = ca.fam || fam || def.fam || 'body';
   // The log shows every save, failed ones too (spec: Sigils 9, Afterwards: "every target, roll, save and number").
   let saved = '';
-  // Rules 1.8: Defiance poured in, no saves against the release (NOSAVE_BY); Defiance's "your next save passes".
+  // Defiance poured in: every save against the release is DEFY_PEN harder (rules 1.19; rules 1.8 had no save at all, NOSAVE_BY); Defiance's "your next save passes".
   if (NOSAVE_BY && by === NOSAVE_BY && t !== by) { if (DEFY_PEN > 0) ca.tnAdd = (ca.tnAdd || 0) + DEFY_PEN; else ca.skipSave = true; } // rules 1.19: 4 harder to resist (it was: no save)
   if (!def.boon && !def.noSave && !ca.skipSave) {
     // the one save (rolls.ts): 'cond_apply' was fired above, so its context is handed over (ca). Defiance's "your next save passes" is settled there.
@@ -457,7 +457,7 @@ export function condTurnEnd(cb: Combat, u: Unit, rng?: Rng | null) {
     if (u.conds[id] <= 0) { endCond(u, id, cb); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
   }
 }
-/** Conditions whose source is gone end (Grappled when the grappler is down or not adjacent; Taunted, Fear and Marked
+/** Conditions whose source is gone end (Grappled when the grappler is down or not adjacent; Taunted, Fear, Commanded and Puppeted
  * when the source is dead). Called before a unit acts. */
 export function condSourcesCheck(cb: Combat, u: Unit) {
   for (const id of ['grappled', 'taunted', 'fear', 'commanded', 'puppeted']) {
@@ -609,7 +609,7 @@ export function enemyScuff(cb: Combat, u: Unit): boolean {
 /** The spell being cast now, for the damage it deals (Drink It In gains the real MP cost or 10 per Sigil word). */
 let SPELL: { mp?: number; words?: number } | null = null;
 
-/** Rules 1.8 release state: whose release skips saves (Defiance), whose damage Downs instead of killing (Mercy). */
+/** Rules 1.8 release state: whose release is harder to save against (Defiance: rules 1.19), whose damage Downs instead of killing (Mercy). */
 let NOSAVE_BY: Unit | null = null, NONLETHAL_BY: Unit | null = null;
 /** Rules 1.19, Defiance: what its Release adds to every save's TN (0: the old rule, no save at all). */
 const DEFY_PEN: number = Number((FEELING.defiance?.pour as any)?.save_penalty || 0);
@@ -639,9 +639,9 @@ export const RESONANCE_BONUS: number = SR.resonance?.bonus ?? 0.2;
 /** Resonance's ceiling per release (Leon 8 Nov 2026): +0.4 in total, however many allies released before you. */
 export const RESONANCE_MAX: number = SR.resonance?.max_bonus ?? 0.4;
 export const SECOND_SCHOOL = { fromWill: SR.second_school?.from_will_power ?? 5, strength: SR.second_school?.strength ?? 0.5, cost: SR.second_school?.cost ?? 10 };
-/** The Damage school's base (rules 1.17): a character's 28 (it was 20); an enemy caster's 18, so that with the new
+/** The Damage school's base (rules 1.19: a character's 40, an enemy caster's 24; rules 1.17 had 28 and 18), so that with the new
  * stage table its Outbursts deal what the enemy table was fitted with. A unit's heart carries its own (`soulBase`). */
-export const SOUL_DAMAGE: number = SR.damage?.base ?? SCHOOL.damage?.damage ?? 20;
+export const SOUL_DAMAGE: number = SR.damage?.base ?? SCHOOL.damage?.damage ?? 40; // the fallback is rules 1.19's base (it said the rules 1.5 20)
 export const SOUL_DAMAGE_ENEMY: number = SR.damage?.enemy_base ?? SOUL_DAMAGE;
 /** Rules 1.19: a character takes one free stage a turn at most (the fight's first Pump, Empathy's, Shape's, a fed
  * feeling, Heart Overload II's stage 1), whatever gives it. Enemy casters keep their own free Pumps (the enemy table
@@ -914,7 +914,7 @@ export function magicTurnEnd(cb: Combat, rng: Rng | null, u: Unit) {
 
 // ----- the cycle -----
 export interface OutburstPreview { ok: boolean; why?: string; cost: number; ap: number; range: number; strain: number; stage: number; hp?: number;
-  /** A snap cast's multiplier from items (Heart Surge's snap: ×1, not ×0.6), 1 when none. */ relMult?: number;
+  /** A snap cast's multiplier from items (Heart Surge's snap: stage 1's ×1.0, not stage 0's ×0.8), 1 when none. */ relMult?: number;
   /** What items say about that multiplier, for the preview ("Resonance +10%"; rules 1.14). */ relNotes?: string[];
   /** The part of relMult that holds at any stage (the Resonance perk), for a plan with Pumps in it; 1 when none. */ relAll?: number }
 /** The Begin's price (and, with release, the snap cast's: Begin + Release at stage 0). Kept for class moves. */
@@ -938,7 +938,7 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
 }
 export interface BeginOpts { /** Heart Overwatch on from the start. */ watch?: boolean }
 /** Begin (rules 1.5): pay MP, +1 Strain (2 Flooded; +2 from the air without an Emanator), hold the design at stage 0.
- * hold false is a snap cast: Begin and Release at once (3 AP, ×0.6), as class moves and old callers use it.
+ * hold false is a snap cast: Begin and Release at once (3 AP, stage 0: ×0.8), as class moves and old callers use it.
  * fx 'outburst' {unit, at, design, school, form, tone, element, stage: 0, hold, watch}. */
 export function beginOutburst(cb: Combat, rng: Rng, u: Unit, designId: string, aim: string | undefined, hold: boolean, opts: BeginOpts = {}): string | null {
   const pv = previewOutburst(cb, u, designId, aim, !hold); if (!pv.ok) return pv.why || 'Can\'t.';
@@ -961,14 +961,14 @@ export interface PumpPreview { ok: boolean; why?: string; ap: number; free: bool
   /** What an item says about this Pump, for its card (Overdraw: the stages it adds and its Strain; rules 1.14). */ note?: string }
 /** Is the fight's free first Pump still there (rules 1.8, item 814)? Not on the area map (no fight). */
 const firstFree = (cb: Combat, m: MagicUnit, u?: Unit | null) => !cb.overworld && !m.firstUsed && !!u?.charId && !u.companion && ((SOUL_RULES as any).cycle?.first_pump_free ?? true);
-/** The held Outburst's multiplier now (rules 1.8, item 804): the stage table's plus (step − 0.4) for each feeling pump.
+/** The held Outburst's multiplier now (rules 1.8, item 804): the stage table's plus (step − the plain step, 0.2 since rules 1.19) for each feeling pump.
  * With a target, Spite reads it (whoever last hurt you). */
 export function heldMult(cb: Combat | null, u: Unit, h: { stage: number; felt?: string[]; design?: string; plus?: number } | null | undefined, t?: Unit | null): number {
   if (!h) return stageMult(0);
-  const d = h.design && u.mg ? findDesign(u.mg, h.design) : null; // Calm's ×0.8 on a Release that rolls (rules 1.17)
+  const d = h.design && u.mg ? findDesign(u.mg, h.design) : null; // Calm's multiplier on a Release that rolls (rules 1.17: ×0.75; none since rules 1.19)
   return Math.round((stageMult(h.stage) + feelDelta(cb, u, h.felt, h.stage, t) + ((h as any).plus || 0)) * calmMult(d, h.felt) * 100) / 100;
 }
-/** A Pump's price: 1 AP, or free while the fight's first free Pump or the round's free Pumps last (Empathy 3: 1; 7: 2).
+/** A Pump's price: 1 AP, or free while the fight's first free Pump or the turn's one free Pump lasts (Empathy 3; rules 1.19: never two).
  * 'outburst_pump' {u, design, stage, ap, free, fail, preview, feeling, stages, note} (mutable) lets items change it.
  * Rules 1.8: a feeling pump pours in a feeling you know (`feeling`). On the preview, `stages` is how many stages the
  * Pump will add (1; Overdraw says 2, and adds its second stage itself on the real Pump) and `note` a line for its card. */
@@ -1180,7 +1180,7 @@ function rollFor(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, ignoreCover: b
 export const twiceBetter = (pct: number) => Math.round((1 - (1 - pct / 100) ** 2) * 1000) / 10;
 const rolls = (d: OutburstDesign) => (formOf(d) === 'bolt' || formOf(d) === 'lance') && !d.modules.includes('at_once');
 const formMult = (d: OutburstDesign) => { const f = formOf(d); return f === 'bolt' ? 1 : (MODULE[f] as any)?.damage_mult ?? 1; };
-/** The damage one school deals at a multiplier before armour (rules 1.5): 20 × Soul multiplier × stage × shape. */
+/** The damage one school deals at a multiplier before armour (rules 1.5): the base (40, an enemy caster's 24: rules 1.19) × Soul multiplier × stage × shape. */
 // On the one formula (effects/output.ts; step a4): an Outburst's amount is its base (the Damage school's, Buff's heal,
 // Inverse's or Shell's shield: soul_modules.json) × the Stat term (the heart's own cached Soul multiplier or Healing
 // given) × its own named multipliers, each from data, in the order they always multiplied:
@@ -1195,7 +1195,7 @@ const soulAmount = (kind: 'damage' | 'heal' | 'shield', base: number, mults: { v
   amountOf({ kind, base, profile: kind === 'heal' ? 'mend' : 'soul', round: 'none' }, null, { level: null, mults }).raw;
 export const outburstDamage = (m: MagicUnit, d: OutburstDesign, sm: number) => { const a = outburstTerms(m, d, sm); return soulAmount('damage', a.base, a.mults); };
 /** The same amount with its terms open, as harm takes it (step a7: what an item adds goes in beside the base). */
-export const outburstTerms = (m: MagicUnit, d: OutburstDesign, sm: number): SpellAmount => ({ base: m.soulBase ?? SOUL_DAMAGE_ENEMY, mults: [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.5 : 1, 'at once')] });
+export const outburstTerms = (m: MagicUnit, d: OutburstDesign, sm: number): SpellAmount => ({ base: m.soulBase ?? SOUL_DAMAGE_ENEMY, mults: [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.8 : 1, 'at once')] });
 // ---------- rules 1.20: what an Outburst heals and shields with ----------
 // Their own bases, never the Damage base (moving one must not move the other): the Buff school's `heal`, Inverse's and
 // Shell's `shield` (soul_modules.json). A character's grow with its level (mendFactor). In an area shape a heal or a
@@ -1217,7 +1217,7 @@ export const inverseShield = (m: MagicUnit, d: OutburstDesign, sm: number) => of
 export const shellShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? soulAmount('shield', (MODULE.shell as any)?.shield ?? 4, [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(mendOf(m), 'level')]) : outburstDamage(m, d, sm) * ((MODULE.shell as any)?.shield_of_power_enemy ?? 0.35);
 /** Love's heal: a share of what the Buff school would heal at this multiplier (in the shape, or the lone share). */
 export const loveHeal = (m: MagicUnit, d: OutburstDesign, sm: number, lone = false, area = false) => soulAmount('heal', ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY, [term(m.healMult, 'stat: healing given'), term(sm, 'stage'), term(mendOf(m), 'level'), term(area ? boonArea(m, d) : 1, 'shape'), term(lone ? (FEELING.love?.pour as any)?.lone_heal_share ?? 0.15 : (FEELING.love?.pour as any)?.heal_share ?? 0.25, 'share')]);
-/** Calm's multiplier on the whole Release (rules 1.17: ×0.75). Rules 1.19: none (Calm steps −0.2 instead); kept for data that sets `release_mult`. */
+/** Calm's multiplier on the whole Release (rules 1.17: ×0.75). Rules 1.19: none (Calm steps −0.4 instead); kept for data that sets `release_mult`. */
 export const calmMult = (d: OutburstDesign | null | undefined, felt?: string[] | null): number => (d && (felt || []).includes('calm') && rolls(d) ? (FEELING.calm?.pour as any)?.release_mult ?? 1 : 1);
 const armourKind = (tone: string, rs: number): 'none' | 'half' | 'full' => tone === 'raw' ? 'none' : toneRiders(tone, rs).riders.some((r) => r.rider === 'armour_full') ? 'full' : 'half';
 const bonusDmg = (tone: string, rs: number) => toneRiders(tone, rs).riders.filter((r) => r.rider === 'bonus_damage').reduce((a, r) => a + (r.value || 0), 0);
@@ -1355,7 +1355,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   const fz = (d as any).__fused;
   const orl: any = fz ? { mult: (d as any).__fuseMult ?? 1 } : emit(cb, 'outburst_release', { u, design: d, stage, aim, wild, mult: 1, form, tone, reaction, felt, cb, rng });
   const res = wild ? { bonus: 0, with: [] as string[] } : resonanceFor(cb, u);
-  // Rules 1.8 (item 804): the table's step, plus (step − 0.4) for each feeling pump; Quiet ×0.8. Spite reads per target.
+  // Rules 1.8 (item 804): the table's step, plus (step − the plain step) for each feeling pump; Quiet ×0.8. Spite reads per target.
   const quiet = has('quiet') ? (MODULE.quiet as any)?.damage_mult ?? 0.8 : 1;
   const plus = m.held?.plus || 0; // rules 1.19: what items added to this hold (Shape)
   const om = (orl.mult || 1) * quiet * calmMult(d, felt), smOf = (t?: Unit | null) => Math.max(0, (stageMult(stage) + feelDelta(cb, u, felt, stage, t) + plus + res.bonus) * om);
@@ -1409,9 +1409,9 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
       if (tone !== 'raw' && t.side !== u.side && !t.dead) { const rr = applyToneRiders(cb, rng, u, t, tone, rs, form === 'burst' ? aim : u.pos, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']); if (rr) line.push(rr.replace(/^ · /, '')); hitFoes.push(t); }
       if (t.side !== u.side && !t.dead) { const fl = pourOn(cb, rng, u, d, t, F, aim); if (fl) line.push(fl.replace(/^ · /, '')); }
     }
-    // Love: the allies inside are healed by the release's power × 0.5.
+    // Love: the allies inside are healed for a quarter of what the Buff school would heal there (rules 1.20; loveHeal).
     for (const a of loved) if (!a.dead) line.push(heal(a, loveHeal(m, d, sm), cb, u).replace(/^ · /, '') + ' (Love)');
-    // Love with no ally in the shape (rules 1.17): the most wounded ally within the design's reach, or you, heals a fifth of it.
+    // Love with no ally in the shape (rules 1.17): the most wounded ally within the design's reach, or you, heals the lone share (0.15 of the Buff heal: rules 1.20).
     if (F.has('love') && hostile && !loved.length) { const a = loneLove(cb, u, m, d); if (a) line.push(heal(a, loveHeal(m, d, sm, true), cb, u).replace(/^ · /, '') + ' (Love)'); }
     if (F.has('love') && !hostile) for (const a of hits) if (!a.dead && a.side === u.side) line.push(heal(a, loveHeal(m, d, sm, false, true), cb, u).replace(/^ · /, '') + ' (Love)');
     // Storm's chains: from the first enemy hit, to the nearest other enemies within range, at half (no roll).
@@ -1499,7 +1499,7 @@ function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<stri
   if (F.has('guilt') && FP('guilt').heal_per_stage) { const id = (u as any).feelHurtAlly, a = (id ? cb.units.find((v) => v.id === id && !v.dead) : null) || woundedAlly(cb, u, heartReach(m, d), false); if (a) out.push(clean(heal(a, FP('guilt').heal_per_stage * Math.max(1, stage), cb, u)) + ' (Guilt)'); out.push(u.name + ' pays' + harmFor('guilt', () => harm(cb, rng, null, u, FP('guilt').self_damage ?? 0, 'true'))); }
   // Fear (rules 1.19): the Release throws you back from where you aimed it. Forced movement: nobody reacts to it.
   if (F.has('fear') && FP('fear').recoil && !u.dead && !u.downed) { const from = aim && aim !== u.pos ? aim : hits.find((v) => v.pos !== u.pos)?.pos; if (from) { const s = magicShove(cb, u, from, FP('fear').recoil, null); if (s) out.push(clean(s) + ' (Fear)'); } }
-  // Pride (rules 1.19): a Release that takes nobody down costs 1 Strain after it.
+  // Pride (rules 1.19): a Release that takes nobody down costs 2 Strain after it (the data's strain_unless_down).
   if (F.has('pride') && FP('pride').strain_unless_down && !wild && !u.dead && !hits.some((v) => v.side !== u.side && (v.dead || v.downed || v.hp <= 0 || v.surrendered))) { const s = addStrain(cb, rng, u, FP('pride').strain_unless_down, 'pride'); out.push(u.name + '\'s pride stings (+' + FP('pride').strain_unless_down + ' Strain)' + s); }
   // Shame (rules 1.17): each Shame poured in costs its own damage (it was 5 once, however many).
   if (F.has('shame') && !u.dead) out.push(u.name + ' pays' + harmFor('shame', () => harm(cb, rng, null, u, (FP('shame').self_damage ?? 0) * (FP('shame').per_pour ? felt.filter((x) => x === 'shame').length : 1), 'true')));
@@ -1509,13 +1509,13 @@ function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<stri
     for (const z of cb.zones || []) { const zz: any = z; if (z.side !== u.side && (z.kind === 'trap' || (z.kind === 'turret' && zz.hidden)) && z.tiles.some((k) => set.has(k)) && !(zz.spotted ||= []).includes(u.side)) { zz.spotted.push(u.side); emitFx(cb, 'trap_spotted', { id: z.id, tile: z.tiles[0], by: u.id, side: u.side, only: u.side, kind: z.kind }); out.push('a trap shows at ' + refOf(z.tiles[0]) + ' (Wonder)'); } }
     for (const h of (cb.hazards || []) as any[]) if (h.hidden && h.tiles.some((k: string) => set.has(k))) { h.hidden = false; emitFx(cb, 'hazard_spotted', { id: h.id, kind: h.kind, at: h.tiles[0], tiles: [...h.tiles], by: u.id, how: 'wonder' }); out.push('a hazard shows (Wonder)'); }
   }
-  // Relief (rules 1.17): each Relief poured in takes 1 Strain off (it was the whole hold's Strain for one pump).
+  // Relief (rules 1.19): Relief poured in takes 2 Strain off (the data's strain_back; rules 1.17 had 1).
   if (F.has('relief')) { const n = FP('relief').strain_back != null ? FP('relief').strain_back * felt.filter((x) => x === 'relief').length : held?.strainIn || 0, back = n > 0 ? easeStrain(cb, u, n, 'relief') : 0; if (back) out.push(u.name + "'s Strain −" + back + ' (Relief)'); }
   if (F.has('defiance')) (u as any).feelSaveNext = true;
   // Modules after the release (rules 1.8): Shell shields you; Thread links two allies; Linger leaves a field.
   if (has('shell') && !u.dead) { const sh = grantShield(cb, u, shellShield(m, d, sm), u); out.push(u.name + ' is shelled (' + sh + ')'); }
   if (has('thread') && d.school === 'buff') { const two = hits.filter((v) => v.side === u.side && !v.dead).slice(0, 2); if (two.length === 2) { (two[0] as any).thread = two[1].id; (two[1] as any).thread = two[0].id; emitFx(cb, 'thread', { unit: u.id, a: two[0].id, b: two[1].id }); out.push(two[0].name + ' and ' + two[1].name + ' are threaded'); } }
-  if (has('linger') && tiles.length) { (cb.zones ||= []).push({ id: 'lz' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'linger' as any, tiles: [...tiles], words: [], by: u.id, side: u.side, left: (MODULE.linger as any)?.rounds ?? 2, mult: 1, who: u.name, element: toneElement(toneOf(d)), linger: { school: d.school, tone: toneOf(d), hostile: d.school !== 'buff' } } as any); emitFx(cb, 'linger', { unit: u.id, tiles, tone: toneOf(d), element: toneElement(toneOf(d)) }); }
+  if (has('linger') && tiles.length && !(d.school === 'damage' && has('inverse'))) { /* an Inverse Damage design strikes nobody: no damaging field (item 1510) */ (cb.zones ||= []).push({ id: 'lz' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'linger' as any, tiles: [...tiles], words: [], by: u.id, side: u.side, left: (MODULE.linger as any)?.rounds ?? 2, mult: 1, who: u.name, element: toneElement(toneOf(d)), linger: { school: d.school, tone: toneOf(d), hostile: d.school !== 'buff' } } as any); emitFx(cb, 'linger', { unit: u.id, tiles, tone: toneOf(d), element: toneElement(toneOf(d)) }); }
   void felt;
   return out.filter(Boolean);
 }
@@ -1711,7 +1711,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
     const a: OutburstAffected = { unit: t.id, name: t.name, at: t.pos, ally: t.side === u.side && t !== u, enemy: t.side !== u.side, self: t === u, dmg: 0, dmgAfterArmour: 0, heal: 0, shield: 0, roll: null, saves: [], rider: '', second: '', via: 'area' };
     const one = (school: string, option: string | undefined, f: number, primary: boolean) => {
       if (school === 'damage') {
-        // Love on a hostile design (rules 1.8): an ally inside is healed by the power × 0.5, not harmed.
+        // Love on a hostile design (rules 1.8): an ally inside is healed (a quarter of the Buff heal: rules 1.20), not harmed.
         if (F.has('love') && hostile && t.side === u.side) { if (primary) a.heal += Math.floor(loveHeal(m, d, sm) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); return; }
         const raw = outburstDamage(m, d, smT) * f * (primary ? strikes : 1) * (d.modules.includes('inverse') ? 1 : damageModeMult(option, t)); // rules 1.19: the way it strikes
         if (d.modules.includes('inverse')) { if (t.side === u.side) { a.shield += Math.floor(inverseShield(m, d, smT) * f); if (primary && F.has('love')) a.heal += Math.floor(loveHeal(m, d, sm, false, true) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); } return; }

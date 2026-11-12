@@ -90,7 +90,7 @@
         "detect_tn": 12,
         "detect_range": 2
       },
-      "text": "Hidden until someone spots it: a character within 2 tiles spots it if 10 + their Vigilance modifier reaches its TN. Stepping on it sets it off and deals its damage. Disarming it takes a check.",
+      "text": "Hidden until someone spots it: a character within {=trap.detect_range} tiles spots it if 10 + their Vigilance modifier reaches its TN. Stepping on it sets it off and deals its damage. Disarming it takes a check.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -105,7 +105,7 @@
       "hazard": {
         "damage": 10
       },
-      "text": "Burning ground. Anyone who starts their turn in it takes 10 damage.",
+      "text": "Burning ground. Anyone who starts their turn in it takes {=hazard.damage} damage.",
       "adjudication": "engine",
       "provisional": true,
       "light": 2
@@ -121,7 +121,7 @@
       "hazard": {
         "damage": 8
       },
-      "text": "Spilled chemicals or bad mana. Anyone who starts their turn in it takes 8 damage.",
+      "text": "Spilled chemicals or bad mana. Anyone who starts their turn in it takes {=hazard.damage} damage.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -137,7 +137,7 @@
         "damage": 40,
         "radius": 2
       },
-      "text": "It gives half cover until it is destroyed. At 0 HP it explodes: 40 damage to everyone within 2 tiles, and it leaves fire behind.",
+      "text": "It gives half cover until it is destroyed. At 0 HP it explodes: {=explodes.damage} damage to everyone within {=explodes.radius} tiles, and it leaves fire behind.",
       "adjudication": "engine",
       "provisional": true
     },
@@ -189,7 +189,7 @@
       "cover": null,
       "hp": 10,
       "light": 3,
-      "text": "A work lamp, flare or brazier. It lights the tiles within 3 of it, so darkness doesn't halve sight there. Shoot it out to bring the dark back.",
+      "text": "A work lamp, flare or brazier. It lights the tiles within {=light} of it, so darkness doesn't halve sight there. Shoot it out to bring the dark back.",
       "adjudication": "engine",
       "provisional": true,
       "electronic": true

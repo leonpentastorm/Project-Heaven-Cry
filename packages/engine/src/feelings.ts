@@ -1,5 +1,5 @@
 // Feelings (rules 1.8, Outburst 4.0; spec: Soul magic section 12; data/feelings.json). A feeling is poured into a held
-// Outburst with a Pump: +1 stage with its own step on the multiplier instead of the plain +0.4, and its behaviour joins
+// Outburst with a Pump: +1 stage with its own step on the multiplier instead of the plain +0.2 (rules 1.19), and its behaviour joins
 // the release. A feeling unlocks the first time its trigger happens to the character (the engine watches the hooks and
 // the effects stream below); the Narrator may grant one too. This file holds the data, the steps, the unlocking and the
 // triggers, and residue lookups; what a feeling does at a release (and residue's effects) runs in magic.ts beside the
@@ -7,6 +7,7 @@
 // Rules 1.19 (the Outburst rework, round 2): a plain Pump is +0.2; each feeling goes into an Outburst once; a feeling
 // that buys the multiplier pays for it (1 Strain or 8 HP for +0.3 above a plain Pump), one that changes the Release
 // steps +0.3, and a strong one steps +0.2, 0 or below 0 (Calm, Relief: the multiplier going down is the price).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import feelJ from '../../../data/feelings.json';
 import { SOUL_RULES } from './data';
 import type { Character } from './character';
@@ -17,7 +18,7 @@ import { emitFx } from './combat';
 
 export interface FeelingDef {
   id: string; name: string; n: number; family: string;
-  /** Rules 1.17: `base` is the step (+0.4 is a plain Pump's); the rest are what a few feelings add to it; `text` says it in words. */
+  /** Rules 1.17: `base` is the step (+0.2 is a plain Pump's since rules 1.19); the rest are what a few feelings add to it; `text` says it in words. */
   step: { base?: number; text?: string; vs_last_hurt?: number; fallen?: number; per_stage_past?: number; from_stage?: number; per_20pct_missing?: number; alone_extra?: number; alone_range?: number; per_ally?: number; range?: number; max?: number };
   trigger: { event: string; text: string };
   pour: Record<string, any> & { text: string };
@@ -222,7 +223,7 @@ function registerFeelingTriggers() {
   });
 }
 registerFeelingTriggers();
-/** Story triggers game.ts calls: resisting or indulging an Overreach, a new zone reached, a vow broken (faith.ts). */
+/** Story triggers game.ts calls: resisting or indulging an Overreach, a new zone reached. A broken vow unlocks Shame from faith.ts (breakVow). */
 export function feelOverreach(g: any, c: Character, choice: 'indulge' | 'resist') { feelChar(g, c, choice === 'resist' ? 'defiance' : 'abandon', choice === 'resist' ? 'resisted an Overreach' : 'indulged an Overreach'); }
 export function feelNewZone(g: any, c: Character) { feelChar(g, c, 'wonder', 'a new place'); }
 export const SOUL_PRACTICE: any = (SOUL_RULES as any).practice || {};

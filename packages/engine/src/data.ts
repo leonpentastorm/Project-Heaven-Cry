@@ -1,4 +1,5 @@
 // The data pack, loaded as-is (data/*.json is the source of truth after the spec).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import skillsJ from '../../../data/skills.json';
 import attributesJ from '../../../data/attributes.json';
 import rulesJ from '../../../data/rules.json';

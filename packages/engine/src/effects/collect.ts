@@ -1,6 +1,7 @@
 // Collecting a holder's active effects (plan 2.2): traits, perks at their tier (Mastered, Achieved and Ultimate
 // included), and class moves by rank (base classes) or all at once (an advanced class). Built like gearEffects in
 // character.ts; memoised per holder on what it holds.
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { PERK, PERKS, TRAITS, CLASSES, SKILL, CLASS_MOVE_POOL } from '../data';
 import classesJ from '../../../../data/classes.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';
@@ -158,7 +159,15 @@ export function itemsOf(h: Held): ItemInfo[] {
   return out;
 }
 const itemsCache = new Map<string, ItemInfo[]>();
-export const heldKey = (h: Held) => JSON.stringify([rev2, h.perks || [], h.traits || [], h.cls || null, h.rank || 0, advancedActive(h.adv) ? h.adv : null, h.skills || []]);
+/** A cache key for what a unit holds: everything itemsOf() reads (each perk's id and tier, the traits, the class, its
+ * rank, the advanced class, the skill items), in order. Built by hand: it is asked for every unit on every hook. */
+export const heldKey = (h: Held) => {
+  let s = (rev2 ? '1|' : '0|') + (h.cls || '') + '|' + (h.rank || 0) + '|' + (advancedActive(h.adv) ? h.adv : '') + '|';
+  for (const p of h.perks || []) s += p.id + '\t' + p.tier + '\n'; s += '|';
+  for (const t of h.traits || []) s += t + '\n'; s += '|';
+  for (const k of h.skills || []) s += k + '\n';
+  return s;
+};
 
 /** Every effect of every item, flat (plan 2.2: effectsOf). */
 export function effectsOfHeld(h: Held): ActiveEffect[] {

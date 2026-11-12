@@ -52,10 +52,10 @@ describe('the 19 relabels (item 1101)', () => {
     for (const id of A_PERKS) expect(perkOf(id).adjudication, id).toBe('engine');
     for (const id of A_TRAITS) expect(traitOf(id).adjudication, id).toBe('engine');
   });
-  it('the labels of the 180: 119 engine, 46 hybrid, 15 narrator (it was 100, 64, 16)', () => {
+  it('the labels of the 180: 126 engine, 47 hybrid, 7 narrator (rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen)', () => {
     const all = [...PERKS, ...TRAITS], n = (l: string) => all.filter((x) => x.adjudication === l).length;
     expect(all.length).toBe(180);
-    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([119, 46, 15]);
+    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([126, 47, 7]);
   });
   it('no relabelled card still hands a rule to the Narrator: Talks Broke Down gives its timing rule, Verse of War has no audit', () => {
     for (const t of ['I', 'II']) { expect(perkOf('talks_broke_down').tiers[t].text).not.toMatch(/Narrator/); expect(perkOf('talks_broke_down').tiers[t].text).toMatch(/same story round .* or the round after/); }

@@ -178,7 +178,7 @@ await openArea();
 await tile(area, ref(box.pos)).click();
 const objDlg = p.locator('div[role="dialog"][aria-label="Strongbox"]');
 await objDlg.waitFor();
-ok('the strongbox panel: locked, holds 2, odds and "Fail: 35 damage" in plain words: ' + (await objDlg.locator('[data-fail]').first().textContent()), /50 damage/.test(await objDlg.locator('[data-fail]').first().textContent()) && (await objDlg.locator('[data-odds]').count()) > 0);
+ok('the strongbox panel: locked, holds 2, odds and "Fail: 50 damage" in plain words: ' + (await objDlg.locator('[data-fail]').first().textContent()), /50 damage/.test(await objDlg.locator('[data-fail]').first().textContent()) && (await objDlg.locator('[data-odds]').count()) > 0);
 await snap('08-locked-cache');
 await objDlg.getByRole('button', { name: 'Try this · 2 AP' }).first().click();
 await p.waitForTimeout(700);

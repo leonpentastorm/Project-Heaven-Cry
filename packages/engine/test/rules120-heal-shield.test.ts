@@ -70,6 +70,19 @@ describe('rules 1.20: Sigil', () => {
   });
 });
 
+describe('MEND\'s base by who casts it (truth pass 3)', () => {
+  it('an allied caster that is not a character (no sheet, on the players\' side) mends at the character base, as before; only an enemy caster takes the enemy base', () => {
+    const run = (strip: boolean) => {
+      const f = rig({ ...SIG }, { level: 12 }), u = me(f), rng = seed(); u.mg!.words = ['mend', 'seek']; u.mg!.sigilMult = 2; u.mg!.healMult = 1.5; ally(f).hp = 100; ally(f).pos = '8,5';
+      if (strip) { delete (u as any).charId; delete (u as any).ctrl; }
+      withGame(f.g, () => { u.pos = '5,5'; drawGlyph(f.cb, rng, u, 'mend'); u.pos = '4,5'; drawGlyph(f.cb, rng, u, 'seek'); evoke(f.cb, rng, u, '4,5', '8,5'); });
+      return ally(f).hp - 100;
+    };
+    const asChar = run(false), asAlly = run(true);
+    expect(asChar).toBeGreaterThan(0); expect(asAlly).toBe(asChar); // the enemy base (25) would give 2.5 times as much
+  });
+});
+
 describe('rules 1.20: the Outburst', () => {
   it('the Buff heal is 7 × Healing given × the stage multiplier × the level factor', () => {
     expect(BUFF_HEAL).toBe(7); expect((SCHOOL.buff as any).heal).toBe(7);

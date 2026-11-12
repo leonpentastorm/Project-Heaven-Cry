@@ -11,7 +11,7 @@
 // RULES 1.22 (Faith, round 2) refitted three of these numbers to a Hymn that waits on a cooldown: Rebuke 20 (15),
 // Judgement 56 (42 in rules 1.22, 50 before), Lightning Rod 56 and 23 (42 and 17; 50 and 20). The rules they follow are unchanged and are still pinned here,
 // with the numbers of rules 1.22; test/rules122-faith.test.ts pins the new revision.
-// The measurements behind the numbers are test/balance/faith-measure.test.ts (the cheap targets run in `npm run check`).
+// The measurements behind the numbers are test/balance/faith-measure.test.ts (the cheap targets run in `npm run balance`).
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { previewPrayer, FAITH_PATRON, WHISPER, WHISPERS, FAITH_FX, ATHEIST_TN, prayerDamage, d20, resolveAttack, condOn, type Combat, type Unit, type Character, type Action } from '../src';

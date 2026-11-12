@@ -38,7 +38,7 @@ Every rule-bearing item carries both:
   - `{"op":"condition","condition":"<id>","target":"<self|target|ally|area>","when":"<trigger>"}`
   - `{"op":"narrator","note":"<what the Narrator must judge>"}` for anything the engine can't adjudicate
 - The full op list lives in `effect_ops.json`. "core" ops (50) are generic and the engine must implement them;
-  "bespoke" ops (about 80, about 10% of all effect uses) belong to one or two items. Implement a bespoke op as a hook on that item,
+  "bespoke" ops (113, about 14% of all effect uses) belong to one or two items; the weapon (17), item (11) and Sigil (1) tiers are the ops of weapon skills, items and Sigil words. Implement a bespoke op as a hook on that item,
   or until then hand the item's `text` to the Narrator. An op the engine doesn't recognise always falls back to
   the Narrator; it is never silently ignored.
 - Effects may also carry `when`, `context`, `duration`, `target`, `uses`, `limit` keys to scope them.
@@ -134,9 +134,19 @@ Every rule-bearing item carries both:
 - After any change here, the golden tables (`packages/engine/test/golden/`) say which actions moved. Record them anew only when a number was meant to move (`GOLDEN_RECORD=1`, see `docs/TESTING.md`).
 
 ## Requirements
-`requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`, `{"core":"<id>","min":n}`,
+`requires`: array of `{"skill":"<id>","min":n}`, `{"attr":"<id>","min":n}`,
 `{"perk":"<id>"}`, `{"class":"<id>"}`, `{"deed":"<free text the Narrator checks>"}`, `{"patron":true}`.
 `excludes`: array of ids this can't be taken with.
 
 ## Text
+**Texts read their numbers (12 Nov 2026).** A number in a rules text (`text`, a trait's `upsides` and `downsides`, a Sigil word's `grand`) is not typed: it is a placeholder that names the field of the same item it comes from, so the card can never disagree with the field.
+
+- `{=path}`: keys and list indexes joined by dots, from the item (the nearest enclosing object with an `id`): `{=effects.0.value}`, `{=tiers.II.ap_cost}`, `{=numbers.push}`. A leading dot starts at the object that holds the text: `{=.ap}`. The path must end at a number.
+- `{=path|format}`: `abs` (no sign), `signed` (+2, −2), `pct` (0.25 → 25), `more` (a multiplier 1.25 → 25), `less` (0.75 → 25). With no format a negative field prints its own minus sign: write `{=effects.2.value} Athletics`, not `−{=...|abs}`.
+- The `=` keeps them apart from the engine's own templates (`{name}` in a patron's lines).
+- They are filled when the data is loaded: `packages/engine/src/datatext.ts` (the engine; every file that imports a data JSON imports it first), and `tools/text_numbers.py` (the validator, and `design/canvas-build/build.py` for the web's `protodata.json`). A test holds the two equal.
+- `tools/validate.py` refuses a digit typed into a text unless it is in `tools/text_numbers.json`: `allow` (with a reason) or the `baseline` of numbers not yet bound, which only shrinks. When a number has no field, **add the field the engine reads** and bind to it; do not add a mirror field that nothing reads.
+- `ap_cost` is the AP a card's chip shows. When the cost is not a fixed number it is `null` and `ap_cost_is` names it: `weapon_attack` (the AP of your weapon's attack), `twice_shot`, `reload`, `soul_cast_ap`.
+- A move's `uses` may also be `reaction` (it spends your reaction; the engine counts it as at will) and `per_combat`.
+
 English, in-universe where the doc is in-universe. No pop-culture references. Keep numbers exactly as the source doc states them; if the source conflicts with the Core Rules spec, the spec wins and you log the conflict in your report.

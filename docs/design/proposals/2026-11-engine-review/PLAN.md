@@ -25,7 +25,7 @@ The reviews: [`1-duplication.md`](1-duplication.md), [`2-performance.md`](2-perf
 
 Status words: **running**, **merged**, **next**, **later**.
 
-### Wave 1 (running, 12 Nov)
+### Wave 1 (merged, 12 Nov)
 
 | Piece | From | What | Hand-off |
 | --- | --- | --- | --- |
@@ -33,7 +33,7 @@ Status words: **running**, **merged**, **next**, **later**.
 | Engine foundations 1 | review 1: F14, F6, F1, F2 | Typed stat ids; `kit.ts` (geometry, selectors); `rolls.ts` (every save and roll, "a save is a save"); `displace()` (every forced move, one trigger table); the bugs found by reading | `engine-foundations-1.md` |
 | Client boundary 1 | review 4: 1, 2, 6, 9 | Costs and legality from the engine (six live disagreements); one engine preview that owns the copy and the fog; card texts that can't go stale; the Perks tab asks the engine | `client-boundary-1.md` |
 
-### Wave 2 (next; after wave 1 is merged)
+### Wave 2 (running, 12 Nov: costs and counters, conditions, fog in the engine; also running: performance 1, the text-number sweep, the browser suites)
 
 | Piece | From | What |
 | --- | --- | --- |
@@ -58,6 +58,29 @@ Status words: **running**, **merged**, **next**, **later**.
 
 The re-fit (an all-in build on each ceiling, a normal share at ceiling ÷ 1.25, no damage slope on rolled attacks),
 many targets, the yardstick for control, what was left out, the balance contract and its guard, closing the patch.
+
+## What ships together (Leon, 12 Nov 2026)
+
+"Roll the balance pass in and wave 3 too before asking me to push to live, include hand off for agents then, and a
+list of what I should test on my own. Do conserve token as much as possible."
+
+So nothing is offered for live until ALL of this is merged and one clean `npm run check` and `npm run e2e -- all` have
+run on a quiet machine:
+
+1. Wave 2 and the three pieces running beside it.
+2. Wave 3 (item ops, preview as a dry run, state sync, action descriptors, effects with a schema, rooms and the
+   Narrator prompt), then the spec's revisions folded into its body.
+3. The balance pass on that foundation (balance-pass section 17: the re-fit to all-in ceilings at ratio 1.25, many
+   targets, the yardstick for control, what was left out, the balance contract and its guard).
+4. `docs/ENGINE-GUIDE.md` (the "How to add things" notes of every piece, collected: what an agent reads before it
+   extends the engine), the session hand-off, the patch tally checked against live, the version and changelog.
+5. `docs/PLAYTEST-CHECKLIST.md`: what Leon should try by hand, by system, with what "right" looks like.
+
+**Token rule for the rest (one usage reset left):** no new piece starts while more than two are running; builders are
+the cheapest tier that can do the piece (CLAUDE.md, "Who does what"); an adversarial reviewer only where a mistake
+would be silent (determinism, saves, a primitive every item goes through), never for mechanical conversions, which the
+golden tables and the lints already check; measurement runs use the smallest sample that separates the answer from
+noise; the lead merges and reads reports, it does not re-derive them.
 
 ## Rulings taken without asking (Leon: "do everything without ask")
 

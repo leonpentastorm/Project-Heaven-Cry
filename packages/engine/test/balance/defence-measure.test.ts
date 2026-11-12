@@ -49,12 +49,15 @@ describe('the defence step: the medic\'s kit against the yardstick (rules 1.23)'
   });
 });
 
+// The "quick run" smoke fights play whole simulated fights and assert only that they build: `npm run balance` runs them
+// (vitest.balance.config.ts sets BALANCE_QUICK); the engine's default run leaves them out. test/suite-shape.test.ts.
+const QUICK_RUN = !!process.env.BALANCE_QUICK;
 describe('the defence step: the enemy table (rules 1.23)', () => {
   it('the Boss: HP at level 1, and still at least 20 of the yardstick\'s hits at every level', () => {
     expect(ENEMY.boss.hp).toBe(BOSS_HP);
     for (const lv of D_LEVELS) expect(enemyStats('boss', lv).hp).toBeGreaterThanOrEqual(BOSS_HP);
   });
-  it('quick run: one fight of each kind for each squad builds (level 6, ground with cover), and a pair under fire', () => {
+  (QUICK_RUN ? it : it.skip)('quick run: one fight of each kind for each squad builds (level 6, ground with cover), and a pair under fire', () => {
     for (const sq of Object.keys(SQUADS)) { const r = fightRow(sq, sq === 'healer' ? 'standard' : 'boss', 6, 'cover', 1); expect(r.errors, fightLine(r)).toBe(0); expect(fightLine(r)).not.toMatch(/undefined|NaN/); }
     const on = pairFire('medic', PAIRS.medic.seconds, 6, 2, 2), off = pairFire('medic', PAIRS.medic.seconds, 6, 2, 2, { focus: false });
     expect(on.errors + off.errors).toBe(0); expect(pairLine(on)).not.toMatch(/undefined|NaN/);

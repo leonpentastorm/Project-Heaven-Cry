@@ -751,10 +751,17 @@ if "actions" in data:
                 errors.append(f"actions: {aid}.{rk} names {r}, which is not in rules.json combat.actions")
             elif isinstance(_rule_acts[r].get("ap"), int) and a.get(apk) != _rule_acts[r].get("ap"):
                 errors.append(f"actions: {aid} costs {a.get(apk)} AP but rules.json {r} says {_rule_acts[r].get('ap')}")
-        if aid == "stim" and "stabilise" in _rule_acts and a.get("ap_downed_medic") != _rule_acts["stabilise"].get("ap_combat_medic"):
-            errors.append("actions: stim.ap_downed_medic disagrees with rules.json stabilise.ap_combat_medic")
+        if aid == "stim" and "stabilise" in _rule_acts and a.get("ap_downed_medic") != _rule_acts["stabilise"].get("ap_bard"):
+            errors.append("actions: stim.ap_downed_medic disagrees with rules.json stabilise.ap_bard")
         if aid == "pickup" and (data.get("world_play", {}).get("ap") or {}).get("pickup") not in (None, a.get("ap")):
             errors.append("actions: pickup.ap disagrees with world_play ap.pickup")
+
+# Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
+# prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
+_wit = next((o for o in items("conditions") if o.get("id") == "witnessed"), None)
+_wb = ((data.get("patrons", {}).get("prayer") or {}).get("witnessed") or {}).get("like_bonus")
+if _wit and _wb is not None and ((_wit.get("effects") or [{}])[0].get("value") != _wb):
+    errors.append("conditions: witnessed effects[0].value (the card's +2) disagrees with patrons.json prayer.witnessed.like_bonus (the engine's)")
 
 # Rules 1.10 (Sigil 1.5): the sigil_mark kind's Investigate numbers, and the marks the campaigns place
 _mk = next((o for o in items("objects") if o.get("id") == "sigil_mark"), None)
@@ -1641,8 +1648,19 @@ for c in items("conditions"):
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 
+# attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
+for _a in data["attributes"]["items"]:
+    _want = {k["slot"]: k["id"] for k in data["skills"]["items"] if k["attribute"] == _a["id"]}
+    if _a.get("skills") != _want: errors.append(f"attributes.json {_a['id']}: skills {_a.get('skills')} is not what skills.json says ({_want})")
+
+# The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import text_numbers
+TEXT_NUMBERS = text_numbers.check(data, errors, sys.argv[2:])
+
 print("files:", ", ".join(f"{k}({len(items(k)) if k not in ('classes','rules') else ''})" for k in data))
 print(f"base classes {len(base)}, advanced {len(adv)} (shelved {sum(1 for a in adv if a.get('shelved'))}), move pool {len(pool)}")
+print(TEXT_NUMBERS)
 print(f"\n{len(errors)} errors")
 for e in errors[:80]:
     print("  ERR", e)

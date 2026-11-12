@@ -59,6 +59,7 @@
       "max": 10,
       "mod_at_0": -2,
       "mod_formula": "points==0 ? -2 : points-1",
+      "check_mod": "rules 1.13: on a check, an Ask and a passive, a gamma-slot skill adds its full points (points==0 ? -2 : points); alpha and beta skills, and every save, attack, Initiative and debuff TN, use mod_formula",
       "table": {
         "0": -2,
         "1": 0,
@@ -126,7 +127,7 @@
         ],
         "players_see_truth": false
       },
-      "passive_score": "10 + mod(skill)",
+      "passive_score": "10 + check_mod(skill) (resolution.skill_track.check_mod: a gamma skill counts its full points)",
       "passive_resolved_by": "engine",
       "lines_per_player_per_beat": 2,
       "line_order": "largest margin first; ties: narrator choice",
@@ -135,7 +136,7 @@
       "ask_a_skill": {
         "when": "out of combat",
         "limit": "once per scene per skill",
-        "roll": "d20 + mod(skill)",
+        "roll": "d20 + check_mod(skill)",
         "vs": "lowest-TN unrevealed hook for that skill",
         "on_fail": "the skill has nothing to say"
       },
@@ -300,7 +301,7 @@
     }
   },
   "derived": {
-    "note": "Attr counts from 1, Skill = points 0-10; floor results; mod(skill) = -2 at 0 points, else points-1",
+    "note": "Attr counts from 1, Skill = points 0-10; floor results; mod(skill) = -2 at 0 points, else points-1 (on a check, an Ask and a passive a gamma skill adds its full points: resolution.skill_track.check_mod)",
     "body": {
       "max_hp": "100 + 15*(endurance-1) + (level-1)*hp_per_level",
       "hp_per_level": "5 + 2*pain_threshold",
@@ -357,7 +358,7 @@
     },
     "magic": {
       "sigil_max_words": "2 + floor((intelligence-1)/2)",
-      "sigil_ap": "max(1, words - 0.5*(expression-1))",
+      "sigil_ap": "max(0.5, 1 - 0.1*(expression-1)) for each glyph drawn",
       "sigil_core_saving": "floor(brain_power/3) per spell; spell cost min 1",
       "sigil_range_bonus_tiles": "0.5*brain_power",
       "sigil_duration_bonus_rounds": "0.5*brain_power",
@@ -397,30 +398,13 @@
           }
         ]
       },
-      "karma_bonus_per_award": "+authority (Karma moves 1 further a point each time it changes)",
-      "reputation_bonus_per_award": "+authority"
+      "karma_bonus_per_award": "+authority (Karma moves 1 further a point each time it changes)"
     },
     "source": "rules 1.13 (Skeleton 2.0): the formulas as the spec's Derived stats section states them; the engine's are in packages/engine/src/character.ts"
   },
   "classes": {
-    "gained_at_level": 3,
-    "chosen": false,
-    "qualify": "sum points in each base class's 3 signature skills; may take any class whose total is among your two highest totals (ties included)",
-    "classless_possible": false,
-    "rank_thresholds": {
-      "I": "on gaining",
-      "II": 13,
-      "III": 18
-    },
-    "advanced": {
-      "parent_a_total": 15,
-      "parent_b_total": 9,
-      "tutor_required": true,
-      "tutor_placed_by": "narrator",
-      "must_hold_parent": false
-    },
     "data": "classes.json",
-    "rank_thresholds_provisional": true
+    "note": "Class Roster Revision 3. The rule and every number of it (the level a class is earned at, whose class it is, the attribute and the level of each rank, the shelved advanced classes) are written once, in classes.json `assignment`; the engine reads them there (character.ts CLASS_RULES). The Revision 2 numbers once kept here (signature totals 13 and 18, tutors) are retired."
   },
   "combat": {
     "grid": {
@@ -428,6 +412,7 @@
       "shape": "square",
       "los": "centre to centre; solid blocks",
       "high_ground_to_hit": 1,
+      "high_ground_built": false,
       "diagonals": "melee reach counts diagonals; diagonal movement cost not specified",
       "diagonal_move_cost": null,
       "difficult_terrain_move_multiplier": 2
@@ -440,7 +425,9 @@
       "surprise_round": {
         "ambushers_ap": 3,
         "surprised_can_act": false,
-        "exception": "perk says so"
+        "exception": "perk says so",
+        "built": false,
+        "built_note": "not built; see spec item 1501. What the engine does instead: an unaware enemy loses round 1 (Stealth and awareness, item 92), and an ambush from hiding opens on the attacker's own turn with the AP it has left. The spec's surprise round stands until Leon rules."
       }
     },
     "turn": {
@@ -523,6 +510,7 @@
         "ap": 4,
         "rounds": 10,
         "area": "3-tile cone",
+        "area_built": "every enemy ahead of the shooter within 1.5 tiles of the line to the target (a weapon with Wide Spray: its auto_width + 0.5), at any range the weapon reaches. Cone or corridor is open: spec item 1502",
         "to_hit": -2,
         "text": "one roll per target"
       },
@@ -626,8 +614,7 @@
       },
       {
         "id": "cast_soul",
-        "ap": "soul_cast_ap",
-        "improvise_extra_ap": 1
+        "ap": "soul_cast_ap"
       },
       {
         "id": "syphon",
@@ -644,11 +631,11 @@
       },
       {
         "id": "pray",
-        "ap": 3,
+        "ap": "by the prayer (patrons.json prayer): a Whisper 1, a Hymn 3, a Miracle 3",
         "requires": {
-          "patron": true,
           "faith_min": 3
-        }
+        },
+        "note": "an Atheist prays too, by dice, with no patron (rules 1.6: Atheists and pilgrims)"
       },
       {
         "id": "speak",
@@ -668,7 +655,7 @@
       {
         "id": "stabilise",
         "ap": 2,
-        "ap_combat_medic": 1,
+        "ap_bard": 1,
         "requires_item": "stim"
       }
     ],
@@ -862,7 +849,7 @@
       "ally_stabilise": {
         "item": "stim",
         "ap": 2,
-        "ap_combat_medic": 1
+        "ap_bard": 1
       }
     },
     "death_releases_bots": true
@@ -1099,7 +1086,7 @@
           "delta": "+flux vented"
         },
         {
-          "event": "vanguard_reactive_plate_3_guard",
+          "event": "defender_reactive_plate_3_guard",
           "delta": 2
         },
         {
@@ -1159,7 +1146,7 @@
         "effect": "all flux to the air"
       },
       "hit": "damage spells: brain_power vs defense; Afflictions: the target saves against 12 + the caster's strength with Brain Power; Boons and Workings: no roll",
-      "damage": "Subjects' damage summed x Reach x Burst x Delivery multipliers x 0.9 per repeated glyph x the Line multiplier (rules 1.17: 1.7 for 2 glyphs, 1.75 for 3, 1.8 for 4; a character's Lines only) x sigil multiplier x elemental multiplier (elemental damage); a critical x1.5, to x2.0 at most; no ceiling",
+      "damage": "the strongest damaging Subject in full + half of every other damaging glyph (items 588, 589) x Reach x Burst x Delivery multipliers x 0.9 per repeated glyph x the Line multiplier (rules 1.17: 1.7 for 2 glyphs, 1.75 for 3, 1.8 for 4; a character's Lines only) x (1 + the Sigil bonus + the Elemental bonus for elemental damage: added, not multiplied); a critical x1.5, to x2.0 at most; no ceiling",
       "example": {
         "words": [
           "spark",
@@ -1186,8 +1173,7 @@
         "two_schools_from_will_power": 5,
         "second_school_extra_cost": 10,
         "module_slots": "1 + floor(will_power/3)",
-        "ready_designs": "2 + floor(empathy/2)",
-        "improvise_in_combat_extra_ap": 1,
+        "ready_designs": "2 + floor(will_power/2), at least 3",
         "second_school": "a rider at half strength with its own option",
         "forms_per_design": 1
       },
@@ -1440,7 +1426,7 @@
         "supplies",
         "toxins"
       ],
-      "combat_medic_treats_injuries": true
+      "bard_treats_injuries": true
     }
   },
   "traits_rules": {
@@ -1453,13 +1439,15 @@
   "perks_rules": {
     "acquired": {
       "per_skill": 2,
-      "mastery1": "take one at Tier I",
-      "mastery3": "upgrade to Tier II or take the other at Tier I",
-      "mastered": "both at Tier II"
+      "step_at_points": [3, 5, 7, 9],
+      "step": "one perk step at each of Mastery 1 to 4: one of the skill's two perks at Tier I, or one already held raised to Tier II",
+      "mastered_at_points": 10,
+      "mastered": "the skill's own Mastered perk, granted automatically",
+      "data": "perks.json rules.acquired and rules.mastered"
     },
     "achieved": {
-      "requires": "Mastery 1 in every listed skill + a deed in play",
-      "granted_by": "narrator",
+      "requires": "Mastery 2 (5 points) in every listed skill + a deed in play",
+      "granted_by": "the engine for the nine deeds it can watch in a fight (rules 1.14); the Narrator for the other ten, and the Narrator may still grant any of them by hand",
       "engine_checks": "skills; records deed"
     },
     "ultimate": {
@@ -1498,20 +1486,17 @@
     ],
     "narrator_owns": [
       "setting every TN and stating the stakes",
-      "patron mood TN",
       "describing the world",
       "playing NPCs and Celestial patrons",
       "calling Overreach triggers",
       "writing voice hooks and voicing passed hooks",
       "nat20 benefit and nat1 complication",
-      "granting Achieved perks and recording deeds",
+      "granting the Achieved perks whose deeds the engine cannot watch (it grants the nine fight deeds itself, rules 1.14; any may still be granted by hand) and recording deeds",
       "awarding XP by source",
-      "placing tutors for advanced classes",
-      "judging on-theme vs off-theme while Witnessed",
-      "designing Miracles",
       "setting the starting meter by location",
       "Legendary Deeds",
       "keeping the Veil and the Knowing",
+      "Faith (rules 1.6): pacts, knowledge pieces, Narrator rites, Devotion XP moves for deeds (-6 to +5) and the day counter; the engine owns the tags, vows, Witnessed, interventions and the Miracles",
       "trait and perk effects flagged narrator"
     ]
   },

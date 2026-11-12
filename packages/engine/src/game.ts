@@ -1,5 +1,6 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS, levelGiven, fightLevelOf } from './data';
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
@@ -354,7 +355,7 @@ export type Action =
   | { type: 'combat/vent'; unitId: string } | { type: 'combat/core'; unitId: string } | { type: 'combat/outburst'; unitId: string; design: string; aim?: string; hold?: boolean; watch?: boolean }
   | { type: 'combat/release'; unitId: string; aim?: string } | { type: 'combat/syphon'; unitId: string } | { type: 'combat/crystallise'; unitId: string }
   // Outburst 2.0 (rules 1.5): combat/outburst Begins and holds at stage 0; with an aim (and no hold: true) it is a snap
-  // cast, Begin + Release at once at stage 0 (3 AP, ×0.6); then Pump, Release, Let go, Steady the heart, Feed (a glyph on your tile), Heart Overwatch.
+  // cast, Begin + Release at once at stage 0 (3 AP, at stage 0's multiplier); then Pump, Release, Let go, Steady the heart, Feed (a glyph on your tile), Heart Overwatch.
   | { type: 'combat/pump'; unitId: string; feeling?: string } | { type: 'combat/revert'; unitId: string } | { type: 'combat/letgo'; unitId: string } | { type: 'combat/steady'; unitId: string } | { type: 'combat/feed'; unitId: string }
   | { type: 'combat/heartwatch'; unitId: string; on?: boolean }
   | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; tone?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/pick'; charId: string; module: string; via?: string } | { type: 'magic/forget'; charId: string; designId: string }
@@ -457,8 +458,37 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterItems(c as any); } catch { /* a save this old is handled by apply */ }
   return g;
 }
+// ---------- what apply() shares with the state it was given (it copies everything else) ----------
+// `campaign` (the campaign file: read in play, about 40% of a fight's state), `sandbox.saved.campaign` (the room's own
+// campaign, parked while the Proving Ground is open) and the lines in `archive` (every story line past the 400th) are
+// NOT copied by apply(): the new state holds the same campaign objects and a new list of the same archive lines. So the rule for both: REPLACE, NEVER WRITE IN PLACE (g.campaign = { ...g.campaign, zones }, never
+// g.campaign.zones.push(…)); a write in place would change the previous state too (the one the store keeps for a
+// reroll and React is drawing). The engine's test suite turns the freeze on (test/helpers/setup.ts): both are frozen
+// deep when shared, and so is every zone map built from the campaign, so a write in place throws at its own line.
+let FREEZE_ON = false; const FROZEN = new WeakSet<object>();
+/** Tests only: freeze what apply() shares (see above). Returns the old setting. The suite's setup file sets the global
+ * instead: it must not import the engine (a test file that mocks an engine module has to be the first to load it). */
+export function _freezeShared(on: boolean): boolean { const was = FREEZE_ON; FREEZE_ON = on; return was; }
+const freezing = () => FREEZE_ON || (globalThis as any).__PHC_FREEZE_SHARED === true;
+function deepFreeze(o: any) { if (!o || typeof o !== 'object' || FROZEN.has(o)) return; FROZEN.add(o); Object.freeze(o); for (const v of Object.values(o)) deepFreeze(v); }
+/** The copy apply() works on: everything but the campaign, the archive's lines and the campaign a Proving Ground
+ * parked in sandbox.saved (the room's own, read back whole at sandbox/end), in the same key order. */
+function workingCopy(state: GameState): GameState {
+  const parked = (state as any).sandbox?.saved?.campaign || null; // a Proving Ground opened from the title has none (null)
+  const slim: any = {}; for (const k of Object.keys(state)) if (k !== 'campaign' && k !== 'archive') slim[k] = (state as any)[k];
+  if (parked) slim.sandbox = { ...slim.sandbox, saved: { ...slim.sandbox.saved, campaign: null } }; // the key keeps its place; the object goes back below
+  const copy = JSON.parse(JSON.stringify(slim)), g: any = {};
+  if (parked) copy.sandbox.saved.campaign = parked;
+  for (const k of Object.keys(state)) {
+    if (k === 'campaign') { if (state.campaign !== undefined) g.campaign = state.campaign; }
+    else if (k === 'archive') { if (state.archive !== undefined) g.archive = Array.isArray(state.archive) ? state.archive.slice() : state.archive; }
+    else if (k in copy) g[k] = copy[k];
+  }
+  if (freezing()) { deepFreeze(state.campaign); deepFreeze(parked); if (Array.isArray(state.archive)) for (const e of state.archive) deepFreeze(e); }
+  return g;
+}
 export function apply(state: GameState, action: Action, by: string): GameState {
-  const g: GameState = JSON.parse(JSON.stringify(state));
+  const g: GameState = workingCopy(state);
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
   for (const c of Object.values(g.characters || {})) {
@@ -682,7 +712,7 @@ function reduce(g: GameState, a: Action, by: string) {
       const o = g.overreach.find((x) => x.id === a.id); if (!o || o.choice) fail('Nothing to choose.');
       const c = g.characters[o!.charId]; if (c.owner !== by) fail('Not your character.');
       // 'overreach_cost' {c, skill, cost}: Echo to resist (Crowded Head +1).
-      const oc: any = emitStory(g, 'overreach_cost', { c, skill: o!.skill, cost: (c.skills[o!.skill] || 0) >= 10 ? 2 : 1, g }), cost = Math.max(0, oc.cost);
+      const oc: any = emitStory(g, 'overreach_cost', { c, skill: o!.skill, cost: (c.skills[o!.skill] || 0) >= 10 ? ((SKILL[o!.skill] as any)?.unlocks?.['10']?.resist_echo ?? 2) : 1, g }), cost = Math.max(0, oc.cost);
       const choice = a.choice === 'resist' && c.echo >= cost ? 'resist' : 'indulge';
       if (choice === 'resist') gainEcho(c, -cost, 'resisting Overreach', g); else gainEcho(c, 1, 'indulging Overreach', g);
       feelOverreach(g, c, choice); // rules 1.8: Defiance, Abandon
@@ -2037,7 +2067,8 @@ const mapCache = new WeakMap<object, Record<string, MapDef>>();
 /** A zone of the campaign as a map, or a built-in map by id. */
 export function mapFor(g: GameState, id: string): MapDef | null {
   const c = campaignOf(g), z = c?.zones.find((x) => x.id === id);
-  if (z) { let cache = mapCache.get(c!); if (!cache) { cache = {}; if (g.campaign) mapCache.set(c!, cache); } return (cache[id] ||= zoneToMap(z, Object.fromEntries(c!.zones.map((x) => [x.id, x.name])))); }
+  // The cache lives as long as the campaign object, and apply() shares that object between states: a map from here is read-only.
+  if (z) { let cache = mapCache.get(c!); if (!cache) { cache = {}; if (g.campaign) mapCache.set(c!, cache); } if (!cache[id]) { cache[id] = zoneToMap(z, Object.fromEntries(c!.zones.map((x) => [x.id, x.name]))); if (freezing()) deepFreeze(cache[id]); } return cache[id]; }
   return MAPS[id] || null;
 }
 export const zoneMap = (g: GameState): MapDef => mapFor(g, g.story.zone || campaignOf(g)?.startZone || 'yard') || MAPS.yard;
@@ -2634,7 +2665,7 @@ function repairAlly(cb: Combat, u: Combat['units'][number], t: Combat['units'][n
   if (!t || t.side !== u.side || t.dead) return 'Pick a squadmate.';
   if (!holdersOf({ u: t }).some((h) => h.key === 'trait:factory_made')) return t.name + ' isn\'t a machine: stim them instead.';
   if (dist(u.pos, t.pos) > 1) return 'Walk up to them first.';
-  if ((u.proficiency || 0) < 3) return 'Needs Proficiency 3.';
+  if ((u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
   if (!(u.parts || 0)) return 'No spare-parts charges.';
   if (t.hp >= t.maxHp) return t.name + ' is already whole.';
   const cost = actionAp({ u }, 'field_repair', 2).ap; if (u.ap < cost) return 'Needs ' + cost + ' AP.';
@@ -4045,12 +4076,16 @@ function sbWorldPlay(g: GameState, a: Extract<SandboxAction, { type: 'sandbox/ca
     sbLog(g, n.name + ' (' + (n.kind || 'human') + ', ' + n.side + ') at ' + refOf(n.pos) + ' [' + n.id + '].'); return;
   }
   // An objective of the Proving Ground's drill mission (made on first use), with its where and status.
-  const camp: any = g.campaign || (g.campaign = JSON.parse(JSON.stringify(PROVING_GROUND)));
+  const camp0: any = g.campaign || JSON.parse(JSON.stringify(PROVING_GROUND));
   const id = String(a.id || '').trim().replace(/[^a-z0-9_]/gi, '_').slice(0, 40); if (!id) fail('Name the objective.');
-  let m = (camp.missions ||= []).find((x: any) => x.id === 'drill');
-  if (!m) { m = { id: 'drill', title: 'Drill', act: 1, summary: 'The Proving Ground\'s practice objectives.', goal: 'Practise.', objectives: [] }; camp.missions.push(m); }
+  // The campaign is shared between states (workingCopy): the mission list, the drill mission and its objectives are
+  // copied, written, and put back as a new campaign object.
+  const missions: any[] = [...(camp0.missions || [])]; let mi = missions.findIndex((x: any) => x.id === 'drill');
+  if (mi < 0) { missions.push({ id: 'drill', title: 'Drill', act: 1, summary: 'The Proving Ground\'s practice objectives.', goal: 'Practise.', objectives: [] }); mi = missions.length - 1; }
+  const m = { ...missions[mi], objectives: (missions[mi].objectives || []).map((x: any) => ({ ...x })) }; missions[mi] = m;
   let o = m.objectives.find((x: any) => x.id === id);
   if (!o) { o = { id, text: (a.text || id).slice(0, 120), done_when: 'The tools mark it.' }; m.objectives.push(o); } else if (a.text) o.text = a.text.slice(0, 120);
+  g.campaign = { ...camp0, missions };
   const ms = g.story.missions || (g.story.missions = { active: [], done: [], failed: [], objectives: {}, revealed: [], side: [], choose: null, ending: null, opening: null, act: { scene: g.story.scene.n, xp: {} } });
   if (!ms.active.includes('drill')) { ms.active.push('drill'); ms.done = ms.done.filter((x) => x !== 'drill'); }
   const st = (ms.objectives.drill ||= {}); st[id] = a.status === 'done' || a.status === 'failed' ? a.status : 'open';

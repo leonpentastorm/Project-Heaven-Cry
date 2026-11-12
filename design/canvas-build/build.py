@@ -16,13 +16,15 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "design" / "canvas"
 BUILD = ROOT / "design" / "canvas-build"
 # --web: build the same screen data for the web game (apps/web), with its own image URLs (tools/build_web_assets.py).
-# --web --check: write nothing; exit 1 when apps/web/src/game/protodata.json is not what the data pack builds today.
+# --web --check: write nothing; exit 1 when apps/web/src/game/protodata.json is not what the data pack builds today (tools/check.py).
 WEB = "--web" in sys.argv
 BLOBS = json.loads(((ROOT / "apps/web/src/game/assets.json") if WEB else (BUILD / "blobs.json")).read_text())
 PAL = json.loads((ROOT / "art/style-guide/palette.json").read_text())
 
+sys.path.insert(0, str(ROOT / "tools"))
+import text_numbers  # texts read their numbers: {=path} placeholders are filled from the item's own fields, as the engine does
 def load(name):
-    return json.loads((ROOT / "data" / name).read_text())
+    return text_numbers.resolve_file(json.loads((ROOT / "data" / name).read_text()))
 
 INK = {k: v["ui_ink"] for k, v in PAL["attributes"].items()}
 CORE = PAL["ui"]["cores"]
@@ -331,14 +333,14 @@ def build_web():
         # `npm run check` and the web build's prebuild both run this; nothing is written.
         have = dst.read_text() if dst.exists() else ""
         if have == text:
-            print("screen data fresh:", dst.relative_to(ROOT), "matches data/*.json")
+            print("screen data fresh:", dst.relative_to(ROOT), "matches data/*.json: 0 errors")
             return
         try:
             old = json.loads(have)
         except Exception:
             old = {}
         stale = [k for k in out if json.dumps(old.get(k), ensure_ascii=False, sort_keys=True) != json.dumps(out[k], ensure_ascii=False, sort_keys=True)]
-        print("error: screen data STALE:", dst.relative_to(ROOT), "does not match data/*.json (changed: " + (", ".join(stale) or "formatting") + ").")
+        print("error: screen data STALE:", dst.relative_to(ROOT), "does not match data/*.json (changed: " + (", ".join(stale) or "formatting") + "): 1 error.")
         print("       The creation and sheet screens would show old card texts. Run: python3 design/canvas-build/build.py --web")
         sys.exit(1)
     dst.write_text(text)

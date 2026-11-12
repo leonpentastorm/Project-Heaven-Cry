@@ -6,8 +6,8 @@ import { alive, dist, burstRolls, lineOfSight, unitSees, sideSees, effectiveRang
 import type { HeldWatch } from '../types';
 import { looseRound } from './press';
 
-// 27. Overwatch: the first enemy to move in your sight: the held shot. Precise: +2. Auto: it is a Burst (rules 1.18: its rolls; each
-//     later one −1). Spread: anyone coming within 4 tiles (instead of anyone moving in sight).
+// 27. Overwatch: the first enemy to move in your sight: the held shot. Precise: +2. Auto: it is a Burst (rules 1.18: a character's two rolls, the second at −4; an
+//     enemy's old three, each later one −1). Spread: anyone coming within 4 tiles (instead of anyone moving in sight).
 technique({
   id: 'overwatch',
   run(t) { holdWatch(t, { trigger: 'moves' }); return null; },

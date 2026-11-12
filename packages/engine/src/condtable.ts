@@ -12,6 +12,7 @@
 //           does not put it on
 // DURATIONS ARE IN ONE UNIT: `rounds` counts the ends of the bearer's own turns (a condition put on during the
 // bearer's own turn doesn't lose a round at that turn's end). `until` lasts until its rule ends it (UNTIL, 99).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import conditionsJ from '../../../data/conditions.json';
 import type { Fam } from './rolls';
 

@@ -4,10 +4,12 @@
 // minefield still sets a mine off. Hidden hazards are found by passive Vigilant, by stepping in, or by a reveal.
 // Every hazard carries two approaches the engine writes itself: find a safe path (a lane that doesn't trigger for the
 // squad) and disarm (removes it; failing gives the actor one tile of the hazard). Deterministic: dice from the rng.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
 import { type Combat, type Unit, hurtUnit, emitFx, dist, refOf } from './combat';
 import { applyCond, saveAgainst } from './magic';
 import { passiveVigilance } from './character';
+import { SKILL } from './data';
 import { type Rng } from './rng';
 import type { Approach } from './objects';
 
@@ -106,6 +108,6 @@ export function spotHazards(cb: Combat, u: Unit) {
     if (!near || passive < hazardTn(h)) continue;
     h.hidden = false;
     emitFx(cb, 'hazard_spotted', { id: h.id, kind: h.kind, at: h.tiles[0], tiles: [...h.tiles], by: u.id, how: 'vigilant' });
-    cb.log.push(u.name + ' spots a ' + (h.name || HAZARD[h.kind]?.name || h.kind).toLowerCase() + ' at ' + refOf(h.tiles[0]) + (h.tiles.length > 1 ? ' (+' + (h.tiles.length - 1) + ' tiles)' : '') + ' (Vigilant ' + passive + ' vs ' + hazardTn(h) + ').');
+    cb.log.push(u.name + ' spots a ' + (h.name || HAZARD[h.kind]?.name || h.kind).toLowerCase() + ' at ' + refOf(h.tiles[0]) + (h.tiles.length > 1 ? ' (+' + (h.tiles.length - 1) + ' tiles)' : '') + ' (' + SKILL.vigilant.name + ' ' + passive + ' vs ' + hazardTn(h) + ').');
   }
 }

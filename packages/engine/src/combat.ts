@@ -1,7 +1,8 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
 import { MAP_LAYOUTS, readLayout, nearestFree } from './maplayout';
-import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
+import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
@@ -27,7 +28,7 @@ import { noteFallbacks } from './effects/narrator';
 import { windowStep } from './effects/actions';
 import { type Hazard, hazardStep, spotHazards, hazardLiveAt, HAZARD } from './hazards';
 import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PICKUP_AP, PILE } from './containers';
-import { canStand, standBlocker, unitsIn } from './kit';
+import { canStand, standBlocker, unitsIn, inBounds } from './kit';
 import { setBraced, setDowned, setNailed, stagger, clearStagger, rawDazed, rawBleed } from './unitstate';
 import { setProne, bleedTick, dazeSpent } from './magic';
 import { condMods, condDef } from './condtable';
@@ -350,7 +351,7 @@ function volleyAp(cb: Combat, u: Unit, t: Unit | null, mode: string, base: numbe
 }
 
 export const key = (x: number, y: number) => x + ',' + y;
-export const xy = (k: string) => k.split(',').map(Number) as [number, number];
+export const xy = (k: string): [number, number] => { const i = k.indexOf(','); return i < 0 ? (k.split(',').map(Number) as [number, number]) : [+k.slice(0, i), +k.slice(i + 1)]; }; // asked for every tile of every path and line of sight: no split, no map
 // ---------- grid references (spec: Grid references): columns A, B, C… left to right, rows 1, 2, 3… top to bottom ----------
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const colName = (x: number) => (x < 26 ? LETTERS[x] : LETTERS[Math.floor(x / 26) - 1] + LETTERS[x % 26]);
@@ -602,7 +603,6 @@ export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp:
   for (const o of objectsOf(cb)) { const c = coverKind(o); if (c) out[o.pos] = { kind: c, hp: o.hp ?? 0, max: o.max ?? 0, id: o.id, name: o.name }; }
   return out;
 }
-const coverKeys = (cb: Combat, kind?: 'half' | 'full') => Object.entries(coverOf(cb)).filter(([, c]) => !kind || c.kind === kind).map(([k]) => k);
 export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...objectsOf(cb).filter(isDifficult).map((o) => o.pos)]);
 export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
 export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb)]);
@@ -656,12 +656,12 @@ export const damageCover = damageObject;
 export function spotTraps(objs: MapObject[], pos: string, vigilant: number, name: string, log: (s: string) => void) {
   for (const o of objs) if (o.hidden && isTrap(o)) {
     const t = kindOf(o).trap!, passive = passiveVigilance(vigilant);
-    if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots a trap at ' + refOf(o.pos) + ' (Vigilant ' + passive + ' vs ' + t.detect_tn + ').'); }
+    if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots a trap at ' + refOf(o.pos) + ' (' + SKILL.vigilant.name + ' ' + passive + ' vs ' + t.detect_tn + ').'); }
   }
   // Rules 1.9: a hidden pile (the Narrator's) falls to the same passive Vigilant, by its kind's spot TN and range (item 677).
   for (const o of objs) if (o.hidden && !isTrap(o) && kindOf(o).spot) {
     const t = kindOf(o).spot!, passive = passiveVigilance(vigilant);
-    if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots something on the ground at ' + refOf(o.pos) + ' (Vigilant ' + passive + ' vs ' + t.detect_tn + ').'); }
+    if (dist(o.pos, pos) <= t.detect_range && passive >= t.detect_tn) { o.hidden = false; log(name + ' spots something on the ground at ' + refOf(o.pos) + ' (' + SKILL.vigilant.name + ' ' + passive + ' vs ' + t.detect_tn + ').'); }
   }
 }
 /** Open or close an adjacent door (1 AP in a fight). */
@@ -699,28 +699,52 @@ export function paths(cb: Combat, from: string, self: string, avoid?: Set<string
   const solid = new Set([...moveBlockers(cb), ...objectsOf(cb).filter((o) => isTrap(o) && trapKnown(o, me?.side || 'pc')).map((o) => o.pos)]);
   for (const k of opt.runnable) solid.delete(k);
   const blocked = new Set(cb.units.filter((u) => u.id !== self && !u.dead && !opt.pass.has(u.id)).map((u) => u.pos));
-  const d: Record<string, number> = { [from]: 0 }, prev: Record<string, string> = {}, open = [from];
-  const stand = (k: string) => !solid.has(k) && !blocked.has(k);
-  while (open.length) {
-    // The nearest open tile, the earliest found among equals (what a stable sort of the whole list gave, without
-    // sorting it at every step: a 26 × 26 map has 676 tiles to visit).
-    let bi = 0; for (let i = 1; i < open.length; i++) if (d[open[i]] < d[open[bi]]) bi = i;
-    const k = open.splice(bi, 1)[0], [x, y] = xy(k);
-    if (avoid && k !== from && avoid.has(k)) continue; // reachable, but no way through
+  // The search: the nearest open tile first, the EARLIEST FOUND among equals; `dist` and `prev` list tiles in the order
+  // they were first found. Callers depend on both (the first best tile of Object.entries(dist); which of two equal
+  // routes is walked, and so which hazard, Overwatch or opportunity attack it meets), so this order is part of the
+  // rules: test/paths-order.test.ts holds the plain version of this loop (strings and a scan of the open list) and
+  // compares the two tile for tile and key for key. Here the same search runs on number arrays with an indexed heap
+  // ordered by (distance now, when first found); a tile whose distance is lowered moves up and keeps its place in line.
+  // The grid is padded by one tile all round so that a start just off the map behaves as it always did.
+  const H = h + 2, N = (w + 2) * H, at = (x: number, y: number) => (x + 1) * H + (y + 1);
+  const solidA = new Uint8Array(N), blockA = new Uint8Array(N), diffA = new Uint8Array(N), avoidA = avoid ? new Uint8Array(N) : null;
+  const mark = (set: Iterable<string>, a: Uint8Array) => { for (const k of set) { const [x, y] = xy(k); if (x >= -1 && y >= -1 && x <= w && y <= h) a[at(x, y)] = 1; } };
+  mark(solid, solidA); mark(blocked, blockA); if (!opt.ignoreDifficult) mark(diff, diffA); if (avoid && avoidA) mark(avoid, avoidA);
+  const dd = new Float64Array(N).fill(-1), pv = new Int32Array(N).fill(-1), seq = new Int32Array(N), hp = new Int32Array(N).fill(-1), heap: number[] = [], found: number[] = [];
+  let counter = 0;
+  const less = (a: number, b: number) => dd[a] < dd[b] || (dd[a] === dd[b] && seq[a] < seq[b]);
+  const up = (i: number) => { const v = heap[i]; while (i > 0) { const p = (i - 1) >> 1; if (!less(v, heap[p])) break; heap[i] = heap[p]; hp[heap[i]] = i; i = p; } heap[i] = v; hp[v] = i; };
+  const down = (i: number) => { const v = heap[i], n = heap.length; for (;;) { let c = 2 * i + 1; if (c >= n) break; if (c + 1 < n && less(heap[c + 1], heap[c])) c++; if (!less(heap[c], v)) break; heap[i] = heap[c]; hp[heap[i]] = i; i = c; } heap[i] = v; hp[v] = i; };
+  const relax = (n: number, nd: number, k: number) => {
+    if (dd[n] >= 0 && !(nd < dd[n] - 1e-9)) return;
+    if (dd[n] < 0) found.push(n);
+    dd[n] = nd; pv[n] = k;
+    if (hp[n] >= 0) up(hp[n]); else { seq[n] = counter++; heap.push(n); up(heap.length - 1); }
+  };
+  const [fx0, fy0] = xy(from), onGrid = fx0 >= -1 && fy0 >= -1 && fx0 <= w && fy0 <= h, src = onGrid ? at(fx0, fy0) : -1;
+  if (onGrid) { dd[src] = 0; found.push(src); seq[src] = counter++; heap.push(src); hp[src] = 0; }
+  while (heap.length) {
+    const k = heap[0], last = heap.pop()!; hp[k] = -2; if (heap.length && last !== k) { heap[0] = last; down(0); }
+    if (avoidA && k !== src && avoidA[k]) continue; // reachable, but no way through
+    const x = ((k / H) | 0) - 1, y = k - (x + 1) * H - 1;
     for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
       if (!dx && !dy) continue;
-      const nx = x + dx, ny = y + dy, n = key(nx, ny);
+      const nx = x + dx, ny = y + dy;
       if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
-      if (!stand(n)) {
+      const n = at(nx, ny);
+      if (solidA[n] || blockA[n]) {
         // A jump clears one blocked tile in a straight line (2 tiles of movement), landing on a free one.
-        if (opt.jump) { const jx = nx + dx, jy = ny + dy, j = key(jx, jy); if (jx >= 0 && jy >= 0 && jx < w && jy < h && stand(j)) { const nd = d[k] + 2; if (d[j] === undefined || nd < d[j] - 1e-9) { d[j] = nd; prev[j] = k; open.push(j); } } }
+        if (opt.jump) { const jx = nx + dx, jy = ny + dy; if (jx >= 0 && jy >= 0 && jx < w && jy < h) { const j = at(jx, jy); if (!solidA[j] && !blockA[j]) relax(j, dd[k] + 2, k); } }
         continue;
       }
-      if (dx && dy && solid.has(key(x + dx, y)) && solid.has(key(x, y + dy))) continue; // no squeezing diagonally between two walls
-      const nd = d[k] + (diff.has(n) && !opt.ignoreDifficult ? 2 : 1) + (dx && dy ? 0.001 : 0);
-      if (d[n] === undefined || nd < d[n] - 1e-9) { d[n] = nd; prev[n] = k; open.push(n); }
+      if (dx && dy && solidA[at(x + dx, y)] && solidA[at(x, y + dy)]) continue; // no squeezing diagonally between two walls
+      relax(n, dd[k] + (diffA[n] ? 2 : 1) + (dx && dy ? 0.001 : 0), k);
     }
   }
+  const kOf = (i: number) => { const x = ((i / H) | 0) - 1; return key(x, i - (x + 1) * H - 1); };
+  const d: Record<string, number> = {}, prev: Record<string, string> = {};
+  if (!onGrid) d[from] = 0;
+  for (const i of found) { const k = i === src ? from : kOf(i); d[k] = dd[i]; if (pv[i] >= 0) prev[k] = pv[i] === src ? from : kOf(pv[i]); }
   for (const k of Object.keys(d)) d[k] = Math.round(d[k]);
   // A tile someone you pass through stands on is a way through, never a place to stop.
   for (const u of cb.units) if (u.id !== self && !u.dead && opt.pass.has(u.id)) delete d[u.pos];
@@ -729,6 +753,28 @@ export function paths(cb: Combat, from: string, self: string, avoid?: Set<string
   // again when the sabotage ends, and nobody may then be standing inside it (spec item 568).
   for (const o of objectsOf(cb)) if ((o as any).sabotaged && kindOf(o).blocks_move && o.pos !== from) delete d[o.pos];
   return { dist: d, prev };
+}
+/** The tiles one step from `from` that paths(cb, from, self) puts at distance 1, sorted: the same rules for one step
+ * (a wall, a known trap, someone standing there, the squeeze between two walls, rough ground costing 2 so not a 1-tile
+ * step, what the unit's items open, tiles nobody may stop on), without searching the whole map. For a reaction that
+ * only ever steps one tile (Duck and Roll). test/paths-order.test.ts holds it to paths(): change them together. */
+export function stepsFrom(cb: Combat, from: string, self: string): string[] {
+  const { w, h } = cb.map, me = cb.units.find((u) => u.id === self), diff = difficultOf(cb), opt = pathOpts(cb, me);
+  const solid = new Set([...moveBlockers(cb), ...objectsOf(cb).filter((o) => isTrap(o) && trapKnown(o, me?.side || 'pc')).map((o) => o.pos)]);
+  for (const k of opt.runnable) solid.delete(k);
+  const [x, y] = xy(from), out: string[] = [];
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+    if (!dx && !dy) continue;
+    const nx = x + dx, ny = y + dy, n = key(nx, ny);
+    if (nx < 0 || ny < 0 || nx >= w || ny >= h || solid.has(n)) continue;
+    if (cb.units.some((u) => u.id !== self && !u.dead && u.pos === n)) continue; // someone stands there (one you may pass through is never a place to stop)
+    if (dx && dy && solid.has(key(x + dx, y)) && solid.has(key(x, y + dy))) continue;
+    if (diff.has(n) && !opt.ignoreDifficult) continue;
+    if (opt.noStop?.has(n)) continue;
+    if (objectsOf(cb).some((o) => o.pos === n && (o as any).sabotaged && kindOf(o).blocks_move)) continue;
+    out.push(n);
+  }
+  return out.sort();
 }
 /** The revealed hazard tiles that would go off for this side (rules 1.9: not hidden, not spent, not on its safe path). */
 export function revealedHazardTiles(cb: Combat, side: 'pc' | 'foe'): Map<string, Hazard> {
@@ -791,11 +837,18 @@ export function lineOfSight(cb: Combat, a: string, b: string, ignoreVeil = false
 }
 /** The half-cover tile protecting a target: next to it and between it and the attacker (spec: Cover). */
 export function coverTileFor(cb: Combat, from: string, to: string): string | null {
-  const [tx, ty] = xy(to);
-  for (const c of coverKeys(cb, 'half')) {
-    const [cx, cy] = xy(c);
-    if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && dist(from, c) < dist(from, to)) return c;
+  // The same answer as walking coverOf(cb) in its order (tiles in the order their first cover object was placed; a
+  // tile's cover is its LAST cover object's), looking only at the eight tiles round the target: this is asked by every
+  // attack preview, and the enemy asks for a preview of every target.
+  const [tx, ty] = xy(to); let near: { k: string; kind: 'half' | 'full' }[] | null = null;
+  for (const o of objectsOf(cb)) {
+    const c = coverKind(o); if (!c) continue;
+    const [cx, cy] = xy(o.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) !== 1) continue;
+    const e = near && near.find((q) => q.k === o.pos); if (e) e.kind = c; else (near ||= []).push({ k: o.pos, kind: c });
   }
+  if (!near) return null;
+  const far = dist(from, to);
+  for (const e of near) if (e.kind === 'half' && dist(from, e.k) < far) return e.k;
   return null;
 }
 export const coverBonus = (cb: Combat, from: string, to: string) => (coverTileFor(cb, from, to) ? 5 : 0);
@@ -806,15 +859,16 @@ export function litAt(cb: Combat, k: string): boolean {
   return objectsOf(cb).some((o) => lightOf(o) > 0 && dist(o.pos, k) <= lightOf(o)) || cb.units.some((u) => !u.dead && (u.light || 0) > 0 && dist(u.pos, k) <= (u.light || 0));
 }
 /** Can this unit see that tile (range, darkness, line of sight)? */
-export function unitSees(cb: Combat, u: Unit, k: string): boolean {
+/** walls: sightBlockers(cb), from a caller that asks about many eyes or many tiles at once (building it is four times the cost of walking one line). */
+export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>): boolean {
   if (u.dead || u.downed) return false;
   const range = litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2);
-  return dist(u.pos, k) <= range && (k === u.pos || lineOfSight(cb, u.pos, k));
+  return dist(u.pos, k) <= range && (k === u.pos || lineOfSight(cb, u.pos, k, false, walls));
 }
 /** What one side sees, shared by the squad: tiles in sight, units seen, units only sensed (Sensory). */
 export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
-  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), tiles = new Set<string>();
-  for (let x = 0; x < cb.map.w; x++) for (let y = 0; y < cb.map.h; y++) { const k = key(x, y); if (eyes.some((u) => unitSees(cb, u, k))) tiles.add(k); }
+  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), tiles = new Set<string>(), walls = sightBlockers(cb);
+  for (let x = 0; x < cb.map.w; x++) for (let y = 0; y < cb.map.h; y++) { const k = key(x, y); if (eyes.some((u) => unitSees(cb, u, k, walls))) tiles.add(k); }
   const seen = new Set<string>(), sensed = new Set<string>();
   for (const t of cb.units) if (t.side !== side && !t.dead) {
     // A Hidden unit isn't seen (spec: Helpful states): at most sensed, by Sensory range.
@@ -832,13 +886,16 @@ function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen
   const r: any = emit(cb, 'sees', { cb, side, t, by, seen, sensed });
   return { seen: !!r.seen, sensed: !!r.sensed };
 }
-/** Does this side see the unit t where it stands now? The same answer as visibility(cb, side).seen.has(t.id) (its own
- * side always sees it), for one unit, without walking the map. */
-export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit): boolean {
+/** Does this side see the unit t where it stands now? For a unit on the map, the same answer as
+ * visibility(cb, side).seen.has(t.id) (its own side always sees it), for one unit, without walking the map. A unit
+ * standing OFF the map (a bug or an old save; no rule puts one there) is where the two part: this draws the line of
+ * sight to it all the same, visibility() only looks at the map's tiles. `onMapOnly` gives visibility()'s answer there
+ * too (noteSighted; test/sight-order.test.ts holds the two together). */
+export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly = false): boolean {
   if (t.side === side) return true;
   if (t.dead) return false;
-  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed);
-  let isSeen = !t.hidden && eyes.some((u) => unitSees(cb, u, t.pos));
+  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !inBounds(cb, t.pos), walls = t.hidden || off ? undefined : sightBlockers(cb);
+  let isSeen = !t.hidden && !off && eyes.some((u) => unitSees(cb, u, t.pos, walls));
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
@@ -860,7 +917,7 @@ export function moveFx(cb: Combat, u: Unit, path: string[], how: string, walked?
 }
 /** A mover's sight where it stands now, as moveFx's walked entry ('1' or '0' for the pc side, then the foe side). */
 export const sightHere = (cb: Combat, u: Unit) => (sideSeesUnit(cb, 'pc', u) ? '1' : '0') + (sideSeesUnit(cb, 'foe', u) ? '1' : '0');
-const seenIds = (cb: Combat, side: 'pc' | 'foe') => cb.units.filter((t) => t.side !== side && !t.dead && sideSeesUnit(cb, side, t)).map((t) => t.id);
+const seenIds = (cb: Combat, side: 'pc' | 'foe', onMapOnly = false) => cb.units.filter((t) => t.side !== side && !t.dead && sideSeesUnit(cb, side, t, onMapOnly)).map((t) => t.id);
 /** What a walker's side saw after each of its steps (moveUnit): at, the walker's tile; ids, the hostiles seen then. */
 export interface WalkSight { by: string; side: 'pc' | 'foe'; steps: { at: string; ids: Set<string> }[] }
 /** The walker's tile from which this unit stayed in (in = true) or out of its side's sight to the walk's end (the step
@@ -909,12 +966,14 @@ export function sightFx(cb: Combat, skip?: string | null, why: Record<string, 'h
 /** Note every hostile the party sees now in cb.sighted (it only grows; old saves start it here). */
 export function noteSighted(cb: Combat) {
   if (cb.over) return;
-  const seen = visibility(cb, 'pc').seen, had = cb.sighted || [], add = [...seen].filter((id) => !had.includes(id));
+  // seenIds: the same hostiles, in the same order, as visibility(cb, 'pc').seen, without walking every tile of the map
+  // (onMapOnly: a hostile standing off the map is not sighted, as visibility() has it; test/sight-order.test.ts)
+  const seen = seenIds(cb, 'pc', true), had = cb.sighted || [], add = seen.filter((id) => !had.includes(id));
   if (add.length || !cb.sighted) cb.sighted = [...had, ...add];
 }
 /** Does anyone on the attacker's side see the target? */
 export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | null): boolean {
-  const base = !(tgt.hidden && tgt.side !== side) && cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos));
+  const hid = tgt.hidden && tgt.side !== side, walls = hid ? undefined : sightBlockers(cb), base = !hid && cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos, walls));
   return sightHooked(cb) ? seesHook(cb, side, tgt, by || null, base, false).seen : base;
 }
 
@@ -1097,7 +1156,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   if (o.ambush) M(att.ambushMult || 1.5, 'ambush');
   if (condOn(att, 'weakened')) M(condMods('weakened').dealtMult ?? 1, 'Weakened'); // the row's damage_dealt_pct (data/conditions.json)
   if (condOn(att, 'sharpened')) M(condMods('sharpened').nextAttackMult ?? 1, 'Sharpened'); // SHARPEN (rules 1.4)
-  if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
+  if (fx.op === 'vs_status_damage' && ((tgt.bleed && fx.statuses.includes('bleeding')) || (tgt.dazedNext && fx.statuses.includes('dazed')) || (fx.statuses.includes('stunned') && condOn(tgt, 'stunned')) || (tgt.downed && fx.statuses.includes('downed')))) M(fx.mult, (w as any).grants?.name || 'weapon skill');
   const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null };
   // pierce / ignoreArmour: armour this attack ignores, set by a listener (a technique's strike, rules 1.12)
   const ctx: any = { att, tgt, mode, melee, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0 };
@@ -1202,7 +1261,9 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   const ev = emitFx(cb, melee ? 'melee' : 'shot', { unit: att.id, target: tgt.id, from: attAt, to: tgtAt, weapon: useW.id, cat: useW.category, mode, hit, crit, fumble, dmg: 0, killed: false,
     ...(!melee && att.jammed ? { jam: true } : {}), ...(fxChain ? { chain: true } : {}), ...(mode === 'thrown' ? { thrown: true } : {}),
     // the special round or arrow fired (Load Special's, a quiver's): its look on screen
-    ...(!melee && mode !== 'thrown' && ammoId(att.ammoType) && ammoId(att.ammoType) !== 'standard' ? { round: ammoId(att.ammoType) } : {}), ...(opts.fx || {}) });
+    ...(!melee && mode !== 'thrown' && ammoId(att.ammoType) && ammoId(att.ammoType) !== 'standard' ? { round: ammoId(att.ammoType) } : {}),
+    ...(!melee && typeof opts.extra === 'number' && opts.extra < 0 ? { step: opts.extra } : {}), // this roll's own to-hit step (a Burst's later roll: −4, −3, −1; an enemy's −1 or −2), for the screen
+    ...(opts.fx || {}) });
   let damage = 0, killed = false, injury = '';
   if (hit) {
     const d = attackDamage(cb, att, tgt, mode, who, { crit, dmgMult: opts.dmgMult, ambush });
@@ -1253,7 +1314,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
  * the shooter (rules 1.3; provisional): the hit's damage before the target's armour, less each one's armour. */
 function splash(cb: Combat, att: Unit, tgt: Unit, w: WeaponDef, dealt: number): string {
   // An enemy's splash grows with its tier and level as its direct hit does (rules 1.15; attackDamage's 'tier and level' term).
-  const r = radiusOf(w), raw = weaponDamage(w, dist(att.pos, tgt.pos)) * (!att.charId && att.lvlDmg ? att.lvlDmg : 1); let out = '';
+  const r = radiusOf(w), raw = ((w as any).splash_damage ?? weaponDamage(w, dist(att.pos, tgt.pos))) * (!att.charId && att.lvlDmg ? att.lvlDmg : 1); let out = '';
   for (const v of unitsIn(cb, { shape: 'burst', at: tgt.pos, r }, { downed: true, not: [tgt] })) out += hurtUnit(v, raw, false, cb, 'explosion', att);
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && dist(o.pos, tgt.pos) <= r) out += damageObject(cb, o.pos, raw * (((w as any).grants?.effect?.op === 'cover_damage_mult') ? (w as any).grants.effect.value : 1), 0, att);
   void dealt;
@@ -1872,6 +1933,7 @@ export function brace(cb: Combat, u: Unit): string | null {
   // its bearer sets only themself, for Guard and for the class moves that ask for the braced stance (rules 1.13).
   u.ap -= 1; setBraced(u, true, !weaponBraces(u)); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' }); cb.log.push(u.name + ' braces.');
   braceHook.f?.(cb, u); // a unit with a Guard pool gains Guard as it sets itself
+  emit(cb, 'protect_act', { u, how: 'brace', cb }); // 'protect_act' {u, how}: a Brace or an Interpose (the patrons' protect tag, item 600)
   return null;
 }
 
@@ -1923,12 +1985,13 @@ export function useWeaponSkill(cb: Combat, rng: Rng, u: Unit, t: Unit | null, wh
 /** Field Repair (spec): 2 AP, Proficiency 3+, one spare-parts charge; restores 10% + 5% per Proficiency point above 3. */
 export function fieldRepair(cb: Combat, u: Unit): string | null {
   if (!u.maxDur) return 'Nothing to repair.';
-  if ((u.proficiency || 0) < 3) return 'Needs Proficiency 3.';
+  if ((u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
   if (!(u.parts || 0)) return 'No spare-parts charges.';
   if ((u.dur ?? u.maxDur) >= u.maxDur) return 'Already in full repair.';
   const cost = actionAp({ u }, 'field_repair', 2).ap;
   if (u.ap < cost) return 'Needs ' + cost + ' AP.';
-  const add = Math.ceil(u.maxDur * (0.1 + 0.05 * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
+  const fr: any = (SKILL.proficiency as any).unlocks?.['3']?.effects?.[0] || {}; // the card's numbers (skills.json Field Repair)
+  const add = Math.ceil(u.maxDur * ((fr.repair_base ?? 0.1) + (fr.repair_per_point ?? 0.05) * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
   u.ap -= cost; u.parts = (u.parts || 0) - 1; u.dur = Math.min(u.maxDur, (u.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, at: u.pos, dur: 1400 });
   cb.log.push(u.name + ' patches the weapon: +' + add + ' durability (' + u.dur + '/' + u.maxDur + ').'); return null;
 }
@@ -2544,10 +2607,10 @@ export function weaponActions(u: Unit): WeaponAction[] {
   // Rules 1.13: anyone with a Guard pool (Durability 1+) may Brace, whatever the weapon: it is how Guard is gained.
   const pool = u.resMax?.guard != null;
   if (braces || pool) add({ id: 'brace', label: 'Brace', ap: 1, why: u.braced ? 'Already braced.' : need(1), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (pool ? ' You gain ' + (GUARD_RULES().brace_gain ?? 2) + ' Guard (' + ((GUARD_RULES().brace_gain ?? 2) + (GUARD_RULES().brace_shield_gain ?? 1)) + ' with a shield).' : '') + ' Moving ends it.' });
-  if (u.maxDur) { const c = actionAp({ u }, 'field_repair', 2).ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs Proficiency 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: 'Proficiency 3+, one spare-parts charge: +10% durability, +5% per Proficiency above 3.' }); }
+  if (u.maxDur) { const c = actionAp({ u }, 'field_repair', 2).ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
   const owAp = attackApCost(w, melee ? 'melee' : 'shot');
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });
-  for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? 4 : 3, why: null, text: '' });
+  for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? ((w as any).grants?.effect?.op === 'auto_ap' ? (w as any).grants.effect.value : 4) : 3, why: null, text: '' });
   // An item may replace the weapon's own skill (stat 'hide_weapon_skill' > 0: Old School's Fan the Hammer: hooks gap C6).
   if (w.grants && !((u.charId || u.held) && statQuery({ u }, 'hide_weapon_skill', { weapon: w.id, skill: w.grants.name }).add > 0)) add({ id: 'skill', label: w.grants.name + (w.grants.effect?.op === 'narrator' ? ' (Narrator)' : ''), ap: w.grants.effect?.ap || 0, why: null, text: w.grants.text || '' });
   // A unit with a fixed action list (the drone: move and shoot, item 370) has none of the weapon's other actions.

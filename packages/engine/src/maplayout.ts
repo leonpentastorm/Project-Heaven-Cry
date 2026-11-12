@@ -2,6 +2,7 @@
 // sides start. A layout is small, readable data: the campaign file (or data/maps.json for the shared open ground) holds
 // the rows, and this file turns them into the solid, difficult, start and object lists every map already had.
 // No imports from the rest of the engine: combat.ts builds its open ground from here.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import mapsJ from '../../../data/maps.json';
 
 /** max and min: a map's width and height, in tiles. deploy_min and deploy_max: tiles between the nearest of each side. */

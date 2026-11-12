@@ -15,6 +15,7 @@
 //   the state    the use counters the engine keeps (effects/uses.ts), the item's own fight state, the fight's log.
 //
 // Items that only matter in the story are left off (null shelf). Class moves have their own tab and are not listed.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import cardsJ from '../../../data/perk_cards.json';
 import type { Character } from './character';
 import type { Combat, Unit } from './combat';
