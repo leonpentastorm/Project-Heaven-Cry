@@ -783,6 +783,44 @@
           "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-orbit.png",
+      "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3",
+      "id": "module-orbit",
+      "family": "modules",
+      "action": "a dot circling a centre dot on a ring path",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-orbit.png",
+        "sha256": "55ecdb91e770d6039132837debf924a0a4afcda5b19595212238922c5bbd04e8"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-orbit.png",
+        "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-orbit.txt",
+        "sha256": "b2be676ee0825296a6cf66a90a747a3758f3bb17771f6a3c205bc03f30529cb7"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-orbit.png",
+        "128": "art/icons/modules/exports/128/module-orbit.png",
+        "64": "art/icons/modules/exports/64/module-orbit.png",
+        "56": "art/icons/modules/exports/56/module-orbit.png",
+        "48": "art/icons/modules/exports/48/module-orbit.png",
+        "44": "art/icons/modules/exports/44/module-orbit.png",
+        "40": "art/icons/modules/exports/40/module-orbit.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
     }
   ]
 }

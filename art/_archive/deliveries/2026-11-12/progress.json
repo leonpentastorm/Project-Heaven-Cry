@@ -25,13 +25,13 @@
     "feeling-joy",
     "feeling-calm",
     "module-split",
-    "module-ricochet"
+    "module-ricochet",
+    "module-orbit"
   ],
   "awaiting_after_test": "Leon verdict before remaining feeling/module production; map guides before optional maps",
   "production_approved": false,
   "remaining_now": [
-    "module-orbit",
     "module-echo"
   ],
-  "updated_utc": "2026-11-12T02:44:43.721489+00:00"
+  "updated_utc": "2026-11-12T02:46:18.517582+00:00"
 }

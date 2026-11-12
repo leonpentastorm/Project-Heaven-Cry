@@ -10476,6 +10476,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-ricochet.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-ricochet.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-orbit": {
+      "id": "module-orbit",
+      "label": "a dot circling a centre dot on a ring path",
+      "path": "art/icons/modules/module-orbit.png",
+      "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-orbit.png",
+        "128": "art/icons/modules/exports/128/module-orbit.png",
+        "64": "art/icons/modules/exports/64/module-orbit.png",
+        "56": "art/icons/modules/exports/56/module-orbit.png",
+        "48": "art/icons/modules/exports/48/module-orbit.png",
+        "44": "art/icons/modules/exports/44/module-orbit.png",
+        "40": "art/icons/modules/exports/40/module-orbit.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-orbit.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-orbit.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
