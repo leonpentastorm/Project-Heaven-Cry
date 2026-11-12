@@ -11076,6 +11076,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-swift.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-swift.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-ether": {
+      "id": "module-ether",
+      "label": "a dot passing through a dashed wall",
+      "path": "art/icons/modules/module-ether.png",
+      "sha256": "9435dd5a68f915a323a013f13b6e72fda1b96ff17400e6cdb5cf98e8c0dc8c4f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-ether.png",
+        "128": "art/icons/modules/exports/128/module-ether.png",
+        "64": "art/icons/modules/exports/64/module-ether.png",
+        "56": "art/icons/modules/exports/56/module-ether.png",
+        "48": "art/icons/modules/exports/48/module-ether.png",
+        "44": "art/icons/modules/exports/44/module-ether.png",
+        "40": "art/icons/modules/exports/40/module-ether.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-ether.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-ether.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
