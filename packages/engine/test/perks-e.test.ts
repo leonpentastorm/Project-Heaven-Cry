@@ -223,7 +223,7 @@ describe('Sweet Talker', () => {
       const f = charmed(tier); f.turn(f.pc); const foe = f.foes[0];
       // The fight may have opened with Vel's own shot, and a critical's Bleeding is a debuff that lands like any other
       // (engine foundations 2: it goes through applyCond), so the sting may already be spent: start from a clean slate.
-      f.unit(f.pc.id).ps = {};
+      f.unit(f.pc.id).ps = {}; delete f.unit(f.pc.id).uses; // (the sting's own cooldown is a uses() cell, engine foundations 2 costs: both are the slate)
       withGame(f.g, () => applyCond(f.cb, rng(), f.unit(foe.id), f.unit(f.pc.id), 'shaken', 2, undefined, { skipSave: true }));
       expect(f.turn(f.pc).ap).toBe(want);
     }
