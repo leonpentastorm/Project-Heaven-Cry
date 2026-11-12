@@ -11,7 +11,7 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import feelJ from '../../../data/feelings.json';
 import { SOUL_RULES } from './data';
 import type { Character } from './character';
-import { type Combat, type Unit, dist, lineOfSight } from './combat';
+import { say, type Combat, type Unit, dist, lineOfSight } from './combat';
 import { fxTaps } from './fxtap';
 import { onHook, onStoryHook, boundGame, charOfUnit } from './effects/hooks';
 import { emitFx } from './combat';
@@ -64,7 +64,7 @@ export function feelChar(g: any, c: Character | null | undefined, id: string, wh
   if (cb) {
     let unit: string | null = null;
     for (const v of cb.units) if (v.charId === c.id && v.mg) { const fl = (v.mg.feelings ||= []); if (!fl.includes(id)) fl.push(id); unit ||= v.id; }
-    cb.log.push(text);
+    say(cb, text);
     emitFx(cb, 'felt', { unit, char: c.id, feeling: id, name: f.name, family: f.family, why });
     if (cb.overworld && g && storyNote) storyNote(g, c, text);
   } else if (g && storyNote) storyNote(g, c, text);

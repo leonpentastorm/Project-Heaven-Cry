@@ -3,7 +3,7 @@
 // hostile's id, name, tile and HP, the other side's glyphs, field and False Images out of sight, and fx that named and
 // located the unseen; the browser hid them. Now the view holds only what the viewer's side sees.
 import { describe, expect, it } from 'vitest';
-import { viewFor, emitFx, visibility, fightSight, isUnseenId, active, UNSEEN, musicFor, type Unit } from '../src';
+import { viewFor, emitFx, visibility, fightSight, isUnseenId, active, UNSEEN, musicFor, say, sayAt, unsay, fogFight, type Unit } from '../src';
 import { fightWith } from './helpers/perkfight';
 
 const H = 'host', GUEST = 'p2';
@@ -27,6 +27,8 @@ export function fogScene() {
   seen.pos = '4,5'; lurker.pos = '4,6'; lurker.hidden = true; creeper.pos = '3,0'; far.pos = '12,5'; body.pos = '12,7'; body.dead = true; body.hp = 0;
   const cb = f.cb;
   cb.fx = []; // the opening's effects were seen with the old eyes: the scene's own start here
+  cb.log.length = 0; delete cb.logSee; // and its log lines: the scene's log opens with the initiative line, as a fight's does
+  say(cb, 'Initiative: ' + cb.order.map((id) => cb.units.find((u) => u.id === id)!.name).join(' · '));
   cb.glyphs = [
     { id: 'gFar', word: 'FIRE', pos: '12,4', by: far.id, side: 'foe', left: 3, who: far.name },
     { id: 'gNear', word: 'MEND', pos: '4,4', by: seen.id, side: 'foe', left: 3, who: seen.name },
@@ -40,10 +42,10 @@ export function fogScene() {
   emitFx(cb, 'move', { unit: seen.id, from: '6,5', to: '4,5', path: ['6,5', '5,5', '4,5'], how: 'move', sight: { pc: '001', foe: '111' } });
   // Far's walk, wholly in the fog, then its shot from the fog at Cy (the HP it takes is stamped on the next effect)
   emitFx(cb, 'move', { unit: far.id, from: '13,5', to: '12,5', path: ['13,5', '12,5'], how: 'move', sight: { pc: '00', foe: '11' } });
-  cb.log.push(far.name + ' moves to ' + 'M6' + ' (1 tile).');
+  say(cb, far.name + ' moves to ' + 'M6' + ' (1 tile).');
   emitFx(cb, 'shot', { unit: far.id, from: far.pos, to: c.pos, target: c.id, weapon: 'service_pistol' });
   c.hp -= 5;
-  cb.log.push(far.name + ' shoots ' + c.name + ' from M6: 5 damage.');
+  say(cb, far.name + ' shoots ' + c.name + ' from M6: 5 damage.');
   emitFx(cb, 'hurt', { target: c.id, at: c.pos, n: 5 });
   return { f, cb, a, b, c, seen, lurker, creeper, far, body };
 }
@@ -64,8 +66,8 @@ const secret = (s: ReturnType<typeof fogScene>) => [s.lurker, s.creeper, s.far];
 
 describe('a player\'s view holds only what that side sees', () => {
   it('a guest\'s serialised view never holds an unseen hostile\'s id, name, tile or HP; the seen, the dead and the own side stay', () => {
-    // (the log is the known gap below: its lines are strings that name whom they like)
-    const s = fogScene(), v = viewFor(s.f.g, GUEST), all = js({ ...v, combat: { ...v.combat, log: [], images: [] } }); // (and the decoy, which wears Farzul's face on purpose: below)
+    // (the log too: each line carries who saw what it names, say(); below)
+    const s = fogScene(), v = viewFor(s.f.g, GUEST), all = js({ ...v, combat: { ...v.combat, images: [] } }); // (and the decoy, which wears Farzul's face on purpose: below)
     expect(units(v).sort()).toEqual(['Ada', 'Bo', 'Bodvar', 'Cy', 'Qorsa']);
     for (const u of secret(s)) { expect(all).not.toContain('"' + u.id + '"'); expect(all).not.toContain(u.name); }
     // Lurkzil's tile is in sight (it is Hidden there) and Crepzan's is sensed: both are in cb.fog, as tiles
@@ -76,7 +78,7 @@ describe('a player\'s view holds only what that side sees', () => {
     const s = fogScene();
     expect(units(viewFor(s.f.g, H)).sort()).toEqual(units(viewFor(s.f.g, GUEST)).sort());
     const hv = viewFor(s.f.g, H).combat!;
-    for (const u of secret(s)) expect(js({ ...hv, log: [] })).not.toContain('"' + u.id + '"');
+    for (const u of secret(s)) { expect(js(hv)).not.toContain('"' + u.id + '"'); expect(js({ ...hv, images: [] })).not.toContain(u.name); } // (the decoy wears Farzul's face on purpose)
   });
   it('the human Narrator (the host in "I\'ll narrate") keeps the whole fight, with the players\' sight for shading', () => {
     const s = fogScene(); s.f.g.settings.mode = 'human';
@@ -129,7 +131,63 @@ describe('a player\'s view holds only what that side sees', () => {
     const s = fogScene();
     expect(musicFor(viewFor(s.f.g, GUEST))).toEqual(musicFor(s.f.g));
   });
-  // KNOWN GAP (docs/design/handoffs/client-boundary-2-fog.md, item 1600 a): log lines are strings with no record of whom
-  // 12 Nov 2026: they name; it waits for a per-line mark in the state (and the replays re-recorded on purpose).
-  it.todo('the log withholds the lines of a hostile\'s turn its viewer\'s side never saw (needs a per-line mark in the state)');
+});
+
+// Item 1600 (a): the fight log. Each line is written by say() (combat.ts), which records, per side, whether that side saw
+// the units it names when it was written (cb.logSee); fogFight sends a side only what it saw.
+describe('the log: a player reads only the lines about what their side saw', () => {
+  it('a hostile\'s line its viewer never saw is not sent; a line about the viewer\'s own unit names the unseen as "something unseen"', () => {
+    const s = fogScene(), log = viewFor(s.f.g, GUEST).combat!.log;
+    expect(log.join('\n')).not.toContain('Farzul'); expect(log.join('\n')).not.toContain('M6');
+    expect(log.some((l) => / moves to /.test(l) && /Farzul|unseen/i.test(l))).toBe(false); // the walk in the fog: gone
+    expect(log).toContain('Something unseen shoots Cy from somewhere unseen: 5 damage.');
+    expect(log.length).toBe(s.cb.log.length - 1);
+    expect(log[0]).toMatch(/^Initiative: .*something unseen/); expect(log[0]).toContain('Qorsa'); // the opening names the unseen as unseen
+  });
+  it('a real fight\'s opening: a hostile set up Hidden is unseen in the initiative line', () => {
+    const s = fogScene(), raw = s.cb.log[0];
+    expect(raw).toContain('Lurkzil'); expect(viewFor(s.f.g, GUEST).combat!.log[0]).not.toContain('Lurkzil');
+  });
+  it('the same lines are there, whole, for the side that saw them, and for the human Narrator; the host\'s truth keeps them', () => {
+    const s = fogScene();
+    const foe = fogFight(s.f.g, s.cb, s.cb, 'foe');
+    expect(foe.log).toEqual(s.cb.log.filter(() => true).map((l) => l)); // the hostiles see Farzul; Cy is in their sight
+    expect(s.cb.log).toContain('Farzul moves to M6 (1 tile).');
+    s.f.g.settings.mode = 'human';
+    expect(viewFor(s.f.g, H).combat!.log).toEqual(s.cb.log);
+    expect((viewFor(s.f.g, H).combat as any).logSee).toBeUndefined();
+  });
+  it('sight is the sight when the line was written: a hostile that steps into sight later does not bring its old lines', () => {
+    const s = fogScene(); s.far.pos = '3,4';
+    const log = viewFor(s.f.g, GUEST).combat!.log;
+    expect(log).not.toContain('Farzul moves to M6 (1 tile).');
+    say(s.cb, 'Farzul steps out of the fog.');
+    expect(viewFor(s.f.g, GUEST).combat!.log).toContain('Farzul steps out of the fog.');
+  });
+  it('an fx\'s L counts the lines the viewer is sent', () => {
+    const s = fogScene(), v = viewFor(s.f.g, GUEST).combat!;
+    const hurt = (v.fx || []).filter((e) => e.k === 'hurt').pop()!, real = (s.cb.fx || []).filter((e) => e.k === 'hurt').pop()!;
+    expect(real.L).toBe(s.cb.log.length); expect(hurt.L).toBe(v.log.length);
+  });
+  it('a line that names nobody, or only the seen, reaches everyone', () => {
+    const s = fogScene();
+    say(s.cb, 'The wind turns.', s.seen.name + ' snarls at ' + s.a.name + '.');
+    const log = viewFor(s.f.g, GUEST).combat!.log;
+    expect(log.slice(-2)).toEqual(['The wind turns.', 'Qorsa snarls at Ada.']);
+  });
+  it('an old save (plain lines, no marks) loads, and every line is sent as it is', () => {
+    const s = fogScene(); delete (s.cb as any).logSee;
+    const saved = JSON.parse(JSON.stringify(s.f.g));
+    s.cb.log.length = 0; s.cb.log.push(...saved.combat.log);
+    expect(viewFor(saved, GUEST).combat!.log).toEqual(saved.combat.log);
+  });
+  it('sayAt and unsay keep each line\'s mark beside it', () => {
+    const s = fogScene();
+    sayAt(s.cb, 0, 'WAVE 2');
+    expect(viewFor(s.f.g, GUEST).combat!.log[0]).toBe('WAVE 2');
+    expect(viewFor(s.f.g, GUEST).combat!.log.join('\n')).not.toContain('Farzul');
+    const at = s.cb.log.indexOf('Farzul moves to M6 (1 tile).'); unsay(s.cb, at);
+    expect(viewFor(s.f.g, GUEST).combat!.log).toContain('Something unseen shoots Cy from somewhere unseen: 5 damage.');
+    expect(s.cb.logSee!.length).toBeLessThanOrEqual(s.cb.log.length);
+  });
 });

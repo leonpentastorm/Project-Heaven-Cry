@@ -1,7 +1,7 @@
 // Physical 2.0, ranged Press: Pressure with little or no damage (+1 Heat on top of what it fires: the core adds it).
 // Suppress is the lead's reference; the ranged lane builds Rake, Warning Shot, Flush, Mag Dump and Crossfire here.
 import { technique, strike, canStrike, spendRounds, addPressure, addPressureTo, onHook, save, hitByAlly, ownSideOnly, stepsWithin, stepUser, standingAt, turnStamp, atCover, flanksCover, hitPressure, pressureOf, isPressed, type Tech, type StrikeResult } from './shared';
-import { alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, neverJams, attackApCost, refOf, type Combat, type Unit } from '../../combat';
+import { say, alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileFor, coverOf, objectsAt, damageObject, weaponDamage, attackDamage, heatLimit, canJam, neverJams, attackApCost, refOf, type Combat, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { applyDamage } from '../../effects/damage';
 import { landed } from '../../effects/output';
@@ -97,7 +97,7 @@ function inWeapon<T>(t: Tech, fn: () => T): T {
 export function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): void {
   if (t.preview) return;
   const u = t.u, w = t.w;
-  if (heatsUp(t)) { u.heat += 1; if (t.hand === 'main' && canJam(w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, w)) { u.jammed = true; t.cb.log.push(u.name + '\'s weapon jams (Heat).'); } }
+  if (heatsUp(t)) { u.heat += 1; if (t.hand === 'main' && canJam(w) && !neverJams(t.cb, u) && u.heat >= heatLimit(u, w)) { u.jammed = true; say(t.cb, u.name + '\'s weapon jams (Heat).'); } }
   u.shotsThisTurn = (u.shotsThisTurn || 0) + 1; u.firstShotDone = true; u.firstShotTurn = true; u.attackedTurn = true;
   if (t.hand === 'main' && u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1);
   emitFx(t.cb, 'shot', { unit: u.id, target: null, from: u.pos, to, weapon: w.id, cat: w.category, mode: 'shot', hit: false, crit: false, fumble: false, dmg: 0, killed: false, ...(u.jammed && t.hand === 'main' ? { jam: true } : {}), tech: t.def.id, vi: 0, ...fx });
@@ -113,7 +113,7 @@ function noRollHit(t: Tech, target: Unit, mult: number, label: string): number {
   const r = applyDamage(t.cb, target, dmg, { ...d.src, shield: true, credit: 'all' } as any);
   emitFx(t.cb, 'hurt', { target: target.id, at: target.pos, dmg: r.amount, why: 'weapon', killed: r.killed, by: t.u.id });
   if (r.killed) fxFell(t.cb, target);
-  t.cb.log.push(target.name + ' takes ' + r.amount + ' (' + t.def.name + ', ' + label + ')' + (r.killed ? (target.side === 'foe' ? ' · down for good' : ' · Downed') : '') + '.');
+  say(t.cb, target.name + ' takes ' + r.amount + ' (' + t.def.name + ', ' + label + ')' + (r.killed ? (target.side === 'foe' ? ' · down for good' : ' · Downed') : '') + '.');
   return r.amount;
 }
 /** What the ordinary Pressure of a ranged hit would give this target now (rules.ts's on_hit, read without changing
@@ -174,7 +174,7 @@ technique({
     if (!canStrike(t, tgt)) return refused(strike(t, { target: tgt })); // the shot can't be made: nothing is spent
     if (p === 'auto') {
       const list = coneTargets(t, tgt), total = t.num('auto_rounds', 10), dur0 = u.dur, w = t.w;
-      if (!t.preview) { cb.log.push(u.name + ' opens up on full auto.'); emitFx(cb, 'volley', { unit: u.id, target: tgt.id, from: u.pos, to: tgt.pos, weapon: w.id, cat: w.category, mode: 'auto', shots: total }); }
+      if (!t.preview) { say(cb, u.name + ' opens up on full auto.'); emitFx(cb, 'volley', { unit: u.id, target: tgt.id, from: u.pos, to: tgt.pos, weapon: w.id, cat: w.category, mode: 'auto', shots: total }); }
       let fired = 0;
       // one full-auto volley, as fireAuto makes it (Spray and Pray and the items read the volley), one roll a target
       chained(() => {
@@ -232,7 +232,7 @@ technique({
     const tgt = t.tgt!, loud = t.line('loud') === 'loud', tn = loud ? t.num('loud_save_tn', 2) : 0;
     if (!spendRounds(t, t.def.rounds as number)) return 'Needs ' + t.def.rounds + ' round.';
     looseRound(t, tgt.pos, { warning: true });
-    if (!t.preview) t.cb.log.push(t.u.name + ' fires a warning shot past ' + tgt.name + '.');
+    if (!t.preview) say(t.cb, t.u.name + ' fires a warning shot past ' + tgt.name + '.');
     if (!save(t, tgt, 'heart', tn)) addPressure(t, tgt, t.num('pressure', 1), 'a warning shot');
     if (t.preview) t.note('No attack: ' + tgt.name + ' makes a Heart save' + (tn ? ' at −' + tn : '') + ' or gains +' + t.num('pressure', 1) + ' Pressure.');
     return null;
@@ -259,7 +259,7 @@ technique({
     if (!spendRounds(t, t.def.rounds as number)) return 'Needs ' + t.def.rounds + ' round.';
     if (p === 'arc') {
       looseRound(t, tgt.pos, { flush: true });
-      if (!t.preview) cb.log.push(u.name + ' drops a round over ' + tgt.name + '\'s cover.');
+      if (!t.preview) say(cb, u.name + ' drops a round over ' + tgt.name + '\'s cover.');
       noRollHit(t, tgt, t.num('arc_damage_mult', 0.5), 'half damage over the cover');
     } else {
       const tile = coverTileFor(cb, u.pos, tgt.pos)!, c = coverOf(cb)[tile], name = (c?.name || 'cover').toLowerCase();
@@ -268,7 +268,7 @@ technique({
       const dmg = raw * (p === 'spread' || p === 'blast' ? t.num('cover_mult', 2) : 1);
       t.pv.area = [tile];
       if (t.preview) t.note('The ' + name + ' at ' + refOf(tile) + ' takes ' + Math.max(1, Math.floor(dmg)) + (c ? ' (' + c.hp + ' HP left)' : '') + '.');
-      else { looseRound(t, tile, { object: true, flush: true }); cb.log.push(u.name + ' flushes ' + tgt.name + ': the ' + name + ' at ' + refOf(tile) + damageObject(cb, tile, dmg, 0, u) + '.'); }
+      else { looseRound(t, tile, { object: true, flush: true }); say(cb, u.name + ' flushes ' + tgt.name + ': the ' + name + ' at ' + refOf(tile) + damageObject(cb, tile, dmg, 0, u) + '.'); }
     }
     addPressure(t, tgt, t.num('pressure', 2), 'flushed');
     return null;
@@ -361,7 +361,7 @@ technique({
     }
     if (step) { stepUser(t, step.route); if (!alive(t.u) || t.u.pos !== step.to) return null; } // a held shot stopped the step: the shot is lost
     const r = strike(t, o);
-    if (!r.ok) { if (step) { t.cb.log.push('  The shot can\'t be made from there.'); return null; } return refused(r); }
+    if (!r.ok) { if (step) { say(t.cb, '  The shot can\'t be made from there.'); return null; } return refused(r); }
     if (r.hit && alive(r.target || tgt)) addPressure(t, r.target || tgt, extra, 'crossfire'); // the unit really struck
     return null;
   },

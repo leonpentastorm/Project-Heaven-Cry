@@ -262,7 +262,7 @@ register({
       const u = h.u, a: Unit | undefined = ctx.att; if (!u || ctx.tgt !== u || !a || a.side === u.side || !alive(u) || !alive(a)) return;
       const s = stateOf(h); if (s.acted || s.countered) return;
       const mode = isMelee(WEAPON[u.weapon]) ? 'melee' : 'shot', pv = previewAttack(ctx.cb, u, a, mode as any, { free: true }); if (!pv.ok) return;
-      s.countered = true; ctx.cb.log.push(u.name + ' stood still, and answers the miss.');
+      s.countered = true; say(ctx.cb, u.name + ' stood still, and answers the miss.');
       resolveAttack(ctx.cb, ctx.rng || { state: ((ctx.cb.round || 1) * 7919 + (ctx.cb.log.length || 1)) >>> 0 }, u, a, mode as any, charOfUnit(u), { free: true }); checkOver(ctx.cb);
     },
     action_done: (ctx, h) => { if (ctx.u === h.u && h.cb && !overworld(h.cb) && !NOT_ACTING.has(ctx.a?.type)) stateOf(h).acted = true; },

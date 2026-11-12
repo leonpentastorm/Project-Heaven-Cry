@@ -4,7 +4,7 @@
 import { technique, strike, canStrike, answer, canAnswer, landed, stop, onHook, meleeFx, fallFx } from './shared';
 import type { Tech } from './shared';
 import type { StrikeOpts } from '../types';
-import { alive, active, dist, type Unit } from '../../combat';
+import { say, alive, active, dist, type Unit } from '../../combat';
 import { ITEM } from '../../data';
 import { canReact } from '../../tactics';
 import { mod } from '../../character';
@@ -71,7 +71,7 @@ technique({
         const shield = shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, // with any weapon (Leon's ruling, 10 Nov 2026)
            bonus = attackSkill(t) + shield;
         const rv = rollVs(t.cb, t.rng, { by: t.u, mod: bonus, tn: vs, nat: false, over: true, why: 'parry' }), won = rv.ok; // it must BEAT the attack's total
-        t.cb.log.push(t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': ' + rv.text + (shield ? ' (incl. +' + shield + ' shield)' : '') + (won ? ' · the hit is halved' : ' · it gets through') + '.');
+        say(t.cb, t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': ' + rv.text + (shield ? ' (incl. +' + shield + ' shield)' : '') + (won ? ' · the hit is halved' : ' · it gets through') + '.');
         meleeFx(t, 'parry', { from: att.pos, to: v.pos, attacker: att.id, ally: forAlly ? v.id : null, won });
         if (!won) return;
         ctx.parryWon = true; // a Parried hit costs the one it lands on no Momentum (physical/rules.ts)

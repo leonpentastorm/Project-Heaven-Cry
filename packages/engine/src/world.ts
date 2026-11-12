@@ -6,7 +6,7 @@
 import { SKILL, TN_LADDER, WEAPON, SIGIL } from './data';
 import { type Character, mod, checkMod, packOf, carriedKg, carryLimit, overweightKg, wordsKnownCap } from './character';
 import { copyWord, growthOf, knowsWord, learnedElsewhere } from './sigilgrowth';
-import { type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf, pickUp, unitSees, visionOf } from './combat';
+import { say, type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf, pickUp, unitSees, visionOf } from './combat';
 import { isCache, isPile, pileAt, dropOnTile, lootToPack, PILE } from './containers';
 import { gearBonus, gearHas } from './character';
 import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy, MARK } from './objects';
@@ -316,7 +316,7 @@ export function dropFromDowned(g: GameState) {
     const c = u.charId ? g.characters[u.charId] : null; if (!c?.carried?.length || !(u.downed || u.dead)) continue;
     const taken = new Set([...cb.units.filter((x) => !x.dead).map((x) => x.pos), ...(cb.dropped || []).map((d) => d.at)]), blocked = new Set(objectsOf(cb).filter(blocksMove).map((o) => o.pos));
     const near = () => { const [x0, y0] = u.pos.split(',').map(Number); for (let r = 1; r < 6; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const k = (x0 + dx) + ',' + (y0 + dy); if (standable(cb.map, k) && !taken.has(k) && !blocked.has(k)) return k; } return u.pos; };
-    for (const x of [...c.carried]) { const k = near(); taken.add(k); (cb.dropped ||= []).push({ npc: x.npc, at: k, by: c.id }); emitFx(cb, 'drop', { unit: u.id, target: x.npc.id, at: k, name: x.npc.name }); cb.log.push(c.name + ' goes down and drops ' + x.npc.name + ' at ' + refOf(k) + '.'); }
+    for (const x of [...c.carried]) { const k = near(); taken.add(k); (cb.dropped ||= []).push({ npc: x.npc, at: k, by: c.id }); emitFx(cb, 'drop', { unit: u.id, target: x.npc.id, at: k, name: x.npc.name }); say(cb, c.name + ' goes down and drops ' + x.npc.name + ' at ' + refOf(k) + '.'); }
     delete c.carried;
   }
 }
@@ -353,7 +353,7 @@ export function search(g: GameState, c: Character, objId: string, cb?: Combat, u
   const names = o!.items!.map((x) => (x.qty > 1 ? x.qty + ' × ' : '') + (x.name || (WEAPON[x.item]?.name) || x.item.replace(/_/g, ' '))).join(', ');
   const n = takeItems(g, c, o!);
   const line = c.name + ' searches the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.';
-  if (cb) { cb.log.push(line); emitFx(cb, 'search', { unit: u!.id, at: o!.pos, obj: o!.id, items: n }); }
+  if (cb) { say(cb, line); emitFx(cb, 'search', { unit: u!.id, at: o!.pos, obj: o!.id, items: n }); }
   else { W().push(g, { kind: 'system', text: line, act: true, charId: c.id }); worldFx(g, 'search', { unit: 'pc-' + c.id, at: o!.pos, obj: o!.id, items: n }); }
   worldEvent(g, 'search', c.name + ' searched ' + o!.name + ' (' + o!.id + '): ' + names + '.');
   if (!cb) examineTriggers(g, c, o!.id);
@@ -550,7 +550,7 @@ function success(g: GameState, c: Character, t: Target, ap: Approach, p: string,
 }
 function failure(g: GameState, c: Character, t: Target, ap: Approach, p: string): string {
   const I = W(), f = ap.fail || '';
-  if (f === 'hurt') { const dmg = FAIL_HURT[ap.tn] ?? 20; onWorld(g, c, (cb, u) => { cb.log.push(c.name + ' pays for it (' + ap.label + ')' + hurtUnit(u, dmg, false, cb, 'hazard') + '.'); }); return 'hurt ' + dmg; }
+  if (f === 'hurt') { const dmg = FAIL_HURT[ap.tn] ?? 20; onWorld(g, c, (cb, u) => { say(cb, c.name + ' pays for it (' + ap.label + ')' + hurtUnit(u, dmg, false, cb, 'hazard') + '.'); }); return 'hurt ' + dmg; }
   if (f === 'alarm') { raiseAlarm(g, p, c); return 'alarm'; }
   if (f === 'condition' && ap.failCondition && isCondition(ap.failCondition)) { worldCond(g, c, ap.failCondition); return ap.failCondition; }
   if (f === 'jam') { ap.gone = true; if (t.kind === 'obj') { t.o.jam = g.story.scene.n; I.push(g, { kind: 'system', text: t.o.name + ' at ' + refOf(t.o.pos) + ' jams: no way in this scene.' }); } return 'jammed'; }
@@ -562,7 +562,7 @@ function failure(g: GameState, c: Character, t: Target, ap: Approach, p: string)
 /** A failed approach's condition: the ones a story carries (Bleeding, Shaken…) for the scene; the rest on the area map. */
 export function worldCond(g: GameState, c: Character, id: string) {
   if (STORY_CARRY.has(id)) { setStoryCond(g, c, id === 'left_brain_debuff' ? 'ldebuff' : id === 'right_brain_debuff' ? 'rdebuff' : id, 'scene'); W().push(g, { kind: 'system', text: c.name + ' is ' + id.replace(/_/g, ' ') + ' for the scene.', charId: c.id }); return; }
-  onWorld(g, c, (cb, u) => { const r = applyCond(cb, cb.worldRng || g.rng, null, u, id, undefined, undefined, { skipSave: true }); if (r) cb.log.push(c.name + r.replace(/^ · [^ ]+/, '').replace(/^ · /, ' ') + '.'); });
+  onWorld(g, c, (cb, u) => { const r = applyCond(cb, cb.worldRng || g.rng, null, u, id, undefined, undefined, { skipSave: true }); if (r) say(cb, c.name + r.replace(/^ · [^ ]+/, '').replace(/^ · /, ' ') + '.'); });
 }
 function loseItem(c: Character, what: string): string {
   const pack = packOf(c).map((x) => ({ ...x })), w = what.toLowerCase();

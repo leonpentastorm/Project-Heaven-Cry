@@ -1,7 +1,7 @@
 // Physical 2.0 (rules 1.12): Pressure, the ranged meter. It sits on the target (0 to 4): Pressed at 2, Suppressed at 3,
 // Broken at 4 (enemies only). The meter's own arithmetic lives here; what raises and lowers it by the rules (a first
 // ranged hit, a kill nearby, the end of a turn) is in rules.ts, and techniques add through core's addPressure().
-import { type Combat, type Unit, emitFx, alive, coverOf, coverTileFor, unitSees, xy, key } from '../combat';
+import { say, type Combat, type Unit, emitFx, alive, coverOf, coverTileFor, unitSees, xy, key } from '../combat';
 import { isSilent } from '../tactics';
 import { PHYS_RULES } from './data';
 import { foesOf } from '../kit';
@@ -45,7 +45,7 @@ function set(cb: Combat, u: Unit, to: number, by: Unit | null, why: string, hidd
   // hidden pips: the event goes to the shooter's side only (viewFor drops an event marked `only` for the other side)
   emitFx(cb, 'pressure', { unit: u.id, at: u.pos, now: to, was, state: s1, by: by?.id || null, why, ...(hidden && by ? { hidden: true, only: by.side } : {}) });
   if (s1 !== s0) {
-    if (to > was && s1) cb.log.push(u.name + ' is ' + s1[0].toUpperCase() + s1.slice(1) + (by ? ' (' + by.name + ': ' + why + ')' : '') + '.');
+    if (to > was && s1) say(cb, u.name + ' is ' + s1[0].toUpperCase() + s1.slice(1) + (by ? ' (' + by.name + ': ' + why + ')' : '') + '.');
     for (const f of LISTENERS) f(cb, u, s0, s1);
   }
 }

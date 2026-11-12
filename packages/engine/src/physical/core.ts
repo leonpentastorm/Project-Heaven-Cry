@@ -2,7 +2,7 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
+import { say, unsay, type Combat, type Unit, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
@@ -484,7 +484,7 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
   const bonus = Math.max(...skills.map((s) => (FAM[s] && (s === FAM[s] || !c) ? unitSave(target, FAM[s]) : c ? mod((c.skills as any)[s] || 0) : target.attack ?? 0)));
   // the one save (rolls.ts): items that change saves are asked; the family is the first one named (a skill save: Body)
   const sv = rollSave(t.cb, t.rng, { by: t.u, target, fam: skills.map((x) => FAM[x]).find(Boolean) || 'body', id: 'stop', via: techVia(t), tn, mod: bonus, lead: skills.join(' or ') + ' save' }), ok = sv.ok;
-  t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + sv.text + ').');
+  say(t.cb, target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + sv.text + ').');
   // the save for the screen (HOLDS / STEADY); kept to the target's side when the user's side can't see it
   emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sv.skipped ? {} : { die: sv.die, mod: sv.mod, total: sv.total, tn: sv.tn }), ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
   return ok;
@@ -493,7 +493,7 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
  * `by` set it, `who` saves against `tn` (techSaveTn of `by` with the skill it was set with). True: it saved. */
 export function saveOutside(cb: Combat, rng: Rng, by: Unit | null, who: Unit, against: string, tn: number, via?: string): boolean {
   const sv = rollSave(cb, rng, { by, target: who, fam: 'body', id: 'stop', via, tn, mod: unitSave(who, 'body') });
-  cb.log.push(who.name + (sv.ok ? ' saves' : ' fails the save') + ' against ' + against + ' (' + sv.text + ').');
+  say(cb, who.name + (sv.ok ? ' saves' : ' fails the save') + ' against ' + against + ' (' + sv.text + ').');
   return sv.ok;
 }
 /** The skill a technique's conditions and saves are delivered by (rules 1.13): the one its weapon hits with. */
@@ -502,7 +502,7 @@ export const techVia = (t: Tech): string => hitsWith(t.weaponId) || 'raw_power';
 export function cond(t: Tech, target: Unit, id: string, rounds?: number, opts: { save?: boolean; tnAdd?: number; arg?: any } = {}): boolean {
   if (t.preview) { t.note(target.name + ': ' + id.replace(/_/g, ' ') + (rounds ? ' ' + rounds + (rounds === 1 ? ' round' : ' rounds') : '') + (opts.save ? ' (save)' : '') + '.'); return true; }
   const s = applyCond(t.cb, t.rng, t.u, target, id, rounds, undefined, { skipSave: !opts.save, tnAdd: opts.tnAdd, arg: opts.arg, via: techVia(t) });
-  if (s) t.cb.log.push(target.name + s.replace(/^ · /, ': ') + '.');
+  if (s) say(t.cb, target.name + s.replace(/^ · /, ': ') + '.');
   return !/resists|untouched|shrugs/.test(s);
 }
 const stoppedNow = (u: Unit) => ((u as any).stopped || 0) > 0;
@@ -540,7 +540,7 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
   if (ranged) (target as any).stopped = active(t.cb) === target ? 2 : 1;
   if (!took.length) return true; // only the AP loss landed
   emitFx(t.cb, 'stopped', { unit: target.id, how: took.join('+'), by: t.u.id, ...(opts.apLoss ? { apLoss: opts.apLoss } : {}), ...(opts.untilAp && took.includes('pinned') ? { untilAp: opts.untilAp } : {}) });
-  t.cb.log.push(target.name + ' is ' + took.map((h) => (h === 'push' ? 'pushed' : h === 'halt' ? 'stopped' : h)).join(' and ') + ' (' + t.def.name + ').');
+  say(t.cb, target.name + ' is ' + took.map((h) => (h === 'push' ? 'pushed' : h === 'halt' ? 'stopped' : h)).join(' and ') + ' (' + t.def.name + ').');
   return true;
 }
 export type StopHow = 'pinned' | 'push' | 'prone' | 'halt';
@@ -561,7 +561,7 @@ export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string
   }
   const mv = displace(cb, t.rng, target, to, o);
   if (mv.blockedAt && dir === 'away') pushBlocked(t, target, mv.blockedAt, opts.how); // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
-  if (mv.moved) cb.log.push(target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ')' + mv.text + '.');
+  if (mv.moved) say(cb, target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ')' + mv.text + '.');
   return mv.moved;
 }
 /** Breaching Strike's rule for a push that is blocked, bound by perks/skeleton.ts (that file imports this one). */
@@ -701,7 +701,7 @@ export function loseWeaponInto(t: Tech, target: Unit): void {
   if (t.c && GEAR) item = GEAR.lose(t.cb, u, t.hand, null);
   else { if (t.hand === 'off') delete u.offWeapon; else { u.weapon = 'fists'; u.ammo = 0; u.jammed = false; } }
   (target.stuck ||= []).push({ by: u.id, weapon: id, ...(item ? { item } : {}) });
-  t.cb.log.push('  The ' + (WEAPON[id]?.name || id).toLowerCase() + ' is stuck in ' + target.name + '.');
+  say(t.cb, '  The ' + (WEAPON[id]?.name || id).toLowerCase() + ' is stuck in ' + target.name + '.');
 }
 /** Take a weapon entry straight into a free hand of the unit (a character: the reducer's gear change; a unit with no
  * sheet: its empty main hand). False when it has no free hand. */
@@ -766,7 +766,7 @@ export function holdWatch(t: Tech, spec: WatchSpec): void {
 export function endWatch(cb: Combat, u: Unit, why: string): void {
   const w = (u as any).watch as HeldWatch | undefined; if (!w) return;
   delete (u as any).watch; emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: w.id, why, ...ownSideOnly(cb, u) });
-  if (why !== 'replaced' && why !== 'fired' && why !== 'turn') cb.log.push(u.name + ' loses the held shot (' + why + ').');
+  if (why !== 'replaced' && why !== 'fired' && why !== 'turn') say(cb, u.name + ' loses the held shot (' + why + ').');
 }
 /** A held Watch's trigger has happened: spend the reaction and run fn (the strikes). False when the user can't react
  * now (Pressed, no reaction left, an item cancels it): the Watch stays held. kind 'overwatch' keeps the old Overwatch's
@@ -778,7 +778,7 @@ export function fireWatch(t: Tech, ctx: any, target: Unit, fn: () => void, kind:
   ctx?.flush?.(); // the mover's walk so far plays before the shot
   useReaction(cb, u); delete (u as any).watch;
   emitFx(cb, kind === 'overwatch' ? 'overwatch' : 'watch_fire', { unit: u.id, target: target.id, from: u.pos, at: target.pos, id: w.id, mode: 'shot', ...fx });
-  cb.log.push(u.name + (kind === 'overwatch' ? ' fires from overwatch.' : ' fires the held shot (' + t.def.name + ').'));
+  say(cb, u.name + (kind === 'overwatch' ? ' fires from overwatch.' : ' fires the held shot (' + t.def.name + ').'));
   fn(); checkOver(cb);
   return true;
 }
@@ -789,7 +789,7 @@ export function answer(t: Tech, against: Unit | null, fn: () => void): boolean {
   const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: against, kind: 'answer', id: t.def.id, cancel: false, at: u.pos, cb, rng: t.rng }); if (rw.cancel) return false;
   useReaction(cb, u);
   emitFx(cb, 'technique', { unit: u.id, id: t.def.id, group: 'answer', system: t.def.system, target: against?.id || null, hand: t.hand, at: u.pos, reaction: true });
-  cb.log.push(u.name + ' answers with ' + t.def.name + '.');
+  say(cb, u.name + ' answers with ' + t.def.name + '.');
   fn(); checkOver(cb);
   return true;
 }
@@ -885,10 +885,10 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   const more = p.h!.fx?.(t) || {};
   const ev = emitFx(cb, 'technique', { unit: u.id, id, group: def.group, system: def.system, target: t.tgt?.id || null, tile: args.tile || null, hand: t.hand, at: u.pos,
     line: lineProp(def, t.weaponId, args.line, u), opt: args.opt ?? null, ammo: args.ammo ?? (t.wield === 'throwable' && args.item != null ? String(args.item) : null), weapon: t.weaponId, ...more });
-  const logAt = cb.log.length; cb.log.push(u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
+  const logAt = cb.log.length; say(cb, u.name + ' uses ' + def.name + (t.tgt ? ' on ' + t.tgt.name : '') + '.');
   const err = withVia(u, techVia(t), () => p.h!.run(t));
   if (err) { // a handler must refuse before it changes anything: the cost comes back
-    refund(cb, u, ap); u.heat = heat0; cb.log.splice(logAt, 1); (ev as any).refused = true;
+    refund(cb, u, ap); u.heat = heat0; unsay(cb, logAt); (ev as any).refused = true;
     if (mCost && u.res) { const now = momentumOf(u); u.res.momentum = Math.min(u.resMax?.momentum ?? now + mCost, now + mCost); momentumFx(cb, u, now); }
     if (opener0) u.openerUsed = opener0; else delete u.openerUsed;
     if (gCost) addGuard(cb, u, gCost);
@@ -897,9 +897,9 @@ export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rn
   if (def.group === 'press' && t.w.heat_limit && !u.infiniteAmmo && !scratch(t).cancelled) {
     u.heat += 1;
     // the Press's own Heat can jam the gun (Leon's ruling, 10 Nov 2026), as a shot's does (the main hand's gun)
-    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !neverJams(cb, u) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; cb.log.push(u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
+    if (t.hand !== 'off' && t.wield !== 'throwable' && canJam(t.w) && !neverJams(cb, u) && !u.jammed && u.heat >= heatLimit(u, t.w)) { u.jammed = true; say(cb, u.name + '\'s ' + t.w.name.toLowerCase() + ' overheats and jams (' + def.name + ').'); }
   } // a Press costs +1 Heat on top of what it fires (after the roll: the card's to-hit is the roll's)
-  for (const n of t.pv.notes) cb.log.push('  ' + n);
+  for (const n of t.pv.notes) say(cb, '  ' + n);
   const st = scratch(t);
   if (st.usedSetUp && !st.madeSetUp) delete (u as any).setUp; // a set-up is for one technique
   if (def.system === 'melee') { const ch = chainFor(cb, u); ch.n++; ch.last = id; if (def.group === 'finisher') ch.ended = true; }
@@ -1019,12 +1019,12 @@ function previewPaired(cb: Combat, u: Unit, id: string, args: TechArgs): TechPre
 }
 function usePaired(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng): string | null {
   const pv = previewPaired(cb, u, id, args); if (!pv.ok) return pv.why || 'Not now.';
-  cb.log.push(u.name + ' uses both hands.');
+  say(cb, u.name + ' uses both hands.');
   const e = useTechnique(cb, u, id, { ...args, hand: 'main', _pair: { hit: -1, ap: pv.ap } } as any, rng); if (e) { cb.log.pop(); return e; }
   if (u.dead || u.downed || cb.over) return null;
   const tgt = args.targetId ? cb.units.find((x) => x.id === args.targetId) : null;
   if (tgt && (tgt.dead || tgt.downed)) return null; // the first weapon ended it
   const e2 = useTechnique(cb, u, id, { ...args, hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any, rng);
-  if (e2) cb.log.push('  (off hand: ' + e2 + ')');
+  if (e2) say(cb, '  (off hand: ' + e2 + ')');
   return null;
 }

@@ -19,7 +19,7 @@ import patronsJ from '../../../data/patrons.json';
 import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
-import { unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
+import { say, unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
 import { condOn, applyCond, endCond, harm, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { pushAway } from './effects/core';
 import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot } from './effects/cost';
@@ -445,7 +445,7 @@ export function miracleCost(g: GameState | null, cb: Combat | null, c: Character
   const lv = devotionLevelOf(devotionXpOf(c)), to = devotionThreshold(Math.max(0, lv - MIRACLE_COST_LEVELS));
   return shiftDevotion(g, cb, c, to - devotionXpOf(c), 'the Miracle: Devotion −' + MIRACLE_COST_LEVELS + ' levels');
 }
-function logFaith(g: GameState | null, cb: Combat | null, text: string) { if (cb) cb.log.push(text); else if (g) B?.push(g, { kind: 'system', text }); }
+function logFaith(g: GameState | null, cb: Combat | null, text: string) { if (cb) say(cb, text); else if (g) B?.push(g, { kind: 'system', text }); }
 
 // ---------- the caps on tags, on the character (rules 1.6.1, items 703-704) ----------
 /** What a character's tags (and the Narrator) have given this session, scene and fight. On the character, not the fight
@@ -526,7 +526,7 @@ export function grantLine(rng: Rng, patron: any, name: string): string | null {
 function speak(g: GameState | null, cb: Combat | null, rng: Rng, c: Character, patron: any, bank: string, said?: string | null): string | null {
   const text = said ?? patronLine(rng, patron, bank); if (!text) return null;
   const ev = { patron: patron.id, event: bank, text, char: c.id };
-  if (cb) { emitFx(cb, FAITH_FX.patron_line, ev); cb.log.push(patron.name + ': "' + text + '"'); }
+  if (cb) { emitFx(cb, FAITH_FX.patron_line, ev); say(cb, patron.name + ': "' + text + '"'); }
   else if (g) { storyFx(g, FAITH_FX.patron_line, ev); B?.push(g, { kind: 'system', head: patron.name.toUpperCase(), text: '"' + text + '"' }); }
   return text;
 }
@@ -564,7 +564,7 @@ function breakVow(cb: Combat, u: Unit, why: string) {
   const v = u.vow; if (!v || v.state !== 'sworn') return;
   const c = unitChar(u); if (!c) return; v.state = 'broken'; if (c.vow) c.vow = { ...v };
   emitFx(cb, FAITH_FX.vow, { unit: u.id, char: c.id, id: v.id, state: 'broken', ...(v.allyId ? { allyId: v.allyId } : {}) });
-  cb.log.push(u.name + ' breaks the vow "' + (VOW[v.id]?.words || v.id) + '" (' + why + ').');
+  say(cb, u.name + ' breaks the vow "' + (VOW[v.id]?.words || v.id) + '" (' + why + ').');
   shiftDevotion(G(), cb, c, -DEVOTION_XP.vowBroken, 'vow broken'); feelChar(G(), c, 'shame', 'a vow broken', cb);
   const p = patronOf(c); if (p) speak(G(), cb, rngOf(), c, p, 'vow_broken');
 }
@@ -583,7 +583,7 @@ export function fulfilVow(cb: Combat, u: Unit, why: string): boolean {
   st.vowRound = cb.round; st.vowFulfilled = (st.vowFulfilled || 0) + 1;
   const left = hymnLeft(cb, c, u), n = HYMN_COOLDOWN.vowCut;
   emitFx(cb, FAITH_FX.vow, { unit: u.id, char: c.id, id: v.id, state: 'fulfilled', why, cut: n, left, at: u.pos, ...(banked ? { banked: true } : {}), ...(v.allyId ? { allyId: v.allyId } : {}) });
-  cb.log.push(u.name + ' fulfils the vow "' + (VOW[v.id]?.words || v.id) + '" (' + why + '): ' + (banked ? 'the wait after the next Hymn will be ' + n + ' round shorter' : 'the next Hymn comes ' + n + ' round sooner (' + (left > 0 ? 'in ' + left + (left === 1 ? ' round' : ' rounds') : 'ready now') + ')') + '.');
+  say(cb, u.name + ' fulfils the vow "' + (VOW[v.id]?.words || v.id) + '" (' + why + '): ' + (banked ? 'the wait after the next Hymn will be ' + n + ' round shorter' : 'the next Hymn comes ' + n + ' round sooner (' + (left > 0 ? 'in ' + left + (left === 1 ? ' round' : ' rounds') : 'ready now') + ')') + '.');
   // The patron speaks the first time in a fight (its vow_kept bank; the fight's end speaks it again when the vow is kept).
   if (st.vowFulfilled === 1) { const p = patronOf(c); if (p) speak(G(), cb, rngOf(), c, p, 'vow_kept'); }
   return true;
@@ -612,7 +612,7 @@ function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, am
   emitFx(cb, FAITH_FX.intervention, { unit: f.id, patron: p.id, trigger, target: target?.id || null, amount, at: (target || f).pos });
   ACTING.push(f); let said: string;
   try { said = run(); } finally { ACTING.splice(ACTING.lastIndexOf(f), 1); }
-  cb.log.push(p.name + ' intervenes for ' + f.name + said + '.');
+  say(cb, p.name + ' intervenes for ' + f.name + said + '.');
   const line = speak(G(), cb, rngOf(), c, p, 'intervention');
   // Decision 113: a god breaking in is a spotlight moment (the patron's torn strip, then the fighter's; the action it
   // happened in plays back slower). Presentation only. Never from the area map's dry run (game.ts: a throwaway copy of
@@ -620,7 +620,7 @@ function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, am
   const g = G(), why = String(said || '').replace(/^[\s:·]+/, '').trim();
   if (g && !(cb as any).dry) spotlight(g, { kind: 'god', patron: p.id, char: c.id, unit: f.id, reason: why || 'intervenes for ' + f.name, ...(line ? { line } : {}),
     ...(target ? { target: target.id, targetName: target.name } : {}), ...(target?.charId && target.charId !== c.id && target.side === f.side ? { targetChar: target.charId } : {}) });
-  if (condOn(f, 'witnessed')) { endCond(f, 'witnessed', cb); cb.log.push(f.name + ' is no longer Witnessed.'); }
+  if (condOn(f, 'witnessed')) { endCond(f, 'witnessed', cb); say(cb, f.name + ' is no longer Witnessed.'); }
 }
 /** The Quartermaster (item 742): a reload of yours that cost AP gives it all back. game.ts calls this after a
  * combat/reload action that succeeded, with the AP it took. */
@@ -665,7 +665,7 @@ export function registerFaithHooks() {
         // Red Thread: half of a hit on one of a linked pair moves to the other (item 615).
         const link = (cb as any).faithLinks?.find((l: any) => l.until >= cb.round && (l.a === t.id || l.b === t.id));
         const other = link ? cb.units.find((x) => x.id === (link.a === t.id ? link.b : link.a)) : null;
-        if (other && alive(other)) { const half = Math.floor(ctx.dmg / 2); if (half > 0) { ctx.dmg -= half; applyDamage(cb, other, half, { ...src, faithShare: true, shield: true } as any); cb.log.push('Red Thread: ' + other.name + ' takes ' + half + ' of the hit on ' + t.name + '.'); } }
+        if (other && alive(other)) { const half = Math.floor(ctx.dmg / 2); if (half > 0) { ctx.dmg -= half; applyDamage(cb, other, half, { ...src, faithShare: true, shield: true } as any); say(cb, 'Red Thread: ' + other.name + ' takes ' + half + ' of the hit on ' + t.name + '.'); } }
         // The Matchmaker's intervention: an ally next to you is hit, half moves to you.
         else for (const f of intervening(cb, 'the_matchmaker')) {
           if (f === t || f.side !== t.side || dist(f.pos, t.pos) > 1 || !alive(f)) continue;
@@ -677,7 +677,7 @@ export function registerFaithHooks() {
       }
     }
     if (ctx.phase === 'would_drop_to_0' && ctx.floor == null && !ctx.self) {
-      if ((cb as any).faithGates?.some((gt: any) => gt.side === t.side && gt.ids.includes(t.id))) { ctx.floor = 1; cb.log.push('Hold the Gate: ' + t.name + ' stays at 1 HP.'); return; }
+      if ((cb as any).faithGates?.some((gt: any) => gt.side === t.side && gt.ids.includes(t.id))) { ctx.floor = 1; say(cb, 'Hold the Gate: ' + t.name + ' stays at 1 HP.'); return; }
       for (const f of intervening(cb, 'toll_keeper')) { if (f.side !== t.side || t.companion) continue; ctx.floor = 1; intervene(cb, f, 'ally_would_die', t, 1, () => ': ' + t.name + ' stays at 1 HP'); break; }
     }
     if (ctx.phase === 'after' && ctx.dealt > 0 && by) {
@@ -746,11 +746,11 @@ export function registerFaithHooks() {
       x.faithTogether = x.faithTogether.filter((t: any) => t.by !== u.id);
     }
     // Hearthlight: allies starting a turn in it heal the zone's amount (patrons.json; × power × the level factor).
-    for (const z of x.faithZones || []) if (z.until >= cb.round && z.side === u.side && z.tiles.includes(u.pos) && !u.dead) cb.log.push('Hearthlight: ' + u.name + healLine(cb, cb.units.find((v) => v.id === z.by) || null, u, z.heal));
+    for (const z of x.faithZones || []) if (z.until >= cb.round && z.side === u.side && z.tiles.includes(u.pos) && !u.dead) say(cb, 'Hearthlight: ' + u.name + healLine(cb, cb.units.find((v) => v.id === z.by) || null, u, z.heal));
   });
   onHook('turn_end', (ctx, cb) => {
     const u: Unit = ctx.u;
-    if (u.faith?.encore?.started) { delete u.faith.encore; cb.log.push('Encore: ' + u.name + '\'s repeat is gone.'); }
+    if (u.faith?.encore?.started) { delete u.faith.encore; say(cb, 'Encore: ' + u.name + '\'s repeat is gone.'); }
     // Rules 1.22, the Shield vow's moment: this unit attacked the ally someone named, its turn is over and the ally stands.
     for (const w of cb.units) { if (w.faith?.shieldAtk !== u.id) continue; delete w.faith.shieldAtk; if (!vowOn(w, 'shield')) continue; const al = cb.units.find((x) => x.id === w.vow!.allyId || (!!x.charId && x.charId === w.vow!.allyId)); if (al && alive(al) && !al.downed) fulfilVow(cb, w, al.name + ' was attacked and still stands'); }
     if (!u.charId) return;
@@ -777,7 +777,7 @@ export function registerFaithHooks() {
       condNotFresh(u, gr.condition);
       if (r && !/resists|untouched/.test(r)) fs(u).grudgeCond = gr.condition;
       emitFx(cb, FAITH_FX.grudge, { char: c.id, patron: gr.patron, sessions: Math.max(0, gr.until - sessionN(g)), condition: gr.condition, at: u.pos, unit: u.id });
-      cb.log.push('Grudge (' + (p?.name || gr.patron) + '): ' + u.name + ' starts the fight ' + condNameOf(gr.condition) + (r ? ' (' + r.replace(/^ · /, '') + ')' : '') + '.');
+      say(cb, 'Grudge (' + (p?.name || gr.patron) + '): ' + u.name + ' starts the fight ' + condNameOf(gr.condition) + (r ? ' (' + r.replace(/^ · /, '') + ')' : '') + '.');
     }
   });
   onHook('round_start', (_ctx, cb) => {
@@ -809,12 +809,12 @@ export function registerFaithHooks() {
     if (att.faith?.killEdge && tgt && tgt.side !== att.side) delete att.faith.killEdge; // spent by the roll, hit or miss (item 1288)
     // Rules 1.22: an enemy's attack on a Stand vow's swearer, or on the ally a Shield vow names, is remembered.
     if (tgt && att.side !== tgt.side) { if (vowOn(tgt, 'stand')) fs(tgt).standHit = true; for (const w of cb.units) if (w !== tgt && w.side === tgt.side && vowOn(w, 'shield') && (w.vow!.allyId === tgt.id || (!!tgt.charId && w.vow!.allyId === tgt.charId))) fs(w).shieldAtk = att.id; }
-    if (tgt?.faith?.foreknown && att.side !== tgt.side) { const left = (tgt.faith.foreknown === true ? 1 : Number(tgt.faith.foreknown) || 1) - 1; if (left > 0) tgt.faith.foreknown = left; else delete tgt.faith.foreknown; rc.hit = false; cb.log.push('Foreknowing: the attack on ' + tgt.name + ' misses.'); return; }
+    if (tgt?.faith?.foreknown && att.side !== tgt.side) { const left = (tgt.faith.foreknown === true ? 1 : Number(tgt.faith.foreknown) || 1) - 1; if (left > 0) tgt.faith.foreknown = left; else delete tgt.faith.foreknown; rc.hit = false; say(cb, 'Foreknowing: the attack on ' + tgt.name + ' misses.'); return; }
     if (vowOn(att, 'bare') && !isMelee(WEAPON[att.weapon]) && rc.mode !== 'melee') breakVow(cb, att, 'attacked with a gun');
     // Lucky Break: the next failed attack rolls (its `uses`, 2 since rules 1.21) are each rerolled at +5.
     if (att.faith?.luckyBreak && rc.hit !== true) {
       const fails = !attackHits({ ...rc, hit: undefined });
-      if (fails) { const left = (att.faith.luckyBreak === true ? 1 : Number(att.faith.luckyBreak) || 1) - 1; if (left > 0) att.faith.luckyBreak = left; else delete att.faith.luckyBreak; const r = rerollAttack(rc, rc.rng || rngOf(), 5); cb.log.push('Lucky Break: ' + att.name + ' rerolls (d20 ' + r + ' +5).'); }
+      if (fails) { const left = (att.faith.luckyBreak === true ? 1 : Number(att.faith.luckyBreak) || 1) - 1; if (left > 0) att.faith.luckyBreak = left; else delete att.faith.luckyBreak; const r = rerollAttack(rc, rc.rng || rngOf(), 5); say(cb, 'Lucky Break: ' + att.name + ' rerolls (d20 ' + r + ' +5).'); }
     }
     if (!tgt || att.side === tgt.side) return;
     for (const f of intervening(cb, 'counting_weaver')) { if (f !== tgt || !(rc.die === 20 || rc.die >= rc.critMin)) continue; intervene(cb, f, 'enemy_crits_you', att, null, () => ': the critical becomes a normal hit'); rc.die = 19; rc.critMin = 21; rc.hit = true; break; }
@@ -909,7 +909,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
     line += ' · ' + rv.text + (pv.mode === 'overreach' ? ' (overreach)' : '');
     if (!ok) {
       emitFx(cb, FAITH_FX.prayer_fail, { unit: u.id, kind, id, patron: patron?.id || null, at: u.pos, why: pv.mode === 'overreach' ? 'overreach' : 'dice' });
-      cb.log.push(line + ' · no answer.');
+      say(cb, line + ' · no answer.');
       if (pv.mode === 'overreach') { shiftDevotion(g, cb, c, OVERREACH.miss, 'a failed overreach'); speak(g, cb, rng, c, patron, 'refused'); }
       return null;
     }
@@ -923,7 +923,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   // A Miracle is past the Elite and Boss guard (bug sweep, 12 Nov 2026: it may exceed the ceilings, once a session, for five levels of Devotion).
   const did = kind === 'miracle' ? unguarded(() => runEntry(cb, rng, u, kind, pe, t, a, power)) : runEntry(cb, rng, u, kind, pe, t, a, power);
   line += did;
-  cb.log.push(line + '.');
+  say(cb, line + '.');
   if (mfx) { const grant = grantLine(rng, patron, c.name); mfx.line = grant; mfx.summary = summaryOf(did); if (grant) speak(g, cb, rng, c, patron, 'grant', grant); }
   // The price after the effect, and after its line in the log (item 621's order; items 725, 737): its own tags give
   // nothing back; Devotion −5 levels.
@@ -1025,7 +1025,7 @@ function actionWords(key: string): string { const [t, what] = key.split(':'); co
 export function encoreUsed(cb: Combat, u: Unit, spent: number, credit: number) {
   const x = { credit };
   const key = u.faith?.encore?.key || ''; if (u.faith) delete u.faith.encore;
-  cb.log.push('Encore: ' + u.name + ' repeats ' + actionWords(key) + (spent > x.credit ? ' (' + (spent - x.credit) + ' AP more than before)' : ', free') + '.');
+  say(cb, 'Encore: ' + u.name + ' repeats ' + actionWords(key) + (spent > x.credit ? ' (' + (spent - x.credit) + ' AP more than before)' : ', free') + '.');
 }
 // ---------- rules 1.21 (the Faith fit, item 1269): a prayer's damage and counts are read from its data entry ----------
 /** The first effect of an entry with this op (and passing this test), or null. */
@@ -1202,7 +1202,7 @@ export function faithFightEnd(g: GameState, cb: Combat) {
       else if (!u.dead) {
         v.state = 'kept'; const p = patronOf(c);
         emitFx(cb, FAITH_FX.vow, { unit: u.id, char: c.id, id: v.id, state: 'kept', ...(v.allyId ? { allyId: v.allyId } : {}) });
-        cb.log.push(u.name + ' kept the vow "' + (VOW[v.id]?.words || v.id) + '".');
+        say(cb, u.name + ' kept the vow "' + (VOW[v.id]?.words || v.id) + '".');
         shiftDevotion(g, cb, c, DEVOTION_XP.vowKept, 'vow kept');
         if (p) speak(g, cb, g.rng as Rng, c, p, 'vow_kept');
       }
@@ -1249,7 +1249,7 @@ function swearVow(g: GameState, a: Extract<FaithAction, { type: 'faith/vow' }>, 
   u.vow = { id: v.id, ...(allyId ? { allyId } : {}), state: 'sworn' }; c.vow = { ...u.vow };
   if (v.id === 'stand') fs(u).standFrom = nearestEnemy(cb, u);
   emitFx(cb, FAITH_FX.vow, { unit: u.id, char: c.id, id: v.id, state: 'sworn', ...(allyId ? { allyId } : {}) });
-  cb.log.push(u.name + ' swears a vow: "' + v.words + '"' + (allyId ? ' (' + cb.units.find((x) => x.id === allyId)!.name + ')' : '') + '.');
+  say(cb, u.name + ' swears a vow: "' + v.words + '"' + (allyId ? ' (' + cb.units.find((x) => x.id === allyId)!.name + ')' : '') + '.');
   return null;
 }
 

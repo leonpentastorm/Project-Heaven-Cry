@@ -45,12 +45,35 @@ is never written). The fx rule, per event:
 So a shot from the fog arrives as `{ k: 'shot', unit: '?', from: null, to: <your tile>, target: <you>, hp: {...} }`:
 the client plays the hit on you and draws nothing where the shooter is.
 
-**The log is not covered** (item 1600 a): `cb.log` lines are plain text with no record of whom they name, and a
-per-line mark would be new state, which moves every replay hash (`test/replay-hash.test.ts` is a guard that changes
-only on purpose). What it needs: either the reducer stamps each new line with the units it names (`say(cb, text,
-unitIds)` at the 253 `cb.log.push` sites, or a per-line mark computed from the action's `turn` and `move` fx at the end
-of each action, kept in the fight as `cb.logFog`), and the replays re-recorded once, on purpose. Then `fogFight` drops
-or replaces the marked lines (keep their count: the fx's `L` indexes into the log).
+## The log (item 1600 a; closed 12 Nov 2026, later the same day)
+
+Every line of `cb.log` is written by one primitive, `packages/engine/src/log.ts` (re-exported by `combat.ts` and
+`kit.ts`): `say(cb, ...lines)`, `sayOf(cb, ids, line)` (units given by id; `[]` names nobody: the Narrator's own words),
+`sayAt(cb, i, line)` (the top of the log: a wave's header) and `unsay(cb, i)` (a refused call or technique). All 266 raw
+`cb.log.push` sites were converted (mechanically: the text is the same, so the golden tables did not move);
+`test/lint-foundations.test.ts` "the fight log is written through say()" fails on a raw `push`, `unshift` or `splice` on a
+log anywhere but `log.ts` (memory.ts's thread logs are not a fight's).
+
+- **What is recorded.** `say` finds the units a line names by their names (`unitsNamedIn`, `combat.ts`: longest name
+  first, word boundaries, so "Raider 2" is not "Raider") and asks, for each side, whether that side sees each one **now**
+  (`sideSeesUnit`; on its side, or dead, counts as seen). The answer is kept beside the line in `cb.logSee` (a parallel
+  array; trailing 0s are not kept, so a fight where everything is in sight carries none): `0` every side may read it,
+  else `{ pc?, foe? }` with `0` (that side saw none of the units it names) or `{ n: names, t: tiles }` (the names that
+  side didn't see, and their tiles then, as `refOf` and `x,y`). Never recomputed later: a hostile that walks into sight
+  does not bring its old lines. A preview's copy writes no marks (`logQuietly`, `preview.ts`).
+- **The initiative line** names every unit; `sightQuietly`'s set-up (who starts Hidden) re-marks it (`remarkOpening`).
+- **What a player is sent** (`fogLog`, `fog.ts`): a line with no mark for its side, whole; a `0`, not at all; a list,
+  with each name as "something unseen" ("Something unseen" at the start of a line) and each tile as "somewhere unseen".
+  The fx's `L` (lines before it) is moved to count the lines sent. `logSee` itself is never sent (nor to the human
+  Narrator, who gets the whole log).
+- **Old saves**: no `logSee`: every line is sent, as before.
+- **Replays**: `cb.logSee` is new state, so the replay hashes were re-recorded once, on purpose (the action streams were
+  the same in all eight; only the state moved).
+
+**Still unconverted / not covered:** nothing pushes raw any more, but a line is only as good as its names: one that
+says "the drone" or "it" instead of the unit's name is every side's; a line that names a tile and no unit (a trap at
+F4 no one saw sprung) is every side's. Lines marked with `sayOf(cb, [], …)` (the Narrator's words, the Narrator's
+"skip") are every side's on purpose.
 
 ## What the client does now, and must never do again
 
@@ -95,17 +118,19 @@ working, not a bug.
 - `packages/engine/test/fog-view.test.ts`: the guest's serialised view holds no unseen hostile's id, name or tile; the
   host with an AI Narrator gets the same; the human Narrator gets everything plus the players' sight; sensed is a tile;
   the turn order's marks; the other side's glyph, field and False Image; the fx cuts; it appears the moment it is seen;
-  the view never writes on the host's game; the music; a `todo` for the log.
+  the view never writes on the host's game; the music; the log (a line never seen is not sent, the unseen in a sent
+  line is "something unseen", the seeing side and the human Narrator get it whole, sight is the sight when it was
+  written, fx `L`, an old save, `sayAt`/`unsay`).
 - `apps/web/src/game/boundary.test.ts`: the lint above. `apps/web/src/game/turnIntro.test.ts`: an unseen hostile's
   banner from the fogged view. `apps/web/src/game/fx/ranged.test.ts` R6: a Hidden foe's events, as `fogFight` sends
   them, draw nothing.
-- `apps/web/e2e/two-players.mjs` (not run here): every 20 loop steps, the guest's view (log and fx aside) must not name
-  a living hostile it doesn't hold, and every hostile it holds must stand on a tile in its `cb.fog`; it checks against
+- `apps/web/e2e/two-players.mjs`: every 20 loop steps, the guest's whole view (log and fx included) must not name a
+  living hostile it doesn't hold, must hold no log line the host's truth marks as unseen by the players' side, and every hostile it holds must stand on a tile in its `cb.fog`; it checks against
   the host's whole game (`window.__phc.truth()`, a test hook that returns `hostState`, null on a guest).
 
 ## What is not done
 
-- The log (above; item 1600 a).
+- Log lines that refer to a unit by something other than its name (above).
 - A walk seen at both ends sends its middle through the fog (item 1600 c).
 - The other side's zones are forgotten when they slip out of sight (item 1600 e).
 - The review's section 7 (send the static part once, bound `cb.log` in the view): not touched.

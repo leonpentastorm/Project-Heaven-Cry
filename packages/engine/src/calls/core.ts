@@ -5,7 +5,7 @@
 //
 // The shared ladder, by the speaker's points in the Call's skill (calls.json `rules`): 2 AP and 5 tiles + 1 a point;
 // step 2 at 3 points; 1 AP from 5; step 3 at 7; as a reaction once a round from 9; the first Call of a turn free at 10.
-import { type Combat, type Unit, alive, emitFx, checkOver, active, dist, sideSees } from '../combat';
+import { say, unsay, type Combat, type Unit, alive, emitFx, checkOver, active, dist, sideSees } from '../combat';
 import { charOfUnit, emit, bindGame } from '../effects/hooks';
 import { grantPerkAp } from '../effects/ap';
 import { applyCond, condOn, unitStrength, withVia } from '../magic';
@@ -140,15 +140,15 @@ export function useCall(cb: Combat, u: Unit, id: string, args: CallArgs, rng: Rn
   callMarks(tgt)[key] = { r: cb.round, id, side: u.side };
   const ev = emitFx(cb, 'call', { unit: u.id, id, target: tgt.id, at: u.pos, step: t.step, kind: def.kind, ...(t.react ? { reaction: true } : {}), ...ownSideOnly(cb, u) });
   const said = args.text ? ' "' + String(args.text).slice(0, 200) + '"' : '';
-  const logAt = cb.log.length; cb.log.push(u.name + ' calls ' + def.name + (tgt === u ? '' : (def.aim === 'enemy' ? ' at ' : ' to ') + tgt.name) + (t.react ? ' (a reaction)' : '') + said + '.');
+  const logAt = cb.log.length; say(cb, u.name + ' calls ' + def.name + (tgt === u ? '' : (def.aim === 'enemy' ? ' at ' : ' to ') + tgt.name) + (t.react ? ' (a reaction)' : '') + said + '.');
   const err = withVia(u, def.skill, () => p.h!.run(t));
   if (err) { // a handler must refuse before it changes anything: the cost and the marks come back
-    refund(cb, u, ap); cb.log.splice(logAt, 1); (ev as any).refused = true;
+    refund(cb, u, ap); unsay(cb, logAt); (ev as any).refused = true;
     if (t.react) { refundReaction(cb, u); spoken(cb, u).refund('reaction', REACT_KEY); } else spoken(cb, u).refund('per_turn', TURN_KEY);
     if (limit0) callMarks(tgt)[key] = limit0; else delete callMarks(tgt)[key];
     return err;
   }
-  for (const n of t.pv.notes) cb.log.push('  ' + n);
+  for (const n of t.pv.notes) say(cb, '  ' + n);
   if (args.text) (cb.notes ||= []).push(u.name + ' (round ' + cb.round + ', ' + def.name + (tgt === u ? '' : ' at ' + tgt.name) + '):' + said);
   checkOver(cb);
   return null;
@@ -199,7 +199,7 @@ export function hinder(t: Call, condId: string): boolean {
   if (t.preview) { if (t.def.save) t.pv.save = { unit: t.tgt.id, family: t.def.save, tn: callTn(t.u, t.def, t.tnAdd) }; return true; }
   const at0 = t.tgt.condAt?.[condId];
   const out = applyCond(t.cb, t.rng, t.u, t.tgt, condId, undefined, t.def.save, { tnAdd: t.tnAdd, via: t.def.skill });
-  if (out) t.cb.log.push(' ' + out);
+  if (out) say(t.cb, ' ' + out);
   return condOn(t.tgt, condId) && t.tgt.condAt?.[condId] !== at0;
 }
 /** A unit's Call marks as one side may see them (viewFor): a mark shows to the side that made it; the speaker's own

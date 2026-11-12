@@ -163,7 +163,7 @@ register({
     // fireBurst spends the preview's AP (2): the burst's first round spends the once-a-turn use.
     attack_target: (ctx, h) => {
       if (ctx.att !== h.u || ctx.volley !== 'burst' || ctx.vi !== 0 || !h.cb) return;
-      if (uses(h).take('per_turn', 1, h.key + '#burst')) h.cb.log.push(h.u!.name + ': Fire Discipline, the burst costs 2 AP.');
+      if (uses(h).take('per_turn', 1, h.key + '#burst')) say(h.cb, h.u!.name + ': Fire Discipline, the burst costs 2 AP.');
     },
   },
   brief: () => null,
@@ -1265,7 +1265,7 @@ register({
       if (!more.length) { say(cb, 'Storm Front: nobody else within 2 tiles.'); return; }
       const sm = ctx.mult ?? stageMult(ctx.stage), rs = ctx.riderStage ?? riderStage(cb, ctx.stage), rng = rngOf(h, ctx), lines: string[] = [];
       for (const t of more) { emitFx(cb, 'chain', { unit: u.id, from, to: t.pos, target: t.id, element: toneElement(toneOf(d)), storm: true }); lines.push(soulStrike(cb, rng, u, d, t, sm, rs, designRolls(d))); }
-      cb.log.push('Storm Front arcs on: ' + lines.join(' · ') + '.');
+      say(cb, 'Storm Front arcs on: ' + lines.join(' · ') + '.');
     },
   },
   brief: () => null,
@@ -1486,7 +1486,7 @@ export function castGift(cb: Combat, rng: Rng, bard: Unit, ally: Unit, designId:
   const was = bard.pos; bard.pos = ally.pos;
   const held = m.held;
   try { m.held = { design: d.id, stage: GIFT_STAGE, cost, tone: toneOf(d), form: formOf(d), turns: 0, v: SOUL_REV }; freely(bard, () => releaseOutburst(cb, rng, bard, formOf(d) === 'aura' ? ally.pos : aim)); } finally { bard.pos = was; m.held = held; } // the ally paid: the giver's release takes nothing
-  cb.log.push(ally.name + ' casts ' + bard.name + '\'s Gift (' + d.name + ').' + strainUp(cb, rng, bard, baseStrain(cb) + (m.emanator ? 0 : 2)));
+  say(cb, ally.name + ' casts ' + bard.name + '\'s Gift (' + d.name + ').' + strainUp(cb, rng, bard, baseStrain(cb) + (m.emanator ? 0 : 2)));
   return null;
 }
 /** The ally's cast of a Gift in a fight (combat/gift {unitId, aim}): the Bard in this fight whose Gift (this rest) the
@@ -1516,7 +1516,7 @@ register({
   }],
   on: {
     combat_start: (ctx, h) => { const gft = keep(h).gift; if (!gft || gft.stamp !== restStamp(h) || !h.cb) return; const t = h.g?.characters?.[gft.to], d = (h.c?.outbursts || []).find((x) => x.id === gft.design);
-      if (t && d && !gft.used) h.cb.log.push(t.name + ' carries ' + (h.c?.name || '') + '\'s Gift (' + d.name + '): Cast the Gift on their turn.'); },
+      if (t && d && !gft.used) say(h.cb, t.name + ' carries ' + (h.c?.name || '') + '\'s Gift (' + d.name + '): Cast the Gift on their turn.'); },
   },
   brief: () => 'A Gift cast in the story (or by the ally in a fight, until the engine can) is the Narrator\'s to rule.',
 });

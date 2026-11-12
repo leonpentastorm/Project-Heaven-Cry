@@ -1,3 +1,4 @@
+import { say } from '../log';
 // The AP perks' cooldown (rules 1.14, "The engine takes everything it can, first step"; spec items 1102 to 1105).
 // A perk or trait that gives AP on a condition gives it at most once every AP_COOLDOWN_TURNS of its holder's turns in a
 // fight: after its AP lands on one of the holder's turns, it gives none on the next two. A penalty side of the same
@@ -39,5 +40,5 @@ export function cdTick(h: Holder) {
   const cb = h.cb, u = h.u; if (!cb || !u || overworld(cb)) return;
   const last = uses(h).cooledAt(keyOf(h, 'gain')); if (last == null || cb.round <= last) return;
   const left = last + AP_COOLDOWN_TURNS - cb.round; if (left <= 0) return;
-  cb.log.push(u.name + ': ' + h.info.name + ' is cooling down. Ready again ' + (left === 1 ? 'next turn' : 'in ' + left + ' turns') + '.');
+  say(cb, u.name + ': ' + h.info.name + ' is cooling down. Ready again ' + (left === 1 ? 'next turn' : 'in ' + left + ' turns') + '.');
 }

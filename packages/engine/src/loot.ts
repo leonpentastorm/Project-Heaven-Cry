@@ -8,7 +8,7 @@ import ltJ from '../../../data/loot_tables.json';
 import { WEAPON, ITEM, CALIBRE_NAME, SIGIL, TONE, SCHOOL, MODULE } from './data';
 import { type PackItem, type Rarity, maxDurOf, plotItem, roundsOf, moduleShelved } from './character';
 import { lootToPack, magItem, itemLabel } from './containers';
-import { type Combat, type Unit, dropToPile } from './combat';
+import { say, type Combat, type Unit, dropToPile } from './combat';
 import { type Rng, next, die } from './rng';
 
 /** One thing a drop list or a table can give: an id in the loot shape (a weapon, an item, `mag:<weapon>`,
@@ -170,7 +170,7 @@ export function rollDeathDrops(cb: Combat, rng: Rng, u: Unit): PackItem[] {
   if (!list.length) return [];
   dropToPile(cb, u.pos, list, 'death');
   const line = u.name + ' drops: ' + list.map((x, i) => dropLabel(x, i < always.length)).join(', ') + '.';
-  cb.log.push(line);
+  say(cb, line);
   // Players' views keep the contents only while the tile is in sight (world.ts pileFog; review fix: the log told what
   // lay on a fogged tile). The host's state and the end-of-fight report keep the full line.
   (cb.dropLines ||= []).push({ line, at: u.pos, name: u.name }); if (cb.dropLines.length > 40) cb.dropLines.splice(0, cb.dropLines.length - 40);

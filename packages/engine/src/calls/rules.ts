@@ -1,7 +1,7 @@
 // Calls (rules 1.13): the standing rules. What a Call left on a unit (Spot, Warn, Taunt's dearer attack, Threaten's AP
 // loss, a Brief, a Cue) is read here on the fight's hooks. A preview only reads: marks are used up by a real attack
 // ('attack_target', which only a resolved attack fires), a real turn start or a real action, never in 'attack_preview'.
-import { type Combat, type Unit, alive, previewAttack, moveBlock, moveUnit, paths, unitSees } from '../combat';
+import { say, type Combat, type Unit, alive, previewAttack, moveBlock, moveUnit, paths, unitSees } from '../combat';
 import { onHook } from '../effects/hooks';
 import { briefCredit } from '../effects/ap';
 import { condSource } from '../magic';
@@ -47,7 +47,7 @@ onHook('attack_target', (ctx: any, cb) => {
   const sp = tgt.call?.spot;
   if (sp) {
     if (first) sp.live = null;
-    if (first && stands(cb, sp) && att.side === sp.side && att.id !== sp.by && sp.left > 0 && !sp.users.includes(att.id)) { sp.left--; sp.users.push(att.id); sp.live = att.id; cb.log.push('(' + att.name + ' attacks the one that was Spotted: its cover doesn\'t count.)'); }
+    if (first && stands(cb, sp) && att.side === sp.side && att.id !== sp.by && sp.left > 0 && !sp.users.includes(att.id)) { sp.left--; sp.users.push(att.id); sp.live = att.id; say(cb, '(' + att.name + ' attacks the one that was Spotted: its cover doesn\'t count.)'); }
     if (!sp.left && !sp.live) delete tgt.call!.spot;
   }
   // Warn: the unit steps before this real attack on it
@@ -60,7 +60,7 @@ onHook('attack_target', (ctx: any, cb) => {
     const to = warnStep(cb, att, tgt, ctx.mode, wn.tiles, wn.to); if (!to) return;
     const from = tgt.pos;
     if (moveUnit(cb, tgt, to, ctx.rng, 'move', { free: true, shortest: true, part: true }) || tgt.pos === from) return;
-    cb.log.push('(' + tgt.name + ' was warned and steps clear.)');
+    say(cb, '(' + tgt.name + ' was warned and steps clear.)');
     if (alive(tgt) && !previewAttack(cb, att, tgt, ctx.mode, { free: true }).ok) {
       ctx.cancel = true; ctx.why = tgt.name + ' was warned and is no longer there';
       if (!ctx.free && paid.ok && alive(att)) pay(cb, att, Math.min(apFor(cb, att), paid.ap)); // the attack was made at where they stood: its AP is spent
@@ -119,5 +119,5 @@ export function briefUsed(cb: Combat, u: Unit, used: number) {
   if (used <= 0) return;
   u.apGained = (u.apGained || 0) + used; u.apTurnTotal = (u.apTurnTotal ?? u.ap) + used; // AP from a Call counts in the turn's +3
   const b = u.call?.brief; if (b) { b.cuts.shift(); if (!b.cuts.length) delete u.call!.brief; }
-  cb.log.push('  (Briefed: that cost ' + u.name + ' ' + used + ' AP less.)');
+  say(cb, '  (Briefed: that cost ' + u.name + ' ' + used + ' AP less.)');
 }

@@ -10,7 +10,7 @@
 // Today's Throw (tactics.ts throwItem) is untouched: it stays for a character who knows no techniques, and keeps every
 // grenade effect (Blinded, the scrambler's Stun on machines, burning tiles). Lob goes through the same blast().
 import { technique, strike, canStrike, spendRounds, addPressure, endWatch, ownSideOnly, pressureDecay, onHook, strikingWith, TECHNIQUE, type Tech } from './shared';
-import { type Combat, type Unit, alive, dist, lineOfSight, unitSees, effectiveRange, emitFx, refOf, xy, key, heatLimit } from '../../combat';
+import { say, type Combat, type Unit, alive, dist, lineOfSight, unitSees, effectiveRange, emitFx, refOf, xy, key, heatLimit } from '../../combat';
 import { WEAPON, type WeaponDef } from '../../data';
 import { blast, radiusOf, throwRangeOf, isSilent, reveal } from '../../tactics';
 import { condOn } from '../../magic';
@@ -85,7 +85,7 @@ function lobGrenade(t: Tech, id: string): string | null {
   // Its AP is the technique's, already paid.
   const ctx: any = emit(cb, 'throw', { u, item: id, tile, ap: t.pv.ap, radius: radiusOf(w), cancel: false, caughtBy: null, preview: false, cb, rng: t.rng, technique: t.def.id });
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: id, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, technique: t.def.id, tech: t.def.id, vi: 0 });
-  cb.log.push(u.name + ' lobs ' + an(nameOf(w)) + ' at ' + refOf(tile!) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : lobbing(u, id, () => blast(cb, t.rng, u, tile!, id, ctx.radius))) + '.');
+  say(cb, u.name + ' lobs ' + an(nameOf(w)) + ' at ' + refOf(tile!) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : lobbing(u, id, () => blast(cb, t.rng, u, tile!, id, ctx.radius))) + '.');
   if (!ctx.cancel && explosive) blastPressure(t, tile!, ctx.radius);
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + nameOf(w));
   return null;
@@ -108,7 +108,7 @@ function lobBlast(t: Tech): string | null {
   if (t.hand === 'main' && w.heat_limit && !u.infiniteAmmo) { u.heat += 1; if (u.heat >= heatLimit(u, w)) u.jammed = true; }
   u.shotsThisTurn = (u.shotsThisTurn || 0) + 1; u.firstShotDone = true; u.firstShotTurn = true; u.attackedTurn = true;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: w.id, cat: w.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, technique: t.def.id, tech: t.def.id, vi: 0 });
-  cb.log.push(u.name + ' lobs a round from the ' + w.name + ' onto ' + refOf(tile!) + lobbing(u, w.id, () => blast(cb, t.rng, u, tile!, w.id, radius)) + (u.jammed && t.hand === 'main' ? ' · the weapon jams' : '') + '.');
+  say(cb, u.name + ' lobs a round from the ' + w.name + ' onto ' + refOf(tile!) + lobbing(u, w.id, () => blast(cb, t.rng, u, tile!, w.id, radius)) + (u.jammed && t.hand === 'main' ? ' · the weapon jams' : '') + '.');
   blastPressure(t, tile!, radius);
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'fired');
   return null;
@@ -166,7 +166,7 @@ onHook('blast_landed', (ctx: any, cb) => {
   for (const v of (ctx.who || []) as Unit[]) {
     if (!alive(v)) continue;
     endWatch(cb, v, why);
-    if (v.overwatch) { v.overwatch = null; v.owShots = 0; cb.log.push(v.name + ' loses the held shot (' + why + ').'); emitFx(cb, 'watch_end', { unit: v.id, at: v.pos, id: 'overwatch', why, ...ownSideOnly(cb, v) }); }
+    if (v.overwatch) { v.overwatch = null; v.owShots = 0; say(cb, v.name + ' loses the held shot (' + why + ').'); emitFx(cb, 'watch_end', { unit: v.id, at: v.pos, id: 'overwatch', why, ...ownSideOnly(cb, v) }); }
     endBead(cb, v, why); // sets.ts owns the Bead's state (techState(u, 'bead').targetId) and its bead_end fx
   }
 });

@@ -13,7 +13,7 @@
 //   Head Down: u.noWatch = the round: the core's gate refuses every Watch technique; the old Overwatch action is
 //         refused here.
 import { technique, stepUser, stepsWithin, endWatch, ownSideOnly, lowerPressure, techState, techStateOf, turnStamp, strikingWith, strikeRound, addPressureTo, pressureOf, pressureState, pressureDecay, atCover, onHook, type Tech } from './shared';
-import { type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponBraces, weaponBraced, heatLimit, moveUnit, moveBlock, paths } from '../../combat';
+import { say, type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponBraces, weaponBraced, heatLimit, moveUnit, moveBlock, paths } from '../../combat';
 import { condSource } from '../../magic';
 import { WEAPON } from '../../data';
 import { packOf } from '../../character';
@@ -42,7 +42,7 @@ export function endBead(cb: Combat, u: Unit, why: string): void {
   const st = techStateOf(u, 'bead'); if (!st.targetId) return;
   const was = st.targetId; techState(u, 'bead').targetId = null;
   emitFx(cb, 'bead_end', { unit: u.id, at: u.pos, target: was, why, ...ownSideOnly(cb, u) });
-  if (why !== 'replaced') cb.log.push(u.name + ' loses the bead (' + why + ').');
+  if (why !== 'replaced') say(cb, u.name + ' loses the bead (' + why + ').');
 }
 technique({
   id: 'bead',
@@ -235,7 +235,7 @@ strikeRound({
   fired(t, _tgt, type) {
     if (!type || techStateOf(t.u, 'load_special').type !== type) return; // spent by this technique's first shot already
     delete t.u.tech!.load_special;
-    t.cb.log.push('  ' + t.u.name + ' fires the chambered ' + roundName(type) + ' round.');
+    say(t.cb, '  ' + t.u.name + ' fires the chambered ' + roundName(type) + ' round.');
   },
 });
 

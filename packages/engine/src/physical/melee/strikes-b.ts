@@ -12,7 +12,7 @@
 import { technique, strike, loseWeaponInto, takeWeapon, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp, meleeFx, fallFx, refuseFx } from './shared';
 import type { Tech } from './shared';
 import { canStrike, loseWeapon, techSaveTn, techVia, saveOutside } from '../core';
-import { type Combat, type Unit, alive, dist, lineOfSight, refOf, weaponDamage, dropToPile, hurtUnit } from '../../combat';
+import { say, type Combat, type Unit, alive, dist, lineOfSight, refOf, weaponDamage, dropToPile, hurtUnit } from '../../combat';
 import { WEAPON } from '../../data';
 import { throwRangeOf } from '../../tactics';
 import { condOn, unitSave } from '../../magic';
@@ -94,7 +94,7 @@ export const binderOf = (cb: Combat, target: Unit): Unit | null => cb.units.find
 const endBind = (cb: Combat, b: Unit, why: string) => {
   const s = b.tech?.bind; if (!s?.target) return;
   const tg = cb.units.find((x) => x.id === s.target); delete s.target; delete s.pen;
-  if (why && tg) cb.log.push(b.name + '\'s bind on ' + tg.name + ' breaks (' + why + ').');
+  if (why && tg) say(cb, b.name + '\'s bind on ' + tg.name + ' breaks (' + why + ').');
 };
 // "Until your next turn."
 onHook('turn_start_pre', (ctx: any, cb) => { if (ctx.u?.tech?.bind?.target) endBind(cb, ctx.u, ''); });
@@ -128,7 +128,7 @@ onHook('move_cost', (ctx: any, cb) => {
   if (!failed && rng && saveOutside(cb, rng, b, u, 'the bind', techSaveTn(b, s.via || 'raw_power'), s.via || 'raw_power')) return; // it breaks away; the step out of reach ends the bind
   if (!failed) s.failed = stamp + ':' + u.id;
   route.length = i; // the walk the engine takes is this route: it stops before the first tile out of reach
-  cb.log.push(u.name + ' is Bound by ' + b.name + ' and can\'t move away.');
+  say(cb, u.name + ' is Bound by ' + b.name + ' and can\'t move away.');
   // Nothing left to walk: the move is refused, not paid for (move_cost can't refuse in words, so the price is put out
   // of reach, as Hamstring does; request 4). A walk that keeps some tiles goes ahead as far as it can.
   if (!route.length) ctx.ap = Math.max(ctx.ap, apFor(cb, u, { type: 'combat/move', how: ctx.how }) + 1);
@@ -208,7 +208,7 @@ technique({
     v.stuck = (v.stuck || []).filter((x: any) => x !== e); if (!v.stuck!.length) delete v.stuck;
     if (!takeWeapon(t.cb, t.u, e.weapon, e.item)) dropToPile(t.cb, t.u.pos, [e.item || { id: e.weapon, name: w.name, qty: 1, kind: 'weapon', weapon: e.weapon } as any], 'drop');
     meleeFx(t, 'throw', { from: v.pos, to: t.u.pos, target: v.id, weapon: e.weapon, back: true });
-    t.cb.log.push('  ' + t.u.name + ' wrenches the ' + w.name.toLowerCase() + ' out of ' + v.name + hurtUnit(v, dmg, false, t.cb, 'weapon', t.u) + '.');
+    say(t.cb, '  ' + t.u.name + ' wrenches the ' + w.name.toLowerCase() + ' out of ' + v.name + hurtUnit(v, dmg, false, t.cb, 'weapon', t.u) + '.');
     if (alive(v)) cond(t, v, 'bleeding');
     return null;
   },

@@ -8,7 +8,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits } from './combat';
+import { say, type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits } from './combat';
 import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
@@ -114,7 +114,7 @@ export function shiftMana(cb: Combat, by: number, why?: string) {
   const was = manaOf(cb), now = Math.max(0, Math.min(40, was + by)); cb.mana = now;
   const a = manaBand(was).id, b = manaBand(now).id;
   if (a !== b) emitFx(cb, 'mana', { band: b, mana: now });
-  if (a !== b) cb.log.push('The air turns ' + b.toUpperCase() + ' (mana ' + now + ')' + (why ? ': ' + why : '') + '.');
+  if (a !== b) say(cb, 'The air turns ' + b.toUpperCase() + ' (mana ' + now + ')' + (why ? ': ' + why : '') + '.');
 }
 /** Deaths release bots (spec: the meter): +5 a person, +3 a beast, +2 a robot. Called once per turn; each death counts once. Rules
  * 1.9: the same sweep rolls each death's drops (loot.ts) on the fight's dice, so it happens exactly once per death; the
@@ -439,7 +439,7 @@ export function bleedTick(cb: Combat, u: Unit): boolean {
   const by = u.lastHitBy ? cb.units.find((x) => x.id === u.lastHitBy) || null : null; // kill credit: whoever opened the wound
   const r = applyDamage(cb, u, Math.floor(itemAmount('condition:bleeding', 'tick', [term(flatLevelOf(by, cb), 'level')])), { type: 'bleed', by, shield: false, credit: 'hp' });
   emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'bleed', killed: u.hp === 0 }); if (u.hp === 0) fxFell(cb, u);
-  cb.log.push(u.name + ' bleeds: ' + r.dealt + ' damage' + (u.hp === 0 ? (u.side === 'foe' ? ' · down for good' : ' · Downed') : ''));
+  say(cb, u.name + ' bleeds: ' + r.dealt + ' damage' + (u.hp === 0 ? (u.side === 'foe' ? ' · down for good' : ' · Downed') : ''));
   if (u.hp === 0) { rawBleed(u, 0); return true; }
   if (!u.bleed && u.condAt) delete u.condAt.bleeding;
   return false;
@@ -450,21 +450,21 @@ export function bleedTick(cb: Combat, u: Unit): boolean {
 export function condTurnEnd(cb: Combat, u: Unit, rng?: Rng | null) {
   if (u.dead) return;
   // MASK (rules 1.4): Hidden for 2 of the bearer's turn ends, or until it attacks (then it is no longer Hidden).
-  if (u.maskLeft) { if (!u.hidden) delete u.maskLeft; else if (u.maskFresh) u.maskFresh = false; else if (--u.maskLeft <= 0) { delete u.maskLeft; rawHidden(cb, u, false); (cb.sightWhy ||= {})[u.id] = 'reveal'; emitFx(cb, 'mask', { target: u.id, at: u.pos, fade: true }); cb.log.push(u.name + "'s MASK fades: no longer Hidden."); } }
+  if (u.maskLeft) { if (!u.hidden) delete u.maskLeft; else if (u.maskFresh) u.maskFresh = false; else if (--u.maskLeft <= 0) { delete u.maskLeft; rawHidden(cb, u, false); (cb.sightWhy ||= {})[u.id] = 'reveal'; emitFx(cb, 'mask', { target: u.id, at: u.pos, fade: true }); say(cb, u.name + "'s MASK fades: no longer Hidden."); } }
   if (!u.conds) return;
   const fresh = new Set(u.condFresh || []); u.condFresh = [];
   // Corroded (rules 1.4): a Body save at the end of each of the bearer's turns ends it early (against 12 + the strength of the
   // skill that delivered it, kept in condVia). Not on the turn it landed.
   if (condOn(u, 'corroded') && !fresh.has('corroded') && rng) {
     const by = condSource(u, 'corroded'), src = by ? cb.units.find((x) => x.id === by) || null : null, sv = saveAgainst(cb, rng, src, u, 'body', 'corroded', { via: u.condVia?.corroded || 'brain_power' });
-    if (sv.ok) { endCond(u, 'corroded', cb); cb.log.push(u.name + ' scrubs off the acid (' + sv.text + ').'); }
+    if (sv.ok) { endCond(u, 'corroded', cb); say(cb, u.name + ' scrubs off the acid (' + sv.text + ').'); }
   }
   for (const id of Object.keys(u.conds)) {
     const def = CONDS[id]; if (!def) continue;
     if (def.noTick && u.conds[id] >= UNTIL) continue;
     if (fresh.has(id)) continue;
     u.conds[id]--;
-    if (u.conds[id] <= 0) { endCond(u, id, cb); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
+    if (u.conds[id] <= 0) { endCond(u, id, cb); say(cb, u.name + ' is no longer ' + condName(id) + '.'); }
   }
 }
 /** Conditions whose source is gone end (Grappled when the grappler is down or not adjacent; Taunted, Fear, Commanded and Puppeted
@@ -474,7 +474,7 @@ export function condSourcesCheck(cb: Combat, u: Unit) {
     if (!condOn(u, id)) continue;
     const by = condSource(u, id), s = by ? cb.units.find((x) => x.id === by) : null;
     const gone = !!by && (!s || s.dead || (id !== 'fear' && s.downed) || (id === 'grappled' && Math.max(...s.pos.split(',').map((v, i) => Math.abs(+v - +u.pos.split(',')[i]))) > 1));
-    if (gone) { endCond(u, id, cb); cb.log.push(u.name + ' is no longer ' + condName(id) + '.'); }
+    if (gone) { endCond(u, id, cb); say(cb, u.name + ' is no longer ' + condName(id) + '.'); }
   }
 }
 /** Damage from magic (or a wall zone): the shield first, then armour (Sigil damage takes full armour, Elemental half,
@@ -541,7 +541,7 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
   noteDeaths(cb, rng);
   // Burning burns at the start of each turn (spec: 10, until put out; it ignores armour). Timed conditions tick at the
   // end of the bearer's turn (condTurnEnd, rules 1.3).
-  if (condOn(u, 'burning') && !u.downed) { const by = condSource(u, 'burning'); cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, Math.floor(itemAmount('condition:burning', 'tick', [term(flatLevelOf(by ? cb.units.find((x) => x.id === by) || null : null, cb), 'level')])), 'true', 'fire'))); }
+  if (condOn(u, 'burning') && !u.downed) { const by = condSource(u, 'burning'); say(cb, u.name + ' burns' + harmFor('burn', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, Math.floor(itemAmount('condition:burning', 'tick', [term(flatLevelOf(by ? cb.units.find((x) => x.id === by) || null : null, cb), 'level')])), 'true', 'fire'))); }
   if (u.mg && !u.downed) heartTurnStart(cb, rng, u); // rules 1.5: Strain −1, the swell, the aura, free Pumps
   feelTurnStart(cb, rng, u); // rules 1.8: residue underfoot, fuses, Linger
   sigilTurnStart(cb, rng, u); // Quickened, Corroded, fields and traps underfoot, the unit's turrets (rules 1.4)
@@ -600,7 +600,7 @@ export function vent(cb: Combat, u: Unit): string | null {
   pay(cb, u, ap); const n = m.flux; m.flux = 0;
   const vc: any = emit(cb, 'vent', { u, flux: n, extra: 0, cb });
   const all = n + Math.max(0, vc.extra || 0);
-  emitFx(cb, 'vent', { unit: u.id, at: u.pos, flux: all }); cb.log.push(u.name + ' vents ' + n + ' Flux into the air' + (all > n ? ' (' + (all - n) + ' more with it)' : '') + (ap !== SPELL_AP.vent ? ' (' + ap + ' AP)' : '') + '.'); shiftMana(cb, all, 'vented Flux');
+  emitFx(cb, 'vent', { unit: u.id, at: u.pos, flux: all }); say(cb, u.name + ' vents ' + n + ' Flux into the air' + (all > n ? ' (' + (all - n) + ' more with it)' : '') + (ap !== SPELL_AP.vent ? ' (' + ap + ' AP)' : '') + '.'); shiftMana(cb, all, 'vented Flux');
   return null;
 }
 export function swapCore(cb: Combat, u: Unit): string | null {
@@ -609,7 +609,7 @@ export function swapCore(cb: Combat, u: Unit): string | null {
   { const no = whyNot(cb, u, ap); if (no) return no; } if (m.cores < 1) return 'No spare cores.';
   // focus: which Evoker throws out the spent core (an Evoker blade, a grand staff, else the off-hand Evoker), for the picture
   const focus = [u.weapon, u.offWeapon].find((id) => id && ((WEAPON as any)[id]?.properties || []).includes('counts_as_evoker')) || 'evoker';
-  pay(cb, u, ap); m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000, focus }); cb.log.push(u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
+  pay(cb, u, ap); m.cores--; m.charge = CORE_CHARGE; emitFx(cb, 'core', { unit: u.id, at: u.pos, dur: 1000, focus }); say(cb, u.name + ' loads a fresh core into the Evoker (' + CORE_CHARGE + ' charge).');
   return null;
 }
 /** Enemies scuff a glyph of the other side they stand on (spec: Sigils, Drawing 7). */
@@ -876,7 +876,7 @@ function easeStrain(cb: Combat, u: Unit, n: number, way: string): number {
 function calm(cb: Combat, u: Unit, n: number, way: string, quiet = false): number {
   const d = easeStrain(cb, u, n, way); if (!d) return 0;
   emitFx(cb, 'calm', { unit: u.id, at: u.pos, way, by: d, strain: u.mg!.strain });
-  if (!quiet) cb.log.push(u.name + "'s heart calms (" + ({ still: 'a still turn', fight: 'fighting it out', tend: 'tending an ally', letgo: 'let go', steady: 'steadied', turn: 'a new turn' } as Record<string, string>)[way] + '): Strain ' + u.mg!.strain + '/' + u.mg!.strainLimit + '.');
+  if (!quiet) say(cb, u.name + "'s heart calms (" + ({ still: 'a still turn', fight: 'fighting it out', tend: 'tending an ally', letgo: 'let go', steady: 'steadied', turn: 'a new turn' } as Record<string, string>)[way] + '): Strain ' + u.mg!.strain + '/' + u.mg!.strainLimit + '.');
   return d;
 }
 /** Fighting it out: the first weapon attack of a caster's own turn (melee or shot) eases 1 Strain (combat.ts calls it). */
@@ -897,12 +897,12 @@ tendHook.f = calmTend;
 export function manaShort(cb: Combat, rng: Rng, u: Unit, limit?: number): string {
   const m = heart(u)!, lim = limit ?? m.strainLimit, held = m.held, tone = held?.tone || 'raw';
   emitFx(cb, 'short', { unit: u.id, at: u.pos, held: !!held, tone, element: toneElement(tone), strain: m.strain, limit: lim });
-  cb.log.push('MANA SHORT: ' + u.name + "'s heart stops (Strain " + m.strain + '/' + lim + '): Stunned' + (held ? ', and the held Outburst goes off wild' : '') + '.');
+  say(cb, 'MANA SHORT: ' + u.name + "'s heart stops (Strain " + m.strain + '/' + lim + '): Stunned' + (held ? ', and the held Outburst goes off wild' : '') + '.');
   if (!u.dead && !u.downed) applyCond(cb, rng, null, u, 'stunned', 1, undefined, { skipSave: true });
   if (held && !u.dead) {
     wildRelease(cb, rng, u);
     // Its element's stage-1 rider on your own tile (conditions only: a push from your own tile has no way to go).
-    for (const r of toneRiders(tone, 1).riders) if (r.rider === 'cond' && r.condition && !u.dead) cb.log.push(u.name + ' takes the backlash' + applyCond(cb, rng, null, u, r.condition, r.rounds, undefined, { skipSave: !r.save }));
+    for (const r of toneRiders(tone, 1).riders) if (r.rider === 'cond' && r.condition && !u.dead) say(cb, u.name + ' takes the backlash' + applyCond(cb, rng, null, u, r.condition, r.rounds, undefined, { skipSave: !r.save }));
   }
   const was = m.strain; m.strain = Math.min(m.strain, lim); m.pumps = [];
   if (was !== m.strain) emit(cb, 'strain_change', { u, from: was, to: m.strain, why: 'short', limit: lim, cb });
@@ -914,13 +914,13 @@ export function manaShort(cb: Combat, rng: Rng, u: Unit, limit?: number): string
 export function magicTurnEnd(cb: Combat, rng: Rng | null, u: Unit) {
   const m = heart(u); if (!m || u.dead) return;
   // The Short is a state (rules 1.5: automatic at 3 over): a limit that fell this turn (Heart's Own) is checked here.
-  if (rng && m.strain - m.strainLimit >= SHORT_AT_OVER && !u.downed) cb.log.push(u.name + "'s heart is 3 over its limit" + manaShort(cb, rng, u) + '.');
+  if (rng && m.strain - m.strainLimit >= SHORT_AT_OVER && !u.downed) say(cb, u.name + "'s heart is 3 over its limit" + manaShort(cb, rng, u) + '.');
   const over = m.strain - m.strainLimit;
   if (over > 0 && !u.downed) {
     const r = applyDamage(cb, u, STRAIN_BURN * over, { type: 'strain', dmgType: 'true', shield: false, credit: 'none', nonlethal: true } as any);
     emitFx(cb, 'burn', { unit: u.id, at: u.pos, over, dmg: r.dealt });
     emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'strain', killed: false }); if (u.hp === 0) fxFell(cb, u);
-    cb.log.push(u.name + "'s heart burns: " + r.dealt + ' damage (' + over + ' over the Strain limit)' + (u.hp === 0 ? ', ' + (u.side === 'foe' ? 'out of the fight' : 'Downed') : '') + '.');
+    say(cb, u.name + "'s heart burns: " + r.dealt + ' damage (' + over + ' over the Strain limit)' + (u.hp === 0 ? ', ' + (u.side === 'foe' ? 'out of the fight' : 'Downed') : '') + '.');
   }
   if (!m.cast && !m.held && m.strain > 0) calm(cb, u, 1, 'still');
 }
@@ -962,7 +962,7 @@ export function beginOutburst(cb: Combat, rng: Rng, u: Unit, designId: string, a
   shiftMana(cb, -Math.ceil(pv.cost / 10));
   m.held = { design: d.id, stage: 0, cost: pv.cost, tone: toneOf(d), form: formOf(d), turns: 0, paid: 0, v: SOUL_REV, ...(opts.watch ? { watch: true } : {}) };
   emitFx(cb, 'outburst', { unit: u.id, at: u.pos, design: d.id, school: d.school, form: formOf(d), tone: toneOf(d), element: toneElement(toneOf(d)), hold, stage: 0, watch: !!opts.watch });
-  cb.log.push(u.name + ' begins ' + d.name + ' (' + pv.cost + ' MP' + (m.emanator ? '' : ' from the air') + ', ' + (pv.ap - (hold ? 0 : SOUL_AP.release)) + ' AP): the heart lights.');
+  say(cb, u.name + ' begins ' + d.name + ' (' + pv.cost + ' MP' + (m.emanator ? '' : ' from the air') + ', ' + (pv.ap - (hold ? 0 : SOUL_AP.release)) + ' AP): the heart lights.');
   holdStrain(cb, rng, u, pv.strain + (m.debt || 0), 'begin'); m.debt = 0; m.pumps = [];
   if (!hold && m.held && !u.dead && !u.downed) { pay(cb, u, SOUL_AP.release); releaseAt(cb, rng, u, d, aim!, false); }
   return null;
@@ -1027,7 +1027,7 @@ export function pumpOutburst(cb: Combat, rng: Rng, u: Unit, feeling?: string | n
   if (paid > 0) { m.mp -= paid; rec.mp = paid; h.pumpMp = (h.pumpMp || 0) + paid; }
   const f = feeling ? FEELING[feeling] : null, mult = heldMult(cb, u, h);
   emitFx(cb, 'pump', { unit: u.id, at: u.pos, stage: h.stage, mult, free: pv.free, max: h.stage >= MAX_STAGE, tone: h.tone || 'raw', ...(paid ? { mp: paid } : {}), ...(f ? { feeling: f.id, family: f.family, step: pv.step, does: feelingWord(d, f.id) } : {}) });
-  cb.log.push(u.name + ' pumps the heart' + (f ? ' with ' + f.name : '') + ': ' + d.name + ' at stage ' + h.stage + ' (×' + mult + ')' + (pv.freeKind === 'first' ? ', the fight\'s free first Pump' : pv.freeKind === 'empathy' ? ', a free Pump (Empathy)' : pv.free ? ', a free Pump' : '') + (paid ? ', ' + paid + ' MP' : '') + '.');
+  say(cb, u.name + ' pumps the heart' + (f ? ' with ' + f.name : '') + ': ' + d.name + ' at stage ' + h.stage + ' (×' + mult + ')' + (pv.freeKind === 'first' ? ', the fight\'s free first Pump' : pv.freeKind === 'empathy' ? ', a free Pump (Empathy)' : pv.free ? ', a free Pump' : '') + (paid ? ', ' + paid + ' MP' : '') + '.');
   (m.pumps ||= []).push(rec);
   // A feeling's own Strain (Rage +1, Abandon +2), with the hold's (Quiet halves it).
   const fs = Number((f?.pour as any)?.strain || 0);
@@ -1055,7 +1055,7 @@ export function revertPump(cb: Combat, u: Unit): string | null {
   if (r.strain > 0) { const back = easeStrain(cb, u, r.strain, 'revert'); h.strainIn = Math.max(0, (h.strainIn || 0) - back); }
   const mult = heldMult(cb, u, h);
   emitFx(cb, 'revert', { unit: u.id, at: u.pos, stage: h.stage, mult, ...(r.feeling ? { feeling: r.feeling } : {}) });
-  cb.log.push(u.name + ' takes the pump back' + (r.feeling ? ' (' + FEELING[r.feeling].name + ')' : '') + ': stage ' + h.stage + ' (×' + mult + ').');
+  say(cb, u.name + ' takes the pump back' + (r.feeling ? ' (' + FEELING[r.feeling].name + ')' : '') + ': stage ' + h.stage + ' (×' + mult + ').');
   return null;
 }
 /** The AP of n Pumps of design d from stage0 (the preview's and the AI's): the round's free Pumps first, then 1 AP each;
@@ -1100,7 +1100,7 @@ export function letGo(cb: Combat, u: Unit): string | null {
   const by = easeStrain(cb, u, back, 'letgo');
   emitFx(cb, 'letgo', { unit: u.id, at: u.pos, stage: st, by, strain: m.strain });
   if (by) emitFx(cb, 'calm', { unit: u.id, at: u.pos, way: 'letgo', by, strain: m.strain });
-  cb.log.push(u.name + ' lets ' + (d ? d.name : 'the Outburst') + ' go: a violet sigh (Strain −' + by + ', ' + m.strain + '/' + m.strainLimit + ').');
+  say(cb, u.name + ' lets ' + (d ? d.name : 'the Outburst') + ' go: a violet sigh (Strain −' + by + ', ' + m.strain + '/' + m.strainLimit + ').');
   shiftMana(cb, 1, 'a heart let go');
   return null;
 }
@@ -1115,7 +1115,7 @@ export function steadyHeart(cb: Combat, u: Unit): string | null {
   const by = easeStrain(cb, u, 1, 'steady');
   emitFx(cb, 'steady', { unit: u.id, at: u.pos, by, strain: m.strain, stage: m.held.stage });
   if (by) emitFx(cb, 'calm', { unit: u.id, at: u.pos, way: 'steady', by, strain: m.strain });
-  cb.log.push(u.name + ' steadies the heart: the glow cools (Strain ' + m.strain + '/' + m.strainLimit + '; no swell next turn).');
+  say(cb, u.name + ' steadies the heart: the glow cools (Strain ' + m.strain + '/' + m.strainLimit + '; no swell next turn).');
   return null;
 }
 /** Feeding (rules 1.5): 1 AP, absorb a glyph on your own tile into the held Outburst: +1 stage; the glyph is gone (a
@@ -1130,7 +1130,7 @@ export function feedOutburst(cb: Combat, u: Unit): string | null {
   cb.glyphs = (cb.glyphs || []).filter((x) => x !== g); tidyStrokesS(cb.glyphs); // rules 1.10 (item 903): a fed middle glyph splits its stroke
   m.held.stage++;
   emitFx(cb, 'feed', { unit: u.id, at: u.pos, word: g.word, glyph: g.id, stage: m.held.stage, mult: stageMult(m.held.stage) });
-  cb.log.push(u.name + ' feeds the ' + g.word.toUpperCase() + ' glyph to the heart: stage ' + m.held.stage + ' (×' + stageMult(m.held.stage) + ').');
+  say(cb, u.name + ' feeds the ' + g.word.toUpperCase() + ' glyph to the heart: stage ' + m.held.stage + ' (×' + stageMult(m.held.stage) + ').');
   return null;
 }
 /** Heart Overwatch on or off (free): while on and holding, the first enemy to enter the design's reach draws the release
@@ -1139,7 +1139,7 @@ export function setHeartWatch(cb: Combat, u: Unit, on = true): string | null {
   const m = u.mg ? heart(u) : undefined; if (!m || !m.held) return 'You hold no Outburst.';
   if (on) m.held.watch = true; else delete m.held.watch;
   emitFx(cb, 'hold', { unit: u.id, at: u.pos, stage: m.held.stage, tone: m.held.tone || 'raw', form: m.held.form || 'bolt', watch: on });
-  cb.log.push(u.name + (on ? ' watches with the heart: the first enemy into reach draws the release.' : ' stops watching with the heart.'));
+  say(cb, u.name + (on ? ' watches with the heart: the first enemy into reach draws the release.' : ' stops watching with the heart.'));
   return null;
 }
 /** Heart Overwatch (rules 1.5): called at each step of a walk. A watching holder releases at an enemy that has just
@@ -1156,7 +1156,7 @@ export function heartOverwatch(cb: Combat, rng: Rng, mover: Unit, from: string) 
     const rw: any = emit(cb, 'reaction_window', { reactor: h, mover, kind: 'heart_overwatch', cancel: false, at: mover.pos, cb, rng }); if (rw.cancel) continue;
     useReaction(cb, h);
     emitFx(cb, 'heart_overwatch', { unit: h.id, at: h.pos, target: mover.id, to: mover.pos, stage: m.held.stage, tone: m.held.tone || 'raw' });
-    cb.log.push(h.name + ' gasps and lets the heart go at ' + mover.name + ' (Heart Overwatch).');
+    say(cb, h.name + ' gasps and lets the heart go at ' + mover.name + ' (Heart Overwatch).');
     releaseAt(cb, rng, h, d, formOf(d) === 'aura' ? h.pos : mover.pos, false, true);
     if (mover.dead || mover.downed) return;
   }
@@ -1165,9 +1165,9 @@ export function heartOverwatch(cb: Combat, rng: Rng, mover: Unit, from: string) 
 export function wildRelease(cb: Combat, rng: Rng, u: Unit): boolean {
   const m = heart(u)!, d = findDesign(m, m.held?.design); if (!d) { m.held = null; return false; }
   const near = cb.units.filter((v) => !v.dead && v !== u && dist(v.pos, u.pos) <= Math.max(1, heartReach(m, d)));
-  if (!near.length) { emitFx(cb, 'release', { unit: u.id, at: u.pos, to: u.pos, school: d.school, form: formOf(d), tone: toneOf(d), element: toneElement(toneOf(d)), stage: m.held?.stage ?? 0, wild: true, area: [], targets: [], air: true }); cb.log.push(u.name + "'s Outburst bursts into the air."); m.held = null; return true; }
+  if (!near.length) { emitFx(cb, 'release', { unit: u.id, at: u.pos, to: u.pos, school: d.school, form: formOf(d), tone: toneOf(d), element: toneElement(toneOf(d)), stage: m.held?.stage ?? 0, wild: true, area: [], targets: [], air: true }); say(cb, u.name + "'s Outburst bursts into the air."); m.held = null; return true; }
   const t = near[die(rng, near.length) - 1];
-  cb.log.push(u.name + "'s Outburst releases wild at " + t.name + '.');
+  say(cb, u.name + "'s Outburst releases wild at " + t.name + '.');
   releaseAt(cb, rng, u, d, formOf(d) === 'aura' ? u.pos : t.pos, true);
   return true;
 }
@@ -1383,7 +1383,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
     const tiles = outburstArea(cb, u, d, aim, stage);
     (cb.zones ||= []).push({ id: 'fz' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'fuse' as any, tiles, words: [], by: u.id, side: u.side, left: 99, mult: 1, who: u.name, fuse: { design: d.id, held: heldWas, aim, mult: orl.mult || 1 } } as any);
     emitFx(cb, 'fuse', { unit: u.id, at: u.pos, to: aim, tiles, tone, element: toneElement(tone), stage });
-    cb.log.push(u.name + ' sets ' + d.name + ' to wait at ' + refOf(aim) + ' (Fuse): it goes off at ' + u.name + "'s next turn, or when someone steps in.");
+    say(cb, u.name + ' sets ' + d.name + ' to wait at ' + refOf(aim) + ' (Fuse): it goes off at ' + u.name + "'s next turn, or when someone steps in.");
     return;
   }
   const tiles = outburstArea(cb, u, d, aim, stage);
@@ -1397,7 +1397,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   if (!wild) { noteRelease(cb, u); if (F.has('belonging')) noteRelease(cb, u); } // Belonging counts twice for allies' Resonance
   if (res.with.length) emitFx(cb, 'resonance', { unit: u.id, at: u.pos, with: res.with, bonus: res.bonus });
   // Silent (rules 1.8): a hostile release reveals a Hidden caster, as a harmful Sigil does; Silent keeps you hidden.
-  if (u.hidden && hostile && !has('silent') && !wild) { endCond(u, 'hidden', cb); cb.log.push(u.name + ' is revealed (released an Outburst).'); emit(cb, 'spotted', { u, why: 'released an Outburst', cb }); }
+  if (u.hidden && hostile && !has('silent') && !wild) { endCond(u, 'hidden', cb); say(cb, u.name + ' is revealed (released an Outburst).'); emit(cb, 'spotted', { u, why: 'released an Outburst', cb }); }
   const does = felt.map((f) => feelingWord(d, f)).filter(Boolean);
   emitFx(cb, 'release', { unit: u.id, at: u.pos, to: aim, design: d.id, school: d.school, school2: d.school2 || null, option: d.option || null, form, tone, element: toneElement(tone), stage, mult: Math.round(sm * 100) / 100,
     riderStage: rs, wild, reaction, resonance: res.bonus, area: tiles, targets: [...targets, ...loved].map((t) => t.id), felt, ...(does.length ? { does: [...new Set(does)] } : {}) });
@@ -1456,7 +1456,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   line.push(...pourAfter(cb, rng, u, d, F, felt, stage, tiles, hits, heldWas, sm, aim, wild));
   if (!targets.length && !loved.length) line.push('nobody ' + (form === 'bolt' ? 'at ' + refOf(aim) : 'in the ' + form));
   const fn = felt.length ? ' with ' + [...new Set(felt)].map((f) => FEELING[f]?.name + (felt.filter((x) => x === f).length > 1 ? ' ×' + felt.filter((x) => x === f).length : '')).join(', ') : '';
-  cb.log.push(u.name + ' releases ' + d.name + ' (' + form.toUpperCase() + (tone !== 'raw' ? ' · ' + TONE[tone].name : '') + ')' + fn + ' at stage ' + stage + ' (×' + Math.round(sm * 100) / 100 + (res.bonus ? ', resonance +' + res.bonus.toFixed(1) : '') + ')' + (wild ? ' (wild)' : '') + (reaction ? ' (Heart Overwatch)' : '') + ': ' + line.filter(Boolean).join(' · ') + '.');
+  say(cb, u.name + ' releases ' + d.name + ' (' + form.toUpperCase() + (tone !== 'raw' ? ' · ' + TONE[tone].name : '') + ')' + fn + ' at stage ' + stage + ' (×' + Math.round(sm * 100) / 100 + (res.bonus ? ', resonance +' + res.bonus.toFixed(1) : '') + ')' + (wild ? ' (wild)' : '') + (reaction ? ' (Heart Overwatch)' : '') + ': ' + line.filter(Boolean).join(' · ') + '.');
   // Residue: the strongest feeling poured in, on every tile the release covered, for 2 rounds (rules 1.8, item 807).
   const top = strongestFeeling(felt);
   if (top && FEELING[top].residue.kind !== 'none' && tiles.length) placeResidue(cb, u, top, form === 'aura' ? tiles : tiles.length ? tiles : [aim]);
@@ -1544,7 +1544,7 @@ function placeResidue(cb: Combat, u: Unit, feeling: string, tiles: string[]) {
   const f = FEELING[feeling];
   cb.zones.push({ id: 'rz' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'residue' as any, tiles: [...set], words: [], by: u.id, side: u.side, left: RESIDUE_ROUNDS, mult: 1, who: u.name, feeling, residueKind: f.residue.kind, str: unitStrength(u, 'will_power') } as any);
   emitFx(cb, 'residue', { unit: u.id, tiles: [...set], feeling, family: f.family, kind: f.residue.kind, side: u.side, rounds: RESIDUE_ROUNDS });
-  cb.log.push(f.name + ' lingers on ' + set.size + ' tile' + (set.size === 1 ? '' : 's') + ' (' + f.residue.text.replace(/\.$/, '') + ', ' + RESIDUE_ROUNDS + ' rounds).');
+  say(cb, f.name + ' lingers on ' + set.size + ' tile' + (set.size === 1 ? '' : 's') + ' (' + f.residue.text.replace(/\.$/, '') + ', ' + RESIDUE_ROUNDS + ' rounds).');
 }
 /** Practice (rules 1.8): kept on the character. fx 'practice' {unit, gain, total}. */
 let PRACTICE_HELD = 0;
@@ -1576,15 +1576,15 @@ export function residueTick(cb: Combat, rng: Rng, u: Unit, when: 'turn' | 'entry
   if (r.strain && u.mg && r.strain < 0) { const n = easeStrain(cb, u, -r.strain, 'residue'); if (n) line.push(' · ' + u.name + "'s Strain −" + n); }
   if (r.reveal_radius) for (const v of cb.units) if (v.hidden && v.side !== u.side && dist(v.pos, u.pos) <= r.reveal_radius) { endCond(v, 'hidden', cb); line.push(' · ' + v.name + ' is revealed'); }
   const txt = line.filter(Boolean).join('');
-  if (txt) { emitFx(cb, 'residue_tick', { unit: u.id, at: u.pos, feeling: f.id, kind: r.kind, when }); cb.log.push(f.name + ' residue at ' + refOf(u.pos) + ' (' + u.name + ')' + txt + '.'); }
+  if (txt) { emitFx(cb, 'residue_tick', { unit: u.id, at: u.pos, feeling: f.id, kind: r.kind, when }); say(cb, f.name + ' residue at ' + refOf(u.pos) + ' (' + u.name + ')' + txt + '.'); }
 }
 /** A Fuse going off (its caster's turn start, or someone stepping in): the release it held. */
 function fuseGo(cb: Combat, rng: Rng, z: any, why: string) {
   cb.zones = (cb.zones || []).filter((x) => x !== z);
-  const u = cb.units.find((x) => x.id === z.by); if (!u || u.dead || u.downed || !u.mg) { cb.log.push('A fuse fizzles out.'); return; }
+  const u = cb.units.find((x) => x.id === z.by); if (!u || u.dead || u.downed || !u.mg) { say(cb, 'A fuse fizzles out.'); return; }
   const m = heart(u)!, d = findDesign(m, z.fuse.design); if (!d) return;
   const keep = m.held; m.held = z.fuse.held ? { ...z.fuse.held } : null;
-  cb.log.push(u.name + "'s fused " + d.name + ' goes off (' + why + ').');
+  say(cb, u.name + "'s fused " + d.name + ' goes off (' + why + ').');
   const dd: any = { ...d, __fused: true, __fuseMult: z.fuse.mult ?? 1 };
   try { releaseAt(cb, rng, u, dd, z.fuse.aim, false); } finally { m.held = keep; }
 }
@@ -1593,8 +1593,8 @@ export function feelTurnStart(cb: Combat, rng: Rng, u: Unit) {
   for (const z of [...(cb.zones || [])] as any[]) if (z.kind === 'fuse' && z.by === u.id) fuseGo(cb, rng, z, 'its time');
   for (const z of [...(cb.zones || [])] as any[]) if (z.kind === 'linger' && z.tiles.includes(u.pos) && !u.dead) {
     const by = cb.units.find((x) => x.id === z.by) || null, tick = (MODULE.linger as any)?.tick ?? 5;
-    if (z.linger.hostile && u.side !== z.side) cb.log.push(z.who + "'s lingering Outburst" + harmFor('linger', () => harm(cb, rng, by, u, tick, z.linger.tone === 'raw' ? 'soul' : 'elemental', TONE[z.linger.tone]?.damage_type, z.linger.tone === 'raw' ? 'none' : 'half')) + (z.linger.tone !== 'raw' ? applyToneRiders(cb, rng, by, u, z.linger.tone, 1, z.tiles[0], ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']) : '') + '.');
-    else if (!z.linger.hostile && u.side === z.side && !u.downed) cb.log.push(z.who + "'s lingering Outburst" + heal(u, tick, cb, by) + '.');
+    if (z.linger.hostile && u.side !== z.side) say(cb, z.who + "'s lingering Outburst" + harmFor('linger', () => harm(cb, rng, by, u, tick, z.linger.tone === 'raw' ? 'soul' : 'elemental', TONE[z.linger.tone]?.damage_type, z.linger.tone === 'raw' ? 'none' : 'half')) + (z.linger.tone !== 'raw' ? applyToneRiders(cb, rng, by, u, z.linger.tone, 1, z.tiles[0], ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']) : '') + '.');
+    else if (!z.linger.hostile && u.side === z.side && !u.downed) say(cb, z.who + "'s lingering Outburst" + heal(u, tick, cb, by) + '.');
   }
   residueTick(cb, rng, u, 'turn');
 }
@@ -1614,9 +1614,9 @@ function heartTurnStart(cb: Combat, rng: Rng, u: Unit) {
   const h = m.held; if (!h) { m.cast = false; return; }
   const d = findDesign(m, h.design); if (!d) { m.held = null; m.cast = false; return; }
   h.turns = (h.turns || 0) + 1;
-  if (h.steady) { delete h.steady; cb.log.push(u.name + "'s steadied heart holds at stage " + h.stage + '.'); }
+  if (h.steady) { delete h.steady; say(cb, u.name + "'s steadied heart holds at stage " + h.stage + '.'); }
   else {
-    if (h.stage < MAX_STAGE) { h.stage++; emitFx(cb, 'swell', { unit: u.id, at: u.pos, stage: h.stage, mult: stageMult(h.stage), tone: h.tone || 'raw' }); cb.log.push(u.name + "'s held Outburst swells to stage " + h.stage + ' (×' + stageMult(h.stage) + ').'); }
+    if (h.stage < MAX_STAGE) { h.stage++; emitFx(cb, 'swell', { unit: u.id, at: u.pos, stage: h.stage, mult: stageMult(h.stage), tone: h.tone || 'raw' }); say(cb, u.name + "'s held Outburst swells to stage " + h.stage + ' (×' + stageMult(h.stage) + ').'); }
     // 'outburst_hold' {u, strain} (mutable): the Strain of holding one more turn (hooks gap D7).
     // Rules 1.19: from Empathy 7 a swell adds no Strain.
     const oh: any = emit(cb, 'outburst_hold', { u, strain: m.swellFree ? 0 : flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.swell_strain ?? 1, cb });
@@ -1629,7 +1629,7 @@ function heartTurnStart(cb: Combat, rng: Rng, u: Unit) {
   if (tone !== 'raw') {
     const rs = riderStage(cb, 1), near = cb.units.filter((v) => !v.dead && v.side !== u.side && !v.surrendered && dist(v.pos, u.pos) <= (SR.aura?.radius ?? 1));
     if (near.length) emitFx(cb, 'aura_tick', { unit: u.id, at: u.pos, tone, element: toneElement(tone), targets: near.map((v) => v.id), riderStage: rs });
-    for (const v of near) { const s = withElement(toneElement(tone), () => harm(cb, rng, u, v, AURA_TICK + bonusDmg(tone, rs), 'elemental', TONE[tone]?.damage_type, armourKind(tone, rs))) + applyToneRiders(cb, rng, u, v, tone, rs, u.pos, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']); cb.log.push(u.name + "'s held " + TONE[tone].name + ' leaks' + s + '.'); }
+    for (const v of near) { const s = withElement(toneElement(tone), () => harm(cb, rng, u, v, AURA_TICK + bonusDmg(tone, rs), 'elemental', TONE[tone]?.damage_type, armourKind(tone, rs))) + applyToneRiders(cb, rng, u, v, tone, rs, u.pos, ['armour_full', 'bonus_damage', 'ignore_cover', 'chain']); say(cb, u.name + "'s held " + TONE[tone].name + ' leaks' + s + '.'); }
   }
   emitFx(cb, 'hold', { unit: u.id, at: u.pos, stage: m.held?.stage ?? 0, tone, form: m.held?.form || 'bolt', watch: !!m.held?.watch });
   emit(cb, 'held_turn_start', { u, held: m.held, cb, rng });
@@ -1795,7 +1795,7 @@ export function syphon(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return NEEDS_EMANATOR;
   const ap = price({ cb, u }, 'syphon').ap; { const no = whyNot(cb, u, ap); if (no) return no; } if (m.mp >= m.mpMax) return 'Your Emanator is full.';
   pay(cb, u, ap); const gain = Math.round(manaBand(manaOf(cb)).syphon_mp * m.syphon), was = m.mp; m.mp = Math.min(m.mpMax, m.mp + gain);
-  emitFx(cb, 'syphon', { unit: u.id, at: u.pos, mp: m.mp - was }); shiftMana(cb, -2); cb.log.push(u.name + ' syphons ' + (m.mp - was) + ' MP from the air (' + m.mp + '/' + m.mpMax + ').');
+  emitFx(cb, 'syphon', { unit: u.id, at: u.pos, mp: m.mp - was }); shiftMana(cb, -2); say(cb, u.name + ' syphons ' + (m.mp - was) + ' MP from the air (' + m.mp + '/' + m.mpMax + ').');
   return null;
 }
 /** Crystallise (3 AP, the meter at 10+): the meter drops 10 and you make one standard core. */
@@ -1803,7 +1803,7 @@ export function crystallise(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return NEEDS_EMANATOR;
   const cap = price({ cb, u }, 'crystallise').ap; // items price it (hooks gap D8)
   { const no = whyNot(cb, u, cap); if (no) return no; } if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
-  pay(cb, u, cap); m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); cb.log.push(u.name + ' crystallises a mana core from the air.');
+  pay(cb, u, cap); m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); say(cb, u.name + ' crystallises a mana core from the air.');
   return null;
 }
 /** Who a spell would affect, hit or miss (used to decide whether a spell on the story map starts a fight). */
@@ -1823,7 +1823,7 @@ onHook('spell_roll', (ctx, cb) => spendHope(ctx.u, cb));
 onHook('heal_given', (ctx, cb) => {
   const t: Unit = ctx.t, id = (t as any)?.thread; if (!t || !id || !(ctx.n > 0) || ctx.threaded) return;
   const o = cb.units.find((v) => v.id === id); delete (t as any).thread; if (o) delete (o as any).thread;
-  if (o && !o.dead) { const r = healUnit(cb, o, ctx.n, ctx.by || null, 'thread'); emitFx(cb, 'heal', { target: o.id, at: o.pos, amount: r.restored }); cb.log.push(o.name + ' heals ' + r.restored + ' along the thread.'); }
+  if (o && !o.dead) { const r = healUnit(cb, o, ctx.n, ctx.by || null, 'thread'); emitFx(cb, 'heal', { target: o.id, at: o.pos, amount: r.restored }); say(cb, o.name + ' heals ' + r.restored + ' along the thread.'); }
 });
 onHook('death_save', (ctx, cb) => { if (residueFlag(cb, ctx.u, 'stabilise')) ctx.add = (ctx.add || 0) + 20; });
 onHook('cond_apply', (ctx, cb) => { if ((ctx.id === 'fear' || ctx.id === 'afraid') && residueFlag(cb, ctx.t, 'immune') === 'fear') { ctx.cancel = true; ctx.why = 'Defiance underfoot'; } });

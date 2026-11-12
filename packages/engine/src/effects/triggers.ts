@@ -19,7 +19,7 @@ import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems } from './collect';
 import { overworld, rngOf } from '../kit';
-import { dist, displace, emitFx, unitSees } from '../combat';
+import { say, dist, displace, emitFx, unitSees } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf } from '../magic';
 import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
@@ -280,7 +280,7 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   for (const x of all) { const r = OPS[x.op].run(ev, x, x.label || label); if (typeof r === 'string' && r) parts.push(r); }
   if (ev.preview) return;
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
-  if (e.say) cb.log.push(fill(e.say, ev).replace('{then}', parts.join('')));
+  if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));
 }
 /** The hooks any data effect listens on (hooks.ts hookUsed asks, so a hook that is skipped when nobody listens, the
  * `cost` hook, still fires for a data item). */
