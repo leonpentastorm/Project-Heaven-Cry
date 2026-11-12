@@ -5,5 +5,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-split.png`: one line forking into two
 - `module-ricochet.png`: a zig-zag path bouncing off a wall line
 - `module-orbit.png`: a dot circling a centre dot on a ring path
+- `module-echo.png`: one shape and a fainter (thinner-lined) double of it beside it
 
 Test set only. Await Leon’s verdict before the rest, as requested in the Outburst brief.

@@ -26,12 +26,11 @@
     "feeling-calm",
     "module-split",
     "module-ricochet",
-    "module-orbit"
+    "module-orbit",
+    "module-echo"
   ],
   "awaiting_after_test": "Leon verdict before remaining feeling/module production; map guides before optional maps",
   "production_approved": false,
-  "remaining_now": [
-    "module-echo"
-  ],
-  "updated_utc": "2026-11-12T02:46:18.517582+00:00"
+  "remaining_now": [],
+  "updated_utc": "2026-11-12T02:48:15.312783+00:00"
 }

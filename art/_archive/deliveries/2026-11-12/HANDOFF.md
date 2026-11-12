@@ -2,13 +2,13 @@
 
 **Destination: `art/briefs-complete`; keep develop and the implementer branch untouched.** The prompt file was found on `claude/charming-gauss-hbq4n0` at `dd35e4b8`; it was safely fast-forwarded into this art branch. No force pushes. Fetch current refs and preserve any subsequent implementer work before continuing.
 
-Actual delivered: **20/21**. Every delivered image was generated with image_gen, shown in chat, technically exported, validated, committed and pushed before the next render. New art is review-candidate with production_approved:false. The exact delivered list is progress.json; production selections and source/reference hashes are manifest.json.
+Actual delivered: **21/21**. Every delivered image was generated with image_gen, shown in chat, technically exported, validated, committed and pushed before the next render. New art is review-candidate with production_approved:false. The exact delivered list is progress.json; production selections and source/reference hashes are manifest.json.
 
 ## Next work
 
-Next image: **`module-echo`**.
+The current 21-job stage is fully drawn. Await Leon’s Outburst test verdict before the remaining glyphs/modules.
 
-Remaining ordered queue: `module-echo`.
+Remaining ordered queue: none in the current stage.
 
 Read `art/AGENTS.md`, `art/README.md`, `art/style-guide/PHC-Style-Guide.md`, `art/icons/STYLE-LOCK.md`, `art/briefs/GPT-PROMPTS-2026-11-12.md` and its linked current request/rules documents. Read queue.json in this folder: it contains exact prompts, reference paths and delivered flags. **Do not skip Both Hands just because its id exists:** its replacement is already delivered here and its stand-in is preserved in art/_archive/icons/perks/2026-11-12/. Do not rely on the Wick section heading13: the table and ART-REQUESTS enumerate11 (Rebuke, Both Hands, nine Calls).
 

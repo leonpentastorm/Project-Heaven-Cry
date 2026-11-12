@@ -10501,6 +10501,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-orbit.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-orbit.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-echo": {
+      "id": "module-echo",
+      "label": "one shape and a fainter (thinner-lined) double of it beside it",
+      "path": "art/icons/modules/module-echo.png",
+      "sha256": "5b36a91d564707364eca05096b06360f77cfc89d2ac56610da5501f8a8c8f1c1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-echo.png",
+        "128": "art/icons/modules/exports/128/module-echo.png",
+        "64": "art/icons/modules/exports/64/module-echo.png",
+        "56": "art/icons/modules/exports/56/module-echo.png",
+        "48": "art/icons/modules/exports/48/module-echo.png",
+        "44": "art/icons/modules/exports/44/module-echo.png",
+        "40": "art/icons/modules/exports/40/module-echo.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-echo.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-echo.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

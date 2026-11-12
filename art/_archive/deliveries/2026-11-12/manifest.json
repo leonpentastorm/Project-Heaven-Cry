@@ -821,6 +821,44 @@
           "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-echo.png",
+      "sha256": "5b36a91d564707364eca05096b06360f77cfc89d2ac56610da5501f8a8c8f1c1",
+      "id": "module-echo",
+      "family": "modules",
+      "action": "one shape and a fainter (thinner-lined) double of it beside it",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-echo.png",
+        "sha256": "2efc72a5d02570c70a0b2b13be96591b012ec32a6b9622fd06e31361198fa786"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-echo.png",
+        "sha256": "5b36a91d564707364eca05096b06360f77cfc89d2ac56610da5501f8a8c8f1c1"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-echo.txt",
+        "sha256": "0ac688662ec4a03abdaf221fcc69bb1ce20922d0270263aeedb5b2112a362550"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-echo.png",
+        "128": "art/icons/modules/exports/128/module-echo.png",
+        "64": "art/icons/modules/exports/64/module-echo.png",
+        "56": "art/icons/modules/exports/56/module-echo.png",
+        "48": "art/icons/modules/exports/48/module-echo.png",
+        "44": "art/icons/modules/exports/44/module-echo.png",
+        "40": "art/icons/modules/exports/40/module-echo.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
     }
   ]
 }
