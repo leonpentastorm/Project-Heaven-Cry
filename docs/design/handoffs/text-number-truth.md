@@ -211,7 +211,8 @@ Four lines of `packages/engine/test/golden/enemies.json`, all from change 12 (th
 | `enemy/boss/breacher_tube/L20/blast` | 225 | 116 |
 
 No other golden table moved (weapons, flat, faith, outburst, builds, items: all pass unchanged). The Bleeding change
-moved none because no golden action runs a Bleeding technique long enough to tick twice. **A Boss with a breacher
+moved none: a golden line is one action, and the two extra ticks come on later turns, so **the tables do not measure
+it** (15 HP more from every technique that leaves a target Bleeding). **A Boss with a breacher
 tube is weaker against a bunched squad than the rules 1.15 table was fitted with**; the balance pass should look.
 
 ### 7.4 Revived assertions that failed
@@ -322,7 +323,8 @@ statement. String blanking is a small scanner that also blanks regex literals, s
 hides the rest of the line. Shelved tests: `it.skip.each(`, `it.concurrent.skip(`, `xit(`, `xdescribe(`, `it.fails(`,
 `runIf(false)`, `(false ? it : it.skip)(`. A dated reason needs a date and at least three more words. Each shape the
 review named is one of the lint's own test cases. Still not seen: an early `return` in a test, vitest `exclude`
-patterns, and a statement in a comment that looks like prose.
+patterns, and a statement in a comment that looks like prose. `npm run check -- web` now runs the lint (it walks the web's and
+the browser suites' tests); `npm run check -- -t <name>` is a targeted run and skips it, with the data checks, by design.
 
 `text-number-truth.test.ts`: the table of old skill names builds itself from data (an id in title case that is not the
 name), so all five renamed skills are covered and a sixth would be the day it is renamed; it reads the client and the
