@@ -90,6 +90,7 @@ DISK_LOW_MB = 150
 SUITE_TMP = None
 if free_mb() < 4096 and os.path.isdir('/dev/shm') and os.access('/dev/shm', os.W_OK) and shutil.disk_usage('/dev/shm').free > 2 * 1024 ** 3:
     SUITE_TMP = tempfile.mkdtemp(prefix='phc-e2e-', dir='/dev/shm')
+    DISK_LOW_MB = 40  # (only the logs and a failed suite's pictures are written to the disk then)
 
 def down(url):
     """Is the server gone (the connection is refused)? A slow answer on a busy machine is not "gone"."""

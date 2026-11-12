@@ -59,7 +59,11 @@ ok('and did not act: your unit has not moved and has spent nothing', meNow(after
 // (the view has come to rest after the drag before a tile's place on screen is read: read while it still glided, the
 // click landed on the tile beside it)
 await settle();
+// (and the action panel is yours: while the fight's opening still plays the panel is locked and a click on a tile does
+// nothing, which on a busy machine lasted past this point)
+await myTurn().catch(() => {});
 const near = (mx + 1) + ',' + my, nb = await tileBox(near);
+const panelAt = await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'), t = document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]'); return (d && d.getAttribute('data-lock') ? 'locked: ' + d.getAttribute('data-lock') : 'open') + ', tab ' + (t ? (t.textContent || '').trim() : '?'); });
 await p.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2);
 const confirm = p.getByRole('button', { name: 'Confirm', exact: true }).first();
 // (until the click has done its work: the unit is there already, or Confirm has lit up for the picked tile. A look at
@@ -69,7 +73,7 @@ await p.waitForFunction((a) => { const b = [...document.querySelectorAll('button
 if (!(await p.evaluate(there, { id: me.id, to: near })) && await confirm.isEnabled().catch(() => false)) await confirm.click();
 await p.waitForFunction(there, { id: me.id, to: near }, { timeout: 20000 }).catch(() => {});
 after = await G();
-ok('a click without a drag still acts (the unit walked to ' + ref(near) + ')', meNow(after).pos === near);
+ok('a click without a drag still acts (the unit walked to ' + ref(near) + '; at the click the panel was ' + panelAt + '; the unit is at ' + ref(meNow(after).pos) + ', AP ' + meNow(after).ap + ')', meNow(after).pos === near);
 await pause(p, 700);
 
 // 3. The keys: arrows and WASD move the view, Home jumps back to your unit.

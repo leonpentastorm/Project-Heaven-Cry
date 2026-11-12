@@ -10,10 +10,11 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 | Only the client | `npm run check -- web` | about 1.5 min | Web types, web tests |
 | One rule, and you want only its tests | `npm run check -- -t "Heart Overload"` | seconds | Both suites, only tests whose name matches |
 | A number or a rule, and you want to SEE what the game does | `npm run try -- '<scenario>'` | 3 s | A fight played through the real rules: the log lines and every unit's HP, AP, meters and conditions after each step. No browser, no new test file. `npm run try -- --help` has the fields and examples |
-| A screen, a button, anything a player clicks | `npm run e2e -- <suite>` | 1 to 3 min a suite | The suite's checks in a real browser. It builds, starts and stops the server itself |
-| Before a merge to `develop` that touches the client | `npm run e2e -- rules` | @@RULES@@ | Every suite that checks rules and screens (fights at the test pace) |
-| You changed `game/fx/`, the camera, the combat speed, a cut-in | `npm run e2e -- anim` | @@ANIM@@ | Every suite that looks at animation or time, at real speed |
-| Before a release | `npm run e2e -- all` then deploy | @@ALL@@ | Every browser suite (`rules` + `anim`), three at a time. It must end `ALL GREEN` |
+| A screen, a button, anything a player clicks | `npm run e2e -- <suite>` | 1 to 3 min a suite | The suite's checks in a real browser. It builds, starts and stops the server itself. `apps/web/e2e/README.md` lists every suite and what it looks at |
+| Any change to the client, before you say "done" | `npm run e2e -- smoke` | 3 to 5 min | Five suites that catch most breakage: an old save opens, creation's points step, perks in play, two players through a whole session, a long enemy phase in order |
+| Before a merge to `develop` that touches the client | `npm run e2e -- rules` | about 15 min | Every suite that checks rules and screens (fights at the test pace) |
+| You changed `game/fx/`, the camera, the combat speed, a cut-in | `npm run e2e -- anim` | about 20 min | Every suite that looks at animation or time, at real speed |
+| Before a release | `npm run e2e -- all` then deploy | 35 to 50 min (measured on a machine busy with other work; 61 suites, about 1,800 named checks) | Every browser suite (`rules` + `anim`), three at a time. It must end `ALL GREEN` |
 | You changed a weapon, a technique or an effect's timing | `npm run e2e -- sweep` | about 17 min | `fx-sweep`'s whole table: every weapon × every technique, judged from the effects layer's own trace |
 | After a deploy | `npm run e2e -- smoke --base https://project-heaven-cry.leonpentastorm.workers.dev` | 3 min | The live site |
 
@@ -58,8 +59,11 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   - `FAIL <suite> … alone too`: red. A real bug in the game, or a suite gone stale after a rules change; either way it
     is fixed before the merge. A suite gets one retry, never two.
   - A suite that prints no `ok` line fails ("nothing was checked").
-  - `ok … run again: the room server had stopped under its first run`: `wrangler dev` died mid-run (seen on a busy
-    machine); the runner started it again and ran the suite again. Not the suite's fault and not the game's.
+  - `ok … run again: the room server had stopped under its first run (or the disk was full)`: `wrangler dev` died
+    mid-run, or a browser tab did ("Target crashed"). Both happen when the disk fills up (12 Nov 2026: every suite failed
+    within seconds with 113 MB free). The runner starts the server again and runs the suite again; that is not the
+    suite's fault and not the game's. It refuses to start on a nearly full disk, and with under 4 GB free it keeps the
+    browsers' files and the rooms' saved state on the memory disk (`/dev/shm`).
 - **Timing.** A suite judges ORDER and PRESENCE from the effects layer's own plan (`window.__phcFxTrace`: each thing
   drawn or heard, with `t`, when it was due, the same on any machine) or from a watcher inside the page; a wall-clock
   length is asserted only where the length is the thing under test, measured in the page, with the plan as the lower

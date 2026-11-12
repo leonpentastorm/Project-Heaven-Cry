@@ -41,7 +41,7 @@ and `npm run check` fails for the same reason (`apps/web/src/e2e-groups.test.ts`
 | `ok` | passed | nothing |
 | `FLAKY … passed alone` | it failed beside the others and passed alone. The run still ends green (`GREEN, BUT n PASSED ONLY ALONE`) | not a bug in the game: a fault in the SUITE (it cannot share a machine). Fix the suite with the checklist below. The first run's log is `.check/e2e/<suite>.first.log` |
 | `FAIL … alone too` | it failed twice, the second time with the machine to itself | a real bug, in the game or in a stale suite. The run is red |
-| `ok … run again: the room server had stopped` | `wrangler dev` died in the middle of the run (it has, on a busy machine). The runner started it again and ran the suite again; that run counts | nothing; the run's last line says how often it happened |
+| `ok … run again: the room server had stopped` | `wrangler dev` died in the middle of the run, or the disk was full (see Disk, below). The runner started the server again and ran the suite again; that run counts | nothing; the run's last line says how often it happened |
 
 A suite never gets a second retry, and a suite that prints no `ok` line fails ("nothing was checked"). A suite that
 runs for 30 minutes is stopped with its browsers and fails.

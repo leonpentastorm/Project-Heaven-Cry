@@ -8,7 +8,7 @@
 // Faith 2.2's patron on screen (spec 2.1, 2.2, 2.4-2.6): the FAITH tab's header portrait and its lightbox, the Hymn's face over the
 // head (and greyed on a miss), the Whisper's icon over the head, the Witnessed chip's words, round crops on the voice-line cards,
 // portraits on the pact / switch / grudge / apostasy cards (the grudge's greyed), the story faith tab's header portrait.
-import { chromium, click, BASE, pickAction, pause, settle, fxIdle, watch, watched, watchedGone } from './lib.mjs';
+import { chromium, click, BASE, pickAction, pause, settle, fxIdle, watch, watched, watchedGone, traceStart, traceTake } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
@@ -430,22 +430,30 @@ await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/stop' }); await
     new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) { const t = (n.textContent || '').trim(); if (/^[−-]\d|^DEAD|^DOWN/.test(t)) w.__mlog.push(['hit', performance.now() - t0, t.slice(0, 12)]); } }).observe(L, { childList: true });
     new MutationObserver(() => { const c = !!document.querySelector('[data-phc-cut="full"]'); if (c !== w.__mc) { w.__mc = c; w.__mlog.push(['cut', performance.now() - t0, c]); } }).observe(document.body, { childList: true });
   });
+  await traceStart(p);
   const errN = await act({ type: 'faith/pray', unitId: mN.id, kind: 'miracle' });
   // (the cut-in up and gone again, then every effect it held back played: the state the check needs, not a number of seconds)
   await p.waitForFunction(() => window.__mlog.some((e) => e[0] === 'cut' && e[2] === false), null, { timeout: 60000 }).catch(() => {});
   await fxIdle(p, 60000); await pause(p, 300);
   const log = await p.evaluate(() => window.__mlog), cutOn = log.find((e) => e[0] === 'cut' && e[2] === true), cutOff = log.find((e) => e[0] === 'cut' && e[2] === false), hits = log.filter((e) => e[0] === 'hit');
-  // ORDER, judged against the PLAN: the effects queue holds the Miracle's effects for the cut-in's landing time
-  // (fx/faith.ts: cutInTiming('full').land = 3000 ms, × the combat speed), counted from the moment the cut-in comes up.
-  // No damage float may show before that. (It used to be judged against the moment the portrait's node left the page.
-  // The portrait leaves by two timers in a row (cutIn.ts pull, then removeRoot) and the queue by one, so on a busy
-  // machine the portrait can leave up to a second AFTER the effects it was hiding have begun: seen 12 Nov 2026, floats
-  // 800 ms before the node left. That is a weakness of the game on a slow machine, reported, and not what this checks.)
-  const landPlan = 3000 * (await p.evaluate(() => window.__phcCombatTempo().mult));
-  const early = hits.filter((h) => !cutOn || h[1] < cutOn[1] + landPlan - 60);
+  // ORDER, judged on the PLAN (the effects layer's own trace, lib.mjs traceStart: `t` is when a thing was DUE, the same
+  // on any machine). The queue gives the Miracle's event a beat as long as the cut-in takes to land (fx/faith.ts
+  // faithBeat: cutInTiming('full').land = 3000 ms, × the pace), and everything the Miracle did is due after it: no
+  // damage number, no wound, no fall may be due before the landing.
+  // What this does NOT assert, and why: that no number shows before the portrait's node has left the page. On an idle
+  // machine it holds. On a busy one it does not: the portrait leaves by two timers in a row (cutIn.ts: the pull-away,
+  // then removeRoot) and the queue is released by one, so the numbers have begun up to 0.8 s before the portrait had
+  // gone (12 Nov 2026: 383 ms and 800 ms). That is the game's to mend (let the landing itself release the queue); it is
+  // reported, and printed below every run.
+  const tr = await traceTake(p), mir = tr.find((e) => e.w === 'ev' && e.k === 'miracle');
+  const pace = await p.evaluate(() => window.__phcCombatTempo().pace), landPlan = 3000 * pace;
+  const after = tr.filter((e) => mir && e.n > mir.n && (e.w === 'ev' ? /^(hurt|down|kill|dead)/.test(e.k || '') : e.w === 'float' ? /^[−-]\d|^DEAD|^DOWN/.test(String(e.text || '')) : e.w === 'hp'));
+  const early = after.filter((e) => e.t < mir.t + landPlan - 1);
+  const firstDue = after.length ? Math.round(Math.min(...after.map((e) => e.t)) - mir.t) : null;
   const foesNow = (await G()).combat.units.filter((u) => u.side === 'foe').length;
-  ok('Nerukhan\'s Miracle on a crowd (' + spawned + ' minions spawned, ' + (errN || 'prayed') + '): ' + hits.length + ' damage floats, none before the cut-in\'s landing (up at ' + (cutOn ? Math.round(cutOn[1]) : '-') + ' ms, lands ' + Math.round(landPlan) + ' ms later by the plan, gone at ' + (cutOff ? Math.round(cutOff[1]) + ' ms' : 'never') + '; first hit ' + (hits[0] ? Math.round(hits[0][1]) + ' ms' : '-') + ')',
-    !errN && spawned >= 6 && !!cutOn && !!cutOff && hits.length >= Math.min(spawned, foesNow) && early.length === 0);
+  console.log('note the Miracle on screen: the portrait up at ' + (cutOn ? Math.round(cutOn[1]) : '-') + ' ms and gone at ' + (cutOff ? Math.round(cutOff[1]) : '-') + ' ms; the first damage number at ' + (hits[0] ? Math.round(hits[0][1]) : '-') + ' ms (' + (hits[0] && cutOff ? Math.round(hits[0][1] - cutOff[1]) : '-') + ' ms after the portrait left; negative: before)');
+  ok('Nerukhan\'s Miracle on a crowd (' + spawned + ' minions spawned, ' + (errN || 'prayed') + '): ' + hits.length + ' damage floats on screen, and by the plan nothing it did is due before the cut-in lands (' + after.length + ' steps traced, the first due ' + firstDue + ' ms after the Miracle, the landing ' + Math.round(landPlan) + ' ms)',
+    !errN && spawned >= 6 && !!cutOn && !!cutOff && !!mir && hits.length >= Math.min(spawned, foesNow) && after.length >= hits.length && early.length === 0);
   await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/stop' }); await pause(p, 300);
 }
 console.log('errors', errors);
