@@ -20,6 +20,7 @@ import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game'
 import { cdFire, cdTick, landsNext } from './cooldown';
 import { rngOf, foesOf } from '../kit';
 import { rollVs, rollD20, judge, TN } from '../rolls';
+import { hideAgain } from '../magic';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -249,8 +250,7 @@ register({
       if (eyes.length) { const rv = rollVs(cb, rng, { by: h.u, mod: m, tn, why: 'hide' }); ok = rv.ok; line = ': ' + rv.text; }
       if (!ok) { log(cb, h.u.name + ' tries to melt back into cover (Shadow Step' + line + ' · seen).'); return; }
       s.stayed = (s.stayed || 0) + 1;
-      h.u.hidden = true; // the same Hidden entry: no new ambush
-      for (const side of ['pc', 'foe']) if (side !== h.u.side) ((cb.lastSeen ||= {})[side] ||= {})[h.u.id] = h.u.pos;
+      if (!hideAgain(cb, rng, h.u)) return; // the same Hidden entry: no new ambush
       log(cb, h.u.name + ' melts back into cover (Shadow Step' + line + ' · stays Hidden).');
     },
   },

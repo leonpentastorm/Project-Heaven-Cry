@@ -36,6 +36,8 @@ import { spotlight } from './spotlight';
 import { feelChar } from './feelings';
 import { WEAPON, SKILL, ITEM } from './data';
 import { rngOf, overworld, tilesAround, foesOf } from './kit';
+import { setBraced, setDowned, clearStagger } from './unitstate';
+import { condNotFresh } from './magic';
 
 export type { Belief, Vow } from './character';
 
@@ -738,7 +740,7 @@ export function registerFaithHooks() {
     // Rules 1.22, the Shield vow's moment: this unit attacked the ally someone named, its turn is over and the ally stands.
     for (const w of cb.units) { if (w.faith?.shieldAtk !== u.id) continue; delete w.faith.shieldAtk; if (!vowOn(w, 'shield')) continue; const al = cb.units.find((x) => x.id === w.vow!.allyId || (!!x.charId && x.charId === w.vow!.allyId)); if (al && alive(al) && !al.downed) fulfilVow(cb, w, al.name + ' was attacked and still stands'); }
     if (!u.charId) return;
-    if (u.braced || u.overwatch || u.watch || condOn(u, 'anchored')) faithTag(cb, u, 'hold'); // a held Watch technique is holding too (rules 1.12)
+    if (u.braced || u.overwatch || u.watch) faithTag(cb, u, 'hold'); // a held Watch technique is holding too (rules 1.12)
     if (u.hidden && cb.units.some((v) => v.side === u.side && v !== u && v.downed && !v.dead)) faithTag(cb, u, 'cower');
     if (u.vow?.state === 'sworn' && u.vow.id === 'stand' && fs(u).standFrom != null && nearestEnemy(cb, u) > fs(u).standFrom) breakVow(cb, u, 'ended the turn farther from the enemy');
     // Rules 1.22, the Stand vow's moment: attacked since your last turn, and the turn ends with no ground given.
@@ -758,7 +760,7 @@ export function registerFaithHooks() {
       const r = applyCond(cb, rng, null, u, gr.condition, gr.rounds, undefined, { skipSave: true });
       // Item 723: it lasts its rounds of the bearer's own turns whatever the initiative (landing before the first turn
       // isn't "on your own turn"), and it ends with the fight (marked: never carried into the story).
-      if (u.condFresh) { u.condFresh = u.condFresh.filter((x) => x !== gr.condition); if (!u.condFresh.length) delete u.condFresh; }
+      condNotFresh(u, gr.condition);
       if (r && !/resists|untouched/.test(r)) fs(u).grudgeCond = gr.condition;
       emitFx(cb, FAITH_FX.grudge, { char: c.id, patron: gr.patron, sessions: Math.max(0, gr.until - sessionN(g)), condition: gr.condition, at: u.pos, unit: u.id });
       cb.log.push('Grudge (' + (p?.name || gr.patron) + '): ' + u.name + ' starts the fight ' + condNameOf(gr.condition) + (r ? ' (' + r.replace(/^ · /, '') + ')' : '') + '.');
@@ -968,7 +970,7 @@ function cleanseHarmful(cb: Combat, v: Unit): string[] {
   const ids = Object.keys(v.conds || {}).filter((k) => !condIsBoon(k) && condOn(v, k));
   if (v.prone) ids.push('prone'); if ((v.bleed || 0) > 0) ids.push('bleeding'); if (v.dazedNext) ids.push('dazed');
   for (const k of ids) endCond(v, k, cb);
-  v.stunnedNext = 0; if (v.faith?.grudgeCond) delete v.faith.grudgeCond;
+  clearStagger(v); if (v.faith?.grudgeCond) delete v.faith.grudgeCond;
   return ids;
 }
 /** Requisition Approved's restock of one fighter (item 728): every magazine full (the loaded one, the spares, at least
@@ -1065,7 +1067,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     }
     // The Quartermaster
     case 'resupply': return land(cb, rng, u, one!, e, power, () => { const r = freeReload(cb, one!); if (one !== u) faithTag(cb, u, 'supply'); const res = (one!.res ||= {}); if (res.supplies != null) res.supplies = Math.min(res.supplies + 1, one!.resMax?.supplies ?? res.supplies + 1); return r + (res.supplies != null ? ' · +1 Supply' : ''); });
-    case 'dig_in': return land(cb, rng, u, one!, e, power, () => { fs(one!).dugIn = one!.pos; one!.braced = true; delete one!.guardBrace; return ' · ' + one!.name + ' digs in (half cover until they move) and is Braced'; });
+    case 'dig_in': return land(cb, rng, u, one!, e, power, () => { fs(one!).dugIn = one!.pos; setBraced(one!, true); return ' · ' + one!.name + ' digs in (half cover until they move) and is Braced'; });
     case 'covering_fire': { let out = ''; for (const v of enemiesIn(cb, u, tilesAround(a.tile!, 1))) out += applyCond(cb, rng, u, v, 'pinned', 1, 'body'); return out || ' · nobody in the area'; }
     case 'requisition_approved': { // rules 1.6.2 (item 728): the whole squad (characters), restocked, repaired, cleared, +3 AP banked
       let out = ''; const squad = cb.units.filter((x) => x.side === u.side && x.charId && !x.companion && !x.dead);
@@ -1106,7 +1108,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       let out = '';
       for (const v of fallenAllies(cb, u)) {
         const was = v.dead ? 'crossed' : 'fell', half = Math.ceil(v.maxHp / 2);
-        v.dead = false; v.downed = false; v.hp = half; v.saves = { ok: 0, fail: 0 }; v.stunnedNext = 0;
+        v.dead = false; setDowned(v, false); v.hp = half; clearStagger(v);
         const ch = unitChar(v); if (ch) ch.dead = false;
         emitFx(cb, 'heal', { target: v.id, at: v.pos, amount: half });
         out += ' · ' + v.name + ' (' + was + ') is turned back at the shore: ' + half + ' HP';
@@ -1154,12 +1156,12 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     }
     // The Counting Weaver
     case 'foreknowing': { const n = Math.max(1, Number(fxOf(e, 'state', (q) => q.state === 'foreknown')?.uses ?? 2)); fs(one!).foreknown = n; return ' · the next ' + (n > 1 ? n + ' attacks' : 'attack') + ' on ' + one!.name + ' will miss'; } // item 1266
-    case 'unravel': { const v = one!; const ids = Object.keys(v.conds || {}).filter((k) => condIsBoon(k) && condOn(v, k)); for (const k of ids) endCond(v, k, cb); const had = !!v.shield; v.shield = 0; v.braced = false; dropHeldShot(cb, v, 'Unravel'); if (v.hidden) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; } return ' · ' + v.name + ' is unravelled' + (ids.length || had ? ' (' + [...ids, ...(had ? ['shield'] : [])].join(', ') + ')' : ''); }
+    case 'unravel': { const v = one!; const ids = Object.keys(v.conds || {}).filter((k) => condIsBoon(k) && condOn(v, k)); for (const k of ids) endCond(v, k, cb); const had = !!v.shield; v.shield = 0; setBraced(v, false); dropHeldShot(cb, v, 'Unravel'); if (v.hidden) endCond(v, 'hidden', cb); return ' · ' + v.name + ' is unravelled' + (ids.length || had ? ' (' + [...ids, ...(had ? ['shield'] : [])].join(', ') + ')' : ''); }
     case 'cut_short': { const v = one!; if (v.tier === 'boss') { apDebt(v, 2); return ' · ' + v.name + ' loses 2 AP on its next turn (a boss)'; } const out = applyCond(cb, rng, u, v, 'stunned', 1, 'heart'); if (condOn(v, 'stunned') || (v as any).stunnedNext) fs(v).cutShortRound = cb.round; return out; } // item 1268: not the same enemy two rounds running
     case 'rewoven': { // rules 1.6.2 (item 734): HP back to the round's start where that was higher (the Downed stand), then a full turn each
       const x: any = cb, snap: Record<string, number> = x.faithRoundHp || {}; let out = '';
       for (const v of allies) { const was = snap[v.id]; if (was == null || was <= v.hp) continue;
-        const up = v.downed; if (up) { v.downed = false; v.saves = { ok: 0, fail: 0 }; } v.hp = Math.min(v.maxHp, was);
+        const up = v.downed; if (up) setDowned(v, false); v.hp = Math.min(v.maxHp, was);
         emitFx(cb, 'heal', { target: v.id, at: v.pos, amount: v.hp }); out += ' · ' + v.name + ' is rewoven to ' + v.hp + ' HP' + (up ? ' (stands)' : ''); }
       if (!x.faithOrderRestore) x.faithOrderRestore = [...cb.order];
       // From the round's own initiative, once each (item 737: a second Rewoven in the round used to copy the first one's

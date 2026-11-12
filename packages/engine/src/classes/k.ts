@@ -35,6 +35,8 @@ import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } fr
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround, foesOf, canStand, tilesLine } from '../kit';
+import { setDowned } from '../unitstate';
+import { hideAgain, setCondRounds } from '../magic';
 
 // =============================================================================================== helpers
 type Rng = { state: number };
@@ -114,7 +116,7 @@ register({
       if (!st.killed) { st.wasHidden = false; return; } st.killed = false; st.wasHidden = false;
       if (u.hidden) { say(cb, u.name + ' stays in the dark (Silent Kill).'); return; }
       if (loud(u, !!ctx.melee)) { say(cb, u.name + '\'s shot is too loud to stay hidden (Silent Kill needs a quiet weapon).'); note(h, u.name + ' killed from Hidden with a loud gun: who heard it?'); return; }
-      u.hidden = true; say(cb, u.name + ' kills without a sound and stays Hidden (Silent Kill; no new ambush until you hide again).');
+      if (!hideAgain(cb, rngOf(h, ctx), u)) return; say(cb, u.name + ' kills without a sound and stays Hidden (Silent Kill; no new ambush until you hide again).');
     },
     spot: (ctx, h) => { if (ctx.u !== h.u || !inFight(h)) return; const st = stateOf(h); if (st.kr === h.cb!.round && st.kn) ctx.tn -= 2 * st.kn; },
   },
@@ -888,7 +890,7 @@ function grandTurnStart(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, g: any)
     case 'dread': return !ally ? applyCond(cb, rng, o, t, 'shaken', undefined, 'heart') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
     case 'light': return t.hidden && !ally ? reveal(cb, t, 'the Noon form') : '';
-    case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
+    case 'veil': if (!t.hidden && hideAgain(cb, rng, t)) return ' · ' + t.name + ' vanishes in the smoke'; return '';
     // The 1.4 words (item 468).
     // COMMAND (Parade ground): a Brain save, or halt: Pinned for the turn (no moving; it can still act).
     case 'command': return ally || condOn(t, 'pinned') || bodySave(cb, rng, o, t, 'brain') ? '' : ' · the Parade ground halts ' + t.name + applyCond(cb, rng, o, t, 'pinned', 1, undefined, { skipSave: true });
@@ -907,7 +909,7 @@ function grandEnter(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, ms: any): s
     case 'gale': { ms.stop = 'cyclone'; const [cx, cy] = xy(zCentre(z)), [x, y] = xy(t.pos); return nudge(cb, t, key(cx - (x - cx) * 9, cy - (y - cy) * 9), 2).replace('is pulled', 'is thrown') || ' · the cyclone batters ' + t.name; }
     case 'light': return t.hidden && t.side !== o.side ? reveal(cb, t, 'the Noon form') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
-    case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
+    case 'veil': if (!t.hidden && hideAgain(cb, rng, t)) return ' · ' + t.name + ' vanishes in the smoke'; return '';
     case 'wait': if (t.side === o.side) return ''; ms.stop = 'tripwire'; return ' · a tripwire catches ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'tripwire'), 'sigil');
   }
   return '';
@@ -969,7 +971,7 @@ register({
         if (!t || dist(u.pos, t) > 1 || !standable(cb.map, t)) return { ok: false, why: 'Plant it on your tile or one next to you.' };
         return { lines: [SIGIL[w].word + ': ' + SIGIL[w].grand] };
       },
-      run: (h, a) => {
+      run: (h, a, rng) => {
         const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, w = a.choice!, m = u.mg!, left = 3 + m.durBonus;
         m.charge -= 3; m.cast = true;
         const tiles = tilesAround(t, 2).filter((k) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; });
@@ -989,7 +991,7 @@ register({
           line = placed.length ? ' · earthworks rise at ' + placed.map(refOf).join(', ') : ' · no room for earthworks';
         }
         if (w === 'light') for (const x of cb.units) if (x.hidden && x.side !== u.side && inZ(z, x.pos)) line += reveal(cb, x, 'the Noon form');
-        if (w === 'veil') for (const x of cb.units) if (!x.dead && inZ(z, x.pos) && !x.hidden && !condOn(x, 'marked')) { x.hidden = true; line += ' · ' + x.name + ' vanishes in the smoke'; }
+        if (w === 'veil') for (const x of cb.units) if (!x.dead && inZ(z, x.pos) && !x.hidden && hideAgain(cb, rng, x)) line += ' · ' + x.name + ' vanishes in the smoke';
         if (w === 'null') line += cleanGround(cb, z);
         // RAISE (Ramparts): up to 8 wall segments on the edge ring, every other tile, never on anyone; they fall with the form.
         if (w === 'raise') {
@@ -1121,7 +1123,7 @@ register({
       // STAY (stasis): conditions inside don't tick down (one landed this turn wasn't going to tick anyway).
       if (!grandZones(cb, o).some((z) => zWord(z) === 'stay' && inZ(z, t.pos))) { if (condOn(t, 'silenced') && t.condBy?.silenced === o.id && !grandZones(cb, o).some((z) => zWord(z) === 'silence' && inZ(z, t.pos))) endCond(t, 'silenced', cb); return; }
       const fresh = new Set(t.condFresh || []);
-      for (const id of Object.keys(t.conds)) if (t.conds[id] > 0 && t.conds[id] < 99 && !fresh.has(id)) t.conds[id]++;
+      for (const id of Object.keys(t.conds)) if (t.conds[id] > 0 && t.conds[id] < 99 && !fresh.has(id)) setCondRounds(t, id, t.conds[id] + 1);
     },
     round_start: (ctx, h) => {
       if (!h.u || !onGrid(h) || !staffOf(h)) return;
@@ -1762,7 +1764,7 @@ function twinDesign(h: Holder, a: ActionArgs): OutburstDesign | null {
   return (h.u?.mg?.designs || []).find((d) => d.id === a.choice) || null;
 }
 function vanish(cb: Combat, tw: Unit) {
-  tw.dead = true; tw.downed = false; tw.hp = 0; (cb.deadSeen ||= []).includes(tw.id) || cb.deadSeen!.push(tw.id); // a twin's loss isn't a death: no bots
+  tw.dead = true; setDowned(tw, false); tw.hp = 0; (cb.deadSeen ||= []).includes(tw.id) || cb.deadSeen!.push(tw.id); // a twin's loss isn't a death: no bots
   emitFx(cb, 'down', { unit: tw.id, at: tw.pos, dead: true, vanish: true });
 }
 // Bond (K33, PROVISIONAL, audit 1-3): if the twin would drop to 0 HP it vanishes instead (not Downed; no bots on the

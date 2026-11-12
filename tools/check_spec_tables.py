@@ -165,6 +165,10 @@ def check_conditions():
         if (c.get("family") or "").lower() != cells[1].lower(): diff(f"condition:{c['id']}:family", ln, f"{c['name']}: family {cells[1]} in the spec, {c.get('family')} in data")
         dur, m = c.get("duration") or {}, re.match(r"\s*(\d+) (round|turn)", cells[3])
         dn = dur.get("rounds") if dur.get("rounds") is not None else dur.get("turns")
+        # one unit since engine foundations 2 ("One table, one door" point 2): `rounds` counts the bearer's own turn ends,
+        # so "until the end of your next turn" is 1 round; "1 turn" of a next-turn effect is `until: next_turn`
+        if dur.get("until") == "next_turn" and m and m.group(1) == "1" and m.group(2) == "turn": continue
+        if dn == 1 and re.match(r"\s*until the end of your next turn", cells[3]): continue
         if m and not same(float(m.group(1)), dn): diff(f"condition:{c['id']}:lasts", ln, f"{c['name']}: lasts {cells[3]!r} in the spec, {dur} in data")
         if not m and dn is not None: diff(f"condition:{c['id']}:lasts", ln, f"{c['name']}: lasts {cells[3]!r} in the spec, {dur} in data")
     for c in conds:  # every debuff has a row; states are listed under "Helpful states" and in their own sections

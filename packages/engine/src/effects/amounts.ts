@@ -29,7 +29,7 @@
 // engine's source asks for exists and that no new numeric literal is passed to a damage, heal or shield sink.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { PERK, TRAITS, SKILL, RULES, SIGIL } from '../data';
-import conditionsJ from '../../../../data/conditions.json';
+import { CONDITION_ROWS } from '../condtable';
 import feelingsJ from '../../../../data/feelings.json';
 import patronsJ from '../../../../data/patrons.json';
 import { classMove } from './collect';
@@ -40,7 +40,7 @@ export interface AmountBlock {
   type?: string; armour?: 'full' | 'half' | 'none'; mults?: Record<string, number>; provisional?: boolean; text?: string;
 }
 const TRAIT_BY: Record<string, any> = Object.fromEntries((TRAITS as any[]).map((t) => [t.id, t]));
-const COND_BY: Record<string, any> = Object.fromEntries(((conditionsJ as any).items as any[]).map((c) => [c.id, c]));
+const COND_BY: Record<string, any> = Object.fromEntries(CONDITION_ROWS.map((c) => [c.id, c]));
 const FEELING_BY: Record<string, any> = Object.fromEntries((((feelingsJ as any).items || (feelingsJ as any).feelings || []) as any[]).map((f) => [f.id, f]));
 const PATRON_BY: Record<string, any> = Object.fromEntries(((patronsJ as any).items as any[]).map((p) => [p.id, p]));
 /** The data object a key names (see the head of this file), or null. */

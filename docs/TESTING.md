@@ -67,6 +67,14 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 - **The foundation lint** (`packages/engine/test/lint-foundations.test.ts`, inside `npm run check`): reads the engine's
   source and fails on a raw `d20(`, a hand-written pass/fail, a new `unit.pos =`, a private copy of a `kit.ts` helper,
   a fixed-seed rng, or a stat id that is answered and never asked. Each failure says what to call instead.
+- **The conditions table and its lint** (engine foundations 2; both inside `npm run check`):
+  `packages/engine/test/golden-conditions.test.ts` holds every condition on every tier and a character through its life
+  (apply, stack, tick, cleanse, end), from each kind of source, against both immunity doors and every trait and perk
+  that changes one (`test/golden/conditions.json`: a state line that moves is a behaviour change; the words are
+  `conditions.log.json`, re-recorded with `GOLDEN_RECORD=log npm test -w @phc/engine -- golden-conditions`).
+  `test/lint-conditions.test.ts` fails on a direct write of a condition flag or a unit state, on `u.conds` written
+  outside the condition block, on a condition id in code that `data/conditions.json` does not have (and a row nothing
+  uses), and on a private cone or blast test.
 - **The roll digest** (opt-in: `cd packages/engine && ROLL_DIGEST=record npx vitest run --config vitest.digest.config.ts`
   before a refactor, `ROLL_DIGEST=compare …` after): every die of every test, counted and hashed; a test whose dice
   moved fails by name. For refactors that must not change what is rolled.

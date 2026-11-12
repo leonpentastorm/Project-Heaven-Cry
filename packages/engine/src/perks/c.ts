@@ -23,7 +23,7 @@ import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
 import { callMarks, callLevel } from '../calls/core';
 import { CALL, callStepAt } from '../calls/data';
 import { positionsOf } from '../game';
-import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
+import { overworld, say, unitById, tileOf, rngOf, canStand, tilesAround, inArea, tilesIn, unitsIn } from '../kit';
 import { rollVs } from '../rolls';
 
 // ---------- small helpers ----------
@@ -740,15 +740,15 @@ function shapeTiles(cb: Combat, from: string, at: string, shape: string, r: numb
   const out: string[] = [], [ax, ay] = xy(at), [fx, fy] = xy(from), dx = Math.sign(ax - fx), dy = Math.sign(ay - fy), n = 2 * r + 1;
   const inMap = (x: number, y: number) => x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h;
   if (shape === 'line') { for (let i = 0; i < n; i++) { const x = ax + dx * i, y = ay + dy * i; if (!inMap(x, y) || cb.map.solid.includes(key(x, y))) break; out.push(key(x, y)); } return out; }
-  if (shape === 'cone') { const dl = Math.hypot(dx, dy) || 1; for (let x = ax - n; x <= ax + n; x++) for (let y = ay - n; y <= ay + n; y++) { if (!inMap(x, y)) continue; const vx = x - ax, vy = y - ay, l = Math.hypot(vx, vy); if (l === 0 || (l <= n + 0.5 && (vx * dx + vy * dy) / (l * dl) >= 0.7)) out.push(key(x, y)); } return out; }
-  for (let x = ax - r; x <= ax + r; x++) for (let y = ay - r; y <= ay + r; y++) if (inMap(x, y)) out.push(key(x, y));
-  return out;
+  // the kit's shapes (kit.ts Area): a cone from the charge away from the setter (its own tile too), or its radius
+  if (shape === 'cone') return tilesAround(at, n, cb).filter((k) => k === at || inArea({ shape: 'cone', from: at, toward: [dx, dy], n }, k));
+  return tilesIn(cb, { shape: 'burst', at, r });
 }
 function detonate(h: Holder, rng: Rng, ch: { at: string; from: string; shape: string; item: string }): string {
   const cb = h.cb!, u = h.u!, w: any = WEAPON[ch.item], r = radiusOf(w), tiles = shapeTiles(cb, ch.from, ch.at, ch.shape, r), dmg = typeof w?.damage === 'number' ? w.damage : 0;
   emitFx(cb, 'explode', { at: ch.at, radius: r, what: ch.item, tiles });
   let out = '';
-  for (const v of cb.units) if (!v.dead && !v.surrendered && tiles.includes(v.pos)) { out += hurtUnit(v, dmg, false, cb, 'explosion', u); if (!v.dead && (w.properties || []).includes('applies_burning')) out += applyCond(cb, rng, u, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
+  for (const v of unitsIn(cb, tiles, { downed: true })) { out += hurtUnit(v, dmg, false, cb, 'explosion', u); if (!v.dead && (w.properties || []).includes('applies_burning')) out += applyCond(cb, rng, u, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) out += damageObject(cb, o.pos, dmg * DEMO, 0, u);
   return out || ' · it finds no one';
 }

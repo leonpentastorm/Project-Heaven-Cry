@@ -20,6 +20,8 @@ import { setStoryCond, storyConds, strikeFromWorld } from '../game';
 import { reveal, PATRON , dropHeldShot } from '../tactics';
 import { overworld, say, tileOf, rngOf } from '../kit';
 import { rollVs, TN } from '../rolls';
+import { setBraced, setDowned } from '../unitstate';
+import { restoreConds, setCondRounds } from '../magic';
 
 // ---------- small helpers ----------
 const ow = overworld;
@@ -260,7 +262,7 @@ const WW_LESS = 0.2;
 const wwSnap = (h: Holder) => { const st = stateOf(h); st.snap = { daz: h.u!.dazedNext || 0, mv: h.u!.movement, legs: (h.u!.injuries || []).filter((i) => i.loc === 'leg').length }; };
 function wwUndo(h: Holder, line: string) {
   const u = h.u!, st = stateOf(h), s = st.snap; if (!s) return; st.snap = null;
-  if (/head, Dazed/.test(line) && !s.daz && u.dazedNext) { u.dazedNext = 0; say(h.cb, u.name + ' shrugs off the blow to the head (Walking Wounded).'); }
+  if (/head, Dazed/.test(line) && !s.daz && u.dazedNext) { endCond(u, 'dazed'); say(h.cb, u.name + ' shrugs off the blow to the head (Walking Wounded).'); }
   const legs = (u.injuries || []).filter((i) => i.loc === 'leg').length;
   if (legs > s.legs && u.movement < s.mv) { u.movement = s.mv; if (u.baseMove != null) u.baseMove = Math.max(u.baseMove, s.mv); say(h.cb, u.name + ' walks on the bad leg (Walking Wounded).'); }
 }
@@ -304,7 +306,7 @@ register({
 // (this turn, if it is yours now). Then you go Downed unless someone healed you. Each hit you take meanwhile is a
 // death-save failure (two on a critical) instead of damage; at 3 you die (PROVISIONAL, plan 6 Bite the Bullet 2).
 // Ordering: after Angel of the Trenches and Last Wall (priority 20).
-const btbEnd = (h: Holder, why: string) => { const st = stateOf(h); st.lt = null; if (h.u?.conds) delete h.u.conds.last_turn; say(h.cb, why); };
+const btbEnd = (h: Holder, why: string) => { const st = stateOf(h); st.lt = null; if (h.u) endCond(h.u, 'last_turn'); say(h.cb, why); };
 register({
   id: 'bite_the_bullet', claims: 'all', priority: 20,
   on: {
@@ -322,13 +324,13 @@ register({
       if (!uses(h).take('per_combat', 1)) return;
       const own = !!h.cb && h.cb.order[h.cb.turn] === u.id && !h.cb.window;
       ctx.floor = 1; st.lt = { began: own };
-      (u.conds ||= {}).last_turn = 99;
+      restoreConds(u, { last_turn: 99 }); // the perk's own marker: nobody is asked
       say(h.cb, u.name + ' bites the bullet: still standing for ' + (own ? 'the rest of this turn' : 'one more turn') + '.');
     },
     turn_start: (ctx, h) => { if (ctx.u === h.u && stateOf(h).lt) stateOf(h).lt.began = true; },
     turn_end: (ctx, h) => {
       const st = stateOf(h); if (ctx.u !== h.u || !st.lt || !st.lt.began) return;
-      const u = h.u!; u.hp = 0; u.downed = true; u.braced = false; dropHeldShot(h.cb, u, 'down');
+      const u = h.u!; u.hp = 0; setDowned(u, true); setBraced(u, false); dropHeldShot(h.cb, u, 'down');
       btbEnd(h, u.name + '\'s Last Turn is over: Downed.'); if (h.cb) fxFell(h.cb, u);
     },
     heal_given: (ctx, h) => { if (ctx.t === h.u && stateOf(h).lt && ctx.n > 0) btbEnd(h, h.u!.name + ' is patched up in time: the Last Turn ends, still standing.'); },
@@ -604,7 +606,7 @@ register({
     on_damaged: (ctx, h) => {
       if (ctx.t !== h.u || ctx.src?.dmgType !== 'emp' || !augOf(h) || !h.cb || h.u!.dead) return;
       const r = applyCond(h.cb, rngOf(h), ctx.src.by || null, h.u!, 'augment_offline', 2, undefined, { skipSave: true });
-      if (h.u!.conds?.augment_offline) h.u!.conds.augment_offline = 2;
+      if (h.u!.conds?.augment_offline) setCondRounds(h.u!, 'augment_offline', 2);
       if (augOf(h) === 'eye') h.u!.darkSight = !!stateOf(h).gearDark;
       say(h.cb, 'The EMP fries ' + h.u!.name + '\'s ' + augOf(h) + ' augment' + r + '.');
     },

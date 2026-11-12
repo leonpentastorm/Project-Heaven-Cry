@@ -35,7 +35,9 @@ import {
   saveTn,
 } from './magic';
 import { makeObject, OBJ } from './objects';
-import { tilesAround, canStand, inBounds } from './kit';
+import { tilesAround, canStand, inBounds, inArea } from './kit';
+import { rawHidden } from './unitstate';
+import { condMods } from './condtable';
 
 type Fam = SigilFam;
 /** Enemy notice by tier (tactics.ts TIER_NOTICE; copied here so this module doesn't import tactics, which reads magic.ts
@@ -44,12 +46,12 @@ const NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 
 /** Hidden (tactics.ts hide/reveal, the same steps): not while Marked; each entry gives one ambush. */
 function hideUnit(cb: Combat, u: Unit, why: string): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
-  if (!u.hidden) { u.hidden = true; u.hideEntry = (u.hideEntry || 0) + 1; for (const side of ['pc', 'foe']) if (side !== u.side) ((cb.lastSeen ||= {})[side] ||= {})[u.id] = u.pos; emit(cb, 'hide', { u, why, cb }); sightFx(cb, null, { [u.id]: 'hide' }); }
+  if (!u.hidden) { rawHidden(cb, u, true); emit(cb, 'hide', { u, why, cb }); sightFx(cb, null, { [u.id]: 'hide' }); }
   return ' · ' + u.name + ' is Hidden (' + why + ')';
 }
 function revealUnit(cb: Combat, u: Unit, why: string): string {
   if (!u.hidden) return '';
-  u.hidden = false; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id];
+  rawHidden(cb, u, false);
   cb.log.push(u.name + ' is revealed (' + why + ').'); emit(cb, 'spotted', { u, why, cb }); sightFx(cb, null, { [u.id]: 'reveal' }); return ' · revealed';
 }
 // ---------- ready, costs ----------
@@ -59,7 +61,7 @@ export function sigilReady(cb: Combat, u: Unit): string | null {
   if (m.lockRound != null && cb.round <= m.lockRound) return 'Your Evoker is locked after an overload until next round.';
   return canCast(u);
 }
-export const glyphApOf = (u: Unit) => (u.mg?.glyphAp || 1) + (condOn(u, 'ldebuff') ? 1 : 0);
+export const glyphApOf = (u: Unit) => (u.mg?.glyphAp || 1) + (condOn(u, 'ldebuff') ? condMods('ldebuff').sigilAp || 0 : 0);
 /** A glyph's price for this unit: 'glyph_cost' {u, word, tile, ap, charge, flux, preview, fail} (mutable), after
  * word_cost items. fail = 'why' refuses the draw (hooks gap D2/K5). Flux is the word's (TWICE 2). */
 export function glyphCost(cb: Combat, u: Unit, word: string, preview = false, tile?: string): { ap: number; charge: number; flux: number; fail?: string } {
@@ -299,8 +301,8 @@ export function burstTiles(cb: Combat, sp: Spell, impact: string, f: Dir): { til
   if (!sp.burst) put(impact, 1);
   if (sp.spread) for (const k of tilesAround(impact, sp.radius)) put(k, sp.radiusMult);
   if (sp.push) {
-    const apex = add(impact, f, -1), [px, py] = xy(apex), fl = Math.hypot(f[0], f[1]) || 1;
-    for (const k of tilesAround(apex, sp.coneLen)) { const [x, y] = xy(k), ax = x - px, ay = y - py, l = Math.hypot(ax, ay); if (!l || dist(apex, k) > sp.coneLen) continue; if ((ax * f[0] + ay * f[1]) / (l * fl) >= 0.7) put(k, sp.coneMult); }
+    const apex = add(impact, f, -1);
+    for (const k of tilesAround(apex, sp.coneLen)) if (inArea({ shape: 'cone', from: apex, toward: f, n: sp.coneLen, reach: 'square' }, k)) put(k, sp.coneMult); // the kit's cone, measured by the grid
     put(impact, sp.coneMult);
   }
   if (sp.condense) mult[impact] = Math.max(mult[impact] ?? 0, sp.coreMult);
@@ -615,7 +617,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   if (!near) return no('Stand within 1 tile of a glyph of the Line to Evoke it.', { pattern: p, spell: sp });
   const facing = facingFrom(p, u.pos); if (typeof facing === 'string') return no(facing, { pattern: p, spell: sp });
   // 'evoke_cost' {u, pattern, ap, charge, preview, fail} (mutable): items change what firing costs; fail refuses it.
-  const ec: any = emit(cb, 'evoke_cost', { u, pattern: p, ap: SPELL_AP.evoke + (condOn(u, 'ldebuff') ? 1 : 0), charge: evokeCharge(p, u), preview: true, fail: '', cb });
+  const ec: any = emit(cb, 'evoke_cost', { u, pattern: p, ap: SPELL_AP.evoke + (condOn(u, 'ldebuff') ? condMods('ldebuff').sigilAp || 0 : 0), charge: evokeCharge(p, u), preview: true, fail: '', cb });
   if (ec.fail) return no(ec.fail, { pattern: p, spell: sp });
   const charge = Math.max(0, ec.charge), eap = Math.max(0, ec.ap), depth = spellRange(cb, u, sp, p);
   const base = { pattern: p, spell: sp, charge, ap: eap, flux: 0, facing, range: depth, targets: [] as string[] };
