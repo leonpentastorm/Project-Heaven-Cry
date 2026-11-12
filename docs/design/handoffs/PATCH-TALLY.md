@@ -141,6 +141,47 @@ Detail: `BUGLIST-0.22.md`.
 - 19 perks and traits moved from the Narrator to the engine.
 - Spec section 14: items 1015 to 1088, 1200 to 1222, 1230 to 1247, 1260 to 1274, and what 1.22 and 1.23 add.
 
+## 10. What has no ceiling yet (asked by Leon, 12 Nov)
+
+Fitted = measured and brought to a target. Everything is measured on **one target that never acts**, which is why the
+second and third groups exist.
+
+**Fitted:** the plain rifle (the 100% line); guns on one target (rules 1.18); Sigil damage (1.17); Outburst damage
+(1.17, 1.19, base 40); magic heals and shields (1.20); enemies by tier and level (1.15). Being fitted: Faith (1.22), the
+medic's kit and Boss HP (1.23).
+
+**Measured, not fitted (inside the ceiling, so left):** the optimised blade (112 to 126%; 109 to 142% holding its
+Finisher); a gun in each hand (123 to 144%).
+
+**Measured and over every ceiling, undecided:** the all-in 7/1/1 builds (gun 148 to 228%, Outburst 190 to 270%, Sigil
+142 to 205% of the normal-share rifle). Leon's answer is wanted: is the ceiling for a normal share only.
+
+**Never measured:**
+
+| # | System | What is in the game | Why it matters |
+| --- | --- | --- | --- |
+| 1 | Area and many targets | Blast, Spread, cones, the thumper, breacher tube, flamer, satchel charge, grenades; Sigil Burst and Filter words; Outburst Wave, Burst, Aura; Bloom, Split, Swift (flagged strong) | A blast on four enemies is four hits; none of the ceilings count it |
+| 2 | Melee beyond one blade build | 7 heavy, 6 light, the lance and glaive (Reach), 4 unarmed (fists to the servo fist), the Bare vow | Only "optimised blade" was run |
+| 3 | Thrown | Frag, incendiary, flashbang, smoke, bot scrambler, knives, hatchet | Not in any build |
+| 4 | Mana arms | Spellslinger pistol, Evoker blade, Emanator gauntlet, censer gun, banner, grand staff (the core rifle is fitted) | They ride on casters whose spells were fitted without them |
+| 5 | Class moves | 9 classes, two moves a rank, three ranks | The builds carry a class, but no move was measured or given a ceiling |
+| 6 | Perks, Mastered perks, traits | 76 perks, 27 Mastered, 74 traits | Guns: "perks add no gun damage" was checked; nothing else |
+| 7 | Weapon mastery and drill | 33 mastery items in 11 families | Inside the gun runs only as Masterwork (×1.25, left alone) |
+| 8 | Special rounds and mods | 4 ammunition types, 13 weapon mods | Not measured; "with the armour step" |
+| 9 | Control and conditions | 40 conditions; lost turns, Slows, Marks, Taunts; damage over time (bleed, burn, corrode); Sigil fields, traps, turrets, walls; Outburst Control and Status | No yardstick yet for a turn taken away (Cut Short could lock an enemy out all fight) |
+| 10 | Calls | 9 Calls; a Calls leader build exists in the simulator | Support worth is an estimate, as for the six support patrons |
+| 11 | Squad multipliers | Resonance, Feed the Fire (+2 AP), Foreknowing, Marks, buffs between characters | The simulator plays one character at a time for damage |
+| 12 | Reactions and held actions | Overwatch, held shots, Heart Overwatch, opportunity attacks, Watches | Damage outside your own turn is in no total |
+| 13 | Stealth openers and decoys | Hidden attacks (Infiltrator), False Image (Trickster) | Not measured |
+| 14 | Defence | 16 armours, 3 shields, cover, Guard, the Tank build | Armour is a planned system; the defence step (1.23) fits Boss HP and healing only |
+| 15 | Elites and Bosses by damage type | Soul and lightning ignore armour, Elemental half | Faith and Raw Outbursts are worth more there than the range shows |
+| 16 | Enemy casters and the enemy Burst | Untouched on purpose | They keep pre-1.17 numbers and the old three-roll Burst |
+| 17 | Overdraw, Heart Overload, Miracles, interventions | Peaks with a price | Left for the playtest; a Miracle is allowed over every ceiling |
+| 18 | Consumables and the rest | Stims (in the medic pass), the companion, the augment, hazards and traps on the map | Not measured |
+
+**Order suggested:** 1 (many targets) first, because it changes every other number; then 9 (a yardstick for control),
+5 (class moves), 2 to 4 (the weapons left out), 6 to 8, and the rest with Weapon Arts and armour.
+
 ## Still moving (12 Nov)
 
 - **Rules 1.22**, Faith round 2: being built.
