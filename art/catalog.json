@@ -10774,6 +10774,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-contempt.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-contempt.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-guilt": {
+      "id": "feeling-guilt",
+      "label": "Guilt: the ribbon drags a small weight behind it",
+      "path": "art/icons/feelings/feeling-guilt.png",
+      "sha256": "df1734988e77c96f46a768385e9b497711c1d05ca94e57f5a5cf3c27ad54d3a4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-guilt.png",
+        "128": "art/icons/feelings/exports/128/feeling-guilt.png",
+        "64": "art/icons/feelings/exports/64/feeling-guilt.png",
+        "56": "art/icons/feelings/exports/56/feeling-guilt.png",
+        "48": "art/icons/feelings/exports/48/feeling-guilt.png",
+        "44": "art/icons/feelings/exports/44/feeling-guilt.png",
+        "40": "art/icons/feelings/exports/40/feeling-guilt.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-guilt.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-guilt.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {
