@@ -29,12 +29,12 @@
     "module-orbit",
     "module-echo",
     "feeling-spite",
-    "feeling-shame"
+    "feeling-shame",
+    "feeling-pride"
   ],
   "awaiting_after_test": "Test styles approved; optional map layout/playtest confirmation still pending",
   "production_approved": false,
   "remaining_now": [
-    "feeling-pride",
     "feeling-despair",
     "feeling-hope",
     "feeling-mercy",
@@ -89,7 +89,7 @@
     "ui-practice",
     "ui-felt"
   ],
-  "updated_utc": "2026-11-12T02:53:57.763662+00:00",
+  "updated_utc": "2026-11-12T02:55:32.263910+00:00",
   "outburst_test_verdict": "Leon: Approve both styles and continue",
   "pending_after_test_approval": false
 }

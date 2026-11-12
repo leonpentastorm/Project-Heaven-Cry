@@ -951,6 +951,52 @@
           "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
         }
       ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-pride.png",
+      "sha256": "5a7c0e10ea7ae981dd79ec271f4c583ae364c054f73a65370e4b720f4d1af5b3",
+      "id": "feeling-pride",
+      "family": "feelings",
+      "action": "Pride: the ribbon rises into a tall straight spire.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-pride.png",
+        "sha256": "7eb2de1232836cc2761ce97ef633235be018e3c6c8cfdb257a714aa80ce132dd"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-pride.png",
+        "sha256": "5a7c0e10ea7ae981dd79ec271f4c583ae364c054f73a65370e4b720f4d1af5b3"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-pride.txt",
+        "sha256": "e73cc7b9856fdad51c3a1b14f828e9875befc583170731d3603ae3e7434d9ddb"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-pride.png",
+        "128": "art/icons/feelings/exports/128/feeling-pride.png",
+        "64": "art/icons/feelings/exports/64/feeling-pride.png",
+        "56": "art/icons/feelings/exports/56/feeling-pride.png",
+        "48": "art/icons/feelings/exports/48/feeling-pride.png",
+        "44": "art/icons/feelings/exports/44/feeling-pride.png",
+        "40": "art/icons/feelings/exports/40/feeling-pride.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
     }
   ]
 }

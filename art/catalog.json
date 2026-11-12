@@ -10474,6 +10474,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-shame.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-shame.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-pride": {
+      "id": "feeling-pride",
+      "label": "Pride: the ribbon rises into a tall straight spire",
+      "path": "art/icons/feelings/feeling-pride.png",
+      "sha256": "5a7c0e10ea7ae981dd79ec271f4c583ae364c054f73a65370e4b720f4d1af5b3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-pride.png",
+        "128": "art/icons/feelings/exports/128/feeling-pride.png",
+        "64": "art/icons/feelings/exports/64/feeling-pride.png",
+        "56": "art/icons/feelings/exports/56/feeling-pride.png",
+        "48": "art/icons/feelings/exports/48/feeling-pride.png",
+        "44": "art/icons/feelings/exports/44/feeling-pride.png",
+        "40": "art/icons/feelings/exports/40/feeling-pride.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-pride.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-pride.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {
