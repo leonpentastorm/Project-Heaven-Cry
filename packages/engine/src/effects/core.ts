@@ -20,6 +20,7 @@ import { grantShield, healUnit, tendHook } from './damage';
 import { gainEcho } from './echo';
 import { deal, mend, type AmountSpec } from './output';
 import { amountBlock, type AmountBlock } from './amounts';
+import './triggers'; // item ops: the runner of triggered effects registers itself with the hooks (engine foundations 3)
 
 // ---------- the scope vocabulary ----------
 const GATES = ['when', 'duration', 'limit', 'uses', 'requires_state', 'per', 'trigger', 'count', 'area'];

@@ -386,7 +386,7 @@
           "what": "hidden_enemy",
           "count": 1,
           "range": "vision_range",
-          "when": "combat_start"
+          "when": "when the fight starts"
         }
       ],
       "tiers": {
@@ -405,7 +405,7 @@
               "what": "hidden_enemy",
               "count": 1,
               "range": "vision_range",
-              "when": "combat_start"
+              "when": "when the fight starts"
             }
           ]
         },
@@ -424,7 +424,7 @@
               "what": "hidden_enemy",
               "count": "all",
               "range": "vision_range",
-              "when": "combat_start"
+              "when": "when the fight starts"
             }
           ],
           "replaces_tier_I": true,
@@ -943,7 +943,7 @@
               "op": "condition",
               "condition": "fear",
               "target": "enemies_with_line_of_sight",
-              "when": "kill",
+              "when": "on a kill",
               "save": "heart"
             }
           ],
@@ -4753,7 +4753,7 @@
         {
           "op": "condition",
           "id": "fear",
-          "when": "combat_start",
+          "when": "when the fight starts",
           "target": "enemies that know you",
           "save": "heart"
         },
