@@ -10172,6 +10172,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/cue.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/cue.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "spot": {
+      "id": "spot",
+      "label": "Spot",
+      "path": "art/icons/calls/spot.png",
+      "sha256": "98f33caa406789930bc9f1940e329d979ede1e3318dd082fea4ae9aff56cea53",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/calls/exports/256/spot.png",
+        "128": "art/icons/calls/exports/128/spot.png",
+        "64": "art/icons/calls/exports/64/spot.png",
+        "56": "art/icons/calls/exports/56/spot.png",
+        "48": "art/icons/calls/exports/48/spot.png",
+        "44": "art/icons/calls/exports/44/spot.png",
+        "40": "art/icons/calls/exports/40/spot.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/spot.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/spot.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

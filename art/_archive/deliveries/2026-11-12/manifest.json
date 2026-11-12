@@ -311,6 +311,48 @@
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
+    },
+    {
+      "path": "art/icons/calls/spot.png",
+      "sha256": "98f33caa406789930bc9f1940e329d979ede1e3318dd082fea4ae9aff56cea53",
+      "id": "spot",
+      "family": "calls",
+      "action": "Spot. Wick pointing out a target: one arm fully extended with a pointing finger, his other hand shading his eyes, and far along the pointing line a small target ring.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/spot.png",
+        "sha256": "719f53bbd08d3119a87854a7e4f275e15ff46b0ab333992c31ed393219985d3f"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/spot.png",
+        "sha256": "98f33caa406789930bc9f1940e329d979ede1e3318dd082fea4ae9aff56cea53"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/spot.txt",
+        "sha256": "350cda5b7f2636d1a69b4de619b1a299e7a307b76825323e6aa71fc9b05c9a1b"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/spot.png",
+        "128": "art/icons/calls/exports/128/spot.png",
+        "64": "art/icons/calls/exports/64/spot.png",
+        "56": "art/icons/calls/exports/56/spot.png",
+        "48": "art/icons/calls/exports/48/spot.png",
+        "44": "art/icons/calls/exports/44/spot.png",
+        "40": "art/icons/calls/exports/40/spot.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
     }
   ]
 }
