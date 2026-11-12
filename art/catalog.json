@@ -11701,6 +11701,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-tether.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-tether.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-siphon": {
+      "id": "module-siphon",
+      "label": "a curve drawing drops toward a centre",
+      "path": "art/icons/modules/module-siphon.png",
+      "sha256": "57e3edf56d109a99a64e8b6247c85a22441843552b2ca95398724d98c1335764",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-siphon.png",
+        "128": "art/icons/modules/exports/128/module-siphon.png",
+        "64": "art/icons/modules/exports/64/module-siphon.png",
+        "56": "art/icons/modules/exports/56/module-siphon.png",
+        "48": "art/icons/modules/exports/48/module-siphon.png",
+        "44": "art/icons/modules/exports/44/module-siphon.png",
+        "40": "art/icons/modules/exports/40/module-siphon.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-siphon.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-siphon.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
