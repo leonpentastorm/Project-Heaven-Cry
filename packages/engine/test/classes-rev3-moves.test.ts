@@ -47,7 +47,8 @@ describe('Defender', () => {
     for (const guard of [2, 0]) {
       const f = fightWith([cls('defender', 5)], [{ weapon: 'maul' }]);
       const d = at(f, f.pc, '4,2'); tough(d); d.res = { ...(d.res || {}), guard }; d.def = -40; d.armour = 999; // the blow gets 1 damage through: 1 Guard soaks it (rules 1.13), 1 is left to shrug with
-      const foe = at(f, f.foe, '5,2'); foe.attack = 60; foe.techs = []; // plain attacks: the maul's knockdown is its plain attack's grant, not a technique's (rules 1.12) order(f, d, foe);
+      const foe = at(f, f.foe, '5,2'); foe.attack = 60; foe.techs = []; // plain attacks: the maul's knockdown is its plain attack's grant, not a technique's (rules 1.12)
+      order(f, d, foe);
       f.turn(d); act(f, d, { type: 'combat/end-turn' });
       expect(logHas(f.cb, /knocks? .*prone|Knockdown|prone/i)).toBe(true);
       if (guard) { expect(logCount(f.cb, /shrugs it off: no longer prone/)).toBeGreaterThanOrEqual(1); expect(f.unit(d.id).res!.guard).toBeLessThan(2); expect(fx(f, 'shrug').length).toBeGreaterThanOrEqual(1); }
@@ -131,7 +132,8 @@ describe('Fighter', () => {
     withGame(f.g, () => { applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'pinned', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'slowed', 3, undefined, { skipSave: true }); });
     expect(() => act(f, u, { type: 'combat/move', to: '2,2' })).toThrow(/Pinned/);
     perk(f, u, 'class:fighter.unstoppable');
-    expect(condOn(f.unit(u.id), 'pinned')).toBe(false); expect(f.unit(u.id).res!.momentum).toBe(3); // the 1 a fight starts with, +2 expect(fx(f, 'unstoppable').length).toBe(1);
+    expect(condOn(f.unit(u.id), 'pinned')).toBe(false); expect(f.unit(u.id).res!.momentum).toBe(3); // the 1 a fight starts with, +2
+    expect(fx(f, 'unstoppable').length).toBe(1);
     withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'fear', 2, undefined, { skipSave: true }));
     expect(condOn(f.unit(u.id), 'fear')).toBe(false);
     const n = f.cb.log.length; act(f, u, { type: 'combat/move', to: '2,2' });

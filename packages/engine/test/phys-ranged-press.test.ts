@@ -64,7 +64,8 @@ describe('Rake', () => {
   it('Auto: one full-auto volley as today (the volley event, chained shots, volley_end for Spray and Pray)', () => {
     const f = fight('hellraiser_service_rifle', crowd), [a, b] = f.foes; rig({ hit: true, die: 12 });
     f.tech('rake', { targetId: a.id });
-    const v = f.fx('volley').filter((e: any) => e.unit === f.pc.id); // the opening enemy turns may Suppress (its own volley event) expect(f.fx('volley').filter((e: any) => e.unit !== f.pc.id).every((e: any) => e.mode === 'suppress')).toBe(true); expect(v.length).toBe(1); expect(v[0]).toMatchObject({ unit: f.pc.id, target: a.id, mode: 'auto', shots: 10 });
+    const v = f.fx('volley').filter((e: any) => e.unit === f.pc.id); // the opening enemy turns may Suppress (its own volley event)
+    expect(f.fx('volley').filter((e: any) => e.unit !== f.pc.id).every((e: any) => e.mode === 'suppress')).toBe(true); expect(v.length).toBe(1); expect(v[0]).toMatchObject({ unit: f.pc.id, target: a.id, mode: 'auto', shots: 10 });
     const shots = f.fx('shot').filter((e: any) => e.unit === f.pc.id); expect(shots.length).toBe(2); expect(shots.every((e: any) => e.chain)).toBe(true);
     expect(VOLLEY_END).toEqual([{ u: f.pc.id, mode: 'auto', hits: [a.id, b.id] }]);
     expect(f.pressure(a)).toBe(1); expect(f.pressure(b)).toBe(1); // its own +1, not the ordinary +1 on top
