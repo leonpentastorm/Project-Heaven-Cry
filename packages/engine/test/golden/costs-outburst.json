@@ -137,7 +137,7 @@
 "outburst/buff:to_hit_2/stage4/ally/rage": "P1 ap99>98 mg.mp9999>9965 mg.strain0>1; air mana15>13",
 "outburst/buff:to_hit_2/stage4/soldier/plain": "P1 ap99>98 mg.mp9999>9965 mg.strain0>1; air mana15>13",
 "outburst/buff:to_hit_2/stage4/soldier/rage": "P1 ap99>98 mg.mp9999>9965 mg.strain0>2; air mana15>13",
-"outburst/caster": "soul 1.85 heal 1.7 base 40 level 6",
+"outburst/caster": "soul 1.55 heal 1.235 base 31 level 6",
 "outburst/control:pinned/stage0/ally/plain": "P1 ap99>98 mg.mp9999>9978 mg.strain0>1; air mana15>12",
 "outburst/control:pinned/stage0/soldier/plain": "P1 ap99>98 mg.mp9999>9978 mg.strain0>1; air mana15>12",
 "outburst/control:pinned/stage1/ally/plain": "P1 ap99>98 mg.mp9999>9976 mg.strain0>1; air mana15>12",

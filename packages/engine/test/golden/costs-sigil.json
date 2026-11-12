@@ -109,7 +109,7 @@
 "sigil/blind+seek/soldier": "P1 ap99>96.6 mg.charge10>995 mg.flux0>-97",
 "sigil/blind+spread+seek/soldier": "P1 ap99>95.9 mg.charge10>993 mg.flux0>-96",
 "sigil/blind+twice+seek/soldier": "P1 ap99>95.9 mg.charge10>992 mg.flux0>-95",
-"sigil/caster": "sigil 2.1 elem 1.5 heal 1.5 level 6",
+"sigil/caster": "sigil 1.7 elem 1 heal 1.131 level 6",
 "sigil/cleanse+arc/soldier": "P1 ap99>96.6 mg.charge10>994 mg.flux0>-97",
 "sigil/cleanse+chain+seek/soldier": "P1 ap99>95.9 mg.charge10>992 mg.flux0>-96",
 "sigil/cleanse+condense+seek/ally": "REFUSED Evoke: Out of the area: pick a tinted tile, or yourself.",

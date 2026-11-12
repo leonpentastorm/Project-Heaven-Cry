@@ -67,6 +67,7 @@
 "item/class/defender@III/defender.reactive_plate/plate_off": "P1 faith.acted0>true faith.apMark6>9 ps.class:defender.reactive_plate.policy0>off ps.skill:composure.5.acted0>true",
 "item/class/defender@III/defender.shrug_it_off/shrug_off": "P1 faith.acted0>true faith.apMark6>9 ps.class:defender.shrug_it_off.policy0>off ps.skill:composure.5.acted0>true",
 "item/class/defender@III/taken": "P1 ps.class:defender.reactive_plate.lost0>2; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
+"item/class/defender@III/taken-blast": "P1 ps.class:defender.reactive_plate.lost0>2",
 "item/class/defender@III/taken-blow": "P1 ps.class:defender.reactive_plate.lost0>1; F1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true",
 "item/class/defender@III/taken-crit": "P1 ps.class:defender.reactive_plate.lost0>2; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "item/class/defender@III/taken-fire": "P1 ps.class:defender.reactive_plate.lost0>2",

@@ -45,8 +45,11 @@ Detail: `balance-sim-step1-full.md`, `defence-step.md` (to come).
 | Heavy Bolt | +50% | +40% |
 | SMG family | SMG 15, PDW 16, whisper 13, drum 15, auto-pistol 14 | 19, 20, 16, 19, 17 |
 | Plain rifle, melee | | Unchanged |
+| **Rules 1.26, the re-fit** | | The best gun **all in** on 145% (measured 164 / 150 / 148 / 135% at levels 1, 5, 10, 20), a normal share under it (136 to 130%). A weapon hits as hard in anyone's hands at the same level: no damage slope, a Level term instead (the plain rifle at a normal share did not move). Masterwork, Relic and Celestial add **no damage** (×1.1 before): accuracy, durability and a mod slot only |
+| **Melee (rules 1.26)** | 112 to 142% (the optimised blade) | All in on **165%**: every melee blow a character strikes ×1.35 (the greatsword 156 / 149 / 131 / 176%; the Tank lower, 77 to 121%) |
+| **Grenades and charges (rules 1.26)** | Frag 40, flat at every level | A character's consumables ×0.7 (a frag 28), × the thrower's Level term: on a group of enemies they were 1.5 times the budget |
 
-Detail: `damage-step-guns.md`. Ruling for later: Weapon Arts may break the ceiling as a charged ultimate, counted in the
+Detail: `damage-step-guns.md`; the re-fit: `balance-refit.md`. Ruling for later: Weapon Arts may break the ceiling as a charged ultimate, counted in the
 build's average.
 
 ## 4. Sigil magic (rules 1.17)
@@ -58,10 +61,11 @@ build's average.
 | How | Damage clamped at 350 / 500 | A Line multiplies its damage: ×1.7 / 1.75 / 1.8 for 2 / 3 / 4 glyphs; no clamp |
 | Spell criticals | Not checked for this table | ×1.5 |
 | Elites and Bosses | | One Evoke leaves a full-HP Elite or Boss at your level or above on 1 HP |
-| MEND / WARD | 25 / 30, flat | 10 / 12 × the level factor (see Healing) |
+| MEND / WARD | 25 / 30, flat | 10 / 12 × the level factor (see Healing); since rules 1.26 × a landed Stat on Intelligence and Brain Power (`sigil_mend`) |
+| **Rules 1.26, the re-fit** | | Line multiplier **×1.87 / 1.93 / 1.98**; no damage slope (Sigil power 1.7 × the Level term), no Elemental bonus; a full Line **all in** 155 / 145 / 174 / 188% at levels 1, 5, 10, 20 (band 150 to 200%) |
 | Edge Word (Evoker blade) | Triggered on any hit | Only on your own turn |
 
-Detail: `damage-step-magic.md`.
+Detail: `damage-step-magic.md`; the re-fit: `balance-refit.md`.
 
 ## 5. Outburst (rules 1.17, 1.19, and the base of 12 Nov)
 
@@ -70,7 +74,7 @@ Detail: `damage-step-magic.md`.
 | Steady, against the plain rifle | 61 to 89% | about **135%** |
 | Biggest Release | 122 to 143% | about **165%**, over two turns |
 | Stage table | ×0.8 / 1 / 1.4 / 1.8 / 2.2 | ×0.8 / 1.0 / 1.2 / 1.4 / 1.6 (a plain Pump is **+0.2**) |
-| Damage base | 20 | **40** |
+| Damage base | 20 | **31** (rules 1.26: all in on 135% steady and 165% at the peak, measured 128 to 149% and 147 to 166%; 40 on 12 Nov). The Soul multiplier has no slope: 1.55 × the Level term |
 | A feeling in one Outburst | As many times as you like | **Once each** |
 | Rage | +0.5, 1 Strain | +0.5, 1 Strain (now 2.5 plain Pumps' worth) |
 | Shame | +0.6, 5 HP | +0.5, 8 HP |
@@ -96,6 +100,7 @@ Detail: `damage-step-magic.md`, `outburst-rework-2.md`.
 | Love, Inverse, Shell | Shares of damage | Their own bases |
 | Round limit | | None (a half-max-HP limit was built in 1.20 and is **withdrawn**: Leon) |
 | Medic's kit, Triage, stims | Triage 20, stim 30, Rally 20, flat | Triage 5, stim 6, Rally 6, × Healing given × the level factor |
+| **Rules 1.26, the re-fit** | | A healer's turn **all in** on 1.25 Soldier-turns (146 / 132 / 122 / 99% measured at levels 1, 5, 10, 20), a normal share about 1.0: Healing given 0.87 × (1 + 0.06 per point of Insight over 1 and of Empathy). Inverse and Shell read a landed Soul Stat (`soul_mend`) |
 
 Detail: `heal-shield-pass.md`, `defence-step.md` (to come).
 
@@ -112,6 +117,7 @@ Detail: `heal-shield-pass.md`, `defence-step.md` (to come).
 | Hold the Gate | Any Hymn turn | Its own 6-round cooldown |
 | Witnessed, Old Overcast | +2 to hit on every attack | +2 on the next attack after a kill made while Witnessed |
 | Prayer heals | Flat | Level factor; Warm Hands 13, Saint's Shield 16, Absolution 9 |
+| **Blessing power (rules 1.26)** | 1 + 0.1 × Faith | 0.956 × (1 + 0.06 per point of Virtue over 1 and of Faith): Virtue counts. All in: a Hymn turn 124 / 95 / 157 / 167%, a Whisper turn 98 / 71 / 57 / 98% at levels 1, 5, 10, 20 |
 
 Detail: `faith-fit.md`, `faith-round-2.md` (to come).
 
@@ -169,6 +175,11 @@ Finisher); a gun in each hand (123 to 144%).
 **Measured and over every ceiling, undecided:** the all-in 7/1/1 builds (gun 148 to 228%, Outburst 190 to 270%, Sigil
 142 to 205% of the normal-share rifle). Leon's answer is wanted: is the ceiling for a normal share only.
 
+**Rules 1.26 (the re-fit, `balance-refit.md` section 5):** row 1 (many targets) measured: the cluster, a per-extra-target
+rule, grenades fitted (×0.7); row 2 (melee beyond one build) and row 4 (mana arms) measured, inside their ceilings;
+row 3 (thrown) fitted; row 9 (control) has its yardstick and a condition table (arithmetic, not played); row 15
+(Elites by damage type) measured, not fitted. The rest below is still unmeasured.
+
 **Never measured:**
 
 | # | System | What is in the game | Why it matters |
@@ -220,7 +231,8 @@ Finisher); a gun in each hand (123 to 144%).
 - **Rules 1.24**, MP off Virtue and Pumps that cost MP: being built.
 - **The capstone** (balance pass section 17): one damage formula (`proposals/2026-11-unified-damage.md`), then the
   re-fit so that an **all-in** build reaches each ceiling and a normal share sits at ceiling ÷ 1.25; many targets;
-  a yardstick for control; the balance contract and its guard.
+  a yardstick for control; the balance contract and its guard. **The re-fit is built (rules 1.26, `balance-refit.md`):**
+  the contract `docs/design/balance-contract.md` and its guard in `npm run check`; Boss HP not yet re-run.
 - Open with Leon: bug 12 (which action shows no AP cost); the questions in each hand-off not yet answered.
 - Not done: the version bump and changelog, the stale suites (`soul`, `heart`, `feelings40`, `sigil15`, `magic`),
   a playtest of any of it. **Nothing here is live.**

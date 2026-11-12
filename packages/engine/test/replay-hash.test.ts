@@ -100,7 +100,7 @@ describe('whole-game replays (enemy AI on) play exactly as recorded', () => {
     // reactions: the enemies' opportunity attacks and the squad's Answers, in more than one game each
     expect(total('lines', 'opportunity'), '"takes an opportunity attack" lines').toBeGreaterThan(5);
     expect(games('lines', 'opportunity'), 'games with an opportunity attack').toBeGreaterThanOrEqual(2);
-    expect(total('lines', 'answer'), '"answers with" lines').toBeGreaterThan(15);
+    expect(total('lines', 'answer'), '"answers with" lines').toBeGreaterThan(8); // 11 since rules 1.26 (fights end sooner where the squad hits harder early); 16 or more before
     expect(games('lines', 'answer', 3), 'games with three Answers or more').toBeGreaterThanOrEqual(2);
     expect(total('lines', 'hides'), 'units that went to ground').toBeGreaterThan(1);
   });
