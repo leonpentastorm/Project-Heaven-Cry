@@ -11376,6 +11376,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-lance.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-lance.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-fuse": {
+      "id": "module-fuse",
+      "label": "a dot on a ground line with a short burning line leading to it",
+      "path": "art/icons/modules/module-fuse.png",
+      "sha256": "cbba8052a1fc985c35573b0dd3e1a0a904f20d78e81cc2743739c349cc275f9f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-fuse.png",
+        "128": "art/icons/modules/exports/128/module-fuse.png",
+        "64": "art/icons/modules/exports/64/module-fuse.png",
+        "56": "art/icons/modules/exports/56/module-fuse.png",
+        "48": "art/icons/modules/exports/48/module-fuse.png",
+        "44": "art/icons/modules/exports/44/module-fuse.png",
+        "40": "art/icons/modules/exports/40/module-fuse.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-fuse.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-fuse.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
