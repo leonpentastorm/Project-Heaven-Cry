@@ -200,7 +200,7 @@
       "derived": [
         {
           "stat": "mult_heal_given",
-          "formula": "0.87 × (1 + 0.06 × (Insight − 1) + 0.06 × Empathy) (rules 1.26)",
+          "formula": "1.392 × (1 + 0.06 × (Insight − 1) + 0.06 × Empathy), never under half of a normal share's (rules 1.27)",
           "per_point_above_1": 0.06
         },
         {

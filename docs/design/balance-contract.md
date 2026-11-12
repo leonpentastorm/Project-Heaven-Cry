@@ -1,9 +1,9 @@
-# The balance contract (rules 1.26, 12 Nov 2026)
+# The balance contract (rules 1.26, 12 Nov 2026; the healer's ceiling: rules 1.27)
 
 The floor every later system, class, weapon, Weapon Art and mode is balanced to. Leon's rulings (12 Nov 2026) are the
 contract; this page says what they mean in numbers, where each number lives, and how to measure something new against
 them. The numbers themselves are in **`data/rules.json` `balance`** (read by the guard) and the spec's rules 1.26 (items
-1700 to 1724). Everything here is **PROVISIONAL** until playtests confirm it.
+1700 to 1724) and 1.27 (the heal re-fit, items 1730 to 1741). Everything here is **PROVISIONAL** until playtests confirm it.
 
 ## 1. The rulings
 
@@ -18,6 +18,10 @@ them. The numbers themselves are in **`data/rules.json` `balance`** (read by the
 5. **Cost counts:** a system with set-up or a resource may sit higher than a free one (the cost ledger, section 4).
 6. Weapon Arts (not built) may break the ceiling as a charged ultimate, counted in the build's fight average. Miracles
    are exempt.
+7. **A healer's turn is worth two Soldier-turns all in** (rules 1.27, Leon's report on 0.23.0 and the lead's ruling): a
+   rifle turn removes about a whole Soldier for the rest of the fight, a heal undoes one turn of it, so a heal is priced
+   above its Soldier-turn count. A Hymn turn's healing is capped at 2.5. A heal by a caster with no points in its skill
+   is never under half of a normal share's (the landed profiles' `floor`).
 
 ## 2. The unit and the yardsticks
 
@@ -44,7 +48,7 @@ All in, in percent of a rifle-turn (a healer: of a Soldier-turn). The guard hold
 | Outburst, the biggest Release | 165 | 132 | `soul_modules.json damage.base`, then `cycle.stage_mult` | 147 / 166 / 150 / 157 |
 | Faith, a Whisper turn | 80 | 64 | the Whispers' values in `patrons.json`; `output.profiles.blessing.k` | 98 / 71 / 57 / 98 |
 | Faith, a Hymn turn | 150 (low end 55% at Devotion 3) | 120 | the Hymns' values in `patrons.json`; `output.profiles.blessing.k` | 124 / 95 / 157 / 167 |
-| A healer's turn | 125 (Soldier-turns × 100) | 100 | `rules.json output.profiles.healing.k` (and `mend`) | 146 / 132 / 122 / 99 |
+| A healer's turn (rules 1.27; it was 125) | 200 (Soldier-turns × 100) | 160 | `rules.json output.profiles.healing.k` (and `mend`); the Sigil boon `sigil_mend.k`, the Soul shields `soul_mend.k`, prayers `blessing_mend.k` | 234 / 211 / 195 / 158 (the Sigil boon's 3-glyph Line 235 / 212 / 196 / 158; a Hymn turn's healing 249 / 224 / 208 / 168, capped at 250) |
 | A shield | ×1.2 the heal of the same cost | | `balance.ceilings.shield.of_heal` | |
 | Grenades and charges a character throws | the budget rule (section 5) | | `rules.json output.factors.thrown` | a frag on the cluster: 64 landed against 61 allowed at level 1 (+5%; it was 98) |
 
@@ -59,7 +63,7 @@ little under late (the all-in head start is accuracy, which a normal share catch
 
 | Term | Where | What it is |
 | --- | --- | --- |
-| Stat | `rules.json output.profiles` (k, attr, skill, level) and `output.pairs` | three shapes: **aimed** (no slope; weapon k 1.5, sigil 1.7, soul 1.55, elemental 1), **landed** (0.06 a point; blessing 0.956, healing and mend 0.87, sigil_mend 1.2, soul_mend 0.81), **flat** (k 1) |
+| Stat | `rules.json output.profiles` (k, attr, skill, level) and `output.pairs` | three shapes: **aimed** (no slope; weapon k 1.5, sigil 1.7, soul 1.55, elemental 1), **landed** (0.06 a point; blessing 0.956; rules 1.27: healing and mend 1.392, sigil_mend 1.17, soul_mend 1.296, blessing_mend 1.44, each heal and shield profile with a `floor` of 0.5: never under half of a normal share's Stat, `output.floor_reference`), **flat** (k 1) |
 | Level | `rules.json output.level.deal` (aimed and flat), `mend` (heals and shields: the enemy table's damage column) | `deal` is derived from the plain rifle: k × deal is its old multiplier |
 | A system's identity | `rules.json output.factors` (melee, thrown), `rules.json rarity`, `sigils.json grammar.line_mult`, `soul_modules.json damage.base` and `cycle.stage_mult`, the prayers' values | one number each |
 | Own multipliers | the register `rules.json output.systems` lists each system's, in the order they apply | technique, stage, shape, Line, ammunition, critical, conditions, perks |
