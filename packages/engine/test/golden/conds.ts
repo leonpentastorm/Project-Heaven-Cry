@@ -15,6 +15,7 @@
 //                           serrated critical, the injury table, a fumble, kneel, a shove into a wall, a hazard, a
 //                           stim, standing up, hiding), plain and against the two immunity doors
 //   story/<id>              a story condition carried into a fight; restore/<id>: one kept in the story's magic state
+//   moved/<site>            the moved sites the review of 12 Nov found unpinned (see the block)
 //
 // A line is what changed on the bearer against the clean unit: conditions and their rounds, who and what delivered
 // them, the flags (Prone, Hidden, Braced), Bleeding, Dazed, Staggered, injuries, Defense, Movement, vision, AP, HP.
@@ -31,13 +32,16 @@ const DATA = JSON.parse(readFileSync(fileURLToPath(new URL('../../../../data/con
 export const IDS: string[] = [...new Set([...DATA.items.map((x: any) => x.id), 'guarded', 'inspired', 'ldebuff', 'rdebuff', 'afraid', 'stun'])];
 const MAIN = IDS.filter((x) => !['ldebuff', 'rdebuff', 'afraid', 'stun'].includes(x));
 
-const MARK: { immune?: string; what?: string[]; hooked?: string; hookIds?: string[] } = {};
+const MARK: { immune?: string; what?: string[]; hooked?: string; hookIds?: string[]; injury?: string; shrug?: string; landed?: number } = {};
 if (!(globalThis as any).__condsTap) {
   (globalThis as any).__condsTap = true;
   onHook('cond_apply', (ctx: any) => { if (MARK.hooked && ctx.t?.id === MARK.hooked && (!MARK.hookIds || MARK.hookIds.includes(ctx.id))) { ctx.cancel = true; ctx.why = 'golden hook'; } });
+  onHook('injury', (ctx: any) => { if (MARK.injury && ctx.t?.id === MARK.injury) { ctx.cancel = true; ctx.why = 'golden injury hook'; } });
+  // a stand-in for Shrug It Off (it ends Prone the moment it lands), and a count of the landings
+  onHook('cond_landed', (ctx: any) => { if (ctx.id !== 'prone') return; if (MARK.landed != null) MARK.landed++; if (MARK.shrug && ctx.t?.id === MARK.shrug) { A.endCond(ctx.t, 'prone', ctx.cb); ctx.cb.log.push(ctx.t.name + ' shrugs it off (golden).'); } });
   for (const id of [...IDS, 'bleed']) onStat(('immune:' + id) as any, (x: any) => (MARK.immune && x.u?.id === MARK.immune && (MARK.what || []).includes(id) ? 1 : 0));
 }
-const clear = () => { delete MARK.immune; delete MARK.what; delete MARK.hooked; delete MARK.hookIds; };
+const clear = () => { delete MARK.immune; delete MARK.what; delete MARK.hooked; delete MARK.hookIds; delete MARK.injury; delete MARK.shrug; delete MARK.landed; };
 
 const EVEN = { level: 6, skills: Object.fromEntries(A.SKILLS.map((x: any) => [x.id, 5])), attrs: Object.fromEntries(A.ATTRS.map((x: any) => [x.id, 5])) };
 const BEARERS = [...TIERS, 'pc'];
@@ -189,9 +193,78 @@ export function recordConditions(): { state: Record<string, string>; log: Record
     set('site/' + site + '/' + door, 'T ' + diff(s.base, s.t).replace(/hp\d+>\d+ ?/, '') + ' A ' + diff(sb, s.src).replace(/ap\d+>\d+ ?/, ''), r + ' ## ' + logSince(s, n0));
   }
 
+  // ---------- the moved sites the review of 12 Nov found unpinned (conditions-review.json, problems 1, 3, 4, 8) ----------
+  //   moved/tech-bleed/<technique>/<door>  each technique that puts Bleeding on with no rounds of its own (3 rounds since
+  //                                        the text-number sweep, spec item 1512; listed in item 1581), on an edge weapon
+  //   moved/stop-prone/<door>              a technique's Stop: Prone (the Shove technique into a wall: no save)
+  //   moved/fighter-shove/<door>           the Fighter's Shove (Prone), with how many times cond_landed was told
+  //   moved/called-shot-<place>/<door>     the Called Shot through the move (the injury hook and the condition door)
+  //   moved/unravel                        the Counting Weaver's Unravel on a seen enemy (its boons, its Brace, its shield)
+  //   moved/drop-prone-braced              dropping Prone by choice keeps a weapon Brace (spec item 1583)
+  {
+    const gT = fightSpec([{ ...EVEN, weapon: 'sabre' }, { ...EVEN }, { ...EVEN }], TIERS.map((tier) => ({ tier })), { level: 6, seed: 'conds-moved' });
+    for (const u of gT.combat.units) { u.hp = u.maxHp; u.hidden = false; }
+    const know = (s: Stage, id: string) => { const p = A.phys.ensurePhys(s.g.characters[s.src.charId]); p.known = [id]; p.ready = { melee: [id], ranged: [] }; p.uncapped = true; };
+    const tech = (s: Stage, id: string, die: number, args: any = {}) => { know(s, id); return FORCE(die, () => A.useTechnique(s.cb, s.src, id, { targetId: s.t.id, tile: s.t.pos, ...args }, s.g.rng)); };
+    const doors = (s: Stage, door: string, ids: string[]) => { if (door === 'hook') { MARK.hooked = s.t.id; MARK.hookIds = ids; } else if (door === 'query') { MARK.immune = s.t.id; MARK.what = ids; } else if (door === 'injury') MARK.injury = s.t.id; };
+    const record = (key: string, s: Stage, f: () => any, extra: () => string = () => '') => {
+      const n0 = s.cb.log.length; let r = '';
+      try { const out = W(s.g, f); r = typeof out === 'string' ? out : out?.refused ? 'REFUSED ' + out.refused : ''; } catch (e: any) { r = 'THREW ' + short(e); }
+      const x = extra(); clear(); set(key, diff(s.base, s.t).replace(/hp\d+>\d+ ?/, '') + x, r + ' ## ' + logSince(s, n0));
+    };
+    const TECH_BLEED: [string, number, (s: Stage) => any][] = [
+      ['cut', 20, () => ({})], ['sweep', 20, () => ({})], ['cleave', 10, (s) => { (s.src.res ||= {}).momentum = 2; return {}; }],
+      ['sunder', 10, (s) => { s.t.armour = 0; return {}; }],
+      ['draw_cut', 10, (s) => { const c = s.g.characters[s.src.charId]; s.src.weapon = 'fists'; c.weapon = 'fists'; c.pack = [{ id: 'sabre', name: 'Sabre', qty: 1, kind: 'weapon', weapon: 'sabre' }]; if (s.src.tech?.draw_cut) delete s.src.tech.draw_cut.start; return { item: 0 }; }],
+      ['pull_out', 10, (s) => { s.t.stuck = [{ by: s.src.id, weapon: 'combat_knife' }]; s.src.weapon = 'fists'; return {}; }],
+    ];
+    for (const [id, die, setup] of TECH_BLEED) for (const door of ['plain', 'query', 'hook']) {
+      const s = stageOf(gT, 'soldier'); s.t.hp = s.t.maxHp = 999; const args = setup(s); s.base = snap(s.t); doors(s, door, door === 'query' ? ['bleed'] : ['bleeding']);
+      record('moved/tech-bleed/' + id + '/' + door, s, () => tech(s, id, die, args));
+    }
+    for (const door of ['plain', 'query', 'hook']) {
+      const s = stageOf(gT, 'soldier'); s.src.strength = 50; s.t.pos = '6,5'; s.other.pos = '7,5'; s.t.braced = true; s.base = snap(s.t); doors(s, door, ['prone']);
+      record('moved/stop-prone/' + door, s, () => tech(s, 'shove', 10));
+    }
+    {
+      const gF = fightSpec([{ ...EVEN, classId: 'fighter', level: 12, attrs: { ...EVEN.attrs, strength: 6 } }, { ...EVEN }, { ...EVEN }], TIERS.map((tier) => ({ tier })), { level: 6, seed: 'conds-shove' });
+      for (const u of gF.combat.units) { u.hp = u.maxHp; u.hidden = false; }
+      for (const door of ['plain', 'query', 'hook', 'shrug']) {
+        const s = stageOf(gF, 'soldier'); s.t.sv = { body: -50, brain: -50, heart: -50 }; s.t.braced = true; s.base = snap(s.t); doors(s, door, ['prone']); if (door === 'shrug') MARK.shrug = s.t.id;
+        MARK.landed = 0;
+        record('moved/fighter-shove/' + door, s, () => A.runPerkAction({ u: s.src, c: s.g.characters[s.src.charId], cb: s.cb, g: s.g }, 'class:fighter.shove', { targetId: s.t.id, choice: 'prone' }, s.g.rng, 'combat'), () => ' landed' + MARK.landed);
+      }
+    }
+    {
+      const gC = fightSpec([{ ...EVEN, classId: 'marksman', level: 12, attrs: { ...EVEN.attrs, agility: 8 }, weapon: 'service_pistol' }, { ...EVEN }, { ...EVEN }], TIERS.map((tier) => ({ tier })), { level: 12, seed: 'conds-called' });
+      for (const u of gC.combat.units) { u.hp = u.maxHp; u.hidden = false; }
+      for (const loc of ['head', 'leg']) for (const door of ['plain', 'query', 'hook', 'injury']) {
+        const s = stageOf(gC, 'soldier'); s.t.hp = s.t.maxHp = 999; s.t.injResist = 0; s.src.ammo = 12; s.src.pos = '3,5'; s.base = snap(s.t); doors(s, door, ['dazed']);
+        record('moved/called-shot-' + loc + '/' + door, s, () => dice({ die: 10, hit: true }, () => A.runPerkAction({ u: s.src, c: s.g.characters[s.src.charId], cb: s.cb, g: s.g }, 'class:gunslinger.called_shot', { targetId: s.t.id, choice: loc }, s.g.rng, 'combat')));
+      }
+    }
+    {
+      const gU = fightSpec([{ ...EVEN, skills: { ...EVEN.skills, faith: 9 } }, { ...EVEN }, { ...EVEN }], TIERS.map((tier) => ({ tier })), { level: 6, seed: 'conds-unravel' });
+      for (const u of gU.combat.units) { u.hp = u.maxHp; u.hidden = false; }
+      const s = stageOf(gU, 'soldier'); const c = s.g.characters[s.src.charId];
+      c.belief = { kind: 'faithful', patron: 'counting_weaver' }; c.patron = 'counting_weaver'; c.devotion = 10;
+      // Unravel targets an enemy you can see, and a Hidden one is not on that list (faith.ts targetsOf): its reveal of a
+      // Hidden unit cannot be reached through the action. Pinned: what it ends on a seen enemy.
+      s.t.shield = 20; s.t.braced = true; W(s.g, () => { A.applyCond(s.cb, s.g.rng, null, s.t, 'inspired'); A.applyCond(s.cb, s.g.rng, null, s.t, 'guarded'); }); s.base = snap(s.t);
+      s.src.ap = 9; s.g.rng.state = rollState(20);
+      let r = '', line = 'nothing';
+      try { const g1 = A.apply(s.g, { type: 'faith/pray', unitId: s.src.id, kind: 'hymn', id: 'unravel', targetId: s.t.id }, 'host'); const t1 = g1.combat.units.find((x: any) => x.id === s.t.id); line = diff(s.base, t1).replace(/hp\d+>\d+ ?/, '') + ' shield' + (t1.shield || 0); r = g1.combat.log.slice(s.cb.log.length).map((l: string) => l.slice(0, 200)).join(' / '); } catch (e: any) { r = 'THREW ' + short(e); }
+      set('moved/unravel', line, r);
+    }
+    for (const bearer of ['soldier', 'pc']) {
+      const s = stageOf(g0, bearer, { turnOf: 't' }); s.t.braced = true; s.base = snap(s.t);
+      record('moved/drop-prone-braced/' + bearer, s, () => { const a = A.toggleProne(s.cb, s.t) || ''; const b = A.toggleProne(s.cb, s.t) || ''; return a + b; });
+    }
+  }
+
   // ---------- every trait and perk: what it changes, as the bearer and as the source ----------
   const baseline: Record<string, string> = {};
-  const ITEM_IDS = ['weakened', 'fear', 'ldebuff', 'silenced', 'stunned', 'nausea', 'pinned', 'slowed', 'burning', 'bleeding', 'prone', 'dazed', 'injured', 'grappled', 'disarmed', 'lowered', 'taunted', 'commanded', 'shaken', 'marked', 'confused', 'corroded', 'suppressed', 'blinded', 'puppeted', 'smitten', 'guarded'];
+  const ITEM_IDS = ['weakened', 'fear', 'ldebuff', 'silenced', 'stunned', 'nausea', 'pinned', 'slowed', 'burning', 'bleeding', 'prone', 'dazed', 'injured', 'grappled', 'disarmed', 'lowered', 'taunted', 'commanded', 'shaken', 'marked', 'confused', 'corroded', 'suppressed', 'blinded', 'puppeted', 'smitten', 'guarded', 'witnessed', 'hopeful'];
   const itemRun = (spec: any, role: 'bearer' | 'source'): Record<string, string> => {
     const out: Record<string, string> = {};
     let g: any; try { g = fightSpec(role === 'bearer' ? [{ ...EVEN }, { ...EVEN, ...spec }] : [{ ...EVEN, ...spec }, { ...EVEN }], [{ tier: 'soldier' }], { level: 6, seed: 'conds' }); } catch (e: any) { return { '*': 'NO FIGHT ' + short(e) }; }

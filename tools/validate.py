@@ -1602,16 +1602,32 @@ for name, grp in (out_rules.get("amounts") or {}).items():
 # engine foundations 2: the condition table IS this file. Every row needs what the loader reads, in one form each.
 COND_UNTIL = {"put_out", "next_turn", "stand", "revealed", "source", "moved", "fight_end", "stabilised", "escape", "recovered", "treated", "repaired", "raised"}
 COND_HIT = {"own_attacks", "next_attack", "not_vs_source", "vs_source", "marker_squad_vs_self", "melee_vs_self", "ranged_vs_self"}
-# the numbers the engine reads from a row's effects, by condition (a row that loses one would silently do nothing)
-COND_NEEDS = {
-    "slowed": ("stat_mod", "move_mult"), "blinded": ("stat_mod", "vision"), "guarded": ("stat_mod", "defense"), "withdrawing": ("stat_mod", "defense"),
-    "corroded": ("stat_mod", "defense"), "nausea": ("stat_mod", "ap"), "suppressed": ("stat_mod", "ap"), "dazed": ("stat_mod", "ap"),
-    "shaken": ("stat_mod", "save_heart"), "weakened": ("stat_mod", "damage_dealt_pct"), "left_brain_debuff": ("stat_mod", "sigil_ap"),
-    "right_brain_debuff": ("stat_mod", "soul_cost_pct"), "pinned": ("attack_mod", "own_attacks"), "inspired": ("attack_mod", "own_attacks"),
-    "sharpened": ("attack_mod", "next_attack"), "hopeful": ("attack_mod", "next_attack"), "fear": ("attack_mod", "not_vs_source"),
-    "grappled": ("attack_mod", "not_vs_source"), "scorned": ("attack_mod", "vs_source"), "marked": ("attack_mod", "marker_squad_vs_self"),
-    "prone": ("attack_mod", "melee_vs_self"),
+# The numbers the engine reads from a row's effects (condtable.ts modsOf), by condition: EXACTLY these, each once. A
+# row that loses one, gains one the engine would read, or writes one so the loader skips it (a `when`, a misspelt
+# context or stat) fails here. The review of 12 Nov 2026 (conditions-review.json, problem 6) made five such edits and
+# this check said 0 errors; it finds all five now. Change this table only together with a ruling on the row.
+COND_READS = {
+    "weakened": ["stat_mod:damage_dealt_pct"], "slowed": ["stat_mod:move_mult"], "nausea": ["stat_mod:ap"], "pinned": ["attack_mod:own_attacks"],
+    "dazed": ["stat_mod:ap"], "blinded": ["attack_mod:own_attacks", "stat_mod:vision"], "prone": ["attack_mod:melee_vs_self", "attack_mod:ranged_vs_self"],
+    "left_brain_debuff": ["skill_mod_tag:core:mind", "stat_mod:sigil_ap"], "right_brain_debuff": ["skill_mod_tag:attr:expression", "skill_mod_tag:core:soul", "stat_mod:soul_cost_pct"],
+    "fear": ["attack_mod:not_vs_source"], "shaken": ["stat_mod:save_heart"], "marked": ["attack_mod:marker_squad_vs_self"], "grappled": ["attack_mod:not_vs_source"],
+    "suppressed": ["stat_mod:ap"], "withdrawing": ["stat_mod:defense"], "corroded": ["stat_mod:defense"], "quickened": ["stat_mod:ap"],
+    "sharpened": ["attack_mod:next_attack", "damage_mult:next_attack"], "hopeful": ["attack_mod:next_attack"], "scorned": ["attack_mod:vs_source"],
+    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"],
 }
+COND_ENGINE_STATS = {"defense", "move_mult", "vision", "ap", "damage_dealt_pct", "sigil_ap", "soul_cost_pct", "save_body", "save_brain", "save_heart"}
+# stat_mod stats and attack_mod contexts a row may carry that the loader does not read (another part of the engine does)
+COND_OTHER_STATS = {"can_act", "hp", "next_attack_mult", "random_target_pct", "untargetable"}
+COND_OTHER_HIT = {"liked_tag", "emplaced_weapon"}
+def cond_reads(c):
+    out = []
+    for e in c.get("effects") or []:
+        if not isinstance(e, dict): continue
+        if e.get("op") == "stat_mod" and e.get("stat") in COND_ENGINE_STATS and not e.get("when") and isinstance(e.get("value"), (int, float)): out.append("stat_mod:" + e["stat"])
+        if e.get("op") == "attack_mod" and (e.get("context") or "own_attacks") in COND_HIT and isinstance(e.get("value"), (int, float)): out.append("attack_mod:" + (e.get("context") or "own_attacks"))
+        if e.get("op") == "skill_mod_tag" and isinstance(e.get("value"), (int, float)): out.append("skill_mod_tag:" + str(e.get("tag")))
+        if e.get("op") == "damage_mult" and e.get("context") == "next_attack": out.append("damage_mult:next_attack")
+    return sorted(out)
 cond_names = set()
 for c in items("conditions"):
     cid = c.get("id"); w = f"conditions:{cid}"
@@ -1640,9 +1656,14 @@ for c in items("conditions"):
         if e.get("op") == "tn_mod" and e.get("context") in COND_HIT: errors.append(f"{w}: a to-hit change is `attack_mod` (the engine reads that op), not tn_mod")
         if e.get("op") == "stat_mod" and e.get("stat") in ("defense", "move_mult", "vision", "ap", "damage_dealt_pct", "sigil_ap", "soul_cost_pct", "save_body", "save_brain", "save_heart") and not e.get("when") and not isinstance(e.get("value"), (int, float)):
             errors.append(f"{w}: stat_mod {e.get('stat')} needs a number (the engine applies it as written)")
-    need = COND_NEEDS.get(cid)
-    if need and not any(isinstance(e, dict) and e.get("op") == need[0] and (e.get("stat") == need[1] if need[0] == "stat_mod" else (e.get("context") or "own_attacks") == need[1]) and isinstance(e.get("value"), (int, float)) for e in c.get("effects") or []):
-        errors.append(f"{w}: the engine reads `{need[0]} {need[1]}` from this row's effects and it is not there")
+    got, want = cond_reads(c), sorted(COND_READS.get(cid, []))
+    if got != want: errors.append(f"{w}: the engine reads {want or 'no number'} from this row's effects; the row gives it {got or 'none'} (condtable.ts modsOf; tools/validate.py COND_READS)")
+    for e in c.get("effects") or []:
+        if not isinstance(e, dict): continue
+        if e.get("op") == "stat_mod" and e.get("stat") not in COND_ENGINE_STATS | COND_OTHER_STATS: errors.append(f"{w}: stat_mod stat '{e.get('stat')}' is not one the engine knows ({sorted(COND_ENGINE_STATS | COND_OTHER_STATS)})")
+        if e.get("op") == "stat_mod" and e.get("stat") in COND_ENGINE_STATS and e.get("when"): errors.append(f"{w}: stat_mod {e.get('stat')} has a `when`, and the engine skips a condition's number with one")
+        if e.get("op") == "attack_mod" and (e.get("context") or "own_attacks") not in COND_HIT | COND_OTHER_HIT: errors.append(f"{w}: attack_mod context '{e.get('context')}' is not one the engine knows ({sorted(COND_HIT | COND_OTHER_HIT)})")
+        if e.get("op") == "damage_mult" and e.get("context") != "next_attack": errors.append(f"{w}: damage_mult is read only with context next_attack")
     if c.get("engine") != "state" and cid in ("bleeding", "burning", "corroded") and not ((c.get("amounts") or {}).get("tick")): errors.append(f"{w}: needs amounts.tick (its damage each turn)")
 
 for op, n in new_ops.items():

@@ -13,7 +13,7 @@
 //
 //   CONDITION FLAGS (`engine: "flag"`): RAW writes. Only applyCond / endCond / the turn clock call these; everything
 //   else calls applyCond(cb, rng, by, target, 'bleeding' | 'dazed' | 'prone' | 'hidden') and endCond(target, id, cb).
-//     rawBleed(u, rounds)  rawDazed(u, n)  rawProne(u, on)  rawHidden(cb, u, on)
+//     rawBleed(u, rounds)  rawDazed(u, n)  rawProne(u, on, endBrace?)  rawHidden(cb, u, on)
 import type { Combat, Unit } from './combat';
 
 // ---------- unit states ----------
@@ -46,8 +46,9 @@ export function asStanding<T>(u: Unit, f: () => T): T { const was = u.prone; u.p
 export function rawBleed(u: Unit, rounds: number): void { u.bleed = Math.max(0, rounds); }
 /** Dazed: AP off the next turn (0: not Dazed). */
 export function rawDazed(u: Unit, n: number): void { u.dazedNext = n; }
-/** Prone on or off. Going Prone ends Braced. */
-export function rawProne(u: Unit, on: boolean): void { u.prone = on; if (on) u.braced = false; }
+/** Prone on or off. Knocked Prone ends Braced; `endBrace: false` (the unit drops Prone by its own choice, rules 'Brace':
+ * "while braced (or prone)") keeps a weapon set. */
+export function rawProne(u: Unit, on: boolean, endBrace = true): void { u.prone = on; if (on && endBrace) u.braced = false; }
 /** Hidden on or off, with its book-keeping: an entry gives one ambush (`entry: false`: the same entry, kept), and
  * each other side remembers where it last saw the unit until it is seen again. */
 export function rawHidden(cb: Combat | null | undefined, u: Unit, on: boolean, o: { entry?: boolean } = {}): void {

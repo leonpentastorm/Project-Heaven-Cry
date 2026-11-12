@@ -69,6 +69,58 @@ describe('F4: a condition goes on with applyCond and comes off with endCond', ()
   });
 });
 
+// The review of 12 Nov 2026 (docs/design/proposals/2026-11-engine-review/conditions-review.json, problem 5) went round the
+// patterns above with Object.assign, a bracket write, a destructured or aliased u.conds, a raw write inside combat.ts, a
+// private injury, a loop blast and an Overwatch write. Each has its own pattern here; what no pattern can see is listed
+// in the hand-off (docs/design/handoffs/engine-foundations-2-conditions.md, "What the lint cannot catch").
+const FIELDS = 'bleed|dazedNext|stunnedNext|prone|braced|nailed|downed|guardBrace|conds|condFresh';
+const ASSIGN_WRITE = new RegExp(String.raw`Object\.assign\([^,]+,\s*\{[^}]*\b(${FIELDS})\s*:`);
+const ASSIGN_HIDDEN = /Object\.assign\([^,]+,\s*\{[^}]*\bhidden\s*:/;
+const BRACKET_WRITE = new RegExp(String.raw`\[\s*['"\x60](${FIELDS}|hidden)['"\x60]\s*\]\s*(=[^=>]|\+=|-=|\+\+|--|\|\|=|\?\?=)|delete [\w.!?]+\[\s*['"\x60](${FIELDS}|hidden)['"\x60]\s*\]`);
+const DESTRUCTURE = /\{[^{}]*\b(conds|condFresh|condAt)\b[^{}]*\}\s*=\s*[^=>]/;
+const ALIAS = /(const|let|var)\s+[^=;]*=\s*\(?[\w.!?]+\.(conds|condFresh)\b[!]?\s*(\|\||\?\?|;|,|\)\s*;)/;
+const INJURY_WRITE = /\binjuries\b[^;]*?\.(push|unshift)\(|\binjuries\s*=\s*\[\s*\{/;
+const LOOP_BLAST = /(for \(const (\w+) of [^)]*units\b|units\.(filter|forEach)\()[^;]*\bdist\([^)]*\)\s*<=.*\b(hurtUnit|harm|applyDamage|applyCond|dealDamage)\(/;
+const WATCH_WRITE = /\.overwatch\b\s*(=[^=>]|\|\|=|\?\?=)|delete [\w.!?]+\.overwatch\b/;
+const count = (re: RegExp, skip: string[] = []) => { const got: Record<string, number> = {}; for (const h of hits(re, skip)) { const f = h.split(':')[0]; got[f] = (got[f] || 0) + 1; } return got; };
+describe('F4: the ways round the door that the review of 12 Nov found', () => {
+  it('the patterns bite on the review\'s own bypasses, and a read is not one', () => {
+    for (const bad of ['Object.assign(u, { prone: true, braced: false })', 'Object.assign(t, { conds: {} })', 'Object.assign(v, { bleed: 3 });']) expect(ASSIGN_WRITE.test(bad), bad).toBe(true);
+    for (const bad of ["u['bleed'] = 3;", 't["prone"] = true;', "delete u['braced'];", "u['conds'] = {};", "x['hidden'] = true;"]) expect(BRACKET_WRITE.test(bad), bad).toBe(true);
+    for (const bad of ['const { conds } = u;', 'const { conds: c, hp } = t;', 'let { condFresh } = u;']) expect(DESTRUCTURE.test(bad), bad).toBe(true);
+    for (const bad of ['const cs = u.conds;', 'const cs = u.conds || {};', 'let fr = t.condFresh ?? [];', 'const c = (u.conds);']) expect(ALIAS.test(bad), bad).toBe(true);
+    for (const bad of ["u.injuries.push({ loc: 'arm', side: 'left' })", '(t.injuries ||= []).push(x);', "t.injuries = [{ loc: 'leg' }];", 'u.injuries!.unshift(i)']) expect(INJURY_WRITE.test(bad), bad).toBe(true);
+    for (const bad of ['for (const v of cb.units) if (dist(v.pos, at) <= 2) out += hurtUnit(v, 5);', 'cb.units.filter((x) => dist(x.pos, t) <= r).forEach((x) => harm(cb, rng, u, x, 9))']) expect(LOOP_BLAST.test(bad), bad).toBe(true);
+    for (const bad of ['u.overwatch = { at: 1 };', 'delete t.overwatch;', 'u.overwatch ||= w;']) expect(WATCH_WRITE.test(bad), bad).toBe(true);
+    for (const ok of ['const n = t.conds![boon];', 'if (u.conds?.lowered) x();', "const k = u['prone'];", 'const { hp, pos } = u;', 'u.injuries.filter((i) => i.loc !== x)', 'const near = cb.units.filter((v) => dist(v.pos, u.pos) <= 1);', 'if (u.overwatch) y();', "{ hidden: p === 'silent' }"]) {
+      for (const re of [ASSIGN_WRITE, BRACKET_WRITE, DESTRUCTURE, ALIAS, INJURY_WRITE, LOOP_BLAST, WATCH_WRITE]) expect(re.test(ok), ok + ' / ' + re).toBe(false);
+    }
+  });
+  it('no Object.assign, bracket write, destructured or aliased u.conds sets a condition or a unit state', () => {
+    const MSG = 'A condition goes on with applyCond and off with endCond (magic.ts); a unit state through its setter (unitstate.ts). Object.assign, u[\'field\'], a destructured or aliased u.conds go round the door.';
+    expect([...hits(ASSIGN_WRITE, ['unitstate.ts']), ...hits(BRACKET_WRITE, ['unitstate.ts']), ...hits(DESTRUCTURE), ...hits(ALIAS, ['magic.ts'])], MSG).toEqual([]);
+    // Object.assign with a `hidden:` field: a map object's or a shot's (counted, as the `.hidden =` writes above)
+    expect(count(ASSIGN_HIDDEN, ['unitstate.ts']), 'A unit becomes Hidden through hide / applyCond(…, \'hidden\') / hideAgain. If the Object.assign you added sets an object\'s hidden, raise that file\'s count.').toEqual({ 'physical/ranged/sets.ts': 1 });
+  });
+  it('the raw flag writes inside combat.ts are rollInjury\'s two lines for a unit with no fight (cb null) only', () => {
+    const src = SOURCES.find((x) => x.file === 'combat.ts')!.text.split('\n'), lines = src.filter((l) => /\b(rawBleed|rawDazed|rawProne|rawHidden)\(/.test(l));
+    expect(lines.length, lines.join('\n')).toBe(2);
+    for (const l of lines) expect(l, 'In combat.ts a raw flag write is allowed only as rollInjury\'s fallback with no fight: `if (cb) applyCond(…); else raw…`. Call applyCond.').toMatch(/if \(cb\) applyCond\([^;]*\); else (if \(.*?\) )?raw(Bleed|Dazed)\(/);
+  });
+  it('an injury is added only by rollInjury (combat.ts)', () => {
+    expect(hits(INJURY_WRITE, ['combat.ts']), 'An injury is rollInjury(rng, target, cb, by, called?) (combat.ts): it asks the `injury` hook and the condition door. Never push one yourself.').toEqual([]);
+  });
+  it('a blast that hurts or conditions everyone within reach is unitsIn (kit.ts): the three left from before are counted', () => {
+    // combat.ts: an exploding object (kd.explodes); faith.ts: Thunderclap; magic.ts: a hazard's radius condition. Not
+    // moved by engine foundations 2 (the hand-off lists them); a new one, or one more in these files, fails.
+    expect(count(LOOP_BLAST), 'unitsIn(cb, { shape: \'burst\', at, r }, …) (kit.ts), then harm each unit it gives.').toEqual({ 'combat.ts': 1, 'faith.ts': 1, 'magic.ts': 1 });
+  });
+  it('Overwatch has no setter yet: its writes are counted, file by file', () => {
+    expect(count(WATCH_WRITE), 'Overwatch is a unit state (conditions.json engine "state"). A new write of u.overwatch is a second rule for it: put it beside the ones counted here, or give the state a setter in unitstate.ts, and change this list.')
+      .toEqual({ 'classes/i.ts': 2, 'combat.ts': 3, 'physical/core.ts': 1, 'physical/ranged/sets.ts': 1, 'physical/ranged/thrown.ts': 1, 'physical/rules.ts': 1, 'tactics.ts': 1 });
+  });
+});
+
 describe('F4: every condition id in code is a row of the data, and every row is used', () => {
   // the ids handed to the condition functions as a literal, and the names read off u.conds / condBy / condArg / condAt / condVia
   const arg = String.raw`(?:[^(),']|\((?:[^()]|\([^()]*\))*\))*`;

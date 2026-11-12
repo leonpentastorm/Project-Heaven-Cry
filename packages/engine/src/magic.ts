@@ -271,9 +271,13 @@ export const bodyDebuffs = (u: Unit) => debuffsOf(u, 'body');
 // No other file writes u.conds, u.bleed, u.dazedNext, u.prone or u.hidden (test/lint-conditions.test.ts).
 export interface CondOpts { /** No save (a hit's rider, a perk that says so). */ skipSave?: boolean; tnAdd?: number; /** Commanded's order, a variant. */ arg?: string;
   /** The skill that delivered it (rules 1.13: its strength sets the TN). */ via?: string; /** A strength fixed earlier (residue, a zone, a stored spell): used as it is. */ str?: number;
-  /** Hidden only: the same Hidden entry as before (no new ambush). */ sameEntry?: boolean }
+  /** Hidden only: the same Hidden entry as before (no new ambush). */ sameEntry?: boolean;
+  /** Called once the condition has taken hold, just before 'cond_landed' is told (a move logs its own line here, so
+   * that what reacts to the landing (Shrug It Off) reads after it). Never stored. */ onLand?: () => void }
 /** The second door of an immunity (the first is the 'cond_apply' hook): the `immune:<id>` query, and for Bleeding the
  * data's own word for it ('bleed'). Sets ca.cancel. Both doors are asked for every condition, whoever applies it. */
+/** The condition took hold: the caller's onLand, then 'cond_landed' {by, t, id, rounds}. */
+function landed(cb: Combat, opts: CondOpts, ctx: any) { opts.onLand?.(); emit(cb, 'cond_landed', ctx); }
 function askImmune(ca: any, t: Unit, id: string, fam?: Fam) {
   if (ca.cancel) return;
   const im = immune({ u: t }, id, fam) || (id === 'bleeding' ? immune({ u: t }, 'bleed') : null);
@@ -318,7 +322,7 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
     condNumbers(t, def, true);
     if (id === 'grappled' || id === 'stunned') { dropHeldShot(cb, t, id); }
   }
-  emit(cb, 'cond_landed', { by, t, id, rounds: n, cb, rng }); // 'cond_landed' {by, t, id, rounds}: after it takes hold
+  landed(cb, opts, { by, t, id, rounds: n, cb, rng }); // 'cond_landed' {by, t, id, rounds}: after it takes hold
   const dur = def.noTick && !rounds ? '' : n + ' round' + (n === 1 ? '' : 's');
   return ' · ' + t.name + ' is ' + def.name + (dur || saved ? ' (' + [dur, saved].filter(Boolean).join('; ') + ')' : '');
 }
@@ -345,17 +349,19 @@ function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, def: CondDef, 
     if (sv.ok) return ' · ' + t.name + (sv.skipped ? ' ' + sv.text : ' resists (' + sv.text + ')');
     saved = sv.skipped ? '' : ' (' + sv.text + ')'; }
   if (id === 'dazed' || id === 'prone' || id === 'bleeding') (t.condAt ||= {})[id] = (cb.condSeq = (cb.condSeq || 0) + 1);
-  if (id === 'dazed') { rawDazed(t, 1); emit(cb, 'cond_landed', { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed' + saved; }
-  if (id === 'prone') { rawProne(t, true); emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
-  if (id === 'bleeding') { rawBleed(t, Math.max(t.bleed || 0, ca.rounds || def.rounds)); if (by) t.lastHitBy = by.id; emit(cb, 'cond_landed', { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
-  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; if (t.hidden) return ''; rawHidden(cb, t, true, { entry: !opts.sameEntry }); (cb.sightWhy ||= {})[t.id] = 'hide'; emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is Hidden'; }
-  if (id === 'injured') { const inj = rollInjury(rng, t, cb, by); emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return inj; }
+  if (id === 'dazed') { rawDazed(t, 1); landed(cb, opts, { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed' + saved; }
+  if (id === 'prone') { rawProne(t, true); landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
+  if (id === 'bleeding') { rawBleed(t, Math.max(t.bleed || 0, ca.rounds || def.rounds)); if (by) t.lastHitBy = by.id; landed(cb, opts, { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
+  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; if (t.hidden) return ''; rawHidden(cb, t, true, { entry: !opts.sameEntry }); (cb.sightWhy ||= {})[t.id] = 'hide'; landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is Hidden'; }
+  if (id === 'injured') { const inj = rollInjury(rng, t, cb, by); landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return inj; }
   return '';
 }
 /** Prone by the unit's own choice (it drops, it kneels on an order, it stands): no item is asked and nobody saves.
- * Knocking someone Prone is applyCond(…, 'prone'). */
-export function setProne(cb: Combat | null, u: Unit, on: boolean) {
-  rawProne(u, on);
+ * Knocking someone Prone is applyCond(…, 'prone'), and it ends Braced. Dropping Prone by choice keeps a weapon's Brace
+ * (spec, Brace: "while braced (or prone)"; the old toggleProne); kneeling on an order and going down with a thrown body
+ * end it (`endBrace: true`, as their old code did). */
+export function setProne(cb: Combat | null, u: Unit, on: boolean, o: { endBrace?: boolean } = {}) {
+  rawProne(u, on, !!o.endBrace);
   if (on && cb) (u.condAt ||= {}).prone = (cb.condSeq = (cb.condSeq || 0) + 1); else if (!on && u.condAt) delete u.condAt.prone;
 }
 /** End a condition now (its effects undone). 'cond_end' {u, id} when a fight is given. */
@@ -418,7 +424,7 @@ export function condsAside(u: Unit, ids: string[]): () => void {
 }
 /** Slip out of sight again on the same Hidden entry (no new ambush): Shadow Step, Silent Kill, smoke. The items are
  * asked as for any condition, and a Marked unit can't. Returns whether the unit is Hidden now. */
-export function hideAgain(cb: Combat, u: Unit, by: Unit | null = null): boolean { applyCond(cb, rngOf(), by, u, 'hidden', undefined, undefined, { sameEntry: true }); return !!u.hidden; }
+export function hideAgain(cb: Combat, rng: Rng, u: Unit, by: Unit | null = null): boolean { applyCond(cb, rng, by, u, 'hidden', undefined, undefined, { sameEntry: true }); return !!u.hidden; }
 /** THE CLOCK, turn start (combat.ts beginTurn): Dazed has cost its AP and is spent. */
 export function dazeSpent(u: Unit) { rawDazed(u, 0); if (u.condAt) delete u.condAt.dazed; }
 /** THE CLOCK, turn start: Bleeding bites (the tick is the row's amount) and loses a round; its rounds are its bites.

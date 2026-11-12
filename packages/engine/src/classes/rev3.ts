@@ -165,10 +165,13 @@ register({
         say(cb, u.name + ' shoves ' + t.name + ' back to ' + refOf(mv.to) + ' (' + s.line + ')' + mv.text + '.'); sightCheck(cb); return;
       }
       // the save above was the save: the condition lands with none (and every item is asked once more, as for any condition)
-      { const pr = applyCond(cb, rng as Rng, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'raw_power' }); if (!t.prone) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ':' + pr.replace(/^ · [^ ]+/, '') + '.'); return; } }
-      emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: true, prone: true });
-      say(cb, u.name + ' knocks ' + t.name + ' Prone (' + s.line + ').');
-      emit(cb, 'cond_landed', { by: u, t, id: 'prone', rounds: 0, cb, rng });
+      // the line is said as it lands, before 'cond_landed' (applyCond tells it once): Shrug It Off's line reads after it
+      let fell = false;
+      const pr = applyCond(cb, rng as Rng, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'raw_power', onLand: () => {
+        fell = true; emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: true, prone: true });
+        say(cb, u.name + ' knocks ' + t.name + ' Prone (' + s.line + ').');
+      } });
+      if (!fell) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + (pr.startsWith(' · ' + t.name + ' ') ? ', who' + pr.slice(3 + t.name.length) : ': ' + pr.replace(/^ · /, '')) + '.'); }
     },
   }],
   brief: () => null,

@@ -73,17 +73,18 @@ describe('applyCond: the one door', () => {
     withGame(x.f.g, () => { for (let i = 0; i < 5; i++) { const was = x.t.hp; bleedTick(x.cb, x.t); if (x.t.hp < was) bites++; } });
     expect(bites).toBe(3); expect(x.t.bleed).toBe(0); expect(hp0 - x.t.hp).toBe(15); expect(debuffsOf(x.t)).toEqual([]);
   });
-  it('Prone ends Braced however it lands; standing, kneeling and dropping are the unit\'s own (setProne): nobody is asked', () => {
+  it('knocked Prone ends Braced however it lands; dropping by choice keeps it (review, item 1583); standing, kneeling and dropping are the unit\'s own (setProne): nobody is asked', () => {
     let x = field(); setBraced(x.t, true); x.put('prone'); expect([x.t.prone, x.t.braced]).toEqual([true, false]);
-    x = field(); setBraced(x.t, true); DOOR.hook = x.t.id; setProne(x.cb, x.t, true); expect([x.t.prone, x.t.braced]).toEqual([true, false]); expect(DOOR.seen).toEqual([]);
+    x = field(); setBraced(x.t, true); DOOR.hook = x.t.id; setProne(x.cb, x.t, true); expect([x.t.prone, x.t.braced]).toEqual([true, true]); expect(DOOR.seen).toEqual([]);
+    setProne(x.cb, x.t, false); setProne(x.cb, x.t, true, { endBrace: true }); expect([x.t.prone, x.t.braced]).toEqual([true, false]); expect(DOOR.seen).toEqual([]); // kneeling on an order
     setProne(x.cb, x.t, false); expect(x.t.prone).toBe(false); expect(x.t.condAt?.prone).toBeUndefined(); clear();
   });
   it('Hidden as a condition keeps the same books as the Hide action; a Marked unit can\'t; hideAgain is the same entry', () => {
     const x = field(); x.put('hidden'); expect(x.t.hidden).toBe(true); expect(x.t.hideEntry).toBe(1); expect(x.cb.lastSeen?.pc?.[x.t.id]).toBe(x.t.pos);
     x.put('hidden'); expect(x.t.hideEntry).toBe(1); // already Hidden: not a second ambush
     endCond(x.t, 'hidden', x.cb); expect(x.t.hidden).toBe(false); expect(x.cb.lastSeen?.pc?.[x.t.id]).toBeUndefined();
-    expect(withGame(x.f.g, () => hideAgain(x.cb, x.t))).toBe(true); expect(x.t.hideEntry).toBe(1);
-    endCond(x.t, 'hidden', x.cb); x.put('marked'); expect(withGame(x.f.g, () => hideAgain(x.cb, x.t))).toBe(false); expect(withGame(x.f.g, () => hide(x.cb, x.t))).toMatch(/Marked/);
+    expect(withGame(x.f.g, () => hideAgain(x.cb, x.rng, x.t))).toBe(true); expect(x.t.hideEntry).toBe(1);
+    endCond(x.t, 'hidden', x.cb); x.put('marked'); expect(withGame(x.f.g, () => hideAgain(x.cb, x.rng, x.t))).toBe(false); expect(withGame(x.f.g, () => hide(x.cb, x.t))).toMatch(/Marked/);
     endCond(x.t, 'marked', x.cb); withGame(x.f.g, () => { hide(x.cb, x.t); reveal(x.cb, x.t, 'test'); }); expect(x.t.hidden).toBe(false); expect(x.cb.lastSeen?.pc?.[x.t.id]).toBeUndefined();
   });
   it('the few other writes: setCondRounds, restoreConds (numbers applied once), condsAside (put back as they were)', () => {

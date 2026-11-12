@@ -13,7 +13,7 @@ If you only read one part, read [How to add things](#how-to-add-things).
 | --- | --- | --- | --- |
 | The table | `data/conditions.json`, loaded by `src/condtable.ts` (`CONDS`, `condDef`, `condMods`, `condId`) | the 34-row TypeScript literal, the 5-id flag set, the alias map, 3 loaders of the file, about 20 number literals | Seven disagreements settled (below) |
 | The door | `applyCond` / `endCond` and the few other writes, all in the condition block of `src/magic.ts` | 115 direct writes of a flag, a state or `u.conds`, in 21 files | Yes: every item is asked, wherever the condition comes from (below) |
-| The flags and states | `src/unitstate.ts`: one write of each field | (the same 115) | Prone always ends Braced; coming up always clears death saves |
+| The flags and states | `src/unitstate.ts`: one write of each field | (the same 115) | Knocked Prone always ends Braced (dropping Prone by choice keeps it: review, item 1583); coming up always clears death saves |
 | One injury table | `rollInjury(rng, target, cb, by, called?)` in `combat.ts` | the Called Shot's own table (`classes/j.ts`) | A Called Shot asks the `injury` hook |
 | Area shapes | `kit.ts`: `Area`, `inArea`, `tilesIn`, `unitsIn` | 9 per-file cone, blast and band tests | None (damage and rules tables identical) |
 
@@ -185,10 +185,11 @@ Short rules. Each has a lint test (`test/lint-conditions.test.ts`) that fails wi
    `immune:<id>`. All of them stop the condition whoever applies it.
 7. **To give a condition a number the engine applies,** write it in the row's `effects` in a form `condtable.ts`
    reads (`CONVENTIONS.md` lists them), then read it with `condMods('<id>').defense` and the like. If the engine does
-   not read that kind of number yet, add it to `CondMods` and `modsOf` in `condtable.ts`, and to `COND_NEEDS` in
-   `tools/validate.py` so the row can't lose it. **Never write the number in code.**
+   not read that kind of number yet, add it to `CondMods` and `modsOf` in `condtable.ts`, and to `COND_READS` (and
+   `cond_reads`) in `tools/validate.py` so the row can't lose it. **Never write the number in code.**
 8. **A unit's own choice is not a condition applied to it:** `setProne(cb, u, true)` (it drops, it kneels),
-   `hide(cb, u)` and `reveal(cb, u, why)` (`tactics.ts`), `hideAgain(cb, u)` (the same Hidden entry).
+   `hide(cb, u)` and `reveal(cb, u, why)` (`tactics.ts`), `hideAgain(cb, rng, u)` (the same Hidden entry; pass the
+   action's rng). Dropping Prone keeps a weapon's Brace; kneeling on an order passes `{ endBrace: true }`.
 9. **Unit states** (not conditions): `setBraced(u, true)`, `setBraced(u, false)`, `stagger(u, 1)` (AP off its next
    turn), `setDowned(u, false)`, `setNailed(u, null)` (`unitstate.ts`). **Never write `u.braced`, `u.downed`,
    `u.stunnedNext` or `u.nailed`.**
@@ -207,8 +208,8 @@ Short rules. Each has a lint test (`test/lint-conditions.test.ts`) that fails wi
    and arc scopes, bridged into a fight by `STORY_CARRY`. They read their numbers from the table now, nothing else.
 2. **No timed modifier any item can put on a unit** (review F4, (e): `applyMod(target, { stat, value, rounds })`):
    Rewrite's "−2 Defense for N rounds" and its like still keep private clocks in `stateOf(h)`. This belongs with F5.
-3. **Overwatch** is a row (`engine: "state"`) with no setter here: `u.overwatch` is written in about ten places. It
-   belongs to the held-action work (Watches), not to conditions.
+3. **Overwatch** is a row (`engine: "state"`) with no setter here: `u.overwatch` is written in ten places (the lint
+   counts them by file since the review, so an eleventh fails). It belongs to the held-action work (Watches).
 4. **Two private counters inside the condition block:** MASK's two rounds (`u.maskLeft`, ticked in `condTurnEnd`) and
    a deep ACID's extra Defense −2 (`acidDeep`, never undone when Corroded ends: read, not run).
 5. **The flag conditions draw no `cond` effect event** (a table condition does). The client would have to know them
@@ -220,4 +221,46 @@ Short rules. Each has a lint test (`test/lint-conditions.test.ts`) that fails wi
    stops the parley"). It has four callers (the story's magic state, Bite the Bullet's Last Turn, Old Tongue, Jealousy); a fifth should have a reason.
 9. Rulings taken without asking, for Leon: spec items **1561** (Bleeding is 3 rounds everywhere: Cleave and Cruelty
    bleed three times as long), **1562** (Guarded and Inspired as provisional rows), **1563** (both immunity doors),
-   **1564** (the flag conditions ask the items), **1565** (boons and Marked have no family).
+   **1564** (the flag conditions ask the items), **1565** (boons and Marked have no family), and from the review
+   **1580** (Mind Without Fog lets Witnessed and Hopeful land; Grudge Bearer's Spite skips Marked) and **1581**
+   (every technique Bleeding reaches).
+
+## Problems found in review and what was done
+
+The review: `docs/design/proposals/2026-11-engine-review/conditions-review.json` (8 problems, 15 mutations). Repaired on
+this branch after merging the main line (12 Nov 2026). Unit tests for the problems a unit test can show:
+`test/conditions-review.test.ts` (four of its seven tests fail on the code before the repair: the Shove twice, the
+Shove's line, `hideAgain` with no game, Drop Prone and Brace; the other three pin the rulings kept).
+
+| # | Problem | Verdict | What was done | Pinned by |
+|---|---|---|---|---|
+| 1 | Bleeding 1 → 3 rounds reaches five more techniques, unlisted and unpinned | A correction kept (the main line's text-number sweep, item 1512) | Listed: Cut and Sweep (Edge critical), Sunder (Edge, no armour left), Draw Cut (Edge hit), Pull Out, Cleave, Cruelty; Open Vein unreachable (weapon mastery is retired). Spec item **1581** | golden `moved/tech-bleed/<technique>/{plain,query,hook}` (new); Cruelty in `rules-outburst` |
+| 2 | Mind Without Fog stopped blocking Witnessed and Hopeful; Grudge Bearer and Marked | A ruling kept, by the spec: the card says "Heart debuffs never affect you", and boons are not debuffs (a holder could never be Witnessed by their own patron). Leon to confirm | Item 1565 corrected; spec item **1580**. Mind Without Fog still stops every Heart debuff | `item/` lines now try `witnessed` and `hopeful` against every trait and perk (`item/#baseline` re-recorded for it) |
+| 3 | No pin on three moved sites (Stop: Prone, the Called Shot, Unravel) | Pin strengthened | New golden lines through the real actions: the Shove technique into a wall (Stop: Prone, no save), the Called Shot through the class move (head and leg, against the query, the hook and an `injury` hook), Unravel through the reducer. Re-ran the review's mutations: M3 (Stop: Prone by `setProne`) changes `moved/stop-prone/{query,hook}`; M4 (Called Shot with `cb = null`) changes five `moved/called-shot-*` lines. **M13 is refuted as a pin gap:** Unravel targets "an enemy you can see", and `targetsOf` never lists a Hidden enemy, so its reveal cannot be reached through the action (an equivalent mutation); the line pins what it does end (boons, Brace, shield) | golden `moved/stop-prone/*`, `moved/called-shot-*/*`, `moved/unravel` |
+| 4 | The Fighter's Shove (Prone) fired `cond_landed` twice and logged a broken line | An accident: fixed | `applyCond` takes `onLand` (called once the condition holds, just before `cond_landed`); the move logs "X knocks Y Prone (…)" there and no longer emits `cond_landed` itself. A target that is untouched reads "X shoves Y, who is untouched (…)". Spec item **1582** | golden `moved/fighter-shove/{plain,query,hook,shrug}` (with the landing count); unit test |
+| 5 | The lint missed Object.assign, bracket writes, destructured `conds`, a private injury, a loop blast, `u.overwatch`, a raw write in `combat.ts`, a variable id | Fixed, except the id (below) | `lint-conditions.test.ts`, "the ways round the door": a pattern each, with a self-test on the review's own lines; the three loop blasts that predate this work are counted (an exploding object in `combat.ts`, Thunderclap in `faith.ts`, a hazard's radius condition in `magic.ts`); the Overwatch writes are counted by file; a raw flag write in `combat.ts` must be `rollInjury`'s no-fight fallback. Checked by appending the review's bypasses to `perks/a.ts`: four tests fail | `lint-conditions` |
+| 6 | The validator missed five silent losses of a row's numbers | Fixed | `tools/validate.py` `COND_READS`: the exact numbers `condtable.ts modsOf` reads from each row; an unknown `stat_mod` stat or `attack_mod` context, a `when` on a number the engine reads, a `damage_mult` outside `next_attack` are errors. The review's five edits, re-made on a scratch copy of `data/`: nine errors (was 0) | the validator |
+| 7 | `hideAgain` used the bound game's rng and threw with none | Fixed | `hideAgain(cb, rng, u, by?)`; its four callers pass the action's rng (Silent Kill `rngOf(h, ctx)`, the Grand Sigil veil's turn start and entry, the Grand Sigil plant, Shadow Step) | unit test |
+| 8 | Dropping Prone by choice ended a weapon Brace | Restored (the spec's Brace: "while braced (or prone)") | `rawProne(u, on, endBrace = true)`; `setProne(cb, u, on, { endBrace })`: Drop Prone and standing keep Braced; kneeling on an order and Throw Down's "goes down with" pass `endBrace: true` (as their old code did); being knocked Prone still ends it. Spec "One table, one door" point 3 and item 1564 corrected; item **1583** | golden `moved/drop-prone-braced/*`; unit test |
+
+**Re-recorded:** `test/golden/conditions.json` and `.log.json`: only new `moved/` lines and `item/#baseline` (two ids
+added to the baseline row); no existing state line moved. The replay hashes, after the merge with the main line
+(rules moved on both sides; the oracles `paths-order`, `sight-order`, `shared-state` pass).
+
+**After the merge, also:** `tools/check_spec_tables.py` reads the one duration unit (Pinned's "until the end of your
+next turn" is `rounds: 1`; Dazed's "1 turn" is `until: next_turn`). `npm run check` on this branch: everything passes
+but `apps/web/src/screens/boundary-costs.test.ts` (9 tests, `TypeError: Cannot assign to read only property 'solid'`):
+the test writes `cb.map.solid`, and the main line's shared-state freeze (`__PHC_FREEZE_SHARED` in the web test setup,
+`deepFreeze` of the map cache in `game.ts`) has frozen it. Neither file differs from the main line; not touched here.
+
+### What the lint cannot catch (said plainly)
+
+- **A condition id held in a variable** (`const id = 'rooted'; …applyCond(…, id)`): the id lint reads literals at
+  the call. An id that is no row still does nothing at run time (`applyCond` returns `''`), and no test says so.
+- **A write through a renamed alias of a unit** (`const x: any = u; x['pro' + 'ne'] = true`), `Reflect.set`, or a
+  write in a helper that takes the field name as a string. The patterns read one line of source each.
+- **A loop blast written over several lines,** or with a reach test that is not `dist(…) <=` (a squared distance, a
+  tile set built by hand). Only the one-line shape is caught.
+- **A second injury table that never pushes to `injuries`** (one that only halves Movement or Dazes): the injury
+  lint looks for an added injury and for a function named like one.
+
