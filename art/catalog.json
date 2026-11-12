@@ -11326,6 +11326,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-burst.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-burst.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-aura": {
+      "id": "module-aura",
+      "label": "a ring around a centre dot",
+      "path": "art/icons/modules/module-aura.png",
+      "sha256": "7754cd992b199bc4ea43f90d1c7294f6e1fd6755c0a5fbec8ddc6a6af6deb4b1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-aura.png",
+        "128": "art/icons/modules/exports/128/module-aura.png",
+        "64": "art/icons/modules/exports/64/module-aura.png",
+        "56": "art/icons/modules/exports/56/module-aura.png",
+        "48": "art/icons/modules/exports/48/module-aura.png",
+        "44": "art/icons/modules/exports/44/module-aura.png",
+        "40": "art/icons/modules/exports/40/module-aura.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-aura.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-aura.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

@@ -19,5 +19,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-at_once.png`: three arrows leaving one point together
 - `module-wave.png`: a cone made of three arcs
 - `module-burst.png`: a ring with short radiating marks
+- `module-aura.png`: a ring around a centre dot
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

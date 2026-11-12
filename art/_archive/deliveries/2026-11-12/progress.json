@@ -59,12 +59,12 @@
     "module-random",
     "module-at_once",
     "module-wave",
-    "module-burst"
+    "module-burst",
+    "module-aura"
   ],
   "awaiting_after_test": "Test styles approved; optional map layout/playtest confirmation still pending",
   "production_approved": false,
   "remaining_now": [
-    "module-aura",
     "module-lance",
     "module-fuse",
     "module-return",
@@ -89,7 +89,7 @@
     "ui-practice",
     "ui-felt"
   ],
-  "updated_utc": "2026-11-12T03:46:02.753667+00:00",
+  "updated_utc": "2026-11-12T03:47:26.297255+00:00",
   "outburst_test_verdict": "Leon: Approve both styles and continue",
   "pending_after_test_approval": false
 }
