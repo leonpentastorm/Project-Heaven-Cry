@@ -10724,6 +10724,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-longing.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-longing.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-relief": {
+      "id": "feeling-relief",
+      "label": "Relief: a knot coming loose into a soft breath-like curl",
+      "path": "art/icons/feelings/feeling-relief.png",
+      "sha256": "bf793ad4bcaec6a6f1ddb4d4d4d3c9bc3b61a88a7440550af3b05c80930a2cca",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-relief.png",
+        "128": "art/icons/feelings/exports/128/feeling-relief.png",
+        "64": "art/icons/feelings/exports/64/feeling-relief.png",
+        "56": "art/icons/feelings/exports/56/feeling-relief.png",
+        "48": "art/icons/feelings/exports/48/feeling-relief.png",
+        "44": "art/icons/feelings/exports/44/feeling-relief.png",
+        "40": "art/icons/feelings/exports/40/feeling-relief.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-relief.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-relief.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {

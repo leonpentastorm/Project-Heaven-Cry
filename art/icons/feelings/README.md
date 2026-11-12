@@ -20,5 +20,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `feeling-dread.png`: Dread: the ribbon coils around an empty eye-shaped gap.
 - `feeling-awe.png`: Awe: rays opening above a small bowed curve.
 - `feeling-longing.png`: Longing: the ribbon reaches toward a distant dot and does not touch it.
+- `feeling-relief.png`: Relief: a knot coming loose into a soft breath-like curl.
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
