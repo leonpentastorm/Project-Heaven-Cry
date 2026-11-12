@@ -72,7 +72,7 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   each also with no AP (the refusal), a second time, next turn and three rounds on, and the pad again for every holder
   of an item that changes a cost. A state line that moves is a change of cost or of a limit. Where a counter is kept is
   in `*.marks.json`: when a counter moved to `uses()`, `GOLDEN_RECORD=marks npm test -w @phc/engine -- golden-costs`.
-  Three more (`golden-costs-review.test.ts`, 3,023 lines): `costs-credit` (every action under a Brief and an Encore,
+  Three more (`golden-costs-review.test.ts`, 3,673 lines): `costs-credit` (every action under a Brief and an Encore,
   with 0 to 6 AP of the unit's own), `costs-foes` (an enemy's whole turn with every gun; the only table where the AI
   acts) and `costs-cooldowns` (the round each Hymn and each AP perk comes back).
 - **The cost and counter lint** (`packages/engine/test/lint-costs.test.ts`): fails on a hand-written AP check, a direct

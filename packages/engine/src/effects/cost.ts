@@ -35,6 +35,7 @@
 //
 // WITH NO FIGHT (x.cb left out or null: a card outside a fight) only the unit's own items are asked. In a fight EVERY
 // price passes the fight (`price({ cb, u }, …)`), so another unit's item and an engine system's listener are asked too.
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import actionsJ from '../../../../data/actions.json';
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';

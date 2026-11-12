@@ -54,12 +54,12 @@ The damage tables (5,327 actions) and the rules tables are identical too.
 **Honest limits.** (1) These fourteen tables never let an enemy act (the harness skips every enemy action, as the
 damage tables do). (2) Encore and a Brief are not in them. (3) `later` is a fixed three rounds, so a cooldown one round
 shorter moves no line. The review showed what that cost (two regressions under a credit moved nothing), and added
-**three tables that close the three gaps** (`test/golden-costs-review.test.ts`, **3,023 lines**, recorded on the main
+**three tables that close the three gaps** (`test/golden-costs-review.test.ts`, **3,673 lines**, recorded on the main
 line's engine, before this work, and then played on this one):
 
 | Table | Lines | What a line holds |
 | --- | --- | --- |
-| `costs-credit` | 2,155 | every action of the pad (seven sheets) and every item action of a level-12 Fighter, Mage and Guardian, made with no credit, a Brief of 1, a Brief of 2, an Encore of 2 for that very action, and both, each with 0, 1, 2, 3 and 6 AP of the unit's own: what it took, what is left of the Brief and the Encore, the AP counted as gained and the turn's total, and what the log said of the credit |
+| `costs-credit` | 2,805 | every action of the pad (nine sheets, two of them a Rounding Up holder) and every item action of a level-12 Fighter, Mage and Guardian, made with no credit, a Brief of 1, a Brief of 2, an Encore of 2 for that very action, and both, each with 0, 1, 2, 3 and 6 AP of the unit's own: what it took, what is left of the Brief and the Encore, the AP counted as gained and the turn's total, and what the log said of the credit |
 | `costs-foes` | 594 | an enemy's whole turn (the AI acting) with each of the 33 guns, as a Soldier and an Elite, empty, with one round and full, at 2, 3 and 6 AP: what it spent, where it ended, how often it reloaded, what the squad lost |
 | `costs-cooldowns` | 274 | for each patron at Devotion 3, 5, 7 and 10, after each Hymn: the first round the same Hymn and each other one is accepted again; and for every perk and trait that listens for a kill or a turn, the AP of a kill on each of the five rounds after a kill |
 
@@ -159,7 +159,7 @@ RESOURCES;  resLeft(u, id, c?)
 | 4 | Load with AP in tenths (3.4 AP left after glyphs) | Loaded 17 rounds for 4 AP: AP went to −0.6 | Loads for the whole AP it has (15 rounds, 3 AP) | A bug found by reading (`rounds = ap × 5` on a fraction) |
 | 5 | An enemy's reload | Asked `u.ap >= 2` | Asks the weapon's own price: a 1 AP reload (a quick-release magazine) is made with 1 AP left | The first wording here ("an enemy with a breacher tube and 2 AP tried to reload six times") was wrong: no shipped enemy gets there (see the review, problem 6). `costs-foes` shows no enemy turn moved |
 | 7 | AP given back **inside** the action that paid it (the Quartermaster's free reload; a class move that refunds and lets an inner action pay) | (first version of this work) went to the unit, and the Brief stayed used | Goes back to the credit first | As before the credit: the old settle saw the action as free. Review, problem 2 |
-| 8 | The turn's AP total (`apTurnTotal`, what keeps a turn at 9) after an action paid by **both** a Brief and an Encore | Included Encore's lent AP (only in this combination: the loan sat in `u.ap` when the Brief was counted) | The unit's AP plus what the Brief paid | 280 lines of `costs-credit` re-recorded on purpose; a Brief alone and an Encore alone are as they were |
+| 8 | The turn's AP total (`apTurnTotal`, what keeps a turn at 9) after an action paid by **both** a Brief and an Encore | Included Encore's lent AP (only in this combination: the loan sat in `u.ap` when the Brief was counted) | The unit's AP plus what the Brief paid | 374 lines of `costs-credit` re-recorded on purpose (every `…/both` line that was accepted); a Brief alone and an Encore alone are as they were |
 | 9 | A story action that declares `res` | Ran and took nothing | Refused (`Needs 1 Echo.`) and paid from the character; a resource only a unit holds is refused (`Only in a fight (it costs 2 charge).`) | Review, problem 5. No shipped story action declares one |
 | 6 | An item action that is short of **both** a declared resource and something else | `Needs 2 charge.` came before `Used this turn.` (it was in `available`) | `Used this turn.` first, then the resource, then the AP | The runtime asks in one order for every action |
 
@@ -250,7 +250,7 @@ It reads the source and fails, with a sentence saying what to call, on:
     (`cb.round - st.last < 3`, the exact shape of the old `prayedRound` check), an addition (`st.last + 3 > cb.round`),
     a stamp of the turn (`=== cb.round + ':' + cb.turn`, `=== turnKey(cb)`). 5 left, counted per file.
 
-The review injected thirteen ways round the primitives into `tactics.ts`; the first lint caught one. All thirteen fail
+The review injected eleven ways round the primitives into `tactics.ts`; the first lint caught one. All eleven fail
 now (the list is in the last section).
 
 `test/lint-foundations.test.ts` (F14) reads `price()` call sites now, where it read `actionAp()`.
@@ -357,34 +357,55 @@ Short rules. Each has a lint or a test that fails with a sentence telling you wh
 A reviewer attacked the branch (12 Nov 2026) and reported nine problems. Each was reproduced with a failing test before
 it was fixed. The pin for the fixes was made first, as the plan asks: the three tables above were written against the
 test harness only, **recorded on the main line's engine** (the one before this work), committed, and only then played
-on this branch. 303 of the 2,155 credit lines differed. After the fixes, 284 differ, all for the two reasons of rows 8
-below and nothing else; `costs-foes` and `costs-cooldowns` never differed.
+on this branch. 303 of the first 2,155 credit lines differed. The fixes brought 19 lines back; the 284 left differ for
+two reasons only (the turn's total under a Brief and an Encore together, 280; float noise, 4) and were re-recorded on
+purpose. Two sheets with a Rounding Up holder were added afterwards the same way (650 lines, recorded on the main
+line's engine): 98 of them differ, for the same two reasons (94 and 4). `costs-foes` and `costs-cooldowns` never
+differed.
 
 | # | The problem | Verdict | What was done | Held by |
 | --- | --- | --- | --- | --- |
-| 1 | A Briefed or Encore'd **Reload both** drove AP below 0 and gave no discount (AP 2 became −1) | Right, a regression | `reloadHands` ran its inner main-gun reload under `withAp(u, 99, …)`, which is not `freely`: the inner `pay()` drew the action's credit, and the real payment found it empty. It is `freely(…)` now. Resupply's off-hand reload (new on the main line) uses `freely` too | `costs-credit` (`credit/two-guns/reload-both/*`: 12 parts moved, all back); `costs-foundations` "problem 1" (two tests) and "freely(): the inner action draws on no credit" |
-| 2 | A Briefed or Encore'd **Load** loaded fewer rounds, and 0 rounds at 0 AP; the same blind spot in three other places | Right, a regression; the other three read correctly too | Load divides `apFor(cb, u)` (the unit's AP and the credit). The route a move takes round a hazard is chosen with the credit (`canAffordTiles(…, cb)`). Rounding Up rounds what is left of `apFor`. A perk ruling's refundable AP and the Quartermaster's "AP back" are measured with `apMeter` (the credit's part too), and `refund` gives AP back to the credit while the action runs, so a reload the Quartermaster makes free leaves the Brief unused, as before | `costs-credit` (`credit/*/load/*`: 17 parts moved, all back); `costs-foundations` "problem 2" (two tests); lint: the AP-read ratchet and the `ap0 - u.ap` ratchet |
+| 1 | A Briefed or Encore'd **Reload both** drove AP below 0 and gave no discount (AP 2 became −1) | Right, a regression | `reloadHands` ran its inner main-gun reload under `withAp(u, 99, …)`, which is not `freely`: the inner `pay()` drew the action's credit, and the real payment found it empty. It is `freely(…)` now. Resupply's off-hand reload (new on the main line) uses `freely` too | `costs-credit` (`credit/two-guns/reload-both/*`, 4 lines); `costs-foundations` "problem 1" (two tests) and "freely(): the inner action draws on no credit" |
+| 2 | A Briefed or Encore'd **Load** loaded fewer rounds, and 0 rounds at 0 AP; the same blind spot in three other places | Right, a regression; the other three read correctly too | Load divides `apFor(cb, u)` (the unit's AP and the credit). The route a move takes round a hazard is chosen with the credit (`canAffordTiles(…, cb)`; not on the area map, where no credit is ever opened). Rounding Up rounds what is left of `apFor` (its two sheets in the credit table show a holder's glyphs under a credit as they were). A perk ruling's refundable AP and the Quartermaster's "AP back" are measured with `apMeter` (the credit's part too), and `refund` gives AP back to the credit while the action runs, so a reload the Quartermaster makes free leaves the Brief unused, as before | `costs-credit` (`credit/*/load/*`, 20 lines); `costs-foundations` "problem 2" (two tests); lint: the AP-read ratchet and the `ap0 - u.ap` ratchet |
 | 3 | "The one `cost` hook every priced action passes" was not true: Reload, Analyze, a stim, Vent, a core change, a throw and every weapon row were priced without the fight, so another unit's item and every `onHook('cost')` listener were skipped | Right | Every one takes the fight and passes it (`reloadAp(u, cb)` and the six others; `weaponActions(u, cb)`); the reducer's own calls all pass it. With no fight (a card outside one) the unit's own items are still all that is asked: that is stated at the top of `cost.ts` and in rule 4. **Left:** the client's four calls (What is left, 7) | `costs-foundations` "problem 3" (an ally's item makes Prone and Reload free through `apply()`; the helper prices and the weapon rows); lint "a price is asked WITH the fight" |
 | 4 | The same verb reached the hook under two names: the Pull free row showed 2 AP, the action took 3 | Right for `pullfree` / `pull_free`, `reload2` / `reload_both`, `cover` / `break`. **Not for the stim:** `stim` and `stabilise` are two sites with two prices, and the row and the action both ask the one that fits the target | `price()` turns a row's id into its site (`actionName`) before anything is asked, and finds the floor (`min`) and the base under either name. `ctx.action` is the site, `ctx.row` what was asked. `reloadBothAp` asks `reload_both` | `costs-foundations` "problem 4" (every row whose id is not its site, by both names; Pull free and Reload both through `apply()` against their rows) |
 | 5 | A declared `res` was neither checked nor paid in story scope | Right | `resWhyNot` / `resPay` (`cost.ts`) ask and take resources with or without a unit; the item runtime calls them where no unit pays. A character's resource (Echo, stims) is refused and taken; a unit's resource in a story is refused outright | `costs-foundations` "problem 5" (two tests) |
 | 6 | The pin and the tests missed two of six mutations; the test of listed bug fix 5 was vacuous | Right, and more: **the listed bug fix 5 described something that cannot happen.** An enemy with a breacher tube never asks for a reload (see What is left, 8), so "tried six times" was never true of a shipped enemy; even given a spare magazine by hand, the enemy stands still either way (six refused shots instead of six refused reloads). What the change does is the 1 AP reload | The three tables. The enemy test now asserts what the fix makes true (a quick-release reload with 1 AP left; a tube with a spare: not at 2 AP, done at 3). Row 5 of the F3 table and spec item 1524 were corrected | The mutation run below |
-| 7 | The lint missed most ways round the primitives (12 of 13 injected) | Right | Reads of a unit's `.ap` are a ratchet (any operator); writes cover `--`, `++`, `*=`, `Object.assign`; the resource ratchet covers every resource and a subtraction written as an assignment; a second F8 ratchet covers a cooldown by subtraction or addition and a turn stamp | All 13 injected lines fail: `u.ap <= 1`, `u.ap--`, `!(u.ap > 2)`, `Object.assign(u, { ap: … })`, `const left = u.ap - 2`, `res.supplies -= 1`, `mg.mp = mg.mp - 5`, `mg.charge = Math.max(0, mg.charge - 2)`, `cb.round - st.last < 3`, `st.t === cb.round + ':' + cb.turn`, `v.ap = left`, `--u.ap`, and the price without a fight |
+| 7 | The lint missed most ways round the primitives (10 of the 11 it injected) | Right | Reads of a unit's `.ap` are a ratchet (any operator); writes cover `--`, `++`, `*=`, `Object.assign`; the resource ratchet covers every resource and a subtraction written as an assignment; a second F8 ratchet covers a cooldown by subtraction or addition and a turn stamp | All eleven fail now, and two more spellings: `u.ap <= 1`, `u.ap--`, `!(u.ap > 2)`, `Object.assign(u, { ap: … })`, `const left = u.ap - 2`, `res.supplies -= 1`, `mg.mp = mg.mp - 5`, `mg.charge = Math.max(0, mg.charge - 2)`, `cb.round - st.last < 3`, `st.t === cb.round + ':' + cb.turn`, `v.ap = left`, `--u.ap`, and the price without a fight |
 | 8 | The save note was incomplete; the counts were off | Right | "Behaviour changes of F8" 1 and spec item 1527 list every limit an old mid-fight save forgets. `costs` has 15 entries (the table said 17) | Read |
 | 9 | The web suite could not be verified in the reviewer's sparse checkout | An environment limit, not a defect | `npm run check` was run whole on this full checkout (below) | The run |
 
 **Two more things the new tables showed, neither asked for:**
 
-- **The turn's AP total under a Brief and an Encore together** (F3 table, row 8): 280 lines re-recorded on purpose, and
-  4 more that only lose float noise (`total1.5999999999999999` is `total1.6`).
+- **The turn's AP total under a Brief and an Encore together** (F3 table, row 8): 374 lines re-recorded on purpose, and
+  8 more that only lose float noise (`total1.5999999999999999` is `total1.6`).
 - **Loose-loaded enemy guns are never reloaded** (What is left, 8): pinned as it is, not changed.
 
 **The mutation run.** Each mutation alone, against `golden-costs-review` and `costs-foundations`:
 
-MUTATION_TABLE
+| Mutation | Caught by |
+| --- | --- |
+| Every cooldown one round shorter (`uses.ts` `coolLeft`) | `costs-cooldowns` (88 lines) and a unit test. The first tables: none |
+| `pay()` draws the credit inside `freely()` | `costs-credit` (4 lines) and three unit tests. Before: nothing |
+| `grantAp` with no ceiling | a unit test |
+| The enemy asks a typed 2 AP for a reload | the rewritten enemy test. Before: nothing (its test passed with the bug) |
+| Reload both's inner reload under `withAp` again (problem 1) | `costs-credit` (4 lines) and two unit tests |
+| Load divides the unit's own AP (problem 2) | `costs-credit` (20 lines) and a unit test |
+| A refund never goes back to the credit | a unit test |
+| Encore's part drawn before the Brief's | `costs-credit` (280 lines) |
+| Reload priced without the fight (problem 3) | two unit tests |
+| The `cost` hook given the row's id (problem 4) | two unit tests |
+| A story action pays no resource (problem 5) | a unit test |
 
-**How the merge went.** The main line had moved (performance 1, the text-number truth sweep). Five files conflicted
+**How the merges went.** The main line moved twice while this was repaired. **First** (performance 1, the text-number
+truth sweep): five files conflicted
 (`combat.ts`, `faith.ts`, `classes/i.ts`, `classes/k.ts`, the spec); both sides were kept: the main line's numbers read
 from data (Field Repair's 10% and 5%, Inspire's MP) inside this work's `price` / `whyNot` / `pay`. Two things followed
 from the main line's changes, each its own commit: Sanctuary's story action is 0 AP as typed (its data AP became "your
 Soul cast AP", so `ap: 'data'` had nothing to read), and 13 pad lines re-recorded for a refusal sentence the main line
-reworded (`Needs Proficiency 3.` is `Needs Improvisation 3.`).
+reworded (`Needs Proficiency 3.` is `Needs Improvisation 3.`). **Second** (engine foundations 2 conditions, client
+boundary 2 fog): twenty files conflicted, eleven of them only on an import line. In the rest the main line's setters
+(`setBraced`, `setProne`, `setNailed`, `setDowned`, `rawHidden`, `bleedTick`, `endCond`) were kept with this work's
+`price` / `whyNot` / `pay` / `setAp` around them; the condition table stays out of `magic.ts` and `SPELL_AP` stays read
+from data. After it all seventeen costs tables passed with no line moved, and the costs lint needed one name added to
+its list of things that are not units (`condtable.ts` `m`, a condition's modifiers).
