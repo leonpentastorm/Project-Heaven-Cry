@@ -68,7 +68,8 @@ describe('a player\'s view holds only what that side sees', () => {
     const s = fogScene(), v = viewFor(s.f.g, GUEST), all = js({ ...v, combat: { ...v.combat, log: [], images: [] } }); // (and the decoy, which wears Farzul's face on purpose: below)
     expect(units(v).sort()).toEqual(['Ada', 'Bo', 'Bodvar', 'Cy', 'Qorsa']);
     for (const u of secret(s)) { expect(all).not.toContain('"' + u.id + '"'); expect(all).not.toContain(u.name); }
-    for (const k of ['12,5', '12,4', '13,5', '13,6']) // Lurkzil's tile is in sight (it is Hidden there) and Crepzan's is sensed: both are in fog, as tiles expect(js(v.combat)).not.toContain('"' + k + '"');
+    // Lurkzil's tile is in sight (it is Hidden there) and Crepzan's is sensed: both are in cb.fog, as tiles
+    for (const k of ['12,5', '12,4', '13,5', '13,6']) expect(js({ ...v.combat, map: null })).not.toContain('"' + k + '"'); // (the yard's own lists name 13,6: a start tile)
     expect(all).not.toContain('Hidden'); // nobody's Hidden condition rides along for an absent unit
   });
   it('the host with an AI Narrator is a player: the same fight as the guest', () => {
@@ -128,6 +129,7 @@ describe('a player\'s view holds only what that side sees', () => {
     const s = fogScene();
     expect(musicFor(viewFor(s.f.g, GUEST))).toEqual(musicFor(s.f.g));
   });
-  // KNOWN GAP (docs/design/handoffs/client-boundary-2-fog.md): log lines are strings with no record of whom they name.
+  // KNOWN GAP (docs/design/handoffs/client-boundary-2-fog.md, item 1600 a): log lines are strings with no record of whom
+  // 12 Nov 2026: they name; it waits for a per-line mark in the state (and the replays re-recorded on purpose).
   it.todo('the log withholds the lines of a hostile\'s turn its viewer\'s side never saw (needs a per-line mark in the state)');
 });
