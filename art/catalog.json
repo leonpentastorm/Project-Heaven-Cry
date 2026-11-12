@@ -11826,6 +11826,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-judgement_mark.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-judgement_mark.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-halo": {
+      "id": "module-halo",
+      "label": "a ring of light over a small heart",
+      "path": "art/icons/modules/module-halo.png",
+      "sha256": "195c434d4a8c4b17c472a6e6337072e3139873c9f3ac5449365711eb1cee8093",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-halo.png",
+        "128": "art/icons/modules/exports/128/module-halo.png",
+        "64": "art/icons/modules/exports/64/module-halo.png",
+        "56": "art/icons/modules/exports/56/module-halo.png",
+        "48": "art/icons/modules/exports/48/module-halo.png",
+        "44": "art/icons/modules/exports/44/module-halo.png",
+        "40": "art/icons/modules/exports/40/module-halo.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-halo.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-halo.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
