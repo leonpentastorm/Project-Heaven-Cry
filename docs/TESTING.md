@@ -51,6 +51,17 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   with the characters, perks, skills and enemies you name, through the real reducer. Every rules test starts here.
 - `packages/engine/test/perk-audit.test.ts`: every perk and trait through a fight (`PERK_AUDIT_OUT=<file>` writes the
   report).
+- **The rules tables** (`packages/engine/test/golden-rules.test.ts`, inside `npm run check`; engine foundations 1): the same
+  actions read a second way: how many dice were rolled and what changed on each unit that is not an amount (tile,
+  conditions, Prone, Braced, Nailed…), each from five seeds, in `test/golden/rules-<section>.json`; and every forced
+  mover against 29 cases in `test/golden/moves.json`. A state line that moves is a change of rules. The words (log
+  lines, roll events) are in `*.log.json`: when only wording changed, `GOLDEN_RECORD=log npm test -w @phc/engine -- golden-rules`.
+- **The foundation lint** (`packages/engine/test/lint-foundations.test.ts`, inside `npm run check`): reads the engine's
+  source and fails on a raw `d20(`, a hand-written pass/fail, a new `unit.pos =`, a private copy of a `kit.ts` helper,
+  a fixed-seed rng, or a stat id that is answered and never asked. Each failure says what to call instead.
+- **The roll digest** (opt-in: `cd packages/engine && ROLL_DIGEST=record npx vitest run --config vitest.digest.config.ts`
+  before a refactor, `ROLL_DIGEST=compare …` after): every die of every test, counted and hashed; a test whose dice
+  moved fails by name. For refactors that must not change what is rolled.
 - **The golden tables** (`packages/engine/test/golden-damage*.test.ts`, inside `npm run check`): what about 5,300 fixed
   actions produce and land, exact, against `packages/engine/test/golden/*.json` (every weapon, technique, reference
   build, a Line for every Subject word, the Outburst by school, stage and feeling, every prayer, blasts, traps, hazards,
