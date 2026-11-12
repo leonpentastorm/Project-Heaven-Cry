@@ -26,7 +26,10 @@ JOBS = [
     ('engine', 'engine tests', ['npm', 'test', '-w', '@phc/engine'] + vt),
     ('web', 'web tests', ['npm', 'test', '-w', '@phc/web'] + vt),
 ]
-if only: JOBS = [j for j in JOBS if j[0] == only or (only == 'engine' and j[0] == 'data')]
+# `check -- web` also runs the two guards over web files that live elsewhere: the screen-data freshness check (protodata.json
+# is a web file built from data) and the test lint (an engine test that walks the web's and the browser suites' tests).
+WEB_GUARDS = [('web', 'lint tests', ['npm', 'test', '-w', '@phc/engine', '--', 'test/test-lint.test.ts', 'test/datatext.test.ts'])]
+if only: JOBS = [j for j in JOBS if j[0] == only or (only == 'engine' and j[0] == 'data') or (only == 'web' and j[1] == 'screen data')] + (WEB_GUARDS if only == 'web' and not pat else [])
 if pat: JOBS = [j for j in JOBS if 'tests' in j[1]]
 DATA_JOBS = ('validator', 'spec tables', 'screen data')  # each prints one line 'N errors'
 ANSI = re.compile(r'\x1b\[[0-9;]*m')

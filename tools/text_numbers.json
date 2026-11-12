@@ -1,5 +1,6 @@
 {
  "what": "tools/text_numbers.py: the text-number guard. allow = bare numbers that are right to have no field, each with its reason; baseline = the bare numbers of 12 Nov 2026 not yet bound to a field with a {placeholder} (key: how many times), which may only shrink.",
+ "ceiling": 1428,
  "allow": {},
  "baseline": {
   "calls:call.brief:steps.0.text:1": 1,

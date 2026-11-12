@@ -972,7 +972,7 @@ One row per action. **AP** is the number on the action's own card where the engi
 | Clear a jam | 2 |  |  | the gun works again; Heat back to 0 | upkeep |  | not priced | not priced |  | data + engine code |  |
 | Load loose rounds into a magazine | 1 per 5 rounds | loose rounds in the pack |  | 5 rounds into a spare magazine | upkeep |  | not priced | not priced |  | engine code (loadMagazine) |  |
 | Brace the weapon (the basic action, any weapon that can) | 1 |  |  | Recoil halved until you move; a character with Durability also gains 2 Guard (3 with a shield) | damage prevented | 0.77 | 2 Guard at 10 HP each; the Recoil is not priced | 1.5× | part priced | engine code (brace) + data (techniques.json guard rules) | Guard holds at most your Durability points, 5 at most; 1 point is kept back unless the hit would take you down |
-| Field Repair | 2 | 1 spare-parts charge; Proficiency 3 |  | restores weapon durability | upkeep |  | not priced | not priced |  | engine code |  |
+| Field Repair | 2 | 1 spare-parts charge; Improvisation 3 |  | restores weapon durability | upkeep |  | not priced | not priced |  | engine code |  |
 
 ### Gear
 
@@ -995,10 +995,10 @@ One row per action. **AP** is the number on the action's own card where the engi
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | Attack with both hands (a weapon in each) | the dearer weapon's attack + 1 | a round from each gun; main hand −1 to hit, off hand −3 (−1 at best, with points) |  | both weapons attack, at one target or two | damage dealt |  | not priced here: dual wielding is its own question in the balance pass (section 9) | not priced |  | engine code (pairedAttack) |  |
 | A weapon's own skill (the weapons that grant one) | set by the weapon |  |  | what the weapon's card says | damage dealt |  | not priced: one per weapon, in weapons.json | not priced |  | data (weapons.json grants) |  |
-| Read a glyph or a trace | as Analyze: 2 (1 from Analysis 3) |  |  | you learn the word (study toward a new Sigil word) | information |  | not priced | not priced |  | engine code (readGlyph) |  |
+| Read a glyph or a trace | as Analyze: 2 (1 from Acuity 3) |  |  | you learn the word (study toward a new Sigil word) | information |  | not priced | not priced |  | engine code (readGlyph) |  |
 | Spend an Echo on a roll | 0 | 1 Echo (you hold 3 at most; 1 at the start of a session) | once a roll | the d20 is rolled again | damage dealt | 0.23 | a missed attack hits after all 65% of the time: 0.23 of an attack per Echo held | free |  | engine code (check/reroll) + rules.json | paid in Echo, not AP |
 | Hide | 2 | no enemy may see you |  | Hidden: you can't be targeted until spotted (not priced), and your first attack is an Ambush (×1.7 at Ingenuity 4) | damage dealt | 0.7 | the Ambush's extra damage only | 0.7× | part priced | engine code (not in rules.json's action list) |  |
-| Analyze | 2 (1 from Analysis 3) |  |  | shows the enemy's HP, Defense and armour; from Analysis 5 it deals 15% less damage to the squad | information |  | not priced below Analysis 5; from 5: 15% off its attacks for the fight | not priced |  | data + engine code (analyzeCost) |  |
+| Analyze | 2 (1 from Acuity 3) |  |  | shows the enemy's HP, Defense and armour; from Acuity 5 it deals 15% less damage to the squad | information |  | not priced below Acuity 5; from 5: 15% off its attacks for the fight | not priced |  | data + engine code (analyzeCost) |  |
 | Overwatch (hold a shot) | the AP of the shot (2, or 3 aimed) | your reaction; not while Pressed | one held shot | 1 shot at the first enemy that moves in your sight | damage dealt | 1 | damage ×1, if it fires | 0.7× | part priced | data + engine code (setOverwatch) |  |
 | Shove (anyone, no technique) | 2 |  |  | a 1-tile push on an opposed roll (your Raw Power against its Raw Power or Athletics) | position | 0.13 | one pushed tile, half the time | 0.1× | part priced | engine code (not in rules.json's action list) | the Shove technique and the Fighter's Shove cost 1 AP |
 | Stim an ally next to you | 1 | 1 stim |  | heals 30 × Healing given and stops Bleeding | HP restored | 1.15 | 30 HP, at the rifle's rate | 2.3× | cheap for what it does | engine code (useStim) |  |

@@ -9,7 +9,12 @@ The spec (docs/rules/PHC-Core-Rules-v1.0.md) is the source of truth: when a row 
 later "Rules revision" moved the number and the table was not folded, in which case the table gets the house note
 ("19 (rules 1.18; was 15)": the CURRENT value first). This tool never decides which: it prints the row.
 
-A cell is read by its FIRST number, so a note after it is free text. What is compared:
+A cell is read by its FIRST number, so a note after it is free text. A cell with no number ("none") against a number in
+data is a difference, and so is a number in the spec for a field the weapon does not have. A row is matched by its exact
+name (or ALIAS), never by a near one; a column header that is neither compared nor in NOT_COMPARED is an error, and so
+is any count of weapon tables other than 12. What it cannot see: a number a later revision moved in PROSE while neither
+the table nor the data followed, and tables it does not read (mods, armour, items, techniques, the Derived stats and
+skills tables, XP and levels, classes). What is compared:
 
   weapons     the Starter weapons table and every roster table of "Weapons, version 2" section 7 (7.1 to 7.11), by
               name: damage (a shotgun's two bands; a bow's base and slope), range or reach, magazine, heat limit,
@@ -64,31 +69,39 @@ def section(start_pat, end_pat):
     b = next((i for i, l in enumerate(LINES) if a is not None and i > a and re.search(end_pat, l)), len(LINES))
     return (a + 1, b + 1) if a is not None else (0, 0)
 
+# A spec row whose name is not the weapon's name in data, by hand (normalised): {spec name: data name}.
+ALIAS = {"700 blackpoint": "700 blackpoint anti materiel"}
+# Columns of the weapon tables that are read by nobody here (words, not numbers), so that a NEW or renamed column is an error.
+NOT_COMPARED = {"type", "ammo", "notes", "modes", "skill", "requirement", "requires", "effect", "properties", "special", "property", "durability", "mods", "mod slots", "slots", "family", "weapon", "ap", "note", "lore", "use", "grants", "needs", "feeds on"}
 def check_weapons():
     weapons = load("weapons.json")["items"]
     by = {norm(w["name"]): w for w in weapons}
     def find(name):
-        n = norm(name)
-        if n in by: return by[n]
-        hit = [w for k, w in by.items() if k.startswith(n) or n.startswith(k) or n in k]
-        return hit[0] if len(hit) == 1 else None
+        n = norm(name)  # the exact name, or a spelling listed in ALIAS: never a near match (a renamed row must not be read as its neighbour)
+        return by.get(n) or by.get(ALIAS.get(n, ""))
     lo, hi = section(r"^#### 7\. The roster", r"^##### 7\.12 |^#### 8\. ")
-    seen = set()
+    seen, found = set(), 0
     COL = {"dmg": "damage", "damage": "damage", "range": "range_tiles", "reach": "range_tiles", "mag": "magazine", "magazine": "magazine",
            "heat": "heat_limit", "heat limit": "heat_limit", "kg": "weight_kg", "weight": "weight_kg", "price": "price_credits", "hands": "hands"}
     for line, head, rows in TABLES:
         starter = head[:3] == ["Weapon", "Type", "Damage"]
         if not (starter or (lo <= line < hi and head[0] == "Type")): continue
-        cols = [COL.get(re.sub(r"\s*\(.*", "", h).strip().lower()) for h in head]
+        heads = [re.sub(r"\s*\(.*", "", h).strip().lower() for h in head]
+        cols = [COL.get(h) for h in heads]; found += 1
+        for h in heads[1:]:  # a renamed column must not drop out of the check without a word
+            if h not in COL and h not in NOT_COMPARED: diff(f"weapon-table:{line}:column:{h}", line, f"column '{h}' is neither compared nor listed in NOT_COMPARED")
         for ln, cells in rows:
             w = find(cells[0])
             if not w:
                 diff(f"weapon:{norm(cells[0])}:missing-in-data", ln, f"'{cells[0]}' is in the spec's table and not in weapons.json"); continue
             seen.add(w["id"])
             for field, cell in zip(cols, cells):
-                if not field or field not in w: continue
-                dv, n = w[field], nums(cell)
-                key = f"weapon:{w['id']}:{field}"
+                if not field: continue
+                n = nums(cell); key = f"weapon:{w['id']}:{field}"
+                if field not in w:  # the spec gives a value and the weapon has no such field
+                    if n and n[0]: diff(key, ln, f"{w['name']}: {field} {cell!r} in the spec, no such field in data")
+                    continue
+                dv = w[field]
                 if field == "hands":
                     if cell and cell.split()[0] != dv: diff(key, ln, f"{w['name']}: hands {cell} in the spec, {dv} in data")
                 elif field == "damage" and isinstance(dv, dict):  # a shotgun's two bands: "40 / 25" or "40 within 4 tiles, 25 within 8"
@@ -96,8 +109,8 @@ def check_weapons():
                     if not (n and same(n[0], want[0]) and any(same(x, want[1]) for x in n[1:])): diff(key, ln, f"{w['name']}: damage '{cell}' in the spec, {want[0]} / {want[1]} in data")
                 elif field == "damage" and isinstance(dv, str):  # a bow: "20 + 5*raw_power"
                     if n[:2] != nums(dv)[:2]: diff(key, ln, f"{w['name']}: damage '{cell}' in the spec, '{dv}' in data")
-                elif not n:  # "none", "throwing range", a thrown weapon's effect in words
-                    if isinstance(dv, (int, float)) and dv and field in ("magazine", "heat_limit") and cell.lower() not in ("none", ""): diff(key, ln, f"{w['name']}: {field} '{cell}' in the spec, {dv} in data")
+                elif not n:  # "none", "throwing range", a thrown weapon's effect in words: data must not hold a number then
+                    if isinstance(dv, (int, float)) and not isinstance(dv, bool) and dv and not (field == "damage" and "Effect" in head) and not (field == "range_tiles" and dv == 1 and "adjacent" in cell.lower()): diff(key, ln, f"{w['name']}: {field} '{cell}' in the spec, {dv} in data")
                 elif field == "damage" and not dv:  # a thrown weapon with no damage: the cell is its effect in words
                     pass
                 elif field == "damage" and "Effect" in head:  # thrown: the effect cell leads with the damage
@@ -106,6 +119,7 @@ def check_weapons():
                     if not same(n[0], dv): diff(key, ln, f"{w['name']}: {field} {cell!r} in the spec, {dv} in data")
                 elif dv is None and field in ("magazine", "heat_limit"):
                     diff(key, ln, f"{w['name']}: {field} {cell!r} in the spec, none in data")
+    if found != 12: diff("weapon:tables", lo, f"{found} weapon tables were read; 12 expected (the Starter table and 7.1 to 7.11): a header changed")
     for w in weapons:
         if w["id"] not in seen: diff(f"weapon:{w['id']}:missing-in-spec", lo, f"{w['name']} ({w['id']}) is in weapons.json and in no weapon table of the spec")
 
@@ -169,6 +183,6 @@ if "--list" in sys.argv:
     for k, m in diffs: print(("known  " if k in known else "NEW    ") + k + "\n         " + m)
 for k, m in new: print(f"error: {k}: {m}")
 for k in gone: print(f"error: {k}: on the known list and no longer differs (run: python3 tools/check_spec_tables.py --prune)")
-if CELLS[0] < 400: print(f"error: only {CELLS[0]} cells were compared (about 480 expected): a table's header changed and it is no longer read"); new.append(("cells", ""))
+if CELLS[0] < 480: print(f"error: only {CELLS[0]} cells were compared (about 500 expected): a table's header changed and it is no longer read"); new.append(("cells", ""))
 print(f"spec tables: {len(new) + len(gone)} errors ({CELLS[0]} cells compared, {len(diffs)} differences, {len(known)} known and waiting for a ruling)")
 sys.exit(1 if new or gone else 0)

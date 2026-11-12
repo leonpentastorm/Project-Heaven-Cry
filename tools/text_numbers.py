@@ -33,6 +33,8 @@ WHAT IS CHECKED (check(), called by validate.py)
          "baseline"  {key: count}    the bare numbers of 12 Nov 2026 not yet bound to a field. It only shrinks: a new
                                      key, or a higher count, is an error; a key that is gone must be taken out
                                      (python3 tools/validate.py data --shrink-text-baseline)
+         "ceiling"   n               the most the baseline may hold: its size when it was last shrunk. A key added
+                                     by hand, or a rewrite that slips a new number in, goes over it and is an error.
        A key is "<file>:<id>[/<nested id>]:<path to the text>:<number as written>".
 
 To fix an error, in order: bind the number to its field with a placeholder; add the field the engine should be
@@ -157,18 +159,22 @@ def check(data, errors, argv=()):
     bare, bound, read = scan(data, errors)
     book = json.loads(FILE.read_text(encoding="utf8")) if FILE.exists() else {"allow": {}, "baseline": {}}
     allow, base = book.get("allow", {}), dict(book.get("baseline", {}))
+    ceiling = book.get("ceiling")
     if "--init-text-baseline" in argv:
         if base: raise SystemExit("the baseline exists: it only shrinks (--shrink-text-baseline)")
-        base = {k: n for k, n in bare.items() if k not in allow}
+        base = {k: n for k, n in bare.items() if k not in allow}; ceiling = sum(base.values())
     if "--shrink-text-baseline" in argv:
         base = {k: min(n, bare[k]) for k, n in base.items() if k in bare and k not in allow}
         allow = {k: v for k, v in allow.items() if k in bare}
+        ceiling = min(ceiling if ceiling is not None else 10 ** 9, sum(base.values()))
     if "--init-text-baseline" in argv or "--shrink-text-baseline" in argv:
         book = {"what": "tools/text_numbers.py: the text-number guard. allow = bare numbers that are right to have no field, each with its reason; baseline = the bare numbers of 12 Nov 2026 not yet bound to a field with a {placeholder} (key: how many times), which may only shrink.",
-                "allow": dict(sorted(allow.items())), "baseline": dict(sorted(base.items()))}
+                "ceiling": ceiling, "allow": dict(sorted(allow.items())), "baseline": dict(sorted(base.items()))}
         FILE.write_text(json.dumps(book, indent=1, ensure_ascii=False) + "\n", encoding="utf8")
     for k, why in allow.items():
         if not str(why).strip(): errors.append(f"text numbers: allow entry {k} has no reason")
+    if ceiling is None or sum(base.values()) > ceiling:  # a key added by hand, or a baseline rewritten around a new bare number
+        errors.append(f"text numbers: the baseline holds {sum(base.values())} bare numbers and its ceiling is {ceiling}: the baseline only shrinks, a number is never added to it (bind it or allow it with a reason)")
     new = sorted(k for k, n in bare.items() if k not in allow and n > base.get(k, 0))
     gone = sorted(k for k, n in base.items() if bare.get(k, 0) < n) + sorted(k for k in allow if k not in bare)
     for k in new[:40]:

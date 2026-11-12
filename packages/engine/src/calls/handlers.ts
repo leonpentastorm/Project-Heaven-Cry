@@ -115,7 +115,7 @@ call({
   },
 });
 
-// ---------- Name It (Lore Master): cancels AP the unit would lose next turn ----------
+// ---------- Name It (Lore Master): a bonus on saves, a fresh save, and Shaken and Afraid end (it no longer touches Threaten's AP loss) ----------
 call({
   id: 'call.name_it',
   // You tell them what it is, so it can't get into their head (Leon, 10 Nov 2026: a Call that just gives the ally

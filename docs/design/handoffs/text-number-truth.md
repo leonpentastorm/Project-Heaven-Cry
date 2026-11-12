@@ -1,11 +1,13 @@
-# Text and number truth: the rules.json and client slice (12 Nov 2026)
+# Text and number truth (12 Nov 2026): two passes
+
+**Read section 7 on first: the second pass.** Sections 1 to 6 are the first pass (the rules.json and client slice), kept as its record; where the second pass changed something of the first, the line says so.
 
 The engine review (`docs/design/proposals/2026-11-engine-review/3-data-text-tests.md`, sections 2 and 5.2) found texts,
 data fields, spec lines and comments that state a rule the game no longer has, and eight assertions that never ran.
 A two-stage review then confirmed 34 mismatches in this slice (`rules.json`, the other data files nothing reads, the
 client's and the engine's own strings). This is what was done about them, and the guards that now hold the line.
 
-Branch: `worktree-wf_67430118-ae8-17` (not pushed, not merged). No rule number of the engine changed; no golden line moved.
+First-pass branch: `worktree-wf_67430118-ae8-17`. Second-pass branch (holds both): `worktree-wf_67430118-ae8-19`. Neither is pushed or merged. The first pass changed no rule number; the second changed several and moved four golden lines (section 7.3).
 
 ## 1. What was fixed, by kind
 
@@ -45,14 +47,15 @@ Branch: `worktree-wf_67430118-ae8-17` (not pushed, not merged). No rule number o
   `reputation_bonus_per_award`, are removed (no such rule in the spec or the engine); `pray` lists the three costs;
   `resolution` states the gamma rule (`skill_track.check_mod`, and the passive and Ask formulas use it);
   `ownership.narrator_owns` loses the patron's mood TN and the tutors and says which Achieved perks the Narrator grants;
-  `combat.initiative.surprise_round` became `unaware` (the later rule); the keys named after classes that no longer
+  `combat.initiative.surprise_round` became `unaware` (the later rule) *(second pass: restored as the spec has it,
+  with `built: false`, until Leon rules on item 1501)*; the keys named after classes that no longer
   exist are renamed (`ap_bard`, `bard_treats_injuries`, `defender_reactive_plate_3_guard`; the price-list tool and its
   generated doc follow).
 - `data/attributes.json`: the `skills` map follows `skills.json` (4 slots were wrong); the elemental multiplier
   (0.1 and 0.05), critical damage taken (Acuity) and the glyph AP formula (`glyph_ap`, 1 − 0.1 a point, minimum 0.5).
 - `data/skills.json`: `signature_of` is removed from all 27 skills (it named Revision 2 classes; a class's skills are
-  in `classes.json` `base[].skills`); `per_point.effects` is rewritten for 18 skills whose effects named a pre-1.13
-  home or missed what the text gives, so that every effect is the text's own number.
+  in `classes.json` `base[].skills`); `per_point.effects` was rewritten for 18 skills. *(Second pass: the field is
+  deleted from all 27. Nothing read it, and a mirror nobody reads is what went stale in the first place.)*
 - `data/archetypes.json` `rules.preset_style`, `data/soul_modules.json` `notes` (the Damage base is 40) and
   `limits.ready_designs`, `data/sigils.json` `grammar.range_bonus` (Brain Power), `data/perks.json` `rules.achieved`
   (the engine grants nine).
@@ -62,7 +65,7 @@ Empathy lines (Derived stats, the skill table, the Outburst cycle rule 6, the mo
 places), the surprise round, full auto; and in the weapon tables the hand cannon (38), the Decrkm SMG's roster row (19)
 and the Boss's HP cell, which now reads current value first like every other cell.
 
-**Engine comments (4 confirmed, 9 corrected).** `character.ts` (critical damage taken is Acuity's; the orphaned
+**Engine comments (4 confirmed; ten hunks, of which the second pass took six back out, see 7.6).** `character.ts` (critical damage taken is Acuity's; the orphaned
 "Attribute can't pass its Core" line; the old free-Pump line; Core points in `levelGains`), `tactics.ts` (a beast's
 death is +3), `sigil.ts`, `hazards.ts` and `combat.ts` (passive Vigilance is 10 + its points), `calls/core.ts`
 (a Call reaches 4 tiles + 1 a point).
@@ -118,83 +121,9 @@ Seen and left alone (outside the 34, or another agent's ground):
 
 ## 5. The guards
 
-All run inside `npm run check`, and together take under five seconds.
-
-### a. The text-number guard (`tools/text_numbers.py`, called by `tools/validate.py`)
-
-**Rule:** every number in a data item's `text` must be a number in that item's own structured fields.
-
-- An item is any object with an `id` in `data/*.json`. Its texts are the strings under a `text` key inside it (a perk's
-  tiers, a technique's lines, a weapon's grant), down to the next object that has its own id.
-- Its structured numbers are every number in it, the numbers in its short non-prose strings (`"20 + 5*raw_power"`, an
-  effect's `when`) and numeric keys. Prose keys (`flavour`, `lore`, `note`, `deed` and so on: the `PROSE` set) never count.
-- `25%` matches 25, 0.25, 1.25 or 0.75; `×1.5` matches 1.5, 0.5 or 50; a plain number matches itself, sign ignored.
-  References ("rules 1.19", "item 953") and digits inside a word (".32", "d20", "2H") are not read.
-
-Today 1,733 numbers are checked and **352 fail**. Those are the baseline in `tools/text_numbers.json`, recorded after
-the fixes above. The validator prints one line: `text numbers: 1733 checked ..., 352 in the baseline (it only shrinks),
-0 allowed`.
-
-- A failure that is not in the file is an **error** (a new card whose number has no field, or an edited number).
-- A baseline entry that no longer fails is an **error** too, until it is taken out:
-  `python3 tools/validate.py data --shrink-text-baseline`. So the list can only get shorter.
-- A number that is right to have no field (a die face, a count that is part of a name) goes under `"allow"` with a
-  reason; an entry with no reason is an error.
-
-To fix a failure, in this order: make the screen build the line from the field; add the field the engine should be
-reading; correct the text; allow it with a reason. The 352 are the work list for "texts read their numbers" (the
-review's section 3.3): 88 in class moves, 51 in perks, 34 in traits, 29 in Soul modules, 25 in weapons.
-
-To extend: a new prose key goes in `PROSE`; a new way to write a number (a fraction in words, say) goes in
-`text_numbers()` with the values a field may hold for it; a file that is not rules goes in `SKIP_FILES`.
-
-What it does not catch: a text and a field that are wrong together; a number hard-coded in a TypeScript hook and
-written in no field (those are among the 352); words ("twice", "half").
-
-### b. The test lint (`packages/engine/test/test-lint.test.ts`)
-
-Walks every test file of the repo (engine, web, server, the browser suites) and refuses:
-
-1. a statement after a `//` comment on the same line (an `expect(` anywhere in a trailing comment, or a call ending in
-   `);` at its end);
-2. `it.skip(`, `describe.skip(`, `test.skip(`, `.todo(`, `.only(` without a comment on the line or the line above that
-   holds a date ("12 Nov 2026" or "2026-11-12"). A switch needs none: `(FULL ? it : it.skip)(...)`, `it.skipIf(...)`.
-
-It tests its own two patterns first. To extend: add a directory to `DIRS`, a shape to `swallows` or `SHELVED`.
-
-`packages/engine/test/text-number-truth.test.ts` holds the engine-side checks of this pass: no engine string types a
-renamed skill's old name (add a rename to its `OLD` table when a skill is renamed again), and the wiki's class entries
-state the rank rule as the engine reads it.
-
-### c. Screen data freshness (`python3 design/canvas-build/build.py --web --check`)
-
-There was no freshness test for `apps/web/src/game/protodata.json` in this worktree, so this is a minimal one: the
-build runs, writes nothing, and fails when the committed file is not what the data builds. If another branch brings a
-vitest freshness test, keep one of the two.
-
-### d. The spec's tables (`tools/check_spec_tables.py`)
-
-Compares, cell by cell (499 cells), the spec's Starter weapons table and the eleven roster tables of Weapons version 2,
-the enemy tiers at level 1, the enemy level table and the Conditions table with `weapons.json`, `enemies.json` and
-`conditions.json`. A cell is read by its **first number**, so the house note "19 (rules 1.18; was 15)" works and the
-current value must come first. It also fails when a weapon, a tier, a level or a debuff is on one side only, and when
-fewer than 400 cells were read (a header changed and a table is no longer parsed).
-
-The tool never decides who is right. When a row differs: the spec wins and the data is the bug, unless a later revision
-moved the number, in which case the table's cell takes the note. A difference that needs a ruling goes in
-`tools/spec_tables_known.json` with the reason (three conditions today); a known row that stops differing fails until
-`--prune` drops it. `--list` prints everything.
-
-What it found on its first run, all settled by the spec's own later revisions (no row needed a stop):
-
-| Row | The table said | Now |
-| --- | --- | --- |
-| Frontier hand cannon, damage | 40 | 38 (rules 1.18, item 1074), as data |
-| Decrkm SMG, damage (the roster row; the Starter row was right) | 15 | 19 (rules 1.18), as data |
-| Boss, HP | "960 *(820 since rules 1.23)*" | "820 *(rules 1.23; was 960)*" |
-| Bite and claws (a beast companion's weapon) | not in any table | a row in 7.9 Unarmed, from data |
-
-To extend: a new table is one function in the tool (find it by its header, map the columns to fields, call `diff`).
+The guards were rebuilt in the second pass: see section 8, which replaces what stood here. (The first form of the
+text-number guard let a text number match ANY number anywhere in its item; a review measured that 40% of the numbers
+it passed survived a +1 edit, and that it would have caught none of the 34 findings.)
 
 ## 6. Before relying on this
 

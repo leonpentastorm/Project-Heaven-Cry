@@ -422,9 +422,12 @@
       "order": "high first",
       "tie": "higher agility",
       "tie_after_agility": null,
-      "unaware": {
-        "enemy_first_acts_in_round": 2,
-        "note": "there is no surprise round (the 3 AP round of rules 1.0 was never built): an unaware enemy loses round 1 (spec: Stealth and awareness, item 92), and an ambush from hiding opens on the attacker's own turn with the AP it has left"
+      "surprise_round": {
+        "ambushers_ap": 3,
+        "surprised_can_act": false,
+        "exception": "perk says so",
+        "built": false,
+        "built_note": "not built; see spec item 1501. What the engine does instead: an unaware enemy loses round 1 (Stealth and awareness, item 92), and an ambush from hiding opens on the attacker's own turn with the AP it has left. The spec's surprise round stands until Leon rules."
       }
     },
     "turn": {

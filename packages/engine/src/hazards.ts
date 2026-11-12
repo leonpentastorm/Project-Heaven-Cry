@@ -98,7 +98,7 @@ export function hazardStep(cb: Combat, rng: Rng | undefined, u: Unit, k: string)
   return stop;
 }
 
-/** After a PC moves: hidden hazards within 2 tiles fall to passive Vigilance (10 + its points: a gamma) against their TN. */
+/** After a PC moves: hidden hazards within 2 tiles fall to passive Vigilant (10 + modifier) against their TN. */
 export function spotHazards(cb: Combat, u: Unit) {
   if (u.side !== 'pc' || !cb.hazards?.length) return;
   const passive = passiveVigilance(u.vigilant || 0);

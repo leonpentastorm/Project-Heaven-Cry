@@ -20,17 +20,51 @@ const walk = (dir: string): string[] => (!existsSync(dir) ? [] : readdirSync(dir
   return f === 'node_modules' ? [] : statSync(p).isDirectory() ? walk(p) : isTest(p) ? [p] : [];
 }));
 const FILES = DIRS.flatMap((d) => walk(join(ROOT, d)));
-/** The line with every string literal blanked, so a // inside a string or a URL is not read as a comment. */
-const noStrings = (l: string) => l.replace(/'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`/g, (m) => 'S'.repeat(m.length));
+/** The line with every string and regex literal blanked, so a // inside a string or a URL, or a quote inside a regex,
+ * is not read as a comment or as the start of a string. A small scanner: a "/" opens a regex only where a value may
+ * start (after an operator, an opening bracket, a comma, or at the start of the line). */
+export function noStrings(l: string): string {
+  let out = '', i = 0, prev = '';
+  while (i < l.length) {
+    const c = l[i];
+    if (c === '/' && l[i + 1] === '/') { out += l.slice(i); break; }
+    if (c === "'" || c === '"' || c === '`' || (c === '/' && l[i + 1] !== '*' && (prev === '' || '(,=:[!&|?{};+-*%<>~^'.includes(prev)))) {
+      let j = i + 1, cls = false;
+      for (; j < l.length; j++) {
+        if (l[j] === '\\') { j++; continue; }
+        if (c === '/') { if (l[j] === '[') cls = true; else if (l[j] === ']') cls = false; else if (l[j] === '/' && !cls) break; } else if (l[j] === c) break;
+      }
+      if (j >= l.length && c === '/') { out += c; prev = c; i++; continue; } // not a regex after all (a division)
+      out += 'S'.repeat(Math.min(j, l.length - 1) - i + 1); i = j + 1; prev = 'S'; continue;
+    }
+    out += c; if (c.trim()) prev = c; i++;
+  }
+  return out;
+}
 /** The text of a trailing comment on a line that also holds code, or null. */
 export function trailingComment(line: string): string | null {
   const s = noStrings(line), m = /(?<![:\\])\/\//.exec(s);
   return !m || !s.slice(0, m.index).trim() ? null : line.slice(m.index + 2);
 }
-/** A trailing comment that holds a statement: an expect( anywhere in it, or a call "name(...);" at its end. */
-export const swallows = (line: string) => { const c = trailingComment(line); return c != null && (/\bexpect\s*\(/.test(c) || /[\w.\]]\((?:[^()]|\([^()]*\))*\)\s*;\s*$/.test(c)); };
+/** A trailing comment that holds a statement. Any of: an expect( or an assert anywhere in it; an await; a call
+ * "name(...);" at its end, or with no semicolon when words come before it (a lone formula, "// floor(x / 2)", is a note); an assignment or an increment that ends in a semicolon; a
+ * semicolon followed by something that starts a statement ("; u.ap = 0", "; f.cb.round++", "; go(x)"). */
+export const swallows = (line: string) => {
+  const c = trailingComment(line); if (c == null) return false;
+  return /\bexpect\s*\(/.test(c) || /\bassert(\.\w+)?\s*\(/.test(c) || /\bawait\s+[\w$.]+\s*[.(]/.test(c)
+    || /[\w$\]]\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\)\s*;\s*$/.test(c) || /[A-Za-z,:]\s+[\w$.]*[\w$\]]\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\)\s*$/.test(c)
+    || /[\w$.\]]+\s*(\+\+|--)\s*;/.test(c) || /(^|[\s;])[\w$.[\]]+\s*[-+*/]?=\s*[^=;][^;]*;\s*$/.test(c)
+    || /;\s*[\w$.[\]]+\s*(\+\+|--|[-+*/]?=[^=]|\()/.test(c);
+};
 const DATED = /\b\d{1,2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\w* 20\d\d\b|\b20\d\d-\d\d-\d\d\b/;
-const SHELVED = /\b(it|test|describe)\.(skip|todo|only)\s*\(/;
+/** A shelved test, in every spelling vitest has: it.skip( / .todo( / .only( / .fails(, with modifiers between
+ * (it.concurrent.skip(, it.skip.each(), xit( / xdescribe( / xtest(, a switch whose condition is a literal
+ * ((false ? it : it.skip)(), and runIf(false) / skipIf(true). A real switch is not one: (FULL ? it : it.skip)(. */
+export const shelved = (code: string) => /\b(it|test|describe)(\.\w+)*\.(skip|todo|only|fails)\s*[.(]/.test(code) || /\bx(it|test|describe)\s*\(/.test(code)
+  || /\(\s*(false|true|0|1)\s*\?\s*(it|test|describe)\b/.test(code) || /\.runIf\(\s*(false|0)\s*\)|\.skipIf\(\s*(true|1)\s*\)/.test(code);
+const SHELVED = { test: shelved };
+/** A dated reason: a date, and at least three more words that say why. */
+const reasoned = (c: string) => DATED.test(c) && c.replace(DATED, ' ').split(/\s+/).filter((w) => /[A-Za-z]{2,}/.test(w)).length >= 3;
 
 describe('test lint', () => {
   it('finds the test files', () => {
@@ -46,6 +80,16 @@ describe('test lint', () => {
     expect(SHELVED.test("it.skip('x', () => {})")).toBe(true);
     expect(SHELVED.test("(FULL ? it : it.skip)('x', () => {})")).toBe(false);
     expect(SHELVED.test("it.skipIf(!on)('x', () => {})")).toBe(false);
+    // the shapes the first lint let through (the review of 12 Nov 2026)
+    expect(swallows('u.hp = 5; // wounded f.cb.round++; u.ap = 0;')).toBe(true);
+    expect(swallows('const a = 1; // set up act(f, u, {...})')).toBe(true);
+    expect(swallows('x(); // then await page.click(sel); assert.ok(v)')).toBe(true);
+    expect(swallows("expect(a).toMatch(/it's/); // note expect(b).toBe(2); x('y');")).toBe(true);
+    expect(swallows('const r = a / b; // half of it (rounded down)')).toBe(false);
+    expect(swallows('expect(v).toMatch(/range 6/); // floor(Rumination 2 / 2)')).toBe(false);
+    expect(swallows('at(f, u, tile); // next to the wall; the foe is 2 tiles off')).toBe(false);
+    for (const t of ["it.skip.each([1])('x', () => {})", "it.concurrent.skip('x', () => {})", "xit('x', () => {})", "xdescribe('x', () => {})", "it.fails('x', () => {})", "it.runIf(false)('x', () => {})", "(false ? it : it.skip)('x', () => {})"]) expect(SHELVED.test(t), t).toBe(true);
+    expect(reasoned('12 Nov 2026')).toBe(false); expect(reasoned('12 Nov 2026: waits for the height rule')).toBe(true);
   });
   it('no statement after a // comment on the same line (a dead assertion)', () => {
     const hits: string[] = [];
@@ -63,7 +107,7 @@ describe('test lint', () => {
       lines.forEach((l, i) => {
         if (!SHELVED.test(noStrings(l))) return;
         const c = (trailingComment(l) || '') + ' ' + (/^\s*\/\//.test(lines[i - 1] || '') ? lines[i - 1] : '');
-        if (!DATED.test(c)) hits.push(relative(ROOT, f) + ':' + (i + 1));
+        if (!reasoned(c)) hits.push(relative(ROOT, f) + ':' + (i + 1));
       });
     }
     expect(hits).toEqual([]);

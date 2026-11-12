@@ -651,6 +651,7 @@ export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power') + ((c as 
 /** Begin's AP (rules 1.5): 2 for everyone (Swift: 1). Empathy no longer lowers it (it gives free Pumps instead). Kept
  * under its 1.2 name for the class moves priced "Soul cast AP". */
 export const soulCastAp = (c: Character) => { void c; return 2; };
+/** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3, 2 from Empathy 7. PROVISIONAL. */
 /** Empathy's free Pump each round (rules 1.19: one from Empathy 3; Empathy 7 no longer gives a second: see swellFree).
  * The table is soul_modules.json cycle.free_pumps; whatever items add, a character takes one free Pump a turn at most
  * (magic.ts FREE_PER_TURN). */
@@ -813,7 +814,7 @@ export function levelForXp(xp: number): number {
 export const xpForLevel = (l: number) => XP_TOTAL[String(Math.min(20, Math.max(1, l)))];
 
 /** What reaching `level` gives (spec table "On reaching a level"; rules 1.11, item 924): odd levels 2 Skill points,
- * even levels 1 Skill point and 1 Attribute point; no Core points since rules 1.13 (amount 0). Read from rules.json
+ * even levels 1 Skill point and 1 Attribute point, a Core point every 3rd level up to 18. Read from rules.json
  * `character.levels.gains`, so the numbers live in the data. */
 export function levelGains(level: number): { skill: number; attr: number; core: number } {
   const G = RULES.character.levels.gains || {};
