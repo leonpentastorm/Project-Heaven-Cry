@@ -10147,6 +10147,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/name-it.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/name-it.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "cue": {
+      "id": "cue",
+      "label": "Cue",
+      "path": "art/icons/calls/cue.png",
+      "sha256": "7cd857a156cb03b78836c3cccaeb0b447c1f76084eb4e77013f977399c2f4845",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/calls/exports/256/cue.png",
+        "128": "art/icons/calls/exports/128/cue.png",
+        "64": "art/icons/calls/exports/64/cue.png",
+        "56": "art/icons/calls/exports/56/cue.png",
+        "48": "art/icons/calls/exports/48/cue.png",
+        "44": "art/icons/calls/exports/44/cue.png",
+        "40": "art/icons/calls/exports/40/cue.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/cue.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/cue.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
