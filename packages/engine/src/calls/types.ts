@@ -55,8 +55,6 @@ export interface CallPadEntry {
 /** What Calls leave on a unit (plain JSON, saved with the fight; u.call). Every mark carries the side that made it:
  * a view shows a mark only to that side (callView). */
 export interface CallMarks {
-  /** the speaker's own count this turn (the free first Call at 10 points; an enemy's one Call a turn) */ turn?: { t: string; n: number };
-  /** the round the speaker Called as a reaction */ react?: number;
   /** the one helping and one hindering Call a round */ helped?: { r: number; id: string; side: string }; hindered?: { r: number; id: string; side: string };
   /** Brief: AP off the next actions, first first */ brief?: { by: string; side: string; cuts: number[] };
   /** Name It: + on every save until the speaker's next turn */ saves?: { by: string; side: string; n: number };

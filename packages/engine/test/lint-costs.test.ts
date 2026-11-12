@@ -118,7 +118,7 @@ describe('F8: every limit and cooldown goes through uses() (effects/uses.ts)', (
     // only valid this round, an AI's "already tried this round" note, the reactions and Call counters (each already
     // one door: tactics.ts useReaction, calls/core.ts). A NEW hand-kept round compare fails here: write
     // uses(h).take('per_round', n, key) / uses(h).on(target).take('per_round') / uses(h).cool(turns, key) instead.
-    const LEFT: Record<string, number> = { 'ai-sigil.ts': 2, 'ai-soul.ts': 1, 'calls/core.ts': 3, 'calls/handlers.ts': 1, 'classes/i.ts': 2, 'classes/j.ts': 1, 'classes/k.ts': 7, 'classes/rev3.ts': 3, 'combat.ts': 3, 'deeds.ts': 1,
+    const LEFT: Record<string, number> = { 'ai-sigil.ts': 2, 'ai-soul.ts': 1, 'calls/core.ts': 1, 'calls/handlers.ts': 1, 'classes/i.ts': 2, 'classes/j.ts': 1, 'classes/k.ts': 7, 'classes/rev3.ts': 3, 'combat.ts': 3, 'deeds.ts': 1,
       'effects/mending.ts': 1, 'faith.ts': 4, 'feelings.ts': 1, 'fighttalk.ts': 1, 'game.ts': 2, 'magic.ts': 2, 'perks/b.ts': 1, 'perks/c.ts': 1, 'perks/d.ts': 3, 'perks/e.ts': 4, 'perks/g.ts': 2, 'perks/skeleton.ts': 1, 'physical/core.ts': 2,
       'physical/ranged/press.ts': 2, 'sigil.ts': 3, 'tactics.ts': 2 };
     const got: Record<string, number> = {};

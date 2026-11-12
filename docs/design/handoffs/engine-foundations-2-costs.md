@@ -14,7 +14,7 @@ If you only read one part, read [How to add things](#how-to-add-things).
 | --- | --- | --- | --- |
 | **F3** paying a cost | `effects/cost.ts`: `price`, `whyNot` / `canPay`, `pay`, `refund`, `spend`, `grantAp`, `loseAp`, `setAp`, `freely`, `withAp`, the credit (`lend` / `settleCredit`), the one `cost` hook | 60 `u.ap <` checks and about 30 more written the other way round (`u.ap >= n`, `n > u.ap`); 193 direct writes to `.ap`; 41 `actionAp` calls; the AP refusal sentence written out 60 times; the loan (three copies) | No number moved. Six edge cases (below) |
 | **F3** costs in data | `data/actions.json` `costs` (17 verbs with no row) and `resources` (10); `ap: 'data'` on an item's action | the literal base costs of the built-in verbs; 95 lane actions that typed their item's own `ap_cost` again | No |
-| **F8** limits and counters | `effects/uses.ts`: `uses(h)` with pure reads, `first`, `on(target)`, the `cooldown` scope (`cool` / `coolLeft` / `ready`), the `SCOPES` table | The AP perks' cooldown store (`perks/cooldown.ts`), the prayer limits (five fields in two places), QUICKEN's round, two "took an order this round" marks, Under the Eye's note | Where they are kept (the marks tables). Not what they allow |
+| **F8** limits and counters | `effects/uses.ts`: `uses(h)` with pure reads, `first`, `on(target)`, the `cooldown` scope (`cool` / `coolLeft` / `ready`), the `SCOPES` table | The AP perks' cooldown store (`perks/cooldown.ts`), the prayer limits (five fields in two places), the speaker's Call counters, QUICKEN's round, two "took an order this round" marks, Under the Eye's note | Where they are kept (the marks tables). Not what they allow |
 | Wall-clock tests | `kit.ts` `work` / `counted` | 3 millisecond assertions | No |
 
 Branch: the worktree's (see the report). Commits: the pin first, on unmodified code; then the work.
@@ -45,7 +45,8 @@ Branch: the worktree's (see the report). Commits: the pin first, on unmodified c
 **Result: across F3 and F8 no state line moved** (0 of 6,230). The marks moved in four files: the AP perks' cooldown
 (`ps.<item>.cd.gain` became `uses.<item>#ap-gain|cooldown`, 4 lines), a Whisper and a Hymn (`faith.whisperTurn`,
 `prayedRound`, `faith.ownHymn` became `uses.faith#whisper|per_turn`, `uses.faith#hymn|cooldown`,
-`uses.faith#own:<id>|cooldown`, 216 lines), QUICKEN (`quickRound` became `uses.sigil:quicken|per_round`, 11 lines).
+`uses.faith#own:<id>|cooldown`, 216 lines), QUICKEN (`quickRound` became `uses.sigil:quicken|per_round`, 11 lines),
+and a speaker's Calls (`call.turn`, `call.react` became `uses.calls#turn|per_turn`, `uses.calls#react|reaction`).
 The damage tables (5,327 actions) and the rules tables are identical too.
 
 **Honest limits.** (1) The tables never let an enemy act (the harness skips every enemy action, as the damage tables
@@ -162,7 +163,8 @@ roundNow({ cb?, g? }): number
   reads as 0.
 - **Moved onto it:** the AP perks' cooldown (`stateOf(h).cd`); the prayer limits in a fight (`u.faith.whisperTurn`,
   `u.prayedRound`, `u.faith.ownHymn`) and in the story (`c.state.faith.whisperRound`, `hymnRound`, `own`): one set of
-  three cells (`faith#whisper`, `faith#hymn`, `faith#own:<id>`) for both; QUICKEN's `quickRound`; "this ally already
+  three cells (`faith#whisper`, `faith#hymn`, `faith#own:<id>`) for both; a speaker's Calls this turn and its one Call
+  as a reaction a round (`u.call.turn`, `u.call.react`); QUICKEN's `quickRound`; "this ally already
   took an order this round" (On My Mark, Born Officer); Under the Eye's one note a round.
   `clearPrayerLimits(u, g?, c?)` (`faith.ts`) is the Proving Ground's "reset the limits".
 
@@ -198,7 +200,7 @@ It reads the source and fails, with a sentence saying what to call, on:
    the data also holds (28, written by helpers);
 9. the moved stores coming back (`prayedRound`, `whisperTurn`, `hymnRound`, `ownHymn`, `quickRound`, `stateOf(h).cd`);
 10. a `uses` bag created outside `uses.ts`;
-11. a **new** round number kept by hand and compared with `cb.round` (56 left, counted per file: a ratchet).
+11. a **new** round number kept by hand and compared with `cb.round` (54 left, counted per file: a ratchet).
 
 `test/lint-foundations.test.ts` (F14) reads `price()` call sites now, where it read `actionAp()`.
 
@@ -261,12 +263,13 @@ Short rules. Each has a lint or a test that fails with a sentence telling you wh
    Heat and the Momentum refund on a refused handler are still the technique runtime's own (`physical/core.ts`).
 4. **The area map's round pool** (`g.story.ap`) has one door of its own (`game.ts` `apLeft` / `spendAp`, the sentence
    from `poolWhyNot`). It is not a unit's AP and was left.
-5. **Lane action AP literals:** 28 that equal their data are written by a helper (a map over toxins, on / off pairs);
+5. **Lane action AP literals:** three item actions price a typed 2 through `price()` (Triage, Ward, Set explosive: their
+   AP is a function); 28 that equal their data are written by a helper (a map over toxins, on / off pairs);
    about 115 have no number in the data to read (story variants at 0 AP, second actions of an item). Review F5 (`num(h,
    key)`, numbers in data) is where they go.
-6. **F8 is half done.** `uses()` now does everything the seven stores did, but only stores 5 and 6 and five state
-   fields were moved. Still by hand: 56 `=== cb.round` compares (the ratchet), among them the reactions
-   (`tactics.ts` `useReaction`, one door), the Call counters (`calls/core.ts`), `fighttalk.ts` `attempted`, zone
+6. **F8 is half done.** `uses()` now does everything the seven stores did, but only stores 5 and 6, the Call counters and five state
+   fields were moved. Still by hand: 54 `=== cb.round` compares (the ratchet), among them the reactions
+   (`tactics.ts` `useReaction`, one door), a Call's helped / hindered mark on its target, `fighttalk.ts` `attempted`, zone
    "hit this round" maps; technique state (`u.tech[id]` with `turnStamp`, 41 uses); the unit flags (`shotsThisTurn`,
    `firstShotTurn`, `sprinted`, `openerUsed`, `moved`, `stopped`); `c.miracleSession`; the story's `noticed`. Review 1
    says F8 "rides on F5's `limit`": the data's `limit` should be the only way an item states one.
