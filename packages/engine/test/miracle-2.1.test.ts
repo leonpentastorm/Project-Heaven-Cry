@@ -10,6 +10,7 @@ import {
 } from '../src';
 import { emit } from '../src/effects/hooks';
 import { mendFactor } from '../src/effects/mending'; // rules 1.20: prayer heals and shields grow with level
+import { prayerMendDial } from '../src/faith'; // rules 1.27: Faith's heal dial
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
@@ -143,7 +144,7 @@ describe('the eight Miracles in a fight (items 727-734)', () => {
     const h = miracle({ patron: 'mother_ember', allies: 2 }), pw = h.me.blessPower!;
     Object.assign(h.ally(0), { hp: 0, downed: true }); h.ally(1).hp = 9; h.ally(1).conds = { shaken: 2, weakened: 1, inspired: 1 } as any; h.ally(1).prone = true; h.ally(1).bleed = 2; h.me.hp = 30;
     h.pray('everyone_home');
-    for (const u of [h.me, h.ally(0), h.ally(1)]) { expect(u.hp).toBe(u.maxHp); expect(u.downed).toBe(false); expect(u.shield).toBe(Math.floor(17 * pw * mendFactor(h.me.level))); }
+    for (const u of [h.me, h.ally(0), h.ally(1)]) { expect(u.hp).toBe(u.maxHp); expect(u.downed).toBe(false); expect(u.shield).toBe(Math.floor(17 * pw * prayerMendDial() * mendFactor(h.me.level))); } // rules 1.27: Faith's heal dial
     const b = h.ally(1); expect(condOn(b, 'shaken') || condOn(b, 'weakened') || !!b.prone || (b.bleed || 0) > 0).toBe(false); expect(condOn(b, 'inspired')).toBe(true);
   });
   it('Old Overcast, The Sky Answers: a 5×5 in sight, enemies only: 150 Storm, Stunned 1 and Shaken; outside the 5×5 nothing', () => {

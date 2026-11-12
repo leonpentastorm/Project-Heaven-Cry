@@ -185,3 +185,79 @@ to `rules.json balance` and its row to the guard.
 - Docs: the spec (rules 1.26, items 1700 to 1725), `balance-contract.md` (new), this hand-off, `PATCH-TALLY.md`, the
   hand-offs README. Tools: `tools/golden_diff.py` (new).
 - Not touched: versions, the changelog, `PICKUP.md`, `CLAUDE.md`, the web client.
+
+## 9. Rules 1.27, the heal re-fit (12 Nov 2026)
+
+Leon on live 0.23.0: "a recruit at level 0 soul skill and a fully pumped soul mend heals for 6, his HP is 125, we might
+have over-nerfed the healing." The lead's ruling, built: a healer's turn all in is **2.0 Soldier-turns** (was 1.25), a
+normal share 1.6; every heal and shield ×1.6 by its dial, re-measured and trimmed to an all-in average of 200 over
+levels 1, 5, 10 and 20; Faith ×1.6 unless a Hymn turn's healing passes 2.5 Soldier-turns (it did: capped); a floor of
+half a normal share for a caster with no points in the skill. Spec: rules 1.27, items 1730 to 1741.
+
+### 9.1 Every k, before and after
+
+| Dial (`rules.json output.profiles`) | Was | ×1.6 | Now | Measured all in, levels 1 / 5 / 10 / 20 (% of a Soldier-turn) |
+| --- | --- | --- | --- | --- |
+| `healing.k` (Healing given) | 0.87 | 1.392 | **1.392** | Soul healer's steady turn 234 / 211 / 195 / 158 (avg 200; was 146 / 132 / 122 / 99) |
+| `mend.k` | 0.87 | 1.392 | **1.392** | (items through the `mend` op; same pair) |
+| `soul_mend.k` | 0.81 | 1.296 | **1.296** | Inverse steady 157 / 133 / 120 / 158 (was 98 / 83 / 75 / 99) |
+| `sigil_mend.k` | 1.2 | 1.92 | **1.17** | MEND · CONDENSE · SEEK 235 / 212 / 196 / 158 (avg 200; was 151 / 136 / 125 / 101); at 1.92: 386 / 348 / 321 / 259 |
+| `blessing_mend.k` | 0.956 | 1.53 | **1.44** (capped) | Hymn turn's healing (Warm Hands + Health) 249 / 224 / 208 / 168 (was 166 / 149 / 138 / 111); at 1.53: 265 at level 1 |
+
+1. **The Sigil boon was trimmed back nearly to where it was** because MEND and WARD multiply two Stat terms: their own
+   (`sigil_mend`) and Healing given (`healing`). `healing.k`'s ×1.6 already carried the boon to ×1.6.
+2. **`blessing_mend.k` was read by nothing** before this revision: a prayer's heal took Blessing power (the `blessing`
+   damage profile's Stat). It is now the heal dial: faith.ts `mendDial` multiplies a prayer heal or shield, and Mother
+   Ember's intervention, by `blessing_mend.k ÷ blessing.k`. Faith's damage did not move.
+3. **The medic's kit** rose ×1.6 through Healing given; its bases (`mending.medic`) did not move.
+4. **The floor** (`floor` 0.5 on the five heal and shield profiles; `output.floor_reference` 4 and 4;
+   `effects/output.ts statTerm`) binds nowhere with today's slopes: no points is 1 ÷ 1.42 = 70% of a normal share on a
+   Stat term. The double punishment the ruling named exists only for a Sigil boon (two Stat terms): a caster with
+   nothing in either is at 49.6% of one with 4 and 4 in both; each term is inside its floor.
+5. **Leon's case.** A Recruit (the Proving Ground's Sharpshooter, Insight 1, no Soul skill), the Mend design at stage 4,
+   through the reducer: **9 → 15** at level 1 (10 → 17, 12 → 19, 17 → 28 at 5, 10, 20). The 6 Leon saw is the same Mend
+   at stage 1 (×1.0) before; it is 9 now.
+6. **Enemy healers did not move:** an enemy caster has a Healing given of 1 and its own bases; no enemy prays.
+
+### 9.2 The tank, dedicated-healed (`DEFENCE_MEASURE=1 DEFENCE_PARTS=fire DEFENCE_ROWS=^tank DEFENCE_N=10`)
+
+A new pair in `defence-measure.ts` PAIRS, `tankAllin` (the tank and an all-in Soul healer). Rounds before the first Down
+(ten at most), the enemy AI's healer weight on, before → after:
+
+| Pair | L1 | L6 | L12 | L20 |
+| --- | --- | --- | --- | --- |
+| tank + all-in healer, 2 Soldiers | 10 → 10 | 10 → 10 | 10 → 10 | 6.8 → 7.1 |
+| tank + all-in healer, 3 Soldiers | 4.8 → 5.3 | 8.8 → 8.0 | 9.1 → 9.1 | 2.9 → 3.6 |
+| tank + normal-share healer, 2 Soldiers | 9.9 → 10 | 10 → 10 | 10 → 10 | 10 → 10 |
+| tank + normal-share healer, 3 Soldiers | 5.0 → 5.6 | 8.4 → 9.0 | 7.9 → 9.8 | 8.7 → 9.7 |
+| tank + idle healer (control), 3 Soldiers | 3.3 | 5.6 | 5.8 | 6.4 |
+
+With a normal-share healer, nobody is Down after ten rounds under three Soldiers in 70 to 80% of fights from level 6
+(30 to 40% before). The one who drops first is mostly the healer (the doctrine). Allowed (Leon); not tuned against.
+**Seen, not investigated:** the simulator's all-in healer casts 2 to 8 heals a fight under fire against 8 to 10 for a
+normal share (its policy runs short); a question for the simulator.
+
+### 9.3 Re-recorded on purpose, and what was touched
+
+Golden tables (`GOLDEN_RECORD=1`), each changed line checked to be a heal, a shield, a boon or a sheet's Healing given
+(`python3 tools/golden_diff.py --rev <base>`): `builds-normal` and `builds-allin` (66 each: the sheet line and the
+Faith build's Health and Protection), `faith` (58: every Whisper heal and shield, Warm Hands, Saint's Shield,
+Absolution, Everyone Home's shield), `outburst` (90: the Buff school's heal at every stage, Love, Shell, the shapes'
+boon, the caster line), `sigil` (31: every MEND and WARD Line; the damage parts of MEND · FIRE did not move), `flat`
+(12: the stim), `items-traits-classes` (12: Triage, Stim Throw, Rally, Will Shield), `items-shelved` (12: Triage, Stim
+Throw, Will Shield, Ward, the Adamantile Knight's brace shield, the banner sweep's heal), `costs-outburst` and
+`costs-sigil` (the caster line), `rules-outburst.log` and `rules-sigil.log` (the same heals' log lines). The replay
+hashes (`REPLAY_RECORD=1 REPLAY_FULL=1`, after the four oracles passed): 11 of 24 games, every one with a caster or a
+healer in it.
+
+- Data: `rules.json` (`output.profiles` healing, mend, sigil_mend, soul_mend, blessing_mend: k and `floor`;
+  `output.floor_reference`; `balance.ceilings.healer_turn` 200 and `hymn_heal_cap` 250; `systems.prayer_mend`;
+  `derived.multipliers.healing_given`), `attributes.json` (Insight's Healing given line).
+- Engine: `effects/output.ts` (`floor` in `statTerm`, `normalShareTerm`), `faith.ts` (`prayerMendDial`: a prayer heal
+  or shield and Mother Ember's intervention read the heal dial).
+- Tests: `balance-contract.test.ts` (the Sigil healer's turn on the ceiling, the Hymn heal cap, the floor),
+  `balance/heal-measure.ts` (the prayer rows read the heal dial) and `.test.ts`, `balance/defence-measure.ts` (the
+  `tankAllin` pair) and `.test.ts` (bands ×1.6, read from data), `faith.test.ts`, `faith-presence.test.ts`,
+  `miracle-2.1.test.ts`, `rules122-faith.test.ts` (read `prayerMendDial`), `output.test.ts` (the formula's order).
+- Docs: the spec (rules 1.27, items 1730 to 1741, superseded notes on 1.20, 1.23, 1.26 and items 1231, 1306, 1707,
+  1708), `balance-contract.md`, this section, `PATCH-TALLY.md`. Not touched: versions, the changelog, the web client.

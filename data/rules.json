@@ -351,7 +351,7 @@
       "elemental": "1 (rules 1.26: no Elemental bonus; an aimed action has no slope)",
       "sigil": "1.7 x Level.deal (rules 1.26: the aimed profile; output.profiles.sigil)",
       "soul": "1.55 x Level.deal (rules 1.26: the aimed profile; output.profiles.soul)",
-      "healing_given": "0.87 x (1 + 0.06*(insight-1) + 0.06*empathy) (rules 1.26: the landed profile; output.profiles.healing)",
+      "healing_given": "1.392 x (1 + 0.06*(insight-1) + 0.06*empathy), never under half of a normal share's (rules 1.27: the landed profile; output.profiles.healing)",
       "critical": "min(2.0, 1.5 + 0.03*(perception-1) + 0.02*dexterity + perks, traits and gear) (rules 1.15; provisional). An enemy: 1.5",
       "ambush": "1.5 + 0.05*ingenuity",
       "blessing_power": "0.956 x (1 + 0.06*(virtue-1) + 0.06*faith) (rules 1.26: the landed profile; output.profiles.blessing)", "weapon": "1.5 x Level.deal (rules 1.26: the aimed profile, the same for every weapon and sheet; output.profiles.weapon)"
@@ -1297,7 +1297,7 @@
       "outburst_peak": { "allin": 165, "what": "the biggest Release, one turn", "dial": "soul_modules.json damage.base, then cycle.stage_mult" },
       "whisper_turn": { "allin": 80, "level_hi": 1.4, "what": "a turn with only a Whisper (and the rifle with the AP left: since rules 1.26 the rifle hits as hard in anyone's hands, and the Faith build's Dexterity sets the shape over the levels, hence the high end)", "dial": "patrons.json the Whispers' values; rules.json output.profiles.blessing.k" },
       "hymn_turn": { "allin": 150, "level_lo": 0.55, "what": "a turn with a Hymn (Old Overcast); Devotion 3 has Hymn I only, hence the low end at levels 1 to 5", "dial": "patrons.json the Hymns' values; rules.json output.profiles.blessing.k" },
-      "healer_turn": { "allin": 125, "what": "the Soul healer's steady Buff heal, one turn, in Soldier-turns x 100", "dial": "rules.json output.profiles.healing.k (and mend)" },
+      "healer_turn": { "allin": 200, "what": "a healer's turn, all in, in Soldier-turns x 100 (rules 1.27, the heal re-fit: was 125; a normal share 160): the Soul healer's steady Buff heal; the Sigil healer's MEND line of 3 glyphs sits on the same ceiling through output.profiles.sigil_mend.k; a Hymn turn's healing is capped at hymn_heal_cap", "dial": "rules.json output.profiles.healing.k (and mend; sigil_mend, soul_mend and blessing_mend for their own systems)", "hymn_heal_cap": 250 },
       "shield": { "of_heal": 1.2, "what": "a shield is worth 1.2 times the heal of the same cost" },
       "weapon_art": { "what": "not built: may break the ceiling as a charged ultimate, counted in the build's fight average (steady + 10%)" },
       "miracle": { "what": "exempt" }
@@ -1327,14 +1327,15 @@
       "elemental": { "k": 1, "attr": 0, "skill": 0, "level": null, "pair": "elemental", "shape": "aimed" },
       "soul": { "k": 1.55, "attr": 0, "skill": 0, "level": "deal", "pair": "soul", "shape": "aimed" },
       "blessing": { "k": 0.956, "attr": 0.06, "skill": 0.06, "level": null, "pair": "blessing", "shape": "landed" },
-      "healing": { "k": 0.87, "attr": 0.06, "skill": 0.06, "level": null, "pair": "healing", "shape": "landed" },
-      "mend": { "k": 0.87, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "healing", "shape": "landed" },
-      "sigil_mend": { "k": 1.2, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "sigil", "shape": "landed" },
-      "soul_mend": { "k": 0.81, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "soul", "shape": "landed" },
-      "blessing_mend": { "k": 0.956, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "blessing", "shape": "landed" },
+      "healing": { "k": 1.392, "attr": 0.06, "skill": 0.06, "level": null, "pair": "healing", "shape": "landed", "floor": 0.5 },
+      "mend": { "k": 1.392, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "healing", "shape": "landed", "floor": 0.5 },
+      "sigil_mend": { "k": 1.17, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "sigil", "shape": "landed", "floor": 0.5 },
+      "soul_mend": { "k": 1.296, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "soul", "shape": "landed", "floor": 0.5 },
+      "blessing_mend": { "k": 1.44, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "blessing", "shape": "landed", "floor": 0.5 },
       "flat": { "k": 1, "attr": 0, "skill": 0, "level": "deal", "shape": "flat" },
-      "note": "Stat = k x (1 + attr x (each Attribute of the pair - 1) + skill x each Skill of the pair). Rules 1.26 (the re-fit; Leon: no damage slope on rolled attacks, skill buys accuracy, level buys damage): every profile has one of three shapes. AIMED (an action that rolls to hit: a weapon, a Sigil Line, an Outburst): no slope, k a constant, the Level term deal. LANDED (an action that always lands: a prayer, a heal, a shield): 0.06 a point of Attribute over 1 and 0.06 a point of Skill (all in at 7/7 is 1.25 times a normal share at 4/4), k a constant. FLAT (what has no dealer's skill: a grenade, a tick, a trap a character sets): k 1, the Level term deal. Each k re-pins its system so that the normal share at level 1 is where it was (weapon 1.5, sigil 1.7, soul 1.55, healing 1.18, blessing 0.956)."
+      "note": "Stat = k x (1 + attr x (each Attribute of the pair - 1) + skill x each Skill of the pair). Rules 1.26 (the re-fit; Leon: no damage slope on rolled attacks, skill buys accuracy, level buys damage): every profile has one of three shapes. AIMED (an action that rolls to hit: a weapon, a Sigil Line, an Outburst): no slope, k a constant, the Level term deal. LANDED (an action that always lands: a prayer, a heal, a shield): 0.06 a point of Attribute over 1 and 0.06 a point of Skill (all in at 7/7 is 1.25 times a normal share at 4/4), k a constant. FLAT (what has no dealer's skill: a grenade, a tick, a trap a character sets): k 1, the Level term deal. Each k re-pins its system so that the normal share at level 1 is where it was (weapon 1.5, sigil 1.7, soul 1.55, healing 1.18, blessing 0.956). Rules 1.27 (the heal re-fit, Leon 12 Nov 2026): a healer's turn all in is 2.0 Soldier-turns (was 1.25), so the heal and shield profiles were scaled by 1.6 and trimmed to that ceiling: healing and mend, soul_mend (the Soul shields) and the Sigil boon's sigil_mend (a Sigil boon also multiplies by Healing given, so most of its rise came through healing); blessing_mend is the heal dial of a prayer (Blessing power times blessing_mend.k over blessing.k), capped where a Hymn turn heals 2.5 Soldier-turns at level 1. Each heal and shield profile has a floor: never under that share of a normal share's Stat term (output.floor_reference)."
     },
+    "floor_reference": { "attribute": 4, "skill": 4, "provisional": true, "note": "Rules 1.27 (the heal re-fit; spec item 1733): a landed heal or shield profile with a floor (output.profiles: healing, mend, sigil_mend, soul_mend, blessing_mend) never has a Stat term under floor x the Stat term of a normal share, which is this many points in each Attribute and Skill of its pair. A damage profile has no floor." },
     "factors": {
       "note": "Rules 1.26 (the re-fit): a system's own named multiplier where it has no number of its own to carry its identity. melee: every melee blow a character strikes (Leon, 12 Nov 2026: melee's all-in ceiling is 165% of the plain rifle, the gun's 145% plus the price of standing in reach). PROVISIONAL (spec item 1702)",
       "melee": 1.35,
@@ -1362,7 +1363,7 @@
         "own": { "level": "output.level.mend", "shape": "schools[buff].area_mult in an area shape; items[split].boon_mult", "share": "feelings.json love.pour.heal_share, lone_heal_share; love.amounts.heal.mults.along_the_chain" } },
       "outburst_shield": { "profile": "soul", "base": "soul_modules.json items[inverse].shield, items[shell].shield", "stat": "the Soul multiplier", "order": ["stat", "stage", "level", "shape"], "round": "none (the shield sink floors it)" },
       "prayer_damage": { "profile": "blessing", "base": "patrons.json: the prayer's stat_mod on hp (below 0), chain_damage, execute.boss_damage; an intervention's value + per_devotion x Devotion", "stat": "Blessing power", "order": ["stat", "it harmed the helpless"], "round": "round" },
-      "prayer_mend": { "profile": "blessing_mend", "base": "patrons.json: the prayer's heal or shield value", "stat": "Blessing power", "order": ["stat", "level"], "round": "round (a heal), none (a shield: its sink floors it)" },
+      "prayer_mend": { "profile": "blessing_mend", "base": "patrons.json: the prayer's heal or shield value; Mother Ember's intervention: its value + per_devotion x Devotion", "stat": "Blessing power", "order": ["stat", "heal dial", "level"], "own": { "heal dial": "rules 1.27: output.profiles.blessing_mend.k over output.profiles.blessing.k (faith.ts mendDial); the intervention takes no level term" }, "round": "round (a heal), none (a shield: its sink floors it)" },
       "kit": { "profile": "mend", "base": "rules.json mending.medic (triage, stim, rally, field_repair_per_point x Improvisation)", "stat": "Healing given", "order": ["stat", "level", "time to work"], "round": "none (the heal sink floors it)", "own": { "time to work": "mending.medic.triage_out_of_fight_mult" } },
       "magic_heal": { "base": "what the spell or Outburst computed", "order": ["the air"], "own": { "the air": "rules.json mana bands: healing_given_mult" } }
     },

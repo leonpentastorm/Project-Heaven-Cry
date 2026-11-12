@@ -26,7 +26,7 @@ import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot } from './effec
 import { sessionN, dayOf, uses as usesOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { mendFactor, mendFactorOf } from './effects/mending';
-import { amountOf, term, levelOf, type Term } from './effects/output';
+import { amountOf, term, levelOf, profileOf, type Term } from './effects/output';
 import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory, statQuery } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
@@ -91,6 +91,11 @@ export const PACT_COOLDOWN_DAYS: number = DV.apostasy?.cooldown_days ?? 90;
 /** The old name of the fight's tag cap (now TAG_CAPS.fight, in XP). */
 export const LIKE_CAP = TAG_CAPS.fight;
 export const PRAYER_MANA = PR.mana_delta ?? -5;
+/** Rules 1.27 (the heal re-fit): Blessing power is the damage profile's Stat term (blessing); a prayer's heal or shield,
+ * and Mother Ember's intervention, read the heal dial in its place: the blessing_mend profile's k over the blessing
+ * profile's (data/rules.json output.profiles). One number moves Faith's healing and nothing else. */
+export const prayerMendDial = (): number => profileOf('blessing_mend').k / profileOf('blessing').k;
+const mendDial = (): Term => term(prayerMendDial(), 'heal dial');
 /** Interventions (rules 1.6.3, items 740-741): per fight (twice from Devotion 7), and the Devotion-scaled number. */
 export const INTERVENTION = {
   perFight: PR.intervention?.per_fight ?? 1, perFightHigh: PR.intervention?.per_fight_high ?? 2, highFrom: PR.intervention?.high_from_devotion ?? 7,
@@ -105,7 +110,7 @@ export const interventionAmount = (c: Character, power = 1) => amountOf({ kind: 
 // (Blessing power: the unit's own, as the prayer landed it) × its own named multipliers; a heal or a shield also takes
 // the Level term (the level factor of rules 1.20). The number is left raw: the heal line and harm round it as before.
 const prayerAmount = (kind: 'damage' | 'heal' | 'shield', base: number, power: number, ...own: Term[]): number =>
-  amountOf({ kind, base, profile: kind === 'damage' ? 'blessing' : 'blessing_mend', round: 'none' }, null, { level: null, mults: [term(power, 'stat: blessing power'), ...own] }).raw;
+  amountOf({ kind, base, profile: kind === 'damage' ? 'blessing' : 'blessing_mend', round: 'none' }, null, { level: null, mults: [term(power, 'stat: blessing power'), ...(kind === 'damage' ? [] : [mendDial()]), ...own] }).raw;
 const levelTerm = (u: Unit | null | undefined): Term => term(mendFactorOf(u), 'level');
 /** Rules 1.26 (the re-fit): a prayer's damage takes the Level term of the blessing profile (data: none today, the landed shape: points carry its growth). */
 const dealTerm = (u: Unit | null | undefined): Term => term(u && u.side === 'pc' ? levelOf('blessing', u.level) : 1, 'level');
@@ -120,7 +125,7 @@ const effVal = (entry: any, op: 'heal' | 'shield', fallback = 0): number => {
 const hymnEntry = (id: string): any => { for (const p of FAITH_PATRONS) for (const h of p.hymns || []) if (h.id === id) return h; return null; };
 /** Mother Ember's healing intervention: (10 + 3 × Devotion) × Blessing power. Its own numbers, not the damage
  * interventions' 20 + 4 × Devotion; no level factor (Devotion is what it grows with). */
-export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_PATRON.mother_ember?.intervention?.effects || [])[0] || {}; return amountOf({ kind: 'heal', base: e.value ?? 10, per: [{ of: 'devotion', value: e.per_devotion ?? 3 }], profile: 'blessing', round: 'round' }, null, { level: null, counts: { devotion: devotionNow(c) }, mults: [term(power, 'stat: blessing power')] }).amount; };
+export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_PATRON.mother_ember?.intervention?.effects || [])[0] || {}; return amountOf({ kind: 'heal', base: e.value ?? 10, per: [{ of: 'devotion', value: e.per_devotion ?? 3 }], profile: 'blessing', round: 'round' }, null, { level: null, counts: { devotion: devotionNow(c) }, mults: [term(power, 'stat: blessing power'), mendDial()] }).amount; };
 
 // ---------- rules 1.22 (Faith, round 2): the Hymn's wait ----------
 /** Rounds a character waits between Hymns: the cooldown (character.ts prayerCooldown), less 1 for True Believer (the
