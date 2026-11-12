@@ -1591,6 +1591,53 @@ for name, grp in (out_rules.get("amounts") or {}).items():
         for bn, b in grp.items():
             check_block(b, f"rules: output.amounts.{name}.{bn}")
 
+# ---------- conditions.json: the fields the engine reads (packages/engine/src/condtable.ts is its one loader) ----------
+# engine foundations 2: the condition table IS this file. Every row needs what the loader reads, in one form each.
+COND_UNTIL = {"put_out", "next_turn", "stand", "revealed", "source", "moved", "fight_end", "stabilised", "escape", "recovered", "treated", "repaired", "raised"}
+COND_HIT = {"own_attacks", "next_attack", "not_vs_source", "vs_source", "marker_squad_vs_self", "melee_vs_self", "ranged_vs_self"}
+# the numbers the engine reads from a row's effects, by condition (a row that loses one would silently do nothing)
+COND_NEEDS = {
+    "slowed": ("stat_mod", "move_mult"), "blinded": ("stat_mod", "vision"), "guarded": ("stat_mod", "defense"), "withdrawing": ("stat_mod", "defense"),
+    "corroded": ("stat_mod", "defense"), "nausea": ("stat_mod", "ap"), "suppressed": ("stat_mod", "ap"), "dazed": ("stat_mod", "ap"),
+    "shaken": ("stat_mod", "save_heart"), "weakened": ("stat_mod", "damage_dealt_pct"), "left_brain_debuff": ("stat_mod", "sigil_ap"),
+    "right_brain_debuff": ("stat_mod", "soul_cost_pct"), "pinned": ("attack_mod", "own_attacks"), "inspired": ("attack_mod", "own_attacks"),
+    "sharpened": ("attack_mod", "next_attack"), "hopeful": ("attack_mod", "next_attack"), "fear": ("attack_mod", "not_vs_source"),
+    "grappled": ("attack_mod", "not_vs_source"), "scorned": ("attack_mod", "vs_source"), "marked": ("attack_mod", "marker_squad_vs_self"),
+    "prone": ("attack_mod", "melee_vs_self"),
+}
+cond_names = set()
+for c in items("conditions"):
+    cid = c.get("id"); w = f"conditions:{cid}"
+    for k in ("name", "text", "kind", "engine", "duration", "effects"):
+        if c.get(k) in (None, ""): errors.append(f"{w}: needs `{k}`")
+    if c.get("engine") not in ("table", "flag", "state"): errors.append(f"{w}: engine must be table, flag or state (how the engine keeps it)")
+    if c.get("kind") not in ("debuff", "state"): errors.append(f"{w}: kind must be debuff or state")
+    if not isinstance(c.get("save"), bool): errors.append(f"{w}: save must be true or false (the family says which save)")
+    fam = c.get("family")
+    if fam not in (None, "body", "brain", "heart"): errors.append(f"{w}: family must be body, brain, heart or null")
+    if c.get("save") and fam is None: errors.append(f"{w}: a condition with a save needs a family")
+    if c.get("boon") and (c.get("save") or fam is not None): errors.append(f"{w}: a boon has no save and no family")
+    if c.get("kind") == "debuff" and fam is None: errors.append(f"{w}: a debuff needs a family")
+    d = c.get("duration") or {}
+    has_r, has_u = isinstance(d.get("rounds"), int) and d.get("rounds") > 0, isinstance(d.get("until"), str)
+    if has_r == has_u: errors.append(f"{w}: duration is exactly one of {{\"rounds\": N}} (the bearer's turn ends) or {{\"until\": \"<word>\"}}")
+    if has_u and d["until"] not in COND_UNTIL: errors.append(f"{w}: duration.until '{d['until']}' is not one of {sorted(COND_UNTIL)}")
+    if set(d) - {"rounds", "until", "out_of_combat"}: errors.append(f"{w}: duration has unknown keys {sorted(set(d) - {'rounds', 'until', 'out_of_combat'})}")
+    for nm in [cid, c.get("key")] + list(c.get("aliases") or []):
+        if nm is None: continue
+        if nm in cond_names: errors.append(f"{w}: the name '{nm}' is used twice (ids, keys and aliases share one space)")
+        cond_names.add(nm)
+    for e in c.get("effects") or []:
+        if not isinstance(e, dict): continue
+        if e.get("op") == "attack_mod" and e.get("context") in (None, *COND_HIT) and not isinstance(e.get("value"), (int, float)): errors.append(f"{w}: attack_mod needs a number")
+        if e.get("op") == "tn_mod" and e.get("context") in COND_HIT: errors.append(f"{w}: a to-hit change is `attack_mod` (the engine reads that op), not tn_mod")
+        if e.get("op") == "stat_mod" and e.get("stat") in ("defense", "move_mult", "vision", "ap", "damage_dealt_pct", "sigil_ap", "soul_cost_pct", "save_body", "save_brain", "save_heart") and not e.get("when") and not isinstance(e.get("value"), (int, float)):
+            errors.append(f"{w}: stat_mod {e.get('stat')} needs a number (the engine applies it as written)")
+    need = COND_NEEDS.get(cid)
+    if need and not any(isinstance(e, dict) and e.get("op") == need[0] and (e.get("stat") == need[1] if need[0] == "stat_mod" else (e.get("context") or "own_attacks") == need[1]) and isinstance(e.get("value"), (int, float)) for e in c.get("effects") or []):
+        errors.append(f"{w}: the engine reads `{need[0]} {need[1]}` from this row's effects and it is not there")
+    if c.get("engine") != "state" and cid in ("bleeding", "burning", "corroded") and not ((c.get("amounts") or {}).get("tick")): errors.append(f"{w}: needs amounts.tick (its damage each turn)")
+
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 

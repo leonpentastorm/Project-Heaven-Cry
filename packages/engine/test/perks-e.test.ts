@@ -221,6 +221,9 @@ describe('Sweet Talker', () => {
   it('I: a charmed NPC who debuffs you stings (−2 AP next turn); II: no sting', () => {
     for (const [tier, want] of [['I', 4], ['II', 6]] as const) {
       const f = charmed(tier); f.turn(f.pc); const foe = f.foes[0];
+      // The fight may have opened with Vel's own shot, and a critical's Bleeding is a debuff that lands like any other
+      // (engine foundations 2: it goes through applyCond), so the sting may already be spent: start from a clean slate.
+      f.unit(f.pc.id).ps = {};
       withGame(f.g, () => applyCond(f.cb, rng(), f.unit(foe.id), f.unit(f.pc.id), 'shaken', 2, undefined, { skipSave: true }));
       expect(f.turn(f.pc).ap).toBe(want);
     }

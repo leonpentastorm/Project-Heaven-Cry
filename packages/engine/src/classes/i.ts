@@ -39,6 +39,8 @@ import { resOf, resGain, resSpend, canReact, useReaction, refundReaction, reveal
 import { itemWords, wordCostMods, actionAp } from '../effects/core';
 import { makeObject } from '../objects';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround } from '../kit';
+import { setBraced } from '../unitstate';
+import { condMods } from '../condtable';
 
 // =================================================================================================== helpers
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
@@ -109,7 +111,7 @@ function soulPrice(h: Holder, school: string, baseMp: number, extraStrain = 0): 
   const u = h.u!, m = u.mg!, cb = h.cb!;
   if (!m) return { mp: 0, ap: 2, range: SOUL_REACH, strain: 0 }; // no magic: the move is greyed with the reason (soulReady); a preview asked anyway must not throw
   const d: any = { id: 'class:' + h.itemId, name: h.info.name, school, modules: [] };
-  const mp0 = Math.max(5, Math.round(baseMp * manaBand(manaOf(cb)).soul_cost_mult * (1 - (m.costSave || 0)))) * (condOn(u, 'rdebuff') ? 1.2 : 1);
+  const mp0 = Math.max(5, Math.round(baseMp * manaBand(manaOf(cb)).soul_cost_mult * (1 - (m.costSave || 0)))) * (condOn(u, 'rdebuff') ? condMods('rdebuff').soulCostMult ?? 1 : 1);
   const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: mp0, ap: Math.max(1, m.soulAp || 2), range: SOUL_REACH + (m.soulRange || 0), strain: (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1) + (m.emanator ? 0 : 2) + extraStrain, hp: 0, release: true, preview: true, cb, classMove: true });
   return { mp: Math.max(0, Math.round(oc.mp)), ap: Math.max(0, oc.ap), range: oc.range, strain: Math.max(0, oc.strain) };
 }
@@ -348,7 +350,7 @@ register({
 // ---------- Brace (rank I, 2 AP; shown as "Brace (Hold the Line)": the base weapon Brace is a different action) ----------
 // Guard + 1 + Durability modifier (at least 1, PROVISIONAL; max 5 in all), Braced: +2 Defense until you move (or are
 // pushed, shoved or knocked prone). It also counts as the base weapon Brace (u.braced).
-const braceSync = (h: Holder) => { const u = h.u; if (!u) return; const st = stateOf(h); if (st.braceDef && (!u.braced || u.prone)) { st.braceDef = false; u.def -= 2; u.braced = false; } };
+const braceSync = (h: Holder) => { const u = h.u; if (!u) return; const st = stateOf(h); if (st.braceDef && (!u.braced || u.prone)) { st.braceDef = false; u.def -= 2; setBraced(u, false); } };
 let interposing = false;
 /** The ally an Interpose just covered (the same attack's injury follows the hit to the Defender). */
 let interposed: { t: string; me: string } | null = null;
@@ -361,7 +363,7 @@ register({
       available: (h) => (h.u ? true : false),
       run: (h) => {
         const u = h.u!, st = stateOf(h), c = h.c, n = Math.max(1, 1 + mod(c?.skills.durability || 0)), got = resGain(u, 'guard', n);
-        u.braced = true; delete u.guardBrace; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
+        setBraced(u, true); if (!st.braceDef) { st.braceDef = true; u.def += 2; }
         emitFx(h.cb!, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
         say(h.cb, u.name + ' braces and holds the line: +' + got + ' Guard (' + resOf(u, 'guard') + '), +2 Defense until they move.');
         emit(h.cb!, 'braced', { u, cb: h.cb }); // 'braced' {u}: the Defender's Brace landed (Adamantile Knight's Bulwark of Will)
@@ -373,7 +375,7 @@ register({
   ],
   on: {
     moved: (ctx, h) => { if (ctx.u === h.u) braceSync(h); },
-    forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel) { h.u!.braced = false; braceSync(h); } },
+    forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel) { setBraced(h.u!, false); braceSync(h); } },
     cond_landed: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'prone') braceSync(h); },
     turn_start: (ctx, h) => { if (ctx.u === h.u) braceSync(h); },
     attack_preview: (ctx, h) => { if (ctx.tgt === h.u) braceSync(h); },
@@ -499,7 +501,7 @@ register({
       id: 'stabilise', label: 'Stabilise (Triage)', scope: ['combat', 'world'], target: 'ally', ap: 1, range: 1,
       text: 'Stabilise a Downed ally next to you at 1 HP. No stim needed.',
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (t && !t.downed) return { ok: false, why: t.name + ' isn\'t Downed.' }; return {}; },
-      run: (h, args) => { const cb = h.cb!, t = unitById(cb, args.targetId)!; healUnit(cb, t, 1, h.u!, 'stabilise'); t.bleed = 0; emitFx(cb, 'stim', { unit: h.u!.id, target: t.id, from: h.u!.pos, to: t.pos }); say(cb, h.u!.name + ' stabilises ' + t.name + ' at 1 HP.'); },
+      run: (h, args) => { const cb = h.cb!, t = unitById(cb, args.targetId)!; healUnit(cb, t, 1, h.u!, 'stabilise'); endCond(t, 'bleeding', cb); emitFx(cb, 'stim', { unit: h.u!.id, target: t.id, from: h.u!.pos, to: t.pos }); say(cb, h.u!.name + ' stabilises ' + t.name + ' at 1 HP.'); },
     },
     {
       id: 'triage_story', label: 'Triage', scope: ['story'], target: 'none', ap: 0,
@@ -529,7 +531,7 @@ register({
     run: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!; resSpend(u, 'supplies', 1);
       emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos });
-      if (t.downed) { healUnit(cb, t, 1, u, 'stim'); t.bleed = 0; say(cb, u.name + ' throws a stim to ' + t.name + ': stabilised at 1 HP (' + resOf(u, 'supplies') + ' Supplies left).'); return; }
+      if (t.downed) { healUnit(cb, t, 1, u, 'stim'); endCond(t, 'bleeding', cb); say(cb, u.name + ' throws a stim to ' + t.name + ': stabilised at 1 HP (' + resOf(u, 'supplies') + ' Supplies left).'); return; }
       const r = healUnit(cb, t, thrownStimHeal(h), u, 'stim'), bled = !!t.bleed; endCond(t, 'bleeding', cb);
       say(cb, u.name + ' throws a stim to ' + t.name + ': +' + r.restored + ' HP' + (bled ? ', bleeding stopped' : '') + ' (' + resOf(u, 'supplies') + ' Supplies left).');
     },
@@ -1150,10 +1152,10 @@ register({
         switch (f) {
           case 'overwatch': dropHeldShot(cb, t, 'Rewrite'); useReaction(cb, t); line += ' · its held shot is gone'; break;
           case 'shield': { const n = Math.min(t.shield || 0, Math.floor(itemAmount('class:trickster.rewrite', 'shield_turned', [term(u.mg?.sigilMult || 1, 'stat: sigil')]))); t.shield = 0; line += ' · the shield turns on it' + harm(cb, r0, u, t, n, 'sigil'); break; }
-          case 'braced': case 'emplaced': t.braced = false; endCond(t, 'emplaced', cb); line += applyCond(cb, r0, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'brain_power' }); break;
+          case 'braced': case 'emplaced': setBraced(t, false); endCond(t, 'emplaced', cb); line += applyCond(cb, r0, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'brain_power' }); break;
           case 'guarded': case 'withdrawing': { const left = t.conds![f]; endCond(t, f, cb); t.def -= 2; (st.def ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its guard becomes an opening (−2 Defense, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
           case 'inspired': { const left = t.conds!.inspired; endCond(t, 'inspired', cb); (st.hit ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its nerve turns (−2 to hit, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
-          case 'quickened': endCond(t, 'quickened', cb); t.dazedNext = 1; line += ' · its haste turns to a stagger (Dazed: −2 AP on its next turn)'; break;
+          case 'quickened': endCond(t, 'quickened', cb); applyCond(cb, r0, u, t, 'dazed', undefined, undefined, { skipSave: true, via: 'brain_power' }); line += ' · its haste turns to a stagger (Dazed: −2 AP on its next turn)'; break;
           case 'sharpened': endCond(t, 'sharpened', cb); (st.blunt ||= []).push({ id: t.id, until: cb.round + 2 }); line += ' · its edge turns (−3 to hit and ×0.8 damage on its next attack)'; break;
           case 'hidden': line += reveal(cb, t, 'rewritten') + applyCond(cb, r0, u, t, 'marked', undefined, undefined, { skipSave: true, via: 'brain_power' }); break;
           default: line += ' · the Narrator decides what flips'; note(h, t.name + ' failed the Rewrite save: pick the opposite of one of its exotic buffs, until it would have ended.');

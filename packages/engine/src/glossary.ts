@@ -4,7 +4,7 @@
 // every number in play, so entries carry only the few numbers that help the Narrator describe it.
 import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL, ATTR, SIGILS, SCHOOLS, MODULES, TONES, SOUL_RULES } from './data';
 import { OBJECT_KINDS } from './objects';
-import conditionsJ from '../../../data/conditions.json';
+import { CONDITION_ROWS } from './condtable';
 import patronsJ from '../../../data/patrons.json';
 import classesJ from '../../../data/classes.json';
 import sigilsJ from '../../../data/sigils.json';
@@ -35,7 +35,7 @@ function build(): WikiEntry[] {
     w.grants ? 'Grants ' + w.grants.name + ': ' + w.grants.text : '',
     w.phys ? 'Properties: ' + (w.phys.props.join(', ') || 'none') + '.' + (w.phys.teaches ? ' Lends the technique ' + (TQ.find((t: any) => t.id === w.phys.teaches)?.name || w.phys.teaches) + ' while held, and teaches it at drill mark I.' : '') : '', w.text, w.lore ? 'Lore: ' + w.lore : '', w.price_credits ? 'Price ' + w.price_credits + ' credits.' : ''));
   for (const [id, it] of Object.entries(ITEM) as [string, any][]) add('item:' + id, it.name, line(it.name + ' (' + (it.category || 'item') + (it.slot ? ', ' + it.slot.replace(/_/g, ' ') : '') + ').', it.text, it.price_credits ? 'Price ' + it.price_credits + ' credits.' : ''));
-  for (const c of (conditionsJ as any).items) add('condition:' + c.id, c.name, line(c.name + ' (' + c.kind + ').', c.text));
+  for (const c of CONDITION_ROWS) add('condition:' + c.id, c.name, line(c.name + ' (' + c.kind + ').', c.text));
   // Class Roster Revision 3: one base class per attribute; advanced classes are shelved (being rebuilt).
   for (const c of CLASSES as any[]) add('class:' + c.id, c.name, line(c.name + ' (' + c.core + ' class, ' + (ATTR[c.attribute]?.name || c.attribute) + ').', c.tagline, 'Skills: ' + (c.skills || []).map((x: string) => SKILL[x]?.name || x).join(', ') + '. Earned at level 3 by the highest attribute; rank II at ' + (ATTR[c.attribute]?.name || c.attribute) + ' 5, rank III at 8.'));
   for (const c of (classesJ as any).advanced || []) add('class:' + c.id, c.name, line(c.name + ' (advanced, shelved: advanced classes are being rebuilt; not learnable yet).', c.summary));

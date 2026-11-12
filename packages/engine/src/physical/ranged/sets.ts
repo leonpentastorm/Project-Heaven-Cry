@@ -20,6 +20,7 @@ import { packOf } from '../../character';
 import { AMMO_TYPES, ammoId } from '../../tactics';
 import { TECHNIQUE, weaponProps } from '../data';
 import { foesOf, alliesOf } from '../../kit';
+import { setBraced } from '../../unitstate';
 
 /** A technique's number outside a Tech (the hooks): the same key its handler's t.num reads. */
 function num(id: string, k: string, fb: number): number { const v = TECHNIQUE[id]?.numbers?.[k]; return typeof v === 'number' ? v : fb; }
@@ -165,7 +166,7 @@ technique({
       t.note('Braced until you move: Recoil halved.' + (p === 'heavy' ? ' Its penalties are gone (no −2 unbraced; a weapon that needs bracing can fire).' : '') + (p === 'auto' ? ' Suppress gives +' + t.num('auto_suppress_pressure', 1) + ' Pressure more.' : ''));
       return null;
     }
-    t.u.braced = true; delete t.u.guardBrace;
+    setBraced(t.u, true);
     Object.assign(techState(t.u, 'brace'), { auto: p === 'auto', at: t.u.pos });
     emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'brace' });
     return null;
@@ -271,7 +272,7 @@ technique({
     const was = SHIFTING; SHIFTING = t.u;
     let err: string | null; try { err = moveUnit(t.cb, t.u, s.to, t.rng, 'move', { via: paths(t.cb, t.u.pos, t.u.id) }); } finally { SHIFTING = was; }
     if (err) return err; // refused before it moved: nothing is spent
-    if (keep && alive(t.u) && !t.u.downed) { t.u.braced = true; if (techStateOf(t.u, 'brace').at) techState(t.u, 'brace').at = t.u.pos; }
+    if (keep && alive(t.u) && !t.u.downed) { setBraced(t.u, true, !!t.u.guardBrace); if (techStateOf(t.u, 'brace').at) techState(t.u, 'brace').at = t.u.pos; }
     return null;
   },
   // under fire, slide to the covered tile the fewest enemies can see

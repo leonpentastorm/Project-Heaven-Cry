@@ -16,7 +16,7 @@ import { blast, radiusOf, throwRangeOf, isSilent, reveal } from '../../tactics';
 import { condOn } from '../../magic';
 import { emit } from '../../effects/hooks';
 import { endBead } from './sets';
-import { tilesAround, inBounds } from '../../kit';
+import { tilesAround, inBounds, unitsIn } from '../../kit';
 
 /** Lob's numbers outside a use (the smoke rule): its data, else the fallback. */
 const lobNum = (k: string, fb: number): number => (typeof TECHNIQUE.lob?.numbers?.[k] === 'number' ? TECHNIQUE.lob.numbers[k] : fb);
@@ -29,7 +29,7 @@ const isGrenade = (id: string | undefined): boolean => !!id && WEAPON[id]?.categ
 const hurts = (w: WeaponDef | undefined): boolean => typeof w?.damage === 'number' && w.damage > 0;
 /** Does anyone on this side see the tile? (Lob's whole point: the user needn't.) */
 const sideSeesTile = (cb: Combat, side: Unit['side'], tile: string) => cb.units.some((v) => v.side === side && unitSees(cb, v, tile));
-const caught = (cb: Combat, tile: string, r: number) => cb.units.filter((v) => alive(v) && dist(v.pos, tile) <= r);
+const caught = (cb: Combat, tile: string, r: number) => unitsIn(cb, { shape: 'burst', at: tile, r });
 const inSmoke = (cb: Combat, u: Unit) => (cb.zones || []).some((z) => z.kind === 'veil' && z.tiles.includes(u.pos));
 
 /** Where a Blast lands: the named tile, else the named target's tile. */

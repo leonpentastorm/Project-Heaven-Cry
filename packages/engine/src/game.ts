@@ -49,6 +49,9 @@ import { readGlyph, readDrawnBy } from './sigil';
 import { masterySync, learnStudied, noteToStudy, learnedElsewhere, growthOf, WORD_MASTERY } from './sigilgrowth';
 import { CASTER, armFoe } from './ai-sigil';
 import { HEART_CASTER, armHeart } from './ai-soul';
+import { setBraced, setDowned, stagger, startHidden } from './unitstate';
+import { clearConds, restoreConds } from './magic';
+import { condMods } from './condtable';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -1061,9 +1064,9 @@ function storyCondMods(g: GameState, c: Character, ck: Check): { add: number; la
   // A Shaken NPC is easier to work on: +2 on social checks against them, for everyone (hooks gap F2; Bone Talk's rule).
   if (social && ck.target && npcConds(g, ck.target).includes('shaken')) out.push({ add: 2, label: ck.target + ' is Shaken' });
   if (!on.length) return out;
-  if (on.includes('shaken') && (social || (ck.kind === 'save' && ck.family === 'heart'))) out.push({ add: -2, label: 'Shaken' });
-  if (on.includes('ldebuff') && ck.skills.some((s) => SKILL[s]?.core === 'mind')) out.push({ add: -2, label: 'Left Brain Debuff' });
-  if (on.includes('rdebuff') && ck.skills.some((s) => SKILL[s]?.core === 'soul' || SKILL[s]?.attribute === 'expression')) out.push({ add: -2, label: 'Right Brain Debuff' });
+  if (on.includes('shaken') && (social || (ck.kind === 'save' && ck.family === 'heart'))) out.push({ add: condMods('shaken').save?.heart ?? 0, label: 'Shaken' }); // the row's number (data/conditions.json), in the story as in a fight
+  if (on.includes('ldebuff') && ck.skills.some((s) => SKILL[s]?.core === 'mind')) out.push({ add: condMods('ldebuff').skills?.[0]?.value ?? 0, label: 'Left Brain Debuff' });
+  if (on.includes('rdebuff') && ck.skills.some((s) => SKILL[s]?.core === 'soul' || SKILL[s]?.attribute === 'expression')) out.push({ add: condMods('rdebuff').skills?.[0]?.value ?? 0, label: 'Right Brain Debuff' });
   return out;
 }
 /** A side d20 with one skill outside rollCheck (Leading Role, The Slope, a prayer): its points, the song, item skill
@@ -1623,7 +1626,7 @@ function applyFightOutcome(g: GameState, cb: Combat, u: Combat['units'][number],
   if ('surrender' in o) { const t = cb.units.find((x) => x.id === o.surrender.target)!; return yieldUnit(cb, t, u, 'talked down'); }
   const t = cb.units.find((x) => x.id === o.condition.target)!, id = o.condition.id;
   // Hesitates is the engine's own "−1 AP on its next turn" (stunnedNext), the only AP the Narrator may touch.
-  if (id === 'hesitates') { t.stunnedNext = Math.max(t.stunnedNext || 0, 1); return ' · ' + t.name + ' hesitates (−1 AP on its next turn)'; }
+  if (id === 'hesitates') { stagger(t, 1); return ' · ' + t.name + ' hesitates (−1 AP on its next turn)'; }
   return applyCondition(cb, g.rng, u, t, id, FIGHT_COND_ROUNDS, undefined, { skipSave: true });
 }
 /** The Narrator's answer to the pending fight ruling: one or two lines in the log, and at most one effect, validated
@@ -1827,7 +1830,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
   if (rearm) endCond(u, 'disarmed', cb);
   // Heat stays with the fighter (design section 3: the rebuild keeps heat; review fix: two swaps no longer cool a gun);
   // a jam and a brace belong to the gun that left the hand.
-  if (c.weapon !== wasMain) { u.jammed = false; u.braced = false; }
+  if (c.weapon !== wasMain) { u.jammed = false; setBraced(u, false); }
   u.ap -= ap;
   const where = toPile.length && pileAt ? (op.op === 'drop' ? ': it lands in the pile at ' : ', leaving the weapon on the ground in the pile at ') + refOf(pileAt) : '';
   if (!(o.free && op.op === 'drop')) cb.log.push(c.name + ' ' + plan.label + (o.free ? '' : ' (' + ap + ' AP)') + where + (op.op !== 'mod' && u.mg ? focusLine(c) : '') + '.');
@@ -1961,7 +1964,7 @@ export function storyHarm(g: GameState, c: Character, dmg: number, o: { type?: s
   const was = bindGame(g);
   try {
     const r = applyDamage(cb, u, dmg, { type: o.type || 'hazard', by: null, shield: true, credit: 'none', ...(o.dmgType ? { dmgType: o.dmgType } : {}) });
-    if (o.floor && (u.downed || u.hp <= 0) && !u.dead) { u.downed = false; u.hp = Math.max(1, u.hp); }
+    if (o.floor && (u.downed || u.hp <= 0) && !u.dead) { setDowned(u, false); u.hp = Math.max(1, u.hp); }
     if (r.amount && o.why) cb.log.push(c.name + ' takes ' + r.amount + ' damage (' + o.why + ').');
   } finally { bindGame(was); }
   for (const x of cb.units) if (x.charId) unitToCharacter(g, x, false, true);
@@ -2307,10 +2310,9 @@ function magicIn(g: GameState, cb: Combat) {
     const s = u.charId ? g.story.magic?.[u.charId] : null; if (!s) continue;
     if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held ? migrateHeld(s.held, u.mg.designs.find((d) => d.id === s.held!.design)) : null; u.mg.cast = !!s.cast;
       if (s.freePumps != null) u.mg.freePumps = s.freePumps; u.mg.calmFight = !!s.calmFight; u.mg.calmTend = !!s.calmTend; if ((s as any).pumps) u.mg.pumps = JSON.parse(JSON.stringify((s as any).pumps)); }
-    if (s.condBy) u.condBy = { ...s.condBy };
-    if (s.condVia) u.condVia = { ...s.condVia };
-    // Merged with what the fight's start put on (a grudge's condition, item 723): the longer of the two stays.
-    if (s.conds && Object.keys(s.conds).length) { const at0 = u.conds || {}; u.conds = { ...s.conds }; for (const [k, n] of Object.entries(at0)) u.conds[k] = Math.max(u.conds[k] || 0, n as number); if (u.conds.slowed && !at0.slowed) { u.baseMove = u.movement; u.movement /= 2; } if (u.conds.blinded && !at0.blinded) { u.baseVision = u.vision || 12; u.vision = 1; } if (u.conds.guarded && !at0.guarded) u.def += 2; }
+    // Merged with what the fight's start put on (a grudge's condition, item 723): the longer of the two stays, and each
+    // condition's numbers are applied once (magic.ts restoreConds: the one way conditions are put back).
+    restoreConds(u, s.conds || {}, s.condBy, s.condVia);
     if (s.shield) u.shield = s.shield;
   }
   // Story conditions (the scene's, the session's, the arc's) come into a fight in their combat form, with no save
@@ -2422,7 +2424,7 @@ export function storyCb(g: GameState): Combat {
   // Companions on the area map (a drone, a beast): tokens with their own AP this round.
   for (const c of Object.values(g.characters)) { const owner = units.find((x) => x.charId === c.id); if (!owner || !c.companions?.some((k) => COMPANION_ROUND_AP[k.kind] != null)) continue;
     const taken = new Set(units.map((x) => x.pos)); for (const d of companionUnits(null, c, owner, taken, scratch, map, pos)) { if (!pos[d.id] || COMPANION_ROUND_AP[d.companion!] == null) continue; d.pos = pos[d.id]; d.ap = g.story.ap?.[d.id] ?? COMPANION_ROUND_AP[d.companion!]; units.push(d); } }
-  for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch, n.level ?? squadLevel(g)); if (n.portrait) u.img = n.portrait; if (n.hidden) u.hidden = true; units.push(u); }
+  for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch, n.level ?? squadLevel(g)); if (n.portrait) u.img = n.portrait; if (n.hidden) startHidden(u, false); units.push(u); }
   const cb = { name: 'overworld', overworld: true, map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
   // Rules 1.7: the zone's hazards (the story's own, so what a step spends stays spent), rolled on the game's dice.
   { const hz = zoneHazards(g, map.id); if (hz.length) { cb.hazards = hz; cb.worldRng = g.rng; } }
@@ -2636,7 +2638,7 @@ function repairAlly(cb: Combat, u: Combat['units'][number], t: Combat['units'][n
   if (!(u.parts || 0)) return 'No spare-parts charges.';
   if (t.hp >= t.maxHp) return t.name + ' is already whole.';
   const cost = actionAp({ u }, 'field_repair', 2).ap; if (u.ap < cost) return 'Needs ' + cost + ' AP.';
-  const was = t.hp; u.ap -= cost; u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 })); if (t.downed && t.hp > 0) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
+  const was = t.hp; u.ap -= cost; u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 })); if (t.downed && t.hp > 0) setDowned(t, false);
   emitFx(cb, 'repair', { unit: u.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was });
   cb.log.push(u.name + ' patches ' + t.name + '\'s chassis: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
 }
@@ -3536,7 +3538,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
     case 'sandbox/refill': {
       const list = a.charId ? [mine(a.charId)] : (host ? Object.values(g.characters) : fail('Pick a character.'));
       for (const c of list) sbChange(g, c, () => sbRefill(c), 'refill');
-      if (cb) for (const c of list) { const u = cb.units.find((x) => x.charId === c.id); if (u) { u.downed = false; u.dead = false; u.saves = { ok: 0, fail: 0 }; u.bleed = 0; u.conds = {}; u.shield = 0; u.jammed = false; u.heat = 0; } }
+      if (cb) for (const c of list) { const u = cb.units.find((x) => x.charId === c.id); if (u) { setDowned(u, false); u.dead = false; clearConds(u, cb); u.shield = 0; u.jammed = false; u.heat = 0; } }
       if (gearing) for (const c of list) { if (g.story.heat) g.story.heat[c.id] = 0; if (g.story.jammed) g.story.jammed[c.id] = false; }
       sbLog(g, list.map((c) => c.name).join(', ') + ': refilled.'); return;
     }
@@ -3974,7 +3976,7 @@ export function sandboxAfter(g: GameState, a: Action, by: string) {
     sbPlayerGone(g, a.id); sbReplace(g);
   }
   const cb = liveFight(g);
-  if (sb.mode === 'teams' && cb) for (const u of cb.units) if (u.charId && u.downed && !u.dead) { u.downed = false; u.dead = true; u.hp = 0; cb.log.push(u.name + ' is out.'); }
+  if (sb.mode === 'teams' && cb) for (const u of cb.units) if (u.charId && u.downed && !u.dead) { setDowned(u, false); u.dead = true; u.hp = 0; cb.log.push(u.name + ' is out.'); }
 }
 /** A player's view of the Proving Ground: no saved room; in a team fight Team B sees the fight from its side. */
 function sandboxView(g: GameState, v: GameState, playerId: string) {

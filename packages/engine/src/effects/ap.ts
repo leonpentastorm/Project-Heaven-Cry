@@ -5,6 +5,7 @@
 import perksJ from '../../../../data/perks.json';
 import type { Combat, Unit } from '../combat';
 import { emit } from './hooks';
+import { condMods } from '../condtable';
 
 const CEIL = (perksJ as any).rules?.ap_ceiling || {};
 export const AP_BASE = 6;
@@ -17,7 +18,7 @@ export interface ApLine { n: number; why: string }
 /** The AP a unit starts its turn with. grants and penalties come from the turn_start_pre hook; banked AP (bankAp) and
  * debt are read off the unit and cleared. Returns the number and the log lines. */
 export function turnAp(u: Unit, grants: ApLine[], penalties: ApLine[]): { ap: number; gained: number; lost: number; lines: string[] } {
-  const stun = u.stunnedNext ? 1 : 0, daze = u.dazedNext ? 2 : 0;
+  const stun = u.stunnedNext ? 1 : 0, daze = u.dazedNext ? -(condMods('dazed').ap || 0) : 0;
   const pos = [...(u.apNext ? [{ n: u.apNext, why: 'banked' }] : []), ...grants.filter((g) => g.n > 0)];
   const posSum = pos.reduce((t, g) => t + g.n, 0), gained = Math.min(PERK_AP_CAP, posSum);
   // Name It (a Call, rules 1.13): AP the unit would lose this turn is cancelled, up to the Call's number: penalties

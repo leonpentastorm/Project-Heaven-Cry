@@ -14,6 +14,7 @@
 import type { Combat, Unit } from '../combat';
 import { emit } from './hooks';
 import { noteTended } from './mending';
+import { rawHidden, setDowned } from '../unitstate';
 
 /** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
 export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };
@@ -92,10 +93,10 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   const prevHp = t.hp; res.amount = ctx.dmg;
   t.hp = Math.max(0, t.hp - ctx.dmg); res.dealt = prevHp - t.hp;
   if (src.by) { t.lastHitBy = src.by.id; const d = (t.damagedBy ||= []); if (!d.includes(src.by.id)) d.push(src.by.id); }
-  if (t.hidden && res.dealt > 0) { t.hidden = false; if (cb) (cb.sightWhy ||= {})[t.id] = 'reveal'; } // damage reveals a Hidden unit (rules 1.3; presentation: a reveal, not a plain entry)
+  if (t.hidden && res.dealt > 0) { rawHidden(cb, t, false); if (cb) (cb.sightWhy ||= {})[t.id] = 'reveal'; } // damage reveals a Hidden unit (rules 1.3; presentation: a reveal, not a plain entry)
   if (t.hp === 0) {
     if (src.nonlethal && t.side === 'foe' && !t.companion) { t.surrendered = true; t.subdued = true; res.killed = false; if (cb) { emit(cb, 'on_surrender', { t, by: src.by || null, why: 'subdued', cb }); cb.log.push(t.name + ' is subdued, not killed.'); } }
-    else { if (t.side === 'foe' || t.companion) t.dead = true; else t.downed = true; res.killed = true; dropped(cb, t, src, res, src.credit !== 'none'); }
+    else { if (t.side === 'foe' || t.companion) t.dead = true; else setDowned(t, true); res.killed = true; dropped(cb, t, src, res, src.credit !== 'none'); }
   }
   if (cb) {
     ctx.phase = 'after'; ctx.dealt = res.dealt; ctx.killed = res.killed; emit(cb, 'damage_in', ctx);
@@ -122,7 +123,7 @@ export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null,
   // (Rules 1.20 held spells and prayers to half of a creature's max HP a round here. Withdrawn by rules 1.23: healing
   // is priced in AP, and the enemies go for whoever mends the most: noteTended below is what they read.)
   let restored = 0, revived = false;
-  if (t.downed) { t.downed = false; t.saves = { ok: 0, fail: 0 }; t.hp = Math.min(t.maxHp, Math.max(1, ctx.n)); restored = t.hp; revived = true; }
+  if (t.downed) { setDowned(t, false); t.hp = Math.min(t.maxHp, Math.max(1, ctx.n)); restored = t.hp; revived = true; }
   else { const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + ctx.n); restored = t.hp - was; }
   noteTended(cb, by, t, restored);
   if (cb) emit(cb, 'heal_given', { t, by, n: restored, kind, revived, cb });

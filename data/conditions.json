@@ -10,6 +10,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
+      "engine": "flag",
       "text": "You take 5 damage at the start of each of your turns, for 3 rounds. A stim ends it early.",
       "effects": [
         {
@@ -35,7 +36,8 @@
       "name": "Burning",
       "kind": "debuff",
       "family": "body",
-      "save": false,
+      "save": true,
+      "engine": "table",
       "text": "You take 10 damage at the start of each of your turns until the fire is put out. You, or anyone next to you, can put it out for 1 AP.",
       "effects": [
         {
@@ -46,7 +48,7 @@
         }
       ],
       "duration": {
-        "rounds": null
+        "until": "put_out"
       },
       "ends_on": [
         "extinguish (1 AP, anyone adjacent or self)"
@@ -60,6 +62,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
+      "engine": "table",
       "text": "You deal 25% less damage. Lasts 2 rounds.",
       "effects": [
         {
@@ -83,6 +86,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
+      "engine": "table",
       "text": "Your Movement is halved. Lasts 2 rounds.",
       "effects": [
         {
@@ -106,6 +110,7 @@
       "kind": "debuff",
       "family": "brain",
       "save": true,
+      "engine": "table",
       "text": "You can't draw or Evoke Sigils, use Outbursts, pray or make Calls. Lasts 1 round.",
       "effects": [
         {
@@ -134,6 +139,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
+      "engine": "table",
       "text": "You have 1 AP less on your turn. Lasts 2 rounds.",
       "effects": [
         {
@@ -157,21 +163,21 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
+      "engine": "table",
       "text": "You can't move and you have −2 to hit. Lasts until the end of your next turn.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "move_mult",
-          "value": 0
+          "op": "forbid",
+          "action": "move"
         },
         {
-          "op": "tn_mod",
-          "context": "own_attacks",
-          "value": -2
+          "op": "attack_mod",
+          "value": -2,
+          "context": "own_attacks"
         }
       ],
       "duration": {
-        "until": "end of your next turn"
+        "rounds": 1
       },
       "ends_on": [
         "end_of_next_turn"
@@ -185,16 +191,19 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
+      "engine": "table",
+      "aliases": [
+        "stun"
+      ],
       "text": "You lose your next turn, and you can't use reactions until it has passed.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": "lose_turn"
+          "op": "forbid",
+          "action": "turn"
         }
       ],
       "duration": {
-        "turns": 1
+        "rounds": 1
       },
       "ends_on": [
         "after skipped turn"
@@ -208,6 +217,7 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
+      "engine": "flag",
       "text": "You have 2 AP less on your next turn.",
       "effects": [
         {
@@ -217,7 +227,7 @@
         }
       ],
       "duration": {
-        "turns": 1
+        "until": "next_turn"
       },
       "ends_on": [
         "after next turn"
@@ -231,17 +241,18 @@
       "kind": "debuff",
       "family": "body",
       "save": true,
+      "engine": "table",
       "text": "You have −4 to hit and can only see the tiles next to you. Lasts 1 round.",
       "effects": [
         {
-          "op": "tn_mod",
-          "context": "own_attacks",
-          "value": -4
+          "op": "attack_mod",
+          "value": -4,
+          "context": "own_attacks"
         },
         {
           "op": "stat_mod",
           "stat": "vision",
-          "value": "adjacent_only"
+          "value": 1
         }
       ],
       "duration": {
@@ -259,21 +270,22 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
+      "engine": "flag",
       "text": "You are on the ground. Melee attacks against you have +2 to hit and ranged attacks against you have −2. Standing up costs 1 AP.",
       "effects": [
         {
-          "op": "tn_mod",
-          "context": "melee_vs_self",
-          "value": 2
+          "op": "attack_mod",
+          "value": 2,
+          "context": "melee_vs_self"
         },
         {
-          "op": "tn_mod",
-          "context": "ranged_vs_self",
-          "value": -2
+          "op": "attack_mod",
+          "value": -2,
+          "context": "ranged_vs_self"
         }
       ],
       "duration": {
-        "until": "you stand"
+        "until": "stand"
       },
       "ends_on": [
         "stand (1 AP)"
@@ -287,6 +299,8 @@
       "kind": "debuff",
       "family": "brain",
       "save": true,
+      "engine": "table",
+      "key": "ldebuff",
       "text": "You have −2 on checks with Mind skills, and drawing a glyph or Evoking costs 1 AP more. Lasts 2 rounds.",
       "effects": [
         {
@@ -315,6 +329,8 @@
       "kind": "debuff",
       "family": "brain",
       "save": true,
+      "engine": "table",
+      "key": "rdebuff",
       "text": "You have −2 on checks with Expression and Soul skills, and your Soul spells cost 20% more MP. Lasts 2 rounds.",
       "effects": [
         {
@@ -348,6 +364,7 @@
       "kind": "debuff",
       "family": "brain",
       "save": true,
+      "engine": "table",
       "text": "Each attack you make has a 50% chance to go at a random target instead: anyone else you could have attacked. Lasts 1 round.",
       "effects": [
         {
@@ -368,20 +385,24 @@
     {
       "id": "fear",
       "name": "Fear",
+      "label": "Afraid",
       "kind": "debuff",
       "family": "heart",
       "save": true,
+      "engine": "table",
+      "aliases": [
+        "afraid"
+      ],
       "text": "You are Afraid of whoever caused it: you can't move toward them or attack them, and you have −2 to hit anyone else. Lasts 2 rounds.",
       "effects": [
         {
-          "op": "tn_mod",
-          "context": "attacks_vs_non_source",
-          "value": -2
+          "op": "attack_mod",
+          "value": -2,
+          "context": "not_vs_source"
         },
         {
-          "op": "stat_mod",
-          "stat": "forbid",
-          "value": "move_toward_or_attack_source"
+          "op": "forbid",
+          "action": "move_toward_or_attack_source"
         }
       ],
       "duration": {
@@ -399,6 +420,7 @@
       "kind": "debuff",
       "family": "heart",
       "save": true,
+      "engine": "table",
       "text": "You have −2 on Heart saves and on social checks. Lasts 3 rounds in a fight, or the rest of the scene outside one.",
       "effects": [
         {
@@ -428,6 +450,8 @@
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "flag",
+      "boon": true,
       "text": "Enemies can't target you until they spot you. Your first attack from hiding is an Ambush and gets the Ambush damage bonus; after it you are revealed.",
       "effects": [
         {
@@ -442,7 +466,7 @@
         }
       ],
       "duration": {
-        "until": "spotted or you attack"
+        "until": "revealed"
       },
       "ends_on": [
         "spotted",
@@ -458,21 +482,21 @@
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "table",
       "text": "The squad of whoever Marked you gets +1 to hit you, and you can't become Hidden. It lasts until the fight ends or the Mark is lifted.",
       "effects": [
         {
-          "op": "tn_mod",
-          "context": "marker_squad_vs_self",
-          "value": 1
+          "op": "attack_mod",
+          "value": 1,
+          "context": "marker_squad_vs_self"
         },
         {
-          "op": "stat_mod",
-          "stat": "can_hide",
-          "value": false
+          "op": "forbid",
+          "action": "hide"
         }
       ],
       "duration": {
-        "set_by": "source"
+        "until": "source"
       },
       "ends_on": [
         "source rule",
@@ -483,10 +507,11 @@
     },
     {
       "id": "braced",
-      "name": "Braced / Emplaced",
+      "name": "Braced",
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "state",
       "text": "You have set yourself or your weapon in place. The move or weapon that Braced you says what you gain. It ends when you move.",
       "effects": [
         {
@@ -495,7 +520,7 @@
         }
       ],
       "duration": {
-        "until": "you move"
+        "until": "moved"
       },
       "ends_on": [
         "move"
@@ -509,6 +534,7 @@
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "state",
       "text": "You are holding AP for one reaction shot at an enemy that moves where you can see it. It ends when you take the shot or when your next turn starts.",
       "effects": [
         {
@@ -519,7 +545,7 @@
         }
       ],
       "duration": {
-        "until": "your next turn"
+        "until": "next_turn"
       },
       "ends_on": [
         "shot taken",
@@ -534,6 +560,8 @@
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "table",
+      "boon": true,
       "text": "Your patron is watching you. Your attacks that carry a tag your patron likes get +2 to hit, and a taboo action costs double Devotion XP. You become Witnessed, if you have Faith 5, when a Hymn of your own patron succeeds or you work a Miracle. It lasts until the fight ends or your patron intervenes.",
       "effects": [
         {
@@ -549,7 +577,7 @@
         }
       ],
       "duration": {
-        "until": "the end of the fight, or your patron's intervention"
+        "until": "fight_end"
       },
       "ends_on": [
         "fight_end",
@@ -565,6 +593,7 @@
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "state",
       "text": "You are at 0 HP and can't act. At the start of each of your turns you roll a death save: 10 or more on a d20 is a success. Three successes and you stabilise at 1 HP; three failures and you die. Each hit you take while Downed adds a failure. An ally can stabilise you with a stim.",
       "effects": [
         {
@@ -574,7 +603,7 @@
         }
       ],
       "duration": {
-        "until": "stabilised or dead"
+        "until": "stabilised"
       },
       "ends_on": [
         "3 successes",
@@ -589,7 +618,8 @@
       "name": "Grappled",
       "kind": "debuff",
       "family": "body",
-      "save": "body",
+      "save": true,
+      "engine": "table",
       "text": "An enemy next to you is holding you. You can't move, and you have −2 to hit anyone but the one holding you. Breaking free costs 2 AP and an opposed roll, each side using the better of Raw Power and Athletics. It also ends if the holder moves away or goes down.",
       "effects": [
         {
@@ -599,7 +629,7 @@
         {
           "op": "attack_mod",
           "value": -2,
-          "context": "not_vs_grappler"
+          "context": "not_vs_source"
         }
       ],
       "duration": {
@@ -618,7 +648,8 @@
       "name": "Taunted",
       "kind": "debuff",
       "family": "heart",
-      "save": "heart",
+      "save": true,
+      "engine": "table",
       "text": "Your next attack must be aimed at the one who Taunted you, if you can see them. Lasts 1 round, and ends early if they go down.",
       "effects": [
         {
@@ -641,7 +672,8 @@
       "name": "Commanded",
       "kind": "debuff",
       "family": "heart",
-      "save": "heart",
+      "save": true,
+      "engine": "table",
       "text": "On your next turn you obey one short order, unless it would directly harm you. The Sigil word COMMAND can order you to halt, kneel, drop your weapon or move up to 3 tiles.",
       "effects": [
         {
@@ -664,7 +696,8 @@
       "name": "Puppeted",
       "kind": "debuff",
       "family": "brain",
-      "save": "brain",
+      "save": true,
+      "engine": "table",
       "text": "The caster decides what you do on your next turn, using your AP. You can't be made to harm yourself. Lasts 1 round, and ends early if the caster goes down.",
       "effects": [
         {
@@ -687,7 +720,8 @@
       "name": "Disarmed",
       "kind": "debuff",
       "family": "heart",
-      "save": "heart",
+      "save": true,
+      "engine": "table",
       "text": "Your weapon is on the ground, in the pile on your tile, and you can't attack with it. Recovering it costs 2 AP. Drawing another weapon into your main hand, or moving your off-hand weapon there, also ends it; the dropped weapon stays in the pile.",
       "effects": [
         {
@@ -717,6 +751,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
+      "engine": "flag",
       "text": "A wound from a critical hit; what it does depends on where it lands. Head: Dazed for 1 turn. Torso: Bleeding. Arm: −2 to attacks with that arm. Leg: half Movement. Arm and leg injuries stay until they are treated, by surgery or a long rest with a medic.",
       "params": {
         "location": [
@@ -748,6 +783,8 @@
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "table",
+      "boon": true,
       "text": "Your heavy weapon is set on a bipod, a mount or the edge of cover. You have +2 to hit with it and its Recoil is halved. It ends when you move.",
       "effects": [
         {
@@ -762,7 +799,7 @@
         }
       ],
       "duration": {
-        "until": "move"
+        "until": "moved"
       },
       "ends_on": [
         "move"
@@ -776,6 +813,7 @@
       "kind": "debuff",
       "family": "body",
       "save": false,
+      "engine": "table",
       "text": "One of your augments, prosthetics or implants has stopped working: it gives no bonus and you can't use its actions. It stays that way until it is repaired, by a field repair or a long rest.",
       "effects": [
         {
@@ -798,7 +836,8 @@
       "name": "Suppressed",
       "kind": "debuff",
       "family": "body",
-      "save": "body",
+      "save": true,
+      "engine": "table",
       "text": "You have 1 AP less on your turn and can't use reactions. Lasts 1 round.",
       "effects": [
         {
@@ -824,9 +863,12 @@
     {
       "id": "withdrawing",
       "name": "Withdrawing",
+      "label": "Withdrawing (+2 Defense)",
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "table",
+      "boon": true,
       "text": "You are making a fighting retreat: +2 Defense until the end of your next turn.",
       "effects": [
         {
@@ -850,7 +892,8 @@
       "name": "Weapon lowered",
       "kind": "debuff",
       "family": "heart",
-      "save": "heart",
+      "save": true,
+      "engine": "table",
       "text": "Your weapon is lowered, and until you raise it you can only strike with your fists. Raising it costs 1 AP.",
       "effects": [
         {
@@ -874,6 +917,8 @@
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "table",
+      "boon": true,
       "text": "You are standing on borrowed time, thanks to Bite the Bullet. Every hit you take adds a failed death save.",
       "effects": [
         {
@@ -897,7 +942,8 @@
       "name": "Corroded",
       "kind": "debuff",
       "family": "body",
-      "save": false,
+      "save": true,
+      "engine": "table",
       "text": "You take 5 damage at the start of each of your turns and have −2 Defense. Lasts 3 rounds. At the end of each of your turns you roll a Body save, and a success ends it early.",
       "effects": [
         {
@@ -930,6 +976,8 @@
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "table",
+      "boon": true,
       "text": "You have 2 more AP on your next turn, up to the limit of 9 AP. You can be Quickened once a round at most, and never by your own spell.",
       "effects": [
         {
@@ -940,7 +988,7 @@
         }
       ],
       "duration": {
-        "until": "your next turn starts"
+        "until": "next_turn"
       },
       "ends_on": [
         "used at your next turn start"
@@ -956,6 +1004,8 @@
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "table",
+      "boon": true,
       "text": "Your next attack has +3 to hit and deals ×1.25 damage. It lasts until that attack or the end of your next turn.",
       "effects": [
         {
@@ -970,7 +1020,7 @@
         }
       ],
       "duration": {
-        "until": "your next attack, or the end of your next turn"
+        "rounds": 1
       },
       "ends_on": [
         "you attack",
@@ -986,7 +1036,8 @@
       "name": "Smitten",
       "kind": "debuff",
       "family": "heart",
-      "save": "heart",
+      "save": true,
+      "engine": "table",
       "text": "You can't attack the one who Smote you, or any ally linked to them. Lasts 1 round. It comes from The Matchmaker's Sweet Nothings.",
       "effects": [
         {
@@ -1007,9 +1058,12 @@
     {
       "id": "hopeful",
       "name": "Hopeful",
+      "label": "Hopeful (+2)",
       "kind": "state",
       "family": null,
       "save": false,
+      "engine": "table",
+      "boon": true,
       "text": "Your next attack or spell roll has +2. It lasts until that roll or the end of your next turn. It comes from the feeling Hope.",
       "effects": [
         {
@@ -1019,7 +1073,7 @@
         }
       ],
       "duration": {
-        "until": "your next attack roll, or the end of your next turn"
+        "rounds": 1
       },
       "ends_on": [
         "you roll to attack",
@@ -1034,9 +1088,10 @@
     {
       "id": "scorned",
       "name": "Scorned",
-      "kind": "condition",
+      "kind": "debuff",
       "family": "heart",
       "save": false,
+      "engine": "table",
       "text": "You have −2 to hit the one who Scorned you. Lasts 2 rounds. It comes from the feeling Contempt.",
       "effects": [
         {
@@ -1056,6 +1111,62 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "rules 1.8"
+    },
+    {
+      "id": "guarded",
+      "name": "Guarded",
+      "label": "Guarded (+2 Defense)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "You have +2 Defense. Lasts 2 rounds.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "defense",
+          "value": 2
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "engine foundations 2 (item 1562)"
+    },
+    {
+      "id": "inspired",
+      "name": "Inspired",
+      "label": "Inspired (+2 to hit)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "You have +2 to hit. Lasts 2 rounds.",
+      "effects": [
+        {
+          "op": "attack_mod",
+          "value": 2,
+          "context": "own_attacks"
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "engine foundations 2 (item 1562)"
     }
   ],
   "families": {
@@ -1063,5 +1174,6 @@
     "brain": "Mental conditions. You resist them with a Brain save.",
     "heart": "Emotional conditions. You resist them with a Heart save."
   },
-  "family_ref": "An effect may name 'family:<body|brain|heart>' instead of a single condition id; it means any condition of that family."
+  "family_ref": "An effect may name 'family:<body|brain|heart>' instead of a single condition id; it means any condition of that family.",
+  "engine_ref": "How the engine runs each condition (packages/engine/src/condtable.ts reads this file; there is no other table). engine 'table': kept in a unit's conditions with its rounds left, put on by applyCond and ended by endCond. 'flag': a field of the unit (Bleeding, Dazed, Prone, Hidden, Injured), written only by applyCond and endCond. 'state': a unit state with its own rule and its own setter (Braced, Overwatch, Downed); applyCond does not put it on. duration: {rounds: N} counts the ends of the bearer's own turns; {until: <word>} lasts until its rule ends it. save: true means the target rolls its family's save unless the source says there is none. boon: true is a help, never saved against, and no family. key: the name it is stored under in a unit's conditions when that is not the id; aliases: other ids the engine answers to; label: the word in 'X is <label>' when it is not the name. The numbers the engine applies are read from effects: stat_mod defense, move_mult, vision, ap, save_<family>, damage_dealt_pct, sigil_ap, soul_cost_pct; skill_mod_tag; attack_mod by context (own_attacks, next_attack, not_vs_source, vs_source, marker_squad_vs_self, melee_vs_self, ranged_vs_self); damage_mult next_attack."
 }

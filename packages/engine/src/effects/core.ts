@@ -14,7 +14,7 @@ import type { Holder, ItemInfo } from './types';
 import { registerGeneric, genericEffects, statQuery, charOfUnit } from './hooks';
 import { COST_SITES, type CostSite } from './stats';
 import type { Rng } from '../rng';
-import { applyCond, endCond, isCondition, condFamily } from '../magic';
+import { applyCond, endCond, isCondition, condFamily, debuffsOf, condId } from '../magic';
 import { moveBlockers, key, xy, dist, displace } from '../combat';
 import { grantShield, healUnit, tendHook } from './damage';
 import { gainEcho } from './echo';
@@ -202,9 +202,11 @@ const T_OK = (e: any) => !e.target || ['self', 'target', 'ally', 'enemy', 'one_e
 registerGeneric({
   op: 'cleanse', claim: () => false, runs: (e) => actPlain(e) && T_OK(e),
   run: (h, e, args) => {
-    const t = targetUnit(h, e, args); if (!t || !t.conds) return null;
-    const ids = Object.keys(t.conds).filter((id) => (e.condition ? id === e.condition : e.family ? condFamily(id) === e.family && !['guarded', 'inspired'].includes(id) : true));
-    const gone = ids.slice(0, e.count || 1); for (const id of gone) endCond(t, id);
+    const t = targetUnit(h, e, args); if (!t) return null;
+    // what it can end: the one named, a family's debuffs, or any debuff (never a boon), the flag conditions included
+    // (Bleeding, Dazed, Prone: magic.ts debuffsOf is the one list)
+    const ids = e.condition ? debuffsOf(t).filter((id) => id === condId(e.condition)) : debuffsOf(t, e.family || undefined);
+    const gone = ids.slice(0, e.count || 1); for (const id of gone) endCond(t, id, h.cb);
     if (gone.length && h.cb && h.u) tendHook.f?.(h.cb, h.u, t); // tending others (rules 1.5, section 3.3)
     return gone.length ? ' · ' + t.name + ' shakes off ' + gone.join(', ') : ' · nothing to shake off';
   },

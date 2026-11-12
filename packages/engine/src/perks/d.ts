@@ -32,6 +32,7 @@ import { die, type Rng } from '../rng';
 import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
 import { rngOf, tilesLine, foesOf, alliesOf } from '../kit';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
+import { setCondRounds } from '../magic';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
@@ -1047,7 +1048,7 @@ register({
       const partnerId = me(h, t) ? s.link.b : t.id === s.link.b ? u.id : null; if (!partnerId) return;
       const p = cb.units.find((x) => x.id === partnerId); if (!p || p.dead) { s.link = null; return; }
       const full = t.conds?.[ctx.id] ?? ctx.rounds, timed = full < 99, half = timed ? Math.max(1, Math.ceil(full / 2)) : undefined;
-      if (timed && t.conds) t.conds[ctx.id] = half!;
+      if (timed && t.conds) setCondRounds(t, ctx.id, half!);
       s.busy = true;
       try { log(cb, 'Shared Breath: ' + t.name + ' and ' + p.name + ' share it' + (half ? ' (' + half + ' round' + (half === 1 ? '' : 's') + ' each)' : '') + applyCond(cb, rngOf(h, ctx), ctx.by || null, p, ctx.id, half, undefined, { skipSave: true, ...(ctx.via ? { via: ctx.via } : {}) }) + '.'); }
       finally { s.busy = false; }

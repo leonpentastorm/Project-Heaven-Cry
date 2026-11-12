@@ -18,7 +18,9 @@ import { note } from './effects/narrator';
 import { sessionN } from './effects/uses';
 import { makeObject } from './objects';
 import { residueFlag } from './feelings';
-import { tilesAround } from './kit';
+import { tilesAround, unitsIn } from './kit';
+import { rawHidden, setDowned, startHidden } from './unitstate';
+import { setCondRounds } from './magic';
 
 // ---------- damage types, special ammo, the damage bucket ----------
 export interface AmmoType { id: string; damage_mult?: number; ignores_armor?: boolean; armor_mult?: number; applies?: string; damage_type?: string; meter_per_hit?: number }
@@ -93,8 +95,7 @@ export const seenByFoes = (cb: Combat, u: Unit) => cb.units.some((v) => v.side !
 export function hide(cb: Combat, u: Unit, why = ''): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
   if (u.hidden) return '';
-  u.hidden = true; u.hideEntry = (u.hideEntry || 0) + 1;
-  for (const side of ['pc', 'foe']) if (side !== u.side) ((cb.lastSeen ||= {})[side] ||= {})[u.id] = u.pos;
+  rawHidden(cb, u, true);
   emit(cb, 'hide', { u, why, cb });
   sightFx(cb, null, { [u.id]: 'hide' }); // presentation: it fades from the eyes of a side that saw it
   return ' · ' + u.name + ' is Hidden' + (why ? ' (' + why + ')' : '');
@@ -102,8 +103,7 @@ export function hide(cb: Combat, u: Unit, why = ''): string {
 /** Stop being Hidden (spotted, an attack that isn't silent, damage taken, an enemy ending its turn next to you). */
 export function reveal(cb: Combat, u: Unit, why: string): string {
   if (!u.hidden) return '';
-  u.hidden = false;
-  for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id];
+  rawHidden(cb, u, false);
   cb.log.push(u.name + ' is revealed (' + why + ').');
   emit(cb, 'spotted', { u, why, cb });
   sightFx(cb, null, { [u.id]: 'reveal' }); // presentation: it shimmers into the sight of a side that can see its tile
@@ -150,7 +150,7 @@ export function canSurrender(t: Unit): boolean {
 }
 /** It gives up: out of the fight, not a target, counted as defeated; no kill credit and no mana rise. 'on_surrender'. */
 export function surrender(cb: Combat, t: Unit, by: Unit | null, why: string): string {
-  t.surrendered = true; dropHeldShot(cb, t, 'surrendered'); t.hidden = false; t.ap = 0; (t.tags ||= []).includes('prisoner') || t.tags!.push('prisoner');
+  t.surrendered = true; dropHeldShot(cb, t, 'surrendered'); rawHidden(cb, t, false); t.ap = 0; (t.tags ||= []).includes('prisoner') || t.tags!.push('prisoner');
   emitFx(cb, 'down', { unit: t.id, at: t.pos, dead: false, surrendered: true });
   emit(cb, 'on_surrender', { t, by, why, cb });
   return ' · ' + t.name + ' SURRENDERS (' + why + ')';
@@ -168,7 +168,7 @@ export function trySurrender(cb: Combat, rng: Rng, by: Unit, t: Unit, tnAdd = 0,
   return held ? ' · ' + t.name + ' refuses' + roll : surrender(cb, t, by, 'talked down' + roll);
 }
 /** A non-lethal blow that takes the last HP subdues a foe instead of killing it (damage src.nonlethal). */
-export function subdue(cb: Combat | null, t: Unit) { t.subdued = true; t.surrendered = true; t.dead = false; t.downed = false; t.hp = 0; if (cb) emit(cb, 'on_surrender', { t, by: null, why: 'subdued', cb }); }
+export function subdue(cb: Combat | null, t: Unit) { t.subdued = true; t.surrendered = true; t.dead = false; setDowned(t, false); t.hp = 0; if (cb) emit(cb, 'on_surrender', { t, by: null, why: 'subdued', cb }); }
 
 // ---------- persuade, threaten, parley mid-fight (spec action table: 2 AP) ----------
 export const HEARING = 8;
@@ -222,7 +222,7 @@ export function throwItem(cb: Combat, rng: Rng, u: Unit, item: string, tile: str
 }
 /** A thrown item goes off on a tile (credited to the thrower: kills, bleed, the barrels it sets off). */
 export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item: string, radius = radiusOf(WEAPON[item])): string {
-  const w = WEAPON[item], who = cb.units.filter((v) => !v.dead && !v.surrendered && dist(v.pos, tile) <= radius);
+  const w = WEAPON[item], who = unitsIn(cb, { shape: 'burst', at: tile, r: radius }, { downed: true });
   emitFx(cb, 'explode', { at: tile, radius, what: item });
   // 'blast_landed' {by, tile, item, radius, who}: a thrown item goes off (rules 1.12: smoke, a flashbang or the scrambler
   // ends the held Watch and the Bead of everyone it lands on: physical/ranged/thrown.ts)
@@ -289,7 +289,7 @@ export function extinguish(cb: Combat, u: Unit, t: Unit): string | null {
   u.ap -= ap;
   // FIRE's inflection (rules 1.10, Sigil 1.5): a Mastered FIRE's Burning lasts +1 round past being put out.
   const linger = /^linger:(\d+)/.exec(String(t.condArg?.burning || ''));
-  if (linger) { t.conds!.burning = +linger[1]; delete t.condArg!.burning; if (cb.order?.[cb.turn] === t.id) (t.condFresh ||= []).push('burning'); cb.log.push(u.name + ' beats down the fire' + (t === u ? '' : ' on ' + t.name) + ', but it smoulders ' + linger[1] + ' more round' + (linger[1] === '1' ? '' : 's') + ' (a Mastered FIRE).'); return null; }
+  if (linger) { setCondRounds(t, 'burning', +linger[1], { fresh: cb.order?.[cb.turn] === t.id, arg: null }); cb.log.push(u.name + ' beats down the fire' + (t === u ? '' : ' on ' + t.name) + ', but it smoulders ' + linger[1] + ' more round' + (linger[1] === '1' ? '' : 's') + ' (a Mastered FIRE).'); return null; }
   endCond(t, 'burning', cb); cb.log.push(u.name + ' puts out the fire' + (t === u ? '' : ' on ' + t.name) + '.'); return null;
 }
 /** Break a grapple (2 AP): d20 + the better of your Raw Power and Athletics modifiers against d20 + the grappler's. */
@@ -361,7 +361,7 @@ export function applyFoeTraits(u: Unit, f: FoeTraits | undefined) {
   const tags = [...new Set([...(['human', 'crawler', 'ork', 'upper_realm', 'cursed', 'celestial'].includes(kind) ? ['humanoid'] : []), ...(f?.tags || []).filter((t) => typeof t === 'string' && FOE_TAGS.includes(t)), ...(f?.no_surrender ? ['no_surrender'] : []), ...(f?.unaware ? ['unaware'] : [])])];
   u.kind = kind; u.tags = tags;
   if (f?.unaware) u.waitRound = Math.max(u.waitRound || 0, 2);
-  if (f?.hidden) { u.hidden = true; u.hideEntry = 1; }
+  if (f?.hidden) startHidden(u);
 }
 /** Mana from a death (spec: the meter): +5 a person or beast, +2 a robot, machine, turret or drone. */
 /** The bots one death releases (spec: the meter; rules.json mana.meter.events): a robot or machine +2, a beast or monster

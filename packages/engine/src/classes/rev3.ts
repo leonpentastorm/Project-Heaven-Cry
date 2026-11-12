@@ -28,6 +28,8 @@ import { type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, hide, seenByFoes, HEARING } from '../tactics';
 import { addImage, dropImage, imageOfOwner, imageTurnStart, imagesOf, type FalseImage } from '../illusion';
 import { makeObject, kindOf } from '../objects';
+import { setBraced, setDowned } from '../unitstate';
+import { condNotFresh } from '../magic';
 
 // =================================================================================================== helpers
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
@@ -111,7 +113,7 @@ register({
     attack_target: (ctx, h) => { if (ctx.tgt === h.u && inFight(h)) stateOf(h).pre = { braced: anchored(h.u), prone: !!h.u!.prone }; },
     on_hit: (ctx, h) => {
       if (ctx.tgt !== h.u) return; const st = stateOf(h), pre = st.pre; st.pre = null;
-      if (pre?.braced && !pre.prone && h.u!.prone && !h.u!.dead && !h.u!.downed) { h.u!.prone = false; h.u!.braced = true; emitFx(h.cb!, 'anchor', { unit: h.u!.id, at: h.u!.pos, what: 'prone' }); say(h.cb, h.u!.name + ' is Anchored: stays on their feet.'); }
+      if (pre?.braced && !pre.prone && h.u!.prone && !h.u!.dead && !h.u!.downed) { endCond(h.u!, 'prone', h.cb); setBraced(h.u!, true, !!h.u!.guardBrace); emitFx(h.cb!, 'anchor', { unit: h.u!.id, at: h.u!.pos, what: 'prone' }); say(h.cb, h.u!.name + ' is Anchored: stays on their feet.'); }
     },
     turn_start: (ctx, h) => { const me = h.u!, u: Unit = ctx.u; if (!inFight(h) || !u || u.side === me.side) return; (stateOf(h).adj ||= {})[u.id] = alive(me) && dist(u.pos, me.pos) <= 1 ? h.cb!.round : -1; },
     move_step: (ctx, h) => {
@@ -162,7 +164,8 @@ register({
         if (!mv.moved) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': holds firm.'); return; }
         say(cb, u.name + ' shoves ' + t.name + ' back to ' + refOf(mv.to) + ' (' + s.line + ')' + mv.text + '.'); sightCheck(cb); return;
       }
-      t.prone = true; t.braced = false; (t.condAt ||= {}).prone = (cb.condSeq = (cb.condSeq || 0) + 1);
+      // the save above was the save: the condition lands with none (and every item is asked once more, as for any condition)
+      { const pr = applyCond(cb, rng as Rng, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'raw_power' }); if (!t.prone) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ':' + pr.replace(/^ · [^ ]+/, '') + '.'); return; } }
       emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: true, prone: true });
       say(cb, u.name + ' knocks ' + t.name + ' Prone (' + s.line + ').');
       emit(cb, 'cond_landed', { by: u, t, id: 'prone', rounds: 0, cb, rng });
@@ -201,7 +204,7 @@ register({
       for (const [id, v] of Object.entries(st.stash || {}) as [string, any][]) {
         const n = v.n - 1; if (n <= 0 || u.dead) continue; // the tick it would have had at the end of the turn you used it
         applyCond(cb, rngOf(h, ctx), unitById(cb, v.by), u, id, n, undefined, { skipSave: true, ...(v.arg ? { arg: v.arg } : {}), ...(v.via ? { via: v.via } : {}) });
-        if (u.condFresh) u.condFresh = u.condFresh.filter((x) => x !== id); back.push(id);
+        condNotFresh(u, id); back.push(id);
       }
       st.stash = {};
       say(cb, u.name + ' is no longer Unstoppable' + (back.length ? ': ' + back.join(', ') + ' back' : '') + '.');
@@ -322,7 +325,7 @@ register({
         say(cb, u.name + ' fixes ' + t.name + '\'s weapon: +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return;
       }
       // A repair, not a heal (as Field Repair): exactly 20, no healing multipliers, not halved by Factory Made's Plug.
-      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + itemAmount('class:infiltrator.field_fix', 'repair')); if (up) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
+      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + itemAmount('class:infiltrator.field_fix', 'repair')); if (up) setDowned(t, false);
       emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
       say(cb, u.name + ' repairs ' + t.name + ': +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
     },

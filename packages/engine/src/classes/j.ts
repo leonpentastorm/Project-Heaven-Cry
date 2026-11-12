@@ -26,6 +26,7 @@ import { rollVs } from '../rolls';
 import { resOf, resGain, resSpend, canReact, useReaction , dropHeldShot } from '../tactics';
 import { makeObject } from '../objects';
 import { overworld, say, unitById, tileOf, rngOf, foesOf } from '../kit';
+import { setBraced } from '../unitstate';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -120,16 +121,6 @@ register({
 // shot). choice: head, arm (left/right: 'arm' hits the target's main hand, or 'arm:left') or leg. On a hit the named
 // injury applies without a critical, but the target's Injury resistance still rolls (PROVISIONAL, audit 2). Story: a
 // disabling shot in a standoff is the Narrator's to call; the engine rolls it.
-function calledInjury(rng: Rng, t: Unit, loc: string, side0?: string): string {
-  const resist = t.injResist || 0;
-  if (resist > 0) { const r = die(rng as any, 100); if (r <= resist) return ' · called ' + loc + ' resisted (d100 ' + r + ' ≤ ' + resist + '%)'; }
-  const inj = (t.injuries ||= []);
-  if (loc === 'head') { t.dazedNext = 1; return ' · CALLED SHOT: head, Dazed'; }
-  const side = (side0 === 'left' || side0 === 'right' ? side0 : t.hand || 'right') as 'left' | 'right';
-  if (loc === 'arm') { inj.push({ loc: 'arm', side }); return ' · CALLED SHOT: ' + side + ' arm, −2 to attacks with it'; }
-  if (!inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
-  inj.push({ loc: 'leg', side }); return ' · CALLED SHOT: ' + side + ' leg, half Movement';
-}
 register({
   id: 'gunslinger.called_shot', claims: 'all',
   actions: [
@@ -146,7 +137,7 @@ register({
         const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!, [loc, side] = String(a.choice).split(':');
         const r = withTerm(u, -2, 'Called Shot', () => resolveAttack(cb, rng, u, t, 'shot', null, { free: true }));
         if (r.refused) return r.refused;
-        if (r.hit && !t.dead && !t.surrendered) say(cb, t.name + calledInjury(rng, t, loc, side) + '.');
+        if (r.hit && !t.dead && !t.surrendered) say(cb, t.name + rollInjury(rng, t, cb, u, { loc: loc === 'head' || loc === 'arm' ? loc : 'leg', side }) + '.'); // the one injury table (combat.ts), with the place named
         checkOver(cb); return null;
       } },
     { id: 'called_shot_story', label: 'Called Shot (a standoff)', scope: ['story'], ap: 0, target: 'text', uses: { per: 'per_scene', n: 1 },
@@ -178,7 +169,7 @@ register({
     run: (h, _a, rng) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h);
       say(cb, u.name + ' digs in and emplaces the ' + W(u).name + applyCond(cb, rng, u, u, 'emplaced', undefined, undefined, { skipSave: true }) + ' · +5 armour.');
-      u.braced = true; delete u.guardBrace; if (!st.armour) { st.armour = 5; u.armour += 5; }
+      setBraced(u, true); if (!st.armour) { st.armour = 5; u.armour += 5; }
       emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
       return null;
     },
@@ -189,7 +180,7 @@ register({
       ctx.noRecoil = true; // attack_preview's noRecoil (hooks gap J10): no recoil term at all, free shots included
     },
     cond_end: (ctx, h) => { if (ctx.u === h.u && ctx.id === 'emplaced') unEmplace(h, 'moved'); },
-    forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel && condOn(h.u!, 'emplaced')) { endCond(h.u!, 'emplaced', h.cb!); h.u!.braced = false; } },
+    forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel && condOn(h.u!, 'emplaced')) { endCond(h.u!, 'emplaced', h.cb!); setBraced(h.u!, false); } },
   },
   priority: 900,
   brief: () => null,
@@ -1121,7 +1112,7 @@ register({
     available: (h) => (!h.u || has(h.u, DEF_BRACE) ? false : true),
     run: (h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h), n = Math.max(1, 1 + mod(h.c?.skills?.durability || 0)), got = resGain(u, 'guard', n);
-      u.braced = true; delete u.guardBrace; if (!st.braceDef) { st.braceDef = true; u.def += 2; }
+      setBraced(u, true); if (!st.braceDef) { st.braceDef = true; u.def += 2; }
       emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'brace' });
       say(cb, u.name + ' braces behind the plate: +' + got + ' Guard (' + resOf(u, 'guard') + '/5), +2 Defense' + bulwarkShield(h) + '.');
       return null;

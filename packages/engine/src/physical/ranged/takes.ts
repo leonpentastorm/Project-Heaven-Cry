@@ -7,6 +7,7 @@ import { alive, dist, xy, paths, moveUnit, moveBlock, emitFx, type Combat, type 
 import { radiusOf } from '../../tactics';
 import { AP_BASE } from '../../effects/ap';
 import { PHYS_RULES } from '../data';
+import { setBraced } from '../../unitstate';
 
 // 21. Dead Centre: one shot at +50% damage. Suppressed: its cover doesn't count. Precise: +2 to hit. Drawn: ignores 5 armour.
 technique({
@@ -135,7 +136,7 @@ technique({
 function asIfAt<T>(u: Unit, tile: string, fn: () => T): T {
   if (tile === u.pos) return fn();
   const keep = { pos: u.pos, moved: u.moved, braced: u.braced };
-  u.pos = tile; u.moved = true; u.braced = false;
+  u.pos = tile; u.moved = true; setBraced(u, false);
   try { return fn(); } finally { Object.assign(u, keep); }
 }
 /** Where Storm takes the user: args.tile if it is within reach, nearer the target and has the shot; else the tile within
