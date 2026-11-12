@@ -2,15 +2,17 @@
 // who may use it, charges its AP, builds the Tech a handler is given, and runs it. Attacks go through strike(), which
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
-import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced } from '../combat';
+import { type Combat, type Unit, dropNailed, previewAttack, resolveAttack, encoreCredit, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { apDebt } from '../effects/ap';
 import { actionAp } from '../effects/core';
+import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, useReaction } from '../tactics';
-import { d20, type Rng } from '../rng';
+import { type Rng } from '../rng';
+import { rollSave } from '../rolls';
 import { mod } from '../character';
 import type { Character } from '../character';
 import { packOf } from '../character';
@@ -205,7 +207,7 @@ export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?:
   const lf = linesFor(def, weaponId, choice, u);
   return Math.max(0, base + [lf.main, ...lf.stack].reduce((n, l) => n + (l?.ap || 0), 0));
 }
-const AP_BY_NAME = new Set(['shove', 'break']);
+const AP_BY_NAME: ReadonlySet<string> = new Set<CostSite>(['shove', 'break']);
 /** A technique's AP for this unit now: its own cost, then what the unit's items do to an attack's AP (Southern Fist's
  * +1 with a weapon, Fire Discipline's first burst), asked the way the engine's own attacks ask ('attack_preview' with
  * the cost and a mode). Weapon-priced techniques ask as a melee strike or a shot; a flat one asks only when the data
@@ -213,7 +215,7 @@ const AP_BY_NAME = new Set(['shove', 'break']);
 export function apFor(cb: Combat, u: Unit, def: TechDef, hand: 'main' | 'off', choice?: string, tgt?: Unit | null): number {
   const weaponId = hand === 'off' && offHeld(u) ? offHeld(u)! : u.weapon, own0 = techniqueAp(def, weaponId, choice, u);
   // the techniques a perk prices by name (Siege Engine: Shove and Break 1 AP less, never below 1): the old actions' path
-  const own = AP_BY_NAME.has(def.id) ? actionAp({ u }, def.id, own0).ap : own0;
+  const own = AP_BY_NAME.has(def.id) ? actionAp({ u }, def.id as CostSite, own0).ap : own0;
   const mode = (def.ap as any).mode || (def.ap.base === 'weapon' ? (def.system === 'melee' ? 'melee' : 'shot') : null);
   if (!mode || hand === 'off' || def.ap.base === 'reaction') return own;
   const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', tech: def.id, ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
@@ -236,7 +238,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     // Rules 1.13. A technique a skill gives (Interpose at Durability 3) is everyone's who has the points, whatever is in
     // the hands: it is listed with the main hand. A shield's techniques are the off hand's while it holds the shield,
     // and that hand offers nothing else. Neither is ever learned, readied or lent.
-    if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, 'technique:' + d.id).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
+    if (d.perk) { if (hand === 'main' && !wield && !plainOnly && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.system !== sys) continue;
@@ -255,7 +257,7 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
 const hasUsable = (u: Unit, hand: 'main' | 'off', id: string, wield?: 'stowed' | 'throwable') => usable(null, u, hand, wield).some((x) => x.id === id);
 /** The Momentum a Finisher needs to start (2 unless its data says otherwise), less what the unit's items take off it
  * ('momentum_needed:<id>': Iron Grip II's Throw Down on a held target needs none). It still spends all there is. */
-export const finisherNeed = (cb: Combat, u: Unit, def: TechDef): number => Math.max(0, (def.needs.momentum || 2) + statQuery({ u, cb }, 'momentum_needed:' + def.id).add);
+export const finisherNeed = (cb: Combat, u: Unit, def: TechDef): number => Math.max(0, (def.needs.momentum || 2) + statQuery({ u, cb }, `momentum_needed:${def.id}`).add);
 /** Why this unit can't start this technique now, before any target is looked at (null: it can). */
 function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null {
   const hand: 'main' | 'off' = args.hand === 'off' && offHeld(u) ? 'off' : 'main', weaponId = hand === 'off' ? offHeld(u)! : u.weapon;
@@ -468,11 +470,19 @@ export function save(t: Tech, target: Unit, skillsOrFam: string[] | 'body' | 'br
   const c = target.companion ? null : charOfUnit(target);
   const FAM: Record<string, 'body' | 'brain' | 'heart'> = { guts: 'body', rumination: 'brain', composure: 'heart', body: 'body', brain: 'brain', heart: 'heart' };
   const bonus = Math.max(...skills.map((s) => (FAM[s] && (s === FAM[s] || !c) ? unitSave(target, FAM[s]) : c ? mod((c.skills as any)[s] || 0) : target.attack ?? 0)));
-  const r = d20(t.rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
-  t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + skills.join(' or ') + ' ' + (r + bonus) + ' vs ' + tn + ').');
+  // the one save (rolls.ts): items that change saves are asked; the family is the first one named (a skill save: Body)
+  const sv = rollSave(t.cb, t.rng, { by: t.u, target, fam: skills.map((x) => FAM[x]).find(Boolean) || 'body', id: 'stop', via: techVia(t), tn, mod: bonus, lead: skills.join(' or ') + ' save' }), ok = sv.ok;
+  t.cb.log.push(target.name + (ok ? ' saves' : ' fails the save') + ' against ' + t.def.name + ' (' + sv.text + ').');
   // the save for the screen (HOLDS / STEADY); kept to the target's side when the user's side can't see it
-  emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
+  emitFx(t.cb, 'save', { unit: target.id, at: target.pos, ok, tech: t.def.id, ...(sv.skipped ? {} : { die: sv.die, mod: sv.mod, total: sv.total, tn: sv.tn }), ...(sideSees(t.cb, t.u.side as 'pc' | 'foe', target) ? {} : { only: target.side }) });
   return ok;
+}
+/** A Body save forced by a technique AFTER its own use (Guard with Reach on a mover's step, a Bound unit walking away):
+ * `by` set it, `who` saves against `tn` (techSaveTn of `by` with the skill it was set with). True: it saved. */
+export function saveOutside(cb: Combat, rng: Rng, by: Unit | null, who: Unit, against: string, tn: number, via?: string): boolean {
+  const sv = rollSave(cb, rng, { by, target: who, fam: 'body', id: 'stop', via, tn, mod: unitSave(who, 'body') });
+  cb.log.push(who.name + (sv.ok ? ' saves' : ' fails the save') + ' against ' + against + ' (' + sv.text + ').');
+  return sv.ok;
 }
 /** The skill a technique's conditions and saves are delivered by (rules 1.13): the one its weapon hits with. */
 export const techVia = (t: Tech): string => hitsWith(t.weaponId) || 'raw_power';
@@ -522,40 +532,25 @@ export function stop(t: Tech, target: Unit, how: StopHow | StopHow[], opts: { ti
   return true;
 }
 export type StopHow = 'pinned' | 'push' | 'prone' | 'halt';
-/** Move a unit against its will, tile by tile, so held Watches and Overwatch fire. dir: 'away' from or 'toward' the user
- * (or opts.from), or a tile to move onto. Returns the tiles moved (0: blocked or it held firm). */
+/** Move a unit against its will: the one forced move (combat.ts displace). dir: 'away' from or 'toward' the user (or
+ * opts.from), or a tile to move toward. Nobody reacts to it (no held Watch, no Overwatch: the unit did not choose to
+ * move); the tiles it enters act on it. Returns the tiles moved (0: blocked or it held firm). */
 export function forceMove(t: Tech, target: Unit, dir: 'away' | 'toward' | string, tiles: number, opts: { from?: string; how?: string } = {}): number {
   const cb = t.cb, origin = opts.from || t.u.pos;
-  if (target.nailed) { if (t.preview) t.note(target.name + ' is nailed in place and can\'t be moved.'); return 0; } // nailed in place: nothing moves it until it is pulled free
-  const stepTo = (from: string): string | null => {
-    const [x, y] = xy(from);
-    if (dir !== 'away' && dir !== 'toward') { const [dx, dy] = xy(dir); return x === dx && y === dy ? null : key(x + Math.sign(dx - x), y + Math.sign(dy - y)); }
-    const [ox, oy] = xy(origin), s = dir === 'away' ? 1 : -1, nx = x + s * Math.sign(x - ox), ny = y + s * Math.sign(y - oy);
-    return nx === x && ny === y ? null : key(nx, ny);
-  };
   // Heavy Hands (Raw Power 3): a melee technique's push away goes 1 tile further (the card, the preview and the push agree)
   if (dir === 'away') tiles += statQuery({ u: t.u, cb }, 'push_tiles', { tech: t.def.id, system: t.def.system }).add;
-  if (t.preview) { let at = target.pos, n = 0; const blocked = moveBlockers(cb); for (; n < tiles; n++) { const to = stepTo(at); if (!to || bad(cb, to, blocked, target)) break; at = to; } if (n) (t.pv.moves ||= []).push({ unit: target.id, to: at }); return n; }
-  let moved = 0; const blocked = moveBlockers(cb);
-  for (let i = 0; i < tiles && alive(target); i++) {
-    const to = stepTo(target.pos); if (!to) break;
-    if (bad(cb, to, blocked, target)) { // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
-      if (dir === 'away') pushBlocked(t, target, to, opts.how);
-      break;
-    }
-    const fm: any = emit(cb, 'forced_move', { u: target, by: t.u, tiles: 1, to, how: opts.how || t.def.id, cancel: false, cb, rng: t.rng }); if (fm.cancel) break;
-    const stopNow = unheld(t.u, () => {
-    const was = target.pos; target.pos = to; target.braced = false; moved++;
-    emitFx(cb, 'shove', { unit: t.u.id, target: target.id, from: was, to, ok: true });
-    // The walk a held shot is waiting for: the new Watches listen on move_step, the old Overwatch on its own call.
-    const ms: any = emit(cb, 'move_step', { u: target, from: was, at: to, i, route: [was, to], how: 'forced', stop: false, cb, rng: t.rng, forced: true });
-    if (alive(target)) triggerOverwatch(cb, t.rng, target);
-    return !!ms.stop;
-    });
-    if (stopNow) break;
+  const to = dir === 'away' ? { away: origin, tiles } : { toward: dir === 'toward' ? origin : dir, tiles };
+  const o = { by: t.u, how: (dir === 'away' ? 'push' : 'pull') as DisplaceHow, source: opts.how || t.def.id };
+  if (t.preview) {
+    const pv = displace(cb, null, target, to, { ...o, preview: true });
+    if (pv.stoppedBy === 'nailed') t.note(target.name + ' is nailed in place and can\'t be moved.');
+    if (pv.moved) (t.pv.moves ||= []).push({ unit: target.id, to: pv.to });
+    return pv.moved;
   }
-  if (moved) cb.log.push(target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ').');
-  return moved;
+  const mv = displace(cb, t.rng, target, to, o);
+  if (mv.blockedAt && dir === 'away') pushBlocked(t, target, mv.blockedAt, opts.how); // stopped by a wall or a body: Breaching Strike's hit again (the perk's own rule decides)
+  if (mv.moved) cb.log.push(target.name + ' is moved to ' + refOf(target.pos) + ' (' + t.def.name + ')' + mv.text + '.');
+  return mv.moved;
 }
 /** Breaching Strike's rule for a push that is blocked, bound by perks/skeleton.ts (that file imports this one). */
 let SLAM: ((cb: Combat, by: Unit, target: Unit, into: 'wall' | Unit, how: string) => void) | null = null;
@@ -566,7 +561,6 @@ export function pushBlocked(t: Tech, target: Unit, to: string | null, how?: stri
   if (!SLAM || t.preview || t.def.system !== 'melee' || !alive(target)) return;
   SLAM(t.cb, t.u, target, (to && t.cb.units.find((v) => v !== target && !v.dead && v.pos === to)) || 'wall', how || t.def.id);
 }
-const bad = (cb: Combat, to: string, blocked: Set<string>, mover: Unit) => { const [x, y] = xy(to); return x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h || blocked.has(to) || cb.units.some((v) => v !== mover && !v.dead && v.pos === to); };
 /** Rounds a technique burns beyond its rolls. False (with a note) if the weapon can't pay. */
 export function spendRounds(t: Tech, n: number): boolean {
   if (t.wield === 'throwable' && n > 0) { // a grenade is the ammunition: one from what the user carries

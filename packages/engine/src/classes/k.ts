@@ -16,7 +16,7 @@ import type { Combat, Unit, Term } from '../combat';
 import type { Character, OutburstDesign } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, standable, lineOfSight, resolveAttack, previewAttack, isMelee, emitFx, fxFell,
-  checkOver, unitSees, sideSees, objectsOf, unitFromEnemy,
+  checkOver, unitSees, sideSees, objectsOf, unitFromEnemy, displace
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
 import { mod, devotionXpOf, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns } from '../character';
@@ -24,33 +24,27 @@ import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
   flux as engineFlux, FLUX_MAX, CORE_CHARGE, isBoon, groundCap, glyphsPerTile, newestCondition, destroyPlaced, SIGIL_REV, MAX_GLYPHS,
-  pumpOutburst, formOf, MAX_STAGE, SOUL_AP, unitSave, unitStrength, strengthFor, withVia,
+  pumpOutburst, formOf, MAX_STAGE, SOUL_AP, unitSave, unitStrength, strengthFor, withVia, saveAgainst,
   type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';
 import { castAt, compileSpell, evokeMarks, strokePick, tidyStrokes, fadePattern } from '../sigil';
-import { d20, die } from '../rng';
+import { die } from '../rng';
+import { rollVs, rollD20 } from '../rolls';
 import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, reveal } from '../tactics';
 import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } from '../faith';
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
+import { overworld, say, unitById, tileOf, rngOf, tilesAround, foesOf, canStand, tilesLine } from '../kit';
 
 // =============================================================================================== helpers
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const onGrid = (h: Holder) => !!h.cb && !!h.u;
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const unitById = (cb: Combat, id: string | null | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
-const tileOf = (cb: Combat, t?: string | null) => (!t ? null : /^-?\d+,-?\d+$/.test(t) ? t : refKey(t, cb.map));
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? (((c as any).state ||= {}) as Record<string, any>) : {});
 /** Item state on the character without creating it (previews and stat queries must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};
 const sceneOf = (h: { g?: any }) => h.g?.story?.scene?.n ?? 0;
 const W = (u: Unit) => WEAPON[u.weapon];
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
-const around = (k: string, r: number) => { const [x, y] = xy(k), out: string[] = []; for (let i = -r; i <= r; i++) for (let j = -r; j <= r; j++) out.push(key(x + i, y + j)); return out; };
-const free = (cb: Combat, k: string, self?: Unit) => standable(cb.map, k) && !cb.units.some((v) => v !== self && !v.dead && v.pos === k) && !objectsOf(cb).some((o) => o.pos === k && /crate|pillar|barricade|low_wall|container|turret|barrel/.test(o.kind) && (o.hp == null || o.hp > 0));
 /** Do something with the AP check out of the way (the AP was paid by the action): AP is put back after. */
 function freeAp<T>(u: Unit, f: () => T): T { const keep = u.ap; u.ap = 99; try { return f(); } finally { u.ap = keep; } }
 /** A target unit from the action's targetId, or a tile from choice/text/tile. */
@@ -66,13 +60,8 @@ const handsEmpty = (u: Unit) => W(u)?.category === 'unarmed' && !u.offWeapon;
 /** Move a unit n tiles toward (n > 0) or away from (n < 0) a tile, stopping at anything in the way. */
 function nudge(cb: Combat, t: Unit, toward: string, n: number): string {
   if (t.dead || !n) return '';
-  const was = t.pos; let [x, y] = xy(t.pos); const [cx, cy] = xy(toward);
-  let dx = Math.sign(cx - x), dy = Math.sign(cy - y); if (n < 0) { dx = -dx; dy = -dy; } if (!dx && !dy) return '';
-  let moved = 0;
-  for (let i = 0; i < Math.abs(n); i++) { const k = key(x + dx, y + dy); if (!free(cb, k, t)) break; x += dx; y += dy; moved++; }
-  if (!moved) return '';
-  t.pos = key(x, y); emitFx(cb, 'shove', { target: t.id, from: was, to: t.pos, ok: true, magic: true });
-  return ' · ' + t.name + (n > 0 ? ' is pulled' : ' is thrown') + ' to ' + refOf(t.pos);
+  const mv = displace(cb, null, t, n > 0 ? { toward, tiles: n } : { away: toward, tiles: -n }, { by: null, how: n > 0 ? 'pull' : 'push', source: 'magic', fx: { magic: true } }); // the one forced move (combat.ts)
+  return mv.moved ? ' · ' + t.name + (n > 0 ? ' is pulled' : ' is thrown') + ' to ' + refOf(t.pos) + mv.text : '';
 }
 /** Flux on an Evoker (the engine's own rule, magic.ts flux): over 6 the Evoker overloads. MISSING EXPORT: flux(). */
 /** Flux through the engine's own rule (magic.ts flux, exported for class moves: hooks gap K1). */
@@ -208,9 +197,9 @@ register({
       const c = h.c!, p = PATRON[c.patron!], bl = (p.blessings || []).find((b: any) => b.id === a.choice) || (p.blessings || [])[0];
       // Rules 1.6 (item 619): by standing (no roll) when Devotion reaches the Hymn's gate, else an overreach (a miss: −3 XP, item 716).
       const gate = (GATE as any)[bl.tier || 1] ?? 3, dv = devotionNow(c), m = mod(c.skills.faith || 0);
-      const tn = dv >= gate ? 0 : OVERREACH.base + OVERREACH.step * (gate - dv), r = tn ? d20(rng as any) : 0, ok = !tn || r === 20 || (r !== 1 && r + m >= tn);
+      const tn = dv >= gate ? 0 : OVERREACH.base + OVERREACH.step * (gate - dv), rv = tn ? rollVs(h.cb || null, rng as any, { by: h.u || null, mod: m, tn, why: 'pray' }) : null, ok = !rv || rv.ok;
       if (!ok) shiftDevotion(h.g || null, null, c, OVERREACH.miss, 'a failed overreach');
-      const line = c.name + ' prays over a shell to ' + p.name + (tn ? ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −' + -OVERREACH.miss + ' Devotion XP.');
+      const line = c.name + ' prays over a shell to ' + p.name + (rv ? ': ' + rv.text + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −' + -OVERREACH.miss + ' Devotion XP.');
       if (ok) charState(c).blessedShell = { id: bl.id, scene: sceneOf(h), power: blessPower(null, c) };
       postStory(h, line); if (h.g) pendRuling(h.g, c, h.key, line + ' Describe how the patron answers (or doesn\'t).');
       return null;
@@ -424,9 +413,9 @@ register({
       if (grammarError(p.words, u.mg!.maxWords)) { const ids = new Set(p.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !ids.has(g.id)); tidyStrokes(cb.glyphs); for (const g of p.glyphs) emitFx(cb, 'glyph_fade', { tile: g.pos, word: g.word, side: g.side, why: 'fizzle' }); say(cb, u.name + '\'s Stitch fizzles: ' + p.words.map((w) => w.toUpperCase()).join(' · ') + ' make no spell, and the strokes fade.'); return null; }
       let pv; STITCHING = u.id; try { pv = previewEvoke(cb, u, t, aim, opts); } finally { STITCHING = null; }
       if (!pv.ok) return pv.why || 'Can\'t fire that.';
-      let g = d20(rng as any); const first = g;
+      let g = rollD20(rng as any).die; const first = g; // the Stitch is a bare d20 read off a table, not a roll against a number
       const he = holderOf({ u, cb }, 'stroke_gambler.house_edge');
-      if (g <= 5 && he && modOn({ ...he, cb, g: h.g }, 'reroll') && uses({ ...he, cb, g: h.g }).take('per_combat', 1)) { g = d20(rng as any); say(cb, 'House Edge: ' + u.name + ' rerolls the Stitch (' + first + ' → ' + g + ').'); }
+      if (g <= 5 && he && modOn({ ...he, cb, g: h.g }, 'reroll') && uses({ ...he, cb, g: h.g }).take('per_combat', 1)) { g = rollD20(rng as any).die; say(cb, 'House Edge: ' + u.name + ' rerolls the Stitch (' + first + ' → ' + g + ').'); }
       say(cb, 'STITCH d20 ' + g + (g <= 5 ? ': it turns on its maker' : g >= 16 ? ': the house pays double' : ': it holds'));
       const st = stateOf(h);
       if (g <= 5) {
@@ -870,9 +859,8 @@ function clearGrand(h: Holder) {
 }
 /** A Grand form's save: the target's save (unitSave: Shaken, residue and all) against 12 + the Brain Power strength
  * the form was laid with (rules 1.13; the caller's withVia holds it). */
-function bodySave(rng: Rng, o: Unit, t: Unit, fam: 'body' | 'brain' | 'heart' = 'body'): boolean {
-  const r = d20(rng), m = unitSave(t, fam), tn = 12 + strengthFor(o, null);
-  return r === 20 || (r !== 1 && r + m >= tn);
+function bodySave(cb: Combat, rng: Rng, o: Unit, t: Unit, fam: 'body' | 'brain' | 'heart' = 'body'): boolean {
+  return saveAgainst(cb, rng, o, t, fam, 'grand_form').ok; // the one save (rolls.ts), at the strength the form was laid with
 }
 /** Everything a Grand form does is a Sigil's, at the strength stored when it was laid. */
 const inGrand = <T,>(o: Unit, z: Zone, fn: () => T): T => withVia(o, 'brain_power', fn, (z as any).str ?? undefined);
@@ -888,7 +876,7 @@ function fogSync(cb: Combat) {
 function grandTurnStart(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, g: any): string {
   const w = zWord(z), ally = t.side === o.side, me = earthed(o, t);
   switch (w) {
-    case 'fire': return me ? '' : ' · lava burns ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'lava'), 'elemental', 'fire') + (t.dead ? '' : bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
+    case 'fire': return me ? '' : ' · lava burns ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'lava'), 'elemental', 'fire') + (t.dead ? '' : bodySave(cb, rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
     case 'shock': { if (me) return ''; let s = armoured(t, g) ? ' · the storm arcs to ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'storm'), 'elemental', 'lightning') : ''; if (isRobot(t) && !t.dead) s += applyCond(cb, rng, o, t, 'stunned', 1); return s; }
     case 'ward': return ally ? applyCond(cb, rng, o, t, 'guarded', 1, undefined, { skipSave: true }) + ' · the dome shields ' + t.name + ' (' + grantShield(cb, t, itemAmount('class:grand_sigilist.enlarge', 'dome'), o) + ')' : '';
     case 'mend': return ally ? heal(t, itemAmount('class:grand_sigilist.enlarge', 'mend', [term(o.mg?.healMult || 1, 'stat: healing given')]), cb, o) : '';
@@ -896,14 +884,14 @@ function grandTurnStart(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, g: any)
     case 'condense': return me || ally || !cb.units.some((x) => x !== t && !x.dead && dist(x.pos, t.pos) === 1) ? '' : ' · the Crush grinds ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'crush'), 'sigil');
     // PUSH (Gust): enemies starting a turn inside are blown 1 tile outward.
     case 'push': { if (ally || t.pos === zCentre(z)) return ''; const [cx, cy] = xy(zCentre(z)), [x, y] = xy(t.pos); return nudge(cb, t, key(cx + (x - cx) * 9, cy + (y - cy) * 9), 1).replace('is pulled', 'is blown') || ''; }
-    case 'muddle': { if (me || bodySave(rng, o, t, 'brain')) return ''; const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]], [dx, dy] = dirs[die(rng, 8) - 1], [x, y] = xy(t.pos); return nudge(cb, t, key(x + dx * 2, y + dy * 2), 1).replace('is pulled', 'staggers') || ' · ' + t.name + ' staggers in place'; }
+    case 'muddle': { if (me || bodySave(cb, rng, o, t, 'brain')) return ''; const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]], [dx, dy] = dirs[die(rng, 8) - 1], [x, y] = xy(t.pos); return nudge(cb, t, key(x + dx * 2, y + dy * 2), 1).replace('is pulled', 'staggers') || ' · ' + t.name + ' staggers in place'; }
     case 'dread': return !ally ? applyCond(cb, rng, o, t, 'shaken', undefined, 'heart') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
     case 'light': return t.hidden && !ally ? reveal(cb, t, 'the Noon form') : '';
     case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
     // The 1.4 words (item 468).
     // COMMAND (Parade ground): a Brain save, or halt: Pinned for the turn (no moving; it can still act).
-    case 'command': return ally || condOn(t, 'pinned') || bodySave(rng, o, t, 'brain') ? '' : ' · the Parade ground halts ' + t.name + applyCond(cb, rng, o, t, 'pinned', 1, undefined, { skipSave: true });
+    case 'command': return ally || condOn(t, 'pinned') || bodySave(cb, rng, o, t, 'brain') ? '' : ' · the Parade ground halts ' + t.name + applyCond(cb, rng, o, t, 'pinned', 1, undefined, { skipSave: true });
     case 'quicken': { if (!ally || t === o) return ''; const was = t.ap; t.ap = Math.min(9, t.ap + 1); return t.ap > was ? ' · ' + t.name + ' quickens (+1 AP)' : ''; }
     case 'cleanse': { if (!ally) return ''; const id = newestCondition(t); if (!id) return ''; endCond(t, id, cb); emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'cleanse', cond: id }); return ' · clear water washes ' + id + ' off ' + t.name; }
   }
@@ -914,7 +902,7 @@ function grandEnter(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, ms: any): s
   const w = zWord(z), me = earthed(o, t); if (me) return '';
   const hit = ((z as any).hit ||= {}); if (hit[t.id] === cb.round + ':' + w) return ''; hit[t.id] = cb.round + ':' + w;
   switch (w) {
-    case 'fire': return ' · lava burns ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'lava'), 'elemental', 'fire') + (t.dead || bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
+    case 'fire': return ' · lava burns ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'lava'), 'elemental', 'fire') + (t.dead || bodySave(cb, rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
     case 'bind': { const l = applyCond(cb, rng, o, t, 'pinned', undefined, 'body'); if (condOn(t, 'pinned')) ms.stop = 'tar'; return ' · tar' + l; }
     case 'gale': { ms.stop = 'cyclone'; const [cx, cy] = xy(zCentre(z)), [x, y] = xy(t.pos); return nudge(cb, t, key(cx - (x - cx) * 9, cy - (y - cy) * 9), 2).replace('is pulled', 'is thrown') || ' · the cyclone batters ' + t.name; }
     case 'light': return t.hidden && t.side !== o.side ? reveal(cb, t, 'the Noon form') : '';
@@ -952,7 +940,7 @@ function etch(cb: Combat, o: Unit, z: Zone): string {
 function mortarTile(cb: Combat, o: Unit, z: Zone): string | null {
   const foes = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && !x.hidden);
   let best: string | null = null, score = 0;
-  for (const f of foes) for (const k of around(f.pos, 1)) {
+  for (const f of foes) for (const k of tilesAround(f.pos, 1)) {
     if (dist(k, zCentre(z)) > 6) continue;
     const sc = foes.reduce((n, x) => n + (x.pos === k ? 3 : dist(x.pos, k) === 1 ? 1 : 0), 0);
     if (sc > score || (sc === score && best && k < best)) { best = k; score = sc; }
@@ -968,11 +956,6 @@ function mortar(cb: Combat, rng: Rng, o: Unit, z: Zone): string {
 }
 let ARCING = false;
 /** Tiles a straight shot crosses (for GALE's -5). */
-function segTiles(a: string, b: string): string[] {
-  const [x0, y0] = xy(a), [x1, y1] = xy(b), n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)), out: string[] = [];
-  for (let i = 1; i < n; i++) out.push(key(Math.round(x0 + ((x1 - x0) * i) / n), Math.round(y0 + ((y1 - y0) * i) / n)));
-  return out;
-}
 const GRAND_STONE = 4, GRAND_WALLS = 8;
 register({
   id: 'grand_sigilist.enlarge', claims: 'all',
@@ -989,7 +972,7 @@ register({
       run: (h, a) => {
         const u = h.u!, cb = h.cb!, t = aimOf(cb, a, 'tile')!, w = a.choice!, m = u.mg!, left = 3 + m.durBonus;
         m.charge -= 3; m.cast = true;
-        const tiles = around(t, 2).filter((k) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; });
+        const tiles = tilesAround(t, 2).filter((k) => { const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; });
         const seq = () => 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
         const z: any = { id: seq(), kind: 'grand', tiles, words: [w], by: u.id, side: u.side, left, mult: 1, who: u.name, centre: t, str: unitStrength(u, 'brain_power') };
         const extra: string[] = []; cb.zones = [...(cb.zones || []), z];
@@ -1000,9 +983,9 @@ register({
         if (w === 'stone') {
           const want = (a.text || '').split(/[\s,]+/).map((x) => tileOf(cb, x)).filter((k): k is string => !!k && tiles.includes(k));
           const diag = (k: string) => (xy(k)[0] - xy(t)[0]) !== 0 && (xy(k)[1] - xy(t)[1]) !== 0;
-          const auto = around(t, 1).filter((k) => k !== t).sort((a, b) => Number(diag(b)) - Number(diag(a)));
+          const auto = tilesAround(t, 1).filter((k) => k !== t).sort((a, b) => Number(diag(b)) - Number(diag(a)));
           const placed: string[] = [];
-          for (const k of [...want, ...auto]) { if (placed.length >= GRAND_STONE) break; if (placed.includes(k) || !free(cb, k)) continue; cb.objects = [...objectsOf(cb), makeObject('earthwork_' + k.replace(',', '_') + '_' + cb.round, 'crate', k, { name: 'Earthwork pillar' })]; placed.push(k); }
+          for (const k of [...want, ...auto]) { if (placed.length >= GRAND_STONE) break; if (placed.includes(k) || !canStand(cb, k)) continue; cb.objects = [...objectsOf(cb), makeObject('earthwork_' + k.replace(',', '_') + '_' + cb.round, 'crate', k, { name: 'Earthwork pillar' })]; placed.push(k); }
           line = placed.length ? ' · earthworks rise at ' + placed.map(refOf).join(', ') : ' · no room for earthworks';
         }
         if (w === 'light') for (const x of cb.units) if (x.hidden && x.side !== u.side && inZ(z, x.pos)) line += reveal(cb, x, 'the Noon form');
@@ -1012,7 +995,7 @@ register({
         if (w === 'raise') {
           const ring = tiles.filter((k) => dist(k, t) === 2).sort((a, b) => Math.atan2(xy(a)[1] - xy(t)[1], xy(a)[0] - xy(t)[0]) - Math.atan2(xy(b)[1] - xy(t)[1], xy(b)[0] - xy(t)[0]));
           const walls: string[] = [];
-          ring.forEach((k, i) => { if (i % 2 || walls.length >= GRAND_WALLS || !free(cb, k)) return; cb.objects = [...objectsOf(cb), makeObject('gw' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), 'sigil_wall', k, { hp: 30, max: 30, by: u.id, side: u.side, left, who: u.name, sigilWall: true, grandWall: true } as any)]; walls.push(k); });
+          ring.forEach((k, i) => { if (i % 2 || walls.length >= GRAND_WALLS || !canStand(cb, k)) return; cb.objects = [...objectsOf(cb), makeObject('gw' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), 'sigil_wall', k, { hp: 30, max: 30, by: u.id, side: u.side, left, who: u.name, sigilWall: true, grandWall: true } as any)]; walls.push(k); });
           line += walls.length ? ' · ramparts rise at ' + walls.map(refOf).join(', ') : ' · no room for ramparts';
         }
         if (w === 'sense') for (const x of cb.units) if (x.hidden && !x.dead && x.side !== u.side && dist(x.pos, t) <= 4) line += reveal(cb, x, 'Second sight');
@@ -1065,7 +1048,7 @@ register({
       fogSync(cb);
       // FREEZE (ice sheet): a Body save each move through it, or fall Prone.
       if (earthed(o, t)) return;
-      for (const z of grandZones(cb, o)) if (zWord(z) === 'freeze' && (ctx.route || []).some((k: string) => inZ(z, k)) && !t.prone) inGrand(o, z, () => { if (!bodySave(rngOf(h, ctx), o, t)) say(cb, t.name + ' slips on the ice' + applyCond(cb, rngOf(h, ctx), o, t, 'prone') + '.'); });
+      for (const z of grandZones(cb, o)) if (zWord(z) === 'freeze' && (ctx.route || []).some((k: string) => inZ(z, k)) && !t.prone) inGrand(o, z, () => { if (!bodySave(cb, rngOf(h, ctx), o, t)) say(cb, t.name + ' slips on the ice' + applyCond(cb, rngOf(h, ctx), o, t, 'prone') + '.'); });
     },
     move_cost: (ctx, h) => {
       const o = h.u, cb = h.cb!, t: Unit = ctx.u; if (!o || !onGrid(h) || !stateOf(h).staff) return;
@@ -1080,7 +1063,7 @@ register({
       for (const z of grandZones(cb, o)) {
         const w = zWord(z), aIn = inZ(z, att.pos), tIn = inZ(z, tgt.pos);
         if (w === 'light' && aIn && att.side !== o.side) ctx.terms.push({ v: -2, label: 'Noon (Grand LIGHT)' });
-        if (w === 'gale' && !ctx.melee && att !== o && (aIn || tIn || segTiles(att.pos, tgt.pos).some((k) => inZ(z, k)))) ctx.terms.push({ v: -5, label: 'Cyclone (Grand GALE)' });
+        if (w === 'gale' && !ctx.melee && att !== o && (aIn || tIn || tilesLine(att.pos, tgt.pos, { end: false }).some((k) => inZ(z, k)))) ctx.terms.push({ v: -5, label: 'Cyclone (Grand GALE)' });
         if (w === 'seek' && tIn && att.side === o.side && tgt.side !== o.side) ctx.ignoreCover = true;
         // ACID (Etching ground): enemies inside have -2 Defense (your side hits them more easily).
         if (w === 'acid' && tIn && tgt.side !== o.side && att.side === o.side) ctx.terms.push({ v: 2, label: 'Etched (Grand ACID)' });
@@ -1674,7 +1657,7 @@ register({
     { id: 'call', label: 'Call the twin', scope: ['combat'], target: 'tile', ap: 2,
       text: 'Your twin appears on a free tile within 3 tiles of you. It acts right after you each round, with 4 AP.',
       available: (h) => (!h.u || isTwin(h.u) ? false : !cs(h.c).twin ? 'Manifest the twin first. You do that out of a fight.' : twinOf(h.cb!, h.u) ? 'The twin is already here.' : cs(h.c).twinLost === sceneOf(h) ? 'Your twin fell this scene. You can call it again next scene.' : true),
-      preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !free(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },
+      preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !canStand(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },
       run: (h, a, rng) => {
         const u = h.u!, cb = h.cb!, c = h.c!, t = aimOf(cb, a, 'tile')!, tw = cs(c).twin;
         const id = 'tw-' + u.id;
@@ -1694,7 +1677,7 @@ register({
     { id: 'call_world', label: 'Call the twin', scope: ['world'], target: 'tile', ap: 2,
       text: 'Your twin appears on a free tile within 3 tiles of you, with 4 AP of its own each round. Out of a fight it can only move. If a fight starts, it is already called.',
       available: (h) => (!h.u || !h.c || isTwin(h.u) ? false : !cs(h.c).twin ? 'Manifest the twin first.' : (h.c.companions || []).some((k) => k.kind === 'twin') ? 'The twin is already here.' : cs(h.c).twinLost === sceneOf(h) ? 'Your twin fell this scene. You can call it again next scene.' : true),
-      preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !free(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },
+      preview: (h, a) => { const t = aimOf(h.cb!, a, 'tile'); if (!t || dist(t, h.u!.pos) > 3 || !canStand(h.cb!, t)) return { ok: false, why: 'Pick a free tile within 3 tiles of you.' }; return {}; },
       run: (h, a) => {
         const u = h.u!, c = h.c!, g = h.g, t = aimOf(h.cb!, a, 'tile')!, tw = cs(c).twin, hp = Math.floor(0.5 * maxHp(c));
         c.companions = [...(c.companions || []).filter((k) => k.kind !== 'twin'), { id: 'twin', kind: 'twin', name: TWIN_NAME, hp, maxHp: hp, ...(tw.portrait ? { img: tw.portrait } : {}) }];
@@ -1765,8 +1748,8 @@ register({
     },
     moved: (ctx, h) => {
       const u = h.u; if (!u || isTwin(u) || ctx.u !== u || !h.cb) return; const tw = twinOf(h.cb, u); if (!tw || dist(tw.pos, u.pos) <= 6) return;
-      const spot = around(u.pos, 6).filter((k) => free(h.cb!, k, tw)).sort((a, b) => dist(a, tw.pos) - dist(b, tw.pos))[0];
-      if (spot) { tw.pos = spot; say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' follows to ' + refOf(spot) + '.'); }
+      const spot = tilesAround(u.pos, 6).filter((k) => canStand(h.cb!, k, tw)).sort((a, b) => dist(a, tw.pos) - dist(b, tw.pos))[0];
+      if (spot) { displace(h.cb!, null, tw, { tile: spot }, { by: null, how: 'teleport', source: 'twin', willing: true, fx: false }); say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + ' follows to ' + refOf(spot) + '.'); }
     },
     on_downed: (ctx, h) => {
       const u = h.u; if (!u || isTwin(u) || ctx.victim !== u || !h.cb) return; const tw = twinOf(h.cb, u); if (!tw) return;

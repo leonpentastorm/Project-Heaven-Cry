@@ -28,19 +28,18 @@ import { type Character, mod, prayerCooldown, maxSigilWords, migrateDesign } fro
 import { songMod, musicTraitOf, startSong } from '../music';
 import { makeObject } from '../objects';
 import { applyMemOp } from '../memory';
-import { d20, die, type Rng } from '../rng';
+import { die, type Rng } from '../rng';
 import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
+import { rngOf, tilesLine, foesOf, alliesOf } from '../kit';
+import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const gameOf = (h: Holder): any => h.g ?? boundGame();
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || gameOf(h)?.rng || { state: 1 };
 const me = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id === h.u.id;
 const charOf = (h: Holder): Character | null => h.c || charOfUnit(h.u) || null;
 const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
 const turnStamp = (h: Holder) => stampOf('per_turn', { cb: h.cb, g: gameOf(h) });
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v) && !v.companion);
-const alliesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side === u.side && alive(v));
 /** Outburst damage (rules 1.5): Soul damage, or an elemental Outburst's (told from a Sigil's by the MP it carries). */
 const outburstHit = (src: any) => !!src && (src.type === 'soul' || (src.type === 'elemental' && src.spellMp != null));
 /** Whose glyph this is (a 1.3 save's Hold the Stroke tagged pooled glyphs "<unitId>#pool"; rules 1.4 asks 'ground_cap'). */
@@ -399,7 +398,6 @@ register({
 // release's stage multiplier and rider stage (the 1.5 maths: magic.ts outburstArea and outburstDamage). It lands after
 // the primary hit, the second school and the tone's riders (the 'outburst_after' hook), on whoever is still standing.
 // =====================================================================================================================
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 function extraSchool(cb: Combat, rng: Rng, u: Unit, d: any, school: string, option: string | undefined, sm: number, stage: number, aim: string): string {
   const dd = migrateDesign(d), tiles = new Set(outburstArea(cb, u, dd, formOf(dd) === 'aura' ? u.pos : aim)), rs = riderStage(cb, stage);
   const targets = cb.units.filter((v) => !v.dead && (tiles.has(v.pos) || (school === 'buff' && formOf(dd) === 'aura' && v === u)) && (school === 'buff' ? v.side === u.side : v !== u));
@@ -618,7 +616,7 @@ register({
     blessing_in: (ctx, h) => {
       const u = h.u, cb: Combat = ctx.cb; if (!u || !me(h, ctx.u) || !stateOf(h).preach) return;
       let line = '';
-      for (const e of foesOf(cb, u)) if (dist(e.pos, u.pos) <= 4) line += applyCond(cb, rngOf(h, ctx), u, e, 'shaken', undefined, undefined, { via: 'faith' });
+      for (const e of foesOf(cb, u, { companions: false })) if (dist(e.pos, u.pos) <= 4) line += applyCond(cb, rngOf(h, ctx), u, e, 'shaken', undefined, undefined, { via: 'faith' });
       if (line) log(cb, 'The sermon burns (Fire Sermon)' + line + '.');
     },
   },
@@ -640,7 +638,7 @@ register({
       available: (h) => (h.u && condOn(h.u, 'silenced') ? 'Silenced: no prayers.' : true),
       run: (h) => {
         const u = h.u!, cb = h.cb!, v = tiles(h), got: string[] = [];
-        for (const t of alliesOf(cb, u)) {
+        for (const t of alliesOf(cb, u, { self: true })) {
           if (dist(t.pos, u.pos) > 3) continue;
           const st = litOf(h.key, { u: t, cb, g: gameOf(h) });
           if (st.lit && st.lit.v > v) continue;
@@ -688,7 +686,7 @@ register({
 // voice from above (the Narrator speaks).
 // =====================================================================================================================
 const isUpper = (v: { kind?: string; tags?: string[] } | null | undefined) => !!v && (v.kind === 'upper_realm' || (v.tags || []).includes('upper_realm'));
-const upperFoes = (cb: Combat, u: Unit) => foesOf(cb, u).filter(isUpper);
+const upperFoes = (cb: Combat, u: Unit) => foesOf(cb, u, { companions: false }).filter(isUpper);
 /** The area map: upper-realm tokens within 10 tiles of the holder, once a scene each (a line; a lurker is revealed). */
 function owSenseUpper(h: Holder, at?: string) {
   const g = gameOf(h), c = charOf(h); if (!g || !c || c.dead) return; at ||= positionsOf(g)[c.id]; if (!at) return;
@@ -830,7 +828,7 @@ register({
         return;
       }
       if (u.hidden) reveal(cb, u, 'Echo Chamber: the Outburst is loud');
-      const near = foesOf(cb, u).filter((v) => dist(v.pos, u.pos) <= 10);
+      const near = foesOf(cb, u, { companions: false }).filter((v) => dist(v.pos, u.pos) <= 10);
       for (const v of near) (((cb.lastSeen ||= {})[v.side] ||= {}))[u.id] = u.pos;
       if (near.length) (cb.notes ||= []).push('TRAIT Hollow Heart (' + u.name + ', r' + cb.round + '): the Outburst is loud: ' + near.map((v) => v.name).join(', ') + ' know where ' + u.name + ' is until their next turn — yours to rule');
     },
@@ -877,8 +875,8 @@ register({
         const c = charOf(h), g = gameOf(h); if (!c || !g) return 'Pray in the story.';
         const pick = stolenPick(args.choice); if (!pick) return 'Name a Blessing to steal.';
         if ((c.skills.will_power || 0) < 3) return 'Stolen Fire needs Will Power 3.';
-        const r = d20(rng), m = mod(c.skills.will_power || 0), tn = ATHEIST_TN[pick.bl.tier || 1] ?? 14, ok = r === 20 || (r !== 1 && r + m >= tn); // rules 1.6: by dice
-        const eid = postStory(h, 'steals a prayer to ' + pick.p.name + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn + (ok ? ' · heard' : ' · silence') + (args.text ? ' ("' + String(args.text).slice(0, 160) + '")' : ''));
+        const rv = rollVs(null, rng, { mod: mod(c.skills.will_power || 0), tn: ATHEIST_TN[pick.bl.tier || 1] ?? 14 }), ok = rv.ok; // rules 1.6: by dice
+        const eid = postStory(h, 'steals a prayer to ' + pick.p.name + ': ' + rv.text + (ok ? ' · heard' : ' · silence') + (args.text ? ' ("' + String(args.text).slice(0, 160) + '")' : ''));
         if (ok) pendRuling(g, c, h.key, c.name + ' stole a prayer and was heard: ' + pick.p.name + ' answers with ' + pick.bl.name + ' × ' + (1 + 0.1 * (c.skills.will_power || 0)).toFixed(1) + ' (Heretic: the patron may resent it).', eid || undefined);
         return null;
       },
@@ -943,8 +941,8 @@ register({
   on: {
     combat_start: (ctx, h) => {
       const u = h.u, cb: Combat = ctx.cb, c = charOf(h); if (!u || !c || ow(cb) || !upperFoes(cb, u).length) return;
-      const r = d20(rngOf(h, ctx)), m = mod(c.skills.faith || 0) + (u.sk?.faith || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
-      log(cb, u.name + ' faces Heaven\'s own: Faith d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs 12 · ' + (ok ? 'steady' : 'hesitates (−2 AP on the first turn)') + ' (Heaven\'s Faithful).');
+      const rv = rollVs(cb, rngOf(h, ctx), { by: u, mod: mod(c.skills.faith || 0) + (u.sk?.faith || 0), tn: TN.standard, why: 'faith' }), ok = rv.ok;
+      log(cb, u.name + ' faces Heaven\'s own: Faith ' + rv.text + ' · ' + (ok ? 'steady' : 'hesitates (−2 AP on the first turn)') + ' (Heaven\'s Faithful).');
       if (!ok) stateOf(h).hesitate = true;
     },
     turn_start_pre: (ctx, h) => { if (!me(h, ctx.u)) return; const s = stateOf(h); if (s.hesitate) { ctx.penalties.push({ n: 2, why: 'Treason: hesitation' }); s.hesitate = false; } },
@@ -1073,13 +1071,6 @@ interface Proj { id: string; kind: 'wall' | 'figure' | 'sound'; tile: string; le
 const MIR_KEY = 'perk:mirage';
 const mirState = (u: Unit, cb: Combat | null | undefined, g?: any) => stateOf({ key: MIR_KEY, u, cb, g } as any);
 const visMod = (c: Character | null | undefined) => mod(c?.skills?.visualization || 0);
-/** Tiles on the line between two tiles (excluding the ends). */
-function lineTiles(a: string, b: string): string[] {
-  let [x0, y0] = xy(a); const [x1, y1] = xy(b), out: string[] = [];
-  const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1; let err = dx + dy;
-  while (!(x0 === x1 && y0 === y1)) { const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } const k = key(x0, y0); if (k !== b) out.push(k); }
-  return out;
-}
 /** Every live projection on the field, with its caster. */
 function projections(cb: Combat): { by: Unit; p: Proj }[] {
   const out: { by: Unit; p: Proj }[] = [];
@@ -1089,17 +1080,17 @@ function projections(cb: Combat): { by: Unit; p: Proj }[] {
 const believes = (e: Unit, p: Proj) => p.believers.includes(e.id);
 function disprove(by: Unit, e: Unit, p: Proj) { p.believers = p.believers.filter((x) => x !== e.id); const s = by.ps![MIR_KEY]; if (!(s.disproved ||= []).includes(e.id)) s.disproved.push(e.id); }
 function castMirage(h: Holder, rng: Rng, specs: { kind: Proj['kind']; tile: string }[]): string {
-  const u = h.u!, cb = h.cb!, c = charOf(h), s = mirState(u, cb, gameOf(h)), tn = 12 + visMod(c), left = h.tier === 'II' ? 2 : 1;
+  const u = h.u!, cb = h.cb!, c = charOf(h), s = mirState(u, cb, gameOf(h)), tn = SAVE_TN + visMod(c), left = h.tier === 'II' ? 2 : 1;
   s.proj = []; // one cast at a time: a new one replaces the old
   const lines: string[] = [];
   for (const sp of specs) {
     const p: Proj = { id: 'mi' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: sp.kind, tile: sp.tile, left, believers: [] };
     const rolls: string[] = [];
-    for (const e of foesOf(cb, u)) {
+    for (const e of foesOf(cb, u, { companions: false })) {
       const aware = sp.kind === 'sound' ? dist(e.pos, sp.tile) <= HEARING : unitSees(cb, e, sp.tile); if (!aware) continue;
-      const m = TIER_SAVE[e.tier || 'minion'] ?? 0, plus = (s.disproved || []).includes(e.id) ? 5 : 0, r = d20(rng), ok = r === 20 || (r !== 1 && r + m + plus >= tn);
+      const plus = (s.disproved || []).includes(e.id) ? 5 : 0, rv = rollVs(cb, rng, { by: e, mod: [{ add: tierSave(e.tier), label: 'tier' }, { add: plus, label: 'disproved' }], tn, why: 'mirage' }), ok = rv.ok;
       if (!ok) p.believers.push(e.id);
-      rolls.push(e.name + ' ' + (r + m + plus) + (ok ? ' sees through it' : ' believes'));
+      rolls.push(e.name + ' ' + rv.total + (ok ? ' sees through it' : ' believes'));
     }
     s.proj.push(p);
     lines.push('a ' + sp.kind + ' at ' + refOf(sp.tile) + (rolls.length ? ' (Acuity vs ' + tn + ': ' + rolls.join(', ') + ')' : ' (no one sees it)'));
@@ -1134,7 +1125,7 @@ register({
       text: 'Project a false wall, figure or sound to distract or misdirect. The engine rolls the NPCs\' Acuity; the Narrator plays them.',
       run: (h, args, rng) => {
         const c = charOf(h), g = gameOf(h); if (!c || !g) return 'Project in the story.';
-        const tn = 12 + visMod(c), rolls = npcsOf(g).filter((n: any) => n.side === 'hostile' && !n.dead).slice(0, 8).map((n: any) => { const r = d20(rng), m = TIER_SAVE[n.tier || 'minion'] ?? 0, ok = r === 20 || (r !== 1 && r + m >= tn); return n.name + ' ' + (r + m) + (ok ? ' sees through it' : ' believes'); });
+        const tn = SAVE_TN + visMod(c), rolls = npcsOf(g).filter((n: any) => n.side === 'hostile' && !n.dead).slice(0, 8).map((n: any) => { const rv = rollVs(null, rng, { mod: tierSave(n.tier), tn }), ok = rv.ok; return n.name + ' ' + rv.total + (ok ? ' sees through it' : ' believes'); });
         const t = String(args.text || '').trim().slice(0, 200), eid = postStory(h, 'projects ' + t + ' (Mirage; Acuity vs ' + tn + (rolls.length ? ': ' + rolls.join(', ') : '') + ').');
         pendRuling(g, c, h.key, 'Mirage: ' + c.name + ' projects ' + t + '. The engine rolled: ' + (rolls.join(', ') || 'no hostile NPCs nearby') + '. Play what the fooled NPCs do.', eid || undefined);
         return null;
@@ -1155,7 +1146,7 @@ register({
     },
     attack_preview: (ctx, h) => {
       const a: Unit = ctx.att; if (!h.u || !a || a.side === h.u.side || ctx.fail || ctx.melee) return;
-      const line = lineTiles(a.pos, ctx.tgt.pos);
+      const line = tilesLine(a.pos, ctx.tgt.pos, { end: false });
       for (const p of (mirState(h.u, ctx.cb).proj || []) as Proj[]) if (p.kind === 'wall' && !p.solid && believes(a, p) && line.includes(p.tile)) { ctx.fail = 'A wall stands in the way (or so they believe).'; return; }
     },
     attack_roll: (ctx, h) => {

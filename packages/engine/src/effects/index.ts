@@ -30,7 +30,7 @@ export { itemAmount, amountMult, amountBlock, amountSpecOf, amountHome, type Amo
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';
 export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';
 export { coverageReport, coverageGaps, coverageOf, verdictOf, verdictFor, coverageSummary, type CoverageRow, type Verdict } from './coverage';
-export { skillRollMod, actionAp, immune, forbids, xpAfter, itemWords, wordCostMods, wearing, contextHolds, pushAway, TAG_VOCAB, COST_SITES } from './core';
+export { skillRollMod, actionAp, immune, forbids, xpAfter, itemWords, wordCostMods, wearing, contextHolds, pushAway, TAG_VOCAB } from './core';
 export { gainEcho, ECHO_MAX } from './echo';
 
 /** Does this unit or character hold the item (an id or key)? */
@@ -50,3 +50,4 @@ export function stateOf(h: { key: string; u?: Unit | null; c?: Character | null;
   if (id && g?.story) { const ps = ((g.story.ps ||= {})[id] ||= {}); return ((ps.items ||= {})[h.key] ||= {}); }
   return h.u ? ((h.u.ps ||= {})[h.key] ||= {}) : {};
 }
+export * from './stats';

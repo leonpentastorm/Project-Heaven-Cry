@@ -13,7 +13,7 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, isMelee, emitFx, checkOver,
-  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode,
+  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode, displace
 } from '../combat';
 import { WEAPON, SIGIL } from '../data';
 import { dropToPile } from '../combat';
@@ -21,18 +21,15 @@ import { magItem } from '../containers';
 import { mod, healingMult, magazineSize } from '../character';
 import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, magicOf, flux, withElement, CORE_CHARGE, applyToneRiders } from '../magic';
 import { castAt, glyphCost, sigilReady } from '../sigil';
-import { d20, die } from '../rng';
+import { die } from '../rng';
+import { rollVs } from '../rolls';
 import { resOf, resGain, resSpend, canReact, useReaction , dropHeldShot } from '../tactics';
 import { makeObject } from '../objects';
+import { overworld, say, unitById, tileOf, rngOf, foesOf } from '../kit';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^-?\d+,-?\d+$/.test(t) ? t : refKey(t, cb.map));
-const unitById = (cb: Combat, id: string | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? ((c as any).state ||= {}) : {});
 /** Item state on the character without creating it (previews and stat queries must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};
@@ -42,7 +39,6 @@ const isRanged = (u: Unit) => { const w = W(u); return !!w && !isMelee(w) && w.c
 const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
 const adj = (a: string, b: string) => dist(a, b) <= 1;
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
 /** Run f with the weapon's state put back afterwards (a shot paid for elsewhere: no ammo, Heat, recoil count, wear). */
 function quiet<T>(u: Unit, f: () => T): T {
   const s = { ammo: u.ammo, heat: u.heat, jammed: u.jammed, shots: u.shotsThisTurn, dur: u.dur, fs: u.firstShotDone, ft: u.firstShotTurn, at: u.attackedTurn, mom: u.res?.momentum };
@@ -556,7 +552,7 @@ register({
       let line = 'The Company strike hits ' + refOf(at);
       for (const v of cb.units) {
         if (v.dead || !tiles.includes(v.pos)) continue;
-        if (alive(v) && canReact(cb, v)) { const out = stepOut(cb, v, tiles); if (out) { useReaction(cb, v); emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); v.pos = out; continue; } }
+        if (alive(v) && canReact(cb, v)) { const out = stepOut(cb, v, tiles); if (out) { useReaction(cb, v); emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); displace(cb, null, v, { tile: out }, { by: v, how: 'teleport', source: 'dive', willing: true, fx: false }); continue; } }
         line += hurtUnit(v, itemAmount('class:rtc_contractor.strike_call', 'damage'), false, cb, 'explosion', u);
       }
       for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) line += damageObject(cb, o.pos, 50, 0, u);
@@ -814,9 +810,9 @@ register({
     turn_end: (ctx, h) => {
       const u = h.u, tu = turretOf(h), cb = h.cb; if (ctx.u !== u || !tu || !cb || !u) return;
       const t = foesOf(cb, tu).filter((v) => !v.hidden && unitSees(cb, tu, v.pos)).sort((a, b) => dist(a.pos, tu.pos) - dist(b.pos, tu.pos) || a.hp - b.hp)[0]; if (!t) return;
-      const rng = rngOf(h, ctx), r = d20(rng as any), cover = coverTileFor(cb, tu.pos, t.pos) ? 5 : 0, tot = r + 4 - cover, hit = r === 20 || (r !== 1 && tot >= t.def);
+      const rng = rngOf(h, ctx), cover = coverTileFor(cb, tu.pos, t.pos) ? 5 : 0, sr = rollVs(cb, rng as any, { by: tu, mod: [{ add: 4, label: 'turret' }, { add: -cover, label: 'cover' }], tn: t.def, why: 'turret shot' }), r = sr.die, hit = sr.ok;
       emitFx(cb, 'shot', { unit: tu.id, target: t.id, from: tu.pos, to: t.pos, weapon: 'service_pistol', cat: 'pistol', mode: 'shot', hit, crit: false, fumble: r === 1, dmg: 0, killed: false });
-      say(cb, 'The sentry turret fires at ' + t.name + ': d20 ' + r + ' +4' + (cover ? ' −5 cover' : '') + ' = ' + tot + ' vs ' + t.def + (hit ? harm(cb, rng as any, u, t, itemAmount('class:siege_engineer.sentry_turret', 'damage'), 'physical') : ' · miss') + '.');
+      say(cb, 'The sentry turret fires at ' + t.name + ': ' + sr.text + (cover ? ' (−5 cover)' : '') + (hit ? harm(cb, rng as any, u, t, itemAmount('class:siege_engineer.sentry_turret', 'damage'), 'physical') : ' · miss') + '.');
       checkOver(cb);
     },
     on_downed: (ctx, h) => { const id = stateOf(h).turret; if (h.cb && ctx.victim.id === id) { const seen = (h.cb.deadSeen ||= []); if (!seen.includes(id)) seen.push(id); say(h.cb, 'The sentry turret is wrecked.'); } },

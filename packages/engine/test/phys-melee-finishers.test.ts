@@ -234,15 +234,15 @@ describe('Throw Down (24)', () => {
     const g = one('fists', [{ at: 'D5' }, { at: 'C4' }]); grab(g); saves(g, g.foes[1], 50);
     g.tech('throw_down', { targetId: g.foe.id, tile: 'C4' }); expect(g.unit(g.foes[1].id).prone || false).toBe(false);
   });
-  it('the moved enemy sets off a held Watch on the way', () => {
+  it('the moved enemy does NOT set off a held Watch on the way: nobody reacts to forced movement (it used to)', () => {
     const f = physFight([{ weapon: 'fists', known: ['throw_down'], skills: SK }, { weapon: 'ccec_marksman_rifle', known: ['deny'], skills: SK }], [{ at: 'D5', tier: 'elite' }]);
     f.put(f.pcs[0], 'C5'); f.put(f.pcs[1], 'C9'); f.put(f.foe, 'D5');
     f.turn(f.pcs[1]); expect(f.tech('deny', { tile: 'D4' })).toBeNull();
     f.turn(f.pcs[0]); f.momentum(f.pcs[0], 2); grab(f, f.pcs[0]); rig({ hit: true, die: 12 });
     const hp = hpOf(f);
     expect(f.tech('throw_down', { targetId: f.foe.id, tile: 'D4' })).toBeNull();
-    expect(f.fx('watch_fire').length).toBe(1); expect(f.unit(f.pcs[1].id).watch).toBeUndefined();
-    expect(hpOf(f)).toBeLessThan(hp);
+    expect(f.fx('watch_fire').length).toBe(0); expect(f.unit(f.pcs[1].id).watch).toBeDefined(); // forced movement: the held Watch does not answer it (engine foundations 1; it used to)
+    expect(hpOf(f)).toBeLessThanOrEqual(hp);
   });
   it('a melee stop is not blocked by Stopped once, and sets none (the core keeps Stopped once for ranged)', () => {
     const f = one('fists'); grab(f); f.unit(f.foe.id).stopped = 1;

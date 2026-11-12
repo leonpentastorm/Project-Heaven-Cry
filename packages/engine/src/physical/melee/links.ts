@@ -15,8 +15,8 @@
 import { statQuery } from '../../effects/hooks';
 import { technique, save, cond, stop, forceMove, pushBlocked, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { PHYS_RULES } from '../data';
-import { strikingWith, techSaveTn, techVia, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
-import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf } from '../../combat';
+import { strikingWith, techSaveTn, techVia, saveOutside, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
+import { type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf, swapUnits } from '../../combat';
 import { mod } from '../../character';
 import { zoneEnter } from '../../magic';
 import { hazardStep, hazardLiveAt } from '../../hazards';
@@ -25,7 +25,9 @@ import { emit, charOfUnit } from '../../effects/hooks';
 import { immune } from '../../effects/core';
 import { unitSave } from '../../magic';
 import { resOf } from '../../tactics';
-import { d20, type Rng } from '../../rng';
+import { type Rng } from '../../rng';
+import { rollVs } from '../../rolls';
+import { canStand } from '../../kit';
 
 // ---------- small helpers ----------
 /** The weapon's melee reach for a Link: 2 with a Reach weapon, else 1. */
@@ -38,10 +40,6 @@ function enemyCheck(t: Tech, verb: string): string | null {
   if (!alive(tgt)) return tgt.name + ' is out of the fight.';
   return null;
 }
-/** Is a tile free to stand on (on the map, not blocked, nobody there but `mover`)? */
-const freeTile = (cb: Combat, k: string, mover: Unit | null, blocked = moveBlockers(cb)) => {
-  const [x, y] = xy(k); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h && !blocked.has(k) && !cb.units.some((v) => v !== mover && !v.dead && v.pos === k);
-};
 /** The tile one step from `at` directly away from `from` (null when they share a tile). */
 function awayFrom(from: string, at: string): string | null {
   const [ox, oy] = xy(from), [x, y] = xy(at), sx = Math.sign(x - ox), sy = Math.sign(y - oy);
@@ -52,13 +50,6 @@ function shieldBonus(u: Unit): number {
   const c = u.companion ? null : charOfUnit(u), it: any = c?.offHand ? (ITEM as any)[c.offHand.id] : null;
   if (!it || it.category !== 'shield') return 0;
   return (it.effects || []).filter((e: any) => e.op === 'defense_bonus' && typeof e.value === 'number').reduce((n: number, e: any) => n + e.value, 0);
-}
-/** A Body save outside a technique's own use (Guard with Reach, on the mover's step): the core's save, with the hook's
- * dice. tn: techSaveTn of the unit that forces it (rules 1.13). */
-function bodySave(cb: Combat, rng: Rng, who: Unit, against: string, tn: number): boolean {
-  const bonus = unitSave(who, 'body'), r = d20(rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
-  cb.log.push(who.name + (ok ? ' saves' : ' fails the save') + ' against ' + against + ' (body ' + (r + bonus) + ' vs ' + tn + ').');
-  return ok;
 }
 
 // ---------- 15. Sidestep ----------
@@ -169,7 +160,7 @@ onHook('move_step', (ctx: any, cb) => {
   if (cb.units.some((v) => v !== m && alive(v) && v.pos === ctx.from)) return;
   for (const h of cb.units) {
     const g = guardStance(h); if (!g?.reach || h.side === m.side || !alive(h) || dist(h.pos, ctx.at) > 1 || dist(h.pos, ctx.from) <= 1) continue;
-    if (bodySave(cb, ctx.rng, m, h.name + '\'s Guard', techSaveTn(h, g.via || 'raw_power'))) continue; // the guard's strength with the weapon it was set with
+    if (saveOutside(cb, ctx.rng, h, m, h.name + '\'s Guard', techSaveTn(h, g.via || 'raw_power'), g.via || 'raw_power')) continue; // the guard's strength with the weapon it was set with
     m.pos = ctx.from; ctx.stop = 'guard';
     cb.log.push(m.name + ' can\'t get past ' + h.name + '\'s guard and stops at ' + refOf(m.pos) + '.');
     return;
@@ -204,13 +195,13 @@ technique({
     const { range } = shoveLine(t), tgt = t.tgt!;
     if (dist(t.u.pos, tgt.pos) > range) return range > 1 ? 'Shove someone within ' + range + ' tiles.' : 'Shove someone next to you.';
     const to = awayFrom(t.u.pos, tgt.pos);
-    if ((!to || !freeTile(t.cb, to, tgt)) && tgt.prone) return tgt.name + ' is already Prone and has nowhere to go.';
+    if ((!to || !canStand(t.cb, to, tgt)) && tgt.prone) return tgt.name + ' is already Prone and has nowhere to go.';
     return null;
   },
   run(t) {
     const tgt = t.tgt!, { tiles } = shoveLine(t);
     const im = immune({ u: tgt }, 'shove'); if (im) { t.note(tgt.name + ' doesn\'t budge (' + im + ').'); return null; }
-    const to = awayFrom(t.u.pos, tgt.pos), blocked = !to || !freeTile(t.cb, to, tgt);
+    const to = awayFrom(t.u.pos, tgt.pos), blocked = !to || !canStand(t.cb, to, tgt);
     // today's opposed roll (combat.ts shove): d20 + Strength + Raw Power against 10 + the target's better of Raw Power
     // and Athletics. Nothing is rolled in a preview: the roll is listed as the target's save against that number.
     const u = t.u, bonus = (u.strength ?? 0) + (u.sk?.raw_power || 0);
@@ -221,9 +212,9 @@ technique({
       stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false }); // a push records where it would leave it
       return null;
     }
-    const roll = d20(t.rng), total = roll + bonus;
-    t.cb.log.push(u.name + ' shoves ' + tgt.name + ': d20 ' + roll + ' ' + (bonus >= 0 ? '+' : '−') + Math.abs(bonus) + ' = ' + total + ' vs ' + need + (total >= need ? '' : ' · holds firm') + '.');
-    if (total < need) { emitFx(t.cb, 'shove', { unit: u.id, target: tgt.id, from: tgt.pos, to: tgt.pos, ok: false }); return null; }
+    const rv = rollVs(t.cb, t.rng, { by: u, mod: bonus, tn: need, nat: false, why: 'shove' }); // an opposed number: no natural 1 or 20
+    t.cb.log.push(u.name + ' shoves ' + tgt.name + ': ' + rv.text + (rv.ok ? '' : ' · holds firm') + '.');
+    if (!rv.ok) { emitFx(t.cb, 'shove', { unit: u.id, target: tgt.id, from: tgt.pos, to: tgt.pos, ok: false }); return null; }
     const was = tgt.pos, wasProne = !!tgt.prone, mk = fxMark(t);
     stop(t, tgt, blocked ? 'prone' : 'push', { tiles, save: false });
     if (blocked) pushBlocked(t, tgt, to); // shoved against a wall or a body: Breaching Strike's hit again
@@ -279,7 +270,7 @@ function dragPlan(t: Tech): { how: 'pull' | 'swap' | 'carry'; why?: string } {
   if (how === 'pull') {
     const [ux, uy] = xy(t.u.pos), [x, y] = xy(tgt.pos), to = key(x - Math.sign(x - ux), y - Math.sign(y - uy));
     if (near || to === t.u.pos) return { how, why: 'It is already next to you: swap tiles with it' + (t.line('hook', 'bare') === 'bare' ? ', or take it with you' : '') + '.' };
-    if (!freeTile(t.cb, to, tgt)) return { how, why: 'Something is in the way.' };
+    if (!canStand(t.cb, to, tgt)) return { how, why: 'Something is in the way.' };
   }
   if (how === 'swap' && !near) return { how, why: 'Swap tiles with someone next to you.' };
   if (how === 'swap') { const blk = moveBlock(t.u); if (blk) return { how, why: blk }; } // the swap is a step for the user
@@ -287,7 +278,7 @@ function dragPlan(t: Tech): { how: 'pull' | 'swap' | 'carry'; why?: string } {
     if (t.line('hook', 'bare') !== 'bare') return { how, why: 'Taking it with you needs a Bare weapon.' };
     if (!near) return { how, why: 'Take someone next to you.' };
     const blk = moveBlock(t.u); if (blk) return { how, why: blk };
-    if (!t.args.tile || dist(t.args.tile, t.u.pos) !== 1 || !freeTile(t.cb, t.args.tile, t.u)) return { how, why: 'Pick a free tile next to you to step to.' };
+    if (!t.args.tile || dist(t.args.tile, t.u.pos) !== 1 || !canStand(t.cb, t.args.tile, t.u)) return { how, why: 'Pick a free tile next to you to step to.' };
   }
   return { how };
 }
@@ -295,20 +286,14 @@ function dragPlan(t: Tech): { how: 'pull' | 'swap' | 'carry'; why?: string } {
 function swap(t: Tech, tgt: Unit): boolean {
   const cb = t.cb, u = t.u, a = u.pos, b = tgt.pos;
   if (t.preview) { (t.pv.moves ||= []).push({ unit: tgt.id, to: a }, { unit: u.id, to: b }); return true; }
-  const fm: any = emit(cb, 'forced_move', { u: tgt, by: u, tiles: 1, to: a, how: 'drag', cancel: false, cb, rng: t.rng });
-  if (fm.cancel) { cb.log.push(tgt.name + ' holds firm.'); return false; }
-  tgt.pos = a; u.pos = b; tgt.braced = false; u.braced = false; u.moved = true;
-  emitFx(cb, 'shove', { unit: u.id, target: tgt.id, from: b, to: a, ok: true }); moveFx(cb, u, [a, b], 'drag');
-  cb.log.push(u.name + ' and ' + tgt.name + ' swap places (' + t.def.name + ').');
-  // what each tile does to whoever enters it (a Sigil zone, a hazard), as the engine's own move runs it
-  const enter = (v: Unit, k: string) => {
-    if (!alive(v) || v.pos !== k) return;
-    if ((cb.zones || []).length) zoneEnter(cb, t.rng, v, k);
-    if (alive(v) && v.pos === k && cb.hazards?.some((h) => hazardLiveAt(h, k, v.side as 'pc' | 'foe'))) hazardStep(cb, t.rng, v, k);
-  };
-  enter(tgt, a); enter(u, b);
-  emit(cb, 'move_step', { u: tgt, from: b, at: a, i: 0, route: [b, a], how: 'forced', stop: false, cb, rng: t.rng, forced: true });
-  if (alive(tgt)) triggerOverwatch(cb, t.rng, tgt);
+  // the one swap (combat.ts swapUnits): the user chose it, the target is moved by force (Nailed, immunity and the hook can refuse); each tile acts on whoever lands on it
+  const sw = swapUnits(cb, t.rng, u, tgt, { by: u, source: 'drag', willing: [u], drawn: () => {
+    u.moved = true;
+    emitFx(cb, 'shove', { unit: u.id, target: tgt.id, from: b, to: a, ok: true }); moveFx(cb, u, [a, b], 'drag');
+    cb.log.push(u.name + ' and ' + tgt.name + ' swap places (' + t.def.name + ').');
+  } });
+  if (!sw.ok) { cb.log.push(tgt.name + ' holds firm.'); return false; }
+  // the user's own step is a move it chose, so a held shot may answer it; the target's half is forced: nobody reacts
   if (alive(u)) { emit(cb, 'move_step', { u, from: a, at: b, i: 0, route: [b], how: 'drag', stop: false, cb, rng: t.rng, technique: t.def.id }); if (alive(u) && !u.hidden) triggerOverwatch(cb, t.rng, u, [a, b]); }
   return true;
 }
@@ -328,7 +313,7 @@ technique({
     else if (how === 'swap') worked = swap(t, tgt);
     else {
       const from = t.u.pos, to = t.args.tile!, [fx, fy] = xy(from), [x, y] = xy(to), [tx, ty] = xy(tgt.pos);
-      const keep = key(tx + x - fx, ty + y - fy), dest = keep !== to && freeTile(t.cb, keep, tgt) ? keep : from; // beside you as it was, else where you stood
+      const keep = key(tx + x - fx, ty + y - fy), dest = keep !== to && canStand(t.cb, keep, tgt) ? keep : from; // beside you as it was, else where you stood
       if (t.preview) { stepUser(t, [to]); (t.pv.moves ||= []).push({ unit: tgt.id, to: dest }); worked = true; }
       else if (stepUser(t, [to]) && alive(t.u) && alive(tgt)) worked = forceMove(t, tgt, dest, 1) > 0;
     }

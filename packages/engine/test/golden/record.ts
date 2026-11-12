@@ -19,7 +19,7 @@
 //             with it held, and each action it puts on the pad
 //   flat      thrown items, blasts, barrels, traps, hazards, damage over time, the medic's kit
 import { buildCharacter, BUILDS, LEVELS, VARIANTS } from '../balance/builds';
-import { A, W, act, run, tryAct, strike, useTech, copy, bend, HIT, CRIT, rollState, fightOf, fightSpec, place, turn, units, pcs, foes, charOf, TIERS, isMeleeW } from './harness';
+import { A, W, act, run, tryAct, strike, useTech, copy, bend, HIT, CRIT, rollState, fightOf, fightSpec, place, turn, units, pcs, foes, charOf, TIERS, isMeleeW , ALSO } from './harness';
 
 export type Table = Record<string, string>;
 const clone = copy;
@@ -73,7 +73,7 @@ function line(g: any, uId: string, words: string[], aim: string, d: any = HIT, s
     const u = byId(g2, uId), tiles = words.map((_, i) => (5 - i) + ',5');
     u.ap = 99; if (u.mg) { u.mg.charge = 999; u.mg.flux = -99; }
     for (let i = 0; i < words.length; i++) { u.pos = tiles[i]; const e = A.drawGlyph(cb, g2.rng, u, words[i]); if (e) return 'Draw ' + words[i] + ': ' + e; }
-    g2.rng.state = seed;
+    g2.rng.state = ALSO.seed ?? seed;
     const e = A.evoke(cb, g2.rng, u, tiles[tiles.length - 1], aim); if (e) return 'Evoke: ' + e;
     if (after) after(g2, cb);
     return null;
@@ -87,7 +87,7 @@ function outburst(g: any, uId: string, design: string, stage: number, aim: strin
     const u = byId(g2, uId); u.ap = 99;
     let e = A.beginOutburst(cb, g2.rng, u, design, undefined, true, {}); if (e) return 'Begin: ' + e;
     for (let i = 0; i < stage; i++) { u.ap = 99; e = A.pumpOutburst(cb, g2.rng, u, feelings[i] || null); if (e) return 'Pump ' + (i + 1) + ': ' + e; }
-    u.ap = 99; g2.rng.state = seed; e = A.releaseOutburst(cb, g2.rng, u, aim); return e ? 'Release: ' + e : null;
+    u.ap = 99; g2.rng.state = ALSO.seed ?? seed; e = A.releaseOutburst(cb, g2.rng, u, aim); return e ? 'Release: ' + e : null;
   }, d, seed).line;
 }
 

@@ -11,7 +11,7 @@ import { isCache, isPile, pileAt, dropOnTile, lootToPack, PILE } from './contain
 import { gearBonus, gearHas } from './character';
 import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy, MARK } from './objects';
 import { type Hazard, type HazardKind, WORLD_PLAY, HAZARD, HAZARD_KINDS, HAZARD_LIMITS, hazardApproaches, hazardHit, hazardTn, hazardLiveAt } from './hazards';
-import { applyCond, isCondition } from './magic';
+import { applyCond, isCondition, STORY_CARRY } from './magic';
 import { songMod } from './music';
 import { skillRollMod } from './effects/core';
 import { bindGame } from './effects';
@@ -19,6 +19,8 @@ import { type Where, missionsOf, markObjective, objectiveOf, objectiveStatus, op
 import { KINDS } from './tactics';
 import { canon } from './memory';
 import { type GameState, type Npc, type Check, type NarratorTurn, RuleError, _world, storyCb, positionsOf, npcsOf, storyObjects, zoneMap, apLeft, campaignOf, portraitFor, setStoryCond } from './game';
+import { tilesLine } from './kit';
+import { passFaces } from './rolls';
 
 const WP: any = WORLD_PLAY;
 const fail = (m: string): never => { throw new RuleError(m); };
@@ -441,8 +443,7 @@ export function previewOdds(g: GameState, c: Character, skills: string[], tn: nu
   const ss = (pick === 'best' ? [bestSkill(g, c, skills)] : skills).filter((s) => SKILL[s]); if (!ss.length) return { skills: [], mod: -2, chance: 0 };
   const ms = ss.map((s) => skillMod(g, c, s)), low = Math.min(...ms), li = ms.indexOf(low);
   const m = low + 2 * ss.filter((s, i) => i !== li && (c.skills[s] || 0) > 0).length;
-  let ok = 0; for (let f = 1; f <= 20; f++) if (f === 20 || (f !== 1 && f + m >= tn)) ok++;
-  return { skills: ss, mod: m, chance: ok / 20 };
+  return { skills: ss, mod: m, chance: passFaces(m, tn) / 20 };
 }
 
 /** The common checks for a player's area-map choice (round open, their character up, nothing else to roll first). */
@@ -558,9 +559,8 @@ function failure(g: GameState, c: Character, t: Target, ap: Approach, p: string)
   return '';
 }
 /** A failed approach's condition: the ones a story carries (Bleeding, Shaken…) for the scene; the rest on the area map. */
-const CARRY = new Set(['shaken', 'fear', 'weakened', 'nausea', 'injured', 'bleeding', 'ldebuff', 'rdebuff', 'left_brain_debuff', 'right_brain_debuff']);
 export function worldCond(g: GameState, c: Character, id: string) {
-  if (CARRY.has(id)) { setStoryCond(g, c, id === 'left_brain_debuff' ? 'ldebuff' : id === 'right_brain_debuff' ? 'rdebuff' : id, 'scene'); W().push(g, { kind: 'system', text: c.name + ' is ' + id.replace(/_/g, ' ') + ' for the scene.', charId: c.id }); return; }
+  if (STORY_CARRY.has(id)) { setStoryCond(g, c, id === 'left_brain_debuff' ? 'ldebuff' : id === 'right_brain_debuff' ? 'rdebuff' : id, 'scene'); W().push(g, { kind: 'system', text: c.name + ' is ' + id.replace(/_/g, ' ') + ' for the scene.', charId: c.id }); return; }
   onWorld(g, c, (cb, u) => { const r = applyCond(cb, cb.worldRng || g.rng, null, u, id, undefined, undefined, { skipSave: true }); if (r) cb.log.push(c.name + r.replace(/^ · [^ ]+/, '').replace(/^ · /, ' ') + '.'); });
 }
 function loseItem(c: Character, what: string): string {
@@ -664,7 +664,7 @@ export function walkStory(g: GameState, c: Character, k: string): boolean {
   const cb = storyCb(g), u = cb.units.find((x) => x.charId === c.id); if (!u) return false;
   const P = paths(cb, u.pos, u.id);
   if (P.dist[k] === undefined || k === u.pos) {
-    const crosses = lineTiles(u.pos, k).some((t) => zoneHazards(g).some((h) => hazardLiveAt(h, t, 'pc')));
+    const crosses = tilesLine(u.pos, k).some((t) => zoneHazards(g).some((h) => hazardLiveAt(h, t, 'pc')));
     if (crosses) { W().push(g, { kind: 'system', text: c.name + ' can\'t get to ' + refOf(k) + ' without crossing the hazard.', ooc: true }); return false; }
     positionsOf(g)[c.id] = k; W().push(g, { kind: 'system', text: c.name + ' moves to ' + refOf(k) + '.' }); return true;
   }
@@ -677,11 +677,6 @@ export function walkStory(g: GameState, c: Character, k: string): boolean {
   writeBack(g, cb, c);
   enterTriggers(g, c, route);
   return true;
-}
-function lineTiles(a: string, b: string): string[] {
-  const [x0, y0] = a.split(',').map(Number), [x1, y1] = b.split(',').map(Number), n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)), out: string[] = [];
-  for (let i = 1; i <= n; i++) out.push(Math.round(x0 + ((x1 - x0) * i) / n) + ',' + Math.round(y0 + ((y1 - y0) * i) / n));
-  return out;
 }
 
 // ---------- after every action ----------

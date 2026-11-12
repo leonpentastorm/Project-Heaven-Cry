@@ -18,16 +18,14 @@ import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily, unitSt
 import { die, d20, type Rng } from '../rng';
 import { setStoryCond, storyConds, strikeFromWorld } from '../game';
 import { reveal, PATRON , dropHeldShot } from '../tactics';
+import { overworld, say, tileOf, rngOf } from '../kit';
+import { rollVs, TN } from '../rolls';
 
 // ---------- small helpers ----------
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const ow = overworld;
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
-const rngOf = (h: Holder, ctx?: any): { state: number } | null => ctx?.rng || h.g?.rng || null;
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 /** A tile from a grid reference ("F6") or a key ("5,5"). */
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
 /** Melee reach of the unit's melee option (fists when it holds a gun): 1, or 2 with a reach weapon. */
 const reachOf = (u: Unit) => { const w: any = WEAPON[u.weapon]; if (!w || !isMelee(w)) return 1; return (w.properties || []).includes('reach_2') || w.id === 'lance' || w.grants?.effect?.op === 'reach' ? (w.grants?.effect?.op === 'reach' ? w.grants.effect.value : 2) : 1; };
 /** A hit by someone (not a hazard, a trap's tick, bleeding or burning): what "a hit" and "a wound" mean here. */
@@ -450,7 +448,7 @@ register({ id: 'right_of_way', claims: [3], stat: (h, stat) => (stat === 'move' 
 // lit tile is undone, and the story's stay-hidden roll fails when they aren't in the dark.
 register({
   id: 'heavyworlder', claims: [2, 3, 6, 7], narrator: [0],
-  stat: (h, stat) => (stat === 'carry' ? { mult: 2 } : stat === 'move' ? -0.5 : stat === 'size' ? 1 : stat === 'one_hand_heavy' ? 1 : 0), // heavies in one hand (character.ts twoHands)
+  stat: (h, stat) => (stat === 'carry' ? { mult: 2 } : stat === 'move' ? -0.5 : stat === 'one_hand_heavy' ? 1 : 0), // heavies in one hand (character.ts twoHands); 'one size larger' is the Narrator's (no stat: nothing asks a size)
   on: {
     attack_preview: (ctx, h) => { if (ctx.tgt === h.u) ctx.terms.push({ v: 2, label: 'big target (Heavyworlder)' }); },
     hide: (ctx, h) => { if (ctx.u === h.u && h.cb && litAt(h.cb, h.u!.pos)) reveal(h.cb, h.u!, 'too big to hide in the light'); },
@@ -605,16 +603,16 @@ register({
     path_opts: (ctx, h) => { if (ctx.u === h.u && augOn(h, 'legs')) ctx.jump = true; },
     on_damaged: (ctx, h) => {
       if (ctx.t !== h.u || ctx.src?.dmgType !== 'emp' || !augOf(h) || !h.cb || h.u!.dead) return;
-      const r = applyCond(h.cb, rngOf(h) || { state: 1 }, ctx.src.by || null, h.u!, 'augment_offline', 2, undefined, { skipSave: true });
+      const r = applyCond(h.cb, rngOf(h), ctx.src.by || null, h.u!, 'augment_offline', 2, undefined, { skipSave: true });
       if (h.u!.conds?.augment_offline) h.u!.conds.augment_offline = 2;
       if (augOf(h) === 'eye') h.u!.darkSight = !!stateOf(h).gearDark;
       say(h.cb, 'The EMP fries ' + h.u!.name + '\'s ' + augOf(h) + ' augment' + r + '.');
     },
     rest: (ctx, h) => {
       if (!h.c || !augOf(h) || !ctx.g?.rng) return;
-      const c = h.c, r = d20(ctx.g.rng), m = mod(c.skills.proficiency || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
+      const c = h.c, rv = rollVs(null, ctx.g.rng, { mod: mod(c.skills.proficiency || 0), tn: TN.standard }), ok = rv.ok;
       charState(c).augmentOffline = !ok;
-      postStory(h, 'maintenance on the ' + augOf(h) + ' augment: Improvisation d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs 12 · ' + (ok ? 'working.' : 'it won\'t work until the next rest.'));
+      postStory(h, 'maintenance on the ' + augOf(h) + ' augment: Improvisation ' + rv.text + ' · ' + (ok ? 'working.' : 'it won\'t work until the next rest.'));
     },
   },
   actions: [{

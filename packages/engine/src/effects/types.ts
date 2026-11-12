@@ -52,14 +52,14 @@ export type HookName =
   | 'move_cost' | 'move_step' | 'moved' | 'forced_move'
   | 'attack_preview' | 'attack_target' | 'attack_roll' | 'damage_out' | 'on_hit' | 'on_miss'
   | 'damage_in' | 'on_damaged' | 'on_downed' | 'on_kill'
-  | 'cond_apply' | 'cond_landed' | 'cond_end'
+  | 'cond_apply' | 'save' | 'cond_landed' | 'cond_end' | 'displaced'
   | 'heal_given' | 'heal_in' | 'shield_grant'
   | 'reaction_window' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
   | 'reload' | 'jam_clear' | 'swap'
   // Physical 2.0 (rules 1.12): after a prone unit stands up {u} (Dead to Rights)
   | 'stood_up'
   | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release' | 'outburst_after' | 'outburst_plan'
-  | 'analyze' | 'action_cost' | 'combat_end'
+  | 'analyze' | 'combat_end'
   // hooks gap (rules 1.3): after an Evoke, a held release's price, holding Strain, Strain added, death saves, injuries,
   // a unit built from its character, every reducer action done, before a stim, an ammo spend, weapon actions listed
   | 'evoked' | 'release_cost' | 'outburst_hold' | 'outburst_pump' | 'strain_change' | 'held_turn_start' | 'strain' | 'death_save' | 'injury' | 'unit_built' | 'action_done'
@@ -87,6 +87,8 @@ export type HookName =
 export type HookFn = (ctx: any, h: Holder) => void;
 
 /** A stat query's answer: a number to add, or { add, mult }. */
+export type { StatId, CostSite } from './stats';
+import type { StatId } from './stats';
 export type StatAnswer = number | { add?: number; mult?: number } | void | null | undefined;
 
 /** A modifier to a d20 check (story or combat), with the label shown in the check's head. */
@@ -150,7 +152,7 @@ export interface ItemHandler {
   narrator?: 'all' | number[] | string[] | ((e: any, index: number, tier: string) => boolean);
   /** Lower runs first among handlers on the same hook (default 100). Use it for orders the rules fix (drop-to-0). */
   priority?: number;
-  stat?(h: Holder, stat: string, ctx: any): StatAnswer;
+  stat?(h: Holder, stat: StatId, ctx: any): StatAnswer;
   on?: Partial<Record<HookName, HookFn>>;
   checkMod?(h: Holder, ck: any, ctx: any): CheckMod[] | void;
   actions?: ActionDef[];

@@ -16,9 +16,9 @@ import { WEAPON } from '../data';
 import { PHYS_RULES, TECHNIQUE, addDrill, drillMult } from './data';
 import { pressureOf, pressureState, addPressureTo, lowerPressureOf, isPressed, isSuppressed, onPressureState, hitPressure, coveredUnseen } from './pressure';
 import { ensureMomentum, momentumOf, loseMomentum, guardUp, strikeNoPressure, turnStamp, endWatch } from './core';
+import { foesOf } from '../kit';
 
 const P = () => PHYS_RULES.pressure;
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
 const nearestFoe = (cb: Combat, u: Unit): number => foesOf(cb, u).reduce((m, v) => Math.min(m, dist(u.pos, v.pos)), 99);
 /** Every weapon an attacker has damaged a unit with this fight (drill is paid for each on the kill). */
 function hitWith(tgt: Unit, attId: string, weaponId: string) { const l = ((tgt.hitWith ||= {})[attId] ||= []); if (!l.includes(weaponId)) l.push(weaponId); }

@@ -45,3 +45,5 @@ export { ACTIONS, ACTION, basicActions, basicCost, reloadBothRows, loadPlan, mov
 export { preview, dryRun, previewAction, withGame, copyFight, shadowGame, fightSeenBy, previewSeenBy, fightWith, type PreviewOpts, type DryRun, type ActionVerdict } from './preview';
 // The perk card in a fight (rules 1.14; engine review 4, finding 9): each held item's shelf, trigger and state, as facts.
 export { perkCards, shelfOf, cardText, cardTrigger, coreWired, PERK_CARDS, LOG_LOOKBACK, type PerkCard, type ShelfId, type CardState } from './perkcard';
+export * from './kit';
+export * from './rolls';

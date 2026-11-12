@@ -137,7 +137,7 @@ describe('Bash (8)', () => {
     expect(k.pv('bash', { targetId: k.foe.id, line: 'bare' }).attacks[0].pv.dmg!.total).toBeCloseTo(cut * 0.5, 1); // only the chosen line applies
     const g = fight('fists', ['J5']); expect(g.tech('bash', { targetId: g.foe.id })).toMatch(/reach/); expect(g.pc.ap).toBe(6);
   });
-  it('Heavy: on a failed save, pushed 2 tiles instead of Dazed when the player chooses; a held shot sees the push', () => {
+  it('Heavy: on a failed save, pushed 2 tiles instead of Dazed when the player chooses; a held shot does not answer the push (forced movement)', () => {
     const f = fight('ork_machete', ['D5'], { ally: { weapon: 'ccec_marksman_rifle', skills: { dexterity: 6 } } });
     f.put(f.pc, 'C9'); f.put(f.foe, 'D9'); f.unit(f.foe.id).sv = { body: -50, brain: 0, heart: 0 };
     f.turn(f.pcs[1]); expect(f.tech('overwatch')).toBeNull(); f.turn(f.pc);
@@ -146,7 +146,7 @@ describe('Bash (8)', () => {
     rig({ hit: true, die: 12 });
     expect(f.tech('bash', { targetId: f.foe.id, opt: 'push' })).toBeNull();
     expect(f.unit(f.foe.id).pos).toBe(f.tile('G9')); expect(f.unit(f.foe.id).dazedNext || 0).toBe(0);
-    expect(f.unit(f.pcs[1].id).watch).toBeUndefined(); expect(f.fx('overwatch').length).toBe(1); // the held shot fired at the pushed foe
+    expect(f.unit(f.pcs[1].id).watch).toBeDefined(); expect(f.fx('overwatch').length).toBe(0); // forced movement: the held shot does not fire at a pushed foe (engine foundations 1; it used to)
     const g = fight('ork_machete', ['D5']); g.unit(g.foe.id).sv = { body: -50, brain: 0, heart: 0 }; rig({ hit: true, die: 12 });
     g.tech('bash', { targetId: g.foe.id }); expect(g.unit(g.foe.id).pos).toBe(g.tile('D5')); expect(g.unit(g.foe.id).dazedNext).toBe(1);
     const s = fight('sabre', ['D5']); s.unit(s.foe.id).sv = { body: -50, brain: 0, heart: 0 }; rig({ hit: true, die: 12 });

@@ -21,6 +21,7 @@ import { WEAPON } from './data';
 import { type Combat, type Unit, type AttackMode, isMelee, attackApCost, effectiveRange, analyzeCost, analyzeRange, stimAp, reloadBothAp, reloadHands, loadMagazine, moveBlock, moveHowBlock, movePlan,
   sprintTiles, apForTiles, paths, movePaths, encoreCredit, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, dist, objectsOf, type MoveHow } from './combat';
 import { actionAp } from './effects/core';
+import { COST_SITE_IDS, type CostSite } from './effects/stats';
 import { emitStory } from './effects/hooks';
 import { STIM_HEAL } from './effects/mending';
 import { condOn } from './magic';
@@ -49,7 +50,7 @@ export interface ActionCtx { c?: Character | null; g?: any }
 const fill = (t: string, v: Record<string, string | number>) => t.replace(/\{(\w+)\}/g, (m, k) => (k in v ? String(v[k]) : m));
 const apText = (n: number) => n + ' AP';
 /** The base AP of a basic action (data/actions.json), then the items that change it. */
-const priced = (u: Unit, id: string, base?: number): number => { const d = ACTION[id]; return actionAp({ u }, d.site || id, base ?? d.ap ?? 0).ap; };
+const priced = (u: Unit, id: string, base?: number): number => { const d = ACTION[id]; const site = d.site || id, n = base ?? d.ap ?? 0; return (COST_SITE_IDS as readonly string[]).includes(site) ? actionAp({ u }, site as CostSite, n).ap : n; }; // (only the sites an item may price are asked: effects/stats.ts)
 const need = (u: Unit, n: number, lend = 0) => ((u.ap ?? 0) + lend < n ? 'Needs ' + n + ' AP.' : null);
 const charOf = (u: Unit, x: ActionCtx): Character | null => x.c || (x.g && u.charId && !u.companion ? x.g.characters?.[u.charId] || null : null);
 /** Whom the unit could pull free now (rules 1.12): itself, an ally next to it, or a weapon left in someone next to it. */
