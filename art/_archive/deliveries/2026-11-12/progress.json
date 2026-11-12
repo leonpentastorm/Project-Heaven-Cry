@@ -11,12 +11,12 @@
     "both-hands",
     "order",
     "rally",
-    "brief"
+    "brief",
+    "name-it"
   ],
   "awaiting_after_test": "Leon verdict before remaining feeling/module production; map guides before optional maps",
   "production_approved": false,
   "remaining_now": [
-    "name-it",
     "cue",
     "spot",
     "warn",
@@ -33,5 +33,5 @@
     "module-orbit",
     "module-echo"
   ],
-  "updated_utc": "2026-11-12T02:18:47.339783+00:00"
+  "updated_utc": "2026-11-12T02:21:05.103939+00:00"
 }

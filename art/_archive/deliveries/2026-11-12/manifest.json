@@ -227,6 +227,48 @@
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
+    },
+    {
+      "path": "art/icons/calls/name-it.png",
+      "sha256": "7a827cf7f9fb5f6e5dbe3dbc6fef57ed8b8a401ac0eabda2721f07158a33050f",
+      "id": "name-it",
+      "family": "calls",
+      "action": "Name It. Wick naming a fear out loud so it loses its hold: standing firm, one open hand held out palm-up as if presenting something, and in front of that hand a small jagged shape with a simple ring drawn around it, as if circled and labelled. Steady, reassuring.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/name-it.png",
+        "sha256": "b964514f8693a2c859960ea43328c5e34e6779a027599cabf51a7c3b37d81dfc"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/name-it.png",
+        "sha256": "7a827cf7f9fb5f6e5dbe3dbc6fef57ed8b8a401ac0eabda2721f07158a33050f"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/name-it.txt",
+        "sha256": "f7ec56482efcee72106b1a7a0cbb34854457647606e5ea6b23826d96e5c3517d"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/name-it.png",
+        "128": "art/icons/calls/exports/128/name-it.png",
+        "64": "art/icons/calls/exports/64/name-it.png",
+        "56": "art/icons/calls/exports/56/name-it.png",
+        "48": "art/icons/calls/exports/48/name-it.png",
+        "44": "art/icons/calls/exports/44/name-it.png",
+        "40": "art/icons/calls/exports/40/name-it.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
     }
   ]
 }

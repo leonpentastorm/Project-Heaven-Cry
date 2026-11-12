@@ -10122,6 +10122,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/brief.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/brief.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "name-it": {
+      "id": "name-it",
+      "label": "Name It",
+      "path": "art/icons/calls/name-it.png",
+      "sha256": "7a827cf7f9fb5f6e5dbe3dbc6fef57ed8b8a401ac0eabda2721f07158a33050f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/calls/exports/256/name-it.png",
+        "128": "art/icons/calls/exports/128/name-it.png",
+        "64": "art/icons/calls/exports/64/name-it.png",
+        "56": "art/icons/calls/exports/56/name-it.png",
+        "48": "art/icons/calls/exports/48/name-it.png",
+        "44": "art/icons/calls/exports/44/name-it.png",
+        "40": "art/icons/calls/exports/40/name-it.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/name-it.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/name-it.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
