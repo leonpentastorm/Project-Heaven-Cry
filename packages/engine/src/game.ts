@@ -18,7 +18,8 @@ import { CALL, useCall, callView, briefBefore, briefAfter, type CallArgs } from 
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap, expandCampaign } from './campaign';
 import { nearestFree } from './maplayout';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
-import { type MusicState, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, noteFightSong, SONG_AP } from './music';
+import { fogFight } from './fog';
+import { type MusicState, musicFor, musicOf, startSong, songEnded, pinSong, unpinSong, musicAfterFight, musicOnTravel, musicTraitOf, songMod, noteFightSong, SONG_AP } from './music';
 import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp, canon, noteScene, rollChapter, chapterDue, findPerson, SCENES_PER_CHAPTER } from './memory';
 import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, ensureMark, MARK } from './objects';
 import type { Hazard } from './hazards';
@@ -2132,6 +2133,10 @@ export function viewFor(g: GameState, playerId: string): GameState {
   // The fight's notes are the Narrator's (what was said, what a perk asks of them, hidden words): never sent to a guest.
   if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.notes; }
   if (v.combat && playerId !== g.hostId) { v.combat = { ...v.combat }; delete v.combat.lootLog; } // rules 1.9: the loot cap's log is the host's (item 695)
+  // Fog of war (spec: Vision; engine review 4, finding 4): the fight as this player's side sees it; fog.ts decides it all.
+  // The human Narrator (the host in "I'll narrate") keeps the whole fight. The music is picked on the whole fight (an
+  // elite once seen keeps Heaven Falls playing after it slips out of sight).
+  if (v.combat && g.combat) { v.combat = fogFight(g, g.combat, v.combat, me, playerId === g.hostId && g.settings.mode === 'human'); if (g.music) v.music = { ...g.music, view: musicFor(g) } as MusicState; }
   worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
   if (g.sandbox) sandboxView(g, v, playerId); // no saved room; a team fight seen from the player's side
   return v;

@@ -240,6 +240,8 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   fire?: { round: number; on: Record<string, string[]> }; doctrineSaid?: Record<string, true>;
   /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id. */
   lastSeen?: Record<string, Record<string, string>>;
+  /** A player's view only (fog.ts): the tiles the viewer's side sees and where it senses something. */
+  fog?: import('./fog').FightFog;
   /** The Narrator's start_fight flag: the place itself is frightening (dark, a nightmare; perks read it). */
   fear?: boolean;
   /** Decoys on the grid (the Trickster's False Image, illusion.ts): not units; the enemies they fooled target them. */
