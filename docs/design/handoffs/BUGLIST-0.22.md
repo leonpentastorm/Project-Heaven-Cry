@@ -166,3 +166,27 @@ Three reports with screenshots, all in the combat screen. Fixed on the branch.
 | (follow-up) with two guns the off-hand and Both rows sat past the ninth row and had no two-key code | codes stopped at 9 rows a tab | a 0 turns the page by nine: 201 is tab 2's tenth row, 2001 its nineteenth (`numKey`, `combat.js`). Proof: `combat-attack-areas.test.ts` (every row's code; 2 0 n picks `clear-off`) |
 
 Not done: a Call card shows its text on the card itself and has no hover card.
+
+## Found by the 0.24.0 browser run (12 Nov)
+
+`npm run e2e -- all` before the 0.24.0 release: four suites failed, two (and on the re-run a third) passed only alone.
+None is a game bug. The hover card (`game/actionTip.ts`) replaced the native `title` on action rows, technique chips,
+glyph keys, heart buttons, feelings and design cards; the words, the refusal included, are still on each element as its
+`aria-description` (checked in Chromium's accessibility tree: the button's description is the card in words), so a
+screen reader and a keyboard user get what the title gave. New unit test: `combat-attack-areas.test.ts` "every row and
+chip keeps the card's words as its accessible description, the refusal included". Suites now read those words with one
+helper, `tipOf(locator)` in `apps/web/e2e/lib.mjs` (aria-description, else title). Every other `title` read in the
+suites was checked: it points at an element that still has one (tiles, plan chips, the selection note, Attempt).
+
+| Suite | Game bug or stale | Cause | Fix |
+| --- | --- | --- | --- |
+| classes-moves | stale | read Unstoppable's and Duck and Roll's reasons from `title` (now null: TypeError) | `tipOf()` |
+| sandbox | stale | read "Needs an Evoker in hand." from Draw a glyph's `title` | `tipOf()` |
+| faith-pg | stale (the Miracle IS once a session: the row's card says "Can't now: One Miracle a session.") | read the refusal from the Miracle row's `title` | `tipOf()` |
+| sigil14 | stale | read "One glyph per tile" from the glyph key's `title` | reads `aria-description` |
+| magic (alone only) | suite's waiting | Evoke's tiles clicked on fixed 200/250 ms pauses; beside others Confirm was not up yet | waits for the effects, the camera to stop (`camStill()` in lib.mjs), Confirm enabled, the evoke in the log |
+| playscreen (alone only) | suite's waiting | creation's "Next ›" clicked back to back; one click hung 30 s beside others | each Next waits for the step bar's `aria-current` to move |
+| camera (alone only, the second full run) | suite's waiting | the plain-click check read the tile's place once, after a settle that came before the turn's start and the Move pick could move the view again; the click landed on the unit's own tile (the keys check failed after it) | the view settled right before the read, and the tile's box read until it stays put and the camera is not gliding |
+| melee-fx (alone only, the re-run) | suite's dice | Parry needs a melee HIT; at Defense 19 the drill elite hits 3 in 10, so 8 rounds without one came about 1 run in 17 | Athletics 1 (Defense 10) for the Parry case; the note now prints the round's log |
+
+Proof: magic, playscreen, melee-fx and camera each three times beside two others, green; then the full run.

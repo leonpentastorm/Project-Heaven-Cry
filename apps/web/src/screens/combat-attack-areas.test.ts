@@ -127,4 +127,23 @@ describe('the Attack tab in areas', () => {
     for (const c of chips) { expect(c.getAttribute('title')).toBeNull(); expect(JSON.parse(c.getAttribute('data-tip')!).lines.length).toBeGreaterThan(0); }
     await React.act(async () => root.unmount()); el.remove();
   });
+
+  // 0.24.0 browser run: the card replaced the native title, so the words a screen reader and a keyboard user got from
+  // the title must still be on the element: its aria-description is the card in words, the refusal included.
+  it('every row and chip keeps the card\'s words as its accessible description, the refusal included', async () => {
+    const { u } = fight(true); u.ap = 1; snap = view();
+    const { el, root } = await mount(); await toAttack(el);
+    const rows = Array.from(el.querySelectorAll('[role="tabpanel"] button[data-act]')) as HTMLElement[];
+    for (const b of rows) {
+      const t = JSON.parse(b.getAttribute('data-tip')!), d = b.getAttribute('aria-description') || '';
+      expect(d.startsWith(t.name), b.getAttribute('data-act')!).toBe(true);
+      for (const l of t.lines) expect(d, b.getAttribute('data-act')!).toContain(l.text);
+    }
+    const refused = rows.filter((b) => JSON.parse(b.getAttribute('data-tip')!).lines.some((l: any) => l.kind === 'why'));
+    expect(refused.length).toBeGreaterThan(0);
+    for (const b of refused) expect(b.getAttribute('aria-description')).toMatch(/Can't now: \S/);
+    await click(el.querySelector('button[data-act="tpad:main"]'));
+    for (const c of Array.from(el.querySelectorAll('[data-tech-pad] button[data-tech]'))) expect((c.getAttribute('aria-description') || '').length).toBeGreaterThan(0);
+    await React.act(async () => root.unmount()); el.remove();
+  });
 });

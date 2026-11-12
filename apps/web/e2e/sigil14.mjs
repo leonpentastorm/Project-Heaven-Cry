@@ -176,7 +176,7 @@ await p.screenshot({ path: OUT + 'sigil14-01b-keyboard-rows.png' });
 await tok(L(4)).hover(); await pause(p, 150); await snap('01-keyboard');
 await tok(L(4)).click(); await pause(p, 300);
 // Our own tile now holds FIRE: every key is refused, and says why on the key, in its tooltip and its aria label.
-const refused = await p.evaluate(() => { const b = [...document.querySelectorAll('div[aria-label="Glyph keyboard"] button[data-word]')]; return b.length ? b.map((x) => ({ off: x.getAttribute('aria-disabled'), text: (x.textContent || '').replace(/\s+/g, ' '), title: x.title, aria: x.getAttribute('aria-label') })) : null; });
+const refused = await p.evaluate(() => { const b = [...document.querySelectorAll('div[aria-label="Glyph keyboard"] button[data-word]')]; return b.length ? b.map((x) => ({ off: x.getAttribute('aria-disabled'), text: (x.textContent || '').replace(/\s+/g, ' '), title: x.getAttribute('aria-description') || x.title, aria: x.getAttribute('aria-label') })) : null; });
 if (refused) ok('on a tile with a glyph every key says "tile taken": ' + refused[0].text + ' | ' + refused[0].aria, refused.every((k) => k.off === 'true' && /tile taken/.test(k.text) && /One glyph per tile/.test(k.title) && /can't draw now/.test(k.aria)));
 await moveTo(L(3));
 await pickAct(/^Draw a glyph/).catch(() => {});
