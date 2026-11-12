@@ -2931,7 +2931,7 @@
           "I saw. Horror... horror and pain, grief and helplessness. Oh, I'd give my whole fortune to forget, you understand? Forget the horror in their eyes, the horror I still feel in my chest, the horror no words can describe. The horror of an empty face hanging above an iron stake."
         ],
         "intro": "Empathy is the bridge between one person and another: feeling what someone else is going through, putting yourself where they stand, and understanding at least partly why they do what they do.",
-        "effect": "+10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two.",
+        "effect": "+10% healing given. From 3 points, one Pump of an Outburst each round is free. From 7 points, a held Outburst swells without Strain.",
         "high_levels": "you become one with humanity. You understand everyone's circumstances, and everyone's story gets into you. You cry other people's tears and stick your nose into business that isn't yours.",
         "good_for": "therapists, human lie detectors, good alignments.",
         "bad_for": "chaotic alignments, serial killers, non-humanoids.",
