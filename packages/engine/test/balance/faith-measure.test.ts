@@ -31,13 +31,15 @@ const VOW = process.env.FAITH_MEASURE_VOW != null ? Number(process.env.FAITH_MEA
 describe('the Faith targets hold (rules 1.22)', () => {
   const n = 8, lv = 6, y = rifleTurn(lv, 30);
   // Leon, 12 Nov 2026: "faith range 80% for whisper only turn and about 125% for hymn, goes up with faith items later".
+  // Leon, later the same day, on "a Hymn is always better than a spell or an Outburst": "raise". The Hymn turn is about
+  // 150% (Judgement and Lightning Rod 56, the chain 23; measured 139 to 160% at levels 6 to 20, item 1389).
   // Rebuke is held at 20 (a quiet turn of about 60 to 80% from level 6; item 1281), so the quiet band here starts under 80.
-  it('a prayer-led character sworn to a damage patron: a turn with a Hymn is about 125% of the plain rifle, a turn with only a Whisper about 60 to 80%, and the Hymn is not there every turn', () => {
+  it('a prayer-led character sworn to a damage patron: a turn with a Hymn is about 150% of the plain rifle, a turn with only a Whisper about 60 to 80%, and the Hymn is not there every turn', () => {
     for (const p of ['old_overcast', 'nerukhan']) {
       const r = prayerRow('prayer-led', faithBuild(p), 'normal', lv, n, y, { opts: { hymn: 'damage', vow: VOW } });
       console.log('[targets] ' + fline(r));
       expect(r.errors).toBe(0);
-      expect(r.pctHymnTurn, p + ', a Hymn turn, percent of the rifle').toBeGreaterThanOrEqual(100); expect(r.pctHymnTurn).toBeLessThanOrEqual(150);
+      expect(r.pctHymnTurn, p + ', a Hymn turn, percent of the rifle').toBeGreaterThanOrEqual(125); expect(r.pctHymnTurn).toBeLessThanOrEqual(175);
       expect(r.pctQuietTurn, p + ', a quiet turn, percent of the rifle').toBeGreaterThanOrEqual(45); expect(r.pctQuietTurn).toBeLessThanOrEqual(95);
       expect(r.hymns).toBeGreaterThanOrEqual(0.3); expect(r.hymns).toBeLessThanOrEqual(0.55); expect(r.whispers).toBeGreaterThan(0.8);
     }
@@ -47,7 +49,7 @@ describe('the Faith targets hold (rules 1.22)', () => {
     // Lightning Rod with a second enemy inside its chain
     const two = prayerRow('two targets', faithBuild('old_overcast'), 'normal', lv, n, y, { foes: 2, opts: { hymn: 'damage', vow: VOW } });
     console.log('[targets] ' + fline(two)); expect(two.errors).toBe(0);
-    expect(two.pctHymnTurn, 'two targets, a Hymn turn').toBeGreaterThanOrEqual(115); expect(two.pctHymnTurn).toBeLessThanOrEqual(185);
+    expect(two.pctHymnTurn, 'two targets, a Hymn turn').toBeGreaterThanOrEqual(145); expect(two.pctHymnTurn).toBeLessThanOrEqual(215);
   }, 120000);
   it('a patron with no Hymn that deals damage still has the Whisper and the rifle: not under half a rifle, not over one', () => {
     const r = prayerRow('prayer-led', faithBuild('mother_ember'), 'normal', lv, n, y, { opts: { hymn: 'any' } });

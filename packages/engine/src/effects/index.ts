@@ -20,7 +20,7 @@ export { register, emit, emitStory, anyOn, holdersOf, holderOf, statQuery, check
 export { itemInfo, itemsOf, effectsOfHeld, allItems, perkEffects, keyOf as itemKey, splitKey, classMove, classMoveKeys, ADVANCED, BASE_CLASS, advancedActive, _setAdvancedLive, _setRevision2Classes, revision2Classes, REV2_CLASSES, SKILL_ITEMS, skillItemsOf, type Held } from './collect';
 export { uses, scopeOf, stampOf, usesLabel, sessionN, restN, dayOf } from './uses';
 export { turnAp, grantPerkAp, bankAp, apDebt, pushAp, refusedGift, AP_BASE, AP_MAX, AP_MIN, PERK_AP_CAP, AP_DEBT_CAP, type ApLine } from './ap';
-export { applyDamage, healUnit, grantShield, hostileSrc, type DamageSrc, type DamageResult } from './damage';
+export { applyDamage, healUnit, grantShield, hostileSrc, PAST_SHIELDS, pastShields, type DamageSrc, type DamageResult } from './damage';
 export { MENDING, mendFactor, mendFactorOf, noteTended, tendedLately, TEND_ROUNDS, TEND_NOTICE, MEDIC, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, RALLY_HEAL, FIELD_REPAIR_HEAL } from './mending';
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';
 export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';

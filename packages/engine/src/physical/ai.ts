@@ -2,7 +2,7 @@
 // and its tier's list (enemies.json `techniques`, on the unit as u.techs). Where it would make a plain attack it asks
 // each technique's handler how much it wants it (`ai`: a plain attack is 5) and uses the best one that beats that.
 // Planning is pure: it reads previews only, so the intent a player Analyzes is what the enemy then does.
-import { type Combat, type Unit, alive, enemyStep, sideSees, healerMark, healerFocus } from '../combat';
+import { type Combat, type Unit, alive, enemyStep, sideSees, enemyPreference } from '../combat';
 import { isGhost, perceivedFoes } from '../illusion';
 import { condOn } from '../magic';
 import type { TechArgs } from './types';
@@ -15,11 +15,11 @@ interface Pick { id: string; args: TechArgs; score: number; target: Unit | null;
 export function aiTechnique(cb: Combat, u: Unit): Pick | null {
   // a tier with no list (a minion) keeps to plain attacks, whatever its weapon would lend
   if (u.side !== 'foe' || u.charId || !u.techs?.length || !alive(u) || condOn(u, 'disarmed') || condOn(u, 'lowered')) return null;
-  const foes = perceivedFoes(cb, u).filter((v) => !isGhost(v) && alive(v) && sideSees(cb, u.side, v));
-  // Rules 1.23: between targets a technique wants equally, the squad's healer is tried first (a tier that looks for one).
-  // The same weight a plain attack gives it (combat.ts enemyTargets): the healer counts as hurt by healer_focus × its max HP more.
-  const mark = healerMark(cb, u), hk = mark ? mark.hp - healerFocus(u) * mark.maxHp : 0;
-  if (mark && foes.every((v) => v === mark || hk <= v.hp)) { const i = foes.indexOf(mark); if (i > 0) { foes.splice(i, 1); foes.unshift(mark); } }
+  // Between targets a technique wants equally it takes the one a plain attack would (combat.ts enemyPreference: its
+  // Taunter, the most hurt, the squad's healer by its tier's weight, rules 1.23; the likeliest hit). It used to take
+  // the first character in the fight's list (item 1315; fixed in the bug sweep of 12 Nov 2026).
+  const pref = enemyPreference(cb, u, perceivedFoes(cb, u).filter((v) => !isGhost(v) && alive(v) && sideSees(cb, u.side, v)));
+  const foes = pref.order, mark = pref.healer;
   let best: Pick | null = null;
   for (const hand of ['main', 'off'] as const) for (const { id } of usable(cb, u, hand)) {
     const def = TECHNIQUE[id], h = handlerOf(id); if (!h?.ai || def.group === 'answer') continue;

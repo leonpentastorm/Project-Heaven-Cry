@@ -155,6 +155,12 @@
       "one_hit_levels_below": 5,
       "to_hit_per_level": 1,
       "max_levels": 5,
+      "full_hp_guard": {
+        "tiers": ["elite", "boss"],
+        "hp": 1,
+        "provisional": true,
+        "text": "No single action by a character takes an Elite or a Boss of their level or higher from full HP to nothing: it is left on 1 HP. Not a Miracle, a trap, a hazard, a field or a turret."
+      },
       "note": "An enemy this many levels below the character who hurts it is taken out by any hit that deals damage. For each level between an enemy and a character, the higher gets +to_hit_per_level to hit the other and the lower the same as a penalty, to max_levels."
     },
     "table": [

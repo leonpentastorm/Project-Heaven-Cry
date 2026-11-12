@@ -18,7 +18,7 @@ import patronsJ from '../../../data/patrons.json';
 import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
-import { emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor, encoreKey } from './combat';
+import { unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, resourcesFor, encoreKey } from './combat';
 import { condOn, applyCond, endCond, harm, shiftMana, unitSave, unitStrength, withVia, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { actionAp, pushAway } from './effects/core';
 import { sessionN, dayOf } from './effects/uses';
@@ -881,7 +881,8 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   // given the grant line (item 745: picked after them, so the line never moves the Miracle's own dice) and the summary
   // of what they did: the web needs no engine call.
   const mfx = kind === 'miracle' ? emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? areaOf(a.tile, pe.entry.id === 'the_sky_answers' ? 2 : 1) : null, unit: u.id, char: c.id, name: pe.entry.name || id, text: pe.entry.text || '', line: null as string | null, summary: '' }) : null;
-  const did = runEntry(cb, rng, u, kind, pe, t, a, power);
+  // A Miracle is past the Elite and Boss guard (bug sweep, 12 Nov 2026: it may exceed the ceilings, once a session, for five levels of Devotion).
+  const did = kind === 'miracle' ? unguarded(() => runEntry(cb, rng, u, kind, pe, t, a, power)) : runEntry(cb, rng, u, kind, pe, t, a, power);
   line += did;
   cb.log.push(line + '.');
   if (mfx) { const grant = grantLine(rng, patron, c.name); mfx.line = grant; mfx.summary = summaryOf(did); if (grant) speak(g, cb, rng, c, patron, 'grant', grant); }

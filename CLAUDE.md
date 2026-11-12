@@ -92,7 +92,7 @@ source/2020/              original material; english/ holds the 2020 trait book 
 
 ## Two referees: engine vs Narrator
 
-The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the grid. The **Narrator** (AI or human) owns judgement: TNs, scene, NPCs, consequences, whether a trigger happened, Achieved perks, legendary deeds. Every rule-bearing data item has `adjudication: engine | hybrid | narrator`. Effects use ops from `data/effect_ops.json`: 50 **core** ops the engine implements generically, 82 **bespoke** ops (~10% of uses) that are per-item hooks. **An op the engine doesn't recognise falls back to the Narrator with the item's `text`; never silently ignore it.** The AI Narrator never sets numbers the engine owns; it requests checks and the engine resolves them.
+The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the grid. The **Narrator** (AI or human) owns judgement: TNs, scene, NPCs, consequences, whether a trigger happened, Achieved perks, legendary deeds. Every rule-bearing data item has `adjudication: engine | hybrid | narrator`. Effects use ops from `data/effect_ops.json`: 50 **core** ops the engine implements generically, 113 **bespoke** ops (~14% of uses) that are per-item hooks. **An op the engine doesn't recognise falls back to the Narrator with the item's `text`; never silently ignore it.** The AI Narrator never sets numbers the engine owns; it requests checks and the engine resolves them.
 
 ## Product decisions so far
 

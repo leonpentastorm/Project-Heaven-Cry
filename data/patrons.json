@@ -472,13 +472,13 @@
           "id": "judgement",
           "name": "Judgement",
           "tier": 2,
-          "text": "An enemy you can see takes 42 Soul damage × your Blessing power. It takes 30% more if it harmed a surrendered or Downed creature this fight.",
+          "text": "An enemy you can see takes 56 Soul damage × your Blessing power. It takes 30% more if it harmed a surrendered or Downed creature this fight.",
           "target": "enemy",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -42,
+              "value": -56,
               "damage_type": "soul"
             },
             {
@@ -1632,20 +1632,20 @@
           "id": "lightning_rod",
           "name": "Lightning Rod",
           "tier": 2,
-          "text": "An enemy you can see takes 42 lightning damage × your Blessing power. It chains to 1 more enemy within 2 tiles for 17 × your Blessing power.",
+          "text": "An enemy you can see takes 56 lightning damage × your Blessing power. It chains to 1 more enemy within 2 tiles for 23 × your Blessing power.",
           "target": "enemy",
           "effects": [
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -42,
+              "value": -56,
               "damage_type": "lightning"
             },
             {
               "op": "chain_damage",
               "jumps": 1,
               "range": 2,
-              "value": 17
+              "value": 23
             }
           ],
           "scales_with": "blessing_power",

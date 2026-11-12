@@ -49,9 +49,15 @@ export const READ_THEM = 0.15;
 export const hostileSrc = (t: Unit, src: DamageSrc) => !!src.by && src.by.side !== t.side;
 
 /** Take damage (already past armour) off a unit's HP. */
+/** The damage a shield does not stop (the spec's Shields paragraph; Leon, 12 Nov 2026): damage over time (Bleeding,
+ * Burning, Corroded, a heart's Strain burn) and true damage. Everything else meets the shield first: a bullet, a
+ * blade, a spell, an Outburst, a prayer, a blast, a trap, a hazard. One rule, read here for every source. */
+export const PAST_SHIELDS = new Set(['true', 'bleed', 'burn', 'burning', 'corrode', 'corroded', 'poison', 'strain', 'dot']);
+export const pastShields = (src: { type?: string; dmgType?: string }): boolean => PAST_SHIELDS.has(src.type || '') || src.dmgType === 'true';
 export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: DamageSrc): DamageResult {
   const res: DamageResult = { dealt: 0, shielded: 0, killed: false, downedHit: false, prevented: false, amount: 0 };
   if (t.dead) return res;
+  if (src.shield !== false && pastShields(src)) src = { ...src, shield: false };
   const ctx: any = { t, src, dmg: Math.max(0, Math.floor(dmg)), phase: 'reduce', hostile: hostileSrc(t, src), self: src.by === t, cb,
     /** the Guard points the unit had as the hit arrived, before any soak spends them (physical/rules.ts: a guard keeps Momentum) */ guard0: t.res?.guard || 0 };
   // Derived reductions (spec: Derived stats): Elemental damage taken (−10% × Pain Threshold) and Ambush damage taken

@@ -53,14 +53,23 @@ describe('the defence step: the enemy table (rules 1.23)', () => {
   it('quick run: one fight of each kind for each squad builds (level 6, ground with cover), and a pair under fire', () => {
     for (const sq of Object.keys(SQUADS)) { const r = fightRow(sq, sq === 'healer' ? 'standard' : 'boss', 6, 'cover', 1); expect(r.errors, fightLine(r)).toBe(0); expect(fightLine(r)).not.toMatch(/undefined|NaN/); }
     const on = pairFire('medic', PAIRS.medic.seconds, 6, 2, 2), off = pairFire('medic', PAIRS.medic.seconds, 6, 2, 2, { focus: false });
-    expect(on.errors + off.errors).toBe(0); expect(on.casts, 'the medic treats: ' + pairLine(on)).toBeGreaterThan(1); expect(pairLine(on)).not.toMatch(/undefined|NaN/);
+    expect(on.errors + off.errors).toBe(0); expect(pairLine(on)).not.toMatch(/undefined|NaN/);
+    // (Bug sweep, 12 Nov 2026: an enemy technique now goes at the target a plain attack would take, the one with the least
+    // HP, so in the open both Soldiers shoot the medic from round 1 and she treats nobody: 0 heals, Down after 1.5 rounds
+    // where this read 4.2. Not refitted. The supporter who does get to work is the one behind a tank.)
+    const tank = pairFire('tank', PAIRS.tank.seconds, 6, 2, 2, { first: PAIRS.tank.first });
+    expect(tank.errors).toBe(0); expect(tank.casts, 'the healer behind a tank heals: ' + pairLine(tank)).toBeGreaterThan(1);
     expect(ENEMY.soldier.healer_focus).toBe(0.5); // (pairFire puts the weight back)
   }, 240000);
-  it('under fire (level 6, 4 fights): with the healer weight the healer takes the fire the rifleman took', () => {
+  // Bug sweep, 12 Nov 2026 (item 1383): this read "with the healer weight the healer takes the fire the rifleman took"
+  // (on > off). An enemy technique now takes the target a plain attack would, the one with the least HP, and that is
+  // the healer with the weight on or off: the weight no longer changes this pair. Measured, not refitted.
+  it('under fire (level 6, 4 fights): the healer takes more fire than the rifleman, with the healer weight on or off', () => {
     const on = pairFire('mender', PAIRS.mender.seconds, 6, 2, 4), off = pairFire('mender', PAIRS.mender.seconds, 6, 2, 4, { focus: false });
     expect(on.errors + off.errors).toBe(0);
-    expect(on.healerTaken, 'on: ' + pairLine(on) + ' | off: ' + pairLine(off)).toBeGreaterThan(off.healerTaken);
-    expect(on.firstTaken).toBeLessThan(off.firstTaken);
+    expect(on.healerTaken, 'on: ' + pairLine(on) + ' | off: ' + pairLine(off)).toBeGreaterThanOrEqual(off.healerTaken);
+    expect(on.firstTaken).toBeLessThanOrEqual(off.firstTaken);
+    expect(on.healerTaken).toBeGreaterThan(on.firstTaken); expect(off.healerTaken).toBeGreaterThan(off.firstTaken);
   }, 240000);
 });
 

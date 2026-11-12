@@ -15,7 +15,7 @@ import {
 export * from './sigilwords';
 import {
   type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
-  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap,
+  active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction,
 } from './combat';
 import { type Rng, d20 } from './rng';
 import { emit, boundGame, onHook } from './effects/hooks';
@@ -948,6 +948,7 @@ export function previewEvoke(cb: Combat, u: Unit, tile: string, aim?: string, op
 /** Evoke (spec: Evoking): fire the pattern from where you stand at the tile you pick. */
 export function evoke(cb: Combat, rng: Rng, u: Unit, tile: string, aim?: string, opts: EvokeOpts = {}): string | null {
   const pv = planEvoke(cb, u, tile, aim, opts); if (!pv.ok) return pv.why || 'Can\'t fire that.';
+  guardNextAction(); // an Evoke is one action (the Elite and Boss guard, combat.ts)
   EVOKE_GUARDED = new Set(); // rules 1.17: the creatures this Evoke may not take out (an Elite or Boss it found at full HP)
   return magicSpellWords(pv.pattern!.glyphs.length, () => evokeInner(cb, rng, u, pv, opts));
 }
@@ -1016,7 +1017,9 @@ function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe',
         const raw = raws[pi];
         // The line of fire runs from the missile's origin (SENSE appears at the target and a field is under it: no line).
         const from = a.via === 'field' || (sp.missile === 'appear' && a.via !== 'chain') ? t.pos : o.origin;
-        line += withSpellFrom(from, () => withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w])));
+        // (a field, a turret and a trap are not the caster's action: the Elite and Boss guard does not hold them; combat.ts)
+        const strike = () => withSpellFrom(from, () => withElement(sp.element, () => harm(cb, rng, by, t, raw, p.type, DMG_TYPE[p.w])));
+        line += direct ? strike() : unguarded(strike);
       }
     } finally { LINE_GUARD = wasGuard; }
     if (guard && !t.dead && t.hp === 1) line += ' (' + t.name + ' is too tough to fall to one spell: 1 HP left)';

@@ -8,6 +8,7 @@
 // heal, condition, knockback, Echo. See run()/runs().
 import { SKILL, SKILLS, PERK } from '../data';
 import type { Character } from '../character';
+import { healingMult } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { Holder, ItemInfo } from './types';
 import { registerGeneric, genericEffects, statQuery, charOfUnit } from './hooks';
@@ -207,9 +208,14 @@ registerGeneric({
   op: 'shield', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && typeof e.value === 'number',
   run: (h, e, args) => { const t = targetUnit(h, e, args); if (!t) return null; const n = e.basis === 'hp_max' || (e.value > 0 && e.value < 1) ? e.value * t.maxHp : e.value; const v = grantShield(h.cb || null, t, n, h.u || null); return ' · ' + t.name + ' gains a ' + v + ' shield'; },
 });
+/** A heal's `scale` (effect_ops.json: "healing_given", "healing_given*ambient_healing"): × the healer's Healing given.
+ * It was read and then multiplied by 1 either way (bug sweep, 12 Nov 2026). The ambient part needs nothing here:
+ * healUnit's callers that mean it go through magic.ts, and no item that reaches this generic op names it. */
+const healScale = (h: Holder, scale: unknown): number =>
+  (typeof scale === 'string' && scale.split('*').map((x) => x.trim()).includes('healing_given') ? (h.c ? healingMult(h.c) : h.u?.mg?.healMult || 1) : 1);
 registerGeneric({
   op: 'heal', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && typeof e.value === 'number',
-  run: (h, e, args) => { const t = targetUnit(h, e, args); if (!t) return null; const n = e.value > 0 && e.value < 1 ? e.value * t.maxHp : e.value * (e.scale === 'healing_given' && h.c ? 1 : 1); const r = healUnit(h.cb || null, t, n, h.u || null, 'perk'); return ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored); },
+  run: (h, e, args) => { const t = targetUnit(h, e, args); if (!t) return null; const n = e.value > 0 && e.value < 1 ? e.value * t.maxHp : e.value * healScale(h, e.scale); const r = healUnit(h.cb || null, t, n, h.u || null, 'perk'); return ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored); },
 });
 registerGeneric({
   op: 'condition', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && isCondition(e.condition || e.id) && !e.choose,

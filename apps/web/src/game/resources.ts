@@ -162,7 +162,7 @@ export function strainRows(hh: HeldHeart): ResRow[] {
     out.push({ key: 'held', label: 'Holding', value: h.name + ' · stage ' + h.stage + ' / ' + h.maxStage, short: h.name + ' · ' + h.stage + ' / ' + h.maxStage, now: h.stage, max: h.maxStage, kind: 'pips', colour: RES_INK.soul,
       sub: h.toneName + form + (mult ? ' · ×' + mult : '') + (h.freePumps != null ? ' · ' + plural(h.freePumps, 'free pump') + ' left' : '') + (h.steady ? ' · steadied' : ''),
       ...(h.stage >= h.maxStage ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : {}),
-      hint: 'A held Outburst: Pump (1 AP) +1 stage, Release (1 AP) fires it. Held past your turn it swells +1 stage at your turn start (+' + hh.swell + ' Strain after that turn start\'s −1); Steady (1 AP) stops the swell.' });
+      hint: 'A held Outburst: Pump (1 AP and some MP) +1 stage, Release (1 AP) fires it. Held past your turn it swells +1 stage at your turn start (+' + hh.swell + ' Strain after that turn start\'s −1); Steady (1 AP) stops the swell.' });
   }
   return out;
 }
@@ -257,7 +257,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   const emaHeld = mg ? !!mg.emanator : !!c && hasEmanator(c), emanator = emaHeld || (!!c && carriesEmanator(c));
   if (emanator) {
     const mp = Math.round(mg ? mg.mp : mpNow(c)), mpMax = mg ? mg.mpMax : maxMp(c);
-    const row: ResRow = { key: 'mp', label: 'MP', value: mp + ' / ' + mpMax, now: mp, max: mpMax, kind: 'bar', colour: RES_INK.mp, hint: 'Your Emanator\'s mana: Outbursts spend it. Syphon (1 AP) draws more from the air.' };
+    const row: ResRow = { key: 'mp', label: 'MP', value: mp + ' / ' + mpMax, now: mp, max: mpMax, kind: 'bar', colour: RES_INK.mp, hint: 'Your Emanator\'s mana: a Begin spends it, and so does every Pump. Syphon (1 AP) draws more from the air.' };
     if (!emaHeld) Object.assign(row, { warn: 'STOWED', level: 'caution', hint: NEEDS_EMANATOR + ' Your Emanator is in the pack: it keeps its MP, but Outbursts draw on the air (+2 Strain) and Syphon waits until you hold it.' });
     else if (mp <= 0) Object.assign(row, { warn: 'EMPTY', level: 'alert', hint: 'No MP: Syphon (1 AP) from the air, or your Outbursts draw on your heart.' });
     else if (mp < mpMax * 0.25) Object.assign(row, { warn: 'LOW', level: 'caution', hint: 'Low MP: Syphon (1 AP) draws mana from the air.' });

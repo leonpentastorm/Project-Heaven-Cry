@@ -4885,7 +4885,7 @@
           "name": "Fusion",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Cast a spell that joins Sigil words that aren't Subjects (Reach, Delivery, Burst, Filter) to a Soul school: each creature the Sigil reaches takes the Outburst as a Bolt, at stage 0 (x0.6) or at the stage you held it to. Pay both costs, +1 Strain and +2 Flux. Celestials notice.",
+          "text": "Cast a spell that joins Sigil words that aren't Subjects (Reach, Delivery, Burst, Filter) to a Soul school: each creature the Sigil reaches takes the Outburst as a Bolt, at stage 0 (×0.8) or at the stage you held it to. Pay both costs, +1 Strain and +2 Flux. Celestials notice.",
           "effects": [
             {
               "op": "grant_action",

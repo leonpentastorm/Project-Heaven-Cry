@@ -1710,12 +1710,12 @@ register({
         return null;
       } },
     { id: 'twin_cast', label: 'The twin casts', scope: ['combat'], target: 'tile', ap: (h, a) => { const d = twinDesign(h, a), m = h.u?.mg; return m && d ? designAp(m, d) + (a.tile ? 1 : 0) : 2; },
-      text: 'Your twin casts one of its three Outbursts from its own tile. You pay the MP and the Strain. With a target, it is a snap cast: Begin and Release in one go, at ×0.6. Without a target, the twin Begins the Outburst and holds it, and can Pump and Release it later.',
+      text: 'Your twin casts one of its three Outbursts from its own tile. You pay the MP and the Strain. With a target, it is a snap cast: Begin and Release in one go, at ×' + stageMult(0) + '. Without a target, the twin Begins the Outburst and holds it, and can Pump and Release it later.',
       available: (h) => (!h.u || !isTwin(h.u) ? false : !h.u.mg || !twinOwner(h.cb!, h.u)?.mg ? 'Your heart has no magic to lend.' : h.u.mg.held ? 'The twin is already holding an Outburst. Pump or Release it.' : true),
       preview: (h, a) => {
         const d = twinDesign(h, a); if (!d) return { ok: false, why: 'Pick one of the twin\'s three Outbursts: tw1, tw2 or tw3.' };
         const tw = h.u!, aim = aimOf(h.cb!, a, 'tile') || undefined;
-        const pv = freeAp(tw, () => previewOutburst(h.cb!, tw, d.id, aim, !!aim)); return pv.ok ? { lines: [d.name + ': ' + pv.cost + ' MP from ' + (twinOwner(h.cb!, tw)?.name || 'you') + ', +' + pv.strain + ' Strain to them' + (aim ? ', ×0.6 now.' : ', held at stage 0.')] } : { ok: false, why: pv.why };
+        const pv = freeAp(tw, () => previewOutburst(h.cb!, tw, d.id, aim, !!aim)); return pv.ok ? { lines: [d.name + ': ' + pv.cost + ' MP from ' + (twinOwner(h.cb!, tw)?.name || 'you') + ', +' + pv.strain + ' Strain to them' + (aim ? ', ×' + stageMult(0) + ' now.' : ', held at stage 0.')] } : { ok: false, why: pv.why };
       },
       run: (h, a, rng) => { const d = twinDesign(h, a)!, tw = h.u!, aim = aimOf(h.cb!, a, 'tile') || undefined; say(h.cb, TWIN_NAME[0].toUpperCase() + TWIN_NAME.slice(1) + (aim ? ' casts ' : ' begins ') + d.name + ' from ' + refOf(tw.pos) + '.');
         const e = freeAp(tw, () => beginOutburst(h.cb!, rng, tw, d.id, aim, !aim)); if (!e) checkOver(h.cb!); return e; } },

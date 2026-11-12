@@ -513,6 +513,40 @@ export function farBelow(t: Unit, by: Unit | null | undefined, cb?: Combat | nul
   if (t.tier === 'elite' || t.tier === 'boss') return false; // Leon, 11 Nov 2026: an Elite and a Boss are never taken out in one hit by the gap
   const lb = gapLevel(by, cb); return lb != null && lb - t.level >= ENEMY_LEVELS.gap.one_hit_levels_below;
 }
+// ---------- the Elite and Boss guard (rules 1.15 and 1.17, made one rule; Leon, 12 Nov 2026) ----------
+// No single action by a character (or a companion) takes an Elite or a Boss at or above their level from full HP to
+// nothing: it is left on 1 HP. Every kind of action: a weapon, a technique's rolls, an Evoke, an Outburst, a prayer, a
+// class move, a blast. Read here, in the damage chokepoint, so nothing has to remember it. An action is one step of
+// the reducer (the state is copied for each, so the marks below die with it), or, inside the enemies' phase, whatever
+// one unit does before the next turn begins. Not guarded: an enemy already hurt, one below the character's level,
+// damage with nobody behind it, a trap, a hazard, a field or a turret (they are not an action; `unguarded`), a
+// Miracle (it is allowed past the ceilings and costs five levels of Devotion; faith.ts), and an execution.
+export const BOSS_GUARD: { tiers: string[]; hp: number } = { tiers: ['elite', 'boss'], hp: 1, ...((ENEMY_LEVELS.gap as any).full_hp_guard || {}) };
+let GUARD_SEQ = 0, GUARD_OFF = 0;
+const GUARD_MARK = new WeakMap<Unit, { by: string; seq: number }>();
+/** A new action begins (a unit's turn starts): what an earlier action found at full HP is no longer held by it. */
+export const guardNextAction = () => { GUARD_SEQ++; };
+/** Run fn with the Elite and Boss guard off: damage that is not a character's action (a field, a turret, a trap), or a Miracle. */
+export function unguarded<T>(fn: () => T): T { GUARD_OFF++; try { return fn(); } finally { GUARD_OFF--; } }
+const NOT_AN_ACTION = new Set(['trap', 'hazard', 'execution', 'bleed', 'burn', 'strain', 'shared']);
+/** Would the guard hold this enemy against this source at all (its tier, the level gap, whose action it is)? */
+export function bossGuards(t: Unit, src: any, cb?: Combat | null): boolean {
+  const by: Unit | null | undefined = src?.by;
+  if (GUARD_OFF || !by || !BOSS_GUARD.tiers.includes(t.tier || '') || t.side !== 'foe' || t.companion || by.side === 'foe') return false;
+  if (NOT_AN_ACTION.has(src.type) || src.faithShare) return false;
+  return levelGap(by, t, cb) <= 0;
+}
+onHook('damage_in', (ctx: any) => {
+  const t: Unit = ctx.t, src = ctx.src;
+  if (ctx.phase === 'reduce') { if (t.hp >= t.maxHp && t.maxHp > BOSS_GUARD.hp && !t.downed && bossGuards(t, src, ctx.cb)) GUARD_MARK.set(t, { by: src.by.id, seq: GUARD_SEQ }); return; }
+  // (an Evoke says it in its own line: sigil.ts, ctx.lineGuard)
+  if (ctx.phase === 'after') { if (ctx.bossGuard && !ctx.lineGuard && !ctx.killed && ctx.cb) ctx.cb.log.push(bossGuardLine(t, src)); return; }
+  if (ctx.phase !== 'would_drop_to_0') return;
+  const m = GUARD_MARK.get(t); if (!m || m.seq !== GUARD_SEQ || m.by !== src?.by?.id || !bossGuards(t, src, ctx.cb)) return;
+  if (ctx.floor == null || ctx.floor < BOSS_GUARD.hp) ctx.floor = BOSS_GUARD.hp;
+  ctx.bossGuard = true;
+});
+const bossGuardLine = (t: Unit, src: any) => (t.name + ' is ' + (t.tier === 'boss' ? 'a Boss' : 'an Elite') + ' of ' + (src.by.name || 'your') + '\'s level or higher: one action can\'t take it from full HP to nothing. It is left on ' + BOSS_GUARD.hp + ' HP.');
 // The hit itself (rules 1.15): whatever the enemy's HP and shield, as long as the hit deals at least 1 damage. It is
 // read after every reduction has spoken: in the 'shield' phase, or, for damage that goes past shields (which has no
 // such phase), in 'reduce' (a listener like this one runs after every item's).
@@ -567,11 +601,15 @@ export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...object
 export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false, cb?: Combat, why = 'hazard', by?: Unit | null): string {
   if (u.dead) return '';
   const d = Math.max(1, Math.floor(dmg) - (ignoreArmour ? 0 : u.armour));
-  const r = applyDamage(cb || null, u, d, { type: why, by: by || null, shield: false, explosive: why === 'explosion', credit: 'hp' });
+  // A shield stops a blast, a trap and a hazard as it stops a bullet or a spell (Leon, 12 Nov 2026): everything but
+  // damage over time and true damage (effects/damage.ts pastShields). It used to be skipped here.
+  const r = applyDamage(cb || null, u, d, { type: why, by: by || null, shield: true, explosive: why === 'explosion', credit: 'hp' });
+  if (r.shielded && cb) emitFx(cb, 'shield', { target: u.id, at: u.pos, absorbed: r.shielded });
   if (r.downedHit) { if (cb) { emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: 0, why, killed: u.dead }); if (u.dead) fxFell(cb, u); } return ' · ' + u.name + ' takes a hit while Downed' + (u.dead ? ' and dies' : ''); }
+  if (r.shielded && r.amount <= 0) return ' · ' + u.name + "'s shield takes it (" + r.shielded + ')';
   if (r.prevented) return ' · ' + u.name + ' shrugs it off';
   if (cb) { emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why, killed: u.hp === 0 }); if (u.hp === 0) fxFell(cb, u); }
-  return ' · ' + u.name + ' takes ' + r.dealt + (u.hp === 0 ? (u.side === 'foe' ? ', down for good' : ', Downed') : '');
+  return ' · ' + u.name + ' takes ' + r.dealt + (r.shielded ? ' (' + r.shielded + ' on the shield)' : '') + (u.hp === 0 ? (u.side === 'foe' ? ', down for good' : ', Downed') : '');
 }
 /** Damage an object on a tile; at 0 HP cover becomes rubble and barrels explode. Returns a log suffix. */
 export function damageObject(cb: Combat, k: string, dmg: number, depth = 0, by: Unit | null = null): string {
@@ -883,8 +921,18 @@ export function setEffectiveArmour(u: Unit, n: number): void {
   const br = u.tech?.break; n = Math.max(0, n);
   if (br && br.cut != null) br.cut = n; else u.armour = n;
 }
-export const weaponDamage = (w: WeaponDef, range: number, rawPower = 0) =>
-  typeof w.damage === 'number' ? w.damage : w.damage?.within_4 ? (range <= 4 ? w.damage.within_4 : w.damage.within_8) : w.id === 'recurve_bow' ? 20 + 5 * rawPower : 20;
+/** A weapon whose damage is written as a formula in weapons.json ("25 + 6*raw_power": the bows, which hit as hard as
+ * the arm that draws them): the base and what each point of Raw Power adds. null when the text is not that shape. */
+export function damageFormula(text: unknown): { base: number; perRawPower: number } | null {
+  const m = typeof text === 'string' ? /^\s*(\d+(?:\.\d+)?)\s*(?:\+\s*(\d+(?:\.\d+)?)\s*[*×x]\s*raw_power\s*)?$/.exec(text) : null;
+  return m ? { base: Number(m[1]), perRawPower: Number(m[2] || 0) } : null;
+}
+export const weaponDamage = (w: WeaponDef, range: number, rawPower = 0) => {
+  if (typeof w.damage === 'number') return w.damage;
+  if ((w.damage as any)?.within_4) return range <= 4 ? (w.damage as any).within_4 : (w.damage as any).within_8;
+  const f = damageFormula(w.damage); // was: only the recurve bow's, by id, so the longbow dealt a flat 20 (bug sweep, 12 Nov 2026)
+  return f ? f.base + f.perRawPower * rawPower : 20;
+};
 /** Rules 1.18: a gun whose action is worked by hand between rounds (weapons.json `cycle_ap`: the long rifle's bolt)
  * costs that much more AP for every action that fires it. Its Shot and Aimed Shot carry it in the weapon's own
  * `ap_cost` (single 3, aimed 4); every other technique that fires a round adds it (physical/core.ts techniqueAp).
@@ -1173,7 +1221,8 @@ export function coneUnits(cb: Combat, from: string, toward: string, n: number): 
 /** An explosive weapon's hit splashes everyone else within its radius of the target, and the cover there, credited to
  * the shooter (rules 1.3; provisional): the hit's damage before the target's armour, less each one's armour. */
 function splash(cb: Combat, att: Unit, tgt: Unit, w: WeaponDef, dealt: number): string {
-  const r = radiusOf(w), raw = weaponDamage(w, dist(att.pos, tgt.pos)); let out = '';
+  // An enemy's splash grows with its tier and level as its direct hit does (rules 1.15; attackDamage's 'tier and level' term).
+  const r = radiusOf(w), raw = weaponDamage(w, dist(att.pos, tgt.pos)) * (!att.charId && att.lvlDmg ? att.lvlDmg : 1); let out = '';
   for (const v of cb.units) if (v !== tgt && !v.dead && !v.surrendered && dist(v.pos, tgt.pos) <= r) out += hurtUnit(v, raw, false, cb, 'explosion', att);
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && dist(o.pos, tgt.pos) <= r) out += damageObject(cb, o.pos, raw * (((w as any).grants?.effect?.op === 'cover_damage_mult') ? (w as any).grants.effect.value : 1), 0, att);
   void dealt;
@@ -1258,6 +1307,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
 /** Start the active unit's turn: AP, heat cooldown, Downed death saves (spec: Downed and dying). */
 export function beginTurn(cb: Combat, rng: Rng) {
   const u = active(cb);
+  guardNextAction(); // the Elite and Boss guard: a new turn is a new action
   if (!u) return;
   // AP (spec: Skills, traits and perks in play): 'turn_start_pre' {u, grants, penalties} collects perk AP ({n, why});
   // turnAp clamps 6 + perk AP (at most +3 a turn) − Stunned − Dazed to 2..9, then takes any debt.
@@ -2078,6 +2128,11 @@ export function healerMark(cb: Combat, u: Unit): Unit | null {
  * squad's healer counts as hurt by a share of its max HP more, the tier's healer_focus, unless this enemy's chance to
  * hit it is under half its best chance on anyone: a healer behind good cover is not worth the rounds), the likeliest
  * hit. `healer` is set on the entry the healer weight was given to. */
+/** How hurt a target looks to an enemy: its HP as a share of its max, in tenths (12 Nov 2026). It was the bare HP left,
+ * which made every enemy open on whoever has the smallest pool (the caster, the healer) from round 1; the enemy table
+ * of rules 1.15 was fitted to fire that spread. In tenths, so a scratch doesn't pull the whole line's fire: among the
+ * equally hurt the likeliest hit decides. */
+const hurtShare = (t: Unit) => Math.round((10 * Math.max(0, t.hp)) / Math.max(1, t.maxHp)) / 10;
 function enemyTargets(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[]) {
   const tauntBy = condSource(u, 'taunted');
   const ownerOf = (t: Unit) => (t as any).ghostOf || t.id;
@@ -2085,8 +2140,22 @@ function enemyTargets(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string
   const list = pcs.map((t) => ({ t, pv: previewAttack(cb, u, t, mode), healer: false })).filter((x) => x.pv.ok);
   const mark = list.length ? healerMark(cb, u) : null, focus = healerFocus(u), bestPct = Math.max(0, ...list.map((x) => x.pv.pct));
   if (mark) for (const x of list) if (ownerOf(x.t) === mark.id && !x.t.downed && x.pv.pct * 2 >= bestPct) x.healer = true;
-  const key = (x: { t: Unit; healer: boolean }) => x.t.hp - (x.healer ? focus * x.t.maxHp : 0);
+  const key = (x: { t: Unit; healer: boolean }) => hurtShare(x.t) - (x.healer ? focus : 0);
   return list.sort((a, b) => (ownerOf(b.t) === tauntBy ? 1 : 0) - (ownerOf(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || b.pv.pct - a.pv.pct);
+}
+/** The same choice for anything else an enemy aims (a technique: physical/ai.ts): the given enemies of it in the
+ * order a plain attack would take them (its Taunter, standing before Downed, the most hurt with the healer's weight,
+ * the likeliest hit). Nobody is dropped: one a plain attack can't reach now keeps its place by HP, after the equal
+ * ones it can. `healer`: the one the healer weight was given to, when it comes first. Pure. */
+export function enemyPreference(cb: Combat, u: Unit, pcs: Unit[]): { order: Unit[]; healer: Unit | null } {
+  const tauntBy = condSource(u, 'taunted'), mode = enemyMode(u);
+  const ownerOf = (t: Unit) => (t as any).ghostOf || t.id;
+  const list = pcs.map((t) => ({ t, pv: previewAttack(cb, u, t, mode), healer: false }));
+  const mark = list.length ? healerMark(cb, u) : null, focus = healerFocus(u), bestPct = Math.max(0, ...list.filter((x) => x.pv.ok).map((x) => x.pv.pct));
+  if (mark) for (const x of list) if (ownerOf(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
+  const key = (x: { t: Unit; healer: boolean }) => hurtShare(x.t) - (x.healer ? focus : 0), pct = (x: { pv: any }) => (x.pv.ok ? x.pv.pct : -1);
+  list.sort((a, b) => (ownerOf(b.t) === tauntBy ? 1 : 0) - (ownerOf(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || pct(b) - pct(a));
+  return { order: list.map((x) => x.t), healer: list[0]?.healer ? list[0].t : null };
 }
 /** Rules 1.23, the hunt: an enemy that puts the healer first (healer_focus 1: an Elite, a Boss), holds a gun and has no
  * shot at the healer from where it stands takes the shortest walk to a tile that has one, if it can still fire this

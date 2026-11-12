@@ -386,3 +386,26 @@ The tables here took about an hour on a busy 4-core machine (whole fights about 
 **`npm run check` at the end of this session:** validator 0 errors; engine types clean; web types clean; engine tests **3,253 passed** (24 skipped; 3,204 before this session and the Faith session's); web tests **986 passed, 1 failed**: `apps/web/src/game/heartView.test.ts` "Overdraw is offered every turn …". That file's source (`apps/web/src/game/heartView.ts`) was being edited by another session at the time (uncommitted, not mine; the test passed in my run ten minutes earlier). During the session the Faith session's own tests were red for a while (`faith.test.ts`, `perks-d.test.ts` True Believer, `rules120-heal-shield.test.ts` "prayer: the bases", `balance/heal-measure.test.ts` "prayer: a Whisper …": Warm Hands 10 against 13) and were green again by the last run; I did not edit them. `apps/web/src/narrator/faith-context.test.ts` (the Narrator prompt's size, under 25.6k) went 45 tokens over with my first, longer Narrator line; the line is one short sentence now and the test passes without moving its limit.
 
 **Not run:** no browser suite (none was edited: a search of `apps/web/e2e` found no number this revision changes); `npm run build`; the screen data (`python3 design/canvas-build/build.py --web`), so `apps/web/src/game/protodata.json` still shows the old Triage, Stim Throw and Rally texts.
+
+## After the bug sweep of 12 Nov 2026: the pairs under fire moved (spec item 1383)
+
+An enemy's technique (most of a Soldier's fire is Bursts) used to go at the first character in the fight's list; it now
+takes the target a plain attack would: its Taunter, then the least HP (the healer counted as hurt by its tier's weight),
+then the likeliest hit. **Nothing was refitted.** Measured with `DEFENCE_PARTS=yard,fire`, 10 fights a cell.
+
+1. **The yardstick did not move** (it is one character): 3.5 / 3.0 / 3.3 rounds at levels 1 / 6 / 12 on the 16 × 11
+   ground, 3.4 / 5.6 / 5.9 on the 26 × 26, before and after.
+2. **Every pair in the open is shorter**, because both Soldiers now shoot whoever has the least HP from round 1.
+   Rounds to the first Down under two Soldiers, levels 1 / 6 / 12, before → after: two idle characters 4.7 → 1.6,
+   4.8 → 1.9, 4.6 → 2.7; a Soul healer and a rifleman 2.4 → 1.6, 6.5 → 3.1, 8.4 → 5.9; the medic and a rifleman
+   6.5 → 1.7, 4.2 → 1.8, 5.4 → 2.6; the tank and a healer 9.2 → 6.1, 10 → 9.8, 10 → 10 (under three: 5.7 → 2.5,
+   8.6 → 3.5, 8.7 → 4.9).
+3. **The healer weight reads the same on and off** wherever the healer already has the least HP (every pair above):
+   the first Down is the supporter in 80 to 100% of fights either way. Sections 5 and 6 above describe the fire as it
+   was before this.
+4. Whole fights at level 6 (8 a cell, the gun and Sigil squads, with the rest of the sweep: the Elite and Boss guard,
+   shields against blasts): rounds −0.2 to +1.3; somebody Down in 38 to 88% of fights on open ground (0 to 25% before).
+5. The question this leaves for Leon: "the most hurt" is the least HP, not the smallest share of HP, so the 115 HP
+   caster is always shot before the 200 HP tank standing in front. Reading it as a share of max HP, or weighing
+   distance, would spread the fire; the enemy table was fitted to fire that was spread by accident.
+6. The two cheap "under fire" tests in `defence-measure.test.ts` were rewritten to what is measured now.

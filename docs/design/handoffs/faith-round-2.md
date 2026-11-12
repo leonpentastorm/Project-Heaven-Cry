@@ -362,3 +362,43 @@ hour. The three cheap tests in `npm run check` are level 6, a normal share: a Hy
 rifle and a quiet turn between 45 and 95% for Old Overcast and Nerukhan, Hymns on 30 to 55% of turns with the vow and
 exactly 3 of 8 without, two targets 115 to 185% on the Hymn turn, a patron with no damage Hymn between 40 and 100%,
 the dabbler no more than 15% over his rifle.
+
+## 14. Leon's answers, 12 Nov
+
+Given the same day, after the report above. Built in the bug sweep of 12 Nov 2026 (spec: the dated note at the head of
+"Rules revision 1.22", section 14 items 1388 to 1390). Not committed by that session; no browser run.
+
+1. **Question 1, Rebuke: it stays 20.**
+2. **Question 2, the Hymn against a spell or a Release: "raise".** A Hymn should clearly beat a spell or an Outburst
+   Release for a cast. The turn with a Hymn goes from about 125% to **about 150%** of the plain rifle for the damage
+   patrons: **Judgement 56** (42), **Lightning Rod 56, and 23 to one more** (42 and 17). Thunderclap, the ×1.3 and every
+   other prayer stand.
+3. **Question 3, 3 rounds at Faith 6: kept.** The cooldown formula is as built.
+
+**Measured** (the same range, 12 fights a cell, a normal share, percent of the plain rifle; before → after):
+
+| | Level 6 | Level 9 | Level 12 | Level 20 |
+|---|---|---|---|---|
+| Old Overcast, a turn with a Hymn | 120 → **143%** | 129 → **155%** | 116 → **139%** | 130 → **155%** |
+| Old Overcast, a turn with only a Whisper | 72 → 72% | 73 → 73% | 64 → 64% | 76 → 76% |
+| Old Overcast, the average, no vow | 90 → 99% | 94 → 104% | 84 → 92% | 96 → 106% |
+| Old Overcast, the average, the vow fulfilled 4 rounds in 10 | 98 → 110% | 100 → 113% | 94 → 105% | 109 → 121% |
+| Two enemies together, a turn with a Hymn | 139 → **173%** | 157 → **193%** | 146 → **180%** | 155 → **191%** |
+| Two enemies together, the average, no vow · with the vow | 97 · 103 → 110 · 120% | 105 · 119 → 118 · 137% | 101 · 105 → 113 · 121% | 109 · 124 → 123 · 142% |
+| Nerukhan, a turn with a Hymn | 122 → **146%** | 134 → **160%** | 121 → **145%** | 127 → **152%** |
+| Nerukhan, a turn with only a Whisper | 78 → 78% | 76 → 76% | 69 → 69% | 79 → 79% |
+| Nerukhan, the average, no vow | 95 → 104% | 98 → 107% | 89 → 98% | 97 → 106% |
+| Nerukhan, the average, the vow fulfilled 4 rounds in 10 | 101 → 112% | 105 → 117% | 92 → 103% | 111 → 123% |
+
+1. The Hymn turn is **149% on average** over the eight cells (125% before), 139 to 160%.
+2. One Hymn II is now 89 / 101 / 107 / 112 damage at levels 6 / 9 / 12 / 20 (it was 67 / 76 / 80 / 84): 92 to 105% of
+   a rifle's turn for 3 AP, with no roll. With a second enemy in the chain 126 / 143 / 151 / 158 between them.
+3. A turn with a Hymn is now over a steady Outburst turn (Leon's 135%) and under the biggest Release (165%). The
+   average over a fight is 92 to 107% with no vow: the wait, not the size, is what holds Faith under the other three.
+4. **The healing Hymns were not raised.** The rule given was to raise them only if their Hymn turn is under the Outburst
+   healer's steady turn by the yardstick of `heal-shield-pass.md`. A turn with Warm Hands and Health is 129 / 124 / 125
+   / 109% of a Soldier-turn; the Outburst healer's steady turn is 125 / 114 / 109 / 111%. It is not under.
+5. Not re-measured: levels 1 and 3 (Devotion 3 has no Hymn II, so nothing there moved), all in, the dabbler's last
+   column (Lightning Rod at Devotion 5: it goes up by the same third), section 6.3 and 6.5 above (they hold the old 42).
+6. The cheap tests in `faith-measure.test.ts` now hold a Hymn turn between 125 and 175% at level 6 (two enemies: 145 to
+   215%); `rules121-faith.test.ts` and `rules122-faith.test.ts` pin 56 and 23.
