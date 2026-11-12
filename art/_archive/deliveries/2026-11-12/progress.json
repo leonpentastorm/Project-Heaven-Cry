@@ -22,16 +22,16 @@
     "feeling-grief",
     "feeling-fear",
     "feeling-love",
-    "feeling-joy"
+    "feeling-joy",
+    "feeling-calm"
   ],
   "awaiting_after_test": "Leon verdict before remaining feeling/module production; map guides before optional maps",
   "production_approved": false,
   "remaining_now": [
-    "feeling-calm",
     "module-split",
     "module-ricochet",
     "module-orbit",
     "module-echo"
   ],
-  "updated_utc": "2026-11-12T02:39:45.198826+00:00"
+  "updated_utc": "2026-11-12T02:41:13.866774+00:00"
 }

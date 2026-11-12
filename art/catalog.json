@@ -10399,6 +10399,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-joy.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-joy.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-calm": {
+      "id": "feeling-calm",
+      "label": "Calm: one long level stroke over two or three still circles, like a horizon over water",
+      "path": "art/icons/feelings/feeling-calm.png",
+      "sha256": "6c67f8d64f77330f81ad30907745e0f9b552282e7a0fcde1168ddd3fdf54b110",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-calm.png",
+        "128": "art/icons/feelings/exports/128/feeling-calm.png",
+        "64": "art/icons/feelings/exports/64/feeling-calm.png",
+        "56": "art/icons/feelings/exports/56/feeling-calm.png",
+        "48": "art/icons/feelings/exports/48/feeling-calm.png",
+        "44": "art/icons/feelings/exports/44/feeling-calm.png",
+        "40": "art/icons/feelings/exports/40/feeling-calm.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-calm.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-calm.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
