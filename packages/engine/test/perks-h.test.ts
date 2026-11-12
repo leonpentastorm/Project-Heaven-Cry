@@ -280,6 +280,7 @@ describe('Central City Kid', () => {
     turn(s, { combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
     const inside = unitSave(s.g.combat!.units.find((u) => u.side === 'pc')!, 'body');
     const s2 = storyWith([{ traits: ['central_city_kid'] }]); const c2 = s2.chars[0];
+    s2.g.campaign = JSON.parse(JSON.stringify(s2.g.campaign)); // shared between states: change a copy
     const z: any = s2.g.campaign!.zones.find((x) => x.id === s2.g.story.zone); z.in_city = false;
     expect(check(s2, c2.id, ['guts']).roll()).toMatch(/−2 Central City Kid/);
     turn(s2, { combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });

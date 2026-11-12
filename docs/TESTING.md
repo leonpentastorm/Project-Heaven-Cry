@@ -9,6 +9,7 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 | Only the engine or the data | `npm run check -- engine` | under 1 min | Validator, engine types, engine tests |
 | Only the client | `npm run check -- web` | about 1.5 min | Web types, the screen data's freshness (`protodata.json` against `data/*.json`; when it says STALE, run `python3 design/canvas-build/build.py --web`), web tests |
 | One rule, and you want only its tests | `npm run check -- -t "Heart Overload"` | seconds | Both suites, only tests whose name matches |
+| A simulator policy or the enemy AI; and before any merge of engine work | `npm run balance` (or `npm run check -- balance`) | a minute or two | The balance simulator's folder (`packages/engine/test/balance/`) with its three "quick run" smoke fights (whole simulated fights for every table, squad and measurement). Every balance TARGET (guns, magic, heals, Faith, defence, the enemy table, the price list) is in `npm run check` already: a number that moves fails there |
 | A number or a rule, and you want to SEE what the game does | `npm run try -- '<scenario>'` | 3 s | A fight played through the real rules: the log lines and every unit's HP, AP, meters and conditions after each step. No browser, no new test file. `npm run try -- --help` has the fields and examples |
 | A screen, a button, anything a player clicks | `npm run e2e -- <suite>` | 1 to 3 min a suite | The suite's checks in a real browser. It builds, starts and stops the server itself |
 | Before a release | `npm run e2e -- all` then deploy | about 15 min | Every browser suite, three at a time |
@@ -82,6 +83,32 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   `hurtUnit`, `heal`, `healUnit`, `grantShield` or `applyDamage` from code, when HP or a shield is written with one in
   `classes/` or `perks/`, when the source asks for a block the data does not have, and when a block no longer holds the
   number its ledger line says (a re-fit changes the data and that line together).
+- **The replay guard** (`packages/engine/test/replay-hash.test.ts`, inside `npm run check`): whole seeded games with
+  the **enemy AI on** (story fights on both 26 × 26 grounds, the Proving Ground at 4 v 10 and across a change of wave,
+  a story-to-fight-to-story round trip, every reference build, casters on both sides, and two scripted games: doors,
+  hiding, held shots and hazards; walking out of an enemy's reach), each reduced to hashes of the state and of the
+  ordered stream (every action, refusal, effect, log line and story line) at the end and every 25 actions, against
+  `packages/engine/test/golden/replays.json`. It is what proves that a change meant to move nothing (performance, a
+  refactor, a cache) moved nothing: a reaction in another order, a unit sighted a turn later or one more die changes
+  a hash. A failure names the game and the 25 actions in which the change began. It hands its policies a copy of the
+  game (a preview writes into the state it reads) and checks what it claims to play (`REPLAY_COVER=1` prints it).
+  Before merging engine work run the larger set: `REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash` (24 games).
+  When a rule, a number, a simulator policy or the saved shape was changed on purpose, record on purpose and say what
+  moved in the commit: `REPLAY_RECORD=1 REPLAY_FULL=1 npm test -w @phc/engine -- replay-hash`. To see what moved, dump
+  the last states on the old code and the new and diff them: `REPLAY_DUMP=<dir> npm test -w @phc/engine -- replay-hash`.
+- **The oracles beside it**: `paths-order.test.ts` (the plain path search: the pin for `paths()` and its tie order),
+  `sight-order.test.ts` (`visibility()`: the pin for who is sighted), `shared-state.test.ts` (what `apply` shares
+  instead of copying gives the deep-copy result and leaves its input alone), `phys-dispatch-answers.test.ts` (the
+  hand an Answer is called with).
+- **Old saves** (`packages/engine/test/old-save.test.ts`): three whole saves (`packages/engine/test/fixtures/`, never
+  regenerated; the test's header says which commit wrote each: one by the live 0.22.0 build with a 511-line archive,
+  two by `develop` the day before the performance work) are loaded and played on. A change to the saved shape adds a
+  migration and a new fixture beside them.
+- **The balance simulator** (`packages/engine/test/balance/*.test.ts`): its targets are in the engine's default run
+  (and so in `npm run check`). Its three "quick run" smoke fights are not: `npm run balance` runs the folder with
+  them (`BALANCE_QUICK`, set by `packages/engine/vitest.balance.config.ts`). One file with its report switches:
+  `HEAL_MEASURE=1 npx vitest run --root packages/engine test/balance/heal-measure.test.ts --silent=false` (the commands
+  in the hand-offs still work as written). `test/suite-shape.test.ts` fails if the folder leaves the default run.
 - `packages/engine/test/balance-baseline.test.ts`: the plain attack of sample weapons against each enemy tier
   (`BALANCE_OUT=<file>`).
 - `window.__phc` in the browser: `getState()`, `act(action)`, `setNarrator({ scripted: true })` (a Narrator that

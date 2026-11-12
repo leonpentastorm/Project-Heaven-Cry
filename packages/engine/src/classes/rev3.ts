@@ -16,7 +16,7 @@ import { tendHook } from '../effects/damage';
 import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
 import {
-  dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, moveUnit,
+  dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, stepsFrom, moveUnit,
   previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike, displace, swapUnits
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
@@ -235,11 +235,11 @@ register({
 // and Overwatch apply). No step that helps: no reaction. Policy: on (default) or off. Spells aren't weapon attacks.
 let ducking: Unit | null = null;
 function duckTile(cb: Combat, me: Unit, att: Unit, mode: string): { k: string; out: boolean } | null {
-  const P = paths(cb, me.pos, me.id), home = me.pos;
+  const home = me.pos, next = stepsFrom(cb, me.pos, me.id); // the tiles paths() puts 1 away, without searching the whole map for them
   const covered = (() => { const pv = previewAttack(cb, att, me, mode as any, { free: true }); return pv.ok && !!pv.coverTile; })();
   let best: { k: string; out: boolean } | null = null;
   try {
-    for (const k of Object.keys(P.dist).filter((x) => P.dist[x] === 1).sort()) {
+    for (const k of next) {
       if (objectsAt(cb, k).some((o) => !!kindOf(o).hazard)) continue;
       me.pos = k;
       const pv = previewAttack(cb, att, me, mode as any, { free: true });

@@ -25,10 +25,16 @@ import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf,
 const HANDLERS: Record<string, TechHandler> = {};
 /** Register a technique's handler (one per id; a second registration replaces the first: tests). */
 export function technique(h: TechHandler): void {
-  HANDLERS[h.id] = h;
+  HANDLERS[h.id] = h; for (const k of Object.keys(ANSWERS)) delete ANSWERS[k];
   for (const name of Object.keys(h.react || {})) if (!DISPATCHED.has(name)) { DISPATCHED.add(name); onHook(name as HookName, (ctx, cb) => dispatch(name as HookName, ctx, cb)); }
 }
 const DISPATCHED = new Set<string>();
+/** The Answers that listen on a hook, in the registry's order: listed once per hook and again after a registration
+ * (dispatch runs on every hook of every action, so it must not walk every technique for every unit each time). */
+const ANSWERS: Record<string, { id: string; def: TechDef; fn: (ctx: any, t: Tech) => void }[]> = {};
+function answersOn(name: string) {
+  return (ANSWERS[name] ||= Object.values(HANDLERS).flatMap((h) => { const def = TECHNIQUE[h.id], fn = h.react?.[name as HookName]; return fn && def?.group === 'answer' ? [{ id: h.id, def, fn: fn as any }] : []; }));
+}
 /** Held Watches and ready Answers hear the fight's hooks through their handler's `react`. A Watch's handler is called
  * for the unit holding it; an Answer's for every unit that has it usable. Never in a preview. */
 function dispatch(name: HookName, ctx: any, cb: Combat): void {
@@ -41,10 +47,14 @@ function dispatch(name: HookName, ctx: any, cb: Combat): void {
     // chosen when it was held, every named ally (Cover Me's Auto names two) and the arrow it names go with it; a step no
     // held Watch hears (ctx.noWatch: Shift) wakes none.
     if (w && TECHNIQUE[w.id] && !ctx.noWatch) { const fn = HANDLERS[w.id]?.react?.[name]; if (fn) unheld(u, () => fn(ctx, buildTech(cb, u, TECHNIQUE[w.id], { hand: w.hand, tile: w.tile, allyId: w.allyId, targetId: w.targetId, ...(w.allyIds ? { allyIds: w.allyIds } : {}), ...(w.line ? { line: w.line } : {}), ...(w.ammo ? { ammo: w.ammo } : {}) }, rng, false))); }
-    for (const h of Object.values(HANDLERS)) {
-      const def = TECHNIQUE[h.id], fn = h.react?.[name]; if (!fn || def?.group !== 'answer' || !alive(u)) continue;
-      const hand = hasUsable(u, 'main', h.id) ? 'main' : hasUsable(u, 'off', h.id) ? 'off' : null; if (!hand) continue;
-      unheld(u, () => fn(ctx, buildTech(cb, u, def, { hand }, rng, false)));
+    // What the unit has usable in each hand is worked out once, and again only after one of its reactions ran (the
+    // reaction may have changed what it holds or can use): the same answer as asking for every Answer in turn.
+    let sets: { main: Set<string>; off: Set<string> } | null = null;
+    for (const a of answersOn(name)) {
+      if (!alive(u)) break;
+      if (!sets) sets = { main: new Set(usable(null, u, 'main').map((x) => x.id)), off: new Set(usable(null, u, 'off').map((x) => x.id)) };
+      const hand = sets.main.has(a.id) ? 'main' : sets.off.has(a.id) ? 'off' : null; if (!hand) continue;
+      unheld(u, () => a.fn(ctx, buildTech(cb, u, a.def, { hand }, rng, false))); sets = null;
     }
   }
 }

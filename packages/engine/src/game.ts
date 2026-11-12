@@ -455,8 +455,37 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterItems(c as any); } catch { /* a save this old is handled by apply */ }
   return g;
 }
+// ---------- what apply() shares with the state it was given (it copies everything else) ----------
+// `campaign` (the campaign file: read in play, about 40% of a fight's state), `sandbox.saved.campaign` (the room's own
+// campaign, parked while the Proving Ground is open) and the lines in `archive` (every story line past the 400th) are
+// NOT copied by apply(): the new state holds the same campaign objects and a new list of the same archive lines. So the rule for both: REPLACE, NEVER WRITE IN PLACE (g.campaign = { ...g.campaign, zones }, never
+// g.campaign.zones.push(…)); a write in place would change the previous state too (the one the store keeps for a
+// reroll and React is drawing). The engine's test suite turns the freeze on (test/helpers/setup.ts): both are frozen
+// deep when shared, and so is every zone map built from the campaign, so a write in place throws at its own line.
+let FREEZE_ON = false; const FROZEN = new WeakSet<object>();
+/** Tests only: freeze what apply() shares (see above). Returns the old setting. The suite's setup file sets the global
+ * instead: it must not import the engine (a test file that mocks an engine module has to be the first to load it). */
+export function _freezeShared(on: boolean): boolean { const was = FREEZE_ON; FREEZE_ON = on; return was; }
+const freezing = () => FREEZE_ON || (globalThis as any).__PHC_FREEZE_SHARED === true;
+function deepFreeze(o: any) { if (!o || typeof o !== 'object' || FROZEN.has(o)) return; FROZEN.add(o); Object.freeze(o); for (const v of Object.values(o)) deepFreeze(v); }
+/** The copy apply() works on: everything but the campaign, the archive's lines and the campaign a Proving Ground
+ * parked in sandbox.saved (the room's own, read back whole at sandbox/end), in the same key order. */
+function workingCopy(state: GameState): GameState {
+  const parked = (state as any).sandbox?.saved?.campaign || null; // a Proving Ground opened from the title has none (null)
+  const slim: any = {}; for (const k of Object.keys(state)) if (k !== 'campaign' && k !== 'archive') slim[k] = (state as any)[k];
+  if (parked) slim.sandbox = { ...slim.sandbox, saved: { ...slim.sandbox.saved, campaign: null } }; // the key keeps its place; the object goes back below
+  const copy = JSON.parse(JSON.stringify(slim)), g: any = {};
+  if (parked) copy.sandbox.saved.campaign = parked;
+  for (const k of Object.keys(state)) {
+    if (k === 'campaign') { if (state.campaign !== undefined) g.campaign = state.campaign; }
+    else if (k === 'archive') { if (state.archive !== undefined) g.archive = Array.isArray(state.archive) ? state.archive.slice() : state.archive; }
+    else if (k in copy) g[k] = copy[k];
+  }
+  if (freezing()) { deepFreeze(state.campaign); deepFreeze(parked); if (Array.isArray(state.archive)) for (const e of state.archive) deepFreeze(e); }
+  return g;
+}
 export function apply(state: GameState, action: Action, by: string): GameState {
-  const g: GameState = JSON.parse(JSON.stringify(state));
+  const g: GameState = workingCopy(state);
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
   for (const c of Object.values(g.characters || {})) {
@@ -2035,7 +2064,8 @@ const mapCache = new WeakMap<object, Record<string, MapDef>>();
 /** A zone of the campaign as a map, or a built-in map by id. */
 export function mapFor(g: GameState, id: string): MapDef | null {
   const c = campaignOf(g), z = c?.zones.find((x) => x.id === id);
-  if (z) { let cache = mapCache.get(c!); if (!cache) { cache = {}; if (g.campaign) mapCache.set(c!, cache); } return (cache[id] ||= zoneToMap(z, Object.fromEntries(c!.zones.map((x) => [x.id, x.name])))); }
+  // The cache lives as long as the campaign object, and apply() shares that object between states: a map from here is read-only.
+  if (z) { let cache = mapCache.get(c!); if (!cache) { cache = {}; if (g.campaign) mapCache.set(c!, cache); } if (!cache[id]) { cache[id] = zoneToMap(z, Object.fromEntries(c!.zones.map((x) => [x.id, x.name]))); if (freezing()) deepFreeze(cache[id]); } return cache[id]; }
   return MAPS[id] || null;
 }
 export const zoneMap = (g: GameState): MapDef => mapFor(g, g.story.zone || campaignOf(g)?.startZone || 'yard') || MAPS.yard;
@@ -4044,12 +4074,16 @@ function sbWorldPlay(g: GameState, a: Extract<SandboxAction, { type: 'sandbox/ca
     sbLog(g, n.name + ' (' + (n.kind || 'human') + ', ' + n.side + ') at ' + refOf(n.pos) + ' [' + n.id + '].'); return;
   }
   // An objective of the Proving Ground's drill mission (made on first use), with its where and status.
-  const camp: any = g.campaign || (g.campaign = JSON.parse(JSON.stringify(PROVING_GROUND)));
+  const camp0: any = g.campaign || JSON.parse(JSON.stringify(PROVING_GROUND));
   const id = String(a.id || '').trim().replace(/[^a-z0-9_]/gi, '_').slice(0, 40); if (!id) fail('Name the objective.');
-  let m = (camp.missions ||= []).find((x: any) => x.id === 'drill');
-  if (!m) { m = { id: 'drill', title: 'Drill', act: 1, summary: 'The Proving Ground\'s practice objectives.', goal: 'Practise.', objectives: [] }; camp.missions.push(m); }
+  // The campaign is shared between states (workingCopy): the mission list, the drill mission and its objectives are
+  // copied, written, and put back as a new campaign object.
+  const missions: any[] = [...(camp0.missions || [])]; let mi = missions.findIndex((x: any) => x.id === 'drill');
+  if (mi < 0) { missions.push({ id: 'drill', title: 'Drill', act: 1, summary: 'The Proving Ground\'s practice objectives.', goal: 'Practise.', objectives: [] }); mi = missions.length - 1; }
+  const m = { ...missions[mi], objectives: (missions[mi].objectives || []).map((x: any) => ({ ...x })) }; missions[mi] = m;
   let o = m.objectives.find((x: any) => x.id === id);
   if (!o) { o = { id, text: (a.text || id).slice(0, 120), done_when: 'The tools mark it.' }; m.objectives.push(o); } else if (a.text) o.text = a.text.slice(0, 120);
+  g.campaign = { ...camp0, missions };
   const ms = g.story.missions || (g.story.missions = { active: [], done: [], failed: [], objectives: {}, revealed: [], side: [], choose: null, ending: null, opening: null, act: { scene: g.story.scene.n, xp: {} } });
   if (!ms.active.includes('drill')) { ms.active.push('drill'); ms.done = ms.done.filter((x) => x !== 'drill'); }
   const st = (ms.objectives.drill ||= {}); st[id] = a.status === 'done' || a.status === 'failed' ? a.status : 'open';

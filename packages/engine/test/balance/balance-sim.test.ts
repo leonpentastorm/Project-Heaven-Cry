@@ -141,8 +141,11 @@ describe('the fight simulator', () => {
   }, 30000); // (many builds: slow when the machine is busy)
 });
 
+// The "quick run" smoke fights play whole simulated fights and assert only that they build: `npm run balance` runs them
+// (vitest.balance.config.ts sets BALANCE_QUICK); the engine's default run leaves them out. test/suite-shape.test.ts.
+const QUICK_RUN = !!process.env.BALANCE_QUICK;
 describe('the baseline', () => {
-  (OUT || FROM || ONE ? it.skip : it)('quick run: every table builds (a smoke test, a few seconds)', () => {
+  (QUICK_RUN && !OUT && !FROM && !ONE ? it : it.skip)('quick run: every table builds (a smoke test, a few seconds)', () => {
     const D = runAll(QUICK), md = writeReport(D);
     expect(D.meta.errors).toBe(0);
     expect(D.builds.every((b: any) => !b.problems.length)).toBe(true);

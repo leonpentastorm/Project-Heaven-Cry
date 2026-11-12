@@ -11,6 +11,9 @@ import { LEVELS } from './builds';
 const OUT = process.env.BALANCE_FIT_OUT, TABLE = process.env.BALANCE_FIT_TABLE;
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..'), fromRepo = (p: string) => (p.startsWith('/') ? p : resolve(REPO, p));
 
+// The "quick run" smoke fights play whole simulated fights and assert only that they build: `npm run balance` runs them
+// (vitest.balance.config.ts sets BALANCE_QUICK); the engine's default run leaves them out. test/suite-shape.test.ts.
+const QUICK_RUN = !!process.env.BALANCE_QUICK;
 describe('the fit of the enemy table', () => {
   (TABLE ? it.skip : it)('the table holds the yardstick targets at every reference level (rules 1.15, the fitted table)', () => {
     // the plain rifleman with a normal share against an enemy of its own level: hits that land to kill, and the chance to hit
@@ -24,7 +27,7 @@ describe('the fit of the enemy table', () => {
       expect(c.soldier.foePct, 'a Soldier\'s chance to hit the yardstick, level ' + lv).toBe(65);
     }
   });
-  (OUT ? it.skip : it)('quick run: every measurement of the fit builds (one fight each, level 6)', () => {
+  (QUICK_RUN && !OUT ? it : it.skip)('quick run: every measurement of the fit builds (one fight each, level 6)', () => {
     const o = fitLevel(6, 1), line = fitLine(o);
     expect(line).not.toMatch(/undefined|NaN/);
     expect(line).toMatch(/errors 0$/);
