@@ -92,6 +92,8 @@ const dryRun = (g, cb, uid, fn) => engineDryRun(g, cb, uid, fn);
 export { dryRun as _dryRun };
 /** Encore's key in words (items 729, 737): "combat/attack:shot" → "Attack (shot)". */
 export const encoreWords = (key) => { const [t, what] = String(key || '').split(':'); const n = t.replace('combat/', ''); return (n.charAt(0).toUpperCase() + n.slice(1)).replace('-', ' ') + (what ? ' (' + what + ')' : ''); };
+/** The switches an action carries (its mods): the ones set and usable, and a default-on one turned off as "!id". */
+const modsOf = (tgls) => tgls.filter((t) => t.on && !t.why).map((t) => t.id).concat(tgls.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
 const sgn = (v) => (v >= 0 ? '+' : '−') + Math.abs(Math.round(v * 100) / 100);
 /** The to-hit sum and damage chain in words: "d20 +4 skill +2 aimed −2 range · dmg 20 ×1.2 Strength and Raw Power". */
 export function hitBreakdown(pv) {
@@ -722,9 +724,10 @@ export class CombatLogic extends DCLogic {
     // Where the picked move may end and what each tile costs is the engine's answer (actions.ts moveOptions: the route,
     // the items' price, one Sprint a turn, Fear, Threatened, an item's ban, Encore's lend), asked once per state and
     // action, not on every mouse move. A tile lights up only if the engine would take the move.
-    const moveKey = mineTurn && isMove ? [cur.id, cur.pos, cur.ap, S.action, (this._modsOn === S.action ? this._mods || [] : []).join(',')].join('|') : '';
+    const moveMods = mineTurn && isMove ? (() => { try { return modsOf(withGame(g, () => togglesFor({ u: cur, c: ch, cb, g }, 'combat/move', { action: S.action, target: null }, S.mods || []))); } catch { return []; } })() : []; // the switches set on the move (they price it)
+    const moveKey = mineTurn && isMove ? [cur.id, cur.pos, cur.ap, S.action, moveMods.join(',')].join('|') : '';
     if (!moveKey) this._move = null;
-    else if (!this._move || this._move.g !== g || this._move.key !== moveKey) { let mo; try { mo = moveOptions(g, cb, cur.id, S.action, { mods: this._modsOn === S.action ? this._mods || [] : [] }); } catch { mo = { tiles: {}, why: 'Not now.', lend: 0 }; } this._move = { g, key: moveKey, ...mo }; }
+    else if (!this._move || this._move.g !== g || this._move.key !== moveKey) { let mo; try { mo = moveOptions(g, cb, cur.id, S.action, { mods: moveMods }); } catch { mo = { tiles: {}, why: 'Not now.', lend: 0 }; } this._move = { g, key: moveKey, ...mo }; }
     const MO = this._move, moveCost = (k) => (MO && MO.tiles[k] ? MO.tiles[k].ap : 0);
     // Encore (items 729, 737): a move that repeats the Laughing Mask's Encore is lent the AP it cost before.
     const moveLend = MO ? MO.lend : 0;
@@ -828,7 +831,7 @@ export class CombatLogic extends DCLogic {
     const TOGGLE_ON = { shot: 'combat/attack', aimed: 'combat/attack', melee: 'combat/attack', burst: 'combat/attack', auto: 'combat/attack', move: 'combat/move', sprint: 'combat/move', disengage: 'combat/move', outburst: 'combat/outburst', release: 'combat/release', pump: 'combat/pump', evoke: 'combat/evoke' };
     const tglOn = TOGGLE_ON[S.action] || (tsel ? 'combat/attack' : null); // a technique is an attack: its toggles (Ricochet, Spare, Nonlethal…) show with it
     const tgls = mineTurn && tglOn ? (() => { try { return withGame(g, () => togglesFor({ u: cur, c: ch, cb, g }, tglOn, { action: S.action, target: tgtUnit }, S.mods || [])); } catch { return []; } })() : [];
-    this._mods = tgls.filter((t) => t.on && !t.why).map((t) => t.id).concat(tgls.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id)); this._modsOn = S.action;
+    this._mods = modsOf(tgls);
     const hp = mineTurn && held ? heartPanel(pcb, cur, this._mods) : null;
     // The grid preview: aimed (a Snap, a Release) on the aim once picked, else on the hovered tile; while holding, your
     // reach ring faintly and the aura's tiles; a design picked to Begin shows its reach.
