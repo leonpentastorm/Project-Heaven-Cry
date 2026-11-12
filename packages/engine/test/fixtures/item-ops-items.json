@@ -1,0 +1,31 @@
+{
+  "about": "Engine foundations 3, the proof: a brand-new perk and a relic written in data only (no TypeScript), loaded with addItems() by test/item-ops.test.ts and played in a fight. Test only: not game content.",
+  "perks": [
+    {
+      "id": "test_blood_for_blood",
+      "name": "Blood for Blood (test)",
+      "tier": "mastered",
+      "text": "Once a fight, when an enemy drops an ally, bank {=effects.0.value} AP for your next turn, and your next hit deals +{=effects.1.value_pct}% damage.",
+      "adjudication": "engine",
+      "effects": [
+        { "op": "grant_ap", "value": 2, "bank": true, "when": "downed", "if": { "target": "ally", "actor": "foe" }, "limit": { "per": "per_combat", "n": 1 },
+          "and": [{ "op": "mark", "flag": "vengeful" }], "say": "{self} swears it on {target}'s blood (Blood for Blood)." },
+        { "op": "damage_mod", "value_pct": 50, "when": "dealing", "if": { "flag": "vengeful" }, "label": "Blood for Blood" },
+        { "op": "mark", "flag": "vengeful", "clear": true, "when": "hit", "if": { "flag": "vengeful" } }
+      ]
+    }
+  ],
+  "relics": [
+    {
+      "id": "test_ember_charm",
+      "name": "Ember Charm (test)",
+      "text": "Once a turn your melee hit sets an enemy Burning. At the start of each of your turns you heal {=effects.1.amount.base} HP. Your reload costs {=effects.2.value|abs} AP less, never below {=effects.2.min}.",
+      "effects": [
+        { "op": "condition", "condition": "burning", "skip_save": true, "target": "target", "when": "hit", "if": { "melee": true, "hostile": true, "target_lacks": ["burning"] },
+          "limit": { "per": "per_turn", "n": 1 }, "say": "The Ember Charm flares{then}." },
+        { "op": "mend", "amount": { "kind": "heal", "base": 5, "profile": "flat" }, "when": "turn_start" },
+        { "op": "cost_mod", "value": -1, "min": 1, "when": "cost", "if": { "action": ["reload"] } }
+      ]
+    }
+  ]
+}

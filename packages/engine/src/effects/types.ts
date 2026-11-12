@@ -6,7 +6,9 @@ import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 
 /** Where an item comes from. Class moves are keyed "class:<classId>.<moveId>". */
-export type ItemKind = 'perk' | 'trait' | 'class' | 'skill';
+/** 'relic': an item a holder carries that is neither a perk nor a trait (engine foundations 3: a roguelike's relics),
+ * loaded with addItems('relic', [...]); written in data only. */
+export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic';
 /** The tier an item is held at: a perk's I or II, a granted perk's kind, 'trait', or a class move's rank ('adv' for an advanced class). */
 export type Tier = 'I' | 'II' | 'mastered' | 'achieved' | 'ultimate' | 'trait' | 'III' | 'adv';
 

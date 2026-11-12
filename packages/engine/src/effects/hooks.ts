@@ -6,7 +6,7 @@ import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
 import type { StatId } from './stats';
-import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf } from './collect';
+import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, _addRawItems, _clearRawItems } from './collect';
 
 // ---------- the bound game (set by apply() for the length of one action) ----------
 let G: any = null;
@@ -34,6 +34,11 @@ export const registered = () => [...REG.keys()];
 /** For tests: take a copy of the lane registrations, and put a copy back (test helpers isolate runtime tests from lanes). */
 export const _snapshotRegistry = () => new Map(REG);
 export function _restoreRegistry(snap: Map<string, ItemHandler>) { REG.clear(); for (const [k, v] of snap) REG.set(k, v); dirty(); }
+/** Add items at run time (engine foundations 3): a mode's relics or new perks, a test's fixtures; plain data in the
+ * shape of perks.json / traits.json items. They run on the generic runners only (no handler). */
+export function addItems(kind: 'perk' | 'trait' | 'relic', items: any[]) { _addRawItems(kind, items); dirty(); }
+/** For tests: forget the items added with addItems. */
+export function clearAddedItems() { _clearRawItems(); dirty(); }
 /** For tests: forget every lane registration (generic handlers stay). */
 export function _unregisterAll(keep: (key: string) => boolean = () => false) { for (const k of [...REG.keys()]) if (!keep(k)) REG.delete(k); dirty(); }
 
@@ -141,7 +146,7 @@ function buildIndex(held: Held): Record<string, Slot[]> {
 export function heldOfChar(c: Character | null | undefined): Held {
   if (!c) return { perks: [], traits: [] };
   const sk = skillItemsOf(c.skills);
-  return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank: rankHook ? rankHook(c) : 1, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}) };
+  return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank: rankHook ? rankHook(c) : 1, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}), ...(c.relics?.length ? { relics: [...c.relics] } : {}) };
 }
 let rankHook: ((c: Character) => number) | null = null;
 /** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */

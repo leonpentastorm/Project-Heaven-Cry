@@ -3,7 +3,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import patronsJ from '../../../data/patrons.json';
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES } from './data';
-import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effects/collect';
+import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem } from './effects/collect';
 import { statQuery, setRankRule } from './effects/hooks';
 import type { StatId } from './effects/stats';
 import feelJ from '../../../data/feelings.json';
@@ -16,6 +16,8 @@ import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from '.
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
+  /** Relics carried (engine foundations 3: items added at run time with addItems('relic', …); data only). */
+  relics?: string[];
   /** The creation rules this sheet was locked in under (SHEET_REV; rules 1.11, item 931). A sheet without it was made
    * before 1.11; it is read by today's budgets all the same (no older budget is tried: item 1504). */
   rulesRev?: number;
@@ -934,17 +936,19 @@ export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', orig
  * id the data no longer has is taken off the sheet, so no screen meets an item it can't look up. */
 export function migrateCharacterItems(c: Character): string[] {
   const notes: string[] = [];
-  if ((c.perks || []).some((x) => !PERK[x.id])) {
+  // a perk or trait added at run time (effects/hooks.ts addItems: a mode's own items) is as known as the data's
+  const known = (id: string) => !!PERK[id] || !!rawItem('perk:' + id), knownTrait = (t: string) => TRAITS.some((d) => d.id === t) || !!rawItem('trait:' + t);
+  if ((c.perks || []).some((x) => !known(x.id))) {
     const out: Character['perks'] = [];
     for (const x of c.perks) {
-      const to = PERK[x.id] ? x.id : PERK_RENAMED[x.id];
-      if (!to || !PERK[to]) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
-      if (to !== x.id) notes.push(c.name + ': ' + PERK[to].name + ' replaces an older perk.');
+      const to = known(x.id) ? x.id : PERK_RENAMED[x.id];
+      if (!to || !known(to)) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
+      if (to !== x.id) notes.push(c.name + ': ' + (PERK[to] || rawItem('perk:' + to)).name + ' replaces an older perk.');
       if (!out.some((y) => y.id === to)) out.push({ ...x, id: to });
     }
     c.perks = out;
   }
-  if ((c.traits || []).some((t) => !TRAITS.some((d) => d.id === t))) c.traits = c.traits.filter((t) => TRAITS.some((d) => d.id === t));
+  if ((c.traits || []).some((t) => !knownTrait(t))) c.traits = c.traits.filter(knownTrait);
   return notes;
 }
 export function migrateCharacterFocus(c: Character): string[] {
