@@ -99,26 +99,38 @@ const slot1 = (await dlg.locator('[data-slot="1"]').textContent()).replace(/\s+/
 ok('slot 1 now reads: ' + slot1, /Reload|Swap magazine/i.test(slot1));
 await dlg.getByRole('button', { name: 'Save', exact: true }).click(); await pause(p, 300);
 ok('Save closes the dialog and stores the choice: ' + await p.evaluate(() => localStorage.getItem('phc.cutinCmds')), (await dlg.count()) === 0 && /reload/.test(String(await p.evaluate(() => localStorage.getItem('phc.cutinCmds')))));
+// The turn card closes itself after 2 s. What is on it is read IN the page, the moment it is up with its commands, by a
+// watcher started before End turn (asking for its buttons one call after another from here raced the card's end on a
+// busy machine, and the suite stopped on a timeout).
+const watchCard = () => p.evaluate(() => {
+  window.__card = null; window.__cardObs?.disconnect();
+  const look = () => { const bs = [...document.querySelectorAll('[data-phc-cutin] button[data-act]')]; if (bs.length && !window.__card) { window.__card = bs.map((b) => ({ act: b.getAttribute('data-act'), text: (b.textContent || '').replace(/\s+/g, ' ').trim() })); window.__cardObs.disconnect(); } };
+  window.__cardObs = new MutationObserver(look); window.__cardObs.observe(document.documentElement, { childList: true, subtree: true }); look();
+});
+const cardSeen = () => p.waitForFunction(() => window.__card, null, { timeout: 30000 }).then((h) => h.jsonValue(), () => []);
+await watchCard();
 await p.getByRole('button', { name: 'End turn', exact: true }).first().click();
-await p.waitForSelector('[data-phc-cutin]', { timeout: 30000 });
-// Keep the card up while the checks run (it closes itself after 2 s unless hovered).
-await p.locator('[data-phc-cutin]').first().hover().catch(() => {});
-const card = await p.locator('[data-phc-cutin] button[data-act]').allTextContents();
-const first = await p.locator('[data-phc-cutin] button[data-act]').first().getAttribute('data-act');
+const seen1 = await cardSeen();
+// Keep the card up for the picture and for C below (it stays while hovered).
+await p.locator('[data-phc-cutin]').first().hover({ timeout: 2000 }).catch(() => {});
+const card = seen1.map((b) => b.text);
+const first = seen1[0]?.act;
 ok('the next turn card leads with Reload: ' + card.map((t) => t.replace(/\s+/g, ' ').trim()).join(' | ') + ' (' + first + ')', first === 'reload');
-const acts = await p.locator('[data-phc-cutin] button[data-act]').evaluateAll((bs) => bs.map((b) => b.getAttribute('data-act')));
+const acts = seen1.map((b) => b.act);
 // (Physical 2.0: the plain Shot is the weapon's technique row, tq:main:shot)
 ok('the smart default fills the other slots in its order, Shoot kept: ' + acts.join(' | '), acts.length === 4 && acts[1] === 'tq:main:shot' && acts[2] === 'move' && new Set(acts).size === 4);
-await p.screenshot({ path: OUT + 'slate-combat-cutin-custom.png' });
-// customise from the card (C), then reset
-await p.keyboard.press('c'); await dlg.waitFor({ timeout: 30000 });
+await p.screenshot({ path: OUT + 'slate-combat-cutin-custom.png' }).catch(() => {});
+// customise from the card (C), then reset (the card gone by now on a slow machine: the panel's own Customise opens the same dialog)
+await p.keyboard.press('c');
+if ((await dlg.waitFor({ timeout: 4000 }).catch(() => 'not up')) === 'not up') await p.getByRole('button', { name: /Customise/ }).first().click();
+await dlg.waitFor({ timeout: 30000 });
 await dlg.getByRole('button', { name: 'Reset to smart default' }).click();
 await dlg.getByRole('button', { name: 'Save', exact: true }).click(); await pause(p, 300);
 ok('Reset clears the choice: ' + await p.evaluate(() => localStorage.getItem('phc.cutinCmds')), !/reload/.test(String(await p.evaluate(() => localStorage.getItem('phc.cutinCmds')))));
 await dismissCut(p);
+await watchCard();
 await p.getByRole('button', { name: 'End turn', exact: true }).first().click();
-await p.waitForSelector('[data-phc-cutin]', { timeout: 30000 });
-const first2 = await p.locator('[data-phc-cutin] button[data-act]').first().getAttribute('data-act');
-ok('the card is smart again (slot 1: ' + first2 + ')', first2 !== 'reload');
+const first2 = (await cardSeen())[0]?.act;
+ok('the card is smart again (slot 1: ' + first2 + ')', !!first2 && first2 !== 'reload');
 ok('no page errors' + (p.errors.length ? ': ' + p.errors.join(' | ') : ''), !p.errors.length);
 await browser.close();
