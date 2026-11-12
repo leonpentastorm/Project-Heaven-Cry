@@ -11,13 +11,16 @@
 //       DEFENCE_SQUADS=sigil,guns,outburst,healer   DEFENCE_FIGHTS=standard,elite,boss   DEFENCE_MAPS=open,cover
 //       DEFENCE_ROWS=<regexp>                  only the pairs whose key matches (defence-measure.ts PAIRS)
 //       DEFENCE_TABLE=<file.json>              a trial enemy table laid over the loaded one (fit.ts useTable)
+//       DEFENCE_PARTS=burst DEFENCE_BURST=old,0.9/1.08/1.3   the enemy's Burst as the characters', with trial damage
+//                                              factors for Soldier/Elite/Boss (not in the default parts)
+//       DEFENCE_FOCUS=off                      whole fights with the enemy AI's healer weight off (the control)
 //       DEFENCE_OUT=<file>                     every line is also appended here as it is measured (vitest prints
 //                                              nothing until the run ends)
 import { describe, it, expect } from 'vitest';
 import { appendFileSync, readFileSync } from 'node:fs';
 import { useTable } from './fit';
 import { fightRow, fightLine, pairFire, pairLine, yardFire, medicRow, medicLine, healerWeight, PAIRS, SQUADS, FIGHTS, TARGET, D_LEVELS, SOLDIER_TURN } from './defence-measure';
-import { ENEMY, enemyStats, TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL } from '../../src';
+import { ENEMY, TECHNIQUE, enemyStats, TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL } from '../../src';
 
 const FULL = !!process.env.DEFENCE_MEASURE, N = Math.max(1, Number(process.env.DEFENCE_N) || 10);
 const list = (k: string, d: string) => (process.env[k] || d).split(',').filter(Boolean);
@@ -69,16 +72,29 @@ describe('the defence step, measured', () => {
     if (PARTS.includes('medic')) for (const [who, b, v] of [['anyone (Healing given ×1)', 'plain_gun', 'normal'], ['the medic (Bard, Empathy first)', 'mender', 'normal'], ['the medic all in', 'mender', 'allin']]) for (const lv of D_LEVELS) say('[medic] ' + medicLine(medicRow(who, b, v, lv)));
     if (PARTS.includes('yard')) for (const lv of levels) for (const [map, build] of [['old', 'plain_gun'], ['open', 'plain_gun'], ['open', 'plain_gun_f']]) { const y = yardFire(lv, Math.max(N, 20), { map, build });
       say('[yard] L' + lv + ' ' + (map === 'old' ? '16 × 11' : '26 × 26') + ' ' + build + ': lasts ' + y.lasted + ' rounds under two Soldiers (Down by round 3 in ' + y.by3 + '%) · ' + y.perFoeTurn + ' HP a Soldier-turn · ' + y.rolls + ' rolls a turn · hit ' + y.hit + '%'); }
+    if (process.env.DEFENCE_FOCUS === 'off') { healerWeight(false); say('[focus] the healer weight is OFF for the whole fights of this run'); }
     if (PARTS.includes('fights')) for (const sq of list('DEFENCE_SQUADS', 'sigil,guns,outburst,healer')) for (const f of list('DEFENCE_FIGHTS', 'standard,elite,boss')) for (const lv of levels) for (const map of list('DEFENCE_MAPS', 'open,cover')) say('[fight] ' + fightLine(fightRow(sq, f, lv, map as any, N)) + ' · target ' + TARGET[f].join(' to '));
     if (PARTS.includes('fire')) {
       const only = process.env.DEFENCE_ROWS ? new RegExp(process.env.DEFENCE_ROWS, 'i') : null;
       for (const lv of LV.length ? LV : [1, 6, 12, 20]) for (const [k, p] of Object.entries(PAIRS)) { if (only && !only.test(k)) continue;
         for (const n of p.seconds.length > 1 ? [2, 3, 4] : [2, 3]) for (const focus of [true, false]) { if (!focus && /idle/i.test(k)) continue; say('[fire] ' + pairLine(pairFire(p.label, p.seconds, lv, n, N, { focus, first: p.first }))); } }
     }
+    // The open question of rules 1.18: an enemy's Burst as the characters' (two rolls, the second at −4), with the
+    // Soldier's, Elite's and Boss's damage factors tried at DEFENCE_BURST=<soldier>/<elite>/<boss>[,…] ("old": as built).
+    if (PARTS.includes('burst')) for (const trial of list('DEFENCE_BURST', 'old')) {
+      const num = TECHNIQUE.burst.numbers as any, was = { same: num.enemy_same, s: ENEMY.soldier.damage, e: ENEMY.elite.damage, b: ENEMY.boss.damage };
+      if (trial !== 'old') { const [fs, fe, fb] = trial.split('/').map(Number); num.enemy_same = 1; for (const [t, f] of [['soldier', fs], ['elite', fe], ['boss', fb]] as any) if (f) { ENEMY[t].damage = f; if (ENEMY['sim_bag_' + t]) ENEMY['sim_bag_' + t].damage = f; } }
+      try {
+        for (const lv of levels) for (const [what, o] of [['the rifleman under two Soldiers', {}], ['the rifleman under an Elite and a Soldier', { foes: ['sim_bag_elite', 'sim_bag_soldier'] }], ['the tank under two Soldiers', { build: 'tank' }], ['an idle caster (Class 1 armour) under two Soldiers', { build: 'mender', policy: 'idle' }]] as any) {
+          const y = yardFire(lv, Math.max(N, 20), { map: 'old', ...o });
+          say('[burst ' + trial + '] L' + lv + ' ' + what + ': lasts ' + y.lasted + ' rounds (Down by round 3 in ' + y.by3 + '%) · ' + y.perFoeTurn + ' HP an enemy turn · ' + y.rolls + ' rolls a turn · hit ' + y.hit + '%'); }
+        if (process.env.DEFENCE_BURST_FIGHTS) for (const f of list('DEFENCE_FIGHTS', 'standard,elite,boss')) for (const lv of levels) for (const map of list('DEFENCE_MAPS', 'open,cover')) say('[burst ' + trial + '] ' + fightLine(fightRow('sigil', f, lv, map as any, N)));
+      } finally { num.enemy_same = was.same; ENEMY.soldier.damage = was.s; ENEMY.elite.damage = was.e; ENEMY.boss.damage = was.b; for (const t of ['soldier', 'elite']) if (ENEMY['sim_bag_' + t]) ENEMY['sim_bag_' + t].damage = ENEMY[t].damage; }
+    }
     healerWeight(true);
     expect(true).toBe(true);
   }, 14400000);
 });
 /** The Boss's HP at level 1 (data/enemies.json; rules 1.23: refitted from 960). */
-const BOSS_HP = 960;
+const BOSS_HP = 820;
 void SOLDIER_TURN; void FIGHTS;

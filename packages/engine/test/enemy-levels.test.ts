@@ -20,7 +20,7 @@ describe('the table (enemies.json: a tier\'s level 1 row raised by its level\'s 
     expect(row('minion')).toEqual([70, 0, 10, 1, 1]);
     expect(row('soldier')).toEqual([140, 5, 11, 3, 0.78]);
     expect(row('elite')).toEqual([240, 10, 12, 5, 1.05]);
-    expect(row('boss')).toEqual([960, 10, 13, 6, 1.2]);
+    expect(row('boss')).toEqual([820, 10, 13, 6, 1.2]); // rules 1.23: the Boss's HP refitted from 960
     expect(ENEMIES.every((e: any) => e.provisional === true)).toBe(true); expect((ENEMY_LEVELS as any).provisional).toBe(true);
   });
   it('one row for each level 1 to 20; level 1 changes nothing', () => {
@@ -42,7 +42,7 @@ describe('the table (enemies.json: a tier\'s level 1 row raised by its level\'s 
     expect(enemyStats('vermin', 20)).toMatchObject({ hp: 27, armour: 0, defense: 16, attack_bonus: 6 });
     expect(enemyStats('minion', 20)).toMatchObject({ hp: 127, armour: 0, defense: 16, attack_bonus: 7 });
     expect(enemyStats('elite', 12)).toMatchObject({ hp: 418, armour: 16, defense: 17, attack_bonus: 7 });
-    expect(enemyStats('boss', 20)).toMatchObject({ hp: 1738, armour: 16, defense: 19, attack_bonus: 12 });
+    expect(enemyStats('boss', 20)).toMatchObject({ hp: 1484, armour: 16, defense: 19, attack_bonus: 12 });
     expect(enemyStats('boss', 20).damage).toBeCloseTo(1.2 * 1.82, 3);
   });
   it('a level is held between 1 and 20, whole', () => {

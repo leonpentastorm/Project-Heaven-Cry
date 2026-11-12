@@ -233,7 +233,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Ready designs | 2 + floor(Will Power ÷ 2), at least 3 (rules 1.13: it was Empathy) |
 | Mana Syphon bonus | +10% × (Determination − 1) + 10% × Will Power |
 | Strain limit | 3 + floor(Will Power ÷ 2) |
-| Prayer cooldown | 4 turns − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1 |
+| Prayer cooldown (the wait between Hymns) | 9 rounds − 0.75 × Faith − 0.25 × Virtue, rounded up, never under 3 (rules 1.22; it was 4 − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1) |
 
 **Social.** Leadership comes from Authority: 0 Unfit, 1–2 Squad, 3–4 Platoon, 5+ Command. Each point of Authority moves Karma 1 further every time it changes, more when it is awarded and more when it is taken (rules 1.13: it was Conscience).
 
@@ -2044,6 +2044,13 @@ Every Grand form is drawn on the grid for everyone: its word's ground look and t
 > (20 + 4 × Devotion) and the Quartermaster's (a reload, a dry core, empty MP) and the Laughing Mask's triggers widen; a new voice-line bank, **grant**,
 > is what the god says granting a Miracle. PROVISIONAL (section 14, items 738–746).
 >
+> **Rules revision 1.22 (Faith, round 2, 12 Nov 2026; Leon's rulings of that day; `docs/design/handoffs/faith-round-2.md`).**
+> The **Whisper** is the prayer for every turn. The **Hymn** is the set-piece: it waits on a cooldown that **Faith** lowers
+> (6 rounds at Faith 3, 3 rounds from Faith 6, never under 3 without an item). A **vow fulfilled in the fight** takes 1 round
+> off the wait. Hold the Gate has a long wait of its own. Witnessed's +2 for a patron that likes kills is earned by a kill.
+> The numbers are in "Rules revision 1.22"; where it and this section disagree, it is the rule. PROVISIONAL (section 14,
+> items 1280–1296).
+>
 > **Rules revision 1.21 (the Faith fit, 12 Nov 2026; balance pass; report `docs/design/handoffs/faith-fit.md`).** Prayer
 > was measured against the plain rifle for the first time and fitted: a seventh Whisper, **Rebuke**; the damage Hymns'
 > numbers; The Saints' Verdict; Lucky Break, Foreknowing, Feed the Fire and Cut Short. The changes are marked in the
@@ -2094,19 +2101,20 @@ the Narrator narrates the rest.
 | Size | AP | Limit | Who |
 |---|---|---|---|
 | **Whisper** | 1 | once a turn (once a round in the story) | anyone with Faith 3 |
-| **Hymn** | 3 | the prayer cooldown (Derived stats; rounds) | the Faithful: their patron's Hymns; an Atheist: the Hymns they learned |
+| **Hymn** | 3 | the prayer cooldown (rules 1.22: 9 − 0.75 × Faith − 0.25 × Virtue rounds, rounded up, never under 3; a vow fulfilled takes 1 round off, never under 2) | the Faithful: their patron's Hymns; an Atheist: the Hymns they learned |
 | **Miracle** | 3 | once a session | the Faithful at Faith 7 and Devotion 10 (Atheists never); lowers Devotion by 5 levels |
 
 **Whispers**, the same seven for every patron (the patron changes the look, the sound and the line): **Luck** (you or an ally
 in sight: +2 on the next roll), **Health** (heals 5 × Blessing power; 15 before rules 1.20), **Protection** (a 6 × Blessing power shield; 15 before rules 1.20),
 **Courage** (ends Fear or Shaken), **Guidance** (reveals Hidden enemies and traps within 6; +2 on your next notice roll),
-**Safe Passage** (your next move this turn draws no opportunity attacks), **Rebuke** (rules 1.21: an enemy in sight takes 15 Soul × Blessing power; no roll, and armour doesn't lower it). **Hymns and Miracles** belong to each patron
+**Safe Passage** (your next move this turn draws no opportunity attacks), **Rebuke** (rules 1.21: an enemy in sight takes 20 Soul × Blessing power (rules 1.22; it was 15); no roll, and armour doesn't lower it). **Hymns and Miracles** belong to each patron
 (the table below). Effects are × Blessing power (damage, heals and shields; never rounds, AP, half HP or full HP).
 
 **Witnessed** (Faith 5, the Faithful only; rules 1.6.3): a successful Hymn of your own patron, or a Miracle, makes you
 Witnessed **until the end of the fight, or until your patron's intervention fires**, whichever comes first. While you are
 Witnessed your attack rolls that would carry a tag your patron likes get +2, and taboo actions cost double Devotion XP
-(−6). It is a fight condition: it never exists out of a fight (story prayers don't give it), and it shows as "WITNESSED ·
+(−6). *Rules 1.22:* a liked **kill** is not every attack. For a patron that likes kills (Old Overcast), a kill you make
+while Witnessed earns +2 on your **next** attack roll at an enemy, and that roll spends it. It is a fight condition: it never exists out of a fight (story prayers don't give it), and it shows as "WITNESSED ·
 UNTIL THE FIGHT ENDS OR <PATRON> ACTS".
 
 **Atheists and pilgrims.** An Atheist prays by dice: a Whisper is d20 + Faith modifier against 12; a learned Hymn I, II or
@@ -2117,15 +2125,17 @@ never Witnessed.
 
 **Vows.** At the start of a fight, before you first act, any Faithful character may swear one vow (free). The engine
 tracks it: broken, −5 Devotion XP at once; kept to the end of the fight, +3. The patron speaks a line either way.
+*Rules 1.22:* each vow also has a moment that **fulfils** it during the fight. When it comes, the Hymn you are waiting for
+comes 1 round sooner (once for each Hymn, at most one moment a round, never under 2 rounds); the vow stays sworn.
 
-| Vow | Broken when |
-|---|---|
-| **Shield** "None of them falls." (name an ally) | that ally is Downed |
-| **Mercy** "I spare who yields." | you damage a surrendered or Downed enemy |
-| **Stand** "I don't give ground." | you end a turn farther from the nearest enemy than you started it |
-| **Bare Hands** "By my own hands." | you attack with a gun or a spell |
-| **No Magic but Theirs** "No magic but theirs." | you draw, Evoke or Begin (Sigil or Outburst) |
-| **Nobody Left Behind** "Nobody left behind." | an ally is still Downed when the fight ends |
+| Vow | Fulfilled when (rules 1.22) | Broken when |
+|---|---|---|
+| **Shield** "None of them falls." (name an ally) | an enemy attacks that ally, and when the enemy's turn ends the ally still stands | that ally is Downed |
+| **Mercy** "I spare who yields." | an enemy yields to you, or you spare one with a blow that would have killed it | you damage a surrendered or Downed enemy |
+| **Stand** "I don't give ground." | an enemy has attacked you since your last turn, and you end your turn no further from the nearest enemy | you end a turn farther from the nearest enemy than you started it |
+| **Bare Hands** "By my own hands." | an enemy falls to your melee attack | you attack with a gun or a spell |
+| **No Magic but Theirs** "No magic but theirs." | an enemy falls to your prayer, or to your patron acting for you | you draw, Evoke or Begin (Sigil or Outburst) |
+| **Nobody Left Behind** "Nobody left behind." | a Downed ally stands up again because of you | an ally is still Downed when the fight ends |
 
 **Tags: what your patron sees.** The engine tags actions in a fight and on the area map; a tag counts once per action
 (and a liked tag once per fight and once per scene, within the caps above). Each patron likes 3 tags and holds 2 as taboo.
@@ -2207,12 +2217,12 @@ figure of a living religion.
 
 | Patron | Likes | Taboos | Rule | Hymn I (Devotion 3) | Hymn II (5) | Hymn III (7) | Miracle (Devotion 10; rules 1.6.2) | Intervention |
 |---|---|---|---|---|---|---|---|---|
-| **Holy Father Nerukhan** (judge-saint) | judge, mercy, protect | betray, desecrate | Jealous | Saint's Shield: an ally gains a 12 shield (40 before rules 1.20) | Judgement: an enemy takes 50 Soul; ×1.3 if it harmed the helpless (rules 1.21; it was 40 and ×2) | Absolution: an ally is cleansed of every condition and heals 30 | The Saints' Verdict: every enemy in sight takes 130 Soul (rules 1.21; it was 100) and is Stunned 1 round; those that harmed the helpless this fight take double and are Stunned 2 rounds | an enemy damages a surrendered or Downed creature: it takes 20 + 4 × Devotion Soul |
+| **Holy Father Nerukhan** (judge-saint) | judge, mercy, protect | betray, desecrate | Jealous | Saint's Shield: an ally gains a 16 shield (rules 1.22; 12 in rules 1.20, 40 before) | Judgement: an enemy takes 42 Soul (rules 1.22; 50 in rules 1.21); ×1.3 if it harmed the helpless (rules 1.21; it was 40 and ×2) | Absolution: an ally is cleansed of every condition and heals 9 (rules 1.22; 7 in rules 1.20, 30 before) | The Saints' Verdict: every enemy in sight takes 130 Soul (rules 1.21; it was 100) and is Stunned 1 round; those that harmed the helpless this fight take double and are Stunned 2 rounds | an enemy damages a surrendered or Downed creature: it takes 20 + 4 × Devotion Soul |
 | **The Quartermaster** (logistics god) | supply, hold, protect | flee, desecrate | Open | Resupply: an ally reloads every weapon free and regains 1 Supply | Dig In: an ally is dug in (half cover) until they move, and Braced | Covering Fire: a 3×3 area; enemies in it make a Body save or are Pinned 1 round | Requisition Approved: the whole squad is fully restocked (ammo, Supplies, throwables), gets 2 standard cores each, all gear repaired to full, jams and heat cleared, and +3 AP next turn | you reload (any reload): it is free, its AP comes back; your Evoker's core runs dry (charge 0): a fresh core slots in, free; your MP runs out (0): 25% of your max MP back |
 | **The Laughing Mask** (trickster) | trick, burn, flee | cower, mercy | Open | Lucky Break: an ally's next 2 failed attack rolls are each rerolled at +5 (rules 1.21; it was 1) | Switcheroo: swap two units in sight within 6 of you (an enemy gets a Brain save) | Pratfall: an enemy makes a Body save or falls Prone and drops its weapon | Encore: every ally may repeat the last action they took this round for free, and every enemy in sight is Confused 1 round | an enemy misses you: it falls Prone |
-| **The Toll-Keeper** (ferryman of the dead) | mercy, heal, hold | kill (of the surrendered or Downed), desecrate | Jealous | Coin for the Ferry: a Downed ally stands at 10 HP | Hold the Gate: until your next turn, allies in sight can't drop below 1 HP | Last Crossing: an enemy at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul) | Turned Back at the Shore: every ally who died or fell (Downed) this fight stands at half HP | an ally would drop to 0 HP: they stay at 1 HP |
-| **Mother Ember** (hearth-mother) | heal, protect, supply | betray, cower | Open | Warm Hands: an ally heals 10 (40 before rules 1.20) | Hearthlight: a 3×3 area; allies starting a turn in it heal 4 (10 before rules 1.20), for 3 rounds | Feed the Fire: an ally gets +2 AP now (rules 1.21; it was +1) (ceiling applies) and loses Weakened and Slowed | Everyone Home: the whole squad heals to full, the Downed stand, every harmful condition is cleared, and each gets a 40 shield | an ally drops below a quarter HP: they heal 20 + 4 × Devotion |
-| **Old Overcast** (thunder sky-father) | storm, kill, hold | flee, cower | Jealous | Thunderclap: enemies within 2 of a tile take 20 lightning (rules 1.21), are pushed 1 and make a Heart save or are Shaken | Lightning Rod: 50 lightning to an enemy, then 20 to one more within 2 (rules 1.21; the second was 25) | Gather the Clouds: until your next turn, allies' Storm riders count a stage higher | The Sky Answers: a 5×5 area in sight takes 150 Storm, enemies only (the sky picks), and they are Stunned 1 round and Shaken | you kill an enemy: 20 + 4 × Devotion Storm (lightning) to the nearest other enemy |
+| **The Toll-Keeper** (ferryman of the dead) | mercy, heal, hold | kill (of the surrendered or Downed), desecrate | Jealous | Coin for the Ferry: a Downed ally stands at 10 HP | Hold the Gate: until your next turn, allies in sight can't drop below 1 HP; not again for 6 rounds (rules 1.22) | Last Crossing: an enemy at a quarter HP or less makes a Heart save or dies (bosses take 40 Soul) | Turned Back at the Shore: every ally who died or fell (Downed) this fight stands at half HP | an ally would drop to 0 HP: they stay at 1 HP |
+| **Mother Ember** (hearth-mother) | heal, protect, supply | betray, cower | Open | Warm Hands: an ally heals 13 (rules 1.22; 10 in rules 1.20, 40 before) | Hearthlight: a 3×3 area; allies starting a turn in it heal 4 (10 before rules 1.20), for 3 rounds | Feed the Fire: an ally gets +2 AP now (rules 1.21; it was +1) (ceiling applies) and loses Weakened and Slowed | Everyone Home: the whole squad heals to full, the Downed stand, every harmful condition is cleared, and each gets a 40 shield | an ally drops below a quarter HP: they heal 20 + 4 × Devotion |
+| **Old Overcast** (thunder sky-father) | storm, kill, hold | flee, cower | Jealous | Thunderclap: enemies within 2 of a tile take 20 lightning (rules 1.21), are pushed 1 and make a Heart save or are Shaken | Lightning Rod: 42 lightning to an enemy, then 17 to one more within 2 (rules 1.22; 50 and 20 in rules 1.21) | Gather the Clouds: until your next turn, allies' Storm riders count a stage higher | The Sky Answers: a 5×5 area in sight takes 150 Storm, enemies only (the sky picks), and they are Stunned 1 round and Shaken | you kill an enemy: 20 + 4 × Devotion Storm (lightning) to the nearest other enemy |
 | **The Matchmaker** (love goddess) | protect, mercy, heal | betray, kill (of the surrendered or Downed) | Open | Red Thread: two allies are linked for 2 rounds; damage to either is split between them | Sweet Nothings: an enemy makes a Heart save or is Smitten (can't attack you or your linked allies) next turn | Together: two adjacent allies get +2 to hit and +2 Defense until your next turn | Love Conquers: every non-boss enemy in sight surrenders, no save; a boss (or one that can't yield) makes a Heart save or is Commanded to hold 1 round | an ally next to you is hit: half the damage moves to you |
 | **The Counting Weaver** (fate-spinner) | hold, trick, judge | flee, betray | Open | Foreknowing: the next 2 attacks against an ally miss (rules 1.21; it was 1) | Unravel: every boon, shield and helpful state on an enemy ends | Cut Short: an enemy makes a Heart save or loses its next turn (bosses lose 2 AP); not the same enemy two rounds running (rules 1.21) | Rewoven: the squad takes another full turn now, and every ally's HP goes back to what it was at the start of this round, if that was higher | an enemy crits you: it becomes a normal hit |
 
@@ -3351,6 +3361,8 @@ The Strain rules and the limit, Overdraw, Heart Overload's free Begin, Resonance
 
 Built on 12 Nov 2026 from Leon's ask ("Do a pass on heal and shield. For both sigil and OB"; then "Faith have heal and shield too"). Rules 1.17 to 1.19 fitted what magic deals; nothing had fitted what it mends. **Every number here is provisional (section 14, items 1230 to 1247).** The measurements, the full inventory and the questions are in `docs/design/handoffs/heal-shield-pass.md`. Where this section and an older one disagree (the Sigil word table, the Buff school, Love, Inverse, Shell, the prayer tables), this one is the rule. Damage is not changed, guns are not touched, and an enemy caster's healing and shields are what they were.
 
+*Rules 1.23 changes two things here: **the round limit of section 7 is withdrawn** (Leon, 12 Nov 2026), and the level factor of section 3 now covers the medic's kit too. The bands row "Nothing makes a squad unkillable" is answered by the enemy AI, not by a limit.*
+
 ### 1. The yardstick: one Soldier's turn
 
 Leon gave no number, so the pass needs a unit. **A Soldier-turn** is what one Soldier of the fight's level takes off the plain rifleman (service rifle, Class 3 armour, a normal share of points) in one of its turns, after armour, misses counted. Measured on the ground the rules 1.15 table was fitted on (60 fights a level):
@@ -3393,7 +3405,7 @@ Why a shield is ×1.2 and no more: a point of shield is a point of HP here (it i
 **A character's healing and shields from Sigil magic, the Outburst and prayer are multiplied by the level factor of the caster's level: the damage column of the enemy table** (`data/enemies.json` `levels.table`: ×1.00 at level 1, ×1.05 at 3, ×1.13 at 6, ×1.24 at 9, ×1.38 at 12, ×1.82 at 20). It is the number that raises what an enemy deals, read from the same place, so the two cannot drift apart.
 
 1. It applies to: MEND and WARD; the Buff school's heal; Love's heal; the Inverse and Shell shields; Will Shield; the prayers' heals and shields (Health, Protection, Warm Hands, Saint's Shield, Absolution, Hearthlight, Coin for the Ferry, Everyone Home's shield).
-2. It does not apply to: Mother Ember's intervention (it grows with Devotion); lifesteal (LEECH, Drain); a stim, Triage, Rally and every other heal that is not a spell or a prayer (not in this pass); Linger's and a residue's 5 a turn; an enemy caster (its spells grow through its own multipliers, rules 1.15).
+2. It does not apply to: Mother Ember's intervention (it grows with Devotion); lifesteal (LEECH, Drain); a stim, Triage, Rally and every other heal that is not a spell or a prayer (not in this pass; *rules 1.23 gives the medic's kit the factor*); Linger's and a residue's 5 a turn; an enemy caster (its spells grow through its own multipliers, rules 1.15).
 3. Units that fight for a character (a turret, a companion) use their owner's level. A fight saved before this rule gets the factor when it is next loaded.
 
 ### 4. Sigil
@@ -3426,7 +3438,7 @@ Why a shield is ×1.2 and no more: a point of shield is a point of HP here (it i
 2. Drain is unchanged (a quarter of the HP it takes, the Damage school at ×0.8): it is a share of damage dealt.
 3. Hope's cleanse (you and each ally in the shape shake off one harmful condition), the Buff school's Inspired and Guarded, Thread, Linger (5 a turn) and the residues (5 a turn) are unchanged.
 4. An enemy Soul caster keeps the Buff heal of 30 and its Inverse and Shell as shares of its damage.
-5. Split on a healing Bolt still heals the second ally in full (two allies for one slot and 15 MP: twice the single heal, over the area band; section 14, item 1244).
+5. Split on a healing Bolt still heals the second ally in full (two allies for one slot and 15 MP: twice the single heal, over the area band; section 14, item 1244). *Rules 1.23: a Split heal or shield is divided, ×0.8 each.*
 
 ### 6. Prayer
 
@@ -3434,8 +3446,8 @@ Why a shield is ×1.2 and no more: a point of shield is a point of HP here (it i
 |---|---|---|
 | Whisper: Health | heals 15 | heals **5** |
 | Whisper: Protection | a shield of 15 | a shield of **6** |
-| Hymn: Warm Hands (Mother Ember I) | heals 40 | heals **10** |
-| Hymn: Saint's Shield (Nerukhan I) | a shield of 40 | a shield of **12** |
+| Hymn: Warm Hands (Mother Ember I) | heals 40 | heals **10** (rules 1.22: **13**) |
+| Hymn: Saint's Shield (Nerukhan I) | a shield of 40 | a shield of **12** (rules 1.22: **16**) |
 | Hymn: Absolution (Nerukhan III) | every harmful condition ends; heals 30 | every harmful condition ends; heals **7** |
 | Hymn: Hearthlight (Mother Ember II) | 10 to each ally starting a turn in it, 3 rounds | **4** |
 | Hymn: Coin for the Ferry (Toll-Keeper I) | a Downed ally stands up with 10 | with **5** |
@@ -3446,7 +3458,9 @@ Why a shield is ×1.2 and no more: a point of shield is a point of HP here (it i
 2. Hold the Gate, Turned Back, Rewoven and the heal of Everyone Home are not numbers a band can hold (nobody drops below 1 HP; the fallen stand at half HP; HP goes back to the round's start; everyone to full): unchanged, and listed for Leon (item 1246).
 3. The engine reads these numbers from `data/patrons.json` (it used to carry its own copies).
 
-### 7. The round limit
+### 7. The round limit (withdrawn by rules 1.23)
+
+> **Withdrawn, 12 Nov 2026 (Leon: "No round limit, just balance ap for healing accordingly; also if a tank is unkillable because a healer is healing them dedicatedly, let them have it, in real combat just make AI focus the unit that are dishing out the most heals").** Nothing limits how much a creature can be healed in a round; a Downed creature gets up with the whole heal. What follows is kept as the record of what rules 1.20 built. See "Rules revision 1.23".
 
 **In one round, spells and prayers together restore at most half of a creature's max HP.** What is over is lost; the log says so. A Downed creature still gets up (at 1 HP if the round's room is gone).
 
@@ -3515,6 +3529,8 @@ Triage, the stim, Stim Throw, Rally and the banner (the medic's kit and the item
 
 Built on 12 Nov 2026 from Leon's question ("I also see nothing listed on Faith yet, is it viable? Faith have heal and shield too, and does a pure faith class stand up?"). Rules 1.17 to 1.19 fitted guns, Sigil and the Outburst against the plain rifle; prayer had only ever been run as one build with one patron. **Every number here is provisional (section 14, items 1260 to 1274).** The inventory, the measurements, the verdict for each patron and the questions are in `docs/design/handoffs/faith-fit.md`. Where this section and "Patrons and prayer" disagree, this one is the rule. Healing and shields from prayer are rules 1.20's, not this revision's: no heal or shield number is changed here.
 
+**Superseded in part by rules 1.22** (the next section): the Hymn is no longer prayed every turn, the target is Leon's later one (a Whisper-only turn about 80% of the plain rifle, a Hymn turn about 125%), and Rebuke, Judgement and Lightning Rod have new numbers. What follows is the 1.21 record.
+
 **The target** is Leon's ruling of 12 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md`, section 16): the Outburst is steady at about 135% of the plain rifle and about 165% at its peak, and a prayer-led build is about level with it. (The step was first fitted to the Outburst's earlier 125% and 150%; that fit is kept in the report, section 4, and is four numbers away.)
 
 ### 1. What was found
@@ -3580,6 +3596,115 @@ Damage a turn as a percent of the plain rifle's (normal share, same level), on t
 2. **Not met at Devotion 3** (levels 1 to about 5): Old Overcast 89 to 91% on one enemy, about 100% on two; every other patron is under the rifle in damage. A new devotee's first Hymn is a small one.
 3. **The six patrons with no damage Hymn** deal 41 to 93% of a rifle while they pray a support Hymn every turn. What the Hymn is worth is not something the simulator counts; the report prices each one (estimates).
 4. **The gunner who dabbles** (the plain rifleman given Faith 3 and Devotion 3 for nothing, 40 fights a cell): with 6 AP he has no AP for a Whisper after three shots, and trading a shot for prayers costs him damage (Whisper first: 108 / 96 / 86 / 99 / 90 / 89% against his own 107 / 96 / 90 / 109 / 105 / 106% with the rifle alone). What he gains is Rebuke on a turn that leaves 1 AP over (after a step, say): 20 damage, about a quarter of a rifle's turn at level 1 and a sixth at level 12, since his Faith stays 3.
+
+## Rules revision 1.22 (Faith, round 2): the Whisper every turn, the Hymn on a cooldown that Faith lowers
+
+Built on 12 Nov 2026 from Leon's rulings of that day on rules 1.20 and 1.21, which had both been fitted to a Hymn prayed every turn (the old cooldown reached 1 round at creation). **Every number here is provisional (section 14, items 1280 to 1296).** The measurements, the tables before and after and the questions are in `docs/design/handoffs/faith-round-2.md`. Where this section and "Patrons and prayer", rules 1.20 or rules 1.21 disagree, this one is the rule.
+
+**The rulings.** (1) "Whisper is the every turn action, and we need a damage whisper." (2) "Whisper is weaker than all combat system because anyone can use it and also use other system. We will add faith boosting item later, a hymn is always better than a standard spell or outburst because their cooldown are balanced to be long if your faith is low." (3) "Add a 1 turn hymn cooldown reduction when you fulfil an oath that can be fulfilled in combat." (4) On Witnessed and Old Overcast: "fix to kill." (5) On Hold the Gate: "if it's a hymn, make the cooldown long." (6) The target, replacing every earlier one for Faith: "faith range 80% for whisper only turn and about 125% for hymn, goes up with faith items later."
+
+### 1. The Hymn cooldown
+
+**The wait between Hymns is 9 rounds − 0.75 × Faith − 0.25 × Virtue, rounded up, and never under 3.** A point of Faith is worth three points of Virtue. Faith is a Virtue skill, so Virtue is never below Faith.
+
+| Faith | Virtue 3 | Virtue 4 | Virtue 5 | Virtue 6 | Virtue 7 | Virtue 8 | Virtue 9 | Virtue 10 |
+|---|---|---|---|---|---|---|---|---|
+| **3** | 6 | 6 | 6 | 6 | 5 | 5 | 5 | 5 |
+| **4** | – | 5 | 5 | 5 | 5 | 4 | 4 | 4 |
+| **5** | – | – | 4 | 4 | 4 | 4 | 3 | 3 |
+| **6** | – | – | – | 3 | 3 | 3 | 3 | 3 |
+| **7** | – | – | – | – | 3 | 3 | 3 | 3 |
+| **8** | – | – | – | – | – | 3 | 3 | 3 |
+| **9** | – | – | – | – | – | – | 3 | 3 |
+| **10** | – | – | – | – | – | – | – | 3 |
+
+1. **A dabbler waits long.** Faith 3 is 6 rounds (5 with Virtue 7): one Hymn in a fight of five rounds.
+2. **A devoted character reaches 3 rounds at Faith 6**, about level 6 for a character who leads with Faith, and stays there. A Hymn in round 1 comes back in round 4.
+3. **Nobody without an item prays a Hymn every turn.** 3 rounds is the floor of the sheet; a vow fulfilled or the True Believer trait takes 1 round off; **no wait is ever under 2 rounds**. Faith-boosting items do not exist yet. When they come they are the only thing that lowers the floor of 3 and the limit of 2: that room is left for them on purpose.
+4. The Miracle does not wait on it. In the story the wait counts story rounds, as before.
+5. The True Believer trait: the wait is 1 round shorter (it used to move the mark of the last Hymn); the limit of 2 rounds holds.
+
+### 2. A vow fulfilled
+
+Each of the six vows has a moment in a fight that fulfils it (the table in "Patrons and prayer"). The engine detects it; nobody rules it.
+
+1. **When the moment comes, the Hymn you are waiting for comes 1 round sooner.** Each Hymn's wait is shortened once. With no Hymn waiting, the moment is kept for the next Hymn (one kept at most), whose wait is then 1 round shorter from the start.
+2. **At most one moment a round** for a character. A moment that could change nothing (this wait is already shortened, or it is at 2 rounds) is not spent and says nothing.
+3. The vow stays sworn. It is still kept at the fight's end (+3 Devotion XP) or broken (−5); a broken vow fulfils nothing.
+4. The log says it ("fulfils the vow … the next Hymn comes 1 round sooner"), an effect plays over the character, and the patron speaks from its vow-kept lines the first time in a fight.
+5. **The moments.** Stand: an enemy's attack roll at you since your last turn, and your turn ends no further from the nearest enemy. Shield: an enemy's attack roll at the ally you named; when that enemy's turn ends, the ally is not Downed. Mercy: an enemy surrenders to you, or your sparing blow subdues it. Bare Hands: an enemy goes down to your melee attack. No Magic but Theirs: an enemy goes down to your Whisper, Hymn or Miracle, or to your patron's intervention. Nobody Left Behind: your heal, stim or prayer gets a Downed ally up.
+6. **How often, for the measurements (assumed, not measured: the simulator's target never acts).** Stand about 6 rounds in 10 for a character under fire; Shield about 5 in 10; Bare Hands and No Magic but Theirs about 1 in 4; Mercy and Nobody Left Behind about 1 in 10 or less. The tables use 4 rounds in 10, which shortens about two waits in three.
+
+### 3. The Whisper
+
+One Whisper a turn, 1 AP, for anyone with Faith 3, as before.
+
+1. **Rebuke is 20 Soul × Blessing power** (it was 15). That is 26 at Faith 3 and 40 at Faith 10, once a turn.
+2. **A turn with only a Whisper** is the Whisper and the weapon with the other 5 AP. Measured for a character who leads with Faith (damage patrons, normal share): 91 to 102% of the plain rifle at levels 1 and 3, and 64 to 79% from level 6 (74% on average; Leon's target is about 80%). It is the weakest steady turn of the four ways to fight: the rifle is 100%, a 2-glyph Line about 100%, the Outburst about 135%.
+3. **One Whisper against one shot.** Rebuke is about the damage of one plain shot (2 AP) at the same level, for 1 AP, with no roll: 26 to 40 against 23 to 37. A character can pray it once a turn and no more. Flagged: Leon's 80% turn needs it this size or larger (item 1281).
+4. **What another build gains by adding it.** A gunner with 6 AP spends all of it on three shots; a Sigil caster on a Line; an Outburst caster on Begin, Pumps and Release. None has 1 AP over in a plain turn. Measured for the plain rifleman given Faith 3: no gain that the noise of 12 fights (about ±8 points) does not cover, at any level. He gains Rebuke on a turn that leaves 1 AP over (a step and two shots).
+5. Health 5 and Protection 6 stand (rules 1.20): 30 to 37% and 36 to 44% of a Soldier-turn, well under a healer's turn.
+
+### 4. The Hymns, refitted to the cooldown
+
+Leon's target is a turn with a Hymn at about 125% of the plain rifle, without items.
+
+| Prayer | Rules 1.21 or 1.20 | Rules 1.22 |
+|---|---|---|
+| Rebuke (Whisper) | 15 Soul | **20** |
+| Judgement (Nerukhan II) | 50 Soul, ×1.3 against one that harmed the helpless | **42**, ×1.3 |
+| Lightning Rod (Old Overcast II) | 50 lightning, 20 to one more within 2 | **42**, and **17** |
+| Thunderclap (Old Overcast I) | 20 lightning to each enemy within 2 | 20 (not changed) |
+| Warm Hands (Mother Ember I) | heals 10 | **13** |
+| Saint's Shield (Nerukhan I) | a shield of 12 | **16** |
+| Absolution (Nerukhan III) | heals 7 | **9** |
+| Hold the Gate (Toll-Keeper II) | every turn the cooldown allowed | **not again for 6 rounds** |
+
+All × Blessing power; heals and shields also × the level factor of rules 1.20. Not changed: Health, Protection, Hearthlight 4, Coin for the Ferry 5, Everyone Home, the interventions, the Miracles, Lucky Break and Foreknowing (2 each), Feed the Fire (+2 AP), Cut Short.
+
+1. **Damage, measured** (normal share, the shooting range, 12 fights of 8 turns a cell, percent of the plain rifle at the same level):
+
+| | Level 1 | Level 3 | Level 6 | Level 9 | Level 12 | Level 20 |
+|---|---|---|---|---|---|---|
+| Old Overcast, a turn with a Hymn | 107% | 104% | 120% | 129% | 116% | 130% |
+| Old Overcast, a turn with only a Whisper | 102% | 91% | 72% | 73% | 64% | 76% |
+| Old Overcast, the average, no vow | 103% | 95% | 90% | 94% | 84% | 96% |
+| Old Overcast, the average, the vow fulfilled 4 rounds in 10 | 92% | 93% | 98% | 100% | 94% | 109% |
+| Old Overcast, two enemies together, a turn with a Hymn | 136% | 135% | 139% | 157% | 146% | 155% |
+| Nerukhan, a turn with a Hymn | 68% (Saint's Shield: no damage Hymn yet) | 52% | 122% | 134% | 121% | 127% |
+| Nerukhan, a turn with only a Whisper | 101% | 91% | 78% | 76% | 69% | 79% |
+| Nerukhan, the average, no vow | 93% | 81% | 95% | 98% | 89% | 97% |
+| Nerukhan, the average, the vow fulfilled 4 rounds in 10 | 91% | 77% | 101% | 105% | 92% | 111% |
+| Hymns a turn, no vow · with the vow | 0.25 · 0.25 | 0.25 · 0.37 | 0.38 · 0.49 | 0.38 · 0.49 | 0.38 · 0.49 | 0.38 · 0.48 |
+
+   From Devotion 5 a turn with a Hymn is 116 to 134% (125% on average) and a turn with only a Whisper 64 to 79% (74%). The average is not a target any more: it is 84 to 98% with no vow and 92 to 111% with one.
+2. **A Hymn against a spell and a Release, a cast.** Judgement or Lightning Rod is 67 to 84 damage at levels 6 to 20: 69 to 78% of a plain rifle's turn for 3 AP, about 24% an AP. A 2-glyph Line cast every turn is 87 to 105% for about 4 AP (21 to 30% an AP); a steady Outburst turn about 135% for 6 AP (about 22% an AP); the biggest Release about 165% for the whole turn. **So a Hymn is level with them for its AP and smaller than any of them as one cast, and a turn with a Hymn (125%) is under a steady Outburst turn (135%).** That follows from ruling 6 and is at odds with ruling 2 ("a hymn is always better than a standard spell or outburst"); it is left for Leon (item 1289).
+3. **Heals and shields** (percent of one Soldier-turn, the yardstick of rules 1.20; arithmetic on the normal-share sheet at levels 1, 3, 6, 9, 12, 20):
+
+| | Level 1 | Level 3 | Level 6 | Level 9 | Level 12 | Level 20 |
+|---|---|---|---|---|---|---|
+| Health (the Whisper-only turn) | 35% | 37% | 36% | 34% | 35% | 30% |
+| Warm Hands, a cast | 91% | 95% | 93% | 90% | 90% | 79% |
+| A turn with Warm Hands and Health | 126% | 132% | 129% | 124% | 125% | 109% |
+| Saint's Shield, a cast | 112% | 117% | 114% | 110% | 111% | 97% |
+| A turn with Saint's Shield and Protection | 154% | 161% | 157% | 151% | 153% | 133% |
+| The average a turn, healing, no vow · the vow shortening every wait | 50% · 53% | 61% · 69% | 67% · 82% | 64% · 79% | 65% · 80% | 56% · 70% |
+
+   A turn with a healing Hymn is the Outburst healer's steady turn (125%, band 100 to 150%), with 2 AP left for the weapon; a Whisper-only turn is about a third of it. A shield is ×1.2 the heal, as in rules 1.20. Nothing here leans on the round limit of rules 1.20, which rules 1.23 withdraws.
+4. **Hold the Gate** keeps its effect and gets a wait of its own: after it is prayed, that character can't pray Hold the Gate again for **6 rounds**. The other Hymns wait as usual, and a vow fulfilled does not shorten the 6. It is once in a normal fight and twice in a long one.
+
+### 5. Witnessed and a patron that likes kills
+
+Witnessed gave +2 to attack rolls "that would carry a liked tag", and a liked kill was read as every attack on an enemy, so Old Overcast's devoted had +2 with every weapon. **Now:** a kill you make while Witnessed (of an enemy that had not surrendered and was not Downed; not a kill by the patron's own intervention) earns **+2 on your next attack roll at an enemy**. That roll spends it, hit or miss. It does not stack, it is kept if the kill's own intervention ends Witnessed, and it ends with the fight. The other liked tags are as they were: an attack on an enemy that harmed the helpless (judge), fire damage (burn), lightning damage (storm).
+
+### 6. Not met, and not done
+
+1. **A Whisper-only turn is 64 to 79% from level 6**, under the 80% asked. Reaching 80% at levels 6 to 12 needs Rebuke at about 26 to 30, more than a rifle shot for half its AP (item 1281).
+2. **A Hymn is not "better than a standard spell or an Outburst Release" as one cast** (point 2 of section 4).
+3. **Devotion 3** (levels 1 to about 5): Nerukhan has no Hymn that hurts; his Hymn turn is a shield and a shot.
+4. **The six patrons with no damage Hymn** were not refitted beyond the heals and shields above. On a turn with a support Hymn they deal 44 to 85% of a rifle; what the Hymn is worth is priced in the 1.21 report and is now there one turn in two or three, not every turn: Foreknowing, Lucky Break, Cut Short, Covering Fire, Sweet Nothings, Resupply and the rest are worth less a fight than rules 1.21 priced them.
+5. **The Miracles** were not looked at. The Saints' Verdict (130 an enemy) is now about three Judgements on each enemy in sight.
+6. No browser suite was run; the screen data was not regenerated.
 
 ## Maps (rules 1.16)
 
@@ -5775,7 +5900,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 592. **Blessing 2.0 numbers.** Every Hymn, Miracle, Whisper and intervention number (patrons.json v2, from the design spec) still needs a pass against `docs/design/balance-targets.md` (design open item 4).
 593. ~~The liked-tag cap.~~ *Superseded in rules 1.6.1 (Faith 2.1): items 702–704 (XP; 2 a fight, 2 a scene, 6 a session; on the character).*
 594. **No roll within standing.** A Faithful character's Whisper, and a Hymn of their own patron at or under their Devotion, need no roll; only an overreach, an Atheist's prayer and a kept Hymn of another patron roll.
-595. **Witnessed's +2** goes on attack rolls that would carry a tag the patron likes: an attack on an enemy when the patron likes kill (or judge, when that enemy harmed the helpless), fire damage when it likes burn, lightning when it likes storm. Other rolls get nothing; the tag is judged before the roll.
+595. **Witnessed's +2** goes on attack rolls that would carry a tag the patron likes: an attack on an enemy when the patron likes kill (or judge, when that enemy harmed the helpless), fire damage when it likes burn, lightning when it likes storm. Other rolls get nothing; the tag is judged before the roll. *Rules 1.22 (item 1288): a liked kill is no longer "an attack on an enemy"; that +2 is earned by a kill and spent by the next attack roll.*
 596. **A tag counts once per action** (one reducer action; what happens during an enemy's turn because of you, such as an Interpose, is its own action). Liked and taboo tags of one action all count.
 597. **Kill as a taboo** (the Toll-Keeper, the Matchmaker) means killing or Downing a surrendered or Downed creature, not any kill (`taboo_notes` in the data).
 598. **Betray** is any attack, Sigil or Soul hit on a creature of your own side that takes HP (friendly fire included); a heal or a shield never is.
@@ -6164,14 +6289,14 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1076. **Heavy Bolt +40% (rules 1.18)** (was +50%): the crossbow fired it every turn for 140 to 154%. It measures 111 to 135% now.
 1077. **The automatic guns whose Burst lost a roll (rules 1.18):** SMG 19 (was 15), PDW 20 (16), whisper SMG 16 (13), drum gun 19 (15), auto-pistol 17 (14), auto-shotgun 40 and 24 (35 and 20). Set so their Burst rotation stays about where it was (60 to 100% of the plain rifle): they were under the ceiling before and are not meant to pay for it. Their plain shots are stronger by the same amount; none passes the service pistol's 20. An enemy carrying one deals more with a plain shot (a Minion with an SMG: 19, a service pistol: 20).
 1078. **Guns still weak (rules 1.18, not changed):** pistols 40 to 105%, SMGs 55 to 85%, shotguns 35 to 105% (the range starts 13 tiles away: they walk first), bows 80 to 115%, the thumper 50%, the flamer 50% (Masterwork, levels 6 and 12). A floor for the weak families is a later step.
-1079. **Enemies keep the old Burst (rules 1.18):** three rolls with an Auto weapon, each later one −1 more, cooling 1; two rolls at 0 and −2 with any other. Measured with the new Burst for enemies: a Soldier's damage a turn falls 30 to 37%, and the plain rifleman lasts 4.9 to 5.3 rounds under two Soldiers (target 3; 3.0 to 3.4 with the old Burst). With the old Burst kept, what enemies deal is the same to the last point at all six levels. To settle when the enemy table is fitted again: enemies take the characters' Burst and the Soldier's, Elite's and Boss's damage factors rise to hold the 3 rounds.
+1079. **Enemies keep the old Burst (rules 1.18):** three rolls with an Auto weapon, each later one −1 more, cooling 1; two rolls at 0 and −2 with any other. Measured with the new Burst for enemies: a Soldier's damage a turn falls 30 to 37%, and the plain rifleman lasts 4.9 to 5.3 rounds under two Soldiers (target 3; 3.0 to 3.4 with the old Burst). With the old Burst kept, what enemies deal is the same to the last point at all six levels. To settle when the enemy table is fitted again: enemies take the characters' Burst and the Soldier's, Elite's and Boss's damage factors rise to hold the 3 rounds. *Looked at again in rules 1.23 (item 1316).*
 1080. **Fire Discipline, Speed Loader, Dead Centre, Masterwork and the jam clear are not changed (rules 1.18).** Masterwork alone is ×1.23 to ×1.28 on a gun; a jam clear takes Heat to 0 for 2 AP, which makes Heat a small price for sustained Bursts.
 1081. **Targets not met (rules 1.18):** with a normal share, none (143 to 146% at every level). All in, against the normal-share rifle: 228 / 223 / 214 / 187 / 175 / 148% at levels 1 to 20 (331 / 329 / 311 / 284 / 249 / 217% before), because the all-in plain rifle is itself 167 / 158 / 146 / 131 / 110 / 100% of the normal one; against the all-in plain rifle the optimised gun is 137 to 159%. Whether an all-in build may pass the ceiling is the creation budget's question, not a weapon's. A Burst at a target in cover is worth +4% for its AP (the ruling: 10 to 25%).
 1082. **The rocket class on one target (rules 1.18):** the breacher tube measures about 25% of the plain rifle on the range (one rocket, a 3 AP reload, the carry limit leaves it one or two rockets). Its worth is its blast, which the range does not measure. Not changed.
 1083. **How the guns are measured (rules 1.18):** the optimised gun build (Marksman, a normal share or all in, its perks, drill marks by level) with each gun, Masterwork, on the range (a Soldier's numbers at the character's level, 5,000 HP, it never acts), 8 turns, 24 fights a cell, played four ways: plain shots only; the simulator's optimised policy; "the gunner" (Brace and Bead once, the best damage for its AP, paired shots and paired techniques with a gun in each hand, a spare AP to Vent) without Mag Dump; the gunner with it. A gun's number is the best of the four. Not played: special rounds, Overwatch, Killzone, cover, more than one target (a split Burst, Rake, a blast).
 1084. **A gun in each hand (rules 1.18, measured, not changed):** two hand cannons 123 to 144% (131 to 152% before the hand cannon went from 40 to 38 damage); two revolvers, magistrate pistols, PDWs and service pistols 80 to 122% before the revision. The off hand was a standard gun and the main hand a Masterwork.
 1085. **Melee (rules 1.18, measured, not changed):** the optimised blade (Masterwork greatsword, Fighter) 112 / 115 / 114 / 112 / 126 / 118% at levels 1 to 20 (109 to 142% when it holds its Finisher for full Momentum; 122 to 160% all in) of the plain rifle on the range; it walks for most of the first turn. Under 150% at every level.
-1086. **The simulator's ground and the enemy table (found in this step):** since the fights moved to the 26 × 26 ground (the sides 13 tiles apart), an enemy never fires at a character who stands still and shoots: in the fit's "under fire" rows the plain rifleman lasts all 10 rounds at every level (3.0 to 3.4 in rules 1.15). On the old 16 × 11 ground the rules 1.15 numbers come back exactly. The table is not wrong; the measure is. This step measured enemies on the old ground. Open: why an enemy that sees nobody at 13 tiles does not close in, and whether the game's own fights have the same gap. **Whole fights are longer since this step** (the squad's gun deals a third less; 10 fights a cell on the new ground): the standard fight 4.5 to 5.3 rounds on open ground (it was 3.9 to 4.5) and 5.7 to 6.9 with cover; the elite fight 5.4 to 6.4 and 6.1 to 8.4; the boss fight 6.4 to 8.9 on open ground and 10.6 to 13.8 with cover (target 8 to 10): the Boss's HP was fitted against a 200% gun and is the number to look at.
+1086. **The simulator's ground and the enemy table (found in this step):** since the fights moved to the 26 × 26 ground (the sides 13 tiles apart), an enemy never fires at a character who stands still and shoots: in the fit's "under fire" rows the plain rifleman lasts all 10 rounds at every level (3.0 to 3.4 in rules 1.15). On the old 16 × 11 ground the rules 1.15 numbers come back exactly. The table is not wrong; the measure is. This step measured enemies on the old ground. Open: why an enemy that sees nobody at 13 tiles does not close in, and whether the game's own fights have the same gap. **Whole fights are longer since this step** (the squad's gun deals a third less; 10 fights a cell on the new ground): the standard fight 4.5 to 5.3 rounds on open ground (it was 3.9 to 4.5) and 5.7 to 6.9 with cover; the elite fight 5.4 to 6.4 and 6.1 to 8.4; the boss fight 6.4 to 8.9 on open ground and 10.6 to 13.8 with cover (target 8 to 10): the Boss's HP was fitted against a 200% gun and is the number to look at. *Fixed on 12 Nov 2026 (an enemy further off than it can see closes in); measured again in rules 1.23 (item 1314).*
 1087. **Not built or run in this step (rules 1.18):** the browser suites; `apps/web/src/game/protodata.json` (screen data generated from the data pack) was not regenerated.
 1088. **Fire Discipline's 2 AP Burst with the two-roll Burst (rules 1.18):** it is now worth about 1 AP a turn (a Burst, a Burst and a spare AP; or a Burst and two Shots). Kept. If guns have to come down further, this is the next thing to change.
 1200. **A plain Pump is +0.2 (rules 1.19):** the stage table is ×0.8, ×1.0, ×1.2, ×1.4, ×1.6 (rules 1.17: +0.4 a stage). It replaces item 1054. PROVISIONAL.
@@ -6201,7 +6326,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 **Rules revision 1.20 (the heal and shield pass, 12 Nov 2026).** Every number below is PROVISIONAL. The report with the measurements and the questions is `docs/design/handoffs/heal-shield-pass.md`.
 
 1230. **The yardstick (rules 1.20):** one Soldier-turn, what a Soldier of the fight's level takes off the plain rifleman in one of its turns: 18.5 / 21.5 / 25.4 / 32.4 / 37.8 / 60.2 HP at levels 1, 3, 6, 9, 12, 20, which is 13% of his max HP at every level. Measured on the 16 × 11 ground of the rules 1.15 fit (item 1086), 60 fights a level. Leon gave no number for healing: the unit and the bands are this pass's proposal. PROVISIONAL.
-1231. **The bands (rules 1.20):** for a normal-share caster, in percent of a Soldier-turn: an Outburst's steady turn of healing 100 to 150%, its biggest heal 150 to 175%, its quick heal 50 to 75%; a 2-glyph MEND Line about 100%, a full Line 150 to 200% over the turns it takes; a shield ×1.2 the heal of the same cost; a rider at most 50 to 75%; an area at most about 1.6 times the single heal in all; a Whisper 30 to 40%, a healing Hymn 60 to 75% (it is 3 AP and can be prayed every turn), a healing intervention about 150%. They mirror the damage targets of rules 1.17 and 1.19. PROVISIONAL (Leon's call: the report's question 1).
+1231. **The bands (rules 1.20):** for a normal-share caster, in percent of a Soldier-turn: an Outburst's steady turn of healing 100 to 150%, its biggest heal 150 to 175%, its quick heal 50 to 75%; a 2-glyph MEND Line about 100%, a full Line 150 to 200% over the turns it takes; a shield ×1.2 the heal of the same cost; a rider at most 50 to 75%; an area at most about 1.6 times the single heal in all; a Whisper 30 to 40%, a healing Hymn 60 to 75% (it is 3 AP and can be prayed every turn), a healing intervention about 150%. They mirror the damage targets of rules 1.17 and 1.19. PROVISIONAL (Leon's call: the report's question 1). *Rules 1.22 (item 1286): the Hymn waits on a cooldown again; a healing Hymn is 75 to 95% a cast.*
 1232. **The level factor (rules 1.20):** a character's healing and shields from Sigil, the Outburst and prayer × the damage column of the enemy table at the caster's level (×1.00 to ×1.82). Not on: Mother Ember's intervention, lifesteal, non-magic healing, Linger and residues, enemy casters. PROVISIONAL.
 1233. **MEND 10 and WARD 12 (rules 1.20):** they were 25 and 30. Still × the Sigil multiplier × Healing given: a caster with both high multiplies them (a Mage has Healing given ×1.0; Intelligence and Insight both at 10 would be ×2.9 × ×2.9). Not changed; flagged. PROVISIONAL.
 1234. **The Buff school's heal 7 (rules 1.20):** it was 30. PROVISIONAL.
@@ -6209,27 +6334,44 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1236. **Love's heal (rules 1.20):** ×0.25 of the Buff school's heal at the Release's multiplier for an ally in a hostile shape, ×0.15 for the lone heal, ×0.25 more on a healing or shielding Outburst. It reads Healing given now, not the Soul multiplier, and not the Damage base. PROVISIONAL.
 1237. **Inverse 10 and Shell 4 (rules 1.20):** × the Soul multiplier × the stage multiplier × the level factor. They were ×0.7 and ×0.35 of the Outburst's damage. PROVISIONAL.
 1238. **Will Shield 12 and the Bard's Mend 9 (rules 1.20):** they were 30 and 40 (against 30). Mend is now ×1.29 of the Buff heal (it was ×1.33). PROVISIONAL.
-1239. **The prayers (rules 1.20):** Health 5, Protection 6, Warm Hands 10, Saint's Shield 12, Absolution 7, Hearthlight 4, Coin for the Ferry 5, Everyone Home's shield 17, all × Blessing power × the level factor; Mother Ember's intervention (10 + 3 × Devotion) × Blessing power. If the Faith fit (rules 1.21) gives prayers a scaling of their own, these bases must come down by what it adds. PROVISIONAL.
-1240. **The round limit (rules 1.20):** spells and prayers restore at most half of a creature's max HP a round; a Miracle is exempt; a Downed creature still gets up. PROVISIONAL (Leon's call: the report's question 3).
+1239. **The prayers (rules 1.20):** Health 5, Protection 6, Warm Hands 10, Saint's Shield 12, Absolution 7, Hearthlight 4, Coin for the Ferry 5, Everyone Home's shield 17, all × Blessing power × the level factor; Mother Ember's intervention (10 + 3 × Devotion) × Blessing power. If the Faith fit (rules 1.21) gives prayers a scaling of their own, these bases must come down by what it adds. PROVISIONAL. *Rules 1.22 (item 1286): Warm Hands 13, Saint's Shield 16, Absolution 9; the others stand.*
+1240. **The round limit (rules 1.20):** spells and prayers restore at most half of a creature's max HP a round; a Miracle is exempt; a Downed creature still gets up. PROVISIONAL (Leon's call: the report's question 3). ***Withdrawn by rules 1.23** (Leon, 12 Nov 2026: no round limit); item 1300.*
 1241. **Enemy casters (rules 1.20):** not changed. They keep MEND 25, WARD 30, the Buff heal 30, and Inverse and Shell as shares of their damage (`heal_enemy`, `shield_enemy`, `shield_mult_enemy`, `shield_of_power_enemy`). Whether an enemy healer is worth a turn against a squad is not measured.
 1242. **Lifesteal (rules 1.20):** LEECH (half of the damage the spell dealt) and Drain (a quarter of the HP taken) are not changed: 38 to 100% of a Soldier-turn for Drain in steady play, about 75 to 140% for a LEECH Line that lands, the caster only, paid for in damage. They are shares of damage, so they are the only healing that moves when a damage base moves.
 1243. **Measured and not met (rules 1.20):** the quick Outburst heal is 43 to 53% (band 50 to 75%); the Outburst's biggest heal is 139 to 146% from level 9 (band 150 to 175%); a full MEND Line is 207 to 208% over its turns at levels 12 and 20 (band to 200%); a healer with Empathy as the main skill heals 151 to 179% in a steady turn, over the band a Channeler sits in, and all in with the Bard's Mend 197 to 280%. **A healer and a shielder together** keep a trio standing under three Soldiers in 38 to 94% of ten-round fights (under four, somebody goes Down in 94 to 100%): a shield is refilled to its size every turn and the round limit does not count shields. Not changed; Leon's call (the report's question 4).
-1244. **Split on a healing Bolt (rules 1.20):** heals the second ally in full: twice the single heal for one slot and 15 MP, over the area band of 1.6. Not changed (Split is already flagged: item 1063).
-1245. **Not in this pass (rules 1.20):** Triage (20 × Healing given, 2 AP), the stim and Stim Throw (30), Rally (20 to everyone within 4), the banner (15). They have no level factor: 108% of a Soldier-turn at level 1 for a Triage by a character with Healing given ×1.0, 33% at level 20; a 1 AP stim 162% and 50%. At low levels they now heal more than a spell does for less AP. Leon's call (the report's question 2).
-1246. **Prayers a band cannot hold (rules 1.20):** Hold the Gate (nobody you see drops below 1 HP until your next turn), Turned Back, Rewoven and Everyone Home's heal to full. Not changed. Hold the Gate is a Hymn (Devotion 5), not a Miracle: it is the one thing left that makes a squad unkillable for a round.
+1244. **Split on a healing Bolt (rules 1.20):** heals the second ally in full: twice the single heal for one slot and 15 MP, over the area band of 1.6. Not changed (Split is already flagged: item 1063). *Rules 1.23: divided, ×0.8 each (item 1305).*
+1245. **Not in this pass (rules 1.20):** Triage (20 × Healing given, 2 AP), the stim and Stim Throw (30), Rally (20 to everyone within 4), the banner (15). They have no level factor: 108% of a Soldier-turn at level 1 for a Triage by a character with Healing given ×1.0, 33% at level 20; a 1 AP stim 162% and 50%. At low levels they now heal more than a spell does for less AP. Leon's call (the report's question 2). *Fitted in rules 1.23 (items 1306 to 1309).*
+1246. **Prayers a band cannot hold (rules 1.20):** Hold the Gate (nobody you see drops below 1 HP until your next turn), Turned Back, Rewoven and Everyone Home's heal to full. Not changed. Hold the Gate is a Hymn (Devotion 5), not a Miracle: it is the one thing left that makes a squad unkillable for a round. *Rules 1.22 (item 1287): Hold the Gate can't be prayed again for 6 rounds.*
 1247. **Not done in this step (rules 1.20):** no browser suite was run; the screen data (`protodata.json`) was not regenerated; the simulator's supporters stand next to a rifleman who never moves (reach and line of sight cost them nothing); enemy focus is the engine's own (the most hurt first); the music traits' "big heal" (30 HP or more) and "a shield of 30 or more" were not rescaled, and are harder to reach at low levels now; why an enemy does not fire at 13 tiles (item 1086) is found and reported, not fixed.
-1260. **Rebuke, the seventh Whisper (rules 1.21):** 1 AP, one enemy in sight takes 15 Soul × Blessing power; no roll; armour does not lower it. The same limits as every Whisper (one a turn, Faith 3, an Atheist by dice against 12). Fitted with the Hymns of item 1262 to the Outburst's steady play. Open: whether 15 is right once squads are measured, and whether a Whisper that hurts should carry a tag of its own. PROVISIONAL. *Data: patrons.json `whispers` (the validator counts 7).*
+1260. **Rebuke, the seventh Whisper (rules 1.21):** 1 AP, one enemy in sight takes 15 Soul × Blessing power; no roll; armour does not lower it. The same limits as every Whisper (one a turn, Faith 3, an Atheist by dice against 12). Fitted with the Hymns of item 1262 to the Outburst's steady play. Open: whether 15 is right once squads are measured, and whether a Whisper that hurts should carry a tag of its own. PROVISIONAL. *Data: patrons.json `whispers` (the validator counts 7).* *Rules 1.22 (item 1281): 20.*
 1261. **Thunderclap deals damage (rules 1.21):** 20 lightning × Blessing power to each enemy within 2 of the tile, before the push and the save. Old Overcast's devoted then has a prayer that hurts from Devotion 3. A surrendered enemy in the area is not hit or pushed. PROVISIONAL.
-1262. **Lightning Rod 50 and 20 (rules 1.21):** it was 50 and 25. With Rebuke in the same turn one enemy takes 65 × Blessing power (50 before) and two enemies 85 between them (75 before). The chain is a number of its own now (20), not half the hit. The first fit, to the Outburst's earlier 125% and 150%, was 45 and 15. PROVISIONAL. *Data: the `chain_damage` op carries `value` in place of `mult`.*
-1263. **Judgement 50 Soul, ×1.3 against one that harmed the helpless (rules 1.21):** it was 40 and ×2 (65 now, 80 before). The first fit, to the Outburst's earlier 125% and 150%, was 40 and ×1.5. PROVISIONAL.
+1262. **Lightning Rod 50 and 20 (rules 1.21):** it was 50 and 25. With Rebuke in the same turn one enemy takes 65 × Blessing power (50 before) and two enemies 85 between them (75 before). The chain is a number of its own now (20), not half the hit. The first fit, to the Outburst's earlier 125% and 150%, was 45 and 15. PROVISIONAL. *Data: the `chain_damage` op carries `value` in place of `mult`.* *Rules 1.22 (item 1285): 42 and 17.*
+1263. **Judgement 50 Soul, ×1.3 against one that harmed the helpless (rules 1.21):** it was 40 and ×2 (65 now, 80 before). The first fit, to the Outburst's earlier 125% and 150%, was 40 and ×1.5. PROVISIONAL. *Rules 1.22 (item 1285): 42; the ×1.3 stands.*
 1264. **The Saints' Verdict 130 (rules 1.21):** it was 100, set against the enemy HP of before rules 1.15 (item 727). The double for one that harmed the helpless stays (260). PROVISIONAL.
 1265. **Lucky Break rerolls 2 failed attack rolls (rules 1.21):** it was 1. Out of a fight it is still +5 on one check. PROVISIONAL.
 1266. **Foreknowing turns 2 attacks (rules 1.21):** it was 1. PROVISIONAL.
 1267. **Feed the Fire +2 AP (rules 1.21):** it was +1. The ceiling of 9 AP holds; out of a fight it is +2 story AP. PROVISIONAL.
-1268. **Cut Short, not the same enemy two rounds running (rules 1.21):** an enemy that failed its save against Cut Short can't be the target of Cut Short in that round or the next. A made save leaves no mark. Bosses (2 AP lost, no save) are not limited. Open: every other way to cost an enemy its turn (Sigil, the Outburst's Control) has no such limit; whether the game wants one rule for all of them. PROVISIONAL. *Data: `again_after_rounds` on the Hymn's condition.*
+1268. **Cut Short, not the same enemy two rounds running (rules 1.21):** an enemy that failed its save against Cut Short can't be the target of Cut Short in that round or the next. A made save leaves no mark. Bosses (2 AP lost, no save) are not limited. Open: every other way to cost an enemy its turn (Sigil, the Outburst's Control) has no such limit; whether the game wants one rule for all of them. PROVISIONAL. *Data: `again_after_rounds` on the Hymn's condition.* *Rules 1.22: the Hymn cooldown (3 rounds, 2 with a vow fulfilled) now keeps Cut Short off the same enemy two rounds running by itself; the rule stays for a character whose wait is ever shorter.*
 1269. **Prayer damage is read from the data (rules 1.21):** Rebuke, Judgement and its multiplier, Thunderclap, Lightning Rod and its chain, The Saints' Verdict and its double, and the counts of Lucky Break, Foreknowing and Feed the Fire are read from `data/patrons.json` by the engine. Still written in the code: Last Crossing's 40 against a boss and The Sky Answers' 150 (neither was changed).
-1270. **The Hymn cooldown stays (rules 1.21):** 1 round from Virtue 4, 2 rounds at Faith 3 and Virtue 3. A prayer-led character prays a Hymn every turn. Open (for rules 1.20 and 1.21 together): the heal and shield bands were set for a Hymn that is not prayed every turn; with a Hymn every turn a healing Hymn and a Whisper together are about 150 to 185% of a Soldier-turn, above the Outburst's 125%. Either the healing Hymns come down by about a third or the cooldown gets a floor of 2 rounds, which would halve the damage patrons (the report, question 2). PROVISIONAL.
-1271. **Targets (rules 1.21):** Leon's ruling of 12 Nov 2026: about level with the Outburst, 135% steady and 165% at the peak. Prayer-led play from Devotion 5: Old Overcast 127 to 143% of the plain rifle on one enemy, 159 to 177% on two; Nerukhan 127 to 144%, about 152 to 171% against one that harmed the helpless (arithmetic). Not met: Devotion 3 (levels 1 to about 5), Old Overcast 89 to 91%, every other patron under the rifle in damage. PROVISIONAL.
+1270. **The Hymn cooldown stays (rules 1.21):** 1 round from Virtue 4, 2 rounds at Faith 3 and Virtue 3. A prayer-led character prays a Hymn every turn. Open (for rules 1.20 and 1.21 together): the heal and shield bands were set for a Hymn that is not prayed every turn; with a Hymn every turn a healing Hymn and a Whisper together are about 150 to 185% of a Soldier-turn, above the Outburst's 125%. Either the healing Hymns come down by about a third or the cooldown gets a floor of 2 rounds, which would halve the damage patrons (the report, question 2). PROVISIONAL. *Rules 1.22 (items 1280, 1282): replaced. 9 − 0.75 × Faith − 0.25 × Virtue rounds, never under 3; nobody prays a Hymn every turn.*
+1271. **Targets (rules 1.21):** Leon's ruling of 12 Nov 2026: about level with the Outburst, 135% steady and 165% at the peak. Prayer-led play from Devotion 5: Old Overcast 127 to 143% of the plain rifle on one enemy, 159 to 177% on two; Nerukhan 127 to 144%, about 152 to 171% against one that harmed the helpless (arithmetic). Not met: Devotion 3 (levels 1 to about 5), Old Overcast 89 to 91%, every other patron under the rifle in damage. PROVISIONAL. *Rules 1.22 (item 1289): replaced by Leon's later target: a Whisper-only turn about 80%, a Hymn turn about 125%.*
 1272. **Not fitted (rules 1.21):** the Quartermaster's Hymns (Resupply, Dig In, Covering Fire) and the Matchmaker's (Red Thread, Sweet Nothings, Together) are priced at a third to a half of a rifle's turn when they are needed; with Rebuke and a shot their devoted is at about 80 to 95% of the target (estimates, the report's section 4). Gather the Clouds does nothing in a squad with no Storm-tone Outburst. Last Crossing against a boss is 40 Soul × Blessing power. They are left until squads are measured: the simulator plays one character.
-1273. **Witnessed and Old Overcast (rules 1.21, found and left):** Witnessed gives +2 to attack rolls that carry a liked tag, and "kill" is read as every attack, so an Old Overcast devotee with Faith 5 has +2 to hit with every weapon from the first Hymn of a fight until a kill; the other seven patrons get the +2 rarely or never. Open: whether that is meant.
+1273. **Witnessed and Old Overcast (rules 1.21, found and left):** Witnessed gives +2 to attack rolls that carry a liked tag, and "kill" is read as every attack, so an Old Overcast devotee with Faith 5 has +2 to hit with every weapon from the first Hymn of a fight until a kill; the other seven patrons get the +2 rarely or never. Open: whether that is meant. *Rules 1.22 (item 1288): settled (Leon: "fix to kill").*
 1274. **Not done in this step (rules 1.21):** no browser suite was run (`faith.mjs` counted 6 Whispers and was edited by reading to 7); the screen data was not regenerated; Rebuke has no painted icon (a line mark stands in; `art/briefs/ART-REQUESTS.md` W3); the simulator's prayer-led character plays alone, so nothing a Hymn gives an ally is measured, only priced; Judgement against an enemy that harmed the helpless, interventions and vows were not run in the simulator.
+1280. **The Hymn cooldown (rules 1.22):** 9 − 0.75 × Faith − 0.25 × Virtue rounds, rounded up, never under 3. It replaces 4 − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1 (item 1270). 6 rounds at Faith 3, 3 from Faith 6 and Virtue 6. Open: whether 3 rounds is reached too early (level 6 for a character who leads with Faith; Faith 7 to 10 add nothing to it). PROVISIONAL. *Data: patrons.json `prayer.hymn.cooldown_rule`.*
+1281. **Rebuke 20 (rules 1.22):** it was 15. Set by Leon's target of about 80% for a turn with only a Whisper; measured 64 to 79% from level 6 and 91 to 102% at levels 1 and 3. One Rebuke is about one plain shot's damage for half the AP, which is against the first reading of "the Whisper is weaker than every combat system" (weaker for its AP); it is built to the second reading (the Whisper-only turn is the weakest steady turn). Leon's call. PROVISIONAL.
+1282. **The floor of 3 and the limit of 2 (rules 1.22):** nothing on a sheet takes the cooldown under 3; a vow fulfilled and True Believer each take 1 round off a wait, and no wait is under 2 rounds. Left open for Faith-boosting items, which do not exist: they are what will lower both. PROVISIONAL.
+1283. **A vow fulfilled (rules 1.22):** 1 round off the wait of the Hymn being waited for, once for each Hymn, at most one moment a round; with no Hymn waiting it is kept for the next one (one kept at most). No Devotion XP for it (the +3 is still for a vow kept to the end). PROVISIONAL.
+1284. **The six moments (rules 1.22):** as written in section 2 of the revision. Readings: an attack roll counts, hit or miss (a spell with no attack roll does not); Shield is settled when the attacker's turn ends; Mercy counts a surrender to you and a subdued enemy; Bare Hands needs a melee attack of your own to take the enemy down; No Magic but Theirs counts your patron's intervention; Nobody Left Behind counts any heal of yours that gets a Downed ally up. Open: Shield is fulfilled by what the enemy does, not by what you do. PROVISIONAL.
+1285. **Judgement 42, Lightning Rod 42 and 17 (rules 1.22):** they were 50, and 50 and 20. Fitted to a turn with a Hymn at about 125% of the plain rifle (measured 116 to 134% from Devotion 5). PROVISIONAL.
+1286. **Warm Hands 13, Saint's Shield 16, Absolution 9 (rules 1.22):** they were 10, 12 and 7, fitted in rules 1.20 to a Hymn every turn. A turn with Warm Hands and Health is 109 to 132% of a Soldier-turn. Health 5, Protection 6, Hearthlight 4, Coin for the Ferry 5 and Everyone Home's shield stand. PROVISIONAL.
+1287. **Hold the Gate, not again for 6 rounds (rules 1.22; Leon: "if it's a hymn, make the cooldown long"):** a wait of its own on that Hymn, beside the ordinary cooldown; a vow does not shorten it. PROVISIONAL. *Data: `own_cooldown` on the Hymn.*
+1288. **Witnessed's +2 and a liked kill (rules 1.22; Leon: "fix to kill"):** earned by a kill made while Witnessed, spent by the next attack roll at an enemy. Reading: it is kept when the kill's own intervention ends Witnessed, so that Old Overcast's devoted gets it at all (his intervention answers the first kill). PROVISIONAL.
+1289. **The targets (rules 1.22; Leon, 12 Nov 2026):** a turn with only a Whisper about 80% of the plain rifle, a turn with a Hymn about 125%, no items; both go up with Faith items later. Met for the Hymn turn; the Whisper-only turn is 74% on average from level 6. Open: a Hymn at this size is level with a spell or a Release for its AP and smaller as one cast, and a Hymn turn (125%) is under a steady Outburst turn (135%), against "a hymn is always better than a standard spell or outburst". PROVISIONAL.
+1290. **The average is reported, not fitted (rules 1.22):** 84 to 98% of the plain rifle with no vow and 92 to 111% with the vow fulfilled 4 rounds in 10, from Devotion 5.
+1291. **How often a vow is fulfilled (rules 1.22):** assumed, not measured (the simulator's target never acts): Stand 6 rounds in 10 under fire, Shield 5, Bare Hands and No Magic but Theirs about 2 or 3, Mercy and Nobody Left Behind 1 or less. The tables use 4.
+1292. **True Believer (rules 1.22):** the wait is 1 round shorter, read by the engine as a stat (`hymn_wait`), within the limit of 2 rounds. It no longer moves the mark of the last Hymn.
+1293. **Skills and attributes text (rules 1.22):** Faith's per-point line reads three quarters of a round; Virtue's a quarter. The 2020 unlock "Answered Prayer" (reset your prayer cooldown) is still data only, as before.
+1294. **Not refitted (rules 1.22):** the support Hymns with no number (Foreknowing, Lucky Break, Feed the Fire, Cut Short, Covering Fire, Dig In, Resupply, Red Thread, Sweet Nothings, Together, Switcheroo, Pratfall, Unravel, Gather the Clouds, Last Crossing) and all eight Miracles. With a Hymn one turn in two or three they are worth less a fight than rules 1.21 priced them.
+1295. **The story (rules 1.22):** the Hymn cooldown and Hold the Gate's own wait count story rounds out of a fight; vows are sworn in fights only, so nothing shortens a wait in the story.
+1296. **Not done in this step (rules 1.22):** no browser suite was run (none pins a number this revision changes; `faith-pg.mjs` resets the limits before each Hymn); the screen data was not regenerated; interventions, the Miracles and real vow moments were not run in the simulator; the old `faith` policy of the step-1 simulator was not re-run.

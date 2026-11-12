@@ -118,10 +118,10 @@ export const PAIRS: Record<string, { label: string; seconds: any[]; first?: stri
 
 // ---------- the yardstick under fire, on either ground ----------
 reg({ ...BUILD.plain_gun, id: 'plain_gun_f', label: 'Plain gun (no Duck and Roll)', classId: 'fighter' });
-export function yardFire(level: number, n: number, o: { map?: string; build?: string; foes?: string[] } = {}) {
+export function yardFire(level: number, n: number, o: { map?: string; build?: string; foes?: string[]; policy?: string } = {}) {
   let taken = 0, ft = 0, lasted = 0, by3 = 0, atk = 0, hits = 0;
   for (let i = 0; i < n; i++) {
-    const r = runFight({ pcs: [{ build: o.build || 'plain_gun', variant: 'normal', level }], foes: (o.foes || ['sim_bag_soldier', 'sim_bag_soldier']).map((t) => ({ tier: t })), map: (o.map || 'old') as any, seed: ['FIRE', 'plain_gun', level, 'soldiers', i].join('-'), maxRounds: 10 }), p = r.pcs[0];
+    const r = runFight({ pcs: [{ build: o.build || 'plain_gun', variant: 'normal', level, ...(o.policy ? { policy: o.policy } : {}) }], foes: (o.foes || ['sim_bag_soldier', 'sim_bag_soldier']).map((t) => ({ tier: t })), map: (o.map || 'old') as any, seed: ['FIRE', 'plain_gun', level, 'soldiers', i].join('-'), maxRounds: 10 }), p = r.pcs[0];
     taken += p.taken; ft += r.foeTurns; lasted += p.downedRound != null ? p.downedRound - 1 : 10; if (p.downedRound != null && p.downedRound <= 3) by3++; atk += p.foeAttacks; hits += p.foeHits;
   }
   return { level, map: o.map || 'old', build: o.build || 'plain_gun', lasted: r1(lasted / n), by3: pct(by3, n), perFoeTurn: r1(taken / Math.max(1, ft)), rolls: r1(atk / Math.max(1, ft)), hit: pct(hits, atk) };

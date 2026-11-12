@@ -1550,7 +1550,7 @@ export function setOverwatch(cb: Combat, u: Unit, mode: 'shot' | 'aimed' | 'mele
 const BURST_NUM = (k: string, fb: number): number => { const v = (((techniquesJ as any).items || []).find((x: any) => x.id === 'burst')?.numbers || {})[k]; return typeof v === 'number' ? v : fb; };
 export function burstRolls(u: Unit, w: WeaponDef): number[] {
   const props: string[] = (w as any).phys?.props || [];
-  if (!u.charId) { // as rules 1.12 had it for everyone: Auto three rolls, each later one −1 more; else two, the second at −2 (Quick: no −2)
+  if (!u.charId && !BURST_NUM('enemy_same', 0)) { // (`enemy_same`: 1 gives an enemy the characters' Burst; not set: rules 1.23 keeps the enemy's own) as rules 1.12 had it for everyone: Auto three rolls, each later one −1 more; else two, the second at −2 (Quick: no −2)
     if (props.includes('auto')) return Array.from({ length: BURST_NUM('enemy_rolls', 3) }, (_, i) => (i ? -BURST_NUM('enemy_step', 1) * i : 0));
     return Array.from({ length: BURST_NUM('rolls', 2) }, (_, i) => (i && !props.includes('quick') ? -BURST_NUM('enemy_later_penalty', 2) : 0));
   }
@@ -1560,7 +1560,7 @@ export function burstRolls(u: Unit, w: WeaponDef): number[] {
 }
 /** The Heat a Burst gives back when it ends. Heat is one a roll: a character's two rolls are 2 Heat and nothing cools; an
  * enemy's three rolls cool 1 (2 Heat too), as its table was fitted. */
-export const burstCool = (u: Unit, auto: boolean): number => (!auto ? 0 : !u.charId ? BURST_NUM('enemy_heat_cool', 1) : BURST_NUM('auto_heat_cool', 0));
+export const burstCool = (u: Unit, auto: boolean): number => (!auto ? 0 : !u.charId && !BURST_NUM('enemy_same', 0) ? BURST_NUM('enemy_heat_cool', 1) : BURST_NUM('auto_heat_cool', 0));
 export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
   const rolls = burstRolls(u, WEAPON[u.weapon]), mag = WEAPON[u.weapon].magazine;

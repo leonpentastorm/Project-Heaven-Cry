@@ -467,3 +467,13 @@ The lead's plan, in order. Each step ends with `npm run check` green and its num
 
 Left for their own systems, with the budget rule to hold them: Weapon Arts, armour (Equipment 2.0), enemy casters and
 the enemy table refit, Faith items.
+
+### MP (Leon, 12 Nov 2026)
+
+14. **The gap between an all-in build and a normal share is 1.25** (step 6 of the capstone).
+15. **MP comes off Virtue.** A Faith build uses no MP, a physical build that takes Virtue for prayer gets MP for
+    nothing, and a pure Outburst mage needs Virtue it has no reason to have. Max MP is 100 + 100 × (Virtue − 1) today.
+16. **Pumps cost MP, gently**, and the pool is brought into proportion with the costs (an endgame character has about
+    a thousand MP against designs that cost 20 to 25).
+
+Built as rules 1.24 (hand-off `mp-rework.md`).

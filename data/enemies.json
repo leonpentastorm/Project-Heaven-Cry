@@ -109,7 +109,7 @@
     {
       "id": "boss",
       "name": "Boss",
-      "hp": 960,
+      "hp": 820,
       "defense": 13,
       "attack_bonus": 6,
       "armour": 10,
