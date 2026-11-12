@@ -174,6 +174,9 @@ export interface Unit {
   /** Rules 1.6 (faith.ts): the vow sworn for this fight, and the faith state of the fight (tags seen per action, the
    * liked-tag gain so far, the Whisper's turn, the intervention used, Lucky Break and the like). */
   vow?: import('./character').Vow | null; faith?: Record<string, any>;
+  /** Rules 1.23: what this unit healed and shielded for OTHERS, round by round (effects/mending.ts noteTended; the last
+   * two rounds are kept). The enemy AI reads it: the enemies go for whoever is mending the squad (healerMark). */
+  tended?: { r: number; n: number }[];
   /** What a Trickster's Read showed this unit means to do on its next turn (enemyIntent; cleared when its turn ends). */
   readIntent?: Intent & { by: string; round: number };
   /** Rules 1.9 drop tables (loot.ts): what this enemy drops beyond its weapon and magazines, from the campaign or the
@@ -1997,7 +2000,8 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
 /** A stim's AP: stabilising a Downed ally 2 (1 for a Medic), healing 1; then items ('stabilise' / 'stim' costs). */
 export const stimAp = (u: Unit, t: Unit, isMedic: boolean) => (t.downed ? actionAp({ u }, 'stabilise', isMedic ? 1 : 2).ap : actionAp({ u }, 'stim', 1).ap);
 
-/** Enemy turn: shoot the most hurt PC in sight and range; otherwise close in. Deterministic given the RNG. The AI
+/** Enemy turn: shoot the most hurt PC in sight and range (rules 1.23: with a weight for whoever is mending the squad,
+ * by the tier's healer_focus; an Elite or a Boss with a gun steps for a shot at the healer); otherwise close in. Deterministic given the RNG. The AI
  * also keeps the conditions' rules (rules 1.3): it puts itself out when Burning, breaks a grapple, recovers a dropped
  * weapon, attacks the one who Taunted it, never attacks or closes on what it fears, obeys a Commanded order, and
  * ignores Hidden PCs (it doesn't know where they are). An enemy a False Image fooled sees the image where its owner

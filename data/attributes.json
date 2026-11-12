@@ -207,6 +207,12 @@
           "stat": "soul_mana_cost_pct",
           "formula": "−5% × (Insight − 1)",
           "per_point_above_1": -5
+        },
+        {
+          "stat": "mp_max",
+          "formula": "100 + 75 × (Determination − 1) + 25 × (Insight − 1) (rules 1.24)",
+          "per_point_above_1": 25,
+          "provisional": true
         }
       ]
     },
@@ -232,8 +238,8 @@
         },
         {
           "stat": "mp_max",
-          "formula": "50 × Soul Core + 50 × Determination (rules 1.24; it was 100 + 100 × (Virtue − 1))",
-          "per_point_above_1": 50,
+          "formula": "100 + 75 × (Determination − 1) + 25 × (Insight − 1) (rules 1.24; it was 100 + 100 × (Virtue − 1))",
+          "per_point_above_1": 75,
           "provisional": true
         }
       ]

@@ -22,6 +22,9 @@ ALL = [a["id"] for a in attrs]
 # Where each role puts points its skills don't need (after the attributes the skills use).
 # Regular presets spread over at least two Cores (Leon); the last entry is often the second Core's attribute.
 # Only the All-in family goes single-Core.
+# Rules 1.24 (12 Nov 2026): Max MP is the Soul Core's and Determination's, not Virtue's. An Outburst caster's spare points
+# go to Determination and Insight (stormcaller, mender, heartreader, unbroken); a build that only prays keeps out of
+# Determination, which would give it MP it has no use for (zealot, prophet).
 EXTRA = {
     "bulwark": ["endurance", "strength", "determination"], "bodyguard": ["endurance", "agility"], "brawler": ["strength", "endurance", "determination"],
     "berserker": ["strength", "endurance", "determination"], "fencer": ["agility", "strength", "perception"], "monk": ["agility", "strength", "determination"],
@@ -30,8 +33,8 @@ EXTRA = {
     "infiltrator": ["agility", "perception"], "stalker": ["agility", "perception"], "thief": ["agility", "perception"],
     "spy": ["expression", "perception"], "sigilist": ["intelligence", "expression", "endurance"], "sentinel": ["intelligence", "determination"],
     "enchanter": ["intelligence", "expression", "insight"], "jinx": ["intelligence", "expression", "insight"], "detective": ["intelligence", "perception", "insight"],
-    "engineer": ["perception", "intelligence", "agility"], "scholar": ["intelligence", "perception", "determination"], "stormcaller": ["determination", "virtue"],
-    "mender": ["insight", "virtue", "endurance"], "confessor": ["virtue", "insight", "endurance"], "zealot": ["virtue", "determination"],
+    "engineer": ["perception", "intelligence", "agility"], "scholar": ["intelligence", "perception", "determination"], "stormcaller": ["determination", "insight"],
+    "mender": ["insight", "determination", "endurance"], "confessor": ["virtue", "insight", "endurance"], "zealot": ["virtue", "agility", "endurance"],
     "witch": ["determination", "insight", "intelligence"], "harbinger": ["insight", "determination"], "silver_tongue": ["expression", "insight"],
     "troubadour": ["insight", "virtue", "expression"], "captain": ["virtue", "insight", "endurance"], "enforcer": ["strength", "virtue"],
     "spellblade": ["intelligence", "agility"], "crusader": ["virtue", "endurance"], "witch_hunter": ["agility", "perception"],
@@ -40,8 +43,8 @@ EXTRA = {
     "living_wall": ["endurance", "strength", "agility"], "wrecking_ball": ["strength", "endurance", "agility"],
     "deadeye": ["agility", "endurance", "strength"], "phantom": ["perception", "intelligence", "expression"],
     "savant": ["intelligence", "expression", "perception"], "illusionist": ["expression", "intelligence", "perception"],
-    "heartreader": ["insight", "virtue", "determination"], "unbroken": ["determination", "insight", "virtue"],
-    "prophet": ["virtue", "insight", "determination"],
+    "heartreader": ["insight", "determination"], "unbroken": ["determination", "insight"],
+    "prophet": ["virtue", "insight"],
 }
 
 def fill(aid, preset):

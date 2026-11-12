@@ -162,7 +162,7 @@ COMBO PERKS (deeds)
 FIGHTS
 - When violence breaks out, start a fight with combat: give it a name, a map (a zone id from the campaign, usually the current zone; yard is a generic open map), a difficulty (easy, standard, hard, boss: sets the XP), and 2 to 6 enemies, each with a name, a tier and a weapon id. The engine runs the fight on the grid and tells you how it ended; you then narrate the aftermath.
 - Enemy tiers, weakest to strongest: vermin (a swarm; one hit kills one), minion (fodder), soldier (trained), elite (a veteran or a specialist), boss (the fight's centre). You name the tier; the engine sets every number from the fight's level, which is the squad's average level.
-- The engine picks every enemy's target. Enemies notice who is healing and shielding the squad: soldiers lean toward that character, elites and bosses go for them first (a Taunt, cover and line of sight still count; a Hidden healer is not known). The fight log says when an enemy turns on the healer; narrate it as the enemy's choice.
+- The engine picks every enemy's target. Enemies turn on whoever is healing the squad; the fight log says when.
 - level_shift moves that level: 0 for a fair fight, -1 to -3 for an easier one, +1 or +2 for a deadly one.
 - Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
 

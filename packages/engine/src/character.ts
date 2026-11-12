@@ -613,10 +613,11 @@ export const CRIT_BASE = 1.5, CRIT_MAX = 2.0, CRIT_PER_PERCEPTION = 0.03, CRIT_P
 /** The Critical multiplier: 1.5 + 3% × (Perception − 1) + 2% × Dexterity, then perks, traits and gear, to 2.0 at most. */
 export const critMult = (c: Character) => Math.max(CRIT_BASE, Math.min(CRIT_MAX, Math.round(fx(c, 'crit_damage', CRIT_BASE + CRIT_PER_PERCEPTION * (A(c, 'perception') - 1) + CRIT_PER_DEXTERITY * P(c, 'dexterity')) * 1000) / 1000)); // rules 1.12 (item 953): offence reads the alpha (it was Athletics)
 export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'empathy')); // rules 1.13: healing given is Empathy's (it was Camaraderie's)
-/** Rules 1.24 (items 1340, 1341; PROVISIONAL): Max MP is 50 × the Soul Core + 50 × Determination: 100 with neither
- * raised, 1,000 with both at 10. It was 100 + 100 × (Virtue − 1) (`maxMpOld`, kept for the one-time move of a save). */
-export const MP_PER_SOUL = 50, MP_PER_DETERMINATION = 50;
-export const maxMp = (c: Character) => fx(c, 'mp_max', MP_PER_SOUL * (c.cores?.soul || 1) + MP_PER_DETERMINATION * A(c, 'determination'));
+/** Rules 1.24 (items 1340, 1341; PROVISIONAL): Max MP is 100 + 75 × (Determination − 1) + 25 × (Insight − 1): the
+ * Outburst's own two attributes (Will Power's and Empathy's); 100 with neither raised, 1,000 with both at 10. Virtue
+ * gives none. It was 100 + 100 × (Virtue − 1) (`maxMpOld`, kept for the one-time move of a save). */
+export const MP_BASE = 100, MP_PER_DETERMINATION = 75, MP_PER_INSIGHT = 25;
+export const maxMp = (c: Character) => fx(c, 'mp_max', MP_BASE + MP_PER_DETERMINATION * (A(c, 'determination') - 1) + MP_PER_INSIGHT * (A(c, 'insight') - 1));
 export const maxMpOld = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue') - 1));
 /** The MP rule's revision (rules 1.24): a save from before it is moved once (migrateCharacterMp). */
 export const MP_REV = 124;
@@ -628,7 +629,7 @@ export function migrateCharacterMp(c: Character): string[] {
   if (c.mp == null) return [];
   const was = Math.max(1, maxMpOld(c)), now = maxMp(c); if (was === now) { c.mp = Math.max(0, Math.min(now, c.mp)); return []; }
   c.mp = Math.max(0, Math.min(now, Math.round(Math.min(was, c.mp) * now / was)));
-  return carriesEmanator(c) ? [c.name + '\'s Emanator now holds up to ' + now + ' MP (it was ' + was + '): Max MP comes from the Soul Core and Determination, not Virtue (rules 1.24).'] : [];
+  return carriesEmanator(c) ? [c.name + '\'s Emanator now holds up to ' + now + ' MP (it was ' + was + '): Max MP comes from Determination and Insight now, not Virtue (rules 1.24).'] : [];
 }
 // ---------- magic stats (spec: Derived stats, Magic; rules 1.2) ----------
 export const sigilMult = (c: Character) => 1 + 0.1 * (A(c, 'intelligence') - 1) + 0.1 * P(c, 'brain_power');

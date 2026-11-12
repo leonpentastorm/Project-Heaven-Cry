@@ -31,13 +31,13 @@ export const TEND_NOTICE: number = TENDING.notice_share_of_max_hp ?? 0.1;
  * healer the squad leans on). Kept on the giver, round by round, for the fight. */
 export function noteTended(cb: Combat | null, by: Unit | null | undefined, t: Unit, n: number) {
   if (!cb || !by || by === t || n <= 0 || by.side !== t.side || by.dead) return;
-  const log = (((by as any).tended ||= []) as { r: number; n: number }[]), last = log[log.length - 1];
+  const log = (by.tended ||= []), last = log[log.length - 1];
   if (last && last.r === cb.round) last.n += n; else log.push({ r: cb.round, n });
   while (log.length && log[0].r <= cb.round - TEND_ROUNDS - 1) log.shift();
 }
 /** What this unit healed and shielded for others in the last TEND_ROUNDS rounds (this one included). */
 export function tendedLately(cb: Combat, u: Unit): number {
-  const log = (u as any).tended as { r: number; n: number }[] | undefined; if (!log) return 0;
+  const log = u.tended; if (!log) return 0;
   let n = 0; for (const e of log) if (e.r > cb.round - TEND_ROUNDS) n += e.n; return n;
 }
 

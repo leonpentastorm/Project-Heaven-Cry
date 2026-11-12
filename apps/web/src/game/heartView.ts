@@ -163,8 +163,11 @@ export interface HeartPanel {
   felt: string[]; does: string[]; feelings: FeelingBtn[]; revert: HeartBtn;
   freePumps: number | null; strain: number; limit: number; warn: string; warnLevel: '' | 'caution' | 'alert'; swell: string;
   watch: boolean; steady: boolean; rider: string; feedShow: boolean;
-  pump: HeartBtn & { ap: number }; release: HeartBtn; steadyBtn: HeartBtn; letgo: HeartBtn & { strainOff: number }; feed: HeartBtn; watchBtn: HeartBtn;
+  pump: HeartBtn & { ap: number; /** rules 1.24: the MP this Pump takes */ mp: number }; release: HeartBtn; steadyBtn: HeartBtn; letgo: HeartBtn & { strainOff: number }; feed: HeartBtn; watchBtn: HeartBtn;
 }
+/** A Pump's price as its button shows it (rules 1.24): "1 AP · 4 MP"; a free Pump with MP owed "0 AP · 4 MP"; "FREE"
+ * only when it takes neither (a heart that draws on the air, or one begun for no MP). */
+export const pumpCost = (pp: { ap: number; mp?: number; free?: boolean }): string => (pp.mp ? (pp.free ? '0 AP' : pp.ap + ' AP') + ' · ' + pp.mp + ' MP' : pp.free ? 'FREE' : pp.ap + ' AP');
 /** mods: the toggles on the release being planned (Heart Surge…), as the action would carry them. */
 export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null {
   const m = u?.mg; if (!m || !m.held) return null;
@@ -194,11 +197,13 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
     stage, maxStage, mult: plan.mult || STAGE_MULT[stage], resonance: plan.resonanceBonus || 0, multNotes: notes, overdraw,
     stages: STAGE_MULT.slice(0, maxStage + 1).map((x, n) => ({ n, mult: x, on: n <= stage, now: n === stage, next: pp.ok && n === pp.stage, feeling: n <= stage ? fAt(n) : null })),
     felt, does: plan.does || [], feelings: feelingButtons(cb, u),
-    revert: { id: 'revert', label: '↶ Revert', cost: 'FREE', ok: rv.ok, why: rv.ok ? '' : rv.why, title: 'Take back your last Pump this turn: its stage, its feeling, and the AP and Strain it cost.' },
+    revert: { id: 'revert', label: '↶ Revert', cost: 'FREE', ok: rv.ok, why: rv.ok ? '' : rv.why, title: 'Take back your last Pump this turn: its stage, its feeling, and the AP, MP and Strain it cost.' },
     freePumps: freeLeft, strain: H.strain, limit: H.limit, warn, warnLevel: plan.shortWarning || plan.burnWarning > 0 ? 'alert' : warn ? 'caution' : '', swell,
     watch: !!m.held.watch, steady: !!m.held.steady, rider: plan.riderText, feedShow: glyphHere,
-    pump: { id: 'pump', label: 'Pump', ap: pp.ap, cost: pp.ok ? (pp.free ? 'FREE' : pp.ap + ' AP') : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
-      title: pp.ok ? (pp.note ? 'An Overdraw Pump' : 'A plain Pump') + ': stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight.' : pp.free ? '. This is your free Pump for this turn.' : '.')
+    // Rules 1.24: a Pump takes MP too (the engine's number). A free Pump is free of AP only, so with MP owed it reads "0 AP · 4 MP".
+    pump: { id: 'pump', label: 'Pump', ap: pp.ap, mp: pp.mp || 0, cost: pp.ok ? pumpCost(pp) : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
+      title: pp.ok ? (pp.note ? 'An Overdraw Pump' : 'A plain Pump') + ': stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight' : pp.free ? '. This is your free Pump for this turn' : '')
+        + (pp.mp ? (pp.free ? ': it costs no AP, and ' : '. It takes ') + pp.mp + ' MP (you have ' + Math.floor(m.mp) + ').' : '.')
         + (pp.note ? ' ' + pp.note : overdraw && !od?.why ? ' ' + overdraw : '') : pp.why || '' },
     release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + (plan.stage ?? stage) + ' (×' + (plan.mult || STAGE_MULT[stage]) + ')' + ((plan.stage ?? stage) !== stage ? ' (surged from stage ' + stage + ')' : '') + (notes.length ? '. ' + notes.join(', ') + ' is in that number, built by the Releases before this one' : '') + (info?.form === 'aura' ? '. It goes off all around you, with no aim.' : '. Pick the aim on the grid.') },
     steadyBtn: { id: 'steady', label: 'Steady', cost: SOUL_AP.steady + ' AP', ok: !st.err, why: st.err || '', title: 'Lose 1 Strain, and the Outburst doesn\'t swell at the start of your next turn.' },
@@ -311,7 +316,7 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
   if (!p) return { show: false };
   // A refused button shows its reason in place of its cost (✕ Needs 1 AP), the whole reason in its title: one line each.
   const b = (x: HeartBtn, primary?: boolean, cost = x.cost) => ({ key: x.id, label: x.label, cost: x.why ? '✕ ' + x.why.replace(/\.$/, '') : cost, title: x.why ? x.label + ': ' + x.why : x.title, off: !x.ok, why: x.why, hasWhy: false, style: S.btn(x, primary), pick: () => { if (x.ok) run(x.id); },
-    costStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; font-weight: 700; color: ' + (x.why ? MUTED : cost === 'FREE' || /^FREE/.test(cost) || cost === 'ARMED' ? GREEN : '#C9D3E3') });
+    costStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.5px; font-weight: 700; color: ' + (x.why ? MUTED : cost === 'FREE' || /^FREE/.test(cost) || /^0 AP/.test(cost) || cost === 'ARMED' ? GREEN : '#C9D3E3') });
   const S = heartStyles(p);
   const btns = [b(p.pump, true), b(p.release, true), b(p.steadyBtn), b(p.letgo, false, 'FREE' + (p.letgo.strainOff ? ' · −' + p.letgo.strainOff + ' STRAIN' : '')), ...(p.feedShow ? [b(p.feed)] : []), b(p.watchBtn), ...(p.revert.ok ? [b(p.revert)] : [])];
   const fr = feelingRows(p.feelings, !!fo.open, fo.query || '', run);

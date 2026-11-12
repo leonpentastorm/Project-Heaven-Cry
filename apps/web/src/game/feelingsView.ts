@@ -50,7 +50,7 @@ export function feelingButtons(cb: any, u: any): FeelingBtn[] {
     const p = previewPump(cb, u, f.id), ink = feelingInk(f.id);
     const step = p.step ?? (f.step?.base ?? PLAIN_STEP);
     return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: (step >= 0 ? '+' : '−') + Math.abs(r2(step)).toFixed(1), // rules 1.19: Calm and Relief take the multiplier down
-      effect: f.pour?.text || '', cost: p.ok ? (p.free ? 'FREE' : p.ap + ' AP') : '', free: !!(p.ok && p.free), does: '' };
+      effect: f.pour?.text || '', cost: p.ok ? (p.mp ? (p.free ? '0 AP' : p.ap + ' AP') + ' · ' + p.mp + ' MP' : p.free ? 'FREE' : p.ap + ' AP') : '', free: !!(p.ok && p.free), does: '' }; // rules 1.24: a Pump's MP
   });
 }
 /** Template rows for the feeling buttons: collapsed past FEELINGS_OPEN_MAX unless opened, filtered by the search. */
