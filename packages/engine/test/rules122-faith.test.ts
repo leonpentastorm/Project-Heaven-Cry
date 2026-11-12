@@ -8,7 +8,7 @@
 //   Hold the Gate    a wait of its own (6 rounds); the other Hymns wait as usual
 //   Witnessed        the +2 of a patron that likes kills is earned by a kill and spent by the next attack roll
 //   the numbers      Rebuke 20; Lightning Rod 56 and 23; Judgement 56; Warm Hands 13, Saint's Shield 16, Absolution 9
-// The measurements behind the numbers are test/balance/faith-measure.test.ts (the cheap targets run in `npm run check`).
+// The measurements behind the numbers are test/balance/faith-measure.test.ts (the cheap targets run in `npm run balance`).
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { previewPrayer, previewAttack, resolveAttack, applyDamage, faithView, fulfilVow, hymnWait, prayerCooldown, prayerDamage, blessingPower, mendFactor, surrender, condOn, d20,
