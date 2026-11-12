@@ -1396,8 +1396,14 @@ if isinstance(tq, dict):
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 
+# The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import text_numbers
+TEXT_NUMBERS = text_numbers.check(data, errors, sys.argv[2:])
+
 print("files:", ", ".join(f"{k}({len(items(k)) if k not in ('classes','rules') else ''})" for k in data))
 print(f"base classes {len(base)}, advanced {len(adv)} (shelved {sum(1 for a in adv if a.get('shelved'))}), move pool {len(pool)}")
+print(TEXT_NUMBERS)
 print(f"\n{len(errors)} errors")
 for e in errors[:80]:
     print("  ERR", e)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""One command for "did I break anything?" without a browser: the data validator, both type checks and both unit
-suites, run together, with ONE short line each and only the failures printed. Meant to be cheap to read.
+"""One command for "did I break anything?" without a browser: the data validator (with the text-number guard), the
+spec-table and screen-data checks, both type checks and both unit suites, run together, with ONE short line each and only the failures printed. Meant to be cheap to read.
 
     npm run check            everything (about 1 to 2 minutes)
     npm run check -- engine  only what touches the engine (validator, engine tsc, engine tests)
@@ -19,6 +19,8 @@ pat = args[args.index('-t') + 1] if '-t' in args and args.index('-t') + 1 < len(
 vt = (['--', '-t', pat] if pat else [])
 JOBS = [
     ('data', 'validator', ['python3', 'tools/validate.py', 'data']),
+    ('data', 'spec tables', ['python3', 'tools/check_spec_tables.py']),  # the spec's weapon, enemy and condition tables against data
+    ('data', 'screen data', ['python3', 'design/canvas-build/build.py', '--web', '--check']),  # protodata.json is what the data builds today
     ('engine', 'engine types', ['npx', 'tsc', '--noEmit', '-p', 'packages/engine']),
     ('web', 'web types', ['npx', 'tsc', '--noEmit', '-p', 'apps/web']),
     ('engine', 'engine tests', ['npm', 'test', '-w', '@phc/engine'] + vt),
@@ -26,13 +28,14 @@ JOBS = [
 ]
 if only: JOBS = [j for j in JOBS if j[0] == only or (only == 'engine' and j[0] == 'data')]
 if pat: JOBS = [j for j in JOBS if 'tests' in j[1]]
+DATA_JOBS = ('validator', 'spec tables', 'screen data')  # each prints one line 'N errors'
 ANSI = re.compile(r'\x1b\[[0-9;]*m')
 
 def run(job):
     kind, name, cmd = job; t0 = time.time()
     p = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
     out = ANSI.sub('', p.stdout + p.stderr); ok = p.returncode == 0; note = ''
-    if name == 'validator':
+    if name in DATA_JOBS:
         m = re.search(r'(\d+) errors?', out); ok = ok and bool(m) and m.group(1) == '0'; note = (m.group(0) if m else 'no result line')
     elif 'tests' in name:
         m = re.search(r'Tests\s+(.*)', out); note = m.group(1).strip() if m else 'no result line'
@@ -55,7 +58,7 @@ if True:
         lines = out.split('\n')
         if 'tests' in name:
             keep = [l for l in lines if re.search(r'^\s*(FAIL|×|✗)\s|AssertionError|Error:|❯ .*\.test\.', l)][:30]
-        elif name == 'validator':
+        elif name in DATA_JOBS:
             keep = [l for l in lines if re.search(r'error', l, re.I)][:30]
         else:
             keep = [l for l in lines if 'error TS' in l][:30]

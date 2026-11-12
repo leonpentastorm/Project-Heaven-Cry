@@ -16,6 +16,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUT = ROOT / "design" / "canvas"
 BUILD = ROOT / "design" / "canvas-build"
 # --web: build the same screen data for the web game (apps/web), with its own image URLs (tools/build_web_assets.py).
+# --web --check: write nothing; exit 1 when apps/web/src/game/protodata.json is not what the data builds (tools/check.py).
 WEB = "--web" in sys.argv
 BLOBS = json.loads(((ROOT / "apps/web/src/game/assets.json") if WEB else (BUILD / "blobs.json")).read_text())
 PAL = json.loads((ROOT / "art/style-guide/palette.json").read_text())
@@ -324,6 +325,10 @@ def build_web():
         "helmetCss": HELMET.split("<style>")[1].split("</style>")[0],
     }
     dst = ROOT / "apps/web/src/game/protodata.json"
+    if "--check" in sys.argv:  # freshness (npm run check): the committed file must be what the data builds today
+        fresh = dst.exists() and dst.read_text() == json.dumps(out, ensure_ascii=False) + "\n"
+        print("protodata.json is fresh: 0 errors" if fresh else "protodata.json is stale: 1 error (run: python3 design/canvas-build/build.py --web)")
+        sys.exit(0 if fresh else 1)
     dst.write_text(json.dumps(out, ensure_ascii=False) + "\n")
     print("built", dst.relative_to(ROOT), round(dst.stat().st_size / 1024), "KB")
 

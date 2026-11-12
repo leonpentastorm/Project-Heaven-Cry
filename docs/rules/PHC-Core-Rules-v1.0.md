@@ -733,7 +733,7 @@ Range is in tiles. Mag is the magazine (or "loose", for loading round by round).
 | Parlour pistol | 16 | 4 | 2 (loose) | 4 | single | 0.4 | 150 | none |
 | ✓ Drifter revolver | 28 | 10 | 6 (speedloader) | 6 | single | 1.5 | 350 | optic |
 | Magistrate heavy pistol (revolver) | 26 | 8 | 7 | 5 | single | 1.4 | 450 | optic, muzzle, magazine |
-| Frontier hand cannon (.50) | 40 | 8 | 5 (speedloader) | 4 | single | 2.2 | 800 | optic |
+| Frontier hand cannon (.50) | 38 (rules 1.18; was 40) | 8 | 5 (speedloader) | 4 | single | 2.2 | 800 | optic |
 
 Weapon skills and lore:
 - **Service pistol · Snap Shot:** swap to it and fire in one action for 2 AP. *"Issued to everyone, trusted by no one, carried by all of them."*
@@ -747,7 +747,7 @@ Weapon skills and lore:
 
 | Type | Hands | Dmg | Range | Mag | Heat | Modes | Kg | Price | Mods |
 |---|---|---|---|---|---|---|---|---|---|
-| ✓ Decrkm SMG | 2H | 15 | 8 | 30 | 10 | single, burst, auto | 3 | 600 | optic, muzzle, magazine, underbarrel |
+| ✓ Decrkm SMG | 2H | 19 (rules 1.18; was 15) | 8 | 30 | 10 | single, burst, auto | 3 | 600 | optic, muzzle, magazine, underbarrel |
 | Legion PDW | 1H | 20 (rules 1.18; was 16) | 8 | 25 | 9 | burst, auto | 2.2 | 750 | optic, muzzle, magazine |
 | Whisper SMG | 2H | 16 (rules 1.18; was 13) | 7 | 30 | 12 | single, burst, auto | 3.2 | 900 | optic, magazine (built-in suppressor) |
 | Mandestra drum-gun | 2H | 19 (rules 1.18; was 15) | 7 | 70 (drum) | 10 | auto | 4.5 | 1,100 | optic, underbarrel |
@@ -868,6 +868,7 @@ Weapon skills and lore:
 | ✓ Gloves or bare fists | 10 | 0 | 40 (gloves) | |
 | Knuckledusters | 16 | 0.3 | 60 | |
 | Hellraiser servo-fist | 30 | 2.5 | 1,200 | Raw Power 3 (rules 1.13; was Proficiency 3) |
+| Bite and claws | 18 | 0 | none | a beast companion's own weapon: never carried, bought or dropped (not one of the 3 types) |
 
 - **Fists · Grapple:** 2 AP; the target can't move until it breaks free (its Athletics or Raw Power check against your Raw Power check). *"Everyone's first weapon."*
 - **Knuckledusters · Rabbit Punch:** 1 AP jab for half damage. *"A bar argument that brought friends."*
@@ -2930,7 +2931,7 @@ An enemy's numbers are its tier's row at level 1, raised by its level's row (`da
 | Minion | 70 | 0 | 10 | +1 | ×1.0 | 1.5 | 1 | 1 |
 | Soldier | 140 | 5 | 11 | +3 | ×0.78 | 1.5 | 3 | 2 |
 | Elite | 240 | 10 | 12 | +5 | ×1.05 | 2 | 5 | 3 |
-| Boss | 960 *(820 since rules 1.23)* | 10 | 13 | +6 | ×1.2 | 2 | 7 | 4 |
+| Boss | 820 *(rules 1.23; was 960)* | 10 | 13 | +6 | ×1.2 | 2 | 7 | 4 |
 
 *Rules 1.25, how each tier shares its fire:* Vermin and Minions take the nearest; Soldiers spread their fire, one each, the near ones first; Elites and Bosses go for the wounded and hunt the healer. The numbers are in "Rules revision 1.25".
 
