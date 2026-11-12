@@ -24,6 +24,12 @@ function hits(re: RegExp, allow: (rel: string) => boolean = () => false): string
   return out;
 }
 const COST = (rel: string) => rel === 'effects/cost.ts';
+// THE RATCHETS' NUMBERS (each test says what is counted and what to call instead). Never raise one to make a test pass.
+const LEFT_AP_READS: Record<string, number> = { 'actions.ts': 1, 'ai-sigil.ts': 2, 'ai-soul.ts': 6, 'calls/rules.ts': 1, 'classes/i.ts': 3, 'classes/j.ts': 2, 'classes/k.ts': 2, 'combat.ts': 4, 'effects/actions.ts': 6, 'faith.ts': 3, 'game.ts': 9,
+  'glossary.ts': 5, 'perks/c.ts': 1, 'perks/e.ts': 2, 'perks/h.ts': 1, 'physical/melee/links.ts': 1, 'physical/melee/shield.ts': 1, 'preview.ts': 2, 'sigil.ts': 7, 'world.ts': 2 }; // (glossary.ts: `t` there is a technique's data, counted all the same)
+const LEFT_RES_SPENT: Record<string, number> = { 'classes/i.ts': 6, 'classes/j.ts': 4, 'classes/k.ts': 10, 'classes/rev3.ts': 1, 'combat.ts': 2, 'game.ts': 3, 'magic.ts': 3, 'perks/a.ts': 1, 'perks/c.ts': 2, 'perks/d.ts': 1, 'perks/e.ts': 2, 'perks/f.ts': 1 };
+const LEFT_HAND_COOLDOWNS: Record<string, number> = { 'classes/k.ts': 1, 'faith.ts': 2, 'perks/b.ts': 2 };
+const LEFT_AP_DELTAS: Record<string, number> = { 'faith.ts': 1, 'game.ts': 2, 'preview.ts': 1, 'world.ts': 1 };
 const AP = (rel: string) => rel === 'effects/cost.ts' || rel === 'effects/ap.ts';
 
 describe('F3: one way to price, check, pay and give AP', () => {
@@ -38,11 +44,50 @@ describe('F3: one way to price, check, pay and give AP', () => {
     // pool (g.story.ap, one door of its own: game.ts apLeft / spendAp), a fight ruling's record (fr)
     const NOT_A_UNIT = new Set(['ctx', 'g.story', 't.pv', 'out', 'fr', 'c']);
     const bad: string[] = [];
-    for (const f of FILES) { if (AP(f.rel)) continue; for (const m of f.code.matchAll(/([A-Za-z_][\w.!\]\)]*)\.ap\s*(\+=|-=|=(?!=))/g)) if (!NOT_A_UNIT.has(m[1])) bad.push(f.rel + ': ' + m[0]); }
+    for (const f of FILES) { if (AP(f.rel)) continue; for (const m of f.code.matchAll(/([A-Za-z_][\w.!\]\)]*)\.ap\s*(\+=|-=|\*=|\/=|\+\+|--|=(?!=))/g)) if (!NOT_A_UNIT.has(m[1])) bad.push(f.rel + ': ' + m[0]); }
     expect(bad).toEqual([]);
+    // the same write spelled another way (review): `--u.ap`, `Object.assign(u, { ap: … })`
+    expect(hits(/(\+\+|--)\s*[A-Za-z_][\w.!]*\.ap\b/, AP)).toEqual([]);
+    expect(hits(/Object\.assign\(\s*[A-Za-z_][\w.!]*\s*,\s*\{[^{}\n]*\bap\s*:/, AP)).toEqual([]);
+  });
+  it('RATCHET: a unit\'s AP is READ through whyNot() / canPay() / apFor() / apMeter() (never raise a number)', () => {
+    // The review showed the rules above only knew the old spellings: `u.ap <= 1`, `!(u.ap > 2)`, `const left = u.ap - 2`
+    // all passed. So every read of a unit's `.ap` outside effects/cost.ts and effects/ap.ts is COUNTED here, file by
+    // file, whatever is done with it. A unit is a receiver named as units are named in this engine (UNIT below; a cast
+    // `(u as any).ap` counts too). What is left: the AI asking "is it nearly out" (not a price), a turn's loop
+    // `u.ap > 0`, a preview measuring what a dry run took, a log line, a window's saved pool.
+    //   To ask "can it pay n":            canPay(cb, u, n) / whyNot(cb, u, n)      (they count Encore's and a Brief's credit)
+    //   "how much can it put toward it":  apFor(cb, u)                             (never u.ap: a credit pays first)
+    //   "what did that take":             const taken = apMeter(cb, u); …; taken()
+    // A NEW read fails here. Use one of the three; only if it really is none of them, raise the file's number in the
+    // same change and say why in the hand-off.
+    const UNIT = /(?:^|[.(\s])(?:u|t|v|e|x|f|me|ally|foe|target|unit|actor|who|by|src|caster|owner|mover|victim|holder|shooter|attacker|defender|u2|t2|v2|e2|u0|u1)[!?]*$|as any\)[!?]*$|\bunits?\b[^.]*$/;
+    const LEFT: Record<string, number> = LEFT_AP_READS;
+    const got: Record<string, number> = {};
+    for (const f of FILES) {
+      if (AP(f.rel)) continue; let n = 0;
+      for (const m of f.code.matchAll(/([A-Za-z_(][\w.!?\]\)\[' ]*?)\.ap\b(?![_(:\w])(?!\s*(\+=|-=|\*=|\/=|\+\+|--|=(?!=)))/g)) { const r = m[1].trim(); if (UNIT.test(r) && !/\bctx$|\bpv$/.test(r)) n++; }
+      if (n) got[f.rel] = n;
+    }
+    expect(got).toEqual(LEFT);
   });
   it('the refusal sentence is built in one place: needs(n) / whyNot() (no \'Needs \' + n + \' AP.\')', () => {
     expect(hits(/'Needs '\s*\+[^;\n]{0,60}' AP\b|['`]Needs \d+ AP\./, COST)).toEqual([]);
+  });
+  it('a price is asked WITH the fight: price({ cb, u }, …), so every unit\'s items and every engine listener hear the `cost` hook', () => {
+    // price({ u }, …) asks the unit's own items only (review: Reload, Analyze, a stim, Vent, a core change and every
+    // weapon row were priced that way inside the action, so an ally's item changed Prone and not Reload). A helper that
+    // prices takes the fight as its last argument (reloadAp(u, cb)) and passes it on; with no fight at hand it passes
+    // the `cb` it was given, which may be null (a card outside a fight).
+    expect(hits(/\b(?:price|priced)\(\s*\{(?![^{}]*\bcb\b)[^{}]*\}/, COST)).toEqual([]);
+    expect(hits(/\b(?:whyNot|canPay)\(\s*null\s*,/, COST).map((x) => x.split(':')[0])).toEqual(['ai-sigil.ts']); // a planner's sum, checked again by the action
+  });
+  it('a cost is measured with apMeter(), never as `ap0 - u.ap` (a Brief or Encore pays first and would be left out)', () => {
+    // what is left: the area map and a dry run on a copy (no reducer action, so no credit is open), Encore's own mark
+    const LEFT: Record<string, number> = LEFT_AP_DELTAS;
+    const got: Record<string, number> = {};
+    for (const f of FILES) { if (AP(f.rel)) continue; const n = [...f.code.matchAll(/\b(?:ap0|before|was|apMark|own|start)\b\s*-\s*[A-Za-z_][\w.!?]*\.ap\b|\.apMark\s*-\s*[A-Za-z_][\w.!?]*\.ap\b/g)].length; if (n) got[f.rel] = n; }
+    expect(got).toEqual(LEFT);
   });
   it('actionAp() is called by price() only', () => {
     expect(hits(/\bactionAp\(/, (rel) => rel === 'effects/cost.ts' || rel === 'effects/core.ts')).toEqual([]);
@@ -70,9 +115,13 @@ describe('F3: one way to price, check, pay and give AP', () => {
     // RATCHET. These are payments of MP, charge, cores, stims, spare parts and Echo still made by hand inside a run() or
     // a built-in verb (they have their own refusal words, or a price worked out in the action). Moving one to `res` or
     // spend() lowers its file's number here; a NEW hand-written payment raises it and fails. Never raise a number.
-    const LEFT: Record<string, number> = { 'classes/i.ts': 4, 'classes/j.ts': 4, 'classes/k.ts': 6, 'classes/rev3.ts': 1, 'combat.ts': 2, 'game.ts': 2, 'magic.ts': 3, 'perks/a.ts': 1, 'perks/c.ts': 1, 'perks/d.ts': 1, 'perks/e.ts': 2, 'perks/f.ts': 1 };
+    const LEFT: Record<string, number> = LEFT_RES_SPENT;
     const got: Record<string, number> = {};
-    for (const f of FILES) { if (COST(f.rel)) continue; const n = [...f.code.matchAll(/\.(mp|charge|cores)\s*(-=|--)|\.stims--|\.echo--|\.parts = \([^;\n]*- 1/g)].length; if (n) got[f.rel] = n; }
+    // Every resource of data/actions.json (its last path segment), spelled any of the ways a subtraction is spelled:
+    // `x.mp -= n`, `x.cores--`, `x.mp = x.mp - n`, `x.charge = Math.max(0, x.charge - n)`, `x.parts = (x.parts || 0) - 1`.
+    const R = '(' + [...new Set(Object.values(RESOURCES).map((r: any) => r.path.split('.').pop()))].join('|') + ')';
+    const SUB = new RegExp('\\.' + R + '!?\\s*(-=|--)|\\.' + R + '!?\\s*=(?!=)[^;\\n]{0,80}?\\.\\3\\b[^;\\n]{0,24}?\\s-\\s', 'g');
+    for (const f of FILES) { if (COST(f.rel)) continue; const n = [...f.code.matchAll(SUB)].length; if (n) got[f.rel] = n; }
     expect(got).toEqual(LEFT);
   });
 });
@@ -123,6 +172,18 @@ describe('F8: every limit and cooldown goes through uses() (effects/uses.ts)', (
       'physical/ranged/press.ts': 2, 'sigil.ts': 3, 'tactics.ts': 2 };
     const got: Record<string, number> = {};
     for (const f of FILES) { const n = [...f.code.matchAll(/[!=]== ?(cb|ctx\.cb|h\.cb!?|t\.cb|c)\.round\b|\b(cb|ctx\.cb|h\.cb!?|t\.cb)\.round ?[!=]==/g)].length; if (n) got[f.rel] = n; }
+    expect(got).toEqual(LEFT);
+  });
+  it('RATCHET: a cooldown or a per-turn stamp kept by hand (the review\'s spellings; never raise a number)', () => {
+    // The ratchet above only sees `=== cb.round`. These are the other ways the same thing is written:
+    //   a cooldown by subtraction      cb.round - st.last < 3        (the old prayedRound check)  ->  uses(h).cool(turns, key) / coolLeft
+    //   a cooldown by addition         st.last + 3 > cb.round                                      ->  the same
+    //   a stamp of the turn            st.t === cb.round + ':' + cb.turn, === turnKey(cb)          ->  uses(h).take('per_turn', n, key)
+    // uses.ts itself, and the one door of each counter that is not moved yet, are what is counted.
+    const RE = /\b(?:cb|ctx\.cb|h\.cb!?|t\.cb|g\.story)\.round\s*-\s*[\w.!?\[\]'()| ]+?\s*(?:<|>)=?|[\w.!?\]]+\s*\+\s*[\w.!?()]+\s*(?:<|>)=?\s*(?:cb|ctx\.cb|h\.cb!?|t\.cb|g\.story)\.round\b|[!=]==\s*(?:cb|ctx\.cb|h\.cb!?|t\.cb)\.round\s*\+\s*':'|[!=]==\s*turnKey\(|turnKey\([^)]*\)\s*[!=]==/g;
+    const LEFT: Record<string, number> = LEFT_HAND_COOLDOWNS;
+    const got: Record<string, number> = {};
+    for (const f of FILES) { if (f.rel === 'effects/uses.ts') continue; const n = [...f.code.matchAll(RE)].length; if (n) got[f.rel] = n; }
     expect(got).toEqual(LEFT);
   });
 });

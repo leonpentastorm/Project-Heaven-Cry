@@ -790,8 +790,10 @@ export type MoveHow = 'move' | 'sprint' | 'disengage' | 'sneak';
 export function canAffordTiles(u: Unit, tiles: number, how: MoveHow = 'move', cb?: Combat | null): boolean {
   if (how === 'sprint') return tiles <= Math.floor(3 * u.movement);
   if (how === 'disengage') return tiles <= 1;
-  // with the credit the move carries (Encore's repeat, a Brief): the route is chosen with the AP the move can really pay
-  return canPay(cb, u, apForTiles(tiles, u.bank || 0, u.movement) + (how === 'sneak' ? tiles : 0), { as: { type: 'combat/move', how } });
+  // In a fight, with the credit the move carries (Encore's repeat, a Brief): the route is chosen with the AP the move can
+  // really pay. On the area map a move is paid from the round's pool and no credit is ever opened.
+  const fight = cb && !cb.overworld ? cb : null;
+  return canPay(fight, u, apForTiles(tiles, u.bank || 0, u.movement) + (how === 'sneak' ? tiles : 0), fight ? { as: { type: 'combat/move', how } } : {});
 }
 /** The paths a move to `to` uses (rules 1.9, item 683): a player's unit (a character or a companion) goes around every
  * revealed hazard tile when that route is at most PILE.route_slack_tiles longer than the shortest AND the unit can still

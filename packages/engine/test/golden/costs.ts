@@ -355,6 +355,8 @@ export function recordCredit(T: Record<string, string>) {
     ['two-guns', { ...SHOOTER, weapon: 'service_pistol' }, (g) => { const u = pcs(g)[0]; u.offWeapon = 'service_pistol'; u.offAmmo = 3; u.offMags = [8, 8]; u.mags = [8, 8, 8]; charOf(g, u).offHand = { id: 'service_pistol' }; }],
     ['sigil', { ...EVEN(), classId: 'mage', kit: 'sigil' }], ['soul', { ...EVEN(), classId: 'channeler', kit: 'soul' }],
     ['even', { ...EVEN() }, (g) => { const c = charOf(g, pcs(g)[0]); c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.devotion = 7; }],
+    // Rounding Up reads what is left of the AP a glyph can draw on: its holder, at both tiers
+    ['rounding-up-1', { ...EVEN(), classId: 'mage', kit: 'sigil', perks: { rounding_up: 'I' } }], ['rounding-up-2', { ...EVEN(), classId: 'mage', kit: 'sigil', perks: { rounding_up: 'II' } }],
   ];
   for (const [name, spec, more] of sheets) {
     let g: any; try { g = padFight(spec); if (more) more(g); } catch (e: any) { T['credit/' + name + '/setup'] = 'THREW ' + why(e); continue; }
