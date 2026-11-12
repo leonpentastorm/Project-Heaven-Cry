@@ -470,7 +470,7 @@ eight places...); each was checked on the branch. The rest, by kind:
   Without Fog). The full-auto cone, high ground and the surprise round stay with items 1500 to 1502.
 - **Docs (24):** CLAUDE.md (Mother Ember's 10 + 3 × Devotion, the Hymn wait and Rebuke, Max MP and the Pump's MP,
   no `art/maps/`, the roster in force, the built Next steps struck; the working agreements untouched; the one-screen
-  section grew by about 600 characters), `docs/HANDOFF.md` (version, deploy from main, section 14's size, the checks
+  section grew by about 320 characters, to 7,754), `docs/HANDOFF.md` (version, deploy from main, section 14's size, the checks
   point at TESTING.md, the hotfix reading confirmed, the balance pass), `docs/ROADMAP.md` (the balance pass done in
   large part, the Bard's capstone done, the Outburst leads settled, the built product leads), `data/README.md` (the
   archetypes' cores, the missing files and the loading order), `data/CONVENTIONS.md` (op counts, the core
@@ -478,7 +478,7 @@ eight places...); each was checked on the branch. The rest, by kind:
 - **Comments (24):** the ones the second pass had not reached (ai-soul, game.ts, classes/k.ts, classes/i.ts,
   magic.ts, character.ts, faith.ts).
 - **Data (15) and player texts (10):** `rules.json` pray (no patron needed) and the Narrator's list (rules 1.6),
-  `scales_with` removed from the 39 prayer entries (read by nothing), Witnessed's card (the kill rule).
+  `scales_with` kept on the 16 prayers with a damage, heal or shield number and removed from the 23 without one (the spec: "never rounds, AP, half HP or full HP"; Rebuke's is pinned by a test), the Acuity and Improvisation EPCCG effect lines follow their per-point texts, Witnessed's card (the kill rule).
 - **Engine against the spec (6):** Together and the tags fixed (10.3); high ground, the surprise round and full auto
   are items 1500 to 1502; Quick's vacuous text is item 1513 (d).
 - **Never-run and placeholder tests (10):** all run now; see 10.7.
@@ -526,3 +526,12 @@ check, the sight leaks and the off quick command all run and pass. The strict co
 14. Item 1644: an allied non-character caster's MEND and WARD bases (character bases, as built).
 15. Item 1504: Mind Without Fog's pre-1.11 sheets (build the fallback or re-make them).
 16. Item 1510: Linger with Inverse leaves no field (PROVISIONAL).
+
+### 10.9 The gate on the day
+
+`python3 tools/validate.py data`: 0 errors. `npm run check`: validator, spec tables, screen data and both type checks
+ok; both suites red only with timeouts and timing tests, on a machine at load average 24 (other worktrees). Every
+failing file was re-run alone and passed: engine `maps`, `engine`, `balance/balance-sim` and the eleven others of the
+first list; web `fx/elements`, `fx/soul`, `narrator/longcampaign`, `combat-calls`, `combat-heart`, `combat-say`,
+`combat-screen`. Two real failures the full run found were fixed: the skeleton-perks test's EPCCG copy of the Acuity
+and Improvisation per-point lines, and Rebuke's `scales_with` (kept with the other number-carrying prayers).

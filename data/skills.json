@@ -1569,7 +1569,7 @@
           "Yes, yes, a watchmaker and a gunsmith aren't far apart. Lay every part of a pendulum clock on the table and odds are your brain starts shorting out. Guns are the same: picking one up and shooting is a world away from stripping every screw and putting it back. Anyone can read a clock, but how many can fix one? What you need is someone who sees every piece of the puzzle and joins them into one. Like me! Unless you use a digital clock or one of those toy guns from the carnival stalls, in which case: scram. Shoo, shoo."
         ],
         "intro": "Acuity is your grasp of complex mechanisms, from something as small as a stopwatch to something as huge as a transcontinental cannon. All of it can be taken apart by you.",
-        "effect": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it costs 1 AP, and at 5 it also shows the target's weak point.",
+        "effect": "−5% critical damage taken. Analyse reaches 1 tile further; at 3 points it is quicker (Quick Read), and at 5 it also shows the target's weak point.",
         "high_levels": "you see how everything works, man-made or not: a lock, a network, a crime scene, the way an enemy guards itself. That helps with a lot, but the first answer that fits is the one you keep, and you lose interest in anything that can't be taken apart, people included.",
         "good_for": "detectives, locksmiths, slicers, clockmakers, anyone who reads an enemy before the shooting starts.",
         "bad_for": "enchanters, party people, therapists, anyone who has to act before they understand.",
@@ -2421,7 +2421,7 @@
           "The manual says a servo-hand wants a clean bench, a calibrated driver and four hours. I had a ditch, a soup spoon, and as long as it takes an Ork to cross a field. He still has the hand. Plans are lovely things. I have had hundreds, and every one of them died in the first minute, most of them louder than I did. What you have after that is whatever is in your pockets, and how fast you stop mourning the plan. The spoon is still in there, by the way. Load-bearing. Nobody tell him."
         ],
         "intro": "Improvisation is what you do when the plan is gone: making the thing in front of you work with whatever is at hand, right now, and working out why later.",
-        "effect": "−10% ambush damage taken. Field Repair restores 5% more from 3 points up.",
+        "effect": "−10% ambush damage taken. Field Repair restores more for each point from 3 up.",
         "high_levels": "nothing catches you flat and nothing stays broken near you. But you stop making plans at all, and the people who depend on you can never tell what you will do next.",
         "good_for": "field mechanics, ditch medics, smugglers, anyone who performs for a living.",
         "bad_for": "planners, quartermasters, whoever signed for the equipment.",
