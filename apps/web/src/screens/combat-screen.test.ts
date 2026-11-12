@@ -281,8 +281,10 @@ describe('combat screen', () => {
     // number, which stalled the next turn card for ~6 s.
     const { _dryRun } = await import('./combat.js');
     const cb: any = { units: [{ id: 'u1', saves: {}, conds: {}, mg: null }], fx: [{ n: 1, k: 'turn' }], fxSeq: 1, glyphs: [], zones: [] };
-    const r = _dryRun(cb, 'u1', (c: any) => { (c.fx ||= []).push({ n: (c.fxSeq = (c.fxSeq || 0) + 1), k: 'draw' }); return null; });
-    expect(r.err).toBeNull();
+    const before = JSON.stringify(cb);
+    // (the dry run is the engine's now, preview.ts: it owns the copy; the game is the first argument)
+    const r = _dryRun(null, cb, 'u1', (c: any, u: any) => { (c.fx ||= []).push({ n: (c.fxSeq = (c.fxSeq || 0) + 1), k: 'draw' }); u.conds.burning = 2; (u.uses ||= {}).x = { s: 'c', n: 1 }; return null; });
+    expect(r.err).toBeNull(); expect(JSON.stringify(cb)).toBe(before); // nothing of the live fight is written: deeply equal
     expect(cb.fx).toEqual([{ n: 1, k: 'turn' }]);
     expect(cb.fxSeq).toBe(1);
   });

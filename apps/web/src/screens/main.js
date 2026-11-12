@@ -12,13 +12,13 @@ import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, in
 import { practiceView, feelingCodex, moduleGroups } from '../game/feelingsView';
 import { startOf } from '../game/starts';
 import { voiceState, speak, stopVoice, coreVoice, voiceChip, voicePrefs } from '../game/voice';
-import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, apForTiles, previewAttack, lineOfSight, effectiveRange, routeHazards, PICKUP_AP } from '@engine';
+import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, previewAttack, routeHazards, PICKUP_AP, moveOptions, reachOf, reachTiles, dryRun, withGame } from '@engine';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
 import { derivedLines } from '../game/derived';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
-import { previewPerkAction, bindGame, phys } from '@engine';
+import { previewPerkAction, phys } from '@engine';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
@@ -123,15 +123,8 @@ function magicNow(g, c) {
     charge: cu?.mg ? cu.mg.charge : c ? evoChargeNow(c) : 0, cores: cu?.mg ? cu.mg.cores || 0 : c ? coresCarried(c) : 0, /* Swap core loads only mg.cores; crystallised ones join after the fight */ mp: cu?.mg ? Math.round(cu.mg.mp) : c ? mpNow(c) : 0 };
 }
 /** Try an engine magic action on a throwaway copy of the story map's fight: the engine's refusal (or null) and the
- *  unit afterwards. The UI learns reasons and costs from the engine without computing a rule itself. */
-function dryMagic(cbx, uid, fn) {
-  const units = cbx.units.map((x) => ({ ...x, conds: x.conds ? { ...x.conds } : x.conds, mg: x.mg ? { ...x.mg, held: x.mg.held ? { ...x.mg.held } : null } : x.mg }));
-  const c = { ...cbx, units, log: [], notes: [], fx: [], glyphs: [...(cbx.glyphs || [])], zones: (cbx.zones || []).map((z) => ({ ...z, hit: { ...(z.hit || {}) } })) };
-  const u = units.find((x) => x.id === uid);
-  let err = null;
-  try { err = u ? fn(c, u, { state: 1 }) : 'No unit.'; } catch (e) { err = String((e && e.message) || e); }
-  return { err, u };
-}
+ *  unit afterwards. The copy, the bound game and the dice are the engine's (preview.ts dryRun). */
+const dryMagic = (g, cbx, uid, fn) => dryRun(g, cbx, uid, fn);
 /** Story and log lines about magic take their family's ink (paired with a ✧ or ♥ mark in the stream). */
 const SIG_LINE = /draws [A-Z]+ at|evokes [A-Z]|scuffs out|vents \d+ Flux|loads a fresh core|OVERLOAD|Sigil word|fades? at /, SOUL_LINE = /Outburst|releases [^:]+:|lets .+ go \(|syphons \d+ MP|crystallises a mana core|MANA SHORT|holds the Strain/;
 const magicInk = (t) => (SIG_LINE.test(t || '') ? SIGIL_INK : SOUL_LINE.test(t || '') ? SOUL_INK : '');
@@ -803,7 +796,7 @@ export class MainLogic extends DCLogic {
       else if (W === 'draw') {
         // Rules 1.4: on your own tile only; the engine says the cost and whether it starts, extends or breaks a Line.
         if (myAt) { mHi.reach.add(myAt); mHi.reachCol = SIG_CYAN; }
-        const was = bindGame(g), strip = (() => { try { return drawStrip(cbx, u, S.wStroke); } finally { bindGame(was); } })(); drawAll = strip.words; drawStroke = strip.stroke; const dw = wordSel ? drawAll.find((x) => x.id === wordSel) : null; drawInfo = dw;
+        const strip = withGame(g, () => drawStrip(cbx, u, S.wStroke)); drawAll = strip.words; drawStroke = strip.stroke; const dw = wordSel ? drawAll.find((x) => x.id === wordSel) : null; drawInfo = dw;
         mHint = !dw ? (myWords.length ? 'Pick a word.' : 'You know no Sigil words yet: learn one from an ally or a Sigil plate.') : !dw.ok ? 'Draw ' + dw.word + ': ' + dw.why
           : 'Click your own tile (' + refOf(myAt) + ') to draw ' + dw.word + ' (' + dw.cost.charge + ' charge, ' + dw.cost.ap + ' AP): it ' + dw.effectText + '.' + (dw.fades ? ' ' + dw.fades + ' fades (your cap).' : '')
             + ' The Evoker holds ' + MN.charge + ' charge. A spell is a straight Line of 2–4 glyphs: step to the next tile and draw again.' + (dw.overload ? ' WARNING: this glyph overloads your Evoker.' : '');
@@ -845,7 +838,7 @@ export class MainLogic extends DCLogic {
         mReady = !!(B && B.ok); mLabel = (B ? B.label + ' · ' + B.cost : 'Confirm');
         mHint = !wHp ? 'You hold no Outburst.' : B.ok ? B.title : B.label + ': ' + B.why;
       } else if (M_INSTANT.includes(W)) {
-        const run = { scuff: mgScuff, vent: mgVent, core: mgSwapCore, syphon: mgSyphon, crystallise: mgCrystallise }[W], why = dryMagic(cbx, u.id, (cc, uu) => run(cc, uu)).err;
+        const run = { scuff: mgScuff, vent: mgVent, core: mgSwapCore, syphon: mgSyphon, crystallise: mgCrystallise }[W], why = dryMagic(g, cbx, u.id, (cc, uu) => run(cc, uu)).err;
         const say = { scuff: 'Wipe out the glyphs on your own tile (1 AP).', vent: 'Let ' + MN.flux + ' Flux out of the Evoker into the air (1 AP): it thickens the mana.', core: 'Load a fresh core: charge back to ' + CORE_CHARGE + ' (2 AP, ' + MN.cores + ' spare).',
           syphon: 'Pull MP from the air (1 AP): about ' + Math.round(MN.band.syphon_mp * (u.mg?.syphon || 1)) + ' MP in ' + bandName(MN.band) + ' air; the air thins by 2.', crystallise: 'Crystallise a mana core out of the air (3 AP): needs mana 10 or more, and drops it by 10.' }[W];
         mHint = say + (why ? ' Not now: ' + why : ''); mReady = !why; mLabel = { scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', syphon: 'Syphon', crystallise: 'Crystallise' }[W] + ' · ' + { scuff: 1, vent: 1, core: 2, syphon: 1, crystallise: 3 }[W] + ' AP';
@@ -918,7 +911,7 @@ export class MainLogic extends DCLogic {
     // Move, Sprint and Sneak show the tiles you can reach this round (dashed) and, on hover, the path and its AP cost.
     // Shot, Aimed shot and Melee show the weapon's reach as a red grid around you: targets in it are outlined in red, the
     // rest dimmed, and hovering one shows the engine's hit chance and AP. All of it comes from the engine (paths,
-    // apForTiles, previewAttack, lineOfSight) on the story map as a throwaway fight; nothing here is a rule of its own.
+    // moveOptions, reachTiles, previewAttack) on the story map as a throwaway fight; nothing here is a rule of its own.
     const plan = { reach: new Set(), route: {}, hv: null, cost: '', red: new Map(), tgt: {}, info: '', isMove: false, isAtk: false, cross: new Set(), pile: null };
     const arrowsOf = (rr, from) => { rr.forEach((k, i) => { const p = i ? rr[i - 1] : from, [ax, ay] = p.split(',').map(Number), [bx, by] = k.split(',').map(Number); plan.route[p] = ARROWS[(bx - ax) + ',' + (by - ay)]; }); };
     const planOn = !!(S.area && mover && mover.hp > 0 && myAt && g.story.await === 'players' && !(g.story.ended || {})[mover.id]);
@@ -927,13 +920,16 @@ export class MainLogic extends DCLogic {
       if (cbx && u && ['move', 'sprint', 'sneak', 'drone', 'beast', 'twin'].includes(W)) {
         plan.isMove = true;
         if (!u.prone) {
-          const P = paths(cbx, u.pos, u.id), mvv = u.movement;
-          const costOf = (k) => (W === 'sprint' ? 2 : apForTiles(P.dist[k], 0, mvv) + (W === 'sneak' ? P.dist[k] : 0));
-          for (const k of Object.keys(P.dist)) { if (k === u.pos || (W === 'sprint' && (u.noSprint || P.dist[k] > Math.floor(3 * mvv)))) continue; if (costOf(k) <= u.ap) plan.reach.add(k); }
+          // Where the move may end and what each tile costs is the engine's answer (actions.ts moveOptions: the route,
+          // a Sprint's price and distance, the sneak's extra AP a tile, the items), asked once per state and action.
+          const how = W === 'sprint' ? 'sprint' : W === 'sneak' ? 'sneak' : 'move', mk = [u.id, u.pos, u.ap, W].join('|');
+          if (!this._wMove || this._wMove.g !== g || this._wMove.key !== mk) { let mo; try { mo = moveOptions(g, cbx, u.id, how, { world: ['move', 'sprint', 'sneak'].includes(W) }); } catch { mo = { tiles: {}, why: null, lend: 0 }; } this._wMove = { g, key: mk, ...mo }; }
+          const MO = this._wMove;
+          for (const k of Object.keys(MO.tiles)) plan.reach.add(k);
           const hv = S.hoverTile && plan.reach.has(S.hoverTile) ? S.hoverTile : null;
           // Rules 1.9 (item 683): the route the click takes goes around revealed hazards when it can (movePaths); the
           // preview marks every revealed hazard tile it still crosses, and says so.
-          if (hv) { const rh = routeHazards(cbx, u, hv, W === 'sprint' ? 'sprint' : W === 'sneak' ? 'sneak' : 'move'), tl = rh ? rh.tiles : P.dist[hv], cst = W === 'sprint' ? 2 : apForTiles(tl, 0, mvv) + (W === 'sneak' ? tl : 0), ct = crossesText(rh && rh.crosses);
+          if (hv) { const P = paths(cbx, u.pos, u.id), rh = routeHazards(cbx, u, hv, how), tl = MO.tiles[hv].tiles, cst = MO.tiles[hv].ap, ct = crossesText(rh && rh.crosses);
             plan.hv = hv; plan.cost = '−' + cst + ' AP · ' + tl + (tl === 1 ? ' tile' : ' tiles') + (ct ? ' · ⚠ HAZARD' : '');
             plan.info = (W === 'sprint' ? 'Sprint' : W === 'sneak' ? 'Sneak' : W === 'drone' ? 'The drone flies' : W === 'beast' ? 'The beast pads' : W === 'twin' ? 'The twin steps' : 'Move') + ' to ' + refOf(hv) + ': ' + tl + (tl === 1 ? ' tile' : ' tiles') + ', ' + cst + ' AP (' + u.ap + ' left).'
               + (ct ? ' ' + ct : rh && tl > P.dist[hv] ? ' The path goes around the revealed hazards (' + (tl - P.dist[hv]) + (tl - P.dist[hv] === 1 ? ' tile' : ' tiles') + ' longer).' : '');
@@ -944,13 +940,11 @@ export class MainLogic extends DCLogic {
         plan.isAtk = true;
         const mode = W, w0 = WEAPON[u.weapon] || WEAPON.fists, melee = isMelee(w0) || mode === 'melee', useW = mode === 'melee' && !isMelee(w0) ? WEAPON.fists : w0, fx = (w0.grants && w0.grants.effect) || {};
         // The reach the engine allows (previewAttack): melee 1 (2 for reach weapons); a gun out to three range bands (four with an optic).
-        const memoKey = g.v + '|' + mode + '|' + u.pos + '|' + u.weapon;
+        const memoKey = g.v + '|' + mode + '|' + u.pos + '|' + u.weapon + '|' + (u.mods || []).join(',');
         if (!this._redMemo || this._redMemo.key !== memoKey) {
-          const reachM = useW.properties?.includes('reach_2') || useW.id === 'lance' || (useW === w0 && fx.op === 'reach') ? (fx.op === 'reach' && useW === w0 ? fx.value : 2) : 1;
-          const optic = (u.mods || []).includes('mod_red_dot') || ((u.mods || []).includes('mod_scope') && mode === 'aimed') ? 1 : 0;
-          const maxR = melee ? reachM : effectiveRange(useW) * (3 + optic), red = new Map(), bandW = melee ? 0 : effectiveRange(useW);
-          // By range band: the first band reads strongest, the far ones fade (−2 to hit per band past the first).
-          for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) { const k = x + ',' + y; if (k === u.pos || solid.has(k)) continue; const d = dist(u.pos, k); if (d <= maxR && (melee || lineOfSight(cbx, u.pos, k))) red.set(k, bandW ? Math.max(0, Math.ceil(d / bandW) - 1) : 0); }
+          // By range band: the first band reads strongest, the far ones fade (−2 to hit per band past the first). How far
+          // it reaches is the engine's rule (actions.ts reachTiles: melee reach, the range bands, the optic).
+          const red = reachTiles(cbx, u, mode);
           this._redMemo = { key: memoKey, red };
         }
         plan.red = this._redMemo.red;
@@ -962,7 +956,7 @@ export class MainLogic extends DCLogic {
         const pvText = (t) => (!t ? '' : t.pv ? (t.pv.ok ? 'Hit ' + t.pv.pct + '% · need ' + t.pv.need + ' (you roll d20 ' + fmt(t.pv.toHit) + ') · ' + t.pv.ap + ' AP' + (t.pv.rangePenalty ? ' · range ' + t.pv.rangePenalty : '') + (t.pv.cover ? ' · behind half cover −5' : '') : t.pv.why) : t.inRange ? 'In reach: ' + attackApCost(useW, melee ? 'melee' : mode === 'aimed' ? 'aimed' : 'shot') + ' AP.' : 'Out of reach.');
         if (ht) { plan.hv = S.hoverTile; plan.cost = ht.pv && ht.pv.ok ? ht.pv.pct + '% · ' + ht.pv.ap + ' AP' : ht.inRange ? 'IN REACH' : 'OUT OF REACH'; plan.info = ht.name + ': ' + pvText(ht); }
         plan.selText = (k) => pvText(plan.tgt[k]);
-        plan.reachText = (melee ? 'Melee reach' : (useW.name || 'Weapon') + ' reach') + ': ' + (melee ? (plan.red.size ? 'the tiles next to you' : 'none') : 'up to ' + Math.round(effectiveRange(useW) * (3 + ((u.mods || []).includes('mod_red_dot') || ((u.mods || []).includes('mod_scope') && mode === 'aimed') ? 1 : 0))) + ' tiles in sight (−2 to hit per range band past ' + effectiveRange(useW) + ')') + '.';
+        const R = reachOf(cbx, u, mode); plan.reachText = (R.melee ? 'Melee reach' : (useW.name || 'Weapon') + ' reach') + ': ' + (R.melee ? (plan.red.size ? (R.max > 1 ? 'the tiles within ' + R.max + ' of you' : 'the tiles next to you') : 'none') : 'up to ' + Math.round(R.max) + ' tiles in sight (−2 to hit per range band past ' + R.band + ')') + '.';
       }
     }
     // Rules 1.9: Pick up on the area map. The clicked pile (or the one in reach, your own tile first) opens its checklist; a
@@ -1215,7 +1209,7 @@ export class MainLogic extends DCLogic {
     const wPk = wu ? perkEntries(g, scb(), wu, c, 'world') : [], wPkSel = parsePk(W), wPkE = wPkSel ? wPk.find((e) => e.id === wPkSel.id && e.actionId === wPkSel.actionId) || null : null;
     const wKlass = classOf(c);
     // Rules 1.9: a magazine gun's two reloads (speed: the magazine drops into the pile here; tactical: it goes in the pack) at the engine's costs.
-    const W_UTIL = wWa ? [...reloadItems(wu), ...['load', 'clear', 'repair'].map((id) => wWA(id)).filter(Boolean).map((a) => [a.id, a.label, a.ap + ' AP']), ...reloadBothItems(wu)].map((a) => [a[0], a[1], String(a[2]).replace(/ · the \w+ drops?$/, ' · drops').replace(/ · the \w+ goe?s? in your pack$/, ' · to your pack')]) // the narrow panel: short words (the hint says the rest)
+    const W_UTIL = wWa ? [...reloadItems(wu), ...['load', 'clear', 'repair'].map((id) => wWA(id)).filter(Boolean).map((a) => [a.id, a.label, a.ap + ' AP']), ...reloadBothItems(wu, scb(), g)].map((a) => [a[0], a[1], String(a[2]).replace(/ · the \w+ drops?$/, ' · drops').replace(/ · the \w+ goe?s? in your pack$/, ' · to your pack')]) // the narrow panel: short words (the hint says the rest)
       : [['reload', 'Reload', '2 AP'], ['load', 'Load a magazine', 'AP by rounds'], ['clear', 'Clear a jam', '2 AP'], ['repair', 'Field Repair', '2 AP']];
     const W_ITEMS = [
       ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile'],
@@ -1291,9 +1285,9 @@ export class MainLogic extends DCLogic {
       act(how === 'world' ? { type: 'world/act', charId: c.id, act: 'perk', id: e.id, actionId: e.actionId, ...args } : { type: 'story/perk', charId: c.id, id: e.id, actionId: e.actionId, ...args });
       this.setState({ pkOpen: null, pkForm: null, ...(S.wAct && parsePk(S.wAct) ? { wAct: null } : {}) }); };
     /** The engine's verdict on the action with these args (the same truth the reducer uses). */
-    const pvOf = (e, how, args) => { const was = bindGame(g);
-      try { return how === 'world' ? previewPerkAction({ u: wu, c, cb: scb(), g }, e.id, { ...args, actionId: e.actionId }, 'world') : previewPerkAction({ c, g }, e.id, { ...args, actionId: e.actionId }, 'story'); }
-      catch (err) { return { ok: false, why: String((err && err.message) || err), lines: [] }; } finally { bindGame(was); } };
+    const pvOf = (e, how, args) => {
+      try { return withGame(g, () => (how === 'world' ? previewPerkAction({ u: wu, c, cb: scb(), g }, e.id, { ...args, actionId: e.actionId }, 'world') : previewPerkAction({ c, g }, e.id, { ...args, actionId: e.actionId }, 'story'))); }
+      catch (err) { return { ok: false, why: String((err && err.message) || err), lines: [] }; } };
     const verbOf = (e) => (/^[a-z]+$/.test(e.actionId) ? e.actionId.charAt(0).toUpperCase() + e.actionId.slice(1) : e.label);
     const pkBtn = (on, off) => 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.45; ' : 'pointer; ') + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3');
     const soulChip = (on, off) => chipStyle(SOUL_VIOLET, on) + (off ? '; opacity: 0.45; cursor: default' : '');

@@ -742,8 +742,8 @@ export function canAffordTiles(u: Unit, tiles: number, how: MoveHow = 'move'): b
  * revealed hazard tile when that route is at most PILE.route_slack_tiles longer than the shortest AND the unit can still
  * pay for it this way (AP, or a sprint's 3 × Movement); otherwise, and for everyone else, the shortest (and the preview
  * warns what it crosses). Hidden hazards don't count (nobody knows them). */
-export function movePaths(cb: Combat, u: Unit, to: string, how: MoveHow = 'move') {
-  const P = paths(cb, u.pos, u.id);
+export function movePaths(cb: Combat, u: Unit, to: string, how: MoveHow = 'move', base?: ReturnType<typeof paths>) {
+  const P = base || paths(cb, u.pos, u.id); // base: the unit's shortest paths, when the caller already has them (actions.ts moveOptions asks for every tile)
   if (u.side !== 'pc' || P.dist[to] === undefined || !cb.hazards?.length) return P;
   const hz = revealedHazardTiles(cb, 'pc'); if (!hz.size) return P;
   if (!routeTo(P, u.pos, to).some((k) => k !== to && hz.has(k))) return P;
@@ -976,11 +976,22 @@ export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: n
 /** 'thrown' (rules 1.12): the held weapon is thrown: a ranged attack at throwing range with line of sight and cover,
  * whatever the weapon is; no rounds, Heat or Recoil. Only a technique makes one (physical/core.ts strike). */
 export type AttackMode = 'shot' | 'aimed' | 'melee' | 'burst' | 'auto' | 'thrown';
+/** A melee strike's reach in tiles before items change it: 2 for a weapon with reach_2, the lance, the Reach property
+ * (rules 1.12: for a melee strike) or a reach weapon skill; else 1. The one place the rule is written (previewAttack
+ * and the red area the client draws, actions.ts reachOf, both ask here). */
+export function meleeReachOf(att: Unit, mode: AttackMode): number {
+  const w = WEAPON[att.weapon], useW = strikeWeapon(att, mode), fx: any = (w as any).grants?.effect || {};
+  return useW.properties?.includes('reach_2') || useW.id === 'lance' || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1;
+}
+/** Range bands an optic adds against units (a red dot always; a scope on an aimed shot). */
+export const opticBands = (att: Unit, mode: AttackMode): number => (hasMod(att.mods, 'mod_red_dot') || (hasMod(att.mods, 'mod_scope') && mode === 'aimed') ? 1 : 0);
+/** The last range band a shot can still be made in (previewAttack refuses past it). */
+export const MAX_RANGE_BANDS = 3;
 export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, opts: { extra?: number; free?: boolean; noRecoil?: boolean; /** the attack is an ambush whatever the attacker's Hidden state (a technique's: its damage shows the Ambush multiplier) */ ambush?: boolean } = {}): AttackPreview {
   const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const fx: any = (w as any).grants?.effect || {};
   const ap0 = opts.free ? 0 : mode === 'burst' ? 3 : mode === 'auto' ? (fx.op === 'auto_ap' ? fx.value : 4) : mode === 'aimed' && fx.op === 'aimed_ap' ? fx.value : attackApCost(useW, mode === 'aimed' ? 'aimed' : mode === 'melee' ? 'melee' : 'shot');
-  const baseReach = melee ? (useW.properties?.includes('reach_2') || useW.id === 'lance' || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1) : 0; // rules 1.12: the Reach property, for a melee strike
+  const baseReach = melee ? meleeReachOf(att, mode) : 0;
   // Items see the attack before it is checked: AP (ctx.ap), reach (ctx.reach), cover (ctx.ignoreCover), extra to-hit
   // terms (ctx.terms), or a refusal (ctx.fail). ctx.preview is true: handlers must not change state here.
   const hk: any = { att, tgt, mode, melee, ap: ap0, reach: baseReach, ignoreCover: false, terms: [] as Term[], fail: null as string | null, free: !!opts.free, noRecoil: !!opts.noRecoil, volley: VOLLEY, preview: true, cb, mods: cb.mods || [], seeVeil: false, noLos: false, coverTile: null as string | null, coverWhy: '', ignoreTaunt: false, bandsLess: 0 };
@@ -1009,8 +1020,8 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   if (thrown && r > throwRangeOf(att)) return fail('Out of throwing range (' + throwRangeOf(att) + ' tiles).');
   // hk.noLos: an indirect shot over full cover (Lob with an Arc weapon, rules 1.12): someone on the side must still see the target
   if (!melee && !hk.noLos && !lineOfSight(cb, att.pos, tgt.pos, !!hk.seeVeil)) return fail('No line of sight.');
-  const eff = effectiveRange(useW), optic = hasMod(att.mods, 'mod_red_dot') || (hasMod(att.mods, 'mod_scope') && mode === 'aimed') ? 1 : 0, bands = melee || thrown ? 0 : Math.max(0, Math.ceil(r / eff) - 1 - optic - Math.max(0, hk.bandsLess || 0)); // hk.bandsLess: range bands an item or technique ignores (Bead, Spot)
-  if (bands > 2) return fail('Out of range.');
+  const eff = effectiveRange(useW), optic = opticBands(att, mode), bands = melee || thrown ? 0 : Math.max(0, Math.ceil(r / eff) - 1 - optic - Math.max(0, hk.bandsLess || 0)); // hk.bandsLess: range bands an item or technique ignores (Bead, Spot)
+  if (bands > MAX_RANGE_BANDS - 1) return fail('Out of range.');
   // hk.coverTile: an item names a half-cover tile that protects the target although it doesn't face the shot (Eyes in
   // the Back): it counts as the cover, so a miss by its margin hits it.
   const facing = melee ? null : coverTileFor(cb, att.pos, tgt.pos), coverTile0 = facing || hk.coverTile || null, coverTile = hk.ignoreCover || (useW.properties || []).includes('ignores_half_cover') ? null : coverTile0, cover = coverTile ? 5 : 0;
@@ -1475,22 +1486,37 @@ export function moveBlock(u: Unit): string | null {
  * not only at the end. A walk cut short (a trap, a reaction that Downs or Pins you, a handler) keeps the tiles not
  * walked in the turn's bank. Sprint is once per turn. Afraid units can't move closer to what they fear. */
 /** o.shortest: the plain shortest path (the Narrator's own moves; rules 1.9 routes only a player's click-path around hazards). */
-export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: { shortest?: boolean; via?: { dist: Record<string, number>; prev: Record<string, string> }; /** A step that is part of something already paid for (a technique's step, rules 1.12): 0 AP and no opportunity attacks (unless oa), told to the items before they price the move. */ free?: boolean; oa?: boolean; /** A paid walk that is a technique's own run (Charge's): priced and walked as any move, but it costs no Momentum. */ part?: boolean } = {}): string | null {
+/** Why this unit can't Sprint or Disengage at all right now, whatever the tile (or null): one Sprint a turn, armour
+ * and items that forbid it. movePlan() and the action list's rows (actions.ts) both ask. */
+export function moveHowBlock(u: Unit, how: 'move' | 'sprint' | 'disengage'): string | null {
+  if (how === 'disengage') { const f = forbids({ u }, 'disengage'); if (f) return f + ': you never Disengage.'; }
+  if (how === 'sprint') {
+    if (u.noSprint) return 'Overburdened or in Juggernaut armour: no Sprint.';
+    if (u.sprinted) return 'One Sprint a turn.';
+    { const f = forbids({ u }, 'sprint'); if (f) return f + ': no Sprint.'; }
+  }
+  return null;
+}
+/** How far a Sprint goes: 3 × Movement, in whole tiles. */
+export const sprintTiles = (u: Unit) => Math.floor(3 * u.movement);
+/** A move as the engine would make it, before anything is paid or walked: its refusal in words, or its route and its
+ * price after the items have priced it ('move_cost'). moveUnit() makes exactly this move; actions.ts moveOptions() asks
+ * it for every tile, on a throwaway copy (some items count a use as they price a move), with o.preview set. */
+export interface MovePlan { ap: number; /** the move's own price, before a free step or an item changed it */ ap0: number; tiles: number; route: string[]; mc: any; P: ReturnType<typeof paths> }
+export type MoveOpts = { shortest?: boolean; via?: { dist: Record<string, number>; prev: Record<string, string> }; /** A step that is part of something already paid for (a technique's step, rules 1.12): 0 AP and no opportunity attacks (unless oa), told to the items before they price the move. */ free?: boolean; oa?: boolean; /** A paid walk that is a technique's own run (Charge's): priced and walked as any move, but it costs no Momentum. */ part?: boolean } & { /** a dry run (told to the items on 'move_cost') */ preview?: boolean; /** the unit's shortest paths, already worked out */ base?: ReturnType<typeof paths> };
+export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint' | 'disengage' = 'move', o: MoveOpts = {}): MovePlan | string {
   const blk = moveBlock(u); if (blk) return blk;
   // o.via: paths the caller already chose (the area map's sneak prices its detour with the sneak's extra AP).
-  const P = o.via || (o.shortest ? paths(cb, u.pos, u.id) : movePaths(cb, u, to, how)); // rules 1.9: a player's click-path goes around revealed hazards (item 683)
+  const P = o.via || (o.shortest ? o.base || paths(cb, u.pos, u.id) : movePaths(cb, u, to, how, o.base)); // rules 1.9: a player's click-path goes around revealed hazards (item 683)
   const tiles = P.dist[to];
   if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
   { const fs = condSource(u, 'fear'), f = fs ? cb.units.find((x) => x.id === fs) : null; if (f && !f.dead && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Afraid of ' + f.name + ': you can\'t move toward them.'; }
   // Threatened (a Call, rules 1.13): on its next turn it can't move toward the one who threatened it.
   { const cw = u.call?.cowed, f = cw ? cb.units.find((x) => x.id === cw.by) : null; if (f && alive(f) && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Threatened by ' + f.name + ': you can\'t move toward them this turn.'; }
   let ap: number;
-  if (how === 'disengage') { const f = forbids({ u }, 'disengage'); if (f) return f + ': you never Disengage.'; }
+  { const no = moveHowBlock(u, how); if (no) return no; }
   if (how === 'sprint') {
-    if (u.noSprint) return 'Overburdened or in Juggernaut armour: no Sprint.';
-    if (u.sprinted) return 'One Sprint a turn.';
-    { const f = forbids({ u }, 'sprint'); if (f) return f + ': no Sprint.'; }
-    if (tiles > Math.floor(3 * u.movement)) return 'Too far to sprint (' + Math.floor(3 * u.movement) + ' tiles).'; ap = actionAp({ u }, 'sprint', 2).ap;
+    if (tiles > sprintTiles(u)) return 'Too far to sprint (' + sprintTiles(u) + ' tiles).'; ap = actionAp({ u }, 'sprint', 2).ap;
   }
   else if (how === 'disengage') { if (tiles > 1) return 'Disengage moves 1 tile.'; ap = actionAp({ u }, 'disengage', 1).ap; }
   else ap = apForTiles(tiles, u.bank, u.movement);
@@ -1499,9 +1525,14 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   // (ap mutable; free: the tiles are not banked against; skipOA/skipOW: no opportunity attacks / no Overwatch).
   const ap0 = ap; // the move's own price, before a free step or an item changes it
   if (o.free) ap = 0;
-  const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: !!o.free && !o.oa, skipOW: false, free: !!o.free, cb, mods: cb.mods || [] });
+  const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: !!o.free && !o.oa, skipOW: false, free: !!o.free, cb, mods: cb.mods || [], ...(o.preview ? { preview: true } : {}) });
   ap = o.free ? 0 : Math.max(0, mc.ap); // a free step stays free whatever the ground adds (the items were told it is free before they priced it)
   if (ap > u.ap) return 'Needs ' + ap + ' AP.';
+  return { ap, ap0, tiles, route, mc, P };
+}
+export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: MoveOpts = {}): string | null {
+  const pl = movePlan(cb, u, to, how, o); if (typeof pl === 'string') return pl;
+  const { ap, ap0, tiles, route, mc, P } = pl;
   const from = u.pos, bank0 = u.bank;
   u.ap -= ap; if (how === 'sprint') u.sprinted = true; u.braced = false; u.moved = true;
   if (condOn(u, 'emplaced')) endCond(u, 'emplaced', cb);
@@ -2018,10 +2049,12 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
 }
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
 export const analyzeCost = (u: Unit) => actionAp({ u }, 'analyze', (u.analysis || 0) >= 3 ? 1 : 2).ap;
+/** How far Analyze reads: 4 tiles + Analysis. */
+export const analyzeRange = (u: Unit) => 4 + (u.analysis || 0);
 export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   if (t.side !== 'foe' || t.dead) return 'Pick a living enemy.';
   if (t.analyzedBy) return t.name + ' is already analyzed.';
-  const cost = analyzeCost(u), range = 4 + (u.analysis || 0);
+  const cost = analyzeCost(u), range = analyzeRange(u);
   if (u.ap < cost) return 'Needs ' + cost + ' AP.';
   if (dist(u.pos, t.pos) > range) return 'Out of Analyze range (' + range + ' tiles).';
   if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';

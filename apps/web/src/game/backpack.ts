@@ -6,7 +6,7 @@
 //
 // In a fight the ammo lives on the unit (u.mags, u.loose, u.offMags, u.extra, u.throwables, u.parts): c.pack is only
 // written back at the end of the fight or on a gear change, so those numbers are read from the unit.
-import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, bindGame } from '@engine';
+import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, withGame } from '@engine';
 
 export interface BpAct { key: string; label: string; cost: string; off: boolean; why: string; action: any }
 /** item: the weapon, armour or shield the row is (its icon, gearIcons.ts); absent for ammo, stims and the rest. */
@@ -26,8 +26,7 @@ const typed = (n: number, cap: number, t?: string | null) => n + '/' + cap + (t 
 export function backpackView(g: any, cb: any, u: any, mine: boolean, hold = ''): Backpack | null {
   if (!g || !cb || !u || !u.charId || u.companion) return null;
   const c = g.characters?.[u.charId]; if (!c) return null;
-  const was = bindGame(g);
-  try { return build(g, cb, u, c, mine, hold); } finally { bindGame(was); }
+  return withGame(g, () => build(g, cb, u, c, mine, hold));
 }
 
 function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Backpack {

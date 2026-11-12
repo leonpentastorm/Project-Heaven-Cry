@@ -108,10 +108,15 @@ export function reveal(cb: Combat, u: Unit, why: string): string {
   return ' · revealed';
 }
 /** The Hide action (2 AP, provisional): only out of every enemy's sight, never while Marked. */
-export function hideAction(cb: Combat, u: Unit): string | null {
+/** Why this unit can't Hide now, whatever its AP (or null): the Hide action and its row in the action list both ask. */
+export function hideBlock(cb: Combat, u: Unit): string | null {
   if (u.hidden) return 'Already Hidden.';
   if (condOn(u, 'marked')) return 'Marked: you can\'t hide.';
   if (seenByFoes(cb, u)) return 'An enemy can see you: get out of sight first.';
+  return null;
+}
+export function hideAction(cb: Combat, u: Unit): string | null {
+  { const no = hideBlock(cb, u); if (no) return no; }
   const ap = actionAp({ u }, 'hide', 2).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
   u.ap -= ap; cb.log.push(u.name + ' goes to ground' + hide(cb, u) + '.'); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' });
   return null;
