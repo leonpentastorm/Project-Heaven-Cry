@@ -118,6 +118,14 @@ export const SITUATIONS: [string, (g: any, cb: any) => any, any?][] = [
   ['hide', (g) => reduce(g, { type: 'combat/hide', unitId: P(g.combat).id })],
   ['shove', (g, cb) => reduce(g, { type: 'combat/shove', unitId: P(g.combat).id, targetId: F(cb).id })],
   ['prices', (g, cb) => { const u = P(cb), out: string[] = []; for (const s of COST_SITES) { try { out.push(s + A.price({ cb, u }, s).ap); } catch { out.push(s + '?'); } } cb.log.push('PRICES ' + out.join(' ')); }],
+  // added before batch 2 (the items it moves needed them; recorded on the engine before they moved)
+  ['prices2', (g, cb) => { const u = P(cb), out: string[] = []; for (const s of A.COST_SITE_IDS) { if (COST_SITES.includes(s)) continue; try { out.push(s + A.price({ cb, u }, s).ap); } catch { out.push(s + '?'); } } cb.log.push('PRICES ' + out.join(' ')); }],
+  ['stats', (g, cb) => { const u = P(cb), out: string[] = []; for (const s of [...Object.keys(A.STATS), 'one_hand_heavy', 'throw_range', 'reactions', 'never_jams', 'push_tiles', 'carry', 'move', 'vision']) { const q = A.statQuery({ u, cb }, s); if (q.add || q.mult !== 1) out.push(s + ':' + q.add + 'x' + q.mult); } cb.log.push('STATS ' + out.join(' ')); }],
+  ['glyph-costs', (g, cb) => { const u = P(cb); if (!u.mg) return; const out: string[] = []; for (const w of ['fire', 'shock', 'freeze', 'stone', 'acid', 'spark', 'gale', 'blind', 'slow', 'muddle']) { try { const c = A.glyphCost(cb, u, w, true); out.push(w + ':' + c.ap + '/' + c.charge + '/' + c.flux); } catch { out.push(w + '?'); } } cb.log.push('GLYPHS ' + out.join(' ')); }],
+  ...['fear', 'nausea'].map((id) => ['cond-in-' + id + '-nosave', (g: any, cb: any) => { A.applyCond(cb, g.rng, F(cb), P(cb), id, undefined, undefined, { skipSave: true }); }] as [string, any]),
+  ['ally-afraid-turn', (g, cb) => { A.applyCond(cb, g.rng, F(cb), Q(cb), 'fear', 2, undefined, { skipSave: true }); cb.turn = cb.order.indexOf(Q(cb).id); A.beginTurn(cb, g.rng); }],
+  ['taken-bloodied', (g, cb) => { P(cb).hp = Math.ceil(P(cb).maxHp * 0.3); return foeAttack(cb, g.rng, FAR(cb), P(cb)); }],
+  ['taken-then-turn', (g, cb) => { foeAttack(cb, g.rng, FAR(cb), P(cb)); cb.round = 2; cb.turn = cb.order.indexOf(P(cb).id); A.beginTurn(cb, g.rng); }],
 ];
 
 /** The item sweep's fight (record.ts itemFight), with what a situation needs on the ground: ammo in hand, a second weapon. */
