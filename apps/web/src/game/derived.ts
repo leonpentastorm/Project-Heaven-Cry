@@ -21,7 +21,7 @@ export function derivedLines(c: Character): DerivedLine[] {
   return [
     { key: 'hp', k: 'Max HP', v: String(maxHp(c)), from: at('endurance') },
     { key: 'hp_level', k: 'HP per level', v: '+' + hpPerLevel(c), from: sk('pain_threshold') },
-    { key: 'mp', k: 'Max MP', v: String(maxMp(c)), from: at('virtue') },
+    { key: 'mp', k: 'Max MP', v: String(maxMp(c)), from: at('determination') + ' and ' + at('insight') }, // rules 1.24 (it was Virtue)
     { key: 'defense', k: 'Defense', v: String(defense(c)), from: sk('athletics') },
     { key: 'init', k: 'Initiative', v: signed(initiativeBonus(c)), from: and(at('agility'), sk('reaction_speed')) },
     { key: 'move', k: 'Movement', v: movement(c) + ' tiles per AP', from: at('agility') },

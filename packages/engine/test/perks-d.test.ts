@@ -317,6 +317,7 @@ describe('Heretic', () => {
 describe('True Believer', () => {
   it('the prayer cooldown is a turn shorter; a story miracle once a session; missed rites cost Faith rolls', () => {
     const f = soulFight({}, { traits: ['true_believer'], skills: { faith: 3 } }); const c = charOf(f.g, f.pc);
+    c.attrs.virtue = 3; // rules 1.24: the Stormcaller preset no longer holds Virtue 3 (its spare points left Virtue with Max MP)
     c.patron = PATRONS[0].id; f.g.rng.state = rngFor(15).state;
     f.act({ type: 'combat/pray', unitId: f.pc.id, choice: PATRONS[0].blessings[0].id });
     // rules 1.22: the wait itself is a round shorter (it was a round taken off the last Hymn's mark); never under 2

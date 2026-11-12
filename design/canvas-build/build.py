@@ -33,9 +33,9 @@ ATTR_FX = {
     "perception": "Vision range and critical damage",
     "intelligence": "Sigil words per spell and Sigil damage",
     "expression": "Sigil AP cost and elemental damage",
-    "insight": "Healing given and Soul spell cost",
-    "determination": "Soul damage and Mana Syphon",
-    "virtue": "Max MP and prayer cooldown",
+    "insight": "Healing given, Soul spell cost and some Max MP",
+    "determination": "Soul damage, Max MP and Mana Syphon",
+    "virtue": "Prayer cooldown",
 }
 CORE_TEXT = {
     "body": ["Muscle, blood, and how well you command your own flesh.", "Endurance · Strength · Agility", "Runs on ammo, weapons and tech"],

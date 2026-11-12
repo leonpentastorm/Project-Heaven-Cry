@@ -1,7 +1,7 @@
 // Outburst 2.0 on screen (game/heartView.ts): design cards with a shape icon and their line, the HEART panel's costs
 // and refusals (the engine's), the grid preview that tells an area from a bolt, and the cut-in's top commands.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, type Sheet, newCharacter, startCombat, beginOutburst, pumpOutburst, releaseOutburst } from '@engine';
+import { ARCHETYPES, type Sheet, newCharacter, startCombat, beginOutburst, pumpOutburst, releaseOutburst, previewPump } from '@engine';
 import { formIconSvg, designInfo, designCards, heartPanel, heartVals, aimOverlay, idleOverlay, overlayTileStyle, designVerdict, toneChips, FORMS } from './heartView';
 import { smartCommands, actionGroups } from './commands';
 
@@ -166,7 +166,8 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     expect(p.overdraw).toMatch(/^Overdraw is ready this turn\. This Pump adds 2 stages\. Your first Overdraw of the fight costs no Strain\.$/);
     expect(p.pump.title).toMatch(/^A plain Pump: stage 0 → 1 .*Overdraw is ready this turn/);
     p = heartPanel(cb, u, [OD])!;
-    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP' }); expect(p.pump.title).toMatch(/^An Overdraw Pump: stage 0 → 2 \(×1\.2\)\. Overdraw: 2 stages\. No Strain: your first Overdraw of the fight\.$/);
+    // rules 1.24: both of its stages cost MP (10% + 20% of the Begin's 17: 5)
+    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP · 5 MP', mp: 5 }); expect(p.pump.title).toMatch(/^An Overdraw Pump: stage 0 → 2 \(×1\.2\)\. It takes 5 MP \(you have 383\)\. Overdraw: 2 stages\. No Strain: your first Overdraw of the fight\.$/);
     expect(p.stages.find((x) => x.next)!.n).toBe(2); // the meter marks the stage this Pump reaches
     // Used this turn: the panel says why it isn't there; next turn it is ready again, now for 1 Strain.
     cb.mods = [OD]; pumpOutburst(cb, rng, u); delete cb.mods; u.mg.held.stage = 1;
@@ -174,6 +175,26 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     cb.round += 1;
     expect(heartPanel(cb, u)!.overdraw).toMatch(/^Overdraw is ready this turn\. This Pump adds 2 stages\. You take 1 Strain after it\.$/);
     expect(heartPanel(cb, u, [OD])!.pump.title).toMatch(/stage 1 → 3 .*You take 1 Strain after it\./);
+  });
+  it('rules 1.24: the Pump button shows the MP the Pump will take, from the engine; a free Pump still owes it; short of MP it says so', () => {
+    const { cb, u } = withPerks({}, 2); beginOutburst(cb, rng, u, 'sb', undefined, true); // Soul Bolt: 17 MP for this caster
+    let p = heartPanel(cb, u)!;
+    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP · 2 MP', mp: previewPump(cb, u).mp }); expect(p.pump.mp).toBe(2);
+    expect(p.pump.title).toBe('A plain Pump: stage 0 → 1 (×1). It takes 2 MP (you have 383).');
+    u.mg.freePumps = 1; u.mg.freePumpsMax = 1; // Empathy's free Pump: no AP, the MP is still owed
+    p = heartPanel(cb, u)!;
+    expect(p.pump).toMatchObject({ ok: true, free: true, cost: '0 AP · 2 MP' }); expect(p.pump.title).toBe('A plain Pump: stage 0 → 1 (×1). This is your free Pump for this turn: it costs no AP, and 2 MP (you have 383).');
+    expect(heartVals(p, () => {}).btns!.find((b: any) => b.key === 'pump')!.cost).toBe('0 AP · 2 MP');
+    expect(p.feelings.every((f) => !f.ok || f.cost === '0 AP · 2 MP')).toBe(true); // a feeling Pump costs the same
+    pumpOutburst(cb, rng, u); expect(u.mg.mp).toBe(381);
+    expect(heartPanel(cb, u)!.pump).toMatchObject({ cost: '1 AP · 3 MP', mp: 3 }); // stage 2: 20% of the Begin
+    u.mg.mp = 2;
+    p = heartPanel(cb, u)!;
+    expect(p.pump).toMatchObject({ ok: false, why: 'A Pump to stage 2 needs 3 MP (2): Syphon first, or Release what you hold.' });
+    expect(heartVals(p, () => {}).btns!.find((b: any) => b.key === 'pump')!.cost).toMatch(/^✕ A Pump to stage 2 needs 3 MP/);
+    expect(p.revert.title).toMatch(/the AP, MP and Strain it cost/);
+    u.mg.emanator = false; u.mg.mp = 0; // no Emanator in hand: the heart draws on the air, and a Pump takes no MP
+    expect(heartPanel(cb, u)!.pump).toMatchObject({ ok: true, cost: '1 AP', mp: 0 });
   });
   it('a character without Overdraw has no Overdraw line', () => {
     const { cb, u } = withPerks({}, 2); beginOutburst(cb, rng, u, 'sb', undefined, true);

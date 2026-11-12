@@ -188,7 +188,7 @@ describe('the points step: what the next point gives', () => {
     const v = screen().renderVals();
     expect(attrOf(v, 'endurance').next).toBe('Next point: +15 max HP, +10% chance to ignore an injury.');
     expect(attrOf(v, 'agility').next).toBe('Next point: +0.5 tile of movement an AP, +1 Initiative.');
-    expect(attrOf(v, 'virtue').next).toBe('Next point: +100 max MP, Hymns come back a little sooner.');
+    expect(attrOf(v, 'virtue').next).toBe('Next point: Hymns come back a little sooner.'); // rules 1.24: Max MP left Virtue
     expect(attrOf(v, 'endurance').upAria).toBe('Raise Endurance from 1 to 2 for 1 Attribute point. Gives +15 max HP, +10% chance to ignore an injury.');
   });
   it('a skill shows the roll it gives (the engine\'s check modifier) and the data\'s per-point text', () => {

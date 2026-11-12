@@ -6,7 +6,7 @@
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
 import { inverseShield, outburstHeal, SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
-  previewOutburst, previewOutburstPlan, previewPump, togglesFor, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
+  previewOutburst, previewOutburstPlan, previewPump, pumpsMp, togglesFor, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
 import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, type FeelingBtn } from './feelingsView';
 import { heldOutburstOf } from './resources';
@@ -117,6 +117,7 @@ export function dryHeart(cb: any, uid: string, fn: (c: any, u: any) => string | 
 
 // ---------- the combat Outbursts tab, not holding: design cards with Begin and Snap ----------
 export interface DesignCard extends DesignInfo { beginAp: number; snapAp: number; beginWhy: string; snapWhy: string; canBegin: boolean; costText: string;
+  /** Rules 1.24: the MP of the Begin and four Pumps (a full heart); the Begin's alone when Pumps take none. */ fullMp: number;
   /** Heart Overload (rules 1.14): right after a Release at stage 2 or higher, this design may Begin again for 0 AP.
    * `again` is the card's line for it ('' when it isn't offered here); `bloodHp` the HP the Begin costs when the mana is short. */
   again: string; bloodHp: number }
@@ -142,10 +143,13 @@ export function designCards(cb: any, u: any): DesignCard[] {
     const plainAp = d.modules.includes('swift') ? SOUL_AP.swiftBegin : SOUL_AP.begin;
     const free = offered && b.ap === 0 && withMods(cb, ['!' + HO_AGAIN], () => previewOutburst(cb, u, d.id, undefined, false)).ap > 0;
     const beginAp = free ? 0 : b.ap || plainAp, snapAp = sn.ap || plainAp + SOUL_AP.release, bloodHp = free ? b.hp || 0 : 0;
+    const fullMp = bloodHp ? 0 : (b.cost || 0) + pumpsMp(u, MAX_STAGE, 0, b.cost || 0);
     const again = free ? 'Heart Overload: Begin ' + info.name + ' again for 0 AP' + (bloodHp ? '. You don\'t have the mana: it costs ' + bloodHp + ' HP, and it can\'t heal or shield' : '') + '.' : '';
     return { ...info, mp: bloodHp ? 0 : b.cost || info.mp, beginAp, snapAp, beginWhy: b.ok ? '' : b.why || 'Not now.', snapWhy, canBegin: !!b.ok, again, bloodHp,
       costText: (free ? 'Heart Overload: Begin again 0 AP' + (bloodHp ? ' · ' + bloodHp + ' HP for the mana' : '') : 'Begin ' + beginAp + ' AP' + (d.modules.includes('swift') ? ' (Swift)' : ''))
-        + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain' };
+        + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain'
+        // rules 1.24: what a full heart of it comes to (the Begin and its four Pumps), when Pumps take MP
+        + (fullMp > (b.cost || 0) ? ' · full heart ' + fullMp + ' MP' : ''), fullMp };
   });
 }
 
