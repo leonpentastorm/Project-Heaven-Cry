@@ -22,15 +22,11 @@ that can do a piece; no more than two pieces running at once; a reviewer only wh
 - **In flight, each on a local branch in a git worktree** (`git worktree list`,
   `git branch --list 'worktree-*'`). In a fresh container use the `wip/` copies; only if a piece has none, redo it from the brief in section 5.
 
-| Piece | Branch prefix | State when this was written |
+| Piece | Branch | State when this was written |
 | --- | --- | --- |
-| Wave 2: costs and counters (review 1: F3, F8) | `worktree-wf_62a78fa1-aaf-*` | building |
-| Wave 2: conditions (review 1: F4) | `worktree-wf_62a78fa1-aaf-*` | building |
-| Wave 2: fog in the engine (review 4: 4) | `worktree-wf_62a78fa1-aaf-*` | building |
-| Browser suites clean-up (review 3: row 10) | `worktree-wf_bff3748c-24c-*` | building |
+| Browser suites clean-up (review 3: row 10) | `worktree-wf_bff3748c-24c-*` (remote: `wip/worktree-wf_bff3748c-24c-1`) | building |
 
-Branches whose names start `worktree-agent-…`, `worktree-wf_15b947ef…` and `worktree-wf_67430118…` are **already
-merged**; leave them.
+Every other `worktree-…` branch is **already merged** (wave 1, wave 2, the sweep, performance); leave them.
 
 ## 3. How to take in a branch (the lead's routine)
 
@@ -71,7 +67,7 @@ not push, and to report the branch name. Hand long lists to an agent as a **file
 
 ## 4. What is left, in order (tick as you go)
 
-- [ ] **Wave 2** merged: costs and counters, conditions, fog in the engine.
+- [x] **Wave 2** merged (12 Nov): costs and counters, conditions, fog in the engine. Left over from it, for wave 3: the fight log still reaches every player whole (spec item 1600 a: do it with the effects schema); about half the counters and 28 resource payments are still by hand (ratcheted by `lint-costs`; they ride on item ops).
 - [ ] **Browser suites** clean-up merged (every suite in a group or deleted; timing checks made load-proof).
 - [ ] **Wave 3** (PLAN.md has the table; the reviews have the detail). Cheapest order:
   1. Item ops (review 1: F5): `when` / `if` / `limit` and about nine generic ops so most of the 310 per-item
