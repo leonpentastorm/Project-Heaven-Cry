@@ -672,6 +672,51 @@ if wp:
     if "light_armour" in acts and gr.get("light_armour_max_kg") is not None and acts["light_armour"].get("max_kg") != gr.get("light_armour_max_kg"):
         errors.append("rules: action light_armour max_kg disagrees with world_play gear.light_armour_max_kg")
 
+# The perk card in a fight (data/perk_cards.json; rules 1.14, engine review 4 finding 9): the trigger each held item
+# waits for is declared here (never read out of card prose). Every id must be a real perk, trait or skill perk.
+if "perk_cards" in data:
+    _pc = data["perk_cards"]
+    _perks = {x.get("id"): x for x in items("perks")}
+    _traits = ids_of(items("traits"))
+    _skills = ids_of(items("skills"))
+    def _card_item(key):
+        kind, _, rest = str(key).partition(":")
+        if kind == "perk":
+            return rest in _perks
+        if kind == "trait":
+            return rest in _traits
+        if kind == "skill":
+            sk, _, n = rest.rpartition(".")
+            return sk in _skills and n.isdigit()
+        return False
+    _seen_cards = set()
+    for r in _pc.get("items", []):
+        rid, tier = r.get("id"), r.get("tier")
+        if not _card_item(rid):
+            errors.append(f"perk_cards: {rid} is not a perk, a trait or a skill perk in the data")
+            continue
+        if (rid, tier) in _seen_cards:
+            errors.append(f"perk_cards: {rid} {tier or ''} is listed twice")
+        _seen_cards.add((rid, tier))
+        if str(rid).startswith("perk:"):
+            pk = _perks[str(rid)[5:]]
+            tiers = list((pk.get("tiers") or {}).keys()) or [pk.get("tier")]
+            if tier not in tiers and not (pk.get("tier") == "acquired" and tier in ("I", "II")):
+                errors.append(f"perk_cards: {rid} has no tier {tier}")
+        elif tier is not None:
+            errors.append(f"perk_cards: {rid}: only a perk has a tier")
+        t = r.get("trigger")
+        if not isinstance(t, str) or len(t.split()) < 3 or t.endswith(".") or t[:1] != t[:1].lower():
+            errors.append(f"perk_cards: {rid}: trigger must be the moment in a few words, lower case, with no full stop")
+        if "standing" in r and r.get("standing") is not True:
+            errors.append(f"perk_cards: {rid}: standing is true or left out")
+    for cid in _pc.get("core_wired", []):
+        if cid not in _perks and cid not in _traits:
+            errors.append(f"perk_cards: core_wired names {cid}, which is not a perk or a trait")
+    for key in _pc.get("private_count", []):
+        if not _card_item(key):
+            errors.append(f"perk_cards: private_count names {key}, which is not an item")
+
 # The basic actions of a fight (data/actions.json; engine review 4, finding 1): the rows the engine hands the client.
 # Each needs a name, a text, a tab and an action type; its base AP is a whole number of 0 or more (or null where it is
 # not one number), and agrees with the same action in rules.json combat.actions when `rule` names one.
