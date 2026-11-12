@@ -26,8 +26,8 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
-await centre.waitFor({ timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
+await centre.waitFor({ timeout: 30000 });
 let g = await G();
 const cid = Object.keys(g.characters)[0];
 
@@ -106,15 +106,15 @@ const logBtn = centre.getByRole('button', { name: 'Close the tools and show the 
 ok('the Practice card\'s button reads "Story log ›" (no ✕ that reads as closing the log)', (await logBtn.textContent()).trim() === 'Story log ›');
 await logBtn.click(); await settle(p, 400);
 ok('Close the tools: the story log is back, the tools are gone', (await tools.count()) === 0 && await p.locator('main[aria-label="Story"] > .phc-story').isVisible());
-await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click(); await centre.waitFor({ timeout: 15000 });
+await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click(); await centre.waitFor({ timeout: 30000 });
 ok('the side tab brings the tools back to the centre', (await centre.count()) === 1);
 // a fight still starts; in it, the tools are the floating drawer
 await centre.getByRole('button', { name: /^⚔ Start the fight/ }).click();
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 await settle(p, 1500);
 ok('Start the fight: the fight begins (combat screen)', (await G()).phase === 'combat');
 if (!(await tools.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
-await tools.waitFor({ timeout: 15000 });
+await tools.waitFor({ timeout: 30000 });
 ok('in the fight the tools are the floating drawer (not in a story column)', (await centre.count()) === 0 && (await tools.evaluate((e) => getComputedStyle(e).position)) === 'fixed');
 await snap('fight-drawer');
 
@@ -148,7 +148,7 @@ await act({ type: 'sandbox/class', charId: cid, classId: 'marksman', rank: 1 });
 await act({ type: 'sandbox/level', charId: cid, level: 9 });
 await settle(p, 500);
 await p.locator('button', { hasText: /Level up|Earn your class/ }).first().click();
-await p.locator('.phc-lu-core').first().waitFor({ timeout: 15000 });
+await p.locator('.phc-lu-core').first().waitFor({ timeout: 30000 });
 ok('the tree: three cores, nine attributes, twenty-seven skills', (await p.locator('.phc-lu-core').count()) === 3 && (await p.locator('.phc-lu-attrcol').count()) === 9 && (await p.locator('.phc-lu-skill').count()) === 27);
 ok('the floating ♪ / ◈ buttons step aside on level up (they sat over the tree\'s left column)', (await p.locator('[data-phc-float]:visible').count()) === 0);
 for (const [w, h] of [[1280, 720], [1440, 900], [1920, 1080]]) { await p.setViewportSize({ width: w, height: h }); await settle(p, 500); await snap('levelup-' + w); }

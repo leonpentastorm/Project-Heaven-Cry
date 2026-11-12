@@ -21,9 +21,9 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 await pause(p, 2400);
 for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 990); await pause(p, 380); }
 await p.mouse.move(1430, 990);
@@ -34,8 +34,8 @@ const R = ref(me.pos);
 const mine = (g) => g.combat.units.find((u) => u.id === me.id);
 const pileCount = (g) => ((g.combat.objects || []).find((o) => o.kind === 'pile' && o.pos === me.pos)?.items || []).length;
 const myTurn = async () => {
-  await p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.id === id && u.ap >= 6; }, me.id, { timeout: 15000 });
-  await p.waitForFunction(() => performance.now() > window.__phcHold(), null, { timeout: 15000 });
+  await p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.id === id && u.ap >= 6; }, me.id, { timeout: 30000 });
+  await p.waitForFunction(() => performance.now() > window.__phcHold(), null, { timeout: 30000 });
 };
 // a refused action doesn't throw (it toasts), so a round is spent only when the magazine says so: cover that broke is skipped
 const burn = async () => { const left = async () => (await G()).combat.units.find((x) => x.id === me.id).ammo; const a0 = await left(); const [ux, uy] = (await G()).combat.units.find((x) => x.id === me.id).pos.split(',').map(Number), near = [];
@@ -112,8 +112,16 @@ ok('it is on top: the card is what is at its centre (' + w.probe?.what + '; card
 const vis = s.filter((x) => x.op > 0.95)[0];
 ok('it sits above the unit and the pile glyph, clear of them (card bottom ' + Math.round(vis?.box.b) + ', pile glyph top ' + Math.round(pg0.t) + ')', vis && vis.box.b <= pg0.t);
 ok('it is big enough to read at a glance (' + Math.round(vis.box.r - vis.box.l) + ' × ' + Math.round(vis.box.b - vis.box.t) + ' px, the tile is ' + Math.round(pg0.tile.s) + ')', vis.box.r - vis.box.l >= pg0.tile.s * 2 && vis.box.b - vis.box.t >= pg0.tile.s * 1.8);
-const oldS = s.filter((x) => x.old && x.old.op > 0.3);
-ok('the old magazine falls out of the bottom toward the unit (' + Math.round(oldS[0]?.old.y) + ' → ' + Math.round(oldS.at(-1)?.old.y) + ', unit at ' + Math.round(pg0.tile.y) + ')', oldS.length > 2 && oldS.at(-1).old.y - oldS[0].old.y > pg0.tile.s * 0.8 && oldS.at(-1).old.y > vis.box.b - 10);
+let oldS = s.filter((x) => x.old && x.old.op > 0.3);
+const fell = (o) => o.length > 2 && o.at(-1).old.y - o[0].old.y > pg0.tile.s * 0.8 && o.at(-1).old.y > vis.box.b - 10;
+// The fall takes a third of a second and is followed by a sampler in the page. On a busy machine the sampler runs too
+// seldom to see the end of it (seen: three samples, 560 → 593, of a fall to 632). When the samples do not show the
+// whole fall, the same card is played again from the reload's own effect event and sampled again, three times at most:
+// the check is the same, it only needs one run in which the page had the time to look.
+const reloadFx = (g.combat.fx || []).filter((e) => e.k === 'reload').at(-1);
+let fallRuns = 1;
+for (; fallRuns < 4 && !fell(oldS) && reloadFx; fallRuns++) { await settle(); oldS = (await watch({ fx: reloadFx })).seen.filter((x) => x.old && x.old.op > 0.3); }
+ok('the old magazine falls out of the bottom toward the unit (' + Math.round(oldS[0]?.old.y) + ' → ' + Math.round(oldS.at(-1)?.old.y) + ', unit at ' + Math.round(pg0.tile.y) + '; ' + oldS.length + ' samples, run ' + fallRuns + ')', fell(oldS));
 ok('a falling magazine is drawn over the grid too (on top at its centre: ' + w.probe?.oldOnTop + ')', w.probe?.oldOnTop !== false);
 ok('the speed card marks the pile, not the pack (drop glyph ' + !!s[0].drop + ', pack glyph ' + !!s[0].pack + ', badge ' + s.at(-1).badge + ')', !!s[0].drop && !s[0].pack);
 const cs = s.map((x) => x.counts[0]); const lastCount = s.filter((x) => x.done).at(-1)?.counts[0] || '';

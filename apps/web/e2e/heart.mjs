@@ -39,7 +39,7 @@ async function newRound() {
   await idleOn(p); await dismissCut();
   const r0 = (await st()).cb.round;
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && (u.ap >= 5 || u.conds?.stunned > 0); }, r0, { timeout: 25000 });
+  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && (u.ap >= 5 || u.conds?.stunned > 0); }, r0, { timeout: 30000 });
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idleOn(p);
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
@@ -53,14 +53,14 @@ let cid = '';
  *  near the middle of the map with free tiles toward `dir`. */
 async function build(steps) {
   let g = (await st()).g;
-  if (g.sandbox) { await act({ type: 'sandbox/end' }); await p.waitForFunction(() => !window.__phc.getState().game.sandbox, null, { timeout: 15000 }); }
+  if (g.sandbox) { await act({ type: 'sandbox/end' }); await p.waitForFunction(() => !window.__phc.getState().game.sandbox, null, { timeout: 30000 }); }
   await act({ type: 'sandbox/start', standalone: true });
-  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
   g = (await st()).g; cid = Object.values(g.characters)[0].id;
   await must({ type: 'sandbox/ai', on: false }); await must({ type: 'sandbox/auto', on: false });
   for (const a of steps) await must({ ...a, charId: cid }, a.type + ' ' + JSON.stringify(a).slice(0, 80));
   await must({ type: 'sandbox/fight' });
-  await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.combat; }, null, { timeout: 15000 });
+  await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.combat; }, null, { timeout: 30000 });
   await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
   await must({ type: 'sandbox/clear' });
   await pause(p, 2300); await dismissCut();
@@ -86,7 +86,7 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await p.mouse.move(1430, 990);
 
 // =============================================================== Part A: one Soul caster (with an Evoker for Feed)
@@ -324,7 +324,7 @@ if (inf) console.log('  infuse (world/act): ' + inf + (await act({ type: 'world/
 s = await st(); const infused = s.g.characters[cid].state?.['class:storm_hand.gauntlet_infusion']?.element;
 ok('Gauntlet Infusion: SHOCK (' + infused + ')', infused === 'shock');
 await must({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 30000 });
 await must({ type: 'sandbox/clear' }); await pause(p, 2000); await dismissCut();
 s = await st(); me = s.u.pos;
 const free1 = await p.evaluate((me) => { const cb = window.__phc.getState().game.combat, m = cb.map, [x, y] = me.split(',').map(Number);
@@ -361,32 +361,32 @@ if (p.errors.length) process.exitCode = 1;
 const host = await player(browser, 'host2'), mai = await player(browser, 'mai');
 for (const pg of [host, mai]) pg.on('dialog', (d) => d.accept());
 await host.goto(BASE);
-await click(host, 'PROVING GROUND', { timeout: 20000 });
+await click(host, 'PROVING GROUND', { timeout: 30000 });
 await host.getByPlaceholder('Leon').fill('Leon');
 await click(host, 'With friends ›');
-await host.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await host.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 const invite = host.locator('div[role="dialog"][aria-label="Invite friends"]');
-await invite.waitFor({ timeout: 15000 });
+await invite.waitFor({ timeout: 30000 });
 const code = (await stOn(host)).g.code;
 await invite.getByRole('button', { name: 'Gear up ›' }).click();
 await mai.goto(BASE);
-await click(mai, 'JOIN A FRIEND', { timeout: 20000 });
+await click(mai, 'JOIN A FRIEND', { timeout: 30000 });
 await mai.getByPlaceholder('Leon').fill('Mai');
 await mai.getByPlaceholder('ROOM CODE').fill(code);
 await click(mai, 'Join ›');
-await mai.waitForFunction(() => !!window.__phc.getState().game?.sandbox && window.__phc.getState().screen === 'main', null, { timeout: 15000 });
+await mai.waitForFunction(() => !!window.__phc.getState().game?.sandbox && window.__phc.getState().screen === 'main', null, { timeout: 30000 });
 const ids = { host: await host.evaluate(() => window.__phc.getState().me.id), mai: await mai.evaluate(() => window.__phc.getState().me.id) };
 let G2 = (await stOn(host)).g;
 const charOf = (who) => Object.values(G2.characters).find((c) => c.owner === ids[who]);
 for (const [who, pg] of [['host', host], ['mai', mai]]) {
-  await pg.waitForFunction((id) => Object.values(window.__phc.getState().game.characters).some((c) => c.owner === id), ids[who], { timeout: 15000 });
+  await pg.waitForFunction((id) => Object.values(window.__phc.getState().game.characters).some((c) => c.owner === id), ids[who], { timeout: 30000 });
   G2 = (await stOn(pg)).g; const c = charOf(who);
   for (const a of [{ type: 'sandbox/kit', kind: 'soul' }, { type: 'sandbox/level', level: 6 }, { type: 'sandbox/skill', skill: 'will_power', points: 6 }]) { const e = await actOn(pg, { ...a, charId: c.id }); if (e) console.log('  ' + who + ' ' + a.type + ': ' + e); }
 }
 await actOn(host, { type: 'sandbox/ai', on: false }); await actOn(host, { type: 'sandbox/auto', on: false });
 await pause(mai, 600);
 const e0 = await actOn(host, { type: 'sandbox/fight' }); if (e0) console.log('  fight: ' + e0);
-for (const pg of [host, mai]) await pg.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 15000 });
+for (const pg of [host, mai]) await pg.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 30000 });
 await actOn(host, { type: 'sandbox/clear' }); await pause(host, 1500);
 let cb = (await stOn(host)).cb;
 const pcs = cb.units.filter((u) => u.side === 'pc');

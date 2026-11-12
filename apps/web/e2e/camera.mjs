@@ -25,12 +25,12 @@ await click(p, 'PROVING GROUND', { timeout: 90000 });
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let g = await G(); const cid = Object.keys(g.characters)[0];
 await act({ type: 'sandbox/skill', charId: cid, skill: 'durability', points: 10 }); await act({ type: 'sandbox/level', charId: cid, level: 12 });
 await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 await pause(p, 2400); await calm(); await act({ type: 'sandbox/clear' }); await pause(p, 500); await settle();
 g = await G(); const me = g.combat.units.find((u) => u.side === 'pc'), [mx, my] = me.pos.split(',').map(Number);
 ok('the Proving Ground is 26 x 26', g.combat.map.w === 26 && g.combat.map.h === 26);

@@ -31,7 +31,7 @@ a suite, and stops the server. Logs: `.check/e2e/<suite>.log`. Options: `--jobs 
 
 **Every suite must be in `rules` or in `anim`.** `tools/e2e.py` refuses to run when a `.mjs` file here is in neither,
 and `npm run check` fails for the same reason (`apps/web/src/e2e-groups.test.ts`). A suite nobody runs rots: on 12 Nov
-2026, 32 of 64 suites were in no group, and 17 of those 32 no longer passed.
+2026, 32 of 64 suites were in no group; run beside each other, 17 of those 32 did not pass, 12 of them not even alone.
 
 **The retry rule.** A suite that fails while others run beside it is run once more, alone, after the rest.
 
@@ -92,6 +92,10 @@ node apps/web/e2e/two-players.mjs
 FAST=1 node apps/web/e2e/tabs.mjs               # a `rules` suite, as the runner runs it
 BASE=https://project-heaven-cry.leonpentastorm.workers.dev node apps/web/e2e/reconnect.mjs
 ```
+
+`PARTS` means one thing to `fx-sweep` (`real,table,fog,glyphs`) and another to `coop-stall` (`ABC`): set it only when you
+run that one suite. (Set for a whole run, it made `coop-stall` run none of its parts and print `RESULT OK`; a suite
+that prints no `ok` line now fails.)
 
 **Proxies:** with `BASE` and `HTTPS_PROXY` both set, `lib.mjs` sends Chromium through `HTTPS_PROXY` (an agent sandbox's only way to the live site), with loopback bypassed. A `BASE` on this machine (`127.0.0.1` or any `127.x`, `localhost`, `::1`) never goes through the proxy, so a local `wrangler dev` runs the same with `HTTPS_PROXY` set or not (such a proxy only takes CONNECT to the outside, and every local test used to stop at the title):
 

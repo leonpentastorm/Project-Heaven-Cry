@@ -26,8 +26,8 @@ await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 
 await click(host, 'Next ›'); await click(host, 'Lock in and bring to the room');
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');
-await host.waitForSelector('.phc-story', { timeout: 15000 });
-await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 15000 });
+await host.waitForSelector('.phc-story', { timeout: 30000 });
+await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 });
 await settle(host, 600);
 const code = await host.evaluate(() => window.__phc.getState().code);
 
@@ -92,7 +92,7 @@ await host.getByLabel('What do you do?').fill('');
 // 5. The settings cog: four tabs; volumes persist; the Music panel is music only and links here.
 await head.getByRole('button', { name: 'Settings', exact: true }).click();
 const set = host.locator('div[role="dialog"][aria-label="Settings"]');
-await set.waitFor({ timeout: 15000 });
+await set.waitFor({ timeout: 30000 });
 ok('the cog opens Settings with Audio, Voice, Combat and Display', (await set.getByRole('tab').allTextContents()).join(',') === 'Audio,Voice,Combat,Display');
 ok('the default mix: combat 100%, interface 35%', (await set.locator('input[data-phc-vol="combat"]').inputValue()) === '100' && (await set.locator('input[data-phc-vol="ui"]').inputValue()) === '35');
 await set.locator('input[data-phc-vol="combat"]').fill('130');
@@ -116,7 +116,7 @@ await set.getByRole('button', { name: 'Done' }).click(); await settle(host, 300)
 ok('closing gives the focus back to the cog', await host.evaluate(() => document.activeElement?.hasAttribute('data-phc-cog')));
 // At phone width: the tabs on top, the sliders full width, nothing cut off.
 await host.setViewportSize({ width: 390, height: 844 }); await settle(host, 300);
-await host.locator('header [data-phc-cog]').click(); await set.waitFor({ timeout: 15000 });
+await host.locator('header [data-phc-cog]').click(); await set.waitFor({ timeout: 30000 });
 const nar = await set.evaluate((d) => { const b = d.querySelector('[data-phc-settings]'), r = d.querySelector('input[data-phc-vol="combat"]').getBoundingClientRect(); return { sw: b.scrollWidth, cw: b.clientWidth, slider: Math.round(r.width) }; });
 ok('Settings at 390 wide: the combat slider is ' + nar.slider + ' px wide, nothing cut off (' + nar.sw + ' / ' + nar.cw + ')', nar.slider >= 200 && nar.sw <= nar.cw + 1);
 if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-settings-390.png' });
@@ -132,7 +132,7 @@ await mpanel.getByRole('button', { name: 'Voice settings ⚙' }).click(); await 
 ok('its Voice settings link opens Settings on the Voice tab', (await set.count()) === 1 && (await set.getByRole('tab', { name: 'Voice' }).getAttribute('aria-selected')) === 'true');
 await host.keyboard.press('Escape'); await settle(host, 300);
 await host.setViewportSize({ width: 1440, height: 900 }); await host.reload();
-await host.waitForSelector('.phc-story', { timeout: 15000 }); await settle(host, 500);
+await host.waitForSelector('.phc-story', { timeout: 30000 }); await settle(host, 500);
 ok('…and still there after a reload', (await host.evaluate(() => JSON.parse(localStorage.getItem('phc.ui') || '{}').combat)) === 130);
 
 // 6. The floating buttons: bottom left, see-through at rest, never over End turn.
@@ -193,7 +193,7 @@ ok('at 1280×720 the board still shows ' + qh + ' px of quests and End turn is o
 if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-story-quests-1280.png' });
 await host.setViewportSize({ width: 1440, height: 900 }); await settle(host, 300);
 await qb.getByRole('button', { name: 'Full board' }).click();
-ok('Full board ⤢ opens the whole mission board', await host.getByRole('dialog', { name: 'Mission board' }).waitFor({ timeout: 15000 }).then(() => true, () => false));
+ok('Full board ⤢ opens the whole mission board', await host.getByRole('dialog', { name: 'Mission board' }).waitFor({ timeout: 30000 }).then(() => true, () => false));
 await host.getByRole('button', { name: 'Close the mission board' }).click(); await settle(host, 300);
 const near = col.locator('[data-near-list] .phc-near-scroll');
 ok('NEAR YOU is capped at 132 px with its own scrollbar', (await near.evaluate((e) => getComputedStyle(e).maxHeight + ' ' + getComputedStyle(e).overflowY)) === '132px auto');
@@ -210,12 +210,12 @@ await er.click();
 await host.evaluate(() => { const g = window.__phc.getState().game; window.__phc.act({ type: 'narrator/turn', turn: { narration: 'A good moment.', echo: [{ charId: Object.keys(g.characters)[0], n: 1, why: 'a fine call' }] } }); });
 await settle(host, 250);
 ok('a gain flares the new diamond and says so', (await host.locator('[data-phc-echo] .phc-echo-gain').count()) === 1 && /2 \/ 3/.test(await er.textContent()));
-await host.waitForSelector('text=+1 ECHO', { timeout: 15000 }).then(() => ok('…with a toast', true), () => ok('…with a toast', false));
+await host.waitForSelector('text=+1 ECHO', { timeout: 30000 }).then(() => ok('…with a toast', true), () => ok('…with a toast', false));
 
 // 7. Leave: Stay keeps you here.
 await head.getByRole('button', { name: 'Leave the room', exact: true }).click();
 const dlg = host.locator('[role="alertdialog"]');
-await dlg.waitFor({ timeout: 15000 });
+await dlg.waitFor({ timeout: 30000 });
 ok('Leave asks in the game\'s own dialog: Save and leave or Stay', /Leave the room\?/.test(await dlg.textContent()) && (await dlg.getByRole('button', { name: 'Save and leave' }).count()) === 1);
 if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-leave-dialog.png' });
 await dlg.getByRole('button', { name: 'Stay' }).click(); await settle(host, 300);
@@ -223,20 +223,20 @@ ok('Stay: still in the session', (await dlg.count()) === 0 && (await host.evalua
 
 // 8. The room in session: the key says it saved, Test key reports, the big button takes you back.
 await head.getByRole('button', { name: new RegExp('^Room ' + code) }).click();
-await host.waitForSelector('input[data-narrator-key]', { timeout: 15000 });
+await host.waitForSelector('input[data-narrator-key]', { timeout: 30000 });
 // Nothing in this suite may reach the real provider: every other call to it (a Narrator turn made while the test key is
 // in) gets the same 401 here. (It used to go out for real; behind a proxy that answered 403, which read as a page error.)
 await host.route('https://api.anthropic.com/**', (r) => r.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }) }));
 await host.route('https://api.anthropic.com/v1/models**', (r) => r.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }) }));
 await host.locator('input[data-narrator-key]').fill('sk-' + 'ant-api03-not-a-real-key') // fake, split so the repo's key check stays clean;
-await host.waitForSelector('[data-phc-key-saved]', { timeout: 15000 });
+await host.waitForSelector('[data-phc-key-saved]', { timeout: 30000 });
 ok('typing a key says: Saved for this session, used from the next turn', /Saved for this session · the Narrator uses it from its next turn/.test(await host.locator('[data-phc-key-saved]').textContent()));
 await host.locator('[data-phc-key-test]').click();
-await host.waitForSelector('[data-phc-key-test-result]:has-text("✗")', { timeout: 15000 });
+await host.waitForSelector('[data-phc-key-test-result]:has-text("✗")', { timeout: 30000 });
 ok('Test key with a refused key says why, in red with ✗', /✗ Anthropic rejected the API key/.test(await host.locator('[data-phc-key-test-result]').textContent()));
 await host.route('https://api.anthropic.com/v1/models**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: [{ id: 'claude-opus-5-5' }, { id: 'claude-sonnet-5' }] }) }));
 await host.locator('[data-phc-key-test]').click();
-await host.waitForSelector('[data-phc-key-test-result]:has-text("✓")', { timeout: 15000 });
+await host.waitForSelector('[data-phc-key-test-result]:has-text("✓")', { timeout: 30000 });
 ok('…and a good one: ✓ the key works', /✓ Anthropic answered: the key works \(2 models\)/.test(await host.locator('[data-phc-key-test-result]').textContent()));
 const start = host.locator('[data-phc-start]');
 await start.scrollIntoViewIfNeeded();
@@ -245,16 +245,16 @@ if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-room-insession.png', fu
 ok('the room has no Save and leave any more', (await host.getByRole('button', { name: 'Save and leave' }).count()) === 0);
 await start.click(); await settle(host, 500);
 ok('…and it works', (await host.evaluate(() => window.__phc.getState().screen)) === 'main');
-await host.waitForSelector('text=Narrator settings updated', { timeout: 15000 }).then(() => ok('returning says the Narrator settings were updated', true), () => ok('returning says the Narrator settings were updated', false));
+await host.waitForSelector('text=Narrator settings updated', { timeout: 30000 }).then(() => ok('returning says the Narrator settings were updated', true), () => ok('returning says the Narrator settings were updated', false));
 // The header's Back to the session › says so too (review of the UI pass: only the big button did).
 await host.waitForSelector('text=Narrator settings updated', { state: 'detached', timeout: 9000 }).catch(() => {});
 await head.getByRole('button', { name: new RegExp('^Room ' + code) }).click();
-await host.waitForSelector('input[data-narrator-key]', { timeout: 15000 });
+await host.waitForSelector('input[data-narrator-key]', { timeout: 30000 });
 await host.locator('input[data-narrator-key]').fill('sk-' + 'ant-api03-another-fake-key');
-await host.waitForSelector('[data-phc-key-saved]', { timeout: 15000 });
+await host.waitForSelector('[data-phc-key-saved]', { timeout: 30000 });
 await host.locator('header [data-phc-back-session]').click(); await settle(host, 300);
 ok('the header\'s Back to the session › lands on the story', (await host.evaluate(() => window.__phc.getState().screen)) === 'main');
-await host.waitForSelector('text=Narrator settings updated', { timeout: 15000 }).then(() => ok('…and says the Narrator settings were updated', true), () => ok('…and says the Narrator settings were updated', false));
+await host.waitForSelector('text=Narrator settings updated', { timeout: 30000 }).then(() => ok('…and says the Narrator settings were updated', true), () => ok('…and says the Narrator settings were updated', false));
 await host.evaluate(() => window.__phc.setNarrator({ key: '', scripted: true }));
 await host.unroute('https://api.anthropic.com/v1/models**');
 
@@ -290,10 +290,10 @@ if (fought) {
 
 // 10. Save and leave: the title, with the room under Saved sessions.
 await host.locator('[data-phc-leave]').first().click();
-await dlg.waitFor({ timeout: 15000 });
+await dlg.waitFor({ timeout: 30000 });
 ok('in a fight the dialog says the fight is saved where it is', /The fight is saved where it is/.test(await dlg.textContent()));
 await dlg.getByRole('button', { name: 'Save and leave' }).click();
-await host.waitForFunction(() => window.__phc.getState().screen === 'home', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().screen === 'home', null, { timeout: 30000 });
 ok('Save and leave lands on the title', true);
 ok('…with the room saved', await host.evaluate((c) => JSON.parse(localStorage.getItem('phc.sessions') || '[]').some((s) => s.code === c), code));
 await noBrowserDialogs('the whole walk');

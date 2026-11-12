@@ -18,8 +18,9 @@ export async function player(browser, name) {
   page.errors = errors; page.pname = name;
   // Every suite starts with page.goto(BASE) and then reaches for a button. The game's first screen takes 2 s to come
   // up on an idle machine and has taken over 30 s beside two other suites on a busy one: goto() and reload() here
-  // return when the game has drawn its first button (or the title's "press any key"), within two minutes.
-  const ready = () => page.waitForFunction(() => !!document.querySelector('#root button, .phc-press'), null, { timeout: 120000 }).catch(() => {});
+  // return when the game has drawn its first screen, within two minutes.
+  // (the title's menu or its "press any key", a panel with a box to type in, or any screen that is not the title)
+  const ready = () => page.waitForFunction(() => !!document.querySelector('nav[aria-label="Main menu"], .phc-press, #root input, #root textarea') || !['home', undefined].includes(window.__phc?.getState?.().screen), null, { timeout: 120000 }).catch(() => {});
   const goto = page.goto.bind(page), reload = page.reload.bind(page);
   page.goto = async (url, o) => { const r = await goto(url, o); await ready(); return r; };
   page.reload = async (o) => { const r = await reload(o); await ready(); return r; };
@@ -186,19 +187,21 @@ export async function titleHoverDuringHello(page) {
   const pt = await page.evaluate(() => {
     const mid = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; };
     const label = () => { const l = document.querySelector('[data-item="settings"] .phc-label'); return l ? getComputedStyle(l).color : ''; };
-    const W = (window.__hello = { seen: null, before: label(), colour: '' });
+    const W = (window.__hello = { seen: null, before: label(), colour: '', done: false });
     const look = () => {
       const on = document.querySelector('.phc-item.on')?.getAttribute('data-item'), pressed = document.querySelector('.phc-item.pressed')?.getAttribute('data-item');
       if (on !== 'settings' || pressed !== 'chars' || W.seen) return;
       W.seen = { on, pressed, bubble: document.querySelectorAll('.phc-bubble').length, act: document.querySelector('.phc-wick')?.getAttribute('data-act') };
       // the lit colour, once its transition has run (read each frame for as long as the row stays lit, 400 ms at most)
-      const t0 = performance.now(); const tick = () => { if (document.querySelector('.phc-item.on')?.getAttribute('data-item') === 'settings') { W.colour = label(); if (performance.now() - t0 < 400) requestAnimationFrame(tick); } }; tick();
+      const t0 = performance.now(); const tick = () => { const lit = document.querySelector('.phc-item.on')?.getAttribute('data-item') === 'settings', c = label();
+        if (lit && c !== W.before) W.colour = c;
+        if (lit && performance.now() - t0 < 600) requestAnimationFrame(tick); else { W.done = true; if (!W.colour) W.colour = c; } }; tick();
     };
     new MutationObserver(look).observe(document.documentElement, { subtree: true, childList: true, attributes: true });
     return { chars: mid('[data-item="chars"]'), settings: mid('[data-item="settings"]') };
   });
   await page.mouse.click(pt.chars.x, pt.chars.y);
   await page.mouse.move(pt.settings.x, pt.settings.y, { steps: 2 });
-  await page.waitForFunction(() => window.__hello.seen && window.__hello.colour, null, { timeout: 5000 }).catch(() => {});
+  await page.waitForFunction(() => window.__hello.seen && window.__hello.done, null, { timeout: 8000 }).catch(() => {});
   return page.evaluate(() => window.__hello);
 }

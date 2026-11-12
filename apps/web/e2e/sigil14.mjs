@@ -31,7 +31,7 @@ async function newRound() {
   await idleOn(p); await dismissCut();
   const r0 = (await st()).cb.round;
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 15000 });
+  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 30000 });
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idleOn(p);
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
@@ -109,7 +109,7 @@ const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let s = await st();
 const cid = Object.values(s.g.characters)[0].id;
 await must({ type: 'sandbox/ai', on: false }); await must({ type: 'sandbox/auto', on: false });
@@ -128,7 +128,7 @@ const ch = s.g.characters[cid];
 ok('the Recruit has an Evoker and the words: ' + (ch.sigils || []).join(' '), (ch.pack || []).concat(ch.offHand ? [ch.offHand] : []).some((x) => (x.item || x.id) === 'evoker') && ['fire', 'seek', 'chain', 'wait', 'watch', 'raise', 'null', 'step', 'kin'].every((w) => ch.sigils.includes(w)));
 await p.getByRole('button', { name: /^⚔ Start the fight/ }).first().click();
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
 await must({ type: 'sandbox/clear' });
 for (let i = 0; i < 20; i++) { s = await st(); const cur = s.cb.units.find((u) => u.id === s.cb.order[s.cb.turn]); if (cur?.side === 'pc') break; await pause(p, 300); }
@@ -290,7 +290,7 @@ await dismissCut();
 await p.getByRole('button', { name: 'End turn', exact: true }).click();
 await p.waitForFunction((n1) => (window.__phc.getState().game.combat.fx || []).some((e) => e.n > n1 && e.k === 'turret_shot'), n1, { timeout: 15000 }).catch(() => {});
 await pause(p, 250); await snap('13-turret-shot');
-await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 15000 });
+await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
 await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut();
 s = await st();
 const shots = (await fxSince(n1)).filter((e) => e.k === 'turret_shot');
@@ -364,8 +364,8 @@ for (let i = 0; i < 4 && !cast; i++) {
   const l0 = (await st()).cb.log.length, n2 = await fxSeq();
   await dismissCut();
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction((n2) => (window.__phc.getState().game.combat.fx || []).some((e) => e.n > n2 && e.k === 'evoke' && e.side === 'foe'), n2, { timeout: 15000 }).then(async () => { await pause(p, 260); await snap('21-enemy-cast-' + i); }, () => {});
-  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; if (cb.over) return true; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 20000 });
+  await p.waitForFunction((n2) => (window.__phc.getState().game.combat.fx || []).some((e) => e.n > n2 && e.k === 'evoke' && e.side === 'foe'), n2, { timeout: 30000 }).then(async () => { await pause(p, 260); await snap('21-enemy-cast-' + i); }, () => {});
+  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; if (cb.over) return true; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
   const lines = await logSince(l0);
   console.log('  enemy turn ' + (i + 1) + ':', lines.filter((l) => /Sigil adept/.test(l)).join(' | ').slice(0, 300));
   cast = lines.some((l) => /Sigil adept.*evokes/.test(l));

@@ -27,7 +27,7 @@ const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let g = await G();
 const cid = Object.values(g.characters)[0].id;
 await act({ type: 'sandbox/clear' });
@@ -111,7 +111,7 @@ await p.locator('section[aria-label="Sigils"] [data-ws-group="reach"] > button[d
 await p.locator('[data-ws-head="magic.soul"]').click(); await pause(p, 150);
 ok('sheet: Reach closed, Outbursts closed', (await p.locator('[data-word-card="seek"]').count()) === 0 && (await p.locator('section[aria-label="Outbursts"] [data-ws-group]').count()) === 0);
 await snap('04-collapsed');
-await p.reload(); await p.waitForFunction(() => !!window.__phc?.getState().game?.sandbox, null, { timeout: 15000 });
+await p.reload(); await p.waitForFunction(() => !!window.__phc?.getState().game?.sandbox, null, { timeout: 30000 });
 await p.mouse.move(1430, 990); await pause(p, 800);
 if (await drawer.count()) await closeTools();
 await p.getByRole('tab', { name: 'MAGIC', exact: true }).click(); await pause(p, 300);

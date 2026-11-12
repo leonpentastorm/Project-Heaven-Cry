@@ -46,7 +46,7 @@ for (const [w, h] of SIZES) {
     ok(`hover during hello: SETTINGS highlighted (on=${sn.on}, pressed=${sn.pressed}, colour ${hl.before} -> ${hl.colour})`, sn.on === 'settings' && sn.pressed === 'chars' && !!hl.colour && hl.before !== hl.colour);
     ok('Wick is in hello (data-act ' + sn.act + ', bubble ' + sn.bubble + ')', sn.act === 'hello' && sn.bubble === 1);
     await page.screenshot({ path: `${SHOTS}/slate-title-hello-hover.png` }).catch(() => {});
-    await page.waitForSelector('text=Your characters', { timeout: 15000 });
+    await page.waitForSelector('text=Your characters', { timeout: 30000 });
     ok('the pressed row (CHARACTERS) still opens', true);
   }
   if (errors.length) ok(`${w}x${h}: no page errors ${errors}`, false);
@@ -55,7 +55,7 @@ for (const [w, h] of SIZES) {
 {
   const p2 = await ctx.newPage(); await page.close(); await p2.setViewportSize({ width: 1440, height: 900 });
   await p2.goto(BASE + '/?fresh=1'); await p2.waitForSelector('text=PRESS ANY KEY', { timeout: 90000 }); await p2.keyboard.press("Space");
-  const got = await p2.waitForFunction(() => document.querySelector('.phc-wick')?.getAttribute('data-act') === 'greet', null, { timeout: 15000 }).then(() => true, () => false);
+  const got = await p2.waitForFunction(() => document.querySelector('.phc-wick')?.getAttribute('data-act') === 'greet', null, { timeout: 30000 }).then(() => true, () => false);
   await pause(p2, 300);
   ok('greeting: Wick jumps and waves with Hi! (' + (await p2.locator('.phc-bubble').textContent().catch(() => '')) + ')', got);
   await p2.screenshot({ path: `${SHOTS}/slate-title-greet.png` });

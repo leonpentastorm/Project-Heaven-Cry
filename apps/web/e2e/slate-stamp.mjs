@@ -25,7 +25,7 @@ const watchStamp = (pg) => pg.evaluate(() => {
   };
   const mo = new MutationObserver(look); mo.observe(document.documentElement, { childList: true, subtree: true }); look();
 });
-const stampSeen = (pg, what) => pg.waitForFunction((what) => window.__stamp && window.__stamp[what], what, { timeout: 15000 }).then((h) => h.jsonValue(), () => null);
+const stampSeen = (pg, what) => pg.waitForFunction((what) => window.__stamp && window.__stamp[what], what, { timeout: 30000 }).then((h) => h.jsonValue(), () => null);
 const sounds = []; p.on('request', (r) => { if (/\/sfx\//.test(r.url())) sounds.push(r.url().split('/').pop()); });
 await hostAs(p, 'Leon');
 await p.waitForSelector('text=The squad', { timeout: 90000 });

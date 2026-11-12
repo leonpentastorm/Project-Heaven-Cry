@@ -12,18 +12,18 @@ await p.goto(BASE); await click(p, 'PROVING GROUND', { timeout: 90000 });
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 
 // 1. The button, the room
 const btn = p.getByRole('button', { name: 'Effect testing', exact: true }).first();
 ok('the Effect testing button is on the gearing-up screen', (await btn.count()) > 0);
 await btn.click();
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 let g = await G();
 const dummy = g.combat.units.find((u) => u.side === 'foe'), me = g.combat.units.find((u) => u.side === 'pc');
 ok('one dummy with 9,999 HP: ' + dummy?.name + ' ' + dummy?.hp, g.combat.units.filter((u) => u.side === 'foe').length === 1 && dummy.hp === 9999);
 ok('your AP is 9', me.ap === 9);
-await p.waitForSelector('text=YOUR TURN', { timeout: 15000 }); await pause(p, 1500); await cutOff();
+await p.waitForSelector('text=YOUR TURN', { timeout: 30000 }); await pause(p, 1500); await cutOff();
 ok('the dummy is on the map', (await p.locator('[data-unit="' + dummy.id + '"], [data-token="' + dummy.id + '"]').count()) > 0 || (await p.getByText('Target dummy').count()) > 0);
 
 // 2. Two-key codes: every button shows one; pressing it picks that action
@@ -53,8 +53,8 @@ ok('Stop the fight leaves the room (phase ' + g.phase + ', no dummy left)', g.ph
 
 // 5. A fight's last blow plays in full: the swing or shot before the fall
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-await p.waitForSelector('text=YOUR TURN', { timeout: 15000 }); await pause(p, 1500); await cutOff();
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+await p.waitForSelector('text=YOUR TURN', { timeout: 30000 }); await pause(p, 1500); await cutOff();
 await act({ type: 'sandbox/clear' }); g = await G();
 const m2 = g.combat.units.find((u) => u.side === 'pc'), [x, y] = m2.pos.split(',').map(Number);
 await act({ type: 'sandbox/spawn', tier: 'minion', weapon: 'combat_knife', at: ref((x + 2) + ',' + y), level: 1 });
@@ -69,9 +69,20 @@ const res = await p.evaluate(async ({ meId, foeId }) => {
     last = s.combat.fxSeq || 0;
     try { window.__phc.act({ type: 'combat/attack', unitId: meId, targetId: foeId }); }
     catch (e) { const m = String(e.message || e); try { window.__phc.act({ type: /jam/.test(m) ? 'combat/clear' : /AP|turn/.test(m) ? 'combat/end-turn' : 'combat/reload', unitId: meId }); } catch { /* */ } }
-    await new Promise((r) => setTimeout(r, 2200));
+    // Until the blow has played and it is this fighter's turn again (or the fight is over): the state and the effects
+    // queue say so. (This waited 2.2 s a blow; on a busy machine the hostile's turn was still playing when the next
+    // attack was sent, it was refused, and forty tries ran out with the fight not won.)
+    const t0 = performance.now();
+    for (;;) {
+      await new Promise((r) => setTimeout(r, 60));
+      const g = window.__phc.getState().game, cb = g.combat, d = window.__phcFxDebug();
+      const quiet = d.timers === 0 && d.queueEndIn <= 0 && !d.heldBehindGate;
+      if (!cb || cb.over || g.phase !== 'combat') { if (quiet || performance.now() - t0 > 20000) break; continue; }
+      if (cb.order[cb.turn] === meId && quiet && (window.__phcHold?.() || 0) <= performance.now()) break;
+      if (performance.now() - t0 > 20000) break;
+    }
   }
-  await new Promise((r) => setTimeout(r, 3000));
+  await new Promise((r) => setTimeout(r, 1500));
   window.removeEventListener('phc-fx', on);
   const s = window.__phc.getState().game, cb = s.combat;
   const final = (cb?.fx || []).filter((e) => e.n > last).map((e) => ({ n: e.n, k: e.k }));

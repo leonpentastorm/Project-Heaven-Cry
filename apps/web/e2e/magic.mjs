@@ -58,8 +58,8 @@ ok('the character keeps the picks: ' + JSON.stringify(me0.sigils) + ' / ' + JSON
 // ---------- 2. Session ----------
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');
-await host.waitForSelector('.phc-story', { timeout: 15000 });
-await host.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 15000 });
+await host.waitForSelector('.phc-story', { timeout: 30000 });
+await host.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 30000 });
 const me = me0.id;
 const story = () => host.evaluate(() => { const g = window.__phc.getState().game; return { await: g.story.await, round: g.story.round, phase: g.phase }; });
 console.log('story', await story());
@@ -68,7 +68,7 @@ await act({ type: 'narrator/turn', turn: { narration: 'A crate by the ramp holds
 await pause(host, 400);
 const meNow = () => host.evaluate((id) => window.__phc.getState().game.characters[id], me);
 ok('the Emanator is in the pack', (await meNow()).pack.some((x) => (x.item || x.id) === 'emanator'));
-await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 });
 
 // ---------- 3. The MAGIC sheet tab ----------
 await host.getByRole('tab', { name: 'MAGIC', exact: true }).click();
@@ -167,7 +167,7 @@ const cAt = (await G()).story.positions[me], [cx, cy] = cAt.split(',').map(Numbe
 const free = await host.evaluate(([cx, cy]) => { const g = window.__phc.getState().game, occ = new Set([...Object.values(g.story.positions), ...(g.story.npcs || []).map((n) => n.pos), ...(g.story.objects || []).map((o) => o.pos)]);
   const out = []; for (const [dx, dy] of [[4, 0], [4, 1], [-4, 0], [0, 4], [3, 2], [-3, 2], [2, 3], [7, 0], [-7, 0], [6, 3], [-6, 3], [7, 5], [-7, 5]]) { const k = (cx + dx) + ',' + (cy + dy); if (!occ.has(k) && cx + dx >= 0 && cy + dy >= 0 && cx + dx < 16 && cy + dy < 11) out.push(k); } return out; }, [cx, cy]);
 await act({ type: 'narrator/turn', turn: { narration: 'Two raiders step out of the smoke, fists up.', npcs: [{ action: 'place', name: 'Raider', side: 'hostile', tier: 'minion', weapon: 'fists', at: ref(free[0]) }, { action: 'place', name: 'Raider Two', side: 'hostile', tier: 'minion', weapon: 'fists', at: ref(free.find((k) => Math.abs(k.split(',')[0] - cx) + Math.abs(k.split(',')[1] - cy) >= 7) || free[1]) }] } });
-await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 });
 ok('the Narrator\'s turn opens a fresh round (' + round0 + ' → ' + (await G()).story.round + ')', (await G()).story.round > round0);
 // The Line spent most of the core (3 glyphs + the Evoke): load a fresh one on the area map, so the fight below opens
 // with charge for its own Line (a core swap mid-fight costs the turn the raiders use to close in).
@@ -188,8 +188,8 @@ const letGo = dlg.getByRole('button', { name: /^Snap ·/ }).first(); // rules 1.
 ok('Confirm reads "Snap · AP"', await letGo.count() > 0);
 await snap('06b-area-outburst-aim');
 await letGo.click();
-await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 15000 });
-await host.waitForSelector('text=ACTION POINTS', { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 30000 });
+await host.waitForSelector('text=ACTION POINTS', { timeout: 30000 });
 ok('the screen goes to combat', true);
 const opener = await host.evaluate(() => window.__phc.getState().game.combat.log.slice(0, 6).join(' | '));
 console.log('  combat opens:', opener);
@@ -289,7 +289,7 @@ if (back !== 'mine') console.log('  state:', await host.evaluate(() => { const c
 ({ cb, u } = await CB());
 console.log('  held now', JSON.stringify(u.mg?.held), 'strain', u.mg?.strain, 'AP', u.ap);
 await host.evaluate(() => scrollTo(0, 0)); await snap('13-combat-held-next-turn');
-const relOk = await host.locator('.phc-heart-panel button[data-hact="release"]').click({ timeout: 15000 }).then(() => true, () => pickAction(host, /^Release/, { timeout: 15000 }).then(() => true, () => false));
+const relOk = await host.locator('.phc-heart-panel button[data-hact="release"]').click({ timeout: 30000 }).then(() => true, () => pickAction(host, /^Release/, { timeout: 30000 }).then(() => true, () => false));
 ok('Release appears while holding', relOk);
 if (relOk) {
   await pause(host, 200);
@@ -327,9 +327,9 @@ for (let i = 0; i < 40; i++) {
     const g2 = window.__phc.getState().game; if (!g2.combat.over && (g2.combat.log.length === before || u.ap < 2)) window.__phc.act({ type: 'combat/end-turn', unitId: u.id }); }, me);
   await pause(host, 150);
 }
-await host.waitForSelector('text=Back to the story ›', { timeout: 15000 });
+await host.waitForSelector('text=Back to the story ›', { timeout: 30000 });
 await click(host, 'Back to the story ›');
-await host.waitForSelector('.phc-story', { timeout: 15000 });
+await host.waitForSelector('.phc-story', { timeout: 30000 });
 await host.getByRole('tab', { name: 'MAGIC', exact: true }).click();
 const after = await host.evaluate((id) => { const g = window.__phc.getState().game, c = g.characters[id]; return { mp: c.mp, evo: c.evoCharge, glyphs: (g.story.glyphs || []).length, magic: (g.story.magic || {})[id] }; }, me);
 const soul2 = (await host.locator('section[aria-label="Outbursts"]').textContent()).replace(/\s+/g, ' ');

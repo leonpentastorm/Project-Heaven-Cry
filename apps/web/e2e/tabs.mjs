@@ -21,10 +21,10 @@ async function open(vw, vh) {
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.mouse.move(vw - 10, vh - 10);
   // The Proving Ground opens gearing up on the map; start the fight straight away.
-  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
   if (await p.evaluate(() => window.__phc.getState().game.phase !== 'combat')) await p.evaluate(() => window.__phc.act({ type: 'sandbox/fight' }));
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-  await p.waitForSelector('text=YOUR TURN', { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+  await p.waitForSelector('text=YOUR TURN', { timeout: 30000 });
   return p;
 }
 const act = (p, a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
@@ -52,7 +52,7 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
   await act(p, { type: 'sandbox/design', charId: cid, design: { id: '', name: 'Long Red Hand', school: 'damage', modules: [] } });
   // A fresh turn so the panel picks up the magic.
   await p.getByRole('button', { name: 'End turn', exact: true }).click().catch(() => {});
-  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 15000 });
+  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 30000 });
   await settle(p, 600); await dismissCut(p, vw, vh); await settle(p, 300);
   await p.waitForSelector('[role="tablist"][aria-label="Actions"] [role="tab"]', { timeout: 30000 }).catch(() => {}); // the panel comes up when the turn is yours on screen
   const tabs = await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').allTextContents();
@@ -118,8 +118,8 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     // The last tab is remembered for this character across turns; a command on the turn card switches the tab.
     await p.locator('[role="tab"][data-tab="utility"]').click(); await settle(p, 150);
     await p.getByRole('button', { name: 'End turn', exact: true }).click();
-    await p.waitForSelector('[data-phc-cutin]', { timeout: 15000 });
-    await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 15000 });
+    await p.waitForSelector('[data-phc-cutin]', { timeout: 30000 });
+    await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 30000 });
     await settle(p, 300);
     ok('next turn opens the tab this character used last: ' + await selTab(), (await selTab()) === 'utility');
     const cmds = await p.locator('[data-phc-cutin] button').allTextContents();

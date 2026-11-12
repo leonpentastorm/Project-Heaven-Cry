@@ -21,7 +21,7 @@ async function newRound() {
   await idle(); await dismissCut();
   const r0 = (await st()).cb.round;
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 15000 });
+  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 30000 });
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idle();
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
@@ -47,7 +47,7 @@ const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let s = await st();
 const cid = Object.values(s.g.characters)[0].id;
 await must({ type: 'sandbox/ai', on: false }); await must({ type: 'sandbox/auto', on: false });
@@ -63,7 +63,7 @@ s = await st();
 ok('a Mage: ' + s.g.characters[cid].classId, s.g.characters[cid].classId === 'mage');
 await p.getByRole('button', { name: /^⚔ Start the fight/ }).first().click();
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
 await must({ type: 'sandbox/clear' });
 for (let i = 0; i < 20; i++) { s = await st(); const cur = s.cb.units.find((u) => u.id === s.cb.order[s.cb.turn]); if (cur?.side === 'pc') break; await pause(p, 300); }

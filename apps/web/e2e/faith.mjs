@@ -32,16 +32,16 @@ await p.locator('[data-belief="faithful"]').click();
 await p.locator('[data-patron="mother_ember"] [data-swear]').click();
 await click(p, 'Next ›'); // kit
 await p.locator('button', { hasText: 'Line soldier' }).first().click();
-await click(p, 'Next ›'); await click(p, 'Lock in and bring to the room', { timeout: 15000 });
-await p.waitForFunction(() => Object.keys(window.__phc.getState().game?.characters || {}).length > 0, null, { timeout: 15000 });
+await click(p, 'Next ›'); await click(p, 'Lock in and bring to the room', { timeout: 30000 });
+await p.waitForFunction(() => Object.keys(window.__phc.getState().game?.characters || {}).length > 0, null, { timeout: 30000 });
 const sheet = await p.evaluate(() => Object.values(window.__phc.getState().game.characters)[0]);
 ok('the sheet carries the belief (Faithful, Mother Ember)', sheet.belief?.kind === 'faithful' && sheet.belief?.patron === 'mother_ember');
 ok('and Faith 3', (sheet.skills.faith || 0) >= 3);
 await p.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(p, 'Start session');
-await p.waitForSelector('.phc-story', { timeout: 15000 });
+await p.waitForSelector('.phc-story', { timeout: 30000 });
 await p.getByRole('tab', { name: 'FAITH' }).click().catch(async () => { await p.getByRole('button', { name: 'FAITH', exact: true }).click(); });
-const panel = p.locator('[data-phc-faith-panel]'); await panel.waitFor({ timeout: 15000 });
+const panel = p.locator('[data-phc-faith-panel]'); await panel.waitFor({ timeout: 30000 });
 const txt = await panel.textContent();
 ok('the panel: Mother Ember, Devotion 3 with its XP toward 4 (DEVOTION 3 · 0/25 XP) and the gates (Hymn III at 7, the Miracle at 10: rules 1.6.2)', /Mother Ember/.test(txt) && /DEVOTION 3 · 0\/25 XP/.test(txt) && /HYMN I/.test(txt) && /HYMN III/.test(txt) && !/HYMN III · MIRACLE/.test(txt) && /MIRACLE/.test(txt));
 ok('the Miracle\'s heading gives its gate and price', /✦ MIRACLE · AT DEVOTION 10 · ONCE A SESSION · COSTS 5 LEVELS/.test(txt));
@@ -55,7 +55,7 @@ ok('the meter says its words to a screen reader too', /DEVOTION 3 · 0\/25 XP/.t
   const fit = await panel.evaluate((el) => { const h = el.querySelector('section[aria-label="Belief"]').getBoundingClientRect(); return [...el.querySelectorAll('[role="meter"] span')].every((s) => { const r = s.getBoundingClientRect(); return r.right <= h.right + 0.5 && r.left >= h.left - 0.5; }); });
   ok('the meter\'s gate words stay inside the header', fit);
   await port.click(); const lb = p.getByRole('dialog', { name: /Mother Ember/ });
-  const up = await lb.waitFor({ timeout: 15000 }).then(() => true, () => false);
+  const up = await lb.waitFor({ timeout: 30000 }).then(() => true, () => false);
   ok('a click opens it large (the lightbox, the -lg painting)', up && /patron-mother_ember-lg/.test((await lb.locator('img').first().getAttribute('src')) || ''));
   if (up) { await lb.getByRole('button', { name: 'Close the enlarged image' }).click(); await lb.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {}); } }
 ok('the gate marks are faith light (var(--faith-light) = #F2C46A)', await panel.evaluate((el) => { const s = [...el.querySelectorAll('[role="meter"] span')].find((x) => x.textContent === 'HYMN I'); return !!s && getComputedStyle(s).color === 'rgb(242, 196, 106)'; }));
@@ -75,7 +75,7 @@ if (opened) { const grp = panel.locator('[role="group"][aria-label="Choose the t
   await grp.locator('[data-prayer-confirm]').click();
   // Faith 2.2 (spec 2.1): on the area map too, the Whisper's icon rises over the head of the one who prays.
   const onMap = await p.evaluate(() => { const g = window.__phc.getState().game, c = Object.values(g.characters)[0]; return !!g.story.positions?.[c.id]; });
-  const wUp = await p.locator('[data-phc-faith-whisper]').first().waitFor({ timeout: 15000 }).then(() => true, () => false);
+  const wUp = await p.locator('[data-phc-faith-whisper]').first().waitFor({ timeout: 30000 }).then(() => true, () => false);
   ok('the story Whisper: its icon over your token on the area map (' + (onMap ? 'on the map' : 'no token on the map') + ')', !onMap || wUp);
   if (wUp && SHOTS) await p.screenshot({ path: SHOTS + '/faith-story-whisper.png' });
   await settle(p, 600);
@@ -109,7 +109,7 @@ if (SHOTS) { await p.setViewportSize({ width: 1440, height: 1400 }); await settl
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 await p.setViewportSize({ width: 1600, height: 1000 });
 await act({ type: 'narrator/turn', turn: { narration: 'Two raiders come over the crates.', combat: { name: 'Crates', enemies: [{ name: 'Raider', tier: 'minion', weapon: 'fists' }, { name: 'Raider Two', tier: 'minion', weapon: 'fists' }] } } });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
 await settle(p, 1500); if (await p.locator('[data-phc-cutin]').count()) { await p.keyboard.press('Escape'); await settle(p, 500); }
 const vow = p.locator('[data-phc-vow-prompt]');

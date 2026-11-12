@@ -8,7 +8,7 @@ await p.goto(BASE); await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 await p.evaluate(() => { const g = window.__phc.getState().game; window.__phc.act({ type: 'sandbox/perk', charId: Object.keys(g.characters)[0], perk: 'bulwark', tier: 'I' }); });
 await settle(p, 600);
 // rewrite the stored save the way an old build left it

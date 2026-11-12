@@ -27,12 +27,12 @@ const ownerPage = async (g, u) => { const c = g.characters[u.charId]; return c ?
 
 // 1. The host: PROVING GROUND → With friends
 await host.goto(BASE);
-await click(host, 'PROVING GROUND', { timeout: 20000 });
+await click(host, 'PROVING GROUND', { timeout: 30000 });
 await host.getByPlaceholder('Leon').fill('Leon');
 await click(host, 'With friends ›');
 await until(host, () => !!window.__phc.getState().game?.sandbox);
 const invite = host.locator('div[role="dialog"][aria-label="Invite friends"]');
-await invite.waitFor({ timeout: 15000 });
+await invite.waitFor({ timeout: 30000 });
 let g = await G(host);
 const code = g.code;
 ok('With friends: the room code ' + code + ' is shown big, with Copy and the link', (await invite.getByText(code, { exact: true }).count()) > 0 && (await invite.getByRole('button', { name: 'Copy the code' }).count()) > 0 && (await invite.getByText('/?room=' + code).count()) > 0);
@@ -43,7 +43,7 @@ pages[(await host.evaluate(() => window.__phc.getState().me.id))] = host;
 
 // 2. A guest joins by the code and gets "Recruit 2", straight into the Proving Ground
 await mai.goto(BASE);
-await click(mai, 'JOIN A FRIEND', { timeout: 20000 });
+await click(mai, 'JOIN A FRIEND', { timeout: 30000 });
 await mai.getByPlaceholder('Leon').fill('Mai');
 await mai.getByPlaceholder('ROOM CODE').fill(code);
 await click(mai, 'Join ›');
@@ -88,7 +88,7 @@ for (let i = 0; i < 30 && !(sawMaiCut && sawHostWaiting && sawHostCut && sawMaiW
   const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]);
   if (!cur || cur.side !== 'pc') { await pause(host, 250); continue; }
   const mine = await ownerPage(g, cur), other = mine === host ? mai : host, name = mine === host ? 'Leon' : 'Mai';
-  await mine.waitForSelector('div[data-phc-cutin][aria-label="Your turn: ' + cur.name + '"]', { timeout: 15000 }).then(() => { if (mine === mai) sawMaiCut = true; else sawHostCut = true; }, () => {});
+  await mine.waitForSelector('div[data-phc-cutin][aria-label="Your turn: ' + cur.name + '"]', { timeout: 30000 }).then(() => { if (mine === mai) sawMaiCut = true; else sawHostCut = true; }, () => {});
   const waiting = await other.getByText(new RegExp('WAITING FOR ' + name.toUpperCase())).count() + await other.getByText(new RegExp('Waiting for ' + name)).count();
   if (waiting) { if (other === host) sawHostWaiting = true; else sawMaiWaiting = true; }
   await dismissCut(mine);

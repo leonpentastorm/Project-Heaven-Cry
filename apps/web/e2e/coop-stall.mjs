@@ -95,29 +95,29 @@ async function browsers() {
     await settle(host, 800);
     await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
     await click(host, 'Start session');
-    await host.waitForSelector('text=The rear pad', { timeout: 15000 });
-    await guest.waitForSelector('text=Outpost-813\'s rear landing pad', { timeout: 15000 });
+    await host.waitForSelector('text=The rear pad', { timeout: 30000 });
+    await guest.waitForSelector('text=Outpost-813\'s rear landing pad', { timeout: 30000 });
     await host.getByLabel('What do you do?').fill('I walk up the ramp with 4-Ten on my shoulders.'); await click(host, 'Send', { exact: true }); await click(host, 'End turn', { exact: true });
     await guest.getByLabel('What do you do?').fill('I cover him from the wreck line.'); await click(guest, 'Send', { exact: true }); await click(guest, 'End turn', { exact: true });
-    await host.waitForSelector('text=CLICK TO ROLL', { timeout: 15000 });
+    await host.waitForSelector('text=CLICK TO ROLL', { timeout: 30000 });
     await settle(host, 300);
     if (!(await host.locator('div[aria-label="Dice table"]').count())) await host.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
     await click(host, /Throw/);
     await host.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/');
     await click(host, 'Continue', { exact: true });
     await host.waitForSelector('text=Initiative', { timeout: 10000 }).catch(() => {});
-    await guest.waitForFunction(() => { const g = window.__phc.getState().game; return !!(g && g.combat); }, null, { timeout: 15000 });
+    await guest.waitForFunction(() => { const g = window.__phc.getState().game; return !!(g && g.combat); }, null, { timeout: 30000 });
 
     // ----- B. a lost view -----
     if (PARTS.includes('B')) {
       const v = (p) => p.evaluate(() => window.__phc.getState().game.v);
-      await guest.waitForFunction((hv) => window.__phc.getState().game.v >= hv, await v(host), { timeout: 15000 });
+      await guest.waitForFunction((hv) => window.__phc.getState().game.v >= hv, await v(host), { timeout: 30000 });
       const before = await guest.evaluate(() => window.__phc.net().resyncs);
       tap.drop = true;
       await host.evaluate(() => { const s = window.__phc.getState(), c = Object.values(s.game.characters).find((x) => x.owner === s.me.id); window.__phc.act({ type: 'combat/say', charId: c.id, text: 'Eyes up.' }); });
       const hv = await v(host);
       // the tap drops the view of that action; only an answer to the guest's own check-in gets through (within 5 s)
-      const ok = await guest.waitForFunction((hv) => window.__phc.getState().game.v >= hv, hv, { timeout: 15000 }).then(() => true, () => false);
+      const ok = await guest.waitForFunction((hv) => window.__phc.getState().game.v >= hv, hv, { timeout: 30000 }).then(() => true, () => false);
       tap.drop = false;
       const n = await guest.evaluate(() => window.__phc.net());
       check(tap.dropped > 0, 'the view of the host\'s line was lost on the way (' + tap.dropped + ' dropped)');
@@ -142,7 +142,7 @@ async function browsers() {
           if (await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'); return d ? d.getAttribute('data-lock') || '' : 'none'; })) continue;
           await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
           const conf = p.getByRole('button', { name: 'Confirm', exact: true });
-          try { if (await conf.isEnabled({ timeout: 15000 })) { await conf.click({ timeout: 15000 }); attacks++; } else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 15000 }); acts++; } catch (e) { log('      a click did not land (' + p.pname + '): ' + String(e.message).split('\n')[0]); }
+          try { if (await conf.isEnabled({ timeout: 30000 })) { await conf.click({ timeout: 30000 }); attacks++; } else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 30000 }); acts++; } catch (e) { log('      a click did not land (' + p.pname + '): ' + String(e.message).split('\n')[0]); }
           await settle(p, 60);
           // a long fight is not a stall: say once what it looks like (who is left, how far apart)
           if (acts === 40) log('      a long fight: ' + attacks + ' attacks in 40 actions · ' + JSON.stringify(await host.evaluate(() => { const cb = window.__phc.getState().game.combat; return { round: cb.round, units: cb.units.map((u) => u.name + ' ' + u.side + ' ' + u.pos + ' hp ' + u.hp + (u.dead ? ' dead' : u.downed ? ' downed' : '')) }; })));

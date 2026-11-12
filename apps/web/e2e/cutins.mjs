@@ -38,11 +38,11 @@ await host.getByPlaceholder('Leon').fill('Leon');
 await click(host, 'With friends ›');
 await until(host, () => !!window.__phc.getState().game?.sandbox);
 const invite = host.locator('div[role="dialog"][aria-label="Invite friends"]');
-await invite.waitFor({ timeout: 15000 });
+await invite.waitFor({ timeout: 30000 });
 const code = (await G(host)).code;
 await invite.getByRole('button', { name: 'Gear up ›' }).click();
 await mai.goto(BASE);
-await click(mai, 'JOIN A FRIEND', { timeout: 20000 });
+await click(mai, 'JOIN A FRIEND', { timeout: 30000 });
 await mai.getByPlaceholder('Leon').fill('Mai');
 await mai.getByPlaceholder('ROOM CODE').fill(code);
 await click(mai, 'Join ›');
@@ -150,20 +150,30 @@ ok('the guest sees the same cut-in (' + (mtd && mtd.label + ' · ' + mtd.caption
 await settle(host);
 const n0 = (await logs(host)).length;
 await host.evaluate((id) => window.dispatchEvent(new CustomEvent('phc:cutin', { detail: { kind: 'god', patron: 'toll_keeper', char: id, reason: 'Stays at 1 HP', line: 'Not yet. You haven\'t paid.' } })), hostChar.id);
-const godStrip = await host.locator('[data-phc-spotlight-strip="p:toll_keeper"]').waitFor({ timeout: 15000 }).then(() => true, () => false);
+const godStrip = await host.locator('[data-phc-spotlight-strip="p:toll_keeper"]').waitFor({ timeout: 30000 }).then(() => true, () => false);
 await pause(host, 550); await snap(host, 'e-god');
 let last = (await logs(host)).slice(n0)[0];
 ok('the trigger API shows the patron\'s torn strip first (' + (last && last.label) + ': ' + (last && last.strips.join(' + ')) + ')', godStrip && !!last && last.label === 'INTERVENTION · THE TOLL-KEEPER' && last.strips[0] === 'The Toll-Keeper');
 await pause(host, 1600);
-const n1 = (await logs(host)).length;
-await host.evaluate(() => window.dispatchEvent(new CustomEvent('phc:cutin', { detail: { kind: 'god', patron: 'old_overcast', char: null, reason: 'Rain' } })));
-// (click as soon as its strip is on the page, then wait until the page says it ended: no counted milliseconds)
-await host.locator('[data-phc-spotlight-strip="p:old_overcast"]').waitFor({ timeout: 15000 }).catch(() => {});
-await host.mouse.click(700, 500);
-await host.waitForFunction((b) => { const c = (window.__phcCutins || []).slice(b)[0]; return !!c && !!c.end && !document.querySelector('[data-phc-spotlight]'); }, n1, { timeout: 15000 }).catch(() => {});
-last = (await logs(host)).slice(n1)[0];
-// (`skipped` is the page's own word for it; and it ended sooner than it lasts by itself, 1.4 s × the speed)
-ok('a click skips it (gone in ' + (last && last.end - last.at) + ' ms)', !!last && last.skipped === true && last.end - last.at < 1300 * K && !(await host.locator('[data-phc-spotlight]').count()));
+// A click skips it. The cut-in is up for 1.4 s and takes a click from 150 ms in (spotlight/timing.ts CUTIN_ARM_MS): a
+// real click from this script has to land in that window, and on a busy machine it can land after it. The page notes
+// when the click reached it; a click that came too early or too late proves nothing either way, and the cut-in is asked
+// for again (five times at most). A click that came in time must end it, at once, and the page must call it skipped.
+let skip = null, skipTries = 0;
+for (; skipTries < 5 && !skip; skipTries++) {
+  await settle(host);
+  const n1 = (await logs(host)).length;
+  await host.evaluate(() => { window.__clickAt = 0; window.addEventListener('pointerdown', () => { window.__clickAt = performance.now(); }, { capture: true, once: true });
+    window.dispatchEvent(new CustomEvent('phc:cutin', { detail: { kind: 'god', patron: 'old_overcast', char: null, reason: 'Rain' } })); });
+  await host.locator('[data-phc-spotlight-strip="p:old_overcast"]').waitFor({ timeout: 30000 }).catch(() => {});
+  await pause(host, 160);
+  await host.mouse.click(700, 500);
+  await host.waitForFunction((b) => { const c = (window.__phcCutins || []).slice(b)[0]; return !!c && !!c.end && !document.querySelector('[data-phc-spotlight]'); }, n1, { timeout: 30000 }).catch(() => {});
+  last = (await logs(host)).slice(n1)[0];
+  const clickAt = await host.evaluate(() => window.__clickAt);
+  if (last && clickAt && clickAt >= last.at + 150 && clickAt < last.at + 1300 * K) skip = { skipped: last.skipped, after: Math.round(last.end - clickAt), len: Math.round(last.end - last.at) };
+}
+ok('a click skips it (the click reached the page ' + (skip ? 'in time on try ' + skipTries + ': gone ' + skip.after + ' ms after it, ' + skip.len + ' ms in all' : 'too late, ' + skipTries + ' times') + ')', !!skip && skip.skipped === true && skip.after < 600 && !(await host.locator('[data-phc-spotlight]').count()));
 
 // 4b. (f) A crit (Leon: "play it when a critical hit appear in combat too"): a sturdy trooper beside the host's fighter,
 // the host's dice set so the shot's d20 is a natural 20 (a test hook on the host's own state, as the Warden's HP above).
@@ -206,7 +216,7 @@ if (cr) {
   critStrip = (await spied(host)).crit === 1;
   await pause(host, 140); await snap(host, 'f-crit');
   // the casing: thrown out behind the shooter when the slowed shot plays (after the cut-in), never before it
-  casingAt = await host.waitForFunction(() => window.__casingAt || 0, null, { timeout: 15000 }).then((h) => h.jsonValue(), () => 0);
+  casingAt = await host.waitForFunction(() => window.__casingAt || 0, null, { timeout: 30000 }).then((h) => h.jsonValue(), () => 0);
   await settle(host); await pause(host, 700);
   critCut = (await logs(host)).slice(cr.nb).find((x) => x.kind === 'crit');
 }
@@ -236,7 +246,7 @@ const nh = (await logs(host)).length;
 await host.evaluate((uid) => { const cb = window.__phc.getState().game.combat, u = cb.units.find((x) => x.id === uid); u.conds = { ...(u.conds || {}), witnessed: 99 }; u.ammo = 0; delete (u.faith || {}).intervened; if (u.faith) u.faith.interventions = 0; u.ap = Math.max(u.ap, 4); }, me.id);
 await spy(host);
 const re = await act(host, { type: 'combat/reload', unitId: me.id });
-const god = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), nh, { timeout: 15000 }).then(() => true, () => false);
+const god = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), nh, { timeout: 30000 }).then(() => true, () => false);
 let godStrip2 = false, faithCut = 0;
 if (god) { await host.waitForFunction(() => window.__spy.strips.length > 0, null, { timeout: 15000 }).catch(() => {}); const sp = await spied(host); godStrip2 = sp.strips.filter((x) => x === 'p:the_quartermaster').length === 1; faithCut = sp.overlap ? 1 : await host.locator('[data-phc-cut]').count(); await pause(host, 450); await snap(host, 'h-god'); }
 await settle(host); await pause(host, 600);
@@ -252,7 +262,7 @@ me = await hostsTurn(); await settle(host);
 const fm = await act(host, { type: 'sandbox/faith', charId: hostChar.id, belief: 'faithful', patron: 'mother_ember', faith: 7, devotion: 10, reset: true });
 const ni = (await logs(host)).length;
 const pe = await act(host, { type: 'faith/pray', unitId: me.id, kind: 'miracle' });
-const mUp = await host.locator('[data-phc-cut="full"]').waitFor({ timeout: 15000 }).then(() => true, () => false);
+const mUp = await host.locator('[data-phc-cut="full"]').waitFor({ timeout: 30000 }).then(() => true, () => false);
 let overlap = false;
 if (mUp) {
   await pause(host, 700); await snap(host, 'i-miracle');
@@ -263,7 +273,7 @@ if (mUp) {
   if (await host.locator('[data-phc-spotlight-strip="p:nerukhan"]').waitFor({ timeout: 30000 }).then(() => true, () => false)) { await pause(host, 250); await snap(host, 'i-after-miracle'); }
   overlap = (await spied(host)).overlap;
 }
-const waited = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), ni, { timeout: 15000 }).then(() => true, () => false);
+const waited = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), ni, { timeout: 30000 }).then(() => true, () => false);
 await settle(host); await pause(host, 400);
 ok('a Miracle cuts in (' + (fm || pe || 'prayed') + ')', !fm && !pe && mUp);
 const after = (await logs(host)).slice(ni).find((x) => x.kind === 'god');
@@ -282,7 +292,7 @@ await click(nora, 'Next ›'); await click(nora, 'Next ›'); await click(nora, 
 await click(nora, 'Next ›'); await click(nora, 'Lock in and bring to the room');
 await nora.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(nora, 'Start session');
-await nora.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 15000 });
+await nora.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 30000 });
 const room2 = (await G(nora)).code;
 await zed.goto(BASE);
 await click(zed, 'SETTINGS', { timeout: 30000 });
@@ -291,7 +301,7 @@ await zed.locator('[data-phc-cutins="off"]').click();
 const pref = await zed.evaluate(() => JSON.parse(localStorage.getItem('phc.ui') || '{}').cutins);
 ok('Settings: Cut-ins Off is saved (' + pref + ') and pressed', pref === 'off' && (await zed.locator('[data-phc-cutins="off"]').getAttribute('aria-pressed')) === 'true');
 await zed.goto(BASE);
-await click(zed, 'JOIN A FRIEND', { timeout: 20000 });
+await click(zed, 'JOIN A FRIEND', { timeout: 30000 });
 await zed.getByPlaceholder('Leon').fill('Zed');
 await zed.getByPlaceholder('ROOM CODE').fill(room2);
 await click(zed, 'Join ›');
@@ -310,7 +320,7 @@ const rolled = await nora.evaluate((id) => window.__phc.getState().game.checks.f
 ok('the die shows a natural 20 (' + (rolled && rolled.die) + ')', !!rolled && rolled.die === 20);
 await spy(nora);
 await act(nora, { type: 'check/accept', checkId: ck.id });
-const critShown = await nora.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((x) => x.kind === 'crit'), b1, { timeout: 15000 }).then(() => true, () => false);
+const critShown = await nora.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((x) => x.kind === 'crit'), b1, { timeout: 30000 }).then(() => true, () => false);
 await nora.waitForFunction(() => window.__spy.strips.length > 0, null, { timeout: 15000 }).catch(() => {});
 const blurNow = (await spied(nora)).blur;
 await pause(nora, 400); await snap(nora, 'b-crit');

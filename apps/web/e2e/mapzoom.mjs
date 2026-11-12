@@ -18,10 +18,10 @@ await click(p, 'PROVING GROUND', { timeout: 90000 });
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await act(p, { type: 'sandbox/ai', on: false });
 await act(p, { type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 await settle(p, 2200);
 const calm = async () => { for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await settle(p, 450); } };
 await calm();
@@ -77,7 +77,7 @@ if (SHOTS) await p.screenshot({ path: SHOTS + '/mapzoom-250.png' });
 // 4. Kept after a reload; Auto again.
 await p.keyboard.press('-'); await settle(p, 200);
 await p.reload();
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !!document.querySelector('.phc-mapzoom'), null, { timeout: 20000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !!document.querySelector('.phc-mapzoom'), null, { timeout: 30000 });
 await settle(p, 1500); await calm();
 ok('after a reload the size is kept: ' + (await pct()), (await pct()) === '225%');
 await autoBtn().click(); await settle(p, 500);

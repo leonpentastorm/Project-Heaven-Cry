@@ -37,7 +37,7 @@ await p.locator('.phc-press').waitFor({ timeout: 90000 }); await settle(p, 1500)
 a = await titleAudio(p);
 ok('autoplay refused: nothing plays before a gesture (' + JSON.stringify(a) + ')', !a || a.paused);
 await p.keyboard.press('Space');
-a = await p.waitForFunction(() => { const a = window.__phcTitleAudio?.(); return a && !a.paused ? { paused: a.paused, src: a.src, t: a.currentTime } : null; }, null, { timeout: 20000 }).then((h) => h.jsonValue(), () => titleAudio(p));
+a = await p.waitForFunction(() => { const a = window.__phcTitleAudio?.(); return a && !a.paused ? { paused: a.paused, src: a.src, t: a.currentTime } : null; }, null, { timeout: 30000 }).then((h) => h.jsonValue(), () => titleAudio(p));
 ok('the first key starts it (' + JSON.stringify(a) + ')', !!a && !a.paused);
 
 // 3. The Proving Ground's banner (a fresh page, as sandbox.mjs opens it)
@@ -50,7 +50,7 @@ await click(p, 'PROVING GROUND', { timeout: 90000 });
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 // (until the banner's picture has loaded: a picture still on its way has no width yet)
 await p.waitForFunction(() => [...document.querySelectorAll('img')].some((x) => /ill-proving-ground-drill-yard/.test(x.src) && x.naturalWidth > 0 && x.getBoundingClientRect().height > 0), null, { timeout: 30000 }).catch(() => {});
 // the tools centre's banner (the story column's copy is hidden under it)

@@ -6,7 +6,7 @@ import { chromium, click, BASE, OUT, pause } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const act = (p, a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
-const myTurn = (p) => p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 15000 });
+const myTurn = (p) => p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 30000 });
 
 async function open(ctx, vw, vh) {
   const p = await ctx.newPage(); await p.setViewportSize({ width: vw, height: vh });
@@ -16,10 +16,10 @@ async function open(ctx, vw, vh) {
   const nm = p.getByPlaceholder('Leon');
   await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
   await act(p, { type: 'sandbox/ai', on: false });
   await act(p, { type: 'sandbox/fight' });
-  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
   await myTurn(p); await pause(p, 1800);
   return p;
 }
@@ -90,7 +90,7 @@ ok('H shows the panel again', (await p.locator('.phc-cb-hide').count()) > 0 && (
   await tabs.first().click(); }
 // ----- customise the four commands -----
 await p.locator('button.phc-cb-link').first().click();
-const dlg = p.locator('[data-phc-cmds-dialog]'); await dlg.waitFor({ timeout: 15000 });
+const dlg = p.locator('[data-phc-cmds-dialog]'); await dlg.waitFor({ timeout: 30000 });
 await p.screenshot({ path: OUT + 'slate-combat-customise.png' });
 await dlg.locator('[data-slot="1"]').click();
 await dlg.locator('[data-cmd="reload"]').first().click();
@@ -100,7 +100,7 @@ ok('slot 1 now reads: ' + slot1, /Reload|Swap magazine/i.test(slot1));
 await dlg.getByRole('button', { name: 'Save', exact: true }).click(); await pause(p, 300);
 ok('Save closes the dialog and stores the choice: ' + await p.evaluate(() => localStorage.getItem('phc.cutinCmds')), (await dlg.count()) === 0 && /reload/.test(String(await p.evaluate(() => localStorage.getItem('phc.cutinCmds')))));
 await p.getByRole('button', { name: 'End turn', exact: true }).first().click();
-await p.waitForSelector('[data-phc-cutin]', { timeout: 15000 });
+await p.waitForSelector('[data-phc-cutin]', { timeout: 30000 });
 // Keep the card up while the checks run (it closes itself after 2 s unless hovered).
 await p.locator('[data-phc-cutin]').first().hover().catch(() => {});
 const card = await p.locator('[data-phc-cutin] button[data-act]').allTextContents();
@@ -111,13 +111,13 @@ const acts = await p.locator('[data-phc-cutin] button[data-act]').evaluateAll((b
 ok('the smart default fills the other slots in its order, Shoot kept: ' + acts.join(' | '), acts.length === 4 && acts[1] === 'tq:main:shot' && acts[2] === 'move' && new Set(acts).size === 4);
 await p.screenshot({ path: OUT + 'slate-combat-cutin-custom.png' });
 // customise from the card (C), then reset
-await p.keyboard.press('c'); await dlg.waitFor({ timeout: 15000 });
+await p.keyboard.press('c'); await dlg.waitFor({ timeout: 30000 });
 await dlg.getByRole('button', { name: 'Reset to smart default' }).click();
 await dlg.getByRole('button', { name: 'Save', exact: true }).click(); await pause(p, 300);
 ok('Reset clears the choice: ' + await p.evaluate(() => localStorage.getItem('phc.cutinCmds')), !/reload/.test(String(await p.evaluate(() => localStorage.getItem('phc.cutinCmds')))));
 await dismissCut(p);
 await p.getByRole('button', { name: 'End turn', exact: true }).first().click();
-await p.waitForSelector('[data-phc-cutin]', { timeout: 15000 });
+await p.waitForSelector('[data-phc-cutin]', { timeout: 30000 });
 const first2 = await p.locator('[data-phc-cutin] button[data-act]').first().getAttribute('data-act');
 ok('the card is smart again (slot 1: ' + first2 + ')', first2 !== 'reload');
 ok('no page errors' + (p.errors.length ? ': ' + p.errors.join(' | ') : ''), !p.errors.length);

@@ -17,11 +17,11 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   const nm = p.getByPlaceholder('Leon');
   await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-  await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
   const cid = Object.keys((await G(p)).characters)[0];
   for (const [perk, tier] of [['shrug_it_off', 'I'], ['trick_shot', 'mastered'], ['last_wall', 'mastered'], ['used_to_the_pain', 'I'], ['real_power', 'I']]) await act(p, { type: 'sandbox/perk', charId: cid, perk, tier });
   await act(p, { type: 'sandbox/ai', on: false }); await act(p, { type: 'sandbox/fight' });
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
   await myTurnPanel(p); await settle(p, 800); await dismiss(p);
   await p.locator('#phc-tab-perks').click(); await settle(p, 300);
   const panel = p.locator('[role="tabpanel"]');
@@ -90,12 +90,12 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   await p.locator('button', { hasText: 'Field medic' }).first().click(); await click(p, 'Next ›');
   await click(p, 'Lock in and bring to the room'); await p.waitForSelector('text=✓ LOCKED IN');
   await p.evaluate(() => window.__phc.setNarrator({ scripted: true }));
-  await click(p, 'Start session'); await p.waitForSelector('text=The rear pad', { timeout: 15000 });
+  await click(p, 'Start session'); await p.waitForSelector('text=The rear pad', { timeout: 30000 });
   await p.getByLabel('What do you do?').fill('I walk up the ramp.'); await click(p, 'Send', { exact: true }); await click(p, 'End turn', { exact: true });
-  await p.waitForSelector('text=CLICK TO ROLL', { timeout: 15000 }); await settle(p, 300);
+  await p.waitForSelector('text=CLICK TO ROLL', { timeout: 30000 }); await settle(p, 300);
   if (!(await p.locator('div[aria-label="Dice table"]').count())) await p.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
   await click(p, /Throw/); await p.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/'); await click(p, 'Continue', { exact: true });
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 20000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
   // wait for MPAT's own turn on screen (hostiles may go first)
   for (let i = 0; i < 6; i++) { const mine = await p.evaluate(() => { const g = window.__phc.getState().game, cb = g.combat, u = cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.side === 'pc'; }); if (mine) break; await settle(p, 2500); }
   await myTurnPanel(p); await dismiss(p);
@@ -108,7 +108,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   const attOn = await att().evaluate((b) => new Promise((res) => { const t0 = Date.now(); const tick = () => (!b.disabled ? res(true) : Date.now() - t0 > 3000 ? res(false) : setTimeout(tick, 100)); tick(); }));
   ok('Attempt is on, and says its price: ' + (await att().innerText()) + ' (' + (await att().getAttribute('title')) + ')', attOn && /1 AP/.test(await att().innerText()));
   const n1 = (await G(p)).combat.log.length; await att().click();
-  const deciding = await p.waitForSelector('text=/The Narrator is deciding/', { timeout: 15000 }).then(() => true, () => false);
+  const deciding = await p.waitForSelector('text=/The Narrator is deciding/', { timeout: 30000 }).then(() => true, () => false);
   await p.waitForFunction(() => !window.__phc.getState().game.combat.ruling && !(window.__phc.getState().game.combat.pending || []).length, null, { timeout: 30000 }).catch(() => {});
   await settle(p, 800);
   const g2 = await G(p), fresh = g2.combat.log.slice(n1);

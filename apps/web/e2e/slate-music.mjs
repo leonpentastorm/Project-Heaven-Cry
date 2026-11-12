@@ -17,7 +17,7 @@ async function create(page, name) {
   await page.locator('main button[aria-pressed]').first().click();
   await click(page, 'Next ›'); await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›'); await page.locator('button', { hasText: 'Line soldier' }).first().click(); await click(page, 'Next ›');
-  await click(page, 'Lock in and bring to the room'); await page.waitForSelector('text=✓ LOCKED IN', { timeout: 15000 });
+  await click(page, 'Lock in and bring to the room'); await page.waitForSelector('text=✓ LOCKED IN', { timeout: 30000 });
 }
 const music = (p) => p.locator('button[aria-label^="Music:"]').getAttribute('aria-label', { timeout: 500 }).catch(() => null);
 const ostNow = (p) => p.evaluate(() => window.__phcOst?.now?.() ?? null);
@@ -32,8 +32,8 @@ await guest.goto(BASE + '/?room=' + code); await guest.getByPlaceholder('Leon').
 await guest.waitForSelector('text=The squad'); await create(guest, 'Reed');
 await pause(host, 600);
 await host.getByRole('button', { name: /Proving Ground/ }).first().click();
-await host.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
-await guest.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
+await guest.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 ok('both are gearing up on the map: host ' + await host.evaluate(() => window.__phc.getState().screen) + ', guest ' + await guest.evaluate(() => window.__phc.getState().screen),
   (await host.evaluate(() => window.__phc.getState().screen)) === 'main' && (await guest.evaluate(() => window.__phc.getState().screen)) === 'main');
 // 0. gearing up: Gearing Up, in both browsers (the label, and the track each page's player holds)
@@ -43,9 +43,9 @@ ok('both are gearing up on the map: host ' + await host.evaluate(() => window.__
 await host.screenshot({ path: OUT + 'slate-music-gearing-up.png' });
 await act(host, { type: 'sandbox/ai', on: false });
 // 1. a plain wave: the fight's song, one of the pool (the NOW PLAYING card shows for 5 s after the change: watch for it from the start)
-const cardSeen = host.locator('[role="status"]', { hasText: '♪ NOW PLAYING' }).filter({ hasText: new RegExp(Object.values(POOL).join('|')) }).first().waitFor({ state: 'visible', timeout: 15000 }).then(() => true, () => false);
+const cardSeen = host.locator('[role="status"]', { hasText: '♪ NOW PLAYING' }).filter({ hasText: new RegExp(Object.values(POOL).join('|')) }).first().waitFor({ state: 'visible', timeout: 30000 }).then(() => true, () => false);
 await act(host, { type: 'sandbox/fight' });
-await host.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 const song1 = (await G(host)).combat.song, title1 = POOL[song1], re1 = new RegExp('^Music: ' + title1 + ' by Project Heaven Cry OST');
 ok('wave 1 has a song of the pool: ' + song1 + ' (the guest\'s state: ' + (await G(guest)).combat?.song + ')', !!title1 && (await G(guest)).combat?.song === song1);
 const m1 = await waitMusic(host, re1); const m1g = await waitMusic(guest, re1);
@@ -56,23 +56,23 @@ await host.screenshot({ path: OUT + 'slate-music-fight-song.png' });
 ok('the NOW PLAYING card named the fight\'s song', await cardSeen);
 // 1b. stop: Gearing Up is back; the next plain fight plays another song of the pool
 ok('stop the fight: ' + (await act(host, { type: 'sandbox/stop' }) || 'ok'), true);
-await host.waitForFunction(() => window.__phc.getState().game.phase === 'story', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.phase === 'story', null, { timeout: 30000 });
 { const b = await waitMusic(host, /Gearing Up/), bg = await waitMusic(guest, /Gearing Up/);
   ok('between fights Gearing Up is back (host: ' + b + ', guest: ' + bg + ')', /Gearing Up/.test(b || '') && /Gearing Up/.test(bg || '') && (await waitOst(host, 'gearing_up')) === 'gearing_up'); }
 await act(host, { type: 'sandbox/fight' });
-await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat' && !!window.__phc.getState().game.combat?.song, null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat' && !!window.__phc.getState().game.combat?.song, null, { timeout: 30000 });
 { const song2 = (await G(host)).combat.song, re2 = new RegExp('^Music: ' + POOL[song2] + ' by Project Heaven Cry OST');
   const m = await waitMusic(host, re2), mg = await waitMusic(guest, re2);
   ok('the second fight plays another song of the pool: ' + song2 + ' after ' + song1 + ' (host: ' + m + ', guest: ' + mg + ')', !!POOL[song2] && song2 !== song1 && re2.test(m || '') && re2.test(mg || '')); }
 // 2. stop, a boss on the map, fight: Heaven Falls
 ok('stop the fight: ' + (await act(host, { type: 'sandbox/stop' }) || 'ok'), true);
-await host.waitForFunction(() => window.__phc.getState().game.phase === 'story', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.phase === 'story', null, { timeout: 30000 });
 await act(host, { type: 'sandbox/clear' });
 let err = null;
 for (const at of ['M6', 'L6', 'N6', 'M8', 'L8', 'K6']) { err = await act(host, { type: 'sandbox/spawn', tier: 'boss', weapon: 'drifter_revolver', at }); if (!err) break; }
 ok('a boss stands on the map' + (err ? ': ' + err : ''), !err);
 await act(host, { type: 'sandbox/fight' });
-await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat' && !!window.__phc.getState().game.combat?.song, null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat' && !!window.__phc.getState().game.combat?.song, null, { timeout: 30000 });
 // Rules 1.16 (the 26 × 26 ground: the sides start 10 to 14 tiles apart): that boss begins in the fog of war, and until
 // the party has seen it neither the track nor its label gives it away (packages/engine/src/music.ts fightTheme).
 const bossSeen = () => host.evaluate(() => { const cb = window.__phc.getState().game.combat; return !!cb && cb.units.some((u) => u.side === 'foe' && u.tier === 'boss' && !u.dead && (cb.sighted || []).includes(u.id)); });
@@ -86,7 +86,7 @@ if (!(await bossSeen())) {
       if ((m.solid || []).includes(k) || cb.units.some((u) => !u.dead && u.pos === k) || (cb.objects || []).some((o) => o.pos === k)) continue;
       return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x + dx] + (y + dy + 1); } return null; });
   const e2 = beside ? await act(host, { type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: beside }) : 'no free tile';
-  const seenNow = await host.waitForFunction(() => { const cb = window.__phc.getState().game.combat; return cb.units.some((u) => u.side === 'foe' && u.tier === 'boss' && (cb.sighted || []).includes(u.id)); }, null, { timeout: 15000 }).then(() => true, () => false);
+  const seenNow = await host.waitForFunction(() => { const cb = window.__phc.getState().game.combat; return cb.units.some((u) => u.side === 'foe' && u.tier === 'boss' && (cb.sighted || []).includes(u.id)); }, null, { timeout: 30000 }).then(() => true, () => false);
   ok('a boss steps into the party\'s sight (' + (e2 || 'placed at ' + beside) + ')', !e2 && seenNow);
 }
 const m2 = await waitMusic(host, /Heaven Falls/), m2g = await waitMusic(guest, /Heaven Falls/);
@@ -124,7 +124,7 @@ await host.screenshot({ path: OUT + 'slate-music-last-rounds.png' });
 ok('the OST files were fetched: ' + [...new Set(fetched)].join(', '), ['gearing-up', song1.replace(/_/g, '-'), 'heaven-falls', 'last-rounds'].every((n) => fetched.some((f) => f.startsWith(n + '.mp3') && /20[06]$/.test(f))));
 // 4. leave: both on the room screen
 await act(host, { type: 'sandbox/stop' });
-await host.waitForFunction(() => window.__phc.getState().game.phase === 'story', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.phase === 'story', null, { timeout: 30000 });
 await pause(host, 400);
 const leave = host.getByRole('button', { name: 'Leave', exact: true });
 if (await leave.count()) await leave.first().click(); else await host.evaluate(() => window.__phc.act({ type: 'sandbox/end' }));

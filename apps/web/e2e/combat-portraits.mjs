@@ -28,13 +28,13 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 const meChar = await p.evaluate(() => { const g = window.__phc.getState().game, me = window.__phc.getState().me.id; return Object.values(g.characters).find((c) => c.owner === me).id; });
 await act({ type: 'sandbox/give', charId: meChar, item: 'hellraiser_service_rifle', equip: true });
 // A combat drone companion with its own face, and a beast with none (rules 1.3: they fight beside their owner).
 await p.evaluate((id) => { const c = window.__phc.getState().game.characters[id]; c.companions = [{ id: 'd1', kind: 'drone', name: 'Combat drone', img: 'char-m813-scavenger-drone' }, { id: 'b1', kind: 'beast', name: 'Grey hound' }]; }, meChar);
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 await pause(p, 2400);
 for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 880); await pause(p, 380); }
 await settle();
@@ -154,7 +154,7 @@ async function critBy(test, target) {
     const err = await act({ type: 'combat/attack', unitId: u.id, targetId: tid, mode: 'shot' });
     if (err) { console.log('note ' + u.name + ': ' + err); await act({ type: 'combat/end-turn', unitId: u.id }); continue; }
     const strip = p.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-face]').first();
-    if (!(await strip.waitFor({ timeout: 15000 }).then(() => true, () => false))) continue;
+    if (!(await strip.waitFor({ timeout: 30000 }).then(() => true, () => false))) continue;
     await p.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-words]').first().waitFor({ timeout: 3000 }).catch(() => {});
     await pause(p, 450);
     const face = await strip.evaluate((el) => ({ kind: el.getAttribute('data-phc-spotlight-face'), href: el.getAttribute('href') || el.textContent }));

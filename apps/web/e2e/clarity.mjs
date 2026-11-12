@@ -65,8 +65,8 @@ async function run(speed) {
   const nm = p.getByPlaceholder('Leon');
   await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
-  await p.waitForSelector('[data-phc-float="music"]', { timeout: 15000 });
+  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
+  await p.waitForSelector('[data-phc-float="music"]', { timeout: 30000 });
   ok('combat speed is ' + speed, (await p.evaluate(() => window.__phcCombatSpeed.get())) === speed);
 
   // (a) The floating buttons: tucked to a tab at rest, out when the pointer comes near; one out hides the other.
@@ -109,7 +109,7 @@ async function run(speed) {
   await p.evaluate(WATCH);
   const t0 = await p.evaluate(() => performance.now());
   ok('the fight starts', (await act({ type: 'sandbox/fight' })) === null);
-  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
   // The opening: the drill units walk in from the far side, some of it in the blockhouse's shadow.
   // The opening waits for the combat-in transition, then plays (the turn hold counts from then).
   await p.waitForFunction(() => !document.querySelector('.phc-combat-in') && (window.__phcCombatTempo().fx || []).length > 0, null, { timeout: 8000 }).catch(() => {});

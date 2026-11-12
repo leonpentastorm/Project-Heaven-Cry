@@ -70,7 +70,7 @@ async function openGround(browser, speed) {
   const nm = p.getByPlaceholder('Leon');
   await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-  await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
   // the driver: act (the engine's refusal as a string), wait for the effects queue to run dry, and one case
   await p.evaluate(() => {
     const st = () => window.__phc.getState().game, sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -197,8 +197,8 @@ async function enterRoom(R, first) {
   const charId = (await R.G()).chars[0];
   if (first) { await A({ type: 'sandbox/skills', charId, points: 10 }); await A({ type: 'sandbox/technique', charId, id: 'all', ready: true }); }
   const e = await A({ type: 'sandbox/fxtest' }); if (e) throw new Error('the Effect testing room refused: ' + e);
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 30000 });
   await p.evaluate(() => window.__sweep.idle(300, 15000));
   return charId;
 }
@@ -361,8 +361,8 @@ async function fogPart() {
   await A({ type: 'sandbox/skills', charId, points: 10 }); await A({ type: 'sandbox/technique', charId, id: 'all', ready: true });
   await A({ type: 'sandbox/give', charId, item: 'smetanita_thumper', equip: true });
   await A({ type: 'sandbox/ai', on: false }); await A({ type: 'sandbox/fight' });
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 30000 });
   await p.evaluate(() => window.__sweep.idle(400, 15000));
   await A({ type: 'sandbox/clear' }); await pause(p, 300);
   const tiles = () => p.evaluate(() => [...document.querySelectorAll('button.phc-tok[aria-label]')].map((b) => b.getAttribute('aria-label')));
@@ -430,8 +430,8 @@ async function glyphPart() {
   const charId = (await R.G()).chars[0];
   for (const a of [{ type: 'sandbox/kit', charId, kind: 'sigil' }, { type: 'sandbox/skill', charId, skill: 'brain_power', points: 3 }, { type: 'sandbox/give', charId, item: 'evoker_blade', equip: true },
     { type: 'sandbox/give', charId, item: 'standard_core', qty: 3 }, { type: 'sandbox/learn', charId, word: 'fire' }, { type: 'sandbox/learn', charId, word: 'seek' }, { type: 'sandbox/ai', on: false }, { type: 'sandbox/fight' }]) await A(a);
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 30000 });
   await p.evaluate(() => window.__sweep.idle(600, 15000));
   await A({ type: 'sandbox/clear' });
   const me = (await R.G()).units.find((u) => u.side === 'pc'), [x, y] = me.pos.split(',').map(Number), K = (dx) => (x + dx) + ',' + y;

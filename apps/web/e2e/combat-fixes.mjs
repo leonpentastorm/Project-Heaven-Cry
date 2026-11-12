@@ -17,12 +17,12 @@ await click(p, 'PROVING GROUND', { timeout: 90000 });
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, /^Solo ›/); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 
 // 1. The skill buttons.
 const drawer = p.locator('aside[aria-label="Proving Ground tools"]');
 if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
-await drawer.waitFor({ timeout: 15000 });
+await drawer.waitFor({ timeout: 30000 });
 for (const name of ['Squad', 'Character', 'You']) { const t = drawer.getByRole('tab', { name, exact: true }); if (await t.count()) { await t.click(); break; } }
 const one = drawer.getByRole('button', { name: 'Max Athletics' });
 await one.scrollIntoViewIfNeeded(); await one.click(); await settle(p, 400);
@@ -38,8 +38,8 @@ ok('All to 0 clears them', Object.values((await ch()).skills).every((v) => !v));
 // 2. The enemies' turns: a move clicked while they still play waits.
 await act({ type: 'sandbox/ai', on: true });
 await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
-const myTurn = () => p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 20000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
+const myTurn = () => p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 30000 });
 await myTurn(); await settle(p, 3500);
 for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await settle(p, 400); }
 const me = () => p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb.units.find((x) => x.side === 'pc'); });

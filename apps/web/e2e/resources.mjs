@@ -23,7 +23,7 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 let g = await G();
 let me = Object.values(g.characters)[0].id;
 
@@ -31,14 +31,14 @@ let me = Object.values(g.characters)[0].id;
  *  turn, with the cut-in dismissed. The drill units pass their turns (AI off), so nothing changes under the test. */
 async function build(steps) {
   g = await G();
-  if (g.sandbox) { await act({ type: 'sandbox/end' }); await p.waitForFunction(() => !window.__phc.getState().game.sandbox, null, { timeout: 15000 }); }
+  if (g.sandbox) { await act({ type: 'sandbox/end' }); await p.waitForFunction(() => !window.__phc.getState().game.sandbox, null, { timeout: 30000 }); }
   await act({ type: 'sandbox/start', standalone: true });
-  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
   g = await G(); me = Object.values(g.characters)[0].id;
   await act({ type: 'sandbox/ai', on: false });
   for (const a of steps) { const e = await act({ ...a, charId: me }); if (e) console.log('  (' + a.type + ': ' + e + ')'); }
   await act({ type: 'sandbox/fight' });
-  await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.combat; }, null, { timeout: 15000 });
+  await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.combat; }, null, { timeout: 30000 });
   for (let i = 0; i < 30; i++) { g = await G(); const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]); if (cur && cur.charId === me) break; if (cur) await act({ type: 'combat/end-turn', unitId: cur.id }); await pause(p, 200); }
   await settle();
 }
@@ -61,7 +61,7 @@ async function patch(fnSrc) {
     localStorage.setItem(key, JSON.stringify(s));
   }, { me, fnSrc });
   await p.reload();
-  await p.waitForFunction(() => window.__phc?.getState().game?.combat, null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc?.getState().game?.combat, null, { timeout: 30000 });
   await settle();
 }
 const youCard = () => p.locator('[aria-label="You"] [aria-label="Your resources"]');
@@ -161,7 +161,7 @@ await snap('stormhand-1280', SMALL); await p.setViewportSize(BIG);
 // 6. The area-map HUD (out of the fight): the same block under HP and AP, with the gun and the Evoker.
 await build([{ type: 'sandbox/kit', kind: 'both' }, { type: 'sandbox/give', item: 'hellraiser_service_rifle', equip: true }]);
 await act({ type: 'sandbox/stop' });
-await p.waitForFunction(() => window.__phc.getState().game.phase !== 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game.phase !== 'combat', null, { timeout: 30000 });
 await pause(p, 500);
 // (the tools first, then the area map: the map is a modal over the whole screen, and the tools' button is under it)
 const closeTools = p.getByRole('button', { name: 'Close the tools' });

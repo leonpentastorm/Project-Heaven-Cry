@@ -33,7 +33,7 @@ async function newRound() {
   await idleOn(p); await dismissCut();
   const r0 = (await st()).cb.round;
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && (u.ap >= 5 || u.conds?.stunned > 0); }, r0, { timeout: 25000 });
+  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && (u.ap >= 5 || u.conds?.stunned > 0); }, r0, { timeout: 30000 });
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idleOn(p);
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
@@ -47,14 +47,14 @@ let cid = '';
  *  near the middle of the map with free tiles toward `dir`. */
 async function build(steps) {
   let g = (await st()).g;
-  if (g.sandbox) { await act({ type: 'sandbox/end' }); await p.waitForFunction(() => !window.__phc.getState().game.sandbox, null, { timeout: 15000 }); }
+  if (g.sandbox) { await act({ type: 'sandbox/end' }); await p.waitForFunction(() => !window.__phc.getState().game.sandbox, null, { timeout: 30000 }); }
   await act({ type: 'sandbox/start', standalone: true });
-  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
   g = (await st()).g; cid = Object.values(g.characters)[0].id;
   await must({ type: 'sandbox/ai', on: false }); await must({ type: 'sandbox/auto', on: false });
   for (const a of steps) await must({ ...a, charId: cid }, a.type + ' ' + JSON.stringify(a).slice(0, 80));
   await must({ type: 'sandbox/fight' });
-  await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.combat; }, null, { timeout: 15000 });
+  await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.combat; }, null, { timeout: 30000 });
   await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
   await must({ type: 'sandbox/clear' });
   await pause(p, 2300); await dismissCut();
@@ -79,7 +79,7 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await p.mouse.move(1430, 990);
 
 const STEPS = [{ type: 'sandbox/level', level: 10 },

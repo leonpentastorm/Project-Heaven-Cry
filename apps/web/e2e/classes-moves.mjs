@@ -110,16 +110,16 @@ const layerKids = () => host.evaluate(() => document.querySelector('.phc-fx-laye
 
 // ---------- 0. The Proving Ground with a friend ----------
 await host.goto(BASE);
-await click(host, 'PROVING GROUND', { timeout: 20000 });
+await click(host, 'PROVING GROUND', { timeout: 30000 });
 await host.getByPlaceholder('Leon').fill('Leon');
 await click(host, 'With friends ›');
 await until(host, () => !!window.__phc.getState().game?.sandbox);
 const invite = host.locator('div[role="dialog"][aria-label="Invite friends"]');
-await invite.waitFor({ timeout: 15000 });
+await invite.waitFor({ timeout: 30000 });
 const code = (await G()).code;
 await invite.getByRole('button', { name: 'Gear up ›' }).click();
 await mai.goto(BASE);
-await click(mai, 'JOIN A FRIEND', { timeout: 20000 });
+await click(mai, 'JOIN A FRIEND', { timeout: 30000 });
 await mai.getByPlaceholder('Leon').fill('Mai');
 await mai.getByPlaceholder('ROOM CODE').fill(code);
 await click(mai, 'Join ›');

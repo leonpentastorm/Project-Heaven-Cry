@@ -55,7 +55,7 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let g = await G();
 const cid = Object.keys(g.characters)[0];
 const C = async () => (await G()).characters[cid];
@@ -100,7 +100,7 @@ await act({ type: 'sandbox/technique', charId: cid, id: 'deny', ready: true });
 
 // ---------- 4. the fight: two blocks, the pads ----------
 await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
 const myTurn = () => p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 4; }, cid, { timeout: 45000 });
 const dismissCut = async () => { for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 890); await settle(p, 400); } };
@@ -193,7 +193,7 @@ if (m1 > 0) {
 // (a wave cleared ends the fight: start another, as the Proving Ground's Start the fight does)
 const endTurn = async () => { await act({ type: 'sandbox/refill', charId: cid }); await settle(p, 300);
   const gg = await G();
-  if (gg.phase !== 'combat' || gg.combat?.over) { await settle(p, 1500); await act({ type: 'sandbox/fight' }); await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 }); await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {}); }
+  if (gg.phase !== 'combat' || gg.combat?.over) { await settle(p, 1500); await act({ type: 'sandbox/fight' }); await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {}); }
   else await p.getByRole('button', { name: 'End turn', exact: true }).first().click();
   await myTurn(); await settle(p, 1600); await dismissCut();
   if (await tools.count()) await tools.getByRole('button', { name: /^Close the tools/ }).first().click().catch(() => {}); };

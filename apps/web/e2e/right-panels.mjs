@@ -22,9 +22,9 @@ await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›
 await click(p, 'Next ›'); await click(p, 'Lock in and bring to the room');
 await p.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(p, 'Start session');
-await p.waitForSelector('.phc-story', { timeout: 15000 });
-await p.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 15000 });
-await p.locator('[data-story-zone]').waitFor({ timeout: 15000 });
+await p.waitForSelector('.phc-story', { timeout: 30000 });
+await p.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 30000 });
+await p.locator('[data-story-zone]').waitFor({ timeout: 30000 });
 await settle(p, 600);
 
 // ---------- the four modules, each with a grip ----------
@@ -62,7 +62,7 @@ await p.mouse.move(g1.x + 5, g1.y + 5); await p.mouse.down(); await p.mouse.move
 ok('Escape cancels a drag (nothing moved)', (await shown()).join() === after.join());
 
 // ---------- the order survives a reload; Reset puts it back ----------
-await p.reload(); await p.locator('[data-story-zone]').waitFor({ timeout: 15000 }); await settle(p, 800);
+await p.reload(); await p.locator('[data-story-zone]').waitFor({ timeout: 30000 }); await settle(p, 800);
 ok('after a reload the modules are where they were left', (await shown()).join() === after.join());
 await p.locator('.phc-rp-reset').click(); await settle(p, 300);
 ok('Reset: the first order again, nothing kept', (await shown()).join() === first.join() && (await stored()) === null && (await p.locator('.phc-rp-reset').count()) === 0);

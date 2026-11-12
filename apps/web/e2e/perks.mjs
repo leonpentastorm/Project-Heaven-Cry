@@ -32,7 +32,7 @@ async function allActions() {
 async function newTurn() {
   await dismissCut();
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.over || (u && u.side === 'pc' && u.ap >= 5); }, null, { timeout: 15000 });
+  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.over || (u && u.side === 'pc' && u.ap >= 5); }, null, { timeout: 30000 });
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut();
 }
 /** One drill unit (minion, fists) on a free tile east of me with two free tiles behind it, plus one far off. */
@@ -55,7 +55,7 @@ const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let g = await G();
 const cid = Object.keys(g.characters)[0];
 const drawer = p.locator('aside[aria-label="Proving Ground tools"]');
@@ -86,8 +86,8 @@ await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() =
 
 // ---------- 2. The fight: PERKS and CLASS tabs, the emblem, weapon-granted reload ----------
 await p.getByRole('button', { name: /^⚔ Start the fight/ }).first().click().catch(async () => { await act({ type: 'sandbox/fight' }); });
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-await p.waitForSelector('text=YOUR TURN', { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+await p.waitForSelector('text=YOUR TURN', { timeout: 30000 });
 await p.waitForSelector('[data-phc-cutin]', { timeout: 3000 }).catch(() => {}); await dismissCut();
 const field = await setField();
 ok('a drill unit stands next to the Recruit at ' + (field && ref(field.at)), !!field);
@@ -197,7 +197,7 @@ await q.goto(BASE);
 await click(q, 'NEW GAME', { exact: true });
 await q.getByPlaceholder('Leon').fill('Leon');
 await click(q, 'Open a room ›');
-await q.waitForSelector('text=The squad', { timeout: 15000 });
+await q.waitForSelector('text=The squad', { timeout: 30000 });
 // The field medic archetype (its best skill is Camaraderie, which the scripted Narrator checks) with Oil in My Soul (+1).
 const ARCH = JSON.parse(readFileSync(new URL('../../../data/archetypes.json', import.meta.url), 'utf8'));
 const fm = (ARCH.items || ARCH).find((x) => x.id === 'field_medic');
@@ -210,13 +210,13 @@ let oc = Object.values(qg.characters)[0];
 ok('a character with Oil in My Soul is in the room: ' + (oc && oc.name) + ' · ' + (oc && oc.traits.join(', ')), !!oc && oc.traits.includes('oil_in_my_soul'));
 await q.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(q, 'Start session');
-await q.waitForSelector('text=The rear pad', { timeout: 15000 });
+await q.waitForSelector('text=The rear pad', { timeout: 30000 });
 await q.getByLabel('What do you do?').fill('I ask Keel nicely, one medic to another.'); await click(q, 'Send', { exact: true }); await click(q, 'End turn', { exact: true });
-await q.waitForSelector('text=CLICK TO ROLL', { timeout: 15000 });
+await q.waitForSelector('text=CLICK TO ROLL', { timeout: 30000 });
 await settle(q, 600);
 if (!(await q.locator('[aria-label="Dice table"]').count())) await q.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
 await click(q, /Throw/);
-await q.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/', { timeout: 15000 });
+await q.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/', { timeout: 30000 });
 await settle(q, 600);
 qg = await G(q);
 const ck = qg.checks.find((k) => k.roll) || qg.checks[0];

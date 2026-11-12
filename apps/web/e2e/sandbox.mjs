@@ -43,7 +43,7 @@ await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunc
 // PROVING GROUND asks Solo or With friends (multiplayer); Solo is the Proving Ground as it always was.
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await drawer.waitFor({ timeout: 6000 }).catch(() => {});
 let g = await G();
 ok('gearing up: phase ' + g.phase + ', no fight, on the ' + (await screen()) + ' screen', g.phase === 'story' && !g.combat && (await screen()) === 'main' && g.sandbox.state === 'ready');
@@ -102,9 +102,9 @@ await settle(p, 200);
 g = await G();
 const target = g.story.npcs[0];
 await p.locator('.phc-mini button.phc-tok[aria-label^="' + ref(target.pos) + ': "]').first().click();
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 }).then(() => ok('a click on a drill unit starts the fight', true), () => ok('a click on a drill unit starts the fight', false));
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 }).then(() => ok('a click on a drill unit starts the fight', true), () => ok('a click on a drill unit starts the fight', false));
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 6000 }).catch(() => {});
-await p.waitForSelector('div[aria-live="polite"] >> text=/WAVE\\s*1/', { timeout: 15000 }).then(() => ok('the WAVE 1 banner', true), () => ok('the WAVE 1 banner', false));
+await p.waitForSelector('div[aria-live="polite"] >> text=/WAVE\\s*1/', { timeout: 30000 }).then(() => ok('the WAVE 1 banner', true), () => ok('the WAVE 1 banner', false));
 g = await G();
 ok('wave 1 is on: ' + g.combat.units.filter((u) => u.side === 'foe').length + ' drill units, ' + g.combat.name, g.sandbox.state === 'fighting' && g.combat.name === 'Proving Ground · Wave 1');
 ok('the gear came into the fight: ' + g.combat.units.find((u) => u.charId === me.id).weapon, g.combat.units.find((u) => u.charId === me.id).weapon === 'drifter_revolver');
@@ -126,10 +126,10 @@ g = await G();
 ok('the field is cleared and one drone stands at ' + ref((ux + 2) + ',' + uy), g.combat.units.filter((u) => u.side === 'foe' && !u.dead).length === 1);
 await drawer.getByRole('button', { name: 'Close the tools' }).click();
 await clearField();
-await p.waitForFunction(() => window.__phc.getState().game.sandbox?.state === 'cleared', null, { timeout: 15000 }).then(() => ok('wave 1 cleared', true), () => ok('wave 1 cleared', false));
+await p.waitForFunction(() => window.__phc.getState().game.sandbox?.state === 'cleared', null, { timeout: 30000 }).then(() => ok('wave 1 cleared', true), () => ok('wave 1 cleared', false));
 g = await G();
 ok('after the fight the Proving Ground is gearing up again (phase ' + g.phase + ')', g.phase === 'story' && g.combat?.over === 'win');
-await p.waitForSelector('div[role="dialog"][aria-label="Wave cleared"]', { timeout: 15000 }).then(() => ok('the Wave cleared card shows', true), () => ok('the Wave cleared card shows', false));
+await p.waitForSelector('div[role="dialog"][aria-label="Wave cleared"]', { timeout: 30000 }).then(() => ok('the Wave cleared card shows', true), () => ok('the Wave cleared card shows', false));
 await settle(p, 400); await snap('04-wave-cleared');
 await p.locator('div[aria-label="Wave cleared"] button', { hasText: 'Gear up first' }).click();
 await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 4000 }).catch(() => {});
@@ -139,7 +139,7 @@ await settle(p, 300); await snap('05-gear-up-again');
 
 // 5. Wave 2 from the Start button; cast a Sigil in it
 await drawer.getByRole('button', { name: /^⚔ Start the fight/ }).click();
-await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.sandbox?.wave === 2 && g.sandbox.state === 'fighting'; }, null, { timeout: 15000 });
+await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.sandbox?.wave === 2 && g.sandbox.state === 'fighting'; }, null, { timeout: 30000 });
 g = await G();
 ok('Start the fight brings wave 2: ' + g.combat.units.filter((u) => u.side === 'foe' && !u.dead).map((u) => u.name).join(', '), g.combat.units.some((u) => u.side === 'foe' && !u.dead));
 await settle(p, 2600); await dismissCut();
@@ -156,7 +156,7 @@ ok('the Evoker stowed: Draw a glyph says "Needs an Evoker in hand."', /Needs an 
 const ap0 = (await G()).combat.units.find((u) => u.charId === me.id).ap;
 await p.locator('[data-backpack]:visible').first().click();
 const bpPanel = p.locator('[data-bp-panel]');
-await bpPanel.waitFor({ timeout: 15000 }).then(() => ok('the backpack button opens the inventory panel over the fight', true), () => ok('the backpack button opens the inventory panel over the fight', false));
+await bpPanel.waitFor({ timeout: 30000 }).then(() => ok('the backpack button opens the inventory panel over the fight', true), () => ok('the backpack button opens the inventory panel over the fight', false));
 const evoRow = bpPanel.locator('[data-bp-row]', { hasText: 'counts only in a hand' }).filter({ hasText: /FOCUS\s*Evoker/ }).first();
 const evoTxt = (await evoRow.textContent().catch(() => '')) || '';
 ok('the Evoker in the pack: "' + evoTxt.replace(/\s+/g, ' ').trim() + '"', /counts only in a hand/.test(evoTxt) && /Draw · 1 AP · off hand/.test(evoTxt));
@@ -195,11 +195,11 @@ for (let i = 0; i < 40; i++) {
 }
 g = await G();
 ok('the squad is down (state ' + g.sandbox.state + '), and back to gearing up with everyone refilled', g.sandbox.state === 'fallen' && g.phase === 'story' && g.characters[me.id].hp > 1);
-await p.waitForSelector('div[role="dialog"][aria-label="The squad fell"]', { timeout: 15000 });
+await p.waitForSelector('div[role="dialog"][aria-label="The squad fell"]', { timeout: 30000 });
 await settle(p, 500); await snap('07-squad-down');
 const attempt = g.sandbox.attempt;
 await p.locator('div[aria-label="The squad fell"] button', { hasText: /Retry wave/ }).click();
-await p.waitForFunction((a) => { const g = window.__phc.getState().game; return g.sandbox?.state === 'fighting' && g.sandbox.attempt > a; }, attempt, { timeout: 15000 });
+await p.waitForFunction((a) => { const g = window.__phc.getState().game; return g.sandbox?.state === 'fighting' && g.sandbox.attempt > a; }, attempt, { timeout: 30000 });
 g = await G();
 const u2 = g.combat.units.find((u) => u.charId === me.id);
 // Refilled at the start: full HP unless a drill unit (wave 2 has a Sigil novice) already acted before this check.

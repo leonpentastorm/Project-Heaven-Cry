@@ -5,7 +5,7 @@
 // tried again on a fresh turn. The lasting states (a Bind's link, a weapon left in a nailed unit, a raised Guard) must
 // stand on the layer (data-melee-mark). Frames for every technique go to SHOTS (deviceScaleFactor 1).
 //   node apps/web/e2e/melee-fx.mjs            SHOTS=/some/dir to put the frames elsewhere
-import { chromium, player, BASE, OUT, pause } from './lib.mjs';
+import { chromium, player, BASE, OUT, pause, watch, watched } from './lib.mjs';
 import { mkdirSync } from 'node:fs';
 const SHOTS = (process.env.SHOTS || OUT + 'melee-fx/').replace(/\/?$/, '/');
 mkdirSync(SHOTS, { recursive: true });
@@ -27,7 +27,7 @@ await p.getByRole('button', { name: 'PROVING GROUND' }).first().click();
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await p.getByRole('button', { name: 'Solo ›' }).first().click(); }
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let g = await G();
 const cid = Object.keys(g.characters)[0];
 await act({ type: 'sandbox/ai', on: false });
@@ -35,7 +35,7 @@ for (const sk of ['athletics', 'dexterity', 'raw_power', 'endurance', 'agility']
 await act({ type: 'sandbox/technique', charId: cid, id: 'all', ready: true });
 await act({ type: 'sandbox/give', charId: cid, item: 'sabre', equip: true });
 await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
 
 const me = async () => (await G()).combat.units.find((u) => u.charId === cid);
@@ -49,7 +49,7 @@ async function freshTurn() {
   let gg = await G();
   if (gg.phase !== 'combat' || gg.combat?.over) {
     await pause(p, 1200); await act({ type: 'sandbox/fight' });
-    await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 });
+    await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 30000 });
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
     await act({ type: 'sandbox/clear' });
   } else { const u = await me(); if (u && (u.ap < 6 || gg.combat.order[gg.combat.turn] !== u.id || u.tech?.guard?.on)) { await act({ type: 'combat/end-turn', unitId: u.id }); } }
@@ -97,7 +97,7 @@ const mfxSince = async (n0) => ((await G()).combat.fx || []).filter((e) => e.n >
 /** A standing mark comes only once the queue has played its beat (review fix): wait for it, then check it rose after
  *  the beat (the hook records 'mark:<kind>' when the layer adds it). */
 async function markAfter(kind, beat, t0, label) {
-  const has = await p.locator('[data-melee-mark="' + kind + '"]').first().waitFor({ timeout: 15000 }).then(() => true).catch(() => false);
+  const has = await p.locator('[data-melee-mark="' + kind + '"]').first().waitFor({ timeout: 30000 }).then(() => true).catch(() => false);
   const r = (await records()).filter((x) => x.at >= t0), b = r.find((x) => x.kind === beat && x.drawn), m = r.find((x) => x.kind === 'mark:' + kind);
   ok(label + ' (the mark rose after its beat: beat ' + (b ? b.at - t0 : '?') + ' ms, mark ' + (m ? m.at - t0 : '?') + ' ms)', has && !!b && !!m && m.at >= b.at);
   return has;
@@ -193,14 +193,23 @@ async function answerCase(label, kind, dist, tries = 5) {
     const d = adj(gg, u, dist === 1 ? [[1, 0]] : [[1, 0], [2, 0], [3, 0]]); if (!d) continue;
     await spawnAt(d.tiles[dist === 1 ? 0 : 2], 'elite', 'sabre');
     const t0 = await now();
+    // The beat's element is on the layer for a fraction of a second, on the enemy's turn: a watcher in the page notes it
+    // (lib.mjs watch(); a poll from here missed it on a busy machine). The loop ends when the beat is drawn and
+    // recorded, or when the enemy's turn has played out and ours is back with no beat (the dice), 45 s at most.
+    await watch(p, 'answer', '[data-melee-fx^="' + kind + '"]');
+    const round0 = await p.evaluate(() => window.__phc.getState().game.combat.round);
     await act({ type: 'sandbox/ai', on: true });
     await act({ type: 'combat/end-turn', unitId: u.id });
-    let el = false; const t1 = Date.now();
-    while (Date.now() - t1 < 9000) {
-      if (!el && (await p.locator('[data-melee-fx^="' + kind + '"]').count())) { el = true; await pause(p, 70); await p.screenshot({ path: SHOTS + label.toLowerCase().replace(/ /g, '_') + '-1.png' }); await pause(p, 150); await p.screenshot({ path: SHOTS + label.toLowerCase().replace(/ /g, '_') + '-2.png' }); }
+    let el = false, shot = false; const t1 = Date.now();
+    while (Date.now() - t1 < 45000) {
+      el = (await watched(p, 'answer')).up != null;
+      if (el && !shot) { shot = true; await p.screenshot({ path: SHOTS + label.toLowerCase().replace(/ /g, '_') + '-1.png' }).catch(() => {}); await pause(p, 150); await p.screenshot({ path: SHOTS + label.toLowerCase().replace(/ /g, '_') + '-2.png' }).catch(() => {}); }
       const r = (await records()).filter((x) => x.at >= t0 && x.kind === kind);
       if (el && r.some((x) => x.drawn)) break;
-      await pause(p, 25);
+      const back = await p.evaluate(([id, r0]) => { const cb = window.__phc.getState().game?.combat, a = cb && cb.units.find((x) => x.id === cb.order[cb.turn]), d = window.__phcFxDebug();
+        return !cb || cb.over || (!!a && a.charId === id && cb.round > r0 && d.timers === 0 && d.queueEndIn <= 0 && (window.__phcHold ? window.__phcHold() : 0) <= performance.now()); }, [cid, round0]);
+      if (back) { el = (await watched(p, 'answer')).up != null; break; }
+      await pause(p, 50);
     }
     await act({ type: 'sandbox/ai', on: false });
     await myTurn(); await idle();

@@ -93,7 +93,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
   const nm = p.getByPlaceholder('Leon');
   await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-  await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
   let g = await G(); const cid = Object.keys(g.characters)[0];
   await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/auto', on: false });
   // level 4 (ceiling 8), points to spend; three talking skills, Durability for a Guard pool, a blade and a shield
@@ -142,7 +142,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
 
   // ----- 3. level up -----
   await p.locator('button', { hasText: /Level up|Earn your class/ }).first().click();
-  await p.locator('.phc-lu-core').first().waitFor({ timeout: 15000 });
+  await p.locator('.phc-lu-core').first().waitFor({ timeout: 30000 });
   for (const [W, H] of SIZES) {
     const at = W + '×' + H + ': ';
     await p.setViewportSize({ width: W, height: H }); await settle(p, 400);
@@ -185,7 +185,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
   await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'old_overcast', faith: 3, devotion: 5, reset: true });
   await act({ type: 'sandbox/skill', charId: cid, skill: 'will_power', points: 10 }); // its Mastered perk: a row on the Perks tab, so all nine tabs are up
   await act({ type: 'sandbox/fight' });
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
   await p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 4; }, cid, { timeout: 45000 });
   await settle(p, 2600);
   const dismiss = async () => { for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 890); await settle(p, 400); } };

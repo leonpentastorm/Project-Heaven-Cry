@@ -26,29 +26,29 @@ await guest.goto(BASE + '/?room=' + code); await guest.getByPlaceholder('Leon').
 await guest.waitForSelector('text=The squad');
 await create(guest, 'Ninety-Two', 'Guns and hunters', 'Line soldier');
 // (the host's screen shows the guest's locked-in character: the room relay carried it)
-const bothIn = await host.waitForFunction(() => Object.keys(window.__phc.getState().game.characters).length >= 2, null, { timeout: 20000 }).then(() => true, () => false);
+const bothIn = await host.waitForFunction(() => Object.keys(window.__phc.getState().game.characters).length >= 2, null, { timeout: 30000 }).then(() => true, () => false);
 ok('both players made a character through the creation screens and the host sees both in room ' + code, bothIn);
 await shot(host, '10-room-ready'); await shot(guest, '11-room-guest');
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');
-await host.waitForSelector('text=The rear pad', { timeout: 15000 });
-await guest.waitForSelector('text=Outpost-813\'s rear landing pad', { timeout: 15000 });
+await host.waitForSelector('text=The rear pad', { timeout: 30000 });
+await guest.waitForSelector('text=Outpost-813\'s rear landing pad', { timeout: 30000 });
 ok('the session starts: both screens show the Narrator\'s opening', true);
 await shot(host, '12-main-opening');
 await host.getByLabel('What do you do?').fill('I walk up the ramp with 4-Ten on my shoulders.'); await click(host, 'Send', { exact: true }); await click(host, 'End turn', { exact: true });
 await guest.getByLabel('What do you do?').fill('I cover him from the wreck line.'); await click(guest, 'Send', { exact: true }); await click(guest, 'End turn', { exact: true });
-await host.waitForSelector('text=CLICK TO ROLL', { timeout: 15000 });
+await host.waitForSelector('text=CLICK TO ROLL', { timeout: 30000 });
 ok('both spoke, the round closed and the Narrator called a check', true);
 await shot(host, '13-check-called');
 // a new check of yours opens the dice table by itself; else open it from its line
-if (!(await host.locator('div[aria-label="Dice table"]').waitFor({ timeout: 3000 }).then(() => true, () => false))) await host.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
+if ((await host.locator('div[aria-label="Dice table"]').waitFor({ timeout: 3000 }).catch(() => 'not up')) === 'not up') await host.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
 await click(host, /Throw/);
 await host.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/');
 ok('the check is rolled on the dice table and shows its outcome', true);
 await shot(host, '14-dice');
 await click(host, 'Continue', { exact: true });
 await host.waitForSelector('text=Initiative', { timeout: 10000 }).catch(() => {});
-ok('a fight starts on both screens', await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 20000 }).then(() => true, () => false) && await guest.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 20000 }).then(() => true, () => false));
+ok('a fight starts on both screens', await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 30000 }).then(() => true, () => false) && await guest.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 30000 }).then(() => true, () => false));
 log('host url screen', await host.locator('text=/ROUND \\d+/').first().textContent().catch(() => 'no combat header'));
 await shot(host, '15-combat');
 // Both screens play the same beats from the shared state: record the turn banners and effects each one shows.
@@ -96,7 +96,7 @@ const named = (l) => l.filter((t) => /HOSTILE/.test(t)).length;
 ok('both saw a hostile-turn banner (host ' + named(hs.banners) + ', guest ' + named(gs.banners) + ')', named(gs.banners) > 0 && named(hs.banners) > 0);
 log('combat over dialog', await host.locator('text=Back to the story ›').count(), await guest.locator('text=Back to the story ›').count());
 await click(host, 'Back to the story ›'); await click(guest, 'Back to the story ›');
-await host.waitForSelector('text=The pad goes quiet', { timeout: 15000 });
+await host.waitForSelector('text=The pad goes quiet', { timeout: 30000 });
 ok('Back to the story: the story resumes after the fight', true);
 await settle(host, 300);
 await shot(host, '18-after-fight');

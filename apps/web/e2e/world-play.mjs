@@ -34,7 +34,7 @@ const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await openTools();
 await drawer.getByRole('tab', { name: 'Field' }).click();
 await drawer.getByRole('button', { name: /^Clear all enemies/ }).click();
@@ -102,7 +102,7 @@ ok('mini map draws the pile (a stack with its count)', (await tile(p.locator('.p
 // 4. Talk: click the robot's token on the area map; ask what it wants, ask about the objective (marker + HERE).
 await openArea();
 await tile(area, ref(robotAt)).click();
-await panel.waitFor({ timeout: 15000 });
+await panel.waitFor({ timeout: 30000 });
 ok('the Talk panel opens with the portrait and kind', (await panel.locator('img[data-avatar]').count()) === 1 && /ROBOT/.test(await panel.textContent()));
 const odds = await panel.locator('[data-odds]').allTextContents();
 ok('the talk approach shows its odds and effects (' + odds.join(', ') + ')', odds.length >= 1 && /\d+%/.test(odds[0]) && /Fail: they turn hostile/.test(await panel.textContent()));
@@ -129,7 +129,7 @@ g = await G();
 ok('carried: ' + JSON.stringify((g.characters[me.id].carried || []).map((x) => x.npc.name + ' ' + x.kg)), (g.characters[me.id].carried || []).some((x) => x.npc.id === robot.id && x.kg === 40) && !(g.story.npcs || []).some((n) => n.id === robot.id));
 await p.getByRole('tab', { name: 'GEAR', exact: true }).click().catch(async () => { await p.getByRole('tab', { name: /Gear/i }).first().click(); });
 const carriedBox = p.locator('[data-carried]');
-await carriedBox.waitFor({ timeout: 15000 });
+await carriedBox.waitFor({ timeout: 30000 });
 ok('the GEAR tab shows the carried robot with 40 kg: ' + (await carriedBox.textContent()), /Hum/.test(await carriedBox.textContent()) && /40 kg/.test(await carriedBox.textContent()));
 await snap('06-carried');
 await endTurn();

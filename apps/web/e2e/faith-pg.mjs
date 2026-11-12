@@ -29,7 +29,7 @@ await click(p, 'PROVING GROUND', { timeout: 90000 });
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, /^Solo ›/); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 const drawer = p.locator('aside[aria-label="Proving Ground tools"]');
 if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
 await drawer.waitFor();
@@ -43,8 +43,8 @@ ok('the tools make a Faithful of Mother Ember, Faith ' + (c.skills.faith || 0) +
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-pg-tools.png' });
 await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
-await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 20000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
+await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
 // The your-turn card comes up when the opening has played (later on the 26 x 26 map's heavier screen than the fixed
 // 0.8 s this waited before): wait for it, send it away, and only then reach for the tools (the card covers them).
 await p.locator('[data-phc-cutin]').first().waitFor({ timeout: 6000 }).catch(() => {});
@@ -63,7 +63,7 @@ await p.locator('[role="tab"][data-tab="faith"]').click();
   if (SHOTS) { await pause(p, 1800); await p.screenshot({ path: SHOTS + '/faith-combat-head.png' }); }
   await head.locator('[data-faith-portrait]').click();
   const lb = p.getByRole('dialog', { name: /Mother Ember/ });
-  const lbUp = await lb.waitFor({ timeout: 15000 }).then(() => true, () => false);
+  const lbUp = await lb.waitFor({ timeout: 30000 }).then(() => true, () => false);
   ok('a click on it opens the portrait large (the lightbox)', lbUp && /patron-mother_ember-lg/.test((await lb.locator('img').first().getAttribute('src')) || ''));
   if (lbUp) { await lb.getByRole('button', { name: 'Close the enlarged image' }).click(); await lb.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {}); }
 }
@@ -122,7 +122,7 @@ const landed = (await watchedGone(p, 'miracle', 30000))?.ms;
 // are pinned without a browser in apps/web/src/game/cutIn.test.ts.
 ok('it lands in about 3.5 s and lets go of the screen (' + landed + ' ms on the page from up to gone)', landed != null && landed >= 2900 && landed < 9000 && (await cut.count()) === 0);
 const box = p.locator('[data-phc-cut-box]');
-const boxShown = await box.waitFor({ timeout: 15000 }).then(() => true, () => false);
+const boxShown = await box.waitFor({ timeout: 30000 }).then(() => true, () => false);
 const boxText = boxShown ? (await box.textContent()) || '' : '';
 ok('then a box says what happened (' + boxText.slice(0, 120) + ')', boxShown && /MIRACLE · MOTHER EMBER/.test(boxText) && /WHAT IT DID/.test(boxText));
 if (boxShown && SHOTS) await p.screenshot({ path: SHOTS + '/faith-miracle-box.png' });
@@ -155,7 +155,7 @@ ok('Reset the limits clears the Miracle\'s session mark', c.miracleSession == nu
   const uu = await p.evaluate(() => window.__phc.getState().game.combat.units.find((x) => x.charId));
   const err = await act({ type: 'faith/pray', unitId: uu.id, kind: 'miracle' });
   await watch(p, 'miracle2', '[data-phc-cut="full"][data-phc-miracle="mother_ember"]');
-  const up = await cut.waitFor({ timeout: 15000 }).then(() => true, () => false);
+  const up = await cut.waitFor({ timeout: 30000 }).then(() => true, () => false);
   ok('a second Miracle cuts in (' + (err || 'prayed') + ')', !err && up);
   await pause(p, 500);
   await p.evaluate(() => { window.__keyAt = null; window.addEventListener('keydown', () => { window.__keyAt = performance.now(); }, { capture: true, once: true }); });
@@ -164,7 +164,7 @@ ok('Reset the limits clears the Miracle\'s session mark', c.miracleSession == nu
   // WALL CLOCK, on purpose, read in the page: skipped, the portrait is gone at once; left alone it would stay about 3 s
   // more (it lands at 3.5 s and the key came at 0.5 s). Under 2 s after the key can only be the skip, on any machine.
   ok('a key skips it (gone ' + afterKey + ' ms after the key; ' + (w2 && w2.ms) + ' ms on screen in all)', (await cut.count()) === 0 && afterKey != null && afterKey < 2000 && w2.ms < 2900);
-  ok('and the box still follows', await box.waitFor({ timeout: 15000 }).then(() => true, () => false));
+  ok('and the box still follows', await box.waitFor({ timeout: 30000 }).then(() => true, () => false));
   const bx = await box.boundingBox(), grid = await p.locator('.phc-grid-scroll').boundingBox(), panel = await p.locator('[role="tabpanel"]').boundingBox();
   const overlaps = (a, b) => !!a && !!b && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
   ok('the box sits over the map, not over the FAITH tab (' + JSON.stringify(bx && { x: Math.round(bx.x), y: Math.round(bx.y), w: Math.round(bx.width) }) + ')', !!bx && !!grid && bx.y >= grid.y - 1 && !overlaps(bx, panel));
@@ -188,15 +188,15 @@ ok('the FAITH tab shows them by dice (' + hy.join(' / ').slice(0, 80) + ')', hy.
 // ---------- Old Overcast: Witnessed, Hymns at the gate and above it, an intervention, vows ----------
 const cid = c.id, G = () => p.evaluate(() => window.__phc.getState().game);
 const myU = () => p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb && cb.units.find((x) => x.charId); });
-const myTurn = () => p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && !cb.over && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 20000 });
+const myTurn = () => p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && !cb.over && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
 const calm = async () => { await pause(p, 700); if (await p.locator('[data-phc-cutin]').count()) { await p.keyboard.press('Escape'); await pause(p, 300); } };
 const logHas = async (re) => re.test((await G()).combat.log.join('\n'));
 await act({ type: 'sandbox/stop' });
-await p.waitForFunction(() => window.__phc.getState().game.phase === 'story', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game.phase === 'story', null, { timeout: 30000 });
 await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'old_overcast', faith: 7, devotion: 5, reset: true });
 await act({ type: 'sandbox/give', charId: cid, item: 'hellraiser_lmg', equip: true });
 await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 await myTurn(); await calm();
 let u = await myU();
 ok('not Witnessed yet: it comes with your patron\'s first Hymn', !(u.conds && u.conds.witnessed));
@@ -218,7 +218,7 @@ await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
 // Faith 2.2 (spec 2.2): a square crop of the patron's portrait over the head of the one who prays, framed in the accent.
 {
   const face = p.locator('[data-phc-faith-face="old_overcast"]');
-  const up = await face.first().waitFor({ timeout: 15000 }).then(() => true, () => false);
+  const up = await face.first().waitFor({ timeout: 30000 }).then(() => true, () => false);
   ok('a Hymn: Old Overcast\'s face over the head of the one who prays', up && /patron-old_overcast/.test((await face.first().locator('img').getAttribute('src').catch(() => '')) || ''));
   if (up) {
     const r = await fxRect('[data-phc-faith-face="old_overcast"]'), t = await tokRect(meU.pos);
@@ -248,7 +248,7 @@ ok('Gather the Clouds is an overreach (TN 16, a miss costs 3 Devotion XP)', /OVE
 const c0 = (await G()).characters[cid], dv0 = c0.devotion, xp0 = c0.devotionXp, n2 = (await G()).combat.log.length;
 ok('the tools\' Devotion 5 is the level-5 threshold (' + xp0 + ' XP)', xp0 === 102);
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
-const faceSeen = await p.locator('[data-phc-faith-face="old_overcast"]').first().waitFor({ timeout: 15000 }).then(() => true, () => false);
+const faceSeen = await p.locator('[data-phc-faith-face="old_overcast"]').first().waitFor({ timeout: 30000 }).then(() => true, () => false);
 const faceMiss = faceSeen && (await p.locator('[data-phc-faith-face="old_overcast"][data-phc-faith-miss]').count()) > 0;
 if (faceMiss && SHOTS) { await pause(p, 450); await p.screenshot({ path: SHOTS + '/faith-hymn-miss.png' }); }
 await pause(p, 600);
@@ -297,7 +297,7 @@ await act({ type: 'sandbox/clear' }); await pause(p, 300);
 await act({ type: 'sandbox/stop' }); await pause(p, 800);
 // A vow broken: Stand, then end the turn farther from the nearest enemy.
 await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 30000 });
 await myTurn(); await calm();
 await p.locator('[data-phc-vow-prompt] [data-vow="stand"]').click(); await pause(p, 300);
 // Step toward them this turn (no break), then back the next: the turn ends farther than it began.
@@ -318,7 +318,7 @@ const n5 = (await G()).combat.log.length;
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
 // Faith 2.2 (spec 2.1): the Whisper's own icon rises over the head of the one who prays (grey and sinking on a miss); no portrait.
 { const w = p.locator('[data-phc-faith-whisper="guidance"]');
-  const up = await w.first().waitFor({ timeout: 15000 }).then(() => true, () => false);
+  const up = await w.first().waitFor({ timeout: 30000 }).then(() => true, () => false);
   const miss = up && (await w.first().getAttribute('data-phc-faith-miss')) === '1';
   const r = up ? await fxRect('[data-phc-faith-whisper="guidance"]') : null, t = await tokRect((await myU()).pos);
   ok('a Whisper: its icon over the head of the one who prays (' + (miss ? 'unanswered, grey' : 'answered') + '; ' + JSON.stringify(r) + ' over ' + JSON.stringify(t) + ')', up && !!r && !!t && r.y + r.h <= t.y + 2 && Math.abs(r.x + r.w / 2 - (t.x + t.w / 2)) < 2);
@@ -339,7 +339,7 @@ ok('a pact with a Jealous patron ends the others\' Hymns (' + (e2 || (cc.belief?
 const pactLines = (await G()).story.entries.filter((e) => /^PACT/.test(e.head || '')).length;
 ok('the story says so (PACT entries: ' + pactLines + ')', pactLines >= 2);
 // ---------- leaving a patron (rules 1.6.1): a switch from a Jealous patron leaves a grudge; apostasy has the cooldown ----------
-const openFaithTab = async () => { await drawer.getByRole('button', { name: 'Close the tools' }).click({ timeout: 1500 }).catch(() => {}); await p.getByRole('tab', { name: 'FAITH', exact: true }).first().click(); const fp = p.locator('[data-phc-faith-panel]'); await fp.waitFor({ timeout: 15000 }); return fp; };
+const openFaithTab = async () => { await drawer.getByRole('button', { name: 'Close the tools' }).click({ timeout: 1500 }).catch(() => {}); await p.getByRole('tab', { name: 'FAITH', exact: true }).first().click(); const fp = p.locator('[data-phc-faith-panel]'); await fp.waitFor({ timeout: 30000 }); return fp; };
 const e3 = await act({ type: 'faith/pact', charId: cid, patron: 'mother_ember' }); await pause(p, 300);
 cc = (await G()).characters[cid];
 ok('leaving Nerukhan (Jealous) for Mother Ember: no cooldown, and his grudge (' + (e3 || JSON.stringify(cc.grudge || null).slice(0, 90)) + ')', cc.belief?.patron === 'mother_ember' && cc.grudge?.patron === 'nerukhan' && !cc.faithLeft);
@@ -386,7 +386,7 @@ ok('the tools swear a patron anyway: the cooldown is gone and the meter reads "'
 await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'the_laughing_mask', faith: 7, devotion: 10, reset: true }); await pause(p, 200);
 await act({ type: 'sandbox/give', charId: cid, item: 'service_pistol', equip: true });
 await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 30000 });
 await myTurn(); await calm();
 await act({ type: 'sandbox/clear' });
 { const gq = await G(), mu = gq.combat.units.find((x) => x.charId), [qx, qy] = mu.pos.split(',').map(Number), M = gq.combat.map;
@@ -416,7 +416,7 @@ await act({ type: 'sandbox/clear' }); await act({ type: 'sandbox/stop' }); await
 {
   await act({ type: 'sandbox/faith', charId: cid, belief: 'faithful', patron: 'nerukhan', faith: 7, devotion: 10, reset: true });
   await act({ type: 'sandbox/fight' });
-  await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 30000 });
   await myTurn(); await calm(); await pause(p, 1200);
   const gN = await G(), mN = gN.combat.units.find((x) => x.charId), [nx, ny] = mN.pos.split(',').map(Number), M = gN.combat.map;
   let spawned = 0;

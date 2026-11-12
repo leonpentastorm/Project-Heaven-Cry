@@ -34,7 +34,7 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 await p.mouse.move(1430, 990);
 let g = await G();
 ok('alone in the Proving Ground, gearing up (phase ' + g.phase + ', standalone ' + !!g.sandbox.standalone + ')', g.phase === 'story' && !g.combat && !!g.sandbox.standalone);
@@ -52,7 +52,7 @@ await act({ type: 'sandbox/ai', on: false });
 // 2. A fight plays one of the pool; it is that fight's song to the end
 const fight = async (n) => {
   const e = await act({ type: 'sandbox/fight' }); if (e) ok('fight ' + n + ' starts: ' + e, false);
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !!window.__phc.getState().game.combat?.song, null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !!window.__phc.getState().game.combat?.song, null, { timeout: 30000 });
   const g = await G(), song = g.combat.song, title = POOL[song];
   ok('fight ' + n + ': the engine picked a song of the pool (' + song + ')', !!title);
   const r = await playing(title || '?', song);
@@ -61,7 +61,7 @@ const fight = async (n) => {
 };
 const stop = async () => {
   await act({ type: 'sandbox/stop' });
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'story', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'story', null, { timeout: 30000 });
   const r = await playing('Gearing Up', 'gearing_up');
   ok('the fight over, Gearing Up is back (button: ' + r.m + '; player: ' + r.o + ')', r.ok);
 };
@@ -76,8 +76,10 @@ await p.reload();
 await p.waitForFunction(() => window.__phc?.getState().game?.phase === 'combat', null, { timeout: 30000 }).catch(() => {});
 g = await G();
 ok('after a reload the fight still has its song (' + g?.combat?.song + ')', g?.combat?.song === s1);
-await p.mouse.click(700, 500).catch(() => {}); // the browser starts sound again only after a click
-r = await playing(POOL[s1], s1, 12000);
+// The browser starts sound again only after a click, and a click is heard only once the fight's screen is drawn again
+// (the state is back before the screen is: a click sent then went to an empty page, and no song ever started).
+await p.waitForFunction(() => window.__phc?.getState().screen === 'combat' && !!document.querySelector('.phc-grid button.phc-tok') && !!document.querySelector('button[aria-label^="Music:"]'), null, { timeout: 60000 }).catch(() => {});
+for (let i = 0; i < 3; i++) { await p.mouse.click(700, 500).catch(() => {}); r = await playing(POOL[s1], s1, 12000); if (r.ok) break; }
 ok('and the page plays it again (button: ' + r.m + '; player: ' + r.o + ')', r.ok);
 await stop();
 

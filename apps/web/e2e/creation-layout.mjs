@@ -61,12 +61,12 @@ const art = p.locator('[data-patron-art="mother_ember"]');
 ok('every patron card leads with its art, as a button', (await p.locator('[data-patron-art]').count()) === 8 && (await art.getAttribute('aria-label')) === 'View the art of Mother Ember');
 await art.click();
 const lb = p.getByRole('dialog', { name: /Mother Ember/ });
-await lb.waitFor({ timeout: 15000 });
+await lb.waitFor({ timeout: 30000 });
 const big = await lb.locator('img').evaluate((img) => ({ src: img.getAttribute('src'), w: img.naturalWidth }));
 ok('clicking the art opens it large (' + big.src + ', ' + big.w + ' px wide)', /patron-mother_ember.*-lg/.test(big.src) || big.w >= 600);
 if (SHOTS) { await settle(p, 600); await p.screenshot({ path: SHOTS + '/creation-patron-art.png' }); }
 await lb.getByRole('button', { name: 'Close the enlarged image' }).click();
-await lb.waitFor({ state: 'detached', timeout: 15000 });
+await lb.waitFor({ state: 'detached', timeout: 30000 });
 ok('and closes', (await p.getByRole('dialog').count()) === 0);
 ok('the art click doesn\'t swear you to the patron', (await p.locator('[data-swear="mother_ember"]').getAttribute('aria-checked')) === 'false');
 

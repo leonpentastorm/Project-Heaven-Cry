@@ -29,14 +29,14 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 const meChar = await p.evaluate(() => { const g = window.__phc.getState().game, me = window.__phc.getState().me.id; return Object.values(g.characters).find((c) => c.owner === me).id; });
 await act({ type: 'sandbox/give', charId: meChar, item: 'hellraiser_service_rifle', equip: true });
 // before the fight: no fight, so the pace is 1 whatever the setting
 const pre = await tempo();
 ok('outside a fight the pace is 1 (speed ' + pre.speed + ', pace ' + pre.pace + ')', pre.pace === 1 && pre.battle === false);
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 await pause(p, 2400);
 for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 880); await pause(p, 380); }
 await settle();
@@ -82,7 +82,7 @@ ok('and again after the event switch (ratio ' + (dN2[0] / dF[0]).toFixed(4) + ')
 {
   const cssK = () => p.evaluate(() => Number(getComputedStyle(document.documentElement).getPropertyValue('--phc-k')));
   await p.locator('header').first().getByRole('button', { name: 'Settings', exact: true }).click();
-  const set = p.locator('div[role="dialog"][aria-label="Settings"]'); await set.waitFor({ timeout: 15000 });
+  const set = p.locator('div[role="dialog"][aria-label="Settings"]'); await set.waitFor({ timeout: 30000 });
   await set.getByRole('tab', { name: 'Combat' }).click();
   await set.locator('button[data-phc-speed="fast"]').click();
   t = await tempo(); const kF = await cssK();

@@ -38,7 +38,7 @@ async function newRound() {
   await idle(); await dismissCut();
   const r0 = (await st()).cb.round;
   await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 15000 });
+  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 30000 });
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idle();
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
@@ -88,7 +88,7 @@ const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let g = await G();
 const cid = Object.values(g.characters)[0].id;
 await must({ type: 'sandbox/clear' });
@@ -170,7 +170,7 @@ ok('Close closes the mark\'s panel and the area map', (await dlg.count()) === 0 
 await openTools();
 await drawer.getByRole('button', { name: /^⚔ Start the fight/ }).first().click();
 await p.mouse.move(1430, 990);
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
 await must({ type: 'sandbox/clear' });
 for (let i = 0; i < 20; i++) { const s = await st(); const cur = s.cb.units.find((u) => u.id === s.cb.order[s.cb.turn]); if (cur?.side === 'pc') break; await pause(p, 300); }
@@ -298,23 +298,23 @@ await p.context().close();
 const host = await player(browser, 'hostA'), ona = await player(browser, 'onaB');
 for (const q of [host, ona]) q.on('dialog', (d) => d.accept());
 await host.goto(BASE);
-await click(host, 'PROVING GROUND', { timeout: 20000 });
+await click(host, 'PROVING GROUND', { timeout: 30000 });
 await host.getByPlaceholder('Leon').fill('Leon');
 await click(host, 'With friends ›');
-await host.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await host.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 const invite = host.locator('div[role="dialog"][aria-label="Invite friends"]');
-await invite.waitFor({ timeout: 15000 });
+await invite.waitFor({ timeout: 30000 });
 const code = (await G(host)).code;
 await invite.getByRole('button', { name: 'Gear up ›' }).click();
 await ona.goto(BASE + '/?room=' + code);
 await ona.getByPlaceholder('Leon').fill('Ona');
 await click(ona, 'Join ›');
-await ona.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await ona.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 const onaId = await ona.evaluate(() => window.__phc.getState().me.id), hostId = await host.evaluate(() => window.__phc.getState().me.id);
-await host.waitForFunction((id) => Object.values(window.__phc.getState().game.characters).some((c) => c.owner === id), onaId, { timeout: 15000 });
+await host.waitForFunction((id) => Object.values(window.__phc.getState().game.characters).some((c) => c.owner === id), onaId, { timeout: 30000 });
 await must({ type: 'sandbox/clear' }, 'clear', host);
 await must({ type: 'sandbox/settings', mode: 'teams' }, 'teams', host);
-await ona.waitForFunction(() => window.__phc.getState().game.sandbox.mode === 'teams', null, { timeout: 15000 });
+await ona.waitForFunction(() => window.__phc.getState().game.sandbox.mode === 'teams', null, { timeout: 30000 });
 g = await G(host);
 const hc = Object.values(g.characters).find((c) => c.owner === hostId), oc = Object.values(g.characters).find((c) => c.owner === onaId);
 ok('Team A: Leon, Team B: Ona', g.sandbox.team[hostId] === 'A' && g.sandbox.team[onaId] === 'B');
@@ -326,8 +326,8 @@ for (const [pg, c] of [[host, hc], [ona, oc]]) {
 await must({ type: 'sandbox/learn', charId: oc.id, word: 'shock' }, 'Ona learns SHOCK', ona);
 if ((await G(host)).characters[hc.id].sigils.includes('shock')) await must({ type: 'sandbox/forget', charId: hc.id, word: 'shock' }, 'forget', host);
 await must({ type: 'sandbox/fight' }, 'fight', host);
-await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat' && window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
-await ona.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat' && window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
+await ona.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 const hostStudy0 = (await growth(hc.id, host)).study || 0;
 let drew = false, analyzed = false, gr2 = null;
 const turnOf = async () => { const g = await G(host); const cb = g.combat; return { g, cb, cur: cb.units.find((u) => u.id === cb.order[cb.turn]) }; };

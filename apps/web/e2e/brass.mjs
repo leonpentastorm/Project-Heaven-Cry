@@ -15,9 +15,9 @@ await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 await pause(p, 2400);
 for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 880); await pause(p, 380); }
 await pause(p, 1200);
@@ -29,7 +29,7 @@ const tok = await p.evaluate((k) => { const [x, y] = k.split(',').map(Number); c
   const b = [...document.querySelectorAll('button.phc-tok[aria-label]')].find((el) => { const l = el.getAttribute('aria-label') || ''; return l.startsWith(ref) && !/[0-9A-Za-z]/.test(l.charAt(ref.length)); });
   const img = [...b.children].find((c) => /z-index:\s*2/.test(c.getAttribute('style') || '')); const r = img.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; }, me.pos);
 /** Play an effect and sample the pieces (tag, centre on screen, opacity, the clip on their box) every step ms. */
-const watch = (ev, ms = 1600, step = 40) => p.evaluate(async ({ ev, ms, step }) => {
+const watchOnce = (ev, ms = 1600, step = 40) => p.evaluate(async ({ ev, ms, step }) => {
   const seen = [], t0 = performance.now(); let n = 0;
   window.__phcFx.playFx(ev);
   // (for `ms`, and then for as long as a piece is still on the layer, to four times that: a busy machine runs the
@@ -44,6 +44,12 @@ const watch = (ev, ms = 1600, step = 40) => p.evaluate(async ({ ev, ms, step }) 
   }
   return seen;
 }, { ev, ms, step });
+/** watchOnce, played again (three times at most) when the sampler in the page was starved: two samples in a row more than
+ *  150 ms apart, where the step is 20 to 40 ms. A busy machine does that, and then the samples skip the very part of the
+ *  flight a check looks at (seen: a bow's arrow sampled once, before it swung to the front). The checks stay as they
+ *  are; they are only given a run in which the page had the time to look. */
+const starved = (s) => { const ts = [...new Set(s.map((x) => x.t))].sort((a, b) => a - b); return ts.some((t, i) => i > 0 && t - ts[i - 1] > 150); };
+const watch = async (ev, ms, step) => { let s = []; for (let i = 0; i < 3; i++) { s = await watchOnce(ev, ms, step); if (!starved(s)) break; await p.waitForFunction(() => !document.querySelector('[data-fx-piece]'), null, { timeout: 5000 }).catch(() => {}); } return s; };
 const by = (s, tag) => s.filter((x) => x.tag === tag);
 const shot = (weapon, cat, to) => ({ k: 'shot', unit: me.id, target: null, from: me.pos, to, weapon, cat, mode: 'shot', hit: true, dmg: 5 });
 const right = (mx + 4) + ',' + my, up = mx + ',' + Math.max(0, my - 4);

@@ -29,7 +29,8 @@ describe('the browser suites (apps/web/e2e)', () => {
     expect(G.smoke.filter((n) => !G.rules.includes(n) && !G.anim.includes(n))).toEqual([]);
   });
   it('every suite prints named checks (a green line must mean something was looked at)', () => {
-    const none = SUITES.filter((n) => !/\b(ok|check)\(\s*['"`(]/.test(src(n)) && !/console\.log\(\(?[^)]*\? 'ok/.test(src(n)));
+    // (a printer of 'ok   ' / 'FAIL ' lines, and at least three calls to it)
+    const none = SUITES.filter((n) => !/\? 'ok +' : 'FAIL +'/.test(src(n)) || (src(n).match(/\b(ok|check)\(/g) || []).length < 3);
     expect(none, 'these print no "ok   <label>" line').toEqual([]);
   });
   it('every suite has an entry in apps/web/e2e/README.md', () => {
