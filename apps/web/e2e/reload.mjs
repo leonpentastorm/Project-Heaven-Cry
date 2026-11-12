@@ -19,7 +19,7 @@ await p.setViewportSize({ width: 1440, height: 1000 });
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
@@ -42,7 +42,7 @@ const burn = async () => { const left = async () => (await G()).combat.units.fin
   // any cover in reach will do (the Proving Ground was redrawn at 26 x 26 in rules 1.16: no tile is named here)
   for (let dy = -7; dy <= 7; dy++) for (let dx = -7; dx <= 7; dx++) if (dx || dy) near.push([dx * dx + dy * dy, (ux + dx) + ',' + (uy + dy)]);
   for (const [, k] of near.sort((a, b) => a[0] - b[0])) { await act({ type: 'combat/shoot-cover', unitId: me.id, tile: k }); if ((await left()) < a0) return true; } return false; };
-const settle = () => p.waitForFunction(() => !document.querySelector('[data-fx="reload"]'), null, { timeout: 8000 }).catch(() => {});
+const settle = () => p.waitForFunction(() => !document.querySelector('[data-fx="reload"]'), null, { timeout: 20000 }).catch(() => {});
 /** Start something (a game action, or an effect by hand) and sample the reload card every step ms: its box, its mode
  *  and title, the count, the old magazine's centre, the pack and pile glyphs, and (once, at probeAt ms) what is on top
  *  at the card's centre and at its old magazine's. */

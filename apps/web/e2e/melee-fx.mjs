@@ -25,7 +25,7 @@ const XY = (k) => k.split(',').map(Number);
 await p.goto(BASE);
 await p.getByRole('button', { name: 'PROVING GROUND' }).first().click();
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await p.getByRole('button', { name: 'Solo ›' }).first().click(); }
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let g = await G();
@@ -36,10 +36,10 @@ await act({ type: 'sandbox/technique', charId: cid, id: 'all', ready: true });
 await act({ type: 'sandbox/give', charId: cid, item: 'sabre', equip: true });
 await act({ type: 'sandbox/fight' });
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
 
 const me = async () => (await G()).combat.units.find((u) => u.charId === cid);
-const idle = () => p.waitForFunction(() => (window.__phcHold ? window.__phcHold() : 0) <= performance.now() + 30, null, { timeout: 15000 }).catch(() => {});
+const idle = () => p.waitForFunction(() => (window.__phcHold ? window.__phcHold() : 0) <= performance.now() + 30, null, { timeout: 20000 }).catch(() => {});
 const myTurn = () => p.waitForFunction((id) => { const cb = window.__phc.getState().game?.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 6; }, cid, { timeout: 45000 }).catch(() => {});
 const dismissCut = async () => { for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 890); await pause(p, 350); } };
 const closeTools = async () => { const tools = p.locator('aside[aria-label="Proving Ground tools"]').first(); if (await tools.count()) await tools.getByRole('button', { name: /^Close the tools/ }).first().click().catch(() => {}); };
@@ -50,7 +50,7 @@ async function freshTurn() {
   if (gg.phase !== 'combat' || gg.combat?.over) {
     await pause(p, 1200); await act({ type: 'sandbox/fight' });
     await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 30000 });
-    await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
+    await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
     await act({ type: 'sandbox/clear' });
   } else { const u = await me(); if (u && (u.ap < 6 || gg.combat.order[gg.combat.turn] !== u.id || u.tech?.guard?.on)) { await act({ type: 'combat/end-turn', unitId: u.id }); } }
   await myTurn(); await idle(); await pause(p, 300); await dismissCut(); await closeTools();

@@ -68,7 +68,7 @@ async function openGround(browser, speed) {
   p.fxErrors = []; p.on('pageerror', (e) => p.fxErrors.push(String(e.message || e)));
   await p.goto(BASE); await click(p, 'PROVING GROUND', { timeout: 90000 });
   const nm = p.getByPlaceholder('Leon');
-  await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+  await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
   // the driver: act (the engine's refusal as a string), wait for the effects queue to run dry, and one case

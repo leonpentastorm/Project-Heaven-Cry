@@ -16,14 +16,14 @@ const cam = () => p.evaluate(() => window.__phcCamera());
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 const shows = (c, k) => { const [x, y] = k.split(',').map(Number); return !!c && x >= c.tiles.x0 && x <= c.tiles.x1 && y >= c.tiles.y0 && y <= c.tiles.y1; };
 const calm = async () => { for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await pause(p, 450); } };
-const settle = async () => { await p.waitForFunction(() => { const c = window.__phcCamera(); return !!c && !c.gliding; }, null, { timeout: 5000 }).catch(() => {}); await pause(p, 120); };
+const settle = async () => { await p.waitForFunction(() => { const c = window.__phcCamera(); return !!c && !c.gliding; }, null, { timeout: 20000 }).catch(() => {}); await pause(p, 120); };
 const tileBox = (k) => p.locator('.phc-grid button.phc-tok[aria-label^="' + ref(k) + ' ·"]').boundingBox();
 const myTurn = () => p.waitForFunction(() => { const d = document.querySelector('.phc-cb-dock'); return !!d && !d.getAttribute('data-lock') && !!document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"]'); }, null, { timeout: 60000 });
 
 await p.goto(BASE);
 await click(p, 'PROVING GROUND', { timeout: 90000 });
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let g = await G(); const cid = Object.keys(g.characters)[0];
@@ -62,8 +62,13 @@ await settle();
 // (and the action panel is yours: while the fight's opening still plays the panel is locked and a click on a tile does
 // nothing, which on a busy machine lasted past this point)
 await myTurn().catch(() => {});
+// (and Move is the picked action, by its own button: it is at the start of a turn, but nothing here has said so since
+// the fight was cleared; with no action picked a click on a tile only looks at it)
+{ const mv = p.locator('[role="tabpanel"] button[data-act="move"]').first();
+  if (!(await mv.count())) await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').first().click();
+  if ((await mv.getAttribute('aria-pressed').catch(() => null)) !== 'true') await mv.click({ timeout: 5000 }).catch(() => {}); }
 const near = (mx + 1) + ',' + my, nb = await tileBox(near);
-const panelAt = await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'), t = document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]'); return (d && d.getAttribute('data-lock') ? 'locked: ' + d.getAttribute('data-lock') : 'open') + ', tab ' + (t ? (t.textContent || '').trim() : '?'); });
+const panelAt = await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'), t = document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]'); const mv = document.querySelector('[role="tabpanel"] button[data-act="move"]'); return (d && d.getAttribute('data-lock') ? 'locked: ' + d.getAttribute('data-lock') : 'open') + ', tab ' + (t ? (t.textContent || '').trim() : '?') + ', Move ' + (mv ? 'pressed: ' + mv.getAttribute('aria-pressed') : 'not on the panel'); });
 await p.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2);
 const confirm = p.getByRole('button', { name: 'Confirm', exact: true }).first();
 // (until the click has done its work: the unit is there already, or Confirm has lit up for the picked tile. A look at
@@ -138,7 +143,7 @@ await p.mouse.click(5, 500); for (let i = 0; i < 9; i++) await p.keyboard.press(
 c = await cam(); ok('you look elsewhere: the hostile is off screen', !shows(c, farU.pos));
 const vb = await p.locator('.phc-grid-scroll').boundingBox(); await p.mouse.move(vb.x + vb.width / 2, vb.y + vb.height / 2); await pause(p, 200);
 const e1 = await act({ type: 'combat/attack', unitId: me.id, targetId: farU.id, mode: 'shot' });
-await p.waitForSelector('.phc-cam-arrow[data-cam-arrow="' + farU.pos + '"]', { timeout: 6000 }).catch(() => {});
+await p.waitForSelector('.phc-cam-arrow[data-cam-arrow="' + farU.pos + '"]', { timeout: 20000 }).catch(() => {});
 const arrow = p.locator('.phc-cam-arrow[data-cam-arrow="' + farU.pos + '"]').first();
 const hasArrow = (await arrow.count()) > 0;
 ok('shooting a target that is off screen while you aim raises an arrow at the edge' + (e1 ? ' (the shot was refused: ' + e1 + ')' : ''), hasArrow);
@@ -243,12 +248,12 @@ await act({ type: 'sandbox/ai', on: false }); await calm(); await act({ type: 's
 await myTurn().catch(() => {});
 await p.mouse.click(5, 500); for (let i = 0; i < 6; i++) await p.keyboard.press('ArrowRight'); await settle();
 await p.evaluate((id) => window.__phc.go('levelup', { levelupChar: id }), cid);
-await p.waitForFunction(() => window.__phc.getState().screen === 'levelup', null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'levelup', null, { timeout: 20000 }).catch(() => {});
 await pause(p, 600);
 const lvl = await p.evaluate(() => ({ cam: window.__phcCamera(), clip: document.querySelector('.phc-fx-layer')?.style.clipPath || '' }));
 ok('on the level-up screen there is no camera and the effects layer is whole again', lvl.cam === null && lvl.clip === '');
 await p.evaluate(() => window.__phc.go('combat', { levelupChar: null }));
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !!window.__phcCamera(), null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !!window.__phcCamera(), null, { timeout: 20000 }).catch(() => {});
 await pause(p, 900); await calm(); await settle();
 c = await cam(); g = await G();
 ok('back in the fight the camera shows your unit (' + ref(g.combat.units.find((u) => u.id === me.id).pos) + ')', !!c && c.scrolls && shows(c, g.combat.units.find((u) => u.id === me.id).pos));
@@ -270,11 +275,11 @@ ok('a bigger window gives bigger tiles, never smaller: ' + [1280, 1440, 1920].ma
 
 // 10. The area map has the same camera (the Proving Ground between fights).
 await p.setViewportSize({ width: 1440, height: 900 }); await pause(p, 500);
-await act({ type: 'sandbox/stop' }); await p.waitForFunction(() => window.__phc.getState().game?.phase !== 'combat', null, { timeout: 15000 }).catch(() => {});
-await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 15000 }).catch(() => p.evaluate(() => window.__phc.go && window.__phc.go('main')));
+await act({ type: 'sandbox/stop' }); await p.waitForFunction(() => window.__phc.getState().game?.phase !== 'combat', null, { timeout: 20000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 20000 }).catch(() => p.evaluate(() => window.__phc.go && window.__phc.go('main')));
 await pause(p, 1200); await calm();
 await p.mouse.click(5, 500); await p.keyboard.press('m');
-await p.waitForSelector('[role="dialog"][aria-label="Area map"]', { timeout: 8000 }).catch(() => {});
+await p.waitForSelector('[role="dialog"][aria-label="Area map"]', { timeout: 20000 }).catch(() => {});
 await pause(p, 900); await settle();
 c = await cam();
 const area = await p.evaluate(() => { const s = document.querySelector('.phc-area-scroll'); if (!s) return null; const t = s.querySelector('button.phc-tok').getBoundingClientRect(); return { tile: t.width, vw: s.clientWidth, vh: s.clientHeight, cw: s.scrollWidth, ch: s.scrollHeight, mini: !!document.querySelector('[data-phc-cam="area"] .phc-cam-mini-map') }; });

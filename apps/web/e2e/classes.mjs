@@ -22,7 +22,7 @@ const dismissCut = async () => { for (let i = 0; i < 3; i++) { if (!(await p.loc
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
@@ -119,7 +119,7 @@ await act({ type: 'sandbox/auto', on: false });
 await p.getByRole('button', { name: /^⚔ Start the fight/ }).first().click().catch(async () => { await act({ type: 'sandbox/fight' }); });
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 await p.waitForSelector('text=YOUR TURN', { timeout: 30000 });
-await p.waitForSelector('[data-phc-cutin]', { timeout: 3000 }).catch(() => {}); await dismissCut();
+await p.waitForSelector('[data-phc-cutin]', { timeout: 20000 }).catch(() => {}); await dismissCut();
 const tab = p.locator('#phc-tab-class');
 ok('a CLASS tab', (await tab.count()) === 1);
 const src = decodeURIComponent((await tab.locator('img').first().getAttribute('src').catch(() => '')) || '');

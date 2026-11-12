@@ -53,7 +53,7 @@ await p.setViewportSize({ width: 1440, height: 900 });
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 let g = await G();
@@ -101,7 +101,7 @@ await act({ type: 'sandbox/technique', charId: cid, id: 'deny', ready: true });
 // ---------- 4. the fight: two blocks, the pads ----------
 await act({ type: 'sandbox/fight' });
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
 const myTurn = () => p.waitForFunction((id) => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 4; }, cid, { timeout: 45000 });
 const dismissCut = async () => { for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 890); await settle(p, 400); } };
 await myTurn(); await settle(p, 2600); await dismissCut();
@@ -152,7 +152,7 @@ ok('a drill unit spawned near (' + (foe1 && foe1.pos) + ')', !!foe1);
 const mom = async () => (await me()).res?.momentum ?? 0;
 /** Confirm, then wait until the engine has taken it (the panel holds input while the last effects play). */
 const confirm = async () => { const n = (await G()).combat.log.length; await p.locator('.phc-cb-confirm button').first().click();
-  await p.waitForFunction((n) => window.__phc.getState().game.combat.log.length > n, n, { timeout: 8000 }).catch(() => {}); await settle(p, 500); };
+  await p.waitForFunction((n) => window.__phc.getState().game.combat.log.length > n, n, { timeout: 20000 }).catch(() => {}); await settle(p, 500); };
 await panel().locator('[data-act="tpad:main"]').click(); await settle(p, 300);
 await p.locator('[data-tech-pad="tpad:main"] [data-tech="lunge"]').click(); await settle(p, 300);
 ok('picking Lunge closes the pad to the selected card ("Lunge · N AP")', (await p.locator('[data-tech-pad]').count()) === 0 && /Lunge · \d+ AP/.test((await p.locator('.phc-cb-turnbox').first().textContent().catch(() => '')) || (await p.locator('body').textContent())));
@@ -193,7 +193,7 @@ if (m1 > 0) {
 // (a wave cleared ends the fight: start another, as the Proving Ground's Start the fight does)
 const endTurn = async () => { await act({ type: 'sandbox/refill', charId: cid }); await settle(p, 300);
   const gg = await G();
-  if (gg.phase !== 'combat' || gg.combat?.over) { await settle(p, 1500); await act({ type: 'sandbox/fight' }); await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {}); }
+  if (gg.phase !== 'combat' || gg.combat?.over) { await settle(p, 1500); await act({ type: 'sandbox/fight' }); await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {}); }
   else await p.getByRole('button', { name: 'End turn', exact: true }).first().click();
   await myTurn(); await settle(p, 1600); await dismissCut();
   if (await tools.count()) await tools.getByRole('button', { name: /^Close the tools/ }).first().click().catch(() => {}); };

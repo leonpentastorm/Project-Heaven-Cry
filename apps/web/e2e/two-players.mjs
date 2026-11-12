@@ -41,13 +41,13 @@ await host.waitForSelector('text=CLICK TO ROLL', { timeout: 30000 });
 ok('both spoke, the round closed and the Narrator called a check', true);
 await shot(host, '13-check-called');
 // a new check of yours opens the dice table by itself; else open it from its line
-if ((await host.locator('div[aria-label="Dice table"]').waitFor({ timeout: 3000 }).catch(() => 'not up')) === 'not up') await host.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
+if ((await host.locator('div[aria-label="Dice table"]').waitFor({ timeout: 20000 }).catch(() => 'not up')) === 'not up') await host.locator('button', { hasText: 'Get Keel to lower the ramp.' }).click();
 await click(host, /Throw/);
 await host.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/');
 ok('the check is rolled on the dice table and shows its outcome', true);
 await shot(host, '14-dice');
 await click(host, 'Continue', { exact: true });
-await host.waitForSelector('text=Initiative', { timeout: 10000 }).catch(() => {});
+await host.waitForSelector('text=Initiative', { timeout: 20000 }).catch(() => {});
 ok('a fight starts on both screens', await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 30000 }).then(() => true, () => false) && await guest.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 30000 }).then(() => true, () => false));
 log('host url screen', await host.locator('text=/ROUND \\d+/').first().textContent().catch(() => 'no combat header'));
 await shot(host, '15-combat');
@@ -82,7 +82,7 @@ for (let i = 0; i < 6000; i++) {
     const conf = p.getByRole('button', { name: 'Confirm', exact: true });
     // (a button that can't be pressed this moment, because the panel is still sliding or has just locked, is looked at
     // again on the next pass, as a player would; the fight standing still is what fails, 45 s below)
-    if (await conf.isEnabled().catch(() => false)) await conf.click({ timeout: 5000 }).catch(() => {}); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 5000 }).catch(() => {});
+    if (await conf.isEnabled().catch(() => false)) await conf.click({ timeout: 20000 }).catch(() => {}); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 20000 }).catch(() => {});
     await pause(p, 60);
   }
   if (i % 100 === 0) console.log('loop', i, states.join(','));

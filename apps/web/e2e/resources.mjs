@@ -21,7 +21,7 @@ const dismissCut = async () => { for (let i = 0; i < 4 && (await p.locator('[dat
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 let g = await G();
@@ -76,7 +76,7 @@ await patch('u.ammo = 3; u.heat = 0;');
 g = await G();
 await act({ type: 'combat/end-turn', unitId: g.combat.units.find((u) => u.charId === me && !u.ctrl).id });
 const cut = p.locator('[data-phc-cutin]');
-await cut.waitFor({ timeout: 10000 }).catch(() => {});
+await cut.waitFor({ timeout: 20000 }).catch(() => {});
 await pause(p, 700);
 if (await cut.count()) {
   const ct = (await cut.textContent()) || '';

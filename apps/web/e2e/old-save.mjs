@@ -6,7 +6,7 @@ const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v)
 const errors = []; p.on('pageerror', (e) => errors.push(String(e.message || e)));
 await p.goto(BASE); await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 await p.evaluate(() => { const g = window.__phc.getState().game; window.__phc.act({ type: 'sandbox/perk', charId: Object.keys(g.characters)[0], perk: 'bulwark', tier: 'I' }); });

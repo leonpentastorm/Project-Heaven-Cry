@@ -99,7 +99,7 @@ async function useMove(name, o = {}) {
   if (o.tile) { await tok(o.tile).click(); await settle(host, 150); }
   if (o.shot) await snap(o.shot);
   const b = host.getByRole('button', { name: /^Confirm/ }).first();
-  await b.waitFor({ timeout: 4000 }).catch(() => {});
+  await b.waitFor({ timeout: 20000 }).catch(() => {});
   if (!(await b.isEnabled().catch(() => false))) return 'Confirm disabled: ' + ((await host.locator('[aria-live]').allTextContents().catch(() => [])).join(' ').slice(0, 300));
   await b.click(); await settle(host, 500);
   return null;

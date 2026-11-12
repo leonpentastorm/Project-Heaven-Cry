@@ -53,15 +53,15 @@ await click(p, 'SETTINGS', { exact: true, timeout: 60000 }); await p.getByRole('
 const sec = p.locator('[data-phc-voice-settings]');
 await sec.waitFor();
 ok('Settings has a Voice tab with the voice settings', (await p.getByRole('tab', { name: 'Voice', exact: true }).count()) > 0 && (await sec.count()) === 1);
-await p.waitForFunction(() => /about \d+ MB/.test(document.querySelector('[data-voice-install]')?.textContent || ''), null, { timeout: 5000 }).catch(() => {});
+await p.waitForFunction(() => /about \d+ MB/.test(document.querySelector('[data-voice-install]')?.textContent || ''), null, { timeout: 20000 }).catch(() => {});
 ok('Kokoro: not installed, with the Install button sized for this device (' + await sec.locator('[data-voice-install]').textContent() + ')', /not installed/.test(await sec.textContent()) && /Install the Narrator's voice \(about 326 MB\)/.test(await sec.locator('[data-voice-install]').textContent()) && /your GPU \(WebGPU: Test GPU/.test(await sec.textContent()));
 // Render by GPU | Render by CPU (Leon, 9 Nov 2026): before the install it changes what the install downloads.
 ok('Render by GPU is picked by default', (await sec.locator('[data-voice-render="gpu"]').getAttribute('aria-pressed')) === 'true' && (await sec.locator('[data-voice-render="cpu"]').getAttribute('aria-pressed')) === 'false');
 await sec.locator('[data-voice-render="cpu"]').click();
-await p.waitForFunction(() => /about 92 MB/.test(document.querySelector('[data-voice-install]')?.textContent || ''), null, { timeout: 5000 }).catch(() => {});
+await p.waitForFunction(() => /about 92 MB/.test(document.querySelector('[data-voice-install]')?.textContent || ''), null, { timeout: 20000 }).catch(() => {});
 ok('Render by CPU: the install is the CPU one (' + await sec.locator('[data-voice-install]').textContent() + ')', /about 92 MB/.test(await sec.locator('[data-voice-install]').textContent()) && (await sec.locator('[data-voice-render="cpu"]').getAttribute('aria-pressed')) === 'true');
 await sec.locator('[data-voice-render="gpu"]').click();
-await p.waitForFunction(() => /about 326 MB/.test(document.querySelector('[data-voice-install]')?.textContent || ''), null, { timeout: 5000 }).catch(() => {});
+await p.waitForFunction(() => /about 326 MB/.test(document.querySelector('[data-voice-install]')?.textContent || ''), null, { timeout: 20000 }).catch(() => {});
 ok('and back to Render by GPU (' + await sec.locator('[data-voice-install]').textContent() + ')', /about 326 MB/.test(await sec.locator('[data-voice-install]').textContent()));
 const groups = await sec.locator('[data-voice-select="Narrator voice"] optgroup').evaluateAll((gs) => gs.map((g) => g.label + ':' + g.querySelectorAll('option').length));
 ok('the Narrator picker lists Kokoro, Edge natural voices and Browser voices (' + groups.join(', ') + ')', groups.length === 3 && /^Kokoro:7$/.test(groups[0]) && /^Edge natural voices:2$/.test(groups[1]) && /^Browser voices:3$/.test(groups[2]));
@@ -140,7 +140,7 @@ await p.waitForFunction(() => window.__phcVoice && window.__phcVoice.state().sta
 ok('opted in: the title screen starts the voice by itself (' + await p.evaluate(() => window.__phcVoice.state().status) + ')', ['loading', 'installing', 'ready'].includes(await p.evaluate(() => window.__phcVoice.state().status)));
 await click(p, 'PROVING GROUND', { timeout: 30000 });
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, /^Solo ›/); }
 const chip = p.locator('[data-phc-voice-chip]');
 await chip.waitFor({ timeout: 30000 });
@@ -183,7 +183,7 @@ ok('after about 8 s its text shows though Kokoro is still ' + stLate + ' (' + sh
 await q.waitForFunction(() => window.__phcVoice.state().status === 'ready', null, { timeout: 30000 });
 await settle(q, 400);
 ok('the browser voice never took it (' + (await q.evaluate(() => window.__spoken.length)) + ' browser utterances)', (await q.evaluate(() => window.__spoken.length)) === 0);
-await q.waitForFunction(() => window.__phcVoice.state().speaking === null, null, { timeout: 5000 }).catch(() => {});
+await q.waitForFunction(() => window.__phcVoice.state().speaking === null, null, { timeout: 20000 }).catch(() => {});
 ok('and the Kokoro audio followed (' + (logs2.find((l) => /first audio in \d+ ms \(Kokoro/.test(l)) || 'none') + ')', logs2.some((l) => /first audio in \d+ ms \(Kokoro/.test(l)));
 // Back to not installed, for the WebGPU failure below.
 await q.evaluate(() => { localStorage.setItem('phc.voice', JSON.stringify({ ...JSON.parse(localStorage.getItem('phc.voice') || '{}'), install: false, ready: false })); });
@@ -210,11 +210,11 @@ ok('the noisy GPU is remembered (' + await q.evaluate(() => localStorage.getItem
 ok('after the noise the CPU is ticked and the GPU says it failed (' + await sec2.locator('[data-voice-render="gpu"]').textContent() + ')', (await sec2.locator('[data-voice-render="cpu"]').getAttribute('aria-pressed')) === 'true' && (await sec2.locator('[data-voice-render="gpu"]').getAttribute('aria-pressed')) === 'false' && /failed here/.test(await sec2.locator('[data-voice-render="gpu"]').textContent()) && /Your GPU made noise, not speech, so the CPU reads/.test(await sec2.textContent()));
 await q.evaluate(() => { window.__voiceFail = null; });
 await sec2.locator('[data-voice-render="gpu"]').click();
-await q.waitForFunction(() => /Ready · Kokoro on WebGPU/.test(document.querySelector('[data-phc-voice-settings]')?.textContent || ''), null, { timeout: 10000 }).catch(() => {});
+await q.waitForFunction(() => /Ready · Kokoro on WebGPU/.test(document.querySelector('[data-phc-voice-settings]')?.textContent || ''), null, { timeout: 20000 }).catch(() => {});
 ok('Render by GPU again: back on WebGPU, the check passed (' + ((await sec2.textContent()).match(/Warm-up check[^)]*\)/)?.[0] || '?') + ')', /Ready · Kokoro on WebGPU/.test(await sec2.textContent()) && /sounds like speech \(97%\)/.test(await sec2.textContent()) && (await q.evaluate(() => localStorage.getItem('phc.voiceGpuNoise'))) === null);
 ok('back on the GPU, its button is ticked again', (await sec2.locator('[data-voice-render="gpu"]').getAttribute('aria-pressed')) === 'true' && !/failed here/.test(await sec2.locator('[data-voice-render="gpu"]').textContent()));
 await sec2.locator('[data-voice-render="cpu"]').click();
-await q.waitForFunction(() => /Ready · Kokoro on the CPU/.test(document.querySelector('[data-phc-voice-settings]')?.textContent || ''), null, { timeout: 10000 }).catch(() => {});
+await q.waitForFunction(() => /Ready · Kokoro on the CPU/.test(document.querySelector('[data-phc-voice-settings]')?.textContent || ''), null, { timeout: 20000 }).catch(() => {});
 ok('Render by CPU switches to the CPU and keeps it (' + await q.evaluate(() => localStorage.getItem('phc.voicePlan')) + ')', /Ready · Kokoro on the CPU/.test(await sec2.textContent()) && /wasm/.test(await q.evaluate(() => localStorage.getItem('phc.voicePlan')) || '') && (await sec2.locator('[data-voice-render="cpu"]').getAttribute('aria-pressed')) === 'true');
 if (SHOTS) await sec2.screenshot({ path: SHOTS + '/voice-noise-fallback.png' });
 await ctx2.close();

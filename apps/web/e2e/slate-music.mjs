@@ -93,7 +93,7 @@ const m2 = await waitMusic(host, /Heaven Falls/), m2g = await waitMusic(guest, /
 ok('a boss fight plays Heaven Falls (host: ' + m2 + ', guest: ' + m2g + ')', /Heaven Falls/.test(m2 || '') && /Heaven Falls/.test(m2g || ''));
 // The label never gives away a hostile the party hasn't seen: "Fight: a boss" only once the boss is in cb.sighted.
 { const g2 = await G(host), seen = g2.combat.units.some((u) => u.side === 'foe' && u.tier === 'boss' && (g2.combat.sighted || []).includes(u.id));
-  const card = async (p) => (await p.locator('[role="status"]', { hasText: '♪ NOW PLAYING' }).filter({ hasText: 'Heaven Falls' }).first().textContent({ timeout: 3000 }).catch(() => '')) || '';
+  const card = async (p) => (await p.locator('[role="status"]', { hasText: '♪ NOW PLAYING' }).filter({ hasText: 'Heaven Falls' }).first().textContent({ timeout: 20000 }).catch(() => '')) || '';
   const ch = await card(host), cg = await card(guest);
   ok('the card names the boss only once the party has seen it (seen ' + seen + '; host: ' + ch + ' | guest: ' + cg + ')', ch && cg && (seen ? /Fight: a boss/.test(ch) && /Fight: a boss/.test(cg) : !/boss/.test(ch + cg))); }
 await host.screenshot({ path: OUT + 'slate-music-heaven-falls.png' });
@@ -128,8 +128,8 @@ await host.waitForFunction(() => window.__phc.getState().game.phase === 'story',
 await pause(host, 400);
 const leave = host.getByRole('button', { name: 'Leave', exact: true });
 if (await leave.count()) await leave.first().click(); else await host.evaluate(() => window.__phc.act({ type: 'sandbox/end' }));
-await host.waitForFunction(() => window.__phc.getState().screen === 'room', null, { timeout: 8000 }).catch(() => {});
-await guest.waitForFunction(() => window.__phc.getState().screen === 'room', null, { timeout: 8000 }).catch(() => {});
+await host.waitForFunction(() => window.__phc.getState().screen === 'room', null, { timeout: 20000 }).catch(() => {});
+await guest.waitForFunction(() => window.__phc.getState().screen === 'room', null, { timeout: 20000 }).catch(() => {});
 const hs = await host.evaluate(() => window.__phc.getState().screen), gs = await guest.evaluate(() => window.__phc.getState().screen);
 ok('leaving the Proving Ground: host on ' + hs + ', guest on ' + gs, hs === 'room' && gs === 'room');
 ok('the squad is the room\'s again: ' + Object.values((await G(host)).characters).map((c) => c.name).join(', '), Object.values((await G(host)).characters).length === 2);

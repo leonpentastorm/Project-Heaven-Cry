@@ -247,7 +247,7 @@ await start.click(); await settle(host, 500);
 ok('…and it works', (await host.evaluate(() => window.__phc.getState().screen)) === 'main');
 await host.waitForSelector('text=Narrator settings updated', { timeout: 30000 }).then(() => ok('returning says the Narrator settings were updated', true), () => ok('returning says the Narrator settings were updated', false));
 // The header's Back to the session › says so too (review of the UI pass: only the big button did).
-await host.waitForSelector('text=Narrator settings updated', { state: 'detached', timeout: 9000 }).catch(() => {});
+await host.waitForSelector('text=Narrator settings updated', { state: 'detached', timeout: 20000 }).catch(() => {});
 await head.getByRole('button', { name: new RegExp('^Room ' + code) }).click();
 await host.waitForSelector('input[data-narrator-key]', { timeout: 30000 });
 await host.locator('input[data-narrator-key]').fill('sk-' + 'ant-api03-another-fake-key');

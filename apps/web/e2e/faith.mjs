@@ -57,7 +57,7 @@ ok('the meter says its words to a screen reader too', /DEVOTION 3 · 0\/25 XP/.t
   await port.click(); const lb = p.getByRole('dialog', { name: /Mother Ember/ });
   const up = await lb.waitFor({ timeout: 30000 }).then(() => true, () => false);
   ok('a click opens it large (the lightbox, the -lg painting)', up && /patron-mother_ember-lg/.test((await lb.locator('img').first().getAttribute('src')) || ''));
-  if (up) { await lb.getByRole('button', { name: 'Close the enlarged image' }).click(); await lb.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {}); } }
+  if (up) { await lb.getByRole('button', { name: 'Close the enlarged image' }).click(); await lb.waitFor({ state: 'detached', timeout: 20000 }).catch(() => {}); } }
 ok('the gate marks are faith light (var(--faith-light) = #F2C46A)', await panel.evaluate((el) => { const s = [...el.querySelectorAll('[role="meter"] span')].find((x) => x.textContent === 'HYMN I'); return !!s && getComputedStyle(s).color === 'rgb(242, 196, 106)'; }));
 ok('likes and taboos, in words with their marks', /✓ HEAL/.test(txt) && /✕ BETRAY/.test(txt));
 ok('7 Whispers (rules 1.21: Rebuke is the seventh), 3 Hymns, the Miracle', (await panel.locator('[data-prayer^="whisper:"]').count()) === 7 && (await panel.locator('[data-prayer^="hymn:"]').count()) === 3 && (await panel.locator('[data-prayer^="miracle:"]').count()) === 1);

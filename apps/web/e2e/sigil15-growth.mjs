@@ -24,7 +24,7 @@ await p.setViewportSize({ width: 1440, height: 1000 });
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
@@ -132,7 +132,7 @@ await cell.scrollIntoViewIfNeeded();
 await snap('05-area-mark');
 await cell.click(); await pause(p, 400);
 const mp = p.locator('[data-mark-panel]');
-await mp.waitFor({ timeout: 4000 }).catch(() => {});
+await mp.waitFor({ timeout: 20000 }).catch(() => {});
 ok('panel: the mark section', (await mp.count()) === 1);
 const mtext = await mp.innerText().catch(() => '');
 ok('panel: age, damage and TN (' + mtext.split('\n')[0] + ')', /FRESH · WORN · TN 12/.test(mtext));

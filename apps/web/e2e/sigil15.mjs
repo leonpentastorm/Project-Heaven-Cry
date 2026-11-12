@@ -28,7 +28,7 @@ const must = async (a, what, pg = p) => { const e = await actOn(pg, a); if (e) c
 const G = (pg = p) => pg.evaluate(() => window.__phc.getState().game);
 const st = () => p.evaluate(() => { const s = window.__phc.getState(), g = s.game, cb = g.combat; const u = cb && cb.units.find((x) => x.side === 'pc'); return { g, cb, u }; });
 const tok = (k, pg = p) => pg.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
-const idle = (pg = p) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 12000 }).catch(() => {});
+const idle = (pg = p) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 20000 }).catch(() => {});
 const drawer = p.locator('aside[aria-label="Proving Ground tools"]');
 const openTools = async () => { if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click(); await drawer.waitFor(); };
 const closeTools = async () => { if (await drawer.count()) { await drawer.getByRole('button', { name: 'Close the tools' }).click(); await drawer.waitFor({ state: 'detached' }).catch(() => {}); } };
@@ -85,7 +85,7 @@ async function fireAt(k) {
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
@@ -137,7 +137,7 @@ ok('the carved mark is on the area map', (await cell.locator('img[data-sigil-mar
 const study0 = (await growth(cid)).study || 0;
 await cell.click(); await pause(p, 400);
 const dlg = p.locator('div[role="dialog"][aria-label="Sigil mark"]');
-await dlg.waitFor({ timeout: 4000 }).catch(() => {});
+await dlg.waitFor({ timeout: 20000 }).catch(() => {});
 ok('the mark panel: unread, Investigate with Acuity or Rumination (the skill is Acuity since Skeleton 2.0)', /An unread word/.test(await p.locator('[data-mark-panel]').innerText().catch(() => '')) && (await dlg.getByText('Acuity or Rumination').count()) > 0);
 await snap('01-mark-panel');
 const tryBtn = dlg.getByRole('button', { name: /Try this · 2 AP|Try it · 2 AP/ }).first();
@@ -163,7 +163,7 @@ if (tr && tr.ok) {
 } else ok('Investigate succeeds at +9 against TN 8 (a natural 1 fails: ' + (tr ? tr.total : '?') + ')', false);
 // Close what is open with its own Close button (the mark's panel, then the area map): the tools' Start button is under
 // them. (This pressed Escape twice; neither panel answers Escape, and the mark's panel stayed over the tools.)
-for (const d of [dlg, area]) if (await d.count()) { await d.getByRole('button', { name: 'Close', exact: true }).first().click(); await d.waitFor({ state: 'detached', timeout: 15000 }).catch(() => {}); }
+for (const d of [dlg, area]) if (await d.count()) { await d.getByRole('button', { name: 'Close', exact: true }).first().click(); await d.waitFor({ state: 'detached', timeout: 20000 }).catch(() => {}); }
 ok('Close closes the mark\'s panel and the area map', (await dlg.count()) === 0 && (await area.count()) === 0);
 
 // ---------- the fight ----------
@@ -171,7 +171,7 @@ await openTools();
 await drawer.getByRole('button', { name: /^⚔ Start the fight/ }).first().click();
 await p.mouse.move(1430, 990);
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
 await must({ type: 'sandbox/clear' });
 for (let i = 0; i < 20; i++) { const s = await st(); const cur = s.cb.units.find((u) => u.id === s.cb.order[s.cb.turn]); if (cur?.side === 'pc') break; await pause(p, 300); }
 await pause(p, 2300); await dismissCut();

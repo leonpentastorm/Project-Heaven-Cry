@@ -27,7 +27,7 @@ const tokRect = (pos) => p.evaluate((pos) => { const cb = window.__phc.getState(
 await p.goto(BASE);
 await click(p, 'PROVING GROUND', { timeout: 90000 });
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, /^Solo ›/); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 const drawer = p.locator('aside[aria-label="Proving Ground tools"]');
@@ -47,7 +47,7 @@ await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null,
 await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
 // The your-turn card comes up when the opening has played (later on the 26 x 26 map's heavier screen than the fixed
 // 0.8 s this waited before): wait for it, send it away, and only then reach for the tools (the card covers them).
-await p.locator('[data-phc-cutin]').first().waitFor({ timeout: 6000 }).catch(() => {});
+await p.locator('[data-phc-cutin]').first().waitFor({ timeout: 20000 }).catch(() => {});
 for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await pause(p, 400); }
 if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
 await drawer.getByRole('tab', { name: 'Faith' }).click();
@@ -65,7 +65,7 @@ await p.locator('[role="tab"][data-tab="faith"]').click();
   const lb = p.getByRole('dialog', { name: /Mother Ember/ });
   const lbUp = await lb.waitFor({ timeout: 30000 }).then(() => true, () => false);
   ok('a click on it opens the portrait large (the lightbox)', lbUp && /patron-mother_ember-lg/.test((await lb.locator('img').first().getAttribute('src')) || ''));
-  if (lbUp) { await lb.getByRole('button', { name: 'Close the enlarged image' }).click(); await lb.waitFor({ state: 'detached', timeout: 3000 }).catch(() => {}); }
+  if (lbUp) { await lb.getByRole('button', { name: 'Close the enlarged image' }).click(); await lb.waitFor({ state: 'detached', timeout: 20000 }).catch(() => {}); }
 }
 const mir = p.locator('[role="tabpanel"] [data-act^="pr:miracle:"]');
 ok('the Miracle is in the FAITH tab and ready', (await mir.count()) === 1);
@@ -354,7 +354,7 @@ ok('the switch has no APOSTASY line', !(await G()).story.entries.some((e) => e.h
   const gf = fp.locator('[data-faith-grudge-face="nerukhan"]');
   ok('the grudge banner shows Nerukhan, greyed', (await gf.count()) === 1 && /grayscale\(1\)/.test(await gf.evaluate((el) => getComputedStyle(el).filter)) && /patron-nerukhan/.test((await gf.locator('img').getAttribute('src')) || ''));
   const pact = p.locator('[data-phc-faith-card="pact"]'), grudgeC = p.locator('[data-phc-faith-card="grudge"]:has([data-phc-faith-card-face="nerukhan"])'), leave = p.locator('[data-phc-faith-card="leave"]');
-  await grudgeC.first().waitFor({ timeout: 3000 }).catch(() => {});
+  await grudgeC.first().waitFor({ timeout: 20000 }).catch(() => {});
   ok('pact cards in the story with a small portrait (' + (await pact.count()) + ')', (await pact.count()) >= 3 && /patron-/.test((await pact.last().locator('[data-phc-faith-card-face] img').getAttribute('src')) || ''));
   ok('the switch away from Nerukhan: its card with his portrait', (await leave.count()) >= 1 && /patron-nerukhan/.test((await leave.last().locator('img').getAttribute('src')) || ''));
   ok('the grudge card: Nerukhan greyed (the Quartermaster may hold one too: the switch to Nerukhan rolls)', (await grudgeC.count()) === 1 && (await grudgeC.locator('[data-phc-faith-card-face="nerukhan"][data-grey="true"]').count()) === 1 && /grayscale/.test(await grudgeC.locator('[data-phc-faith-card-face]').evaluate((el) => getComputedStyle(el).filter)));
@@ -397,7 +397,7 @@ await pause(p, 300);
 { const gE = await G(), mE = gE.combat.units.find((x) => x.charId), fE = gE.combat.units.find((x) => x.side === 'foe' && !x.dead);
   const ap0 = mE.ap, eA = await act({ type: 'combat/attack', unitId: mE.id, targetId: fE.id, mode: 'shot' });
   const eP = await act({ type: 'faith/pray', unitId: mE.id, kind: 'miracle', id: 'encore' });
-  await p.locator('[data-phc-miracle]').waitFor({ state: 'detached', timeout: 5000 }).catch(() => {}); await calm();
+  await p.locator('[data-phc-miracle]').waitFor({ state: 'detached', timeout: 20000 }).catch(() => {}); await calm();
   const uE = await myU(), en = uE.faith?.encore;
   ok('a shot, then Encore: the repeat is lent ' + (en?.ap ?? '?') + ' AP with ' + uE.ap + ' AP left (' + (eA || eP || 'prayed') + ')', !eA && !eP && en?.key === 'combat/attack:shot' && en.ap === ap0 - 3 - uE.ap);
   await pickAction(p, /^Shot/); await pause(p, 150);
@@ -405,7 +405,7 @@ await pause(p, 300);
   await p.locator('.phc-grid button.phc-tok').nth(fy * mapW + fx).click(); await pause(p, 250);
   const asideT = await p.locator('aside').first().textContent(), conf = p.getByRole('button', { name: 'Confirm', exact: true }).first();
   ok('the action panel marks the repeat FREE · ENCORE', /FREE · ENCORE/.test(asideT));
-  await p.waitForFunction(() => [...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Confirm' && !b.disabled), null, { timeout: 3000 }).catch(() => {});
+  await p.waitForFunction(() => [...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Confirm' && !b.disabled), null, { timeout: 20000 }).catch(() => {});
   ok('and Confirm is enabled even with ' + uE.ap + ' AP (the shot costs ' + en?.ap + ')', await conf.isEnabled());
   const nE = (await G()).combat.log.length; await conf.click(); await pause(p, 600);
   const lgE = (await G()).combat.log.slice(nE).join(' | ');

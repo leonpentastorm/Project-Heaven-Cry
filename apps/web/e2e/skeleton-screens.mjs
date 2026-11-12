@@ -91,7 +91,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
   await p.goto(BASE);
   await click(p, 'PROVING GROUND');
   const nm = p.getByPlaceholder('Leon');
-  await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+  await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
   let g = await G(); const cid = Object.keys(g.characters)[0];

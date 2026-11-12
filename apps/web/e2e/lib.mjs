@@ -50,9 +50,13 @@ export async function pickAction(page, name, opts = {}) {
   if (!(await btn().count())) {
     const tabs = page.locator('[role="tablist"][aria-label="Actions"] [role="tab"]');
     const n = await tabs.count();
-    for (let i = 0; i < n; i++) {
+    // Each tab in turn, until the button is on its panel. The tab is waited for by its own state (aria-selected), and
+    // the button for a quarter of a second after that; when no tab showed it, the tabs are gone through again with
+    // more patience (a busy machine drew a tab's panel later than the quarter second, and the button was never found).
+    scan: for (const wait of [250, 1500, 5000]) for (let i = 0; i < n; i++) {
       await tabs.nth(i).click();
-      if (await btn().waitFor({ timeout: 250 }).then(() => true, () => false)) break;
+      await page.waitForFunction((i) => document.querySelectorAll('[role="tablist"][aria-label="Actions"] [role="tab"]')[i]?.getAttribute('aria-selected') === 'true', i, { timeout: 5000 }).catch(() => {});
+      if (await btn().waitFor({ timeout: wait }).then(() => true, () => false)) break scan;
     }
   }
   await btn().click({ timeout: opts.timeout || 30000 }); // (30 s unless the caller is only trying: see click())

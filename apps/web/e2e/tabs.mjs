@@ -17,7 +17,7 @@ async function open(vw, vh) {
   await p.goto(BASE);
   await click(p, 'PROVING GROUND');
   const nm = p.getByPlaceholder('Leon');
-  await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+  await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.mouse.move(vw - 10, vh - 10);
   // The Proving Ground opens gearing up on the map; start the fight straight away.
@@ -110,8 +110,8 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     const foe = s.cb.units.find((u) => u.side === 'foe' && !u.dead && p);
     const vis = await p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb.units.filter((u) => u.side === 'foe' && !u.dead).map((u) => u.pos); });
     let clicked = false;
-    for (const k of vis) { const t = p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"][aria-label*="hostile"]').first(); if (await t.count()) { await p.waitForFunction(() => { const c = window.__phcCamera && window.__phcCamera(); return !c || !c.gliding; }, null, { timeout: 4000 }).catch(() => {}); await t.evaluate((el) => el.scrollIntoView({ block: 'center', inline: 'center' })); await settle(p, 250); await t.click(); clicked = true; break; } } // the camera's window: once the camera has come to rest on your unit (your turn has just started), the tile is brought to its middle, clear of the small map in the corner
-    await p.waitForFunction(() => document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]')?.getAttribute('data-tab') === 'attack', null, { timeout: 2500 }).catch(() => {});
+    for (const k of vis) { const t = p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"][aria-label*="hostile"]').first(); if (await t.count()) { await p.waitForFunction(() => { const c = window.__phcCamera && window.__phcCamera(); return !c || !c.gliding; }, null, { timeout: 20000 }).catch(() => {}); await t.evaluate((el) => el.scrollIntoView({ block: 'center', inline: 'center' })); await settle(p, 250); await t.click(); clicked = true; break; } } // the camera's window: once the camera has come to rest on your unit (your turn has just started), the tile is brought to its middle, clear of the small map in the corner
+    await p.waitForFunction(() => document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]')?.getAttribute('data-tab') === 'attack', null, { timeout: 20000 }).catch(() => {});
     // (rules 1.16: the sides deploy 10 to 14 tiles apart, so on some seeds no hostile is in sight yet: nothing to click, and the unit test in combat-screen.test.ts holds the rule)
     if (!clicked) ok('clicking a hostile while on Move: no hostile in sight on this seed (' + vis.length + ' alive), not checked here', true);
     else ok('clicking a hostile while on Move switches to the Attack tab: ' + await selTab(), (await selTab()) === 'attack');

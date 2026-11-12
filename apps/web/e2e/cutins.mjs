@@ -81,7 +81,7 @@ const spy = (p) => p.evaluate(() => {
   window.__spyObs = new MutationObserver(look); window.__spyObs.observe(document.documentElement, { childList: true, subtree: true, attributes: true }); look();
 });
 const spied = (p) => p.evaluate(() => window.__spy || { strips: [], blur: false, held: false, overlap: false, crit: 0 });
-const settle = async (p) => { await p.waitForFunction(() => (window.__phcHold?.() || 0) <= performance.now() + 5 && !window.__phcCutin?.showing, null, { timeout: 12000 }).catch(() => {}); await pause(p, 150); };
+const settle = async (p) => { await p.waitForFunction(() => (window.__phcHold?.() || 0) <= performance.now() + 5 && !window.__phcCutin?.showing, null, { timeout: 20000 }).catch(() => {}); await pause(p, 150); };
 async function hostsTurn() {
   for (let i = 0; i < 40; i++) {
     const u = await cur(host); if (!u) { await pause(host, 200); continue; }
@@ -248,7 +248,7 @@ await spy(host);
 const re = await act(host, { type: 'combat/reload', unitId: me.id });
 const god = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), nh, { timeout: 30000 }).then(() => true, () => false);
 let godStrip2 = false, faithCut = 0;
-if (god) { await host.waitForFunction(() => window.__spy.strips.length > 0, null, { timeout: 15000 }).catch(() => {}); const sp = await spied(host); godStrip2 = sp.strips.filter((x) => x === 'p:the_quartermaster').length === 1; faithCut = sp.overlap ? 1 : await host.locator('[data-phc-cut]').count(); await pause(host, 450); await snap(host, 'h-god'); }
+if (god) { await host.waitForFunction(() => window.__spy.strips.length > 0, null, { timeout: 20000 }).catch(() => {}); const sp = await spied(host); godStrip2 = sp.strips.filter((x) => x === 'p:the_quartermaster').length === 1; faithCut = sp.overlap ? 1 : await host.locator('[data-phc-cut]').count(); await pause(host, 450); await snap(host, 'h-god'); }
 await settle(host); await pause(host, 600);
 const gl = (await logs(host)).slice(nh).filter((x) => x.kind === 'god');
 const qmLog = await host.evaluate(() => window.__phc.getState().game.combat.log.some((l) => /Quartermaster intervenes/.test(l)));
@@ -306,7 +306,7 @@ await zed.getByPlaceholder('Leon').fill('Zed');
 await zed.getByPlaceholder('ROOM CODE').fill(room2);
 await click(zed, 'Join ›');
 await until(zed, () => !!window.__phc.getState().game && window.__phc.getState().conn === 'online', null, 20000);
-await nora.waitForFunction(() => { const g = window.__phc.getState().game; return g.story.await === 'players' && !g.narrator.busy; }, null, { timeout: 15000 }).catch(() => {});
+await nora.waitForFunction(() => { const g = window.__phc.getState().game; return g.story.await === 'players' && !g.narrator.busy; }, null, { timeout: 20000 }).catch(() => {});
 await pause(zed, 800);
 const b1 = (await logs(nora)).length;
 const ncId = await nora.evaluate(() => Object.values(window.__phc.getState().game.characters)[0].id);
@@ -321,7 +321,7 @@ ok('the die shows a natural 20 (' + (rolled && rolled.die) + ')', !!rolled && ro
 await spy(nora);
 await act(nora, { type: 'check/accept', checkId: ck.id });
 const critShown = await nora.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((x) => x.kind === 'crit'), b1, { timeout: 30000 }).then(() => true, () => false);
-await nora.waitForFunction(() => window.__spy.strips.length > 0, null, { timeout: 15000 }).catch(() => {});
+await nora.waitForFunction(() => window.__spy.strips.length > 0, null, { timeout: 20000 }).catch(() => {});
 const blurNow = (await spied(nora)).blur;
 await pause(nora, 400); await snap(nora, 'b-crit');
 // (until the page's own record says the cut-in ended)

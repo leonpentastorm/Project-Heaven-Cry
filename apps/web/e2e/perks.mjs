@@ -20,7 +20,7 @@ const xy = (k) => k.split(',').map(Number);
 const dismissCut = async () => { for (let i = 0; i < 3; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.mouse.click(1430, 990); await settle(p, 380); } };
 const me = async () => { const g = await G(); return g.combat.units.find((u) => u.side === 'pc'); };
 const log = async () => ((await G()).combat?.log || []).map((l) => (typeof l === 'string' ? l : l.text || '')).join('\n');
-const confirm = async () => { const b = p.getByRole('button', { name: /^Confirm/ }).first(); await b.waitFor({ timeout: 4000 }).catch(() => {}); if (!(await b.isEnabled().catch(() => false))) return false; await b.click(); return true; };
+const confirm = async () => { const b = p.getByRole('button', { name: /^Confirm/ }).first(); await b.waitFor({ timeout: 20000 }).catch(() => {}); if (!(await b.isEnabled().catch(() => false))) return false; await b.click(); return true; };
 const tok = (k) => p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
 /** Every action button across the action tabs (names only). */
 async function allActions() {
@@ -52,7 +52,7 @@ async function setField() {
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
@@ -88,7 +88,7 @@ await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() =
 await p.getByRole('button', { name: /^⚔ Start the fight/ }).first().click().catch(async () => { await act({ type: 'sandbox/fight' }); });
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
 await p.waitForSelector('text=YOUR TURN', { timeout: 30000 });
-await p.waitForSelector('[data-phc-cutin]', { timeout: 3000 }).catch(() => {}); await dismissCut();
+await p.waitForSelector('[data-phc-cutin]', { timeout: 20000 }).catch(() => {}); await dismissCut();
 const field = await setField();
 ok('a drill unit stands next to the Recruit at ' + (field && ref(field.at)), !!field);
 const tabNames = await p.locator('[role="tablist"][aria-label="Actions"]').first().locator('[role="tab"]').allTextContents();
@@ -163,7 +163,7 @@ for (let i = 0; i < 6 && !pain; i++) {
   if ((await G()).combat.over) break;
   await dismissCut();
   await p.getByRole('button', { name: 'End turn', exact: true }).click().catch(() => {});
-  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.over || (u && u.side === 'pc'); }, null, { timeout: 12000 }).catch(() => {});
+  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.over || (u && u.side === 'pc'); }, null, { timeout: 20000 }).catch(() => {});
   await settle(p, 400);
   pain = /Used to the Pain/.test(await log());
   if (!pain) { const u = await me(); if (u.hp < u.maxHp * 0.5) await act({ type: 'sandbox/refill', charId: cid }); }
@@ -175,15 +175,15 @@ await snap(p, '05-used-to-the-pain');
 
 // ---------- 6. The level-up screen's class panel ----------
 await act({ type: 'sandbox/stop' }).catch(() => {});
-await p.waitForFunction(() => window.__phc.getState().game?.phase === 'story', null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'story', null, { timeout: 20000 }).catch(() => {});
 await act({ type: 'sandbox/level', charId: cid, level: 5 });
 await p.evaluate(() => window.__phc.getState().screen !== 'main' && null);
 if ((await p.evaluate(() => window.__phc.getState().screen)) !== 'main') await p.getByRole('button', { name: /Gear up first|Back to the map/ }).first().click().catch(() => {});
 await settle(p, 400);
 const lvl = p.locator('button', { hasText: /Level up|Earn your class/ }).first();
-await lvl.waitFor({ timeout: 6000 }).catch(() => {});
+await lvl.waitFor({ timeout: 20000 }).catch(() => {});
 if (await lvl.count()) await lvl.click();
-await p.waitForSelector('.phc-lu-class', { timeout: 6000 }).catch(() => {});
+await p.waitForSelector('.phc-lu-class', { timeout: 20000 }).catch(() => {});
 ok('the level-up screen shows the class panel', (await p.locator('.phc-lu-class').count()) > 0);
 ok('class name, rank and emblem: ' + ((await p.locator('.phc-lu-class-name').first().textContent().catch(() => '')) || '').trim() + ' ' + ((await p.locator('.phc-lu-rank').first().textContent().catch(() => '')) || '').trim(),
   /Fighter/i.test(await p.locator('.phc-lu-class-name').first().textContent().catch(() => '')) && (await p.locator('.phc-lu-class img.phc-lu-emblem, .phc-lu-class img').count()) > 0);

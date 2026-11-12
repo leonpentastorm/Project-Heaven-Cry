@@ -24,7 +24,7 @@ await p.setViewportSize({ width: 1440, height: 900 });
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 await centre.waitFor({ timeout: 30000 });
@@ -142,7 +142,7 @@ await snap('perks-tab');
 
 // ---------- 2. Level up: the character tree ----------
 await act({ type: 'sandbox/stop' }); await settle(p, 800);
-await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 20000 }).catch(() => {});
 await act({ type: 'sandbox/skill', charId: cid, skill: 'will_power', points: 0 });
 await act({ type: 'sandbox/class', charId: cid, classId: 'marksman', rank: 1 });
 await act({ type: 'sandbox/level', charId: cid, level: 9 });

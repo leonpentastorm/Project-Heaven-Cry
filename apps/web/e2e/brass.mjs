@@ -13,7 +13,7 @@ await p.setViewportSize({ width: 1440, height: 900 });
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
@@ -49,7 +49,7 @@ const watchOnce = (ev, ms = 1600, step = 40) => p.evaluate(async ({ ev, ms, step
  *  flight a check looks at (seen: a bow's arrow sampled once, before it swung to the front). The checks stay as they
  *  are; they are only given a run in which the page had the time to look. */
 const starved = (s) => { const ts = [...new Set(s.map((x) => x.t))].sort((a, b) => a - b); return ts.some((t, i) => i > 0 && t - ts[i - 1] > 150); };
-const watch = async (ev, ms, step) => { let s = []; for (let i = 0; i < 3; i++) { s = await watchOnce(ev, ms, step); if (!starved(s)) break; await p.waitForFunction(() => !document.querySelector('[data-fx-piece]'), null, { timeout: 5000 }).catch(() => {}); } return s; };
+const watch = async (ev, ms, step) => { let s = []; for (let i = 0; i < 3; i++) { s = await watchOnce(ev, ms, step); if (!starved(s)) break; await p.waitForFunction(() => !document.querySelector('[data-fx-piece]'), null, { timeout: 20000 }).catch(() => {}); } return s; };
 const by = (s, tag) => s.filter((x) => x.tag === tag);
 const shot = (weapon, cat, to) => ({ k: 'shot', unit: me.id, target: null, from: me.pos, to, weapon, cat, mode: 'shot', hit: true, dmg: 5 });
 const right = (mx + 4) + ',' + my, up = mx + ',' + Math.max(0, my - 4);

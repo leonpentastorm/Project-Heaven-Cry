@@ -15,7 +15,7 @@ const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v)
 const snap = (n) => p.screenshot({ path: (SHOTS ? SHOTS + '/' : OUT) + 'combat-speed-' + n + '.png' });
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const tempo = () => p.evaluate(() => window.__phcCombatTempo());
-const settle = async () => { await p.waitForFunction(() => (window.__phcHold?.() || 0) <= performance.now() + 5 && !window.__phcCutin?.showing, null, { timeout: 15000 }).catch(() => {}); await pause(p, 150); };
+const settle = async () => { await p.waitForFunction(() => (window.__phcHold?.() || 0) <= performance.now() + 5 && !window.__phcCutin?.showing, null, { timeout: 20000 }).catch(() => {}); await pause(p, 150); };
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 const near = (a, b, tol) => Math.abs(a - b) <= tol;
 const MULT = 1 / 0.85, READ = 1600;
@@ -27,7 +27,7 @@ await p.setViewportSize({ width: 1440, height: 900 });
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 const meChar = await p.evaluate(() => { const g = window.__phc.getState().game, me = window.__phc.getState().me.id; return Object.values(g.characters).find((c) => c.owner === me).id; });
@@ -141,7 +141,7 @@ async function crit(speed) {
     if (err) { await watch.catch(() => {}); await act({ type: 'combat/end-turn', unitId: u.id }); continue; }
     const isCrit = await p.evaluate((uid) => (window.__phc.getState().game.combat.fx || []).slice(-12).some((e) => e.k === 'spotlight' && e.kind === 'crit'), u.id);
     if (!isCrit) { await watch.catch(() => {}); continue; }
-    await p.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-words]').first().waitFor({ timeout: 3000 }).catch(() => {});
+    await p.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-words]').first().waitFor({ timeout: 20000 }).catch(() => {});
     await pause(p, 500); await snap('crit-' + speed);
     const w = await watch;
     // (the hold let go, then everything queued behind the cut-in played: the slowed shot is in the page's record by then)

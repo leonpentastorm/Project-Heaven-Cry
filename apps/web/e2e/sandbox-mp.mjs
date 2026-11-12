@@ -126,7 +126,7 @@ if (g.sandbox.state === 'cleared') { // cleared before it could fall: fight the 
 g = await G(host);
 ok('the squad fell (state ' + g.sandbox.state + ')', g.sandbox.state === 'fallen');
 const fell = mai.locator('div[role="dialog"][aria-label="The squad fell"]');
-await fell.waitFor({ timeout: 9000 }).catch(() => {});
+await fell.waitFor({ timeout: 20000 }).catch(() => {});
 ok('the guest sees the squad-fell card with Retry', (await fell.getByRole('button', { name: /Retry wave/ }).count()) > 0);
 await snap(mai, '05-fell');
 const attempt = g.sandbox.attempt;
@@ -229,7 +229,7 @@ g = await G(host);
 ok('the team fight ends with a winner: Team ' + winner + ' (' + (g.combat?.summary || '') + ')', !!winner && g.phase === 'story');
 ok('everyone is back to gearing up with full HP', Object.values(g.characters).every((c) => !c.dead && c.hp > 1));
 const endCard = ona.locator('div[role="dialog"][aria-label="Team ' + winner + ' wins"]');
-await endCard.waitFor({ timeout: 6000 }).catch(() => {});
+await endCard.waitFor({ timeout: 20000 }).catch(() => {});
 ok('Team B\'s player sees the result from their side', (await endCard.getByText(winner === 'B' ? '✓ YOUR TEAM WINS' : '✕ YOUR TEAM IS DOWN').count()) > 0);
 await snap(ona, '08-team-end');
 

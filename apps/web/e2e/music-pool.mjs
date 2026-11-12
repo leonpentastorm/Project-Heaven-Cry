@@ -21,7 +21,7 @@ const playing = async (title, id, ms = 10000) => { const t = Date.now(); let m, 
 // 0. The Credits page (on the title) lists the nine new tracks, and never the book-keeping "(ingame)".
 await p.goto(BASE);
 await click(p, 'CREDITS', { exact: true }).catch(() => {});
-await p.getByRole('heading', { name: 'Credits' }).waitFor({ timeout: 8000 }).catch(() => {});
+await p.getByRole('heading', { name: 'Credits' }).waitFor({ timeout: 20000 }).catch(() => {});
 await settle(p, 300);
 const creditsText = await p.locator('body').innerText();
 ok('the Credits page lists all nine new tracks' + (NEW.every((t) => creditsText.includes(t + ' (')) ? '' : ': missing ' + NEW.filter((t) => !creditsText.includes(t + ' (')).join(', ')), NEW.every((t) => creditsText.includes(t + ' (')));
@@ -32,7 +32,7 @@ await p.goto(BASE);
 // 1. From the title, alone: gearing up plays Gearing Up
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 await p.mouse.move(1430, 990);

@@ -28,7 +28,7 @@ const seq = async () => (await st()).cb.fxSeq || 0;
 const fxSince = async (n) => (await st()).cb.fx.filter((e) => e.n > n);
 const kinds = (list) => list.map((e) => e.k);
 const ourTurn = () => p.evaluate(() => { const s = window.__phc.getState(), cb = s.game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.side === 'pc'; });
-const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 12000 }).catch(() => {});
+const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance.now() >= window.__phcHold(), null, { timeout: 20000 }).catch(() => {});
 async function newRound() {
   await idleOn(p); await dismissCut();
   const r0 = (await st()).cb.round;
@@ -55,7 +55,7 @@ async function build(steps) {
   for (const a of steps) await must({ ...a, charId: cid }, a.type + ' ' + JSON.stringify(a).slice(0, 80));
   await must({ type: 'sandbox/fight' });
   await p.waitForFunction(() => { const g = window.__phc.getState().game; return g.phase === 'combat' && g.combat; }, null, { timeout: 30000 });
-  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
   await must({ type: 'sandbox/clear' });
   await pause(p, 2300); await dismissCut();
   let s = await st(); mapW = s.cb.map.w;
@@ -77,7 +77,7 @@ const spawn = (tier, k, extra = {}) => must({ type: 'sandbox/spawn', tier, weapo
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 await p.mouse.move(1430, 990);
@@ -153,8 +153,8 @@ const err0 = p.errors.length;
 await p.locator('.phc-heart-panel button[data-hact="release"]').click(); await pause(p, 600);
 const crashErr = () => p.errors.slice(err0).filter((e) => /pageerror|TypeError|is not|Cannot read/.test(e));
 ok('Release with Love and Joy held: the screen stays up, no error ' + JSON.stringify(crashErr()), !crashErr().length && await p.locator('.phc-heart-panel').count() === 1 && /Hover to preview/.test(await p.locator('.phc-cb-foot').textContent().catch(() => '')));
-if (!crashErr().length) { await tileOf(foeAt).hover({ timeout: 5000 }).catch(() => {}); await pause(p, 400); }
-ok('hovering the aim previews it (the feelings in the line): ' + crashErr().length, !crashErr().length && /Preview at .*Feelings: /.test(await p.locator('.phc-cb-foot').textContent({ timeout: 3000 }).catch(() => '')));
+if (!crashErr().length) { await tileOf(foeAt).hover({ timeout: 20000 }).catch(() => {}); await pause(p, 400); }
+ok('hovering the aim previews it (the feelings in the line): ' + crashErr().length, !crashErr().length && /Preview at .*Feelings: /.test(await p.locator('.phc-cb-foot').textContent({ timeout: 20000 }).catch(() => '')));
 await p.mouse.move(1430, 990); await pause(p, 300);
 if (crashErr().length) { console.log('stopping: the combat screen crashed'); await browser.close(); process.exit(1); }
 await snap('2b-release');
@@ -181,7 +181,7 @@ await snap('4-felt');
 // ---------- 5. the Proving Ground tools, grouped ----------
 const drawer = p.locator('aside[aria-label="Proving Ground tools"]');
 if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click().catch(() => {});
-await drawer.waitFor({ timeout: 5000 }).catch(() => {});
+await drawer.waitFor({ timeout: 20000 }).catch(() => {});
 await drawer.getByRole('tab', { name: 'Magic', exact: true }).first().click().catch(() => {}); await pause(p, 400);
 // The Outburst tools share the Sigil words' collapsible groups (workshopGroups.tsx): section sb.soul.
 const SB = '[data-ws-section="sb.soul"]';
@@ -206,7 +206,7 @@ if (groups.includes('modules')) {
 
 // ---------- 6. the MAGIC tab's codex (out of the fight) ----------
 await must({ type: 'sandbox/end' });
-await p.waitForFunction(() => !window.__phc.getState().game?.sandbox || window.__phc.getState().game.phase !== 'combat', null, { timeout: 10000 }).catch(() => {});
+await p.waitForFunction(() => !window.__phc.getState().game?.sandbox || window.__phc.getState().game.phase !== 'combat', null, { timeout: 20000 }).catch(() => {});
 await pause(p, 800);
 console.log('done');
 await browser.close();

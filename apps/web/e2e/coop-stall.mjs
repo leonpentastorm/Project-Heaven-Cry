@@ -105,7 +105,7 @@ async function browsers() {
     await click(host, /Throw/);
     await host.waitForSelector('text=/SUCCESS|FAILURE|COMPLICATION/');
     await click(host, 'Continue', { exact: true });
-    await host.waitForSelector('text=Initiative', { timeout: 10000 }).catch(() => {});
+    await host.waitForSelector('text=Initiative', { timeout: 20000 }).catch(() => {});
     await guest.waitForFunction(() => { const g = window.__phc.getState().game; return !!(g && g.combat); }, null, { timeout: 30000 });
 
     // ----- B. a lost view -----
@@ -155,7 +155,7 @@ async function browsers() {
       tap.lossy = 0;
       const end = [await books(host), await books(guest)];
       // the fight's last view may itself have been dropped: the guest's check-in brings it
-      if (!stalled && end[0].over && !end[1].over) await guest.waitForFunction(() => { const cb = window.__phc.getState().game.combat; return !cb || cb.over; }, null, { timeout: 15000 }).catch(() => {});
+      if (!stalled && end[0].over && !end[1].over) await guest.waitForFunction(() => { const cb = window.__phc.getState().game.combat; return !cb || cb.over; }, null, { timeout: 20000 }).catch(() => {});
       const gOver = await guest.evaluate(() => { const cb = window.__phc.getState().game.combat; return !cb || !!cb.over; });
       check(!stalled, 'the fight never stood still for 45 s');
       check(end[0].over && gOver, 'the fight ended on both screens (' + acts + ' actions, ' + stress + ' disturbances, ' + tap.dropped + ' views dropped, ' + Math.round((Date.now() - t0) / 1000) + ' s)');

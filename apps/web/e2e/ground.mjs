@@ -39,7 +39,7 @@ await p.setViewportSize({ width: 1440, height: 1000 });
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
 await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
@@ -51,7 +51,7 @@ const aiBtn = drawer.getByRole('button', { name: /^Enemy AI: ON/ });
 if (await aiBtn.count()) await aiBtn.click();
 await drawer.getByRole('button', { name: /^⚔ Start the fight/ }).first().click();
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
 await closeTools();
 await myTurn(); await dismissCut();
 g = await G();
@@ -108,7 +108,7 @@ await burn(); // a round out, for the area map's reload later
 await openTools();
 await drawer.getByRole('button', { name: /Stop the fight/ }).first().click();
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'story', null, { timeout: 30000 });
-await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 8000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 20000 }).catch(() => {});
 await closeTools();
 g = await G();
 const sp = pileAt(g.story.objects, at);

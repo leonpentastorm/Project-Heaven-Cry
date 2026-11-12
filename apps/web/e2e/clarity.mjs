@@ -25,7 +25,7 @@ async function framesWhile(p, name, max = 400) {
     const m = await p.evaluate(() => (window.__clarMarks || []).slice()).catch(() => []);
     if (m.length > done) {
       const mk = m[done]; done = m.length; seq++;
-      for (let f = 0; f < 9; f++) await p.screenshot({ path: SHOTS + '/' + name + '-' + seq + '-' + mk + '-' + f + '.png', clip, timeout: 5000 }).catch(() => {});
+      for (let f = 0; f < 9; f++) await p.screenshot({ path: SHOTS + '/' + name + '-' + seq + '-' + mk + '-' + f + '.png', clip, timeout: 20000 }).catch(() => {});
       continue;
     }
     if (i > 4 && await p.evaluate(() => (window.__phcHold ? window.__phcHold() <= performance.now() : true))) break;
@@ -63,7 +63,7 @@ async function run(speed) {
   await p.goto(BASE);
   await click(p, 'PROVING GROUND');
   const nm = p.getByPlaceholder('Leon');
-  await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+  await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
   await p.waitForSelector('[data-phc-float="music"]', { timeout: 30000 });
@@ -112,7 +112,7 @@ async function run(speed) {
   await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
   // The opening: the drill units walk in from the far side, some of it in the blockhouse's shadow.
   // The opening waits for the combat-in transition, then plays (the turn hold counts from then).
-  await p.waitForFunction(() => !document.querySelector('.phc-combat-in') && (window.__phcCombatTempo().fx || []).length > 0, null, { timeout: 8000 }).catch(() => {});
+  await p.waitForFunction(() => !document.querySelector('.phc-combat-in') && (window.__phcCombatTempo().fx || []).length > 0, null, { timeout: 20000 }).catch(() => {});
   const fr1 = framesWhile(p, 'fog-' + speed);
   ok('the opening plays out (hold lets go)', await holdFree(p));
   await fr1;

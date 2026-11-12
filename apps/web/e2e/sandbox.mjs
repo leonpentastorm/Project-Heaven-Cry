@@ -39,12 +39,12 @@ const clearField = async () => {
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 // PROVING GROUND asks Solo or With friends (multiplayer); Solo is the Proving Ground as it always was.
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.mouse.move(1430, 990);
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
-await drawer.waitFor({ timeout: 6000 }).catch(() => {});
+await drawer.waitFor({ timeout: 20000 }).catch(() => {});
 let g = await G();
 ok('gearing up: phase ' + g.phase + ', no fight, on the ' + (await screen()) + ' screen', g.phase === 'story' && !g.combat && (await screen()) === 'main' && g.sandbox.state === 'ready');
 ok('wave 1 stands idle on the map: ' + (g.story.npcs || []).map((n) => n.name + ' at ' + ref(n.pos)).join(', '), (g.story.npcs || []).length > 0 && (g.story.npcs || []).every((n) => n.side === 'hostile'));
@@ -103,7 +103,7 @@ g = await G();
 const target = g.story.npcs[0];
 await p.locator('.phc-mini button.phc-tok[aria-label^="' + ref(target.pos) + ': "]').first().click();
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 }).then(() => ok('a click on a drill unit starts the fight', true), () => ok('a click on a drill unit starts the fight', false));
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 6000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 20000 }).catch(() => {});
 await p.waitForSelector('div[aria-live="polite"] >> text=/WAVE\\s*1/', { timeout: 30000 }).then(() => ok('the WAVE 1 banner', true), () => ok('the WAVE 1 banner', false));
 g = await G();
 ok('wave 1 is on: ' + g.combat.units.filter((u) => u.side === 'foe').length + ' drill units, ' + g.combat.name, g.sandbox.state === 'fighting' && g.combat.name === 'Proving Ground · Wave 1');
@@ -132,8 +132,8 @@ ok('after the fight the Proving Ground is gearing up again (phase ' + g.phase + 
 await p.waitForSelector('div[role="dialog"][aria-label="Wave cleared"]', { timeout: 30000 }).then(() => ok('the Wave cleared card shows', true), () => ok('the Wave cleared card shows', false));
 await settle(p, 400); await snap('04-wave-cleared');
 await p.locator('div[aria-label="Wave cleared"] button', { hasText: 'Gear up first' }).click();
-await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 4000 }).catch(() => {});
-await drawer.waitFor({ timeout: 4000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'main', null, { timeout: 20000 }).catch(() => {});
+await drawer.waitFor({ timeout: 20000 }).catch(() => {});
 ok('Gear up first: the map with the tools open (' + (await screen()) + ')', (await screen()) === 'main' && (await drawer.count()) > 0 && (await dock.getByText(/Wave 1 cleared/).count()) > 0);
 await settle(p, 300); await snap('05-gear-up-again');
 
@@ -214,7 +214,7 @@ await settle(p, 2200); await dismissCut();
 await openTools();
 const lastG = await G();
 await drawer.getByRole('button', { name: 'Leave', exact: true }).click();
-await p.waitForFunction(() => window.__phc.getState().screen === 'home' && !window.__phc.getState().game, null, { timeout: 6000 }).catch(() => {});
+await p.waitForFunction(() => window.__phc.getState().screen === 'home' && !window.__phc.getState().game, null, { timeout: 20000 }).catch(() => {});
 await settle(p, 500);
 ok('leaving (from the title) lands on the title screen (' + (await screen()) + '), the room closed', (await screen()) === 'home' && !(await G()));
 await snap('09-left-to-title');

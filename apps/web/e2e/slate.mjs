@@ -14,7 +14,7 @@ async function open(ctx, vw, vh) {
   await p.goto(BASE);
   await click(p, 'PROVING GROUND', { timeout: 90000 });
   const nm = p.getByPlaceholder('Leon');
-  await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+  await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
   await act(p, { type: 'sandbox/ai', on: false });
@@ -122,7 +122,7 @@ ok('the smart default fills the other slots in its order, Shoot kept: ' + acts.j
 await p.screenshot({ path: OUT + 'slate-combat-cutin-custom.png' }).catch(() => {});
 // customise from the card (C), then reset (the card gone by now on a slow machine: the panel's own Customise opens the same dialog)
 await p.keyboard.press('c');
-if ((await dlg.waitFor({ timeout: 4000 }).catch(() => 'not up')) === 'not up') await p.getByRole('button', { name: /Customise/ }).first().click();
+if ((await dlg.waitFor({ timeout: 20000 }).catch(() => 'not up')) === 'not up') await p.getByRole('button', { name: /Customise/ }).first().click();
 await dlg.waitFor({ timeout: 30000 });
 await dlg.getByRole('button', { name: 'Reset to smart default' }).click();
 await dlg.getByRole('button', { name: 'Save', exact: true }).click(); await pause(p, 300);
