@@ -11,7 +11,7 @@ import { isCache, isPile, pileAt, dropOnTile, lootToPack, PILE } from './contain
 import { gearBonus, gearHas } from './character';
 import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy, MARK } from './objects';
 import { type Hazard, type HazardKind, WORLD_PLAY, HAZARD, HAZARD_KINDS, HAZARD_LIMITS, hazardApproaches, hazardHit, hazardTn, hazardLiveAt } from './hazards';
-import { applyCond, isCondition } from './magic';
+import { applyCond, isCondition, STORY_CARRY } from './magic';
 import { songMod } from './music';
 import { skillRollMod } from './effects/core';
 import { bindGame } from './effects';
@@ -558,9 +558,8 @@ function failure(g: GameState, c: Character, t: Target, ap: Approach, p: string)
   return '';
 }
 /** A failed approach's condition: the ones a story carries (Bleeding, Shaken…) for the scene; the rest on the area map. */
-const CARRY = new Set(['shaken', 'fear', 'weakened', 'nausea', 'injured', 'bleeding', 'ldebuff', 'rdebuff', 'left_brain_debuff', 'right_brain_debuff']);
 export function worldCond(g: GameState, c: Character, id: string) {
-  if (CARRY.has(id)) { setStoryCond(g, c, id === 'left_brain_debuff' ? 'ldebuff' : id === 'right_brain_debuff' ? 'rdebuff' : id, 'scene'); W().push(g, { kind: 'system', text: c.name + ' is ' + id.replace(/_/g, ' ') + ' for the scene.', charId: c.id }); return; }
+  if (STORY_CARRY.has(id)) { setStoryCond(g, c, id === 'left_brain_debuff' ? 'ldebuff' : id === 'right_brain_debuff' ? 'rdebuff' : id, 'scene'); W().push(g, { kind: 'system', text: c.name + ' is ' + id.replace(/_/g, ' ') + ' for the scene.', charId: c.id }); return; }
   onWorld(g, c, (cb, u) => { const r = applyCond(cb, cb.worldRng || g.rng, null, u, id, undefined, undefined, { skipSave: true }); if (r) cb.log.push(c.name + r.replace(/^ · [^ ]+/, '').replace(/^ · /, ' ') + '.'); });
 }
 function loseItem(c: Character, what: string): string {

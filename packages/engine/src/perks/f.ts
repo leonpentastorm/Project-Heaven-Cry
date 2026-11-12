@@ -18,14 +18,12 @@ import { WEAPON } from '../data';
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
 import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
 import { cdFire, cdTick, landsNext } from './cooldown';
+import { overworld, say, rngOf } from '../kit';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const rngOf = (h: Holder, ctx?: any): Rng | null => ctx?.rng || h.g?.rng || null;
 const up = (u: Unit | null | undefined): u is Unit => !!u && alive(u);
 const cst = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read-only item state (stat queries and previews must not change state). */
@@ -56,7 +54,7 @@ const oncePerFight = (h: Holder, k: string) => { const st = stateOf(h); if (st[k
 function carryStoryCond(h: Holder, ctx: any, id: string) {
   if (!h.u || !h.c || !h.g || condOn(h.u, id)) return;
   if (!storyConds(h.g, h.c).includes(id)) return;
-  const r = applyCond(h.cb!, rngOf(h, ctx) || { state: 1 }, null, h.u, id, 99, undefined, { skipSave: true });
+  const r = applyCond(h.cb!, rngOf(h, ctx), null, h.u, id, 99, undefined, { skipSave: true });
   if (r) say(h.cb, h.u.name + ' carries it into the fight' + r + '.');
 }
 
@@ -106,7 +104,7 @@ register({
     combat_start: (ctx, h) => {
       const sc = h.g?.story?.scene?.npcConds; if (!sc || !h.cb) return;
       for (const v of h.cb.units) if (v.side !== h.u?.side && !condOn(v, 'shaken') && (shakenNpc(h.g, v.npcId) || shakenNpc(h.g, v.name)))
-        say(h.cb, v.name + ' is still rattled' + applyCond(h.cb, rngOf(h, ctx) || { state: 1 }, h.u || null, v, 'shaken', 99, 'heart', { skipSave: true, via: 'intimidation' }) + '.');
+        say(h.cb, v.name + ' is still rattled' + applyCond(h.cb, rngOf(h, ctx), h.u || null, v, 'shaken', 99, 'heart', { skipSave: true, via: 'intimidation' }) + '.');
     },
   },
   brief: (h) => 'Narrator: does the threat name a real detail; the true answer, or Shaken (conditions)' + (tierII(h) ? '; the group leader answers' : ''),
@@ -126,14 +124,14 @@ register({
   on: {
     combat_start: (ctx, h) => {
       const cb = h.cb!, u = h.u; if (!up(u) || !oncePerFight(h, 'started')) return;
-      const rng = rngOf(h, ctx) || { state: 1 }; let out = '';
+      const rng = rngOf(h, ctx); let out = '';
       for (const v of cb.units) if (v.side !== u.side && up(v) && !isStranger(h, v)) out += applyCond(cb, rng, u, v, 'fear', 2, 'heart', { via: 'intimidation' });
       if (out) say(cb, 'They know the name ' + u.name + ' (The Name They Whisper)' + out + '.');
     },
     turn_end: (ctx, h) => {
       const cb = h.cb!, u = h.u, t: Unit = ctx.u;
       if (!up(u) || !t || t.side === u.side || !up(t) || t.hp * 2 > t.maxHp || !canSurrender(t) || !unitSees(cb, t, u.pos)) return;
-      say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, ctx.rng || rngOf(h) || { state: 1 }, u, t, 0, 'intimidation') + '.');
+      say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, rngOf(h, ctx), u, t, 0, 'intimidation') + '.');
     },
   },
   brief: () => 'everyone knows the name; only for someone who has truly never heard of them, set traitState strangers (a list of names) before the fight starts',
@@ -700,7 +698,7 @@ register({
       if (ctx.by !== h.u || !h.c) return;
       h.c.echo = 0;
       if (h.g) setStoryCond(h.g, h.c, 'shaken', 'session', false, 'pacifist');
-      const r = applyCond(h.cb!, rngOf(h) || { state: 1 }, null, h.u!, 'shaken', 99, 'heart', { skipSave: true });
+      const r = applyCond(h.cb!, rngOf(h), null, h.u!, 'shaken', 99, 'heart', { skipSave: true });
       say(h.cb, h.u!.name + ' broke the Vow (Pacifist): all Echo gone' + r + ' for the rest of the session.');
       note(h, h.u!.name + ' killed ' + ctx.victim.name + ' and broke their vow.');
     },
@@ -829,7 +827,7 @@ register({
       if (ctx.tgt !== h.u || ctx.att.side === h.u!.side || !armedOf(h) || !luckyLeft(h)) return;
       const hit = ctx.hit ?? (ctx.die !== 1 && (ctx.die >= ctx.critMin || ctx.die + ctx.toHit >= ctx.need)); if (!hit) return;
       uses(h).take('per_session', 1, LUCKY(h)); disarm(h);
-      const was = ctx.die; ctx.die = d20(ctx.rng || rngOf(h) || { state: 1 }); delete ctx.hit;
+      const was = ctx.die; ctx.die = d20(rngOf(h, ctx)); delete ctx.hit;
       say(h.cb, 'Lucky Foot: ' + ctx.att.name + '\'s ' + was + ' against ' + h.u!.name + ' is rerolled: ' + ctx.die + '.');
     },
     // Vengeful: once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts); the AP lands on your next turn.
@@ -869,7 +867,7 @@ function lost(h: Holder, ctx: any, kind: 'drone' | 'beast') {
   setStoryCond(h.g, c, 'shaken', 'arc', false, kind === 'drone' ? 'drone_handler' : 'beast_handler');
   cst(c)[kind + '_lost_rest'] = restN(h.g);
   const comp = compOf(c, kind); if (comp) comp.hp = 0;
-  const r = up(h.u) ? applyCond(h.cb!, rngOf(h, ctx) || { state: 1 }, null, h.u!, 'shaken', 99, 'heart', { skipSave: true }) : '';
+  const r = up(h.u) ? applyCond(h.cb!, rngOf(h, ctx), null, h.u!, 'shaken', 99, 'heart', { skipSave: true }) : '';
   say(h.cb, (kind === 'drone' ? 'The drone is gone. ' : 'The beast is dead. ') + (h.u?.name || c.name) + ' feels it' + r + '.');
   note(h, (kind === 'drone' ? c.name + '\'s drone was destroyed: Shaken until rebuilt.' : c.name + '\'s beast died: Shaken for the rest of the arc.'));
 }
@@ -939,7 +937,7 @@ register({
     turn_start_pre: (ctx, h) => { if (myComp(h, ctx.u, 'beast')) pushAp(ctx, -2, 'a beast: 4 AP'); },
     turn_start: (ctx, h) => {
       const b: Unit = ctx.u, cb = h.cb!; if (!myComp(h, b, 'beast') || !up(b) || !h.c) return;
-      const rng = ctx.rng || rngOf(h) || { state: 1 }, r = d20(rng), m = mod(h.c.skills.empathy || 0) + (h.u?.sk?.empathy || 0), ok = !up(h.u) ? false : r === 20 || (r !== 1 && r + m >= 8);
+      const rng = rngOf(h, ctx), r = d20(rng), m = mod(h.c.skills.empathy || 0) + (h.u?.sk?.empathy || 0), ok = !up(h.u) ? false : r === 20 || (r !== 1 && r + m >= 8);
       let line = h.c.name + ' calls the beast: Empathy d20 ' + r + ' ' + sgn(m) + ' vs 8';
       if (ok) { say(cb, line + ' · it obeys.'); return; }
       const foe = cb.units.find((v) => v.side !== b.side && up(v) && dist(v.pos, b.pos) <= 1 && previewAttack(cb, b, v, 'melee').ok);
@@ -952,7 +950,7 @@ register({
       // Every bite carries the grapple (PROVISIONAL, spec 14): the beast's turns have no attack-mod chip to pick (its
       // instinct bite runs inside the owner's end-turn; the client has no companion orders), so a toggle never reached it.
       if (ctx.tgt.side === ctx.att.side || condOn(ctx.tgt, 'grappled')) return;
-      say(h.cb, 'The beast clamps on' + applyCond(h.cb!, ctx.rng || rngOf(h) || { state: 1 }, ctx.att, ctx.tgt, 'grappled', undefined, 'body', { via: 'empathy', str: unitStrength(h.u, 'empathy') }) + '.');
+      say(h.cb, 'The beast clamps on' + applyCond(h.cb!, rngOf(h, ctx), ctx.att, ctx.tgt, 'grappled', undefined, 'body', { via: 'empathy', str: unitStrength(h.u, 'empathy') }) + '.');
     },
     on_downed: (ctx, h) => { if (myComp(h, ctx.victim, 'beast') && ctx.victim.dead) lost(h, ctx, 'beast'); },
     combat_start: (ctx, h) => carryStoryCond(h, ctx, 'shaken'),

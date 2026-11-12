@@ -16,11 +16,10 @@ import { d20 } from '../rng';
 import { SKILL, ITEM, MANA_BANDS } from '../data';
 import { storyConds, zoneTags, karmaBand, sideRollMod } from '../game';
 import { applyMemOp } from '../memory';
+import { overworld, say } from '../kit';
 
 // ---------- small helpers ----------
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 const cst = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read-only item state (stat queries and previews must not change state). */
 const ro = (c: Character | null | undefined): Record<string, any> => c?.state || {};

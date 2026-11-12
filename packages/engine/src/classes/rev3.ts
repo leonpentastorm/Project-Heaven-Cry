@@ -21,6 +21,7 @@ import {
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
 import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana } from '../magic';
+import { overworld, say, unitById, tileOf, rngOf } from '../kit';
 type Fam = 'body' | 'brain' | 'heart';
 import { d20, type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, hide, seenByFoes, HEARING } from '../tactics';
@@ -28,14 +29,9 @@ import { addImage, dropImage, imageOfOwner, imageTurnStart, imagesOf, type False
 import { makeObject, kindOf } from '../objects';
 
 // =================================================================================================== helpers
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const myTurn = (h: Holder) => !!h.cb && !!h.u && h.cb.order[h.cb.turn] === h.u.id && !h.cb.window;
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const unitById = (cb: Combat, id?: string | null) => (id ? cb.units.find((x) => x.id === id) || null : null);
 const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
 const free = (cb: Combat, k: string, not?: Unit) => standable(cb.map, k) && !moveBlockers(cb).has(k) && !cb.units.some((v) => v !== not && !v.dead && v.pos === k);
 /** The fight a stat query is asked in (statQuery's holder has no fight when actionAp is called with {u} alone). */
 const fightOf = (h: Holder): Combat | null => h.cb || (h.g?.combat && h.u && h.g.combat.units.includes(h.u) ? h.g.combat : null);

@@ -22,20 +22,16 @@ import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
 import { callMarks, callLevel } from '../calls/core';
 import { CALL, callStepAt } from '../calls/data';
 import { positionsOf } from '../game';
+import { overworld, say, unitById, tileOf, rngOf } from '../kit';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 /** A tile from a grid reference ("F6") or a key ("5,5"). */
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? ((c as any).state ||= {}) : {});
 /** Read a character's item state without creating it (stat queries and previews must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};
-const unitById = (cb: Combat, id: string | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
 /** Do something with the AP check out of the way (a free reload, clear or repair): the AP is given back after. */
 function free<T>(u: Unit, f: () => T): T { const keep = u.ap; u.ap = 99; try { return f(); } finally { u.ap = keep; } }
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;

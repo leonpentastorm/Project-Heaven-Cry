@@ -18,7 +18,7 @@ import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { openAmount, closeAmount, armourAgainst, landed, deal } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf } from './effects/mending';
-import { turnAp, briefCredit } from './effects/ap';
+import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
 import { skillRollMod, actionAp, immune, forbids } from './effects/core';
 import { statQuery } from './effects/hooks';
 import { noteFallbacks } from './effects/narrator';
@@ -2291,10 +2291,10 @@ export function enemyIntent(cb: Combat, u: Unit): Intent {
   if (u.dead || u.downed || u.surrendered) return { kind: 'none', text: 'nothing: it is out of the fight' };
   if (condOn(u, 'stunned')) return { kind: 'lost', text: 'nothing: Stunned, it loses the turn' };
   const save = { ap: u.ap, bank: u.bank, shots: u.shotsThisTurn, moved: u.moved };
-  u.ap = AP_BASE; u.bank = 0; u.shotsThisTurn = 0; u.moved = false;
+  // the AP its next turn will really have: Stunned's 1 and Dazed's 2 come off, as turnAp takes them (review bug 10)
+  u.ap = Math.max(AP_MIN, AP_BASE - (u.stunnedNext ? 1 : 0) - (u.dazedNext ? 2 : 0)); u.bank = 0; u.shotsThisTurn = 0; u.moved = false;
   try { return intentInner(cb, u); } finally { u.ap = save.ap; u.bank = save.bank; u.shotsThisTurn = save.shots; u.moved = save.moved; }
 }
-const AP_BASE = 6;
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
 export const HEALER_WHY = ': it goes for whoever is mending the squad';
 /** Rules 1.25: the reason an intent gives for each way an enemy chooses its target. */
@@ -2302,12 +2302,13 @@ export const AIM_WHY: Record<AimWhy, string> = { healer: HEALER_WHY, spread: ': 
 function intentInner(cb: Combat, u: Unit): Intent {
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
   if (order) return { kind: 'order', text: 'obey its order (' + order.split(':')[0] + ')' };
-  if (condOn(u, 'burning')) return { kind: 'recover', text: 'beat out the flames on it' };
-  if (condOn(u, 'grappled')) return { kind: 'recover', text: 'break the grapple' };
-  if (u.nailed) return { kind: 'recover', text: 'pull itself free' };
-  if (condOn(u, 'disarmed') || condOn(u, 'lowered')) return { kind: 'recover', text: 'recover its weapon' };
-  if (u.prone) return { kind: 'recover', text: 'stand up' };
-  if (u.jammed) return { kind: 'recover', text: 'clear its jammed weapon' };
+  // the same AP gates as enemyTurn's ladder (review bug 10: the intent named recoveries the turn could not pay for)
+  if (condOn(u, 'burning') && u.ap >= 1) return { kind: 'recover', text: 'beat out the flames on it' };
+  if (condOn(u, 'grappled') && u.ap >= 2) return { kind: 'recover', text: 'break the grapple' };
+  if (u.nailed && u.ap >= u.nailed.ap) return { kind: 'recover', text: 'pull itself free' };
+  if ((condOn(u, 'disarmed') && u.ap >= 2) || (condOn(u, 'lowered') && u.ap >= 1)) return { kind: 'recover', text: 'recover its weapon' };
+  if (u.prone && u.ap >= 1) return { kind: 'recover', text: 'stand up' };
+  if (u.jammed && u.ap >= 2) return { kind: 'recover', text: 'clear its jammed weapon' };
   if ((cb.glyphs || []).some((g) => g.pos === u.pos && g.side !== u.side && !(g as any).keystone)) return { kind: 'scuff', text: 'scuff the glyph under its feet' };
   const caster = u.mg?.evoker && (u.mg.words || []).length ? 'spell' : u.mg && !u.mg.evoker && u.mg.emanator && (u.mg.designs || []).length ? 'outburst' : null;
   let then = '';

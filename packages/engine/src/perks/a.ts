@@ -17,16 +17,13 @@ import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily, unitSt
 import { die, d20, type Rng } from '../rng';
 import { setStoryCond, storyConds, strikeFromWorld } from '../game';
 import { reveal, PATRON , dropHeldShot } from '../tactics';
+import { overworld, say, tileOf, rngOf } from '../kit';
 
 // ---------- small helpers ----------
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const ow = overworld;
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
-const rngOf = (h: Holder, ctx?: any): { state: number } | null => ctx?.rng || h.g?.rng || null;
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 /** A tile from a grid reference ("F6") or a key ("5,5"). */
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
 /** Melee reach of the unit's melee option (fists when it holds a gun): 1, or 2 with a reach weapon. */
 const reachOf = (u: Unit) => { const w: any = WEAPON[u.weapon]; if (!w || !isMelee(w)) return 1; return (w.properties || []).includes('reach_2') || w.id === 'lance' || w.grants?.effect?.op === 'reach' ? (w.grants?.effect?.op === 'reach' ? w.grants.effect.value : 2) : 1; };
 /** A hit by someone (not a hazard, a trap's tick, bleeding or burning): what "a hit" and "a wound" mean here. */
@@ -604,7 +601,7 @@ register({
     path_opts: (ctx, h) => { if (ctx.u === h.u && augOn(h, 'legs')) ctx.jump = true; },
     on_damaged: (ctx, h) => {
       if (ctx.t !== h.u || ctx.src?.dmgType !== 'emp' || !augOf(h) || !h.cb || h.u!.dead) return;
-      const r = applyCond(h.cb, rngOf(h) || { state: 1 }, ctx.src.by || null, h.u!, 'augment_offline', 2, undefined, { skipSave: true });
+      const r = applyCond(h.cb, rngOf(h), ctx.src.by || null, h.u!, 'augment_offline', 2, undefined, { skipSave: true });
       if (h.u!.conds?.augment_offline) h.u!.conds.augment_offline = 2;
       if (augOf(h) === 'eye') h.u!.darkSight = !!stateOf(h).gearDark;
       say(h.cb, 'The EMP fries ' + h.u!.name + '\'s ' + augOf(h) + ' augment' + r + '.');

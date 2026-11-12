@@ -30,11 +30,11 @@ import { makeObject } from '../objects';
 import { applyMemOp } from '../memory';
 import { d20, die, type Rng } from '../rng';
 import { npcsOf, positionsOf, setStoryCond, strikeFromWorld } from '../game';
+import { rngOf } from '../kit';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const gameOf = (h: Holder): any => h.g ?? boundGame();
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || gameOf(h)?.rng || { state: 1 };
 const me = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id === h.u.id;
 const charOf = (h: Holder): Character | null => h.c || charOfUnit(h.u) || null;
 const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };

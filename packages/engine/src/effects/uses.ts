@@ -6,6 +6,7 @@ import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { Holder, UseScope } from './types';
 import { boundGame } from './hooks';
+import { overworld } from '../kit';
 
 export interface UseCell { s: string; n: number }
 const SCOPES: UseScope[] = ['at_will', 'per_turn', 'per_round', 'per_combat', 'per_scene', 'per_session', 'per_rest', 'per_campaign', 'reaction', 'out_of_combat'];
@@ -20,7 +21,6 @@ export const sessionN = (g: any) => (g?.sessionN ?? 1);
 /** The day counter (rules 1.6.1, item 709): g.day, from 1; a long rest is a day, the Narrator's turn field days adds more. Old saves: day 1. */
 export const dayOf = (g: any): number => (Number.isFinite(g?.day) ? g.day : 1);
 export const restN = (g: any) => (g?.restN ?? 0);
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 
 /** The stamp a counter of this scope carries now. */
 export function stampOf(scope: UseScope, x: { cb?: Combat | null; g?: any }): string {

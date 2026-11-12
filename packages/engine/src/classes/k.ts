@@ -31,16 +31,12 @@ import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, reveal }
 import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } from '../faith';
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
+import { overworld, say, unitById, tileOf, rngOf } from '../kit';
 
 // =============================================================================================== helpers
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const onGrid = (h: Holder) => !!h.cb && !!h.u;
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const unitById = (cb: Combat, id: string | null | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
-const tileOf = (cb: Combat, t?: string | null) => (!t ? null : /^-?\d+,-?\d+$/.test(t) ? t : refKey(t, cb.map));
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? (((c as any).state ||= {}) as Record<string, any>) : {});
 /** Item state on the character without creating it (previews and stat queries must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};

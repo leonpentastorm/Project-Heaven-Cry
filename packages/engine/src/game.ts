@@ -33,7 +33,7 @@ export * from './fighttalk';
 import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
 import { deedGrant } from './deeds';
-import { condSkillMod } from './magic';
+import { condSkillMod, STORY_CARRY } from './magic';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
@@ -1045,7 +1045,6 @@ export function zoneTags(g: GameState): string[] {
 const SOCIAL_TAGS = ['dialogue', 'crowd', 'official', 'merchant', 'military', 'underworld'];
 const SOCIAL_SKILLS = new Set(['charisma', 'eloquence', 'implication', 'intimidation', 'empathy', 'authority']);
 /** Story conditions that come into a fight as combat conditions (spec: Conditions in the story; the rest stay story-side). */
-const STORY_CARRY = new Set(['shaken', 'fear', 'ldebuff', 'rdebuff', 'left_brain_debuff', 'right_brain_debuff', 'weakened', 'nausea', 'injured', 'augment_offline', 'bleeding']);
 /** A character's story conditions now (persistent ones whose scope still holds). */
 export function storyConds(g: GameState, c: Character): string[] {
   return (c.persistentConds || []).filter((p) => p.scope === 'arc' || (p.scope === 'session' && (p.session ?? 1) === (g.sessionN ?? 1)) || (p.scope === 'scene' && p.scene === g.story.scene.n)).map((p) => p.id);

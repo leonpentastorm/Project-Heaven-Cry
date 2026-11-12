@@ -22,14 +22,13 @@ import { d20 } from '../rng';
 import { npcsOf, sideRollMod } from '../game';
 import { foreseeVote } from '../game';
 import './briefs';
+import { overworld, say } from '../kit';
 
 // ---------- small helpers ----------
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
 const gOf = (h: Holder): any => h.g ?? boundGame();
 const sceneN = (h: Holder) => gOf(h)?.story?.scene?.n ?? 0;
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 const clip = (s: any, n = 120) => String(s ?? '').replace(/\s+/g, ' ').trim().slice(0, n);
 /** The item's story state (engine-only; kept on g.story.ps[charId], fights included, so a scene's use reaches its fight). */
 function sst(h: Holder): Record<string, any> {

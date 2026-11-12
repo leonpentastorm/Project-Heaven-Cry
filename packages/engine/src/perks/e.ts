@@ -24,17 +24,13 @@ import { d20 } from '../rng';
 import { HEARING } from '../tactics';
 import { apLeft, positionsOf, rankReached } from '../game';
 import { cdFire, cdTick, landsNow, landsNext } from './cooldown';
+import { overworld, say, unitById, tileOf, rngOf } from '../kit';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
 const gameOf = (h: Holder) => h.g ?? boundGame();
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || gameOf(h)?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
-const unitById = (cb: Combat | null | undefined, id: string | undefined | null) => (cb && id ? cb.units.find((x) => x.id === id) || null : null);
 /** Character item state that lasts beyond a fight (bonds, charms, the last talk). */
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? ((c as any).state ||= {}) : {});
 /** Read it without creating it (stat queries and previews must not change state). */

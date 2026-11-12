@@ -31,6 +31,7 @@ import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing 
 import { d20, die, type Rng } from './rng';
 import { spotlight } from './spotlight';
 import { WEAPON, SKILL, ITEM } from './data';
+import { rngOf, overworld } from './kit';
 
 export type { Belief, Vow } from './character';
 
@@ -352,7 +353,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
     cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: cb && u ? u.faith?.whisperTurn === turnKey(cb) : sf.whisperRound === g.story.round, miracleUsed: c.miracleSession === sessionN(g), hymnWait: cd, hymnCooldown: prayerCooldown(c), vowCut: !!(cb && u && u.faith?.hymnCut), vowBanked: !!(cb && u && u.faith?.vowBank) },
     likedThisFight: tv.fight,
     devotionXp: belief.kind === 'faithful' ? (() => { const total = devotionXpOf(c), lv = devotionLevelOf(total), at = devotionThreshold(lv), next = lv < DEVOTION_MAX_LEVEL ? devotionThreshold(lv + 1) : null; return { total, level: lv, into: total - at, step: next != null ? next - at : null, next }; })() : null,
-    tagXp: { fight: tv.fight, scene: tv.scene, session: tv.session, caps: { ...TAG_CAPS, session: (g as any).sandbox ? null : TAG_CAPS.session }, where: cb && !isOverworld(cb) ? 'fight' : 'scene' }, narratorXp: { session: tv.narr, cap: NARRATOR_XP.sessionCap },
+    tagXp: { fight: tv.fight, scene: tv.scene, session: tv.session, caps: { ...TAG_CAPS, session: (g as any).sandbox ? null : TAG_CAPS.session }, where: cb && !overworld(cb) ? 'fight' : 'scene' }, narratorXp: { session: tv.narr, cap: NARRATOR_XP.sessionCap },
     day: dayOf(g),
     pactCooldown: cdl > 0 && c.faithLeft ? { daysLeft: cdl, until: c.faithLeft.day + PACT_COOLDOWN_DAYS, patron: c.faithLeft.patron, patronName: patronById(c.faithLeft.patron)?.name || c.faithLeft.patron } : null,
     grudge: gr ? { patron: gr.patron, patronName: patronById(gr.patron)?.name || gr.patron, condition: gr.condition, conditionName: condNameOf(gr.condition), rounds: gr.rounds, xpMult: gr.xp_mult, sessionsLeft: Math.max(0, gr.until - sessionN(g)), text: gr.text } : null,
@@ -361,7 +362,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
 /** The tally as the view shows it (read only: a new session or scene reads as 0). */
 function tallyView(g: GameState, c: Character, cb: Combat | null) {
   const t = c.faithTally as FaithTally | undefined, same = !!t && t.session === sessionN(g);
-  const fid = cb && !isOverworld(cb) ? (cb as any).faithFight : null;
+  const fid = cb && !overworld(cb) ? (cb as any).faithFight : null;
   return { fight: same && fid && t!.fight?.id === fid ? t!.fight!.xp : 0, scene: same && t!.scene === sceneOf(g) ? t!.sceneXp : 0, session: same ? t!.sessionXp : 0, narr: same ? t!.narrXp : 0 };
 }
 /** Can this rite's button be pressed now (engine rites only)? */
@@ -502,13 +503,11 @@ const fs = (u: Unit): Record<string, any> => (u.faith ||= {});
 const unitChar = (u: Unit | null | undefined): Character | null => charOfUnit(u);
 /** The game and its rng while a fight runs (bound by apply()). */
 const G = (): GameState | null => boundGame() as GameState | null;
-const rngOf = (): Rng => (G()?.rng as Rng) || { state: 1 };
 
 // ---------- tags: what your patron sees (spec 1.6 §6; items 595-601; rules 1.6.1 items 703-704) ----------
 /** The current action's key: a tag counts once per action (item 596). Kept on the character's tally, so it holds on the
  * area map too, where the units are rebuilt every action. */
-const isOverworld = (cb: Combat) => !!cb.overworld || cb.name === 'overworld';
-const actionKey = (cb: Combat) => (isOverworld(cb) ? 'w' : 'f') + String((G() as any)?.v ?? '') + ':' + cb.round + ':' + cb.turn;
+const actionKey = (cb: Combat) => (overworld(cb) ? 'w' : 'f') + String((G() as any)?.v ?? '') + ':' + cb.round + ':' + cb.turn;
 /** A Faithful fighter's action carried a tag: liked +1 XP (once per fight or scene, within the caps), taboo −3 (−6 while
  * Witnessed). On the area map (an overworld fight state) the tag counts toward the scene. */
 export function faithTag(cb: Combat, u: Unit | null | undefined, tag: string, ctx: { victimHelpless?: boolean } = {}) {
@@ -516,7 +515,7 @@ export function faithTag(cb: Combat, u: Unit | null | undefined, tag: string, ct
   const c = unitChar(u); if (!c) return; const p = patronOf(c); if (!p) return;
   if ((p.taboos || []).includes(tag) && p.taboo_notes?.[tag] && !ctx.victimHelpless) return; // the Toll-Keeper's and Matchmaker's "kill" is of the helpless (item 597)
   const g = G(), taboo = (p.taboos || []).includes(tag);
-  const moved = tagDevotion(g, cb, c, tag, { fight: isOverworld(cb) ? null : fightId(cb), act: actionKey(cb), witnessed: condOn(u, 'witnessed') });
+  const moved = tagDevotion(g, cb, c, tag, { fight: overworld(cb) ? null : fightId(cb), act: actionKey(cb), witnessed: condOn(u, 'witnessed') });
   if (taboo && moved !== null) speak(g, cb, rngOf(), c, p, 'taboo');
 }
 const helpless = (t: Unit) => !!(t.downed || t.surrendered);
@@ -545,7 +544,7 @@ const vowOn = (u: Unit | null | undefined, id: string) => !!u?.vow && u.vow.stat
  * vow stays sworn: it is still kept or broken at the fight's end. Returns whether it counted. */
 export function fulfilVow(cb: Combat, u: Unit, why: string): boolean {
   const v = u.vow; if (!v || v.state !== 'sworn' || u.dead || u.downed) return false;
-  const c = unitChar(u); if (!c || isOverworld(cb)) return false; const st = fs(u);
+  const c = unitChar(u); if (!c || overworld(cb)) return false; const st = fs(u);
   if (st.vowRound === cb.round) return false;
   const waiting = hymnLeft(cb, c, u) > 0; let banked = false;
   if (waiting) { if (st.hymnCut) return false; const was = hymnWait(c, u); st.hymnCut = HYMN_COOLDOWN.vowCut; if (hymnWait(c, u) >= was) { delete st.hymnCut; return false; } }
@@ -604,7 +603,7 @@ const QM_MP_SHARE: number = (FAITH_PATRON.the_quartermaster?.intervention?.effec
  * are remembered after every action and at every turn's start; one that was above 0 and is now 0 is a hit, while
  * Witnessed: a fresh core slots into the Evoker (free; the spare cores untouched), or 25% of max MP comes back. */
 function quartermasterDry(cb: Combat) {
-  if (isOverworld(cb)) return;
+  if (overworld(cb)) return;
   for (const u of cb.units) {
     const m = u.mg; if (!u.charId || !m) continue; const st = fs(u);
     const charge = m.evoker ? Math.round(m.charge) : null, mp = m.emanator && m.mpMax > 0 ? Math.round(m.mp) : null;
@@ -1058,7 +1057,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     case 'lucky_break': { const n = Math.max(1, Number(fxOf(e, 'reroll')?.uses ?? 2)); fs(one!).luckyBreak = n; return ' · ' + one!.name + '\'s next ' + (n > 1 ? n + ' failed attack rolls are each' : 'failed attack roll is') + ' rerolled at +5'; } // item 1265
     case 'switcheroo': {
       const [x, y] = two; for (const v of [x, y]) if (v.side !== u.side) { const s = rollSaveVs(rng, u, v, 'brain'); if (s.ok) return ' · ' + v.name + ' resists (' + s.text + ')'; }
-      const px = x.pos; x.pos = y.pos; y.pos = px; faithTag(cb, u, 'trick'); return ' · ' + x.name + ' and ' + y.name + ' swap places';
+      const px = x.pos; x.pos = y.pos; y.pos = px; emitFx(cb, 'shove', { unit: u.id, target: x.id, from: px, to: x.pos, ok: true, magic: true, swap: true }); emitFx(cb, 'shove', { unit: u.id, target: y.id, from: x.pos, to: px, ok: true, magic: true, swap: true }); faithTag(cb, u, 'trick'); return ' · ' + x.name + ' and ' + y.name + ' swap places';
     }
     case 'pratfall': { const s = rollSaveVs(rng, u, one!, 'body'); if (s.ok) return ' · ' + one!.name + ' keeps its feet (' + s.text + ')'; return applyCond(cb, rng, u, one!, 'prone', undefined, undefined, { skipSave: true }) + applyCond(cb, rng, u, one!, 'disarmed', undefined, undefined, { skipSave: true }); }
     case 'encore': { // rules 1.6.2 (item 729): each ally may repeat its last action this round for free; enemies in sight Confused

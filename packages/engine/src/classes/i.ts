@@ -33,17 +33,13 @@ import {
 import { soulStrike, designRolls } from './soul';
 import { d20, die, type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction, refundReaction, reveal , dropHeldShot } from '../tactics';
-import { itemWords, wordCostMods } from '../effects/core';
+import { itemWords, wordCostMods, actionAp } from '../effects/core';
 import { makeObject } from '../objects';
+import { overworld, say, unitById, tileOf, rngOf } from '../kit';
 
 // =================================================================================================== helpers
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const myTurn = (h: Holder) => !!h.cb && !!h.u && h.cb.order[h.cb.turn] === h.u.id && !h.cb.window;
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
-const unitById = (cb: Combat, id?: string | null) => (id ? cb.units.find((x) => x.id === id) || null : null);
 const foeOf = (a: Unit, b: Unit) => a.side !== b.side;
 const isBoss = (t: Unit) => t.tier === 'boss' || t.kind === 'celestial';
 /** Story-level item state (outlives fights: inscriptions, stored spells, a Gift, an Inspire waiting for its roll). */
@@ -484,7 +480,7 @@ register({
   id: 'medic.triage', claims: 'all',
   actions: [
     {
-      id: 'triage', label: 'Triage', scope: ['combat', 'world'], target: 'ally', ap: 2, range: 1,
+      id: 'triage', label: 'Triage', scope: ['combat', 'world'], target: 'ally', ap: (h) => (h.u ? actionAp({ u: h.u }, 'triage', 2).ap : 2), range: 1,
       text: 'Heal an ally next to you for 5 HP × your Healing given, more as you level, and end their Bleeding. Once per ally each turn. Out of a fight you have time to work: three times as much, once per ally each scene. Costs no Supplies.',
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Triage an ally, not yourself.' }; if (t.downed) return { ok: false, why: 'They are Downed. Stabilise them instead (1 AP).' }; if (uses(h).left(triPer(h), 1, triKey(h, t)) <= 0) return { ok: false, why: triPer(h) === 'per_scene' ? 'Already treated this scene.' : 'Already treated this turn.' };
         return { lines: ['Heal ' + t.name + ' about ' + Math.floor(triageHeal(h, triPer(h) === 'per_scene') * (t.healRecv || 1)) + (t.bleed ? ' and stop the bleeding.' : '.')] }; },

@@ -2215,7 +2215,7 @@
         "id": "rewrite",
         "name": "Rewrite",
         "ap_cost": 3,
-        "uses": "at_will",
+        "uses": "per_turn",
         "text": "Costs 3 AP and 3 charge, once per turn, and adds 1 Flux. An enemy you can see within 8 tiles (plus your Sigil range bonus) makes a Brain save against 12 + your strength with Brain Power. If it fails, one helpful state on it flips into its opposite until it would have ended: Braced becomes Prone, +2 to hit becomes −2, a shield becomes damage, Hidden becomes revealed and Marked. The Narrator decides the flip for a state the game doesn't track.",
         "effects": [
           {

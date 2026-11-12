@@ -10,11 +10,11 @@
 import perksJ from '../../../../data/perks.json';
 import { stateOf, type Holder } from '../effects';
 import type { Combat, Unit } from '../combat';
+import { overworld } from '../kit';
 
 export const AP_COOLDOWN_TURNS: number = (perksJ as any).rules?.ap_cooldown?.turns ?? 3;
 export type CdSide = 'gain' | 'pen';
 
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
 /** The round in which AP given to u right now lands: this round on its own turn, else the round its next turn starts in. */
 export function landsNow(cb: Combat, u: Unit): number { return ownTurn(cb, u) ? cb.round : landsNext(cb, u); }

@@ -17,11 +17,11 @@ import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../o
 import { d20, die, type Rng } from '../rng';
 import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game';
 import { cdFire, cdTick, landsNext } from './cooldown';
+import { rngOf } from '../kit';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const gameOf = (h: Holder): any => h.g ?? boundGame();
-const rngOf = (h: Holder, ctx?: any): Rng | null => ctx?.rng || gameOf(h)?.rng || null;
 const turnKey = (cb: Combat) => cb.round + '.' + cb.turn;
 const myTurn = (cb: Combat, u: Unit | null | undefined) => !!u && active(cb) === u && !cb.window;
 const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
@@ -873,7 +873,7 @@ register({
     injury: (ctx, h) => {
       if (ctx.t !== h.u || ctx.loc !== 'arm' || ctx.cancel || !h.c || !packOf(h.c).some((x) => (x.item || x.id) === 'prosthetic_arm' && x.qty > 0)) return;
       ctx.cancel = true; const cb: Combat = ctx.cb;
-      const r = applyCond(cb, ctx.rng || rngOf(h) || { state: 1 }, ctx.by || null, h.u!, 'augment_offline', undefined, undefined, { skipSave: true });
+      const r = applyCond(cb, rngOf(h, ctx), ctx.by || null, h.u!, 'augment_offline', undefined, undefined, { skipSave: true });
       log(cb, 'The blow lands on ' + h.u!.name + '\'s prosthetic arm' + r + ' (Ghost Soldier).');
     },
     // The area map: a failed stay-hidden roll (found while sneaking) costs 2 AP on the next overworld round.

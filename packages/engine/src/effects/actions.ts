@@ -16,6 +16,7 @@ import { keyOf } from './collect';
 import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
+import { overworld } from '../kit';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
 export function apFromData(ap: any, u?: Unit | null): number {
@@ -86,7 +87,6 @@ export interface PerkActionEntry {
   options?: { id: string; label: string }[]; pickMulti?: number; pickLabel?: string;
 }
 type Who = { u?: Unit | null; c?: Character | null; cb?: Combat | null; g?: any };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 
 /** Every action a holder's items give on this surface, available or greyed (hidden ones left out). */
 export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {

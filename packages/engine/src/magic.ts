@@ -8,7 +8,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck } from './combat';
+import { type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury } from './combat';
 import { type Rng, d20, die } from './rng';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
 import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
@@ -122,6 +122,9 @@ const CONDS: Record<string, CondDef> = {
 const ALIAS: Record<string, string> = { left_brain_debuff: 'ldebuff', right_brain_debuff: 'rdebuff', afraid: 'fear', stun: 'stunned', braced: 'emplaced' };
 /** Conditions kept as unit flags rather than in u.conds (applyCond sets them). */
 const FLAG_CONDS = new Set(['dazed', 'prone', 'bleeding', 'hidden', 'injured']);
+/** The story conditions that come into a fight (and that a failed approach on the area map puts on the scene) in
+ * their combat form. ONE list (review bug 11: game.ts and world.ts each kept one, and they differed). */
+export const STORY_CARRY = new Set(['shaken', 'fear', 'ldebuff', 'rdebuff', 'left_brain_debuff', 'right_brain_debuff', 'weakened', 'nausea', 'injured', 'augment_offline', 'bleeding']);
 export const condId = (id: string) => ALIAS[id] || id;
 /** A condition's own rounds (conditions data), for durations an item lengthens. */
 export const condRoundsOf = (id: string): number | undefined => CONDS[condId(id)]?.rounds;
@@ -348,18 +351,8 @@ function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id: string, ro
   if (id === 'prone') { t.prone = true; t.braced = false; emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
   if (id === 'bleeding') { t.bleed = Math.max(t.bleed || 0, ca.rounds || 3); if (by) t.lastHitBy = by.id; emit(cb, 'cond_landed', { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
   if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; t.hidden = true; t.hideEntry = (t.hideEntry || 0) + 1; (cb.sightWhy ||= {})[t.id] = 'hide'; return ' · ' + t.name + ' is Hidden'; }
-  if (id === 'injured') { const inj = injureUnit(rng, t); emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return inj; }
+  if (id === 'injured') { const inj = rollInjury(rng, t, cb, by); emit(cb, 'cond_landed', { by, t, id, rounds: 0, cb, rng }); return inj; }
   return '';
-}
-/** An injury with no resistance roll (the Injured condition): the same d6 table as a critical's (spec: Injuries). */
-function injureUnit(rng: Rng, t: Unit): string {
-  const d = die(rng, 6), inj = t.injuries || (t.injuries = []);
-  if (d === 1) { t.dazedNext = 1; return ' · INJURY (d6 1): head, Dazed'; }
-  if (d <= 3) { t.bleed = 3; return ' · INJURY (d6 ' + d + '): torso, Bleeding'; }
-  const side: 'left' | 'right' = die(rng, 2) === 1 ? 'left' : 'right';
-  if (d === 4) { inj.push({ loc: 'arm', side }); return ' · INJURY (d6 4): ' + side + ' arm'; }
-  if (!inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
-  inj.push({ loc: 'leg', side }); return ' · INJURY (d6 ' + d + '): ' + side + ' leg';
 }
 /** End a condition now (its effects undone). 'cond_end' {u, id} when a fight is given. */
 export function endCond(u: Unit, id: string, cb?: Combat) {

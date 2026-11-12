@@ -22,15 +22,11 @@ import { castAt, glyphCost, sigilReady } from '../sigil';
 import { d20, die } from '../rng';
 import { resOf, resGain, resSpend, canReact, useReaction , dropHeldShot } from '../tactics';
 import { makeObject } from '../objects';
+import { overworld, say, unitById, tileOf, rngOf } from '../kit';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^-?\d+,-?\d+$/.test(t) ? t : refKey(t, cb.map));
-const unitById = (cb: Combat, id: string | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? ((c as any).state ||= {}) : {});
 /** Item state on the character without creating it (previews and stat queries must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};

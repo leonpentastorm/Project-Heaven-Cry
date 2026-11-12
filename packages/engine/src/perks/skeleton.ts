@@ -23,9 +23,8 @@ import { condSource } from '../magic';
 import { die } from '../rng';
 import { TECHNIQUE } from '../physical/data';
 import { strikingWith, ensureMomentum, turnStamp, setSlam } from '../physical/core';
+import { overworld, say } from '../kit';
 
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const tierII = (h: Holder) => h.tier === 'II';
 /** An item's per-fight state, read without creating it (previews and stat queries change nothing). */
 const peek = (h: Holder): Record<string, any> => (h.u?.ps?.[h.key] as any) || {};
