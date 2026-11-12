@@ -17,7 +17,8 @@ to 1724.
    10 and 20 is within 9% of every ceiling.
 3. **b7, flat things grow with level: done** (grenades, charges, splash, traps, hazards, barrels, ticks).
 4. **b8, the guard: done.** Hybrids re-measured (the Faith build's rifle; casters' sidearms now hit like anyone's).
-   **Boss HP was not re-run** (section 6).
+   **Boss HP re-run** (section 4 item 6): the boss fight is 5.3 to 7.8 rounds for the damage squads, as in rules 1.25
+   (6.3 to 7.4); not changed.
 5. **(a) Many targets: measured**, a per-extra-target rule proposed and built into the contract; the thrown factor
    fitted.
 6. **(b) The control yardstick: written**, the conditions priced against it (arithmetic, not played).
@@ -125,10 +126,12 @@ normal share (57%): the caster walks into reach first, so the "one turn" peak is
    at a normal share at levels 10 and 20, all in 174 to 188%.
 4. **The Hymn turn at levels 1 to 5** (95 to 124%): Devotion 3 gives Hymn I only. The ceiling is reached from Devotion 6.
 5. **CHAIN** is 17% over the area rule (left: it needs a glyph and a second target).
-6. **Boss HP (rules 1.23) was not re-run** (b8): the defence measurements (`defence-measure.test.ts` fight rows, about
-   10 minutes) were not part of this run. The plain rifle did not move and Boss HP was fitted on it, but the optimised
-   and all-in builds now deal less early: Boss fights will run longer for an all-in squad. **Run
-   `DEFENCE_MEASURE=1 npx vitest run --root packages/engine test/balance/defence-measure.test.ts --silent=false` next.**
+6. **Boss HP (rules 1.23): re-run, not changed.** `DEFENCE_MEASURE=1 DEFENCE_PARTS=fights DEFENCE_FIGHTS=boss,standard
+   DEFENCE_MAPS=open DEFENCE_N=6 DEFENCE_LEVELS=1,6,12,20`: the boss fight on open ground 6.8 / 5.3 / 6.3 / 7.7 rounds
+   (the Sigil squad), 7.0 / 7.3 / 7.7 / 7.5 (guns), 7.8 / 7.5 / 6.7 / 6.5 (Outburst), 10.4 / 10.2 / 10.5 / 10.7 (the
+   healer squad), all won (83% for the healer squad at level 1); the standard fight 4.3 to 6.0 (7.0 with the healer
+   squad). Rules 1.25 measured the boss fight at 6.3 to 7.4: the re-fit leaves it where it was, still under its 8 to 10
+   rounds target (item 1409's lever is the enemy table, a ruling). Six fights a cell: read a cell as about ±1 round.
 7. **Not measured** (PATCH-TALLY 10): class moves, perks, Mastered perks, traits, weapon mastery, special rounds and
    mods, Calls and squad buffs, reactions, stealth openers, armour, enemy casters, Overdraw and Heart Overload. The
    guard does not hold them.
