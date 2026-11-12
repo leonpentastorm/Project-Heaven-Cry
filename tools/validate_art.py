@@ -412,7 +412,7 @@ def validate():
     require(catalog['skill_palette_version'] == palette['skill_palette_version'], 'Palette version mismatch')
     paths = set()
     if PIXEL_ASSET is not None:
-        require(any(PIXEL_ASSET in catalog.get(f, {}) for f in ['traits', 'perks', 'characters', 'illustrations', 'maps', 'sprites']),
+        require(any(PIXEL_ASSET in catalog.get(f, {}) for f in ['traits', 'perks', 'characters', 'illustrations', 'maps', 'sprites', 'prayers', 'calls', 'feelings', 'modules']),
                 f'Unknown selected asset: {PIXEL_ASSET}')
     families = [('skills', 27, 27), ('characters', 83, 191),  # 99 + 46 archetype cards + room for a second card each
                 ('traits', 9, 74), ('perks', 2, 106), ('illustrations', 2, 16)]
@@ -450,6 +450,9 @@ def validate():
     validate_brief_assets(catalog)
     validate_production_icons(catalog)
     validate_campaign_art(catalog)
+    sys.path.insert(0, str(ROOT / 'tools/art'))
+    from export_nov12_icons import validate_delivery
+    validate_delivery(PIXEL_ASSET)
     from validate_wick_animation import validate_wick_animation
     validate_wick_animation(complete=COMPLETE_WICK_ANIM)
     checksums = local('art/checksums.sha256').read_text().splitlines()

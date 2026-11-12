@@ -1,0 +1,1060 @@
+[
+  {
+    "id": "whisper-rebuke",
+    "family": "prayers",
+    "path": "art/icons/prayers/whisper-rebuke.png",
+    "action": "Rebuke. Wick rebuking someone out of frame: one arm raised with the hand held flat and stiff toward them, like a stern \"enough\", and a single hard straight ray of light leaving the palm. His other hand is at his side. It must read as a scolding word that lands, not as casting a spell: no swirls, no sparks, no magic circle, one ray only. Match the attached Whisper icons: one small light source.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nRebuke. Wick rebuking someone out of frame: one arm raised with the hand held flat and stiff toward them, like a stern \"enough\", and a single hard straight ray of light leaving the palm. His other hand is at his side. It must read as a scolding word that lands, not as casting a spell: no swirls, no sparks, no magic circle, one ray only. Match the attached Whisper icons: one small light source.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png",
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/whisper-safe-passage.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "both-hands",
+    "family": "perks",
+    "path": "art/icons/perks/both-hands.png",
+    "action": "Both Hands. Wick fighting with a sword in one hand and a pistol in the other at the same moment: mid-strike with the blade swept across his body, the pistol in the other hand already levelled straight ahead. A grounded lunge, not a spin. The sword and pistol are simple invented shapes, not real-world models.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nBoth Hands. Wick fighting with a sword in one hand and a pistol in the other at the same moment: mid-strike with the blade swept across his body, the pistol in the other hand already levelled straight ahead. A grounded lunge, not a spin. The sword and pistol are simple invented shapes, not real-world models.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "order",
+    "family": "calls",
+    "path": "art/icons/calls/order.png",
+    "action": "Order. Wick giving an order to a squadmate: standing square, one arm thrust out straight with the whole hand pointing \"you, go there\", mouth open in a shout shown by two short sound lines at his face. Commanding, not angry.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nOrder. Wick giving an order to a squadmate: standing square, one arm thrust out straight with the whole hand pointing \"you, go there\", mouth open in a shout shown by two short sound lines at his face. Commanding, not angry.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.\n\nCORRECTION TO FIRST ATTACHED IMAGE: Delete the entire floating bowl and both large arrows above Wick. Leave all that upper area empty transparent. Wick has a normal closed ceramic head, with absolutely nothing sitting on or floating over it. Keep the two SHORT sound marks only at face level. This is an order to move, not meditation or Mind Without Fog. Use a low firm open mitten pointing to the right. Keep the feet planted apart. The approved master is only a construction reference; its bowl and arrows are forbidden here.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/order-attempt-1.png",
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "rally",
+    "family": "calls",
+    "path": "art/icons/calls/rally.png",
+    "action": "Rally. Wick rallying the squad: one fist raised high above his head, body leaning forward, three short sound lines fanning up from him. A cheer that lifts people.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nRally. Wick rallying the squad: one fist raised high above his head, body leaning forward, three short sound lines fanning up from him. A cheer that lifts people.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "brief",
+    "family": "calls",
+    "path": "art/icons/calls/brief.png",
+    "action": "Brief. Wick giving a quick briefing: crouched on one knee, one hand drawing a short plan on the ground with a finger (two small strokes and a dot on the ground line), the other hand held up with two fingers raised. Calm and quick.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nBrief. Wick giving a quick briefing: crouched on one knee, one hand drawing a short plan on the ground with a finger (two small strokes and a dot on the ground line), the other hand held up with two fingers raised. Calm and quick.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.\n\nCRITICAL: The reference master contains two big bent arrows and a floating bowl. Neither belongs in ANY Call: do not reproduce either arrow anywhere and no bowl. Use ONLY this Call’s specifically requested small gesture marks. The closed ceramic head has nothing sitting on it. NO halo or glow around the silhouette: flat white shapes with hard negative-space gaps only.\n\nEDIT FIRST ATTACHED IMAGE: Keep the kneeling Wick, the finger drawing the two ground strokes and dot, and the raised two-finger hand. COMPLETELY REMOVE BOTH LARGE ARROWS above the head. Remove all grey/light haze and the entire surrounding glow. The head top and the space above and around it are quiet, genuinely transparent. Draw no replacement overhead symbols.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/brief-attempt-1.png",
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "name-it",
+    "family": "calls",
+    "path": "art/icons/calls/name-it.png",
+    "action": "Name It. Wick naming a fear out loud so it loses its hold: standing firm, one open hand held out palm-up as if presenting something, and in front of that hand a small jagged shape with a simple ring drawn around it, as if circled and labelled. Steady, reassuring.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nName It. Wick naming a fear out loud so it loses its hold: standing firm, one open hand held out palm-up as if presenting something, and in front of that hand a small jagged shape with a simple ring drawn around it, as if circled and labelled. Steady, reassuring.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.\n\nCRITICAL: The reference master contains two big bent arrows and a floating bowl. Neither belongs in ANY Call: do not reproduce either arrow anywhere and no bowl. Use ONLY this Call’s specifically requested small gesture marks. The closed ceramic head has nothing sitting on it. NO halo or glow around the silhouette: flat white shapes with hard negative-space gaps only.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "cue",
+    "family": "calls",
+    "path": "art/icons/calls/cue.png",
+    "action": "Cue. Wick giving a cue: one arm raised with the hand about to drop in a sharp \"now!\" chop, a single short curved motion line under the hand, his head turned over his shoulder toward someone behind him.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nCue. Wick giving a cue: one arm raised with the hand about to drop in a sharp \"now!\" chop, a single short curved motion line under the hand, his head turned over his shoulder toward someone behind him.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.\n\nCRITICAL: The reference master contains two big bent arrows and a floating bowl. Neither belongs in ANY Call: do not reproduce either arrow anywhere and no bowl. Use ONLY this Call’s specifically requested small gesture marks. The closed ceramic head has nothing sitting on it. NO halo or glow around the silhouette: flat white shapes with hard negative-space gaps only.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "spot",
+    "family": "calls",
+    "path": "art/icons/calls/spot.png",
+    "action": "Spot. Wick pointing out a target: one arm fully extended with a pointing finger, his other hand shading his eyes, and far along the pointing line a small target ring.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nSpot. Wick pointing out a target: one arm fully extended with a pointing finger, his other hand shading his eyes, and far along the pointing line a small target ring.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.\n\nCRITICAL: The reference master contains two big bent arrows and a floating bowl. Neither belongs in ANY Call: do not reproduce either arrow anywhere and no bowl. Use ONLY this Call’s specifically requested small gesture marks. The closed ceramic head has nothing sitting on it. NO halo or glow around the silhouette: flat white shapes with hard negative-space gaps only.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "warn",
+    "family": "calls",
+    "path": "art/icons/calls/warn.png",
+    "action": "Warn. Wick shouting a warning: both hands cupped around his mouth, body twisted toward someone at his side, and a small sharp zig-zag danger mark above and behind him. Urgent.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nWarn. Wick shouting a warning: both hands cupped around his mouth, body twisted toward someone at his side, and a small sharp zig-zag danger mark above and behind him. Urgent.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.\n\nCRITICAL: The reference master contains two big bent arrows and a floating bowl. Neither belongs in ANY Call: do not reproduce either arrow anywhere and no bowl. Use ONLY this Call’s specifically requested small gesture marks. The closed ceramic head has nothing sitting on it. NO halo or glow around the silhouette: flat white shapes with hard negative-space gaps only.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "threaten",
+    "family": "calls",
+    "path": "art/icons/calls/threaten.png",
+    "action": "Threaten. Wick threatening an enemy: leaning forward and looming, shoulders up, one hand drawn across in a slow cutting gesture at chest height, capelet flared. Menacing but still Wick. No weapon.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nThreaten. Wick threatening an enemy: leaning forward and looming, shoulders up, one hand drawn across in a slow cutting gesture at chest height, capelet flared. Menacing but still Wick. No weapon.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.\n\nCRITICAL: The reference master contains two big bent arrows and a floating bowl. Neither belongs in ANY Call: do not reproduce either arrow anywhere and no bowl. Use ONLY this Call’s specifically requested small gesture marks. The closed ceramic head has nothing sitting on it. NO halo or glow around the silhouette: flat white shapes with hard negative-space gaps only.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "taunt",
+    "family": "calls",
+    "path": "art/icons/calls/taunt.png",
+    "action": "Taunt. Wick goading an enemy: weight on his back foot, one hand beckoning \"come on then\" with curled fingers, the other hand on his hip, head tilted. Cocky.",
+    "prompt": "Draw one icon in exactly the style of the attached reference images. The character is Wick, the same mascot as in the references: a small figure with a short capelet, a lantern for a heart with a small medical cross on it, a pixel-screen face, and a slightly asymmetric build. Keep his proportions, capelet and lantern heart exactly as attached. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow, no outline colour. Same line weight and level of detail as the references. No text, no letters, no numbers, no border, no frame. One figure, centred, with a little clear space around him. Square, 1024 × 1024 PNG with transparency. The silhouette must read clearly when shrunk to 44 pixels.\n\nTaunt. Wick goading an enemy: weight on his back foot, one hand beckoning \"come on then\" with curled fingers, the other hand on his hip, head tilted. Cocky.\n\nPreserve Wick own-left clipped head corner (viewer-right in front view), square pixel clusters in a transparent recessed screen, thick equal-length arms on the medical cross and clearly visible short asymmetric capelet. No reference-specific bowl, arch or holy missile; those belong only to reference poses. Exactly one Wick, full figure, unique pose. Keep important shapes within central84percent of canvas.\n\nCRITICAL: The reference master contains two big bent arrows and a floating bowl. Neither belongs in ANY Call: do not reproduce either arrow anywhere and no bowl. Use ONLY this Call’s specifically requested small gesture marks. The closed ceramic head has nothing sitting on it. NO halo or glow around the silhouette: flat white shapes with hard negative-space gaps only.",
+    "references": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/into-the-dark.png",
+      "art/icons/perks/holy-ordnance.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-rage",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-rage.png",
+    "action": "Rage: the ribbon snaps upward into a jagged crest, like a flame with teeth.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Rage: the ribbon snaps upward into a jagged crest, like a flame with teeth.\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-grief",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-grief.png",
+    "action": "Grief: the ribbon falls and pools at the bottom like rain running off.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Grief: the ribbon falls and pools at the bottom like rain running off.\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-fear",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-fear.png",
+    "action": "Fear: the ribbon recoils outward from an empty centre, in broken ring fragments.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Fear: the ribbon recoils outward from an empty centre, in broken ring fragments.\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-love",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-love.png",
+    "action": "Love: two ribbons wrap around each other into one knot.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Love: two ribbons wrap around each other into one knot.\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-joy",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-joy.png",
+    "action": "Joy: the ribbon leaps in a high arc with a small spark at the peak.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Joy: the ribbon leaps in a high arc with a small spark at the peak.\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-calm",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-calm.png",
+    "action": "Calm: one long level stroke over two or three still circles, like a horizon over water.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Calm: one long level stroke over two or three still circles, like a horizon over water.\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-split",
+    "family": "modules",
+    "path": "art/icons/modules/module-split.png",
+    "action": "one line forking into two",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: one line forking into two\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-ricochet",
+    "family": "modules",
+    "path": "art/icons/modules/module-ricochet.png",
+    "action": "a zig-zag path bouncing off a wall line",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a zig-zag path bouncing off a wall line\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-orbit",
+    "family": "modules",
+    "path": "art/icons/modules/module-orbit.png",
+    "action": "a dot circling a centre dot on a ring path",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a dot circling a centre dot on a ring path\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-echo",
+    "family": "modules",
+    "path": "art/icons/modules/module-echo.png",
+    "action": "one shape and a fainter (thinner-lined) double of it beside it",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: one shape and a fainter (thinner-lined) double of it beside it\n\nOne complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-spite",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-spite.png",
+    "action": "Spite: a hooked ribbon turning back on itself like a barb.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Spite: a hooked ribbon turning back on itself like a barb.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-shame",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-shame.png",
+    "action": "Shame: the ribbon folds inward and hides its own end.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Shame: the ribbon folds inward and hides its own end.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-pride",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-pride.png",
+    "action": "Pride: the ribbon rises into a tall straight spire.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Pride: the ribbon rises into a tall straight spire.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-despair",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-despair.png",
+    "action": "Despair: the ribbon unravels downward into loose threads.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Despair: the ribbon unravels downward into loose threads.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-hope",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-hope.png",
+    "action": "Hope: a small flame-shaped ribbon rising from a low flat line.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Hope: a small flame-shaped ribbon rising from a low flat line.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-mercy",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-mercy.png",
+    "action": "Mercy: an open cupped curve, lowered, like a hand let down.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Mercy: an open cupped curve, lowered, like a hand let down.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-cruelty",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-cruelty.png",
+    "action": "Cruelty: the ribbon tightens into a loop with thorns.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Cruelty: the ribbon tightens into a loop with thorns.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-loneliness",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-loneliness.png",
+    "action": "Loneliness: one small knot far from a wide empty ring.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Loneliness: one small knot far from a wide empty ring.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nESSENTIAL CORRECTION: The first attached attempt incorrectly connects the heart-knot to the large ring. Create TWO PHYSICALLY SEPARATE elements with a broad transparent gap. A large EMPTY ribbon ring sits at lower left, diameter about620px on1024canvas, occupying x80-700 and y280-900. A SMALL heart-shaped ribbon knot sits alone at upper right, about120px wide centred near x835,y190. Leave at least100px genuinely transparent distance between the heart-knot and the ring. The big ring is empty and unadorned; there is no heart on its circumference. The isolated heart may have one tiny ribbon tail belonging only to itself. Nothing connects them. No crossing stroke, no decorative bridge, no line, no second knot. This physical separation IS Loneliness. Preserve pure white flat ink, no grey or glow, all elements within generous canvas margins.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/feeling-loneliness-attempt-1.png",
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-belonging",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-belonging.png",
+    "action": "Belonging: several small knots joined along one line.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Belonging: several small knots joined along one line.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-dread",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-dread.png",
+    "action": "Dread: the ribbon coils around an empty eye-shaped gap.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Dread: the ribbon coils around an empty eye-shaped gap.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-awe",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-awe.png",
+    "action": "Awe: rays opening above a small bowed curve.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Awe: rays opening above a small bowed curve.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-longing",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-longing.png",
+    "action": "Longing: the ribbon reaches toward a distant dot and does not touch it.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Longing: the ribbon reaches toward a distant dot and does not touch it.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-relief",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-relief.png",
+    "action": "Relief: a knot coming loose into a soft breath-like curl.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Relief: a knot coming loose into a soft breath-like curl.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-contempt",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-contempt.png",
+    "action": "Contempt: the ribbon turned away with a lifted, chin-like tilt.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Contempt: the ribbon turned away with a lifted, chin-like tilt.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-guilt",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-guilt.png",
+    "action": "Guilt: the ribbon drags a small weight behind it.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Guilt: the ribbon drags a small weight behind it.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-jealousy",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-jealousy.png",
+    "action": "Jealousy: two ribbons, one curling to snatch the other's spark.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Jealousy: two ribbons, one curling to snatch the other's spark.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nEDIT CORRECTION TO FIRST ATTACHED IMAGE: The required spark is missing. Put ONE distinct small FOUR-POINT WHITE SPARK in the open upper-right space between the two reaching ribbon tips. The spark should be about one tenth of the canvas width, with a transparent gap around it, clearly readable as a separate white mark at40px. One ribbon curls protectively around its spark; the second hooks toward that spark as if snatching it. Preserve the current lower heart-knot and the two bold flowing ribbons, but make their ownership and reaching clear. Only ONE spark, no extra hearts, no glow or colour, no grey. The spark is essential to Jealousy.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/feeling-jealousy-attempt-1.png",
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-wonder",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-wonder.png",
+    "action": "Wonder: a spiral opening into a small star.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Wonder: a spiral opening into a small star.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-defiance",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-defiance.png",
+    "action": "Defiance: the ribbon stands straight against slanted lines pushing at it.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Defiance: the ribbon stands straight against slanted lines pushing at it.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "feeling-abandon",
+    "family": "feelings",
+    "path": "art/icons/feelings/feeling-abandon.png",
+    "action": "Abandon: the ribbon flung wide, its knot burst open.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Abandon: the ribbon flung wide, its knot burst open.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nThe heart-knot is BURST OPEN: show its two heart-like lobes pulling apart with a clear transparent opening between them, their ribbon ends flung wide. This individual action overrides the default closed knot. Keep recognition of an opened heart, but do not draw a neatly tied intact central heart.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/feelings/feeling-rage.png",
+      "art/icons/feelings/feeling-love.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-move",
+    "family": "modules",
+    "path": "art/icons/modules/module-move.png",
+    "action": "an arrow carrying a dot",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: an arrow carrying a dot\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nEDIT FIRST ATTACHED IMAGE: COMPLETELY REMOVE BOTH surrounding circular rings and all FOUR small cardinal satellite dots. Preserve ONLY the single straight rightward arrow and its ONE central solid dot. Extend that straight arrow across the canvas as a simple horizontal motion diagram, generous clear transparent margin. Exactly ONE arrow carrying ONE dot, NOTHING else. No ring, no border, no frame, no extra dots or marks.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/module-move-attempt-1.png",
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-homing",
+    "family": "modules",
+    "path": "art/icons/modules/module-homing.png",
+    "action": "a curved arrow bending onto a target ring",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a curved arrow bending onto a target ring\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-swift",
+    "family": "modules",
+    "path": "art/icons/modules/module-swift.png",
+    "action": "a dot with three speed lines behind it",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a dot with three speed lines behind it\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-ether",
+    "family": "modules",
+    "path": "art/icons/modules/module-ether.png",
+    "action": "a dot passing through a dashed wall",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a dot passing through a dashed wall\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-right",
+    "family": "modules",
+    "path": "art/icons/modules/module-right.png",
+    "action": "an arrow curving to the right",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: an arrow curving to the right\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-left",
+    "family": "modules",
+    "path": "art/icons/modules/module-left.png",
+    "action": "an arrow curving to the left; mirror direction of module-right, preserving the same geometry",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: an arrow curving to the left; mirror direction of module-right, preserving the same geometry\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nEDIT THE FIRST ATTACHED RIGHT-ARROW IMAGE: make its horizontal mirror for the LEFT turn. The same broad quarter-turn arc rises from the bottom RIGHT and bends over to a triangular arrowhead pointing LEFT near upper left. Preserve exactly the same simple geometry, proportions and white line weight; change only left/right orientation. One arrow only, no dot, no circle, no decorative frame.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/module-right.png",
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-time",
+    "family": "modules",
+    "path": "art/icons/modules/module-time.png",
+    "action": "an hourglass made of two triangles",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: an hourglass made of two triangles\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-inverse",
+    "family": "modules",
+    "path": "art/icons/modules/module-inverse.png",
+    "action": "two arrows swapping direction, one above the other",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: two arrows swapping direction, one above the other\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-size",
+    "family": "modules",
+    "path": "art/icons/modules/module-size.png",
+    "action": "a small circle inside a large one",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a small circle inside a large one\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-random",
+    "family": "modules",
+    "path": "art/icons/modules/module-random.png",
+    "action": "three scattered dots and one loose curl (no question mark)",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: three scattered dots and one loose curl (no question mark)\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-at_once",
+    "family": "modules",
+    "path": "art/icons/modules/module-at_once.png",
+    "action": "three arrows leaving one point together",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: three arrows leaving one point together\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-wave",
+    "family": "modules",
+    "path": "art/icons/modules/module-wave.png",
+    "action": "a cone made of three arcs",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a cone made of three arcs\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-burst",
+    "family": "modules",
+    "path": "art/icons/modules/module-burst.png",
+    "action": "a ring with short radiating marks",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a ring with short radiating marks\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-aura",
+    "family": "modules",
+    "path": "art/icons/modules/module-aura.png",
+    "action": "a ring around a centre dot",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a ring around a centre dot\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-lance",
+    "family": "modules",
+    "path": "art/icons/modules/module-lance.png",
+    "action": "one long straight line through two dots",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: one long straight line through two dots\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nEDIT FIRST ATTACHED IMAGE: The beam must pass THROUGH both dots and extend far BEYOND them on BOTH sides. The existing picture incorrectly ends at its dots. Draw one long horizontal white line, with TWO solid dots centred ON the line at about40percent and65percent of its length. Leave substantial line continuing to the left of the first dot and to the right of the second. Both dots sit well inside the beam’s span, not at its ends. Exactly one straight line, exactly two interior dots; no arrowhead, no ring or frame. This is a piercing Lance, not Thread connecting two endpoints.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/module-lance-attempt-1.png",
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-fuse",
+    "family": "modules",
+    "path": "art/icons/modules/module-fuse.png",
+    "action": "a dot on a ground line with a short burning line leading to it",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a dot on a ground line with a short burning line leading to it\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nEDIT FIRST ATTACHED IMAGE: DELETE THE DIRECTION ARROW completely. Keep ONE solid white dot resting on ONE horizontal ground line. A SHORT gently wavy fuse line leads into the side of the dot; at the outer free end of the fuse show a tiny ignition spark made of THREE short geometric rays. The little fuse is burning toward the dot. No arrowhead anywhere; no long parallel movement shaft. Pure white flat ink, no glow, flame shading or colour. The burning fuse distinguishes this delay module from Move.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/module-fuse-attempt-1.png",
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-return",
+    "family": "modules",
+    "path": "art/icons/modules/module-return.png",
+    "action": "a loop going out and coming back",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a loop going out and coming back\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-volley",
+    "family": "modules",
+    "path": "art/icons/modules/module-volley.png",
+    "action": "three small parallel dashes",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: three small parallel dashes\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-bloom",
+    "family": "modules",
+    "path": "art/icons/modules/module-bloom.png",
+    "action": "nested rings growing outward",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: nested rings growing outward\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-anchor",
+    "family": "modules",
+    "path": "art/icons/modules/module-anchor.png",
+    "action": "a dot pinned by a cross-shaped stake",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a dot pinned by a cross-shaped stake\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.\n\nEDIT FIRST ATTACHED IMAGE: This must read as PINNING A DOT IN PLACE, not a four-axis movement control. REMOVE the upper, left and right arrowheads. Give the upright stake a FLAT top and a single short sharpened DOWNWARD tip at its bottom. The horizontal crossbar has two plain FLAT ends. A clearly visible solid dot is pinned at their intersection. No arrows anywhere; the pointed bottom is a stake tip, not a broad triangular direction marker. One mechanical cross-shaped pin and one dot, no extra ring, frame or decoration.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/module-anchor-attempt-1.png",
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-lure",
+    "family": "modules",
+    "path": "art/icons/modules/module-lure.png",
+    "action": "an arrow pulling a dot inward",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: an arrow pulling a dot inward\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.\n\nEDIT FIRST ATTACHED IMAGE: REMOVE BOTH complete surrounding rings. There must be no circular enclosure or target frame. Draw just ONE open curved arrow curling INWARD toward its own centre, and ONE solid dot on the outer part of that curved path, being pulled toward the inner arrowhead. Use an open spiral-like bend to make inward movement clear; the curve never closes into a ring. Exactly one dot and one inward-curling arrow, no other dots, no rings, no frame. Keep the strong clean geometric white line weight.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/module-lure-attempt-1.png",
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-shell",
+    "family": "modules",
+    "path": "art/icons/modules/module-shell.png",
+    "action": "a dome over a dot",
+    "prompt": "Clean up the first icon into an immaculate flat geometric white diagram on transparency, matching the smooth even construction of the last two references. Shell: one thick semicircular dome with flat horizontal base and ONE solid circular dot centered safely inside. Remove ALL splashes, speckles, scratches, distressing, white residue, texture, extra shapes. The entire empty interior around the dot MUST be fully transparent. White dome and white dot only. Smooth bold vectorlike edges, no glow, no gray, no shadow, no text. Center in square with generous margin. Keep a clear transparent gap all around the dot.",
+    "references": [
+      "art/_archive/deliveries/2026-11-12/sources/module-shell-attempt-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-linger",
+    "family": "modules",
+    "path": "art/icons/modules/module-linger.png",
+    "action": "a square patch of dotted ground",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a square patch of dotted ground\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-quiet",
+    "family": "modules",
+    "path": "art/icons/modules/module-quiet.png",
+    "action": "a heart with one soft lowered line under it",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a heart with one soft lowered line under it\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-silent",
+    "family": "modules",
+    "path": "art/icons/modules/module-silent.png",
+    "action": "a dot inside a circle with a slash through the circle",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a dot inside a circle with a slash through the circle\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-thread",
+    "family": "modules",
+    "path": "art/icons/modules/module-thread.png",
+    "action": "two dots tied by one line",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: two dots tied by one line\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-cascade",
+    "family": "modules",
+    "path": "art/icons/modules/module-cascade.png",
+    "action": "a stair of small dots growing in size",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a stair of small dots growing in size\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-tether",
+    "family": "modules",
+    "path": "art/icons/modules/module-tether.png",
+    "action": "a straight beam between two rings",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a straight beam between two rings\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-siphon",
+    "family": "modules",
+    "path": "art/icons/modules/module-siphon.png",
+    "action": "a curve drawing drops toward a centre",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a curve drawing drops toward a centre\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.\n\nIMPORTANT: no rings whatsoever. One open curved path draws THREE separated teardrop droplets toward one central solid dot. Use a short clear inward arrowhead at the curve end before the central dot. The teardrops travel along the curve with transparent gaps between them. No target, no circular outline, no enclosing shape. Only a curve, three drops and a solid central dot.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-phantom",
+    "family": "modules",
+    "path": "art/icons/modules/module-phantom.png",
+    "action": "a dot passing through a solid block",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a dot passing through a solid block\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-volatile",
+    "family": "modules",
+    "path": "art/icons/modules/module-volatile.png",
+    "action": "a dot cracking open with sparks",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a dot cracking open with sparks\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-bastion",
+    "family": "modules",
+    "path": "art/icons/modules/module-bastion.png",
+    "action": "three small domes over three dots",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: three small domes over three dots\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-judgement_mark",
+    "family": "modules",
+    "path": "art/icons/modules/module-judgement_mark.png",
+    "action": "a target ring with a heavy downward bar landing on it",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a target ring with a heavy downward bar landing on it\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "module-halo",
+    "family": "modules",
+    "path": "art/icons/modules/module-halo.png",
+    "action": "a ring of light over a small heart",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a ring of light over a small heart\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "ui-revert",
+    "family": "modules",
+    "path": "art/icons/modules/ui-revert.png",
+    "action": "a curved rewind arrow",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a curved rewind arrow. This UI mark is an explicit exception to the no-hearts/no-ribbons rule where its requested motif requires one. Match the approved module test set’s clean white line weight. No text.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "ui-practice",
+    "family": "modules",
+    "path": "art/icons/modules/ui-practice.png",
+    "action": "a small heart with exactly four separated tally lines",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a small heart with exactly four separated tally lines. This UI mark is an explicit exception to the no-hearts/no-ribbons rule where its requested motif requires one. Match the approved module test set’s clean white line weight. No text.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  },
+  {
+    "id": "ui-felt",
+    "family": "modules",
+    "path": "art/icons/modules/ui-felt.png",
+    "action": "a ribbon opening outward, for having felt a feeling",
+    "prompt": "Draw one small diagram icon in the flat white ink style of the attached references. It shows how a spell behaves, like a diagram of motion. Use clean, even, geometric lines: arrows, rings, dots, straight paths. No brush texture, no ribbons, no hearts unless stated. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no text, no letters, no numbers, no real-world symbols. One motif, centred, bold enough to read at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nIt shows: a ribbon opening outward, for having felt a feeling. This UI mark is an explicit exception to the no-hearts/no-ribbons rule where its requested motif requires one. Match the approved module test set’s clean white line weight. No text.\n\nUse ONLY the geometry explicitly requested for THIS module. Do not add decorative surrounding rings, a circular frame or four satellite dots unless this module’s individual description explicitly requires them. Reference diagrams establish ink weight, not reusable decoration. Do not copy Orbit’s surrounding ring or Split’s fork into another module.\n\nDo not add arrowheads to a static diagram unless its individual description calls for an arrow or a moving path. Static stakes, domes, patches, straight connecting beams and hearts should not become direction controls.",
+    "references": [
+      "art/icons/prayers/whisper-luck.png",
+      "art/icons/prayers/hymn-mother_ember-1.png",
+      "art/icons/modules/module-split.png",
+      "art/icons/modules/module-orbit.png"
+    ],
+    "status": "delivered"
+  }
+]
