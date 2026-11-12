@@ -2,7 +2,8 @@
 // arrows and which tiles an effect is about.
 import { describe, it, expect } from 'vitest';
 import { usualScale, overviewScale, fitsWhole, naturalSize, clampScroll, inFrame, pointOf, frameTiles, aim, mayFollow, glideMs, ease, isDrag, panKey, edgeArrow,
-  miniGeom, miniFrame, miniToScroll, fxTiles, movesCamera, HANDS_OFF_MS, HANDS_OFF_OTHERS_MS, GLIDE_MS, MINI_PX, type Hands, type GridAt } from './camera';
+  miniGeom, miniFrame, miniToScroll, fxTiles, movesCamera, HANDS_OFF_MS, HANDS_OFF_OTHERS_MS, GLIDE_MS, MINI_PX, type Hands, type GridAt,
+  MOVE, moveMs, planMove, sampleMove, moveState, travel, type Move } from './camera';
 
 const G: GridAt = { ox: 51, oy: 51, pitch: 48 }; // tile 0,0's centre and the pitch of the fight grid at 100%
 const BIG = { w: 26 * 48 + 36, h: 26 * 48 + 36 }; // a 26 x 26 map's content
@@ -117,7 +118,7 @@ describe('when not to move', () => {
     expect(mayFollow(hands({ handAt: 100000 - HANDS_OFF_OTHERS_MS + 1 }), 'beat')).toBe(false);
     expect(mayFollow(hands({ handAt: 100000 - HANDS_OFF_OTHERS_MS }), 'beat')).toBe(true);
   });
-  it('the glide is a quarter of a second at Fast, follows the combat speed, and is a cut under reduced motion', () => {
+  it('the plain glide (the floor of a squeezed move) is a quarter of a second at Fast, follows the combat speed, and is a cut under reduced motion', () => {
     expect(glideMs(1)).toBe(GLIDE_MS); expect(GLIDE_MS).toBe(250);
     expect(glideMs(1 / 0.85)).toBe(Math.round(250 / 0.85));
     expect(glideMs(1, true)).toBe(0);
@@ -197,5 +198,84 @@ describe('which tiles an effect is about', () => {
   });
   it('bookkeeping never moves the camera (a turn\'s banner has its own rule)', () => {
     for (const k of ['turn', 'sight', 'cond', 'mana', 'cover', 'object', 'shield', 'spotlight', 'volley']) expect(fxTiles({ k, unit: 'a', at: '2,2' }, pos, all)).toEqual([]);
+  });
+});
+
+describe('the camera move (planMove / sampleMove)', () => {
+  const P = 48, NORMAL = 1 / 0.85;
+  const at = (m: Move, t: number) => sampleMove(m, t);
+  /** Every frame of a move at 60 fps (and its last, exact sample). */
+  const frames = (m: Move) => { const out = []; for (let t = 0; t < m.ms; t += 1000 / 60) out.push(at(m, t)); out.push(at(m, m.ms)); return out; };
+  it('its length grows with the distance and is capped: a hop is quick, a move across the map at most CROSS_MS at Normal', () => {
+    const hop = moveMs(1, NORMAL), two = moveMs(2, NORMAL), mid = moveMs(8, NORMAL), far = moveMs(18, NORMAL), farther = moveMs(40, NORMAL);
+    expect(hop).toBeGreaterThanOrEqual(250); expect(hop).toBeLessThanOrEqual(350);
+    expect(two).toBeGreaterThan(hop); expect(mid).toBeGreaterThan(two); expect(far).toBeGreaterThan(mid);
+    expect(far).toBe(MOVE.CROSS_MS); expect(farther).toBe(far); expect(far).toBeGreaterThanOrEqual(800); expect(far).toBeLessThanOrEqual(900);
+  });
+  it('it follows the combat speed: Fast is 0.85 of Normal, the test pace near instant', () => {
+    expect(moveMs(18, 1)).toBe(Math.round(MOVE.CROSS_MS * 0.85));
+    expect(moveMs(18, 0.04)).toBeLessThan(40);
+  });
+  it('no move inside the dead zone: a forced centring that would only nudge the view is not made', () => {
+    const f = { x: 300, y: 300, w: 800, h: 500 }, c = { x: 300 + 400, y: 300 + 250 };
+    expect(aim(f, BIG, [{ x: c.x + 30, y: c.y }], 72, true)).not.toBeNull(); // no dead zone: it centres
+    expect(aim(f, BIG, [{ x: c.x + 30, y: c.y }], 72, true, MOVE.DEAD_ZONE_TILES * P)).toBeNull();
+    expect(aim(f, BIG, [{ x: c.x + 200, y: c.y }], 72, true, MOVE.DEAD_ZONE_TILES * P)).not.toBeNull(); // farther than a tile: it goes
+  });
+  it('the shape: a lean back, then on to the mark, a few px past it, and back onto it with no bounce', () => {
+    const m = planMove({ x: 0, y: 0 }, { x: 900, y: 0 }, { pitch: P, pace: 1 });
+    const xs = frames(m).map((s) => s.x);
+    const min = Math.min(...xs), max = Math.max(...xs);
+    expect(min).toBeLessThan(0); expect(min).toBeGreaterThanOrEqual(-MOVE.ANTICIPATE_PX - 0.01); // the lean
+    expect(max).toBeGreaterThan(900); expect(max).toBeLessThanOrEqual(900 + MOVE.OVERSHOOT_PX + 0.01); // the overshoot
+    // past its peak it only comes back (critically damped: never under the mark again, never out again)
+    const peak = xs.indexOf(max); for (let i = peak + 1; i < xs.length; i++) { expect(xs[i]).toBeLessThanOrEqual(xs[i - 1] + 1e-9); expect(xs[i]).toBeGreaterThanOrEqual(900 - 1e-6); }
+    expect(xs[xs.length - 1]).toBe(900);
+    // the speed is smooth: no frame jumps more than a smooth curve allows (no step, no snap)
+    // (the speed changes by under a fifth of its top from one frame to the next: a step or a snap is a jump of all of it)
+    const v = xs.slice(1, -1).map((x, i) => x - xs[i]), top = Math.max(...v);
+    for (let i = 1; i < v.length; i++) expect(Math.abs(v[i] - v[i - 1])).toBeLessThan(top * 0.2);
+    expect(Math.abs(v[0])).toBeLessThan(top * 0.05); expect(Math.abs(v[v.length - 1])).toBeLessThan(top * 0.05); // from rest, to rest
+  });
+  it('a hop has no overshoot and no zoom arc; a long move pulls back in the middle, by distance, and ends at its own zoom', () => {
+    const hop = planMove({ x: 0, y: 0 }, { x: 70, y: 0 }, { pitch: P });
+    expect(hop.over).toEqual({ x: 0, y: 0 }); expect(hop.arc).toBe(0);
+    const mid = planMove({ x: 0, y: 0 }, { x: 8 * P, y: 0 }, { pitch: P }), far = planMove({ x: 0, y: 0 }, { x: 22 * P, y: 0 }, { pitch: P });
+    expect(mid.arc).toBeGreaterThan(0); expect(far.arc).toBeGreaterThan(mid.arc); expect(far.arc).toBeCloseTo(MOVE.ARC_MAX);
+    expect(far.arc).toBeGreaterThanOrEqual(0.08); expect(far.arc).toBeLessThanOrEqual(0.12);
+    const sc = frames(far).map((s) => s.scale);
+    expect(Math.min(...sc)).toBeCloseTo(1 - far.arc, 2); expect(sc[0]).toBeCloseTo(1, 5); expect(sc[sc.length - 1]).toBe(1);
+  });
+  it('the arc never takes the view under the smallest zoom', () => {
+    const m = planMove({ x: 0, y: 0 }, { x: 22 * P, y: 0 }, { pitch: P, zoom: 0.42, zoomMin: 0.4 });
+    expect(0.42 * (1 - m.arc)).toBeGreaterThanOrEqual(0.4 - 1e-9);
+    expect(planMove({ x: 0, y: 0 }, { x: 22 * P, y: 0 }, { pitch: P, zoom: 0.4, zoomMin: 0.4 }).arc).toBe(0);
+  });
+  it('the overshoot never runs past the edge of the map', () => {
+    const m = planMove({ x: 0, y: 0 }, { x: 900, y: 0 }, { pitch: P, max: { x: 900, y: 500 } });
+    expect(m.over.x).toBe(0);
+    for (const s of frames(m)) expect(s.x).toBeLessThanOrEqual(900);
+  });
+  it('an interrupted move starts from where the first one is and how fast it goes (no snap, no restart)', () => {
+    const a = planMove({ x: 0, y: 0 }, { x: 1000, y: 0 }, { pitch: P }), t = a.ms * 0.45, st = moveState(a, t);
+    expect(st.v.x).toBeGreaterThan(0.5); expect(st.scale).toBeLessThan(1);
+    const b = planMove({ x: st.x, y: st.y }, { x: st.x, y: 800 }, { pitch: P, v0: st.v, s0: st.scale });
+    const b0 = sampleMove(b, 0), b1 = sampleMove(b, 1000 / 60);
+    expect(b0.x).toBeCloseTo(st.x, 6); expect(b0.y).toBeCloseTo(st.y, 6); expect(b0.scale).toBeCloseTo(st.scale, 6);
+    // the first frame carries on in the old direction at about the old speed
+    expect((b1.x - b0.x) / (1000 / 60)).toBeGreaterThan(st.v.x * 0.7);
+    expect(b.lean).toEqual({ x: 0, y: 0 }); // already moving: no lean back
+    const end = sampleMove(b, b.ms); expect(end).toEqual({ x: st.x, y: 800, scale: 1, done: true });
+  });
+  it('reduced motion: a short plain ease, no lean, no overshoot, no arc', () => {
+    const m = planMove({ x: 0, y: 0 }, { x: 1000, y: 600 }, { pitch: P, reduced: true, v0: { x: 3, y: 0 } });
+    expect(m.ms).toBe(MOVE.REDUCED_MS); expect(m.arc).toBe(0); expect(m.over).toEqual({ x: 0, y: 0 }); expect(m.lean).toEqual({ x: 0, y: 0 });
+    const fs = frames(m);
+    for (const s of fs) { expect(s.scale).toBe(1); expect(s.x).toBeGreaterThanOrEqual(0); expect(s.x).toBeLessThanOrEqual(1000); }
+  });
+  it('the travel curve starts and ends at rest and never goes back', () => {
+    expect(travel(0)).toBe(0); expect(travel(1)).toBeCloseTo(1, 9);
+    let last = 0; for (let u = 0.01; u <= 1; u += 0.01) { const v = travel(u); expect(v).toBeGreaterThanOrEqual(last - 1e-12); last = v; }
+    expect(travel(0.01)).toBeLessThan(0.001); expect(1 - travel(0.99)).toBeLessThan(0.001);
   });
 });

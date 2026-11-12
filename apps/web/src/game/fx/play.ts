@@ -1584,6 +1584,9 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
 }
 /** The camera leaves this much before a glide's length ahead of its beat, so the glide is over when the beat plays. */
 export const CAM_EARLY_MS = 40;
+/** A move to the next beat never leaves sooner than this after the beat before it began (ms at Fast; it follows the
+ *  combat speed): that beat is seen starting where it plays. */
+export const CAM_HOLD_MS = 120;
 /** The camera rests this long (at Fast; it follows the combat speed) where a move takes it, or the move is not made. */
 export const CAM_REST_MS = 350;
 /** The order the camera's looks were planned in, and the latest one that has run (see runQueue). */
@@ -1607,6 +1610,8 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
   const walks = new Map<string, { t: number; path: string[]; ms: number }[]>();
   const cam = document.hidden ? null : activeCamera(); let camAt: { x: number; y: number } | null = null;
   let lastGo: { arrives: number; from: { x: number; y: number } | null; rec: { skip: boolean } } | null = null;
+  /** When the last beat this player sees was scheduled to start (-1: none yet in this batch). */
+  let prevBeat = -1;
   for (let i = 0; i < evs.length; i++) {
     const e = evs[i], gate = gates.find((x) => x.at === i);
     if (gate) {
@@ -1628,19 +1633,33 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
         // A result (a wound, a heal, a unit going down) never moves the camera: off screen it only gets its arrow.
         const moves = isTurn || movesCamera(e.k);
         let to: { x: number; y: number } | null = moves ? cam.plan(keys, camAt, isTurn ? 'turn' : 'beat') : null;
-        const glide = glideMs(fxPace(), reducedMotion()) / tp, leaves = isTurn ? t : t - glide - CAM_EARLY_MS;
+        // Each move's own length (camera.ts moveMs: longer for a longer move, at the combat speed).
+        const mms = (a: { x: number; y: number } | null, b: { x: number; y: number } | null) => (b ? cam.moveMs(a, b) / tp : 0);
+        // ...but it never leaves before the beat before this one has begun (CAM_HOLD_MS): a longer move is squeezed into
+        // the time there is, never under the plain glide every move took before (camera.ts glideMs).
+        const fit = (ms: number) => { const room = t - CAM_EARLY_MS - (prevBeat + CAM_HOLD_MS * fxPace() / tp); return isTurn || prevBeat < 0 || room >= ms ? ms : Math.max(Math.min(ms, glideMs(fxPace(), reducedMotion()) / tp), room); };
+        let glide = fit(mms(camAt, to)), leaves = isTurn ? t : t - glide - CAM_EARLY_MS;
         // No going somewhere only to leave at once: when this beat takes the camera away before it has rested where
         // the move before sent it (a hostile's turn banner, then its shot at a unit on the far side 0.4 s later), that
         // move is not made (its place gets an arrow at the window's edge) and the camera goes straight here.
-        if (to && lastGo && leaves - lastGo.arrives < CAM_REST_MS * fxPace() / tp) { lastGo.rec.skip = true; camAt = lastGo.from; to = cam.plan(keys, camAt, isTurn ? 'turn' : 'beat'); lastGo = null; }
+        if (to && lastGo && leaves - lastGo.arrives < CAM_REST_MS * fxPace() / tp) { lastGo.rec.skip = true; camAt = lastGo.from; to = cam.plan(keys, camAt, isTurn ? 'turn' : 'beat'); lastGo = null; glide = fit(mms(camAt, to)); leaves = isTurn ? t : t - glide - CAM_EARLY_MS; }
         const rec = { skip: false };
+        // When the move must have arrived: by its beat; a turn's, by the unit's first attack after it (its walk may
+        // start while the camera comes in). A move with less time than it wants is squeezed (cameraView glide).
+        let by: number | undefined = isTurn ? undefined : t - CAM_EARLY_MS;
         // The same for a turn's banner, looked up ahead (a banner at the head of a batch plays before the rest is
         // planned): the unit's next beat is on another part of the map before the camera would have rested on it.
         if (to && isTurn) {
           let tt = t + beat * speed;
           for (let j = i + 1; j < evs.length && evs[j].k !== 'turn' && !gates.some((x) => x.at === j); j++) {
             const x = evs[j], bx = beatOf(x), ks = mineOnly(x) && movesCamera(x.k) && (bx > 0 || x.k === 'move') ? fxTiles(x, (id) => unit(id)?.pos, (k) => visible(k)) : [];
-            if (ks.length) { if (cam.plan(ks, to, 'beat') && tt - glide - CAM_EARLY_MS - (t + glide) < CAM_REST_MS * fxPace() / tp) { rec.skip = true; to = null; } break; }
+            if (ks.length) { const nto = cam.plan(ks, to, 'beat'); if (nto && tt - mms(to, nto) - CAM_EARLY_MS - (t + glide) < CAM_REST_MS * fxPace() / tp) { rec.skip = true; to = null; } break; }
+            tt += bx * speed;
+          }
+          tt = t + beat * speed;
+          for (let j = i + 1; to && j < evs.length && evs[j].k !== 'turn' && !gates.some((x) => x.at === j); j++) {
+            const x = evs[j], bx = beatOf(x);
+            if (bx > 0 && x.k !== 'move' && mineOnly(x) && movesCamera(x.k)) { by = Math.max(t, tt - CAM_EARLY_MS); glide = Math.min(glide, Math.max(glideMs(fxPace(), reducedMotion()) / tp, by - t)); break; }
             tt += bx * speed;
           }
         }
@@ -1650,12 +1669,13 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
         // the next one (its early start), and a technique's name over the attacker would pull it back from the
         // target just before the shot lands. A look that comes late only raises its arrow.
         const ord = ++camOrd;
-        look = () => { const late = ord < camDone; if (!late) camDone = ord; try { if (isTurn && rec.skip) activeCamera()?.passTurn(keys[0]); activeCamera()?.show(keys, isTurn ? 'turn' : 'beat', tag, moves && !late && !rec.skip); } catch { /* */ } };
+        look = () => { const late = ord < camDone; if (!late) camDone = ord; try { if (isTurn && rec.skip) activeCamera()?.passTurn(keys[0]); activeCamera()?.show(keys, isTurn ? 'turn' : 'beat', tag, moves && !late && !rec.skip, by); } catch { /* */ } };
         // The early start has its own timer only when there is a glide to make (no extra timer otherwise).
         if (to && !isTurn) { if (leaves - now <= 4) look(); else schedule(look, leaves); }
       }
     }
     if (e.k === 'turn') lastTurn = t;
+    if (beat > 0 && mineOnly(e)) prevBeat = t;
     const camLook = look;
     let due = t;
     const wait = t - now, go = () => { if (camLook) camLook(); if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp, due); };
