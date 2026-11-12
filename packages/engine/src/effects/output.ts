@@ -52,12 +52,16 @@ export interface Profile {
   /** What a point of Skill adds to the Stat term. */ skill: number;
   /** The column of output.level this profile reads: 'deal', 'mend', or null (no level term). */ level: 'deal' | 'mend' | null;
   /** The pair it reads by default (output.pairs). */ pair?: string;
+  /** Rules 1.27 (the heal re-fit): the floor of a landed heal or shield profile: its Stat term is never under this share
+   * of what a normal share (output.floor_reference: 4 in each Attribute and Skill of the pair) gets. Absent: no floor. */ floor?: number;
 }
 export interface Pair { attrs: string[]; skills: string[] }
 const OUT: any = (RULES as any).output || {};
 /** The profiles (data/rules.json output.profiles). Today's slopes, one per system; `level` null everywhere but `mend`. */
 export const PROFILES: Record<string, Profile> = Object.fromEntries(Object.entries(OUT.profiles || {}).filter(([, p]) => p && typeof p === 'object').map(([id, p]: [string, any]) =>
-  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: p.level === 'deal' || p.level === 'mend' ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}) }]));
+  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: p.level === 'deal' || p.level === 'mend' ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}), ...(Number.isFinite(p.floor) ? { floor: Number(p.floor) } : {}) }]));
+/** Rules 1.27: the normal share a landed profile's floor is a share of (data/rules.json output.floor_reference). */
+const FLOOR_REF: { attribute: number; skill: number } = { attribute: Number(OUT.floor_reference?.attribute) || 4, skill: Number(OUT.floor_reference?.skill) || 4 };
 /** The pairs (data/rules.json output.pairs): which Attributes and Skills a Stat term reads. A weapon's own pair comes
  * from weapons.json `phys` (each `scales_with` Attribute; the skill it hits with): character.ts weaponMult. */
 export const PAIRS: Record<string, Pair> = Object.fromEntries(Object.entries(OUT.pairs || {}).filter(([, p]: [string, any]) => p && Array.isArray(p.attrs) && Array.isArray(p.skills)).map(([id, p]: [string, any]) => [id, { attrs: [...p.attrs], skills: [...p.skills] }]));
@@ -68,11 +72,19 @@ const FLAT: Profile = { k: 1, attr: 0, skill: 0, level: null };
 export const pairOf = (id: string | null | undefined): Pair => PAIRS[id || ''] || PAIRS[profileOf(id).pair || ''] || { attrs: [], skills: [] };
 
 /** The Stat term of a profile for these Attribute and Skill values: 1 + Σ attr × (Attribute − 1) + Σ skill × Skill.
- * (Summed in this order, as every derived multiplier always was: the result is the same number to the last place.) */
+ * (Summed in this order, as every derived multiplier always was: the result is the same number to the last place.)
+ * Rules 1.27 (the heal re-fit): a profile with a `floor` (the landed heal and shield profiles, never a damage one) is
+ * never under floor × what a normal share of the same pair gets (output.floor_reference), whatever the points. */
 export function statTerm(profile: string | Profile, attrs: number[], skills: number[]): number {
   const p = typeof profile === 'string' ? profileOf(profile) : profile;
-  const s = 1 + attrs.reduce((t, a) => t + p.attr * (a - 1), 0) + skills.reduce((t, k) => t + p.skill * k, 0);
+  let s = 1 + attrs.reduce((t, a) => t + p.attr * (a - 1), 0) + skills.reduce((t, k) => t + p.skill * k, 0);
+  if (p.floor) s = Math.max(s, p.floor * normalShareTerm(p, attrs.length, skills.length));
   return p.k === 1 ? s : s * p.k;
+}
+/** Rules 1.27: the bracket of a profile's Stat term (before k) for a normal share: output.floor_reference in each of
+ * its pair's Attributes and Skills. */
+export function normalShareTerm(p: Profile, nAttrs: number, nSkills: number): number {
+  return 1 + nAttrs * p.attr * (FLOOR_REF.attribute - 1) + nSkills * p.skill * FLOOR_REF.skill;
 }
 /** The Stat term of a profile for a character, read from its sheet with the profile's pair (or the pair given). No
  * perks, traits or gear: a caller that lets items speak wraps it (character.ts fx). */

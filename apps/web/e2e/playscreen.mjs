@@ -1,6 +1,6 @@
 // The play screen (Leon, 6 Nov): fixed panels that scroll on their own, the story sticking to the newest line with a
 // Latest button, a point of interest rolled in its own popup, and the area map's status and log, with real ammo.
-import { chromium, player, click, BASE, hostAs, settle } from './lib.mjs';
+import { chromium, player, click, BASE, hostAs, settle, until } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -10,9 +10,13 @@ await hostAs(host, 'Leon');
 await click(host, 'Create a character');
 await host.getByPlaceholder('What the squad calls you').fill('MPAT');
 await host.locator('main button[aria-pressed]').first().click();
-await click(host, 'Next ›'); await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 'Next ›'); await host.locator('button', { hasText: 'Line soldier' }).first().click();
-await click(host, 'Next ›'); await click(host, 'Lock in and bring to the room');
+// Each step is waited for by its own state (the step bar's aria-current moves on), not clicked straight after the last:
+// beside two other suites a click on "Next ›" once hung for 30 s while the screen before it was still drawing.
+const stepNow = () => host.evaluate(() => document.querySelector('button[aria-current="step"]')?.textContent || '');
+const next = async () => { const was = await stepNow(); await click(host, 'Next ›'); await until(host, (w) => (document.querySelector('button[aria-current="step"]')?.textContent || '') !== w, was, 30000); await settle(host); };
+await next(); await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
+await next(); await next(); await next(); await host.locator('button', { hasText: 'Line soldier' }).first().click();
+await next(); await click(host, 'Lock in and bring to the room');
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');
 await host.waitForSelector('.phc-story', { timeout: 30000 });

@@ -42,6 +42,8 @@ import { callChips, CL } from '../game/callView';
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
+import { tipAttrs, mountActionTips } from '../game/actionTip';
+import { areaOrder, areaHead } from '../game/attackAreas';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
@@ -113,6 +115,8 @@ export function hitBreakdown(pv) {
 //   .phc-wait-dots   the waiting card's three dots
 // Their times are × var(--phc-k): the combat speed (game/combatSpeed.ts; Normal ≈ 15% slower than Fast).
 const COMBAT_CSS = [
+  // The map's row and column labels take the pointer over their 2 px gaps too, so a tile scrolled under them is never hovered.
+  '.phc-axis::before{content:\'\';position:absolute;inset:-2px}',
   '.phc-cb-dock[data-lock="wait"] > :not(.phc-cb-say2):not(.phc-cb-lockmsg):not([data-phc-vow-prompt]), .phc-cb-dock[data-lock="held"] > :not(.phc-cb-say2):not(.phc-cb-lockmsg):not([data-phc-vow-prompt]){opacity:.38;filter:grayscale(1);pointer-events:none;transition:opacity .2s}',
   '.phc-cb-lockmsg{flex:none;padding:6px 10px;border:1px solid #232D3F;border-radius:8px;background:#10151F;color:#A3AEC2;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}',
   '@keyframes phcYtIn{0%{transform:translateX(70px) skewX(-14deg);opacity:0}60%{transform:translateX(-4px) skewX(-14deg);opacity:1}100%{transform:skewX(-14deg);opacity:1}}',
@@ -181,12 +185,17 @@ ensureStyle('phc-combat-layout', LAYOUT_CSS);
 ensureStyle('phc-resources', RES_CSS);
 ensureStyle('phc-combat-mapzoom', ZOOM_CSS);
 ensureStyle('phc-camera', CAMERA_CSS);
+mountActionTips();
 /** The fight's camera (roadmap 2c; game/cameraView.ts): the map's window keeps the usual tile size and follows the play.
  *  Local to this browser: every player in a room has their own. */
 const CAM = new CameraView('fight');
 /** Room kept free beside the map for the small map, so the tiles in that corner can be scrolled out from under it. */
 /** Two-key codes: how long after the first number the second still counts (provisional; balance pass section 15). */
 const CHORD_MS = 1000;
+/** The map's own layers (inside .phc-grid, which is isolated: none of them reaches out of the map). A tile's overlays use
+ *  1 to 5, its chips and hover card 30 (main.tsx: a hovered tile is raised to 20 over its neighbours); the row and
+ *  column labels sit over all of them, the corner over both label strips. */
+const GRID_LAYER = { axis: 40, corner: 41 };
 const MINI_SLACK = 172;
 
 /** The mounted combat screen's logic (one at a time), for the window events below. */
@@ -435,22 +444,27 @@ export class CombatLogic extends DCLogic {
     if (j < 0) return;
     e.preventDefault(); this.setTab(ids[j], true); sfx('tab');
   }
-  /** Number keys 1–9 anywhere on the combat screen, on your turn (1–4 pick the quick commands while the panel is hidden). */
+  /** Number keys 1–9 (and 0 inside a code) anywhere on the combat screen, on your turn (1–4 pick the quick commands while the panel is hidden). */
   numKey(e) {
-    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !/^[1-9]$/.test(e.key) || !this._mine) return;
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat || !/^[0-9]$/.test(e.key) || !this._mine) return;
     if (typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
+    if (e.key === '0') { // only inside a code: the next nine rows of the tab named (201 the tenth row of tab 2)
+      const ch = this._chord; if (!ch || PANEL_HIDDEN || Date.now() - ch.at > CHORD_MS) return;
+      e.preventDefault(); this._chord = { ...ch, page: (ch.page || 0) + 1, at: Date.now() }; return;
+    }
     if (PANEL_HIDDEN) {
       const c = (this._quick || [])[Number(e.key) - 1];
       if (c && !c.off) { e.preventDefault(); this.pickAction(c.action); sfx('tab'); }
       return;
     }
     // Two-key codes (Leon, 11 Nov 2026): the first number is the tab, the second the action in it, in the order shown:
-    // 11 the first tab's first action, 42 the fourth tab's second. The tab doesn't have to be open. A second number that
+    // 11 the first tab's first action, 42 the fourth tab's second; past the ninth, a 0 between them per nine (201). The tab doesn't have to be open. A second number that
     // names no action there is read as a tab, as a lone number always is.
     const now = Date.now(), chord = this._chord; this._chord = null;
     if (chord && now - chord.at <= CHORD_MS) {
-      const k2 = ((this._tabItems || [])[chord.tab] || [])[Number(e.key) - 1];
+      const k2 = ((this._tabItems || [])[chord.tab] || [])[(chord.page || 0) * 9 + Number(e.key) - 1];
       if (k2) { e.preventDefault(); this.pickAction(k2); sfx('tab'); return; }
+      if (chord.page) { e.preventDefault(); return; } // a paged code that names no row: nothing (not a tab)
     }
     // Inside the Attack tab (a pad open, or the keyboard in the tab's panel): 1 the first weapon's plain attack, 2 its
     // Techniques, 3 and 4 the second weapon's, 5 Hold a shot. Elsewhere the numbers switch tabs, as before.
@@ -964,9 +978,12 @@ export class CombatLogic extends DCLogic {
     // World Play 1.7 (game/worldView.ts): the fight's hazards per tile, caches with their count, carried people a Downed
     // carrier dropped (lying on the floor until the fight ends).
     const myCharC = (cur && cur.charId && g.characters[cur.charId]?.owner === me ? cur.charId : Object.values(g.characters).find((x) => x.owner === me)?.id), WLc = worldLayer(g, true, myCharC), dropAt = {}; (cb.dropped || []).forEach((d) => { dropAt[d.at] = d; });
-    // The letters and numbers stay at the window's edge while the map scrolls under them (the camera).
+    // The letters and numbers stay at the window's edge while the map scrolls under them (the camera). They are the top
+    // layer of the map (GRID_LAYER): a tile scrolled under them, its hover and its chips stay beneath, and the pointer
+    // over them (their gaps included: .phc-axis) is theirs, so a tile under the header never reacts (Leon, live 0.23.0).
     const AXIS = 'display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #7F8BA1; background: #05070B; box-shadow: 0 0 0 2px #05070B; position: sticky; ';
-    const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text, style: AXIS + (key === 'h-' ? 'top: 0; left: 0; z-index: 7' : key[0] === 'h' ? 'top: 0; z-index: 6' : 'left: 0; z-index: 6') });
+    const clearHover = () => { if (this.state.hover) this.setState({ hover: null }); };
+    const tiles = [], axis = (key, text) => ({ key, isLabel: true, isTile: false, text, hover: clearHover, style: AXIS + (key === 'h-' ? 'top: 0; left: 0; z-index: ' + GRID_LAYER.corner : key[0] === 'h' ? 'top: 0; z-index: ' + GRID_LAYER.axis : 'left: 0; z-index: ' + GRID_LAYER.axis) });
     // Tooltips near an edge turn inward: the edge is the camera's window, not the map's (vx, vy: a tile's place in it).
     const VT = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 }, vW = Math.max(1, VT.x1 - VT.x0 + 1), vH = Math.max(1, VT.y1 - VT.y0 + 1);
     const vxOf = (x) => Math.max(0, Math.min(vW - 1, x - VT.x0)), vyOf = (y) => Math.max(0, Math.min(vH - 1, y - VT.y0));
@@ -1096,8 +1113,11 @@ export class CombatLogic extends DCLogic {
     const pkSince = cur ? turnMark(cb, cur) : 0;
     const ITEMS = actionGroups(cb, cur, ch, { noNarrator: !!g.sandbox, g, since: pkSince }); // the Proving Ground has no Narrator to rule on anything
     let pkShelfMemo = null; const pkShelves = () => pkShelfMemo || (pkShelfMemo = perkShelves(g, cb, cur, ch, { since: pkSince }));
-    const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 11px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: items.map(([id, label, costText, text, why]) => ({
+    const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 11px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: areaOrder(gid, items).map(([id, label, costText, text, why, meta]) => ({
       // A move that can't be used now still opens (its footer says why); its reason is on the button too.
+      // Its hover card (game/actionTip.ts): the name and cost, a line per sentence, the weapon's line and traits, the refusal.
+      ...tipAttrs({ name: label, cost: costText, ...(meta && meta.parts ? { needs: meta.parts.needs, text: meta.parts.text, line: meta.parts.line, traits: meta.parts.traits } : { text }), why }),
+      area: gid === 'attack' ? (meta && meta.hand) || 'other' : '',
       name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
       costStyle: 'font-size: 12px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
@@ -1269,7 +1289,11 @@ export class CombatLogic extends DCLogic {
         // Two short lines under the word: the cost, then what it does (starts, extends…) or why it can't be drawn.
         const sub = wi.sub || (def.charge ?? '?') + ' ch' + (hint ? ' · ' + hint : ''), cut = sub.lastIndexOf(' · ');
         return { key: wd, word: wd.toUpperCase(), icon: glyphUri(wd, wi.ok ? SIGIL_INK : '#7F8BA1', { glow: on && wi.ok }), sub, subA: cut < 0 ? sub : sub.slice(0, cut), subB: cut < 0 ? '' : sub.slice(cut + 3), pressed: on ? 'true' : 'false',
-          title: wi.title + (wm ? ' · ' + wm.text : ''), off: !wi.ok, disabled: wi.ok ? 'false' : 'true', onKey: (e) => this.wordKey(e),
+          title: wi.title + (wm ? ' · ' + wm.text : ''), off: !wi.ok,
+          ...tipAttrs({ name: (def.word || wd.toUpperCase()), cost: [wordClassName(wd), 'charge ' + (def.charge ?? '?'), ...(wi.ok && wi.cost ? [wi.cost.ap + ' AP', '+' + wi.cost.flux + ' Flux'] : [])],
+            text: (wi.ok && wi.effectText ? wi.effectText.charAt(0).toUpperCase() + wi.effectText.slice(1) + '. ' : '') + (def.text || ''),
+            notes: [...(wi.ok && wi.fades ? [{ label: 'Fades', text: wi.fades + ' (your cap)' }] : []), ...(wi.ok && wi.overload ? [{ label: 'Warning', text: 'this overloads your Evoker' }] : []), ...(wm ? [{ label: 'Mastery', text: wm.text }] : [])],
+            why: wi.ok ? null : why }), disabled: wi.ok ? 'false' : 'true', onKey: (e) => this.wordKey(e),
           hasUses: !!wm, uses: wm ? String(wm.uses) : '', hasStar: !!(wm && wm.hasStar), star: wm ? wm.star : '', starAlt: wm ? wm.starAlt : '',
           aria: (def.word || wd.toUpperCase()) + ', ' + (wordClassName(wd) || 'word') + ', ' + (wi.ok ? wi.sub : 'can\'t draw now: ' + why) + (wm ? '; ' + wm.text : ''),
           subStyle: 'font-size: 10px; font-weight: 600; line-height: 1.2; color: ' + (wi.ok ? '#C9D3E3' : '#A3AEC2'),
@@ -1278,7 +1302,7 @@ export class CombatLogic extends DCLogic {
             + (on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; box-shadow: 0 0 8px rgba(79, 200, 223, 0.45)' : wi.ok ? 'border: 1px solid #1F4A55; background: #0D1119' : 'border: 1px dashed #2A3A48; background: #0B0F16') + (wi.ok ? '' : '; opacity: 0.8') }; }) : [],
       designs: isMagic && mineTurn && S.action === 'outburst' && designs.length > 0 && !mg?.held, // holding: the HEART panel runs it
       designList: S.action === 'outburst' && mg ? cards.map((d) => { const on = dsel && d.id === dsel.id;
-        return { key: d.id, name: d.name, pressed: on ? 'true' : 'false', pick: () => this.setState({ design: d.id, aim: null }), icon: d.icon, line: d.line, school: d.schools, title: d.title,
+        return { key: d.id, name: d.name, pressed: on ? 'true' : 'false', pick: () => this.setState({ design: d.id, aim: null }), icon: d.icon, line: d.line, school: d.schools, title: d.title, ...tipAttrs({ name: d.name, cost: d.costText, text: d.title, why: d.canBegin ? null : d.beginWhy }),
           stats: d.costText, hasWhy: !d.canBegin, why: d.beginWhy, lineStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: ' + d.ink,
           style: 'display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 8px 10px; border-radius: 8px; font-family: inherit; text-align: left; cursor: pointer; color: #E7EBF3; '
             + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
@@ -1345,9 +1369,18 @@ export class CombatLogic extends DCLogic {
     // own inside the pinned column, so the grid (and every effect on it) stays in view whatever you pick ----------
     const tabOf = {}; groups.forEach((gr) => gr.items.forEach((a) => { tabOf[a.key] = gr.id; }));
     if (rowSel !== S.action && tabOf[rowSel]) tabOf[S.action] = tabOf[rowSel]; // a technique picked from a pad lives in its row's tab
-    // Each weapon block's header (on its plain attack's row): the weapon's icon and name, and its meter.
-    const headOf = {}; blocks.forEach((b) => { if (!b.plain && b.hand !== 'both' && !b.shield) return; headOf[b.hand === 'both' ? 'paired' : b.plain ? techAction(b.hand, b.plain.id) : padAction(b.hand)] = { hand: b.hand, name: b.name.toUpperCase() + (b.hand === 'both' ? '' : blocks.length > 1 ? ' · ' + (b.hand === 'main' ? 'MAIN HAND' : 'OFF HAND') : ''), icon: b.icon, hasIcon: !!b.icon,
-      meter: b.meter, hint: b.meterHint, hasHint: !!b.meterHint, pips: b.pips.map((p) => ({ key: p.key, on: p.on ? 'true' : 'false', style: b.meterKind === 'guard' ? 'width: 8px; height: 11px; border-radius: 2px 2px 5px 5px; box-sizing: border-box; ' + (p.on ? 'background: #E7EBF3' : 'border: 1px solid #5B6577') : 'width: 9px; height: 9px; border-radius: 2px; transform: rotate(45deg); ' + (p.on ? 'background: #F68A38' : 'border: 1px solid #5B6577') })), hasPips: b.pips.length > 0, pipKind: b.meterKind || '' }; });
+    // The Attack tab in areas (Leon, live 0.23.0): each weapon's own actions under its header (its shots and techniques,
+    // its reload, its unjam, shooting an object with it), main hand, then off hand, then Both (what uses both hands,
+    // Reload both among them), then what belongs to no one weapon. The area is the descriptor's `hand`, never a name.
+    // An area's header (on its first row): the weapon's icon and name, and its meter; a 1 px line between areas.
+    const headOf = {}, sepOf = {};
+    { const atk = groups.find((gr) => gr.id === 'attack'), byHand = {}; blocks.forEach((b) => { byHand[b.hand] = b; });
+      const areas = atk ? [...new Set(atk.items.map((a) => a.area))] : [];
+      if (areas.some((h) => h !== 'other') && (areas.length > 1 || blocks.length)) areas.forEach((h, i) => {
+        const first = atk.items.find((a) => a.area === h), b = byHand[h];
+        if (i > 0) sepOf[first.key] = true;
+        headOf[first.key] = h === 'other' ? areaHead('other', 'OTHER') : h === 'both' ? areaHead('both', 'BOTH', b) : b ? areaHead(h, (blocks.filter((x) => x.hand !== 'both').length > 1 ? (h === 'main' ? 'MAIN HAND · ' : 'OFF HAND · ') : '') + b.name.toUpperCase(), b) : areaHead(h, h === 'main' ? 'MAIN HAND' : 'OFF HAND');
+      }); }
     const tabIds = groups.map((gr) => gr.id);
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
       const seenHostile = foes.some((u) => !u.downed);
@@ -1362,7 +1395,9 @@ export class CombatLogic extends DCLogic {
     this._tabs = tabIds; this._tabOf = tabOf;
     // The two-key codes: each tab's actions in the order shown (the read-only perk rows have none).
     this._tabItems = groups.map((gr) => gr.items.filter((x) => !isPerkInfo(x.key)).map((x) => x.key));
-    { const codeOf = {}; this._tabItems.forEach((ks, ti) => ks.forEach((k, ki) => { if (ti < 9 && ki < 9) codeOf[k] = String(ti + 1) + (ki + 1); })); this._codeOf = codeOf; }
+    // Past the ninth row a 0 turns the page by nine (12 Nov 2026: two guns put the off hand and Both there): 201 is the
+    // tenth row of tab 2, 209 the eighteenth, 2001 the nineteenth.
+    { const codeOf = {}; this._tabItems.forEach((ks, ti) => ks.forEach((k, ki) => { if (ti < 9) codeOf[k] = String(ti + 1) + '0'.repeat(Math.floor(ki / 9)) + ((ki % 9) + 1); })); this._codeOf = codeOf; }
     if (S.tab !== this._tabShown) { // flipping: the new tab's actions slide in from the side it sits on
       this._tabCls = this._tabShown == null ? '' : tabIds.indexOf(S.tab) > tabIds.indexOf(this._tabShown) ? 'phc-slide-in-right' : 'phc-slide-in-left'; this._tabShown = S.tab;
     }
@@ -1397,7 +1432,7 @@ export class CombatLogic extends DCLogic {
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
       // Rules 1.14, the perk card in a fight: three shelves. USE NOW is the buttons below; the other two are lists to read.
       ...(tabG.id === 'perks' ? perkShelfVals(pkShelves(), tabG.items, rowSel) : { hasUse: false, useLabel: '', useHelp: '', shelves: [] }),
-      items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), code: this._codeOf[a.key] || '', hasCode: !!this._codeOf[a.key], padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
+      items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), code: this._codeOf[a.key] || '', hasCode: !!this._codeOf[a.key], padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], hasSep: !!sepOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
     // Leon (8 Nov 2026): the whole action panel greys out until it is really your turn: someone else's turn, or the
     // enemies' moves still playing on screen after the engine has handed the turn back (Say stays usable).
     const holdUntil = mineTurn && typeof performance !== 'undefined' ? turnsBusyUntil() : 0, holding = holdUntil > performance.now();
@@ -1461,7 +1496,9 @@ export class CombatLogic extends DCLogic {
     return {
       ...lightboxVals(this), zoomPc: zoomer(this, who.img, who.name, 'portrait'), who, legend, turnPanels,
       gridLeave: () => { if (this.state.hover != null) this.setState({ hover: null }); }, // the stroke tip and lit stroke go with the cursor
-      gridStyle: 'display: grid; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (this._camNeeded && !this._overview && !CAM.miniHidden ? '; margin-right: ' + Math.round(MINI_SLACK / zoom) + 'px' : ''),
+      // isolation: the map is one stacking layer, so nothing in it (a hovered tile, a chip, a token's card) rises above the
+      // small map, the camera's arrows or any panel; inside it the axis labels are on top (GRID_LAYER).
+      gridStyle: 'display: grid; isolation: isolate; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (this._camNeeded && !this._overview && !CAM.miniHidden ? '; margin-right: ' + Math.round(MINI_SLACK / zoom) + 'px' : ''),
       // The map's window (the camera): the grid scrolls inside it when it is bigger.
       camStyle: 'flex: none; max-width: ' + (this._view ? this._view.w + 'px' : '100%') + (this._view ? '; max-height: ' + this._view.h + 'px' : ''),
       camLabel: 'The map. Drag it, or use the arrow keys or W A S D, to look around; Home goes back to your unit; M shows the whole map.',

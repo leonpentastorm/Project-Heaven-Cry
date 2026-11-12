@@ -152,6 +152,8 @@ export interface Unit {
    * loaded in it now, and (a gun loaded round by round, of another calibre than the main gun) its loose rounds. A
    * character's magazine off-hand gun always has offMags (empty: no spares; review fix: it reloaded for free). */
   offMags?: number[]; offMagTypes?: (string | null)[]; offAmmoType?: string | null; offLoose?: number;
+  /** The off-hand gun is jammed (its own jam: a fumble with it jams it, not the main gun; Clear jam with the off hand clears it). */
+  offJammed?: boolean;
   /** A companion (drone, beast): the character who controls it (its owner's player gives its orders). */
   ctrl?: string; companion?: string;
   /** The only actions this unit has (action ids as the action list names them: 'move', 'shot'…), besides ending its
@@ -1753,6 +1755,23 @@ export function burstRolls(u: Unit, w: WeaponDef): number[] {
 /** The Heat a Burst gives back when it ends. Heat is one a roll: a character's two rolls are 2 Heat and nothing cools; an
  * enemy's three rolls cool 1 (2 Heat too), as its table was fitted. */
 export const burstCool = (u: Unit, auto: boolean): number => (!auto ? 0 : !u.charId && !BURST_NUM('enemy_same', 0) ? BURST_NUM('enemy_heat_cool', 1) : BURST_NUM('auto_heat_cool', 0));
+/** Rounds that left the gun with no roll of their own (a Burst's third, a Suppress's two, the rest of a Mag Dump or of a
+ * full-auto volley): counted on the action's own volley event as `loose`, so the screen draws one tracer, one muzzle
+ * flash and one casing for every round the magazine lost, not one for every roll. Presentation only: nothing reads it
+ * back. The volley is the latest of this unit's in this action (the search stops at the action's technique event or a
+ * turn); with no volley, the action's last shot carries them; a round spent before any shot (a Rout's, a Warning Shot's)
+ * is drawn by the shot that follows it. */
+export function noteLoose(cb: Combat, u: Unit, n: number): void {
+  if (!(n > 0) || !cb.fx) return;
+  let shot: any = null;
+  for (let i = cb.fx.length - 1; i >= 0; i--) {
+    const e: any = cb.fx[i];
+    if (e.k === 'turn' || (e.k === 'technique' && e.unit === u.id)) break;
+    if (e.k === 'volley' && e.unit === u.id) { e.loose = (e.loose || 0) + n; return; }
+    if (!shot && e.k === 'shot' && e.unit === u.id && !e.thrown) shot = e;
+  }
+  if (shot) shot.loose = (shot.loose || 0) + n; // no volley (Both Barrels' one roll for two rounds): on the roll itself
+}
 export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
   const pv = previewAttack(cb, u, t, 'burst'); if (!pv.ok) return pv.why!;
   const rolls = burstRolls(u, WEAPON[u.weapon]), mag = WEAPON[u.weapon].magazine;
@@ -1762,7 +1781,7 @@ export function fireBurst(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character
   let made = 0;
   chained(() => { for (let i = 0; i < rolls.length && !t.dead && (mag == null || u.ammo > 0) && !u.jammed; i++) { const r = resolveAttack(cb, rng, u, t, 'shot', who, { extra: rolls[i], noAp: true, noWear: i > 0, vi: i } as any); if (r.refused || r.cancelled) break; made++; } }, 'burst');
   // three rounds leave the gun whatever was rolled (rules 1.18): the one with no roll of its own is burned (no Heat: Heat is one a roll)
-  if (made === rolls.length && rolls.length < 3 && mag != null && !u.infiniteAmmo) u.ammo -= Math.min(3 - rolls.length, Math.max(0, u.ammo));
+  if (made === rolls.length && rolls.length < 3 && mag != null) { const burn = u.infiniteAmmo ? 3 - rolls.length : Math.min(3 - rolls.length, Math.max(0, u.ammo)); if (!u.infiniteAmmo) u.ammo -= burn; noteLoose(cb, u, burn); }
   u.heat = Math.max(0, u.heat - burstCool(u, true)); emit(cb, 'volley_end', { u, mode: 'burst', target: t, cb, rng }); checkOver(cb); return null;
 }
 export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character | null): string | null {
@@ -1772,13 +1791,15 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
   const hits = cb.units.filter((v) => v.side !== u.side && !v.dead && near(v) && previewAttack(cb, u, v, 'auto', { free: true }).ok);
   pay(cb, u, pv.ap); say(cb, u.name + ' opens up on full auto' + (pv.ap !== 4 ? ' (' + pv.ap + ' AP)' : '') + '.');
   const w = WEAPON[u.weapon], startAmmo = u.ammo;
-  emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
+  const vev = emitFx(cb, 'volley', { unit: u.id, target: t.id, from: u.pos, to: t.pos, weapon: u.weapon, cat: w.category, mode: 'auto', shots: 10 });
   // The line is worked out once; each target is checked again as it comes up (resolveAttack refuses a shot it can't
   // take), and a jam or an empty magazine ends the burst of fire.
   chained(() => { let i = 0; for (const v of hits) { if (u.jammed || (w.magazine != null && u.ammo <= 0)) break; if (resolveAttack(cb, rng, u, v, 'shot', who, { extra: -2, noAp: true, noWear: true, vi: i++ } as any).cancelled) break; } }, 'auto');
   if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 2);
   // Ten rounds go out whatever the shots took; what items changed during the volley stays (hooks gap C4).
+  const rolled = (cb.fx || []).filter((x: any) => x.k === 'shot' && x.unit === u.id && x.n > vev.n).length;
   if (w.magazine != null && !u.infiniteAmmo) u.ammo = Math.max(0, u.ammo - Math.max(0, 10 - (startAmmo - u.ammo)));
+  noteLoose(cb, u, Math.max(0, (w.magazine != null && !u.infiniteAmmo ? startAmmo - u.ammo : 10) - rolled)); // the rounds with no roll, for the screen
   u.heat += 4 - hits.length; emit(cb, 'volley_end', { u, mode: 'auto', target: t, hits, cb, rng }); checkOver(cb); return null;
 }
 // ---------- forced movement (engine foundations 1, review finding F2; spec: Combat on the grid, Forced movement) ----------
@@ -2042,11 +2063,11 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   try {
   resolveAttack(cb, rng, u, t, mainMode, who, { extra: -1, noAp: true });
   // swap the off-hand weapon in for its own swing or shot
-  const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType };
+  const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
   const skillPts = u.dexterity || 0; // rules 1.12 (item 953): an off-hand gun or light blade hits with Dexterity
-  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null;
+  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
   if (!offTarget.dead) { const p2 = previewAttack(cb, u, offTarget, isMelee(ow) ? 'melee' : 'shot', { free: true }); if (p2.ok) resolveAttack(cb, rng, u, offTarget, isMelee(ow) ? 'melee' : 'shot', who, { extra: Math.min(-1, -3 + Math.floor(skillPts / 3)), noAp: true }); else say(cb, '(off hand: ' + p2.why + ')'); }
-  u.offAmmo = u.ammo; Object.assign(u, keep);
+  u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep);
   } finally { fxChain--; VOLLEY = wasV; }
   emit(cb, 'volley_end', { u, mode: 'paired', target: t, cb, rng }); checkOver(cb); return null;
 }
@@ -2130,13 +2151,16 @@ function reloadPaid(cb: Combat, u: Unit, o: { both?: boolean; tactical?: boolean
  * Each gun takes its own spares (the same pack entry when both hands hold the same model). */
 /** Reload both guns' speed price (Two guns: 3 AP, items may change it); the tactical one is this + 1. */
 export const reloadBothAp = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'reload_both').ap;
+/** Reload the off-hand gun alone: its speed price (the gun's reload_ap, else a reload's, priced as the off hand's); the
+ *  tactical one is this + 1. */
+export const reloadOffAp = (u: Unit, cb?: Combat | null) => { const ow: any = u.offWeapon ? WEAPON[u.offWeapon] : null; return price({ cb, u }, 'reload', (ow && ow.reload_ap) ?? costOf('reload'), { hand: 'off' }).ap; };
 export function reloadHands(cb: Combat, u: Unit, hand: 'off' | 'both', tactical = false): string | null {
   { const no = (hand === 'both' ? reloadRefused(u, u.weapon, cb) : null) || reloadRefused(u, u.offWeapon, cb); if (no) return no; }
   const ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
   if (!ow || ow.magazine == null || !ow.reload) return 'Your off hand holds no gun to reload.';
   if (tactical && ow.reload === 'loose') return 'Loaded round by round: there is only one reload.';
   // The off-hand gun is priced as a reload, but it isn't the main hand's: Speed Loader leaves it alone (spec item 564).
-  const ap = (hand === 'both' ? reloadBothAp(u, cb) : price({ cb, u }, 'reload', ow.reload_ap ?? costOf('reload'), { hand: 'off' }).ap) + (tactical ? PILE.tactical_reload_extra_ap : 0);
+  const ap = (hand === 'both' ? reloadBothAp(u, cb) : reloadOffAp(u, cb)) + (tactical ? PILE.tactical_reload_extra_ap : 0);
   { const no = whyNot(cb, u, ap); if (no) return no; }
   const pc = !!u.charId, shared = ow.id === u.weapon, have = u.offAmmo ?? 0, offFull = have >= ow.magazine;
   // A character's off-hand gun reloads only from what it carries (review fix: with no spares entry it reloaded free);
@@ -2252,8 +2276,22 @@ export function loadMagazine(cb: Combat, u: Unit): string | null {
   say(cb, u.name + ' loads ' + rounds + (rounds === 1 ? ' round' : ' rounds') + ' into a ' + (w.reload_unit || 'magazine') + ' (' + u.mags[i] + '/' + cap + ') for ' + cost + ' AP.');
   return null;
 }
-/** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. */
-export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | null): string | null {
+/** The off-hand gun's jam, kept on the unit only while it is jammed. */
+export const setOffJam = (u: Unit, jam: boolean) => { if (jam) u.offJammed = true; else delete u.offJammed; };
+/** Run fn with the off-hand weapon in the main hand's place (its rounds, its jam, its ammo type; no wear, no mods), as
+ * a paired attack does; what fn spent is written back to the off hand and the main hand is put back as it was. */
+export function withOffHand<T>(u: Unit, fn: () => T): T {
+  const ow = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow) return fn();
+  const keep = { weapon: u.weapon, ammo: u.ammo, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
+  u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed;
+  try { return fn(); } finally { u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); }
+}
+/** Shoot an object with the off-hand weapon: its attack AP, rounds, range and damage (the main hand's rule). */
+export const coverOffAp = (u: Unit, cb?: Combat | null): number => { const w = u.offWeapon ? WEAPON[u.offWeapon] : null; return w ? Math.max(1, price({ cb, u }, 'break', attackApCost(w, isMelee(w) ? 'melee' : 'shot'), { hand: 'off' }).ap) : 2; };
+/** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. hand 'off':
+ * the off-hand weapon's (its own rounds, jam, range and damage). */
+export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | null, hand: 'main' | 'off' = 'main'): string | null {
+  if (hand === 'off') { if (!u.offWeapon || !WEAPON[u.offWeapon]) return 'Your off hand holds no weapon.'; return withOffHand(u, () => shootCover(cb, u, tile, who)); }
   const c = objectsAt(cb, tile).find((x) => x.hp != null && x.hp > 0); if (!c) return 'Nothing there to shoot.';
   // Breaking cover is priced through the items ('ap_cost:break'; Siege Engine: hooks gap A1), at least 1 AP.
   const w = WEAPON[u.weapon], melee = isMelee(w), ap = Math.max(1, price({ cb, u }, 'break', attackApCost(w, melee ? 'melee' : 'shot')).ap);
@@ -2290,7 +2328,18 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
   return null;
 }
-export function clearJam(cb: Combat, u: Unit): string | null {
+/** Clear a jam (2 AP, then items; it resets Heat). hand 'off': the off-hand gun's own jam, at the same price. */
+export function clearJam(cb: Combat, u: Unit, hand: 'main' | 'off' = 'main'): string | null {
+  if (hand === 'off') {
+    const ow = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow || isMelee(ow)) return 'Your off hand holds no gun.';
+    if (!u.offJammed) return 'Not jammed.';
+    const cost = price({ cb, u }, 'clear_jam', undefined, { hand: 'off' }).ap;
+    { const no = whyNot(cb, u, cost); if (no) return no; }
+    const jc: any = emit(cb, 'jam_clear', { u, ap: cost, keepHeat: false, cb, hand: 'off' });
+    pay(cb, u, cost); setOffJam(u, false); if (!jc.keepHeat) u.heat = 0; emitFx(cb, 'clear', { unit: u.id, at: u.pos, dur: 1000, hand: 'off' });
+    say(cb, u.name + ' clears the off-hand gun\'s jam.');
+    return null;
+  }
   if (!u.jammed) return 'Not jammed.';
   const cost = price({ cb, u }, 'clear_jam').ap;
   { const no = whyNot(cb, u, cost); if (no) return no; }

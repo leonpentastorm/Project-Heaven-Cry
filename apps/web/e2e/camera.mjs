@@ -67,7 +67,13 @@ await myTurn().catch(() => {});
 { const mv = p.locator('[role="tabpanel"] button[data-act="move"]').first();
   if (!(await mv.count())) await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').first().click();
   if ((await mv.getAttribute('aria-pressed').catch(() => null)) !== 'true') await mv.click({ timeout: 5000 }).catch(() => {}); }
-const near = (mx + 1) + ',' + my, nb = await tileBox(near);
+// (the view at rest right before the tile's place is read, and read twice to be sure it stays put: the turn's start and
+// picking Move can move the camera AFTER the settle above (0.24.0's eased move with its settle runs longer), and a click
+// read from a gliding view landed on the unit's own tile; the 0.24.0 full run)
+await settle();
+const near = (mx + 1) + ',' + my;
+let nb = await tileBox(near);
+for (let i = 0; i < 20; i++) { await pause(p, 100); const b2 = await tileBox(near); const same = !!nb && !!b2 && Math.abs(b2.x - nb.x) < 1 && Math.abs(b2.y - nb.y) < 1; nb = b2; if (same && !(await cam())?.gliding) break; }
 const panelAt = await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'), t = document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]'); const mv = document.querySelector('[role="tabpanel"] button[data-act="move"]'); return (d && d.getAttribute('data-lock') ? 'locked: ' + d.getAttribute('data-lock') : 'open') + ', tab ' + (t ? (t.textContent || '').trim() : '?') + ', Move ' + (mv ? 'pressed: ' + mv.getAttribute('aria-pressed') : 'not on the panel'); });
 await p.mouse.click(nb.x + nb.width / 2, nb.y + nb.height / 2);
 const confirm = p.getByRole('button', { name: 'Confirm', exact: true }).first();

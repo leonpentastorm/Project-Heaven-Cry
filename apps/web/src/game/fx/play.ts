@@ -11,7 +11,8 @@ import { faithHandlers, faithBeat } from './faith';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
 import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
-import { wrapRanged, rangedBeat, rangedBatch, resetRanged } from './ranged';
+import { wrapRanged, rangedBeat, rangedBatch, resetRanged, rattlesOf, drawsOwnLoose } from './ranged';
+import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
@@ -794,6 +795,7 @@ const H: Record<string, Handler> = {
       after(() => fire(), draw);
     } else fire();
     function fire() {
+      if (!e.thrown) trace('round', { unit: e.unit }); // one round left the gun (fx/techniqueFx.ts draws any it spent beyond this roll)
       if (!silent && g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
       if (!toP) return;
       let mp: { x: number; y: number } | null = null;
@@ -856,11 +858,13 @@ const H: Record<string, Handler> = {
     volley = { unit: e.unit, silent: !!vs, until: performance.now() + slow(2500) }; // the shots it covers are spaced at the pace
     if (vs) play(vs.s, p, { rate: vs.rate });
     if (e.mode === 'skill' && e.name) { const q = centre(e.from); if (q && visible(e.from)) floatText(String(e.name).toUpperCase(), q, WHITE, { small: true, ms: 1100 }); }
-    if (e.mode === 'auto' && p && e.to && gunOf(e.weapon || '', e.cat || '').look === 'bullet') {
+    if (e.mode === 'auto' && p && e.to && ['bullet', 'pellets'].includes(gunOf(e.weapon || '', e.cat || '').look)) {
       // The spray: extra tracers fanning around the line (the engine rolls one shot per enemy near it).
       const toP = centre(e.to); if (!toP || !visible(e.from)) return;
       const br = brassOf(e.weapon || '', e.cat || ''), who = br.when === 'shot' ? whoOf(tokOf(e.unit, e.from)) : null, aim = angle(p, toP);
-      for (let i = 0; i < 7; i++) after(() => { const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, 'bullet', toP.s); if (who) ejectShell(who, br.shell, aim); }, i * 85);
+      // as many as the volley spent beyond its rolls (the engine's `loose`); seven before it was sent
+      const n = Number.isFinite(Number(e.loose)) ? Math.max(0, Number(e.loose)) : 7;
+      for (let i = 0; i < n; i++) after(() => { trace('round', { unit: e.unit, loose: true }); const m = muzzle(p, toP); projectile(m, missPoint(p, toP), 150, 'bullet', toP.s); if (who) ejectShell(who, br.shell, aim); }, i * Math.min(85, 600 / Math.max(1, n)));
     }
   },
   reload(e) {
@@ -1393,10 +1397,15 @@ Object.assign(H, physHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, play, n
 Object.assign(H, meleeTechHandlers({ at, tokOf, posOf: (id) => unit(id)?.pos, sideOf: (id) => unit(id)?.side, play, sawThen }));
 // Physical 2.0 B (fx/ranged.ts): the ranged techniques, the quiver and thrown weapons; it wraps the handlers above.
 wrapRanged(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, gunOf, muzzle, projectile, missPoint, dust, explosion, corners, seesUnit });
+// Every physical technique's own attack and result (fx/techniqueFx.ts, the table), and the rounds a volley spent beyond
+// its rolls drawn one by one; it wraps everything above.
+wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn, gunOf, muzzle, projectile, missPoint, rattles: rattlesOf, drawsOwnLoose });
+/** A volley that draws its own rounds as one stream (a Mag Dump with bullets: fx/ranged.ts dumpStream). */
+const streamsOwn = (v: FxEvent) => v.mode === 'dump' && gunOf(v.weapon || '', v.cat || '').look === 'bullet' && v.cat !== 'shotgun';
 
 // ---------- the queue ----------
 /** How long each kind holds the stage before the next event starts (ms), at the combat speed (game/combatSpeed.ts). */
-const beatOf = (e: FxEvent): number => { const b = baseBeat(e); return b ? b * fxPace() : b; };
+const beatOf = (e: FxEvent): number => { const b = baseBeat(e) + (mineOnly(e) ? techExtraBeat(e, !drawsOwnLoose(e)) : 0); return b ? b * fxPace() : b; };
 /** The beat at Fast (the written timings). */
 function baseBeat(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
@@ -1566,6 +1575,7 @@ export const sameAction = (sp: FxEvent, x: FxEvent) => { const f = Number.isFini
 function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: number; from?: number }) {
   if (!evs.length) return;
   evs = meleePrepass(evs); // the melee techniques' movement beats over their moves, quick later strikes, Thrown Flurry flights
+  evs = techPrepass(evs, streamsOwn); // a volley's rounds beyond its rolls on its last roll; a use technique's outcome (fx/techniqueFx.ts)
   if (held) { held.evs.push(...evs); return; } // a gate is closed: join behind it
   const now = performance.now(), base = Math.max(now, queueEnd);
   // A fight plays every effect, in order, at the speed the player chose (Leon, 11 Nov 2026: "the animation must be
@@ -1584,6 +1594,9 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
 }
 /** The camera leaves this much before a glide's length ahead of its beat, so the glide is over when the beat plays. */
 export const CAM_EARLY_MS = 40;
+/** A move to the next beat never leaves sooner than this after the beat before it began (ms at Fast; it follows the
+ *  combat speed): that beat is seen starting where it plays. */
+export const CAM_HOLD_MS = 120;
 /** The camera rests this long (at Fast; it follows the combat speed) where a move takes it, or the move is not made. */
 export const CAM_REST_MS = 350;
 /** The order the camera's looks were planned in, and the latest one that has run (see runQueue). */
@@ -1607,6 +1620,8 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
   const walks = new Map<string, { t: number; path: string[]; ms: number }[]>();
   const cam = document.hidden ? null : activeCamera(); let camAt: { x: number; y: number } | null = null;
   let lastGo: { arrives: number; from: { x: number; y: number } | null; rec: { skip: boolean } } | null = null;
+  /** When the last beat this player sees was scheduled to start (-1: none yet in this batch). */
+  let prevBeat = -1;
   for (let i = 0; i < evs.length; i++) {
     const e = evs[i], gate = gates.find((x) => x.at === i);
     if (gate) {
@@ -1628,19 +1643,33 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
         // A result (a wound, a heal, a unit going down) never moves the camera: off screen it only gets its arrow.
         const moves = isTurn || movesCamera(e.k);
         let to: { x: number; y: number } | null = moves ? cam.plan(keys, camAt, isTurn ? 'turn' : 'beat') : null;
-        const glide = glideMs(fxPace(), reducedMotion()) / tp, leaves = isTurn ? t : t - glide - CAM_EARLY_MS;
+        // Each move's own length (camera.ts moveMs: longer for a longer move, at the combat speed).
+        const mms = (a: { x: number; y: number } | null, b: { x: number; y: number } | null) => (b ? cam.moveMs(a, b) / tp : 0);
+        // ...but it never leaves before the beat before this one has begun (CAM_HOLD_MS): a longer move is squeezed into
+        // the time there is, never under the plain glide every move took before (camera.ts glideMs).
+        const fit = (ms: number) => { const room = t - CAM_EARLY_MS - (prevBeat + CAM_HOLD_MS * fxPace() / tp); return isTurn || prevBeat < 0 || room >= ms ? ms : Math.max(Math.min(ms, glideMs(fxPace(), reducedMotion()) / tp), room); };
+        let glide = fit(mms(camAt, to)), leaves = isTurn ? t : t - glide - CAM_EARLY_MS;
         // No going somewhere only to leave at once: when this beat takes the camera away before it has rested where
         // the move before sent it (a hostile's turn banner, then its shot at a unit on the far side 0.4 s later), that
         // move is not made (its place gets an arrow at the window's edge) and the camera goes straight here.
-        if (to && lastGo && leaves - lastGo.arrives < CAM_REST_MS * fxPace() / tp) { lastGo.rec.skip = true; camAt = lastGo.from; to = cam.plan(keys, camAt, isTurn ? 'turn' : 'beat'); lastGo = null; }
+        if (to && lastGo && leaves - lastGo.arrives < CAM_REST_MS * fxPace() / tp) { lastGo.rec.skip = true; camAt = lastGo.from; to = cam.plan(keys, camAt, isTurn ? 'turn' : 'beat'); lastGo = null; glide = fit(mms(camAt, to)); leaves = isTurn ? t : t - glide - CAM_EARLY_MS; }
         const rec = { skip: false };
+        // When the move must have arrived: by its beat; a turn's, by the unit's first attack after it (its walk may
+        // start while the camera comes in). A move with less time than it wants is squeezed (cameraView glide).
+        let by: number | undefined = isTurn ? undefined : t - CAM_EARLY_MS;
         // The same for a turn's banner, looked up ahead (a banner at the head of a batch plays before the rest is
         // planned): the unit's next beat is on another part of the map before the camera would have rested on it.
         if (to && isTurn) {
           let tt = t + beat * speed;
           for (let j = i + 1; j < evs.length && evs[j].k !== 'turn' && !gates.some((x) => x.at === j); j++) {
             const x = evs[j], bx = beatOf(x), ks = mineOnly(x) && movesCamera(x.k) && (bx > 0 || x.k === 'move') ? fxTiles(x, (id) => unit(id)?.pos, (k) => visible(k)) : [];
-            if (ks.length) { if (cam.plan(ks, to, 'beat') && tt - glide - CAM_EARLY_MS - (t + glide) < CAM_REST_MS * fxPace() / tp) { rec.skip = true; to = null; } break; }
+            if (ks.length) { const nto = cam.plan(ks, to, 'beat'); if (nto && tt - mms(to, nto) - CAM_EARLY_MS - (t + glide) < CAM_REST_MS * fxPace() / tp) { rec.skip = true; to = null; } break; }
+            tt += bx * speed;
+          }
+          tt = t + beat * speed;
+          for (let j = i + 1; to && j < evs.length && evs[j].k !== 'turn' && !gates.some((x) => x.at === j); j++) {
+            const x = evs[j], bx = beatOf(x);
+            if (bx > 0 && x.k !== 'move' && mineOnly(x) && movesCamera(x.k)) { by = Math.max(t, tt - CAM_EARLY_MS); glide = Math.min(glide, Math.max(glideMs(fxPace(), reducedMotion()) / tp, by - t)); break; }
             tt += bx * speed;
           }
         }
@@ -1650,12 +1679,13 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
         // the next one (its early start), and a technique's name over the attacker would pull it back from the
         // target just before the shot lands. A look that comes late only raises its arrow.
         const ord = ++camOrd;
-        look = () => { const late = ord < camDone; if (!late) camDone = ord; try { if (isTurn && rec.skip) activeCamera()?.passTurn(keys[0]); activeCamera()?.show(keys, isTurn ? 'turn' : 'beat', tag, moves && !late && !rec.skip); } catch { /* */ } };
+        look = () => { const late = ord < camDone; if (!late) camDone = ord; try { if (isTurn && rec.skip) activeCamera()?.passTurn(keys[0]); activeCamera()?.show(keys, isTurn ? 'turn' : 'beat', tag, moves && !late && !rec.skip, by); } catch { /* */ } };
         // The early start has its own timer only when there is a glide to make (no extra timer otherwise).
         if (to && !isTurn) { if (leaves - now <= 4) look(); else schedule(look, leaves); }
       }
     }
     if (e.k === 'turn') lastTurn = t;
+    if (beat > 0 && mineOnly(e)) prevBeat = t;
     const camLook = look;
     let due = t;
     const wait = t - now, go = () => { if (camLook) camLook(); if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp, due); };

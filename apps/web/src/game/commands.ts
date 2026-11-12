@@ -16,7 +16,10 @@ import { perkShelves } from './perkShelves';
 const HOSTILE_INK = '#F65157';
 export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal', rich: 'Rich', flooded: 'Flooded' };
 /** [id, label, cost text, explanation, why not now (the engine's reason; undefined: work it out from the cost)] */
-export type ActionItem = [string, string, string, string, (string | null)?];
+/** [id, label, cost, text, why, meta]: meta is the descriptor's hand (the Attack tab's areas) and a technique's text in
+ *  parts (the hover card's lines). */
+export interface ActionMeta { hand?: 'main' | 'off' | 'both'; parts?: { needs: string; text: string; line: string; traits: { label: string; text: string }[] } }
+export type ActionItem = [string, string, string, string, (string | null)?, ActionMeta?];
 /** [group title, items, family ink (or null), tab id] */
 export type ActionGroup = [string, ActionItem[], string | null, string];
 export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith', calls: 'Calls' };
@@ -94,7 +97,7 @@ export const gameFor = (g: any, cb: any, ch: any): any => ({ ...(g || {}), comba
 export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
   if (!cb || !cur) return [];
   const list: ActionDescriptor[] = (() => { try { return actionsFor(gameFor(opts.g, cb, ch), cur.id, null); } catch { return []; } })();
-  const by = (gr: string) => list.filter((d) => d.group === gr && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why]);
+  const by = (gr: string) => list.filter((d) => d.group === gr && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why, { ...(d.hand ? { hand: d.hand } : {}), ...(d.parts ? { parts: d.parts } : {}) }]);
   const w: any = (WEAPON as any)[cur.weapon];
   const out: ActionGroup[] = [['MOVEMENT', by('move'), null, 'move'], ['ATTACK & DEFEND · ' + (w ? w.name.toUpperCase() : ''), by('attack'), HOSTILE_INK, 'attack'], ['UTILITY', by('utility'), null, 'utility']];
   // Rules 1.14, the perk card in a fight: USE NOW is the buttons; RIDES AN ACTION and ALWAYS ON are rows to read.

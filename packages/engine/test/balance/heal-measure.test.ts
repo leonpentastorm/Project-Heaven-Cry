@@ -12,7 +12,7 @@
 //   HEAL_MEASURE_PARTS=yard,inv,fire       only these parts        HEAL_MEASURE_ROWS=Faith   only the pairs whose name matches
 import { describe, it, expect } from 'vitest';
 import { inventory, invTable, invNums, underFire, fireLine, soldierTurn, SOLDIER_TURN, RIFLEMAN_HP, H_LEVELS } from './heal-measure';
-import { SIGIL, BUFF_HEAL, BOON_AREA, mendFactor } from '../../src';
+import { SIGIL, BUFF_HEAL, BOON_AREA, mendFactor, RULES, prayerMendDial } from '../../src';
 
 const FULL = !!process.env.HEAL_MEASURE, N = Math.max(1, Number(process.env.HEAL_MEASURE_N) || 12);
 const LV = (process.env.HEAL_MEASURE_LEVELS || '').split(',').map(Number).filter(Boolean), PARTS = (process.env.HEAL_MEASURE_PARTS || 'yard,inv,fire').split(',');
@@ -25,6 +25,10 @@ const SUPPORT: Record<string, any> = {
   pray: { build: 'faith_s', variant: 'normal', policy: 'pray_heal' }, prayShield: { build: 'faith_n', variant: 'normal', policy: 'pray_heal', opts: { whisper: 'protection' } },
 };
 const idleOf = (s: any) => ({ ...s, policy: 'idle', opts: undefined });
+// Rules 1.27 (the heal re-fit): every heal and shield rose by the healer's ceiling (data) over the 125 these bands were
+// set on (×1.6); Faith's by its heal dial (blessing_mend.k over blessing.k: ×1.51, capped). The bands below scale with them.
+const R = (RULES as any).balance.ceilings.healer_turn.allin / 125, FD = prayerMendDial();
+const within = (x: number, lo: number, hi: number, what: string) => { expect(x, what).toBeGreaterThanOrEqual(Math.floor(lo)); expect(x, what).toBeLessThanOrEqual(Math.ceil(hi)); };
 
 // The bands (the hand-off, section 1.2), pinned on the engine's own numbers for the reference casters at levels 1, 6
 // and 20. They are a little wider than the report's, so that a later change that keeps a band does not break a test.
@@ -33,20 +37,20 @@ describe('the heal and shield bands hold (rules 1.20)', () => {
     for (const lv of H_LEVELS) { const sh = SOLDIER_TURN[lv] / RIFLEMAN_HP[lv]; expect(sh, 'level ' + lv).toBeGreaterThan(0.12); expect(sh).toBeLessThan(0.145); }
     expect([1, 6, 12, 20].map(mendFactor)).toEqual([1, 1.13, 1.38, 1.82]);
   });
-  it('Outburst: a steady turn of healing is 65 to 130% of a Soldier-turn at a normal share (rules 1.26: 1.25 all in, ÷ 1.25), the biggest 85 to 170%, the quick heal about a third of a turn\'s', () => {
+  it('Outburst: a steady turn of healing is 65 to 130% of a Soldier-turn at a normal share (rules 1.26: 1.25 all in, ÷ 1.25), the biggest 85 to 170%, the quick heal about a third of a turn\'s; each ×1.6 since rules 1.27', () => {
     for (const lv of [1, 6, 20]) {
       const r = inventory('outburst_s', 'normal', lv);
       const steady = row(r, /steady \(Rage and Love/).pctNow, big = row(r, /the biggest/).pctNow, quick = row(r, /stage 1 \(the quick/).pctNow;
-      expect(steady, 'steady, level ' + lv).toBeGreaterThanOrEqual(65); expect(steady).toBeLessThanOrEqual(130);
-      expect(big, 'biggest, level ' + lv).toBeGreaterThanOrEqual(85); expect(big).toBeLessThanOrEqual(170); expect(big).toBeGreaterThan(steady);
-      expect(quick, 'quick, level ' + lv).toBeGreaterThanOrEqual(25); expect(quick).toBeLessThanOrEqual(60);
+      within(steady, 65 * R, 130 * R, 'steady, level ' + lv);
+      within(big, 85 * R, 170 * R, 'biggest, level ' + lv); expect(big).toBeGreaterThan(steady);
+      within(quick, 25 * R, 60 * R, 'quick, level ' + lv);
     }
   });
-  it('Sigil: a 2-glyph MEND Line is 60 to 115% of a Soldier-turn; the full Line is the biggest single heal (170 to 280%; rules 1.26: MEND reads the landed sigil_mend Stat)', () => {
+  it('Sigil: a 2-glyph MEND Line is 60 to 115% of a Soldier-turn; the full Line is the biggest single heal (170 to 280%; rules 1.26: MEND reads the landed sigil_mend Stat); each ×1.6 since rules 1.27', () => {
     for (const lv of [1, 6, 20]) {
       const r = inventory('sigil_s', 'normal', lv), two = row(r, /^MEND · SEEK/).pctNow, full = row(r, /^MEND · MEND · CONDENSE/).pctNow;
-      expect(two, '2 glyphs, level ' + lv).toBeGreaterThanOrEqual(60); expect(two).toBeLessThanOrEqual(115);
-      expect(full, 'the full Line, level ' + lv).toBeGreaterThanOrEqual(170); expect(full).toBeLessThanOrEqual(280);
+      within(two, 60 * R, 115 * R, '2 glyphs, level ' + lv);
+      within(full, 170 * R, 280 * R, 'the full Line, level ' + lv);
       expect(full).toBeGreaterThan(row(inventory('outburst_s', 'normal', lv), /the biggest/).pctNow); // the set-up earns the biggest single heal
     }
   });
@@ -62,18 +66,18 @@ describe('the heal and shield bands hold (rules 1.20)', () => {
   it('riders stay small, and an area gives all its allies together at most about 1.6 times the single heal', () => {
     for (const lv of [1, 6, 20]) {
       const o = inventory('outburst_s', 'normal', lv);
-      expect(row(o, /Love on a Damage Outburst: an ally/).pctNow).toBeLessThanOrEqual(50); expect(row(o, /^Shell/).pctNow).toBeLessThanOrEqual(75);
+      expect(row(o, /Love on a Damage Outburst: an ally/).pctNow).toBeLessThanOrEqual(50 * R); expect(row(o, /^Shell/).pctNow).toBeLessThanOrEqual(75 * R);
       expect(row(o, /in an Aura, steady/).now * 4 / row(o, /steady \(Rage and Love/).now).toBeLessThanOrEqual(1.75);
     }
     expect(BOON_AREA * 4).toBeCloseTo(1.6, 5);
   });
   // Rules 1.22: the healing Hymn waits on its cooldown now and is 13 (10): 75 to 100% of a Soldier-turn a cast.
-  it('prayer: a Whisper is 28 to 45% of a Soldier-turn, a healing Hymn 75 to 100% (rules 1.22), the intervention 120 to 180%', () => {
+  it('prayer: a Whisper is 28 to 45% of a Soldier-turn, a healing Hymn 75 to 100% (rules 1.22), the intervention 120 to 180%; each × Faith\'s heal dial since rules 1.27', () => {
     for (const lv of [1, 6, 20]) {
       const f = inventory('faith_s', 'normal', lv);
-      for (const w of [/Whisper: Health/, /Whisper: Protection/]) { expect(row(f, w).pctNow, String(w) + ' level ' + lv).toBeGreaterThanOrEqual(28); expect(row(f, w).pctNow).toBeLessThanOrEqual(45); }
-      expect(row(f, /Warm Hands/).pctNow).toBeGreaterThanOrEqual(75); expect(row(f, /Warm Hands/).pctNow).toBeLessThanOrEqual(100);
-      expect(row(f, /intervention/).pctNow).toBeGreaterThanOrEqual(120); expect(row(f, /intervention/).pctNow).toBeLessThanOrEqual(180);
+      for (const w of [/Whisper: Health/, /Whisper: Protection/]) within(row(f, w).pctNow, 28 * FD, 45 * FD, String(w) + ' level ' + lv);
+      within(row(f, /Warm Hands/).pctNow, 75 * FD, 100 * FD, 'Warm Hands, level ' + lv);
+      within(row(f, /intervention/).pctNow, 120 * FD, 180 * FD, 'the intervention, level ' + lv);
     }
   });
   it('all in passes the bands by about half (rules 1.23: there is no round limit to stay under any more)', () => {

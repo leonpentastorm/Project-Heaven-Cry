@@ -18,11 +18,13 @@ function oldAction(u: any, cb: any, id: string, p: Picks): any {
     case 'move': case 'sprint': case 'disengage': return { type: 'combat/move', ...U, to: p.tile, how: id, ...mods };
     case 'reload': return { type: 'combat/reload', ...U }; case 'reload-tac': return { type: 'combat/reload', ...U, tactical: true };
     case 'reload2': return { type: 'combat/reload', ...U, hand: 'both' }; case 'reload2-tac': return { type: 'combat/reload', ...U, hand: 'both', tactical: true };
+    case 'reload-off': return { type: 'combat/reload', ...U, hand: 'off' }; case 'reload-off-tac': return { type: 'combat/reload', ...U, hand: 'off', tactical: true }; // (added 12 Nov 2026: the off-hand gun's own reload)
     case 'pullfree': { const ts = pullFreeTargets(cb, u), x = ts.find((v) => v.id === p.targetId) || ts[0]; return { type: 'combat/pull-free', ...U, targetId: x.id }; }
     case 'overwatch': return { type: 'combat/overwatch', ...U, mode: isMelee(WEAPON[u.weapon]) ? 'melee' : 'shot' };
     case 'shove': return { type: 'combat/shove', ...U, targetId: p.targetId };
     case 'analyze': return { type: 'combat/analyze', ...U, targetId: p.targetId };
     case 'cover': return { type: 'combat/shoot-cover', ...U, tile: p.tile };
+    case 'cover-off': return { type: 'combat/shoot-cover', ...U, tile: p.tile, hand: 'off' }; case 'clear-off': return { type: 'combat/clear', ...U, hand: 'off' }; // (added 12 Nov 2026: the off-hand weapon's own)
     case 'door': return { type: 'combat/door', ...U, tile: p.tile };
     case 'pickup': return { type: 'combat/pickup', ...U, tile: p.tile, ...(p.take ? { take: p.take } : {}) };
     case 'stim': return { type: 'combat/stim', ...U, targetId: p.targetId };

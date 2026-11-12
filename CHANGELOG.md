@@ -8,6 +8,19 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.24.0 — 12 November 2026
+
+What Leon found playing 0.23.0 on its first night, and rules 1.27.
+
+- **Healing was over-nerfed (rules 1.27, provisional).** A healer's whole turn, all in, is now worth 2.0 Soldier-turns (1.25 before), 1.6 for a normal build: about ×1.6 on every heal and shield. A level 1 Recruit with no Soul skill heals 15 with a stage 4 Mend (9 before); a trained healer's steady turn 33 (21 before). Prayer heals and shields have their own dial now and rise ×1.51. Enemy healers are unchanged.
+- **Every physical technique has its own animation:** an attack beat that plays whether or not it lands, and a result that is different for a hit, a miss and a critical, so a miss is never only text. 72 of 72 (56 before, many of those only a mark over the generic lunge). Sunder shows your own weapon striking before the shield breaks. One table (`fx/techniqueFx.ts`): a new technique is one row, and a test fails without it.
+- **Shots on screen match rounds spent.** A Burst spends three rounds and now shows three tracers and three casings (it showed one per roll: two). Every gun and shooting technique is checked.
+- **The fight camera moves properly:** timed by distance (0.3 s for a hop, up to 0.86 s across the map at Normal), eased with a small settle, a slight pull-back on long moves, and a move that interrupts another blends from its speed (the old one restarted three times every enemy turn). Your own drag or wheel cancels it. Enemy turns are not slower (1.76 s a turn at Fast, 1.82 s before). The numbers are one block at the top of `game/camera.ts`.
+- **Action tooltips are cards with lines:** the name and its costs, one line a sentence, the weapon's modifier and each weapon trait on their own lines, a refusal last.
+- **Two weapons:** the Attack tab is grouped by main hand, off hand, Both and Other, with a thin line between. The off-hand gun has its own Reload, Clear jam and Shoot an object (before, once the main gun was full the other could not be reloaded, and a jammed off-hand gun could not be cleared). **Each gun jams on its own** (a new rule, the lead's call: an off-hand fumble used to jam the main gun). Hotkey codes go past the ninth row.
+- **Fixed:** a hovered map tile and its tooltip drew over the column letters and the mini-map after the map was dragged.
+- **Waiting on Leon:** how the camera and the new animations feel; whether 2.0 Soldier-turns is enough healing (the dial is one number, `balance.ceilings.healer_turn`); each gun jamming on its own; "Reload both" still greys out once one gun is full (the rule as written).
+
 ## 0.23.0 — 12 November 2026
 
 The balance pass and the engine foundation: rules 1.15 to 1.26. Everything in it is new to players (live stops at rules 1.14). The full list of what changed against 0.22.0, system by system, is `docs/design/handoffs/PATCH-TALLY.md`; what to try by hand is `docs/PLAYTEST-CHECKLIST.md`.

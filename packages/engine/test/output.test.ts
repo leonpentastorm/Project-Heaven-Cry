@@ -167,7 +167,7 @@ describe('deal and mend: the one way in', () => {
     const { f, a, b } = setup(); b.hp = 10; (b as any).healRecv = 1.5; (b as any).shieldRecv = 2; b.shield = 0;
     const c = withStats({ insight: 5 }, { empathy: 3 }); a.level = 12;
     const h = withGame(f.g, () => mend(f.cb, a, b, { kind: 'heal', base: 5, profile: 'mend' }, { who: c, healKind: 'triage' }));
-    const want = 5 * (statOf('mend', c) * enemyLevelRow(12).damage_mult); expect(h.amount).toBe(want); expect(h.restored).toBe(Math.min(b.maxHp - 10, Math.floor(want * 1.5)));
+    const want = 5 * statOf('mend', c) * enemyLevelRow(12).damage_mult; /* in the formula's order: base × Stat × Level */ expect(h.amount).toBe(want); expect(h.restored).toBe(Math.min(b.maxHp - 10, Math.floor(want * 1.5)));
     const s = withGame(f.g, () => mend(f.cb, a, b, { kind: 'shield', base: 6, profile: 'mend' }, { who: c })); expect(s.shield).toBe(Math.floor(6 * (statOf('mend', c) * enemyLevelRow(12).damage_mult) * 2)); expect(b.shield).toBe(s.shield);
   });
 });

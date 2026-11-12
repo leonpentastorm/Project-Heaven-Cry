@@ -11,7 +11,7 @@ import {
   type Combat, type GameState, type Unit, type Character, type Action,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
-import { clearPrayerLimits } from '../src';
+import { clearPrayerLimits, prayerMendDial } from '../src';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const fx = (cb: Combat, k: string) => (cb.fx || []).filter((e: any) => e.k === k) as any[];
@@ -116,7 +116,7 @@ describe('the numbers scale with Devotion, × Blessing power (item 741)', () => 
   it('Mother Ember at Devotion 10 heals 40 × power (rules 1.20: 10 + 3 × Devotion); Old Overcast at 10 throws 60 × power Storm', () => {
     const m = holy({ patron: 'mother_ember', devotion: 10 }); m.me.conds = { witnessed: 99 } as any; const mx = m.ally.maxHp;
     m.ally.maxHp = 1000; m.ally.hp = 1000; m.bound(() => applyDamage(m.cb, m.ally, 800, { by: m.foe, type: 'physical' } as any));
-    expect(m.ally.hp).toBe(200 + Math.round(40 * m.me.blessPower!)); void mx;
+    expect(m.ally.hp).toBe(200 + Math.round(40 * m.me.blessPower! * prayerMendDial())); void mx; // rules 1.27: a heal reads Faith's heal dial
     const o = holy({ patron: 'old_overcast', devotion: 10 }); o.me.conds = { witnessed: 99 } as any; o.foe2.maxHp = o.foe2.hp = 2000;
     o.bound(() => applyDamage(o.cb, o.foe, 9999, { by: o.me, type: 'physical', credit: 'hp' } as any));
     const e = fx(o.cb, FAITH_FX.intervention)[0]; expect(e).toMatchObject({ trigger: 'you_kill', target: o.foe2.id, amount: Math.round(60 * o.me.blessPower!) });

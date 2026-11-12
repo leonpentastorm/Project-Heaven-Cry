@@ -118,7 +118,7 @@ describe('the shield on the Attack tab', () => {
     const { el, root } = await mount();
     await click(el.querySelector('[role="tab"][data-tab="attack"]'));
     const head = el.querySelector('[data-weapon-block="off"]')!;
-    expect(head.textContent).toMatch(/RIOT SHIELD · OFF HAND/i);
+    expect(head.textContent).toMatch(/OFF HAND · .*RIOT SHIELD/i);
     expect(head.textContent).toContain('Guard 2 / ' + cu.resMax!.guard);
     const pips = head.querySelectorAll('[data-pips="guard"] > span');
     expect(pips.length).toBe(cu.resMax!.guard); expect(Array.from(pips).filter((p) => p.getAttribute('data-on') === 'true').length).toBe(2);

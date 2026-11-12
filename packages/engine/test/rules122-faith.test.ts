@@ -11,7 +11,7 @@
 // The measurements behind the numbers are test/balance/faith-measure.test.ts (the cheap targets run in `npm run balance`).
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import { previewPrayer, previewAttack, resolveAttack, applyDamage, faithView, fulfilVow, hymnWait, prayerCooldown, prayerDamage, blessingPower, mendFactor, surrender, condOn, d20,
+import { previewPrayer, previewAttack, resolveAttack, applyDamage, faithView, fulfilVow, hymnWait, prayerCooldown, prayerDamage, blessingPower, mendFactor, prayerMendDial, surrender, condOn, d20,
   HYMN_COOLDOWN, FAITH_PATRON, FAITH_RULES, WHISPER, VOWS, FAITH_FX, type Combat, type Unit, type Character, type Action } from '../src';
 import { emit } from '../src/effects/hooks';
 import { fightWith, withGame } from './helpers/perkfight';
@@ -223,7 +223,7 @@ describe('the refitted prayers land their numbers (items 1281, 1285, 1286)', () 
   });
   it('Warm Hands heals 13 × Blessing power × the level factor; Saint\'s Shield is 16 ×', () => {
     const h = holy({ patron: 'mother_ember' }); const bp = h.me.blessPower!, m = mendFactor(h.c.level); // the fight's own Blessing power
-    h.ally.hp = 1000; h.pray('hymn', 'warm_hands', { targetId: h.ally.id }); expect(h.ally.hp - 1000).toBe(Math.round(13 * bp * m));
-    const n = holy(); n.pray('hymn', 'saints_shield', { targetId: n.ally.id }); expect(n.ally.shield).toBe(Math.floor(16 * n.me.blessPower! * m)); // the shield sink floors
+    h.ally.hp = 1000; h.pray('hymn', 'warm_hands', { targetId: h.ally.id }); expect(h.ally.hp - 1000).toBe(Math.round(13 * bp * prayerMendDial() * m)); // rules 1.27: Faith's heal dial
+    const n = holy(); n.pray('hymn', 'saints_shield', { targetId: n.ally.id }); expect(n.ally.shield).toBe(Math.floor(16 * n.me.blessPower! * prayerMendDial() * m)); // the shield sink floors
   });
 });
