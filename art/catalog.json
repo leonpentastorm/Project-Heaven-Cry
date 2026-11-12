@@ -11401,6 +11401,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-fuse.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-fuse.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-return": {
+      "id": "module-return",
+      "label": "a loop going out and coming back",
+      "path": "art/icons/modules/module-return.png",
+      "sha256": "fbabbf770d6b6a430f56485c14dff314880243be84f52b69fc8145b6bbca36d2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-return.png",
+        "128": "art/icons/modules/exports/128/module-return.png",
+        "64": "art/icons/modules/exports/64/module-return.png",
+        "56": "art/icons/modules/exports/56/module-return.png",
+        "48": "art/icons/modules/exports/48/module-return.png",
+        "44": "art/icons/modules/exports/44/module-return.png",
+        "40": "art/icons/modules/exports/40/module-return.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-return.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-return.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }
