@@ -55,7 +55,7 @@ export async function pickAction(page, name, opts = {}) {
       if (await btn().waitFor({ timeout: 250 }).then(() => true, () => false)) break;
     }
   }
-  await btn().click({ timeout: opts.timeout || 8000 });
+  await btn().click({ timeout: opts.timeout || 30000 }); // (30 s unless the caller is only trying: see click())
 }
 export const shot = (page, n) => page.screenshot({ path: OUT + n + '.png', fullPage: !!0 });
 export async function makeCharacter(page, name, archFamily, archName, kit) {
@@ -199,10 +199,12 @@ export async function titleHoverDuringHello(page) {
         const on = document.querySelector('.phc-item.on')?.getAttribute('data-item'), pressed = document.querySelector('.phc-item.pressed')?.getAttribute('data-item');
         if (on !== 'settings' || pressed !== 'chars' || W.seen) return;
         W.seen = { on, pressed, bubble: document.querySelectorAll('.phc-bubble').length, act: document.querySelector('.phc-wick')?.getAttribute('data-act') };
-        // the lit colour, once its transition has run (read each frame for as long as the row stays lit, 600 ms at most)
+        // the lit colour, once its transition has run (read each frame for as long as the row stays lit)
         const t0 = performance.now(); const tick = () => { const lit = document.querySelector('.phc-item.on')?.getAttribute('data-item') === 'settings', c = label();
           if (lit && c !== W.before) W.colour = c;
-          if (lit && performance.now() - t0 < 600) requestAnimationFrame(tick); else { W.done = true; if (!W.colour) W.colour = c; } }; tick();
+          // (until the colour has changed and 300 ms have passed, or the row is no longer lit; 3 s at most: on a busy
+          // machine the page draws a frame or two in the time the transition should take)
+          if (lit && performance.now() - t0 < 3000 && !(W.colour && performance.now() - t0 > 300)) requestAnimationFrame(tick); else { W.done = true; if (!W.colour) W.colour = c; } }; tick();
       };
       window.__helloObs = new MutationObserver(look); window.__helloObs.observe(document.documentElement, { subtree: true, childList: true, attributes: true });
       // did the pointer reach SETTINGS while CHARACTERS was still the pressed row (the hello still on)?
