@@ -1,0 +1,1709 @@
+{
+ "note": "Text/number truth sweep, 12 Nov 2026. confirmed = found by a slice reader and confirmed by a sceptic. left = confirmed and not yet fixed on branch worktree-wf_67430118-ae8-19 (the fixer never received them: its list was cut off). reviewOfSecondPass = an independent review of that branch: problems to fix before or after merging.",
+ "left": [
+  {
+   "id": "siege-engine-shove-discount",
+   "kind": "player-text-wrong",
+   "where": "data/perks.json:6172 (siege_engine text and effects[0])",
+   "says": "Card: \"Shove and the Break Finisher cost you 1 AP less, never below 1 AP.\" effects[0]: {\"op\":\"action_cost\",\"action\":\"shove\",\"value\":-1}",
+   "truth": "Shove is a flat 1 AP Link (data/techniques.json, id shove: ap {base: flat, value: 1}) and the hook only discounts when the base is above 1 (a.ts:347 `(ctx?.base ?? 2) > 1 ? -1`), so Shove is never cheaper. The hook's own comment says so (a.ts:346: \"the Shove Link is 1 AP already, so its discount gave nothing\"), which is why the 1 Guard was added. Only Break is discounted. effects[] also has no entry for the 1 Guard the card and the hook (stat 'shove_guard') give.",
+   "rightSide": "Card: say \"The Break Finisher costs you 1 AP less (never below 1). A Shove that moves its target gives you 1 Guard.\" Data: drop the shove action_cost effect and add the Guard effect.",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "Confirmed with nuance. On the technique pad Shove is flat 1 AP (techniques.json shove ap value 1; apFor -> actionAp(u,'shove',1)) and a.ts:347 discounts only when base > 1, so the Shove Link is never cheaper; only Break is. The card is not literally false (\"never below 1 AP\") but the Shove half is empty. Two things the finder missed: (1) the legacy reducer action combat/shove (combat.ts:1694, base 2 AP) still exists and IS discounted 2 -> 1; (2) the card wording is Leon's recorded ruling of 10 Nov (commit 59731ee; skeleton-2.0-PLAN.md:133 \"Shove and Break cost 1 AP less, and a Shove that moves its target gives 1 Guard\"), so rewording is Leon's call, not a plain fix. Data part stands: effects[0] shove value -1 has no floor and there is no effect for the 1 Guard (stat 'shove_guard')."
+  },
+  {
+   "id": "effects-omit-combat-form",
+   "kind": "data-field-wrong",
+   "where": "data/perks.json effects[] of: heart_overload, footnote, double_meaning, crowd_pleaser, bone_talk, detectives_eye, old_tongue (II), iron_grip, bone_talk ap_cost, blueprint uses",
+   "says": "heart_overload effects: only {\"op\":\"alt_cost\",\"pay\":\"hp\"}; footnote, double_meaning, crowd_pleaser, bone_talk, detectives_eye, old_tongue: only the story effect; iron_grip: no grant of Grapple; bone_talk ap_cost: null on both tiers; blueprint uses: \"at_will\".",
+   "truth": "The card and the hook of each have a rule the structured fields do not carry: Heart Overload's free Begin once a turn (d.ts:181-189); Footnote's once-a-fight +1/+2 to hit (g.ts:117-125); Double Meaning's once-a-round +2 and II's -2 AP (g.ts:247-275); Crowd Pleaser's +2 save TN for 3+ enemies (g.ts:205-215); Bone Talk's 2 AP Heart save in a fight (f.ts:79, while ap_cost is null; Lab Coat II records its 2 AP the same way); Detective's Eye at combat_start (g.ts:170); Old Tongue II's held attacks (g.ts:317); Iron Grip's Grapple technique (skeleton.ts:135 stat 'technique:grapple'; techniques.json grapple, 1 AP); Blueprint is once a scene (e.ts:180 uses per_scene; Footnote records per_scene for the same shape).",
+   "rightSide": "Data: add the missing effect entries and set bone_talk ap_cost and blueprint uses; nothing reads them today, which is why they drifted. Cards and hooks agree with each other.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Confirmed from the data dump: heart_overload effects are only alt_cost/hp; footnote, double_meaning, crowd_pleaser, bone_talk, detectives_eye, old_tongue carry only the story effect; iron_grip has no grant of Grapple (skeleton.ts:135 gives stat 'technique:grapple'); bone_talk ap_cost is null at top level and both tiers while the action is 2 AP (f.ts:79) and Lab Coat II records ap_cost 2; blueprint uses is \"at_will\" while the action is per_scene (e.ts:180) and the card says once per scene. Cards and hooks agree; these are structured-field omissions only (handlers claim 'all', so nothing runs wrong). Lowest-priority group."
+  },
+  {
+   "id": "eyes-in-the-back-flank-pressure",
+   "kind": "player-text-wrong",
+   "where": "data/perks.json:1929 (eyes_in_the_back text, both tiers)",
+   "says": "\"You can't be flanked.\" (II: \"You and the allies next to you can't be flanked.\")",
+   "truth": "The hook only supplies a cover tile or the shield's -5 inside attack_preview (b.ts:319-328). The engine's one flanking rule, the ranged Pressure bonus for a hit \"past its cover\" (physical/pressure.ts:80 flanksCover, :90 flank_bonus; techniques.json:54), reads coverTileFor directly and never asks the perk, so a holder at cover is still flanked for Pressure. The spec's reading of the perk (lines 2368-2372) promises only the cover and the shield, not immunity to flanking.",
+   "rightSide": "Either the card drops \"can't be flanked\" and keeps the cover sentence (follows the spec's reading), or flanksCover asks the perk. Leon's call; the spec as written supports changing the card.",
+   "playerVisible": true,
+   "confidence": "low",
+   "verifier": "Facts confirmed, but it is a judgement call, not a clear mismatch. The spec defines flanking as cover not counting (line 505), and the perk honours that: b.ts:319-328 supplies a cover tile or the shield's -5 (spec 2368-2372, item 126). The gap is a second consumer: pressure.ts:80 flanksCover / :90 flank_bonus (spec item 935 \"+1 past cover the target stands against\", never called flanking in the spec) reads coverTileFor directly, so a holder at cover gets the hook's cover against the shot and still takes +1 Pressure \"past its cover\" from the same hit. Also Sidestep's \"counts as flanking\" (links.ts:116 ignoreCover) is not blocked, but the perk is ranged-only by its second sentence. Spec is silent on Pressure for this perk; either have flanksCover ask the perk or leave as is. Leon's call; low priority."
+  },
+  {
+   "id": "mwf-unmoving-inert",
+   "kind": "other",
+   "where": "data/traits.json, item mind_without_fog, downsides[0]; packages/engine/src/character.ts:197-198 (comment)",
+   "says": "Card: 'bonuses to Attributes and Skills from gear don't work on you'. Comment: 'its price, no gear bonuses, is steep now that weapons give so much'.",
+   "truth": "The handler cancels only worn slot items' skill_mod / skill_bonus effects (perks/h.ts:95-100). A scan of data/items.json and data/weapons.json finds no such op on any item (items carry armour_bonus, defense_bonus, movement_bonus...; weapons carry hit_bonus, first_shot_bonus...), and none of those is denied to the holder. So the gear half of the downside does nothing today, and weapon bonuses still apply; spec item 249 (line 5287) says the same ('items.json has none yet').",
+   "rightSide": "Leon's call, then engine or comment: either the engine denies gear bonuses the comment has in mind (weapon hit bonuses, armour pieces' stat bonuses), or the character.ts comment stops justifying the 2 points by a price nobody pays.",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "Facts confirmed, but this is a design observation, not a text error. items.json effect ops are armour_bonus, defense_bonus, movement_bonus, carry_bonus etc., with no skill_mod or skill_bonus; weapons.json items carry no effects ops. So the handler at h.ts:95-100 cancels nothing today, exactly as spec item 249 (line 5287) and the handler's own comment say. The card ('bonuses to Attributes and Skills from gear') is vacuously true and agrees with spec and engine. The only contestable text is the rationale in the character.ts:197-198 comment. Should be playerVisible false; Leon's call on whether the price should bite."
+  },
+  {
+   "id": "traits-adjudication-vs-engine-verdict",
+   "kind": "data-field-wrong",
+   "where": "data/traits.json, field adjudication, 27 of 74 traits",
+   "says": "engine: grenadiers_arm, blade_recluse, bottle_butts_for_eyes, the_mask, the_old_blood, factory_made, upper_touched, old_school, sigil_savant, gambler, insomniac, chain_smoker, crowded_head, slicer, demolitionist, drone_handler. hybrid: right_of_way, holo_drama_addict, rabbits_foot, central_city_kid, heretic, sworn_sibling, born_officer. narrator: company_man, cover_story, inner_ring_heir, occultist.",
+   "truth": "The engine's own verdict (effects/coverage.ts:20-29 verdictOf, run over every trait with the lanes registered) gives 'both' for the 16 marked engine and for the 4 marked narrator (each has engine-run actions or hooks: company_man's extraction perks/h.ts:463-478, cover_story's counter perks/g.ts:631-655, inner_ring_heir's favour, occultist's actions), and 'engine' for the 7 marked hybrid. Two labels for the same thing are computed by different rules: the data follows spec item 1101 ('colour is not a ruling'), the code counts every narrator op. Nothing in apps/web reads the trait's adjudication field.",
+   "rightSide": "One of them goes: either the data field is generated from verdictOf, or verdictOf learns item 1101's reading (a narrator note that is colour doesn't make an item 'both'). The four 'narrator' labels are wrong under either reading.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Confirmed by a run of verdictFor over all 74 traits. Result: engine->engine 23, engine->both 16, hybrid->both 23, hybrid->engine 7, narrator->narrator 1 (worldline_fracture), narrator->both 4. The three mismatch lists match the finder's exactly (27). No file in apps/web/src reads 'adjudication'. Direction: for the 16, the data follows spec item 1101 (line 6501, 'colour is not a ruling'), so verdictOf is the side that should learn it; the 7 marked hybrid, which the engine fully runs, should become engine in the data (working agreement of 11 Nov); the 4 marked narrator are wrong under either reading (hybrid or engine)."
+  },
+  {
+   "id": "payload-special-ammo-ap-cost",
+   "kind": "data-field-wrong",
+   "where": "data/classes.json:1908 mage.payload and :1608 marksman.special_ammo, field ap_cost (live)",
+   "says": "\"ap_cost\": 0 on both",
+   "truth": "Loading special ammo costs a reload's AP: i.ts:185 ap: reloadAp(u) (the card says \"costs the same AP\" as a reload). Payload is an Evoke: the action is ap 0 (i.ts:749) but calls evoke() (i.ts:770), which charges the Evoke's own AP (SPELL_AP.evoke = 1, magic.ts:78). I did not trace evoke()'s AP deduction line; lower confidence on Payload.",
+   "rightSide": "Data: ap_cost should say reload AP / the Evoke's AP.",
+   "playerVisible": false,
+   "confidence": "low",
+   "verifier": "Half confirmed. special_ammo: confirmed, i.ts:185 ap = reloadAp(u) against data ap_cost 0. payload: the direction is weak. The action is ap 0 (i.ts:749) and evoke() charges the Evoke's own AP (sigil.ts:958, u.ap - pv.ap), so Payload adds no AP of its own and ap_cost 0 is a defensible reading of a rider on an Evoke. Treat only special_ammo as a data error."
+  },
+  {
+   "id": "spec-momentum-guard-points",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1047 and :1061",
+   "says": "\"Being hit costs Momentum \u2026 Not while you are guarding: the Guard technique is up, the hit was Parried, or you hold Guard points.\" / \"A hit on a unit that holds Guard points costs it no Momentum.\"",
+   "truth": "Engine physical/rules.ts:64: Momentum is kept only when the Guard technique is up, the Parry won, or Guard soaked part of that hit (comment: Leon, 10 Nov 2026; spec section 14 item 1004 raised it). classes.json Fighter resource rule agrees with the engine: \"unless you Parry it or your Guard takes part of it\". Outside my slice proper (physical/), found through the Fighter's resource text.",
+   "rightSide": "Spec body lines 1047 and 1061: \"or Guard took part of the hit\" (if Leon's ruling of 10 Nov stands; it is recorded only in the engine comment).",
+   "playerVisible": false,
+   "confidence": "low",
+   "verifier": "The mismatch is real, but the direction is not established and the kind should not be \"spec-body-stale\". Spec rule 6 (the \"Being hit costs Momentum\" line, about 1048) and Guard point 6 (about 1061) say holding Guard points protects Momentum. physical/rules.ts:64 protects only when the Guard technique is up, the Parry won or guardSoaked > 0, citing \"Leon, 10 Nov 2026\". Spec section 14 item 1004 lists exactly this as open (\"To settle: leave it, or protect Momentum only from a hit that Guard soaked part of\"), and no ruling appears in the spec, docs/design/decisions.md or CHANGELOG.md. By the source-of-truth rule the spec body stands until the ruling is recorded, so this is an engine-ahead-of-spec item needing Leon's confirmation: record the ruling and close item 1004 (then fix both spec lines), or revert the engine. I did not check the classes.json Fighter resource text."
+  },
+  {
+   "id": "one-breath-plus4-and-no-range-halving",
+   "kind": "player-text-wrong",
+   "where": "data/weapons.json long_rifle grants.text (One Breath)",
+   "says": "\"If you haven't moved this turn, an Aimed Shot gets +3 to hit instead of +2.\"",
+   "truth": "The engine adds +1 for aimed_still_bonus (combat.ts:1021) on top of Aimed Shot's Precise line, which is already +3 (physical/ranged/fire.ts aimed_shot: precise_hit 3). A still long rifle aims at +4. The spec (line 775) also gives One Breath \"range-band penalties are halved\", which neither the data text nor the engine has.",
+   "rightSide": "Spec says +3 in all and halved range bands: engine should not stack the +1 on the Precise +3 (or the card should say +4), and the range-band halving is missing from engine and data.",
+   "playerVisible": true,
+   "confidence": "high",
+   "verifier": "Confirmed: combat.ts:1032 adds aimed_still_bonus +1 on top of mode aimed +2 and the Aimed Shot technique's Precise extra +1 (fire.ts:30), so a still long rifle aims at +4 while the card says '+3 instead of +2'. No range-band halving exists in engine or data (spec 775 has it). Correction to the right side: spec 775 predates rules 1.12's Precise +3, so whether the total should be +3 or +4 needs a ruling; the card is wrong either way and the halving is missing."
+  },
+  {
+   "id": "mods-foregrip-wrapped-grip-not-run",
+   "kind": "player-text-wrong",
+   "where": "data/items.json mod_foregrip, mod_wrapped_grip (adjudication: engine)",
+   "says": "\"the first burst each turn ignores Recoil\"; \"you can't be Disarmed while you hold this weapon\"",
+   "truth": "hasMod is only asked for red_dot, scope, compensator, suppressor, bayonet, weighted, serrated, quick_release, extended_mag (combat.ts:1012-1058, 1193, 2351; character.ts:1133). No code reads mod_foregrip or mod_wrapped_grip.",
+   "rightSide": "Engine should run them (spec mods table, lines 697 and 702) or adjudication should not say engine.",
+   "playerVisible": true,
+   "confidence": "high",
+   "verifier": "Confirmed: grep of packages/engine/src finds no read of mod_foregrip or mod_wrapped_grip. hasMod is asked only for red_dot, scope, compensator, suppressor (also tactics.ts:45, press.ts:102), bayonet, weighted, serrated, quick_release and extended_mag. Both items are adjudication engine; spec 697 and 702 list the effects. No disarm path checks a grip mod."
+  },
+  {
+   "id": "torch-flare-pavise-not-run",
+   "kind": "data-field-wrong",
+   "where": "data/items.json torch, flare, pavise (all adjudication: engine)",
+   "says": "Torch: \"hits for 12 Elemental damage (Unarmed), and a hit on a roll of 15 or more sets the target Burning\". Flare: \"lights 6 tiles for 3 rounds and reveals anyone Hidden there. It is used up.\" Pavise: \"Plant it for 2 AP... full cover... 80 HP\" with effects [{op: narrator}]",
+   "truth": "Only the `light` value is read (combat.ts:426, world.ts:397). No engine code for the torch as a weapon or Ignite, for the flare's 3 rounds, reveal or being used up, or for planting a pavise (its own effect is op narrator while adjudication says engine).",
+   "rightSide": "Set adjudication to narrator/hybrid until built, or build them (spec 7.12 lines 921-923).",
+   "playerVisible": true,
+   "confidence": "high",
+   "verifier": "Confirmed: only gearBonus(c,'light') is read (world.ts:397; combat). No engine code names torch, flare or pavise except perks/b.ts:315 excluding the pavise from carried shields. The torch as a weapon, Ignite, the flare's 3 rounds, reveal and being used up, and planting the pavise (its own effect is op narrator) are not run, yet all three say adjudication engine."
+  },
+  {
+   "id": "quick-property-text-vacuous",
+   "kind": "engine-wrong-vs-spec",
+   "where": "data/techniques.json rules.props.quick; spec lines 1009 and 675; weapons.json sawn_off grants (Close Quarters)",
+   "says": "\"Handy. Firing next to an enemy doesn't provoke; moving costs no accuracy.\" Spec 675: \"firing at an adjacent enemy provokes as usual\"",
+   "truth": "The only opportunity attack in the engine is on movement (combat.ts:1533, the single `kind: 'opportunity'` emit). Firing next to an enemy never provokes with any weapon, and no attack term penalises having moved (combat.ts:1030-1033). Both halves of the Quick text are true of every weapon.",
+   "rightSide": "Spec wins: the engine lacks \"firing at an adjacent enemy provokes\" (and any moved penalty), or Leon drops the rule and the Quick text and Close Quarters are rewritten.",
+   "playerVisible": true,
+   "confidence": "high",
+   "verifier": "Facts confirmed, direction corrected. The only opportunity attack is on leaving reach (combat.ts:1560-1569, plus Anchor in rev3.ts), and no to-hit term penalises having moved. But the spec never states a rule that firing next to an enemy provokes: spec 408 defines an opportunity attack only as an enemy leaving your melee reach, and lines 675, 789 and 1009 merely presuppose such a rule. So this is not engine-wrong-vs-spec. The Quick property text (spec 1009, techniques.json rules.props.quick), Close Quarters and line 675 are vacuous; rewrite them, unless Leon adds the rule."
+  },
+  {
+   "id": "heavy-property-3ap",
+   "kind": "player-text-wrong",
+   "where": "data/techniques.json rules.props.heavy; spec line 1000",
+   "says": "\"Mass. Melee: 3 AP an attack...\"",
+   "truth": "combat.ts:946 attackApCost prices melee by category (`heavy_melee` 3, else 2), not by the Heavy property. hellraiser_servo_fist (category unarmed, props heavy/bare/blunt) and grand_staff (category mana, props heavy/blunt/reach) attack for 2 AP.",
+   "rightSide": "Leon's call: either the engine prices by the Heavy property (spec property table) or the two weapons lose Heavy / the text says \"a heavy melee weapon\".",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "Confirmed: combat.ts:946 attackApCost prices by category (isMelee is /melee|unarmed/; heavy_* is 3, else 2). hellraiser_servo_fist (unarmed, props heavy) pays 2. grand_staff (category mana, props heavy) is not isMelee, so it pays ap_cost.single = 2. The property text says Heavy melee is 3 AP an attack. Leon's call which side moves."
+  },
+  {
+   "id": "thrown-range-fields-dead",
+   "kind": "data-field-wrong",
+   "where": "data/weapons.json combat_knife (thrown_range_tiles: 6, throwable_6_tiles), throwing_knives (throwable_6_tiles), hatchet (throwable_5_tiles); spec lines 616, 830-832",
+   "says": "thrown 6 tiles / 6 tiles / 5 tiles",
+   "truth": "A thrown weapon uses the unit's Throwing range, 6 + 0.5 \u00d7 Dexterity (character.ts:792; tactics.ts:197; combat.ts:1009). Nothing reads thrown_range_tiles or throwable_N_tiles; the hatchet is not shorter. Spec line 1092 (rules 1.12) says \"at throwing range\".",
+   "rightSide": "Data and the 7.7 table notes follow rules 1.12: drop the per-weapon tiles.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Confirmed: nothing in packages/engine/src or apps/web/src reads thrown_range_tiles or throwable_N_tiles. Thrown range is the unit's throwRange (character.ts:792, combat.ts:1020). Spec 1092 (rules 1.12) says 'at throwing range'; spec 616 and 830-832 still give per-weapon tiles."
+  },
+  {
+   "id": "servo-fist-wall-bonus",
+   "kind": "engine-wrong-vs-spec",
+   "where": "data/weapons.json hellraiser_servo_fist grants; combat.ts:1719-1727 (onHit push)",
+   "says": "\"A hit pushes the target 2 tiles away from you.\"",
+   "truth": "Spec line 874: \"...if it hits a wall or cover, +20 damage to it.\" Neither the data text nor the engine's push has the +20.",
+   "rightSide": "Data and engine add it (spec wins), or the spec line drops it.",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "Confirmed: spec 874 has 'if it hits a wall or cover, +20 damage to it'. onHit push (combat.ts:1750-1757) just stops at a blocker with no damage, and the data text omits it. Caveat: 'to it' is ambiguous (the target or the cover), so the ruling should say which."
+  },
+  {
+   "id": "rotary-minus2-and-movement",
+   "kind": "data-field-wrong",
+   "where": "data/weapons.json hellraiser_rotary.properties",
+   "says": "[\"minus2_to_hit_unless_emplaced\"]",
+   "truth": "Spec line 797 notes for the rotary: \"auto only; \u22121 Movement\" (the \u22122 unless emplaced is the LMG's, line 796). The engine applies the \u22122 to the rotary (combat.ts:1019) and has no \u22121 Movement for it (no code names the weapon).",
+   "rightSide": "Data and engine: \u22121 Movement, no unbraced \u22122 (spec wins), unless Leon rules otherwise.",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "Confirmed: spec 797 notes for the rotary are 'auto only; \u22121 Movement'; the \u22122 unless emplaced is the LMG's row (796). Data gives the rotary minus2_to_hit_unless_emplaced, which combat.ts:1030 applies, and no code gives it \u22121 Movement. No later revision mentions it (1.18 only says its damage is unchanged). Medium: the rules 1.12 Heavy property ('must be Braced to work well') could be read as supporting the \u22122, so Leon should rule."
+  },
+  {
+   "id": "spin-up-ap",
+   "kind": "player-text-wrong",
+   "where": "data/weapons.json hellraiser_rotary grants.text (Spin Up, op narrator)",
+   "says": "\"Your first full auto of each fight costs 1 AP more. After that, full auto costs 3 AP.\"",
+   "truth": "The engine runs full auto itself and charges 4 every time (combat.ts:982: only op auto_ap changes it; Rake's Auto line is a flat 4, techniques.json rake.ap). A Narrator cannot refund engine AP.",
+   "rightSide": "Engine should run it (an op like auto_ap with a first-use surcharge), per the 90% engine rule; until then the card is wrong.",
+   "playerVisible": true,
+   "confidence": "high",
+   "verifier": "Confirmed: Spin Up is op narrator; combat.ts:993 charges 4 for auto unless the op is auto_ap, and Rake's Auto line is a flat 4. The first use is not 5 and later ones are not 3. No engine code names Spin Up or the rotary."
+  },
+  {
+   "id": "narrator-grants-ap-discounts",
+   "kind": "player-text-wrong",
+   "where": "data/weapons.json grants with op narrator that promise engine numbers: lever_carbine (Work the Lever), recurve_bow (Nock and Loose), legion_bullpup (Shoot and Scoot), knuckledusters (Rabbit Punch), frag_grenade (Cook It), throwing_knives (Fan of Knives), core_rifle (Overcharge), ork_machete (Chop Through), flashbang (Sudden Dark), smoke_grenade (Cover Me)",
+   "says": "e.g. \"After a hit, your next shot this turn costs 1 AP less\"; \"your second arrow costs 1 AP\"; \"For 1 AP, throw a jab that deals half damage\"",
+   "truth": "combat.ts:1759: a narrator-op weapon skill returns \"isn't an action the engine runs yet\"; the engine charges the normal AP and does none of these. They are shown as a button with the text (combat.ts:2387, label \"(Narrator)\").",
+   "rightSide": "By design they fall to the Narrator, but each is an AP or damage number the engine owns: move them to engine ops (Leon's 90% rule) or mark the card as not yet in play.",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "Facts confirmed: all ten are op narrator; useWeaponSkill returns '... isn't an action the engine runs yet: say it with Say, and the Narrator rules it after the fight'; grep finds no hook running any of them. Reclassify: this is not a text error but a sanctioned gap. Spec 628 says a weapon skill the engine doesn't run falls back to the Narrator with its text, and the button is labelled '(Narrator)'. It is a design gap against the 90% engine rule, since AP and damage can't be ruled after the fight. The flashbang's and smoke grenade's grants are never shown as a wielded weapon's button."
+  },
+  {
+   "id": "smg-rake-vs-spray-and-pray",
+   "kind": "other",
+   "where": "data/weapons.json decrkm_smg grants (auto_ap 3) against techniques.json rake (ap flat 4); combat.ts:2385",
+   "says": "\"Full auto costs 3 AP instead of 4.\"",
+   "truth": "auto_ap is read only by the plain full-auto action (combat.ts:982). The SMG's own signature Rake, whose Auto line is the same full-auto cone, costs a flat 4 (physical/core.ts:198-206; apFor asks only item hooks). The weapon-action list also prints 4 AP for Full auto whatever the weapon (combat.ts:2385) while fireAuto charges 3.",
+   "rightSide": "Engine: one price for full auto, read in one place (the grant should reach Rake's Auto line and the action list).",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "Confirmed: auto_ap is read only at combat.ts:993 (the plain auto attack). techniqueAp/apFor (core.ts:197-221) price Rake at its flat 4 and ask only attack_preview hooks, so the SMG's signature Rake costs 4 while plain full auto costs 3. The action list hard-codes 4 AP for Full auto (combat.ts:2418)."
+  },
+  {
+   "id": "grand-staff-range",
+   "kind": "data-field-wrong",
+   "where": "data/weapons.json grand_staff.range_tiles; spec line 904",
+   "says": "range 1",
+   "truth": "The grand staff has the Reach property (phys.props; spec line 1255), and a melee strike with it reaches 2 (combat.ts:983). range_tiles is not read for melee: the lance is hard-coded by id and the glaive and banner by `reach_2`.",
+   "rightSide": "Data and the 7.11 row: 2. Engine: read reach from one field, not three (id, property string, phys prop).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Confirmed: grand_staff range_tiles is 1 and spec 904 says 1, but its phys props include reach (spec 1255) and meleeReachOf (combat.ts:984) gives 2 for a melee strike. Reach is read from three places (the reach_2 property, id 'lance', phys.props reach). Not player-visible: main.js prints range only above 1."
+  },
+  {
+   "id": "modes-single-not-enforced",
+   "kind": "data-field-wrong",
+   "where": "data/weapons.json modes of hellraiser_lmg, hellraiser_rotary, mandestra_drum_gun, legion_pdw; spec lines 613, 751, 753, 797",
+   "says": "modes without `single` (\"burst, auto\", \"auto only\")",
+   "truth": "Only burst and auto are checked against modes (combat.ts:999). Shot is a free technique for every gun (physical/core.ts:248), priced at ap_cost.single ?? 2 (combat.ts:946), so these four fire single shots.",
+   "rightSide": "Leon's call: the engine refuses Shot where modes lacks single, or the spec's Modes column is dropped (rules 1.12: everyone knows Shot).",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "Confirmed: modes is checked only for burst and auto (combat.ts:1010, 2418). Shot is free for every gun (rules 1.12 point 1) and priced ap_cost.single ?? 2, so the LMG, rotary, drum gun and PDW fire single shots despite the Modes column. Leon's call; rules 1.12 ('everyone knows Shot') is the later text, so the Modes column is the likelier stale side."
+  },
+  {
+   "id": "rip-saw-fuel",
+   "kind": "data-field-wrong",
+   "where": "data/weapons.json ork_rip_saw.ammo",
+   "says": "ammo: null",
+   "truth": "Spec line 718: the fuel canister is \"Used by: Flamethrower, rip-saw\"; line 854 prices it \"1,400 (fuel)\". The engine burns no fuel for it.",
+   "rightSide": "Data and engine, or the spec drops the fuel.",
+   "playerVisible": false,
+   "confidence": "low",
+   "verifier": "Confirmed as stated, low: spec 718 lists the fuel canister for 'Flamethrower, rip-saw' and 854 prices it '1,400 (fuel)'; data ammo is null and no engine code burns fuel for it. The spec gives no rate for the saw, so the spec may equally be the side to drop it."
+  },
+  {
+   "id": "spellslinger-requires",
+   "kind": "data-field-wrong",
+   "where": "data/weapons.json spellslinger_pistol.requires",
+   "says": "requires: {brain_power: 3} (checked to hold it, character.ts:1066)",
+   "truth": "Spec line 899: \"Brain Power 3 to inscribe\": the requirement is for inscribing a magazine, not for firing the pistol.",
+   "rightSide": "Leon's reading; by the spec the gate belongs on inscribing.",
+   "playerVisible": true,
+   "confidence": "low",
+   "verifier": "Confirmed as an ambiguity, low: spec 899 reads 'Brain Power 3 to inscribe', where the other rows just give a skill and number. The data gates holding the pistol (requires brain_power 3, checked at character.ts:1066). The 7.11 header says 'anyone who meets the requirement can use them', which supports the data's reading. Leon's call."
+  },
+  {
+   "id": "weapons-missing-from-starter-table",
+   "kind": "other",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:603-624 (Starter weapons table)",
+   "says": "20 rows",
+   "truth": "40 of the 60 data weapons are not in this table: decrkm_autopistol, parlour_pistol, magistrate_pistol, frontier_hand_cannon, legion_pdw, whisper_smg, mandestra_drum_gun, adamantile_battle_rifle, ccec_marksman_rifle, legion_bullpup, coach_gun, sawn_off, brigade_auto_shotgun, hellraiser_rotary, smetanita_thumper, breacher_tube, purifier_flamer, satchel_charge, longbow, repeating_crossbow, throwing_knives, hatchet, legion_gladius, kemizuchi_duelling_blade, war_axe, adamantile_greatsword, glaive, ork_rip_saw, knuckledusters, hellraiser_servo_fist, incendiary_grenade, bot_scrambler, core_rifle, spellslinger_pistol, evoker_blade, emanator_gauntlet, lumeri_censer_gun, bot_thread_banner, grand_staff, beast_bite. All but beast_bite are in the section 7 roster tables (lines 729-904); beast_bite is only in the rules 1.12 table (line 1256). The rules 1.12 property table (1234-1300) matches data `phys` for all 60 with no difference (checked by script).",
+   "rightSide": "No change needed beyond the stale rows listed separately; the starter table is a subset by design. The spec carries each weapon's numbers in up to three tables, which is how lines 736 and 750 went stale.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Confirmed as an observation, not a mismatch: the starter table (lines 603-624) has 20 rows and is a subset by design. I did not re-run the finder's phys-table comparison. No change needed beyond the stale rows listed separately."
+  },
+  {
+   "id": "conds-two-tables-names",
+   "kind": "other",
+   "where": "packages/engine/src/magic.ts:101, 108-110, 118 against data/conditions.json",
+   "says": "Engine names: 'Afraid' (fear), 'Withdrawing (+2 Defense)', 'Hopeful (+2)', 'Guarded (+2 Defense)', 'Inspired (+2 to hit)'",
+   "truth": "Data names: \"Fear\", \"Withdrawing\", \"Hopeful\"; guarded and inspired are not in the data at all. Rounds agree for every shared id.",
+   "rightSide": "One table (data), read by the engine; the name Leon wants for fear (cards say Afraid).",
+   "playerVisible": true,
+   "confidence": "high",
+   "verifier": "Confirmed: magic.ts CONDS names 'Afraid', 'Withdrawing (+2 Defense)', 'Hopeful (+2)', 'Guarded (+2 Defense)', 'Inspired (+2 to hit)' against data 'Fear', 'Withdrawing', 'Hopeful'; guarded and inspired have no data entry. The glossary shows the data names (glossary.ts:38) while logs use the engine names, so players see both."
+  },
+  {
+   "id": "conds-family-of-states",
+   "kind": "data-field-wrong",
+   "where": "data/conditions.json family of marked, witnessed, withdrawing, emplaced, quickened, sharpened, hopeful, last_turn; kind of scorned",
+   "says": "family: null (kind state); scorned kind: \"condition\"",
+   "truth": "Engine CONDS gives each a save family: marked body (and it is not a boon), withdrawing/emplaced/quickened/sharpened/last_turn body, witnessed and hopeful heart (magic.ts:107-118). `scorned` is the only item with kind \"condition\"; every other is debuff or state.",
+   "rightSide": "One table. The data's null is the truer statement; the engine's family for a boon is filler.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Confirmed by script: data family is null for marked, witnessed, withdrawing, emplaced, quickened, sharpened, hopeful and last_turn, while the engine gives each a family (magic.ts:107-118). scorned is the only item with kind 'condition'. Low impact: boons and noSave conditions never roll a save, so the engine's family is filler."
+  },
+  {
+   "id": "spec-cond-table-missing",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1373-1411 (Conditions and Helpful states tables)",
+   "says": "24 conditions and 8 states",
+   "truth": "The engine also runs Smitten, Scorned, Hopeful, Last Turn, Guarded and Inspired (magic.ts:108-119), the first four of which are in data/conditions.json; none is in the spec's tables.",
+   "rightSide": "Spec tables.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Confirmed: the tables at 1373-1411 have none of Smitten, Scorned, Hopeful, Last Turn, Guarded or Inspired; all six are in magic.ts CONDS and the first four in conditions.json. (Weapon lowered is mentioned inside the Disarmed row.)"
+  },
+  {
+   "id": "focus-durability-missing",
+   "kind": "data-field-wrong",
+   "where": "data/items.json evoker, emanator",
+   "says": "no durability field",
+   "truth": "Spec lines 924-925: Evoker (held) and Emanator (held) have Durability 250.",
+   "rightSide": "Data, if focuses are meant to wear.",
+   "playerVisible": false,
+   "confidence": "low",
+   "verifier": "Confirmed, low: spec 924-925 list Durability 250 for the held Evoker and Emanator; items.json evoker and emanator have no durability field (shields have 150). Whether focuses wear at all is not stated anywhere else."
+  },
+  {
+   "id": "together-duration",
+   "kind": "engine-wrong-vs-spec",
+   "where": "packages/engine/src/faith.ts:1120 (case 'together')",
+   "says": "Card (data/patrons.json the_matchmaker.hymns together): \"+2 to hit and +2 Defense until your next turn\"; spec section 14 item 615: \"Hearthlight, Hold the Gate, Gather the Clouds and Together last until the caster's next turn\". Code: applyCond(..., 'inspired', 1) and 'guarded', 1 on each ally.",
+   "truth": "A 1-round condition ticks at the end of the BEARER's own turn (magic.ts:386-406 condTurnEnd; only a condition put on during the bearer's own turn skips that tick, magic.ts:321-322). An ally who acts after the Matchmaker's devotee loses the +2 Defense at the end of their own turn, before the enemies attack; an ally who acted earlier keeps it only to the end of their own next turn. It never lasts 'until the caster's next turn' unless the caster is one of the pair.",
+   "rightSide": "Engine: hold Together on the fight keyed to the caster and end it at the caster's turn_start (as faithGates/faithClouds do, faith.ts:711-712). Spec and card stand.",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "faith.ts:1120 puts 'inspired' 1 and 'guarded' 1 on each of the pair. condTurnEnd (magic.ts) ticks at the end of the bearer's own turn; only a condition landed during the bearer's own turn skips that tick (condFresh, magic.ts:321-322). An ally who acts after the caster loses +2 Defense at the end of their own turn the same round; an ally who acted earlier loses it at the end of their next turn. If the caster is one of the pair it is fresh and lasts through the caster's next turn, longer than 'until your next turn'. No case matches item 615 or the card. Hold the Gate and Gather the Clouds are caster-keyed and cleared at the caster's turn_start (faith.ts:711-712). Right side: engine; spec and card stand."
+  },
+  {
+   "id": "tags-supply-protect-trick-never-fire",
+   "kind": "engine-wrong-vs-spec",
+   "where": "packages/engine/src/faith.ts:686-691, 761 (tag hooks); texts at data/patrons.json tags[] lines ~130-190",
+   "says": "Spec tag table and item 600: protect on \"a shield you give an ally, an Interpose, a Brace\"; supply on \"a stim given, an item handed over, an ally's reload, or cover placed\"; trick on \"hide, a Trickster move, a False Image, a feint or a swap\". Data tag texts say the same (\"Interpose, Brace\", \"Reload an ally's weapon, throw a stim, hand over an item or place cover\", \"feint\").",
+   "truth": "faithTag is called only inside faith.ts. supply: only a stim (heal_given kind 'stim', faith.ts:686); the 'gift' hook it listens to (faith.ts:691) is declared in effects/types.ts:74 but never emitted anywhere in packages/engine/src, and the Resupply Hymn (reloads an ally) tags nothing. protect: only shield_grant, the Matchmaker's share and the 'braced' hook, which only the Defender's class Brace emits (classes/i.ts:368); the general Brace action (combat.ts:1706) and Interpose (physical/guard.ts) emit nothing. trick: hide, Switcheroo, and combat/perk|move ids matching a regex (faith.ts:761); a Feint technique (combat/technique) is not matched.",
+   "rightSide": "Engine: emit the tags the spec lists (item handed over, an ally reloaded, cover placed, Interpose, the general Brace, Feint). If any is dropped on purpose, change spec item 600 and the tag texts.",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "faithTag is called only inside faith.ts. supply: only on heal_given kind 'stim' (686) and the 'gift' hook (691); 'gift' is declared in effects/types.ts:74 and perkcard.ts:71 but never emitted in packages/engine/src (the Bard's combat/gift runs runGift, no emit). The Resupply case tags nothing. protect: shield_grant, the Matchmaker's share (645) and the 'braced' hook, emitted only at classes/i.ts:368 (the Defender's Brace). The general Brace (combat.ts:1737) emits nothing, and physical/guard.ts Interpose calls applyDamage with interposed:true but no tag. trick: 'hide', Switcheroo, and combat/perk|move ids matching the regex (761); combat/technique 'feint' (physical/melee/openers.ts:128) is not matched. Title overstates: stim-supply, shield-protect and hide/Switcheroo-trick do fire; the listed sub-cases do not. Spec table 2149/2155 and item 600 list them, so engine is the wrong side."
+  },
+  {
+   "id": "witnessed-text-kill",
+   "kind": "player-text-wrong",
+   "where": "data/conditions.json:535 (witnessed text) and packages/engine/src/magic.ts:116 (CONDS.witnessed text, the line a fight shows)",
+   "says": "\"Your attacks that carry a tag your patron likes get +2 to hit\" / \"attack rolls carrying a tag your patron likes +2\"",
+   "truth": "Rules 1.22 section 5 and item 1288: a liked kill no longer gives +2 on attacks; a kill made while Witnessed earns +2 on the next attack roll at an enemy, which that roll spends, and it is kept even if Witnessed has ended. Engine: likedAttack leaves 'kill' out (faith.ts:831-836), killEdge set on on_kill (faith.ts:676), spent at faith.ts:774. For Old Overcast's devoted (the only patron that likes kill) the card describes the pre-1.22 reading.",
+   "rightSide": "Both texts: add the kill rule ('for a patron that likes kills, a kill earns +2 on your next attack roll').",
+   "playerVisible": true,
+   "confidence": "medium",
+   "verifier": "data/conditions.json witnessed text and magic.ts:116 CONDS.witnessed text both say only that attacks carrying a liked tag get +2. Rules 1.22 section 5 (line 3719) and items 595 note / 1288: a liked kill earns +2 on the next attack roll, spent by that roll, kept after Witnessed ends. Engine matches the spec (likedAttack omits kill; killEdge set at faith.ts:676, used at 774, spent at 779-780). The texts are incomplete rather than false: accurate for judge, burn and storm, silent on the kill rule that applies to Old Overcast, the only patron liking kill. The web hint (apps/web/src/game/resources.ts:400, 'what they like gets +2') has the same gap. Right side: texts add the kill clause."
+  },
+  {
+   "id": "scales-with-on-everything",
+   "kind": "data-field-wrong",
+   "where": "data/patrons.json: `scales_with: \"blessing_power\"` on all 24 Hymns and 8 Miracles (e.g. lines 724, 745, 764, 816, 965, 982, 1004, 1029, 1198, 1435, 1854-1919, 2065-2126)",
+   "says": "Resupply, Dig In, Covering Fire, Requisition Approved (+3 AP, 2 cores), Lucky Break (+5), Switcheroo, Pratfall, Encore, Hold the Gate, Turned Back (half HP), Feed the Fire (+2 AP), Gather the Clouds, Red Thread, Sweet Nothings, Together (+2/+2), Love Conquers, Foreknowing, Unravel, Cut Short (2 AP), Rewoven all scale with Blessing power.",
+   "truth": "Spec 'Patrons and prayer': \"Effects are \u00d7 Blessing power (damage, heals and shields; never rounds, AP, half HP or full HP)\". Engine multiplies by power only in the damage/heal/shield cases of runEntryInner (faith.ts:1024-1114); none of the listed prayers uses `power` (e.g. feed_the_fire faith.ts:1098, requisition_approved 1052-1056, turned_back 1084-1094). Nothing reads the field.",
+   "rightSide": "Data: keep scales_with only on entries with a damage, heal or shield number (or delete the field; the engine does not read it).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "All 24 Hymns and 8 Miracles carry scales_with 'blessing_power' (counted 32). Spec line 2115: effects are \u00d7 Blessing power for damage, heals and shields; never rounds, AP, half HP or full HP. No code in packages/engine/src, apps/web/src or tools/validate.py reads the field on prayers (the only scales_with readers are weapon phys). The field is an unread blanket marker, wrong on number-less entries (Dig In, Switcheroo, Together, Turned Back, Feed the Fire, Rewoven and others). Harmless in play. Right side: data."
+  },
+  {
+   "id": "rules-json-pray-action",
+   "kind": "data-field-wrong",
+   "where": "data/rules.json:646 (combat.actions id \"pray\")",
+   "says": "{\"id\": \"pray\", \"ap\": 3, \"requires\": {\"patron\": true, \"faith_min\": 3}}",
+   "truth": "Since rules 1.6 a Whisper is 1 AP and a Hymn or Miracle 3 (patrons.json prayer.whisper.ap 1; faith.ts:63 AP_COST), and an Atheist prays with no patron (by dice; faith.ts:237, 242; spec 'Atheists and pilgrims'). Only Faith 3 is required (faith.ts:245).",
+   "rightSide": "rules.json: Whisper 1 / Hymn 3 / Miracle 3 and requires faith_min 3 only (or point at patrons.json prayer).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "data/rules.json combat.actions 'pray' is {ap: 3, requires: {patron: true, faith_min: 3}}. patrons.json prayer has whisper.ap 1, hymn.ap 3, miracle.ap 3 (faith.ts:63 AP_COST reads those). An Atheist prays by dice with no patron (faith.ts:237, 242); only Faith 3 gates (faith.ts:245). The engine passes its own base to actionAp, so this entry does not drive the cost. Right side: rules.json."
+  },
+  {
+   "id": "rules-json-ownership-faith",
+   "kind": "data-field-wrong",
+   "where": "data/rules.json:1452, 1461, 1462 (ownership.narrator_owns)",
+   "says": "The Narrator owns \"patron mood TN\", \"judging on-theme vs off-theme while Witnessed\", \"designing Miracles\".",
+   "truth": "Rules 1.6: \"The patron's mood (the old prayer TN) is retired\" (spec line ~2031; rules.json mana.prayer.note says the same; tactics.ts:256). Witnessed's +2 is decided by the engine from tags (spec 'What the Narrator owns ... The engine owns ... the tags, vows, Witnessed, interventions'; faith.ts:831-836). The eight Miracles are data run by the engine (faith.ts runEntryInner).",
+   "rightSide": "rules.json: remove the three entries; add what rules 1.6 gives the Narrator (pacts, pieces, Narrator rites, Devotion XP moves -6 to +5, days).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "rules.json ownership.narrator_owns still lists 'patron mood TN', 'judging on-theme vs off-theme while Witnessed' and 'designing Miracles'. The same file's mana.prayer.note says the patron's mood as a TN is retired. Spec lines 2233-2237 give the Narrator pacts, pieces, Narrator rites, Devotion XP moves and days, and give the engine tags, vows, Witnessed and interventions. The Miracles are data entries run by runEntryInner. Right side: rules.json."
+  },
+  {
+   "id": "spec-body-coin-for-the-ferry-10",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:2227 (patron table, the Toll-Keeper, Hymn I)",
+   "says": "\"Coin for the Ferry: a Downed ally stands at 10 HP\"",
+   "truth": "Rules 1.20 section 6: stands up with 5 (\u00d7 Blessing power \u00d7 the level factor); rules 1.22 section 4 keeps 'Coin for the Ferry 5'. Data: heal value 5 (patrons.json toll_keeper coin_for_the_ferry); engine faith.ts:1076.",
+   "rightSide": "Spec body: fold to 5 \u00d7 Blessing power \u00d7 the level factor.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Spec line 2227 patron table: 'Coin for the Ferry: a Downed ally stands at 10 HP', with no revision note in the cell (other cells in the table have them). Rules 1.20 table (line 3460): 'with 5'; items 1239 and 1286 keep 5. Data heal value 5; engine faith.ts:1076. Body is stale; the revision already overrides it."
+  },
+  {
+   "id": "spec-body-everyone-home-40",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:2228 (patron table, Mother Ember, Miracle); also section 14 item 731 (line 6337) with no later note",
+   "says": "\"Everyone Home: ... and each gets a 40 shield\"",
+   "truth": "Rules 1.20 section 6: a shield of 17 each (\u00d7 Blessing power \u00d7 the level factor). Data: shield value 17; engine faith.ts:1104.",
+   "rightSide": "Spec body table: 17. Item 731: add the rules 1.20 note.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Spec line 2228: 'each gets a 40 shield'. Item 731 (line 6337) also says 40 with no later note. Rules 1.20 table (line 3461): a shield of 17; item 1239: 17. Data shield value 17; engine faith.ts:1104 reads it."
+  },
+  {
+   "id": "spec-body-ember-intervention-20-4",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:2205-2207 (Interventions paragraph) and :2228 (patron table, Mother Ember's Intervention column); also item 741 (line 6350) with no later note",
+   "says": "\"Nerukhan's Soul, Mother Ember's heal and Old Overcast's Storm are 20 + 4 \u00d7 Devotion (32 at Devotion 3, 48 at 7, 60 at 10)\"; table: \"an ally drops below a quarter HP: they heal 20 + 4 \u00d7 Devotion\"",
+   "truth": "Rules 1.20 section 6: Mother Ember's intervention heals (10 + 3 \u00d7 Devotion) \u00d7 Blessing power, no level factor. Data: mother_ember.intervention effects value 10, per_devotion 3 and prayer.intervention.text; engine interventionHeal faith.ts:102, used at faith.ts:662.",
+   "rightSide": "Spec body paragraph and table: Mother Ember 10 + 3 \u00d7 Devotion; only the two damage interventions are 20 + 4.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Spec lines 2205-2207 and the table cell at 2228 give Mother Ember's heal as 20 + 4 \u00d7 Devotion. Item 741 says the same with no later note. Rules 1.20 table (line 3462): (10 + 3 \u00d7 Devotion) \u00d7 Blessing power, no level factor; point 1 below it keeps 20 + 4 for the two damage interventions only. Data: mother_ember.intervention value 10, per_devotion 3; engine interventionHeal faith.ts:102. Also stale in the same way: the rules 1.6.3 head note at about line 2048, and patrons.json prayer.intervention.amount (base 20, per 4) is correct only for the damage ones (its text states both)."
+  },
+  {
+   "id": "spec-body-pray-3-ap",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:445 (combat action table)",
+   "says": "\"| Pray | 3 |\"",
+   "truth": "Rules 1.6 ('The three sizes of prayer', and line 2299): a Whisper is 1 AP, a Hymn or a Miracle 3 AP. Engine faith.ts:63.",
+   "rightSide": "Spec body table: 'Pray: a Whisper 1; a Hymn or a Miracle 3'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Spec line 445: '| Pray | 3 |'. Rules 1.6 and the engine: a Whisper is 1 AP, a Hymn or Miracle 3 (patrons.json prayer.whisper.ap 1; faith.ts:63). The row is right for a Hymn or Miracle and wrong for a Whisper, which is the every-turn prayer since rules 1.22."
+  },
+  {
+   "id": "spec-s13-patrons-3",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:4423 (section 13, Data files)",
+   "says": "\"| patrons.json | 3 | Patrons and blessings by Faith tier (provisional numbers) |\"",
+   "truth": "patrons.json holds 8 patrons (items length 8), 7 Whispers, 6 vows; Hymns are gated by Devotion 3/5/7 and the Miracle by Faith 7 + Devotion 10 (devotion.gates), not by Faith tier.",
+   "rightSide": "Spec section 13 row: 8 patrons, Whispers, Hymns by Devotion, Miracles, vows, line banks.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Spec line 4423: '| patrons.json | 3 | Patrons and blessings by Faith tier (provisional numbers) |'. data/patrons.json has 8 patrons, 7 Whispers, vows, tags and line banks; Hymns are gated by Devotion 3/5/7 and the Miracle by Faith 7 + Devotion 10."
+  },
+  {
+   "id": "data-readme-patrons-3",
+   "kind": "doc-stale",
+   "where": "data/README.md:24",
+   "says": "\"`patrons.json` | 3 | Nerukhan plus 2 invented patrons (flagged); blessings by Faith tier\"",
+   "truth": "8 patrons (Nerukhan plus 7 invented), version 2 shape: Whispers, Hymns I-III by Devotion, a Miracle, an intervention, rites, vows, 11 line banks (data/patrons.json).",
+   "rightSide": "data/README.md row rewritten to the version 2 pack.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "data/README.md line 24: '`patrons.json` | 3 | Nerukhan plus 2 invented patrons (flagged); blessings by Faith tier; **provisional numbers**'. The file holds 8 patrons in the version 2 shape."
+  },
+  {
+   "id": "claude-md-interventions-20-4",
+   "kind": "doc-stale",
+   "where": "CLAUDE.md:78 (the Mana/Blessings bullet)",
+   "says": "\"interventions (each ends Witnessed; once a fight, twice from Devotion 7; 20 + 4 \u00d7 Devotion; ...)\"; the bullet also gives no Hymn cooldown and calls nothing out of rules 1.20-1.22.",
+   "truth": "Only the two damage interventions are 20 + 4 \u00d7 Devotion; Mother Ember's heal is 10 + 3 \u00d7 Devotion (rules 1.20 section 6; faith.ts:102). The brief is silent on rules 1.21/1.22: the seventh Whisper (Rebuke), the Hymn cooldown 9 - 0.75 \u00d7 Faith - 0.25 \u00d7 Virtue (floor 3), a vow fulfilled, Witnessed's kill rule.",
+   "rightSide": "CLAUDE.md: correct the intervention number and add one clause for the Hymn cooldown and Rebuke.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "The CLAUDE.md Blessings bullet reads 'interventions (...; 20 + 4 \u00d7 Devotion; ...)' with no exception for Mother Ember's 10 + 3 \u00d7 Devotion (rules 1.20; faith.ts:102). It mentions neither the Hymn cooldown, Rebuke, nor the vow cut of rules 1.21/1.22. The 'silent on' half is an omission in a summary, not a false statement; the intervention number is the real error. The same file's 'every later revision (to 1.13)' is also stale, since the spec runs to 1.25."
+  },
+  {
+   "id": "faith-ts-stale-comments",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/faith.ts:713, :779, :1099",
+   "says": "713: \"Hearthlight: allies starting a turn in it heal 10 \u00d7 power.\" 779: \"Lucky Break: the next failed attack roll is rerolled at +5.\" 1099: \"everyone_home ... a 40 shield each\"",
+   "truth": "Hearthlight heals 4 \u00d7 power \u00d7 the level factor (data value 4; faith.ts:1097). Lucky Break is the next 2 failed rolls (data uses 2; faith.ts:1058, 782). Everyone Home's shield is 17 (data; faith.ts:1104).",
+   "rightSide": "Engine comments: state the rule without the number, or the current one.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "faith.ts:713 'heal 10 \u00d7 power' (data 4, \u00d7 level factor, set at :1097); :779 'the next failed attack roll is rerolled at +5' (data uses 2; code handles the count at :782 and :1058); :1099 'a 40 shield each' (data 17, read at :1104). All three verified as written."
+  },
+  {
+   "id": "faith-ts-stale-fallback-literals",
+   "kind": "other",
+   "where": "packages/engine/src/faith.ts:1034 (Rebuke fallback 15), :1040 (Saint's Shield 12), :1041 (Judgement 50), :1042 (Absolution 7), :1096 (Warm Hands 10), :1110 (Lightning Rod 50 and chain 20); :1080 P(40) and :1114 P(150) literals",
+   "says": "Fallback copies of the rules 1.20/1.21 numbers beside the data reads; Last Crossing's boss 40 and The Sky Answers' 150 are written in code although the data carries them (execute.boss_damage 40; stat_mod -150).",
+   "truth": "Current values are Rebuke 20, Saint's Shield 16, Judgement 56, Absolution 9, Warm Hands 13, Lightning Rod 56/23 (patrons.json). The fallbacks never run while the data has the entries, so nothing is wrong in play, but they are second copies that state old rules; item 1269 admits the 40 and 150 are still in code, so a data edit to either would silently do nothing.",
+   "rightSide": "Engine: drop the numeric fallbacks (fail loudly on missing data) and read Last Crossing's 40 and The Sky Answers' 150 from the entry.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Verified literals: :1034 prayerDamage(e, 15) (data 20); :1040 effVal shield 12 (16); :1041 prayerDamage 50 (56); :1042 heal 7 (9); :1096 heal 10 (13); :1110 50 and chain ?? 20 (56 and 23). Hard-coded: :1080 P(40) while data has execute.boss_damage 40, and :1114 P(150) while data has stat_mod -150; item 1269 admits both. The fallbacks never run with the current data, so play is correct; a data edit to Last Crossing's 40 or The Sky Answers' 150 would be ignored. Also unflagged: Saints' Verdict fallback 130 matches data, and the Whisper fallbacks 5 and 6 match."
+  },
+  {
+   "id": "interventions-ally-includes-self",
+   "kind": "player-text-wrong",
+   "where": "data/patrons.json toll_keeper.intervention text (\"When an ally would drop to 0 HP, they stay at 1 HP instead.\") and mother_ember.intervention text (\"When an ally drops below a quarter of their HP, they heal ...\"); spec patron table lines 2227-2228",
+   "says": "The trigger is an ally.",
+   "truth": "Engine fires both for the devoted themself too: faith.ts:651 and :662 only test `f.side !== t.side` (no `f === t` exclusion, unlike the Matchmaker's at faith.ts:641). So the Toll-Keeper keeps its own devoted at 1 HP and Mother Ember heals her own devoted.",
+   "rightSide": "Unclear which is meant; by 'a text follows the rule' the cards and spec rows should say 'you or an ally', unless the spec's 'an ally' is intended, in which case the engine adds `f !== t`. Needs Leon's ruling.",
+   "playerVisible": true,
+   "confidence": "low",
+   "verifier": "faith.ts:651 (Toll-Keeper): `if (f.side !== t.side || t.companion) continue;` and :662 (Mother Ember): `if (f.side !== t.side) continue;`. Neither excludes f === t, unlike the Matchmaker at :641 (`f === t`). Both fire for the devoted themself. Cards and spec rows 2227-2228 say 'an ally'; items 738-744 are silent on self. The tests I saw (faith-presence.test.ts:126, faith.test.ts:274) use an ally as target, so the self case is untested either way. The direction is not settled by the spec: by 'engine stands, text follows' the cards and rows should say 'you or an ally', but it needs Leon's ruling."
+  },
+  {
+   "id": "high-ground-not-in-engine",
+   "kind": "engine-wrong-vs-spec",
+   "where": "packages/engine/src/combat.ts:1031-1033 (previewAttack terms); stated in data/rules.json combat.grid.high_ground_to_hit (430) and combat.attack.modifiers.high_ground (691)",
+   "says": "rules.json: high_ground_to_hit 1",
+   "truth": "Spec lines 354 and 497: 'A character on higher ground gets +1 to hit targets below.' The engine has no height at all (grep elevat|high.?ground|height in packages/engine/src: nothing); the to-hit terms hold no such line. No later revision withdraws it.",
+   "rightSide": "Needs a ruling: either the engine and maps gain height, or the spec lines and the two rules.json keys go (maps are flat today).",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Spec lines 354 and 497 give +1 to hit from higher ground; these are the only two mentions and no later revision withdraws them. The engine has no height (grep elevat|high ground|height in packages/engine/src finds only map width/height). rules.json lines 430 and 691 carry the number. By the source-of-truth rule the engine is behind the spec, but maps are flat, so it needs a ruling: add height, or strike the two spec lines and the two keys."
+  },
+  {
+   "id": "surprise-round-3ap",
+   "kind": "engine-wrong-vs-spec",
+   "where": "data/rules.json combat.initiative.surprise_round (440-444); spec line 356",
+   "says": "ambushers_ap 3, surprised_can_act false ('the ambushers get a surprise round: each acts once with up to 3 AP')",
+   "truth": "The engine has no surprise round. An unaware enemy loses round 1 (tactics.ts:357 waitRound = 2; spec lines 2285 and 4546), and an ambush is the Hidden opening (spec line 2283). Nothing gives ambushers a 3 AP turn (grep surprise|ambushers: nothing).",
+   "rightSide": "The spec body (line 356) and rules.json take the later rule: unaware enemies lose round 1; no 3 AP round.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Facts confirmed: spec line 356 (the only mention) and rules.json 440-444 describe a 3 AP surprise round; the engine has none (only a comment at combat.ts:1323). What exists: an unaware enemy loses round 1 (tactics.ts:362 waitRound = 2; spec lines 2285 and 4546) and the Hidden opening with an ambush attack (spec line 2283). Correction on direction: no later revision withdraws line 356, so this is a ruling for Leon, not an automatic spec fix. The later rules cover the same ground, so striking line 356 and the rules.json block is the likely outcome."
+  },
+  {
+   "id": "full-auto-cone-vs-line",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:422; data/rules.json combat.actions full_auto.area (525)",
+   "says": "'Full auto: a 3-tile cone, 10 rounds, one roll per target at \u22122'",
+   "truth": "The engine attacks every enemy within 1.5 tiles of the line to the target, at any range the weapon reaches (combat.ts:1647-1648 near()); the spec's own weapon line 758 speaks of 'the line' ('also catches enemies up to 2 tiles from the line'); the client says 'Every enemy near the line to your target' (commands.ts:159).",
+   "rightSide": "Spec line 422 and rules.json: 'every enemy within 1 tile of the line to the target' (or a ruling that it is a cone and the engine changes).",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Mismatch confirmed, with corrections. combat.ts:1677-1679: every enemy ahead of the shooter within 1.5 tiles of the line to the target, any distance the weapon allows, not a 3-tile cone. Wide Spray is value + 0.5. The proposed wording 'within 1 tile of the line' is off: the engine's number is 1.5 (orthogonal neighbours and diagonals of the line). The spec keeps calling it 'the full-auto cone' elsewhere (lines 1192, 1566, 5976; sigil.ts:293 PUSH 'widening like the full-auto cone'), though line 1192 glosses it 'every enemy near the line'. So the word 'cone' is live in the spec; fix line 422 and rules.json line 525 to the engine's shape, or rule it a true cone. Needs a ruling."
+  },
+  {
+   "id": "spec-derived-critical-formula",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:215 (Derived stats, Damage multipliers)",
+   "says": "\"Critical | 2 + 0.1 \u00d7 (Perception \u2212 1) + 0.05 \u00d7 Dexterity (rules 1.12: it was Athletics ...)\"",
+   "truth": "Rules 1.15: a critical is \u00d71.5, +3% a point of Perception above 1, +2% a point of Dexterity, \u00d72.0 at most (spec:3024-3028). data/rules.json derived.multipliers.critical = \"min(2.0, 1.5 + 0.03*(perception-1) + 0.02*dexterity ...)\". The Critical hits paragraph at spec:511 carries a note; this table row does not.",
+   "rightSide": "Spec body row changes to the rules 1.15 formula (1.5 + 0.03 \u00d7 (Perception \u2212 1) + 0.02 \u00d7 Dexterity, max 2.0).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:215 still reads 2 + 0.1\u00d7(Perception\u22121) + 0.05\u00d7Dexterity with no 1.15 note; rules 1.15 (spec:3024-3028) and data/rules.json derived.multipliers.critical = min(2.0, 1.5 + 0.03*(perception-1) + 0.02*dexterity ...). spec:511 carries the note, the table row does not. Right side as proposed."
+  },
+  {
+   "id": "spec-speaking-in-fight",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:404 (Combat on the grid, \"Speaking in a fight\")",
+   "says": "\"Speaking in a fight costs 0 AP. What a character says or attempts that needs judgement (a bluff, a surrender offer, a prayer) goes in the combat log and is ruled on by the Narrator when the fight ends. A fight costs the AI Narrator one call\"",
+   "truth": "Rules 1.14 (spec:2772-2784): the Narrator answers inside the fight; plain speech is free, an attempt costs 1 AP once a turn and opens one ruling. Engine: packages/engine/src/fighttalk.ts:1-10 (ATTEMPT_AP = 1).",
+   "rightSide": "Spec body paragraph is rewritten to rules 1.14 (or replaced by a pointer to it).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:404 unchanged (ruled on when the fight ends, one Narrator call); rules 1.14 at spec:2772 says the Narrator now answers inside the fight; fighttalk.ts:10 ATTEMPT_AP = 1. No in-place note."
+  },
+  {
+   "id": "spec-enemy-damage-no-multiplier",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:570 (under the superseded Enemy stat blocks table)",
+   "says": "\"Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapon's damage with no multipliers.\"",
+   "truth": "Rules 1.15 (spec:2962): \"an enemy deals its weapon's damage \u00d7 its tier's damage factor \u00d7 its level's damage factor (it used to deal the weapon's damage with no multiplier)\". The superseded note at spec:561 only covers \"the numbers in this table\", not this sentence.",
+   "rightSide": "Spec body sentence changes (damage \u00d7 tier factor \u00d7 level factor), or the superseded note is widened to the paragraph.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:570 says 'no multipliers'; spec:2962 (rules 1.15) says weapon damage \u00d7 tier factor \u00d7 level factor. The superseded note at 561 names only 'the numbers in this table'."
+  },
+  {
+   "id": "spec-rally-20",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:315 (Classes, \"What the new moves do in play\")",
+   "says": "\"Rally (2 AP, once a scene): every squadmate within 4 heals 20 \u00d7 your Healing given and loses Fear and Shaken.\"",
+   "truth": "Rules 1.23 (spec:3769): Rally is 6 \u00d7 Healing given \u00d7 the level factor. data/classes.json bard rank III rally: text \"heals 6 \u00d7 your Healing given, more as you level\", effects heal value 6.",
+   "rightSide": "Spec body line changes to 6 \u00d7 Healing given \u00d7 the level factor.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:315 says 20 \u00d7 Healing given; rules 1.23 table (spec:3769) says 6 \u00d7 Healing given \u00d7 level factor; data/classes.json rally heal value 6."
+  },
+  {
+   "id": "spec-decrkm-smg-15",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:750 (Weapons v2 roster, \"\u2713 Decrkm SMG\" row)",
+   "says": "\"\u2713 Decrkm SMG | 2H | 15 | 8 | 30 | 10 | single, burst, auto ...\"",
+   "truth": "Rules 1.18 (spec:3192): Decrkm SMG 15 \u2192 19. The starter-weapons row at spec:607 was patched (\"19 (rules 1.18; was 15)\"); the same gun's roster row was not.",
+   "rightSide": "Spec body row changes to 19.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:750 roster row says 15; spec:607 was patched to 19 (rules 1.18); spec:3192 15 \u2192 19; data 19."
+  },
+  {
+   "id": "spec-empathy-two-free-pumps-262",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:262 (\"What a point gives\" table, Empathy) and :1714 (Soul magic 1.6); the review already named :230",
+   "says": "262: \"From 3 points, one Pump of an Outburst each round is free; from 7, two.\" 1714: \"free Pumps each round: 1 from Empathy 3, a second from Empathy 7 ... it still sets your ready designs (2 + floor(Empathy \u00f7 2))\"",
+   "truth": "Rules 1.19 (spec:3311): Empathy 7 no longer gives a second free Pump; a held Outburst swells without Strain instead. data/soul_modules.json cycle.free_pumps = [{empathy:3,pumps:1}]; packages/engine/src/character.ts:656-660. Ready designs are Will Power since rules 1.13 (spec:232). Line 1714 sits under the 1.19 banner at spec:1701; line 262 has no note at all.",
+   "rightSide": "Spec body lines change to the 1.19 rule (and Will Power for ready designs).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:262 'from 7, two' has no note and sits outside the Soul section. spec:1714 is under the 1.19 banner at 1701 (which names Empathy 7), so it is flagged-stale rather than silent, but its 'ready designs (2 + floor(Empathy \u00f7 2))' is also wrong against spec:233 (Will Power, rules 1.13). Rules 1.19 spec:3311; soul_modules.json cycle.free_pumps = [{empathy:3,pumps:1}], swell_no_strain empathy 7; character.ts freePumps/swellFree. Note: the Ready designs row is spec:233, not 232."
+  },
+  {
+   "id": "data-skills-empathy-text",
+   "kind": "player-text-wrong",
+   "where": "data/skills.json, item empathy, per_point.text (the line spec:262 quotes)",
+   "says": "\"+10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two.\"",
+   "truth": "Rules 1.19 (spec:3311) and the engine give one free Pump only; from Empathy 7 a swell adds no Strain (character.ts:656-660, magic.ts:1543; soul_modules.json cycle.free_pumps). This text is what the skill card and level-up screen show (spec:239 says so).",
+   "rightSide": "Data text changes: \"from 7, a held Outburst swells without Strain\". Its effects array (soul_cast_ap \u22120.5, soul_designs_ready 0.5) is also a pre-1.13 leftover nobody reads.",
+   "playerVisible": true,
+   "confidence": "high",
+   "verifier": "data/skills.json empathy per_point.text = '+10% healing given. From 3 points, one Pump of an Outburst each round is free; from 7, two.' Contradicts rules 1.19 (spec:3311) and the engine. Player-visible: the create and level-up screens show per_point.text (create-points.test.ts:197-205, skeleton-screens.test.ts:74). Effects array still holds soul_cast_ap \u22120.5 and soul_designs_ready 0.5; soulCastAp() ignores it (returns 2). I did not prove that no other code reads those two effects."
+  },
+  {
+   "id": "spec-soul-stage-table-in-body",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1711, :1722, :1871 (the review named :1712 and :1874)",
+   "says": "1711: \"Stage multipliers (rules 1.17): 0 \u2192 \u00d70.8, 1 \u2192 \u00d71.2, 2 \u2192 \u00d71.6, 3 \u2192 \u00d72.0, 4 \u2192 \u00d72.4: every plain Pump adds +0.4\". 1722: \"Maxed (2.45): a snap cast 54, a full turn's stage 3 137, a stage 4 164 ... about 125% of a plain rifle in normal play, about 150% with the biggest Pump\". 1871: \"(rules 1.17: \u00d70.8, \u00d71.2, \u00d71.6, \u00d72.0, \u00d72.4)\"",
+   "truth": "Rules 1.19 (spec:3234-3235): \u00d70.8, \u00d71.0, \u00d71.2, \u00d71.4, \u00d71.6; base 40; targets 135% steady and 165% peak. data/soul_modules.json cycle.stage_mult [0.8,1.0,1.2,1.4,1.6], damage.base 40. These lines present the 1.17 numbers as current; only the section banner at spec:1701 says 1.19 wins.",
+   "rightSide": "Spec body lines fold in the 1.19 table, base and targets (worked numbers recomputed from base 40).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:1711, 1722, 1871 present the 1.17 table and 125%/150% targets as current; rules 1.19 spec:3234-3235 (\u00d70.8/1.0/1.2/1.4/1.6, base 40, 135%/165%); data stage_mult [0.8,1.0,1.2,1.4,1.6]. Mitigation: 1711 and 1722 are under the 1.19 banner at spec:1701 which names the stage table and base, so this is stale-under-a-banner. 1871 is in sub-section 12 (rules 1.8) of the same Soul section."
+  },
+  {
+   "id": "spec-soul-damage-base-28-and-20",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1721 and :1749",
+   "says": "1721: \"Damage school base 28 (rules 1.17; it was 20; an enemy caster's is 18: item 1056)\". 1749 (schools table): \"Damage | 20 | 20 damage \u00d7 the Soul multiplier\"",
+   "truth": "Rules 1.19 (spec:3235): base 40 for a character, 24 for an enemy caster. data/soul_modules.json damage.base 40, enemy_base 24. The Buff row next to it (1750) was patched for rules 1.20; the Damage row still says 20.",
+   "rightSide": "Spec body lines change to 40 (enemy 24).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:1721 says base 28 (enemy 18); spec:1749 schools table says 20. Rules 1.19 spec:3235: 40, enemy 24; data damage.base 40, enemy_base 24. Both under the 1701 banner (names 'the Damage base (40)'); row 1750 next to it was patched for 1.20, 1749 was not."
+  },
+  {
+   "id": "spec-at-once-half-damage",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1724, :1806, :1838",
+   "says": "1724: \"At Once makes a Bolt or Lance land with no roll at half damage\". 1806: \"At Once | survives: a Bolt or Lance with no roll, half damage\". 1838 (Storm Front): \"(At Once: none, half)\"",
+   "truth": "Rules 1.17 (spec:3112): At Once is no roll at \u00d70.8 (was \u00d70.5). data/soul_modules.json at_once damage_mult 0.8. Not one of the topics the 1.19 banner lists; the note at spec:1912 covers only section 12's module table.",
+   "rightSide": "Spec body lines change to \u00d70.8.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:1724, 1806, 1838 say half damage; rules 1.17 spec:3112 says \u00d70.8 (was \u00d70.5); soul_modules.json at_once damage_mult 0.8. The 1701 banner does not list modules; the note at 1912 covers only that paragraph."
+  },
+  {
+   "id": "spec-feelings-table-points-to-117",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1880 (and the table 1882-1908, the pouring rules 1874-1875)",
+   "says": "\"The steps and what each feeling does when poured in were reworked in rules 1.17: the table in 'Rules revision 1.17' replaces the Step and 'Poured in' columns below.\" 1875: \"A feeling poured in twice applies its behaviour once (its step counts twice)\"",
+   "truth": "Rules 1.19 (spec:3230, :3239-3273) replaced the 1.17 table again (Rage +0.5, Calm \u22120.4, Relief \u22120.2, Awe +0, Abandon +0.8 ...) and each feeling goes into an Outburst once, four at most (data/feelings.json plain_step 0.2, once_each true, max_feelings_per_hold 4). The in-place pointer sends the reader to a table that is itself superseded.",
+   "rightSide": "Spec body pointer changes to rules 1.19; better, the 1.8 Step and Poured-in columns are replaced by the 1.19 table.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:1880 points the reader to the rules 1.17 table; spec:1874-1875 still say feelings stack with themselves and a plain step of +0.4. Rules 1.19 (spec:3230, 3239-3241) replaced both; feelings.json plain_step 0.2, once_each true, max_feelings_per_hold 4. The 1701 banner does say 1.19 wins on feelings, but the in-place pointer names the wrong revision."
+  },
+  {
+   "id": "spec-shape-channeler-row",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1837 (Soul classes table, Shape) and :1957",
+   "says": "\"Shape (Channeler I) | Your first Pump each turn that would cost AP is free, on a Damage design. Empathy's free Pumps go first.\"",
+   "truth": "Rules 1.19 (spec:3312): Shape no longer adds a free Pump to Empathy's; on a Damage design you have the turn's one free Pump even without Empathy 3, and the turn's free Pump steps +0.1 more. data/classes.json channeler.shape text says the same. Under the 1.19 banner only.",
+   "rightSide": "Spec body row changes to the 1.19 Shape.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:1837 old Shape; rules 1.19 spec:3312 and data/classes.json channeler shape text agree with each other. Under the 1701 banner (names Shape), so flagged-stale. spec:1957 ('Shape's free Pump works on feeling pumps too') is only loosely affected."
+  },
+  {
+   "id": "spec-split-full-power",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1916 (rules 1.8 module table, Split)",
+   "says": "\"Split | Empathy 2 | a Bolt also strikes the nearest other creature it can reach within 2 of the aim (the same side rule), at full power\"",
+   "truth": "Rules 1.23 (spec:3739): a Split heal or shield is divided, \u00d70.8 each (harmful Split unchanged). data/soul_modules.json split boon_mult 0.8 and its text.",
+   "rightSide": "Spec body row adds: a heal or a shield is divided, \u00d70.8 each (rules 1.23).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:1916 'at full power' with no note; rules 1.23 spec:3739: a Split heal or shield is \u00d70.8 each, harmful Split unchanged; soul_modules.json split boon_mult 0.8. The row is still true for harmful Outbursts; only the boon case is missing."
+  },
+  {
+   "id": "spec-inverse-second-school-half-damage",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1743 (second school examples) and :1802",
+   "says": "\"Buff (heal) + Damage with Inverse = the heal, then a shield of half the damage\"; 1802: \"Inverse | survives: damage becomes a shield on allies\"",
+   "truth": "Rules 1.20 (spec:3445, :3450): Inverse's shield no longer reads the damage; it is 10 \u00d7 Soul multiplier \u00d7 stage multiplier \u00d7 level factor (\"No heal or shield reads the Damage base any more\"). data/soul_modules.json inverse text.",
+   "rightSide": "Spec body lines change to the 1.20 Inverse (own number, halved as a second school).",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "spec:1743 'a shield of half the damage' and 1802 'damage becomes a shield'; rules 1.20 spec:3445: no shield reads the Damage base, Inverse has its own number; data inverse shield 10 \u00d7 Soul multiplier \u00d7 stage multiplier. Rules 1.20's head does say it wins over Inverse text, so this is stale-but-declared. Right side: the 1.20 Inverse number, at half strength as a second school."
+  },
+  {
+   "id": "spec-coin-for-the-ferry-10",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:2227 (patron table, The Toll-Keeper, Hymn I)",
+   "says": "\"Coin for the Ferry: a Downed ally stands at 10 HP\"",
+   "truth": "Rules 1.20 (spec:3461): stands up with 5 (\u00d7 Blessing power \u00d7 level factor). data/patrons.json toll_keeper coin_for_the_ferry heal value 5. Other cells of the same table carry 1.20/1.21/1.22 notes; this one was missed.",
+   "rightSide": "Spec body cell changes to 5.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:2227 'stands at 10 HP' with no note; rules 1.20 spec:3461: 5; data/patrons.json coin_for_the_ferry heal value 5 (item 1286 confirms 5 stands)."
+  },
+  {
+   "id": "spec-everyone-home-40",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:2228 (patron table, Mother Ember, Miracle)",
+   "says": "\"Everyone Home: ... and each gets a 40 shield\"",
+   "truth": "Rules 1.20 (spec:3462): a shield of 17. data/patrons.json mother_ember everyone_home shield value 17.",
+   "rightSide": "Spec body cell changes to 17.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:2228 'a 40 shield'; rules 1.20 spec:3462: 17; data everyone_home shield value 17. Other cells in the same row carry 1.20/1.22 notes."
+  },
+  {
+   "id": "spec-mother-ember-intervention",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:2228 (Intervention cell), :2205-2206 (Interventions paragraph), :2047-2048 (rules 1.6.3 blurb)",
+   "says": "2228: \"an ally drops below a quarter HP: they heal 20 + 4 \u00d7 Devotion\". 2205: \"Nerukhan's Soul, Mother Ember's heal and Old Overcast's Storm are 20 + 4 \u00d7 Devotion (32 at Devotion 3, 48 at 7, 60 at 10)\"",
+   "truth": "Rules 1.20 (spec:3463): Mother Ember's intervention heals (10 + 3 \u00d7 Devotion) \u00d7 Blessing power; only the two damage interventions keep 20 + 4 \u00d7 Devotion. data/patrons.json mother_ember intervention heal 10, per_devotion 3; prayer.intervention.text says the same.",
+   "rightSide": "Spec body: Mother Ember's cell and the Interventions paragraph change to 10 + 3 \u00d7 Devotion for the heal.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:2228 and 2205-2206 give Mother Ember's heal as 20 + 4 \u00d7 Devotion; rules 1.20 spec:3463: (10 + 3 \u00d7 Devotion) \u00d7 Blessing power; data mother_ember intervention heal 10, per_devotion 3; prayer.intervention.text states both formulas. spec:2047-2048 is a general blurb (20 + 4 \u00d7 Devotion) and is imprecise for the heal only."
+  },
+  {
+   "id": "spec-ap-perks-old-limits",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:2359 (Got You in My Sight), :2418 (War Footing), :2445 (Forlorn Hope)",
+   "says": "2359: \"gives +2 AP. Once a round\" and \"a sneak attack that hits you costs 2 AP next turn\". 2418: \"an enemy that ends a move next to you loses 2 AP at once. This applies once per enemy a turn\". 2445: \"+2 AP are banked for next turn\" (every turn)",
+   "truth": "Rules 1.14, the AP perks' cooldown (spec:2857-2869): in a fight each gives or takes AP at most once every 3 of the holder's turns (War Footing: one enemy, then nothing for the next 2 turns). data/perks.json rules.ap_cooldown.turns 3. Only the area map keeps once a round.",
+   "rightSide": "Spec body readings change to the 3-turn cooldown in fights.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:2359 'Once a round', 2418 'once per enemy a turn', 2445 every turn; rules 1.14 section 3 table (spec:2857-2869) puts all three on the 3-turn cooldown. The 'Perks ... in play (rules 1.3)' section (2311 on) has no 1.14 banner or cooldown mention."
+  },
+  {
+   "id": "spec-verse-of-war-audit",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:2506-2508 (Perks in play, \"Verse\")",
+   "says": "\"The Narrator audits it after the fight, never per cast.\"",
+   "truth": "Rules 1.14 (spec:2850): the sentence about the Narrator checking the verse after the fight is gone, with the audit note behind it; Verse of War was relabelled engine.",
+   "rightSide": "Spec body sentence is deleted.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:2507-2508 still say 'The Narrator audits it after the fight, never per cast.'; rules 1.14 spec:2850 says that sentence and the audit note are gone."
+  },
+  {
+   "id": "spec-silence-word-row",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:1502 (Sigil word table, SILENCE); same statement as the review's D6 at :1379",
+   "says": "\"SILENCE | Silenced: no Sigils, Outbursts or prayers for 1 round (Brain save)\"",
+   "truth": "A Silenced unit can't Call either: packages/engine/src/calls/core.ts:55 (\"You are Silenced and can't Call.\") and :171.",
+   "rightSide": "Spec body row (and :1379) adds Calls.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Rows 1379 and 1502 omit Calls. Correction to the truth: the spec is not silent, spec:1325 already says 'a Silenced unit can't Call' and the engine matches (calls/core.ts:55, :171). So it is an incomplete row against the spec's own Calls section, low severity."
+  },
+  {
+   "id": "spec-section-13-data-table",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:4406-4427 (section 13, Data files)",
+   "says": "\"classes.json | 13 + 15\", \"enemies.json | 4\", \"conditions.json | 29\", \"weapons.json | 20\", \"weapon_mastery.json | 10 + 30\", \"techniques.json | 58 ... 27 melee and 31 ranged\", \"items.json | 1\", \"soul_modules.json | 4 + 20\", \"patrons.json | 3\", \"effect_ops.json | 132 | 50 core, 82 bespoke\"; \"The 82 bespoke ops cover about 10% of effect uses\"",
+   "truth": "Counted from data/ today: classes 9 base + 21 advanced; enemies 5 tiers (Vermin, rules 1.15); conditions 40; weapons 60; weapon_mastery 11 families + 33 items; techniques 65 (33 melee, 32 ranged); items 60; soul_modules 4 schools + 38 items; patrons 8; effect_ops 192 (50 core, 113 bespoke, 17 weapon, 11 item, 1 sigil; bespoke 14% of counted uses, non-core 22%). Files the table does not list at all: actions, calls, feelings, loot_tables, objects, perk_cards, world_play.",
+   "rightSide": "Spec section 13 is regenerated from the data pack (or the counts are dropped).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Counted from data/: classes 9 base + 21 advanced; enemies 5; conditions 40; weapons 60; weapon_mastery 11 families + 33 items; techniques 65 (33 melee, 32 ranged); items 60; soul_modules 4 schools + 38 items; patrons 8; effect_ops 192 (50 core, 113 bespoke, 17 weapon, 11 item, 1 sigil; bespoke 191 of 1,324 counted uses = 14%). The table at spec:4406-4427 lacks actions, calls, feelings, loot_tables, objects, perk_cards and world_play. The archetypes row also still says 'and cores'."
+  },
+  {
+   "id": "spec-header-no-revisions-after-116",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:3-27 (the file's head)",
+   "says": "Revision blurbs for 1.1, 1.10, 1.11, 1.12, 1.16 and 1.13 only; nothing says that sections \"Rules revision 1.14\" to \"1.25\" exist or override the body. The 1.11 blurb (line 9) still states \"a Core point comes every 3rd level ... Mind Without Fog gives 1 Core point, not 2\" with no note.",
+   "truth": "Rules 1.14, 1.15 and 1.17 to 1.25 are appended at spec:2766-3999 and override the body; rules 1.13 removed Core points (spec:15) and Mind Without Fog gives 2 Attribute points (character.ts FOG_CORE = 2, review B1).",
+   "rightSide": "Spec head gets one line per revision 1.14 to 1.25 and the override rule; the 1.11 blurb gets a superseded note.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:1-27 has blurbs for 1.1, 1.10, 1.11, 1.12, 1.16, 1.13 only; sections 1.14-1.25 start at spec:2766. The 1.11 blurb still says Core point every 3rd level and Fog 1 Core point. Correction: the spec nowhere states the current Mind Without Fog rule; items 21 and 929 (spec:4460, 6415) still say +1 Core point. Only character.ts:197-199 (FOG_CORE = 2, 'rules 1.13; Leon, 10 Nov 2026') and the trait card (2 extra Attribute points) do. So the spec needs the rule written, not just a superseded note."
+  },
+  {
+   "id": "spec-pre-114-leftovers",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:2269, :1463, :1951, :4041, :4043 (outside the 1.14-1.25 brief: rules 1.13 leftovers found on the way)",
+   "says": "2269: \"Ambush damage taken \u221210% \u00d7 Reaction Speed, Critical damage taken \u221210% \u00d7 (Perception \u2212 1) \u2212 5% \u00d7 Durability\". 1463 and 1951: \"you keep 2 + floor(Empathy \u00f7 2) ready\". 4041: \"Intimidation, Eloquence or Implication against the target's Body, Brain or Heart save\". 4043: \"the engine adds Conscience\" (Karma)",
+   "truth": "Rules 1.13, as the body's own Derived stats say: ambush damage taken is Improvisation and critical damage taken Acuity (spec:186-188); ready designs 2 + floor(Will Power \u00f7 2), at least 3 (spec:232); strength is by the skill that delivered the condition (spec:192); Karma moves by Authority (spec:238).",
+   "rightSide": "Spec body lines change to the rules 1.13 skills.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "spec:2269 (Reaction Speed, Durability) vs spec:186-188 (Improvisation, Acuity); spec:1463 and 1951 (Empathy) vs spec:233 (Will Power; the finder's :232 is the Soul range row); spec:4041 vs spec:192 (strength by delivering skill); spec:4043 'the engine adds Conscience' vs spec:238 (Authority). All confirmed. Also spec:2623 still says 'Conscience's +1'."
+  },
+  {
+   "id": "rev-123-guard-one-evoke",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md, Rules revision 1.23 section 4 point 1 (about line 3779)",
+   "says": "\"The Elite/Boss guard of rules 1.17 (one Evoke leaves a full-HP Elite or Boss on 1 HP) is unchanged.\"",
+   "truth": "The same day's ruling made it one rule for every action (weapon attack, technique, Evoke, Release, prayer, class move, companion): rules 1.15 \"The level gap\" point 4 (spec:3016) and the note on rules 1.17 Sigil point 5; section 14 item 1385. Rules 1.23 neither says it supersedes nor was it patched.",
+   "rightSide": "Rules 1.23 sentence changes to point at rules 1.15 point 4 (the guard for every action).",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "spec:3779 says 'The Elite/Boss guard of rules 1.17 (one Evoke ...) is unchanged'; spec:3016 (rules 1.15 point 4, Leon 12 Nov) and item 1385 make it one rule for every action. The 1.23 sentence is not false (the guard still holds for an Evoke), only narrower than the rule in force. Low severity; a pointer fix as proposed."
+  },
+  {
+   "id": "rev-120-hymn-every-turn-band",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md, Rules revision 1.20 section 2 bands table (about line 3403) and section 8 rows \"Prayer: Warm Hands (3 AP, every turn)\"",
+   "says": "\"A healing Hymn (3 AP; from Virtue 4 its cooldown is one round, so it is prayed every turn) | 60 to 75%\"",
+   "truth": "Rules 1.22 (spec:3620-3640): the wait is 9 \u2212 0.75 \u00d7 Faith \u2212 0.25 \u00d7 Virtue rounds, never under 3; nobody prays a Hymn every turn. Rules 1.22 does say it wins over 1.20, but rules 1.20's own head note (spec:3372) lists only what rules 1.23 changed, and its prayer table was patched for 1.22 in two cells only (Warm Hands, Saint's Shield; Absolution 7 \u2192 9 was not).",
+   "rightSide": "Rules 1.20 head note adds rules 1.22 (cooldown; Absolution 9), as rules 1.21 has.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Band row is at spec:3405 ('prayed every turn'); rows 3498-3499 say '(3 AP, every turn)'; spec:3459 Absolution still 7 with no 1.22 note (rules 1.22 spec:3681: 9), while Warm Hands and Saint's Shield cells were patched. The 1.20 head note (spec:3372) names only rules 1.23. Rules 1.21 does carry a 'Superseded in part by rules 1.22' note (spec:3540). Rules 1.22 spec:3610 does declare itself the winner, so this is a missing back-pointer."
+  },
+  {
+   "id": "rev-118-outburst-peak-150",
+   "kind": "spec-body-stale",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md, Rules revision 1.18, The targets point 5 (about line 3144)",
+   "says": "\"Guns end below a full Sigil Line (150 to 200%, rules 1.17) and level with the biggest Outburst (150%).\"",
+   "truth": "Rules 1.19 section 1.2 (spec:3235, Leon 12 Nov 2026, item 1222): the Outburst's steady play is about 135% and its biggest Release about 165%, raised because the best gun at about 145% made it feel weak. Rules 1.19 lists what it replaces in 1.5, 1.8 and 1.17, not this 1.18 target.",
+   "rightSide": "Rules 1.18 target line gets a note (the biggest Outburst is about 165% since 12 Nov).",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Line is spec:3142: 'level with the biggest Outburst (150%)'. Rules 1.19 spec:3235 (Leon, 12 Nov): about 135% steady and 165% peak. No note on the 1.18 line; spec:3044 (rules 1.17 targets 125/150) is in the same state."
+  },
+  {
+   "id": "spec-section-14-numbering",
+   "kind": "other",
+   "where": "docs/rules/PHC-Core-Rules-v1.0.md:4431-6742 (section 14)",
+   "says": "Asked: item numbers that collide or are referenced but missing.",
+   "truth": "Checked by script: 1,109 numbered items, all unique (no collision), 1 to 1,424 with 12 reserved gaps (748-800, 819-900, 1089-1100, 1117-1199, 1223-1229, 1248-1259, 1275-1279, 1297-1299, 1323-1339, 1354-1379, 1392-1399, 1413-1419). All 521 \"item N\" / \"items N to M\" references in the spec resolve to an existing item, and every revision head's range starts and ends on a real item. Two order breaks: item 592 follows 635 (line 6192) and the block 1101-1116 stands before 1015 (line 6517).",
+   "rightSide": "Nothing to fix in the numbering; the two out-of-order blocks could be moved if the list is ever regenerated.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Reproduced by script: 1,109 numbered items, all unique, 1 to 1,424; the same 12 gaps; no 'item N' reference points at a missing number (my regex found 378 distinct referenced numbers, all present). Order breaks at line 6192 (592 after 635) and 6517 (1015 after 1116). Nothing to fix."
+  },
+  {
+   "id": "claude-modifier-gamma",
+   "kind": "doc-stale",
+   "where": "CLAUDE.md, \"The game in one screen\", Rolls bullet",
+   "says": "\"Modifier = \u22122 at 0 points, else points \u2212 1 (Mastered = +9).\"",
+   "truth": "Rules 1.13 (spec:170): a gamma skill adds its full points on a check (Mastered = +10); only alphas and betas are points \u2212 1. packages/engine/src/character.ts:767-769 (checkModOf).",
+   "rightSide": "CLAUDE.md line adds the gamma rule (or drops the number).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "CLAUDE.md Rolls bullet gives points \u2212 1 for every skill; spec:170 (rules 1.13) and character.ts:767-769 checkModOf: a gamma adds full points on a check."
+  },
+  {
+   "id": "claude-intervention-heal",
+   "kind": "doc-stale",
+   "where": "CLAUDE.md, \"The game in one screen\", Blessings",
+   "says": "\"interventions (each ends Witnessed; once a fight, twice from Devotion 7; 20 + 4 \u00d7 Devotion ...)\"",
+   "truth": "Rules 1.20 (spec:3463): Mother Ember's healing intervention is 10 + 3 \u00d7 Devotion; 20 + 4 \u00d7 Devotion is the two damage interventions only (data/patrons.json prayer.intervention.text). The same paragraph also has no word of the Hymn cooldown (rules 1.22: 9 \u2212 0.75 \u00d7 Faith \u2212 0.25 \u00d7 Virtue, never under 3) or of Rebuke, the seventh Whisper.",
+   "rightSide": "CLAUDE.md line changes (or the number goes, as the review proposes for every movable number).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "CLAUDE.md gives 20 + 4 \u00d7 Devotion for all interventions; spec:3463 and patrons.json give Mother Ember's heal as 10 + 3 \u00d7 Devotion. CLAUDE.md has no mention of the Hymn cooldown or Rebuke (grep: none); patrons.json has 7 whispers."
+  },
+  {
+   "id": "claude-feelings-and-pump-cost",
+   "kind": "doc-stale",
+   "where": "CLAUDE.md, \"The game in one screen\", Mana, the Soul magic sentence (beyond the review's E5)",
+   "says": "\"Pump (1 AP) +1 stage to 4 ... each Pump plain or with one of 25 feelings (its own step and behaviour ...)\" and \"Emanator + MP\" with Max MP left on the old sheet by silence",
+   "truth": "Rules 1.19 (spec:3239-3241): a feeling goes into an Outburst once, four different feelings at most; one free Pump a turn. Rules 1.24 (spec:3882, :3898): Max MP = 100 + 75 \u00d7 (Determination \u2212 1) + 25 \u00d7 (Insight \u2212 1), and each Pump costs a tenth of the Begin's MP for each stage it reaches. data/feelings.json once_each true, max_feelings_per_hold 4.",
+   "rightSide": "CLAUDE.md sentence is rewritten from rules 1.19 and 1.24 together with E5.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "CLAUDE.md Soul sentence: old release table \u00d70.6/1/1.4/1.8/2.2, feelings with no once-each or four-feeling limit, no Pump MP cost, no new Max MP. Rules 1.19 spec:3234-3241 and rules 1.24 spec:3882, 3898; feelings.json once_each true, max_feelings_per_hold 4; soul_modules.json cycle.pump_mp share_per_stage 0.1."
+  },
+  {
+   "id": "claude-art-maps-path",
+   "kind": "doc-stale",
+   "where": "CLAUDE.md repo map (\"art/ ... illustrations/, maps/, sprites/\") and UI direction (\"maps in `art/maps/`\"); also docs/HANDOFF.md:48",
+   "says": "\"world illustrations are in art/illustrations/m813/ ..., maps in art/maps/\"",
+   "truth": "art/maps does not exist in the checkout. Rules 1.16 (spec, Maps, \"Plain colour\"): no map is painted today; the four M813 paintings are retired to art/_archive/maps/. art/README.md:38 says \"maps/ empty today\".",
+   "rightSide": "CLAUDE.md and HANDOFF.md drop art/maps/ (or say the paintings are archived until the maps are repainted).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "art/maps does not exist in the checkout (ls art); paintings are in art/_archive/maps. CLAUDE.md repo map and UI direction both name art/maps/; docs/HANDOFF.md:48 lists 'maps' among production folders. art/README.md already says it is empty."
+  },
+  {
+   "id": "claude-tools-list",
+   "kind": "doc-stale",
+   "where": "CLAUDE.md repo map, the tools/ entry",
+   "says": "\"tools/ validate.py ..., fix_pack.py ..., archetype_fill.py ..., build_web_assets.py, deploy_site.py, render_map_guides.py, validate_art.py + validate_wick_animation.py, validate_patrons.py, rehash_art_checksums.py, art/\"",
+   "truth": "tools/ also holds check.py (npm run check), e2e.py (npm run e2e), try_fight.py (npm run try), maplayout.py, normalize_sfx.py, skeleton_diff.py and voice_reference.mjs. The three that the Testing agreement in the same file tells every session to use first are not in the map. Every listed tool does exist.",
+   "rightSide": "CLAUDE.md tools entry adds check.py, e2e.py, try_fight.py (and the other four).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "ls tools: check.py, e2e.py, try_fight.py, maplayout.py, normalize_sfx.py, skeleton_diff.py, voice_reference.mjs exist and are not in CLAUDE.md's tools entry; every listed tool exists."
+  },
+  {
+   "id": "claude-next-steps-tech-plan",
+   "kind": "doc-stale",
+   "where": "CLAUDE.md, Next steps items 1, 2 and 3",
+   "says": "\"1. Tech plan: ... Waiting on Leon's decisions in its section 10.\" \"2. Starter mode: character creation \u2192 story scene \u2192 one combat\" \"3. The M813 one-shot\"",
+   "truth": "Tech-plan section 10's decisions (React + Vite, Cloudflare, no accounts, Anthropic first, M813 slice first, packages/ and apps/) are all built: CLAUDE.md itself says \"Stack (built, decision 62)\" and the game is live at 0.22.0. Starter mode and the M813 one-shot exist (data/campaigns/m813.json, plus curse, godplot, own, summoning, proving). The list reads as work to do.",
+   "rightSide": "CLAUDE.md Next steps is cut to a pointer to docs/ROADMAP.md, or the built items are struck.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "CLAUDE.md Next steps 1-3 read as open; the stack is built (decision 62), version 0.22.0, data/campaigns has m813, curse, godplot, own, proving, summoning. Note docs/design/tech-plan.md:3 itself still says 'Decisions in section 10 wait for Leon's approval', so that file is stale in the same way. CLAUDE.md does prefix the list with 'the original brief's', which softens it."
+  },
+  {
+   "id": "claude-class-roster-rev2",
+   "kind": "doc-stale",
+   "where": "CLAUDE.md, living-docs table (\"Class Roster, Revision 2\") and repo map (\"docs/design/ Class-Roster-Rev2.md\")",
+   "says": "The only class roster document named is Revision 2.",
+   "truth": "The roster in force is Class Roster Revision 3 (CLAUDE.md's own Classes bullet; spec:274; docs/design/class-roster-rev3-proposal.md; data/classes.json revision 3). The Rev 2 file describes 13 base and 15 advanced classes that no longer exist as such.",
+   "rightSide": "CLAUDE.md names class-roster-rev3-proposal.md as the roster and marks Class-Roster-Rev2.md as superseded.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "CLAUDE.md names only 'Class Roster, Revision 2' (table) and Class-Roster-Rev2.md (repo map); docs/design/class-roster-rev3-proposal.md exists with status 'accepted, implemented'; data/classes.json has 9 base and 21 advanced. Class-Roster-Rev2.md's own head still says the Doc is the source of truth."
+  },
+  {
+   "id": "handoff-version-and-item-range",
+   "kind": "doc-stale",
+   "where": "docs/HANDOFF.md:1, :3, :12",
+   "says": "\"picking up Project Heaven Cry at v0.0.1\"; \"open and provisional numbers are its section 14 (items 1\u2013670)\"; \"decisions.md (numbered; 94\u2013105 are the latest systems)\"",
+   "truth": "package.json version 0.22.0. Section 14 runs to item 1,424 (1,109 items). decisions.md runs to 114, and HANDOFF.md itself cites decisions 106, 107, 109 and 113 further down. Nothing in its systems list covers rules 1.10 to 1.25 (Sigil 1.5 strokes, Physical 2.0, Skeleton 2.0, Calls, the balance pass, maps).",
+   "rightSide": "HANDOFF.md is brought to 0.22.0 or cut to what does not move; CLAUDE.md still sends every new collaborator to it second.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "docs/HANDOFF.md:1 and :3 say v0.0.1; :12 says items 1\u2013670 and decisions 94\u2013105. package.json 0.22.0; section 14 runs to 1,424; decisions.md runs to 114."
+  },
+  {
+   "id": "handoff-hotfix-unconfirmed",
+   "kind": "doc-stale",
+   "where": "docs/HANDOFF.md:79 and :91",
+   "says": "\"A branchless hotfix on `develop` bumping the last number is a reading Leon still has to confirm.\" and open decision 7 \"Versioning: confirm the hotfix reading above.\"",
+   "truth": "CLAUDE.md, Versioning: \"A hotfix committed straight to develop without a branch bumps the last number (confirmed by Leon, 10 Nov 2026)\"; CHANGELOG.md head states it as the rule.",
+   "rightSide": "HANDOFF.md lines change (confirmed) and open decision 7 is struck.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "docs/HANDOFF.md:79 and :91 still call the hotfix reading unconfirmed; CLAUDE.md Versioning says 'confirmed by Leon, 10 Nov 2026'."
+  },
+  {
+   "id": "handoff-balance-pending",
+   "kind": "doc-stale",
+   "where": "docs/HANDOFF.md:89 and :106",
+   "says": "\"Damage balance targets: weapons already exceed the caps (item 591); the pass is pending (ROADMAP item 4).\" Next steps: \"(4) the damage balance pass\"",
+   "truth": "The balance pass has run as rules 1.15, 1.17 to 1.25 (enemy table, magic, guns, Outburst, heals, Faith, defence, MP, fire doctrine), measured with the simulator in packages/engine/test/balance/. Rules 1.17 removed the hard caps (spec:3057 \"No ceiling\"; ruling: no hard damage caps).",
+   "rightSide": "HANDOFF.md lines change to what is left of the pass.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "docs/HANDOFF.md:89 and :106 say the balance pass is pending and weapons exceed the caps; rules 1.15 and 1.17-1.25 are in the spec, spec:3057 'No ceiling', and packages/engine/test/balance/ holds the simulator (fit.ts, *-measure.ts)."
+  },
+  {
+   "id": "handoff-deployed-from-develop",
+   "kind": "doc-stale",
+   "where": "docs/HANDOFF.md:7",
+   "says": "\"the web game, deployed from `develop`\"",
+   "truth": "docs/TESTING.md:74-77: \"merge to develop then main ... deploy ... a backup/live-<version> branch\"; CLAUDE.md, Live backups: the backup branch is \"at the deployed main commit\"; origin/main head is \"Merge develop into main: version 0.22.0\".",
+   "rightSide": "HANDOFF.md changes to \"deployed from main after develop is merged into it\".",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "docs/HANDOFF.md:7 'deployed from develop'; docs/TESTING.md Releasing: merge to develop then main, deploy, backup/live-<version>; CLAUDE.md: backup at the deployed main commit; origin/main head is 'Merge develop into main: version 0.22.0'. Medium: the deploy tools take the working tree, so the branch is by convention."
+  },
+  {
+   "id": "handoff-checks-before-pushing",
+   "kind": "doc-stale",
+   "where": "docs/HANDOFF.md:60-65 and :69",
+   "says": "\"Checks before pushing (all must pass): npm test -w @phc/engine, npm test -w @phc/web; npx tsc --noEmit ...\" and e2e by `node apps/web/e2e/two-players.mjs` with a hand-made \"devup\" script for the dev server",
+   "truth": "docs/TESTING.md:8-15 and CLAUDE.md, Testing: the gate is `npm run check` (validator, both type checks, the screen data's freshness, both suites) and browser suites run through `npm run e2e -- <suite>`, which builds, starts and stops the server itself (tools/check.py, tools/e2e.py). HANDOFF.md's list also misses the screen-data freshness check.",
+   "rightSide": "HANDOFF.md section points at docs/TESTING.md.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "docs/HANDOFF.md:60-65 list the separate commands and node apps/web/e2e/two-players.mjs; :69 describes a hand-made devup script. docs/TESTING.md:8-15 makes npm run check and npm run e2e the gate (with the screen-data freshness check, which HANDOFF does not list). The old commands still work; the list is out of date, not wrong."
+  },
+  {
+   "id": "roadmap-balance-pass-next-up",
+   "kind": "doc-stale",
+   "where": "docs/ROADMAP.md:70-82 (items 4 and 4a) and :179-182",
+   "says": "\"4. The balance pass (next up ...): Sigil is about 150% at most; Outburst is about 125% steady; optimised physical is 150%; caps of 350 per hit for a full build and 500 on a mega crit. Weapons already go over the caps (spec item 591), so a damage simulator would help.\" 4a: \"Next up is item 4\". 179: \"Outburst numbers awaiting the balance pass: Heart Surge; Empathy's free Pumps with the swell; Resonance caps\"",
+   "truth": "Done or under way as rules 1.15 to 1.25: a full Sigil Line 150 to 200% (spec:3044), no ceiling (spec:3057), Outburst about 135% steady and 165% peak (spec:3235), optimised gun a bit under 150% (rules 1.18), Heart Surge and Empathy's free Pumps settled in rules 1.19 (spec:3237, :3311). The simulator exists (packages/engine/test/balance/, fit.ts).",
+   "rightSide": "ROADMAP.md item 4 is rewritten as what the pass has done and what is left (weapon step leftovers, Equipment 2.0, XP by level); the Magic leads are struck.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "docs/ROADMAP.md:70-82 still says the balance pass is next up with the old targets and caps; :179-182 lists Heart Surge and Empathy's free Pumps as awaiting it. Spec rules 1.15-1.25 exist; spec:3057 removes the caps, 3235 sets 135/165%, 3237 and 3311 settle Heart Surge and Empathy 7. Resonance caps were rewritten in rules 1.14 (spec:1854). ROADMAP has no line mentioning rules 1.17 or later."
+  },
+  {
+   "id": "roadmap-bard-capstone",
+   "kind": "doc-stale",
+   "where": "docs/ROADMAP.md:135 (Classes, ideas not taken up yet)",
+   "says": "\"a combat capstone for the Bard (Rally Banner instead of Gift)\"",
+   "truth": "The Bard's rank III is Field Surgery and Rally, a new combat move; Gift is not on the Bard (spec:290; data/classes.json bard ranks III: medic.field_surgery and rally).",
+   "rightSide": "ROADMAP.md line is struck.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "docs/ROADMAP.md:135 'a combat capstone for the Bard (Rally Banner instead of Gift)'; data/classes.json bard rank III = medic.field_surgery and rally, no 'gift' anywhere in the Bard; spec:290 agrees."
+  },
+  {
+   "id": "roadmap-title-and-product-list",
+   "kind": "doc-stale",
+   "where": "docs/ROADMAP.md:1 and :195-199",
+   "says": "\"(as of v0.0.1, 9 Nov 2026)\"; \"Leon's decisions in docs/design/tech-plan.md section 10\"; \"Starter mode: creation \u2192 story scene \u2192 one fight, solo with the AI Narrator\"",
+   "truth": "The file carries entries dated 10 and 11 Nov and items built at 0.19.0 and later; the version is 0.22.0. The tech-plan decisions and starter mode are built (CLAUDE.md \"Stack (built, decision 62)\"; live site).",
+   "rightSide": "ROADMAP.md title date and the two built leads change.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "docs/ROADMAP.md:1 '(as of v0.0.1, 9 Nov 2026)' while the file has entries dated 11 Nov and 0.19.0; :197-198 list tech-plan section 10 decisions and Starter mode as leads; both are built."
+  },
+  {
+   "id": "data-readme-counts",
+   "kind": "doc-stale",
+   "where": "data/README.md:14, :18-21, :23-25, :27",
+   "says": "\"classes.json | 13 base, 15 advanced ... `assignment` holds the level-3 closest-class rule\"; \"conditions.json | 29\"; \"weapons.json | 20 | Starter weapons\"; \"weapon_mastery.json | 10 families, 30 perks\"; \"items.json | 1\"; \"soul_modules.json | 4 schools, 20 modules\"; \"patrons.json | 3 | Nerukhan plus 2 invented patrons\"; \"effect_ops.json | 132 ... (50 core, 82 bespoke)\"; \"techniques.json | 58 ... 27 melee and 31 ranged\"",
+   "truth": "Counted today: classes 9 base, 21 advanced, and assignment is the highest-attribute rule (classes.json assignment.eligible); conditions 40; weapons 60; weapon_mastery 11 families, 33 items; items 60; soul_modules 4 schools, 38 items; patrons 8; effect_ops 192 (50 core, 113 bespoke, 17 weapon, 11 item, 1 sigil); techniques 65 (33 melee, 32 ranged). The rows added later (actions 17, perk_cards 67, calls 9, loot 5, maps) are right.",
+   "rightSide": "data/README.md table is regenerated from the files.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "data/README.md rows vs files: classes 13/15 and 'closest-class rule' (data: 9 base, 21 advanced, assignment.eligible = highest attribute); conditions 29 (40); weapons 20 (60); weapon_mastery 10/30 (11/33); items 1 (60); soul_modules 20 modules (38 items); patrons 3 (8); effect_ops 132, 50/82 (192: 50/113/17/11/1); techniques 58, 27/31 (65: 33/32)."
+  },
+  {
+   "id": "data-readme-missing-files",
+   "kind": "doc-stale",
+   "where": "data/README.md:9-31 (Files table) and :34 (Loading order)",
+   "says": "The table lists 20 files; the loading order names 14.",
+   "truth": "data/ holds 24 JSON files. Not in the table: enemies.json (5 tiers, the level table, companions, casters), feelings.json (25), objects.json (23), world_play.json; data/campaigns/ is not mentioned. The loading order also leaves out techniques, calls, actions, perk_cards, feelings, enemies, objects, loot_tables, maps, world_play and archetypes.",
+   "rightSide": "data/README.md adds the missing rows and files.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Confirmed with a count correction: data/ holds 25 JSON files and the table lists 21, not 24 and 20. Missing rows are as stated: enemies, feelings, objects, world_play; data/campaigns/ is not mentioned. The loading order names 14 and leaves out the 11 listed."
+  },
+  {
+   "id": "data-readme-archetypes-cores",
+   "kind": "doc-stale",
+   "where": "data/README.md:15",
+   "says": "\"each archetype spends every creation point (10-point skill preset, all 9 attributes, 3 cores ...)\"",
+   "truth": "Rules 1.13: there are no Core points; a preset spends 10 Skill and 10 Attribute points (spec:105; data/rules.json character.creation.cores.points 0). The items in archetypes.json still carry a `cores` object (living_wall: {body: 7, mind: 1, soul: 1}) that no rule gives a meaning to, and the All-in family's blurb still says \"A 7/1/1 character\".",
+   "rightSide": "data/README.md line changes; the `cores` field in archetypes.json is a dead field to remove or derive (data follows the spec).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "data/README.md:15 says '3 cores'; rules 1.13 (spec:105, rules.json creation.cores.points 0). archetypes.json items still carry a cores object and the All-in family blurb says 'A 7/1/1 character'. I did not check whether any code reads the cores field, so 'dead field' is unverified. Spec:105 itself still calls All-in 'nine 7/1/1 builds'."
+  },
+  {
+   "id": "conventions-op-counts",
+   "kind": "doc-stale",
+   "where": "data/CONVENTIONS.md:40-41",
+   "says": "\"'core' ops (50) are generic ...; 'bespoke' ops (about 80, about 10% of all effect uses) belong to one or two items.\"",
+   "truth": "data/effect_ops.json: 192 ops: 50 core, 113 bespoke, plus 17 weapon, 11 item and 1 sigil tier ops the sentence does not know of. By the registry's own `count` fields bespoke is 191 of 1,324 uses (14%) and all non-core 22%.",
+   "rightSide": "data/CONVENTIONS.md sentence changes (and names the weapon, item and sigil tiers).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "data/CONVENTIONS.md:40-41 '\"bespoke\" ops (about 80, about 10% of all effect uses)'; effect_ops.json: 113 bespoke of 192, 191 of 1,324 counted uses (14%), plus weapon, item and sigil tiers the sentence does not name."
+  },
+  {
+   "id": "conventions-core-requirement",
+   "kind": "doc-stale",
+   "where": "data/CONVENTIONS.md:117",
+   "says": "\"`requires`: array of {\"skill\":...}, {\"attr\":...}, {\"core\":\"<id>\",\"min\":n}, ...\"",
+   "truth": "Rules 1.13: Cores are not spent and carry no points (data/rules.json character.caps.attribute_le_core false, creation.cores.points 0). No file in data/ uses a {\"core\": ...} requirement (searched all 24).",
+   "rightSide": "data/CONVENTIONS.md drops the core requirement form (or says it reads the family's highest attribute).",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "data/CONVENTIONS.md:117 still documents {\"core\":\"<id>\",\"min\":n}; a walk of all data/*.json and data/campaigns/*.json finds no object with both core and min; rules.json caps.attribute_le_core false, cores.points 0. Unused, documented form; low severity."
+  },
+  {
+   "id": "conventions-condition-ids",
+   "kind": "doc-stale",
+   "where": "data/CONVENTIONS.md:69",
+   "says": "\"Condition ids the engine runs are the ones in conditions.json\"",
+   "truth": "The engine also runs conditions that are not in conditions.json: guarded and inspired live only in packages/engine/src/magic.ts CONDS (the review's B7), and rules 1.14's fight conditions `lowered` and `hesitates` are defined in packages/engine/src/fighttalk.ts:12-14.",
+   "rightSide": "The data follows: the missing conditions go into conditions.json; until then the CONVENTIONS line is false.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Confirmed with a correction: 'lowered' IS in data/conditions.json (so are taunted and withdrawing). Missing from conditions.json but run by the engine: guarded and inspired (magic.ts:108-109) and hesitates (fighttalk.ts:12 FIGHT_CONDS). Right side: add those three."
+  },
+  {
+   "id": "dead-classes-k-298",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/classes-k.test.ts:298",
+   "says": "`expect(f.pc.ap).toBe(6); // rules 1.19: one free stage a turn, so the second fed Pump costs its AP expect(f.pc.mg!.held!.stage).toBe(2); expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(2);`",
+   "truth": "Everything after the `//` is comment: 2 expects (held stage 2; heartfed.rage 2) never run. Found by a comment-aware scan of all 282 test files (strings, templates and regex literals skipped).",
+   "rightSide": "Test: put the comment at the end of the line (or on its own line) so both expects run; fix whichever value is then red by deriving it.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "classes-k.test.ts:298 read: `expect(f.pc.ap).toBe(6); // rules 1.19: ... expect(held.stage).toBe(2); expect(...heartfed.rage).toBe(2);` on one line; the two trailing expects are comment text. Test-only fix as proposed (values must be derived when un-commented; not checked whether they pass)."
+  },
+  {
+   "id": "dead-sigil14-apply-146",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/sigil14-apply.test.ts:146",
+   "says": "`expect(493 - f.foe.hp).toBe(4 + 5); // the field \u00d70.5, and Corroded (from the strike) bites 5 expect(condOn(f.foe, 'corroded')).toBe(true); expect(logHas(f.cb, /caught in .*ACID field/)).toBe(true);`",
+   "truth": "2 expects swallowed by the mid-line comment (Corroded applied; the field's log line).",
+   "rightSide": "Test: move the comment to the line's end.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "sigil14-apply.test.ts:146 read: two expects (corroded cond, ACID field log) sit after the `//` on the same line."
+  },
+  {
+   "id": "dead-magic-48",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/magic.test.ts:48",
+   "says": "`... expect(cb.glyphs!.length).toBe(0); // rules 1.13: Brain Power saves a core charge on the Evoke (it was Proficiency) expect(cb.log.at(-1)).toMatch(/evokes SPARK \u00b7 SEEK/);`",
+   "truth": "1 expect swallowed (the Evoke log line).",
+   "rightSide": "Test: move the comment to the line's end.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "magic.test.ts:48 read: `expect(cb.log.at(-1)).toMatch(/evokes SPARK \u00b7 SEEK/)` is behind the mid-line `// rules 1.13 ...` comment."
+  },
+  {
+   "id": "dead-classes-rev3-moves-134",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/classes-rev3-moves.test.ts:134",
+   "says": "`... expect(f.unit(u.id).res!.momentum).toBe(3); // the 1 a fight starts with, +2 expect(fx(f, 'unstoppable').length).toBe(1);`",
+   "truth": "1 expect swallowed (Unstoppable's effect fired once).",
+   "rightSide": "Test: move the comment to the line's end.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "classes-rev3-moves.test.ts:134 read: `expect(fx(f,'unstoppable').length).toBe(1)` is behind `// the 1 a fight starts with, +2`."
+  },
+  {
+   "id": "dead-classes-rev3-moves-50",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/classes-rev3-moves.test.ts:50",
+   "says": "`const foe = at(f, f.foe, '5,2'); foe.attack = 60; foe.techs = []; // plain attacks: the maul's knockdown is its plain attack's grant, not a technique's (rules 1.12) order(f, d, foe);`",
+   "truth": "NEW (not in the review's 8): a set-up statement `order(f, d, foe);` is swallowed by the comment, so the Shrug It Off test runs with whatever turn order the fixture gives, not the one the author set. It is a statement, not an expect; the test still passes.",
+   "rightSide": "Test: move the comment to the line's end so order() runs (or delete the call if the default order is what is wanted).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "classes-rev3-moves.test.ts:50 read: `order(f, d, foe);` is swallowed by the `// plain attacks: ...` comment. It is a set-up statement, not an expect; the test passes with the fixture's default order. Fix as proposed (or delete the call)."
+  },
+  {
+   "id": "dead-outburst20-review-202",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/outburst20-review.test.ts:202",
+   "says": "`...toBeCloseTo(stageMult(3) + (v.mg!.held!.plus || 0)); // Shape's +0.1 on the turn's free Pump (rules 1.19) expect((f.cb as any).mods).toBeUndefined();`",
+   "truth": "1 expect swallowed (`mods` cleared).",
+   "rightSide": "Test: move the comment to the line's end.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "outburst20-review.test.ts:202 read: `expect((f.cb as any).mods).toBeUndefined()` is behind `// Shape's +0.1 ...`."
+  },
+  {
+   "id": "dead-phys-ranged-press-67",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/phys-ranged-press.test.ts:67",
+   "says": "`const v = f.fx('volley').filter(...); // the opening enemy turns may Suppress (its own volley event) expect(f.fx('volley').filter(...).every((e) => e.mode === 'suppress')).toBe(true); expect(v.length).toBe(1); expect(v[0]).toMatchObject({ unit: f.pc.id, target: a.id, mode: 'auto', shots: 10 });`",
+   "truth": "THREE expects are swallowed, not one as the review counted: the enemy volley check, `v.length === 1`, and the full-auto volley's shape (mode auto, 10 shots). `v` is computed and never asserted. Total over the six lines is 10 dead expects plus one dead statement (classes-rev3-moves:50); the scan found no others in packages/engine/test, apps/web/src or apps/web/e2e.",
+   "rightSide": "Test: move the comment to the line's end so the three expects run.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "phys-ranged-press.test.ts:67 read: three expects (enemy volleys all 'suppress'; v.length 1; v[0] shape auto/10 shots) follow the `//`; `v` is never asserted. My own git-grep scan for code after a mid-line comment in packages/engine/test, apps/web/src and apps/web/e2e returns exactly the same 7 lines (classes-k:298, classes-rev3-moves:50 and :134, magic:48, outburst20-review:202, phys-ranged-press:67, sigil14-apply:146), so the total of 10 dead expects + 1 dead statement holds."
+  },
+  {
+   "id": "neverrun-rules123-defence-128",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/rules123-defence.test.ts:127-128",
+   "says": "Test 'the hunt: an Elite with a gun and no shot at the healer steps to where it has one': `if (!m) { expect(enemyIntent(...).targetId).toBe(ada(f).id); return; }` then 4 expects (kind 'move', why 'healer', target Bo, the intent text).",
+   "truth": "In this fixture `healerMark(f.cb, f.foe)` is always null, so the test returns on line 127 and the four expects on line 128 never run: the hunt the title names (rules 1.23, spec 3741-3757) is not tested. Confirmed by running the whole engine suite with every `expect(` call site counted (13,772 sites; 3,398 tests passed): these 4 sites were never reached.",
+   "rightSide": "Test: fix the fixture so the enemy side sees Bo (the comment says a spotter should), and make the early return a failure, not a pass.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Ran an instrumented copy of the file (console.log on each arm): only the `if (!m)` early-return arm is hit; the four hunt expects on line 128 are never reached. The hunt (rules 1.23) is untested by this test."
+  },
+  {
+   "id": "neverrun-ai-soul-123",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/ai-soul.test.ts:120-124",
+   "says": "'...a release that hits more of its own side than of the players is never made': `for (const r of fx(b.cb, 'release', b.e)) expect(...)` and `if (c) expect(c.own).toBeLessThanOrEqual(c.foes);`",
+   "truth": "Fight b's caster is never given a turn (line 122 sets cb.turn and ap but never calls turn(b.cb, b.e)), so there are no release events and the loop body never runs; heartBestRelease returns null so the `if (c)` expect never runs either. Both sites unreached in the instrumented run. The second half of the test can never fail.",
+   "rightSide": "Test: call turn(b.cb, b.e) and assert on the releases (or assert `c` is null/`toHaveLength(0)` outright).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Instrumented copy prints `releases 0, c null` for fight b: turn(b.cb, b.e) is never called (line 122 only sets cb.turn and ap), so the for-loop body and the `if (c)` expect never execute. Second half of the test cannot fail."
+  },
+  {
+   "id": "neverrun-engine-859",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/engine.test.ts:859",
+   "says": "'a failed queued attack leaves no stray token behind': `if (g.phase === 'story') expect(npcsOf(g).length).toBe(before);`",
+   "truth": "The only expect in the test sits behind a condition that is never true with this seed (unreached in the instrumented run): the test asserts nothing.",
+   "rightSide": "Test: rig the roll so the attack fails (the suite has seq/rig helpers) and assert without the `if`.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Instrumented copy prints g.phase === 'combat' after the narrator/turn: the queued attack starts a fight, so `if (g.phase === 'story') expect(...)` never runs and the test asserts nothing."
+  },
+  {
+   "id": "neverrun-completeness-b-170",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/completeness-b.test.ts:169-170",
+   "says": "'Grim Reaper on the area map: a kill from the area map (the opening blow of the fight) counts': `const cb = s.g.combat; if (!cb) return; if (cb.units.find(...)?.dead) expect(logHas(cb, /Grim Reaper/)).toBe(true);`",
+   "truth": "The single expect is behind two guards and is never reached (instrumented run): the test cannot fail.",
+   "rightSide": "Test: make the kill certain (rig the die / set the drone's HP to 1) and assert unconditionally.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Instrumented copy: s.g.combat exists but the drone unit's `dead` is false, so the only expect (Grim Reaper log) is never reached. Test cannot fail."
+  },
+  {
+   "id": "neverrun-music-ost-129",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/music-ost.test.ts:127-129",
+   "says": "'...a wave on plays the fight music': `if (g.phase !== 'combat') { expect(gearing up) ...; g.phase = 'combat'; } if (!g.combat) return; expect(musicFor(g)).toMatchObject({ layer: 'combat', ... });`",
+   "truth": "After sandbox/start there is no g.combat, so the test returns on line 128; the combat-music expect on line 129 is never reached (instrumented run). Only the Gearing Up half is tested.",
+   "rightSide": "Test: start a wave (sandbox/fight) before the second expect and drop the early return.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Instrumented copy: after sandbox/start (and the forced g.phase='combat') g.combat is falsy, so the test returns at line 128; the combat-layer expect on 129 never runs. Only the Gearing Up half is tested."
+  },
+  {
+   "id": "neverrun-classes-j-201",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/classes-j.test.ts:201",
+   "says": "'Banner Thread: no torso armour gives +2 Defense and +1 Movement': `if ((c.armourClass || 0) === 0 && !c.worn?.inner_torso && !c.worn?.lower_torso) { expect(bare.pc.def).toBe(base.def + 2); expect(bare.pc.movement).toBe(base.movement + 1); }`",
+   "truth": "The default fixture character wears torso armour, so the condition is always false and the two expects that state the move's headline effect never run (instrumented run). Banner Dancer is a shelved advanced class.",
+   "rightSide": "Test: strip the fixture's armour before the check and assert unconditionally (or delete with the shelved class's tests).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Instrumented copy prints armourClass 3, worn undefined for the fixture character: the guard is false through armourClass (not through worn slots; the finder's 'wears torso armour' is loosely worded but the effect is the same) and the two headline expects never run. The rest of the test (story-side defense with armour stripped) does run."
+  },
+  {
+   "id": "neverrun-sight-fx-119",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/sight-fx.test.ts:119 (and :132)",
+   "says": "`for (const pid of ['h1','p2']) for (const e of viewFor(g, pid).combat!.fx!) if (e.k === 'sight') expect(e.only).toBe('pc');` and `if (rv) expect(rv).toMatchObject({ how: 'reveal', only: 'pc' });`",
+   "truth": "No 'sight' event exists in either player's view in the first fixture, and `rv` is never set in the second: both expects are unreached in the instrumented run. Line 119 asserts nothing; line 132 is an optional branch that never happens with this seed.",
+   "rightSide": "Test: produce a sight event in the fixture (a reveal) and assert at least one was checked.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Instrumented copy: both players' views hold 0 'sight' events at line 119, and `rv` is falsy at line 132. Neither expect executes with these seeds."
+  },
+  {
+   "id": "neverrun-combat-screen-213",
+   "kind": "dead-assertion",
+   "where": "apps/web/src/screens/combat-screen.test.ts:213",
+   "says": "`if (!third.off) expect(L.state.action).toBe(third.action === 'shot' ? 'shot' : third.action);`",
+   "truth": "The third quick command is always off in this fixture, so the '3' key's effect is never asserted. This is the only never-reached expect in the web suite that is not simply the other arm of an if/else (4,872 call sites instrumented; the two else-arms are techView.test.ts:60 and combat-screen.test.ts:111, not defects).",
+   "rightSide": "Test: give the fixture a usable third command, or assert that pressing 3 on an off command leaves the action unchanged.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "Instrumented copy of apps/web/src/screens/combat-screen.test.ts: the third quick command is {label 'Reload (speed)', off: true, action 'reload'} (12/12 loaded), so `if (!third.off) expect(...)` never runs. Fix as proposed (assert the action is unchanged for an off command, or empty the magazine first)."
+  },
+  {
+   "id": "placeholder-completeness-c2-170",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/completeness-c2.test.ts:170",
+   "says": "`it('is covered under the 1.4 rules in sigil14-perks.test.ts', () => { expect(true).toBe(true); });`",
+   "truth": "A placeholder that can never fail, counted as a passing test (also `expect(true).toBe(true)` at balance/defence-measure.test.ts:121 and balance/heal-measure.test.ts:119, both in env-gated report writers).",
+   "rightSide": "Test: delete the placeholder describe; the comment above it already points at sigil14-perks.test.ts.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "completeness-c2.test.ts:170 is `expect(true).toBe(true)` under a describe whose comment points at sigil14-perks.test.ts. The two other occurrences (balance/defence-measure.test.ts:121, balance/heal-measure.test.ts:119) exist as stated."
+  },
+  {
+   "id": "stale-skip-coverage-36",
+   "kind": "dead-assertion",
+   "where": "packages/engine/test/coverage.test.ts:36",
+   "says": "`it.skipIf(!strict)('no gaps (todo until the lanes finish; PHC_COVERAGE_STRICT=1): every effect is engine-run or explicitly Narrator-ruled', ...)`",
+   "truth": "Nothing sets PHC_COVERAGE_STRICT (not tools/check.py, not package.json), so this test is skipped on every run with an undated 'todo until the lanes finish'. The lanes have finished: BASELINE is 0 (coverage.test.ts:12) and `PHC_COVERAGE_STRICT=1 npx vitest run test/coverage.test.ts` passes 3 of 3 today. The skip is the only it.skip/skipIf in the suites that is not an opt-in measuring tool (the balance/*-measure files, try.test.ts, live-playtest).",
+   "rightSide": "Test: remove the skipIf and the 'todo' wording (the strict test is now the rule), or delete it since the ratchet at BASELINE 0 already says the same.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "coverage.test.ts:36 is it.skipIf(!strict) with 'todo until the lanes finish'; BASELINE = 0 with a comment that every lane has closed. git grep finds PHC_COVERAGE_STRICT only in this file and four handoff docs (not tools/check.py, not package.json). `PHC_COVERAGE_STRICT=1 npx vitest run test/coverage.test.ts` passes 3 of 3. All other skips in the suites are env-gated measuring tools (balance/*, live-playtest)."
+  },
+  {
+   "id": "cmt-snap-0.6",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/ai-soul.ts:17 and :143; classes/k.ts:624, :672, :1371; game.ts:352; magic.ts:874, :898",
+   "says": "A snap cast (stage 0) is '\u00d70.6' (e.g. magic.ts:898 'hold false is a snap cast: Begin and Release at once (3 AP, \u00d70.6)'; ai-soul.ts:143 'A snap cast (stage 0, \u00d70.6 for 3 AP)'; magic.ts:874 \"Heart Surge's snap: \u00d71, not \u00d70.6\").",
+   "truth": "Stage 0 is \u00d70.8 since rules 1.8 and still in rules 1.19: spec 3234 ('\u00d70.8 at stage 0 ... A snap cast stays \u00d70.8'); data/soul_modules.json cycle.stage_mult [0.8, 1.0, 1.2, 1.4, 1.6]; magic.ts:583-584.",
+   "rightSide": "Comments: say \u00d70.8, or better name STAGE_MULT[0] and no number (8 places).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "All 8 sites read and say \u00d70.6 (ai-soul.ts:17, :143; classes/k.ts:624, :672, :1371; game.ts:352; magic.ts:874, :898). Spec 3234 (rules 1.19): stage 0 \u00d70.8, 'A snap cast stays \u00d70.8'; soul_modules.json cycle.stage_mult [0.8,1.0,1.2,1.4,1.6]; magic.ts:583-584 says so itself. k.ts:624/:672 label it 'rules 1.5', which was true of 1.5 but is not the current number. No later revision restores 0.6."
+  },
+  {
+   "id": "cmt-stage4-2.2",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/classes/k.ts:540, :1462, :1570-1571",
+   "says": "':540 Begins at stage 4 ... (\u00d72.2 and the tone's stage-4 rider'; ':1462 reads the 1.5 stage table (\u00d71, \u00d71.4, \u00d71.8, \u00d72.2 at stage 4)'; ':1570 (stage 1 \u00d71 \u2026 stage 4 \u00d72.2) ... two stage-4 forms are 66 before the multiplier'.",
+   "truth": "The code reads STAGE_MULT (k.ts:1483), which is \u00d71.0 / \u00d71.2 / \u00d71.4 / \u00d71.6 for stages 1-4 since rules 1.19 (spec 3234; soul_modules.json cycle.stage_mult). Stage 4 is \u00d71.6; two stage-4 forms are 15 \u00d7 1.6 \u00d7 2 = 48, not 66. (These are shelved advanced-class moves, but the comments are what a reader meets first.)",
+   "rightSide": "Comments: drop the literal table and point at STAGE_MULT.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "k.ts:540, :1462, :1570-1571 read as quoted; k.ts:1483 says the form multiplier is magic.ts STAGE_MULT, which is \u00d71.0/1.2/1.4/1.6 for stages 1-4 (spec 3234, data). releaseSum is 15 \u00d7 vesselMult(stage) per form, so two stage-4 forms are 48, not 66. Comment-only."
+  },
+  {
+   "id": "cmt-heart-surge-2.8",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/classes/i.ts:1283",
+   "says": "'the multiplier reads one step higher (stage 4: \u00d72.8, the table's 0.4 step continued; a snap: \u00d71.2, stage 1)'",
+   "truth": "Rules 1.19 (spec 3237): past stage 4 it is \u00d71.8, the table's 0.2 step; a snap reads stage 1 = \u00d71.0. The code three lines down computes it from the table and its own trailing comment says \u00d71.8 (i.ts:1286).",
+   "rightSide": "Comment at 1283: \u00d71.8, 0.2 step, snap \u00d71.0 (or no numbers).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "classes/i.ts:1283 says '\u00d72.8, the table's 0.4 step continued; a snap: \u00d71.2'; spec 3237 (rules 1.19): \u00d71.8; the line's own trailing comment at :1286 says 'rules 1.19: \u00d71.8; rules 1.17: \u00d72.8'. Stage 1 is \u00d71.0 now."
+  },
+  {
+   "id": "cmt-plain-pump-0.4",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/feelings.ts:2 and :20; magic.ts:921",
+   "says": "feelings.ts:2 'its own step on the multiplier instead of the plain +0.4'; feelings.ts:20 'Rules 1.17: `base` is the step (+0.4 is a plain Pump's)'; magic.ts:921 \"the stage table's plus (step \u2212 0.4) for each feeling pump\".",
+   "truth": "A plain Pump is +0.2 since rules 1.19 (spec 3232-3236: 'its own step in place of the plain +0.2 ... plus (step \u2212 0.2) for each feeling Pump'); feelings.ts:29-30 PLAIN_STEP = 0.2; data/feelings.json plain_step 0.2.",
+   "rightSide": "Comments: +0.2 / (step \u2212 PLAIN_STEP).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "feelings.ts:2 and :20 and magic.ts:921 say +0.4 / (step \u2212 0.4); spec 3236 says +0.2 and (step \u2212 0.2); feelings.ts:29-30 PLAIN_STEP = FJ.plain_step ?? 0.2; data/feelings.json plain_step 0.2."
+  },
+  {
+   "id": "cmt-damage-base-20",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/magic.ts:1140; classes/soul.ts:22; magic.ts:595-596 (and the fallback literal at :597)",
+   "says": "magic.ts:1140 'The damage one school deals ... (rules 1.5): 20 \u00d7 Soul multiplier \u00d7 stage \u00d7 shape'; classes/soul.ts:22 'rules 1.5 maths: 20 \u00d7 Soul multiplier \u00d7 stage \u00d7 shape'; magic.ts:595 \"The Damage school's base (rules 1.17): a character's 28 (it was 20); an enemy caster's 18\".",
+   "truth": "Rules 1.19 (spec 3235): the base is 40 for a character and 24 for an enemy caster; data/soul_modules.json damage.base 40, damage.enemy_base 24. The code reads the data (`m.soulBase ?? SOUL_DAMAGE_ENEMY`); the `?? 20` fallback at magic.ts:597 is also the 1.5 number.",
+   "rightSide": "Comments: 40 / 24 (rules 1.19), or 'the Damage base (soul_modules.json damage.base)'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "magic.ts:1140 and classes/soul.ts:22 say '20 \u00d7 Soul multiplier ...'; magic.ts:595 says 28/18 (rules 1.17). Spec 3235 (rules 1.19): 40 and 24; soul_modules.json damage.base 40, enemy_base 24. The code reads the data; the `?? 20` fallback at :597 is the old number but never reached with the shipped data."
+  },
+  {
+   "id": "cmt-free-pumps-empathy7",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/magic.ts:52 (and character.ts:655, already in the review)",
+   "says": "'Free Pumps left this round and per round (Empathy 3: 1, 7: 2)'",
+   "truth": "Rules 1.19 (spec 3311): Empathy 7 no longer gives a second free Pump; soul_modules.json cycle.free_pumps is [{empathy: 3, pumps: 1}]; a character takes one free stage a turn at most.",
+   "rightSide": "Comment: 'Empathy 3: 1' only.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "magic.ts:52 '(Empathy 3: 1, 7: 2)' and character.ts:655 '2 from Empathy 7'; spec 3311 (rules 1.19): Empathy 7 no longer gives a second, it gives a Strain-free swell; soul_modules.json cycle.free_pumps [{empathy 3, pumps 1}], free_pumps_per_turn 1."
+  },
+  {
+   "id": "cmt-calm-0.8",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/magic.ts:925",
+   "says": "'// Calm's \u00d70.8 on a Release that rolls (rules 1.17)'",
+   "truth": "Calm never was \u00d70.8 (rules 1.17 said \u00d70.75), and since rules 1.19 Calm has no Release multiplier at all: its price is the step (spec 3254); feelings.json calm.pour has no release_mult, so calmMult returns 1 (magic.ts:1164).",
+   "rightSide": "Comment: 'calmMult: 1 since rules 1.19; kept for data that sets release_mult'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "magic.ts:925 says 'Calm's \u00d70.8 on a Release that rolls (rules 1.17)'. Spec 3254: rules 1.17 was \u00d70.75, rules 1.19 has no Release multiplier (step \u22120.4 is the price); feelings.json calm.pour has no release_mult, so calmMult returns 1. I found no place in the spec where Calm was \u00d70.8, but I did not search git history, so 'never was' is not proven; the comment is wrong for both 1.17 and 1.19 either way."
+  },
+  {
+   "id": "cmt-calm-step",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/magic.ts:1163",
+   "says": "'Rules 1.19: none (Calm steps \u22120.2 instead)'",
+   "truth": "Calm's step is \u22120.4: spec 3254 ('**\u22120.4**'); data/feelings.json calm.step.base \u22120.4. (\u22120.2 is Relief's.)",
+   "rightSide": "Comment: \u22120.4.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "magic.ts:1163 says 'Calm steps \u22120.2 instead'; spec 3254 says \u22120.4; feelings.json calm.step.base \u22120.4 (\u22120.2 is Relief's)."
+  },
+  {
+   "id": "cmt-pride-strain",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/magic.ts:1441",
+   "says": "'Pride (rules 1.19): a Release that takes nobody down costs 1 Strain after it.'",
+   "truth": "2 Strain: spec 3257 ('2 Strain after the Release, unless it took somebody down'); feelings.json pride.pour.strain_unless_down 2, which the code on the next line reads.",
+   "rightSide": "Comment: 2 Strain (or 'its strain_unless_down').",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "magic.ts:1441 says 1 Strain; spec 3257 says 2; feelings.json pride.pour.strain_unless_down 2, read by the code on :1442."
+  },
+  {
+   "id": "cmt-relief-strain",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/magic.ts:1451",
+   "says": "'Relief (rules 1.17): each Relief poured in takes 1 Strain off'",
+   "truth": "Rules 1.19 (spec 3267): Relief takes 2 Strain off, and a feeling goes into an Outburst once (spec 3238-3239), so there is no 'each Relief'; feelings.json relief.pour.strain_back 2.",
+   "rightSide": "Comment: 'Relief (rules 1.19): takes its strain_back (2) off at the Release'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "magic.ts:1451 says 'rules 1.17: each Relief poured in takes 1 Strain off'; spec 3267 (rules 1.19): 2 Strain; feelings.json relief.pour.strain_back 2; a feeling goes in once (spec section 2 of 1.19), so the count multiplier on :1452 is 1 in practice."
+  },
+  {
+   "id": "cmt-defiance-nosave",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/magic.ts:304 (and :565)",
+   "says": "'// Rules 1.8: Defiance poured in, no saves against the release (NOSAVE_BY)' and ':565 whose release skips saves (Defiance)'",
+   "truth": "Rules 1.19 (spec 3272): everything the Release makes a target save against is 4 harder, not unsaved; feelings.json defiance.pour.save_penalty 4, and the code on line 305 adds DEFY_PEN to the TN (skipSave only when the data has no penalty).",
+   "rightSide": "Comments: '+4 to the save's TN (rules 1.19; no save at all before)'.",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "magic.ts:304 lead comment and :565 doc say Defiance's release skips saves; spec 3272 (rules 1.19): 4 harder to resist; feelings.json defiance.pour.save_penalty 4, and :305 adds DEFY_PEN to the TN (skipSave only when the data has no penalty). Mitigation: :305 carries its own trailing comment 'rules 1.19: 4 harder to resist (it was: no save)', so only the lead comment at :304 and the doc at :565 are stale. Low severity."
+  },
+  {
+   "id": "cmt-love-fifth",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/magic.ts:1353",
+   "says": "'Love with no ally in the shape (rules 1.17): the most wounded ally within the design's reach, or you, heals a fifth of it.'",
+   "truth": "Rules 1.20 (spec 3438): with no ally in the shape it heals \u00d70.15 of what the Buff school would heal at that multiplier, not a fifth of the damage; loveHeal reads lone_heal_share ?? 0.15 off BUFF_HEAL (magic.ts:1162).",
+   "rightSide": "Comment: '\u00d70.15 of the Buff heal (rules 1.20)'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "magic.ts:1353 says 'heals a fifth of it' (rules 1.17's \u00d70.2 of damage); spec 3438 (rules 1.20): \u00d70.15 of what the Buff school would heal; loveHeal (magic.ts:1162) uses BUFF_HEAL \u00d7 lone_heal_share ?? 0.15; feelings.json love.pour.lone_heal_share 0.15."
+  },
+  {
+   "id": "cmt-at-once-half",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/classes/i.ts:1240",
+   "says": "'one roll each where the design rolls (At Once: no roll, half)'",
+   "truth": "At Once is \u00d70.8 since rules 1.17 (spec 3112: 'At Once: no roll at \u00d70.8 (was \u00d70.5)'); soul_modules.json at_once text '\u00d70.8 damage'. (magic.ts:1141's fallback `?? 0.5` is the old number too.)",
+   "rightSide": "Comment: '\u00d70.8'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "classes/i.ts:1240 says 'At Once: no roll, half'; spec 3112 (rules 1.17): \u00d70.8; soul_modules.json at_once damage_mult 0.8. The `?? 0.5` fallback at magic.ts:1141 is also the old number (unreached with shipped data)."
+  },
+  {
+   "id": "cmt-mend-40",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/classes/i.ts:1457",
+   "says": "'Your Buff-school heals heal 40 (not 30) \u00d7 your Healing given \u00d7 the stage ...'",
+   "truth": "Rules 1.20 (spec 3443): Mend heals from a base of 9 in place of 7, \u00d7 the level factor; the code five lines down reads heal_base ?? 9 (i.ts:1462) and soul_modules.json schools[buff].heal is 7.",
+   "rightSide": "Comment: '9 (not 7) \u00d7 Healing given \u00d7 the stage \u00d7 the level factor'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "classes/i.ts:1457 says '40 (not 30)'; spec 3443 (rules 1.20): base 9 in place of 7; i.ts:1462 BARD_MEND = heal_base ?? 9; soul_modules.json buff school heal 7."
+  },
+  {
+   "id": "cmt-heavy-bolt-50",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/physical/ranged/fire.ts:245",
+   "says": "'31. Heavy Bolt (the crossbow's signature; Leon, 10 Nov 2026): one bolt at +50% damage that ignores 10 armour'",
+   "truth": "+40% since rules 1.18 (spec 3174); data/techniques.json heavy_bolt text 'One bolt at +40% damage'.",
+   "rightSide": "Comment: +40% (rules 1.18).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "physical/ranged/fire.ts:245 says +50%; spec 3174 (rules 1.18): +40%; techniques.json heavy_bolt text '+40% damage'. Also the code's fallback `t.num('damage_pct', 50)` carries the old 50 (the data line supplies the live number)."
+  },
+  {
+   "id": "cmt-mag-dump-4",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/physical/ranged/press.ts:278-279",
+   "says": "'12. Mag Dump ... one roll per 3 rounds left (at least one, at most 4), each at \u22121 more than the last'",
+   "truth": "Rules 1.18 (spec 3173): three rolls at most, each at \u22124 more than the last; data/techniques.json mag_dump text 'at most 3 rolls, each at \u22124 more than the last'.",
+   "rightSide": "Comment: 'at most 3, each at \u22124 more (rules 1.18)'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "physical/ranged/press.ts:278-279 says 'at most 4, each at \u22121 more'; spec 3173 (rules 1.18): three rolls at most, each \u22124 more; techniques.json mag_dump text says at most 3, \u22124. Code fallback `t.num('max_rolls', 4)` is also the old number."
+  },
+  {
+   "id": "cmt-hearthlight-10",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/faith.ts:713",
+   "says": "'// Hearthlight: allies starting a turn in it heal 10 \u00d7 power.'",
+   "truth": "4 \u00d7 Blessing power \u00d7 the level factor since rules 1.20 (spec 3460); data/patrons.json Hearthlight text 'heals 4 \u00d7 your Blessing power. The heal grows with your level'. The code uses z.heal from the data.",
+   "rightSide": "Comment: drop the number ('heal the zone's amount').",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "faith.ts:713 says 'heal 10 \u00d7 power'; spec 3460 (rules 1.20): 4; patrons.json Hearthlight text '4 \u00d7 your Blessing power'; code uses z.heal."
+  },
+  {
+   "id": "cmt-lucky-break-1",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/faith.ts:779",
+   "says": "'// Lucky Break: the next failed attack roll is rerolled at +5.'",
+   "truth": "The next 2 failed attack rolls since rules 1.21 (spec 3576); patrons.json 'Their next 2 failed attack rolls are each rerolled at +5'; the code below counts down a number.",
+   "rightSide": "Comment: 'the next failed attack rolls (2, rules 1.21) are each rerolled at +5'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "faith.ts:779 says 'the next failed attack roll'; spec 3576 (rules 1.21): the next 2; patrons.json Lucky Break text 'next 2 failed attack rolls'; the code at :782 counts a number down."
+  },
+  {
+   "id": "cmt-true-believer-min1",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/perks/d.ts:902",
+   "says": "'True Believer (trait). Unshaken: prayer cooldown 1 turn shorter (minimum 1).'",
+   "truth": "Rules 1.22 (spec 3644-3646): the wait is 1 round shorter and no wait is ever under 2 rounds; patrons.json prayer.hymn.cooldown_rule.min_wait 2; the register block's own comment at d.ts:910 says '2 rounds or more'.",
+   "rightSide": "Comment at 902: '(never under 2 rounds; rules 1.22)'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "perks/d.ts:902 says 'prayer cooldown 1 turn shorter (minimum 1)'; spec 3644-3646 (rules 1.22): no wait under 2 rounds; patrons.json min_wait 2; d.ts:910 already says '2 rounds or more'."
+  },
+  {
+   "id": "cmt-brain-save-charisma",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/magic.ts:198",
+   "says": "\"Saves (spec: Conditions and saves): a PC's d20 + mod(Guts | Charisma | Composure) + items\"",
+   "truth": "The Brain save is Rumination since rules 1.13: spec 191; character.ts:731 SAVE_SKILL_OF = { body: 'guts', brain: 'rumination', heart: 'composure' }; magic.ts:207 says so itself.",
+   "rightSide": "Comment: mod(Guts | Rumination | Composure).",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "magic.ts:198 says mod(Guts | Charisma | Composure); spec 191 (rules 1.13): Brain save is Rumination; character.ts:731 SAVE_SKILL_OF brain 'rumination'; magic.ts:207 says so."
+  },
+  {
+   "id": "cmt-crit-taken-durability",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/character.ts:778",
+   "says": "'/** Critical damage taken: \u221210% \u00d7 (Perception \u2212 1) \u2212 5% \u00d7 Durability. */'",
+   "truth": "Acuity since rules 1.13 (spec 186: '\u2212 5% \u00d7 Acuity (rules 1.13: it was Durability)'); the code on the next line reads P(c, 'analysis') and its trailing comment says so.",
+   "rightSide": "Doc comment: '\u2212 5% \u00d7 Acuity'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "character.ts:778 doc says '\u2212 5% \u00d7 Durability'; spec 186: Acuity (rules 1.13); :779 reads P(c,'analysis') with a trailing comment saying it was Durability's."
+  },
+  {
+   "id": "cmt-attr-le-core",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/character.ts:857",
+   "says": "\"/** After creation the caps work normally: a skill can't pass its Attribute, an Attribute can't pass its Core. */\" (an orphaned doc comment, attached to nothing)",
+   "truth": "Rules 1.13: one gate only, Skill \u2264 Attribute; a Core is read off its highest attribute (spec 101; character.ts:207; data/rules.json:173 attribute_le_core false).",
+   "rightSide": "Delete the orphaned comment.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "character.ts:857 is a doc comment followed directly by another doc comment (Legendary Deed), attached to nothing; it states Attribute \u2264 Core. Spec 101 and character.ts:207: one gate only (Skill \u2264 Attribute); rules.json:173 attribute_le_core false. Delete."
+  },
+  {
+   "id": "cmt-fog-core-point",
+   "kind": "comment-stale",
+   "where": "packages/engine/src/perks/h.ts:81",
+   "says": "'// +1 Core point at creation (rules 1.11, item 929; FOG_CORE in character.ts reads the trait).'",
+   "truth": "Mind Without Fog gives 2 Attribute points: character.ts:195-199 ('nobody spends Core points ... It was 1 Core point'; FOG_CORE = 2) and character.ts:237 passes it as extra Attribute points. (Same root as the review's B1; this comment is a fifth place that says it.)",
+   "rightSide": "Comment: '+2 Attribute points at creation (rules 1.13; FOG_CORE)'.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "perks/h.ts:81 says '+1 Core point at creation (rules 1.11...)'; character.ts:197-199 FOG_CORE = 2 Attribute points (rules 1.13, 'It was 1 Core point'), passed as extra Attribute points at :237; data/traits.json Mind Without Fog text '2 extra Attribute points at creation (12 instead of 10)'."
+  },
+  {
+   "id": "e2e-orphans",
+   "kind": "other",
+   "where": "tools/e2e.py:22-26 (ANIM, RULES, GROUPS) against apps/web/e2e/*.mjs",
+   "says": "`'all': RULES + ANIM` and the docstring 'npm run e2e -- all   every suite in the lists below': 32 suites.",
+   "truth": "apps/web/e2e holds 64 suites (lib.mjs is the helper). 32 are in no group, so 'all' never runs them: combat-portraits, faith, feel, feelings40, grand, heart, layout, magic, mana-forecast, mapzoom, missions, pg-art, playscreen, playtest-tools, reconnect, resources, sandbox-mp, shell-guest, sigil14, sigil15, sigil15-growth, sigil15-strokes, slate, slate-music, slate-stamp, slate-title, soul, title, turn-card-side, ui-shell, voice, vote. 25 of them were last edited on or before 10 Nov 2026 (before rules 1.15); soul (8 Nov), sigil14 (8 Nov), heart (9 Nov), sigil15* (9 Nov), magic (9 Nov) drive systems that rules 1.17-1.24 reworked. Every name in the groups exists as a file.",
+   "rightSide": "tools/e2e.py: put each orphan in a group or delete it, and exit with an error when a .mjs in apps/web/e2e is in no group.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "Recomputed: apps/web/e2e has 65 .mjs (64 suites + lib.mjs); tools/e2e.py names 32 (ANIM 12 + RULES 20) and 'all' = RULES + ANIM; the 32 orphans match the finder's list exactly. Nothing else runs them (package.json's only e2e entry is tools/e2e.py; an orphan can still be run by name, e.g. `npm run e2e -- soul`, since unknown names fall through GROUPS.get). Small correction: by git log I count 26, not 25, orphans last touched on or before 10 Nov 2026; soul/sigil14 8 Nov, heart/magic/sigil15 9 Nov as stated; feelings40 is 11 Nov and faith 12 Nov."
+  },
+  {
+   "id": "e2e-readme-feelings40",
+   "kind": "doc-stale",
+   "where": "apps/web/e2e/README.md:39",
+   "says": "'feelings40.mjs: ... Rage (a coloured stage segment with its glyph, \u00d71.1)' (and the suite's own header, feelings40.mjs:4, says \u00d71.3)",
+   "truth": "The suite asserts \u00d71.3 (feelings40.mjs:113 `ev.mult === 1.3`, :115 `/\u00d71\\.3/`): rules 1.19, stage 0 \u00d70.8 plus Rage's +0.5 (spec 3234, 3249). \u00d71.1 was the rules 1.8 number (0.6 + 0.5).",
+   "rightSide": "README: \u00d71.3, or no number.",
+   "playerVisible": false,
+   "confidence": "high",
+   "verifier": "apps/web/e2e/README.md:39 says Rage '\u00d71.1'; feelings40.mjs:4 header and :113/:115 assert \u00d71.3 (rules 1.19: 0.8 + 0.5; spec 3234, 3249; feelings.json rage base 0.5). README is the stale side."
+  },
+  {
+   "id": "e2e-world-play-label",
+   "kind": "other",
+   "where": "apps/web/e2e/world-play.mjs:181",
+   "says": "The check is named 'the strongbox panel: locked, holds 2, odds and \"Fail: 35 damage\" in plain words' but asserts `/50 damage/.test(...)`.",
+   "truth": "The name of the check states 35 while the assertion (which runs in the 'rules' group) wants 50: the label is the stale half. I did not trace the strongbox's number to its source file.",
+   "rightSide": "Suite: make the label say what is asserted (or read the number from the panel and not pin it).",
+   "playerVisible": false,
+   "confidence": "medium",
+   "verifier": "world-play.mjs:181: the check's label says \"Fail: 35 damage\" while the assertion is /50 damage/ on the panel's [data-fail] text. The label is stale relative to its own assertion; like the finder I did not trace which engine/data number produces 50, so only the label-vs-assertion mismatch is confirmed. Cosmetic (the label is log text)."
+  }
+ ],
+ "notFixedBySecondPass": [
+  {
+   "id": "(about 140 findings after 'tag-desecrate-corpse-damage')",
+   "why": "NEVER RECEIVED. The task text's list of 309 findings was cut off in the middle of the faith slice, after about 167 items (perks 19, traits 29, classes 27, weapons/techniques 59, magic 26, faith 7). The rest of faith and every later slice was not visible to me and the full list is not on disk (I searched the tasks directory). They need another pass with the list handed over as a file."
+  },
+  {
+   "id": "together-duration",
+   "why": "Engine is wrong against item 615 (the Hymn ticks on each ally's own turn), but the fix is a caster-keyed state like Hold the Gate, not a small hunk in faith.ts, which another agent is refactoring. Recorded as spec item 1513 (n)."
+  },
+  {
+   "id": "tags-supply-protect-trick-never-fire",
+   "why": "PARTLY fixed: Resupply (prayed for an ally) now tags supply and a Feint tags trick. The general Brace, Interpose, an item handed over and cover placed still tag nothing: each needs a new emit in combat.ts / physical/guard.ts. Item 1513 (o)."
+  },
+  {
+   "id": "one-breath-plus4-and-no-range-halving",
+   "why": "PARTLY: the card is now true whatever the ruling ('+1 more to hit', bound to the effect's value). Whether the total should be +3 or +4, and the spec's range-band halving (not built), need Leon: item 1508."
+  },
+  {
+   "id": "servo-fist-wall-bonus",
+   "why": "Verifier: ambiguous ('to it': the target or the cover). Needs a ruling; item 1513 (a). Nothing guessed."
+  },
+  {
+   "id": "rotary-minus2-and-movement",
+   "why": "Verifier: Leon should rule (the Heavy property can be read as supporting the -2). Item 1513 (b)."
+  },
+  {
+   "id": "spin-up-ap",
+   "why": "Not built; a Narrator-op grant that promises engine AP. Item 1513 (c)."
+  },
+  {
+   "id": "narrator-grants-ap-discounts",
+   "why": "Verifier reclassified it as a sanctioned gap (spec line 628), a design gap against the 90% engine rule. Item 1513 (c)."
+  },
+  {
+   "id": "quick-property-text-vacuous",
+   "why": "The spec never states the rule the text presupposes; rewriting Quick and Close Quarters or adding the rule is Leon's. Item 1513 (d)."
+  },
+  {
+   "id": "heavy-property-3ap",
+   "why": "Leon's call which side moves (engine prices by category). Item 1513 (e)."
+  },
+  {
+   "id": "modes-single-not-enforced",
+   "why": "Leon's call (rules 1.12 'everyone knows Shot' vs the Modes column). Item 1513 (f)."
+  },
+  {
+   "id": "rip-saw-fuel",
+   "why": "Low confidence; the spec gives no rate. Item 1513 (g)."
+  },
+  {
+   "id": "spellslinger-requires",
+   "why": "An ambiguity, Leon's call. Item 1513 (h)."
+  },
+  {
+   "id": "eyes-in-the-back-flank-pressure",
+   "why": "A judgement call per the verifier (the spec is silent on Pressure for this perk). Item 1513 (i)."
+  },
+  {
+   "id": "siege-engine-shove-discount",
+   "why": "The card's wording is Leon's recorded ruling of 10 Nov and is not literally false (the old 2 AP Shove is discounted). The data half asks for new effects[] entries nothing reads; not added. Item 1513 (j)."
+  },
+  {
+   "id": "spec-momentum-guard-points",
+   "why": "Engine is ahead of the spec on an open item (1004) with no recorded ruling; needs Leon. Item 1513 (k). Spec lines left as they are."
+  },
+  {
+   "id": "effects-omit-combat-form",
+   "why": "PARTLY: Bone Talk's ap_cost (2) and Blueprint's uses (per_scene) set. The rest asks for new effects[] entries that nothing reads, which is the kind of unread mirror field that went stale (the review of pass 1 said the same), and handlers claim effects by index."
+  },
+  {
+   "id": "traits-adjudication-vs-engine-verdict",
+   "why": "PARTLY: the 11 data labels are fixed (7 hybrid to engine, 4 narrator to hybrid; spec table and item 1514; the label-count test follows). verdictOf (effects/coverage.ts) still calls 16 engine traits 'both'; teaching it item 1101 is a code change left open."
+  },
+  {
+   "id": "mwf-unmoving-inert",
+   "why": "Verifier: a design observation, not a text error. Recorded in item 1504."
+  },
+  {
+   "id": "payload-special-ammo-ap-cost",
+   "why": "PARTLY: special_ammo now says ap_cost_is 'reload'. Payload left at 0: the verifier found 0 defensible (a rider on an Evoke)."
+  },
+  {
+   "id": "grand-staff-range",
+   "why": "PARTLY: the spec row carries a note. range_tiles left at 1 because for a 'mana' weapon the engine reads that field for its attack; reading reach from one place is a refactor."
+  },
+  {
+   "id": "smg-rake-vs-spray-and-pray",
+   "why": "PARTLY: the action list now prices Full auto by the weapon. Rake's own Auto line still costs a flat 4 on the SMG."
+  },
+  {
+   "id": "thrown-range-fields-dead",
+   "why": "PARTLY: thrown_range_tiles removed, the weapons notes and a spec note say the per-weapon tiles are not used. The throwable_N property strings stay (code keys on the prefix)."
+  },
+  {
+   "id": "mods-foregrip-wrapped-grip-not-run",
+   "why": "Not built. adjudication no longer says engine (narrator, built: false)."
+  },
+  {
+   "id": "torch-flare-pavise-not-run",
+   "why": "Not built beyond the light value. adjudication is now hybrid (torch, flare) or narrator (pavise) with a built marker."
+  },
+  {
+   "id": "conds-two-tables-names",
+   "why": "The fix is one conditions table read by the engine: a refactor of magic.ts CONDS. Item 1513 (p)."
+  },
+  {
+   "id": "conds-family-of-states",
+   "why": "The data's null family is the truer statement (verifier); the engine's filler family is harmless. Left."
+  },
+  {
+   "id": "spec-cond-table-missing",
+   "why": "Adding rows for Smitten, Scorned, Hopeful, Last Turn, Guarded, Inspired is a spec addition: Leon's. Smitten and Scorned wait in tools/spec_tables_known.json."
+  },
+  {
+   "id": "focus-durability-missing",
+   "why": "Low confidence; nothing says focuses wear."
+  },
+  {
+   "id": "weapons-missing-from-starter-table",
+   "why": "Verifier: an observation, no change needed."
+  }
+ ],
+ "reviewOfSecondPass": {
+  "problems": [
+   {
+    "where": "data/skills.json:1289 (ingenuity per_point.text), :2285 (proficiency per_point.text), :2293 (proficiency unlocks.3.text) on branch worktree-wf_67430118-ae8-19",
+    "problem": "Coincidental placeholder bindings. \"+{=overreach.from_points}% ambush damage\", \"Field Repair restores {=overreach.from_points}% more\" and \"10% + {=overreach.from_points}% per Improvisation point\" all read overreach.from_points, the Overreach threshold (5 points, the same on all 27 skills). It only happens to equal the 5%. Move the Overreach threshold and three unrelated percentages change on the card; change the real 5% and the card stays. The hand-off says three coincidental bindings were undone; these were not.",
+    "severity": "high"
+   },
+   {
+    "where": "data/skills.json unlocks.10.text of rumination, empathy, will_power, lore_master",
+    "problem": "\"Resisting this skill's Overreach now costs {=overreach.effects.0.value|abs} Echo\" (will_power: effects.1) binds the 2 Echo resist cost to the Overreach's indulge penalty (a skill_mod of -2). Unrelated field, equal by chance. The other 23 skills leave the same sentence as a bare 2 in the baseline, so the same sentence is guarded two different ways.",
+    "severity": "high"
+   },
+   {
+    "where": "data/calls.json call.rally steps[1].text and steps[2].text, call.threaten steps[1].text, call.warn steps[2].text; data/soul_modules.json fire/storm/gale stages 3 and 4 text; data/feelings.json shame trigger.text; data/skills.json analysis per_point.text",
+    "problem": "Texts bound to another step's or another object's field. Rally step 1 reads steps.0.numbers.ap; Rally step 2 reads steps.1.numbers.pressure; Threaten step 1 reads steps.0.numbers.ap_loss; Warn step 2 reads steps.1.numbers.tiles; soul module stage 3 and 4 texts read stages.2.riders.*; gale stage 4 reads stages.1.riders.0.tiles. Tune one step's own number and its card does not move. Shame's \"You roll a natural {=residue.roll|abs}\" binds a natural 1 to the residue's -1 roll penalty. Acuity's \"at 3 points it costs {=unlocks.3.effects.0.value|abs} AP\" binds a cost to a discount (-1). All render right today and follow the wrong number tomorrow.",
+    "severity": "high"
+   },
+   {
+    "where": "packages/engine/test/truth-pass-2.test.ts:17-30 (Crawler-Blooded) against packages/engine/src/perks/a.ts:482",
+    "problem": "The test does not pin the rule it names. I replaced the fix in a scratch copy with `p = PATRON[charOfUnit(ctx.u)?.patron]` (the praying unit's patron only, no lookup of the Blessing's patron) and the test still passed. In both of its cases the pray-er's patron and the Hymn's patron are the same. An Atheist, a Heretic or a knowledge-piece holder praying a Lumeri Hymn (pray-er's patron differs from the Blessing's) is not covered, and that is the case spec item 114 is about.",
+    "severity": "medium"
+   },
+   {
+    "where": "packages/engine/src/sigil.ts:415 (numbersFor)",
+    "problem": "`foe` changed from `caster.side !== 'pc'` to `!caster.charId && !caster.ctrl`. Spec item 1512 declares one direction (a character on the enemy side of a Proving Ground fight gets character MEND and WARD bases). The other direction is not declared: a pc-side caster with no charId and no ctrl (an allied NPC caster) now heals and shields with the enemy bases (heal_enemy / shield_enemy). I found no test for it. This is a behaviour change in a file other agents are refactoring.",
+    "severity": "medium"
+   },
+   {
+    "where": "data/perks.json case_closed effects[2]; data/traits.json oil_in_my_mind and oil_in_my_soul effects[4].derived; data/classes.json rewrite shield_damage_cap, inspire without_emanator, ap_cost_is / ap_is",
+    "problem": "New mirror fields that no engine code reads, with card numbers bound to them. Case Closed's \"deal {=effects.2.value|more}% more\" reads a new damage_mult 1.2 effect, while the engine's number is the literal `v: 1.2` at perks/f.ts:354 (the handler claims 'all', so there is no double application). The Oil traits' derived block mirrors paperStat in perks/h.ts. grep finds no reader of ap_cost_is, shield_damage_cap or without_emanator. The fixer declined other findings on the grounds that unread mirror fields go stale, then added these.",
+    "severity": "medium"
+   },
+   {
+    "where": "whole diff: 15 data files (855 placeholders; skills.json +191/-531, classes.json 465 lines, traits.json 382), 31 engine files given `import './datatext'`, packages/engine/src/index.ts:1",
+    "problem": "Scope and merge risk well beyond a list of fixes. Every data text holding a number was rewritten into {=path} form, and a one-line import was added at the top of every engine module that imports data JSON (ai-sigil, ai-soul, calls/data, campaign, character, combat, containers, data, effects/ap, effects/collect, game, gear, loot, maplayout, objects, perks/cooldown, physical/data, sigilwords, tactics and others). Any parallel branch that edits a card text or an import block will conflict. The no-raw-placeholder property rests on a convention with no guard: I checked that every current importer has the line, but a new module from another agent that imports data JSON without it is caught by nothing. skills.json also drops `signature_of` and the per_point `effects` arrays and renames `choice` values (upgrade_or_second to perk_step, both_tier_2 to mastered_perk); grep finds no engine or client reader of those, so no behaviour moved, but they add to the conflict surface.",
+    "severity": "medium"
+   },
+   {
+    "where": "data/items.json buckler text; data/traits.json the_mask upsides[0], bottle_butts_for_eyes downsides[0]; data/techniques.json stopping_shot lines[1]",
+    "problem": "Four cards were moved to the engine's reading where the verifier said a ruling from Leon decides. The buckler lost \"+3 Defense\" Parry for the technique's +2 while the spec row still says \"needs a ruling, item 1506\". The mask and glasses follow rules 1.9 (1 AP in a fight) against spec line 2644. Stopping Shot's Spread now says \"a target that fails the save ... Suppressed or not\" against the spec's \"either way\". Each card is now true of the engine, which is defensible, but the spec has not yet won or lost: these should be listed for Leon as decisions taken, not as fixes.",
+    "severity": "low"
+   },
+   {
+    "where": "docs/rules/PHC-Core-Rules-v1.0.md:2688, :2691, :2276, items 983, 986, 1503",
+    "problem": "Case Closed's +20% and Stand Still's original were written into the spec as \"Superseded by Leon's ruling of 10 Nov 2026\" on the strength of skeleton-2.0-PLAN.md and the changelog. The verifier's note said both need Leon's confirmation. The direction is probably right and item 1503 records the source, but the spec now states as settled something Leon has not confirmed in the spec itself.",
+    "severity": "low"
+   },
+   {
+    "where": "CLAUDE.md:82 (Mana line, edited by this branch)",
+    "problem": "No false statement found in the changed lines I checked against the branch: op counts 50 / 113 / 29 = 192 and 14.4% of uses; creation 10 + 10 with attribute cap 7 then 8 / 9 / 10 at levels 3 / 6 / 9; 38 Skill and 20 Attribute points; HP by Pain Threshold; a gamma skill's full points on checks; stage table x0.8 to x1.6; Flux per glyph; Atheist prays by dice; tools and test folders exist. One omission in a line the branch did edit: it still reads \"Pump (1 AP)\" although data/rules.json mana.soul.cycle.pump_mp (rules 1.24) charges MP for a Pump, and the line stops at rules 1.19. Not checked: the Hymn cooldown wording and the faith numbers.",
+    "severity": "low"
+   },
+   {
+    "where": "sampled fixes (about 60 of the confirmed findings, all engine-wrong and player-visible ones in the visible list)",
+    "problem": "No wrong-side or missing fix found in the sample. Verified present and on the right side: Bleeding 3 rounds (magic.ts flagCond); Heavy Bolt Body save; Finish It Stunned (data and combat.ts); breacher splash 60 (golden lines re-recorded consistently); Crawler-Blooded; Rally preview; Improvisation strings; Burst fx step from the event; Heart Surge card; fire_sermon text and target; lay_down_arms tiers; grim_reaper limit; verse_of_war (effect removed, claims 'all'); spoon_feed; twin_souls; four perks to hybrid; 7 traits to engine and 4 to hybrid; Mind Without Fog; True Believer; Old School; Oil cards; trench_poet; factory_made; heretic; chain_smoker; the_old_blood claims; reactive_plate, unbroken, rewrite, shelved uses; Through and Inner Charge; signature_total removed; weapons ap_cost shapes (mana melee arms keep `single`, so attackApCost is unchanged); grenade range fields; Steady Aim; lance and thumper grants; on-hit \"a plain attack\"; bayonet Dexterity; shove roll; spec rows 607, 736, 877, 2364, 2423. validate.py prints 0 errors, check_spec_tables 0 errors, and the four guard test files pass (16 tests) on a scratch export of the branch. The fixer's own report of about 140 findings never received stands: nothing after the faith slice can be called fixed.",
+    "severity": "info"
+   }
+  ],
+  "guardWeaknesses": [
+   "Text-number guard (tools/text_numbers.py, datatext.test.ts): it proves a card equals a data field, not that the field is what the engine runs. Passes while the bug exists whenever the engine hard-codes the number (Case Closed's 1.2 at perks/f.ts:354 against the bound effects[2].value) or the field is a mirror nothing reads.",
+   "Text-number guard: a binding to the wrong field passes for as long as the two values are equal (overreach.from_points for 5%, another step's numbers, a discount for a cost). Nothing checks that the path is inside the text's own object or step.",
+   "Text-number guard: the mutation test (+1 on each bound field changes the text) is true by construction. It tests the renderer, not whether any binding is right.",
+   "Text-number guard: 1,432 bare numbers stay in the baseline against 855 bound. For those, the guard only stops the text being edited; the engine or the field can change under them and it passes.",
+   "Text-number guard: only keys text / upsides / downsides / grand are scanned. Numbers in name, note, summary, rule, when, tagline strings are not, and numbers written as words (twice, double, half, one) or as lists (\"18, 19 or 20\" is three bare tokens in the baseline) are not bound.",
+   "datatext.test.ts 'no text the engine hands out still holds a placeholder' scans PERK, WEAPON and TRAIT only, after index.ts has already loaded datatext. It cannot catch a new module that imports data JSON without the datatext import and builds a constant from a text; classes, skills, techniques, patrons, conditions and calls are not scanned.",
+   "truth-pass-2 Crawler-Blooded test: passes with the Blessing-patron lookup deleted (run in a scratch copy). It only distinguishes the holder's patron from the pray-er's.",
+   "truth-pass-2 Finish It test: real (fails with `expected 22.5 to be greater than 22.5` when the Stunned clause is removed). It asserts only 'greater than', so a wrong multiplier passes.",
+   "truth-pass-2 Bleeding test: real for applyCond with no length and skipSave. It does not cover a technique's own cond() path or a cond_apply listener lowering the rounds.",
+   "tools/check_spec_tables.py: compares the spec's tables with data, never with the engine, and reads only the first number of a cell. Passes while the engine disagrees with both (the Bleeding bug: 3 rounds in spec and conditions.json, 1 in magic.ts CONDS), while a second number in a cell is wrong (\"110 on the tile, 60 radius 1\"), and when someone 'fixes' a difference by editing the spec row to match the data. Modes, AP, notes, mods, armour, techniques and derived-stat tables are not read.",
+   "text-number-truth.test.ts (old skill names): matches only the title-cased id of a renamed skill. It misses the old name in lower case or inside a template built from parts, and the words Analysis / Sensory / Implication unless followed by a digit or check / roll / modifier / points. Data texts are not scanned by it.",
+   "text-number-truth.test.ts (wiki rank line): compares the glossary string with RANK_ATTR / RANK_LEVEL, which the glossary now builds from the same constants, so it is close to a tautology; the only real check is that the constants equal classes.json.",
+   "test-lint.test.ts: catches a statement after // on one line. It does not catch a statement inside a /* */ block, an expect with no matcher, an expect behind an early return or a false condition, or a swallowed assignment with no trailing semicolon. It walks only the listed directories."
+  ],
+  "verdict": "Not ready to merge as it stands.\n\n**What holds.** In a sample of about 60 of the confirmed findings, every fix I looked at is present, correct and on the right side. That includes all the engine-wrong and player-visible ones in the visible list. The engine hunks are small. On a scratch export of the branch, the validator and the spec-table check print 0 errors and the four guard test files pass.\n\n**What blocks it.**\n1. **Wrong-field bindings.** The placeholder pass left at least 20 texts bound to a field that only happens to hold the same number today. Examples: three percentages read the Overreach threshold; four Echo costs read an Overreach penalty; Call steps and soul-module stages read another step's numbers. The new guard cannot see this, and its mutation test is true by construction.\n2. **Crawler-Blooded test.** It still passes with the Blessing-patron lookup removed, so it does not pin spec item 114.\n3. **`sigil.ts:415`.** The new `foe` test also moves pc-side casters that are not characters onto the enemy heal and shield bases. That direction is not declared and not tested.\n4. **Scope.** The branch is far wider than a list of fixes: every numbered data text was rewritten and 31 engine modules got a new import line. That will conflict with the parallel refactors, and nothing enforces the import on new modules.\n\n**Smaller points.** Four cards and two spec rows were settled where the verifier asked for Leon's ruling. Several new data fields are mirrors nothing reads. CLAUDE.md's changed lines are true as far as I checked; the one gap is that the Mana line omits the rules 1.24 MP cost of a Pump.\n\n**Not reviewed.** The roughly 140 findings the fixer never received are untouched. The `engineBehaviourChanged` list reached me cut off after four entries, so I checked the rest of the engine diff against spec item 1512 instead."
+ }
+}
