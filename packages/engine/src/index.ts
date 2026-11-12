@@ -8,7 +8,7 @@ export * from './objects';
 export * from './campaign';
 export { MAP_LIMITS, MAP_LAYOUTS, readLayout, expandZone, sizeProblem, startGap, deployEnemy, nearestFree } from './maplayout';
 export * from './music';
-export { fightSight, isUnseenId, UNSEEN, UNSEEN_NAME, type FightFog } from './fog';
+export { fogFight, fightSight, isUnseenId, UNSEEN, UNSEEN_NAME, type FightFog } from './fog';
 export * from './spotlight';
 export * from './glossary';
 export * from './memory';

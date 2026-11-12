@@ -1,7 +1,7 @@
 // Plays the engine's presentation events (packages/engine/src/combat.ts, FxEvent) as sound and pictures over the grid.
 // Every player's screen plays the same events from the shared game state, in order, each given its beat so a burst of
 // enemy actions reads as a sequence. Nothing here changes the game; nothing waits on it; a hidden tab skips it all.
-import { type FxEvent, type GameState, SIGIL, WEAPON, visibility, phys, refOf } from '@engine';
+import { type FxEvent, type GameState, SIGIL, WEAPON, fightSight, phys, refOf } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
@@ -49,7 +49,9 @@ export function setContext(g: GameState | null, screen: string) {
   for (const c of Object.values(g.characters || {})) if (c && (c as any).id) charNames.set((c as any).id, String((c as any).name || ''));
   if (screen === 'combat' && g.combat) {
     for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name) || MACHINE_KIND.has((u as any).kind), dead: !!u.dead, charId: u.charId || undefined });
-    try { const v = visibility(g.combat, 'pc'); seenTiles = v.tiles; seenUnits = new Set([...v.seen, ...g.combat.units.filter((u) => u.side === 'pc').map((u) => u.id)]); } catch { seenTiles = null; seenUnits = null; }
+    // The view is already fogged by the engine (fog.ts): every unit in it is one this side sees (or its own, or a body);
+    // the human Narrator's view holds everything and plays everything.
+    try { const v = fightSight(g.combat); seenTiles = v.full ? null : v.tiles; seenUnits = v.full ? null : new Set(g.combat.units.map((u) => u.id)); } catch { seenTiles = null; seenUnits = null; }
   } else {
     for (const c of Object.values(g.characters)) { const p = g.story.positions?.[c.id]; if (p) units.set('pc-' + c.id, { pos: p, name: c.name, side: 'pc', robot: false, charId: c.id }); }
     for (const n of g.story.npcs || []) units.set(n.id, { pos: n.pos, name: n.name, side: 'foe', robot: ROBOT.test(n.name) || MACHINE_KIND.has(n.kind || '') });
@@ -68,7 +70,9 @@ const ghosts = new Map<string, HTMLElement>();
 /** After each render: copy the living units' tokens (never overwritten by a dead unit's empty tile). */
 export function rememberTokens() {
   try { rememberTiles(); } catch { /* the effects never stop the game */ }
-  for (const id of [...lastTok.keys()]) if (!units.has(id)) lastTok.delete(id);
+  // A hostile that went out of sight is gone from the view (the engine's fog), but its walk into the fog or its fade still
+  // plays on its last copy: copies are kept in a fight, dropped outside one.
+  if (!seenUnits) for (const id of [...lastTok.keys()]) if (!units.has(id)) lastTok.delete(id);
   for (const [id, u] of units) { if (u.dead || heldIds().has(id)) continue; const t = tokenEl(tileEl(u.pos)); if (t) lastTok.set(id, t.cloneNode(true) as HTMLElement); } // a held token is see-through: keep the last good copy
 }
 function ghostOf(id: string | null | undefined, key: string | null | undefined, life = 2400): HTMLElement | null {
@@ -377,7 +381,8 @@ export function holdMovers(evs: FxEvent[]) {
   if (!seenUnits || !hasLayer()) return;
   for (const [id, m] of moversOf(evs, (x) => unit(x)?.side)) {
     if (waiting.has(id) || parked.has(id)) continue;
-    const u = unit(id); if (!u) continue;
+    // one gone from the view into the fog: its stand-in is its last copy where it was last seen
+    const u = unit(id) || (lastTok.has(id) && m.stand ? { pos: '', name: '', side: 'foe', robot: false } : undefined); if (!u) continue;
     const live = !u.dead && seesUnit(id) ? tokenEl(tileEl(u.pos)) : null;
     if (!live && !m.stand && !(u.dead || seesUnit(id))) continue;
     const hide = live ? anim(live, [{ opacity: 0 }, { opacity: 0 }], { duration: HOLD_CAP_MS }) : null;
