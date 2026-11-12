@@ -83,7 +83,7 @@ not push, and to report the branch name. Hand long lists to an agent as a **file
   4. Effects with a schema (review 4: 5).
   5. Rooms and the Narrator prompt (review 4: 7, 10). **First to cut if tokens run short.**
   6. Fold the spec's revision sections 1.14 to 1.25 into its body (review 3: row 7); section 14 as a ledger.
-- [ ] **The balance pass resumes** (`docs/design/proposals/2026-11-balance-pass.md` section 17;
+- [x] **The balance pass: the re-fit merged 12 Nov** (rules 1.26; `balance-refit.md`, `docs/design/balance-contract.md`; still unmeasured: class moves, perks, special rounds, Calls, reactions, armour). The brief it was built from: (`docs/design/proposals/2026-11-balance-pass.md` section 17;
   `2026-11-unified-damage.md` stage b: steps b1 to b8). Rulings already given by Leon: the ceilings are what an
   **all-in** build reaches and a normal share sits at ceiling ÷ **1.25**; **no damage slope on rolled attacks** (skill
   buys accuracy, level buys damage); melee's all-in ceiling 165% with the Defender lower; flat things grow with
@@ -93,8 +93,8 @@ not push, and to report the branch name. Hand long lists to an agent as a **file
   charged ultimate counted in the average; Miracles exempt. Then: many targets, a yardstick for control, the systems
   never measured (`PATCH-TALLY.md` section 10), the balance contract (`docs/design/balance-contract.md`) and its
   guard test. Known to re-check in the re-fit: Bleeding now lasts 3 rounds; the breacher tube's splash is 60.
-- [ ] **`docs/ENGINE-GUIDE.md`**: collect every hand-off's "How to add things" into one guide for agents.
-- [ ] **`docs/PLAYTEST-CHECKLIST.md`**: what Leon should try by hand, by system, with what "right" looks like. Seed it
+- [x] **`docs/ENGINE-GUIDE.md`** (written 12 Nov, by reading the hand-offs; correct it when a hand-off changes): collect every hand-off's "How to add things" into one guide for agents.
+- [x] **`docs/PLAYTEST-CHECKLIST.md`** (written 12 Nov; its "right" values are from the hand-offs, not from play): what Leon should try by hand, by system, with what "right" looks like. Seed it
   from `PATCH-TALLY.md` (every changed system), `BUGLIST-0.22.md` (bugs to confirm by eye) and each hand-off's
   behaviour changes.
 - [ ] **Close:** `PATCH-TALLY.md` live column checked against `origin/main`; version bump in the four `package.json`
