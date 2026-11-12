@@ -254,6 +254,7 @@ describe('Insomniac, Rival, Rabbit\'s Foot, Company Man, Upper-Touched, Sworn Si
 describe('Lowland Born, Raised by Orks, Oil in My Mind, start items', () => {
   it('Lowland Born: −2 Vigilant on a story check in an open zone', () => {
     const s = storyWith([{ traits: ['lowland_born'] }]); const c = s.chars[0];
+    s.g.campaign = JSON.parse(JSON.stringify(s.g.campaign)); // shared between states: change a copy
     const z = (s.g.campaign as any).zones.find((x: any) => x.id === zoneMap(s.g).id); z.tags = [...(z.tags || []), 'terrain:open'];
     const ck = storyCheck(s, c.id, ['vigilant'], [], 10);
     expect(JSON.stringify(ck.roll) + JSON.stringify(s.g.story.entries.at(-1))).toMatch(/Lowland|Open Sky|−2/);

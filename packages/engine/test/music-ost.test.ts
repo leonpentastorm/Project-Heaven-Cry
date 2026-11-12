@@ -70,7 +70,7 @@ const brawl = (enemies: { name: string; tier: string; weapon: string }[], name =
 describe('musicFor in a fight', () => {
   it('plays the OST, never the campaign\'s generic combat track', () => {
     const r = room();
-    r.g.campaign!.music = { ...(r.g.campaign!.music || {}), combat: { yt: 'bbbbbbbbbbb', title: 'Old fight', artist: '' } };
+    r.g.campaign = { ...r.g.campaign!, music: { ...(r.g.campaign!.music || {}), combat: { yt: 'bbbbbbbbbbb', title: 'Old fight', artist: '' } } }; // shared between states: replaced, not written in place
     r.act(brawl([{ name: 'E', tier: 'minion', weapon: 'service_pistol' }]));
     const song = r.g.combat!.song!;
     expect(FIGHT_POOL).toContain(song);
@@ -112,7 +112,7 @@ describe('musicFor in a fight', () => {
   });
   it('a campaign\'s theme for a named encounter keeps its fight, until Last Rounds', () => {
     const r = room();
-    const camp = r.g.campaign!;
+    const camp = (r.g.campaign = JSON.parse(JSON.stringify(r.g.campaign)))!; // shared between states: change a copy
     camp.encounters = [...(camp.encounters || []), { name: 'The ramp', zone: camp.zones[0].id, when: '', difficulty: 'hard', music: { yt: 'ccccccccccc', title: 'Red', artist: 'Someone' }, enemies: [] }];
     r.act(brawl([{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }], 'The ramp'));
     expect(musicFor(r.g)).toMatchObject({ layer: 'encounter', track: { title: 'Red' } });

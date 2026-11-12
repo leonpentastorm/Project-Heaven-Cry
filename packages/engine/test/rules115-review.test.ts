@@ -62,7 +62,7 @@ describe('the Narrator names a tier and a level, never a number', () => {
 describe('a campaign file may give a fight, or one enemy, a level', () => {
   const withCampaign = (level: number) => {
     const s = storyWith([{ level }]);
-    const camp: any = (s.g as any).campaign;
+    const camp: any = ((s.g as any).campaign = JSON.parse(JSON.stringify((s.g as any).campaign))); // shared between states: change a copy
     return { s, camp };
   };
   it('an encounter\'s level is the fight\'s; an encounter enemy\'s level is its own; the fight\'s own list wins over both', () => {

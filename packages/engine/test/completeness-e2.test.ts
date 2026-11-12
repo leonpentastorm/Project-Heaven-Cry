@@ -29,7 +29,7 @@ function created(traits: string[], kit = 'soldier') {
   return { g, c: Object.values(g.characters)[0] };
 }
 /** Tag the current zone (the campaign's zone record). */
-function tagZone(g: GameState, ...tags: string[]) { const z = (g.campaign as any).zones.find((x: any) => x.id === zoneMap(g).id); z.tags = [...(z.tags || []), ...tags]; }
+function tagZone(g: GameState, ...tags: string[]) { g.campaign = JSON.parse(JSON.stringify(g.campaign)); /* shared between states: change a copy */ const z = (g.campaign as any).zones.find((x: any) => x.id === zoneMap(g).id); z.tags = [...(z.tags || []), ...tags]; }
 function storyCheck(s: any, charId: string, skills: string[], tags: string[], die: number) {
   s.act({ type: 'narrator/turn', turn: { narration: 'A test.', checks: [{ charId, skills, tn: 12, stakes: 'Test', tags }] } } as any);
   s.g.rng.state = rngFor(die).state; const ck = s.g.checks.find((k: any) => !k.done)!; s.act({ type: 'check/roll', checkId: ck.id });
