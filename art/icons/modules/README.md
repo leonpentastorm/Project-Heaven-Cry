@@ -33,5 +33,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-silent.png`: a dot inside a circle with a slash through the circle
 - `module-thread.png`: two dots tied by one line
 - `module-cascade.png`: a stair of small dots growing in size
+- `module-tether.png`: a straight beam between two rings
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.

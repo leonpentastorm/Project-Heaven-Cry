@@ -11676,6 +11676,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-cascade.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-cascade.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-tether": {
+      "id": "module-tether",
+      "label": "a straight beam between two rings",
+      "path": "art/icons/modules/module-tether.png",
+      "sha256": "858d0c26cfdcc88b23ee79151369b45df48860502381ff40eea144a12b164e43",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-tether.png",
+        "128": "art/icons/modules/exports/128/module-tether.png",
+        "64": "art/icons/modules/exports/64/module-tether.png",
+        "56": "art/icons/modules/exports/56/module-tether.png",
+        "48": "art/icons/modules/exports/48/module-tether.png",
+        "44": "art/icons/modules/exports/44/module-tether.png",
+        "40": "art/icons/modules/exports/40/module-tether.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-tether.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-tether.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

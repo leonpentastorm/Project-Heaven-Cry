@@ -3007,6 +3007,52 @@
           "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
         }
       ]
+    },
+    {
+      "path": "art/icons/modules/module-tether.png",
+      "sha256": "858d0c26cfdcc88b23ee79151369b45df48860502381ff40eea144a12b164e43",
+      "id": "module-tether",
+      "family": "modules",
+      "action": "a straight beam between two rings",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-tether.png",
+        "sha256": "e8cda7b7134f88948bbfc85a5e1ba0e8c1f84a57c2832032755bfef2676c5ec4"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-tether.png",
+        "sha256": "858d0c26cfdcc88b23ee79151369b45df48860502381ff40eea144a12b164e43"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-tether.txt",
+        "sha256": "3474c02bace559de0bb22a2888228886a44e5487396793427203a9c6fa212154"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-tether.png",
+        "128": "art/icons/modules/exports/128/module-tether.png",
+        "64": "art/icons/modules/exports/64/module-tether.png",
+        "56": "art/icons/modules/exports/56/module-tether.png",
+        "48": "art/icons/modules/exports/48/module-tether.png",
+        "44": "art/icons/modules/exports/44/module-tether.png",
+        "40": "art/icons/modules/exports/40/module-tether.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
     }
   ]
 }
