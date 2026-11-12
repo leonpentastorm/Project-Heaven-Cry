@@ -24,7 +24,6 @@ that can do a piece; no more than two pieces running at once; a reviewer only wh
 
 | Piece | Branch | State when this was written |
 | --- | --- | --- |
-| Browser suites clean-up (review 3: row 10) | `worktree-wf_bff3748c-24c-*` (remote: `wip/worktree-wf_bff3748c-24c-1`) | building |
 | Balance pass stage b (the re-fit) | a `worktree-agent-*` branch (remote `wip/…`), started 12 Nov | building |
 
 Every other `worktree-…` branch is **already merged** (wave 1, wave 2, the sweep, performance); leave them.
@@ -69,7 +68,7 @@ not push, and to report the branch name. Hand long lists to an agent as a **file
 ## 4. What is left, in order (tick as you go)
 
 - [x] **Wave 2** merged (12 Nov): costs and counters, conditions, fog in the engine. Left over from it, for wave 3: the fight log still reaches every player whole (spec item 1600 a: do it with the effects schema); about half the counters and 28 resource payments are still by hand (ratcheted by `lint-costs`; they ride on item ops).
-- [ ] **Browser suites** clean-up merged (every suite in a group or deleted; timing checks made load-proof).
+- [x] **Browser suites** clean-up merged (12 Nov; stopped by the lead after 8 hours of full runs on a loaded machine: 61 suites in `apps/web/e2e/groups.json`, runner retries once alone). Not yet run against the merged tree: action descriptors changed the client after it, so expect stale suites on the first `npm run e2e -- all`.
 - [ ] **Wave 3** (PLAN.md has the table; the reviews have the detail). Cheapest order:
   1. [x] Item ops, first pass (merged 12 Nov; `engine-foundations-3-item-ops.md`): the runner, closed lists of
      30 triggers / 54 predicates / 18 ops, a ratchet lint, a `relic` item kind loaded at run time. **Only 20 of 310
