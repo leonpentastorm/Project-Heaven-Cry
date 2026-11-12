@@ -491,6 +491,54 @@ export function recordItems(T: Table, part: 'perks' | 'traits-classes' | 'all' =
   return seen;
 }
 
+// ============================================================================================== the shelved moves
+// Step a6 moves the numbers written in classes/*.ts into data. Most of them belong to moves no character can hold today
+// (the 21 advanced classes and the Revision 2 ranks of the move pool: shelved, Class Roster 3), which the sweep above
+// never reaches. This section holds them with the tests' own switches on (_setAdvancedLive, _setRevision2Classes: never
+// on in play), on one even sheet and the same probes, and writes whatever number they give.
+export function recordShelved(T: Table): Record<string, number> {
+  const seen: Record<string, number> = {}, kitOf = (core: string) => (/mind/i.test(core) ? 'sigil' : /soul/i.test(core) ? 'soul' : 'soldier');
+  const HIGH = () => ({ level: 12, skills: Object.fromEntries(A.SKILLS.map((x: any) => [x.id, 6])), attrs: Object.fromEntries(A.ATTRS.map((x: any) => [x.id, 6])) });
+  const sweep = (key: string, spec: any, kit: string) => {
+    const without = { ...HIGH(), kit }, base = probes(itemFight(without), null);
+    let g: any; try { g = itemFight({ ...without, ...spec }); } catch (e: any) { T[key + '/setup'] = 'THREW ' + String(e?.message || e).slice(0, 80); return; }
+    const u = pcs(g)[0]; if (u.mg) Object.assign(u.mg, { charge: Math.max(u.mg.charge || 0, 9), mp: Math.max(u.mg.mp || 0, 200) });
+    { const c = charOf(g, u); c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.devotion = 7; }
+    foes(g)[1].kind = 'robot'; pcs(g)[1].jammed = true;
+    for (const k of Object.keys(u.resMax || {})) (u.res ||= {})[k] = u.resMax[k];
+    for (const m of (u.held ? A.classMoveKeys(u.held) : [])) seen[m.key] = seen[m.key] || 0;
+    for (const [k, v] of Object.entries(probes(g, null))) if (base[k] !== v) T[key + '/' + k] = v;
+    const got = itemActions(T, key, g, (e) => String(e.id).startsWith('class:'), base, (e) => e.id.slice(6) + '/' + e.actionId);
+    for (const [k, v] of Object.entries(got)) seen[k] = (seen[k] || 0) + v;
+  };
+  A._setAdvancedLive(true);
+  try {
+    for (const id of Object.keys(A.ADVANCED)) { const adv = A.ADVANCED[id], parent = (adv.parents || [])[0], core = A.CLASS[parent]?.core || ''; sweep('shelved/advanced/' + id, { classId: parent || 'fighter', advancedClass: id }, kitOf(core)); }
+    A._setRevision2Classes(true);
+    for (const id of Object.keys(A.REV2_CLASSES)) sweep('shelved/rev2/' + id, { classId: id }, kitOf(A.REV2_CLASSES[id].core || ''));
+  } finally { A._setRevision2Classes(false); A._setAdvancedLive(null); }
+  return seen;
+}
+
+// ============================================================================================== the literals
+// What step a6 moves that no action of the sweeps above produces: the system's own flat numbers, called as the engine
+// calls them. (Bleeding, Burning and Corroded ticks, hazards, traps and thrown items are in `flat`; Shame's rider is in
+// `outburst`.)
+export function recordLiterals(T: Table) {
+  // the Flux overload: an Evoker 1, 2 and 4 Flux over its limit (a shield up: it takes the burst first)
+  const gs = fightSpec([{ ...CASTER }, { ...SHOOTER }], [{ tier: 'soldier' }], { level: 6, seed: 'literals' }), us = pcs(gs)[0]; turn(gs, us, 9);
+  for (const over of [1, 2, 4]) for (const sh of [0, 12]) T['literal/flux-overload/' + over + '-over' + (sh ? '/shield' : '')] = run(gs, (g2, cb) => { const u = byId(g2, us.id); u.mg.flux = A.FLUX_MAX; u.shield = sh; A.flux(cb, g2.rng, u, over); return null; }).line;
+  // the Strain burn at the end of a turn (1 and 2 over the limit) and the Mana Short (3 over)
+  const gh = heartFight({ ...HEART }, [{ tier: 'soldier' }, { tier: 'elite' }], { level: 6, seed: 'literals' }), uh = pcs(gh)[0], [sold, elite] = foes(gh);
+  place(gh, [[uh, '5,5'], [sold, '6,5'], [elite, '5,6']]); turn(gh, uh, 9);
+  for (const over of [1, 2, 3, 5]) for (const sh of [0, 12]) T['literal/strain-burn/' + over + '-over' + (sh ? '/shield' : '')] = run(gh, (g2, cb) => { const u = byId(g2, uh.id); u.mg.strainLimit = 4; u.mg.strain = 4 + over; u.shield = sh; A.magicTurnEnd(cb, g2.rng, u); return null; }).line;
+  // the aura: a held heart with an element leaks onto the enemies next to it at the start of its turn (each tone)
+  for (const tone of A.TONES.map((x: any) => x.id)) T['literal/aura/' + tone] = run(gh, (g2, cb) => {
+    const u = byId(g2, uh.id), id = 'aura_' + tone; u.mg.designs.push({ id, name: 'Golden ' + id, school: 'damage', modules: [], tone }); u.ap = 99;
+    const e = A.beginOutburst(cb, g2.rng, u, id, undefined, true, {}); if (e) return 'Begin: ' + e;
+    cb.turn = cb.order.indexOf(u.id); delete cb.window; A.beginTurn(cb, g2.rng); return null; }).line;
+}
+
 // ============================================================================================== flat
 export function recordFlat(T: Table) {
   // thrown items and blasts: a throw onto a Soldier with an Elite and a shielded squadmate inside the radius
@@ -595,7 +643,7 @@ export function recordSpecial(T: Table) {
  * technique or item of the lines that hold a number (0: tried, and nothing to read): coverage.json keeps them. */
 export const SECTIONS: Record<string, (T: Table) => Record<string, number> | void> = {
   'builds-normal': (T) => recordBuilds(T, ['normal']), 'builds-allin': (T) => recordBuilds(T, ['allin']), weapons: recordWeapons, enemies: recordEnemies, techniques: recordTechniques, sigil: recordSigil,
-  outburst: recordOutburst, faith: recordFaith, 'items-perks': (T) => recordItems(T, 'perks'), 'items-traits-classes': (T) => recordItems(T, 'traits-classes'), flat: recordFlat, special: recordSpecial,
+  outburst: recordOutburst, faith: recordFaith, 'items-perks': (T) => recordItems(T, 'perks'), 'items-traits-classes': (T) => recordItems(T, 'traits-classes'), flat: recordFlat, special: recordSpecial, 'items-shelved': recordShelved, literals: recordLiterals,
 };
 /** One section's table, sorted, without the actions that produced no number (a stance, a condition, a refusal). */
 export function recordSection(name: string): { table: Table; counts: Record<string, number> | null } {
