@@ -9,7 +9,7 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 | Only the engine or the data | `npm run check -- engine` | under 1 min | Validator, engine types, engine tests |
 | Only the client | `npm run check -- web` | about 1.5 min | Web types, web tests |
 | One rule, and you want only its tests | `npm run check -- -t "Heart Overload"` | seconds | Both suites, only tests whose name matches |
-| A number, a simulator policy or the enemy AI; and before any merge of engine work | `npm run balance` (or `npm run check -- balance`) | a few min | The balance simulator (`packages/engine/test/balance/`): whole simulated fights and every balance target (guns, magic, heals, Faith, defence, the enemy table). It is NOT in `npm run check`, which runs only its "balance smoke" line: the reference builds are legal, the simulator is deterministic and agrees with the engine's previews, one fight for every way to fight plays without a refusal (10 tests of `balance-sim.test.ts`) |
+| A simulator policy or the enemy AI; and before any merge of engine work | `npm run balance` (or `npm run check -- balance`) | a minute or two | The balance simulator's folder (`packages/engine/test/balance/`) with its three "quick run" smoke fights (whole simulated fights for every table, squad and measurement). Every balance TARGET (guns, magic, heals, Faith, defence, the enemy table, the price list) is in `npm run check` already: a number that moves fails there |
 | A number or a rule, and you want to SEE what the game does | `npm run try -- '<scenario>'` | 3 s | A fight played through the real rules: the log lines and every unit's HP, AP, meters and conditions after each step. No browser, no new test file. `npm run try -- --help` has the fields and examples |
 | A screen, a button, anything a player clicks | `npm run e2e -- <suite>` | 1 to 3 min a suite | The suite's checks in a real browser. It builds, starts and stops the server itself |
 | Before a release | `npm run e2e -- all` then deploy | about 15 min | Every browser suite, three at a time |
@@ -74,10 +74,11 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 - **Old saves** (`packages/engine/test/old-save.test.ts`): two whole saves written by 0.22.0
   (`packages/engine/test/fixtures/`, never regenerated) are loaded and played on. A change to the saved shape adds a
   migration and a new fixture beside them.
-- **The balance simulator** (`packages/engine/test/balance/*.test.ts`): out of the engine's default run since 12 Nov
-  2026 (it was about 40% of the suite's time). `npm run balance` runs all of it; one file with its report switches:
+- **The balance simulator** (`packages/engine/test/balance/*.test.ts`): its targets are in the engine's default run
+  (and so in `npm run check`). Its three "quick run" smoke fights are not: `npm run balance` runs the folder with
+  them (`BALANCE_QUICK`, set by `packages/engine/vitest.balance.config.ts`). One file with its report switches:
   `HEAL_MEASURE=1 npx vitest run --root packages/engine test/balance/heal-measure.test.ts --silent=false` (the commands
-  in the hand-offs still work as written). `npm test -w @phc/engine` leaves the folder out.
+  in the hand-offs still work as written). `test/suite-shape.test.ts` fails if the folder leaves the default run.
 - `packages/engine/test/balance-baseline.test.ts`: the plain attack of sample weapons against each enemy tier
   (`BALANCE_OUT=<file>`).
 - `window.__phc` in the browser: `getState()`, `act(action)`, `setNarrator({ scripted: true })` (a Narrator that

@@ -6,15 +6,13 @@ suites, run together, with ONE short line each and only the failures printed. Me
     npm run check -- engine  only what touches the engine (validator, engine tsc, engine tests)
     npm run check -- web     only the client (web tsc, web tests)
     npm run check -- -t "Heart Overload"     both suites, only tests whose name matches
-    npm run check -- balance the whole balance simulator (packages/engine/test/balance: every measurement's cheap
-                             targets and smoke fights; a few minutes). The same as `npm run balance`.
+    npm run check -- balance the balance simulator's folder with its smoke fights too (packages/engine/test/balance;
+                             a minute or two). The same as `npm run balance`.
 
-The engine's unit suite does NOT run packages/engine/test/balance (whole simulated fights: about 40% of the suite's
-time). What a plain `npm run check` still runs of it is the "balance smoke" line: the reference builds are legal, the
-simulator is deterministic and agrees with the engine's previews, and one fight for every way to fight plays without
-a refusal (balance-sim.test.ts, "the reference builds" and "the fight simulator": 10 tests). The balance targets
-themselves (guns, magic, heals, Faith, defence, the enemy table) run with `npm run balance`: do that before a merge
-and after any change to a number, a policy or the enemy AI.
+The engine's unit suite runs packages/engine/test/balance: every balance target (guns, magic, heals, Faith, defence,
+the enemy table, the price list) fails a plain `npm run check` when a number moves. What it leaves out are the three
+"quick run" smoke fights (whole simulated fights that assert only "it builds"); `npm run balance` adds them: run that
+after a change to a simulator policy or the enemy AI, and before a merge of engine work.
 
 Exit code 0 when all pass. Full logs are kept in .check/ (ignored by git) when something fails.
 """
@@ -32,13 +30,10 @@ JOBS = [
     ('web', 'web types', ['npx', 'tsc', '--noEmit', '-p', 'apps/web']),
     ('engine', 'engine tests', ['npm', 'test', '-w', '@phc/engine'] + vt),
     ('web', 'web tests', ['npm', 'test', '-w', '@phc/web'] + vt),
-    # the cheap part of the balance simulator (see the top of this file); the whole of it: `npm run check -- balance`
-    ('engine', 'balance smoke', ['npm', 'run', 'balance:smoke', '-w', '@phc/engine']),
     ('balance', 'balance tests', ['npm', 'run', 'balance', '-w', '@phc/engine'] + vt),
 ]
 if only: JOBS = [j for j in JOBS if j[0] == only or (only == 'engine' and j[0] == 'data')]
 else: JOBS = [j for j in JOBS if j[0] != 'balance']
-if pat: JOBS = [j for j in JOBS if j[1] != 'balance smoke']
 if pat: JOBS = [j for j in JOBS if 'tests' in j[1]]
 ANSI = re.compile(r'\x1b\[[0-9;]*m')
 

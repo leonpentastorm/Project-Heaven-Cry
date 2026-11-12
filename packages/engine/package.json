@@ -5,9 +5,8 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "test": "vitest run --exclude \"test/balance/**\"",
-    "balance": "vitest run test/balance/",
-    "balance:smoke": "vitest run test/balance/balance-sim.test.ts -t \"the reference builds|the fight simulator\""
+    "test": "vitest run",
+    "balance": "vitest run --config vitest.balance.config.ts test/balance/"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
