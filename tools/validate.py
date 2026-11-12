@@ -1748,6 +1748,17 @@ def walk_triggers(o, w):
         for v in o.values(): walk_triggers(v, w)
     elif isinstance(o, list):
         for v in o: walk_triggers(v, w)
+# an item's own `numbers` (effects/num.ts num(h, key): what a handler that is not data yet reads) are numbers
+def check_numbers(o, w):
+    n = o.get("numbers") if isinstance(o, dict) else None
+    if n is not None and (not isinstance(n, dict) or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in n.values())):
+        errors.append(f"{w}: `numbers` must map names to numbers (effects/num.ts)")
+for _n in ("perks", "traits"):
+    for _x in items(_n):
+        check_numbers(_x, f"{_n}:{_x.get('id')}")
+        for _t in (_x.get("tiers") or {}).values(): check_numbers(_t, f"{_n}:{_x.get('id')}")
+for _m in [m for b in base for r in (b.get("ranks") or {}).values() for m in r.get("moves", [])] + pool + [m for a in adv for m in a.get("moves", [])]:
+    check_numbers(_m, f"classes:{_m.get('origin', '')}.{_m.get('id')}")
 if TRIG:
     for _n in ("perks", "traits"):
         for _x in items(_n): walk_triggers(_x, f"{_n}:{_x.get('id')}")
