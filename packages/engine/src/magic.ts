@@ -17,7 +17,7 @@ import { canSurrender, surrender, deathMana } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { itemAmount, amountMult } from './effects/amounts';
 import { mendFactor, MENDING } from './effects/mending';
-import { deal, mend, amountOf, term, armourAgainst } from './effects/output';
+import { deal, mend, amountOf, term, armourAgainst, type Term } from './effects/output';
 import { canReact, useReaction, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
@@ -424,19 +424,25 @@ let hurtWhy = '';
 const harmFor = (why: string, f: () => string) => { hurtWhy = why; try { return f(); } finally { hurtWhy = ''; } };
 /** Run f as the strain burn / short (exported for class moves that hurt the heart). */
 export { harmFor };
-export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: number, type: 'sigil' | 'elemental' | 'soul' | 'true' | 'physical', dmgType?: string, armour?: 'none' | 'half' | 'full'): string {
+/** A spell's amount handed to harm with its terms open (step a7, leak 3): the base and the caster's own multipliers
+ * (Stat, the Line, the stage, the critical…), so that what an item ADDS on 'damage_out' goes in beside the base and is
+ * multiplied by all of them, as a weapon's always was. `plus`: a rider's flat amount on the same hit (a tone's bonus
+ * damage: after the multipliers). `round`: how it is made whole ('round': a Sigil part; default: floored). */
+export interface SpellAmount { base: number; mults: Term[]; plus?: number; round?: 'floor' | 'round' }
+export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: number | SpellAmount, type: 'sigil' | 'elemental' | 'soul' | 'true' | 'physical', dmgType?: string, armour?: 'none' | 'half' | 'full'): string {
   if (t.dead) return '';
-  let dmg = Math.floor(raw), out = '';
-  // The one way in (effects/output.ts deal). The number arrives whole (the caller's formula: a Line's, an Outburst's,
-  // a prayer's; they move into the amount itself in the later steps), so there is no Stat or Level term here yet.
+  const am: SpellAmount = typeof raw === 'number' ? { base: Math.floor(raw), mults: [] } : raw;
+  let dmg = 0, out = '';
+  // The one way in (effects/output.ts deal). A Line, an Outburst and a prayer hand their amount in with its terms open
+  // (SpellAmount); a finished number (a flat source: a tick, a class move's own number) is its own base.
   // 'damage_out' for spells (hooks gap A4/F3): the same hook attacks use, before armour, so "+X% against this target"
   // and the caster's own multipliers reach Sigil, Elemental and Soul damage. ctx.spell is true and ctx.mode 'spell';
   // weapon-only handlers check ctx.src.type === 'weapon'. Hazards (burn, short, overload, wall) and blows with no
   // attacker skip it. Armour by the damage's type (Sigil and physical full, Elemental half, Soul and true none)
   // unless the caller says otherwise; then the sink.
   const ak = armour || (type === 'sigil' || type === 'physical' ? 'full' : type === 'elemental' ? 'half' : 'none');
-  const r = deal(cb, att, t, { kind: 'damage', base: dmg, armour: ak, hook: !!att && !hurtWhy }, {
-    hookCtx: { mode: 'spell', spell: true, src: { by: att, type, dmgType: dmgType || type, spell: true, ...(SPELL_FROM ? { from: SPELL_FROM } : {}) } },
+  const r = deal(cb, att, t, { kind: 'damage', base: am.base, ...(am.plus ? { plus: am.plus } : {}), ...(am.round ? { round: am.round } : {}), armour: ak, hook: !!att && !hurtWhy }, {
+    mults: am.mults, hookCtx: { mode: 'spell', spell: true, src: { by: att, type, dmgType: dmgType || type, spell: true, ...(SPELL_FROM ? { from: SPELL_FROM } : {}) } },
     src: { by: att, type: hurtWhy || type, dmgType: dmgType || (type === 'true' ? 'true' : type), shield: true, credit: 'hp', ...(SPELL && att ? { spellMp: SPELL.mp, spellWords: SPELL.words } : {}), ...(SPELL_FROM ? { from: SPELL_FROM } : {}), ...(NONLETHAL_BY && att === NONLETHAL_BY ? { nonlethal: true } : {}) } as any });
   if (r.shielded) { out += ' (' + r.shielded + ' on the shield)'; emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: r.shielded }); }
   if (r.downedHit) { emitFx(cb, 'hurt', { target: t.id, at: t.pos, dmg: 0, why: hurtWhy || type, killed: t.dead }); if (t.dead) fxFell(cb, t); return ' · ' + t.name + ' takes a hit while Downed' + (t.dead ? ' and dies' : ''); }
@@ -1152,7 +1158,9 @@ const formMult = (d: OutburstDesign) => { const f = formOf(d); return f === 'bol
 // riders, and harm floors it (as before).
 const soulAmount = (kind: 'damage' | 'heal' | 'shield', base: number, mults: { v: number; label: string }[]): number =>
   amountOf({ kind, base, profile: kind === 'heal' ? 'mend' : 'soul', round: 'none' }, null, { level: null, mults }).raw;
-export const outburstDamage = (m: MagicUnit, d: OutburstDesign, sm: number) => soulAmount('damage', m.soulBase ?? SOUL_DAMAGE_ENEMY, [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.5 : 1, 'at once')]);
+export const outburstDamage = (m: MagicUnit, d: OutburstDesign, sm: number) => { const a = outburstTerms(m, d, sm); return soulAmount('damage', a.base, a.mults); };
+/** The same amount with its terms open, as harm takes it (step a7: what an item adds goes in beside the base). */
+export const outburstTerms = (m: MagicUnit, d: OutburstDesign, sm: number): SpellAmount => ({ base: m.soulBase ?? SOUL_DAMAGE_ENEMY, mults: [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.5 : 1, 'at once')] });
 // ---------- rules 1.20: what an Outburst heals and shields with ----------
 // Their own bases, never the Damage base (moving one must not move the other): the Buff school's `heal`, Inverse's and
 // Shell's `shield` (soul_modules.json). A character's grow with its level (mendFactor). In an area shape a heal or a
@@ -1188,19 +1196,20 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
   const rounds = (n: number) => Math.max(1, Math.floor((n + extra) * f * deep));
   if (school === 'damage') {
     const mode = has('inverse') ? undefined : option, md: any = mode ? DMODE[mode] : null;
-    const base = outburstDamage(m, d, sm) * f * damageModeMult(mode, t);
+    // (its terms open: the school's amount, a second school's share, the way it strikes, the critical; the tone's bonus rides after them)
+    const oa = outburstTerms(m, d, sm), strike = (crit: number, plus: number): SpellAmount => ({ base: oa.base, mults: [...oa.mults, term(f, 'share'), term(damageModeMult(mode, t), 'way'), term(crit, 'critical')], ...(plus ? { plus } : {}) });
     if (has('inverse')) { if (t.side !== u.side) return { landed: false, crit: false, line: '' }; const s = grantShield(cb, t, inverseShield(m, d, sm) * f, u); out.push(t.name + ' is shielded (' + s + ')'); return { landed: true, crit: false, line: '' }; }
     const ign = toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover');
     let crit = false; const hp0 = t.hp;
-    if (primary && rolls(d) && REL?.calm && (FEELING.calm?.pour as any)?.no_miss) out.push('strikes ' + t.name + ' (Calm: no roll)' + withElement(toneElement(tone), () => harm(cb, rng, u, t, base + bonusDmg(tone, rs), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
+    if (primary && rolls(d) && REL?.calm && (FEELING.calm?.pour as any)?.no_miss) out.push('strikes ' + t.name + ' (Calm: no roll)' + withElement(toneElement(tone), () => harm(cb, rng, u, t, strike(1, bonusDmg(tone, rs)), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
     else if (primary && rolls(d)) {
       // Calm (rules 1.19): two rolls, the better kept, and no critical. Joy: a critical from 18 up, when it hits.
       const adv = !!REL?.calm, r1 = d20(rng), r2 = adv ? d20(rng) : 0, r = Math.max(r1, r2), rf = rollFor(cb, u, d, t, ign || !!REL?.ignoreCover), tot = r + rf.bonus + (emit(cb, 'spell_roll', { u, t, die: r, add: 0, kind: 'soul', cb }) as any).add;
       const rolled = adv ? 'd20 ' + r1 + ' and ' + r2 + ', Calm keeps ' + r : 'd20 ' + r;
       if (r === 1 || (r !== 20 && tot < t.def)) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); out.push('misses ' + t.name + ' (' + rolled + ' → ' + tot + ' vs ' + t.def + ')'); return { landed: false, crit: false, line: '' }; }
-      crit = !adv && r >= (REL?.critFrom ?? 20); out.push('hits ' + t.name + ' (' + rolled + (crit ? ', CRITICAL' : '') + ')' + withElement(toneElement(tone), () => harm(cb, rng, u, t, base * (crit ? spellCritMult(cb, u, t) : 1) + bonusDmg(tone, rs), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
+      crit = !adv && r >= (REL?.critFrom ?? 20); out.push('hits ' + t.name + ' (' + rolled + (crit ? ', CRITICAL' : '') + ')' + withElement(toneElement(tone), () => harm(cb, rng, u, t, strike(crit ? spellCritMult(cb, u, t) : 1, bonusDmg(tone, rs)), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
       if (crit) noteCrit(cb, u, t, 'outburst'); // the spotlight's crit (decision 113): presentation only
-    } else out.push((primary ? '' : 'and ') + withElement(toneElement(tone), () => harm(cb, rng, u, t, base + (primary ? bonusDmg(tone, rs) : 0), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))).replace(/^ · /, ''));
+    } else out.push((primary ? '' : 'and ') + withElement(toneElement(tone), () => harm(cb, rng, u, t, strike(1, primary ? bonusDmg(tone, rs) : 0), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))).replace(/^ · /, ''));
     // The ways to strike (rules 1.19): Brand marks the target for your side; Drain heals you for a share of the HP taken.
     if (md?.condition && !t.dead && t.side !== u.side) out.push(applyCond(cb, rng, u, t, md.condition, undefined, undefined, { skipSave: true }).replace(/^ · /, ''));
     if (md?.heal_of_damage && !u.dead && t.side !== u.side) { const took = Math.max(0, hp0 - t.hp); if (took > 0 && u.hp < u.maxHp) out.push(heal(u, took * md.heal_of_damage * f, cb, u).replace(/^ · /, '') + ' (Drain)'); }
@@ -1375,7 +1384,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
         const next = cb.units.filter((v) => !v.dead && !done.has(v.id) && v.side !== u.side && dist(v.pos, from.pos) <= range).sort((a, b) => dist(a.pos, from.pos) - dist(b.pos, from.pos))[0];
         if (!next) break; done.add(next.id);
         emitFx(cb, 'chain', { unit: u.id, from: from.pos, to: next.pos, target: next.id, element: toneElement(tone), ...(why ? { feeling: why } : {}) });
-        line.push('it chains to ' + next.name + (why ? ' (' + FEELING[why].name + ')' : '') + withElement(toneElement(tone), () => harm(cb, rng, u, next, outburstDamage(m, d, smOf(next)) * mult, harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
+        line.push('it chains to ' + next.name + (why ? ' (' + FEELING[why].name + ')' : '') + withElement(toneElement(tone), () => harm(cb, rng, u, next, ((a: SpellAmount): SpellAmount => ({ base: a.base, mults: [...a.mults, term(mult, 'chain')] }))(outburstTerms(m, d, smOf(next))), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
         if (withRiders) { const sh = toneRiders(tone, rs).riders.filter((r) => r.rider === 'cond'); for (const r of sh) if (!next.dead) line.push(applyCond(cb, rng, u, next, r.condition!, r.rounds, undefined, { skipSave: !r.save }).replace(/^ · /, '')); }
         if (F.has('love')) for (const a of cb.units.filter((v) => !v.dead && v.side === u.side && dist(v.pos, next.pos) <= 1)) line.push(heal(a, loveHeal(m, d, sm) * amountMult('feeling:love', 'heal', 'along_the_chain'), cb, u).replace(/^ · /, '') + ' (Love, along the chain)');
         hitFoes.push(next); from = next;

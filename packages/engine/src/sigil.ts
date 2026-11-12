@@ -29,7 +29,7 @@ import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
 import { ENEMY_LEVELS } from './data';
 import {
-  type Glyph, type Zone, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, strengthFor, withVia,
+  type Glyph, type Zone, type SpellAmount, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, strengthFor, withVia,
   SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
 } from './magic';
 import { makeObject, OBJ } from './objects';
@@ -423,7 +423,12 @@ export function evokeGrowth(cb: Combat, u: Unit, words: string[], glyphs: number
 const SIGIL_DAMAGE: AmountSpec = { kind: 'damage', base: 0, profile: 'sigil', round: 'round' };
 /** One damage part of a spell (all its Sigil-type glyphs, or all its Elemental ones) on one creature, before armour. */
 export function sigilDamage(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): number {
-  return amountOf({ ...SIGIL_DAMAGE, base }, null, { level: null, mults: [term(shape, 'shape'), term(line, 'line'), term(sigilPower(mg, type), type === 'elemental' ? 'stat: sigil + elemental' : 'stat: sigil'), term(sharp, 'sharpened'), term(items, 'items'), term(crit, 'critical')] }).amount;
+  const a = sigilDamageTerms(mg, type, base, shape, line, sharp, items, crit);
+  return amountOf({ ...SIGIL_DAMAGE, base: a.base }, null, { level: null, mults: a.mults }).amount;
+}
+/** The same part with its terms open, as harm takes it (step a7: what an item adds goes in beside the base). */
+export function sigilDamageTerms(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): SpellAmount {
+  return { base, round: 'round', mults: [term(shape, 'shape'), term(line, 'line'), term(sigilPower(mg, type), type === 'elemental' ? 'stat: sigil + elemental' : 'stat: sigil'), term(sharp, 'sharpened'), term(items, 'items'), term(crit, 'critical')] };
 }
 /** What MEND heals or WARD shields on one creature: the word's base × shape × Sigil multiplier × Healing given × the
  * level factor (two Stat terms: the second is an own multiplier with a name). */
@@ -1033,7 +1038,7 @@ function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe',
     line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + (r ? ' hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')' : ' catches ' + t.name);
     const lm = lineMultFor(by, sp), cm = crit ? spellCritMult(cb, by, t) : 1; // rules 1.17: the Line multiplier; a critical ×1.5 to ×2.0
     const raws = parts.map((p) => { const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
-      return sigilDamage(by?.mg, p.type, p.n, a.mult, lm, sharp, hk, cm); });
+      return sigilDamageTerms(by?.mg, p.type, p.n, a.mult, lm, sharp, hk, cm); });
     // Rules 1.17: one Evoke never takes an Elite or a Boss of the caster's level (or higher) from full HP to nothing.
     const direct = !['field', 'turret', 'trap'].includes(a.via), guard = direct && (EVOKE_GUARDED.has(t) || lineGuards(by, t, cb)), wasGuard = LINE_GUARD; if (guard) { LINE_GUARD = t; EVOKE_GUARDED.add(t); }
     try {
