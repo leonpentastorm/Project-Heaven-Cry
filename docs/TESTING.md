@@ -5,9 +5,9 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 
 | You changed… | Run | Takes | It tells you |
 | --- | --- | --- | --- |
-| Anything, before you say "done" | `npm run check` | 1 to 2 min | The data validator, both type checks and both unit suites: one line each, only failures printed |
+| Anything, before you say "done" | `npm run check` | 1 to 2 min | The data validator, both type checks, the screen data's freshness and both unit suites: one line each, only failures printed |
 | Only the engine or the data | `npm run check -- engine` | under 1 min | Validator, engine types, engine tests |
-| Only the client | `npm run check -- web` | about 1.5 min | Web types, web tests |
+| Only the client | `npm run check -- web` | about 1.5 min | Web types, the screen data's freshness (`protodata.json` against `data/*.json`; when it says STALE, run `python3 design/canvas-build/build.py --web`), web tests |
 | One rule, and you want only its tests | `npm run check -- -t "Heart Overload"` | seconds | Both suites, only tests whose name matches |
 | A number or a rule, and you want to SEE what the game does | `npm run try -- '<scenario>'` | 3 s | A fight played through the real rules: the log lines and every unit's HP, AP, meters and conditions after each step. No browser, no new test file. `npm run try -- --help` has the fields and examples |
 | A screen, a button, anything a player clicks | `npm run e2e -- <suite>` | 1 to 3 min a suite | The suite's checks in a real browser. It builds, starts and stops the server itself |

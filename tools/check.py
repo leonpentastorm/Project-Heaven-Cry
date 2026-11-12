@@ -4,7 +4,7 @@ suites, run together, with ONE short line each and only the failures printed. Me
 
     npm run check            everything (about 1 to 2 minutes)
     npm run check -- engine  only what touches the engine (validator, engine tsc, engine tests)
-    npm run check -- web     only the client (web tsc, web tests)
+    npm run check -- web     only the client (web tsc, the screen data's freshness, web tests)
     npm run check -- -t "Heart Overload"     both suites, only tests whose name matches
 
 Exit code 0 when all pass. Full logs are kept in .check/ (ignored by git) when something fails.
@@ -21,10 +21,13 @@ JOBS = [
     ('data', 'validator', ['python3', 'tools/validate.py', 'data']),
     ('engine', 'engine types', ['npx', 'tsc', '--noEmit', '-p', 'packages/engine']),
     ('web', 'web types', ['npx', 'tsc', '--noEmit', '-p', 'apps/web']),
+    # The creation and sheet screens' card texts (apps/web/src/game/protodata.json) are generated from data/*.json: this
+    # fails when the committed file is stale against the data (engine review 4, finding 6). Nothing is written.
+    ('web', 'screen data', ['python3', 'design/canvas-build/build.py', '--web', '--check']),
     ('engine', 'engine tests', ['npm', 'test', '-w', '@phc/engine'] + vt),
     ('web', 'web tests', ['npm', 'test', '-w', '@phc/web'] + vt),
 ]
-if only: JOBS = [j for j in JOBS if j[0] == only or (only == 'engine' and j[0] == 'data')]
+if only: JOBS = [j for j in JOBS if j[0] == only or (only == 'engine' and j[0] == 'data') or (only == 'data' and j[1] == 'screen data')]
 if pat: JOBS = [j for j in JOBS if 'tests' in j[1]]
 ANSI = re.compile(r'\x1b\[[0-9;]*m')
 
@@ -36,6 +39,8 @@ def run(job):
         m = re.search(r'(\d+) errors?', out); ok = ok and bool(m) and m.group(1) == '0'; note = (m.group(0) if m else 'no result line')
     elif 'tests' in name:
         m = re.search(r'Tests\s+(.*)', out); note = m.group(1).strip() if m else 'no result line'
+    elif name == 'screen data':
+        note = 'fresh' if ok else 'STALE: run python3 design/canvas-build/build.py --web'
     else:
         n = len(re.findall(r'error TS\d+', out)); note = 'clean' if ok else f'{n} errors'
     return name, ok, note, out, time.time() - t0
@@ -55,7 +60,7 @@ if True:
         lines = out.split('\n')
         if 'tests' in name:
             keep = [l for l in lines if re.search(r'^\s*(FAIL|×|✗)\s|AssertionError|Error:|❯ .*\.test\.', l)][:30]
-        elif name == 'validator':
+        elif name in ('validator', 'screen data'):
             keep = [l for l in lines if re.search(r'error', l, re.I)][:30]
         else:
             keep = [l for l in lines if 'error TS' in l][:30]
