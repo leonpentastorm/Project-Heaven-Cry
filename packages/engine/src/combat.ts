@@ -344,7 +344,7 @@ function volleyAp(cb: Combat, u: Unit, t: Unit | null, mode: string, base: numbe
 }
 
 export const key = (x: number, y: number) => x + ',' + y;
-export const xy = (k: string) => k.split(',').map(Number) as [number, number];
+export const xy = (k: string): [number, number] => { const i = k.indexOf(','); return i < 0 ? (k.split(',').map(Number) as [number, number]) : [+k.slice(0, i), +k.slice(i + 1)]; }; // asked for every tile of every path and line of sight: no split, no map
 // ---------- grid references (spec: Grid references): columns A, B, C… left to right, rows 1, 2, 3… top to bottom ----------
 const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const colName = (x: number) => (x < 26 ? LETTERS[x] : LETTERS[Math.floor(x / 26) - 1] + LETTERS[x % 26]);
@@ -819,15 +819,16 @@ export function litAt(cb: Combat, k: string): boolean {
   return objectsOf(cb).some((o) => lightOf(o) > 0 && dist(o.pos, k) <= lightOf(o)) || cb.units.some((u) => !u.dead && (u.light || 0) > 0 && dist(u.pos, k) <= (u.light || 0));
 }
 /** Can this unit see that tile (range, darkness, line of sight)? */
-export function unitSees(cb: Combat, u: Unit, k: string): boolean {
+/** walls: sightBlockers(cb), from a caller that asks about many eyes or many tiles at once (building it is four times the cost of walking one line). */
+export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>): boolean {
   if (u.dead || u.downed) return false;
   const range = litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2);
-  return dist(u.pos, k) <= range && (k === u.pos || lineOfSight(cb, u.pos, k));
+  return dist(u.pos, k) <= range && (k === u.pos || lineOfSight(cb, u.pos, k, false, walls));
 }
 /** What one side sees, shared by the squad: tiles in sight, units seen, units only sensed (Sensory). */
 export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
-  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), tiles = new Set<string>();
-  for (let x = 0; x < cb.map.w; x++) for (let y = 0; y < cb.map.h; y++) { const k = key(x, y); if (eyes.some((u) => unitSees(cb, u, k))) tiles.add(k); }
+  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), tiles = new Set<string>(), walls = sightBlockers(cb);
+  for (let x = 0; x < cb.map.w; x++) for (let y = 0; y < cb.map.h; y++) { const k = key(x, y); if (eyes.some((u) => unitSees(cb, u, k, walls))) tiles.add(k); }
   const seen = new Set<string>(), sensed = new Set<string>();
   for (const t of cb.units) if (t.side !== side && !t.dead) {
     // A Hidden unit isn't seen (spec: Helpful states): at most sensed, by Sensory range.
@@ -850,8 +851,8 @@ function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen
 export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit): boolean {
   if (t.side === side) return true;
   if (t.dead) return false;
-  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed);
-  let isSeen = !t.hidden && eyes.some((u) => unitSees(cb, u, t.pos));
+  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), walls = t.hidden ? undefined : sightBlockers(cb);
+  let isSeen = !t.hidden && eyes.some((u) => unitSees(cb, u, t.pos, walls));
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
@@ -928,7 +929,7 @@ export function noteSighted(cb: Combat) {
 }
 /** Does anyone on the attacker's side see the target? */
 export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | null): boolean {
-  const base = !(tgt.hidden && tgt.side !== side) && cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos));
+  const hid = tgt.hidden && tgt.side !== side, walls = hid ? undefined : sightBlockers(cb), base = !hid && cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos, walls));
   return sightHooked(cb) ? seesHook(cb, side, tgt, by || null, base, false).seen : base;
 }
 
