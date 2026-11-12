@@ -4,17 +4,13 @@
 // actionGroups() is the one list of actions a unit has (the panel's tabs show it); the cut-in's four commands are a
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
-import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, ROUNDS_PER_AP, glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, weaponActions, perkActionsFor, withGame, type PerkActionEntry,
-  focusHand, NEEDS_EVOKER, NEEDS_EMANATOR, PILE, dist, basicActions, reloadBothRows, loadPlan, pullFreeTargets as enginePullFree, type BasicAction } from '@engine';
+import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, withGame, type PerkActionEntry,
+  PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
-import { heartPanel, designCards } from './heartView';
-import { faithView, beliefOf, FAITH_MIN } from '@engine';
-import { prayerButtons, FAITH_INK } from './faithView';
+import { FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
 import { heldClassId, currentClassId } from './classView';
-import { pilesIn } from './worldView';
-import { weaponBlocks, blockItems, techAction, TWATCH, legacyAttack } from './techView';
-import { callItems } from './callView';
+import { techAction, TWATCH, legacyAttack } from './techView';
 import { perkShelves } from './perkShelves';
 
 const HOSTILE_INK = '#F65157';
@@ -26,26 +22,12 @@ export type ActionGroup = [string, ActionItem[], string | null, string];
 export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith', calls: 'Calls' };
 
 // ---------- prayers (Blessing 2.0, rules 1.6; the engine's faithView and previewPrayer) ----------
-/** A prayer's id in the action list: "pr:<kind>:<id>" (a Hymn's id is its "<patron>.<hymn>" key). */
-export const PR = 'pr:';
-export const prayId = (kind: string, id: string) => PR + kind + ':' + id;
-export const parsePray = (a: string): { kind: 'whisper' | 'hymn' | 'miracle'; id: string } | null => {
-  if (!a || !a.startsWith(PR)) return null; const i = a.indexOf(':', PR.length); return { kind: a.slice(PR.length, i) as any, id: a.slice(i + 1) }; };
-/** The FAITH tab's items: every prayer this unit could make, with AP, the gate or the dice, the odds, and the reason when not. */
-export function prayerItems(g: any, cur: any): ActionItem[] {
-  if (!g || !cur || cur.side !== 'pc' || !cur.charId || cur.companion) return [];
-  const c = g.characters?.[cur.charId]; if (!c) return [];
-  if (beliefOf(c).kind !== 'faithful' && (c.skills?.faith || 0) < FAITH_MIN) return []; // no faith to speak of: no tab
-  const B = prayerButtons(faithView(g, c.id));
-  return [...B.whispers, ...B.hymns, ...(B.miracle ? [B.miracle] : [])].map((b) => [prayId(b.kind, b.id), (b.kind === 'miracle' ? '✦ ' : '') + b.name + (b.kind === 'whisper' ? '' : ' · ' + (b.kind === 'miracle' ? 'MIRACLE' : b.gate.replace(/ · DEVOTION \d+$/, ''))), b.ap + ' · ' + b.odds,
-    b.gate + ' · ' + b.odds + '. ' + b.text + (b.warn ? ' ' + b.warn + '.' : ''), b.ok ? null : b.why || 'Not now.'] as ActionItem);
-}
+/** A prayer's id in the action list: "pr:<kind>:<id>" (the engine's descriptor id). */
+export const PR = ENGINE_PR, prayId = enginePrayId, parsePray = parsePrayId;
 
 // ---------- perk, trait and class-move actions (engine effects/actions.ts) ----------
-/** A perk action's id in the action list: "pk:<item key>#<action id>". */
-export const PK = 'pk:';
-export const pkId = (e: Pick<PerkActionEntry, 'id' | 'actionId'>) => PK + e.id + '#' + e.actionId;
-export const parsePk = (id: string): { id: string; actionId: string } | null => { if (!id || !id.startsWith(PK)) return null; const [k, a] = id.slice(PK.length).split('#'); return { id: k, actionId: a }; };
+/** A perk action's id in the action list: "pk:<item key>#<action id>" (the engine's descriptor id). */
+export const PK = ENGINE_PK, pkId = perkId, parsePk = parsePerkId;
 /** The unit's perk, trait and class actions on this surface, with the game bound (handlers see the live character). */
 export function perkEntries(g: any, cb: any, u: any, ch: any, scope: 'combat' | 'world' = 'combat'): PerkActionEntry[] {
   if (!u) return [];
@@ -64,17 +46,8 @@ export function storyPerkEntries(g: any, ch: any): PerkActionEntry[] {
 /** "2 AP · 1/combat" */
 /** Vent and core swap as the engine prices them (magic.ts ventAp / coreAp: Bleed the Flux, Core Change). */
 export const magicAp = (u: any, a: 'vent' | 'core'): number => { try { return u ? (a === 'vent' ? ventAp(u) : coreAp(u)) : SPELL_AP[a]; } catch { return SPELL_AP[a]; } };
-const apNote = (u: any, a: 'vent' | 'core') => { const n = magicAp(u, a), base = SPELL_AP[a]; return n < base ? (a === 'vent' ? ' Bleed the Flux' : 'Core Change') + ' lowers the cost from ' + base + ' to ' + n + ' AP. ' : ''; };
-export const pkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : e.ap + ' AP') + (e.uses.label ? ' · ' + e.uses.label : '');
-/** A move's standing state for its button (Class Roster Revision 3): an on/off policy pair names the one in force
- *  (its twin is greyed "on now"), Eye of the Storm reads ARMED once armed, a spent once-a-scene move "used". */
-export function pkState(e: PerkActionEntry): { tag: string; why: string | null } {
-  const pol = /^(.*)_(on|off)$/.exec(e.actionId);
-  if (pol && e.why === 'Already set.') return { tag: ' ✓', why: 'In force now. ' + (pol[2] === 'on' ? 'On is the default.' : 'It stays off for this fight.') };
-  if (e.why === 'Already armed.') return { tag: ' · ARMED', why: 'Armed. Your next Release this turn uses it.' };
-  return { tag: '', why: e.why };
-}
-export const pkText = (e: PerkActionEntry) => e.text + (e.engine ? '' : ' The Narrator decides the rest.');
+/** A perk action's cost, state and text as its row shows them (the engine's). */
+export const pkCost = perkCost, pkState = perkState, pkText = perkText;
 /** The class a character holds, for the Class tab's name and emblem: an active advanced class, else the base class (a
  *  shelved advanced class shows nothing). With no character, a move's origin (an action entry's cls, e.g. medic for
  *  the Bard's Triage) stands in, mapped to the Revision 3 class that holds it now. */
@@ -100,131 +73,43 @@ export function reloadItems(u: any): ActionItem[] {
     [RELOAD_TAC, (/^(Swap magazine|Reload)$/.test(R.label) ? 'Reload' : R.label) + ' (tactical)', R.tactical.ap + ' AP · the ' + unit + ' goes in your pack', 'Swap in your fullest spare ' + unit + ' for ' + PILE.tactical_reload_extra_ap + ' AP more. The one in the gun goes back in your pack with its rounds still in it.' + now, R.tactical.why],
   ];
 }
-/** An engine row (actions.ts basicActions) as an item of the action list. */
-export const rowItem = (r: BasicAction): ActionItem => [r.id, r.label, r.cost, r.text, r.why];
 /** Reload both guns (Two guns): the engine's rows (speed; tactical +1 AP when both guns take magazines), with its
  *  own price and its own refusal (a full gun). cb: the fight, when there is one. */
 export function reloadBothItems(u: any, cb: any = null, g: any = null): ActionItem[] {
   if (!u) return [];
-  try { return reloadBothRows(cb, u, { g }).map(rowItem); } catch { return []; }
+  try { return reloadBothRows(cb, u, { g }).map((r): ActionItem => [r.id, r.label, r.cost, r.text, r.why]); } catch { return []; }
 }
-/** A visible pile on your tile or next to it (Pick up's reach), from the fight's objects in this player's view. */
-export const pileInReach = (cb: any, u: any) => { if (!cb || !u) return null; for (const o of pilesIn(cb.objects).values()) if (dist(u.pos, o.pos) <= 1) return o; return null; };
-
 /** Options for the action list. noNarrator: there is no Narrator to rule on anything (the Proving Ground), so actions
  *  only the Narrator can resolve (cost 'Narrator', e.g. a weapon skill the engine doesn't run) are left out. */
 export interface ActionOpts { noNarrator?: boolean; /** The game (perk actions read the live character and the use counters). */ g?: any; /** Where in the fight's log this unit's last turn began (perkShelves turnMark), for the passives' live lines. */ since?: number }
 
-/** Every action this unit has, in tab order (Move · Attack · Utility · Sigils · Outbursts). ch: the unit's character
- *  (for stims and the song), or null. */
-export function actionGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
-  const w: any = cur ? (WEAPON as any)[cur.weapon] : null, melee = w ? isMelee(w) : false;
-  const mv = cur ? cur.movement : 1;
-  const modes = (w && w.modes) || [];
-  // Weapon-granted actions (engine weaponActions, plan 2.9): only what this weapon grants shows, with the engine's reason.
-  const wa = cur ? weaponActions(cur) : [], W = (id: string) => wa.find((x: any) => x.id === id);
-  const offW: any = cur && cur.offWeapon ? (WEAPON as any)[cur.offWeapon] : null;
-  const legacy = isLegacyUnit(cur);
-  // two weapons of one kind: the both-hands block (the paired attack, the shared techniques, reloading both guns)
-  const blocks0 = legacy ? [] : weaponBlocks(opts.g, cb, cur), dual = blocks0.some((b) => b.hand === 'both');
-  // a gun in either hand: Reload and Clear jam are listed with the shots, on the Attack tab
-  const gunTab = !!cur && ((!!w && !melee && w.id !== 'fists') || (!!offW && !isMelee(offW)));
-  const clearItems: ActionItem[] = W('clear') ? [['clear', W('clear')!.label, W('clear')!.ap + ' AP', W('clear')!.text, W('clear')!.why] as ActionItem] : [];
-  const loadInfo = cur && W('load') && !W('load')!.why ? loadPlan(opts.g, cb, cur) : null; // how many rounds go in now, and the AP: the engine's (actions.ts)
-  // The basic actions (Move, Sprint … Analyze): the engine's rows (actions.ts basicActions: names and texts from
-  // data/actions.json, costs priced by the items, the engine's own reason when one can't be used). No cost is typed here.
-  const basic: BasicAction[] = cur ? (() => { try { return withGame(opts.g || null, () => basicActions(cb, cur, { c: ch, g: opts.g })); } catch { return []; } })() : [];
-  const B = (...ids: string[]): ActionItem[] => ids.flatMap((id) => basic.filter((r) => r.id === id).map(rowItem));
-  const bothRows = B('reload2', 'reload2-tac');
-  const mg = cur && cur.mg, words = mg ? mg.words || [] : [], designs = mg ? mg.designs || [] : [];
-  const hasMagic = !!(mg && (words.length || designs.length || mg.evoker || mg.emanator));
-  const held = mg && mg.held, heldD = held ? designs.find((d: any) => d.id === held.design) || null : null;
-  const band = manaBand(cb ? cb.mana ?? MANA_START : MANA_START);
-  const ITEMS: ActionGroup[] = [
-    ['MOVEMENT', B('move', 'sprint', 'disengage', 'prone'), null, 'move'],
-    ['ATTACK & DEFEND · ' + (w ? w.name.toUpperCase() : ''), [
-      // Physical 2.0 (rules 1.12; game/techView.ts): one block per held weapon, its plain attack (Cut, Shot) and its
-      // Techniques pad, then Hold a shot. They replace the old Shot / Aimed / Burst / Full auto / Overwatch / weapon
-      // skill / Melee rows (the engine still takes those actions; a saved turn-card pick maps onto the new rows).
-      // A companion, a puppet or a unit with a fixed action list (the drone) can't use techniques (the engine's gate), so
-      // it keeps the old rows.
-      ...(legacy ? [...(melee ? [['melee', 'Strike', attackApCost(w, 'melee') + ' AP', 'd20 + ' + w.skill.replace('_', ' ') + ' vs Defense. ' + w.damage + ' damage.'] as ActionItem]
-        : [['shot', 'Shot', (w ? attackApCost(w, 'shot') : 2) + ' AP', 'd20 + Dexterity against Defense, at −5 if the target is behind half cover. ' + (w && typeof w.damage === 'number' ? w.damage + ' damage. ' : '') + 'Heat +1.'] as ActionItem,
-          ['aimed', 'Aimed shot', attackApCost(w || WEAPON.fists, 'aimed') + ' AP', '+2 to hit, and a critical hit on 19–20.'] as ActionItem,
-          ...(modes.includes('burst') && W('burst') ? [['burst', 'Burst', W('burst')!.ap + ' AP', 'Fire 3 rounds at one target, with two rolls. The second roll is at −4 to hit (−3 with a Quick weapon, −1 with a Heavy weapon that is braced).'] as ActionItem] : []),
-          ...(modes.includes('auto') && W('auto') ? [['auto', 'Full auto', W('auto')!.ap + ' AP', 'Fire 10 rounds. Every enemy near the line to your target is attacked with one roll at −2 to hit.'] as ActionItem] : [])]),
-        ...(W('overwatch') ? [['overwatch', W('overwatch')!.label, W('overwatch')!.ap + ' AP', W('overwatch')!.text] as ActionItem] : [])]
-        : [...withBoth(blockItems(blocks0) as ActionItem[], dual, bothRows),
-          // a gun in the hand still hits: the butt of the weapon (the engine's bare-hand strike; Leon, 10 Nov 2026)
-          ...(w && !melee ? [['melee', 'Strike (weapon\'s butt)', attackApCost(WEAPON.fists, 'melee') + ' AP', 'Hit an enemy next to you with the gun itself: d20 + Raw Power against Defense, for the damage of a bare-hand strike. It uses no round and adds no Heat.'] as ActionItem] : [])]),
-      ...(offW && !dual ? [['paired', 'Both hands (' + offW.name + ')', 'AP +1', 'Attack with both weapons in one action. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.'] as ActionItem] : []),
-      // with a gun in a hand, reloading and clearing a jam sit with the shots (Leon, 10 Nov 2026: no tab switch mid-fight)
-      ...(gunTab ? [...reloadItems(cur).filter((it) => !dual || !String(it[0]).startsWith('reload2')), ...clearItems] : []),
-      ...B('shove'),
-      ...(W('brace') ? [['brace', 'Brace', W('brace')!.ap + ' AP', W('brace')!.text, W('brace')!.why] as ActionItem] : []),
-      ...B('cover')], HOSTILE_INK, 'attack'],
-    ['UTILITY', [
-      // rules 1.12: what nails a unit in place (Run Through's pin) holds until 2 AP is spent to pull free
-      ...B('pullfree'),
-      ...(gunTab ? [] : reloadItems(cur)),
-      ...(W('load') ? [['load', W('load')!.label, loadInfo ? loadInfo.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', loadInfo ? 'Load ' + loadInfo.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : W('load')!.text, W('load')!.why] as ActionItem] : []),
-      ...(gunTab ? [] : clearItems),
-      ...(W('repair') ? [['repair', 'Field Repair', W('repair')!.ap + ' AP', 'Needs Improvisation 3 and one spare-parts charge (' + (cur && cur.parts || 0) + ' left). Your weapon regains 10% durability, plus 5% for each Improvisation point above 3. Weapon durability: ' + (cur && cur.maxDur ? (cur.dur ?? cur.maxDur) + '/' + cur.maxDur : 'n/a') + '.', W('repair')!.why] as ActionItem] : []),
-      ...B('pickup', 'door', 'stim', 'song'),
-      // Rules 1.3 (lane 0B): these show only when they apply (the engine leaves them out otherwise).
-      ...B('extinguish', 'escape', 'recover'),
-      ...(dual ? [] : bothRows), // two guns: with the both-hands block on the Attack tab
-      ...B('hide', 'analyze')], null, 'utility'],
-  ];
-  // Perks and traits, then class moves: each item's actions as the engine lists them (hidden when they don't apply).
-  const pk = perkEntries(opts.g, cb, cur, ch, 'combat');
-  const pkItem = (e: PerkActionEntry): ActionItem => { const st = pkState(e); return [pkId(e), e.label + st.tag, pkCost(e), pkText(e), st.why]; };
-  const perks = pk.filter((e) => e.tab === 'perks'), moves = pk.filter((e) => e.tab === 'class');
-  // Rules 1.14, the perk card in a fight: USE NOW is the buttons; RIDES AN ACTION and ALWAYS ON are rows to read (no
-  // Confirm), in that order (game/perkShelves.ts sorts them). Story-only items are not on the fight's card.
-  const sh = perkShelves(opts.g, cb, cur, ch, { entries: perks, since: opts.since });
+/** Every action this unit has, in tab order: the engine's descriptors (actionsFor) as the panel's rows. ch: the unit's
+ *  character, or null. */
+export const actionGroups = (cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] => descriptorGroups(cb, cur, ch, opts);
+
+/** The game the engine's actionsFor reads, for a fight this screen holds (cb may be the screen's drawn copy). */
+export const gameFor = (g: any, cb: any, ch: any): any => ({ ...(g || {}), combat: cb, characters: { ...((g && g.characters) || {}), ...(ch ? { [ch.id]: ch } : {}) } });
+/** The action list from the engine's descriptors (actionsFor): the rows each tab shows, in the engine's order, with
+ *  its names, costs, texts and reasons. A child row (a technique inside its pad) and a hidden one are not listed. */
+export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
+  if (!cb || !cur) return [];
+  const list: ActionDescriptor[] = (() => { try { return actionsFor(gameFor(opts.g, cb, ch), cur.id, null); } catch { return []; } })();
+  const by = (gr: string) => list.filter((d) => d.group === gr && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why]);
+  const w: any = (WEAPON as any)[cur.weapon];
+  const out: ActionGroup[] = [['MOVEMENT', by('move'), null, 'move'], ['ATTACK & DEFEND · ' + (w ? w.name.toUpperCase() : ''), by('attack'), HOSTILE_INK, 'attack'], ['UTILITY', by('utility'), null, 'utility']];
+  // Rules 1.14, the perk card in a fight: USE NOW is the buttons; RIDES AN ACTION and ALWAYS ON are rows to read.
+  const perks = by('perks'), sh = perkShelves(opts.g, cb, cur, ch, { entries: perkEntries(opts.g, cb, cur, ch, 'combat').filter((e) => e.tab === 'perks'), since: opts.since });
   const info = [...sh.rides, ...sh.always].map((r): ActionItem => [PKI + r.key, r.name, r.line, r.detail, null]);
-  if (perks.length || info.length) ITEMS.push(['PERKS & TRAITS', [...perks.map(pkItem), ...info], null, 'perks']);
-  if (moves.length) { const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null), moves[0].cls); ITEMS.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves.map(pkItem), k ? k.ink : null, 'class']); }
-  // Magic, two groups that never mix: Sigils (Mind cyan) and Outbursts (Soul violet). Only for a unit that has magic.
-  if (hasMagic) {
-    const sig = words.length > 0 || mg.evoker, soul = designs.length > 0 || mg.emanator;
-    // A focus counts only in a hand (spec: Hands 2, item 630): the buttons stay, greyed with the engine's reason.
-    const evoWhy = mg.evoker ? undefined : NEEDS_EVOKER, emaWhy = mg.emanator ? undefined : NEEDS_EMANATOR;
-    const MG: ActionGroup[] = [];
-    if (sig) MG.push(['MAGIC · SIGILS', [
-      ['draw', 'Draw a glyph', glyphApOf(cur) + ' AP', 'Pick a word on the glyph keyboard, then click your own tile. A tile holds one glyph. Step and draw again to walk a Line of 2 to 4 glyphs in a straight row. Each glyph costs its word\'s charge from your Evoker and adds its Flux.', evoWhy],
-      ['evoke', 'Evoke', SPELL_AP.evoke + ' AP', 'Fire a Line of glyphs. It needs a Subject and at least one other word. Where you stand aims it: from an end, it fires along the Line; from the side, across it. Charge ' + mg.charge + '/' + CORE_CHARGE + '.', evoWhy],
-      ['scuff', 'Scuff', SPELL_AP.scuff + ' AP', 'Wipe out the glyphs on the tile you stand on.'],
-      ['vent', 'Vent Flux · ' + mg.flux + '/' + FLUX_MAX, magicAp(cur, 'vent') + ' AP', 'Pour all your Flux into the air. The mana meter rises by the same amount. If your Flux goes past ' + FLUX_MAX + ', the Evoker overloads.' + apNote(cur, 'vent'), evoWhy],
-      ['core', 'Swap core', magicAp(cur, 'core') + ' AP', apNote(cur, 'core') + 'Load a fresh mana core with ' + CORE_CHARGE + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.', evoWhy]], SIGIL_GLOW, 'sigils']);
-    if (soul) MG.push(['MAGIC · OUTBURSTS', [
-      // Rules 1.5, the heart cycle: Begin (or a snap cast) when nothing is held; Pump, Release, Steady, Let go, Feed and
-      // Heart Overwatch while holding. Costs and refusals are the engine's (game/heartView.ts runs its previews).
-      // Heart Overload's free Begin is said on the row itself, so it is seen without opening the designs (11 Nov 2026).
-      ...(designs.length && !held ? [['outburst', 'Outburst', (() => { try { const c = designCards(cb, cur).find((x: any) => x.again); if (c) return 'Heart Overload: ' + c.name + ' again, 0 AP'; } catch { /* the plain line */ } return designs.length === 1 ? 'Begin ' + designAp(mg, designs[0]) + ' AP' : designs.length + ' designs'; })(), 'Begin a design and hold it at stage 0 (2 AP, or 1 AP with the Swift module). Pump it up a stage at a time, to stage 4 (1 AP each), then Release it (1 AP). Or Snap it: Begin and Release in one go for 3 AP, at ×' + stageMult(0) + '.' + (mg.emanator ? '' : ' With no Emanator in hand it draws on the air: no MP cost, but +2 Strain.')] as ActionItem] : []),
-      ...(held ? (() => { const hp = cb ? heartPanel(cb, cur) : null; if (!hp) return [['release', 'Release · stage ' + held.stage, SPELL_AP.release + ' AP', 'Let the held Outburst go.'] as ActionItem];
-        return [['pump', 'Pump · stage ' + hp.stage + (hp.pump.ok ? ' → ' + (hp.stage + 1) : ''), hp.pump.cost, 'Raise the held Outburst by 1 stage. Stages run from ×' + stageMult(0) + ' at stage 0 to ×' + stageMult(4) + ' at stage 4: a plain Pump adds +' + Math.round((stageMult(1) - stageMult(0)) * 10) / 10 + ', and a feeling adds its own step instead. One Pump a turn can cost 0 AP: your first of the fight, or one each round from Empathy 3.', hp.pump.ok ? null : hp.pump.why] as ActionItem,
-          ['release', 'Release · stage ' + hp.stage + ' ×' + hp.mult, hp.release.cost, 'Fire ' + hp.name + ' at the stage reached (' + hp.shape + ').', hp.release.ok ? null : hp.release.why] as ActionItem,
-          ['steady', 'Steady the heart', hp.steadyBtn.cost, hp.steadyBtn.title, hp.steadyBtn.ok ? null : hp.steadyBtn.why] as ActionItem,
-          ['letgo', 'Let it go' + (hp.letgo.strainOff ? ' · −' + hp.letgo.strainOff + ' Strain' : ''), 'free', hp.letgo.title, hp.letgo.ok ? null : hp.letgo.why] as ActionItem,
-          ...(hp.feedShow ? [['feed', 'Feed the glyph', hp.feed.cost, hp.feed.title, hp.feed.ok ? null : hp.feed.why] as ActionItem] : []),
-          ['heartwatch', hp.watch ? 'Heart Overwatch · armed' : 'Heart Overwatch', 'free', hp.watchBtn.title, hp.watchBtn.ok ? null : hp.watchBtn.why] as ActionItem]; })() : []),
-      ...(mg.emanator || (ch && focusHand(ch, 'emanator')) ? [['syphon', 'Syphon', SPELL_AP.syphon + ' AP', 'Draw MP from the air: ' + band.syphon_mp + ' MP in ' + BAND_NAME[band.id] + ' air, times your Syphon bonus. The mana meter drops.', emaWhy] as ActionItem,
-        ['crystallise', 'Crystallise', SPELL_AP.crystallise + ' AP', 'Squeeze the air into one standard mana core. Needs ambient mana of 10 or more (Normal air or richer). The mana meter drops by 10.', emaWhy] as ActionItem] : [])], SOUL_INK, 'outbursts']);
-    ITEMS.push(...MG.filter((gr) => gr[1].length));
-  }
-  // Faith (rules 1.6): Whispers, Hymns and the Miracle, in Virtue ink.
-  const pray = prayerItems(opts.g, cur);
-  if (pray.length) ITEMS.push(['FAITH · PRAYERS', pray, FAITH_INK, 'faith']);
-  // Calls (the nine talking skills' actions in a fight): one row per Call the unit has a point for; no tab without one.
-  const cl = callItems(opts.g, cb, cur);
-  if (cl.length) ITEMS.push(['CALLS · SPOKEN TO SOMEONE WHO CAN HEAR YOU', cl as ActionItem[], null, 'calls']);
-  // A unit with a fixed action list (the drone: move and a plain shot; spec 14 item 370) shows only those.
-  const allowed: string[] | undefined = cur && cur.allowedActions;
-  const LIST = allowed ? ITEMS.map(([n, items, ink, tab]) => [n, items.filter((it) => allowed.includes(it[0])), ink, tab] as ActionGroup).filter((gr) => gr[1].length) : ITEMS;
-  if (opts.noNarrator) return LIST.map(([n, items, ink, tab]) => [n, items.filter((it) => it[2] !== 'Narrator'), ink, tab] as ActionGroup).filter((gr) => gr[1].length);
-  return LIST;
+  if (perks.length || info.length) out.push(['PERKS & TRAITS', [...perks, ...info], null, 'perks']);
+  const moves = by('class');
+  if (moves.length) { const pe = perkEntries(opts.g, cb, cur, ch, 'combat').find((e) => e.tab === 'class'); const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null), pe?.cls); out.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves, k ? k.ink : null, 'class']); }
+  const sig = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
+  if (sig.length) out.push(['MAGIC · SIGILS', sig, SIGIL_GLOW, 'sigils']);
+  if (soul.length) out.push(['MAGIC · OUTBURSTS', soul, SOUL_INK, 'outbursts']);
+  if (pray.length) out.push(['FAITH · PRAYERS', pray, FAITH_INK, 'faith']);
+  if (cl.length) out.push(['CALLS · SPOKEN TO SOMEONE WHO CAN HEAR YOU', cl, null, 'calls']);
+  if (opts.noNarrator) return out.map(([n, items, ink, tab]) => [n, items.filter((it) => it[2] !== 'Narrator'), ink, tab] as ActionGroup).filter((gr) => gr[1].length);
+  return out;
 }
 
 /** A unit that can't use techniques (the engine's gate: a companion, a puppet, a unit with a fixed action list) keeps
@@ -410,11 +295,3 @@ export function wantsDetail(e: { options?: unknown[]; pickLabel?: string; target
 
 /** Whom the unit could pull free now (rules 1.12): the engine's list (actions.ts). */
 export const pullFreeTargets = (cb: any, cur: any): any[] => (cb && cur ? enginePullFree(cb, cur) : []);
-
-/** The both-hands block's rows get "Reload both" after them (two guns), so the block is everything the pair does. */
-function withBoth(items: ActionItem[], dual: boolean, both: ActionItem[]): ActionItem[] {
-  if (!dual) return items;
-  if (!both.length) return items;
-  let at = items.findIndex((it) => it[0] === 'tpad:both'); if (at < 0) at = items.findIndex((it) => it[0] === 'paired');
-  return at < 0 ? items : [...items.slice(0, at + 1), ...both, ...items.slice(at + 1)];
-}

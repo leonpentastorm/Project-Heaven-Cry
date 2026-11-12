@@ -6,7 +6,9 @@
 //   - typing a basic action's AP cost into a row or into the cost of the picked action;
 //   - working out sight itself to hide units, glyphs or effects (finding 4: the view is fogged by the engine, fog.ts;
 //     docs/design/handoffs/client-boundary-2-fog.md).
-// What to do instead is in docs/design/handoffs/client-boundary-1.md ("How to add an action").
+//   - building an action, its cost, its legality or its target list on the client (finding 3: every action is the
+//     engine's descriptor, game/actionFlow.ts walks it; docs/design/handoffs/client-boundary-3-actions.md).
+// What to do instead is in docs/design/handoffs/client-boundary-1.md and client-boundary-3-actions.md ("How to add an action").
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -52,5 +54,26 @@ describe('the client asks the engine; it does not go round it', () => {
   it('the Perks tab reads no registry and no card prose', () => {
     const src = read(join(SRC, 'game', 'perkShelves.ts'));
     for (const banned of ['handlerOf', 'genericOf', 'actionDefs', 'holdersOf', 'RegExp(', '.exec(']) expect(src.includes(banned), banned).toBe(false);
+  });
+
+  it('the fight screen sends no unit action it built itself: Confirm and a click send the descriptor\'s (finding 3)', () => {
+    const combat = read(join(SRC, 'screens', 'combat.js'));
+    // what may still be typed: the turn's end, Say and Attempt (words, not actions on the list), a cache's Search (the
+    // world layer), and reading a glyph with Analyze (its own path); everything else is sendDescriptor's or the flow's
+    const OWN = ['end-turn', 'say', 'attempt', 'search', 'read'];
+    const built = [...combat.matchAll(/act\(\{ type: 'combat\/([a-z-]+)'/g)].map((m) => m[1]).filter((t) => !OWN.includes(t));
+    expect(built).toEqual([]);
+    // and no action literal waits in a variable to be sent either (the old this._tech, _call, _pr, _pk payloads)
+    expect(combat).not.toMatch(/payload: \{ type: 'combat\//);
+  });
+  it('no screen works out an action\'s cost, legality or targets: the descriptor and the engine\'s preview do (finding 3)', () => {
+    const SCREENS = /[\\/](screens[\\/](combat|faithCombat)\.js|game[\\/](actionFlow|callView|techView)\.ts)$/; // (commands.ts: the turn card's smartCommands still prints its own costs; client-boundary-3-actions.md, what is left)
+    // the old per-system pickers, prompts and previews the flow replaced
+    expect(hits(/\b(prayerView|callTakes|callPrompt|callPreviewOf|callReach|techPrompt|techPreview|previewLines|needsEnemy|needsTile|basicCost|attackApCost|previewPerkAction|previewPrayer|previewCall|previewTechnique)\s*\(/, SCREENS)).toEqual([]);
+    // the fight screen asks no weapon row, no magic price and no dry run of a spell for a cost
+    expect(hits(/\b(weaponActions|glyphCost|ventAp|coreAp|designAp)\s*\(|SPELL_AP\[S\.action\]/, /[\\/]screens[\\/]combat\.js$/)).toEqual([]);
+    // the flow itself only asks the engine: it imports the descriptors, their preview and the step rule, nothing else
+    const flow = read(join(SRC, 'game', 'actionFlow.ts')), imp = /import \{([^}]*)\} from '@engine'/.exec(flow)![1].split(',').map((x) => x.trim().replace(/^type /, '')).filter(Boolean);
+    expect(imp.sort()).toEqual(['ActionDescriptor', 'DescriptorPreview', 'PickStep', 'Picks', 'actionsFor', 'previewDescriptor', 'stepOn']);
   });
 });

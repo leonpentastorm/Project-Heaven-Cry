@@ -6,10 +6,10 @@
 //   tq:<hand>:<id>   a technique to use (the plain attack row, or a chip picked from a pad)
 //   tpad:<hand>      a weapon's Techniques row (selecting it opens the pad)
 //   twatch           Hold a shot (selecting it opens the Watches)
-import { WEAPON, ITEM, phys } from '@engine';
-type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup; type TechPreview = phys.TechPreview;
+import { WEAPON, ITEM, phys, parseTechId } from '@engine';
+type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup;
 import { heatLimit } from '@engine';
-const { techniquePad, packPad, pairedPad, previewTechnique, physView, weaponSystem, propText, TECHNIQUE, shieldOf } = phys;
+const { techniquePad, packPad, pairedPad, physView, weaponSystem, propText, TECHNIQUE, shieldOf } = phys;
 import { gearIconUri, GEAR_INK_OFF } from './gearIcons';
 
 export const TQ = 'tq:';
@@ -21,11 +21,8 @@ export type Hand = 'main' | 'off' | 'both';
 export const techAction = (hand: Hand, id: string, item?: string | number | null) => TQ + hand + ':' + id + (item != null && item !== '' ? '@' + item : '');
 export const padAction = (hand: Hand) => TPAD + hand;
 /** A technique action's hand and id, or null. */
-export function parseTech(a: string | null | undefined): { hand: Hand; id: string; item?: string | number } | null {
-  if (!a || !a.startsWith(TQ)) return null;
-  const [hand, rest] = a.slice(TQ.length).split(':'), [id, it] = (rest || '').split('@');
-  return (hand === 'main' || hand === 'off' || hand === 'both') && id ? { hand, id, ...(it != null && it !== '' ? { item: /^\d+$/.test(it) ? Number(it) : it } : {}) } : null;
-}
+/** A technique's id parsed (the engine's: tq:<hand>:<id>[@<item>]). */
+export const parseTech = parseTechId;
 /** The pad an action belongs to: a Techniques row (its hand), Hold a shot, or none. */
 export function padOf(a: string | null | undefined): { kind: 'tech'; hand: Hand } | { kind: 'watch' } | null {
   if (!a) return null;
@@ -199,40 +196,10 @@ export function padView(blocks: WeaponBlock[], pad: ReturnType<typeof padOf>, se
 }
 
 // ---------- the selected technique ----------
-/** The arguments a technique needs from the grid, by what it aims at. */
-export const aimOf = (id: string): string => TECHNIQUE[id]?.aim || 'enemy';
-export const needsEnemy = (id: string) => aimOf(id) === 'enemy' || aimOf(id).startsWith('enemy');
-export const needsTile = (id: string) => aimOf(id) === 'tile' || aimOf(id).endsWith('+tile');
-export const needsAlly = (id: string) => aimOf(id) === 'ally';
-/** What to ask the player for next, in words (null: nothing more to pick). */
-export function techPrompt(id: string, have: { target?: any; tile?: string | null; ally?: any }): string | null {
-  if (needsEnemy(id) && !have.target) return 'Click an enemy on the map.';
-  if (needsAlly(id) && !have.ally) return 'Click an ally on the map.';
-  if (needsTile(id) && !have.tile) return aimOf(id) === 'enemy+tile' ? 'Now click the tile.' : 'Click a tile on the map.';
-  return null;
-}
-/** The engine's preview of the picked technique (null when it can't be asked yet). */
-export function techPreview(g: any, cb: any, u: any, sel: { hand: Hand; id: string; item?: string | number }, args: { targetId?: string; tile?: string | null; allyId?: string; line?: string | null; opt?: string | null }): TechPreview | null {
-  try { return previewTechnique(cb, u, sel.id, { hand: sel.hand, ...(args.targetId ? { targetId: args.targetId } : {}), ...(args.tile ? { tile: args.tile } : {}), ...(args.allyId ? { allyId: args.allyId } : {}), ...(args.line ? { line: args.line } : {}), ...(args.opt ? { opt: args.opt } : {}), ...(sel.item != null ? { item: sel.item } : {}) }, g); }
-  catch (e) { return { ok: false, why: String((e as any)?.message || e), id: sel.id, ap: 0, rounds: 0, attacks: [], notes: [] }; }
-}
-const STATE: Record<string, string> = { pressed: 'Pressed', suppressed: 'Suppressed', broken: 'Broken', under_fire: 'Under fire', '': '' };
-/** The preview as lines for the selected card: each roll's odds, the damage, the notes, Momentum, Pressure, saves. */
-export function previewLines(cb: any, pv: TechPreview | null): { odds: string[]; notes: string[]; meters: string[]; saves: string[] } {
-  const out = { odds: [] as string[], notes: [] as string[], meters: [] as string[], saves: [] as string[] };
-  if (!pv) return out;
-  const nameOf = (id: string) => cb.units.find((x: any) => x.id === id)?.name || id;
-  for (const a of pv.attacks || []) {
-    const p: any = a.pv; if (!p) continue;
-    out.odds.push(nameOf(a.target) + ': ' + (p.ok ? 'hit ' + p.pct + '% · need ' + p.need + (p.dmg && p.dmg.total != null ? ' · ' + p.dmg.total + ' damage' : '') : p.why || 'can\'t attack'));
-  }
-  out.notes = [...(pv.notes || [])];
-  if (pv.momentum) out.meters.push('Momentum ' + pv.momentum.now + ' → ' + pv.momentum.after + (pv.ends ? ' · ends your chain' : ''));
-  if ((pv as any).guard) out.meters.push('Guard ' + (pv as any).guard.now + ' → ' + (pv as any).guard.after);
-  for (const p of pv.pressure || []) out.meters.push(nameOf(p.unit) + ': Pressure ' + (p.add >= 0 ? '+' : '') + p.add + ' → ' + p.after + (p.state ? ' (' + (STATE[p.state] || p.state) + ')' : '') + (p.onHit ? ' on a hit' : ''));
-  for (const s of pv.saves || []) out.saves.push(nameOf(s.unit) + ' saves with ' + s.skills.map((k) => k.replace(/_/g, ' ')).join(' or ') + ' vs TN ' + s.tn);
-  return out;
-}
+// A picked technique is on the one action flow (game/actionFlow.ts): what to click next, its preview in words, its
+// red area and what Confirm sends are the engine's descriptor (descriptors.ts).
+/** Whether a technique aims at an ally (the pad's chip keeps the screen's target for the others). */
+export const needsAlly = (id: string) => ((TECHNIQUE as any)[id]?.aim || 'enemy') === 'ally';
 /** A property's explanation (the engine's glossary), for the chips' and the help's hover. */
 export const propHelp = (prop: string) => propText(prop);
 
@@ -301,16 +268,5 @@ export function lineTiles(a: string, b: string): string[] {
   return out;
 }
 
-/** The choices a technique's text offers beyond its property line (the engine's args.opt), for the selected card's
- * toggles. The first is what is sent when nothing was picked; '' means "send nothing" (the plain use). */
-export const TECH_OPTS: Record<string, [string, string, string][]> = {
-  called_shot: [['leg', 'LEG', 'Slowed on a hit.'], ['arm', 'ARM', 'Its weapon is lowered on a hit.'], ['head', 'HEAD', 'Dazed on a hit.']],
-  run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Only with a Reach weapon: you leave the weapon in the target and are unarmed. The target stays Pinned until the weapon is pulled out.']],
-  bash: [['', 'DAZE', 'The target is Dazed.'], ['push', 'PUSH', 'With a Heavy weapon: the target is pushed 2 tiles instead.']],
-  trip: [['', 'TRIP', 'The target goes Prone.'], ['grapple', 'GO DOWN WITH IT', 'With bare hands, on a target next to you: you go Prone with it, and it is Grappled as well.']],
-  // Raise Shield: how much Momentum to turn into Guard (all of it when nothing is picked; the engine caps it at the pool)
-  raise_shield: [['1', 'TURN 1', '1 Momentum becomes 1 Guard.'], ['2', 'TURN 2', '2 Momentum become 2 Guard.'], ['', 'ALL', 'All your Momentum becomes Guard, as much as the pool holds.']],
-  drag: [['', 'AUTO', 'Pull it to you, or swap places when it is next to you.'], ['pull', 'PULL', 'Pull it toward you.'], ['swap', 'SWAP', 'Change places with it.']],
-};
-/** (What is sent when nothing was picked: the '' choice where there is one, else the first.) */
-export const techOptOf = (id: string, picked: string | null | undefined): string | null => { const o = TECH_OPTS[id]; if (!o) return null; const v = picked != null && o.some((x) => x[0] === picked) ? picked : (o.find((x) => x[0] === '') || o[0])[0]; return v || null; };
+/** The choices a technique's text offers beyond its property line, and what is sent when nothing is picked: the engine's. */
+export { TECH_OPTIONS as TECH_OPTS, techOpt as techOptOf } from '@engine';

@@ -51,3 +51,7 @@ export * from './kit';
 export * from './rolls';
 // Engine foundations 2: the unit states' setters (Braced, Staggered, Downed, Nailed). The raw flag writes are not exported: applyCond / endCond (magic.ts) are the door.
 export { setBraced, stagger, clearStagger, setDowned, setNailed, startHidden, asStanding } from './unitstate';
+// Action descriptors (engine review 4, finding 3): one description of every action a unit can take, one preview, one send.
+export { actionsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, stepOn, GROUP_ORDER, isLegacyUnit, TQ, TPAD, TWATCH, techId, parseTechId, TECH_OPTIONS, techOpt, techHelp, ORDER_THINGS, orderMax,
+  PR, prayId, parsePrayId, oddsPct, prayOdds, PK, perkId, parsePerkId, perkCost, perkState, perkText,
+  type ActionDescriptor, type DescGroup, type PickStep, type PickKind, type PickOption, type Picks, type DescCost, type DescriptorPreview, type PreviewLine, type GridMarks, type ActionSystem, type DescCtx } from './descriptors';
