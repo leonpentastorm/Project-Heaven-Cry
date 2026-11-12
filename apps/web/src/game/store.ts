@@ -240,9 +240,20 @@ let idbTimer: any = null;
 let lsTimer: any = null;
 /** After an action: the save is written as soon as the action has been handled and drawn, not inside the click (the
  * whole state is turned into text for localStorage: 0.3 ms on a fresh fight, 1 ms after 50 fights, more on a long
- * campaign), and once for several actions run in the same step. Leaving the page before it ran writes it at once. */
-function persistSoon() { if (hostState && lsTimer == null) lsTimer = setTimeout(() => { lsTimer = null; persist(); }, 0); }
-if (typeof addEventListener === 'function') addEventListener('pagehide', () => { if (lsTimer != null) persist(); });
+ * campaign), and once for several actions run in the same step. So between an action and the next task the save on
+ * disk is one step behind; three things close that gap where a timer cannot be trusted:
+ *   - the tab is out of view (the host's tab in the background is when guests' actions arrive, and browsers run a
+ *     hidden tab's timers late, about once a second): the write is made at once, inside the action, as it was before;
+ *   - the tab goes out of view with a write waiting (`visibilitychange`: on a phone the last event a page is sure to
+ *     get before it is frozen or thrown away): written at once;
+ *   - the page is left (`pagehide`): written at once.
+ * A crash between an action and the next task can still lose that one step; the room server's copy and IndexedDB are
+ * behind by more than that in any case. */
+const pageHidden = () => typeof document !== 'undefined' && document.visibilityState === 'hidden';
+function persistSoon() { if (!hostState) return; if (pageHidden()) { persist(); return; } if (lsTimer == null) lsTimer = setTimeout(() => { lsTimer = null; persist(); }, 0); }
+const flushSave = () => { if (lsTimer != null) persist(); };
+if (typeof addEventListener === 'function') addEventListener('pagehide', flushSave);
+if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') document.addEventListener('visibilitychange', () => { if (pageHidden()) flushSave(); });
 function persist() { if (lsTimer != null) { clearTimeout(lsTimer); lsTimer = null; } if (hostState) { write(LS.game(hostState.code), slim(hostState)); noteSession(hostState, 'host'); clearTimeout(idbTimer); const g = hostState; idbTimer = setTimeout(() => idbPut(g.code, g), 400); } }
 function broadcast(force: boolean) {
   if (!conn || !hostState) return;
