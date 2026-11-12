@@ -220,7 +220,7 @@ export function inventory(build: string, variant: string, level: number, st = SO
   const { g, u, c } = unitOf(build, variant, level), m = u.mg || {}, lf = mendFactor(level), rows: InvRow[] = [];
   const add = (school: string, what: string, cost: string, targets: string, before: number, now: number, note?: string) => rows.push({ school, what, cost, targets, before: Math.round(before), now: Math.round(now), pctBefore: pct(before, st), pctNow: pct(now, st), ...(note ? { note } : {}) });
   if (m.evoker || (m.words || []).length) {
-    const s = (m.sigilMult || 1) * (m.healMult || 1), mend = (SIGIL.mend as any).heal, ward = (SIGIL.ward as any).shield, rp = 0.9, cond = 1.5, spread = 0.6;
+    const s = (m.sigilBoon ?? m.sigilMult ?? 1) * (m.healMult || 1), mend = (SIGIL.mend as any).heal, ward = (SIGIL.ward as any).shield, rp = 0.9, cond = 1.5, spread = 0.6;
     add('Sigil', 'MEND · SEEK (2 glyphs)', 'about 4 AP, 5 charge', '1', OLD.mend * s, mend * s * lf);
     add('Sigil', 'MEND · CONDENSE · SEEK (3 glyphs)', 'about 5.5 AP, 6 charge', '1', OLD.mend * cond * s, mend * cond * s * lf);
     add('Sigil', 'MEND · MEND · CONDENSE · SEEK (the full Line)', 'about 6.5 AP over 1.1 to 1.6 turns, 9 charge', '1', OLD.mend * 2 * rp * cond * s, mend * 2 * rp * cond * s * lf);

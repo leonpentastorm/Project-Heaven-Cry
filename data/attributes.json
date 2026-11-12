@@ -200,8 +200,8 @@
       "derived": [
         {
           "stat": "mult_heal_given",
-          "formula": "1 + 0.1 × (Insight − 1) + 0.1 × Empathy",
-          "per_point_above_1": 0.1
+          "formula": "0.87 × (1 + 0.06 × (Insight − 1) + 0.06 × Empathy) (rules 1.26)",
+          "per_point_above_1": 0.06
         },
         {
           "stat": "soul_mana_cost_pct",

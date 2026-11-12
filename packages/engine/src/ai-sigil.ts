@@ -25,7 +25,7 @@ import { type Rng } from './rng';
 import {
   type EvokePreview, type EvokeOpts, type Affected, type Dir, type Spell,
   planEvoke, drawGlyph, evoke, findPattern, glyphCost, sigilReady,  dir8, secretFrom, scuff, strikeTurret, compileSpell, grammarError,
-  enemyMagic, W, isElement, isAffliction, isBoonWord,  MAX_GLYPHS, SIGIL_REV, sigilPower,
+  enemyMagic, W, isElement, isAffliction, isBoonWord,  MAX_GLYPHS, SIGIL_REV, sigilPower, lineMultFor,
 } from './sigil';
 import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, unitSave, condOn, ventAp, coreAp } from './magic';
 import { fooledBy } from './illusion';
@@ -54,8 +54,9 @@ const unitOf = (cb: Combat, id: string) => cb.units.find((x) => x.id === id)!;
  * field, ×1 for a trap), an affliction counted as 6. An estimate: the engine's numbers decide. */
 function biteOf(cb: Combat, z: { words: string[]; by: string }, mult: number): number {
   const o = cb.units.find((x) => x.id === z.by), m = o?.mg; let d = 0;
-  for (const w of z.words) { const x: any = W(w); if (x?.damage) d += x.damage * sigilPower(m, x.damage_type === 'elemental' ? 'elemental' : 'sigil'); if (isAffliction(w)) d += 6; }
-  return Math.round(d * mult);
+  for (const w of z.words) { const x: any = W(w); if (x?.damage) d += x.damage * sigilPower(m, x.damage_type === 'elemental' ? 'elemental' : 'sigil') * (m?.deal ?? 1); if (isAffliction(w)) d += 6; }
+  // rules 1.26: the owner's Line multiplier too, as the engine deals it (it was left out of the estimate)
+  return Math.round(d * mult * (o ? lineMultFor(o, compileSpell(z.words)) : 1));
 }
 /** How bad it is for u to step on tile k (an expected-damage scale; the move score adds it): a field of the other side
  * (10 + 3 × its bite), a trap of the other side its side has spotted (150), and 200 more when the bite would kill it.

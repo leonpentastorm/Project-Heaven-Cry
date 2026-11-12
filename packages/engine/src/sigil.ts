@@ -24,7 +24,7 @@ import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTI
 import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
 import { itemAmount } from './effects/amounts';
-import { mendFactorOf } from './effects/mending';
+import { mendFactorOf, flatLevelOf } from './effects/mending';
 import { armourAgainst, landed, amountOf, term, type AmountSpec } from './effects/output';
 import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
@@ -427,13 +427,13 @@ export function evokeGrowth(cb: Combat, u: Unit, words: string[], glyphs: number
 // floored), each damage type apart, in the order base × shape × line × Stat × the rest: as it always was.
 const SIGIL_DAMAGE: AmountSpec = { kind: 'damage', base: 0, profile: 'sigil', round: 'round' };
 /** One damage part of a spell (all its Sigil-type glyphs, or all its Elemental ones) on one creature, before armour. */
-export function sigilDamage(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): number {
+export function sigilDamage(mg: { sigilMult?: number; elemMult?: number; deal?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): number {
   const a = sigilDamageTerms(mg, type, base, shape, line, sharp, items, crit);
   return amountOf({ ...SIGIL_DAMAGE, base: a.base }, null, { level: null, mults: a.mults }).amount;
 }
 /** The same part with its terms open, as harm takes it (step a7: what an item adds goes in beside the base). */
-export function sigilDamageTerms(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): SpellAmount {
-  return { base, round: 'round', mults: [term(shape, 'shape'), term(line, 'line'), term(sigilPower(mg, type), type === 'elemental' ? 'stat: sigil + elemental' : 'stat: sigil'), term(sharp, 'sharpened'), term(items, 'items'), term(crit, 'critical')] };
+export function sigilDamageTerms(mg: { sigilMult?: number; elemMult?: number; deal?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): SpellAmount {
+  return { base, round: 'round', mults: [term(shape, 'shape'), term(line, 'line'), term(sigilPower(mg, type), type === 'elemental' ? 'stat: sigil + elemental' : 'stat: sigil'), term(mg?.deal ?? 1, 'level'), term(sharp, 'sharpened'), term(items, 'items'), term(crit, 'critical')] };
 }
 /** What MEND heals or WARD shields on one creature: the word's base × shape × Sigil multiplier × Healing given × the
  * level factor (two Stat terms: the second is an own multiplier with a name). */
@@ -458,7 +458,7 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const saves: Affected['saves'] = [];
   for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: saveTn(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
   if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: saveTn(caster, 'brain_power') });
-  return { dmg: E + S, dmgAfterArmour: arm, heal: sigilBoon('heal', hl, m, sm, hm, lf, hook('heal')), shield: sigilBoon('shield', sh, m, sm, hm, lf, hook('shield')),
+  return { dmg: E + S, dmgAfterArmour: arm, heal: sigilBoon('heal', hl, m, mg?.sigilBoon ?? sm, hm, lf, hook('heal')), shield: sigilBoon('shield', sh, m, mg?.sigilBoon ?? sm, hm, lf, hook('shield')),
     roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
 }
 /** Who a spell affects on a set of tiles, with every one it spares or skips flagged (spec: Filter KIN; Grammar 9). */
@@ -1298,7 +1298,7 @@ export function sigilTurnStart(cb: Combat, rng: Rng, u: Unit) {
   migrateSigil(cb);
   if (u.dead) return;
   if (condOn(u, 'quickened')) { const add = (W('quicken') as any)?.ap ?? 2, was = u.ap; if (!cb.overworld) grantAp(cb, u, add); endCond(u, 'quickened', cb); cb.log.push(u.name + ' is Quickened: +' + (u.ap - was) + ' AP this turn.'); }
-  if (condOn(u, 'corroded') && !u.downed) { const by = u.condBy?.corroded; cb.log.push(u.name + ' corrodes' + withElement('acid', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, itemAmount('condition:corroded', 'tick'), 'true', 'acid'))); }
+  if (condOn(u, 'corroded') && !u.downed) { const by = u.condBy?.corroded; cb.log.push(u.name + ' corrodes' + withElement('acid', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, Math.floor(itemAmount('condition:corroded', 'tick', [term(flatLevelOf(by ? cb.units.find((x) => x.id === by) || null : null, cb), 'level')])), 'true', 'acid'))); }
   for (const z of [...(cb.zones || [])]) {
     if (u.dead || !z.tiles.includes(u.pos)) continue;
     if (z.kind === 'field' || z.kind === 'wall') fieldBite(cb, rng, z, u);

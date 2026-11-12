@@ -26,7 +26,7 @@ const adv = (id: string, extra: CharSpec = {}): CharSpec => ({ ...SOUL, advanced
 function clean(f: F) {
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   for (const x of cb.units) { x.hp = x.maxHp = 999; x.armour = 0; x.def = -40; x.sv = { body: -40, brain: -40, heart: -40 } as any; x.hidden = false; (x as any).healRecv = 1; }
-  for (const x of cb.units) if (x.mg) Object.assign(x.mg, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0 });
+  for (const x of cb.units) if (x.mg) Object.assign(x.mg, { emanator: true, mp: 999, mpMax: 999, soulMult: 1, soulBoon: 1, deal: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0 });
 }
 const give = (u: Unit, d: Partial<OutburstDesign>): string => { const id = 'x' + (u.mg!.designs.length + 1); u.mg!.designs.push({ id, name: 'Test ' + id, school: 'damage', modules: [], ...d } as OutburstDesign); return id; };
 const place = (f: F, u: Unit, k: string) => { f.unit(u.id).pos = k; return f.unit(u.id); };

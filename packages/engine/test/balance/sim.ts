@@ -104,7 +104,7 @@ export function startFight(spec: FightSpec, begin = true) {
 }
 
 /** Play one fight to its end (or to maxRounds). */
-export function runFight(spec: FightSpec, opts: { log?: boolean } = {}): FightResult {
+export function runFight(spec: FightSpec, opts: { log?: boolean; /** called after every action with the fight (the many-targets cluster count, refit-measure.ts) */ watch?: (cb: any) => void } = {}): FightResult {
   const st = startFight(spec, false); let g = st.g; // the fight itself opens below, measured: the enemies that win initiative act inside that step
   const maxRounds = spec.maxRounds || 12, errors: string[] = [];
   const pcIds = spec.pcs.map((_, i) => 'pc-c' + (i + 1));
@@ -147,6 +147,7 @@ export function runFight(spec: FightSpec, opts: { log?: boolean } = {}): FightRe
     let next: any;
     try { next = apply(g, action, 'host'); } catch (e: any) { return String(e?.message || e); }
     g = next; const cb = g.combat; if (!cb) return 'the fight did not start';
+    if (opts.watch) opts.watch(cb);
     if (actor && P[actor] && step && /^Hymn: /.test(step.label || '') && P[actor].turnDmg.length) (P[actor].hymnTurns ||= {})[P[actor].turnDmg.length - 1] = true; // rules 1.22: which turns held a Hymn
     if (!Object.keys(sideOf).length) for (const q of cb.units) { sideOf[q.id] = q.side; tierOf[q.id] = q.tier || ''; }
     const after = snap(g), endTurn = action.type === 'combat/end-turn' || !before0;

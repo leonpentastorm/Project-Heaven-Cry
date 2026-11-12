@@ -35,7 +35,7 @@ describe('the magic targets hold (rules 1.17)', () => {
     expect(t.elite.biggest).toBeLessThan(t.elite.hp); expect(t.boss.biggest).toBeLessThan(t.boss.hp);
     expect(t.elite.castsToKillAvg).toBeGreaterThanOrEqual(2); expect(t.boss.castsToKillAvg).toBeGreaterThanOrEqual(4);
   }, 120000);
-  it('Outburst: steady play is about 125% of the plain rifle; the biggest Release is about 150% and above steady play', () => {
+  it('Outburst at a normal share (rules 1.26: all in on 135 and 165, a normal share ÷ 1.25): steady play about 105% of the plain rifle; the biggest Release about 130% and above steady play', () => {
     const steady = pattern('steady', 'outburst', 'normal', 6, N, { feelings: 'early' }, /^Release /, y);
     const fresh = pattern('steady, a new caster', 'outburst', 'normal', 6, N, null, /^Release /, y);
     // Rules 1.19: one free Pump a turn, so the biggest Release takes the whole turn (Begin 2, four Pumps with one free, Release 1): a
@@ -43,9 +43,9 @@ describe('the magic targets hold (rules 1.17)', () => {
     const peak1 = pattern('peak', 'outburst', 'normal', 6, N * 10, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 1);
     const peak = peak1.casts ? peak1 : pattern('peak', 'outburst', 'normal', 6, N * 10, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 2);
     expect(steady.errors + fresh.errors + peak.errors).toBe(0);
-    expect(steady.pctRifle, 'steady play, percent of the rifle').toBeGreaterThanOrEqual(100); expect(steady.pctRifle).toBeLessThanOrEqual(145);
-    expect(fresh.pctRifle, 'a new caster, percent of the rifle').toBeGreaterThanOrEqual(95); expect(fresh.pctRifle).toBeLessThanOrEqual(140);
-    expect(peak.pctRifle, 'the biggest Release, percent of the rifle').toBeGreaterThanOrEqual(120); expect(peak.pctRifle).toBeLessThanOrEqual(175);
+    expect(steady.pctRifle, 'steady play, percent of the rifle').toBeGreaterThanOrEqual(80); expect(steady.pctRifle).toBeLessThanOrEqual(135);
+    expect(fresh.pctRifle, 'a new caster, percent of the rifle').toBeGreaterThanOrEqual(75); expect(fresh.pctRifle).toBeLessThanOrEqual(130);
+    expect(peak.pctRifle, 'the biggest Release, percent of the rifle').toBeGreaterThanOrEqual(95); expect(peak.pctRifle).toBeLessThanOrEqual(170);
     expect(peak.perCast).toBeGreaterThan(steady.perCast); console.log('[targets] steady ' + steady.pctRifle + '% fresh ' + fresh.pctRifle + '% peak ' + peak.pctRifle + '% (' + peak.perCast + ' a cast vs ' + steady.perCast + ')');
   }, 120000);
 });

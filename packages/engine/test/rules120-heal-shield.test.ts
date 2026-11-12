@@ -27,7 +27,7 @@ function rig(spec: CharSpec = {}, o: { level?: number } = {}) {
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pcs[0].pos = '3,5'; f.pcs[1].pos = '4,5'; f.foe.pos = '12,5';
   for (const x of [...f.pcs, f.foe]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; (x as any).healRecv = 1; (x as any).shieldRecv = 1; }
-  for (const p of f.pcs) if (p.mg) { Object.assign(p.mg, { emanator: true, evoker: true, mp: 9999, mpMax: 9999, charge: 999, flux: -99, soulMult: 1, sigilMult: 1, healMult: 1, strain: 0, strainLimit: 20, freePumps: 0, freePumpsMax: 0, freeUsed: 0, firstUsed: true, feelings: FEELINGS.map((q) => q.id), maxWords: 4, glyphAp: 1, coreSave: 0, rangeBonus: 0 }); }
+  for (const p of f.pcs) if (p.mg) { Object.assign(p.mg, { emanator: true, evoker: true, mp: 9999, mpMax: 9999, charge: 999, flux: -99, soulMult: 1, soulBoon: 1, deal: 1, sigilMult: 1, sigilBoon: 1, healMult: 1, strain: 0, strainLimit: 20, freePumps: 0, freePumpsMax: 0, freeUsed: 0, firstUsed: true, feelings: FEELINGS.map((q) => q.id), maxWords: 4, glyphAp: 1, coreSave: 0, rangeBonus: 0 }); }
   const u = f.turn(f.pc); u.ap = 60;
   return f;
 }
@@ -56,7 +56,7 @@ describe('rules 1.20: the level factor', () => {
 describe('rules 1.20: Sigil', () => {
   it('MEND 10 and WARD 12, × the Sigil multiplier × Healing given × the level factor', () => {
     expect((SIGIL.mend as any).heal).toBe(10); expect((SIGIL.ward as any).shield).toBe(12);
-    const f = rig({ ...SIG }, { level: 12 }), u = me(f), rng = seed(); u.mg!.words = ['mend', 'ward', 'seek']; u.mg!.sigilMult = 2; u.mg!.healMult = 1.5; ally(f).hp = 100; ally(f).pos = '8,5';
+    const f = rig({ ...SIG }, { level: 12 }), u = me(f), rng = seed(); u.mg!.words = ['mend', 'ward', 'seek']; u.mg!.sigilMult = 2; u.mg!.sigilBoon = 2; u.mg!.healMult = 1.5; ally(f).hp = 100; ally(f).pos = '8,5'; // rules 1.26: a boon reads the landed sigil_mend Stat (sigilBoon)
     withGame(f.g, () => {
       u.pos = '5,5'; expect(drawGlyph(f.cb, rng, u, 'mend')).toBeFalsy(); u.pos = '4,5'; expect(drawGlyph(f.cb, rng, u, 'seek')).toBeFalsy();
       expect(evoke(f.cb, rng, u, '4,5', '8,5')).toBeNull();
@@ -99,7 +99,7 @@ describe('rules 1.20: the Outburst', () => {
   });
   it('Inverse and Shell have shield bases of their own: the Damage base does not move them', () => {
     expect((MODULE.inverse as any).shield).toBe(10); expect((MODULE.shell as any).shield).toBe(4);
-    const f = rig({}, { level: 20 }), m = me(f).mg!; m.soulMult = 2;
+    const f = rig({}, { level: 20 }), m = me(f).mg!; m.soulMult = 2; m.soulBoon = 2; // rules 1.26: a Soul shield reads the landed soul_mend Stat (soulBoon)
     const inv: any = { id: 'i', school: 'damage', modules: ['inverse'] }, wave: any = { id: 'w', school: 'damage', modules: ['inverse', 'wave'] }, bolt: any = { id: 'b', school: 'damage', modules: [] };
     const was = [inverseShield(m, inv, 1.4), shellShield(m, bolt, 1.4)];
     expect(was[0]).toBeCloseTo(10 * 2 * 1.4 * 1.82, 5); expect(was[1]).toBeCloseTo(4 * 2 * 1.4 * 1.82, 5);

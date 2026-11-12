@@ -33,20 +33,20 @@ describe('the heal and shield bands hold (rules 1.20)', () => {
     for (const lv of H_LEVELS) { const sh = SOLDIER_TURN[lv] / RIFLEMAN_HP[lv]; expect(sh, 'level ' + lv).toBeGreaterThan(0.12); expect(sh).toBeLessThan(0.145); }
     expect([1, 6, 12, 20].map(mendFactor)).toEqual([1, 1.13, 1.38, 1.82]);
   });
-  it('Outburst: a steady turn of healing is 100 to 150% of a Soldier-turn, the biggest 135 to 200%, the quick heal about half a turn\'s', () => {
+  it('Outburst: a steady turn of healing is 65 to 130% of a Soldier-turn at a normal share (rules 1.26: 1.25 all in, ÷ 1.25), the biggest 85 to 170%, the quick heal about a third of a turn\'s', () => {
     for (const lv of [1, 6, 20]) {
       const r = inventory('outburst_s', 'normal', lv);
       const steady = row(r, /steady \(Rage and Love/).pctNow, big = row(r, /the biggest/).pctNow, quick = row(r, /stage 1 \(the quick/).pctNow;
-      expect(steady, 'steady, level ' + lv).toBeGreaterThanOrEqual(100); expect(steady).toBeLessThanOrEqual(150);
-      expect(big, 'biggest, level ' + lv).toBeGreaterThanOrEqual(135); expect(big).toBeLessThanOrEqual(200); expect(big).toBeGreaterThan(steady);
-      expect(quick, 'quick, level ' + lv).toBeGreaterThanOrEqual(40); expect(quick).toBeLessThanOrEqual(75);
+      expect(steady, 'steady, level ' + lv).toBeGreaterThanOrEqual(65); expect(steady).toBeLessThanOrEqual(130);
+      expect(big, 'biggest, level ' + lv).toBeGreaterThanOrEqual(85); expect(big).toBeLessThanOrEqual(170); expect(big).toBeGreaterThan(steady);
+      expect(quick, 'quick, level ' + lv).toBeGreaterThanOrEqual(25); expect(quick).toBeLessThanOrEqual(60);
     }
   });
-  it('Sigil: a 2-glyph MEND Line is about one Soldier-turn; the full Line is the biggest single heal (200 to 280%)', () => {
+  it('Sigil: a 2-glyph MEND Line is 60 to 115% of a Soldier-turn; the full Line is the biggest single heal (170 to 280%; rules 1.26: MEND reads the landed sigil_mend Stat)', () => {
     for (const lv of [1, 6, 20]) {
       const r = inventory('sigil_s', 'normal', lv), two = row(r, /^MEND · SEEK/).pctNow, full = row(r, /^MEND · MEND · CONDENSE/).pctNow;
-      expect(two, '2 glyphs, level ' + lv).toBeGreaterThanOrEqual(80); expect(two).toBeLessThanOrEqual(115);
-      expect(full, 'the full Line, level ' + lv).toBeGreaterThanOrEqual(200); expect(full).toBeLessThanOrEqual(280);
+      expect(two, '2 glyphs, level ' + lv).toBeGreaterThanOrEqual(60); expect(two).toBeLessThanOrEqual(115);
+      expect(full, 'the full Line, level ' + lv).toBeGreaterThanOrEqual(170); expect(full).toBeLessThanOrEqual(280);
       expect(full).toBeGreaterThan(row(inventory('outburst_s', 'normal', lv), /the biggest/).pctNow); // the set-up earns the biggest single heal
     }
   });

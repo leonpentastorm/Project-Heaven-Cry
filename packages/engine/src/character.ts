@@ -130,11 +130,11 @@ export interface Companion { id: string; kind: 'drone' | 'beast' | 'twin' | stri
 export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string; option2?: string; tone?: string }
 export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
 export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string }
-/** Rarity (spec: Weapons v2, Rarity): accuracy, damage and durability bonuses; price multiplier. */
-export const RARITY: Record<Rarity, { acc: number; dmg: number; dur: number; price: number; marks: number }> = {
-  standard: { acc: 0, dmg: 1, dur: 1, price: 1, marks: 0 }, fine: { acc: 1, dmg: 1, dur: 1.25, price: 3, marks: 1 },
-  masterwork: { acc: 2, dmg: 1.1, dur: 1.5, price: 8, marks: 2 }, relic: { acc: 2, dmg: 1.1, dur: 1.5, price: 25, marks: 3 }, celestial: { acc: 2, dmg: 1.1, dur: 1.5, price: 50, marks: 4 },
-};
+/** Rarity (spec: Weapons v2, Rarity; data/rules.json `rarity` since rules 1.26): accuracy, damage and durability bonuses; price multiplier. */
+export const RARITY: Record<Rarity, { acc: number; dmg: number; dur: number; price: number; marks: number }> = Object.fromEntries((['standard', 'fine', 'masterwork', 'relic', 'celestial'] as Rarity[]).map((r) => {
+  const d: any = (RULES as any).rarity?.[r]; if (!d) throw new Error('data/rules.json rarity.' + r + ' is missing');
+  return [r, { acc: Number(d.acc), dmg: Number(d.dmg), dur: Number(d.dur), price: Number(d.price), marks: Number(d.marks) }];
+})) as any;
 export const maxDurOf = (weaponId: string, rarity: Rarity = 'standard') => Math.round(((WEAPON[weaponId] as any)?.durability || ITEM[weaponId] && (ITEM[weaponId] as any).durability || 0) * RARITY[rarity].dur);
 export const weaponDurOf = (c: Character) => c.weaponState?.dur ?? maxDurOf(c.weapon, c.weaponState?.rarity);
 /** Effects of everything worn and held in the off hand (slot armour, shields, lights). */

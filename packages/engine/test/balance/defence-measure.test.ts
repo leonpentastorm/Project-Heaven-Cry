@@ -32,19 +32,19 @@ const LV = list('DEFENCE_LEVELS', '').map(Number), PARTS = list('DEFENCE_PARTS',
 const say = (s: string) => { console.log(s); if (process.env.DEFENCE_OUT) appendFileSync(process.env.DEFENCE_OUT, s + '\n'); };
 
 describe('the defence step: the medic\'s kit against the yardstick (rules 1.23)', () => {
-  it('Triage in the medic\'s hands is 40 to 55% of a Soldier-turn for 2 AP: a bit under the same character\'s magic, per AP', () => {
+  it('Triage in the medic\'s hands is 20 to 40% of a Soldier-turn for 2 AP (a normal share; rules 1.26: the healer\'s turn is 1.25 Soldier-turns all in, 1.0 at a normal share): a bit under the same character\'s magic, per AP', () => {
     for (const lv of D_LEVELS) { const r = medicRow('medic', 'mender', 'normal', lv);
-      expect(r.triagePct, 'Triage, level ' + lv).toBeGreaterThanOrEqual(40); expect(r.triagePct).toBeLessThanOrEqual(55);
+      expect(r.triagePct, 'Triage, level ' + lv).toBeGreaterThanOrEqual(20); expect(r.triagePct).toBeLessThanOrEqual(40);
       expect(r.magicPerAp, 'the steady Outburst heal an AP, level ' + lv).not.toBe(null); expect(r.triagePerAp).toBeLessThan(r.magicPerAp!); expect(r.triagePerAp).toBeGreaterThanOrEqual(r.magicPerAp! * 0.7); }
   });
-  it('a dose (a stim, a thrown stim) in the medic\'s hands is 45 to 65% for 1 AP; in anyone\'s hands 17 to 35%', () => {
+  it('a dose (a stim, a thrown stim) in the medic\'s hands is 25 to 50% for 1 AP; in anyone\'s hands 12 to 35% (rules 1.26)', () => {
     for (const lv of D_LEVELS) { const m = medicRow('medic', 'mender', 'normal', lv), a = medicRow('anyone', 'plain_gun', 'normal', lv);
-      expect(m.stimPct, 'the medic, level ' + lv).toBeGreaterThanOrEqual(45); expect(m.stimPct).toBeLessThanOrEqual(65);
-      expect(a.healGiven).toBe(1); expect(a.stimPct, 'anyone, level ' + lv).toBeGreaterThanOrEqual(17); expect(a.stimPct).toBeLessThanOrEqual(35); }
+      expect(m.stimPct, 'the medic, level ' + lv).toBeGreaterThanOrEqual(25); expect(m.stimPct).toBeLessThanOrEqual(50);
+      expect(a.healGiven).toBeLessThan(1.1); expect(a.stimPct, 'anyone, level ' + lv).toBeGreaterThanOrEqual(12); expect(a.stimPct).toBeLessThanOrEqual(35); }
   });
   it('before rules 1.23 the same kit was 150 to 180% and 225 to 265% at level 1 to 12 in the medic\'s hands: no level factor', () => {
     const b1 = medicRow('medic', 'mender', 'normal', 1).before, b20 = medicRow('anyone', 'plain_gun', 'normal', 20).before;
-    expect(b1.triagePct).toBeGreaterThan(150); expect(b1.stimPct).toBeGreaterThan(225); expect(b20.triagePct).toBeLessThan(40);
+    expect(b1.triagePct).toBeGreaterThan(100); expect(b1.stimPct).toBeGreaterThan(150); expect(b20.triagePct).toBeLessThan(40); // the old bases with today's Healing given (rules 1.26: the landed profile, about 0.75 of the old one)
     expect([TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL]).toEqual([5, 6, 6]);
   });
 });

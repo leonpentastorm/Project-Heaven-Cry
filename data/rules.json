@@ -348,13 +348,13 @@
     },
     "multipliers": {
       "physical": "1 + 0.1*(strength-1) + 0.05*raw_power",
-      "elemental": "1 + 0.1*(expression-1) + 0.05*visualization",
-      "sigil": "1 + 0.1*(intelligence-1) + 0.1*brain_power",
-      "soul": "1 + 0.05*(determination-1) + 0.1*will_power",
-      "healing_given": "1 + 0.1*(insight-1) + 0.1*empathy",
+      "elemental": "1 (rules 1.26: no Elemental bonus; an aimed action has no slope)",
+      "sigil": "1.7 x Level.deal (rules 1.26: the aimed profile; output.profiles.sigil)",
+      "soul": "1.55 x Level.deal (rules 1.26: the aimed profile; output.profiles.soul)",
+      "healing_given": "0.87 x (1 + 0.06*(insight-1) + 0.06*empathy) (rules 1.26: the landed profile; output.profiles.healing)",
       "critical": "min(2.0, 1.5 + 0.03*(perception-1) + 0.02*dexterity + perks, traits and gear) (rules 1.15; provisional). An enemy: 1.5",
       "ambush": "1.5 + 0.05*ingenuity",
-      "blessing_power": "1 + 0.1*faith"
+      "blessing_power": "0.956 x (1 + 0.06*(virtue-1) + 0.06*faith) (rules 1.26: the landed profile; output.profiles.blessing)", "weapon": "1.5 x Level.deal (rules 1.26: the aimed profile, the same for every weapon and sheet; output.profiles.weapon)"
     },
     "magic": {
       "sigil_max_words": "2 + floor((intelligence-1)/2)",
@@ -1272,27 +1272,74 @@
     "area_share": 0.4,
     "text": "Healing and shields from Sigil magic, Outbursts, prayers and the medic's kit grow with the giver's level, by the same factor that raises what enemies deal (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). Nothing limits how much a creature can be healed in a round. Enemies notice who is mending the squad and turn on them: Soldiers lean that way, Elites and Bosses go for the healer first. In an area shape a healing or shielding Outburst gives each ally ×0.4."
   },
+  "rarity": {
+    "rules": "rules 1.26 (the re-fit): Weapons v2, Rarity, moved from code into data. Rarity buys accuracy, durability and a mod slot; since the re-fit it adds no damage (Masterwork's +10% was the gun premium the all-in ceiling could not hold: PROVISIONAL, spec item 1701)",
+    "provisional": true,
+    "standard": { "acc": 0, "dmg": 1, "dur": 1, "price": 1, "marks": 0 },
+    "fine": { "acc": 1, "dmg": 1, "dur": 1.25, "price": 3, "marks": 1 },
+    "masterwork": { "acc": 2, "dmg": 1, "dur": 1.5, "price": 8, "marks": 2 },
+    "relic": { "acc": 2, "dmg": 1, "dur": 1.5, "price": 25, "marks": 3 },
+    "celestial": { "acc": 2, "dmg": 1, "dur": 1.5, "price": 50, "marks": 4 }
+  },
+  "balance": {
+    "rules": "rules 1.26 (the re-fit, 12 Nov 2026): the balance contract. docs/design/balance-contract.md explains every number; packages/engine/test/balance-contract.test.ts measures each system and fails when it leaves its band.",
+    "provisional": true,
+    "unit": "percent of what the normal-share plain rifle deals in one 6-AP turn on the simulator's range at the same level (a heal: of one Soldier-turn)",
+    "ratio_allin_to_normal": 1.25,
+    "levels": [1, 5, 10, 20],
+    "tolerance": { "mean": 0.12, "level": 0.25, "note": "a system's all-in measure, averaged over the levels, is within mean of its ceiling; no single level more than level off (a system with a ladder of its own, Devotion, has its own low end: level_lo)" },
+    "ceilings": {
+      "plain": { "allin": 125, "what": "the plain rifle in all-in hands (a normal share is 100 by definition)", "dial": "rules.json output.profiles.weapon.k and output.level.deal" },
+      "gun": { "allin": 145, "what": "the best gun, the best way (Masterwork)", "dial": "rules.json rarity (Masterwork's damage, 1.0 since rules 1.26), then each weapon's damage" },
+      "melee": { "allin": 165, "what": "the heavy-melee damage dealer (the Defender sits lower: its own armour and Guard pay for standing in reach)", "dial": "rules.json output.factors.melee" },
+      "sigil_line": { "allin": [150, 200], "what": "a full Line (4 glyphs) over the turns it takes to draw", "dial": "sigils.json grammar.line_mult" },
+      "outburst_steady": { "allin": 135, "what": "steady play, the early feelings", "dial": "soul_modules.json damage.base" },
+      "outburst_peak": { "allin": 165, "what": "the biggest Release, one turn", "dial": "soul_modules.json damage.base, then cycle.stage_mult" },
+      "whisper_turn": { "allin": 80, "level_hi": 1.4, "what": "a turn with only a Whisper (and the rifle with the AP left: since rules 1.26 the rifle hits as hard in anyone's hands, and the Faith build's Dexterity sets the shape over the levels, hence the high end)", "dial": "patrons.json the Whispers' values; rules.json output.profiles.blessing.k" },
+      "hymn_turn": { "allin": 150, "level_lo": 0.55, "what": "a turn with a Hymn (Old Overcast); Devotion 3 has Hymn I only, hence the low end at levels 1 to 5", "dial": "patrons.json the Hymns' values; rules.json output.profiles.blessing.k" },
+      "healer_turn": { "allin": 125, "what": "the Soul healer's steady Buff heal, one turn, in Soldier-turns x 100", "dial": "rules.json output.profiles.healing.k (and mend)" },
+      "shield": { "of_heal": 1.2, "what": "a shield is worth 1.2 times the heal of the same cost" },
+      "weapon_art": { "what": "not built: may break the ceiling as a charged ultimate, counted in the build's fight average (steady + 10%)" },
+      "miracle": { "what": "exempt" }
+    },
+    "yardsticks": {
+      "soldier_turn": { "1": 18.5, "3": 21.5, "6": 25.4, "9": 32.4, "12": 37.8, "20": 60.2, "note": "what one Soldier of the fight's level takes off the plain rifleman in one of its turns (heal-shield-pass.md 1.1); one Soldier-turn kept off the squad counts as one plain rifle's turn of damage" },
+      "control": { "denied_turn": 1.0, "ap": 0.167, "elite": 1.4, "boss": 3.0, "boss_never_whole_turn": true, "same_enemy_rounds_apart": 2, "note": "a whole Soldier turn denied is worth one rifle-turn (100%); one AP off it a sixth of that; an Elite x1.4, a Boss x3 and never a whole turn; never the same enemy two rounds running (the Cut Short rule, for everything)" },
+      "area": { "extra_target_share": 0.5, "cluster": { "r1": 2.4, "r2": 2.8, "r3": 2.95, "chain": 2.0 }, "note": "an area is worth its single-target allowance plus half of it for each extra target it is expected to catch; cluster: the enemies a shape catches when aimed at one of a standard group, measured (refit-measure.ts cluster: levels 1, 6, 12, open ground, rounds 2 on)" },
+      "over_time": { "full_rounds": 2, "long_share": 0.75, "note": "damage over time counts in full for 2 rounds, x0.75 for longer (the target dies or is cleansed)" },
+      "cost": { "none": -0.15, "upkeep": 0, "session_supply": 0.05, "session_supply_credits": 0.10, "setup_turn": 0.10, "rooted": 0.05, "exposure": 0.15, "note": "allowances on a ceiling for what the range leaves out (unified-damage proposal 2.6): no cost at all, a pool that empties over a session, a turn of set-up a target can waste, standing on what you prepared, standing in reach" },
+      "tiers": { "plain": 1.25, "steady": 1.45, "peak": 1.65, "ultimate": 2.5, "note": "the budget rule for one use: allowed = (AP / 6) x tier x (1 + cost allowances) x the area worth" }
+    }
+  },
   "output": {
     "provisional": true,
     "rules": "the unified damage formula, stage (a): a re-expression, no number moved (12 Nov 2026)",
     "formula": "amount = (base + flat) x Stat x Level x own multipliers x (1 + target bonuses, capped at +100%); dealt = max(1, floor(amount) - armour); healing and shields go to their sinks",
     "level": {
-      "deal": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "deal": [1.0, 1.0666666666666667, 1.0999999999999999, 1.1666666666666667, 1.2000000000000002, 1.2666666666666668, 1.3, 1.366666666666667, 1.4000000000000001, 1.4666666666666668, 1.5, 1.5666666666666667, 1.5999999999999999, 1.5999999999999999, 1.5999999999999999, 1.5999999999999999, 1.5999999999999999, 1.5999999999999999, 1.5999999999999999, 1.5999999999999999],
       "mend": "enemies.levels.table.damage_mult",
-      "note": "One row a level, 1 to 20. deal: what a character's level multiplies its damage by (x1 at every level today: the slot exists, nothing moves; stage (b) fills it). mend: what it multiplies healing and shields by: the level row of the enemy table's damage column (rules 1.20), read from enemies.json, not copied here."
+      "note": "One row a level, 1 to 20. deal (rules 1.26, the re-fit): what a character's level multiplies its damage by: the growth a Skill point used to carry, moved to level (Leon: skill buys accuracy, level buys damage); derived so that the normal-share plain rifle hits exactly as hard as before at every level (its old weapon multiplier divided by the weapon profile's k). mend: what it multiplies healing and shields by: the level row of the enemy table's damage column (rules 1.20), read from enemies.json, not copied here."
     },
     "profiles": {
       "physical": { "k": 1, "attr": 0.1, "skill": 0.05, "level": null, "pair": "physical" },
-      "weapon": { "k": 1, "attr": 0.1, "skill": 0.05, "level": null, "pair": "weapon" },
-      "sigil": { "k": 1, "attr": 0.1, "skill": 0.1, "level": null, "pair": "sigil" },
-      "elemental": { "k": 1, "attr": 0.1, "skill": 0.05, "level": null, "pair": "elemental" },
-      "soul": { "k": 1, "attr": 0.05, "skill": 0.1, "level": null, "pair": "soul" },
-      "blessing": { "k": 1, "attr": 0, "skill": 0.1, "level": null, "pair": "blessing" },
-      "healing": { "k": 1, "attr": 0.1, "skill": 0.1, "level": null, "pair": "healing" },
-      "mend": { "k": 1, "attr": 0.1, "skill": 0.1, "level": "mend", "pair": "healing" },
-      "blessing_mend": { "k": 1, "attr": 0, "skill": 0.1, "level": "mend", "pair": "blessing" },
-      "flat": { "k": 1, "attr": 0, "skill": 0, "level": null },
-      "note": "Stat = k x (1 + attr x (each Attribute of the pair - 1) + skill x each Skill of the pair). These are today's slopes, one profile a system (stage (a)); stage (b) replaces them with the two shared profiles of the proposal (aimed, landed)."
+      "weapon": { "k": 1.5, "attr": 0, "skill": 0, "level": "deal", "pair": "weapon", "shape": "aimed" },
+      "sigil": { "k": 1.7, "attr": 0, "skill": 0, "level": "deal", "pair": "sigil", "shape": "aimed" },
+      "elemental": { "k": 1, "attr": 0, "skill": 0, "level": null, "pair": "elemental", "shape": "aimed" },
+      "soul": { "k": 1.55, "attr": 0, "skill": 0, "level": "deal", "pair": "soul", "shape": "aimed" },
+      "blessing": { "k": 0.956, "attr": 0.06, "skill": 0.06, "level": null, "pair": "blessing", "shape": "landed" },
+      "healing": { "k": 0.87, "attr": 0.06, "skill": 0.06, "level": null, "pair": "healing", "shape": "landed" },
+      "mend": { "k": 0.87, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "healing", "shape": "landed" },
+      "sigil_mend": { "k": 1.2, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "sigil", "shape": "landed" },
+      "soul_mend": { "k": 0.81, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "soul", "shape": "landed" },
+      "blessing_mend": { "k": 0.956, "attr": 0.06, "skill": 0.06, "level": "mend", "pair": "blessing", "shape": "landed" },
+      "flat": { "k": 1, "attr": 0, "skill": 0, "level": "deal", "shape": "flat" },
+      "note": "Stat = k x (1 + attr x (each Attribute of the pair - 1) + skill x each Skill of the pair). Rules 1.26 (the re-fit; Leon: no damage slope on rolled attacks, skill buys accuracy, level buys damage): every profile has one of three shapes. AIMED (an action that rolls to hit: a weapon, a Sigil Line, an Outburst): no slope, k a constant, the Level term deal. LANDED (an action that always lands: a prayer, a heal, a shield): 0.06 a point of Attribute over 1 and 0.06 a point of Skill (all in at 7/7 is 1.25 times a normal share at 4/4), k a constant. FLAT (what has no dealer's skill: a grenade, a tick, a trap a character sets): k 1, the Level term deal. Each k re-pins its system so that the normal share at level 1 is where it was (weapon 1.5, sigil 1.7, soul 1.55, healing 1.18, blessing 0.956)."
+    },
+    "factors": {
+      "note": "Rules 1.26 (the re-fit): a system's own named multiplier where it has no number of its own to carry its identity. melee: every melee blow a character strikes (Leon, 12 Nov 2026: melee's all-in ceiling is 165% of the plain rifle, the gun's 145% plus the price of standing in reach). PROVISIONAL (spec item 1702)",
+      "melee": 1.35,
+      "thrown": 0.7,
+      "thrown_note": "thrown: every grenade, thrown or placed charge a character sets off (frag, incendiary, satchel): on the measured cluster an area of radius 2 catches 2.8 enemies, and an area is allowed its single-target worth plus half for each extra target; a frag at 40 was 1.5 times that (spec item 1710). PROVISIONAL"
     },
     "pairs": {
       "physical": { "attrs": ["strength"], "skills": ["raw_power"] },
@@ -1300,14 +1347,14 @@
       "sigil": { "attrs": ["intelligence"], "skills": ["brain_power"] },
       "elemental": { "attrs": ["expression"], "skills": ["visualization"] },
       "soul": { "attrs": ["determination"], "skills": ["will_power"] },
-      "blessing": { "attrs": [], "skills": ["faith"] },
+      "blessing": { "attrs": ["virtue"], "skills": ["faith"] },
       "healing": { "attrs": ["insight"], "skills": ["empathy"] }
     },
     "systems": {
       "note": "Steps a4 and a5: each system's amount is its base x the Stat term x its own NAMED multipliers, every one a number in data; to re-fit a system, change the number where it lives. `where` names the field. `order`: the multipliers apply to the base one after another in this order; `round`: how the number is made whole.",
       "sigil_damage": { "profile": "sigil", "base": "sigils.json items[word].damage (the strongest glyph in full, every other half; each damage type apart)", "stat": "Sigil power: the Sigil multiplier, plus the Elemental bonus for Elemental damage (added)", "order": ["shape", "line", "stat", "sharpened", "items", "critical"], "round": "round",
         "own": { "shape": "sigils.json: spread, chain, arc, twice, placed (a Burst's or a placed spell's multiplier on this creature)", "line": "sigils.json grammar.line_mult (by glyph count; a character's Lines)", "sharpened": "sigils.json items[sharpen].damage_mult", "items": "the 'spell_mult' hook", "critical": "rules 1.17: x1.5 to x2.0" } },
-      "sigil_boon": { "profile": "mend", "base": "sigils.json items[mend].heal, items[ward].shield (heal_enemy, shield_enemy for an enemy caster)", "stat": "the Sigil multiplier", "order": ["shape", "stat", "healing given", "level", "items"], "round": "round",
+      "sigil_boon": { "profile": "mend", "base": "sigils.json items[mend].heal, items[ward].shield (heal_enemy, shield_enemy for an enemy caster)", "stat": "the landed sigil_mend Stat (rules 1.26; the Sigil multiplier before)", "order": ["shape", "stat", "healing given", "level", "items"], "round": "round",
         "own": { "healing given": "the caster's Healing given (a second Stat term, as an own multiplier)", "level": "output.level.mend", "items": "the 'spell_mult' hook" } },
       "outburst_damage": { "profile": "soul", "base": "soul_modules.json damage.base (damage.enemy_base for an enemy caster)", "stat": "the Soul multiplier", "order": ["stat", "stage", "shape", "at once"], "round": "none (harm floors it after the way of striking, a second school's half, the critical and the tone's riders)",
         "own": { "stage": "soul_modules.json cycle.stage_mult, plus feelings.json each feeling's step, the residue and resonance (added)", "shape": "soul_modules.json items[wave|burst|aura|lance].damage_mult", "at once": "soul_modules.json items[at_once].damage_mult" } },

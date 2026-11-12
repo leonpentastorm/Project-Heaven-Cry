@@ -161,6 +161,13 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   them (`BALANCE_QUICK`, set by `packages/engine/vitest.balance.config.ts`). One file with its report switches:
   `HEAL_MEASURE=1 npx vitest run --root packages/engine test/balance/heal-measure.test.ts --silent=false` (the commands
   in the hand-offs still work as written). `test/suite-shape.test.ts` fails if the folder leaves the default run.
+- **The balance contract** (`packages/engine/test/balance-contract.test.ts`, inside `npm run check`, about 20 s; rules 1.26):
+  each system all in at levels 1, 5, 10, 20 (six seeded fights a cell) against its ceiling in `data/rules.json balance`;
+  a failure names the system, the level and the dial in data. The full measurement:
+  `REFIT_MEASURE=1 npx vitest run --root packages/engine test/balance/refit-measure.test.ts --silent=false` (`REFIT_N`,
+  `REFIT_LEVELS`, `REFIT_VARIANTS`, `REFIT_SYSTEMS`; `REFIT_CLUSTER=1` for the many-targets yardstick). How to fit a
+  new system: `docs/design/balance-contract.md` section 6. `python3 tools/golden_diff.py --rev <base> [--table t --grep re]`
+  lists what moved in the golden tables before you re-record them.
 - `packages/engine/test/balance-baseline.test.ts`: the plain attack of sample weapons against each enemy tier
   (`BALANCE_OUT=<file>`).
 - `window.__phc` in the browser: `getState()`, `act(action)`, `setNarrator({ scripted: true })` (a Narrator that

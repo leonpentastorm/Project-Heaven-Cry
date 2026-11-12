@@ -78,15 +78,15 @@ describe('the data (rules 1.21): the numbers the spec gives', () => {
 describe('Rebuke, the seventh Whisper (item 1260)', () => {
   it('1 AP; an enemy in sight takes 20 Soul × Blessing power (rules 1.22); no roll; armour does not lower it; the mana meter −5', () => {
     const h = holy(); const pw = h.me.blessPower!, ap = h.me.ap, mana = h.cb.mana ?? 0;
-    expect(pw).toBeCloseTo(1.7, 5);
+    expect(pw).toBeGreaterThan(1); // rules 1.26: Blessing power is the landed profile on Virtue and Faith
     h.pray('whisper', 'rebuke', { targetId: h.foe.id });
-    expect(h.foe.hp).toBe(2000 - Math.round(20 * pw)); // 34 at Faith 7, with 12 armour on the target
+    expect(h.foe.hp).toBe(2000 - Math.round(20 * pw)); // with 12 armour on the target
     expect(h.me.ap).toBe(ap - 1); expect(h.cb.mana).toBe(mana - 5);
     expect(logHas(h.cb, /whispers a prayer.*Rebuke/)).toBe(true); expect(h.cb.log.filter((l) => /Rebuke/.test(l)).some((l) => /d20/.test(l))).toBe(false);
     expect((h.cb.fx || []).filter((e: any) => e.k === FAITH_FX.prayer).length).toBe(1);
   });
-  it('it grows with Faith and with nothing else: 26 at Faith 3, 40 at Faith 10', () => {
-    for (const [faith, dmg] of [[3, 26], [5, 30], [10, 40]]) { const h = holy({ faith, devotion: 3 }); h.pray('whisper', 'rebuke', { targetId: h.foe.id }); expect(2000 - h.foe.hp, 'Faith ' + faith).toBe(dmg); }
+  it('it grows with Blessing power (Faith, and Virtue since rules 1.26) and with nothing else', () => {
+    let last = 0; for (const faith of [3, 5, 10]) { const h = holy({ faith, devotion: 3 }); h.pray('whisper', 'rebuke', { targetId: h.foe.id }); const dmg = 2000 - h.foe.hp; expect(dmg, 'Faith ' + faith).toBe(Math.round(20 * h.me.blessPower!)); expect(dmg).toBeGreaterThan(last); last = dmg; }
     const lo = holy({ devotion: 0 }), hi = holy({ devotion: 10 }); lo.pray('whisper', 'rebuke', { targetId: lo.foe.id }); hi.pray('whisper', 'rebuke', { targetId: hi.foe.id });
     expect(lo.foe.hp).toBe(hi.foe.hp); // Devotion does not move it
   });

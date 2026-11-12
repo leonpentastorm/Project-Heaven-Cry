@@ -11,7 +11,7 @@ import {
 } from '../src';
 import { mendFactor } from '../src/effects/mending'; // rules 1.20: prayer heals and shields grow with level
 import { fightWith, storyWith, withGame, sheetOf } from './helpers/perkfight';
-import { clearPrayerLimits } from '../src';
+import { clearPrayerLimits, blessingPower } from '../src';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
@@ -104,7 +104,7 @@ describe('prayer in a fight (faith/pray through combat/pray)', () => {
   it('a Hymn by standing lands; Witnessed at Faith 5; the patron speaks; then the cooldown', () => {
     const h = holy({ devotion: 3, faith: 5 });
     h.pray('hymn', 'saints_shield', { targetId: h.ally.id });
-    expect(h.ally.shield).toBe(Math.round(16 * h.me.blessPower! * mendFactor(h.me.level))); expect(h.me.ap).toBe(3); // 16: rules 1.22 (12 in rules 1.20)
+    expect(h.ally.shield).toBe(Math.floor(16 * h.me.blessPower! * mendFactor(h.me.level))); expect(h.me.ap).toBe(3); // 16: rules 1.22 (12 in rules 1.20); the shield sink floors
     expect(condOn(h.me, 'witnessed')).toBe(true); expect(fx(h.cb, FAITH_FX.witnessed).length).toBe(1);
     expect(fx(h.cb, FAITH_FX.patron_line).some((e) => e.event === 'answered')).toBe(true);
     expect(() => h.pray('hymn', 'saints_shield', { targetId: h.ally.id })).toThrow(/wait/);
@@ -177,7 +177,7 @@ type Case = { id: string; kind?: 'hymn' | 'miracle'; setup?: (h: H) => void; arg
 const ALLY = (h: H) => ({ targetId: h.ally.id }), FOE = (h: H) => ({ targetId: h.foe.id });
 const CASES: Record<string, Case[]> = {
   nerukhan: [
-    { id: 'saints_shield', args: ALLY, check: (h) => expect(h.ally.shield).toBe(Math.round(16 * h.me.blessPower! * mendFactor(h.me.level))) }, // rules 1.22
+    { id: 'saints_shield', args: ALLY, check: (h) => expect(h.ally.shield).toBe(Math.floor(16 * h.me.blessPower! * mendFactor(h.me.level))) }, // rules 1.22; the shield sink floors
     { id: 'judgement', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: FOE, check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(logHas(h.cb, /×1\.3: it harmed the helpless/)).toBe(true); } }, // rules 1.21, item 1263: 30% more (it was double)
     { id: 'absolution', setup: (h) => { h.ally.hp = 40; h.ally.conds = { shaken: 2 } as any; }, args: ALLY, check: (h) => { expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.hp).toBeGreaterThan(40); } },
     { id: 'saints_verdict', kind: 'miracle', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: () => ({}), check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(h.foe2.hp).toBeLessThan(b.foe2Hp); expect(logHas(h.cb, /×2: it harmed the helpless/)).toBe(true); } },
@@ -483,7 +483,7 @@ describe('prayer in the story', () => {
   it('a Whisper heals a squad member, costs story AP and the mana meter, once a round', () => {
     const { s, c, ally } = faithful(); ally().hp = 40; const mana = s.g.story.mana ?? 15;
     s.act({ type: 'faith/pray', charId: c().id, kind: 'whisper', id: 'health', targetId: ally().id });
-    expect(ally().hp).toBe(40 + Math.round(5 * (1 + 0.5) * mendFactor(c().level))); expect(s.g.story.ap?.[c().id]).toBe(5); expect(s.g.story.mana).toBe(Math.max(0, mana - 5));
+    expect(ally().hp).toBe(40 + Math.round(5 * blessingPower(c()) * mendFactor(c().level))); expect(s.g.story.ap?.[c().id]).toBe(5); expect(s.g.story.mana).toBe(Math.max(0, mana - 5));
     expect(said(s.g, /BY STANDING · ✓ ANSWERED/)).toBe(true);
     expect(() => s.act({ type: 'faith/pray', charId: c().id, kind: 'whisper', id: 'luck' })).toThrow(/One Whisper a round/);
   });

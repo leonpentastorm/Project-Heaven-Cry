@@ -30,7 +30,7 @@ function rig(words: string[], foes: string[] = ['14,9'], allies: string[] = []) 
 }
 function arm(u: Unit, words: string[]) {
   u.ap = 60; const m = u.mg!;
-  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0 });
+  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0 });
 }
 type F = ReturnType<typeof rig>;
 /** Walk a Line through the reducer: each word drawn on its own tile in order; the caster ends on the last tile. */

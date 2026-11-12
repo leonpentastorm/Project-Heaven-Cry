@@ -16,6 +16,7 @@ import {
   weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees, displace
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
+import { factorOf } from '../effects/output';
 import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf } from '../character';
 import { applyCond, condOn } from '../magic';
 import { throwItem, blast, radiusOf, canReact, useReaction, refundReaction, throwRangeOf } from '../tactics';
@@ -732,7 +733,7 @@ function detonate(h: Holder, rng: Rng, ch: { at: string; from: string; shape: st
   const cb = h.cb!, u = h.u!, w: any = WEAPON[ch.item], r = radiusOf(w), tiles = shapeTiles(cb, ch.from, ch.at, ch.shape, r), dmg = typeof w?.damage === 'number' ? w.damage : 0;
   emitFx(cb, 'explode', { at: ch.at, radius: r, what: ch.item, tiles });
   let out = '';
-  for (const v of unitsIn(cb, tiles, { downed: true })) { out += hurtUnit(v, dmg, false, cb, 'explosion', u); if (!v.dead && (w.properties || []).includes('applies_burning')) out += applyCond(cb, rng, u, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
+  for (const v of unitsIn(cb, tiles, { downed: true })) { out += hurtUnit(v, dmg * (u.charId && (w.properties || []).includes('consumable') ? factorOf('thrown') : 1), false, cb, 'explosion', u); if (!v.dead && (w.properties || []).includes('applies_burning')) out += applyCond(cb, rng, u, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) out += damageObject(cb, o.pos, dmg * DEMO, 0, u);
   return out || ' · it finds no one';
 }

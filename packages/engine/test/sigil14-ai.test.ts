@@ -143,8 +143,8 @@ describe('enemy casters choose by situation (spec: Sigils 8)', () => {
 describe('every enemy and the other side\'s magic', () => {
   it('walks around a field of yours it knows of instead of through it', () => {
     const { cb, e, p } = fight([{ at: '3,5', weapon: 'fists' }], [{ at: '10,5', tier: 'minion', weapon: 'fists' }]);
-    const tiles = ['8,3', '8,4', '8,5', '8,6', '8,7']; field(cb, tiles, 'pc', p.id);
-    e.hp = e.maxHp = 30; // the old Minion's HP: a field that would nearly kill it is one it walks round
+    const tiles = ['8,3', '8,4', '8,5', '8,6', '8,7']; field(cb, tiles, 'pc', p.id); if (p.mg) { p.mg.sigilMult = 1; p.mg.deal = 1; } // the field's strength this test was written for (rules 1.26 gave a character's Sigil multiplier k 1.7)
+    e.hp = e.maxHp = 25; // a field whose bite (the AI's estimate, with the Line multiplier since rules 1.26) would kill it is one it walks round
     const hp = e.hp; turn(cb, e);
     expect(e.hp).toBe(hp);
     const walked = (cb.fx || []).filter((x) => x.k === 'move' && x.unit === e.id).flatMap((x) => x.path);

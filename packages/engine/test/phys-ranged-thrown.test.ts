@@ -2,7 +2,7 @@
 // at −4, Arc over full cover at −2, Blast onto a tile with no roll and +2 Pressure in the radius; grenades as Lob's
 // ammunition; smoke, flashbangs and the scrambler ending a held Watch and a Bead; smoke letting Pressure fall by 2.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, WEAPON, unitSees } from '../src';
+import { phys, WEAPON, unitSees, factorOf } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { calm, type PhysF as Fight } from './helpers/physfight-ranged';
 
@@ -23,6 +23,8 @@ function smoke(f: Fight, tiles: string[]) { f.cb.zones = [...(f.cb.zones || []),
 const sorted = (v: any): any => (Array.isArray(v) ? v.map(sorted) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, sorted(v[k])])) : v);
 const snap = (f: Fight) => JSON.stringify(sorted(f.cb)) + JSON.stringify(f.g.rng);
 const blastDmg = (item: string, armour: number) => Math.max(1, (WEAPON[item].damage as number) - armour);
+/** A consumable a character throws or lobs (rules 1.26: × output.factors.thrown; a level-1 thrower, so no Level term). */
+const thrownDmg = (item: string, armour: number) => Math.max(1, Math.floor((WEAPON[item].damage as number) * factorOf('thrown')) - armour);
 const signed = (n: number) => (n >= 0 ? '+' : '−') + Math.abs(n);
 const lastLog = (f: Fight, re: RegExp) => [...f.cb.log].reverse().find((l) => re.test(l)) || '';
 
@@ -172,7 +174,7 @@ describe('Lob: a carried grenade is its weapon', () => {
     expect(pv.pressure).toEqual([expect.objectContaining({ unit: f.foe.id, add: 2, after: 2 })]);
     const hp = f.foe.hp, ammo = f.pc.ammo, heat = f.pc.heat;
     expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull();
-    expect(f.foe.hp).toBe(hp - blastDmg('frag_grenade', f.foe.armour)); expect(f.pressure(f.foe)).toBe(2);
+    expect(f.foe.hp).toBe(hp - thrownDmg('frag_grenade', f.foe.armour)); expect(f.pressure(f.foe)).toBe(2);
     expect(f.pc.throwables!.frag_grenade).toBe(1); expect(f.pc.ammo).toBe(ammo); expect(f.pc.heat).toBe(heat);
     expect(f.pc.shotsThisTurn).toBe(0); expect(f.pc.ap).toBe(3);
     expect(lastLog(f, /lobs a frag grenade/)).toMatch(/at I6/);
