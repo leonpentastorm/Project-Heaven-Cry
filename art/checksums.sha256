@@ -123,9 +123,9 @@ fd90a1199fab581246e6a304a47e9e82887d7965a2ac8146a6070ab7702b8ea4  art/_archive/c
 9f01b2fda4f16639aff967fc68c5447e9af36d03bfd16126e7e00a9f8117b9be  art/_archive/character-portraits/patrons/v1/source-renders/the_matchmaker-native.png
 33357380b1f5f672428f390434217bdf2ba48b0ab849cccac021948cc4fc9b98  art/_archive/character-portraits/patrons/v1/source-renders/the_quartermaster-native.png
 26658bcc4b6fe3516eb2312ef25df38efbffca447a8fd23e4b2f3501a94832bd  art/_archive/character-portraits/patrons/v1/source-renders/the_toll_keeper-native.png
-c48b7586f567bf29bb682ac6629b3259bca9bf5d07591cee26bc0b71a19078d9  art/_archive/deliveries/2026-11-12/HANDOFF.md
-2054aee05711af264fd5e6ead5eceb3a8e14f0ecfd4070742da20795246d70a9  art/_archive/deliveries/2026-11-12/README.md
-492f66c56e193fece5b0f4b6fc855089c3eac57c6a19fb34683d065569ed836f  art/_archive/deliveries/2026-11-12/manifest.json
+d41f3fcc78f5342c8b536389137e59e855b6ae8d83e79db044ef1e1e93ea6aad  art/_archive/deliveries/2026-11-12/HANDOFF.md
+71f964ce4c055e8aa7893c30023cc8b2457467ac565810d1d217512332273d58  art/_archive/deliveries/2026-11-12/README.md
+a01b641b582a1cfdd2e04acf7158f5fbc97c6cf8dbe96d2db6195d8103139ac9  art/_archive/deliveries/2026-11-12/manifest.json
 01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c  art/_archive/deliveries/2026-11-12/masters/v1/both-hands.png
 27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb  art/_archive/deliveries/2026-11-12/masters/v1/brief.png
 7cd857a156cb03b78836c3cccaeb0b447c1f76084eb4e77013f977399c2f4845  art/_archive/deliveries/2026-11-12/masters/v1/cue.png
@@ -136,6 +136,7 @@ d7ef57bef3860edc7c0c3e4ec0b768014b2db49a512d1b93ccf8ce4189069ddd  art/_archive/d
 561437ccf7b3463842110a5d85fd2ab6abb32ac99285123b78671f616ff873e1  art/_archive/deliveries/2026-11-12/masters/v1/feeling-grief.png
 8cef29a0cc0c1b25d9af65724009bd916c34b97a7bec741ef0bce77352bdfd1e  art/_archive/deliveries/2026-11-12/masters/v1/feeling-hope.png
 cbef1a7ef71e54bb6c40004f9655655eeb3b9b7fd35643c62bc07b653e99d708  art/_archive/deliveries/2026-11-12/masters/v1/feeling-joy.png
+b9ef9910d4d12efa116c8c74a456943ba97112cf133dac1aba3ace2f241d6e1e  art/_archive/deliveries/2026-11-12/masters/v1/feeling-loneliness.png
 a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490  art/_archive/deliveries/2026-11-12/masters/v1/feeling-love.png
 c4f91123710ede6d39e9bad266ac5957b211d8137ee2127ce20ad8792686933c  art/_archive/deliveries/2026-11-12/masters/v1/feeling-mercy.png
 5a7c0e10ea7ae981dd79ec271f4c583ae364c054f73a65370e4b720f4d1af5b3  art/_archive/deliveries/2026-11-12/masters/v1/feeling-pride.png
@@ -154,7 +155,7 @@ ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566  art/_archive/d
 5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0  art/_archive/deliveries/2026-11-12/masters/v1/threaten.png
 f4bcfd657520e61ccd84200f617a8e243bd9d44bfacf50ad0f4094f830a615c9  art/_archive/deliveries/2026-11-12/masters/v1/warn.png
 5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0  art/_archive/deliveries/2026-11-12/masters/v1/whisper-rebuke.png
-c4ba53dfa4ae149042feb05c41c131bd5b78593e27be01ac80a7de1b67605e5f  art/_archive/deliveries/2026-11-12/progress.json
+ee5fff2bc7086db7ce17b7ebe63e3c8f46458297f99ebf23693361a650f22dbd  art/_archive/deliveries/2026-11-12/progress.json
 10a70cc1081ca4e054d8f039b0196009b6c892ab9ad05745729fed6f6fb062fc  art/_archive/deliveries/2026-11-12/prompts/both-hands.txt
 853cb54ab9b5c838b7720d5d4ae856a5a767b88c4bcf4154fdf69958e3ed351b  art/_archive/deliveries/2026-11-12/prompts/brief-attempt-1.txt
 ebcd21f5284814bd05fe5d38d026710bf14fb3b4ff9fac31e1d7d4d8d4890876  art/_archive/deliveries/2026-11-12/prompts/brief.txt
@@ -174,7 +175,8 @@ ed9333d631fde802c56f6e0589cb9d53d7251aeb5942f0c2af170b9753fee448  art/_archive/d
 62e83741951bc8f1e3fa0c6a41e3b9223d35b191a638a313cf1f04aca8ff3210  art/_archive/deliveries/2026-11-12/prompts/feeling-hope.txt
 7ae3716a3524b4855e793c9566322161affba2b59e97f9b617b603acdd32238f  art/_archive/deliveries/2026-11-12/prompts/feeling-jealousy.txt
 61877a39e51fa47a25ebdf363c565da7b75e45e2c2d459e3a405e9cb0c6057f1  art/_archive/deliveries/2026-11-12/prompts/feeling-joy.txt
-b89df45ba221f74436c8373ff4f5d26d00a4794f6c1b64681d5dd2aacfb26ab3  art/_archive/deliveries/2026-11-12/prompts/feeling-loneliness.txt
+b89df45ba221f74436c8373ff4f5d26d00a4794f6c1b64681d5dd2aacfb26ab3  art/_archive/deliveries/2026-11-12/prompts/feeling-loneliness-attempt-1.txt
+80a6fe1333bb5f499f2b34a12d8c4eb0ca92bb2d866003557d7ed4de92eda920  art/_archive/deliveries/2026-11-12/prompts/feeling-loneliness.txt
 3876a7b109686e23636f21f281ff4e4f4a55474059fb68c131719850ffd053eb  art/_archive/deliveries/2026-11-12/prompts/feeling-longing.txt
 449f5627071fbc1a7a50fbf11682eae0c4a62531096749afb3db7e2f797fc644  art/_archive/deliveries/2026-11-12/prompts/feeling-love.txt
 4d794f49be45d182a791a1d3ed90d4fbf3e4e44c993b07e68c03b21faf58bb27  art/_archive/deliveries/2026-11-12/prompts/feeling-mercy.txt
@@ -234,13 +236,13 @@ db51fa340ebe062e067e4d55aad0ac6998466df2e74148b5a377ce0748c22b13  art/_archive/d
 076dcb3b8c107e61489e899431a6bb0797031cd3f0c4feab2e3e1b3cd7986dd1  art/_archive/deliveries/2026-11-12/prompts/ui-revert.txt
 fa7a5c9eabfd85350b9af09bae13530c4192f829a0cb0dbb15a6b6658c85315e  art/_archive/deliveries/2026-11-12/prompts/warn.txt
 fc0ebb8cf9e8fb31426e205cba04b988a0f1f13fa87e46825519b695cb2cfe79  art/_archive/deliveries/2026-11-12/prompts/whisper-rebuke.txt
-135702f164ff63c66b6b65144b164ba600fe70188e573fe71945f0b1782a9c86  art/_archive/deliveries/2026-11-12/queue.json
+ca2c8b71b32e923ed1b5aaa41c9f72059c08cbddd97f79d96aff0c1eb4e87075  art/_archive/deliveries/2026-11-12/queue.json
 3636b1ba464d94ea9cb212447683e9fc9841aa4eb516de520c92a0a2c0e46b21  art/_archive/deliveries/2026-11-12/reviews/calls-40px.png
 4900d0e3a62bee1a83750153eb4e1f599e3a361f44f73b2329b3e2ceb29ba4ba  art/_archive/deliveries/2026-11-12/reviews/calls-44px.png
 e8d2e8474476681cb92963990fe9f929f59e78dbb1019add6fd68a1677e1663c  art/_archive/deliveries/2026-11-12/reviews/calls-64px.png
-d927d55889e00f15324bc99b2b7fcc6e9a61be196e78672da2a767a919f02c9a  art/_archive/deliveries/2026-11-12/reviews/feelings-40px.png
-a300a9fe841a74339ba52da6175346a4e75a764f11dfe7a618673004cceec30d  art/_archive/deliveries/2026-11-12/reviews/feelings-44px.png
-2db9486857afdbfe2014443ebc0610cf15478ef5d70e9422a51568541e6bd859  art/_archive/deliveries/2026-11-12/reviews/feelings-64px.png
+6a792a93843e0d672cc819e53a6c97de28acc3e61c135cfb30e93e4955e8c219  art/_archive/deliveries/2026-11-12/reviews/feelings-40px.png
+d1707a6924770afa91f1e4950a170635809b5c6a32d29a0fa97352751be488eb  art/_archive/deliveries/2026-11-12/reviews/feelings-44px.png
+8856cab34475e0130405db2025dca39b9c8f8ab206dc473ea24103ec1c805809  art/_archive/deliveries/2026-11-12/reviews/feelings-64px.png
 77b435e5ddb21e6eb73e5f7555990ff722d2c0e7b87838b8cf90d515fd8291d1  art/_archive/deliveries/2026-11-12/reviews/modules-40px.png
 75562412d374bcff637d79e4a754bb61485942265ead4916323b54e0e9546d0e  art/_archive/deliveries/2026-11-12/reviews/modules-44px.png
 d6eba1cce88982f4774a829bda2ac4f7a91477c050eb6d5d342a603aae80fd3e  art/_archive/deliveries/2026-11-12/reviews/modules-64px.png
@@ -261,6 +263,8 @@ c2a48ef157c6b9802c9832756a009a485d748c20aeb0f0d9cf9d411906e3e313  art/_archive/d
 79da67d545df4ceab694aa1470754fe279656b418703cb32a87b82d6a406aa89  art/_archive/deliveries/2026-11-12/sources/feeling-grief.png
 a545ade9a9bbd1b5496daa98149846fe44a9fa62364869e3524d6943761ca909  art/_archive/deliveries/2026-11-12/sources/feeling-hope.png
 e529a3ba8df2dc9196d55b2328968d754ed608f5ea7c01663687d4ecacb2c4c8  art/_archive/deliveries/2026-11-12/sources/feeling-joy.png
+74796114d436ee6159ac06e694bf4e9d057b1311b1901e6fdb028cf12befff30  art/_archive/deliveries/2026-11-12/sources/feeling-loneliness-attempt-1.png
+104848fe176fd24fecdb64c47091d4a850099c2c3494c817dd51dd85e9c05427  art/_archive/deliveries/2026-11-12/sources/feeling-loneliness.png
 148098757634f337dc8a33cb43c4a2eee844c643538f168dcef3c84ead555762  art/_archive/deliveries/2026-11-12/sources/feeling-love.png
 0618e40443ad22e23399d6b0bf1eaa89ad81fe48fa6a2a9c9eb1977a8f10f83d  art/_archive/deliveries/2026-11-12/sources/feeling-mercy.png
 7eb2de1232836cc2761ce97ef633235be018e3c6c8cfdb257a714aa80ce132dd  art/_archive/deliveries/2026-11-12/sources/feeling-pride.png
@@ -1009,7 +1013,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 fd9fd865d5891d7e7880b1def9c8b3fb60cbe6697d91b5afe36cc91a20af0961  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-330cfbde7cdb5d25ffc2fa64656f3a15e969dbcc8f748f96959fcc1465c381a5  art/catalog.json
+f33077793d6f5cfa3bb955429bcba896af3a9445c90f4e43385eb1cc341ea4d2  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 79a8fdcfaf94dfbd8fabd5492492ddae430bb3f773cc2826712103ad667c8347  art/emblems/patrons/mother_ember.png
@@ -1113,7 +1117,7 @@ ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566  art/icons/call
 791c582f2fe0aecdaa80e4fca31b4b0548e304f47842481aa1c52448453e8dbd  art/icons/calls/taunt.png
 5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0  art/icons/calls/threaten.png
 f4bcfd657520e61ccd84200f617a8e243bd9d44bfacf50ad0f4094f830a615c9  art/icons/calls/warn.png
-20345000d2d2bd0620807b77bb8d725bf2c47f5c8d7af32015abe0719c0eeb11  art/icons/feelings/README.md
+9406ee4cbd2405adee1eb77695e28c6e442450db92d2adb6aa62a7806d4459c8  art/icons/feelings/README.md
 01b77b219e62f3dcd9beb205a4aa4fdcb1552ff4e155e2bfccdc0eb6b3dd610c  art/icons/feelings/exports/128/feeling-calm.png
 bca599c380a55def96e941f2c2b274677b4cd54b22ac6fe3c37649d5276caa75  art/icons/feelings/exports/128/feeling-cruelty.png
 ecd2bb956e60deba0d02a58590e91f4cb3be00401b83bb5556c0eff4e3e87ce2  art/icons/feelings/exports/128/feeling-despair.png
@@ -1121,6 +1125,7 @@ ecd2bb956e60deba0d02a58590e91f4cb3be00401b83bb5556c0eff4e3e87ce2  art/icons/feel
 5c2a95d10df8080f7c21ec59ae6dffbc8e2ccf43d05d4df32055e3adbf8776e0  art/icons/feelings/exports/128/feeling-grief.png
 dc0d8fbaa2b6583d88c0850015142f79946c0ee2f606ccf9f464fb25cb08e8e5  art/icons/feelings/exports/128/feeling-hope.png
 6072758943ba8074ee12cf7c54382cb7446543b13f2f18f60953391f2098ec87  art/icons/feelings/exports/128/feeling-joy.png
+b755257c48fd0570e949616ca7af3e86d8bd40146ad08c6b967973f79899dae8  art/icons/feelings/exports/128/feeling-loneliness.png
 b2ba4e0066b4c5c63e13fdc4f9e6ec51922c085dbfd299879abfd962cc0694ae  art/icons/feelings/exports/128/feeling-love.png
 c822868b3753bd288ef15a893231d39ac8680ad4a904d3a36d6cece81857ed94  art/icons/feelings/exports/128/feeling-mercy.png
 0ef7f0fe5ac82552791645812eae3ae065c9ee59bc4e5cee3868796e8d4c8a2d  art/icons/feelings/exports/128/feeling-pride.png
@@ -1134,6 +1139,7 @@ f004839a0dcdb498f301162fa4a1f4d3a5163268407e6b25b967c2ff77bd859f  art/icons/feel
 b6da541d968d9a0ae07f773fe86b79b4deb2f8e23d48da62ad87c206cca197ad  art/icons/feelings/exports/256/feeling-grief.png
 fb44f4cd4d1c2f971712ade65328851273172e004dd1354862ceddc0d95ac487  art/icons/feelings/exports/256/feeling-hope.png
 7cd6073b91e565f2b62a9fdfc0520f12b46ad71e334b56de8df49b9395c5c830  art/icons/feelings/exports/256/feeling-joy.png
+dfa3d591d8ee38076c14e4d25c65f042e522feea008d8c87efa98d8dbf13ebe8  art/icons/feelings/exports/256/feeling-loneliness.png
 438e54edd57961a00d2caf14825174dbaac229a4c09cbe937aed2473be4a1496  art/icons/feelings/exports/256/feeling-love.png
 72f9f1147f5c13c724122a301c92b30eab76154cc82205808388d5832e34e582  art/icons/feelings/exports/256/feeling-mercy.png
 c016eb86085e26a431856b95429abded15f1cbf453ae8b0ba3a850b5665cf0a2  art/icons/feelings/exports/256/feeling-pride.png
@@ -1147,6 +1153,7 @@ fa3c4cc3998ee86b3a5bb7a1bfcd7ea7b95208d8d357641b190f2b86fc0d4197  art/icons/feel
 cff56dfcd5830a9861adda60c71e70a15a3c0a4e621583c596b85164c05c5d6c  art/icons/feelings/exports/40/feeling-grief.png
 fb9bddcb08d3f94c5db2509a2655307f260380784ad0267106ca5d5c851933b3  art/icons/feelings/exports/40/feeling-hope.png
 504d4f3c9980eeb460849e5dc8159223a725a9c012dc446bf548fa687e3bddca  art/icons/feelings/exports/40/feeling-joy.png
+95a06cd2eca706164c69d74c6367c5a791f45ca596bf3999019d03e60dfb5301  art/icons/feelings/exports/40/feeling-loneliness.png
 5d3b9d73a912459bcb5a3dcd017e5f9b01d2c8d75d33ad3285054585c4c5b14a  art/icons/feelings/exports/40/feeling-love.png
 b7dffff5ec60e011c691ceb5b8558af8c1e1bb9ddfb8623d4f5c6f9b01421870  art/icons/feelings/exports/40/feeling-mercy.png
 76ca38516a09b2247f3ed6134ca770ffeeefe77a7ded7931bff92ed76a6ec65a  art/icons/feelings/exports/40/feeling-pride.png
@@ -1160,6 +1167,7 @@ a77b9813fd294bc539289edc9bdbf78db6b3070edb2ecf431346f3799b219993  art/icons/feel
 49680595c7fab7045ee886ca4004008272f2cca0a5bd1ccc3d60f3a4d3aa1cee  art/icons/feelings/exports/44/feeling-grief.png
 265cf9f74c9c373a525395b60840ed1e27490b3e1e9404192057980663d79d65  art/icons/feelings/exports/44/feeling-hope.png
 f6db94dccf3a412d0ddbe52c64e6baec205b2be45d848f3e51d6ea5a06c5a524  art/icons/feelings/exports/44/feeling-joy.png
+2afa33cc62017e4809c216a3546abc0903fc26f08fbd4ce5f54fdc816473b6b8  art/icons/feelings/exports/44/feeling-loneliness.png
 3ad3f246220fd6a75095d3f09a3af44c45ef3356dcc8a2d08bfa282fe8190353  art/icons/feelings/exports/44/feeling-love.png
 9967b9b8258fbe71a851dafe3f587cbda272ce8750ab1c7e7c94acb254f04b66  art/icons/feelings/exports/44/feeling-mercy.png
 9e8e77fb673a785dbc70e2a39e1a911a0d7ae8b66e7908de8bc4b898ed92e4c3  art/icons/feelings/exports/44/feeling-pride.png
@@ -1173,6 +1181,7 @@ b40f6104559d6ce96c84a85e8650b3aa5aa4f89f73e4e8ae230ebdcf017f85d7  art/icons/feel
 ee6907eac83e5974afe8fd0c58f893da0f458b89988470ecf003961201355e09  art/icons/feelings/exports/48/feeling-grief.png
 d055f20444b1c909f86104ea4170f0a902cc49d0f1617efc3a1484f58fa3b256  art/icons/feelings/exports/48/feeling-hope.png
 67ec7ec6327ab7fbd2351155c53dd26b4ed0d14c047a818b25b9c53a50d21cb2  art/icons/feelings/exports/48/feeling-joy.png
+f7d697d86ec31d4110f5261116da6d342cd4f72cbd9971a6032aae0b654d3816  art/icons/feelings/exports/48/feeling-loneliness.png
 7d31963ca0546418635ad8a86c7f2678b98c735c3b0edb2298c76be4764ec76d  art/icons/feelings/exports/48/feeling-love.png
 b956cdc0ebcbd8d4bc41305bbfeeec3da888fc2c4f5d9a0b687123df7657c166  art/icons/feelings/exports/48/feeling-mercy.png
 3afb38596a05b21e1e881a6d8dcdb19ba71348c2178ef0fdd151d02d6d5a7153  art/icons/feelings/exports/48/feeling-pride.png
@@ -1186,6 +1195,7 @@ c8effcf65661b9c772d566b3fcbba2620ea0e4e4ce8dad7f80b398f2c49cc260  art/icons/feel
 5907a33f78e49f1283198a21e07d12c1228ba5a8f3af0b4cba19ff3418c3c75a  art/icons/feelings/exports/56/feeling-grief.png
 a7eed9decce7db8d0119b2a26d9604ead2dab68a083fb34121810471769bb6cd  art/icons/feelings/exports/56/feeling-hope.png
 2bdfe30021039e426542103a40e2363542c25388aec86c6b1aad1b6e2c0f54a8  art/icons/feelings/exports/56/feeling-joy.png
+aa4fd60d39e010f1719c709316a215dc5b9a53e50c0a6d166e26e07dfa7be22c  art/icons/feelings/exports/56/feeling-loneliness.png
 28e95eaddcb64a61008ce49e8a296a5428ba78a798af7523d2e2c9bb795a610b  art/icons/feelings/exports/56/feeling-love.png
 d4864122729d5e7df6f6a1dbb5b954e2cd81e01fdc3b57482624bc9e6abd9e0f  art/icons/feelings/exports/56/feeling-mercy.png
 08044b28f5b29b220b526529043f827b494d8aed57f4254c004f05a41ff6097e  art/icons/feelings/exports/56/feeling-pride.png
@@ -1199,6 +1209,7 @@ a5064a7c2f50610325252609aa5438179943bd92d1637dd1df17cbf84825af6d  art/icons/feel
 3ffcff189c3e9f4266bbc7cd90aa1853e6795acf430cf7ecbb1f86e0c383ab82  art/icons/feelings/exports/64/feeling-grief.png
 0dd90cdf0db4466f40a356b75b7f4cc7151218cabe94b3bf91af4ecd74717724  art/icons/feelings/exports/64/feeling-hope.png
 5be173ebb0069e107a1ec37986aa43087600375562af0c4751302d61d82f6d16  art/icons/feelings/exports/64/feeling-joy.png
+1bfa1728501f136e6ad98157ccda050d658fcfd4e07553235c98ffc93cacdfc8  art/icons/feelings/exports/64/feeling-loneliness.png
 ac5fe4b676443afc51102260244d00e002e9d0c7303ec5b2229c14db61d2401b  art/icons/feelings/exports/64/feeling-love.png
 083a68a5f83b53e9583d95973d9c6a9b0ea1eec98d1a0e0990746fbb25727ecc  art/icons/feelings/exports/64/feeling-mercy.png
 07133f6846534fbec0cca942f95d9522063b772edbb09431c4dada1763d822ac  art/icons/feelings/exports/64/feeling-pride.png
@@ -1212,6 +1223,7 @@ d7ef57bef3860edc7c0c3e4ec0b768014b2db49a512d1b93ccf8ce4189069ddd  art/icons/feel
 561437ccf7b3463842110a5d85fd2ab6abb32ac99285123b78671f616ff873e1  art/icons/feelings/feeling-grief.png
 8cef29a0cc0c1b25d9af65724009bd916c34b97a7bec741ef0bce77352bdfd1e  art/icons/feelings/feeling-hope.png
 cbef1a7ef71e54bb6c40004f9655655eeb3b9b7fd35643c62bc07b653e99d708  art/icons/feelings/feeling-joy.png
+b9ef9910d4d12efa116c8c74a456943ba97112cf133dac1aba3ace2f241d6e1e  art/icons/feelings/feeling-loneliness.png
 a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490  art/icons/feelings/feeling-love.png
 c4f91123710ede6d39e9bad266ac5957b211d8137ee2127ce20ad8792686933c  art/icons/feelings/feeling-mercy.png
 5a7c0e10ea7ae981dd79ec271f4c583ae364c054f73a65370e4b720f4d1af5b3  art/icons/feelings/feeling-pride.png
