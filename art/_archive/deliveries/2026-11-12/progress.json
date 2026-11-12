@@ -1,0 +1,37 @@
+{
+  "status": "in-progress",
+  "base_commit": "dd35e4b8",
+  "brief": "art/briefs/GPT-PROMPTS-2026-11-12.md",
+  "wick_listed": 11,
+  "wick_heading": 13,
+  "outburst_test_count": 10,
+  "target_now": 21,
+  "delivered": [
+    "whisper-rebuke"
+  ],
+  "awaiting_after_test": "Leon verdict before remaining feeling/module production; map guides before optional maps",
+  "production_approved": false,
+  "remaining_now": [
+    "both-hands",
+    "order",
+    "rally",
+    "brief",
+    "name-it",
+    "cue",
+    "spot",
+    "warn",
+    "threaten",
+    "taunt",
+    "feeling-rage",
+    "feeling-grief",
+    "feeling-fear",
+    "feeling-love",
+    "feeling-joy",
+    "feeling-calm",
+    "module-split",
+    "module-ricochet",
+    "module-orbit",
+    "module-echo"
+  ],
+  "updated_utc": "2026-11-12T02:07:09.771418+00:00"
+}

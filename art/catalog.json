@@ -10016,6 +10016,31 @@
       "height": 1024,
       "sha256": "6e1f25c349e4814331ab954efe42087092eb0ef89d7659a7e2b3e498a9edd28b",
       "status": "review-candidate"
+    },
+    "whisper-rebuke": {
+      "id": "whisper-rebuke",
+      "label": "Rebuke",
+      "path": "art/icons/prayers/whisper-rebuke.png",
+      "sha256": "5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/prayers/exports/256/whisper-rebuke.png",
+        "128": "art/icons/prayers/exports/128/whisper-rebuke.png",
+        "64": "art/icons/prayers/exports/64/whisper-rebuke.png",
+        "56": "art/icons/prayers/exports/56/whisper-rebuke.png",
+        "48": "art/icons/prayers/exports/48/whisper-rebuke.png",
+        "44": "art/icons/prayers/exports/44/whisper-rebuke.png",
+        "40": "art/icons/prayers/exports/40/whisper-rebuke.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/whisper-rebuke.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/whisper-rebuke.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

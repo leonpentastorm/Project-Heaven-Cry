@@ -1,0 +1,56 @@
+{
+  "status": "review-candidate",
+  "production_approved": false,
+  "icons": [
+    {
+      "path": "art/icons/prayers/whisper-rebuke.png",
+      "sha256": "5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0",
+      "id": "whisper-rebuke",
+      "family": "prayers",
+      "action": "Rebuke. Wick rebuking someone out of frame: one arm raised with the hand held flat and stiff toward them, like a stern \"enough\", and a single hard straight ray of light leaving the palm. His other hand is at his side. It must read as a scolding word that lands, not as casting a spell: no swirls, no sparks, no magic circle, one ray only. Match the attached Whisper icons: one small light source.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/whisper-rebuke.png",
+        "sha256": "c1a53675348140f0f12a9373605dff85200a83922fda80a83131e8d68c776ae7"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/whisper-rebuke.png",
+        "sha256": "5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/whisper-rebuke.txt",
+        "sha256": "fc0ebb8cf9e8fb31426e205cba04b988a0f1f13fa87e46825519b695cb2cfe79"
+      },
+      "exports": {
+        "256": "art/icons/prayers/exports/256/whisper-rebuke.png",
+        "128": "art/icons/prayers/exports/128/whisper-rebuke.png",
+        "64": "art/icons/prayers/exports/64/whisper-rebuke.png",
+        "56": "art/icons/prayers/exports/56/whisper-rebuke.png",
+        "48": "art/icons/prayers/exports/48/whisper-rebuke.png",
+        "44": "art/icons/prayers/exports/44/whisper-rebuke.png",
+        "40": "art/icons/prayers/exports/40/whisper-rebuke.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/whisper-safe-passage.png",
+          "sha256": "b658beca2579608a875b63c1f2f14fd211a74c79151fda1778b4103247bf377b"
+        }
+      ]
+    }
+  ]
+}
