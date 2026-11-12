@@ -5,7 +5,7 @@
 // 1024×768 with no sideways page scroll. Shots for Leon: docs/design/handoffs/skeleton-2.0-shots/creation-points-<width>.png
 // (the window) and -full.png (the whole step), or SHOTS=<dir>.
 import { mkdirSync } from 'fs';
-import { chromium, click, player, hostAs } from './lib.mjs';
+import { chromium, click, player, hostAs, settle } from './lib.mjs';
 const SHOTS = process.env.SHOTS || new URL('../../../docs/design/handoffs/skeleton-2.0-shots/', import.meta.url).pathname.replace(/\/$/, '');
 mkdirSync(SHOTS, { recursive: true });
 const browser = await chromium.launch();
@@ -14,7 +14,7 @@ const p = await player(browser, 'A');
 await hostAs(p, 'Leon');
 await click(p, 'Create a character');
 await p.getByPlaceholder('What the squad calls you').fill('Vess');
-const step = async (name) => { await p.getByRole('navigation', { name: 'Creation steps' }).getByRole('button', { name }).click(); await p.waitForTimeout(300); };
+const step = async (name) => { await p.getByRole('navigation', { name: 'Creation steps' }).getByRole('button', { name }).click(); await settle(p, 300); };
 const text = (sel) => p.locator(sel).first().innerText();
 const budgets = async () => [await text('[data-budget="SKILL POINTS"] [data-budget-left]'), await text('[data-budget="ATTRIBUTE POINTS"] [data-budget-left]')].join(' | ');
 const note = () => text('[data-points-note]');
@@ -22,7 +22,7 @@ const val = (kind, id) => text('[data-' + kind + '-val="' + id + '"]');
 const up = (kind, id) => p.locator('[data-' + kind + '-up="' + id + '"]');
 const down = (kind, id) => p.locator('[data-' + kind + '-down="' + id + '"]');
 /** Press a stepper that will refuse (it is marked aria-disabled, with its reason; it still answers a click or Enter). */
-const refused = async (loc) => { await loc.focus(); await p.keyboard.press('Enter'); await p.waitForTimeout(60); };
+const refused = async (loc) => { await loc.focus(); await p.keyboard.press('Enter'); await settle(p, 60); };
 const sideways = () => p.evaluate(() => document.documentElement.scrollWidth - innerWidth);
 
 for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
@@ -31,7 +31,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   // An archetype fills the sheet and lands here, every point placed.
   await step('Archetype');
   await p.locator('[data-arch="bulwark"]').click();
-  await p.locator('[data-arch-preview] button', { hasText: /^Use / }).click(); await p.waitForTimeout(300);
+  await p.locator('[data-arch-preview] button', { hasText: /^Use / }).click(); await settle(p, 300);
   ok(at + 'the Bulwark lands on the points step with every point placed (' + await budgets() + ')', (await budgets()) === '✓ ALL 10 PLACED | ✓ ALL 10 PLACED' && /^✓ Every point is placed/.test(await text('[data-points-todo]')));
   ok(at + 'no sideways page scroll (' + await sideways() + ' px over)', (await sideways()) <= 1);
   // The gate is the layout: three families, nine attributes, each skill inside its attribute's block and under its header.
@@ -50,7 +50,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   const stray = lay.words.replace(/Sigil Core|core charges?/gi, '').match(/\bcores?\b|rules \d|today's rule|[a-z]_[a-z]/i);
   ok(at + 'nothing on the step says Core, and nothing reads like a rules reference or an id' + (stray ? ' (' + stray[0] + ')' : ''), !stray);
   // Both budgets stay in view when the page is scrolled to its end.
-  await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await p.waitForTimeout(150);
+  await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await settle(p, 150);
   const bar = await p.locator('[data-points-bar]').boundingBox();
   ok(at + 'the budgets stay in view at the bottom of the page (bar at ' + Math.round(bar.y) + '–' + Math.round(bar.y + bar.height) + ' of ' + H + ')', bar.y >= -1 && bar.y + bar.height <= H);
   await p.evaluate(() => window.scrollTo(0, 0));
@@ -87,7 +87,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   // The shot: a skill just driven past its attribute, the status line saying so.
   await up('skill', 'dexterity').click();
   ok(at + 'one more: ' + await note(), (await note()) === '✓ Dexterity 5 needs Agility 5: 1 Attribute point spent.');
-  await p.evaluate(() => window.scrollTo(0, 0)); await p.mouse.move(W - 4, H - 4); await p.waitForTimeout(250);
+  await p.evaluate(() => window.scrollTo(0, 0)); await p.mouse.move(W - 4, H - 4); await settle(p, 250);
   await p.screenshot({ path: SHOTS + '/creation-points-' + W + '.png' });
   // The whole step in one picture: the budget bar is held in its place for it (a full-page capture draws a sticky bar mid-page).
   const hold = await p.addStyleTag({ content: '.phc-pt-bar{position:static!important}' });

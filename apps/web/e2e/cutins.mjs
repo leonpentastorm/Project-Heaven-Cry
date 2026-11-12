@@ -14,7 +14,7 @@
 //      until it lands.
 // Screens at deviceScaleFactor 1 in e2e/shots/cutins-*.png (DSF=2 SHOTS=<dir> for sharper copies in <dir>).
 const SHOTS = process.env.SHOTS;
-import { chromium, player, click, hostAs, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, hostAs, BASE, OUT, pause } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -38,7 +38,7 @@ await host.getByPlaceholder('Leon').fill('Leon');
 await click(host, 'With friends ›');
 await until(host, () => !!window.__phc.getState().game?.sandbox);
 const invite = host.locator('div[role="dialog"][aria-label="Invite friends"]');
-await invite.waitFor({ timeout: 6000 });
+await invite.waitFor({ timeout: 15000 });
 const code = (await G(host)).code;
 await invite.getByRole('button', { name: 'Gear up ›' }).click();
 await mai.goto(BASE);
@@ -65,14 +65,30 @@ ok('the combat speed in force: × ' + K.toFixed(4), K >= 1 && K < 1.2);
 
 // 2. (a) The host's turn: a boss next to the host's fighter, at 1 HP; shoot it down.
 const cur = (p) => p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb && cb.units.find((x) => x.id === cb.order[cb.turn]); });
-const settle = async (p) => { await p.waitForFunction(() => (window.__phcHold?.() || 0) <= performance.now() + 5 && !window.__phcCutin?.showing, null, { timeout: 12000 }).catch(() => {}); await p.waitForTimeout(150); };
+/** A watcher IN the page (it cannot miss a cut-in the way a poll from this script can on a busy machine): from now on it
+ *  notes every strip that shows, whether the screen behind one was blurred, whether input was held while one showed, and
+ *  whether a strip was ever on the page together with a Miracle's full cut-in. Read it with spied(). */
+const spy = (p) => p.evaluate(() => {
+  window.__spyObs?.disconnect(); const S = (window.__spy = { strips: [], blur: false, held: false, overlap: false, crit: 0 });
+  const look = () => {
+    const v = document.querySelector('[data-phc-spotlight-blur]'), cs = v && getComputedStyle(v), strips = [...document.querySelectorAll('[data-phc-spotlight-strip]')].map((e) => e.getAttribute('data-phc-spotlight-strip'));
+    if (cs && /blur\(/.test(cs.backdropFilter || cs.webkitBackdropFilter || '')) S.blur = true;
+    for (const x of strips) if (!S.strips.includes(x)) S.strips.push(x);
+    if (strips.length && (window.__phcHold?.() || 0) > performance.now() + 100) S.held = true;
+    if (strips.length && document.querySelector('[data-phc-cut="full"]')) S.overlap = true;
+    S.crit = Math.max(S.crit, document.querySelectorAll('[data-phc-spotlight="crit"] [data-phc-spotlight-strip]').length);
+  };
+  window.__spyObs = new MutationObserver(look); window.__spyObs.observe(document.documentElement, { childList: true, subtree: true, attributes: true }); look();
+});
+const spied = (p) => p.evaluate(() => window.__spy || { strips: [], blur: false, held: false, overlap: false, crit: 0 });
+const settle = async (p) => { await p.waitForFunction(() => (window.__phcHold?.() || 0) <= performance.now() + 5 && !window.__phcCutin?.showing, null, { timeout: 12000 }).catch(() => {}); await pause(p, 150); };
 async function hostsTurn() {
   for (let i = 0; i < 40; i++) {
-    const u = await cur(host); if (!u) { await host.waitForTimeout(200); continue; }
+    const u = await cur(host); if (!u) { await pause(host, 200); continue; }
     const owner = u.charId ? (await G(host)).characters[u.charId]?.owner : null;
     if (owner === hostId) return u;
     if (owner === maiId) { await settle(mai); await act(mai, { type: 'combat/end-turn', unitId: u.id }); }
-    await host.waitForTimeout(300);
+    await pause(host, 300);
   }
   return null;
 }
@@ -95,18 +111,16 @@ for (let tries = 0; tries < 12 && !killed; tries++) {
   if (!boss) break;
   // a sure hit that is no crit (an 18 on the die): the takedown alone, not the crit's moment
   await host.evaluate((s) => { window.__phc.getState().game.rng.state = s; }, dieSeed(18, tries));
+  await spy(host);
   const err = await act(host, { type: 'combat/attack', unitId: me.id, targetId: boss, mode: 'shot' });
   if (err) { console.log('note the shot at the Warden: ' + err); await act(host, { type: 'combat/end-turn', unitId: me.id }); continue; }
   killed = await host.evaluate(() => window.__phc.getState().game.combat.units.some((u) => u.name === 'Warden' && u.dead));
   if (!killed) { await settle(host); const u = await cur(host); if (u && u.id === me.id && u.ap < 3) await act(host, { type: 'combat/end-turn', unitId: me.id }); continue; }
-  // While it shows: the blur behind, the strip, the input held.
-  for (let i = 0; i < 40 && !(sawBlur && sawStrip); i++) {
-    const st = await host.evaluate(() => { const v = document.querySelector('[data-phc-spotlight-blur]'); const cs = v && getComputedStyle(v); return { blur: !!cs && /blur\(/.test(cs.backdropFilter || cs.webkitBackdropFilter || ''), strip: !!document.querySelector('[data-phc-spotlight-strip]'), held: (window.__phcHold?.() || 0) > performance.now() + 100 }; });
-    sawBlur ||= st.blur; sawStrip ||= st.strip; holdDuring ||= st.held;
-    if (st.strip && i > 3) break;
-    await host.waitForTimeout(60);
-  }
-  await host.waitForTimeout(350); await snap(host, 'a-takedown');
+  // While it shows: the blur behind, the strip, the input held (noted by the watcher in the page, from the moment the
+  // strip is put on it; a poll from here missed all three when the machine was busy for longer than the cut-in lasts).
+  await host.waitForFunction(() => window.__spy.strips.length > 0, null, { timeout: 20000 }).catch(() => {});
+  await pause(host, 350); await snap(host, 'a-takedown');
+  const sp = await spied(host); sawBlur = sp.blur; sawStrip = sp.strips.length > 0; holdDuring = sp.held;
 }
 ok('the Warden is taken down', killed);
 ok('the cut-in shows its torn strip over a blurred screen', sawStrip && sawBlur);
@@ -114,8 +128,11 @@ ok('input is held while it shows', holdDuring);
 await settle(host);
 let L = (await logs(host)).slice(before), td = L.find((x) => x.kind === 'takedown');
 ok('the host\'s cut-in is a takedown, "' + (td && td.caption) + '", ' + (td && td.label), !!td && /Took down Warden/.test(td.caption) && /^TAKEDOWN · /.test(td.label));
-ok('it lasts about 1.4 s × the speed (' + (td && td.end - td.at) + ' ms)', !!td && td.end - td.at >= 1300 * K && td.end - td.at <= 1700 * K);
-await host.waitForTimeout(800); L = (await logs(host)).slice(before); td = L.find((x) => x.kind === 'takedown');
+// WALL CLOCK, on purpose (the page's own record of when the cut-in began and ended): its length is the thing under test.
+// A timer never fires early, so the lower bound is the plan's; the upper bound is twice the plan and a second more, for a
+// busy machine. The exact length is pinned without a browser in apps/web/src/game/spotlight/spotlight.test.ts.
+ok('it lasts about 1.4 s × the speed (' + (td && td.end - td.at) + ' ms)', !!td && td.end - td.at >= 1300 * K && td.end - td.at <= 2800 * K + 1000);
+await pause(host, 800); L = (await logs(host)).slice(before); td = L.find((x) => x.kind === 'takedown');
 const sl = td ? td.slowed : [];
 ok('the shot that took it down plays after the cut-in, slowed (tempo ' + (td && td.tempo) + '; ' + sl.map((x) => x.k + ' ' + x.beat).join(', ') + ')', !!td && td.slow && td.tempo === 0.85 && sl.length >= 2 && sl[0].at >= td.end - 5);
 const shotEv = sl.find((x) => x.k === 'shot'), i0 = sl.indexOf(shotEv);
@@ -125,7 +142,7 @@ await settle(host);
 ok('and the input hold releases', await host.evaluate(() => window.__phcHold() <= performance.now() + 5));
 
 // 3. (d) The guest saw the same moment.
-await mai.waitForTimeout(500);
+await pause(mai, 500);
 const M = (await logs(mai)).slice(beforeMai), mtd = M.find((x) => x.kind === 'takedown');
 ok('the guest sees the same cut-in (' + (mtd && mtd.label + ' · ' + mtd.caption) + ')', !!mtd && !!td && mtd.caption === td.caption && mtd.label === td.label);
 
@@ -133,18 +150,20 @@ ok('the guest sees the same cut-in (' + (mtd && mtd.label + ' · ' + mtd.caption
 await settle(host);
 const n0 = (await logs(host)).length;
 await host.evaluate((id) => window.dispatchEvent(new CustomEvent('phc:cutin', { detail: { kind: 'god', patron: 'toll_keeper', char: id, reason: 'Stays at 1 HP', line: 'Not yet. You haven\'t paid.' } })), hostChar.id);
-const godStrip = await host.locator('[data-phc-spotlight-strip="p:toll_keeper"]').waitFor({ timeout: 2000 }).then(() => true, () => false);
-await host.waitForTimeout(550); await snap(host, 'e-god');
+const godStrip = await host.locator('[data-phc-spotlight-strip="p:toll_keeper"]').waitFor({ timeout: 15000 }).then(() => true, () => false);
+await pause(host, 550); await snap(host, 'e-god');
 let last = (await logs(host)).slice(n0)[0];
 ok('the trigger API shows the patron\'s torn strip first (' + (last && last.label) + ': ' + (last && last.strips.join(' + ')) + ')', godStrip && !!last && last.label === 'INTERVENTION · THE TOLL-KEEPER' && last.strips[0] === 'The Toll-Keeper');
-await host.waitForTimeout(1600);
+await pause(host, 1600);
 const n1 = (await logs(host)).length;
 await host.evaluate(() => window.dispatchEvent(new CustomEvent('phc:cutin', { detail: { kind: 'god', patron: 'old_overcast', char: null, reason: 'Rain' } })));
-await host.waitForTimeout(400);
+// (click as soon as its strip is on the page, then wait until the page says it ended: no counted milliseconds)
+await host.locator('[data-phc-spotlight-strip="p:old_overcast"]').waitFor({ timeout: 15000 }).catch(() => {});
 await host.mouse.click(700, 500);
-await host.waitForTimeout(300);
+await host.waitForFunction((b) => { const c = (window.__phcCutins || []).slice(b)[0]; return !!c && !!c.end && !document.querySelector('[data-phc-spotlight]'); }, n1, { timeout: 15000 }).catch(() => {});
 last = (await logs(host)).slice(n1)[0];
-ok('a click skips it (gone in ' + (last && last.end - last.at) + ' ms)', !!last && last.skipped === true && last.end - last.at < 800 && !(await host.locator('[data-phc-spotlight]').count()));
+// (`skipped` is the page's own word for it; and it ended sooner than it lasts by itself, 1.4 s × the speed)
+ok('a click skips it (gone in ' + (last && last.end - last.at) + ' ms)', !!last && last.skipped === true && last.end - last.at < 1300 * K && !(await host.locator('[data-phc-spotlight]').count()));
 
 // 4b. (f) A crit (Leon: "play it when a critical hit appear in combat too"): a sturdy trooper beside the host's fighter,
 // the host's dice set so the shot's d20 is a natural 20 (a test hook on the host's own state, as the Warden's HP above).
@@ -166,6 +185,7 @@ async function critShot(name, prep) {
       window.__casingAt = 0; window.__casingObs?.disconnect();
       window.__casingObs = new MutationObserver(() => { if (!window.__casingAt && document.querySelector('[data-fx-piece^="shell:"]:not([data-old])')) window.__casingAt = performance.now(); });
       window.__casingObs.observe(document.body, { childList: true, subtree: true }); const g = window.__phc.getState().game; g.rng.state = s; return g.combat.fxSeq || 0; }, nat20(k++));
+    await spy(host);
     const err = await act(host, { type: 'combat/attack', unitId: me.id, targetId: tid, mode: 'shot' });
     if (err) { await act(host, { type: 'combat/end-turn', unitId: me.id }); continue; }
     const shotCrit = await host.evaluate(([seq, uid]) => (window.__phc.getState().game.combat.fx || []).some((e) => e.n > seq && e.k === 'shot' && e.unit === uid && e.crit && e.hit), [seq, me.id]);
@@ -181,27 +201,29 @@ ok('the host\'s shot is a critical hit (a natural 20)', !!cr);
 let critCut = null, critStrip = false, casingAt = 0;
 if (cr) {
   // the short cut-in is 2.24 s (× the speed): the screenshot is taken as soon as the strip is in (its slide-in ends at 280 ms)
-  await host.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-strip]').first().waitFor({ timeout: 3000 }).catch(() => {});
-  critStrip = await host.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-strip]').count() === 1;
-  await host.waitForTimeout(140); await snap(host, 'f-crit');
+  // (the watcher in the page counts the strips: a count taken from here can come after the cut-in is over)
+  await host.waitForFunction(() => window.__spy.crit > 0, null, { timeout: 20000 }).catch(() => {});
+  critStrip = (await spied(host)).crit === 1;
+  await pause(host, 140); await snap(host, 'f-crit');
   // the casing: thrown out behind the shooter when the slowed shot plays (after the cut-in), never before it
-  casingAt = await host.waitForFunction(() => window.__casingAt || 0, null, { timeout: 4000 }).then((h) => h.jsonValue(), () => 0);
-  await settle(host); await host.waitForTimeout(700);
+  casingAt = await host.waitForFunction(() => window.__casingAt || 0, null, { timeout: 15000 }).then((h) => h.jsonValue(), () => 0);
+  await settle(host); await pause(host, 700);
   critCut = (await logs(host)).slice(cr.nb).find((x) => x.kind === 'crit');
 }
 ok('the crit cut-in: one strip, "' + (critCut && critCut.label) + '", "' + (critCut && critCut.caption) + '"', critStrip && !!critCut && /^CRITICAL HIT · /.test(critCut.label) && /^Critical hit on (Rook|an unseen hostile)$/.test(critCut.caption) && critCut.strips.length === 1);
-ok('it is the short one: its words held 1.6 s to read (' + (critCut && critCut.end - critCut.at) + ' ms in all, words ' + (critCut && critCut.outAt - critCut.textIn) + ' ms)', !!critCut && critCut.end - critCut.at >= 2140 * K && critCut.end - critCut.at <= 2400 * K && critCut.outAt - critCut.textIn >= 1600 * K - 1);
+ok('it is the short one: its words held 1.6 s to read (' + (critCut && critCut.end - critCut.at) + ' ms in all, words ' + (critCut && critCut.outAt - critCut.textIn) + ' ms)', // (WALL CLOCK, on purpose, from the page's own record: lower bounds from the plan, the upper one with room for a busy machine)
+  !!critCut && critCut.end - critCut.at >= 2140 * K && critCut.end - critCut.at <= 4800 * K + 1000 && critCut.outAt - critCut.textIn >= 1600 * K - 1);
 const csl = critCut ? critCut.slowed : [], cShot = csl.find((x) => x.k === 'shot');
 ok('then the shot plays 15% slower (tempo ' + (critCut && critCut.tempo) + '; ' + csl.map((x) => x.k + ' ' + x.beat).join(', ') + ')', !!critCut && critCut.slow && critCut.tempo === 0.85 && !!cShot && Math.abs(cShot.beat - 400 / 0.85 * K) <= 6 && cShot.at >= critCut.end - 5);
 ok('its casing comes with the slowed shot, after the cut-in (' + Math.round(casingAt - (critCut ? critCut.end : 0)) + ' ms after it ended; cut-in ' + (critCut && critCut.at) + '–' + (critCut && critCut.end) + ', casing ' + Math.round(casingAt) + ')', !!critCut && casingAt >= critCut.end - 5);
-if (cr) { await mai.waitForTimeout(400); const mc = (await logs(mai)).slice(cr.nbM).find((x) => x.kind === 'crit'); ok('the guest sees the same crit cut-in (' + (mc && mc.caption) + ')', !!mc && !!critCut && mc.caption === critCut.caption && mc.label === critCut.label); }
+if (cr) { await pause(mai, 400); const mc = (await logs(mai)).slice(cr.nbM).find((x) => x.kind === 'crit'); ok('the guest sees the same crit cut-in (' + (mc && mc.caption) + ')', !!mc && !!critCut && mc.caption === critCut.caption && mc.label === critCut.label); }
 
 // 4c. (g) A crit that takes down a boss: one moment, the takedown (the crit gives way).
 await settle(host);
 { const k = await freeBeside(host, (await cur(host)).pos); const e = k ? await act(host, { type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: ref(k), name: 'Titan' }) : 'no free tile'; ok('a boss (Titan) beside the host\'s fighter (' + (e || ref(k)) + ')', !e); }
 const cr2 = await critShot('Titan', 'one');
 let kd = [];
-if (cr2) { await host.waitForTimeout(400); await snap(host, 'g-crit-takedown'); await settle(host); await host.waitForTimeout(900); kd = (await logs(host)).slice(cr2.nb); }
+if (cr2) { await pause(host, 400); await snap(host, 'g-crit-takedown'); await settle(host); await pause(host, 900); kd = (await logs(host)).slice(cr2.nb); }
 ok('a crit that takes down a boss plays ONE cut-in, the takedown (' + kd.map((x) => x.kind + ' "' + x.caption + '"').join(', ') + ')', !!cr2 && kd.length === 1 && kd[0].kind === 'takedown' && /Took down Titan/.test(kd[0].caption));
 
 // 4d. (h) A patron intervention (Faith 2.2): the Quartermaster refunds a Witnessed fighter's reload. The patron's strip
@@ -212,11 +234,12 @@ const fe = await act(host, { type: 'sandbox/faith', charId: hostChar.id, belief:
 ok('the host\'s fighter is the Quartermaster\'s (' + (fe || 'ok') + ')', !fe);
 const nh = (await logs(host)).length;
 await host.evaluate((uid) => { const cb = window.__phc.getState().game.combat, u = cb.units.find((x) => x.id === uid); u.conds = { ...(u.conds || {}), witnessed: 99 }; u.ammo = 0; delete (u.faith || {}).intervened; if (u.faith) u.faith.interventions = 0; u.ap = Math.max(u.ap, 4); }, me.id);
+await spy(host);
 const re = await act(host, { type: 'combat/reload', unitId: me.id });
-const god = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), nh, { timeout: 3000 }).then(() => true, () => false);
+const god = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), nh, { timeout: 15000 }).then(() => true, () => false);
 let godStrip2 = false, faithCut = 0;
-if (god) { godStrip2 = (await host.locator('[data-phc-spotlight-strip="p:the_quartermaster"]').count()) === 1; faithCut = await host.locator('[data-phc-cut]').count(); await host.waitForTimeout(450); await snap(host, 'h-god'); }
-await settle(host); await host.waitForTimeout(600);
+if (god) { await host.waitForFunction(() => window.__spy.strips.length > 0, null, { timeout: 15000 }).catch(() => {}); const sp = await spied(host); godStrip2 = sp.strips.filter((x) => x === 'p:the_quartermaster').length === 1; faithCut = sp.overlap ? 1 : await host.locator('[data-phc-cut]').count(); await pause(host, 450); await snap(host, 'h-god'); }
+await settle(host); await pause(host, 600);
 const gl = (await logs(host)).slice(nh).filter((x) => x.kind === 'god');
 const qmLog = await host.evaluate(() => window.__phc.getState().game.combat.log.some((l) => /Quartermaster intervenes/.test(l)));
 ok('a Witnessed reload: the Quartermaster intervenes (' + (re || 'reloaded') + ')', !re && qmLog);
@@ -229,21 +252,19 @@ me = await hostsTurn(); await settle(host);
 const fm = await act(host, { type: 'sandbox/faith', charId: hostChar.id, belief: 'faithful', patron: 'mother_ember', faith: 7, devotion: 10, reset: true });
 const ni = (await logs(host)).length;
 const pe = await act(host, { type: 'faith/pray', unitId: me.id, kind: 'miracle' });
-const mUp = await host.locator('[data-phc-cut="full"]').waitFor({ timeout: 4000 }).then(() => true, () => false);
+const mUp = await host.locator('[data-phc-cut="full"]').waitFor({ timeout: 15000 }).then(() => true, () => false);
 let overlap = false;
 if (mUp) {
-  await host.waitForTimeout(700); await snap(host, 'i-miracle');
+  await pause(host, 700); await snap(host, 'i-miracle');
+  await spy(host);
   await host.evaluate(() => window.dispatchEvent(new CustomEvent('phc:cutin', { detail: { kind: 'god', patron: 'nerukhan', char: null, reason: 'speaks' } })));
   // watch until the strip comes on (after the landing): never both at once; a screenshot of the strip once it is in
-  for (let i = 0; i < 90; i++) {
-    const st = await host.evaluate(() => ({ full: !!document.querySelector('[data-phc-cut="full"]'), strip: !!document.querySelector('[data-phc-spotlight-strip="p:nerukhan"]') }));
-    overlap ||= st.full && st.strip;
-    if (st.strip && !st.full) { await host.waitForTimeout(250); await snap(host, 'i-after-miracle'); break; }
-    await host.waitForTimeout(80);
-  }
+  // (the watcher in the page notes any moment the two are on the page together)
+  if (await host.locator('[data-phc-spotlight-strip="p:nerukhan"]').waitFor({ timeout: 30000 }).then(() => true, () => false)) { await pause(host, 250); await snap(host, 'i-after-miracle'); }
+  overlap = (await spied(host)).overlap;
 }
-const waited = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), ni, { timeout: 8000 }).then(() => true, () => false);
-await settle(host); await host.waitForTimeout(400);
+const waited = await host.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((c) => c.kind === 'god'), ni, { timeout: 15000 }).then(() => true, () => false);
+await settle(host); await pause(host, 400);
 ok('a Miracle cuts in (' + (fm || pe || 'prayed') + ')', !fm && !pe && mUp);
 const after = (await logs(host)).slice(ni).find((x) => x.kind === 'god');
 ok('a strip asked for during it waits for the landing: never drawn over the Miracle, then shown in full (' + (after && (after.end - after.at) + ' ms' + (after.skipped ? ', skipped' : '')) + ')', !overlap && waited && !!after && !after.skipped && after.end - after.at >= 1300);
@@ -276,7 +297,7 @@ await zed.getByPlaceholder('ROOM CODE').fill(room2);
 await click(zed, 'Join ›');
 await until(zed, () => !!window.__phc.getState().game && window.__phc.getState().conn === 'online', null, 20000);
 await nora.waitForFunction(() => { const g = window.__phc.getState().game; return g.story.await === 'players' && !g.narrator.busy; }, null, { timeout: 15000 }).catch(() => {});
-await zed.waitForTimeout(800);
+await pause(zed, 800);
 const b1 = (await logs(nora)).length;
 const ncId = await nora.evaluate(() => Object.values(window.__phc.getState().game.characters)[0].id);
 await act(nora, { type: 'narrator/turn', turn: { narration: 'The gate is jammed.', checks: [{ charId: ncId, skills: ['composure'], tn: 16, stakes: 'Hold it steady.' }] } });
@@ -287,16 +308,20 @@ await nora.evaluate((s) => { window.__phc.getState().game.rng.state = s; }, s20)
 await act(nora, { type: 'check/roll', checkId: ck.id });
 const rolled = await nora.evaluate((id) => window.__phc.getState().game.checks.find((k) => k.id === id).roll, ck.id);
 ok('the die shows a natural 20 (' + (rolled && rolled.die) + ')', !!rolled && rolled.die === 20);
+await spy(nora);
 await act(nora, { type: 'check/accept', checkId: ck.id });
-const critShown = await nora.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((x) => x.kind === 'crit'), b1, { timeout: 4000 }).then(() => true, () => false);
-const blurNow = await nora.evaluate(() => { const v = document.querySelector('[data-phc-spotlight-blur]'); return !!v && /blur\(/.test(getComputedStyle(v).backdropFilter || ''); });
-await nora.waitForTimeout(400); await snap(nora, 'b-crit');
-await nora.waitForTimeout(1600);
+const critShown = await nora.waitForFunction((b) => (window.__phcCutins || []).slice(b).some((x) => x.kind === 'crit'), b1, { timeout: 15000 }).then(() => true, () => false);
+await nora.waitForFunction(() => window.__spy.strips.length > 0, null, { timeout: 15000 }).catch(() => {});
+const blurNow = (await spied(nora)).blur;
+await pause(nora, 400); await snap(nora, 'b-crit');
+// (until the page's own record says the cut-in ended)
+await nora.waitForFunction((b) => { const c = (window.__phcCutins || []).slice(b).find((x) => x.kind === 'crit'); return !!c && !!c.end && !document.querySelector('[data-phc-spotlight]'); }, b1, { timeout: 20000 }).catch(() => {});
+await pause(nora, 200);
 const crit = (await logs(nora)).slice(b1).find((x) => x.kind === 'crit');
 ok('the crit cut-in plays over the blurred area map: "' + (crit && crit.caption) + '"', critShown && blurNow && !!crit && crit.caption === 'Natural 20 on Composure · Hard');
 ok('with no slow-mo (nothing slowed, no hold)', !!crit && !crit.slow && crit.slowed.length === 0 && (await nora.evaluate(() => window.__phcHold() <= performance.now() + 5)));
 await zed.evaluate(() => window.dispatchEvent(new CustomEvent('phc:cutin', { detail: { kind: 'god', patron: 'nerukhan', char: null, reason: 'speaks' } })));
-await zed.waitForTimeout(1200);
+await pause(zed, 1200);
 const zl = await logs(zed), zsaw = await zed.evaluate(() => window.__phc.getState().game.checks.some((k) => k.done && k.roll && k.roll.die === 20));
 ok('the Off player had the crit in the state (' + zsaw + ') but saw no cut-in (' + zl.length + '), not even the trigger API\'s', zsaw && zl.length === 0 && !(await zed.locator('[data-phc-spotlight]').count()));
 

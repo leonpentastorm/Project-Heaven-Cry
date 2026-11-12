@@ -223,6 +223,9 @@ ok('Stay: still in the session', (await dlg.count()) === 0 && (await host.evalua
 // 8. The room in session: the key says it saved, Test key reports, the big button takes you back.
 await head.getByRole('button', { name: new RegExp('^Room ' + code) }).click();
 await host.waitForSelector('input[data-narrator-key]', { timeout: 5000 });
+// Nothing in this suite may reach the real provider: every other call to it (a Narrator turn made while the test key is
+// in) gets the same 401 here. (It used to go out for real; behind a proxy that answered 403, which read as a page error.)
+await host.route('https://api.anthropic.com/**', (r) => r.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }) }));
 await host.route('https://api.anthropic.com/v1/models**', (r) => r.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ type: 'error', error: { type: 'authentication_error', message: 'invalid x-api-key' } }) }));
 await host.locator('input[data-narrator-key]').fill('sk-' + 'ant-api03-not-a-real-key') // fake, split so the repo's key check stays clean;
 await host.waitForSelector('[data-phc-key-saved]', { timeout: 3000 });

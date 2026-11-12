@@ -4,7 +4,7 @@
 // before the shot flies; a reload's magazine drops straight down and is gone when it lands; a tactical reload drops none
 // (the reload card puts it in the pack); a revolver's brass drops and fresh rounds go in; a double barrel kicks both
 // hulls out behind; an Evoker throws out its spent core, the way opposite its last Evoke. Shots: e2e/shots/brass-*.png.
-import { chromium, player, click, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, pause } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -18,9 +18,9 @@ if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
-await p.waitForTimeout(2400);
-for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 880); await p.waitForTimeout(380); }
-await p.waitForTimeout(1200);
+await pause(p, 2400);
+for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 880); await pause(p, 380); }
+await pause(p, 1200);
 
 const me = await p.evaluate(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.side === 'pc' && !x.dead); return { id: u.id, pos: u.pos }; });
 const [mx, my] = me.pos.split(',').map(Number);
@@ -30,14 +30,17 @@ const tok = await p.evaluate((k) => { const [x, y] = k.split(',').map(Number); c
   const img = [...b.children].find((c) => /z-index:\s*2/.test(c.getAttribute('style') || '')); const r = img.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, w: r.width, h: r.height }; }, me.pos);
 /** Play an effect and sample the pieces (tag, centre on screen, opacity, the clip on their box) every step ms. */
 const watch = (ev, ms = 1600, step = 40) => p.evaluate(async ({ ev, ms, step }) => {
-  const seen = [], t0 = performance.now();
+  const seen = [], t0 = performance.now(); let n = 0;
   window.__phcFx.playFx(ev);
-  while (performance.now() - t0 < ms) {
+  // (for `ms`, and then for as long as a piece is still on the layer, to four times that: a busy machine runs the
+  // effect's timers late, and a window counted in milliseconds alone closed before the piece had landed)
+  while (performance.now() - t0 < ms || (document.querySelector('[data-fx-piece]') && performance.now() - t0 < ms * 4)) {
     for (const el of document.querySelectorAll('[data-fx-piece]')) {
       const r = el.getBoundingClientRect(), box = el.parentElement;
-      seen.push({ t: Math.round(performance.now() - t0), tag: el.getAttribute('data-fx-piece'), x: r.left + r.width / 2, y: r.top + r.height / 2, h: r.height, op: Number(getComputedStyle(el).opacity), clip: getComputedStyle(box).clipPath || '' });
+      // (`late`: how far this loop's own timers have fallen behind by now: what a busy machine has cost every timer on the page)
+      seen.push({ t: Math.round(performance.now() - t0), late: Math.max(0, Math.round(performance.now() - t0 - n * step)), tag: el.getAttribute('data-fx-piece'), x: r.left + r.width / 2, y: r.top + r.height / 2, h: r.height, op: Number(getComputedStyle(el).opacity), clip: getComputedStyle(box).clipPath || '' });
     }
-    await new Promise((res) => setTimeout(res, step));
+    await new Promise((res) => setTimeout(res, step)); n++;
   }
   return seen;
 }, { ev, ms, step });
@@ -71,10 +74,14 @@ const xs = c.map((x) => x.x), ys = c.map((x) => x.y);
 ok('a reload drops the magazine (' + c.length + ' samples)', c.length > 3);
 ok('straight down: it hardly moves sideways (' + Math.round(Math.max(...xs) - Math.min(...xs)) + ' px) and falls (' + Math.round(Math.max(...ys) - Math.min(...ys)) + ' px)', Math.max(...xs) - Math.min(...xs) < tok.w * 0.25 && Math.max(...ys) - Math.min(...ys) > tok.h * 0.3);
 const seenTill = c.filter((x) => x.op > 0.05).pop()?.t;
-ok('it is gone once it lands (last visible at ' + seenTill + ' ms, of a 1200 ms reload)', seenTill < 800);
+// WALL CLOCK, on purpose: the magazine is gone when it lands, a third of the way into the reload, not at its end (1200 ms).
+// Under 800 ms on an idle machine; on a busy one every timer on the page runs late, the effect's and this sampler's
+// alike, so the sampler's own lateness at that moment is taken off first.
+const lateBy = c.filter((x) => x.op > 0.05).pop()?.late || 0;
+ok('it is gone once it lands (last visible at ' + seenTill + ' ms, of a 1200 ms reload; the page\'s timers were ' + lateBy + ' ms late by then)', seenTill - lateBy < 800);
 await p.evaluate((ev) => window.__phcFx.playFx(ev), { k: 'reload', unit: me.id, at: me.pos, weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200 });
-await p.waitForTimeout(330); await p.screenshot({ path: OUT + 'brass-mag.png', clip: { x: Math.max(0, tok.x - 120), y: Math.max(0, tok.y - 100), width: 260, height: 200 } });
-await p.waitForTimeout(1500);
+await pause(p, 330); await p.screenshot({ path: OUT + 'brass-mag.png', clip: { x: Math.max(0, tok.x - 120), y: Math.max(0, tok.y - 100), width: 260, height: 200 } });
+await pause(p, 1500);
 // 6. Tactical: nothing drops under the portrait (the reload card slides the old magazine into its pack; review, 9 Nov
 //    2026: a magazine falling under the token read as a speed reload).
 s = await watch({ k: 'reload', unit: me.id, at: me.pos, weapon: 'legion_bullpup', cat: 'rifle', how: 'mag', dur: 1200, tactical: true }, 1300, 30); c = by(s, 'mag:curved_mag');
@@ -89,13 +96,13 @@ const hullEnd = c.filter((x) => x.op > 0.5).pop();
 ok('a double barrel kicks its hulls out behind (' + Math.round((hullEnd?.x ?? 0) - tok.x) + ' px) and takes two fresh ones (' + by(s, 'round:hull').length + ' samples)', hullEnd && hullEnd.x < tok.x - tok.w * 0.3 && by(s, 'round:hull').length > 2);
 // 9. An Evoker after an Evoke to the right: the spent core goes left.
 await p.evaluate((u) => window.__phcFx.playFx({ k: 'evoke', unit: u.id, at: u.pos, shape: 'line', tiles: [], dir: [1, 0], element: 'fire', missiles: [] }), me);
-await p.waitForTimeout(900);
+await pause(p, 900);
 s = await watch({ k: 'core', unit: me.id, at: me.pos, dur: 1000, focus: 'evoker' }, 1500); c = by(s, 'core:evoker');
 const coreEnd = c.filter((x) => x.op > 0.5).pop();
 ok('the Evoker throws its spent core out behind, away from its last Evoke (' + Math.round((coreEnd?.x ?? 0) - tok.x) + ' px)', coreEnd && coreEnd.x < tok.x - tok.w * 0.4);
 s = await watch({ k: 'core', unit: me.id, at: me.pos, dur: 1000, focus: 'grand_staff' }, 600);
 ok('a grand staff throws its orb', by(s, 'core:staff').length > 2);
-await p.waitForTimeout(1500);
+await pause(p, 1500);
 ok('nothing left on the layer afterwards', (await p.locator('[data-fx-piece]').count()) === 0);
 ok('no page errors', p.errors.length === 0);
 if (p.errors.length) console.log(p.errors);

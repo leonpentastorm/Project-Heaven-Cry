@@ -163,10 +163,11 @@ await build([{ type: 'sandbox/kit', kind: 'both' }, { type: 'sandbox/give', item
 await act({ type: 'sandbox/stop' });
 await p.waitForFunction(() => window.__phc.getState().game.phase !== 'combat', null, { timeout: 8000 });
 await p.waitForTimeout(500);
-const mapBtn = p.getByRole('button', { name: /area map/i }).first();
-if (await mapBtn.count()) { await mapBtn.click().catch(() => {}); await p.waitForTimeout(500); }
+// (the tools first, then the area map: the map is a modal over the whole screen, and the tools' button is under it)
 const closeTools = p.getByRole('button', { name: 'Close the tools' });
 if (await closeTools.count()) { await closeTools.first().click(); await p.waitForTimeout(400); }
+const mapBtn = p.getByRole('button', { name: /area map/i }).first();
+if (await mapBtn.count()) { await mapBtn.click().catch(() => {}); await p.waitForTimeout(500); }
 const hud = p.locator('[aria-label="Your status"] [aria-label="Your resources"]').first();
 const ht = ((await hud.textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
 ok('area-map HUD: the resources block under HP: ' + ht.slice(0, 120), (await hud.count()) > 0 && /AMMO/.test(ht) && /loaded/.test(ht) && /EVOKER CHARGE/.test(ht));

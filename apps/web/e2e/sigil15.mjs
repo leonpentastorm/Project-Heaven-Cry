@@ -1,5 +1,5 @@
 // Sigil 1.5 (rules 1.10) end to end, through real buttons where the game has them:
-//  (d) a sigil mark cut into the wall on the area map, Investigated (Analysis or Rumination): the word is copied, study
+//  (d) a sigil mark cut into the wall on the area map, Investigated (Acuity or Rumination): the word is copied, study
 //      rises, the panel says so, and the Investigate sound is served;
 //  (a) two Lines drawn side by side (the stroke picker's "new Line"), each Evoked as its own spell (touching glyphs no
 //      longer poison a Line);
@@ -138,7 +138,7 @@ const study0 = (await growth(cid)).study || 0;
 await cell.click(); await p.waitForTimeout(400);
 const dlg = p.locator('div[role="dialog"][aria-label="Sigil mark"]');
 await dlg.waitFor({ timeout: 4000 }).catch(() => {});
-ok('the mark panel: unread, Investigate with Analysis or Rumination', /An unread word/.test(await p.locator('[data-mark-panel]').innerText().catch(() => '')) && (await dlg.getByText('Analysis or Rumination').count()) > 0);
+ok('the mark panel: unread, Investigate with Acuity or Rumination (the skill is Acuity since Skeleton 2.0)', /An unread word/.test(await p.locator('[data-mark-panel]').innerText().catch(() => '')) && (await dlg.getByText('Acuity or Rumination').count()) > 0);
 await snap('01-mark-panel');
 const tryBtn = dlg.getByRole('button', { name: /Try this · 2 AP|Try it · 2 AP/ }).first();
 ok('Investigate can be tried', await tryBtn.isEnabled().catch(() => false));
@@ -161,8 +161,10 @@ if (tr && tr.ok) {
   ok('the panel says it (' + out.trim() + ')', /Copied: PULL|PULL is yours/.test(out));
   await snap('02-mark-copied');
 } else ok('Investigate succeeds at +9 against TN 8 (a natural 1 fails: ' + (tr ? tr.total : '?') + ')', false);
-await p.keyboard.press('Escape').catch(() => {}); await p.waitForTimeout(200);
-if (await area.count()) await p.keyboard.press('Escape').catch(() => {});
+// Close what is open with its own Close button (the mark's panel, then the area map): the tools' Start button is under
+// them. (This pressed Escape twice; neither panel answers Escape, and the mark's panel stayed over the tools.)
+for (const d of [dlg, area]) if (await d.count()) { await d.getByRole('button', { name: 'Close', exact: true }).first().click(); await d.waitFor({ state: 'detached', timeout: 15000 }).catch(() => {}); }
+ok('Close closes the mark\'s panel and the area map', (await dlg.count()) === 0 && (await area.count()) === 0);
 
 // ---------- the fight ----------
 await openTools();

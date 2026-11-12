@@ -7,7 +7,7 @@
 // a pump gun's rounds fed one by one (the count ticking), a revolver's cylinder, both guns (two columns), the off hand
 // alone, reduced motion (a still card with the end count), and the combat speed (Normal holds it longer than Fast).
 // Shots for Leon (deviceScaleFactor 2): shots/combat-polish/reload-*.png.
-import { chromium, player, click, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, pause } from './lib.mjs';
 process.env.DSF = process.env.DSF || '2';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
@@ -24,8 +24,8 @@ if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
 await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
-await p.waitForTimeout(2400);
-for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 990); await p.waitForTimeout(380); }
+await pause(p, 2400);
+for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 990); await pause(p, 380); }
 await p.mouse.move(1430, 990);
 let g = await G();
 const me = g.combat.units.find((u) => u.side === 'pc' && !u.dead);
@@ -50,7 +50,9 @@ const watch = (start, ms = 2200, step = 30, probeAt = 260) => p.evaluate(async (
   const seen = [], t0 = performance.now(); let probe = null, countProbe = null;
   if (start.act) window.__phc.act(start.act); else window.__phcFx.playFx(start.fx);
   const rc = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, l: r.left, t: r.top, r: r.right, b: r.bottom }; };
-  while (performance.now() - t0 < ms) {
+  // (for `ms`, and then for as long as the card is still up, to four times that: on a busy machine the card's own timers
+  // run late, and a window counted in milliseconds alone closed before the count had run up)
+  while (performance.now() - t0 < ms || (document.querySelector('[data-fx="reload"]') && performance.now() - t0 < ms * 4)) {
     const card = document.querySelector('[data-fx="reload"]');
     if (card) {
       const t = Math.round(performance.now() - t0), old = card.querySelector('[data-reload-old]');
@@ -93,11 +95,11 @@ const pileGlyph = async () => p.evaluate((R) => { const b = [...document.querySe
 const shotCard = async (name, box) => { const pad = 40; await p.screenshot({ path: DIR + name + '.png', clip: { x: Math.max(0, box.l - pad), y: Math.max(0, box.t - pad), width: box.r - box.l + pad * 2, height: box.b - box.t + pad * 2 + 70 } }); };
 
 // 1. A first speed reload puts a pile on the tile; the next turn the Recruit reloads standing on it.
-ok('a round spent', await burn()); await p.waitForTimeout(900);
-await act({ type: 'combat/reload', unitId: me.id }); await p.waitForTimeout(400); await settle();
+ok('a round spent', await burn()); await pause(p, 900);
+await act({ type: 'combat/reload', unitId: me.id }); await pause(p, 400); await settle();
 g = await G(); ok('the first speed reload left a pile on ' + R + ' (' + pileCount(g) + ')', pileCount(g) === 1);
 await act({ type: 'combat/end-turn', unitId: me.id }); await myTurn();
-ok('a round spent', await burn()); await p.waitForTimeout(1200);
+ok('a round spent', await burn()); await pause(p, 1200);
 const pg0 = await pileGlyph();
 ok('the pile is drawn on the Recruit\'s tile (' + JSON.stringify(pg0 && pg0.n) + ')', !!pg0);
 
@@ -119,12 +121,15 @@ ok('the count shows what was left, empties, then runs up to what the gun holds: 
 ok('the pile on the tile now holds the dropped magazine too (' + pileCount(g) + ')', pileCount(g) === 2);
 ok('the old magazine falls behind the count: the count stays readable where it crosses (' + JSON.stringify(w.countProbe) + ')', !w.countProbe || w.countProbe.onTop);
 const bIn = s.find((x) => x.badgeOp > 0.5)?.t;
-ok('the card\'s PILE +1 shows as the old one leaves, in step with the tile\'s pile count (first seen at ' + bIn + ' ms)', bIn != null && bIn < 420);
+// WALL CLOCK, on purpose: the +1 comes as the magazine leaves (about 0.3 s in), not at the end of the reload. A sample
+// sees it late by at most the wait since the sample before it, so that wait (30 ms idle, more when busy) is allowed for.
+const bGap = (() => { const i = s.findIndex((x) => x.badgeOp > 0.5); return i > 0 ? s[i].t - s[i - 1].t : i === 0 ? s[0].t : 0; })();
+ok('the card\'s PILE +1 shows as the old one leaves, in step with the tile\'s pile count (first seen at ' + bIn + ' ms, ' + bGap + ' ms after the sample before)', bIn != null && bIn - bGap < 420);
 ok('a speed reload drops its magazine under the portrait, to the pile (' + Math.max(...s.map((x) => x.brassMags)) + ')', s.some((x) => x.brassMags > 0));
 const spLook = s.at(-1);
-await p.waitForTimeout(100);
+await pause(p, 100);
 await act({ type: 'combat/end-turn', unitId: me.id }); await settle(); await myTurn();
-ok('a round spent', await burn()); await p.waitForTimeout(1200);
+ok('a round spent', await burn()); await pause(p, 1200);
 
 // 3. TACTICAL reload on the same pile.
 w = await watch({ act: { type: 'combat/reload', unitId: me.id, tactical: true } });
@@ -153,7 +158,7 @@ const catchAt = async (name, ev, times) => {
   await p.evaluate((ev) => window.__phcFx.playFx(ev), ev);
   const t0 = Date.now(); let box = null;
   for (const [t, tag] of times) {
-    const left = t - (Date.now() - t0); if (left > 0) await p.waitForTimeout(left);
+    const left = t - (Date.now() - t0); if (left > 0) await pause(p, left);
     box = box || await p.evaluate(() => { const c = document.querySelector('[data-fx="reload"]'); if (!c) return null; const r = c.getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; });
     if (box) await shotCard('reload-' + name + '-' + tag, box);
   }
@@ -193,7 +198,7 @@ w = await watch({ fx: fx({ weapon: 'hellraiser_service_rifle', cat: 'rifle', how
 ok('reduced motion: the card still shows, its count already 24/24 and no old magazine moving (' + w.seen[0]?.counts[0] + ')', w.seen.length > 3 && /^24\/24/.test(w.seen[0].counts[0]) && w.seen.every((x) => !x.old) && !!w.seen[0].pack && w.seen[0].badge === '+1');
 await settle(); await p.emulateMedia({ reducedMotion: 'no-preference' });
 
-await p.waitForTimeout(600);
+await pause(p, 600);
 ok('no reload card left on the layer afterwards', (await p.locator('[data-fx="reload"]').count()) === 0);
 ok('no page errors', p.errors.length === 0);
 if (p.errors.length) console.log(p.errors);

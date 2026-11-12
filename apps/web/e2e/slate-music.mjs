@@ -72,11 +72,27 @@ let err = null;
 for (const at of ['M6', 'L6', 'N6', 'M8', 'L8', 'K6']) { err = await act(host, { type: 'sandbox/spawn', tier: 'boss', weapon: 'drifter_revolver', at }); if (!err) break; }
 ok('a boss stands on the map' + (err ? ': ' + err : ''), !err);
 await act(host, { type: 'sandbox/fight' });
-await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 8000 });
+await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat' && !!window.__phc.getState().game.combat?.song, null, { timeout: 15000 });
+// Rules 1.16 (the 26 × 26 ground: the sides start 10 to 14 tiles apart): that boss begins in the fog of war, and until
+// the party has seen it neither the track nor its label gives it away (packages/engine/src/music.ts fightTheme).
+const bossSeen = () => host.evaluate(() => { const cb = window.__phc.getState().game.combat; return !!cb && cb.units.some((u) => u.side === 'foe' && u.tier === 'boss' && !u.dead && (cb.sighted || []).includes(u.id)); });
+if (!(await bossSeen())) {
+  const mf = await waitMusic(host, /by Project Heaven Cry OST/), mfg = await waitMusic(guest, /by Project Heaven Cry OST/);
+  ok('a boss still in the fog gives nothing away: the fight plays a song of the pool (host: ' + mf + ', guest: ' + mfg + ')', !!mf && !!mfg && !/Heaven Falls|boss/i.test(mf + mfg));
+  // Then the party sees one: a boss placed beside the host's fighter (the tools, mid-fight).
+  const beside = await host.evaluate(() => { const g = window.__phc.getState().game, cb = g.combat, m = cb.map, me = cb.units.find((u) => u.side === 'pc' && !u.dead), [x, y] = me.pos.split(',').map(Number);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1], [2, 0], [-2, 0], [0, 2], [0, -2]]) {
+      const k = (x + dx) + ',' + (y + dy); if (x + dx < 0 || y + dy < 0 || x + dx >= m.w || y + dy >= m.h) continue;
+      if ((m.solid || []).includes(k) || cb.units.some((u) => !u.dead && u.pos === k) || (cb.objects || []).some((o) => o.pos === k)) continue;
+      return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x + dx] + (y + dy + 1); } return null; });
+  const e2 = beside ? await act(host, { type: 'sandbox/spawn', tier: 'boss', weapon: 'fists', at: beside }) : 'no free tile';
+  const seenNow = await host.waitForFunction(() => { const cb = window.__phc.getState().game.combat; return cb.units.some((u) => u.side === 'foe' && u.tier === 'boss' && (cb.sighted || []).includes(u.id)); }, null, { timeout: 15000 }).then(() => true, () => false);
+  ok('a boss steps into the party\'s sight (' + (e2 || 'placed at ' + beside) + ')', !e2 && seenNow);
+}
 const m2 = await waitMusic(host, /Heaven Falls/), m2g = await waitMusic(guest, /Heaven Falls/);
 ok('a boss fight plays Heaven Falls (host: ' + m2 + ', guest: ' + m2g + ')', /Heaven Falls/.test(m2 || '') && /Heaven Falls/.test(m2g || ''));
 // The label never gives away a hostile the party hasn't seen: "Fight: a boss" only once the boss is in cb.sighted.
-{ const g2 = await G(host), boss = g2.combat.units.find((u) => u.side === 'foe' && u.tier === 'boss'), seen = (g2.combat.sighted || []).includes(boss.id);
+{ const g2 = await G(host), seen = g2.combat.units.some((u) => u.side === 'foe' && u.tier === 'boss' && (g2.combat.sighted || []).includes(u.id));
   const card = async (p) => (await p.locator('[role="status"]', { hasText: '♪ NOW PLAYING' }).filter({ hasText: 'Heaven Falls' }).first().textContent({ timeout: 3000 }).catch(() => '')) || '';
   const ch = await card(host), cg = await card(guest);
   ok('the card names the boss only once the party has seen it (seen ' + seen + '; host: ' + ch + ' | guest: ' + cg + ')', ch && cg && (seen ? /Fight: a boss/.test(ch) && /Fight: a boss/.test(cg) : !/boss/.test(ch + cg))); }

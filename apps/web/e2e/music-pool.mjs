@@ -3,7 +3,7 @@
 // same one for the whole fight (a reload of the page keeps it); stopping the fight brings Gearing Up back; the next
 // fight plays another song of the pool, and so does every one after it; the Credits page lists all nine new tracks.
 // Screenshots land in e2e/shots/music-pool-*.png.
-import { chromium, player, click, BASE, OUT, autoConfirm } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, autoConfirm, settle } from './lib.mjs';
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const POOL = { gunline: 'Gunline', brass_on_the_floor: 'Brass on the Floor', danger_close: 'Danger Close', flank_left: 'Flank Left', held_breath: 'Held Breath', hold_the_line: 'Hold the Line', line_of_four: 'Line of Four', mag_check: 'Mag Check', suppressing_fire: 'Suppressing Fire' };
 const NEW = [...Object.values(POOL).filter((t) => t !== 'Gunline'), 'Gearing Up'];
@@ -16,13 +16,13 @@ const G = () => p.evaluate(() => window.__phc.getState().game);
 const label = () => p.locator('button[aria-label^="Music:"]').getAttribute('aria-label', { timeout: 500 }).catch(() => null);
 const ostNow = () => p.evaluate(() => window.__phcOst?.now?.() ?? null);
 /** Wait until the Music button names `title` and the page's player holds the track `id`. */
-const playing = async (title, id, ms = 10000) => { const t = Date.now(); let m, o; while (Date.now() - t < ms) { m = await label(); o = await ostNow(); if ((m || '').includes(title + ' by Project Heaven Cry OST') && o === id) return { m, o, ok: true }; await p.waitForTimeout(200); } return { m, o, ok: false }; };
+const playing = async (title, id, ms = 10000) => { const t = Date.now(); let m, o; while (Date.now() - t < ms) { m = await label(); o = await ostNow(); if ((m || '').includes(title + ' by Project Heaven Cry OST') && o === id) return { m, o, ok: true }; await settle(p, 200); } return { m, o, ok: false }; };
 
 // 0. The Credits page (on the title) lists the nine new tracks, and never the book-keeping "(ingame)".
 await p.goto(BASE);
 await click(p, 'CREDITS', { exact: true }).catch(() => {});
 await p.getByRole('heading', { name: 'Credits' }).waitFor({ timeout: 8000 }).catch(() => {});
-await p.waitForTimeout(300);
+await settle(p, 300);
 const creditsText = await p.locator('body').innerText();
 ok('the Credits page lists all nine new tracks' + (NEW.every((t) => creditsText.includes(t + ' (')) ? '' : ': missing ' + NEW.filter((t) => !creditsText.includes(t + ' (')).join(', ')), NEW.every((t) => creditsText.includes(t + ' (')));
 ok('no "(ingame)" anywhere on it', !/ingame/i.test(creditsText));
@@ -52,7 +52,7 @@ await act({ type: 'sandbox/ai', on: false });
 // 2. A fight plays one of the pool; it is that fight's song to the end
 const fight = async (n) => {
   const e = await act({ type: 'sandbox/fight' }); if (e) ok('fight ' + n + ' starts: ' + e, false);
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !!window.__phc.getState().game.combat?.song, null, { timeout: 10000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !!window.__phc.getState().game.combat?.song, null, { timeout: 15000 });
   const g = await G(), song = g.combat.song, title = POOL[song];
   ok('fight ' + n + ': the engine picked a song of the pool (' + song + ')', !!title);
   const r = await playing(title || '?', song);
@@ -61,14 +61,14 @@ const fight = async (n) => {
 };
 const stop = async () => {
   await act({ type: 'sandbox/stop' });
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'story', null, { timeout: 8000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'story', null, { timeout: 15000 });
   const r = await playing('Gearing Up', 'gearing_up');
   ok('the fight over, Gearing Up is back (button: ' + r.m + '; player: ' + r.o + ')', r.ok);
 };
 const s1 = await fight(1);
 await p.screenshot({ path: OUT + 'music-pool-fight-1.png' });
 // The song holds while the fight goes on: turns pass, and the pick is still the same in the state and in the player.
-for (let i = 0; i < 3; i++) { const g = await G(), cb = g.combat; if (!cb || cb.over) break; const cur = cb.units.find((u) => u.id === cb.order[cb.turn]); if (cur?.side === 'pc') await act({ type: 'combat/end-turn', unitId: cur.id }); await p.waitForTimeout(300); }
+for (let i = 0; i < 3; i++) { const g = await G(), cb = g.combat; if (!cb || cb.over) break; const cur = cb.units.find((u) => u.id === cb.order[cb.turn]); if (cur?.side === 'pc') await act({ type: 'combat/end-turn', unitId: cur.id }); await settle(p, 300); }
 g = await G();
 ok('turns later it is the same song (state ' + g.combat?.song + ', player ' + await ostNow() + ')', g.combat?.song === s1 && (await ostNow()) === s1);
 // A reload of the page (a reconnect): the same fight, the same song.

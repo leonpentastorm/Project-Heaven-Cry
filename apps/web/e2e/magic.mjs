@@ -20,8 +20,8 @@ await click(host, 'Next ›');
 await host.getByRole('tab', { name: 'Sigil casters', exact: true }).click();
 await host.locator('button', { hasText: 'Sigilist' }).first().click();
 await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
-await host.getByRole('button', { name: 'Lower Vigilant', exact: true }).first().click();
-await host.getByRole('button', { name: 'Raise Will Power', exact: true }).first().click();
+await host.locator('[data-skill-down="vigilant"]').click(); // (the Skills step's steppers since Skeleton 2.0: creation-points.mjs)
+await host.locator('[data-skill-up="will_power"]').click();
 await click(host, 'Next ›'); // traits
 await click(host, 'Next ›'); // Belief (rules 1.6; not chosen: Atheist)
 await click(host, 'Next ›'); // kit

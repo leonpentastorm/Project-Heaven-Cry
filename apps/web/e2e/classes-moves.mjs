@@ -9,7 +9,7 @@
 //  · Mage: Vent and Swap core read the engine's AP (Bleed the Flux 0, Core Change 1).
 // Every move through its real button on the CLASS tab, its picker's chips and the grid; the engine state checked and the
 // fx events seen playing (the layer draws). Screenshots: e2e/shots/classes-moves-*.png (deviceScaleFactor 1).
-import { chromium, player, click, BASE, OUT, pickAction } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, pickAction, settle } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -21,7 +21,7 @@ const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJ
 const xy = (k) => k.split(',').map(Number);
 const dist = (a, b) => { const [x1, y1] = xy(a), [x2, y2] = xy(b); return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2)); };
 for (const p of [host, mai]) p.on('dialog', (d) => d.accept());
-const dismissCut = async (p = host) => { for (let i = 0; i < 3; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.mouse.click(1430, 990); await p.waitForTimeout(380); } };
+const dismissCut = async (p = host) => { for (let i = 0; i < 3; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.mouse.click(1430, 990); await settle(p, 380); } };
 const tok = (k) => host.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
 const log = async () => ((await G()).combat?.log || []).map((l) => (typeof l === 'string' ? l : l.text || '')).join('\n');
 const fxSince = async (n) => ((await G()).combat?.fx || []).filter((e) => e.n > n);
@@ -35,14 +35,14 @@ async function toHost() {
   for (let i = 0; i < 40; i++) {
     const g = await G(); const cb = g.combat; if (!cb) return false;
     const cur = cb.units.find((u) => u.id === cb.order[cb.turn]);
-    if (cur && cur.charId === hostChar && cur.ap >= 5) { await host.waitForTimeout(300); await dismissCut(); return true; }
+    if (cur && cur.charId === hostChar && cur.ap >= 5) { await settle(host, 300); await dismissCut(); return true; }
     if (cur && cur.charId === maiChar) { await dismissCut(mai); await act(mai, { type: 'combat/end-turn', unitId: cur.id }); }
     else if (cur && cur.charId === hostChar) { await dismissCut(); await act(host, { type: 'combat/end-turn', unitId: cur.id }); }
-    await host.waitForTimeout(350);
+    await settle(host, 350);
   }
   return false;
 }
-async function newTurn() { const u = await me(); await dismissCut(); await act(host, { type: 'combat/end-turn', unitId: u.id }); await host.waitForTimeout(300); return toHost(); }
+async function newTurn() { const u = await me(); await dismissCut(); await act(host, { type: 'combat/end-turn', unitId: u.id }); await settle(host, 300); return toHost(); }
 /** The guest walks (on their own turn) to a tile near the host, then hands the turn back. */
 async function mateNear(maxD = 1) {
   for (let i = 0; i < 4; i++) {
@@ -76,7 +76,7 @@ async function spawnNear(tier, weapon, name, avoid = []) {
 async function setClass(id, rank, extra = async () => {}) {
   await act(host, { type: 'sandbox/class', charId: hostChar, classId: id, rank });
   await extra();
-  await host.waitForTimeout(250);
+  await settle(host, 250);
 }
 /** The magic kit with its focus in a hand (spec: Hands 2, item 630: a focus counts only in a hand): a one-handed pistol
  *  in the main hand first (the Recruit's rifle fills both) and a free off hand, so the kit puts the Evoker or Emanator in the off hand. */
@@ -87,21 +87,21 @@ async function withFocus(kind) {
 }
 /** Open the CLASS tab and press a move's button there (the base Shove lives on another tab under the same name). */
 async function pickClass(name) {
-  await host.locator('#phc-tab-class').click(); await host.waitForTimeout(120);
-  await host.locator('[role="tabpanel"]').getByRole('button', { name }).first().click(); await host.waitForTimeout(150);
+  await host.locator('#phc-tab-class').click(); await settle(host, 120);
+  await host.locator('[role="tabpanel"]').getByRole('button', { name }).first().click(); await settle(host, 150);
 }
 /** Click a CLASS-tab move, then its grid picks and chips, then Confirm. Returns the footer's text if Confirm is disabled. */
 async function useMove(name, o = {}) {
   await dismissCut();
   await pickClass(name);
-  if (o.target) { await tok(o.target).click(); await host.waitForTimeout(150); }
-  if (o.chip) { await host.locator('.phc-cb-pick').getByRole('button', { name: o.chip }).first().click(); await host.waitForTimeout(120); }
-  if (o.tile) { await tok(o.tile).click(); await host.waitForTimeout(150); }
+  if (o.target) { await tok(o.target).click(); await settle(host, 150); }
+  if (o.chip) { await host.locator('.phc-cb-pick').getByRole('button', { name: o.chip }).first().click(); await settle(host, 120); }
+  if (o.tile) { await tok(o.tile).click(); await settle(host, 150); }
   if (o.shot) await snap(o.shot);
   const b = host.getByRole('button', { name: /^Confirm/ }).first();
   await b.waitFor({ timeout: 4000 }).catch(() => {});
   if (!(await b.isEnabled().catch(() => false))) return 'Confirm disabled: ' + ((await host.locator('[aria-live]').allTextContents().catch(() => [])).join(' ').slice(0, 300));
-  await b.click(); await host.waitForTimeout(500);
+  await b.click(); await settle(host, 500);
   return null;
 }
 async function fxSeenSince(mark) { return host.evaluate((m) => (window.__fxSeen || []).slice(m), mark); }
@@ -115,7 +115,7 @@ await host.getByPlaceholder('Leon').fill('Leon');
 await click(host, 'With friends ›');
 await until(host, () => !!window.__phc.getState().game?.sandbox);
 const invite = host.locator('div[role="dialog"][aria-label="Invite friends"]');
-await invite.waitFor({ timeout: 6000 });
+await invite.waitFor({ timeout: 15000 });
 const code = (await G()).code;
 await invite.getByRole('button', { name: 'Gear up ›' }).click();
 await mai.goto(BASE);
@@ -151,7 +151,7 @@ n0 = await fxN();
 r = await useMove(/^Unstoppable/);
 u = await me(); fx = await fxSince(n0);
 ok('Unstoppable: +2 Momentum (' + JSON.stringify(u.res || {}) + ') and its event', !r && (u.res?.momentum || 0) >= 2 && fx.some((e) => e.k === 'unstoppable'));
-await host.waitForTimeout(200);
+await settle(host, 200);
 ok('the fx layer draws them (' + (await layerKids()) + ' nodes) and they played: ' + (await fxSeenSince(m0)).join(','), (await fxSeenSince(m0)).includes('unstoppable') && (await fxSeenSince(m0)).includes('shove'));
 await snap('02-unstoppable');
 const tabTxt = await host.locator('[role="tabpanel"]').first().textContent();
@@ -182,7 +182,7 @@ ok('next to the squadmate', await mateNear(1));
 // Field Fix: the squadmate's gun jams (set up by hand), the chip clears it.
 await host.evaluate((id) => { const cb = window.__phc.getState().game.combat; const x = cb.units.find((v) => v.charId === id); x.jammed = true; }, maiChar);
 m = await mate();
-await dismissCut(); await pickClass(/^Field Fix/); await tok(m.pos).click(); await host.waitForTimeout(200);
+await dismissCut(); await pickClass(/^Field Fix/); await tok(m.pos).click(); await settle(host, 200);
 const chips = await host.locator('.phc-cb-pick button').allTextContents();
 ok('Field Fix offers its three jobs, the ones that don\'t apply greyed with a reason: ' + chips.join(' | '), chips.length === 3 && /Restore durability · /.test(chips.join('|')) && !/Clear the jam ·/.test(chips.join('|')));
 const greyed = await host.locator('.phc-cb-pick button[disabled]').count();
@@ -198,7 +198,7 @@ u = await me(); g = await G();
 const rig = (g.combat.objects || []).find((o) => o.rig && o.pos === u.pos);
 ok('Rig: a rigged tile under the Infiltrator (' + (r || 'confirmed') + ')', !r && !!rig && rig.side === 'pc');
 fx = await fxSince(n0); ok('the rig event', fx.some((e) => e.k === 'rig'));
-await host.waitForTimeout(300);
+await settle(host, 300);
 ok('the grid marks it: ✱ RIG on ' + ref(u.pos), (await tok(u.pos).locator('span', { hasText: '✱ RIG' }).count()) > 0);
 const drone = await spawnNear('soldier', 'fists', 'Drone 1');
 ok('a drone stands next to the Infiltrator', !!drone);
@@ -206,7 +206,7 @@ n0 = await fxN();
 r = await useMove(/^Sabotage: disable a machine/, { target: drone.pos });
 g = await G(); const dr = g.combat.units.find((x) => x.id === drone.id); fx = await fxSince(n0);
 ok('Sabotage: the drone is disabled (stunned ' + (dr.conds?.stunned || 0) + '): ' + (r || 'confirmed'), !r && (dr.conds?.stunned || 0) > 0 && fx.some((e) => e.k === 'sabotage'));
-await host.waitForTimeout(250);
+await settle(host, 250);
 await snap('05-sabotage');
 
 // ---------- 4. Trickster: Read, False Image, Silver Tongue, Sleight ----------
@@ -219,8 +219,8 @@ ok('an armed enemy a few tiles off', !!far);
 ok('host turn', await newTurn());
 foe = (await G()).combat.units.find((x) => x.side === 'foe' && !x.dead);
 n0 = await fxN(); ap0 = (await me()).ap;
-await dismissCut(); await pickAction(host, /^Analyze/); await tok(foe.pos).click(); await host.waitForTimeout(150);
-await host.getByRole('button', { name: /^Confirm/ }).first().click(); await host.waitForTimeout(600);
+await dismissCut(); await pickAction(host, /^Analyze/); await tok(foe.pos).click(); await settle(host, 150);
+await host.getByRole('button', { name: /^Confirm/ }).first().click(); await settle(host, 600);
 g = await G(); foe = g.combat.units.find((x) => x.id === foe.id); u = await me();
 ok('Read: Analyze cost 1 AP (' + ap0 + ' → ' + u.ap + ') and named its next move: ' + (foe.readIntent && foe.readIntent.text), u.ap === ap0 - 1 && !!foe.readIntent);
 fx = await fxSince(n0); ok('the intent event', fx.some((e) => e.k === 'intent'));
@@ -234,7 +234,7 @@ n0 = await fxN();
 r = await useMove(/^False Image/, { target: null, tile: imgAt });
 g = await G();
 ok('False Image at ' + ref(imgAt) + ': ' + (r || 'confirmed'), !r && (g.combat.images || []).some((i) => i.pos === imgAt));
-await host.waitForTimeout(400);
+await settle(host, 400);
 const decoy = tok(imgAt).locator('span[title^="False Image of"]');
 ok('the grid draws the decoy (a translucent copy): ' + (await decoy.count()) + ' marks', (await decoy.count()) >= 1 && /opacity: 0\.55/.test((await decoy.first().getAttribute('style')) || ''));
 ok('the guest (same side) sees it too', (await mai.locator('button.phc-tok[aria-label^="' + ref(imgAt) + ' ·"] span[title^="False Image of"]').count()) >= 1);
@@ -250,7 +250,7 @@ const before = [u.pos, m.pos];
 r = await useMove(/^Sleight: swap with a squadmate/, { target: m.pos });
 m = await mate(); u = await me();
 ok('Sleight: the two swapped places (' + before.map(ref).join('↔') + '): ' + (r || 'confirmed'), !r && u.pos === before[1] && m.pos === before[0]);
-await host.waitForTimeout(300); await snap('08-sleight');
+await settle(host, 300); await snap('08-sleight');
 
 // ---------- 5. Bard: Rally ----------
 await act(host, { type: 'sandbox/clear' });
@@ -261,7 +261,7 @@ n0 = await fxN();
 r = await useMove(/^Rally/);
 fx = await fxSince(n0);
 ok('Rally: ' + (r || 'confirmed'), !r && fx.some((e) => e.k === 'rally') && /rallies the squad/.test(await log()));
-await host.waitForTimeout(250); await snap('09-rally');
+await settle(host, 250); await snap('09-rally');
 
 // ---------- 6. Marksman: Duck and Roll off and on ----------
 await setClass('marksman', 2);
@@ -270,7 +270,7 @@ await pickClass(/^Duck and Roll: on/);
 const onTitle = await host.locator('[role="tabpanel"] button', { hasText: 'Duck and Roll: on' }).first().getAttribute('title');
 ok('Duck and Roll: on is ticked as in force: ' + onTitle.slice(0, 40), /In force now/.test(onTitle) && (await host.locator('[role="tabpanel"] button', { hasText: 'Duck and Roll: on ✓' }).count()) > 0);
 r = await useMove(/^Duck and Roll: off/);
-await host.waitForTimeout(250);
+await settle(host, 250);
 ok('Duck and Roll: off now ticked (' + (r || 'confirmed') + ')', !r && (await host.locator('[role="tabpanel"] button', { hasText: 'Duck and Roll: off ✓' }).count()) > 0);
 r = await useMove(/^Duck and Roll: on/);
 ok('and on again (' + (r || 'confirmed') + ')', !r && (await host.locator('[role="tabpanel"] button', { hasText: 'Duck and Roll: on ✓' }).count()) > 0);
@@ -291,7 +291,7 @@ ok('host turn', await newTurn());
 n0 = await fxN();
 r = await useMove(/^Eye of the Storm/);
 fx = await fxSince(n0);
-await host.waitForTimeout(250);
+await settle(host, 250);
 ok('Eye of the Storm armed: ' + (r || 'confirmed'), !r && fx.some((e) => e.k === 'eye_storm'));
 ok('its button reads ARMED', (await host.locator('[role="tabpanel"] button', { hasText: 'Eye of the Storm · ARMED' }).count()) > 0);
 await snap('12-eye-of-the-storm');
@@ -303,7 +303,7 @@ await setClass('defender', 2);
 ok('host turn', await newTurn());
 ok('the Defender\'s panel reads Guard: ' + ((await bodyTxt()).match(/GUARD\s*\d+ \/ \d+/i) || [''])[0], /GUARD\s*\d+ \/ 5/i.test(await bodyTxt()));
 r = await useMove(/^Shrug It Off: off/);
-await host.waitForTimeout(250);
+await settle(host, 250);
 ok('Shrug It Off: off is in force (' + (r || 'confirmed') + ')', !r && (await host.locator('[role="tabpanel"] button', { hasText: 'Shrug It Off: off ✓' }).count()) > 0);
 await snap('13-defender');
 

@@ -138,7 +138,7 @@ const mtext = await mp.innerText().catch(() => '');
 ok('panel: age, damage and TN (' + mtext.split('\n')[0] + ')', /FRESH · WORN · TN 12/.test(mtext));
 ok('panel: the word is unread before Investigate', /An unread word/.test(mtext));
 const dlg = p.locator('div[role="dialog"][aria-label="Sigil mark"]');
-ok('panel: Investigate with Analysis or Rumination', (await dlg.getByText('Analysis or Rumination').count()) > 0);
+ok('panel: Investigate with Acuity or Rumination (the skill is Acuity since Skeleton 2.0)', (await dlg.getByText('Acuity or Rumination').count()) > 0);
 await snap('06-mark-panel');
 // Investigate it (the roll is the engine's; either outcome is fine here, the panel must say it).
 const tryBtn = dlg.getByRole('button', { name: /Try this · 2 AP|Try it · 2 AP/ }).first();

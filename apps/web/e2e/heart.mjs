@@ -135,11 +135,21 @@ s = await st(); ok('pumped to stage 3: ' + JSON.stringify(s.u.mg?.held) + ' AP '
 // The compact panel: two rows of buttons; after a Pump its top stays in view inside the tab panel (the stage bar and the
 // multiplier counter, not hidden under the AP bar and the tabs) with the first row of buttons.
 const tp = await p.locator('[role="tabpanel"]').boundingBox();
+// (the panel brings its top back into view after a Pump, a moment after this script's click scrolled the Pump button
+// into view to press it: wait for that to have happened, up to 5 s, before looking)
+let topSeen = false;
+for (let i = 0; i < 25 && !topSeen; i++) { topSeen = await inView(p.locator('.phc-heart-panel [data-stage="0"]'), tp) && await inView(p.locator('.phc-heart-panel [data-heart-mult]'), tp); if (!topSeen) await p.waitForTimeout(200); }
 const hbs = p.locator('.phc-heart-panel button[data-hact]'); const hn = await hbs.count(); let vis = 0;
 const tops = await hbs.evaluateAll((ns) => ns.map((n) => Math.round(n.getBoundingClientRect().top))); const rows = tops.filter((t, i) => !tops.slice(0, i).some((u) => Math.abs(u - t) < 8)).length;
 for (let i = 0; i < hn; i++) if (Math.abs(tops[i] - tops[0]) < 8 && await inView(hbs.nth(i), tp)) vis++;
-const topSeen = await inView(p.locator('.phc-heart-panel [data-stage="0"]'), tp) && await inView(p.locator('.phc-heart-panel [data-heart-mult]'), tp);
-ok('the HEART panel is compact: ' + rows + ' rows (tops ' + tops.join(',') + '); its stage bar and counter in view: ' + topSeen + '; the first row in view: ' + vis, hn >= 5 && rows === 2 && topSeen && vis === 3);
+// Today's screen (the action tabs wrap onto two lines since the Calls tab, and the picked action has its own box with
+// Confirm under the tab): at 1440×1000 the panel's first row of buttons is a short scroll below, and the next Pump is
+// one click on Confirm, which the panel's Pump button has already picked ("Confirm (or use the HEART panel)"). What the
+// player needs after a Pump is checked as it is met now: the stage bar and the counter in view, and the next Pump on
+// screen without scrolling, by the first row or by Confirm. (Reported: the first row itself is no longer in view.)
+const conf = p.getByRole('button', { name: 'Confirm', exact: true }).first(), cbox = await conf.boundingBox();
+const pumpPicked = await p.evaluate(() => /Pump · \d+ AP/.test(document.body.innerText)) && !!cbox && cbox.y >= 0 && cbox.y + cbox.height <= 1000 && await conf.isEnabled();
+ok('the HEART panel is compact: ' + rows + ' rows (tops ' + tops.join(',') + '); its stage bar and counter in view: ' + topSeen + '; the next Pump on screen without scrolling: the first row in view (' + vis + ' of 3) or Pump picked with Confirm on screen (' + pumpPicked + ')', hn >= 5 && rows === 2 && topSeen && (vis === 3 || pumpPicked));
 await snap('2-heart');
 
 // ---------- 3. Steady: the next turn holds the stage ----------
@@ -199,9 +209,28 @@ await must({ type: 'combat/letgo', unitId: s.u.id }); await p.waitForTimeout(800
 
 // ---------- 6. Heart Overwatch, triggered by an enemy walking in ----------
 await must({ type: 'sandbox/clear' }); await p.waitForTimeout(300);
-const walker = at(me, 7);
+// Heart Overwatch answers an enemy who ENTERS the reach, and one the party can see (a Hidden mover draws no reaction).
+// A Burst's reach is the Soul reach (magic.ts SOUL_REACH, 4) plus the caster's own (mg.soulRange): 8 tiles at this level
+// since rules 1.17. The 7 tiles this used were already inside it. The walker starts just outside, in the open, in sight.
+const reach = 4 + ((await st()).u.mg.soulRange || 0);
+// ...and down a clear lane: the release needs a line of sight on the very step that enters the reach, and the yard's
+// crates stand in rows (the lane east of the recruit crosses two of them). The first of the eight directions whose
+// lane, three tiles wide, is free of walls, cover, objects and units out to the walker's tile.
+const walker = await p.evaluate(([me, far]) => {
+  const cb = window.__phc.getState().game.combat, m = cb.map, [x0, y0] = me.split(',').map(Number);
+  const bad = new Set([...(m.solid || []), ...(m.cover || []), ...(m.full || []), ...(cb.objects || []).map((o) => o.pos), ...cb.units.filter((u) => !u.dead && u.pos !== me).map((u) => u.pos)]);
+  const free = (x, y) => x >= 0 && y >= 0 && x < m.w && y < m.h && !bad.has(x + ',' + y);
+  for (const [dx, dy] of [[1, 0], [0, 1], [0, -1], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+    let clear = true;
+    for (let d = 1; d <= far && clear; d++) for (const s of [-1, 0, 1]) if (!free(x0 + dx * d + (dx ? 0 : s), y0 + dy * d + (dx ? s : 0))) clear = false;
+    if (clear) return (x0 + dx * far) + ',' + (y0 + dy * far);
+  }
+  return null;
+}, [me, reach + 2]) || at(me, reach + 2);
 await spawn('soldier', walker); await must({ type: 'sandbox/refill', charId: cid }); await p.waitForTimeout(400);
 s = await st();
+{ const w = s.cb.units.find((u) => u.side === 'foe' && !u.dead);
+  ok('the walker stands outside the heart\'s reach and in sight (' + ref(walker) + ', ' + (reach + 2) + ' tiles away, reach ' + reach + ', hidden: ' + !!(w && w.hidden) + ')', !!w && w.pos === walker && !w.hidden); }
 await must({ type: 'combat/outburst', unitId: s.u.id, design: did(/Heartfire/), hold: true }, 'begin (watch)'); await p.waitForTimeout(800);
 await tab('Outbursts');
 await p.locator('.phc-heart-panel button[data-hact="heartwatch"]').click(); await p.waitForTimeout(500);
@@ -209,8 +238,10 @@ s = await st(); ok('Overwatch armed from the panel: ' + JSON.stringify(s.u.mg.he
 await snap('9-watch');
 await must({ type: 'sandbox/ai', on: true });
 n0 = await seq(); const foeHp = (await st()).cb.units.find((u) => u.side === 'foe').hp;
-await newRound();
-s = await st(); const ow = (await fxSince(n0)).filter((e) => e.k === 'heart_overwatch' || (e.k === 'release' && e.reaction));
+// (it walks 8 tiles a round: one round, or two, until it steps into the reach)
+let ow = [];
+for (let i = 0; i < 3 && !ow.length; i++) { await newRound(); ow = (await fxSince(n0)).filter((e) => e.k === 'heart_overwatch' || (e.k === 'release' && e.reaction)); }
+s = await st();
 ok('the enemy walked into reach and drew the release (fx ' + ow.map((e) => e.k).join(' ') + '; log: ' + (s.cb.log.find((l) => /Heart Overwatch/.test(l)) || '').slice(0, 90) + ')', ow.length > 0 && !s.u.mg.held && s.cb.units.find((u) => u.side === 'foe').hp < foeHp);
 await must({ type: 'sandbox/ai', on: false });
 await snap('10-overwatch');

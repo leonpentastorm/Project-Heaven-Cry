@@ -7,7 +7,7 @@
 //  · the Proving Ground's class menu lists only the nine base classes.
 // Screenshots: e2e/shots/classes-*.png (deviceScaleFactor 1).
 import { readFileSync } from 'fs';
-import { chromium, player, click, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, settle } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -16,7 +16,7 @@ const G = () => p.evaluate(() => window.__phc.getState().game);
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const SKILLS = JSON.parse(readFileSync(new URL('../../../data/skills.json', import.meta.url), 'utf8')).items;
 const CLASSES = JSON.parse(readFileSync(new URL('../../../data/classes.json', import.meta.url), 'utf8')).base;
-const dismissCut = async () => { for (let i = 0; i < 3; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.mouse.click(1430, 990); await p.waitForTimeout(380); } };
+const dismissCut = async () => { for (let i = 0; i < 3; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.mouse.click(1430, 990); await settle(p, 380); } };
 
 // ---------- 1. The Proving Ground, then every attribute tied at level 3 ----------
 await p.goto(BASE);
@@ -43,10 +43,10 @@ ok('level 3, no class yet: level ' + g.characters[cid].level + ', class ' + g.ch
 
 // ---------- 2. The picker: nine cards ----------
 const lvl = p.locator('button', { hasText: /Earn your class|Level up/ }).first();
-await lvl.waitFor({ timeout: 8000 });
+await lvl.waitFor({ timeout: 15000 });
 await lvl.click();
-await p.waitForSelector('.phc-lu-pick', { timeout: 6000 });
-await p.waitForTimeout(700); // the pop-in animations
+await p.waitForSelector('.phc-lu-pick', { timeout: 15000 });
+await settle(p, 700); // the pop-in animations
 const cards = p.locator('button.phc-lu-class-card');
 ok('the picker offers all nine classes: ' + (await cards.count()), (await cards.count()) === 9);
 const ids = (await cards.evaluateAll((bs) => bs.map((b) => b.getAttribute('data-class')))).sort();
@@ -68,22 +68,22 @@ await snap('01-picker-1440');
 await snap('01-picker-1440-full', true);
 // A narrow screen: one column, no overflow, the confirm bar at the bottom.
 await p.setViewportSize({ width: 420, height: 900 });
-await p.waitForTimeout(400);
+await settle(p, 400);
 const nrects = await cards.evaluateAll((bs) => bs.map((b) => Math.round(b.getBoundingClientRect().left)));
 ok('420 wide: one column (' + new Set(nrects).size + '), no overflow (' + (await over()) + ')', new Set(nrects).size === 1 && (await over()) <= 0);
 await snap('02-picker-narrow');
 await p.setViewportSize({ width: 1440, height: 1000 });
-await p.waitForTimeout(300);
+await settle(p, 300);
 
 // ---------- 3. Select, preview, confirm; a second pick is refused ----------
 ok('nothing selected yet: no confirm button', (await p.locator('button.phc-lu-confirm-btn').count()) === 0);
 await card.click();
-await p.waitForTimeout(250);
+await settle(p, 250);
 ok('the selected card previews the class: ' + (await p.locator('.phc-lu-class-kicker').textContent()), /PREVIEW/.test(await p.locator('.phc-lu-class-kicker').textContent()) && /Infiltrator/.test(await p.locator('.phc-lu-class-name').textContent()));
 ok('a card only selects (no class yet)', !(await G()).characters[cid].classId);
 await snap('03-picker-selected');
 await p.locator('button.phc-lu-confirm-btn').click();
-await p.waitForTimeout(300);
+await settle(p, 300);
 g = await G();
 ok('confirmed: the Infiltrator', g.characters[cid].classId === 'infiltrator');
 ok('the picker is gone', (await cards.count()) === 0);
@@ -99,7 +99,7 @@ ok('the quiet advanced line', (await p.locator('.phc-lu-adv-note').textContent()
 const per = SKILLS.find((k) => (k.attribute || k.attr) === 'perception');
 await act({ type: 'sandbox/level', charId: cid, level: 6 });
 await act({ type: 'sandbox/skill', charId: cid, skill: per.id, points: 5 });
-await p.waitForTimeout(400);
+await settle(p, 400);
 g = await G();
 ok('Perception 5: ' + g.characters[cid].attrs.perception, g.characters[cid].attrs.perception >= 5);
 ok('rank II: ' + (await p.locator('.phc-lu-rank').textContent()), (await p.locator('.phc-lu-rank').textContent()).trim() === 'RANK II');
@@ -113,19 +113,19 @@ await snap('04-rank-two-full', true);
 
 // ---------- 5. The fight: the CLASS tab's emblem and moves ----------
 await p.locator('button.phc-lu-done').click();
-await p.waitForTimeout(400);
+await settle(p, 400);
 await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/auto', on: false });
 await p.getByRole('button', { name: /^⚔ Start the fight/ }).first().click().catch(async () => { await act({ type: 'sandbox/fight' }); });
 await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-await p.waitForSelector('text=YOUR TURN', { timeout: 10000 });
+await p.waitForSelector('text=YOUR TURN', { timeout: 15000 });
 await p.waitForSelector('[data-phc-cutin]', { timeout: 3000 }).catch(() => {}); await dismissCut();
 const tab = p.locator('#phc-tab-class');
 ok('a CLASS tab', (await tab.count()) === 1);
 const src = decodeURIComponent((await tab.locator('img').first().getAttribute('src').catch(() => '')) || '');
 ok('the CLASS tab wears the Infiltrator emblem (Mind cyan, the eye)', src.includes('#4FC8DF') && src.includes('M6.4 10.2 Q12 4.6'));
 await tab.click();
-await p.waitForTimeout(200);
+await settle(p, 200);
 const panel = await p.locator('[role="tabpanel"]').first().textContent();
 ok('the Class tab names the Infiltrator: ' + panel.slice(0, 40), /INFILTRATOR/i.test(panel));
 ok('the Class tab lists Mark (rank I) and Toxin (rank II)', /Mark/.test(panel) && /Toxin/.test(panel));

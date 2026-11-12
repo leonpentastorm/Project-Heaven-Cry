@@ -3,7 +3,7 @@
 // gentle "!", a Hidden hostile is revealed with its shimmer, and an Overwatch shot is its own beat: the mover stops on
 // the tile it is shot on, OVERWATCH shows over the watcher, the shot plays, and the turn hold (window.__phcHold) lets go.
 // Runs at Normal and at Fast combat speed. SHOTS=<dir>: frame sequences of each moment (deviceScaleFactor 1).
-import { chromium, player, click, BASE, autoConfirm } from './lib.mjs';
+import { chromium, player, click, BASE, autoConfirm, pause } from './lib.mjs';
 import fs from 'fs';
 const SHOTS = process.env.SHOTS || '';
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
@@ -13,7 +13,7 @@ const browser = await chromium.launch();
 /** Frames: n screenshots, gap ms apart (a screenshot itself takes a while: the gaps are rough). */
 async function frames(p, name, n, gap, clip) {
   if (!SHOTS) return;
-  for (let i = 0; i < n; i++) { await p.screenshot({ path: SHOTS + '/' + name + '-' + String(i).padStart(2, '0') + '.png', ...(clip ? { clip } : {}) }); if (gap) await p.waitForTimeout(gap); }
+  for (let i = 0; i < n; i++) { await p.screenshot({ path: SHOTS + '/' + name + '-' + String(i).padStart(2, '0') + '.png', ...(clip ? { clip } : {}) }); if (gap) await pause(p, gap); }
 }
 /** Frames while the other turns play (until the turn hold lets go): a burst of frames from each moment worth seeing
  *  (a walk out of the fog, a reveal, a sprung Overwatch), of the grid only. */
@@ -29,7 +29,7 @@ async function framesWhile(p, name, max = 400) {
       continue;
     }
     if (i > 4 && await p.evaluate(() => (window.__phcHold ? window.__phcHold() <= performance.now() : true))) break;
-    await p.waitForTimeout(25);
+    await pause(p, 25);
   }
 }
 /** Watch the effects layer: every walker, "!", tag and floating word added, with when (performance.now()). */
@@ -73,29 +73,29 @@ async function run(speed) {
   const place = (k) => p.locator('[data-phc-float="' + k + '"]').getAttribute('data-phc-float-place');
   const ty = (k) => p.locator('[data-phc-float="' + k + '"]').evaluate((b) => new DOMMatrix(getComputedStyle(b).transform).m42);
   if (speed === 'normal') {
-    await p.mouse.move(900, 300); await p.waitForTimeout(500);
+    await p.mouse.move(900, 300); await pause(p, 500);
     ok('at rest both are tucked to a tab (' + await place('music') + ' ' + Math.round(await ty('music')) + ' px, ' + await place('memory') + ')', (await place('music')) === 'tucked' && (await place('memory')) === 'tucked' && (await ty('music')) > 20);
     const vis = await p.locator('[data-phc-float="music"]').evaluate((b) => { const r = b.getBoundingClientRect(); return Math.round(innerHeight - r.top); });
     ok('…a tab still shows at the edge (' + vis + ' px)', vis >= 12 && vis <= 30);
     await frames(p, 'buttons-rest', 1, 0, { x: 0, y: 860, width: 420, height: 140 });
     await p.mouse.move(60, 900);
     const fr = frames(p, 'buttons-slide', 5, 30, { x: 0, y: 860, width: 420, height: 140 });
-    await p.waitForTimeout(400); await fr;
+    await pause(p, 400); await fr;
     ok('the pointer near: they slide out (' + await place('music') + ', ' + Math.round(await ty('music')) + ' px)', (await place('music')) === 'out' && Math.abs(await ty('music')) < 1);
     const mb = await p.locator('[data-phc-float="music"]').boundingBox();
-    await p.mouse.move(mb.x + mb.width / 2, mb.y + mb.height / 2); await p.waitForTimeout(450);
+    await p.mouse.move(mb.x + mb.width / 2, mb.y + mb.height / 2); await pause(p, 450);
     ok('hovering ♪ shows the song and the ◈ slides away (' + await place('memory') + ')', (await place('memory')) === 'away' && Number(await p.locator('[data-phc-float="memory"]').evaluate((b) => getComputedStyle(b).opacity)) < 0.05);
     await frames(p, 'buttons-music-out', 1, 0, { x: 0, y: 860, width: 420, height: 140 });
-    await p.locator('[data-phc-float="music"]').click(); await p.waitForTimeout(400);
+    await p.locator('[data-phc-float="music"]').click(); await pause(p, 400);
     ok('the music panel open: the ◈ stays away', (await p.locator('div[role="dialog"][aria-label="Music"][aria-hidden="false"]').count()) === 1 && (await place('memory')) === 'away');
     await frames(p, 'buttons-music-panel', 1, 0);
-    await p.locator('[data-phc-float="music"]').click(); await p.mouse.move(300, 700); await p.mouse.move(60, 900); await p.waitForTimeout(450);
+    await p.locator('[data-phc-float="music"]').click(); await p.mouse.move(300, 700); await p.mouse.move(60, 900); await pause(p, 450);
     ok('closed: the ◈ is back', (await place('memory')) === 'out');
-    await p.locator('[data-phc-float="memory"]').click(); await p.waitForTimeout(450);
+    await p.locator('[data-phc-float="memory"]').click(); await pause(p, 450);
     ok('the memory open: its dialog shows and the ♪ is away, its panel shut', (await p.locator('div[role="dialog"][aria-label="The Narrator\'s memory"]').count()) === 1 && (await place('music')) === 'away' && (await p.locator('div[role="dialog"][aria-label="Music"][aria-hidden="false"]').count()) === 0);
     await frames(p, 'buttons-memory-open', 1, 0);
-    await p.getByRole('button', { name: 'Close', exact: true }).first().click(); await p.waitForTimeout(400);
-    await p.mouse.move(900, 300); await p.waitForTimeout(500);
+    await p.getByRole('button', { name: 'Close', exact: true }).first().click(); await pause(p, 400);
+    await p.mouse.move(900, 300); await pause(p, 500);
     ok('closed again, both tuck away at rest', (await place('music')) === 'tucked' && (await place('memory')) === 'tucked');
   }
 
@@ -109,14 +109,14 @@ async function run(speed) {
   await p.evaluate(WATCH);
   const t0 = await p.evaluate(() => performance.now());
   ok('the fight starts', (await act({ type: 'sandbox/fight' })) === null);
-  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 10000 });
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
   // The opening: the drill units walk in from the far side, some of it in the blockhouse's shadow.
   // The opening waits for the combat-in transition, then plays (the turn hold counts from then).
   await p.waitForFunction(() => !document.querySelector('.phc-combat-in') && (window.__phcCombatTempo().fx || []).length > 0, null, { timeout: 8000 }).catch(() => {});
   const fr1 = framesWhile(p, 'fog-' + speed);
   ok('the opening plays out (hold lets go)', await holdFree(p));
   await fr1;
-  await p.waitForTimeout(600);
+  await pause(p, 600);
   if (process.env.DEBUG) console.log('played:', JSON.stringify((await p.evaluate(() => window.__phcCombatTempo().fx)).map((x) => x.n + x.k)), 'fx:', JSON.stringify((await G()).combat.fx.map((e) => e.n + e.k + (e.sight ? e.sight.pc : ''))));
   let c = await p.evaluate(() => ({ clar: window.__clar, sight: window.__phcSight }));
   g = await G();
@@ -133,7 +133,7 @@ async function run(speed) {
   const lurker = g.combat.units.find((u) => u.name === 'Lurker');
   let me2 = g.combat.units.find((u) => u.side === 'pc');
   // (d) Overwatch: the recruit holds a shot, then ends the turn; a drill unit walking in its sight draws it.
-  for (let i = 0; i < 30 && g.combat.order[g.combat.turn] !== me2.id; i++) { await p.waitForTimeout(250); g = await G(); }
+  for (let i = 0; i < 30 && g.combat.order[g.combat.turn] !== me2.id; i++) { await pause(p, 250); g = await G(); }
   await holdFree(p);
   ok('the recruit\'s turn', g.combat.order[g.combat.turn] === me2.id);
   // (b) again, made sure of: a knife drone dropped into the nearest shadow the recruit can't see (it has to walk out).
@@ -141,16 +141,16 @@ async function run(speed) {
   const toKey = (r) => ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(r[0])) + ',' + (Number(r.slice(1)) - 1), d = (k) => Math.max(Math.abs(+k.split(',')[0] - +me2.pos.split(',')[0]), Math.abs(+k.split(',')[1] - +me2.pos.split(',')[1]));
   const spot = shade.map(toKey).filter((k) => d(k) >= 3).sort((a, b) => d(a) - d(b))[0];
   if (spot) ok('a knife drone waits in the shadow at ' + ref(spot), (await act({ type: 'sandbox/spawn', tier: 'minion', weapon: 'combat_knife', at: ref(spot), name: 'Shade' })) === null);
-  await p.waitForTimeout(300);
+  await pause(p, 300);
   const owErr = await act({ type: 'combat/overwatch', unitId: me2.id, mode: 'shot' });
   ok('the recruit holds a shot on overwatch' + (owErr ? ' (' + owErr + ')' : ''), owErr === null);
-  await holdFree(p); await p.waitForTimeout(400);
+  await holdFree(p); await pause(p, 400);
   const t1 = await p.evaluate(() => performance.now());
   const fr2 = framesWhile(p, 'turn2-' + speed);
   ok('end turn', (await act({ type: 'combat/end-turn', unitId: me2.id })) === null);
   ok('the enemies\' turns play out and the hold lets go', await holdFree(p, 30000));
   await fr2;
-  await p.waitForTimeout(600);
+  await pause(p, 600);
   c = await p.evaluate(() => ({ clar: window.__clar, sight: window.__phcSight, ow: window.__phcOverwatch }));
   g = await G();
   if (process.env.DEBUG) console.log((g.combat.fx || []).filter((e) => ['move', 'overwatch', 'shot', 'sight', 'turn', 'down'].includes(e.k)).map((e) => e.n + ' ' + e.k + ' ' + (e.unit || '') + ' ' + (e.path ? e.path.map(ref).join('>') : e.at ? ref(e.at) : '') + (e.sight ? ' ' + e.sight.pc : '') + (e.how ? ' ' + e.how : '')).join('\n'));

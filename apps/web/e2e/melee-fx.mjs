@@ -5,7 +5,7 @@
 // tried again on a fresh turn. The lasting states (a Bind's link, a weapon left in a nailed unit, a raised Guard) must
 // stand on the layer (data-melee-mark). Frames for every technique go to SHOTS (deviceScaleFactor 1).
 //   node apps/web/e2e/melee-fx.mjs            SHOTS=/some/dir to put the frames elsewhere
-import { chromium, player, BASE, OUT } from './lib.mjs';
+import { chromium, player, BASE, OUT, pause } from './lib.mjs';
 import { mkdirSync } from 'node:fs';
 const SHOTS = (process.env.SHOTS || OUT + 'melee-fx/').replace(/\/?$/, '/');
 mkdirSync(SHOTS, { recursive: true });
@@ -41,19 +41,19 @@ await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null,
 const me = async () => (await G()).combat.units.find((u) => u.charId === cid);
 const idle = () => p.waitForFunction(() => (window.__phcHold ? window.__phcHold() : 0) <= performance.now() + 30, null, { timeout: 15000 }).catch(() => {});
 const myTurn = () => p.waitForFunction((id) => { const cb = window.__phc.getState().game?.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!u && u.charId === id && u.ap >= 6; }, cid, { timeout: 45000 }).catch(() => {});
-const dismissCut = async () => { for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 890); await p.waitForTimeout(350); } };
+const dismissCut = async () => { for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 890); await pause(p, 350); } };
 const closeTools = async () => { const tools = p.locator('aside[aria-label="Proving Ground tools"]').first(); if (await tools.count()) await tools.getByRole('button', { name: /^Close the tools/ }).first().click().catch(() => {}); };
 /** A fresh turn with a full 6 AP on a clear field (a fight cleared ends: another starts). */
 async function freshTurn() {
-  await act({ type: 'sandbox/refill', charId: cid }); await act({ type: 'sandbox/clear' }); await p.waitForTimeout(250);
+  await act({ type: 'sandbox/refill', charId: cid }); await act({ type: 'sandbox/clear' }); await pause(p, 250);
   let gg = await G();
   if (gg.phase !== 'combat' || gg.combat?.over) {
-    await p.waitForTimeout(1200); await act({ type: 'sandbox/fight' });
+    await pause(p, 1200); await act({ type: 'sandbox/fight' });
     await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat' && !window.__phc.getState().game.combat.over, null, { timeout: 15000 });
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 8000 }).catch(() => {});
     await act({ type: 'sandbox/clear' });
   } else { const u = await me(); if (u && (u.ap < 6 || gg.combat.order[gg.combat.turn] !== u.id || u.tech?.guard?.on)) { await act({ type: 'combat/end-turn', unitId: u.id }); } }
-  await myTurn(); await idle(); await p.waitForTimeout(300); await dismissCut(); await closeTools();
+  await myTurn(); await idle(); await pause(p, 300); await dismissCut(); await closeTools();
   gg = await G();
   // a Bind or a Guard left from the last case is gone at the turn's start; a nail goes with the cleared units
   return gg;
@@ -62,7 +62,7 @@ const free = (gg, k) => { const [x, y] = XY(k); return x >= 0 && y >= 0 && x < g
 /** Spawn a drill unit exactly on a tile (null when the engine put it elsewhere or refused). */
 async function spawnAt(k, tier = 'minion', weapon = 'fists') {
   const before = new Set((await G()).combat.units.map((u) => u.id));
-  await act({ type: 'sandbox/spawn', tier, weapon, at: ref(k) }); await p.waitForTimeout(250);
+  await act({ type: 'sandbox/spawn', tier, weapon, at: ref(k) }); await pause(p, 250);
   const nu = (await G()).combat.units.find((u) => !before.has(u.id)); return nu && nu.pos === k ? nu : nu || null;
 }
 const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]];
@@ -84,11 +84,11 @@ async function catchBeat(id, kind, tag, since, shotName, delays = [60, 200]) {
   while (Date.now() - t0 < 6000) {
     if (!el && (await p.locator('[data-melee-fx^="' + tag + '"]').count())) {
       el = true;
-      for (let i = 0; i < delays.length; i++) { await p.waitForTimeout(i ? delays[i] - delays[i - 1] : delays[0]); await p.screenshot({ path: SHOTS + shotName + '-' + (i + 1) + '.png' }); }
+      for (let i = 0; i < delays.length; i++) { await pause(p, i ? delays[i] - delays[i - 1] : delays[0]); await p.screenshot({ path: SHOTS + shotName + '-' + (i + 1) + '.png' }); }
     }
     const r = (await records()).filter((x) => x.at >= since && x.id === id && x.kind === kind);
     if (r.length) { drawn = r.some((x) => x.drawn); if (el || !drawn) break; }
-    await p.waitForTimeout(25);
+    await pause(p, 25);
   }
   return { el, drawn };
 }
@@ -97,7 +97,7 @@ const mfxSince = async (n0) => ((await G()).combat.fx || []).filter((e) => e.n >
 /** A standing mark comes only once the queue has played its beat (review fix): wait for it, then check it rose after
  *  the beat (the hook records 'mark:<kind>' when the layer adds it). */
 async function markAfter(kind, beat, t0, label) {
-  const has = await p.locator('[data-melee-mark="' + kind + '"]').first().waitFor({ timeout: 6000 }).then(() => true).catch(() => false);
+  const has = await p.locator('[data-melee-mark="' + kind + '"]').first().waitFor({ timeout: 15000 }).then(() => true).catch(() => false);
   const r = (await records()).filter((x) => x.at >= t0), b = r.find((x) => x.kind === beat && x.drawn), m = r.find((x) => x.kind === 'mark:' + kind);
   ok(label + ' (the mark rose after its beat: beat ' + (b ? b.at - t0 : '?') + ' ms, mark ' + (m ? m.at - t0 : '?') + ' ms)', has && !!b && !!m && m.at >= b.at);
   return has;
@@ -118,9 +118,9 @@ const lastN = async () => { const f = (await G()).combat.fx || []; return f.leng
 async function tryTech(c) {
   for (let i = 0; i < (c.tries || 8); i++) {
     const gg = await freshTurn(); const u = await me();
-    await act({ type: 'sandbox/give', charId: cid, item: c.weapon, equip: c.equip !== false }); await p.waitForTimeout(200);
+    await act({ type: 'sandbox/give', charId: cid, item: c.weapon, equip: c.equip !== false }); await pause(p, 200);
     const args = await c.setup(gg, u); if (!args) { note(c.id + ': no room for the set-up here (at ' + ref(u.pos) + '; blocked: ' + JSON.stringify(pickDirWhy(await G(), u.pos, [[1, 0], [2, 0], [3, 0], [4, 0]])) + ')'); continue; }
-    { await act({ type: 'sandbox/meter', unitId: u.id, momentum: c.momentum || 2 }); await p.waitForTimeout(150); } // Strikes and Openers spend Momentum (rules 1.13)
+    { await act({ type: 'sandbox/meter', unitId: u.id, momentum: c.momentum || 2 }); await pause(p, 150); } // Strikes and Openers spend Momentum (rules 1.13)
     await idle();
     const n0 = await lastN(), t0 = await now();
     const err = await act({ type: 'combat/technique', unitId: u.id, id: c.id, ...args });
@@ -149,7 +149,7 @@ const CASES = [
   { id: 'throw_down', kind: 'slam', tag: 'slam', weapon: 'sabre', label: 'Throw Down (slam on the landing tile)', delays: [40, 160, 320], momentum: 2,
     async setup(gg, u) { const d = adj(gg, u, [[1, 0], [0, 1], [1, 1]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); if (!a) return null;
       await act({ type: 'sandbox/meter', unitId: u.id, momentum: 2 }); // Bind is an Opener: it spends Momentum too
-      const e = await act({ type: 'combat/technique', unitId: u.id, id: 'bind', targetId: a.id }); if (e) return null; await idle(); await p.waitForTimeout(200);
+      const e = await act({ type: 'combat/technique', unitId: u.id, id: 'bind', targetId: a.id }); if (e) return null; await idle(); await pause(p, 200);
       await act({ type: 'sandbox/meter', unitId: u.id, momentum: 2 }); return { targetId: a.id, tile: ref(d.tiles[1]) }; } },
   { id: 'shove', kind: 'force', lead: ['shove'], weapon: 'sabre', label: 'Shove (the skid along its path)', async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0]); return a ? { targetId: a.id } : null; } },
   { id: 'drag', kind: 'force', weapon: 'sabre', shot: 'drag', label: 'Drag (a swap: two crossing arrows)', async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0]); return a ? { targetId: a.id, opt: 'swap' } : null; } },
@@ -171,7 +171,7 @@ const CASES = [
     async setup(gg, u) { const d = adj(gg, u, [[1, 0], [2, 0], [3, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[2], 'boss'); return a ? { targetId: a.id, line: 'thrown' } : null; },
     async check(u, args, t0) { const r = (await records()).filter((x) => x.at >= t0); ok('…the thrown shots flew the weapon (' + r.filter((x) => x.kind === 'flurry-throw').length + ')', r.some((x) => x.kind === 'flurry-throw' && x.drawn)); ok('…no sword cuts drawn on the target at range', !r.some((x) => x.kind === 'flurry' && x.drawn)); } },
   { id: 'draw_cut', kind: 'draw', weapon: 'sabre', equip: false, label: 'Draw Cut (the draw flash)', async setup(gg, u) {
-    await act({ type: 'sandbox/give', charId: cid, item: 'combat_knife', equip: true }); await p.waitForTimeout(150);
+    await act({ type: 'sandbox/give', charId: cid, item: 'combat_knife', equip: true }); await pause(p, 150);
     const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'boss'); const pack = (await G()).characters[cid].pack || [];
     const item = pack.findIndex((x) => x.weapon === 'sabre'); return a && item >= 0 ? { targetId: a.id, item } : null; } },
   { id: 'ambush', kind: 'ambush', weapon: 'sabre', label: 'Ambush (from hiding)', tries: 3, async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null;
@@ -180,7 +180,7 @@ const CASES = [
   { id: 'break', kind: 'break', weapon: 'maul', momentum: 2, label: 'Break (the shattering beat)', tries: 6, async setup(gg, u) { const d = adj(gg, u, [[1, 0]]); if (!d) return null; const a = await spawnAt(d.tiles[0], 'elite'); return a ? { targetId: a.id, line: 'blunt' } : null; } },
 ];
 // warm up: the fight's opening (the wave banner, the first turns) plays out before the first case
-await freshTurn(); await p.waitForTimeout(2500); await idle();
+await freshTurn(); await pause(p, 2500); await idle();
 const ONLY = process.env.ONLY ? process.env.ONLY.split(',') : null; // ONLY=sweep,charge,parry: a few cases
 for (const c of CASES) if (!ONLY || ONLY.includes(c.id)) await tryTech(c);
 
@@ -197,10 +197,10 @@ async function answerCase(label, kind, dist, tries = 5) {
     await act({ type: 'combat/end-turn', unitId: u.id });
     let el = false; const t1 = Date.now();
     while (Date.now() - t1 < 9000) {
-      if (!el && (await p.locator('[data-melee-fx^="' + kind + '"]').count())) { el = true; await p.waitForTimeout(70); await p.screenshot({ path: SHOTS + label.toLowerCase().replace(/ /g, '_') + '-1.png' }); await p.waitForTimeout(150); await p.screenshot({ path: SHOTS + label.toLowerCase().replace(/ /g, '_') + '-2.png' }); }
+      if (!el && (await p.locator('[data-melee-fx^="' + kind + '"]').count())) { el = true; await pause(p, 70); await p.screenshot({ path: SHOTS + label.toLowerCase().replace(/ /g, '_') + '-1.png' }); await pause(p, 150); await p.screenshot({ path: SHOTS + label.toLowerCase().replace(/ /g, '_') + '-2.png' }); }
       const r = (await records()).filter((x) => x.at >= t0 && x.kind === kind);
       if (el && r.some((x) => x.drawn)) break;
-      await p.waitForTimeout(25);
+      await pause(p, 25);
     }
     await act({ type: 'sandbox/ai', on: false });
     await myTurn(); await idle();

@@ -26,7 +26,7 @@ export async function hostAs(page, name) {
   await page.getByPlaceholder('Leon').fill(name);
   await click(page, 'Open a room ›');
 }
-export const click = async (page, text, opts = {}) => { const b = page.getByRole('button', { name: text, exact: !!opts.exact }).first(); await b.waitFor({ timeout: opts.timeout || 8000 }); await b.click(); };
+export const click = async (page, text, opts = {}) => { const b = page.getByRole('button', { name: text, exact: !!opts.exact }).first(); await b.waitFor({ timeout: opts.timeout || 30000 }); await b.click(); }; // (30 s: a wait only costs time when the button never comes; the title can take 10 s to load beside two other suites)
 /** Click a combat action by its button name (string or RegExp). The actions live in tabs (Move · Attack · Utility ·
  *  Sigils · Outbursts) and only the open tab's buttons are on the page, so this flips to the tab that holds it first. */
 export async function pickAction(page, name, opts = {}) {
@@ -88,4 +88,84 @@ export async function answerAsk(page, text) {
   await d.waitFor({ timeout: 5000 });
   if (text != null) await d.locator('textarea, input').first().fill(text);
   await d.locator('button').last().click();
+}
+
+// ---------- waiting without a stopwatch (apps/web/e2e/README.md, "A suite that does not flake") ----------
+/** Wait until `fn` (run in the page, with `arg`) returns something truthy, and return it. THE way to wait: name the
+ *  state you are waiting for. It throws after `timeout` ms (default 15 s; generous on purpose: it only costs time when
+ *  the thing never comes, and then the suite is red for a reason). */
+export async function until(page, fn, arg, timeout = 15000) { return (await page.waitForFunction(fn, arg, { timeout })).jsonValue(); }
+/** Has the fight on this page played everything the engine sent it (every effect taken up and played, no timer
+ *  waiting, no cut-in up, the other turns shown)? Run inside the page. */
+const FX_IDLE = () => {
+  const g = window.__phc?.getState?.().game, cb = g && g.phase === 'combat' ? g.combat : null, d = window.__phcFxDebug?.();
+  if (!d) return true;
+  if (document.querySelector('[data-phc-cutin], [data-phc-cut]')) return false;
+  if (d.timers > 0 || d.queueEndIn > 0 || d.heldBehindGate || d.gateShowing) return false;
+  if (!cb) return true;
+  return (window.__phcHold?.() || 0) <= performance.now() + 5;
+};
+/** Wait until the fight's effects have all played and the input hold is over (the screen has caught up with the
+ *  state). Use it after an action in a fight in place of a sleep. False when it didn't happen in `timeout` ms. */
+export async function fxIdle(page, timeout = 30000) { return page.waitForFunction(FX_IDLE, null, { timeout, polling: 30 }).then(() => true, () => false); }
+/** Wait for the page to go QUIET after a click, a key or an action, in place of `waitForTimeout(ms)`.
+ *  It waits `ms` on the PAGE's own clock (a timer in the page: the page's own shorter timers always run before it, so
+ *  a busy machine stretches both alike, which a sleep in this script does not), then until the effects queue has
+ *  nothing left to play and two frames have passed with nothing added to or taken from the page. It never throws: after `ms` + `cap`
+ *  it returns anyway, and the check that follows says what is wrong.
+ *  Prefer `until(page, () => <the state you wait for>)` whenever you can name the state. */
+export async function settle(page, ms = 0, cap = 3000) {
+  await page.evaluate(async ({ ms, cap }) => {
+    // (the effects queue only: a cut-in on screen or the turn hold is not waited out here; fxIdle() does that)
+    const fxIdle = () => { const d = window.__phcFxDebug?.(); return !d || !(d.timers > 0 || d.queueEndIn > 0 || d.heldBehindGate); };
+    const sleep = (t) => new Promise((r) => setTimeout(r, t));
+    // (a frame, or 50 ms where the page gets no frames)
+    const frame = () => new Promise((r) => { let done = false; const go = () => { if (!done) { done = true; r(); } }; requestAnimationFrame(go); setTimeout(go, 50); });
+    if (ms > 0) await sleep(ms);
+    let dirty = false; const mo = new MutationObserver(() => { dirty = true; }); mo.observe(document.body, { childList: true, subtree: true });
+    const t0 = performance.now(); let quiet = 0;
+    while (quiet < 2 && performance.now() - t0 < cap) { dirty = false; await frame(); quiet = !dirty && fxIdle() ? quiet + 1 : 0; }
+    mo.disconnect();
+  }, { ms, cap }).catch(() => {}); // (the page navigated or closed under us: nothing to wait for)
+}
+/** Wait `ms` on the PAGE's own clock and nothing more (no waiting for quiet): for a suite that looks at an animation
+ *  part-way through. A timer in the page runs after every shorter timer the page set before it, so "600 ms after the
+ *  click" still means "after everything the game planned for the first 600 ms" on a busy machine; a sleep in this script
+ *  (page.waitForTimeout) promises nothing of the kind, and is not to be used. */
+export async function pause(page, ms) {
+  const t0 = Date.now();
+  const ran = await page.evaluate((ms) => new Promise((r) => setTimeout(() => r(true), ms)), ms).catch(() => false);
+  // (the page reloaded or closed under the timer: wait the rest out here)
+  if (!ran && !page.isClosed()) await new Promise((r) => setTimeout(r, Math.max(0, ms - (Date.now() - t0))));
+}
+/** A stopwatch IN the page, for the few checks where a length of time IS the thing under test: it notes (on the page's
+ *  own performance.now()) when something matching `sel` is first on the page and when it is gone again. Start it BEFORE
+ *  the click that brings the thing up. Read it with watched(). Why in the page: this script learns of a change one
+ *  round trip late, and on a busy machine a round trip can take a second; the page's own clock is what the player saw.
+ *  And when you assert on it: a timer never fires EARLY, so the lower bound can be exact; the upper bound must leave
+ *  room for a busy machine (twice the plan plus a second or two), and a comment must say that it does. */
+export const watch = (page, name, sel) => page.evaluate(({ name, sel }) => {
+  const W = (window.__e2eWatch ||= {}); if (W[name]) W[name].mo.disconnect();
+  const w = (W[name] = { up: null, down: null, mo: null });
+  const look = () => { const on = !!document.querySelector(sel), now = performance.now(); if (on && w.up == null) w.up = now; else if (!on && w.up != null && w.down == null) w.down = now; };
+  w.mo = new MutationObserver(look); w.mo.observe(document.documentElement, { childList: true, subtree: true, attributes: true }); look();
+}, { name, sel });
+/** What watch() saw: { up, down, ms (how long it was on the page; null while it still is, or never was), now }. */
+export const watched = (page, name) => page.evaluate((name) => { const w = window.__e2eWatch?.[name]; return w ? { up: w.up, down: w.down, now: performance.now(), ms: w.up != null && w.down != null ? Math.round(w.down - w.up) : null } : null; }, name);
+/** Wait until what watch() watches has come and gone (or `timeout`), and return watched(). */
+export async function watchedGone(page, name, timeout = 30000) { await page.waitForFunction((name) => { const w = window.__e2eWatch?.[name]; return !!w && w.down != null; }, name, { timeout }).catch(() => {}); return watched(page, name); }
+/** Start recording the effects layer's own trace (apps/web/src/game/fx/dom.ts trace()): what was drawn and heard, with
+ *  `t`, the time the PLAN gave it (the same on a busy machine), and `rt`, when it ran. Judge the ORDER and the PRESENCE
+ *  of effects from `t`; never from a stopwatch in this script. */
+export const traceStart = (page) => page.evaluate(() => { window.__phcFxTrace = []; });
+/** The trace so far (and stop recording unless `keep`). */
+export const traceTake = (page, keep) => page.evaluate((keep) => { const t = window.__phcFxTrace || []; if (!keep) window.__phcFxTrace = null; return t; }, !!keep);
+/** Open the Proving Ground alone from the title and wait until it is ready (gearing up). */
+export async function openGround(page, name = 'Leon') {
+  await page.goto(BASE);
+  await click(page, 'PROVING GROUND', { timeout: 90000 });
+  const nm = page.getByPlaceholder('Leon');
+  await Promise.race([nm.waitFor({ timeout: 15000 }).catch(() => {}), page.waitForFunction(() => !!window.__phc?.getState().game?.sandbox, null, { timeout: 15000 }).catch(() => {})]);
+  if (await nm.count()) { await nm.fill(name); await click(page, 'Solo ›'); }
+  await page.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
 }
