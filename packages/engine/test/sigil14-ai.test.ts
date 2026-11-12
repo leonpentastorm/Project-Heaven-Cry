@@ -8,6 +8,10 @@ import {
   CASTER, CASTERS, casterCombos, aiTileRisk, aiPlanValue, planEvoke, drawGlyph, makeObject,
   type Sheet, type Combat, type Unit, type MapDef, type GameState,
 } from '../src';
+import { counted } from '../src/kit';
+// The planners' work, counted (src/kit.ts work / counted), with a quarter of slack over what was measured on 12 Nov 2026: three
+// Sigil casters' turn 2,811 planEvoke calls; ten rounds of three hearts 2,933 Outburst plans; twelve enemy turns on the yard 61 path searches.
+const WORK_MAX = { sigil: 3500, soul: 3700, yard: 80 };
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
 const sheet = (archId: string, name: string): Sheet => { const a = arch(archId); return { name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
@@ -124,9 +128,10 @@ describe('enemy casters choose by situation (spec: Sigils 8)', () => {
   });
   it('weighs a full warden turn quickly (pruned candidates, the engine\'s planner)', () => {
     const { cb, es } = fight([{ at: '4,5' }, { at: '4,7' }, { at: '5,9' }, { at: '3,11' }], [{ at: '12,6', caster: 'sigil_warden', tier: 'elite' }, { at: '12,9', caster: 'sigil_warden', tier: 'elite' }, { at: '13,7', caster: 'sigil_adept' }]);
-    es[2].hp = 20; const t0 = Date.now();
-    for (const e of es) turn(cb, e);
-    expect(Date.now() - t0).toBeLessThan(1500);
+    es[2].hp = 20;
+    const { work } = counted(() => { for (const e of es) turn(cb, e); });
+    // work, not milliseconds (a count is the same on a loaded machine): the candidates the three casters weighed
+    expect(work.planEvoke).toBeLessThan(WORK_MAX.sigil);
     expect(cb.log.some((l) => /evokes/.test(l))).toBe(true);
   });
   it('is deterministic: the same fight plays out the same', () => {

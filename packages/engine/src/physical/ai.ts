@@ -8,6 +8,7 @@ import { condOn } from '../magic';
 import type { TechArgs } from './types';
 import { TECHNIQUE } from './data';
 import { usable, handlerOf, previewTechnique, useTechnique, aiScore } from './core';
+import { canPay } from '../effects/cost';
 
 export const PLAIN_ATTACK_SCORE = 5;
 interface Pick { id: string; args: TechArgs; score: number; target: Unit | null; /** why this target, when it is the one a plain attack would take and that was a choice (rules 1.23 the healer; rules 1.25 its doctrine) */ why?: AimWhy }
@@ -27,7 +28,7 @@ export function aiTechnique(cb: Combat, u: Unit): Pick | null {
     const tries: TechArgs[] = def.aim.startsWith('enemy') ? foes.map((v) => ({ hand, targetId: v.id })) : [{ hand }];
     for (const a0 of tries) {
       const s = aiScore(cb, u, id, a0); if (s.score <= PLAIN_ATTACK_SCORE || (best && s.score <= best.score)) continue;
-      const pv = previewTechnique(cb, u, id, s.args); if (!pv.ok || pv.ap > u.ap) continue;
+      const pv = previewTechnique(cb, u, id, s.args); if (!pv.ok || !canPay(cb, u, pv.ap)) continue;
       best = { id, args: s.args, score: s.score, target: s.args.targetId ? cb.units.find((x) => x.id === s.args.targetId) || null : null }; if (pref.why && best.target && best.target === foes[0]) best.why = pref.why;
     }
   }

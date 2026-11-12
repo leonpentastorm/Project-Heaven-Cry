@@ -11,7 +11,7 @@
 //
 // TO ADD A STAT: add its line to STATS (what it is, who asks), ask it with statQuery(x, '<id>') where the engine needs
 // the number, answer it in the item's `stat:`. TO ADD AN ACTION WHOSE AP ITEMS MAY CHANGE: add its id to COST_SITE_IDS
-// and price it with actionAp(x, '<id>', base). An item answers 'ap_cost:<id>'; a data effect
+// and price it with price(x, '<id>') (effects/cost.ts). An item answers 'ap_cost:<id>'; a data effect
 // {"op":"action_cost","action":"<id>","value":-1,"min":1} works with no code.
 
 /** Every action whose AP the engine prices through actionAp() (effects/core.ts): the ids a data `action_cost` effect
@@ -19,6 +19,8 @@
 export const COST_SITE_IDS = [
   'analyze', 'break', 'clear_jam', 'crystallise', 'disengage', 'escape', 'extinguish', 'field_repair', 'hide', 'parley', 'pray', 'recover',
   'reload', 'reload_both', 'set_explosive', 'shove', 'sprint', 'stabilise', 'stim', 'swap_core', 'throw', 'triage', 'vent', 'ward', 'whisper',
+  // engine foundations 2: every verb priced by price() is a site (review 1, F3: these priced a literal, so no item could reach them)
+  'attempt', 'brace', 'door', 'feed', 'load', 'overwatch', 'pickup', 'prone', 'pull_free', 'scuff', 'search', 'song', 'steady', 'syphon',
 ] as const;
 export type CostSite = (typeof COST_SITE_IDS)[number];
 /** What a data `action_cost` effect may name. 'heal' is the one alias: it means both 'stim' and 'stabilise' (healing an

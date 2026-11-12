@@ -94,3 +94,15 @@ function counts(cb: Combat, v: Unit, o: Who, from: string): boolean {
 export const foesOf = (cb: Combat, u: Unit, o: Who = {}): Unit[] => cb.units.filter((v) => v.side !== u.side && counts(cb, v, o, u.pos));
 /** The OTHER units of this unit's side (o.self: the unit too). See `Who`. */
 export const alliesOf = (cb: Combat, u: Unit, o: Who = {}): Unit[] => cb.units.filter((v) => v.side === u.side && (o.self || v !== u) && counts(cb, v, o, u.pos));
+
+// ---------- work counters (tests only read them) ----------
+/** How much work the planners did: a count per name, raised by work('<name>') at the top of a costly function
+ * (planEvoke, previewOutburstPlan, paths). A test that used to assert milliseconds asserts these instead: a count is
+ * the same on a loaded machine. Nothing in the rules reads it. */
+export const WORK: Record<string, number> = {};
+export const work = (what: string): void => { WORK[what] = (WORK[what] || 0) + 1; };
+/** Run fn and return what it counted (the counters are put back as they were). */
+export function counted<T>(fn: () => T): { ret: T; work: Record<string, number> } {
+  const was = { ...WORK }; for (const k of Object.keys(WORK)) delete WORK[k];
+  try { const ret = fn(); return { ret, work: { ...WORK } }; } finally { for (const k of Object.keys(WORK)) delete WORK[k]; Object.assign(WORK, was); }
+}

@@ -10,6 +10,7 @@ import {
 } from '../src';
 import { mendFactor } from '../src/effects/mending'; // rules 1.20: prayer heals and shields grow with level
 import { fightWith, storyWith, withGame, sheetOf } from './helpers/perkfight';
+import { clearPrayerLimits } from '../src';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
@@ -519,7 +520,7 @@ describe('compatibility', () => {
     const f = fightWith([{ skills: { faith: 5 } }, { name: 'Heretic', traits: ['heretic'] }], [{ at: 'F6' }]);
     const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan';
     const al = f.pcs[1]; let slid = 0;
-    for (let i = 0; i < 12; i++) { f.turn(f.pc); f.unit(f.pc.id).prayedRound = undefined; f.act({ type: 'faith/pray', unitId: f.pc.id, kind: 'hymn', id: 'saints_shield', targetId: al.id } as any); }
+    for (let i = 0; i < 12; i++) { f.turn(f.pc); clearPrayerLimits(f.unit(f.pc.id)); f.act({ type: 'faith/pray', unitId: f.pc.id, kind: 'hymn', id: 'saints_shield', targetId: al.id } as any); }
     slid = f.cb.log.filter((l) => /slides off/.test(l)).length; expect(slid).toBeGreaterThan(0); expect(slid).toBeLessThan(12); expect(logHas(f.cb, /Saint's Shield/)).toBe(true);
   });
   it('Heretic\'s Stolen Fire prays any patron\'s Hymn by dice on Will Power, with its tile (Thunderclap)', () => {

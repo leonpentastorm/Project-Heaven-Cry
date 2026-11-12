@@ -21,6 +21,7 @@ import { canon } from './memory';
 import { type GameState, type Npc, type Check, type NarratorTurn, RuleError, _world, storyCb, positionsOf, npcsOf, storyObjects, zoneMap, apLeft, campaignOf, portraitFor, setStoryCond } from './game';
 import { tilesLine } from './kit';
 import { passFaces } from './rolls';
+import { price, whyNot, pay, freely, poolWhyNot } from './effects/cost';
 
 const WP: any = WORLD_PLAY;
 const fail = (m: string): never => { throw new RuleError(m); };
@@ -266,7 +267,7 @@ export function carry(g: GameState, c: Character, npcId: string, free = false) {
   if (!free) {
     if (!carryable(n!)) fail(n!.name + ' won\'t let you: only someone willing, a prisoner or someone down can be carried.');
     const at = positionsOf(g)[c.id]; if (!at || dist(at, n!.pos) > 1) fail('Step next to ' + n!.name + ' first.');
-    if (apLeft(g, c) < WORLD_AP.carry) fail('Needs ' + WORLD_AP.carry + ' AP.');
+    { const no = poolWhyNot(apLeft(g, c), WORLD_AP.carry); if (no) fail(no); }
     W().spendAp(g, c, WORLD_AP.carry);
   }
   const avatar = avatarOf(g, n!), kg = kindKg(n!.kind), from = n!.pos;
@@ -290,7 +291,7 @@ export function putDown(g: GameState, c: Character, id: string, to?: string, fre
     if (freeNear(g, k!, new Set(), 0) !== k) { if (!free) fail('That tile isn\'t free.'); k = null; }
   }
   k ||= freeNear(g, at!, new Set([at!])); if (!k) fail('No free tile near ' + c.name + '.');
-  if (!free) { if (apLeft(g, c) < WORLD_AP.put_down) fail('Needs ' + WORLD_AP.put_down + ' AP.'); W().spendAp(g, c, WORLD_AP.put_down); }
+  if (!free) { { const no = poolWhyNot(apLeft(g, c), WORLD_AP.put_down); if (no) fail(no); } W().spendAp(g, c, WORLD_AP.put_down); }
   const [x] = list.splice(i, 1); if (!list.length) delete c.carried;
   npcsOf(g).push({ ...x.npc, pos: k! });
   W().push(g, { kind: 'system', text: c.name + ' puts ' + x.npc.name + ' down at ' + refOf(k!) + '.', act: true, charId: c.id });
@@ -347,8 +348,8 @@ export function search(g: GameState, c: Character, objId: string, cb?: Combat, u
   const at = u ? u.pos : positionsOf(g)[c.id]; if (!at || dist(at, o!.pos) > 1) fail('Walk up to it first.');
   if (o!.locked || jammed(g, o!)) fail(o!.name + ' is locked: try its approaches first.');
   if (!o!.items?.length) fail(o!.name + ' is empty.');
-  if (cb && u) { if (u.ap < WORLD_AP.search) fail('Needs ' + WORLD_AP.search + ' AP.'); u.ap -= WORLD_AP.search; }
-  else { if (apLeft(g, c) < WORLD_AP.search) fail('Needs ' + WORLD_AP.search + ' AP.'); W().spendAp(g, c, WORLD_AP.search); }
+  if (cb && u) { const ap = price({ cb, u }, 'search', WORLD_AP.search).ap, no = whyNot(cb, u, ap); if (no) fail(no); pay(cb, u, ap); }
+  else { { const no = poolWhyNot(apLeft(g, c), WORLD_AP.search); if (no) fail(no); } W().spendAp(g, c, WORLD_AP.search); }
   const names = o!.items!.map((x) => (x.qty > 1 ? x.qty + ' × ' : '') + (x.name || (WEAPON[x.item]?.name) || x.item.replace(/_/g, ' '))).join(', ');
   const n = takeItems(g, c, o!);
   const line = c.name + ' searches the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.';
@@ -455,7 +456,7 @@ function readyToAct(g: GameState, c: Character | undefined, by: string, ap: numb
   if (c!.dead) fail('The dead stay where they fell.');
   if (c!.hp <= 0) fail(c!.name + ' is Downed: an ally\'s stim, or the Narrator, gets them up.');
   if (g.checks.some((k) => !k.done && k.poi && g.characters[k.charId]?.owner === by)) fail('Roll your attempt first.');
-  if (apLeft(g, c!) < ap) fail('Needs ' + ap + ' AP (' + apLeft(g, c!) + ' left).');
+  { const no = poolWhyNot(apLeft(g, c!), ap, { left: true }); if (no) fail(no); }
 }
 /** A player tries an approach on an object, a hazard or a person (2 AP): the engine rolls it like the Narrator's check
  * (in the Proving Ground at once). idx is 0-based. */
@@ -612,7 +613,7 @@ export function talkOptions(g: GameState, tokenId: string, charId?: string): Tal
   const n = npcsOf(g).find((x) => x.id === tokenId); if (!n || n.hidden) return [];
   const c = charId ? g.characters[charId] : undefined, at = c ? positionsOf(g)[c.id] : undefined;
   const near = !c || (!!at && dist(at, n.pos) <= TALK_RANGE), apL = c ? apLeft(g, c) : 99, open = g.phase === 'story' && g.story.await === 'players';
-  const gate = (ap: number) => (!open ? 'Wait for the round to open.' : !near ? 'Get within ' + TALK_RANGE + ' tiles.' : apL < ap ? 'Needs ' + ap + ' AP.' : '');
+  const gate = (ap: number) => (!open ? 'Wait for the round to open.' : !near ? 'Get within ' + TALK_RANGE + ' tiles.' : poolWhyNot(apL, ap) || '');
   const out: TalkOption[] = [];
   if (n.wants || n.wantsHidden) { const why = gate(WORLD_AP.ask); out.push({ kind: 'ask', what: 'wants', label: 'Ask what they want', ap: WORLD_AP.ask, available: !why, ...(why ? { why } : {}) }); }
   if (n.knows) { const why = gate(WORLD_AP.ask); out.push({ kind: 'ask', what: 'objective', label: 'Ask about the objective', ap: WORLD_AP.ask, available: !why, ...(why ? { why } : {}) }); }
@@ -668,10 +669,9 @@ export function walkStory(g: GameState, c: Character, k: string): boolean {
     if (crosses) { W().push(g, { kind: 'system', text: c.name + ' can\'t get to ' + refOf(k) + ' without crossing the hazard.', ooc: true }); return false; }
     positionsOf(g)[c.id] = k; W().push(g, { kind: 'system', text: c.name + ' moves to ' + refOf(k) + '.' }); return true;
   }
-  const from = u.pos, ap0 = u.ap; u.ap = 999;
-  const was = bindGame(g); let err: string | null = null; try { err = moveUnit(cb, u, k, undefined, 'move', { shortest: true }); } finally { bindGame(was); }
+  const from = u.pos;
+  const was = bindGame(g); let err: string | null = null; try { err = freely(u, () => moveUnit(cb, u, k, undefined, 'move', { shortest: true })); } finally { bindGame(was); } // the Narrator moves them: no AP
   if (err) return false;
-  u.ap = ap0;
   positionsOf(g)[c.id] = u.pos;
   const route: string[] = []; for (let x = u.pos; x && x !== from; x = P.prev[x]) route.unshift(x);
   writeBack(g, cb, c);

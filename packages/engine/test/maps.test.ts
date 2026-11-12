@@ -7,6 +7,10 @@ import {
   defaultObjects, walkable, lineOfSight, blocksMove, coverKind, dist, refOf, newGame, apply, startCombat, enemyTurn, active, endTurn,
   type MapDef, type Combat, type GameState,
 } from '../src';
+import { counted } from '../src/kit';
+// The planners' work, counted (src/kit.ts work / counted), with a quarter of slack over what was measured on 12 Nov 2026: three
+// Sigil casters' turn 2,811 planEvoke calls; ten rounds of three hearts 2,933 Outburst plans; twelve enemy turns on the yard 61 path searches.
+const WORK_MAX = { sigil: 3500, soul: 3700, yard: 80 };
 import { fightWith, storyWith } from './helpers/perkfight';
 
 const zonesOf = (): { where: string; map: MapDef }[] => [
@@ -241,11 +245,11 @@ describe('the enemy on the big map (rules 1.16)', () => {
     expect(foes.length).toBe(12);
     const near0 = Math.min(...foes.map((f) => Math.min(...pcs.map((p) => dist(f.pos, p.pos)))));
     expect(near0).toBeGreaterThanOrEqual(10);
-    const t0 = Date.now(); let turns = 0;
-    for (let i = 0; i < 64 && !cb.over && turns < 12; i++) { const u = active(cb)!; if (u.side === 'foe' && !u.dead) { enemyTurn(cb, rng); turns++; } endTurn(cb, rng); }
-    const ms = Date.now() - t0;
+    let turns = 0;
+    const { work } = counted(() => { for (let i = 0; i < 64 && !cb.over && turns < 12; i++) { const u = active(cb)!; if (u.side === 'foe' && !u.dead) { enemyTurn(cb, rng); turns++; } endTurn(cb, rng); } });
     expect(turns).toBe(12);
-    expect(ms).toBeLessThan(3000); // measured 0.2 s for the twelve turns (11 Nov 2026); the bound is slack for a slow machine
+    // work, not milliseconds (a count is the same on a loaded machine): the path searches of the twelve turns
+    expect(work.paths).toBeLessThan(WORK_MAX.yard);
     // Everyone moved toward the fight: nobody is still on a start tile, and the knives are well on their way.
     const melee = foes.filter((f) => f.weapon === 'combat_knife' && !f.dead);
     for (const f of melee) expect(Math.min(...pcs.map((p) => dist(f.pos, p.pos))), f.name).toBeLessThan(near0);

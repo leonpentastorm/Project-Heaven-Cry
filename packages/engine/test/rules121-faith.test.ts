@@ -14,7 +14,7 @@
 // The measurements behind the numbers are test/balance/faith-measure.test.ts (the cheap targets run in `npm run check`).
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import { previewPrayer, FAITH_PATRON, WHISPER, WHISPERS, FAITH_FX, ATHEIST_TN, prayerDamage, d20, resolveAttack, condOn, type Combat, type Unit, type Character, type Action } from '../src';
+import { clearPrayerLimits, previewPrayer, FAITH_PATRON, WHISPER, WHISPERS, FAITH_FX, ATHEIST_TN, prayerDamage, d20, resolveAttack, condOn, type Combat, type Unit, type Character, type Action } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
@@ -180,7 +180,7 @@ describe('the Hymns that are not damage (items 1265 to 1268)', () => {
     const h = holy({ patron: 'counting_weaver', devotion: 7, faith: 10 }); h.me.ap = 20;
     h.g.rng.state = rngFor(2); h.pray('hymn', 'cut_short', { targetId: h.foe.id }); expect(condOn(h.foe, 'stunned')).toBe(true);
     const r0 = h.cb.round; expect(h.foe.faith?.cutShortRound).toBe(r0);
-    h.me.prayedRound = undefined as any; // the cooldown is not what is tested here
+    clearPrayerLimits(h.me); // the cooldown is not what is tested here
     expect(previewPrayer(h.g, h.me.id, 'hymn', 'cut_short', { targetId: h.foe.id }).why).toMatch(/has just been Cut Short/);
     const ap = h.me.ap; expect(() => h.pray('hymn', 'cut_short', { targetId: h.foe.id })).toThrow(/has just been Cut Short/); expect(h.me.ap).toBe(ap);
     expect(previewPrayer(h.g, h.me.id, 'hymn', 'cut_short', { targetId: h.foe2.id }).ok).toBe(true); // another enemy

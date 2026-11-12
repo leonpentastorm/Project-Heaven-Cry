@@ -25,6 +25,7 @@ export function hits(re: RegExp, allow: (rel: string) => boolean = () => false):
 }
 
 // ============================================================================================ F14: stat ids
+const SITE_OF: Record<string, string> = Object.fromEntries([...(ACTIONS_JSON as any).items, ...Object.entries((ACTIONS_JSON as any).costs || {}).map(([id, v]: any) => ({ id, ...v }))].filter((x: any) => x.site).map((x: any) => [x.id, x.site]));
 const FAMS = Object.keys(STAT_FAMILIES);
 /** 'skill:guts' → ['skill:', 'guts']; 'hp' → ['hp', '']. A template or a concatenation gives the family and ''. */
 const split = (id: string): [string, string] => { const f = FAMS.find((p) => id.startsWith(p)); return f ? [f, id.slice(f.length).replace(/\$\{.*$/, '')] : [id, '']; };
@@ -38,9 +39,10 @@ describe('F14: stat ids are declared, asked and answered', () => {
       if (f.rel !== 'character.ts' && m[0].startsWith('fx(')) continue;
       const [a, b] = split(m[2]); if (b) asked.add(a + b); else if (FAMS.includes(a)) askedFam.add(a); else asked.add(a);
     }
-    for (const m of f.code.matchAll(/\bactionAp\(\s*\{[^{}]*\},\s*([^,]+),/g)) { const lit = [...m[1].matchAll(/'([a-z_]+)'/g)].map((x) => x[1]); for (const s of lit) costSites.add(s); if (!lit.length && !/def\.id as CostSite|site as CostSite|action\b/.test(m[1])) throw new Error('actionAp with a site the lint cannot read: ' + f.rel + ' ' + m[0]); }
+    // cost sites: price(x, '<action>', …) (effects/cost.ts) asks 'ap_cost:<site>' for the action's site (data/actions.json `site`, default the id)
+    for (const m of f.code.matchAll(/\b(?:price|affords)\(\s*(?:\{[^{}]*\}|cb, u),\s*([^,)]+)[,)]/g)) { if (f.rel === 'effects/cost.ts') continue; const lit = [...m[1].matchAll(/'([a-z_0-9]+)'/g)].map((x) => x[1]); for (const s of lit) costSites.add(SITE_OF[s] || s); if (!lit.length && !/^def\.id$|^action$|^id$|^h\.key/.test(m[1].trim())) throw new Error('price() with an action the lint cannot read: ' + f.rel + ':' + lineOf(f.code, m.index!) + ' ' + m[0]); }
     // actions.ts prices the basic actions from data/actions.json (`site as CostSite`, asked only when the site is declared)
-    if (f.rel === 'actions.ts') for (const x of (ACTIONS_JSON as any).items) { const site = x.site || x.id; if ((COST_SITE_IDS as readonly string[]).includes(site)) costSites.add(site); }
+    if (f.rel === 'actions.ts') for (const x of (ACTIONS_JSON as any).items) { const site = x.site || x.id; if ((COST_SITE_IDS as readonly string[]).includes(site)) costSites.add(site); } // (a row with no site of its own and no fixed AP is priced by its own pipeline: Move by tiles)
     for (const m of f.code.matchAll(/AP_BY_NAME[^=]*= new Set<CostSite>\(\[([^\]]+)\]/g)) for (const x of m[1].matchAll(/'([a-z_]+)'/g)) costSites.add(x[1]);
     for (const m of f.code.matchAll(/\bimmune\(\s*\{[^{}]*\},\s*'([a-z_]+)'/g)) immuneAsked.add(m[1]);
     // answerers: every string a `stat` is compared with

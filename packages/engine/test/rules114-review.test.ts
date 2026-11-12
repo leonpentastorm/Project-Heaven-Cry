@@ -63,7 +63,7 @@ describe('the AP perks\' cooldown holds through real turns', () => {
     endTurn(s); expect(s.g.phase).not.toBe('combat');
     s.act({ type: 'narrator/turn', turn: { narration: 'On.' } } as any);
     startFight(s, [{ at: 'P10' }]); open(cbOf(s));
-    expect(unitOf(s, me).ps?.['trait:forlorn_hope']?.cd).toBeUndefined();
+    expect(unitOf(s, me).uses?.['trait:forlorn_hope#ap-gain|cooldown']).toBeUndefined();
     expect(playRounds(s, me, 3, closeIn)).toEqual([6, 8, 6]);
   });
   it('two holders in one squad: each has its own cooldown, and neither lends the other a turn', () => {
@@ -107,14 +107,14 @@ describe('the AP perks\' cooldown holds through real turns', () => {
     g = apply(g, { type: 'sandbox/trait', charId: c.id, trait: 'rabbits_foot', on: true } as any, 'h1');
     g = apply(g, { type: 'sandbox/fight' } as any, 'h1');
     const pc = () => g.combat!.units.find((u) => u.side === 'pc')!;
-    (pc().ps ||= {})['trait:rabbits_foot'] = { cd: { gain: g.combat!.round } };
+    (pc().uses ||= {})['trait:rabbits_foot#ap-gain|cooldown'] = { s: 'cd', n: g.combat!.round };
     g = apply(g, { type: 'sandbox/perk', charId: c.id, perk: 'bulwark', tier: 'I' } as any, 'h1');
-    expect(pc().ps?.['trait:rabbits_foot']?.cd).toEqual({ gain: g.combat!.round });
+    expect(pc().uses?.['trait:rabbits_foot#ap-gain|cooldown']?.n).toBe(g.combat!.round); // the cooldown cell holds the round the AP landed in
   });
   it('an old save (a fight saved before the cooldown existed): the perk is simply ready, then cools down', () => {
     const s = storyWith([{ perks: { talks_broke_down: 'I' } }]), me = s.chars[0].id;
     storyCheck(s, me, ['charisma'], { auto: 'success' }); startFight(s, [{ at: 'P6' }]);
-    const aps = playRounds(s, me, 5, (round, u) => { if (round === 2) { delete u.ps!['perk:talks_broke_down'].cd; s.g = JSON.parse(JSON.stringify(s.g)); } });
+    const aps = playRounds(s, me, 5, (round, u) => { if (round === 2) { delete u.uses?.['perk:talks_broke_down#ap-gain|cooldown']; s.g = JSON.parse(JSON.stringify(s.g)); } });
     // Turn 1 +2 (as every turn was, before). The save is opened on turn 2 with no cooldown stored: turn 3 pays, then 4 and 5 wait.
     expect(aps).toEqual([8, 6, 8, 6, 6]);
   });

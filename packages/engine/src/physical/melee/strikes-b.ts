@@ -18,6 +18,7 @@ import { throwRangeOf } from '../../tactics';
 import { condOn, unitSave } from '../../magic';
 import { boundGame } from '../../effects/hooks';
 import { type Rng } from '../../rng';
+import { apFor } from '../../effects/cost';
 
 // ---------- 11. Hamstring ----------
 // Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds. Edge: no save. Hook: Prone instead of Slowed.
@@ -117,7 +118,7 @@ onHook('move_cost', (ctx: any, cb) => {
   const u: Unit | undefined = ctx.u; if (!u) return;
   // Hamstring with Point: no Sprint or Disengage. move_cost can't refuse in words, so the price is put out of reach
   // (a request for the lead: a refusal field on move_cost).
-  if ((ctx.how === 'sprint' || ctx.how === 'disengage') && lame(u)) { ctx.ap = Math.max(ctx.ap, u.ap + 1); return; }
+  if ((ctx.how === 'sprint' || ctx.how === 'disengage') && lame(u)) { ctx.ap = Math.max(ctx.ap, apFor(cb, u, { type: 'combat/move', how: ctx.how }) + 1); return; }
   const b = binderOf(cb, u); if (!b) return;
   const route: string[] = ctx.route || [], i = route.findIndex((k) => dist(k, b.pos) > 1); if (i < 0) return;
   // one save a turn: a failed save stands for the rest of the Bound unit's turn (a refused walk costs nothing, so it
@@ -130,7 +131,7 @@ onHook('move_cost', (ctx: any, cb) => {
   cb.log.push(u.name + ' is Bound by ' + b.name + ' and can\'t move away.');
   // Nothing left to walk: the move is refused, not paid for (move_cost can't refuse in words, so the price is put out
   // of reach, as Hamstring does; request 4). A walk that keeps some tiles goes ahead as far as it can.
-  if (!route.length) ctx.ap = Math.max(ctx.ap, u.ap + 1);
+  if (!route.length) ctx.ap = Math.max(ctx.ap, apFor(cb, u, { type: 'combat/move', how: ctx.how }) + 1);
 });
 
 // ---------- 13. Half-Sword ----------

@@ -5,7 +5,7 @@
 //
 // The shared ladder, by the speaker's points in the Call's skill (calls.json `rules`): 2 AP and 5 tiles + 1 a point;
 // step 2 at 3 points; 1 AP from 5; step 3 at 7; as a reaction once a round from 9; the first Call of a turn free at 10.
-import { type Combat, type Unit, alive, emitFx, checkOver, active, dist, sideSees, encoreCredit } from '../combat';
+import { type Combat, type Unit, alive, emitFx, checkOver, active, dist, sideSees } from '../combat';
 import { charOfUnit, emit, bindGame } from '../effects/hooks';
 import { grantPerkAp } from '../effects/ap';
 import { applyCond, condOn, unitStrength, withVia } from '../magic';
@@ -14,6 +14,7 @@ import type { Rng } from '../rng';
 import { turnStamp, ownSideOnly } from '../physical/core';
 import type { Call, CallArgs, CallDef, CallHandler, CallMarks, CallPadEntry, CallPreview } from './types';
 import { CALL, CALLS, CALL_RULES, callBaseAp, callRangeAt, callSkillName, callStepAt } from './data';
+import { whyNot, pay, refund } from '../effects/cost';
 
 // ---------- the registry ----------
 const HANDLERS: Record<string, CallHandler> = {};
@@ -60,7 +61,7 @@ function gate(cb: Combat, u: Unit, def: CallDef, args: CallArgs): string | null 
     if (!canReact(cb, u)) return 'No reaction left this round.';
   }
   const ap = callAp(cb, u, def, !!args.react);
-  if (u.ap + encoreCredit(u, { type: 'combat/call', id: def.id }, cb) < ap) return 'Needs ' + ap + ' AP.';
+  { const no = whyNot(cb, u, ap, { as: { type: 'combat/call', id: def.id } }); if (no) return no; }
   return null;
 }
 const NO_ENEMY = 'Pick an enemy who can hear you.';
@@ -130,7 +131,7 @@ export function useCall(cb: Combat, u: Unit, id: string, args: CallArgs, rng: Rn
     if (!useReaction(cb, u)) return 'No reaction left this round.';
   }
   const react0 = marks.react, turn0 = marks.turn, key = def.kind === 'helping' ? 'helped' : 'hindered', limit0 = tgt.call?.[key];
-  u.ap -= ap;
+  pay(cb, u, ap);
   if (t.react) marks.react = cb.round; else marks.turn = { t: turnStamp(cb), n: callsThisTurn(cb, u) + 1 };
   callMarks(tgt)[key] = { r: cb.round, id, side: u.side };
   const ev = emitFx(cb, 'call', { unit: u.id, id, target: tgt.id, at: u.pos, step: t.step, kind: def.kind, ...(t.react ? { reaction: true } : {}), ...ownSideOnly(cb, u) });
@@ -138,7 +139,7 @@ export function useCall(cb: Combat, u: Unit, id: string, args: CallArgs, rng: Rn
   const logAt = cb.log.length; cb.log.push(u.name + ' calls ' + def.name + (tgt === u ? '' : (def.aim === 'enemy' ? ' at ' : ' to ') + tgt.name) + (t.react ? ' (a reaction)' : '') + said + '.');
   const err = withVia(u, def.skill, () => p.h!.run(t));
   if (err) { // a handler must refuse before it changes anything: the cost and the marks come back
-    u.ap += ap; cb.log.splice(logAt, 1); (ev as any).refused = true;
+    refund(cb, u, ap); cb.log.splice(logAt, 1); (ev as any).refused = true;
     if (t.react) { refundReaction(cb, u); if (react0 == null) delete marks.react; else marks.react = react0; }
     else if (turn0) marks.turn = turn0; else delete marks.turn;
     if (limit0) callMarks(tgt)[key] = limit0; else delete callMarks(tgt)[key];

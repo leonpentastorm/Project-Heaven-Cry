@@ -29,6 +29,7 @@ import {
 import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, unitSave, condOn, ventAp, coreAp } from './magic';
 import { fooledBy } from './illusion';
 import { tilesAround, canStand, foesOf } from './kit';
+import { withAp, canPay } from './effects/cost';
 
 // ---------- caster archetypes (data/enemies.json `casters`) ----------
 export interface CasterDef { id: string; name: string; tier: string; weapon: string; sigils: string[]; spell_bias?: number; text?: string; provisional?: boolean }
@@ -83,8 +84,8 @@ const friendsOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side === u.s
 export function aiAvoid(cb: Combat, rng: Rng, u: Unit): boolean {
   if ((u as any).aiAvoid === cb.round || !(cb.zones || []).length) return false;
   const tur = (cb.zones || []).find((z) => z.kind === 'turret' && z.side !== u.side && !secretFrom(z, u.side) && z.tiles[0] === u.pos);
-  if (tur && u.ap >= SPELL_AP.scuff) { (u as any).aiAvoid = cb.round; return !scuff(cb, u); }
-  if (aiTileRisk(cb, u, u.pos) <= 0 || u.ap < 1) return false;
+  if (tur && canPay(cb, u, SPELL_AP.scuff)) { (u as any).aiAvoid = cb.round; return !scuff(cb, u); }
+  if (aiTileRisk(cb, u, u.pos) <= 0 || !canPay(cb, u, 1)) return false;
   (u as any).aiAvoid = cb.round;
   const P = paths(cb, u.pos, u.id), adj = players(cb, u).filter((t) => dist(t.pos, u.pos) <= 1);
   const out = Object.entries(P.dist).filter(([k, n]) => k !== u.pos && aiRouteRisk(cb, u, P, k) <= 0 && apForTiles(n, u.bank, u.movement) <= Math.min(2, u.ap))
@@ -109,7 +110,7 @@ export function aiClearBlock(cb: Combat, rng: Rng, u: Unit): boolean {
   const pcs = cb.units.filter((t) => t.side !== u.side && live(t)); if (!pcs.length) return false;
   const near = pcs.reduce((a, b) => (dist(u.pos, b.pos) < dist(u.pos, a.pos) ? b : a));
   const P = paths(cb, u.pos, u.id), now = dist(u.pos, near.pos);
-  const closer = Object.entries(P.dist).some(([k, n]) => k !== u.pos && apForTiles(n, u.bank, u.movement) <= u.ap && dist(k, near.pos) < now);
+  const closer = Object.entries(P.dist).some(([k, n]) => k !== u.pos && canPay(cb, u, apForTiles(n, u.bank, u.movement)) && dist(k, near.pos) < now);
   if (closer) return false;
   const between = (k: string) => { const [ax, ay] = xy(u.pos), [bx, by] = xy(near.pos), [x, y] = xy(k); return dist(k, u.pos) + dist(k, near.pos) <= now + 1 && (x - ax) * (bx - ax) + (y - ay) * (by - ay) >= 0; };
   const wall = walls.filter((o) => between(o.pos)).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos) || (a.pos < b.pos ? -1 : 1))[0];
@@ -164,14 +165,14 @@ export function casterCombos(words: string[], max: number): Combo[] {
 /** Plan an Evoke of a Line not yet drawn (glyphs on `tiles`, in order, the caster standing on the last), then put the
  * fight back exactly as it was. Uses the engine's own planner, so nothing it finds breaks a rule. */
 function planLine(cb: Combat, u: Unit, words: string[], tiles: string[], aim: string, opts: EvokeOpts): EvokePreview | null {
-  const was = u.pos, glyphs = cb.glyphs, seq = cb.glyphSeq || 0, ap = u.ap, m = u.mg!, charge = m.charge;
+  const was = u.pos, glyphs = cb.glyphs, seq = cb.glyphSeq || 0, m = u.mg!, charge = m.charge;
   try {
     // Rules 1.10: one stroke, with the id the real first glyph will give it, so nothing beside it joins or spoils it.
     cb.glyphs = [...(glyphs || []), ...tiles.map((k, i) => ({ id: 'gl' + (seq + 1 + i), word: words[i], pos: k, by: u.id, side: u.side, left: 2, who: u.name, v: SIGIL_REV, strokeId: 'sgl' + (seq + 1) } as Glyph))];
-    u.pos = tiles[tiles.length - 1]; u.ap = 99; m.charge = 99;
-    const pv = planEvoke(cb, u, tiles[0], aim, opts);
+    u.pos = tiles[tiles.length - 1]; m.charge = 99;
+    const pv = withAp(u, 99, () => planEvoke(cb, u, tiles[0], aim, opts));
     return pv.ok && !pv.fizzle && findLineOk(cb, tiles) ? pv : null;
-  } finally { u.pos = was; cb.glyphs = glyphs; cb.glyphSeq = seq; u.ap = ap; m.charge = charge; }
+  } finally { u.pos = was; cb.glyphs = glyphs; cb.glyphSeq = seq; m.charge = charge; }
 }
 /** The Line read is exactly the tiles drawn (a stroke: no other glyph joins it; rules 1.10). */
 function findLineOk(cb: Combat, tiles: string[]) { const p = findPattern(cb, tiles[0]); return typeof p !== 'string' && p.tiles.length === tiles.length; }
@@ -339,7 +340,7 @@ function linePrice(cb: Combat, u: Unit, words: string[], tiles: string[], evokeA
   if (m.flux + fx > FLUX_MAX) { pre.push('vent'); ap += ventAp(u); }
   if (charge + evokeCharge > m.charge) { if (m.cores < 1 || charge + evokeCharge > CORE_CHARGE) return null; pre.push('core'); ap += coreAp(u); }
   ap += evokeAp;
-  return ap <= u.ap ? { ap, pre } : null;
+  return canPay(null, u, ap) ? { ap, pre } : null;
 }
 /** The tiles a Line of n glyphs walks, starting on the caster's tile and going `d`: each free, unmarked, off any
  * known danger and a straight step on from the last; null if any isn't. */

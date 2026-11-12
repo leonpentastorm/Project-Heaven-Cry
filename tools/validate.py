@@ -755,6 +755,28 @@ if "actions" in data:
             errors.append("actions: stim.ap_downed_medic disagrees with rules.json stabilise.ap_combat_medic")
         if aid == "pickup" and (data.get("world_play", {}).get("ap") or {}).get("pickup") not in (None, a.get("ap")):
             errors.append("actions: pickup.ap disagrees with world_play ap.pickup")
+    # Engine foundations 2 (review 1, finding F3): `costs` is the base cost of every engine verb that has no row above
+    # (the engine's price() reads it: packages/engine/src/effects/cost.ts), `resources` is what an action can cost
+    # besides AP. A cost is a whole number; a verb is priced in one place only; `rule` agrees with rules.json.
+    _acts_root = data.get("actions", {})
+    for cid, c in (_acts_root.get("costs") or {}).items():
+        if cid in _seen_acts:
+            errors.append(f"actions: costs.{cid} repeats a row of items: one price for one action")
+        if not isinstance(c, dict) or not isinstance(c.get("ap"), int) or isinstance(c.get("ap"), bool):
+            errors.append(f"actions: costs.{cid} needs a whole-number ap")
+            continue
+        for k, v in c.items():
+            if (k == "ap" or k.startswith("ap_") or k in ("min", "rounds")) and not (isinstance(v, int) and not isinstance(v, bool) and v >= 0):
+                errors.append(f"actions: costs.{cid}.{k} must be a whole number of 0 or more")
+        r = c.get("rule")
+        if r is not None:
+            if r not in _rule_acts:
+                errors.append(f"actions: costs.{cid}.rule names {r}, which is not in rules.json combat.actions")
+            elif isinstance(_rule_acts[r].get("ap"), int) and c.get("ap") != _rule_acts[r].get("ap"):
+                errors.append(f"actions: costs.{cid} costs {c.get('ap')} AP but rules.json {r} says {_rule_acts[r].get('ap')}")
+    for rid, r in (_acts_root.get("resources") or {}).items():
+        if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
+            errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
 
 # Rules 1.10 (Sigil 1.5): the sigil_mark kind's Investigate numbers, and the marks the campaigns place
 _mk = next((o for o in items("objects") if o.get("id") == "sigil_mark"), None)

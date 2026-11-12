@@ -13,7 +13,7 @@ import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RU
 import { levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
-import { CALL, useCall, callView, briefBefore, briefAfter, type CallArgs } from './calls';
+import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap, expandCampaign } from './campaign';
 import { nearestFree } from './maplayout';
 import { spotlight, markAction, clearAction, critMoment } from './spotlight';
@@ -29,7 +29,7 @@ import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
 import { itemAmount } from './effects/amounts';
-import { actionAp } from './effects/core';
+import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyNot, needs, costOf } from './effects/cost';
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
 import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
@@ -41,7 +41,7 @@ import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, 
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
 import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
-import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreBefore, encoreAfter, FAITH_PATRON, VOW } from './faith';
+import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreUsed, clearPrayerLimits, FAITH_PATRON, VOW } from './faith';
 import './perks';
 import './classes';
 import { runGift } from './classes/i';
@@ -884,7 +884,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.story.ended?.[c!.id]) fail(c!.name + ' has ended the turn.');
       if (c!.hp <= 0) fail(c!.name + ' is Downed: an ally\'s stim, or the Narrator, gets them up.');
       if (g.checks.some((k) => !k.done && k.poi && g.characters[k.charId]?.owner === by)) fail('Roll your attempt first.');
-      const cost = 1; if (apLeft(g, c!) < cost) fail('Needs ' + cost + ' AP (' + apLeft(g, c!) + ' left).');
+      const cost = costOf('interact'); { const no = poolWhyNot(apLeft(g, c!), cost, { left: true }); if (no) fail(no); }
       const o = storyObjects(g).find((x) => x.id === a.objId); if (!o || o.hidden) fail('Nothing like that here.');
       if (dist(positionsOf(g)[c!.id], o!.pos) > 1) fail('Walk up to it first (stand on it or next to it).');
       if (a.type === 'poi/travel') {
@@ -1446,10 +1446,9 @@ function combatAction(g: GameState, a: Action, by: string) {
   const mods = (a as any).mods; cb!.mods = Array.isArray(mods) ? mods.filter((x: any) => typeof x === 'string').slice(0, 8) : [];
   const inWindow = !!cb!.window;
   // Encore (rules 1.6.2, item 729): repeating the action the Laughing Mask's Miracle named lends its AP; settled below.
-  const encore = inWindow ? null : encoreBefore(cb!, u, a);
-  const brief = briefBefore(cb!, u, a); // rules 1.13: a Brief's discount on this action, lent the same way
+  const loan = lend(cb!, u, a); // the action's credit (effects/cost.ts): Encore's repeat, a Brief's cut (rules 1.13). pay() draws on it first
   markAction(cb!); // spotlight.ts: this action's fx start here (a spotlight in it slows its playback on the client)
-  (cb as any).acting = true; // encoreCredit: previews inside the action don't lend Encore's AP again
+  (cb as any).acting = true; // creditFor: inside the action, the credit is what is left of this action's
   try {
   switch (a.type) {
     case 'combat/perk': { const ap0 = u.ap; err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat');
@@ -1533,21 +1532,20 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/crystallise': err = crystalliseCore(cb!, u); break;
     case 'combat/song': {
       if (!musicTraitOf(c)) fail('Only a music trait plays its song on demand.');
-      if (u.ap < SONG_AP) fail('Needs ' + SONG_AP + ' AP.');
+      const sAp = price({ cb, u }, 'song').ap; { const no = whyNot(cb, u, sAp); if (no) fail(no); }
       if (!startSong(g, c!, 'on the Musek Blestor', 'manual', (t) => cb!.log.push(t))) fail(musicOf(g).now?.charId === c!.id ? 'Your song is already playing.' : 'Another song is playing; wait for it to end.');
-      u.ap -= SONG_AP; emitFx(cb!, 'song', { unit: u.id, at: u.pos }); spotlight(g, { kind: 'song', char: c!.id, unit: u.id, reason: 'plays their song', song: true }); break;
+      pay(cb, u, sAp); emitFx(cb!, 'song', { unit: u.id, at: u.pos }); spotlight(g, { kind: 'song', char: c!.id, unit: u.id, reason: 'plays their song', song: true }); break;
     }
     default: fail('Unknown action.');
   }
   } finally { delete cb!.mods; delete (cb as any).acting; }
-  if (err) fail(err);
-  briefAfter(cb!, u, brief);
-  encoreAfter(cb!, u, encore);
+  if (err) { unlend(cb); fail(err); }
+  { const used = settleCredit(cb!, loan); if (used) { briefUsed(cb!, u, used.brief); if (used.hadEncore) encoreUsed(cb!, u, used.spent - used.brief, loan!.encore); } }
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
   // 'action_done' {u, a, cb}: after every combat action and its window step (On My Mark settles its debt: hooks gap E-H2).
   emitHook(cb!, 'action_done', { u, a, cb: cb! });
-  for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10; // Glyph AP comes in tenths: no 3.4000000000000004
+  for (const x of cb!.units) setAp(x, Math.round(x.ap * 10) / 10); // Glyph AP comes in tenths: no 3.4000000000000004
   songTriggers(g, u, c!, before);
   critMoment(g); // decision 113: a party crit in this action cuts in (unless a bigger moment already did)
   noteDeaths(cb!, g.rng);
@@ -1560,16 +1558,16 @@ function combatAction(g: GameState, a: Action, by: string) {
  *  It opens the one pending fight ruling; the fight waits for the answer. */
 function attempt(g: GameState, cb: Combat, u: Combat['units'][number], text0: string): string | null {
   const text = String(text0 || '').trim().slice(0, 300); if (!text) return 'Write what you attempt.';
-  const why = attemptWhy(g, cb, u, ATTEMPT_AP); if (why) return why;
-  u.ap = Math.round((u.ap - ATTEMPT_AP) * 10) / 10;
-  openRuling(g, cb, u, text, ATTEMPT_AP);
-  cb.log.push(u.name + ' attempts (' + ATTEMPT_AP + ' AP): "' + text + '"');
+  const ap = price({ cb, u }, 'attempt').ap, why = attemptWhy(g, cb, u, ap); if (why) return why;
+  pay(cb, u, ap);
+  openRuling(g, cb, u, text, ap);
+  cb.log.push(u.name + ' attempts (' + ap + ' AP): "' + text + '"');
   return null;
 }
 /** Give back what a fight ruling cost: its AP and, for a perk, the use. Returns what came back, in words. */
 function refundFight(g: GameState, cb: Combat, r: FightRuling): string {
   const u = cb.units.find((x) => x.id === r.unit), c = g.characters[r.charId], back: string[] = [];
-  if (u && r.ap > 0) { u.ap = Math.round((u.ap + r.ap) * 10) / 10; back.push(r.ap + ' AP'); }
+  if (u && r.ap > 0) { refund(cb, u, r.ap); back.push(r.ap + ' AP'); }
   if (r.perk?.use && c) { usesOf({ key: r.perk.key, c, u, cb, g }).refund(r.perk.use.per as any, r.perk.use.key); if (!['at_will', 'out_of_combat'].includes(r.perk.use.per)) back.push('the use of ' + r.perk.name); }
   return back.join(' and ');
 }
@@ -1656,7 +1654,7 @@ function fightRuling(g: GameState, a: FightAnswer) {
   }
   // The after-fight report: already answered, with what the engine did (the Narrator follows through, it doesn't rule twice).
   (cb!.notes ||= []).push((u?.name || 'Someone') + ' (round ' + r!.round + (r!.perk ? ', ' + r!.perk.name : ', an attempt') + '): "' + r!.text.slice(0, 160) + '" — answered in the fight' + (lines.length ? ': ' + lines.join(' ') : '') + (did ? ' [' + did + ']' : '') + (r!.perk?.ask && !(eff && 'perk' in eff && !eff.perk.accepted) ? ' Follow through: ' + r!.perk.ask : ''));
-  for (const x of cb!.units) x.ap = Math.round(x.ap * 10) / 10;
+  for (const x of cb!.units) setAp(x, Math.round(x.ap * 10) / 10);
   checkOver(cb!);
   runEnemies(g);
 }
@@ -1738,7 +1736,7 @@ function callReaction(g: GameState, cb: Combat, a: Extract<Action, { type: 'comb
   if (u!.companion || u!.allowedActions || condOn(u!, 'puppeted')) fail(u!.name + ' can\'t Call.');
   const err = runCall(g, cb, u!, { ...a, react: true }); if (err) fail(err);
   emitHook(cb, 'action_done', { u: u!, a, cb });
-  for (const x of cb.units) x.ap = Math.round(x.ap * 10) / 10;
+  for (const x of cb.units) setAp(x, Math.round(x.ap * 10) / 10);
 }
 const COMPANION_ACTS = new Set(['combat/move', 'combat/attack', 'combat/technique', 'combat/overwatch', 'combat/end-turn', 'combat/decline', 'combat/reload', 'combat/prone', 'combat/extinguish', 'combat/escape']);
 /** The PC character who Puppeted this enemy (its player runs the enemy's turn), if the puppeteer is up. */
@@ -1794,7 +1792,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
   const disarmed = condOn(u, 'disarmed'), plan = gearPlan(c, op, { disarmed }); if (plan.why) return plan.why;
   let ap = o.free ? 0 : plan.ap;
   if (plan.hand && ap > 0) { const ctx: any = emitHook(cb, 'swap', { u, c, from: op.op === 'swap' ? 'off' : (op as any).item, mod: op.op === 'mod' ? op.item : undefined, ap, cb }); ap = Math.max(0, ctx.ap); }
-  if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  { const no = whyNot(cb, u, ap); if (no) return no; }
   if (plan.idx != null) { c.pack = packOf(c).map((x) => ({ ...x })); (c.pack[plan.idx] as any)._pick = 1; }
   unitToCharacter(g, u, false);
   let idx = -1;
@@ -1828,7 +1826,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
   // Heat stays with the fighter (design section 3: the rebuild keeps heat; review fix: two swaps no longer cool a gun);
   // a jam and a brace belong to the gun that left the hand.
   if (c.weapon !== wasMain) { u.jammed = false; u.braced = false; }
-  u.ap -= ap;
+  pay(cb, u, ap);
   const where = toPile.length && pileAt ? (op.op === 'drop' ? ': it lands in the pile at ' : ', leaving the weapon on the ground in the pile at ') + refOf(pileAt) : '';
   if (!(o.free && op.op === 'drop')) cb.log.push(c.name + ' ' + plan.label + (o.free ? '' : ' (' + ap + ' AP)') + where + (op.op !== 'mod' && u.mg ? focusLine(c) : '') + '.');
   syncSong(g);
@@ -2418,10 +2416,10 @@ function narratorTeach(g: GameState, c: Character, m: { word?: string; school?: 
  * each character's AP left this round; NPCs are 'foe' units (they block and can be targeted). Objects are the live list. */
 export function storyCb(g: GameState): Combat {
   const map = zoneMap(g), scratch = { state: g.rng.state }, pos = positionsOf(g);
-  const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); u.ap = apLeft(g, c); u.heat = g.story.heat?.[c.id] || 0; u.jammed = !!g.story.jammed?.[c.id]; if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
+  const units = Object.values(g.characters).filter((c) => !c.dead && pos[c.id]).map((c) => { const u = unitFromCharacter(c, pos[c.id], scratch); setAp(u, apLeft(g, c)); u.heat = g.story.heat?.[c.id] || 0; u.jammed = !!g.story.jammed?.[c.id]; if (u.downed) u.saves = { ok: 0, fail: c.downedFails || 0 }; return u; });
   // Companions on the area map (a drone, a beast): tokens with their own AP this round.
   for (const c of Object.values(g.characters)) { const owner = units.find((x) => x.charId === c.id); if (!owner || !c.companions?.some((k) => COMPANION_ROUND_AP[k.kind] != null)) continue;
-    const taken = new Set(units.map((x) => x.pos)); for (const d of companionUnits(null, c, owner, taken, scratch, map, pos)) { if (!pos[d.id] || COMPANION_ROUND_AP[d.companion!] == null) continue; d.pos = pos[d.id]; d.ap = g.story.ap?.[d.id] ?? COMPANION_ROUND_AP[d.companion!]; units.push(d); } }
+    const taken = new Set(units.map((x) => x.pos)); for (const d of companionUnits(null, c, owner, taken, scratch, map, pos)) { if (!pos[d.id] || COMPANION_ROUND_AP[d.companion!] == null) continue; d.pos = pos[d.id]; setAp(d, g.story.ap?.[d.id] ?? COMPANION_ROUND_AP[d.companion!]); units.push(d); } }
   for (const n of npcsOf(g)) { const u = unitFromEnemy(n.id, n.name, n.tier, n.weapon, n.pos, scratch, n.level ?? squadLevel(g)); if (n.portrait) u.img = n.portrait; if (n.hidden) u.hidden = true; units.push(u); }
   const cb = { name: 'overworld', overworld: true, map, units, order: units.map((u) => u.id), turn: 0, round: g.story.round, difficulty: 'standard', log: [], over: null, objects: storyObjects(g) } as Combat;
   // Rules 1.7: the zone's hazards (the story's own, so what a step spends stays spent), rolled on the game's dice.
@@ -2514,9 +2512,9 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     // The move is priced by moveUnit through 'move_cost' (Charge!, Into the Dark, Shadow Step discount it: hooks gap B9);
     // the sneak's extra comes after. A failure throws, and apply() keeps the state from before the action.
     const extra = Math.max(0, wm.extra), ap0 = u.ap;
-    const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move', { via: P }); if (err) fail(err.replace(/^Needs (\d+(?:\.\d+)?) AP\.$/, (_m, n) => 'Needs ' + (+n + extra) + ' AP (' + ap0 + ' left).'));
-    if (u.ap < extra && a.how !== 'sprint') fail('Needs ' + (Math.round((ap0 - u.ap + extra) * 10) / 10) + ' AP (' + ap0 + ' left).');
-    u.ap -= extra;
+    const from = u.pos; err = moveUnit(cb, u, k!, undefined, a.how === 'sprint' ? 'sprint' : 'move', { via: P }); if (err) fail(err.replace(/^Needs (\d+(?:\.\d+)?) AP\.$/, (_m, n) => needs(+n + extra, 'AP', ap0)));
+    if (poolWhyNot(u.ap, extra) && a.how !== 'sprint') fail(needs(Math.round((ap0 - u.ap + extra) * 10) / 10, 'AP', ap0));
+    pay(cb, u, extra);
     const route = routeTo(P, from, k!);
     walked = route.slice(0, route.indexOf(u.pos) + 1); // a hazard or a trap may have stopped the walk short
     ((g.story.trail ||= {})[c!.id] ||= []).push(...(route.length ? [from, ...route] : [from, k!]));
@@ -2528,7 +2526,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
   } else if (a.act === 'door') {
     const o = storyObjects(g).find((x) => x.id === a.objId && kindOf(x).door); if (!o) fail('No such door.');
     if (dist(u.pos, o!.pos) > 1) fail('Walk up to it first.'); if (o!.locked) fail('Locked. Examine it for a way in.');
-    if (u.ap < 1) fail('Needs 1 AP.'); u.ap -= 1; o!.open = !o!.open; emitFx(cb, 'door', { unit: u.id, at: o!.pos, open: !!o!.open }); cb.log.push(c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
+    { const ap = price({ cb, u }, 'door').ap, no = whyNot(cb, u, ap); if (no) fail(no); pay(cb, u, ap); } o!.open = !o!.open; emitFx(cb, 'door', { unit: u.id, at: o!.pos, open: !!o!.open }); cb.log.push(c!.name + (o!.open ? ' opens ' : ' closes ') + 'the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.');
   } else if (a.act === 'perk') {
     if (!a.id) fail('Pick a perk, trait or class move.');
     (cb as any).mods = a.mods || []; worldStrikeReq = null;
@@ -2541,7 +2539,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
     if (!err && worldStrikeReq) {
       const req: { targetId: string; ap: number; perform: (cbx: Combat, att: Combat['units'][number], tgt: Combat['units'][number]) => string | null } = worldStrikeReq; worldStrikeReq = null;
       const t = cb.units.find((x) => x.id === req.targetId);
-      if (t && t.side === 'foe') { overworldAttack(g, cb, c!, u, t, 'melee', (cbx, att) => { const tt = cbx.units.find((x) => x.npcId === t.id); if (!tt) return 'They are gone.'; att.ap = Math.max(0, Math.round((att.ap - req.ap) * 10) / 10); return req.perform(cbx, att, tt); }); return; }
+      if (t && t.side === 'foe') { overworldAttack(g, cb, c!, u, t, 'melee', (cbx, att) => { const tt = cbx.units.find((x) => x.npcId === t.id); if (!tt) return 'They are gone.'; pay(cbx, att, Math.min(att.ap, req.ap)); return req.perform(cbx, att, tt); }); return; }
     }
   } else if (a.act === 'reload') err = a.hand === 'both' || a.hand === 'off' ? reloadHands(cb, u, a.hand, !!a.tactical) : reload(cb, u, { tactical: !!a.tactical }); // rules 1.9: speed or tactical
   else if (a.act === 'load') err = loadMagazine(cb, u);
@@ -2565,7 +2563,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
         const w = WEAPON[u.weapon], mode = a.mode || 'shot', melee = isMelee(w) || mode === 'melee', useW = melee && !isMelee(w) ? WEAPON.fists : w;
         const fx: any = (w as any).grants?.effect || {}, r = dist(u.pos, o.pos);
         const cost = !melee && mode === 'aimed' && fx.op === 'aimed_ap' ? fx.value : attackApCost(useW, melee ? 'melee' : mode === 'aimed' ? 'aimed' : 'shot');
-        if (u.ap < cost) fail('Needs ' + cost + ' AP.');
+        { const no = whyNot(cb, u, cost); if (no) fail(no); }
         if (melee) { if (r > 1) fail('Out of melee reach: walk up to it.'); if (u.maxDur && useW === w) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1); } // a strike wears the weapon as in a fight
         else {
           if (u.jammed) fail('Weapon jammed: clear it (2 AP).');
@@ -2578,7 +2576,7 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
           if ((w as any).heat_limit && !u.infiniteAmmo && u.heat >= (w as any).heat_limit) u.jammed = true;
           if (u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1 - (u.jammed ? 5 : 0));
         }
-        u.ap -= cost; emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: o.pos, weapon: useW.id, cat: useW.category, mode, hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, ...(u.jammed ? { jam: true } : {}) });
+        pay(cb, u, cost); emitFx(cb, melee ? 'melee' : 'shot', { unit: u.id, target: null, from: u.pos, to: o.pos, weapon: useW.id, cat: useW.category, mode, hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, ...(u.jammed ? { jam: true } : {}) });
         cb.log.push(c!.name + (melee ? ' strikes ' : mode === 'aimed' ? ' takes an aimed shot at ' : ' fires at ') + 'the ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + (melee ? '.' : ' (' + (w.magazine != null ? u.ammo + ' left in the ' + (w.name || 'weapon').toLowerCase() : 'loose round') + ')' + (u.jammed ? '; the weapon jams' : '') + '.'));
         g.story.needs = true;
       }
@@ -2635,8 +2633,8 @@ function repairAlly(cb: Combat, u: Combat['units'][number], t: Combat['units'][n
   if ((u.proficiency || 0) < 3) return 'Needs Proficiency 3.';
   if (!(u.parts || 0)) return 'No spare-parts charges.';
   if (t.hp >= t.maxHp) return t.name + ' is already whole.';
-  const cost = actionAp({ u }, 'field_repair', 2).ap; if (u.ap < cost) return 'Needs ' + cost + ' AP.';
-  const was = t.hp; u.ap -= cost; u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 })); if (t.downed && t.hp > 0) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
+  const cost = price({ cb, u }, 'field_repair').ap; { const no = whyNot(cb, u, cost); if (no) return no; }
+  const was = t.hp; pay(cb, u, cost); u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 })); if (t.downed && t.hp > 0) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
   emitFx(cb, 'repair', { unit: u.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was });
   cb.log.push(u.name + ' patches ' + t.name + '\'s chassis: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
 }
@@ -2697,7 +2695,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   // The opening strike is an action of the fight like any other (spotlight.ts): its fx start here, so a crit, a takedown,
   // a revive or an intervention in it cuts in and slows its playback (decision 113).
   const before = cbx.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
-  att.ap = apNow; markAction(cbx);
+  setAp(att, apNow); markAction(cbx);
   if (perform) { const e = perform(cbx, att); if (e) cbx.log.push(c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
   if (hidden && silentTakedown(g, cbx, c, att, tgt)) return; // no fight opens: its moments are thrown away with it
   songTriggers(g, att, c, before);
@@ -3046,7 +3044,7 @@ const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.co
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
   'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
-  'condBy', 'condVia', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'prayedRound', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
+  'condBy', 'condVia', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
   'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed',
   // Calls (rules 1.13): the marks Calls left and the unit's own Call counters
@@ -3069,7 +3067,7 @@ function sbRebuild(g: GameState, c: Character, mode: 'keep' | 'refill') {
     if (u.conds?.guarded) u.def += 2;
     u.hp = Math.min(u.hp, u.maxHp);
   } else {
-    u.ap = active(cb)?.id === old.id ? Math.max(old.ap, 6) : old.ap;
+    setAp(u, active(cb)?.id === old.id ? Math.max(old.ap, 6) : old.ap);
     u.waitRound = old.waitRound;
   }
   ensureMomentum(u); // rules 1.12: the rebuilt fighter keeps its meter (resMax comes fresh from the character)
@@ -3218,7 +3216,7 @@ function sbEffectRoom(g: GameState) {
 /** After every action in the Effect testing room: the squad's AP is full again. */
 function fxRoomAfter(g: GameState) {
   const cb = g.combat; if (!cb || cb.over || !g.sandbox?.fx) return;
-  for (const u of cb.units) if (u.side !== 'foe' && !u.dead && !u.downed) u.ap = Math.max(u.ap, FX_ROOM_AP);
+  for (const u of cb.units) if (u.side !== 'foe' && !u.dead && !u.downed) setAp(u, Math.max(u.ap, FX_ROOM_AP));
 }
 /** Begin a fight on the Proving Ground map: the squad where it stands (pos), these foes, everyone on the fight's clock. */
 function sbBegin(g: GameState, n: number, foes: { name: string; tier: string; weapon: string; at?: string; hp?: number; npc?: Npc; caster?: string; hidden?: boolean; level?: number }[], pos: Record<string, string>, objects?: MapObject[], room?: string) {
@@ -3466,10 +3464,10 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
           for (const [pid, n] of Object.entries(a.pieces)) if (FAITH_PATRON[pid] && pid !== own && n > 0) pc[pid] = Math.min(3, Math.round(n));
           c.faithPieces = pc; c.hymns = Object.entries(pc).flatMap(([pid, n]) => (FAITH_PATRON[pid].hymns || []).slice(0, n).map((h: any) => pid + '.' + h.id));
         }
-        if (a.reset) { c.miracleSession = undefined; c.ritesKept = {}; delete c.faithTally; const st: any = c.state; if (st?.faith) st.faith = {}; }
+        if (a.reset) { c.miracleSession = undefined; c.ritesKept = {}; delete c.faithTally; const st: any = c.state; if (st?.faith) st.faith = {}; clearPrayerLimits(null, g, c); }
       });
       const u = cb?.units.find((x) => x.charId === c.id);
-      if (u && a.reset) { u.prayedRound = undefined; if (u.faith) { delete u.faith.whisperTurn; delete u.faith.hymnCut; delete u.faith.vowBank; delete u.faith.ownHymn; delete u.faith.intervened; delete u.faith.interventions; u.faith.liked = 0; } }
+      if (u && a.reset) { clearPrayerLimits(u); if (u.faith) { delete u.faith.hymnCut; delete u.faith.vowBank; delete u.faith.intervened; delete u.faith.interventions; u.faith.liked = 0; } }
       if (a.vow !== undefined) {
         const v = a.vow ? VOW[a.vow] : null, al = v?.needs_ally ? cb?.units.find((x) => (x.id === a.allyId || x.charId === a.allyId) && x.side === u?.side && x !== u) : null;
         if (v?.needs_ally && u && !al) fail('Name the ally to shield.');

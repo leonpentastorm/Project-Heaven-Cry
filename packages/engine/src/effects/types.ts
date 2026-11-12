@@ -80,7 +80,9 @@ export type HookName =
   // rules 1.8 (feelings.ts): a condition's save passed {by, t, id}
   | 'cond_resisted'
   // Calls (rules 1.13, calls/core.ts): a Call about to be made {u, t, id, kind, step, react, tnAdd, cancel}; its AP {u, id, ap, react}
-  | 'call' | 'call_cost';
+  | 'call' | 'call_cost'
+  // engine foundations 2 (effects/cost.ts): EVERY priced action {u, c, cb, action, base, ap, res, min, free, labels}
+  | 'cost';
 
 /** A hook handler. ctx is the hook's payload (fields documented at each emit site and in effects/hooks.ts); mutable
  * fields may be changed. Return nothing. */
@@ -94,7 +96,8 @@ export type StatAnswer = number | { add?: number; mult?: number } | void | null 
 /** A modifier to a d20 check (story or combat), with the label shown in the check's head. */
 export interface CheckMod { add: number; label: string }
 
-export type UseScope = 'at_will' | 'per_turn' | 'per_round' | 'per_combat' | 'per_scene' | 'per_session' | 'per_rest' | 'per_campaign' | 'reaction' | 'out_of_combat';
+/** When a limit is fresh again (the table: effects/uses.ts SCOPES). 'cooldown' is taken with uses(h).cool(turns), not take(). */
+export type UseScope = 'at_will' | 'per_turn' | 'per_round' | 'per_combat' | 'per_scene' | 'per_session' | 'per_rest' | 'per_campaign' | 'reaction' | 'out_of_combat' | 'cooldown';
 export type ActionScope = 'combat' | 'world' | 'story';
 export type ActionTarget = 'none' | 'self' | 'ally' | 'enemy' | 'unit' | 'tile' | 'object' | 'npc' | 'check' | 'text';
 
@@ -108,7 +111,12 @@ export interface ActionPreview { ok: boolean; why?: string; ap: number; lines: s
 /** An action an item grants (combat Perks or Class tab, the area map, the story panel). */
 export interface ActionDef {
   id: string; label: string; scope: ActionScope[];
-  ap: number | ((h: Holder, args: ActionArgs) => number);
+  /** Its AP before items. 'data': the item's own number in data/*.json (the action's `ap` in its grant_action, else the
+   * item's ap_cost): write that, not a literal that repeats the data. A function: a cost that depends on the holder. */
+  ap: number | 'data' | ((h: Holder, args: ActionArgs) => number);
+  /** What it costs besides AP, by resource id (data/actions.json `resources`: charge, mp, cores, momentum, guard,
+   * supplies, toxins, parts, stims, echo). The runtime checks it ("Needs 2 charge.") and pays it: run() never subtracts. */
+  res?: Record<string, number> | ((h: Holder, args: ActionArgs) => Record<string, number> | null | undefined);
   uses?: { per: UseScope; n: number };
   target: ActionTarget;
   range?: number; needsSight?: boolean;

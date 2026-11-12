@@ -20,6 +20,8 @@ import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExpl
 import { cdFire, cdTick, landsNext } from './cooldown';
 import { overworld, say, rngOf } from '../kit';
 import { rollVs, rerollAttack, attackHits, tierSave, TN, SAVE_TN } from '../rolls';
+import { setAp } from '../effects/cost';
+import { AP_BASE } from '../effects/ap';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
@@ -241,7 +243,7 @@ const judged = (h: Holder): { id: string; spent: boolean } | null => (h.u?.ps?.[
 register({
   id: 'judgement_day', claims: 'all',
   actions: [{
-    id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 3, uses: { per: 'per_combat', n: 1 }, needsSight: true,
+    id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 'data', uses: { per: 'per_combat', n: 1 }, needsSight: true,
     text: 'Once a fight: judge an enemy you can see. Its next attack on your side fails, and your attacks on it deal +50% damage for the rest of the fight.',
     preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && h.u && !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: ['Its next attack on your side fails. Your attacks on it deal +50% damage.'] }; },
     run: (h, a) => {
@@ -514,7 +516,7 @@ function foresee(h: Holder, rng: Rng): string[] {
   try {
     for (const f of cb2.units.filter((v) => v.side === 'foe' && alive(v) && sideSees(cb2, 'pc', v))) {
       const from = f.pos, at = cb2.log.length; cb2.turn = cb2.order.indexOf(f.id); if (cb2.turn < 0) continue;
-      f.ap = 6; cb2.over = null as any;
+      setAp(f, AP_BASE); cb2.over = null as any; // a dry run of its turn, on a copy
       try { enemyTurn(cb2, r); } catch { continue; }
       const hits = cb2.log.slice(at).filter((l) => l.startsWith(f.name + ' fires at') || l.startsWith(f.name + ' strikes') || l.startsWith(f.name + ' takes an aimed shot at'))
         .map((l) => l.replace(f.name + ' ', '').split(':')[0].replace(/^(fires at|strikes|takes an aimed shot at) /, ''));
@@ -943,7 +945,7 @@ register({
       const foe = cb.units.find((v) => v.side !== b.side && up(v) && dist(v.pos, b.pos) <= 1 && previewAttack(cb, b, v, 'melee').ok);
       say(cb, line + ' · it acts on instinct' + (foe ? ' and goes for ' + foe.name : ' and holds') + '.');
       if (foe) resolveAttack(cb, rng, b, foe, 'melee', null);
-      b.ap = 0;
+      setAp(b, 0);
     },
     on_hit: (ctx, h) => {
       if (!myComp(h, ctx.att, 'beast') || !ctx.melee || ctx.tgt.dead || ctx.tgt.surrendered) return;

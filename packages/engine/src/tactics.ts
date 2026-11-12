@@ -19,6 +19,7 @@ import { sessionN } from './effects/uses';
 import { makeObject } from './objects';
 import { residueFlag } from './feelings';
 import { tilesAround } from './kit';
+import { price, costOf, whyNot, pay, setAp, spend } from './effects/cost';
 
 // ---------- damage types, special ammo, the damage bucket ----------
 export interface AmmoType { id: string; damage_mult?: number; ignores_armor?: boolean; armor_mult?: number; applies?: string; damage_type?: string; meter_per_hit?: number }
@@ -119,8 +120,8 @@ export function hideBlock(cb: Combat, u: Unit): string | null {
 }
 export function hideAction(cb: Combat, u: Unit): string | null {
   { const no = hideBlock(cb, u); if (no) return no; }
-  const ap = actionAp({ u }, 'hide', 2).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  u.ap -= ap; cb.log.push(u.name + ' goes to ground' + hide(cb, u) + '.'); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' });
+  const ap = price({ cb, u }, 'hide').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
+  pay(cb, u, ap); cb.log.push(u.name + ' goes to ground' + hide(cb, u) + '.'); emitFx(cb, 'stance', { unit: u.id, at: u.pos, what: 'hide' });
   return null;
 }
 /** An ambush: the first attack from each Hidden entry (spec item 41; plan 6a-8): crit on 19-20, × the Ambush multiplier. */
@@ -150,7 +151,7 @@ export function canSurrender(t: Unit): boolean {
 }
 /** It gives up: out of the fight, not a target, counted as defeated; no kill credit and no mana rise. 'on_surrender'. */
 export function surrender(cb: Combat, t: Unit, by: Unit | null, why: string): string {
-  t.surrendered = true; dropHeldShot(cb, t, 'surrendered'); t.hidden = false; t.ap = 0; (t.tags ||= []).includes('prisoner') || t.tags!.push('prisoner');
+  t.surrendered = true; dropHeldShot(cb, t, 'surrendered'); t.hidden = false; setAp(t, 0); (t.tags ||= []).includes('prisoner') || t.tags!.push('prisoner');
   emitFx(cb, 'down', { unit: t.id, at: t.pos, dead: false, surrendered: true });
   emit(cb, 'on_surrender', { t, by, why, cb });
   return ' · ' + t.name + ' SURRENDERS (' + why + ')';
@@ -185,11 +186,11 @@ export const setThreaten = (f: ThreatenAlias) => { THREATEN = f; };
 export function parley(cb: Combat, rng: Rng, u: Unit, t: Unit, kind: 'persuade' | 'threaten' | 'parley', text = ''): string | null {
   if (!t || t.dead || t.surrendered || t.side === u.side) return 'Pick an enemy who can hear you.';
   if (dist(u.pos, t.pos) > HEARING) return 'Too far to be heard (' + HEARING + ' tiles).';
-  const ap = actionAp({ u }, 'parley', 2).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
+  const ap = price({ cb, u }, 'parley').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
   if (kind === 'threaten' && THREATEN) { const no = THREATEN.refuse(cb, u, t); if (no) return no; } // one hindering Call on a unit a round
   const ctx: any = emit(cb, 'parley', { u, t, kind, text, tnAdd: 0, via: PARLEY_VIA[kind], cancel: null as string | null, result: '', cb, rng });
   if (ctx.cancel) return ctx.cancel;
-  u.ap -= ap;
+  pay(cb, u, ap);
   const said = text ? ' "' + text.slice(0, 200) + '"' : '';
   let out = '';
   if (kind === 'persuade') out = applyCond(cb, rng, u, t, 'ldebuff', undefined, 'brain', { tnAdd: ctx.tnAdd, via: ctx.via });
@@ -212,9 +213,9 @@ export function throwItem(cb: Combat, rng: Rng, u: Unit, item: string, tile: str
   if (tile !== u.pos && !lineOfSight(cb, u.pos, tile)) return 'No line of sight to throw there.';
   // 'throw' {u, item, tile, ap, radius, cancel, caughtBy, preview} (mutable): cancel stops the blast (and any fire it
   // leaves); caughtBy names who caught it, for the log (hooks gap C1).
-  const ctx: any = emit(cb, 'throw', { u, item, tile, ap: actionAp({ u }, 'throw', 2).ap, radius: radiusOf(w), cancel: false, caughtBy: null, preview: false, cb, rng });
-  if (u.ap < ctx.ap) return 'Needs ' + ctx.ap + ' AP.';
-  u.ap -= ctx.ap; u.throwables![item]--;
+  const ctx: any = emit(cb, 'throw', { u, item, tile, ap: price({ cb, u }, 'throw').ap, radius: radiusOf(w), cancel: false, caughtBy: null, preview: false, cb, rng });
+  { const no = whyNot(cb, u, ctx.ap); if (no) return no; }
+  pay(cb, u, ctx.ap); u.throwables![item]--;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: item, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true });
   cb.log.push(u.name + (placed ? ' places a ' : ' throws a ') + w.name.toLowerCase() + ' at ' + refOf(tile) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : blast(cb, rng, u, tile, item, ctx.radius)) + '.');
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + w.name.toLowerCase());
@@ -285,8 +286,8 @@ export function blessing(cb: Combat, rng: Rng, u: Unit, t: Unit, bl: any, power:
 export function extinguish(cb: Combat, u: Unit, t: Unit): string | null {
   if (!condOn(t, 'burning')) return t === u ? 'You aren\'t burning.' : t.name + ' isn\'t burning.';
   if (dist(u.pos, t.pos) > 1) return 'Stand next to them.';
-  const ap = actionAp({ u }, 'extinguish', 1).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  u.ap -= ap;
+  const ap = price({ cb, u }, 'extinguish').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
+  pay(cb, u, ap);
   // FIRE's inflection (rules 1.10, Sigil 1.5): a Mastered FIRE's Burning lasts +1 round past being put out.
   const linger = /^linger:(\d+)/.exec(String(t.condArg?.burning || ''));
   if (linger) { t.conds!.burning = +linger[1]; delete t.condArg!.burning; if (cb.order?.[cb.turn] === t.id) (t.condFresh ||= []).push('burning'); cb.log.push(u.name + ' beats down the fire' + (t === u ? '' : ' on ' + t.name) + ', but it smoulders ' + linger[1] + ' more round' + (linger[1] === '1' ? '' : 's') + ' (a Mastered FIRE).'); return null; }
@@ -295,8 +296,8 @@ export function extinguish(cb: Combat, u: Unit, t: Unit): string | null {
 /** Break a grapple (2 AP): d20 + the better of your Raw Power and Athletics modifiers against d20 + the grappler's. */
 export function escapeGrapple(cb: Combat, rng: Rng, u: Unit): string | null {
   if (!condOn(u, 'grappled')) return 'Nothing is holding you.';
-  const ap = actionAp({ u }, 'escape', 2).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  u.ap -= ap;
+  const ap = price({ cb, u }, 'escape').ap; { const no = whyNot(cb, u, ap); if (no) return no; }
+  pay(cb, u, ap);
   const by = cb.units.find((x) => x.id === condSource(u, 'grappled'));
   const mine = Math.max(u.strength ?? 0, mod(u.athleticsPts || 0)), theirs = by ? Math.max(by.strength ?? 0, mod(by.athleticsPts || 0)) : 0;
   const ct = contest(cb, rng, { by: u, mod: mine }, { by: by || null, mod: theirs }, 'escape'), ok = ct.won || !by; // the higher total; the holder keeps a tie
@@ -307,8 +308,8 @@ export function escapeGrapple(cb: Combat, rng: Rng, u: Unit): string | null {
 /** Recover a dropped or lowered weapon: 2 AP (1 for a lowered one). */
 export function recoverWeapon(cb: Combat, u: Unit): string | null {
   const id = condOn(u, 'disarmed') ? 'disarmed' : condOn(u, 'lowered') ? 'lowered' : null; if (!id) return 'Your weapon is in your hand.';
-  const ap = actionAp({ u }, 'recover', id === 'disarmed' ? 2 : 1).ap; if (u.ap < ap) return 'Needs ' + ap + ' AP.';
-  u.ap -= ap; endCond(u, id, cb); cb.log.push(u.name + (id === 'disarmed' ? ' recovers the weapon.' : ' raises the weapon.')); return null;
+  const ap = price({ cb, u }, 'recover', costOf('recover', id === 'disarmed' ? 'ap' : 'ap_lowered')).ap; { const no = whyNot(cb, u, ap); if (no) return no; }
+  pay(cb, u, ap); endCond(u, id, cb); cb.log.push(u.name + (id === 'disarmed' ? ' recovers the weapon.' : ' raises the weapon.')); return null;
 }
 
 // ---------- companions (rules 1.3; stat blocks provisional) ----------
@@ -349,7 +350,7 @@ export function resGain(u: Unit, id: string, n: number): number {
   if (!u.resMax || u.resMax[id] == null) return 0;
   const was = resOf(u, id); (u.res ||= {})[id] = Math.max(0, Math.min(u.resMax[id], was + n)); return u.res[id] - was;
 }
-export function resSpend(u: Unit, id: string, n: number): boolean { if (resOf(u, id) < n) return false; u.res![id] -= n; return true; }
+export function resSpend(u: Unit, id: string, n: number): boolean { return spend(u, id, n); } // the one door (effects/cost.ts)
 
 // ---------- what an enemy carries into a fight (Narrator start_fight, campaign data) ----------
 export interface FoeTraits { kind?: string; tags?: string[]; unaware?: boolean; no_surrender?: boolean; hidden?: boolean }

@@ -17,6 +17,7 @@ import { storyConds, zoneTags, karmaBand, sideRollMod } from '../game';
 import { applyMemOp } from '../memory';
 import { overworld, say } from '../kit';
 import { rollVs, TN } from '../rolls';
+import { loseAp, setAp } from '../effects/cost';
 
 // ---------- small helpers ----------
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
@@ -427,7 +428,7 @@ register({
       if (ctx.t !== h.u || !(ctx.dmg > 0) || ctx.src?.by === h.u) return;
       const st = stateOf(h); if (st.wounded) return; st.wounded = true;
       const cb = h.cb!, u = h.u!, mine = cb.units.find((x) => x.id === cb.order[cb.turn]) === u && !cb.window;
-      if (mine) { u.ap = Math.max(0, u.ap - 2); say(cb, u.name + ' reels from the first wound: −2 AP (Soft Hands).'); }
+      if (mine) { loseAp(u, 2); say(cb, u.name + ' reels from the first wound: −2 AP (Soft Hands).'); }
       else { st.shock = true; say(cb, u.name + ' reels from the first wound: −2 AP next turn (Soft Hands).'); }
     },
     turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const st = stateOf(h); if (st.shock) { st.shock = false; ctx.penalties.push({ n: 2, why: 'Soft Hands' }); } },
@@ -467,7 +468,7 @@ register({
     run: (h) => {
       if (inFight(h)) {
         const u = h.u!, cb = h.cb!; if (u.downed) return 'Only while conscious.';
-        u.surrendered = true; u.ap = 0; (u as any).extracted = true; if (h.c) cst(h.c).rtcFight = true;
+        u.surrendered = true; setAp(u, 0); (u as any).extracted = true; if (h.c) cst(h.c).rtcFight = true;
         say(cb, 'An RTC extraction team pulls ' + u.name + ' out of the fight (Company Man).');
         if (!cb.units.some((v) => v.side === 'pc' && !v.companion && !v.dead && !v.downed && !v.surrendered) && cb.units.some((v) => v.side === 'foe' && !v.dead && !v.downed && !v.surrendered)) cb.over = 'loss';
         note(h, u.name + ' was extracted by RTC mid-fight: say where they land and what RTC wants for it.');
@@ -553,7 +554,7 @@ register({
       },
     },
     {
-      id: 'ward_area', label: 'Ward Area', scope: ['world', 'story'], target: 'none', ap: 0, uses: { per: 'out_of_combat', n: 1 },
+      id: 'ward_area', label: 'Ward Area', scope: ['world', 'story'], target: 'none', ap: 'data', uses: { per: 'out_of_combat', n: 1 },
       text: 'Out of a fight: spend 10 minutes to ward this place against the supernatural.',
       run: (h) => {
         const eid = postStory(h, 'spends ten minutes warding the area.');

@@ -33,6 +33,7 @@ import { aiRouteRisk } from './ai-sigil';
 import { fooledBy } from './illusion';
 import { foesOf } from './kit';
 import { tierSave, tierStrength } from './rolls';
+import { setAp, canPay, costOf } from './effects/cost';
 
 // ---------- Soul caster archetypes (data/enemies.json `soul_casters`) ----------
 export interface HeartCasterDef {
@@ -123,7 +124,7 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
     const P = paths(cb, u.pos, u.id), fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
     const foes = seenFoes(cb, u), maxReach = Math.max(...srcs.map((s) => heartReach(m, s.d))) + 2;
     const cand = Object.entries(P.dist).map(([k, n]) => ({ k, ap: apForTiles(n, u.bank, u.movement) }))
-      .filter(({ k, ap }) => k !== u.pos && ap >= 1 && ap <= u.ap - SOUL_AP.release && aiRouteRisk(cb, u, P, k) <= 0
+      .filter(({ k, ap }) => k !== u.pos && ap >= 1 && canPay(cb, u, ap + SOUL_AP.release) && aiRouteRisk(cb, u, P, k) <= 0
         && !(fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) && foes.some((t) => dist(k, t.pos) <= maxReach))
       .sort((a, b) => a.ap - b.ap || (a.k < b.k ? -1 : 1)).slice(0, 24);
     tiles.push(...cand);
@@ -132,7 +133,7 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
   let best: HeartChoice | null = null;
   try {
     for (const t of tiles) {
-      u.pos = t.k; u.ap = was.ap - t.ap;
+      u.pos = t.k; setAp(u, was.ap - t.ap); // a dry run from that tile, with the AP the walk leaves
       for (const { src, d } of srcs) {
         // A release from a design Begins it first: never into the burn (desperate: into it, never into a Short).
         if (src !== 'held' && m.strain + beginStrain(cb, u, d) > strainCap(u)) continue;
@@ -148,7 +149,7 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
         }
       }
     }
-  } finally { u.pos = was.pos; u.ap = was.ap; }
+  } finally { u.pos = was.pos; setAp(u, was.ap); }
   return best;
 }
 /** The highest stage the caster's AP buys for a release of `src` this turn (Begin + Pumps + Release from a design;
@@ -212,7 +213,7 @@ export function aiSoulStep(cb: Combat, rng: Rng, u: Unit): boolean {
   // 1. Over the limit (it burns at the turn's end): release if anything is worth it, else Steady (stage 2+) or let go.
   if (m.held && m.strain > strainCap(u)) {
     const c = heartBestRelease(cb, u); if (c) return doRelease(cb, rng, u, c);
-    if (m.held.stage >= 2 && !m.held.steady && u.ap >= SOUL_AP.steady && m.strain - 1 <= strainCap(u)) return !steadyHeart(cb, u);
+    if (m.held.stage >= 2 && !m.held.steady && canPay(cb, u, SOUL_AP.steady) && m.strain - 1 <= strainCap(u)) return !steadyHeart(cb, u);
     return !letGo(cb, u);
   }
   // 2. The best release this turn (from here, or one walk away).
@@ -223,13 +224,13 @@ export function aiSoulStep(cb: Combat, rng: Rng, u: Unit): boolean {
     // 3. Holding toward a big release: Steady if one more turn would drift over, free Pumps, then Pump with spare AP
     //    when a player is near (within reach + 3), and watch with the heart.
     if (!holdSafe(cb, u)) {
-      if (m.held.stage >= 2 && !m.held.steady && u.ap >= SOUL_AP.steady) { watch(cb, u); return !steadyHeart(cb, u); }
+      if (m.held.stage >= 2 && !m.held.steady && canPay(cb, u, SOUL_AP.steady)) { watch(cb, u); return !steadyHeart(cb, u); }
       if (m.strain >= m.strainLimit) return !letGo(cb, u);
     }
     const d = m.designs.find((x) => x.id === m.held!.design);
     if (m.held.stage < MAX_STAGE && (m.freePumps || 0) > 0 && !pumpOutburst(cb, rng, u)) { watch(cb, u); return true; }
     const near = d ? seenFoes(cb, u).some((t) => dist(t.pos, u.pos) <= heartReach(m, d) + 3) : false;
-    if (m.held.stage < MAX_STAGE && u.ap >= SOUL_AP.pump && (near || st.moved) && !m.held.steady && !pumpOutburst(cb, rng, u)) { watch(cb, u); return true; }
+    if (m.held.stage < MAX_STAGE && canPay(cb, u, SOUL_AP.pump) && (near || st.moved) && !m.held.steady && !pumpOutburst(cb, rng, u)) { watch(cb, u); return true; }
     watch(cb, u);
     return false; // walk or shoot (the weapon code); a hit calms the heart
   }
@@ -238,7 +239,7 @@ export function aiSoulStep(cb: Combat, rng: Rng, u: Unit): boolean {
   const pick = cd && !m.held && canBeginHold(cb, u, cd) ? cd : beginPick(cb, u); if (!pick) return false;
   const pv = previewOutburst(cb, u, pick.id, undefined, false);
   if (!pv.ok) {
-    if (/MP/.test(pv.why || '') && m.mp < m.mpMax && u.ap >= 1 + SOUL_AP.begin) return !syphon(cb, u);
+    if (/MP/.test(pv.why || '') && m.mp < m.mpMax && canPay(cb, u, costOf('syphon') + SOUL_AP.begin)) return !syphon(cb, u);
     return false;
   }
   if (beginOutburst(cb, rng, u, pick.id, undefined, true)) return false;
@@ -249,13 +250,13 @@ export function aiSoulStep(cb: Combat, rng: Rng, u: Unit): boolean {
 function canBeginHold(cb: Combat, u: Unit, d: OutburstDesign): boolean {
   const m = u.mg!; if (!d || m.held) return false;
   const pv = previewOutburst(cb, u, d.id, undefined, false);
-  return pv.ok && u.ap >= pv.ap + 1 && m.strain + beginStrain(cb, u, d) <= Math.min(strainCap(u), m.strainLimit);
+  return pv.ok && canPay(cb, u, pv.ap + SOUL_AP.pump) && m.strain + beginStrain(cb, u, d) <= Math.min(strainCap(u), m.strainLimit);
 }
 /** Which design to Begin and hold with nothing in reach: a hostile one (the first that can be held safely; a Buff only
  * when an ally of its side is hurt). */
 function beginPick(cb: Combat, u: Unit): OutburstDesign | null {
   const m = u.mg!, hurt = cb.units.some((t) => t.side === u.side && live(t) && t.hp < 0.6 * t.maxHp);
-  const ok = (d: OutburstDesign) => { const pv = previewOutburst(cb, u, d.id, undefined, false); return (pv.ok || /MP/.test(pv.why || '')) && u.ap >= pv.ap + 1 && m.strain + beginStrain(cb, u, d) <= Math.min(strainCap(u), m.strainLimit); };
+  const ok = (d: OutburstDesign) => { const pv = previewOutburst(cb, u, d.id, undefined, false); return (pv.ok || /MP/.test(pv.why || '')) && canPay(cb, u, pv.ap + SOUL_AP.pump) && m.strain + beginStrain(cb, u, d) <= Math.min(strainCap(u), m.strainLimit); };
   return m.designs.find((d) => hostile(d) && ok(d)) || (hurt ? m.designs.find((d) => !hostile(d) && ok(d)) : null) || null;
 }
 /** The designs a Soul caster archetype holds ready (for tools and the Narrator's context). */
