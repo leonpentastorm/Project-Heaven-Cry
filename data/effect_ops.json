@@ -927,6 +927,38 @@
       }
     },
     {
+      "id": "deal",
+      "tier": "core",
+      "summary": "Deal an amount of damage from data on the one formula (rules.json output): the item's amount block by name, or a block written here. The 'damage_out' hook, armour by the block's type, then the sink.",
+      "count": 0,
+      "params": [
+        "amount",
+        "target"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "deal",
+        "amount": { "kind": "damage", "base": 30, "profile": "flat", "type": "physical" },
+        "target": "enemy"
+      }
+    },
+    {
+      "id": "mend",
+      "tier": "core",
+      "summary": "Give an amount of healing or a shield from data on the one formula (rules.json output), by the block's kind: the item's amount block by name, or a block written here. Then the heal sink or the shield sink.",
+      "count": 0,
+      "params": [
+        "amount",
+        "target"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "mend",
+        "amount": { "kind": "heal", "base": 5, "profile": "mend" },
+        "target": "ally"
+      }
+    },
+    {
       "id": "heal",
       "tier": "core",
       "summary": "Restore HP.",

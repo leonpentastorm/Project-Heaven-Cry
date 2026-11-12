@@ -10,9 +10,10 @@ import {
   register, stateOf, uses, note, has, tierOf, grantPerkAp, bankAp, refusedGift, apDebt, pushAp, applyDamage, healUnit, openWindow,
   armedOf, disarm, actionAp, postStory, pendRuling, boundGame, PERK_AP_CAP, type Holder,
 } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
-import { FIELD_REPAIR_HEAL, mendFactorOf } from '../effects/mending';
+import { FIELD_REPAIR_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import {
   dist, alive, keyOf as refKey, unitSees, sideSees, lineOfSight, paths, apForTiles, previewAttack, resolveAttack, moveUnit,
   toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active,
@@ -679,7 +680,7 @@ register({
 // Your heals on robotic allies (Factory Made, machines) work at full power (Factory Made's Plug halving is undone).
 // Out of a fight (area map or story), 10 minutes and a charge patch a squadmate for 50% of their max HP (PROVISIONAL).
 // Rules 1.23: 3 a point (it was 10) × Healing given × the level factor, as the rest of the medic's kit.
-const surgeonHeal = (h: Holder) => Math.floor(FIELD_REPAIR_HEAL * (h.c?.skills?.proficiency || h.u?.proficiency || 0) * (h.c ? healingMult(h.c) : 1) * mendFactorOf(h.u));
+const surgeonHeal = (h: Holder) => kitHeal(0, h.c ? healingMult(h.c) : 1, mendFactorOf(h.u), { per: { of: 'improvisation', value: FIELD_REPAIR_HEAL, n: h.c?.skills?.proficiency || h.u?.proficiency || 0 }, floor: true });
 function takePart(c: Character): boolean {
   const pack = packOf(c).map((x) => ({ ...x })), i = pack.findIndex((x) => (x.item || x.id) === 'spare_parts' && x.qty > 0); if (i < 0) return false;
   if (pack[i].qty > 1) pack[i].qty--; else pack.splice(i, 1); c.pack = pack; return true;
@@ -708,7 +709,7 @@ register({
         if ((h.c?.skills?.proficiency || 0) < 3) return 'Needs Improvisation 3.';
         if (!h.c || partsOf(h.c) <= 0) return 'No spare-parts charges.';
         const max = maxHp(t); if (t.hp >= max) return t.name + ' is already whole.';
-        takePart(h.c); const was = t.hp; t.hp = Math.min(max, Math.max(t.hp, 0) + Math.floor(max * 0.5)); if (was <= 0) (t as any).downedFails = 0;
+        takePart(h.c); const was = t.hp; t.hp = Math.min(max, Math.max(t.hp, 0) + Math.floor(itemAmount('perk:field_surgeon', 'patch', [], { max_hp: max }))); if (was <= 0) (t as any).downedFails = 0;
         const line = h.c.name + ' spends ten minutes patching up ' + t.name + ' (Field Surgeon): +' + (t.hp - Math.max(0, was)) + ' HP (' + t.hp + '/' + max + ').';
         say(h.cb, line); postStory(h, line, { kind: 'system' });
         return null;

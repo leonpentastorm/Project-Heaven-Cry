@@ -421,6 +421,7 @@ onHook('attack_roll', (ctx: any) => {
   if (a.o.critOnHit && ctx.die !== 1 && ctx.die + ctx.toHit >= ctx.need) ctx.critMin = Math.min(ctx.critMin, ctx.die);
 });
 onHook('damage_out', (ctx: any) => {
+  if (ctx.blast) return; // a blast's splash is not the strike (step a7: it fires the hook now; a technique's multiplier never reached it)
   const a = cur(ctx.att); if (!a) return;
   if (a.o.mult != null && a.o.mult !== 1) ctx.mults.push({ v: a.o.mult, label: a.o.label || a.t.def.name });
   // armour this strike ignores, against the unit really struck (nobody's armour is changed)

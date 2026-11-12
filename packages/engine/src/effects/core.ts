@@ -16,6 +16,8 @@ import { applyCond, endCond, isCondition, condFamily } from '../magic';
 import { moveBlockers, key, xy, dist } from '../combat';
 import { grantShield, healUnit, tendHook } from './damage';
 import { gainEcho } from './echo';
+import { deal, mend, type AmountSpec } from './output';
+import { amountBlock, type AmountBlock } from './amounts';
 
 // ---------- the scope vocabulary ----------
 const GATES = ['when', 'duration', 'limit', 'uses', 'requires_state', 'per', 'trigger', 'count', 'area'];
@@ -216,6 +218,34 @@ const healScale = (h: Holder, scale: unknown): number =>
 registerGeneric({
   op: 'heal', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && typeof e.value === 'number',
   run: (h, e, args) => { const t = targetUnit(h, e, args); if (!t) return null; const n = e.value > 0 && e.value < 1 ? e.value * t.maxHp : e.value * healScale(h, e.scale); const r = healUnit(h.cb || null, t, n, h.u || null, 'perk'); return ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored); },
+});
+// ---------- 'deal' and 'mend' (step a6 of the damage-formula migration): an AMOUNT from data, on the one formula ----------
+// { "op": "deal", "amount": "<a name in the item's amounts>" | { an amount block }, "target": … }: damage through deal()
+// (the 'damage_out' hook, armour by the block's type, the sink). { "op": "mend", … }: a heal through healUnit or a shield
+// through grantShield, by the block's kind. The Stat term is the block's profile read from the holder's sheet; the
+// Level term its profile's column. With these an item that only deals, heals or shields a number needs no code.
+const blockOf = (h: Holder, e: any): AmountBlock | null => {
+  if (e.amount && typeof e.amount === 'object' && typeof e.amount.base === 'number') return e.amount as AmountBlock;
+  if (typeof e.amount === 'string') { try { return amountBlock(h.key, e.amount); } catch { return null; } }
+  return null;
+};
+const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none' });
+registerGeneric({
+  op: 'deal', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && !!e.amount,
+  run: (h, e, args) => {
+    const t = targetUnit(h, e, args), b = blockOf(h, e); if (!t || !h.cb || !b || b.kind !== 'damage') return null;
+    const type = b.type || 'true', src: any = { by: h.u || null, type, dmgType: type, shield: type !== 'true', credit: 'hp', item: h.key };
+    const r = deal(h.cb, h.u || null, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !!h.u }, { who: h.c || null, counts: (args as any)?.counts, src, hookCtx: { mode: 'item', src } });
+    return r.amount > 0 ? ' · ' + r.amount + ' damage to ' + t.name + (t.hp === 0 ? (t.side === 'foe' ? ', down for good' : ', Downed') : '') : ' · ' + t.name + ' takes no damage';
+  },
+});
+registerGeneric({
+  op: 'mend', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && !!e.amount,
+  run: (h, e, args) => {
+    const t = targetUnit(h, e, args), b = blockOf(h, e); if (!t || !b || b.kind === 'damage') return null;
+    const r = mend(h.cb || null, h.u || null, t, { ...specOf(b), kind: b.kind }, { who: h.c || null, counts: (args as any)?.counts, healKind: 'perk' });
+    return b.kind === 'shield' ? ' · ' + t.name + ' gains a ' + r.shield + ' shield' : ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored);
+  },
 });
 registerGeneric({
   op: 'condition', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && isCondition(e.condition || e.id) && !e.choose,

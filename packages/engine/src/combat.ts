@@ -16,8 +16,9 @@ import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion
 import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
+import { itemAmount } from './effects/amounts';
 import { openAmount, closeAmount, armourAgainst, landed, deal } from './effects/output';
-import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf } from './effects/mending';
+import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal } from './effects/mending';
 import { turnAp, briefCredit } from './effects/ap';
 import { skillRollMod, actionAp, immune, forbids } from './effects/core';
 import { statQuery } from './effects/hooks';
@@ -602,13 +603,18 @@ export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objects
 export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb)]);
 
 /** Damage to a unit from something other than an attack (explosions, traps, hazards). Returns a log suffix. */
+/** What hurtUnit deals that an item may speak about when someone made it (its `damage_kinds`). */
+export const BLAST_KINDS = ['explosion', 'trap', 'thrown'];
 export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false, cb?: Combat, why = 'hazard', by?: Unit | null): string {
   if (u.dead) return '';
   // The one way in (effects/output.ts deal): the number as given (no Stat or Level term yet, no 'damage_out' hook:
   // this is nobody's roll), the target's armour in full unless ignored, then the sink.
   // A shield stops a blast, a trap and a hazard as it stops a bullet or a spell (Leon, 12 Nov 2026): everything but
   // damage over time and true damage (effects/damage.ts pastShields). It used to be skipped here.
-  const r = deal(cb || null, by || null, u, { kind: 'damage', base: dmg, armour: 'full' }, { ignoreArmour, src: { type: why, by: by || null, shield: true, explosive: why === 'explosion', credit: 'hp' } });
+  // Step a7 (leak 4): a blast, a splash, a trap and a thrown item that SOMEONE made fire 'damage_out' (ctx.blast,
+  // ctx.kind), so that an item which says it speaks about them does (data `damage_kinds`; effects/hooks.ts emit).
+  const made = !!by && !!cb && BLAST_KINDS.includes(why);
+  const r = deal(cb || null, by || null, u, { kind: 'damage', base: dmg, armour: 'full', hook: made }, { ignoreArmour, src: { type: why, by: by || null, shield: true, explosive: why === 'explosion', credit: 'hp' }, ...(made ? { hookCtx: { mode: 'blast', blast: true, kind: why } } : {}) });
   if (r.shielded && cb) emitFx(cb, 'shield', { target: u.id, at: u.pos, absorbed: r.shielded });
   if (r.downedHit) { if (cb) { emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: 0, why, killed: u.dead }); if (u.dead) fxFell(cb, u); } return ' · ' + u.name + ' takes a hit while Downed' + (u.dead ? ' and dies' : ''); }
   if (r.shielded && r.amount <= 0) return ' · ' + u.name + "'s shield takes it (" + r.shielded + ')';
@@ -1071,7 +1077,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   // multiplier, which follows the weapon's scales_with, rules 1.12, with perks and gear in it; an enemy: its tier and
   // level, rules 1.15, which is its Stat and its Level together); the Level term (×1 today); then this attack's own
   // multipliers below, the items' ('damage_out') and the bonuses against this target.
-  const amt = openAmount({ kind: 'damage', base, profile: 'weapon', order: 'stack' }, att, { level: who ? att.level : null,
+  const amt = openAmount({ kind: 'damage', base, profile: 'weapon' }, att, { level: who ? att.level : null,
     stat: who ? { v: weaponMult(who, useW.id), label: weaponMultLabel(useW.id) } : { v: att.lvlDmg ? att.lvlDmg : 1, label: att.tier ? 'tier and level' : 'level' } });
   const mults: Term[] = amt.mults, vs: Term[] = amt.vs;
   const M = (v: number, label: string) => { if (v !== 1) mults.push({ v, label }); };
@@ -1099,7 +1105,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const props = useW.properties || [];
   const ignoreAll = !!ctx.ignoreArmour || props.includes('ignores_armour') || !!ammo?.ignores_armor || fx.op === 'ignore_armour' && fx.value >= 99;
   const pierce = (ctx.pierce || 0) + (fx.op === 'ignore_armour' ? fx.value : 0) + (props.includes('armor_ignore_5') ? 5 : 0) + (props.includes('armor_ignore_10') || props.includes('ignores_10_armour') ? 10 : 0);
-  const armour = armourAgainst(tgt, 'full', { mult: ammo?.armor_mult || 1, pierce, ignore: ignoreAll, floor0: true });
+  const armour = armourAgainst(tgt, 'full', { mult: ammo?.armor_mult || 1, pierce, ignore: ignoreAll });
   return { base, terms: ctx.add ? [{ v: ctx.add, label: 'perks (flat)' }] : [], mults, vs, total, crit: critM, pierce, armour, src };
 }
 
@@ -1355,7 +1361,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
   if (u.bleed && !u.dead && !u.downed) {
     u.bleed--;
     const by = u.lastHitBy ? cb.units.find((x) => x.id === u.lastHitBy) || null : null; // kill credit: whoever opened the wound
-    const r = applyDamage(cb, u, 5, { type: 'bleed', by, shield: false, credit: 'hp' });
+    const r = applyDamage(cb, u, itemAmount('condition:bleeding', 'tick'), { type: 'bleed', by, shield: false, credit: 'hp' });
     emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'bleed', killed: u.hp === 0 }); if (u.hp === 0) fxFell(cb, u);
     cb.log.push(u.name + ' bleeds: ' + r.dealt + ' damage' + (u.hp === 0 ? (u.side === 'foe' ? ' · down for good' : ' · Downed') : ''));
     if (u.hp === 0) { u.bleed = 0; u.ap = 0; return; }
@@ -2075,7 +2081,7 @@ export function clearJam(cb: Combat, u: Unit): string | null {
 }
 /** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others).
  * Else heal 6 × Healing given × the level factor (rules 1.23: it was 30 × Healing given at every level). */
-export const stimHeal = (u: Unit, who: Character) => STIM_HEAL * healingMult(who) * mendFactorOf(u);
+export const stimHeal = (u: Unit, who: Character) => kitHeal(STIM_HEAL, healingMult(who), mendFactorOf(u));
 export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean): string | null {
   if (who.stims <= 0) return 'No stims left.';
   if (dist(u.pos, t.pos) > 1) return 'Must be adjacent.';

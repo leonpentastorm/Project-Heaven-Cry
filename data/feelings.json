@@ -143,6 +143,7 @@
     },
     {
       "id": "love",
+      "amounts": {"heal": {"kind": "heal", "base": 0, "profile": "mend", "mults": {"along_the_chain": 0.5}, "text": "Love's heal along a chain, as a share of Love's heal", "provisional": true}},
       "name": "Love",
       "n": 4,
       "family": "warm",

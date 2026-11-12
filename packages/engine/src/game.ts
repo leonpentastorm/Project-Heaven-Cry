@@ -27,6 +27,7 @@ import { isCache, isPile, packAdd, lootToPack, itemLabel, magItem, dropOnTile, P
 import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
+import { itemAmount } from './effects/amounts';
 import { actionAp } from './effects/core';
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
@@ -2635,7 +2636,7 @@ function repairAlly(cb: Combat, u: Combat['units'][number], t: Combat['units'][n
   if (!(u.parts || 0)) return 'No spare-parts charges.';
   if (t.hp >= t.maxHp) return t.name + ' is already whole.';
   const cost = actionAp({ u }, 'field_repair', 2).ap; if (u.ap < cost) return 'Needs ' + cost + ' AP.';
-  const was = t.hp; u.ap -= cost; u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + 10 * (u.proficiency || 0)); if (t.downed && t.hp > 0) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
+  const was = t.hp; u.ap -= cost; u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 })); if (t.downed && t.hp > 0) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
   emitFx(cb, 'repair', { unit: u.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was });
   cb.log.push(u.name + ' patches ' + t.name + '\'s chassis: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
 }
