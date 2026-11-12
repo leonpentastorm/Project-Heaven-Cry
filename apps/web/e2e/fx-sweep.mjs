@@ -21,7 +21,7 @@
 //   PARTS=real,table,fog,glyphs  which parts to run · JOBS=3  how many pages play the table at once
 // One line per failing case, then the counts. The full report: .check/e2e/fx-sweep.json. Exit code 1 on any failure.
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync } from 'fs';
-import { chromium, player, click, BASE } from './lib.mjs';
+import { chromium, player, click, BASE, pause } from './lib.mjs';
 
 const ROOT = new URL('../../../', import.meta.url).pathname;
 const WEAPONS = JSON.parse(readFileSync(ROOT + 'data/weapons.json', 'utf8')).items;
@@ -68,9 +68,9 @@ async function openGround(browser, speed) {
   p.fxErrors = []; p.on('pageerror', (e) => p.fxErrors.push(String(e.message || e)));
   await p.goto(BASE); await click(p, 'PROVING GROUND', { timeout: 90000 });
   const nm = p.getByPlaceholder('Leon');
-  await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+  await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-  await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
   // the driver: act (the engine's refusal as a string), wait for the effects queue to run dry, and one case
   await p.evaluate(() => {
     const st = () => window.__phc.getState().game, sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -197,8 +197,8 @@ async function enterRoom(R, first) {
   const charId = (await R.G()).chars[0];
   if (first) { await A({ type: 'sandbox/skills', charId, points: 10 }); await A({ type: 'sandbox/technique', charId, id: 'all', ready: true }); }
   const e = await A({ type: 'sandbox/fxtest' }); if (e) throw new Error('the Effect testing room refused: ' + e);
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 30000 });
   await p.evaluate(() => window.__sweep.idle(300, 15000));
   return charId;
 }
@@ -209,7 +209,7 @@ async function sweep(browser, cases, speed) {
   let charId = await enterRoom(R, true), resets = 0;
   const results = [];
   /** Leave the room and enter it again (the ground cleared, the fighters as their sheets say; `gear`: an action while gearing up). */
-  const reset = async (gear) => { resets++; await A({ type: 'sandbox/stop' }); await p.waitForTimeout(fast ? 150 : 700); if (gear) await A(gear); charId = await enterRoom(R, false); };
+  const reset = async (gear) => { resets++; await A({ type: 'sandbox/stop' }); await pause(p, fast ? 150 : 700); if (gear) await A(gear); charId = await enterRoom(R, false); };
   for (const id of [...new Set(cases.map((c) => c.weapon))]) {
     const w = WEAPONS.find((x) => x.id === id), mine = cases.filter((c) => c.weapon === id);
     const job = { charId, weapon: id, thrown: w.category === 'thrown', melee: systemOf(w) === 'melee', settle, from: 0, mag: w.magazine ?? null, heatLimit: w.heat_limit || 0,
@@ -234,7 +234,12 @@ async function sweep(browser, cases, speed) {
     for (const c of mine) {
       const r = got.find((x) => x.name === c.name) || { name: c.name, refused: 'not reached' };
       const res = { name: c.name, weapon: c.weapon, t: c.t, line: c.line, refused: r.refused, trace: r.trace, fails: r.fails };
-      if (r.trace) { res.fails = judge(c, w, r.trace, { tol, k, clock }); if (r.stalled) res.fails.push('the effects queue never ran dry'); }
+      if (r.trace) {
+        res.fails = judge(c, w, r.trace, { tol, k, clock });
+        // the real-speed part is judged on the plan as well as on the clock (the plan is the same on any machine)
+        if (clock) for (const f of judge(c, w, r.trace, { tol, k, clock: false })) if (!res.fails.includes(f)) res.fails.push(f + ' (by the plan)');
+        if (r.stalled) res.fails.push('the effects queue never ran dry');
+      }
       results.push(res);
       if (LOG) console.log((res.refused ? 'n/a  ' : res.fails && res.fails.length ? 'bad  ' : 'good ') + c.name + (res.refused ? ' — ' + res.refused : res.fails && res.fails.length ? ' — ' + res.fails.join('; ') : ' — ' + summary(res.trace)));
     }
@@ -252,6 +257,11 @@ const GUN_SOUND = /^(gun_|auto_|burst_)/;
 /** What is wrong with a case's trace (an empty list: nothing). tol: ms of slack on this page's clock; k: its pace. */
 function judge(c, w, tr0, { tol, k, clock }) {
   // the table judges the plan (t: the same on any machine); the real-speed part judges the clock (rt: what was seen)
+  // WALL CLOCK, on purpose, in the real-speed part: what the player saw, and when. Its slack is 40 ms plus the most any
+  // step of THIS case ran behind its own plan (rt - t): about nothing on an idle machine, and exactly what a busy one
+  // cost. Two steps planned 40 ms apart can run 300 ms apart when the machine is busy between them; that is the
+  // machine, and the plan (judged beside it, above) still has to be right to the millisecond.
+  if (clock) tol += Math.max(0, ...tr0.map((e) => (e.rt || 0) - (e.t || 0)));
   const tr = clock ? tr0.map((e) => ({ ...e, t: e.rt })) : tr0;
   const bad = [], say = (s) => { if (!bad.includes(s)) bad.push(s); };
   const props = propsOf(w), melee = systemOf(w) === 'melee', cat = w.category;
@@ -351,10 +361,10 @@ async function fogPart() {
   await A({ type: 'sandbox/skills', charId, points: 10 }); await A({ type: 'sandbox/technique', charId, id: 'all', ready: true });
   await A({ type: 'sandbox/give', charId, item: 'smetanita_thumper', equip: true });
   await A({ type: 'sandbox/ai', on: false }); await A({ type: 'sandbox/fight' });
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 30000 });
   await p.evaluate(() => window.__sweep.idle(400, 15000));
-  await A({ type: 'sandbox/clear' }); await p.waitForTimeout(300);
+  await A({ type: 'sandbox/clear' }); await pause(p, 300);
   const tiles = () => p.evaluate(() => [...document.querySelectorAll('button.phc-tok[aria-label]')].map((b) => b.getAttribute('aria-label')));
   const xy = (r) => [r.charCodeAt(0) - 65, Number(r.slice(1)) - 1], d = (a, b) => { const [ax, ay] = xy(a), [bx, by] = xy(b); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
   const read = async () => { const ls = await tiles(), open = ls.filter((l) => / · open( |$)/.test(l)); return { all: ls, fog: open.filter((l) => /out of sight/.test(l)).map((l) => l.split(' ')[0]), seen: open.filter((l) => !/out of sight/.test(l)).map((l) => l.split(' ')[0]) }; };
@@ -368,7 +378,7 @@ async function fogPart() {
     await A({ type: 'sandbox/clear' });
     const e1 = await A({ type: 'sandbox/spawn', tier: 'elite', weapon: 'fists', at: near[0], name: 'Fog lurker' }), e2 = await A({ type: 'sandbox/spawn', tier: 'elite', weapon: 'fists', at: near[1], name: 'Fog lurker' });
     if (e1 || e2) continue;
-    await p.waitForTimeout(250);
+    await pause(p, 250);
     const now = await read();
     if (now.all.some((l) => /Fog lurker/.test(l)) || !now.seen.includes(t)) continue; // one of them is in sight after all, or the tile isn't
     aim = t; lurk = near.slice(0, 2); T = now; break;
@@ -388,11 +398,11 @@ async function fogPart() {
   const tools = p.locator('aside[aria-label="Proving Ground tools"]').first();
   if (await tools.count()) await tools.getByRole('button', { name: /^Close the tools/ }).first().click().catch(() => {});
   await p.waitForFunction(() => { const dk = document.querySelector('.phc-cb-dock'); return !!dk && !dk.getAttribute('data-lock'); }, null, { timeout: 30000 }).catch(() => {});
-  await p.locator('#phc-tab-attack').click(); await p.waitForTimeout(200);
-  await p.locator('[role="tabpanel"] [data-act="tpad:main"]').first().click(); await p.waitForTimeout(250);
-  await p.locator('[data-tech-pad] [data-word="lob"]').first().click(); await p.waitForTimeout(250);
+  await p.locator('#phc-tab-attack').click(); await pause(p, 200);
+  await p.locator('[role="tabpanel"] [data-act="tpad:main"]').first().click(); await pause(p, 250);
+  await p.locator('[data-tech-pad] [data-word="lob"]').first().click(); await pause(p, 250);
   const blast = p.locator('.phc-cb-dock').getByRole('button', { name: /blast/i }).first();
-  if (await blast.count()) { await blast.click(); await p.waitForTimeout(200); }
+  if (await blast.count()) { await blast.click(); await pause(p, 200); }
   const shown = () => p.evaluate(() => {
     const marks = [...document.querySelectorAll('button.phc-tok [title$=": affected"]')].map((m) => m.closest('button.phc-tok').getAttribute('aria-label').split(' ')[0] + ' ' + m.getAttribute('title'));
     const dock = (document.querySelector('.phc-cb-dock') || document.body).innerText || '';
@@ -400,7 +410,7 @@ async function fogPart() {
     return { marks, card: (dock.match(/Fog lurker/g) || []).length, plain: (dock.match(/Plain sight/g) || []).length, onTiles: /Fog lurker/.test(attrs), covered: document.querySelectorAll('button.phc-tok[aria-label*="it covers this tile"]').length };
   });
   const base = await shown();
-  const clickTile = async (r) => { await p.locator('button.phc-tok[aria-label^="' + r + ' "]').first().click({ force: true }); await p.waitForTimeout(350); };
+  const clickTile = async (r) => { await p.locator('button.phc-tok[aria-label^="' + r + ' "]').first().click({ force: true }); await pause(p, 350); };
   await clickTile(aim2); const seenAim = await shown();
   ok('fog: aimed in sight, the blast is drawn (' + seenAim.covered + ' tiles) and both hostiles in it are marked (' + seenAim.marks.join(' | ') + ') and named', seenAim.covered > 4 && seenAim.marks.length === 2 && seenAim.plain > base.plain);
   await clickTile(aim); const fogAim = await shown();
@@ -420,8 +430,8 @@ async function glyphPart() {
   const charId = (await R.G()).chars[0];
   for (const a of [{ type: 'sandbox/kit', charId, kind: 'sigil' }, { type: 'sandbox/skill', charId, skill: 'brain_power', points: 3 }, { type: 'sandbox/give', charId, item: 'evoker_blade', equip: true },
     { type: 'sandbox/give', charId, item: 'standard_core', qty: 3 }, { type: 'sandbox/learn', charId, word: 'fire' }, { type: 'sandbox/learn', charId, word: 'seek' }, { type: 'sandbox/ai', on: false }, { type: 'sandbox/fight' }]) await A(a);
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+  await p.waitForSelector('button.phc-tok[aria-label]', { timeout: 30000 });
   await p.evaluate(() => window.__sweep.idle(600, 15000));
   await A({ type: 'sandbox/clear' });
   const me = (await R.G()).units.find((u) => u.side === 'pc'), [x, y] = me.pos.split(',').map(Number), K = (dx) => (x + dx) + ',' + y;
@@ -440,7 +450,7 @@ async function glyphPart() {
   ok('glyphs: a Line of two is on the ground and drawn (' + before.state + ' / ' + before.drawn + ')' + (errs.filter(Boolean).length ? ' · ' + errs.filter(Boolean).join(' · ') : ''), before.state.split(' ').length === 2 && before.drawn === before.state);
   const eMove = await A({ type: 'combat/move', unitId: me.id, to: K(-1) });
   const gone = []; let last = before;
-  for (const t0 = Date.now(); Date.now() - t0 < 4500;) { const s = await snap(); if (s) { last = s; if (s.drawn !== s.state) gone.push((Date.now() - t0) + ' ms: in the fight ' + s.state + ', drawn ' + (s.drawn || 'none')); } await p.waitForTimeout(35); }
+  for (const t0 = Date.now(); Date.now() - t0 < 4500;) { const s = await snap(); if (s) { last = s; if (s.drawn !== s.state) gone.push((Date.now() - t0) + ' ms: in the fight ' + s.state + ', drawn ' + (s.drawn || 'none')); } await pause(p, 35); }
   ok('glyphs: walking away drew an opportunity attack (' + last.log.slice(0, 200) + ')' + (eMove ? ' · ' + eMove : ''), /opportunity attack/.test(last.log));
   ok('glyphs: through the attack and after it, every glyph in the fight stays drawn' + (gone.length ? ' — ' + gone.slice(0, 3).join('; ') : ' (' + last.drawn + ')'), gone.length === 0 && last.state.split(' ').length === 2);
   ok('glyphs: no page errors' + (p.fxErrors.length ? ': ' + p.fxErrors.join(' | ').slice(0, 300) : ''), p.fxErrors.length === 0);

@@ -1,6 +1,6 @@
 // Title screen at six window sizes (the slate pass): the title words never clip, the layered key art is in,
 // Wick's clips play, and hover still works on other rows while Wick says hello after a press.
-import { chromium, OUT, BASE } from './lib.mjs';
+import { chromium, OUT, BASE, pause, titleHoverDuringHello } from './lib.mjs';
 const SHOTS = process.env.SHOTS || OUT;
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const browser = await chromium.launch();
@@ -15,7 +15,7 @@ for (const [w, h] of SIZES) {
   await page.goto(BASE);
   await page.waitForSelector('nav[aria-label="Main menu"] [data-item]', { timeout: 90000 });
   await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(1600);
+  await pause(page, 1600);
   const fit = await page.evaluate(() => {
     const words = [...document.querySelectorAll('.phc-word')];
     const col = document.querySelector('.phc-col');
@@ -31,29 +31,22 @@ for (const [w, h] of SIZES) {
   // parallax: move the pointer and see a layer shift
   if (w >= 900) {
     const t = () => page.evaluate(() => [...document.querySelectorAll('.phc-layer')].map((l) => getComputedStyle(l).transform).join('|'));
-    await page.mouse.move(10, 10); await page.waitForTimeout(700); const a = await t();
-    await page.mouse.move(w - 10, h - 10); await page.waitForTimeout(700); const b = await t();
+    await page.mouse.move(10, 10); await pause(page, 700); const a = await t();
+    await page.mouse.move(w - 10, h - 10); await pause(page, 700); const b = await t();
     ok(`${w}x${h}: parallax moves the layers`, a !== b);
   }
   if (w === 1440) {
     const act = () => page.locator('.phc-wick').getAttribute('data-act');
-    await page.getByRole('button', { name: 'CREDITS', exact: true }).hover(); await page.waitForTimeout(60);
+    await page.getByRole('button', { name: 'CREDITS', exact: true }).hover(); await pause(page, 60);
     ok('Wick runs to a hovered row (data-act ' + (await act()) + ')', ['run', 'stop'].includes(await act()));
-    await page.waitForTimeout(1500);
+    await pause(page, 1500);
     ok('then idles (data-act ' + (await act()) + ')', ['idle', 'stop'].includes(await act()));
-    // hover during hello
-    await page.getByRole('button', { name: 'CHARACTERS', exact: true }).click();
-    await page.waitForTimeout(80);
-    const before = await page.locator('[data-item="settings"] .phc-label').evaluate((el) => getComputedStyle(el).color);
-    await page.getByRole('button', { name: 'SETTINGS', exact: true }).hover();
-    await page.waitForTimeout(120);
-    const after = await page.locator('[data-item="settings"] .phc-label').evaluate((el) => getComputedStyle(el).color);
-    const on = await page.locator('.phc-item.on').getAttribute('data-item').catch(() => null);
-    const pr = await page.locator('.phc-item.pressed').getAttribute('data-item').catch(() => null);
-    ok(`hover during hello: SETTINGS highlighted (on=${on}, pressed=${pr}, colour ${before} -> ${after})`, on === 'settings' && pr === 'chars' && before !== after);
-    ok('Wick is in hello (data-act ' + (await act()) + ', bubble ' + (await page.locator('.phc-bubble').count()) + ')', (await act()) === 'hello' && (await page.locator('.phc-bubble').count()) === 1);
-    await page.screenshot({ path: `${SHOTS}/slate-title-hello-hover.png` });
-    await page.waitForSelector('text=Your characters', { timeout: 3000 });
+    // hover during hello (lib.mjs titleHoverDuringHello: the press, the pointer onto SETTINGS, and a watcher in the page)
+    const hl = await titleHoverDuringHello(page), sn = hl.seen || {};
+    ok(`hover during hello: SETTINGS highlighted (on=${sn.on}, pressed=${sn.pressed}, colour ${hl.before} -> ${hl.colour})`, sn.on === 'settings' && sn.pressed === 'chars' && !!hl.colour && hl.before !== hl.colour);
+    ok('Wick is in hello (data-act ' + sn.act + ', bubble ' + sn.bubble + ')', sn.act === 'hello' && sn.bubble === 1);
+    await page.screenshot({ path: `${SHOTS}/slate-title-hello-hover.png` }).catch(() => {});
+    await page.waitForSelector('text=Your characters', { timeout: 30000 });
     ok('the pressed row (CHARACTERS) still opens', true);
   }
   if (errors.length) ok(`${w}x${h}: no page errors ${errors}`, false);
@@ -62,8 +55,8 @@ for (const [w, h] of SIZES) {
 {
   const p2 = await ctx.newPage(); await page.close(); await p2.setViewportSize({ width: 1440, height: 900 });
   await p2.goto(BASE + '/?fresh=1'); await p2.waitForSelector('text=PRESS ANY KEY', { timeout: 90000 }); await p2.keyboard.press("Space");
-  const got = await p2.waitForFunction(() => document.querySelector('.phc-wick')?.getAttribute('data-act') === 'greet', null, { timeout: 4000 }).then(() => true, () => false);
-  await p2.waitForTimeout(300);
+  const got = await p2.waitForFunction(() => document.querySelector('.phc-wick')?.getAttribute('data-act') === 'greet', null, { timeout: 30000 }).then(() => true, () => false);
+  await pause(p2, 300);
   ok('greeting: Wick jumps and waves with Hi! (' + (await p2.locator('.phc-bubble').textContent().catch(() => '')) + ')', got);
   await p2.screenshot({ path: `${SHOTS}/slate-title-greet.png` });
 }

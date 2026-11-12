@@ -11,8 +11,12 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 | One rule, and you want only its tests | `npm run check -- -t "Heart Overload"` | seconds | Both suites, only tests whose name matches |
 | A simulator policy or the enemy AI; and before any merge of engine work | `npm run balance` (or `npm run check -- balance`) | a minute or two | The balance simulator's folder (`packages/engine/test/balance/`) with its three "quick run" smoke fights (whole simulated fights for every table, squad and measurement). Every balance TARGET (guns, magic, heals, Faith, defence, the enemy table, the price list) is in `npm run check` already: a number that moves fails there |
 | A number or a rule, and you want to SEE what the game does | `npm run try -- '<scenario>'` | 3 s | A fight played through the real rules: the log lines and every unit's HP, AP, meters and conditions after each step. No browser, no new test file. `npm run try -- --help` has the fields and examples |
-| A screen, a button, anything a player clicks | `npm run e2e -- <suite>` | 1 to 3 min a suite | The suite's checks in a real browser. It builds, starts and stops the server itself |
-| Before a release | `npm run e2e -- all` then deploy | about 15 min | Every browser suite, three at a time |
+| A screen, a button, anything a player clicks | `npm run e2e -- <suite>` | 1 to 3 min a suite | The suite's checks in a real browser. It builds, starts and stops the server itself. `apps/web/e2e/README.md` lists every suite and what it looks at |
+| Any change to the client, before you say "done" | `npm run e2e -- smoke` | 3 to 5 min | Five suites that catch most breakage: an old save opens, creation's points step, perks in play, two players through a whole session, a long enemy phase in order |
+| Before a merge to `develop` that touches the client | `npm run e2e -- rules` | about 15 min | Every suite that checks rules and screens (fights at the test pace) |
+| You changed `game/fx/`, the camera, the combat speed, a cut-in | `npm run e2e -- anim` | about 20 min | Every suite that looks at animation or time, at real speed |
+| Before a release | `npm run e2e -- all` then deploy | 35 to 50 min (measured on a machine busy with other work; 61 suites, about 1,800 named checks) | Every browser suite (`rules` + `anim`), three at a time. It must end `ALL GREEN` |
+| You changed a weapon, a technique or an effect's timing | `npm run e2e -- sweep` | about 17 min | `fx-sweep`'s whole table: every weapon × every technique, judged from the effects layer's own trace |
 | After a deploy | `npm run e2e -- smoke --base https://project-heaven-cry.leonpentastorm.workers.dev` | 3 min | The live site |
 
 ## Rules that save the most time
@@ -23,8 +27,9 @@ change with the cheapest tool that proves it. **Start at the top of this table a
    screen's logic is tested in `apps/web/src/**/**.test.ts` without a browser (the screens are functions that return
    values). Add your test there. A browser suite is the last check, not the first.
 3. **Never run browser suites at real speed unless they test animation.** `npm run e2e` does this for you: every suite
-   that doesn't look at animation plays fights about 25 times faster (`FAST=1`, the hidden `test` combat speed in
-   `apps/web/src/game/combatSpeed.ts`). The animation suites are listed as `ANIM` in `tools/e2e.py`.
+   in the group `rules` plays fights about 25 times faster (`FAST=1`, the hidden `test` combat speed in
+   `apps/web/src/game/combatSpeed.ts`). The suites that look at animation or time are the group `anim`
+   (`apps/web/e2e/groups.json`).
 4. **Read one line per suite.** The tools print a summary and only the failing lines. The full log is in `.check/`
    when you need it; don't print it.
 5. **One server, one build.** `npm run e2e` owns `apps/web/dist` and port 8787 while it runs. Don't run two at once,
@@ -32,9 +37,38 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 6. **A browser script must wait for what a player waits for,** not for a number of milliseconds: `pickAction` in
    `apps/web/e2e/lib.mjs` waits until the action panel is really yours. In a fight the screen shows the turn that is
    playing; the state can say "your turn" several seconds earlier. Read `window.__phc.getState()` for facts and the
-   page for what is shown, and don't mix them up.
+   page for what is shown, and don't mix them up. `page.waitForTimeout` is not used in any suite (a test keeps the
+   count at 0): `until`, `settle`, `fxIdle`, `pause` and `watch` in `lib.mjs` take its place, and the twelve-point
+   checklist in `apps/web/e2e/README.md` ("A suite that does not flake") says which to use when.
 7. **In a one-line script, never put a `//` comment in the middle of the line.** It comments out the rest of the
    line. (This cost two debugging rounds on 11 Nov 2026.)
+8. **A red browser run means a real bug.** Every suite is in a group and green, or it is deleted; nothing is left
+   "known to fail". So a red line is never ignored and never "probably the machine": see the next section.
+
+## The browser suites: groups, and what a line means
+
+- **The groups** are in `apps/web/e2e/groups.json`: `rules` (rules and screens, test pace), `anim` (animation and
+  time, real speed), `smoke` (five of them), `all` = `rules` + `anim` = every `.mjs` in the folder, and `sweep`
+  (`fx-sweep` with its whole table). `npm run e2e -- --list` prints them.
+- **A suite in no group cannot exist.** `tools/e2e.py` stops with an error, and `npm run check` fails
+  (`apps/web/src/e2e-groups.test.ts`), when a `.mjs` in `apps/web/e2e/` is in neither `rules` nor `anim`. A new suite:
+  write it, add its name to one of the two lists, add its entry to `apps/web/e2e/README.md`.
+- **The retry rule.** A suite that fails while others run beside it is run once more, alone, at the end.
+  - `FLAKY <suite> … passed alone`: it failed beside the others and passed alone. The run still ends green, but says
+    `GREEN, BUT n PASSED ONLY ALONE`. That is a fault in the SUITE (it measures the machine, not the game): fix it with
+    the checklist in `apps/web/e2e/README.md`. It is never silently green: the line and the summary name it.
+  - `FAIL <suite> … alone too`: red. A real bug in the game, or a suite gone stale after a rules change; either way it
+    is fixed before the merge. A suite gets one retry, never two.
+  - A suite that prints no `ok` line fails ("nothing was checked").
+  - `ok … run again: the room server had stopped under its first run (or the disk was full)`: `wrangler dev` died
+    mid-run, or a browser tab did ("Target crashed"). Both happen when the disk fills up (12 Nov 2026: every suite failed
+    within seconds with 113 MB free). The runner starts the server again and runs the suite again; that is not the
+    suite's fault and not the game's. It refuses to start on a nearly full disk, and with under 4 GB free it keeps the
+    browsers' files and the rooms' saved state on the memory disk (`/dev/shm`).
+- **Timing.** A suite judges ORDER and PRESENCE from the effects layer's own plan (`window.__phcFxTrace`: each thing
+  drawn or heard, with `t`, when it was due, the same on any machine) or from a watcher inside the page; a wall-clock
+  length is asserted only where the length is the thing under test, measured in the page, with the plan as the lower
+  bound and room for a busy machine above, and a comment that starts `WALL CLOCK, on purpose`.
 
 ## The tools
 
@@ -47,8 +81,8 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   `packages/engine/test/test-lint.test.ts` (no statement after a `//` comment on a test line; no skipped test without
   a dated reason).
 - `tools/try_fight.py` + `packages/engine/test/try.test.ts` (`npm run try`): a scenario in JSON, played by the engine.
-- `fx-sweep` (in `anim`): every weapon × technique in the Effect testing room, judged from the effects layer's own trace (`window.__phcFxTrace`, `fx/dom.ts`). The whole table takes about 9.5 min; `PARTS=real` (19 cases on the wall clock) 1.5 min; `ONLY='<regex>'` narrows it. Report in `.check/e2e/fx-sweep.json`.
-- `tools/e2e.py` (`npm run e2e`): the browser suites; groups `smoke`, `rules`, `anim`, `all`; `--jobs`, `--no-build`,
+- `fx-sweep`: every weapon × technique in the Effect testing room, judged from the effects layer's own trace (`window.__phcFxTrace`, `fx/dom.ts`). In `anim` and `all` it plays its real-speed, fog and glyph parts (19 named cases at the player's speed, about 2 min); the whole table (about 17 min) is its own group, `npm run e2e -- sweep`. `ONLY='<regex>'` narrows it. Report in `.check/e2e/fx-sweep.json`.
+- `tools/e2e.py` (`npm run e2e`): the browser suites; groups `smoke`, `rules`, `anim`, `all`, `sweep`; `--list`, `--jobs`, `--no-build`, `--no-retry`,
   `--slow`, `--base`.
 - **The ground a test fights on.** `fightWith` (and so `npm run try`) fights on the **practice square**, a fixed 16 × 11
   map kept for tests (`packages/engine/test/helpers/yard16.ts`, map id `yard16`): a rule's test names tiles on it and

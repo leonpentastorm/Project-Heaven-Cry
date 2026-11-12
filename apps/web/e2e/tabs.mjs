@@ -4,7 +4,7 @@
 // Also: keyboard (1–9 and arrows; the row wraps onto a second line when the tabs don't fit), the cut-in picking an action switches the tab, the last tab is remembered, and a
 // narrow window (900 px) keeps the tab bar and Confirm stuck to the bottom.
 // Screenshots: e2e/shots/tabs-*.png.
-import { chromium, click, BASE, OUT, pickAction } from './lib.mjs';
+import { chromium, click, BASE, OUT, pickAction, settle } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
@@ -17,19 +17,19 @@ async function open(vw, vh) {
   await p.goto(BASE);
   await click(p, 'PROVING GROUND');
   const nm = p.getByPlaceholder('Leon');
-  await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+  await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.mouse.move(vw - 10, vh - 10);
   // The Proving Ground opens gearing up on the map; start the fight straight away.
-  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+  await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
   if (await p.evaluate(() => window.__phc.getState().game.phase !== 'combat')) await p.evaluate(() => window.__phc.act({ type: 'sandbox/fight' }));
-  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 15000 });
-  await p.waitForSelector('text=YOUR TURN', { timeout: 8000 });
+  await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+  await p.waitForSelector('text=YOUR TURN', { timeout: 30000 });
   return p;
 }
 const act = (p, a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const st = (p) => p.evaluate(() => { const s = window.__phc.getState(), g = s.game, cb = g.combat; const u = cb && cb.units.find((x) => x.side === 'pc'); return { cb, u, c: u && g.characters[u.charId] }; });
-const dismissCut = async (p, vw, vh) => { for (let i = 0; i < 3; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.mouse.click(vw - 10, vh - 10); await p.waitForTimeout(400); } };
+const dismissCut = async (p, vw, vh) => { for (let i = 0; i < 3; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.mouse.click(vw - 10, vh - 10); await settle(p, 400); } };
 const scrollY = (p) => p.evaluate(() => Math.max(document.documentElement.scrollHeight - window.innerHeight, 0));
 /** Is the whole grid inside the viewport, and the Confirm button too? */
 const inView = (p) => p.evaluate(() => {
@@ -52,8 +52,8 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
   await act(p, { type: 'sandbox/design', charId: cid, design: { id: '', name: 'Long Red Hand', school: 'damage', modules: [] } });
   // A fresh turn so the panel picks up the magic.
   await p.getByRole('button', { name: 'End turn', exact: true }).click().catch(() => {});
-  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 8000 });
-  await p.waitForTimeout(600); await dismissCut(p, vw, vh); await p.waitForTimeout(300);
+  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 30000 });
+  await settle(p, 600); await dismissCut(p, vw, vh); await settle(p, 300);
   await p.waitForSelector('[role="tablist"][aria-label="Actions"] [role="tab"]', { timeout: 30000 }).catch(() => {}); // the panel comes up when the turn is yours on screen
   const tabs = await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').allTextContents();
   ok(tag + ' tabs: ' + tabs.map((t) => t.replace(/\s+/g, ' ').trim()).join(' | '), tabs.length >= 4);
@@ -62,17 +62,17 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
   ok(tag + ' default tab on your turn: ' + sel0.trim() + (foeSeen ? ' (a hostile is up)' : ''), true);
   for (let i = 0; i < tabs.length; i++) {
     const t = p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').nth(i);
-    await t.click(); await p.waitForTimeout(380);
+    await t.click(); await settle(p, 380);
     const name = (await t.getAttribute('data-tab')) || String(i);
     // Pick the tab's first action, so the footer shows its details.
     const first = p.locator('[role="tabpanel"] button.phc-cb-act').first();
-    if (await first.count()) { await first.click(); await p.waitForTimeout(250); }
+    if (await first.count()) { await first.click(); await settle(p, 250); }
     if (name === 'outbursts') {
-      await pickAction(p, /^Outburst/); await p.waitForTimeout(350);
+      await pickAction(p, /^Outburst/); await settle(p, 350);
       const s2 = await st(p); const foe = s2.cb.units.find((u) => u.side === 'foe' && !u.dead);
-      if (foe) { await p.locator('button.phc-tok[aria-label^="' + ref(foe.pos) + ' ·"]').first().hover(); await p.waitForTimeout(200); }
+      if (foe) { await p.locator('button.phc-tok[aria-label^="' + ref(foe.pos) + ' ·"]').first().hover(); await settle(p, 200); }
     }
-    if (name === 'sigils') { await pickAction(p, /^Draw a glyph/); await p.waitForTimeout(350); }
+    if (name === 'sigils') { await pickAction(p, /^Draw a glyph/); await settle(p, 350); }
     const v = await inView(p);
     await p.screenshot({ path: OUT + 'tabs-' + tag + '-' + name + '.png' });
     ok(tag + ' ' + name + ': grid ' + (v.grid ? 'in view' : 'CUT ' + v.gridBox) + ', Confirm ' + (v.confirm ? 'in view' : 'NOT in view') + ', page scroll ' + v.pageScroll + ' px', v.grid && v.confirm && v.pageScroll <= 1);
@@ -81,17 +81,17 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     const selTab = () => p.locator('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]').getAttribute('data-tab');
     // Keyboard: number keys anywhere, arrows / Home / End inside the tab bar (focus follows).
     await p.mouse.click(1100, 30); // somewhere neutral (the header), so no input has focus
-    await p.keyboard.press('1'); await p.waitForTimeout(150);
+    await p.keyboard.press('1'); await settle(p, 150);
     ok('key 1 opens the first tab: ' + await selTab(), (await selTab()) === 'move');
-    await p.keyboard.press('5'); await p.waitForTimeout(150);
+    await p.keyboard.press('5'); await settle(p, 150);
     ok('key 5 opens the fifth tab: ' + await selTab(), (await selTab()) === 'outbursts');
     await p.locator('[role="tab"][data-tab="outbursts"]').focus();
-    await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(150);
+    await p.keyboard.press('ArrowLeft'); await settle(p, 150);
     const focused = await p.evaluate(() => document.activeElement && document.activeElement.getAttribute('data-tab'));
     ok('ArrowLeft moves to ' + await selTab() + ' and focus follows (' + focused + ')', (await selTab()) === 'sigils' && focused === 'sigils');
-    await p.keyboard.press('End'); await p.waitForTimeout(120); const e1 = await selTab();
-    await p.keyboard.press('Home'); await p.waitForTimeout(120); const h1 = await selTab();
-    await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(120); const w1 = await selTab();
+    await p.keyboard.press('End'); await settle(p, 120); const e1 = await selTab();
+    await p.keyboard.press('Home'); await settle(p, 120); const h1 = await selTab();
+    await p.keyboard.press('ArrowLeft'); await settle(p, 120); const w1 = await selTab();
     // (the last tab is Calls for a character with a talking skill, else Outbursts)
     const lastTab = await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').last().getAttribute('data-tab');
     ok('End / Home / wrap-around: ' + [e1, h1, w1].join(' → '), e1 === lastTab && h1 === 'move' && w1 === lastTab);
@@ -102,31 +102,31 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     ok('the tab row wraps (' + wrapT.rows + ' line' + (wrapT.rows > 1 ? 's' : '') + ') and never scrolls sideways', wrapT.wrap === 'wrap' && wrapT.over <= 1 && wrapT.rows <= 2);
     // Typing in the Say box never flips tabs.
     const say = p.getByLabel(/^Say something/);
-    if (await say.count()) { await say.focus(); await p.keyboard.press('2'); await p.waitForTimeout(120); ok('typing 2 in the Say box leaves the tab alone', (await selTab()) === lastTab); await say.fill(''); }
+    if (await say.count()) { await say.focus(); await p.keyboard.press('2'); await settle(p, 120); ok('typing 2 in the Say box leaves the tab alone', (await selTab()) === lastTab); await say.fill(''); }
     // A tile that implies an action switches to its tab: a hostile under Move → Attack.
     await p.keyboard.press('Escape').catch(() => {}); await p.mouse.click(1100, 30);
-    await pickAction(p, /^Move\b/); await p.waitForTimeout(150);
+    await pickAction(p, /^Move\b/); await settle(p, 150);
     s = await st(p);
     const foe = s.cb.units.find((u) => u.side === 'foe' && !u.dead && p);
     const vis = await p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb.units.filter((u) => u.side === 'foe' && !u.dead).map((u) => u.pos); });
     let clicked = false;
-    for (const k of vis) { const t = p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"][aria-label*="hostile"]').first(); if (await t.count()) { await p.waitForFunction(() => { const c = window.__phcCamera && window.__phcCamera(); return !c || !c.gliding; }, null, { timeout: 4000 }).catch(() => {}); await t.evaluate((el) => el.scrollIntoView({ block: 'center', inline: 'center' })); await p.waitForTimeout(250); await t.click(); clicked = true; break; } } // the camera's window: once the camera has come to rest on your unit (your turn has just started), the tile is brought to its middle, clear of the small map in the corner
-    await p.waitForFunction(() => document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]')?.getAttribute('data-tab') === 'attack', null, { timeout: 2500 }).catch(() => {});
+    for (const k of vis) { const t = p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"][aria-label*="hostile"]').first(); if (await t.count()) { await p.waitForFunction(() => { const c = window.__phcCamera && window.__phcCamera(); return !c || !c.gliding; }, null, { timeout: 20000 }).catch(() => {}); await t.evaluate((el) => el.scrollIntoView({ block: 'center', inline: 'center' })); await settle(p, 250); await t.click(); clicked = true; break; } } // the camera's window: once the camera has come to rest on your unit (your turn has just started), the tile is brought to its middle, clear of the small map in the corner
+    await p.waitForFunction(() => document.querySelector('[role="tablist"][aria-label="Actions"] [role="tab"][aria-selected="true"]')?.getAttribute('data-tab') === 'attack', null, { timeout: 20000 }).catch(() => {});
     // (rules 1.16: the sides deploy 10 to 14 tiles apart, so on some seeds no hostile is in sight yet: nothing to click, and the unit test in combat-screen.test.ts holds the rule)
     if (!clicked) ok('clicking a hostile while on Move: no hostile in sight on this seed (' + vis.length + ' alive), not checked here', true);
     else ok('clicking a hostile while on Move switches to the Attack tab: ' + await selTab(), (await selTab()) === 'attack');
     // The last tab is remembered for this character across turns; a command on the turn card switches the tab.
-    await p.locator('[role="tab"][data-tab="utility"]').click(); await p.waitForTimeout(150);
+    await p.locator('[role="tab"][data-tab="utility"]').click(); await settle(p, 150);
     await p.getByRole('button', { name: 'End turn', exact: true }).click();
-    await p.waitForSelector('[data-phc-cutin]', { timeout: 6000 });
-    await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 8000 });
-    await p.waitForTimeout(300);
+    await p.waitForSelector('[data-phc-cutin]', { timeout: 30000 });
+    await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc' && u.ap >= 5; }, null, { timeout: 30000 });
+    await settle(p, 300);
     ok('next turn opens the tab this character used last: ' + await selTab(), (await selTab()) === 'utility');
     const cmds = await p.locator('[data-phc-cutin] button').allTextContents();
-    await p.locator('[data-phc-cutin] button', { hasText: /^1/ }).first().click(); await p.waitForTimeout(300);
+    await p.locator('[data-phc-cutin] button', { hasText: /^1/ }).first().click(); await settle(p, 300);
     const pressed = await p.locator('[role="tabpanel"] button[data-act][aria-pressed="true"]').allTextContents();
     ok('the turn card\'s first command (' + (cmds[0] || '').replace(/\s+/g, ' ').trim() + ') opens its tab: ' + await selTab() + ' · ' + pressed.join(','), (await selTab()) === 'attack' && pressed.length === 1);
-    await p.waitForTimeout(300); await p.screenshot({ path: OUT + 'tabs-' + tag + '-after-cutin.png' });
+    await settle(p, 300); await p.screenshot({ path: OUT + 'tabs-' + tag + '-after-cutin.png' });
   }
   ok(tag + ' no page errors' + (p.errors.length ? ': ' + p.errors.join(' | ') : ''), !p.errors.length);
   await p.context().close();
@@ -136,14 +136,14 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
 {
   const p = await open(900, 800);
   await act(p, { type: 'sandbox/ai', on: false });
-  await p.waitForTimeout(600); await dismissCut(p, 900, 800); await p.waitForTimeout(300);
+  await settle(p, 600); await dismissCut(p, 900, 800); await settle(p, 300);
   const box = await p.evaluate(() => { const r = (el) => el && el.getBoundingClientRect();
     const dock = r(document.querySelector('.phc-cb-dock')), conf = r(Array.from(document.querySelectorAll('button')).find((b) => /^(Confirm|Click a tile)/.test(b.textContent.trim()))), grid = r(document.querySelector('.phc-grid'));
     return { scrollY: window.scrollY, H: window.innerHeight, dockTop: dock && Math.round(dock.top), dockBottom: dock && Math.round(dock.bottom), conf: conf && Math.round(conf.bottom), gridTop: grid && Math.round(grid.top), pos: getComputedStyle(document.querySelector('.phc-cb-dock')).position }; });
   ok('900×800: the action dock is fixed to the bottom (' + JSON.stringify(box) + ')', box.pos === 'fixed' && box.dockBottom <= box.H + 1 && box.conf <= box.H && box.gridTop < box.dockTop);
-  await pickAction(p, /^(Reload|Swap magazine|Speedloader|Swap drum|Feed belt)/); await p.waitForTimeout(250);
+  await pickAction(p, /^(Reload|Swap magazine|Speedloader|Swap drum|Feed belt)/); await settle(p, 250);
   await p.screenshot({ path: OUT + 'tabs-900x800-narrow.png' });
-  await p.mouse.wheel(0, 600); await p.waitForTimeout(300);
+  await p.mouse.wheel(0, 600); await settle(p, 300);
   const conf2 = await p.evaluate(() => { const b = Array.from(document.querySelectorAll('button')).find((x) => /^(Confirm|Click a tile)/.test(x.textContent.trim())); const r = b.getBoundingClientRect(); return r.bottom <= window.innerHeight && r.top >= 0; });
   ok('900×800: Confirm stays on screen after scrolling the page', conf2);
   await p.screenshot({ path: OUT + 'tabs-900x800-narrow-scrolled.png' });
