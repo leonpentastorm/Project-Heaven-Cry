@@ -11,6 +11,7 @@
 // (False Image, Sleight), 'turn_start_pre' (Silver Tongue), the stat 'rider_stage' (magic.ts riderBonus) and the
 // 'strain' hook (Eye of the Storm), 'trap_sprung' (Sabotage's rig), the new 'ai_move_risk' (Anchor in the enemy AI).
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import { tendHook } from '../effects/damage';
 import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
@@ -330,7 +331,7 @@ register({
         say(cb, u.name + ' fixes ' + t.name + '\'s weapon: +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return;
       }
       // A repair, not a heal (as Field Repair): exactly 20, no healing multipliers, not halved by Factory Made's Plug.
-      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + 20); if (up) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
+      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + itemAmount('class:infiltrator.field_fix', 'repair')); if (up) { t.downed = false; t.saves = { ok: 0, fail: 0 }; }
       emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
       say(cb, u.name + ' repairs ' + t.name + ': +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
     },
@@ -385,7 +386,7 @@ register({
         const cb = h.cb!, u = h.u!;
         cb.objects = objectsOf(cb).filter((o) => !((o as any).rig === h.key && (o as any).owner === u.id));
         const id = 'rig' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
-        cb.objects.push(makeObject(id, 'trap', u.pos, { name: 'Rigged tile', text: 'Rigged by ' + u.name + '.', damage: 30, owner: u.id, side: u.side, rig: h.key, hidden: false } as any));
+        cb.objects.push(makeObject(id, 'trap', u.pos, { name: 'Rigged tile', text: 'Rigged by ' + u.name + '.', damage: itemAmount('class:infiltrator.sabotage', 'damage'), owner: u.id, side: u.side, rig: h.key, hidden: false } as any));
         emitFx(cb, 'rig', { unit: u.id, at: u.pos, id, only: u.side });
         say(cb, u.name + ' rigs ' + refOf(u.pos) + ' (Sabotage).');
       },
@@ -586,7 +587,7 @@ register({
   actions: [{
     id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 2, uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: every ally within 4 tiles heals 6 HP × your Healing given, more as you level, and loses Fear and Shaken.',
-    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(20 * (h.c ? healingMult(h.c) : 1)) + ' HP each, and their Fear and Shaken end.'] }; },
+    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(kitHeal(RALLY_HEAL, h.c ? healingMult(h.c) : 1, mendFactorOf(h.u))) + ' HP each, and their Fear and Shaken end.'] }; },
     run: (h) => {
       const cb = h.cb!, u = h.u!, mult = h.c ? healingMult(h.c) : 1, ts = rallied(cb, u), parts: string[] = [];
       emitFx(cb, 'rally', { unit: u.id, at: u.pos, radius: 4, targets: ts.map((t) => t.id) });

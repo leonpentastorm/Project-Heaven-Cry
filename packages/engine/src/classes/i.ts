@@ -24,6 +24,7 @@ import {
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
 import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, kitHeal } from '../effects/mending';
 import { term } from '../effects/output';
+import { itemAmount, amountMult, amountBlock } from '../effects/amounts';
 import { BUFF_HEAL } from '../magic';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitStrength, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
@@ -93,7 +94,7 @@ function addFlux(cb: Combat, u: Unit, n: number): string {
   m.flux += n; if (m.flux <= FLUX_MAX) return ' · +' + n + ' Flux (' + m.flux + '/' + FLUX_MAX + ')';
   const over = m.flux - FLUX_MAX, all = m.flux; m.flux = 0; m.lockRound = cb.round;
   emitFx(cb, 'overload', { unit: u.id, at: u.pos }); shiftMana(cb, all, 'an Evoker overloads');
-  const r = applyDamage(cb, u, 10 * over, { type: 'overload', shield: true, credit: 'none' }); if (u.hp === 0) fxFell(cb, u);
+  const r = applyDamage(cb, u, itemAmount('rule:flux_overload', 'damage', [], { flux_over: over }), { type: 'overload', shield: true, credit: 'none' }); if (u.hp === 0) fxFell(cb, u);
   return ' · OVERLOAD: the Evoker bursts (' + r.amount + ' damage to ' + u.name + '), locked until next round';
 }
 // ---------- the Emanator (Soul classes) ----------
@@ -859,12 +860,12 @@ register({
 // Healing given multiplier (the higher shield stands, like the WARD word). +1 Flux per charge. No glyph.
 const wardDef = (n: number, self: boolean): ActionDef => ({
   id: 'ward' + n + (self ? '_self' : ''), label: 'Ward ×' + n + (self ? ' (yourself)' : ''), scope: ['combat'], target: self ? 'none' : 'ally', ap: 2, range: 6,
-  text: 'Spend ' + n + ' charge to put a shield of ' + 10 * n + ' × your Healing given on ' + (self ? 'yourself' : 'an ally within 6 tiles') + '. Adds ' + n + ' Flux.',
+  text: 'Spend ' + n + ' charge to put a shield of ' + itemAmount('class:warden.ward', 'shield', [], { charge: n }) + ' × your Healing given on ' + (self ? 'yourself' : 'an ally within 6 tiles') + '. Adds ' + n + ' Flux.',
   available: (h) => { const e = evokerReady(h); if (e) return e; if ((h.u!.mg!.charge || 0) < n) return 'Needs ' + n + ' charge.'; return true; },
   preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (t && !unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
   run: (h, args) => {
     const cb = h.cb!, u = h.u!, t = self ? u : unitById(cb, args.targetId)!; u.mg!.charge -= n; u.mg!.cast = true;
-    const v = grantShield(cb, t, 10 * n * healMultOf(h), u); emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: 0, gained: v });
+    const v = grantShield(cb, t, itemAmount('class:warden.ward', 'shield', [term(healMultOf(h), 'stat: healing given')], { charge: n }), u); emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: 0, gained: v });
     say(cb, u.name + ' wards ' + (t === u ? 'themself' : t.name) + ': a ' + v + ' shield (' + n + ' charge)' + addFlux(cb, u, n) + '.');
   },
 });
@@ -1151,7 +1152,7 @@ register({
         const f = flippable(t)[0], st = stateOf(h);
         switch (f) {
           case 'overwatch': dropHeldShot(cb, t, 'Rewrite'); useReaction(cb, t); line += ' · its held shot is gone'; break;
-          case 'shield': { const n = Math.min(t.shield || 0, Math.floor(30 * (u.mg?.sigilMult || 1))); t.shield = 0; line += ' · the shield turns on it' + harm(cb, r0, u, t, n, 'sigil'); break; }
+          case 'shield': { const n = Math.min(t.shield || 0, Math.floor(itemAmount('class:trickster.rewrite', 'shield_turned', [term(u.mg?.sigilMult || 1, 'stat: sigil')]))); t.shield = 0; line += ' · the shield turns on it' + harm(cb, r0, u, t, n, 'sigil'); break; }
           case 'braced': case 'emplaced': t.braced = false; endCond(t, 'emplaced', cb); line += applyCond(cb, r0, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'brain_power' }); break;
           case 'guarded': case 'withdrawing': { const left = t.conds![f]; endCond(t, f, cb); t.def -= 2; (st.def ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its guard becomes an opening (−2 Defense, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
           case 'inspired': { const left = t.conds!.inspired; endCond(t, 'inspired', cb); (st.hit ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its nerve turns (−2 to hit, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
@@ -1325,7 +1326,7 @@ const shieldBy = (h: Holder): Record<string, boolean> => (stateOf(h).shields ||=
 // An ally in Soul reach (4 + range bonus) you can see, or you (PROVISIONAL), gains a shield of 12 × your Healing given
 // (× their Healing received) until the fight ends; the higher shield stands. A class cast, so every Guardian has it
 // without a design (PROVISIONAL: the plan's Buff option 'shield' for designs needs the design builder; see the notes).
-const WILL_SHIELD: number = ((CLASS_MOVE_POOL['guardian.will_shield'] as any)?.effects || []).find((e: any) => e.op === 'shield')?.value ?? 12;
+const WILL_SHIELD: number = amountBlock('class:guardian.will_shield', 'shield').base;
 const willShield = (self: boolean): ActionDef => ({
   id: self ? 'will_shield_self' : 'will_shield', label: 'Will Shield' + (self ? ' (yourself)' : ''), scope: ['combat'], target: self ? 'none' : 'ally',
   ap: (h) => (h.u?.mg ? soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20).ap : 2),
@@ -1334,7 +1335,7 @@ const willShield = (self: boolean): ActionDef => ({
   preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (!t) return {}; const p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20); const e = soulAim(h, t.pos, p.range); return e ? { ok: false, why: e } : { lines: ['Will Shield on ' + t.name + ': about ' + Math.floor(WILL_SHIELD * healMultOf(h) * mendFactorOf(h.u) * (t.shieldRecv || 1)) + ' (' + p.mp + ' MP, ' + p.strain + ' Strain).'] }; },
   run: (h, args, rng) => {
     const cb = h.cb!, u = h.u!, t = self ? u : unitById(cb, args.targetId)!, p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20);
-    const v = grantShield(cb, t, WILL_SHIELD * healMultOf(h) * mendFactorOf(u), u); shieldBy(h)[t.id] = true;
+    const v = grantShield(cb, t, itemAmount('class:guardian.will_shield', 'shield', [term(healMultOf(h), 'stat: healing given'), term(mendFactorOf(u), 'level')]), u); shieldBy(h)[t.id] = true;
     emitFx(cb, 'release', { unit: u.id, at: u.pos, to: t.pos, school: 'buff', option: 'shield', stage: 1, wild: false, area: 0, targets: [t.id] });
     say(cb, u.name + ' casts Will Shield on ' + (t === u ? 'themself' : t.name) + ': a ' + v + ' shield (' + p.mp + ' MP' + (u.mg!.emanator ? '' : ' from the air') + ')' + soulPay(h, rng as Rng, p) + '.');
   },
@@ -1460,7 +1461,7 @@ register({
 // (PROVISIONAL). The data's AP 0 is the Soul cast AP. Out of combat the area map's casts use the same numbers.
 const GIFT_AP = SOUL_AP.begin + SOUL_AP.release, GIFT_STAGE = 1;
 const isHealDesign = (d: any) => !!d && (d.school === 'buff' || d.school2 === 'buff') && (!d.option || d.option === 'heal');
-const BARD_MEND: number = (CLASS_MOVE_POOL['bard.mend'] as any)?.heal_base ?? 9;
+const BARD_MEND: number = amountBlock('class:bard.mend', 'heal').base;
 register({
   id: 'bard.mend', claims: 'all',
   on: {

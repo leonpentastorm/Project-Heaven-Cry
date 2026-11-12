@@ -6,6 +6,8 @@ import type { Combat, Unit } from '../combat';
 import { coverTileFor, emitFx, noteCrit } from '../combat';
 import type { OutburstDesign } from '../character';
 import { MODULE, TONE } from '../data';
+import { itemAmount } from '../effects/amounts';
+import { term } from '../effects/output';
 import {
   harm, heal, applyCond, magicShove, condSkillMod, condHit, withElement, outburstDamage, toneRiders, applyToneRiders, toneElement, toneOf, spellCritMult, spellGapToHit,
   stageMult, resonanceFor, RESONANCE_BONUS, RESONANCE_MAX,
@@ -52,7 +54,7 @@ export function schoolRider(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t:
   if (school === 'buff') {
     if (t.side !== u.side) return '';
     const o = option || 'heal';
-    return (o === 'defense' ? applyCond(cb, rng, u, t, 'guarded', rounds(2), undefined, { via: 'will_power' }) : o === 'hit' ? applyCond(cb, rng, u, t, 'inspired', rounds(2), undefined, { via: 'will_power' }) : heal(t, 30 * m.healMult * sm * f, cb, u)).replace(/^ · /, '');
+    return (o === 'defense' ? applyCond(cb, rng, u, t, 'guarded', rounds(2), undefined, { via: 'will_power' }) : o === 'hit' ? applyCond(cb, rng, u, t, 'inspired', rounds(2), undefined, { via: 'will_power' }) : heal(t, itemAmount('rule:school_rider', 'heal', [term(m.healMult, 'stat: healing given'), term(sm, 'stage'), term(f, 'share')]), cb, u)).replace(/^ · /, '');
   }
   if (t === u) return '';
   if (school === 'control') {

@@ -10,6 +10,8 @@ import {
   register, emit, stateOf, uses, note, has, modOn, applyDamage, grantShield, healUnit, pendRuling, postStory, holderOf,
   type Holder, type ActionDef, type ActionArgs,
 } from '../effects';
+import { itemAmount, amountMult } from '../effects/amounts';
+import { term } from '../effects/output';
 import type { Combat, Unit, Term } from '../combat';
 import type { Character, OutburstDesign } from '../character';
 import {
@@ -886,12 +888,12 @@ function fogSync(cb: Combat) {
 function grandTurnStart(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, g: any): string {
   const w = zWord(z), ally = t.side === o.side, me = earthed(o, t);
   switch (w) {
-    case 'fire': return me ? '' : ' · lava burns ' + t.name + harm(cb, rng, o, t, 10, 'elemental', 'fire') + (t.dead ? '' : bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
-    case 'shock': { if (me) return ''; let s = armoured(t, g) ? ' · the storm arcs to ' + t.name + harm(cb, rng, o, t, 15, 'elemental', 'lightning') : ''; if (isRobot(t) && !t.dead) s += applyCond(cb, rng, o, t, 'stunned', 1); return s; }
-    case 'ward': return ally ? applyCond(cb, rng, o, t, 'guarded', 1, undefined, { skipSave: true }) + ' · the dome shields ' + t.name + ' (' + grantShield(cb, t, 20, o) + ')' : '';
-    case 'mend': return ally ? heal(t, 10 * (o.mg?.healMult || 1), cb, o) : '';
+    case 'fire': return me ? '' : ' · lava burns ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'lava'), 'elemental', 'fire') + (t.dead ? '' : bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
+    case 'shock': { if (me) return ''; let s = armoured(t, g) ? ' · the storm arcs to ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'storm'), 'elemental', 'lightning') : ''; if (isRobot(t) && !t.dead) s += applyCond(cb, rng, o, t, 'stunned', 1); return s; }
+    case 'ward': return ally ? applyCond(cb, rng, o, t, 'guarded', 1, undefined, { skipSave: true }) + ' · the dome shields ' + t.name + ' (' + grantShield(cb, t, itemAmount('class:grand_sigilist.enlarge', 'dome'), o) + ')' : '';
+    case 'mend': return ally ? heal(t, itemAmount('class:grand_sigilist.enlarge', 'mend', [term(o.mg?.healMult || 1, 'stat: healing given')]), cb, o) : '';
     // CONDENSE (Crush): enemies inside pressed against another creature take 10.
-    case 'condense': return me || ally || !cb.units.some((x) => x !== t && !x.dead && dist(x.pos, t.pos) === 1) ? '' : ' · the Crush grinds ' + t.name + harm(cb, rng, o, t, 10, 'sigil');
+    case 'condense': return me || ally || !cb.units.some((x) => x !== t && !x.dead && dist(x.pos, t.pos) === 1) ? '' : ' · the Crush grinds ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'crush'), 'sigil');
     // PUSH (Gust): enemies starting a turn inside are blown 1 tile outward.
     case 'push': { if (ally || t.pos === zCentre(z)) return ''; const [cx, cy] = xy(zCentre(z)), [x, y] = xy(t.pos); return nudge(cb, t, key(cx + (x - cx) * 9, cy + (y - cy) * 9), 1).replace('is pulled', 'is blown') || ''; }
     case 'muddle': { if (me || bodySave(rng, o, t, 'brain')) return ''; const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]], [dx, dy] = dirs[die(rng, 8) - 1], [x, y] = xy(t.pos); return nudge(cb, t, key(x + dx * 2, y + dy * 2), 1).replace('is pulled', 'staggers') || ' · ' + t.name + ' staggers in place'; }
@@ -912,13 +914,13 @@ function grandEnter(cb: Combat, rng: Rng, o: Unit, z: Zone, t: Unit, ms: any): s
   const w = zWord(z), me = earthed(o, t); if (me) return '';
   const hit = ((z as any).hit ||= {}); if (hit[t.id] === cb.round + ':' + w) return ''; hit[t.id] = cb.round + ':' + w;
   switch (w) {
-    case 'fire': return ' · lava burns ' + t.name + harm(cb, rng, o, t, 10, 'elemental', 'fire') + (t.dead || bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
+    case 'fire': return ' · lava burns ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'lava'), 'elemental', 'fire') + (t.dead || bodySave(rng, o, t) ? '' : applyCond(cb, rng, o, t, 'burning', undefined, 'body', { skipSave: true }));
     case 'bind': { const l = applyCond(cb, rng, o, t, 'pinned', undefined, 'body'); if (condOn(t, 'pinned')) ms.stop = 'tar'; return ' · tar' + l; }
     case 'gale': { ms.stop = 'cyclone'; const [cx, cy] = xy(zCentre(z)), [x, y] = xy(t.pos); return nudge(cb, t, key(cx - (x - cx) * 9, cy - (y - cy) * 9), 2).replace('is pulled', 'is thrown') || ' · the cyclone batters ' + t.name; }
     case 'light': return t.hidden && t.side !== o.side ? reveal(cb, t, 'the Noon form') : '';
     case 'silence': return applyCond(cb, rng, o, t, 'silenced', 1, undefined, { skipSave: true });
     case 'veil': if (!t.hidden && !condOn(t, 'marked')) { t.hidden = true; return ' · ' + t.name + ' vanishes in the smoke'; } return '';
-    case 'wait': if (t.side === o.side) return ''; ms.stop = 'tripwire'; return ' · a tripwire catches ' + t.name + harm(cb, rng, o, t, 10, 'sigil');
+    case 'wait': if (t.side === o.side) return ''; ms.stop = 'tripwire'; return ' · a tripwire catches ' + t.name + harm(cb, rng, o, t, itemAmount('class:grand_sigilist.enlarge', 'tripwire'), 'sigil');
   }
   return '';
 }
@@ -961,7 +963,7 @@ function mortar(cb: Combat, rng: Rng, o: Unit, z: Zone): string {
   const k = mortarTile(cb, o, z); if (!k) return '';
   emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: null, at: k, side: o.side, grand: true, lob: true });
   let line = ' · the Mortar pit shells ' + refOf(k);
-  for (const v of cb.units.filter((x) => !x.dead && x.side !== o.side && (x.pos === k || dist(x.pos, k) === 1))) line += harm(cb, rng, o, v, v.pos === k ? 15 : 5, 'sigil');
+  for (const v of cb.units.filter((x) => !x.dead && x.side !== o.side && (x.pos === k || dist(x.pos, k) === 1))) line += harm(cb, rng, o, v, v.pos === k ? itemAmount('class:grand_sigilist.enlarge', 'mortar') : itemAmount('class:grand_sigilist.enlarge', 'mortar_splash'), 'sigil');
   return line;
 }
 let ARCING = false;
@@ -1039,7 +1041,7 @@ register({
       for (const z of grandZones(cb, o)) {
         if (zWord(z) === 'pull') { if (t.side !== o.side && dist(t.pos, zCentre(z)) <= 4) line += nudge(cb, t, zCentre(z), 1); continue; }
         if (zWord(z) === 'sense') { for (const x of cb.units) if (x.hidden && !x.dead && x.side !== o.side && dist(x.pos, zCentre(z)) <= 4) line += reveal(cb, x, 'Second sight'); continue; }
-        if (zWord(z) === 'watch') { if (t === o) { const v = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos)).sort((a, b) => dist(a.pos, zCentre(z)) - dist(b.pos, zCentre(z)))[0]; if (v) { emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: v.id, at: v.pos, side: o.side, grand: true }); line += ' · the Sentinel strikes ' + v.name + harm(cb, rngOf(h, ctx), o, v, 15, 'sigil'); } } continue; }
+        if (zWord(z) === 'watch') { if (t === o) { const v = cb.units.filter((x) => !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos)).sort((a, b) => dist(a.pos, zCentre(z)) - dist(b.pos, zCentre(z)))[0]; if (v) { emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: v.id, at: v.pos, side: o.side, grand: true }); line += ' · the Sentinel strikes ' + v.name + harm(cb, rngOf(h, ctx), o, v, itemAmount('class:grand_sigilist.enlarge', 'sentinel'), 'sigil'); } } continue; }
         if (zWord(z) === 'arc') { if (t === o) line += mortar(cb, rngOf(h, ctx), o, z); continue; }
         if (inZ(z, t.pos)) line += inGrand(o, z, () => grandTurnStart(cb, rngOf(h, ctx), o, z, t, h.g));
       }
@@ -1054,7 +1056,7 @@ register({
       for (const z of grandZones(cb, o)) if (zWord(z) === 'watch' && t.side !== o.side && inZ(z, ctx.from) && !inZ(z, ctx.at)) {
         const left = ((z as any).left_hit ||= {}); if (left[t.id] === cb.round) continue; left[t.id] = cb.round;
         emitFx(cb, 'turret_shot', { id: z.id, tile: zCentre(z), target: t.id, at: ctx.at, side: o.side, grand: true });
-        line += ' · the Sentinel strikes ' + t.name + ' as it leaves' + harm(cb, rngOf(h, ctx), o, t, 10, 'sigil');
+        line += ' · the Sentinel strikes ' + t.name + ' as it leaves' + harm(cb, rngOf(h, ctx), o, t, itemAmount('class:grand_sigilist.enlarge', 'sentinel_leaving'), 'sigil');
       }
       if (line) say(cb, t.name + ' enters the Grand form' + line + '.');
     },
@@ -1118,7 +1120,7 @@ register({
       for (const z of grandZones(cb, o)) {
         if (zWord(z) !== 'leech' || !inZ(z, t.pos) || by.dead || by.downed) continue;
         const fed = ((z as any).fed ||= {}), k = by.id + '>' + t.id; if (fed[k] === cb.round) continue; fed[k] = cb.round;
-        const r = healUnit(cb, by, 5, o, 'leech'); if (r.restored) { emitFx(cb, 'leech', { unit: by.id, to: by.pos, from: [t.pos], amount: r.restored, element: null }); say(cb, 'Bloodwell (Grand LEECH): ' + by.name + ' drinks ' + r.restored + ' HP from ' + t.name + '.'); }
+        const r = healUnit(cb, by, itemAmount('class:grand_sigilist.enlarge', 'bloodwell'), o, 'leech'); if (r.restored) { emitFx(cb, 'leech', { unit: by.id, to: by.pos, from: [t.pos], amount: r.restored, element: null }); say(cb, 'Bloodwell (Grand LEECH): ' + by.name + ' drinks ' + r.restored + ' HP from ' + t.name + '.'); }
       }
       if (ARCING) return;
       for (const z of grandZones(cb, o)) {
@@ -1127,7 +1129,7 @@ register({
         const v = cb.units.filter((x) => x !== t && !x.dead && !x.downed && !x.surrendered && x.side !== o.side && inZ(z, x.pos) && dist(x.pos, t.pos) <= 3 && arced[x.id] !== cb.round).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0];
         if (!v) continue; arced[v.id] = cb.round;
         emitFx(cb, 'chain', { from: t.pos, to: v.pos, target: v.id, jump: 1, mult: 1, element: 'shock', grand: true });
-        ARCING = true; let l = ''; try { l = harm(cb, rngOf(h, ctx), o, v, 10, 'elemental', 'lightning'); } finally { ARCING = false; }
+        ARCING = true; let l = ''; try { l = harm(cb, rngOf(h, ctx), o, v, itemAmount('class:grand_sigilist.enlarge', 'arc'), 'elemental', 'lightning'); } finally { ARCING = false; }
         say(cb, 'Conductor (Grand CHAIN): the hit on ' + t.name + ' arcs to ' + v.name + l + '.');
       }
     },
@@ -1151,7 +1153,7 @@ register({
       for (const z of grandZones(cb, o)) {
         if (!inZ(z, ctx.impact)) continue;
         // Bloom: every enemy inside the spell missed takes 10.
-        if (zWord(z) === 'spread') { let l = ''; for (const v of cb.units.filter((x) => !x.dead && !x.downed && x.side !== o.side && inZ(z, x.pos) && !hitIds.has(x.id))) l += harm(cb, rng, o, v, 10, 'sigil'); if (l) say(cb, 'Bloom (Grand SPREAD): the spell blooms through the form' + l + '.'); }
+        if (zWord(z) === 'spread') { let l = ''; for (const v of cb.units.filter((x) => !x.dead && !x.downed && x.side !== o.side && inZ(z, x.pos) && !hitIds.has(x.id))) l += harm(cb, rng, o, v, itemAmount('class:grand_sigilist.enlarge', 'bloom'), 'sigil'); if (l) say(cb, 'Bloom (Grand SPREAD): the spell blooms through the form' + l + '.'); }
         // Echo field: the first spell each round echoes on the enemies it hit, at half its damage per target (5 at least).
         if (zWord(z) === 'twice' && (z as any).echoed !== cb.round && ctx.dealt > 0) {
           const foes = (ctx.targets || []).filter((x: Unit) => !x.dead && x.side !== o.side); if (!foes.length) continue;
@@ -1403,8 +1405,8 @@ register({
       run: (h, a, rng) => { const u = h.u!, cb = h.cb!, f = linkFrom(h, a) as Unit; say(cb, u.name + ' releases through ' + f.name + '.'); const e = fromLink(u, f, () => releaseOutburst(cb, rng, u, aimOf(cb, a, 'tile') || f.pos)); if (!e) checkOver(cb); return e; } },
   ],
   on: {
-    heal_given: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link' + heal(x, Math.floor(ctx.n / 2), ctx.cb, h.u!) + '.'); } finally { MIRROR = false; } },
-    shield_grant: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link, ' + x.name + ' is shielded (' + grantShield(ctx.cb, x, Math.floor(ctx.n / 2), ctx.by) + ').'); } finally { MIRROR = false; } },
+    heal_given: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link' + heal(x, Math.floor(ctx.n * amountMult('class:heartbinder.through', 'mirror', 'share')), ctx.cb, h.u!) + '.'); } finally { MIRROR = false; } },
+    shield_grant: (ctx, h) => { if (MIRROR || ctx.t !== h.u || ctx.n <= 1 || !onGrid(h)) return; MIRROR = true; try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link, ' + x.name + ' is shielded (' + grantShield(ctx.cb, x, Math.floor(ctx.n * amountMult('class:heartbinder.through', 'mirror', 'share')), ctx.by) + ').'); } finally { MIRROR = false; } },
     cond_landed: (ctx, h) => {
       if (MIRROR || ctx.t !== h.u || !['guarded', 'inspired'].includes(ctx.id) || !onGrid(h)) return; MIRROR = true;
       try { for (const x of linkedUnits(h)) say(ctx.cb, 'Through the link' + applyCond(ctx.cb, rngOf(h, ctx), ctx.by || h.u!, x, ctx.id, Math.max(1, Math.floor((ctx.rounds || 2) / 2)), undefined, { skipSave: true, ...(ctx.via ? { via: ctx.via } : {}) }) + '.'); } finally { MIRROR = false; }
@@ -1549,7 +1551,7 @@ register({
       const grown = fs.map((x) => ({ ...x, stage: Math.min(MAX_STAGE, x.stage + 1) })); setForms(h, grown); vSync(h);
       emitFx(cb, 'swell', { unit: u.id, at: u.pos, stage: Math.max(...grown.map((x) => x.stage)), mult: vesselMult(Math.max(...grown.map((x) => x.stage))), tone: 'raw', forms: grown.map((x) => x.form) });
       const hb = fm(h, 'heartbeat'); let line = u.name + '\'s forms grow (' + grown.map((x) => FORMS[x.form] + ' ' + x.stage).join(', ') + ')';
-      if (hb) line += heal(u, 10 * hb * (u.mg?.healMult || 1), cb, u);
+      if (hb) line += heal(u, itemAmount('class:vessel.inner_charge', 'heartbeat', [term(u.mg?.healMult || 1, 'stat: healing given')], { forms: hb }), cb, u);
       say(cb, line + '.' + strainUp(cb, rngOf(h, ctx), u, grown.length * (manaBand(manaOf(cb)).id === 'flooded' ? 2 : 1), 'holding body forms'));
     },
     // Pain to Power counts what you take. Rules 1.5: no slipping (a hit no longer loosens a form).
@@ -1569,7 +1571,7 @@ register({
 // weapon), or free with a melee hit (a toggle on the attack): every form ends in one strike. Each form adds 15 Soul
 // damage × its stage multiplier (stage 1 ×1 … stage 4 ×2.2), summed, × your Soul multiplier, armour ignored (1.2's
 // +15 a stage capped at 8 stages is gone: two stage-4 forms are 66 before the multiplier). The forms end on a miss too.
-const releaseSum = (h: Holder) => formsOf(h).reduce((a, x) => a + 15 * vesselMult(x.stage), 0);
+const releaseSum = (h: Holder) => formsOf(h).reduce((a, x) => a + itemAmount('class:vessel.release_strike', 'damage', [term(vesselMult(x.stage), 'stage')]), 0);
 function releaseRider(h: Holder, t: Unit, rng: Rng): string {
   const u = h.u!, cb = h.cb!, fs = formsOf(h); if (!fs.length) return '';
   const sum = releaseSum(h), n = fs.length; setForms(h, []); vSync(h);

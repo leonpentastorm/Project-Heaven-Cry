@@ -7,6 +7,7 @@
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags F…) and docs/design/perk-runtime.md.
 import { register, stateOf, uses, note, pendRuling, postStory, bankAp, pushAp, has, armedOf, disarm, modOn, charOfUnit, bindGame, restN, grantShield, type Holder } from '../effects';
+import { itemAmount, amountMult } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
@@ -198,7 +199,7 @@ register({
 // cause (talked down, mercy, the Name) counts. Protect: healing or shielding a civilian or neutral. Out of combat the
 // Narrator rules spared or protected moments: an accepted claim is a shield waiting when the next fight starts.
 // PROVISIONAL (spec 14).
-const CLEAN = { I: 15, II: 25 };
+const CLEAN = { I: amountMult('perk:clean_hands', 'shield', 'pct_of_max_hp_I'), II: amountMult('perk:clean_hands', 'shield', 'pct_of_max_hp_II') };
 const cleanPct = (h: Holder) => (tierII(h) ? CLEAN.II : CLEAN.I);
 function cleanShield(h: Holder, why: string) {
   if (overworld(h.cb) || (!h.u && h.c)) { // the area map and the story: the shield waits for the next fight
@@ -893,10 +894,10 @@ register({
         if (!myComp(h, t, 'drone')) return { ok: false, why: 'Pick your drone.' };
         if (!(h.u!.parts || 0)) return { ok: false, why: 'No spare-parts charges.' };
         if (t.hp >= t.maxHp) return { ok: false, why: 'Not a scratch on it.' };
-        return { lines: ['+' + 10 * Math.max(1, masteryLevel(h.c?.skills.proficiency || 0)) + ' HP.'] };
+        return { lines: ['+' + itemAmount('trait:drone_handler', 'repair', [], { mastery: Math.max(1, masteryLevel(h.c?.skills.proficiency || 0)) }) + ' HP.'] };
       },
       run: (h, a) => {
-        const t = h.cb!.units.find((x) => x.id === a.targetId)!, n = 10 * Math.max(1, masteryLevel(h.c?.skills.proficiency || 0)), was = t.hp;
+        const t = h.cb!.units.find((x) => x.id === a.targetId)!, n = itemAmount('trait:drone_handler', 'repair', [], { mastery: Math.max(1, masteryLevel(h.c?.skills.proficiency || 0)) }), was = t.hp;
         h.u!.parts = (h.u!.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + n);
         emitFx(h.cb!, 'repair', { unit: t.id, at: t.pos, dur: 1400 });
         say(h.cb, h.u!.name + ' patches the drone: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').');

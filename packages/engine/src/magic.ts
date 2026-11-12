@@ -15,6 +15,7 @@ import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep,
 import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
+import { itemAmount, amountMult } from './effects/amounts';
 import { mendFactor, MENDING } from './effects/mending';
 import { deal, mend, amountOf, term, armourAgainst } from './effects/output';
 import { canReact, useReaction, dropHeldShot } from './tactics';
@@ -484,7 +485,7 @@ export function magicTurnStart(cb: Combat, rng: Rng, u: Unit) {
   noteDeaths(cb, rng);
   // Burning burns at the start of each turn (spec: 10, until put out; it ignores armour). Timed conditions tick at the
   // end of the bearer's turn (condTurnEnd, rules 1.3).
-  if (condOn(u, 'burning') && !u.downed) { const by = condSource(u, 'burning'); cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, 10, 'true', 'fire'))); }
+  if (condOn(u, 'burning') && !u.downed) { const by = condSource(u, 'burning'); cb.log.push(u.name + ' burns' + harmFor('burn', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, itemAmount('condition:burning', 'tick'), 'true', 'fire'))); }
   if (u.mg && !u.downed) heartTurnStart(cb, rng, u); // rules 1.5: Strain −1, the swell, the aura, free Pumps
   feelTurnStart(cb, rng, u); // rules 1.8: residue underfoot, fuses, Linger
   sigilTurnStart(cb, rng, u); // Quickened, Corroded, fields and traps underfoot, the unit's turrets (rules 1.4)
@@ -528,7 +529,7 @@ export function flux(cb: Combat, rng: Rng, u: Unit, n: number): string {
   if (m.flux <= FLUX_MAX) return '';
   const over = m.flux - FLUX_MAX, all = m.flux; m.flux = 0; m.lockRound = cb.round;
   emitFx(cb, 'overload', { unit: u.id, at: u.pos }); shiftMana(cb, all, 'an Evoker overloads');
-  return ' OVERLOAD: the Evoker bursts' + harmFor('overload', () => harm(cb, rng, null, u, 10 * over, 'true')) + ', locked until next round';
+  return ' OVERLOAD: the Evoker bursts' + harmFor('overload', () => harm(cb, rng, null, u, itemAmount('rule:flux_overload', 'damage', [], { flux_over: over }), 'true')) + ', locked until next round';
 }
 /** Vent's and a core swap's AP (1 and 2), through the items (stat 'ap_cost:vent' / 'ap_cost:swap_core': the Mage's
  * Bleed the Flux and Core Change, Class Roster Rev 3). The UI and the enemy planner read these. */
@@ -1376,7 +1377,7 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
         emitFx(cb, 'chain', { unit: u.id, from: from.pos, to: next.pos, target: next.id, element: toneElement(tone), ...(why ? { feeling: why } : {}) });
         line.push('it chains to ' + next.name + (why ? ' (' + FEELING[why].name + ')' : '') + withElement(toneElement(tone), () => harm(cb, rng, u, next, outburstDamage(m, d, smOf(next)) * mult, harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
         if (withRiders) { const sh = toneRiders(tone, rs).riders.filter((r) => r.rider === 'cond'); for (const r of sh) if (!next.dead) line.push(applyCond(cb, rng, u, next, r.condition!, r.rounds, undefined, { skipSave: !r.save }).replace(/^ · /, '')); }
-        if (F.has('love')) for (const a of cb.units.filter((v) => !v.dead && v.side === u.side && dist(v.pos, next.pos) <= 1)) line.push(heal(a, loveHeal(m, d, sm) * 0.5, cb, u).replace(/^ · /, '') + ' (Love, along the chain)');
+        if (F.has('love')) for (const a of cb.units.filter((v) => !v.dead && v.side === u.side && dist(v.pos, next.pos) <= 1)) line.push(heal(a, loveHeal(m, d, sm) * amountMult('feeling:love', 'heal', 'along_the_chain'), cb, u).replace(/^ · /, '') + ' (Love, along the chain)');
         hitFoes.push(next); from = next;
       }
     };
@@ -1448,13 +1449,13 @@ function pourAfter(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, F: Set<stri
     out.push(clean(applyCond(cb, rng, u, a, 'hopeful', FP('hope').rounds ?? 2, undefined, { skipSave: true })));
   }
   // Guilt healed in rules 1.8 to 1.17 (what Buff and Love do); rules 1.19: it Taunts (pourOn). The heal stays for data that still sets it.
-  if (F.has('guilt') && FP('guilt').heal_per_stage) { const id = (u as any).feelHurtAlly, a = (id ? cb.units.find((v) => v.id === id && !v.dead) : null) || woundedAlly(cb, u, heartReach(m, d), false); if (a) out.push(clean(heal(a, (FP('guilt').heal_per_stage ?? 10) * Math.max(1, stage), cb, u)) + ' (Guilt)'); out.push(u.name + ' pays' + harmFor('guilt', () => harm(cb, rng, null, u, FP('guilt').self_damage ?? 5, 'true'))); }
+  if (F.has('guilt') && FP('guilt').heal_per_stage) { const id = (u as any).feelHurtAlly, a = (id ? cb.units.find((v) => v.id === id && !v.dead) : null) || woundedAlly(cb, u, heartReach(m, d), false); if (a) out.push(clean(heal(a, FP('guilt').heal_per_stage * Math.max(1, stage), cb, u)) + ' (Guilt)'); out.push(u.name + ' pays' + harmFor('guilt', () => harm(cb, rng, null, u, FP('guilt').self_damage ?? 0, 'true'))); }
   // Fear (rules 1.19): the Release throws you back from where you aimed it. Forced movement: nobody reacts to it.
   if (F.has('fear') && FP('fear').recoil && !u.dead && !u.downed) { const from = aim && aim !== u.pos ? aim : hits.find((v) => v.pos !== u.pos)?.pos; if (from) { const s = magicShove(cb, u, from, FP('fear').recoil, null); if (s) out.push(clean(s) + ' (Fear)'); } }
   // Pride (rules 1.19): a Release that takes nobody down costs 1 Strain after it.
   if (F.has('pride') && FP('pride').strain_unless_down && !wild && !u.dead && !hits.some((v) => v.side !== u.side && (v.dead || v.downed || v.hp <= 0 || v.surrendered))) { const s = addStrain(cb, rng, u, FP('pride').strain_unless_down, 'pride'); out.push(u.name + '\'s pride stings (+' + FP('pride').strain_unless_down + ' Strain)' + s); }
   // Shame (rules 1.17): each Shame poured in costs its own damage (it was 5 once, however many).
-  if (F.has('shame') && !u.dead) out.push(u.name + ' pays' + harmFor('shame', () => harm(cb, rng, null, u, (FP('shame').self_damage ?? 8) * (FP('shame').per_pour ? felt.filter((x) => x === 'shame').length : 1), 'true')));
+  if (F.has('shame') && !u.dead) out.push(u.name + ' pays' + harmFor('shame', () => harm(cb, rng, null, u, (FP('shame').self_damage ?? 0) * (FP('shame').per_pour ? felt.filter((x) => x === 'shame').length : 1), 'true')));
   if (F.has('jealousy')) { const t = hits.find((v) => v.side !== u.side); if (t) { const boon = Object.keys(t.conds || {}).find((c) => condOn(t, c) && isBoon(c) && c !== 'hidden'); if (boon) { const n = t.conds![boon]; endCond(t, boon, cb); (u.conds ||= {})[boon] = Math.max(u.conds[boon] || 0, Math.min(n, 3)); out.push(u.name + ' steals ' + condName(boon) + ' from ' + t.name + ' (Jealousy)'); } else if ((t.shield || 0) > 0) { const n = t.shield!; t.shield = 0; out.push(clean(grantShield(cb, u, n, u) + '') + ' ' + u.name + ' steals ' + t.name + "'s shield (Jealousy)"); } } }
   if (F.has('wonder')) {
     for (const v of cb.units) if (v.hidden && v.side !== u.side && set.has(v.pos)) { v.hidden = false; (cb.sightWhy ||= {})[v.id] = 'reveal'; for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][v.id]; out.push(v.name + ' is revealed (Wonder)'); }

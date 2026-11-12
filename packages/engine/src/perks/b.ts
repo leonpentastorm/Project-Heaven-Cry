@@ -8,6 +8,7 @@
 // engine stays deterministic. What the engine can't run goes to the Narrator: a fight note, a pending ruling, or the
 // item's brief() remainder in the character brief.
 import { register, stateOf, uses, has, note, postStory, grantPerkAp, bankAp, pushAp, grantShield, boundGame, skillRollMod, type Holder } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import { SKILL, WEAPON, ITEM } from '../data';
 import { type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE } from '../tactics';
@@ -574,7 +575,7 @@ register({
       const s = stateOf(h), cb: Combat = ctx.cb; s.melee = turnKey(cb);
       let line = h.u!.name + ' hits the line at full tilt (Last Charge: ×1.5 melee this turn';
       if (uses(h).take('per_combat', 1, h.key + '#shield')) {
-        const ac = h.c?.armourClass || 0, n = Math.max(15, 15 * ac), before = h.u!.shield || 0;
+        const ac = h.c?.armourClass || 0, n = Math.max(itemAmount('perk:last_charge', 'shield'), itemAmount('perk:last_charge', 'shield_by_armour', [], { armour_class: ac })), before = h.u!.shield || 0;
         grantShield(cb, h.u!, n, h.u!); s.shield = Math.max(0, (h.u!.shield || 0) - before); line += ', a ' + s.shield + ' shield until next turn';
       }
       log(cb, line + ').');

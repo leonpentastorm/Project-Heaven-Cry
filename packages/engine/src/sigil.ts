@@ -22,6 +22,7 @@ import { emit, boundGame, onHook } from './effects/hooks';
 import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTION_STATS, STUDY, masteredWords as masteredOf } from './sigilgrowth';
 import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
+import { itemAmount } from './effects/amounts';
 import { mendFactorOf } from './effects/mending';
 import { armourAgainst, landed, amountOf, term, type AmountSpec } from './effects/output';
 import { AP_MAX } from './effects/ap';
@@ -1294,7 +1295,7 @@ export function sigilTurnStart(cb: Combat, rng: Rng, u: Unit) {
   migrateSigil(cb);
   if (u.dead) return;
   if (condOn(u, 'quickened')) { const add = (W('quicken') as any)?.ap ?? 2, was = u.ap; if (!cb.overworld) u.ap = Math.min(AP_MAX, u.ap + add); endCond(u, 'quickened', cb); cb.log.push(u.name + ' is Quickened: +' + (u.ap - was) + ' AP this turn.'); }
-  if (condOn(u, 'corroded') && !u.downed) { const by = u.condBy?.corroded; cb.log.push(u.name + ' corrodes' + withElement('acid', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, 5, 'true', 'acid'))); }
+  if (condOn(u, 'corroded') && !u.downed) { const by = u.condBy?.corroded; cb.log.push(u.name + ' corrodes' + withElement('acid', () => harm(cb, rng, by ? cb.units.find((x) => x.id === by) || null : null, u, itemAmount('condition:corroded', 'tick'), 'true', 'acid'))); }
   for (const z of [...(cb.zones || [])]) {
     if (u.dead || !z.tiles.includes(u.pos)) continue;
     if (z.kind === 'field' || z.kind === 'wall') fieldBite(cb, rng, z, u);

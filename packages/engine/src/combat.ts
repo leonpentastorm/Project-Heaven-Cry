@@ -16,6 +16,7 @@ import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion
 import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
+import { itemAmount } from './effects/amounts';
 import { openAmount, closeAmount, armourAgainst, landed, deal } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal } from './effects/mending';
 import { turnAp, briefCredit } from './effects/ap';
@@ -1344,7 +1345,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
   if (u.bleed && !u.dead && !u.downed) {
     u.bleed--;
     const by = u.lastHitBy ? cb.units.find((x) => x.id === u.lastHitBy) || null : null; // kill credit: whoever opened the wound
-    const r = applyDamage(cb, u, 5, { type: 'bleed', by, shield: false, credit: 'hp' });
+    const r = applyDamage(cb, u, itemAmount('condition:bleeding', 'tick'), { type: 'bleed', by, shield: false, credit: 'hp' });
     emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'bleed', killed: u.hp === 0 }); if (u.hp === 0) fxFell(cb, u);
     cb.log.push(u.name + ' bleeds: ' + r.dealt + ' damage' + (u.hp === 0 ? (u.side === 'foe' ? ' · down for good' : ' · Downed') : ''));
     if (u.hp === 0) { u.bleed = 0; u.ap = 0; return; }

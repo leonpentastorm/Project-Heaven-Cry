@@ -5,6 +5,7 @@
   "items": [
     {
       "id": "bleeding",
+      "amounts": {"tick": {"kind": "damage", "base": 5, "profile": "flat", "type": "true", "provisional": true}},
       "name": "Bleeding",
       "kind": "debuff",
       "family": "body",
@@ -30,6 +31,7 @@
     },
     {
       "id": "burning",
+      "amounts": {"tick": {"kind": "damage", "base": 10, "profile": "flat", "type": "true", "provisional": true}},
       "name": "Burning",
       "kind": "debuff",
       "family": "body",
@@ -891,6 +893,7 @@
     },
     {
       "id": "corroded",
+      "amounts": {"tick": {"kind": "damage", "base": 5, "profile": "flat", "type": "true", "provisional": true}},
       "name": "Corroded",
       "kind": "debuff",
       "family": "body",

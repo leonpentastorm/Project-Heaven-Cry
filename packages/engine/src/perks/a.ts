@@ -7,6 +7,7 @@
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags A…) and docs/design/perk-runtime.md.
 import { register, stateOf, uses, pendRuling, postStory, applyDamage, grantShield, gainEcho, pushAway, immune, emit, type Holder } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import { ELEMENTAL_TYPES } from '../effects/damage';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
@@ -99,7 +100,7 @@ register({
     text: 'Remove one Body debuff from yourself. II: this costs 1 AP instead of 2, and you gain a shield of 10% of your max HP.',
     available: (h) => (inFight(h) ? (shrugList(h.u!).length ? true : 'No Body debuff to shrug off.') : true),
     preview: (h, a) => {
-      if (inFight(h)) { const l = shrugList(h.u!); const pick = a.choice && l.includes(a.choice) ? a.choice : l[0]; return { lines: ['Removes ' + (pick || 'nothing') + (tierII(h) ? '; shield ' + Math.floor(0.1 * h.u!.maxHp) : '') + '.'] }; }
+      if (inFight(h)) { const l = shrugList(h.u!); const pick = a.choice && l.includes(a.choice) ? a.choice : l[0]; return { lines: ['Removes ' + (pick || 'nothing') + (tierII(h) ? '; shield ' + Math.floor(itemAmount('perk:shrug_it_off', 'shield', [], { max_hp: h.u!.maxHp })) : '') + '.'] }; }
       const l = storyBody(h); return { lines: [l.length ? 'Ends ' + l[0] + '.' : 'The Narrator decides whether you shake off what ails you.'] };
     },
     run: (h, a) => {
@@ -108,7 +109,7 @@ register({
         if (!pick) return 'No Body debuff to shrug off.';
         endCond(u, pick, h.cb!);
         let line = u.name + ' shrugs off ' + pick + ' (Shrug It Off)';
-        if (tierII(h)) { const v = grantShield(h.cb!, u, 0.1 * u.maxHp, u); emitFx(h.cb!, 'shield', { target: u.id, at: u.pos, amount: v }); line += ' · a ' + v + ' shield'; }
+        if (tierII(h)) { const v = grantShield(h.cb!, u, itemAmount('perk:shrug_it_off', 'shield', [], { max_hp: u.maxHp }), u); emitFx(h.cb!, 'shield', { target: u.id, at: u.pos, amount: v }); line += ' · a ' + v + ' shield'; }
         emitFx(h.cb!, 'cond', { target: u.id, at: u.pos, id: pick, resisted: true });
         say(h.cb, line + '.'); return null;
       }
@@ -387,9 +388,9 @@ register({
       id: 'self_repair', label: 'Field Repair (self)', scope: ['combat'], target: 'none', ap: 2,
       text: 'Patch your own machine body: heal 10 HP per Improvisation point. Uses one spare-parts charge. Needs Improvisation 3.',
       available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : h.u.hp >= h.u.maxHp ? 'Already whole.' : true),
-      preview: (h) => ({ lines: ['Heals ' + 10 * (h.u?.proficiency || 0) + ' HP. This repair is not halved the way other healing on you is.'] }),
+      preview: (h) => ({ lines: ['Heals ' + itemAmount('trait:factory_made', 'repair', [], { improvisation: h.u?.proficiency || 0 }) + ' HP. This repair is not halved the way other healing on you is.'] }),
       run: (h) => {
-        const u = h.u!, n = 10 * (u.proficiency || 0), was = u.hp;
+        const u = h.u!, n = itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 }), was = u.hp;
         u.parts = (u.parts || 0) - 1; u.hp = Math.min(u.maxHp, u.hp + n);
         emitFx(h.cb!, 'heal', { target: u.id, at: u.pos, amount: u.hp - was }); emitFx(h.cb!, 'repair', { unit: u.id, at: u.pos, dur: 1400 });
         say(h.cb, u.name + ' patches their own chassis: +' + (u.hp - was) + ' HP (' + u.hp + '/' + u.maxHp + ').'); return null;
@@ -402,7 +403,7 @@ register({
       run: (h) => {
         const c = h.c!; let left = 1;
         c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left || x.qty <= 0) return x; left--; return { ...x, qty: x.qty - 1 }; }).filter((x) => x.qty > 0 || x.mags);
-        const max = Math.max(c.hp, maxHpOf(c)), was = c.hp; c.hp = Math.min(max, c.hp + 10 * (c.skills.proficiency || 0));
+        const max = Math.max(c.hp, maxHpOf(c)), was = c.hp; c.hp = Math.min(max, c.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: c.skills.proficiency || 0 }));
         postStory(h, 'spends ten minutes on repairs: +' + (c.hp - was) + ' HP (' + c.hp + '/' + max + ').'); return null;
       },
     },
@@ -474,14 +475,14 @@ register({
     on_hit: (ctx, h) => {
       if (ctx.tgt !== h.u || !ctx.crit || !h.cb || h.u!.dead || h.u!.downed) return;
       if (!/INJURY \(d6 \d\): (left|right) (arm|leg)/.test(lastLine(h.cb))) return;
-      const back = Math.floor(0.3 * (ctx.dmg || 0)); if (back <= 0) return;
+      const back = Math.floor(itemAmount('trait:crawler_blooded', 'chitin', [], { damage: ctx.dmg || 0 })); if (back <= 0) return;
       h.u!.hp = Math.min(h.u!.maxHp, h.u!.hp + back); say(h.cb, 'Chitin turns part of the blow: ' + back + ' back (Crawler-Blooded).');
     },
     blessing_in: (ctx, h) => {
       if (ctx.t !== h.u || !h.cb) return;
       const p = PATRON[h.c?.patron || ''] || Object.values(PATRON).find((x: any) => (x.blessings || []).includes(ctx.blessing));
       if ((p as any)?.faction !== 'lumeri') return;
-      const r = applyDamage(h.cb, h.u!, 10, { by: null, type: 'true', dmgType: 'true', shield: false, credit: 'none' });
+      const r = applyDamage(h.cb, h.u!, itemAmount('trait:crawler_blooded', 'blessing_burn'), { by: null, type: 'true', dmgType: 'true', shield: false, credit: 'none' });
       say(h.cb, 'The Lumeri light burns ' + h.u!.name + ' for ' + r.dealt + ' (Crawler-Blooded).');
     },
   },

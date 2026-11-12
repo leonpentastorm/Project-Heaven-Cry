@@ -10,6 +10,7 @@ import {
   register, stateOf, uses, note, has, tierOf, grantPerkAp, bankAp, refusedGift, apDebt, pushAp, applyDamage, healUnit, openWindow,
   armedOf, disarm, actionAp, postStory, pendRuling, boundGame, PERK_AP_CAP, type Holder,
 } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { FIELD_REPAIR_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
@@ -708,7 +709,7 @@ register({
         if ((h.c?.skills?.proficiency || 0) < 3) return 'Needs Improvisation 3.';
         if (!h.c || partsOf(h.c) <= 0) return 'No spare-parts charges.';
         const max = maxHp(t); if (t.hp >= max) return t.name + ' is already whole.';
-        takePart(h.c); const was = t.hp; t.hp = Math.min(max, Math.max(t.hp, 0) + Math.floor(max * 0.5)); if (was <= 0) (t as any).downedFails = 0;
+        takePart(h.c); const was = t.hp; t.hp = Math.min(max, Math.max(t.hp, 0) + Math.floor(itemAmount('perk:field_surgeon', 'patch', [], { max_hp: max }))); if (was <= 0) (t as any).downedFails = 0;
         const line = h.c.name + ' spends ten minutes patching up ' + t.name + ' (Field Surgeon): +' + (t.hp - Math.max(0, was)) + ' HP (' + t.hp + '/' + max + ').';
         say(h.cb, line); postStory(h, line, { kind: 'system' });
         return null;

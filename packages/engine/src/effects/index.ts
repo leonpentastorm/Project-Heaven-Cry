@@ -25,6 +25,8 @@ export { applyDamage, healUnit, grantShield, hostileSrc, PAST_SHIELDS, pastShiel
 export { PROFILES, PAIRS, profileOf, pairOf, statTerm, statOf, levelFactor, levelOf, openAmount, closeAmount, amountOf, armourAgainst, landed, deal, mend, term,
   type Profile, type Pair, type AmountSpec, type AmountCtx, type Amount, type AmountKind, type ArmourKind, type DealSpec, type DealCtx, type DealResult } from './output';
 export { MENDING, mendFactor, mendFactorOf, noteTended, tendedLately, TEND_ROUNDS, TEND_NOTICE, MEDIC, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, RALLY_HEAL, FIELD_REPAIR_HEAL, kitHeal } from './mending';
+// amount blocks (step a6): the numbers items deal, heal and shield with, from their data
+export { itemAmount, amountMult, amountBlock, amountSpecOf, amountHome, type AmountBlock } from './amounts';
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';
 export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';
 export { coverageReport, coverageGaps, coverageOf, verdictOf, verdictFor, coverageSummary, type CoverageRow, type Verdict } from './coverage';

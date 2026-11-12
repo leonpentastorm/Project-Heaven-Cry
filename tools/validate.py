@@ -1393,6 +1393,115 @@ if isinstance(tq, dict):
         if tch and techs.get(tch, {}).get("free"):
             warns.append(f"{where}: teaches '{tch}', which everyone already knows")
 
+# ---------------------------------------------------------------------------------------------- amount blocks
+# Step a6 of the damage-formula migration (docs/design/proposals/2026-11-unified-damage.md 2.5; data/CONVENTIONS.md):
+# every number an item deals, heals or shields with is in data, as an `amounts` block on the item (read by the engine
+# through effects/amounts.ts), or as the numeric `value` of the item's own heal / shield / hp effect.
+#   1. every `amounts` block has a known kind, a numeric base, well-formed per-point parts and multipliers, a known
+#      profile (rules.json output.profiles), a known type and armour;
+#   2. an effect that heals or shields names a number: a numeric `value`, the words "half" / "full" (a state, not an
+#      amount), or (a formula written as text) an `amounts` block of that kind on the same item;
+#   3. a `deal` or `mend` effect names a block that exists (or carries one);
+#   4. one number, one place: where an item has both a plain heal / shield effect with a number and a plain block of
+#      that kind (a base, no per-point part), they are the same number.
+AMOUNT_KINDS = {"damage", "heal", "shield"}
+AMOUNT_TYPES = {"physical", "sigil", "elemental", "soul", "true"}
+AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text"}
+out_rules = (data.get("rules") or {}).get("output") or {}
+PROFILES = set(k for k, v in (out_rules.get("profiles") or {}).items() if isinstance(v, dict))
+num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
+
+def check_block(b, where):
+    if not isinstance(b, dict):
+        errors.append(f"{where}: an amount block must be an object"); return False
+    if b.get("kind") not in AMOUNT_KINDS:
+        errors.append(f"{where}: amount kind '{b.get('kind')}' is not one of {sorted(AMOUNT_KINDS)}")
+    if not num(b.get("base")):
+        errors.append(f"{where}: amount base must be a number (no formulas as text: use per-point parts)")
+    for p in b.get("per") or []:
+        if not (isinstance(p, dict) and isinstance(p.get("of"), str) and num(p.get("value"))):
+            errors.append(f"{where}: a per-point part is {{of: <what it counts>, value: <number>}}")
+    if "profile" in b and b["profile"] not in PROFILES:
+        errors.append(f"{where}: unknown profile '{b['profile']}' (rules.json output.profiles)")
+    if "type" in b and b["type"] not in AMOUNT_TYPES:
+        errors.append(f"{where}: unknown damage type '{b['type']}'")
+    if "armour" in b and b["armour"] not in ("full", "half", "none"):
+        errors.append(f"{where}: armour is full, half or none")
+    if "mults" in b and not (isinstance(b["mults"], dict) and all(num(v) for v in b["mults"].values())):
+        errors.append(f"{where}: mults is a map of name to number")
+    for k in set(b) - AMOUNT_KEYS:
+        errors.append(f"{where}: unknown field '{k}' in an amount block")
+    return True
+
+def effects_of(x):
+    """An item's own effects, with those of its tiers (a perk) and nested ones (an aura's)."""
+    out = []
+    def rec(lst):
+        for e in lst or []:
+            if isinstance(e, dict):
+                out.append(e); rec(e.get("effects"))
+    rec(x.get("effects"))
+    for t in (x.get("tiers") or {}).values():
+        if isinstance(t, dict): rec(t.get("effects"))
+    return out
+
+def check_amounts(x, where):
+    if not isinstance(x, dict):
+        return
+    blocks = x.get("amounts")
+    if blocks is not None:
+        if not isinstance(blocks, dict) or not blocks:
+            errors.append(f"{where}: amounts is a map of name to amount block"); blocks = {}
+        for name, b in blocks.items():
+            check_block(b, f"{where}: amounts.{name}")
+    blocks = blocks or {}
+    kinds = {b.get("kind") for b in blocks.values() if isinstance(b, dict)}
+    for e in effects_of(x):
+        op = e.get("op")
+        if op in ("heal", "shield") and "value" in e:
+            v = e["value"]
+            if not num(v) and v not in ("half", "full") and op not in kinds:
+                errors.append(f"{where}: its {op} effect has no number ({v!r}): give the item an `amounts` block of kind {op}")
+            plain = [b for b in blocks.values() if isinstance(b, dict) and b.get("kind") == op and not b.get("per") and num(b.get("base")) and b.get("base") > 0]
+            if num(v) and len(plain) == 1 and len([f for f in effects_of(x) if f.get("op") == op and num(f.get("value"))]) == 1 and plain[0]["base"] != v:
+                errors.append(f"{where}: its {op} effect says {v} and its amount block says {plain[0]['base']}: one number, one place")
+        if op in ("deal", "mend"):
+            a = e.get("amount")
+            if isinstance(a, str):
+                if a not in blocks: errors.append(f"{where}: its {op} effect names the amount block '{a}', which the item does not have")
+                elif (blocks[a].get("kind") == "damage") != (op == "deal"): errors.append(f"{where}: its {op} effect names the block '{a}' of kind {blocks[a].get('kind')}")
+            elif isinstance(a, dict):
+                if check_block(a, f"{where}: {op} effect") and (a.get("kind") == "damage") != (op == "deal"):
+                    errors.append(f"{where}: a {op} effect with an amount of kind {a.get('kind')}")
+            else:
+                errors.append(f"{where}: a {op} effect needs an `amount` (a block, or the name of one of the item's amounts)")
+
+for name in ("perks", "traits", "conditions", "sigils", "feelings", "soul_modules", "items", "weapons", "skills"):
+    for x in items(name) if isinstance(items(name), list) else []:
+        check_amounts(x, f"{name}:{x.get('id') if isinstance(x, dict) else '?'}")
+        for lvl, un in ((x.get("unlocks") or {}).items() if isinstance(x, dict) and isinstance(x.get("unlocks"), dict) else []):
+            check_amounts(un, f"{name}:{x.get('id')}.{lvl}")
+for b in base:
+    for r, v in (b.get("ranks") or {}).items():
+        for m in v.get("moves") or []:
+            if "ref" not in m: check_amounts(m, f"classes:{b.get('id')}.{m.get('id')}")
+for m in pool:
+    check_amounts(m, f"classes:pool.{m.get('origin')}.{m.get('id')}")
+for a in adv:
+    for m in a.get("moves") or []:
+        check_amounts(m, f"classes:{a.get('id')}.{m.get('id')}")
+pat = data.get("patrons") or {}
+for w in pat.get("whispers") or []:
+    check_amounts(w, f"patrons:whisper.{w.get('id')}")
+for p in items("patrons"):
+    if isinstance(p, dict):
+        for h in (p.get("hymns") or []) + ([p["miracle"]] if isinstance(p.get("miracle"), dict) else []) + ([p["intervention"]] if isinstance(p.get("intervention"), dict) else []):
+            check_amounts(h, f"patrons:{p.get('id')}.{h.get('id') or 'intervention'}")
+for name, grp in (out_rules.get("amounts") or {}).items():
+    if isinstance(grp, dict):
+        for bn, b in grp.items():
+            check_block(b, f"rules: output.amounts.{name}.{bn}")
+
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 
