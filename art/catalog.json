@@ -10874,6 +10874,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/feeling-defiance.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-defiance.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "feeling-abandon": {
+      "id": "feeling-abandon",
+      "label": "Abandon: the ribbon flung wide, its knot burst open",
+      "path": "art/icons/feelings/feeling-abandon.png",
+      "sha256": "5f7b30e6c98be39624707ead259fb3e0ab9d41587f283fdb365112679176c498",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-abandon.png",
+        "128": "art/icons/feelings/exports/128/feeling-abandon.png",
+        "64": "art/icons/feelings/exports/64/feeling-abandon.png",
+        "56": "art/icons/feelings/exports/56/feeling-abandon.png",
+        "48": "art/icons/feelings/exports/48/feeling-abandon.png",
+        "44": "art/icons/feelings/exports/44/feeling-abandon.png",
+        "40": "art/icons/feelings/exports/40/feeling-abandon.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-abandon.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-abandon.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   },
   "modules": {

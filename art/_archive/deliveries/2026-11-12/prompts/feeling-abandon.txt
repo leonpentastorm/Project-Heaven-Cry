@@ -3,3 +3,5 @@ Draw one abstract glyph in the flat white ink style of the attached references. 
 The feeling is Abandon: the ribbon flung wide, its knot burst open.
 
 Match the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.
+
+The heart-knot is BURST OPEN: show its two heart-like lobes pulling apart with a clear transparent opening between them, their ribbon ends flung wide. This individual action overrides the default closed knot. Keep recognition of an opened heart, but do not draw a neatly tied intact central heart.

@@ -525,14 +525,14 @@
     "family": "feelings",
     "path": "art/icons/feelings/feeling-abandon.png",
     "action": "Abandon: the ribbon flung wide, its knot burst open.",
-    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Abandon: the ribbon flung wide, its knot burst open.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.",
+    "prompt": "Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.\n\nThe feeling is Abandon: the ribbon flung wide, its knot burst open.\n\nMatch the approved test set’s family style in the last two attachments. One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight and construction only.\n\nThe heart-knot is BURST OPEN: show its two heart-like lobes pulling apart with a clear transparent opening between them, their ribbon ends flung wide. This individual action overrides the default closed knot. Keep recognition of an opened heart, but do not draw a neatly tied intact central heart.",
     "references": [
       "art/icons/prayers/whisper-luck.png",
       "art/icons/prayers/hymn-mother_ember-1.png",
       "art/icons/feelings/feeling-rage.png",
       "art/icons/feelings/feeling-love.png"
     ],
-    "status": "pending"
+    "status": "delivered"
   },
   {
     "id": "module-move",

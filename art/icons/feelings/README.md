@@ -26,5 +26,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `feeling-jealousy.png`: Jealousy: two ribbons, one curling to snatch the other's spark.
 - `feeling-wonder.png`: Wonder: a spiral opening into a small star.
 - `feeling-defiance.png`: Defiance: the ribbon stands straight against slanted lines pushing at it.
+- `feeling-abandon.png`: Abandon: the ribbon flung wide, its knot burst open.
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
