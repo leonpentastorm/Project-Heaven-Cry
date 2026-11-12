@@ -3,6 +3,7 @@
 // and the world do goes through the engine functions their turns use (resolveAttack, applyDamage, applyCond), with the
 // game bound.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { applyDamage, applyCond, resolveAttack, previewAttack as pv0, healUnit, condOn, condArg, d20, beginTurn, type Unit, type Combat } from '../src';
 import { fightWith, storyWith, withGame, rng } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -31,7 +32,7 @@ function storyCheck(s: { act: any; g: any }, charId: string, skills: string[], e
 /** A story first, then a fight on the yard (before() runs in the story). */
 function fightAfter(specs: any[], foes: any[], before: (s: ReturnType<typeof storyWith>) => void) {
   const s = storyWith(specs); before(s);
-  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard', difficulty: 'standard', enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: 'service_pistol', at: f.at || '' })) } } } as any);
+  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Test fight', map: 'yard16', difficulty: 'standard', enemies: foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'soldier', weapon: 'service_pistol', at: f.at || '' })) } } } as any);
   const box: any = s;
   const api = {
     get g() { return box.g; }, get cb(): Combat { return box.g.combat; },
@@ -80,21 +81,24 @@ describe('Grim Reaper', () => {
 // ======================================================================================================== Overruled!
 describe('Overruled!', () => {
   const setup = (tier: string) => { const f = fightWith([{ perks: { overruled: tier } }], [{ at: 'F6' }]); open(f.cb); f.turn(f.pc); return f; };
+  // Rules 1.14 (the AP perks' cooldown): the bonus and the penalty each come at most once every 3 of your turns, so
+  // these turns are three rounds apart. The cooldown itself is tested in rules114-engine-first-step.test.ts.
+  const turnLater = (f: F, n = 3) => { f.cb.round += n; return f.turn(f.pc); };
   it('I: +2 AP while your Left Brain Debuff holds on an enemy; −2 while you carry one', () => {
     const f = setup('I'), foe = f.foes[0];
-    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'ldebuff', 3, undefined, { skipSave: true }));
-    expect(f.turn(f.pc).ap).toBe(8);
-    withGame(f.g, () => applyCond(f.cb, rng(), null, f.unit(f.pc.id), 'ldebuff', 3, undefined, { skipSave: true }));
-    expect(f.turn(f.pc).ap).toBe(6);
-    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'rdebuff', 3, undefined, { skipSave: true }));
-    f.unit(foe.id).conds!.ldebuff = 0; expect(f.turn(f.pc).ap).toBe(4); // a Right Brain Debuff doesn't count at Tier I
+    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'ldebuff', 30, undefined, { skipSave: true }));
+    expect(turnLater(f).ap).toBe(8);
+    withGame(f.g, () => applyCond(f.cb, rng(), null, f.unit(f.pc.id), 'ldebuff', 30, undefined, { skipSave: true }));
+    expect(turnLater(f).ap).toBe(6);
+    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'rdebuff', 30, undefined, { skipSave: true }));
+    f.unit(foe.id).conds!.ldebuff = 0; expect(turnLater(f).ap).toBe(4); // a Right Brain Debuff doesn't count at Tier I
   });
   it('II: Right Brain Debuffs count too, and your own penalty is −1', () => {
     const f = setup('II'), foe = f.foes[0];
-    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'rdebuff', 3, undefined, { skipSave: true }));
-    expect(f.turn(f.pc).ap).toBe(8);
-    withGame(f.g, () => applyCond(f.cb, rng(), null, f.unit(f.pc.id), 'rdebuff', 3, undefined, { skipSave: true }));
-    expect(f.turn(f.pc).ap).toBe(7);
+    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(f.pc.id), f.unit(foe.id), 'rdebuff', 30, undefined, { skipSave: true }));
+    expect(turnLater(f).ap).toBe(8);
+    withGame(f.g, () => applyCond(f.cb, rng(), null, f.unit(f.pc.id), 'rdebuff', 30, undefined, { skipSave: true }));
+    expect(turnLater(f).ap).toBe(7);
   });
   it('the fight\'s Persuade (a non-caster) feeds it', () => {
     const f = setup('I'), foe = f.foes[0]; weakSaves(f.unit(foe.id));
@@ -127,9 +131,12 @@ describe('Blueprint', () => {
 // ======================================================================================================== Talks Broke Down
 describe('Talks Broke Down', () => {
   const talk = (tier: string, ok: boolean) => fightAfter([{ perks: { talks_broke_down: tier } }], [{ at: 'P6' }, { at: 'P8' }], (s) => storyCheck(s, s.chars[0].id, ['charisma'], { auto: ok ? 'success' : 'fail' }));
-  it('I: a won argument before the fight, +2 AP every turn; a lost one, −2', () => {
-    const w = talk('I', true); expect(w.turn(w.pc).ap).toBe(8); expect(w.turn(w.pc).ap).toBe(8);
-    const l = talk('I', false); expect(l.turn(l.pc).ap).toBe(4);
+  // Rules 1.14 (the AP perks' cooldown): +2 on the first turn and then once every 3 turns (it was every turn).
+  /** The holder's turn in round r (the fight may have opened on their turn already: the cooldown starts fresh). */
+  const turnIn = (f: ReturnType<typeof talk>, r: number) => { if (r === 1) { const us = f.unit(f.pc.id).uses || {}; delete us['perk:talks_broke_down#ap-gain|cooldown']; delete us['perk:talks_broke_down#ap-pen|cooldown']; } f.cb.round = r; return f.turn(f.pc).ap; };
+  it('I: a won argument before the fight, +2 AP on turns 1, 4 and 7; a lost one, −2 on the same turns', () => {
+    const w = talk('I', true); expect([1, 2, 3, 4, 5, 6, 7].map((r) => turnIn(w, r))).toEqual([8, 6, 6, 8, 6, 6, 8]);
+    const l = talk('I', false); expect([1, 2, 3, 4].map((r) => turnIn(l, r))).toEqual([4, 6, 6, 4]);
   });
   it('II: no penalty, and the first enemy in initiative hesitates (−1 AP in round 1)', () => {
     const l = talk('II', false); expect(l.turn(l.pc).ap).toBe(6);
@@ -183,7 +190,7 @@ describe('Soulmate', () => {
   it('the share never Downs the holder; mutual Soulmates don\'t ping-pong', () => {
     const s0 = storyWith([{ perks: { soulmate: 'I' }, skills: { camaraderie: 9 } }, { perks: { soulmate: 'I' }, skills: { camaraderie: 9 } }]);
     const [c1, c2] = s0.chars; s0.act({ type: 'story/perk', charId: c1.id, id: 'soulmate', choice: c2.name }); s0.act({ type: 'story/perk', charId: c2.id, id: 'soulmate', choice: c1.name });
-    s0.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'P6' }] } } } as any);
+    s0.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'P6' }] } } } as any);
     const cb = s0.g.combat!, [a, b] = cb.units.filter((u) => u.side === 'pc'); a.hp = a.maxHp = 200; b.hp = b.maxHp = 200;
     withGame(s0.g, () => applyDamage(cb, b, 100, { type: 'weapon', by: cb.units.find((u) => u.side === 'foe') }));
     expect(a.hp).toBe(180); expect(b.hp).toBe(120);
@@ -214,6 +221,9 @@ describe('Sweet Talker', () => {
   it('I: a charmed NPC who debuffs you stings (−2 AP next turn); II: no sting', () => {
     for (const [tier, want] of [['I', 4], ['II', 6]] as const) {
       const f = charmed(tier); f.turn(f.pc); const foe = f.foes[0];
+      // The fight may have opened with Vel's own shot, and a critical's Bleeding is a debuff that lands like any other
+      // (engine foundations 2: it goes through applyCond), so the sting may already be spent: start from a clean slate.
+      f.unit(f.pc.id).ps = {}; delete f.unit(f.pc.id).uses; // (the sting's own cooldown is a uses() cell, engine foundations 2 costs: both are the slate)
       withGame(f.g, () => applyCond(f.cb, rng(), f.unit(foe.id), f.unit(f.pc.id), 'shaken', 2, undefined, { skipSave: true }));
       expect(f.turn(f.pc).ap).toBe(want);
     }
@@ -426,13 +436,13 @@ describe('Lay Down Arms', () => {
 
 // ======================================================================================================== Field Surgeon
 describe('Field Surgeon', () => {
-  it('Field Repair heals an adjacent living ally: 10 × Proficiency × Healing given, one spare-parts charge', () => {
+  it('Field Repair heals an adjacent living ally: 3 × Proficiency × Healing given × the level factor (rules 1.23; it was 10 a point), one spare-parts charge', () => {
     const f = fightWith([{ perks: { field_surgeon: 'achieved' }, skills: { proficiency: 5 }, kit: 'engineer' }, {}]); open(f.cb);
     const [me, ally] = f.pcs; at(f, me, '2,5'); at(f, ally, '3,5'); f.unit(me.id).parts = 2; f.unit(me.id).proficiency = 5; f.unit(ally.id).hp = 10;
     f.turn(f.unit(me.id));
     pcAct(f, { type: 'combat/perk', id: 'field_surgeon', actionId: 'repair_ally', targetId: ally.id }, me);
     expect(f.unit(me.id).ap).toBe(4); expect(f.unit(me.id).parts).toBe(1);
-    expect(f.unit(ally.id).hp).toBeGreaterThanOrEqual(60);
+    expect(f.unit(ally.id).hp).toBeGreaterThanOrEqual(10 + 12); expect(f.unit(ally.id).hp).toBeLessThan(60); // 3 × 5 × Healing given (the landed profile since rules 1.26: about ×0.87 at a bare sheet)
   });
   it('a Factory Made ally is healed at full power (the Plug halving undone)', () => {
     const run = (perk: boolean) => {
@@ -525,7 +535,7 @@ describe('Rival', () => {
     expect(storyCheck(s, r.id, ['charisma'])).toMatch(/\+2 Show-Off/);
   });
   it('Show-Off in a fight: a hit by your rival gives your next attack with that skill +2', () => {
-    const s = rivals(); s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'F6' }] } } } as any);
+    const s = rivals(); s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'F6' }] } } } as any);
     const cb = s.g.combat!, [me, r] = cb.units.filter((u) => u.side === 'pc'), foe = cb.units.find((u) => u.side === 'foe')!;
     open(cb); r.attack = 60; foe.hp = foe.maxHp = 999;
     withGame(s.g, () => resolveAttack(cb, s.g.rng, r, foe, 'shot', null, { noAp: true }));

@@ -5,12 +5,14 @@
 // player joins for a team fight (Team A against Team B) fought until one side wins, then the host leaves and the
 // guest sees "The host closed the Proving Ground." on the title. No Narrator, ever.
 // Screenshots land in e2e/shots/sandbox-mp-*.png.
-import { chromium, player, click, BASE, OUT, autoConfirm } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, autoConfirm, pause } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const snap = (p, n) => p.screenshot({ path: OUT + 'sandbox-mp-' + n + '.png' });
 const G = (p) => p.evaluate(() => window.__phc.getState().game);
+/** The host's whole game (fog in the engine: a player's view holds no hostile its side can't see). */
+const T = (p) => p.evaluate(() => window.__phc.truth());
 const screen = (p) => p.evaluate(() => window.__phc.getState().screen);
 const act = (p, a) => p.evaluate((a) => window.__phc.act(a), a);
 const until = (p, f, arg, t = 15000) => p.waitForFunction(f, arg, { timeout: t });
@@ -21,18 +23,18 @@ const watch = (p) => p.on('request', (r) => { if (PROVIDERS.test(r.url())) calls
 watch(host); watch(mai);
 const drawerOf = (p) => p.locator('aside[aria-label="Proving Ground tools"]');
 const openTools = async (p) => { if (!(await drawerOf(p).count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click(); await drawerOf(p).waitFor(); };
-const dismissCut = async (p) => { if (await p.locator('[data-phc-cutin]').count()) { await p.mouse.click(1430, 990); await p.waitForTimeout(380); } };
+const dismissCut = async (p) => { if (await p.locator('[data-phc-cutin]').count()) { await p.mouse.click(1430, 990); await pause(p, 380); } };
 const pages = {};
 const ownerPage = async (g, u) => { const c = g.characters[u.charId]; return c ? pages[c.owner] : null; };
 
 // 1. The host: PROVING GROUND → With friends
 await host.goto(BASE);
-await click(host, 'PROVING GROUND', { timeout: 20000 });
+await click(host, 'PROVING GROUND', { timeout: 30000 });
 await host.getByPlaceholder('Leon').fill('Leon');
 await click(host, 'With friends ›');
 await until(host, () => !!window.__phc.getState().game?.sandbox);
 const invite = host.locator('div[role="dialog"][aria-label="Invite friends"]');
-await invite.waitFor({ timeout: 6000 });
+await invite.waitFor({ timeout: 30000 });
 let g = await G(host);
 const code = g.code;
 ok('With friends: the room code ' + code + ' is shown big, with Copy and the link', (await invite.getByText(code, { exact: true }).count()) > 0 && (await invite.getByRole('button', { name: 'Copy the code' }).count()) > 0 && (await invite.getByText('/?room=' + code).count()) > 0);
@@ -43,7 +45,7 @@ pages[(await host.evaluate(() => window.__phc.getState().me.id))] = host;
 
 // 2. A guest joins by the code and gets "Recruit 2", straight into the Proving Ground
 await mai.goto(BASE);
-await click(mai, 'JOIN A FRIEND', { timeout: 20000 });
+await click(mai, 'JOIN A FRIEND', { timeout: 30000 });
 await mai.getByPlaceholder('Leon').fill('Mai');
 await mai.getByPlaceholder('ROOM CODE').fill(code);
 await click(mai, 'Join ›');
@@ -86,20 +88,20 @@ let sawMaiCut = false, sawHostWaiting = false, sawHostCut = false, sawMaiWaiting
 for (let i = 0; i < 30 && !(sawMaiCut && sawHostWaiting && sawHostCut && sawMaiWaiting); i++) {
   g = await G(host); if (g.phase !== 'combat') break;
   const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]);
-  if (!cur || cur.side !== 'pc') { await host.waitForTimeout(250); continue; }
+  if (!cur || cur.side !== 'pc') { await pause(host, 250); continue; }
   const mine = await ownerPage(g, cur), other = mine === host ? mai : host, name = mine === host ? 'Leon' : 'Mai';
-  await mine.waitForSelector('div[data-phc-cutin][aria-label="Your turn: ' + cur.name + '"]', { timeout: 4000 }).then(() => { if (mine === mai) sawMaiCut = true; else sawHostCut = true; }, () => {});
+  await mine.waitForSelector('div[data-phc-cutin][aria-label="Your turn: ' + cur.name + '"]', { timeout: 30000 }).then(() => { if (mine === mai) sawMaiCut = true; else sawHostCut = true; }, () => {});
   const waiting = await other.getByText(new RegExp('WAITING FOR ' + name.toUpperCase())).count() + await other.getByText(new RegExp('Waiting for ' + name)).count();
   if (waiting) { if (other === host) sawHostWaiting = true; else sawMaiWaiting = true; }
   await dismissCut(mine);
   const t = g.combat.units.find((u) => u.side === 'foe' && !u.dead);
   if (t && cur.ap >= 2 && cur.ammo > 0) await act(mine, { type: 'combat/attack', unitId: cur.id, targetId: t.id, mode: 'shot' });
-  await mine.waitForTimeout(400);
+  await pause(mine, 400);
   const [a, b] = [await G(host), await G(mai)];
-  if (a.combat && b.combat && a.combat.fxSeq !== b.combat.fxSeq) { await mai.waitForTimeout(500); const b2 = await G(mai); if (b2.combat && b2.combat.fxSeq !== (await G(host)).combat?.fxSeq) fxSame = false; }
+  if (a.combat && b.combat && a.combat.fxSeq !== b.combat.fxSeq) { await pause(mai, 500); const b2 = await G(mai); if (b2.combat && b2.combat.fxSeq !== (await G(host)).combat?.fxSeq) fxSame = false; }
   g = await G(host); const c2 = g.combat && g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]);
   if (c2 && c2.id === cur.id && g.phase === 'combat') await act(mine, { type: 'combat/end-turn', unitId: cur.id });
-  await mine.waitForTimeout(300);
+  await pause(mine, 300);
 }
 ok('the guest gets the turn cut-in on their own turn', sawMaiCut);
 ok('the host gets the turn cut-in on their own turn', sawHostCut);
@@ -115,18 +117,18 @@ if (g.phase === 'combat') {
     g = await G(host); if (g.sandbox.state === 'fallen' || g.phase !== 'combat') break;
     const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]);
     if (cur && cur.side === 'pc') { const p = await ownerPage(g, cur); await dismissCut(p); await act(p, { type: 'combat/end-turn', unitId: cur.id }); }
-    await host.waitForTimeout(250);
+    await pause(host, 250);
   }
 }
 g = await G(host);
 if (g.sandbox.state === 'cleared') { // cleared before it could fall: fight the next one and fall there
   await act(host, { type: 'sandbox/wave', wave: 9 });
-  for (let i = 0; i < 80; i++) { g = await G(host); if (g.sandbox.state === 'fallen') break; const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]); if (cur && cur.side === 'pc') { const p = await ownerPage(g, cur); await dismissCut(p); await act(p, { type: 'combat/end-turn', unitId: cur.id }); } await host.waitForTimeout(250); }
+  for (let i = 0; i < 80; i++) { g = await G(host); if (g.sandbox.state === 'fallen') break; const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]); if (cur && cur.side === 'pc') { const p = await ownerPage(g, cur); await dismissCut(p); await act(p, { type: 'combat/end-turn', unitId: cur.id }); } await pause(host, 250); }
 }
 g = await G(host);
 ok('the squad fell (state ' + g.sandbox.state + ')', g.sandbox.state === 'fallen');
 const fell = mai.locator('div[role="dialog"][aria-label="The squad fell"]');
-await fell.waitFor({ timeout: 9000 }).catch(() => {});
+await fell.waitFor({ timeout: 20000 }).catch(() => {});
 ok('the guest sees the squad-fell card with Retry', (await fell.getByRole('button', { name: /Retry wave/ }).count()) > 0);
 await snap(mai, '05-fell');
 const attempt = g.sandbox.attempt;
@@ -137,7 +139,7 @@ g = await G(host);
 ok('Retry for everyone: both fighters back in the fight (attempt ' + g.sandbox.attempt + ')', g.combat.units.filter((u) => u.charId && !u.dead).length === 2);
 
 // 6. The guest leaves: their fighter goes, they land on the title
-await mai.waitForTimeout(1500); await dismissCut(mai);
+await pause(mai, 1500); await dismissCut(mai);
 await openTools(mai);
 await drawerOf(mai).getByRole('button', { name: 'Leave', exact: true }).click();
 await until(mai, () => window.__phc.getState().screen === 'home' && !window.__phc.getState().game);
@@ -167,9 +169,12 @@ for (const c of Object.values(g.characters)) await act(pages[c.owner], { type: '
 await act(host, { type: 'sandbox/fight' });
 await until(ona, () => window.__phc.getState().game.phase === 'combat');
 await until(ona, () => window.__phc.getState().screen === 'combat');
-const vOna = await G(ona), vHost = await G(host);
+const vOna = await G(ona), vHost = await G(host), tHost = await T(host);
 const onaUnit = vOna.combat.units.find((u) => vOna.characters[u.charId]?.owner === onaId);
-ok('Team B sees its own fighter as the squad, the host sees it as hostile', onaUnit.side === 'pc' && vHost.combat.units.find((u) => u.id === onaUnit.id).side === 'foe');
+// the host's view holds Ona's fighter only while Team A sees it (else it is an unseen hostile, absent); either way the
+// host's game has it on the other side
+const onaForHost = vHost.combat.units.find((u) => u.id === onaUnit.id);
+ok('Team B sees its own fighter as the squad, the host sees it as hostile (' + (onaForHost ? 'in sight' : 'unseen') + ')', onaUnit.side === 'pc' && (!onaForHost || onaForHost.side === 'foe') && tHost.combat.units.find((u) => u.id === onaUnit.id).side === 'foe');
 const xy = (k) => k.split(',').map(Number);
 /** The shortest path (tile keys, from the unit's own tile) to a tile next to the target, around walls, cover, objects
  *  and other units; hazards are avoided when there is another way. */
@@ -193,50 +198,51 @@ function pathTo(cb, from, to) {
   }
   return [from.pos];
 }
+// (the loop reads the host's truth: whose turn it is and where the other team stands, seen or not)
 let winner = null;
 for (let i = 0; i < 240 && !winner; i++) {
-  g = await G(host);
+  g = await T(host);
   if (g.phase !== 'combat') { winner = g.sandbox.lastWin; break; }
   const cur = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]);
   const p = cur && cur.charId ? await ownerPage(g, cur) : null;
-  if (!p) { await host.waitForTimeout(250); continue; }
+  if (!p) { await pause(host, 250); continue; }
   await dismissCut(p);
   const foe = g.combat.units.find((u) => u.charId && u.side !== cur.side && !u.dead && !u.downed);
-  if (!foe) { await host.waitForTimeout(250); continue; }
+  if (!foe) { await pause(host, 250); continue; }
   const before = JSON.stringify([cur.ap, cur.pos, cur.ammo]);
-  if (cur.ap >= 2 && cur.ammo > 0) { await act(p, { type: 'combat/attack', unitId: cur.id, targetId: foe.id, mode: 'shot' }); await p.waitForTimeout(350); }
-  let now = (await G(host)).combat?.units.find((u) => u.id === cur.id);
-  if (now && cur.ammo === 0 && cur.ap >= 2) { await act(p, { type: 'combat/reload', unitId: cur.id }); await p.waitForTimeout(300); now = (await G(host)).combat?.units.find((u) => u.id === cur.id); }
+  if (cur.ap >= 2 && cur.ammo > 0) { await act(p, { type: 'combat/attack', unitId: cur.id, targetId: foe.id, mode: 'shot' }); await pause(p, 350); }
+  let now = (await T(host)).combat?.units.find((u) => u.id === cur.id);
+  if (now && cur.ammo === 0 && cur.ap >= 2) { await act(p, { type: 'combat/reload', unitId: cur.id }); await pause(p, 300); now = (await T(host)).combat?.units.find((u) => u.id === cur.id); }
   if (now && JSON.stringify([now.ap, now.pos, now.ammo]) === before && now.ap >= 1) {
     // Out of reach or sight: walk the shortest open path toward the other team (a search over the map the view carries).
     const path = pathTo(g.combat, cur, foe);
     for (let k = Math.min(4, path.length - 1); k >= 1; k--) {
       await act(p, { type: 'combat/move', unitId: cur.id, to: path[k] });
-      await p.waitForTimeout(200);
-      const moved = (await G(host)).combat?.units.find((u) => u.id === cur.id);
+      await pause(p, 200);
+      const moved = (await T(host)).combat?.units.find((u) => u.id === cur.id);
       if (!moved || moved.pos !== cur.pos) break;
     }
-    const now2 = (await G(host)).combat?.units.find((u) => u.id === cur.id);
-    if (now2 && now2.ap >= 2) { const adj = Math.max(Math.abs(xy(now2.pos)[0] - xy(foe.pos)[0]), Math.abs(xy(now2.pos)[1] - xy(foe.pos)[1])) <= 1; await act(p, { type: 'combat/attack', unitId: cur.id, targetId: foe.id, mode: adj ? 'melee' : 'shot' }); await p.waitForTimeout(300); }
+    const now2 = (await T(host)).combat?.units.find((u) => u.id === cur.id);
+    if (now2 && now2.ap >= 2) { const adj = Math.max(Math.abs(xy(now2.pos)[0] - xy(foe.pos)[0]), Math.abs(xy(now2.pos)[1] - xy(foe.pos)[1])) <= 1; await act(p, { type: 'combat/attack', unitId: cur.id, targetId: foe.id, mode: adj ? 'melee' : 'shot' }); await pause(p, 300); }
   }
-  if (i % 20 === 19) { const x = (await G(host)).combat; if (x) console.log('  team fight round ' + x.round + ': ' + x.units.filter((u) => u.charId).map((u) => u.name + ' ' + u.hp + ' HP at ' + u.pos).join(' · ')); }
-  g = await G(host); if (g.phase !== 'combat') { winner = g.sandbox.lastWin; break; }
+  if (i % 20 === 19) { const x = (await T(host)).combat; if (x) console.log('  team fight round ' + x.round + ': ' + x.units.filter((u) => u.charId).map((u) => u.name + ' ' + u.hp + ' HP at ' + u.pos).join(' · ')); }
+  g = await T(host); if (g.phase !== 'combat') { winner = g.sandbox.lastWin; break; }
   const c2 = g.combat.units.find((u) => u.id === g.combat.order[g.combat.turn]);
   if (c2 && c2.id === cur.id) await act(p, { type: 'combat/end-turn', unitId: cur.id });
-  await p.waitForTimeout(200);
+  await pause(p, 200);
 }
 g = await G(host);
 ok('the team fight ends with a winner: Team ' + winner + ' (' + (g.combat?.summary || '') + ')', !!winner && g.phase === 'story');
 ok('everyone is back to gearing up with full HP', Object.values(g.characters).every((c) => !c.dead && c.hp > 1));
 const endCard = ona.locator('div[role="dialog"][aria-label="Team ' + winner + ' wins"]');
-await endCard.waitFor({ timeout: 6000 }).catch(() => {});
+await endCard.waitFor({ timeout: 20000 }).catch(() => {});
 ok('Team B\'s player sees the result from their side', (await endCard.getByText(winner === 'B' ? '✓ YOUR TEAM WINS' : '✕ YOUR TEAM IS DOWN').count()) > 0);
 await snap(ona, '08-team-end');
 
 // 8. The host leaves: the room closes, the guest sees why and lands on the title
 const hostEnd = host.locator('div[role="dialog"][aria-label="Team ' + winner + ' wins"]');
 if (await hostEnd.count()) await hostEnd.getByRole('button', { name: 'Gear up ›' }).click();
-await host.waitForTimeout(600);
+await pause(host, 600);
 await openTools(host);
 await drawerOf(host).getByRole('button', { name: 'Leave', exact: true }).click();
 await until(host, () => window.__phc.getState().screen === 'home' && !window.__phc.getState().game);

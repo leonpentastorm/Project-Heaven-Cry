@@ -24,7 +24,42 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    ~~**Still open for Leon:** the Miracle's price.~~ **Decided** (Leon, 9 Nov 2026) and built as **Miracle 2.1**, rules
    1.6.2 (items 724–737): the Miracle needs Devotion 10 and lowers Devotion by 5 levels; all eight Miracles are
    stronger and engine-run. Every number in items 701–736 is provisional for playtests.
-3. **Rewrite M813 for World Play.** Every area gets:
+2b. **Fight maps up to 26 × 26** (**built**, rules 1.16, 11 Nov 2026: the limits, `data/maps.json`, layouts as rows of
+   characters, open ground and the Proving Ground at 26 × 26, the M813 paintings retired; the camera is 2c. Spec:
+   Maps; open items 1039 to 1047) (Leon, 11 Nov 2026; queued right behind step 1 of the balance pass, which is in the
+   same engine files). 26 × 26 (A to Z by 1 to 26) is the largest a map can be and the size of the Proving Ground and
+   of open ground; a campaign or a later game mode may set a smaller map, chosen when the campaign is made (the
+   campaign format gets a size field with that maximum); sides deploy about 10 to 14 tiles apart with cover on the
+   approach (Sprint and range bands finally matter); the screen opens zoomed to fit and follows whoever acts. The five
+   painted maps (M813's four and the Proving Ground) go to plain colour until they are repainted (`art/briefs/ART-REQUESTS.md`,
+   maps M1 to M9). The simulator's maps follow, so the balance numbers are measured on the real ground.
+2c. **The camera** (**built**, 11 Nov 2026: `apps/web/src/game/camera.ts` and `cameraView.ts`, the effects queue in
+   `fx/play.ts`, both map screens; how it behaves: `docs/design/ui-screens.md`, The camera; its numbers: spec item
+   1048 and 1049; browser suite `camera`. What was settled while building: it follows every turn and effect the squad can
+   see; each co-op player has their own; the overview is on M and on the map's toolbar, not in the settings;
+   reduced motion cuts instead of gliding; the jump-back key is Home.) (Leon, 11 Nov 2026: on a 26 × 26 map zoomed
+   to fit, "tokens will be barely visible, let alone effects like casings"; "zoom to our current is good"). For the
+   fight and the area map alike:
+   - **The view keeps today's tile size.** The map is bigger than the window and the window is a camera on it. Fit-to-
+     window stays as an **overview** the player switches to and back from (a key and the map's zoom control), never
+     the default.
+   - **The camera follows the play:** to whoever's turn it is; to the target before an attack, a spell or a push
+     plays, so its effect is seen at full size; back to the player's own unit when their turn comes. It moves once per
+     beat, smoothly, never while the player is aiming or dragging.
+   - **The player moves it too:** drag the map, the arrow or WASD keys, the wheel; a key to jump back to their unit.
+   - **Nothing happens unseen:** an arrow at the screen's edge, in the side's colour, points at each unit or effect
+     acting off screen (a click goes there); a click on a portrait in the initiative strip moves the camera to that
+     unit. **A small map in the corner** shows the whole field: units as dots in their side's colour, the camera's
+     frame, and it takes clicks (Leon, 11 Nov 2026: "keep the mini map… I will playtest and think about it later if
+     it's unusable"; at 26 × 26 it is about 6 pixels a tile, so it is for where things are, not what they are).
+     **And the overview key:** the whole field fits the window while it is on, a click on a tile sends the camera
+     there. The M key already opens the area map outside a fight; in a fight the same key is the overview, so one key
+     means "show me the whole map" everywhere. Fog of war holds: an unseen hostile's turn moves nobody's camera and
+     draws no arrow or dot.
+   - **To settle while building** (proposed defaults in brackets): whether the camera follows hostile turns at all or
+     only shows their effects on the player's side of the field [follow what the squad can see]; whether co-op players
+     each have their own camera [yes]; the overview's place in the settings; reduced-motion players [cuts, no glides].
+3. **Rewrite M813 for World Play.** (Leon, 11 Nov 2026: "M813 is too broken now with all we have changed": its maps are plain colour until this is done.) Every area gets:
    - an objective with a `where`;
    - a hazard or obstacle with approaches and real failure costs;
    - someone to talk to (`wants`, `knows`, `talk`);
@@ -32,7 +67,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    - a trigger where an ambush belongs.
 
    Objective-givers speak plainly. Spec: `docs/design/world-play-spec.md`. Campaign: `data/campaigns/m813.json`.
-4. **The balance pass** (next up; the full draft with every angle, the AP economy included, is
+4. **The balance pass** (done in large part as rules 1.15 and 1.17 to 1.25: the enemy table, magic, guns, the Outburst, heals and shields, Faith, defence, MP, the fire doctrine; a full Sigil Line is 150 to 200%, the Outburst about 135% steady and 165% at its biggest, an optimised gun a bit under 150%, and there are no hard caps since rules 1.17. The simulator is `packages/engine/test/balance/`. Left: the weapon step's leftovers, Equipment 2.0, XP by level. The original brief follows; the full draft with every angle, the AP economy included, is
    `docs/design/proposals/2026-11-balance-pass.md`), against `docs/design/balance-targets.md`:
    - weapons are the 100% baseline;
    - Sigil is about 150% at most;
@@ -40,7 +75,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
    - optimised physical is 150% (110% without ideal gear);
    - caps of 350 per hit for a full build and 500 on a mega crit.
 
-   Weapons already go over the caps (spec item 591), so a damage simulator would help. Every number in section 14
+   *(The targets and caps above are the brief's; rules 1.17 removed the caps and rules 1.19 set the Outburst's.)* Every number in section 14
    is provisional.
 4a. ~~**Skeleton 2.0**~~ (rules 1.13): live as 0.19.0 on 10 Nov 2026. Plan and log `docs/design/handoffs/skeleton-2.0-PLAN.md`.
    **Next up is item 4, the number balance pass** (Leon, 10 Nov 2026: balance first, so everything added later has a
@@ -101,7 +136,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
   - each rank as one fixed move plus a pick of three (more choice inside a class, the D&D/Pathfinder comparison);
   - a mechanic (Proficiency) move for the Infiltrator;
   - more for a Guardian with no patron;
-  - a combat capstone for the Bard (Rally Banner instead of Gift).
+  - ~~a combat capstone for the Bard (Rally Banner instead of Gift)~~: done, Rally is the Bard's rank III move (rules 1.23).
 - **Provisional numbers to confirm in play:** ranks at attribute 5 and 8 and, since rules 1.11, level 6 and 12 (spec item 930); the rules 1.11 level gains (item 924); two moves per rank at level 3.
 
 ## World Play gaps (from `docs/design/handoffs/world-play-A-HANDOFF.md` and `-B-HANDOFF.md`)
@@ -145,10 +180,7 @@ This is a list of leads, not a spec. Each item says where its design lives. Befo
 
 - The two-glyph hook (spec item 586): nobody has it yet.
 - Grand forms (spec items 582–585) are built but shelved with the Grand Sigilist (batch 1).
-- Outburst numbers awaiting the balance pass:
-  - Heart Surge (flagged as much weaker than 1.2);
-  - Empathy's free Pumps with the swell;
-  - Resonance caps.
+- ~~Outburst numbers awaiting the balance pass~~: Heart Surge and Empathy's free Pumps were settled in rules 1.19, the Resonance caps rewritten in rules 1.14.
 
 ## Small engine oddities (Leon: not urgent)
 
@@ -236,8 +268,7 @@ is sold.
 
 ## Product and world (from `CLAUDE.md` "Next steps" and the tech plan)
 
-- Leon's decisions in `docs/design/tech-plan.md` section 10.
-- Starter mode: creation → story scene → one fight, solo with the AI Narrator.
+- ~~Leon's decisions in `docs/design/tech-plan.md` section 10~~ and ~~starter mode~~: built (decision 62; the live game).
 - Settle the open items in spec section 14 through playtests.
 - Races (after origin, in character creation).
 - Sectors beyond Earth.

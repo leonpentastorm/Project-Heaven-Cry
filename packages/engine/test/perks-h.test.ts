@@ -3,6 +3,7 @@
 // game bound and the engine's own functions (applyCond, applyDamage, resolveAttack, damageObject), the calls the
 // reducer makes.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   applyCond, applyDamage, resolveAttack, damageObject, condOn, d20, maxHp, holderOf, briefOf, passive, emit, unitSave, previewAttack,
   type Unit, type Combat, type GameState, type Character,
@@ -129,7 +130,7 @@ describe('The Mask', () => {
     const bare = unitSave(f.pc, 'heart');
     const s = storyWith([{ traits: ['the_mask'] }]); const c = s.chars[0];
     s.g.characters[c.id].worn = { ...(s.g.characters[c.id].worn || {}), head: 'smiling_mask' };
-    turn(s, { combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
+    turn(s, { combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
     expect(unitSave(s.g.combat!.units.find((u) => u.side === 'pc')!, 'heart')).toBe(bare + 5);
   });
 });
@@ -215,7 +216,7 @@ describe('Lunarshine', () => {
     expect(f.g.characters[c.id].state!.lunar.drinks).toBe(1);
     const s = storyWith([{ traits: ['lunarshine'] }]); const d = s.chars[0];
     s.g.characters[d.id].state = { lunar: { drinks: 5, today: 5 } };
-    turn(s, { combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
+    turn(s, { combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
     expect(s.g.combat!.units.find((u) => u.side === 'pc')!.sk?.reaction_speed).toBe(-2);
   });
   it('no bottle: a pending ruling; a drink poured by the Narrator counts; a dry day gives the shakes', () => {
@@ -248,7 +249,7 @@ describe('Insomniac', () => {
   });
   it('Always Up: a hidden enemy at a rest camp gets no ambush against them', () => {
     const s = storyWith([{ traits: ['insomniac'] }]);
-    turn(s, { rest: { kind: 'short' }, combat: { name: 'Night raid', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '', hidden: true }] } });
+    turn(s, { rest: { kind: 'short' }, combat: { name: 'Night raid', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '', hidden: true }] } });
     const cb = s.g.combat!, foe = cb.units.find((u) => u.side === 'foe')!, pc = cb.units.find((u) => u.side === 'pc')!;
     open(cb); foe.pos = '6,5'; pc.pos = '2,5'; foe.attack = 40; foe.ap = 9;
     withGame(s.g, () => resolveAttack(cb, rngFor(19), foe, pc, 'shot', null));
@@ -276,12 +277,13 @@ describe('Central City Kid', () => {
   });
   it('outside the city: −2 Guts on story checks and on Body saves in a fight', () => {
     const s = storyWith([{ traits: ['central_city_kid'] }]); const c = s.chars[0];
-    turn(s, { combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
+    turn(s, { combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
     const inside = unitSave(s.g.combat!.units.find((u) => u.side === 'pc')!, 'body');
     const s2 = storyWith([{ traits: ['central_city_kid'] }]); const c2 = s2.chars[0];
+    s2.g.campaign = JSON.parse(JSON.stringify(s2.g.campaign)); // shared between states: change a copy
     const z: any = s2.g.campaign!.zones.find((x) => x.id === s2.g.story.zone); z.in_city = false;
     expect(check(s2, c2.id, ['guts']).roll()).toMatch(/−2 Central City Kid/);
-    turn(s2, { combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
+    turn(s2, { combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } });
     expect(unitSave(s2.g.combat!.units.find((u) => u.side === 'pc')!, 'body')).toBe(inside - 2);
     void c;
   });

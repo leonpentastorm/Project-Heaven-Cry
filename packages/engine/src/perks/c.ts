@@ -7,37 +7,37 @@
 // section 6) are marked PROVISIONAL and listed in the spec (section 14, tags C…) and docs/design/perk-runtime.md.
 import { isPressed } from '../physical/pressure';
 import { register, stateOf, uses, note, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
+import { itemAmount, amountMult } from '../effects/amounts';
+import { term } from '../effects/output';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   key, xy, dist, alive, refOf, keyOf as refKey, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, reload, clearJam,
-  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees,
+  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees, displace
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
+import { factorOf } from '../effects/output';
 import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf } from '../character';
 import { applyCond, condOn } from '../magic';
-import { d20 } from '../rng';
 import { throwItem, blast, radiusOf, canReact, useReaction, refundReaction, throwRangeOf } from '../tactics';
 import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
 import { callMarks, callLevel } from '../calls/core';
 import { CALL, callStepAt } from '../calls/data';
 import { positionsOf } from '../game';
+import { overworld, say, unitById, tileOf, rngOf, canStand, tilesAround, inArea, tilesIn, unitsIn } from '../kit';
+import { rollVs } from '../rolls';
+import { price, costOf, freely, apFor } from '../effects/cost';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || h.g?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 /** A tile from a grid reference ("F6") or a key ("5,5"). */
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? ((c as any).state ||= {}) : {});
 /** Read a character's item state without creating it (stat queries and previews must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => (c as any)?.state || {};
-const unitById = (cb: Combat, id: string | undefined) => (id ? cb.units.find((x) => x.id === id) || null : null);
 /** Do something with the AP check out of the way (a free reload, clear or repair): the AP is given back after. */
-function free<T>(u: Unit, f: () => T): T { const keep = u.ap; u.ap = 99; try { return f(); } finally { u.ap = keep; } }
+const free = freely;
 const ownTurn = (cb: Combat, u: Unit) => cb.order[cb.turn] === u.id && !cb.window;
 const isMachine = (x: { kind?: string; name?: string } | null | undefined) => !!x && (['robot', 'machine', 'turret', 'drone'].includes(x.kind || '') || /robot|drone|automaton|\bbot\b|turret/i.test(x.name || ''));
 const isGun = (w: any) => !!w && !isMelee(w) && w.category !== 'thrown' && w.category !== 'bow' && w.magazine != null;
@@ -106,7 +106,7 @@ register({
   on: {
     glyph_cost: (ctx, h) => {
       const u = h.u; if (ctx.u !== u || !u) return;
-      const left = Math.round((u.ap - ctx.ap) * 10) / 10; if (left < 0) return;
+      const left = Math.round((apFor(h.cb, u) - ctx.ap) * 10) / 10; if (left < 0) return; // what is left of the AP this glyph can draw on (the unit's own and the action's credit)
       let frac = Math.round((Math.ceil(left - 1e-9) - left) * 10) / 10; if (frac <= 0) return;
       if (uses(h).left('per_turn', 1) <= 0) return;
       if (!overworld(h.cb)) frac = Math.min(frac, Math.max(0, PERK_AP_CAP - (u.apGained || 0))); if (frac <= 0) return;
@@ -262,7 +262,7 @@ register({
         u.dur = 0; if (h.c) charState(h.c).juryUsed = true; else stateOf(h).juryUsed = true;
         checkOver(cb); return null;
       } },
-    { id: 'repair_drone', label: 'Patch the drone', scope: ['combat', 'world'], ap: (h) => (h.u ? actionAp({ u: h.u }, 'field_repair', 2).ap : 2), target: 'ally', range: 1,
+    { id: 'repair_drone', label: 'Patch the drone', scope: ['combat', 'world'], ap: (h) => (h.u ? price({ cb: h.cb, u: h.u }, 'field_repair').ap : costOf('field_repair')), target: 'ally', range: 1,
       text: 'Repair a drone next to you at double strength: it regains 20% of its max HP, plus 10% for each Improvisation point above 3. Uses one spare-parts charge. Needs Improvisation 3.',
       available: (h) => { if (!tierII(h) || !h.u || !h.cb) return false; if (!h.cb.units.some((v) => v.companion === 'drone' && !v.dead && v.side === h.u!.side)) return false; return (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare parts.' : true; },
       preview: (h, args) => { const t = unitById(h.cb!, args.targetId); return !t || t.companion !== 'drone' ? { ok: false, why: 'Pick a drone next to you.' } : t.hp >= t.maxHp ? { ok: false, why: 'Already in full repair.' } : {}; },
@@ -280,23 +280,7 @@ register({
   brief: () => 'story: a broken device works one more time when it counts (once per breakage)',
 });
 
-// ---------- Hot-Swap (Proficiency β) ----------
-// I: a hand's gear change mid-fight (draw, put away, swap main and off hand, a two-handed draw's 2 AP too) or fitting a
-// mod costs 0 AP, once per turn (plan 6b; rules 1.9, item 686: never armour, and a drop is 0 AP anyway). II: twice per
-// turn. Out of combat gear changes are already free.
-register({
-  id: 'hot_swap', claims: 'all',
-  on: {
-    swap: (ctx, h) => {
-      if (ctx.u !== h.u || !inFight(h) || !(ctx.ap > 0)) return;
-      const n = tierII(h) ? 2 : 1; if (!uses(h).take('per_turn', n)) return;
-      ctx.ap = 0; say(h.cb, h.u!.name + ' swaps without missing a beat (Hot-Swap: 0 AP).');
-    },
-  },
-  brief: () => null,
-});
-
-// Origami Hands was replaced by Both Hands (rules 1.13: perks/skeleton.ts); its traps wait for the stealth list.
+// ---------- Hot-Swap (Proficiency β): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Trick Shot (Dexterity Mastered) ----------
 // Once per turn, a ranged attack can ricochet (the Ricochet toggle on Attack): it ignores half cover (no −5, never
@@ -320,7 +304,7 @@ register({
     on_hit: (ctx, h) => {
       const cb = h.cb; if (ctx.att !== h.u || ctx.melee || !cb || !modOn(h, 'ricochet') || !uses(h).take('per_turn')) return;
       const t2 = ricochetTarget(cb, ctx.att, ctx.tgt); if (!t2) { say(cb, '(Ricochet: nobody within 2 tiles of ' + ctx.tgt.name + '.)'); return; }
-      const n = Math.max(1, Math.floor((ctx.dmg || 0) / 2)), r = applyDamage(cb, t2, n, { by: ctx.att, type: 'weapon', ranged: true, shield: true, credit: 'all', weapon: ctx.att.weapon });
+      const n = Math.max(1, Math.floor((ctx.dmg || 0) * amountMult('perk:trick_shot', 'ricochet', 'share'))), r = applyDamage(cb, t2, n, { by: ctx.att, type: 'weapon', ranged: true, shield: true, credit: 'all', weapon: ctx.att.weapon });
       emitFx(cb, 'shot', { unit: ctx.att.id, target: t2.id, from: ctx.tgt.pos, to: t2.pos, weapon: ctx.att.weapon, cat: WEAPON[ctx.att.weapon]?.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: r.amount, killed: r.killed, chain: true, ricochet: true });
       say(cb, 'The round ricochets into ' + t2.name + ' (Trick Shot): ' + r.amount + ' damage' + (r.killed ? (t2.side === 'foe' ? ' · down for good' : ' · Downed') : '') + '.');
       checkOver(cb);
@@ -336,10 +320,9 @@ register({
 // permanent extra mod slot, once per item: a second slot of a type it already has (plan 6b: the player picks the type
 // by the mod they fit; PROVISIONAL).
 register({
-  id: 'overhaul', claims: 'all',
-  // The data's action_cost says value 1 (which actionAp reads as +1); the text says Field Repair costs 1 AP, so the
-  // lane answers it: 2 → 1 (data delta in the lane notes: set 1).
-  stat: (h, stat, ctx) => (stat === 'field_repair_amount' ? { mult: 2 } : stat === 'ap_cost:field_repair' ? 1 - (ctx?.base ?? 2) : 0),
+  // Field Repair's 1 AP and its doubled amount are the data's generic action_cost (set: 1) and stat_mult (engine
+  // foundations 3); the lane keeps the bench repair and the extra slot (effect 2).
+  id: 'overhaul', claims: [2],
   actions: [
     { id: 'bench_repair', label: 'Bench repair', scope: ['story', 'world'], ap: 0, target: 'none',
       text: 'Out of a fight: spend one spare-parts charge to bring your weapon back to full durability.',
@@ -470,7 +453,7 @@ const holyFoe = (t: Unit) => ['upper_realm', 'cursed', 'crawler', 'celestial'].i
 register({
   id: 'holy_ordnance', claims: 'all',
   actions: [{
-    id: 'bless', label: 'Bless a magazine', scope: ['combat', 'world'], ap: 3, target: 'ally', range: 1,
+    id: 'bless', label: 'Bless a magazine', scope: ['combat', 'world'], ap: 'data', target: 'ally', range: 1,
     text: 'Bless the magazine in your gun, or in the gun of an ally next to you. I: its rounds deal +20% damage to upper-realm and cursed beings. II: +40%, and the next magazine loaded is blessed too.',
     preview: (h, args) => { const t = unitById(h.cb!, args.targetId); return !t ? {} : !blessable(t) ? { ok: false, why: t.name + ' holds no gun with a magazine.' } : { lines: [t.name + '\'s ' + (WEAPON[t.weapon]?.name || 'gun') + ': +' + (tierII(h) ? 40 : 20) + '% vs upper-realm and cursed beings' + (tierII(h) ? ', two magazines' : '') + '.'] }; },
     run: (h, args) => {
@@ -620,7 +603,7 @@ register({
 
 // ---------- One Shot ----------
 // Breath Held: if you haven't moved this turn, your first shot of the turn ignores half cover (full cover still blocks
-// sight) and its critical multiplier is ×1.5 (2.0 → 3.0; plan 6b; PROVISIONAL). Tunnel Vision (after a Breath Held
+// sight) and its critical is +25% (rules 1.15: ×1.5 → ×1.75, never past ×2.0; PROVISIONAL, item 1022). Tunnel Vision (after a Breath Held
 // shot, until you next move; in the story too): no Vigilant checks (they fail; voice lines of Vigilant stay silent; no
 // spotting Hidden enemies), and ambushes on you do +50% damage. A new scene counts as moving (PROVISIONAL).
 const breathOk = (u: Unit) => !u.moved && !u.firstShotTurn && !isMelee(WEAPON[u.weapon]);
@@ -636,7 +619,7 @@ register({
       st.breath = ctx.mode !== 'melee' && breathOk(ctx.att);
       if (st.breath) { setTunnel(h, true); say(h.cb, ctx.att.name + ' holds a breath (One Shot).'); }
     },
-    damage_out: (ctx, h) => { if (ctx.att === h.u && ctx.crit && !ctx.preview && stateOf(h).breath) ctx.mults.push({ v: 1.5, label: 'Breath Held' }); },
+    damage_out: (ctx, h) => { if (ctx.att === h.u && ctx.crit && !ctx.preview && stateOf(h).breath) ctx.critBonus = (ctx.critBonus || 0) + 0.25; }, // rules 1.15: +25% on the critical, inside the ×2.0 ceiling (combat.ts)
     on_hit: (ctx, h) => { if (ctx.att === h.u) stateOf(h).breath = false; },
     on_miss: (ctx, h) => { if (ctx.att === h.u) stateOf(h).breath = false; },
     moved: (ctx, h) => { if (ctx.u === h.u && !ctx.forced && tunnelOn(h)) setTunnel(h, false); },
@@ -655,7 +638,7 @@ register({
 // bosses can't be thrown; plan 6b; PROVISIONAL) to a tile within throwing range − 1 per 20 kg, for the throw's AP. It
 // and anyone it lands on take 10 + kg ÷ 4 physical damage × Strength (PROVISIONAL). Objects and story throws: Narrator.
 const weightOf = (t: Unit) => (t.tier === 'boss' ? Infinity : t.companion === 'drone' ? 15 : t.companion ? 40 : t.tier === 'elite' ? 100 : 80);
-const throwCost = (u: Unit) => actionAp({ u }, 'throw', 2).ap;
+const throwCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'throw').ap;
 /** What an object weighs when thrown (PROVISIONAL, spec 14): the light, loose ones; walls, doors and fixtures can't be. */
 const THROW_KG: Record<string, number> = { crate: 25, barrel: 30, lamp: 5, camera: 3, alarm: 3, terminal: 20, container: 60 };
 /** Where a thrown object comes down: the tile, unless a unit or something solid is there (then the nearest free one). */
@@ -666,16 +649,15 @@ const objLanding = (cb: Combat, tile: string, o: any): string | null => {
   return null;
 };
 const landing = (cb: Combat, tile: string, self: Unit): string | null => {
-  const free = (k: string) => standable(cb.map, k) && !moveBlockers(cb).has(k) && !cb.units.some((v) => v !== self && !v.dead && v.pos === k);
+  const free = (k: string) => canStand(cb, k, self);
   if (free(tile)) return tile;
   const [x, y] = xy(tile); for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]]) { const k = key(x + dx, y + dy); if (free(k)) return k; }
   return null;
 };
 register({
-  id: 'grenadiers_arm', claims: [0],
-  stat: (h, stat) => (stat === 'throw_range' ? 2 : 0),
+  id: 'grenadiers_arm', // +2 throw range is the data's generic stat_mod (engine foundations 3); the throw of a body stays here
   actions: [{
-    id: 'hurl', label: 'Throw someone', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u) : 3), target: 'unit', range: 1,
+    id: 'hurl', label: 'Throw someone', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u, h.cb) : 3), target: 'unit', range: 1,
     text: 'Throw an ally or enemy next to you to a tile in range. They must weigh less than you can carry. The one thrown and whoever they land on take damage by weight.',
     preview: (h, args) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId); if (!t) return {};
@@ -688,23 +670,22 @@ register({
       if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + range + ' tiles for ' + kg + ' kg.' };
       if (!lineOfSight(cb, u.pos, k)) return { ok: false, why: 'No line of sight to throw there.' };
       if (!landing(cb, k, t)) return { ok: false, why: 'No room to land there.' };
-      return { lines: [t.name + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1)) + ' damage to it and to anyone there.'] };
+      return { lines: [t.name + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })) + ' damage to it and to anyone there.'] };
     },
     run: (h, args) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId)!, k = tileOf(cb, args.tile)!, kg = weightOf(t);
-      const fm: any = emit(cb, 'forced_move', { u: t, by: u, tiles: dist(t.pos, k), to: k, how: 'throw', cancel: false, cb });
-      if (fm.cancel) { say(cb, t.name + ' won\'t be thrown.'); return null; }
-      const hit = cb.units.find((v) => v !== t && !v.dead && v.pos === k) || null, land = landing(cb, k, t)!, was = t.pos;
-      const dmg = Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1));
-      t.pos = land; t.braced = false; emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: land, ok: true });
-      say(cb, u.name + ' throws ' + t.name + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + hurtUnit(t, dmg, false, cb, 'thrown', u) + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + '.');
+      const hit = cb.units.find((v) => v !== t && !v.dead && v.pos === k) || null, land = landing(cb, k, t)!;
+      const mv = displace(cb, null, t, { tile: land }, { by: u, how: 'throw', source: 'throw' }); // the one forced move (combat.ts): it lands, and the tile acts on it
+      if (!mv.moved) { say(cb, t.name + ' won\'t be thrown' + (mv.why ? ' (' + mv.why + ')' : '') + '.'); return null; }
+      const dmg = Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg }));
+      say(cb, u.name + ' throws ' + t.name + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + hurtUnit(t, dmg, false, cb, 'thrown', u) + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + mv.text + '.');
       checkOver(cb); return null;
     },
   }, {
     // An object next to you (tile) thrown to a tile (choice): a crate, a barrel, a lamp… by its weight (PROVISIONAL
     // weights, spec 14: objects carry none in the data). It lands there (or the nearest free tile), and it and whoever
     // it lands on take the same damage by weight; a barrel that breaks goes off as barrels do.
-    id: 'hurl_object', label: 'Throw an object', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u) : 3), target: 'tile', range: 1,
+    id: 'hurl_object', label: 'Throw an object', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u, h.cb) : 3), target: 'tile', range: 1,
     pickLabel: 'Where it lands',
     text: 'Throw an object next to you to a tile in range. It must weigh less than you can carry. The object and whoever it lands on take damage by weight.',
     preview: (h, args) => {
@@ -718,11 +699,11 @@ register({
       if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + range + ' tiles for ' + kg + ' kg.' };
       if (!lineOfSight(cb, u.pos, k)) return { ok: false, why: 'No line of sight to throw there.' };
       if (!objLanding(cb, k, o)) return { ok: false, why: 'No room to land there.' };
-      return { tiles: [k], lines: ['The ' + o.name.toLowerCase() + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1)) + ' damage to whoever is there, and to it.'] };
+      return { tiles: [k], lines: ['The ' + o.name.toLowerCase() + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })) + ' damage to whoever is there, and to it.'] };
     },
     run: (h, args) => {
       const u = h.u!, cb = h.cb!, k0 = tileOf(cb, args.tile)!, o = objectsOf(cb).find((x) => x.pos === k0 && THROW_KG[x.kind] != null)!, k = tileOf(cb, args.choice)!, kg = THROW_KG[o.kind];
-      const dmg = Math.floor((10 + kg / 4) * (h.c ? physicalMult(h.c) : 1)), hit = cb.units.find((v) => !v.dead && v.pos === k) || null, land = objLanding(cb, k, o)!, was = o.pos;
+      const dmg = Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })), hit = cb.units.find((v) => !v.dead && v.pos === k) || null, land = objLanding(cb, k, o)!, was = o.pos;
       o.pos = land; emitFx(cb, 'shove', { unit: u.id, target: null, from: was, to: land, ok: true, object: o.id });
       say(cb, u.name + ' hurls the ' + o.name.toLowerCase() + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + (o.hp != null && o.hp > 0 ? damageObject(cb, land, dmg, 0, u) : '') + '.');
       checkOver(cb); return null;
@@ -744,15 +725,15 @@ function shapeTiles(cb: Combat, from: string, at: string, shape: string, r: numb
   const out: string[] = [], [ax, ay] = xy(at), [fx, fy] = xy(from), dx = Math.sign(ax - fx), dy = Math.sign(ay - fy), n = 2 * r + 1;
   const inMap = (x: number, y: number) => x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h;
   if (shape === 'line') { for (let i = 0; i < n; i++) { const x = ax + dx * i, y = ay + dy * i; if (!inMap(x, y) || cb.map.solid.includes(key(x, y))) break; out.push(key(x, y)); } return out; }
-  if (shape === 'cone') { const dl = Math.hypot(dx, dy) || 1; for (let x = ax - n; x <= ax + n; x++) for (let y = ay - n; y <= ay + n; y++) { if (!inMap(x, y)) continue; const vx = x - ax, vy = y - ay, l = Math.hypot(vx, vy); if (l === 0 || (l <= n + 0.5 && (vx * dx + vy * dy) / (l * dl) >= 0.7)) out.push(key(x, y)); } return out; }
-  for (let x = ax - r; x <= ax + r; x++) for (let y = ay - r; y <= ay + r; y++) if (inMap(x, y)) out.push(key(x, y));
-  return out;
+  // the kit's shapes (kit.ts Area): a cone from the charge away from the setter (its own tile too), or its radius
+  if (shape === 'cone') return tilesAround(at, n, cb).filter((k) => k === at || inArea({ shape: 'cone', from: at, toward: [dx, dy], n }, k));
+  return tilesIn(cb, { shape: 'burst', at, r });
 }
 function detonate(h: Holder, rng: Rng, ch: { at: string; from: string; shape: string; item: string }): string {
   const cb = h.cb!, u = h.u!, w: any = WEAPON[ch.item], r = radiusOf(w), tiles = shapeTiles(cb, ch.from, ch.at, ch.shape, r), dmg = typeof w?.damage === 'number' ? w.damage : 0;
   emitFx(cb, 'explode', { at: ch.at, radius: r, what: ch.item, tiles });
   let out = '';
-  for (const v of cb.units) if (!v.dead && !v.surrendered && tiles.includes(v.pos)) { out += hurtUnit(v, dmg, false, cb, 'explosion', u); if (!v.dead && (w.properties || []).includes('applies_burning')) out += applyCond(cb, rng, u, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
+  for (const v of unitsIn(cb, tiles, { downed: true })) { out += hurtUnit(v, dmg * (u.charId && (w.properties || []).includes('consumable') ? factorOf('thrown') : 1), false, cb, 'explosion', u); if (!v.dead && (w.properties || []).includes('applies_burning')) out += applyCond(cb, rng, u, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) out += damageObject(cb, o.pos, dmg * DEMO, 0, u);
   return out || ' · it finds no one';
 }
@@ -761,7 +742,7 @@ const parseCharge = (choice?: string) => { const p = String(choice || 'circle').
 register({
   id: 'demolitionist', claims: [4],
   actions: [
-    { id: 'set_explosive', label: 'Set explosive', scope: ['combat'], ap: (h) => (h.u ? actionAp({ u: h.u }, 'set_explosive', 2).ap : 2), target: 'tile',
+    { id: 'set_explosive', label: 'Set explosive', scope: ['combat'], ap: (h) => (h.u ? price({ cb: h.cb, u: h.u }, 'set_explosive', 2).ap : 2), target: 'tile',
       text: 'Place a charge on your tile or next to you and shape its blast: a circle, or a line or cone that points away from you. It goes off at once, or waits until you Detonate.',
       available: (h) => (!h.u ? false : explosiveOf(h.u) ? true : 'No explosive in your kit.'),
       preview: (h, args) => {
@@ -822,7 +803,7 @@ register({
 
 // ---------- Slicer ----------
 // Backdoor: 2 AP, at will, within 5 tiles (no sight needed, PROVISIONAL): take over one static electronic device — a
-// door, terminal, camera, alarm panel or emplaced turret — until your next turn, on Proficiency (d20 + mod) against its
+// door, terminal, camera, alarm panel or emplaced turret — until your next turn, on Acuity (analysis; d20 + mod) against its
 // tier (doors, terminals, cameras and alarms TN 12; a turret object 14; a turret unit by tier: minion 12, soldier 14,
 // elite 16, boss 20; PROVISIONAL). Never mobile robots, bosses' bodies or people (plan 6a-17). A door opens, closes or
 // locks; a turret unit is Puppeted (your player runs its next turn); what a terminal, camera or alarm does is the
@@ -850,13 +831,13 @@ function deviceAt(h: Holder, args: { tile?: string; targetId?: string }): Device
 register({
   id: 'slicer', claims: [2, 3],
   actions: [
-    { id: 'backdoor', label: 'Backdoor', scope: ['combat', 'world'], ap: 2, target: 'tile',
+    { id: 'backdoor', label: 'Backdoor', scope: ['combat', 'world'], ap: 'data', target: 'tile',
       text: 'Take over a door, terminal, camera, alarm or emplaced turret within 5 tiles until your next turn: Acuity against its tier. A door: open, close or lock it.',
       preview: (h, args) => { const d = deviceAt(h, args); if (typeof d === 'string') return { ok: false, why: d }; const m = unitMod(h.u!, 'analysis'); return { lines: [d.name + ': d20 ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + d.tn + ' (' + Math.max(5, Math.min(95, (21 - (d.tn - m)) * 5)) + '%).'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, d = deviceAt(h, args); if (typeof d === 'string') return d;
-        const r = d20(rng), m = unitMod(u, 'analysis'), ok = r === 20 || (r !== 1 && r + m >= d.tn);
-        let line = u.name + ' backdoors the ' + d.name.toLowerCase() + ': d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs ' + d.tn;
+        const rv = rollVs(cb, rng, { by: u, mod: unitMod(u, 'analysis'), tn: d.tn, why: 'slicer' }), ok = rv.ok;
+        let line = u.name + ' backdoors the ' + d.name.toLowerCase() + ': ' + rv.text;
         if (!ok) { say(cb, line + ' · locked out (Slicer).'); return null; }
         const st = stateOf(h), list: any[] = (st.devices ||= []);
         if (d.unit) { line += ' · it\'s yours until your next turn' + applyCond(cb, rng, u, d.unit, 'puppeted', 1, undefined, { skipSave: true, via: 'ingenuity' }); say(cb, line + '.'); return null; }

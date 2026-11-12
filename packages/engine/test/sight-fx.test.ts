@@ -113,10 +113,15 @@ describe('team fight', () => {
     // Each player's view puts its own side on 'pc', and carries only its own side's sight (where the other team had
     // eyes on a tile is that team's secret): the mover's own player sees all '1' there.
     expect(vm.sight.pc).toMatch(/^1+$/); expect(vm.sight.foe).toBeUndefined();
-    expect(vo.sight.foe).toBeUndefined();
-    expect(vo.sight.pc).toBe(cur.side === 'pc' ? mv.sight.foe : mv.sight.pc);
+    // The other team's view holds the walk only where that team saw it, cut to the fog edge (fog.ts, 12 Nov 2026).
+    const seenBy = cur.side === 'pc' ? mv.sight.foe : mv.sight.pc, f0 = seenBy.indexOf('1'), f1 = seenBy.lastIndexOf('1');
+    if (f0 < 0) expect(vo).toBeUndefined();
+    else { expect(vo.sight.foe).toBeUndefined(); expect(vo.sight.pc).toBe(seenBy.slice(Math.max(0, f0 - 1), Math.min(seenBy.length, f1 + 2))); }
     for (const pid of ['h1', 'p2']) { const vc = viewFor(g, pid).combat!; expect(vc.sightSeen).toBeUndefined(); expect(vc.sightPos).toBeUndefined(); }
-    for (const pid of ['h1', 'p2']) for (const e of viewFor(g, pid).combat!.fx!) if (e.k === 'sight') expect(e.only).toBe('pc');
+    // A walk makes no 'sight' event of its own (its sight rides the move event, checked above); any that a view does
+    // carry must be its own side's. Stated as one list, so the check is not a loop that never runs (truth pass 3).
+    const leaks = ['h1', 'p2'].flatMap((pid) => viewFor(g, pid).combat!.fx!.filter((e: FxEvent) => e.k === 'sight' && e.only !== 'pc'));
+    expect(leaks).toEqual([]);
   });
 });
 

@@ -1,4 +1,4 @@
-// Blessing 2.0 (rules 1.6) art for the web game: the eight patrons' marks, the prayer icons (6 Whispers, the Hymns, the
+// Blessing 2.0 (rules 1.6) art for the web game: the eight patrons' marks, the prayer icons (7 Whispers, the Hymns, the
 // Miracles), the vow glyphs, the Witnessed eye, and the patrons' portraits, each resolved to the painted art when it is
 // there (docs/design/handoffs/blessing-art-brief.md: art/portraits/patrons/<id>.png, art/emblems/patrons/
 // <id>.png, art/icons/prayers/<file>.png; `npm run assets` builds them as patron-<id>, patron-mark-<id> and prayer-<file>)
@@ -10,7 +10,7 @@ import ASSETS from './assets.json';
 
 /** The launch patrons' ids, as in the art brief (the engine's data/patrons.json v2 is the authority once it lands). */
 export const PATRON_IDS = ['nerukhan', 'the_quartermaster', 'the_laughing_mask', 'the_toll_keeper', 'mother_ember', 'old_overcast', 'the_matchmaker', 'the_counting_weaver'] as const;
-export const WHISPER_IDS = ['luck', 'health', 'protection', 'courage', 'guidance', 'safe_passage'] as const;
+export const WHISPER_IDS = ['luck', 'health', 'protection', 'courage', 'guidance', 'safe_passage', 'rebuke'] as const;
 export const VOW_IDS = ['shield', 'mercy', 'stand', 'bare', 'unarmed_faith', 'no_one_behind'] as const;
 
 // ---------- colour (proposal for Leon: docs/design/handoffs/blessing-ui-HANDOFF.md) ----------
@@ -58,7 +58,8 @@ export const PATRON_MARK_PATHS: Record<string, string[]> = {
   the_counting_weaver: ['M5 4 V20 M12 4 V20 M19 4 V20', 'M3 12 H21', c(5, 12, 1.8), c(12, 12, 1.8), c(19, 12, 1.8), 'M3 4 H21 M3 20 H21'],
 };
 const GENERIC_MARK = [c(12, 12, 8), 'M12 5 V9 M12 15 V19 M5 12 H9 M15 12 H19'];
-/** The six Whispers (the art brief's motifs). */
+/** The Whispers: the six of the art brief, and Rebuke (rules 1.21: the seventh; its painted icon is asked for in
+ *  art/briefs/ART-REQUESTS.md, and until it is delivered this line mark is what shows). */
 export const WHISPER_PATHS: Record<string, string[]> = {
   luck: ['M12 4 V7', 'M10.5 9 Q12 8 13.5 9 V18 Q12 19 10.5 18 Z', 'M8 5 L9.5 7 M16 5 L14.5 7'], // a coin on its edge under a ray
   health: ['M5 14 Q5 19 12 19 Q19 19 19 14 M5 14 H9 M15 14 H19', c(12, 10, 2.2), 'M12 5 V6.5 M8.5 7 L9.5 8 M15.5 7 L14.5 8'], // cupped hands, a small light
@@ -66,6 +67,7 @@ export const WHISPER_PATHS: Record<string, string[]> = {
   courage: ['M12 6 Q15 10 13.5 13 Q12.5 15 12 14 Q11.5 15 10.5 13 Q9 10 12 6 Z', 'M12 14 V19 M9 19 H15', 'M3 8 H7 M3 12 H6 M17 8 H21 M18 12 H21'], // a candle flame in wind lines
   guidance: ['M4 9 Q12 3 20 9 Q12 15 4 9 Z', c(12, 9, 2), 'M9 21 L11 15 M15 21 L13 15'], // an eye of a halo, a path below
   safe_passage: [c(12, 12, 8.5), 'M10.5 8 Q12.8 8 12.8 11 Q12.8 15 10.8 16 Q9.4 15 9.6 12 Q9.6 8.8 10.5 8 Z', c(13.6, 6.6, 0.7), c(11.6, 6, 0.7)], // a footprint in a ring
+  rebuke: ['M12 3 V11', 'M9 8 L12 11 L15 8', c(12, 15.5, 2.5), 'M6 21 H18', 'M5 5 L7 7 M19 5 L17 7'], // a ray coming down on a bowed head
 };
 /** A Hymn by level (I, II, III): a rising ray with its level as bars; a Miracle: a radiant opening. */
 const HYMN_PATHS = (lv: number): string[] => { const n = Math.max(1, Math.min(3, lv)); return ['M12 3 L8.5 14 H15.5 Z', 'M6 16 H18', ...Array.from({ length: n }, (_, i) => 'M' + (12 + (i - (n - 1) / 2) * 3.5) + ' 18.5 V22')]; };

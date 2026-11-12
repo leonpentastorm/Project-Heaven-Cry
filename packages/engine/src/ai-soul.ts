@@ -14,13 +14,14 @@
 //    tile it can walk to this turn, at the highest stage its AP buys (Pumps cost AP only; free Pumps first), and scores
 //    the plan by expected damage on visible players (the roll's chance, armour, saves) less 1.5 × what it does to its
 //    own side, plus the HP a Buff heals on hurt allies;
-//  · a snap cast (stage 0) only on two or more players, a heal, or in desperation: one target at ×0.6 is the weapon's job;
+//  · a snap cast (stage 0) only on two or more players, a heal, or in desperation: one target at stage 0's multiplier (STAGE_MULT[0]) is the weapon's job;
 //  · a big release goes now: two or more players in the area, stage 3+, a player next to it, a heal for an ally
 //    under half HP, holding no longer safe, or desperate. A small one (one player, a low stage) is held instead;
 //  · holding: free Pumps, then Pump with the AP it doesn't need to walk, and Heart Overwatch on (a Bolt always; an area
 //    only with no ally of its own near enough to be caught), so the first player into reach draws the release;
 //  · nothing to aim at yet: Begin and hold (when the Strain allows and it can still act), Syphon when the MP is short,
 //    and leave the walking and shooting to the enemy turn's weapon code (a shot or a hit also calms the heart).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
 import { type OutburstDesign } from './character';
 import { type Combat, type Unit, dist, paths, apForTiles, moveUnit } from './combat';
@@ -31,6 +32,9 @@ import {
 } from './magic';
 import { aiRouteRisk } from './ai-sigil';
 import { fooledBy } from './illusion';
+import { foesOf } from './kit';
+import { tierSave, tierStrength } from './rolls';
+import { setAp, canPay, costOf } from './effects/cost';
 
 // ---------- Soul caster archetypes (data/enemies.json `soul_casters`) ----------
 export interface HeartCasterDef {
@@ -39,13 +43,11 @@ export interface HeartCasterDef {
 }
 export const HEART_CASTERS: HeartCasterDef[] = ((enemiesJ as any).soul_casters || []) as HeartCasterDef[];
 export const HEART_CASTER: Record<string, HeartCasterDef> = Object.fromEntries(HEART_CASTERS.map((c) => [c.id, c]));
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
-const TIER_DEBUFF: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 2 };
 
 /** A Soul caster's heart (an Emanator, its designs, MP and Strain limit). Will Power for its rolls is its tier's attack
  * bonus; saves and debuff strength by tier, as a Sigil caster's. */
 export function heartMagic(u: Unit, c: HeartCasterDef): MagicUnit {
-  const tier = u.tier || c.tier, s = TIER_SAVE[tier] ?? 0, d = TIER_DEBUFF[tier] ?? 0;
+  const tier = u.tier || c.tier, s = tierSave(tier), d = tierStrength(tier);
   return {
     words: [], designs: c.designs.map((x) => ({ ...x, modules: [...(x.modules || [])] })), evoker: false, emanator: true,
     charge: 0, cores: 0, coresMade: 0, flux: 0, mp: c.mp, mpMax: c.mp, strain: 0, held: null, cast: false, freePumps: c.free_pumps || 0, freePumpsMax: c.free_pumps || 0,
@@ -66,7 +68,7 @@ const live = (t: Unit) => !t.dead && !t.downed && !t.surrendered;
 const isHeart = (u: Unit) => !!u.mg && !u.mg.evoker && u.mg.emanator && u.mg.designs.length > 0 && u.side === 'foe';
 const blocked = (u: Unit) => u.dead || u.downed || condOn(u, 'silenced');
 const desperate = (u: Unit) => u.hp <= 0.3 * u.maxHp;
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side !== u.side && live(t) && !t.hidden && !fooledBy(cb, u, t)); // a False Image's fooled enemy (illusion.ts)
+const seenFoes = (cb: Combat, u: Unit) => foesOf(cb, u, { hidden: false }).filter((t) => !fooledBy(cb, u, t)); // a False Image's fooled enemy (illusion.ts)
 const hostile = (d: OutburstDesign) => d.school !== 'buff' && !(d.school === 'damage' && d.modules.includes('inverse'));
 
 /** A plan's worth to the caster: expected damage on the players it can see (after armour, × the roll's chance), 6 a
@@ -94,7 +96,7 @@ export function heartPlanValue(cb: Combat, u: Unit, pv: OutburstPlan): { score: 
 function aimsFor(cb: Combat, u: Unit, d: OutburstDesign, at: string): string[] {
   const f = formOf(d); if (f === 'aura') return [at];
   const reach = heartReach(u.mg!, d) + 1;
-  const pts = hostile(d) ? foesOf(cb, u).map((t) => t.pos) : cb.units.filter((t) => t.side === u.side && live(t) && t.hp < t.maxHp).map((t) => t.pos);
+  const pts = hostile(d) ? seenFoes(cb, u).map((t) => t.pos) : cb.units.filter((t) => t.side === u.side && live(t) && t.hp < t.maxHp).map((t) => t.pos);
   const out = new Set<string>();
   for (const p of pts) {
     if (f !== 'wave' && f !== 'lance' && dist(at, p) > reach + (f === 'burst' ? 1 : 0)) continue;
@@ -119,11 +121,11 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
     : m.designs.map((d) => ({ src: d.id, d }));
   if (!srcs.length) return null;
   const tiles: { k: string; ap: number }[] = [{ k: u.pos, ap: 0 }];
-  if (opts.move && !condOn(u, 'pinned') && !condOn(u, 'rooted')) {
+  if (opts.move && !condOn(u, 'pinned')) {
     const P = paths(cb, u.pos, u.id), fearOf = condSource(u, 'fear'), fu = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
-    const foes = foesOf(cb, u), maxReach = Math.max(...srcs.map((s) => heartReach(m, s.d))) + 2;
+    const foes = seenFoes(cb, u), maxReach = Math.max(...srcs.map((s) => heartReach(m, s.d))) + 2;
     const cand = Object.entries(P.dist).map(([k, n]) => ({ k, ap: apForTiles(n, u.bank, u.movement) }))
-      .filter(({ k, ap }) => k !== u.pos && ap >= 1 && ap <= u.ap - SOUL_AP.release && aiRouteRisk(cb, u, P, k) <= 0
+      .filter(({ k, ap }) => k !== u.pos && ap >= 1 && canPay(cb, u, ap + SOUL_AP.release) && aiRouteRisk(cb, u, P, k) <= 0
         && !(fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) && foes.some((t) => dist(k, t.pos) <= maxReach))
       .sort((a, b) => a.ap - b.ap || (a.k < b.k ? -1 : 1)).slice(0, 24);
     tiles.push(...cand);
@@ -132,7 +134,7 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
   let best: HeartChoice | null = null;
   try {
     for (const t of tiles) {
-      u.pos = t.k; u.ap = was.ap - t.ap;
+      u.pos = t.k; setAp(u, was.ap - t.ap); // a dry run from that tile, with the AP the walk leaves
       for (const { src, d } of srcs) {
         // A release from a design Begins it first: never into the burn (desperate: into it, never into a Short).
         if (src !== 'held' && m.strain + beginStrain(cb, u, d) > strainCap(u)) continue;
@@ -140,7 +142,7 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
         for (const aim of aimsFor(cb, u, d, t.k)) {
           const pv = previewOutburstPlan(cb, u, src, aim, { stage }); if (!pv.ok) continue;
           const v = heartPlanValue(cb, u, pv); if (!(v.score > 0)) continue;
-          // A snap cast (stage 0, ×0.6 for 3 AP) only on a cluster or in desperation: one target is the weapon's job.
+          // A snap cast (stage 0, STAGE_MULT[0] for 3 AP) only on a cluster or in desperation: one target is the weapon's job.
           if (src !== 'held' && stage < 1 && v.foes < 2 && !v.heal && !desperate(u)) continue;
           // The walk costs stage (fewer Pumps) and risk: a little less for every AP walked, so standing wins a tie.
           const score = v.score - 0.5 * t.ap;
@@ -148,7 +150,7 @@ export function heartBestRelease(cb: Combat, u: Unit, opts: { move?: boolean } =
         }
       }
     }
-  } finally { u.pos = was.pos; u.ap = was.ap; }
+  } finally { u.pos = was.pos; setAp(u, was.ap); }
   return best;
 }
 /** The highest stage the caster's AP buys for a release of `src` this turn (Begin + Pumps + Release from a design;
@@ -178,7 +180,7 @@ const holdSafe = (cb: Combat, u: Unit) => { const m = u.mg!; if (m.held?.steady)
 function bigEnough(cb: Combat, u: Unit, c: HeartChoice): boolean {
   if (c.foes >= 2 || c.stage >= 3 || desperate(u)) return true;
   if (c.heal > 0 && cb.units.some((t) => t.side === u.side && live(t) && t.hp < 0.5 * t.maxHp)) return true;
-  if (foesOf(cb, u).some((t) => dist(t.pos, u.pos) <= 1)) return true;
+  if (seenFoes(cb, u).some((t) => dist(t.pos, u.pos) <= 1)) return true;
   if (u.mg!.held && !holdSafe(cb, u)) return true;
   return false;
 }
@@ -212,7 +214,7 @@ export function aiSoulStep(cb: Combat, rng: Rng, u: Unit): boolean {
   // 1. Over the limit (it burns at the turn's end): release if anything is worth it, else Steady (stage 2+) or let go.
   if (m.held && m.strain > strainCap(u)) {
     const c = heartBestRelease(cb, u); if (c) return doRelease(cb, rng, u, c);
-    if (m.held.stage >= 2 && !m.held.steady && u.ap >= SOUL_AP.steady && m.strain - 1 <= strainCap(u)) return !steadyHeart(cb, u);
+    if (m.held.stage >= 2 && !m.held.steady && canPay(cb, u, SOUL_AP.steady) && m.strain - 1 <= strainCap(u)) return !steadyHeart(cb, u);
     return !letGo(cb, u);
   }
   // 2. The best release this turn (from here, or one walk away).
@@ -223,22 +225,22 @@ export function aiSoulStep(cb: Combat, rng: Rng, u: Unit): boolean {
     // 3. Holding toward a big release: Steady if one more turn would drift over, free Pumps, then Pump with spare AP
     //    when a player is near (within reach + 3), and watch with the heart.
     if (!holdSafe(cb, u)) {
-      if (m.held.stage >= 2 && !m.held.steady && u.ap >= SOUL_AP.steady) { watch(cb, u); return !steadyHeart(cb, u); }
+      if (m.held.stage >= 2 && !m.held.steady && canPay(cb, u, SOUL_AP.steady)) { watch(cb, u); return !steadyHeart(cb, u); }
       if (m.strain >= m.strainLimit) return !letGo(cb, u);
     }
     const d = m.designs.find((x) => x.id === m.held!.design);
     if (m.held.stage < MAX_STAGE && (m.freePumps || 0) > 0 && !pumpOutburst(cb, rng, u)) { watch(cb, u); return true; }
-    const near = d ? foesOf(cb, u).some((t) => dist(t.pos, u.pos) <= heartReach(m, d) + 3) : false;
-    if (m.held.stage < MAX_STAGE && u.ap >= SOUL_AP.pump && (near || st.moved) && !m.held.steady && !pumpOutburst(cb, rng, u)) { watch(cb, u); return true; }
+    const near = d ? seenFoes(cb, u).some((t) => dist(t.pos, u.pos) <= heartReach(m, d) + 3) : false;
+    if (m.held.stage < MAX_STAGE && canPay(cb, u, SOUL_AP.pump) && (near || st.moved) && !m.held.steady && !pumpOutburst(cb, rng, u)) { watch(cb, u); return true; }
     watch(cb, u);
     return false; // walk or shoot (the weapon code); a hit calms the heart
   }
   // 4. Nothing worth releasing yet: Syphon if the MP is short, else Begin and hold for what is coming.
-  if (!foesOf(cb, u).length) return false;
+  if (!seenFoes(cb, u).length) return false;
   const pick = cd && !m.held && canBeginHold(cb, u, cd) ? cd : beginPick(cb, u); if (!pick) return false;
   const pv = previewOutburst(cb, u, pick.id, undefined, false);
   if (!pv.ok) {
-    if (/MP/.test(pv.why || '') && m.mp < m.mpMax && u.ap >= 1 + SOUL_AP.begin) return !syphon(cb, u);
+    if (/MP/.test(pv.why || '') && m.mp < m.mpMax && canPay(cb, u, costOf('syphon') + SOUL_AP.begin)) return !syphon(cb, u);
     return false;
   }
   if (beginOutburst(cb, rng, u, pick.id, undefined, true)) return false;
@@ -249,13 +251,13 @@ export function aiSoulStep(cb: Combat, rng: Rng, u: Unit): boolean {
 function canBeginHold(cb: Combat, u: Unit, d: OutburstDesign): boolean {
   const m = u.mg!; if (!d || m.held) return false;
   const pv = previewOutburst(cb, u, d.id, undefined, false);
-  return pv.ok && u.ap >= pv.ap + 1 && m.strain + beginStrain(cb, u, d) <= Math.min(strainCap(u), m.strainLimit);
+  return pv.ok && canPay(cb, u, pv.ap + SOUL_AP.pump) && m.strain + beginStrain(cb, u, d) <= Math.min(strainCap(u), m.strainLimit);
 }
 /** Which design to Begin and hold with nothing in reach: a hostile one (the first that can be held safely; a Buff only
  * when an ally of its side is hurt). */
 function beginPick(cb: Combat, u: Unit): OutburstDesign | null {
   const m = u.mg!, hurt = cb.units.some((t) => t.side === u.side && live(t) && t.hp < 0.6 * t.maxHp);
-  const ok = (d: OutburstDesign) => { const pv = previewOutburst(cb, u, d.id, undefined, false); return (pv.ok || /MP/.test(pv.why || '')) && u.ap >= pv.ap + 1 && m.strain + beginStrain(cb, u, d) <= Math.min(strainCap(u), m.strainLimit); };
+  const ok = (d: OutburstDesign) => { const pv = previewOutburst(cb, u, d.id, undefined, false); return (pv.ok || /MP/.test(pv.why || '')) && canPay(cb, u, pv.ap + SOUL_AP.pump) && m.strain + beginStrain(cb, u, d) <= Math.min(strainCap(u), m.strainLimit); };
   return m.designs.find((d) => hostile(d) && ok(d)) || (hurt ? m.designs.find((d) => !hostile(d) && ok(d)) : null) || null;
 }
 /** The designs a Soul caster archetype holds ready (for tools and the Narrator's context). */

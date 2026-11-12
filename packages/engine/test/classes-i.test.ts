@@ -2,13 +2,15 @@
 // combat/attack, combat/move, combat/draw, combat/outburst, story/perk, check/roll); what enemies do goes through the
 // same engine functions their turns use (resolveAttack, moveUnit, applyDamage, harm, applyCond), with the game bound.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   CLASS, WEAPON, resolveAttack, previewAttack, attackDamage, moveUnit, applyDamage, applyCond, condOn, harm, glyphCost, previewOutburst, objectsOf, healingMult, maxHp,
   manaOf, perkActionsFor, coverageOf, itemInfo, emit, type Unit, type Combat,
 } from '../src';
 import { fightWith, storyWith, withGame, rng, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
-import { CLASS_MOVE_POOL, REV2_CLASSES } from '../src';
+import { CLASS_MOVE_POOL, REV2_CLASSES, mendFactor } from '../src';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
@@ -172,14 +174,14 @@ describe('Defender', () => {
 
 // ======================================================================================================== MEDIC
 describe('Medic', () => {
-  it('Triage: an adjacent ally heals 20 × Healing given and stops bleeding; once per ally per turn', () => {
+  it('Triage: an adjacent ally heals 5 × Healing given × the level factor (rules 1.23; it was 20 × Healing given) and stops bleeding; once per ally per turn', () => {
     const f = fightWith([cls('medic', 1), {}], [{}]);
     const [m, ally] = f.pcs; line(f, [m, 3], [ally, 4], [f.foe, 12]);
     const a = f.unit(ally.id); a.hp = 20; a.bleed = 2;
     const u = f.turn(m);
     act(f, u, { type: 'combat/perk', id: 'class:medic.triage', actionId: 'triage', targetId: ally.id });
     const mult = healingMult(f.g.characters[m.charId!]);
-    expect(f.unit(ally.id).hp).toBe(20 + Math.floor(Math.floor(20 * mult) * (a.healRecv || 1))); expect(f.unit(ally.id).bleed).toBe(0);
+    expect(f.unit(ally.id).hp).toBe(20 + Math.floor(Math.floor(5 * mult * mendFactor(f.g.characters[m.charId!].level)) * (a.healRecv || 1))); expect(f.unit(ally.id).bleed).toBe(0);
     expect(() => act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:medic.triage', actionId: 'triage', targetId: ally.id })).toThrow(/already treated/i);
     f.unit(ally.id).hp = 0; f.unit(ally.id).downed = true;
     act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:medic.triage', actionId: 'stabilise', targetId: ally.id });
@@ -192,12 +194,12 @@ describe('Medic', () => {
     expect(s.g.characters[ally.id].hp).toBeGreaterThan(30);
     expect(() => s.act({ type: 'story/perk', charId: m.id, id: 'class:medic.triage', actionId: 'triage_story', text: s.g.characters[ally.id].name })).toThrow(/already treated/);
   });
-  it('Stim Throw: 1 Supply, an ally within 4 heals 30 × Healing given; a Downed ally gets up at 1 HP', () => {
+  it('Stim Throw: 1 Supply, an ally within 4 heals 6 × Healing given × the level factor (rules 1.23; it was 30 × Healing given); a Downed ally gets up at 1 HP', () => {
     const f = fightWith([cls('medic', 2), {}], [{}]);
     const [m, ally] = f.pcs; line(f, [m, 2], [ally, 5], [f.foe, 13]);
     f.unit(ally.id).hp = 10; const u = f.turn(m), sup = f.unit(m.id).res!.supplies;
     act(f, u, { type: 'combat/perk', id: 'class:medic.stim_throw', targetId: ally.id });
-    expect(f.unit(ally.id).hp).toBeGreaterThan(10 + 29); expect(f.unit(m.id).res!.supplies).toBe(sup - 1);
+    { const c = f.g.characters[m.charId!]; expect(f.unit(ally.id).hp).toBe(10 + Math.floor(Math.floor(6 * healingMult(c) * mendFactor(c.level)) * (f.unit(ally.id).healRecv || 1))); } expect(f.unit(m.id).res!.supplies).toBe(sup - 1);
     f.unit(ally.id).hp = 0; f.unit(ally.id).downed = true;
     act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:medic.stim_throw', targetId: ally.id });
     expect(f.unit(ally.id).hp).toBe(1);
@@ -233,7 +235,7 @@ describe('Assassin', () => {
     act(f, u, { type: 'combat/perk', id: 'class:assassin.toxin', actionId: 'toxin_weakened' });
     expect(f.unit(u.id).res!.toxins).toBe(doses - 1);
     act(f, f.unit(u.id), { type: 'combat/attack', targetId: f.foe.id, mode: 'melee' });
-    expect(logHas(f.cb, /The toxin on .*Body save d20/)).toBe(true);
+    expect(logHas(f.cb, /The toxin on .*body save d20/)).toBe(true);
     const s = storyWith([cls('assassin', 2, { weapon: 'combat_knife' })]);
     s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'class:assassin.toxin', actionId: 'story_bleeding' });
     expect(s.g.story.ps![s.chars[0].id].items['class:assassin.toxin'].coat).toBe('bleeding');
@@ -318,7 +320,7 @@ describe('Scribe', () => {
     const c = st.chars[0];
     st.act({ type: 'story/perk', charId: c.id, id: 'class:scribe.inscribe_gear', actionId: 'armour_story' });
     expect(st.g.characters[c.id].evoCharge).toBe(8);
-    st.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
+    st.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
     const pcU = st.g.combat!.units.find((x) => x.charId === c.id)!;
     const plain = fightWith([cls('scribe', 2, MIND)]).pc.armour;
     expect(pcU.armour).toBe(plain + 5);
@@ -372,13 +374,13 @@ describe('Channeler', () => {
     act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.stage).toBe(1); expect(logHas(f.cb, /Shape: the first Pump/)).toBe(true);
     act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.stage).toBe(2);
   });
-  it('Shape: Empathy\'s free Pump goes first; Shape takes the next one', () => {
+  it('Shape (rules 1.19): one free Pump a turn, so with Empathy\'s Shape adds none; the free Pump steps +0.1 more', () => {
     const f = fightWith([cls('channeler', 1, SOUL)], [{}]);
     const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; const m = f.unit(u.id).mg!; m.freePumps = 1; m.freePumpsMax = 1; m.firstUsed = true;
     const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d });
-    act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7);
-    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.stage).toBe(3);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.plus).toBe(0.1);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(5); expect(f.pc.mg!.held!.stage).toBe(3);
   });
   it('Storm Front: +10 MP, two more enemies within 2 tiles of the first, once a turn', () => {
     const f = fightWith([cls('channeler', 2, SOUL)], [{}, {}, {}]);
@@ -400,20 +402,20 @@ describe('Channeler', () => {
       return { f, rel: (f.cb.fx || []).filter((e: any) => e.k === 'release').at(-1) as any, strain: f.pc.mg!.strain - s0 };
     };
     const plain = run([]), surge = run(['class:channeler.heart_surge#surge']);
-    expect(plain.rel.stage).toBe(2); expect(surge.rel.stage).toBe(3); expect(surge.rel.mult).toBe(1.8);
+    expect(plain.rel.stage).toBe(2); expect(surge.rel.stage).toBe(3); expect(surge.rel.mult).toBe(1.5); // stage 3 is ×1.4, and Shape's +0.1 on the free Pump (rules 1.19)
     expect(surge.strain).toBe(plain.strain + 1); expect(logHas(surge.f.cb, /Heart Surge: the heart pays for it/)).toBe(true);
   });
 });
 
 // ======================================================================================================== GUARDIAN
 describe('Guardian', () => {
-  it('Will Shield: a Buff cast, a shield of 30 × Healing given on an ally in reach; MP and Strain paid', () => {
+  it('Will Shield: a Buff cast, a shield of 12 × Healing given on an ally in reach (rules 1.20); MP and Strain paid', () => {
     const f = fightWith([cls('guardian', 1, SOUL), {}], [{}]);
     const [gd, ally] = f.pcs; line(f, [gd, 3], [ally, 5], [f.foe, 13]);
     const u = f.turn(gd), mp = u.mg!.mp;
     act(f, u, { type: 'combat/perk', id: 'class:guardian.will_shield', actionId: 'will_shield', targetId: ally.id });
     const mult = healingMult(f.g.characters[gd.charId!]);
-    expect(f.unit(ally.id).shield).toBe(Math.floor(Math.floor(30 * mult) * (f.unit(ally.id).healRecv || 1)));
+    expect(f.unit(ally.id).shield).toBe(Math.floor(Math.floor(12 * mult * mendFactor(f.g.characters[gd.charId!].level)) * (f.unit(ally.id).shieldRecv || 1)));
     expect(f.unit(gd.id).mg!.mp).toBeLessThan(mp); expect(f.unit(gd.id).mg!.strain).toBe(1);
   });
   it('Drink It In: an enemy spell on your shield feeds your Emanator (one reaction a round)', () => {
@@ -463,14 +465,14 @@ describe('Bard', () => {
     s.act({ type: 'check/roll', checkId: ck.id }, s.g.characters[ally.id].owner);
     expect(s.g.story.entries.filter((e) => e.kind === 'check').at(-1)!.head).toMatch(/\+2 Encouraged by/);
   });
-  it('Mend: a Bard\'s Buff heal heals 40, not 30 (× Healing given × the air)', () => {
+  it('Mend: a Bard\'s Buff heal heals from 9, not 7 (× Healing given × the level factor × the air)', () => {
     const f = fightWith([cls('bard', 2, SOUL), {}], [{}]);
     const [bd, ally] = f.pcs; line(f, [bd, 3], [ally, 5], [f.foe, 13]);
     const u = f.turn(bd), d = designOf(f.unit(bd.id), 'buff', 'heal'); f.unit(ally.id).hp = 10;
-    // Rules 1.5: Begin, Pump to stage 1 (×1), Release.
+    // Rules 1.5: Begin, Pump to stage 1 (×1.2 since rules 1.17), Release.
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/release', aim: '5,2' });
     const hm = f.unit(bd.id).mg!.healMult, recv = f.unit(ally.id).healRecv || 1;
-    expect(f.unit(ally.id).hp - 10).toBe(Math.floor(Math.floor(30 * hm * recv) * 40 / 30));
+    expect(f.unit(ally.id).hp - 10).toBe(Math.floor(Math.floor(7 * 1 * hm * (f.unit(bd.id).mg!.mend ?? 1) * recv) * 9 / 7)); // rules 1.20: a base of 9 in place of 7, and the level factor
   });
   it('Gift: out of combat, once a rest, a design handed to an ally (the Narrator is told)', () => {
     const s = storyWith([cls('bard', 3, SOUL), {}]);
@@ -498,7 +500,7 @@ describe('Hexer', () => {
       const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 5]);
       const d = designOf(f.unit(u.id), 'status', 'shaken');
       act(f, f.unit(u.id), { type: 'combat/outburst', design: d, aim: '5,2' });
-      const l = f.cb.log.find((x) => /resists \(heart save \d+ vs \d+\)/.test(x)); if (l) seen = l.match(/vs (\d+)\)/)![1] + '|' + (12 + (f.pc.dbf?.will_power ?? 0) + 2); // rules 1.13: an Outburst's conditions read Will Power
+      const l = f.cb.log.find((x) => /resists \(heart save d20 [^)]* vs \d+/.test(x)); if (l) seen = l.match(/vs (\d+)/)![1] + '|' + (12 + (f.pc.dbf?.will_power ?? 0) + 2); // rules 1.13: an Outburst's conditions read Will Power
     }
     const [got, want] = seen.split('|'); expect(got).toBe(want);
   });

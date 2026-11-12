@@ -10,29 +10,30 @@ import {
   register, stateOf, uses, note, has, tierOf, grantPerkAp, bankAp, refusedGift, apDebt, pushAp, applyDamage, healUnit, openWindow,
   armedOf, disarm, actionAp, postStory, pendRuling, boundGame, PERK_AP_CAP, type Holder,
 } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
+import { FIELD_REPAIR_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import {
   dist, alive, keyOf as refKey, unitSees, sideSees, lineOfSight, paths, apForTiles, previewAttack, resolveAttack, moveUnit,
-  toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active,
+  toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active, displace
 } from '../combat';
 import { WEAPON, SKILL } from '../data';
 import { mod, strengthOf, healingMult, maxHp, packOf, levelForXp, applyLevels, isMedicChar, classRank } from '../character';
-import { applyCond, condOn, condSource, unitStrength, isBoon } from '../magic';
-import { d20 } from '../rng';
+import { applyCond, condOn, condSource, unitStrength, isBoon , saveTn } from '../magic';
 import { HEARING } from '../tactics';
 import { apLeft, positionsOf, rankReached } from '../game';
+import { cdFire, cdTick, landsNow, landsNext } from './cooldown';
+import { overworld, say, unitById, tileOf, rngOf } from '../kit';
+import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
+import { price, costOf, refund, grantAp, setAp, freely, withAp } from '../effects/cost';
+import { endCond } from '../magic';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
 const gameOf = (h: Holder) => h.g ?? boundGame();
-const rngOf = (h: Holder, ctx?: any): Rng => ctx?.rng || gameOf(h)?.rng || { state: 1 };
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
-const unitById = (cb: Combat | null | undefined, id: string | undefined | null) => (cb && id ? cb.units.find((x) => x.id === id) || null : null);
 /** Character item state that lasts beyond a fight (bonds, charms, the last talk). */
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? ((c as any).state ||= {}) : {});
 /** Read it without creating it (stat queries and previews must not change state). */
@@ -111,8 +112,8 @@ export function pettyGate(h: Holder, target: Unit | Character | null | undefined
   const st = h.u && inFight(h) ? stateOf(rh) : storyState(rh), stamp = h.cb && !overworld(h.cb) ? h.cb.round + '.' + h.cb.turn : 'w' + (gameOf(h)?.story?.round ?? 0);
   if (st.pettyFail === stamp) return 'Petty (Rival): you can\'t bring yourself to help them this turn.';
   if (st.pettyOk === stamp) return null;
-  const r = d20(rng), m = mod(c.skills.camaraderie || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
-  say(h.cb, c.name + ' swallows their pride? Camaraderie d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs 12 · ' + (ok ? 'yes' : 'no (Rival: Petty)'));
+  const rv = rollVs(h.cb || null, rng, { by: h.u || null, mod: mod(c.skills.camaraderie || 0), tn: TN.standard, why: 'pride' }), ok = rv.ok;
+  say(h.cb, c.name + ' swallows their pride? Camaraderie ' + rv.text + ' · ' + (ok ? 'yes' : 'no (Rival: Petty)'));
   if (ok) { st.pettyOk = stamp; return null; }
   st.pettyFail = stamp; return 'Petty (Rival): you can\'t bring yourself to help them this turn.';
 }
@@ -121,13 +122,15 @@ export function pettyGate(h: Holder, target: Unit | Character | null | undefined
 
 // ---------- Grim Reaper (Intimidation γ) ----------
 // I: −1 AP on your first turn of each fight; a kill or a KO (a subdued foe) of an enemy on your own turn gives +2 AP at
-// once, once per turn (the +3 cap and the 9 ceiling hold). II: no first-turn penalty; same +2; every enemy who sees
+// once, once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts; the +3 cap and the 9 ceiling hold). II: no first-turn penalty; same +2; every enemy who sees
 // the kill saves (Heart, vs 12 + your Intimidation strength) against Fear, with you as its source. A kill on someone
 // else's turn (Overwatch, a reaction) gives nothing. Area map fights count the same (the first-turn penalty is a fight's).
 function reaperKill(h: Holder, victim: Unit, rng: Rng) {
   const u = h.u, cb = h.cb; if (!u || !cb || victim.side === u.side) return;
-  if (uses(h).take('per_turn', 1, h.key + '#ap')) {
-    if (overworld(cb)) { u.ap += 2; say(cb, u.name + ' +2 AP (Grim Reaper).'); } else grantPerkAp(cb, u, 2, 'Grim Reaper');
+  // The area map keeps its once-a-turn limit; in a fight the cooldown decides (and the turn's use is still counted, so
+  // the perk card says "Used this turn").
+  if (overworld(cb) ? uses(h).take('per_turn', 1, h.key + '#ap') : cdFire(h, 'gain', cb.round)) {
+    if (overworld(cb)) { grantAp(cb, u, 2, { max: Infinity }); say(cb, u.name + ' +2 AP (Grim Reaper).'); } else { uses(h).take('per_turn', 1, h.key + '#ap'); grantPerkAp(cb, u, 2, 'Grim Reaper'); }
   }
   if (tierII(h) && !overworld(cb)) {
     for (const f of cb.units) if (f.side !== u.side && alive(f) && f !== victim && unitSees(cb, f, victim.pos)) say(cb, u.name + '\'s kill (Grim Reaper)' + applyCond(cb, rng, u, f, 'fear', undefined, 'heart', { via: 'intimidation' }) + '.');
@@ -137,7 +140,7 @@ register({
   id: 'grim_reaper', claims: 'all',
   on: {
     turn_start_pre: (ctx, h) => {
-      if (ctx.u !== h.u || !inFight(h)) return; const st = stateOf(h);
+      if (ctx.u !== h.u || !inFight(h)) return; const st = stateOf(h); cdTick(h);
       if (!st.firstDone) { st.firstDone = true; if (!tierII(h)) pushAp(ctx, -1, 'Grim Reaper: first turn'); }
     },
     on_kill: (ctx, h) => { if (ctx.by === h.u && ctx.ownTurn) reaperKill(h, ctx.victim, rngOf(h, ctx)); },
@@ -149,15 +152,16 @@ register({
 // ---------- Overruled! (Eloquence γ) ----------
 // I: +2 AP at the start of your turn while a Left Brain Debuff you inflicted is on a living enemy (once, however many);
 // −2 AP while you carry one. II: Left or Right Brain Debuff; your own penalty is −1. Non-casters inflict it with the
-// fight's Persuade (rules 1.3, 2 AP). The story has no debuffs: no story part.
+// fight's Persuade (rules 1.3, 2 AP). The story has no debuffs: no story part. The bonus comes at most once every 3 of
+// your turns, and so does the penalty, each counted by itself (the AP perks' cooldown, ./cooldown.ts).
 register({
   id: 'overruled', claims: 'all',
   on: {
     turn_start_pre: (ctx, h) => {
       const u = h.u, cb = h.cb; if (ctx.u !== u || !u || !cb) return;
-      const ids = tierII(h) ? ['ldebuff', 'rdebuff'] : ['ldebuff'];
-      if (cb.units.some((e) => e.side !== u.side && alive(e) && ids.some((id) => condSource(e, id) === u.id))) pushAp(ctx, 2, 'Overruled!');
-      if (ids.some((id) => condOn(u, id))) pushAp(ctx, tierII(h) ? -1 : -2, 'Overruled! (your own Brain Debuff)');
+      const ids = tierII(h) ? ['ldebuff', 'rdebuff'] : ['ldebuff']; cdTick(h);
+      if (cb.units.some((e) => e.side !== u.side && alive(e) && ids.some((id) => condSource(e, id) === u.id)) && cdFire(h, 'gain', cb.round)) pushAp(ctx, 2, 'Overruled!');
+      if (ids.some((id) => condOn(u, id)) && cdFire(h, 'pen', cb.round)) pushAp(ctx, tierII(h) ? -1 : -2, 'Overruled! (your own Brain Debuff)');
     },
   },
   brief: () => null,
@@ -208,8 +212,10 @@ register({
 // ---------- Talks Broke Down (Charisma γ) ----------
 // The engine reads how the talk went: the last dialogue check (a dialogue skill, or the 'dialogue' tag) any squadmate
 // made this scene, before the fight started. The Narrator's combat.fromTalk says whether the fight started because of
-// it; when it says nothing the engine infers it from a talk this story round or the one before (PROVISIONAL). I: won, +2
-// AP every turn of the fight; lost, −2. II: no penalty, and the first enemy in initiative order hesitates: −1 AP on its
+// it; when it says nothing the engine infers it from a talk this story round or the one before (PROVISIONAL; this
+// timing is the card's rule since rules 1.14, the Narrator's fromTalk only overrules it). I: won, +2 AP on your first
+// turn of the fight and then once every 3 turns (turns 1, 4, 7: the AP perks' cooldown, ./cooldown.ts; it was every
+// turn); lost, −2 on the same turns. II: no penalty, and the first enemy in initiative order hesitates: −1 AP on its
 // round-1 turn.
 register({
   id: 'talks_broke_down', claims: 'all',
@@ -230,18 +236,23 @@ register({
     },
     turn_start_pre: (ctx, h) => {
       const cb = h.cb; if (!cb) return;
-      if (ctx.u === h.u) { const o = stateOf(h).origin; if (o === 'won') pushAp(ctx, 2, 'Talks Broke Down'); else if (o === 'lost' && !tierII(h)) pushAp(ctx, -2, 'Talks Broke Down'); }
+      if (ctx.u === h.u) {
+        const o = stateOf(h).origin; cdTick(h);
+        if (o === 'won') { if (cdFire(h, 'gain', cb.round)) pushAp(ctx, 2, 'Talks Broke Down'); }
+        else if (o === 'lost' && !tierII(h)) { if (cdFire(h, 'pen', cb.round)) pushAp(ctx, -2, 'Talks Broke Down'); }
+      }
       const fs = (ctx.u as Unit).ps?.[h.key]; if (fs?.hesitate && cb.round === 1 && !fs.hesitated) { fs.hesitated = true; pushAp(ctx, -1, 'hesitates'); }
     },
   },
-  brief: () => 'say combat.fromTalk when a fight breaks out of a talk (false if not)',
+  brief: () => 'a fight within one story round of a talk counts as breaking out of it; set combat.fromTalk only to overrule that',
 });
 
 // ---------- Rally Cry (Camaraderie β) ----------
 // Rules 1.13 (a beta gives no AP). I: when an ally drops to 0 HP (Downed or killed) by an enemy, a hazard or an enemy's
 // effect (not friendly fire or your own side's magic), every other ally, the holder included, takes 15% less damage
 // until their own next turn starts; II: 25%. Several drops or holders don't stack (the best counts). PROVISIONAL.
-const RALLY = { I: 0.15, II: 0.25 };
+// The share is its data's (engine foundations 3): the held tier's effects[0].value_pct.
+const rallyLess = (h: Holder) => h.info.effects[0].value_pct / 100;
 register({
   id: 'rally_cry', claims: 'all',
   on: {
@@ -249,7 +260,7 @@ register({
       const v = ctx.victim as Unit, u = h.u, cb = h.cb; if (!u || !cb || v.side !== u.side || v.companion) return;
       if (ctx.by && ctx.by.side === v.side) return; // friendly fire, or your own Mana Short
       if (ctx.dead && v.downed) return; // finished off while already Downed: they dropped to 0 once, not twice
-      const n = tierII(h) ? RALLY.II : RALLY.I, got: string[] = [];
+      const n = rallyLess(h), got: string[] = [];
       for (const a of cb.units) {
         if (a === v || a.side !== u.side || a.dead || a.downed || a.companion) continue;
         const as = unitState(h, a); if ((as.less || 0) >= n) continue;
@@ -297,8 +308,9 @@ register({
 // ---------- Sweet Talker (Implication γ) ----------
 // The charm: a successful Charisma or Implication check aimed at an NPC (the check's target) marks that NPC charmed
 // for the scene. In a fight (and on the area map) buffing or debuffing that NPC's unit gives +2 AP at once (II +3),
-// once per turn (plan 6, PROVISIONAL). I: a charmed NPC who debuffs you costs you 2 AP on your next turn. The
-// fight is usually the same scene, so the charm carries in.
+// once every 3 of your turns in a fight (the AP perks' cooldown, ./cooldown.ts; once a turn on the area map). I: a
+// charmed NPC who debuffs you costs you 2 AP on your next turn, also at most once every 3 turns. The fight is usually
+// the same scene, so the charm carries in.
 const charmedKey = (s: string) => String(s || '').trim().toLowerCase();
 function charmedBy(h: Holder, t: Unit): boolean {
   const g = gameOf(h), ch = cs(h.c).charmed; if (!ch || !g || ch.scene !== (g.story?.scene?.n ?? 0)) return false;
@@ -318,14 +330,15 @@ register({
     cond_landed: (ctx, h) => {
       const u = h.u, cb = h.cb; if (!u || !cb) return;
       if (ctx.by === u && ctx.t !== u && charmedBy(h, ctx.t)) {
-        if (!uses(h).take('per_turn', 1, h.key + '#ap')) return;
+        if (overworld(cb) ? !uses(h).take('per_turn', 1, h.key + '#ap') : !cdFire(h, 'gain', landsNow(cb, u))) return;
         const n = tierII(h) ? 3 : 2;
-        if (overworld(cb)) { u.ap += n; say(cb, u.name + ' +' + n + ' AP (Sweet Talker).'); } else grantPerkAp(cb, u, n, 'Sweet Talker');
+        if (overworld(cb)) { grantAp(cb, u, n, { max: Infinity }); say(cb, u.name + ' +' + n + ' AP (Sweet Talker).'); } else { uses(h).take('per_turn', 1, h.key + '#ap'); grantPerkAp(cb, u, n, 'Sweet Talker'); }
       } else if (ctx.t === u && ctx.by && ctx.by !== u && !tierII(h) && !isBoon(ctx.id) && charmedBy(h, ctx.by)) {
+        if (stateOf(h).sting || !cdFire(h, 'pen', landsNext(cb, u))) return;
         stateOf(h).sting = true; say(cb, ctx.by.name + '\'s betrayal stings (Sweet Talker): −2 AP next turn.');
       }
     },
-    turn_start_pre: (ctx, h) => { if (ctx.u === h.u && stateOf(h).sting) { delete stateOf(h).sting; pushAp(ctx, -2, 'Sweet Talker: betrayal'); } },
+    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; cdTick(h); if (stateOf(h).sting) { delete stateOf(h).sting; pushAp(ctx, -2, 'Sweet Talker: betrayal'); } },
   },
   brief: (h) => { const ch = cs(h.c).charmed; return ch?.npcs?.length ? 'charmed this scene: ' + ch.npcs.slice(0, 3).join(', ') + ' (name the target on social checks)' : 'name the target NPC on Charisma/Insinuation checks'; },
 });
@@ -367,6 +380,8 @@ register({ id: 'many_hands', claims: 'all', brief: () => null });
 // PROVISIONAL). They act at once, outside their turn (an off-turn window: their player acts, or declines), with up to
 // 4 AP (6 minus the floor of 2: plan 6, PROVISIONAL); what they spend comes off their next turn after the floor (AP
 // debt). One order per ally per round, however many holders.
+/** "This ally already took this order this round": a cell on the ALLY (whoever gave the order), once a round. */
+const ordered = (h: Holder, t: Unit) => uses({ key: h.key, u: t, cb: h.cb, g: h.g });
 const OMM = 'On My Mark';
 function ommSettle(h: Holder) {
   const cb = h.cb; if (!cb || overworld(cb)) return;
@@ -374,13 +389,13 @@ function ommSettle(h: Holder) {
   delete st.mark;
   const t = unitById(cb, m.ally); if (!t) return;
   const spent = Math.max(0, Math.round((m.pool - t.ap) * 10) / 10);
-  t.ap = m.real;
+  setAp(t, m.real); // the window's pool is not kept: its own AP is back
   if (spent > 0) { apDebt(t, Math.ceil(spent)); say(cb, t.name + ' owes ' + Math.ceil(spent) + ' AP next turn (On My Mark).'); }
 }
 register({
   id: 'on_my_mark', claims: 'all',
   actions: [{
-    id: 'order', label: 'On My Mark', scope: ['combat'], ap: 1, uses: { per: 'per_round', n: 1 }, target: 'ally',
+    id: 'order', label: 'On My Mark', scope: ['combat'], ap: 'data', uses: { per: 'per_round', n: 1 }, target: 'ally',
     text: 'Once a round, on your turn: order an ally to take one action now, outside their turn. They can spend up to 4 AP, and it comes off their next turn.',
     available: (h) => (h.cb && h.u && ownTurn(h.cb, h.u) ? true : h.u ? 'Only on your turn.' : false),
     preview: (h, args) => {
@@ -389,15 +404,15 @@ register({
       if (t.side !== h.u!.side || t.companion) return { ok: false, why: 'Pick a squadmate.' };
       if (!alive(t) || condOn(t, 'stunned')) return { ok: false, why: t.name + ' can\'t act now.' };
       if (condOn(t, 'silenced')) return { ok: false, why: t.name + ' is Silenced and can\'t answer.' };
-      if (t.ps?.[h.key]?.round === cb.round) return { ok: false, why: t.name + ' already took an order this round.' };
+      if (ordered(h, t).left('per_round') <= 0) return { ok: false, why: t.name + ' already took an order this round.' };
       return { lines: [t.name + ' acts now with up to 4 AP; what they spend comes off their next turn.'] };
     },
     run: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
-      unitState(h, t).round = cb.round;
+      ordered(h, t).take('per_round');
       const pool = Math.min(4, 6);
       stateOf(h).mark = { ally: t.id, real: t.ap, pool };
-      t.ap = pool;
+      setAp(t, pool); // the window's pool
       openWindow(cb, OMM, [{ unitId: t.id, limit: 1 }], u.id);
       emitFx(cb, 'perk', { unit: u.id, target: t.id, id: 'on_my_mark' });
       return null;
@@ -426,7 +441,7 @@ export const settleOnMyMark = (h: Holder) => ommSettle(h);
 register({
   id: 'supreme_command', claims: 'all',
   actions: [{
-    id: 'supreme_command', label: 'Supreme Command', scope: ['combat'], ap: 0, uses: { per: 'per_combat', n: 1 }, target: 'none',
+    id: 'supreme_command', label: 'Supreme Command', scope: ['combat'], ap: 'data', uses: { per: 'per_combat', n: 1 }, target: 'none',
     text: 'Once a fight, on your turn: order the whole squad. Every ally takes a free 2 AP action now, in initiative order.',
     available: (h) => (h.cb && h.u && ownTurn(h.cb, h.u) ? true : h.u ? 'Only on your turn.' : false),
     preview: (h) => { const n = (h.cb?.units || []).filter((x) => x !== h.u && x.side === h.u?.side && alive(x) && !x.companion).length; return n ? { lines: [n + ' allies act now, 2 AP each.'] } : { ok: false, why: 'No one to command.' }; },
@@ -450,14 +465,14 @@ const ORDERS: Record<string, string> = { halt: 'halt', hold: 'hold', 'hold fire'
 register({
   id: 'the_voice', claims: 'all', narrator: (e) => e?.op === 'condition',
   actions: [{
-    id: 'the_voice', label: 'The Voice', scope: ['combat'], ap: 0, uses: { per: 'per_session', n: 1 }, target: 'none',
+    id: 'the_voice', label: 'The Voice', scope: ['combat'], ap: 'data', uses: { per: 'per_session', n: 1 }, target: 'none',
     text: 'Once a session: give an order (halt, hold fire, drop it, kneel, fall back, or one in your own words). Rank-and-file enemies who hear it make a Heart save. Those who fail obey on their next turn.',
     preview: (h, args) => {
       const cb = h.cb, u = h.u; if (!cb || !u) return {};
       const order = ORDERS[String(args.choice || '').trim().toLowerCase()] || (args.text ? 'other' : '');
       if (!order) return { ok: false, why: 'Pick an order: halt, hold fire, drop it, kneel or fall back, or type your own.' };
       const n = cb.units.filter((t) => t.side !== u.side && alive(t) && ['minion', 'soldier'].includes(t.tier || 'minion') && dist(t.pos, u.pos) <= HEARING).length;
-      return n ? { lines: [n + ' enemies hear you (Heart save vs ' + (12 + unitStrength(u, 'authority')) + ').'] } : { ok: false, why: 'No rank-and-file enemy within ' + HEARING + ' tiles.' };
+      return n ? { lines: [n + ' enemies hear you (Heart save vs ' + (saveTn(u, 'authority')) + ').'] } : { ok: false, why: 'No rank-and-file enemy within ' + HEARING + ' tiles.' };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, order = ORDERS[String(args.choice || '').trim().toLowerCase()] || 'other';
@@ -485,8 +500,8 @@ register({
 const BH_MODES = ['shot', 'move', 'prone', 'stim', 'reload'];
 function heartbeat(h: Holder, foe: Unit, rng: Rng): boolean {
   const cb = h.cb!, u = h.u!, arm = armedOf(h), ch = String(arm?.choice ?? 'shot'), [mode0, tile0] = ch.split(':'), mode = BH_MODES.includes(mode0) ? mode0 : 'shot';
-  const keep = u.ap; u.ap = 2; let err: string | null = null;
-  try {
+  let err: string | null = null;
+  withAp(u, 2, () => {
     if (mode === 'shot') {
       const pv = previewAttack(cb, u, foe, isMelee(WEAPON[u.weapon]) ? 'melee' : 'shot');
       if (!pv.ok) err = pv.why || 'no shot'; else resolveAttack(cb, rng, u, foe, isMelee(WEAPON[u.weapon]) ? 'melee' : 'shot', h.c || null);
@@ -497,7 +512,7 @@ function heartbeat(h: Holder, foe: Unit, rng: Rng): boolean {
     } else if (mode === 'prone') err = u.prone ? 'already prone' : toggleProne(cb, u);
     else if (mode === 'stim') { const t = unitById(cb, arm?.targetId); const c = h.c; err = !t || !c ? 'no one to stim' : useStim(cb, u, t, c, isMedicChar(c)); }
     else err = reload(cb, u, { free: true });
-  } finally { u.ap = keep; }
+  });
   if (err) { say(cb, '(Between Heartbeats: ' + err + ')'); return false; }
   say(cb, u.name + ' moves between heartbeats, before ' + foe.name + ' can act (Between Heartbeats).');
   return true;
@@ -533,7 +548,7 @@ register({
 register({
   id: 'spoon_feed', claims: 'all',
   actions: [{
-    id: 'spoon_feed', label: 'Spoon-Feed', scope: ['combat'], ap: 2, target: 'enemy',
+    id: 'spoon_feed', label: 'Spoon-Feed', scope: ['combat'], ap: 'data', target: 'enemy',
     text: 'Explain the weakness of an enemy you can see. Allies within 6 tiles of you get +2 to hit it until your next turn.',
     preview: (h, args) => {
       const cb = h.cb, t = unitById(cb, args.targetId); if (!cb || !t || !h.u) return {};
@@ -622,11 +637,10 @@ function patSee(ctx: any, h: Holder) {
 // Area map and story: the same plea to a hostile person; the engine rolls the save (d20 + its tier save vs 12 +
 // Implication), and on a failure the Narrator plays them standing down for the moment (a pending ruling).
 const humanoid = (t: Unit) => !['robot', 'machine', 'turret', 'drone', 'beast'].includes(t.kind || '') && !isMachine(t) && !(t.tags || []).includes('non_humanoid');
-const NPC_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 function storyPlea(h: Holder, who: { name: string; tier?: string } | null, rng: Rng, text?: string): string | null {
   if (!who) return 'Name who you plead with.';
-  const r = d20(rng), m = NPC_SAVE[who.tier || 'soldier'] ?? 1, tn = 12 + (h.c ? strengthOf(h.c, 'empathy') : 0), saved = r === 20 || (r !== 1 && r + m >= tn);
-  const line = who.name + ' Heart save d20 ' + r + ' +' + m + ' = ' + (r + m) + ' vs ' + tn + ' · ' + (saved ? 'holds their weapon' : 'lowers their weapon');
+  const rv = rollVs(null, rng, { mod: tierSave(who.tier || 'soldier'), tn: SAVE_TN + (h.c ? strengthOf(h.c, 'empathy') : 0), lead: 'Heart save' }), saved = rv.ok; // someone in the story with no tier named saves as a Soldier
+  const line = who.name + ' ' + rv.text + ' · ' + (saved ? 'holds their weapon' : 'lowers their weapon');
   say(h.cb, (h.c?.name || '') + ' pleads with ' + who.name + (text ? ' "' + text.slice(0, 120) + '"' : '') + ' (Lay Down Arms): ' + line + '.');
   const g = gameOf(h); if (g && h.c) pendRuling(g, h.c, h.key, 'Lay Down Arms on ' + who.name + (text ? ' ("' + text.slice(0, 100) + '")' : '') + ': ' + line + (saved ? '.' : ': play them standing down for the moment.'));
   return null;
@@ -634,13 +648,13 @@ function storyPlea(h: Holder, who: { name: string; tier?: string } | null, rng: 
 register({
   id: 'lay_down_arms', claims: 'all', narrator: [],
   actions: [
-    { id: 'lay_down_arms', label: 'Lay Down Arms', scope: ['combat'], ap: 2, target: 'enemy', range: HEARING,
+    { id: 'lay_down_arms', label: 'Lay Down Arms', scope: ['combat'], ap: 'data', target: 'enemy', range: HEARING,
       text: 'Plead with a humanoid enemy who can hear you. It makes a Heart save. If it fails, it lowers its weapon and can\'t attack on its next turn. II: plead with up to three enemies at once.',
       preview: (h, args) => {
         const cb = h.cb; if (!cb) return {};
         const ids = [...new Set([args.targetId, ...(args.targetIds || [])].filter(Boolean) as string[])].slice(0, tierII(h) ? 3 : 1);
         for (const id of ids) { const t = unitById(cb, id); if (!t || t.side === h.u!.side || !alive(t)) return { ok: false, why: 'Pick enemies.' }; if (!humanoid(t)) return { ok: false, why: t.name + ' doesn\'t listen to pleas.' }; if (dist(t.pos, h.u!.pos) > HEARING) return { ok: false, why: t.name + ' can\'t hear you (' + HEARING + ' tiles).' }; }
-        return { lines: [ids.length + ' Heart save' + (ids.length === 1 ? '' : 's') + ' vs ' + (12 + unitStrength(h.u!, 'empathy')) + '.'] };
+        return { lines: [ids.length + ' Heart save' + (ids.length === 1 ? '' : 's') + ' vs ' + (saveTn(h.u!, 'empathy')) + '.'] };
       },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!;
@@ -661,11 +675,12 @@ register({
 });
 
 // ---------- Field Surgeon (Proficiency + Camaraderie, Achieved) ----------
-// Field Repair reaches an adjacent ally: 2 AP, Proficiency 3+, one spare-parts charge: a living ally heals 10 ×
-// Proficiency points × your Healing given (PROVISIONAL, plan 6: the Factory Made number); a Downed ally is brought back.
+// Field Repair reaches an adjacent ally: 2 AP, Proficiency 3+, one spare-parts charge: a living ally heals 3 ×
+// Improvisation points × your Healing given × the level factor (rules 1.23); a Downed ally is brought back.
 // Your heals on robotic allies (Factory Made, machines) work at full power (Factory Made's Plug halving is undone).
 // Out of a fight (area map or story), 10 minutes and a charge patch a squadmate for 50% of their max HP (PROVISIONAL).
-const surgeonHeal = (h: Holder) => Math.floor(10 * (h.c?.skills?.proficiency || h.u?.proficiency || 0) * (h.c ? healingMult(h.c) : 1));
+// Rules 1.23: 3 a point (it was 10) × Healing given × the level factor, as the rest of the medic's kit.
+const surgeonHeal = (h: Holder) => kitHeal(0, h.c ? healingMult(h.c) : 1, mendFactorOf(h.u), { per: { of: 'improvisation', value: FIELD_REPAIR_HEAL, n: h.c?.skills?.proficiency || h.u?.proficiency || 0 }, floor: true });
 function takePart(c: Character): boolean {
   const pack = packOf(c).map((x) => ({ ...x })), i = pack.findIndex((x) => (x.item || x.id) === 'spare_parts' && x.qty > 0); if (i < 0) return false;
   if (pack[i].qty > 1) pack[i].qty--; else pack.splice(i, 1); c.pack = pack; return true;
@@ -674,13 +689,13 @@ const partsOf = (c: Character | null | undefined) => (c ? packOf(c).filter((x) =
 register({
   id: 'field_surgeon', claims: 'all', priority: 200,
   actions: [
-    { id: 'repair_ally', label: 'Field Repair an ally', scope: ['combat'], ap: (h) => actionAp({ u: h.u }, 'field_repair', 2).ap, target: 'ally', range: 1,
-      text: 'Patch up an ally next to you: they heal 10 HP per Improvisation point, raised by your healing bonuses. Uses one spare-parts charge. Needs Improvisation 3.',
+    { id: 'repair_ally', label: 'Field Repair an ally', scope: ['combat'], ap: (h) => price({ cb: h.cb, u: h.u }, 'field_repair').ap, target: 'ally', range: 1,
+      text: 'Patch up an ally next to you: they heal 3 HP per Improvisation point, raised by your healing bonuses and your level. Uses one spare-parts charge. Needs Improvisation 3.',
       available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : true),
       preview: (h, args) => { const t = unitById(h.cb, args.targetId); if (t === h.u) return { ok: false, why: 'Pick an ally. To fix your own weapon, use Field Repair.' }; return { lines: ['+' + surgeonHeal(h) + ' HP' + (t && isMachine(t) ? ' (full power on a machine)' : '') + '.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
-        const p = pettyGate(h, t, rng); if (p) { u.ap += actionAp({ u }, 'field_repair', 2).ap; return null; }
+        const p = pettyGate(h, t, rng); if (p) { refund(cb, u, price({ cb, u }, 'field_repair').ap); return null; }
         u.parts = (u.parts || 0) - 1; if (h.c) takePart(h.c);
         const r = healUnit(cb, t, surgeonHeal(h), u, 'field_repair');
         emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 });
@@ -694,7 +709,7 @@ register({
         if ((h.c?.skills?.proficiency || 0) < 3) return 'Needs Improvisation 3.';
         if (!h.c || partsOf(h.c) <= 0) return 'No spare-parts charges.';
         const max = maxHp(t); if (t.hp >= max) return t.name + ' is already whole.';
-        takePart(h.c); const was = t.hp; t.hp = Math.min(max, Math.max(t.hp, 0) + Math.floor(max * 0.5)); if (was <= 0) (t as any).downedFails = 0;
+        takePart(h.c); const was = t.hp; t.hp = Math.min(max, Math.max(t.hp, 0) + Math.floor(itemAmount('perk:field_surgeon', 'patch', [], { max_hp: max }))); if (was <= 0) (t as any).downedFails = 0;
         const line = h.c.name + ' spends ten minutes patching up ' + t.name + ' (Field Surgeon): +' + (t.hp - Math.max(0, was)) + ' HP (' + t.hp + '/' + max + ').';
         say(h.cb, line); postStory(h, line, { kind: 'system' });
         return null;
@@ -733,8 +748,8 @@ register({
       }
       if (!to) return;
       uses(h).take('per_combat');
-      if (to !== u.pos) { const from = u.pos; u.pos = to; emitFx(cb, 'move', { unit: u.id, from, to, path: [from, to] }); }
-      ctx.floor = 1; t.bleed = 0;
+      if (to !== u.pos) { const from = u.pos; displace(cb, null, u, { tile: to }, { by: u, how: 'teleport', source: 'angel_of_the_trenches', willing: true, fx: false, drawn: () => { emitFx(cb, 'move', { unit: u.id, from, to, path: [from, to] }); } }); } // its own rush: not forced, but the tile it lands on acts on it
+      ctx.floor = 1; endCond(t, 'bleeding');
       emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: 0, revive: false });
       say(cb, u.name + ' is there before ' + t.name + ' hits the ground and holds them up at 1 HP (Angel of the Trenches).');
     },
@@ -869,14 +884,14 @@ function foeArg(cb: Combat, args: any, u: Unit): Unit | null {
 register({
   id: 'born_officer', claims: 'all', narrator: [1, 2, 4],
   actions: [{
-    id: 'command', label: 'Command', scope: ['combat', 'world'], ap: 1, uses: { per: 'per_round', n: 1 }, target: 'ally',
+    id: 'command', label: 'Command', scope: ['combat', 'world'], ap: 'data', uses: { per: 'per_round', n: 1 }, target: 'ally',
     text: 'Once a round: an ally you can see takes a free move worth 1 AP (pick the tile), or a free Shoot or Strike (pick the enemy).',
     preview: (h, args) => {
       const cb = h.cb, u = h.u, t = unitById(cb, args.targetId); if (!cb || !u || !t) return {};
       if (t === u) return { ok: false, why: 'Command someone else.' };
       if (!unitSees(cb, u, t.pos)) return { ok: false, why: 'You can\'t see ' + t.name + '.' };
       if (!alive(t) || condOn(t, 'stunned')) return { ok: false, why: t.name + ' can\'t act.' };
-      if (t.ps?.[h.key]?.round === cb.round && !overworld(cb)) return { ok: false, why: t.name + ' already took a Command this round.' };
+      if (!overworld(cb) && ordered(h, t).left('per_round') <= 0) return { ok: false, why: t.name + ' already took a Command this round.' };
       const kind = String(args.choice || '').toLowerCase();
       if (kind === 'move') { const to = tileOf(cb, args.tile); if (!to) return { ok: false, why: 'Pick a tile.' }; const R = reach(cb, t, 1); if (R[to] == null) return { ok: false, why: 'More than 1 AP of movement away for ' + t.name + '.' }; return { lines: [t.name + ' moves to the tile, free.'] }; }
       if (kind === 'attack') { const f = foeArg(cb, args, u); if (!f) return { ok: false, why: 'Pick the enemy.' }; const pv = previewAttack(cb, t, f, isMelee(WEAPON[t.weapon]) ? 'melee' : 'shot', { free: true }); return pv.ok ? { lines: [t.name + ' attacks ' + f.name + ' for free (' + pv.pct + '%).'] } : { ok: false, why: pv.why }; }
@@ -884,17 +899,17 @@ register({
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, kind = String(args.choice || '').toLowerCase();
-      unitState(h, t).round = cb.round;
+      ordered(h, t).take('per_round');
       const p = pettyGate(h, t, rng); if (p) { say(cb, p); return null; }
       const tc = charOf(h, t);
       if (tc && has(tc, 'trait:born_officer')) {
-        const r = d20(rng), m = mod(tc.skills.composure || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
-        say(cb, t.name + ' takes orders from no one but themselves? Composure d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (r + m) + ' vs 12 · ' + (ok ? 'obeys' : 'refuses (Born Officer)'));
+        const rv = rollVs(cb, rng, { by: t, mod: mod(tc.skills.composure || 0), tn: TN.standard, why: 'born officer' }), ok = rv.ok;
+        say(cb, t.name + ' takes orders from no one but themselves? Composure ' + rv.text + ' · ' + (ok ? 'obeys' : 'refuses (Born Officer)'));
         if (!ok) return null;
       }
       if (kind === 'move') {
-        const to = tileOf(cb, args.tile)!, keep = t.ap; t.ap = 99;
-        let e: string | null; try { e = moveUnit(cb, t, to, rng); } finally { t.ap = keep; }
+        const to = tileOf(cb, args.tile)!;
+        const e: string | null = freely(t, () => moveUnit(cb, t, to, rng));
         if (e) return e;
         const g = gameOf(h); if (overworld(cb) && g && t.charId) { const pos = (g.story.positions ||= {}); pos[t.charId] = t.pos; }
       } else {
@@ -933,11 +948,11 @@ const healDesign = (d: any) => d?.option === 'heal' || d?.school === 'heal' || d
 register({
   id: 'field_medic', claims: 'all', narrator: [2],
   stat: (h, stat, ctx) => {
-    if (!['ap_cost:stabilise', 'ap_cost:stim', 'ap_cost:heal', 'ap_cost:triage'].includes(stat)) return 0;
+    if (stat !== 'ap_cost:stabilise' && stat !== 'ap_cost:stim' && stat !== 'ap_cost:triage') return 0;
     const base = ctx?.base ?? 1; return base > 1 ? -1 : 0;
   },
   actions: [{
-    id: 'thrown_stim', label: 'Thrown Stim', scope: ['combat', 'world'], ap: (h) => actionAp({ u: h.u }, 'stabilise', isMedicChar(h.c) ? 1 : 2).ap, uses: { per: 'per_combat', n: 1 }, target: 'ally', range: 3,
+    id: 'thrown_stim', label: 'Thrown Stim', scope: ['combat', 'world'], ap: (h) => price({ cb: h.cb, u: h.u }, 'stabilise', costOf('stim', isMedicChar(h.c) ? 'ap_downed_medic' : 'ap_downed')).ap, uses: { per: 'per_combat', n: 1 }, target: 'ally', range: 3,
     text: 'Once a fight: throw a stim to stabilise a Downed ally up to 3 tiles away. You need line of sight. Uses one stim.',
     available: (h) => (!h.u ? false : (h.c?.stims || 0) <= 0 ? 'No stims left.' : true),
     preview: (h, args) => {
@@ -948,8 +963,8 @@ register({
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
-      const p = pettyGate(h, t, rng); if (p) { u.ap += actionAp({ u }, 'stabilise', isMedicChar(h.c) ? 1 : 2).ap; return null; }
-      if (h.c) h.c.stims--; t.bleed = 0;
+      const p = pettyGate(h, t, rng); if (p) { refund(cb, u, price({ cb, u }, 'stabilise', costOf('stim', isMedicChar(h.c) ? 'ap_downed_medic' : 'ap_downed')).ap); return null; }
+      if (h.c) h.c.stims--; endCond(t, 'bleeding');
       healUnit(cb, t, 1, u, 'stim');
       emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos, heal: 1, revive: true, thrown: true });
       say(cb, u.name + ' lobs a stim to ' + t.name + ': stabilised at 1 HP (Thrown Stim).');

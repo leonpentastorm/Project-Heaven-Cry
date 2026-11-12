@@ -4,6 +4,7 @@
 // the sheet's gear actions forwarded to the combat actions, and a pack entry named by id. Every rule goes through
 // apply(), the path a player's click takes.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, packOf, magsOf, refOf, RuleError, WEAPON, ITEM, GEAR, gearPlan, gearCost, hotSwapLeft, packRef, HEAVY_WHY, DOWN_WHY, isLightArmour,
   type Action, type Character, type GameState, type Unit,
@@ -25,7 +26,7 @@ function fight(setup: (c: Character) => void = () => {}, perks?: Record<string, 
   c0.pack = [magsOf('service_pistol', 1), gun('drifter_revolver', { loaded: 4 }), gun('hellraiser_service_rifle', { loaded: 20 }), magsOf('hellraiser_service_rifle', 1),
     piece('evoker'), piece('padded_undershirt'), piece('runner_trousers'), piece('night_goggles'), piece('field_helmet'), piece('combat_gloves'), piece('work_gloves'), piece('smiling_mask'), piece('ballistic_helmet')];
   setup(c0);
-  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Gear', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'minion', weapon: 'fists', at: '' }] } } } as any);
+  s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Gear', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'minion', weapon: 'fists', at: '' }] } } } as any);
   const api = {
     get g(): GameState { return s.g; },
     get c(): Character { return s.g.characters[s.chars[0].id]; },

@@ -7,31 +7,34 @@
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags F…) and docs/design/perk-runtime.md.
 import { register, stateOf, uses, note, pendRuling, postStory, bankAp, pushAp, has, armedOf, disarm, modOn, charOfUnit, bindGame, restN, grantShield, type Holder } from '../effects';
+import { itemAmount, amountMult } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
 import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, type AttackMode } from '../combat';
-import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength } from '../magic';
-import { d20 } from '../rng';
+import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength, saveAgainst , saveTn } from '../magic';
 import { tendHook } from '../effects/damage';
-import { WEAPON } from '../data';
+import { WEAPON, PERK } from '../data';
+/** Case Closed's two numbers, read from its card (perks.json effects[1] and [2]): the Defense and the damage. */
+const CASE_CLOSED: any[] = (PERK.case_closed as any)?.effects || [];
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
 import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
+import { cdFire, cdTick, landsNext } from './cooldown';
+import { overworld, say, rngOf } from '../kit';
+import { rollVs, rerollAttack, attackHits, tierSave, TN, SAVE_TN } from '../rolls';
+import { setAp } from '../effects/cost';
+import { AP_BASE } from '../effects/ap';
 
 // ---------- small helpers ----------
 type Rng = { state: number };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const rngOf = (h: Holder, ctx?: any): Rng | null => ctx?.rng || h.g?.rng || null;
 const up = (u: Unit | null | undefined): u is Unit => !!u && alive(u);
 const cst = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read-only item state (stat queries and previews must not change state). */
 const ro = (c: Character | null | undefined): Record<string, any> => c?.state || {};
 const sceneN = (h: Holder) => h.g?.story?.scene?.n ?? 0;
 const sgn = (n: number) => (n >= 0 ? '+' : '−') + Math.abs(n);
-const TIER_SAVE: Record<string, number> = { minion: 0, soldier: 1, elite: 2, boss: 3 };
 /** Does a unit answer to a name or id the story uses (an NPC id, or its name; loose for names of 3+ letters)? */
 function matches(u: Unit, ref: any): boolean {
   if (ref == null) return false;
@@ -55,7 +58,7 @@ const oncePerFight = (h: Holder, k: string) => { const st = stateOf(h); if (st[k
 function carryStoryCond(h: Holder, ctx: any, id: string) {
   if (!h.u || !h.c || !h.g || condOn(h.u, id)) return;
   if (!storyConds(h.g, h.c).includes(id)) return;
-  const r = applyCond(h.cb!, rngOf(h, ctx) || { state: 1 }, null, h.u, id, 99, undefined, { skipSave: true });
+  const r = applyCond(h.cb!, rngOf(h, ctx), null, h.u, id, 99, undefined, { skipSave: true });
   if (r) say(h.cb, h.u.name + ' carries it into the fight' + r + '.');
 }
 
@@ -80,7 +83,7 @@ register({
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
         if (!unitSees(h.cb!, t, h.u.pos)) return { ok: false, why: t.name + ' has to see you.' };
-        const tn = 12 + unitStrength(h.u, 'intimidation');
+        const tn = saveTn(h.u, 'intimidation');
         return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + tn + ' or Shaken' + (tierII(h) ? '. Every enemy in earshot who sees you rolls too.' : '.')] };
       },
       run: (h, a, rng) => {
@@ -105,33 +108,37 @@ register({
     combat_start: (ctx, h) => {
       const sc = h.g?.story?.scene?.npcConds; if (!sc || !h.cb) return;
       for (const v of h.cb.units) if (v.side !== h.u?.side && !condOn(v, 'shaken') && (shakenNpc(h.g, v.npcId) || shakenNpc(h.g, v.name)))
-        say(h.cb, v.name + ' is still rattled' + applyCond(h.cb, rngOf(h, ctx) || { state: 1 }, h.u || null, v, 'shaken', 99, 'heart', { skipSave: true, via: 'intimidation' }) + '.');
+        say(h.cb, v.name + ' is still rattled' + applyCond(h.cb, rngOf(h, ctx), h.u || null, v, 'shaken', 99, 'heart', { skipSave: true, via: 'intimidation' }) + '.');
     },
   },
   brief: (h) => 'Narrator: does the threat name a real detail; the true answer, or Shaken (conditions)' + (tierII(h) ? '; the group leader answers' : ''),
 });
 
 // ---------- The Name They Whisper (Intimidation Mastered) ----------
-// When a fight starts, every enemy not marked unaware saves (Heart) or is Afraid of you for 2 rounds. An enemy at half
+// When a fight starts, every enemy who is not a stranger saves (Heart) or is Afraid of you for 2 rounds. Everyone
+// knows the name unless marked a stranger (rules 1.14, spec item 1106): the tag 'stranger' on the enemy, or a name on
+// the holder's `strangers` list (c.state.strangers, the Narrator's traitState: a name, or a list of names). It no
+// longer reads 'unaware' (that mark also takes the enemy's first turn; a surprised guard still knows the name). An enemy at half
 // HP or less that can see you, at the end of its own turn, makes a Heart save or surrenders: once per enemy a fight,
 // only while you're up, never a Boss (plan 6, The Name They Whisper: GAMEBREAKING fix; PROVISIONAL). The TN is 12 +
 // your Intimidation strength (rules 1.13: a perk that speaks reads the gamma it belongs to).
+const isStranger = (h: Holder, v: Unit) => (v.tags || []).includes('stranger') || [v.name, v.npcId, v.id].some((ref) => ref != null && listHas(ro(h.c).strangers, ref));
 register({
   id: 'the_name_they_whisper', claims: 'all', narrator: (e: any) => e?.op === 'narrator',
   on: {
     combat_start: (ctx, h) => {
       const cb = h.cb!, u = h.u; if (!up(u) || !oncePerFight(h, 'started')) return;
-      const rng = rngOf(h, ctx) || { state: 1 }; let out = '';
-      for (const v of cb.units) if (v.side !== u.side && up(v) && !(v.tags || []).includes('unaware')) out += applyCond(cb, rng, u, v, 'fear', 2, 'heart', { via: 'intimidation' });
+      const rng = rngOf(h, ctx); let out = '';
+      for (const v of cb.units) if (v.side !== u.side && up(v) && !isStranger(h, v)) out += applyCond(cb, rng, u, v, 'fear', 2, 'heart', { via: 'intimidation' });
       if (out) say(cb, 'They know the name ' + u.name + ' (The Name They Whisper)' + out + '.');
     },
     turn_end: (ctx, h) => {
       const cb = h.cb!, u = h.u, t: Unit = ctx.u;
       if (!up(u) || !t || t.side === u.side || !up(t) || t.hp * 2 > t.maxHp || !canSurrender(t) || !unitSees(cb, t, u.pos)) return;
-      say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, ctx.rng || rngOf(h) || { state: 1 }, u, t, 0, 'intimidation') + '.');
+      say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, rngOf(h, ctx), u, t, 0, 'intimidation') + '.');
     },
   },
-  brief: () => 'Narrator: NPCs who know the name react; mark strangers unaware when a fight starts',
+  brief: () => 'everyone knows the name; only for someone who has truly never heard of them, set traitState strangers (a list of names) before the fight starts',
 });
 
 // ---------- Open Hand (Empathy Mastered) ----------
@@ -143,8 +150,8 @@ function mercyOk(t: Unit) { const was = t.surrenderTried; t.surrenderTried = fal
 const offered = (h: Holder): string[] => (stateOf(h).offered ||= []);
 function offerMercy(h: Holder, t: Unit, rng: Rng): string {
   offered(h).push(t.id);
-  const r = d20(rng), m = unitSave(t, 'heart'), tn = 12 + unitStrength(h.u!, 'empathy'), held = r === 20 || (r !== 1 && r + m >= tn);
-  const roll = ' (Heart save d20 ' + r + ' ' + sgn(m) + ' vs ' + tn + ')';
+  const sv = saveAgainst(h.cb!, rng, h.u!, t, 'heart', 'surrender', { via: 'empathy' }), held = sv.ok;
+  const roll = ' (' + sv.text + ')';
   return held ? ' · ' + t.name + ' won\'t take it' + roll : surrender(h.cb!, t, h.u!, 'mercy accepted' + roll);
 }
 const mercyMode = (h: Holder) => ro(h.c).open_hand || 'always';
@@ -169,7 +176,7 @@ register({
         if (offered(h).includes(t.id)) return { ok: false, why: 'Mercy was offered to ' + t.name + ' already.' };
         if (!mercyOk(t)) return { ok: false, why: t.name + ' won\'t surrender.' };
         if (!unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' };
-        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitStrength(h.u, 'empathy')) + ' or it surrenders.'] };
+        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (saveTn(h.u, 'empathy')) + ' or it surrenders.'] };
       },
       run: (h, a, rng) => { const t = h.cb!.units.find((x) => x.id === a.targetId)!; say(h.cb, h.u!.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.'); },
     },
@@ -193,7 +200,7 @@ register({
 // cause (talked down, mercy, the Name) counts. Protect: healing or shielding a civilian or neutral. Out of combat the
 // Narrator rules spared or protected moments: an accepted claim is a shield waiting when the next fight starts.
 // PROVISIONAL (spec 14).
-const CLEAN = { I: 15, II: 25 };
+const CLEAN = { I: amountMult('perk:clean_hands', 'shield', 'pct_of_max_hp_I'), II: amountMult('perk:clean_hands', 'shield', 'pct_of_max_hp_II') };
 const cleanPct = (h: Holder) => (tierII(h) ? CLEAN.II : CLEAN.I);
 function cleanShield(h: Holder, why: string) {
   if (overworld(h.cb) || (!h.u && h.c)) { // the area map and the story: the shield waits for the next fight
@@ -238,7 +245,7 @@ const judged = (h: Holder): { id: string; spent: boolean } | null => (h.u?.ps?.[
 register({
   id: 'judgement_day', claims: 'all',
   actions: [{
-    id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 3, uses: { per: 'per_combat', n: 1 }, needsSight: true,
+    id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 'data', uses: { per: 'per_combat', n: 1 }, needsSight: true,
     text: 'Once a fight: judge an enemy you can see. Its next attack on your side fails, and your attacks on it deal +50% damage for the rest of the fight.',
     preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && h.u && !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: ['Its next attack on your side fails. Your attacks on it deal +50% damage.'] }; },
     run: (h, a) => {
@@ -262,8 +269,20 @@ register({
 // Once per session, 0 AP: name an upper-realm being, curse or creature you've studied. For the rest of the scene it
 // takes +50% from you and your allies (the target bucket, capped ×2), and it can't lie to you. The engine allows only
 // targets the Narrator marked upper-realm, cursed, celestial or beast (kind, or the upper_realm tag; plan 6, True Name;
-// PROVISIONAL); "studied" and the lie are the Narrator's. In the story the Narrator confirms (refused: the use comes back).
+// PROVISIONAL). "Studied" means Analyzed (rules 1.14, spec item 1107): the unit carries an Analyze's mark (anyone's on
+// your side: an enemy is Analyzed once), or the person on the area map does; the engine refuses the name until then.
+// An Analyze made on the area map before the fight counts in the fight too (the holder remembers it: studiedBefore).
+// The lie is the Narrator's. A being that is only in the story (no token) is still confirmed by the Narrator (refused:
+// the use comes back).
 const NAMEABLE = new Set(['upper_realm', 'cursed', 'celestial', 'beast']);
+/** What the squad has Analyzed on the area map, as the holder remembers it (c.state.studied: each person's id and
+ * name, the last 24 people). A fight the Narrator starts seats the people on the map without their Analyze mark (and
+ * on another map under a new id), so the holder's own memory is what makes the card true there: "it must have been
+ * Analyzed" holds for an Analyze made before the fight too. */
+const studiedBefore = (h: Holder, t: Unit) => { const l = ro(h.c).studied; return Array.isArray(l) && [t.npcId, t.id, t.name.toLowerCase()].some((id) => id != null && l.includes(id)); };
+const studied = (h: Holder, t: Unit) => !!t.analyzedBy || studiedBefore(h, t);
+/** The person on the area map a typed name or id means (read only: no map, no list, nobody), or null. */
+const onMap = (h: Holder, who: string): any | null => (who ? ((h.g?.story?.npcs || []) as any[]).find((x) => x.id === who || nameMatch(x.name, who)) || null : null);
 const nameable = (t: Unit) => NAMEABLE.has(t.kind || '') || (t.tags || []).includes('upper_realm');
 const trueNamed = (h: Holder, t: Unit) => { const tn = ro(h.c).true_name; return !!tn && (tn.scene == null || tn.scene === sceneN(h)) && (tn.unit === t.id || matches(t, tn.id)); };
 register({
@@ -271,38 +290,54 @@ register({
   actions: [
     {
       id: 'true_name', label: 'True Name', scope: ['combat'], target: 'enemy', ap: 0, uses: { per: 'per_session', n: 1 },
-      text: 'Once a session: speak the true name of an upper-realm being, a cursed being or a creature. Your side deals +50% damage to it for the scene, and it can\'t lie to you.',
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && !nameable(t)) return { ok: false, why: t.name + ' has no true name to speak. It must be upper-realm, cursed or a creature.' }; return { lines: ['+50% damage to it from your side for the rest of the scene.'] }; },
+      text: 'Once a session: speak the true name of an upper-realm being, a cursed being or a creature. It must have been Analyzed first. Your side deals +50% damage to it for the scene, and it can\'t lie to you.',
+      preview: (h, a) => {
+        const t = h.cb?.units.find((x) => x.id === a.targetId);
+        if (t && !nameable(t)) return { ok: false, why: t.name + ' has no true name to speak. It must be upper-realm, cursed or a creature.' };
+        if (t && !studied(h, t)) return { ok: false, why: 'You have not studied ' + t.name + ' yet. Analyze it first.' };
+        return { lines: ['+50% damage to it from your side for the rest of the scene.'] };
+      },
       run: (h, a) => {
         const t = h.cb!.units.find((x) => x.id === a.targetId)!;
         cst(h.c).true_name = { id: t.npcId || t.name, unit: t.id, scene: sceneN(h) };
         say(h.cb, h.u!.name + ' speaks the true name of ' + t.name + ' (True Name): it takes +50% from the squad this scene.');
-        note(h, t.name + ' was named; it can\'t lie to ' + h.u!.name + ' this scene. Confirm it was studied.');
+        note(h, t.name + ' was named; it can\'t lie to ' + h.u!.name + ' this scene.');
       },
     },
     {
       id: 'true_name_story', label: 'True Name', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
-      text: 'Once a session: speak the true name of a being, a curse or a creature here (type who). It can\'t lie to you this scene, and it takes +50% damage from your side if it comes to a fight.',
+      text: 'Once a session: speak the true name of a being, a curse or a creature here (type who). If it stands on the map, it must have been Analyzed first. It can\'t lie to you this scene, and it takes +50% damage from your side if it comes to a fight.',
       available: (h) => (uses(h).left('per_session', 1, h.key + '#true_name') > 0 ? true : 'Used this session.'),
+      preview: (h, a) => { const n = onMap(h, a.npc || String(a.text || '').trim()); return n && !n.analyzed ? { ok: false, why: 'You have not studied ' + n.name + ' yet. Analyze it first.' } : {}; },
       run: (h, a) => {
-        const who = a.npc || String(a.text || '').trim(); uses(h).take('per_session', 1, h.key + '#true_name');
+        const who = a.npc || String(a.text || '').trim(), n = onMap(h, who);
+        if (n && !n.analyzed) return 'You have not studied ' + n.name + ' yet. Analyze it first.';
+        uses(h).take('per_session', 1, h.key + '#true_name');
         cst(h.c).true_name = { id: who.slice(0, 60), scene: sceneN(h) };
         const eid = postStory(h, 'speaks the true name of ' + who.slice(0, 80) + '.');
-        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'True Name on ' + who.slice(0, 80) + ': if it is an upper-realm being, curse or creature ' + h.c.name + ' has studied, it can\'t lie to them this scene (and takes +50% in a fight). Refuse otherwise (the use comes back).', eid || undefined);
+        // On the map the engine has checked "studied" (Analyzed); what kind of being it is, and a being with no token, stay the Narrator's.
+        if (h.g && h.c) pendRuling(h.g, h.c, h.key, 'True Name on ' + who.slice(0, 80) + ': if it is an upper-realm being, a curse or a creature' + (n ? '' : ' that ' + h.c.name + ' has studied') + ', it can\'t lie to them this scene (and takes +50% in a fight). Refuse otherwise (the use comes back).', eid || undefined);
+        return null;
       },
     },
   ],
   on: {
+    // An Analyze by anyone on the holder's side, on the area map: remembered by the person's id (see studiedBefore).
+    analyze: (ctx, h) => {
+      const t: Unit = ctx.t, by: Unit = ctx.u; if (!h.c || !h.u || !t || !by || by.side !== h.u.side || !overworld(ctx.cb)) return;
+      const l: string[] = Array.isArray(ro(h.c).studied) ? ro(h.c).studied : [], add = [t.npcId || t.id, t.name.toLowerCase()].filter((x) => x && !l.includes(x));
+      if (add.length) cst(h.c).studied = [...l, ...add].slice(-48);
+    },
     damage_out: (ctx, h) => { if (h.u && ctx.att.side === h.u.side && trueNamed(h, ctx.tgt) && !ctx.vs.some((x: any) => x.label === 'True Name')) ctx.vs.push({ v: 0.5, label: 'True Name' }); },
   },
-  brief: (h) => { const tn = ro(h.c).true_name; return 'Narrator: confirm studied; the named one can\'t lie' + (tn && tn.scene === sceneN(h) ? ' (named: ' + String(tn.id).slice(0, 30) + ')' : ''); },
+  brief: (h) => { const tn = ro(h.c).true_name; return 'the named one can\'t lie to them this scene' + (tn && tn.scene === sceneN(h) ? ' (named: ' + String(tn.id).slice(0, 30) + ')' : ''); },
 });
 
 // ---------- Case Closed (Acuity Mastered; id analysis) ----------
 // Analyze reveals everything at once (HP, Defense, armour, its kind and tags, its saves, conditions; it is read, as
 // Read Them has it: −15% damage to your side) and what it wants (the Narrator's, in the report). Rules 1.13 (a beta is
 // defence): you and every ally have +2 Defense against an enemy you analyzed (its attacks on your side are at −2); the
-// +2 to hit and +20% damage are gone. An enemy an ally analyzed can be re-read with Close the case (the Analyze cost).
+// +2 to hit is gone; the squad's +20% damage on the target is back (Leon, 10 Nov 2026). An enemy an ally analyzed can be re-read with Close the case (the Analyze cost).
 // Story: a successful Acuity check on an NPC owes the motive (a pending ruling).
 const closed = (h: Holder): string[] => ((h.u?.ps?.[h.key] as any)?.closed || []);
 function closeCase(h: Holder, t: Unit) {
@@ -310,15 +345,15 @@ function closeCase(h: Holder, t: Unit) {
   t.weakPoint = true;
   const conds = debuffsOf(t);
   say(h.cb, 'Case Closed on ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + ', ' + (t.kind || 'human') + ((t.tags || []).length ? ' (' + t.tags!.join(', ') + ')' : '') +
-    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · read: it deals 15% less to the squad, and the squad has +2 Defense against it · motive: for the Narrator.');
+    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · read: it deals 15% less to the squad, the squad has +' + Math.abs(CASE_CLOSED[1]?.value ?? -2) + ' Defense against it and deals ' + Math.round(((CASE_CLOSED[2]?.value ?? 1.2) - 1) * 100) + '% more to it · motive: for the Narrator.');
   note(h, h.u!.name + ' read ' + t.name + ' completely: say what it wants, in the report.');
 }
 register({
   id: 'case_closed', claims: 'all',
   on: {
     analyze: (ctx, h) => { if (ctx.u === h.u && ctx.t) closeCase(h, ctx.t); },
-    attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: -2, label: 'Case Closed' }); },
-    damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: 1.2, label: 'Case Closed' }); },
+    attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: CASE_CLOSED[1]?.value ?? -2, label: 'Case Closed' }); },
+    damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: CASE_CLOSED[2]?.value ?? 1.2, label: 'Case Closed' }); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !ctx.roll?.ok || !ctx.ck.skills?.includes('analysis') || !h.g || !h.c) return;
       pendRuling(h.g, h.c, h.key, 'Case Closed: the Acuity check succeeded; tell ' + h.c.name + ' (a private perkLine) what ' + (ctx.ck.target || 'the subject') + ' wants most.');
@@ -470,8 +505,8 @@ const heartCondsOn = (u: Unit) => debuffsOf(u, 'heart');
 const storyHeart = (h: Holder) => (h.c && h.g ? storyConds(h.g, h.c).filter((id) => condFamily(id) === 'heart' && !isBoon(id)) : []);
 function flashback(h: Holder, why: string, rng: Rng | null) {
   const u = h.u, cb = h.cb; if (!up(u) || !cb || !rng || !oncePerFight(h, 'flashback')) return;
-  const r = d20(rng), m = mod(h.c?.skills.composure || 0) + (u.sk?.composure || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
-  let line = u.name + ' is back at Daggerfall (' + why + '): Composure d20 ' + r + ' ' + sgn(m) + ' vs 12';
+  const rv = rollVs(cb, rng, { by: u, mod: mod(h.c?.skills.composure || 0) + (u.sk?.composure || 0), tn: TN.standard, why: 'flashback' }), ok = rv.ok;
+  let line = u.name + ' is back at Daggerfall (' + why + '): Composure ' + rv.text;
   if (ok) line += ' · holds it together';
   else line += ' · lost in it' + applyCond(cb, rng, null, u, 'stunned', 1, 'body', { skipSave: true }) + ', loses the next turn';
   say(cb, line + '.');
@@ -483,7 +518,7 @@ function foresee(h: Holder, rng: Rng): string[] {
   try {
     for (const f of cb2.units.filter((v) => v.side === 'foe' && alive(v) && sideSees(cb2, 'pc', v))) {
       const from = f.pos, at = cb2.log.length; cb2.turn = cb2.order.indexOf(f.id); if (cb2.turn < 0) continue;
-      f.ap = 6; cb2.over = null as any;
+      setAp(f, AP_BASE); cb2.over = null as any; // a dry run of its turn, on a copy
       try { enemyTurn(cb2, r); } catch { continue; }
       const hits = cb2.log.slice(at).filter((l) => l.startsWith(f.name + ' fires at') || l.startsWith(f.name + ' strikes') || l.startsWith(f.name + ' takes an aimed shot at'))
         .map((l) => l.replace(f.name + ' ', '').split(':')[0].replace(/^(fires at|strikes|takes an aimed shot at) /, ''));
@@ -582,7 +617,7 @@ register({
     {
       id: 'verse', label: 'Verse', scope: ['combat'], target: 'enemy', ap: 1, range: HEARING, uses: { per: 'per_scene', n: 1 },
       text: 'Once a scene: answer an enemy in metaphor. It makes a Heart save or is Confused. Allies in earshot get +1 Composure for the scene.',
-      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {}; return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (12 + unitStrength(h.u, 'implication')) + ' or Confused.'] }; },
+      preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {}; return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (saveTn(h.u, 'implication')) + ' or Confused.'] }; },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
         const allies = cb.units.filter((v) => v.side === u.side && v !== u && !v.dead && v.charId && dist(v.pos, u.pos) <= HEARING).map((v) => v.charId!);
@@ -597,7 +632,7 @@ register({
       run: (h, a, rng) => {
         uses(h).take('per_scene', 1, h.key + '#verse');
         const g = h.g, c = h.c!, who = a.npc || '', n = who ? npcsOf(g).find((x) => nameMatch(x.name, who) || x.id === who) : null;
-        const r = d20(rng), m = TIER_SAVE[n?.tier || 'minion'] ?? 0, tn = 12 + Math.max(0, mod(c.skills.implication || 0)), held = r === 20 || (r !== 1 && r + m >= tn);
+        const rv = rollVs(null, rng, { mod: tierSave(n?.tier), tn: SAVE_TN + Math.max(0, mod(c.skills.implication || 0)), lead: 'Heart save' }), r = rv.die, m = rv.mod, tn = rv.tn, held = rv.ok;
         const allies = Object.values<Character>(g.characters).filter((x) => x !== c && !x.dead).map((x) => x.id);
         cst(c).verse = { scene: sceneN(h), allies };
         if (!held && who) { const k = n ? n.id : who.toLowerCase().slice(0, 40); const l = ((g.story.scene.npcConds ||= {})[k] ||= []); if (!l.includes('confused')) l.push('confused'); }
@@ -667,7 +702,7 @@ register({
       if (ctx.by !== h.u || !h.c) return;
       h.c.echo = 0;
       if (h.g) setStoryCond(h.g, h.c, 'shaken', 'session', false, 'pacifist');
-      const r = applyCond(h.cb!, rngOf(h) || { state: 1 }, null, h.u!, 'shaken', 99, 'heart', { skipSave: true });
+      const r = applyCond(h.cb!, rngOf(h), null, h.u!, 'shaken', 99, 'heart', { skipSave: true });
       say(h.cb, h.u!.name + ' broke the Vow (Pacifist): all Echo gone' + r + ' for the rest of the session.');
       note(h, h.u!.name + ' killed ' + ctx.victim.name + ' and broke their vow.');
     },
@@ -712,7 +747,7 @@ register({
 // Trade prices with other races (+20% buy, −20% sell) are the Narrator's: there is no shop.
 const raceOf = (u: Unit | null | undefined) => { if (!u) return null; const c = charOfUnit(u); return c ? c.race || 'human' : u.kind || 'human'; };
 register({
-  id: 'the_old_blood', claims: [7], narrator: [8, 9],
+  id: 'the_old_blood', claims: [7, 8], narrator: [9],
   on: {
     heal_in: (ctx, h) => {
       if (ctx.t !== h.u || !ctx.by || ctx.by === h.u || ctx.kind === 'blessing' || raceOf(ctx.by) === (h.c?.race || 'human')) return; // a Blessing: halved at its power
@@ -723,7 +758,7 @@ register({
       ctx.power = (ctx.power ?? 1) * 0.5; say(h.cb, h.u!.name + ' takes ' + ctx.u.name + '\'s Blessing badly (The Old Blood): half power.');
     },
   },
-  brief: () => 'Narrator: tag checks vs_same_race_and_homeworld / vs_other_race; trade +20% buy, −20% sell; story heals and Blessings from another race at half',
+  brief: () => 'Narrator: tag checks vs_same_race_and_homeworld / vs_other_race; trade +20% buy, −20% sell; in the story, heals and Blessings from another race at half (a fight halves them itself)',
 });
 
 // ---------- Moon Hunter ----------
@@ -794,13 +829,14 @@ register({
     combat_start: (ctx, h) => { if (h.u && luckyLeft(h)) (h.u.armed ||= {})[h.key] = { choice: true, round: 0 }; },
     attack_roll: (ctx, h) => {
       if (ctx.tgt !== h.u || ctx.att.side === h.u!.side || !armedOf(h) || !luckyLeft(h)) return;
-      const hit = ctx.hit ?? (ctx.die !== 1 && (ctx.die >= ctx.critMin || ctx.die + ctx.toHit >= ctx.need)); if (!hit) return;
+      const hit = attackHits(ctx); if (!hit) return;
       uses(h).take('per_session', 1, LUCKY(h)); disarm(h);
-      const was = ctx.die; ctx.die = d20(ctx.rng || rngOf(h) || { state: 1 }); delete ctx.hit;
+      const was = ctx.die; rerollAttack(ctx, rngOf(h, ctx)); // the new die stands; resolveAttack settles the hit from it
       say(h.cb, 'Lucky Foot: ' + ctx.att.name + '\'s ' + was + ' against ' + h.u!.name + ' is rerolled: ' + ctx.die + '.');
     },
-    on_downed: (ctx, h) => { const v: Unit = ctx.victim; if (h.u && v !== h.u && v.side === h.u.side && !v.companion && v.downed && up(h.u)) stateOf(h).venge = true; },
-    turn_start_pre: (ctx, h) => { if (ctx.u === h.u && stateOf(h).venge) { stateOf(h).venge = false; pushAp(ctx, 2, 'Vengeful'); } },
+    // Vengeful: once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts); the AP lands on your next turn.
+    on_downed: (ctx, h) => { const v: Unit = ctx.victim; if (h.u && h.cb && v !== h.u && v.side === h.u.side && !v.companion && v.downed && up(h.u) && !stateOf(h).venge && cdFire(h, 'gain', landsNext(h.cb, h.u))) stateOf(h).venge = true; },
+    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; cdTick(h); if (stateOf(h).venge) { stateOf(h).venge = false; pushAp(ctx, 2, 'Vengeful'); } },
     damage_in: (ctx, h) => {
       const by: Unit | null = ctx.src?.by; if (ctx.phase !== 'reduce' || ctx.t !== h.u || !by) return;
       if (by.kind === 'ork' || (by.tags || []).includes('hunter')) ctx.dmg = ctx.dmg * 1.25;
@@ -835,7 +871,7 @@ function lost(h: Holder, ctx: any, kind: 'drone' | 'beast') {
   setStoryCond(h.g, c, 'shaken', 'arc', false, kind === 'drone' ? 'drone_handler' : 'beast_handler');
   cst(c)[kind + '_lost_rest'] = restN(h.g);
   const comp = compOf(c, kind); if (comp) comp.hp = 0;
-  const r = up(h.u) ? applyCond(h.cb!, rngOf(h, ctx) || { state: 1 }, null, h.u!, 'shaken', 99, 'heart', { skipSave: true }) : '';
+  const r = up(h.u) ? applyCond(h.cb!, rngOf(h, ctx), null, h.u!, 'shaken', 99, 'heart', { skipSave: true }) : '';
   say(h.cb, (kind === 'drone' ? 'The drone is gone. ' : 'The beast is dead. ') + (h.u?.name || c.name) + ' feels it' + r + '.');
   note(h, (kind === 'drone' ? c.name + '\'s drone was destroyed: Shaken until rebuilt.' : c.name + '\'s beast died: Shaken for the rest of the arc.'));
 }
@@ -859,10 +895,10 @@ register({
         if (!myComp(h, t, 'drone')) return { ok: false, why: 'Pick your drone.' };
         if (!(h.u!.parts || 0)) return { ok: false, why: 'No spare-parts charges.' };
         if (t.hp >= t.maxHp) return { ok: false, why: 'Not a scratch on it.' };
-        return { lines: ['+' + 10 * Math.max(1, masteryLevel(h.c?.skills.proficiency || 0)) + ' HP.'] };
+        return { lines: ['+' + itemAmount('trait:drone_handler', 'repair', [], { mastery: Math.max(1, masteryLevel(h.c?.skills.proficiency || 0)) }) + ' HP.'] };
       },
       run: (h, a) => {
-        const t = h.cb!.units.find((x) => x.id === a.targetId)!, n = 10 * Math.max(1, masteryLevel(h.c?.skills.proficiency || 0)), was = t.hp;
+        const t = h.cb!.units.find((x) => x.id === a.targetId)!, n = itemAmount('trait:drone_handler', 'repair', [], { mastery: Math.max(1, masteryLevel(h.c?.skills.proficiency || 0)) }), was = t.hp;
         h.u!.parts = (h.u!.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + n);
         emitFx(h.cb!, 'repair', { unit: t.id, at: t.pos, dur: 1400 });
         say(h.cb, h.u!.name + ' patches the drone: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').');
@@ -905,20 +941,20 @@ register({
     turn_start_pre: (ctx, h) => { if (myComp(h, ctx.u, 'beast')) pushAp(ctx, -2, 'a beast: 4 AP'); },
     turn_start: (ctx, h) => {
       const b: Unit = ctx.u, cb = h.cb!; if (!myComp(h, b, 'beast') || !up(b) || !h.c) return;
-      const rng = ctx.rng || rngOf(h) || { state: 1 }, r = d20(rng), m = mod(h.c.skills.empathy || 0) + (h.u?.sk?.empathy || 0), ok = !up(h.u) ? false : r === 20 || (r !== 1 && r + m >= 8);
-      let line = h.c.name + ' calls the beast: Empathy d20 ' + r + ' ' + sgn(m) + ' vs 8';
+      const rng = rngOf(h, ctx), rv = rollVs(cb, rng, { by: h.u || null, mod: mod(h.c.skills.empathy || 0) + (h.u?.sk?.empathy || 0), tn: TN.easy, why: 'beast' }), ok = !up(h.u) ? false : rv.ok;
+      let line = h.c.name + ' calls the beast: Empathy ' + rv.text;
       if (ok) { say(cb, line + ' · it obeys.'); return; }
       const foe = cb.units.find((v) => v.side !== b.side && up(v) && dist(v.pos, b.pos) <= 1 && previewAttack(cb, b, v, 'melee').ok);
       say(cb, line + ' · it acts on instinct' + (foe ? ' and goes for ' + foe.name : ' and holds') + '.');
       if (foe) resolveAttack(cb, rng, b, foe, 'melee', null);
-      b.ap = 0;
+      setAp(b, 0);
     },
     on_hit: (ctx, h) => {
       if (!myComp(h, ctx.att, 'beast') || !ctx.melee || ctx.tgt.dead || ctx.tgt.surrendered) return;
       // Every bite carries the grapple (PROVISIONAL, spec 14): the beast's turns have no attack-mod chip to pick (its
       // instinct bite runs inside the owner's end-turn; the client has no companion orders), so a toggle never reached it.
       if (ctx.tgt.side === ctx.att.side || condOn(ctx.tgt, 'grappled')) return;
-      say(h.cb, 'The beast clamps on' + applyCond(h.cb!, ctx.rng || rngOf(h) || { state: 1 }, ctx.att, ctx.tgt, 'grappled', undefined, 'body', { via: 'empathy', str: unitStrength(h.u, 'empathy') }) + '.');
+      say(h.cb, 'The beast clamps on' + applyCond(h.cb!, rngOf(h, ctx), ctx.att, ctx.tgt, 'grappled', undefined, 'body', { via: 'empathy', str: unitStrength(h.u, 'empathy') }) + '.');
     },
     on_downed: (ctx, h) => { if (myComp(h, ctx.victim, 'beast') && ctx.victim.dead) lost(h, ctx, 'beast'); },
     combat_start: (ctx, h) => carryStoryCond(h, ctx, 'shaken'),

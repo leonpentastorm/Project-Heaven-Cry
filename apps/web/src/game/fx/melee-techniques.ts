@@ -18,7 +18,7 @@ import { phys } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
 import { gearIconUri, hasGearIcon } from '../gearIcons';
-import { type Pt, after, anim, burst, centre, floatText, layerEl, put, ring, shake, shakeScreen, svg } from './dom';
+import { type Pt, after, anim, burst, centre, floatText, layerEl, put, ring, shake, shakeScreen, slow, svg, trace } from './dom';
 
 // Colour = meaning (docs/design/colour-system.md): white the cut, Strength ink force (pushes, pulls, holds, slams),
 // Agility ink footwork, Body amber the guard, HP red damage or a warning, muted failed, held or armour.
@@ -548,6 +548,7 @@ export function meleeTechHandlers(K: MeleeKit): Record<string, (e: FxEvent) => v
     const size = b.s * 0.95;
     const run = () => {
       const fly = !!a && !rm(), dist = a ? Math.hypot(b.x - a.x, b.y - a.y) : 0, ft = fly ? Math.max(140, Math.min(380, dist / 0.9)) : 0;
+      trace('throw', { weapon: weapon || '', ms: Math.round(slow(ft)) });
       const img = weaponImg(weapon, size), box = put(img, b, size, size, ft + 520);
       box.setAttribute('data-melee-fx', 'throw'); box.style.zIndex = '3';
       const frames: Keyframe[] = [];

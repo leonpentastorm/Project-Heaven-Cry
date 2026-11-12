@@ -1,0 +1,3468 @@
+{
+  "status": "review-candidate",
+  "production_approved": false,
+  "icons": [
+    {
+      "path": "art/icons/prayers/whisper-rebuke.png",
+      "sha256": "5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0",
+      "id": "whisper-rebuke",
+      "family": "prayers",
+      "action": "Rebuke. Wick rebuking someone out of frame: one arm raised with the hand held flat and stiff toward them, like a stern \"enough\", and a single hard straight ray of light leaving the palm. His other hand is at his side. It must read as a scolding word that lands, not as casting a spell: no swirls, no sparks, no magic circle, one ray only. Match the attached Whisper icons: one small light source.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/whisper-rebuke.png",
+        "sha256": "c1a53675348140f0f12a9373605dff85200a83922fda80a83131e8d68c776ae7"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/whisper-rebuke.png",
+        "sha256": "5f100c457233e123f5729d5daf05629c76cd8ac416b3c23aef6f65438c254ce0"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/whisper-rebuke.txt",
+        "sha256": "fc0ebb8cf9e8fb31426e205cba04b988a0f1f13fa87e46825519b695cb2cfe79"
+      },
+      "exports": {
+        "256": "art/icons/prayers/exports/256/whisper-rebuke.png",
+        "128": "art/icons/prayers/exports/128/whisper-rebuke.png",
+        "64": "art/icons/prayers/exports/64/whisper-rebuke.png",
+        "56": "art/icons/prayers/exports/56/whisper-rebuke.png",
+        "48": "art/icons/prayers/exports/48/whisper-rebuke.png",
+        "44": "art/icons/prayers/exports/44/whisper-rebuke.png",
+        "40": "art/icons/prayers/exports/40/whisper-rebuke.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/whisper-safe-passage.png",
+          "sha256": "b658beca2579608a875b63c1f2f14fd211a74c79151fda1778b4103247bf377b"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/perks/both-hands.png",
+      "sha256": "01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c",
+      "id": "both-hands",
+      "family": "perks",
+      "action": "Both Hands. Wick fighting with a sword in one hand and a pistol in the other at the same moment: mid-strike with the blade swept across his body, the pistol in the other hand already levelled straight ahead. A grounded lunge, not a spin. The sword and pistol are simple invented shapes, not real-world models.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/both-hands.png",
+        "sha256": "83dd14f4f4727d1c0a9aafbfa3dfc53aa7555d154988ea2e2d191c1984d1b9f6"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/both-hands.png",
+        "sha256": "01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/both-hands.txt",
+        "sha256": "10a70cc1081ca4e054d8f039b0196009b6c892ab9ad05745729fed6f6fb062fc"
+      },
+      "exports": {
+        "256": "art/icons/perks/exports/256/both-hands.png",
+        "128": "art/icons/perks/exports/128/both-hands.png",
+        "64": "art/icons/perks/exports/64/both-hands.png",
+        "56": "art/icons/perks/exports/56/both-hands.png",
+        "48": "art/icons/perks/exports/48/both-hands.png",
+        "44": "art/icons/perks/exports/44/both-hands.png",
+        "40": "art/icons/perks/exports/40/both-hands.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/calls/order.png",
+      "sha256": "92bf01b08148a8f65dba67a7a3052d340fe25277e6e2a02b02cd5a335503ab75",
+      "id": "order",
+      "family": "calls",
+      "action": "Order. Wick giving an order to a squadmate: standing square, one arm thrust out straight with the whole hand pointing \"you, go there\", mouth open in a shout shown by two short sound lines at his face. Commanding, not angry.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/order.png",
+        "sha256": "4f1c3b150b018be0743e1abf809afe8fb6bb14570ce54edafdab3e359c78d190"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/order.png",
+        "sha256": "92bf01b08148a8f65dba67a7a3052d340fe25277e6e2a02b02cd5a335503ab75"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/order.txt",
+        "sha256": "83729d0be2de2067a81232ca4d89fe98de7b85bc614643861af6b4a3dd38a6e1"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/order.png",
+        "128": "art/icons/calls/exports/128/order.png",
+        "64": "art/icons/calls/exports/64/order.png",
+        "56": "art/icons/calls/exports/56/order.png",
+        "48": "art/icons/calls/exports/48/order.png",
+        "44": "art/icons/calls/exports/44/order.png",
+        "40": "art/icons/calls/exports/40/order.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/order-attempt-1.png",
+          "sha256": "ed409fae50891bc219e3dfabb026317bd9058ce4bd58e1c3bee8036b6fb92edc"
+        },
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/calls/rally.png",
+      "sha256": "ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566",
+      "id": "rally",
+      "family": "calls",
+      "action": "Rally. Wick rallying the squad: one fist raised high above his head, body leaning forward, three short sound lines fanning up from him. A cheer that lifts people.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/rally.png",
+        "sha256": "bd12799bccfb275bb96b6c89d306520d056373dc39997bfa3cc350268c100a77"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/rally.png",
+        "sha256": "ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/rally.txt",
+        "sha256": "6ccf28a5c8fcefa4151c661ef004785790bbad7f8c2bd91c9ed9dc866dca98a1"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/rally.png",
+        "128": "art/icons/calls/exports/128/rally.png",
+        "64": "art/icons/calls/exports/64/rally.png",
+        "56": "art/icons/calls/exports/56/rally.png",
+        "48": "art/icons/calls/exports/48/rally.png",
+        "44": "art/icons/calls/exports/44/rally.png",
+        "40": "art/icons/calls/exports/40/rally.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/calls/brief.png",
+      "sha256": "27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb",
+      "id": "brief",
+      "family": "calls",
+      "action": "Brief. Wick giving a quick briefing: crouched on one knee, one hand drawing a short plan on the ground with a finger (two small strokes and a dot on the ground line), the other hand held up with two fingers raised. Calm and quick.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/brief.png",
+        "sha256": "295aa88febf6077236cee67f309c11665dfd2945cd0efcbefd14e53002eea295"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/brief.png",
+        "sha256": "27201246781e8f15ecdbe2c9ac7643bc7bdfecd676485344205b9bcb9ad39efb"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/brief.txt",
+        "sha256": "ebcd21f5284814bd05fe5d38d026710bf14fb3b4ff9fac31e1d7d4d8d4890876"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/brief.png",
+        "128": "art/icons/calls/exports/128/brief.png",
+        "64": "art/icons/calls/exports/64/brief.png",
+        "56": "art/icons/calls/exports/56/brief.png",
+        "48": "art/icons/calls/exports/48/brief.png",
+        "44": "art/icons/calls/exports/44/brief.png",
+        "40": "art/icons/calls/exports/40/brief.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/brief-attempt-1.png",
+          "sha256": "df9a3e74a289093f5e584fa619a5cd6c3e0380a471c05df50de2231c6a9ac0a9"
+        },
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/calls/name-it.png",
+      "sha256": "7a827cf7f9fb5f6e5dbe3dbc6fef57ed8b8a401ac0eabda2721f07158a33050f",
+      "id": "name-it",
+      "family": "calls",
+      "action": "Name It. Wick naming a fear out loud so it loses its hold: standing firm, one open hand held out palm-up as if presenting something, and in front of that hand a small jagged shape with a simple ring drawn around it, as if circled and labelled. Steady, reassuring.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/name-it.png",
+        "sha256": "b964514f8693a2c859960ea43328c5e34e6779a027599cabf51a7c3b37d81dfc"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/name-it.png",
+        "sha256": "7a827cf7f9fb5f6e5dbe3dbc6fef57ed8b8a401ac0eabda2721f07158a33050f"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/name-it.txt",
+        "sha256": "f7ec56482efcee72106b1a7a0cbb34854457647606e5ea6b23826d96e5c3517d"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/name-it.png",
+        "128": "art/icons/calls/exports/128/name-it.png",
+        "64": "art/icons/calls/exports/64/name-it.png",
+        "56": "art/icons/calls/exports/56/name-it.png",
+        "48": "art/icons/calls/exports/48/name-it.png",
+        "44": "art/icons/calls/exports/44/name-it.png",
+        "40": "art/icons/calls/exports/40/name-it.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/calls/cue.png",
+      "sha256": "7cd857a156cb03b78836c3cccaeb0b447c1f76084eb4e77013f977399c2f4845",
+      "id": "cue",
+      "family": "calls",
+      "action": "Cue. Wick giving a cue: one arm raised with the hand about to drop in a sharp \"now!\" chop, a single short curved motion line under the hand, his head turned over his shoulder toward someone behind him.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/cue.png",
+        "sha256": "4717c2ccdb4c8386d3c58fc7d6ce2aec0343a954614bffd7334839dbc82f11c5"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/cue.png",
+        "sha256": "7cd857a156cb03b78836c3cccaeb0b447c1f76084eb4e77013f977399c2f4845"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/cue.txt",
+        "sha256": "f336ebe8620b187ac84ef783b1f43ff75036f15863186ef1f3d5d8c0796b0c2f"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/cue.png",
+        "128": "art/icons/calls/exports/128/cue.png",
+        "64": "art/icons/calls/exports/64/cue.png",
+        "56": "art/icons/calls/exports/56/cue.png",
+        "48": "art/icons/calls/exports/48/cue.png",
+        "44": "art/icons/calls/exports/44/cue.png",
+        "40": "art/icons/calls/exports/40/cue.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/calls/spot.png",
+      "sha256": "98f33caa406789930bc9f1940e329d979ede1e3318dd082fea4ae9aff56cea53",
+      "id": "spot",
+      "family": "calls",
+      "action": "Spot. Wick pointing out a target: one arm fully extended with a pointing finger, his other hand shading his eyes, and far along the pointing line a small target ring.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/spot.png",
+        "sha256": "719f53bbd08d3119a87854a7e4f275e15ff46b0ab333992c31ed393219985d3f"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/spot.png",
+        "sha256": "98f33caa406789930bc9f1940e329d979ede1e3318dd082fea4ae9aff56cea53"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/spot.txt",
+        "sha256": "350cda5b7f2636d1a69b4de619b1a299e7a307b76825323e6aa71fc9b05c9a1b"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/spot.png",
+        "128": "art/icons/calls/exports/128/spot.png",
+        "64": "art/icons/calls/exports/64/spot.png",
+        "56": "art/icons/calls/exports/56/spot.png",
+        "48": "art/icons/calls/exports/48/spot.png",
+        "44": "art/icons/calls/exports/44/spot.png",
+        "40": "art/icons/calls/exports/40/spot.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/calls/warn.png",
+      "sha256": "f4bcfd657520e61ccd84200f617a8e243bd9d44bfacf50ad0f4094f830a615c9",
+      "id": "warn",
+      "family": "calls",
+      "action": "Warn. Wick shouting a warning: both hands cupped around his mouth, body twisted toward someone at his side, and a small sharp zig-zag danger mark above and behind him. Urgent.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/warn.png",
+        "sha256": "4c7312fca953597e9f74fca036d4de676ebd49c74a09b01e0b64db46b143fcc7"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/warn.png",
+        "sha256": "f4bcfd657520e61ccd84200f617a8e243bd9d44bfacf50ad0f4094f830a615c9"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/warn.txt",
+        "sha256": "fa7a5c9eabfd85350b9af09bae13530c4192f829a0cb0dbb15a6b6658c85315e"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/warn.png",
+        "128": "art/icons/calls/exports/128/warn.png",
+        "64": "art/icons/calls/exports/64/warn.png",
+        "56": "art/icons/calls/exports/56/warn.png",
+        "48": "art/icons/calls/exports/48/warn.png",
+        "44": "art/icons/calls/exports/44/warn.png",
+        "40": "art/icons/calls/exports/40/warn.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/calls/threaten.png",
+      "sha256": "5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0",
+      "id": "threaten",
+      "family": "calls",
+      "action": "Threaten. Wick threatening an enemy: leaning forward and looming, shoulders up, one hand drawn across in a slow cutting gesture at chest height, capelet flared. Menacing but still Wick. No weapon.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/threaten.png",
+        "sha256": "5955eeef19b88b4a304a983ec06adb8732d4ed592ab8ecf9d6656fdb6c072423"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/threaten.png",
+        "sha256": "5781384ec582e6a79eed6d9bd24fddfd62e3cc62be52bc2d0f370daae9094fc0"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/threaten.txt",
+        "sha256": "3467da7dfcb3aaae9ac7d4a80ce4ccdd4415bd519a09550b23ed2029f8ed1f52"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/threaten.png",
+        "128": "art/icons/calls/exports/128/threaten.png",
+        "64": "art/icons/calls/exports/64/threaten.png",
+        "56": "art/icons/calls/exports/56/threaten.png",
+        "48": "art/icons/calls/exports/48/threaten.png",
+        "44": "art/icons/calls/exports/44/threaten.png",
+        "40": "art/icons/calls/exports/40/threaten.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/calls/taunt.png",
+      "sha256": "791c582f2fe0aecdaa80e4fca31b4b0548e304f47842481aa1c52448453e8dbd",
+      "id": "taunt",
+      "family": "calls",
+      "action": "Taunt. Wick goading an enemy: weight on his back foot, one hand beckoning \"come on then\" with curled fingers, the other hand on his hip, head tilted. Cocky.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/taunt.png",
+        "sha256": "455add3a6e5911991a0f3299fe90016c22c7d36fbeed888230787d0a4b1e0257"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/taunt.png",
+        "sha256": "791c582f2fe0aecdaa80e4fca31b4b0548e304f47842481aa1c52448453e8dbd"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/taunt.txt",
+        "sha256": "1f600fbdb5d9b49f2f041375b45d282a0f092bb697983699bdb2723daa177292"
+      },
+      "exports": {
+        "256": "art/icons/calls/exports/256/taunt.png",
+        "128": "art/icons/calls/exports/128/taunt.png",
+        "64": "art/icons/calls/exports/64/taunt.png",
+        "56": "art/icons/calls/exports/56/taunt.png",
+        "48": "art/icons/calls/exports/48/taunt.png",
+        "44": "art/icons/calls/exports/44/taunt.png",
+        "40": "art/icons/calls/exports/40/taunt.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/traits/mind-without-fog.png",
+          "sha256": "4f30b32b8faca15d8b89d72c2e790bc6b99ed991a31ec59a96e595bf6aff2444"
+        },
+        {
+          "path": "art/icons/perks/into-the-dark.png",
+          "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
+        },
+        {
+          "path": "art/icons/perks/holy-ordnance.png",
+          "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-rage.png",
+      "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2",
+      "id": "feeling-rage",
+      "family": "feelings",
+      "action": "Rage: the ribbon snaps upward into a jagged crest, like a flame with teeth.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-rage.png",
+        "sha256": "63d50296a1a5bc7629a1a39d40f43f92bdde37a9585f16b3c3a4d03174d55085"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-rage.png",
+        "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-rage.txt",
+        "sha256": "c52d03d5381d6894ec4868f3522ab289747743981939de2825d0c9766de51e5f"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-rage.png",
+        "128": "art/icons/feelings/exports/128/feeling-rage.png",
+        "64": "art/icons/feelings/exports/64/feeling-rage.png",
+        "56": "art/icons/feelings/exports/56/feeling-rage.png",
+        "48": "art/icons/feelings/exports/48/feeling-rage.png",
+        "44": "art/icons/feelings/exports/44/feeling-rage.png",
+        "40": "art/icons/feelings/exports/40/feeling-rage.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-grief.png",
+      "sha256": "561437ccf7b3463842110a5d85fd2ab6abb32ac99285123b78671f616ff873e1",
+      "id": "feeling-grief",
+      "family": "feelings",
+      "action": "Grief: the ribbon falls and pools at the bottom like rain running off.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-grief.png",
+        "sha256": "79da67d545df4ceab694aa1470754fe279656b418703cb32a87b82d6a406aa89"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-grief.png",
+        "sha256": "561437ccf7b3463842110a5d85fd2ab6abb32ac99285123b78671f616ff873e1"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-grief.txt",
+        "sha256": "ed9333d631fde802c56f6e0589cb9d53d7251aeb5942f0c2af170b9753fee448"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-grief.png",
+        "128": "art/icons/feelings/exports/128/feeling-grief.png",
+        "64": "art/icons/feelings/exports/64/feeling-grief.png",
+        "56": "art/icons/feelings/exports/56/feeling-grief.png",
+        "48": "art/icons/feelings/exports/48/feeling-grief.png",
+        "44": "art/icons/feelings/exports/44/feeling-grief.png",
+        "40": "art/icons/feelings/exports/40/feeling-grief.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-fear.png",
+      "sha256": "98436c051bc5163ce0e57ef48d14b343c440267fddba65f206610b212b419dad",
+      "id": "feeling-fear",
+      "family": "feelings",
+      "action": "Fear: the ribbon recoils outward from an empty centre, in broken ring fragments.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-fear.png",
+        "sha256": "4dd3b43c5d19d6bc222e809d0e889d68d289621af2c06a5425d69d60b82d7771"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-fear.png",
+        "sha256": "98436c051bc5163ce0e57ef48d14b343c440267fddba65f206610b212b419dad"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-fear.txt",
+        "sha256": "f6c441c6f354c561039da4381877af53a31ff343f354cffecdccefc263d055cf"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-fear.png",
+        "128": "art/icons/feelings/exports/128/feeling-fear.png",
+        "64": "art/icons/feelings/exports/64/feeling-fear.png",
+        "56": "art/icons/feelings/exports/56/feeling-fear.png",
+        "48": "art/icons/feelings/exports/48/feeling-fear.png",
+        "44": "art/icons/feelings/exports/44/feeling-fear.png",
+        "40": "art/icons/feelings/exports/40/feeling-fear.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-love.png",
+      "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490",
+      "id": "feeling-love",
+      "family": "feelings",
+      "action": "Love: two ribbons wrap around each other into one knot.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-love.png",
+        "sha256": "148098757634f337dc8a33cb43c4a2eee844c643538f168dcef3c84ead555762"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-love.png",
+        "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-love.txt",
+        "sha256": "449f5627071fbc1a7a50fbf11682eae0c4a62531096749afb3db7e2f797fc644"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-love.png",
+        "128": "art/icons/feelings/exports/128/feeling-love.png",
+        "64": "art/icons/feelings/exports/64/feeling-love.png",
+        "56": "art/icons/feelings/exports/56/feeling-love.png",
+        "48": "art/icons/feelings/exports/48/feeling-love.png",
+        "44": "art/icons/feelings/exports/44/feeling-love.png",
+        "40": "art/icons/feelings/exports/40/feeling-love.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-joy.png",
+      "sha256": "cbef1a7ef71e54bb6c40004f9655655eeb3b9b7fd35643c62bc07b653e99d708",
+      "id": "feeling-joy",
+      "family": "feelings",
+      "action": "Joy: the ribbon leaps in a high arc with a small spark at the peak.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-joy.png",
+        "sha256": "e529a3ba8df2dc9196d55b2328968d754ed608f5ea7c01663687d4ecacb2c4c8"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-joy.png",
+        "sha256": "cbef1a7ef71e54bb6c40004f9655655eeb3b9b7fd35643c62bc07b653e99d708"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-joy.txt",
+        "sha256": "61877a39e51fa47a25ebdf363c565da7b75e45e2c2d459e3a405e9cb0c6057f1"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-joy.png",
+        "128": "art/icons/feelings/exports/128/feeling-joy.png",
+        "64": "art/icons/feelings/exports/64/feeling-joy.png",
+        "56": "art/icons/feelings/exports/56/feeling-joy.png",
+        "48": "art/icons/feelings/exports/48/feeling-joy.png",
+        "44": "art/icons/feelings/exports/44/feeling-joy.png",
+        "40": "art/icons/feelings/exports/40/feeling-joy.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-calm.png",
+      "sha256": "6c67f8d64f77330f81ad30907745e0f9b552282e7a0fcde1168ddd3fdf54b110",
+      "id": "feeling-calm",
+      "family": "feelings",
+      "action": "Calm: one long level stroke over two or three still circles, like a horizon over water.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-calm.png",
+        "sha256": "60b067d5e93c9728d6216a4ef19f79891751f84cf7194eb593f6785dbaa5b548"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-calm.png",
+        "sha256": "6c67f8d64f77330f81ad30907745e0f9b552282e7a0fcde1168ddd3fdf54b110"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-calm.txt",
+        "sha256": "7f19996d8c9eda025475839d507b3737868c986f3561b7966b9a2502e2d78138"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-calm.png",
+        "128": "art/icons/feelings/exports/128/feeling-calm.png",
+        "64": "art/icons/feelings/exports/64/feeling-calm.png",
+        "56": "art/icons/feelings/exports/56/feeling-calm.png",
+        "48": "art/icons/feelings/exports/48/feeling-calm.png",
+        "44": "art/icons/feelings/exports/44/feeling-calm.png",
+        "40": "art/icons/feelings/exports/40/feeling-calm.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-split.png",
+      "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3",
+      "id": "module-split",
+      "family": "modules",
+      "action": "one line forking into two",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-split.png",
+        "sha256": "e9d6474a62e9c37b296a8c73834451318b0346cf7025b310beb9afd01cd2aac4"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-split.png",
+        "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-split.txt",
+        "sha256": "97f9db9078ce9ee7321fba3b5db1f2f8cddec5079bcd946a48aef0591c7f74c5"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-split.png",
+        "128": "art/icons/modules/exports/128/module-split.png",
+        "64": "art/icons/modules/exports/64/module-split.png",
+        "56": "art/icons/modules/exports/56/module-split.png",
+        "48": "art/icons/modules/exports/48/module-split.png",
+        "44": "art/icons/modules/exports/44/module-split.png",
+        "40": "art/icons/modules/exports/40/module-split.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-ricochet.png",
+      "sha256": "a992039155a6bfa6ff8032dbae04361f4601fec269bc4743b429b293c77210eb",
+      "id": "module-ricochet",
+      "family": "modules",
+      "action": "a zig-zag path bouncing off a wall line",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-ricochet.png",
+        "sha256": "f956a1e62f513922f6e8bb259b144c5ab83e71139ebde9b753ccb7254a9d2d34"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-ricochet.png",
+        "sha256": "a992039155a6bfa6ff8032dbae04361f4601fec269bc4743b429b293c77210eb"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-ricochet.txt",
+        "sha256": "7a23e7f884f2618fe0b2b0cb4ba4f527dd04621a29366a95775382045f5700d7"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-ricochet.png",
+        "128": "art/icons/modules/exports/128/module-ricochet.png",
+        "64": "art/icons/modules/exports/64/module-ricochet.png",
+        "56": "art/icons/modules/exports/56/module-ricochet.png",
+        "48": "art/icons/modules/exports/48/module-ricochet.png",
+        "44": "art/icons/modules/exports/44/module-ricochet.png",
+        "40": "art/icons/modules/exports/40/module-ricochet.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-orbit.png",
+      "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3",
+      "id": "module-orbit",
+      "family": "modules",
+      "action": "a dot circling a centre dot on a ring path",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-orbit.png",
+        "sha256": "55ecdb91e770d6039132837debf924a0a4afcda5b19595212238922c5bbd04e8"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-orbit.png",
+        "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-orbit.txt",
+        "sha256": "b2be676ee0825296a6cf66a90a747a3758f3bb17771f6a3c205bc03f30529cb7"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-orbit.png",
+        "128": "art/icons/modules/exports/128/module-orbit.png",
+        "64": "art/icons/modules/exports/64/module-orbit.png",
+        "56": "art/icons/modules/exports/56/module-orbit.png",
+        "48": "art/icons/modules/exports/48/module-orbit.png",
+        "44": "art/icons/modules/exports/44/module-orbit.png",
+        "40": "art/icons/modules/exports/40/module-orbit.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-echo.png",
+      "sha256": "5b36a91d564707364eca05096b06360f77cfc89d2ac56610da5501f8a8c8f1c1",
+      "id": "module-echo",
+      "family": "modules",
+      "action": "one shape and a fainter (thinner-lined) double of it beside it",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-echo.png",
+        "sha256": "2efc72a5d02570c70a0b2b13be96591b012ec32a6b9622fd06e31361198fa786"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-echo.png",
+        "sha256": "5b36a91d564707364eca05096b06360f77cfc89d2ac56610da5501f8a8c8f1c1"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-echo.txt",
+        "sha256": "0ac688662ec4a03abdaf221fcc69bb1ce20922d0270263aeedb5b2112a362550"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-echo.png",
+        "128": "art/icons/modules/exports/128/module-echo.png",
+        "64": "art/icons/modules/exports/64/module-echo.png",
+        "56": "art/icons/modules/exports/56/module-echo.png",
+        "48": "art/icons/modules/exports/48/module-echo.png",
+        "44": "art/icons/modules/exports/44/module-echo.png",
+        "40": "art/icons/modules/exports/40/module-echo.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-spite.png",
+      "sha256": "d3e9c1a2b22aff103313378db7c51cfe595c1fb20c3b33d5c963bbddcc335704",
+      "id": "feeling-spite",
+      "family": "feelings",
+      "action": "Spite: a hooked ribbon turning back on itself like a barb.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-spite.png",
+        "sha256": "ac5819ba0c7ddee9af6f8d8734a69ad576ab5e8862a6d4e5f8ff7e70e0057b17"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-spite.png",
+        "sha256": "d3e9c1a2b22aff103313378db7c51cfe595c1fb20c3b33d5c963bbddcc335704"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-spite.txt",
+        "sha256": "b4dbb3ba9b3d62864f0774e7d408795dcbf6ce11645ed42af6e7da96cbfdc059"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-spite.png",
+        "128": "art/icons/feelings/exports/128/feeling-spite.png",
+        "64": "art/icons/feelings/exports/64/feeling-spite.png",
+        "56": "art/icons/feelings/exports/56/feeling-spite.png",
+        "48": "art/icons/feelings/exports/48/feeling-spite.png",
+        "44": "art/icons/feelings/exports/44/feeling-spite.png",
+        "40": "art/icons/feelings/exports/40/feeling-spite.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-shame.png",
+      "sha256": "0373416db5b351e04e7a564d1109b712192dd0ad63e8f1172a7a3ca26579d560",
+      "id": "feeling-shame",
+      "family": "feelings",
+      "action": "Shame: the ribbon folds inward and hides its own end.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-shame.png",
+        "sha256": "fae1434e264dc592bf423b8b647f67734ece0aefbf482225f3aea4732aa3098f"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-shame.png",
+        "sha256": "0373416db5b351e04e7a564d1109b712192dd0ad63e8f1172a7a3ca26579d560"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-shame.txt",
+        "sha256": "c1099922f4fd2e9c64d9a499f5a647b72f0db1c21dc333f8c743ce69198f7b10"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-shame.png",
+        "128": "art/icons/feelings/exports/128/feeling-shame.png",
+        "64": "art/icons/feelings/exports/64/feeling-shame.png",
+        "56": "art/icons/feelings/exports/56/feeling-shame.png",
+        "48": "art/icons/feelings/exports/48/feeling-shame.png",
+        "44": "art/icons/feelings/exports/44/feeling-shame.png",
+        "40": "art/icons/feelings/exports/40/feeling-shame.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-pride.png",
+      "sha256": "5a7c0e10ea7ae981dd79ec271f4c583ae364c054f73a65370e4b720f4d1af5b3",
+      "id": "feeling-pride",
+      "family": "feelings",
+      "action": "Pride: the ribbon rises into a tall straight spire.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-pride.png",
+        "sha256": "7eb2de1232836cc2761ce97ef633235be018e3c6c8cfdb257a714aa80ce132dd"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-pride.png",
+        "sha256": "5a7c0e10ea7ae981dd79ec271f4c583ae364c054f73a65370e4b720f4d1af5b3"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-pride.txt",
+        "sha256": "e73cc7b9856fdad51c3a1b14f828e9875befc583170731d3603ae3e7434d9ddb"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-pride.png",
+        "128": "art/icons/feelings/exports/128/feeling-pride.png",
+        "64": "art/icons/feelings/exports/64/feeling-pride.png",
+        "56": "art/icons/feelings/exports/56/feeling-pride.png",
+        "48": "art/icons/feelings/exports/48/feeling-pride.png",
+        "44": "art/icons/feelings/exports/44/feeling-pride.png",
+        "40": "art/icons/feelings/exports/40/feeling-pride.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-despair.png",
+      "sha256": "6882ae7504c91c2449025d0ed0e99f05d47285c35b6e7afe2318e1628a46849e",
+      "id": "feeling-despair",
+      "family": "feelings",
+      "action": "Despair: the ribbon unravels downward into loose threads.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-despair.png",
+        "sha256": "c2a48ef157c6b9802c9832756a009a485d748c20aeb0f0d9cf9d411906e3e313"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-despair.png",
+        "sha256": "6882ae7504c91c2449025d0ed0e99f05d47285c35b6e7afe2318e1628a46849e"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-despair.txt",
+        "sha256": "91d9fa4bda4082e0a24def6e6b4c53c0a802cff0090630edbf1e8d2407dd267d"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-despair.png",
+        "128": "art/icons/feelings/exports/128/feeling-despair.png",
+        "64": "art/icons/feelings/exports/64/feeling-despair.png",
+        "56": "art/icons/feelings/exports/56/feeling-despair.png",
+        "48": "art/icons/feelings/exports/48/feeling-despair.png",
+        "44": "art/icons/feelings/exports/44/feeling-despair.png",
+        "40": "art/icons/feelings/exports/40/feeling-despair.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-hope.png",
+      "sha256": "8cef29a0cc0c1b25d9af65724009bd916c34b97a7bec741ef0bce77352bdfd1e",
+      "id": "feeling-hope",
+      "family": "feelings",
+      "action": "Hope: a small flame-shaped ribbon rising from a low flat line.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-hope.png",
+        "sha256": "a545ade9a9bbd1b5496daa98149846fe44a9fa62364869e3524d6943761ca909"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-hope.png",
+        "sha256": "8cef29a0cc0c1b25d9af65724009bd916c34b97a7bec741ef0bce77352bdfd1e"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-hope.txt",
+        "sha256": "62e83741951bc8f1e3fa0c6a41e3b9223d35b191a638a313cf1f04aca8ff3210"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-hope.png",
+        "128": "art/icons/feelings/exports/128/feeling-hope.png",
+        "64": "art/icons/feelings/exports/64/feeling-hope.png",
+        "56": "art/icons/feelings/exports/56/feeling-hope.png",
+        "48": "art/icons/feelings/exports/48/feeling-hope.png",
+        "44": "art/icons/feelings/exports/44/feeling-hope.png",
+        "40": "art/icons/feelings/exports/40/feeling-hope.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-mercy.png",
+      "sha256": "c4f91123710ede6d39e9bad266ac5957b211d8137ee2127ce20ad8792686933c",
+      "id": "feeling-mercy",
+      "family": "feelings",
+      "action": "Mercy: an open cupped curve, lowered, like a hand let down.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-mercy.png",
+        "sha256": "0618e40443ad22e23399d6b0bf1eaa89ad81fe48fa6a2a9c9eb1977a8f10f83d"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-mercy.png",
+        "sha256": "c4f91123710ede6d39e9bad266ac5957b211d8137ee2127ce20ad8792686933c"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-mercy.txt",
+        "sha256": "4d794f49be45d182a791a1d3ed90d4fbf3e4e44c993b07e68c03b21faf58bb27"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-mercy.png",
+        "128": "art/icons/feelings/exports/128/feeling-mercy.png",
+        "64": "art/icons/feelings/exports/64/feeling-mercy.png",
+        "56": "art/icons/feelings/exports/56/feeling-mercy.png",
+        "48": "art/icons/feelings/exports/48/feeling-mercy.png",
+        "44": "art/icons/feelings/exports/44/feeling-mercy.png",
+        "40": "art/icons/feelings/exports/40/feeling-mercy.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-cruelty.png",
+      "sha256": "d7ef57bef3860edc7c0c3e4ec0b768014b2db49a512d1b93ccf8ce4189069ddd",
+      "id": "feeling-cruelty",
+      "family": "feelings",
+      "action": "Cruelty: the ribbon tightens into a loop with thorns.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-cruelty.png",
+        "sha256": "a32e356f5aaa6c70599c90ba6c1c31aef43f870a36314c631361efa9256dc9d5"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-cruelty.png",
+        "sha256": "d7ef57bef3860edc7c0c3e4ec0b768014b2db49a512d1b93ccf8ce4189069ddd"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-cruelty.txt",
+        "sha256": "ddeff261f99c7519797d4e4769af8682dd1418d4a48012ef106038aec5c03b80"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-cruelty.png",
+        "128": "art/icons/feelings/exports/128/feeling-cruelty.png",
+        "64": "art/icons/feelings/exports/64/feeling-cruelty.png",
+        "56": "art/icons/feelings/exports/56/feeling-cruelty.png",
+        "48": "art/icons/feelings/exports/48/feeling-cruelty.png",
+        "44": "art/icons/feelings/exports/44/feeling-cruelty.png",
+        "40": "art/icons/feelings/exports/40/feeling-cruelty.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-loneliness.png",
+      "sha256": "b9ef9910d4d12efa116c8c74a456943ba97112cf133dac1aba3ace2f241d6e1e",
+      "id": "feeling-loneliness",
+      "family": "feelings",
+      "action": "Loneliness: one small knot far from a wide empty ring.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-loneliness.png",
+        "sha256": "104848fe176fd24fecdb64c47091d4a850099c2c3494c817dd51dd85e9c05427"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-loneliness.png",
+        "sha256": "b9ef9910d4d12efa116c8c74a456943ba97112cf133dac1aba3ace2f241d6e1e"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-loneliness.txt",
+        "sha256": "80a6fe1333bb5f499f2b34a12d8c4eb0ca92bb2d866003557d7ed4de92eda920"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-loneliness.png",
+        "128": "art/icons/feelings/exports/128/feeling-loneliness.png",
+        "64": "art/icons/feelings/exports/64/feeling-loneliness.png",
+        "56": "art/icons/feelings/exports/56/feeling-loneliness.png",
+        "48": "art/icons/feelings/exports/48/feeling-loneliness.png",
+        "44": "art/icons/feelings/exports/44/feeling-loneliness.png",
+        "40": "art/icons/feelings/exports/40/feeling-loneliness.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/feeling-loneliness-attempt-1.png",
+          "sha256": "74796114d436ee6159ac06e694bf4e9d057b1311b1901e6fdb028cf12befff30"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-belonging.png",
+      "sha256": "f963d20b97a50cc43deb82b80136a4bb91f20f53c55d76231ccfc9462edfcf65",
+      "id": "feeling-belonging",
+      "family": "feelings",
+      "action": "Belonging: several small knots joined along one line.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-belonging.png",
+        "sha256": "ebd1723822fd01a24f5f20f49000b614ff06166da190762f487642407fea31ee"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-belonging.png",
+        "sha256": "f963d20b97a50cc43deb82b80136a4bb91f20f53c55d76231ccfc9462edfcf65"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-belonging.txt",
+        "sha256": "12242c757e2c933dcaeb5d46749b651c7bf5859937eaa55aa1ecc27c6de0a14b"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-belonging.png",
+        "128": "art/icons/feelings/exports/128/feeling-belonging.png",
+        "64": "art/icons/feelings/exports/64/feeling-belonging.png",
+        "56": "art/icons/feelings/exports/56/feeling-belonging.png",
+        "48": "art/icons/feelings/exports/48/feeling-belonging.png",
+        "44": "art/icons/feelings/exports/44/feeling-belonging.png",
+        "40": "art/icons/feelings/exports/40/feeling-belonging.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-dread.png",
+      "sha256": "77a235db396cc6adc197337bdd60e023a99006fb2f71e897313cfb1884e2a241",
+      "id": "feeling-dread",
+      "family": "feelings",
+      "action": "Dread: the ribbon coils around an empty eye-shaped gap.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-dread.png",
+        "sha256": "273813ff150ffae97470a061ca0e79e480488b7c1586f771ebeb64386f3f27e5"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-dread.png",
+        "sha256": "77a235db396cc6adc197337bdd60e023a99006fb2f71e897313cfb1884e2a241"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-dread.txt",
+        "sha256": "ea67642afb87680de7aac1b579ab33977c5f9bac5763cf4fd71d24e368b46458"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-dread.png",
+        "128": "art/icons/feelings/exports/128/feeling-dread.png",
+        "64": "art/icons/feelings/exports/64/feeling-dread.png",
+        "56": "art/icons/feelings/exports/56/feeling-dread.png",
+        "48": "art/icons/feelings/exports/48/feeling-dread.png",
+        "44": "art/icons/feelings/exports/44/feeling-dread.png",
+        "40": "art/icons/feelings/exports/40/feeling-dread.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-awe.png",
+      "sha256": "6936073f0f9ec15feb00019b82c4419de3aa25d6c53016aae41a60e289a39b43",
+      "id": "feeling-awe",
+      "family": "feelings",
+      "action": "Awe: rays opening above a small bowed curve.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-awe.png",
+        "sha256": "5e91641dc9683752e940160a55b04cba20a0a0844fd779970268f8be942f8032"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-awe.png",
+        "sha256": "6936073f0f9ec15feb00019b82c4419de3aa25d6c53016aae41a60e289a39b43"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-awe.txt",
+        "sha256": "96d513f55672ec539aa7d88903b64cf013180ac7a1414518983487e57e2a666d"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-awe.png",
+        "128": "art/icons/feelings/exports/128/feeling-awe.png",
+        "64": "art/icons/feelings/exports/64/feeling-awe.png",
+        "56": "art/icons/feelings/exports/56/feeling-awe.png",
+        "48": "art/icons/feelings/exports/48/feeling-awe.png",
+        "44": "art/icons/feelings/exports/44/feeling-awe.png",
+        "40": "art/icons/feelings/exports/40/feeling-awe.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-longing.png",
+      "sha256": "af6dc48269c2886a6eb9721fa74b7b021c1664ffb3bac2ce72e0ecd7727a3ea9",
+      "id": "feeling-longing",
+      "family": "feelings",
+      "action": "Longing: the ribbon reaches toward a distant dot and does not touch it.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-longing.png",
+        "sha256": "a2c68aeb6d5642bf3f1cc16527aaed182ca77fc775a20b4407cf4d81c5f9e783"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-longing.png",
+        "sha256": "af6dc48269c2886a6eb9721fa74b7b021c1664ffb3bac2ce72e0ecd7727a3ea9"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-longing.txt",
+        "sha256": "3876a7b109686e23636f21f281ff4e4f4a55474059fb68c131719850ffd053eb"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-longing.png",
+        "128": "art/icons/feelings/exports/128/feeling-longing.png",
+        "64": "art/icons/feelings/exports/64/feeling-longing.png",
+        "56": "art/icons/feelings/exports/56/feeling-longing.png",
+        "48": "art/icons/feelings/exports/48/feeling-longing.png",
+        "44": "art/icons/feelings/exports/44/feeling-longing.png",
+        "40": "art/icons/feelings/exports/40/feeling-longing.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-relief.png",
+      "sha256": "bf793ad4bcaec6a6f1ddb4d4d4d3c9bc3b61a88a7440550af3b05c80930a2cca",
+      "id": "feeling-relief",
+      "family": "feelings",
+      "action": "Relief: a knot coming loose into a soft breath-like curl.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-relief.png",
+        "sha256": "d7965936fa9c76a259eaf48ec9718e72a5c72dd3bcd198ebc1046ad84a977f1d"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-relief.png",
+        "sha256": "bf793ad4bcaec6a6f1ddb4d4d4d3c9bc3b61a88a7440550af3b05c80930a2cca"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-relief.txt",
+        "sha256": "91f6fcc4b72cd5cb3178be1dbcc9e48aae7843f67cab878382fe71195ccd35fe"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-relief.png",
+        "128": "art/icons/feelings/exports/128/feeling-relief.png",
+        "64": "art/icons/feelings/exports/64/feeling-relief.png",
+        "56": "art/icons/feelings/exports/56/feeling-relief.png",
+        "48": "art/icons/feelings/exports/48/feeling-relief.png",
+        "44": "art/icons/feelings/exports/44/feeling-relief.png",
+        "40": "art/icons/feelings/exports/40/feeling-relief.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-contempt.png",
+      "sha256": "d9752b28c7eb489628fd23cbad7176b53b08d9c631acf193e46e2c0bb1591b24",
+      "id": "feeling-contempt",
+      "family": "feelings",
+      "action": "Contempt: the ribbon turned away with a lifted, chin-like tilt.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-contempt.png",
+        "sha256": "be127131e4a7e10bccb93c212ca720f17ed99ec0b2bc9d2d1ad3d2ec5bc5e201"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-contempt.png",
+        "sha256": "d9752b28c7eb489628fd23cbad7176b53b08d9c631acf193e46e2c0bb1591b24"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-contempt.txt",
+        "sha256": "2712835590a7563c6e29e9f8e677c7528c3851ee7d2b9ddc485c7c4eec358a90"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-contempt.png",
+        "128": "art/icons/feelings/exports/128/feeling-contempt.png",
+        "64": "art/icons/feelings/exports/64/feeling-contempt.png",
+        "56": "art/icons/feelings/exports/56/feeling-contempt.png",
+        "48": "art/icons/feelings/exports/48/feeling-contempt.png",
+        "44": "art/icons/feelings/exports/44/feeling-contempt.png",
+        "40": "art/icons/feelings/exports/40/feeling-contempt.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-guilt.png",
+      "sha256": "df1734988e77c96f46a768385e9b497711c1d05ca94e57f5a5cf3c27ad54d3a4",
+      "id": "feeling-guilt",
+      "family": "feelings",
+      "action": "Guilt: the ribbon drags a small weight behind it.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-guilt.png",
+        "sha256": "dc6c0f3f4a5cfbfdaf69aa864aa074e9e05984177d4ad6ffcbfb10bb7898c35f"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-guilt.png",
+        "sha256": "df1734988e77c96f46a768385e9b497711c1d05ca94e57f5a5cf3c27ad54d3a4"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-guilt.txt",
+        "sha256": "24a0120d8fbdf153d35efcfd592c987e1d95bd1966aaf2bdc629e3edac2c8bdd"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-guilt.png",
+        "128": "art/icons/feelings/exports/128/feeling-guilt.png",
+        "64": "art/icons/feelings/exports/64/feeling-guilt.png",
+        "56": "art/icons/feelings/exports/56/feeling-guilt.png",
+        "48": "art/icons/feelings/exports/48/feeling-guilt.png",
+        "44": "art/icons/feelings/exports/44/feeling-guilt.png",
+        "40": "art/icons/feelings/exports/40/feeling-guilt.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-jealousy.png",
+      "sha256": "e9178fb62fb5c81464ca510d68ac15b872a8a875d0588ffa97fa6e8b94f4d165",
+      "id": "feeling-jealousy",
+      "family": "feelings",
+      "action": "Jealousy: two ribbons, one curling to snatch the other's spark.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-jealousy.png",
+        "sha256": "fcefeda0fea5a914bbec30750b19fca71cc672a25e02bf3475bb38c99db86f0b"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-jealousy.png",
+        "sha256": "e9178fb62fb5c81464ca510d68ac15b872a8a875d0588ffa97fa6e8b94f4d165"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-jealousy.txt",
+        "sha256": "bfcb8aa62acb099b12da1a0723d8d87921f0ad1687926ab02cec682197b98169"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-jealousy.png",
+        "128": "art/icons/feelings/exports/128/feeling-jealousy.png",
+        "64": "art/icons/feelings/exports/64/feeling-jealousy.png",
+        "56": "art/icons/feelings/exports/56/feeling-jealousy.png",
+        "48": "art/icons/feelings/exports/48/feeling-jealousy.png",
+        "44": "art/icons/feelings/exports/44/feeling-jealousy.png",
+        "40": "art/icons/feelings/exports/40/feeling-jealousy.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/feeling-jealousy-attempt-1.png",
+          "sha256": "cd5e40addab74d662bc76dd65f22ff5be138e0be4e99dc998c94fcf28fdc783e"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-wonder.png",
+      "sha256": "c600e91bbc9812b2df9f11024aae8a85e5191e5f394c22c7d42eed0e38c38d01",
+      "id": "feeling-wonder",
+      "family": "feelings",
+      "action": "Wonder: a spiral opening into a small star.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-wonder.png",
+        "sha256": "a5b380d019c4c67b035bb3356f05b1b43bd50904968e514d3ccf1a8c37b8192d"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-wonder.png",
+        "sha256": "c600e91bbc9812b2df9f11024aae8a85e5191e5f394c22c7d42eed0e38c38d01"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-wonder.txt",
+        "sha256": "55246ae34ba47efec0b5be298f02040f58dd4e7bf093c1cab3868270eec47a6e"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-wonder.png",
+        "128": "art/icons/feelings/exports/128/feeling-wonder.png",
+        "64": "art/icons/feelings/exports/64/feeling-wonder.png",
+        "56": "art/icons/feelings/exports/56/feeling-wonder.png",
+        "48": "art/icons/feelings/exports/48/feeling-wonder.png",
+        "44": "art/icons/feelings/exports/44/feeling-wonder.png",
+        "40": "art/icons/feelings/exports/40/feeling-wonder.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-defiance.png",
+      "sha256": "4d1999fad96c1ac5ba483ce4fa9122525ed2bcc681c98f1f4931fea2b5fdd4ce",
+      "id": "feeling-defiance",
+      "family": "feelings",
+      "action": "Defiance: the ribbon stands straight against slanted lines pushing at it.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-defiance.png",
+        "sha256": "86a575d46adfd96b017157b2a784642a47458434c3acdb1464d810bb281967a8"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-defiance.png",
+        "sha256": "4d1999fad96c1ac5ba483ce4fa9122525ed2bcc681c98f1f4931fea2b5fdd4ce"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-defiance.txt",
+        "sha256": "44e092c8d32e1f77855f6ae22bed331ef4a159f646ccc497fdd0ae1c9eb5fc00"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-defiance.png",
+        "128": "art/icons/feelings/exports/128/feeling-defiance.png",
+        "64": "art/icons/feelings/exports/64/feeling-defiance.png",
+        "56": "art/icons/feelings/exports/56/feeling-defiance.png",
+        "48": "art/icons/feelings/exports/48/feeling-defiance.png",
+        "44": "art/icons/feelings/exports/44/feeling-defiance.png",
+        "40": "art/icons/feelings/exports/40/feeling-defiance.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/feelings/feeling-abandon.png",
+      "sha256": "5f7b30e6c98be39624707ead259fb3e0ab9d41587f283fdb365112679176c498",
+      "id": "feeling-abandon",
+      "family": "feelings",
+      "action": "Abandon: the ribbon flung wide, its knot burst open.",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/feeling-abandon.png",
+        "sha256": "c9f2522ad47b2ebb95d10de658f0c026c1624a52895b983b8ccd196c79b83ffc"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/feeling-abandon.png",
+        "sha256": "5f7b30e6c98be39624707ead259fb3e0ab9d41587f283fdb365112679176c498"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/feeling-abandon.txt",
+        "sha256": "ecd429ad7818eea47265944268e4020d591dbc8685c6b4353294296b927ccb8c"
+      },
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-abandon.png",
+        "128": "art/icons/feelings/exports/128/feeling-abandon.png",
+        "64": "art/icons/feelings/exports/64/feeling-abandon.png",
+        "56": "art/icons/feelings/exports/56/feeling-abandon.png",
+        "48": "art/icons/feelings/exports/48/feeling-abandon.png",
+        "44": "art/icons/feelings/exports/44/feeling-abandon.png",
+        "40": "art/icons/feelings/exports/40/feeling-abandon.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/feelings/feeling-rage.png",
+          "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2"
+        },
+        {
+          "path": "art/icons/feelings/feeling-love.png",
+          "sha256": "a6e2b679d2a669d59384e2a8b5c2b1f8611b5975521c7aedb1560fb7af352490"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-move.png",
+      "sha256": "0bb087997ce3ad8464e05b367fd0d0d4f54995aed4cac6d6d1e599262457d1e4",
+      "id": "module-move",
+      "family": "modules",
+      "action": "an arrow carrying a dot",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-move.png",
+        "sha256": "743a21a332c8677ebf35f7dd57b198d0cf875bc8da54e3b6b26072ebcb3a205d"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-move.png",
+        "sha256": "0bb087997ce3ad8464e05b367fd0d0d4f54995aed4cac6d6d1e599262457d1e4"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-move.txt",
+        "sha256": "66336446670e483cc7d494b59f3382e8e312b6ae10ed21af403dd961d697aaf6"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-move.png",
+        "128": "art/icons/modules/exports/128/module-move.png",
+        "64": "art/icons/modules/exports/64/module-move.png",
+        "56": "art/icons/modules/exports/56/module-move.png",
+        "48": "art/icons/modules/exports/48/module-move.png",
+        "44": "art/icons/modules/exports/44/module-move.png",
+        "40": "art/icons/modules/exports/40/module-move.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/module-move-attempt-1.png",
+          "sha256": "65669afb12ac4375f950a5c1066799ab9acc8f93bfd63e8bd613a9f039648ff2"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-homing.png",
+      "sha256": "41da449492ecddf57099b52e24c3fae59207c6996799f02921daef25ec0694b9",
+      "id": "module-homing",
+      "family": "modules",
+      "action": "a curved arrow bending onto a target ring",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-homing.png",
+        "sha256": "62fa1e069fbb3ff8861b313a702a5d68fab13dd202900523fe84cf76481828c5"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-homing.png",
+        "sha256": "41da449492ecddf57099b52e24c3fae59207c6996799f02921daef25ec0694b9"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-homing.txt",
+        "sha256": "e5f9eac7fb8536546f8ced43237a7690eb56021cbbf1fa5aec0ed79c4521e099"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-homing.png",
+        "128": "art/icons/modules/exports/128/module-homing.png",
+        "64": "art/icons/modules/exports/64/module-homing.png",
+        "56": "art/icons/modules/exports/56/module-homing.png",
+        "48": "art/icons/modules/exports/48/module-homing.png",
+        "44": "art/icons/modules/exports/44/module-homing.png",
+        "40": "art/icons/modules/exports/40/module-homing.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-swift.png",
+      "sha256": "c8277227597b730341d09addf5117daf37892eddc8c4efbeb582f6b37b93bf96",
+      "id": "module-swift",
+      "family": "modules",
+      "action": "a dot with three speed lines behind it",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-swift.png",
+        "sha256": "71cf9101b71aae69b7744ecb6c1e05d0112db6a5c486d6bed1e3ce1d8f0ef699"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-swift.png",
+        "sha256": "c8277227597b730341d09addf5117daf37892eddc8c4efbeb582f6b37b93bf96"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-swift.txt",
+        "sha256": "93e2a571ba49e718437fed82e2ea0786bd9c0807841c07fd657be75e4c9d5a89"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-swift.png",
+        "128": "art/icons/modules/exports/128/module-swift.png",
+        "64": "art/icons/modules/exports/64/module-swift.png",
+        "56": "art/icons/modules/exports/56/module-swift.png",
+        "48": "art/icons/modules/exports/48/module-swift.png",
+        "44": "art/icons/modules/exports/44/module-swift.png",
+        "40": "art/icons/modules/exports/40/module-swift.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-ether.png",
+      "sha256": "9435dd5a68f915a323a013f13b6e72fda1b96ff17400e6cdb5cf98e8c0dc8c4f",
+      "id": "module-ether",
+      "family": "modules",
+      "action": "a dot passing through a dashed wall",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-ether.png",
+        "sha256": "5b7c2677e4f530b9317a3183e77045b58a29a36105fb065b5ad51409c127b2f3"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-ether.png",
+        "sha256": "9435dd5a68f915a323a013f13b6e72fda1b96ff17400e6cdb5cf98e8c0dc8c4f"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-ether.txt",
+        "sha256": "1be08bb70344d608cba62f1e4ec029a801b7848873afbddaff1eb9b57b87d102"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-ether.png",
+        "128": "art/icons/modules/exports/128/module-ether.png",
+        "64": "art/icons/modules/exports/64/module-ether.png",
+        "56": "art/icons/modules/exports/56/module-ether.png",
+        "48": "art/icons/modules/exports/48/module-ether.png",
+        "44": "art/icons/modules/exports/44/module-ether.png",
+        "40": "art/icons/modules/exports/40/module-ether.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-right.png",
+      "sha256": "2469c610bfe926498ab8eb18fe7735e2dae2f3c6778cad2eb5b3133fe422f979",
+      "id": "module-right",
+      "family": "modules",
+      "action": "an arrow curving to the right",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-right.png",
+        "sha256": "6c3f632433fc1c15552a5d482a2013df0328be906e18817dff81b2defb7c0a63"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-right.png",
+        "sha256": "2469c610bfe926498ab8eb18fe7735e2dae2f3c6778cad2eb5b3133fe422f979"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-right.txt",
+        "sha256": "a1fb8eb8991094939de5c17c999eb0cf7cee945e67da94dbcaa933a966727cb2"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-right.png",
+        "128": "art/icons/modules/exports/128/module-right.png",
+        "64": "art/icons/modules/exports/64/module-right.png",
+        "56": "art/icons/modules/exports/56/module-right.png",
+        "48": "art/icons/modules/exports/48/module-right.png",
+        "44": "art/icons/modules/exports/44/module-right.png",
+        "40": "art/icons/modules/exports/40/module-right.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-left.png",
+      "sha256": "8a8253362977180cdf546cb0a682da8569b3bdd00cb5d0b64a6ec78e8a39d745",
+      "id": "module-left",
+      "family": "modules",
+      "action": "an arrow curving to the left; mirror direction of module-right, preserving the same geometry",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-left.png",
+        "sha256": "89a6aaaae7f5ddfbd9e992e2a59cbf953f5a382c1a3c8566f408c5ec64823bc4"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-left.png",
+        "sha256": "8a8253362977180cdf546cb0a682da8569b3bdd00cb5d0b64a6ec78e8a39d745"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-left.txt",
+        "sha256": "129cf5b2a6e9b5bdcf7f90ab00e646f735f432565655ceb9c3ddf7c98652fc45"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-left.png",
+        "128": "art/icons/modules/exports/128/module-left.png",
+        "64": "art/icons/modules/exports/64/module-left.png",
+        "56": "art/icons/modules/exports/56/module-left.png",
+        "48": "art/icons/modules/exports/48/module-left.png",
+        "44": "art/icons/modules/exports/44/module-left.png",
+        "40": "art/icons/modules/exports/40/module-left.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/module-right.png",
+          "sha256": "6c3f632433fc1c15552a5d482a2013df0328be906e18817dff81b2defb7c0a63"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-time.png",
+      "sha256": "3be792ea3c7753b7140bc9a11a174d343822fc688590ad4e45bdd5ded1cf4606",
+      "id": "module-time",
+      "family": "modules",
+      "action": "an hourglass made of two triangles",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-time.png",
+        "sha256": "6ce6699bd26275d5875e8562226eaa73f2758056d62602ff7658ea96940fe374"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-time.png",
+        "sha256": "3be792ea3c7753b7140bc9a11a174d343822fc688590ad4e45bdd5ded1cf4606"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-time.txt",
+        "sha256": "edc096e3f27481dd7f3f38fa75dc26f3e744ef147778d467f94e9154880b9e26"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-time.png",
+        "128": "art/icons/modules/exports/128/module-time.png",
+        "64": "art/icons/modules/exports/64/module-time.png",
+        "56": "art/icons/modules/exports/56/module-time.png",
+        "48": "art/icons/modules/exports/48/module-time.png",
+        "44": "art/icons/modules/exports/44/module-time.png",
+        "40": "art/icons/modules/exports/40/module-time.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-inverse.png",
+      "sha256": "411b7f0418cdb8176e494263a695d61084811f1f692d9a8682f2107eb2e1a51d",
+      "id": "module-inverse",
+      "family": "modules",
+      "action": "two arrows swapping direction, one above the other",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-inverse.png",
+        "sha256": "bbf01535f5fb02a87bd5ad7f3bdbd33788ce74c00190ed016ae7ebb461239d55"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-inverse.png",
+        "sha256": "411b7f0418cdb8176e494263a695d61084811f1f692d9a8682f2107eb2e1a51d"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-inverse.txt",
+        "sha256": "f7f7876ba5befd20bd0edb5a3ad11cae0f616171e68832408af69bb96b348cc7"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-inverse.png",
+        "128": "art/icons/modules/exports/128/module-inverse.png",
+        "64": "art/icons/modules/exports/64/module-inverse.png",
+        "56": "art/icons/modules/exports/56/module-inverse.png",
+        "48": "art/icons/modules/exports/48/module-inverse.png",
+        "44": "art/icons/modules/exports/44/module-inverse.png",
+        "40": "art/icons/modules/exports/40/module-inverse.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-size.png",
+      "sha256": "f421b714f9b4447ac54beda54abe476df2efbf3b741e20b76dbdd8853db98044",
+      "id": "module-size",
+      "family": "modules",
+      "action": "a small circle inside a large one",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-size.png",
+        "sha256": "26a9abb12b4082f5190d2a0cc529f8004499fc2e217b74a7ed1c637e099791a1"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-size.png",
+        "sha256": "f421b714f9b4447ac54beda54abe476df2efbf3b741e20b76dbdd8853db98044"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-size.txt",
+        "sha256": "9a60dab2c11fc95c510100fad8bea163d69e925be09f1bb1c18845139fc9d060"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-size.png",
+        "128": "art/icons/modules/exports/128/module-size.png",
+        "64": "art/icons/modules/exports/64/module-size.png",
+        "56": "art/icons/modules/exports/56/module-size.png",
+        "48": "art/icons/modules/exports/48/module-size.png",
+        "44": "art/icons/modules/exports/44/module-size.png",
+        "40": "art/icons/modules/exports/40/module-size.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-random.png",
+      "sha256": "ab5eba8f0cbe5d98bcc18b42191f603726a4e083c7718f39fc178be3e9f3a142",
+      "id": "module-random",
+      "family": "modules",
+      "action": "three scattered dots and one loose curl (no question mark)",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-random.png",
+        "sha256": "32c126205fcd307b3c9cbe0bb2181c486f993e626242293ead3f6cb27fc0f6a1"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-random.png",
+        "sha256": "ab5eba8f0cbe5d98bcc18b42191f603726a4e083c7718f39fc178be3e9f3a142"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-random.txt",
+        "sha256": "fb30c4a7fbf939fad80b3078afdc04876c294be873169fb38fb6bd2b3b48c063"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-random.png",
+        "128": "art/icons/modules/exports/128/module-random.png",
+        "64": "art/icons/modules/exports/64/module-random.png",
+        "56": "art/icons/modules/exports/56/module-random.png",
+        "48": "art/icons/modules/exports/48/module-random.png",
+        "44": "art/icons/modules/exports/44/module-random.png",
+        "40": "art/icons/modules/exports/40/module-random.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-at_once.png",
+      "sha256": "733fabeb2588d1ddd8d2b9ad5bc77807eb7fe53cc6ff0296f3088d68c9fdba8f",
+      "id": "module-at_once",
+      "family": "modules",
+      "action": "three arrows leaving one point together",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-at_once.png",
+        "sha256": "7df464cc6f53332c9a56a9ba300e6a6cda1ebaeff50d2691f9fe224b823951f8"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-at_once.png",
+        "sha256": "733fabeb2588d1ddd8d2b9ad5bc77807eb7fe53cc6ff0296f3088d68c9fdba8f"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-at_once.txt",
+        "sha256": "d2662672ef1a5a2bda97d590a5e7e334f4b264f1d4640ef858aa26947963c3c6"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-at_once.png",
+        "128": "art/icons/modules/exports/128/module-at_once.png",
+        "64": "art/icons/modules/exports/64/module-at_once.png",
+        "56": "art/icons/modules/exports/56/module-at_once.png",
+        "48": "art/icons/modules/exports/48/module-at_once.png",
+        "44": "art/icons/modules/exports/44/module-at_once.png",
+        "40": "art/icons/modules/exports/40/module-at_once.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-wave.png",
+      "sha256": "a8f6fc2a99f57ccc818168140463b741e1e5224def3adfe0f535c43d624d2f36",
+      "id": "module-wave",
+      "family": "modules",
+      "action": "a cone made of three arcs",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-wave.png",
+        "sha256": "7824265547392b6bb070bba9ad75131028d2c65b982690400f65716def8efd1c"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-wave.png",
+        "sha256": "a8f6fc2a99f57ccc818168140463b741e1e5224def3adfe0f535c43d624d2f36"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-wave.txt",
+        "sha256": "45de4f62f024c2eb4ab2bdd456267b72ad7990dfac48f43666e47caa503a16d1"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-wave.png",
+        "128": "art/icons/modules/exports/128/module-wave.png",
+        "64": "art/icons/modules/exports/64/module-wave.png",
+        "56": "art/icons/modules/exports/56/module-wave.png",
+        "48": "art/icons/modules/exports/48/module-wave.png",
+        "44": "art/icons/modules/exports/44/module-wave.png",
+        "40": "art/icons/modules/exports/40/module-wave.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-burst.png",
+      "sha256": "2761ce4842fc314a407a373fa2b2e768a1269ab6e683cc27ee9debd0095aef81",
+      "id": "module-burst",
+      "family": "modules",
+      "action": "a ring with short radiating marks",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-burst.png",
+        "sha256": "88676b19af1527c6e5b3c54f29384952fc2ca521ee47c1167402f5b1ad2431e7"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-burst.png",
+        "sha256": "2761ce4842fc314a407a373fa2b2e768a1269ab6e683cc27ee9debd0095aef81"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-burst.txt",
+        "sha256": "6186e08c6fbfddfbd699dabb160a6ffd40fab8c3bd306452a1a33a5c76f09cf7"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-burst.png",
+        "128": "art/icons/modules/exports/128/module-burst.png",
+        "64": "art/icons/modules/exports/64/module-burst.png",
+        "56": "art/icons/modules/exports/56/module-burst.png",
+        "48": "art/icons/modules/exports/48/module-burst.png",
+        "44": "art/icons/modules/exports/44/module-burst.png",
+        "40": "art/icons/modules/exports/40/module-burst.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-aura.png",
+      "sha256": "7754cd992b199bc4ea43f90d1c7294f6e1fd6755c0a5fbec8ddc6a6af6deb4b1",
+      "id": "module-aura",
+      "family": "modules",
+      "action": "a ring around a centre dot",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-aura.png",
+        "sha256": "f887fa20211a41b5f4fb81c9d23b0a414219dfba92c8f4ffc3f52a13fc35be26"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-aura.png",
+        "sha256": "7754cd992b199bc4ea43f90d1c7294f6e1fd6755c0a5fbec8ddc6a6af6deb4b1"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-aura.txt",
+        "sha256": "cb3060358a1793837885aaa7b02c85441c27451e2833fda93bcc012f2a977a31"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-aura.png",
+        "128": "art/icons/modules/exports/128/module-aura.png",
+        "64": "art/icons/modules/exports/64/module-aura.png",
+        "56": "art/icons/modules/exports/56/module-aura.png",
+        "48": "art/icons/modules/exports/48/module-aura.png",
+        "44": "art/icons/modules/exports/44/module-aura.png",
+        "40": "art/icons/modules/exports/40/module-aura.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-lance.png",
+      "sha256": "69c36c63368d5b65d4010f6e3d9cb42abd7d49a7d66aa6a8a57cb8243f79b074",
+      "id": "module-lance",
+      "family": "modules",
+      "action": "one long straight line through two dots",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-lance.png",
+        "sha256": "0cb5f9947428650f095b9e9f69e1872dd3c134d44ff2848ae221391ef0b694c6"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-lance.png",
+        "sha256": "69c36c63368d5b65d4010f6e3d9cb42abd7d49a7d66aa6a8a57cb8243f79b074"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-lance.txt",
+        "sha256": "ac274592bef85e69a1269de7e4539870adad5cfef5fde8c6eb8d46c905027e4c"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-lance.png",
+        "128": "art/icons/modules/exports/128/module-lance.png",
+        "64": "art/icons/modules/exports/64/module-lance.png",
+        "56": "art/icons/modules/exports/56/module-lance.png",
+        "48": "art/icons/modules/exports/48/module-lance.png",
+        "44": "art/icons/modules/exports/44/module-lance.png",
+        "40": "art/icons/modules/exports/40/module-lance.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/module-lance-attempt-1.png",
+          "sha256": "bd24be870dcf10686af3319225ac8870710947ca916c6458f04678ddad0455ef"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-fuse.png",
+      "sha256": "cbba8052a1fc985c35573b0dd3e1a0a904f20d78e81cc2743739c349cc275f9f",
+      "id": "module-fuse",
+      "family": "modules",
+      "action": "a dot on a ground line with a short burning line leading to it",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-fuse.png",
+        "sha256": "5b953855a9f6c3ee464c9f80e5077109230041d1fecf87fc8a0d9fabf795631a"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-fuse.png",
+        "sha256": "cbba8052a1fc985c35573b0dd3e1a0a904f20d78e81cc2743739c349cc275f9f"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-fuse.txt",
+        "sha256": "6b27c64182c667ab2ad6f9d8f12223c83ef94b4d2cca0c60801f60885dec64fd"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-fuse.png",
+        "128": "art/icons/modules/exports/128/module-fuse.png",
+        "64": "art/icons/modules/exports/64/module-fuse.png",
+        "56": "art/icons/modules/exports/56/module-fuse.png",
+        "48": "art/icons/modules/exports/48/module-fuse.png",
+        "44": "art/icons/modules/exports/44/module-fuse.png",
+        "40": "art/icons/modules/exports/40/module-fuse.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/module-fuse-attempt-1.png",
+          "sha256": "7f7a2a37b99b2a3d060f3fd5f48856177d87abac3beb991926b65ab5c6ae8a14"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-return.png",
+      "sha256": "fbabbf770d6b6a430f56485c14dff314880243be84f52b69fc8145b6bbca36d2",
+      "id": "module-return",
+      "family": "modules",
+      "action": "a loop going out and coming back",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-return.png",
+        "sha256": "d2a045755d1990ef6b1ec95add7517ced9f03e8896825d42be43237908b8c470"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-return.png",
+        "sha256": "fbabbf770d6b6a430f56485c14dff314880243be84f52b69fc8145b6bbca36d2"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-return.txt",
+        "sha256": "503fd04e95912835b97a76496f6620b9dc60c9596ede428a62d0bf8da753f1b5"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-return.png",
+        "128": "art/icons/modules/exports/128/module-return.png",
+        "64": "art/icons/modules/exports/64/module-return.png",
+        "56": "art/icons/modules/exports/56/module-return.png",
+        "48": "art/icons/modules/exports/48/module-return.png",
+        "44": "art/icons/modules/exports/44/module-return.png",
+        "40": "art/icons/modules/exports/40/module-return.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-volley.png",
+      "sha256": "dcd109531803ecdb505b78e5116253dc751eed53fb220eb85bc018bd58fdffa9",
+      "id": "module-volley",
+      "family": "modules",
+      "action": "three small parallel dashes",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-volley.png",
+        "sha256": "7b6f498b548324ef332ebf01a6ce6acbd0d5d2001aea918d364541f3e9681281"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-volley.png",
+        "sha256": "dcd109531803ecdb505b78e5116253dc751eed53fb220eb85bc018bd58fdffa9"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-volley.txt",
+        "sha256": "34da74aff24e9e374cdb613a974eab034b0943a597473dbe448b21cabfdaa097"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-volley.png",
+        "128": "art/icons/modules/exports/128/module-volley.png",
+        "64": "art/icons/modules/exports/64/module-volley.png",
+        "56": "art/icons/modules/exports/56/module-volley.png",
+        "48": "art/icons/modules/exports/48/module-volley.png",
+        "44": "art/icons/modules/exports/44/module-volley.png",
+        "40": "art/icons/modules/exports/40/module-volley.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-bloom.png",
+      "sha256": "24a5c93960b840d5496e8b9af7ad34063d768586a081c19d22a2338ded65a014",
+      "id": "module-bloom",
+      "family": "modules",
+      "action": "nested rings growing outward",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-bloom.png",
+        "sha256": "f5ccee86cea2e9b67fddc5ef341b5a8f8d9c89ab320055b45e62fdb43ac57a37"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-bloom.png",
+        "sha256": "24a5c93960b840d5496e8b9af7ad34063d768586a081c19d22a2338ded65a014"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-bloom.txt",
+        "sha256": "7fede6741ae1d222bdf765b3355228c34be9d08da036f3f94c719c523c77bd33"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-bloom.png",
+        "128": "art/icons/modules/exports/128/module-bloom.png",
+        "64": "art/icons/modules/exports/64/module-bloom.png",
+        "56": "art/icons/modules/exports/56/module-bloom.png",
+        "48": "art/icons/modules/exports/48/module-bloom.png",
+        "44": "art/icons/modules/exports/44/module-bloom.png",
+        "40": "art/icons/modules/exports/40/module-bloom.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-anchor.png",
+      "sha256": "459e5ddedd3800a233bcd875f66f36fb02064af046cc8d87547c411f10d58fb3",
+      "id": "module-anchor",
+      "family": "modules",
+      "action": "a dot pinned by a cross-shaped stake",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-anchor.png",
+        "sha256": "06638144d4e8290900d30fcc9425377c3fe08b09564554739e9a72836c8ba8bd"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-anchor.png",
+        "sha256": "459e5ddedd3800a233bcd875f66f36fb02064af046cc8d87547c411f10d58fb3"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-anchor.txt",
+        "sha256": "4cb149e291bb3a30eb54dd82ef1571c96273dd13d6080adfb7cfaf27255b1492"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-anchor.png",
+        "128": "art/icons/modules/exports/128/module-anchor.png",
+        "64": "art/icons/modules/exports/64/module-anchor.png",
+        "56": "art/icons/modules/exports/56/module-anchor.png",
+        "48": "art/icons/modules/exports/48/module-anchor.png",
+        "44": "art/icons/modules/exports/44/module-anchor.png",
+        "40": "art/icons/modules/exports/40/module-anchor.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/module-anchor-attempt-1.png",
+          "sha256": "15a23deea1ff383bfe145f45b5cda7f868daf9b643eb2454332e361346cf307f"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-lure.png",
+      "sha256": "d334bfc8fc42b7631fbfe83b2d27b0bcc1c86bd8ed1ccaa270c2f8a48016ecf2",
+      "id": "module-lure",
+      "family": "modules",
+      "action": "an arrow pulling a dot inward",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-lure.png",
+        "sha256": "8d2a4b77c5e8a145a1b68dd9795fdda893ba02a847917111cf466fc418ee71cf"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-lure.png",
+        "sha256": "d334bfc8fc42b7631fbfe83b2d27b0bcc1c86bd8ed1ccaa270c2f8a48016ecf2"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-lure.txt",
+        "sha256": "6be5c54959577a447766ef9b4327106bfa55969b35ce87538b49c00dba6ca8d7"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-lure.png",
+        "128": "art/icons/modules/exports/128/module-lure.png",
+        "64": "art/icons/modules/exports/64/module-lure.png",
+        "56": "art/icons/modules/exports/56/module-lure.png",
+        "48": "art/icons/modules/exports/48/module-lure.png",
+        "44": "art/icons/modules/exports/44/module-lure.png",
+        "40": "art/icons/modules/exports/40/module-lure.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/module-lure-attempt-1.png",
+          "sha256": "c3993c196485048ff0cacfd63e490f910c9cbfe48fb2b0a8bd9ddb8a6f87fc6e"
+        },
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-shell.png",
+      "sha256": "68c9a09919c29f3c30c0f7cd5600084c107db416479cedf7dcfd2b50a195c73e",
+      "id": "module-shell",
+      "family": "modules",
+      "action": "a dome over a dot",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-shell.png",
+        "sha256": "4b37dc7e6e0ec683134c98a65e262ae89345d97f23dc66c01a3454e1b0df0377"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-shell.png",
+        "sha256": "68c9a09919c29f3c30c0f7cd5600084c107db416479cedf7dcfd2b50a195c73e"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-shell.txt",
+        "sha256": "17a45a1697eb727cfa8f3b1bc61054cbaf596741ddbdfb75686127a37621de81"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-shell.png",
+        "128": "art/icons/modules/exports/128/module-shell.png",
+        "64": "art/icons/modules/exports/64/module-shell.png",
+        "56": "art/icons/modules/exports/56/module-shell.png",
+        "48": "art/icons/modules/exports/48/module-shell.png",
+        "44": "art/icons/modules/exports/44/module-shell.png",
+        "40": "art/icons/modules/exports/40/module-shell.png"
+      },
+      "references": [
+        {
+          "path": "art/_archive/deliveries/2026-11-12/sources/module-shell-attempt-1.png",
+          "sha256": "8c9279d5a00c8d08c7526173af15df072a0a5fd85742a3785430fa3e55161fc3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-linger.png",
+      "sha256": "58687ca10a097eb210252346b981887636a1b3c79c9e726706c6205250711085",
+      "id": "module-linger",
+      "family": "modules",
+      "action": "a square patch of dotted ground",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-linger.png",
+        "sha256": "8e95010f3842762db132e2647eb4dc7b7a601d70a75561859d2dd13232b4349f"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-linger.png",
+        "sha256": "58687ca10a097eb210252346b981887636a1b3c79c9e726706c6205250711085"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-linger.txt",
+        "sha256": "6419022ddb13227fa4aaa62896265dc73f39a67ed1d1c05ef847d8c734eeca38"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-linger.png",
+        "128": "art/icons/modules/exports/128/module-linger.png",
+        "64": "art/icons/modules/exports/64/module-linger.png",
+        "56": "art/icons/modules/exports/56/module-linger.png",
+        "48": "art/icons/modules/exports/48/module-linger.png",
+        "44": "art/icons/modules/exports/44/module-linger.png",
+        "40": "art/icons/modules/exports/40/module-linger.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-quiet.png",
+      "sha256": "bb7c96427a2fc3f6e8f93070283d9ef7e888b54baffd14309091c3fb2f67db6f",
+      "id": "module-quiet",
+      "family": "modules",
+      "action": "a heart with one soft lowered line under it",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-quiet.png",
+        "sha256": "476c72eaee5c3907788d7cd33ff7a854c8a4b15de5774e39f8c2b96f2bdce1d0"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-quiet.png",
+        "sha256": "bb7c96427a2fc3f6e8f93070283d9ef7e888b54baffd14309091c3fb2f67db6f"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-quiet.txt",
+        "sha256": "5dafbce30449dbfd5a61adde455692044c52ebf21a389b42dc97a7108d5103a2"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-quiet.png",
+        "128": "art/icons/modules/exports/128/module-quiet.png",
+        "64": "art/icons/modules/exports/64/module-quiet.png",
+        "56": "art/icons/modules/exports/56/module-quiet.png",
+        "48": "art/icons/modules/exports/48/module-quiet.png",
+        "44": "art/icons/modules/exports/44/module-quiet.png",
+        "40": "art/icons/modules/exports/40/module-quiet.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-silent.png",
+      "sha256": "a297df334a43b2eae1c9de70d541c5bd54b38048ef1fb99e27b25695cd6db01f",
+      "id": "module-silent",
+      "family": "modules",
+      "action": "a dot inside a circle with a slash through the circle",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-silent.png",
+        "sha256": "7dda233d10d826af3405092bc71941c9878765576ea45a14df509d070e52a5ab"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-silent.png",
+        "sha256": "a297df334a43b2eae1c9de70d541c5bd54b38048ef1fb99e27b25695cd6db01f"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-silent.txt",
+        "sha256": "15553d3ddfb9f12197cf792c1766f805b6ea05f6d2d3bf87e2e0340a10b01ea8"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-silent.png",
+        "128": "art/icons/modules/exports/128/module-silent.png",
+        "64": "art/icons/modules/exports/64/module-silent.png",
+        "56": "art/icons/modules/exports/56/module-silent.png",
+        "48": "art/icons/modules/exports/48/module-silent.png",
+        "44": "art/icons/modules/exports/44/module-silent.png",
+        "40": "art/icons/modules/exports/40/module-silent.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-thread.png",
+      "sha256": "43b55b5d9ce52a9789fd78f1568b44796e051b2916a859a971f9b8a7e6ed5cb2",
+      "id": "module-thread",
+      "family": "modules",
+      "action": "two dots tied by one line",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-thread.png",
+        "sha256": "be784e699e61bf5e2f0430ffe3fd0e65faca1a5b5ca2636b0bc3a944a4c29ef4"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-thread.png",
+        "sha256": "43b55b5d9ce52a9789fd78f1568b44796e051b2916a859a971f9b8a7e6ed5cb2"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-thread.txt",
+        "sha256": "4e5322b7395c660602a33ba0dfde6158c4d53db99f24904790bbf4449db1cd06"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-thread.png",
+        "128": "art/icons/modules/exports/128/module-thread.png",
+        "64": "art/icons/modules/exports/64/module-thread.png",
+        "56": "art/icons/modules/exports/56/module-thread.png",
+        "48": "art/icons/modules/exports/48/module-thread.png",
+        "44": "art/icons/modules/exports/44/module-thread.png",
+        "40": "art/icons/modules/exports/40/module-thread.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-cascade.png",
+      "sha256": "c26a852060443c487f5e56ff3b764567862091c096a8978ef9f161a9385ed926",
+      "id": "module-cascade",
+      "family": "modules",
+      "action": "a stair of small dots growing in size",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-cascade.png",
+        "sha256": "5d6d30e6703c1b4d02763424f688fdf5df1866ac6dc99634b18f36e751caa282"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-cascade.png",
+        "sha256": "c26a852060443c487f5e56ff3b764567862091c096a8978ef9f161a9385ed926"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-cascade.txt",
+        "sha256": "3bd4558598e32d694f221aef3ac928d6e374bd99ec21c06eb999c791d084b77b"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-cascade.png",
+        "128": "art/icons/modules/exports/128/module-cascade.png",
+        "64": "art/icons/modules/exports/64/module-cascade.png",
+        "56": "art/icons/modules/exports/56/module-cascade.png",
+        "48": "art/icons/modules/exports/48/module-cascade.png",
+        "44": "art/icons/modules/exports/44/module-cascade.png",
+        "40": "art/icons/modules/exports/40/module-cascade.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-tether.png",
+      "sha256": "858d0c26cfdcc88b23ee79151369b45df48860502381ff40eea144a12b164e43",
+      "id": "module-tether",
+      "family": "modules",
+      "action": "a straight beam between two rings",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-tether.png",
+        "sha256": "e8cda7b7134f88948bbfc85a5e1ba0e8c1f84a57c2832032755bfef2676c5ec4"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-tether.png",
+        "sha256": "858d0c26cfdcc88b23ee79151369b45df48860502381ff40eea144a12b164e43"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-tether.txt",
+        "sha256": "3474c02bace559de0bb22a2888228886a44e5487396793427203a9c6fa212154"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-tether.png",
+        "128": "art/icons/modules/exports/128/module-tether.png",
+        "64": "art/icons/modules/exports/64/module-tether.png",
+        "56": "art/icons/modules/exports/56/module-tether.png",
+        "48": "art/icons/modules/exports/48/module-tether.png",
+        "44": "art/icons/modules/exports/44/module-tether.png",
+        "40": "art/icons/modules/exports/40/module-tether.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-siphon.png",
+      "sha256": "57e3edf56d109a99a64e8b6247c85a22441843552b2ca95398724d98c1335764",
+      "id": "module-siphon",
+      "family": "modules",
+      "action": "a curve drawing drops toward a centre",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-siphon.png",
+        "sha256": "6712dd569627161769608e4a2976f42dea8cdf275f9c2616220e9b65a0ea59b6"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-siphon.png",
+        "sha256": "57e3edf56d109a99a64e8b6247c85a22441843552b2ca95398724d98c1335764"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-siphon.txt",
+        "sha256": "9b1fc5199c4d769c4e204bbb2743927cc6caa5ec1016b5d7c01547a485388000"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-siphon.png",
+        "128": "art/icons/modules/exports/128/module-siphon.png",
+        "64": "art/icons/modules/exports/64/module-siphon.png",
+        "56": "art/icons/modules/exports/56/module-siphon.png",
+        "48": "art/icons/modules/exports/48/module-siphon.png",
+        "44": "art/icons/modules/exports/44/module-siphon.png",
+        "40": "art/icons/modules/exports/40/module-siphon.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-phantom.png",
+      "sha256": "25c8cf55ced8b19926a0dc2966407e3b7849da4fbd2984f2b6e75a33f3b43f95",
+      "id": "module-phantom",
+      "family": "modules",
+      "action": "a dot passing through a solid block",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-phantom.png",
+        "sha256": "d542c86e2ea892345ddd700dfd4b6342d7359c65c134386cff793aa08d0cc2fe"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-phantom.png",
+        "sha256": "25c8cf55ced8b19926a0dc2966407e3b7849da4fbd2984f2b6e75a33f3b43f95"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-phantom.txt",
+        "sha256": "5e8ab61ad1945be38d6da2afed31f2e8c8f4b1664c0d93a703131a64d1bd7f6f"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-phantom.png",
+        "128": "art/icons/modules/exports/128/module-phantom.png",
+        "64": "art/icons/modules/exports/64/module-phantom.png",
+        "56": "art/icons/modules/exports/56/module-phantom.png",
+        "48": "art/icons/modules/exports/48/module-phantom.png",
+        "44": "art/icons/modules/exports/44/module-phantom.png",
+        "40": "art/icons/modules/exports/40/module-phantom.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-volatile.png",
+      "sha256": "321fce4e2bd9b3c25e487ff1fe6c132f4bc58e2c2ebf021506733f21b94c5a96",
+      "id": "module-volatile",
+      "family": "modules",
+      "action": "a dot cracking open with sparks",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-volatile.png",
+        "sha256": "88228929b8749a341eb63680faba1052ac6eab617adbc5405f45d8c56066dd42"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-volatile.png",
+        "sha256": "321fce4e2bd9b3c25e487ff1fe6c132f4bc58e2c2ebf021506733f21b94c5a96"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-volatile.txt",
+        "sha256": "6680c4c02532bb86c3f927ce845f600ad7e727f66ec8fa53aeb1b899a23d3a57"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-volatile.png",
+        "128": "art/icons/modules/exports/128/module-volatile.png",
+        "64": "art/icons/modules/exports/64/module-volatile.png",
+        "56": "art/icons/modules/exports/56/module-volatile.png",
+        "48": "art/icons/modules/exports/48/module-volatile.png",
+        "44": "art/icons/modules/exports/44/module-volatile.png",
+        "40": "art/icons/modules/exports/40/module-volatile.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-bastion.png",
+      "sha256": "7b12557d841b5348d4c9a2675484755e16bbf53810567f075f54881d1f5dae03",
+      "id": "module-bastion",
+      "family": "modules",
+      "action": "three small domes over three dots",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-bastion.png",
+        "sha256": "a5d8dec11d4f57802bd5606fb7da5d5aef7d559aaf0ae60753e73fa4cacbc646"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-bastion.png",
+        "sha256": "7b12557d841b5348d4c9a2675484755e16bbf53810567f075f54881d1f5dae03"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-bastion.txt",
+        "sha256": "eeee00e404592374a64ba29e3453cd02b30f6d6cc29886558fc32041f54bf51d"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-bastion.png",
+        "128": "art/icons/modules/exports/128/module-bastion.png",
+        "64": "art/icons/modules/exports/64/module-bastion.png",
+        "56": "art/icons/modules/exports/56/module-bastion.png",
+        "48": "art/icons/modules/exports/48/module-bastion.png",
+        "44": "art/icons/modules/exports/44/module-bastion.png",
+        "40": "art/icons/modules/exports/40/module-bastion.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-judgement_mark.png",
+      "sha256": "50f1caa3e06e0af6c95e77eaac9c51c485ced0790ff5c5fcf95568948609ae98",
+      "id": "module-judgement_mark",
+      "family": "modules",
+      "action": "a target ring with a heavy downward bar landing on it",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-judgement_mark.png",
+        "sha256": "61934525e2c2a5645b1f8e05d52a67e19d69e88104ca27866847cfd2143c811d"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-judgement_mark.png",
+        "sha256": "50f1caa3e06e0af6c95e77eaac9c51c485ced0790ff5c5fcf95568948609ae98"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-judgement_mark.txt",
+        "sha256": "250af3d3d5e4b68fa438aaa81185f9b9c6a716955330996f370845af0dae4fc7"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-judgement_mark.png",
+        "128": "art/icons/modules/exports/128/module-judgement_mark.png",
+        "64": "art/icons/modules/exports/64/module-judgement_mark.png",
+        "56": "art/icons/modules/exports/56/module-judgement_mark.png",
+        "48": "art/icons/modules/exports/48/module-judgement_mark.png",
+        "44": "art/icons/modules/exports/44/module-judgement_mark.png",
+        "40": "art/icons/modules/exports/40/module-judgement_mark.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/module-halo.png",
+      "sha256": "195c434d4a8c4b17c472a6e6337072e3139873c9f3ac5449365711eb1cee8093",
+      "id": "module-halo",
+      "family": "modules",
+      "action": "a ring of light over a small heart",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/module-halo.png",
+        "sha256": "ac63c6f9730bdae0b7730b1597c2191860b1a672eb07c08986bed4e5d03bdcad"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/module-halo.png",
+        "sha256": "195c434d4a8c4b17c472a6e6337072e3139873c9f3ac5449365711eb1cee8093"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/module-halo.txt",
+        "sha256": "1b163f2ab96e74b6c632243ff38c6201c50257329b1c84322443a0738c70838d"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-halo.png",
+        "128": "art/icons/modules/exports/128/module-halo.png",
+        "64": "art/icons/modules/exports/64/module-halo.png",
+        "56": "art/icons/modules/exports/56/module-halo.png",
+        "48": "art/icons/modules/exports/48/module-halo.png",
+        "44": "art/icons/modules/exports/44/module-halo.png",
+        "40": "art/icons/modules/exports/40/module-halo.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/ui-revert.png",
+      "sha256": "12147c2777fb0fdba114d07638c97644fb86d70774601c2ac0e56893fe0478e4",
+      "id": "ui-revert",
+      "family": "modules",
+      "action": "a curved rewind arrow",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/ui-revert.png",
+        "sha256": "ae1b807c04e6edd371495e3b7dc713e1adfcc97e2137e34a3185380c41782ac4"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/ui-revert.png",
+        "sha256": "12147c2777fb0fdba114d07638c97644fb86d70774601c2ac0e56893fe0478e4"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/ui-revert.txt",
+        "sha256": "86aa1aea5f6d340431228e7779a27d0fce62971be2a796e5ed5ecb8f7c040c58"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/ui-revert.png",
+        "128": "art/icons/modules/exports/128/ui-revert.png",
+        "64": "art/icons/modules/exports/64/ui-revert.png",
+        "56": "art/icons/modules/exports/56/ui-revert.png",
+        "48": "art/icons/modules/exports/48/ui-revert.png",
+        "44": "art/icons/modules/exports/44/ui-revert.png",
+        "40": "art/icons/modules/exports/40/ui-revert.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/ui-practice.png",
+      "sha256": "a204962a920110b89b5c076ba2bece9e9409a98727c8473219d5edc7e3df6de8",
+      "id": "ui-practice",
+      "family": "modules",
+      "action": "a small heart with exactly four separated tally lines",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/ui-practice.png",
+        "sha256": "165b52196687347c60f52edaa88e690d1d67c5ded22854ad78481ce4d9746f28"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/ui-practice.png",
+        "sha256": "a204962a920110b89b5c076ba2bece9e9409a98727c8473219d5edc7e3df6de8"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/ui-practice.txt",
+        "sha256": "c6cd2ee1e0fad3004e6df8c5c740919a063d653be10a7b5f12a8e48522adef2d"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/ui-practice.png",
+        "128": "art/icons/modules/exports/128/ui-practice.png",
+        "64": "art/icons/modules/exports/64/ui-practice.png",
+        "56": "art/icons/modules/exports/56/ui-practice.png",
+        "48": "art/icons/modules/exports/48/ui-practice.png",
+        "44": "art/icons/modules/exports/44/ui-practice.png",
+        "40": "art/icons/modules/exports/40/ui-practice.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    },
+    {
+      "path": "art/icons/modules/ui-felt.png",
+      "sha256": "18a8e646334b51130e99e81e8d72c1be8dcb35f9dd42775fd3912fbfef100293",
+      "id": "ui-felt",
+      "family": "modules",
+      "action": "a ribbon opening outward, for having felt a feeling",
+      "source": {
+        "path": "art/_archive/deliveries/2026-11-12/sources/ui-felt.png",
+        "sha256": "a842c46102dc1f6837a72f7130665006481345c01fedd5759ef1d0fb44828e18"
+      },
+      "master": {
+        "path": "art/_archive/deliveries/2026-11-12/masters/v1/ui-felt.png",
+        "sha256": "18a8e646334b51130e99e81e8d72c1be8dcb35f9dd42775fd3912fbfef100293"
+      },
+      "prompt": {
+        "path": "art/_archive/deliveries/2026-11-12/prompts/ui-felt.txt",
+        "sha256": "aaf5efe48a4496c8b2f9549ab7f8efff7fa1eae9fb47d884ac337e1664b8917c"
+      },
+      "exports": {
+        "256": "art/icons/modules/exports/256/ui-felt.png",
+        "128": "art/icons/modules/exports/128/ui-felt.png",
+        "64": "art/icons/modules/exports/64/ui-felt.png",
+        "56": "art/icons/modules/exports/56/ui-felt.png",
+        "48": "art/icons/modules/exports/48/ui-felt.png",
+        "44": "art/icons/modules/exports/44/ui-felt.png",
+        "40": "art/icons/modules/exports/40/ui-felt.png"
+      },
+      "references": [
+        {
+          "path": "art/icons/prayers/whisper-luck.png",
+          "sha256": "8d11426c672ed80d5bedb736902998f5dcd398c98f403ee323d5b7dc363f8a2a"
+        },
+        {
+          "path": "art/icons/prayers/hymn-mother_ember-1.png",
+          "sha256": "53d16f4615ca26a45b051426da43cf3cdb7344a44378d2a7bbf2634737d7b1a3"
+        },
+        {
+          "path": "art/icons/modules/module-split.png",
+          "sha256": "ba6d0ed1fc684e9a42ca34427496e4f2ae26ff3ce2696658b18645c363ad2cb3"
+        },
+        {
+          "path": "art/icons/modules/module-orbit.png",
+          "sha256": "29f2523db99af2321fbaca95bd3d9a74342e7c73ae3c45fcb228f9680e8d51d3"
+        }
+      ]
+    }
+  ]
+}

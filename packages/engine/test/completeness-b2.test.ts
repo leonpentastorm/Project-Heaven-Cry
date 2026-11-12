@@ -4,6 +4,7 @@
 // Outclassed, You Get Used to It and Sweet Talker hearing a reducer action or an enemy's turn; Sixth Sense letting a
 // squadmate target an enemy in the dark; Foreseen's spent use after the rewind; Just the Repairman's scene memory.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, apLeft, d20, holdersOf, briefOf, previewAttack, votesOf, rerollFrom, packOf, lineOfSight, CLASS,
   type GameState, type Combat, type Unit,
@@ -132,7 +133,7 @@ describe('triggers from a reducer action or an enemy\'s turn (item 20)', () => {
       const s = storyWith([{ perks: { sweet_talker: tier, lay_down_arms: 'I' } }]); const c = s.chars[0];
       s.act({ type: 'narrator/turn', turn: { narration: 'Talk.', checks: [{ charId: c.id, skills: ['implication'], tn: 12, stakes: 'Charm Vel', target: 'Vel', auto: 'success' }] } } as any);
       const ck = s.g.checks.find((k: any) => !k.done); if (ck) s.act({ type: 'check/roll', checkId: ck.id } as any);
-      s.act({ type: 'narrator/turn', turn: { narration: 'Vel turns.', combat: { name: 'Fight', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Vel', tier: 'soldier', weapon: 'service_pistol', at: 'F6' }] } } } as any);
+      s.act({ type: 'narrator/turn', turn: { narration: 'Vel turns.', combat: { name: 'Fight', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Vel', tier: 'soldier', weapon: 'service_pistol', at: 'F6' }] } } } as any);
       const box: any = s, cb: Combat = box.g.combat; open(cb);
       const me = cb.units.find((u) => u.side === 'pc')!, vel = cb.units.find((u) => u.name === 'Vel')!;
       me.pos = '2,5'; vel.pos = '4,5'; vel.sv = { body: -50, brain: -50, heart: -50 } as any;

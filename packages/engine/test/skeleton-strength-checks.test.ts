@@ -103,23 +103,23 @@ describe('debuff strength by source (rules 1.13)', () => {
     f.foe.condFresh = [];
     withGame(f.g, () => condTurnEnd(f.cb, f.foe, rngFor(17)));
     expect(condOn(f.foe, 'corroded')).toBe(false);
-    expect(f.cb.log.some((l) => /scrubs off the acid \(body save 17 vs 17\)/.test(l))).toBe(true);
+    expect(f.cb.log.some((l) => /scrubs off the acid \(body save d20 \d+ [+−]\d+ = 17 vs 17/.test(l))).toBe(true);
   });
   describe('talking in a fight: the gamma that spoke', () => {
     const say = (f: F, kind: string) => { f.g.rng = rngFor(2); f.act({ type: 'combat/parley', unitId: f.pc.id, targetId: f.foe.id, kind, text: '' } as any); return f.cb.log.at(-1)!; };
     it('Threaten: Shaken on a HEART save against 12 + Intimidation strength', () => {
       const f = fight(); f.foe.sv = { body: 40, brain: 40, heart: 0 }; // a Body save would shrug it off
       const line = say(f, 'threaten');
-      expect(line).toMatch(/heart save \d+ vs 17/); expect(condOn(f.foe, 'shaken')).toBe(true);
+      expect(line).toMatch(/heart save d20 [^)]* vs 17/); expect(condOn(f.foe, 'shaken')).toBe(true);
       expect(f.foe.condVia?.shaken).toBe('intimidation');
     });
     it('Persuade: a Brain save against 12 + Eloquence strength', () => {
       const f = fight(); f.foe.sv = { body: 40, brain: 0, heart: 40 };
-      expect(say(f, 'persuade')).toMatch(/brain save \d+ vs 13/); expect(condOn(f.foe, 'ldebuff')).toBe(true);
+      expect(say(f, 'persuade')).toMatch(/brain save d20 [^)]* vs 13/); expect(condOn(f.foe, 'ldebuff')).toBe(true);
     });
     it('the offer of terms: a Heart save against 12 + Charisma strength', () => {
       const f = fight(); f.foe.hp = 1; f.foe.sv = { body: 40, brain: 40, heart: 0 };
-      expect(say(f, 'parley')).toMatch(/Heart save d20 2 \+0 vs 15/);
+      expect(say(f, 'parley')).toMatch(/heart save d20 2 \+0 = 2 vs 15/);
     });
   });
   it('a foe\'s spoken or thrown condition is its tier, as before', () => {
@@ -233,7 +233,7 @@ describe('a technique\'s save reads the user\'s strength with the weapon\'s skil
     expect(tn(h, 'feint')).toBe(12 + 1); // half of Raw Power strength 2; no Light step
     const b = duel('fists', ['bind'], { raw_power: 6, dexterity: 2 }); b.g.rng = rngFor(10);
     expect(b.tech('bind', { targetId: b.foe.id })).toBeNull(); // Bare: the grapple's Body save
-    expect(tnOf(b.cb.log.find((l) => /body save \d+ vs/.test(l))!)).toBe(12 + 5);
+    expect(tnOf(b.cb.log.find((l) => /body save d20 [^)]* vs/.test(l))!)).toBe(12 + 5);
   });
   it('a save rolled after the technique\'s own use (walking away from a Bind) reads the binder\'s strength with the weapon it was set with', () => {
     const f = duel('sabre', ['bind'], { dexterity: 5, raw_power: 8 });

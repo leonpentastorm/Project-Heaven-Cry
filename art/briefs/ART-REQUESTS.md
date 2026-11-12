@@ -35,21 +35,53 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 
 ## Open requests
 
+**Ready-to-paste prompts for an image generator** (12 Nov 2026): [`GPT-PROMPTS-2026-11-12.md`](GPT-PROMPTS-2026-11-12.md) covers W1 to W3, F1, F2 and the two maps whose layouts are set (M1, M6).
+
 ### 1. Wick icons (white flat ink, 1024 × 1024, transparent; the STYLE-LOCK applies)
 
 | # | For | Status | What it must show | Direction | Goes to |
 | --- | --- | --- | --- | --- | --- |
-| W1 | **The nine Calls:** Order, Rally, Brief, Name It, Cue, Spot, Warn, Threaten, Taunt (`data/calls.json`) | Wanted: the Calls tab has no pictures | One icon a Call: Wick calling out across a fight. Each must read as a shout with a different purpose (an order to a squadmate, a rallying cry, a quick briefing, naming a fear out loud, a cue, a pointed finger at a target, a warning, a threat, a goad) | Same Wick, same line weight as the perk set. A small speech mark, sound lines or a pointing hand may carry the idea; no text in the image. They sit side by side, so the nine silhouettes must differ at 44 px | `art/icons/calls/<name>.png` (new folder; `order.png`, `name-it.png`, …) |
-| W2 | **Both Hands** (perk: a blade in one hand, a gun in the other; a melee hit steadies the next shot) | Stand-in: the Hot Swap Wick with a sword patched into his open hand (`art/icons/perks/both-hands.png`, made by `tools/art/both_hands_icon.py`) | Wick fighting with a sword and a pistol at once | A fresh pose, not the Hot Swap spin: mid-strike with the blade, the pistol already levelled. The old Origami Hands icon it replaced is in `art/_archive/perks/wick/replaced/` | `art/icons/perks/both-hands.png` |
+| W1 | **The nine Calls:** Order, Rally, Brief, Name It, Cue, Spot, Warn, Threaten, Taunt (`data/calls.json`) | Done: nine icons delivered, cataloged and shown on the Calls tab chips (`call-<name>`) | One icon a Call: Wick calling out across a fight. Each must read as a shout with a different purpose (an order to a squadmate, a rallying cry, a quick briefing, naming a fear out loud, a cue, a pointed finger at a target, a warning, a threat, a goad) | Same Wick, same line weight as the perk set. A small speech mark, sound lines or a pointing hand may carry the idea; no text in the image. They sit side by side, so the nine silhouettes must differ at 44 px | `art/icons/calls/<name>.png` (new folder; `order.png`, `name-it.png`, …) |
+| W2 | **Both Hands** (perk: a blade in one hand, a gun in the other; a melee hit steadies the next shot) | Done: fresh sword-and-pistol pose delivered; previous stand-in archived | Wick fighting with a sword and a pistol at once | A fresh pose, not the Hot Swap spin: mid-strike with the blade, the pistol already levelled. The old Origami Hands icon it replaced is in `art/_archive/perks/wick/replaced/` | `art/icons/perks/both-hands.png` |
+| W3 | **Rebuke**, the seventh Whisper (rules 1.21, 12 Nov 2026: a short prayer that hurts one enemy; `data/patrons.json` `whispers`) | Done: image_gen Wick Whisper delivered and cataloged | Wick rebuking: one hand raised flat toward someone out of frame, a single hard ray of light leaving it. It must read as a scolding word that lands, not as a spell | The six Whisper icons are the set to match (`art/icons/prayers/whisper-*.png`): same Wick, same line weight, one small light source. No colour; every patron uses it | `art/icons/prayers/whisper-rebuke.png` (then `npm run assets`) |
 
 ### 2. Outburst feelings and modules
 
 | # | For | Status | What it must show | Direction | Goes to |
 | --- | --- | --- | --- | --- | --- |
-| F1 | **The 25 feelings** poured into an Outburst | Stand-in: the game draws simple shapes in code | One glyph a feeling | The brief has every feeling, its meaning and its look: [`outburst-4.0-art-brief.md`](../../docs/design/handoffs/outburst-4.0-art-brief.md) | `art/icons/feelings/feeling-<id>.png` |
-| F2 | **The Outburst modules** | Stand-in: code-drawn shapes | One icon a module | Same brief | `art/icons/modules/module-<id>.png` |
+| F1 | **The 25 feelings** poured into an Outburst | Done: all 25 feeling glyphs delivered and shown (HEART panel, stage bar, Magic tab, unlock card); family style approved | One glyph a feeling. Rules 1.17 (11 Nov 2026) changed what some feelings do, not what they mean: no glyph changes (Relief now eases Strain a point at a time; Calm steadies the cast at a price; Love and Guilt also reach an ally outside the shape). Rules 1.19 (11 Nov 2026) gave six feelings a new job (Grief reads a fallen ally, Fear throws the caster back, Joy widens the critical, Hope cleanses, Guilt draws the enemy's fire, Longing only reaches further): each glyph draws the feeling, not its effect, so **no glyph changes**. The Damage school's new ways (Strike, Finish, Brand, Drain), Control's Swap and Status' Silenced are words on a chip: **no new icons** | The brief has every feeling, its meaning and its look: [`outburst-4.0-art-brief.md`](../../docs/design/handoffs/outburst-4.0-art-brief.md) | `art/icons/feelings/feeling-<id>.png` |
+| F2 | **The Outburst modules** | Done: all 38 modules plus Revert, Practice and Felt UI marks delivered and shown (modules in the Magic tab and design cards; Revert on the HEART buttons, Practice on the practice bar, Felt on the unlock card); family style approved | One icon a module. **Impact needs no icon any more: the module was retired in rules 1.17 (11 Nov 2026)** | Same brief (skip its Impact row) | `art/icons/modules/module-<id>.png` |
 
-### 3. Portraits, illustrations, maps
+Delivered on `art/briefs-complete` (12 Nov 2026): **77 icons** across W1–W3, F1 and F2.
+Sources, exports, contact sheets and implementation notes: [`delivery handoff`](../_archive/deliveries/2026-11-12/HANDOFF.md).
+Leon approved both Outburst test-set family styles; individual artwork remains review-candidate, `production_approved:false`.
+
+### 3. Maps
+
+**The rule for every map (Leon, 11 Nov 2026).** A fight map is at most **26 × 26 tiles** (A to Z by 1 to 26). The
+Proving Ground is that full size. A campaign or a later game mode may set a smaller map for a place that should feel
+tight; the size is chosen when the campaign is made. The four maps that were painted before this (M813's, 16 × 11 tiles each) are retired to plain colour and kept in
+`art/_archive/maps/m813/retired-2026-11/` as the reference for the look. (The Proving Ground was listed as a fifth
+painted map; it only ever had its banner, which stays.)
+
+**Direction for all of them.** The same Heavenprint map treatment as the retired four: top-down, the same tile scale
+and light, so tokens and object sprites sit on it unchanged. A map shows approaches, flanks and a way round, so a squad
+can manoeuvre instead of meeting head-on. Paint to the tile layout guide that `tools/render_map_guides.py` makes from
+the campaign file: **a map is only ready to paint when its row below says its layout is set.**
+
+| # | Map | Campaign | Size | Status | Notes | Goes to |
+| --- | --- | --- | --- | --- | --- | --- |
+| M1 | **The Proving Ground** | The Proving Ground (practice fights) | 26 × 26 | **Layout set** (rules 1.16, 11 Nov 2026; first layout, open to playtests). Ready to paint once Leon has played it. Guide: `python3 tools/render_map_guides.py data/campaigns/proving.json <folder>` | Packed sand under floodlights; the squad comes in from the west, drill units from the east. The first one to paint | `art/maps/proving-ground.png` |
+| M2 | **The shield line** | The Last Ship Out (M813) | 16 × 11 today; to be set | Planned, with the M813 rewrite. Don't start | Leon: "M813 is too broken now with all we have changed… wait for the rewrite." Old painting: `art/_archive/maps/m813/retired-2026-11/shield-line.png` | `art/maps/m813/shield-line.png` |
+| M3 | **Outpost-813 rear landing pad** | The Last Ship Out (M813) | 16 × 11 today; to be set | Planned, with the M813 rewrite. Don't start | Old painting: `art/_archive/maps/m813/retired-2026-11/rear-pad.png` | `art/maps/m813/rear-pad.png` |
+| M4 | **Outpost-813** | The Last Ship Out (M813) | 16 × 11 today; to be set | Planned, with the M813 rewrite. Don't start | Old painting: `art/_archive/maps/m813/retired-2026-11/outpost.png` | `art/maps/m813/outpost.png` |
+| M5 | **Outpost-1** | The Last Ship Out (M813) | 16 × 11 today; to be set | Planned, with the M813 rewrite. Don't start | Old painting: `art/_archive/maps/m813/retired-2026-11/outpost-1.png` | `art/maps/m813/outpost-1.png` |
+| M6 | **Open ground** | The Narrator's Own Start, and any fight with no map of its own | 26 × 26 | **Layout set** (rules 1.16; `data/maps.json`, `layouts.open_ground`). Never painted; plain colour today. Guide: the same tool on `data/campaigns/own.json` | The generic field the Narrator uses when a story names no place: it should read as "somewhere outdoors" and suit any world. Worth two or three variants later (wasteland, street, forest edge) | `art/maps/open-ground.png` |
+| M7 | **The mining camp** | A God-Plot on a Mining World | 26 × 26 | First layout set (rules 1.16), but the campaign is still a sketch: wait until it is written. Never painted | A shrine camp on a mining world | `art/maps/godplot/shrine-camp.png` |
+| M8 | **The penthouse** | A Summoning in Central City | 16 × 11 (an interior; kept small) | Layout unchanged; the campaign is still a sketch: wait until it is written. Never painted | A Central City penthouse where a summoning goes wrong | `art/maps/summoning/penthouse.png` |
+| M9 | **The lifted town** | The Town Where the Curse Is Lifted | 26 × 26 | First layout set (rules 1.16), but the campaign is still a sketch: wait until it is written. Never painted | A Bazaim-style town of lifted curses | `art/maps/curse/lifted-town.png` |
+
+### 3b. Portraits and illustrations
 
 Nothing waiting.
 
@@ -93,6 +125,9 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
+- **12 Nov 2026:** W3 opened: Rebuke, a seventh Whisper (rules 1.21, the Faith fit). Thunderclap now also deals lightning damage and Lightning Rod's numbers moved; their icons (`hymn-old_overcast-1`, `-2`) still fit.
+- **11 Nov 2026:** maps built to rules 1.16: M1 and M6 have their 26 × 26 layouts; the four M813 paintings moved to `art/_archive/maps/m813/retired-2026-11/` and left the catalog.
+- **11 Nov 2026:** maps: the rule (26 × 26 at most, the Proving Ground at full size, smaller allowed per campaign) and one row a map, M1 to M9.
 - **11 Nov 2026:** E1 added (Heavenprint artwork for all equipment, planned with Equipment 2.0).
 - **11 Nov 2026:** list started. W1, W2, F1, F2 opened. Breaching Strike, Nothing Gets Past and Iron Grip were
   checked against their rules 1.13 meanings and fit as they are.

@@ -92,7 +92,7 @@ describe('the crossbow (0.18.1)', () => {
     expect(f.tech('shot', { targetId: f.foe.id })).toBeNull();
     expect(f.unit(f.pc.id).ammo).toBe(0); // the last one: nothing left to load
   });
-  it('Heavy Bolt is its signature: 4 AP, +50% damage through 10 armour', () => {
+  it('Heavy Bolt is its signature: 4 AP, +40% damage (rules 1.18; it was +50%) through 10 armour', () => {
     expect(WEAPON.crossbow.damage).toBe(55); expect((WEAPON.crossbow as any).phys.teaches).toBe('heavy_bolt');
     const f = physFight([{ weapon: 'crossbow', known: ['heavy_bolt'], skills: SK }], [{ tier: 'soldier' }], { seed: 'X2' });
     f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'H5'); foe.hp = foe.maxHp = 9000; foe.armour = 10;
@@ -100,7 +100,7 @@ describe('the crossbow (0.18.1)', () => {
     const plain = f.pv('shot', { targetId: f.foe.id }), heavy = f.pv('heavy_bolt', { targetId: f.foe.id });
     expect(heavy.ok).toBe(true); expect(heavy.ap).toBe(4);
     expect(heavy.attacks[0].pv.pct).toBeGreaterThan(plain.attacks[0].pv.pct); // Precise: +2
-    expect((heavy.attacks[0].pv as any).dmg.total ?? 0).toBeGreaterThan(((plain.attacks[0].pv as any).dmg.total ?? 0) * 1.4);
+    expect((heavy.attacks[0].pv as any).dmg.total ?? 0).toBeCloseTo(((plain.attacks[0].pv as any).dmg.total ?? 0) * 1.4, 6);
   });
 });
 

@@ -6,7 +6,8 @@
 // Every item runs both tiers in combat and its story part (checks, story conditions, rest, session start) where it has
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags A…) and docs/design/perk-runtime.md.
-import { register, stateOf, uses, pendRuling, postStory, applyDamage, grantShield, gainEcho, pushAway, immune, emit, type Holder } from '../effects';
+import { register, charOfUnit, stateOf, uses, pendRuling, postStory, applyDamage, grantShield, gainEcho, pushAway, immune, emit, type Holder } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import { ELEMENTAL_TYPES } from '../effects/damage';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
@@ -17,16 +18,16 @@ import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily, unitSt
 import { die, d20, type Rng } from '../rng';
 import { setStoryCond, storyConds, strikeFromWorld } from '../game';
 import { reveal, PATRON , dropHeldShot } from '../tactics';
+import { overworld, say, tileOf, rngOf } from '../kit';
+import { rollVs, TN } from '../rolls';
+import { setBraced, setDowned } from '../unitstate';
+import { restoreConds, setCondRounds } from '../magic';
 
 // ---------- small helpers ----------
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const ow = overworld;
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
-const rngOf = (h: Holder, ctx?: any): { state: number } | null => ctx?.rng || h.g?.rng || null;
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
 /** A tile from a grid reference ("F6") or a key ("5,5"). */
-const tileOf = (cb: Combat, t?: string) => (!t ? null : /^\d+,\d+$/.test(t) ? t : refKey(t, cb.map));
 /** Melee reach of the unit's melee option (fists when it holds a gun): 1, or 2 with a reach weapon. */
 const reachOf = (u: Unit) => { const w: any = WEAPON[u.weapon]; if (!w || !isMelee(w)) return 1; return (w.properties || []).includes('reach_2') || w.id === 'lance' || w.grants?.effect?.op === 'reach' ? (w.grants?.effect?.op === 'reach' ? w.grants.effect.value : 2) : 1; };
 /** A hit by someone (not a hazard, a trap's tick, bleeding or burning): what "a hit" and "a wound" mean here. */
@@ -34,8 +35,6 @@ const isHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].in
 /** Self-inflicted damage (Mana Short, an Evoker's overload, Strain) never triggers the drop-to-0 savers (plan 6, Last Wall 1). */
 const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
 const magicSrc = (src: any) => ['sigil', 'soul', 'elemental'].includes(src?.type);
-const bloodied = (u: Unit) => u.hp * 2 < u.maxHp;
-const fresh = (u: Unit) => u.hp * 2 > u.maxHp;
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read a character's item state without creating it (stat queries and previews must not change state). */
 const cs = (c: Character | null | undefined): Record<string, any> => c?.state || {};
@@ -99,7 +98,7 @@ register({
     text: 'Remove one Body debuff from yourself. II: this costs 1 AP instead of 2, and you gain a shield of 10% of your max HP.',
     available: (h) => (inFight(h) ? (shrugList(h.u!).length ? true : 'No Body debuff to shrug off.') : true),
     preview: (h, a) => {
-      if (inFight(h)) { const l = shrugList(h.u!); const pick = a.choice && l.includes(a.choice) ? a.choice : l[0]; return { lines: ['Removes ' + (pick || 'nothing') + (tierII(h) ? '; shield ' + Math.floor(0.1 * h.u!.maxHp) : '') + '.'] }; }
+      if (inFight(h)) { const l = shrugList(h.u!); const pick = a.choice && l.includes(a.choice) ? a.choice : l[0]; return { lines: ['Removes ' + (pick || 'nothing') + (tierII(h) ? '; shield ' + Math.floor(itemAmount('perk:shrug_it_off', 'shield', [], { max_hp: h.u!.maxHp })) : '') + '.'] }; }
       const l = storyBody(h); return { lines: [l.length ? 'Ends ' + l[0] + '.' : 'The Narrator decides whether you shake off what ails you.'] };
     },
     run: (h, a) => {
@@ -108,7 +107,7 @@ register({
         if (!pick) return 'No Body debuff to shrug off.';
         endCond(u, pick, h.cb!);
         let line = u.name + ' shrugs off ' + pick + ' (Shrug It Off)';
-        if (tierII(h)) { const v = grantShield(h.cb!, u, 0.1 * u.maxHp, u); emitFx(h.cb!, 'shield', { target: u.id, at: u.pos, amount: v }); line += ' · a ' + v + ' shield'; }
+        if (tierII(h)) { const v = grantShield(h.cb!, u, itemAmount('perk:shrug_it_off', 'shield', [], { max_hp: u.maxHp }), u); emitFx(h.cb!, 'shield', { target: u.id, at: u.pos, amount: v }); line += ' · a ' + v + ' shield'; }
         emitFx(h.cb!, 'cond', { target: u.id, at: u.pos, id: pick, resisted: true });
         say(h.cb, line + '.'); return null;
       }
@@ -121,47 +120,29 @@ register({
   brief: () => 'out of combat: ends a narrated Body condition (Narrator judges)',
 });
 
-// ---------- Used to the Pain (Pain Threshold β) ----------
-// Rules 1.13 (a beta gives no AP): the first hit that takes HP each combat (a shield-only hit doesn't count; hazards,
-// bleeding and burning don't). I: under 20% of max HP, the next hit against you deals 25% less; a heavier one gives
-// nothing. II: under 30%, 40% less. Numbers PROVISIONAL (spec 14).
-const UTP = { I: { cut: 0.2, less: 25 }, II: { cut: 0.3, less: 40 } };
-register({
-  id: 'used_to_the_pain', claims: 'all',
-  on: {
-    damage_in: (ctx, h) => {
-      if (ctx.phase !== 'reduce' || ctx.t !== h.u || !isHit(ctx.src) || ctx.src.by?.side === h.u!.side || ctx.dmg <= 0) return;
-      const st = stateOf(h); if (!st.hard) return;
-      const less = st.hard; st.hard = 0; ctx.dmg = ctx.dmg * (1 - less / 100);
-      say(h.cb, h.u!.name + ' was ready for that one (Used to the Pain): ' + less + '% less.');
-    },
-    on_damaged: (ctx, h) => {
-      if (ctx.t !== h.u || !isHit(ctx.src) || ctx.src.by?.side === h.u!.side) return;
-      const st = stateOf(h); if (st.seen) return; st.seen = true;
-      const k = tierII(h) ? UTP.II : UTP.I;
-      if (ctx.dmg / h.u!.maxHp < k.cut) { st.hard = k.less; say(h.cb, h.u!.name + ' takes it in stride (Used to the Pain): the next hit deals ' + k.less + '% less.'); }
-    },
-  },
-  brief: () => null,
-});
+// ---------- Used to the Pain (Pain Threshold β): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Scar Tissue (Pain Threshold β) ----------
 // Each wound (a hit that takes HP) this combat: +5% Elemental damage reduction, up to 25% (II: 40%). The total with the
 // derived Elemental damage taken stays within the 60% cap (spec: Derived stats). II, PROVISIONAL (plan 6, Scar Tissue 2):
 // "limb damage" is Injury resistance: each stack adds +5 points to the d100 injury resistance, up to +40.
+// Its numbers are its data's (engine foundations 3): each stack is effects[0].value, up to effects[0].max (the count of
+// stacks is max / value); II's Injury resistance per stack is effects[1].value in points of the d100.
+const scarStack = (h: Holder) => h.info.effects[0] as { value: number; max: number };
 register({
   id: 'scar_tissue', claims: 'all',
   on: {
     on_damaged: (ctx, h) => {
       if (ctx.t !== h.u || !isHit(ctx.src) || !inFight(h)) return;
-      const st = stateOf(h), cap = tierII(h) ? 8 : 5; if ((st.n || 0) >= cap) return;
+      const { value, max } = scarStack(h), st = stateOf(h), cap = Math.round(max / value); if ((st.n || 0) >= cap) return;
       st.n = (st.n || 0) + 1;
-      if (tierII(h)) { st.base ??= h.u!.injResist || 0; h.u!.injResist = st.base + 5 * st.n; }
+      const inj = h.info.effects[1]; if (inj?.type === 'limb') { st.base ??= h.u!.injResist || 0; h.u!.injResist = st.base + Math.round(inj.value * 100) * st.n; }
     },
     damage_in: (ctx, h) => {
       if (ctx.phase !== 'reduce' || ctx.t !== h.u || !ELEMENTAL_TYPES.has(ctx.src?.dmgType || '')) return;
       const n = stateOf(h).n || 0; if (!n) return;
-      const e = Math.min(0.6, h.u!.elemTaken || 0), room = Math.max(0, 1 - 0.4 / (1 - e)), s = Math.min(n * 0.05, tierII(h) ? 0.4 : 0.25, room);
+      const { value, max } = scarStack(h);
+      const e = Math.min(0.6, h.u!.elemTaken || 0), room = Math.max(0, 1 - 0.4 / (1 - e)), s = Math.min(n * value, max, room); // 0.6 and 0.4: the 60% cap of the spec's Derived stats
       ctx.dmg = ctx.dmg * (1 - s);
     },
   },
@@ -175,9 +156,8 @@ register({
 const FEARISH = ['fear', 'nausea', 'gore', 'horror', 'disgust'];
 const storyShake = (h: Holder, ids: string[]) => { if (!h.c || !h.g) return; for (const id of storyConds(h.g, h.c)) if (ids.includes(id)) setStoryCond(h.g, h.c, id, 'scene', true); };
 register({
-  id: 'iron_stomach', claims: (e, i, t) => t === 'I',
+  id: 'iron_stomach', // Tier I's one round is data (engine foundations 3); the story's checks stay here
   on: {
-    cond_apply: (ctx, h) => { if (ctx.t === h.u && (ctx.id === 'fear' || ctx.id === 'nausea') && !tierII(h)) ctx.rounds = Math.min(ctx.rounds || 1, 1); },
     check_build: (ctx, h) => { if (ctx.c === h.c && tierII(h)) storyShake(h, ['fear', 'nausea']); },
     check_post: (ctx, h) => { if (ctx.c !== h.c || !tierII(h)) return; const tg: string[] = ctx.ck.tags || []; if (tg.some((x) => FEARISH.includes(x)) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('Iron Stomach'); } },
     check_result: (ctx, h) => { if (ctx.c === h.c) storyShake(h, ['fear', 'nausea']); },
@@ -199,7 +179,7 @@ register({
   id: 'earthbreaker', claims: 'all',
   actions: [
     {
-      id: 'earthbreaker', label: 'Earthbreaker', scope: ['combat'], target: 'tile', ap: 4, uses: { per: 'per_combat', n: 1 },
+      id: 'earthbreaker', label: 'Earthbreaker', scope: ['combat'], target: 'tile', ap: 'data', uses: { per: 'per_combat', n: 1 },
       preview: (h, a) => {
         if (!h.cb || !h.u) return; const k = tileOf(h.cb, a.tile); if (!k) return { ok: false, why: 'Pick a tile.' };
         if (dist(h.u.pos, k) > reachOf(h.u)) return { ok: false, why: 'Out of reach: your reach is ' + reachOf(h.u) + '.' };
@@ -230,43 +210,21 @@ register({
   brief: () => 'out of a fight, once a scene: smashes floor, walls or cover in reach (you rule what breaks)',
 });
 
-// ---------- Last Wall (Durability Mastered) ----------
-// Once per combat, damage from any hostile or outside source (not self-inflicted) that would take you from 1+ HP to 0
-// leaves you at 1, and you take no damage at all until the start of your next turn (Bleeding and Burning ticks too).
-// If it fires on your own turn, the guard lasts until your next turn starts (PROVISIONAL, plan 6 Last Wall 2).
-register({
-  id: 'last_wall', claims: 'all', priority: 10,
-  on: {
-    damage_in: (ctx, h) => {
-      if (ctx.t !== h.u) return;
-      const st = stateOf(h);
-      if (ctx.phase === 'reduce' && st.guard && ctx.dmg > 0) { ctx.dmg = 0; say(h.cb, 'Last Wall: nothing gets through to ' + h.u!.name + '.'); return; }
-      if (ctx.phase !== 'would_drop_to_0' || ctx.floor != null || selfHarm(ctx) || h.u!.hp <= 0 || st.used) return;
-      st.used = true; st.guard = true; ctx.floor = 1;
-      if (h.cb) { emitFx(h.cb, 'shield', { target: h.u!.id, at: h.u!.pos, amount: 0 }); say(h.cb, h.u!.name + ' refuses to fall (Last Wall): 1 HP, and nothing gets through until their next turn.'); }
-    },
-    turn_start_pre: (ctx, h) => { if (ctx.u === h.u) stateOf(h).guard = false; },
-    // Nothing gets through means no injury either: a critical on the guarded holder rolls none (else a torso Bleeding
-    // from a blow that did nothing would Down them at their next turn start; PROVISIONAL, spec 14).
-    injury: (ctx, h) => { if (ctx.t === h.u && stateOf(h).guard) { ctx.cancel = true; say(h.cb, 'Last Wall: no injury gets through.'); } },
-  },
-  brief: () => 'once a fight a lethal blow leaves them at 1 HP and untouchable to their next turn',
-});
+// ---------- Last Wall (Durability Mastered): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Walking Wounded (Pain Threshold Mastered) ----------
 // Injuries never cost you AP or Movement: a head injury doesn't Daze you, a leg injury doesn't halve Movement (in a
 // fight, from a critical or the Injured condition, and on the area map). The injury is still recorded; torso Bleeding
 // and the arm's −2 still apply. Below half max HP you take 20% less damage (rules 1.13; PROVISIONAL, spec 14).
-const WW_LESS = 0.2;
 const wwSnap = (h: Holder) => { const st = stateOf(h); st.snap = { daz: h.u!.dazedNext || 0, mv: h.u!.movement, legs: (h.u!.injuries || []).filter((i) => i.loc === 'leg').length }; };
 function wwUndo(h: Holder, line: string) {
   const u = h.u!, st = stateOf(h), s = st.snap; if (!s) return; st.snap = null;
-  if (/head, Dazed/.test(line) && !s.daz && u.dazedNext) { u.dazedNext = 0; say(h.cb, u.name + ' shrugs off the blow to the head (Walking Wounded).'); }
+  if (/head, Dazed/.test(line) && !s.daz && u.dazedNext) { endCond(u, 'dazed'); say(h.cb, u.name + ' shrugs off the blow to the head (Walking Wounded).'); }
   const legs = (u.injuries || []).filter((i) => i.loc === 'leg').length;
   if (legs > s.legs && u.movement < s.mv) { u.movement = s.mv; if (u.baseMove != null) u.baseMove = Math.max(u.baseMove, s.mv); say(h.cb, u.name + ' walks on the bad leg (Walking Wounded).'); }
 }
 register({
-  id: 'walking_wounded', claims: 'all',
+  id: 'walking_wounded', claims: [0], // effect 1 (20% less while Bloodied) is data (engine foundations 3)
   stat: (h, stat) => (stat === 'move' && h.c && legInjured(h.c) ? baseMove(h.c) * 0.5 : 0),
   on: {
     // A critical's injury: the 'injury' hook keeps the wound but not its Daze or the halved Movement.
@@ -277,7 +235,6 @@ register({
     },
     cond_apply: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'injured') wwSnap(h); },
     cond_landed: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'injured') { const st = stateOf(h); if (st.snap) { const legs = (h.u!.injuries || []).filter((i) => i.loc === 'leg').length; wwUndo(h, h.u!.dazedNext && !st.snap.daz ? 'head, Dazed' : legs > st.snap.legs ? 'leg' : ''); } } },
-    damage_in: (ctx, h) => { if (ctx.phase === 'reduce' && ctx.t === h.u && !h.u!.downed && bloodied(h.u!) && ctx.dmg > 0) ctx.dmg = ctx.dmg * (1 - WW_LESS); },
   },
   brief: () => 'injuries never slow this character down',
 });
@@ -286,12 +243,9 @@ register({
 // Immune to Fear (the generic immunity). Allies within 3 tiles who can see you can't be made Afraid (no save), and an
 // ally already Afraid who starts its turn in the aura loses it (PROVISIONAL, plan 6). Story: this character can't be
 // frightened (Fear-tagged checks auto-pass; a story Fear ends at once).
-const inAura = (cb: Combat, g: Unit, t: Unit) => t !== g && t.side === g.side && alive(g) && dist(g.pos, t.pos) <= 3 && unitSees(cb, t, g.pos);
 register({
-  id: 'nothing_left_to_fear', claims: [1],
+  id: 'nothing_left_to_fear', // the aura in a fight is data (engine foundations 3); the story's fear stays here
   on: {
-    cond_apply: (ctx, h) => { if (ctx.id === 'fear' && h.u && h.cb && inAura(h.cb, h.u, ctx.t)) { ctx.cancel = true; ctx.why = h.u.name + ' is there (Nothing Left to Fear)'; } },
-    turn_start: (ctx, h) => { if (h.u && h.cb && condOn(ctx.u, 'fear') && inAura(h.cb, h.u, ctx.u)) { endCond(ctx.u, 'fear', h.cb); say(h.cb, ctx.u.name + ' steadies beside ' + h.u.name + ': no longer Afraid (Nothing Left to Fear).'); } },
     story_cond_apply: (ctx, h) => { if (ctx.c === h.c && ctx.id === 'fear') { ctx.cancel = true; ctx.why = 'Nothing Left to Fear'; } },
     check_build: (ctx, h) => { if (ctx.c === h.c) storyShake(h, ['fear']); },
     check_post: (ctx, h) => { if (ctx.c !== h.c) return; const tg: string[] = ctx.ck.tags || []; if ((tg.includes('fear') || tg.includes('horror')) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('Nothing Left to Fear'); } },
@@ -305,7 +259,7 @@ register({
 // (this turn, if it is yours now). Then you go Downed unless someone healed you. Each hit you take meanwhile is a
 // death-save failure (two on a critical) instead of damage; at 3 you die (PROVISIONAL, plan 6 Bite the Bullet 2).
 // Ordering: after Angel of the Trenches and Last Wall (priority 20).
-const btbEnd = (h: Holder, why: string) => { const st = stateOf(h); st.lt = null; if (h.u?.conds) delete h.u.conds.last_turn; say(h.cb, why); };
+const btbEnd = (h: Holder, why: string) => { const st = stateOf(h); st.lt = null; if (h.u) endCond(h.u, 'last_turn'); say(h.cb, why); };
 register({
   id: 'bite_the_bullet', claims: 'all', priority: 20,
   on: {
@@ -323,13 +277,13 @@ register({
       if (!uses(h).take('per_combat', 1)) return;
       const own = !!h.cb && h.cb.order[h.cb.turn] === u.id && !h.cb.window;
       ctx.floor = 1; st.lt = { began: own };
-      (u.conds ||= {}).last_turn = 99;
+      restoreConds(u, { last_turn: 99 }); // the perk's own marker: nobody is asked
       say(h.cb, u.name + ' bites the bullet: still standing for ' + (own ? 'the rest of this turn' : 'one more turn') + '.');
     },
     turn_start: (ctx, h) => { if (ctx.u === h.u && stateOf(h).lt) stateOf(h).lt.began = true; },
     turn_end: (ctx, h) => {
       const st = stateOf(h); if (ctx.u !== h.u || !st.lt || !st.lt.began) return;
-      const u = h.u!; u.hp = 0; u.downed = true; u.braced = false; dropHeldShot(h.cb, u, 'down');
+      const u = h.u!; u.hp = 0; setDowned(u, true); setBraced(u, false); dropHeldShot(h.cb, u, 'down');
       btbEnd(h, u.name + '\'s Last Turn is over: Downed.'); if (h.cb) fxFell(h.cb, u);
     },
     heal_given: (ctx, h) => { if (ctx.t === h.u && stateOf(h).lt && ctx.n > 0) btbEnd(h, h.u!.name + ' is patched up in time: the Last Turn ends, still standing.'); },
@@ -337,35 +291,11 @@ register({
   brief: () => null,
 });
 
-// ---------- Siege Engine (Raw Power + Durability, Achieved) ----------
-// The Shove Link and the Break Finisher cost 1 AP less, never below 1 (so a 1 AP Shove stays 1): the stat
-// 'ap_cost:shove' / 'ap_cost:break', asked by the technique AP path (physical/core.ts apFor) and by the old Shove. Nothing knocks you back: shoves, knockback
-// (generic immunity), Breaching Strike; Prone from a blocked shove still lands.
-register({
-  id: 'siege_engine', claims: [0, 1],
-  // The Break Finisher costs 1 AP less; a Shove that moves its target gives 1 Guard (Leon, 10 Nov 2026: the Shove Link is 1 AP already, so its discount gave nothing)
-  stat: (h, stat, ctx) => ((stat === 'ap_cost:shove' || stat === 'ap_cost:break') && (ctx?.base ?? 2) > 1 ? -1 : stat === 'shove_guard' ? 1 : 0),
-  on: { forced_move: (ctx, h) => { if (ctx.u === h.u && !ctx.cancel) { ctx.cancel = true; say(h.cb, h.u!.name + ' doesn\'t move an inch (Siege Engine).'); } } },
-  brief: () => 'can\'t be knocked back or off their feet in a story scuffle',
-});
+// ---------- Siege Engine (Raw Power + Durability, Achieved): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ======================================================================================================== TRAITS
 
-// ---------- Pain Eater ----------
-// Bloodied (below half max HP): ×1.5 damage dealt (weapons; Sigil, Soul and Elemental damage too, through harm()'s
-// damage_out, before armour). Fresh (above half):
-// ×1.5 damage taken from every source, after armour. At exactly half, neither.
-register({
-  id: 'pain_eater', claims: [0, 1],
-  on: {
-    damage_out: (ctx, h) => { if (ctx.att === h.u && bloodied(h.u!)) ctx.mults.push({ v: 1.5, label: 'Pain Eater (Bloodied)' }); },
-    damage_in: (ctx, h) => {
-      if (ctx.phase !== 'reduce') return;
-      if (ctx.t === h.u && fresh(h.u!)) ctx.dmg *= 1.5;
-    },
-  },
-  brief: () => null,
-});
+// ---------- Pain Eater: written in data only (data/traits.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Factory Made ----------
 // Machine Body: immune to poison (the toxic spill hazard; a poison condition if one is ever applied), bleed (generic)
@@ -387,9 +317,9 @@ register({
       id: 'self_repair', label: 'Field Repair (self)', scope: ['combat'], target: 'none', ap: 2,
       text: 'Patch your own machine body: heal 10 HP per Improvisation point. Uses one spare-parts charge. Needs Improvisation 3.',
       available: (h) => (!h.u ? false : (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare-parts charges.' : h.u.hp >= h.u.maxHp ? 'Already whole.' : true),
-      preview: (h) => ({ lines: ['Heals ' + 10 * (h.u?.proficiency || 0) + ' HP. This repair is not halved the way other healing on you is.'] }),
+      preview: (h) => ({ lines: ['Heals ' + itemAmount('trait:factory_made', 'repair', [], { improvisation: h.u?.proficiency || 0 }) + ' HP. This repair is not halved the way other healing on you is.'] }),
       run: (h) => {
-        const u = h.u!, n = 10 * (u.proficiency || 0), was = u.hp;
+        const u = h.u!, n = itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 }), was = u.hp;
         u.parts = (u.parts || 0) - 1; u.hp = Math.min(u.maxHp, u.hp + n);
         emitFx(h.cb!, 'heal', { target: u.id, at: u.pos, amount: u.hp - was }); emitFx(h.cb!, 'repair', { unit: u.id, at: u.pos, dur: 1400 });
         say(h.cb, u.name + ' patches their own chassis: +' + (u.hp - was) + ' HP (' + u.hp + '/' + u.maxHp + ').'); return null;
@@ -402,7 +332,7 @@ register({
       run: (h) => {
         const c = h.c!; let left = 1;
         c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left || x.qty <= 0) return x; left--; return { ...x, qty: x.qty - 1 }; }).filter((x) => x.qty > 0 || x.mags);
-        const max = Math.max(c.hp, maxHpOf(c)), was = c.hp; c.hp = Math.min(max, c.hp + 10 * (c.skills.proficiency || 0));
+        const max = Math.max(c.hp, maxHpOf(c)), was = c.hp; c.hp = Math.min(max, c.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: c.skills.proficiency || 0 }));
         postStory(h, 'spends ten minutes on repairs: +' + (c.hp - was) + ' HP (' + c.hp + '/' + max + ').'); return null;
       },
     },
@@ -436,11 +366,7 @@ register({
   brief: () => null,
 });
 
-// ---------- Right of Way ----------
-// Can't be Shoved (generic immunity; weapon knockback and PUSH still move them). +2 Intimidation and Authority on
-// checks tagged vs_blocker_or_interrupter (generic). Old Injury: −2 Reaction Speed (generic; Initiative too) and
-// −0.5 Movement instead of −1 (PROVISIONAL, plan 6 Right of Way 1: −1 halves Movement at Agility 1).
-register({ id: 'right_of_way', claims: [3], stat: (h, stat) => (stat === 'move' ? -0.5 : 0), brief: () => 'tag checks vs_blocker_or_interrupter when someone blocks or interrupts them' });
+// ---------- Right of Way: written in data only (data/traits.json; run by effects/triggers.ts, engine foundations 3) ----------
 
 // ---------- Heavyworlder ----------
 // Dense: can't be Shoved (generic), carry ×2, +2 Intimidation (generic); counts one size larger (no size rules: the
@@ -448,10 +374,10 @@ register({ id: 'right_of_way', claims: [3], stat: (h, stat) => (stat === 'move' 
 // −0.5 Movement (PROVISIONAL like Right of Way), attacks against them +2 to hit, and they can't hide in light: Hide on a
 // lit tile is undone, and the story's stay-hidden roll fails when they aren't in the dark.
 register({
-  id: 'heavyworlder', claims: [2, 3, 6, 7], narrator: [0],
-  stat: (h, stat) => (stat === 'carry' ? { mult: 2 } : stat === 'move' ? -0.5 : stat === 'size' ? 1 : stat === 'one_hand_heavy' ? 1 : 0), // heavies in one hand (character.ts twoHands)
+  // carry ×2, −0.5 Movement, heavies in one hand (character.ts twoHands) and +2 to hit it are data (engine foundations 3);
+  // 'one size larger' is the Narrator's (no stat: nothing asks a size). The light and the dark stay here.
+  id: 'heavyworlder', narrator: [0],
   on: {
-    attack_preview: (ctx, h) => { if (ctx.tgt === h.u) ctx.terms.push({ v: 2, label: 'big target (Heavyworlder)' }); },
     hide: (ctx, h) => { if (ctx.u === h.u && h.cb && litAt(h.cb, h.u!.pos)) reveal(h.cb, h.u!, 'too big to hide in the light'); },
     notice: (ctx, h) => { if (ctx.c === h.c) stateOf(h).dark = !!ctx.dark; },
     stay_hidden: (ctx, h) => { if (ctx.c === h.c && !stateOf(h).dark) ctx.auto = 'fail'; },
@@ -474,14 +400,14 @@ register({
     on_hit: (ctx, h) => {
       if (ctx.tgt !== h.u || !ctx.crit || !h.cb || h.u!.dead || h.u!.downed) return;
       if (!/INJURY \(d6 \d\): (left|right) (arm|leg)/.test(lastLine(h.cb))) return;
-      const back = Math.floor(0.3 * (ctx.dmg || 0)); if (back <= 0) return;
+      const back = Math.floor(itemAmount('trait:crawler_blooded', 'chitin', [], { damage: ctx.dmg || 0 })); if (back <= 0) return;
       h.u!.hp = Math.min(h.u!.maxHp, h.u!.hp + back); say(h.cb, 'Chitin turns part of the blow: ' + back + ' back (Crawler-Blooded).');
     },
     blessing_in: (ctx, h) => {
       if (ctx.t !== h.u || !h.cb) return;
-      const p = PATRON[h.c?.patron || ''] || Object.values(PATRON).find((x: any) => (x.blessings || []).includes(ctx.blessing));
+      const bid = ctx.blessing?.id, p = Object.values(PATRON).find((x: any) => !!bid && (x.blessings || []).some((b: any) => b.id === bid)) || PATRON[charOfUnit(ctx.u)?.patron || '']; // the Blessing's patron (item 114), never the holder's own
       if ((p as any)?.faction !== 'lumeri') return;
-      const r = applyDamage(h.cb, h.u!, 10, { by: null, type: 'true', dmgType: 'true', shield: false, credit: 'none' });
+      const r = applyDamage(h.cb, h.u!, itemAmount('trait:crawler_blooded', 'blessing_burn'), { by: null, type: 'true', dmgType: 'true', shield: false, credit: 'none' });
       say(h.cb, 'The Lumeri light burns ' + h.u!.name + ' for ' + r.dealt + ' (Crawler-Blooded).');
     },
   },
@@ -604,16 +530,16 @@ register({
     path_opts: (ctx, h) => { if (ctx.u === h.u && augOn(h, 'legs')) ctx.jump = true; },
     on_damaged: (ctx, h) => {
       if (ctx.t !== h.u || ctx.src?.dmgType !== 'emp' || !augOf(h) || !h.cb || h.u!.dead) return;
-      const r = applyCond(h.cb, rngOf(h) || { state: 1 }, ctx.src.by || null, h.u!, 'augment_offline', 2, undefined, { skipSave: true });
-      if (h.u!.conds?.augment_offline) h.u!.conds.augment_offline = 2;
+      const r = applyCond(h.cb, rngOf(h), ctx.src.by || null, h.u!, 'augment_offline', 2, undefined, { skipSave: true });
+      if (h.u!.conds?.augment_offline) setCondRounds(h.u!, 'augment_offline', 2);
       if (augOf(h) === 'eye') h.u!.darkSight = !!stateOf(h).gearDark;
       say(h.cb, 'The EMP fries ' + h.u!.name + '\'s ' + augOf(h) + ' augment' + r + '.');
     },
     rest: (ctx, h) => {
       if (!h.c || !augOf(h) || !ctx.g?.rng) return;
-      const c = h.c, r = d20(ctx.g.rng), m = mod(c.skills.proficiency || 0), ok = r === 20 || (r !== 1 && r + m >= 12);
+      const c = h.c, rv = rollVs(null, ctx.g.rng, { mod: mod(c.skills.proficiency || 0), tn: TN.standard }), ok = rv.ok;
       charState(c).augmentOffline = !ok;
-      postStory(h, 'maintenance on the ' + augOf(h) + ' augment: Improvisation d20 ' + r + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs 12 · ' + (ok ? 'working.' : 'it won\'t work until the next rest.'));
+      postStory(h, 'maintenance on the ' + augOf(h) + ' augment: Improvisation ' + rv.text + ' · ' + (ok ? 'working.' : 'it won\'t work until the next rest.'));
     },
   },
   actions: [{

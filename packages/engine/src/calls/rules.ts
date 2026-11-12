@@ -1,11 +1,12 @@
 // Calls (rules 1.13): the standing rules. What a Call left on a unit (Spot, Warn, Taunt's dearer attack, Threaten's AP
 // loss, a Brief, a Cue) is read here on the fight's hooks. A preview only reads: marks are used up by a real attack
 // ('attack_target', which only a resolved attack fires), a real turn start or a real action, never in 'attack_preview'.
-import { type Combat, type Unit, alive, previewAttack, moveBlock, moveUnit, paths, unitSees } from '../combat';
+import { say, type Combat, type Unit, alive, previewAttack, moveBlock, moveUnit, paths, unitSees } from '../combat';
 import { onHook } from '../effects/hooks';
 import { briefCredit } from '../effects/ap';
 import { condSource } from '../magic';
 import { CALL_RULES } from './data';
+import { pay, apFor } from '../effects/cost';
 
 /** A mark made in round r still stands: through that round and the next, until its speaker's next turn starts
  * (cleared there); the round bound is for a speaker who never gets that turn. */
@@ -46,7 +47,7 @@ onHook('attack_target', (ctx: any, cb) => {
   const sp = tgt.call?.spot;
   if (sp) {
     if (first) sp.live = null;
-    if (first && stands(cb, sp) && att.side === sp.side && att.id !== sp.by && sp.left > 0 && !sp.users.includes(att.id)) { sp.left--; sp.users.push(att.id); sp.live = att.id; cb.log.push('(' + att.name + ' attacks the one that was Spotted: its cover doesn\'t count.)'); }
+    if (first && stands(cb, sp) && att.side === sp.side && att.id !== sp.by && sp.left > 0 && !sp.users.includes(att.id)) { sp.left--; sp.users.push(att.id); sp.live = att.id; say(cb, '(' + att.name + ' attacks the one that was Spotted: its cover doesn\'t count.)'); }
     if (!sp.left && !sp.live) delete tgt.call!.spot;
   }
   // Warn: the unit steps before this real attack on it
@@ -59,10 +60,10 @@ onHook('attack_target', (ctx: any, cb) => {
     const to = warnStep(cb, att, tgt, ctx.mode, wn.tiles, wn.to); if (!to) return;
     const from = tgt.pos;
     if (moveUnit(cb, tgt, to, ctx.rng, 'move', { free: true, shortest: true, part: true }) || tgt.pos === from) return;
-    cb.log.push('(' + tgt.name + ' was warned and steps clear.)');
+    say(cb, '(' + tgt.name + ' was warned and steps clear.)');
     if (alive(tgt) && !previewAttack(cb, att, tgt, ctx.mode, { free: true }).ok) {
       ctx.cancel = true; ctx.why = tgt.name + ' was warned and is no longer there';
-      if (!ctx.free && paid.ok && alive(att)) att.ap = Math.max(0, att.ap - paid.ap); // the attack was made at where they stood: its AP is spent
+      if (!ctx.free && paid.ok && alive(att)) pay(cb, att, Math.min(apFor(cb, att), paid.ap)); // the attack was made at where they stood: its AP is spent
     }
   }
 });
@@ -94,7 +95,7 @@ onHook('turn_start_pre', (ctx: any, cb) => {
   // the speaker's turn has come round: its Spot, Warn and Cue end
   for (const v of cb.units) { const c = v.call; if (!c) continue; if (c.spot?.by === u.id) delete c.spot; if (c.warn?.by === u.id) delete c.warn; if (c.cue?.by === u.id) delete c.cue; if (c.saves?.by === u.id) delete c.saves; }
   for (const v of cb.units) { const c = v.call; if (!c) continue; if (c.spot && !stands(cb, c.spot)) delete c.spot; if (c.warn && !stands(cb, c.warn)) delete c.warn; if (c.cue && !stands(cb, c.cue)) delete c.cue; }
-  // Threaten: the AP it loses this turn (a penalty before the floor of 2; Name It can cancel it)
+  // Threaten: the AP it loses this turn (a penalty before the floor of 2)
   const loss = u.call?.apLoss; if (loss) { ctx.penalties.push({ n: loss.n, why: 'Threatened' }); delete u.call!.apLoss; }
 });
 onHook('turn_end', (ctx: any, cb) => {
@@ -111,20 +112,12 @@ onHook('round_start', (_ctx: any, cb) => {
   const now = new Set(cb.order); cb.order = [...keep.filter((id) => now.has(id)), ...cb.order.filter((id) => !keep.includes(id))];
 });
 
-// ---------- Brief: the reducer lends the discount before the action and settles it after (as Encore does) ----------
-/** Before a briefed unit's action: lend the AP its Brief takes off (inside the +3 cap and the turn's 9). */
-export function briefBefore(cb: Combat, u: Unit, a: { type: string }): { credit: number; before: number } | null {
-  if (cb.window || a.type === 'combat/end-turn' || a.type === 'combat/decline') return null;
-  const credit = briefCredit(u, cb); if (!credit) return null;
-  const before = u.ap; u.ap += credit; return { credit, before };
-}
-/** After it: the action cost up to `credit` less; an action that cost nothing leaves the Brief for the next one. */
-export function briefAfter(cb: Combat, u: Unit, x: { credit: number; before: number } | null) {
-  if (!x) return;
-  const spent = Math.round((x.before + x.credit - u.ap) * 10) / 10, used = Math.min(x.credit, Math.max(0, spent));
-  u.ap -= x.credit - used; // what wasn't used goes back
+// ---------- Brief: a credit on the briefed unit's next action (effects/cost.ts lend / settle) ----------
+/** After a briefed unit's action: `used` AP of its Brief paid for it. An action that cost nothing leaves the Brief for
+ * the next one. AP from a Call counts in the turn's +3. */
+export function briefUsed(cb: Combat, u: Unit, used: number) {
   if (used <= 0) return;
   u.apGained = (u.apGained || 0) + used; u.apTurnTotal = (u.apTurnTotal ?? u.ap) + used; // AP from a Call counts in the turn's +3
   const b = u.call?.brief; if (b) { b.cuts.shift(); if (!b.cuts.length) delete u.call!.brief; }
-  cb.log.push('  (Briefed: that cost ' + u.name + ' ' + used + ' AP less.)');
+  say(cb, '  (Briefed: that cost ' + u.name + ' ' + used + ' AP less.)');
 }

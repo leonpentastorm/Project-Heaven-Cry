@@ -1,6 +1,7 @@
 // Presentation events (combat.ts FxEvent): the effects layer animates from these, so the main actions must emit them,
 // and emitting them must never change a roll.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { ARCHETYPES, type Sheet, type GameState, newCharacter, newGame, apply, positionsOf, standable, zoneMap, storyObjects, startCombat, resolveAttack, reload, clearJam, useWeaponSkill, FX_CAP, emitFx, trimFx, type Combat } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -9,7 +10,7 @@ const sheetFrom = (archId: string, name = 'Test'): Sheet => {
 };
 const fight = () => {
   const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-  const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
+  const cb = startCombat('t', 'yard16', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
   return { c, cb, u: cb.units.find((x) => x.side === 'pc')!, e: cb.units.find((x) => x.side === 'foe')! };
 };
 const after = (cb: Combat, n: number) => (cb.fx || []).filter((x) => x.n > n);

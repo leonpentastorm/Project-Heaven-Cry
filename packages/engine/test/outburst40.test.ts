@@ -23,7 +23,7 @@ function rig(foes: string[] = ['6,5'], allies: string[] = [], o: { first?: boole
   f.foes.forEach((e, i) => { e.pos = foes[i]; });
   for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; (x as any).healRecv = 1; }
   for (const p of f.pcs) {
-    Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: !o.first, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } });
+    Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBoon: 1, deal: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: !o.first, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } });
     p.sk = {}; p.dbf = {};
   }
   const u = f.turn(f.pc); u.ap = 60;
@@ -54,13 +54,14 @@ describe('the stage table and the free first Pump (rules 1.8, sections 2 and 6)'
   });
 });
 
-describe('feelings poured in (section 3)', () => {
-  it('a feeling pump adds its own step instead of +0.4; Rage ×3 at stage 3 is ×2.1; Rage adds 1 Strain at the pump', () => {
+describe('feelings poured in (section 3; steps and behaviours as rules 1.19 set them)', () => {
+  it('a feeling pump adds its own step instead of the plain +0.2; Rage is +0.5 and 1 Strain at the pump; each feeling goes in once', () => {
     const f = rig(); const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); const s0 = me(f).mg!.strain;
-    pump(f, 'rage'); expect(me(f).mg!.strain).toBe(s0 + 1); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(1.1);
-    expect(fx(f.cb, 'pump').at(-1)).toMatchObject({ feeling: 'rage', family: 'wild', step: 0.5, mult: 1.1 });
-    pump(f, 'rage'); pump(f, 'rage'); expect(me(f).mg!.held!.felt).toEqual(['rage', 'rage', 'rage']);
-    release(f, '6,5'); expect(fx(f.cb, 'release').at(-1).mult).toBe(2.1); expect(lost(f.foe)).toBe(Math.floor(20 * 2.1 * 0.5));
+    pump(f, 'rage'); expect(me(f).mg!.strain).toBe(s0 + 1); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(1.3);
+    expect(fx(f.cb, 'pump').at(-1)).toMatchObject({ feeling: 'rage', family: 'wild', step: 0.5, mult: 1.3 });
+    expect(() => pump(f, 'rage')).toThrow(/already in this Outburst/);
+    pump(f, 'shame'); pump(f); expect(me(f).mg!.held!.felt).toEqual(['rage', 'shame']);
+    release(f, '6,5'); expect(fx(f.cb, 'release').at(-1).mult).toBe(2); expect(lost(f.foe)).toBe(Math.floor(20 * 2 * 0.8)); // 1.4 + 0.3 + 0.3; At Once ×0.8
   });
   it('a feeling you haven\'t felt can\'t be poured in; an unknown one is refused', () => {
     const f = rig(); me(f).mg!.feelings = ['rage']; const d = give(f.pc, {}); begin(f, d);
@@ -71,51 +72,75 @@ describe('feelings poured in (section 3)', () => {
     const d = give(f.pc, { modules: ['burst'] }); begin(f, d); pump(f, 'love');
     expect(fx(f.cb, 'pump').at(-1).does).toBe('now HEALS');
     release(f, '6,5');
-    expect(lost(f.foe)).toBe(Math.floor(20 * 0.9 * 0.7)); expect(f.unit(ally.id).hp).toBeGreaterThan(400); // Love's step +0.3
+    expect(lost(f.foe)).toBe(Math.floor(20 * 1.1 * 0.7)); expect(f.unit(ally.id).hp).toBe(400 + Math.floor(7 * 1.1 * 0.25)); // Love's step +0.3; the ally heals ×0.25 of the Buff school's heal at that multiplier (rules 1.20)
   });
-  it('Joy chains to one more enemy within 2 at half; Calm can\'t miss', () => {
+  it('Joy no longer chains: a Bolt is a critical from 18 up. Calm no longer lands by itself: two rolls, the better kept, at −0.4, and no critical', () => {
     const f = rig(['6,5', '7,6']); const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'joy'); release(f, '6,5');
-    expect(lost(f.foes[1])).toBeGreaterThan(0); expect(logHas(f.cb, /chains to .* \(Joy\)/)).toBe(true);
-    const g = rig(); g.foe.def = 99; const e = give(g.pc, {}); begin(g, e); pump(g, 'calm'); release(g, '6,5');
-    expect(lost(g.foe)).toBe(Math.floor(20 * 0.9)); expect(logHas(g.cb, /Calm: no roll/)).toBe(true); // Calm's step +0.3
+    expect(lost(f.foes[1])).toBe(0); expect(lost(f.foes[0])).toBe(Math.floor(20 * 1.1 * 0.8));
+    // Joy: find a seed whose roll is 18 or 19 and see the critical
+    let crit = 0, plain = 0;
+    for (let s = 1; s <= 60; s++) { const g = rig(); const e = give(g.pc, {}); begin(g, e); pump(g, 'joy'); g.g.rng.state = s * 7919; release(g, '6,5'); const m = /d20 (\d+)(, CRITICAL)?/.exec(g.cb.log.join('\n').split('releases').pop()!); if (!m) continue; if (+m[1] >= 18) { expect(m[2]).toBeTruthy(); crit++; } else { expect(m[2]).toBeFalsy(); plain++; } }
+    expect(crit).toBeGreaterThan(0); expect(plain).toBeGreaterThan(0);
+    // Calm: two dice in the log, the better one kept, never a critical; the multiplier went DOWN
+    const g = rig(); const e = give(g.pc, {}); begin(g, e); pump(g, 'calm'); expect(heldMult(g.cb, me(g), me(g).mg!.held)).toBe(0.4); release(g, '6,5');
+    const m = /d20 (\d+) and (\d+), Calm keeps (\d+)/.exec(g.cb.log.join('\n'))!; expect(m).toBeTruthy(); expect(+m[3]).toBe(Math.max(+m[1], +m[2]));
+    expect(logHas(g.cb, /CRITICAL/)).toBe(false); expect(lost(g.foe)).toBe(Math.floor(20 * 0.4));
+    const h = rig(); h.foe.def = 99; const k = give(h.pc, {}); begin(h, k); pump(h, 'calm'); h.g.rng.state = 5; release(h, '6,5');
+    if (!/d20 \d+ and \d+, Calm keeps 20/.test(h.cb.log.join('\n'))) expect(lost(h.foe)).toBe(0); // it can miss now
+    // the preview shows the better-of-two chance
+    const q = rig(); q.foe.def = 8; const dq = give(q.pc, {}); begin(q, dq); const p0 = withGame(q.g, () => previewOutburstPlan(q.cb, me(q), 'held', '6,5')).affected[0].roll!.pct; pump(q, 'calm');
+    const p1 = withGame(q.g, () => previewOutburstPlan(q.cb, me(q), 'held', '6,5')).affected[0].roll!.pct; expect(p1).toBeCloseTo(100 * (1 - (1 - p0 / 100) ** 2), 0); expect(p1).toBeGreaterThan(p0);
   });
-  it('Spite: +0.8 against whoever last hurt you, +0.4 against anyone else', () => {
+  it('Spite: +0.5 against whoever last hurt you, the plain +0.2 against anyone else', () => {
     const f = rig(['6,5', '6,7']); (me(f) as any).feelHurtBy = f.foes[1].id;
-    expect(feelDelta(f.cb, me(f), ['spite'], 1, f.foes[1])).toBe(0.4); expect(feelDelta(f.cb, me(f), ['spite'], 1, f.foes[0])).toBe(0);
+    expect(feelDelta(f.cb, me(f), ['spite'], 1, f.foes[1])).toBe(0.3); expect(feelDelta(f.cb, me(f), ['spite'], 1, f.foes[0])).toBe(0);
   });
-  it('Pride, Despair, Loneliness and Belonging read the moment', () => {
+  it('Grief, Despair, Loneliness and Belonging read the moment; Pride is a flat +0.6', () => {
     const f = rig(['6,5'], ['3,6', '4,5', '2,5']);
-    expect(feelDelta(f.cb, me(f), ['pride'], 4, null)).toBe(Math.round((0.8 - 0.4) * 100) / 100);
-    expect(feelDelta(f.cb, me(f), ['belonging'], 1, null)).toBe(Math.round((0.3 - 0.4) * 100) / 100);
-    me(f).hp = 250; expect(feelDelta(f.cb, me(f), ['despair'], 1, null)).toBe(Math.round((0.5 - 0.4) * 100) / 100);
-    const g = rig(); expect(feelDelta(g.cb, me(g), ['loneliness'], 1, null)).toBe(Math.round((0.5 - 0.4) * 100) / 100);
+    expect(feelDelta(f.cb, me(f), ['pride'], 4, null)).toBe(0.4); expect(feelDelta(f.cb, me(f), ['pride'], 1, null)).toBe(0.4);
+    expect(feelDelta(f.cb, me(f), ['belonging'], 1, null)).toBe(0.3); // 3 allies within 3: +0.5
+    expect(feelDelta(f.cb, me(f), ['despair'], 1, null)).toBe(0); me(f).hp = 250; expect(feelDelta(f.cb, me(f), ['despair'], 1, null)).toBe(0.2); // half HP missing: +0.4
+    expect(feelDelta(f.cb, me(f), ['loneliness'], 1, null)).toBe(0); // allies near: the plain +0.2
+    expect(feelDelta(f.cb, me(f), ['grief'], 1, null)).toBe(0); f.pcs[1].downed = true; expect(feelDelta(f.cb, me(f), ['grief'], 1, null)).toBe(0.3); // an ally has fallen: +0.5
+    const g = rig(); expect(feelDelta(g.cb, me(g), ['loneliness'], 1, null)).toBe(0.2); // alone: +0.4
   });
-  it('behaviours on the targets hit: Grief Slows, Fear pushes and Shakes, Cruelty bleeds and spreads, Contempt scorns, Awe staggers, Dread takes the reaction, Longing pulls', () => {
+  it('behaviours on the targets hit: Cruelty bleeds and spreads, Contempt scorns, Awe staggers, Dread takes the reaction, Guilt Taunts; Grief no longer Slows and Longing no longer pulls', () => {
     const f = rig(['6,5', '7,5']); const d = give(f.pc, { modules: ['at_once'] }); begin(f, d);
     for (const x of ['grief', 'cruelty', 'contempt', 'awe']) pump(f, x);
     release(f, '6,5'); const t = f.foes[0];
-    expect(t.conds?.slowed).toBeGreaterThan(0); expect(t.bleed).toBeGreaterThan(0); expect(f.foes[1].bleed).toBeGreaterThan(0);
+    expect(t.conds?.slowed || 0).toBe(0); expect(t.bleed).toBeGreaterThan(0); expect(f.foes[1].bleed).toBeGreaterThan(0);
     expect(t.conds?.scorned).toBeGreaterThan(0); expect(t.apDebt).toBe(1);
-    const g = rig(); const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'fear'); pump(g, 'dread'); release(g, '6,5');
-    expect(g.foe.pos).toBe('7,5'); expect(g.foe.conds?.shaken).toBeGreaterThan(0); expect(logHas(g.cb, /loses its reaction \(Dread\)/)).toBe(true);
-    const h = rig(['7,5']); const k = give(h.pc, { modules: ['at_once'] }); begin(h, k); pump(h, 'longing'); release(h, '7,5'); expect(h.foe.pos).toBe('6,5');
+    const g = rig(); const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'guilt'); pump(g, 'dread'); release(g, '6,5');
+    expect(g.foe.conds?.taunted).toBeGreaterThan(0); expect(g.foe.condBy?.taunted).toBe(g.pc.id); expect(logHas(g.cb, /loses its reaction \(Dread\)/)).toBe(true);
+    const h = rig(['7,5']); const k = give(h.pc, { modules: ['at_once'] }); begin(h, k); pump(h, 'longing'); release(h, '7,5'); expect(h.foe.pos).toBe('7,5');
+  });
+  it('Fear throws YOU 2 tiles back from where you aimed; the target is not pushed and not Shaken', () => {
+    const g = rig(); const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'fear'); release(g, '6,5');
+    expect(g.foe.pos).toBe('6,5'); expect(g.foe.conds?.shaken || 0).toBe(0); expect(me(g).pos).toBe('1,5'); expect(logHas(g.cb, /\(Fear\)/)).toBe(true);
   });
   it('Longing adds 2 reach at the release', () => {
     const f = rig(['9,5']); const d = give(f.pc, { modules: ['at_once'] }); begin(f, d);
     expect(() => release(f, '9,5')).toThrow(/Out of reach/); pump(f, 'longing'); release(f, '9,5'); expect(lost(f.foe)).toBeGreaterThan(0);
   });
-  it('Defiance: no saves against the release, and your next save passes; Mercy talks a beaten foe down', () => {
+  it('Defiance: saves against the release are 4 harder (not gone), and your next save passes; Mercy talks a beaten foe down', () => {
     const f = rig(); f.foe.sv = { body: 99, brain: 99, heart: 99 } as any;
     const d = give(f.pc, { school: 'status', option: 'shaken' }); begin(f, d); pump(f, 'defiance'); release(f, '6,5');
-    expect(f.foe.conds?.shaken).toBeGreaterThan(0); expect((me(f) as any).feelSaveNext).toBe(true);
+    expect(f.foe.conds?.shaken || 0).toBe(0); expect((me(f) as any).feelSaveNext).toBe(true); // a sure save still saves
+    const q = rig(); const dq = give(q.pc, { school: 'status', option: 'shaken' }); begin(q, dq);
+    const tn0 = withGame(q.g, () => previewOutburstPlan(q.cb, me(q), 'held', '6,5')).affected[0].saves[0].tn; pump(q, 'defiance');
+    expect(withGame(q.g, () => previewOutburstPlan(q.cb, me(q), 'held', '6,5')).affected[0].saves[0].tn).toBe(tn0 + 4);
+    q.foe.sv = { body: 0, brain: 0, heart: 0 } as any; release(q, '6,5'); expect(logHas(q.cb, new RegExp('vs ' + (tn0 + 4)))).toBe(true);
     const g = rig(); g.foe.hp = 100; const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'mercy'); release(g, '6,5');
     expect(g.foe.surrendered).toBe(true);
   });
-  it('after the strike: Hope cleanses and heartens, Shame and Guilt cost you 5, Relief gives back the hold\'s Strain', () => {
-    const f = rig(['6,5'], ['6,6']); f.pcs[1].conds = { fear: 2 };
+  it('after the strike: Hope takes one harmful condition off each ally in the shape (the newest), Shame costs you 8, Relief takes 2 Strain off at −0.2, Pride costs 2 Strain unless someone goes down', () => {
+    const f = rig(['6,5'], ['6,6']); f.pcs[1].conds = { fear: 2, slowed: 2 }; f.pcs[1].condAt = { fear: 1, slowed: 2 } as any;
     const d = give(f.pc, { modules: ['burst'] }); begin(f, d); pump(f, 'hope'); pump(f, 'shame'); const hp = me(f).hp; release(f, '6,5');
-    expect(f.unit(f.pcs[1].id).conds?.fear || 0).toBe(0); expect(f.unit(f.pcs[1].id).conds?.hopeful).toBeGreaterThan(0); expect(me(f).hp).toBe(hp - 5);
-    const g = rig(); const e = give(g.pc, {}); begin(g, e); pump(g, 'rage'); pump(g, 'relief'); expect(me(g).mg!.strain).toBe(2); release(g, '6,5'); expect(me(g).mg!.strain).toBe(0);
+    expect(f.unit(f.pcs[1].id).conds?.slowed || 0).toBe(0); expect(f.unit(f.pcs[1].id).conds?.fear).toBeGreaterThan(0); expect(f.unit(f.pcs[1].id).conds?.hopeful || 0).toBe(0); expect(me(f).hp).toBe(hp - 8);
+    const g = rig(); const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'rage'); pump(g, 'abandon'); pump(g, 'relief'); expect(me(g).mg!.strain).toBe(4);
+    expect(heldMult(g.cb, me(g), me(g).mg!.held)).toBe(1.9); release(g, '6,5'); expect(me(g).mg!.strain).toBe(2); // 0.8 + 0.5 + 0.8 − 0.2
+    const h = rig(); const k = give(h.pc, { modules: ['at_once'] }); begin(h, k); pump(h, 'pride'); expect(me(h).mg!.strain).toBe(1); release(h, '6,5'); expect(me(h).mg!.strain).toBe(3); expect(logHas(h.cb, /pride stings/)).toBe(true);
+    const w = rig(); w.foe.hp = 5; const kw = give(w.pc, { modules: ['at_once'] }); begin(w, kw); pump(w, 'pride'); release(w, '6,5'); expect(me(w).mg!.strain).toBe(1); // it took the foe down: no Strain
   });
 });
 
@@ -123,10 +148,10 @@ describe('the release preview counts feelings (section 7)', () => {
   it('previewOutburstPlan: the multiplier with the steps, Love\'s heal on an ally, the words and the residue tiles', () => {
     const f = rig(['6,5'], ['6,6']); const d = give(f.pc, { modules: ['burst'] }); begin(f, d); pump(f, 'love'); pump(f, 'rage');
     const p = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
-    expect(p.mult).toBe(1.4); expect(p.felt).toEqual(['love', 'rage']); expect(p.does).toEqual(['now HEALS']);
+    expect(p.mult).toBe(1.6); expect(p.felt).toEqual(['love', 'rage']); expect(p.does).toEqual(['now HEALS']);
     expect(p.residue).toMatchObject({ feeling: 'rage', kind: 'harms' }); expect(p.residue!.tiles.length).toBe(9);
     const ally = p.affected.find((x) => x.unit === f.pcs[1].id)!; expect(ally.heal).toBeGreaterThan(0); expect(ally.dmg).toBe(0);
-    expect(p.affected.find((x) => x.unit === f.foe.id)!.dmg).toBe(Math.floor(20 * 1.4 * 0.7)); // 1.4 + (0.3 − 0.4) + (0.5 − 0.4)
+    expect(p.affected.find((x) => x.unit === f.foe.id)!.dmg).toBe(Math.floor(20 * 1.6 * 0.7)); // 1.2 + (0.3 − 0.2) + (0.5 − 0.2)
   });
 });
 
@@ -156,21 +181,21 @@ describe('residue (section 3.3, item 807)', () => {
 });
 
 describe('the new modules (section 4)', () => {
-  it('Split takes a second creature within 2 of the aim; Volley is 3 bolts at ×0.4; Return strikes twice', () => {
+  it('Split takes a second creature within 2 of the aim; Volley is 3 bolts at ×0.4; Return strikes twice, the second time at ×0.3 (rules 1.17)', () => {
     const f = rig(['6,5', '6,6']); const d = give(f.pc, { modules: ['split'] }); begin(f, d, f.pc, { aim: '6,5' });
     expect(lost(f.foes[0])).toBe(16); expect(lost(f.foes[1])).toBe(16);
     const g = rig(); const e = give(g.pc, { modules: ['volley'] }); begin(g, e, g.pc, { aim: '6,5' }); expect(lost(g.foe)).toBe(3 * Math.floor(20 * 0.8 * 0.4));
-    const h = rig(); const k = give(h.pc, { modules: ['return'] }); begin(h, k, h.pc, { aim: '6,5' }); expect(lost(h.foe)).toBe(2 * 16);
+    const h = rig(); const k = give(h.pc, { modules: ['return'] }); begin(h, k, h.pc, { aim: '6,5' }); expect(lost(h.foe)).toBe(16 + Math.floor(16 * 0.3));
   });
   it('Bloom grows a Burst +1 radius a stage; Anchor pins; Lure pulls 2; Shell shields you', () => {
     const f = rig(['8,5']); const d = give(f.pc, { modules: ['burst', 'bloom'] }); begin(f, d); pump(f); pump(f); release(f, '6,5'); expect(lost(f.foe)).toBeGreaterThan(0);
     const g = rig(['6,5']); const e = give(g.pc, { modules: ['anchor', 'at_once'] }); begin(g, e, g.pc, { aim: '6,5' }); expect(g.foe.conds?.pinned).toBeGreaterThan(0);
     const h = rig(['7,5']); const k = give(h.pc, { modules: ['lure', 'at_once'] }); begin(h, k, h.pc, { aim: '7,5' }); expect(h.foe.pos).toBe('5,5');
-    const i = rig(); const s = give(i.pc, { modules: ['shell'] }); begin(i, s, i.pc, { aim: '6,5' }); expect(me(i).shield).toBe(8);
+    const i = rig(); const s = give(i.pc, { modules: ['shell'] }); begin(i, s, i.pc, { aim: '6,5' }); expect(me(i).shield).toBe(Math.floor(4 * 0.8)); // rules 1.20: 4 × the Soul multiplier × the stage multiplier (stage 0)
   });
   it('Quiet halves the hold\'s Strain (rounded down) and deals ×0.8', () => {
     const f = rig(); const d = give(f.pc, { modules: ['quiet', 'at_once'] }); begin(f, d); expect(me(f).mg!.strain).toBe(0);
-    pump(f, 'abandon'); expect(me(f).mg!.strain).toBe(1); release(f, '6,5'); expect(lost(f.foe)).toBe(Math.floor(20 * (1 + 0.4) * 0.8 * 0.5));
+    pump(f, 'abandon'); expect(me(f).mg!.strain).toBe(1); release(f, '6,5'); expect(lost(f.foe)).toBe(Math.floor(20 * (0.8 + 0.8) * 0.8 * 0.8)); // Abandon +0.8, Quiet ×0.8, At Once ×0.8
   });
   it('Fuse waits: it goes off when a creature steps into its area, or at your next turn start', () => {
     const f = rig(['8,5']); const d = give(f.pc, { modules: ['fuse', 'at_once'] }); begin(f, d, f.pc, { aim: '6,5' });

@@ -162,6 +162,8 @@ for op, u in sorted(uses.items(), key=lambda kv: (-kv[1]["count"], kv[0])):
     reg["items"].append({"id": op, "tier": "core" if op in CORE else "bespoke",
                          "summary": CORE.get(op, ""), "count": u["count"], "params": sorted(u["params"]),
                          "used_by": sorted(u["used_by"])[:12], "example": u["example"]})
+_old = json.loads((root / "effect_ops.json").read_text()) if (root / "effect_ops.json").exists() else {}
+if "item_ops" in _old: reg["item_ops"] = _old["item_ops"]  # the closed lists of item ops (engine foundations 3): written from the engine's code, kept
 save("effect_ops.json", reg)
 core_n = sum(1 for x in reg["items"] if x["tier"] == "core")
 print(f"conditions: {len(cond_ids)}; ops: {len(reg['items'])} ({core_n} core, {len(reg['items'])-core_n} bespoke)")

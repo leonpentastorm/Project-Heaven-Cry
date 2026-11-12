@@ -7,7 +7,7 @@
     "custom_option": true,
     "leans": "base classes of the preset's highest attribute, every tied one (the level-3 rule, Class Roster Revision 3); recomputed by tools/validate.py",
     "budgets": "every archetype spends both creation budgets: its preset places the 10 Skill points and `attributes` places every Attribute point (tools/archetype_fill.py). Cores are not spent: `cores` is each family's highest attribute, kept for the screens; picking one leaves nothing to spend",
-    "preset_style": "presets keep everything at 5 or below as moderate examples; players have no creation cap (a 7/1/1 build is legal from Custom)"
+    "preset_style": "most presets keep everything at 5 or below as moderate examples; the All-in family's nine put one attribute and one skill at 7, the ceiling of an attribute at creation (rules.json character.creation.attributes.cap_at_creation). Custom has the same ceiling and no other: a 7/1/1 build is legal"
   },
   "families": [
     {
@@ -749,11 +749,10 @@
       "cores": {
         "body": 1,
         "mind": 4,
-        "soul": 4
+        "soul": 5
       },
       "leans": [
-        "channeler",
-        "trickster"
+        "channeler"
       ],
       "attributes": {
         "endurance": 1,
@@ -762,9 +761,9 @@
         "perception": 1,
         "intelligence": 1,
         "expression": 4,
-        "insight": 3,
-        "determination": 4,
-        "virtue": 3
+        "insight": 4,
+        "determination": 5,
+        "virtue": 1
       }
     },
     {
@@ -785,7 +784,7 @@
       },
       "leans": [
         "bard",
-        "guardian"
+        "channeler"
       ],
       "attributes": {
         "endurance": 3,
@@ -795,8 +794,8 @@
         "intelligence": 1,
         "expression": 1,
         "insight": 5,
-        "determination": 1,
-        "virtue": 5
+        "determination": 5,
+        "virtue": 1
       }
     },
     {
@@ -848,18 +847,17 @@
         "soul": 5
       },
       "leans": [
-        "channeler",
         "guardian"
       ],
       "attributes": {
-        "endurance": 1,
+        "endurance": 3,
         "strength": 3,
-        "agility": 1,
+        "agility": 3,
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
         "insight": 1,
-        "determination": 5,
+        "determination": 1,
         "virtue": 5
       }
     },
@@ -976,8 +974,7 @@
         "soul": 5
       },
       "leans": [
-        "bard",
-        "guardian"
+        "bard"
       ],
       "attributes": {
         "endurance": 1,
@@ -987,8 +984,8 @@
         "intelligence": 1,
         "expression": 3,
         "insight": 5,
-        "determination": 1,
-        "virtue": 5
+        "determination": 3,
+        "virtue": 3
       }
     },
     {
@@ -1464,8 +1461,8 @@
         "intelligence": 1,
         "expression": 1,
         "insight": 7,
-        "determination": 3,
-        "virtue": 3
+        "determination": 5,
+        "virtue": 1
       }
     },
     {
@@ -1493,9 +1490,9 @@
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
-        "insight": 3,
+        "insight": 5,
         "determination": 7,
-        "virtue": 3
+        "virtue": 1
       }
     },
     {
@@ -1523,8 +1520,8 @@
         "perception": 1,
         "intelligence": 1,
         "expression": 1,
-        "insight": 3,
-        "determination": 3,
+        "insight": 5,
+        "determination": 1,
         "virtue": 7
       }
     }

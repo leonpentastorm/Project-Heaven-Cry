@@ -12,9 +12,10 @@
 // The Defender's class moves are untouched: a unit that holds the Defender's Reactive Plate spends its Guard through
 // the plate and its policy (this soak stands aside), and one that holds the Defender's Brace Interposes by the class
 // move and its policy (the general Interpose stands aside).
-import { type Combat, type Unit, alive, dist, emitFx, fxFell, attackDamage, rollInjury, braceHook } from '../combat';
-import { onHook, charOfUnit, statQuery } from '../effects/hooks';
+import { say, type Combat, type Unit, alive, dist, emitFx, fxFell, attackDamage, rollInjury, braceHook } from '../combat';
+import { onHook, emit, charOfUnit, statQuery } from '../effects/hooks';
 import { applyDamage } from '../effects/damage';
+import { landed } from '../effects/output';
 import { PHYS_RULES } from './data';
 import { technique, answer, guardOf, guardMax, guardGain, addGuard, spendGuard, holds } from './core';
 import { NOT_A_HIT } from './rules';
@@ -25,7 +26,7 @@ const DEF_PLATE = 'class:defender.reactive_plate', DEF_BRACE = 'class:defender.b
 // ---------- gained by Brace ----------
 braceHook.f = (cb: Combat, u: Unit) => {
   const got = addGuard(cb, u, guardGain(u, 'brace'));
-  if (got) cb.log.push('  +' + got + ' Guard (' + guardOf(u) + '/' + guardMax(u) + ').');
+  if (got) say(cb, '  +' + got + ' Guard (' + guardOf(u) + '/' + guardMax(u) + ').');
 };
 
 // ---------- the soak ----------
@@ -49,7 +50,7 @@ onHook('damage_in', (ctx: any, cb) => {
   if (k < 1) return;
   const cut = Math.min(reach, k * per);
   spendGuard(cb, u, k); ctx.dmg = Math.floor(ctx.dmg) - cut; ctx.guardSoaked = (ctx.guardSoaked || 0) + cut;
-  cb.log.push(u.name + '\'s Guard takes ' + cut + ' of it (' + k + ' Guard, ' + guardOf(u) + ' left).');
+  say(cb, u.name + '\'s Guard takes ' + cut + ' of it (' + k + ' Guard, ' + guardOf(u) + ' left).');
 });
 
 // ---------- Interpose ----------
@@ -74,11 +75,12 @@ technique({
       answer(t, src.by, () => {
         spendGuard(cb, me, cost);
         const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
-        const dmg = Math.max(1, Math.floor(d.total) - d.armour);
+        const dmg = landed(d.total, d.armour);
         ctx.dmg = 0;
         interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
         emitFx(cb, 'shove', { unit: me.id, target: v.id, from: me.pos, to: me.pos, ok: true, interpose: true });
-        cb.log.push(me.name + ' interposes for ' + v.name + ' (' + cost + ' Guard) and takes ' + r.amount + ' damage' + (me.hp === 0 ? ' · Downed' : '') + '.');
+        say(cb, me.name + ' interposes for ' + v.name + ' (' + cost + ' Guard) and takes ' + r.amount + ' damage' + (me.hp === 0 ? ' · Downed' : '') + '.');
+        emit(cb, 'protect_act', { u: me, how: 'interpose', t: v, cb }); // the patrons' protect tag (item 600)
         if (me.hp === 0) fxFell(cb, me);
         covered = { t: v.id, me: me.id };
       });
@@ -90,7 +92,7 @@ onHook('injury', (ctx: any, cb) => {
   const ip = covered; if (!ip || ctx.t?.id !== ip.t || ctx.cancel) return; covered = null;
   const me = cb.units.find((x) => x.id === ip.me); if (!me) return;
   ctx.cancel = true;
-  if (!me.dead && !me.downed) cb.log.push('The blow\'s injury lands on ' + me.name + ' (Interpose)' + rollInjury(ctx.rng, me, cb, ctx.by || null) + '.');
+  if (!me.dead && !me.downed) say(cb, 'The blow\'s injury lands on ' + me.name + ' (Interpose)' + rollInjury(ctx.rng, me, cb, ctx.by || null) + '.');
 });
 onHook('on_hit', () => { covered = null; });
 onHook('on_miss', () => { covered = null; });

@@ -128,6 +128,9 @@ def validate_brief_assets(catalog):
             size = (800, 1000) if family == 'characters' else (1600, 900)
             require((asset['width'], asset['height']) == size, f'M813 dimensions: {entry["id"]}')
 
+# Icons a delivery manifest lists that were later replaced (the Origami Hands alias became Both Hands, 10 Nov 2026).
+REPLACED_ICONS = {'origami-hands': 'art/_archive/perks/wick/replaced/origami-hands.png'}
+
 def validate_production_icons(catalog):
     """Validate incremental deliveries without claiming the full run is finished."""
     rules = {family: {x['id'] for x in json.loads(local(f'data/{family}.json').read_text())['items']}
@@ -153,6 +156,9 @@ def validate_production_icons(catalog):
         require(len({i['id'] for i in manifest['icons']}) == len(manifest['icons']), f'Duplicate manifest IDs: {folder}')
         for item in manifest['icons']:
             family = item['family']
+            if item['id'] in REPLACED_ICONS and item['id'] not in catalog[family]:
+                local(REPLACED_ICONS[item['id']])  # Delivered, then replaced by another icon: kept in the archive only.
+                continue
             asset = catalog[family][item['id']]
             if item['path'] != asset['path'] and asset.get('previous_revision_path') == item['path']:
                 local(item['path'])  # Superseded revision is retained, not selected by the catalog.
@@ -218,6 +224,8 @@ def require(condition, message):
         raise ValueError(message)
 
 
+RETIRED_M813_MAPS = {'map-m813-' + n: 'art/_archive/maps/m813/retired-2026-11/' + n + '.png' for n in ['shield-line', 'rear-pad', 'outpost', 'outpost-1']}
+
 def validate_campaign_art(catalog):
     queue_path = ROOT / 'art/briefs/m813-tutorial/production-queue.json'
     if not queue_path.exists():
@@ -229,6 +237,12 @@ def validate_campaign_art(catalog):
     delivered = []
     for job in queue['jobs']:
         asset = catalog.get(job['family'], {}).get(job['id'])
+        if asset is None and job['id'] in RETIRED_M813_MAPS:
+            # Delivered, then retired to plain colour (rules 1.16, Leon 11 Nov 2026): out of the catalog and the game,
+            # kept in the archive as the reference for the look. Still a delivery in the M813 record.
+            local(RETIRED_M813_MAPS[job['id']])
+            delivered.append(job['id'])
+            continue
         if asset is None:
             continue
         delivered.append(job['id'])
@@ -398,7 +412,7 @@ def validate():
     require(catalog['skill_palette_version'] == palette['skill_palette_version'], 'Palette version mismatch')
     paths = set()
     if PIXEL_ASSET is not None:
-        require(any(PIXEL_ASSET in catalog.get(f, {}) for f in ['traits', 'perks', 'characters', 'illustrations', 'maps', 'sprites']),
+        require(any(PIXEL_ASSET in catalog.get(f, {}) for f in ['traits', 'perks', 'characters', 'illustrations', 'maps', 'sprites', 'prayers', 'calls', 'feelings', 'modules']),
                 f'Unknown selected asset: {PIXEL_ASSET}')
     families = [('skills', 27, 27), ('characters', 83, 191),  # 99 + 46 archetype cards + room for a second card each
                 ('traits', 9, 74), ('perks', 2, 106), ('illustrations', 2, 16)]
@@ -436,6 +450,9 @@ def validate():
     validate_brief_assets(catalog)
     validate_production_icons(catalog)
     validate_campaign_art(catalog)
+    sys.path.insert(0, str(ROOT / 'tools/art'))
+    from export_nov12_icons import validate_delivery
+    validate_delivery(PIXEL_ASSET)
     from validate_wick_animation import validate_wick_animation
     validate_wick_animation(complete=COMPLETE_WICK_ANIM)
     checksums = local('art/checksums.sha256').read_text().splitlines()

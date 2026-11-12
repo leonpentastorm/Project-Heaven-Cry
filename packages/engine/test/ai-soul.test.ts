@@ -2,15 +2,20 @@
 // `soul_casters`). The AI only chooses: every release is a real previewOutburstPlan and every step a real action, so the
 // tests check the choice and what the engine then did.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, enemyTurn, sandboxWave, magicTurnStart, magicTurnEnd, moveUnit, wikiLookup, wikiKinds,
   HEART_CASTER, HEART_CASTERS, heartBestRelease, heartPlanValue, previewOutburstPlan, SCHOOL, MODULE, TONE, WEAPON,
   type Sheet, type Combat, type Unit, type MapDef,
 } from '../src';
+import { counted } from '../src/kit';
+// The planners' work, counted (src/kit.ts work / counted), with a quarter of slack over what was measured on 12 Nov 2026: three
+// Sigil casters' turn 2,811 planEvoke calls; ten rounds of three hearts 2,933 Outburst plans; twelve enemy turns on the yard 61 path searches.
+const WORK_MAX = { sigil: 3500, soul: 3700, yard: 80 };
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
 const sheet = (archId: string, name: string): Sheet => { const a = arch(archId); return { name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
-const open = (w = 20, h = 20): MapDef => ({ ...MAPS.yard, w, h, cover: [], full: [], solid: [], difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
+const open = (w = 20, h = 20): MapDef => ({ ...MAPS.yard16, w, h, cover: [], full: [], solid: [], difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
 function seed(n = 60, from = 1): { state: number } { for (let s = from; s < 200000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return { state: s }; } throw new Error('no seed'); }
 interface FoeAt { at: string; caster?: string; tier?: string; name?: string; weapon?: string }
 /** Players with 500 HP, Defense 10, saves 0; foes[0] is the one whose turn the tests run. Normal air. */
@@ -42,7 +47,8 @@ describe('Soul caster archetypes (data/enemies.json soul_casters)', () => {
   });
   it('a foe naming one gets an Emanator (no Evoker), the designs, its Soul multiplier, MP, Strain limit and free Pumps', () => {
     const { e } = fight(['2,5'], [{ at: '15,5', caster: 'heartfire_elite' }]);
-    expect(e.mg).toMatchObject({ emanator: true, evoker: false, soulMult: 1.4, mp: 140, mpMax: 140, strainLimit: 5, freePumps: 1, freePumpsMax: 1, will: e.attack });
+    expect(e.mg!.soulMult).toBeCloseTo(1.4 * e.lvlDmg!, 6); expect(e.lvlDmg).toBe(1.05); // rules 1.15: its spells take the tier and level damage factor (an Elite at level 1: ×1.05)
+    expect(e.mg).toMatchObject({ emanator: true, evoker: false, mp: 140, mpMax: 140, strainLimit: 5, freePumps: 1, freePumpsMax: 1, will: e.attack });
     expect(e.mg!.designs.map((d) => d.id)).toEqual(['heartfire_burst', 'cinder_wave', 'ember_mend']);
     expect((e as any).caster).toBe('heartfire_elite');
   });
@@ -118,8 +124,9 @@ describe('enemy Soul casters choose by situation (rules 1.5)', () => {
     const b = fight(['10,5'], [{ at: '13,5', caster: 'heartfire_elite' }, { at: '10,4', tier: 'soldier', name: 'G1' }, { at: '10,6', tier: 'soldier', name: 'G2' }, { at: '11,5', tier: 'soldier', name: 'G3' }]);
     b.e.mg!.designs = b.e.mg!.designs.filter((d) => d.id === 'heartfire_burst');
     const c = heartBestRelease(b.cb, b.e); b.cb.turn = b.cb.order.indexOf(b.e.id); b.e.ap = 6;
+    expect(c === null || c.own <= c.foes).toBe(true); // the planner offers no such release (it offered none here: null)
+    turn(b.cb, b.e); // truth pass 3: the caster takes its turn (the loop below had nothing to read before)
     for (const r of fx(b.cb, 'release', b.e)) expect(r.targets.filter((t: string) => t !== b.p.id).length).toBeLessThanOrEqual(1);
-    if (c) expect(c.own).toBeLessThanOrEqual(c.foes);
   });
 });
 
@@ -152,7 +159,7 @@ describe('the Narrator\'s wiki: the heart, tones, forms and the Soul casters', (
 describe('a whole fight with every Soul caster', () => {
   it('ten rounds of the three casters against four players: no Short, no burn, it acts, and it stays quick', () => {
     const { cb, es, ps } = fight(['4,5', '4,7', '5,6', '3,9'], [{ at: '12,5', caster: 'heart_adept' }, { at: '12,8', caster: 'heartfire_elite' }, { at: '14,6', caster: 'heart_sovereign' }, { at: '13,10', tier: 'soldier', name: 'Guard', weapon: 'service_pistol' }]);
-    const t0 = Date.now();
+    const { work } = counted(() => {
     for (let r = 1; r <= 10; r++) {
       cb.round = r;
       for (const e of es) if (!e.dead && !e.downed) {
@@ -163,7 +170,9 @@ describe('a whole fight with every Soul caster', () => {
       }
       for (const p of ps) if (!p.dead && !p.downed) { cb.turn = cb.order.indexOf(p.id); p.ap = 6; const [x, y] = p.pos.split(',').map(Number); moveUnit(cb, p, Math.min(19, x + 1) + ',' + y, seed()); }
     }
-    expect(Date.now() - t0).toBeLessThan(8000);
+    });
+    // work, not milliseconds: the plans the casters weighed over ten rounds
+    expect(work.outburstPlan).toBeLessThan(WORK_MAX.soul);
     expect(cb.log.some((l) => /MANA SHORT/.test(l))).toBe(false);
     for (const e of es.slice(0, 3)) { expect(fx(cb, 'burn', e), e.name).toHaveLength(0); expect(cb.log.some((l) => l.startsWith(e.name + ' releases ')), e.name).toBe(true); } // (the log, not the effects list: that one is capped, and a long fight drops its early events)
     expect(ps.some((p) => p.hp < 500)).toBe(true);

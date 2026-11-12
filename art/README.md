@@ -26,7 +26,10 @@ art/
     traits/<trait>.png             Wick, white flat ink, 1024 masters (74)
     traits/exports/<px>/<trait>.png      UI sizes 40/44/48/56/64/128/256
     perks/<perk>.png  perks/exports/<px>/<perk>.png   (106)
-    prayers/<file>.png             whisper / hymn / miracle icons (38)
+    prayers/<file>.png             whisper / hymn / miracle icons (39)
+    calls/<call>.png               nine Wick Calls (44px UI)
+    feelings/feeling-<id>.png       25 Outburst feeling glyphs
+    modules/module-<id>.png        38 Outburst modules, plus ui-revert/practice/felt
     STYLE-LOCK.md                  the Wick icon lock (master: traits/mind-without-fog.png)
     weapons/<weapon_id>.svg        monoline weapon icons, one per data/weapons.json id (60); README.md is the spec
     armour/<item_id>.svg           monoline armour and shield icons, one per data/items.json armour/shield id (19)
@@ -35,7 +38,8 @@ art/
     ahoc/ahoc-seal-white.png       the AHOC seal used in the UI (+ the red 2020 original)
     patrons/<patron_id>.png        the eight patron marks
   illustrations/m813/<id>.png      M813 banners and story moments; spoilers/ holds ending-only images
-  maps/m813/<zone>.png             M813 map backgrounds (1600 x 1100)
+  maps/                            empty today: every map is plain colour (rules 1.16). The four M813 map paintings
+                                   (16 x 11 tiles) are in _archive/maps/m813/retired-2026-11/; new maps: briefs/ART-REQUESTS.md
   sprites/objects/<object>.png     M813 object sprites (catalog id minus "obj-")
   mascot/wick-welcome.png          the app mark
   mascot/wick-anim/                the five menu clips (a validated package: frames, strips, masters, manifest)
@@ -64,6 +68,7 @@ Each file keeps the path it had before the tidy, minus the leading `art/` (so `a
 - `illustrations/`, `maps/`, `sprites/`: M813 v1/v2 deliveries, superseded revisions, sources and previews.
 - `emblems/`, `ui/prayers/`: delivery READMEs, manifests, package checksums and source atlases for the patron marks and prayer icons.
 - `ui/title-screen/`: the title's review previews and native source renders; `history/` holds the earlier title layers (formerly `art/archive/`).
+- `deliveries/2026-11-12/`: the 77-icon delivery (Rebuke, replacement Both Hands, nine Calls, 25 feelings, 38 modules, three UI marks), with versioned masters, sources, prompts, exports and contact sheets. See `HANDOFF.md`.
 - `mascot/`: the mascot README and the Wick animation sources, plans and previews.
 - `style-guide/v1.2/`: the previous six-file guide and its illustrated PDF.
 - `briefs/m813-tutorial/maps/archive-2026-11-06/`: the first outpost layout guide.
@@ -73,7 +78,8 @@ Byte-identical duplicates were removed and every reference pointed at the copy t
 ## Status
 
 - **Icons:** all 74 trait and 106 perk icons are delivered (review candidates; Leon's visual approval pending).
+- **12 November icons:** 77/77 delivered; nine Calls, replacement Both Hands, Rebuke, 25 feelings, 38 modules and three UI marks. Outburst family styles approved; individual art remains review-candidate. See [`handoff`](_archive/deliveries/2026-11-12/HANDOFF.md).
 - **M813 campaign:** 53 images delivered (banners, portraits, maps, story moments, sprites); review candidates.
 - **Archetype cards:** 46 portraits (`pool: player-card` in the catalog); review candidates.
-- **Patrons (Blessing 2.0):** eight portraits, eight marks and 38 prayer icons; review candidates.
+- **Patrons (Blessing 2.0):** eight portraits, eight marks and 39 prayer icons; review candidates.
 - **Title screen:** three layers and the PSD (Part A); the Wick menu clips are review candidates.

@@ -13,17 +13,17 @@
 //   Head Down: u.noWatch = the round: the core's gate refuses every Watch technique; the old Overwatch action is
 //         refused here.
 import { technique, stepUser, stepsWithin, endWatch, ownSideOnly, lowerPressure, techState, techStateOf, turnStamp, strikingWith, strikeRound, addPressureTo, pressureOf, pressureState, pressureDecay, atCover, onHook, type Tech } from './shared';
-import { type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponBraces, weaponBraced, heatLimit, moveUnit, moveBlock, paths } from '../../combat';
+import { say, type Combat, type Unit, alive, unitSees, coverOf, xy, key, emitFx, effectiveRange, dist, weaponBraces, weaponBraced, heatLimit, moveUnit, moveBlock, paths } from '../../combat';
 import { condSource } from '../../magic';
 import { WEAPON } from '../../data';
 import { packOf } from '../../character';
 import { AMMO_TYPES, ammoId } from '../../tactics';
 import { TECHNIQUE, weaponProps } from '../data';
+import { foesOf, alliesOf } from '../../kit';
+import { setBraced } from '../../unitstate';
 
 /** A technique's number outside a Tech (the hooks): the same key its handler's t.num reads. */
 function num(id: string, k: string, fb: number): number { const v = TECHNIQUE[id]?.numbers?.[k]; return typeof v === 'number' ? v : fb; }
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v));
-const alliesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v !== u && v.side === u.side && alive(v));
 /** A standing cover tile of this kind next to a tile. */
 function coverNext(cb: Combat, at: string, kind: 'half' | 'full'): boolean {
   const cov = coverOf(cb), [x, y] = xy(at);
@@ -42,7 +42,7 @@ export function endBead(cb: Combat, u: Unit, why: string): void {
   const st = techStateOf(u, 'bead'); if (!st.targetId) return;
   const was = st.targetId; techState(u, 'bead').targetId = null;
   emitFx(cb, 'bead_end', { unit: u.id, at: u.pos, target: was, why, ...ownSideOnly(cb, u) });
-  if (why !== 'replaced') cb.log.push(u.name + ' loses the bead (' + why + ').');
+  if (why !== 'replaced') say(cb, u.name + ' loses the bead (' + why + ').');
 }
 technique({
   id: 'bead',
@@ -166,7 +166,7 @@ technique({
       t.note('Braced until you move: Recoil halved.' + (p === 'heavy' ? ' Its penalties are gone (no −2 unbraced; a weapon that needs bracing can fire).' : '') + (p === 'auto' ? ' Suppress gives +' + t.num('auto_suppress_pressure', 1) + ' Pressure more.' : ''));
       return null;
     }
-    t.u.braced = true; delete t.u.guardBrace;
+    setBraced(t.u, true);
     Object.assign(techState(t.u, 'brace'), { auto: p === 'auto', at: t.u.pos });
     emitFx(t.cb, 'stance', { unit: t.u.id, at: t.u.pos, what: 'brace' });
     return null;
@@ -235,7 +235,7 @@ strikeRound({
   fired(t, _tgt, type) {
     if (!type || techStateOf(t.u, 'load_special').type !== type) return; // spent by this technique's first shot already
     delete t.u.tech!.load_special;
-    t.cb.log.push('  ' + t.u.name + ' fires the chambered ' + roundName(type) + ' round.');
+    say(t.cb, '  ' + t.u.name + ' fires the chambered ' + roundName(type) + ' round.');
   },
 });
 
@@ -272,7 +272,7 @@ technique({
     const was = SHIFTING; SHIFTING = t.u;
     let err: string | null; try { err = moveUnit(t.cb, t.u, s.to, t.rng, 'move', { via: paths(t.cb, t.u.pos, t.u.id) }); } finally { SHIFTING = was; }
     if (err) return err; // refused before it moved: nothing is spent
-    if (keep && alive(t.u) && !t.u.downed) { t.u.braced = true; if (techStateOf(t.u, 'brace').at) techState(t.u, 'brace').at = t.u.pos; }
+    if (keep && alive(t.u) && !t.u.downed) { setBraced(t.u, true, !!t.u.guardBrace); if (techStateOf(t.u, 'brace').at) techState(t.u, 'brace').at = t.u.pos; }
     return null;
   },
   // under fire, slide to the covered tile the fewest enemies can see

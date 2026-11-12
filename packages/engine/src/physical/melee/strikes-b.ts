@@ -11,13 +11,14 @@
 //   Throw: Dexterity replaces the weapon's skill on the roll, and the weapon goes to the pile on the target's tile.
 import { technique, strike, loseWeaponInto, takeWeapon, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp, meleeFx, fallFx, refuseFx } from './shared';
 import type { Tech } from './shared';
-import { canStrike, loseWeapon, techSaveTn, techVia } from '../core';
-import { type Combat, type Unit, alive, dist, lineOfSight, refOf, weaponDamage, dropToPile, hurtUnit } from '../../combat';
+import { canStrike, loseWeapon, techSaveTn, techVia, saveOutside } from '../core';
+import { say, type Combat, type Unit, alive, dist, lineOfSight, refOf, weaponDamage, dropToPile, hurtUnit } from '../../combat';
 import { WEAPON } from '../../data';
 import { throwRangeOf } from '../../tactics';
 import { condOn, unitSave } from '../../magic';
 import { boundGame } from '../../effects/hooks';
-import { d20, type Rng } from '../../rng';
+import { type Rng } from '../../rng';
+import { apFor } from '../../effects/cost';
 
 // ---------- 11. Hamstring ----------
 // Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds. Edge: no save. Hook: Prone instead of Slowed.
@@ -93,7 +94,7 @@ export const binderOf = (cb: Combat, target: Unit): Unit | null => cb.units.find
 const endBind = (cb: Combat, b: Unit, why: string) => {
   const s = b.tech?.bind; if (!s?.target) return;
   const tg = cb.units.find((x) => x.id === s.target); delete s.target; delete s.pen;
-  if (why && tg) cb.log.push(b.name + '\'s bind on ' + tg.name + ' breaks (' + why + ').');
+  if (why && tg) say(cb, b.name + '\'s bind on ' + tg.name + ' breaks (' + why + ').');
 };
 // "Until your next turn."
 onHook('turn_start_pre', (ctx: any, cb) => { if (ctx.u?.tech?.bind?.target) endBind(cb, ctx.u, ''); });
@@ -112,31 +113,25 @@ onHook('attack_preview', (ctx: any, cb) => {
   if (ctx.melee && bindOf(cb, att)) ctx.reach = Math.min(ctx.reach, 1);
   const b = binderOf(cb, att); if (b && ctx.tgt && ctx.tgt.id !== b.id) ctx.terms.push({ v: -bindOf(cb, b)!.pen, label: 'Bound by ' + b.name });
 });
-/** A Body save rolled outside a technique (the Bound unit tries to walk away). tn: techSaveTn of the binder (rules 1.13). */
-function bodySave(cb: Combat, rng: Rng, u: Unit, why: string, tn: number): boolean {
-  const bonus = unitSave(u, 'body'), r = d20(rng), ok = r === 20 || (r !== 1 && r + bonus >= tn);
-  cb.log.push(u.name + (ok ? ' saves' : ' fails the save') + ' against ' + why + ' (body ' + (r + bonus) + ' vs ' + tn + ').');
-  return ok;
-}
 // A walk of the unit's own (moveUnit prices it here, before a tile is walked).
 onHook('move_cost', (ctx: any, cb) => {
   const u: Unit | undefined = ctx.u; if (!u) return;
   // Hamstring with Point: no Sprint or Disengage. move_cost can't refuse in words, so the price is put out of reach
   // (a request for the lead: a refusal field on move_cost).
-  if ((ctx.how === 'sprint' || ctx.how === 'disengage') && lame(u)) { ctx.ap = Math.max(ctx.ap, u.ap + 1); return; }
+  if ((ctx.how === 'sprint' || ctx.how === 'disengage') && lame(u)) { ctx.ap = Math.max(ctx.ap, apFor(cb, u, { type: 'combat/move', how: ctx.how }) + 1); return; }
   const b = binderOf(cb, u); if (!b) return;
   const route: string[] = ctx.route || [], i = route.findIndex((k) => dist(k, b.pos) > 1); if (i < 0) return;
   // one save a turn: a failed save stands for the rest of the Bound unit's turn (a refused walk costs nothing, so it
   // can't be tried again for a fresh roll)
   const s = techState(b, 'bind'), stamp = turnStamp(cb), failed = s.failed === stamp + ':' + u.id;
   const rng = boundGame()?.rng;
-  if (!failed && rng && bodySave(cb, rng, u, 'the bind', techSaveTn(b, s.via || 'raw_power'))) return; // it breaks away; the step out of reach ends the bind
+  if (!failed && rng && saveOutside(cb, rng, b, u, 'the bind', techSaveTn(b, s.via || 'raw_power'), s.via || 'raw_power')) return; // it breaks away; the step out of reach ends the bind
   if (!failed) s.failed = stamp + ':' + u.id;
   route.length = i; // the walk the engine takes is this route: it stops before the first tile out of reach
-  cb.log.push(u.name + ' is Bound by ' + b.name + ' and can\'t move away.');
+  say(cb, u.name + ' is Bound by ' + b.name + ' and can\'t move away.');
   // Nothing left to walk: the move is refused, not paid for (move_cost can't refuse in words, so the price is put out
   // of reach, as Hamstring does; request 4). A walk that keeps some tiles goes ahead as far as it can.
-  if (!route.length) ctx.ap = Math.max(ctx.ap, u.ap + 1);
+  if (!route.length) ctx.ap = Math.max(ctx.ap, apFor(cb, u, { type: 'combat/move', how: ctx.how }) + 1);
 });
 
 // ---------- 13. Half-Sword ----------
@@ -213,7 +208,7 @@ technique({
     v.stuck = (v.stuck || []).filter((x: any) => x !== e); if (!v.stuck!.length) delete v.stuck;
     if (!takeWeapon(t.cb, t.u, e.weapon, e.item)) dropToPile(t.cb, t.u.pos, [e.item || { id: e.weapon, name: w.name, qty: 1, kind: 'weapon', weapon: e.weapon } as any], 'drop');
     meleeFx(t, 'throw', { from: v.pos, to: t.u.pos, target: v.id, weapon: e.weapon, back: true });
-    t.cb.log.push('  ' + t.u.name + ' wrenches the ' + w.name.toLowerCase() + ' out of ' + v.name + hurtUnit(v, dmg, false, t.cb, 'weapon', t.u) + '.');
+    say(t.cb, '  ' + t.u.name + ' wrenches the ' + w.name.toLowerCase() + ' out of ' + v.name + hurtUnit(v, dmg, false, t.cb, 'weapon', t.u) + '.');
     if (alive(v)) cond(t, v, 'bleeding');
     return null;
   },

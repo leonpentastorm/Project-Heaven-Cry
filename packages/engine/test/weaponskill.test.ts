@@ -1,6 +1,7 @@
 // Weapon skills that are actions (Fan the Hammer and the like): a volley never rolls a shot the engine would refuse,
 // and the action only takes a living target that isn't the shooter.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { ARCHETYPES, type Sheet, type GameState, newCharacter, newGame, apply, active, startCombat, useWeaponSkill, RuleError, resolveAttack, fireAuto, fireBurst } from '../src';
 
 const sheetFrom = (archId: string, name = 'Test'): Sheet => {
@@ -9,7 +10,7 @@ const sheetFrom = (archId: string, name = 'Test'): Sheet => {
 };
 const fight = () => {
   const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-  const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
+  const cb = startCombat('t', 'yard16', [{ c, pos: '1,5' }], [{ name: 'E', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
   const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
   u.weapon = 'drifter_revolver'; u.ammo = 6; u.ap = 9; e.hp = e.maxHp = 999;
   return { c, cb, u, e };
@@ -51,7 +52,7 @@ describe('Fan the Hammer', () => {
 describe('refused shots are never rolled', () => {
   const line = (seed: number) => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [
+    const cb = startCombat('t', 'yard16', [{ c, pos: '1,5' }], [
       { name: 'A', tier: 'boss', weapon: 'fists', at: 'D5' }, { name: 'B', tier: 'boss', weapon: 'fists', at: 'E5' }, { name: 'C', tier: 'boss', weapon: 'fists', at: 'F5' },
     ], 'easy', { state: seed }, []);
     const u = cb.units.find((x) => x.side === 'pc')!, foes = cb.units.filter((x) => x.side === 'foe');

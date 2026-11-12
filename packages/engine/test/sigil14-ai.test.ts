@@ -2,15 +2,20 @@
 // packages/engine/src/ai-sigil.ts; data/enemies.json `casters`). The AI only chooses; every spell it casts is a real
 // planEvoke plan and every step a real action, so the tests check the choice and what the engine then did.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, enemyTurn, apply, newGame, sandboxWave, validateCampaign, PROVING_GROUND, condOn, objectsOf,
   CASTER, CASTERS, casterCombos, aiTileRisk, aiPlanValue, planEvoke, drawGlyph, makeObject,
   type Sheet, type Combat, type Unit, type MapDef, type GameState,
 } from '../src';
+import { counted } from '../src/kit';
+// The planners' work, counted (src/kit.ts work / counted), with a quarter of slack over what was measured on 12 Nov 2026: three
+// Sigil casters' turn 2,811 planEvoke calls; ten rounds of three hearts 2,933 Outburst plans; twelve enemy turns on the yard 61 path searches.
+const WORK_MAX = { sigil: 3500, soul: 3700, yard: 80 };
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
 const sheet = (archId: string, name: string): Sheet => { const a = arch(archId); return { name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
-const open = (w = 20, h = 20, solid: string[] = []): MapDef => ({ ...MAPS.yard, w, h, cover: [], full: [], solid, difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
+const open = (w = 20, h = 20, solid: string[] = []): MapDef => ({ ...MAPS.yard16, w, h, cover: [], full: [], solid, difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
 /** A seed whose next n d20 rolls are all 2–19 (no criticals, no natural 1s). */
 function seed(n = 40, from = 1): { state: number } { for (let s = from; s < 200000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return { state: s }; } throw new Error('no seed'); }
 interface PcAt { at: string; weapon?: string }
@@ -123,9 +128,10 @@ describe('enemy casters choose by situation (spec: Sigils 8)', () => {
   });
   it('weighs a full warden turn quickly (pruned candidates, the engine\'s planner)', () => {
     const { cb, es } = fight([{ at: '4,5' }, { at: '4,7' }, { at: '5,9' }, { at: '3,11' }], [{ at: '12,6', caster: 'sigil_warden', tier: 'elite' }, { at: '12,9', caster: 'sigil_warden', tier: 'elite' }, { at: '13,7', caster: 'sigil_adept' }]);
-    es[2].hp = 20; const t0 = Date.now();
-    for (const e of es) turn(cb, e);
-    expect(Date.now() - t0).toBeLessThan(1500);
+    es[2].hp = 20;
+    const { work } = counted(() => { for (const e of es) turn(cb, e); });
+    // work, not milliseconds (a count is the same on a loaded machine): the candidates the three casters weighed
+    expect(work.planEvoke).toBeLessThan(WORK_MAX.sigil);
     expect(cb.log.some((l) => /evokes/.test(l))).toBe(true);
   });
   it('is deterministic: the same fight plays out the same', () => {
@@ -137,7 +143,8 @@ describe('enemy casters choose by situation (spec: Sigils 8)', () => {
 describe('every enemy and the other side\'s magic', () => {
   it('walks around a field of yours it knows of instead of through it', () => {
     const { cb, e, p } = fight([{ at: '3,5', weapon: 'fists' }], [{ at: '10,5', tier: 'minion', weapon: 'fists' }]);
-    const tiles = ['8,3', '8,4', '8,5', '8,6', '8,7']; field(cb, tiles, 'pc', p.id);
+    const tiles = ['8,3', '8,4', '8,5', '8,6', '8,7']; field(cb, tiles, 'pc', p.id); if (p.mg) { p.mg.sigilMult = 1; p.mg.deal = 1; } // the field's strength this test was written for (rules 1.26 gave a character's Sigil multiplier k 1.7)
+    e.hp = e.maxHp = 25; // a field whose bite (the AI's estimate, with the Line multiplier since rules 1.26) would kill it is one it walks round
     const hp = e.hp; turn(cb, e);
     expect(e.hp).toBe(hp);
     const walked = (cb.fx || []).filter((x) => x.k === 'move' && x.unit === e.id).flatMap((x) => x.path);

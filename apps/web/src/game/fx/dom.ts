@@ -6,7 +6,46 @@ import { reducedMotion } from '../sfx';
 import { battlePace } from '../combatSpeed';
 
 let layer: HTMLDivElement | null = null;
-export const setLayer = (el: HTMLDivElement | null) => { layer = el; };
+export const setLayer = (el: HTMLDivElement | null) => { layer = el; applyClip(); };
+// ---------- the camera (game/cameraView.ts) ----------
+// Everything on the layer is placed in viewport pixels over the map. When the map scrolls under it (the camera glides,
+// the player drags), what is already drawn moves with the map: every absolutely placed box shifts by the scroll. Boxes
+// that follow a tile each frame (anchor, the standing looks, the reload card) place themselves again anyway, and the
+// full-screen ones (position: fixed) stay. And the layer is clipped to the map's window, so an effect on a tile that
+// is off screen never draws over the panels beside the map.
+/** The map scrolled by (dx, dy) px: move what is drawn with it. */
+export function shiftLayer(dx: number, dy: number) {
+  tileCache.clear();
+  scrolled.x += dx; scrolled.y += dy;
+  for (const f of floats) { f.l -= dx; f.r -= dx; f.y -= dy; }
+  if (!layer || (!dx && !dy)) return;
+  for (const el of Array.from(layer.children) as HTMLElement[]) {
+    const st = el.style; if (!st || st.position !== 'absolute') continue;
+    const l = parseFloat(st.left), t = parseFloat(st.top);
+    if (Number.isFinite(l)) st.left = (l - dx) + 'px';
+    if (Number.isFinite(t)) st.top = (t - dy) + 'px';
+  }
+}
+/** How far the map has scrolled in all (the camera). A point found with centre() carries the figure of that moment,
+ *  so a step that draws at it later (a wound's number 150 ms after the hit, an impact after the flight) lands on the
+ *  tile where it is by then, not where it was before the camera moved (liveAt). */
+const scrolled = { x: 0, y: 0 };
+/** A point as it is on screen now: one found with centre() before the map scrolled is moved with the map. A point
+ *  built by hand (no stamp) is taken as it is. */
+export function liveAt<T extends { x: number; y: number }>(p: T): T {
+  const q = p as T & { _sx?: number; _sy?: number };
+  if (typeof q._sx !== 'number' || typeof q._sy !== 'number' || (q._sx === scrolled.x && q._sy === scrolled.y)) return p;
+  return { ...p, x: p.x - (scrolled.x - q._sx), y: p.y - (scrolled.y - q._sy), _sx: scrolled.x, _sy: scrolled.y };
+}
+let clip: { left: number; top: number; right: number; bottom: number } | null = null;
+function applyClip() {
+  if (!layer) return;
+  const W = typeof innerWidth === 'number' ? innerWidth : 0, H = typeof innerHeight === 'number' ? innerHeight : 0;
+  const v = clip ? 'inset(' + Math.max(0, Math.round(clip.top)) + 'px ' + Math.max(0, Math.round(W - clip.right)) + 'px ' + Math.max(0, Math.round(H - clip.bottom)) + 'px ' + Math.max(0, Math.round(clip.left)) + 'px)' : '';
+  if (layer.style.clipPath !== v) layer.style.clipPath = v;
+}
+/** Clip the layer to the map's window (viewport pixels), or lift the clip (null: no camera on screen). */
+export function setLayerClip(r: { left: number; top: number; right: number; bottom: number } | null) { clip = r; applyClip(); }
 export const hasLayer = () => !!layer && layer.isConnected;
 /** The layer node itself (the ambient field and turret looks keep their own nodes on it). */
 export const layerEl = () => layer;
@@ -33,7 +72,24 @@ export function withTempo<T>(tp: number, f: () => T): T { const was = tempo; tem
 export const slow = (ms: number) => { const k = fxScale(); return k === 1 ? ms : ms * k; };
 /** Run f after ms, unless the effects were cleared meanwhile. The wait follows the pace and tempo, and f runs under the
  *  same tempo. */
-export const after = (f: () => void, ms: number) => { const g0 = gen, tp = tempo; setTimeout(() => { if (g0 === gen) withTempo(tp, f); }, slow(ms)); };
+export const after = (f: () => void, ms: number) => { const g0 = gen, tp = tempo, n = cur, d = slow(ms), due = clock == null ? null : clock + d; setTimeout(() => { if (g0 === gen) withEvent(n, () => withTempo(tp, f), due); }, d); };
+
+// ---------- the trace (apps/web/e2e/fx-sweep.mjs) ----------
+// What was drawn and heard, and when: a test sets window.__phcFxTrace = [] and reads it back. Each entry is
+// { w: what ('ev' an event's handler started, 'proj' a projectile and its flight time, 'muzzle', 'boom', 'impact',
+// 'swing', 'throw', 'burst' a sprite, 'float' a floating word or number, 'sfx' a sound, 'hp' the HP bars took an event's
+// change), n: the engine event it belongs to, t: when it was due (ms), rt: when it ran (performance.now()), … }.
+// t is the plan, not the clock: the time the queue gave the event plus the waits of the later steps that led here, so
+// it is the same on a busy machine and at any combat speed (scaled by the pace). A sound's t and rt are when it is heard
+// (its delay added). Nothing is recorded unless a test asks.
+let cur = 0, clock: number | null = null;
+/** Run f as part of engine event n, due at `at` on the plan's clock (its later steps, scheduled with after(), keep the
+ *  event and move the clock on by their own wait). */
+export function withEvent<T>(n: number, f: () => T, at?: number | null): T { const was = cur, wasAt = clock; cur = n; if (at !== undefined) clock = at; try { return f(); } finally { cur = was; clock = wasAt; } }
+export function trace(w: string, d: Record<string, unknown> = {}, wait = 0) {
+  const T = typeof window !== 'undefined' ? (window as any).__phcFxTrace : null;
+  if (Array.isArray(T)) { const rt = performance.now(); T.push({ w, n: cur, t: (clock ?? rt) + wait, rt: rt + wait, ...d }); }
+}
 
 // ---------- finding tiles and tokens ----------
 /** The on-screen tile for a grid key ("x,y"): a button.phc-tok whose aria-label starts with its reference ("C7 · …" or
@@ -49,14 +105,18 @@ export function tileEl(key: string | null | undefined): HTMLElement | null {
   return el;
 }
 function findTile(ref: string): HTMLElement | null {
-  let best: HTMLElement | null = null, area = 0;
+  // A tile of a map bigger than its window (the camera) can lie beyond the browser window's own edge: it is still the
+  // tile (its effects are drawn there, clipped, and ride in when the camera arrives; a walk through it must not be
+  // dropped), so it is found when no tile of that name is inside the browser window.
+  let best: HTMLElement | null = null, area = 0, off: HTMLElement | null = null, offArea = 0;
   for (const el of Array.from(document.querySelectorAll<HTMLElement>('button.phc-tok[aria-label]'))) {
     const l = el.getAttribute('aria-label') || '';
     if (!l.startsWith(ref) || /[0-9A-Za-z]/.test(l.charAt(ref.length))) continue;
     const r = el.getBoundingClientRect(), a = r.width * r.height;
-    if (a > area && r.bottom > 0 && r.top < innerHeight) { area = a; best = el; }
+    if (r.bottom > 0 && r.top < innerHeight) { if (a > area) { area = a; best = el; } }
+    else if (a > offArea) { offArea = a; off = el; }
   }
-  return best;
+  return best || off;
 }
 /** Is any map grid on screen at all? */
 export const gridShown = () => !!document.querySelector('button.phc-tok[aria-label]');
@@ -69,11 +129,11 @@ export function tokenEl(tile: HTMLElement | null): HTMLElement | null {
   }
   return null;
 }
-export interface Pt { x: number; y: number; s: number }
+export interface Pt { x: number; y: number; s: number; _sx?: number; _sy?: number }
 /** The centre of a tile on screen and its size, in viewport pixels. */
 export function centre(key: string | null | undefined): Pt | null {
   const el = tileEl(key); if (!el) return null;
-  const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, s: Math.max(18, r.width) };
+  const r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, s: Math.max(18, r.width), _sx: scrolled.x, _sy: scrolled.y };
 }
 export const angle = (a: Pt, b: Pt) => Math.atan2(b.y - a.y, b.x - a.x);
 export const panOf = (p: Pt | null) => (p ? Math.max(-0.7, Math.min(0.7, (p.x / Math.max(1, innerWidth)) * 1.4 - 0.7)) : 0);
@@ -81,6 +141,7 @@ export const panOf = (p: Pt | null) => (p ? Math.max(-0.7, Math.min(0.7, (p.x / 
 // ---------- nodes ----------
 /** Put a node on the layer at a viewport point (its centre), for ms; it is removed after, whatever happens. */
 export function put(el: HTMLElement | SVGElement, p: { x: number; y: number }, w: number, h: number, ms: number): HTMLElement {
+  p = liveAt(p);
   const box = document.createElement('div');
   box.style.cssText = 'position:absolute;left:' + (p.x - w / 2) + 'px;top:' + (p.y - h / 2) + 'px;width:' + w + 'px;height:' + h + 'px;pointer-events:none;will-change:transform,opacity';
   box.appendChild(el);
@@ -107,6 +168,7 @@ export function anim(el: Element, frames: Keyframe[], opts: KeyframeAnimationOpt
 /** A sprite burst at a point: scale from a to b and fade, rotated. */
 export function burst(name: string, p: { x: number; y: number }, size: number, ms: number, o: { color?: string; rot?: number; from?: number; to?: number; fade?: number; blend?: string; delay?: number } = {}) {
   const run = () => {
+    trace('burst', { name });
     const el = sprite(name, o.color), box = put(el, p, size, size, ms);
     if (o.blend) box.style.mixBlendMode = o.blend;
     const r = (o.rot || 0) + 'deg', from = o.from ?? 0.4, to = o.to ?? 1.2;
@@ -154,12 +216,14 @@ export function clearShift(list: FloatBox[], x: number, y: number, hw: number, h
 }
 /** Floating text over a point: damage numbers, MISS, a condition. rise: how far it drifts up over its life (in tiles;
  *  0.5 by default, so it fades before it reaches the unit in the tile above). */
-export function floatText(text: string, p: { x: number; y: number; s: number }, color: string, o: { big?: boolean; delay?: number; ms?: number; small?: boolean; rise?: number } = {}) {
+export function floatText(text: string, p0: { x: number; y: number; s: number }, color: string, o: { big?: boolean; delay?: number; ms?: number; small?: boolean; rise?: number } = {}) {
   const run = () => {
+    const p = liveAt(p0);
     const t = document.createElement('div'), fs = o.big ? Math.round(p.s * 0.62) : o.small ? Math.max(10, Math.round(p.s * 0.26)) : Math.round(p.s * 0.42);
     const ms = o.ms || (o.big ? 1300 : 1000), now = performance.now(), rise = p.s * (o.rise ?? 0.5), h = fs * 1.4;
     for (let i = floats.length - 1; i >= 0; i--) if (now - floats[i].t0 > floats[i].ms * fxScale() + 50) floats.splice(i, 1);
     const y0 = p.y - p.s * 0.35;
+    trace('float', { text });
     if (sameNews(floats, text, p.x, y0, p.s, now)) return;
     const span = document.createElement('span');
     span.textContent = text;

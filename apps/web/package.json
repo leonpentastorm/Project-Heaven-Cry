@@ -1,10 +1,11 @@
 {
   "name": "@phc/web",
-  "version": "0.22.0",
+  "version": "0.23.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "python3 ../../design/canvas-build/build.py --web --check",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run"

@@ -179,7 +179,7 @@
       "spent": true,
       "stops": true,
       "disarm": "Disarm the mines",
-      "text": "Stepping on a mined tile deals 25 damage (light) or 45 (heavy), reduced by armour; a Body save halves it. That tile's mine is then used up, and your move stops there."
+      "text": "Stepping on a mined tile deals {=damage.light} damage (light) or {=damage.heavy} (heavy), reduced by armour; a Body save halves it. That tile's mine is then used up, and your move stops there."
     },
     {
       "id": "fire",
@@ -194,7 +194,7 @@
         "heavy": "burning"
       },
       "disarm": "Put out the fire",
-      "text": "Entering a burning tile deals 10 damage (light) or 20 (heavy) that ignores armour, and sets you Burning."
+      "text": "Entering a burning tile deals {=damage.light} damage (light) or {=damage.heavy} (heavy) that ignores armour, and sets you Burning."
     },
     {
       "id": "radiation",
@@ -210,7 +210,7 @@
         "heavy": "weakened"
       },
       "disarm": "Seal the source",
-      "text": "Each tile you enter deals 5 damage (light) or 10 (heavy) that ignores armour. From the third tile you enter, you are also Weakened."
+      "text": "Each tile you enter deals {=damage.light} damage (light) or {=damage.heavy} (heavy) that ignores armour. From the third tile you enter, you are also Weakened."
     },
     {
       "id": "gas",
@@ -245,7 +245,7 @@
       },
       "stops": true,
       "disarm": "Shore it up",
-      "text": "Entering it deals 20 damage (light) or 35 (heavy), reduced by armour, knocks you Prone and stops your move."
+      "text": "Entering it deals {=damage.light} damage (light) or {=damage.heavy} (heavy), reduced by armour, knocks you Prone and stops your move."
     }
   ],
   "hazard_approaches": [

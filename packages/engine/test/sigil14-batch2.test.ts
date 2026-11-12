@@ -4,6 +4,7 @@
 // the class-move previews the grid paints. Everything a player does goes through apply() (combat/draw, combat/evoke,
 // combat/perk, combat/attack).
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { d20, emit, applyCond, previewEvoke, previewDraw, previewPerkAction, drawGlyph, evoke as evokeSpell, condOn, CLASS, allItems, itemsOf, heldOfChar, type Combat, type Unit } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -28,7 +29,7 @@ function rig(words: string[], foes: string[] = ['14,9'], o: { skills?: Record<st
 }
 function arm(u: Unit, words: string[], maxWords = 4) {
   u.ap = 60; const m = u.mg!;
-  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords, flux: -99, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0 });
+  Object.assign(m, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords, flux: -99, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0 });
 }
 type F = ReturnType<typeof rig>;
 function line(f: F, words: string[], tiles: string[]) { words.forEach((w, i) => { f.pc.pos = tiles[i]; f.act({ type: 'combat/draw', unitId: f.pc.id, word: w, tile: tiles[i] }); }); }
@@ -64,17 +65,17 @@ describe('gap 13: COMMAND · move is checked when planned, Evoked and obeyed (it
 
 describe('gap 15: every save is in the log, failed ones too (spec 9.11, item 489 a)', () => {
   it('Afflictions, FREEZE\'s Slowed and STEP log the d20 + save vs TN when the save fails', () => {
-    for (const [w, re] of [['bind', /is Pinned \(\d+ rounds?; body save -?\d+ vs \d+\)/], ['dread', /is Shaken \(\d+ rounds?; heart save -?\d+ vs \d+\)/], ['muddle', /brain save -?\d+ vs \d+\)/],
-      ['command', /is Commanded \(1 round; brain save -?\d+ vs \d+\)/], ['freeze', /is Slowed \(\d+ rounds?; body save -?\d+ vs \d+\)/]] as const) {
+    for (const [w, re] of [['bind', /is Pinned \(\d+ rounds?; body save d20 [^)]* vs \d+/], ['dread', /is Shaken \(\d+ rounds?; heart save d20 [^)]* vs \d+/], ['muddle', /brain save d20 [^)]* vs \d+/],
+      ['command', /is Commanded \(1 round; brain save d20 [^)]* vs \d+/], ['freeze', /is Slowed \(\d+ rounds?; body save d20 [^)]* vs \d+/]] as const) {
       const f = rig([w, 'seek'], ['8,5']); line(f, [w, 'seek'], L2); evoke(f, '3,5', '8,5', w === 'command' ? { order: 'halt' } : {});
       expect(logHas(f.cb, re), w).toBe(true);
     }
     const s = rig(['step', 'seek'], ['8,5']); line(s, ['step', 'seek'], L2); evoke(s, '3,5', '8,5', { dest: '9,7' });
-    expect(s.foe.pos).toBe('9,7'); expect(logHas(s.cb, /steps to \S+ \(body save -?\d+ vs \d+\)/)).toBe(true);
+    expect(s.foe.pos).toBe('9,7'); expect(logHas(s.cb, /steps to \S+ \(body save d20 [^)]* vs \d+/)).toBe(true);
   });
   it('a save that succeeds still reads "resists (… save X vs Y)"', () => {
     const f = rig(['bind', 'seek'], ['8,5']); f.foe.sv = { body: 99, brain: 99, heart: 99 } as any; line(f, ['bind', 'seek'], L2); evoke(f, '3,5', '8,5');
-    expect(logHas(f.cb, /resists \(body save \d+ vs \d+\)/)).toBe(true); expect(condOn(f.foe, 'pinned')).toBe(false);
+    expect(logHas(f.cb, /resists \(body save d20 [^)]* vs \d+/)).toBe(true); expect(condOn(f.foe, 'pinned')).toBe(false);
   });
 });
 

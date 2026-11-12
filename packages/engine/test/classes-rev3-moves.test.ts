@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CLASS, d20, healingMult, applyCond, condOn, moveUnit, beginTurn, objectsOf, manaOf, strainLimit, readyDesigns, enemyIntent, coverageOf, itemInfo, handlerOf, paths,
   type Unit, type Combat, type Character,
+  mendFactor, levelFactor,
 } from '../src';
 import { makeObject } from '../src/objects';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -34,7 +35,7 @@ describe('the 20 new moves are handled', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
     expect(NEW.length).toBe(20);
     for (const m of NEW as any[]) {
-      const info = itemInfo(m.key)!; expect(handlerOf(info.key), m.key).toBeTruthy();
+      const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic'), m.key).toBe(true); // a handler, or data only (engine foundations 3)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);
     }
   });
@@ -46,7 +47,8 @@ describe('Defender', () => {
     for (const guard of [2, 0]) {
       const f = fightWith([cls('defender', 5)], [{ weapon: 'maul' }]);
       const d = at(f, f.pc, '4,2'); tough(d); d.res = { ...(d.res || {}), guard }; d.def = -40; d.armour = 999; // the blow gets 1 damage through: 1 Guard soaks it (rules 1.13), 1 is left to shrug with
-      const foe = at(f, f.foe, '5,2'); foe.attack = 60; foe.techs = []; // plain attacks: the maul's knockdown is its plain attack's grant, not a technique's (rules 1.12) order(f, d, foe);
+      const foe = at(f, f.foe, '5,2'); foe.attack = 60; foe.techs = []; // plain attacks: the maul's knockdown is its plain attack's grant, not a technique's (rules 1.12)
+      order(f, d, foe);
       f.turn(d); act(f, d, { type: 'combat/end-turn' });
       expect(logHas(f.cb, /knocks? .*prone|Knockdown|prone/i)).toBe(true);
       if (guard) { expect(logCount(f.cb, /shrugs it off: no longer prone/)).toBeGreaterThanOrEqual(1); expect(f.unit(d.id).res!.guard).toBeLessThan(2); expect(fx(f, 'shrug').length).toBeGreaterThanOrEqual(1); }
@@ -92,7 +94,7 @@ describe('Defender', () => {
     // nearest player, the Defender itself): without Anchor it walks off toward them; with Anchor it keeps beside the Defender.
     const tiles: Record<number, string> = {};
     for (const rank of [8, 5]) {
-      const f = fightWith([cls('defender', rank), {}], [{ weapon: 'combat_knife' }]);
+      const f = fightWith([cls('defender', rank), {}], [{ weapon: 'combat_knife' }], { classic: true });
       const [d, p] = f.pcs; at(f, d, '5,2').hidden = true; at(f, p, '15,2'); tough(at(f, f.foe, '6,2'));
       order(f, d, f.foe, p); f.turn(d); act(f, f.unit(d.id), { type: 'combat/end-turn' });
       tiles[rank] = f.unit(f.foe.id).pos;
@@ -130,7 +132,8 @@ describe('Fighter', () => {
     withGame(f.g, () => { applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'pinned', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'slowed', 3, undefined, { skipSave: true }); });
     expect(() => act(f, u, { type: 'combat/move', to: '2,2' })).toThrow(/Pinned/);
     perk(f, u, 'class:fighter.unstoppable');
-    expect(condOn(f.unit(u.id), 'pinned')).toBe(false); expect(f.unit(u.id).res!.momentum).toBe(3); // the 1 a fight starts with, +2 expect(fx(f, 'unstoppable').length).toBe(1);
+    expect(condOn(f.unit(u.id), 'pinned')).toBe(false); expect(f.unit(u.id).res!.momentum).toBe(3); // the 1 a fight starts with, +2
+    expect(fx(f, 'unstoppable').length).toBe(1);
     withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'fear', 2, undefined, { skipSave: true }));
     expect(condOn(f.unit(u.id), 'fear')).toBe(false);
     const n = f.cb.log.length; act(f, u, { type: 'combat/move', to: '2,2' });
@@ -215,7 +218,7 @@ describe('Infiltrator', () => {
     expect(() => perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage', targetId: f.foes[1].id })).toThrow(/isn't a machine/);
   });
   it('Sabotage: a rigged tile springs on the next enemy (30, Pinned on a failed Body save), never on your side', () => {
-    const f = fightWith([cls('infiltrator', 8), {}], [{}]);
+    const f = fightWith([cls('infiltrator', 8), {}], [{}], { classic: true });
     const [i, p] = f.pcs; at(f, i, '4,2'); at(f, p, '3,3'); f.turn(i);
     perk(f, f.unit(i.id), 'class:infiltrator.sabotage', { actionId: 'rig' });
     expect(objectsOf(f.cb).some((o: any) => o.rig && o.pos === '4,2')).toBe(true);
@@ -223,7 +226,7 @@ describe('Infiltrator', () => {
     f.turn(p); expect(() => act(f, f.unit(p.id), { type: 'combat/move', to: '4,2' })).toThrow(/Can't reach/); // your side knows it and walks round it
     const foe = tough(saves(at(f, f.foe, '6,2'), -50)); foe.armour = 0;
     f.turn(foe); seed(f, 5); withGame(f.g, () => moveUnit(f.cb, f.unit(foe.id), '4,2', f.g.rng));
-    expect(f.unit(foe.id).hp).toBe(999 - 30); expect(condOn(f.unit(foe.id), 'pinned')).toBe(true);
+    expect(f.unit(foe.id).hp).toBe(999 - Math.floor(30 * levelFactor('deal', f.unit(i.id).level))); expect(condOn(f.unit(foe.id), 'pinned')).toBe(true); // rules 1.26 b7: a trap a character set grows with its level
     expect(objectsOf(f.cb).some((o: any) => o.rig)).toBe(false);
   });
   it('Sabotage: a barricade stops blocking the way for 2 rounds (a way through, not a place to stop: item 568)', () => {
@@ -281,7 +284,7 @@ describe('Trickster', () => {
     expect(it0.kind).toMatch(/attack|move/); expect(f.g.rng.state).toBe(s0); expect(JSON.stringify(f.cb)).toBe(before);
   });
   it('False Image: 1 charge, a decoy the fooled enemy shoots instead of you; it scatters when struck', () => {
-    const f = fightWith([cls('trickster', 3, MIND)], [{}]);
+    const f = fightWith([cls('trickster', 3, MIND)], [{}], { classic: true });
     const u = tough(at(f, f.pc, '4,2')), foe = saves(at(f, f.foe, '10,2'), -50); order(f, u, foe); f.turn(u);
     const ch = f.unit(u.id).mg!.charge;
     perk(f, u, 'class:trickster.false_image', { tile: '6,4' });
@@ -339,13 +342,13 @@ describe('Trickster', () => {
 
 // ======================================================================================================== BARD
 describe('Bard', () => {
-  it('Rally: allies within 4 heal 20 × Healing given and lose Fear and Shaken; the far one doesn\'t; once a scene', () => {
+  it('Rally: allies within 4 heal 6 × Healing given × the level factor (rules 1.23; it was 20 × Healing given) and lose Fear and Shaken; the far one doesn\'t; once a scene', () => {
     const f = fightWith([cls('bard', 8), {}, {}], [{ at: 'P11' }]);
     const [b, a, far] = f.pcs; at(f, b, '2,2'); at(f, a, '4,2'); at(f, far, '9,2');
     f.unit(a.id).hp = 20; f.unit(far.id).hp = 20;
     withGame(f.g, () => { applyCond(f.cb, f.g.rng, f.foe, f.unit(a.id), 'fear', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, f.foe, f.unit(a.id), 'shaken', 3, undefined, { skipSave: true }); });
     f.turn(b); perk(f, f.unit(b.id), 'class:bard.rally');
-    const n = Math.floor(Math.floor(20 * healingMult(charOf(f, b))) * (f.unit(a.id).healRecv || 1));
+    const n = Math.floor(Math.floor(6 * healingMult(charOf(f, b)) * mendFactor(charOf(f, b).level)) * (f.unit(a.id).healRecv || 1));
     expect(f.unit(a.id).hp).toBe(20 + n);
     expect(condOn(f.unit(a.id), 'fear')).toBe(false); expect(condOn(f.unit(a.id), 'shaken')).toBe(false);
     expect(f.unit(far.id).hp).toBe(20); expect(f.unit(b.id).ap).toBe(4);

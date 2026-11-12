@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { canRevertLevelUp } from '../src';
 import { storyWith } from './helpers/perkfight';
 
@@ -20,7 +21,7 @@ describe('taking a level-up back', () => {
   });
   it('a fight settles it', () => {
     const s = mk(); s.act({ type: 'levelup/raise', charId: C(s).id, kind: 'skill', id: 'dexterity' });
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'fists' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'minion', weapon: 'fists' }] } } } as any);
     expect(canRevertLevelUp(s.g, C(s))).toMatch(/Nothing/); expect(C(s).skills.dexterity).toBe(3);
   });
   it('a build changed by something else is not rolled back over', () => {

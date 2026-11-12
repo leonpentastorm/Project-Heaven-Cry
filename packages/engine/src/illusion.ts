@@ -5,9 +5,10 @@
 // attack on an image passes through it and it scatters. Images fade at the start of their owner's turn two rounds on.
 // Everything here is deterministic: no die is rolled (the saves are rolled by the class move with the game's rng).
 import type { Combat, Unit } from './combat';
-import { emitFx, previewAttack, isMelee, refOf } from './combat';
+import { say, emitFx, previewAttack, isMelee, refOf } from './combat';
 import { WEAPON } from './data';
 import { calmFight } from './magic';
+import { pay } from './effects/cost';
 
 export interface FalseImage {
   id: string; owner: string; pos: string; side: 'pc' | 'foe';
@@ -55,18 +56,18 @@ export function dropImage(cb: Combat, img: FalseImage, why: string) {
 export function strikeImage(cb: Combat, att: Unit, ghost: Unit, mode: 'melee' | 'shot') {
   const img = imagesOf(cb).find((i) => i.id === ghost.id); const owner = cb.units.find((x) => x.id === (ghost as any).ghostOf);
   const pv = previewAttack(cb, att, ghost, mode);
-  if (!pv.ok || !img) { cb.log.push('(' + att.name + ' can\'t attack the image: ' + (pv.why || 'gone') + ')'); return; }
+  if (!pv.ok || !img) { say(cb, '(' + att.name + ' can\'t attack the image: ' + (pv.why || 'gone') + ')'); return; }
   const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee';
-  att.ap -= pv.ap;
+  pay(cb, att, pv.ap);
   if (att.mg) calmFight(cb, att);
   if (!melee) { if (w.magazine != null && !att.infiniteAmmo) att.ammo = Math.max(0, att.ammo - 1); if (w.heat_limit && !att.infiniteAmmo) att.heat += 1; att.shotsThisTurn++; }
   att.firstShotDone = true; att.firstShotTurn = true; att.attackedTurn = true;
   emitFx(cb, melee ? 'melee' : 'shot', { unit: att.id, target: img.id, from: att.pos, to: img.pos, weapon: att.weapon, cat: w.category, mode, hit: false, crit: false, fumble: false, dmg: 0, killed: false, image: true });
-  cb.log.push(att.name + (melee ? ' strikes at ' : ' fires at ') + (owner ? owner.name : 'someone') + ' at ' + refOf(img.pos) + ': it passes through a False Image, which scatters.');
+  say(cb, att.name + (melee ? ' strikes at ' : ' fires at ') + (owner ? owner.name : 'someone') + ' at ' + refOf(img.pos) + ': it passes through a False Image, which scatters.');
   dropImage(cb, img, 'struck');
 }
 /** An image fades at its owner's turn start two rounds after it appeared, or when its owner falls. */
 export function imageTurnStart(cb: Combat, u: Unit) {
   const img = imageOfOwner(cb, u.id); if (!img) return;
-  if (u.dead || cb.round >= img.round + 2) { dropImage(cb, img, u.dead ? 'owner down' : 'faded'); cb.log.push(u.name + '\'s False Image fades.'); }
+  if (u.dead || cb.round >= img.round + 2) { dropImage(cb, img, u.dead ? 'owner down' : 'faded'); say(cb, u.name + '\'s False Image fades.'); }
 }

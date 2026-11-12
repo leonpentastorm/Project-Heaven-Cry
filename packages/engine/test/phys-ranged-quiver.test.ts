@@ -2,6 +2,7 @@
 // out of a fight from the arrows carried (loadQuiver, the phys/quiver action), each shot names its arrow type (args.ammo,
 // default the type with the most left) and that type's rider applies, and a bow can't be reloaded in a fight.
 import { describe, it, expect, beforeEach } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { phys, enemyTurn, reload, reloadHands, weaponActions, type Unit, type Character, type PackItem } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { calm } from './helpers/physfight-ranged';
@@ -85,7 +86,7 @@ describe('loadQuiver (out of a fight)', () => {
     s.act({ type: 'phys/quiver', charId: c.id, weaponId: 'recurve_bow', load: { armor_piercing: 5, standard: 15 } } as any);
     expect(phys.physOf(s.g.characters[c.id]).quiver.recurve_bow).toEqual({ armor_piercing: 5, standard: 15 });
     // the fight starts with that load on the unit
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.charId === c.id)!;
     expect(u.quiver).toEqual({ armor_piercing: 5, standard: 15 }); expect(u.ammo).toBe(20); expect(u.ammoType).toBeNull(); // standard has the most
     expect(() => s.act({ type: 'phys/quiver', charId: c.id, weaponId: 'recurve_bow', load: {} } as any)).toThrow('A quiver is filled before the fight.');

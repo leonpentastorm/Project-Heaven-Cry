@@ -495,6 +495,54 @@ for k in (data.get("enemies", {}) or {}).get("companions", []) if isinstance(dat
     for f in ("hp", "defense", "attack_bonus", "armour", "movement"):
         if not isinstance(k.get(f), (int, float)):
             errors.append(f"enemies.companions:{k.get('id')}: {f} must be a number")
+# Rules 1.15: enemy levels. Every tier row is its level 1 block with a damage factor; `levels.table` has one row for
+# each level from min to max, in order, with the five columns the engine reads; the gap and the Narrator's shift are numbers.
+if isinstance(data.get("enemies"), dict):
+    _en = data["enemies"]; _lv = _en.get("levels")
+    for t in items("enemies"):
+        for f in ("hp", "defense", "attack_bonus", "armour", "damage"):
+            if not isinstance(t.get(f), (int, float)) or isinstance(t.get(f), bool):
+                errors.append(f"enemies:{t.get('id')}: {f} must be a number (the tier's level 1 value)")
+        if isinstance(t.get("damage"), (int, float)) and t["damage"] <= 0:
+            errors.append(f"enemies:{t.get('id')}: damage (the factor on its weapon's damage) must be above 0")
+    # Rules 1.25: the fire doctrine of each tier (how it chooses among the targets it could attack).
+    for t in items("enemies"):
+        if t.get("doctrine") not in ("nearest", "spread", "focus"):
+            errors.append(f"enemies:{t.get('id')}: doctrine must be nearest, spread or focus (rules 1.25)")
+        for f in ("fire_spread", "fire_near"):
+            v = t.get(f)
+            if not isinstance(v, (int, float)) or isinstance(v, bool) or v < 0 or v > 1:
+                errors.append(f"enemies:{t.get('id')}: {f} must be a number from 0 to 1 (rules 1.25)")
+        if t.get("doctrine") == "spread" and not t.get("fire_spread"):
+            errors.append(f"enemies:{t.get('id')}: a spread doctrine needs fire_spread above 0")
+        if t.get("doctrine") == "nearest" and not t.get("fire_near"):
+            errors.append(f"enemies:{t.get('id')}: a nearest doctrine needs fire_near above 0")
+    if not isinstance(_lv, dict):
+        errors.append("enemies: needs a levels block (rules 1.15)")
+    else:
+        lo, hi, rows = _lv.get("min"), _lv.get("max"), _lv.get("table") or []
+        if not (isinstance(lo, int) and isinstance(hi, int) and 1 <= lo <= hi):
+            errors.append("enemies.levels: min and max must be whole numbers, 1 <= min <= max")
+        elif [r.get("level") for r in rows if isinstance(r, dict)] != list(range(lo, hi + 1)):
+            errors.append(f"enemies.levels.table: needs one row for each level {lo} to {hi}, in order")
+        for r in rows:
+            if not isinstance(r, dict):
+                errors.append("enemies.levels.table: every row is an object"); continue
+            for f in ("hp_mult", "armour_mult", "damage_mult"):
+                if not isinstance(r.get(f), (int, float)) or isinstance(r.get(f), bool) or r[f] <= 0:
+                    errors.append(f"enemies.levels.table level {r.get('level')}: {f} must be a number above 0")
+            for f in ("defense_plus", "attack_plus"):
+                if not isinstance(r.get(f), int) or isinstance(r.get(f), bool):
+                    errors.append(f"enemies.levels.table level {r.get('level')}: {f} must be a whole number")
+        sh = _lv.get("narrator_shift") or {}
+        if not (isinstance(sh.get("min"), int) and isinstance(sh.get("max"), int) and sh["min"] <= 0 <= sh["max"]):
+            errors.append("enemies.levels.narrator_shift: min and max must be whole numbers around 0")
+        gp = _lv.get("gap") or {}
+        for f in ("one_hit_levels_below", "to_hit_per_level", "max_levels"):
+            if not isinstance(gp.get(f), int) or isinstance(gp.get(f), bool) or gp[f] < 0:
+                errors.append(f"enemies.levels.gap: {f} must be a whole number, 0 or more")
+        if _lv.get("provisional") is not True:
+            errors.append("enemies.levels: must be flagged provisional (spec section 14, items 1015 to 1024)")
 # Enemy Sigil casters (rules 1.4, ai-sigil.ts): a known tier and weapon, known words that make a spell, a Reach word.
 _smap = {w.get("id"): w for w in items("sigils")}
 _cids = set()
@@ -624,6 +672,119 @@ if wp:
     if "light_armour" in acts and gr.get("light_armour_max_kg") is not None and acts["light_armour"].get("max_kg") != gr.get("light_armour_max_kg"):
         errors.append("rules: action light_armour max_kg disagrees with world_play gear.light_armour_max_kg")
 
+# The perk card in a fight (data/perk_cards.json; rules 1.14, engine review 4 finding 9): the trigger each held item
+# waits for is declared here (never read out of card prose). Every id must be a real perk, trait or skill perk.
+if "perk_cards" in data:
+    _pc = data["perk_cards"]
+    _perks = {x.get("id"): x for x in items("perks")}
+    _traits = ids_of(items("traits"))
+    _skills = ids_of(items("skills"))
+    def _card_item(key):
+        kind, _, rest = str(key).partition(":")
+        if kind == "perk":
+            return rest in _perks
+        if kind == "trait":
+            return rest in _traits
+        if kind == "skill":
+            sk, _, n = rest.rpartition(".")
+            return sk in _skills and n.isdigit()
+        return False
+    _seen_cards = set()
+    for r in _pc.get("items", []):
+        rid, tier = r.get("id"), r.get("tier")
+        if not _card_item(rid):
+            errors.append(f"perk_cards: {rid} is not a perk, a trait or a skill perk in the data")
+            continue
+        if (rid, tier) in _seen_cards:
+            errors.append(f"perk_cards: {rid} {tier or ''} is listed twice")
+        _seen_cards.add((rid, tier))
+        if str(rid).startswith("perk:"):
+            pk = _perks[str(rid)[5:]]
+            tiers = list((pk.get("tiers") or {}).keys()) or [pk.get("tier")]
+            if tier not in tiers and not (pk.get("tier") == "acquired" and tier in ("I", "II")):
+                errors.append(f"perk_cards: {rid} has no tier {tier}")
+        elif tier is not None:
+            errors.append(f"perk_cards: {rid}: only a perk has a tier")
+        t = r.get("trigger")
+        if not isinstance(t, str) or len(t.split()) < 3 or t.endswith(".") or t[:1] != t[:1].lower():
+            errors.append(f"perk_cards: {rid}: trigger must be the moment in a few words, lower case, with no full stop")
+        if "standing" in r and r.get("standing") is not True:
+            errors.append(f"perk_cards: {rid}: standing is true or left out")
+    for cid in _pc.get("core_wired", []):
+        if cid not in _perks and cid not in _traits:
+            errors.append(f"perk_cards: core_wired names {cid}, which is not a perk or a trait")
+    for key in _pc.get("private_count", []):
+        if not _card_item(key):
+            errors.append(f"perk_cards: private_count names {key}, which is not an item")
+
+# The basic actions of a fight (data/actions.json; engine review 4, finding 1): the rows the engine hands the client.
+# Each needs a name, a text, a tab and an action type; its base AP is a whole number of 0 or more (or null where it is
+# not one number), and agrees with the same action in rules.json combat.actions when `rule` names one.
+if "actions" in data:
+    _rule_acts = {a.get("id"): a for a in ((data.get("rules", {}).get("combat", {}) or {}).get("actions") or []) if isinstance(a, dict)}
+    _seen_acts = set()
+    for a in items("actions"):
+        aid = a.get("id")
+        if not aid or aid in _seen_acts:
+            errors.append(f"actions: missing or repeated id {aid}")
+        _seen_acts.add(aid)
+        for k in ("name", "text", "type"):
+            if not isinstance(a.get(k), str) or not a.get(k):
+                errors.append(f"actions: {aid} needs {k}")
+        if a.get("tab") not in ("move", "attack", "utility"):
+            errors.append(f"actions: {aid}: tab must be move, attack or utility")
+        if not str(a.get("type", "")).startswith("combat/"):
+            errors.append(f"actions: {aid}: type must be a combat action")
+        if a.get("adjudication") != "engine":
+            errors.append(f"actions: {aid}: a basic action is the engine's (adjudication: engine)")
+        for k in [k for k in a if k == "ap" or k.startswith("ap_")]:
+            v = a.get(k)
+            if not (v is None and k == "ap") and not (isinstance(v, int) and not isinstance(v, bool) and v >= 0):
+                errors.append(f"actions: {aid}.{k} must be a whole number of 0 or more")
+        if a.get("ap") is None and "{" not in str(a.get("cost", "")) and aid not in ("cover", "pullfree"):
+            errors.append(f"actions: {aid} has no ap: it needs a cost text")
+        for rk, apk in (("rule", "ap"), ("rule_downed", "ap_downed")):
+            r = a.get(rk)
+            if r is None:
+                continue
+            if r not in _rule_acts:
+                errors.append(f"actions: {aid}.{rk} names {r}, which is not in rules.json combat.actions")
+            elif isinstance(_rule_acts[r].get("ap"), int) and a.get(apk) != _rule_acts[r].get("ap"):
+                errors.append(f"actions: {aid} costs {a.get(apk)} AP but rules.json {r} says {_rule_acts[r].get('ap')}")
+        if aid == "stim" and "stabilise" in _rule_acts and a.get("ap_downed_medic") != _rule_acts["stabilise"].get("ap_bard"):
+            errors.append("actions: stim.ap_downed_medic disagrees with rules.json stabilise.ap_bard")
+        if aid == "pickup" and (data.get("world_play", {}).get("ap") or {}).get("pickup") not in (None, a.get("ap")):
+            errors.append("actions: pickup.ap disagrees with world_play ap.pickup")
+    # Engine foundations 2 (review 1, finding F3): `costs` is the base cost of every engine verb that has no row above
+    # (the engine's price() reads it: packages/engine/src/effects/cost.ts), `resources` is what an action can cost
+    # besides AP. A cost is a whole number; a verb is priced in one place only; `rule` agrees with rules.json.
+    _acts_root = data.get("actions", {})
+    for cid, c in (_acts_root.get("costs") or {}).items():
+        if cid in _seen_acts:
+            errors.append(f"actions: costs.{cid} repeats a row of items: one price for one action")
+        if not isinstance(c, dict) or not isinstance(c.get("ap"), int) or isinstance(c.get("ap"), bool):
+            errors.append(f"actions: costs.{cid} needs a whole-number ap")
+            continue
+        for k, v in c.items():
+            if (k == "ap" or k.startswith("ap_") or k in ("min", "rounds")) and not (isinstance(v, int) and not isinstance(v, bool) and v >= 0):
+                errors.append(f"actions: costs.{cid}.{k} must be a whole number of 0 or more")
+        r = c.get("rule")
+        if r is not None:
+            if r not in _rule_acts:
+                errors.append(f"actions: costs.{cid}.rule names {r}, which is not in rules.json combat.actions")
+            elif isinstance(_rule_acts[r].get("ap"), int) and c.get("ap") != _rule_acts[r].get("ap"):
+                errors.append(f"actions: costs.{cid} costs {c.get('ap')} AP but rules.json {r} says {_rule_acts[r].get('ap')}")
+    for rid, r in (_acts_root.get("resources") or {}).items():
+        if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
+            errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
+
+# Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
+# prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
+_wit = next((o for o in items("conditions") if o.get("id") == "witnessed"), None)
+_wb = ((data.get("patrons", {}).get("prayer") or {}).get("witnessed") or {}).get("like_bonus")
+if _wit and _wb is not None and ((_wit.get("effects") or [{}])[0].get("value") != _wb):
+    errors.append("conditions: witnessed effects[0].value (the card's +2) disagrees with patrons.json prayer.witnessed.like_bonus (the engine's)")
+
 # Rules 1.10 (Sigil 1.5): the sigil_mark kind's Investigate numbers, and the marks the campaigns place
 _mk = next((o for o in items("objects") if o.get("id") == "sigil_mark"), None)
 if _mk is None:
@@ -661,6 +822,94 @@ else:
                     errors.append(f"campaigns/{cp.name}:{z.get('id')}: sigil mark at {o.get('at')}: unknown age {o['age']}")
                 if o.get("damage") is not None and o["damage"] not in (mk.get("damages") or []):
                     errors.append(f"campaigns/{cp.name}:{z.get('id')}: sigil mark at {o.get('at')}: unknown damage {o['damage']}")
+
+# Maps, rules 1.16: the limits, the shared layouts, and every campaign zone's size, picture and start tiles
+import maplayout as _ml
+_maps = data.get("maps")
+if not _maps:
+    errors.append("maps: data/maps.json (rules 1.16) is missing")
+else:
+    _lim = _maps.get("limits") or {}
+    if _lim.get("max") != 26:
+        errors.append("maps: limits.max must be 26 (Leon, 11 Nov 2026: A to Z by 1 to 26)")
+    if not (isinstance(_lim.get("min"), int) and 1 <= _lim["min"] <= _lim.get("max", 0)):
+        errors.append("maps: limits.min must be a whole number up to the maximum")
+    if _lim.get("min_provisional") is not True:
+        errors.append("maps: limits.min is provisional (spec section 14) and must be flagged min_provisional")
+    if not (_lim.get("deploy_min") == 10 and _lim.get("deploy_max") == 14):
+        errors.append("maps: the sides deploy 10 to 14 tiles apart (limits.deploy_min, limits.deploy_max)")
+    if _lim.get("full_size") != _lim.get("max"):
+        errors.append("maps: limits.full_size (open ground, the Proving Ground) must be the maximum")
+    _okinds = ids_of(items("objects"))
+    for _ch, _v in (_maps.get("legend") or {}).items():
+        if len(_ch) != 1:
+            errors.append(f"maps: legend key {_ch!r} must be one character")
+        if isinstance(_v, dict) and _v.get("kind") not in _okinds:
+            errors.append(f"maps: legend {_ch!r} names unknown object kind {_v.get('kind')!r}")
+
+    def _check_ground(where, w, h, solid, objects, start, enemy):
+        """Start tiles on the map, on free ground; objects of known kinds."""
+        sol = _ml.expand_refs(solid, w, h)
+        blk = {}
+        for o in objects or []:
+            if o.get("kind") not in _okinds:
+                errors.append(f"{where}: unknown object kind {o.get('kind')!r}")
+                continue
+            kd = next(k for k in items("objects") if k.get("id") == o["kind"])
+            if kd.get("blocks_move"):
+                for t in _ml.expand_refs([o.get("at")], w, h):
+                    blk[t] = o.get("name") or kd.get("name")
+        for lst, what in ((start, "start"), (enemy, "enemy start")):
+            for r in lst or []:
+                ts = _ml.expand_refs([r], w, h)
+                if not ts:
+                    errors.append(f"{where}: {what} tile {r} is off the map")
+                for t in ts:
+                    if t in sol:
+                        errors.append(f"{where}: {what} tile {_ml.ref(*t)} is inside solid ground")
+                    elif t in blk:
+                        errors.append(f"{where}: {what} tile {_ml.ref(*t)} is on {blk[t]}, which blocks the way")
+        return sol, blk
+
+    def _gap(a, b):
+        return min((max(abs(p[0] - q[0]), abs(p[1] - q[1])) for p in a for q in b), default=None)
+
+    for _lid, _lay in (_maps.get("layouts") or {}).items():
+        _bad = _ml.size_problem(_maps, _lay.get("w"), _lay.get("h"))
+        if _bad:
+            errors.append(f"maps:{_lid}: {_bad}")
+            continue
+        _parts, _errs = _ml.read_layout(_maps, _lay.get("rows"), _lay["w"], _lay["h"], _lay.get("legend"))
+        for _e in _errs:
+            errors.append(f"maps:{_lid}: {_e}")
+        if not _parts["start"] or not _parts["enemyStart"]:
+            errors.append(f"maps:{_lid}: a shared layout needs squad (S) and enemy (E) start tiles")
+        _check_ground(f"maps:{_lid}", _lay["w"], _lay["h"], _parts["solid"], _parts["objects"], _parts["start"], _parts["enemyStart"])
+    for cp in sorted((root / "campaigns").glob("*.json")):
+        try:
+            camp = json.loads(cp.read_text())
+        except Exception as e:
+            errors.append(f"campaigns/{cp.name}: does not parse ({e})")
+            continue
+        for z0 in camp.get("zones") or []:
+            _w = f"campaigns/{cp.name}:{z0.get('id')}"
+            z, _errs = _ml.expand_zone(_maps, z0)
+            for _e in _errs:
+                errors.append(f"{_w}: {_e}")
+            _bad = _ml.size_problem(_maps, z.get("w"), z.get("h"))
+            if _bad:
+                errors.append(f"{_w}: {_bad}")
+                continue
+            if not z.get("start"):
+                errors.append(f"{_w}: needs start tiles")
+            _check_ground(_w, z["w"], z["h"], z.get("solid"), z.get("objects"), z.get("start"), z.get("enemyStart"))
+            if (z.get("art") or {}).get("map"):
+                errors.append(f"{_w}: art.map names a map painting, but every map is plain colour until it is repainted (rules 1.16; art/briefs/ART-REQUESTS.md section 3)")
+            # A full-size map: the nearest of each side 10 to 14 tiles apart (when it names both starts).
+            if z["w"] == _lim.get("full_size") and z["h"] == _lim.get("full_size") and z.get("enemyStart"):
+                _g = _gap(_ml.expand_refs(z.get("start"), z["w"], z["h"]), _ml.expand_refs(z.get("enemyStart"), z["w"], z["h"]))
+                if _g is not None and not (_lim.get("deploy_min", 0) <= _g <= _lim.get("deploy_max", 99)):
+                    errors.append(f"{_w}: the nearest squad and enemy start tiles are {_g} apart; a full-size map deploys them {_lim.get('deploy_min')} to {_lim.get('deploy_max')} apart")
 
 # Soul magic, rules 1.5 (Outburst 2.0): tones, forms, retired modules, the cycle's numbers
 soul = data.get("soul_modules", {})
@@ -824,8 +1073,8 @@ if isinstance(pat, dict) and pat.get("tags"):
         for m in re.finditer(r"[+\-−]\s?\d+ Devotion(?! XP)", t):
             errors.append(f"{path}: '{m.group(0)}' gives Devotion in levels; rules 1.6.1 moves Devotion XP ('{m.group(0)} XP')")
     cond_kinds = {c.get("id"): c.get("adjudication") for c in items("conditions")}
-    if len(pat.get("whispers") or []) != 6:
-        errors.append("patrons: there should be 6 Whispers")
+    if len(pat.get("whispers") or []) != 7:
+        errors.append("patrons: there should be 7 Whispers (rules 1.21: Rebuke is the seventh)")
     for w in pat.get("whispers") or []:
         for f in ("id", "name", "text", "target", "effects"):
             if f not in w:
@@ -885,6 +1134,8 @@ if isinstance(pat, dict) and pat.get("tags"):
             if not nums:
                 errors.append(f"patrons:{pid}: a Devotion-scaled intervention needs an effect with a value and per_devotion")
             for e in nums:
+                if e.get("op") == "heal":
+                    continue  # rules 1.20: a healing intervention carries its own numbers (fitted to a Soldier's turn)
                 sign = -1 if e["value"] < 0 else 1
                 if abs(e["value"]) != amt.get("base") or e["per_devotion"] != sign * (amt.get("per_devotion") or 0):
                     errors.append(f"patrons:{pid}: intervention effect {e.get('op')} must be {amt.get('base')} + {amt.get('per_devotion')} × Devotion (prayer.intervention.amount)")
@@ -1255,11 +1506,281 @@ if isinstance(tq, dict):
         if tch and techs.get(tch, {}).get("free"):
             warns.append(f"{where}: teaches '{tch}', which everyone already knows")
 
+# ---------------------------------------------------------------------------------------------- amount blocks
+# Step a6 of the damage-formula migration (docs/design/proposals/2026-11-unified-damage.md 2.5; data/CONVENTIONS.md):
+# every number an item deals, heals or shields with is in data, as an `amounts` block on the item (read by the engine
+# through effects/amounts.ts), or as the numeric `value` of the item's own heal / shield / hp effect.
+#   1. every `amounts` block has a known kind, a numeric base, well-formed per-point parts and multipliers, a known
+#      profile (rules.json output.profiles), a known type and armour;
+#   2. an effect that heals or shields names a number: a numeric `value`, the words "half" / "full" (a state, not an
+#      amount), or (a formula written as text) an `amounts` block of that kind on the same item;
+#   3. a `deal` or `mend` effect names a block that exists (or carries one);
+#   4. one number, one place: where an item has both a plain heal / shield effect with a number and a plain block of
+#      that kind (a base, no per-point part), they are the same number.
+AMOUNT_KINDS = {"damage", "heal", "shield"}
+AMOUNT_TYPES = {"physical", "sigil", "elemental", "soul", "true"}
+AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text"}
+out_rules = (data.get("rules") or {}).get("output") or {}
+PROFILES = set(k for k, v in (out_rules.get("profiles") or {}).items() if isinstance(v, dict))
+num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
+
+def check_block(b, where):
+    if not isinstance(b, dict):
+        errors.append(f"{where}: an amount block must be an object"); return False
+    if b.get("kind") not in AMOUNT_KINDS:
+        errors.append(f"{where}: amount kind '{b.get('kind')}' is not one of {sorted(AMOUNT_KINDS)}")
+    if not num(b.get("base")):
+        errors.append(f"{where}: amount base must be a number (no formulas as text: use per-point parts)")
+    for p in b.get("per") or []:
+        if not (isinstance(p, dict) and isinstance(p.get("of"), str) and num(p.get("value"))):
+            errors.append(f"{where}: a per-point part is {{of: <what it counts>, value: <number>}}")
+    if "profile" in b and b["profile"] not in PROFILES:
+        errors.append(f"{where}: unknown profile '{b['profile']}' (rules.json output.profiles)")
+    if "type" in b and b["type"] not in AMOUNT_TYPES:
+        errors.append(f"{where}: unknown damage type '{b['type']}'")
+    if "armour" in b and b["armour"] not in ("full", "half", "none"):
+        errors.append(f"{where}: armour is full, half or none")
+    if "mults" in b and not (isinstance(b["mults"], dict) and all(num(v) for v in b["mults"].values())):
+        errors.append(f"{where}: mults is a map of name to number")
+    for k in set(b) - AMOUNT_KEYS:
+        errors.append(f"{where}: unknown field '{k}' in an amount block")
+    return True
+
+def effects_of(x):
+    """An item's own effects, with those of its tiers (a perk) and nested ones (an aura's)."""
+    out = []
+    def rec(lst):
+        for e in lst or []:
+            if isinstance(e, dict):
+                out.append(e); rec(e.get("effects"))
+    rec(x.get("effects"))
+    for t in (x.get("tiers") or {}).values():
+        if isinstance(t, dict): rec(t.get("effects"))
+    return out
+
+DAMAGE_KINDS = {"blast", "all", "explosion", "trap", "thrown"}
+
+def check_amounts(x, where):
+    if not isinstance(x, dict):
+        return
+    # step a7 (leak 4): which blasts an item's damage bonus speaks about besides weapon attacks and spells
+    if "damage_kinds" in x and not (isinstance(x["damage_kinds"], list) and x["damage_kinds"] and set(x["damage_kinds"]) <= DAMAGE_KINDS):
+        errors.append(f"{where}: damage_kinds is a list of {sorted(DAMAGE_KINDS)}")
+    blocks = x.get("amounts")
+    if blocks is not None:
+        if not isinstance(blocks, dict) or not blocks:
+            errors.append(f"{where}: amounts is a map of name to amount block"); blocks = {}
+        for name, b in blocks.items():
+            check_block(b, f"{where}: amounts.{name}")
+    blocks = blocks or {}
+    kinds = {b.get("kind") for b in blocks.values() if isinstance(b, dict)}
+    for e in effects_of(x):
+        op = e.get("op")
+        if op in ("heal", "shield") and "value" in e:
+            v = e["value"]
+            if not num(v) and v not in ("half", "full") and op not in kinds:
+                errors.append(f"{where}: its {op} effect has no number ({v!r}): give the item an `amounts` block of kind {op}")
+            plain = [b for b in blocks.values() if isinstance(b, dict) and b.get("kind") == op and not b.get("per") and num(b.get("base")) and b.get("base") > 0]
+            if num(v) and len(plain) == 1 and len([f for f in effects_of(x) if f.get("op") == op and num(f.get("value"))]) == 1 and plain[0]["base"] != v:
+                errors.append(f"{where}: its {op} effect says {v} and its amount block says {plain[0]['base']}: one number, one place")
+        if op in ("deal", "mend"):
+            a = e.get("amount")
+            if isinstance(a, str):
+                if a not in blocks: errors.append(f"{where}: its {op} effect names the amount block '{a}', which the item does not have")
+                elif (blocks[a].get("kind") == "damage") != (op == "deal"): errors.append(f"{where}: its {op} effect names the block '{a}' of kind {blocks[a].get('kind')}")
+            elif isinstance(a, dict):
+                if check_block(a, f"{where}: {op} effect") and (a.get("kind") == "damage") != (op == "deal"):
+                    errors.append(f"{where}: a {op} effect with an amount of kind {a.get('kind')}")
+            else:
+                errors.append(f"{where}: a {op} effect needs an `amount` (a block, or the name of one of the item's amounts)")
+
+for name in ("perks", "traits", "conditions", "sigils", "feelings", "soul_modules", "items", "weapons", "skills"):
+    for x in items(name) if isinstance(items(name), list) else []:
+        check_amounts(x, f"{name}:{x.get('id') if isinstance(x, dict) else '?'}")
+        for lvl, un in ((x.get("unlocks") or {}).items() if isinstance(x, dict) and isinstance(x.get("unlocks"), dict) else []):
+            check_amounts(un, f"{name}:{x.get('id')}.{lvl}")
+for b in base:
+    for r, v in (b.get("ranks") or {}).items():
+        for m in v.get("moves") or []:
+            if "ref" not in m: check_amounts(m, f"classes:{b.get('id')}.{m.get('id')}")
+for m in pool:
+    check_amounts(m, f"classes:pool.{m.get('origin')}.{m.get('id')}")
+for a in adv:
+    for m in a.get("moves") or []:
+        check_amounts(m, f"classes:{a.get('id')}.{m.get('id')}")
+pat = data.get("patrons") or {}
+for w in pat.get("whispers") or []:
+    check_amounts(w, f"patrons:whisper.{w.get('id')}")
+for p in items("patrons"):
+    if isinstance(p, dict):
+        for h in (p.get("hymns") or []) + ([p["miracle"]] if isinstance(p.get("miracle"), dict) else []) + ([p["intervention"]] if isinstance(p.get("intervention"), dict) else []):
+            check_amounts(h, f"patrons:{p.get('id')}.{h.get('id') or 'intervention'}")
+for name, grp in (out_rules.get("amounts") or {}).items():
+    if isinstance(grp, dict):
+        for bn, b in grp.items():
+            check_block(b, f"rules: output.amounts.{name}.{bn}")
+
+# ---------- conditions.json: the fields the engine reads (packages/engine/src/condtable.ts is its one loader) ----------
+# engine foundations 2: the condition table IS this file. Every row needs what the loader reads, in one form each.
+COND_UNTIL = {"put_out", "next_turn", "stand", "revealed", "source", "moved", "fight_end", "stabilised", "escape", "recovered", "treated", "repaired", "raised"}
+COND_HIT = {"own_attacks", "next_attack", "not_vs_source", "vs_source", "marker_squad_vs_self", "melee_vs_self", "ranged_vs_self"}
+# The numbers the engine reads from a row's effects (condtable.ts modsOf), by condition: EXACTLY these, each once. A
+# row that loses one, gains one the engine would read, or writes one so the loader skips it (a `when`, a misspelt
+# context or stat) fails here. The review of 12 Nov 2026 (conditions-review.json, problem 6) made five such edits and
+# this check said 0 errors; it finds all five now. Change this table only together with a ruling on the row.
+COND_READS = {
+    "weakened": ["stat_mod:damage_dealt_pct"], "slowed": ["stat_mod:move_mult"], "nausea": ["stat_mod:ap"], "pinned": ["attack_mod:own_attacks"],
+    "dazed": ["stat_mod:ap"], "blinded": ["attack_mod:own_attacks", "stat_mod:vision"], "prone": ["attack_mod:melee_vs_self", "attack_mod:ranged_vs_self"],
+    "left_brain_debuff": ["skill_mod_tag:core:mind", "stat_mod:sigil_ap"], "right_brain_debuff": ["skill_mod_tag:attr:expression", "skill_mod_tag:core:soul", "stat_mod:soul_cost_pct"],
+    "fear": ["attack_mod:not_vs_source"], "shaken": ["stat_mod:save_heart"], "marked": ["attack_mod:marker_squad_vs_self"], "grappled": ["attack_mod:not_vs_source"],
+    "suppressed": ["stat_mod:ap"], "withdrawing": ["stat_mod:defense"], "corroded": ["stat_mod:defense"], "quickened": ["stat_mod:ap"],
+    "sharpened": ["attack_mod:next_attack", "damage_mult:next_attack"], "hopeful": ["attack_mod:next_attack"], "scorned": ["attack_mod:vs_source"],
+    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"],
+}
+COND_ENGINE_STATS = {"defense", "move_mult", "vision", "ap", "damage_dealt_pct", "sigil_ap", "soul_cost_pct", "save_body", "save_brain", "save_heart"}
+# stat_mod stats and attack_mod contexts a row may carry that the loader does not read (another part of the engine does)
+COND_OTHER_STATS = {"can_act", "hp", "next_attack_mult", "random_target_pct", "untargetable"}
+COND_OTHER_HIT = {"liked_tag", "emplaced_weapon"}
+def cond_reads(c):
+    out = []
+    for e in c.get("effects") or []:
+        if not isinstance(e, dict): continue
+        if e.get("op") == "stat_mod" and e.get("stat") in COND_ENGINE_STATS and not e.get("when") and isinstance(e.get("value"), (int, float)): out.append("stat_mod:" + e["stat"])
+        if e.get("op") == "attack_mod" and (e.get("context") or "own_attacks") in COND_HIT and isinstance(e.get("value"), (int, float)): out.append("attack_mod:" + (e.get("context") or "own_attacks"))
+        if e.get("op") == "skill_mod_tag" and isinstance(e.get("value"), (int, float)): out.append("skill_mod_tag:" + str(e.get("tag")))
+        if e.get("op") == "damage_mult" and e.get("context") == "next_attack": out.append("damage_mult:next_attack")
+    return sorted(out)
+cond_names = set()
+for c in items("conditions"):
+    cid = c.get("id"); w = f"conditions:{cid}"
+    for k in ("name", "text", "kind", "engine", "duration", "effects"):
+        if c.get(k) in (None, ""): errors.append(f"{w}: needs `{k}`")
+    if c.get("engine") not in ("table", "flag", "state"): errors.append(f"{w}: engine must be table, flag or state (how the engine keeps it)")
+    if c.get("kind") not in ("debuff", "state"): errors.append(f"{w}: kind must be debuff or state")
+    if not isinstance(c.get("save"), bool): errors.append(f"{w}: save must be true or false (the family says which save)")
+    fam = c.get("family")
+    if fam not in (None, "body", "brain", "heart"): errors.append(f"{w}: family must be body, brain, heart or null")
+    if c.get("save") and fam is None: errors.append(f"{w}: a condition with a save needs a family")
+    if c.get("boon") and (c.get("save") or fam is not None): errors.append(f"{w}: a boon has no save and no family")
+    if c.get("kind") == "debuff" and fam is None: errors.append(f"{w}: a debuff needs a family")
+    d = c.get("duration") or {}
+    has_r, has_u = isinstance(d.get("rounds"), int) and d.get("rounds") > 0, isinstance(d.get("until"), str)
+    if has_r == has_u: errors.append(f"{w}: duration is exactly one of {{\"rounds\": N}} (the bearer's turn ends) or {{\"until\": \"<word>\"}}")
+    if has_u and d["until"] not in COND_UNTIL: errors.append(f"{w}: duration.until '{d['until']}' is not one of {sorted(COND_UNTIL)}")
+    if set(d) - {"rounds", "until", "out_of_combat"}: errors.append(f"{w}: duration has unknown keys {sorted(set(d) - {'rounds', 'until', 'out_of_combat'})}")
+    for nm in [cid, c.get("key")] + list(c.get("aliases") or []):
+        if nm is None: continue
+        if nm in cond_names: errors.append(f"{w}: the name '{nm}' is used twice (ids, keys and aliases share one space)")
+        cond_names.add(nm)
+    for e in c.get("effects") or []:
+        if not isinstance(e, dict): continue
+        if e.get("op") == "attack_mod" and e.get("context") in (None, *COND_HIT) and not isinstance(e.get("value"), (int, float)): errors.append(f"{w}: attack_mod needs a number")
+        if e.get("op") == "tn_mod" and e.get("context") in COND_HIT: errors.append(f"{w}: a to-hit change is `attack_mod` (the engine reads that op), not tn_mod")
+        if e.get("op") == "stat_mod" and e.get("stat") in ("defense", "move_mult", "vision", "ap", "damage_dealt_pct", "sigil_ap", "soul_cost_pct", "save_body", "save_brain", "save_heart") and not e.get("when") and not isinstance(e.get("value"), (int, float)):
+            errors.append(f"{w}: stat_mod {e.get('stat')} needs a number (the engine applies it as written)")
+    got, want = cond_reads(c), sorted(COND_READS.get(cid, []))
+    if got != want: errors.append(f"{w}: the engine reads {want or 'no number'} from this row's effects; the row gives it {got or 'none'} (condtable.ts modsOf; tools/validate.py COND_READS)")
+    for e in c.get("effects") or []:
+        if not isinstance(e, dict): continue
+        if e.get("op") == "stat_mod" and e.get("stat") not in COND_ENGINE_STATS | COND_OTHER_STATS: errors.append(f"{w}: stat_mod stat '{e.get('stat')}' is not one the engine knows ({sorted(COND_ENGINE_STATS | COND_OTHER_STATS)})")
+        if e.get("op") == "stat_mod" and e.get("stat") in COND_ENGINE_STATS and e.get("when"): errors.append(f"{w}: stat_mod {e.get('stat')} has a `when`, and the engine skips a condition's number with one")
+        if e.get("op") == "attack_mod" and (e.get("context") or "own_attacks") not in COND_HIT | COND_OTHER_HIT: errors.append(f"{w}: attack_mod context '{e.get('context')}' is not one the engine knows ({sorted(COND_HIT | COND_OTHER_HIT)})")
+        if e.get("op") == "damage_mult" and e.get("context") != "next_attack": errors.append(f"{w}: damage_mult is read only with context next_attack")
+    if c.get("engine") != "state" and cid in ("bleeding", "burning", "corroded") and not ((c.get("amounts") or {}).get("tick")): errors.append(f"{w}: needs amounts.tick (its damage each turn)")
+
 for op, n in new_ops.items():
     warns.append(f"non-standard effect op '{op}' used {n}x")
 
+# ---------- item ops (engine foundations 3; packages/engine/src/effects/triggers.ts): the closed lists ----------
+# An effect whose `when` is a single word is a trigger: it must be in effect_ops.json item_ops.triggers, its op (and
+# every op in `and`) must take that trigger, every `if` key must be a predicate with the right kind of value, and the
+# `limit` must be { per, n } or { cooldown }. A `when` with spaces is the old prose scope (the item's handler or the
+# Narrator reads it). Legacy single-word scopes still claimed by an item's own handler are listed and may only shrink.
+IOPS = (data.get("effect_ops") or {}).get("item_ops") or {}
+TRIG, PRED, TOPS = IOPS.get("triggers", {}), IOPS.get("predicates", {}), IOPS.get("ops", {})
+LIMIT_SCOPES = set(IOPS.get("limit_scopes", []))
+# The legacy single-word scopes (prose in a token's clothing, read by the item's own handler or the Narrator). This list
+# may only SHRINK: a converted item uses a trigger, never a new word here.
+LEGACY_WHEN = {"on_use", "remove", "would_drop_to_0", "on_hit", "on_kill", "on_reaction", "on_analyze", "on_cast",
+               "hp_floor_triggered", "long_rest", "vent", "on_downed", "in_combat",
+               "adjacent_enemy_moves_away_after_turn_start", "after_release", "cast_fear", "cast_outburst", "companion_destroyed_until_rebuilt",
+               "companion_dies_rest_of_arc", "duration+1", "first_pump_each_turn", "full_auto_cone_hit_or_miss", "hands_empty", "hit_by:emp:2_turns",
+               "hit_by:emp|lightning", "hit_marked_below_25pct", "next_hit", "next_release_this_turn", "next_turn", "on_brace",
+               "on_failed_save_before_initiative", "on_failed_threat", "on_overclock", "on_vanish", "on_vent", "once_per_scene:wreck_plan_or_property",
+               "per_3_guard_lost", "reaction:enemy_spell_hits_your_shield", "reaction:melee_miss_against_self", "rest:each_special_type",
+               "rest_of_session", "scene_start", "session_start", "stitch_16_20", "supreme_command", "turn_start_save"}
+REL = {"self", "ally", "side", "foe", "other", "none", "any"}
+def check_pred(k, v, w):
+    p = PRED.get(k)
+    if not p: errors.append(f"{w}: unknown predicate '{k}' in `if` (item_ops.predicates)"); return
+    a, vals = p["arg"], v if isinstance(v, list) else [v]
+    if a == "rel" and not all(x in REL for x in vals): errors.append(f"{w}: `if.{k}` must be one of {sorted(REL)}")
+    elif a == "number" and not (isinstance(v, (int, float)) and not isinstance(v, bool)): errors.append(f"{w}: `if.{k}` must be a number")
+    elif a == "bool" and not isinstance(v, bool): errors.append(f"{w}: `if.{k}` must be true or false")
+    elif a == "ids" and not all(isinstance(x, str) and x in known["condition"] for x in vals): errors.append(f"{w}: `if.{k}` names a condition that is not in conditions.json")
+    elif a in ("words", "string") and not all(isinstance(x, str) for x in vals): errors.append(f"{w}: `if.{k}` must be words")
+def check_trigger_effect(e, w):
+    t = e.get("when")
+    if t not in TRIG:
+        if t not in LEGACY_WHEN: errors.append(f"{w}: unknown trigger '{t}' (item_ops.triggers; prose with spaces is the old free-text scope)")
+        return
+    for x in [e] + list(e.get("and") or []):
+        o = TOPS.get(x.get("op"))
+        if not o: errors.append(f"{w}: op '{x.get('op')}' does not run on a trigger (item_ops.ops)"); continue
+        if t not in o["on"]: errors.append(f"{w}: op '{x.get('op')}' does not run on '{t}' (it runs on {o['on'][:6]}…)")
+        if x.get("target") not in (None, "self", "actor", "target"): errors.append(f"{w}: an item op's target is self, actor or target")
+        for f in ("value", "value_pct", "max", "add", "set", "min", "tiles", "rounds"):
+            if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)): errors.append(f"{w}: '{f}' must be a number in data, never a word")
+        if x.get("op") in ("damage_mult", "damage_vs", "roll_mod", "grant_ap", "resource", "floor") and not isinstance(x.get("value"), (int, float)): errors.append(f"{w}: op '{x.get('op')}' needs a numeric value")
+        if x.get("op") == "condition" and x.get("condition") not in known["condition"]: errors.append(f"{w}: condition '{x.get('condition')}' is not in conditions.json")
+    cond = e.get("if")
+    if cond is not None:
+        if not isinstance(cond, dict): errors.append(f"{w}: `if` must be an object of predicates")
+        else:
+            for k, v in cond.items(): check_pred(k, v, w)
+    lim = e.get("limit")
+    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
+        errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }} or {{ cooldown: rounds }}")
+def walk_triggers(o, w):
+    if isinstance(o, dict):
+        if isinstance(o.get("op"), str) and isinstance(o.get("when"), str) and " " not in o["when"] and ";" not in o["when"]:
+            check_trigger_effect(o, w)
+        for v in o.values(): walk_triggers(v, w)
+    elif isinstance(o, list):
+        for v in o: walk_triggers(v, w)
+# an item's own `numbers` (effects/num.ts num(h, key): what a handler that is not data yet reads) are numbers
+def check_numbers(o, w):
+    n = o.get("numbers") if isinstance(o, dict) else None
+    if n is not None and (not isinstance(n, dict) or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in n.values())):
+        errors.append(f"{w}: `numbers` must map names to numbers (effects/num.ts)")
+for _n in ("perks", "traits"):
+    for _x in items(_n):
+        check_numbers(_x, f"{_n}:{_x.get('id')}")
+        for _t in (_x.get("tiers") or {}).values(): check_numbers(_t, f"{_n}:{_x.get('id')}")
+for _m in [m for b in base for r in (b.get("ranks") or {}).values() for m in r.get("moves", [])] + pool + [m for a in adv for m in a.get("moves", [])]:
+    check_numbers(_m, f"classes:{_m.get('origin', '')}.{_m.get('id')}")
+if TRIG:
+    for _n in ("perks", "traits"):
+        for _x in items(_n): walk_triggers(_x, f"{_n}:{_x.get('id')}")
+    for _x in base + adv: walk_triggers(_x, f"classes:{_x.get('id')}")
+    for _m in pool: walk_triggers(_m, f"classes:pool.{_m.get('origin')}.{_m.get('id')}")
+    for _x in items("skills"): walk_triggers(_x.get("unlocks"), f"skills:{_x.get('id')}")
+else:
+    errors.append("effect_ops.json: no item_ops block (the closed lists of item ops)")
+
+# attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
+for _a in data["attributes"]["items"]:
+    _want = {k["slot"]: k["id"] for k in data["skills"]["items"] if k["attribute"] == _a["id"]}
+    if _a.get("skills") != _want: errors.append(f"attributes.json {_a['id']}: skills {_a.get('skills')} is not what skills.json says ({_want})")
+
+# The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import text_numbers
+TEXT_NUMBERS = text_numbers.check(data, errors, sys.argv[2:])
+
 print("files:", ", ".join(f"{k}({len(items(k)) if k not in ('classes','rules') else ''})" for k in data))
 print(f"base classes {len(base)}, advanced {len(adv)} (shelved {sum(1 for a in adv if a.get('shelved'))}), move pool {len(pool)}")
+print(TEXT_NUMBERS)
 print(f"\n{len(errors)} errors")
 for e in errors[:80]:
     print("  ERR", e)

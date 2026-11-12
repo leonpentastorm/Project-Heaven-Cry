@@ -1,47 +1,10 @@
-// Faith in a fight (Blessing 2.0, rules 1.6): a prayer's targets picked on the grid with the engine's preview as the
-// verdict, the vow prompt at the start of a fight, and the patron's lines as cards beside the combat log. The rules are
-// the engine's (faithView, previewPrayer); this is screen glue for screens/combat.js.
-import { faithView, previewPrayer, beliefOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, MIRACLE_COST_LEVELS } from '@engine';
-import { prayAction, pickerFor, oddsText, faithPanel, FAITH_INK, FAITH_GOLD } from '../game/faithView';
+// Faith in a fight (Blessing 2.0, rules 1.6): the vow prompt at the start of a fight, and the patron's lines as cards
+// beside the combat log. A prayer itself is on the one action flow (game/actionFlow.ts): its targets, verdict, words and
+// what Confirm sends are the engine's descriptor (descriptors.ts). This is screen glue for screens/combat.js.
+import { faithView, beliefOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, HYMN_COOLDOWN } from '@engine';
+import { faithPanel, FAITH_INK, FAITH_GOLD } from '../game/faithView';
 import { accentOf, patronFace, patronMarkUri, vowIconUri } from '../game/faithArt';
 import { patronOfLog, FACE_BOX } from './faithTab';
-
-const NEED = { unit: 'Click who it goes to.', two: 'Click two on the grid.', tile: 'Click a tile in sight.' };
-const SIDE = { ally: 'an ally', enemy: 'an enemy', any: 'anyone' };
-
-/** The chosen prayer: its picks (S.target, S.target2, S.tile), the engine's verdict, the payload, and the grid click. */
-export function prayerView(g, cb, cur, sel, S, seen) {
-  const pv0 = previewPrayer(g, cur.id, sel.kind, sel.id), pk = pickerFor(pv0.target), valid = new Set(pv0.targets || []);
-  const nameOf = (id) => (cb.units.find((u) => u.id === id) || {}).name || id;
-  const chosen = pk.kind === 'unit' ? [S.target].filter((id) => id && valid.has(id)) : pk.kind === 'two' ? [S.target, S.target2].filter((id) => id && valid.has(id)) : [];
-  // A place is aimed at a tile in sight (the engine refuses others; its preview doesn't check sight yet).
-  const inSight = (k) => !seen || seen.has(k), tile = pk.kind === 'tile' && S.tile && inSight(S.tile) ? S.tile : null;
-  const args = pk.kind === 'unit' && chosen[0] ? { targetId: chosen[0] } : pk.kind === 'two' ? { ...(chosen[0] ? { targetId: chosen[0] } : {}), ...(chosen[1] ? { targetId2: chosen[1] } : {}) } : tile ? { tile } : {};
-  const missing = pk.kind === 'none' ? '' : pk.kind === 'tile' ? (tile ? '' : NEED.tile) : pk.kind === 'two' ? (chosen.length < 2 ? (chosen.length ? 'Click a second one.' : NEED.two) : '')
-    : chosen.length ? '' : !valid.size ? 'No one in sight to pray for.' : 'Click ' + (pk.dead ? 'a fallen ally' : pk.downed ? 'a Downed ally' : pk.self ? 'yourself or an ally' : SIDE[pk.side] || 'a target') + '.';
-  const pv = !pv0.ok ? pv0 : missing ? null : previewPrayer(g, cur.id, sel.kind, sel.id, args);
-  const ready = !!pv && pv.ok, picked = chosen.map(nameOf).join(' and ') || (tile ? 'tile ' + tile : '');
-  const why = !pv0.ok ? pv0.why : pv && !pv.ok ? pv.why : '';
-  return {
-    ink: FAITH_INK, ap: pv0.ap, ready, chosen, tile,
-    payload: prayAction({ unitId: cur.id }, sel, args),
-    sel: {
-      name: (sel.kind === 'miracle' ? '✦ MIRACLE · ' : sel.kind === 'hymn' ? 'HYMN · ' : 'WHISPER · ') + pv0.name + ' · ' + pv0.ap + ' AP · ' + oddsText(pv || pv0),
-      text: why ? '✕ ' + why : (picked ? 'Target: ' + picked + '. ' : '') + (missing || pv0.effectText),
-      extra: pv0.mode === 'overreach' && pv0.overreach ? 'Overreach: you ask above your standing. TN ' + pv0.overreach.tn + '; a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP.'
-        : pv0.mode === 'dice' && pv0.roll ? 'By dice: d20 ' + (pv0.roll.mod >= 0 ? '+ ' : '− ') + Math.abs(pv0.roll.mod) + ' against TN ' + pv0.roll.tn + '.'
-        : sel.kind === 'miracle' ? 'By standing: no roll. After it lands, your Devotion falls ' + MIRACLE_COST_LEVELS + ' levels.' : 'By standing: no roll.',
-    },
-    /** A grid click while this prayer is chosen: the state patch, or null to let the screen handle it. */
-    click(u, k) {
-      if (pk.kind === 'tile') return inSight(k) ? { tile: k } : { tile: null };
-      if (!u || !valid.has(u.id)) return null;
-      if (pk.kind === 'unit') return { target: u.id };
-      if (pk.kind === 'two') { const now = chosen.includes(u.id) ? chosen.filter((x) => x !== u.id) : [...chosen, u.id].slice(-2); return { target: now[0] || null, target2: now[1] || null }; }
-      return null;
-    },
-  };
-}
 
 // ---------- the vow prompt (round 1, a Faithful character's first turn; skippable) ----------
 const SKIPPED = new Set();
@@ -58,8 +21,8 @@ export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
   return {
     show: true, key, shield, allies, hasAllies: allies.length > 0, noAllies: shield && !allies.length,
     head: 'SWEAR A VOW · ' + (v.patron ? v.patron.name.toUpperCase() : 'YOUR PATRON'),
-    sub: 'Kept to the end of the fight: +' + DEVOTION_XP.vowKept + ' Devotion XP. Broken: −' + DEVOTION_XP.vowBroken + ', and your patron says so. Or fight unsworn.',
-    vows: v.vows.map((x) => ({ key: x.id, icon: vowIconUri(x.id), name: x.name, words: x.words, title: 'Broken when: ' + x.brokenWhen, pressed: shield && x.id === 'shield' ? 'true' : 'false',
+    sub: 'Fulfilled in the fight: your next Hymn comes ' + HYMN_COOLDOWN.vowCut + ' round sooner (once for each Hymn). Kept to the end of the fight: +' + DEVOTION_XP.vowKept + ' Devotion XP. Broken: −' + DEVOTION_XP.vowBroken + ', and your patron says so. Or fight unsworn.',
+    vows: v.vows.map((x) => ({ key: x.id, icon: vowIconUri(x.id), name: x.name, words: x.words, title: (x.fulfilledWhen ? 'Fulfilled when: ' + x.fulfilledWhen + '. ' : '') + 'Broken when: ' + x.brokenWhen, pressed: shield && x.id === 'shield' ? 'true' : 'false',
       pick: () => (x.needsAlly ? sc.setState({ vowShield: shield ? null : key }) : swear(x.id)),
       style: 'display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 1px 8px; align-items: center; text-align: left; min-height: 40px; padding: 5px 8px; border-radius: 8px; font-family: inherit; color: #E7EBF3; cursor: pointer; '
         + (shield && x.id === 'shield' ? 'border: 1px solid ' + FAITH_INK + '; background: #1C2536' : 'border: 1px solid #2E3A50; background: #10151F') })),

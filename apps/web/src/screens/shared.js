@@ -8,7 +8,7 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
-import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF } from '@engine';
+import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION } from '@engine';
 
 export const D = PD;
 export const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
@@ -20,8 +20,8 @@ export const checkMod = (skillId, p) => checkModOf(skillId, p || 0);
 /** What one more point of an attribute gives, in the game's numbers (creation, level up, the attribute page). */
 export const ATTR_GIVES = {
   endurance: '+15 max HP, +10% chance to ignore an injury', strength: '+10% physical damage, +5 kg carried', agility: '+0.5 tile of movement an AP, +1 Initiative',
-  perception: '+2 tiles of vision, +10% critical damage, −10% critical damage taken', intelligence: '+10% Sigil power, a longer Line every 2 points', expression: '+10% elemental damage, glyphs 0.1 AP cheaper',
-  insight: '+10% healing given, Soul magic costs 5% less MP', determination: '+5% Soul power, +10% mana syphoned', virtue: '+100 max MP, prayers come back half a turn sooner',
+  perception: '+2 tiles of vision, +' + Math.round(CRIT_PER_PERCEPTION * 100) + '% critical damage, −10% critical damage taken', intelligence: '+10% Sigil power, a longer Line every 2 points', expression: '+10% elemental damage, glyphs 0.1 AP cheaper',
+  insight: '+10% healing given, Soul magic costs 5% less MP, +25 max MP', determination: '+5% Soul power, +75 max MP, +10% mana syphoned', virtue: 'Hymns come back a little sooner', // rules 1.24: Max MP is Determination's and Insight's
 };
 /** A skill's place under its attribute, in words: the first is how you fight, the second how you survive, the third how
  *  you talk and notice (the third rolls checks one better than the others, which the roll shown already counts). */

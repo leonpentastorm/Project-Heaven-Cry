@@ -82,6 +82,7 @@ export function faithTabVals(sc, g, c) {
     whispers: B.whispers.map(view), hymns: B.hymns.map(view), hasHymns: B.hymns.length > 0, miracle: B.miracle ? view(B.miracle) : {}, hasMiracle: !!B.miracle,
     // Rules 1.6.2: the gate and the price in the heading, beside the words (the gold is light only).
     miracleHead: '✦ MIRACLE · AT DEVOTION ' + GATE.miracle + ' · ONCE A SESSION · COSTS ' + MIRACLE_COST_LEVELS + ' LEVELS',
+    hymnHead: P.hymnText || 'HYMNS', // rules 1.22: the wait between Hymns, in the heading
     prayHead: story ? 'PRAY · THE STORY' : 'PRAY', anyOpen: all.some((b) => S.faOpen === b.key),
   };
 }

@@ -7,7 +7,9 @@ The scenario (every field optional):
   pcs    characters: [{"archetype": "sharpshooter", "weapon": "sabre", "level": 6, "kit": "soul", "classId": "fighter",
          "perks": {"last_wall": "mastered", "bulwark": "II"}, "traits": ["pain_eater"],
          "skills": {"dexterity": 9}, "attrs": {"agility": 9}}]            (default: one sharpshooter)
-  foes   [{"tier": "minion|soldier|elite|boss", "weapon": "fists", "at": "F6"}]   (default: one soldier at F6)
+  foes   [{"tier": "vermin|minion|soldier|elite|boss", "weapon": "fists", "at": "F6", "level": 9}]   (default: one soldier at F6;
+         an enemy is the squad's level unless it has its own; "classic": true gives it the old fixed numbers)
+  level  the fight's level, 1 to 20 (default: the average level of the characters, rounded down)
   seed   a string: the dice. Change it to see other rolls.
   set    put things where you need them first: {"$pc": {"pos": "5,5", "ap": 9}, "$foe": {"pos": "6,5", "hp": 20}}
   turn   whose turn it starts on ("$pc" by default, "$foe", "$pc1"…; false: leave the turn order alone)

@@ -2,12 +2,12 @@
 // holding it; the handler checks the trigger and calls fireWatch(), which spends the reaction (never while Pressed).
 // Overwatch and Deny are the lead's references; the ranged lane builds Cover Me and Dead to Rights here.
 import { technique, strike, canStrike, holdWatch, fireWatch, stop, spendRounds, addPressure, isPressed, atCover, turnStamp, onHook, strikingWith, type Tech } from './shared';
-import { alive, dist, lineOfSight, unitSees, sideSees, effectiveRange, xy, key, type Combat, type Unit } from '../../combat';
+import { say, alive, dist, burstRolls, lineOfSight, unitSees, sideSees, effectiveRange, xy, key, type Combat, type Unit } from '../../combat';
 import type { HeldWatch } from '../types';
 import { looseRound } from './press';
 
-// 27. Overwatch: the first enemy to move in your sight: the held shot. Precise: +2. Auto: it is a Burst (3 rounds, each
-//     later one −1). Spread: anyone coming within 4 tiles (instead of anyone moving in sight).
+// 27. Overwatch: the first enemy to move in your sight: the held shot. Precise: +2. Auto: it is a Burst (rules 1.18: a character's two rolls, the second at −4; an
+//     enemy's old three, each later one −1). Spread: anyone coming within 4 tiles (instead of anyone moving in sight).
 technique({
   id: 'overwatch',
   run(t) { holdWatch(t, { trigger: 'moves' }); return null; },
@@ -18,8 +18,8 @@ technique({
       if (p === 'spread' && dist(t.u.pos, m.pos) > t.num('spread_range', 4)) return;
       if (!canStrike(t, m)) return;
       fireWatch(t, ctx, m, () => {
-        const shots = p === 'auto' ? 3 : Math.max(1, t.u.owShots || 1); t.u.owShots = 0;
-        for (let i = 0; i < shots && alive(m); i++) if (!strike(t, { target: m, extra: (p === 'precise' ? t.num('precise_hit', 2) : 0) - (p === 'auto' ? i : 0) }).ok) break;
+        const burst = p === 'auto' ? burstRolls(t.u, t.w) : null, shots = burst ? burst.length : Math.max(1, t.u.owShots || 1); t.u.owShots = 0; // rules 1.18: an Auto weapon's held shot is a Burst, with the Burst's rolls
+        for (let i = 0; i < shots && alive(m); i++) if (!strike(t, { target: m, extra: (p === 'precise' ? t.num('precise_hit', 2) : 0) + (burst ? burst[i] : 0) }).ok) break;
       }, 'overwatch');
     },
   },
@@ -100,7 +100,7 @@ technique({
         caught(t.cb, att);
         (att as any).coveredBy = { t: turnStamp(t.cb), tgt: tgt.id, v: pen, by: t.u.id, volley: ctx.volley ?? null };
         const use = strikingWith(att); if (use) COVERED_USE.set(att, use); else COVERED_USE.delete(att);
-        t.cb.log.push('  Covering fire: ' + att.name + '\'s attack on ' + tgt.name + ' is at −' + pen + '.');
+        say(t.cb, '  Covering fire: ' + att.name + '\'s attack on ' + tgt.name + ' is at −' + pen + '.');
         addPressure(t, att, t.num('pressure', 1), 'Cover Me');
         if (shoot && alive(att)) strike(t, { target: att, label: 'Cover Me' }); // a round, Heat and a hit's Pressure, as any shot
         else { spendRounds(t, t.def.rounds as number); looseRound(t, att.pos, { covering: true }); } // the covering burst: the round goes, nothing is rolled; still a shot (Heat, the report)
@@ -137,10 +137,10 @@ function rights(t: Tech, ctx: any, why: string): void { // why: 'attacks' | 'sta
   const p = t.line('precise', 'silent');
   fireWatch(t, ctx, m, () => {
     caught(t.cb, m);
-    t.cb.log.push('  ' + m.name + ' ' + why + ': the shot lands first.');
+    say(t.cb, '  ' + m.name + ' ' + why + ': the shot lands first.');
     const was = !!t.u.hidden;
     strike(t, { target: m, extra: t.num('hit', 2), critMin: p === 'precise' ? t.num('precise_crit_min', 18) : undefined, quiet: p === 'silent', label: 'Dead to Rights' });
-    if (p === 'silent' && was && t.u.hidden) t.cb.log.push('  ' + t.u.name + ' stays Hidden.');
+    if (p === 'silent' && was && t.u.hidden) say(t.cb, '  ' + t.u.name + ' stays Hidden.');
   }, 'watch', { why });
 }
 technique({

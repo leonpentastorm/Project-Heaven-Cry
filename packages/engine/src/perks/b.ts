@@ -8,23 +8,27 @@
 // engine stays deterministic. What the engine can't run goes to the Narrator: a fight note, a pending ruling, or the
 // item's brief() remainder in the character brief.
 import { register, stateOf, uses, has, note, postStory, grantPerkAp, bankAp, pushAp, grantShield, boundGame, skillRollMod, type Holder } from '../effects';
+import { itemAmount } from '../effects/amounts';
 import { SKILL, WEAPON, ITEM } from '../data';
-import { type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
+import { say, type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE } from '../tactics';
 import { applyCond, condOn } from '../magic';
 import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod } from '../character';
 import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../objects';
-import { d20, die, type Rng } from '../rng';
+import { die, type Rng } from '../rng';
 import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game';
+import { cdFire, cdTick, landsNext } from './cooldown';
+import { rngOf, foesOf } from '../kit';
+import { rollVs, rollD20, judge, TN } from '../rolls';
+import { refund, loseAp } from '../effects/cost';
+import { hideAgain } from '../magic';
 
 // ---------- shared helpers ----------
 const ow = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const gameOf = (h: Holder): any => h.g ?? boundGame();
-const rngOf = (h: Holder, ctx?: any): Rng | null => ctx?.rng || gameOf(h)?.rng || null;
 const turnKey = (cb: Combat) => cb.round + '.' + cb.turn;
 const myTurn = (cb: Combat, u: Unit | null | undefined) => !!u && active(cb) === u && !cb.window;
-const log = (cb: Combat | null | undefined, s: string) => { if (cb) cb.log.push(s); };
-const foesOf = (cb: Combat, u: Unit) => cb.units.filter((v) => v.side !== u.side && alive(v) && !v.companion);
+const log = (cb: Combat | null | undefined, s: string) => { if (cb) say(cb, s); };
 /** The zone the story stands in carries this tag (terrain:open, urban, fear…; campaign zones set them). */
 const zoneHas = (g: any, ...tags: string[]) => { if (!g?.story) return false; try { const z = zoneTags(g); return tags.some((t) => z.includes(t)); } catch { return false; } };
 /** Is this overworld unit a hostile NPC (storyCb makes every NPC a 'foe' unit)? In a fight every foe is hostile. */
@@ -102,7 +106,7 @@ register({
       ctx.cancel = true; ctx.why = 'Into the Dark';
     },
   },
-  brief: (h) => 'Narrator: walking first into the unknown, they are never surprised there' + (h.tier === 'II' ? '; no Fear on their first turn in a frightening place' : ''),
+  brief: () => null, // the engine runs all of it (the split's finding 19: no standing line for the Narrator)
 });
 
 
@@ -167,7 +171,7 @@ register({
     },
     run: (h, a, rng) => {
       const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId);
-      u.ap = Math.round((u.ap + strikeAp(h)) * 10) / 10; // the shown AP back: the attack below takes its own
+      refund(cb, u, strikeAp(h)); // the shown AP back: the attack below takes its own
       const k = a.tile && (/,/.test(a.tile) ? a.tile : refKey(a.tile, cb.map)); if (!k || !t) return 'Pick a tile and a target.';
       const end = a.choice ? (/,/.test(a.choice) ? a.choice : refKey(a.choice, cb.map)) : null;
       const s = stateOf(h); s.mid = true; s.carry = 0;
@@ -236,19 +240,18 @@ register({
       if (ow(cb)) s.refund = ctx.tiles - half; // the sneak surcharge is 1 AP a tile: half the tiles, half the surcharge
       log(cb, h.u!.name + ' slips from cover to cover (Shadow Step: half the tiles).');
     },
-    moved: (ctx, h) => { fixBank(h, ctx); const s = stateOf(h); if (ctx.u === h.u && s.refund) { h.u!.ap += s.refund; s.refund = 0; } if (ctx.u === h.u) s.owHow = null; },
+    moved: (ctx, h) => { fixBank(h, ctx); const s = stateOf(h); if (ctx.u === h.u && s.refund) { refund(h.cb, h.u!, s.refund); s.refund = 0; } if (ctx.u === h.u) s.owHow = null; },
     spotted: (ctx, h) => {
       if (h.tier !== 'II' || ctx.u !== h.u || ctx.why !== 'attacked' || !h.u || h.u.dead) return;
       const cb: Combat = ctx.cb, rng = rngOf(h); if (!rng) return;
-      const eyes = foesOf(cb, h.u).filter((v) => unitSees(cb, v, h.u!.pos)), s = stateOf(h);
+      const eyes = foesOf(cb, h.u, { companions: false }).filter((v) => unitSees(cb, v, h.u!.pos)), s = stateOf(h);
       const best = eyes.reduce((m, v) => Math.max(m, TIER_NOTICE[v.tier || 'minion'] ?? 0), 0), tn = 10 + best + 2 * (s.stayed || 0);
       const m = (h.u.ingMod ?? (h.c ? mod(h.c.skills.ingenuity || 0) : -2)) + (h.u.sk?.ingenuity || 0);
       let ok = true, line = '';
-      if (eyes.length) { const d = d20(rng); ok = d === 20 || (d !== 1 && d + m >= tn); line = ': d20 ' + d + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' vs ' + tn; }
+      if (eyes.length) { const rv = rollVs(cb, rng, { by: h.u, mod: m, tn, why: 'hide' }); ok = rv.ok; line = ': ' + rv.text; }
       if (!ok) { log(cb, h.u.name + ' tries to melt back into cover (Shadow Step' + line + ' · seen).'); return; }
       s.stayed = (s.stayed || 0) + 1;
-      h.u.hidden = true; // the same Hidden entry: no new ambush
-      for (const side of ['pc', 'foe']) if (side !== h.u.side) ((cb.lastSeen ||= {})[side] ||= {})[h.u.id] = h.u.pos;
+      if (!hideAgain(cb, rng, h.u)) return; // the same Hidden entry: no new ambush
       log(cb, h.u.name + ' melts back into cover (Shadow Step' + line + ' · stays Hidden).');
     },
   },
@@ -258,17 +261,18 @@ register({
 
 // =====================================================================================================================
 // Got You in My Sight (Vigilant). I: an enemy you see hide, or one that leaves your sight: +2 AP now on your turn,
-// banked if your turn is still to come this round (once a round, provisional). A sneak attack (an ambush) that hits
-// you: −2 AP next turn. II: no penalty, and the squad keeps the enemy's last position (cb.lastSeen).
+// banked if your turn is still to come this round; once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts;
+// it was once a round). A sneak attack (an ambush) that hits you: −2 AP next turn, also at most once every 3 turns.
+// II: no penalty, and the squad keeps the enemy's last position (cb.lastSeen). The area map keeps once a round.
 // =====================================================================================================================
 function gotYou(h: Holder, cb: Combat, foe: Unit, at: string) {
   const u = h.u!;
   if (h.tier === 'II') ((cb.lastSeen ||= {})[u.side] ||= {})[foe.id] = at;
-  if (myTurn(cb, u)) { if (uses(h).take('per_round')) grantPerkAp(cb, u, 2, 'Got You in My Sight: ' + foe.name); return; }
+  if (myTurn(cb, u)) { if (cdFire(h, 'gain', cb.round)) { uses(h).take('per_round'); grantPerkAp(cb, u, 2, 'Got You in My Sight: ' + foe.name); } return; }
   const mine = cb.order.indexOf(u.id);
-  if (mine > cb.turn && uses(h).take('per_round')) bankAp(u, 2, 'Got You in My Sight: ' + foe.name, cb);
+  if (mine > cb.turn && cdFire(h, 'gain', cb.round)) { uses(h).take('per_round'); bankAp(u, 2, 'Got You in My Sight: ' + foe.name, cb); }
 }
-function sightSnap(h: Holder, cb: Combat): Record<string, string> { const out: Record<string, string> = {}; for (const f of foesOf(cb, h.u!)) if (!f.hidden && unitSees(cb, h.u!, f.pos)) out[f.id] = f.pos; return out; }
+function sightSnap(h: Holder, cb: Combat): Record<string, string> { const out: Record<string, string> = {}; for (const f of foesOf(cb, h.u!, { companions: false })) if (!f.hidden && unitSees(cb, h.u!, f.pos)) out[f.id] = f.pos; return out; }
 register({
   id: 'got_you_in_my_sight', claims: 'all',
   on: {
@@ -285,9 +289,9 @@ register({
       if (unitSees(cb, h.u, ctx.u.pos)) gotYou(h, cb, ctx.u, ctx.u.pos);
     },
     attack_roll: (ctx, h) => { if (ctx.tgt === h.u && ctx.ambush && h.tier !== 'II') stateOf(h).sneak = true; },
-    on_hit: (ctx, h) => { if (ctx.tgt === h.u) { const s = stateOf(h); if (s.sneak) { s.pen = 2; s.sneak = false; log(ctx.cb, h.u!.name + ' is caught by a sneak attack: −2 AP next turn (Got You in My Sight).'); } } },
+    on_hit: (ctx, h) => { if (ctx.tgt === h.u) { const s = stateOf(h); if (s.sneak) { s.sneak = false; if (!s.pen && cdFire(h, 'pen', landsNext(ctx.cb, h.u!))) { s.pen = 2; log(ctx.cb, h.u!.name + ' is caught by a sneak attack: −2 AP next turn (Got You in My Sight).'); } } } },
     on_miss: (ctx, h) => { if (ctx.tgt === h.u) stateOf(h).sneak = false; },
-    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); if (s.pen) { pushAp(ctx, -s.pen, 'sneak attack (Got You in My Sight)'); s.pen = 0; } },
+    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); cdTick(h); if (s.pen) { pushAp(ctx, -s.pen, 'sneak attack (Got You in My Sight)'); s.pen = 0; } },
     // The area map: an NPC token the holder could see moves out of their sight, hides or leaves: +2 AP on the next
     // overworld round (once a round); II also marks where it was last seen (g.story.lastSeen, shown as a line).
     npc_moved: (ctx, h) => {
@@ -338,7 +342,7 @@ register({
     combat_start: (ctx, h) => {
       const cb: Combat = ctx.cb, u = h.u; if (!u || ow(cb) || !alive(u)) return;
       const seen = visibility(cb, u.side).seen, range = u.vision || 12;
-      const cand = foesOf(cb, u).filter((f) => !seen.has(f.id) && dist(u.pos, f.pos) <= range).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos));
+      const cand = foesOf(cb, u, { companions: false }).filter((f) => !seen.has(f.id) && dist(u.pos, f.pos) <= range).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos));
       const pick = h.tier === 'II' ? cand : cand.slice(0, 1); if (!pick.length) return;
       const ls = ((cb.lastSeen ||= {})[u.side] ||= {}); for (const f of pick) ls[f.id] = f.pos;
       log(cb, u.name + ' feels the air move (Wind on the Skin): ' + pick.map((f) => 'an enemy at ' + refOf(f.pos)).join(', ') + '.');
@@ -469,13 +473,13 @@ register({
   },
   actions: [
     {
-      id: 'vanishing_act', label: 'Vanishing Act', scope: ['combat'], ap: 2, uses: { per: 'per_combat', n: 1 }, target: 'none',
+      id: 'vanishing_act', label: 'Vanishing Act', scope: ['combat'], ap: 'data', uses: { per: 'per_combat', n: 1 }, target: 'none',
       text: 'Once a fight: drop out of sight where you stand, even in plain view. You stay Hidden until you attack or someone touches you.',
       available: (h) => (h.u?.hidden ? 'Already Hidden.' : h.u && condOn(h.u, 'marked') ? 'Marked: you can\'t hide.' : true),
       run: (h) => { const cb = h.cb!, u = h.u!; const out = hide(cb, u, 'Vanishing Act'); if (!u.hidden) return 'You can\'t hide now.'; stateOf(h).entry = u.hideEntry; log(cb, u.name + ' is simply gone' + out + '.'); return null; },
     },
     {
-      id: 'vanish', label: 'Vanishing Act', scope: ['world'], ap: 2, uses: { per: 'per_scene', n: 1 }, target: 'none',
+      id: 'vanish', label: 'Vanishing Act', scope: ['world'], ap: 'data', uses: { per: 'per_scene', n: 1 }, target: 'none',
       text: 'Once a scene: vanish in plain view. You are sneaking and Hidden, and only someone who walks up to you can notice you.',
       run: (h) => {
         const g = gameOf(h), c = h.c; if (!g || !c) return 'Not here.';
@@ -523,8 +527,9 @@ register({
 });
 
 // =====================================================================================================================
-// War Footing (Ultimate: Charge! + Make Way). Any enemy that ends a move (not a Disengage) next to you loses 2 AP at
-// once, once per enemy a turn. A failed Intimidation check costs nothing: no complication, a natural 1 is just a
+// War Footing (Ultimate: Charge! + Make Way). An enemy that ends a move (not a Disengage) next to you loses 2 AP at
+// once; once every 3 of your turns, whichever enemy it is (the AP perks' cooldown, ./cooldown.ts, spec item 1104; it
+// was once per enemy a turn). A failed Intimidation check costs nothing: no complication, a natural 1 is just a
 // failure, and the target is simply unmoved; no second try on the same target this scene (provisional). In a fight a
 // Threaten already can't backfire (it's the target's save).
 // =====================================================================================================================
@@ -534,15 +539,17 @@ register({
   on: {
     moved: (ctx, h) => {
       const u = h.u, m: Unit = ctx.u; if (!u || !alive(u) || m.side === u.side || ctx.how === 'disengage' || ctx.forced || dist(ctx.to, u.pos) > 1) return;
-      if (!uses(h).take('per_turn', 1, h.key + '|' + m.id)) return;
-      const lost = Math.min(2, Math.max(0, m.ap)); m.ap = Math.max(0, m.ap - 2);
+      if (m.ap <= 0) return; // nothing to lose: the cooldown isn't spent on it
+      if (ow(ctx.cb) ? !uses(h).take('per_turn', 1, h.key + '|' + m.id) : !cdFire(h, 'gain', ctx.cb.round)) return; // the area map keeps once per enemy a turn
+      const lost = loseAp(m, 2);
       log(ctx.cb, m.name + ' steps into ' + u.name + '\'s reach and falters: −' + lost + ' AP (War Footing).');
     },
+    turn_start_pre: (ctx, h) => { if (ctx.u === h.u) cdTick(h); },
     check_post: (ctx, h) => {
       if (ctx.c !== h.c || !intimidates(ctx.ck)) return;
       const g = gameOf(h), s = stateOf(h), who = String(ctx.ck.target || ctx.ck.npc || ''), scene = g?.story?.scene?.n;
       if (who && s.unmoved?.[who] === scene && ctx.auto !== 'success') { ctx.auto = 'fail'; ctx.labels.push('War Footing: ' + who + ' is unmoved this scene'); return; }
-      const ok = ctx.auto === 'success' || (ctx.auto !== 'fail' && (ctx.die === 20 || (ctx.die !== 1 && ctx.die + ctx.mod >= ctx.tn)));
+      const ok = ctx.auto === 'success' || (ctx.auto !== 'fail' && judge('roll', { die: ctx.die }, ctx.mod, ctx.tn).ok);
       if (!ok) { ctx.labels.push('costs nothing (War Footing)'); ctx.noFumble = true; } // no CRITICAL FAIL head
     },
     check_result: (ctx, h) => {
@@ -569,7 +576,7 @@ register({
       const s = stateOf(h), cb: Combat = ctx.cb; s.melee = turnKey(cb);
       let line = h.u!.name + ' hits the line at full tilt (Last Charge: ×1.5 melee this turn';
       if (uses(h).take('per_combat', 1, h.key + '#shield')) {
-        const ac = h.c?.armourClass || 0, n = Math.max(15, 15 * ac), before = h.u!.shield || 0;
+        const ac = h.c?.armourClass || 0, n = Math.max(itemAmount('perk:last_charge', 'shield'), itemAmount('perk:last_charge', 'shield_by_armour', [], { armour_class: ac })), before = h.u!.shield || 0;
         grantShield(cb, h.u!, n, h.u!); s.shield = Math.max(0, (h.u!.shield || 0) - before); line += ', a ' + s.shield + ' shield until next turn';
       }
       log(cb, line + ').');
@@ -603,7 +610,7 @@ register({
       const r = die(g.rng, 100); if (r > 50) return;
       if (nid) (s.passed ||= {})[nid] = scene; ctx.ok = true; ctx.labels.push('taken for staff');
       postStory(h, (ctx.npc?.name || 'The guard') + ' takes them for maintenance staff (d100 ' + r + ' ≤ 50).', { kind: 'system' });
-      note(h, (ctx.npc?.name || 'a guard') + ' took ' + h.c!.name + ' for maintenance staff: the cover holds until they act unlike a repairman.');
+      note(h, (ctx.npc?.name || 'a guard') + ' took ' + h.c!.name + ' for maintenance staff and will not look again this scene, unless ' + h.c!.name + ' attacks.');
     },
     spot: (ctx, h) => {
       if (ctx.u !== h.u || !carriesToolbox(h.c)) return; const s = stateOf(h), by: Unit = ctx.by;
@@ -613,7 +620,7 @@ register({
     },
     attack_roll: (ctx, h) => { if (ctx.att === h.u) stateOf(h).passed = {}; },
   },
-  brief: () => 'Narrator: how long the maintenance-staff cover holds when they talk.',
+  brief: () => null, // the engine rolls it and remembers who was fooled; the note above tells the Narrator when it happens
 });
 
 // =====================================================================================================================
@@ -712,7 +719,7 @@ function deviceAt(h: Holder, a: any): MapObject | null {
 register({
   id: 'dead_signal', claims: 'all',
   actions: [{
-    id: 'disable_device', label: 'Dead Signal', scope: ['combat', 'world'], ap: 1, target: 'object', range: 3,
+    id: 'disable_device', label: 'Dead Signal', scope: ['combat', 'world'], ap: 'data', target: 'object', range: 3,
     text: 'While you are in stealth: silently disable one electronic device within 3 tiles.',
     available: (h) => inStealth(h),
     preview: (h, a) => {
@@ -740,7 +747,7 @@ register({
 // (banked: it shares the +3 cap). No Way Back: no Disengage (the generic forbid), no Retreat; armour past Class I
 // gives nothing (the unit's armour is capped at Class I's 5, slot pieces included; see the notes for equip).
 // =====================================================================================================================
-const nearestFoe = (cb: Combat, u: Unit) => foesOf(cb, u).reduce((m, f) => Math.min(m, dist(u.pos, f.pos)), Infinity);
+const nearestFoe = (cb: Combat, u: Unit) => foesOf(cb, u, { companions: false }).reduce((m, f) => Math.min(m, dist(u.pos, f.pos)), Infinity);
 register({
   id: 'forlorn_hope', kind: 'trait', claims: [0, 1, 2],
   stat: (h, stat) => {
@@ -749,10 +756,12 @@ register({
     return base > cap ? cap - base : 0;
   },
   on: {
+    turn_start_pre: (ctx, h) => { if (ctx.u === h.u) cdTick(h); },
     turn_start: (ctx, h) => { if (ctx.u === h.u && !ow(ctx.cb)) stateOf(h).d0 = nearestFoe(ctx.cb, h.u!); },
     turn_end: (ctx, h) => {
       if (ctx.u !== h.u || ow(ctx.cb) || !alive(h.u!)) return; const s = stateOf(h), d1 = nearestFoe(ctx.cb, h.u!);
-      if (Number.isFinite(s.d0) && d1 < s.d0) bankAp(h.u!, 2, 'Forlorn Hope: closer to the enemy', ctx.cb);
+      // Once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts): the AP lands on the next turn.
+      if (Number.isFinite(s.d0) && d1 < s.d0 && cdFire(h, 'gain', landsNext(ctx.cb, h.u!))) bankAp(h.u!, 2, 'Forlorn Hope: closer to the enemy', ctx.cb);
     },
   },
   brief: () => 'Never offer them a retreat or a way to fall back.',
@@ -786,7 +795,7 @@ register({
     available: (h) => (h.u && has(h.u, 'forlorn_hope') ? 'No Way Back: you can\'t retreat.' : h.u?.sprinted ? 'You already Sprinted this turn.' : true),
     preview: (h, a) => {
       if (!h.cb || !h.u || !a.tile) return {}; const k = /,/.test(a.tile) ? a.tile : refKey(a.tile, h.cb.map); if (!k) return { ok: false, why: 'Pick a tile.' };
-      const seen = foesOf(h.cb, h.u).filter((f) => sideSees(h.cb!, h.u!.side, f)), bad = seen.find((f) => dist(k, f.pos) <= dist(h.u!.pos, f.pos));
+      const seen = foesOf(h.cb, h.u, { companions: false }).filter((f) => sideSees(h.cb!, h.u!.side, f)), bad = seen.find((f) => dist(k, f.pos) <= dist(h.u!.pos, f.pos));
       if (bad) return { ok: false, why: 'A retreat must end farther from every enemy you can see (' + bad.name + ').' };
       return { lines: ['Retreat to ' + refOf(k) + ' for 0 AP. No opportunity attacks, then +2 Defense.'] };
     },
@@ -857,8 +866,8 @@ register({
     turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; const s = stateOf(h); if (s.pen) { pushAp(ctx, -s.pen, 'stealth broken (Ghost Soldier)'); s.pen = 0; } },
     rest: (ctx, h) => {
       if (!ctx.settlement || !h.c || !ctx.chars.includes(h.c)) return; const g = gameOf(h) || ctx.g; if (!g) return;
-      const d = d20(g.rng), m = checkMod(h.c, 'vigilant') + skillRollMod({ c: h.c }, 'vigilant', { roll: 'check', tags: (() => { try { return zoneTags(g); } catch { return []; } })() }).add, ok = d === 20 || (d !== 1 && d + m >= 12);
-      postStory(h, 'VIGILANCE · d20 ' + d + ' ' + (m >= 0 ? '+' : '−') + Math.abs(m) + ' = ' + (d + m) + ' vs 12 · ' + (ok ? 'sleeps, for once.' : 'spends the night watching the doors: no rest benefit.'), { kind: 'system' });
+      const rd0 = rollD20(g.rng), m = checkMod(h.c, 'vigilant') + skillRollMod({ c: h.c }, 'vigilant', { roll: 'check', tags: (() => { try { return zoneTags(g); } catch { return []; } })() }).add, rv = judge('roll', rd0, m, TN.standard), ok = rv.ok;
+      postStory(h, 'VIGILANCE · ' + rv.text + ' · ' + (ok ? 'sleeps, for once.' : 'spends the night watching the doors: no rest benefit.'), { kind: 'system' });
       if (!ok) { const i = ctx.chars.indexOf(h.c); if (i >= 0) ctx.chars.splice(i, 1); }
     },
     // The prosthetic arm (the start item, while carried): an arm injury hits metal, not flesh. No −2 to attacks; the
@@ -866,7 +875,7 @@ register({
     injury: (ctx, h) => {
       if (ctx.t !== h.u || ctx.loc !== 'arm' || ctx.cancel || !h.c || !packOf(h.c).some((x) => (x.item || x.id) === 'prosthetic_arm' && x.qty > 0)) return;
       ctx.cancel = true; const cb: Combat = ctx.cb;
-      const r = applyCond(cb, ctx.rng || rngOf(h) || { state: 1 }, ctx.by || null, h.u!, 'augment_offline', undefined, undefined, { skipSave: true });
+      const r = applyCond(cb, rngOf(h, ctx), ctx.by || null, h.u!, 'augment_offline', undefined, undefined, { skipSave: true });
       log(cb, 'The blow lands on ' + h.u!.name + '\'s prosthetic arm' + r + ' (Ghost Soldier).');
     },
     // The area map: a failed stay-hidden roll (found while sneaking) costs 2 AP on the next overworld round.

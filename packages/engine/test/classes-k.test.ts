@@ -3,9 +3,12 @@
 // through the reducer (apply) where it is an action or rides on one, else with the game bound and the engine's own
 // functions (resolveAttack, applyDamage, emit), the same calls enemy turns make.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, condOn, applyCond, applyDamage, resolveAttack, previewAttack, previewEvoke, previewOutburst, d20, endTurn, glyphCost, manaOf,
   coverageOf, itemInfo, ADVANCED, perkActionsFor, emit, statQuery, objectsOf, moveUnit, heal, beginTurn, noteDeaths, condTurnEnd, type Unit, type Combat, type Character,
+  PROFILES, factorOf, levelFactor,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -27,7 +30,7 @@ const charOf = (f: { g: any }, u: Unit): Character => f.g.characters[u.charId!];
 /** Give a unit both an Evoker (with words) and an Emanator. */
 function caster(u: Unit, words: string[], extra: any = {}) {
   u.mg = { words, designs: [{ id: 'o1', name: 'Damage Outburst', school: 'damage', modules: ['move'] }], evoker: true, emanator: true, charge: 10, cores: 2, coresMade: 0, flux: 0, mp: 300, mpMax: 300, strain: 0, held: null, cast: false,
-    brain: 3, will: 3, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
+    brain: 3, will: 3, sigilMult: 1, sigilBoon: 1, soulMult: 1, soulBoon: 1, deal: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
     saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any;
   return u;
 }
@@ -98,7 +101,7 @@ describe('Lumeri Templar', () => {
     s.act({ type: 'story/perk', charId: c.id, id: 'lumeri_templar.blessed_shells', actionId: 'bless_shell', choice: 'saints_shield' } as any);
     expect((s.g.characters[c.id] as any).state.blessedShell.id).toBe('saints_shield');
     expect((s.g.story.rulings || []).some((r: any) => /patron answers/.test(r.text))).toBe(true);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.side === 'pc')!;
     expect(u.ps!['class:lumeri_templar.blessed_shells'].loaded.bl.id).toBe('saints_shield');
   });
@@ -293,7 +296,8 @@ describe('Heartfed', () => {
     const mp = m.mp; act(f, f.unit(u.id), { type: 'combat/outburst', design: 'o1' });
     expect(mp - f.pc.mg!.mp).toBe(Math.max(5, Math.round(plain * 0.6)));
     perk(f, f.pc, 'heartfed.fed'); perk(f, f.pc, 'heartfed.fed');
-    expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.stage).toBe(2); expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(2);
+    expect(f.pc.ap).toBe(6); // rules 1.19: one free stage a turn, so the second fed Pump costs its AP
+    expect(f.pc.mg!.held!.stage).toBe(2); expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(2);
     expect(() => perk(f, f.pc, 'heartfed.fed')).toThrow(/Used twice this turn already/);
     act(f, f.unit(u.id), { type: 'combat/release', aim: foe.pos });
     expect((charOf(f, f.pc) as any).state.heartfed.rage).toBe(0); expect(logHas(f.cb, /takes the rest of the rage/)).toBe(true);
@@ -353,8 +357,8 @@ describe('Vessel', () => {
   it('Inner Charge: Iron adds armour by stage, grows at turn start with Strain; no Outbursts for a Vessel', () => {
     const f = fightWith([adv('vessel', SOUL)], [{}]); const u = f.turn(f.pc); const arm = f.unit(u.id).armour, mp = f.unit(u.id).mg!.mp;
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'iron' });
-    expect(f.pc.armour).toBe(arm + 10); expect(f.pc.mg!.mp).toBeLessThan(mp); expect(f.pc.mg!.strain).toBe(1);
-    f.turn(f.pc.id); expect(f.pc.armour).toBe(arm + 14); expect(f.pc.mg!.strain).toBeGreaterThanOrEqual(1); // rules 1.5: stage 2 is ×1.4
+    expect(f.pc.armour).toBe(arm + 10); expect(f.pc.mg!.mp).toBeLessThan(mp); expect(f.pc.mg!.strain).toBe(1); // stage 1 is ×1.0 (rules 1.19)
+    f.turn(f.pc.id); expect(f.pc.armour).toBe(arm + 12); expect(f.pc.mg!.strain).toBeGreaterThanOrEqual(1); // stage 2 is ×1.2
     expect(withGame(f.g, () => previewOutburst(f.cb, f.pc, 'o1', f.foe.pos)).ok).toBe(false);
   });
   it('Inner Charge: Steady can\'t be knocked Prone; Pain to Power gives AP next turn; Surge adds 15 to melee', () => {
@@ -370,8 +374,9 @@ describe('Vessel', () => {
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'surge' }); seed(f, 10);
     perk(f, f.pc, 'vessel.release_strike', { targetId: foe.id });
     expect(logHas(f.cb, /RELEASE \(1 form, 15\)/)).toBe(true);
-    // fists 10 + Surge 15 (stage 1, ×1; past Empty Hand's floor of 20) + the release 15 × 1 × the Soul multiplier, armour 0
-    expect(999 - f.unit(foe.id).hp).toBe(25 + Math.floor(15 * f.pc.mg!.soulMult));
+    // fists 10 + Surge 15 × 1.0 (stage 1, ×1.0 since rules 1.19; past Empty Hand's floor of 20) + the release 15 × 1.0 × the Soul multiplier, armour 0
+    // rules 1.26: the fists and Surge's 15 go in together and take the weapon profile's k, the melee factor and the Level term (a7: an item's flat is multiplied)
+    expect(999 - f.unit(foe.id).hp).toBe(Math.floor((10 + 15) * PROFILES.weapon.k * factorOf('melee') * levelFactor('deal', f.pc.level)) + Math.floor(15 * f.pc.mg!.soulMult));
     expect((charOf(f, f.pc) as any).state.vessel.forms).toEqual([]);
   });
 });
@@ -399,7 +404,7 @@ describe('Twinbound', () => {
   it('Call: 2 AP, the twin acts right after you with 4 AP and casts from your heart', () => {
     const s = storyWith([adv('twinbound', SOUL)]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: TWIN } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'I3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'I3' }] } } } as any);
     const f: any = { get g() { return s.g; }, get cb() { return s.g.combat!; }, act: s.act, unit: (id: string) => s.g.combat!.units.find((x) => x.id === id)! };
     const cb = () => s.g.combat!; const pc = cb().units.find((x) => x.side === 'pc' && !(x as any).twinOf)!;
     cb().turn = cb().order.indexOf(pc.id); withGame(s.g, () => beginTurn(cb(), s.g.rng));
@@ -418,7 +423,7 @@ describe('Twinbound', () => {
   it('Bond: the twin at 0 HP vanishes (not Downed, no bots) and you take 3 Strain; no Call again this scene', () => {
     const s = storyWith([adv('twinbound', SOUL)]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: TWIN } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
     const cb = () => s.g.combat!; const pc = cb().units.find((x) => x.side === 'pc')!;
     cb().turn = cb().order.indexOf(pc.id); withGame(s.g, () => beginTurn(cb(), s.g.rng));
     s.act({ type: 'combat/perk', unitId: pc.id, id: 'twinbound.call', tile: '2,4' } as any);
@@ -458,7 +463,7 @@ describe('Lane K: more forms and story parts', () => {
   it('Call: the twin guards you (takes the next attack within 1 tile) and is held within 6 tiles of you', () => {
     const s = storyWith([adv('twinbound', SOUL)]); const c = s.chars[0];
     s.act({ type: 'story/perk', charId: c.id, id: 'twinbound.manifest', text: TWIN } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
     const cb = () => s.g.combat!, U = (id: string) => cb().units.find((x) => x.id === id)!; const pc = cb().units.find((x) => x.side === 'pc')!;
     cb().turn = cb().order.indexOf(pc.id); withGame(s.g, () => beginTurn(cb(), s.g.rng));
     s.act({ type: 'combat/perk', unitId: pc.id, id: 'twinbound.call', tile: '2,4' } as any);
@@ -478,7 +483,7 @@ describe('Lane K: more forms and story parts', () => {
     s.act({ type: 'story/perk', charId: hb.id, id: 'heartbinder.link', actionId: 'link_story', choice: v.id } as any);
     expect((s.g.characters[hb.id] as any).state.links.ids).toEqual([v.id]);
     expect((s.g.story.rulings || []).length).toBeGreaterThanOrEqual(2);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe 1', tier: 'soldier', weapon: 'service_pistol', at: 'O3' }] } } } as any);
     const u = s.g.combat!.units.find((x) => x.charId === v.id)!; expect((u as any).vsl.armour).toBeGreaterThanOrEqual(10);
   });
 });

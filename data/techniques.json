@@ -63,6 +63,7 @@
     },
     "drill": {
       "per_kill": {
+        "vermin": 1,
         "minion": 5,
         "soldier": 10,
         "elite": 25,
@@ -168,19 +169,19 @@
           "props": [
             "point"
           ],
-          "text": "+2 to hit."
+          "text": "+{=numbers.point_hit} to hit."
         },
         {
           "props": [
             "reach"
           ],
-          "text": "the step may be 2 tiles."
+          "text": "the step may be {=numbers.reach_step} tiles."
         },
         {
           "props": [
             "heavy"
           ],
-          "text": "on a hit the target is pushed 1 tile."
+          "text": "on a hit the target is pushed {=numbers.heavy_push} tile."
         }
       ],
       "free": false,
@@ -209,13 +210,13 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "After moving 3 or more tiles in a straight line this turn: strike at +10% damage per tile moved, up to +50%.",
+      "text": "After moving 3 or more tiles in a straight line this turn: strike at +10% damage per tile moved, up to +{=numbers.max_pct}%.",
       "lines": [
         {
           "props": [
             "point"
           ],
-          "text": "ignores 5 armour."
+          "text": "ignores {=numbers.point_armour} armour."
         },
         {
           "props": [
@@ -258,13 +259,13 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "No damage. The target makes a Brain save against 12 + half your strength with the weapon's skill. If it fails, your next technique against it this turn has +3 to hit and it can't use an Answer.",
+      "text": "No damage. The target makes a Brain save against 12 + half your strength with the weapon's skill. If it fails, your next technique against it this turn has +{=numbers.hit} to hit and it can't use an Answer.",
       "lines": [
         {
           "props": [
             "light"
           ],
-          "text": "the save is at −2."
+          "text": "the save is at −{=numbers.light_save}."
         },
         {
           "props": [
@@ -349,7 +350,7 @@
           "props": [
             "bare"
           ],
-          "text": "no damage, the target is Grappled and Silenced for 1 round instead."
+          "text": "no damage, the target is Grappled and Silenced for {=numbers.bare_rounds} round instead."
         }
       ],
       "free": false,
@@ -389,7 +390,7 @@
           "props": [
             "point"
           ],
-          "text": "+1 to hit."
+          "text": "+{=numbers.point_hit} to hit."
         },
         {
           "props": [
@@ -421,13 +422,13 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Strike up to 3 enemies in an arc in front of you, each at ×0.7, one roll each.",
+      "text": "Strike up to 3 enemies in an arc in front of you, each at ×{=numbers.mult}, one roll each.",
       "lines": [
         {
           "props": [
             "reach"
           ],
-          "text": "the arc is 2 tiles out."
+          "text": "the arc is {=numbers.reach_out} tiles out."
         },
         {
           "props": [
@@ -470,7 +471,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Strike at ×0.5 with the pommel, haft or fist. The target makes a Body save or is Dazed.",
+      "text": "Strike at ×{=numbers.mult} with the pommel, haft or fist. The target makes a Body save or is Dazed.",
       "lines": [
         {
           "props": [
@@ -482,13 +483,13 @@
           "props": [
             "heavy"
           ],
-          "text": "on a failed save it is pushed 2 tiles instead of Dazed, your choice."
+          "text": "on a failed save it is pushed {=numbers.heavy_push} tiles instead of Dazed, your choice."
         },
         {
           "props": [
             "bare"
           ],
-          "text": "costs 1 AP less.",
+          "text": "costs {=lines.2.ap|abs} AP less.",
           "ap": -1
         }
       ],
@@ -516,14 +517,14 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Strike at ×0.7. On a hit the target's armour is 5 lower for the rest of the fight (once per target per attacker).",
+      "text": "Strike at ×{=numbers.mult}. On a hit the target's armour is {=numbers.lower} lower for the rest of the fight (once per target per attacker).",
       "lines": [
         {
           "props": [
             "blunt",
             "hook"
           ],
-          "text": "10 lower.",
+          "text": "{=numbers.blunt_hook_lower} lower.",
           "match": "any"
         },
         {
@@ -558,7 +559,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Two strikes at ×0.6 at one target, the second at −1 to hit.",
+      "text": "Two strikes at ×{=numbers.mult} at one target, the second at {=numbers.later_hit} to hit.",
       "lines": [
         {
           "props": [
@@ -607,7 +608,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Strike at ×0.7. The target makes a Body save or is Slowed 2 rounds.",
+      "text": "Strike at ×{=numbers.damage_mult}. The target makes a Body save or is Slowed {=numbers.slow_rounds} rounds.",
       "lines": [
         {
           "props": [
@@ -698,7 +699,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "A short, driven thrust: ×0.8 damage, ignores 10 armour.",
+      "text": "A short, driven thrust: ×{=numbers.damage_mult} damage, ignores {=numbers.armour_ignore} armour.",
       "lines": [
         {
           "props": [
@@ -755,7 +756,7 @@
           "props": [
             "thrown"
           ],
-          "text": "no penalty and full damage. Without Thrown: −2 to hit, ×0.7."
+          "text": "no penalty and full damage. Without Thrown: −{=numbers.unthrown_hit} to hit, ×{=numbers.unthrown_mult}."
         },
         {
           "props": [
@@ -813,13 +814,13 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Move 1 tile to another tile next to the same enemy. No opportunity attack. Your next Strike against it this turn ignores a carried shield and counts as flanking.",
+      "text": "Move {=numbers.tiles} tile to another tile next to the same enemy. No opportunity attack. Your next Strike against it this turn ignores a carried shield and counts as flanking.",
       "lines": [
         {
           "props": [
             "light"
           ],
-          "text": "2 tiles."
+          "text": "{=numbers.light_tiles} tiles."
         }
       ],
       "free": false,
@@ -846,7 +847,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "+2 Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. With Durability you also gain Guard: 1, +1 for each Durability point above 1, +1 with a shield.",
+      "text": "+{=numbers.defense} Defense against melee until your next turn, and your Momentum doesn't drop when you are hit. With Durability you also gain Guard: 1, +1 for each Durability point above 1, +1 with a shield.",
       "lines": [
         {
           "props": [
@@ -884,7 +885,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Push an enemy next to you 1 tile, or knock it Prone if it can't move back.",
+      "text": "Roll d20 + your Raw Power modifier against 10 + the better of its Raw Power and Athletics: on a win you push an enemy next to you 1 tile, or knock it Prone if it can't move back.",
       "lines": [
         {
           "props": [
@@ -909,7 +910,8 @@
         "range": 1,
         "reach_range": 2,
         "tiles": 1,
-        "heavy_tiles": 2
+        "heavy_tiles": 2,
+        "roll_tn_base": 10
       },
       "adjudication": "engine",
       "provisional": true,
@@ -934,7 +936,7 @@
             "hook",
             "reach"
           ],
-          "text": "the save is at −2.",
+          "text": "the save is at −{=numbers.save_penalty}.",
           "match": "any"
         },
         {
@@ -973,7 +975,7 @@
           "props": [
             "hook"
           ],
-          "text": "you pull from 2 tiles away (3 with Reach), up to 2 tiles."
+          "text": "you pull from {=numbers.hook_tiles} tiles away (3 with Reach), up to {=numbers.hook_tiles} tiles."
         },
         {
           "props": [
@@ -1015,7 +1017,7 @@
           "props": [
             "edge"
           ],
-          "text": "+50% more against a target that is Bleeding, Dazed, Prone or Downed."
+          "text": "+{=numbers.edge_bonus_pct}% more against a target that is Bleeding, Dazed, Prone or Downed."
         },
         {
           "props": [
@@ -1095,7 +1097,7 @@
       "needs": {
         "momentum": 2
       },
-      "text": "One strike. The target makes a Body save at −1 per Momentum spent or is Stunned (bosses: Dazed).",
+      "text": "One strike. The target makes a Body save at −{=numbers.save_per_momentum} per Momentum spent or is Stunned (bosses: Dazed).",
       "lines": [
         {
           "props": [
@@ -1137,7 +1139,7 @@
       "needs": {
         "momentum": 2
       },
-      "text": "One strike at +20% per Momentum spent. On a hit the target is Pinned where it stands until it spends 2 AP to pull free.",
+      "text": "One strike at +{=numbers.per_momentum_pct}% per Momentum spent. On a hit the target is Pinned where it stands until it spends {=numbers.pull_free_ap} AP to pull free.",
       "lines": [
         {
           "props": [
@@ -1149,7 +1151,7 @@
           "props": [
             "reach"
           ],
-          "text": "you may leave the weapon in (you are unarmed; the target stays Pinned until anyone next to it pulls it out for 2 AP; you, or anyone not on its side, take it into a free hand). Without Point: −2 to hit."
+          "text": "you may leave the weapon in (you are unarmed; the target stays Pinned until anyone next to it pulls it out for {=numbers.pull_free_ap} AP; you, or anyone not on its side, take it into a free hand). Without Point: −2 to hit."
         }
       ],
       "free": false,
@@ -1184,7 +1186,7 @@
         "momentum": 2,
         "held": true
       },
-      "text": "Only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + 25% per Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone.",
+      "text": "Only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + {=numbers.per_momentum_pct}% per Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone.",
       "lines": [
         {
           "props": [
@@ -1196,7 +1198,7 @@
           "props": [
             "heavy"
           ],
-          "text": "you may throw it 2 tiles."
+          "text": "you may throw it {=numbers.heavy_tiles} tiles."
         }
       ],
       "free": false,
@@ -1233,7 +1235,7 @@
           "props": [
             "light"
           ],
-          "text": "and you gain 1 Momentum."
+          "text": "and you gain {=numbers.light_momentum} Momentum."
         },
         {
           "props": [
@@ -1275,7 +1277,7 @@
             "edge",
             "point"
           ],
-          "text": "the strike back is at +2 to hit.",
+          "text": "the strike back is at +{=numbers.edge_point_hit} to hit.",
           "match": "any"
         }
       ],
@@ -1308,7 +1310,7 @@
           "props": [
             "reach"
           ],
-          "text": "your reach is 2 tiles, so most enemies never arrive."
+          "text": "your reach is {=numbers.reach_tiles} tiles, so most enemies never arrive."
         },
         {
           "props": [
@@ -1354,7 +1356,7 @@
           "props": [
             "loud"
           ],
-          "text": "a miss gives +1 Pressure."
+          "text": "a miss gives +{=numbers.loud_miss_pressure} Pressure."
         }
       ],
       "free": true,
@@ -1426,19 +1428,28 @@
       },
       "rounds": 3,
       "needs": {},
-      "text": "Two shots at one target. The second is at −2 to hit.",
+      "text": "Three rounds at one target, two rolls. The second roll is at −4 to hit.",
       "lines": [
         {
           "props": [
             "auto"
           ],
-          "text": "three shots, and you may split them between two targets standing next to each other."
+          "text": "you may split the two rolls between two targets standing next to each other."
         },
         {
           "props": [
             "quick"
           ],
-          "text": "the second shot has no −2."
+          "text": "the second roll is at −3 instead of −4.",
+          "stack": true
+        },
+        {
+          "props": [
+            "heavy"
+          ],
+          "text": "the second roll is at −1 instead of −4.",
+          "when": "braced",
+          "stack": true
         }
       ],
       "free": false,
@@ -1449,12 +1460,16 @@
       "particular": false,
       "numbers": {
         "rolls": 2,
-        "later_penalty": 2,
-        "auto_rolls": 3,
-        "auto_step": 1,
-        "auto_heat_cool": 1,
+        "later_penalty": 4,
+        "quick_penalty": 3,
+        "heavy_penalty": 1,
+        "auto_heat_cool": 0,
         "auto_split_targets": 2,
-        "auto_split_range": 1
+        "auto_split_range": 1,
+        "enemy_rolls": 3,
+        "enemy_step": 1,
+        "enemy_later_penalty": 2,
+        "enemy_heat_cool": 1
       },
       "adjudication": "engine",
       "provisional": true,
@@ -1473,19 +1488,19 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "A careful shot at +2 to hit.",
+      "text": "A careful shot at +{=numbers.hit} to hit.",
       "lines": [
         {
           "props": [
             "precise"
           ],
-          "text": "+3 to hit instead, and a critical hit on 18 to 20 if you haven't moved this turn."
+          "text": "+{=numbers.precise_hit} to hit instead, and a critical hit on 18 to 20 if you haven't moved this turn."
         },
         {
           "props": [
             "drawn"
           ],
-          "text": "a full draw: +25% damage."
+          "text": "a full draw: +{=numbers.drawn_damage_pct}% damage."
         }
       ],
       "free": true,
@@ -1535,7 +1550,7 @@
           "props": [
             "spread"
           ],
-          "text": "can only be used within 4 tiles."
+          "text": "can only be used within {=numbers.spread_range} tiles."
         }
       ],
       "free": false,
@@ -1563,19 +1578,19 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "Move 2 tiles and fire one shot at any point of the move.",
+      "text": "Move {=numbers.tiles} tiles and fire one shot at any point of the move.",
       "lines": [
         {
           "props": [
             "quick"
           ],
-          "text": "3 tiles, and no opportunity attacks."
+          "text": "{=numbers.quick_tiles} tiles, and no opportunity attacks."
         },
         {
           "props": [
             "auto"
           ],
-          "text": "the shot is a Burst for 3 rounds."
+          "text": "the shot is a Burst ({=numbers.auto_rounds} rounds, the Burst's own rolls)."
         },
         {
           "props": [
@@ -1591,10 +1606,7 @@
       "numbers": {
         "tiles": 2,
         "quick_tiles": 3,
-        "auto_rolls": 3,
-        "auto_step": 1,
-        "auto_rounds": 3,
-        "auto_heat_cool": 1
+        "auto_rounds": 3
       },
       "adjudication": "engine",
       "provisional": true,
@@ -1670,7 +1682,7 @@
           "props": [
             "blast"
           ],
-          "text": "you aim at the tile; no penalty, and everyone in the radius gains +2 Pressure."
+          "text": "you aim at the tile; no penalty, and everyone in the radius gains +{=numbers.blast_pressure} Pressure."
         }
       ],
       "free": false,
@@ -1704,19 +1716,19 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "One bolt at +50% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed 1 tile.",
+      "text": "One bolt at +{=numbers.damage_pct}% damage that ignores 10 armour. On a hit the target saves (Body) or is pushed {=numbers.push} tile.",
       "lines": [
         {
           "props": [
             "precise"
           ],
-          "text": "+2 to hit."
+          "text": "+{=numbers.precise_hit} to hit."
         },
         {
           "props": [
             "quick"
           ],
-          "text": "costs 1 AP less.",
+          "text": "costs {=lines.1.ap|abs} AP less.",
           "ap": -1
         }
       ],
@@ -1728,7 +1740,7 @@
       ],
       "particular": false,
       "numbers": {
-        "damage_pct": 50,
+        "damage_pct": 40,
         "pierce": 10,
         "push": 1,
         "precise_hit": 2
@@ -1750,13 +1762,13 @@
       },
       "rounds": 3,
       "needs": {},
-      "text": "Fire to keep a target's head down: one roll at +2 to hit. A hit does half damage and gives it 2 Pressure. A miss still gives it 1 Pressure.",
+      "text": "Fire to keep a target's head down: one roll at +2 to hit. A hit does half damage and gives it {=numbers.pressure_hit} Pressure. A miss still gives it 1 Pressure.",
       "lines": [
         {
           "props": [
             "auto"
           ],
-          "text": "enemies within 1 tile of the target also gain +1."
+          "text": "enemies within {=numbers.auto_spill_range} tile of the target also gain +1."
         },
         {
           "props": [
@@ -1803,19 +1815,19 @@
       },
       "rounds": 6,
       "needs": {},
-      "text": "Sweep fire across up to 3 targets that stand within 2 tiles of each other. Each shot is at −3 to hit, and each hit gives 1 Pressure.",
+      "text": "Sweep fire across up to {=numbers.targets} targets that stand within 2 tiles of each other. Each shot is at {=numbers.hit} to hit, and each hit gives {=numbers.pressure} Pressure.",
       "lines": [
         {
           "props": [
             "auto"
           ],
-          "text": "full auto: 10 rounds in a cone. One roll at −2 against every enemy near the line to your target; each gains 1 Pressure, hit or miss."
+          "text": "full auto: {=numbers.auto_rounds} rounds in a cone. One roll at −2 against every enemy near the line to your target; each gains {=numbers.pressure} Pressure, hit or miss."
         },
         {
           "props": [
             "spread"
           ],
-          "text": "the cone is 1 wider."
+          "text": "the cone is {=numbers.spread_wider} wider."
         }
       ],
       "free": false,
@@ -1855,13 +1867,13 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "A shot to frighten, not to hit. The target makes a Heart save or gains 1 Pressure.",
+      "text": "A shot to frighten, not to hit. The target makes a Heart save or gains {=numbers.pressure} Pressure.",
       "lines": [
         {
           "props": [
             "loud"
           ],
-          "text": "the save is at −2."
+          "text": "the save is at −{=numbers.loud_save_tn}."
         },
         {
           "props": [
@@ -1898,7 +1910,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "Shoot the target's cover, not the target. No roll: the cover takes the damage, and the target gains 2 Pressure.",
+      "text": "Shoot the target's cover, not the target. No roll: the cover takes the damage, and the target gains {=numbers.pressure} Pressure.",
       "lines": [
         {
           "props": [
@@ -1941,13 +1953,13 @@
       },
       "rounds": "all",
       "needs": {},
-      "text": "Empty the weapon at one target: one roll per 3 rounds left (at most 4 rolls), each at −1 more than the last. +1 Pressure per hit. Heat goes to one under the limit.",
+      "text": "Empty the weapon at one target: one roll per 3 rounds left (at most {=numbers.max_rolls} rolls), each at −4 more than the last. +1 Pressure per hit. Heat goes to one under the limit.",
       "lines": [
         {
           "props": [
             "auto"
           ],
-          "text": "+1 Pressure per roll, hit or miss."
+          "text": "+{=numbers.pressure} Pressure per roll, hit or miss."
         },
         {
           "props": [
@@ -1962,7 +1974,7 @@
           "props": [
             "spread"
           ],
-          "text": "both barrels, one roll at double damage within 4 tiles."
+          "text": "both barrels, one roll at double damage within {=numbers.spread_range} tiles."
         },
         {
           "props": [
@@ -1981,8 +1993,8 @@
       "particular": true,
       "numbers": {
         "per_roll": 3,
-        "max_rolls": 4,
-        "step": 1,
+        "max_rolls": 3,
+        "step": 4,
         "pressure": 1,
         "heat_under": 1,
         "spread_mult": 2,
@@ -2008,7 +2020,7 @@
       },
       "rounds": 1,
       "needs": {},
-      "text": "A shot at a target an ally has already hit this round: +2 to hit and +1 extra Pressure.",
+      "text": "A shot at a target an ally has already hit this round: +{=numbers.hit} to hit and +{=numbers.extra_pressure} extra Pressure.",
       "lines": [
         {
           "props": [
@@ -2048,7 +2060,7 @@
           "props": [
             "precise"
           ],
-          "text": "+1 to hit it."
+          "text": "+{=numbers.precise_hit} to hit it."
         },
         {
           "props": [
@@ -2134,7 +2146,7 @@
           "props": [
             "auto"
           ],
-          "text": "Suppress gives +1 more."
+          "text": "Suppress gives +{=numbers.auto_suppress_pressure} more."
         }
       ],
       "free": false,
@@ -2199,13 +2211,13 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Move 1 tile from cover to cover without setting off a Watch.",
+      "text": "Move {=numbers.tiles} tile from cover to cover without setting off a Watch.",
       "lines": [
         {
           "props": [
             "quick"
           ],
-          "text": "2 tiles."
+          "text": "{=numbers.quick_tiles} tiles."
         },
         {
           "props": [
@@ -2238,13 +2250,13 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Cool the weapon: −2 Heat now.",
+      "text": "Cool the weapon: −{=numbers.heat} Heat now.",
       "lines": [
         {
           "props": [
             "heavy"
           ],
-          "text": "−4 Heat (a barrel swap)."
+          "text": "−{=numbers.heavy_heat} Heat (a barrel swap)."
         },
         {
           "props": [
@@ -2280,7 +2292,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Duck: remove 1 Pressure from yourself, or 2 if you are behind full cover. You can't hold a shot (Overwatch and the like) this round.",
+      "text": "Duck: remove {=numbers.pressure} Pressure from yourself, or {=numbers.full_cover_pressure} if you are behind full cover. You can't hold a shot (Overwatch and the like) this round.",
       "lines": [],
       "free": false,
       "comes_with": [],
@@ -2309,14 +2321,14 @@
       "needs": {
         "pressed": true
       },
-      "text": "One shot at +50% damage.",
+      "text": "One shot at +{=numbers.damage_pct}% damage.",
       "suppressed": "Its cover doesn't count.",
       "lines": [
         {
           "props": [
             "precise"
           ],
-          "text": "+2 to hit."
+          "text": "+{=numbers.precise_hit} to hit."
         },
         {
           "props": [
@@ -2356,7 +2368,7 @@
       "needs": {
         "pressed": true
       },
-      "text": "A shot at ×0.7. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned for 1 round.",
+      "text": "A shot at ×{=numbers.damage_mult}. On a hit the target saves (Guts or Athletics, whichever is better) or is Pinned for 1 round.",
       "suppressed": "The save is at −2.",
       "lines": [
         {
@@ -2370,7 +2382,7 @@
             "drawn",
             "silent"
           ],
-          "text": "nailed in place until it spends 2 AP.",
+          "text": "nailed in place until it spends {=numbers.nailed_ap} AP.",
           "match": "any"
         }
       ],
@@ -2410,7 +2422,7 @@
           "props": [
             "loud"
           ],
-          "text": "the save is at −2."
+          "text": "the save is at −{=numbers.loud_save}."
         },
         {
           "props": [
@@ -2447,7 +2459,7 @@
       "needs": {
         "pressed": true
       },
-      "text": "A shot. On a hit the target saves (Guts or Athletics, whichever is better) or loses 1 AP next turn and is pushed 1 tile.",
+      "text": "A shot. On a hit the target saves (Guts or Athletics, whichever is better) or loses {=numbers.ap_loss} AP next turn and is pushed {=numbers.push} tile.",
       "suppressed": "It also falls Prone on a failed save.",
       "lines": [
         {
@@ -2455,14 +2467,14 @@
             "loud",
             "heavy"
           ],
-          "text": "the target is pushed 2 tiles instead of 1.",
+          "text": "the target is pushed {=numbers.push_more} tiles instead of 1.",
           "match": "any"
         },
         {
           "props": [
             "spread"
           ],
-          "text": "within 4 tiles the target is pushed 2 tiles and knocked Prone, save or no save.",
+          "text": "within {=numbers.spread_range} tiles a target that fails the save is pushed {=numbers.push_more} tiles and knocked Prone, Suppressed or not.",
           "when": "within_4"
         }
       ],
@@ -2495,14 +2507,14 @@
       "needs": {
         "pressed": true
       },
-      "text": "Move up to 3 tiles toward the target without its reaction, then shoot.",
+      "text": "Move up to {=numbers.move} tiles toward the target without its reaction, then shoot.",
       "suppressed": "Your shot is a critical on 18–20.",
       "lines": [
         {
           "props": [
             "quick"
           ],
-          "text": "+2 to hit."
+          "text": "+{=numbers.quick_hit} to hit."
         },
         {
           "props": [
@@ -2540,7 +2552,7 @@
         "pressed": true,
         "last_round": true
       },
-      "text": "Only with the last round in the weapon: +3 to hit. If it takes the target out, your next speed reload is free.",
+      "text": "Only with the last round in the weapon: +{=numbers.hit} to hit. If it takes the target out, your next speed reload is free.",
       "suppressed": "It can't be reduced by cover.",
       "lines": [
         {
@@ -2548,7 +2560,7 @@
             "quick",
             "precise"
           ],
-          "text": "+50% damage.",
+          "text": "+{=numbers.damage_pct}% damage.",
           "match": "all",
           "note": "a revolver"
         },
@@ -2590,19 +2602,19 @@
           "props": [
             "precise"
           ],
-          "text": "The held shot is at +2 to hit."
+          "text": "The held shot is at +{=numbers.precise_hit} to hit."
         },
         {
           "props": [
             "auto"
           ],
-          "text": "The held shot is a Burst of three."
+          "text": "The held shot is a Burst."
         },
         {
           "props": [
             "spread"
           ],
-          "text": "It only fires at an enemy that comes within 4 tiles of you."
+          "text": "It only fires at an enemy that comes within {=numbers.spread_range} tiles of you."
         }
       ],
       "free": true,
@@ -2672,7 +2684,7 @@
       "rounds": 1,
       "needs": {},
       "trigger": "an enemy attacks the ally you picked",
-      "text": "Pick an ally. The first enemy that attacks them does it at −2 to hit and gains 1 Pressure. This uses your reaction and lasts until your next turn.",
+      "text": "Pick an ally. The first enemy that attacks them does it at −2 to hit and gains {=numbers.pressure} Pressure. This uses your reaction and lasts until your next turn.",
       "lines": [
         {
           "props": [
@@ -2714,7 +2726,7 @@
       "rounds": 1,
       "needs": {},
       "trigger": "the Pressed enemy you picked attacks, stands up, reloads or leaves cover",
-      "text": "Pick a Pressed enemy. The moment it attacks, stands up, reloads or leaves cover, you shoot first, at +2 to hit. This uses your reaction and lasts until your next turn.",
+      "text": "Pick a Pressed enemy. The moment it attacks, stands up, reloads or leaves cover, you shoot first, at +{=numbers.hit} to hit. This uses your reaction and lasts until your next turn.",
       "lines": [
         {
           "props": [
@@ -2755,7 +2767,7 @@
       "needs": {
         "shield": true
       },
-      "text": "Strike with the shield: bare-hand damage ×1.5, hitting with Raw Power. It costs 1 Guard in place of 1 Momentum. On a hit you gain 1 Momentum, and the target makes a Body save or is pushed 1 tile.",
+      "text": "Strike with the shield: bare-hand damage ×{=numbers.mult}, hitting with Raw Power. It costs 1 Guard in place of 1 Momentum. On a hit you gain {=numbers.momentum_on_hit} Momentum, and the target makes a Body save or is pushed {=numbers.push} tile.",
       "lines": [],
       "free": false,
       "comes_with": [
@@ -2840,7 +2852,7 @@
       "needs": {
         "shield": true
       },
-      "text": "When an ally next to you is shot at: spend 1 Guard and your reaction, and that ally counts as behind half cover against the shot (−5 to hit them).",
+      "text": "When an ally next to you is shot at: spend {=numbers.guard_cost} Guard and your reaction, and that ally counts as behind half cover against the shot (−{=numbers.half_cover} to hit them).",
       "trigger": "an ally next to you is the target of a ranged attack",
       "lines": [],
       "free": false,
@@ -2869,7 +2881,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "When an ally next to you is hit: spend 1 Guard and your reaction, and you take the hit instead. Your armour applies, and the Guard you have left soaks it.",
+      "text": "When an ally next to you is hit: spend {=numbers.guard_cost} Guard and your reaction, and you take the hit instead. Your armour applies, and the Guard you have left soaks it.",
       "trigger": "an ally next to you is hit by an attack",
       "lines": [],
       "free": false,

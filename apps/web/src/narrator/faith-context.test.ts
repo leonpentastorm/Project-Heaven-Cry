@@ -72,6 +72,8 @@ describe('the Narrator and faith', () => {
     // Legendary Deeds (item 1006): the legends[] field and its line, about 0.07k: the cap moves to 25.4k on purpose.
     // Speaking in a fight (rules 1.14): the FIGHTS line now says speech is free and attempts are answered inside the
     // fight, about 0.07k: the cap moves to 25.5k on purpose.
-    expect(e.stable).toBeLessThan(25500);
+    // Enemy levels (rules 1.15): the Vermin tier, the level_shift field and its line, about 0.05k after cutting the
+    // tier line: the cap moves to 25.6k on purpose.
+    expect(e.stable).toBeLessThan(25600);
   });
 });

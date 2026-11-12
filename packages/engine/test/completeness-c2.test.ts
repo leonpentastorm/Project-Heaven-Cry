@@ -165,10 +165,8 @@ describe('Verse of War on the area map (item 31)', () => {
   });
 });
 
-describe('Twin Discipline on the area map (item 32)', () => {
-  // Rules 1.4: the fused Line on the area map is tested in sigil14-perks.test.ts ("Twin Discipline on the area map").
-  it('is covered under the 1.4 rules in sigil14-perks.test.ts', () => { expect(true).toBe(true); });
-});
+// Twin Discipline on the area map (item 32): the fused Line on the area map is tested in sigil14-perks.test.ts
+// ("Twin Discipline on the area map"; rules 1.4). The placeholder test that stood here could not fail (truth pass 3).
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('Dead Signal on the area map: silent (item 33)', () => {

@@ -27,7 +27,7 @@ function rig(words: string[], foes: string[] = ['14,9'], bp = 10) {
   const c = f.g.characters[f.pc.charId!]; c.sigils = [...words]; c.skills.brain_power = bp;
   (c as any).sigilGrowth = { study: 0, picksUsed: 0, free: 0, paid: [...ALL_PAID], toStudy: [], uses: {} };
   const u = f.turn(f.pc); u.ap = 60;
-  Object.assign(u.mg!, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, inflect: [] });
+  Object.assign(u.mg!, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords: 4, flux: -99, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, inflect: [] });
   f.g.rng.state = SEED;
   return f;
 }

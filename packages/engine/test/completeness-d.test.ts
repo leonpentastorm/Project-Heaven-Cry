@@ -1,6 +1,7 @@
 // The completeness pass, part D: class moves (lanes I, J, K) whose fight, area-map or story side was missing or untested.
 // Player actions go through the reducer (apply); an enemy's blow through combat/end-turn where the AI can make it.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   CLASS, apply, holderOf, lineOfSight, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, d20, resolveAttack, previewEvoke, applyCond, emit, stampOf,
   type GameState, type Combat, type Unit,
@@ -25,7 +26,7 @@ const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 const MIND = { archetype: 'sigilist', kit: 'sigil' } as const;
 function caster(u: Unit, words: string[], extra: any = {}) {
   u.mg = { words, designs: [{ id: 'o1', name: 'Damage Outburst', school: 'damage', modules: [] }], evoker: true, emanator: true, charge: 10, cores: 2, coresMade: 0, flux: 0, mp: 300, mpMax: 300, strain: 0, held: null, cast: false,
-    brain: 3, will: 3, sigilMult: 1, soulMult: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
+    brain: 3, will: 3, sigilMult: 1, sigilBoon: 1, soulMult: 1, soulBoon: 1, deal: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 5,
     saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any;
   return u;
 }
@@ -50,7 +51,7 @@ describe('Bard: the Gift cast in a fight', () => {
   it('the ally casts it on their turn (combat/gift) on the Bard\'s MP; once', () => {
     const s = storyWith([cls('bard', 3, SOUL), {}]); const [b, ally] = s.chars;
     s.act({ type: 'story/perk', charId: b.id, id: 'class:bard.gift', text: 'For you, ' + s.g.characters[ally.id].name });
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'boss', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'boss', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     const cb = s.g.combat!, bu = cb.units.find((u) => u.charId === b.id)!, au = cb.units.find((u) => u.charId === ally.id)!, foe = cb.units.find((u) => u.side === 'foe')!;
     bu.pos = '2,2'; au.pos = '3,2'; foe.pos = '5,2'; foe.def = -40; const mp = bu.mg!.mp;
     cb.turn = cb.order.indexOf(au.id); au.ap = 6; delete cb.window;
@@ -188,7 +189,7 @@ describe('class story actions', () => {
     const s = storyWith([cls('scribe', 3, MIND)]); const c = s.chars[0];
     const st = withGame(s.g, () => stampOf('per_rest', { g: s.g }));
     (((s.g.story as any).ps ||= {})[c.id] ||= { items: {} }).items ||= {};
-    (s.g.story as any).ps[c.id].items['class:scribe.stored_spell'] = { spells: [{ words: ['fire'], shape: 'stack', nums: { brain: 3, sigilMult: 1 }, debuff: { body: 0 }, stamp: st }] };
+    (s.g.story as any).ps[c.id].items['class:scribe.stored_spell'] = { spells: [{ words: ['fire'], shape: 'stack', nums: { brain: 3, sigilMult: 1, sigilBoon: 1, deal: 1 }, debuff: { body: 0 }, stamp: st }] };
     s.act({ type: 'story/perk', charId: c.id, id: 'class:scribe.stored_spell', actionId: 'trigger_story', text: 'the door ward' } as any);
     expect(rulingHas(s.g, /Stored spell fire \(stack\) set off out of combat/)).toBe(true);
   });

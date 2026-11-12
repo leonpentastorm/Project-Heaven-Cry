@@ -2,6 +2,8 @@
 // stays as a field; the field takes whoever it has not affected yet at full, and whoever it has (its placing strike or an
 // earlier bite) at ×0.5; at most once per creature per round.
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, apply, newGame, positionsOf, viewFor, magicTurnStart, magicRoundTick, moveUnit, endTurn, active,
   drawGlyph, previewDraw, evoke, previewEvoke, planEvoke, findPattern, evokeOrigins, patternAt, placedMagic, grammarError, compileSpell, scuff, strikeTurret,
@@ -11,7 +13,7 @@ import {
 
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
 const sheet = (archId: string, name: string, extra: Partial<Sheet> = {}): Sheet => { const a = arch(archId); return { name, portrait: '', origin: 'Central City', kit: 'sigil', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {}, ...extra }; };
-const open = (w = 20, h = 20): MapDef => ({ ...MAPS.yard, w, h, cover: [], full: [], solid: [], difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
+const open = (w = 20, h = 20): MapDef => ({ ...MAPS.yard16, w, h, cover: [], full: [], solid: [], difficult: [], pcStart: ['2,5', '2,6', '2,7', '2,8'], foeStart: ['15,5', '15,6', '15,7', '15,8', '15,9', '15,10', '15,11', '15,12'] });
 /** A seed whose next n d20 rolls are all 2–19 (no criticals, no natural 1s). */
 function seed(n = 16, from = 1): { state: number } { for (let s = from; s < 200000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return { state: s }; } throw new Error('no seed'); }
 /** A seed whose next d20 is n. */
@@ -24,7 +26,7 @@ function setup(words: string[], foes: FoeAt[] = [{ at: '9,5' }], o: { map?: MapD
   const cb = startCombat('t', o.map || open(), [{ c, pos: '2,5' }, ...extra], foes.map((f, i) => ({ name: f.name || 'Foe ' + (i + 1), tier: f.tier || 'minion', weapon: f.weapon || 'service_pistol', at: refOf(f.at), ...(f.sigils ? { sigils: f.sigils } : {}) })), 'easy', { state: 7 }, []);
   cb.objects = [];
   const u = cb.units.find((x) => x.charId === 'c1')!, es = cb.units.filter((x) => x.side === 'foe'), allies = cb.units.filter((x) => x.side === 'pc' && x !== u);
-  for (const x of [u, ...allies]) { x.ap = 99; x.mg!.words = [...words]; x.mg!.maxWords = 4; x.mg!.charge = 999; x.mg!.flux = -99; x.mg!.sigilMult = 1; x.mg!.elemMult = 1; x.mg!.healMult = 1; x.mg!.rangeBonus = 0; x.mg!.durBonus = 0; x.mg!.coreSave = 0; x.mg!.glyphAp = 1; x.hp = x.maxHp = 500; x.armour = 0; x.def = 10; }
+  for (const x of [u, ...allies]) { x.ap = 99; x.mg!.words = [...words]; x.mg!.maxWords = 4; x.mg!.charge = 999; x.mg!.flux = -99; x.mg!.sigilMult = 1; x.mg!.sigilBoon = 1; x.mg!.deal = 1; x.mg!.elemMult = 1; x.mg!.healMult = 1; x.mg!.rangeBonus = 0; x.mg!.durBonus = 0; x.mg!.coreSave = 0; x.mg!.glyphAp = 1; x.hp = x.maxHp = 500; x.armour = 0; x.def = 10; }
   for (const e of es) { e.def = -99; e.hp = e.maxHp = 500; e.armour = 0; e.sv = { body: -99, brain: -99, heart: -99 }; }
   cb.mana = 15; // Normal air: Healing given ×1
   return { cb, u, e: es[0], es, allies, rng: seed() };

@@ -8,6 +8,7 @@
 //   6. no variety bonus          7. no technique gives Momentum by its text, but Parry's Light line
 //   8. it carries from turn to turn   9. the maximums stand   10. enemies plan with it   11. the card shows it
 import { describe, it, expect, beforeEach } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { phys, resolveAttack, startCombat, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
 
@@ -100,7 +101,7 @@ describe('2. a Strike and an Opener spend 1 Momentum', () => {
 describe('3. a fight starts with 1 Momentum; the first Opener of a fight is free', () => {
   it('every unit with the meter starts at 1; a unit with no melee weapon has no meter', () => {
     const f = fight('sabre', []);
-    const cb = f.bound(() => startCombat('Start', 'yard', [{ c: f.char(f.pc) }], [{ name: 'Blade', tier: 'elite', weapon: 'sabre' }, { name: 'Gun', tier: 'elite', weapon: 'service_pistol' }], 'standard', { state: 5 }));
+    const cb = f.bound(() => startCombat('Start', 'yard16', [{ c: f.char(f.pc) }], [{ name: 'Blade', tier: 'elite', weapon: 'sabre' }, { name: 'Gun', tier: 'elite', weapon: 'service_pistol' }], 'standard', { state: 5 }));
     const pc = cb.units.find((u) => u.side === 'pc')!, blade = cb.units.find((u) => u.name === 'Blade')!, gun = cb.units.find((u) => u.name === 'Gun')!;
     expect(pc.res?.momentum).toBe(1); expect(pc.resMax?.momentum).toBe(3);
     expect(blade.res?.momentum).toBe(1); expect(gun.resMax?.momentum).toBeUndefined();

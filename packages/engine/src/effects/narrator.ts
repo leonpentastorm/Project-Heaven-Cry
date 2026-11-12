@@ -8,9 +8,10 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import type { Holder, ItemInfo, PendingRuling } from './types';
 import { handlerOf, ownerOf, holdersOf, boundGame } from './hooks';
+import { rawItem } from './collect';
+import { overworld } from '../kit';
 
 const KIND_TAG: Record<string, string> = { perk: 'PERK', trait: 'TRAIT', class: 'CLASS', skill: 'SKILL' };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const short = (s: string, n = 220) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 const whoOf = (h: Holder) => h.c?.name || h.u?.name || 'someone';
 
@@ -65,6 +66,8 @@ export function narratorPart(info: ItemInfo): boolean {
 export function briefOf(h: Holder): string | null {
   const hd = handlerOf(h.key);
   if (hd?.brief) return hd.brief(h);
+  // an item written in data only (engine foundations 3) keeps its Narrator line in its data: `brief`
+  const d = rawItem(h.key)?.brief; if (typeof d === 'string') return d || null;
   return narratorPart(h.info) ? '' : null;
 }
 /** At the start of a fight: one line per fighter naming the items whose effects the engine won't run (so the Narrator

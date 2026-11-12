@@ -3,6 +3,7 @@
 // and in the attack preview; Eyes in the Back's cover tile taking a shot an enemy missed by its margin; Iron Stomach
 // and Nothing Left to Fear in a fight; the area-map Breaching Strike at Tier II; Talks Broke Down II; Soulmate II.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { apply, makeObject, harm, applyDamage, previewAttack, npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, d20, condOn, type GameState, type Combat, type Unit } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -99,7 +100,7 @@ describe('Iron Stomach and Nothing Left to Fear in a fight (through the reducer)
   const fearThenFight = (specs: any[]) => {
     const s = storyWith(specs); const ids = s.chars.map((c) => c.id);
     for (const id of ids) s.act({ type: 'narrator/turn', turn: { narration: 'Dread.', conditions: [{ target: id, id: 'fear' }] } } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     return s;
   };
   it('Iron Stomach I: a Fear carried into the fight lasts 1 round; without it, its full length', () => {
@@ -132,7 +133,7 @@ describe('Breaching Strike II on the area map; Talks Broke Down II; Soulmate II 
     const s = storyWith([{ perks: { talks_broke_down: 'II' } }]); const c = s.chars[0];
     s.act({ type: 'narrator/turn', turn: { narration: 'Talk.', checks: [{ charId: c.id, skills: ['charisma'], tn: 20, stakes: 'Calm them', tags: ['dialogue'] }] } } as any);
     s.g.rng.state = rngFor(2).state; const ck = s.g.checks.find((k) => !k.done)!; s.act({ type: 'check/roll', checkId: ck.id }); s.act({ type: 'check/accept', checkId: ck.id } as any);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard', difficulty: 'standard', fromTalk: true, enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', fromTalk: true, enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     const cb = s.g.combat!;
     expect(logHas(cb, /Talks broke down .*lost/)).toBe(true); expect(logHas(cb, /hesitates \(Talks Broke Down\)/)).toBe(true);
   });

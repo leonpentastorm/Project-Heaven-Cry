@@ -15,16 +15,17 @@
 // is blocked at once (forceMove calls slam through setSlam, below).
 import { register, stateOf, applyDamage, emit, has, tierOf, type Holder } from '../effects';
 import { onHook, charOfUnit } from '../effects/hooks';
-import { type Combat, type Unit, key, xy, dist, alive, moveBlockers, emitFx, attackDamage, checkOver, previewAttack, resolveAttack, isMelee } from '../combat';
+import { landed } from '../effects/output';
+import { amountMult } from '../effects/amounts';
+import { type Combat, type Unit, key, xy, dist, alive, moveBlockers, emitFx, attackDamage, checkOver, previewAttack, resolveAttack, isMelee, displace } from '../combat';
 import { WEAPON } from '../data';
 import { resGain, resOf } from '../tactics';
 import { condSource } from '../magic';
 import { die } from '../rng';
 import { TECHNIQUE } from '../physical/data';
 import { strikingWith, ensureMomentum, turnStamp, setSlam } from '../physical/core';
+import { overworld, say, standBlocker } from '../kit';
 
-const say = (cb: Combat | null | undefined, line: string) => { if (cb) cb.log.push(line); };
-const overworld = (cb: Combat | null | undefined) => !!cb && (cb.overworld || cb.name === 'overworld');
 const tierII = (h: Holder) => h.tier === 'II';
 /** An item's per-fight state, read without creating it (previews and stat queries change nothing). */
 const peek = (h: Holder): Record<string, any> => (h.u?.ps?.[h.key] as any) || {};
@@ -54,11 +55,11 @@ register({ id: 'raw_power.3', kind: 'skill', claims: 'all', stat: (_h, stat, ctx
 const NOT_A_PUSH = new Set(['drag', 'throw_down', 'iron_grip']);
 interface Push { from: string; to: string }
 const BREACH = 'breaching_strike';
-onHook('forced_move', (ctx: any) => {
-  const by: Unit | undefined = ctx.by, t: Unit | undefined = ctx.u; if (!by || !t || ctx.cancel || !ctx.to || NOT_A_PUSH.has(ctx.how)) return;
-  if (TECHNIQUE[ctx.how]?.system !== 'melee' || dist(by.pos, ctx.to) <= dist(by.pos, t.pos)) return; // a melee technique, moving it away
+onHook('displaced', (ctx: any) => { // after the one forced move (combat.ts displace): where it started and where it ended
+  const by: Unit | undefined = ctx.by, t: Unit | undefined = ctx.u; if (!by || !t || !ctx.to || ctx.to === ctx.from || NOT_A_PUSH.has(ctx.how)) return;
+  if (TECHNIQUE[ctx.how]?.system !== 'melee' || dist(by.pos, ctx.to) <= dist(by.pos, ctx.from)) return; // a melee technique, moving it away
   if (!has(by, BREACH)) return;
-  (((by as any)._push ||= {}) as Record<string, Push>)[t.id] = { from: t.pos, to: ctx.to };
+  (((by as any)._push ||= {}) as Record<string, Push>)[t.id] = { from: ctx.from, to: ctx.to };
 });
 onHook('on_hit', (ctx: any) => { const a: Unit = ctx.att; if (ctx.melee && a && has(a, BREACH)) ((a as any)._hit ||= {})[ctx.tgt.id] = ctx.dmg; });
 onHook('action_done', (_ctx: any, cb) => {
@@ -75,16 +76,15 @@ onHook('action_done', (_ctx: any, cb) => {
 });
 /** What stands on a tile for a pushed unit: 'wall' (off the map, a solid tile, a blocking object), a unit, or null. */
 function blockerAt(cb: Combat, k: string, mover: Unit): 'wall' | Unit | null {
-  const [x, y] = xy(k); if (x < 0 || y < 0 || x >= cb.map.w || y >= cb.map.h || moveBlockers(cb).has(k)) return 'wall';
-  return cb.units.find((v) => v !== mover && !v.dead && v.pos === k) || null;
+  const b = standBlocker(cb, k, mover); return b === 'edge' || b === 'object' ? 'wall' : b;
 }
 /** Breaching Strike: `t`, pushed by `by`, is stopped by a wall or by the unit `into`. Half the hit again (II: the enemy
  * it hit takes the same). Nothing for a holder without the perk, or when `into` is on the pusher's side. */
 export function slam(cb: Combat, by: Unit, t: Unit, into: 'wall' | Unit, hit?: number): void {
   const tier = tierOf(by, BREACH); if (!tier || (into !== 'wall' && into.side === by.side)) return;
   let base = hit;
-  if (base == null) { const d = attackDamage(cb, by, t, 'melee', by.companion ? null : charOfUnit(by), { preview: true }); base = Math.max(1, Math.floor(d.total) - d.armour); }
-  const dmg = Math.max(1, Math.floor(base / 2)), src: any = { by, type: 'weapon', melee: true, mode: 'melee', shield: true, credit: 'all' };
+  if (base == null) { const d = attackDamage(cb, by, t, 'melee', by.companion ? null : charOfUnit(by), { preview: true }); base = landed(d.total, d.armour); }
+  const dmg = Math.max(1, Math.floor(base * amountMult('perk:breaching_strike', 'slam', 'share'))), src: any = { by, type: 'weapon', melee: true, mode: 'melee', shield: true, credit: 'all' };
   const r = applyDamage(cb, t, dmg, src);
   emitFx(cb, 'perk', { unit: by.id, target: t.id, from: by.pos, to: t.pos, id: BREACH });
   say(cb, t.name + ' is slammed into ' + (into === 'wall' ? 'the wall' : into.name) + ' (Breaching Strike): ' + r.amount + ' damage' + (r.killed ? ' · down' : '') + '.');
@@ -150,12 +150,9 @@ register({
       const u = h.u, cb = h.cb; if (!u || !cb || ctx.u !== u || ctx.forced || ctx.how === 'drag' || !ctx.from) return;
       const ids: string[] = peek(h).drag || []; if (!ids.length) return;
       const t = cb.units.find((x) => ids.includes(x.id) && alive(x) && dist(x.pos, ctx.from) <= 1 && x.pos !== ctx.from);
-      if (!t || t.nailed || cb.units.some((v) => !v.dead && v.pos === ctx.from)) return;
-      const fm: any = emit(cb, 'forced_move', { u: t, by: u, tiles: 1, to: ctx.from, how: 'iron_grip', cancel: false, cb, rng: ctx.rng }); if (fm.cancel) return;
-      const was = t.pos; t.pos = ctx.from; t.braced = false;
-      emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: t.pos, ok: true });
-      say(cb, u.name + ' drags ' + t.name + ' along (Iron Grip).');
-      emit(cb, 'move_step', { u: t, from: was, at: t.pos, i: 0, route: [was, t.pos], how: 'forced', stop: false, cb, rng: ctx.rng, forced: true });
+      if (!t || cb.units.some((v) => !v.dead && v.pos === ctx.from)) return;
+      const mv = displace(cb, ctx.rng, t, { tile: ctx.from }, { by: u, how: 'pull', source: 'iron_grip' }); if (!mv.moved) return; // the one forced move (combat.ts): Nailed, immunity and the hook can hold it
+      say(cb, u.name + ' drags ' + t.name + ' along (Iron Grip)' + mv.text + '.');
     },
     moved: (ctx, h) => { if (ctx.u === h.u) stateOf(h).drag = []; },
     on_hit: (ctx, h) => {
@@ -265,7 +262,7 @@ register({
       const u = h.u, a: Unit | undefined = ctx.att; if (!u || ctx.tgt !== u || !a || a.side === u.side || !alive(u) || !alive(a)) return;
       const s = stateOf(h); if (s.acted || s.countered) return;
       const mode = isMelee(WEAPON[u.weapon]) ? 'melee' : 'shot', pv = previewAttack(ctx.cb, u, a, mode as any, { free: true }); if (!pv.ok) return;
-      s.countered = true; ctx.cb.log.push(u.name + ' stood still, and answers the miss.');
+      s.countered = true; say(ctx.cb, u.name + ' stood still, and answers the miss.');
       resolveAttack(ctx.cb, ctx.rng || { state: ((ctx.cb.round || 1) * 7919 + (ctx.cb.log.length || 1)) >>> 0 }, u, a, mode as any, charOfUnit(u), { free: true }); checkOver(ctx.cb);
     },
     action_done: (ctx, h) => { if (ctx.u === h.u && h.cb && !overworld(h.cb) && !NOT_ACTING.has(ctx.a?.type)) stateOf(h).acted = true; },

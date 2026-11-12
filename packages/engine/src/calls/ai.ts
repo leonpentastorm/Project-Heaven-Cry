@@ -8,6 +8,7 @@ import { isGhost, perceivedFoes } from '../illusion';
 import type { CallArgs } from './types';
 import { CALL, CALL_RULES } from './data';
 import { callHandler, previewCall, useCall, aiCallScore, callsThisTurn } from './core';
+import { canPay } from '../effects/cost';
 
 interface Pick { id: string; args: CallArgs; score: number; target: Unit }
 /** The Call this enemy would make now, or null (an attack, a technique, a move or nothing is better). */
@@ -22,7 +23,7 @@ export function aiCall(cb: Combat, u: Unit): Pick | null {
     const pool = def.aim === 'enemy' ? foes : def.aim === 'ally' ? own.filter((v) => v !== u) : own;
     for (const v of pool) {
       const s = aiCallScore(cb, u, id, { targetId: v.id }); if (s.score <= CALL_RULES.enemy.beats || (best && s.score <= best.score)) continue;
-      const pv = previewCall(cb, u, id, s.args); if (!pv.ok || pv.ap > u.ap) continue;
+      const pv = previewCall(cb, u, id, s.args); if (!pv.ok || !canPay(cb, u, pv.ap)) continue;
       best = { id, args: s.args, score: s.score, target: v };
     }
   }

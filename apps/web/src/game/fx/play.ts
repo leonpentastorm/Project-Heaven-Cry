@@ -1,7 +1,7 @@
 // Plays the engine's presentation events (packages/engine/src/combat.ts, FxEvent) as sound and pictures over the grid.
 // Every player's screen plays the same events from the shared game state, in order, each given its beat so a burst of
 // enemy actions reads as a sequence. Nothing here changes the game; nothing waits on it; a hidden tab skips it all.
-import { type FxEvent, type GameState, SIGIL, WEAPON, visibility, phys } from '@engine';
+import { type FxEvent, type GameState, SIGIL, WEAPON, fightSight, phys, refOf } from '@engine';
 import { sfx, reducedMotion, type Sfx } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
@@ -20,8 +20,10 @@ import { setInBattle, getCombatSpeed, combatTempo, battlePace, inBattle } from '
 import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, loadRounds, stowArrows, whoOf } from './brass';
 import { reloadCard } from './reload';
 import { bangMark, bangDue, tickDue, noteSight, noteOverwatch, tagChip, aimLine, resetSight, HOSTILE_INK, OTHER_INK } from './sight';
-import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
+import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, withEvent, trace, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
 
+import { activeCamera } from '../cameraView';
+import { fxTiles, glideMs, movesCamera } from '../camera';
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
 /** The window event fired as each effect plays (detail: the FxEvent), and when the queue runs dry. */
 export const FX_EVENT = 'phc-fx', FX_IDLE = 'phc-fx-idle', FX_HOLD = 'phc-fx-hold';
@@ -47,7 +49,9 @@ export function setContext(g: GameState | null, screen: string) {
   for (const c of Object.values(g.characters || {})) if (c && (c as any).id) charNames.set((c as any).id, String((c as any).name || ''));
   if (screen === 'combat' && g.combat) {
     for (const u of g.combat.units) units.set(u.id, { pos: u.pos, name: u.name, side: u.side, robot: ROBOT.test(u.name) || MACHINE_KIND.has((u as any).kind), dead: !!u.dead, charId: u.charId || undefined });
-    try { const v = visibility(g.combat, 'pc'); seenTiles = v.tiles; seenUnits = new Set([...v.seen, ...g.combat.units.filter((u) => u.side === 'pc').map((u) => u.id)]); } catch { seenTiles = null; seenUnits = null; }
+    // The view is already fogged by the engine (fog.ts): every unit in it is one this side sees (or its own, or a body);
+    // the human Narrator's view holds everything and plays everything.
+    try { const v = fightSight(g.combat); seenTiles = v.full ? null : v.tiles; seenUnits = v.full ? null : new Set(g.combat.units.map((u) => u.id)); } catch { seenTiles = null; seenUnits = null; }
   } else {
     for (const c of Object.values(g.characters)) { const p = g.story.positions?.[c.id]; if (p) units.set('pc-' + c.id, { pos: p, name: c.name, side: 'pc', robot: false, charId: c.id }); }
     for (const n of g.story.npcs || []) units.set(n.id, { pos: n.pos, name: n.name, side: 'foe', robot: ROBOT.test(n.name) || MACHINE_KIND.has(n.kind || '') });
@@ -66,7 +70,9 @@ const ghosts = new Map<string, HTMLElement>();
 /** After each render: copy the living units' tokens (never overwritten by a dead unit's empty tile). */
 export function rememberTokens() {
   try { rememberTiles(); } catch { /* the effects never stop the game */ }
-  for (const id of [...lastTok.keys()]) if (!units.has(id)) lastTok.delete(id);
+  // A hostile that went out of sight is gone from the view (the engine's fog), but its walk into the fog or its fade still
+  // plays on its last copy: copies are kept in a fight, dropped outside one.
+  if (!seenUnits) for (const id of [...lastTok.keys()]) if (!units.has(id)) lastTok.delete(id);
   for (const [id, u] of units) { if (u.dead || heldIds().has(id)) continue; const t = tokenEl(tileEl(u.pos)); if (t) lastTok.set(id, t.cloneNode(true) as HTMLElement); } // a held token is see-through: keep the last good copy
 }
 function ghostOf(id: string | null | undefined, key: string | null | undefined, life = 2400): HTMLElement | null {
@@ -104,6 +110,7 @@ const sawThen = (e: FxEvent) => (e.seen && typeof e.seen.pc === 'number' ? !!e.s
  *  changes a sound's pitch. */
 const play = (s: Sfx, p: Pt | null, o: { rate?: number; gain?: number; delay?: number; lowpass?: number } = {}) => {
   const tp = fxTempo(), k = fxScale();
+  trace('sfx', { s }, (o.delay || 0) * k);
   sfx(s, { ...o, pan: panOf(p), ...(tp !== 1 ? { rate: (o.rate || 1) * tp } : {}), ...(o.delay && k !== 1 ? { delay: o.delay * k } : {}) });
 };
 const jitter = (r = 0.06) => 1 + (Math.random() * 2 - 1) * r;
@@ -261,6 +268,33 @@ export function fxShownHp(g: GameState | null | undefined): Map<string, number> 
   }
   return out;
 }
+/** Whether a later effect takes the glyphs off a tile (word: only that word's glyph, for a fade). A Grand Sigil and a
+ *  Seal name the tiles they cover, not glyphs they use up. */
+const takesGlyph = (e: FxEvent, tile: string, word: string): boolean =>
+  e.k === 'evoke' ? e.shape !== 'grand' && e.shape !== 'area' && (e.tiles || []).includes(tile) : e.k === 'glyph_fade' ? e.tile === tile && (!e.word || e.word === word)
+    : e.k === 'scuff' ? e.at === tile : e.k === 'null_wave' ? (e.glyphs || []).includes(tile) : false;
+/**
+ * The glyphs that still lie on the ground on screen though the state has them gone already: drawn by an effect that has
+ * played, and taken off (Evoked, faded, scuffed, wiped) by one that has not played yet. The engine works a hostile
+ * caster's turn out in one step (draw, walk, draw, Evoke), so the state that arrives never holds its Line: without
+ * these, a glyph showed only for its draw effect's 0.9 s and was gone while its caster still walked the Line (Leon,
+ * 11 Nov 2026: "the sigil next to me on the tile they got Op attack vanish"). Pure: waits says which effects wait.
+ */
+export function shownGlyphs(fx: FxEvent[], waits: (e: FxEvent) => boolean): any[] {
+  const out: any[] = [];
+  fx.forEach((d, i) => {
+    if (d.k !== 'draw' || !d.tile || !d.word || waits(d)) return;
+    const gone = fx.slice(i + 1).find((e) => takesGlyph(e, String(d.tile), String(d.word)));
+    if (gone && waits(gone)) out.push({ id: 'fx' + d.n, word: d.word, pos: d.tile, by: d.unit, side: d.side, left: 1, shown: true, ...(d.stroke ? { strokeId: d.stroke } : {}), ...(d.stroke2 ? { strokeId2: d.stroke2 } : {}) });
+  });
+  return out;
+}
+export function fxShownGlyphs(g: GameState | null | undefined): any[] {
+  const cb = g?.combat, key = fightStream(g); if (!cb || !key || !hasLayer()) return [];
+  const w = waitingIn(cb, key); if (!w) return [];
+  const have = new Set((cb.glyphs || []).map((x: any) => x.pos + '|' + x.word));
+  return shownGlyphs(cb.fx || [], w).filter((x) => !have.has(x.pos + '|' + x.word));
+}
 export function setProcessed(stream: string | null | undefined, n: number) { if (!stream || processed.get(stream) === n) return; moved(); processed.set(stream, n); holdChanged(); }
 /** The fight's effects stream key (its numbering restarts with every fight). */
 export const fightStream = (g: GameState | null | undefined): string | null =>
@@ -347,7 +381,8 @@ export function holdMovers(evs: FxEvent[]) {
   if (!seenUnits || !hasLayer()) return;
   for (const [id, m] of moversOf(evs, (x) => unit(x)?.side)) {
     if (waiting.has(id) || parked.has(id)) continue;
-    const u = unit(id); if (!u) continue;
+    // one gone from the view into the fog: its stand-in is its last copy where it was last seen
+    const u = unit(id) || (lastTok.has(id) && m.stand ? { pos: '', name: '', side: 'foe', robot: false } : undefined); if (!u) continue;
     const live = !u.dead && seesUnit(id) ? tokenEl(tileEl(u.pos)) : null;
     if (!live && !m.stand && !(u.dead || seesUnit(id))) continue;
     const hide = live ? anim(live, [{ opacity: 0 }, { opacity: 0 }], { duration: HOLD_CAP_MS }) : null;
@@ -547,8 +582,22 @@ function volleySound(cat: string, mode: string, weapon = ''): { s: Sfx; rate?: n
 let volley: { unit: string; silent: boolean; until: number } | null = null;
 
 // ---------- the pieces of a shot ----------
+/** How fast each kind of projectile flies (px per ms) and the longest its flight is drawn (ms). */
+const flySpeed = (look: Look) => (look === 'lob' ? 0.55 : look === 'arrow' || look === 'thrown' ? 0.9 : look === 'rocket' ? 0.9 : 2.2);
+const flyMs = (look: Look, dist: number) => Math.max(60, Math.min(look === 'lob' ? 650 : 320, dist / flySpeed(look)));
+/** What a shot event fires, as it is drawn (a thrown melee weapon is never a gunshot: the shot handler's rule). */
+const shotGun = (e: FxEvent): Gun => (e.thrown && gunOf(e.weapon || '', e.cat || '').look !== 'lob' ? { sound: 'swish', rate: 0.8, look: 'thrown' } : gunOf(e.weapon || '', e.cat || ''));
+/** How long after a shot's event starts its round lands (ms at Fast, the bow's draw included): the time everything that
+ *  follows from the landing must wait for (the blast, the wounds around it, the HP bars). Leon, 11 Nov 2026: a lobbed
+ *  grenade's blast went off while the grenade was still in the air. 0 when the tiles aren't on screen. */
+function landsIn(e: FxEvent): number {
+  const a = centre(e.from), b = centre(e.to); if (!a || !b) return 0;
+  const g = shotGun(e), muz = g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' && g.look !== 'thrown' ? a.s * 0.42 : 0;
+  return (drawsArrow(e) ? DRAW_MS : 0) + flyMs(g.look, Math.max(0, Math.hypot(b.x - a.x, b.y - a.y) - muz));
+}
 function muzzle(from: Pt, to: Pt, color = MUZZLE) {
   const a = angle(from, to), r = (a * 180) / Math.PI + 90, off = from.s * 0.42;
+  trace('muzzle');
   const p = { x: from.x + Math.cos(a) * off, y: from.y + Math.sin(a) * off };
   burst('muzzle', { x: p.x + Math.cos(a) * from.s * 0.3, y: p.y + Math.sin(a) * from.s * 0.3 }, from.s * 1.05, 140, { color, rot: r, from: 0.7, to: 1.2, fade: 0 });
   burst('flare', p, from.s * 1.15, 150, { color: HOT, from: 0.6, to: 1.5 });
@@ -556,6 +605,7 @@ function muzzle(from: Pt, to: Pt, color = MUZZLE) {
 }
 /** A projectile from a to b over ms (straight, or lobbed). */
 function projectile(a: { x: number; y: number }, b: { x: number; y: number }, ms: number, look: Look, s: number, color?: string) {
+  trace('proj', { look, ms: Math.round(slow(ms)) });
   if (reducedMotion()) return;
   const ang = Math.atan2(b.y - a.y, b.x - a.x), deg = (ang * 180) / Math.PI;
   const el = document.createElement('div');
@@ -581,6 +631,7 @@ function missPoint(from: Pt, to: Pt): { x: number; y: number } {
 /** A target is hit: flash, sparks or blood, a decal that stays a few seconds, the token shakes, a number rises. */
 function impact(e: FxEvent, p: Pt, tid: string | null, o: { crit?: boolean; melee?: boolean; color?: string; sound?: Sfx | null; dmg?: number } = {}) {
   const u = unit(tid), robot = !!u?.robot, tok = tokOrGhost(tid, e.to || u?.pos, !!e.killed || !!u?.dead);
+  trace('impact', { dmg: o.dmg ?? null, melee: !!o.melee });
   burst(o.crit ? 'flash_crit' : 'flash_star', p, p.s * (o.crit ? 1.9 : 1.1), o.crit ? 260 : 170, { color: o.color || WHITE, from: 0.3, to: 1.2, rot: Math.random() * 90 });
   burst(Math.random() < 0.5 ? 'spark_burst' : 'spark_burst_2', p, p.s * 0.8, 260, { color: o.color || (robot ? '#FFD27A' : '#C2272F'), from: 0.4, to: 1.15 });
   decal(e.to || u?.pos, robot || o.color ? 'scorch' : 'blood_' + (1 + Math.floor(Math.random() * 3)), robot || o.color ? '#1A1A1A' : '#7A0E16');
@@ -617,6 +668,7 @@ function mapFlash(k: string | undefined, p: Pt, ms = 350) {
 }
 function explosion(k: string | undefined, radius = 1, kind: 'frag' | 'fire' | 'smoke' | 'flash' | 'zap' = 'frag', point?: Pt) {
   const p = point || centre(k); if (!p) return;
+  trace('boom', { kind });
   const size = p.s * (1.2 + radius * 1.1);
   if (kind === 'smoke') { burst('puff', p, size, 1600, { from: 0.3, to: 1.4, fade: 0 }); play('vent', p, { rate: 0.8 }); return; }
   if (kind === 'flash') { burst('flare', p, size * 2, 400, { color: WHITE, from: 0.2, to: 2 }); mapFlash(k, p, 350); play('explosion', p, { rate: 1.4, gain: 0.6 }); return; }
@@ -727,7 +779,7 @@ const H: Record<string, Handler> = {
   shot(e) {
     // a thrown weapon is never a gunshot, whatever the event names as the weapon (a gun in the other hand, a blade that
     // is also a focus): a swish, no muzzle flash, no casing
-    const g: Gun = e.thrown && gunOf(e.weapon || '', e.cat || '').look !== 'lob' ? { sound: 'swish', rate: 0.8, look: 'thrown' } : gunOf(e.weapon || '', e.cat || ''), br = e.thrown ? null : brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
+    const g: Gun = shotGun(e), br = e.thrown ? null : brassOf(e.weapon || '', e.cat || ''), from = at(e.from), toP = centre(e.to), shooterSeen = visible(e.from);
     const silent = !!(volley && volley.unit === e.unit && volley.silent && e.chain && performance.now() < volley.until);
     // A bow's shot waits for the draw: the arrow comes from the quiver behind the portrait to the front, then flies.
     const draw = drawsArrow(e) ? DRAW_MS : 0;
@@ -752,8 +804,7 @@ const H: Record<string, Handler> = {
       if (br && from && shooterTok && br.when === 'shot' && !rico) { const who = whoOf(shooterTok); ejectShell(who, br.shell, aim, { delay: br.cycle }); if (br.load === 'pump' && br.cycle) play('rack', from, { delay: br.cycle - 40, gain: 0.55, rate: 1.1 }); }
       const start = mp || (from ? { x: from.x, y: from.y } : null);
       const dist = start ? Math.hypot(toP.x - start.x, toP.y - start.y) : 0;
-      const speed = g.look === 'lob' ? 0.55 : g.look === 'arrow' || g.look === 'thrown' ? 0.9 : g.look === 'rocket' ? 0.9 : 2.2; // px per ms
-      const ft = start ? Math.max(60, Math.min(g.look === 'lob' ? 650 : 320, dist / speed)) : 0;
+      const ft = start ? flyMs(g.look, dist) : 0;
       const coverP = e.cover ? centre(e.cover) : null;
       const end = e.hit ? toP : coverP || missPoint(from || toP, toP);
       if (start) {
@@ -762,7 +813,8 @@ const H: Record<string, Handler> = {
         else if (!(g.look === 'thrown' && e.thrown)) projectile(start, end, ft, g.look === 'thrown' ? 'arrow' : g.look, toP.s, g.color); // a thrown melee weapon's flight is its melee_fx; any other melee-category shot keeps a tracer
       }
       after(() => {
-        if (e.object) { burst('spark_burst', toP, toP.s * 0.8, 280, { color: '#FFD27A' }); dust(toP, toP.s); play('hit_wood', toP, { rate: jitter() }); return; }
+        // (a charge that lands on a tile goes off as the next event: no knock on wood, only the dust it lands in)
+        if (e.object) { if (g.blast) { dust(toP, toP.s); return; } burst('spark_burst', toP, toP.s * 0.8, 280, { color: '#FFD27A' }); dust(toP, toP.s); play('hit_wood', toP, { rate: jitter() }); return; }
         // A charge that misses still goes off where it lands (a smaller blast, no scorch: the engine hurt nobody there);
         // a flamer's miss is a gout of fire on the floor, not a blast.
         const wide = !e.hit && !coverP;
@@ -780,6 +832,7 @@ const H: Record<string, Handler> = {
   },
   melee(e) {
     const from = at(e.from), toP = centre(e.to), cat = e.cat || 'unarmed';
+    trace('swing', { cat });
     play(cat === 'heavy_melee' ? 'swish' : 'swish', from || toP, { rate: (cat === 'heavy_melee' ? 0.75 : cat === 'unarmed' ? 1.2 : 1) * jitter(0.08) });
     if (!toP) return;
     if (e.killed && e.target) tokOrGhost(e.target, e.to, true);
@@ -1348,6 +1401,7 @@ const beatOf = (e: FxEvent): number => { const b = baseBeat(e); return b ? b * f
 function baseBeat(e: FxEvent): number {
   if (!mineOnly(e)) return 0;
   if (e.k === 'spotlight') return 0; // the cut-in is the queue's gate (below), not a beat
+  if (e.k === 'roll') return 0; // a roll's numbers (engine rolls.ts): data for the dice read-out, no beat of its own
   const sb = soulBeat(e); if (sb !== undefined) return sb;
   const fe = feelingBeat(e); if (fe !== undefined) return fe;
   const kb = classBeat(e); if (kb !== undefined) return kb;
@@ -1362,7 +1416,12 @@ function baseBeat(e: FxEvent): number {
     case 'move': { const n = moveSteps(e, units.get(e.unit)?.side === 'pc'); return n ? Math.min(1100, Math.max(160, n * (e.how === 'sprint' ? 75 : 115))) : 60; } // a walk wholly in the fog: a breath, not a pause
     case 'sight': return e.by ? 0 : e.how === 'reveal' ? 480 : e.how === 'hide' ? 380 : e.how === 'lost' ? 300 : 120; // by: on its walker's step (runQueue)
     case 'overwatch': return 560;
-    case 'shot': return (e.chain || e._quick ? 170 : e.object ? 150 : 400) + (drawsArrow(e) ? DRAW_MS : 0);
+    case 'shot': {
+      // A round that goes off where it lands (a launcher's, a grenade's) holds the stage until it lands: the blast, the
+      // wounds around it and the cover it breaks are the next events, and they played while it was still in the air.
+      const draw = drawsArrow(e) ? DRAW_MS : 0, base = e.chain || e._quick ? 170 : e.object ? 150 : 400;
+      return (shotGun(e).blast ? Math.max(base, landsIn(e) - draw + 30) : base) + draw;
+    }
     case 'melee': return e.chain || e._quick ? 240 : 420; // _quick: a Sweep's, Cleave's or Flurry's later strikes (fx/melee-techniques.ts quickStrikes)
     case 'volley': return e.mode === 'auto' ? 260 : 90;
     case 'reload': case 'load': case 'clear': case 'repair': case 'core': case 'crystallise': return Math.min(1200, (e.dur || 1000) * 0.85);
@@ -1421,16 +1480,17 @@ if (typeof window !== 'undefined') (window as any).__phcHold = turnsBusyUntil;
 export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
 /** Run one event's effect now, outside the queue (for the turn intro, the Proving Ground, a test button). tempo: 0.85 for
  *  an action slowed after a spotlight cut-in. */
-export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1) {
-  const ev = { n: 0, ...e } as FxEvent;
-  try { if (mineOnly(ev)) withTempo(tempo, () => H[ev.k]?.(ev)); } catch (err) { console.warn('fx', ev.k, err); }
+export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1, due?: number) {
+  const ev = { n: 0, ...e } as FxEvent, at = due ?? performance.now();
+  withEvent(ev.n, () => trace('ev', { k: ev.k, id: ev.id, tech: ev.tech, weapon: ev.weapon, cat: ev.cat, mode: ev.mode, hit: ev.hit, object: ev.object, thrown: ev.thrown, chain: ev.chain, dmg: ev.dmg, why: ev.why, hp: !!ev.hp }), at);
+  try { if (mineOnly(ev)) withEvent(ev.n, () => withTempo(tempo, () => H[ev.k]?.(ev)), at); } catch (err) { console.warn('fx', ev.k, err); }
   try { if (ev.k === 'object' && ev.at) releaseTile(String(ev.at)); else if (ev.k === 'explode' && ev.at) releaseCloud(ev); } catch { /* */ }
   // The turn intro (turnIntro.tsx) times enemy-turn banners on this clock instead of estimating. stream names whose
   // numbering n belongs to (FxLayer's stream key: 'cb|…' for a fight, 'st|…' for the area map).
   if (ev.n) try { window.dispatchEvent(new CustomEvent('phc:fx-at', { detail: { n: ev.n, stream: stream || '' } })); } catch { /* */ }
-  try { window.dispatchEvent(new CustomEvent(FX_EVENT, { detail: ev })); } catch { /* */ }
+  try { withEvent(ev.n, () => window.dispatchEvent(new CustomEvent(FX_EVENT, { detail: ev })), at); } catch { /* */ }
   // its HP changes show a beat into it (the hit lands), not as it starts
-  if (ev.n && ev.hp) { const n = ev.n; window.setTimeout(() => notePlayed(stream, n), slow(ev.k === 'shot' || ev.k === 'melee' ? 260 : 80)); } else notePlayed(stream, ev.n, ev.k === 'turn' && ev.unit ? String(ev.unit) : undefined);
+  if (ev.n && ev.hp) { const n = ev.n, wait = withTempo(tempo, () => slow(ev.k === 'shot' ? Math.max(260, landsIn(ev)) : ev.k === 'melee' ? 260 : 80)); window.setTimeout(() => { withEvent(n, () => trace('hp'), at + wait); notePlayed(stream, n); }, wait); } else notePlayed(stream, ev.n, ev.k === 'turn' && ev.unit ? String(ev.unit) : undefined);
 }
 /** How much faster than normal a backlog may play: past this, the oldest effects are skipped instead (they never play in a
  *  blur: "the battle keeps going in super speed"). */
@@ -1522,6 +1582,12 @@ function queuePlain(evs: FxEvent[], stream: string | undefined, opts: { keep?: n
   if (plan.from > 0) { const later = new Set(evs.slice(plan.from).filter((e) => e.k === 'move' || e.k === 'sight').map((e) => String(e.unit || ''))); for (const e of evs.slice(0, plan.from)) if (e.unit && !later.has(String(e.unit))) releaseMover(String(e.unit)); }
   runQueue(evs.slice(plan.from), stream, base, plan.speed, null, null);
 }
+/** The camera leaves this much before a glide's length ahead of its beat, so the glide is over when the beat plays. */
+export const CAM_EARLY_MS = 40;
+/** The camera rests this long (at Fast; it follows the combat speed) where a move takes it, or the move is not made. */
+export const CAM_REST_MS = 350;
+/** The order the camera's looks were planned in, and the latest one that has run (see runQueue). */
+let camOrd = 0, camDone = 0;
 /** The last walk or sight event of each unit in a batch being scheduled: only that one lets a held unit go when its walk
  *  is out of sight (H.move). */
 const lastOfUnit = new WeakSet<FxEvent>();
@@ -1539,6 +1605,8 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
   let lastTurn = -1;
   { const had = new Set<string>(); for (let i = evs.length - 1; i >= 0; i--) { const e = evs[i], id = String(e.unit || ''); if ((e.k === 'move' || e.k === 'sight') && id && !had.has(id)) { had.add(id); lastOfUnit.add(e); } } }
   const walks = new Map<string, { t: number; path: string[]; ms: number }[]>();
+  const cam = document.hidden ? null : activeCamera(); let camAt: { x: number; y: number } | null = null;
+  let lastGo: { arrives: number; from: { x: number; y: number } | null; rec: { skip: boolean } } | null = null;
   for (let i = 0; i < evs.length; i++) {
     const e = evs[i], gate = gates.find((x) => x.at === i);
     if (gate) {
@@ -1547,19 +1615,61 @@ function runQueue(evs: FxEvent[], stream: string | undefined, t: number, speed: 
       if (c) { closeGate(evs.slice(i), stream, t, gate, c, lastTurn, speed); return; }
     }
     const slowed = slowedIn(e, seg), tp = slowed ? CUTIN_TEMPO : 1, beat = beatOf(e);
+    // The camera (roadmap 2c): the camera goes to a beat whose tiles are off screen, and is there when the beat plays:
+    // it leaves a glide's length before the beat's time (while the beat before it ends), so no beat is ever delayed
+    // (a wait put into the queue here broke the turn hand-over and the melee techniques' paired beats). A turn's banner
+    // plays as the camera leaves for its unit. Planned here from where the camera will be by then (cam.plan), done when
+    // the time comes (cam.show: not while the player aims or drags; what still does not show gets an arrow at the
+    // window's edge).
+    let look: (() => void) | null = null;
+    if (cam && mineOnly(e)) {
+      const isTurn = e.k === 'turn', keys = isTurn ? (sawThen(e) && typeof e.at === 'string' && visible(e.at) ? [String(e.at)] : []) : beat > 0 || e.k === 'move' ? fxTiles(e, (id) => unit(id)?.pos, (k) => visible(k)) : [];
+      if (keys.length) {
+        // A result (a wound, a heal, a unit going down) never moves the camera: off screen it only gets its arrow.
+        const moves = isTurn || movesCamera(e.k);
+        let to: { x: number; y: number } | null = moves ? cam.plan(keys, camAt, isTurn ? 'turn' : 'beat') : null;
+        const glide = glideMs(fxPace(), reducedMotion()) / tp, leaves = isTurn ? t : t - glide - CAM_EARLY_MS;
+        // No going somewhere only to leave at once: when this beat takes the camera away before it has rested where
+        // the move before sent it (a hostile's turn banner, then its shot at a unit on the far side 0.4 s later), that
+        // move is not made (its place gets an arrow at the window's edge) and the camera goes straight here.
+        if (to && lastGo && leaves - lastGo.arrives < CAM_REST_MS * fxPace() / tp) { lastGo.rec.skip = true; camAt = lastGo.from; to = cam.plan(keys, camAt, isTurn ? 'turn' : 'beat'); lastGo = null; }
+        const rec = { skip: false };
+        // The same for a turn's banner, looked up ahead (a banner at the head of a batch plays before the rest is
+        // planned): the unit's next beat is on another part of the map before the camera would have rested on it.
+        if (to && isTurn) {
+          let tt = t + beat * speed;
+          for (let j = i + 1; j < evs.length && evs[j].k !== 'turn' && !gates.some((x) => x.at === j); j++) {
+            const x = evs[j], bx = beatOf(x), ks = mineOnly(x) && movesCamera(x.k) && (bx > 0 || x.k === 'move') ? fxTiles(x, (id) => unit(id)?.pos, (k) => visible(k)) : [];
+            if (ks.length) { if (cam.plan(ks, to, 'beat') && tt - glide - CAM_EARLY_MS - (t + glide) < CAM_REST_MS * fxPace() / tp) { rec.skip = true; to = null; } break; }
+            tt += bx * speed;
+          }
+        }
+        if (to) { lastGo = { arrives: leaves + glide, from: camAt, rec }; camAt = to; }
+        const who = unit(e.unit) || unit(e.target), tag = { color: who && who.side === 'pc' ? WHITE : HP, label: (who && seesUnit(String(e.unit || e.target || '')) ? who.name : isTurn ? 'A turn' : 'Something') + ' at ' + refOf(keys[0]) };
+        // A beat's own look never takes the camera back from a later beat's: the camera may already have left for
+        // the next one (its early start), and a technique's name over the attacker would pull it back from the
+        // target just before the shot lands. A look that comes late only raises its arrow.
+        const ord = ++camOrd;
+        look = () => { const late = ord < camDone; if (!late) camDone = ord; try { if (isTurn && rec.skip) activeCamera()?.passTurn(keys[0]); activeCamera()?.show(keys, isTurn ? 'turn' : 'beat', tag, moves && !late && !rec.skip); } catch { /* */ } };
+        // The early start has its own timer only when there is a glide to make (no extra timer otherwise).
+        if (to && !isTurn) { if (leaves - now <= 4) look(); else schedule(look, leaves); }
+      }
+    }
     if (e.k === 'turn') lastTurn = t;
-    const wait = t - now, go = () => { if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp); };
+    const camLook = look;
+    let due = t;
+    const wait = t - now, go = () => { if (camLook) camLook(); if (slowed && cutId) noteSlowed(cutId, e, beat / tp, tp); noteFx(e, beat / (slowed ? tp : 1)); playFx(e, stream, tp, due); };
     // A walk's clock: a sight change its walker's eyes made plays on that step (a hostile found or lost mid-walk), not
     // after the whole walk.
     if (e.k === 'move' && e.unit && mineOnly(e)) { const id = String(e.unit); (walks.get(id) || walks.set(id, []).get(id)!).push({ t, path: (e.path || [e.from, e.to]).filter(Boolean), ms: (e.how === 'sprint' ? 75 : 115) * fxPace() / tp }); }
-    if (e.k === 'sight' && e.by && e.byAt) { const at = stepTime(walks, String(e.by), String(e.byAt)); if (at != null && at < t) { if (at - now <= 4) go(); else schedule(go, at); continue; } }
+    if (e.k === 'sight' && e.by && e.byAt) { const at = stepTime(walks, String(e.by), String(e.byAt)); if (at != null && at < t) { due = at; if (at - now <= 4) go(); else schedule(go, at); continue; } }
     if (wait <= 4) go();
     else schedule(go, t);
     // A slowed event's whole beat follows the tempo (a bow's draw included: its after() is slowed too). Otherwise a bow's
     // draw holds its full time even when a backlog plays faster (the arrow can't fly before it is loosed), and a Miracle
     // (behind a gate that was closed when it came) is never sped up.
     const draw = drawsArrow(e) && mineOnly(e) ? DRAW_MS * fxPace() : 0;
-    t += slowed ? beat / tp : e.k === 'miracle' ? beat : (beat - draw) * speed + draw;
+    t += (slowed ? beat / tp : e.k === 'miracle' ? beat : (beat - draw) * speed + draw);
   }
   queueEnd = t;
   // A batch that changes turns: the last turn it shows starts when its banner plays; input waits for it.
@@ -1575,7 +1685,16 @@ const holdChanged = () => { try { window.dispatchEvent(new CustomEvent(FX_HOLD))
 /** Run f at performance.now() time t (a timer the queue can move: hurryFx). */
 function schedule(run: () => void, t: number) {
   const entry = { id: 0, at: t, run };
-  entry.id = window.setTimeout(() => { timers = timers.filter((x) => x !== entry); run(); }, Math.max(0, t - performance.now()));
+  // Steps due at the same moment play in the order they were scheduled. Each has its own timer, set a little later
+  // than the one before it (planning the camera's move between two of them takes a moment), so the browser may fire
+  // the later one first: a step that fires runs the earlier ones still waiting for that moment before itself. (A
+  // technique's movement beat and the push it plays over were swapped this way once the camera was planned here.)
+  entry.id = window.setTimeout(() => {
+    const i = timers.indexOf(entry), first = i > 0 ? timers.slice(0, i).filter((x) => x.at <= entry.at) : [];
+    timers = timers.filter((x) => x !== entry && !first.includes(x));
+    for (const x of first) { clearTimeout(x.id); x.run(); }
+    run();
+  }, Math.max(0, t - performance.now()));
   timers.push(entry);
 }
 /** Close a gate at time t: the rest of the batch waits; the cut-in plays at t; when it ends (or is skipped, or the cap)

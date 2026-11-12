@@ -103,7 +103,7 @@ describe('the Class tab reads each move\'s state', () => {
 
 describe('the grid marks what stands', () => {
   it('a False Image: a translucent Sigil-cyan copy of its owner\'s token, with its word and its fooled count', () => {
-    const f = fightWith([cls('trickster', 3, MIND)], [{}]);
+    const f = fightWith([cls('trickster', 3, MIND)], [{}], { classic: true }); // a fixed target (the old Soldier): the test is about the mark
     const u = at(f, f.pc, '4,2'); at(f, f.foe, '10,2').sv = { body: -50, brain: -50, heart: -50 }; f.turn(u);
     f.act({ type: 'combat/perk', unitId: u.id, id: 'class:trickster.false_image', tile: '6,4' } as any);
     const m = classMarks(f.cb, 'pc', { imgOf: () => '/art/me.webp' })['6,4'];

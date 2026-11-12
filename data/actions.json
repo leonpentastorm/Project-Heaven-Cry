@@ -1,0 +1,312 @@
+{
+  "$schema_version": "1.0",
+  "kind": "actions",
+  "source": "PHC Core Rules v1.0: the basic actions of a fight (Moving, Sprint, Disengage, Prone, Shove, Analyze, stims, World Play 1.1 pick up, the rules 1.3 conditions). Engine review 4, findings 1 and 8.4 (12 Nov 2026).",
+  "adjudication": "engine",
+  "notes": "One entry per basic action a unit has in a fight that no other data file describes (weapons, techniques, Calls, perks, prayers and magic describe their own). `ap` is the base AP before items change it (null: it is not one number: Move goes by tiles, Shoot an object costs the weapon's shot, Pull free costs what nails you). `rule` names the same action in rules.json combat.actions; the validator checks the two agree. `site` is the id the engine prices it under (effects/core.ts actionAp), so an item's action_cost reaches it. `text` is the card's words; {tokens} are filled by the engine (packages/engine/src/actions.ts) from the unit. The engine's action list (basicActions) is the only reader: the client prints what it returns and holds no cost of its own. A test (packages/engine/test/actions.test.ts) runs every action through the reducer and fails when the AP it takes is not the AP listed here. `costs` (engine review 1, finding F3) holds the base cost of every engine verb that has no row above: a weapon's own actions, magic's verbs, the area map's. The engine prices every action through one function (packages/engine/src/effects/cost.ts price()), which reads `ap` here or on the row, asks the items by `site` (default: the id), and never goes under `min`. `rule` names the same action in rules.json combat.actions; the validator checks the two agree. `resources` lists everything an action can cost besides AP: where the engine keeps it (`on` the unit or the character, at `path`) and the word a refusal uses (\"Needs 3 charge.\").",
+  "items": [
+    {
+      "id": "move",
+      "name": "Move",
+      "tab": "move",
+      "type": "combat/move",
+      "ap": null,
+      "rule": "move",
+      "cost": "1 AP / {movement} tiles",
+      "text": "Each AP moves you {movement} tiles (your Movement). Rough tiles count double. If you leave an enemy's reach without Disengaging, it gets an opportunity attack.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "sprint",
+      "name": "Sprint",
+      "tab": "move",
+      "type": "combat/move",
+      "ap": 2,
+      "rule": "sprint",
+      "site": "sprint",
+      "text": "Move up to {sprint_tiles} tiles (3 × your Movement).",
+      "text_blocked": "You can't Sprint while Overburdened or in Juggernaut armour.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "disengage",
+      "name": "Disengage",
+      "tab": "move",
+      "type": "combat/move",
+      "ap": 1,
+      "rule": "disengage",
+      "site": "disengage",
+      "text": "Step 1 tile. No enemy gets an opportunity attack.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "prone",
+      "name": "Drop prone",
+      "name_alt": "Stand up",
+      "tab": "move",
+      "type": "combat/prone",
+      "ap": 1,
+      "rule": "prone_toggle",
+      "text": "While you are Prone, ranged attacks against you are at −2 to hit and melee attacks at +2. You can't move until you stand up.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "shove",
+      "name": "Shove",
+      "tab": "attack",
+      "type": "combat/shove",
+      "ap": 2,
+      "site": "shove",
+      "pick": "enemy_adjacent",
+      "text": "Shove an enemy next to you: d20 + Raw Power against 10 + the better of its Raw Power and Athletics. If you win, it is pushed 1 tile, or knocked Prone if the way is blocked.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "cover",
+      "name": "Shoot an object",
+      "tab": "attack",
+      "type": "combat/shoot-cover",
+      "ap": null,
+      "site": "break",
+      "pick": "object",
+      "text": "Shoot cover, a barricade, a door, a barrel or a lamp. There is no roll: it takes your weapon's damage. Broken cover becomes rubble, and barrels explode.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "pullfree",
+      "name": "Pull free",
+      "name_ally": "Pull an ally free",
+      "name_weapon": "Pull the weapon out",
+      "tab": "utility",
+      "type": "combat/pull-free",
+      "ap": null,
+      "text": "You are nailed in place. Pull free to move again. A weapon left in you drops at your feet.",
+      "text_ally": "Pull {target} free of what nails them in place. Pick them as the target if more than one is held.",
+      "text_weapon": "Pull the weapon out of {target}. It goes to your free hand, or to the ground if you have none. This also frees them.",
+      "adjudication": "engine",
+      "site": "pull_free"
+    },
+    {
+      "id": "pickup",
+      "name": "Pick up",
+      "tab": "utility",
+      "type": "combat/pickup",
+      "ap": 1,
+      "rule": "pickup",
+      "pick": "pile",
+      "text": "Take what you tick from the pile on your tile or next to it: magazines with their rounds, loose rounds, weapons, whatever was dropped. Everything starts ticked.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "door",
+      "name": "Open or close a door",
+      "tab": "utility",
+      "type": "combat/door",
+      "ap": 1,
+      "rule": "interact",
+      "pick": "door",
+      "text": "Open or close a door next to you. A closed door blocks movement and sight. A locked door needs a check after the fight, or enough damage to break it.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "stim",
+      "name": "Stim an ally",
+      "tab": "utility",
+      "type": "combat/stim",
+      "ap": 1,
+      "site": "stim",
+      "ap_downed": 2,
+      "ap_downed_medic": 1,
+      "rule_downed": "stabilise",
+      "pick": "ally_adjacent",
+      "text": "Use a stim on an ally next to you. A Downed ally is stabilised at 1 HP ({ap_downed_medic} AP for a Bard, {ap_downed} AP for anyone else). Anyone else heals {stim_heal} HP × your Healing given, more as you level. It also stops Bleeding. Uses one stim{stims_left}.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "song",
+      "name": "Play my song",
+      "tab": "utility",
+      "type": "combat/song",
+      "ap": 2,
+      "text": "Your Musek Blestor plays your favourite song for the whole room until the fight ends, and your music trait's bonus is active while it plays. It can replace another player's song, but never a spotlight track.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "extinguish",
+      "name": "Put out the fire",
+      "tab": "utility",
+      "type": "combat/extinguish",
+      "ap": 1,
+      "rule": "extinguish",
+      "site": "extinguish",
+      "text": "You are Burning: you take 10 damage at the start of each of your turns until someone spends {ap} AP to put it out.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "escape",
+      "name": "Break free",
+      "tab": "utility",
+      "type": "combat/escape",
+      "ap": 2,
+      "site": "escape",
+      "text": "You are Grappled. Roll d20 + the better of your Raw Power and Athletics against the grappler's to break free.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "recover",
+      "name": "Recover your weapon",
+      "name_alt": "Raise your weapon",
+      "tab": "utility",
+      "type": "combat/recover",
+      "ap": 2,
+      "ap_lowered": 1,
+      "site": "recover",
+      "text": "Until you do, you attack with your fists.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "reload2",
+      "name": "Reload both guns",
+      "name_tactical": "Reload both (tactical)",
+      "tab": "utility",
+      "type": "combat/reload",
+      "ap": 3,
+      "site": "reload_both",
+      "text": "Each gun takes its own spare magazine. The old magazines drop onto your tile.",
+      "text_tactical": "Each gun takes its own spare magazine. The old magazines go back in your pack.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "hide",
+      "name": "Hide",
+      "tab": "utility",
+      "type": "combat/hide",
+      "ap": 2,
+      "site": "hide",
+      "text": "You can Hide only when no enemy can see you, and never while Marked. While Hidden, enemies can't target you, and your first attack is an ambush: a critical hit on 19–20, and damage × your Ambush multiplier. Enemies look for you at the end of their turns.",
+      "adjudication": "engine"
+    },
+    {
+      "id": "analyze",
+      "name": "Analyze",
+      "tab": "utility",
+      "type": "combat/analyze",
+      "ap": 2,
+      "ap_quick": 1,
+      "quick_at": 3,
+      "rule": "analyze",
+      "site": "analyze",
+      "pick": "enemy_in_range",
+      "text": "Read one enemy within {analyze_range} tiles that you can see. The whole squad sees its HP, Defense, armour and status for the rest of the fight. No roll.",
+      "adjudication": "engine"
+    }
+  ],
+  "resources": {
+    "mp": {
+      "name": "MP",
+      "on": "unit",
+      "path": "mg.mp"
+    },
+    "charge": {
+      "name": "charge",
+      "on": "unit",
+      "path": "mg.charge"
+    },
+    "cores": {
+      "name": "spare cores",
+      "on": "unit",
+      "path": "mg.cores"
+    },
+    "momentum": {
+      "name": "Momentum",
+      "on": "unit",
+      "path": "res.momentum"
+    },
+    "guard": {
+      "name": "Guard",
+      "on": "unit",
+      "path": "res.guard"
+    },
+    "supplies": {
+      "name": "Supplies",
+      "on": "unit",
+      "path": "res.supplies"
+    },
+    "toxins": {
+      "name": "toxins",
+      "on": "unit",
+      "path": "res.toxins"
+    },
+    "parts": {
+      "name": "spare parts",
+      "on": "unit",
+      "path": "parts"
+    },
+    "stims": {
+      "name": "stims",
+      "on": "character",
+      "path": "stims"
+    },
+    "echo": {
+      "name": "Echo",
+      "on": "character",
+      "path": "echo"
+    }
+  },
+  "costs": {
+    "brace": {
+      "ap": 1
+    },
+    "load": {
+      "ap": 1,
+      "rounds": 5
+    },
+    "clear_jam": {
+      "ap": 2,
+      "rule": "clear_jam"
+    },
+    "field_repair": {
+      "ap": 2
+    },
+    "reload": {
+      "ap": 2,
+      "ap_quick_release": 1,
+      "rule": "reload"
+    },
+    "parley": {
+      "ap": 2
+    },
+    "throw": {
+      "ap": 2,
+      "rule": "throw"
+    },
+    "attempt": {
+      "ap": 1
+    },
+    "evoke": {
+      "ap": 1
+    },
+    "scuff": {
+      "ap": 1
+    },
+    "vent": {
+      "ap": 1,
+      "rule": "vent"
+    },
+    "swap_core": {
+      "ap": 2
+    },
+    "syphon": {
+      "ap": 1,
+      "rule": "syphon"
+    },
+    "crystallise": {
+      "ap": 3,
+      "rule": "crystallise"
+    },
+    "interact": {
+      "ap": 1,
+      "rule": "interact"
+    }
+  }
+}

@@ -6,11 +6,14 @@ import type { Combat, Unit } from '../combat';
 import { coverTileFor, emitFx, noteCrit } from '../combat';
 import type { OutburstDesign } from '../character';
 import { MODULE, TONE } from '../data';
+import { itemAmount } from '../effects/amounts';
+import { term } from '../effects/output';
 import {
-  harm, heal, applyCond, magicShove, condSkillMod, condHit, withElement, outburstDamage, toneRiders, applyToneRiders, toneElement, toneOf,
+  harm, heal, applyCond, magicShove, condSkillMod, condHit, withElement, outburstDamage, toneRiders, applyToneRiders, toneElement, toneOf, spellCritMult, spellGapToHit,
   stageMult, resonanceFor, RESONANCE_BONUS, RESONANCE_MAX,
 } from '../magic';
-import { d20, type Rng } from '../rng';
+import { type Rng } from '../rng';
+import { rollVs } from '../rolls';
 
 const SKIP = ['armour_full', 'bonus_damage', 'ignore_cover', 'chain'];
 /** Armour a tone's damage counts at this rider stage: Raw none, an element half (Stone from stage 1: full). */
@@ -27,12 +30,12 @@ export function soulStrike(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: 
   let crit = false, head = '';
   if (roll) {
     const homing = (d.modules || []).includes('homing'), ign = homing || toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover');
-    const r = d20(rng), cover = !ign && coverTileFor(cb, u.pos, t.pos) ? 5 : 0;
-    const tot = r + m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (homing ? 2 : 0) + condHit(u, t, cb) - cover;
-    if (r === 1 || (r !== 20 && tot < t.def)) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); return 'misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + ')'; }
-    crit = r === 20; head = 'hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')';
+    const cover = !ign && coverTileFor(cb, u.pos, t.pos) ? 5 : 0;
+    const sr = rollVs(cb, rng, { by: u, mod: m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (homing ? 2 : 0) + condHit(u, t, cb) - cover + spellGapToHit(cb, u, t), tn: t.def, why: 'soul' }); // rules 1.17: a spell's roll reads the level gap
+    if (!sr.ok) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); return 'misses ' + t.name + ' (' + sr.text + ')'; }
+    crit = sr.nat === 20; head = 'hits ' + t.name + ' (' + sr.text + (crit ? ', CRITICAL' : '') + ')';
   }
-  const dmg = outburstDamage(m, d, sm) * f * (crit ? 2 : 1) + toneBonus(tone, rs);
+  const dmg = outburstDamage(m, d, sm) * f * (crit ? spellCritMult(cb, u, t) : 1) + toneBonus(tone, rs); // rules 1.17: a spell's critical is ×1.5 to ×2.0
   let out = head + withElement(el, () => harm(cb, rng, u, t, dmg, tone === 'raw' ? 'soul' : 'elemental', TONE[tone]?.damage_type, toneArmour(tone, rs)));
   if (crit) noteCrit(cb, u, t, 'outburst'); // a rolled arc that crits cuts in like the primary strike (decision 113)
   if (tone !== 'raw' && t.side !== u.side && !t.dead) out += withElement(el, () => applyToneRiders(cb, rng, u, t, tone, rs, u.pos, SKIP));
@@ -52,7 +55,7 @@ export function schoolRider(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t:
   if (school === 'buff') {
     if (t.side !== u.side) return '';
     const o = option || 'heal';
-    return (o === 'defense' ? applyCond(cb, rng, u, t, 'guarded', rounds(2), undefined, { via: 'will_power' }) : o === 'hit' ? applyCond(cb, rng, u, t, 'inspired', rounds(2), undefined, { via: 'will_power' }) : heal(t, 30 * m.healMult * sm * f, cb, u)).replace(/^ · /, '');
+    return (o === 'defense' ? applyCond(cb, rng, u, t, 'guarded', rounds(2), undefined, { via: 'will_power' }) : o === 'hit' ? applyCond(cb, rng, u, t, 'inspired', rounds(2), undefined, { via: 'will_power' }) : heal(t, itemAmount('rule:school_rider', 'heal', [term(m.healMult, 'stat: healing given'), term(sm, 'stage'), term(f, 'share')]), cb, u)).replace(/^ · /, '');
   }
   if (t === u) return '';
   if (school === 'control') {

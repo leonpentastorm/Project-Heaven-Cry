@@ -1,15 +1,15 @@
-# Hand-off: picking up Project Heaven Cry at v0.0.1
+# Hand-off: picking up Project Heaven Cry (written at v0.0.1; the version now is in `package.json`)
 
 For a new collaborator, human or AI (for example Cline on Leon's PC). Read [`CLAUDE.md`](../CLAUDE.md) first (the brief, the lore canon and the working agreements), then this, then [`ROADMAP.md`](ROADMAP.md) (what's next, in order). Written 9 Nov 2026 at **v0.0.1** ([`CHANGELOG.md`](../CHANGELOG.md)).
 
 ## What's live
 
-- **https://project-heaven-cry.leonpentastorm.workers.dev**: the web game, deployed from `develop`. Title → create a character → open a room (solo or up to 4) → story with the AI Narrator (your own key, any provider) or a human Narrator → grid fights. The **Proving Ground** (title menu) is the practice mode: fights without a Narrator, co-op or PvP.
+- **https://project-heaven-cry.leonpentastorm.workers.dev**: the web game, deployed from `main` after `develop` is merged into it (`docs/TESTING.md`, Releasing). Title → create a character → open a room (solo or up to 4) → story with the AI Narrator (your own key, any provider) or a human Narrator → grid fights. The **Proving Ground** (title menu) is the practice mode: fights without a Narrator, co-op or PvP.
 - The version shows bottom right on the title screen and in every **Report a problem** bundle.
 
 ## The systems, and where each one lives
 
-Rules numbers are in the spec, [`docs/rules/PHC-Core-Rules-v1.0.md`](rules/PHC-Core-Rules-v1.0.md); open and provisional numbers are its **section 14** (items 1–670). Why things are the way they are: [`docs/design/decisions.md`](design/decisions.md) (numbered; 94–105 are the latest systems). Data conventions: [`data/CONVENTIONS.md`](../data/CONVENTIONS.md).
+Rules numbers are in the spec, [`docs/rules/PHC-Core-Rules-v1.0.md`](rules/PHC-Core-Rules-v1.0.md); open and provisional numbers are its **section 14** (over 1,100 numbered items; revisions 1.14 to 1.25 are sections at the end of the body). Why things are the way they are: [`docs/design/decisions.md`](design/decisions.md) (numbered; the newest are at the end). Data conventions: [`data/CONVENTIONS.md`](../data/CONVENTIONS.md).
 
 **Engine** (`packages/engine/src/`). Deterministic and seeded TypeScript; every change to a game is an action through one reducer, and the event log is the save. It owns every number: checks, AP, damage, resources, conditions, the grid. Tests are built from the spec's tables (`npm test -w @phc/engine`). The browser host and the room server run the same engine.
 
@@ -57,7 +57,7 @@ npm run build                               # the client into apps/web/dist
 npm run dev -w @phc/server                  # http://127.0.0.1:8787 (wrangler dev on apps/web/dist)
 ```
 
-Checks before pushing (all must pass):
+Checks before pushing (all must pass): `docs/TESTING.md` is the guide; `npm run check` is the gate (the validator with the text-number guard, the spec tables, the screen data's freshness, both type checks, both unit suites), and browser suites run through `npm run e2e -- <suite>`, which builds and serves for you. The separate commands below still work:
 
 - `npm test -w @phc/engine`, `npm test -w @phc/web`; `npx tsc --noEmit` in `apps/web` and `packages/engine` (or `npm run typecheck`).
 - `python3 tools/validate.py data` → `0 errors` after any data change.
@@ -76,7 +76,7 @@ Deploy (Leon or whoever he asks; never from a feature branch): `npm run build`, 
 ## Branches and versions
 
 - Work happens on a branch from `develop` (`feature/…`, `fix/…`, `chore/…`); it merges into `develop`; `main` only receives merges from `develop`. Nothing is deployed from a branch.
-- **Versioning** (`CHANGELOG.md`, `CLAUDE.md` "Versioning"): 0.MINOR.PATCH until 1.0. Every merged branch bumps the middle number; whoever merges bumps `"version"` in all four `package.json` files and writes the `CHANGELOG.md` entry. A branchless hotfix on `develop` bumping the last number is a reading Leon still has to confirm.
+- **Versioning** (`CHANGELOG.md`, `CLAUDE.md` "Versioning"): 0.MINOR.PATCH until 1.0. Every merged branch bumps the middle number; whoever merges bumps `"version"` in all four `package.json` files and writes the `CHANGELOG.md` entry. A branchless hotfix on `develop` bumps the last number (confirmed by Leon, 10 Nov 2026).
 - Spec first, then data, then the validator; never invent a number silently (flag it `provisional: true` and list it in section 14). Keep game text in-universe (the Unspoken Name).
 - Never commit an API key: `git diff --cached | grep sk-ant` before each commit.
 
@@ -86,9 +86,9 @@ Deploy (Leon or whoever he asks; never from a feature branch): `npm run build`, 
 2. **Carry weight** (spec item 638): overweight uses the old rules (−1 Movement per started 5 kg over), so a 70 kg body takes most characters to the 0.5 Movement floor and a 40 kg robot overloads a starting character. Leon: change the weights or add a carry-specific penalty.
 3. **The Narrator's stall cost:** PACING says a stall costs something "small" without defining it (a robot died during a wait). Leon to define it.
 4. **Narrator length:** turns still run about 167 words even for quick exchanges. Leon to say what length he wants (a hard limit or a style rule).
-5. **Damage balance targets** ([`design/balance-targets.md`](design/balance-targets.md)): weapons already exceed the caps (item 591); the pass is pending (ROADMAP item 4).
+5. ~~**Damage balance targets**~~ The balance pass has run as rules 1.15 and 1.17 to 1.25 (no hard caps since rules 1.17; the simulator is `packages/engine/test/balance/`). What is left of it is in ROADMAP item 4.
 6. **Advanced classes:** the order and contents of batch 1 (the 9 squared classes) and the Devoted/Twinbound collision in batch 3 ([`ROADMAP.md`](ROADMAP.md) "Classes").
-7. **Versioning:** confirm the hotfix reading above.
+7. ~~**Versioning:** confirm the hotfix reading above.~~ Confirmed by Leon, 10 Nov 2026 (`CLAUDE.md`, Versioning).
 8. Older: the tech plan's section 10 ([`design/tech-plan.md`](design/tech-plan.md)) and the provisional items in spec section 14.
 
 ## Known issues and gaps
@@ -103,6 +103,6 @@ Collected in [`ROADMAP.md`](ROADMAP.md) ("World Play gaps", "The Narrator", "Fai
 
 ## Next steps
 
-In [`ROADMAP.md`](ROADMAP.md) order: (1) a real M813 playtest of the new Narrator and World Play on a fresh key; (2) the faith rulings above (built as Faith 2.1, with Miracle 2.1: the Miracle's price is decided); (3) rewrite M813 for World Play (every area: an objective with a `where`, a hazard with approaches and real costs, someone to talk to, a cache, a trigger where an ambush belongs); (4) the damage balance pass; (5) advanced classes batch 1.
+In [`ROADMAP.md`](ROADMAP.md) order: (1) a real M813 playtest of the new Narrator and World Play on a fresh key; (2) the faith rulings above (built as Faith 2.1, with Miracle 2.1: the Miracle's price is decided); (3) rewrite M813 for World Play (every area: an objective with a `where`, a hazard with approaches and real costs, someone to talk to, a cache, a trigger where an ambush belongs); (4) what is left of the damage balance pass; (5) advanced classes batch 1.
 
 Detailed hand-offs from earlier sessions: [`docs/design/handoffs/README.md`](design/handoffs/README.md).

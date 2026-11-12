@@ -123,7 +123,7 @@
       "core": "mind",
       "skills": {
         "alpha": "ingenuity",
-        "beta": "proficiency",
+        "beta": "analysis",
         "gamma": "vigilant"
       },
       "derived": [
@@ -134,13 +134,13 @@
         },
         {
           "stat": "crit_damage_taken_pct",
-          "formula": "−10% × (Perception − 1) − 5% × Durability",
+          "formula": "−10% × (Perception − 1) − 5% × Acuity",
           "per_point_above_1": -10
         },
         {
           "stat": "mult_critical",
-          "formula": "2 + 0.1 × (Perception − 1) + 0.05 × Dexterity",
-          "per_point_above_1": 0.1
+          "formula": "1.5 + 0.03 × (Perception − 1) + 0.02 × Dexterity, to 2.0 at most (rules 1.15; provisional)",
+          "per_point_above_1": 0.03
         }
       ]
     },
@@ -172,19 +172,19 @@
       "core": "mind",
       "skills": {
         "alpha": "visualization",
-        "beta": "analysis",
+        "beta": "proficiency",
         "gamma": "charisma"
       },
       "derived": [
         {
           "stat": "mult_elemental",
-          "formula": "1 + 0.2 × (Expression − 1) + 0.1 × Visualization",
-          "per_point_above_1": 0.2
+          "formula": "1 + 0.1 × (Expression − 1) + 0.05 × Visualization",
+          "per_point_above_1": 0.1
         },
         {
-          "stat": "sigil_ap_per_word",
-          "formula": "1 per word − 0.5 × (Expression − 1), minimum 1",
-          "per_point_above_1": -0.5
+          "stat": "glyph_ap",
+          "formula": "1 − 0.1 × (Expression − 1) AP for each glyph drawn, minimum 0.5",
+          "per_point_above_1": -0.1
         }
       ]
     },
@@ -200,13 +200,19 @@
       "derived": [
         {
           "stat": "mult_heal_given",
-          "formula": "1 + 0.1 × (Insight − 1) + 0.1 × Camaraderie",
-          "per_point_above_1": 0.1
+          "formula": "0.87 × (1 + 0.06 × (Insight − 1) + 0.06 × Empathy) (rules 1.26)",
+          "per_point_above_1": 0.06
         },
         {
           "stat": "soul_mana_cost_pct",
           "formula": "−5% × (Insight − 1)",
           "per_point_above_1": -5
+        },
+        {
+          "stat": "mp_max",
+          "formula": "100 + 75 × (Determination − 1) + 25 × (Insight − 1) (rules 1.24)",
+          "per_point_above_1": 25,
+          "provisional": true
         }
       ]
     },
@@ -216,19 +222,25 @@
       "core": "soul",
       "skills": {
         "alpha": "will_power",
-        "beta": "lore_master",
-        "gamma": "composure"
+        "beta": "composure",
+        "gamma": "lore_master"
       },
       "derived": [
         {
           "stat": "mult_soul",
-          "formula": "1 + 0.1 × (Determination − 1) + 0.15 × Will Power",
-          "per_point_above_1": 0.1
+          "formula": "1 + 0.05 × (Determination − 1) + 0.1 × Will Power",
+          "per_point_above_1": 0.05
         },
         {
           "stat": "mana_syphon_pct",
           "formula": "+10% × (Determination − 1) + 10% × Will Power",
           "per_point_above_1": 10
+        },
+        {
+          "stat": "mp_max",
+          "formula": "100 + 75 × (Determination − 1) + 25 × (Insight − 1) (rules 1.24; it was 100 + 100 × (Virtue − 1))",
+          "per_point_above_1": 75,
+          "provisional": true
         }
       ]
     },
@@ -243,14 +255,9 @@
       },
       "derived": [
         {
-          "stat": "mp_max",
-          "formula": "100 + 100 × (Virtue − 1)",
-          "per_point_above_1": 100
-        },
-        {
           "stat": "prayer_cooldown",
-          "formula": "4 turns − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1",
-          "per_point_above_1": -0.5
+          "formula": "9 rounds − 0.75 × Faith − 0.25 × Virtue, rounded up, never under 3 (rules 1.22)",
+          "per_point_above_1": -0.25
         }
       ]
     }

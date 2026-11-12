@@ -6,12 +6,12 @@
 import { SKILL, TN_LADDER, WEAPON, SIGIL } from './data';
 import { type Character, mod, checkMod, packOf, carriedKg, carryLimit, overweightKg, wordsKnownCap } from './character';
 import { copyWord, growthOf, knowsWord, learnedElsewhere } from './sigilgrowth';
-import { type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf, pickUp, unitSees, visionOf } from './combat';
+import { say, type Combat, type Unit, dist, refOf, keyOf, standable, paths, hurtUnit, emitFx, moveUnit, objectsOf, pickUp, unitSees, visionOf } from './combat';
 import { isCache, isPile, pileAt, dropOnTile, lootToPack, PILE } from './containers';
 import { gearBonus, gearHas } from './character';
 import { type MapObject, type Approach, type CacheItem, kindOf, blocksMove, makeObject, triedBy, MARK } from './objects';
 import { type Hazard, type HazardKind, WORLD_PLAY, HAZARD, HAZARD_KINDS, HAZARD_LIMITS, hazardApproaches, hazardHit, hazardTn, hazardLiveAt } from './hazards';
-import { applyCond, isCondition } from './magic';
+import { applyCond, isCondition, STORY_CARRY } from './magic';
 import { songMod } from './music';
 import { skillRollMod } from './effects/core';
 import { bindGame } from './effects';
@@ -19,6 +19,9 @@ import { type Where, missionsOf, markObjective, objectiveOf, objectiveStatus, op
 import { KINDS } from './tactics';
 import { canon } from './memory';
 import { type GameState, type Npc, type Check, type NarratorTurn, RuleError, _world, storyCb, positionsOf, npcsOf, storyObjects, zoneMap, apLeft, campaignOf, portraitFor, setStoryCond } from './game';
+import { tilesLine } from './kit';
+import { passFaces } from './rolls';
+import { price, whyNot, pay, freely, poolWhyNot } from './effects/cost';
 
 const WP: any = WORLD_PLAY;
 const fail = (m: string): never => { throw new RuleError(m); };
@@ -264,7 +267,7 @@ export function carry(g: GameState, c: Character, npcId: string, free = false) {
   if (!free) {
     if (!carryable(n!)) fail(n!.name + ' won\'t let you: only someone willing, a prisoner or someone down can be carried.');
     const at = positionsOf(g)[c.id]; if (!at || dist(at, n!.pos) > 1) fail('Step next to ' + n!.name + ' first.');
-    if (apLeft(g, c) < WORLD_AP.carry) fail('Needs ' + WORLD_AP.carry + ' AP.');
+    { const no = poolWhyNot(apLeft(g, c), WORLD_AP.carry); if (no) fail(no); }
     W().spendAp(g, c, WORLD_AP.carry);
   }
   const avatar = avatarOf(g, n!), kg = kindKg(n!.kind), from = n!.pos;
@@ -288,7 +291,7 @@ export function putDown(g: GameState, c: Character, id: string, to?: string, fre
     if (freeNear(g, k!, new Set(), 0) !== k) { if (!free) fail('That tile isn\'t free.'); k = null; }
   }
   k ||= freeNear(g, at!, new Set([at!])); if (!k) fail('No free tile near ' + c.name + '.');
-  if (!free) { if (apLeft(g, c) < WORLD_AP.put_down) fail('Needs ' + WORLD_AP.put_down + ' AP.'); W().spendAp(g, c, WORLD_AP.put_down); }
+  if (!free) { { const no = poolWhyNot(apLeft(g, c), WORLD_AP.put_down); if (no) fail(no); } W().spendAp(g, c, WORLD_AP.put_down); }
   const [x] = list.splice(i, 1); if (!list.length) delete c.carried;
   npcsOf(g).push({ ...x.npc, pos: k! });
   W().push(g, { kind: 'system', text: c.name + ' puts ' + x.npc.name + ' down at ' + refOf(k!) + '.', act: true, charId: c.id });
@@ -313,7 +316,7 @@ export function dropFromDowned(g: GameState) {
     const c = u.charId ? g.characters[u.charId] : null; if (!c?.carried?.length || !(u.downed || u.dead)) continue;
     const taken = new Set([...cb.units.filter((x) => !x.dead).map((x) => x.pos), ...(cb.dropped || []).map((d) => d.at)]), blocked = new Set(objectsOf(cb).filter(blocksMove).map((o) => o.pos));
     const near = () => { const [x0, y0] = u.pos.split(',').map(Number); for (let r = 1; r < 6; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const k = (x0 + dx) + ',' + (y0 + dy); if (standable(cb.map, k) && !taken.has(k) && !blocked.has(k)) return k; } return u.pos; };
-    for (const x of [...c.carried]) { const k = near(); taken.add(k); (cb.dropped ||= []).push({ npc: x.npc, at: k, by: c.id }); emitFx(cb, 'drop', { unit: u.id, target: x.npc.id, at: k, name: x.npc.name }); cb.log.push(c.name + ' goes down and drops ' + x.npc.name + ' at ' + refOf(k) + '.'); }
+    for (const x of [...c.carried]) { const k = near(); taken.add(k); (cb.dropped ||= []).push({ npc: x.npc, at: k, by: c.id }); emitFx(cb, 'drop', { unit: u.id, target: x.npc.id, at: k, name: x.npc.name }); say(cb, c.name + ' goes down and drops ' + x.npc.name + ' at ' + refOf(k) + '.'); }
     delete c.carried;
   }
 }
@@ -345,12 +348,12 @@ export function search(g: GameState, c: Character, objId: string, cb?: Combat, u
   const at = u ? u.pos : positionsOf(g)[c.id]; if (!at || dist(at, o!.pos) > 1) fail('Walk up to it first.');
   if (o!.locked || jammed(g, o!)) fail(o!.name + ' is locked: try its approaches first.');
   if (!o!.items?.length) fail(o!.name + ' is empty.');
-  if (cb && u) { if (u.ap < WORLD_AP.search) fail('Needs ' + WORLD_AP.search + ' AP.'); u.ap -= WORLD_AP.search; }
-  else { if (apLeft(g, c) < WORLD_AP.search) fail('Needs ' + WORLD_AP.search + ' AP.'); W().spendAp(g, c, WORLD_AP.search); }
+  if (cb && u) { const ap = price({ cb, u }, 'search', WORLD_AP.search).ap, no = whyNot(cb, u, ap); if (no) fail(no); pay(cb, u, ap); }
+  else { { const no = poolWhyNot(apLeft(g, c), WORLD_AP.search); if (no) fail(no); } W().spendAp(g, c, WORLD_AP.search); }
   const names = o!.items!.map((x) => (x.qty > 1 ? x.qty + ' × ' : '') + (x.name || (WEAPON[x.item]?.name) || x.item.replace(/_/g, ' '))).join(', ');
   const n = takeItems(g, c, o!);
   const line = c.name + ' searches the ' + o!.name.toLowerCase() + ' at ' + refOf(o!.pos) + '.';
-  if (cb) { cb.log.push(line); emitFx(cb, 'search', { unit: u!.id, at: o!.pos, obj: o!.id, items: n }); }
+  if (cb) { say(cb, line); emitFx(cb, 'search', { unit: u!.id, at: o!.pos, obj: o!.id, items: n }); }
   else { W().push(g, { kind: 'system', text: line, act: true, charId: c.id }); worldFx(g, 'search', { unit: 'pc-' + c.id, at: o!.pos, obj: o!.id, items: n }); }
   worldEvent(g, 'search', c.name + ' searched ' + o!.name + ' (' + o!.id + '): ' + names + '.');
   if (!cb) examineTriggers(g, c, o!.id);
@@ -441,8 +444,7 @@ export function previewOdds(g: GameState, c: Character, skills: string[], tn: nu
   const ss = (pick === 'best' ? [bestSkill(g, c, skills)] : skills).filter((s) => SKILL[s]); if (!ss.length) return { skills: [], mod: -2, chance: 0 };
   const ms = ss.map((s) => skillMod(g, c, s)), low = Math.min(...ms), li = ms.indexOf(low);
   const m = low + 2 * ss.filter((s, i) => i !== li && (c.skills[s] || 0) > 0).length;
-  let ok = 0; for (let f = 1; f <= 20; f++) if (f === 20 || (f !== 1 && f + m >= tn)) ok++;
-  return { skills: ss, mod: m, chance: ok / 20 };
+  return { skills: ss, mod: m, chance: passFaces(m, tn) / 20 };
 }
 
 /** The common checks for a player's area-map choice (round open, their character up, nothing else to roll first). */
@@ -454,7 +456,7 @@ function readyToAct(g: GameState, c: Character | undefined, by: string, ap: numb
   if (c!.dead) fail('The dead stay where they fell.');
   if (c!.hp <= 0) fail(c!.name + ' is Downed: an ally\'s stim, or the Narrator, gets them up.');
   if (g.checks.some((k) => !k.done && k.poi && g.characters[k.charId]?.owner === by)) fail('Roll your attempt first.');
-  if (apLeft(g, c!) < ap) fail('Needs ' + ap + ' AP (' + apLeft(g, c!) + ' left).');
+  { const no = poolWhyNot(apLeft(g, c!), ap, { left: true }); if (no) fail(no); }
 }
 /** A player tries an approach on an object, a hazard or a person (2 AP): the engine rolls it like the Narrator's check
  * (in the Proving Ground at once). idx is 0-based. */
@@ -548,7 +550,7 @@ function success(g: GameState, c: Character, t: Target, ap: Approach, p: string,
 }
 function failure(g: GameState, c: Character, t: Target, ap: Approach, p: string): string {
   const I = W(), f = ap.fail || '';
-  if (f === 'hurt') { const dmg = FAIL_HURT[ap.tn] ?? 20; onWorld(g, c, (cb, u) => { cb.log.push(c.name + ' pays for it (' + ap.label + ')' + hurtUnit(u, dmg, false, cb, 'hazard') + '.'); }); return 'hurt ' + dmg; }
+  if (f === 'hurt') { const dmg = FAIL_HURT[ap.tn] ?? 20; onWorld(g, c, (cb, u) => { say(cb, c.name + ' pays for it (' + ap.label + ')' + hurtUnit(u, dmg, false, cb, 'hazard') + '.'); }); return 'hurt ' + dmg; }
   if (f === 'alarm') { raiseAlarm(g, p, c); return 'alarm'; }
   if (f === 'condition' && ap.failCondition && isCondition(ap.failCondition)) { worldCond(g, c, ap.failCondition); return ap.failCondition; }
   if (f === 'jam') { ap.gone = true; if (t.kind === 'obj') { t.o.jam = g.story.scene.n; I.push(g, { kind: 'system', text: t.o.name + ' at ' + refOf(t.o.pos) + ' jams: no way in this scene.' }); } return 'jammed'; }
@@ -558,10 +560,9 @@ function failure(g: GameState, c: Character, t: Target, ap: Approach, p: string)
   return '';
 }
 /** A failed approach's condition: the ones a story carries (Bleeding, Shaken…) for the scene; the rest on the area map. */
-const CARRY = new Set(['shaken', 'fear', 'weakened', 'nausea', 'injured', 'bleeding', 'ldebuff', 'rdebuff', 'left_brain_debuff', 'right_brain_debuff']);
 export function worldCond(g: GameState, c: Character, id: string) {
-  if (CARRY.has(id)) { setStoryCond(g, c, id === 'left_brain_debuff' ? 'ldebuff' : id === 'right_brain_debuff' ? 'rdebuff' : id, 'scene'); W().push(g, { kind: 'system', text: c.name + ' is ' + id.replace(/_/g, ' ') + ' for the scene.', charId: c.id }); return; }
-  onWorld(g, c, (cb, u) => { const r = applyCond(cb, cb.worldRng || g.rng, null, u, id, undefined, undefined, { skipSave: true }); if (r) cb.log.push(c.name + r.replace(/^ · [^ ]+/, '').replace(/^ · /, ' ') + '.'); });
+  if (STORY_CARRY.has(id)) { setStoryCond(g, c, id === 'left_brain_debuff' ? 'ldebuff' : id === 'right_brain_debuff' ? 'rdebuff' : id, 'scene'); W().push(g, { kind: 'system', text: c.name + ' is ' + id.replace(/_/g, ' ') + ' for the scene.', charId: c.id }); return; }
+  onWorld(g, c, (cb, u) => { const r = applyCond(cb, cb.worldRng || g.rng, null, u, id, undefined, undefined, { skipSave: true }); if (r) say(cb, c.name + r.replace(/^ · [^ ]+/, '').replace(/^ · /, ' ') + '.'); });
 }
 function loseItem(c: Character, what: string): string {
   const pack = packOf(c).map((x) => ({ ...x })), w = what.toLowerCase();
@@ -612,7 +613,7 @@ export function talkOptions(g: GameState, tokenId: string, charId?: string): Tal
   const n = npcsOf(g).find((x) => x.id === tokenId); if (!n || n.hidden) return [];
   const c = charId ? g.characters[charId] : undefined, at = c ? positionsOf(g)[c.id] : undefined;
   const near = !c || (!!at && dist(at, n.pos) <= TALK_RANGE), apL = c ? apLeft(g, c) : 99, open = g.phase === 'story' && g.story.await === 'players';
-  const gate = (ap: number) => (!open ? 'Wait for the round to open.' : !near ? 'Get within ' + TALK_RANGE + ' tiles.' : apL < ap ? 'Needs ' + ap + ' AP.' : '');
+  const gate = (ap: number) => (!open ? 'Wait for the round to open.' : !near ? 'Get within ' + TALK_RANGE + ' tiles.' : poolWhyNot(apL, ap) || '');
   const out: TalkOption[] = [];
   if (n.wants || n.wantsHidden) { const why = gate(WORLD_AP.ask); out.push({ kind: 'ask', what: 'wants', label: 'Ask what they want', ap: WORLD_AP.ask, available: !why, ...(why ? { why } : {}) }); }
   if (n.knows) { const why = gate(WORLD_AP.ask); out.push({ kind: 'ask', what: 'objective', label: 'Ask about the objective', ap: WORLD_AP.ask, available: !why, ...(why ? { why } : {}) }); }
@@ -664,24 +665,18 @@ export function walkStory(g: GameState, c: Character, k: string): boolean {
   const cb = storyCb(g), u = cb.units.find((x) => x.charId === c.id); if (!u) return false;
   const P = paths(cb, u.pos, u.id);
   if (P.dist[k] === undefined || k === u.pos) {
-    const crosses = lineTiles(u.pos, k).some((t) => zoneHazards(g).some((h) => hazardLiveAt(h, t, 'pc')));
+    const crosses = tilesLine(u.pos, k).some((t) => zoneHazards(g).some((h) => hazardLiveAt(h, t, 'pc')));
     if (crosses) { W().push(g, { kind: 'system', text: c.name + ' can\'t get to ' + refOf(k) + ' without crossing the hazard.', ooc: true }); return false; }
     positionsOf(g)[c.id] = k; W().push(g, { kind: 'system', text: c.name + ' moves to ' + refOf(k) + '.' }); return true;
   }
-  const from = u.pos, ap0 = u.ap; u.ap = 999;
-  const was = bindGame(g); let err: string | null = null; try { err = moveUnit(cb, u, k, undefined, 'move', { shortest: true }); } finally { bindGame(was); }
+  const from = u.pos;
+  const was = bindGame(g); let err: string | null = null; try { err = freely(u, () => moveUnit(cb, u, k, undefined, 'move', { shortest: true })); } finally { bindGame(was); } // the Narrator moves them: no AP
   if (err) return false;
-  u.ap = ap0;
   positionsOf(g)[c.id] = u.pos;
   const route: string[] = []; for (let x = u.pos; x && x !== from; x = P.prev[x]) route.unshift(x);
   writeBack(g, cb, c);
   enterTriggers(g, c, route);
   return true;
-}
-function lineTiles(a: string, b: string): string[] {
-  const [x0, y0] = a.split(',').map(Number), [x1, y1] = b.split(',').map(Number), n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)), out: string[] = [];
-  for (let i = 1; i <= n; i++) out.push(Math.round(x0 + ((x1 - x0) * i) / n) + ',' + Math.round(y0 + ((y1 - y0) * i) / n));
-  return out;
 }
 
 // ---------- after every action ----------

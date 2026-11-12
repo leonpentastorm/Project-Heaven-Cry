@@ -1,0 +1,5 @@
+OK: title-screen Part A; three 4096x2304 PNGs, layered PSD, manifest/hashes, previews, coverage and sample text contrast.
+OK: all 46 archetype cards; IDs, role tags, review status, PNG format, hashes, manifest and previews.
+OK: 12 November delivery 77/77; source/master/catalog hashes, candidate status and white RGBA exports (all).
+OK: Wick animation 5/5 clips, 36/36 frames; white RGBA, registration, strips, root motion, aliases, timings, reviews, sources and hashes.
+OK: 27 skills, 145 characters, 74 traits, 106 perks, 11 illustrations, 0 maps, 25 sprites, 1 mascot; 2 emblems; 3700 file checksums; metadata, exports, spoilers and palette valid; white-ink/alpha pixel checks: all icons.

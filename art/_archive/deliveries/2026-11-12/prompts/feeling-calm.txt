@@ -1,0 +1,5 @@
+Draw one abstract glyph in the flat white ink style of the attached references. It is the mark of a feeling, like a sigil of a mood. Build it from one or two flowing, gestural ribbon strokes, as if drawn with a soft brush in a single movement, with a small heart-shaped knot tied somewhere in the ribbon. Pure white flat ink (#FFFFFF) on a fully transparent background. No colour, no grey, no gradient, no glow, no shadow. No figure, no face, no hands, no text, no letters, no numbers, no real-world symbols, no emoji. One motif, centred, bold enough that its silhouette reads at 40 pixels. Square, 1024 × 1024 PNG with transparency.
+
+The feeling is Calm: one long level stroke over two or three still circles, like a horizon over water.
+
+One complete standalone glyph, bold and clear with generous transparent margin. Do not copy a reference glyph; use its white ink weight only.

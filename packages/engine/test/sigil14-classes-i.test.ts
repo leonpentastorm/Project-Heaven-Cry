@@ -2,6 +2,8 @@
 // docs/design/sigil-1.4-impact.md, base classes): the Mage's Barrage, Overcharge and Payload, the Warden's Raise Cover
 // and Seal, the Scribe's Stored Spell and the Trickster's Rewrite, every one through the reducer (apply).
 import { describe, expect, it } from 'vitest';
+import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   CLASS, SIGIL_REV, d20, applyCond, condOn, previewAttack, attackDamage, objectsOf, positionsOf, npcsOf, standable, zoneMap, storyObjects, refOf, packOf, sigilCoreSaving, emit, findPattern,
   type Unit, type Combat, type GameState,
@@ -23,7 +25,7 @@ function plain(n = 12): number { for (let s = 1; s < 200000; s++) { const r = { 
 /** The caster knows these words, has plenty of AP and charge, no Flux, multipliers ×1; foes never dodge or save. */
 function prep(f: F, u: Unit, words: string[], maxWords = 4) {
   const m = f.unit(u.id).mg!; f.cb.objects = [];
-  Object.assign(m, { words: [...words], maxWords, charge: 99, flux: 0, sigilMult: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, glyphAp: 1 });
+  Object.assign(m, { words: [...words], maxWords, charge: 99, flux: 0, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, glyphAp: 1 });
   f.unit(u.id).ap = 9;
   for (const e of f.foes) { const x = f.unit(e.id); x.def = -99; x.hp = x.maxHp = 999; x.armour = 0; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.pos = '15,10'; }
   f.g.rng.state = plain();
@@ -199,9 +201,9 @@ describe('Scribe Stored Spell under 1.4', () => {
     return { s, c, before };
   }
   function fight(s: any, c: any) {
-    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
     const cb: Combat = s.g.combat!, u = cb.units.find((x) => x.charId === c.id)!, foe = cb.units.find((x) => x.side === 'foe')!;
-    cb.objects = []; Object.assign(u.mg!, { sigilMult: 1, elemMult: 1, rangeBonus: 0 }); u.pos = '8,2'; foe.pos = '2,2'; foe.def = -99; foe.hp = foe.maxHp = 999; foe.armour = 0;
+    cb.objects = []; Object.assign(u.mg!, { sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, rangeBonus: 0 }); u.pos = '8,2'; foe.pos = '2,2'; foe.def = -99; foe.hp = foe.maxHp = 999; foe.armour = 0;
     cb.turn = cb.order.indexOf(u.id); u.ap = 6; s.g.rng.state = plain();
     return { cb, u, foe };
   }

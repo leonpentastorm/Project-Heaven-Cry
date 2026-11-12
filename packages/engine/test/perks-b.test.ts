@@ -2,6 +2,7 @@
 // the reducer (apply) where an action exists, else with the game bound and the engine's own functions (moveUnit,
 // resolveAttack, spotHidden…), the same calls the reducer makes.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   MAPS, apply, moveUnit, resolveAttack, previewAttack, attackDamage, endTurn, hide, spotHidden, maxReactions, makeObject, applyRest, applyCond, emit, condOn,
   d20, die, packOf, movement, drawGlyph, pathOpts, storyCb, positionsOf, stateOf, holderOf, type Unit, type Combat, type GameState,
@@ -15,7 +16,7 @@ const at = (u: Unit, k: string) => { u.pos = k; return u; };
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 /** A wall down column x (every row), so the only way across is over it. */
 const wallAt = (cb: Combat, x: number) => { cb.map = { ...cb.map, solid: Array.from({ length: cb.map.h }, (_, y) => x + ',' + y) }; };
-MAPS.laneb_dark = { ...MAPS.yard, id: 'laneb_dark', dark: true };
+MAPS.laneb_dark = { ...MAPS.yard16, id: 'laneb_dark', dark: true };
 
 describe('Into the Dark', () => {
   // rules 1.13: no AP. The first walk onto unseen ground: no ambush counts against you until your next turn.

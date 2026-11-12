@@ -10,12 +10,13 @@
 // Today's Throw (tactics.ts throwItem) is untouched: it stays for a character who knows no techniques, and keeps every
 // grenade effect (Blinded, the scrambler's Stun on machines, burning tiles). Lob goes through the same blast().
 import { technique, strike, canStrike, spendRounds, addPressure, endWatch, ownSideOnly, pressureDecay, onHook, strikingWith, TECHNIQUE, type Tech } from './shared';
-import { type Combat, type Unit, alive, dist, lineOfSight, unitSees, effectiveRange, emitFx, refOf, xy, key, heatLimit } from '../../combat';
+import { say, type Combat, type Unit, alive, dist, lineOfSight, unitSees, effectiveRange, emitFx, refOf, xy, key, heatLimit } from '../../combat';
 import { WEAPON, type WeaponDef } from '../../data';
 import { blast, radiusOf, throwRangeOf, isSilent, reveal } from '../../tactics';
 import { condOn } from '../../magic';
 import { emit } from '../../effects/hooks';
 import { endBead } from './sets';
+import { tilesAround, inBounds, unitsIn } from '../../kit';
 
 /** Lob's numbers outside a use (the smoke rule): its data, else the fallback. */
 const lobNum = (k: string, fb: number): number => (typeof TECHNIQUE.lob?.numbers?.[k] === 'number' ? TECHNIQUE.lob.numbers[k] : fb);
@@ -28,9 +29,7 @@ const isGrenade = (id: string | undefined): boolean => !!id && WEAPON[id]?.categ
 const hurts = (w: WeaponDef | undefined): boolean => typeof w?.damage === 'number' && w.damage > 0;
 /** Does anyone on this side see the tile? (Lob's whole point: the user needn't.) */
 const sideSeesTile = (cb: Combat, side: Unit['side'], tile: string) => cb.units.some((v) => v.side === side && unitSees(cb, v, tile));
-const tilesWithin = (cb: Combat, at: string, r: number) => { const [x0, y0] = xy(at), out: string[] = []; for (let x = x0 - r; x <= x0 + r; x++) for (let y = y0 - r; y <= y0 + r; y++) if (x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h) out.push(key(x, y)); return out; };
-const onMap = (cb: Combat, tile: string) => { const [x, y] = xy(tile); return x >= 0 && y >= 0 && x < cb.map.w && y < cb.map.h; };
-const caught = (cb: Combat, tile: string, r: number) => cb.units.filter((v) => alive(v) && dist(v.pos, tile) <= r);
+const caught = (cb: Combat, tile: string, r: number) => unitsIn(cb, { shape: 'burst', at: tile, r });
 const inSmoke = (cb: Combat, u: Unit) => (cb.zones || []).some((z) => z.kind === 'veil' && z.tiles.includes(u.pos));
 
 /** Where a Blast lands: the named tile, else the named target's tile. */
@@ -39,7 +38,7 @@ const aimTile = (t: Tech): string | null => t.args.tile || t.tgt?.pos || null;
  * dark don't stop it). Something with Arc goes over full cover: "Lob a frag over the wall" (the proposal's Grenadier, section 2). */
 function blastCheck(t: Tech, tile: string | null, range: number, rangeWhy: string, arc: boolean): string | null {
   if (!tile) return 'Name a tile.';
-  if (!onMap(t.cb, tile)) return 'Off the map.';
+  if (!inBounds(t.cb, tile)) return 'Off the map.';
   if (dist(t.u.pos, tile) > range) return rangeWhy;
   if (!sideSeesTile(t.cb, t.u.side, tile)) return 'No one on your side can see that tile.';
   if (!arc && tile !== t.u.pos && !lineOfSight(t.cb, t.u.pos, tile, true)) return 'No clear line to that tile: walls in the way.';
@@ -48,7 +47,7 @@ function blastCheck(t: Tech, tile: string | null, range: number, rangeWhy: strin
 const tilesWord = (n: number) => n + (n === 1 ? ' tile' : ' tiles');
 /** The preview of a blast: the tiles, what it does, and the Pressure each enemy in it would gain. */
 function previewBlast(t: Tech, tile: string, radius: number, w: WeaponDef, pressure: boolean): void {
-  t.pv.area = tilesWithin(t.cb, tile, radius);
+  t.pv.area = tilesAround(tile, radius, t.cb);
   t.note('No roll: ' + (hurts(w) ? w.damage + ' to everyone within ' + tilesWord(radius) : 'its effect within ' + tilesWord(radius)) + ' of ' + refOf(tile)
     + (pressure ? ', and +' + t.num('blast_pressure', 2) + ' Pressure to every enemy there' : '') + '.');
   if (pressure) blastPressure(t, tile, radius);
@@ -86,7 +85,7 @@ function lobGrenade(t: Tech, id: string): string | null {
   // Its AP is the technique's, already paid.
   const ctx: any = emit(cb, 'throw', { u, item: id, tile, ap: t.pv.ap, radius: radiusOf(w), cancel: false, caughtBy: null, preview: false, cb, rng: t.rng, technique: t.def.id });
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: id, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, technique: t.def.id, tech: t.def.id, vi: 0 });
-  cb.log.push(u.name + ' lobs ' + an(nameOf(w)) + ' at ' + refOf(tile!) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : lobbing(u, id, () => blast(cb, t.rng, u, tile!, id, ctx.radius))) + '.');
+  say(cb, u.name + ' lobs ' + an(nameOf(w)) + ' at ' + refOf(tile!) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : lobbing(u, id, () => blast(cb, t.rng, u, tile!, id, ctx.radius))) + '.');
   if (!ctx.cancel && explosive) blastPressure(t, tile!, ctx.radius);
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + nameOf(w));
   return null;
@@ -109,7 +108,7 @@ function lobBlast(t: Tech): string | null {
   if (t.hand === 'main' && w.heat_limit && !u.infiniteAmmo) { u.heat += 1; if (u.heat >= heatLimit(u, w)) u.jammed = true; }
   u.shotsThisTurn = (u.shotsThisTurn || 0) + 1; u.firstShotDone = true; u.firstShotTurn = true; u.attackedTurn = true;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: w.id, cat: w.category, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true, technique: t.def.id, tech: t.def.id, vi: 0 });
-  cb.log.push(u.name + ' lobs a round from the ' + w.name + ' onto ' + refOf(tile!) + lobbing(u, w.id, () => blast(cb, t.rng, u, tile!, w.id, radius)) + (u.jammed && t.hand === 'main' ? ' · the weapon jams' : '') + '.');
+  say(cb, u.name + ' lobs a round from the ' + w.name + ' onto ' + refOf(tile!) + lobbing(u, w.id, () => blast(cb, t.rng, u, tile!, w.id, radius)) + (u.jammed && t.hand === 'main' ? ' · the weapon jams' : '') + '.');
   blastPressure(t, tile!, radius);
   if (u.hidden && !isSilent(u)) reveal(cb, u, 'fired');
   return null;
@@ -167,7 +166,7 @@ onHook('blast_landed', (ctx: any, cb) => {
   for (const v of (ctx.who || []) as Unit[]) {
     if (!alive(v)) continue;
     endWatch(cb, v, why);
-    if (v.overwatch) { v.overwatch = null; v.owShots = 0; cb.log.push(v.name + ' loses the held shot (' + why + ').'); emitFx(cb, 'watch_end', { unit: v.id, at: v.pos, id: 'overwatch', why, ...ownSideOnly(cb, v) }); }
+    if (v.overwatch) { v.overwatch = null; v.owShots = 0; say(cb, v.name + ' loses the held shot (' + why + ').'); emitFx(cb, 'watch_end', { unit: v.id, at: v.pos, id: 'overwatch', why, ...ownSideOnly(cb, v) }); }
     endBead(cb, v, why); // sets.ts owns the Bead's state (techState(u, 'bead').targetId) and its bead_end fx
   }
 });

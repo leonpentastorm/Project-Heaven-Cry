@@ -4,6 +4,7 @@
 // 90-day cooldown after apostasy, the direct switch (no cooldown) with the patron's leave roll or grudge, the grudge's
 // fight-start condition and XP multiplier, old saves, Stolen Fire, the Proving Ground's stepper, and determinism.
 import { describe, expect, it } from 'vitest';
+import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, faithView, beliefOf, applyDamage, condOn, newGame, d20, positionsOf, standable, zoneMap, npcsOf, storyObjects,
   DEVOTION_CURVE, devotionThreshold, devotionLevelOf, devotionXpOf, setDevotionXp, DEVOTION_XP, TAG_CAPS, NARRATOR_XP,
@@ -243,7 +244,7 @@ describe('leaving one patron for another (items 711-714)', () => {
     act({ type: 'faith/devotion', charId: c().id, delta: 5, reason: 'a deed' }); expect(c().devotionXp).toBe(45 + 2);
     act({ type: 'faith/devotion', charId: c().id, delta: 5, reason: 'another' }); expect(c().devotionXp).toBe(45 + 5); // 2.5 + 2.5
     expect(said(s.g, /×0.5: Holy Father Nerukhan's grudge/)).toBe(true);
-    act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Ambush', map: 'yard', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } });
+    act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Ambush', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Raider', tier: 'soldier', weapon: 'service_pistol', at: '' }] } } });
     const u = s.g.combat!.units.find((x) => x.charId === c().id)!;
     expect(condOn(u, 'marked')).toBe(true); expect(logHas(s.g.combat!, /Grudge \(Holy Father Nerukhan\): Saint starts the fight Marked/)).toBe(true);
     expect((s.g.combat!.fx || []).some((e: any) => e.k === FAITH_FX.grudge && e.unit === u.id)).toBe(true);

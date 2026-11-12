@@ -12,7 +12,8 @@
 //                mark (delta is XP, rules 1.6.1); a level change (level set) adds "DEVOTION 5", the mark lit
 //   leave        {char, patron, to, letGo, roll?}              leaving a patron for another: "LET GO · <patron>" or "HELD · <patron>"
 //   grudge       {char, patron, sessions, condition, at?, unit?}  "GRUDGE · <patron>" in complication red, the old mark dim
-//   vow          {unit, id, state: sworn|kept|broken, at}       a seal stamped (sworn), lit (kept) or cracked (broken)
+//   vow          {unit, id, state: sworn|kept|broken|fulfilled, at}  a seal stamped (sworn), lit (kept) or cracked (broken);
+//                fulfilled (rules 1.22: {cut, left}): the seal glints and the Hymn's wait is said
 //   patron_line  {patron, event, text}                         a card in the log (the screens draw it); a glint here
 //   miracle      {patron, id, at, area, unit, char, name, text, line, summary}  the cut-in (game/cutIn.ts, Faith 2.2, spec
 //                2.3): the patron's portrait over the whole screen, the god calling the devoted by name with the grant
@@ -206,6 +207,8 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       const p = where(e); if (!p) return;
       const icon = vowIconUri(e.id || 'shield');
       if (e.state === 'broken') { play('hit_metal', p, { rate: 0.7, gain: 0.45 }); mark(icon, { ...p, y: p.y - p.s * 0.8 }, p.s * 0.6, 1000, { opacity: 0.6, from: 1, to: 0.6 }); floatText('VOW BROKEN', p, '#A3AEC2', { small: true, delay: 150 }); return; }
+      // Rules 1.22: the vow's moment came: the seal glints over the swearer and the float says what it bought.
+      if (e.state === 'fulfilled') { play('crystal', p, { rate: 1.25, gain: 0.3 }); mark(icon, { ...p, y: p.y - p.s * 0.8 }, p.s * 0.5, 900, { glow: FAITH_GOLD }); floatText('VOW FULFILLED · HYMN ' + (e.cut || 1) + ' ROUND SOONER', p, FAITH_INK, { small: true, delay: 150 }); return; }
       play('crystal', p, { rate: e.state === 'kept' ? 1.5 : 1, gain: 0.35 });
       mark(icon, { ...p, y: p.y - p.s * 0.8 }, p.s * 0.6, 1100, { glow: e.state === 'kept' ? FAITH_GOLD : undefined });
       floatText(e.state === 'kept' ? 'VOW KEPT' : 'VOW SWORN', p, FAITH_INK, { small: true, delay: 150 });

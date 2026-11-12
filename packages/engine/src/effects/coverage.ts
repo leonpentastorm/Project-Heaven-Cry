@@ -24,6 +24,11 @@ export function verdictOf(info: ItemInfo): Verdict {
   // An action the engine runs only in part (its default run gives the Narrator the rest).
   const act = rows.filter((r) => r.owner === 'action').length;
   if (eng === rows.length) return 'engine';
+  // Item 1101 (rules 1.14), "colour is not a ruling": a Narrator note on an item the data labels `engine` is colour (a
+  // story hook, a "the Narrator may", a roleplay line), not a share of the rules. When every other effect is run, the
+  // badge says the engine runs it, as the data does. (It used to count the note, and called 16 engine traits "both".)
+  const colour = rows.filter((r) => r.owner === 'narrator').length;
+  if (info.adjudication === 'engine' && colour && eng + colour === rows.length) return 'engine';
   if (eng === 0 && !(act && actionDefs(info).length)) return 'narrator';
   return 'both';
 }

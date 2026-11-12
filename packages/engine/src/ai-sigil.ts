@@ -17,17 +17,20 @@
 //    tiles players will cross, turrets and fields where players stand. It respects AP, charge (a core swap first),
 //    Flux (a vent first, never an overload), friendly fire (it holds a spell that hits more of its own than of yours)
 //    and casts only when the spell's value per AP beats its weapon's.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
 import { WEAPON } from './data';
 import { type Combat, type Unit, dist, xy, key, paths, moveUnit, apForTiles, previewAttack, isMelee, effectiveRange, lineOfSight, unitSees, objectsOf, shootCover } from './combat';
 import { type Rng } from './rng';
 import {
   type EvokePreview, type EvokeOpts, type Affected, type Dir, type Spell,
-  planEvoke, drawGlyph, evoke, findPattern, glyphCost, sigilReady, freeTile, dir8, secretFrom, scuff, strikeTurret, compileSpell, grammarError,
-  enemyMagic, W, isElement, isAffliction, isBoonWord, around, MAX_GLYPHS, SIGIL_REV, sigilPower,
+  planEvoke, drawGlyph, evoke, findPattern, glyphCost, sigilReady,  dir8, secretFrom, scuff, strikeTurret, compileSpell, grammarError,
+  enemyMagic, W, isElement, isAffliction, isBoonWord,  MAX_GLYPHS, SIGIL_REV, sigilPower, lineMultFor,
 } from './sigil';
 import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, unitSave, condOn, ventAp, coreAp } from './magic';
 import { fooledBy } from './illusion';
+import { tilesAround, canStand, foesOf } from './kit';
+import { withAp, canPay } from './effects/cost';
 
 // ---------- caster archetypes (data/enemies.json `casters`) ----------
 export interface CasterDef { id: string; name: string; tier: string; weapon: string; sigils: string[]; spell_bias?: number; text?: string; provisional?: boolean }
@@ -51,8 +54,9 @@ const unitOf = (cb: Combat, id: string) => cb.units.find((x) => x.id === id)!;
  * field, ×1 for a trap), an affliction counted as 6. An estimate: the engine's numbers decide. */
 function biteOf(cb: Combat, z: { words: string[]; by: string }, mult: number): number {
   const o = cb.units.find((x) => x.id === z.by), m = o?.mg; let d = 0;
-  for (const w of z.words) { const x: any = W(w); if (x?.damage) d += x.damage * sigilPower(m, x.damage_type === 'elemental' ? 'elemental' : 'sigil'); if (isAffliction(w)) d += 6; }
-  return Math.round(d * mult);
+  for (const w of z.words) { const x: any = W(w); if (x?.damage) d += x.damage * sigilPower(m, x.damage_type === 'elemental' ? 'elemental' : 'sigil') * (m?.deal ?? 1); if (isAffliction(w)) d += 6; }
+  // rules 1.26: the owner's Line multiplier too, as the engine deals it (it was left out of the estimate)
+  return Math.round(d * mult * (o ? lineMultFor(o, compileSpell(z.words)) : 1));
 }
 /** How bad it is for u to step on tile k (an expected-damage scale; the move score adds it): a field of the other side
  * (10 + 3 × its bite), a trap of the other side its side has spotted (150), and 200 more when the bite would kill it.
@@ -73,7 +77,7 @@ export function aiRouteRisk(cb: Combat, u: Unit, P: { prev: Record<string, strin
   return r;
 }
 // A False Image's fooled enemy doesn't know where its owner really is (illusion.ts): it aims no spell at them.
-const players = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side !== u.side && live(t) && !t.hidden && !fooledBy(cb, u, t));
+const players = (cb: Combat, u: Unit) => foesOf(cb, u, { hidden: false }).filter((t) => !fooledBy(cb, u, t));
 const friendsOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side === u.side && !t.dead);
 
 // ---------- every enemy: avoid, and clear what blocks ----------
@@ -82,8 +86,8 @@ const friendsOf = (cb: Combat, u: Unit) => cb.units.filter((t) => t.side === u.s
 export function aiAvoid(cb: Combat, rng: Rng, u: Unit): boolean {
   if ((u as any).aiAvoid === cb.round || !(cb.zones || []).length) return false;
   const tur = (cb.zones || []).find((z) => z.kind === 'turret' && z.side !== u.side && !secretFrom(z, u.side) && z.tiles[0] === u.pos);
-  if (tur && u.ap >= SPELL_AP.scuff) { (u as any).aiAvoid = cb.round; return !scuff(cb, u); }
-  if (aiTileRisk(cb, u, u.pos) <= 0 || u.ap < 1) return false;
+  if (tur && canPay(cb, u, SPELL_AP.scuff)) { (u as any).aiAvoid = cb.round; return !scuff(cb, u); }
+  if (aiTileRisk(cb, u, u.pos) <= 0 || !canPay(cb, u, 1)) return false;
   (u as any).aiAvoid = cb.round;
   const P = paths(cb, u.pos, u.id), adj = players(cb, u).filter((t) => dist(t.pos, u.pos) <= 1);
   const out = Object.entries(P.dist).filter(([k, n]) => k !== u.pos && aiRouteRisk(cb, u, P, k) <= 0 && apForTiles(n, u.bank, u.movement) <= Math.min(2, u.ap))
@@ -108,7 +112,7 @@ export function aiClearBlock(cb: Combat, rng: Rng, u: Unit): boolean {
   const pcs = cb.units.filter((t) => t.side !== u.side && live(t)); if (!pcs.length) return false;
   const near = pcs.reduce((a, b) => (dist(u.pos, b.pos) < dist(u.pos, a.pos) ? b : a));
   const P = paths(cb, u.pos, u.id), now = dist(u.pos, near.pos);
-  const closer = Object.entries(P.dist).some(([k, n]) => k !== u.pos && apForTiles(n, u.bank, u.movement) <= u.ap && dist(k, near.pos) < now);
+  const closer = Object.entries(P.dist).some(([k, n]) => k !== u.pos && canPay(cb, u, apForTiles(n, u.bank, u.movement)) && dist(k, near.pos) < now);
   if (closer) return false;
   const between = (k: string) => { const [ax, ay] = xy(u.pos), [bx, by] = xy(near.pos), [x, y] = xy(k); return dist(k, u.pos) + dist(k, near.pos) <= now + 1 && (x - ax) * (bx - ax) + (y - ay) * (by - ay) >= 0; };
   const wall = walls.filter((o) => between(o.pos)).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos) || (a.pos < b.pos ? -1 : 1))[0];
@@ -163,14 +167,14 @@ export function casterCombos(words: string[], max: number): Combo[] {
 /** Plan an Evoke of a Line not yet drawn (glyphs on `tiles`, in order, the caster standing on the last), then put the
  * fight back exactly as it was. Uses the engine's own planner, so nothing it finds breaks a rule. */
 function planLine(cb: Combat, u: Unit, words: string[], tiles: string[], aim: string, opts: EvokeOpts): EvokePreview | null {
-  const was = u.pos, glyphs = cb.glyphs, seq = cb.glyphSeq || 0, ap = u.ap, m = u.mg!, charge = m.charge;
+  const was = u.pos, glyphs = cb.glyphs, seq = cb.glyphSeq || 0, m = u.mg!, charge = m.charge;
   try {
     // Rules 1.10: one stroke, with the id the real first glyph will give it, so nothing beside it joins or spoils it.
     cb.glyphs = [...(glyphs || []), ...tiles.map((k, i) => ({ id: 'gl' + (seq + 1 + i), word: words[i], pos: k, by: u.id, side: u.side, left: 2, who: u.name, v: SIGIL_REV, strokeId: 'sgl' + (seq + 1) } as Glyph))];
-    u.pos = tiles[tiles.length - 1]; u.ap = 99; m.charge = 99;
-    const pv = planEvoke(cb, u, tiles[0], aim, opts);
+    u.pos = tiles[tiles.length - 1]; m.charge = 99;
+    const pv = withAp(u, 99, () => planEvoke(cb, u, tiles[0], aim, opts));
     return pv.ok && !pv.fizzle && findLineOk(cb, tiles) ? pv : null;
-  } finally { u.pos = was; cb.glyphs = glyphs; cb.glyphSeq = seq; u.ap = ap; m.charge = charge; }
+  } finally { u.pos = was; cb.glyphs = glyphs; cb.glyphSeq = seq; m.charge = charge; }
 }
 /** The Line read is exactly the tiles drawn (a stroke: no other glyph joins it; rules 1.10). */
 function findLineOk(cb: Combat, tiles: string[]) { const p = findPattern(cb, tiles[0]); return typeof p !== 'string' && p.tiles.length === tiles.length; }
@@ -250,8 +254,8 @@ function nullValue(cb: Combat, u: Unit, tiles: string[]): number {
 function blinkDest(cb: Combat, u: Unit, from: string): string | null {
   const pcs = players(cb, u), max = (W('step') as any)?.teleport_tiles ?? 4, shoots = !!WEAPON[u.weapon] && !isMelee(WEAPON[u.weapon]);
   let best: string | null = null, bs = -Infinity;
-  for (const k of around(from, max)) {
-    if (k === from || !freeTile(cb, k, u) || aiTileRisk(cb, u, k) > 0) continue;
+  for (const k of tilesAround(from, max)) {
+    if (k === from || !canStand(cb, k, u) || aiTileRisk(cb, u, k) > 0) continue;
     const md = pcs.length ? Math.min(...pcs.map((t) => dist(t.pos, k))) : 9; if (md <= 1) continue;
     const s = Math.min(md, 6) + (shoots && pcs.some((t) => lineOfSight(cb, k, t.pos) && dist(k, t.pos) <= effectiveRange(WEAPON[u.weapon])) ? 5 : 0) - dist(from, k) * 0.1;
     if (s > bs) { bs = s; best = k; }
@@ -335,10 +339,10 @@ function linePrice(cb: Combat, u: Unit, words: string[], tiles: string[], evokeA
   }
   const pre: ('vent' | 'core')[] = [];
   if (fx > FLUX_MAX) return null;
-  if (m.flux + fx > FLUX_MAX) { pre.push('vent'); ap += ventAp(u); }
-  if (charge + evokeCharge > m.charge) { if (m.cores < 1 || charge + evokeCharge > CORE_CHARGE) return null; pre.push('core'); ap += coreAp(u); }
+  if (m.flux + fx > FLUX_MAX) { pre.push('vent'); ap += ventAp(u, cb); }
+  if (charge + evokeCharge > m.charge) { if (m.cores < 1 || charge + evokeCharge > CORE_CHARGE) return null; pre.push('core'); ap += coreAp(u, cb); }
   ap += evokeAp;
-  return ap <= u.ap ? { ap, pre } : null;
+  return canPay(null, u, ap) ? { ap, pre } : null;
 }
 /** The tiles a Line of n glyphs walks, starting on the caster's tile and going `d`: each free, unmarked, off any
  * known danger and a straight step on from the last; null if any isn't. */
@@ -347,7 +351,7 @@ function lineTiles(cb: Combat, u: Unit, n: number, d: Dir, P: { dist: Record<str
   if ((cb.glyphs || []).some((g) => g.pos === u.pos)) return null;
   for (let i = 1; i < n; i++) {
     const k = step(u.pos, d, i);
-    if (!freeTile(cb, k, u) || (cb.glyphs || []).some((g) => g.pos === k) || P.dist[k] === undefined || P.dist[k] > i || aiTileRisk(cb, u, k) > 0) return null;
+    if (!canStand(cb, k, u) || (cb.glyphs || []).some((g) => g.pos === k) || P.dist[k] === undefined || P.dist[k] > i || aiTileRisk(cb, u, k) > 0) return null;
     out.push(k);
   }
   return out;
@@ -403,10 +407,10 @@ export function aiSigilCast(cb: Combat, rng: Rng, u: Unit): boolean {
   for (const o of objectsOf(cb)) if (o.kind === 'sigil_wall' && (o as any).side !== u.side) magicTiles.push(o.pos);
   for (const g of cb.glyphs || []) if (g.side !== u.side) magicTiles.push(g.pos);
   const trapTiles: string[] = [];
-  for (const t of nearPcs.slice(0, 3)) { const f = own.filter(live).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0]; if (!f) continue; const d = dir8(t.pos, f.pos); for (const k of [step(t.pos, d, 1), step(t.pos, d, 2)]) if (freeTile(cb, k) && !trapTiles.includes(k)) trapTiles.push(k); }
+  for (const t of nearPcs.slice(0, 3)) { const f = own.filter(live).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0]; if (!f) continue; const d = dir8(t.pos, f.pos); for (const k of [step(t.pos, d, 1), step(t.pos, d, 2)]) if (canStand(cb, k) && !trapTiles.includes(k)) trapTiles.push(k); }
   const adjPcs = pcs.filter((t) => dist(t.pos, u.pos) <= 1);
   const turretTiles: string[] = [];
-  if (nearPcs[0]) { const d = dir8(u.pos, nearPcs[0].pos); for (const n of [2, 3]) { const k = step(u.pos, d, n); if (freeTile(cb, k) && dist(k, nearPcs[0].pos) >= 2) turretTiles.push(k); } }
+  if (nearPcs[0]) { const d = dir8(u.pos, nearPcs[0].pos); for (const n of [2, 3]) { const k = step(u.pos, d, n); if (canStand(cb, k) && dist(k, nearPcs[0].pos) >= 2) turretTiles.push(k); } }
   for (const c of casterCombos(m.words, m.maxWords)) {
     const L = c.words.length;
     const aims: string[] = c.kind === 'harm' ? nearPcs.map((t) => t.pos) : c.kind === 'boon' ? [...new Set([...hurt, ...(c.sp.uniqueSubjects.some((w) => w === 'ward') ? threatened : [])].map((t) => t.pos))]

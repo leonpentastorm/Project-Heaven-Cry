@@ -1,8 +1,10 @@
 // Campaigns (spec: Campaigns): a premade package of zones (maps with notes, objects and points of interest), an arc the
 // Narrator steers by (beginning, middle, end, secrets), an opening, a cast and suggested fights. Built-in campaigns live
 // in data/campaigns/; a host can load their own file in the same format (docs/design/campaign-format.md).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { type MapDef, keyOf } from './combat';
 import { OBJ, MARK } from './objects';
+import { sizeProblem, expandZone, expandCampaign, deployEnemy } from './maplayout';
 import type { Track } from './music';
 import { type Mission, type BoardNpc, validateMissions } from './missions';
 import { SKILL, TN_LADDER, ENEMY, WEAPON, SIGIL } from './data';
@@ -23,7 +25,12 @@ export interface CampaignObject {
   word?: string; age?: string; damage?: string;
 }
 export interface CampaignZone {
+  /** w, h: 8 to 26 tiles each (rules 1.16; maplayout.ts MAP_LIMITS). */
   id: string; name: string; summary: string; w: number; h: number;
+  /** The ground as a picture (rules 1.16): one row of characters per row of the map, or a shared layout's name
+   * ("open_ground"); legend names its object characters. Only in a campaign file: a loaded campaign's zones are
+   * expanded into the lists below (expandCampaign) and no longer carry these two fields. */
+  layout?: string[] | string; legend?: Record<string, { kind: string; name?: string; text?: string }>;
   /** Grid references or ranges ("N1–P6"). */
   solid?: string[]; difficult?: string[]; start: string[]; enemyStart?: string[];
   notes?: { at: string; text: string }[]; objects?: CampaignObject[];
@@ -81,6 +88,7 @@ export interface Campaign {
   credits?: string[];
 }
 
+const refName = (k: string) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 /** "N1–P6", "F4–F5, H2" or "C7" to tile keys. */
 export function expandRefs(list: string[] | undefined, w: number, h: number): string[] {
   const out = new Set<string>();
@@ -93,12 +101,17 @@ export function expandRefs(list: string[] | undefined, w: number, h: number): st
   return [...out];
 }
 
-/** A zone as the engine's map. Cover comes from objects (crates, pillars…), so the cover lists stay empty. */
-export function zoneToMap(z: CampaignZone, names: Record<string, string> = {}): MapDef {
+/** A zone as the engine's map. Cover comes from objects (crates, pillars…), so the cover lists stay empty. A zone still
+ * carrying a layout (a picture of rows) is expanded first. Without enemy start tiles the enemy deploys by the Maps rule
+ * (rules 1.16): the far side, 10 to 14 tiles from the squad where the map allows. */
+export function zoneToMap(z0: CampaignZone, names: Record<string, string> = {}): MapDef {
+  const z = expandZone(z0 as any).zone as CampaignZone;
   const keys = (l?: string[]) => expandRefs(l, z.w, z.h);
+  const solid = keys(z.solid), start = keys(z.start);
+  const blocked = () => new Set([...solid, ...(z.objects || []).filter((o) => OBJ[o.kind]?.blocks_move).map((o) => keyOf(o.at, { w: z.w, h: z.h } as MapDef) || '')]);
   return {
-    id: z.id, name: z.name, w: z.w, h: z.h, dark: !!z.dark, solid: keys(z.solid), cover: [], full: [], difficult: keys(z.difficult),
-    pcStart: keys(z.start), foeStart: keys(z.enemyStart).length ? keys(z.enemyStart) : keys(z.start).map((k) => { const [x, y] = k.split(',').map(Number); return (z.w - 1 - x) + ',' + y; }),
+    id: z.id, name: z.name, w: z.w, h: z.h, dark: !!z.dark, solid, cover: [], full: [], difficult: keys(z.difficult),
+    pcStart: start, foeStart: keys(z.enemyStart).length ? keys(z.enemyStart) : deployEnemy(z.w, z.h, start, blocked()),
     notes: [...(z.notes || []), ...(z.exits || []).filter((e) => e.at).map((e) => ({ at: e.at!, text: 'Way out: ' + e.text }))],
     objects: [...(z.objects || []).map((o) => ({ ...o })), ...(z.exits || []).filter((e) => e.at).map((e) => ({ kind: 'exit', at: e.at!, name: 'To ' + (names[e.to] || e.to), text: e.text, to: e.to }))] as any,
   };
@@ -113,12 +126,22 @@ export function validateCampaign(c: any): string[] {
   need(Array.isArray(c.zones) && c.zones.length, 'Needs at least one zone.');
   const ids = new Set((c.zones || []).map((z: any) => z.id));
   need(ids.has(c.startZone), 'startZone "' + c.startZone + '" is not a zone.');
-  for (const z of c.zones || []) {
+  for (const z0 of c.zones || []) {
+    // Rules 1.16: a zone may draw its ground as a picture (layout); it is read into the plain lists before the checks.
+    const ex = expandZone(z0 || {}), z: any = ex.zone; for (const e of ex.errors) errs.push((z.id || 'A zone') + ': ' + e);
     const at = (r: string, what: string) => { const k = keyOf(String(r || '').split(/[–-]/)[0].split(',')[0], { w: z.w, h: z.h } as MapDef); if (!k) errs.push(z.id + ': ' + what + ' "' + r + '" is off the map.'); };
     need(z.id && z.name, 'Every zone needs id and name.');
-    need(Number.isInteger(z.w) && Number.isInteger(z.h) && z.w >= 6 && z.h >= 6 && z.w <= 40 && z.h <= 40, z.id + ': size must be 6–40 by 6–40.');
+    { const bad = sizeProblem(z.w, z.h); if (bad) { errs.push(z.id + ': ' + bad); continue; } }
     need(Array.isArray(z.start) && z.start.length, z.id + ': needs start tiles.');
     for (const r of z.start || []) at(r, 'start');
+    for (const r of z.enemyStart || []) at(r, 'enemy start');
+    // Nobody starts inside a wall or on top of something that blocks the way (rules 1.16).
+    { const solid = new Set(expandRefs(z.solid, z.w, z.h)), objAt = new Map<string, string>();
+      for (const o of z.objects || []) if (OBJ[o?.kind]?.blocks_move) { const k = keyOf(String(o.at || ''), { w: z.w, h: z.h } as MapDef); if (k) objAt.set(k, o.name || OBJ[o.kind].name); }
+      for (const [list, what] of [[z.start, 'start'], [z.enemyStart, 'enemy start']] as [string[] | undefined, string][]) for (const k of expandRefs(Array.isArray(list) ? list : [], z.w, z.h)) {
+        if (solid.has(k)) errs.push(z.id + ': ' + what + ' tile ' + refName(k) + ' is inside solid ground.');
+        else if (objAt.has(k)) errs.push(z.id + ': ' + what + ' tile ' + refName(k) + ' is on ' + objAt.get(k) + ', which blocks the way.');
+      } }
     for (const o of z.objects || []) {
       need(OBJ[o.kind], z.id + ': unknown object kind "' + o.kind + '".'); at(o.at, (o.name || o.kind));
       if (o.kind === 'sigil_mark') {
@@ -184,5 +207,6 @@ export function validateCampaign(c: any): string[] {
 }
 
 /** The campaigns that ship with the game, in the order the Room offers them. */
-export const BUILT_IN_CAMPAIGNS: Campaign[] = [m813J, godplotJ, curseJ, summoningJ, ownJ] as any;
+export const BUILT_IN_CAMPAIGNS: Campaign[] = ([m813J, godplotJ, curseJ, summoningJ, ownJ] as any[]).map((c) => expandCampaign(c)) as any;
+export { expandCampaign };
 export const builtInCampaign = (id: string): Campaign | null => { const c = BUILT_IN_CAMPAIGNS.find((x) => x.id === id); return c ? JSON.parse(JSON.stringify(c)) : null; };

@@ -380,7 +380,7 @@
 <div role="group" aria-label="Tone" style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{obTones}}" as="o" hint-placeholder-count="7"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" disabled="{{o.locked}}" title="{{o.title}}" style="{{o.style}}">{{o.name}}</button></sc-for></div>
 <span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{obToneHint}}</span>
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">FEELINGS · PICK 2</span>
-<div role="group" aria-label="Starting feelings" data-feelings-pick="1" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{feelChips}}" as="o" hint-placeholder-count="25"><button type="button" data-feeling="{{o.key}}" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" title="{{o.title}}" style="{{o.style}}"><img src="{{o.icon}}" alt="" style="width: 18px; height: 18px">{{o.name}}</button></sc-for></div>
+<div role="group" aria-label="Starting feelings" data-feelings-pick="1" style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{feelChips}}" as="o" hint-placeholder-count="25"><button type="button" data-feeling="{{o.key}}" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" title="{{o.title}}" style="{{o.style}}"><span aria-hidden="true" style="{{o.iconStyle}}; width: 18px; height: 18px"></span>{{o.name}}</button></sc-for></div>
 <span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{feelHint}}</span>
 <sc-for list="{{modGroups}}" as="g" hint-placeholder-count="3">
 <div style="display: flex; flex-direction: column; gap: 6px">

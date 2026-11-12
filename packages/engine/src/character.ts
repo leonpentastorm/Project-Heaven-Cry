@@ -1,21 +1,25 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import patronsJ from '../../../data/patrons.json';
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES } from './data';
-import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes } from './effects/collect';
+import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem } from './effects/collect';
 import { statQuery, setRankRule } from './effects/hooks';
+import type { StatId } from './effects/stats';
 import feelJ from '../../../data/feelings.json';
 import worldPlayJ from '../../../data/world_play.json';
 import techniquesJ from '../../../data/techniques.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
+import { statOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
 export interface Sheet {
   name: string; portrait: string; origin: string; kit: string; traits: string[];
+  /** Relics carried (engine foundations 3: items added at run time with addItems('relic', …); data only). */
+  relics?: string[];
   /** The creation rules this sheet was locked in under (SHEET_REV; rules 1.11, item 931). A sheet without it was made
-   * before 1.11 and is read by the budgets of its day (a Core point could buy 2 Attribute points; Mind Without Fog
-   * gave 2 Core points), so characters made then stay legal. */
+   * before 1.11; it is read by today's budgets all the same (no older budget is tried: item 1504). */
   rulesRev?: number;
   /** An uploaded portrait's eye line for the spotlight cut-in's torn strip (y from the top, 0.05–0.70; decision 113).
    * Presentation only; the art library's portraits carry their own (art/catalog.json eye_line). */
@@ -82,6 +86,8 @@ export interface Character extends Sheet {
   classRev?: number;
   /** The focus rule's revision (item 630; migrateCharacterFocus). */
   focusRev?: number;
+  /** The MP rule's revision (rules 1.24; migrateCharacterMp). */
+  mpRev?: number;
   /** Item use counters that outlive a fight (per scene, session, rest, campaign), lazily stamped (effects/uses.ts). */
   uses?: Record<string, { s: string; n: number }>;
   // ---------- shared subsystems (rules 1.3; all optional, old saves load) ----------
@@ -124,11 +130,11 @@ export interface Companion { id: string; kind: 'drone' | 'beast' | 'twin' | stri
 export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string; option2?: string; tone?: string }
 export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
 export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string }
-/** Rarity (spec: Weapons v2, Rarity): accuracy, damage and durability bonuses; price multiplier. */
-export const RARITY: Record<Rarity, { acc: number; dmg: number; dur: number; price: number; marks: number }> = {
-  standard: { acc: 0, dmg: 1, dur: 1, price: 1, marks: 0 }, fine: { acc: 1, dmg: 1, dur: 1.25, price: 3, marks: 1 },
-  masterwork: { acc: 2, dmg: 1.1, dur: 1.5, price: 8, marks: 2 }, relic: { acc: 2, dmg: 1.1, dur: 1.5, price: 25, marks: 3 }, celestial: { acc: 2, dmg: 1.1, dur: 1.5, price: 50, marks: 4 },
-};
+/** Rarity (spec: Weapons v2, Rarity; data/rules.json `rarity` since rules 1.26): accuracy, damage and durability bonuses; price multiplier. */
+export const RARITY: Record<Rarity, { acc: number; dmg: number; dur: number; price: number; marks: number }> = Object.fromEntries((['standard', 'fine', 'masterwork', 'relic', 'celestial'] as Rarity[]).map((r) => {
+  const d: any = (RULES as any).rarity?.[r]; if (!d) throw new Error('data/rules.json rarity.' + r + ' is missing');
+  return [r, { acc: Number(d.acc), dmg: Number(d.dmg), dur: Number(d.dur), price: Number(d.price), marks: Number(d.marks) }];
+})) as any;
 export const maxDurOf = (weaponId: string, rarity: Rarity = 'standard') => Math.round(((WEAPON[weaponId] as any)?.durability || ITEM[weaponId] && (ITEM[weaponId] as any).durability || 0) * RARITY[rarity].dur);
 export const weaponDurOf = (c: Character) => c.weaponState?.dur ?? maxDurOf(c.weapon, c.weaponState?.rarity);
 /** Effects of everything worn and held in the off hand (slot armour, shields, lights). */
@@ -192,11 +198,12 @@ export const fmt = (m: number) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m)
  * names now: nobody spends Core points (`core` is 0 and kept so old callers read a number). */
 export const BUDGET = { skill: 10, attr: 10, core: 0, trade: 0, cap: 10, attrCap: (RULES.character.creation?.attributes as any)?.cap_at_creation ?? 7 };
 /** Mind Without Fog's extra points at creation: 2 Attribute points (rules 1.13; Leon, 10 Nov 2026: its price, no gear
- * bonuses, is steep now that weapons give so much. It was 1 Core point). */
+ * bonuses, is steep now that weapons give so much. It was 1 Core point. That price bites on nothing today: no item carries a
+ * bonus to Attributes or Skills, item 249). */
 export const FOG_CORE = 2;
 /** The creation rules' revision a new sheet is stamped with (rules 1.13). */
 export const SHEET_REV = 113;
-/** The budgets before rules 1.11, for sheets locked in then (no rulesRev): item 931. */
+/** The budgets before rules 1.11. Nothing reads this: sheetDerive tries today's budgets only (item 1504). */
 export const LEGACY_BUDGET = { trade: 2, fog: 2 };
 
 /** Port of the prototype's derive(): what a set of skill points and hand-placed stats spend. */
@@ -227,8 +234,7 @@ export function traitGainError(have: string[] | null | undefined, id: string): s
 
 /** A sheet is legal to lock in: every budget spent, tree caps hold, 0–2 traits, a name, an origin, a kit. */
 /** A sheet's creation spend by the rules it was made under. A sheet stamped with rules 1.11 (rulesRev) is read by
- * today's budgets only. One with no stamp was locked in before 1.11: if today's budgets don't fit it, the budgets of
- * its day are tried (the Core-for-Attribute trade at 2; Mind Without Fog's 2 Core points), so it stays legal (item 931). */
+ * today's budgets only, and so is one with no stamp (no older budget is tried: item 1504). */
 export function sheetDerive(s: Pick<Sheet, 'skills' | 'attrs' | 'cores' | 'traits' | 'rulesRev'>) {
   const fog = (s.traits || []).includes('mind_without_fog');
   return deriveCreation(s.skills, s.attrs, s.cores, fog ? FOG_CORE : 0);
@@ -354,6 +360,13 @@ export function pairingError(school: string, school2: string | undefined, mods: 
   if (!school2 || school2 === school || schoolSide(school, mods) === schoolSide(school2, mods)) return null;
   return 'The second school must work on the same side as the first (' + (SCHOOL[school]?.name || school) + ' works on ' + (schoolSide(school, mods) === 'ally' ? 'allies' : 'foes') + ', ' + (SCHOOL[school2]?.name || school2) + ' on ' + (schoolSide(school2, mods) === 'ally' ? 'allies' : 'foes') + ').';
 }
+/** Rules 1.19: may this character take a design's own school a second time? Shelved for everyone (soul_modules.json
+ * second_school.same_school.shelved); when an advanced class opens it, the class sets `soulKnown.sameSchool`. */
+export function sameSchoolError(c: Character): string | null {
+  const ss = (SOUL_RULES as any).second_school?.same_school;
+  if (!ss || ss.shelved) return 'The same school twice in one design is not open yet.';
+  return (c.soulKnown as any)?.sameSchool ? null : 'The same school twice in one design needs an advanced class.';
+}
 /** Every design rule of rules 1.5 (magic/design, Beloved Spells, the Twinbound twin): schools known, a second school at
  * Will Power 5 on the same side, modules known and within `slots`, one shape (Size needs one), a known tone (the first
  * is free at Lore Master 1 (rules 1.8): `learnTone` names it), options checked. Pure: returns the clean design or an error. */
@@ -364,7 +377,10 @@ export function checkOutburstDesign(c: Character, d: Partial<OutburstDesign> | n
   const mods = [...new Set(d.modules || [])];
   if (d.school2) {
     if ((c.skills.will_power || 0) < 5) return 'Two schools need Will Power 5.';
-    if (!SCHOOL[d.school2] || !k.schools.includes(d.school2) || d.school2 === d.school) return 'Pick a second school you know.';
+    // Rules 1.19: a design's own school a second time is carried by the engine and defined in the spec, but shelved (it
+    // comes back as an advanced-class feature): nobody can build one.
+    if (d.school2 === d.school) { const why = sameSchoolError(c); if (why) return why; }
+    if (!SCHOOL[d.school2] || !k.schools.includes(d.school2)) return 'Pick a second school you know.';
     const pe = pairingError(d.school, d.school2, mods); if (pe) return pe;
   }
   if (mods.some((x) => !MODULE[x] || !k.modules.includes(x))) return 'Use only modules you know.';
@@ -427,7 +443,7 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   const c: Character = {
     ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, perks: [],
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
-    injuries: [], pack: kit.pack.map((x) => ({ ...x })), offHand: kit.offHand ? { id: kit.offHand } : null, focusRev: FOCUS_REV,
+    injuries: [], pack: kit.pack.map((x) => ({ ...x })), offHand: kit.offHand ? { id: kit.offHand } : null, focusRev: FOCUS_REV, mpRev: 124,
   };
   // A trait that caps armour (Forlorn Hope: Class I at most) drops the kit's armour to the cap at lock-in (the kit's
   // heavier plate isn't carried; PROVISIONAL, spec 14).
@@ -569,7 +585,7 @@ export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP nex
 const P = (c: Character, id: string) => c.skills[id] || 0;
 const A = (c: Character, id: string) => c.attrs[id] || 1;
 /** A derived stat after items (plan 2.4): + the items' adds, × their multipliers (effects/hooks.ts statQuery). */
-const fx = (c: Character, stat: string, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass) return base; const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
+const fx = (c: Character, stat: StatId, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass) return base; const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
 export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dodge: 0 }, { value: 10, move: 0, dodge: 0 }, { value: 15, move: -0.5, dodge: 0 }, { value: 20, move: -0.5, dodge: -1 }, { value: 25, move: -1, dodge: 0 }];
 // Skeleton 2.0 (rules 1.13): defence numbers sit on the betas. HP a level reads Pain Threshold (it was Durability).
 export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'pain_threshold'));
@@ -581,14 +597,16 @@ export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5
 export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
 export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
   + (c.offHand && (ITEM[c.offHand.id] as any)?.category === 'shield' && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
-export const physicalMult = (c: Character) => fx(c, 'mult_physical', 1 + 0.1 * (A(c, 'strength') - 1) + 0.05 * P(c, 'raw_power'));
+// The derived multipliers below are the Stat term of the one formula (effects/output.ts; data/rules.json output.profiles
+// and output.pairs hold the slopes and what each reads): 1 + attr × (Attribute − 1) + skill × Skill.
+export const physicalMult = (c: Character) => fx(c, 'mult_physical', statOf('physical', c));
 /** Rules 1.12: a weapon's damage multiplier follows what it is aimed with: 1 + 0.1 × (each `scales_with` Attribute − 1)
  * + 0.05 × the skill it hits with (a Bare weapon: both Raw Power and Athletics; weapons.json `phys`). Perks and traits
  * that raise physical damage apply as before. A weapon with no `phys` block reads as Strength and Raw Power. */
 export function weaponMult(c: Character, weaponId: string | null | undefined): number {
   const ph: any = (WEAPON[weaponId || ''] as any)?.phys; if (!ph) return physicalMult(c);
   const skills: string[] = ph.also_scales?.length ? ph.also_scales : [ph.hits_with];
-  return fx(c, 'mult_physical', 1 + (ph.scales_with as string[]).reduce((t, a) => t + 0.1 * (A(c, a) - 1), 0) + skills.reduce((t, k) => t + 0.05 * P(c, k), 0));
+  return fx(c, 'mult_physical', statOf('weapon', c, { attrs: ph.scales_with as string[], skills }));
 }
 /** What that multiplier is made of, in words ("Agility and Dexterity"): the label on the damage line. */
 export function weaponMultLabel(weaponId: string | null | undefined): string {
@@ -596,15 +614,35 @@ export function weaponMultLabel(weaponId: string | null | undefined): string {
   const nm = (id: string) => (ATTRS.find((a) => a.id === id)?.name || SKILL[id]?.name || id);
   return [...(ph.scales_with as string[]), ...((ph.also_scales?.length ? ph.also_scales : [ph.hits_with]) as string[])].map(nm).join(', ').replace(/, ([^,]*)$/, ' and $1');
 }
-export const critMult = (c: Character) => fx(c, 'crit_damage', 2 + 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'dexterity')); // rules 1.12 (item 953): offence reads the alpha (it was Athletics)
-export const healingMult = (c: Character) => fx(c, 'mult_heal_given', 1 + 0.1 * (A(c, 'insight') - 1) + 0.1 * P(c, 'empathy')); // rules 1.13: healing given is Empathy's (it was Camaraderie's)
-export const maxMp = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue') - 1));
+/** Rules 1.15 (provisional, item 1022): a critical is ×1.5, and nothing takes it past ×2.0, everything together. */
+export const CRIT_BASE = 1.5, CRIT_MAX = 2.0, CRIT_PER_PERCEPTION = 0.03, CRIT_PER_DEXTERITY = 0.02;
+/** The Critical multiplier: 1.5 + 3% × (Perception − 1) + 2% × Dexterity, then perks, traits and gear, to 2.0 at most. */
+export const critMult = (c: Character) => Math.max(CRIT_BASE, Math.min(CRIT_MAX, Math.round(fx(c, 'crit_damage', CRIT_BASE + CRIT_PER_PERCEPTION * (A(c, 'perception') - 1) + CRIT_PER_DEXTERITY * P(c, 'dexterity')) * 1000) / 1000)); // rules 1.12 (item 953): offence reads the alpha (it was Athletics)
+export const healingMult = (c: Character) => fx(c, 'mult_heal_given', statOf('healing', c)); // rules 1.13: healing given is Empathy's (it was Camaraderie's)
+/** Rules 1.24 (items 1340, 1341; PROVISIONAL): Max MP is 100 + 75 × (Determination − 1) + 25 × (Insight − 1): the
+ * Outburst's own two attributes (Will Power's and Empathy's); 100 with neither raised, 1,000 with both at 10. Virtue
+ * gives none. It was 100 + 100 × (Virtue − 1) (`maxMpOld`, kept for the one-time move of a save). */
+export const MP_BASE = 100, MP_PER_DETERMINATION = 75, MP_PER_INSIGHT = 25;
+export const maxMp = (c: Character) => fx(c, 'mp_max', MP_BASE + MP_PER_DETERMINATION * (A(c, 'determination') - 1) + MP_PER_INSIGHT * (A(c, 'insight') - 1));
+export const maxMpOld = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue') - 1));
+/** The MP rule's revision (rules 1.24): a save from before it is moved once (migrateCharacterMp). */
+export const MP_REV = 124;
+/** Rules 1.24 (item 1348): Max MP left Virtue. An old save's Emanator keeps the same share of the new pool as it held
+ * of the old one (full stays full, half stays half), once (c.mpRev). Returns a note for a character who carries one. */
+export function migrateCharacterMp(c: Character): string[] {
+  if (c.mpRev === MP_REV) return [];
+  c.mpRev = MP_REV;
+  if (c.mp == null) return [];
+  const was = Math.max(1, maxMpOld(c)), now = maxMp(c); if (was === now) { c.mp = Math.max(0, Math.min(now, c.mp)); return []; }
+  c.mp = Math.max(0, Math.min(now, Math.round(Math.min(was, c.mp) * now / was)));
+  return carriesEmanator(c) ? [c.name + '\'s Emanator now holds up to ' + now + ' MP (it was ' + was + '): Max MP comes from Determination and Insight now, not Virtue (rules 1.24).'] : [];
+}
 // ---------- magic stats (spec: Derived stats, Magic; rules 1.2) ----------
-export const sigilMult = (c: Character) => 1 + 0.1 * (A(c, 'intelligence') - 1) + 0.1 * P(c, 'brain_power');
+export const sigilMult = (c: Character) => statOf('sigil', c); // 1 + 0.1 × (Intelligence − 1) + 0.1 × Brain Power
 /** The Soul multiplier (rules 1.5): 1 + 0.05 × (Determination − 1) + 0.1 × Will Power (2.45 maxed). PROVISIONAL. */
-export const soulMult = (c: Character) => 1 + 0.05 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
+export const soulMult = (c: Character) => statOf('soul', c);
 // Balance pass (item 587, provisional): the same slope as the Physical multiplier (was 0.2 and 0.1; max ×2.4, was ×3.8).
-export const elementalMult = (c: Character) => 1 + 0.1 * (A(c, 'expression') - 1) + 0.05 * P(c, 'visualization');
+export const elementalMult = (c: Character) => statOf('elemental', c); // 1 + 0.1 × (Expression − 1) + 0.05 × Visualization
 export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
 // rules 1.13: a Sigil's reach and its saving on cores are Brain Power's (they were Rumination's and Proficiency's)
@@ -617,8 +655,13 @@ export const wordsKnownCap = (c: Character) => 4 + P(c, 'brain_power') + ((c as 
 /** Begin's AP (rules 1.5): 2 for everyone (Swift: 1). Empathy no longer lowers it (it gives free Pumps instead). Kept
  * under its 1.2 name for the class moves priced "Soul cast AP". */
 export const soulCastAp = (c: Character) => { void c; return 2; };
-/** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3, 2 from Empathy 7. PROVISIONAL. */
-export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', P(c, 'empathy') >= 7 ? 2 : P(c, 'empathy') >= 3 ? 1 : 0)));
+/** Free Pumps per round (rules 1.5, Leon's caveat 1): 1 from Empathy 3 (rules 1.19: no second from Empathy 7; a held Outburst swells without Strain instead). PROVISIONAL. */
+/** Empathy's free Pump each round (rules 1.19: one from Empathy 3; Empathy 7 no longer gives a second: see swellFree).
+ * The table is soul_modules.json cycle.free_pumps; whatever items add, a character takes one free Pump a turn at most
+ * (magic.ts FREE_PER_TURN). */
+export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', ((SOUL_RULES as any).cycle?.free_pumps as { empathy: number; pumps: number }[] || [{ empathy: 3, pumps: 1 }]).reduce((n, r) => (P(c, 'empathy') >= r.empathy ? Math.max(n, r.pumps) : n), 0))));
+/** Rules 1.19: from Empathy 7 a held Outburst swells without Strain. */
+export const swellFree = (c: Character) => P(c, 'empathy') >= ((SOUL_RULES as any).cycle?.swell_no_strain?.empathy ?? 99);
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
 export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
@@ -689,7 +732,7 @@ export function soulPickError(c: Character, id: string, via: string): string | n
 /** Save bonuses and debuff strength (spec: Conditions and saves). */
 /** The skill behind each save (rules 1.13): the betas. Body Guts, Brain Rumination (it was Charisma), Heart Composure. */
 export const SAVE_SKILL_OF: Record<'body' | 'brain' | 'heart', string> = { body: 'guts', brain: 'rumination', heart: 'composure' };
-export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = SAVE_SKILL_OF[fam]; return fx(c, 'save_' + fam, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
+export const saveBonus = (c: Character, fam: 'body' | 'brain' | 'heart') => { const sk = SAVE_SKILL_OF[fam]; return fx(c, `save_${fam}`, mod(P(c, sk)) + skillRollMod({ c }, sk, { roll: 'save', family: fam }).add); };
 /** Debuff strength (rules 1.13, Skeleton 2.0): how hard a condition is to save against is the modifier of the skill
  * that delivered it (`via`), floor 0. Always points − 1: a gamma that sets a TN never counts its full points. */
 export const strengthOf = (c: Character, via: string) => Math.max(0, mod(P(c, via)));
@@ -731,11 +774,11 @@ export const checkMod = (c: Character, skill: string) => checkModOf(skill, P(c, 
 /** Passive Vigilance from a unit's points (traps, hidden piles, hazards, Sigil traps): 10 + the check modifier, the same
  * rule as a voice hook's passive (rules 1.13, ruling 5). The opposed roll to spot the Hidden in a fight is not this. */
 export const passiveVigilance = (points: number) => 10 + checkModOf('vigilant', points || 0);
-export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, 'passive:' + skill, 10 + checkMod(c, skill) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
+export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, `passive:${skill}`, 10 + checkMod(c, skill) + skillRollMod({ c }, skill, { roll: 'passive', ...ctx }).add, ctx);
 // ---------- derived stats the damage chain and the shared subsystems read (spec: Derived stats; rules 1.3) ----------
 /** Percentage reductions are capped at 60% (spec: Derived stats). Each returns the fraction NOT taken off (0..0.6). */
 const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
-/** Critical damage taken: −10% × (Perception − 1) − 5% × Durability. */
+/** Critical damage taken: −10% × (Perception − 1) − 5% × Acuity (the skill with the id 'analysis'). */
 export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'analysis'))); // rules 1.13: Acuity's (the skill with the id 'analysis'); it was Durability's
 /** Elemental damage taken: −10% × Pain Threshold. Below 0 it is damage taken extra (Paper, Oil in My Mind: +10% at
  * Pain Threshold 0), so only the 60% cap applies, not the floor. */
@@ -751,11 +794,16 @@ export const counterBonus = (c: Character) => Math.max(0, fx(c, 'counter', mod(P
 /** Throwing range: 6 + 0.5 × Dexterity tiles (the Derived stats formula; spec item 17). */
 export const throwRange = (c: Character) => Math.floor(fx(c, 'throw_range', 6 + 0.5 * P(c, 'dexterity')));
 /** Ambush multiplier: 1.5 + 0.05 × Ingenuity. */
-export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1.5 + 0.05 * P(c, 'ingenuity'));
+export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1.5 + ((SKILL.ingenuity as any).per_point?.ambush_per_point ?? 0.05) * P(c, 'ingenuity')); // the card's number (skills.json Ingenuity per_point)
 /** Blessing power: 1 + 0.1 × Faith. */
-export const blessingPower = (c: Character) => fx(c, 'blessing_power', 1 + 0.1 * P(c, 'faith'));
-/** Prayer cooldown in turns: 4 − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1 (rounded up). */
-export const prayerCooldown = (c: Character) => Math.max(1, Math.ceil(4 - 0.5 * (A(c, 'virtue') - 1) - 0.5 * P(c, 'faith')));
+export const blessingPower = (c: Character) => fx(c, 'blessing_power', statOf('blessing', c));
+/** The Hymn cooldown's numbers (rules 1.22; patrons.json prayer.hymn.cooldown_rule; PROVISIONAL). */
+const HCR: any = (patronsJ as any).prayer?.hymn?.cooldown_rule || {};
+export const HYMN_COOLDOWN = { base: HCR.base ?? 9, perFaith: HCR.per_faith ?? 0.75, perVirtue: HCR.per_virtue ?? 0.25, floor: HCR.floor ?? 3, minWait: HCR.min_wait ?? 2, vowCut: HCR.vow_cut ?? 1 };
+/** The Hymn cooldown in rounds (rules 1.22): 9 − 0.75 × Faith − 0.25 × Virtue, rounded up, never under 3. Faith counts
+ * three times what Virtue does. The floor of 3 is where a character without items stops; a vow fulfilled (or True
+ * Believer) takes 1 round off a wait, never under 2 rounds (faith.ts hymnWait). */
+export const prayerCooldown = (c: Character) => Math.max(HYMN_COOLDOWN.floor, Math.ceil(HYMN_COOLDOWN.base - HYMN_COOLDOWN.perFaith * P(c, 'faith') - HYMN_COOLDOWN.perVirtue * A(c, 'virtue') - 1e-9));
 /** Detection range 2 + Vigilant; Stealth 0.5 × Ingenuity (subtracted from enemies' Detection range against you). */
 export const detectionRange = (c: Character) => 2 + P(c, 'vigilant');
 export const stealthOf = (c: Character) => Math.floor(0.5 * P(c, 'ingenuity'));
@@ -809,7 +857,6 @@ const CAP_BY_LEVEL: [number, number][] = Object.entries(((RULES.character.creati
 export const attrCapAt = (level: number): number => CAP_BY_LEVEL.reduce((cap, [l, v]) => (level >= l ? v : cap), CAP_BY_LEVEL[0][1]);
 /** The level at which an attribute may first reach this value. */
 export const attrCapLevel = (value: number): number => (CAP_BY_LEVEL.find(([, v]) => v >= value) || CAP_BY_LEVEL[CAP_BY_LEVEL.length - 1])[0];
-/** After creation the caps work normally: a skill can't pass its Attribute, an Attribute can't pass its Core. */
 /** A Legendary Deed (rules 1.13, item 1006): each one lets one Attribute point stand 1 above the level's ceiling (never above
  * 10). Room left = deeds held minus the points standing above the ceiling now (a ceiling that rises frees the room again). */
 export function legendRoom(c: Character): number {
@@ -889,17 +936,19 @@ export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', orig
  * id the data no longer has is taken off the sheet, so no screen meets an item it can't look up. */
 export function migrateCharacterItems(c: Character): string[] {
   const notes: string[] = [];
-  if ((c.perks || []).some((x) => !PERK[x.id])) {
+  // a perk or trait added at run time (effects/hooks.ts addItems: a mode's own items) is as known as the data's
+  const known = (id: string) => !!PERK[id] || !!rawItem('perk:' + id), knownTrait = (t: string) => TRAITS.some((d) => d.id === t) || !!rawItem('trait:' + t);
+  if ((c.perks || []).some((x) => !known(x.id))) {
     const out: Character['perks'] = [];
     for (const x of c.perks) {
-      const to = PERK[x.id] ? x.id : PERK_RENAMED[x.id];
-      if (!to || !PERK[to]) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
-      if (to !== x.id) notes.push(c.name + ': ' + PERK[to].name + ' replaces an older perk.');
+      const to = known(x.id) ? x.id : PERK_RENAMED[x.id];
+      if (!to || !known(to)) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
+      if (to !== x.id) notes.push(c.name + ': ' + (PERK[to] || rawItem('perk:' + to)).name + ' replaces an older perk.');
       if (!out.some((y) => y.id === to)) out.push({ ...x, id: to });
     }
     c.perks = out;
   }
-  if ((c.traits || []).some((t) => !TRAITS.some((d) => d.id === t))) c.traits = c.traits.filter((t) => TRAITS.some((d) => d.id === t));
+  if ((c.traits || []).some((t) => !knownTrait(t))) c.traits = c.traits.filter(knownTrait);
   return notes;
 }
 export function migrateCharacterFocus(c: Character): string[] {

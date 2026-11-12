@@ -62,7 +62,7 @@ describe('E1a shot: tech and vi', () => {
   it('a Burst\'s rolls carry the technique and their place; a plain Shot is tech shot, vi 0', () => {
     const f = gunner('hellraiser_service_rifle', ['burst', 'shot']); tough(f, f.foe); rig({ hit: false, die: 5 });
     f.tech('burst', { targetId: f.foe.id });
-    expect(evs('shot', f.pc.id).map((e) => [e.tech, e.vi])).toEqual([['burst', 0], ['burst', 1], ['burst', 2]]);
+    expect(evs('shot', f.pc.id).map((e) => [e.tech, e.vi])).toEqual([['burst', 0], ['burst', 1]]); // rules 1.18: a Burst is two rolls
     mark(); f.tech('shot', { targetId: f.foe.id });
     expect(evs('shot', f.pc.id).map((e) => [e.tech, e.vi])).toEqual([['shot', 0]]);
   });
@@ -106,9 +106,9 @@ describe('E4 volley: dump, rake, suppress', () => {
     const f = gunner('service_pistol', ['mag_dump'], [{ at: 'G5', tier: 'elite' }]); tough(f, f.foe); rig({ hit: false, die: 5 });
     const ammo0 = f.pc.ammo; expect(f.tech('mag_dump', { targetId: f.foe.id })).toBeNull();
     const v = evs('volley', f.pc.id); expect(v.length).toBe(1);
-    expect(v[0]).toMatchObject({ mode: 'dump', shots: ammo0, rolls: 4, target: f.foe.id, tech: 'mag_dump', weapon: 'service_pistol' });
-    const shots = evs('shot', f.pc.id); expect(shots.length).toBe(4);
-    expect(shots.every((e) => e.chain && e.tech === 'mag_dump')).toBe(true); expect(shots.map((e) => e.vi)).toEqual([0, 1, 2, 3]);
+    expect(v[0]).toMatchObject({ mode: 'dump', shots: ammo0, rolls: 3, target: f.foe.id, tech: 'mag_dump', weapon: 'service_pistol' });
+    const shots = evs('shot', f.pc.id); expect(shots.length).toBe(3); // rules 1.18: three rolls at most
+    expect(shots.every((e) => e.chain && e.tech === 'mag_dump')).toBe(true); expect(shots.map((e) => e.vi)).toEqual([0, 1, 2]);
     expect(EV.indexOf(v[0])).toBeLessThan(EV.indexOf(shots[0]));
     expect(VOLLEYS.every((x) => x === null)).toBe(true);
   });

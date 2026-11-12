@@ -23,51 +23,43 @@
       "id": "lifted_town",
       "name": "The lifted town",
       "summary": "A Crawler town inside walls where the curse is lifted; the Hellraisers outside.",
-      "w": 16,
-      "h": 11,
-      "solid": [
-        "A1–P1"
+      "w": 26,
+      "h": 26,
+      "layout": [
+        "##########################",
+        "........w.................",
+        "........w....###..........",
+        "........w....###...c......",
+        "........w.................",
+        "..........................",
+        "..........................",
+        "........w.........##......",
+        "....c...w..c......##......",
+        "........w.................",
+        "..EE....w...##............",
+        "..EE....w...##..SS........",
+        "..EE....G...##..SS....c...",
+        "..EE....G...##..SS........",
+        "..EE....w...##..SS........",
+        "..EE....w...##............",
+        "........w.................",
+        "....c...w..c......##......",
+        "........w.........##......",
+        "..........................",
+        "..........................",
+        "........w.................",
+        "........w....###...c......",
+        "........w....###..........",
+        "........w.................",
+        "........w................."
       ],
-      "start": [
-        "H8",
-        "G8",
-        "I8",
-        "H9",
-        "G9",
-        "I9"
-      ],
-      "enemyStart": [
-        "A5",
-        "A6",
-        "A7",
-        "B5",
-        "B6",
-        "B7"
-      ],
-      "notes": [
-        {
-          "at": "A2–C11",
-          "text": "Outside the west wall: the road the Hellraisers will come down."
-        },
-        {
-          "at": "D2–D11",
-          "text": "The town wall."
-        }
-      ],
-      "objects": [
-        {
+      "legend": {
+        "w": {
           "kind": "low_wall",
-          "at": "D3",
           "name": "Town wall"
         },
-        {
-          "kind": "low_wall",
-          "at": "D4",
-          "name": "Town wall"
-        },
-        {
+        "G": {
           "kind": "barricade",
-          "at": "D6",
           "name": "The town gate",
           "text": "Oak and scrap. The townsfolk built it themselves.",
           "approaches": [
@@ -83,19 +75,41 @@
             }
           ]
         },
+        "c": {
+          "kind": "crate",
+          "name": "Market stalls"
+        }
+      },
+      "notes": [
         {
-          "kind": "low_wall",
-          "at": "D8",
-          "name": "Town wall"
+          "at": "A2–H26",
+          "text": "Outside the west wall: the road the Hellraisers will come down."
         },
         {
-          "kind": "low_wall",
-          "at": "D9",
-          "name": "Town wall"
+          "at": "I2–I26",
+          "text": "The town wall: chest high, with the gate in the middle and a breach to the north and to the south."
         },
+        {
+          "at": "M11–N16",
+          "text": "The meeting hall: nobody walks or sees through it."
+        },
+        {
+          "at": "N3–P4, N23–P24, S8–T9, S18–T19",
+          "text": "Houses: solid."
+        },
+        {
+          "at": "A1–Z1",
+          "text": "The cliff the town is built against."
+        },
+        {
+          "at": "Q12–R15",
+          "text": "The town square."
+        }
+      ],
+      "objects": [
         {
           "kind": "poi",
-          "at": "K5",
+          "at": "U13",
           "name": "The baker's",
           "text": "A baker with too many hands to be anything but kind. Everyone here loves him.",
           "approaches": [

@@ -1,0 +1,121 @@
+{
+  "$schema_version": "1.0",
+  "kind": "maps",
+  "source": "PHC Core Rules v1.0, rules revision 1.16: Maps (Leon, 11 Nov 2026: a fight map is at most 26 x 26; sides deploy 10 to 14 tiles apart). Spec: Maps; section 14 items 1039-1047.",
+  "adjudication": "engine",
+  "limits": {
+    "max": 26,
+    "min": 8,
+    "full_size": 26,
+    "deploy_min": 10,
+    "deploy_max": 14,
+    "min_provisional": true,
+    "text": "A map is at most 26 tiles wide and 26 tall (columns A to Z, rows 1 to 26) and at least 8 by 8. Open ground and the Proving Ground are the full 26 by 26. Where a map does not say where the enemy starts, the two sides start on opposite sides with 10 to 14 tiles between the nearest of each."
+  },
+  "legend": {
+    ".": "open ground",
+    "#": "solid: nothing walks or sees through it",
+    "~": "difficult ground",
+    "S": "a squad start tile",
+    "E": "an enemy start tile",
+    "c": {
+      "kind": "crate"
+    },
+    "w": {
+      "kind": "low_wall"
+    },
+    "P": {
+      "kind": "pillar"
+    },
+    "B": {
+      "kind": "barricade"
+    },
+    "o": {
+      "kind": "barrel"
+    },
+    "r": {
+      "kind": "rubble"
+    },
+    "D": {
+      "kind": "door"
+    },
+    "L": {
+      "kind": "lamp"
+    }
+  },
+  "layouts": {
+    "open_ground": {
+      "name": "Open ground",
+      "w": 26,
+      "h": 26,
+      "rows": [
+        "..........................",
+        "...~~................~~...",
+        "...~~....c......c....~~...",
+        "............PP............",
+        "..........................",
+        ".......w...c..c...w.......",
+        ".......w...c..c...w.......",
+        "..........................",
+        "....c................c....",
+        ".........w..##..w.........",
+        ".....SS..w..##..w..EE.....",
+        ".....SS.....PP.....EE.....",
+        ".....SS.w...##...w.EE.....",
+        ".....SS.w...##...w.EE.....",
+        ".....SS.....PP.....EE.....",
+        ".....SS..w..##..w..EE.....",
+        ".........w..##..w.........",
+        "....c................c....",
+        "...........~~~~...........",
+        ".......P..c~~~~c..P.......",
+        ".......P..c....c..P.......",
+        "..........................",
+        "..##.....c......c.....##..",
+        "..##..................##..",
+        "..........................",
+        ".........................."
+      ],
+      "legend": {
+        "c": {
+          "kind": "crate",
+          "name": "Debris"
+        },
+        "w": {
+          "kind": "crate",
+          "name": "Broken wall"
+        },
+        "P": {
+          "kind": "pillar",
+          "name": "Thick pillar"
+        }
+      },
+      "notes": [
+        {
+          "at": "A1–Z26",
+          "text": "Open ground. Whatever the Narrator says this place is."
+        },
+        {
+          "at": "M10–N17",
+          "text": "A broken mass in the middle: nobody walks or sees through it. The two thick pillars in it can be shot down."
+        },
+        {
+          "at": "A1–Z9",
+          "text": "The north lane: open, with broken walls and debris to move between."
+        },
+        {
+          "at": "A18–Z26",
+          "text": "The south lane: pillars and debris, and rough ground in the middle of it."
+        },
+        {
+          "at": "L19–O20, D2–E3, V2–W3",
+          "text": "Rough ground: slow going."
+        },
+        {
+          "at": "C23–D24, W23–X24",
+          "text": "A rock outcrop: solid."
+        }
+      ]
+    }
+  }
+}

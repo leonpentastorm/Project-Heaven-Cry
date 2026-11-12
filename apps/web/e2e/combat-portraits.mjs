@@ -10,14 +10,14 @@
 //     shown whole; a crit by a companion drone cuts in with the drone's own face.
 // Screens in e2e/shots/combat-polish/ (DSF=2 for sharper copies).
 import { mkdirSync } from 'fs';
-import { chromium, player, click, BASE, OUT } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, pause } from './lib.mjs';
 const DIR = OUT + 'combat-polish/'; mkdirSync(DIR, { recursive: true });
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const snap = (n, clip) => p.screenshot({ path: DIR + n + (Number(process.env.DSF) > 1 ? '@2x' : '') + '.png', ...(clip ? { clip } : {}) });
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
-const settle = async () => { await p.waitForFunction(() => (window.__phcHold?.() || 0) <= performance.now() + 5 && !window.__phcCutin?.showing, null, { timeout: 15000 }).catch(() => {}); await p.waitForTimeout(150); };
+const settle = async () => { await p.waitForFunction(() => (window.__phcHold?.() || 0) <= performance.now() + 5 && !window.__phcCutin?.showing, null, { timeout: 20000 }).catch(() => {}); await pause(p, 150); };
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 function next(r) { let t = (r.state = (r.state + 0x6d2b79f5) | 0); t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
 const nat20 = (skip = 0) => { for (let s = 1; s < 1e7; s++) { const r = { state: s }; if (1 + Math.floor(next(r) * 20) === 20 && skip-- <= 0) return s; } return 1; };
@@ -26,20 +26,20 @@ await p.setViewportSize({ width: 1440, height: 900 });
 await p.goto(BASE);
 await click(p, 'PROVING GROUND');
 const nm = p.getByPlaceholder('Leon');
-await Promise.race([nm.waitFor({ timeout: 8000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 8000 }).catch(() => {})]);
+await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 20000 }).catch(() => {})]);
 if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
-await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 15000 });
+await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
 const meChar = await p.evaluate(() => { const g = window.__phc.getState().game, me = window.__phc.getState().me.id; return Object.values(g.characters).find((c) => c.owner === me).id; });
 await act({ type: 'sandbox/give', charId: meChar, item: 'hellraiser_service_rifle', equip: true });
 // A combat drone companion with its own face, and a beast with none (rules 1.3: they fight beside their owner).
 await p.evaluate((id) => { const c = window.__phc.getState().game.characters[id]; c.companions = [{ id: 'd1', kind: 'drone', name: 'Combat drone', img: 'char-m813-scavenger-drone' }, { id: 'b1', kind: 'beast', name: 'Grey hound' }]; }, meChar);
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/fight' });
-await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 15000 });
-await p.waitForTimeout(2400);
-for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 880); await p.waitForTimeout(380); }
+await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
+await pause(p, 2400);
+for (let i = 0; i < 3 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.mouse.click(1430, 880); await pause(p, 380); }
 await settle();
 const cur = () => p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb && cb.units.find((x) => x.id === cb.order[cb.turn]); });
-async function turnOf(test) { for (let i = 0; i < 40; i++) { await settle(); const u = await cur(); if (u && test(u)) return u; if (u) await act({ type: 'combat/end-turn', unitId: u.id }); await p.waitForTimeout(250); } return null; }
+async function turnOf(test) { for (let i = 0; i < 40; i++) { await settle(); const u = await cur(); if (u && test(u)) return u; if (u) await act({ type: 'combat/end-turn', unitId: u.id }); await pause(p, 250); } return null; }
 const recruitTurn = () => turnOf((u) => u.charId === meChar);
 const comps = await p.evaluate(() => window.__phc.getState().game.combat.units.filter((u) => u.companion).map((u) => ({ id: u.id, name: u.name, img: u.img || '' })));
 ok('the companions joined the fight: ' + comps.map((c) => c.name + (c.img ? ' (' + c.img + ')' : '')).join(', '), comps.length === 2 && comps.some((c) => c.img === 'char-m813-scavenger-drone'));
@@ -81,7 +81,7 @@ for (const s of spawned) {
   // Click its token on the grid (by its tile's aria-label, which names the unit).
   const tile = p.locator('button.phc-tok[aria-label*="· ' + u.name.replace(/"/g, '') + ' ("]').first();
   if (!(await tile.count())) { ok(u.name + ': its token is on the grid', false); continue; }
-  await tile.click(); await p.waitForTimeout(180);
+  await tile.click(); await pause(p, 180);
   const card = p.locator('[aria-label="Target"]').first();
   const info = await card.evaluate(async (el) => {
     const img = el.querySelector('img[data-target-face="img"]'), badge = el.querySelector('[data-target-face="badge"]');
@@ -119,23 +119,23 @@ await snap('target-card-panel');
   ok('no backpack button by the ACTION POINTS bar', (await p.locator('.phc-cb-aplabel button').count()) === 0);
   const card = p.locator('.phc-me-full').first(); const box = await card.boundingBox();
   if (box) await snap('backpack-button', { x: box.x - 8, y: box.y - 8, width: box.width + 16, height: Math.min(box.height, 120) + 16 });
-  await p.locator('[data-backpack]:visible').first().click(); await p.waitForTimeout(300);
+  await p.locator('[data-backpack]:visible').first().click(); await pause(p, 300);
   ok('it opens the backpack and shows pressed', (await p.locator('[data-bp-panel]').count()) === 1 && (await p.locator('[data-backpack]:visible').first().getAttribute('aria-pressed')) === 'true');
   await snap('backpack-open');
-  await p.keyboard.press('b'); await p.waitForTimeout(250);
+  await p.keyboard.press('b'); await pause(p, 250);
   ok('key B closes it', (await p.locator('[data-bp-panel]').count()) === 0);
   // A short window: the card folds into the one-line bar, which carries the same button.
-  await p.setViewportSize({ width: 1440, height: 780 }); await p.waitForTimeout(400);
+  await p.setViewportSize({ width: 1440, height: 780 }); await pause(p, 400);
   const mini = await p.locator('[data-backpack]:visible').evaluateAll((els) => els.map((b) => b.getAttribute('data-backpack')));
   ok('a short window: the Backpack button rides in the one-line bar (' + mini.join(', ') + ')', mini.length === 1 && mini[0] === 'mini');
   const bar = await p.locator('.phc-cb-bar').first().boundingBox(); if (bar) await snap('backpack-button-short', { x: bar.x - 8, y: bar.y - 6, width: bar.width + 16, height: bar.height + 12 });
   // (review: the name and the AP were cut to 'Rec…' and 'A…' while 80 px stood empty; the bar now grows into it)
   for (const [w, h] of [[1440, 780], [1366, 768], [1280, 720]]) {
-    await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(350);
+    await p.setViewportSize({ width: w, height: h }); await pause(p, 350);
     const cut = await p.evaluate(() => [...document.querySelectorAll('.phc-me-mini > span')].filter((s) => /\S/.test(s.textContent || '') && s.scrollWidth > s.clientWidth + 1).map((s) => (s.textContent || '').trim()));
     ok(w + '×' + h + ': the one-line bar shows your name and AP whole (cut: ' + JSON.stringify(cut) + ')', cut.length === 0);
   }
-  await p.setViewportSize({ width: 1440, height: 900 }); await p.waitForTimeout(400);
+  await p.setViewportSize({ width: 1440, height: 900 }); await pause(p, 400);
 }
 
 // ---------- 3. the cut-in shows the one who acted ----------
@@ -154,9 +154,9 @@ async function critBy(test, target) {
     const err = await act({ type: 'combat/attack', unitId: u.id, targetId: tid, mode: 'shot' });
     if (err) { console.log('note ' + u.name + ': ' + err); await act({ type: 'combat/end-turn', unitId: u.id }); continue; }
     const strip = p.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-face]').first();
-    if (!(await strip.waitFor({ timeout: 2500 }).then(() => true, () => false))) continue;
-    await p.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-words]').first().waitFor({ timeout: 3000 }).catch(() => {});
-    await p.waitForTimeout(450);
+    if (!(await strip.waitFor({ timeout: 30000 }).then(() => true, () => false))) continue;
+    await p.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-words]').first().waitFor({ timeout: 20000 }).catch(() => {});
+    await pause(p, 450);
     const face = await strip.evaluate((el) => ({ kind: el.getAttribute('data-phc-spotlight-face'), href: el.getAttribute('href') || el.textContent }));
     const words = ((await p.locator('[data-phc-spotlight="crit"] [data-phc-spotlight-words]').first().textContent()) || '').replace(/\s+/g, ' ').trim();
     return { u, face, words };
@@ -168,7 +168,7 @@ const rc = await critBy((u) => u.charId === meChar);
 if (rc) await snap('cutin-crit-recruit');
 ok('a crit by the recruit cuts in with the recruit\'s own picture, whole: ' + (rc && rc.face.kind + ' ' + rc.face.href) + ' (HUD ' + hudSrc + ')', !!rc && rc.face.kind === 'whole' && rc.face.href === hudSrc);
 ok('and its words name the recruit: "' + (rc && rc.words) + '"', !!rc && /Recruit/.test(rc.words) && !/char-arch/.test(rc.face.href));
-await settle(); await p.waitForTimeout(600);
+await settle(); await pause(p, 600);
 const dc = await critBy((u) => u.companion === 'drone');
 if (dc) await snap('cutin-crit-drone');
 ok('a crit by the companion drone cuts in with the drone\'s own face: ' + (dc && dc.face.kind + ' ' + dc.face.href) + ' · "' + (dc && dc.words) + '"', !!dc && /char-m813-scavenger-drone/.test(dc.face.href) && /Combat drone/.test(dc.words) && !/Combat drone:/.test(dc.words));

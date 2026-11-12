@@ -4,6 +4,7 @@
 // are exact pack items (a magazine keeps its rounds and type, a weapon its rarity, wear and mods). Piles live with the
 // map (story objects, zone stashes, a fight's objects), so they survive fights, travel and saves. Pure functions: the
 // callers pass the live object list and the character's pack; nothing here rolls dice.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
 import { WEAPON, ITEM, CALIBRE_NAME } from './data';
 import { type PackItem, type Character, magsOf, roundsOf, plotItem, maxDurOf } from './character';

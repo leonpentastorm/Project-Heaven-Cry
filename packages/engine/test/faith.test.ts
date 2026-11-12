@@ -2,13 +2,16 @@
 // and knowledge pieces, conversion (Open and Jealous), apostasy, Witnessed, tags, vows, interventions, rites, voice lines,
 // story prayers, old saves and the Proving Ground's faith tool. Every rule goes through apply() (the reducer), the same
 // path a player's click takes; interventions on an enemy's blow call the damage chokepoint with the game bound.
+import { condTurnEnd } from '../src/magic';
 import { describe, expect, it } from 'vitest';
 import {
   apply, previewPrayer, faithView, beliefOf, patronLine, diceHymns, FAITH_PATRONS, FAITH_PATRON, WHISPERS, VOWS, GATE,
   ATHEIST_TN, OVERREACH, FAITH_FX, tithable, d20, applyDamage, resolveAttack, previewAttack, condOn, sessionN, newGame,
   type Combat, type GameState, type Unit, type Character, type Action,
 } from '../src';
+import { mendFactor } from '../src/effects/mending'; // rules 1.20: prayer heals and shields grow with level
 import { fightWith, storyWith, withGame, sheetOf } from './helpers/perkfight';
+import { clearPrayerLimits, blessingPower } from '../src';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
@@ -94,14 +97,14 @@ describe('prayer in a fight (faith/pray through combat/pray)', () => {
   it('a Whisper by standing: 1 AP, the mana meter −5, once a turn', () => {
     const h = holy({ patron: 'mother_ember' }); h.ally.hp = 50; const mana = h.cb.mana!, ap = h.me.ap;
     h.pray('whisper', 'health', { targetId: h.ally.id });
-    expect(h.ally.hp).toBe(50 + Math.round(15 * h.me.blessPower!)); expect(h.me.ap).toBe(ap - 1); expect(h.cb.mana).toBe(Math.max(0, mana - 5));
+    expect(h.ally.hp).toBe(50 + Math.round(5 * h.me.blessPower! * mendFactor(h.me.level))); expect(h.me.ap).toBe(ap - 1); expect(h.cb.mana).toBe(Math.max(0, mana - 5));
     expect(fx(h.cb, FAITH_FX.prayer).length).toBe(1);
     expect(() => h.pray('whisper', 'luck')).toThrow(/One Whisper a turn/);
   });
   it('a Hymn by standing lands; Witnessed at Faith 5; the patron speaks; then the cooldown', () => {
     const h = holy({ devotion: 3, faith: 5 });
     h.pray('hymn', 'saints_shield', { targetId: h.ally.id });
-    expect(h.ally.shield).toBe(Math.floor(40 * h.me.blessPower!)); expect(h.me.ap).toBe(3);
+    expect(h.ally.shield).toBe(Math.floor(16 * h.me.blessPower! * mendFactor(h.me.level))); expect(h.me.ap).toBe(3); // 16: rules 1.22 (12 in rules 1.20); the shield sink floors
     expect(condOn(h.me, 'witnessed')).toBe(true); expect(fx(h.cb, FAITH_FX.witnessed).length).toBe(1);
     expect(fx(h.cb, FAITH_FX.patron_line).some((e) => e.event === 'answered')).toBe(true);
     expect(() => h.pray('hymn', 'saints_shield', { targetId: h.ally.id })).toThrow(/wait/);
@@ -151,13 +154,13 @@ describe('prayer in a fight (faith/pray through combat/pray)', () => {
 });
 
 // ---------------------------------------------------------------------------------------------------------------------
-describe('the six Whispers', () => {
+describe('the Whispers (six, and Rebuke since rules 1.21)', () => {
   it('Luck: +2 on the next attack roll, then gone', () => {
     const h = holy(); h.pray('whisper', 'luck', { targetId: h.me.id });
     const pv = h.bound(() => previewAttack(h.cb, h.me, h.foe, 'shot')); expect((pv.terms || []).some((t: any) => /Luck/.test(t.label))).toBe(true);
     h.act({ type: 'combat/attack', unitId: h.me.id, targetId: h.foe.id, mode: 'shot' }); expect(h.me.faith?.luck).toBeUndefined();
   });
-  it('Protection: a 15 × power shield', () => { const h = holy(); h.pray('whisper', 'protection', { targetId: h.ally.id }); expect(h.ally.shield).toBe(Math.floor(15 * h.me.blessPower!)); });
+  it('Protection: a 6 × power shield (rules 1.20)', () => { const h = holy(); h.pray('whisper', 'protection', { targetId: h.ally.id }); expect(h.ally.shield).toBe(Math.floor(6 * h.me.blessPower! * mendFactor(h.me.level))); });
   it('Courage: ends Fear and Shaken', () => { const h = holy(); h.ally.conds = { shaken: 2, fear: 2 } as any; h.pray('whisper', 'courage', { targetId: h.ally.id }); expect(condOn(h.ally, 'shaken') || condOn(h.ally, 'fear')).toBe(false); });
   it('Guidance: reveals Hidden enemies within 6 and gives +2 on the next spotting roll', () => {
     const h = holy(); h.foe.hidden = true; h.pray('whisper', 'guidance'); expect(h.foe.hidden).toBe(false); expect(h.me.faith?.guidance).toBe(true);
@@ -165,7 +168,7 @@ describe('the six Whispers', () => {
   it('Safe Passage: the next move this turn draws no opportunity attacks', () => {
     const h = holy(); h.pray('whisper', 'safe_passage'); expect(h.me.faith?.safePassage).toBe(h.cb.round + ':' + h.cb.turn);
   });
-  it('every Whisper is in the data with a target', () => { expect(WHISPERS.map((w) => w.id).sort()).toEqual(['courage', 'guidance', 'health', 'luck', 'protection', 'safe_passage']); });
+  it('every Whisper is in the data with a target', () => { expect(WHISPERS.map((w) => w.id).sort()).toEqual(['courage', 'guidance', 'health', 'luck', 'protection', 'rebuke', 'safe_passage']); });
 });
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -174,8 +177,8 @@ type Case = { id: string; kind?: 'hymn' | 'miracle'; setup?: (h: H) => void; arg
 const ALLY = (h: H) => ({ targetId: h.ally.id }), FOE = (h: H) => ({ targetId: h.foe.id });
 const CASES: Record<string, Case[]> = {
   nerukhan: [
-    { id: 'saints_shield', args: ALLY, check: (h) => expect(h.ally.shield).toBe(Math.floor(40 * h.me.blessPower!)) },
-    { id: 'judgement', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: FOE, check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(logHas(h.cb, /×2: it harmed the helpless/)).toBe(true); } },
+    { id: 'saints_shield', args: ALLY, check: (h) => expect(h.ally.shield).toBe(Math.floor(16 * h.me.blessPower! * mendFactor(h.me.level))) }, // rules 1.22; the shield sink floors
+    { id: 'judgement', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: FOE, check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(logHas(h.cb, /×1\.3: it harmed the helpless/)).toBe(true); } }, // rules 1.21, item 1263: 30% more (it was double)
     { id: 'absolution', setup: (h) => { h.ally.hp = 40; h.ally.conds = { shaken: 2 } as any; }, args: ALLY, check: (h) => { expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.hp).toBeGreaterThan(40); } },
     { id: 'saints_verdict', kind: 'miracle', setup: (h) => { h.foe.faith = { harmedHelpless: true }; }, args: () => ({}), check: (h, b) => { expect(h.foe.hp).toBeLessThan(b.foeHp); expect(h.foe2.hp).toBeLessThan(b.foe2Hp); expect(logHas(h.cb, /×2: it harmed the helpless/)).toBe(true); } },
   ],
@@ -186,22 +189,22 @@ const CASES: Record<string, Case[]> = {
     { id: 'requisition_approved', kind: 'miracle', setup: (h) => { h.ally.ammo = 0; h.ally.jammed = true; h.ally.heat = 4; }, args: () => ({}), check: (h) => { expect(h.ally.ammo).toBeGreaterThan(0); expect(h.ally.jammed).toBe(false); expect(h.ally.heat).toBe(0); expect(h.ally.apNext).toBe(3); expect(h.me.apNext).toBe(3); expect((h.g.characters[h.ally.charId!].pack || []).some((x: any) => x.item === 'standard_core' && x.qty >= 2) || (h.ally.mg?.cores ?? 0) >= 2).toBe(true); } },
   ],
   the_laughing_mask: [
-    { id: 'lucky_break', args: ALLY, check: (h) => expect(h.ally.faith?.luckyBreak).toBe(true) },
+    { id: 'lucky_break', args: ALLY, check: (h) => expect(h.ally.faith?.luckyBreak).toBe(2) }, // rules 1.21, item 1265: two rerolls
     { id: 'switcheroo', seed: [1], args: (h) => ({ targetId: h.ally.id, targetId2: h.foe.id }), check: (h, b) => { expect(h.ally.pos).toBe(b.foePos); expect(h.foe.pos).toBe(b.allyPos); } },
     { id: 'pratfall', seed: [1], args: FOE, check: (h) => { expect(condOn(h.foe, 'prone') || !!h.foe.prone).toBe(true); expect(condOn(h.foe, 'disarmed')).toBe(true); } },
     { id: 'encore', kind: 'miracle', setup: (h) => { h.ally.faith = { lastRound: h.cb.round, lastSpent: 2, lastKey: 'combat/move:move' }; }, args: () => ({}), check: (h) => { expect(h.ally.faith?.encore).toMatchObject({ key: 'combat/move:move', ap: 2, started: false }); expect(condOn(h.foe, 'confused') && condOn(h.foe2, 'confused')).toBe(true); } },
   ],
   toll_keeper: [
-    { id: 'coin_for_the_ferry', setup: (h) => { Object.assign(h.ally, { hp: 0, downed: true, saves: { ok: 0, fail: 0 } }); }, args: ALLY, check: (h) => { expect(h.ally.downed).toBe(false); expect(h.ally.hp).toBe(Math.round(10 * h.me.blessPower!)); } },
+    { id: 'coin_for_the_ferry', setup: (h) => { Object.assign(h.ally, { hp: 0, downed: true, saves: { ok: 0, fail: 0 } }); }, args: ALLY, check: (h) => { expect(h.ally.downed).toBe(false); expect(h.ally.hp).toBe(Math.round(5 * h.me.blessPower! * mendFactor(h.me.level))); } },
     { id: 'hold_the_gate', args: () => ({}), check: (h) => { h.bound(() => applyDamage(h.cb, h.ally, 9999, { by: h.foe, type: 'physical' } as any)); expect(h.ally.hp).toBe(1); } },
     { id: 'last_crossing', seed: [1], setup: (h) => { h.foe.hp = 10; }, args: FOE, check: (h) => expect(h.foe.dead).toBe(true) },
     { id: 'turned_back', kind: 'miracle', setup: (h) => { Object.assign(h.ally, { hp: 0, dead: true, downed: false }); }, args: () => ({}), check: (h) => { expect(h.ally.dead).toBe(false); expect(h.ally.hp).toBe(Math.ceil(h.ally.maxHp / 2)); } },
   ],
   mother_ember: [
-    { id: 'warm_hands', setup: (h) => { h.ally.hp = 30; }, args: ALLY, check: (h) => expect(h.ally.hp).toBe(Math.min(h.ally.maxHp, 30 + Math.round(40 * h.me.blessPower!))) },
+    { id: 'warm_hands', setup: (h) => { h.ally.hp = 30; }, args: ALLY, check: (h) => expect(h.ally.hp).toBe(Math.min(h.ally.maxHp, 30 + Math.round(13 * h.me.blessPower! * mendFactor(h.me.level)))) },
     { id: 'hearthlight', setup: (h) => { h.ally.hp = 30; }, args: (h) => ({ tile: h.ally.pos }), check: (h) => { expect(((h.cb as any).faithZones || []).length).toBe(1); h.f.turn(h.ally); expect(h.ally.hp).toBeGreaterThan(30); } },
-    { id: 'feed_the_fire', setup: (h) => { h.ally.ap = 0; h.ally.conds = { weakened: 2 } as any; }, args: ALLY, check: (h) => { expect(h.ally.ap).toBe(1); expect(condOn(h.ally, 'weakened')).toBe(false); } },
-    { id: 'everyone_home', kind: 'miracle', setup: (h) => { h.ally.hp = 5; h.me.hp = 20; h.ally.conds = { shaken: 2 } as any; }, args: () => ({}), check: (h) => { expect(h.ally.hp).toBe(h.ally.maxHp); expect(h.me.hp).toBe(h.me.maxHp); expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.shield).toBe(Math.floor(40 * h.me.blessPower!)); } },
+    { id: 'feed_the_fire', setup: (h) => { h.ally.ap = 0; h.ally.conds = { weakened: 2 } as any; }, args: ALLY, check: (h) => { expect(h.ally.ap).toBe(2); expect(condOn(h.ally, 'weakened')).toBe(false); } }, // rules 1.21, item 1267: +2 AP
+    { id: 'everyone_home', kind: 'miracle', setup: (h) => { h.ally.hp = 5; h.me.hp = 20; h.ally.conds = { shaken: 2 } as any; }, args: () => ({}), check: (h) => { expect(h.ally.hp).toBe(h.ally.maxHp); expect(h.me.hp).toBe(h.me.maxHp); expect(condOn(h.ally, 'shaken')).toBe(false); expect(h.ally.shield).toBe(Math.floor(17 * h.me.blessPower! * mendFactor(h.me.level))); } },
   ],
   old_overcast: [
     { id: 'thunderclap', seed: [1, 1], args: () => ({ tile: '4,5' }), check: (h) => expect(condOn(h.foe, 'shaken') || condOn(h.foe2, 'shaken')).toBe(true) },
@@ -216,12 +219,25 @@ const CASES: Record<string, Case[]> = {
     { id: 'love_conquers', kind: 'miracle', seed: [20, 20], args: () => ({}), check: (h) => expect(h.foe.surrendered && h.foe2.surrendered).toBe(true) },
   ],
   counting_weaver: [
-    { id: 'foreknowing', args: ALLY, check: (h) => expect(h.ally.faith?.foreknown).toBe(true) },
+    { id: 'foreknowing', args: ALLY, check: (h) => expect(h.ally.faith?.foreknown).toBe(2) }, // rules 1.21, item 1266: two attacks
     { id: 'unravel', setup: (h) => { h.foe.shield = 30; h.foe.braced = true; h.foe.conds = { inspired: 2 } as any; }, args: FOE, check: (h) => { expect(h.foe.shield).toBe(0); expect(h.foe.braced).toBe(false); expect(condOn(h.foe, 'inspired')).toBe(false); } },
     { id: 'cut_short', seed: [1], args: FOE, check: (h) => expect(condOn(h.foe, 'stunned')).toBe(true) },
     { id: 'rewoven', kind: 'miracle', args: () => ({}), check: (h, b) => expect(h.cb.order.length).toBe(b.order + 2) },
   ],
 };
+describe('Together lasts until the caster\'s next turn (item 615; truth pass 3)', () => {
+  it('the ally who acts after the caster keeps +2 Defense through the enemies\' turns; it ends when the caster\'s turn starts', () => {
+    const h = holy({ patron: 'the_matchmaker', devotion: 10, faith: 9 });
+    h.pray('hymn', 'together', { targetId: h.me.id, targetId2: h.ally.id });
+    expect(condOn(h.ally, 'guarded')).toBe(true);
+    h.f.turn(h.ally); h.bound(() => condTurnEnd(h.cb, h.ally)); // the ally acts after the caster: its own turn ends
+    expect(condOn(h.ally, 'guarded')).toBe(true); expect(condOn(h.ally, 'inspired')).toBe(true); // it held a 1-round condition before: gone here
+    h.f.turn(h.foe); h.bound(() => condTurnEnd(h.cb, h.foe));
+    expect(condOn(h.ally, 'guarded')).toBe(true);
+    h.f.turn(h.me); // the caster's next turn starts
+    for (const u of [h.me, h.ally]) { expect(condOn(u, 'guarded')).toBe(false); expect(condOn(u, 'inspired')).toBe(false); }
+  });
+});
 describe('every patron\'s Hymns and Miracle', () => {
   it('the eight launch patrons each have 3 Hymns (tiers 1-3) and a Miracle, and every one is tested here', () => {
     expect(FAITH_PATRONS.length).toBe(8);
@@ -270,10 +286,10 @@ describe('interventions (while Witnessed; rules 1.6.3: each ends Witnessed, the 
     h.bound(() => applyDamage(h.cb, h.ally, 9999, { by: h.foe, type: 'physical' } as any)); expect(h.ally.hp).toBe(1);
     h.bound(() => applyDamage(h.cb, h.ally, 9999, { by: h.foe, type: 'physical' } as any)); expect(h.ally.hp).toBe(0);
   });
-  it('Mother Ember: an ally drops below a quarter HP, they heal 20 + 4 × Devotion (32 at Devotion 3)', () => {
+  it('Mother Ember: an ally drops below a quarter HP, they heal 10 + 3 × Devotion (19 at Devotion 3; rules 1.20)', () => {
     const h = holy({ patron: 'mother_ember' }); witnessed(h); const m = h.ally.maxHp;
     h.bound(() => applyDamage(h.cb, h.ally, m - 10, { by: h.foe, type: 'physical' } as any));
-    expect(h.ally.hp).toBe(10 + Math.round(32 * h.me.blessPower!));
+    expect(h.ally.hp).toBe(10 + Math.round(19 * h.me.blessPower!));
   });
   it('Old Overcast: you kill an enemy, 20 + 4 × Devotion Storm goes to the nearest other enemy', () => {
     const h = holy({ patron: 'old_overcast' }); witnessed(h); const hp2 = h.foe2.hp;
@@ -313,9 +329,11 @@ describe('tags: what your patron sees', () => {
     h.cb.round += 1; h.f.turn(h.me); h.foe2.surrendered = true;
     h.bound(() => applyDamage(h.cb, h.foe2, 9999, { by: h.me, type: 'physical', credit: 'hp' } as any)); expect(h.c.devotion).toBe(4);
   });
-  it('Witnessed: +2 on an attack roll that would carry a liked tag (Old Overcast likes kill)', () => {
+  it('Witnessed: +2 on an attack roll that would carry a liked tag; a liked kill is not every attack (rules 1.22: that +2 is earned by a kill)', () => {
     const h = holy({ patron: 'old_overcast' }); h.me.conds = { witnessed: 2 } as any;
-    const pv = h.bound(() => previewAttack(h.cb, h.me, h.foe, 'shot')); expect((pv.terms || []).some((t: any) => t.label === 'Witnessed' && t.v === 2)).toBe(true);
+    const pv = h.bound(() => previewAttack(h.cb, h.me, h.foe, 'shot')); expect((pv.terms || []).some((t: any) => /^Witnessed/.test(t.label))).toBe(false);
+    const j = holy({ patron: 'nerukhan' }); j.me.conds = { witnessed: 2 } as any; j.foe.faith = { harmedHelpless: true }; // Nerukhan likes judge: an attack on one that harmed the helpless
+    expect((j.bound(() => previewAttack(j.cb, j.me, j.foe, 'shot')).terms || []).some((t: any) => t.label === 'Witnessed' && t.v === 2)).toBe(true);
     const n = holy({ patron: 'mother_ember' }); n.me.conds = { witnessed: 2 } as any;
     expect((n.bound(() => previewAttack(n.cb, n.me, n.foe, 'shot')).terms || []).some((t: any) => t.label === 'Witnessed')).toBe(false);
   });
@@ -465,7 +483,7 @@ describe('prayer in the story', () => {
   it('a Whisper heals a squad member, costs story AP and the mana meter, once a round', () => {
     const { s, c, ally } = faithful(); ally().hp = 40; const mana = s.g.story.mana ?? 15;
     s.act({ type: 'faith/pray', charId: c().id, kind: 'whisper', id: 'health', targetId: ally().id });
-    expect(ally().hp).toBe(40 + Math.round(15 * (1 + 0.5))); expect(s.g.story.ap?.[c().id]).toBe(5); expect(s.g.story.mana).toBe(Math.max(0, mana - 5));
+    expect(ally().hp).toBe(40 + Math.round(5 * blessingPower(c()) * mendFactor(c().level))); expect(s.g.story.ap?.[c().id]).toBe(5); expect(s.g.story.mana).toBe(Math.max(0, mana - 5));
     expect(said(s.g, /BY STANDING · ✓ ANSWERED/)).toBe(true);
     expect(() => s.act({ type: 'faith/pray', charId: c().id, kind: 'whisper', id: 'luck' })).toThrow(/One Whisper a round/);
   });
@@ -516,7 +534,7 @@ describe('compatibility', () => {
     const f = fightWith([{ skills: { faith: 5 } }, { name: 'Heretic', traits: ['heretic'] }], [{ at: 'F6' }]);
     const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan';
     const al = f.pcs[1]; let slid = 0;
-    for (let i = 0; i < 12; i++) { f.turn(f.pc); f.unit(f.pc.id).prayedRound = undefined; f.act({ type: 'faith/pray', unitId: f.pc.id, kind: 'hymn', id: 'saints_shield', targetId: al.id } as any); }
+    for (let i = 0; i < 12; i++) { f.turn(f.pc); clearPrayerLimits(f.unit(f.pc.id)); f.act({ type: 'faith/pray', unitId: f.pc.id, kind: 'hymn', id: 'saints_shield', targetId: al.id } as any); }
     slid = f.cb.log.filter((l) => /slides off/.test(l)).length; expect(slid).toBeGreaterThan(0); expect(slid).toBeLessThan(12); expect(logHas(f.cb, /Saint's Shield/)).toBe(true);
   });
   it('Heretic\'s Stolen Fire prays any patron\'s Hymn by dice on Will Power, with its tile (Thunderclap)', () => {

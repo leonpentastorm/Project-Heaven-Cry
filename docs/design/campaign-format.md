@@ -2,7 +2,7 @@
 
 A PHC campaign is one JSON file. The game ships five (`data/campaigns/`); a host can load their own in the Room before the session starts ("Load a campaign file…"). The engine checks the file (`validateCampaign`) and says in plain words what's wrong.
 
-The Narrator reads everything in the file. Players see only the title, the pitch, the meta line, the art, and the maps as they explore them.
+The Narrator reads everything in the file. Players see only the title, the pitch, the meta line, the art, and the maps as they explore them. A map is at most 26 × 26 tiles (spec: Maps, rules 1.16).
 
 ## Top level
 
@@ -68,17 +68,49 @@ Each zone is a map. Grid references: columns are letters (A, B, C… left to rig
 | Field | Required | What it is |
 |---|---|---|
 | `id` · `name` · `summary` | yes | `outpost`, "Outpost-813", one line the Narrator sees for every zone. |
-| `w` · `h` | yes | Size in tiles, 6–40 each (16 × 11 fits the screen best). Tiles are 1.5 m. |
+| `w` · `h` | yes | Size in tiles: any width and any height from **8 to 26** (rules 1.16). 26 × 26 (A to Z by 1 to 26) is the largest a map can be and the size of open ground and the Proving Ground; pick a smaller size for a place that should feel tight (an interior at 16 × 11, a cellar at 12 × 9). A size outside 8 to 26 is an error: the file is refused, never cut down. Tiles are 1.5 m. |
+| `layout` · `legend` | no | The ground as a picture: one row of characters per row of the map (below, "A map as a picture"), or the name of a shared layout (`"open_ground"`). What it draws is added to `solid`, `difficult`, `start`, `enemyStart` and `objects`. |
 | `solid` | no | Walls, hulls, cliffs: nothing walks or sees through them. |
 | `difficult` | no | Slow ground (2 per tile). |
-| `start` | yes | Where the party stands on arrival (and at the start of a fight here). |
-| `enemyStart` | no | Default enemy tiles for fights here. |
+| `start` | yes | Where the party stands on arrival (and at the start of a fight here): free tiles, never inside solid ground or on an object that blocks the way. May come from the layout's `S` tiles. |
+| `enemyStart` | no | Default enemy tiles for fights here (the layout's `E` tiles). Without them the engine deploys the enemy on the far side, at most 14 tiles from the squad (spec: Maps, deployment). On a 26 × 26 map put the nearest tile of each side **10 to 14 tiles** apart, with something that blocks sight between them and a way round it on both sides. |
 | `notes` | no | `{ at, text }`: what is where. Players see it when they hover a tile; the Narrator reads all of it. |
 | `objects` | no | Things on tiles (below). |
 | `exits` | no | `{ to, at, text }`: other zones you can reach from here. With an `at`, a "way out" marker appears there. The Narrator moves the party with travel. |
-| `art` | no | `{ map, banner }`: the painting under this zone's grid (the whole grid, `w` × `h` tiles) and the banner over the story while the party is here. |
+| `art` | no | `{ banner }`: the banner over the story while the party is here. Maps are drawn in plain colour: no map is painted today (the old `map` painting field is retired until the maps are repainted; `art/briefs/ART-REQUESTS.md`, section 3). |
 | `music` | no | `{ ambient, combat }`: this zone's tracks, in the format of the top-level `music`. |
 | `tags` · `terrain` · `in_city` · `urban` · `fear` · `upper_realm` · `faction` | no | Zone tags perks and traits read (rules 1.3): free tags, the terrain (open, forest, urban…), whether it is inside a city, a frightening place, the upper realm, the faction that holds it. Zone `npcs` may carry `kind` (human, robot, crawler, ork, upper_realm, cursed, beast, machine, turret) and `tags` (military, hunter, lawful, no_surrender…), and `drops` (what they drop if they die in a fight; see `loot_tables`). |
+
+## A map as a picture
+
+A big map is easier to draw than to list. `layout` is one string per row, one character per tile; `w` and `h` must match it.
+
+| Character | What it is |
+|---|---|
+| `.` | Open ground. |
+| `#` | Solid: a wall, a hull, a cliff. |
+| `~` | Difficult ground. |
+| `S` · `E` | A squad start tile · an enemy start tile. The first fighter stands nearest the middle of the group. |
+| `c` `w` `P` `B` `o` `r` `D` `L` | An object: crate, low wall, pillar, barricade, barrel, rubble, door, lamp. |
+| anything else | An object the zone's `legend` names. |
+
+`legend` gives a character its object: `{ "c": { "kind": "crate", "name": "Sandbags" }, "G": { "kind": "barricade", "name": "The town gate", "approaches": [ … ] } }`. It may rename a standard character or add new ones; every tile with that character gets that object. Objects that need their own text or approaches on one tile only go in `objects` as before.
+
+```json
+{ "id": "yard", "name": "The breaker's yard", "summary": "Stacked hulls and one way through.", "w": 12, "h": 8,
+  "legend": { "c": { "kind": "crate", "name": "Scrap bales" } },
+  "layout": [
+    "............",
+    ".S...##...E.",
+    ".S..c##c..E.",
+    ".S........E.",
+    ".S..c##c..E.",
+    ".S...##...E.",
+    "......~~....",
+    "............" ] }
+```
+
+A good full-size map (spec: Maps): both starts on free ground with cover within 4 tiles, the starts out of each other's sight, at least two ways across, some difficult ground. `python3 tools/validate.py data` checks the shipped campaigns' sizes, pictures and start tiles; `python3 tools/render_map_guides.py <campaign file> <folder>` draws each zone as a labelled grid to look at.
 
 ## Objects and points of interest
 
@@ -148,7 +180,7 @@ The weapon the enemy used (worn) and up to 2 leftover magazines with their real 
   "startZone": "vault_door",
   "zones": [{
     "id": "vault_door", "name": "The vault door", "summary": "A stone antechamber and a steel door.", "w": 16, "h": 11,
-    "solid": ["A1–P1", "A11–P11"], "start": ["B5", "B6", "B7"],
+    "solid": ["A1–P1", "A11–P11"], "start": ["B5", "B6", "B7"], "enemyStart": ["N5", "N6", "N7"],
     "notes": [{ "at": "O6", "text": "The vault door: steel, a century old, warm to the touch." }],
     "objects": [{ "kind": "door", "at": "O6", "name": "Vault door", "locked": true,
       "approaches": [{ "label": "Crack the lock", "skills": ["ingenuity", "proficiency"], "tn": 16, "stakes": "Quietly.", "success": "open" },

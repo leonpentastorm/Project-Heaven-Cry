@@ -3,12 +3,12 @@
 // whatever the main hand holds, and every one works with both Momentum and Guard:
 //   Shield Bash  (Strike, 2 AP)  1 Guard in place of the Strike's Momentum (the core charges it); a hit gives 1 Momentum
 //   Raise Shield (Link, 1 AP)    Momentum into Guard, 1 for 1; ranged attacks from the front −2 until your next turn
-//   Shield Wall  (Answer, 1 Guard) an ally next to you is shot at: −2 to hit, and half cover counts for them
+//   Shield Wall  (Answer, 1 Guard) an ally next to you is shot at: half cover counts for them (the −2 went in tuning: item 1000)
 // The strike is the bare hand behind the shield (Raw Power; the core swaps it in as it does an off-hand weapon).
 import { technique, strike, landed, stop, answer, momentumOf, turnStamp, onHook, meleeFx, fxMark, movedSince } from './shared';
 import { guardOf, guardMax, addGuard, spendGuard, loseMomentum } from '../core';
 import { inFront } from './links';
-import { type Unit, alive, dist, xy, isMelee, previewAttack, coverTileFor } from '../../combat';
+import { say, type Unit, alive, dist, xy, isMelee, previewAttack, coverTileFor } from '../../combat';
 import { WEAPON } from '../../data';
 
 // ---------- Shield Bash ----------
@@ -57,7 +57,7 @@ technique({
     if (n) { loseMomentum(t.cb, t.u, n); addGuard(t.cb, t.u, n); }
     Object.assign(t.state(), { on: true, t: turnStamp(t.cb), def, front });
     meleeFx(t, 'guard', { front, shield: true, turned: n });
-    t.cb.log.push(t.u.name + ' raises the shield' + (n ? ': ' + n + ' Momentum into Guard (' + guardOf(t.u) + '/' + guardMax(t.u) + ')' : '') + ' (−' + def + ' to ranged attacks from the front).');
+    say(t.cb, t.u.name + ' raises the shield' + (n ? ': ' + n + ' Momentum into Guard (' + guardOf(t.u) + '/' + guardMax(t.u) + ')' : '') + ' (−' + def + ' to ranged attacks from the front).');
     return null;
   },
   fx: (t) => ({ turned: raiseAmount(t) }),
@@ -83,7 +83,7 @@ technique({
       answer(t, att, () => {
         spendGuard(t.cb, me, cost);
         WALL = { att: att.id, tgt: v.id, by: me.id, cover: t.num('half_cover', 5), ctx };
-        t.cb.log.push(me.name + '\'s shield covers ' + v.name + ' (' + cost + ' Guard): ' + v.name + ' counts as behind half cover against it.');
+        say(t.cb, me.name + '\'s shield covers ' + v.name + ' (' + cost + ' Guard): ' + v.name + ' counts as behind half cover against it.');
       });
     },
   },
