@@ -160,10 +160,12 @@ function ctxOf(g: GameState, unitId: string, viewer?: string | null): DescCtx | 
 
 // ---------- small helpers ----------
 const apT = (n: number) => n + ' AP';
+/** The AP an entry of a system's own list says (a pad entry, a perk entry, a Call): its price, worked out by the engine. */
+const priceOf = (entry: { ap: number }) => entry.ap;
 const alive = (v: Unit) => !v.dead;
 const others = (x: DescCtx) => x.seen.units.filter((v) => alive(v) && v.id !== x.u.id).map((v) => v.id);
-const alliesOf = (x: DescCtx, self = false) => x.seen.units.filter((v) => alive(v) && v.side === x.u.side && (self || v.id !== x.u.id)).map((v) => v.id);
-const foesOf = (x: DescCtx) => x.seen.units.filter((v) => alive(v) && v.side !== x.u.side).map((v) => v.id);
+const allyIds = (x: DescCtx, self = false) => x.seen.units.filter((v) => alive(v) && v.side === x.u.side && (self || v.id !== x.u.id)).map((v) => v.id);
+const foeIds = (x: DescCtx) => x.seen.units.filter((v) => alive(v) && v.side !== x.u.side).map((v) => v.id);
 const mx = (p: Picks) => (Array.isArray(p.mods) && p.mods.length ? { mods: p.mods as string[] } : {});
 const safe = <T>(f: () => T, d: T): T => { try { return f(); } catch { return d; } };
 /** A descriptor with defaults filled. */
@@ -222,7 +224,7 @@ export function techHelp(e: { id: string; text: string; line?: string | null }):
 function techPicks(x: DescCtx, e: { id: string; choices?: { prop: string; text: string }[] }): PickStep[] {
   const aim = aimOf(e.id), out: PickStep[] = [];
   if (aim === 'enemy' || aim.startsWith('enemy')) out.push({ key: 'targetId', kind: 'enemy', prompt: 'Click an enemy on the map.', choices: others(x) });
-  if (aim === 'ally') out.push({ key: 'allyId', kind: 'ally', prompt: 'Click an ally on the map.', choices: alliesOf(x) });
+  if (aim === 'ally') out.push({ key: 'allyId', kind: 'ally', prompt: 'Click an ally on the map.', choices: allyIds(x) });
   if (aim === 'tile' || aim.endsWith('+tile')) out.push({ key: 'tile', kind: 'tile', prompt: aim === 'enemy+tile' ? 'Now click the tile.' : 'Click a tile on the map.' });
   if (e.choices && e.choices.length > 1) out.push({ key: 'line', kind: 'option', prompt: 'Which line applies.', optional: true, options: e.choices.map((c) => ({ id: c.prop, label: c.prop.toUpperCase(), text: c.text })) });
   const o = TECH_OPTIONS[e.id]; if (o) out.push({ key: 'opt', kind: 'option', prompt: 'Choose how.', optional: true, options: o.map(([id, label, text]) => ({ id, label, text })) });
@@ -272,7 +274,7 @@ function prayPicks(target: string, valid: string[], seenTiles?: string[]): PickS
 export const PK = 'pk:';
 export const perkId = (e: { id: string; actionId: string }) => PK + e.id + '#' + e.actionId;
 export function parsePerkId(id: string | null | undefined): { id: string; actionId: string } | null { if (!id || !id.startsWith(PK)) return null; const [k, a] = id.slice(PK.length).split('#'); return { id: k, actionId: a }; }
-export const perkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : e.ap + ' AP') + (e.uses.label ? ' · ' + e.uses.label : '');
+export const perkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : priceOf(e) + ' AP') + (e.uses.label ? ' · ' + e.uses.label : '');
 /** An on/off policy pair names the one in force; Eye of the Storm reads ARMED once armed. */
 export function perkState(e: PerkActionEntry): { tag: string; why: string | null } {
   const pol = /^(.*)_(on|off)$/.exec(e.actionId);
@@ -332,11 +334,11 @@ function basicPicks(x: DescCtx, id: string): PickStep[] {
     case 'cover': return [{ key: 'tile', kind: 'tile', prompt: 'Click an object with HP.', choices: objectsOf(x.seen).filter((o: any) => o.hp != null && o.hp > 0 && !(o.rig && o.side && o.side !== x.side)).map((o: any) => o.pos) }];
     case 'door': return [{ key: 'tile', kind: 'tile', prompt: 'Click an adjacent door.', choices: objectsOf(x.seen).filter((o: any) => kindOf(o).door && dist(x.u.pos, o.pos) <= 1).map((o: any) => o.pos) }];
     case 'pickup': return [{ key: 'tile', kind: 'tile', prompt: 'Click a pile next to you.', optional: true, choices: pileTiles(x) }, { key: 'take', kind: 'custom', renderer: 'pile', prompt: 'Untick what to leave on the ground.', optional: true }];
-    case 'stim': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an adjacent ally.', choices: alliesOf(x, true) }];
+    case 'stim': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an adjacent ally.', choices: allyIds(x, true) }];
     case 'pullfree': return [{ key: 'targetId', kind: 'unit', prompt: 'Click whom to pull free.', optional: true, choices: pullFreeTargets(x.cb, x.u).map((v) => v.id) }];
-    case 'analyze': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile, or a glyph or trace to read (dashed).', choices: foesOf(x) }];
+    case 'analyze': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile, or a glyph or trace to read (dashed).', choices: foeIds(x) }];
     case 'paired': case 'shot': case 'aimed': case 'melee': case 'burst': case 'auto': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile to target it.', choices: others(x) }];
-    case 'skill': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile.', optional: true, choices: foesOf(x) }];
+    case 'skill': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile.', optional: true, choices: foeIds(x) }];
     default: return [];
   }
 }
@@ -457,7 +459,7 @@ function techRows(x: DescCtx): ActionDescriptor[] {
   const shield = !u.offWeapon ? safe(() => shieldOf(u), null) : null;
   const hands: ('main' | 'off')[] = ['main', ...((u.offWeapon && WEAPON[u.offWeapon]) || shield ? ['off' as const] : [])];
   const watch: ActionDescriptor[] = [], seenW = new Set<string>();
-  const chip = (hand: string, e: any, parent: string | undefined, item?: string | number) => D(techId(hand, e.id, item), 'attack', e.name, e.ap, apT(e.ap), techHelp(e), e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.', { parent, picks: techPicks(x, e), toggleOn: 'combat/attack', preview: 'technique', hidden: !!parent });
+  const chip = (hand: string, e: any, parent: string | undefined, item?: string | number) => D(techId(hand, e.id, item), 'attack', e.name, priceOf(e), apT(priceOf(e)), techHelp(e), e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.', { parent, picks: techPicks(x, e), toggleOn: 'combat/attack', preview: 'technique', hidden: !!parent });
   const sys: Record<string, string> = {};
   for (const hand of hands) {
     let pad: any[] = safe(() => techniquePad(cb, u, hand, g), []);
@@ -539,12 +541,12 @@ const PERKS: ActionSystem = {
   list(x) {
     return perkEntriesOf(x).map((e) => {
       const st = perkState(e), picks: PickStep[] = [];
-      if (e.target === 'ally') picks.push({ key: 'targetId', kind: 'ally', prompt: 'Click an ally.', choices: alliesOf(x, true) });
+      if (e.target === 'ally') picks.push({ key: 'targetId', kind: 'ally', prompt: 'Click an ally.', choices: allyIds(x, true) });
       else if (['unit', 'enemy', 'npc'].includes(e.target as string)) picks.push({ key: 'targetId', kind: e.target === 'enemy' ? 'enemy' : 'unit', prompt: 'Click a target.', choices: others(x) });
       else if (e.target === 'tile') picks.push({ key: 'tile', kind: 'tile', prompt: 'Click a tile.' });
       if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
       // an armed move (Eye of the Storm) can be confirmed again to stand it down: its state is said, the reducer rules
-      return D(perkId(e), e.tab, e.label + st.tag, e.ap, perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.arm ? { available: true } : {}) });
+      return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.arm ? { available: true } : {}) });
     });
   },
   send(x, d, p) {
@@ -574,11 +576,11 @@ const CALLS: ActionSystem = {
       if (e.id === 'call.order') picks.push({ key: 'opt', kind: 'option', prompt: 'Pick what to order below.', max: orderMax(e.step), options: ORDER_THINGS.map(([id, label, text, at]) => ({ id, label, text, why: e.step < at ? 'From 3 points of ' + e.skillName + '.' : null })) });
       const aimW = e.aim === 'enemy' ? 'an enemy' : 'an ally';
       picks.push({ key: 'targetId', kind: e.aim === 'enemy' ? 'enemy' : 'ally', prompt: 'Click ' + aimW + ' within ' + reach + '.', optional: e.aim === 'self-or-ally',
-        choices: e.aim === 'enemy' ? foesOf(x) : alliesOf(x, e.aim === 'self-or-ally') });
+        choices: e.aim === 'enemy' ? foeIds(x) : allyIds(x, e.aim === 'self-or-ally') });
       if (e.id === 'call.order') picks.push({ key: 'tile', kind: 'tile', prompt: 'Now click the tile they move to.', when: { key: 'opt', has: 'move' } });
       else if (e.id === 'call.warn' || (e.id === 'call.cue' && e.step >= 2)) picks.push({ key: 'tile', kind: 'tile', prompt: e.id === 'call.cue' ? 'You may also click a free tile next to them: they step there.' : 'You may also click the tile they step to.', optional: true });
-      const apText = e.free ? 'free' : e.ap + ' AP';
-      return D('cl:' + e.id, 'calls', e.name, e.ap, apText + ' · ' + reach, e.text + (save ? ' ' + save + '.' : ''), why, { picks, preview: 'call' });
+      const apText = e.free ? 'free' : priceOf(e) + ' AP';
+      return D('cl:' + e.id, 'calls', e.name, priceOf(e), apText + ' · ' + reach, e.text + (save ? ' ' + save + '.' : ''), why, { picks, preview: 'call' });
     });
   },
   send(x, d, p) {
@@ -783,8 +785,8 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   if (next && next.choices) out.marks.tiles.push(...(next.kind === 'tile' ? next.choices.map((k) => ({ tile: k, kind: 'choice' as const })) : []));
   if (picks.tile) out.marks.tiles.push({ tile: picks.tile, kind: 'pick' });
   if (action && out.ok) {
-    const v = safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any);
-    out.ok = v.ok; out.why = v.ok ? null : v.why; if (v.ok) out.ap = v.ap; out.action = v.ok ? action : null;
+    const vd = safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any);
+    out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok) out.ap = vd.ap; out.action = vd.ok ? action : null;
   }
   if (!out.ok && !need && !out.why) out.why = 'Not now.';
   out.cost = out.ap === d.cost.ap ? d.cost.text : apT(out.ap);
