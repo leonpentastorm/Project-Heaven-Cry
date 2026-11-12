@@ -10273,5 +10273,32 @@
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/taunt.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
+  },
+  "feelings": {
+    "feeling-rage": {
+      "id": "feeling-rage",
+      "label": "Rage: the ribbon snaps upward into a jagged crest, like a flame with teeth",
+      "path": "art/icons/feelings/feeling-rage.png",
+      "sha256": "d2e17d3ee03f59f7c068e04f79bdb2283f330aff6f7dae63128c02a307256fe2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/feelings/exports/256/feeling-rage.png",
+        "128": "art/icons/feelings/exports/128/feeling-rage.png",
+        "64": "art/icons/feelings/exports/64/feeling-rage.png",
+        "56": "art/icons/feelings/exports/56/feeling-rage.png",
+        "48": "art/icons/feelings/exports/48/feeling-rage.png",
+        "44": "art/icons/feelings/exports/44/feeling-rage.png",
+        "40": "art/icons/feelings/exports/40/feeling-rage.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/feeling-rage.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/feeling-rage.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    }
   }
 }
