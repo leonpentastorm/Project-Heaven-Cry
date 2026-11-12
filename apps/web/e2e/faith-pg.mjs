@@ -8,7 +8,7 @@
 // Faith 2.2's patron on screen (spec 2.1, 2.2, 2.4-2.6): the FAITH tab's header portrait and its lightbox, the Hymn's face over the
 // head (and greyed on a miss), the Whisper's icon over the head, the Witnessed chip's words, round crops on the voice-line cards,
 // portraits on the pact / switch / grudge / apostasy cards (the grudge's greyed), the story faith tab's header portrait.
-import { chromium, click, BASE, pickAction, pause, settle, fxIdle, watch, watched, watchedGone, traceStart, traceTake } from './lib.mjs';
+import { chromium, click, BASE, pickAction, pause, settle, fxIdle, watch, watched, watchedGone, traceStart, traceTake, tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
@@ -142,7 +142,7 @@ await box.waitFor({ state: 'detached', timeout: 2000 }).catch(() => {});
 ok('and × closes it', (await box.count()) === 0);
 c = await me();
 ok('the Miracle lowers Devotion by 5 levels (10 → 5, 102 XP: rules 1.6.2; now ' + c.devotion + ' · ' + c.devotionXp + ' XP)', c.devotion === 5 && c.devotionXp === 102);
-ok('and is once a session', /One Miracle a session|Miracle needs Devotion/.test(await p.locator('[role="tabpanel"]').textContent() + (await mir.getAttribute('title') || '')));
+ok('and is once a session', /One Miracle a session|Miracle needs Devotion/.test(await p.locator('[role="tabpanel"]').textContent() + (await tipOf(mir))));
 if (!(await drawer.count())) await p.getByRole('button', { name: 'Open the Proving Ground tools' }).click();
 await drawer.getByRole('tab', { name: 'Faith' }).click();
 await drawer.locator('[data-sb-faith-reset]').click(); await pause(p, 300);

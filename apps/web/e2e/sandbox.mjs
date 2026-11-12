@@ -3,7 +3,7 @@
 // tools, gear up between waves, cast a Sigil, lose on purpose and Retry, then leave back to the room (not the title),
 // and never call a Narrator (no provider host is contacted, the Narrator is never busy).
 // Screenshots land in e2e/shots/sandbox-*.png.
-import { chromium, player, click, pickAction, BASE, OUT, autoConfirm, settle } from './lib.mjs';
+import { chromium, player, click, pickAction, BASE, OUT, autoConfirm, settle, tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -153,7 +153,7 @@ await act({ type: 'sandbox/unequip', charId: me.id, slot: 'off' });
 await settle(p, 300); await dismissCut();
 if (await drawer.count()) { await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {}); await settle(p, 200); }
 await pickAction(p, /^Draw a glyph/).catch(() => {});
-const drawTxt = ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().getAttribute('title').catch(() => '')) || '') + ' ' + ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().textContent().catch(() => '')) || '');
+const drawTxt = (await tipOf(p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }))) + ' ' + ((await p.locator('[role="tabpanel"] button', { hasText: 'Draw a glyph' }).first().textContent().catch(() => '')) || '');
 ok('the Evoker stowed: Draw a glyph says "Needs an Evoker in hand."', /Needs an Evoker in hand\./.test(drawTxt));
 const ap0 = (await G()).combat.units.find((u) => u.charId === me.id).ap;
 await p.locator('[data-backpack]:visible').first().click();
