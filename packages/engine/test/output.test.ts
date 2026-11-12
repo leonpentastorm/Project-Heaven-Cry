@@ -17,10 +17,10 @@ const sheet = (): Sheet => { const a = ARCHETYPES[0]; return { name: 'Tester', p
 const withStats = (attrs: Record<string, number>, skills: Record<string, number>) => { const c = newCharacter('c1', 'p1', sheet()); Object.assign(c.attrs, attrs); Object.assign(c.skills, skills); c.perks = []; c.traits = []; c.classId = null as any; return c; };
 
 describe('the data (rules.json output): today\'s numbers, nothing moved', () => {
-  it('one profile a system with the slopes each derived multiplier always had; only `mend` reads a level column', () => {
+  it('one profile a system with the slopes each derived multiplier always had; only `mend` and `blessing_mend` (the heal or shield of a prayer) read a level column', () => {
     const slopes = Object.fromEntries(Object.entries(PROFILES).map(([id, p]) => [id, [p.k, p.attr, p.skill, p.level]]));
     expect(slopes).toEqual({ physical: [1, 0.1, 0.05, null], weapon: [1, 0.1, 0.05, null], sigil: [1, 0.1, 0.1, null], elemental: [1, 0.1, 0.05, null], soul: [1, 0.05, 0.1, null],
-      blessing: [1, 0, 0.1, null], healing: [1, 0.1, 0.1, null], mend: [1, 0.1, 0.1, 'mend'], flat: [1, 0, 0, null] });
+      blessing: [1, 0, 0.1, null], healing: [1, 0.1, 0.1, null], mend: [1, 0.1, 0.1, 'mend'], blessing_mend: [1, 0, 0.1, 'mend'], flat: [1, 0, 0, null] });
     expect((RULES as any).output.provisional).toBe(true);
   });
   it('the pairs: which Attribute and Skill each Stat term reads', () => {

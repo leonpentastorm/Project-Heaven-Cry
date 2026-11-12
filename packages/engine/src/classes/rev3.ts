@@ -12,7 +12,7 @@
 // 'strain' hook (Eye of the Storm), 'trap_sprung' (Sabotage's rig), the new 'ai_move_risk' (Anchor in the enemy AI).
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { tendHook } from '../effects/damage';
-import { RALLY_HEAL, mendFactorOf } from '../effects/mending';
+import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, moveUnit,
@@ -591,7 +591,7 @@ register({
       const cb = h.cb!, u = h.u!, mult = h.c ? healingMult(h.c) : 1, ts = rallied(cb, u), parts: string[] = [];
       emitFx(cb, 'rally', { unit: u.id, at: u.pos, radius: 4, targets: ts.map((t) => t.id) });
       for (const t of ts) {
-        const r = healUnit(cb, t, RALLY_HEAL * mult * mendFactorOf(u), u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
+        const r = healUnit(cb, t, kitHeal(RALLY_HEAL, mult, mendFactorOf(u)), u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
         for (const id of gone) endCond(t, id, cb);
         if (gone.length && !r.restored) tendHook.f?.(cb, u, t);
         emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored });

@@ -16,7 +16,7 @@ import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
 import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { mendFactor, MENDING } from './effects/mending';
-import { deal } from './effects/output';
+import { deal, mend, amountOf, term, armourAgainst } from './effects/output';
 import { canReact, useReaction, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
@@ -451,7 +451,8 @@ export function harm(cb: Combat, rng: Rng, att: Unit | null, t: Unit, raw: numbe
 export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null, kind = 'soul'): string {
   if (t.dead) return '';
   // The air's Healing given multiplier (spec: the meter bands) applies to magical healing.
-  const r = healUnit(cb || null, t, n * (cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1), by, kind);
+  // (step a5: the one heal path, effects/output.ts mend; the air's band is the heal's own named multiplier)
+  const r = mend(cb || null, by, t, { kind: 'heal', base: n, order: 'chain', round: 'none' }, { mults: [term(cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1, 'the air')], healKind: kind });
   if (r.revived) { if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
   if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored }); return ' · ' + t.name + ' heals ' + r.restored;
 }
@@ -1138,7 +1139,19 @@ export const twiceBetter = (pct: number) => Math.round((1 - (1 - pct / 100) ** 2
 const rolls = (d: OutburstDesign) => (formOf(d) === 'bolt' || formOf(d) === 'lance') && !d.modules.includes('at_once');
 const formMult = (d: OutburstDesign) => { const f = formOf(d); return f === 'bolt' ? 1 : (MODULE[f] as any)?.damage_mult ?? 1; };
 /** The damage one school deals at a multiplier before armour (rules 1.5): 20 × Soul multiplier × stage × shape. */
-export const outburstDamage = (m: MagicUnit, d: OutburstDesign, sm: number) => (m.soulBase ?? SOUL_DAMAGE_ENEMY) * m.soulMult * sm * formMult(d) * (d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.5 : 1);
+// On the one formula (effects/output.ts; step a4): an Outburst's amount is its base (the Damage school's, Buff's heal,
+// Inverse's or Shell's shield: soul_modules.json) × the Stat term (the heart's own cached Soul multiplier or Healing
+// given) × its own named multipliers, each from data, in the order they always multiplied:
+//   stage     the stage table with the feelings' steps, the residue and resonance added (cycle.stage_mult, feelings.json)
+//   shape     the shape's damage multiplier (a module's damage_mult), or a boon's area share (buff.area_mult, split.boon_mult)
+//   at once   At Once (its damage_mult)
+//   level     the level factor of rules 1.20 (heals and shields; the heart's cached m.mend)
+//   share     Love's share of the Buff heal
+// The number is left raw: the caller adds the way of striking, a second school's half, the critical and the tone's
+// riders, and harm floors it (as before).
+const soulAmount = (kind: 'damage' | 'heal' | 'shield', base: number, mults: { v: number; label: string }[]): number =>
+  amountOf({ kind, base, profile: kind === 'heal' ? 'mend' : 'soul', order: 'chain', round: 'none' }, null, { level: null, mults }).raw;
+export const outburstDamage = (m: MagicUnit, d: OutburstDesign, sm: number) => soulAmount('damage', m.soulBase ?? SOUL_DAMAGE_ENEMY, [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(formMult(d), 'shape'), term(d.modules.includes('at_once') ? (MODULE.at_once as any)?.damage_mult ?? 0.5 : 1, 'at once')]);
 // ---------- rules 1.20: what an Outburst heals and shields with ----------
 // Their own bases, never the Damage base (moving one must not move the other): the Buff school's `heal`, Inverse's and
 // Shell's `shield` (soul_modules.json). A character's grow with its level (mendFactor). In an area shape a heal or a
@@ -1153,13 +1166,13 @@ export const BOON_AREA: number = (SCHOOL.buff as any)?.area_mult ?? MENDING.area
 export const SPLIT_BOON: number = (MODULE.split as any)?.boon_mult ?? 0.8;
 const boonArea = (m: MagicUnit, d?: OutburstDesign | null) => (!d || !ofChar(m) ? 1 : formOf(d) !== 'bolt' ? BOON_AREA : d.modules.includes('split') ? SPLIT_BOON : 1);
 /** The Buff school's heal on one ally at a multiplier (before the air's Healing given and what the target receives). */
-export const outburstHeal = (m: MagicUnit, d: OutburstDesign | null | undefined, sm: number) => (ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY) * m.healMult * sm * mendOf(m) * boonArea(m, d);
+export const outburstHeal = (m: MagicUnit, d: OutburstDesign | null | undefined, sm: number) => soulAmount('heal', ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY, [term(m.healMult, 'stat: healing given'), term(sm, 'stage'), term(mendOf(m), 'level'), term(boonArea(m, d), 'shape')]);
 /** Inverse: the shield a flipped Damage Outburst gives one ally. */
-export const inverseShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? ((MODULE.inverse as any)?.shield ?? 10) * m.soulMult * sm * mendOf(m) * boonArea(m, d) : outburstDamage(m, d, sm) * ((MODULE.inverse as any)?.shield_mult_enemy ?? 0.7);
+export const inverseShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? soulAmount('shield', (MODULE.inverse as any)?.shield ?? 10, [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(mendOf(m), 'level'), term(boonArea(m, d), 'shape')]) : outburstDamage(m, d, sm) * ((MODULE.inverse as any)?.shield_mult_enemy ?? 0.7);
 /** Shell: the shield a Release leaves on its caster. */
-export const shellShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? ((MODULE.shell as any)?.shield ?? 4) * m.soulMult * sm * mendOf(m) : outburstDamage(m, d, sm) * ((MODULE.shell as any)?.shield_of_power_enemy ?? 0.35);
+export const shellShield = (m: MagicUnit, d: OutburstDesign, sm: number) => ofChar(m) ? soulAmount('shield', (MODULE.shell as any)?.shield ?? 4, [term(m.soulMult, 'stat: soul'), term(sm, 'stage'), term(mendOf(m), 'level')]) : outburstDamage(m, d, sm) * ((MODULE.shell as any)?.shield_of_power_enemy ?? 0.35);
 /** Love's heal: a share of what the Buff school would heal at this multiplier (in the shape, or the lone share). */
-export const loveHeal = (m: MagicUnit, d: OutburstDesign, sm: number, lone = false, area = false) => (ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY) * m.healMult * sm * mendOf(m) * (area ? boonArea(m, d) : 1) * (lone ? (FEELING.love?.pour as any)?.lone_heal_share ?? 0.15 : (FEELING.love?.pour as any)?.heal_share ?? 0.25);
+export const loveHeal = (m: MagicUnit, d: OutburstDesign, sm: number, lone = false, area = false) => soulAmount('heal', ofChar(m) ? BUFF_HEAL : BUFF_HEAL_ENEMY, [term(m.healMult, 'stat: healing given'), term(sm, 'stage'), term(mendOf(m), 'level'), term(area ? boonArea(m, d) : 1, 'shape'), term(lone ? (FEELING.love?.pour as any)?.lone_heal_share ?? 0.15 : (FEELING.love?.pour as any)?.heal_share ?? 0.25, 'share')]);
 /** Calm's multiplier on the whole Release (rules 1.17: ×0.75). Rules 1.19: none (Calm steps −0.2 instead); kept for data that sets `release_mult`. */
 export const calmMult = (d: OutburstDesign | null | undefined, felt?: string[] | null): number => (d && (felt || []).includes('calm') && rolls(d) ? (FEELING.calm?.pour as any)?.release_mult ?? 1 : 1);
 const armourKind = (tone: string, rs: number): 'none' | 'half' | 'full' => tone === 'raw' ? 'none' : toneRiders(tone, rs).riders.some((r) => r.rider === 'armour_full') ? 'full' : 'half';
@@ -1655,7 +1668,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
         const raw = outburstDamage(m, d, smT) * f * (primary ? strikes : 1) * (d.modules.includes('inverse') ? 1 : damageModeMult(option, t)); // rules 1.19: the way it strikes
         if (d.modules.includes('inverse')) { if (t.side === u.side) { a.shield += Math.floor(inverseShield(m, d, smT) * f); if (primary && F.has('love')) a.heal += Math.floor(loveHeal(m, d, sm, false, true) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); } return; }
         // Floored as harm() floors it, so the chip reads the engine's number.
-        const n = Math.floor(raw + (primary ? bonusDmg(tone, rs) : 0)), ak = armourKind(tone, rs), arm = ak === 'full' ? t.armour : ak === 'half' ? Math.floor(t.armour / 2) : 0;
+        const n = Math.floor(raw + (primary ? bonusDmg(tone, rs) : 0)), ak = armourKind(tone, rs), arm = armourAgainst(t, ak);
         a.dmg += n; a.dmgAfterArmour += Math.max(1, n - arm);
         if (primary && rolls(d) && !(F.has('calm') && (FEELING.calm?.pour as any)?.no_miss)) { a.roll = rollFor(cb, u, d, t, toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover') || bankShot(cb, d, at)); if (F.has('calm')) a.roll.pct = twiceBetter(a.roll.pct); } // Calm (rules 1.19): the better of two rolls
       } else if (school === 'buff') { if (optOf('buff', option) === 'heal' && t.side === u.side) a.heal += Math.floor((outburstHeal(m, d, sm) * f + (primary && F.has('love') ? loveHeal(m, d, sm, false, true) : 0)) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)); }
@@ -1703,7 +1716,7 @@ function blankAffected(u: Unit, t: Unit, via: OutburstAffected['via']): Outburst
  * at the multiplier × f (+ the tone's bonus damage when bonus), its roll when roll, and the given riders' saves. */
 export function planStrike(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, sm: number, rs: number, o: { f?: number; roll?: boolean; bonus?: boolean; riders?: ToneRider[]; via?: OutburstAffected['via']; note?: string } = {}): OutburstAffected {
   const m = u.mg!, tone = toneOf(d), a = blankAffected(u, t, o.via || 'arc');
-  const n = Math.floor(outburstDamage(m, d, sm) * (o.f ?? 1) + (o.bonus ? bonusDmg(tone, rs) : 0)), ak = armourKind(tone, rs), arm = ak === 'full' ? t.armour : ak === 'half' ? Math.floor(t.armour / 2) : 0;
+  const n = Math.floor(outburstDamage(m, d, sm) * (o.f ?? 1) + (o.bonus ? bonusDmg(tone, rs) : 0)), ak = armourKind(tone, rs), arm = armourAgainst(t, ak);
   a.dmg = n; a.dmgAfterArmour = Math.max(1, n - arm);
   if (o.roll) a.roll = rollFor(cb, u, d, t, toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover'));
   const rr = o.riders ?? (tone !== 'raw' ? toneRiders(tone, rs).riders : []);

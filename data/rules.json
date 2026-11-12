@@ -1304,6 +1304,7 @@
       "blessing": { "k": 1, "attr": 0, "skill": 0.1, "level": null, "pair": "blessing" },
       "healing": { "k": 1, "attr": 0.1, "skill": 0.1, "level": null, "pair": "healing" },
       "mend": { "k": 1, "attr": 0.1, "skill": 0.1, "level": "mend", "pair": "healing" },
+      "blessing_mend": { "k": 1, "attr": 0, "skill": 0.1, "level": "mend", "pair": "blessing" },
       "flat": { "k": 1, "attr": 0, "skill": 0, "level": null },
       "note": "Stat = k x (1 + attr x (each Attribute of the pair - 1) + skill x each Skill of the pair). These are today's slopes, one profile a system (stage (a)); stage (b) replaces them with the two shared profiles of the proposal (aimed, landed)."
     },

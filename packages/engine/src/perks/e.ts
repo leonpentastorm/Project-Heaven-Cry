@@ -12,7 +12,7 @@ import {
 } from '../effects';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
-import { FIELD_REPAIR_HEAL, mendFactorOf } from '../effects/mending';
+import { FIELD_REPAIR_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import {
   dist, alive, keyOf as refKey, unitSees, sideSees, lineOfSight, paths, apForTiles, previewAttack, resolveAttack, moveUnit,
   toggleProne, reload, useStim, stimAp, emitFx, checkOver, isMelee, standable, key, xy, active,
@@ -679,7 +679,7 @@ register({
 // Your heals on robotic allies (Factory Made, machines) work at full power (Factory Made's Plug halving is undone).
 // Out of a fight (area map or story), 10 minutes and a charge patch a squadmate for 50% of their max HP (PROVISIONAL).
 // Rules 1.23: 3 a point (it was 10) × Healing given × the level factor, as the rest of the medic's kit.
-const surgeonHeal = (h: Holder) => Math.floor(FIELD_REPAIR_HEAL * (h.c?.skills?.proficiency || h.u?.proficiency || 0) * (h.c ? healingMult(h.c) : 1) * mendFactorOf(h.u));
+const surgeonHeal = (h: Holder) => kitHeal(0, h.c ? healingMult(h.c) : 1, mendFactorOf(h.u), { per: { of: 'improvisation', value: FIELD_REPAIR_HEAL, n: h.c?.skills?.proficiency || h.u?.proficiency || 0 }, floor: true });
 function takePart(c: Character): boolean {
   const pack = packOf(c).map((x) => ({ ...x })), i = pack.findIndex((x) => (x.item || x.id) === 'spare_parts' && x.qty > 0); if (i < 0) return false;
   if (pack[i].qty > 1) pack[i].qty--; else pack.splice(i, 1); c.pack = pack; return true;

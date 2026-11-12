@@ -22,7 +22,8 @@ import {
   classResources, migrateDesign,
 } from '../character';
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
-import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL } from '../effects/mending';
+import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, kitHeal } from '../effects/mending';
+import { term } from '../effects/output';
 import { BUFF_HEAL } from '../magic';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitStrength, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
@@ -469,8 +470,8 @@ const healMultOf = (h: Holder) => (h.c ? healingMult(h.c) : h.u?.mg?.healMult ||
 // Rules 1.23, the medic pass: Triage and a thrown stim grow with the giver's level, as spells do since rules 1.20.
 // On the area map and in the story (out of a fight, once an ally a scene) a Triage is three times a fight's.
 const lvlOf = (h: Holder) => (h.u ? mendFactorOf(h.u) : mendFactor(h.c?.level));
-const triageHeal = (h: Holder, rest = false) => TRIAGE_HEAL * healMultOf(h) * lvlOf(h) * (rest ? TRIAGE_REST_MULT : 1);
-const thrownStimHeal = (h: Holder) => STIM_HEAL * healMultOf(h) * lvlOf(h);
+const triageHeal = (h: Holder, rest = false) => kitHeal(TRIAGE_HEAL, healMultOf(h), lvlOf(h), { own: [term(rest ? TRIAGE_REST_MULT : 1, 'time to work')] });
+const thrownStimHeal = (h: Holder) => kitHeal(STIM_HEAL, healMultOf(h), lvlOf(h));
 function mostHurt(h: Holder): Character | null {
   const all: Character[] = Object.values(h.g?.characters || {});
   return all.filter((c) => !c.dead && c.id !== h.c?.id && c.hp < maxHp(c)).sort((a, b) => a.hp / maxHp(a) - b.hp / maxHp(b))[0] || null;

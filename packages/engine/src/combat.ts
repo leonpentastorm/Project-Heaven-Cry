@@ -17,7 +17,7 @@ import { skillItemsOf } from './effects/collect';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { openAmount, closeAmount, armourAgainst, landed, deal } from './effects/output';
-import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf } from './effects/mending';
+import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal } from './effects/mending';
 import { turnAp, briefCredit } from './effects/ap';
 import { skillRollMod, actionAp, immune, forbids } from './effects/core';
 import { statQuery } from './effects/hooks';
@@ -2042,7 +2042,7 @@ export function clearJam(cb: Combat, u: Unit): string | null {
 }
 /** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others).
  * Else heal 6 × Healing given × the level factor (rules 1.23: it was 30 × Healing given at every level). */
-export const stimHeal = (u: Unit, who: Character) => STIM_HEAL * healingMult(who) * mendFactorOf(u);
+export const stimHeal = (u: Unit, who: Character) => kitHeal(STIM_HEAL, healingMult(who), mendFactorOf(u));
 export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean): string | null {
   if (who.stims <= 0) return 'No stims left.';
   if (dist(u.pos, t.pos) > 1) return 'Must be adjacent.';

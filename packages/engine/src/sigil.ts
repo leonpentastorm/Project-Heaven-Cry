@@ -23,7 +23,7 @@ import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTI
 import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
 import { mendFactorOf } from './effects/mending';
-import { armourAgainst, landed } from './effects/output';
+import { armourAgainst, landed, amountOf, term, type AmountSpec } from './effects/output';
 import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
 import { ENEMY_LEVELS } from './data';
@@ -407,6 +407,28 @@ export function evokeGrowth(cb: Combat, u: Unit, words: string[], glyphs: number
   if (grew.length) emitFx(cb, 'sigil_growth', { unit: u.id, at: u.pos, study: (c as any).sigilGrowth?.study || 0, mastered: now });
   return grew;
 }
+// ---------- a spell's amounts on the one formula (effects/output.ts; step a4 of the damage-formula migration) ----------
+// What a Line hands to harm, a heal or a shield is an amount like any other: the words' base, the Stat term (Sigil
+// power: the caster's Sigil multiplier, with the Elemental bonus added for Elemental damage; the unit's own cached
+// number, never the sheet read again) and the spell's own named multipliers, each from data:
+//   shape      the Burst's or the placed spell's multiplier on this creature (sigils.json: spread, chain, arc, twice, placed)
+//   line       the Line multiplier by glyph count (sigils.json grammar.line_mult; damage only, a character's Lines)
+//   sharpened  SHARPEN on the caster (sigils.json sharpen.damage_mult; a rolled spell)
+//   items      what perks and traits say on 'spell_mult'
+//   critical   a natural 20 (rules 1.17: ×1.5 to ×2.0)
+//   healing    Healing given, and  level  the level factor of rules 1.20 (MEND and WARD)
+// The preview (numbersFor) and the resolve (applyToInner) share these two functions. A Sigil part is ROUNDED (not
+// floored), each damage type apart, in the order base × shape × line × Stat × the rest: as it always was.
+const SIGIL_DAMAGE: AmountSpec = { kind: 'damage', base: 0, profile: 'sigil', order: 'chain', round: 'round' };
+/** One damage part of a spell (all its Sigil-type glyphs, or all its Elemental ones) on one creature, before armour. */
+export function sigilDamage(mg: { sigilMult?: number; elemMult?: number } | null | undefined, type: 'elemental' | 'sigil', base: number, shape: number, line: number, sharp: number, items: number, crit: number): number {
+  return amountOf({ ...SIGIL_DAMAGE, base }, null, { level: null, mults: [term(shape, 'shape'), term(line, 'line'), term(sigilPower(mg, type), type === 'elemental' ? 'stat: sigil + elemental' : 'stat: sigil'), term(sharp, 'sharpened'), term(items, 'items'), term(crit, 'critical')] }).amount;
+}
+/** What MEND heals or WARD shields on one creature: the word's base × shape × Sigil multiplier × Healing given × the
+ * level factor (two Stat terms: the second is an own multiplier with a name). */
+export function sigilBoon(kind: 'heal' | 'shield', base: number, shape: number, sigil: number, healing: number, level: number, items: number): number {
+  return amountOf({ kind, base, profile: 'mend', order: 'chain', round: 'round' }, null, { level: null, mults: [term(shape, 'shape'), term(sigil, 'stat: sigil'), term(healing, 'healing given'), term(level, 'level'), term(items, 'items')] }).amount;
+}
 /** The numbers a spell would put on one creature, after multipliers (spec: Grammar 6). */
 function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: number, roll: boolean, origin: string | null): Pick<Affected, 'dmg' | 'dmgAfterArmour' | 'heal' | 'shield' | 'roll' | 'saves'> {
   const mg = caster?.mg, sm = mg?.sigilMult || 1, hm = mg?.healMult || 1;
@@ -415,17 +437,17 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const foe = !!caster && caster.side !== 'pc'; // rules 1.20: an enemy caster keeps the bases the enemy table was fitted with
   for (const w of sp.subjects) { const d: any = W(w); if (!d) continue; const dh = foe ? d.heal_enemy ?? d.heal : d.heal, ds = foe ? d.shield_enemy ?? d.shield : d.shield; if (dh) hl += dh * (1 + iv(sp, w, 'heal_pct') / 100); if (ds) sh += ds * (1 + iv(sp, w, 'shield_pct') / 100); }
   const sharp = caster && condOn(caster, 'sharpened') && roll ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
-  const hook = (kind: string, v: number) => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1) * v;
+  const hook = (kind: string): number => (caster ? (emit(cb, 'spell_mult', { u: caster, t, spell: sp, kind, mult: 1, cb }) as any).mult ?? 1 : 1);
   const lm = lineMultFor(caster, sp); // rules 1.17: the Line multiplier (damage only; a character's Lines)
   const lf = caster?.mg?.mend ?? mendFactorOf(caster); // rules 1.20: healing and shields grow with the caster's level (a character's; not an enemy caster's)
-  const [E, S] = [Math.round(hook('damage', el * m * lm * sigilPower(mg, 'elemental') * sharp)), Math.round(hook('damage', sg * m * lm * sigilPower(mg, 'sigil') * sharp))];
+  const [E, S] = [sigilDamage(mg, 'elemental', el, m, lm, sharp, hook('damage'), 1), sigilDamage(mg, 'sigil', sg, m, lm, sharp, hook('damage'), 1)];
   const arm = (S ? landed(S, armourAgainst(t, 'full')) : 0) + (E ? landed(E, armourAgainst(t, 'half')) : 0); // as harm will take it: Sigil damage meets armour in full, Elemental half
   const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
   const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') + spellGapToHit(cb, caster, t) : 0;
   const saves: Affected['saves'] = [];
   for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: 12 + unitStrength(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
   if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: 12 + unitStrength(caster, 'brain_power') });
-  return { dmg: E + S, dmgAfterArmour: arm, heal: Math.round(hook('heal', hl * m * sm * hm * lf)), shield: Math.round(hook('shield', sh * m * sm * hm * lf)),
+  return { dmg: E + S, dmgAfterArmour: arm, heal: sigilBoon('heal', hl, m, sm, hm, lf, hook('heal')), shield: sigilBoon('shield', sh, m, sm, hm, lf, hook('shield')),
     roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
 }
 /** Who a spell affects on a set of tiles, with every one it spares or skips flagged (spec: Filter KIN; Grammar 9). */
@@ -1010,7 +1032,7 @@ function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe',
     line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + (r ? ' hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')' : ' catches ' + t.name);
     const lm = lineMultFor(by, sp), cm = crit ? spellCritMult(cb, by, t) : 1; // rules 1.17: the Line multiplier; a critical ×1.5 to ×2.0
     const raws = parts.map((p) => { const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
-      return Math.round(p.n * a.mult * lm * sigilPower(by?.mg, p.type) * sharp * hk * cm); });
+      return sigilDamage(by?.mg, p.type, p.n, a.mult, lm, sharp, hk, cm); });
     // Rules 1.17: one Evoke never takes an Elite or a Boss of the caster's level (or higher) from full HP to nothing.
     const direct = !['field', 'turret', 'trap'].includes(a.via), guard = direct && (EVOKE_GUARDED.has(t) || lineGuards(by, t, cb)), wasGuard = LINE_GUARD; if (guard) { LINE_GUARD = t; EVOKE_GUARDED.add(t); }
     try {

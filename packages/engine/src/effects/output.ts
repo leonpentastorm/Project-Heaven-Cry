@@ -112,8 +112,13 @@ export interface AmountSpec {
   /** data/rules.json output.profiles (absent: no Stat and no Level term: the caller's number is already whole). */ profile?: string;
   /** The pair the Stat term reads, when it is not the profile's own (a weapon's `phys`). */ pair?: Pair;
   /** 'stack': (base + flat) × (own × target), a weapon attack's order. 'base': ((base + flat) × own) × target, a
-   * spell's (and the sum is never under 0). See the head of this file. */
-  order?: 'stack' | 'base';
+   * spell's (and the sum is never under 0). 'chain': the base times each multiplier in turn, in the order the source
+   * lists them, then the target bonus: how a Sigil Line, an Outburst, a prayer and the kit have always multiplied
+   * (step a4: their numbers are the same to the last place). See the head of this file. */
+  order?: 'stack' | 'base' | 'chain';
+  /** How the amount is made whole: 'floor' (default), 'round' (a Sigil Line rounds each of its parts), 'none'
+   * (the caller goes on with the raw number: an Outburst adds its critical and its tone's riders before harm floors it). */
+  round?: 'floor' | 'round' | 'none';
   /** Marked for spec section 14. */ provisional?: boolean;
 }
 export interface AmountCtx {
@@ -126,6 +131,8 @@ export interface AmountCtx {
 /** An amount being built: the Stat and Level terms are already in `mults` (first), a hook may add to add, mults and vs. */
 export interface Amount { spec: AmountSpec; base: number; add: number; mults: Term[]; vs: Term[] }
 const push = (list: Term[], v: number, label: string) => { if (v !== 1) list.push({ v, label }); };
+/** A named multiplier for an amount's `mults` (a term of exactly ×1 is dropped when the amount is opened). */
+export const term = (v: number, label: string): Term => ({ v, label });
 /** Open an amount: the base with its per-point parts, then the Stat term and the Level term as the first multipliers
  * (a term of exactly ×1 is not listed, as everywhere). The caller adds its own multipliers and closes it. */
 export function openAmount(spec: AmountSpec, by: Unit | null, ctx: AmountCtx = {}): Amount {
@@ -140,8 +147,9 @@ export function openAmount(spec: AmountSpec, by: Unit | null, ctx: AmountCtx = {
 /** Close an amount: the stacking rule, then the product in the spec's order. `raw` is the number before the floor. */
 export function closeAmount(a: Amount): { raw: number; amount: number; mult: number; vsMult: number; total: number } {
   const st = stackDamage(a.mults, a.vs);
-  const raw = a.spec.order === 'base' ? Math.max(0, a.base + a.add) * st.mult * st.vsMult : (a.base + a.add) * st.total;
-  return { raw, amount: Math.floor(raw), ...st };
+  const raw = a.spec.order === 'chain' ? a.mults.reduce((t, m) => t * m.v, a.base + a.add) * st.vsMult
+    : a.spec.order === 'base' ? Math.max(0, a.base + a.add) * st.mult * st.vsMult : (a.base + a.add) * st.total;
+  return { raw, amount: a.spec.round === 'round' ? Math.round(raw) : a.spec.round === 'none' ? raw : Math.floor(raw), ...st };
 }
 /** The amount of a source in one call (no hook in between): what it produces before armour or the receiver's
  * multipliers, with every term named. */

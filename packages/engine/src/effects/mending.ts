@@ -12,7 +12,7 @@
 // Every number is provisional (spec section 14, items 1230 on and 1300 on).
 import type { Combat, Unit } from '../combat';
 import { RULES } from '../data';
-import { levelFactor } from './output';
+import { levelFactor, amountOf, term, type Term } from './output';
 
 export const MENDING: any = (RULES as any).mending || {};
 /** The level factor (×1.00 at level 1 … ×1.82 at level 20): enemies.json levels.table damage_mult. No level: ×1. */
@@ -53,3 +53,13 @@ export const TRIAGE_REST_MULT: number = MEDIC.triage_out_of_fight_mult ?? 3;
 export const STIM_HEAL: number = MEDIC.stim ?? 6;
 export const RALLY_HEAL: number = MEDIC.rally ?? 6;
 export const FIELD_REPAIR_HEAL: number = MEDIC.field_repair_per_point ?? 3;
+
+/** The kit on the one formula (effects/output.ts; step a5): the base (rules.json mending.medic) × the Stat term
+ * (Healing given: the giver's, handed in by the caller with its perks and gear in it) × the Level term (the level
+ * factor of the giver) × the move's own named multipliers. `per` adds the per-point part (a Field Repair's 3 a point of
+ * Improvisation). The number is left raw unless `floor`: the heal sink floors it. */
+export function kitHeal(base: number, healing: number, level: number, o: { own?: Term[]; per?: { of: string; value: number; n: number }; floor?: boolean } = {}): number {
+  const a = amountOf({ kind: 'heal', base, ...(o.per ? { per: [{ of: o.per.of, value: o.per.value }] } : {}), profile: 'mend', order: 'chain', round: o.floor ? 'floor' : 'none' }, null,
+    { level: null, ...(o.per ? { counts: { [o.per.of]: o.per.n } } : {}), mults: [term(healing, 'stat: healing given'), term(level, 'level'), ...(o.own || [])] });
+  return o.floor ? a.amount : a.raw;
+}
