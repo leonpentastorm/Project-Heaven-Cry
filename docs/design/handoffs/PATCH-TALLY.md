@@ -1,12 +1,18 @@
 # What this patch changes, against what is live
 
 **Live: 0.22.0.** This branch (`claude/charming-gauss-hbq4n0`) is everything below on top of it. Kept by the lead as the
-work goes; the last section says what is still moving. Rules revisions 1.15 to 1.23 are all new to players: live stops
+work goes; the last section says where it stands. Rules revisions 1.15 to 1.26 are all new to players: live stops
 at rules 1.14.
 
 Each row: what a player on live has today, what they get with this patch, and where the detail is. Written from the
 hand-offs as the work went; **the live column is to be checked against `origin/main` line by line before release**
 (cells marked "not checked" are the ones known to be unverified).
+
+**Live column checked against `origin/main` (0.22.0, `651ad63`) on 12 Nov 2026**, with `git show` and `git grep` on
+`data/*.json` and the engine source, without a checkout. One live value was wrong and is fixed (Boss HP: live has 200
+at every level; 960 was an interim value on this branch). Four were made exact (critical multiplier, prayer heal
+sizes, Boss row, tier HP). Rows that could not be verified from the code on `origin/main` (they are measurements or
+need a running game) are listed at the end of section 11b below.
 
 ## 1. Enemies (rules 1.15)
 
@@ -15,14 +21,14 @@ hand-offs as the work went; **the live column is to be checked against `origin/m
 | Enemy numbers | One set per tier, whatever your level | By tier **and level** (HP, damage, to-hit, defence grow with you) |
 | Tiers | Minion, Soldier, Elite, Boss | Plus **Vermin** (dies in one hit) |
 | To hit at equal level | Not fitted | About 65% |
-| Criticals | Not checked for this table | ×1.5, to ×2.0 with Perception and Dexterity |
+| Criticals | ×2 plus 0.1 per Perception and 0.05 per Dexterity over 1, no cap (`rules.json derived.multipliers.critical`) | ×1.5, to ×2.0 with Perception and Dexterity |
 | Elites and Bosses | Could be one-shot by a big level gap | Never taken out in one hit by the gap |
 | AP perks | Usable every turn | 3-turn cooldown |
 | Enemy 13 or 14 tiles away | (maps were too small for it) | Closes in or fires (it used to stand still: fixed) |
-| Target choice | Most hurt, but techniques went at the first character in the list (a bug that spread the fire) | Techniques aim at the chosen target; **enemies go for whoever heals the most** (Soldiers lean, Elites and Bosses hunt); a **fire doctrine per tier** is being fitted (rules 1.25) because fixed aim made them pile on one character |
-| Boss HP | 960 at its level | **820** (rules 1.23) |
+| Target choice | Most hurt, but techniques went at the first character in the list (a bug that spread the fire) | Techniques aim at the chosen target; **enemies go for whoever heals the most** (Soldiers lean, Elites and Bosses hunt); a **fire doctrine per tier** was fitted (rules 1.25) because fixed aim made them pile on one character |
+| Boss HP | **200** at every level (one row a tier: Minion 30, Soldier 60, Elite 100, Boss 200) | **820** at level 1 (rules 1.23; it was 960 earlier on this branch), growing with the level table |
 
-Detail: `balance-sim-step1-full.md`, `defence-step.md` (to come).
+Detail: `balance-sim-step1-full.md`, `defence-step.md`.
 
 ## 2. Maps and camera (rules 1.16)
 
@@ -102,7 +108,7 @@ Detail: `damage-step-magic.md`, `outburst-rework-2.md`.
 | Medic's kit, Triage, stims | Triage 20, stim 30, Rally 20, flat | Triage 5, stim 6, Rally 6, × Healing given × the level factor |
 | **Rules 1.26, the re-fit** | | A healer's turn **all in** on 1.25 Soldier-turns (146 / 132 / 122 / 99% measured at levels 1, 5, 10, 20), a normal share about 1.0: Healing given 0.87 × (1 + 0.06 per point of Insight over 1 and of Empathy). Inverse and Shell read a landed Soul Stat (`soul_mend`) |
 
-Detail: `heal-shield-pass.md`, `defence-step.md` (to come).
+Detail: `heal-shield-pass.md`, `defence-step.md`.
 
 ## 7. Faith (rules 1.21, 1.22)
 
@@ -116,10 +122,10 @@ Detail: `heal-shield-pass.md`, `defence-step.md` (to come).
 | Cut Short | Could lock one enemy out all fight | Not the same enemy two rounds running |
 | Hold the Gate | Any Hymn turn | Its own 6-round cooldown |
 | Witnessed, Old Overcast | +2 to hit on every attack | +2 on the next attack after a kill made while Witnessed |
-| Prayer heals | Flat | Level factor; Warm Hands 13, Saint's Shield 16, Absolution 9 |
+| Prayer heals | Flat: Warm Hands 40, Saint's Shield 40, Absolution 30, Health 15 (× Blessing power) | Level factor; Warm Hands 13, Saint's Shield 16, Absolution 9 |
 | **Blessing power (rules 1.26)** | 1 + 0.1 × Faith | 0.956 × (1 + 0.06 per point of Virtue over 1 and of Faith): Virtue counts. All in: a Hymn turn 124 / 95 / 157 / 167%, a Whisper turn 98 / 71 / 57 / 98% at levels 1, 5, 10, 20 |
 
-Detail: `faith-fit.md`, `faith-round-2.md` (to come).
+Detail: `faith-fit.md`, `faith-round-2.md`.
 
 ## 7b. MP (rules 1.24)
 
@@ -167,7 +173,7 @@ Fitted = measured and brought to a target. Everything is measured on **one targe
 second and third groups exist.
 
 **Fitted:** the plain rifle (the 100% line); guns on one target (rules 1.18); Sigil damage (1.17); Outburst damage
-(1.17, 1.19, base 40); magic heals and shields (1.20); enemies by tier and level (1.15). Being fitted: Faith (1.22), the
+(1.17, 1.19, base 40); magic heals and shields (1.20); enemies by tier and level (1.15). Since fitted (12 Nov): Faith (1.22 and 1.26), the
 medic's kit and Boss HP (1.23).
 
 **Measured, not fitted (inside the ceiling, so left):** the optimised blade (112 to 126%; 109 to 142% holding its
@@ -224,16 +230,35 @@ row 3 (thrown) fitted; row 9 (control) has its yardstick and a condition table (
 | Card texts with old numbers (the Outburst base, Triage, Stim Throw, Rally) | New in this patch | Fixed |
 | The Narrator prompt 45 tokens over its cap | New in this patch | Fixed |
 
-## Still moving (12 Nov)
+## 11b. Live column: what was not verified (12 Nov 2026)
 
-- **Rules 1.22**, Faith round 2: built; the Hymn turn is being raised from 125% to 150% (Leon).
-- **Rules 1.23**, the defence step: built (no round limit, enemies go for the healer, the medic's kit with the level
-  factor, Boss HP 960 to 820); to be verified.
-- **Rules 1.24**, MP off Virtue and Pumps that cost MP: being built.
-- **The capstone** (balance pass section 17): one damage formula (`proposals/2026-11-unified-damage.md`), then the
-  re-fit so that an **all-in** build reaches each ceiling and a normal share sits at ceiling ÷ 1.25; many targets;
-  a yardstick for control; the balance contract and its guard. **The re-fit is built (rules 1.26, `balance-refit.md`):**
-  the contract `docs/design/balance-contract.md` and its guard in `npm run check`; Boss HP not yet re-run.
-- Open with Leon: bug 12 (which action shows no AP cost); the questions in each hand-off not yet answered.
-- Not done: the version bump and changelog, the stale suites (`soul`, `heart`, `feelings40`, `sigil15`, `magic`),
-  a playtest of any of it. **Nothing here is live.**
+- Every "% of the plain rifle" figure in the Live columns (guns 204 to 221%, Sigil 78 to 119%, Outburst 61 to 143%,
+  Faith 84 to 116% and 15 to 53%, healing 3 to 7 Soldier-turns): measurements from the simulator on the 0.22.0 rules,
+  not fields in the code. Not re-measured.
+- "To hit at equal level: not fitted" and "Elites and Bosses could be one-shot by a big level gap": a description of
+  0.22.0 behaviour, not a data field (live has no level gap rule or table); not checked.
+- "AP perks usable every turn": confirmed only by the absence of any cooldown field on `origin/main`.
+- "Witnessed, Old Overcast: +2 to hit on every attack": on live the +2 applies to an attack carrying a tag the patron
+  likes, and a patron that likes `kill` gets it on every attack (`faith.ts likedAttack`); the row is right for Old
+  Overcast only if its likes include `kill`. Not checked patron by patron.
+- Hymn damage rows ("two patrons with a damage Hymn"), Cut Short, Hold the Gate, Lightning Rod, Judgement and the
+  Saints' Verdict: texts read, behaviours not run.
+- Section 8's visual rows (a fight's last blow, the next wave, portraits, Suppress and Lob timing, area preview in the
+  fog, the opportunity attack order, a vanishing glyph): bugs Leon saw on live (`BUGLIST-0.22.md`); the code on
+  `origin/main` was not run.
+- Section 2, the Proving Ground's ground: live campaigns are 16 × 11 (`data/campaigns/*.json`); the bug list reports
+  16 × 12 in the Proving Ground.
+- Verified exact on `origin/main`: weapon damages (section 3), SMG family, Heavy Bolt +50%, Mag Dump 4 rolls, long
+  rifle Shot 2 / Aimed 3, Burst 3 rolls, MEND 25 / WARD 30, the 350 / 500 Sigil clamp, Outburst base 20 and stage
+  table 0.8 / 1 / 1.4 / 1.8 / 2.2, feeling steps (Rage 0.5, Shame 0.6, Abandon 0.8, Relief 0.2) and their jobs,
+  Max MP 100 + 100 × (Virtue − 1), the prayer cooldown `max(1, 4 − 0.5 × (Virtue − 1) − 0.5 × Faith)`, six Whispers,
+  Triage 20, stim 30, Rally 20, frag 40, tiers (no Vermin), number-key hotkeys.
+
+## Where it stands (12 Nov, at the close)
+
+- Rules 1.15 to 1.26 are built and merged on this branch; the re-fit (1.26) and its guard are in `npm run check`.
+- Merged since the first draft of this tally: the engine foundation (one damage formula, saves, forced movement,
+  costs and counters, conditions from data, fog in the engine including the fight log, action descriptors, item ops
+  first pass), the 77 artist icons shown, painted icons tinted, the eight failing browser suites.
+- Not done: the final `npm run check` and `npm run e2e -- all` on the merged tree on a quiet machine, a playtest of
+  any of it (`docs/PLAYTEST-CHECKLIST.md`), Leon's word. **Nothing here is live.**

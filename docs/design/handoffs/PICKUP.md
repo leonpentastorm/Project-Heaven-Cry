@@ -15,16 +15,17 @@ that can do a piece; no more than two pieces running at once; a reviewer only wh
 ## 2. Where the work is
 
 - **Branch:** `claude/charming-gauss-hbq4n0` (pushed). Everything merged is there. Live is still **0.22.0** on `main`.
-- **Merged so far (12 Nov):** rules 1.15 to 1.25 (the balance pass's first half), the one damage formula stage a,
-  client boundary 1, engine foundations 1, the text-number truth sweep, performance 1. Each has a hand-off in this
-  folder with a "How to add things" section.
+- **Merged so far (12 Nov):** rules 1.15 to 1.26 (the balance pass and the re-fit), the one damage formula stage a,
+  client boundary 1 to 3, engine foundations 1 to 3, the text-number truth sweep, performance 1, the browser suites
+  clean-up, the artist's 77 icons, the fight log fogged. Each has a hand-off in this folder with a "How to add things"
+  section. The version is 0.23.0 on this branch (bump and changelog done); live is 0.22.0.
 - **In flight work is also on the remote as `wip/<branch name>`** (Leon, 12 Nov: "push it"): `git fetch origin 'refs/heads/wip/*:refs/remotes/origin/wip/*'`, then `git branch --list -r 'origin/wip/*'`. A loop pushed them every ten minutes while the lead was alive; a `wip/` branch is the agent's last commit, finished or not: judge it by section 3 before merging, and delete the `wip/` branch once its piece is merged.
 - **In flight, each on a local branch in a git worktree** (`git worktree list`,
   `git branch --list 'worktree-*'`). In a fresh container use the `wip/` copies; only if a piece has none, redo it from the brief in section 5.
 
 | Piece | Branch | State when this was written |
 | --- | --- | --- |
-| Balance pass stage b (the re-fit) | a `worktree-agent-*` branch (remote `wip/…`), started 12 Nov | building |
+| (none) | | The re-fit is merged; nothing is in flight |
 
 Every other `worktree-…` branch is **already merged** (wave 1, wave 2, the sweep, performance); leave them.
 
@@ -67,7 +68,7 @@ not push, and to report the branch name. Hand long lists to an agent as a **file
 
 ## 4. What is left, in order (tick as you go)
 
-- [x] **Wave 2** merged (12 Nov): costs and counters, conditions, fog in the engine. Left over from it, for wave 3: the fight log still reaches every player whole (spec item 1600 a: do it with the effects schema); about half the counters and 28 resource payments are still by hand (ratcheted by `lint-costs`; they ride on item ops).
+- [x] **Wave 2** merged (12 Nov): costs and counters, conditions, fog in the engine. **The fight log is fogged too** (merged 12 Nov: one `say()` primitive, per-side sight stored with each line; a line that names a unit by another word can still reach everyone). Left over from it, for wave 3: about half the counters and 28 resource payments are still by hand (ratcheted by `lint-costs`; they ride on item ops).
 - [x] **Browser suites** clean-up merged (12 Nov; stopped by the lead after 8 hours of full runs on a loaded machine: 61 suites in `apps/web/e2e/groups.json`, runner retries once alone). Not yet run against the merged tree: action descriptors changed the client after it, so expect stale suites on the first `npm run e2e -- all`.
 - [ ] **Wave 3** (PLAN.md has the table; the reviews have the detail). Cheapest order:
   1. [x] Item ops, first pass (merged 12 Nov; `engine-foundations-3-item-ops.md`): the runner, closed lists of
@@ -75,14 +76,15 @@ not push, and to report the branch name. Hand long lists to an agent as a **file
      handlers moved** (11 data-only); the review's estimate was too high. What is left is listed in that hand-off in
      order (cost triggers, a turn-counted cooldown, "next X after Y", area targets); the lint stops it growing.
      Lead's call: the second pass waits until after the balance pass, it does not block live.
-  2. Preview is a dry run (F7), then character / unit / story state in one table (F9, F10).
+  2. [ ] Preview is a dry run (F7), then character / unit / story state in one table (F9, F10). **Not done.**
   3. [x] Action descriptors (merged 12 Nov; `client-boundary-3-actions.md`): `actionsFor`, `previewDescriptor`,
      `sendDescriptor`, `registerActions`; all seven systems on `apps/web/src/game/actionFlow.ts`. Not done: the combat
      screen split (review 4: 8), the story map, `smartCommands` costs. Browser suites it names still to run:
      `npm run e2e -- playscreen physical physical-pack perks classes-moves rules114 ground reload world-play tabs resources combat-fixes turn-order faith faith-pg skeleton-screens heart soul feelings40 magic sigil14 sigil15 sigil15-strokes sandbox two-players`.
-  4. Effects with a schema (review 4: 5).
-  5. Rooms and the Narrator prompt (review 4: 7, 10). **First to cut if tokens run short.**
-  6. Fold the spec's revision sections 1.14 to 1.25 into its body (review 3: row 7); section 14 as a ledger.
+  4. [ ] Effects with a schema (review 4: 5). **Not done.**
+  5. [ ] Rooms and the Narrator prompt (review 4: 7, 10). **Not done** (first to cut if tokens run short).
+  6. [ ] Fold the spec's revision sections 1.14 to 1.26 into its body (review 3: row 7); section 14 as a ledger. **Not done.**
+  Wave 3 is therefore partly done (1, 3 and the fight log); the rest comes after live, with the item ops second pass.
 - [x] **The balance pass: the re-fit merged 12 Nov** (rules 1.26; `balance-refit.md`, `docs/design/balance-contract.md`; still unmeasured: class moves, perks, special rounds, Calls, reactions, armour). The brief it was built from: (`docs/design/proposals/2026-11-balance-pass.md` section 17;
   `2026-11-unified-damage.md` stage b: steps b1 to b8). Rulings already given by Leon: the ceilings are what an
   **all-in** build reaches and a normal share sits at ceiling ÷ **1.25**; **no damage slope on rolled attacks** (skill
@@ -97,9 +99,8 @@ not push, and to report the branch name. Hand long lists to an agent as a **file
 - [x] **`docs/PLAYTEST-CHECKLIST.md`** (written 12 Nov; its "right" values are from the hand-offs, not from play): what Leon should try by hand, by system, with what "right" looks like. Seed it
   from `PATCH-TALLY.md` (every changed system), `BUGLIST-0.22.md` (bugs to confirm by eye) and each hand-off's
   behaviour changes.
-- [ ] **Close:** `PATCH-TALLY.md` live column checked against `origin/main`; version bump in the four `package.json`
-  and `package-lock.json`, `CHANGELOG.md`; on a **quiet machine** one `npm run check` ALL GREEN and
-  `npm run e2e -- all` green. Then tell Leon it is ready and wait.
+- [x] **The artist's 77 icons** (modules, feelings, UI marks) are merged and shown in the game (12 Nov); painted icons take the ink the drawn ones took (one mask primitive).
+- [ ] **Close** (what remains): `PATCH-TALLY.md` live column is checked (12 Nov) and the version bump (0.23.0, the four `package.json` and `package-lock.json`) and `CHANGELOG.md` are done. Left: on a **quiet machine** one final `npm run check` and `npm run e2e -- all` on the merged tree, both green. Then Leon's word (he plays with `docs/PLAYTEST-CHECKLIST.md`); never deploy without it.
 
 ## 5. Briefs for the in-flight pieces, if they have to be redone
 

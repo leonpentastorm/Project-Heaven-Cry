@@ -1,147 +1,56 @@
-# Pick-up note (written 11 Nov 2026, 13:40, with the session's usage nearly spent)
+# Session hand-off (brought up to date 12 Nov 2026, at the close of the balance pass and the engine foundation)
 
 For whoever continues: a person, or a fresh AI session. Read `CLAUDE.md` first, then `docs/TESTING.md` (which tool
-proves which change), then this.
-
-## 0. First thing to do
-
-**`docs/design/handoffs/BUGLIST-0.22.md`**: fourteen bugs and asks from Leon's playtest of 0.22.0, in order, starting with merging `origin/main` (0.22.0, a music expansion from another session) into this branch. Do that list before anything in section 4.
-
-## 0a. Checkpoint, 11 Nov 2026 (Leon called it at 99% usage)
-
-Everything in the working tree is pushed on `claude/charming-gauss-hbq4n0` as "CHECKPOINT, not verified" commits.
-Nothing in them has been through `npm run check`, the browser suites or `python3 tools/validate_art.py`: run those
-first. Whether the maps and camera review (workflow run `wf_330a0dc7-9eb`) finished was not checked; treat its
-last edits (`packages/engine/src/combat.ts`, `apps/web/e2e/turn-order.mjs`) as unreviewed.
-
-Added since the last hand-off:
-- `BUGLIST-0.22.md` section E: what Leon's report from room QDF3DM shows (leads for bugs 10, 11, 13, 14).
-- Balance pass section 13: Outburst gets a full rework in the damage step (Leon: Rage adds Strain with no bigger
-  multiplier, Shame only hurts you; every feeling, module, tone and shape gets audited and priced).
-
-Order when usage is back: verify the checkpoint, then the bug list, then the damage step with the Outburst rework.
-
-Later on 11 Nov: the maps and camera workflow ended. The maps build and the camera build finished (the maps
-builder reports `npm run check` green at its end); the **adversarial browser review died when usage ran out**, so
-the camera and the big maps have never been reviewed in a browser. Run that review again first. The maps builder's
-full report is in the workflow journal: `/root/.claude/projects/-home-user-Project-Heaven-Cry/40abf8cd-77d7-5315-b669-cee39d0cd8b9/subagents/workflows/wf_330a0dc7-9eb/journal.jsonl`
-(gone if the container is reclaimed). Two more asks from Leon are in the balance pass: section 14 (Sigil hits at
-150% to 200%, the biggest in the game) and section 15 (two-key hotkeys: 11 move, 12 sprint, 41 draw, 42 evoke).
-
-**11 Nov, evening (usage back).** The checkpoint is verified: `npm run check` green, `main` (0.22.0) merged in,
-all 31 browser suites green (five needed a second run; `turn-order` had a stale set-up, fixed). Bug list status is
-the table at the top of `BUGLIST-0.22.md`. Two agents were started in the working tree: the weapon effects sweep
-(bugs 3 to 7) and the damage step for Sigil and Outburst (balance pass sections 13 and 14; its report goes to
-`damage-step-magic.md` here). Guns' ceiling (a bit under 150%) is the part of the damage step not started.
-Nothing of this is live.
-
-**11 Nov, night.** Both agents finished and their work is committed. Rules 1.17 (the magic damage step) is in
-the spec, data and engine: read `damage-step-magic.md`, whose ten questions wait for Leon. The effects fixes and
-`fx-sweep` are in (bug list table). `npm run check` green (engine 3,118, web 980); `fx-room`, `fx-sweep` (real-speed
-part), `rules114`, `sigil14`, `classes`, `classes-moves` green. Five old suites outside the `all` group (`soul`,
-`heart`, `feelings40`, `sigil15`, `magic`) fail, and fail the same way on the commit before this work (`5d2bb32`):
-stale, to be repaired or retired. Not done: `npm run e2e -- all` on the final tree, the guns' ceiling, the version
-bump. Nothing of this is live.
-
-**12 Nov, early.** Leon answered the magic questions (in `damage-step-magic.md`) and three more pieces were built:
-rules 1.18, the guns' ceiling (`damage-step-guns.md`: the best gun 143 to 146% of the plain rifle, was 204 to 221;
-nine questions; fights are longer and the Boss fight with cover now runs 10.6 to 13.8 rounds, not refitted), rules
-1.19, Outburst round 2 (`outburst-rework-2.md`; twelve questions; its section 14 items are 1200 to 1221), and the
-glyph that vanished on an opportunity attack (a display bug; bug list item 2), with Edge Word limited to your own
-turn and the blow played before the step it interrupts. Known and not fixed: the fit tool's "under fire" rows read
-wrong on the 26 x 26 simulator ground (an enemy 13 tiles off never fires); whether real fights have that gap is
-unchecked. Nothing of this is live.
-
-**12 Nov, later.** Also built: rules 1.20, the heal and shield pass (`heal-shield-pass.md`: heals were far too high
-and flat; now measured in Soldier-turns, with a level factor; eight questions), rules 1.21, the Faith fit
-(`faith-fit.md`: prayer was not a way to fight; Old Overcast and Nerukhan now about 135%; eight questions), the
-Outburst's Damage base 36 to 40 (Leon: steady 135%, peak 165%; spec item 1222), and an AI fix: an enemy 13 or 14
-tiles off with a long gun never moved or fired (`test/ai-sight-range.test.ts`). Leon's rulings of the day are in
-balance-pass section 16 (Weapon Arts break the ceiling as a charged ultimate, counted in the average). `npm run check`
-green (engine 3,204, web 985). Open: `faith-pg` failed on cut-in timing while agents loaded the machine (re-run it
-alone), the medic's kit (Triage and stims have no level factor), Boss HP (fitted against the old 200% gun), the
-stale suites `soul`, `heart`, `feelings40`, `sigil15`, `magic`, the version bump. Nothing of this is live.
-
-**12 Nov, the foundation.** Read `docs/design/proposals/2026-11-engine-review/PLAN.md` first: it is the plan in
-force (four reviews, waves of refactors each pinned by golden tables, then the balance pass resumes). Merged on this
-branch: rules 1.15 to 1.25, the unified damage formula stage a (`unified-damage-stage-a.md`), client boundary 1
-(`client-boundary-1.md`), engine foundations 1 (`engine-foundations-1.md`). **In flight, each in its own git worktree
-branch (`git worktree list`, `git branch --list 'worktree-*'`): performance 1, the text-number sweep (second pass),
-the browser suites clean-up, and wave 2 (costs and counters, conditions, fog in the engine).** A branch whose agent
-died is still good work if its last commit passes `npm run check`: read its hand-off in the branch, merge it
-(`git merge --no-ff <branch>`), resolve by keeping both sides' intent (the damage amounts from one side, the new
-primitive's call from the other), re-record a golden table only when the diff is new lines or a listed ruling.
-On a loaded machine tests time out: re-run the file alone with `--testTimeout 300000` before believing a failure.
-Worktrees are created from stale `main`: an agent must fast-forward to this branch first. Nothing ships to live until
-everything under "What ships together" in the plan is merged and checked clean; Leon decides the deploy.
+proves which change), then `docs/design/handoffs/PICKUP.md` (what is merged, how to take a branch in, what is left in
+order). The older notes that used to fill this file (the 11 Nov checkpoints, maps and camera in flight, the damage step
+brief) are done and live in the hand-offs listed in `README.md`.
 
 ## 1. What is live
 
 **0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music
-expansion merged by another session; this branch is 9 commits behind it). Leon decides every deploy; say what is ready and wait for his word. The release steps are at
-the end of `docs/TESTING.md`. Releases were made from a clean copy (a `git worktree` of the release commit) while
-agents worked in the main folder.
+expansion). Leon decides every deploy; say what is ready and wait for his word. The release steps are at the end of
+`docs/TESTING.md`. Releases are made from a clean copy (a `git worktree` of the release commit). Keep the
+`backup/live-<version>` branches of the two latest live versions.
 
 ## 2. What is on the branch and not live
 
-Branch `claude/charming-gauss-hbq4n0`. Committed and pushed, in order:
+Branch `claude/charming-gauss-hbq4n0`, version **0.23.0** (bump and `CHANGELOG.md` entry done):
 
-1. **Balance pass, stage A** (measures only): the fight simulator and reference builds
-   (`packages/engine/test/balance/`), the baseline (`docs/design/handoffs/balance-sim-baseline.md`), the action price
-   list, the engine and Narrator split, and the nine combo-perk deeds the engine now grants itself.
-2. **Balance pass, step 1 = rules 1.15:** enemies by tier and level, a Vermin tier, criticals ×1.5 to ×2.0, 65% to hit
-   at equal level, the 3-turn cooldown on conditional AP perks, 19 items relabelled engine-run, an Elite or Boss never
-   one-hit by the level gap. Before and after: `docs/design/handoffs/balance-sim-step1.md`. All unit checks green;
-   28 browser suites pass (two only at real speed, now listed as such in `tools/e2e.py`).
-3. Design notes: `docs/design/proposals/2026-11-combat-roles.md` (who is wanted in which phase and encounter),
-   `docs/design/proposals/2026-11-balance-pass.md` (the whole pass: targets, rulings, the peak rule, the 90/10 rule),
-   `docs/design/handoffs/balance-questions.md` (every question put to Leon, his answers on top).
+1. **The balance pass, rules 1.15 to 1.26:** enemies by tier and level, maps up to 26 x 26 with a camera, the guns'
+   ceiling, Sigil, the Outburst round 2, healing and shields, Faith round 2, the defence step, MP off Determination and
+   Insight, the fire doctrine, and the re-fit (every ceiling is what an all-in build reaches; the balance contract and
+   its guard in `npm run check`). Every changed system against live: `PATCH-TALLY.md` (its live column was checked
+   against `origin/main` on 12 Nov).
+2. **The engine foundation:** one damage formula, saves, forced movement, costs and counters, conditions from data,
+   fog of war in the engine including the fight log, action descriptors, item ops first pass (20 of 310 handlers
+   moved), text numbers from data, performance about 3 times faster.
+3. **Bugs from Leon's 0.22.0 playtest fixed** (`BUGLIST-0.22.md`), the artist's 77 icons shown, the browser suites
+   grouped (61) and the eight failing ones repaired.
+4. **Docs:** `docs/ENGINE-GUIDE.md` (how to add things), `docs/PLAYTEST-CHECKLIST.md` (what to try by hand, and the
+   numbered calls made for Leon).
 
-## 3. What was in flight when this was written: maps and camera
+## 3. In flight
 
-A three-agent workflow (`wf_330a0dc7-9eb`) on roadmap items 2b and 2c (`docs/ROADMAP.md`):
-
-1. **Maps up to 26 × 26** (rules 1.16): done.
-2. **The camera** (today's tile size, follows the play, drag and keys, edge arrows, small map, overview on M): done.
-3. **An adversarial review in a real browser:** still running at 13:40.
-
-**Their work was saved as a checkpoint commit, `2762b0a` ("CHECKPOINT, not verified"), while the review was still editing.** Anything the review changed after that is either in a later commit or still uncommitted in the working tree. To finish it:
-
-1. `git status --short` to see it. Do not throw it away: it is two finished builds and a partial review.
-2. `npm run check`. If it is green, the builds are sound at the unit level.
-3. `npm run e2e -- camera mapzoom turn-order physical tabs right-panels`, then `npm run e2e -- all`. Suites that fail
-   because they assumed a 16 × 11 map or the old zoom: fix the suite if the game is right.
-4. `python3 tools/validate_art.py` (slow): the five map paintings were moved to `art/_archive/maps/` and taken out of
-   the catalog; it must report no failures. `python3 tools/rehash_art_checksums.py` if checksums are stale.
-5. Look at it in a browser at 1280 × 720, 1440 × 900 and 1920 × 1080 (the Proving Ground): tokens, HP bars and casings
-   must be as readable as before; the camera must not fight the player.
-6. Commit (explicit paths or `git add -A data docs packages apps tools art`), push. The agents' own reports are in
-   `/root/.claude/projects/-home-user-Project-Heaven-Cry/40abf8cd-77d7-5315-b669-cee39d0cd8b9/subagents/workflows/wf_330a0dc7-9eb/journal.jsonl`
-   (one result line per finished agent) if that folder still exists.
-7. If `npm run check` is red and cannot be made green in reasonable time, `git stash` the lot with a clear message
-   and tell Leon; step 1 underneath it is good.
+Nothing. All pieces are merged; no worktree agent is running.
 
 ## 4. What comes next, in order
 
-1. Finish and commit maps and camera (above). Leon plays it (three fights suggested in `balance-sim-step1.md`).
-2. **The damage step of the balance pass**, framed by `2026-11-combat-roles.md`:
-   - teach the simulator the six encounter types and three missing builds (Infiltrator, Trickster, Bard), and area and
-     control play for the casters;
-   - Defender, Bard, Trickster first (wanted nowhere today), then the Marksman (wanted everywhere), then the Mage's
-     set-up turns (cheaper drawing at low level; a glyph that stays after an Evoke), then the Fighter's Momentum
-     (a hit costs Momentum at most once a round: Leon's ruling);
-   - weapon base damage by family (ordinary guns top out a bit under 150%; only launcher-class weapons with very
-     expensive ammunition get 150%); a ranged technique beats the plain shot by 10 to 25% when its condition is met;
-     Burst deals more than Shot and is worse to hit; spell criticals ×1.5 to ×2.0; bring the Blackpoint 700 and the
-     breacher tube down.
-3. The rest of "the engine takes everything it can": groups B, C, D of `docs/design/handoffs/adjudication-split.md`.
-4. Later, already designed: effects and icons for the nine Calls; Weapon Arts; tri-scale armour; the M813 rewrite.
+1. On a quiet machine: one `npm run check` and `npm run e2e -- all` on the merged branch, both green (`PICKUP.md`
+   section 4, "Close").
+2. **Leon's playtest** with `docs/PLAYTEST-CHECKLIST.md`; he names which of the calls (section 14 there) to reverse.
+3. **His word to deploy 0.23.0**; then the live backup branch.
+4. **After live:** the item ops second pass (289 handlers are still code; `engine-foundations-3-item-ops.md` lists the
+   order), the unmeasured systems (class moves, perks, Mastered perks, special rounds, Calls, reactions, armour; the
+   list is `PATCH-TALLY.md` section 10), and the rest of wave 3 (Preview as a dry run, one state table, effects with a
+   schema, rooms and the Narrator prompt, folding the spec's revisions into its body).
+5. Later, already designed: effects and icons for the nine Calls; Weapon Arts (may break the ceiling as a charged
+   ultimate); tri-scale armour; the M813 rewrite; the roguelike mode.
 
 ## 5. Things Leon has not ruled on (they take the recommendation until he does)
 
-All in `docs/design/handoffs/balance-questions.md`. Also waiting: the 118 card-versus-game disagreements in
-`docs/design/handoffs/text-pass-mismatches.md`; the roles grid in `2026-11-combat-roles.md` (which phase each class
-owns); the choices in `docs/design/handoffs/rules-1.14-as-built.md`.
+The numbered calls in `docs/PLAYTEST-CHECKLIST.md` section 14 and `PICKUP.md` section 6; the open questions in
+`balance-questions.md`; the 118 card-versus-game disagreements in `text-pass-mismatches.md`; the roles grid in
+`../proposals/2026-11-combat-roles.md`; the choices in `rules-1.14-as-built.md`; Bug 12 of `BUGLIST-0.22.md`.
 
 ## 6. Known problems
 
