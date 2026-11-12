@@ -1,6 +1,6 @@
-# Text and number truth (12 Nov 2026): two passes
+# Text and number truth (12 Nov 2026): three passes
 
-**Read section 7 on first: the second pass.** Sections 1 to 6 are the first pass (the rules.json and client slice), kept as its record; where the second pass changed something of the first, the line says so.
+**Read section 10 first: the third pass (the merge with the main line, the review of the second pass, the 137 findings left). Then section 7, the second pass.** Sections 1 to 6 are the first pass (the rules.json and client slice), kept as its record; where the second pass changed something of the first, the line says so.
 
 The engine review (`docs/design/proposals/2026-11-engine-review/3-data-text-tests.md`, sections 2 and 5.2) found texts,
 data fields, spec lines and comments that state a rule the game no longer has, and eight assertions that never ran.
@@ -358,3 +358,171 @@ read the mods, armour, items, techniques, Derived stats, skills, XP or class tab
 - A new data file with texts must be added to the list at the bottom of `datatext.ts`, or its placeholders reach the
   screen unfilled (`datatext.test.ts` checks perks, weapons and traits only for that).
 - Leon's rulings wanted: items 1500 to 1502 (first pass) and 1503, 1505, 1506, 1508, 1509, 1513 (second).
+
+## 10. Third pass (12 Nov 2026)
+
+Branch: `worktree-agent-acf6af22447e123c9`, built on `worktree-wf_67430118-ae8-19` (the second pass) with the main line
+(`claude/charming-gauss-hbq4n0`: unified damage stage a, engine foundations 1, client boundary 1) merged in. Not pushed.
+The work list was `docs/design/proposals/2026-11-engine-review/text-number-findings.json`: `reviewOfSecondPass` (the
+problems and guard weaknesses of the second pass) and `left` (137 findings never handed to the fixer).
+
+### 10.1 The merge: conflicts and how each was resolved
+
+19 hunks in 15 files. Rule: the main line's new primitive AND the sweep's corrected fact.
+
+| File | Hunks | Resolution |
+| --- | --- | --- |
+| `CLAUDE.md` | 1 | the main line's two new working agreements ("Who does what", "No answer means yes") with the sweep's Testing line |
+| `apps/web/src/screens/main.js` | 1 | the main line's import list (moveOptions, reachOf, dryRun, withGame) plus the sweep's `analyzeCost` |
+| `data/classes.json` | 1 | Rewrite's card: the sweep's text (its placeholder and the flipped-state list) |
+| `design/canvas-build/build.py` | 2 | the main line's freshness check (it names the stale keys), its lines ending in "0 errors" / "1 error" so `check.py` reads it as a data job |
+| `docs/TESTING.md` | 1 | one line naming both sides' checks |
+| `docs/rules/PHC-Core-Rules-v1.0.md` | 1 | section 14 holds both lists: 1440 to 1445 and 1470 to 1483 (main), then 1500 to 1515 (sweep) |
+| `packages/engine/src/classes/rev3.ts` | 1 | Rally's preview through `kitHeal` (main) |
+| `packages/engine/src/combat.ts` | 1 | the import of both `RULES` (main) and `SKILL` (sweep: the Vigilance and Improvisation names) |
+| `packages/engine/src/faith.ts` | 2 | imports of both sides; Saint's Shield and Judgement on `prayerAmount`/`prayerStrike` (main); Absolution on `prayerAmount` AND `cleanseHarmful` (the sweep's Prone, Bleeding, Dazed) |
+| `packages/engine/src/hazards.ts` | 1 | `SKILL` (sweep) kept beside the main line's `rolls` import |
+| `packages/engine/src/magic.ts` | 2 | `soulAmount`/`outburstTerms` and `loveHeal` on the one formula (main) with the sweep's comments (base 40, enemy 24; Calm −0.4) |
+| `packages/engine/src/perks/a.ts` | 1 | `itemAmount` (main) and `charOfUnit` (the sweep's Crawler-Blooded) |
+| `packages/engine/src/perks/e.ts` | 1 | the surgeon's heal through `kitHeal` (main) |
+| `packages/engine/test/golden/enemies.json` | 1 | the main line's table, then re-recorded (10.2) |
+| `tools/check.py` | 2 | one screen-data job (both sides had added it), the sweep's web guards |
+
+Also from the merge: the four new data readers (`actions.ts`, `perkcard.ts`, `rolls.ts`, `effects/amounts.ts`) import
+`datatext` first; `actions.json` is filled at load (its texts' eight rules numbers are `allow`ed in
+`tools/text_numbers.json`, each with the file its number lives in); `validate.py` and `actions.test.ts` read the
+renamed `stabilise.ap_bard` (the merge's one real break: the main line still read `ap_combat_medic`);
+`protodata.json` rebuilt.
+
+### 10.2 Golden lines re-recorded, and why
+
+Every moved line is one of the sweep's listed engine changes; no other line moved.
+
+| Table | Lines | Why |
+| --- | --- | --- |
+| `enemies.json` | 4 (`enemy/boss/breacher_tube/L1, L6, L12, L20/blast`) | the breacher tube's splash is 60 (second pass, change 12), as recorded there: the bystander takes 57 / 66 / 84 / 116 |
+| `rules-enemies.log.json` | the same 4 | the log line of the same blast |
+| `rules-techniques.json` | 6 (`tech/cleave/{combat_knife,evoker_blade,sabre}/{soldier,elite}`) | Bleeding from a technique lasts 3 rounds (change 1): `bleed0>3` |
+| `rules-techniques.log.json` | 24 (`tech/heavy_bolt/*`) | Heavy Bolt's push is a Body save (change 2): "body save ... +1" where it read "guts or athletics save ... +4" |
+| `rules-outburst.json` | 3 (`outburst/feeling/cruelty/*`, `rage+spite+pride+cruelty/boss`) | Cruelty's Bleeding lasts 3 rounds (change 1) |
+
+The main line's new rules tables (`rules-*.json`) measure the Bleeding change the old tables could not (7.3).
+
+### 10.3 Engine behaviour changed in this pass
+
+1. **Together** (the Matchmaker's Hymn) lasts until the caster's next turn: held on the fight and ended at the caster's
+   turn start, as Hold the Gate. It ended at each bearer's own turn end (an ally acting after the caster lost the +2
+   Defense before the enemies moved). Test in `faith.test.ts`; it fails on the old code.
+2. **The protect tag** fires on the general Brace and on an Interpose (a new `protect_act` hook; the Defender's
+   `braced` is unchanged so Bulwark of Will does not hear it). `truth-pass-3.test.ts`; fails without the listener.
+3. **An allied caster that is not a character** (no sheet, players' side) casts MEND and WARD at a character's bases
+   again (10 and 12). The second pass had moved it onto the enemy bases; only an enemy-side caster with no sheet uses
+   those now (item 1644). Test in `rules120-heal-shield.test.ts`; it fails on the second pass's line.
+4. **The sheet's badge** (`effects/coverage.ts` `verdictOf`) takes item 1101's reading: a Narrator note on an item
+   the data labels `engine` is colour, so the 16 engine traits it called "Both" now say "Engine runs it".
+5. **Numbers the engine now reads from the card** (no value changed): Ingenuity's ambush per point, Field Repair's
+   base and per point, the Mastered Overreach resist cost (`unlocks.10.resist_echo`), Case Closed's −2 and ×1.2 (and
+   its log line), Paper's derived numbers, Inspire's MP, Strain and bonus (item 1645).
+6. Strings: Witnessed's fight text and the resources hint state the kill rule (rules 1.22); Inspire's story text
+   and Case Closed's read line are built from data. Fallback literals brought to today's numbers (the Damage base
+   40, At Once ×0.8; reached only with data missing).
+
+### 10.4 The review of the second pass, point by point
+
+1. **Coincidental bindings (high).** All fixed (item 1646): Rally, Threaten and Warn steps and the Fire, Storm and
+   Gale stages read their own object; Ingenuity and Field Repair got fields the engine reads; the Mastered resist
+   sentence reads `unlocks.10.resist_echo` on all 27 skills (it was bound on 4 to an Overreach penalty and bare on 23);
+   Acuity's and Improvisation's per-point lines, Shame's natural 1, Barrage and Blind and Slow are unbound.
+   **The rule now enforced** (`binding_errors`, run by the validator): a placeholder in a text that belongs to a
+   nested object may not read into ANOTHER object that has a text of its own (another step, stage, unlock, the
+   Overreach, the residue); it reads its own object, an ancestor, or a plain data block (`numbers`, `effects`,
+   `amounts`, a feeling's `step`). By kind: "costs N" never reads a negative field unless the text says less or the
+   field is a spent resource; "a natural N" is never bound. `--selftest-bindings` pins the four shapes, and
+   `truth-pass-3.test.ts` runs it. It found exactly the review's list and two more (Barrage, Blind and Slow).
+2. **Crawler-Blooded's test** now has the pray-er sworn elsewhere praying the Lumeri Hymn (burns) and the pray-er
+   sworn to Lumer praying another's Hymn (no burn). With the review's mutation (the pray-er's patron) it fails.
+3. **`sigil.ts` `foe`**: see 10.3 (3).
+4. **Mirror fields.** Case Closed, the Oil traits' `derived` and Inspire's numbers are read by the engine now;
+   Rewrite's `shield_damage_cap` is gone and its card reads the `amounts` block the engine uses; Witnessed's card
+   number and the engine's `like_bonus` are held equal by `validate.py`. Kept: the `ap_cost_is` strings (they hold
+   no number; they say why `ap_cost` is null).
+5. **Scope and the import convention.** The scope stays (the merge is done). The convention has a guard now:
+   `datatext.test.ts` fails when an engine file imports a data JSON before `datatext`, and scans every table the
+   engine exports for a raw placeholder (it scanned three).
+6. **Cards settled without a ruling** (buckler, mask and glasses, Stopping Shot, Case Closed and Stand Still): listed
+   for Leon as decisions taken, item 1641.
+7. **CLAUDE.md**: the Pump's MP and Max MP (rules 1.24) added; see 10.6.
+8. **The mutation test** caught one more hole when run on the merged pack: a second copy of an allowed number went
+   unseen. An allow entry admits one copy now (`{"why", "n"}` for more).
+
+### 10.5 The 137 findings of `left`
+
+About 40 of them were already fixed or already held as rulings by the first two passes (the ten dead assertions,
+the weapon findings in item 1513, 1500 to 1502, 1508, 1509, Rally's 20, the Decrkm row, the ×0.6 snap in four of
+eight places...); each was checked on the branch. The rest, by kind:
+
+- **Spec body (33):** in-place notes, nothing rewritten: the Critical row, Speaking in a fight (1.14), Pray (1.6),
+  enemy damage (1.15), the two Momentum lines (item 1004), SILENCE (Calls), Inverse (1.20), Split (1.23), At Once
+  (1.17), the section 12 stage table (1.19), Coin for the Ferry and Everyone Home and Mother Ember's intervention
+  (table, paragraph, items 731 and 741; 1.20), the rules 1.13 leftovers (ambush and critical taken, ready designs,
+  Insinuation, Authority, Karma), Forlorn Hope (1.14), the 1.23 guard, the 1.18 Outburst target, the 1.20 bands and
+  Absolution (1.22), section 13's counts, the head (one line for 1.14 to 1.25; the 1.11 blurb's Core point and Mind
+  Without Fog). The full-auto cone, high ground and the surprise round stay with items 1500 to 1502.
+- **Docs (24):** CLAUDE.md (Mother Ember's 10 + 3 × Devotion, the Hymn wait and Rebuke, Max MP and the Pump's MP,
+  no `art/maps/`, the roster in force, the built Next steps struck; the working agreements untouched; the one-screen
+  section grew by about 600 characters), `docs/HANDOFF.md` (version, deploy from main, section 14's size, the checks
+  point at TESTING.md, the hotfix reading confirmed, the balance pass), `docs/ROADMAP.md` (the balance pass done in
+  large part, the Bard's capstone done, the Outburst leads settled, the built product leads), `data/README.md` (the
+  archetypes' cores, the missing files and the loading order), `data/CONVENTIONS.md` (op counts, the core
+  requirement form, the three conditions not in conditions.json), the e2e README (Rage ×1.3), a world-play label.
+- **Comments (24):** the ones the second pass had not reached (ai-soul, game.ts, classes/k.ts, classes/i.ts,
+  magic.ts, character.ts, faith.ts).
+- **Data (15) and player texts (10):** `rules.json` pray (no patron needed) and the Narrator's list (rules 1.6),
+  `scales_with` removed from the 39 prayer entries (read by nothing), Witnessed's card (the kill rule).
+- **Engine against the spec (6):** Together and the tags fixed (10.3); high ground, the surprise round and full auto
+  are items 1500 to 1502; Quick's vacuous text is item 1513 (d).
+- **Never-run and placeholder tests (10):** all run now; see 10.7.
+- **Other (8):** `tools/e2e.py` lists the 32 suites no group ran as `UNSORTED` and refuses a suite in no group; the
+  rest were observations (the starter table, section 14's numbering) or 1513 (p).
+
+### 10.6 Not fixed, and why
+
+| What | Why |
+| --- | --- |
+| The rulings of items 1500 to 1513 and 1640 to 1644 | Leon's (10.8) |
+| `effects-omit-combat-form` (Heart Overload's free Begin and the like as `effects[]` entries) | unread mirror entries; the handlers claim their effects by index (as the second pass said) |
+| The 32 `UNSORTED` browser suites | listed, not run: no browser suites in this task. Each must be run by name and moved into a group or deleted |
+| `apps/web` suites, `npm run build`, deploy | out of scope by the task |
+| Guard weaknesses the review listed and this pass did not close | the spec-table check still compares spec with data, never with the engine, and reads a cell's first number; numbers in words and in `name`/`note` strings are not scanned; 1,407 bare numbers stay in the ratchet; the test lint does not see `/* */` blocks or an early `return`; the old-skill-name test sees only title case; the wiki rank test is close to a tautology |
+| `actions.json`'s eight allowed numbers | each lives in `rules.json` or `conditions.json`; a placeholder reads only its own item. A cross-file placeholder would be the fix |
+| The 1,407 bare numbers | item 1515: a field each, read by the hook and the text |
+
+### 10.7 Revived assertions that failed
+
+None failed because of the engine. Two needed their fixtures fixed to run at all, which is the finding: the hunt test
+(rules 1.23) had no enemy that could see the healer and returned early; with a spotter the four hunt expects run and
+pass. Grim Reaper's area-map kill missed with its seed; the seed is now searched for a kill and the kill's +2 AP is
+asserted. The music test's combat half, the ai-soul release check (the caster takes its turn now), the stray-token
+check, the sight leaks and the off quick command all run and pass. The strict coverage test runs in every suite
+(the lanes finished; it passes). The merge broke one real assertion (`actions.test.ts` read `ap_combat_medic`).
+
+### 10.8 Open rulings for Leon
+
+1. Item 1500: higher ground: build height or strike the two lines and keys.
+2. Item 1501: strike the 3 AP surprise round (the later rules describe what is built).
+3. Item 1502: full auto: a cone or the corridor the engine fires.
+4. Item 1503: confirm Case Closed's +20% and Stand Still's original (recorded from the plan, not the spec).
+5. Item 1505: glasses and the mask: 1 AP in a fight (built) or not in a fight.
+6. Item 1506: the buckler's Parry: the technique's +2 (built) or a +3 Defense reaction.
+7. Item 1508: One Breath: +3 or +4 in all, and the range-band halving.
+8. Item 1509: Fire Sermon: once per prayer, every prayer.
+9. Item 1513 (a) to (p): the weapon and property rulings (servo fist, rotary, Spin Up and the ten Narrator weapon
+   skills, Quick, Heavy, Modes, the rip-saw's fuel, the spellslinger, Eyes in the Back, Siege Engine, the one
+   conditions table).
+10. Item 1004 / 1642: Momentum and Guard points: record the 10 Nov ruling or revert the engine.
+11. Item 1640: do the Toll-Keeper's and Mother Ember's interventions cover the devoted themself?
+12. Item 1641: confirm or reverse the four cards moved to the engine's reading.
+13. Item 1643: rows for Smitten, Scorned, Hopeful, Last Turn, Guarded and Inspired, and the one table.
+14. Item 1644: an allied non-character caster's MEND and WARD bases (character bases, as built).
+15. Item 1504: Mind Without Fog's pre-1.11 sheets (build the fallback or re-make them).
+16. Item 1510: Linger with Inverse leaves no field (PROVISIONAL).
