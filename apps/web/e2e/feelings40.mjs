@@ -113,7 +113,7 @@ s = await st(); let ev = (await fxSince(n0)).find((e) => e.k === 'pump');
 ok('Rage poured in: stage ' + s.u.mg.held.stage + ', felt ' + JSON.stringify(s.u.mg.held.felt) + ', fx ' + JSON.stringify(ev && { feeling: ev.feeling, mult: ev.mult }), s.u.mg.held.felt?.[0] === 'rage' && ev?.feeling === 'rage' && ev.mult === 1.3);
 const mult = async () => ((await p.locator('.phc-heart-panel [data-heart-mult]').textContent().catch(() => '')) + ' ' + ((await p.locator('.phc-heart-panel [data-heart-does]').count()) ? await p.locator('.phc-heart-panel [data-heart-does]').textContent() : '')).trim();
 ok('the counter reads ×1.3: ' + await mult(), /×1\.3/.test(await mult())); // rules 1.19: Rage +0.5 on the first Pump (×0.8 → ×1.3)
-ok('the stage-1 segment shows the feeling\'s glyph', await p.locator('.phc-heart-panel [data-stage="1"] img').count() === 1);
+ok('the stage-1 segment shows the feeling\'s glyph', await p.locator('.phc-heart-panel [data-stage="1"] > span[aria-hidden]').evaluate((e) => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return r.width >= 10 && r.height >= 10 && ((cs.maskImage || cs.webkitMaskImage || '').includes('url(') || cs.backgroundImage.includes('url(')); }).catch(() => false));
 await snap('1-rage');
 await p.locator('.phc-heart-panel input[aria-label="Search feelings"]').fill('love'); await p.locator('.phc-heart-panel input[aria-label="Search feelings"]').press('Tab'); await pause(p, 250);
 await p.locator('.phc-heart-panel [data-feel="love"]').click(); await pause(p, 400);
