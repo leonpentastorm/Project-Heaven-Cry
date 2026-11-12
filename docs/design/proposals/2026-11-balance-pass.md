@@ -420,3 +420,16 @@ Outburst 150% at full Pump, guns a bit under 150% (rocket-class ammo at 150%).
 8. Witnessed's +2 to hit for Old Overcast's devoted is for a kill, not every attack.
 
 Built as rules 1.22 (hand-off `faith-round-2.md`).
+
+### Defence (Leon, 12 Nov 2026, after rules 1.20)
+
+9. **No round limit on healing.** The half-max-HP limit of rules 1.20 is withdrawn; healing is balanced by its AP
+   price. A tank kept up by a healer who does nothing else is allowed: "let them have it".
+10. **The enemies go for whoever heals the most.** That is the answer to the dedicated healer, not a cap.
+11. **Refit Boss HP** (it was fitted against the old 200% gun) and **a medic pass** (Triage and stims with the level
+    factor).
+12. **Hold the Gate** is a Hymn: it gets a long cooldown of its own.
+13. Faith's damage: "100-165 fluctuate with pumps and perks". Read as: about 100% on a quiet turn, about 165% on a
+    Hymn turn, averaging 120 to 125%. To be confirmed by Leon.
+
+Built as rules 1.23 (hand-off `defence-step.md`) and in rules 1.22.
