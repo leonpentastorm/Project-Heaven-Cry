@@ -11151,6 +11151,31 @@
       "source": "art/_archive/deliveries/2026-11-12/sources/module-left.png",
       "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-left.txt",
       "note": "New image_gen drawing; technical white-ink separation and UI exports only."
+    },
+    "module-time": {
+      "id": "module-time",
+      "label": "an hourglass made of two triangles",
+      "path": "art/icons/modules/module-time.png",
+      "sha256": "3be792ea3c7753b7140bc9a11a174d343822fc688590ad4e45bdd5ded1cf4606",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "ink": "#FFFFFF",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/modules/exports/256/module-time.png",
+        "128": "art/icons/modules/exports/128/module-time.png",
+        "64": "art/icons/modules/exports/64/module-time.png",
+        "56": "art/icons/modules/exports/56/module-time.png",
+        "48": "art/icons/modules/exports/48/module-time.png",
+        "44": "art/icons/modules/exports/44/module-time.png",
+        "40": "art/icons/modules/exports/40/module-time.png"
+      },
+      "collection": "2026-11-12-art-requests",
+      "source": "art/_archive/deliveries/2026-11-12/sources/module-time.png",
+      "prompt": "art/_archive/deliveries/2026-11-12/prompts/module-time.txt",
+      "note": "New image_gen drawing; technical white-ink separation and UI exports only."
     }
   }
 }

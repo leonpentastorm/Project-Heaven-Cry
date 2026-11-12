@@ -12,5 +12,6 @@ Pure white ink on transparency; image_gen drawings, technically separated and re
 - `module-ether.png`: a dot passing through a dashed wall
 - `module-right.png`: an arrow curving to the right
 - `module-left.png`: an arrow curving to the left; mirror direction of module-right, preserving the same geometry
+- `module-time.png`: an hourglass made of two triangles
 
 Leon approved both test-set family styles for continued production. Individual images remain review candidates, production_approved:false.
