@@ -17,7 +17,7 @@ If you only read one part, read [How to add things](#how-to-add-things).
 | One injury table | `rollInjury(rng, target, cb, by, called?)` in `combat.ts` | the Called Shot's own table (`classes/j.ts`) | A Called Shot asks the `injury` hook |
 | Area shapes | `kit.ts`: `Area`, `inArea`, `tilesIn`, `unitsIn` | 9 per-file cone, blast and band tests | None (damage and rules tables identical) |
 
-Commits, in order: the pin (`d3f6b58`, on unmodified code), then the change with its re-recorded lines, then this note.
+Commits, in order: the pin (`d3f6b58`, on unmodified code), then the change with its re-recorded lines (`775caf6`).
 
 ## The pins
 
