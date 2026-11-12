@@ -406,3 +406,17 @@ Outburst 150% at full Pump, guns a bit under 150% (rocket-class ammo at 150%).
 3. The peaks, in order: a full Sigil Line 150 to 200% (two turns of drawing), a charged Art (to be set with the
    Arts), the Outburst's biggest Release 165%, the best gun's steady 145%, the Outburst's steady 135%, a prayer-led
    build about level with the Outburst (rules 1.21, being measured), the plain rifle 100%.
+
+### Faith (Leon, 12 Nov 2026, after rules 1.21)
+
+4. **The Whisper is the every-turn prayer and is weaker than every combat system**, because anyone can pray one on top
+   of what they already do. There is a Whisper that hurts.
+5. **A Hymn is always better, per cast, than a standard spell or an Outburst**; its price is the cooldown, which is
+   long when Faith is low and comes down with Faith. Faith-boosting items come later and are what lowers it further; a
+   Hymn is not prayed every turn without them. (Rules 1.21 had fitted an every-turn Hymn: the cooldown formula reached
+   its floor of 1 round at Virtue 4 and Faith 3.)
+6. **A vow fulfilled in combat takes 1 round off the Hymn cooldown.** Balance around that.
+7. A prayer-led build averages a little under the Outburst (about 120 to 125%); Devotion 3 may sit under the rifle.
+8. Witnessed's +2 to hit for Old Overcast's devoted is for a kill, not every attack.
+
+Built as rules 1.22 (hand-off `faith-round-2.md`).
