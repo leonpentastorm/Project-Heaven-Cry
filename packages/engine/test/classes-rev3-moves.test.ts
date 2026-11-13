@@ -195,7 +195,7 @@ describe('Infiltrator', () => {
     const v = g.turn(at(g, g.pc, '4,2')); at(g, g.foe, '8,2');
     expect(() => perk(g, v, 'class:infiltrator.vanish')).toThrow(/Not now/); // rules 1.32: data only, its `if` (out of view)
   });
-  // Field Fix left the Operative (rules 1.32); its key and handler stay for the Rigger (step 8), which brings this back.
+  // 13 Nov 2026: Field Fix left the Operative (rules 1.32); its key and handler stay for the Rigger (step 8), which brings this back.
   it.skip('Field Fix: clear a squadmate\'s jam, restore their weapon, repair a machine for 20; nothing to fix is refused', () => {
     const f = fightWith([cls('infiltrator', 5), { traits: ['factory_made'] }], [{ at: 'P11' }]);
     const [i, a] = f.pcs; at(f, i, '4,2'); at(f, a, '5,2');
