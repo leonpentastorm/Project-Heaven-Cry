@@ -16,7 +16,7 @@ import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, 
 import { condMods } from './condtable';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit, hookUsed } from './effects/hooks';
 import { grantShield, tendHook } from './effects/damage';
-import { actionAp } from './effects/core';
+import { actionAp, immune } from './effects/core';
 import { note } from './effects/narrator';
 import { sessionN, uses } from './effects/uses';
 import { makeObject } from './objects';
@@ -205,6 +205,7 @@ export const seenByFoes = (cb: Combat, u: Unit) => cb.units.some((v) => v.side !
 export function hide(cb: Combat, u: Unit, why = ''): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
   if (alwaysSeen(cb, u)) return ' · ' + u.name + ' can\'t hide: the enemy knows where they are'; // always seen (Traced, rules 1.33)
+  if (immune({ u }, 'hidden')) return ' · ' + u.name + ' can\'t hide'; // immune to Hidden (a Figment: figments.json unit_effects, rules 1.34)
   if (u.hidden) return '';
   rawHidden(cb, u, true);
   emit(cb, 'hide', { u, why, cb });

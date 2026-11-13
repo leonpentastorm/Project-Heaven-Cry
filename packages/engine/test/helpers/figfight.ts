@@ -2,7 +2,7 @@
 import { storyWith, withGame, CLASSIC, type CharSpec, type FoeSpec } from './perkfight';
 import { beginTurn, type Combat, type GameState, type Unit, type Action } from '../../src';
 
-export interface FigSpec extends CharSpec { visualizer?: 'hand' | 'pack' | null; cores?: number }
+export interface FigSpec extends CharSpec { visualizer?: 'hand' | 'pack' | null; cores?: number; /** another focus in the off hand (an Attuner: the integration's tests) */ offHand?: string }
 /** A fight on the practice square: the first character holds the Visualizer in its off hand (or in the pack), with
  * spare cores. */
 export function figFight(specs: FigSpec[] = [{}], foes: FoeSpec[] = [{}], o: { seed?: string; level?: number } = {}) {
@@ -11,6 +11,7 @@ export function figFight(specs: FigSpec[] = [{}], foes: FoeSpec[] = [{}], o: { s
     const c = s.g.characters[Object.keys(s.g.characters)[i]];
     const vis = sp.visualizer === undefined ? (i === 0 ? 'hand' : null) : sp.visualizer;
     if (vis === 'hand') c.offHand = { id: 'visualizer' } as any;
+    if (sp.offHand) c.offHand = { id: sp.offHand } as any;
     if (vis === 'pack') c.pack = [...(c.pack || []), { id: 'visualizer', item: 'visualizer', name: 'Visualizer', qty: 1, kind: 'tool' } as any];
     if (vis && (sp.cores ?? 2)) c.pack = [...(c.pack || []), { id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: sp.cores ?? 2, kind: 'ammo' } as any];
   });

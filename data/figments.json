@@ -49,10 +49,11 @@
     "text": "A Double lures by the fire doctrine of enemies.json (double_save): a tier with none is always fooled; the others save (Brain, against 12 + your Visualization strength, plus the tier's double_save) on first sight, an Elite and a Boss again at each of their turn starts, a Boss never two rounds running. An enemy that found a Double out gets found_out_add against your later Doubles this fight."
   },
   "unit_effects": {
-    "text": "What every Figment is: no saves, immune to every condition (the Body, Brain and Heart families) and to Bleeding. Each form's verb item (fig_<form>, collect.ts) holds these and its own.",
+    "text": "What every Figment is: no saves, immune to every condition (the Body, Brain and Heart families), to Bleeding and to Hidden (it never hides: Shadow is a character's). Each form's verb item (fig_<form>, collect.ts) holds these and its own.",
     "effects": [
       { "op": "immunity", "to": "family:body" }, { "op": "immunity", "to": "family:brain" },
-      { "op": "immunity", "to": "family:heart" }, { "op": "immunity", "to": "bleed" }
+      { "op": "immunity", "to": "family:heart" }, { "op": "immunity", "to": "bleed" },
+      { "op": "immunity", "to": "hidden" }
     ]
   },
   "forms": [
