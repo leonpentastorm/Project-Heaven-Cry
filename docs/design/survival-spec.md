@@ -456,29 +456,29 @@ Where it counts: a weapon's grade on its main-hand attacks (`combat.ts` unit bui
 
 ### 11.4 What a character has gained by each Boss (worked example)
 
-The median path of 11.1, each character in its own purse; upkeep as 11.1; two rests a stage (depths 7 and 14). "Output" is against a bare character of the same level (Standard gear, no boons): offense from accuracy (×1.077 a point, section 5.2) and the Relic property; boons are listed apart.
+The median path of 11.1, each character in its own purse; upkeep as 11.1; two rests a stage (depths 7 and 14). "Output" is against a bare character of the same level (Standard gear, no boons): offense from accuracy (×1.077 a point, section 5.2) and the Relic property; boons are listed apart. **Read each row as what that stage's income buys, not what is in hand at its Boss:** the Boss's pay and the last fights' come after the stage's last shop (11.2), so a row's purchases are held from the next stage's first shop at the latest (the gunner's Fine rifle from stage 1's second shop, its Masterwork from stage 3's first, its Relic from stage 5's first). Picks (rule 26) are left out of these tables; they reach the same grades about as early (11.2).
 
 **A gunner** (the soldier kit: Hellraiser service rifle 900, armour class 3):
 
-| Stage | Credits (carried + earned) | Bought | At the Boss | Trainings | Output |
+| Stage | Credits (carried + earned) | Bought | Held | Trainings | Output |
 | --- | --- | --- | --- | --- | --- |
-| 1 | 0 + 3,330 | Fine rifle 1,500; armour class 4 1,200; upkeep 400 → 230 left | Fine rifle, class 4 | drill 200 | ×1.08; hits taken −9% at level 7 |
+| 1 | 0 + 3,330 | Fine rifle 1,500; armour class 4 1,200; upkeep 400 → 230 left | Fine rifle, class 4 | drill 200 | ×1.08; hits taken −9% at level 7 (class 4 also costs a point of dodge to a character whose Athletics gives one, about +8% hits taken: nearly a wash by level 7) |
 | 2 | 230 + 4,290 | Masterwork rifle 3,500; scope 450; upkeep 450 → 120 | Masterwork rifle, scope | drill 200 (with kills: mark I) | ×1.16 (the scope on aimed shots besides) |
 | 3 | 120 + 5,410 | compensator 250, extended magazine 300, ballistic helmet 350, trauma plate 400; upkeep 500 → 3,730 saved | three mods fitted (scope, compensator, extended magazine), two worn pieces | drill 200 | ×1.16, mods about ×1.03 |
 | 4 | 3,730 + 6,520 | the Relic step 9,000 (Keen, worth 10 of the 50); upkeep 550 → 700 | a Relic rifle | drill 200 | ×1.16 × 1.10 × 1.03 = **×1.31** |
 
 **A melee fighter** (a Breaker with a war axe, 500, standard, from node 1's pick; armour class 3):
 
-| Stage | Credits | Bought | At the Boss | Trainings | Output |
+| Stage | Credits | Bought | Held | Trainings | Output |
 | --- | --- | --- | --- | --- | --- |
-| 1 | 0 + 3,330 | Fine axe 1,500; weighted edge 200; wrapped grip 80; armour class 4 1,200; upkeep 320 → 30 | Fine axe, two mods, class 4 | drill 200 | ×1.08 (+ the edge's damage) |
+| 1 | 0 + 3,330 | Fine axe 1,500; weighted head 200; wrapped grip 80; armour class 4 1,200; upkeep 320 → 30 | Fine axe, two mods, class 4 | drill 200 | ×1.08 (+ the weighted head's damage) |
 | 2 | 30 + 4,290 | Masterwork axe 3,500; heavy boots 200; armoured greaves 300; upkeep 320 → 0 | Masterwork axe | drill 200 | ×1.16 |
 | 3 | 0 + 5,410 | ballistic helmet 350, trauma plate 400, combat gloves 220; upkeep 350 → 4,090 saved | worn pieces on every slot | drill 200 | ×1.16 |
 | 4 | 4,090 + 6,520 | the Relic step 9,000 (Biting); upkeep 350 → 1,260 | a Relic axe | drill 200 | ×1.16 × 1.10 = **×1.28** |
 
 **A caster** (a Sigilist: the `sigil` kit, a service pistol in the main hand and an Evoker, armour class 1):
 
-| Stage | Credits | Bought | At the Boss | Trainings | Output |
+| Stage | Credits | Bought | Held | Trainings | Output |
 | --- | --- | --- | --- | --- | --- |
 | 1 | 0 + 3,330 | Fine Evoker 1,500; armour classes 2 and 3 (250 + 600); upkeep 460 → 520 | Fine Evoker (Sigil rolls +1, rule 25a), class 3 | study 6 (a word) | Sigil ×1.08 |
 | 2 | 520 + 4,290 | Masterwork Evoker 3,500; upkeep 500 → 810 | Masterwork Evoker | study 6 | ×1.16 |
@@ -487,14 +487,14 @@ The median path of 11.1, each character in its own purse; upkeep as 11.1; two re
 
 **A healer** (a Mender: the `mender` kit, an Attuner and a service pistol, armour class 2 as the medic's plate):
 
-| Stage | Credits | Bought | At the Boss | Trainings | Output |
+| Stage | Credits | Bought | Held | Trainings | Output |
 | --- | --- | --- | --- | --- | --- |
 | 1 | 0 + 3,330 | Fine Attuner 1,500; armour class 3 600; upkeep 520 → 710 | Fine Attuner (its Bonds' save TN +1) | Devotion 4 (or drill) | heals ×1.00 |
 | 2 | 710 + 4,290 | Masterwork Attuner 3,500; ballistic helmet 350; upkeep 520 → 630 | Masterwork Attuner (TN +2) | Devotion 4 | heals ×1.00 |
 | 3 | 630 + 5,410 | armour class 4 1,200; trauma plate 400; upkeep 550 → 3,890 saved | class 4 | Devotion 4 | heals ×1.00 |
 | 4 | 3,890 + 6,520 | the Relic step 9,000 (Gentle); upkeep 600 → 810 | a Relic Attuner | Devotion 4 | heals **×1.15** |
 
-The healer's heal is landed (no roll), so a grade buys its Bonds' TN and its durability, not more healing; its healing grows by level, the Gentle property and the Deep Well boon (+20%). That is the one class the gear grows least (question 10).
+The healer's heal is landed (no roll), so a grade buys its Bonds' TN, not more healing (a focus has no durability); its healing grows by level, the Gentle property and the Deep Well boon (+20%). That is the one class the gear grows least (question 10).
 
 ### 11.5 How the simulated party spends (for section 5.6)
 
