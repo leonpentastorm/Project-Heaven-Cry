@@ -47,6 +47,8 @@ const RANKS = ['I', 'II', 'III'] as const;
 // _setAdvancedLive(true) (a test-only switch).
 const ADV_LIVE_DATA = !!(classesJ as any).assignment?.advanced?.live;
 let advOverride: boolean | null = null;
+/** Bumped by the test switches heldKey reads (rev2, advanced live): heldKey's per-object memo is stale after one. */
+let keyGen = 0;
 /** Is this advanced class active right now (its moves, resources and effects count)? */
 export function advancedActive(id: string | null | undefined): boolean {
   if (!id || !ADVANCED[id]) return false;
@@ -54,7 +56,7 @@ export function advancedActive(id: string | null | undefined): boolean {
   return ADV_LIVE_DATA && !ADVANCED[id].shelved;
 }
 /** Test-only: turn every advanced class on (true), off (false), or back to the data (null). */
-export function _setAdvancedLive(on: boolean | null) { advOverride = on; itemsCache.clear(); }
+export function _setAdvancedLive(on: boolean | null) { advOverride = on; itemsCache.clear(); keyGen++; }
 
 // ---------- the Revision 2 classes, for tests only ----------
 // The engine tests written for Class Roster Revision 2 (a Warden's Ward, an Assassin's Mark at rank I) keep running the
@@ -66,7 +68,7 @@ export const REV2_CLASSES: Record<string, { id: string; name: string; core: stri
 let rev2 = false;
 export const revision2Classes = () => rev2;
 /** Test-only: hold the Revision 2 classes (true) or the Revision 3 ones (false, the default). */
-export function _setRevision2Classes(on: boolean) { rev2 = on; itemsCache.clear(); }
+export function _setRevision2Classes(on: boolean) { rev2 = on; itemsCache.clear(); keyGen++; }
 
 const isAction = (effects: any[], ap: any, perkType?: string | null) =>
   effects.some((e) => e && e.op === 'grant_action') || (typeof ap === 'number' && ap > 0) || (typeof ap === 'string' && !!ap) || perkType === 'active_skill';
@@ -240,7 +242,14 @@ export function itemsOf(h: Held): ItemInfo[] {
 const itemsCache = new Map<string, ItemInfo[]>();
 /** A cache key for what a unit holds: everything itemsOf() reads (each perk's id and tier, the traits, the class, its
  * rank, the advanced class, the skill items), in order. Built by hand: it is asked for every unit on every hook. */
-export const heldKey = (h: Held) => {
+/** heldKey per Held object (a unit's `held` is replaced, never written into: emit asks it for every unit on every hook,
+ * and the same string instance keeps its hash for the index lookups). Bumped by the test switches the key reads. */
+const HELD_KEYS = new WeakMap<Held, { g: number; k: string }>();
+export const heldKey = (h: Held): string => {
+  const m = HELD_KEYS.get(h); if (m && m.g === keyGen) return m.k;
+  const k = heldKeyOf(h); HELD_KEYS.set(h, { g: keyGen, k }); return k;
+};
+const heldKeyOf = (h: Held) => {
   let s = (rev2 ? '1|' : '0|') + (h.cls || '') + '|' + (h.rank || 0) + '|' + (advancedActive(h.adv) ? h.adv : '') + '|';
   for (const p of h.perks || []) s += p.id + '\t' + p.tier + '\n'; s += '|';
   for (const t of h.traits || []) s += t + '\n'; s += '|';

@@ -281,13 +281,14 @@ export function statHeard(cb: Combat | null | undefined, stat: StatId): boolean 
   for (const u of cb.units) {
     if (rows.length && TR!.condStat!(u, stat)) return true;
     const held = heldOfUnit(u); if (!heldAny(held)) continue;
-    const k = heldKey(held) + '#' + stat; let v = STAT_HELD.get(k);
-    if (v == null) { v = itemsOf(held).some((i) => i.effects.some((e) => e?.op === 'stat_mod' && e.stat === stat)); if (STAT_HELD.size > 400) STAT_HELD.clear(); STAT_HELD.set(k, v); }
+    const hk = heldKey(held); let byStat = STAT_HELD.get(hk); if (!byStat) { if (STAT_HELD.size > 400) STAT_HELD.clear(); STAT_HELD.set(hk, (byStat = new Map())); }
+    let v = byStat.get(stat);
+    if (v == null) { v = itemsOf(held).some((i) => i.effects.some((e) => e?.op === 'stat_mod' && e.stat === stat)); byStat.set(stat, v); }
     if (v) return true;
   }
   return false;
 }
-const STAT_HELD = new Map<string, boolean>();
+const STAT_HELD = new Map<string, Map<string, boolean>>();
 /** Per stat: does anything in the data (an item's stat_mod, a condition row) answer it at all? Cleared when items change. */
 const STAT_ANY = new Map<string, boolean>();
 
