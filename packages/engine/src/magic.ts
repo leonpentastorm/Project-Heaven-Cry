@@ -10,7 +10,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, carriesVisualizer, hasVisualizer, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { say, type Combat, type Unit, alwaysSeen, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
+import { say, type Combat, type Unit, alwaysSeen, bossInTheOpen, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
 import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
@@ -393,7 +393,7 @@ function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, def: CondDef, 
   if (id === 'dazed') { rawDazed(t, 1); landed(cb, opts, { by, t, id, rounds: 1, cb, rng }); return ' · ' + t.name + ' is Dazed' + saved; }
   if (id === 'prone') { rawProne(t, true); landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is knocked prone' + saved; }
   if (id === 'bleeding') { rawBleed(t, Math.max(t.bleed || 0, ca.rounds || def.rounds)); if (by) t.lastHitBy = by.id; landed(cb, opts, { by, t, id, rounds: t.bleed, cb, rng }); return ' · ' + t.name + ' is Bleeding'; }
-  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; if (alwaysSeen(cb, t)) return ' · ' + t.name + ' can\'t hide: the enemy knows where they are'; if (t.hidden) return ''; rawHidden(cb, t, true, { entry: !opts.sameEntry }); (cb.sightWhy ||= {})[t.id] = 'hide'; landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is Hidden'; }
+  if (id === 'hidden') { if (condOn(t, 'marked')) return ' · ' + t.name + ' is Marked and can\'t hide'; if (alwaysSeen(cb, t)) return ' · ' + t.name + ' can\'t hide: the enemy knows where they are'; if (bossInTheOpen(cb, t)) return ' · ' + t.name + ' can\'t hide (a Boss, after the first round)'; if (t.hidden) return ''; rawHidden(cb, t, true, { entry: !opts.sameEntry }); (cb.sightWhy ||= {})[t.id] = 'hide'; landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return ' · ' + t.name + ' is Hidden'; }
   if (id === 'injured') { const inj = rollInjury(rng, t, cb, by); landed(cb, opts, { by, t, id, rounds: 0, cb, rng }); return inj; }
   return '';
 }

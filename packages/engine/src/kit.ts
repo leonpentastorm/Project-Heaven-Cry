@@ -8,7 +8,7 @@
 //   SELECTORS   units, foesOf, alliesOf
 //   AREAS       Area (burst, aura, cone, line, band), inArea, tilesIn, unitsIn   (engine foundations 2)
 import type { Combat, Unit } from './combat';
-import { keyOf, key, xy, dist, moveBlockers, unitSees } from './combat';
+import { keyOf, key, xy, dist, moveBlockers, unitSees, sideSeesUnit, sightBlockers } from './combat';
 import { boundGame, onHook, statQuery, emit, charOfUnit } from './effects/hooks';
 import { condOn, endCond } from './magic';
 import { holds } from './character';
@@ -85,6 +85,8 @@ export interface Who {
   /** false: leave False Images out. */ images?: boolean;
   /** Only units within this many tiles of `from` (default: of the unit asked about). */ within?: number; from?: string;
   /** Only units this unit sees (line of sight and Vision). */ seenBy?: Unit;
+  /** Only units this side sees now, shared by its squad (combat.ts sideSeesUnit: the fog's answer; Hidden ones only when
+   * always seen). What an AI may act on (rules 1.37). */ seenBySide?: Unit['side'];
   /** alliesOf only: the unit itself too. */ self?: boolean;
 }
 function counts(cb: Combat, v: Unit, o: Who, from: string): boolean {
@@ -94,12 +96,14 @@ function counts(cb: Combat, v: Unit, o: Who, from: string): boolean {
   if (o.images === false && (v as any).ghostOf) return false;
   if (o.within != null && dist(v.pos, o.from || from) > o.within) return false;
   if (o.seenBy && !unitSees(cb, o.seenBy, v.pos)) return false;
+  if (o.seenBySide && !sideSeesUnit(cb, o.seenBySide, v, false, walls || (walls = sightBlockers(cb)))) return false;
   return true;
 }
+let walls: Set<string> | null = null; // built once per selector call (foesOf / alliesOf clear it)
 /** The units of the other side. See `Who` for what counts by default and how to ask for more or less. */
-export const foesOf = (cb: Combat, u: Unit, o: Who = {}): Unit[] => cb.units.filter((v) => v.side !== u.side && counts(cb, v, o, u.pos));
+export const foesOf = (cb: Combat, u: Unit, o: Who = {}): Unit[] => { walls = null; return cb.units.filter((v) => v.side !== u.side && counts(cb, v, o, u.pos)); };
 /** The OTHER units of this unit's side (o.self: the unit too). See `Who`. */
-export const alliesOf = (cb: Combat, u: Unit, o: Who = {}): Unit[] => cb.units.filter((v) => v.side === u.side && (o.self || v !== u) && counts(cb, v, o, u.pos));
+export const alliesOf = (cb: Combat, u: Unit, o: Who = {}): Unit[] => { walls = null; return cb.units.filter((v) => v.side === u.side && (o.self || v !== u) && counts(cb, v, o, u.pos)); };
 
 // ---------- work counters (tests only read them) ----------
 /** How much work the planners did: a count per name, raised by work('<name>') at the top of a costly function
@@ -155,7 +159,7 @@ export function tilesIn(cb: Combat, a: Area): string[] {
  * (by default a unit still in the fight: not dead, Downed or surrendered); `side`: only that side; `not`: leave these
  * out (the one the blast was aimed at, the caster). In the fight's own order. */
 export function unitsIn(cb: Combat, a: Area | string[], o: Who & { side?: Unit['side']; not?: (Unit | null | undefined)[] } = {}): Unit[] {
-  const tiles = Array.isArray(a) ? new Set(a) : null;
+  const tiles = Array.isArray(a) ? new Set(a) : null; walls = null;
   return cb.units.filter((v) => (tiles ? tiles.has(v.pos) : inArea(a as Area, v.pos)) && (!o.side || v.side === o.side) && !(o.not || []).includes(v) && counts(cb, v, o, v.pos));
 }
 

@@ -265,7 +265,7 @@ describe('Grand Sigilist under 1.4', () => {
     const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(999 - 15); expect(w.unit(w.foes[1].id).hp).toBe(999);
     const foe = w.turn(w.foe.id); w.unit(foe.id).ap = 6; withGame(w.g, () => moveUnit(w.cb, w.unit(foe.id), '8,2', w.g.rng));
     // The walk also passes Tester 2, whose opportunity attack now lands (spec item 561, Class Roster Rev 3): count it too.
-    const oa = Number((w.cb.log.join(' ').match(/Tester 2 strikes Foe 1:[^·]*· hit, (\d+) damage/) || [])[1] || 0);
+    const oa = Number((w.cb.log.join(' ').match(/Tester 2 strikes Foe 1:[^·]*· (?:hit|CRITICAL), (\d+) damage/) || [])[1] || 0);
     expect(w.unit(foe.id).hp).toBe(999 - 15 - 10 - oa); expect(logHas(w.cb, /as it leaves · 10 damage/)).toBe(true);
   });
   it('WAIT (Minefield): an enemy walking in stops at the edge and takes 10; STEP (Fold): a move that stays inside costs 1 AP at most', () => {

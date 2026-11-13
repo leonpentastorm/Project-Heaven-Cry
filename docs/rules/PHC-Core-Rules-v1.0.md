@@ -2337,7 +2337,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 4. **Who reacts.** Nobody. Held Watches, Overwatch and opportunity attacks answer a unit that chose to move; a unit that was moved did not. (The mover's own step in a move it shares, such as Drag's swap, is its own choice and can be answered.)
 5. **It ends Braced,** and a forced move costs no Momentum and counts for nothing that counts tiles walked.
 
-**Hidden in a fight.** You are Hidden when a fight opens on your ambush (and so is anyone else still sneaking unseen), or when a rule hides you. **Hide** (2 AP) works only out of every enemy's sight, never while Marked. While Hidden, enemies can't target you and draw no line to you; you draw no opportunity attacks or Overwatch. Your **first attack from each time you hide** is an **ambush**: it crits on 19–20 and multiplies its damage by your Ambush multiplier (1.5 + 0.05 × Ingenuity). Any attack reveals you unless the weapon is silent (bows, the suppressor); taking damage reveals you. **Spotting:** at the end of each turn, the unit whose turn it was looks for Hidden enemies whose tile it can see: d20 + its notice (enemies by tier: minion +0, soldier +2, elite +4, boss +6; characters their Vigilant modifier) against 10 + your Ingenuity modifier + your Stealth; ending a turn next to you finds you outright. **Searching** (13 Nov 2026, item 1744): an enemy that perceives nobody walks toward the tile where its side last saw a Hidden hostile (the tile it was on when it hid, if they saw it hide; else the last tile they saw it on), the nearest first, a turn's walk at a time, never toward where that hostile really is; with nothing seen it holds or takes cover.
+**Hidden in a fight.** You are Hidden when a fight opens on your ambush (and so is anyone else still sneaking unseen), or when a rule hides you. **Hide** (2 AP) works only out of every enemy's sight, never while Marked. While Hidden, enemies can't target you and draw no line to you; you draw no opportunity attacks or Overwatch. Your **first attack from each time you hide** is an **ambush**: it crits on 19–20 and multiplies its damage by your Ambush multiplier (1.5 + 0.05 × Ingenuity). Any attack reveals you unless the weapon is silent (bows, the suppressor); taking damage reveals you. **Spotting:** at the end of each turn, the unit whose turn it was looks for Hidden enemies whose tile it can see: d20 + its notice (enemies by tier: minion +0, soldier +2, elite +4, boss +6; characters their Vigilant modifier) against 10 + your Ingenuity modifier + your Stealth; ending a turn next to you finds you outright. **Searching** (13 Nov 2026, item 1744): an enemy that perceives nobody walks toward the tile where its side last saw a Hidden hostile (the tile it was on when it hid, if they saw it hide; else the last tile they saw it on), the nearest first, a turn's walk at a time, never toward where that hostile really is; with nothing seen it holds or takes cover. *(Rules 1.37: it searches for any hostile its side can't see, not only a Hidden one, and acts only on what its side perceives.)*
 
 **What things are.** Every combatant and NPC has a **kind** (human by default; robot, crawler, ork, upper_realm, cursed, beast, machine, turret, drone, celestial) and **tags** (humanoid, military, hunter, lawful, unaware, no_surrender, prisoner…). The Narrator sets them when it starts a fight or places someone; campaigns can set them in their data. Robots, machines, turrets and drones put +2 on the meter when they die, not +5. An **unaware** enemy loses round 1.
 
@@ -4802,6 +4802,82 @@ takes the Evoker blade's numbers (26 damage, 1H, 1.8 kg, 2,400 credits); each hi
 mana arm's does. It is **held back** because the engine cannot be told by data that a weapon counts as an Emanator: the
 focus gate reads a list written in code (`FOCUS_IDS` in `packages/engine/src/character.ts`), not the weapon's
 `counts_as_emanator` property. It goes into 7.11 and the data the day the focus list is read from data (items 2205, 1956).
+
+## Rules revision 1.37: what enemies do about the new systems (Classes 3.0, step 9)
+
+Built on 13 Nov 2026 (Classes 3.0 step 9; `docs/design/handoffs/classes-3.0-step-9.md`): section 8, "The other side",
+of the reaction, Chaplain, Shadow, Bonds and Figments specs. The AI's own numbers are in `data/enemies.json` `ai`
+(behaviour only: no HP or damage). Every number is PROVISIONAL (items 2400 to 2412). It overrides the limit written
+in item 1744 ("an enemy still knows where every hostile who is not Hidden stands").
+
+### 1. An enemy acts on what its side perceives
+
+1. **Targets.** An enemy's targets, its approach, its healer hunt and its Sigil and Soul planners read only the
+   hostiles its side sees now (the fog's answer: in some eye's Vision and line of sight, not Hidden, or always seen:
+   Traced, Watched). One it can't see is no target and no tile to close on; a False Image or a Double it was fooled by
+   stays its belief, as before. An area it plans counts only the hostiles it sees.
+2. **The opening.** A fight opens because the sides met: when the set-up is done (who starts Hidden is Hidden), each
+   side knows the tile of every hostile that is not Hidden, seen or not. From then on a side knows only what it sees,
+   and where it last saw each hostile (item 1744).
+3. **Searching.** An enemy that sees nobody walks toward the nearest tile its side believes a hostile is on (fewest
+   tiles of walk): a Hidden one's last-seen tile (or the tile a Decoy gave), else the last tile its side saw the
+   hostile on. It ends its walk there; standing on it with nothing in sight it holds (it has searched there; ending
+   next to a Hidden one finds it, as before). It never walks toward where the hostile really is.
+4. **Heard, not seen.** A unit hit by an attacker its side can't see learns the attacker's tile: its side's last-seen
+   tile of the attacker becomes the attacker's tile (a Hidden attacker's search tile too).
+5. **No fire at a tile.** No rule allows an enemy to shoot at a tile it believes someone is on (suppressive fire); it
+   never does.
+6. **The spot-back** is the side's: a Hidden character one enemy spots is seen by its whole side at once and is a
+   target for all of them (the call-out is shared sight).
+
+### 2. Shadow
+
+7. **A skulker flanks.** A Vermin, Minion or Soldier with the tag `skulk` that closes in adds `ai.skulk_open` (3) to
+   every tile the other side has in view: it reaches its target through what the other side can't see when it can
+   (it still Hides with no shot and out of view, and ambushes, rules 1.32).
+8. **A Boss is never Hidden after round 1** (`ai.boss_hidden_rounds`, 1): from round 2 it can't Hide (the action, a
+   condition, an item), and one the Narrator placed Hidden is revealed as round 2 starts. Elites may still be placed
+   Hidden.
+9. **Never one-shot from Shadow:** unchanged (rules 1.32: the guard holds every roll of a Break; Execution never on a
+   guard-held hit).
+10. **A Marked enemy** behaves as any enemy: Marked changes what the Operative's side knows, not the AI (nothing new).
+
+### 3. Bonds
+
+11. **The Bonded enemy knows the tie** (`ai.healer_tie`, `bond`): an enemy at the far end of a Bond counts its Bonder
+    as the other side's healer whatever it has healed, before any other healer: an Elite or a Boss (`healer_focus` 1)
+    turns on it first and steps for a line on it; a Soldier (0.5) leans to it; a Minion does not look. Taunt still
+    comes first.
+12. **Enemies do not Bond, Tend, hold a Shadow meter or make Figments** in this patch: no tier, caster or companion
+    carries an Attuner, a Visualizer, a door skill of the new systems or a Shadow resource.
+13. **An ally that will be Raised** is not weighed (no spec rule names it): the doctrine is unchanged.
+
+### 4. Figments
+
+14. **Figments last** (`ai.figments_last`: Soldiers, Elites, Bosses): such an enemy takes a Figment only when no
+    character is in reach, and sizes up no Figment while one is. A Loud Figment draws every tier, and a Double that
+    fooled it is its owner to it (item 2171). Vermin and Minions take the nearest thing, a Figment included.
+15. **A Wall** that blocks an enemy's only way closer is broken like a RAISE wall (it is a unit: the enemy attacks it);
+    otherwise its path goes round it.
+16. **A Blade's Hold** the enemy's side can see is a held attack (rule 18); **a Volatile Figment** it sees prices the
+    tiles next to it the same (its burst).
+17. **NULL on a Figment** is not weighed: NULL does not unmake Figments yet (figments-spec rule 12 is not built).
+
+### 5. The Chaplain and reactions
+
+18. **Held attacks it can see** (`ai.held_risk`, 10, Anchor's weight): a walk that would spring an Overwatch or a
+    Killzone (the holder sees a tile of it within its weapon's reach) or a Blade's Hold (it steps into or out of the
+    Blade's reach) costs this much more, once a holder; so where a walk avoids it at no cost, the enemy takes that
+    walk. A holder it can't perceive (Hidden) is unknown to it.
+19. **A Warded or sheltered target is a worse target:** to the doctrine's "most hurt" a target's shield layers count as
+    HP, and a target standing in a zone of its own side whose kind is in `ai.shelter` (a Sanctuary: 2) counts as that
+    many times its HP. Walking into the other side's Sanctuary is no risk (it shelters only its owner's side).
+20. **The healer hunt counts a Ward** (a shield given to an ally) as tending (rules 1.23, unchanged: every shield goes
+    through the one door).
+21. **The patron's presence** is not a body: never targeted (rules 1.31, unchanged).
+22. **Reactions:** an enemy never reacts off a reaction and, Suppressed, keeps only its protective reactions (rules
+    1.28, the same door as everyone's). Not built: baiting a held line with the cheapest unit and sending two movers
+    into a Killzone (reactions-spec 8); waiting out a Sanctuary.
 
 ## Maps (rules 1.16)
 
@@ -7666,7 +7742,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1740. **The all-in Soul healer of the simulator heals 2 to 8 times a fight under fire** against 8 to 10 for a normal share (rules 1.27, seen, not investigated): its policy runs short under fire. A question for the simulator, not for the numbers.
 1741. **Superseded sizes (rules 1.27):** the bands of rules 1.20 (section 2), the medic's bands of rules 1.23 (section 1), items 1231, 1306 and 1707 to 1708 state sizes this revision raised ×1.6 (Faith ×1.51); the yardstick (a Soldier-turn) and the level factor are unchanged.
 1742. **One Clear jam for two guns, and Attack an object (Leon's ruling, 13 Nov 2026, after live 0.24.0: "move clear jam to Both when dual wielding … we have 2 buttons at 2 places for one thing now"):** with a gun that can jam in each hand, one Clear jam (in the Both area) clears every jammed gun you hold for the main hand's price once and resets the pooled Heat; it is usable when either gun is jammed. The guns still jam apart (`offJammed`): a jammed off-hand gun does not stop the main gun firing, and the reverse. With one such gun, Clear jam stays in that weapon's area. What Leon met on 0.24.0: the engine kept the two jams apart and each row cleared only its own gun, but the screen showed only the main gun's jam (the JAMMED chip and resource warning read the main gun), so after the main hand's Clear jam every sign of a jam was gone while the off-hand gun stayed jammed, and the off-hand row said "Not jammed." whenever only the main gun was: one button seemed to clear both and the other never to work. Engine: `clearJam` (two jamming guns: one action whatever the hand), `twoJammingGuns`, the `clear` descriptor with hand `both`; the retired `clear-off` row is not listed, and its id resolves to `clear` (a saved turn-card pick still works). The action Shoot an object is renamed **Attack an object** (a display name only; its id `cover` / `cover-off` and type `combat/shoot-cover` stay; the log says "shoots" for a gun and "smashes" for a melee weapon, as it did). Proof: `packages/engine/test/dual-jam.test.ts`; the cost tables did not change (the two-gun `clear` and `clear-off` lines cost and do the same).
-1744. **An enemy that perceives nobody searches (13 Nov 2026; lead's ruling on a live bug, `docs/design/rev4-primitives.md` section 4):** it used to stand still. Each side notes where it last saw each hostile (`cb.seenAt`, after every step of the game, before and after each enemy's turn, and at each step of a walk); when a hostile hides, the other side keeps that tile (`cb.lastSeen`; its tile now if it saw the hide). An enemy with no target walks toward the nearest such tile (fewest tiles of walk) and holds when it has none (an old save has none). A side that never saw the hostile learns nothing (until now every side was told the tile a unit hid on). Limit, unchanged: an enemy still knows where every hostile who is not Hidden stands, seen or not (the AI's targeting reads every unit that is not Hidden); only Hidden is unknown to it.
+1744. **An enemy that perceives nobody searches (13 Nov 2026; lead's ruling on a live bug, `docs/design/rev4-primitives.md` section 4):** it used to stand still. Each side notes where it last saw each hostile (`cb.seenAt`, after every step of the game, before and after each enemy's turn, and at each step of a walk); when a hostile hides, the other side keeps that tile (`cb.lastSeen`; its tile now if it saw the hide). An enemy with no target walks toward the nearest such tile (fewest tiles of walk) and holds when it has none (an old save has none). A side that never saw the hostile learns nothing (until now every side was told the tile a unit hid on). Limit, unchanged: an enemy still knows where every hostile who is not Hidden stands, seen or not (the AI's targeting reads every unit that is not Hidden); only Hidden is unknown to it. *Superseded by rules 1.37: an enemy acts only on what its side perceives (item 2400).*
 1743. **Weapon mastery stays retired, and nothing in play promises it (13 Nov 2026; lead's ruling on a live bug, `docs/design/rev4-primitives.md` section 4):** `data/weapon_mastery.json` (11 families, the kills table, 33 weapon perks, Last Word among them) is marked retired and is loaded by no engine file; rules 1.12 put drill in its place (item 947). It is not wired. The one live promise was Blade Recluse's One Blade ("your weapon mastery with it grows 25% faster", and its Name your weapon text: "counts as 1.25 kills towards its weapon mastery"): both clauses are taken out of the texts; the effect row stays in the data marked `retired`. The UI canvas still draws the kills table (the canvas is paused until v1.0); the live client shows none of it. What bringing weapon perks back would take is in `docs/design/handoffs/BUGLIST-0.22.md` (section "Found by the Revision 4 spec writers").
 1745. **A Heat jam lands on the gun that fired (Leon's ruling, 13 Nov 2026: "an off-hand technique's Heat jam lands on the main gun: it should land on the gun that fired"):** Heat stays one value both guns pool, with the pooled limit (main + off). A shot, a no-roll round (Warning Shot, Flush, Rout, Cover Me's covering round) or a Press's own +1 Heat made with the off-hand gun that reaches the limit jams the off-hand gun (`offJammed`); the main gun still fires. A paired attack and a technique made with both hands jam the gun whose shot reached the limit (each half is its own hand's use). Before this an off-hand technique's no-roll round and Press Heat never jammed, and with the off-hand gun swapped in the pooled limit read off + off (`heatLimit`), so the off-hand gun jammed late or not at all and the next main-hand shot jammed the main gun. Engine: `swapMain` on the fighter while the off-hand weapon stands in u.weapon; `looseRound` and the Press's Heat in `useTechnique` jam the hand that fired. Proof: `packages/engine/test/dual-jam.test.ts`.
 
@@ -7843,3 +7919,16 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2204. **Items 1950 to 1956 are rules 1.35's** (after rules 1.31's block, 1900 to 1949).
 2205. **The Emanator katana's numbers (rules 1.35, not built):** 1H, 26 damage, 1.8 kg, 2,400 credits, Will Power 3, counts as an Emanator, +1 ambient mana a hit (the Evoker blade's). Lead's numbers, Leon to confirm. PROVISIONAL.
 2206. **Needs a ruling and a primitive (rules 1.35):** the Emanator katana waits for the focus list to be read from data (a weapon's `counts_as_evoker` / `counts_as_emanator`, or the Classes 3.0 `focus` block). Leon to confirm the katana goes in once it is.
+2400. **An enemy acts on what its side perceives (rules 1.37 rules 1-6; 13 Nov 2026, Classes 3.0 step 9):** its targets, approach, healer hunt and spell planners read only the hostiles its side sees now; the opening gives each side every non-Hidden hostile's tile once; it searches the believed tile; a unit hit by an unseen attacker learns its tile; it never fires at a tile. Overrides item 1744's limit. PROVISIONAL.
+2401. **The opening (rules 1.37 rule 2):** a call made for Leon: without it an enemy that starts out of sight (every shipped full-size map, rules 1.16) would never find the squad. Leon to confirm. PROVISIONAL.
+2402. **A skulker flanks (`ai.skulk_open` 3):** the cost a skulker adds to a tile the other side has in view when it closes in. PROVISIONAL.
+2403. **A Boss is never Hidden after round 1 (`ai.boss_hidden_rounds` 1; shadow-spec 8.1).** PROVISIONAL.
+2404. **The Bonded enemy hunts its Bonder (`ai.healer_tie` bond; bonds-spec 8).** PROVISIONAL.
+2405. **Figments last (`ai.figments_last` soldier, elite, boss; figments-spec 8):** read as "only when no character is in reach" for all three (the spec's "Elites and Bosses ignore Figments" with weights 0.5 / 1.0 is read the same way). PROVISIONAL.
+2406. **Held attacks it sees (`ai.held_risk` 10, Anchor's weight):** Overwatch, Killzone, a Blade's Hold, a Volatile Figment's tiles. PROVISIONAL.
+2407. **Shelter (`ai.shelter` sanctuary 2) and shields as HP** to the doctrine's "most hurt". PROVISIONAL.
+2408. **A Wall Figment joins the AI's clearing list (aiClearBlock).** PROVISIONAL.
+2409. **Not built (rules 1.37):** NULL weighed on a Figment (waits for NULL to unmake Figments, figments-spec rule 12); baiting a held line and two movers into a Killzone (reactions-spec 8); waiting out a Sanctuary (chaplain-spec 8); a Visualist enemy caster (figments-spec 8). Each needs its own piece.
+2410. **An Elite fooled by a Double** saves again at each of its turn starts (figments-spec 2, as built in rules 1.34), so it may stay fooled more than one turn; a Boss is fooled through one of its turns at most. The brief's "Elites and Bosses fooled for a turn at most" was not built for Elites: the spec table rules. Leon to confirm. PROVISIONAL.
+2411. **Enemies do not Bond, Tend, hold Shadow or make Figments (rules 1.37 rule 12):** confirmed through the data (a test reads enemies.json). An enemy version would need: a door skill and a focus on the tier row (Attuner, Visualizer), the tending verbs in the enemy's held items, a planner step (ai-*.ts) that weighs a Tend or a Picture against its weapon. PROVISIONAL.
+2412. **Items 2400 to 2412 are rules 1.37's.**

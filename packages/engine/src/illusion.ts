@@ -5,7 +5,7 @@
 // attack on an image passes through it and it scatters. Images fade at the start of their owner's turn two rounds on.
 // Everything here is deterministic: no die is rolled (the saves are rolled by the class move with the game's rng).
 import type { Combat, Unit } from './combat';
-import { say, emitFx, previewAttack, isMelee, refOf, alwaysSeen, resolveAttack } from './combat';
+import { say, emitFx, previewAttack, isMelee, refOf, sideSeesUnit, sightBlockers, resolveAttack } from './combat';
 import type { Rng } from './rng';
 import { WEAPON } from './data';
 import { calmFight } from './magic';
@@ -33,15 +33,17 @@ export function ghostOf(img: FalseImage, owner: Unit): Unit {
   return { ...owner, id: img.id, pos: img.pos, hidden: false, downed: false, ghostOf: owner.id } as Unit;
 }
 export const isGhost = (t: Unit | null | undefined) => !!t && !!(t as any).ghostOf;
-/** The other side as this unit believes it stands: each one it was fooled about is its image, the rest as they are
- * (not dead, Hidden or surrendered). */
+/** The other side as this unit believes it stands: each one it was fooled about is its image, the rest as they are,
+ * and only those its side sees now (rules 1.37: an enemy acts on what its side perceives, the fog's answer: not dead,
+ * surrendered or Hidden, in some eye's reach and line, or always seen). One it can't see is no target: it searches
+ * where its side last saw it (combat.ts enemySearchTile). */
 export function perceivedFoes(cb: Combat, u: Unit): Unit[] {
-  const out: Unit[] = [];
+  const out: Unit[] = [], walls = sightBlockers(cb);
   for (const t of cb.units) {
     if (t.side === u.side || t.dead || t.surrendered) continue;
     if (cb.images?.length && imagesOf(cb).some((i) => i.body === t.id && i.fooled.includes(u.id))) continue; // a Double it was fooled by is its owner to it (rules 1.34)
     const img = fooledBy(cb, u, t);
-    if (img) out.push(ghostOf(img.body ? { ...img, pos: cb.units.find((x) => x.id === img.body)?.pos || img.pos } : img, t)); else if (!t.hidden || alwaysSeen(cb, t)) out.push(t); // a Hidden unit that is always seen (P7) is not hidden from it
+    if (img) out.push(ghostOf(img.body ? { ...img, pos: cb.units.find((x) => x.id === img.body)?.pos || img.pos } : img, t)); else if (sideSeesUnit(cb, u.side, t, false, walls)) out.push(t); // its side's sight (a Hidden unit that is always seen, P7, is seen)
   }
   return out;
 }

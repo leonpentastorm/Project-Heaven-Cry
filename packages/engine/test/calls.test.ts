@@ -15,7 +15,7 @@ beforeEach(() => rig(null));
 
 /** A fight on open ground: the PCs in a row from 2,2, the foes from 8,2, acting in that order (PCs first). */
 function fight(specs: PhysSpec[], foes: FoeSpec[] = [{}], seed?: string) {
-  const f = physFight(specs.map((s) => ({ ...s, skills: { ...NO_GAMMA, ...(s.skills || {}) } })), foes, { seed });
+  const f = physFight(specs.map((s) => ({ ...s, skills: { ...NO_GAMMA, ...(s.skills || {}) } })), foes, { seed: seed || 'CALLS4' });
   f.pcs.forEach((u, i) => f.put(u, 2 + i + ',2')); f.foes.forEach((u, i) => f.put(u, 8 + i + ',2'));
   f.cb.order = [...f.pcs.map((u) => u.id), ...f.foes.map((u) => u.id)];
   const api = Object.assign(f, {

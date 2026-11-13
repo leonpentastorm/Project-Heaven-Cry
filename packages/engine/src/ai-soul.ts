@@ -24,7 +24,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
 import { type OutburstDesign } from './character';
-import { type Combat, type Unit, dist, paths, apForTiles, moveUnit } from './combat';
+import { type Combat, type Unit, dist, paths, apForTiles, moveUnit, sideSeesUnit } from './combat';
 import { type Rng } from './rng';
 import {
   type MagicUnit, type OutburstPlan, previewOutburstPlan, previewOutburst, beginOutburst, pumpOutburst, releaseOutburst,
@@ -68,7 +68,7 @@ const live = (t: Unit) => !t.dead && !t.downed && !t.surrendered;
 const isHeart = (u: Unit) => !!u.mg && !u.mg.evoker && u.mg.emanator && u.mg.designs.length > 0 && u.side === 'foe';
 const blocked = (u: Unit) => u.dead || u.downed || condOn(u, 'silenced');
 const desperate = (u: Unit) => u.hp <= 0.3 * u.maxHp;
-const seenFoes = (cb: Combat, u: Unit) => foesOf(cb, u, { hidden: false }).filter((t) => !fooledBy(cb, u, t)); // a False Image's fooled enemy (illusion.ts)
+const seenFoes = (cb: Combat, u: Unit) => foesOf(cb, u, { seenBySide: u.side }).filter((t) => !fooledBy(cb, u, t)); // a False Image's fooled enemy (illusion.ts)
 const hostile = (d: OutburstDesign) => d.school !== 'buff' && !(d.school === 'damage' && d.modules.includes('inverse'));
 
 /** A plan's worth to the caster: expected damage on the players it can see (after armour, × the roll's chance), 6 a
@@ -81,7 +81,7 @@ export function heartPlanValue(cb: Combat, u: Unit, pv: OutburstPlan): { score: 
   for (const a of pv.affected) {
     const t = cb.units.find((x) => x.id === a.unit); if (!t || !live(t)) continue;
     const exp = a.roll ? a.dmgAfterArmour * a.roll.pct / 100 : a.dmgAfterArmour, sv = 6 * a.saves.length + (a.rider ? 4 : 0);
-    if (a.enemy) { if (t.hidden || t.id === fear) continue; if (exp > 0 || sv > 0) { foes++; score += exp + sv; } }
+    if (a.enemy) { if (!sideSeesUnit(cb, u.side, t) || t.id === fear) continue; /* rules 1.37: one its side can't see now counts 0 */ if (exp > 0 || sv > 0) { foes++; score += exp + sv; } }
     else {
       if (exp > 0 || (a.saves.length && pv.school !== 'buff')) { own++; score -= 1.5 * (exp + sv); }
       const h = t.hp < 0.75 * t.maxHp ? Math.min(a.heal, t.maxHp - t.hp) : 0; heal += h; score += h + a.shield * 0.5; // a heal counts on the hurt
