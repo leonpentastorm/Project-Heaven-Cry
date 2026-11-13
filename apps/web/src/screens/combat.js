@@ -335,7 +335,7 @@ function presenceVals(u, g, cb) {
   if (!pid) return null;
   const src = patronPortrait(pid) || patronMarkUri(pid), ink = accentOf(pid), name = (FAITH_PATRON[pid] && FAITH_PATRON[pid].name) || 'The patron';
   return { patron: pid, src, tip: name + ' stands at ' + u.name + '\'s side (Witnessed)',
-    boxStyle: 'position: absolute; left: -10%; bottom: 8%; z-index: 1; width: 120%; height: 165%; overflow: hidden; pointer-events: none; opacity: 0.4; border-radius: 40% 40% 0 0; box-shadow: inset 0 0 0 1px ' + ink + '; -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent); mask-image: linear-gradient(to bottom, #000 55%, transparent)',
+    boxStyle: 'position: absolute; left: -30%; bottom: 10%; z-index: 1; width: 160%; height: 230%; overflow: hidden; pointer-events: none; opacity: 0.4; border-radius: 45% 45% 0 0; box-shadow: inset 0 0 0 2px ' + ink + ', 0 0 14px ' + ink + '; -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent); mask-image: linear-gradient(to bottom, #000 55%, transparent)',
     imgStyle: 'display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%' };
 }
 export const witnessedWords = (u, g) => 'UNTIL THE FIGHT ENDS OR ' + (patronNameOf(u, g).toUpperCase() || 'THE PATRON') + ' ACTS';

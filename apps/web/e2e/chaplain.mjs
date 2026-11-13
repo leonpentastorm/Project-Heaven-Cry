@@ -79,6 +79,7 @@ ok('the Hymn (Thunderclap on the sergeant\'s tile): ' + (hymnErr || 'prayed') + 
   const shown = await pr.waitFor({ timeout: 15000 }).then(() => true, () => false);
   const look = shown ? await pr.evaluate((el) => ({ patron: el.getAttribute('data-presence'), op: getComputedStyle(el).opacity, img: !!el.querySelector('img')?.getAttribute('src') })) : null;
   ok('the presence: ' + JSON.stringify(look), !!look && look.patron === 'old_overcast' && Math.abs(Number(look.op) - 0.4) < 0.01 && look.img);
+  await p.mouse.move(700, 120); await settle(p, 200);
   if (process.env.SHOTS_C3) await p.screenshot({ path: process.env.SHOTS_C3 + 'chaplain-witnessed-presence.png' });
 }
 // Sanctuary is a Hymn: right after the Hymn it waits for the Hymn's wait, in words. Since step 10 Ward and Sanctuary are

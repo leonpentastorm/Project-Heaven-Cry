@@ -66,6 +66,7 @@ const kz = host.locator('[role="tabpanel"] button', { hasText: /^Killzone/ }).fi
 const kzTip = (await kz.count()) ? await tipOf(kz) : '';
 ok('Killzone\'s card: two attacks held, both reactions (' + kzTip.slice(0, 80) + ')', /two/i.test(kzTip) && /reactions/i.test(kzTip));
 await host.locator('[data-reactions]').first().scrollIntoViewIfNeeded().catch(() => {});
+await host.mouse.move(700, 120); await settle(host, 200); // no hover card over the picture
 if (process.env.SHOTS_C3) await host.screenshot({ path: process.env.SHOTS_C3 + 'skirmisher-two-reactions.png' });
 await snap('01-two');
 ok('no page errors: ' + host.errors.join(' | '), !host.errors.length);

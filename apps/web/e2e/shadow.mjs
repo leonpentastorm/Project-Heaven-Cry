@@ -112,6 +112,8 @@ u = await me();
   let i = 0; while (i < before.length && before[i] === after[i]) i++;
   const at = Math.max(0, i - 20), seen = after.slice(at, at + 70);
   ok('the Break is a toggle on the attack card, and switching it changes the preview ("…' + seen + '…")', has && before !== after && /shadow|Break/i.test(after));
+  await host.locator('.phc-res-row:not(.phc-res-mini)[data-res="res-shadow"]').first().scrollIntoViewIfNeeded().catch(() => {}); await settle(host, 150);
+  await host.mouse.move(700, 120); await settle(host, 200); // no hover card over the picture
   if (process.env.SHOTS_C3) await host.screenshot({ path: process.env.SHOTS_C3 + 'operative-shadow-break.png' });
   await snap('02b-break-toggle');
 }

@@ -118,6 +118,7 @@ if (bonded) {
   ok('the Ledger is not repeated as a resource row', (await host.locator('[data-res="res-ledger"]').count()) === 0);
   await host.locator('[data-bond-strip]').first().scrollIntoViewIfNeeded().catch(() => {});
   await tendRows(); await host.locator('[data-bond-strip]').first().scrollIntoViewIfNeeded().catch(() => {}); await settle(host, 200);
+  await host.mouse.move(700, 120); await settle(host, 200); // no hover card over the picture
   if (process.env.SHOTS_C3) await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-tend-bond-strip.png' });
   await snap('01b-bond-strip');
 }
