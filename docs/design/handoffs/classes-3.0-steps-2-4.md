@@ -119,3 +119,4 @@ skeleton-screens playscreen perks magic` ALL GREEN.
    here: the balance step's.
 4. Left strings: `effects/stats.ts` `prey_lock`, `effects/types.ts` `braced`, `classes/rev3.ts` Sabotage's brief.
 5. Item numbers 1757 to 1761 may collide with the other builders'.
+6. `tools/validate_art.py` stops on "File integrity mismatch: art/briefs/ART-REQUESTS.md", a file this branch does not touch (so it is the base branch's); the three archetype labels in `art/catalog.json` changed.
