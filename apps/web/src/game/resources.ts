@@ -239,7 +239,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
       rows.push({ key: 'figments', label: 'Figments', value: 'FIGMENTS ' + fm.held + '/' + fm.max, now: fm.held, max: Math.max(1, fm.max), kind: 'pips', colour: RES_INK.expression,
         hint: 'Figments you hold now, of the most you can. Each costs 1 Visualizer charge at your turn start' + (fm.held < fm.max ? '; you can picture ' + (fm.max - fm.held) + ' more.' : '; let one go to picture another.') });
       const vr: ResRow = { key: 'vcharge', label: 'Visualizer', value: 'VISUALIZER ' + (fm.charge > 0 ? fm.charge + '/' + fm.chargeMax : 'EMPTY'), now: fm.charge, max: fm.chargeMax, kind: 'bar', colour: RES_INK.expression,
-        hint: 'The core in your Visualizer: Picture and upkeep spend its charge. Load the Visualizer (2 AP, a spare core) refills it.' };
+        hint: 'The core in your Visualizer: Picture and upkeep spend its charge. Load the Visualizer (a spare core) refills it.' };
       if (!mg.visualizer) Object.assign(vr, { warn: 'STOWED', level: 'caution', hint: 'Your Visualizer is in the pack: your Figments stay, but you can\'t picture or act through them until it is in hand.' });
       else if (fm.charge <= 0) Object.assign(vr, { warn: 'EMPTY', level: 'alert' });
       rows.push(vr);

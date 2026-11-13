@@ -16,7 +16,7 @@ import { num, effNum } from '../effects/num';
 import { levelFactor } from '../effects/output';
 import { withAp, resGive } from '../effects/cost';
 import { RULES } from '../data';
-import { visFocusWhy, pictureTileWhy, projectionRange, figmentsOf, unravel, makeFigment, isFigment, FIG } from '../figments';
+import { visFocusWhy, pictureTileWhy, projectionRange, figmentsOf, unravel, makeFigment, isFigment, FIG, setUpTurret } from '../figments';
 import { ownerOf as ownerOfUnit, ownedBy, unmakeOwned, spawnOwned, runDataVerb, OWNED_DATA_VERBS } from '../owned';
 import { tendHook } from '../effects/damage';
 import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
@@ -533,11 +533,10 @@ register({
     },
     run: (h, args) => {
       const cb = h.cb!, u = h.u!, way = args.choice || 'wreck', t = salvageTarget(h, way)!;
-      if (way === 'wreck') { uses(h).on(t).take('per_combat', 1); const got = resGive(cb, u, 'vcharge', num(h, 'charge'), { c: h.c, why: 'salvage' }); emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1000 }); say(cb, u.name + ' strips the wreck of ' + t.name + ': +' + got + ' Visualizer charge.'); return null; }
+      if (way === 'wreck') { uses(h).on(t).take('per_combat', 1); const got = resGive(cb, u, 'vcharge', num(h, 'charge'), { c: h.c, why: 'salvage' }); emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos }); say(cb, u.name + ' strips the wreck of ' + t.name + ': +' + got + ' Visualizer charge.'); return null; }
       if (way === 'reclaim') { unmakeOwned(cb, t, { refund: true, quiet: true }); say(cb, u.name + ' takes ' + t.name + ' back apart: its charge goes home.'); return null; }
-      const n = Math.floor(itemAmount('class:trickster.salvage', 'repair', [{ v: levelFactor('mend', u.level ?? 1), label: 'level' }])), was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + n); if (up) setDowned(t, false);
-      emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
-      say(cb, u.name + ' patches ' + t.name + ' with salvage: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
+      // the repair: the one Field Repair (combat.ts fieldRepair), with no part, no gate, the move's own amount
+      return withAp(u, Number.POSITIVE_INFINITY, () => fieldRepair(cb, u, { target: t, way: 'repair', parts: 0, gate: false, reach: num(h, 'reach'), item: 'class:trickster.salvage', label: 'Salvage' }));
     },
   }],
   brief: () => null,
@@ -612,8 +611,7 @@ register({
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!, at = turretTile(cb, k)!, w = scrapWeapon(cb, k) || FIG.turret.weapon;
       const melee = isMelee(WEAPON[w]), block = { ...FIG.turret, weapon: w, auto: { ...FIG.turret.auto, verb: melee ? 'melee' : 'shot' } };
       const tr = spawnOwned(cb, u, FIG.turret.id, at, rng as Rng, { block }); if (typeof tr === 'string') return tr;
-      tr.attack = mod(u.proficiency || 0); tr.strength = tr.attack; tr.infiniteAmmo = true; tr.kind = FIG.turret.kind;
-      tr.lvlDmg = Math.round(RULES.output.profiles.weapon.k * levelFactor('deal', u.level ?? 1) * 1000) / 1000;
+      setUpTurret(u, tr);
       (tr as any).owned.free = true; (tr as any).owned.left = num(h, 'rounds');
       say(cb, u.name + ' rigs a Scrap Turret at ' + refOf(at) + ' (' + (WEAPON[w]?.name || w) + ').'); sightCheck(cb);
       return null;

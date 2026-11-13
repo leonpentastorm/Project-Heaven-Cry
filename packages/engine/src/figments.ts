@@ -136,6 +136,13 @@ function setUp(owner: Unit, u: Unit, form: string, traits: string[], made: numbe
   const w = traits.reduce((s, t) => s + (FIG_TRAIT[t]?.weight || 0), 0); if (w) (u as any).figWeight = w;
   (u as any).figment = { form, traits: [...traits], made, range: traits.reduce((s, t) => s + (FIG_TRAIT[t]?.range || 0), 0) };
 }
+/** A Scrap Turret after spawnOwned (rules 1.34; the Rigger's): it rolls d20 + its owner's Improvisation modifier, deals
+ * its weapon's damage on the weapon profile at its owner's level (Unit.lvlDmg), never runs dry. */
+export function setUpTurret(owner: Unit, tr: Unit): void {
+  const prof = RULES.output.profiles.weapon;
+  tr.attack = mod(owner.proficiency || 0); tr.strength = tr.attack; tr.infiniteAmmo = true; tr.kind = FIG.turret.kind;
+  tr.lvlDmg = Math.round(prof.k * levelFactor(prof.level, owner.level ?? 1) * 1000) / 1000;
+}
 /** Every Figment this owner has in the fight (standing). */
 export const figmentsOf = (cb: Combat, owner: Unit): Unit[] => (cb.ties?.length ? ownedBy(cb, owner).filter((u) => isFigment(u) && cb.units.includes(u) && !u.dead) : []);
 /** The Figments in its held count (not the Rigger's Double). */
