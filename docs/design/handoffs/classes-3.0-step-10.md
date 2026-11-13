@@ -206,3 +206,14 @@ Run and Gun's chip).
 
 **Found on the way:** `npm run assets` run before a merge that brings art leaves the painted icons out of
 `public/assets` (the game shows broken images); run it again after the merge.
+
+**The close.** `validate.py` 0 errors (it now checks a tie kind's `line`); the catalogue `--check` clean; screen data
+fresh; `npm run built-from -- claude/charming-gauss-hbq4n0..HEAD`: 2 smells in 1 place, 0 a lint fails on (the MP-row
+hints in `resources.ts`, as before); `npm run check` ALL GREEN (engine 4040, web 1136; a first run under load 35 timed
+out 22 combat-screen tests at 5 s, each file passing alone). Browser suites on port 8897 (`--base`, own server), two at
+a time, all green: shadow, tending, chaplain, figments, reactions, title, missions, reconnect, two-players, faith,
+faith-pg, playscreen, tabs, sandbox, old-save, gear-icons, and the ten not run before (coop-stall, cutins, magic, perks,
+playtest-tools, right-panels, rules114, shell-guest, ui-shell, vote). title and missions passed only alone at first (a
+fresh page and a reload past 30 s at load 35): their waits are 90 s now; green together after. `prim-owned-actions`
+reads the fixture Figment's rows on the Figments tab. Screenshots (deviceScaleFactor 2): the Rigger with two Figments
+and its panel, the Mender's Bond lines, the Operative Hidden at 60%.
