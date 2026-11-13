@@ -117,7 +117,7 @@ export function ownerOf(info: ItemInfo, i: number): Owner {
 interface Slot { info: ItemInfo; fn: (ctx: any, h: Holder) => void; prio: number }
 const indexCache = new Map<string, Record<string, Slot[]>>();
 let version = 0;
-function dirty() { version++; indexCache.clear(); listened.clear(); TH = null; AURA_ANY = null; AURAS.clear(); }
+function dirty() { version++; indexCache.clear(); listened.clear(); TH = null; AURA_ANY = null; AURAS.clear(); STAT_ANY?.clear(); }
 const listened = new Map<string, boolean>();
 /** Does anything at all listen on this hook (an item's handler, a generic op, an engine system)? A hook that every
  * action passes through (the `cost` hook) asks this first, so it costs nothing until somebody uses it. */
@@ -145,7 +145,7 @@ function triggerHooks(): Set<string> {
 }
 let allItemsHook: (() => ItemInfo[]) | null = null;
 /** collect.ts gives the registry its list of every item (kept there to avoid an import cycle). */
-export const setAllItems = (f: () => ItemInfo[]) => { allItemsHook = f; TH = null; listened.clear(); AURA_ANY = null; };
+export const setAllItems = (f: () => ItemInfo[]) => { allItemsHook = f; TH = null; listened.clear(); AURA_ANY = null; STAT_ANY?.clear(); };
 
 function buildIndex(held: Held): Record<string, Slot[]> {
   const k = heldKey(held), hit = indexCache.get(k); if (hit) return hit;
@@ -273,6 +273,10 @@ export function anyOn(cb: Combat | null | undefined, name: HookName): boolean {
 export function statHeard(cb: Combat | null | undefined, stat: StatId): boolean {
   if (!cb) return false;
   if (GLOBAL_STATS[stat]?.length) return true;
+  // the fast way out (it is asked on every sight test): nothing in the data, nor added at run time, answers it at all
+  let any = STAT_ANY.get(stat);
+  if (any == null) { any = !!(TR?.condStatRows?.(stat) || []).length || (allItemsHook ? allItemsHook() : []).some((i) => i.effects.some((e) => e?.op === 'stat_mod' && e.stat === stat)); STAT_ANY.set(stat, any); }
+  if (!any) return false;
   const rows = TR?.condStatRows?.(stat) || [];
   for (const u of cb.units) {
     if (rows.length && TR!.condStat!(u, stat)) return true;
@@ -284,6 +288,8 @@ export function statHeard(cb: Combat | null | undefined, stat: StatId): boolean 
   return false;
 }
 const STAT_HELD = new Map<string, boolean>();
+/** Per stat: does anything in the data (an item's stat_mod, a condition row) answer it at all? Cleared when items change. */
+const STAT_ANY = new Map<string, boolean>();
 
 /** P6: the first predicate of an `if` block that fails for this holder (and its action's target), or null (it holds;
  * outside a fight, or before the runner is loaded, nothing is tested). */

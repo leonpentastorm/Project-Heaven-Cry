@@ -1,0 +1,60 @@
+{
+  "about": "Classes 3.0 step 1b: one row of each system spec's 'Built from' table written in data on the step 1a and 1b primitives (test only: not game content; the systems' own ids, numbers and resources come with their steps). test/prim-specs-1b.test.ts proves each is well formed, run by the generic runners, and does what its row says.",
+  "tie_kinds": [ { "id": "spec_bond", "max": 1, "ends_on": ["from_down", "to_dead", "combat_end"], "on_end": "none" } ],
+  "relics": [
+    {
+      "id": "spec_bonds_echo",
+      "spec": "bonds-spec.md 6.1, the echo (13): a heal you give comes back as damage to every enemy Bonded to you at its next turn",
+      "name": "Echo (spec row)",
+      "text": "When you heal, every enemy tied to you takes a share of it at the start of its next turn.",
+      "effects": [ { "op": "deal", "when": "heal_given", "if": { "actor": "self" }, "amount": { "kind": "damage", "base": 0, "per": [ { "of": "event:amount", "value": 0.2 } ], "type": "soul" }, "targets": { "side": "foe", "tied": "spec_bond" }, "delay": { "until": "target_turn_start" } } ]
+    },
+    {
+      "id": "spec_figments_volatile",
+      "spec": "figments-spec.md 6.1, Volatile: its fall bursts on everyone next to it",
+      "name": "Volatile (spec row)",
+      "text": "When this unit goes down, everyone within 1 tile takes damage.",
+      "effects": [ { "op": "deal", "when": "downed", "amount": { "kind": "damage", "base": 6, "type": "true" }, "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" } } ]
+    },
+    {
+      "id": "spec_shadow_break",
+      "spec": "shadow-spec.md 6 and 10, the Break as a data toggle (rev4-primitives.md section 2: one term from the meter, the ambush and Mark)",
+      "name": "The Break (spec row)",
+      "text": "A toggle on an attack while Hidden: the hit is multiplied by 1 + a share of the ambush and of a Mark.",
+      "toggles": [ { "id": "break", "name": "Break", "on": ["combat/attack"], "if": { "self_has": ["hidden"] },
+        "effects": [ { "op": "damage_mult", "when": "dealing", "value": { "base": 1, "per": [ { "of": "event:ambush", "value": 0.5 }, { "of": "target:marked", "value": 0.15 } ] } } ] } ],
+      "effects": []
+    },
+    {
+      "id": "spec_reactions_run_and_gun",
+      "spec": "reactions-spec.md 6, Run and Gun: a hit with a shot adds a point of Pressure to its target",
+      "name": "Run and Gun (spec row)",
+      "text": "Your shot's hit adds 1 Pressure to its target.",
+      "effects": [ { "op": "resource", "when": "hit", "resource": "pressure", "value": 1, "target": "target", "if": { "mode": ["shot"] } } ]
+    },
+    {
+      "id": "spec_percent_gate",
+      "spec": "heal-shield-percent-spec.md 4: a heal gated at a share of its target's max HP",
+      "name": "Gated Mend (spec row)",
+      "text": "At your turn start you heal yourself, at least a fifth of your max HP (counted up to 145).",
+      "effects": [ { "op": "mend", "when": "turn_start", "amount": { "kind": "heal", "base": 1, "min_pct": 0.2, "gate_hp": 145 } } ]
+    }
+  ],
+  "verbs": [
+    {
+      "id": "spec_chaplain_ward",
+      "spec": "chaplain-spec.md 6, Ward: a Whisper (prayer) at an ally in sight, a shield on its own layer, at most two carry yours",
+      "name": "Ward (spec row)", "kind": "verb", "requires": [ { "skill": "faith", "min": 1 } ],
+      "text": "A Whisper: an ally you see within 6 tiles, or you, gains a ward on its own layer; at most two carry yours.",
+      "effects": [ { "op": "grant_action", "action": "spec_ward", "ap": 1, "uses": "at_will", "prayer": "whisper", "reach": { "tiles": 6, "side": "ally", "self": true, "sight": true },
+        "effects": [ { "op": "mend", "amount": { "kind": "shield", "base": 7 }, "layer": "ward", "holders": 2, "target": "target" } ] } ]
+    },
+    {
+      "id": "spec_figments_picture",
+      "spec": "figments-spec.md 6.1, Picture: a verb that makes an owned unit (spawn)",
+      "name": "Picture (spec row)", "kind": "verb", "requires": [ { "skill": "visualization", "min": 1 } ],
+      "text": "Make a drone next to you.",
+      "effects": [ { "op": "grant_action", "action": "spec_picture", "ap": 2, "uses": "at_will", "limit": { "per": "per_combat", "n": 1 }, "effects": [ { "op": "spawn", "block": "drone", "at": "self" } ] } ]
+    }
+  ]
+}
