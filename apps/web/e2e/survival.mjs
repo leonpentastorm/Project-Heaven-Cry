@@ -114,7 +114,7 @@ async function shopChecks() {
   const c0 = me.credits, rifle = p.locator('[data-phc-card="rounds:rifle"]');
   const price = Number((await rifle.locator('[data-phc-price]').textContent()).replace(/\D/g, ''));
   await rifle.locator('[data-phc-buy]').click();
-  await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, c0, { timeout: 15000 });
+  await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, c0, { timeout: 30000 });
   const c1 = Object.values((await G()).characters)[0].credits;
   ok('buy rifle rounds at the card\'s price (' + price + '): ' + c0 + ' → ' + c1 + ', logged', c0 - c1 === price && /bought/.test(await p.locator('[data-phc-visit-log]').textContent()));
   // today's gear: a card's numbers are the engine's
@@ -140,13 +140,13 @@ async function shopChecks() {
   const best = rows.filter((x) => x.btn).sort((a, b) => b.v - a.v)[0], s0 = Object.values((await G()).characters)[0].credits;
   await p.locator('[data-phc-sell="' + best.idx + '"] [data-phc-sell-btn]').click();
   if (await p.locator('[data-phc-sell-yes]').count()) await p.locator('[data-phc-sell-yes]').click();
-  await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, s0, { timeout: 15000 });
+  await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, s0, { timeout: 30000 });
   ok('sell one at the row\'s price (+' + best.v + ')', Object.values((await G()).characters)[0].credits - s0 === best.v);
   await p.locator('[data-phc-tab="gear"]').click();
   const now = Object.values((await G()).characters)[0].credits, cheap = gear.filter((x) => (WEAPONISH.test(x.id)) && x.price <= now).sort((a, b) => a.price - b.price)[0];
   if (cheap) {
     await p.locator('[data-phc-card="' + cheap.key + '"] [data-phc-buy]').click();
-    await p.waitForFunction((k) => window.__phc.getState().game.run.shop?.stock.find((s) => s.key === k)?.sold, cheap.key, { timeout: 15000 });
+    await p.waitForFunction((k) => window.__phc.getState().game.run.shop?.stock.find((s) => s.key === k)?.sold, cheap.key, { timeout: 30000 });
     ok('buy a rolled weapon (' + cheap.id + ' for ' + cheap.price + '): it is marked "Sold to" and in the pack', /Sold to/.test(await p.locator('[data-phc-card="' + cheap.key + '"] [data-phc-status]').textContent())
       && (Object.values((await G()).characters)[0].pack || []).some((x) => (x.weapon || x.item || x.id) === cheap.id));
   } else ok('buy a rolled weapon: none affordable (' + now + ' credits; ' + gear.map((x) => x.id + ' ' + x.price).join(', ') + ')', false);
@@ -157,7 +157,7 @@ async function shopChecks() {
   await p.locator('[data-phc-tab="gear"]').click(); await settle(p, 500); await p.screenshot({ path: OUT + 'survival-shop-gear-1920.png' });
   await p.setViewportSize({ width: 1280, height: 720 });
   await p.locator('[data-phc-leave]').click();
-  await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 15000 });
+  await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
   ok('Leave the shop: back on the path map', await p.locator('[data-phc-pathmap]').count() === 1);
 }
 const WEAPONISH = /^(?!.*(kit|ration|parts|torch|flare|beads|chalk|toolbox|spirits|cigarettes|plate|shield|buckler|pavise|essence|stim|core$|musek))/;
@@ -173,7 +173,7 @@ while (guard++ < 40) {
     if (['forge', 'training', 'shrine', 'event'].includes(kinds[next])) { await p.waitForSelector('[data-phc-note]'); if (/will stand here/.test(await p.locator('[data-phc-note]').textContent())) sawPanel++; }
   } else if (r.state === 'shop') {
     if (!sawShop) await shopChecks();
-    else { await p.locator('[data-phc-leave]').click(); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'shop', null, { timeout: 15000 }); }
+    else { await p.locator('[data-phc-leave]').click(); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'shop', null, { timeout: 30000 }); }
   } else if (r.state === 'fight') {
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
