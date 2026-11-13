@@ -28,6 +28,7 @@ export * from './deeds';
 export * from './gear';
 export * from './loot';
 export * from './feelings';
+export * from './run/state';
 // Physical 2.0 (rules 1.12): the technique systems. `phys` holds everything; the names the client uses are also top-level.
 export * as phys from './physical';
 export { previewTechnique, useTechnique, techniquePad, packPad, stowedOf, physView, type PackPad, techniqueAp, linesFor, offHome, momentumOf, handlerOf as techniqueHandler, NOT_BUILT as TECHNIQUE_NOT_BUILT } from './physical/core';

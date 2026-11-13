@@ -13,6 +13,11 @@
 //       sides, glyphs and an Outburst on the field; and back in the story with the finished fight still in `combat`.
 //       Neither has an archive.
 //
+//   save-pre-modes-lobby.json     written by the claude/charming-gauss-hbq4n0 engine at 7cd6b8a0, the commit before rules
+//       1.39 (modes and the Survival run): a room saved in its lobby, two players, one character each, start and tone
+//       picked. The script beside it (save-pre-modes-lobby.how.ts.txt) wrote it. It has no settings.play: it loads as a
+//       campaign (run-state.test.ts reads it).
+//
 // Each is loaded the way the client loads a save (parsed, migrateLoaded) and played on. NEVER regenerate these files:
 // they are what an old save looks like. When the saved shape changes, add a NEW fixture beside them (written by the
 // engine as it was before the change; say which commit in this list) and a migration, and these must still pass.
