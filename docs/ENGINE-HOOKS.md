@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 30 triggers, 54 predicates, 18 ops, 90 effect ops, 121 hooks, 3 never emitted, 12 profiles, 39 cost sites, 10 resources, 50 stats, 24 condition fields, 317 primitive exports, 130 fx kinds, 165 Unit fields, 55 Combat fields, 40 guards.
+Counts: 30 triggers, 54 predicates, 18 ops, 90 effect ops, 121 hooks, 3 never emitted, 12 profiles, 39 cost sites, 10 resources, 50 stats, 24 condition fields, 325 primitive exports, 130 fx kinds, 165 Unit fields, 55 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -275,16 +275,16 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `cond_landed` | a condition landed on a unit | (a payload built elsewhere) | magic.ts:285 | classes/i.ts:381 (+11) | `cond_landed` |
 | `cond_end` | a condition ended on a unit | `u`, `id` | magic.ts:385 | classes/j.ts:184 | `cond_ended` |
 | `displaced` | a unit was moved by someone else, after it landed (where it ended, what stopped it) | `u`, `by`, `from`, `to`, `path`, `how`, `kind`, `stoppedBy`, `blockedAt` | combat.ts:1947 | perks/skeleton.ts:58 |  |
-| `heal_given` | a heal landed (who healed whom, how much) | `t`, `by`, `n`, `kind`, `revived` | combat.ts:2394 (+1) | classes/k.ts:1262 (+8) | `heal_given` |
+| `heal_given` | a heal landed (who healed whom, how much) | `t`, `by`, `n`, `kind`, `revived` | combat.ts:2416 (+1) | classes/k.ts:1262 (+8) | `heal_given` |
 | `heal_in` | a unit is about to be healed (the amount may change) | `t`, `by`, `n`, `kind` | effects/damage.ts:127 | classes/i.ts:1466 (+7) | `heal` |
 | `shield_grant` | a shield is about to be given (the amount may change) | `t`, `by`, `n` | effects/damage.ts:140 | classes/i.ts:1346 (+7) | `shield` |
 | `reaction_window` | a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it | `reactor`, `mover`, `kind`, `id`, `cancel`, `at` | calls/core.ts:134 (+6) | classes/i.ts:237 (+5) |  |
-| `enemy_action_start` | an enemy is about to act (an item may open a window or make it skip) | `u`, `step`, `skip` | combat.ts:2426 | calls/rules.ts:81 (+6) |  |
+| `enemy_action_start` | an enemy is about to act (an item may open a window or make it skip) | `u`, `step`, `skip` | combat.ts:2448 | calls/rules.ts:81 (+6) |  |
 | `sight_change` | after a move, the units each side stopped or started seeing (only computed while someone listens) | `side`, `lost`, `gained` | combat.ts:1725 | perks/c.ts:508 |  |
 | `sees` | a side's sight of a unit is decided: items may make it seen or unseen | `side`, `t`, `by`, `seen`, `sensed` | combat.ts:948 | calls/rules.ts:85 (+4) |  |
 | `object_destroyed` | an object on the grid was destroyed | `obj`, `by` | classes/k.ts:938 (+1) | deeds.ts:179 (+3) |  |
 | `reload` | a reload is made (its AP, the hand, tactical or speed) | `u`, `ap`, `special`, `both`, `tactical`, `hand` | classes/i.ts:197 (+2) | classes/i.ts:216 (+3) | `reload` |
-| `jam_clear` | a jam is being cleared (its AP, whether the heat is kept) | `u`, `ap`, `keepHeat`, `hand` | combat.ts:2364 (+1) | perks/c.ts:506 |  |
+| `jam_clear` | a jam is being cleared (its AP, whether the heat is kept) | `u`, `ap`, `keepHeat`, `hand` | combat.ts:2375 (+2) | perks/c.ts:506 |  |
 | `swap` | a weapon swap is priced (declared; the item ops trigger `swap` listens here) | `u`, `c`, `from`, `mod`, `ap` | game.ts:1830 | classes/k.ts:1173 (+1) | `swap` |
 | `stood_up` | a prone unit stood up | `u` | combat.ts:1992 | none |  |
 | `glyph_cost` | a Sigil glyph is priced: its AP, charge and Flux; also every preview | `u`, `word`, `ap`, `charge`, `flux`, `preview`, `tile`, `fail` | sigil.ts:75 | classes/i.ts:693 (+14) | `glyph_cost` |
@@ -307,7 +307,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `injury` | an injury is about to be rolled on a unit (cancel, no daze, no halving) | `t`, `by`, `d`, `loc`, `side`, `cancel`, `noDaze`, `noHalve`, `why`, `called` | combat.ts:1395 | classes/i.ts:402 (+4) | `injury` |
 | `unit_built` | a unit was built from its character (the area map rebuilds units every action) | `u`, `c`, `world` | game.ts:2472 | classes/i.ts:703 (+4) |  |
 | `action_done` | a reducer action finished (any action, any unit) | `u`, `a`, `world` | game.ts:1582 (+2) | calls/rules.ts:80 (+15) |  |
-| `stim_start` | a stim is about to be given (cancel with a reason) | `u`, `t`, `cancel`, `why` | combat.ts:2390 | perks/e.ts:863 |  |
+| `stim_start` | a stim is about to be given (cancel with a reason) | `u`, `t`, `cancel`, `why` | combat.ts:2412 | perks/e.ts:863 |  |
 | `volley_end` | a weapon action's shots are all resolved (a burst, an auto volley, a paired attack, a skill shot) | `u`, `mode`, `target`, `hits` | combat.ts:1811 (+6) | classes/rev3.ts:264 (+2) |  |
 | `weapon_actions` | a unit's weapon actions are listed (declared; nothing emits it yet) |  | **never emitted** | none |  |
 | `path_opts` | a walk's path options are opened by items (run, pass, jump, ignore difficult ground, known traps) | `u`, `runnable`, `pass`, `jump`, `ignoreDifficult` | combat.ts:751 | perks/a.ts:530 |  |
@@ -367,7 +367,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `story_cond_apply` | a condition is about to be put on a character outside a fight (cancel with a reason) | `c`, `id`, `scope`, `cancel`, `why` | game.ts:1183 | perks/a.ts:165 (+2) |  |
 | `gift` | a gift was given (the patrons' supply tag) |  | **never emitted** | faith.ts:727 |  |
 | `vent` | a Vent is made: the Flux it puts into the air may change | `u`, `flux`, `extra` | magic.ts:602 | classes/rev3.ts:407 |  |
-| `ai_move_risk` | an enemy's walk is scored for risk by items (the AI avoids it) | `u`, `from`, `to`, `risk` | combat.ts:2606 | classes/rev3.ts:130 |  |
+| `ai_move_risk` | an enemy's walk is scored for risk by items (the AI avoids it) | `u`, `from`, `to`, `risk` | combat.ts:2628 | classes/rev3.ts:130 |  |
 | `cond_resisted` | a condition's save was passed | `by`, `t`, `id` | magic.ts:312 | feelings.ts:188 |  |
 | `call` | a Call is about to be made (its step, TN, a refusal) | `u`, `t`, `id`, `kind`, `step`, `react`, `tnAdd`, `cancel` | calls/core.ts:130 | none |  |
 | `call_cost` | a Call is priced (its AP) | `u`, `id`, `ap`, `react`, `preview` | calls/core.ts:47 | none |  |
@@ -680,6 +680,8 @@ Families: `body`, `brain`, `heart`.
 | `setAllItems` | `setAllItems(f: () => ItemInfo[])` | collect.ts gives the registry its list of every item (kept there to avoid an import cycle). |
 | `heldOfChar` | `heldOfChar(c: Character \| null \| undefined): Held` | What a character holds (the compact form). |
 | `setRankRule` | `setRankRule(f: (c: Character) => number)` | character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). |
+| `GRAND_FORM_OP` | `GRAND_FORM_OP` | The effect op that lays a Grand form (a Sigil word's `grand`; rules 1.4; effect_ops.json). |
+| `canLayGrandForms` | `canLayGrandForms(c: Character \| null \| undefined): boolean` | Can this character lay Grand forms? Only while it holds a move whose effects lay one, through a class that is active: while the advanced classes are shelved, nobody can, so a screen shows no Grand form (Leon,… |
 | `heldOfUnit` | `heldOfUnit(u: Unit \| null \| undefined): Held` | What a unit holds (perks, traits, class moves): its own list, else its character's. |
 | `charOfUnit` | `charOfUnit(u: Unit \| null \| undefined): Character \| null` | The character behind a unit in the bound game, or null (an enemy, a thing). |
 | `holdersOf` | `holdersOf(x: { u?: Unit \| null; c?: Character \| null; cb?: Combat \| null }): Holder[]` | Holders of every item a unit or character has (traits, perks, class moves), in order. |
@@ -914,15 +916,21 @@ Families: `body`, `brain`, `heart`.
 | name | signature or shape | what for |
 | --- | --- | --- |
 | `TipLine` | `interface TipLine { key, kind, label, text }` | One line of the hover card: what it does, the weapon's line, a trait, a note, or the refusal. |
-| `Tip` | `interface Tip { name, chips, lines }` | A laid-out hover card: the name, its cost chips, its lines. |
+| `Tip` | `interface Tip { name, chips, lines }` | A laid-out hover card: the name, its cost chips, its lines. name '' (a prose hover text): a card with no title line. |
 | `TipSrc` | `interface TipSrc { name, cost, text, needs, line, traits, notes, why }` | What a hover card is made from (the descriptor's own fields). |
 | `sentences` | `sentences(prose: string): string[]` | Split prose into sentences at top level: a stop (. ! ? …) followed by a space and a capital, a digit, a sign or an opening bracket. |
 | `actionTip` | `actionTip(src: TipSrc): Tip` | The action's card: the name and cost chips, then its lines (see the top of this file). |
-| `tipText` | `tipText(t: Tip): string` | The card as plain text, a line each (an aria-description, or a native title where no card can show). |
+| `tipText` | `tipText(t: Tip): string` | The card as plain text, a line each (an aria-description). |
 | `tipAttrs` | `tipAttrs(src: TipSrc): { tip: string; tipText: string }` | What the screen binds: data-tip (the card) and aria-description (the same, in words). |
+| `proseTip` | `proseTip(prose: string, name = ''): Tip` | A plain prose hover text as a card: a line a sentence (and a line for each " · " part and each line break), a "Label: text" sentence and each part of a parenthesised note on their own labelled lines. |
+| `tipProps` | `tipProps(text: string \| null \| undefined, opts: { label?: boolean } = {}): Record<string, string>` | React props for a plain hover text: the card and the same words for assistive tech. |
+| `setTip` | `setTip(el: Element, text: string \| null \| undefined, opts: { label?: boolean } = {}): void` | The same for an element made by hand (cutIn, the camera's arrows). |
+| `tipFor` | `tipFor(el: Element): Tip \| null` | The card an element shows, or null (data-tip first, then data-tip-text). |
 | `TIP_CSS` | `TIP_CSS` | The floating hover card's style, mounted once by mountActionTips. |
-| `tipElement` | `tipElement(doc: Document, t: Tip): HTMLElement` | Lay a card out as elements (the name, its chips, a line each). |
-| `mountActionTips` | `mountActionTips(doc: Document \| null = typeof document !== 'undefined' ? document : null): void` | Show the card of any [data-tip] element under the pointer or keyboard focus, beside it, kept inside the window. |
+| `tipElement` | `tipElement(doc: Document, t: Tip): HTMLElement` | Lay a card out as elements (the name and its chips if any, a line each). |
+| `placeTip` | `placeTip(r: Rect, b: { width: number; height: number }, W: number, H: number, gap = 6): { x: number; y: number }` | Where the card goes: beside the element (left, then right), else below, else above, shifted inside the window and never over the element itself (so never under the pointer: no flicker). |
+| `TIP_SELECTOR` | `TIP_SELECTOR` | **(no doc comment: add one in the source)** |
+| `mountActionTips` | `mountActionTips(doc: Document \| null = typeof document !== 'undefined' ? document : null): void` | The one floating card of the document: any [data-tip] / [data-tip-text] element under the pointer, under keyboard focus or long-pressed on a touch screen shows its card, after a short delay (a pointer swept do… |
 
 #### The client's action flow (`apps/web/src/game/actionFlow.ts`)
 
@@ -954,7 +962,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `carry` | `unit`, `from`, `to`, `target`, `tech` | physical/ranged/fire.ts:279 | 1 |
 | `chain` | `unit`, `from`, `to`, `target`, `element`, `storm`, `jump`, `mult`, `grand`, `feeling` | classes/i.ts:1269 | 6 |
 | `charge` | `unit`, `at`, `charges` | classes/j.ts:1057 | 1 |
-| `clear` | `unit`, `at`, `dur`, `by`, `hand` | classes/rev3.ts:310 | 3 |
+| `clear` | `unit`, `at`, `dur`, `by`, `hand` | classes/rev3.ts:310 | 4 |
 | `command` | `target`, `at`, `order`, `to`, `by` | sigil.ts:1078 | 1 |
 | `command_move` | `unit`, `target`, `from`, `to` | classes/rev3.ts:660 | 1 |
 | `cond` | `target`, `at`, `id`, `resisted`, `element` | magic.ts:303 | 5 |
