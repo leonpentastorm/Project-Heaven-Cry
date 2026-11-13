@@ -477,9 +477,9 @@ Family paragraph: **Focuses: the four gloves**.
 **100. `focus-visualizer.png`** | Visualizer | Expression arms (coming in Classes 3.0)
 > **Subject:** The Expression focus, an Evoker for artists, coming in Classes 3.0 (not yet in items.json; see docs/design/figments-spec.md). A hand-worn glove, palm held out: nanobots build what is pictured in the light of the projector set in the middle of the palm. Holds one mana core of its own (10 charge). **Silhouette feature:** a single glove, palm toward the viewer, with a projector lens set in the middle of the palm as the silhouette feature, ringed by a small emitter bezel, fingers slightly spread. **Materials and accent:** pale ceramic and dark grey leather, in the same glove family as the other two; accent: Expression #5394AC glow from the palm lens, contained, no bloom. **At 32 px:** Against the Evoker and Emanator: palm out, a big central projector bezel and spread fingers.
 
-
 **148. `focus-attuner.png`** | Attuner | Insight arms (coming in Classes 3.0; added 13 Nov)
 > **Subject:** The Insight focus, the fourth standard glove of the gear companies' line, coming in Classes 3.0 (not yet in items.json; see docs/design/bonds-spec.md, 0.4 kg, off hand, one hand). Its wearer feels the people around them, friend or foe: fine threads run from the glove to whoever is Bonded. A hand-worn glove, back of the hand toward the viewer, no hand inside. **Silhouette feature:** a small round core set on the back of the hand, and from it a fan of very fine filaments laid along the back of the hand and each finger to its fingertip (five thin lines, one to each tip, like the veins of a leaf), with one of the five filaments lit; fingers slightly curled as if just closed on a thread. The cuff is plain. **Materials and accent:** the same pale ceramic and dark grey leather as the Visualizer, thin brass-grey wire for the filaments; accent: Insight rose #EB95B7, only in the small core and in the one lit filament, contained, no bloom. **At 32 px:** Against the Evoker (angular, one hexagonal window) and the Visualizer (palm out, big lens): the Attuner is back-of-hand with a round dot and a fan of thin lines to the fingertips, one of them rose.
+
 ### Batch 16: consumables, tools, lights, food, documents, loot, augment, companion
 
 Family paragraph: **Consumables, tools, lights, food, documents, loot**.
@@ -532,9 +532,9 @@ Family paragraph: **Consumables, tools, lights, food, documents, loot**.
 **116. `companion-drone_frame.png`** | Drone frame | Science Team
 > **Subject:** A folding combat drone (4 kg). **Silhouette feature:** a folded quad-rotor frame with four arms, a belly gun mount and a single sensor eye. **Materials and accent:** matte grey frame, dark rotors; accent: Mind cyan #4FC8DF in the sensor lens.
 
-
 **149. `consumable-toxin_vial.png`** | Toxin vial | Underworld / Operatives (coming in Classes 3.0; added 13 Nov)
 > **Subject:** One dose of toxin: the Operative coats a weapon with it (a blade's edge, an arrow, a thrown weapon, a gun's next rounds) and the hit leaves its target Weakened, Slowed or Bleeding. A pack item, used up. Not in items.json yet (see docs/design/rev4-primitives.md section 3.7). **Silhouette feature:** a slim, flat-sided glass phial with a wax-sealed neck and a small dropper cap, laid at a slight diagonal, a leather loop around its neck, and two pale hatch bars painted across the glass as a plain warning band (no symbol, no skull, no text). **Materials and accent:** dark glass, brass dropper cap, oilcloth tie; accent: Perception sea-teal #40BAA0 liquid, a muted tint inside the glass only. **At 32 px:** Against the stim injector (a white pen) and the Essence of Experience (a round ampoule with a cork collar, gold-white): a thin dark phial with a teal fill and a dropper cap.
+
 ### Batch 17: weapon mods
 
 Family paragraph: **Weapon mods**.

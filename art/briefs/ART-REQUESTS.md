@@ -114,6 +114,51 @@ entry, makes the web exports, runs `python3 tools/validate_art.py` and `npm run 
 from review candidate to production. Rarity variants (`--worn`, `--fine`, `--masterwork`, `--relic`, `--celestial`) are
 a second pass; the prompts file lists the first four.
 
+### 5. Classes 3.0 (Class Roster Revision 4 and its seven specs; requested 13 Nov 2026)
+
+**Leon, 13 Nov 2026:** "The artist is working, so push anything needed to him." Collected from each spec's "The screen"
+section (`docs/design/shadow-spec.md`, `bonds-spec.md`, `figments-spec.md`, `chaplain-spec.md`, `reactions-spec.md`) and
+`rev4-moves-and-rename.md`. **Paste-ready prompts, one per image, in
+[`GPT-PROMPTS-2026-11-13-classes-3.0.md`](GPT-PROMPTS-2026-11-13-classes-3.0.md)** (the order to make them in is at its top). Every
+row is **Wanted, requested 13 Nov**; nothing is built yet, but every picture shows an action or an object, never a label, so a
+rename of a *(Suggested)* name changes nothing. **53 images for the artist**: 45 Wick icons, 2 gear icons (and the
+Visualizer, already in E2), 6 Figment portraits. E2 (4b above) now stands at **149** gear icons, not 147: the Attuner (148)
+and the Toxin vial (149) were added to the gear file the same day.
+
+| # | For | Status | What it must show | Direction | Goes to |
+| --- | --- | --- | --- | --- | --- |
+| C1 | **Chaplain and reactions: 6 Wick icons** (Ward, Sanctuary, Smite, Verdict, Reflex, Run and Gun) (`chaplain-spec.md` 9, `reactions-spec.md` 9) | Wanted, requested 13 Nov | One action each: whispering a Ward onto an ally; singing a Sanctuary over a 3 x 3 patch; a weapon hit that carries the god's ray; one decided blow after a pointed finger (Verdict, was Judgement); two reactions in one dodge; running while the gun stays level. Ward and Sanctuary join the prayer icons (one small light source) | Wick, white flat ink, STYLE-LOCK; one full figure, others partial. The reactions spec calls Run and Gun "a line icon"; the lead's call is a Wick icon like every verb, so it matches the rest of the action row | `art/icons/prayers/whisper-ward.png`, `hymn-sanctuary.png`; `art/icons/moves/smite.png`, `verdict.png`, `reflex.png`, `run-and-gun.png` |
+| C2 | **Shadow (the Operative): 8 Wick icons**: the four kinds (Slip, Mark, Work, Break) and the moves with no icon (Toxin, Sabotage, Execution, Called Shot) (`shadow-spec.md` 9) | Wanted, requested 13 Nov | The four group marks the Shadow tab uses (the 21 verbs reuse their group's mark until drawn: four different silhouettes); Toxin is a drop onto an edge; Sabotage a cut cable in a machine; Execution a reversed blade at a nearly-spent ring; Called Shot a ring round one limb. **Fade** (was Vanish) needs nothing new: it reuses `vanishing-act.png`; the Mark move uses the Mark group mark | Same | `art/icons/shadow/slip.png`, `mark.png`, `work.png`, `break.png`; `art/icons/moves/toxin.png`, `sabotage.png`, `execution.png`, `called-shot.png` |
+| C3 | **Bonds, Tending and the Mender: 16 Wick icons**: Bond (ally), Bond (enemy), Mend, Touch, Shield, Raise, Settle, Soothe, Guide, Share a Hit, and the Mender's six moves Triage, Ledger, Inspire, Take the Weight, Brimming, Rally (`bonds-spec.md` 9) | Wanted, requested 13 Nov | One icon a verb for the Tend tab and the class chips. The ally Bond is a slack thread with a heart knot to a partial hand; the enemy Bond a taut thread to a spiked gauntlet (readable apart at 32 px). Others are partials. The Ledger and Brimming illustrate rules that are themselves new (see the prompts file) | Same; the ribbon-and-knot of the feeling glyphs recurs in Inspire. The spec lists 12; the lead added the enemy Bond and the three Mender moves it left out (Triage, Inspire, Rally) so the Mender's six are a set | `art/icons/tending/bond.png`, `bond-foe.png`, `mend.png`, `touch.png`, `shield.png`, `raise.png`, `settle.png`, `soothe.png`, `guide.png`, `share-a-hit.png`; `art/icons/moves/triage.png`, `ledger.png`, `inspire.png`, `take-the-weight.png`, `brimming.png`, `mender-rally.png` |
+| C4 | **Figments and the Rigger: 15 Wick icons**: ten trait icons (Armoured, Swift, Loud, Volatile, Tethered, Mirror, Barbed, Lasting, Keen, Hollow), Picture and Let go, and the Rigger's Salvage, Overclock and Scrap Turret (`figments-spec.md` 9) | Wanted, requested 13 Nov | Trait chips on a design, 32 px; Picture (bots gathering into a shape) and Let go (a shape coming apart) must differ at a glance; Salvage a core pulled from a wreck; Overclock a dial cranked on a machine; Scrap Turret a junk-built turret. The Figment itself is never a second Wick | Same | `art/icons/figments/trait-<id>.png`, `verb-picture.png`, `verb-let-go.png`; `art/icons/moves/salvage.png`, `overclock.png`, `scrap-turret.png` |
+| C5 | **The Attuner** (the fourth standard glove, the Bond focus; Leon: "sounds cool, keep it") and **the Toxin vial** (the Operative's supply, a pack item: `rev4-primitives.md` 3.7): 2 gear icons | Wanted, requested 13 Nov | The Attuner: back of the hand, a small round core and a fan of fine filaments to each fingertip, one lit, in Insight's ink `#EB95B7`; same family and scale as the Evoker, Emanator and Visualizer. The Toxin vial: a slim stoppered phial with a dropper cap and a teal fill. **The Visualizer (gear number 100) is already part of E2**; it is drawn in the same sitting | Heavenprint painted object (gear rule). In the gear file as numbers 148 and 149 | `art/icons/gear/focus-attuner.png`, `art/icons/gear/consumable-toxin_vial.png` |
+| C6 | **Figment portraits: 6** (Double, Eye, Wall, Beast, Blade, and the Scrap Turret), "five form tokens and portraits (bots in the shape, Expression pigment)" (`figments-spec.md` 9) | Wanted, requested 13 Nov | One 4:5 portrait a form, shown cropped to a round token at 40 to 64 px (units here are face tokens, not map sprites): the whole subject inside the central circle. Abstract skill-portrait mode: black, cream, Expression pigment (`#075369`, `#14758B`, `#033443`); the bots as flecks; the Scrap Turret angular and welded, not bots | Skill-portrait mode (style guide section 15 to 17). Cream carries the light, because Expression's pigment is dark | `art/portraits/figments/figment-double.png`, `figment-eye.png`, `figment-wall.png`, `figment-beast.png`, `figment-blade.png`, `figment-scrap-turret.png` |
+
+**Done means:** a master per file name in the prompts file (Wick icons pure white `#FFFFFF` on transparency, 1024 x 1024;
+gear 1024 x 1024 RGBA, the object inside the central 80 to 85%; portraits 800 x 1000, no text); every Wick icon checked at
+44 and 32 px on `#10151F`, with each batch seen on one sheet so no two silhouettes can be confused; then Claude adds the
+catalog entries (`perks`-style maps for `moves`, `shadow`, `tending`, `figments`; `prayers`; the `gear` map; the figment
+portraits), runs `python3 tools/validate_art.py` and `npm run assets`, and Leon's approval flips them from review candidate
+to production. Send C1 to Leon first as the style check; then carry on.
+
+**What already exists and is reused (nothing to make):** `art/icons/perks/vanishing-act.png` (Fade); the 25 feeling glyphs
+(the feelings given along a Bond); the eight patron portraits and marks (the Chaplain's presence; Claude crops them);
+`art/sprites/objects/mine.png` (a Rig trap, until a sprite is asked for); the gear prompts for the field kit (18), spare parts
+(19), standard core (20) and stim injector (24) (the supply of the Rigger's Field Fix and Field Repair, the Mender's gear
+actions and the Visualizer's core). **Class emblems:** per `rev4-moves-and-rename.md` section 3 they are code-drawn line icons
+(`apps/web/src/game/classIcons.ts`), so no painted class emblem is requested; if Leon later wants painted class marks, that is a new request.
+
+**Drawn by Claude, not the artist (Classes 3.0; so nobody waits on these):**
+
+| What | Where | Note |
+| --- | --- | --- |
+| Class emblems redrawn: **Rigger** (the mask becomes a wrench crossed with a spark), **Mender** (the lyre becomes two hands around a plus), **Chaplain** (the dome becomes a dome under a flame); Bulwark, Breaker, Skirmisher, Operative (an eye over a lockpick), Sigilist and Channeler keep theirs | `classIcons.ts`, re-export `class-icons-sheet.png` | `rev4-moves-and-rename.md` section 3 |
+| Meter marks: Shadow pips and its eye glyph (Unseen, In view, Seen); the Bond strip (chip frame, ally line, enemy thread, the Ledger bar); Figments pips and the Visualizer charge bar (EMPTY at 0); reaction pips (one, or two for the Skirmisher); the Ward pip and Sanctuary's zone outline | pure SVG in the UI | inks by the colour system: Perception `#40BAA0`, Insight `#EB95B7`, Expression `#5394AC` |
+| Condition glyphs (line icons): Traced, Bonded, Exposed, Off Balance, Read, Settled, Judged | the conditions table | |
+| Monoline focus icons: `focus/visualizer.svg`, `focus/attuner.svg` (beside the Evoker and the Emanator); monoline weapon icons `figment_claws`, `figment_edge` | `art/icons/focus/`, `art/icons/weapons/` | the painted gloves are Job 2 |
+| The patron's standing presence (Chaplain): eight figures cropped from `art/portraits/patrons/` | `faithArt.ts` | |
+| VFX and SFX **found, not drawn** (CC BY 4.0 or CC0, credited in the game): a particle sheet for bots streaming in and scattering, a build sound and an unravel sound | `sfxCredits.ts`, `credits.ts` | the one thing in the specs no art mode of ours covers: it needs texture, so it is sourced |
+
 ## At risk in the balance pass
 
 The balance pass (`docs/design/proposals/2026-11-balance-pass.md`) will rewrite, merge or remove perks, traits and
@@ -145,6 +190,7 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
+- **13 Nov 2026:** section 5 opened for Classes 3.0 (Revision 4): 53 images for the artist (45 Wick icons, 2 gear icons, 6 Figment portraits), prompts in `GPT-PROMPTS-2026-11-13-classes-3.0.md`; E2 is now 149 gear icons (the Attuner and the Toxin vial added).
 - **12 Nov 2026:** W3 opened: Rebuke, a seventh Whisper (rules 1.21, the Faith fit). Thunderclap now also deals lightning damage and Lightning Rod's numbers moved; their icons (`hymn-old_overcast-1`, `-2`) still fit.
 - **11 Nov 2026:** maps built to rules 1.16: M1 and M6 have their 26 × 26 layouts; the four M813 paintings moved to `art/_archive/maps/m813/retired-2026-11/` and left the catalog.
 - **11 Nov 2026:** maps: the rule (26 × 26 at most, the Proving Ground at full size, smaller allowed per campaign) and one row a map, M1 to M9.
