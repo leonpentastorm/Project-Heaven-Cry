@@ -398,11 +398,13 @@ Bond; the budget; one big patch.
 Sigilist, Rigger, Mender, Channeler kept, Chaplain); Salvage replaces Silver Tongue and Smite replaces Command;
 Rewrite waits in the move pool; Jury-Rig is the Rigger's rank III.
 
-**Still open:**
+**Settled by Leon on draft 2 (13 Nov):** Reflex in full (two reactions a round for the Skirmisher); the patron at
+the Chaplain's side is a presence, not a body; Smite is measured, and it is meant to lift the Chaplain's offence
+("a Whisper is already weaker compared to other classes, so Smite makes up for their offensive capability").
 
-1. **Reflex.** Two reactions a round for the Skirmisher, once the count is real (section 2.1). The safer form is a
-   second reaction only for one that moves you. The lead recommends the full form, measured.
-2. **The patron at the Chaplain's side:** a presence that changes how interventions land (this draft), or a body on
-   the board that can be struck and blocks a tile. The lead recommends the presence: a body is the Rigger's thing.
-3. **Smite's size:** Rebuke's 20 every turn on top of a weapon hit puts a Chaplain's weapon turn near a Whisper
-   turn plus a rifle turn. It needs its own line in the contract.
+**The seven specs** (being written 13 Nov; each ends with its own questions for Leon): `shadow-spec.md`,
+`bonds-spec.md`, `figments-spec.md`, `chaplain-spec.md`, `reactions-spec.md`, `rev4-moves-and-rename.md` (the moves
+that change hands, the rename, the build order).
+
+**A correction the specs carry:** this draft has the Mender take Strain (a Bonded ally going Down; Take the Weight).
+Strain is Determination's meter; the Bonds spec replaces it with a cost in MP or HP.
