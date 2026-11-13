@@ -4593,6 +4593,14 @@
         "arg": "bool",
         "about": "the holder is (or is not) up: not Downed, dead or surrendered"
       },
+      "actor_alive": {
+        "arg": "bool",
+        "about": "the actor is (or is not) up: not Downed, dead or surrendered"
+      },
+      "target_alive": {
+        "arg": "bool",
+        "about": "the target is (or is not) up: not Downed, dead or surrendered"
+      },
       "open": {
         "arg": "bool",
         "about": "nothing has stopped it yet: not cancelled, and (would_drop) not floored"

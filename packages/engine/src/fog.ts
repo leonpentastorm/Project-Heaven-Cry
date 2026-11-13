@@ -155,7 +155,7 @@ export function fogFight(g: unknown, real: Combat, view: Combat, me: Side, full 
     // Classes 3.0 P8: a side keeps its own ties (a tie whose near end is one of its units); another side's are never sent
     ...(ties ? { ties: ties.filter((t) => own.has(t.from)).map((t) => (hid.has(t.to) ? { ...t, to: UNSEEN } : t)) } : {}),
     // Classes 3.0 (step 1b review): a side keeps its own delayed ops (their holder is one of its units)
-    ...(delayed ? { delayed: delayed.filter((d) => own.has(d.holder)).map((d) => scrub(d, c)) } : {}),
+    ...(delayed?.some((d) => own.has(d.holder)) ? { delayed: delayed.filter((d) => own.has(d.holder)).map((d) => scrub(d, c)) } : {}),
     fog,
   };
   return out as unknown as Combat;

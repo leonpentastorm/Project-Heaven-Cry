@@ -33,7 +33,8 @@ describe('section 6: the addendum', () => {
       expect(JSON.parse(JSON.stringify(cb.delayed))).toEqual(cb.delayed); // plain data: saved with the fight
       const hp = f.hp; turn(g, f, 6); expect(hp - f.hp).toBe(Math.floor(n)); expect(cb.delayed).toBeUndefined();
       dice({ die: 10, hit: true }, () => A.resolveAttack(cb, g.rng, u, f, 'shot', null, { noAp: true }));
-      f.dead = true; turn(g, f, 6); expect(cb.delayed).toBeUndefined(); // dropped
+      expect(cb.delayed?.length).toBe(1); // the item still queues (its data was not changed by the first: the integration review's fix)
+      f.dead = true; turn(g, u, 6); expect(cb.delayed).toBeUndefined(); // dropped at the next turn start: a dead unit has none of its own
     });
   });
   it('ties:<kind>: a number counts the holder\'s ties of a kind', () => {

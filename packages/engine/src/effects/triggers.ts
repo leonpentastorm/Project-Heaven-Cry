@@ -168,6 +168,8 @@ P('own_turn', 'bool', 'it is (or is not) the holder\'s own turn', (ev, v) => (ev
 P('flag', 'string', 'the item\'s flag is set (the mark op sets it)', (ev, v) => !!flags(ev)[v]);
 P('no_flag', 'string', 'the item\'s flag is not set', (ev, v) => !flags(ev)[v]);
 P('self_alive', 'bool', 'the holder is (or is not) up: not Downed, dead or surrendered', (ev, v) => (!ev.self.dead && !ev.self.downed && !ev.self.surrendered) === v);
+// P6's two (rev4-primitives.md: a door verb's reach and its effects): the actor or the target is (or is not) up
+for (const who of ['actor', 'target'] as Who[]) P(who + '_alive', 'bool', 'the ' + who + ' is (or is not) up: not Downed, dead or surrendered', (ev, v) => { const u = unitOf(ev, who); return !!u && (!u.dead && !u.downed && !u.surrendered) === v; });
 P('open', 'bool', 'nothing has stopped it yet: not cancelled, and (would_drop) not floored', (ev, v) => (!ev.ctx.cancel && ev.ctx.floor == null) === v);
 P('amount_above', 'number', 'the event\'s amount (damage, a heal) is over this', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) > v);
 P('amount_share_below', 'number', 'the event\'s amount is under this share of the holder\'s max HP', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) / ev.self.maxHp < v);
@@ -503,8 +505,13 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
 export const DELAY_UNTIL = ['target_turn_start', 'holder_turn_start', 'rounds'] as const;
 /** A queued op (cb.delayed; saved with the fight). Its numbers are fixed (a deal's or a mend's amount too). */
 export interface Delayed { key: string; holder: string; actor: string | null; target: string | null; op: any; label: string; until: (typeof DELAY_UNTIL)[number]; n: number; round: number }
+/** The item keys whose delayed ops are running now: what they do queues nothing more of the same item (an echo never
+ * echoes itself: a delayed heal's own heal_given would queue the next one, turn after turn). */
+const DELAYED_NOW: string[] = [];
 function queueDelayed(ev: Ev, x0: any, label: string): void {
-  const x: any = withNumbers(ev, x0), d = x0.delay || {};
+  if (DELAYED_NOW.includes(ev.h.key)) return;
+  // a copy: withNumbers hands back the item's own object when it has no number block, and the fields below are deleted
+  const x: any = { ...withNumbers(ev, x0) }, d = x0.delay || {};
   if ((x.op === 'deal' || x.op === 'mend') && !x.fixed) { const b = blockOf(ev.h, x); if (b) { const r = amountOf({ ...specOf(b), kind: b.kind }, ev.self, { who: ev.h.c || null, counts: countsOf(ev, b) }); x.fixed = { kind: b.kind, n: r.raw, ...(b.type ? { type: b.type } : {}), ...(b.armour ? { armour: b.armour } : {}), ...(b.heal_kind ? { heal_kind: b.heal_kind } : {}) }; } }
   delete x.delay; delete x.targets; delete x.when; delete x.if; delete x.limit; delete x.and;
   const q: Delayed = { key: ev.h.key, holder: ev.self.id, actor: ev.actor?.id || null, target: ev.target?.id || null, op: x, label, until: d.until, n: typeof d.n === 'number' ? d.n : 1, round: ev.cb.round };
@@ -521,10 +528,18 @@ function runDelayed(cb: Combat, due: (d: Delayed) => boolean): void {
     const info = itemInfoT(d.key) || { key: d.key, kind: 'perk', id: d.key, name: d.label, tier: 'I', effects: [], effTier: [], text: '', adjudication: 'engine', active: false, bound: false, ap: null, uses: 'at_will' } as ItemInfo;
     const h: Holder = { key: d.key, itemId: info.id, kind: info.kind, tier: info.tier, info, c: charOfUnit(self), u: self, cb, g: null } as any;
     const ev: Ev = { ctx: { cb }, trig: TRIGGERS.acted, h, self, cb, actor, target, preview: false };
-    const r = op.run(ev, d.op, d.label); if (typeof r === 'string' && r) say(cb, self.name + ' (' + d.label + ')' + r + '.');
+    DELAYED_NOW.push(d.key); let r: any;
+    try { r = op.run(ev, d.op, d.label); } finally { DELAYED_NOW.splice(DELAYED_NOW.lastIndexOf(d.key), 1); }
+    if (typeof r === 'string' && r) say(cb, self.name + ' (' + d.label + ')' + r + '.');
   }
 }
-onHook('turn_start', (ctx: any, cb: Combat) => { const u: Unit = ctx.u; if (u && cb.delayed?.length) runDelayed(cb, (d) => (d.until === 'target_turn_start' && d.target === u.id) || (d.until === 'holder_turn_start' && d.holder === u.id)); });
+/** Drop the queued ops whose holder or target is dead or gone (a dead unit has no turn start to run them at). */
+function dropDeadDelayed(cb: Combat): void {
+  if (!cb.delayed?.length) return;
+  const alive = (id: string | null) => !id || cb.units.some((x) => x.id === id && !x.dead);
+  cb.delayed = cb.delayed.filter((d) => alive(d.holder) && alive(d.target)); if (!cb.delayed.length) delete cb.delayed;
+}
+onHook('turn_start', (ctx: any, cb: Combat) => { dropDeadDelayed(cb); const u: Unit = ctx.u; if (u && cb.delayed?.length) runDelayed(cb, (d) => (d.until === 'target_turn_start' && d.target === u.id) || (d.until === 'holder_turn_start' && d.holder === u.id)); });
 onHook('round_start', (_ctx: any, cb: Combat) => { if (cb.delayed?.length) runDelayed(cb, (d) => d.until === 'rounds' && cb.round >= d.round + d.n); });
 
 // ============================================================================================== door verbs (P6)

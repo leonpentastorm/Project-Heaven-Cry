@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { addItems, clearAddedItems } from '../src/effects/hooks';
 import { healUnit, grantShield, applyDamage } from '../src/effects/damage';
-import { OPS, triggerProblem } from '../src/effects/triggers';
+import { OPS, PREDICATES, triggerProblem } from '../src/effects/triggers';
 import { STATS } from '../src/effects/stats';
 import { condDef } from '../src/condtable';
 import { condOn, applyCond } from '../src/magic';
@@ -31,6 +31,7 @@ describe('the four batch rows (rev4-primitives.md section 1)', () => {
     expect(OPS.mend_mult.on).toEqual(['heal', 'shield']); expect(STATS.intervention_keeps_witnessed).toBeTruthy();
     expect(condDef('read')?.mods.intent).toBe(true); expect(condDef('read')?.rounds).toBe(1);
     for (const r of FIX.relics) for (const e of r.effects) if (e.when) expect(triggerProblem(e)).toBeNull();
+    expect(PREDICATES.actor_alive.arg).toBe('bool'); expect(PREDICATES.target_alive.arg).toBe('bool'); // P6's two
   });
 
   it('mend_mult: the holder\'s tending heal and shield on an ally are ×1.2; another kind, another giver, or itself: not', () => {
