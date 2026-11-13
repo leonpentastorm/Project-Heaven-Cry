@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 34 triggers, 62 predicates, 19 ops, 91 effect ops, 123 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 51 stats, 24 condition fields, 358 primitive exports, 130 fx kinds, 168 Unit fields, 56 Combat fields, 40 guards.
+Counts: 34 triggers, 63 predicates, 19 ops, 91 effect ops, 123 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 51 stats, 24 condition fields, 360 primitive exports, 130 fx kinds, 168 Unit fields, 56 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -50,7 +50,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `to_hit` | `to_hit` | actor | a roll to hit a target is sized up: a weapon attack, a Sigil or an Outburst (one hook, rolls.ts toHitTerms; `damage` reads its type: weapon, sigil, soul); roll_mod adds a term | none yet |
 | `spot` | `spot` | target | a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: "tn", its TN; cancel) | none yet |
 
-### Predicates (62): the keys of `if`
+### Predicates (63): the keys of `if`
 
 | predicate | takes | what it tests | example item |
 | --- | --- | --- | --- |
@@ -115,6 +115,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `by_cover` | words | the move started (from) and / or ended (to) next to standing cover: every end named must be | none yet |
 | `self_in_zone` | zone | self stands in a zone of this kind (a kind, or {kind, owner: self, side or any}) | none yet |
 | `target_in_zone` | zone | target stands in a zone of this kind (a kind, or {kind, owner: self, side or any}) | `sanctuary` (classes.json) |
+| `toggle` | words | one of the holder's item's data toggles (its ids) is on for the action being resolved | none yet |
 | `patron` | words | the holder is Faithful to one of these patrons (patrons.json ids) | none yet |
 
 ### Ops (19)
@@ -758,6 +759,8 @@ Families: `body`, `brain`, `heart`.
 | `runPerkAction` | `runPerkAction(x: Who, id: string, args: ActionArgs & { actionId?: string }, rng: { state: number }, scope?: ActionScope): string \| null` | Do it: checks the preview, spends AP and the use, runs the action. |
 | `ToggleEntry` | `interface ToggleEntry { id, itemKey, label, why, on, preview, defaultOn }` | ---------- toggles on existing actions ---------- |
 | `togglesFor` | `togglesFor(x: Who, actionType: string, actx: any = {}, mods: string[] = []): ToggleEntry[]` | The toggles a holder can set on an action type ('combat/attack', 'combat/move', …), with their state for these mods. |
+| `togglesOf` | `togglesOf(h: Holder): ToggleDef[]` | Every toggle an item gives: its lane's, then its data's. |
+| `toggleOnIn` | `toggleOnIn(t: ToggleDef, key: string, mods: string[])` | Is an item's toggle on for these mods (its key#id, its bare id, or its default unless turned off with '!')? |
 | `modOn` | `modOn(h: Holder, toggleId: string): boolean` | Inside a hook: is this item's toggle on for the action being resolved (cb.mods, set by the reducer)? |
 | `armedOf` | `armedOf(h: Holder)` | Armed preset of this item on its unit (combat/perk {arm:true}), or undefined. |
 | `disarm` | `disarm(h: Holder)` | Clear the holder's armed preset (an armed action fired or was cancelled). |

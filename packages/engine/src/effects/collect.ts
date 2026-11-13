@@ -73,7 +73,7 @@ const infoCache = new Map<string, ItemInfo | null>();
 export function itemInfo(key: string, tier?: Tier | string): ItemInfo | null {
   const ck = key + '@' + (tier || ''); if (infoCache.has(ck)) return infoCache.get(ck)!;
   const out = buildInfo(key, tier);
-  if (out) { const dk = rawItem(key)?.damage_kinds; if (Array.isArray(dk)) out.damageKinds = dk.map(String); if (out.kind !== 'verb') liftActed(out); } // a verb's nested effects are its action's own (they run when it succeeds: effects/actions.ts)
+  if (out) { const raw = rawItem(key), dk = raw?.damage_kinds; if (Array.isArray(dk)) out.damageKinds = dk.map(String); if (out.kind !== 'verb') liftActed(out); liftToggles(out, raw?.toggles); } // a verb's nested effects are its action's own (they run when it succeeds: effects/actions.ts)
   infoCache.set(ck, out); return out;
 }
 /** Classes 3.0 P2: a grant_action's nested effects written `when: "acted"` are the item's own triggered effects, each
@@ -85,6 +85,16 @@ function liftActed(info: ItemInfo): void {
     if (g?.op !== 'grant_action' || !Array.isArray(g.effects)) return;
     for (const e of g.effects) if (e && e.when === 'acted') add.push({ ...e, if: { action: [g.action || 'use' + i], ...(e.if || {}) } });
   });
+  if (!add.length) return;
+  const tier = info.effTier[info.effTier.length - 1] ?? info.tier;
+  info.effects = [...info.effects, ...add]; info.effTier = [...info.effTier, ...add.map(() => tier)];
+}
+/** Classes 3.0 P12: a data toggle's effects are the item's own triggered effects, each with `if.toggle` = that toggle's
+ * id (they run only while it is on for the action being resolved). Appended after the item's own effects. */
+function liftToggles(info: ItemInfo, toggles: any): void {
+  if (!Array.isArray(toggles) || !toggles.length) return;
+  const add: any[] = [];
+  for (const t of toggles) for (const e of t?.effects || []) if (e) add.push({ ...e, if: { toggle: [t.id], ...(e.if || {}) } });
   if (!add.length) return;
   const tier = info.effTier[info.effTier.length - 1] ?? info.tier;
   info.effects = [...info.effects, ...add]; info.effTier = [...info.effTier, ...add.map(() => tier)];

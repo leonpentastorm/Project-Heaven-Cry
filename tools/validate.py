@@ -1870,6 +1870,35 @@ if TRIG:
     for _x in base + adv + pool: _walk_grant(_x, f"classes:{_x.get('id')}")
     for _n in ("perks", "traits"):
         for _x in items(_n): _walk_grant(_x, f"{_n}:{_x.get('id')}")
+    # Classes 3.0 P12: an item's data toggles: [{id, name, on: [action types], if, default_on, effects}]
+    def _check_toggles(x, w):
+        ts = x.get("toggles")
+        if ts is None: return
+        if not isinstance(ts, list): errors.append(f"{w}: toggles is a list"); return
+        ids = set()
+        for t in ts:
+            if not (isinstance(t, dict) and isinstance(t.get("id"), str) and t["id"] not in ids): errors.append(f"{w}: a toggle has a unique id"); continue
+            ids.add(t["id"])
+            for k in t:
+                if k not in ("id", "name", "on", "if", "default_on", "effects"): errors.append(f"{w}: unknown toggle field '{k}'")
+            if not (isinstance(t.get("on"), list) and t["on"] and all(isinstance(a, str) and "/" in a for a in t["on"])): errors.append(f"{w}: a toggle's on lists action types ('combat/attack')")
+            if isinstance(t.get("if"), dict):
+                for k, v in t["if"].items(): check_pred(k, v, w)
+            for e in t.get("effects") or []:
+                if not (isinstance(e, dict) and isinstance(e.get("when"), str)): errors.append(f"{w}: a toggle's effects are item ops with a trigger"); continue
+                check_trigger_effect(e, w)
+        def _walk_tog(o):
+            if isinstance(o, dict):
+                tg = (o.get("if") or {}).get("toggle") if isinstance(o.get("if"), dict) else None
+                for v in ([tg] if isinstance(tg, str) else tg or []):
+                    if v not in ids: errors.append(f"{w}: `if.toggle` names '{v}', not one of the item's toggles")
+                for v in o.values(): _walk_tog(v)
+            elif isinstance(o, list):
+                for v in o: _walk_tog(v)
+        _walk_tog(x.get("effects"))
+    for _x in [m for _b in base for _r in (_b.get("ranks") or {}).values() for m in _r.get("moves", [])] + pool + [m for _a in adv for m in _a.get("moves", [])]: _check_toggles(_x, f"classes:{_x.get('origin', '')}.{_x.get('id')}")
+    for _n in ("perks", "traits"):
+        for _x in items(_n): _check_toggles(_x, f"{_n}:{_x.get('id')}")
     # a door verb (item kind `verb`, any data file's items): held by a sheet that meets every `requires`
     _SK = set(known["skill"]); _CL = {b.get("id") for b in base}
     for _fn, _blk in data.items():
@@ -1881,7 +1910,7 @@ if TRIG:
             for q in req or []:
                 if not (isinstance(q, dict) and ((q.get("skill") in _SK and isinstance(q.get("min", 1), int)) or (q.get("class") in _CL and q.get("rank", 1) in (1, 2, 3)))): errors.append(f"{w}: a verb's requires entry is {{skill, min}} or {{class, rank}}")
             if sum(1 for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action") != 1: errors.append(f"{w}: a verb has one grant_action")
-            _walk_grant(_x, w); walk_triggers(_x, w)
+            _walk_grant(_x, w); walk_triggers(_x, w); _check_toggles(_x, w)
     # skills.json unlocks marked `item` are run as items (effects/collect.ts SKILL_ITEMS)
     for _x in items("skills"):
         for _l, _u in (_x.get("unlocks") or {}).items():

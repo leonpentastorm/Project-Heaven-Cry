@@ -13,7 +13,7 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import type { ActionArgs, ActionDef, ActionPreview, ActionScope, Holder, ItemInfo, ToggleDef, UseScope } from './types';
 import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isItemOp } from './hooks';
-import { keyOf } from './collect';
+import { keyOf, rawItem } from './collect';
 import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
@@ -306,7 +306,7 @@ export interface ToggleEntry { id: string; itemKey: string; label: string; why: 
 /** The toggles a holder can set on an action type ('combat/attack', 'combat/move', …), with their state for these mods. */
 export function togglesFor(x: Who, actionType: string, actx: any = {}, mods: string[] = []): ToggleEntry[] {
   const out: ToggleEntry[] = [];
-  for (const h of holdersOf(x)) for (const t of handlerOf(h.key)?.toggles || []) {
+  for (const h of holdersOf(x)) for (const t of togglesOf(h)) {
     if (!t.on.includes(actionType)) continue;
     const av = t.available ? t.available(h, actx) : true; if (av === false) continue;
     const id = h.key + '#' + t.id;
@@ -314,10 +314,27 @@ export function togglesFor(x: Who, actionType: string, actx: any = {}, mods: str
   }
   return out;
 }
+// ---------- data toggles (Classes 3.0 P12) ----------
+// An item's `toggles: [{id, name, on: [action types: 'combat/attack'…], if, default_on, effects}]` in its data: a flag
+// on an existing action, shown by togglesFor like a lane's; its `if` (the holder's predicates) greys it; its effects are
+// the item's own triggered effects with `if: {toggle: [id]}` (collect.ts liftToggles), so they run only while it is on
+// for the action being resolved (cb.mods; the trigger `acted` carries them too).
+/** A data toggle as the runtime's ToggleDef. */
+function dataToggle(h: Holder, t: any): ToggleDef {
+  return { id: t.id, label: t.name || human(t.id), on: [...(t.on || [])], defaultOn: !!t.default_on,
+    ...(t.if ? { available: (hh: Holder) => { const k = ifFails({ ...hh, u: hh.u ?? h.u, cb: hh.cb ?? h.cb }, t.if); return k ? 'Not now (' + human(k) + ').' : true; } } : {}) };
+}
+/** Every toggle an item gives: its lane's, then its data's. */
+export function togglesOf(h: Holder): ToggleDef[] {
+  const lane = handlerOf(h.key)?.toggles || [], data = (rawItem(h.key)?.toggles || []) as any[];
+  return data.length ? [...lane, ...data.map((t) => dataToggle(h, t))] : lane;
+}
+/** Is an item's toggle on for these mods (its key#id, its bare id, or its default unless turned off with '!')? */
+export const toggleOnIn = (t: ToggleDef, key: string, mods: string[]) => toggleState(t, key + '#' + t.id, mods);
 const toggleState = (t: ToggleDef, id: string, mods: string[]) => mods.includes(id) || mods.includes(t.id) || (!!t.defaultOn && !mods.includes('!' + id) && !mods.includes('!' + t.id));
 /** Inside a hook: is this item's toggle on for the action being resolved (cb.mods, set by the reducer)? */
 export function modOn(h: Holder, toggleId: string): boolean {
-  const t = (handlerOf(h.key)?.toggles || []).find((x) => x.id === toggleId); if (!t) return false;
+  const t = togglesOf(h).find((x) => x.id === toggleId); if (!t) return false;
   const mods: string[] = (h.cb as any)?.mods || (h.g?.story as any)?.mods || [];
   return toggleState(t, h.key + '#' + toggleId, mods);
 }

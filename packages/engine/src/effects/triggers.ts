@@ -18,7 +18,7 @@ import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
-import { allItems } from './collect';
+import { allItems, rawItem as rawItemT } from './collect';
 import { overworld, rngOf, unitsIn, tilesAround, type Area } from '../kit';
 import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS } from '../magic';
@@ -172,6 +172,11 @@ P('by_cover', 'words', 'the move started (from) and / or ended (to) next to stan
 // Classes 3.0 P10: zones from data. {kind, owner: self (the holder's own), side (its side's) or any}
 const zoneArg = (v: any) => (typeof v === 'string' ? { kind: v, owner: 'any' } : { kind: v?.kind, owner: v?.owner || 'any' });
 for (const who of ['self', 'target'] as Who[]) P(who + '_in_zone', 'zone', who + ' stands in a zone of this kind (a kind, or {kind, owner: self, side or any})', (ev, v) => { const u = unitOf(ev, who), a = zoneArg(v); return !!u && zonesAt(ev.cb, u.pos, a.kind, a.owner, ev.self).length > 0; }, () => [...DATA_ZONE_KINDS]);
+// Classes 3.0 P12: a data toggle is on for the action being resolved (cb.mods; acted's ctx.toggles): `toggle: [ids]`
+P('toggle', 'words', 'one of the holder\'s item\'s data toggles (its ids) is on for the action being resolved', (ev, v) => {
+  const mods: string[] = ev.ctx.toggles?.length ? ev.ctx.toggles : (ev.cb as any).mods || [], defs = (rawItemT(ev.h.key)?.toggles || []) as any[];
+  return list(v).some((id) => { const t = defs.find((x) => x.id === id); const k = ev.h.key + '#' + id; return mods.includes(k) || mods.includes(id) || (!!t?.default_on && !mods.includes('!' + k) && !mods.includes('!' + id)); });
+});
 P('patron', 'words', 'the holder is Faithful to one of these patrons (patrons.json ids)', (ev, v) => { const id = patronIdOf(ev.h.c || charOfUnit(ev.self)); return !!id && list(v).includes(id); }, PATRON_IDS);
 
 // ============================================================================================== amount sources (P3)

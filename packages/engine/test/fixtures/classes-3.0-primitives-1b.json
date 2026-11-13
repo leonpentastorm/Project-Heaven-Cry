@@ -129,6 +129,33 @@
           }
         }
       ]
+    },
+    {
+      "id": "test_toggle_heavy",
+      "name": "Heavy Hand (test)",
+      "text": "A toggle on an attack while you are not Marked: its damage is multiplied by {=toggles.0.effects.0.value}.",
+      "toggles": [
+        {
+          "id": "heavy",
+          "name": "Heavy swing",
+          "on": [
+            "combat/attack"
+          ],
+          "if": {
+            "self_lacks": [
+              "marked"
+            ]
+          },
+          "effects": [
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "value": 1.5
+            }
+          ]
+        }
+      ],
+      "effects": []
     }
   ],
   "conditions": [],

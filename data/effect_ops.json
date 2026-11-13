@@ -4526,6 +4526,10 @@
           "sanctuary"
         ]
       },
+      "toggle": {
+        "arg": "words",
+        "about": "one of the holder's item's data toggles (its ids) is on for the action being resolved"
+      },
       "patron": {
         "arg": "words",
         "about": "the holder is Faithful to one of these patrons (patrons.json ids)",
