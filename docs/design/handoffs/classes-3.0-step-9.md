@@ -133,7 +133,20 @@ is easy to rebuild: a `figFight` with four `{ visualization: 7, visualizer: 'han
 - `npm run balance` (the simulator smoke) and `REPLAY_FULL` before the merge: the simulator's fights open out of sight
   on the full-size maps, so its whole-fight numbers move with this step (the lead's to read in step 11).
 
-## 7. How to add the AI's reading of one more system
+## 7. Checks at the close
+
+`python3 tools/validate.py data` 0 errors; `tools/engine_catalog.py --check` clean (regenerated); spec tables 0
+errors; `npm run built-from -- claude/charming-gauss-hbq4n0..HEAD`: **no smells**. `npm run check`: validator, spec
+tables, screen data, hooks, both type checks and **the engine tests green (4057)**; the web tests had 20 failures under
+a load average of 21 to 29, all timeouts or their cascade: run alone with `--testTimeout 300000` every file passes but
+`combat-screen.test.ts`'s first test ("a Shot (Physical 2.0)"), which carries its own 60 s limit and **times out the
+same on the base branch's engine** at that load (checked); the other 14 tests of that file pass when it is left out.
+Browser suites on port 8891 (`--base`, own server, two at a time): shadow, tending, figments, two-players, coop-stall,
+turn-order, combat-fixes, sandbox ALL GREEN; chaplain timed out beside the others (30 minutes, the machine at load 22)
+and passed alone (11 checks): a suite that waits too long under load (step 5 noted its waits), not this step's change.
+Not run: `npm run balance` (the simulator smoke) and `REPLAY_FULL=1` beyond the record run: before the merge.
+
+## 8. How to add the AI's reading of one more system
 
 1. Find what the AI already weighs: the doctrine (`combat.ts enemyRank`: taunt, standing, Figments last, the most hurt
    with `hurtShare` and `shelterOf`, the healer weight, the likeliest hit), the route (`ai-sigil.ts aiRouteRisk`:
