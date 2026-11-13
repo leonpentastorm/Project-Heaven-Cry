@@ -13,7 +13,8 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, isMelee, emitFx, noteLoose, checkOver,
-  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode, displace
+  moveBlockers, moveUnit, moveBlock, paths, unitSees, sideSees, effectiveRange, damageObject, hurtUnit, coverTileFor, analyze, rollInjury, type AttackMode, displace,
+  attackEvent,
 } from '../combat';
 import { WEAPON, SIGIL } from '../data';
 import { dropToPile } from '../combat';
@@ -23,7 +24,7 @@ import { applyCond, condOn, endCond, harm, shiftMana, drawGlyph, grammarError, m
 import { castAt, glyphCost, sigilReady } from '../sigil';
 import { die } from '../rng';
 import { rollVs } from '../rolls';
-import { resOf, resGain, resSpend, canReact, useReaction , dropHeldShot } from '../tactics';
+import { resOf, resGain, resSpend, canReact, react , dropHeldShot } from '../tactics';
 import { makeObject } from '../objects';
 import { overworld, say, unitById, tileOf, rngOf, foesOf } from '../kit';
 import { pay, refund, grantAp, freely, spend } from '../effects/cost';
@@ -293,7 +294,7 @@ register({
       } },
   ],
   on: {
-    analyze: (ctx, h) => { if (ctx.u === h.u && inFight(h)) say(h.cb, ctx.t.name + ' goes in the case file' + markTarget(h, ctx.t, rngOf(h, ctx)) + '.'); },
+    acted: (ctx, h) => { if (ctx.action === 'analyze' && ctx.u === h.u && inFight(h)) say(h.cb, ctx.t.name + ' goes in the case file' + markTarget(h, ctx.t, rngOf(h, ctx)) + '.'); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !ctx.ck?.roll?.ok || !(ctx.ck.skills || []).includes('analysis')) return;
       const st = charState(h.c)[h.key]; if (!st?.pending || st.pending.scene !== (h.g?.story?.scene?.n ?? 0)) return;
@@ -546,7 +547,7 @@ register({
       let line = 'The Company strike hits ' + refOf(at);
       for (const v of cb.units) {
         if (v.dead || !tiles.includes(v.pos)) continue;
-        if (alive(v) && canReact(cb, v)) { const out = stepOut(cb, v, tiles); if (out) { useReaction(cb, v); emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); displace(cb, null, v, { tile: out }, { by: v, how: 'teleport', source: 'dive', willing: true, fx: false }); continue; } }
+        if (alive(v) && canReact(cb, v, 'move')) { const out = stepOut(cb, v, tiles); if (out && react(cb, v, { kind: 'move' })) { emitFx(cb, 'move', { unit: v.id, from: v.pos, to: out, path: [v.pos, out], how: 'move' }); line += ' · ' + v.name + ' dives clear to ' + refOf(out); displace(cb, null, v, { tile: out }, { by: v, how: 'teleport', source: 'dive', willing: true, fx: false }); continue; } }
         line += hurtUnit(v, itemAmount('class:rtc_contractor.strike_call', 'damage'), false, cb, 'explosion', u);
       }
       for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) line += damageObject(cb, o.pos, 50, 0, u);
@@ -1147,18 +1148,18 @@ register({
     damage_in: (ctx, h) => {
       const u = h.u, cb = h.cb; if (!u || !cb || ctx.phase !== 'reduce' || ctx.dmg <= 0 || !ctx.hostile || !alive(u)) return;
       // Interpose: an adjacent ally hit by an attack.
-      if (ctx.t !== u && ctx.t.side === u.side && !ctx.t.companion && ctx.src?.type === 'weapon' && adj(ctx.t.pos, u.pos) && !has(u, DEF_BRACE) && resOf(u, 'guard') >= 1 && canReact(cb, u) && !INTERPOSE) {
-        const d = ctx.dmg; ctx.dmg = 0; resSpend(u, 'guard', 1); useReaction(cb, u);
+      // (the hit it takes for the ally is part of the reaction: rules 1.28, nothing answers it)
+      if (ctx.t !== u && ctx.t.side === u.side && !ctx.t.companion && ctx.src?.type === 'weapon' && adj(ctx.t.pos, u.pos) && !has(u, DEF_BRACE) && resOf(u, 'guard') >= 1 && canReact(cb, u, 'protect') && !INTERPOSE && react(cb, u, { kind: 'protect', event: attackEvent() }, () => {
+        const d = ctx.dmg; ctx.dmg = 0; resSpend(u, 'guard', 1);
         say(cb, u.name + ' interposes for ' + ctx.t.name + ' (1 Guard).');
         INTERPOSE = u.id;
         try { const r = applyDamage(cb, u, d, { ...ctx.src, shield: true }); say(cb, u.name + ' takes ' + r.amount + (u.hp === 0 ? ' · Downed' : '') + '.'); if (u.hp === 0) emitFx(cb, 'down', { unit: u.id, at: u.pos, dead: !!u.dead }); }
         finally { INTERPOSE = null; }
         KNIGHT_COVERED = { t: ctx.t.id, me: u.id };
-        return;
-      }
+      })) return;
       // Reactive Plate: on the Knight.
       if (ctx.t !== u || has(u, DEF_PLATE) || resOf(u, 'guard') <= 0) return;
-      if (INTERPOSE !== u.id && !ctx.src?.interposed) { if (!canReact(cb, u)) return; useReaction(cb, u); } // a hit Interposed for (either Interpose) is free
+      if (INTERPOSE !== u.id && !ctx.src?.interposed) { if (!canReact(cb, u, 'protect') || !react(cb, u, { kind: 'protect', event: attackEvent() })) return; } // a hit Interposed for (either Interpose) is free
       const k = Math.min(resOf(u, 'guard'), Math.ceil(ctx.dmg / 10)); resSpend(u, 'guard', k);
       ctx.dmg = Math.max(0, ctx.dmg - 10 * k);
       const st = stateOf(h); st.lost = (st.lost || 0) + k; let line = u.name + '\'s plate hardens: ' + k + ' Guard cuts ' + 10 * k;

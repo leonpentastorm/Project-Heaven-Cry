@@ -20,7 +20,7 @@ function fight(o: { weapon?: string; shield?: string | null; dur?: number; guard
   const foe = f.put(f.foe, o.foeAt || 'D5'); foe.hp = foe.maxHp = 900;
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
   f.turn(f.pc);
-  for (const u of f.cb.units) { delete u.openerUsed; delete (u as any).reactUsed; if (u.side === 'pc') u.hp = u.maxHp; }
+  for (const u of f.cb.units) { delete u.openerUsed; delete (u as any).reactUsed; delete (u as any).uses?.['reaction|reaction']; if (u.side === 'pc') u.hp = u.maxHp; }
   f.momentum(f.pc, o.m ?? 1); if (f.pc.resMax?.guard != null) f.pc.res!.guard = o.guard ?? 0;
   return f;
 }

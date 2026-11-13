@@ -10,7 +10,8 @@ import { price, priced, whyNot, pay, refund } from '../effects/cost';
 import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
-import { resOf, resGain, resSpend, canReact, useReaction } from '../tactics';
+import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlockedOf, type ReactKind } from '../tactics';
+import { attackEvent } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
 import { mod } from '../character';
@@ -457,12 +458,14 @@ export function setUp(t: Tech, target: Unit, mark: { hit?: number; noAnswer?: bo
   if (t.preview) { t.note('Sets up your next technique against ' + target.name + (mark.hit ? ': +' + mark.hit + ' to hit' : '') + (mark.noAnswer ? ', and it can\'t Answer' : '') + '.'); return; }
   (t.u as any).setUp = { t: turnStamp(t.cb), target: target.id, ...mark }; scratch(t).madeSetUp = true;
 }
-/** May this unit use this Answer now? Protective reactions (Parry) work while Suppressed; the rest don't. */
+/** An Answer's reaction kind (techniques.json `reaction`: attack or protect; rules 1.28). */
+export const answerKind = (id: string): ReactKind => ((TECHNIQUE[id] as any)?.reaction || 'attack') as ReactKind;
+/** May this unit use this Answer now? Its kind decides what Suppressed (the condition or Pressure's state) forbids:
+ * protective Answers (Parry, Shield Wall, Interpose) always work (rules 1.28: tactics.ts reactBlocked). */
 export function canAnswer(cb: Combat, u: Unit, id: string, against?: Unit): boolean {
   if (!alive(u) || condOn(u, 'stunned')) return false;
   if (against && (against as any).setUp?.noAnswer && (against as any).setUp.target === u.id && (against as any).setUp.t === turnStamp(cb)) return false;
-  const protective = id === 'parry' || id === 'shield_wall' || id === 'interpose'; // they protect: they work while Suppressed
-  if (!protective && pressureOf(u) >= PHYS_RULES.pressure.suppressed) return false;
+  if (reactBlockedOf(u, answerKind(id))) return false;
   if (!hasUsable(u, 'main', id) && !hasUsable(u, 'off', id)) return false;
   const order = (charOfUnit(u) as any)?.phys?.answers as string[] | undefined; if (order && !order.includes(id)) return false;
   return true;
@@ -774,25 +777,25 @@ export function endWatch(cb: Combat, u: Unit, why: string): void {
  * reaction window and event, so every perk written for it still applies. */
 export function fireWatch(t: Tech, ctx: any, target: Unit, fn: () => void, kind: 'watch' | 'overwatch' = 'watch', fx: Record<string, any> = {}): boolean {
   const u = t.u, cb = t.cb, w = (u as any).watch as HeldWatch | undefined;
-  if (t.preview || !w || w.id !== t.def.id || !alive(u) || isPressed(u) || !canReact(cb, u)) return false;
-  const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: target, kind, id: w.id, cancel: false, at: target.pos, cb, rng: t.rng }); if (rw.cancel) return false;
-  ctx?.flush?.(); // the mover's walk so far plays before the shot
-  useReaction(cb, u); delete (u as any).watch;
-  emitFx(cb, kind === 'overwatch' ? 'overwatch' : 'watch_fire', { unit: u.id, target: target.id, from: u.pos, at: target.pos, id: w.id, mode: 'shot', ...fx });
-  say(cb, u.name + (kind === 'overwatch' ? ' fires from overwatch.' : ' fires the held shot (' + t.def.name + ').'));
-  fn(); checkOver(cb);
-  return true;
+  if (t.preview || !w || w.id !== t.def.id || !alive(u) || isPressed(u) || !canReact(cb, u, 'attack')) return false;
+  return react(cb, u, { kind: 'attack', event: 'step:' + target.id + ':' + target.pos, window: { kind, mover: target, id: w.id, at: target.pos, rng: t.rng } }, () => {
+    ctx?.flush?.(); // the mover's walk so far plays before the shot
+    delete (u as any).watch;
+    emitFx(cb, kind === 'overwatch' ? 'overwatch' : 'watch_fire', { unit: u.id, target: target.id, from: u.pos, at: target.pos, id: w.id, mode: 'shot', ...fx });
+    say(cb, u.name + (kind === 'overwatch' ? ' fires from overwatch.' : ' fires the held shot (' + t.def.name + ').'));
+    fn(); checkOver(cb);
+  });
 }
 /** An Answer's trigger has happened: spend the reaction and run fn. False when this unit can't answer now. */
 export function answer(t: Tech, against: Unit | null, fn: () => void): boolean {
   const u = t.u, cb = t.cb;
-  if (t.preview || !canAnswer(cb, u, t.def.id, against || undefined) || !canReact(cb, u)) return false;
-  const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: against, kind: 'answer', id: t.def.id, cancel: false, at: u.pos, cb, rng: t.rng }); if (rw.cancel) return false;
-  useReaction(cb, u);
-  emitFx(cb, 'technique', { unit: u.id, id: t.def.id, group: 'answer', system: t.def.system, target: against?.id || null, hand: t.hand, at: u.pos, reaction: true });
-  say(cb, u.name + ' answers with ' + t.def.name + '.');
-  fn(); checkOver(cb);
-  return true;
+  const kind = answerKind(t.def.id);
+  if (t.preview || !canAnswer(cb, u, t.def.id, against || undefined) || !canReact(cb, u, kind)) return false;
+  return react(cb, u, { kind, event: attackEvent(), window: { kind: 'answer', mover: against, id: t.def.id, at: u.pos, rng: t.rng } }, () => {
+    emitFx(cb, 'technique', { unit: u.id, id: t.def.id, group: 'answer', system: t.def.system, target: against?.id || null, hand: t.hand, at: u.pos, reaction: true });
+    say(cb, u.name + ' answers with ' + t.def.name + '.');
+    fn(); checkOver(cb);
+  });
 }
 
 // ---------- the reducer's and the screen's entry points ----------

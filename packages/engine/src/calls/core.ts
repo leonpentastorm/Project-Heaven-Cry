@@ -9,7 +9,7 @@ import { say, unsay, type Combat, type Unit, alive, emitFx, checkOver, active, d
 import { charOfUnit, emit, bindGame } from '../effects/hooks';
 import { grantPerkAp } from '../effects/ap';
 import { applyCond, condOn, unitStrength, withVia } from '../magic';
-import { canReact, useReaction, refundReaction } from '../tactics';
+import { canReact, react, refundReaction } from '../tactics';
 import type { Rng } from '../rng';
 import { turnStamp, ownSideOnly } from '../physical/core';
 import type { Call, CallArgs, CallDef, CallHandler, CallMarks, CallPadEntry, CallPreview } from './types';
@@ -62,7 +62,7 @@ function gate(cb: Combat, u: Unit, def: CallDef, args: CallArgs): string | null 
     if (level < CALL_RULES.reaction_at) return 'A Call as a reaction needs ' + CALL_RULES.reaction_at + ' points of ' + callSkillName(def) + '.';
     if (active(cb) === u) return 'It is your turn. Make the Call as an action.';
     if (spoken(cb, u).left('reaction', 1, REACT_KEY) <= 0) return 'One Call as a reaction a round.';
-    if (!canReact(cb, u)) return 'No reaction left this round.';
+    if (!canReact(cb, u, 'attack')) return 'No reaction left this round.'; // (a Call is not a protective reaction: Suppressed still stops it)
   }
   const ap = callAp(cb, u, def, !!args.react);
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/call', id: def.id } }); if (no) return no; }
@@ -130,10 +130,19 @@ export function useCall(cb: Combat, u: Unit, id: string, args: CallArgs, rng: Rn
   const hk: any = emit(cb, 'call', { u, t: tgt, id, kind: def.kind, step: t.step, react: t.react, tnAdd: 0, cancel: null as string | null, cb, rng });
   if (hk.cancel) return String(hk.cancel);
   t.tnAdd = hk.tnAdd || 0;
+  // A Call as a reaction (rules 1.13) goes through react() (rules 1.28): its window, its reaction, and while it resolves
+  // no reaction answers anything it does.
   if (t.react) {
-    const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: tgt, kind: 'call', id, cancel: false, at: u.pos, cb, rng }); if (rw.cancel) return 'Not now.';
-    if (!useReaction(cb, u)) return 'No reaction left this round.';
+    if (!canReact(cb, u, 'attack')) return 'No reaction left this round.';
+    let out: string | null = 'Not now.';
+    react(cb, u, { kind: 'attack', window: { kind: 'call', mover: tgt, id, at: u.pos, rng } }, () => { out = speak(cb, u, def, args, p, t, tgt, ap); });
+    return out;
   }
+  return speak(cb, u, def, args, p, t, tgt, ap);
+}
+/** The Call itself, once its reaction (if any) is spent: pay, mark, run the handler (a refusal gives everything back). */
+function speak(cb: Combat, u: Unit, def: CallDef, args: CallArgs, p: any, t: any, tgt: Unit, ap: number): string | null {
+  const id = def.id;
   const key = def.kind === 'helping' ? 'helped' : 'hindered', limit0 = tgt.call?.[key];
   pay(cb, u, ap);
   if (t.react) spoken(cb, u).take('reaction', 1, REACT_KEY); else spoken(cb, u).take('per_turn', Infinity, TURN_KEY);

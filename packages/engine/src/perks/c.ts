@@ -19,7 +19,7 @@ import { WEAPON, ITEM } from '../data';
 import { factorOf } from '../effects/output';
 import { mod, packOf, physicalMult, carryLimit, hasMod, collectionOf } from '../character';
 import { applyCond, condOn } from '../magic';
-import { throwItem, blast, radiusOf, canReact, useReaction, refundReaction, throwRangeOf } from '../tactics';
+import { throwItem, blast, radiusOf, canReact, react, refundReaction, throwRangeOf } from '../tactics';
 import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
 import { callMarks, callLevel } from '../calls/core';
 import { CALL, callStepAt } from '../calls/data';
@@ -147,11 +147,10 @@ register({
       const d = h.u, cb = h.cb; if (!d || !cb || ctx.preview || !inFight(h)) return;
       const st = stateOf(h);
       if (ctx.u === d) { if (st.throwing) ctx.ap = 0; return; } // the throw back's AP is the action's own
-      if (ctx.cancel || ctx.u.side === d.side || !alive(d) || st.caught || !canReact(cb, d)) return;
+      if (ctx.cancel || ctx.u.side === d.side || !alive(d) || st.caught || !canReact(cb, d, 'attack')) return;
       if ((WEAPON[ctx.item]?.properties || []).includes('placed')) return;
       const covered = ctx.tile === d.pos || cb.units.some((v) => v !== d && v.side === d.side && alive(v) && v.pos === ctx.tile && dist(v.pos, d.pos) <= 1);
-      if (!covered) return;
-      useReaction(cb, d);
+      if (!covered || !react(cb, d, { kind: 'attack' })) return;
       ctx.cancel = true; ctx.caughtBy = d; // no blast, no fire left on the tile
       st.caught = { item: ctx.item, by: ctx.u.id, round: cb.round, seen: false };
       (d.throwables ||= {})[ctx.item] = (d.throwables[ctx.item] || 0) + 1;
@@ -421,17 +420,16 @@ register({
 function danceFlush(h: Holder, rng: Rng) {
   const st = stateOf(h), u = h.u, cb = h.cb; if (!st.pending || !u || !cb) return;
   const a = unitById(cb, st.pending); delete st.pending;
-  if (!a || !alive(a) || !alive(u) || !canReact(cb, u)) return;
+  if (!a || !alive(a) || !alive(u) || !canReact(cb, u, 'attack')) return;
   const pv = previewAttack(cb, u, a, 'shot', { free: true }); if (!pv.ok) { say(cb, '(Dance of Iron: ' + pv.why + ')'); return; }
-  useReaction(cb, u); say(cb, u.name + ' dances out of it and fires back (Dance of Iron).');
-  resolveAttack(cb, rng, u, a, 'shot', null, { noAp: true }); checkOver(cb);
+  react(cb, u, { kind: 'attack' }, () => { say(cb, u.name + ' dances out of it and fires back (Dance of Iron).'); resolveAttack(cb, rng, u, a, 'shot', null, { noAp: true }); checkOver(cb); });
 }
 register({
   id: 'dance_of_iron', claims: 'all',
   on: {
     on_miss: (ctx, h) => {
       const u = h.u; if (!u || ctx.tgt !== u || ctx.att.side === u.side || !inFight(h) || !alive(u) || stateOf(h).pending) return;
-      if (isMelee(WEAPON[u.weapon]) || !canReact(h.cb!, u)) return;
+      if (isMelee(WEAPON[u.weapon]) || !canReact(h.cb!, u, 'attack')) return;
       stateOf(h).pending = ctx.att.id;
     },
     enemy_action_start: (ctx, h) => danceFlush(h, rngOf(h, ctx)),

@@ -1,6 +1,7 @@
 // Physical 2.0 (rules 1.12), the foundation: the data, Momentum, Pressure, the reference techniques (Cut, Lunge, Coup,
 // Riposte; Shot, Aimed Shot, Suppress, Dead Centre, Overwatch, Deny), drill, and the actions.
 import { describe, it, expect, beforeEach } from 'vitest';
+import { reactionsUsed } from '../src';
 import { phys, WEAPON, TECHNIQUES, TECHNIQUE, PHYS_RULES, resolveAttack, validateSheet, enemyIntent, enemyTurn } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { sheetOf } from './helpers/perkfight';
@@ -68,7 +69,7 @@ describe('Momentum and the chain', () => {
     const f = fight(); const swing = () => f.bound(() => resolveAttack(f.cb, f.g.rng, f.foe, f.pc, 'melee', null, { noAp: true }));
     f.turn(f.foe); rig({ hit: false, die: 5 }); const hp = f.foe.hp;
     swing(); expect(f.cb.log.some((l) => /answers with Riposte/.test(l))).toBe(true);
-    expect(f.pc.reactUsed?.n).toBe(1);
+    expect(reactionsUsed(f.cb, f.pc)).toBe(1);
     const n = f.cb.log.filter((l) => /answers with Riposte/.test(l)).length; swing();
     expect(f.cb.log.filter((l) => /answers with Riposte/.test(l)).length).toBe(n); // the reaction is spent
     expect(f.foe.hp).toBe(hp); // rigged to miss, the riposte missed too
@@ -145,7 +146,7 @@ describe('Watches', () => {
   it('Overwatch is paid on your turn and fires as the reaction at the first enemy to move in sight', () => {
     const f = fight(); expect(f.tech('overwatch')).toBeNull(); expect(f.pc.ap).toBe(4); expect(f.pc.watch?.id).toBe('overwatch');
     rig({ hit: true, die: 12 }); f.turn(f.foe); const hp = f.foe.hp; f.walk(f.foe, 'J5');
-    expect(f.foe.hp).toBeLessThan(hp); expect(f.pc.watch).toBeUndefined(); expect(f.pc.reactUsed?.n).toBe(1);
+    expect(f.foe.hp).toBeLessThan(hp); expect(f.pc.watch).toBeUndefined(); expect(reactionsUsed(f.cb, f.pc)).toBe(1);
     expect(f.pressure(f.foe)).toBe(1); // a held shot's hit is a ranged hit
   });
   it('a Watch is refused while Pressed, and becoming Pressed drops it', () => {
@@ -268,7 +269,7 @@ describe('review fixes', () => {
   it('Riposte keeps the reaction when the attacker is out of reach', () => {
     const f = physFight([{ weapon: 'sabre', known: ['riposte'] }], [{ at: 'E5', tier: 'elite', weapon: 'glaive' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'E5'); f.turn(f.foe);
     rig({ hit: false, die: 5 }); f.bound(() => resolveAttack(f.cb, f.g.rng, f.foe, f.pc, 'melee', null, { noAp: true }));
-    expect(f.cb.log.some((l) => /answers with Riposte/.test(l))).toBe(false); expect(f.pc.reactUsed).toBeUndefined();
+    expect(f.cb.log.some((l) => /answers with Riposte/.test(l))).toBe(false); expect(reactionsUsed(f.cb, f.pc)).toBe(0);
   });
   it('a Press rolls at the to-hit its card shows, and its extra Heat lands after', () => {
     const f = physFight([{ weapon: 'hellraiser_service_rifle', known: ['suppress'], skills: { dexterity: 6 } }], [{ at: 'H5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'H5'); f.turn(f.pc);

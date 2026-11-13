@@ -26,6 +26,7 @@
 "perk/bulwark@I/ally-taken": "Tester 1 stands in the line of fire (Bulwark): Squadmate takes 25% less. / Far soldier fires at Squadmate: d20 10 +2 = 12 vs 14 · hit, 8 damage",
 "perk/bulwark@II/ally-lethal": "Tester 1 stands in the line of fire (Bulwark): Squadmate takes 50% less. / Far soldier fires at Squadmate: d20 10 +2 = 12 vs 14 · hit, 5 damage · Downed",
 "perk/bulwark@II/ally-taken": "Tester 1 stands in the line of fire (Bulwark): Squadmate takes 50% less. / Far soldier fires at Squadmate: d20 10 +2 = 12 vs 14 · hit, 5 damage",
+"perk/case_closed@mastered/analyze": "Case Closed on Far soldier: HP 193/193, Defense 13, armour 6, human (humanoid), saves body +1 brain +1 heart +1 · read: it deals 15% less to the squad, the squad has +2 Defense against it and deals 20 / Tester 1 analyzes Far soldier: HP 193/193, Defense 13, armour 6 · Read Them: it deals 15% less damage to the squad.",
 "perk/detectives_eye@II/move": "Soldier takes an opportunity attack. / Soldier strikes Tester 1: d20 10 +2 = 12 vs 14 · hit, 2 damage / Tester 1 moves to D10 (3 tiles, 1 AP).",
 "perk/detectives_eye@II/move-charge": "Soldier takes an opportunity attack. / Soldier strikes Tester 1: d20 10 +2 = 12 vs 14 · hit, 2 damage / Tester 1 moves to G7 (3 tiles, 1 AP).",
 "perk/detectives_eye@II/move-far": "Soldier takes an opportunity attack. / Soldier strikes Tester 1: d20 10 +2 = 12 vs 14 · hit, 2 damage / Tester 1 moves to L7 (8 tiles, 3 AP).",

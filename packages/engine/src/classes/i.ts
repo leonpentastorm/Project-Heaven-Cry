@@ -7,7 +7,7 @@
 // where it has one, in the story; what the engine can't judge goes to the Narrator (note / pendRuling / brief).
 // Recommended fixes from the audit are marked PROVISIONAL and listed in the spec (section 14, tags I…) and docs/design/perk-runtime.md.
 import { isPressed } from '../physical/pressure';
-import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, type Holder, type ActionDef, type ActionArgs } from '../effects';
+import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, effNum, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { stampOf } from '../effects/uses';
 import { weaponProps, ensurePhys } from '../physical/data';
 import { loadQuiverWith } from '../physical/ranged/quiver';
@@ -16,6 +16,7 @@ import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, sideSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, paths, moveUnit,
   resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury, guardHeld,
+  attackEvent,
 } from '../combat';
 import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
@@ -35,7 +36,7 @@ import {
 import { soulStrike, designRolls } from './soul';
 import { die, type Rng } from '../rng';
 import { rollVs, rollD20, SAVE_TN } from '../rolls';
-import { resOf, resGain, resSpend, canReact, useReaction, payHeldShot, reveal , dropHeldShot } from '../tactics';
+import { resOf, resGain, resSpend, canReact, react, loseReactions, payHeldShot, reveal , dropHeldShot } from '../tactics';
 import { itemWords, wordCostMods, actionAp } from '../effects/core';
 import { makeObject } from '../objects';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround } from '../kit';
@@ -310,11 +311,13 @@ register({
     on_miss: (ctx, h) => {
       const u = h.u!, cb = h.cb!; if (!ctx.melee || ctx.tgt !== u || riposting || !foeOf(ctx.att, u)) return;
       if (policy(h, 'auto') === 'off') return;
-      if (!alive(u) || resOf(u, 'momentum') < 1 || !canReact(cb, u) || dist(u.pos, ctx.att.pos) > reachOf(u) || !alive(ctx.att)) return;
+      if (!alive(u) || resOf(u, 'momentum') < 1 || !canReact(cb, u, 'attack') || dist(u.pos, ctx.att.pos) > reachOf(u) || !alive(ctx.att)) return;
       if (!previewAttack(cb, u, ctx.att, 'melee', { free: true, extra: u.counter || 0 }).ok) return;
-      resSpend(u, 'momentum', 1); useReaction(cb, u); say(cb, u.name + ' ripostes (1 Momentum).');
-      riposting = true; try { resolveAttack(cb, rngOf(h, ctx), u, ctx.att, 'melee', null, { noAp: true, extra: u.counter || 0, fx: { move: 'fighter.riposte' } }); } finally { riposting = false; }
-      checkOver(cb);
+      react(cb, u, { kind: 'attack', event: attackEvent() }, () => {
+        resSpend(u, 'momentum', 1); say(cb, u.name + ' ripostes (1 Momentum).');
+        riposting = true; try { resolveAttack(cb, rngOf(h, ctx), u, ctx.att, 'melee', null, { noAp: true, extra: u.counter || 0, fx: { move: 'fighter.riposte' } }); } finally { riposting = false; }
+        checkOver(cb);
+      });
     },
   },
   brief: () => null,
@@ -324,6 +327,8 @@ register({
 // Spend all your Momentum (at least 1) on one melee strike: +20% damage per point, up to +100%. Momentum is spent even
 // on a miss; a hit then earns the usual +1.
 let finishing: { u: Unit; n: number } | null = null;
+/** The Finisher's multiplier for n Momentum spent: its data's number block (P3: base, per momentum_spent, max). */
+const finisherMult = (h: Holder, n: number) => effNum(h, 'damage_mult', 'value', { momentum_spent: n });
 register({
   id: 'fighter.finisher', claims: 'all',
   actions: [{
@@ -331,15 +336,15 @@ register({
     available: (h) => (h.u ? (resOf(h.u, 'momentum') < 1 ? 'Needs at least 1 Momentum.' : true) : false),
     preview: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {}; if (dist(u.pos, t.pos) > reachOf(u)) return { ok: false, why: 'Out of melee reach.' };
       const pv = previewAttack(cb, u, t, 'melee', { free: true }); if (!pv.ok) return { ok: false, why: pv.why };
-      const n = Math.min(5, resOf(u, 'momentum')); return { lines: ['Finisher: ' + n + ' Momentum, +' + 20 * n + '% damage, ' + pv.pct + '% to hit.'] }; },
+      const n = resOf(u, 'momentum'); return { lines: ['Finisher: ' + n + ' Momentum, +' + Math.round((finisherMult(h, n) - 1) * 100) + '% damage, ' + pv.pct + '% to hit.'] }; },
     run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, n = Math.min(5, resOf(u, 'momentum'));
+      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, n = resOf(u, 'momentum');
       u.res!.momentum = 0; say(cb, u.name + ' spends ' + n + ' Momentum on a Finisher.');
       finishing = { u, n }; try { resolveAttack(cb, rng as Rng, u, t, 'melee', null, { noAp: true, fx: { move: 'fighter.finisher' } }); } finally { finishing = null; }
       checkOver(cb);
     },
   }],
-  on: { damage_out: (ctx, h) => { if (finishing && finishing.u === h.u && ctx.att === h.u) ctx.mults.push({ v: 1 + 0.2 * finishing.n, label: 'Finisher' }); } },
+  on: { damage_out: (ctx, h) => { if (finishing && finishing.u === h.u && ctx.att === h.u) ctx.mults.push({ v: finisherMult(h, finishing.n), label: 'Finisher' }); } },
   brief: () => null,
 });
 
@@ -384,19 +389,22 @@ register({
     damage_in: (ctx, h) => {
       const me = h.u!, cb = h.cb!, t: Unit = ctx.t, src = ctx.src;
       if (ctx.phase !== 'reduce' || interposing || t === me || t.side !== me.side || src?.type !== 'weapon' || !src.by || !foeOf(src.by, t)) return;
-      if (!alive(me) || dist(me.pos, t.pos) > 1 || resOf(me, 'guard') < 1 || !canReact(cb, me) || ctx.dmg <= 0) return;
+      if (!alive(me) || dist(me.pos, t.pos) > 1 || resOf(me, 'guard') < 1 || !canReact(cb, me, 'protect') || ctx.dmg <= 0) return;
       if (statQuery({ u: t }, 'prey_lock', { by: src.by }).add > 0) return; // Rabbit's Foot: a hunter's or Ork's blow stays on its prey
       const pol = policy(h, 'auto');
       if (pol === 'off' || (pol === 'down' && ctx.dmg < t.hp + (t.shield || 0))) return;
-      resSpend(me, 'guard', 1); useReaction(cb, me);
-      const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
-      const dmg = Math.max(1, Math.floor(d.total) - d.armour);
-      ctx.dmg = 0;
-      interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
-      emitFx(cb, 'shove', { unit: me.id, target: t.id, from: me.pos, to: me.pos, ok: true, interpose: true });
-      say(cb, me.name + ' interposes for ' + t.name + ' (1 Guard, ' + resOf(me, 'guard') + ' left) and takes ' + r.amount + ' damage' + (me.hp === 0 ? ' · Downed' : '') + '.');
-      if (me.hp === 0) fxFell(cb, me);
-      interposed = { t: t.id, me: me.id };
+      // the hit it takes for the ally is part of the reaction (rules 1.28: nothing answers it)
+      react(cb, me, { kind: 'protect', event: attackEvent() }, () => {
+        resSpend(me, 'guard', 1);
+        const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
+        const dmg = Math.max(1, Math.floor(d.total) - d.armour);
+        ctx.dmg = 0;
+        interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
+        emitFx(cb, 'shove', { unit: me.id, target: t.id, from: me.pos, to: me.pos, ok: true, interpose: true });
+        say(cb, me.name + ' interposes for ' + t.name + ' (1 Guard, ' + resOf(me, 'guard') + ' left) and takes ' + r.amount + ' damage' + (me.hp === 0 ? ' · Downed' : '') + '.');
+        if (me.hp === 0) fxFell(cb, me);
+        interposed = { t: t.id, me: me.id };
+      });
     },
     // The hit's critical injury goes to the Defender who took it, not the ally (audit problem 3, PROVISIONAL).
     injury: (ctx, h) => {
@@ -449,10 +457,11 @@ register({
       const me = h.u!, cb = h.cb!; if (ctx.phase !== 'reduce' || ctx.t !== me || ctx.dmg <= 0) return;
       const pol = policy(h, 'auto'); if (pol === 'off') return;
       const have = resOf(me, 'guard') - (pol === 'keep1' ? 1 : 0); if (have <= 0) return;
-      const k = Math.min(have, Math.ceil(ctx.dmg / 10)); if (k <= 0) return;
-      resSpend(me, 'guard', k); const was = ctx.dmg; ctx.dmg = Math.max(0, ctx.dmg - 10 * k);
+      const per = effNum(h, 'stat_mod'), every = effNum(h, 'meter', 'every'), bots = effNum(h, 'meter'); // its data (P3: no literal)
+      const k = Math.min(have, Math.ceil(ctx.dmg / per)); if (k <= 0) return;
+      resSpend(me, 'guard', k); const was = ctx.dmg; ctx.dmg = Math.max(0, ctx.dmg - per * k);
       const st = stateOf(h); st.lost = (st.lost || 0) + k;
-      let shed = 0; while (st.lost >= 3) { st.lost -= 3; shed += 2; }
+      let shed = 0; while (st.lost >= every) { st.lost -= every; shed += bots; }
       say(cb, me.name + '\'s plate hardens: ' + k + ' Guard, ' + (was - ctx.dmg) + ' damage stopped.');
       if (shed) shiftMana(cb, shed, 'reactive plate sheds bots');
       emit(cb, 'plate_spent', { u: me, k, cb }); // 'plate_spent' {u, k}: Guard the plate spent (Adamantile Plate's ally shield)
@@ -1144,7 +1153,7 @@ register({
         if (ok) { say(cb, line + ' · resists' + addFlux(cb, u, 1) + '.'); return; }
         const f = flippable(t)[0], st = stateOf(h);
         switch (f) {
-          case 'overwatch': dropHeldShot(cb, t, 'Rewrite'); useReaction(cb, t); line += ' · its held shot is gone'; break;
+          case 'overwatch': dropHeldShot(cb, t, 'Rewrite'); loseReactions(cb, t, 1); line += ' · its held shot is gone'; break;
           case 'shield': { const n = Math.min(t.shield || 0, Math.floor(itemAmount('class:trickster.rewrite', 'shield_turned', [term(u.mg?.sigilMult || 1, 'stat: sigil')]))); t.shield = 0; line += ' · the shield turns on it' + harm(cb, r0, u, t, n, 'sigil'); break; }
           case 'braced': case 'emplaced': setBraced(t, false); endCond(t, 'emplaced', cb); line += applyCond(cb, r0, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'brain_power' }); break;
           case 'guarded': case 'withdrawing': { const left = t.conds![f]; endCond(t, f, cb); t.def -= 2; (st.def ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its guard becomes an opening (−2 Defense, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
@@ -1348,8 +1357,8 @@ register({
       const me = h.u!, cb = h.cb!, t: Unit = ctx.t, src = ctx.src;
       if (ctx.phase !== 'shield' || !((t.shield || 0) > 0) || ctx.dmg <= 0 || !stateOf(h).shields?.[t.id]) return;
       if (!src?.by || src.by.side === me.side || !['sigil', 'elemental', 'soul', 'wall'].includes(src.type)) return;
-      if (policy(h, 'auto') === 'off' || !alive(me) || !me.mg?.emanator || me.mg.mp >= me.mg.mpMax || !canReact(cb, me)) return;
-      useReaction(cb, me);
+      if (policy(h, 'auto') === 'off' || !alive(me) || !me.mg?.emanator || me.mg.mp >= me.mg.mpMax || !canReact(cb, me, 'attack')) return;
+      if (!react(cb, me, { kind: 'attack', event: attackEvent() })) return; // (not a protective reaction in rules 1.28's list: Suppressed still stops it)
       // The spell's own price (magic.ts carries it on the damage): an Outburst's MP cost, 10 MP per Sigil word; the old
       // stand-ins (25 for an Outburst, 2 words) only when a source carries neither.
       // Rules 1.5: an elemental Outburst is 'elemental' damage, told from a Sigil by the MP it carries.

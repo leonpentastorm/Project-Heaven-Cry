@@ -1,0 +1,161 @@
+{
+  "about": "Classes 3.0 step 1a (docs/design/rev4-primitives.md): one fixture item per primitive and batch row, written in data only, loaded with addItems() by test/prim-*.test.ts. Test only: not game content. The tests read their numbers from here.",
+  "perks": [
+    {
+      "id": "test_acted_ping",
+      "name": "Ping (test)",
+      "tier": "mastered",
+      "ap_cost": 1,
+      "text": "Costs {=effects.0.ap} AP. When it is done, gain {=effects.0.effects.0.value} perk AP (a grant_action's nested `when: acted` effect: no `if.action`).",
+      "adjudication": "engine",
+      "effects": [
+        { "op": "grant_action", "action": "test_ping", "ap": 1, "uses": "at_will",
+          "effects": [ { "op": "grant_ap", "when": "acted", "value": 2 } ] }
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "id": "test_fervent", "name": "Fervent (test)", "kind": "boon", "boon": true, "engine": "table", "duration": { "rounds": 2 },
+      "text": "You deal {=effects.0.value} more damage and have {=effects.1.value} more reaction each round; the one who made you Fervent cheers you on at your turn's start.",
+      "effects": [
+        { "op": "damage_mod", "when": "dealing", "value": 5, "label": "Fervent" },
+        { "op": "stat_mod", "stat": "reactions", "value": 1 },
+        { "op": "grant_ap", "when": "turn_start", "value": 1, "say": "{source} cheers {self} on (Fervent)." }
+      ],
+      "adjudication": "engine"
+    },
+    {
+      "id": "test_beacon", "name": "Beacon (test)", "kind": "debuff", "family": "body", "engine": "table", "duration": { "rounds": 2 },
+      "text": "The other side sees you wherever you are (the stat always_seen: P4 and P7).",
+      "effects": [ { "op": "stat_mod", "stat": "always_seen", "value": 1 } ],
+      "adjudication": "engine"
+    }
+  ],
+  "relics": [
+    {
+      "id": "test_acted_reload",
+      "name": "Acted on reload (test)",
+      "text": "After a reload of yours, gain {=effects.0.value} perk AP, once a turn.",
+      "effects": [
+        { "op": "grant_ap", "when": "acted", "if": { "action": ["reload"] }, "value": 1, "limit": { "per": "per_turn", "n": 1 } }
+      ]
+    },
+    {
+      "id": "test_acted_analyze",
+      "name": "Acted on Analyze (test)",
+      "text": "After you Analyze, the target is Marked.",
+      "effects": [
+        { "op": "condition", "when": "acted", "if": { "action": ["analyze"] }, "condition": "marked", "target": "target", "skip_save": true, "rounds": 2 }
+      ]
+    },
+    {
+      "id": "test_spot_still",
+      "name": "Still (test)",
+      "text": "Spot rolls against you are {=effects.0.value} (the trigger spot).",
+      "effects": [ { "op": "roll_mod", "when": "spot", "value": -40 } ]
+    },
+    {
+      "id": "test_spot_cancel",
+      "name": "Unspottable (test)",
+      "text": "Nobody rolls to spot you.",
+      "effects": [ { "op": "cancel", "when": "spot" } ]
+    },
+    {
+      "id": "test_by_cover",
+      "name": "Cover to cover (test)",
+      "text": "A move that ends next to cover sets a flag.",
+      "effects": [ { "op": "mark", "when": "moved", "if": { "by_cover": ["to"] }, "flag": "in_cover" } ]
+    },
+    {
+      "id": "test_deal_nonlethal",
+      "name": "Mercy blow (test)",
+      "text": "Your hit also deals a nonlethal blow that counts as a prayer.",
+      "effects": [ { "op": "deal", "when": "hit", "amount": { "kind": "damage", "base": 500, "profile": "flat", "type": "true" }, "target": "target", "via": "faith", "nonlethal": true, "if": { "hostile": true } } ]
+    },
+    {
+      "id": "test_mend_kind",
+      "name": "Tending touch (test)",
+      "text": "Your hit heals you a little, as tending.",
+      "effects": [ { "op": "mend", "when": "hit", "amount": { "kind": "heal", "base": 5, "profile": "flat", "heal_kind": "tending" } } ]
+    },
+    {
+      "id": "test_res_pressure",
+      "name": "Pinning hit (test)",
+      "text": "Your hit adds {=effects.0.value} Pressure to its target (the resource row pressure).",
+      "effects": [ { "op": "resource", "when": "hit", "resource": "pressure", "value": 2, "target": "target", "if": { "hostile": true } } ]
+    },
+    {
+      "id": "test_num_marked",
+      "name": "Marked bonus (test)",
+      "text": "Against a Marked target your damage is a number block (P3): +{=effects.0.value.per.0.value|pct}% while it is Marked.",
+      "effects": [ { "op": "damage_mult", "when": "dealing", "label": "Marked bonus", "value": { "base": 1, "per": [ { "of": "target:marked", "value": 0.5 } ], "max": 1.5 } } ]
+    },
+    {
+      "id": "test_num_guard",
+      "name": "Guard to AP (test)",
+      "text": "After a reload, gain perk AP equal to your Guard (P3 res:guard), at most {=effects.0.value.max}.",
+      "effects": [ { "op": "grant_ap", "when": "acted", "if": { "action": ["reload"] }, "value": { "base": 0, "per": [ { "of": "res:guard", "value": 1 } ], "max": 2 } } ]
+    },
+    {
+      "id": "test_res_all",
+      "name": "Spend it all (test)",
+      "text": "Your hit spends all your Guard (value all); the turn's end loses all your Momentum (value zero).",
+      "effects": [ { "op": "resource", "when": "hit", "resource": "guard", "value": "all" }, { "op": "resource", "when": "turn_end", "resource": "momentum", "value": "zero" } ]
+    },
+    {
+      "id": "test_amount_sources",
+      "name": "Sources (test)",
+      "text": "Damage you take gives you a shield of half of it (event:amount); your hit heals you a tenth of your max HP (self:max_hp).",
+      "effects": [
+        { "op": "mend", "when": "damaged", "amount": { "kind": "shield", "base": 0, "per": [ { "of": "event:amount", "value": 0.5 } ] } },
+        { "op": "mend", "when": "hit", "amount": { "kind": "heal", "base": 0, "per": [ { "of": "self:max_hp", "value": 0.1 } ] } }
+      ]
+    },
+    {
+      "id": "test_react_brace",
+      "name": "Brace for it (test)",
+      "text": "Once a round, as your reaction (a protective one), a hit you take is multiplied by {=effects.0.value}.",
+      "effects": [ { "op": "damage_mult", "when": "taking", "value": 0.5, "if": { "by_hit": true }, "limit": { "reaction": 1, "kind": "protect" }, "say": "{self} braces for it (a reaction)." } ]
+    },
+    {
+      "id": "test_react_seen",
+      "name": "Reaction watcher (test)",
+      "text": "Each time you make a protective reaction, mark a flag (the trigger reaction).",
+      "effects": [ { "op": "mark", "when": "reaction", "if": { "how": ["protect"] }, "flag": "protected" } ]
+    },
+    {
+      "id": "test_targets_dread",
+      "name": "Dread over the body (test)",
+      "text": "When you kill, every other enemy within {=effects.0.targets.within} tiles of the body is Marked (no save): the unit set targets (P5).",
+      "effects": [ { "op": "condition", "when": "kill", "condition": "marked", "skip_save": true, "rounds": 2, "targets": { "of": "target", "side": "foe", "within": 3 }, "say": "Dread over {target}{then}." } ]
+    },
+    {
+      "id": "test_targets_rally",
+      "name": "Rally on reload (test)",
+      "text": "After you reload, each other ally within {=effects.0.targets.within} tiles (at most {=effects.0.targets.max}) heals {=effects.0.amount.base} HP.",
+      "effects": [ { "op": "mend", "when": "acted", "if": { "action": ["reload"] }, "amount": { "kind": "heal", "base": 10, "profile": "flat" }, "targets": { "side": "ally", "within": 4, "max": 1 } } ]
+    },
+    {
+      "id": "test_targets_cone",
+      "name": "Cone of fear (test)",
+      "text": "Your hit Shakes every enemy in a cone {=effects.0.targets.within} tiles long toward the target, no save, if your side sees it.",
+      "effects": [ { "op": "condition", "when": "hit", "condition": "shaken", "skip_save": true, "rounds": 1, "targets": { "shape": "cone", "within": 6, "side": "foe", "seen": true } } ]
+    },
+    {
+      "id": "test_sight_shroud",
+      "name": "Shroud (test)",
+      "text": "At your turn's start, out of every enemy's view, gain {=effects.0.value} perk AP; seen, lose a flag.",
+      "effects": [
+        { "op": "grant_ap", "when": "turn_start", "if": { "self_sight": ["out_of_view"] }, "value": 1 },
+        { "op": "mark", "when": "turn_start", "if": { "self_sight": "seen" }, "flag": "spotted" }
+      ]
+    },
+    {
+      "id": "test_res_mp",
+      "name": "MP on hit (test)",
+      "text": "Your hit gives you {=effects.0.value} MP, with an Emanator in hand.",
+      "effects": [ { "op": "resource", "when": "hit", "resource": "mp", "value": 30 } ]
+    }
+  ]
+}

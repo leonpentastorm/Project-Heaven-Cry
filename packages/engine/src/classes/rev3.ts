@@ -7,7 +7,7 @@
 // 'cond_landed' (saves, immunity, Shrug It Off), 'forced_move' (Anchor), 'move_step' (Anchor's Disengage OA),
 // 'move_cost' (free steps: Duck and Roll, Command), 'attack_target' / 'attack_preview' (Duck and Roll), 'reload' and
 // the 'ap_cost:<action>' stats (Speed Loader, Core Change, Bleed the Flux: vent and swapCore price through ventAp /
-// coreAp), the new 'vent' hook, 'glyph_cost' / 'glyph_drawn', 'analyze' + combat.ts enemyIntent (Read), illusion.ts
+// coreAp), the new 'vent' hook, 'glyph_cost' / 'glyph_drawn', the trigger 'acted' (action analyze) + combat.ts enemyIntent (Read), illusion.ts
 // (False Image, Sleight), 'turn_start_pre' (Silver Tongue), the stat 'rider_stage' (magic.ts riderBonus) and the
 // 'strain' hook (Eye of the Storm), 'trap_sprung' (Sabotage's rig), the new 'ai_move_risk' (Anchor in the enemy AI).
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
@@ -17,7 +17,8 @@ import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, stepsFrom, moveUnit,
-  previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike, displace, swapUnits
+  previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike, displace, swapUnits,
+  attackEvent,
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
@@ -25,7 +26,7 @@ import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana, saveAgai
 import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
 type Fam = 'body' | 'brain' | 'heart';
 import { type Rng } from '../rng';
-import { resOf, resGain, resSpend, canReact, useReaction, hide, seenByFoes, HEARING } from '../tactics';
+import { resOf, resGain, resSpend, canReact, react, hide, seenByFoes, HEARING } from '../tactics';
 import { addImage, dropImage, imageOfOwner, imageTurnStart, imagesOf, type FalseImage } from '../illusion';
 import { makeObject, kindOf } from '../objects';
 import { setBraced, setDowned } from '../unitstate';
@@ -73,8 +74,9 @@ const SHRUG = ['bleeding', 'slowed', 'weakened', 'prone'];
 function shrug(h: Holder, id: string) {
   const u = h.u!, cb = h.cb!; if (!inFight(h) || policy(h, 'auto') === 'off' || !alive(u)) return;
   const has = id === 'bleeding' ? !!u.bleed : id === 'prone' ? !!u.prone : condOn(u, id); if (!has) return;
-  if (resOf(u, 'guard') < 1 || !canReact(cb, u)) return;
-  resSpend(u, 'guard', 1); useReaction(cb, u); endCond(u, id, cb);
+  if (resOf(u, 'guard') < 1 || !canReact(cb, u, 'protect')) return;
+  if (!react(cb, u, { kind: 'protect' })) return;
+  resSpend(u, 'guard', 1); endCond(u, id, cb);
   emitFx(cb, 'shrug', { unit: u.id, at: u.pos, cond: id });
   say(cb, u.name + ' shrugs it off: no longer ' + (id === 'bleeding' ? 'Bleeding' : id === 'prone' ? 'prone' : id[0].toUpperCase() + id.slice(1)) + ' (1 Guard, ' + resOf(u, 'guard') + ' left; reaction).');
 }
@@ -120,15 +122,16 @@ register({
       const me = h.u!, cb = h.cb!, u: Unit = ctx.u;
       if (!inFight(h) || ctx.how !== 'disengage' || !u || u.side === me.side || cb.order[cb.turn] !== u.id) return;
       if (stateOf(h).adj?.[u.id] !== cb.round || dist(me.pos, ctx.from) > 1 || dist(me.pos, ctx.at) <= 1) return;
-      if (!alive(me) || !canReact(cb, me) || immune({ u }, 'opportunity_attack')) return;
-      const rw: any = emit(cb, 'reaction_window', { reactor: me, mover: u, kind: 'opportunity', cancel: false, at: ctx.at, cb, rng: ctx.rng }); if (rw.cancel) return;
-      { const at = u.pos; u.pos = ctx.from; const ok = previewAttack(cb, me, u, 'melee', { free: true }).ok; u.pos = at; if (!ok) return; }
-      useReaction(cb, me); say(cb, me.name + ' is Anchored: ' + u.name + ' can\'t slip away (opportunity attack).');
-      emitFx(cb, 'anchor', { unit: me.id, at: me.pos, what: 'oa', target: u.id });
-      opportunityStrike(cb, rngOf(h, ctx), me, u, ctx.from);
+      if (!alive(me) || !canReact(cb, me, 'protect') || immune({ u }, 'opportunity_attack')) return;
+      { const at = u.pos; u.pos = ctx.from; const ok = previewAttack(cb, me, u, 'melee', { free: true }).ok; u.pos = at; if (!ok) return; } // (asked before the window now: react() opens it and spends together)
+      react(cb, me, { kind: 'protect', event: 'step:' + u.id + ':' + ctx.from + '>' + ctx.at, window: { kind: 'opportunity', mover: u, at: ctx.at, rng: ctx.rng } }, () => {
+        say(cb, me.name + ' is Anchored: ' + u.name + ' can\'t slip away (opportunity attack).');
+        emitFx(cb, 'anchor', { unit: me.id, at: me.pos, what: 'oa', target: u.id });
+        opportunityStrike(cb, rngOf(h, ctx), me, u, ctx.from);
+      });
     },
     ai_move_risk: (ctx, h) => {
-      const me = h.u!, cb = h.cb!, u: Unit = ctx.u; if (!inFight(h) || !alive(me) || u.side === me.side || !canReact(cb, me)) return;
+      const me = h.u!, cb = h.cb!, u: Unit = ctx.u; if (!inFight(h) || !alive(me) || u.side === me.side || !canReact(cb, me, 'protect')) return;
       if (stateOf(h).adj?.[u.id] === cb.round && dist(me.pos, ctx.from) <= 1 && dist(me.pos, ctx.to) > 1) ctx.risk += 10;
     },
   },
@@ -250,14 +253,16 @@ register({
       if (st.duck && (ctx.vi === 0 || st.duck.att !== att.id)) st.duck = null; // a new attack
       if (!inFight(h) || ctx.tgt !== me || att.side === me.side || ctx.vi) return;
       const w = WEAPON[att.weapon]; if (ctx.mode === 'melee' || !w || isMelee(w)) return;
-      if (policy(h, 'auto') === 'off' || !alive(me) || moveBlock(me) || !canReact(cb, me)) return;
+      if (policy(h, 'auto') === 'off' || !alive(me) || moveBlock(me) || !canReact(cb, me, 'move')) return;
       const d = duckTile(cb, me, att, ctx.mode); if (!d) return;
-      useReaction(cb, me); const from = me.pos;
-      ducking = me; let err: string | null; try { err = moveUnit(cb, me, d.k, rngOf(h, ctx), 'move'); } finally { ducking = null; }
-      if (err) return;
-      st.duck = d.out ? null : { att: att.id };
-      emitFx(cb, 'duck', { unit: me.id, from, to: me.pos, by: att.id, out: d.out, cover: !d.out });
-      say(cb, me.name + ' ducks and rolls to ' + refOf(me.pos) + (d.out ? ': out of ' + att.name + '\'s sight.' : ': into cover (−2 to hit).'));
+      react(cb, me, { kind: 'move', event: attackEvent() }, () => { // its step is a reaction's: it provokes nothing (rules 1.28)
+        const from = me.pos;
+        ducking = me; let err: string | null; try { err = moveUnit(cb, me, d.k, rngOf(h, ctx), 'move'); } finally { ducking = null; }
+        if (err) return;
+        st.duck = d.out ? null : { att: att.id };
+        emitFx(cb, 'duck', { unit: me.id, from, to: me.pos, by: att.id, out: d.out, cover: !d.out });
+        say(cb, me.name + ' ducks and rolls to ' + refOf(me.pos) + (d.out ? ': out of ' + att.name + '\'s sight.' : ': into cover (−2 to hit).'));
+      });
     },
     move_cost: (ctx, h) => { if (ducking && ctx.u === h.u && ducking === h.u) { ctx.ap = 0; ctx.free = true; } },
     attack_preview: (ctx, h) => { const d = stateOf(h).duck; if (d && ctx.tgt === h.u && ctx.att?.id === d.att) { ctx.ignoreCover = true; ctx.terms.push({ v: -2, label: 'Duck and Roll' }); } },
@@ -423,8 +428,8 @@ register({
 register({
   id: 'trickster.read', claims: [1],
   on: {
-    analyze: (ctx, h) => {
-      if (ctx.u !== h.u || !h.cb || !ctx.t) return; const cb = h.cb, t: Unit = ctx.t, it = enemyIntent(cb, t);
+    acted: (ctx, h) => {
+      if (ctx.action !== 'analyze' || ctx.u !== h.u || !h.cb || !ctx.t) return; const cb = h.cb, t: Unit = ctx.t, it = enemyIntent(cb, t);
       t.readIntent = { ...it, by: h.u!.id, round: cb.round };
       emitFx(cb, 'intent', { unit: h.u!.id, target: t.id, at: t.pos, kind: it.kind, text: it.text, ...(it.targetId ? { targetUnit: it.targetId } : {}), ...(it.to ? { to: it.to } : {}), ...(it.image ? { image: it.image } : {}) });
       say(cb, 'Read: ' + t.name + ' means to ' + it.text + '.');

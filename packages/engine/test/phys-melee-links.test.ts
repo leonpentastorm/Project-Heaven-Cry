@@ -1,5 +1,6 @@
 // Physical 2.0 (rules 1.12), the melee Links: Sidestep, Guard, Shove, Trip and Drag.
 import { describe, it, expect, beforeEach } from 'vitest';
+import { reactionsUsed } from '../src';
 import { phys, previewAttack, resolveAttack, type Unit } from '../src';
 import { condOn } from '../src/magic';
 import { d20 } from '../src/rng';
@@ -41,7 +42,7 @@ describe('Sidestep (15)', () => {
     unchanged(f, () => f.pv('sidestep', { targetId: f.foe.id, tile: f.tile('D6') }));
     expect(f.tech('sidestep', { targetId: f.foe.id, tile: f.tile('D6') })).toBeNull();
     expect(at(f, f.pc)).toBe(f.tile('D6')); expect(f.pc.ap).toBe(5); expect(f.momentum(f.pc)).toBe(1); // the 1 the fight began with: a Link's move keeps it
-    expect(f.foes[1].reactUsed?.n || 0).toBe(0); // B7 saw the PC leave its reach: no opportunity attack
+    expect(reactionsUsed(f.cb, f.foes[1])).toBe(0); // B7 saw the PC leave its reach: no opportunity attack
   });
   it('is 1 tile without Light and 2 with it', () => {
     const f = fight('maul'); expect(f.tech('sidestep', { targetId: f.foe.id, tile: f.tile('E7') })).toMatch(/can't step there/);

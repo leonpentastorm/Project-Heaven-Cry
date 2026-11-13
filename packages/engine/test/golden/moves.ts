@@ -73,7 +73,7 @@ function reading(g: any, before: any, a: any, t: any, x: any): { state: string; 
     if (b.pos !== u.pos) q.push(b.pos + '>' + u.pos); if (b.hp !== u.hp) q.push('hp' + (u.hp - b.hp));
     if (!b.prone && u.prone) q.push('+prone'); if (b.braced !== !!u.braced) q.push(u.braced ? '+braced' : '-braced');
     for (const k of Object.keys(u.conds || {})) if (!(k in b.conds)) q.push('+' + k);
-    if (b.nailed && !u.nailed) q.push('-nailed'); if (b.react !== (u.reactedRound ?? u.reactUsed ?? null)) q.push('reacted'); if (b.ammo !== u.ammo) q.push('ammo' + (u.ammo - b.ammo));
+    if (b.nailed && !u.nailed) q.push('-nailed'); if (b.react !== JSON.stringify(u.uses?.['reaction|reaction'] ?? null)) q.push('reacted'); if (b.ammo !== u.ammo) q.push('ammo' + (u.ammo - b.ammo));
     if (b.ow && !u.overwatch) q.push('-overwatch');
     if (q.length) p.push((u === t ? 'T' : u === a ? 'A' : u === x.watcher ? 'W' : u === x.other ? 'O' : label(cb, u)) + ' ' + q.join(' '));
   }
@@ -94,7 +94,7 @@ export function recordMoves(): { state: Record<string, string>; log: Record<stri
       if (m.prep) m.prep(g, a, t);
       if (c.put) c.put(g, cb, a, t, m, x);
       const before = { log: cb.log.length, objects: cb.objects.map((o: any) => o.id), zones: (cb.zones || []).map((z: any) => z.id),
-        units: Object.fromEntries(cb.units.map((u: any) => [u.id, { pos: u.pos, hp: u.hp, prone: !!u.prone, braced: !!u.braced, conds: { ...(u.conds || {}) }, nailed: !!u.nailed, react: u.reactedRound ?? u.reactUsed ?? null, ammo: u.ammo, ow: !!u.overwatch }])) };
+        units: Object.fromEntries(cb.units.map((u: any) => [u.id, { pos: u.pos, hp: u.hp, prone: !!u.prone, braced: !!u.braced, conds: { ...(u.conds || {}) }, nailed: !!u.nailed, react: JSON.stringify(u.uses?.['reaction|reaction'] ?? null), ammo: u.ammo, ow: !!u.overwatch }])) };
       g.rng.state = seed; let err = '';
       try { const r = W(g, () => m.go(g, cb, a, t)); if (typeof r === 'string' && r) err = 'REFUSED ' + r.slice(0, 80); } catch (e: any) { err = (e?.name === 'RuleError' ? 'REFUSED ' : 'THREW ') + String(e?.message || e).slice(0, 80); }
       delete MARK.immune; delete MARK.hooked;

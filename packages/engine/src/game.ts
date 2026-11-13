@@ -11,7 +11,7 @@ import {
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
 import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
@@ -31,10 +31,10 @@ import { type Drops, type LootTable, cleanDrops, cleanTables } from './loot';
 import { type GearOp, gearPlan, packRef } from './gear';
 import { applyDamage } from './effects/damage';
 import { itemAmount } from './effects/amounts';
-import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyNot, needs, costOf, apMeter } from './effects/cost';
+import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyNot, needs, costOf, apMeter, actionName } from './effects/cost';
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
-import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
+import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
 import { deedGrant } from './deeds';
 import { condSkillMod, STORY_CARRY } from './magic';
@@ -1484,6 +1484,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   const loan = lend(cb!, u, a); // the action's credit (effects/cost.ts): Encore's repeat, a Brief's cut (rules 1.13). pay() draws on it first
   markAction(cb!); // spotlight.ts: this action's fx start here (a spotlight in it slows its playback on the client)
   (cb as any).acting = true; // creditFor: inside the action, the credit is what is left of this action's
+  let toggles: string[] = [];
   try {
   switch (a.type) {
     case 'combat/perk': { const taken = apMeter(cb, u); err = runPerkAction({ u, c, cb: cb!, g }, a.id, a, g.rng, 'combat');
@@ -1573,8 +1574,10 @@ function combatAction(g: GameState, a: Action, by: string) {
     }
     default: fail('Unknown action.');
   }
-  } finally { delete cb!.mods; delete (cb as any).acting; }
+  } finally { toggles = cb!.mods || []; delete cb!.mods; delete (cb as any).acting; }
   if (err) { unlend(cb); fail(err); }
+  // Classes 3.0 P2: the trigger `acted`, once, after the unit's own action succeeded (Analyze fires its own: analyze()).
+  { const name = actedName(g, cb!, u, c, a); if (name) acted(cb!, u, { action: name, t: 'targetId' in a && a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null, tile: tileOfAction(g, a), toggles, mode: a.type === 'combat/attack' ? a.mode || 'shot' : null }); }
   { const used = settleCredit(cb!, loan); if (used) { briefUsed(cb!, u, used.brief); if (used.hadEncore) encoreUsed(cb!, u, used.spent - used.brief, loan!.encore); } }
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
@@ -1587,6 +1590,20 @@ function combatAction(g: GameState, a: Action, by: string) {
   checkOver(cb!);
   runEnemies(g);
 }
+
+/** The name the trigger `acted` carries for a reducer action (Classes 3.0 P2): a perk or class action's own id, a
+ * technique's id, a move's kind, an attack's 'attack' (its mode is ctx.mode), else the verb's cost site. null: not an
+ * action of the unit's own (ending the turn, declining a window, words) or one that fires its own (Analyze). */
+function actedName(g: GameState, cb: Combat, u: Combat['units'][number], c: Character | null, a: Action): string | null {
+  const t = a.type.slice('combat/'.length);
+  if (['end-turn', 'decline', 'say', 'attempt', 'analyze'].includes(t)) return null;
+  if (a.type === 'combat/perk') return perkActionId({ u, c, cb, g }, a.id, (a as any).actionId) || null;
+  if (a.type === 'combat/technique') return String((a as any).id || 'technique');
+  if (a.type === 'combat/move') return String((a as any).how || 'move');
+  return actionName(t.replace(/-/g, '_'));
+}
+/** The tile an action names (its tile, else its aim), as a tile key, or null. */
+const tileOfAction = (g: GameState, a: Action): string | null => { const x: any = a; const k = x.tile ?? x.aim ?? x.to; if (k == null) return null; try { return tileKey(g, k); } catch { return null; } };
 
 // ---------- speaking and attempting in a fight (rules 1.14; items 1008 and 1009, provisional) ----------
 /** An attempt: words that want something to happen. 1 AP, once a turn, on your own turn, with a Narrator connected.

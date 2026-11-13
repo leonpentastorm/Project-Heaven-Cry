@@ -123,7 +123,8 @@ describe('F3: one way to price, check, pay and give AP', () => {
     const got: Record<string, number> = {};
     // Every resource of data/actions.json (its last path segment), spelled any of the ways a subtraction is spelled:
     // `x.mp -= n`, `x.cores--`, `x.mp = x.mp - n`, `x.charge = Math.max(0, x.charge - n)`, `x.parts = (x.parts || 0) - 1`.
-    const R = '(' + [...new Set(Object.values(RESOURCES).map((r: any) => r.path.split('.').pop()))].join('|') + ')';
+    // (a row with a `setter` is a meter its own system writes, Pressure: not a resource anyone spends)
+    const R = '(' + [...new Set(Object.values(RESOURCES).filter((r: any) => !r.setter).map((r: any) => r.path.split('.').pop()))].join('|') + ')';
     const SUB = new RegExp('\\.' + R + '!?\\s*(-=|--)|\\.' + R + '!?\\s*=(?!=)[^;\\n]{0,80}?\\.\\3\\b[^;\\n]{0,24}?\\s-\\s', 'g');
     for (const f of FILES) { if (COST(f.rel)) continue; const n = [...f.code.matchAll(SUB)].length; if (n) got[f.rel] = n; }
     expect(got).toEqual(LEFT);
@@ -166,10 +167,20 @@ describe('F8: every limit and cooldown goes through uses() (effects/uses.ts)', (
     // (game.ts copies a foreseen action's cells from one game to another; sigilgrowth.ts's `uses` is how often a Sigil word was used: another thing)
     expect(hits(/\.uses \|\|= \{\}/, (rel) => rel === 'effects/uses.ts').map((x) => x.split(':')[0])).toEqual(['game.ts', 'sigilgrowth.ts']);
   });
+  it('rules 1.28 (P1): every reaction goes through tactics.ts react(): no useReaction, no window opened by hand, no count kept on the unit', () => {
+    // react(cb, u, {kind, event, spend, payer, window}, fn) checks, opens the window, spends the `uses` cell (scope
+    // reaction), and runs fn as a reaction. A reaction not made through it would skip the two rulings (no reaction
+    // inside a reaction; Suppressed forbids only attacking and moving ones). Burning a reaction that is not one (Dread,
+    // Rewrite, Order) is loseReactions().
+    expect(hits(/\buseReaction\(/)).toEqual([]);
+    expect(hits(/emit\([^,]+,\s*'reaction_window'/, (rel) => rel === 'tactics.ts')).toEqual([]);
+    // the old count, read once from an old save (tactics.ts oldReactions); the unit's type and the sandbox's keep list name it
+    expect(hits(/\b(reactUsed|reactedRound)\b/, (rel) => rel === 'tactics.ts' || rel === 'combat.ts' || rel === 'game.ts')).toEqual([]);
+  });
   it('RATCHET: a round number kept by hand and compared with cb.round (never raise a number; move one to uses() and lower it)', () => {
     // What is left is counted file by file. Most are not plain limits: a per-target map on a zone, a record that is
     // only valid this round, an AI's "already tried this round" note, the reactions and Call counters (each already
-    // one door: tactics.ts useReaction, calls/core.ts). A NEW hand-kept round compare fails here: write
+    // one door: tactics.ts react(), calls/core.ts). A NEW hand-kept round compare fails here: write
     // uses(h).take('per_round', n, key) / uses(h).on(target).take('per_round') / uses(h).cool(turns, key) instead.
     const LEFT: Record<string, number> = { 'ai-sigil.ts': 2, 'ai-soul.ts': 1, 'calls/core.ts': 1, 'calls/handlers.ts': 1, 'classes/i.ts': 2, 'classes/j.ts': 1, 'classes/k.ts': 7, 'classes/rev3.ts': 3, 'combat.ts': 3, 'deeds.ts': 1,
       'effects/mending.ts': 1, 'faith.ts': 4, 'feelings.ts': 1, 'fighttalk.ts': 1, 'game.ts': 2, 'magic.ts': 2, 'perks/b.ts': 1, 'perks/c.ts': 1, 'perks/d.ts': 3, 'perks/e.ts': 4, 'perks/g.ts': 2, 'perks/skeleton.ts': 1, 'physical/core.ts': 2,

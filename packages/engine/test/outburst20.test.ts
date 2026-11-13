@@ -2,6 +2,7 @@
 // takes them (combat/outburst, combat/pump, combat/release, combat/letgo, combat/steady, combat/feed,
 // combat/heartwatch, combat/end-turn, combat/attack, world/act), the area maths and the preview called directly.
 import { describe, expect, it } from 'vitest';
+import { reactionsUsed } from '../src';
 import {
   d20, stageMult, outburstArea, previewOutburstPlan, migrateDesign, migrateHeld, freePumps, condOn, objectsOf, moveUnit, healUnit,
   apply, STAGE_MULT, soulMult, heartMagic, HEART_CASTERS, beginOutburst, pumpOutburst, releaseOutburst, type Combat, type Unit, type OutburstDesign, PROFILES } from '../src';
@@ -302,7 +303,7 @@ describe('holding is gameplay: the aura, Heart Overwatch, Resonance, Feeding (se
     withGame(f.g, () => moveUnit(f.cb, foe, '6,5', f.g.rng));
     expect(lost(foe)).toBe(Math.floor(20 * 1.2)); expect(me(f).mg!.held).toBeNull();
     expect(fx(f.cb, 'heart_overwatch').at(-1)).toMatchObject({ target: foe.id, stage: 2 }); expect(fx(f.cb, 'release').at(-1).reaction).toBe(true);
-    expect(f.pc.reactedRound ?? (f.pc as any).reactUsed?.r).toBe(f.cb.round);
+    expect(reactionsUsed(f.cb, f.pc)).toBe(1);
   });
   it('Resonance: an ally who releases after another in the same round gets +0.2 on the stage multiplier', () => {
     const f = rig(['6,5', '6,7'], ['3,7']); const d = give(f.pc, {}); const a = f.pcs[1]; const d2 = give(f.unit(a.id), {});

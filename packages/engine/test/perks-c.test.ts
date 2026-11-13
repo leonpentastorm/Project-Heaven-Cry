@@ -2,6 +2,7 @@
 // (apply) where an action exists, else with the game bound and the engine's own functions (moveUnit, throwItem,
 // resolveAttack, applyDamage…), the same calls the reducer and the enemy AI make.
 import { describe, expect, it } from 'vitest';
+import { reactionsUsed } from '../src';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, moveUnit, resolveAttack, previewAttack, attackDamage, throwItem, applyDamage, applyCond, makeObject, d20, packOf, emitStory, condOn, refOf, positionsOf, endTurn, critMult,
@@ -81,7 +82,7 @@ describe('Catch', () => {
     const pc = at(f.pc, '3,5'), foe = at(f.foe, '7,5'); foe.throwables = { frag_grenade: 1 }; foe.ap = 6; const hp = pc.hp;
     withGame(f.g, () => throwItem(f.cb, f.g.rng, foe, 'frag_grenade', pc.pos));
     expect(pc.hp).toBe(hp); expect(logHas(f.cb, /catches the frag grenade/)).toBe(true);
-    expect(pc.reactUsed?.n).toBe(1);
+    expect(reactionsUsed(f.cb, pc)).toBe(1);
     const u = f.turn(f.pc), fhp = f.foe.hp;
     f.act({ type: 'combat/perk', unitId: u.id, id: 'catch', actionId: 'throw_back', tile: f.foe.pos } as any);
     expect(f.pc.ap).toBe(6 - 1); expect(f.foe.hp).toBeLessThan(fhp);
@@ -213,7 +214,7 @@ describe('Nothing Gets Past', () => {
     const [a, b] = f.foes; a.hp = b.hp = 999; a.ap = b.ap = 6;
     withGame(f.g, () => { moveUnit(f.cb, a, '8,3', f.g.rng); moveUnit(f.cb, b, '8,7', f.g.rng); });
     expect(f.cb.log.filter((l) => /Nothing Gets Past\): Spotted/.test(l)).length).toBe(2);
-    expect(f.pc.ap).toBe(ap); expect(f.pc.reactUsed?.n || 0).toBe(0);
+    expect(f.pc.ap).toBe(ap); expect(reactionsUsed(f.cb, f.pc)).toBe(0);
     const mark = f.foes[0].call!.spot!;
     expect(mark.by).toBe(f.pc.id); expect(mark.left).toBe(2); expect(mark.hit).toBe(1); expect(mark.unhide).toBe(true); // step 3 at 10 points
     expect(f.foes[0].call!.hindered).toBeUndefined(); // it takes no Call slot
@@ -241,7 +242,7 @@ describe('Dance of Iron', () => {
     f.turn(foe);
     withGame(f.g, () => { resolveAttack(f.cb, rngFor(5), foe, pc, 'shot', null); endTurn(f.cb, f.g.rng); });
     expect(logHas(f.cb, /dances out of it and fires back/)).toBe(true);
-    expect(f.pc.reactUsed?.n).toBe(1);
+    expect(f.pc.uses?.['reaction|reaction']).toEqual({ s: 'r1', n: 1 }); // round 1's reaction (the turn has ended since)
     const g = fightWith([{}], [{ at: 'H6' }]); const p = at(g.pc, '3,5'), fo = at(g.foe, '7,5'); p.def = 99; g.turn(fo);
     withGame(g.g, () => { resolveAttack(g.cb, rngFor(5), fo, p, 'shot', null); endTurn(g.cb, g.g.rng); });
     expect(logHas(g.cb, /dances/)).toBe(false);

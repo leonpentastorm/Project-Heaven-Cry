@@ -4200,6 +4200,21 @@
         "hook": "glyph_cost",
         "self": "actor",
         "about": "a Sigil glyph is priced (its AP, charge and Flux; also every preview)"
+      },
+      "acted": {
+        "hook": "acted",
+        "self": "actor",
+        "about": "a unit's own action succeeded (once, after it; ctx.action is its id or cost site, test it with `action`); a grant_action's nested `when: acted` effects need no `if.action`"
+      },
+      "reaction": {
+        "hook": "reaction",
+        "self": "actor",
+        "about": "the holder makes a reaction (tactics.ts react(); its kind for `how`: attack, move, protect), before it resolves"
+      },
+      "spot": {
+        "hook": "spot",
+        "self": "target",
+        "about": "a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: \"tn\", its TN; cancel)"
       }
     },
     "predicates": {
@@ -4247,6 +4262,16 @@
         "arg": "words",
         "about": "self's kind is none of these"
       },
+      "self_sight": {
+        "arg": "words",
+        "about": "self's sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named)",
+        "values": [
+          "seen",
+          "unseen",
+          "in_view",
+          "out_of_view"
+        ]
+      },
       "actor_hp_below": {
         "arg": "number",
         "about": "actor's HP is under this share of its max"
@@ -4286,6 +4311,16 @@
       "actor_within": {
         "arg": "number",
         "about": "actor stands within this many tiles of the holder"
+      },
+      "actor_sight": {
+        "arg": "words",
+        "about": "actor's sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named)",
+        "values": [
+          "seen",
+          "unseen",
+          "in_view",
+          "out_of_view"
+        ]
       },
       "actor_sees_self": {
         "arg": "bool",
@@ -4330,6 +4365,16 @@
       "target_within": {
         "arg": "number",
         "about": "target stands within this many tiles of the holder"
+      },
+      "target_sight": {
+        "arg": "words",
+        "about": "target's sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named)",
+        "values": [
+          "seen",
+          "unseen",
+          "in_view",
+          "out_of_view"
+        ]
       },
       "target_sees_self": {
         "arg": "bool",
@@ -4385,7 +4430,7 @@
       },
       "how": {
         "arg": "words",
-        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport)"
+        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect)"
       },
       "ap_above": {
         "arg": "number",
@@ -4418,6 +4463,28 @@
       "amount_share_below": {
         "arg": "number",
         "about": "the event's amount is under this share of the holder's max HP"
+      },
+      "by_cover": {
+        "arg": "words",
+        "about": "the move started (from) and / or ended (to) next to standing cover: every end named must be",
+        "values": [
+          "from",
+          "to"
+        ]
+      },
+      "patron": {
+        "arg": "words",
+        "about": "the holder is Faithful to one of these patrons (patrons.json ids)",
+        "values": [
+          "nerukhan",
+          "the_quartermaster",
+          "the_laughing_mask",
+          "toll_keeper",
+          "mother_ember",
+          "old_overcast",
+          "the_matchmaker",
+          "counting_weaver"
+        ]
       }
     },
     "ops": {
@@ -4458,14 +4525,15 @@
         "on": [
           "attack",
           "cond_incoming",
-          "save"
+          "save",
+          "spot"
         ],
         "fields": [
           "value",
           "roll"
         ],
         "changes_state": false,
-        "about": "a to-hit term on an attack; on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\")"
+        "about": "a to-hit term on an attack; on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\"); on a spot roll, its modifier or (roll: \"tn\") its TN"
       },
       "cost_mod": {
         "on": [
@@ -4516,7 +4584,10 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "spot"
         ],
         "fields": [
           "value",
@@ -4556,14 +4627,17 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "spot"
         ],
         "fields": [
           "resource",
           "value"
         ],
         "changes_state": true,
-        "about": "give (or take) a class resource (guard, momentum…) or Echo"
+        "about": "give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive); value \"all\" spends and \"zero\" loses all of it"
       },
       "condition": {
         "on": [
@@ -4596,7 +4670,10 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "spot"
         ],
         "fields": [
           "condition",
@@ -4637,7 +4714,10 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "spot"
         ],
         "fields": [
           "condition",
@@ -4671,7 +4751,8 @@
           "cond_incoming",
           "forced_move",
           "injury",
-          "attack"
+          "attack",
+          "spot"
         ],
         "fields": [
           "why"
@@ -4720,13 +4801,18 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "spot"
         ],
         "fields": [
-          "amount"
+          "amount",
+          "via",
+          "nonlethal"
         ],
         "changes_state": true,
-        "about": "deal an amount block (amounts) to the self, actor or target"
+        "about": "deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: \"faith\"), nonlethal: a blow that takes the last HP subdues"
       },
       "mend": {
         "on": [
@@ -4759,13 +4845,16 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "spot"
         ],
         "fields": [
           "amount"
         ],
         "changes_state": true,
-        "about": "heal or shield by an amount block"
+        "about": "heal or shield by an amount block (its heal_kind is the heal's kind for heal_in: tending, prayer…; default perk)"
       },
       "displace": {
         "on": [
@@ -4798,7 +4887,10 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "spot"
         ],
         "fields": [
           "tiles",
@@ -4838,7 +4930,10 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "spot"
         ],
         "fields": [],
         "changes_state": true,
@@ -4875,7 +4970,10 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "spot"
         ],
         "fields": [
           "flag",
@@ -4892,6 +4990,34 @@
       "per_scene",
       "per_session",
       "per_rest"
-    ]
+    ],
+    "targets": {
+      "about": "Classes 3.0 P5: `targets` on any op runs it once for each unit of the set, as its target (effects/triggers.ts TargetSet)",
+      "fields": {
+        "of": [
+          "self",
+          "actor",
+          "target",
+          "tile"
+        ],
+        "side": [
+          "foe",
+          "ally",
+          "side",
+          "any"
+        ],
+        "within": "number",
+        "shape": [
+          "burst",
+          "aura",
+          "cone",
+          "line"
+        ],
+        "seen": "bool",
+        "alive": "bool",
+        "downed": "bool",
+        "max": "number"
+      }
+    }
   }
 }

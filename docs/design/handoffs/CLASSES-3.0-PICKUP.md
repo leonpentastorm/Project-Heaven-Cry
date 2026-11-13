@@ -57,7 +57,7 @@ renamed (Bulwark, Breaker, Skirmisher, Operative, Sigilist, Rigger, Mender, Chan
 Each step: a builder agent with the brief of section 5; then the checks; then merge.
 
 - [x] **0. The tools** (merged 13 Nov; the self-check still fails `rev4-moves-and-rename.md` for having no Built-from table: give it one before step 2): `docs/ENGINE-HOOKS.md` generated and checked by `npm run check`; `npm run built-from`.
-- [ ] **1. The primitives** of `rev4-primitives.md`, in its order, with NO system built on them yet: each with its
+- [ ] **1. The primitives** (1a merged 13 Nov, reviewed: `classes-3.0-step-1a.md` and `-review.md`; **1b is next**: P6, P10, P11, P12, P8, P9, the addendum rows of `rev4-primitives.md` section 6, the one hook for every roll to hit, and what the review lists under "step 1b must add") of `rev4-primitives.md`, in its order, with NO system built on them yet: each with its
       test, its lint baseline, the catalogue regenerated, and the bespoke handlers it replaces deleted. Golden
       tables and replay hashes unchanged (a primitive that moves a golden line is wrong).
 - [ ] **2. The rename** (`rev4-moves-and-rename.md`): display names only, ids stay; the level-up picker, card
@@ -102,6 +102,18 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 **Standing instruction (Leon, 13 Nov): the lead's top-tier usage is at 50%. Everything that can go to Opus goes to Opus; the lead only merges, rules where a spec is wrong, and asks Leon what it needs in short numbered questions.** Design on Revision 4 is closed unless he reopens it.
 
 *(none yet; the design's own calls are in `class-roster-rev4-proposal.md` section 8)*
+*(the design's own calls are in `class-roster-rev4-proposal.md` section 8)*
+
+Step 1a (`docs/design/handoffs/classes-3.0-step-1a.md` section 3, rules 1.28 items 1750 to 1756):
+1. Reactions not on Revision 4's kind list: a Call made as a reaction, Drink It In, Catch, Dance of Iron and Heart
+   Overwatch are `attack`; Order and the Strike Call's dive `move`; Adamantile Plate and Share `protect`. So Suppressed
+   still stops the Call, Drink It In, Catch and Order (item 1751).
+2. An item op that is a reaction names its kind: `limit: {reaction: 1 or 2, kind}`.
+3. `acted` for an attack names `attack` (mode in ctx); Analyze fires its own `acted`; only a nested `when: "acted"`
+   effect is lifted onto the item.
+4. A number block may carry `min` and `max` (the Finisher's cap).
+5. `always_seen` is read by the sight words only; the fog and the AI honour it with its first user.
+6. Riposte is not folded, and reactions that never opened a window still open none (step 3).
 
 ## 7. State when this was last touched
 
@@ -112,3 +124,9 @@ two answers: the Visualizer is a glove with a projector in the palm; prayer open
 pushed to `develop`. In flight: see `git branch --list 'worktree-*'` and the `wip/` branches on the remote (a loop
 pushes them while the lead is alive); a `wip/` branch whose step is not ticked above is unfinished work: judge it by
 `PICKUP.md` section 3 before merging, or redo the step from section 5's brief.
+
+**The lead's rulings on step 1a's review (13 Nov; Leon can reverse):** (1) **Order** (Authority's Call): what the
+ordered ally does is that ally's reaction, kind `move` or as the act requires; being a reaction it provokes nothing
+(a reaction never triggers a reaction). (2) **Anchor's strike is kind `attack`**, not `protect`: Suppressed stops it.
+(3) **Drink It In and the helping Calls are kind `protect`** (they help an ally and move or hurt nobody); a Call that
+harms an enemy is not a reaction at all. (4) The standing-aura form of P5 is the reviewer's recommended shape.

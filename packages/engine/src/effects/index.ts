@@ -28,7 +28,7 @@ export { MENDING, mendFactor, mendFactorOf, dealFactorOf, flatLevelOf, noteTende
 // amount blocks (step a6): the numbers items deal, heal and shield with, from their data
 export { itemAmount, amountMult, amountBlock, amountSpecOf, amountHome, type AmountBlock } from './amounts';
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';
-export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, dataAp, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';
+export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, perkActionId, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, dataAp, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';
 export { coverageReport, coverageGaps, coverageOf, verdictOf, verdictFor, coverageSummary, type CoverageRow, type Verdict } from './coverage';
 export { skillRollMod, actionAp, immune, forbids, xpAfter, itemWords, wordCostMods, wearing, contextHolds, pushAway, TAG_VOCAB } from './core';
 export { gainEcho, ECHO_MAX } from './echo';
@@ -51,5 +51,5 @@ export function stateOf(h: { key: string; u?: Unit | null; c?: Character | null;
   return h.u ? ((h.u.ps ||= {})[h.key] ||= {}) : {};
 }
 export * from './stats';
-export { num } from './num';
+export { num, effNum } from './num';
 export { price, priced, bill, costOf, hasCost, whyNot, canPay, pay, refund, spend, needs, poolWhyNot, grantAp, loseAp, setAp, freely, withAp, apFor, apMeter, actionName, resWhyNot, resPay, creditFor, lend, settleCredit, unlend, resLeft, RESOURCES, type Cost, type Priced, type Credit } from './cost';

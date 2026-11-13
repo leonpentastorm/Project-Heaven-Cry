@@ -372,7 +372,7 @@ register({
 // ---------- Many Hands (Camaraderie Mastered) ----------
 // Rules 1.13 (the AP gift went to the Calls). Your Hand-Off (Camaraderie 3: an ally uses your Defense against one
 // attack a round) reaches any ally within 3 tiles: perks/skeleton.ts reads this perk for its reach. An ally you can see
-// whose reaction is spent may use yours: tactics.ts canReact/useReaction spend the holder's (reactionDonor).
+// whose reaction is spent may use yours: tactics.ts canReact/react() spend the holder's (reactionDonor).
 register({ id: 'many_hands', claims: 'all', brief: () => null });
 
 // ---------- On My Mark (Authority Mastered) ----------

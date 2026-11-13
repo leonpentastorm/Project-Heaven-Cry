@@ -71,7 +71,10 @@ export const hasCost = (action: string, field = 'ap'): boolean => typeof verbOf(
  * 'reload_both', 'break'); any other name is itself. What the `cost` hook's ctx.action carries. */
 export const actionName = (action: string): string => VERBS[action]?.site || action;
 
-interface ResDef { name: string; on: 'unit' | 'character'; path: string; whole?: boolean }
+interface ResDef { name: string; on: 'unit' | 'character'; path: string; whole?: boolean;
+  /** Its most, a path on the same holder (MP: mg.mpMax): a gain stops there. */ max?: string;
+  /** A path on the holder that must be set for it to be given at all (MP: mg.emanator, an Emanator in hand). */ needs?: string;
+  /** A named setter (registered with setResSetter) that gives it instead of the plain path: Pressure's addPressureTo. */ setter?: string }
 /** Every resource an action can cost (data/actions.json `resources`). */
 export const RESOURCES: Record<string, ResDef> = (actionsJ as any).resources;
 const holderOfRes = (d: ResDef, u: Unit | null | undefined, c: Character | null | undefined): any => (d.on === 'character' ? c ?? charOfUnit(u) : u);
@@ -89,6 +92,24 @@ export function resLeft(u: Unit | null | undefined, id: string, c?: Character | 
 function resAdd(u: Unit | null | undefined, id: string, n: number, c?: Character | null): void {
   const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/rules.json costs.resources).');
   const x = cell(d, holderOfRes(d, u, c)); if (x) x.o[x.k] = (Number(x.o[x.k]) || 0) + n;
+}
+
+type ResSetter = (cb: Combat | null | undefined, u: Unit, n: number, by: Unit | null, why: string) => number;
+const SETTERS: Record<string, ResSetter> = {};
+/** Register a resource row's setter (data/actions.json resources.<id>.setter): the system that owns the meter gives it
+ * (physical/pressure.ts: addPressureTo). */
+export function setResSetter(name: string, fn: ResSetter): void { SETTERS[name] = fn; }
+/** GIVE (or with a negative n take) a resource of data/actions.json `resources` to a unit outside an action's price
+ * (the item op `resource`): through its row's setter, else its path, never under 0 nor over its `max`; nothing when
+ * the row's `needs` is not met. Returns what really changed. */
+export function resGive(cb: Combat | null | undefined, u: Unit, id: string, n: number, o: { by?: Unit | null; c?: Character | null; why?: string } = {}): number {
+  const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/actions.json resources).');
+  const root = holderOfRes(d, u, o.c);
+  if (d.needs) { const x = cell({ ...d, path: d.needs }, root); if (!x || !x.o[x.k]) return 0; }
+  if (d.setter) { const f = SETTERS[d.setter]; if (!f) throw new Error('No setter "' + d.setter + '" for the resource ' + id + '.'); return f(cb, u, n, o.by ?? null, o.why || ''); }
+  const x = cell(d, root); if (!x) return 0;
+  const was = Number(x.o[x.k]) || 0, mx = d.max ? cell({ ...d, path: d.max }, root) : null, top = mx ? Number(mx.o[mx.k]) : Infinity;
+  const to = Math.max(0, Math.min(Number.isFinite(top) ? Math.max(top, was) : Infinity, was + n)); x.o[x.k] = to; return to - was;
 }
 
 // ---------------------------------------------------------------------------------------------- the price

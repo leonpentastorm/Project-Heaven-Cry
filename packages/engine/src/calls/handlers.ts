@@ -7,7 +7,7 @@ import { magazineSize } from '../character';
 import { pileAt } from '../containers';
 import { charOfUnit } from '../effects/hooks';
 import { condOn, endCond, applyCond, condFam, freshSave } from '../magic';
-import { canReact, useReaction, maxReactions, setThreaten } from '../tactics';
+import { canReact, loseReactions, maxReactions, setThreaten } from '../tactics';
 import { lowerPressureOf, pressureOf, isSuppressed, isPressed } from '../physical/pressure';
 import type { Combat } from '../combat';
 import type { Rng } from '../rng';
@@ -73,7 +73,7 @@ call({
     if (th.length > max) return max > 1 ? 'An Order is two things at most.' : 'One thing an Order (two from 7 points of Authority).';
     if (condOn(a, 'stunned')) return a.name + ' is Stunned and can\'t follow an order.';
     if (condOn(a, 'suppressed') || isSuppressed(a)) return a.name + ' is Suppressed and has no reaction to act on.';
-    if (!canReact(t.cb, a)) return a.name + ' has no reaction left to act on.';
+    if (!canReact(t.cb, a, 'move')) return a.name + ' has no reaction left to act on.';
     let stood = false;
     for (const x of th as Thing[]) { const no = thingWhy(t, x, stood); if (no) return no; if (x === 'stand') stood = true; }
     return null;
@@ -86,7 +86,7 @@ call({
       return null;
     }
     const first = doThing(t, th[0]); if (first) return first; // refused before anything changed: the Call isn't spent
-    useReaction(t.cb, a);
+    loseReactions(t.cb, a, 1); // the ally's reaction is what it acts on (not a reaction it makes: it answers nothing)
     for (const x of th.slice(1)) { if (!alive(a)) break; const no = doThing(t, x); if (no) t.note(a.name + ' can\'t ' + THING_WORDS[x] + ': ' + no); }
     t.note(a.name + ' acts on their reaction, for none of their AP.');
     return null;

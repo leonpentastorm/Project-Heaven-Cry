@@ -2,6 +2,7 @@
 // phys-core.test.ts). Each technique: the base with a plain weapon, every property line with and without the property,
 // every refusal, AP, rounds, Heat, Pressure before and after (misses and the caps), and the preview against the action.
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { reactionsUsed } from '../src';
 // Saves roll a d20 that the attack rig doesn't reach: D.die forces every d20 (an attack's own is then set by rig()). 1
 // always fails a save, 20 always makes it, whatever the seed (review fix: these tests leaned on the seed's next die).
 const D = vi.hoisted(() => ({ die: null as number | null }));
@@ -377,7 +378,7 @@ describe('Crossfire', () => {
     const { f } = crossed('service_pistol', [{ at: 'H5' }, { at: 'C6', weapon: 'sabre' }]), sw = f.foes[1], hp = f.pc.hp;
     const pv = f.pv('crossfire', { targetId: f.foe.id, tile: f.tile('C4') }); expect(pv.ok).toBe(true); expect(pv.moves).toEqual([{ unit: f.pc.id, to: f.tile('C4') }]);
     rig({ hit: true, die: 12 }); expect(f.tech('crossfire', { targetId: f.foe.id, tile: f.tile('C4') })).toBeNull();
-    expect(f.pc.pos).toBe(f.tile('C4')); expect(f.pc.hp).toBe(hp); expect(f.unit(sw.id).reactUsed?.n ?? 0).toBe(0);
+    expect(f.pc.pos).toBe(f.tile('C4')); expect(f.pc.hp).toBe(hp); expect(reactionsUsed(f.cb, f.unit(sw.id))).toBe(0);
     expect(f.pressure(f.foe)).toBe(3);
     const g = crossed('long_rifle').f; expect(g.tech('crossfire', { targetId: g.foe.id, tile: g.tile('C4') })).toBe('Only a Quick weapon lets you step before the shot.');
     const h = crossed('service_pistol').f; expect(h.tech('crossfire', { targetId: h.foe.id, tile: h.tile('C2') })).toBe('You can\'t step there: one tile, onto free ground.');

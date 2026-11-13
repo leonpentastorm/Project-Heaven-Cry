@@ -37,7 +37,7 @@ const TARGETING = (e: any): ActionDef['target'] => {
 /** The default actions of an item, from its data. */
 export function defaultActions(info: ItemInfo): ActionDef[] {
   const grants = info.effects.filter((e) => e?.op === 'grant_action');
-  const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action') : [];
+  const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
   const mk = (id: string, label: string, apRaw: any, usesRaw: string, effs: any[]): ActionDef => {
     const target = effs.map(TARGETING).find((t) => t !== 'none') || 'none', per = scopeOf(usesRaw);
     return {
@@ -45,7 +45,9 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
       run: (h, args, rng) => defaultRun(h, effs, args, rng),
     };
   };
-  if (grants.length) return grants.map((g, i) => mk(g.action || 'use' + i, grants.length > 1 ? info.name + ' · ' + human(g.action || 'use') : info.name, g.ap ?? info.ap, g.uses || info.uses, [...(g.effects || []), ...own]));
+  // a nested `when: "acted"` effect is the item's own triggered effect (collect.ts liftActed): the trigger runs it, not the action
+  const nested = (g: any) => (g.effects || []).filter((e: any) => e?.when !== 'acted');
+  if (grants.length) return grants.map((g, i) => mk(g.action || 'use' + i, grants.length > 1 ? info.name + ' · ' + human(g.action || 'use') : info.name, g.ap ?? info.ap, g.uses || info.uses, [...nested(g), ...own]));
   if (info.bound) return [mk('use', info.name, info.ap, info.uses, own)];
   return [];
 }
@@ -167,8 +169,8 @@ function pickOptions(h: Holder, d: ActionDef): { id: string; label: string }[] {
   return [];
 }
 function defaultEngine(info: ItemInfo, d: ActionDef): boolean {
-  void d; const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action') : [];
-  const nested = info.effects.filter((e) => e?.op === 'grant_action').flatMap((e) => e.effects || []);
+  void d; const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
+  const nested = info.effects.filter((e) => e?.op === 'grant_action').flatMap((e) => (e.effects || []).filter((x: any) => x?.when !== 'acted'));
   const all = [...own, ...nested]; if (!all.length) return false;
   return all.every((e) => { const g = genericOf(e?.op); return !!(g?.runs && g.runs(e, info)); });
 }
@@ -181,6 +183,9 @@ function resolve(x: Who, id: string, actionId?: string): { h: Holder; d: ActionD
   if (!d) return h.info.name + ' isn\'t an action.';
   return { h, d };
 }
+/** The id of the action an item's `combat/perk` names (its actionId, else the item's first action): what the trigger
+ * `acted` carries as `action` (Classes 3.0 P2). null: the holder has no such item or action. */
+export function perkActionId(x: Who, id: string, actionId?: string): string | null { const r = resolve(x, id, actionId); return typeof r === 'string' ? null : r.d.id; }
 /** What the action would do (the UI and the reducer use the same truth). */
 export function previewPerkAction(x: Who, id: string, args: ActionArgs & { actionId?: string } = {}, scope: ActionScope = x.cb && !overworld(x.cb) ? 'combat' : x.cb ? 'world' : 'story'): ActionPreview {
   const r = resolve(x, id, args.actionId); if (typeof r === 'string') return { ok: false, why: r, ap: 0, lines: [] };

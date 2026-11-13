@@ -8,7 +8,7 @@ import type { Combat, Unit } from '../combat';
 /** Where an item comes from. Class moves are keyed "class:<classId>.<moveId>". */
 /** 'relic': an item a holder carries that is neither a perk nor a trait (engine foundations 3: a roguelike's relics),
  * loaded with addItems('relic', [...]); written in data only. */
-export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic';
+export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic' | 'condition';
 /** The tier an item is held at: a perk's I or II, a granted perk's kind, 'trait', or a class move's rank ('adv' for an advanced class). */
 export type Tier = 'I' | 'II' | 'mastered' | 'achieved' | 'ultimate' | 'trait' | 'III' | 'adv';
 
@@ -46,6 +46,7 @@ export interface ActiveEffect { key: string; kind: ItemKind; itemId: string; tie
 export interface Holder {
   key: string; itemId: string; kind: ItemKind; tier: Tier; info: ItemInfo;
   c?: Character | null; u?: Unit | null; cb?: Combat | null; g?: any;
+  /** A condition held as an item (Classes 3.0 P4): the unit that gave it (its `{source}`), or null. */ source?: Unit | null;
 }
 
 export type HookName =
@@ -56,12 +57,12 @@ export type HookName =
   | 'damage_in' | 'on_damaged' | 'on_downed' | 'on_kill'
   | 'cond_apply' | 'save' | 'cond_landed' | 'cond_end' | 'displaced'
   | 'heal_given' | 'heal_in' | 'shield_grant'
-  | 'reaction_window' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
+  | 'reaction_window' | 'reaction' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
   | 'reload' | 'jam_clear' | 'swap'
   // Physical 2.0 (rules 1.12): after a prone unit stands up {u} (Dead to Rights)
   | 'stood_up'
   | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release' | 'outburst_after' | 'outburst_plan'
-  | 'analyze' | 'combat_end'
+  | 'acted' | 'combat_end'
   // hooks gap (rules 1.3): after an Evoke, a held release's price, holding Strain, Strain added, death saves, injuries,
   // a unit built from its character, every reducer action done, before a stim, an ammo spend, weapon actions listed
   | 'evoked' | 'release_cost' | 'outburst_hold' | 'outburst_pump' | 'strain_change' | 'held_turn_start' | 'strain' | 'death_save' | 'injury' | 'unit_built' | 'action_done'
@@ -118,6 +119,7 @@ export const HOOK_ABOUT: Record<HookName, string> = {
   heal_in: 'a unit is about to be healed (the amount may change)',
   shield_grant: 'a shield is about to be given (the amount may change)',
   reaction_window: 'a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it',
+  reaction: 'a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves',
   enemy_action_start: 'an enemy is about to act (an item may open a window or make it skip)',
   sight_change: 'after a move, the units each side stopped or started seeing (only computed while someone listens)',
   sees: 'a side\'s sight of a unit is decided: items may make it seen or unseen',
@@ -133,7 +135,7 @@ export const HOOK_ABOUT: Record<HookName, string> = {
   outburst_release: 'an Outburst is being released: its multiplier may change',
   outburst_after: 'an Outburst was released and resolved (its area, targets and hits)',
   outburst_plan: 'an Outburst\'s release is previewed (its stage, aim, area and targets)',
-  analyze: 'Analyze was used on a target',
+  acted: 'a unit\'s own action (or a verb inside it, as Analyze) succeeded: {u, t, action, tile, toggles, mode}; the item ops trigger `acted` listens here (Classes 3.0 P2)',
   combat_end: 'the fight ends, after the fighters are written back to their characters',
   evoked: 'a Sigil spell was Evoked (or fizzled), after it resolved',
   release_cost: 'an Outburst Release is priced: its AP and range',

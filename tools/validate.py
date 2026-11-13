@@ -785,6 +785,14 @@ if "actions" in data:
     for rid, r in (_acts_root.get("resources") or {}).items():
         if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
             errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
+        # Classes 3.0 batch row: the item op `resource` gives any row through effects/cost.ts resGive
+        for _k in (set(r) - {"name", "on", "path", "whole", "max", "needs", "setter"}) if isinstance(r, dict) else []:
+            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, on, path, whole, max, needs, setter)")
+        for _k in ("max", "needs", "setter"):
+            if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
+                errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure"):
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
@@ -1527,7 +1535,7 @@ if isinstance(tq, dict):
 #      that kind (a base, no per-point part), they are the same number.
 AMOUNT_KINDS = {"damage", "heal", "shield"}
 AMOUNT_TYPES = {"physical", "sigil", "elemental", "soul", "true"}
-AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text"}
+AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind"}
 out_rules = (data.get("rules") or {}).get("output") or {}
 PROFILES = set(k for k, v in (out_rules.get("profiles") or {}).items() if isinstance(v, dict))
 num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
@@ -1548,6 +1556,8 @@ def check_block(b, where):
         errors.append(f"{where}: unknown damage type '{b['type']}'")
     if "armour" in b and b["armour"] not in ("full", "half", "none"):
         errors.append(f"{where}: armour is full, half or none")
+    if "heal_kind" in b and (b.get("kind") not in ("heal", "shield") or not isinstance(b["heal_kind"], str) or not b["heal_kind"]):
+        errors.append(f"{where}: heal_kind (the heal's kind for heal_in) is a word, on a heal or shield block only")
     if "mults" in b and not (isinstance(b["mults"], dict) and all(num(v) for v in b["mults"].values())):
         errors.append(f"{where}: mults is a map of name to number")
     for k in set(b) - AMOUNT_KEYS:
@@ -1727,6 +1737,33 @@ def check_pred(k, v, w):
     elif a == "bool" and not isinstance(v, bool): errors.append(f"{w}: `if.{k}` must be true or false")
     elif a == "ids" and not all(isinstance(x, str) and x in known["condition"] for x in vals): errors.append(f"{w}: `if.{k}` names a condition that is not in conditions.json")
     elif a in ("words", "string") and not all(isinstance(x, str) for x in vals): errors.append(f"{w}: `if.{k}` must be words")
+    elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
+# Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
+# (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
+SOURCE_SPACES = ["res", "event", "self", "actor", "target"]
+def check_number_block(b, w, item_op=True):
+    if not isinstance(b.get("base"), (int, float)) or isinstance(b.get("base"), bool) or "kind" in b:
+        errors.append(f"{w} is a number block: {{base: <number>, per: [{{of, value}}], min?, max?}}"); return
+    for k in set(b) - {"base", "per", "min", "max"}: errors.append(f"{w}: unknown field '{k}' in a number block")
+    for k in ("min", "max"):
+        if k in b and not (isinstance(b[k], (int, float)) and not isinstance(b[k], bool)): errors.append(f"{w}: a number block's {k} is a number")
+    for pp in b.get("per") or []:
+        if not (isinstance(pp, dict) and isinstance(pp.get("of"), str) and isinstance(pp.get("value"), (int, float)) and not isinstance(pp.get("value"), bool)):
+            errors.append(f"{w}: a number block's per-point part is {{of, value}}"); continue
+        if item_op and pp["of"].split(":", 1)[0] not in SOURCE_SPACES or item_op and ":" not in pp["of"]:
+            errors.append(f"{w}: an item op's number block counts '{pp['of']}': name a source ({', '.join(s + ':' for s in SOURCE_SPACES)})")
+# Classes 3.0 P5: `targets` on any op (the unit set it runs on): its fields and words are item_ops.targets.fields.
+def check_targets(t, w):
+    fields = (IOPS.get("targets") or {}).get("fields") or {}
+    if not isinstance(t, dict): errors.append(f"{w}: `targets` is an object ({sorted(fields)})"); return
+    for k, v in t.items():
+        f = fields.get(k)
+        if f is None: errors.append(f"{w}: unknown targets field '{k}' ({sorted(fields)})")
+        elif f == "number" and not (isinstance(v, (int, float)) and not isinstance(v, bool)): errors.append(f"{w}: targets.{k} is a number")
+        elif f == "bool" and not isinstance(v, bool): errors.append(f"{w}: targets.{k} is true or false")
+        elif isinstance(f, list) and v not in f: errors.append(f"{w}: targets.{k} takes {f}")
+    if t.get("shape") in ("cone", "line") and not isinstance(t.get("within"), (int, float)): errors.append(f"{w}: a cone or a line in targets needs `within`")
+    if t.get("shape") in ("burst", "aura") and not isinstance(t.get("within"), (int, float)): errors.append(f"{w}: a burst or an aura in targets needs `within`")
 def check_trigger_effect(e, w):
     t = e.get("when")
     if t not in TRIG:
@@ -1737,18 +1774,26 @@ def check_trigger_effect(e, w):
         if not o: errors.append(f"{w}: op '{x.get('op')}' does not run on a trigger (item_ops.ops)"); continue
         if t not in o["on"]: errors.append(f"{w}: op '{x.get('op')}' does not run on '{t}' (it runs on {o['on'][:6]}…)")
         if x.get("target") not in (None, "self", "actor", "target"): errors.append(f"{w}: an item op's target is self, actor or target")
-        for f in ("value", "value_pct", "max", "add", "set", "min", "tiles", "rounds"):
-            if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)): errors.append(f"{w}: '{f}' must be a number in data, never a word")
-        if x.get("op") in ("damage_mult", "damage_vs", "roll_mod", "grant_ap", "resource", "floor") and not isinstance(x.get("value"), (int, float)): errors.append(f"{w}: op '{x.get('op')}' needs a numeric value")
+        for f in ("value", "value_pct", "max", "add", "set", "min", "at_least", "tiles", "rounds"):
+            if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)) and not (f == "value" and x.get("op") == "resource" and x[f] in ("all", "zero")):
+                if isinstance(x[f], dict): check_number_block(x[f], f"{w}: '{f}'")
+                else: errors.append(f"{w}: '{f}' must be a number (or a number block) in data, never a word")
+        if x.get("op") in ("damage_mult", "damage_vs", "roll_mod", "grant_ap", "resource", "floor") and not (isinstance(x.get("value"), (int, float)) or isinstance(x.get("value"), dict) or (x.get("op") == "resource" and x.get("value") in ("all", "zero"))): errors.append(f"{w}: op '{x.get('op')}' needs a numeric value (a number block; a resource: \"all\" or \"zero\")")
+        if x.get("op") in ("deal", "mend") and isinstance(x.get("amount"), dict):
+            for pp in x["amount"].get("per") or []:
+                if isinstance(pp, dict) and ":" in str(pp.get("of", "")) and str(pp["of"]).split(":", 1)[0] not in SOURCE_SPACES: errors.append(f"{w}: an amount's per-point part names '{pp['of']}': its source is one of {SOURCE_SPACES}")
         if x.get("op") == "condition" and x.get("condition") not in known["condition"]: errors.append(f"{w}: condition '{x.get('condition')}' is not in conditions.json")
+        if "targets" in x: check_targets(x["targets"], w)
+        if x.get("op") == "deal" and "via" in x and not (isinstance(x["via"], str) and x["via"]): errors.append(f"{w}: a deal's `via` is the source skill it counts as (a word: faith)")
+        if x.get("op") == "deal" and "nonlethal" in x and not isinstance(x["nonlethal"], bool): errors.append(f"{w}: a deal's `nonlethal` is true or false")
     cond = e.get("if")
     if cond is not None:
         if not isinstance(cond, dict): errors.append(f"{w}: `if` must be an object of predicates")
         else:
             for k, v in cond.items(): check_pred(k, v, w)
     lim = e.get("limit")
-    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
-        errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }} or {{ cooldown: rounds }}")
+    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
+        errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }}, {{ cooldown: rounds }} or {{ reaction: 1 or 2, kind }}")
 def walk_triggers(o, w):
     if isinstance(o, dict):
         if isinstance(o.get("op"), str) and isinstance(o.get("when"), str) and " " not in o["when"] and ";" not in o["when"]:
@@ -1773,8 +1818,55 @@ if TRIG:
     for _x in base + adv: walk_triggers(_x, f"classes:{_x.get('id')}")
     for _m in pool: walk_triggers(_m, f"classes:pool.{_m.get('origin')}.{_m.get('id')}")
     for _x in items("skills"): walk_triggers(_x.get("unlocks"), f"skills:{_x.get('id')}")
+    # Classes 3.0 (P7, ahead of P6's door verbs): a grant_action's `if` is the holder's predicates (Vanish: out of view)
+    def _walk_grant_if(o, w):
+        if isinstance(o, dict):
+            if o.get("op") == "grant_action" and o.get("if") is not None:
+                if not isinstance(o["if"], dict): errors.append(f"{w}: a grant_action's `if` is an object of predicates")
+                else:
+                    for k, v in o["if"].items(): check_pred(k, v, w)
+            for v in o.values(): _walk_grant_if(v, w)
+        elif isinstance(o, list):
+            for v in o: _walk_grant_if(v, w)
+    for _x in base + adv + pool: _walk_grant_if(_x, f"classes:{_x.get('id')}")
+    for _n in ("perks", "traits"):
+        for _x in items(_n): _walk_grant_if(_x, f"{_n}:{_x.get('id')}")
+    # (Witnessed's taboo is faith.ts's own rule, read by its words: this list may only shrink)
+    COND_LEGACY_WHEN = {"taboo_tag"}
+    # Classes 3.0 P4: a condition row is an item its bearer holds: its effects whose op is an item op are checked as
+    # triggered effects (a row's own engine rule, Bleeding's turn_start stat_mod, is not an item op and stays prose)
+    for _x in items("conditions"):
+        for _e in _x.get("effects") or []:
+            if isinstance(_e, dict) and _e.get("op") in TOPS and isinstance(_e.get("when"), str) and " " not in _e["when"] and _e["when"] not in COND_LEGACY_WHEN:
+                check_trigger_effect(_e, f"conditions:{_x.get('id')}")
 else:
     errors.append("effect_ops.json: no item_ops block (the closed lists of item ops)")
+
+# Rules 1.28 (Classes 3.0 P1): every reaction has a kind. An Answer technique names its own (`reaction`: attack or
+# protect); a condition's `forbid` of action `reaction` names the kinds it forbids; an item op that is a reaction
+# (`limit: {reaction: n, kind}`) names its kind and spends 1 or 2.
+REACT_KINDS = ["attack", "move", "protect"]
+for _t in items("techniques") if isinstance(items("techniques"), list) else []:
+    if _t.get("group") == "answer" and _t.get("reaction") not in REACT_KINDS:
+        errors.append(f"techniques:{_t.get('id')}: an Answer names its reaction kind (`reaction`: {REACT_KINDS})")
+    elif "reaction" in _t and _t.get("group") != "answer":
+        errors.append(f"techniques:{_t.get('id')}: only an Answer has a `reaction` kind")
+for _c in items("conditions"):
+    for _e in _c.get("effects") or []:
+        if _e.get("op") == "forbid" and _e.get("action") == "reaction" and "kinds" in _e and not (isinstance(_e["kinds"], list) and _e["kinds"] and all(k in REACT_KINDS for k in _e["kinds"])):
+            errors.append(f"conditions:{_c.get('id')}: a forbidden reaction's kinds are some of {REACT_KINDS}")
+def _walk_react(o, w):
+    if isinstance(o, dict):
+        lim = o.get("limit")
+        if isinstance(lim, dict) and "reaction" in lim:
+            if lim.get("reaction") not in (1, 2): errors.append(f"{w}: a reaction limit spends 1 or 2 reactions")
+            if lim.get("kind") not in REACT_KINDS: errors.append(f"{w}: a reaction limit names its kind ({REACT_KINDS})")
+        for v in o.values(): _walk_react(v, w)
+    elif isinstance(o, list):
+        for v in o: _walk_react(v, w)
+for _n in ("perks", "traits"):
+    for _x in items(_n): _walk_react(_x, f"{_n}:{_x.get('id')}")
+for _x in base + adv + pool: _walk_react(_x, f"classes:{_x.get('id')}")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:

@@ -2,6 +2,7 @@
 // src/classes/; the generic core-op handlers (core.ts) register through registerGeneric(). emit() walks units in
 // cb.units order, then items in a fixed order (traits, perks, class moves), then handler priority: dispatch is
 // deterministic.
+import { addConditionRows, clearAddedConditions } from '../condtable';
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
@@ -61,12 +62,21 @@ export interface GenericOp {
 const GEN = new Map<string, GenericOp>();
 
 // ---------- item ops: triggered effects (engine foundations 3, effects/triggers.ts sets this at load) ----------
-interface TriggerRunner { isTriggered(e: any): boolean; problem(e: any): string | null; hookOf(e: any): HookName | null; run(ctx: any, h: Holder, e: any): void }
+interface TriggerRunner { isTriggered(e: any): boolean; problem(e: any): string | null; hookOf(e: any): HookName | null; run(ctx: any, h: Holder, e: any): void;
+  /** Classes 3.0 P4: the triggered effects of the conditions a unit bears on this hook, each with its row as an item and its giver. */
+  conds?(u: Unit, name: HookName, cb: Combat): { info: ItemInfo; e: any; source: Unit | null }[] | null;
+  /** The hooks the conditions' rows listen on. */ condHooks?(): string[];
+  /** What the conditions a unit bears answer to a stat (a row's stat_mod of a declared stat no other path reads). */ condStat?(u: Unit, stat: string): number }
 let TR: TriggerRunner | null = null;
 /** effects/triggers.ts registers the item-ops runner here as it loads (no import cycle). */
 export function setTriggerRunner(r: TriggerRunner) { TR = r; dirty(); }
 /** Does this effect run as a triggered item op (its `when` names a trigger and it is well formed)? */
 const triggered = (e: any): boolean => !!TR && TR.isTriggered(e) && !TR.problem(e);
+/** Add condition rows at run time (condtable.ts addConditionRows: a relic's own condition, a test's fixture); they are
+ * items their bearer holds (Classes 3.0 P4). */
+export function addConditions(rows: any[]): void { addConditionRows(rows); dirty(); }
+/** Take the added condition rows away again. */
+export function clearAddedConditionRows(): void { clearAddedConditions(); dirty(); }
 /** Register the engine's generic handler of a core data op (effects/core.ts). */
 export function registerGeneric(op: GenericOp) { GEN.set(op.op, op); dirty(); }
 /** The generic handler of a core data op, if the engine has one. */
@@ -123,6 +133,7 @@ function triggerHooks(): Set<string> {
   if (TH) return TH;
   TH = new Set();
   for (const info of allItemsHook ? allItemsHook() : []) for (const e of info.effects) { const k = TR?.isTriggered(e) ? TR.hookOf(e) : null; if (k) TH.add(k); }
+  for (const k of TR?.condHooks?.() || []) TH.add(k); // P4: a condition's row is an item too
   return TH;
 }
 let allItemsHook: (() => ItemInfo[]) | null = null;
@@ -195,10 +206,13 @@ export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): a
   if (!cb) return ctx;
   const blast = name === 'damage_out' && !!ctx?.blast;
   for (const u of cb.units) {
-    const held = heldOfUnit(u); if (!heldAny(held)) continue;
-    const list = buildIndex(held)[name]; if (!list) continue;
+    // P4: the conditions it bears run their rows' item ops after its items (nothing to do for most units: TR.conds is null)
+    const cl = TR?.conds?.(u, name, cb) || null;
+    const held = heldOfUnit(u); if (!heldAny(held) && !cl) continue;
+    const list = heldAny(held) ? buildIndex(held)[name] : null; if (!list && !cl) continue;
     const c = charOfUnit(u);
-    for (const s of list) { if (blast && !speaksOfBlast(s.info, ctx.kind)) continue; s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
+    if (list) for (const s of list) { if (blast && !speaksOfBlast(s.info, ctx.kind)) continue; s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
+    if (cl) for (const x of cl) { if (blast && !speaksOfBlast(x.info, ctx.kind)) continue; TR!.run(ctx, { ...holder(x.info, c, u, cb), source: x.source }, x.e); if (ctx && ctx.stop) return ctx; }
   }
   const gl = GLOBAL_HOOKS[name]; if (gl) for (const f of gl) { f(ctx, cb); if (ctx && ctx.stop) return ctx; }
   return ctx;
@@ -250,6 +264,7 @@ export function anyOn(cb: Combat | null | undefined, name: HookName): boolean {
 export function statQuery(x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, stat: StatId, ctx: any = {}): { add: number; mult: number } {
   let add = 0, mult = 1;
   for (const f of GLOBAL_STATS[stat] || []) add += f(x, ctx) || 0; // engine systems (faith.ts)
+  if (x.u && TR?.condStat) add += TR.condStat(x.u, stat); // P4: the conditions the unit bears (their rows' stat_mod)
   const c = x.c ?? charOfUnit(x.u), held = x.u && !x.c ? heldOfUnit(x.u) : heldOfChar(c);
   if (!heldAny(held)) return { add, mult };
   for (const info of itemsOf(held)) {

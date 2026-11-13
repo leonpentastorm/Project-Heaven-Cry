@@ -1,6 +1,7 @@
 // Physical 2.0 (rules 1.12), ranged Watches: Cover Me (29) and Dead to Rights (30). Paid on the holder's turn; they fire
 // on the enemy's turn with no input, once, as the holder's reaction, and never while the holder is Pressed.
 import { describe, it, expect, beforeEach } from 'vitest';
+import { reactionsUsed } from '../src';
 import { phys, resolveAttack, previewAttack, toggleProne, reload, reloadHands, enemyTurn, type Unit } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
@@ -44,7 +45,7 @@ describe('Cover Me (29)', () => {
     attack(f, f.foe, ally);
     expect(lastRoll(f.foe)!.toHit).toBe(base - 2);
     expect(f.pressure(f.foe)).toBe(1);
-    expect(f.unit(f.pc.id).watch).toBeUndefined(); expect(f.unit(f.pc.id).reactUsed?.n).toBe(1);
+    expect(f.unit(f.pc.id).watch).toBeUndefined(); expect(reactionsUsed(f.cb, f.unit(f.pc.id))).toBe(1);
     expect(f.unit(f.pc.id).ammo).toBe(ammo - 1); // the covering round goes
     expect(f.unit(f.pc.id).heat).toBe(heat + 1); // nothing rolled, but the round is still a shot by today's rules: +1 Heat (review fix)
     expect(f.fx('watch_fire').length).toBe(1);
@@ -77,7 +78,7 @@ describe('Cover Me (29)', () => {
     f.turn(f.foe); rig({ hit: false, die: 5 });
     f.bound(() => enemyTurn(f.cb, f.g.rng));
     expect(ROLLS.some((r) => r.att === f.foe.id && r.tgt === ally.id)).toBe(true);
-    expect(heldShots(f)).toBe(1); expect(f.unit(f.pc.id).reactUsed?.n).toBe(1);
+    expect(heldShots(f)).toBe(1); expect(reactionsUsed(f.cb, f.unit(f.pc.id))).toBe(1);
     expect(f.cb.log.some((l) => /Covering fire/.test(l))).toBe(true);
   });
   it('refusals: no ally, yourself, an enemy, two without Auto, while Pressed; nothing is spent', () => {
@@ -95,7 +96,7 @@ describe('Cover Me (29)', () => {
     f.tech('cover_me', { allyId: ally.id });
     (f.unit(f.pc.id) as any).pressure = 2; // Pressed without the state change (which would drop it): fireWatch refuses
     f.turn(f.foe); rig({ hit: false, die: 5 }); attack(f, f.foe, ally);
-    expect(heldShots(f)).toBe(0); expect(f.pressure(f.foe)).toBe(0); expect(f.unit(f.pc.id).reactUsed?.n ?? 0).toBe(0);
+    expect(heldShots(f)).toBe(0); expect(f.pressure(f.foe)).toBe(0); expect(reactionsUsed(f.cb, f.unit(f.pc.id))).toBe(0);
     // and becoming Pressed the ordinary way drops it
     const g = coverFight(); g.tech('cover_me', { allyId: g.pcs[1].id }); g.press(g.pc, 2, g.foe); expect(g.unit(g.pc.id).watch).toBeUndefined();
   });
@@ -189,14 +190,14 @@ describe('Dead to Rights (30)', () => {
     attack(f, f.foe, f.pcs[1]);
     expect(ROLLS[0].att).toBe(f.pc.id); expect(ROLLS[0].toHit).toBe(base + 2); // first, and at +2
     expect(ROLLS[1].att).toBe(f.foe.id);
-    expect(f.unit(f.pc.id).watch).toBeUndefined(); expect(f.unit(f.pc.id).reactUsed?.n).toBe(1);
+    expect(f.unit(f.pc.id).watch).toBeUndefined(); expect(reactionsUsed(f.cb, f.unit(f.pc.id))).toBe(1);
     attack(f, f.foe, f.pcs[1]); expect(heldShots(f)).toBe(1); // once
   });
   it('fires on the enemy\'s own turn with no input (the enemy AI attacks)', () => {
     const f = rightsFight(); f.press(f.foe, 2, f.pc); f.tech('dead_to_rights', { targetId: f.foe.id });
     f.turn(f.foe); rig({ hit: false, die: 5 }); ROLLS.length = 0;
     f.bound(() => enemyTurn(f.cb, f.g.rng));
-    expect(heldShots(f)).toBe(1); expect(ROLLS[0]?.att).toBe(f.pc.id); expect(f.unit(f.pc.id).reactUsed?.n).toBe(1);
+    expect(heldShots(f)).toBe(1); expect(ROLLS[0]?.att).toBe(f.pc.id); expect(reactionsUsed(f.cb, f.unit(f.pc.id))).toBe(1);
   });
   it('not Pressed when it acts: nothing fires, and the shot stays held', () => {
     const f = rightsFight(); expect(f.tech('dead_to_rights', { targetId: f.foe.id })).toBeNull();
@@ -308,7 +309,7 @@ describe('Dead to Rights (30)', () => {
   it('a held Dead to Rights does not fire while the holder is Pressed', () => {
     const f = rightsFight(); f.press(f.foe, 2); f.tech('dead_to_rights', { targetId: f.foe.id });
     (f.unit(f.pc.id) as any).pressure = 2; f.turn(f.foe); rig({ hit: false, die: 5 }); attack(f, f.foe, f.pcs[1]);
-    expect(heldShots(f)).toBe(0); expect(f.unit(f.pc.id).reactUsed?.n ?? 0).toBe(0);
+    expect(heldShots(f)).toBe(0); expect(reactionsUsed(f.cb, f.unit(f.pc.id))).toBe(0);
   });
   it('the preview describes it and changes nothing; the action costs what it showed', () => {
     const f = rightsFight('ccec_marksman_rifle');

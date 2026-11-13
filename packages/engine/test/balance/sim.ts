@@ -11,6 +11,7 @@
 //
 // A fight NEVER changes a rule or a number: the maps registered here (sim_open, sim_cover) are test-only tiles.
 import { apply, newGame, bindGame, MAPS, WEAPON, TECHNIQUE, alive, previewAttack, previewTechnique, techniquePad, pressureCap, isPressed, isSuppressed, maxHp } from '../../src';
+import { reactionsUsed } from '../../src';
 import { fxTaps } from '../../src/fxtap';
 import { onHook } from '../../src/effects/hooks';
 import { ENEMY, clampEnemyLevel, FEELING } from '../../src';
@@ -83,7 +84,7 @@ const resNow = (g: any, u: any): Record<string, number | undefined> => {
   return { momentum: u.resMax?.momentum != null ? u.res?.momentum || 0 : undefined, guard: u.resMax?.guard ? u.res?.guard || 0 : undefined,
     heat: w?.heat_limit ? u.heat || 0 : undefined, ammo: w?.magazine != null && !/melee|unarmed/.test(w.category) ? u.ammo : undefined,
     mp: m?.emanator ? m.mp : undefined, strain: m?.emanator || m?.designs?.length ? m.strain : undefined, flux: m?.evoker ? m.flux : undefined, charge: m?.evoker ? m.charge : undefined, cores: m?.evoker ? m.cores : undefined,
-    echo: c ? c.echo : undefined, reactions: u.reactUsed && u.reactUsed.r === g.combat?.round ? u.reactUsed.n : 0 };
+    echo: c ? c.echo : undefined, reactions: g.combat ? reactionsUsed(g.combat, u) : 0 };
 };
 const resMax = (u: any): Record<string, number> => {
   const m = u.mg, w = WEAPON[u.weapon];

@@ -126,6 +126,10 @@ export const SITUATIONS: [string, (g: any, cb: any) => any, any?][] = [
   ['ally-afraid-turn', (g, cb) => { A.applyCond(cb, g.rng, F(cb), Q(cb), 'fear', 2, undefined, { skipSave: true }); cb.turn = cb.order.indexOf(Q(cb).id); A.beginTurn(cb, g.rng); }],
   ['taken-bloodied', (g, cb) => { P(cb).hp = Math.ceil(P(cb).maxHp * 0.3); return foeAttack(cb, g.rng, FAR(cb), P(cb)); }],
   ['taken-then-turn', (g, cb) => { foeAttack(cb, g.rng, FAR(cb), P(cb)); cb.round = 2; cb.turn = cb.order.indexOf(P(cb).id); A.beginTurn(cb, g.rng); }],
+  // added before Classes 3.0 step 1a (the pin of P2 `acted`: recorded on the engine before the 'analyze' hook moved)
+  ['analyze', (g) => reduce(g, { type: 'combat/analyze', unitId: P(g.combat).id, targetId: FAR(g.combat).id })],
+  ['brace', (g) => reduce(g, { type: 'combat/brace', unitId: P(g.combat).id })],
+  ['vanish', (g, cb) => { for (const f of cb.units) if (f.side === 'foe') f.vision = 0.1; return reduce(g, { type: 'combat/perk', unitId: P(cb).id, id: 'class:infiltrator.vanish' }); }],
 ];
 
 /** The item sweep's fight (record.ts itemFight), with what a situation needs on the ground: ammo in hand, a second weapon. */

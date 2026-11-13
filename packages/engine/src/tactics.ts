@@ -9,10 +9,11 @@ import { factorOf } from './effects/output';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import { type Character, mod, prayerCooldown } from './character';
-import { say, type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
+import { say, type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
-import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst } from './magic';
+import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst, condName } from './magic';
+import { condMods } from './condtable';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit } from './effects/hooks';
 import { grantShield, tendHook } from './effects/damage';
 import { actionAp } from './effects/core';
@@ -54,39 +55,103 @@ export const isSilent = (u: Unit) => { const w = WEAPON[u.weapon]; return (w?.pr
 // effects/output.ts. Re-exported here for the callers that always took it from tactics.
 export { VS_CAP, stackDamage } from './effects/output';
 
-// ---------- reactions (spec: one per round; items may add) ----------
-/** Reactions a unit gets each round: 1, + items (stat 'reactions'); none while Suppressed, Stunned or out of the fight. */
+// ---------- reactions (rules 1.28, Classes 3.0 P1: ONE door, react()) ----------
+// Every answer a unit makes outside its own turn goes through react(cb, u, {kind, event, spend, payer, window}, fn):
+//   - it asks canReact (alive, a reaction left in the round's `uses` cell, the kind not forbidden: Suppressed and
+//     Pressure's Suppressed state forbid `attack` and `move`, never `protect`; no reaction while another resolves),
+//   - opens the reaction window when the site has one (`window`: the 'reaction_window' hook; an item may cancel),
+//   - takes `spend` from the cell (scope `reaction`) of `payer ?? u` (a Cue's extra one, a Many Hands donor's),
+//   - fires the trigger `reaction` (actor, kind), and runs fn with cb.reacting set (A REACTION NEVER TRIGGERS A
+//     REACTION: Leon, 13 Nov 2026), one reaction per unit per `event` (rule 3).
+// The count is a counters cell (effects/uses.ts: fresh each round; on the area map it lives in the story, so a rebuilt
+// unit gets no fresh reaction). Old saves' u.reactUsed / u.reactedRound are read once into it.
+/** What a reaction is (rules 1.28): it attacks, it moves the reactor, or it protects. */
+export type ReactKind = 'attack' | 'move' | 'protect';
+/** The reaction kinds, in order. */
+export const REACT_KINDS: ReactKind[] = ['attack', 'move', 'protect'];
+/** How a reaction is made: its kind, the event it answers (one reaction per unit per event), the reactions it spends,
+ * who pays (default the reactor), and the window the site opens ('reaction_window' {reactor, mover, kind, id, at, rng}). */
+export interface ReactOpts { kind: ReactKind; event?: string | null; spend?: number; payer?: Unit | null; window?: { kind: string; mover?: Unit | null; id?: string; at?: string; rng?: any } }
+const REACT_KEY = 'reaction';
+const reactCell = (cb: Combat, u: Unit) => uses({ key: REACT_KEY, u, c: null, cb, g: boundGame() });
+/** Old saves: a round's count kept on the unit (reactUsed, reactedRound) is read once into the cell, and dropped. */
+function oldReactions(cb: Combat, u: Unit): void {
+  if (u.reactUsed == null && u.reactedRound == null) return;
+  const n = u.reactUsed && u.reactUsed.r === cb.round ? u.reactUsed.n : u.reactedRound === cb.round ? 1 : 0;
+  delete u.reactUsed; delete u.reactedRound;
+  if (n > 0 && !reactCell(cb, u).used('reaction')) reactCell(cb, u).take('reaction', Infinity, undefined, n);
+}
+/** Reactions a unit gets each round: 1, + items (stat 'reactions'); none while Stunned, Dread underfoot or out of the
+ * fight. (Suppressed no longer zeroes it: it forbids kinds, rules 1.28; see reactBlocked.) */
 export function maxReactions(u: Unit, cb?: Combat | null): number {
-  if (!alive(u) || condOn(u, 'suppressed') || condOn(u, 'stunned') || u.skipTurn) return 0;
+  if (!alive(u) || condOn(u, 'stunned') || u.skipTurn) return 0;
   if (cb && residueFlag(cb, u, 'no_reaction')) return 0; // rules 1.8: Dread underfoot
   return Math.max(0, 1 + statQuery({ u }, 'reactions').add);
 }
-export function reactionsUsed(cb: Combat, u: Unit): number {
-  if (u.reactUsed && u.reactUsed.r === cb.round) return u.reactUsed.n;
-  return u.reactedRound === cb.round ? 1 : 0; // old saves
+/** Reactions this unit has spent this round (its cell). */
+export function reactionsUsed(cb: Combat, u: Unit): number { oldReactions(cb, u); return reactCell(cb, u).used('reaction'); }
+/** Systems that forbid a kind of reaction besides the conditions (physical/pressure.ts: Pressure's Suppressed state). */
+const REACT_BLOCKS: ((u: Unit, kind: ReactKind) => string | null)[] = [];
+/** Register a system's own reaction rule (it names why a kind is forbidden, or null). */
+export function addReactBlock(f: (u: Unit, kind: ReactKind) => string | null): void { REACT_BLOCKS.push(f); }
+/** Why this unit can't make a reaction of this kind (or null): a condition row's `forbid` reaction with its `kinds`
+ * (Suppressed: attack and move, never protect), or a system's rule (Pressure). */
+export function reactBlocked(u: Unit, kind: ReactKind): string | null {
+  for (const k of Object.keys(u.conds || {})) { const no = condMods(k).noReact; if (no && (no === 'all' || no.includes(kind)) && condOn(u, k)) return condName(k); }
+  for (const f of REACT_BLOCKS) { const why = f(u, kind); if (why) return why; }
+  return null;
 }
 /** Cue (a Call, rules 1.13): one more reaction, good until the start of the speaker's next turn (calls/rules.ts ends
  * it there; the round bound is for a speaker who never gets that turn). Never for a unit with no reaction at all. */
 export const cueLive = (cb: Combat, u: Unit): boolean => !!u.call?.cue && cb.round <= u.call.cue.r + 1;
-const baseReact = (cb: Combat, u: Unit) => reactionsUsed(cb, u) < maxReactions(u, cb);
-const ownReact = (cb: Combat, u: Unit) => baseReact(cb, u) || (cueLive(cb, u) && maxReactions(u, cb) > 0);
+const baseLeft = (cb: Combat, u: Unit) => maxReactions(u, cb) - reactionsUsed(cb, u);
+const ownReact = (cb: Combat, u: Unit, n = 1) => baseLeft(cb, u) >= n || (n === 1 && cueLive(cb, u) && maxReactions(u, cb) > 0);
 /** Many Hands (Camaraderie Mastered, perk-runtime E-H1): an ally whose reactions are spent may spend a holder's who can
  * see them (alive, same side, not the same unit). The first such holder in unit order. */
 export function reactionDonor(cb: Combat, u: Unit): Unit | null {
-  if (!alive(u) || maxReactions(u, cb) <= 0) return null; // Stunned, Suppressed: no reaction to take anyone's
+  if (!alive(u) || maxReactions(u, cb) <= 0) return null; // Stunned, Dread: no reaction to take anyone's
   return cb.units.find((v) => v !== u && v.side === u.side && alive(v) && !v.companion && heldOfUnit(v).perks.some((p) => p.id === 'many_hands') && ownReact(cb, v) && unitSees(cb, v, u.pos)) || null;
 }
-export const canReact = (cb: Combat, u: Unit) => ownReact(cb, u) || !!reactionDonor(cb, u);
-/** Spend a reaction now; false when none is left. */
-export function useReaction(cb: Combat, u: Unit): boolean {
-  if (!baseReact(cb, u) && cueLive(cb, u) && maxReactions(u, cb) > 0) { delete u.call!.cue; say(cb, u.name + ' reacts again (Cue).'); return true; } // the cued reaction, after its own
-  if (!ownReact(cb, u)) {
-    const d = reactionDonor(cb, u); if (!d) return false;
-    d.reactUsed = { r: cb.round, n: reactionsUsed(cb, d) + 1 }; d.reactedRound = cb.round;
-    say(cb, u.name + ' reacts on ' + d.name + '\'s reaction (Many Hands).'); return true;
-  }
-  u.reactUsed = { r: cb.round, n: reactionsUsed(cb, u) + 1 }; u.reactedRound = cb.round; return true;
+/** Can this unit react now (a reaction of this kind, spending n)? Never while a reaction resolves (rules 1.28). */
+export function canReact(cb: Combat, u: Unit, kind?: ReactKind, n = 1): boolean {
+  if (cb.reacting) return false; // a reaction never triggers a reaction (rules 1.28)
+  if (kind && reactBlocked(u, kind)) return false;
+  if (n <= 0) return maxReactions(u, cb) > 0; // already paid for (Killzone's second shot) or paid by another (payer): the reactor must still be able to react (not Stunned, Downed)
+  return ownReact(cb, u, n) || (n === 1 && !!reactionDonor(cb, u));
 }
+/** The events each unit has already answered (rule 3): transient, within one action; never saved. */
+const ANSWERED = new WeakMap<Combat, Set<string>>();
+/** THE door of every reaction (see the head of this section). Returns false, and nothing is spent, when the unit can't
+ * (or an item cancels the window); else spends, runs fn as a reaction, and returns true. */
+export function react(cb: Combat, u: Unit, o: ReactOpts, fn?: () => void): boolean {
+  const spend = o.spend ?? 1, seen = ANSWERED.get(cb), ek = o.event ? o.event + '|' + u.id : null;
+  if (ek && seen?.has(ek)) return false;
+  if (!canReact(cb, u, o.kind, o.payer && o.payer !== u ? 0 : spend)) return false;
+  if (o.payer && o.payer !== u && (spend > 0 && !ownReact(cb, o.payer, spend))) return false;
+  if (o.window) { const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: o.window.mover ?? null, kind: o.window.kind, ...(o.window.id ? { id: o.window.id } : {}), cancel: false, at: o.window.at ?? u.pos, cb, rng: o.window.rng }); if (rw.cancel) return false; }
+  if (spend > 0) payReaction(cb, o.payer || u, spend);
+  if (ek) { const s = seen || new Set<string>(); if (s.size > 512) s.clear(); s.add(ek); ANSWERED.set(cb, s); }
+  const was = cb.reacting; cb.reacting = { unit: u.id, kind: o.kind };
+  try { emit(cb, 'reaction', { u, kind: o.kind, event: o.event || null, payer: o.payer || u, cb }); fn?.(); } finally { if (was) cb.reacting = was; else delete cb.reacting; }
+  return true;
+}
+/** Spend n reactions of a unit: its own first, then a Cue's, then (one) a Many Hands donor's. */
+function payReaction(cb: Combat, u: Unit, n: number): void {
+  for (let i = 0; i < n; i++) {
+    if (baseLeft(cb, u) > 0) { reactCell(cb, u).take('reaction', Infinity); continue; }
+    if (cueLive(cb, u) && maxReactions(u, cb) > 0) { delete u.call!.cue; say(cb, u.name + ' reacts again (Cue).'); continue; } // the cued reaction, after its own
+    const d = reactionDonor(cb, u); if (!d) return;
+    reactCell(cb, d).take('reaction', Infinity); say(cb, u.name + ' reacts on ' + d.name + '\'s reaction (Many Hands).');
+  }
+}
+/** Lose reactions that are not spent on a reaction (Dread burns them all, Rewrite one, Order spends an ally's): n, or
+ * 'all' (what is left this round). */
+export function loseReactions(cb: Combat, u: Unit, n: number | 'all' = 1): void {
+  for (let i = 0; n === 'all' || i < n; i++) { if (!ownReact(cb, u) && !reactionDonor(cb, u)) break; payReaction(cb, u, 1); }
+}
+/** Give a spent reaction back (a refused Call made as a reaction). */
+export function refundReaction(cb: Combat, u: Unit) { reactCell(cb, u).refund('reaction'); }
+
 /** A held shot already paid for this round: Killzone's second shot (classes.json: "The two shots use one reaction
  * between them"). The first shot spends the round's reaction; the second fires on it, and nothing else does. One cell
  * in the counters primitive (effects/uses.ts, scope 'reaction': fresh again next round, where the second shot spends
@@ -99,8 +164,23 @@ export const heldShotPaid = (cb: Combat, u: Unit): boolean => maxReactions(u, cb
 export function payHeldShot(cb: Combat, u: Unit): void { paidCell(cb, u).take('reaction'); }
 /** The paid held shot fires: the mark is used up. */
 export function spendPaidShot(cb: Combat, u: Unit): void { paidCell(cb, u).refund('reaction'); }
-/** Give a used reaction back (Many Hands shares one; a refused reaction). */
-export function refundReaction(cb: Combat, u: Unit) { const n = reactionsUsed(cb, u); if (n > 0) u.reactUsed = { r: cb.round, n: n - 1 }; if (n <= 1) delete u.reactedRound; }
+
+// ---------- sight words (Classes 3.0 P7; shadow-spec.md 2.1) ----------
+/** The words data uses for a unit's sight (predicates self_sight, actor_sight, target_sight): `seen` (not Hidden and
+ * in view, after the 'sees' hook: sideSeesUnit), `unseen`, `in_view` (some living, standing enemy's eyes reach its tile,
+ * Hidden or not: seenByFoes over unitSees), `out_of_view`. */
+export type SightWord = 'seen' | 'unseen' | 'in_view' | 'out_of_view';
+/** The sight words, in order. */
+export const SIGHT_WORDS: SightWord[] = ['seen', 'unseen', 'in_view', 'out_of_view'];
+/** THE one sight test for data: the two words that hold for a unit, to the other side (or to one unit `by`). A unit whose
+ * stat `always_seen` is over 0 is seen and in view wherever it is. */
+export function sightOf(cb: Combat, u: Unit, by?: Unit | null): [SightWord, SightWord] {
+  const always = statQuery({ u, cb }, 'always_seen').add > 0;
+  let inView: boolean, seen: boolean;
+  if (by) { inView = always || unitSees(cb, by, u.pos); seen = always || (inView && !u.hidden); }
+  else { inView = always || seenByFoes(cb, u); seen = always || sideSeesUnit(cb, u.side === 'pc' ? 'foe' : 'pc', u); }
+  return [seen ? 'seen' : 'unseen', inView ? 'in_view' : 'out_of_view'];
+}
 
 // ---------- combat Hidden (spec: Helpful states; rules 1.3) ----------
 export const TIER_NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
