@@ -419,3 +419,30 @@ that change hands, the rename, the build order).
 
 **A correction the specs carry:** this draft has the Mender take Strain (a Bonded ally going Down; Take the Weight).
 Strain is Determination's meter; the Bonds spec replaces it with a cost in MP or HP.
+
+**Settled by Leon on the specs (13 Nov, later):**
+
+1. **The budget reading: the base class all in sits ON the contract ceiling** (where today's classes were fitted),
+   a door user all in about 13% under it, the squared class about 13% over it in a column of its own. Section 2's
+   "15% / 30%" is read this way; nothing fitted in rules 1.26 and 1.27 moves.
+2. **A reaction never triggers a reaction.** No Riposte of a Riposte, no Parry of an opportunity attack.
+3. **Killzone spends both of the Skirmisher's reactions.**
+4. **Ward is 7 × Blessing power**, uses the turn's Whisper, and sits on at most two allies at once.
+5. **Smite stays at Rebuke's 20; the Chaplain's own line is 125% of a rifle-turn all in.**
+6. **The current advanced classes may be shelved for a whole new system**, designed after all of Revision 4 is in.
+   So the squared classes' "one rule broken" lines and the bridges of section 6 are sketches of the shape, not a
+   plan; no spec may depend on them.
+
+**Calls made for him on the specs' other questions (no answer; each is the lead's recommendation, he can reverse
+any):** every door plays its whole loop at 1 point, smaller (one Figment, the Double, at Visualization 1); Shadow as
+its spec's section 11 recommends (no gain on a turn you attacked, a silent attack lets the target roll to spot, the
+ambush a flat ×1.5 and 0.15 a point spent, the line 125% over three turns, Sabotage 1 round, Toxin's doses its own
+supply); the Mender as its spec recommends (Take the Weight 15% of max HP, a felt Down 10 MP, Traced, the free Bond
+with no range limit, Supplies leave, Brimming replaces the Outburst Mend, Empathy's free Pump moves to Will Power
+and the Outburst is re-measured); Figments as its spec recommends (upkeep 1 charge a Figment a turn, the Blade's
+strike spends your reaction, a ceiling of 150% for bodies on the board, Scrap Turret for Jury-Rig); Suppressed never
+blocks a protective reaction; the Chaplain's Judgement is renamed Verdict *(Suggested)*. **Leon's alone, still
+open:** what the Visualizer looks like (assumed: a hand-held projector in the off hand).
+
+**The consolidated primitives** are in `rev4-primitives.md`: the six specs asked for 26; 12 are needed, with 13 rows
+added to closed lists. The specs are brought into line with it and with the rulings above in one pass.
