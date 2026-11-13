@@ -211,6 +211,12 @@ export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any
   pay(cb, me, cost, { payer: owner, c });
   return null;
 }
+/** Rules 1.34 (Overclock): an owned unit of either turn kind ATTACKS now, at no AP, at this target: a data verb with an
+ * attack (free up to `maxAp`), else its weapon's plain attack (melee or shot). Returns the refusal, or null. */
+export function attackNow(cb: Combat, rng: Rng, owner: Unit, u: Unit, verb: string, t: Unit, maxAp: number): string | null {
+  const dv = OWNED_DATA_VERBS[verb]; if (dv) return runDataVerb(cb, rng, owner, u, dv, { targetId: t.id, free: maxAp });
+  return withAp(u, maxAp, () => { const pv = previewAttack(cb, u, t, verb as AttackMode); if (!pv.ok) return pv.why || 'Not now.'; resolveAttack(cb, rng, u, t, verb as AttackMode, null, { noAp: true }); return null; });
+}
 /** An auto unit's target: the nearest standing foe (ties: the order of the fight's units), or the most hurt. */
 function autoTarget(cb: Combat, u: Unit, how: string): Unit | null {
   const foes = cb.units.filter((x) => x.side !== u.side && !x.dead && !x.downed && !x.surrendered && !x.hidden);

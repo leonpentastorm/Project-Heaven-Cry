@@ -880,6 +880,8 @@ Weapon skills and lore:
 | Knuckledusters | 16 | 0.3 | 60 | |
 | Hellraiser servo-fist | 30 | 2.5 | 1,200 | Raw Power 3 (rules 1.13; was Proficiency 3) |
 | Bite and claws | 18 | 0 | none | a beast companion's own weapon: never carried, bought or dropped (not one of the 3 types) |
+| Figment claws | 30 | 0 | none | a Beast Figment's own weapon (rules 1.34): never carried, bought or dropped |
+| Figment edge | 25 | 0 | none | a Blade Figment's own weapon (rules 1.34): never carried, bought or dropped |
 
 - **Fists · Grapple:** 2 AP; the target can't move until it breaks free (its Athletics or Raw Power check against your Raw Power check). *"Everyone's first weapon."*
 - **Knuckledusters · Rabbit Punch:** 1 AP jab for half damage. *"A bar argument that brought friends."*

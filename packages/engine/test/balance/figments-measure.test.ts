@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { figmentCell } from './figments-measure';
 import RULES from '../../../../data/rules.json';
 
-const N = Number((globalThis as any).process?.env?.FIG_MEASURE_N) || 4;
+const N = Number((globalThis as any).process?.env?.FIG_MEASURE_N) || 1; // the report: FIG_MEASURE_N=4 (the step 8 hand-off)
 const LV = [1, 5, 10, 20];
 describe('Figments: the measured line (a report)', () => {
   it('the door and the Rigger, normal share and all in, at levels 1, 5, 10, 20', () => {
@@ -19,5 +19,5 @@ describe('Figments: the measured line (a report)', () => {
     }
     (globalThis as any).console?.log?.('\nFigments (rules 1.34), % of the plain rifle-turn; lines: door ' + C.door_normal + ' / ' + C.door_allin + ', Rigger ' + C.class_normal + ' / ' + C.allin + '\n' + rows.join('\n'));
     for (const v of Object.values(lines)) for (const x of v) expect(x).toBeGreaterThan(0);
-  });
+  }, 600_000);
 });

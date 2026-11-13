@@ -17,7 +17,7 @@ import { levelFactor } from '../effects/output';
 import { withAp, resGive } from '../effects/cost';
 import { RULES } from '../data';
 import { visFocusWhy, pictureTileWhy, projectionRange, figmentsOf, unravel, makeFigment, isFigment, FIG, setUpTurret } from '../figments';
-import { ownerOf as ownerOfUnit, ownedBy, unmakeOwned, spawnOwned, runDataVerb, OWNED_DATA_VERBS } from '../owned';
+import { ownerOf as ownerOfUnit, ownedBy, unmakeOwned, spawnOwned, attackNow, OWNED_DATA_VERBS } from '../owned';
 import { tendHook } from '../effects/damage';
 import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
@@ -567,7 +567,7 @@ register({
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, foe = overclockFoe(cb, t)!, v = overclockVerb(t)!, dv = OWNED_DATA_VERBS[v];
       say(cb, u.name + ' overclocks ' + t.name + '.');
-      const no = dv ? runDataVerb(cb, rng as Rng, u, t, dv, { targetId: foe.id, free: num(h, 'max_ap') }) : withAp(t, num(h, 'max_ap'), () => { const pv = previewAttack(cb, t, foe, v as any); if (!pv.ok) return pv.why || 'Not now.'; resolveAttack(cb, rng as Rng, t, foe, v as any, null, { noAp: true }); return null; });
+      const no = attackNow(cb, rng as Rng, u, t, v, foe, num(h, 'max_ap')); void dv;
       if (no) return no;
       if (!t.dead) say(cb, t.name + ' strains' + hurtUnit(t, Math.floor(itemAmount('class:trickster.overclock', 'strain', [{ v: levelFactor('deal', u.level ?? 1), label: 'level' }])), true, cb, 'overclock', u) + '.');
       return null;

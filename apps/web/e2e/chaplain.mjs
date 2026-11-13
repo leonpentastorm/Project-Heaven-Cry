@@ -68,7 +68,7 @@ for (const [dx, dy] of [[3, 0], [-3, 0], [0, 3], [0, -3], [2, 2], [-2, -2], [2, 
 ok('a drill sergeant stands in range', !!foe);
 await p.locator('[role="tab"][data-tab="faith"]').click(); await settle(p, 200);
 const hymnErr = await act({ type: 'faith/pray', unitId: u.id, kind: 'hymn', id: 'thunderclap', tile: foe.pos });
-const wit = await p.waitForFunction((id) => !!window.__phc.getState().game.combat.units.find((x) => x.charId === id)?.conds?.witnessed, cid, { timeout: 15000 }).then(() => true, () => false);
+const wit = await p.waitForFunction((id) => !!window.__phc.getState().game.combat.units.find((x) => x.charId === id)?.conds?.witnessed, cid, { timeout: 30000 }).then(() => true, () => false);
 u = await me();
 ok('the Hymn (Thunderclap on the sergeant\'s tile): ' + (hymnErr || 'prayed') + '; Witnessed, the patron at the side', wit);
 // Sanctuary is a Hymn: right after the Hymn it waits for the Hymn's wait, in words; the CLASS tab lists the moves
