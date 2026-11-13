@@ -88,7 +88,7 @@ Reach "R3": an ally within 3 tiles you see, or a Bonded ally anywhere you see. M
 | I | Triage (`medic.triage`) | 2 AP, 6 MP | adjacent or Bonded ally in sight: heal **4.3** × Healing given × level × through, end Bleeding. Once an ally a turn. Out of a fight ×3, once an ally a scene. Stabilising with a stim costs you 1 AP (kept) | kept; Bond reach; base 5 → 4.3 with the ×1.2 |
 | I | Inspire (`bard.inspire`) | 1 AP, 10 MP | a Bonded ally in sight: give a feeling **you have felt** (section 5.1): +2 on their next attack roll and that feeling's boon, until the end of their next turn. One given feeling on an ally at a time (a new one replaces it); each feeling once a fight per ally; once an ally a round. No Strain path | reworked |
 | II | Brimming *(Suggested)* (`bard.mend`) | passive | Tending you give that would heal past an ally's max HP becomes a shield on them, up to **half** of that heal. The Buff-school base of 9 leaves (no borrowing of the Outburst's verbs) | reworked |
-| II | Take the Weight (`bard.take_the_weight`) | reaction | a Bonded ally in sight **would go Down**: they stay at 1 HP, and you lose **15% of your max HP** (true damage); only while you are above a quarter of your max HP, so it never Downs you. Or (a toggle) a Bonded ally **gains a harmful condition**: you take it instead, same rounds, no save | NEW; Strain replaced by HP |
+| II | Take the Weight (`bard.take_the_weight`) | reaction | a Bonded ally in sight **would go Down**: they stay at 1 HP, and you lose **15% of your max HP** (true damage); only while you are above a quarter of your max HP, so it never Downs you. Or a Bonded ally would be **Stunned, Dazed or Afraid**: you take it instead, same rounds, no save (automatic, the reaction spent) | NEW; Strain replaced by HP |
 | III | Rally (`bard.rally`) | 2 AP, 20 MP, once a scene | every Bonded ally **wherever they are, seen or not**, and every ally within 4, heals **3.5** × … (× through for the Bonded) and loses Fear and Shaken | kept; through Bonds; base 6 → 3.5 |
 | III | Field Surgery (`medic.field_surgery`) | out of a fight, 15 MP | with a field kit in the pack (not used up): treat one limb injury or clear every Body condition; once an ally a scene | kept; MP replaces the Supply |
 
@@ -148,7 +148,7 @@ Each row is a field `given` on the feeling in `feelings.json`, carried by a cond
 | Pride's AP, Longing's cheaper move | op `grant_ap` `bank: true` `when: kill`; op `cost_mod` `when: cost` `if: {action: ["move"]}` |
 | Spite, Shame, Take the Weight's HP | op `deal` with an amount block (`per: [{of: "max_hp"}]` for 15%) |
 | Take the Weight's save | op `floor` `value 1` `when: would_drop` `if: {open: true, self_hp_above: 0.25}` |
-| Take the Weight's condition branch | op `cancel` `when: cond_incoming` + op `condition` on self; a toggle (`ToggleDef`) |
+| Take the Weight's condition branch | op `cancel` `when: cond_incoming` `if: {cond: [stunned, dazed, fear]}` + op `condition` on self |
 | The felt Down | `when: downed` `if: {target: ally}` + op `resource` (MP) + `say` |
 | Guide | `displace(cb, rng, ally, {tile}, {willing: true, how: 'guide'})`; a `forced_movement.guide` row in `rules.json` |
 | Sight for Tending through a Bond | `sightCheck` / `sideSees` (`combat.ts`); fog: `fogFight` keeps `ties` for `me`'s side only |
@@ -231,11 +231,10 @@ Every row falls over the levels as rules 1.27's healer does (234 → 158): the S
     { "op": "floor", "value": 1, "when": "would_drop", "if": {"target": "ally", "target_tied": "bond", "open": true, "self_hp_above": 0.25, "self_alive": true},
       "limit": {"reaction": true}, "and": [ { "op": "deal", "amount": "weight", "target": "self" } ],
       "say": "{self} takes the weight: {target} stays standing at {=.value} HP." },
-    { "op": "cancel", "when": "cond_incoming", "if": {"target": "ally", "target_tied": "bond", "cond_family": ["body", "heart"], "flag": "take_conditions"},
+    { "op": "cancel", "when": "cond_incoming", "if": {"target": "ally", "target_tied": "bond", "cond": ["stunned", "dazed", "fear"]},
       "limit": {"reaction": true}, "and": [ { "op": "condition", "condition": "incoming", "target": "self", "skip_save": true } ],
       "say": "{self} takes it from {target}." } ],
-  "toggles": [ { "id": "take_conditions", "label": "Take conditions too", "default": false } ],
-  "text": "Your reaction. When a Bonded ally would go Down, they stay at {=effects.0.value} HP and you lose {=amounts.weight.per.0.value|pct}% of your max HP (only while you are above {=effects.0.if.self_hp_above|pct}%). With the toggle on, you may instead take a Body or Heart condition meant for them.",
+  "text": "Your reaction. When a Bonded ally would go Down, they stay at {=effects.0.value} HP and you lose {=amounts.weight.per.0.value|pct}% of your max HP (only while you are above {=effects.0.if.self_hp_above|pct}%). When a Bonded ally would be Stunned, Dazed or Afraid, you take it in their place.",
   "adjudication": "engine", "provisional": true, "origin": "bard", "origin_rank": "II", "attributes": ["insight"], "status": "active" }
 ```
 
