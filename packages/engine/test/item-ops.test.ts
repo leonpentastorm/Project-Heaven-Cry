@@ -53,9 +53,11 @@ describe('item ops: a new perk and a relic in data only (test/fixtures/item-ops-
       info.effects.forEach((e, i) => { expect(triggerProblem(e), k + ' #' + i).toBeNull(); expect(ownerOf(info, i), k + ' #' + i).toBe('generic'); });
     }
   });
-  const base = () => opsFight({});
+  // (rules 1.33: Share a Hit, Camaraderie 1, would take part of the ally's lethal hit: these situations are about the item, so the squad doesn't share)
+  const noShare = (g: any) => { for (const u of pcs(g)) if (u.held?.skills) u.held = { ...u.held, skills: u.held.skills.filter((k: string) => !k.startsWith('camaraderie.')) }; return g; };
+  const base = () => noShare(opsFight({}));
   it('the perk: an ally dropped by an enemy banks 2 AP once a fight, and the next hit deals +50%', () => {
-    const g0 = opsFight({ perks: { test_blood_for_blood: 'mastered' } }), b0 = base();
+    const g0 = noShare(opsFight({ perks: { test_blood_for_blood: 'mastered' } })), b0 = base();
     const mine = situations(g0), theirs = situations(b0);
     expect(theirs['ally-lethal'].line).not.toMatch(/apNext/);
     expect(mine['ally-lethal'].line).toMatch(/P1 apNext:->2/);
