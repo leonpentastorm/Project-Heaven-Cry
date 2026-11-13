@@ -483,3 +483,17 @@ never needs anything but the standard glove; a faction focus is how an advanced 
 when that system is designed (a sketch, like every advanced idea here); nothing in Classes 3.0 builds one, and the
 focus item's data shape must leave room for variants (a focus is an item with a door, a hand rule and a core or MP
 link, not a hard-coded glove).
+
+**Mana arms (Leon, 13 Nov; for the later advanced-class system, nothing to build now).** The idea behind mana arms
+was a Soul user with a sword: a custom-made weapon and a martial art whose cuts give off the elements; not a hybrid
+like the Storm Hand, since nothing is shot from an Emanator: "they just absorb, dance, and win". It predates Sigils;
+with Sigils in the design it lives on as **the blade Evokers**, and Leon has shelved it as an idea for a new advanced
+class. **What mana arms are in the engine today** (rules 7.11, `data/weapons.json`): seven weapons anyone can use who
+meets the skill requirement: the core rifle (Dexterity 3; a mana core as ammunition), the Spellslinger's pistol, the
+**Evoker blade** and the **Grand staff** (Brain Power 3; each counts as an Evoker), the **Emanator gauntlet** (Will
+Power 3; counts as an Emanator), the Lumeri censer gun (Faith 3) and the bot-thread banner (Empathy 3); each hit adds
+1 to the ambient mana. They were written as the class weapons of five Revision 2 hybrids. **For Classes 3.0 they stay
+exactly as they are.** They are already what a faction focus looks like in rules: a weapon that is also a focus, so
+it frees the hand the standard glove takes. When the advanced system is designed, these seven are its starting stock
+and that freed hand is its first number to price; until then no new one is added, and none counts as the Visualizer
+or the Bond focus.
