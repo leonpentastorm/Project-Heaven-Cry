@@ -43,7 +43,7 @@ export interface CacheItem { item: string; qty: number; rarity?: string; name?: 
   pack?: PackItem; key?: string }
 export interface MapObject {
   id: string; kind: string; pos: string; name: string; text: string;
-  hp?: number; max?: number; open?: boolean; locked?: boolean; hidden?: boolean; approaches: Approach[]; resolved?: boolean;
+  hp?: number; max?: number; /** Rules 1.36: the level its HP is in (absent: 1; combat.ts objectAtLevel). */ hpLvl?: number; open?: boolean; locked?: boolean; hidden?: boolean; approaches: Approach[]; resolved?: boolean;
   /** A way out: the zone it leads to. */
   to?: string;
   /** Art (spec: Campaigns, art): a sprite asset drawn on the tile (spriteBox in tiles from the tile's corner, for art

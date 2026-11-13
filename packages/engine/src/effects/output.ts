@@ -51,7 +51,7 @@ export interface Profile {
   /** A constant of the profile (×1 today; stage (b) re-pins a system here without touching its bases). */ k: number;
   /** What a point of Attribute over 1 adds to the Stat term. */ attr: number;
   /** What a point of Skill adds to the Stat term. */ skill: number;
-  /** The column of output.level this profile reads: 'deal', 'mend', or null (no level term). */ level: 'deal' | 'mend' | null;
+  /** The column of output.level this profile reads ('deal', 'mend', 'scale': any named column there), or null (no level term). */ level: string | null;
   /** The pair it reads by default (output.pairs). */ pair?: string;
   /** Rules 1.27 (the heal re-fit): the floor of a landed heal or shield profile: its Stat term is never under this share
    * of what a normal share (output.floor_reference: 4 in each Attribute and Skill of the pair) gets. Absent: no floor. */ floor?: number;
@@ -63,7 +63,7 @@ export interface Pair { attrs: string[]; skills: string[] }
 const OUT: any = (RULES as any).output || {};
 /** The profiles (data/rules.json output.profiles). Today's slopes, one per system; `level` null everywhere but `mend`. */
 export const PROFILES: Record<string, Profile> = Object.fromEntries(Object.entries(OUT.profiles || {}).filter(([, p]) => p && typeof p === 'object').map(([id, p]: [string, any]) =>
-  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: p.level === 'deal' || p.level === 'mend' ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}), ...(Number.isFinite(p.floor) ? { floor: Number(p.floor) } : {}), ...(Number.isFinite(p.min_pct) ? { min_pct: Number(p.min_pct) } : {}) }]));
+  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: typeof p.level === 'string' && p.level ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}), ...(Number.isFinite(p.floor) ? { floor: Number(p.floor) } : {}), ...(Number.isFinite(p.min_pct) ? { min_pct: Number(p.min_pct) } : {}) }]));
 /** Rules 1.27: the normal share a landed profile's floor is a share of (data/rules.json output.floor_reference). */
 const FLOOR_REF: { attribute: number; skill: number } = { attribute: Number(OUT.floor_reference?.attribute) || 4, skill: Number(OUT.floor_reference?.skill) || 4 };
 /** The pairs (data/rules.json output.pairs): which Attributes and Skills a Stat term reads. A weapon's own pair comes
@@ -98,15 +98,23 @@ export function statOf(profile: string, c: Pick<Character, 'attrs' | 'skills'>, 
   return statTerm(profile, pair.attrs.map((a) => (c.attrs as any)[a] || 1), pair.skills.map((k) => (c.skills as any)[k] || 0));
 }
 
-const LEVEL_DEAL: number[] = Array.isArray(OUT.level?.deal) ? OUT.level.deal.map((x: any) => (Number.isFinite(x) ? Number(x) : 1)) : [];
-/** The Level term (data/rules.json output.level). `mend`: the enemy table's damage column at that level (rules 1.20:
- * the number that raises what an enemy deals; ×1.00 at level 1 … ×1.82 at 20). `deal`: ×1 at every level today.
- * No column, or no level: ×1. */
-export function levelFactor(column: 'deal' | 'mend' | null | undefined, level: number | null | undefined): number {
+/** The columns of data/rules.json output.level: every named array (one value a level, 1 to 20). `mend` may instead name
+ * the enemy table's damage column (a string), as rules 1.20 had it. */
+const LEVEL_COLS: Record<string, number[]> = Object.fromEntries(Object.entries(OUT.level || {}).filter(([, v]) => Array.isArray(v)).map(([k, v]: [string, any]) => [k, v.map((x: any) => (Number.isFinite(x) ? Number(x) : 1))]));
+/** The Level term (data/rules.json output.level): the named column at that level. `deal`: what a character's level
+ * multiplies its damage by; `scale` (rules 1.36, the level scale): what everything measured in HP is multiplied by at
+ * that level; `mend`: heals and shields (a column, or the enemy table's damage column when the data points there).
+ * No column, or no level: ×1. A column the data lacks throws (never a silent ×1). */
+export function levelFactor(column: string | null | undefined, level: number | null | undefined): number {
   if (!column || level == null) return 1;
+  const col = LEVEL_COLS[column];
+  if (col) return col[clampEnemyLevel(level) - 1] ?? 1;
   if (column === 'mend') return enemyLevelRow(level).damage_mult ?? 1;
-  return LEVEL_DEAL[clampEnemyLevel(level) - 1] ?? 1;
+  throw new Error('data/rules.json output.level.' + column + ' is missing');
 }
+/** Rules 1.36 (the level scale): the factor everything measured in HP takes at this level (output.level.scale; ×1 at
+ * level 1). Read at the one place each such number is read in code (max HP, armour, Guard's soak, Strain's burn…). */
+export const scaleOf = (level: number | null | undefined): number => levelFactor('scale', level ?? 1);
 /** The Level term of a profile for a level. */
 export const levelOf = (profile: string | null | undefined, level: number | null | undefined): number => levelFactor(profileOf(profile).level, level);
 

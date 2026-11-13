@@ -13,7 +13,7 @@ import {
   type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT, lineMult,
 } from './sigilwords';
 export * from './sigilwords';
-import { say,
+import { say, objectAtLevel,
   type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction, displace
 } from './combat';
@@ -1178,7 +1178,7 @@ function raiseWalls(cb: Combat, by: Unit | null, side: 'pc' | 'foe', tiles: stri
   const old = objectsOf(cb).filter((o) => o.kind === 'sigil_wall' && (o as any).by === (by?.id || '')); // one RAISE working per caster
   if (old.length) { cb.objects = objectsOf(cb).filter((o) => !old.includes(o)); emitFx(cb, 'wall_crumbled', { tiles: old.map((o) => o.pos), why: 'replaced' }); }
   const objs = objectsOf(cb);
-  for (const k of tiles) objs.push(makeObject('sw' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), 'sigil_wall', k, { hp: b.hp ?? 30, max: b.hp ?? 30, by: by?.id || '', side, left, who: by?.name || '', sigilWall: true } as any));
+  for (const k of tiles) objs.push(objectAtLevel(makeObject('sw' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), 'sigil_wall', k, { hp: b.hp ?? 30, max: b.hp ?? 30, by: by?.id || '', side, left, who: by?.name || '', sigilWall: true } as any), by?.level ?? cb.level)); // rules 1.36: at the maker's level
   emitFx(cb, 'wall_raised', { tiles, by: by?.id, side, hp: b.hp ?? 30, rounds: left });
   return ' · walls rise on ' + tiles.map(refOf).join(', ') + (old.length ? ' (the old ones crumble)' : '');
 }

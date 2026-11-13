@@ -11,7 +11,7 @@
 // target's max HP.
 // Every number is provisional (spec section 14, items 1230 on and 1300 on).
 import type { Combat, Unit } from '../combat';
-import { RULES } from '../data';
+import { RULES, enemyLevelRow } from '../data';
 import { levelFactor, levelOf, amountOf, term, type Term } from './output';
 
 export const MENDING: any = (RULES as any).mending || {};
@@ -30,7 +30,7 @@ export const dealFactorOf = (u: Unit | null | undefined): number => (u && u.side
  * column, as enemies grow. */
 export function flatLevelOf(by: Unit | null | undefined, cb: Combat | null | undefined): number {
   if (by) return by.lvlDmg ? by.lvlDmg : by.charId && !by.companion ? levelOf('flat', by.level) : 1;
-  return cb?.level ? levelFactor('mend', cb.level) : 1;
+  return cb?.level ? enemyLevelRow(cb.level).damage_mult ?? 1 : 1; // the enemy table's damage column (never the heal column)
 }
 
 // ---------- rules 1.23: who has been mending (the enemy AI's healer weight) ----------

@@ -5,7 +5,7 @@ import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from
 import { MAP_LAYOUTS, readLayout, nearestFree } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
@@ -23,7 +23,7 @@ import { type OwnedBlock, tieCompanions } from './owned';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { itemAmount, amountSpecOf } from './effects/amounts';
-import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf, amountOf } from './effects/output';
+import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf, amountOf, scaleOf } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal, flatLevelOf } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
 import { skillRollMod, immune, forbids } from './effects/core';
@@ -496,7 +496,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
   const w = WEAPON[c.weapon] || WEAPON.service_pistol;
   return {
     id: 'pc-' + c.id, side: 'pc', name: c.name, short: c.name.slice(0, 2).toUpperCase(), charId: c.id, img: c.portrait, level: clampEnemyLevel(c.level),
-    pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: (ARMOUR[c.armourClass]?.value || 0) + gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor').add,
+    pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor').add), // rules 1.36: × scale at the wearer's level
     attack: mod(c.skills[w.skill] || 0) + RARITY[c.weaponState?.rarity || 'standard'].acc + skillRollMod({ c }, w.skill, { roll: 'attack', combat: true }).add + statQuery({ c }, 'attack').add, weapon: w.id,
     movement: movement(c), init: rollD20(rng).die + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), magazineSize(w.id, c.weaponState?.mods) ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
     downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
@@ -663,6 +663,17 @@ export const active = (cb: Combat) => cb.units.find((u) => u.id === (cb.window?.
 
 // ---------- map objects in a fight (spec: Map objects; Cover) ----------
 export const COVER_HP = { half: OBJ.crate?.hp || 30, full: OBJ.pillar?.hp || 80 };
+/** Rules 1.36 (the level scale): an object's HP (cover, a barricade, a barrel, a wall someone made) is in the units of
+ * the level it stands at: × scale at the fight's level (or its maker's). The level its HP was last put in is kept on it
+ * (o.hpLvl, absent: level 1), so an object carried from fight to story to fight is moved once, never twice. */
+export function objectAtLevel<T extends { hp?: number; max?: number; hpLvl?: number }>(o: T, level: number | null | undefined): T {
+  const to = clampEnemyLevel(level ?? 1), from = o.hpLvl ?? 1; if (to === from || o.hp == null) return o;
+  const f = scaleOf(to) / scaleOf(from);
+  if (o.max != null) o.max = Math.max(1, Math.round(o.max * f));
+  o.hp = o.hp > 0 ? Math.max(1, Math.round(o.hp * f)) : o.hp;
+  if (to === 1) delete o.hpLvl; else o.hpLvl = to;
+  return o;
+}
 /** The objects a map starts with: its half-cover tiles become crates, its full-cover tiles pillars, plus what it declares. */
 export function defaultObjects(map: MapDef): MapObject[] {
   let n = 0; const id = () => 'm' + (++n);
@@ -679,7 +690,7 @@ export function objectsOf(cb: Combat): MapObject[] {
   if (!cb.objects) {
     cb.objects = cb.cover
       ? [...Object.entries(cb.cover).map(([k, c], i) => makeObject('m' + (i + 1), c.kind === 'full' ? 'pillar' : 'crate', k, { hp: c.hp, max: c.max })), ...(cb.rubble || []).map((k, i) => makeObject('r' + (i + 1), 'rubble', k))]
-      : defaultObjects(cb.map);
+      : defaultObjects(cb.map).map((o) => objectAtLevel(o, cb.level));
   }
   return cb.objects;
 }
@@ -1273,7 +1284,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const total = st.raw;
   const props = useW.properties || [];
   const ignoreAll = !!ctx.ignoreArmour || props.includes('ignores_armour') || !!ammo?.ignores_armor || fx.op === 'ignore_armour' && fx.value >= 99;
-  const pierce = (ctx.pierce || 0) + (fx.op === 'ignore_armour' ? fx.value : 0) + (props.includes('armor_ignore_5') ? 5 : 0) + (props.includes('armor_ignore_10') || props.includes('ignores_10_armour') ? 10 : 0);
+  const pierce = (ctx.pierce || 0) + Math.round(((fx.op === 'ignore_armour' ? fx.value : 0) + (props.includes('armor_ignore_5') ? 5 : 0) + (props.includes('armor_ignore_10') || props.includes('ignores_10_armour') ? 10 : 0)) * scaleOf(att.level)); // rules 1.36: armour in HP, × scale
   const armour = armourAgainst(tgt, 'full', { mult: ammo?.armor_mult || 1, pierce, ignore: ignoreAll });
   return { base, terms: ctx.add ? [{ v: ctx.add, label: 'perks (flat)' }] : [], mults, vs, total, crit: critM, pierce, armour, src };
 }
@@ -1497,6 +1508,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   const anyFree = (near: string | undefined) => nearestFree(map.w, map.h, near || '0,0', (k) => standable(map, k) && !taken.has(k));
   const place = (want: string | null | undefined, fallback: string[]) => { const k = want && standable(map, want) && !taken.has(want) ? want : fallback.find((f) => !taken.has(f)) || anyFree(fallback[0]) || fallback[0]; taken.add(k); return k; };
   const level = fightLevel(pcs.map((x) => x.c), { level: extra.level, shift: extra.levelShift }); // rules 1.15
+  for (const o of objs) objectAtLevel(o, level); // rules 1.36: cover and objects at the fight's level
   pcs.forEach(({ c, pos }) => units.push(unitFromCharacter(c, place(pos, map.pcStart), rng)));
   // Companions (a drone, a beast) stand next to their owner and act right after it (rules 1.3).
   for (const { c, comp } of pcs) { const owner = units.find((x) => x.charId === c.id); if (owner && c.companions?.length) units.push(...companionUnits(null, c, owner, taken, rng, map, comp)); }
@@ -2099,7 +2111,7 @@ function onHit(cb: Combat, att: Unit, t: Unit, fx: any, rng?: Rng | null): strin
   if (fx.apply === 'prone') { const pr = applyCond(cb, rng as Rng, att, t, 'prone', undefined, undefined, { skipSave: true }); return t.prone ? ' · knocked prone' : pr; }
   if (fx.apply === 'bleed') return /Bleeding/.test(applyCond(cb, rng as Rng, att, t, 'bleeding', undefined, undefined, { skipSave: true })) ? ' · Bleeding' : '';
   if (fx.apply === 'armour_break') { // on the armour it wears: a Break's 0 for a round is not what is cut (it is mended to the cut value)
-    const worn = effectiveArmour(t); t.baseArmour ??= worn; const now = Math.max(t.baseArmour - 10, worn - (fx.value || 5), 0); setEffectiveArmour(t, now);
+    const worn = effectiveArmour(t); t.baseArmour ??= worn; const sc = scaleOf(att.level), now = Math.max(Math.round(t.baseArmour - 10 * sc), Math.round(worn - (fx.value || 5) * sc), 0); // rules 1.36: armour broken in HP, × scale at the striker's level setEffectiveArmour(t, now);
     return ' · armour broken (' + now + ')'; }
   if (fx.apply === 'push') {
     const mv = displace(cb, rng, t, { away: att.pos, tiles: fx.value || 1 }, { by: att, how: 'push', source: 'knockback' });

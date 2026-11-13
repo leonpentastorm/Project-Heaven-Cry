@@ -5,6 +5,7 @@
 import { say, unsay, type Combat, type Unit, noteLoose, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
+import { scaleOf } from '../effects/output';
 import { apDebt } from '../effects/ap';
 import { price, priced, whyNot, pay, refund } from '../effects/cost';
 import type { CostSite } from '../effects/stats';
@@ -442,7 +443,7 @@ onHook('damage_out', (ctx: any) => {
   const a = cur(ctx.att); if (!a) return;
   if (a.o.mult != null && a.o.mult !== 1) ctx.mults.push({ v: a.o.mult, label: a.o.label || a.t.def.name });
   // armour this strike ignores, against the unit really struck (nobody's armour is changed)
-  if (a.o.ignoreArmour === true) ctx.ignoreArmour = true; else if (a.o.ignoreArmour) ctx.pierce = (ctx.pierce || 0) + a.o.ignoreArmour;
+  if (a.o.ignoreArmour === true) ctx.ignoreArmour = true; else if (a.o.ignoreArmour) ctx.pierce = (ctx.pierce || 0) + Math.round(a.o.ignoreArmour * scaleOf(ctx.att?.level)); // rules 1.36: armour in HP, × scale at the striker's level
 });
 /** Could the user make this attack now (range, sight, ammunition)? Nothing is rolled or recorded. */
 export function canStrike(t: Tech, target: Unit, mode?: 'melee' | 'shot' | 'aimed'): boolean {
@@ -981,7 +982,7 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   return {
     momentum: max != null && holdsMelee(u) ? { now: momentumOf(u), max, hint: MOMENTUM_HINT } : null,
     // Durability's Guard (rules 1.13): the pool, what a Brace or the Guard technique would add now, and the rule
-    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: GR().soak ?? 10, shield: !!shieldOf(u), hint: GUARD_HINT } : null,
+    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: Math.max(1, Math.round((GR().soak ?? 10) * scaleOf(u.level))), shield: !!shieldOf(u), hint: GUARD_HINT } : null,
     pressure: { now, max: pressureCap(u), state, word: state ? state[0].toUpperCase() + state.slice(1) : now ? 'Under fire' : '',
       cost: state === 'pressed' ? '−1 to hit with ranged attacks; no held shots' : state === 'suppressed' ? (u.side === 'pc' ? 'No reactions that attack or move you' : '−1 AP; no reactions that attack or move it') : state === 'broken' ? '−2 AP; it must reach cover or drop Prone first' : '', by },
     stopped: stoppedNow(u) ? { on: true, text: 'Can\'t be stopped again until the end of its next turn' } : null,
