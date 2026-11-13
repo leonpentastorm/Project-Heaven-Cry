@@ -107,6 +107,7 @@ function TabBody({ v, tab }: { v: PlaceViewV; tab: string }) {
   );
 }
 
+/** A safe node's full-screen place (rules 1.46); `onLeave` closes it on this screen (the squad walks on from the map). */
 export function PlaceScreen({ onLeave }: { onLeave: () => void }) {
   const st = getState(), g = st.game, me = st.me.id;
   const v = g ? placeView(g as any, me) : null;

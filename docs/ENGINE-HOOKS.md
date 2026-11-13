@@ -1191,7 +1191,7 @@ Families: `body`, `brain`, `heart`.
 | `tipFor` | `tipFor(el: Element): Tip \| null` | The card an element shows, or null (data-tip first, then data-tip-text). |
 | `TIP_CSS` | `TIP_CSS` | The floating hover card's style, mounted once by mountActionTips. |
 | `tipElement` | `tipElement(doc: Document, t: Tip): HTMLElement` | Lay a card out as elements (the name and its chips if any, a line each). |
-| `placeTip` | `placeTip(r: Rect, b: { width: number; height: number }, W: number, H: number, gap = 6): { x: number; y: number }` | Where the card goes: beside the element (left, then right), else below, else above, shifted inside the window and never over the element itself (so never under the pointer: no flicker). |
+| `placeTip` | `placeTip(r: Rect, b: { width: number; height: number }, W: number, H: number, gap = 6, avoid: Rect[] = []): { x: number; y: number }` | Where the card goes: beside the element (left, then right), else below, else above, shifted inside the window and never over the element itself (so never under the pointer: no flicker). |
 | `TIP_SELECTOR` | `TIP_SELECTOR` | Every element that carries a hover card: a structured one (data-tip) or a prose one (data-tip-text). |
 | `openTipOn` | `openTipOn(el: Element \| null \| undefined): void` | Open an element's own card now, as if hovered (a click on a locked control says why through the one card, never a toast or a native title). |
 | `mountActionTips` | `mountActionTips(doc: Document \| null = typeof document !== 'undefined' ? document : null): void` | The one floating card of the document: any [data-tip] / [data-tip-text] element under the pointer, under keyboard focus or long-pressed on a touch screen shows its card, after a short delay (a pointer swept do… |
@@ -1269,7 +1269,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `light` | `at`, `tiles`, `side` | sigil.ts:1129 | 1 |
 | `linger` | `unit`, `tiles`, `tone`, `element` | magic.ts:1575 | 1 |
 | `load` | `unit`, `at`, `rounds`, `dur`, `special`, `weapon`, `hand` | combat.ts:2446 | 2 |
-| `mana` | `band`, `mana` | game.ts:3852 | 2 |
+| `mana` | `band`, `mana` | game.ts:3854 | 2 |
 | `mask` | `target`, `at`, `fade` | magic.ts:490 | 2 |
 | `melee` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image` | combat.ts:1417 | 6 |
 | `miss` | `unit`, `target`, `at`, `by`, `element` | classes/soul.ts:35 | 3 |

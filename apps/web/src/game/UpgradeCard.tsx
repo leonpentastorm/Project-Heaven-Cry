@@ -11,6 +11,7 @@ import { FRAME_INK as I } from './FullScreenFrame';
 /** What an upgrade card draws: a services-shelf card (the shop) or a place's option card (the Forge), as one shape. */
 export interface UpgradeCardData { key: string; title: string; id?: string | null; price: number | null; why: string | null; note?: string; lines: { label: string; before: string; after: string }[]; action: { type: string; [k: string]: unknown } }
 
+/** One grade step as a large card (rules 1.46); `choice` marks its button as a place's option (data-phc-choice). */
 export function UpgradeCard({ s, onFocus, choice }: { s: UpgradeCardData; onFocus?: () => void; choice?: boolean }) {
   const icon = s.id ? gearIconUri(s.id, undefined, { large: true }) : '';
   return (

@@ -5404,6 +5404,45 @@ shop) and 1.45 (the fight map's layout) are built beside it.
    pressure band by itself takes a damage scale down to the cap (`anchorDamage`: the HP rule mirrored, damage is
    pressure as HP is bulk), so every fight of stages 1 to 3 composes inside both bands.
 
+## Rules revision 1.46: gives, the shop's grade step, every safe node full screen (Survival, build step 4b)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-4b.md`) from `docs/design/survival-spec.md` (draft 4) rule 47,
+section 4.2 primitive 13, section 8.3 and section 10 rows 4, 4a and 4b where they meet (Leon: "loot are separated for
+each player so at the shop ... they can trade money and items"). Every number is in `data/survival.json` (`give`, the
+face `broker`) and is PROVISIONAL (items 3300 to 3312). Code: `give.ts` (the one give door), `run/placeview.ts` (the
+safe nodes' full-screen view), the grade step registered on the shop's services shelf (`run/progress.ts gradeCards`),
+the focus's grade on its card (`gearpreview.ts`). Revisions 1.44 (stages and boons) and 1.45 (the fight map's layout)
+are built beside it.
+
+1. **Gives** (spec rule 47, primitive 13): `gear/give` hands another character of the room **credits** (`credits`, any
+   amount up to the purse) or **any pack entry** (`idx`, a stack's `qty` or that many of its magazines): a weapon or
+   focus with its grade, durability, mods and named property; armour; a mod not fitted; ammunition and cores; items;
+   the armourer's chit; a plot item. A plain give: the receiver is not asked; the log says who gave what to whom
+   (`A GIVE`), the shop's or the visit's log too, and a shopkeeper says its `gave` line. The entry arrives whole and is
+   never merged into another instance (loose rounds, magazines and plain stacks merge as a pickup merges them).
+2. **Where** (`giveProblem`, the spec's `canGive`): out of a fight; in a Survival run at a node of `give.where` (the
+   seven kinds with no fight) and before the first node (`give.at_start`), never at a fight node after its fight; in a
+   campaign anywhere out of a fight (it was plot items only).
+3. **Never given, refused in words:** a boon, a token or the graft (`c.relics`), a training (drill, study, practice,
+   Devotion), the fitted armour class, anything in a fight; a Relic whose property would take the receiver past the
+   run's cap (`boon_cap.cap`); more credits than the purse; a character not yours; solo: "There is nobody to give to".
+   What is in a hand or worn is put in the pack first (`gear/unequip`; the Give tab offers it).
+4. **The shop's Upgrade tab is rules 1.43's grade step:** the services shelf (rules 1.42 item 10) lists a card per
+   carried weapon or focus (`gradeCards`): the step at the full price here and the Forge's beside it, the numbers
+   before and after (the gear preview), the chit's card, the engine's reason in words (the stage's ceiling, one step a
+   visit, the Relic step is the Forge's); its action is `run/upgrade {place: 'shop'}`. A shop opens a 1.43 visit too, so
+   the one-step-a-visit count holds there.
+5. **A focus's card shows its grade on its door's rolls** (`door_acc`, read through rules 1.43's `focusAccTerm`):
+   Standard +0, Fine +1, Masterwork +2 (`rarity.acc`).
+6. **Every safe node is a full-screen place** (spec 8.3 "The Forge uses this frame"): the Forge (the armourer:
+   Upgrade, Mods and pieces, Armour fitting, Give), a training ground (the drill sergeant), a shrine (its rolled
+   patron's portrait), a crossroads (the broker, new face `broker`), a rest (the medic): the face and its greet line on
+   the left, large choice cards (each `runOptions` row: what you gain, what it costs, the reason it can't), your
+   character on the right, the visit's log (`RunVisit.log`) along the bottom. "To the path map" walks out of it on that
+   screen only; the map's panel opens it again. A cache stays a pick on the map (its kit is a reward).
+7. **The path map's hover card** sits beside its node, flipped near an edge, and never over a reachable node
+   (`placeTip`'s `avoid`, a container's `data-tip-avoid`).
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8584,7 +8623,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2913. **Leaving together (rules 1.42 item 7):** every connected player's Ready, or the host's close; the leave line is said in the room's log. PROVISIONAL.
 2914. **The faces' names (rules 1.42 item 8; Suggested):** Ledda Kroll (quartermaster), Sefa Mire (dealer), Brann Okoye (sutler), Ivo Smetanin (trader), Sister Amaun (reliquary), Corra Vell (chandler), Hesk Varro (armourer), Nara Dusk (drill sergeant), Mallow (medic). Fallback portraits from the world pool until the artist delivers (`art/briefs/ART-REQUESTS.md`). Leon to rename freely.
 2915. **The gear preview's reference (rules 1.42 item 9; `rules.json gear_preview`):** a Soldier with the Hellraiser service rifle at the holder's level, 5 tiles away (or the weapon's effective range when shorter; adjacent for melee). PROVISIONAL.
-2916. **A focus's card (rules 1.42 item 9):** its door and the door skill's modifier; the rarity's accuracy on the door (spec rule 25a, step 4a) is not shown until it is built. PROVISIONAL.
+2916. **A focus's card (rules 1.42 item 9):** its door and the door skill's modifier; the rarity's accuracy on the door (spec rule 25a, step 4a) is not shown until it is built. PROVISIONAL. Superseded by rules 1.46 item 5 (shown since step 4b).
 2917. **The services seam (rules 1.42 item 10):** `registerShopService`; the grade step of build step 4a registers there. PROVISIONAL.
 2918. **Items 2900 to 2918 are rules 1.42's.**
 3000. **A focus's rarity on its door (rules 1.43 item 1; spec rule 25a, Leon "for now"):** `rarity.acc` of the focus of the door in a hand, added to the door's roll to hit (`toHitTerms`, type sigil or soul) and to the TN of a save forced through the door skill (`rollSave`, by `via`); one reading, `rolls.ts focusAccTerm`. PROVISIONAL (it reads no new number).
@@ -8641,3 +8680,16 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3119. **The kept draft (rules 1.44 item 7):** saved to the player's library only (the browser); **no room takes a levelled character yet** (`char/add` builds a level 1 character from a sheet, and Survival refuses above level 1): open, for Leon. PROVISIONAL.
 3120. **Item 2814's damage scale (rules 1.44 item 8):** the big units' damage x (cap - the rest's pressure) / their pressure, only when the band is passed by required units. PROVISIONAL.
 3121. **Items 3100 to 3121 are rules 1.44's.**
+3300. **`gear/give` widened (rules 1.46 item 1; spec primitive 13):** credits and any pack entry; the plot item's merge by id kept; a magazine entry gives that many of its magazines. PROVISIONAL.
+3301. **A give needs no confirm from the receiver (rules 1.46 item 1; Leon's ruling 6, spec rule 47).** PROVISIONAL.
+3302. **Where gives are made (rules 1.46 item 2; `give.where`: shop, forge, training, shrine, rest, cache, event; `give.at_start` true):** not at a fight node after its fight (the spec's "every node with no fight" read strictly). PROVISIONAL.
+3303. **Campaign gives widened (rules 1.46 item 2):** any pack entry or credits out of a fight, where it was plot items only; `gear/drop` stays plot items only. PROVISIONAL.
+3304. **Only a character's own player gives (rules 1.46 item 3):** the host does not give for an away player (it would spend another's purse, as rules 1.42 item 2910). PROVISIONAL.
+3305. **The cap on a give (rules 1.46 item 3):** a Relic's property counts on the receiver's cap (`runWorth` + its worth over `boon_cap.cap` is refused); the giver's cap frees. PROVISIONAL.
+3306. **Never given is named in the action (rules 1.46 item 3):** `relic`, `train`, `armour` on `gear/give` exist only to be refused in words (the Give tab lists them greyed). PROVISIONAL.
+3307. **The shop's grade step card (rules 1.46 item 4):** only the numbers that change are listed (before and after); the price is the step's at the shop with "at a Forge: N" beside it. PROVISIONAL.
+3308. **A focus's grade on its card (rules 1.46 item 5; `door_acc`):** the bonus `focusAccTerm` reads for the focus held in the main hand of a scratch copy. PROVISIONAL.
+3309. **The crossroads broker (rules 1.46 item 6; face `broker`, Teo Vant, Suggested; portrait `event-broker` and backdrop `crossroads` pending; fallback `veyra-salt`).** PROVISIONAL.
+3310. **Walking out of a place is per screen (rules 1.46 item 6):** "To the path map" is the client's, not an action; the squad's next node is marked on the map as before. PROVISIONAL.
+3311. **The cache is not a place (rules 1.46 item 6):** its pick of kit is a reward and shows on the map's panel, as a fight's pick does. PROVISIONAL.
+3312. **Items 3300 to 3312 are rules 1.46's.**

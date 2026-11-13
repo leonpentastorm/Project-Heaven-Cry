@@ -15,6 +15,7 @@ const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing
 /** A character's portrait for the receiver cards (its own art, by asset key or URL), or ''. */
 const portraitOf = (p: string) => (!p ? '' : /^(data:|https?:|\/)/.test(p) ? p : A[p + '-lg'] || A[p] || A['char-' + p + '-lg'] || A['char-' + p] || '');
 
+/** The Give tab (rules 1.46) for this player's character, inside any full-screen place. */
 export function GiveTab() {
   const st = getState(), g = st.game, me = st.me.id;
   const v = g ? giveView(g as any, me) : null;

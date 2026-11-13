@@ -5,7 +5,6 @@
 // it costs, the engine's reason when it can't be taken), the Give tab (give.ts), your character, and the visit's log.
 // Nothing here decides anything: the options, prices and reasons are progress.ts's, the gives give.ts's.
 import { type Character, type Rarity, gearAt } from '../character';
-import { WEAPON, ITEM } from '../data';
 import { FAITH_PATRON } from '../belief';
 import { rngFor, die } from '../rng';
 import { gearPreview } from '../gearpreview';
@@ -15,7 +14,7 @@ import { SETTING } from './encounter';
 import { MAP_DATA } from './map';
 import { faceFor } from './shop';
 import { type MeV, meBlock } from './shopview';
-import { relicRow, worthOf, capRoom, runWorth, BOON_CAP } from './power';
+import { worthOf, capRoom, runWorth, BOON_CAP } from './power';
 import type { GameState } from '../game';
 
 /** A place's tab: its id, its word, and the option groups it holds (the Give tab holds none: it draws `giveView`). */
@@ -43,7 +42,6 @@ const TABS: Record<string, PlaceTabV[]> = {
 export const PLACE_KINDS = Object.keys(TABS);
 /** Is the party standing at a place that opens full screen (its visit open, on the map, not a pick waiting)? */
 export const placeOpen = (g: { run?: RunState | null }): boolean => { const r = g.run; if (!r || r.state !== 'map' || !r.visit || r.visit.node !== r.at) return false; return PLACE_KINDS.includes(r.visit.kind); };
-const nameOf = (id: string): string => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id;
 
 /** The full-screen place's view for player `me` (their own character, or `charId`); null when no place is open. */
 export function placeView(g: GameState, me: string, charId?: string | null): PlaceViewV | null {
@@ -69,7 +67,3 @@ export function placeView(g: GameState, me: string, charId?: string | null): Pla
     party, log: v.log || [], worth: c ? runWorth(c) + ' of ' + BOON_CAP : '',
   };
 }
-/** The name of the thing a card is about, for its heading (a weapon's, a piece's), or null. */
-export const placeCardName = (x: PlaceCardV): string | null => (x.id ? nameOf(x.id) : null);
-/** A Relic property's name and text, for its large card (rules 1.43 rule 38). */
-export const propCard = (id: string) => { const row = relicRow(id); return row ? { name: row.name, text: String((row as any).text || ''), worth: worthOf(id) } : null; };
