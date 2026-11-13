@@ -12,7 +12,8 @@ export const areaOf = (it: ActionItem): Area => ((it[5] && it[5].hand) || 'other
 /** The Attack tab's rows in area order (stable: each area keeps the engine's order). Any other tab, or a tab whose rows
  *  name no hand (a unit with the old rows), as it is. */
 export function areaOrder(tab: string, items: ActionItem[]): ActionItem[] {
-  if (tab !== 'attack' || !items.some((it) => areaOf(it) !== 'other')) return items;
+  if (tab !== 'attack') return subOrder(items);
+  if (!items.some((it) => areaOf(it) !== 'other')) return items;
   return items.map((it, i) => ({ it, i })).sort((a, b) => RANK[areaOf(a.it)] - RANK[areaOf(b.it)] || a.i - b.i).map((x) => x.it);
 }
 const PIP_GUARD = 'width: 8px; height: 11px; border-radius: 2px 2px 5px 5px; box-sizing: border-box; ';
@@ -28,3 +29,16 @@ export function areaHead(hand: Area, name: string, b?: WeaponBlock | null) {
   return { hand, name, icon: b && hand !== 'both' ? b.icon : '', hasIcon: !!(b && hand !== 'both' && b.icon), meter: '', hint: '', hasHint: false, pips: [] as typeof pips, hasPips: false, pipKind: (b && b.meterKind) || '',
     jammed, jamTip: jammed ? 'This gun is jammed: it can\'t fire until cleared (Clear jam).' : '' };
 }
+
+/** A row's group inside its tab (Classes 3.0 step 10): its descriptor's `sub` ('Whispers', 'Hymns'; Shadow's Slip, Mark,
+ *  Work, Break; Tending's Bond, Heal, Help), or ''. */
+export const subOf = (it: ActionItem): string => (it[5] && it[5].sub) || '';
+/** Any tab but Attack: the rows gathered by their group, each group where its first row stood (stable: the engine's order
+ *  inside a group). The Chaplain's Ward, listed after the prayers, joins the Whispers. A tab with no groups, as it is. */
+export function subOrder(items: ActionItem[]): ActionItem[] {
+  if (!items.some((it) => subOf(it))) return items;
+  const first = new Map<string, number>(); items.forEach((it, i) => { if (!first.has(subOf(it))) first.set(subOf(it), i); });
+  return items.map((it, i) => ({ it, i })).sort((a, b) => first.get(subOf(a.it))! - first.get(subOf(b.it))! || a.i - b.i).map((x) => x.it);
+}
+/** A group's header over its first row (the Attack tab's area header, with no weapon). */
+export const subHead = (name: string) => areaHead('other', name.toUpperCase());

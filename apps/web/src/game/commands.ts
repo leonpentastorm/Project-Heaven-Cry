@@ -18,11 +18,11 @@ export const BAND_NAME: Record<string, string> = { thin: 'Thin', normal: 'Normal
 /** [id, label, cost text, explanation, why not now (the engine's reason; undefined: work it out from the cost)] */
 /** [id, label, cost, text, why, meta]: meta is the descriptor's hand (the Attack tab's areas) and a technique's text in
  *  parts (the hover card's lines). */
-export interface ActionMeta { hand?: 'main' | 'off' | 'both'; parts?: { needs: string; text: string; line: string; traits: { label: string; text: string }[] } }
+export interface ActionMeta { /** the row's group inside its tab (the descriptor's sub) */ sub?: string; hand?: 'main' | 'off' | 'both'; parts?: { needs: string; text: string; line: string; traits: { label: string; text: string }[] } }
 export type ActionItem = [string, string, string, string, (string | null)?, ActionMeta?];
 /** [group title, items, family ink (or null), tab id] */
 export type ActionGroup = [string, ActionItem[], string | null, string];
-export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith', calls: 'Calls' };
+export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', shadow: 'Shadow', tend: 'Tend', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith', calls: 'Calls' };
 
 // ---------- prayers (Blessing 2.0, rules 1.6; the engine's faithView and previewPrayer) ----------
 /** A prayer's id in the action list: "pr:<kind>:<id>" (the engine's descriptor id). */
@@ -97,7 +97,7 @@ export const gameFor = (g: any, cb: any, ch: any): any => ({ ...(g || {}), comba
 export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
   if (!cb || !cur) return [];
   const list: ActionDescriptor[] = (() => { try { return actionsFor(gameFor(opts.g, cb, ch), cur.id, null); } catch { return []; } })();
-  const by = (gr: string) => list.filter((d) => d.group === gr && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why, { ...(d.hand ? { hand: d.hand } : {}), ...(d.parts ? { parts: d.parts } : {}) }]);
+  const by = (gr: string) => list.filter((d) => d.group === gr && !d.hidden && !d.parent).map((d): ActionItem => [d.id, d.name, d.cost.text, d.text, d.why, { ...(d.hand ? { hand: d.hand } : {}), ...(d.parts ? { parts: d.parts } : {}), ...(d.sub ? { sub: d.sub } : {}) }]);
   const w: any = (WEAPON as any)[cur.weapon];
   const out: ActionGroup[] = [['MOVEMENT', by('move'), null, 'move'], ['ATTACK & DEFEND · ' + (w ? w.name.toUpperCase() : ''), by('attack'), HOSTILE_INK, 'attack'], ['UTILITY', by('utility'), null, 'utility']];
   // Rules 1.14, the perk card in a fight: USE NOW is the buttons; RIDES AN ACTION and ALWAYS ON are rows to read.
@@ -108,6 +108,8 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   if (moves.length) { const pe = perkEntries(opts.g, cb, cur, ch, 'combat').find((e) => e.tab === 'class'); const k = classOf(ch || (opts.g && cur?.charId ? opts.g.characters?.[cur.charId] : null), pe?.cls); out.push(['CLASS · ' + (k ? k.name.toUpperCase() : 'MOVES'), moves, k ? k.ink : null, 'class']); }
   const shadowRows = by('shadow'); // rules 1.32: Perception's door verbs (Slip, Mark, Work, Break), in Perception ink
   if (shadowRows.length) out.push(['SHADOW · UNSEEN', shadowRows, '#40BAA0', 'shadow']);
+  const tendRows = by('tend'); // rules 1.33: Insight's door verbs (Bond, Heal, Help), in Insight ink
+  if (tendRows.length) out.push(['TEND · BONDS AND CARE', tendRows, '#EB95B7', 'tend']);
   const sig = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
   if (sig.length) out.push(['MAGIC · SIGILS', sig, SIGIL_GLOW, 'sigils']);
   if (soul.length) out.push(['MAGIC · OUTBURSTS', soul, SOUL_INK, 'outbursts']);

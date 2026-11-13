@@ -8,6 +8,7 @@ import type { Character } from './character';
 import { focusHand } from './character';
 import { tiesOf, tieCap, tieKind } from './kit';
 import { condName, condOn } from './magic';
+import { UNTIL } from './condtable';
 import { maxReactions, reactionsUsed, cueLive } from './tactics';
 import { TECHNIQUE } from './physical';
 import { SKILL } from './data';
@@ -34,7 +35,7 @@ export interface BondView {
 }
 const BOND = 'bond';
 /** The bonded mark's rounds left, when they run out (a held condition counts very high: no end). */
-const FOREVER = 900;
+const FOREVER = UNTIL;
 function chipOf(cb: Combat, me: Unit, v: Unit, mark: string | undefined): BondChip {
   const echo = (cb.delayed || []).filter((d: any) => d.holder === me.id && d.target === v.id && d.op?.op === 'deal').reduce((n: number, d: any) => n + Math.round(d.op?.fixed?.n || 0), 0);
   const left = mark && v.conds ? v.conds[mark] : undefined;

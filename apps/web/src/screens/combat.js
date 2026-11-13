@@ -10,7 +10,8 @@ import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, an
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor } from '@engine';
+  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf } from '@engine';
+import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
@@ -43,11 +44,12 @@ import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, re
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
-import { areaOrder, areaHead } from '../game/attackAreas';
+import { areaOrder, areaHead, subHead } from '../game/attackAreas';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS } from '../game/resources';
+import { bondStripVals, reactionPipsVals } from '../game/bondStrip';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 
 /** Confirm lines for the self-only actions of rules 1.3 (reload both, hide, put out a fire, break free, recover). */
@@ -246,7 +248,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
 
 // The action tabs: names, family inks (Sigils Mind cyan, Outbursts Soul violet, Attack the damage red; the rest neutral)
 // and the last tab each character used (kept across turns, and across reloads in this browser).
-const TAB_INK = { attack: HOSTILE_INK, sigils: SIGIL_GLOW, outbursts: SOUL_INK };
+const TAB_INK = { attack: HOSTILE_INK, sigils: SIGIL_GLOW, outbursts: SOUL_INK, shadow: '#40BAA0', tend: '#EB95B7' }; // each door in its attribute's ink (Perception, Insight)
 const TAB_MEM = (() => { try { return JSON.parse(localStorage.getItem('phc.combatTabs') || '{}') || {}; } catch { return {}; } })();
 function tabMem(charId, tab) {
   if (!charId) return null;
@@ -324,6 +326,18 @@ const typingIn = (el) => !!el && (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName ||
 /** Witnessed lasts until the fight ends or the patron intervenes (rules 1.6.3), not for a count of rounds: its chip's
  *  title says so ("Witnessed: until the fight ends or <patron> acts"), as the FAITH tab's header does. */
 const patronNameOf = (u, g) => { const c = g && u.charId ? g.characters[u.charId] : null, p = c && c.patron ? FAITH_PATRON[c.patron] : null; return p ? String(p.name) : ''; };
+/** The patron standing at a Witnessed Chaplain's side (the engine's presenceOf), as a tile layer: its portrait at 40%,
+ *  cut to the figure (the head and shoulders up from the tile), the accent as its edge; the mark when it is not painted. */
+function presenceVals(u, g, cb) {
+  let p = null; try { p = withGame(g, () => presenceOf(cb, u)); } catch { p = null; }
+  if (!p) return null;
+  const c = g.characters && g.characters[u.charId], pid = String((c && ((c.belief && c.belief.patron) || c.patron)) || '');
+  if (!pid) return null;
+  const src = patronPortrait(pid) || patronMarkUri(pid), ink = accentOf(pid), name = (FAITH_PATRON[pid] && FAITH_PATRON[pid].name) || 'The patron';
+  return { patron: pid, src, tip: name + ' stands at ' + u.name + '\'s side (Witnessed)',
+    boxStyle: 'position: absolute; left: -10%; bottom: 8%; z-index: 1; width: 120%; height: 165%; overflow: hidden; pointer-events: none; opacity: 0.4; border-radius: 40% 40% 0 0; box-shadow: inset 0 0 0 1px ' + ink + '; -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent); mask-image: linear-gradient(to bottom, #000 55%, transparent)',
+    imgStyle: 'display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%' };
+}
 export const witnessedWords = (u, g) => 'UNTIL THE FIGHT ENDS OR ' + (patronNameOf(u, g).toUpperCase() || 'THE PATRON') + ' ACTS';
 /** The chip's title: "Witnessed: until the fight ends or Old Overcast acts." */
 const witnessedTitle = (u, g) => 'Witnessed: until the fight ends or ' + (patronNameOf(u, g) || 'the patron') + ' acts.';
@@ -1006,6 +1020,9 @@ export class CombatLogic extends DCLogic {
       if (ob && kindOf(ob).door && !ob.open) { bg = '#3A2E1A'; }
       if (diff.has(k) && !u) { bg = '#161C28'; }
       const aTag = u ? atkTag(k, u) : null;
+      // The Chaplain's patron at its side while Witnessed (rules 1.31, chaplain-spec.md section 9): the engine's presenceOf
+      // says it stands; the patron's portrait, a standing figure at 40% behind the token, in the patron's accent.
+      const prs = u && !u.dead && u.side === 'pc' ? presenceVals(u, g, cb) : null;
       // Physical 2.0 (part 3): Pressure pips over every token (public), Stopped once and a held Watch in its hover card
       // and aria-label; held Watches your side can see, tinted on their tiles with a dotted line from the watcher.
       const uPhys = u ? physOf(g, cb, u, 'pc') : null, pLook = pressureLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
@@ -1030,6 +1047,7 @@ export class CombatLogic extends DCLogic {
         hasCache: !!wc.cache && !u, hasCacheGlyph: !!wc.cache && !u && !spr, cacheGlyph: wc.cache ? wc.cache.glyph : '', cacheStyle: wc.cache ? wc.cache.style : '', cacheChip: wc.cache ? wc.cache.chip : '', cacheChipStyle: wc.cache ? wc.cache.chipStyle : '',
         hasKind: !!(kb && kb.has) && !isHeld, kindText: kb ? kb.text : '', kindStyle: kb ? kb.style : '', kindTitle: kb ? kb.title : '',
         hasDrop: !!dr, dropText: dr ? '▾ ' + dr.npc.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '', dropTitle: dr ? dr.npc.name + ' lies here (dropped when the carrier went down; back on the map after the fight)' : '',
+        hasPresence: !!prs, presence: prs || {},
         hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines }) : null, hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
         click: () => this.tileClick(k), hover: () => { if (this.state.hover !== k) this.setState({ hover: k }); },
         hasArrow: !!route[k] && k !== (cur && cur.pos), arrow: route[k] || '', hasCost: k === hv || !!mTag || !!aTag, cost: mTag || (aTag ? aTag.text : (moveAp ? '−' + moveAp + ' AP' : 'Paid') + ' · ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') + (crossing.length ? ' · ⚠ HAZARD' : '')),
@@ -1119,7 +1137,7 @@ export class CombatLogic extends DCLogic {
       // A move that can't be used now still opens (its footer says why); its reason is on the button too.
       // Its hover card (game/actionTip.ts): the name and cost, a line per sentence, the weapon's line and traits, the refusal.
       ...tipAttrs({ name: label, cost: costText, ...(meta && meta.parts ? { needs: meta.parts.needs, text: meta.parts.text, line: meta.parts.line, traits: meta.parts.traits } : { text }), why }),
-      area: gid === 'attack' ? (meta && meta.hand) || 'other' : '',
+      area: gid === 'attack' ? (meta && meta.hand) || 'other' : '', sub: (meta && meta.sub) || '',
       name: label, cost: costText, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
       costStyle: 'font-size: 12px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
@@ -1258,6 +1276,9 @@ export class CombatLogic extends DCLogic {
       // held Outburst are the panel's; the unit panel doesn't repeat them
       res: null, // ownRes() below, once the tab is settled
       line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Movement ' + myU.movement + ' · Stims ' + mc.stims,
+      // Classes 3.0 step 10: the reaction pips beside AP (the engine's reactionView), and the Bond strip (bondView) once
+      // the resource rows are settled below (it takes the Ledger's row as its end bar)
+      react: reactionPipsVals(cb, myU, mc), bonds: { show: false },
       // Echo has its own row under HP, as on the story sheet (UI pass 4.1): the diamonds, the count, and (?) for what it is.
       echo: { ...echoView(mc.echo), open: !!S.echoOpen, expanded: S.echoOpen ? 'true' : 'false', glyph: S.echoOpen ? '×' : '?', toggle: () => this.setState({ echoOpen: !this.state.echoOpen }) },
       // The one-line summary that stands in for the card on short windows (the bar at the top of the column); the most
@@ -1384,6 +1405,12 @@ export class CombatLogic extends DCLogic {
         if (i > 0) sepOf[first.key] = true;
         headOf[first.key] = h === 'other' ? areaHead('other', 'OTHER') : h === 'both' ? areaHead('both', 'BOTH', b) : b ? areaHead(h, (blocks.filter((x) => x.hand !== 'both').length > 1 ? (h === 'main' ? 'MAIN HAND · ' : 'OFF HAND · ') : '') + b.name.toUpperCase(), b) : areaHead(h, h === 'main' ? 'MAIN HAND' : 'OFF HAND');
       }); }
+    // Any other tab in groups (Classes 3.0 step 10): the descriptor's `sub` heads its first row (Whispers and Hymns on
+    // Faith, Slip, Mark, Work and Break on Shadow, Bond, Heal and Help on Tend); a 1 px line between groups.
+    groups.filter((gr) => gr.id !== 'attack' && gr.items.some((a) => a.sub)).forEach((gr) => {
+      const subs = [...new Set(gr.items.filter((a) => !isPerkInfo(a.key)).map((a) => a.sub))];
+      subs.forEach((sb, i) => { const first = gr.items.find((a) => a.sub === sb && !isPerkInfo(a.key)); if (!first || !sb) return; if (i > 0) sepOf[first.key] = true; headOf[first.key] = subHead(sb); });
+    });
     const tabIds = groups.map((gr) => gr.id);
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
       const seenHostile = foes.some((u) => !u.downed);
@@ -1400,7 +1427,9 @@ export class CombatLogic extends DCLogic {
     // JAMMED is on its own area header, so its ammo row there doesn't repeat it (every other tab: the row says it).
     if (mePanel) {
       const jamHead = new Set(S.tab === 'attack' ? Object.values(headOf).filter((h) => h && h.jammed).map((h) => h.hand) : []);
-      mePanel.res = resView(resourcesOf(myU, mc, g).filter((r) => !(S.tab === 'outbursts' && myU.mg && myU.mg.held && (r.key === 'strain' || r.key === 'held')))
+      const rows0 = resourcesOf(myU, mc, g), ledgerRow = rows0.find((r) => r.key === 'res-ledger') || null;
+      mePanel.bonds = bondStripVals(cb, myU, mc, (id) => { const v = cb.units.find((x) => x.id === id); return v ? faceOf(v) || '' : ''; }, ledgerRow);
+      mePanel.res = resView(rows0.filter((r) => !(mePanel.bonds.show && mePanel.bonds.hasLedger && r.key === 'res-ledger')).filter((r) => !(S.tab === 'outbursts' && myU.mg && myU.mg.held && (r.key === 'strain' || r.key === 'held')))
         .map((r) => (r.warn === 'JAMMED' && jamHead.has(r.key === 'off' ? 'off' : 'main') ? { ...r, warn: undefined, level: undefined } : r)));
     }
     this._tabs = tabIds; this._tabOf = tabOf;
