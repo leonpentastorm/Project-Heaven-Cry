@@ -158,7 +158,7 @@ Against `claude/charming-gauss-hbq4n0`:
 - **The Outburst's steady line after the free Pump moved** (`REFIT_MEASURE=1 REFIT_SYSTEMS=ob REFIT_VARIANTS=allin
   REFIT_N=6`): 146 / 146 / 134 / 115, mean **135** against `outburst_steady` 135: the all-in Channeler has Will Power
   10, so it keeps the free Pump and the swell; the balance-contract guard passes.
-- `npm run check`: see the last line of the final report.
+- `npm run check`: ALL GREEN (engine 3928 passed, web 1122 passed).
 
 ## How to add one more Tending verb
 
