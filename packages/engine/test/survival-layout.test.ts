@@ -11,6 +11,8 @@ import { SETTINGS, SETTING, TEMPLATES, LAYOUT_DATA, layoutRecipe, encounterMap, 
 import { rngFor } from '../src/rng';
 import { OBJ } from '../src/objects';
 import { keyOf } from '../src/combat';
+declare const process: { env: Record<string, string | undefined> }; // the engine's tsconfig has no node types
+declare const console: { log(...a: unknown[]): void };
 
 const SEEDS = Number(process.env.SURVIVAL_LAYOUT_SEEDS || 1000), SIZES = [16, 20, 26];
 const HAZ = new Set(Object.values(OBJ).filter((k) => k.hazard).map((k) => k.id));
