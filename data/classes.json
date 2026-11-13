@@ -1915,7 +1915,7 @@
         "name": "Toxin",
         "ap_cost": 1,
         "uses": "at_will",
-        "text": "Costs {=ap_cost} AP and {=effects.0.value|abs} toxin dose. Coat a melee weapon, your arrows or a thrown weapon (never a gun) and choose Weakened, Slowed or Bleeding. Your next hit with it forces a Body save against 12 + your strength with Ingenuity, and the target takes that condition if it fails. The coat lasts until that hit or the end of the fight, and you can put it on before a fight starts.",
+        "text": "Costs {=ap_cost} AP and {=effects.0.value|abs} toxin dose. Coat the weapon in your hand, whatever it is, and choose Weakened, Slowed or Bleeding. Your next hit with it forces a Body save against 12 + your strength with Ingenuity, and the target takes that condition if it fails. A Break with it raises the save by the Shadow it spends. The coat lasts until that hit or the end of the fight, and you can put it on before a fight starts.",
         "effects": [
           {
             "op": "resource",
