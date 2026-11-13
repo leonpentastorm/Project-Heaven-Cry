@@ -86,8 +86,8 @@ export function cleanDrops(d: any, o: { max?: number; tables?: LootTable[] } = {
 // ---------- rolling ----------
 const tablesOf = (cb: Combat): Record<string, LootTable> => ({ ...LOOT_TABLES, ...Object.fromEntries((cb.lootTables || []).map((t) => [t.id, t])) });
 const rollQty = (rng: Rng, q: DropEntry['qty']) => (Array.isArray(q) ? q[0] + die(rng, q[1] - q[0] + 1) - 1 : q);
-/** One roll on a table: an entry by weight, or nothing. */
-function rollTable(rng: Rng, t: LootTable | undefined): DropEntry | null {
+/** One roll on a table: an entry by weight, or nothing. The one weighted pick (loot, and the Survival path map's kinds). */
+export function rollTable(rng: Rng, t: LootTable | undefined): DropEntry | null {
   if (!t) return null;
   const total = (t.none || 0) + t.entries.reduce((s, e) => s + (e.weight || 0), 0); if (total <= 0) return null;
   let r = next(rng) * total - (t.none || 0); if (r < 0) return null;

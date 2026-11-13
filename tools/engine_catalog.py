@@ -403,6 +403,7 @@ PRIMITIVE_FILES = [
     (SRC + '/effects/hooks.ts', None, 'The hook bus and the registry'),
     (SRC + '/effects/actions.ts', None, 'Item actions'),
     (SRC + '/rolls.ts', None, 'Rolls, saves and contests'),
+    (SRC + '/rng.ts', None, 'Seeded streams (the dice of a fight, and named streams for generated content)'),
     (SRC + '/kit.ts', None, 'The kit: selectors, areas, tiles'),
     (SRC + '/combat.ts', ['displace', 'swapUnits', 'moveUnit', 'emitFx', 'hurtUnit', 'healUnit', 'unitSees', 'dist'], 'Movement and the fight\'s doors'),
     (SRC + '/magic.ts', ['applyCond', 'endCond', 'condOn', 'condId', 'setCondRounds', 'clearConds', 'cleanseList', 'debuffsOf', 'saveAgainst', 'saveTn', 'condMods', 'Zone'], 'Conditions and saves'),
