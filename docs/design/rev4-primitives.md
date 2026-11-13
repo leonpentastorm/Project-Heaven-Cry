@@ -187,3 +187,23 @@ Each closes with `npm run check` green and the lints (`lint-item-ops`, `lint-cos
 | 11 | **P9** owned units | 1 (payer), 7, 8, 10 | `old-save` (drone, beast, twin load as owned), replays (companion turn order unchanged), `golden-costs` (the payer), `golden-rules` | step 8 (Figments) |
 
 The live fixes of section 4 marked "Now" go first, on `develop`, each with its own test, before step 0's pin.
+
+## 6. Addendum, 13 Nov (after Leon's rulings on enemy Bonds and the Bond focus)
+
+The rewritten `bonds-spec.md` (section 6.2) needs these, none of which was in the list above. Each is a general
+addition to a closed list or to a primitive already listed; none is a handler. They are built with the primitive
+they extend (so in step 1b, with P8 and the batch rows), and each needs its test and the catalogue regenerated.
+
+| Addition | Extends | Shape | Who else can use it |
+| --- | --- | --- | --- |
+| **`delay`** on any op | the op runner | `delay: {until: "target_turn_start" \| "holder_turn_start" \| "rounds", n?}`: the op is queued and run then, with the amount fixed when queued; a queued op on a dead unit is dropped; saved with the fight | the healing echo; any "next turn" effect (today hand-written in several perks: find and move them) |
+| P3 source **`ties:<kind>`** | P3 number blocks | `per: [{of: "ties:bond", value}]`: counts the holder's ties of a kind | "harder with more Bonds"; Figments held |
+| predicates **`self_holds`** / **`self_lacks_gear`** | the predicate list | `{slot: "hand" \| "person", door or item kind}`: the holder has a focus or item of that kind in a hand or on its person | every focus gate (Evoker, Emanator, Visualizer, the Bond focus): replace the per-door "in hand" checks with it |
+| P8 **`ends_on`** words `to_down`, `unseen_round`, and `tie clear: "target"` | P8 ties | a tie ends when its far end goes Down (foes), or has been out of the near end's sight for a full round; an op may clear the ties to one target | enemy Bonds; a Figment out of range |
+| **`redirect` `split`** | the `redirect` row | the redirected share is divided among several receivers (`targets`, P5) | the damage share to Bonded enemies; Share a Hit with several allies |
+
+**One thing the Bonds rewrite found that the frame's weapon-neutral rule must settle before step 7:** its to-hit
+bonus against a Bonded enemy reaches weapon attacks only, because Sigil and Outburst rolls do not go through the
+`attack` hook. Either those rolls are brought onto the same roll primitive's hook (the lead's recommendation: one
+place where "a roll to hit this target" can be changed, in `rolls.ts`), or the bonus is stated as weapon-only. Until
+ruled, the spec says weapon attacks.
