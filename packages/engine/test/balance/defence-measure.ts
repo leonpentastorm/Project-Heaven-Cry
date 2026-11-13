@@ -148,10 +148,19 @@ void MAP_ID; void TIER_WEAPON; void plain;
 
 // ---------- Reflex (rules 1.30; reactions-spec.md section 7, "Measure when built") ----------
 /** The Skirmisher's second reaction, measured in whole fights (the range's target never acts, so it shows nothing
- * there): the reference gun squad (SQUADS.guns: the optimised gun, a Skirmisher, first; `variant` for it, the rest
- * normal) in a fight, with Reflex as built and with its stat turned off. Per Skirmisher turn: the damage it dealt outside
+ * there): the reference gun squad (SQUADS.guns: the optimised gun, a Skirmisher, first, playing `watcher`: a shot, then a
+ * held Overwatch; `variant` for it, the rest normal) in a fight, with Reflex as built and with its stat turned off. Per Skirmisher turn: the damage it dealt outside
  * its own turn (its reactions) and what it took, as a percent of the normal-share plain rifle's turn at that level
  * (`yard`: refit-measure.ts yardOf). */
+/** A policy that holds Overwatch (reactions-spec.md section 7): the plain rifleman's turn, but after its first attack,
+ * once it has the AP for a shot, it holds one on Overwatch (the stance) and ends the turn there. */
+export const watcher: Policy = (x) => {
+  const u = x.u, M = x.memo; if (M.round !== x.cb.round) { M.round = x.cb.round; M.shots = 0; }
+  if (M.shots >= 1 && !u.overwatch && !u.watch && u.ap >= 2) { const s: Step = { action: { type: 'combat/overwatch', unitId: u.id, mode: 'shot' }, kind: 'other', label: 'overwatch' }; if (!x.banned.has(JSON.stringify(s.action))) return s; }
+  if (u.overwatch) return null;
+  const s = plain(x); if (s && s.kind === 'attack') M.shots++; return s;
+};
+(POLICIES as any).watcher = watcher;
 export interface ReflexSide { off: number; taken: number; turns: number }
 export interface ReflexRow { level: number; variant: string; fight: string; map: string; n: number; on: ReflexSide; off: ReflexSide; gain: number; errors: number }
 export function reflexRow(level: number, variant: string, n: number, yard: number, o: { fight?: string; map?: 'open' | 'cover' } = {}): ReflexRow {
@@ -161,7 +170,7 @@ export function reflexRow(level: number, variant: string, n: number, yard: numbe
     eff.value = on ? was : 0; let off = 0, taken = 0, turns = 0;
     try {
       for (let i = 0; i < n; i++) {
-        const r = runFight({ pcs: SQUADS.guns.map((b, k) => ({ build: b, variant: (k === 0 ? variant : 'normal') as any, level })), foes: FIGHTS[fight].map((t) => ({ tier: t })), map, seed: ['REFLEX', fight, level, map, i].join('-'), maxRounds: 12 });
+        const r = runFight({ pcs: SQUADS.guns.map((b, k) => ({ build: b, variant: (k === 0 ? variant : 'normal') as any, level, ...(k === 0 ? { policy: 'watcher' } : {}) })), foes: FIGHTS[fight].map((t) => ({ tier: t })), map, seed: ['REFLEX', fight, level, map, i].join('-'), maxRounds: 12 });
         errors += r.errors.length; const s = r.pcs[0]; off += s.offTurnDmg; taken += s.taken; turns += Math.max(1, s.turns);
       }
     } finally { eff.value = was; }

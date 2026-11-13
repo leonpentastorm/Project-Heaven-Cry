@@ -115,6 +115,27 @@ Step 1a (`docs/design/handoffs/classes-3.0-step-1a.md` section 3, rules 1.28 ite
 5. `always_seen` is read by the sight words only; the fog and the AI honour it with its first user.
 6. Riposte is not folded, and reactions that never opened a window still open none (step 3).
 
+Step 3 (`docs/design/handoffs/classes-3.0-step-3.md` section 5, rules 1.30 items 1800 to 1811; branch
+`worktree-agent-a87f47094562526ef`, not merged):
+1. Reflex lives in a base class's new `gain` list (moves held from class gain, beside the six); the Bulwark's 1 Guard and
+   the Operative's Read can use it.
+2. The Breaker does not Riposte with no Momentum, even with a weapon that lends the technique; the class gives the
+   Answer with any melee weapon. An item can give an Answer (stat `technique:<id>`), not any other technique.
+3. Fire Discipline's "first attack" is the first attack roll of your own turn, a free one included; its Aimed +1 also
+   applies to a held aimed shot. **Measured: the Skirmisher all in is 173% against 145 (+19%; level 5 +30%) from the
+   new first-attack cut alone (the long rifle); the dial is the lead's to choose (not refitted).**
+4. Keep one for a held shot refuses everything but the held fire and a Call made as a reaction; on by default, no screen
+   switch until step 10.
+5. Run and Gun: a move over 2 tiles leaves it waiting; its Pressure ends with the turn.
+6. Special Ammo: a story load arms a no-magazine weapon for the next fight; flamers and launchers now take loads (only
+   a consumable is refused). Speed Loader at 1 AP saves nothing and spends the turn's use.
+7. Killzone's second attack in the next round spends that round's one reaction.
+8. A move an item makes free keeps the move bank, for every item (Glass Runner's golden line moved: a negative bank).
+9. Called Shot is `status: shelved` with a `future_home` until step 4.
+10. **The replay coverage guard fails "actions with a door open" (19, needs more than 20)**: the scripted door game ends
+    sooner with two Skirmishers; not edited, not lowered (the brief): the lead's call.
+11. Reflex measured in whole fights: the second reaction is never used by the simulator's enemies (+0); unconfirmed.
+
 ## 7. State when this was last touched
 
 13 Nov 2026, later: **0.25.0 is live** (hover cards everywhere, one Clear jam for two guns, the live bugs, the hooks
