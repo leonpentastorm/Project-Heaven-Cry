@@ -303,7 +303,7 @@
   "derived": {
     "note": "Attr counts from 1, Skill = points 0-10; floor results; mod(skill) = -2 at 0 points, else points-1 (on a check, an Ask and a passive a gamma skill adds its full points: resolution.skill_track.check_mod)",
     "body": {
-      "max_hp": "100 + 15*(endurance-1) + (level-1)*hp_per_level",
+      "max_hp": "scale(level) * (100 + 15*(endurance-1) + (level-1)*hp_per_level) (rules 1.36: output.level.scale)",
       "hp_per_level": "5 + 2*pain_threshold",
       "ap_per_turn": 6,
       "initiative_bonus": "(agility-1) + mod(reaction_speed)",
