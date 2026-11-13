@@ -62,6 +62,7 @@ import { MAP_DATA } from './run/map';
 import { composeEncounter, SETTING } from './run/encounter';
 import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT } from './run/rewards';
 import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
+import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES } from './run/shop';
 import { earnCredits } from './credits';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -327,6 +328,8 @@ export type Action =
   // credits; tests only, win the fight under way
   | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'credits' } | { type: 'run/skip' }
   | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/forge, run/fit, run/train, run/shrine, run/trade, run/take
+  /** Rules 1.42 (run/shop.ts): buy a counter line or a rolled piece (`key`), sell a pack entry, restock a class resource, leave (the host may close). */
+  | { type: 'run/buy'; charId: string; key: string; qty?: number } | { type: 'run/sell'; charId: string; idx: number; qty?: number } | { type: 'run/restock'; charId: string; res: string; n?: number } | { type: 'run/leave'; close?: boolean }
   /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
   | { type: 'session/next' }
   | { type: 'story/speak'; text: string; roll?: boolean; ooc?: boolean } | { type: 'story/skip'; playerId: string }
@@ -3150,6 +3153,17 @@ function runAction(g: GameState, a: Action, by: string) {
       runPicksDone(g);
       return;
     }
+    case 'run/buy': case 'run/restock': { // rules 1.42 (spec rules 25, 26): the counter, a rolled piece, a restock point; each from its own purse
+      const res = a.type === 'run/buy' ? shopBuy(g, by, a) : shopBuy(g, by, { charId: a.charId, key: 'restock:' + a.res, qty: a.n ?? 1 });
+      if ('no' in res) fail(res.no);
+      return;
+    }
+    case 'run/sell': { const res = shopSell(g, by, a); if ('no' in res) fail(res.no); return; } // rules 1.42 (spec rule 27)
+    case 'run/leave': { // rules 1.42 (spec rule 11, 8.3): Ready to leave; the party goes when everyone is, or when the host closes
+      const res = leaveShop(g, by, !!a.close); if ('no' in res) fail(res.no);
+      if ('left' in res && res.left) push(g, { kind: 'system', head: 'THE SHOP', text: (res.line ? res.line + ' ' : '') + 'The squad is back on the road.' });
+      return;
+    }
     case 'run/skip': { // tests only (the browser suites' room): the fight under way is won at once
       if (!g.settings.test) fail('Skipping a fight is for the test room only.');
       if (!isHost(g, by)) fail('Only the host skips a fight.');
@@ -3186,6 +3200,12 @@ function runEnter(g: GameState, id: string) {
   r.at = id; r.path = [...r.path, id]; r.leans = {}; r.note = null; r.visit = null;
   newScene(g, 'Stage ' + r.stage + ' · ' + (n.gate ? 'The gate' : word) + ' · node ' + n.depth + ' of ' + MAP_DATA.rows);
   if (n.kind === 'fight' || n.kind === 'elite' || n.kind === 'boss') { runFight(g, n); return; }
+  if (n.kind === 'shop') { // rules 1.42 (spec 8.3): no node card: the shop opens full screen at once
+    const sh = openShop(r, n, runSetting(r)), f = FACES.find((x) => x.id === sh.face);
+    r.visit = openVisit(g, n); // rules 1.43: the shop's grade step is counted on the visit (run/progress.ts)
+    push(g, { kind: 'system', head: 'THE SHOP', text: (f ? f.name + ', ' + f.role.toLowerCase() + ': "' + sh.line.text + '"' : 'A shop.') });
+    return;
+  }
   const text = (NODE_TEXT as any)[n.kind] as string | undefined;
   r.note = { node: id, kind: n.kind, ...(text ? { text } : {}) };
   r.visit = openVisit(g, n); // rules 1.43: what is done at a safe node, and what it rolled on entry (run/progress.ts)

@@ -11,6 +11,7 @@ import modesJ from '../../../../data/modes.json';
 import survivalJ from '../../../../data/survival.json';
 import { seedFrom } from '../rng';
 import { type PathNode, pathMap, mapNodes, MAP_DATA } from './map';
+import type { ShopState } from './shop';
 
 /** The run's start numbers (data/survival.json `run`: start_credits, dead_return_hp, first_setting; rules 1.41). */
 export const survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string } = (survivalJ as any).run;
@@ -31,9 +32,9 @@ export const modeOf = (id: string | null | undefined): ModeDef | undefined => MO
 export const playOf = (g: { settings: { play?: PlayMode } }): PlayMode => g.settings.play || OLD_SAVE_PLAY;
 
 /** Where a run stands. `map`: choosing the next node; `fight`: a fight at the node under way; `reward`: picks waiting
- * after a won fight (offers); `boon` and `tile`: after a Boss (the stage is cleared; step 5 adds the boon pick and the
- * next tile); `over`: lost or retired. */
-export type RunPhase = 'map' | 'fight' | 'reward' | 'boon' | 'tile' | 'over';
+ * after a won fight (offers); `shop`: a shop (or a Forge) open full screen at the node (rules 1.42, `shop`); `boon` and
+ * `tile`: after a Boss (the stage is cleared; step 5 adds the boon pick and the next tile); `over`: lost or retired. */
+export type RunPhase = 'map' | 'fight' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
 /** A node of a stage's path map (spec section 9's shape, so a node can later hold a designed room): run/map.ts. */
 export type RunNode = PathNode;
 /** A tile of the world the party walks (rule 32): a stage's setting and its boon pool. */
@@ -84,8 +85,8 @@ export interface RunState {
   ready: Record<string, boolean>;
   /** The picks on offer after a won fight, by character id; null when none (step 5 adds the boons and tiles). */
   offers: Record<string, RunOffer> | null;
-  /** The shop or Forge open at this node; null when none (step 4). */
-  shop: unknown | null;
+  /** The shop or Forge open at this node; null when none (rules 1.42, run/shop.ts). */
+  shop: ShopState | null;
   /** The fights' tally for Report a run (rule 35; step 6 adds the damage by system). */
   stats: { fights: RunFight[] };
   /** Characters dead in the fight under way (rule 5: out for that fight), by id. */
@@ -128,6 +129,7 @@ export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by:
   if (!g.players.some((p) => p.id === by)) return 'Only a player in the room picks the way.';
   if (r.state === 'fight') return 'The fight is on.';
   if (r.state === 'reward') return 'Take your picks first: the squad moves on when everyone has.';
+  if (r.state === 'shop') return 'Leave the shop first: everyone marks Ready to leave, or the host closes it.';
   if (r.state !== 'map') return 'The stage is over.';
   const n = runNode(r, nodeId); if (!n) return 'No such node on this map.';
   if (!reachable(r).some((x) => x.id === nodeId)) return 'You can\'t reach ' + (MAP_DATA.words as any)[n.kind] + ' at depth ' + n.depth + ' from here: pick a lit node.';

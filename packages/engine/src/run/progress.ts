@@ -64,7 +64,7 @@ export type Say = (text: string, charId?: string, head?: string) => void;
 // ---------------------------------------------------------------------------------------------- the visit
 /** The safe node the party stands on, and its visit, or null (a fight node, the run elsewhere). */
 function here(g: GameState): { r: RunState; n: NonNullable<ReturnType<typeof runNode>>; v: RunVisit } | null {
-  const r = g.run; if (!r || (r.state !== 'map' && r.state !== 'reward')) return null;
+  const r = g.run; if (!r || (r.state !== 'map' && r.state !== 'reward' && r.state !== 'shop')) return null;
   const n = runNode(r, r.at), v = r.visit; if (!n || !v || v.node !== n.id) return null;
   return { r, n, v };
 }

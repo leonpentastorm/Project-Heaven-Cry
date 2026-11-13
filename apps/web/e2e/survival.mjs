@@ -56,7 +56,7 @@ const far = r.nodes.find((n) => n.depth === 3);
 await p.locator('[data-phc-node="' + far.id + '"]').click();
 const tip1 = await until(p, () => (document.querySelector('.phc-atip')?.textContent || '').trim() || null, null, 5000).catch(() => '');
 ok('an unlit node can\'t be taken and its card says why ("' + tip1.slice(0, 90) + '")', (await run()).at === null && /can.t reach/.test(tip1));
-await shot('survival-path-map');
+await shot("survival-path-map"); await p.setViewportSize({ width: 1920, height: 1080 }); await shot("survival-path-map-1920"); await p.setViewportSize({ width: 1280, height: 720 });
 
 // ---------- node 1 by hand ----------
 await p.locator('[data-phc-node="' + lit[0] + '"]').click();
@@ -94,9 +94,81 @@ ok('… and the map lights the node\'s links', JSON.stringify((await p.locator('
 await act({ type: 'run/skip' }); // a refused action comes back as the player's toast, in the engine's words
 const plain = await until(p, () => window.__phc.getState().toast?.text || null, null, 10000).catch(() => '');
 ok('run/skip with no fight on is refused: "' + plain + '"', plain === 'No fight is under way.');
-let sawLevelUp = false, sawPanel = 0, guard = 0;
+// ---------- the shop (rules 1.42, spec 8.3): full screen, at 1280 and 1920 ----------
+let sawShop = false;
+const fitsCheck = () => p.evaluate(() => {
+  const bad = [];
+  if (document.documentElement.scrollWidth > innerWidth + 1) bad.push('the page scrolls sideways');
+  for (const el of document.querySelectorAll('[data-phc-card-name], [data-phc-keeper-name], [data-phc-tab], [data-phc-price]')) if (el.scrollWidth > el.clientWidth + 1) bad.push('clipped: ' + el.textContent.slice(0, 30));
+  const cards = [...document.querySelectorAll('[data-phc-card]')].map((e) => e.getBoundingClientRect());
+  for (let i = 0; i < cards.length; i++) for (let j = i + 1; j < cards.length; j++) { const a = cards[i], b = cards[j]; if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) bad.push('cards overlap'); }
+  return bad.slice(0, 4);
+});
+async function shopChecks() {
+  sawShop = true;
+  await p.waitForSelector('[data-phc-fullscreen]', { timeout: 30000 });
+  ok('a shop node opens the shop full screen: the keeper, the tabs, the purse; the path map is gone', await p.locator('[data-phc-pathmap]').count() === 0
+    && /\S/.test(await p.locator('[data-phc-keeper-name]').textContent()) && await p.locator('[role="tab"]').count() === 5 && /\d/.test(await p.locator('[data-phc-purse-n]').textContent()));
+  ok('the Give tab is shown and locked until build step 4b', await p.locator('[data-phc-tab="give"][aria-disabled="true"]').count() === 1);
+  const cal = await p.locator('[data-phc-shelf="calibres"] [data-phc-card]').count();
+  ok('Always in stock: every calibre on its own shelf (' + cal + ')', cal === 12);
+  await settle(p, 1400); await p.screenshot({ path: OUT + 'survival-shop-1280.png' });
+  ok('at 1280: nothing clipped, nothing overlaps (' + (await fitsCheck()).join('; ') + ')', !(await fitsCheck()).length);
+  // buy ammunition
+  const me = Object.values((await G()).characters)[0];
+  const c0 = me.credits, rifle = p.locator('[data-phc-card="rounds:rifle"]');
+  const price = Number((await rifle.locator('[data-phc-price]').textContent()).replace(/\D/g, ''));
+  await rifle.locator('[data-phc-buy]').click();
+  await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, c0, { timeout: 30000 });
+  const c1 = Object.values((await G()).characters)[0].credits;
+  ok('buy rifle rounds at the card\'s price (' + price + '): ' + c0 + ' → ' + c1 + ', logged', c0 - c1 === price && /bought/.test(await p.locator('[data-phc-visit-log]').textContent()));
+  // today's gear: a card's numbers are the engine's
+  await p.locator('[data-phc-tab="gear"]').click();
+  const gear = await p.locator('[data-phc-shelf="gear"] [data-phc-card]').evaluateAll((l) => l.map((e) => ({ key: e.getAttribute('data-phc-card'), id: e.getAttribute('data-phc-card-id'), hit: e.querySelector('[data-phc-num="hit"]')?.textContent || null, dmg: e.querySelector('[data-phc-num="dmg"]')?.textContent || null, price: Number(e.querySelector('[data-phc-price]').textContent.replace(/\D/g, '')) })));
+  const sh = (await run()).shop, gun = gear.find((x) => x.hit);
+  const pv = gun ? await p.evaluate(([cid, id, rar]) => window.__phc.gearPreview(cid, { id, rarity: rar }), [me.id, gun.id, sh.stock.find((s) => s.key === gun.key).rarity]) : null;
+  ok('a gear card\'s numbers equal the engine\'s preview (' + (gun ? gun.id + ': ' + gun.hit + ', ' + gun.dmg : 'none') + ')', !!pv && pv.lines.find((l) => l.key === 'hit').value === gun.hit && pv.lines.find((l) => l.key === 'dmg').value === gun.dmg);
+  await p.locator('[data-phc-card="' + gun.key + '"]').hover();
+  ok('hovering a card fills the compare panel (holding against this)', await p.locator('[data-phc-compare]').count() === 1);
+  await settle(p, 400); await p.screenshot({ path: OUT + 'survival-shop-gear-1280.png' });
+  // a purse too short says why
+  const credits = Object.values((await G()).characters)[0].credits, dear = gear.filter((x) => x.price > credits).sort((a, b) => b.price - a.price)[0];
+  if (dear) {
+    const status = await p.locator('[data-phc-card="' + dear.key + '"] [data-phc-status]').textContent();
+    await p.locator('[data-phc-card="' + dear.key + '"] [data-phc-buy]').click();
+    const t = await until(p, () => window.__phc.getState().toast?.text || null, null, 10000).catch(() => '');
+    ok('a purse too short says why, on the card and when tried ("' + status + '" / "' + t + '")', status === 'Short ' + (dear.price - credits) + ' credits.' && t === status);
+  } else ok('a purse too short says why (every piece affordable: nothing to test)', false);
+  // sell one (the weapon picked after node 1), then buy a rolled weapon
+  await p.locator('[data-phc-tab="sell"]').click();
+  const rows = await p.locator('[data-phc-sell]').evaluateAll((l) => l.map((e) => ({ idx: e.getAttribute('data-phc-sell'), v: Number(e.querySelector('[data-phc-sell-value]')?.textContent.replace(/\D/g, '') || 0), btn: !!e.querySelector('[data-phc-sell-btn]') })));
+  const best = rows.filter((x) => x.btn).sort((a, b) => b.v - a.v)[0], s0 = Object.values((await G()).characters)[0].credits;
+  await p.locator('[data-phc-sell="' + best.idx + '"] [data-phc-sell-btn]').click();
+  if (await p.locator('[data-phc-sell-yes]').count()) await p.locator('[data-phc-sell-yes]').click();
+  await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, s0, { timeout: 30000 });
+  ok('sell one at the row\'s price (+' + best.v + ')', Object.values((await G()).characters)[0].credits - s0 === best.v);
+  await p.locator('[data-phc-tab="gear"]').click();
+  const now = Object.values((await G()).characters)[0].credits, cheap = gear.filter((x) => (WEAPONISH.test(x.id)) && x.price <= now).sort((a, b) => a.price - b.price)[0];
+  if (cheap) {
+    await p.locator('[data-phc-card="' + cheap.key + '"] [data-phc-buy]').click();
+    await p.waitForFunction((k) => window.__phc.getState().game.run.shop?.stock.find((s) => s.key === k)?.sold, cheap.key, { timeout: 30000 });
+    ok('buy a rolled weapon (' + cheap.id + ' for ' + cheap.price + '): it is marked "Sold to" and in the pack', /Sold to/.test(await p.locator('[data-phc-card="' + cheap.key + '"] [data-phc-status]').textContent())
+      && (Object.values((await G()).characters)[0].pack || []).some((x) => (x.weapon || x.item || x.id) === cheap.id));
+  } else ok('buy a rolled weapon: none affordable (' + now + ' credits; ' + gear.map((x) => x.id + ' ' + x.price).join(', ') + ')', false);
+  await p.locator('[data-phc-tab="always"]').click();
+  await p.setViewportSize({ width: 1920, height: 1080 });
+  await settle(p, 900); await p.screenshot({ path: OUT + 'survival-shop-1920.png' });
+  ok('at 1920: nothing clipped, nothing overlaps (' + (await fitsCheck()).join('; ') + ')', !(await fitsCheck()).length);
+  await p.locator('[data-phc-tab="gear"]').click(); await settle(p, 500); await p.screenshot({ path: OUT + 'survival-shop-gear-1920.png' });
+  await p.setViewportSize({ width: 1280, height: 720 });
+  await p.locator('[data-phc-leave]').click();
+  await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
+  ok('Leave the shop: back on the path map', await p.locator('[data-phc-pathmap]').count() === 1);
+}
+const WEAPONISH = /^(?!.*(kit|ration|parts|torch|flare|beads|chalk|toolbox|spirits|cigarettes|plate|shield|buckler|pavise|essence|stim|core$|musek))/;
+let sawLevelUp = false, guard = 0;
 // rules 1.43: the route from here that passes the most of the five progression nodes (then the most fights)
-const WANT = ['training', 'shrine', 'forge', 'event', 'rest'];
+const WANT = ['training', 'shrine', 'forge', 'event', 'rest', 'shop'];
 const route = (() => { const by = Object.fromEntries(r.nodes.map((n) => [n.id, n])); let best = { n: -1, path: [] };
   const walk = (id, path) => { const pp = [...path, id], n = by[id]; if (!n.links.length) { const k = new Set(pp.map((x) => by[x].kind).filter((x) => WANT.includes(x))); const sc = k.size * 10 + Math.min(4, pp.filter((x) => by[x].kind === 'fight').length); if (sc > best.n) best = { n: sc, path: pp }; return; } for (const l of n.links) walk(l, pp); };
   for (const l of by[r.at].links) walk(l, []); return best.path; })();
@@ -120,7 +192,6 @@ while (guard++ < 40) {
     const next = ids.find((id) => route.includes(id)) || ids.find((id) => !['fight', 'elite', 'boss'].includes(kinds[id])) || ids[0];
     await p.locator('[data-phc-node="' + next + '"]').click();
     await p.waitForFunction((id) => window.__phc.getState().game.run.at === id, next, { timeout: 30000 });
-    if (kinds[next] === 'shop') { await p.waitForSelector('[data-phc-note]'); if (/will stand here/.test(await p.locator('[data-phc-note]').textContent())) sawPanel++; }
     const k = kinds[next], cid = (await G()).characters && Object.keys((await G()).characters)[0];
     if (k === 'training' && !done.training) {
       const { before, after, key } = await choose('drill:'), w = key && key.slice(6);
@@ -146,6 +217,9 @@ while (guard++ < 40) {
       done.rest = !!key && after.run.visit.did[cid] === 1;
       ok('a rest: its small training clicked (' + key + ')', done.rest);
     }
+  } else if (r.state === 'shop') {
+    if (!sawShop) await shopChecks();
+    else { await p.locator('[data-phc-leave]').click(); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'shop', null, { timeout: 30000 }); }
   } else if (r.state === 'fight') {
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
@@ -171,8 +245,8 @@ while (guard++ < 40) {
 }
 r = await run(); g = await G();
 ok('the level-up waits on the map at level 3 (the class is earned there), and Back to the map returns', sawLevelUp && Object.values(g.characters)[0].level >= 3);
-ok('the shop (build step 4) still says what will be there (' + sawPanel + ' seen)', sawPanel >= 1);
 ok('rules 1.43: the route passed a training ground, a shrine, a Forge, a crossroads and a rest, each choice landed (' + JSON.stringify(done) + ')', ['training', 'shrine', 'forge', 'event', 'rest'].every((k) => done[k]));
+ok('a shop was on the way and opened full screen', sawShop);
 ok('the whole stage walked to the Boss: 15 nodes, STAGE 1 CLEARED', r.state === 'boon' && r.path.length === 15 && /STAGE 1 CLEARED/.test(await p.locator('[data-phc-cleared]').textContent()));
 await shot('survival-stage-cleared');
 await p.locator('[data-phc-cleared] [data-phc-retire]').click();
