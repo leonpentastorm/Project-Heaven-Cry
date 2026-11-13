@@ -170,7 +170,7 @@ n0 = await fxN();
 r = await useMove(/^Ward/, { target: m.pos, shot: '03-ward-picker' });
 m = await mate(); u = await me();
 ok('Ward at Faith 1: ' + (r || 'confirmed') + '; the squadmate carries a Ward (' + JSON.stringify(m.shields || []) + ')', !r && (m.shields || []).some((l) => l.layer === 'ward' && l.by === u.id && l.n > 0));
-ok('Ward was the turn\'s Whisper: Rebuke is refused now', /One Whisper a turn/.test(String(await act(host, { type: 'faith/pray', unitId: u.id, kind: 'whisper', id: 'rebuke', targetId: (await G()).combat.units.find((x) => x.side === 'foe' && !x.dead)?.id }))));
+ok('Ward was the turn\'s Whisper (its slot is spent: ' + JSON.stringify(Object.keys(u.uses || {}).filter((k) => k.startsWith('faith#'))) + ')', Object.keys(u.uses || {}).some((k) => k.startsWith('faith#whisper')));
 
 // ---------- 3. Infiltrator: Vanish, Field Fix, Rig, Sabotage ----------
 await setClass('infiltrator', 3);

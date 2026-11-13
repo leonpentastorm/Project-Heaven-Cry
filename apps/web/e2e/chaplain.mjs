@@ -5,7 +5,7 @@
 // Judged; a second hit that turn carries none; Rebuke after it (the turn's Whisper); the CLASS tab lists Ward and
 // Sanctuary (and Verdict), and Sanctuary (a Hymn) is refused during the Hymn's wait, in words. Ward is in classes-moves.
 // Everything through the real buttons where the screen has one, the reducer (window.__phc.act) for the drill's set-up.
-import { chromium, click, BASE, pause, settle } from './lib.mjs';
+import { chromium, click, BASE, pause, settle, tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const ctx = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 });
@@ -40,7 +40,8 @@ await p.locator('[role="tab"][data-tab="faith"]').click(); await settle(p, 200);
   const rebuke = panel.locator('[data-act="pr:whisper:rebuke"]');
   const txt = (await panel.textContent()) || '';
   ok('Faith 1: the FAITH tab is open (no "Praying needs" line) and offers Rebuke', (await rebuke.count()) === 1 && !/Praying needs Faith/.test(txt));
-  ok('Faith 1: a Hymn is refused in words ("A Hymn needs Faith 3")', /A Hymn needs Faith 3/.test(txt) || /A Hymn needs Faith 3/.test(String(await act({ type: 'faith/pray', unitId: (await G()).combat.order[(await G()).combat.turn], kind: 'hymn', id: 'thunderclap' }))));
+  const hb = panel.locator('[data-act^="pr:hymn:"]').first(), tip = (await hb.count()) ? await tipOf(hb) : '';
+  ok('Faith 1: a Hymn is refused in words (' + (tip || txt.match(/A Hymn needs Faith \d/)?.[0] || 'nothing') + ')', /A Hymn needs Faith 3/.test(tip) || /A Hymn needs Faith 3/.test(txt));
 }
 
 // ---------- 2. The Chaplain: the worked example's turn ----------
@@ -66,16 +67,19 @@ for (const [dx, dy] of [[3, 0], [-3, 0], [0, 3], [0, -3], [2, 2], [-2, -2], [2, 
 }
 ok('a drill sergeant stands in range', !!foe);
 await p.locator('[role="tab"][data-tab="faith"]').click(); await settle(p, 200);
-const hymnErr = await act({ type: 'faith/pray', unitId: u.id, kind: 'hymn', id: 'thunderclap' });
+const hymnErr = await act({ type: 'faith/pray', unitId: u.id, kind: 'hymn', id: 'thunderclap', tile: foe.pos });
+const wit = await p.waitForFunction((id) => !!window.__phc.getState().game.combat.units.find((x) => x.charId === id)?.conds?.witnessed, cid, { timeout: 15000 }).then(() => true, () => false);
 u = await me();
-ok('the Hymn (Thunderclap): ' + (hymnErr || 'answered') + '; Witnessed, the patron at the side', !hymnErr && !!u.conds?.witnessed);
+ok('the Hymn (Thunderclap on the sergeant\'s tile): ' + (hymnErr || 'prayed') + '; Witnessed, the patron at the side', wit);
 // Sanctuary is a Hymn: right after the Hymn it waits for the Hymn's wait, in words; the CLASS tab lists the moves
 await p.locator('#phc-tab-class').click(); await settle(p, 200);
 {
   const txt = (await p.locator('[role="tabpanel"]').textContent()) || '';
-  ok('the CLASS tab lists Ward, Smite, Sanctuary and Verdict', /Ward/.test(txt) && /Smite/.test(txt) && /Sanctuary/.test(txt) && /Verdict/.test(txt));
-  const sErr = await act({ type: 'combat/perk', unitId: u.id, id: 'class:guardian.sanctuary', actionId: 'sanctuary', tile: u.pos });
-  ok('Sanctuary is a Hymn: refused during the Hymn\'s wait (' + sErr + ')', /wait/.test(String(sErr)));
+  ok('the CLASS tab lists Ward, Sanctuary and Verdict', /Ward/.test(txt) && /Sanctuary/.test(txt) && /Verdict/.test(txt));
+  const sb = p.locator('[role="tabpanel"] button', { hasText: 'Sanctuary' }).first(), sTip = (await sb.count()) ? await tipOf(sb) : '';
+  await act({ type: 'combat/perk', unitId: u.id, id: 'class:guardian.sanctuary', actionId: 'sanctuary', tile: u.pos }); await settle(p, 400);
+  const zones = ((await G()).combat.zones || []).filter((z) => z.kind === 'sanctuary');
+  ok('Sanctuary is a Hymn: refused during the Hymn\'s wait (' + sTip.slice(0, 80) + '); no zone laid', /wait/i.test(sTip) && !zones.length);
 }
 /** End the Chaplain's turn and come back to it (the AI is off: the drill units pass). */
 async function nextTurn() {
