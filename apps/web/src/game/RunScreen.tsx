@@ -12,6 +12,7 @@ import { nodeIconSvg } from './runIcons';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { ShopScreen } from './ShopScreen';
+import { StageScreen } from './StageScreen';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
 const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
@@ -96,6 +97,7 @@ export function RunScreen() {
   const v = g ? runView(g, me) : null;
   if (!g || !v) return <div style={{ padding: 40, color: ink.muted }}>No run is under way.</div>;
   if (v.state === 'shop') return <ShopScreen />; // rules 1.42: the shop replaces the play screen (spec 8.3)
+  if (v.state === 'boon' || v.state === 'tile' || v.over) return <StageScreen />; // rules 1.44: the stage's end and the summary, full screen
   const fight = v.state === 'fight';
   // an even grid: depth in columns evenly spaced across the width; a depth's nodes in their map order, evenly spaced and
   // centred on one row pitch for every depth (the order keeps the links as the map makes them)
@@ -162,14 +164,6 @@ export function RunScreen() {
           {v.choices.map((x) => <Choices key={'ch-' + x.charId} x={x} />)}
           {mine.map((o) => <Offer key={o.charId} o={o} />)}
           {others.map((o) => <Offer key={o.charId} o={o} />)}
-          {v.cleared ? (
-            <div data-phc-cleared="" style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 14, borderRadius: 12, background: ink.raised, border: '1px solid ' + ink.white }}>
-              <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '0.14em' }}>STAGE {v.stage} CLEARED</span>
-              <span style={{ fontSize: 13, color: '#DCE2EC', lineHeight: 1.5 }}>The Boss is down. Boons and the next tile come with a later build: retire to keep the score.</span>
-              {(g.run!.stats.fights || []).map((f, i) => <span key={i} style={{ fontSize: 12, color: ink.muted }}>Node {f.depth}: {f.template.replace(/_/g, ' ')} · {f.outcome === 'win' ? 'won' : f.outcome || 'on'} in {f.rounds} {f.rounds === 1 ? 'round' : 'rounds'} · {f.foes.length} {f.foes.length === 1 ? 'foe' : 'foes'}</span>)}
-              {v.canRetire ? <button type="button" data-phc-retire="" onClick={() => act({ type: 'run/retire' })} style={btn(true)}>Retire the run · keep the score</button> : <span style={{ fontSize: 12, color: ink.muted }}>The host retires the run.</span>}
-            </div>
-          ) : null}
         </aside>
       </div>
     </div>

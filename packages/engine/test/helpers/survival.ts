@@ -21,9 +21,15 @@ export function chooseNode(g: any, prefer: string[] = ['fight', 'elite', 'rest',
 }
 /** Walk the run until the stage is cleared, lost or `maxNodes` nodes are walked; fights by the simulator's policies
  * (or won at once by run/skip when `skip`). Returns the recorder. */
-export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: boolean; prefer?: string[] } = {}) {
-  for (let guard = 0; guard < 200; guard++) {
-    const run = r.g.run; if (!run || run.state === 'over' || run.state === 'boon' || r.g.phase === 'lobby') break;
+export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: boolean; prefer?: string[]; /** rules 1.44: play on through this stage (boons: each the first offered; the tile: everyone marks the first) */ through?: number } = {}) {
+  for (let guard = 0; guard < 200 * (o.through || 1); guard++) {
+    const run = r.g.run; if (!run || run.state === 'over' || r.g.phase === 'lobby') break;
+    if (run.state === 'boon' || run.state === 'tile') {
+      if (!o.through || run.stage >= o.through) break;
+      if (run.state === 'boon') { for (let i = 0; i < n; i++) if (run.boons?.['c' + (i + 1)]) r.must({ type: 'run/boon', charId: 'c' + (i + 1), choice: 0 }, ownerOf(i)); }
+      else for (let i = 0; i < n; i++) if (r.g.run.state === 'tile') r.must({ type: 'run/tile', tile: run.tiles![0].id }, ownerOf(i));
+      continue;
+    }
     if (run.state === 'map') {
       if (o.maxNodes != null && run.path.length >= o.maxNodes) break;
       const node = chooseNode(r.g, o.prefer); if (!node) { r.errors.push('no node to reach'); break; }

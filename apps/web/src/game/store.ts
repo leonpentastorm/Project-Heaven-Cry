@@ -215,6 +215,8 @@ function followPhase(prev: GameState | null, g: GameState) {
   // A finished fight keeps its players on the grid until they click "Back to the story".
   if (prev && prev.phase === 'combat' && g.phase !== 'combat' && S.screen === 'combat') return; // (a lost Survival run goes to the lobby: its card shows first too)
   if (!prev || prev.phase !== g.phase) set({ screen: screenFor(g) });
+  // rules 1.44: a run that has just ended (retired, or lost once its fight card is left) shows its summary first
+  if (prev?.run && prev.run.state !== 'over' && g.run?.state === 'over' && S.screen !== 'combat') set({ screen: 'run' });
   if (g.awards.some((a) => g.characters[a.charId]?.owner === S.me.id)) set({ screen: 'ultimate' });
 }
 

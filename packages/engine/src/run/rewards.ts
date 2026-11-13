@@ -13,6 +13,7 @@ import { rngFor, die } from '../rng';
 import { ENC_BUDGET, type FightKind } from './encounter';
 import type { RunOffer, RunWeapon } from './state';
 import { capRoom, rollProps, worthOf } from './power';
+import { statQuery } from '../effects/hooks';
 
 const SV: any = svJ;
 /** What each kind of node without a fight says on its panel (`survival.json nodes`; the shop, Forge, training ground,
@@ -51,12 +52,17 @@ export function magazineWorth(id: string): PackItem[] {
 /** The ammunition pack (rule 23): `n` magazines' worth for every gun carried, and the cores for a Sigil or Visualizer
  * focus carried. The pack items, in order (the caller adds them with packAdd). */
 export function ammoPack(c: Character, n: number, guns: string[] = gunsOf(c)): PackItem[] {
-  const out: PackItem[] = [];
-  for (const id of guns) for (let i = 0; i < n; i++) out.push(...magazineWorth(id));
+  const out: PackItem[] = [], m = ammoMult(c), mags = Math.round(n * m), coreN = Math.round(SV.ammo_pack.cores * m);
+  for (const id of guns) for (let i = 0; i < mags; i++) out.push(...magazineWorth(id));
   const cores = (SV.ammo_pack.core_doors as string[]).some((k) => holds(c, { slot: 'person', door: k }));
-  if (cores && SV.ammo_pack.cores > 0) out.push(...lootToPack({ item: 'standard_core', qty: SV.ammo_pack.cores }));
+  if (cores && coreN > 0) out.push(...lootToPack({ item: 'standard_core', qty: coreN }));
   return out;
 }
+/** Rules 1.44: the ammunition pack's multiplier for this character (the stat `run_ammo`, which its relics answer:
+ * Bandolier), on its magazines and its cores. */
+export const ammoMult = (c: Character): number => statQuery({ c }, 'run_ammo').mult;
+/** Rules 1.44: a node's credits as this character takes them (the stat `run_credits`, which its relics answer: Tithe). */
+export const creditsFor = (c: Character, credits: number): number => Math.round(credits * statQuery({ c }, 'run_credits').mult);
 
 const RARITIES: Rarity[] = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
 /** The weapons and foci a pick can offer (rule 26): every weapon and focus with a price, no thrown things. */

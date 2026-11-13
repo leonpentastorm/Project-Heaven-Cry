@@ -5351,6 +5351,59 @@ this revision's `run/upgrade` with the place `shop`.
    reason when it can't be taken; the picks of kit beside the weapon pick. The Forge's full-screen frame is the shop's
    (build step 4) and comes when the two are merged.
 
+## Rules revision 1.44: stages, boons and the next tile (Survival, build step 5)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-5.md`) from `docs/design/survival-spec.md` (draft 4) rules 3,
+4, 6, 19, 30 to 32, 35 and section 10 row 5 (Leon: "After the boss we move into another tile with another 15 nodes,
+give a big passive buff after the boss"). Every number is in `data/survival.json` (`boons`, `boon_pick`, `world`,
+`settings[].line`, `backdrop`, `awaiting`; the stage term `stage` as before) or `data/actions.json` (the resource
+`devotion_xp`) and is PROVISIONAL (items 3100 to 3121). Code: `run/stage.ts` (what is offered, the stage's log, the
+score), the reducer's `run/boon` and `run/tile`, three general primitives (items 3101 to 3103). Revisions 1.42 (the
+shop) and 1.45 (the fight map's layout) are built beside it.
+
+1. **Endless stages** (spec rules 3, 19): after a Boss and its boon the run goes on to stage N+1 on the tile picked:
+   a fresh 15-node map from the run's seed (`pathMap(seed, stage)`), the squad at its start. Each stage is harder by the
+   stage term, read where each number is used and never typed: the bulk target x (1 + `stage.bulk` x (s - 1)), the
+   pressure cap x (1 + `stage.pressure` x (s - 1)), Elites and Bosses `stage.elite_up` levels over the fight level
+   (min((s - 1) x per, max), never over 20), XP x `stage.xp`, credits x (1 + `stage.credits` x (s - 1)), the grade
+   ceiling by stage (`rewards.ceiling`), the lag as before (by the fight level). Level 20 is the cap: XP past it is
+   **renown**, counted only to the score (rule 6).
+2. **The boon pick** (spec rules 30, 31): when the Boss's picks are taken every character is offered `boon_pick.offer`
+   3 boons, rolled from the tile's pool first and from every boon when the pool runs short; never one it holds (as a
+   boon, a token or a graft), never one that serves none of its doors (a boon's `doors`: Primed); **one that would pass
+   the run's cap is replaced by a utility boon** (worth 0) it does not hold. `run/boon {charId, choice}` (its player, or
+   the host for an away player) puts the boon in `c.relics` for the rest of the run; refused in words off the offer,
+   twice, or past the cap. Boons are relics on the character, not pack entries: they cannot be given.
+3. **The thirteen boons** (spec section 3.5; each one number, its worth in percent of a rifle-turn on the cap): Honed
+   (+10% dealt, 10), Second Wind (+1 AP a turn, 17), True Aim (+1 to hit, 7), Hardened (-10% taken, 13), Lifeline (the
+   first blow a fight that would drop you leaves 1 HP, 8), Steady Breath (+1 Echo at a fight's start, 5), Primed (the
+   door's meter a step up at a fight's start: Guard +2, Momentum +1, Shadow +1; 8), Quick Hands (the first reload or
+   swap a turn 1 AP less, 5), Field Mending (20% of max HP healed at a fight's end, 0), Deep Well (+20% heals and
+   shields given, 8), Bandolier (the ammunition pack x2, magazines and cores, 0), Tithe (+50% credits, 0), Devout (+1
+   Devotion XP at a fight's end, inside the session's cap, 0).
+4. **The next tile** (spec rule 32): when the boons are picked, `world.offer` 3 tiles (at least `world.min` 2) are
+   offered for the next stage: settings that are **ready** (a Boss with a weapon, enemy kinds and a boon pool with a
+   boon in data), those not yet played this run first, then the others but the one under way. Each card shows its
+   name, a line of flavour, its Boss, its boon theme and pool, its backdrop by catalog id (`settings[].backdrop`; a
+   plain panel until the art is merged) and what it still waits for (`awaiting`: art, or its own enemies, played with
+   stand-ins by name). The offer is pure on the seed and the tiles walked (`rngFor(seed, 'world#' + stage)`), so it is
+   known all stage. A tile is picked as a node is (`run/tile`: a mark; when every connected player has marked the
+   squad goes; a tie to the host's; `run/go`, the host at once). The world is a row of tiles (`g.run.world`), each
+   linked to the tiles offered after it: the roguelike's world map later.
+5. **The graft reads the next tile** (rule 42, item 3026 settled): the back-room graft rolls a boon from the pools of
+   the tiles offered after this stage's Boss.
+6. **The end and the score** (spec rules 4, 35): a run ends lost (the whole squad down) or retired after a Boss (at
+   the boon or the tile). It keeps: stages cleared, nodes walked, the stage it ended in, each character's level, the
+   renown, each character's boons, and **each stage's log**: its tile, nodes, fights (and won), foes dropped, credits
+   the squad earned, grade steps bought, the boon each character took. The summary shows it; the room keeps a way back
+   to it.
+7. **Keep this character as a draft** (Leon, 13 Nov): from the summary a player saves its character to its library at
+   the level it reached, with gear, perks and class, named "Name (level N)" so it never replaces its level 1 sheet; the
+   run's purse and relics stay behind (`keptDraft`).
+8. **A solo Elite or Boss over the pressure band** (item 2814 settled): a required Elite or Boss that passes the
+   pressure band by itself takes a damage scale down to the cap (`anchorDamage`: the HP rule mirrored, damage is
+   pressure as HP is bulk), so every fight of stages 1 to 3 composes inside both bands.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8496,7 +8549,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2811. **`FoeSpec.scale` (rules 1.41 item 5):** a new general primitive (`foeScale` in combat.ts): HP and max HP x hp (at least 1), the level damage factor x damage, before the foe's magic is levelled. No fight before this step sets it: the golden tables and replays are unchanged. PROVISIONAL.
 2812. **Filling a template (rules 1.41 item 6):** one foe at a time while it brings the bulk nearer the target; short with no room for another foe: every foe x `scale.hp` = target / bulk; short only for want of slots: the next template first. The spec's "swap a Soldier for two Minions" (rule 21 d) is not built: the HP scale and the next template cover every case measured. PROVISIONAL.
 2813. **Measured (rules 1.41 item 6; 150 seeds x party 1 to 4 x levels 1, 3, 6, 9 x every fight node of a stage, stages 1 to 3: 50,400 fights):** stages 1 and 2 are all inside both bands; the means of bulk spent over target 0.95 to 1.00, of pressure over the cap 0.74 to 1.06 (the table is in the hand-off). PROVISIONAL.
-2814. **Needs a ruling (rules 1.41 item 6), for build step 5:** in stage 3 a solo party's Elite, gate or Boss two levels up passes the pressure cap's band by itself (Elite 1.76 against 1.72): the anchor is required and no rule scales its damage down. Recommendation: the same HP rule mirrored, a `scale.damage` down to the cap for a required anchor that passes it alone. Pinned by a test until ruled. PROVISIONAL.
+2814. **Settled by rules 1.44 (item 3120); it was "needs a ruling (rules 1.41 item 6), for build step 5":** in stage 3 a solo party's Elite, gate or Boss two levels up passes the pressure cap's band by itself (Elite 1.76 against 1.72): the anchor is required and no rule scales its damage down. Recommendation: the same HP rule mirrored, a `scale.damage` down to the cap for a required anchor that passes it alone. Pinned by a test until ruled. PROVISIONAL.
 2815. **The templates (rules 1.41 item 6; `templates`):** the eleven of spec 3.2 with their slots (data); `twin_elites` needs a party of 3; `machines` a setting with robots or drones; the champion's Boss is the setting's. PROVISIONAL.
 2816. **The settings (rules 1.41 item 6; `settings`):** the six of spec 3.3 with their kinds and weights, each Boss (name, kind, weapon, casters, portrait id); stage 1 is AHOC (`run.first_setting`). The other five are data for build step 5. PROVISIONAL.
 2817. **The weapon pools and names (rules 1.41 item 6; `pools`, `names`):** by tier and range (ranged, melee, close), names by kind and tier; Vermin bite. PROVISIONAL.
@@ -8566,3 +8619,25 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3029. **A Relic pick with no property that fits the cap comes as Masterwork (rules 1.43 item 13).** PROVISIONAL.
 3030. **The boons in data (rules 1.43 item 14):** seven of spec section 3.5's thirteen; their worths as the spec gives them. PROVISIONAL.
 3031. **Items 3000 to 3031 are rules 1.43's.**
+3100. **The stage term, read (rules 1.44 item 1):** `stage.bulk` 0.35, `stage.pressure` 0.15, `stage.elite_up` {per 1, max 3}, `stage.xp` [1, 0.8, 0.9, 1, 1], `stage.credits` 0.35, `rewards.ceiling`; no number typed in code. PROVISIONAL.
+3101. **The trigger `combat_over` (rules 1.44; new primitive):** the fight is decided, before the fighters are written back (`game.ts fightBack`), so a heal or resource given there goes home; `combat_end` still comes after. First user: Field Mending. PROVISIONAL.
+3102. **The stats `run_ammo` and `run_credits` (rules 1.44; spec section 4.2 item 8):** multipliers a character's relics answer (`stat_mult`), asked by `ammoPack` / `ammoMult` and `creditsFor` (run/rewards.ts). First users: Bandolier, Tithe. PROVISIONAL.
+3103. **The resource `devotion_xp` (rules 1.44; `actions.json resources`, setter `devotion`, faith.ts `itemDevotion`):** Devotion XP given by an item op, a gain inside the session's tag cap (TAG_CAPS.session), through `shiftDevotion`. First user: Devout. PROVISIONAL.
+3104. **The boon pick (rules 1.44 item 2; `boon_pick.offer` 3):** the pool first, then every boon; a held boon never; a boon past the cap replaced by a utility boon (worth 0). From `rngFor(seed, node + '#boon#' + id)`. PROVISIONAL.
+3105. **A boon's `doors` (rules 1.44 item 2):** a boon that serves only some doors (Primed) is offered only to a character with a point in one of them. A reading of the spec's "your door's meter". PROVISIONAL.
+3106. **Primed's doors (rules 1.44 item 3):** Guard +2 (Durability), Momentum +1 (Raw Power), Shadow +1 (Ingenuity) at a fight's start, through the op `resource`. Pressure (it sits on a target), a free Bond (no primitive gives one), Flux -2 and Strain -1 (they carry from the last fight and are restored after `combat_start`) are **not built**: open, listed in the hand-off. PROVISIONAL.
+3107. **Quick Hands (rules 1.44 item 3):** one use a turn shared by the reload and the swap (`limit.key` "hands"), never under 0 AP. PROVISIONAL.
+3108. **Field Mending (rules 1.44 item 3):** 20% of the holder's max HP (an amount block with no profile: no Stat or Level term, max HP already carries the level), on `combat_over`, the holder up (not Downed); the dead come back at 1 HP by rule 5 as before. PROVISIONAL.
+3109. **Bandolier (rules 1.44 item 3; `run_ammo` x2):** the pack's magazines and cores both x2, so one core becomes two ("one more core"); a picked gun's share too. PROVISIONAL.
+3110. **Tithe (rules 1.44 item 3; `run_credits` x1.5):** on a fight's and a cache's pay, rounded; not on credits taken instead of a weapon, nor a sale. PROVISIONAL.
+3111. **Devout (rules 1.44 item 3):** +1 Devotion XP at each fight's end for the Faithful, inside the session's tag cap (6); an Atheist gains nothing. PROVISIONAL.
+3112. **The boons' pools (rules 1.44 item 3):** spec section 3.5's, its "shrine" pool read as `faith` (the shrine setting's pool): discipline 3, war 3, streets 3, faith 3, survival 3, machine 1 (the pick fills from every pool). PROVISIONAL.
+3113. **The next tile (rules 1.44 item 4; `world.offer` 3, `world.min` 2):** ready settings, the unplayed first; the tile under way only to reach the minimum. PROVISIONAL.
+3114. **A setting's readiness and placeholders (rules 1.44 item 4):** all six settings are ready by data; `awaiting` lists the stand-ins (city, field, works, shrine and rim fight with stand-ins named for their kinds; field and shrine have no Boss portrait); every backdrop waits for the art branch's merge. PROVISIONAL.
+3115. **The tile's marks reuse the node's (rules 1.44 item 4):** `g.run.leans` and `leanWinner` with the tiles' order. PROVISIONAL.
+3116. **The graft's pool (rules 1.44 item 5; settles item 3026):** the pools of the offered next tiles. PROVISIONAL.
+3117. **The stage's log (rules 1.44 item 6):** credits counted are the nodes' pay and credits taken instead of a weapon; grade steps those of the visits (`visit.steps`, a shop's and a Forge's; an off-books trade step is not counted); foes dropped are the dead, Downed and surrendered. PROVISIONAL.
+3118. **Retire at the boon or the tile (rules 1.44 item 6):** both after the Boss; a boon not yet picked is not kept. PROVISIONAL.
+3119. **The kept draft (rules 1.44 item 7):** saved to the player's library only (the browser); **no room takes a levelled character yet** (`char/add` builds a level 1 character from a sheet, and Survival refuses above level 1): open, for Leon. PROVISIONAL.
+3120. **Item 2814's damage scale (rules 1.44 item 8):** the big units' damage x (cap - the rest's pressure) / their pressure, only when the band is passed by required units. PROVISIONAL.
+3121. **Items 3100 to 3121 are rules 1.44's.**

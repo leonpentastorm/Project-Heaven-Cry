@@ -34,6 +34,7 @@ export * from './run/encounter';
 export * from './run/rewards';
 export * from './run/power';
 export * from './run/progress';
+export * from './run/stage';
 export * from './credits';
 export * from './give';
 export * from './gearpreview';

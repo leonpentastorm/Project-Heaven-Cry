@@ -23,7 +23,7 @@ import { say, unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, 
 import { condOn, applyCond, endCond, harm, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { pushAway } from './effects/core';
 import { setPrayerDoor } from './effects/actions';
-import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot } from './effects/cost';
+import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot, setResSetter } from './effects/cost';
 import { sessionN, dayOf, uses as usesOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { mendFactor, mendFactorOf } from './effects/mending';
@@ -500,6 +500,19 @@ export function tagDevotion(g: GameState | null, cb: Combat | null, c: Character
   tags.push(tag); if (f) f.xp += n; else t.sceneXp += n; t.sessionXp += n;
   return shiftDevotion(g, cb, c, n, name, tag);
 }
+
+/** Devotion XP given by an item (rules 1.44: the resource row `devotion_xp`, the op `resource`; Survival's Devout):
+ * a gain counts inside the session's tag cap (TAG_CAPS.session, as a liked tag does; the Proving Ground has none), a
+ * loss is taken whole. Through shiftDevotion. Returns the XP moved. */
+export function itemDevotion(g: GameState | null, cb: Combat | null, c: Character, n: number, why: string): number {
+  if (!n || beliefOf(c).kind !== 'faithful') return 0;
+  if (n < 0) return shiftDevotion(g, cb, c, n, why);
+  const t = tallyOf(g, c), left = (g as any)?.sandbox ? Infinity : TAG_CAPS.session - t.sessionXp, k = Math.min(n, left);
+  if (k <= 0) return 0;
+  t.sessionXp += k;
+  return shiftDevotion(g, cb, c, k, why);
+}
+setResSetter('devotion', (cb, u, n, _by, why) => { const g = G(), c = g && u.charId ? g.characters[u.charId] : null; return c ? itemDevotion(g, cb ?? null, c, n, why || 'an item') : 0; });
 
 // ---------- a grudge: the patron you left lobbies against you (rules 1.6.1, item 713) ----------
 export interface Grudge { patron: string; /** The last session it lasts through. */ until: number; condition: string; rounds: number; xp_mult: number; text: string; carry?: number }

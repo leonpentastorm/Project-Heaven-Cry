@@ -32,15 +32,20 @@ export const modeOf = (id: string | null | undefined): ModeDef | undefined => MO
 export const playOf = (g: { settings: { play?: PlayMode } }): PlayMode => g.settings.play || OLD_SAVE_PLAY;
 
 /** Where a run stands. `map`: choosing the next node; `fight`: a fight at the node under way; `reward`: picks waiting
- * after a won fight (offers); `shop`: a shop (or a Forge) open full screen at the node (rules 1.42, `shop`); `boon` and
- * `tile`: after a Boss (the stage is cleared; step 5 adds the boon pick and the next tile); `over`: lost or retired. */
+ * after a won fight (offers); `shop`: a shop open full screen at the node (rules 1.42, `shop`); `boon` and `tile`:
+ * after a Boss (the stage is cleared; rules 1.44: each character picks a boon, then the squad picks the next tile);
+ * `over`: lost or retired. */
 export type RunPhase = 'map' | 'fight' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
 /** A node of a stage's path map (spec section 9's shape, so a node can later hold a designed room): run/map.ts. */
 export type RunNode = PathNode;
 /** A tile of the world the party walks (rule 32): a stage's setting and its boon pool. */
 export interface RunTile { id: string; setting: string; stage: number; links: string[]; boons: string[] }
-/** How a run ended (rule 4): lost (the whole party down) or retired after a Boss; the score it keeps. */
-export interface RunEnd { how: 'lost' | 'retired'; stage: number; cleared: number; nodes: number; levels: Record<string, number> }
+/** How a run ended (rule 4): lost (the whole party down) or retired after a Boss; the score it keeps (rules 1.44: the
+ * renown past level 20, each character's boons, the stages' log). */
+export interface RunEnd { how: 'lost' | 'retired'; stage: number; cleared: number; nodes: number; levels: Record<string, number>; renown?: number; boons?: Record<string, string[]>; stages?: RunStageLog[] }
+/** Rules 1.44: one stage of the run, for the summary (spec rule 35): its tile's setting, the nodes walked, the fights
+ * (and won), the foes dropped, the credits the squad earned, the grade steps bought, the boon each character took. */
+export interface RunStageLog { stage: number; setting: string; nodes: number; fights: number; won: number; kills: number; credits: number; steps: number; boons: Record<string, string> }
 /** One weapon of a pick (rule 26): the weapon or focus, its rarity, its price at that rarity. */
 export interface RunWeapon { id: string; rarity: 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial'; price: number; /** a Relic's named property (rules 1.43) */ prop?: string }
 /** A character's pick after a won fight (rule 26): three weapons, or credits instead; `ammo`: the node's ammunition
@@ -53,7 +58,7 @@ export interface RunNote { node: string; kind: string; text?: string; xp?: numbe
 export interface RunFight { node: string; stage: number; depth: number; kind: string; template: string; setting: string; level: number;
   target: { bulk: number; pressure: number; rounds: number }; spent: { bulk: number; pressure: number }; scaleHp: number;
   foes: { name: string; tier: string; level: number; weapon: string; kind?: string; caster?: string; scale?: { hp?: number; damage?: number } }[];
-  outcome?: 'win' | 'loss'; rounds?: number }
+  outcome?: 'win' | 'loss'; rounds?: number; /** rules 1.44: the foes dropped (dead, Downed or given up) */ kills?: number }
 /** One line of a node's rolled stock (rules 1.43: the Forge's mods and worn pieces): the item, its price, who took it. */
 export interface RunStock { id: string; price: number; sold?: string }
 /** The safe node the party stands on (rules 1.43, build step 4a): what each character did there this visit and what the
@@ -106,12 +111,19 @@ export interface RunState {
   lasting?: Record<string, RunLasting> | null;
   /** Rules 1.43: what a character has had once a stage (a shrine's token, the wayside shrine), as "what@stage", by id. */
   marks?: Record<string, string[]>;
+  /** Rules 1.44: the boons on offer after a Boss (spec rule 30), by character id; null when none. */
+  boons?: Record<string, string[]> | null;
+  /** Rules 1.44: the tiles on offer for the next stage (spec rule 32); null when none. */
+  tiles?: RunTile[] | null;
+  /** Rules 1.44: each stage's log (the summary), the stage under way last. */
+  stages?: RunStageLog[];
 }
 
 /** A fresh run at stage 1 with nothing walked: stage 1's tile and its path map from the run's seed (rules 10, 12). */
 export function newRun(seed: string): RunState {
   const setting = survivalRun.first_setting, map = pathMap(seed, 1, MAP_DATA, setting);
-  return { seed, stage: 1, world: [{ id: 't1', setting, stage: 1, links: [], boons: [] }], nodes: mapNodes(map), at: null, path: [], state: 'map', leans: {}, ready: {}, offers: null, shop: null, stats: { fights: [] }, out: [], renown: 0, last: null, note: null };
+  return { seed, stage: 1, world: [{ id: 't1', setting, stage: 1, links: [], boons: [] }], nodes: mapNodes(map), at: null, path: [], state: 'map', leans: {}, ready: {}, offers: null, shop: null, stats: { fights: [] }, out: [], renown: 0, last: null, note: null,
+    stages: [{ stage: 1, setting, nodes: 0, fights: 0, won: 0, kills: 0, credits: 0, steps: 0, boons: {} }] };
 }
 /** The setting of the run's current tile (rule 10). */
 export const runSetting = (r: RunState): string => r.world[r.world.length - 1]?.setting || survivalRun.first_setting;
@@ -131,6 +143,8 @@ export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by:
   if (r.state === 'fight') return 'The fight is on.';
   if (r.state === 'reward') return 'Take your picks first: the squad moves on when everyone has.';
   if (r.state === 'shop') return 'Leave the shop first: everyone marks Ready to leave, or the host closes it.';
+  if (r.state === 'boon') return 'Pick your boons first: the next tile comes after them.';
+  if (r.state === 'tile') return 'Pick the next tile first: its map comes with it.';
   if (r.state !== 'map') return 'The stage is over.';
   const n = runNode(r, nodeId); if (!n) return 'No such node on this map.';
   if (!reachable(r).some((x) => x.id === nodeId)) return 'You can\'t reach ' + (MAP_DATA.words as any)[n.kind] + ' at depth ' + n.depth + ' from here: pick a lit node.';
@@ -138,7 +152,7 @@ export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by:
 }
 /** The node the squad goes to (rule 11), or null while it waits: every connected player has leaned, the node with most
  * leans wins and a tie goes to the host's lean (else the first in map order). `now`: the host goes at once. */
-export function leanWinner(g: { hostId: string; run?: RunState | null; players: Who[] }, now = false): string | null {
+export function leanWinner(g: { hostId: string; run?: RunState | null; players: Who[] }, now = false, order?: string[]): string | null {
   const r = g.run; if (!r) return null;
   const on = g.players.filter((p) => p.online), leans = on.map((p) => r.leans[p.id]).filter(Boolean);
   if (!leans.length) return now ? null : null;
@@ -147,7 +161,7 @@ export function leanWinner(g: { hostId: string; run?: RunState | null; players: 
   const top = Math.max(...Object.values(count)), tied = Object.keys(count).filter((k) => count[k] === top);
   const host = r.leans[g.hostId];
   if (host && tied.includes(host)) return host;
-  return r.nodes.find((n) => tied.includes(n.id))?.id || tied[0];
+  return (order || r.nodes.map((n) => n.id)).find((id) => tied.includes(id)) || tied[0]; // rules 1.44: `order`, the tiles' (a tile is leaned like a node)
 }
 /** A run's seed when the host gives none: from the room's code and its action count, so it is the same on a replay and
  * different for each run a room starts. "PHC-" and six letters and digits. */
@@ -189,8 +203,8 @@ export function runRetireProblem(g: { hostId: string; run?: RunState | null }, b
   return null;
 }
 /** The run's end and its score (rule 4): stages cleared (a retire comes after a Boss, so the stage under way counts),
- * nodes walked, each character's level. */
-export function endRun(r: RunState, how: RunEnd['how'], levels: Record<string, number>): RunState {
+ * nodes walked, each character's level; rules 1.44: `more` adds the renown, the boons and the stages' log. */
+export function endRun(r: RunState, how: RunEnd['how'], levels: Record<string, number>, more: Partial<Pick<RunEnd, 'renown' | 'boons' | 'stages'>> = {}): RunState {
   const cleared = how === 'retired' ? r.stage : r.stage - 1;
-  return { ...r, state: 'over', leans: {}, ready: {}, offers: null, shop: null, visit: null, lasting: null, end: { how, stage: r.stage, cleared, nodes: r.path.length, levels } };
+  return { ...r, state: 'over', leans: {}, ready: {}, offers: null, shop: null, visit: null, lasting: null, boons: null, tiles: null, end: { how, stage: r.stage, cleared, nodes: r.path.length, levels, ...more } };
 }

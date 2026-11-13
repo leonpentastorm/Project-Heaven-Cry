@@ -24,6 +24,7 @@ import { type RunState, type RunVisit, type RunLasting, type RunStock, runNode, 
 import { SETTING } from './encounter';
 import { stageCeiling, weaponOffer } from './rewards';
 import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf, BOON_CAP, runWorth } from './power';
+import { nextPools } from './stage';
 import type { GameState } from '../game';
 import { registerShopService, type ServiceCard } from './shop';
 import { gearPreview } from '../gearpreview';
@@ -228,10 +229,11 @@ export function shrineProblem(g: GameState, c: Character, choice: string): strin
 }
 
 // ---------------------------------------------------------------------------------------------- the Crossroads
-/** The graft the Crossroads offers this character (rule 42): a boon of the tile's pool inside its cap, from the node's
- * stream; null when none fits. */
+/** The graft the Crossroads offers this character (rule 42): a boon of the next tile's pool (rules 1.44: the pools of
+ * the tiles offered after this stage's Boss, run/stage.ts nextPools) inside its cap, from the node's stream; null when
+ * none fits. */
 export function graftFor(g: GameState, c: Character): string | null {
-  const r = g.run!, can = boonsFor(c, SETTING[runSetting(r)]?.pool || '');
+  const r = g.run!, can = nextPools(r).flatMap((p) => boonsFor(c, p)).filter((b, i, l) => l.findIndex((x) => x.id === b.id) === i);
   return can.length ? graftOf(can[die(rngFor(r.seed, (r.at || '') + '#graft#' + c.id), can.length) - 1].id) : null;
 }
 /** What a trade costs in credits for this character and its pick (0 when it costs something else). */
