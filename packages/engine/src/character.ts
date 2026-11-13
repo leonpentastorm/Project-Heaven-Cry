@@ -78,6 +78,8 @@ export interface Character extends Sheet {
   /** Magic (spec: Mana, rules 1.2): Sigil words known; Outburst designs ready and the schools and modules learned;
    * MP in the Emanator; charge left in the core loaded in the Evoker; the scene a word was last learned in. */
   outbursts?: OutburstDesign[]; soulKnown?: { schools: string[]; modules: string[]; tones?: string[] };
+  /** Rules 1.34: Figment designs (a form and its traits, named; made out of a fight) and the Visualizer's charge. */
+  figments?: FigmentDesign[]; visCharge?: number;
   mp?: number; evoCharge?: number; learnedScene?: number;
   /** An advanced class (rules 1.2), held alongside the base class: all its moves at once (provisional; spec 14). Class
    * Roster Revision 3 shelves every advanced class: the field is kept, but gives nothing until they come back. */
@@ -740,11 +742,11 @@ export const strengthOf = (c: Character, via: string) => Math.max(0, mod(P(c, vi
 export const strengthTable = (c: Character): Record<string, number> => Object.fromEntries(SKILLS.map((s) => [s.id, strengthOf(c, s.id)] as [string, number]).filter(([, n]) => n > 0));
 // ---------- focuses (spec: Hands 2; item 630: a focus counts only in a hand) ----------
 /** What counts as each focus: the focus items, and the mana arms that count as one. */
-export const FOCUS_IDS: Record<'evoker' | 'emanator', string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'] };
+export const FOCUS_IDS: Record<'evoker' | 'emanator' | 'visualizer', string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'], visualizer: ['visualizer'] };
 /** What the hands hold: the main-hand weapon, and the off hand unless a two-handed weapon fills both. */
 export const inHands = (c: Character): string[] => [c.weapon, ...(c.offHand && !twoHands(c, c.weapon) ? [c.offHand.id] : [])];
 /** Which hand holds this kind of focus ('main' or 'off'), 'pack' if it is only carried, else null. */
-export function focusHand(c: Character, kind: 'evoker' | 'emanator'): 'main' | 'off' | 'pack' | null {
+export function focusHand(c: Character, kind: 'evoker' | 'emanator' | 'visualizer'): 'main' | 'off' | 'pack' | null {
   const ids = FOCUS_IDS[kind], held = inHands(c);
   if (ids.includes(held[0])) return 'main';
   if (held[1] && ids.includes(held[1])) return 'off';
@@ -754,9 +756,11 @@ const carries = (c: Character, ids: string[]) => ids.includes(c.weapon) || (!!c.
 /** What a holder holds (Classes 3.0 section 6: the predicates self_holds / self_lacks_gear): a door's focus (door:
  * evoker, emanator) or an item (item: an id) in a hand (slot hand) or anywhere on the person (slot person: a hand or
  * the pack). THE one test of "a focus in hand": hasEvoker and hasEmanator are it. */
-export interface HoldSpec { slot?: 'hand' | 'person'; door?: 'evoker' | 'emanator'; item?: string }
+/** A Figment design (rules 1.34, figments.json): a form and up to two traits, named. */
+export interface FigmentDesign { id: string; name: string; form: string; traits: string[] }
+export interface HoldSpec { slot?: 'hand' | 'person'; door?: 'evoker' | 'emanator' | 'visualizer'; item?: string }
 /** The doors whose focus `holds` knows (FOCUS_IDS). */
-export const FOCUS_DOORS = Object.keys(FOCUS_IDS) as ('evoker' | 'emanator')[];
+export const FOCUS_DOORS = Object.keys(FOCUS_IDS) as ('evoker' | 'emanator' | 'visualizer')[];
 /** Does this character hold it (see HoldSpec)? */
 export function holds(c: Character, o: HoldSpec): boolean {
   const ids = o.door ? FOCUS_IDS[o.door] || [] : o.item ? [o.item] : [];
@@ -768,6 +772,10 @@ export function holds(c: Character, o: HoldSpec): boolean {
 export const hasEvoker = (c: Character) => holds(c, { slot: 'hand', door: 'evoker' });
 /** An Emanator in a hand: MP can be spent and filled (spec: Hands 2; without one an Outburst draws on the air). */
 export const hasEmanator = (c: Character) => holds(c, { slot: 'hand', door: 'emanator' });
+/** A Visualizer in a hand (rules 1.34): Figments can be pictured and acted through. */
+export const hasVisualizer = (c: Character) => holds(c, { slot: 'hand', door: 'visualizer' });
+/** A Visualizer anywhere (rules 1.34): held Figments stay, and it keeps its core's charge. */
+export const carriesVisualizer = (c: Character) => carries(c, FOCUS_IDS.visualizer);
 /** An Evoker anywhere (a hand or the pack): it keeps its core's charge. */
 export const carriesEvoker = (c: Character) => carries(c, FOCUS_IDS.evoker);
 /** An Emanator anywhere (a hand or the pack): it keeps its MP. */

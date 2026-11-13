@@ -19,12 +19,14 @@
 // the doors.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
+import figmentsJ from '../../../data/figments.json';
 import type { Combat, Unit } from './combat';
-import { unitFromEnemy, levelCompanion, say, emitFx, moveUnit, previewAttack, resolveAttack, dist, isMelee, type AttackMode } from './combat';
+import { unitFromEnemy, levelCompanion, say, emitFx, moveUnit, previewAttack, resolveAttack, dist, isMelee, unitSees, sideSeesUnit, type AttackMode } from './combat';
+import { canStand } from './kit';
 import { WEAPON } from './data';
-import { apFor, pay, withAp } from './effects/cost';
+import { apFor, pay, withAp, price, whyNot } from './effects/cost';
 import { tie, untie, tiesOf, tieKind } from './kit';
-import { onHook } from './effects/hooks';
+import { onHook, runOwnEffects } from './effects/hooks';
 import { resGive, resLeft } from './effects/cost';
 import { charOfUnit } from './effects/hooks';
 import type { Rng } from './rng';
@@ -32,7 +34,9 @@ import type { Rng } from './rng';
 /** How an owned unit takes its turn. */
 export const OWNED_TURNS = ['own', 'owner', 'auto'] as const;
 /** An owned unit's own block (P9). `spent`: what its spawn took (unmake's refund). */
-export interface OwnedBlock { turn: (typeof OWNED_TURNS)[number]; /** companion (default) or a system's word (figment): one tie kind, the record tells them apart */ kind?: string; eyes?: boolean; upkeep?: { res: string; n: number }; cover?: boolean; lure?: boolean; spent?: Record<string, number>; /** turn auto: what it does at its owner's turn start */ auto?: { verb: string; target: (typeof AUTO_TARGETS)[number] } }
+export interface OwnedBlock { turn: (typeof OWNED_TURNS)[number]; /** companion (default) or a system's word (figment): one tie kind, the record tells them apart */ kind?: string; eyes?: boolean; upkeep?: { res: string; n: number }; cover?: boolean; lure?: boolean; spent?: Record<string, number>; /** turn auto: what it does at its owner's turn start */ auto?: { verb: string; target: (typeof AUTO_TARGETS)[number] };
+  /** Classes 3.0 step 8 (rules 1.34): made outside its owner's held count (the Rigger's Double, a Scrap Turret) */ free?: boolean;
+  /** rules 1.34: it is unmade at its owner's turn start in this round (a lifetime in rounds) */ until?: number }
 /** The fields of a block a spawn copies onto the unit's record. */
 export const OWNED_FIELDS = ['turn', 'owned_kind', 'eyes', 'upkeep', 'cover', 'lure', 'auto'];
 /** The verbs an owned unit of turn owner or auto can be given: the engine's own move and plain attacks, run with the
@@ -43,7 +47,17 @@ export const AUTO_TARGETS = ['nearest_foe', 'weakest_foe'] as const;
 /** The tie kind that makes a unit owned (data/rules.json ties.kinds). */
 export const OWNED_TIE = 'owned';
 /** The data blocks a spawn may name: enemies.json companions (and each system's forms, one line here as they come). */
-const BLOCKS: Record<string, any> = Object.fromEntries((((enemiesJ as any).companions || []) as any[]).map((k) => [k.id, k]));
+const BLOCKS: Record<string, any> = Object.fromEntries([...(((enemiesJ as any).companions || []) as any[]), ...(((figmentsJ as any).forms || []) as any[]), (figmentsJ as any).turret].filter(Boolean).map((k) => [k.id, k]));
+/** The data verbs an owned unit of turn owner can be given besides OWNED_VERBS (rules 1.34: figments.json verbs: Strike,
+ * Pounce, Cut, Stare, Let go): `site` (its cost site, priced on the owner), `attack` (the plain attack it makes: melee or
+ * shot), `dash` (tiles in a straight line before it), `reach` {tiles, side, eyes: the unit itself must see it},
+ * `on_hit` and `effects` (item ops run with the owned unit as the holder, its owner's sheet behind it), `unmake`
+ * (refund_share: what share of its making comes back). One line here as each system's file comes. */
+export const OWNED_DATA_VERBS: Record<string, any> = Object.fromEntries((((figmentsJ as any).verbs || []) as any[]).map((v) => [v.id, v]));
+/** Each system's gate on giving its owned units orders (figments.ts: the Visualizer in hand, not Silenced, in range). */
+const GATES: ((cb: Combat, owner: Unit, u: Unit, verb: string) => string | null)[] = [];
+/** Add a gate (a system's rule on acting through its owned units): its reason refuses the order. */
+export const addOwnedGate = (f: (cb: Combat, owner: Unit, u: Unit, verb: string) => string | null) => { GATES.push(f); };
 let ADDED: Record<string, any> = {};
 /** A block by id (the data's, then those added at run time: a test's). */
 export const ownedBlock = (id: string): any => ADDED[id] || BLOCKS[id] || null;
@@ -82,14 +96,15 @@ export function tieCompanions(cb: Combat): void {
 /** THE door that makes an owned unit: from a block (its stat line: hp, defense, attack_bonus, armour, movement, weapon;
  * its record), at the owner's level, on a tile; tied to its owner. Refused (a reason) when the owner holds as many as
  * its cap (ties_max:owned) or the block is unknown. `spent`: the resources its maker paid (unmake's refund). */
-export function spawnOwned(cb: Combat, owner: Unit, blockId: string, at: string, rng: Rng, o: { spent?: Record<string, number> } = {}): Unit | string {
-  const k = ownedBlock(blockId); if (!k) return 'No such thing to make (' + blockId + ').';
+export function spawnOwned(cb: Combat, owner: Unit, blockId: string, at: string, rng: Rng, o: { spent?: Record<string, number>; /** the block itself, worked out by its system (a Figment's design: its form with its traits) */ block?: any } = {}): Unit | string {
+  const k = o.block || ownedBlock(blockId); if (!k) return 'No such thing to make (' + blockId + ').';
   const n = ((cb as any).ownedSeq = ((cb as any).ownedSeq || 0) + 1), id = 'ow-' + owner.id + '-' + blockId + '-' + n;
   const u = unitFromEnemy(id, k.name, 'minion', k.weapon || 'fists', at, rng);
   Object.assign(u, { side: owner.side, tier: undefined, def: k.defense, armour: k.armour, attack: k.attack_bonus, movement: k.movement ?? 1, strength: k.attack_bonus, init: owner.init - 0.5, agility: 1, ctrl: owner.charId || owner.ctrl, companion: k.id, kind: k.kind || k.id, tags: [...(k.tags || [])], short: (k.name || '').slice(0, 2).toUpperCase(), img: k.portrait || undefined });
   u.mags = undefined;
   levelCompanion(u, k, owner.level ?? 1);
   if (Array.isArray(k.actions) && k.actions.length) u.allowedActions = [...k.actions];
+  if (Array.isArray(k.verbs) && k.verbs.length) (u as any).dataVerbs = k.verbs.filter((v: string) => OWNED_DATA_VERBS[v]);
   if (k.infinite_ammo) u.infiniteAmmo = true;
   const rec = ownedRecord(k); if (o.spent) rec.spent = { ...o.spent };
   (u as any).owned = rec; if (rec.eyes === false) u.eyes = false;
@@ -101,14 +116,14 @@ export function spawnOwned(cb: Combat, owner: Unit, blockId: string, at: string,
 }
 /** THE door that unmakes an owned unit: it leaves the fight (no Down, no kill, no bots); its tie ends; with `refund`,
  * what its spawn took goes back to its owner. */
-export function unmakeOwned(cb: Combat, u: Unit, o: { refund?: boolean } = {}): void {
+export function unmakeOwned(cb: Combat, u: Unit, o: { refund?: boolean; /** the share of what it took that comes back (rounded down; default all) */ share?: number; quiet?: boolean } = {}): void {
   if (!cb.units.includes(u)) return;
   const owner = ownerOf(cb, u), rec: OwnedBlock | undefined = (u as any).owned;
   const i = cb.order.indexOf(u.id); cb.units = cb.units.filter((x) => x !== u); cb.order = cb.order.filter((x) => x !== u.id); if (i >= 0 && i < cb.turn) cb.turn--;
   untie(cb, (t) => t.kind === OWNED_TIE && t.to === u.id);
-  if (o.refund && owner && rec?.spent) for (const [id, n] of Object.entries(rec.spent)) resGive(cb, owner, id, n, { c: charOfUnit(owner), why: 'unmade' });
+  if (o.refund && owner && rec?.spent) for (const [id, n] of Object.entries(rec.spent)) { const back = Math.floor(n * (o.share ?? 1)); if (back > 0) resGive(cb, owner, id, back, { c: charOfUnit(owner), why: 'unmade' }); }
   emitFx(cb, 'unmake', { unit: u.id, at: u.pos });
-  say(cb, u.name + ' is gone.');
+  if (!o.quiet) say(cb, u.name + ' is gone.');
 }
 // ---------- the owned action system (the lead's ruling at step 1b's integration) ----------
 /** The record of a unit that has no turn of its own (turn owner or auto), else null. */
@@ -117,7 +132,14 @@ export const turnless = (u: Unit): OwnedBlock | null => { const r: OwnedBlock | 
 export function ownedVerbs(u: Unit): string[] {
   const w: any = (WEAPON as any)[u.weapon], plain = w && isMelee(w) ? 'melee' : 'shot';
   const a = Array.isArray(u.allowedActions) && u.allowedActions.length ? u.allowedActions : ['move', plain];
-  return a.filter((v) => (OWNED_VERBS as readonly string[]).includes(v));
+  return [...a.filter((v) => (OWNED_VERBS as readonly string[]).includes(v)), ...(((u as any).dataVerbs || []) as string[])];
+}
+const VERB_NAMES: Record<string, string> = { move: 'Move', shot: 'Shot', aimed: 'Aimed shot', melee: 'Strike' };
+/** A data verb's name, its AP for this owner now (its site, priced on the owner), and what it is aimed at: the
+ * descriptors' row. null: one of OWNED_VERBS (the descriptors price those from the weapon). */
+export function ownedVerbInfo(cb: Combat, owner: Unit, u: Unit, verb: string): { name: string; ap: number; pick: 'tile' | 'enemy' | 'none'; text: string } | null {
+  const dv = OWNED_DATA_VERBS[verb]; if (!dv) return null;
+  return { name: dv.name || VERB_NAMES[verb] || verb, ap: price({ cb, u: owner }, dv.site, undefined, { owned: u.id }).ap, pick: dv.reach ? 'enemy' : 'none', text: dv.text || '' };
 }
 /** The units its owner may give orders to now: its owned units with no turn of their own, standing. */
 export const orderable = (cb: Combat, owner: Unit): Unit[] => (cb.ties?.length ? ownedBy(cb, owner).filter((u) => !!turnless(u) && !u.dead && !u.downed && cb.units.includes(u)) : []);
@@ -128,6 +150,7 @@ export function ownedWhy(cb: Combat, owner: Unit, u: Unit | undefined, verb: str
   if (!turnless(u)) return u.name + ' takes its own turn.';
   if (u.dead || u.downed) return u.name + ' is out of the fight.';
   if (!ownedVerbs(u).includes(verb)) return u.name + ' can only ' + ownedVerbs(u).join(', ') + '.';
+  for (const g of GATES) { const no = g(cb, owner, u, verb); if (no) return no; }
   return null;
 }
 /** THE door an owned unit acts through (combat/owned; the auto driver): the verb runs with the owned unit as the actor,
@@ -135,6 +158,7 @@ export function ownedWhy(cb: Combat, owner: Unit, u: Unit | undefined, verb: str
  * Returns the refusal, or null. */
 export function runOwned(cb: Combat, rng: Rng, owner: Unit, u: Unit | undefined, verb: string, o: { targetId?: string | null; tile?: string | null } = {}): string | null {
   const no = ownedWhy(cb, owner, u, verb); if (no) return no;
+  if (OWNED_DATA_VERBS[verb]) return runDataVerb(cb, rng, owner, u!, OWNED_DATA_VERBS[verb], o);
   const me = u!, avail = apFor(cb, owner);
   let err: string | null = null, spent = 0;
   withAp(me, avail, () => {
@@ -149,6 +173,42 @@ export function runOwned(cb: Combat, rng: Rng, owner: Unit, u: Unit | undefined,
   });
   if (err) return err;
   if (spent > 0) pay(cb, me, spent, { payer: owner, c: charOfUnit(owner) });
+  return null;
+}
+/** A data verb (OWNED_DATA_VERBS) run with the owned unit as the actor, priced at its site on the owner and paid by it.
+ * `free`: Overclock's (no AP, a verb of up to that many AP). Returns the refusal, or null. */
+export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any, o: { targetId?: string | null; tile?: string | null; free?: number } = {}): string | null {
+  const c = charOfUnit(owner), pr = price({ cb, u: owner }, dv.site, undefined, { owned: me.id });
+  if (o.free != null && pr.ap > o.free) return dv.name + ' costs more than ' + o.free + ' AP.';
+  const cost = o.free != null ? 0 : pr.ap;
+  { const no = whyNot(cb, owner, cost, { c }); if (no) return no; }
+  if (dv.unmake) { pay(cb, me, cost, { payer: owner, c }); unmakeOwned(cb, me, { refund: true, share: dv.refund_share ?? 1, quiet: true }); say(cb, owner.name + ' lets ' + me.name + ' go.'); return null; }
+  let t: Unit | null = null;
+  if (dv.reach) {
+    t = o.targetId ? cb.units.find((x) => x.id === o.targetId) || null : null;
+    if (!t || t.dead || t === me) return 'Pick a target.';
+    if (dv.reach.side === 'foe' && t.side === owner.side) return 'Pick an enemy.';
+    if (dist(me.pos, t.pos) > (dv.reach.tiles ?? 1)) return 'Out of reach (' + (dv.reach.tiles ?? 1) + ' tiles from ' + me.name + ').';
+    if (dv.reach.eyes ? !unitSees(cb, me, t.pos) : t.side !== owner.side && !sideSeesUnit(cb, owner.side, t)) return 'It can\'t see them.';
+  }
+  const holder: any = { key: 'verb:' + dv.id, itemId: dv.id, kind: 'verb', tier: 'I', info: { key: 'verb:' + dv.id, kind: 'verb', id: dv.id, name: dv.name, tier: 'I', effects: [], effTier: [], text: dv.text || '', adjudication: 'engine', active: false, bound: false, ap: null, uses: 'at_will' }, c, u: me, cb };
+  if (dv.dash && t && dist(me.pos, t.pos) > 1) {
+    // a straight line (a row, a column or a diagonal) of free tiles, up to dash, to the tile next to the target
+    const [ax, ay] = me.pos.split(',').map(Number), [bx, by] = t.pos.split(',').map(Number), dx = Math.sign(bx - ax), dy = Math.sign(by - ay), n = Math.max(Math.abs(bx - ax), Math.abs(by - ay));
+    if (!(ax === bx || ay === by || Math.abs(bx - ax) === Math.abs(by - ay))) return 'Not in a straight line.';
+    if (n - 1 > dv.dash) return 'Too far to ' + String(dv.name).toLowerCase() + ' (' + dv.dash + ' tiles).';
+    let to = me.pos;
+    for (let i = 1; i < n; i++) { const k = (ax + dx * i) + ',' + (ay + dy * i); if (!canStand(cb, k, me)) return 'Something is in the way.'; to = k; }
+    const err = withAp(me, 99, () => moveUnit(cb, me, to, rng, 'move')); if (err) return err;
+    if (me.dead || me.downed || !cb.units.includes(me)) { pay(cb, me, cost, { payer: owner, c }); return null; }
+  }
+  if (dv.attack && t) {
+    const tt = t;
+    const no = withAp(me, 99, (): string | null => { const pv = previewAttack(cb, me, tt, dv.attack as AttackMode); if (!pv.ok) return pv.why || 'Not now.'; const r = resolveAttack(cb, rng, me, tt, dv.attack as AttackMode, null, { noAp: true }); if (r.hit && dv.on_hit?.length) runOwnEffects(holder, dv.on_hit, { u: me, t: tt, action: dv.site, tile: null, toggles: [], mode: null }); return null; });
+    if (no) return no;
+  }
+  if (dv.effects?.length) runOwnEffects(holder, dv.effects, { u: me, t, action: dv.site, tile: o.tile || null, toggles: [], mode: null });
+  pay(cb, me, cost, { payer: owner, c });
   return null;
 }
 /** An auto unit's target: the nearest standing foe (ties: the order of the fight's units), or the most hurt. */

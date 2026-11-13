@@ -32,7 +32,6 @@
     "text": "At your turn start: {=upkeep.n} charge for each Figment held; the {=upkeep.ap_from|ord} held also costs {=upkeep.ap} AP that turn. Short of charge, the newest unravels for each charge missing."
   },
   "let_go": {
-    "refund_share": 0.5,
     "snap_ap": 1,
     "text": "Let go (0 AP): unmake one; half its made charge (rounded down) goes back into the core. A Figment destroyed by damage gives nothing back and Snaps: your next turn has {=let_go.snap_ap} AP less (at most once a turn)."
   },
@@ -48,6 +47,13 @@
   "lure": {
     "found_out_add": 5,
     "text": "A Double lures by the fire doctrine of enemies.json (double_save): a tier with none is always fooled; the others save (Brain, against 12 + your Visualization strength, plus the tier's double_save) on first sight, an Elite and a Boss again at each of their turn starts, a Boss never two rounds running. An enemy that found a Double out gets +{=lure.found_out_add} against your later Doubles this fight."
+  },
+  "unit_effects": {
+    "text": "What every Figment is: no saves, immune to every condition (the Body, Brain and Heart families) and to Bleeding. Each form's verb item (fig_<form>, collect.ts) holds these and its own.",
+    "effects": [
+      { "op": "immunity", "to": "family:body" }, { "op": "immunity", "to": "family:brain" },
+      { "op": "immunity", "to": "family:heart" }, { "op": "immunity", "to": "bleed" }
+    ]
   },
   "forms": [
     {
@@ -74,7 +80,7 @@
       "id": "wall", "name": "Wall", "owned_kind": "figment", "turn": "owner", "eyes": false, "cover": true,
       "opens": { "skill": "visualization", "min": 3 }, "charge": 3,
       "hp": 60, "defense": 6, "armour": 5, "attack_bonus": 0, "movement": 1, "weapon": "fists",
-      "actions": ["move"], "verbs": ["let_go"], "immune": ["knockback"],
+      "actions": ["move"], "verbs": ["let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],
       "upkeep": { "res": "vcharge", "n": 1 },
       "glyph": "▮",
       "text": "Movable cover: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tile an AP. Full cover; it blocks movement and sight for both sides and nothing pushes it.",
@@ -129,7 +135,7 @@
       "text": "One unit it sees stays seen by your side until your next turn, Hidden or not.", "provisional": true
     },
     {
-      "id": "let_go", "name": "Let go", "site": "let_go", "unmake": true,
+      "id": "let_go", "name": "Let go", "site": "let_go", "unmake": true, "refund_share": 0.5,
       "text": "Unmake it: half its made charge (rounded down) goes back into the core.", "provisional": true
     }
   ],
@@ -137,10 +143,12 @@
     { "id": "armoured", "name": "Armoured", "hp_mult": 1.5, "text": "HP x{=hp_mult}.", "provisional": true },
     { "id": "swift", "name": "Swift", "tiles": 2, "text": "+{=tiles} tiles an AP; its moves draw no opportunity attacks.", "provisional": true },
     { "id": "loud", "name": "Loud", "weight": -1, "text": "Enemies count it as the most hurt in reach, Minions included.", "provisional": true },
-    { "id": "volatile", "name": "Volatile", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "flat", "type": "explosive", "provisional": true } }, "within": 1, "text": "Destroyed (not let go): a burst of radius {=within}, {=amounts.burst.base} on everyone in it, both sides.", "provisional": true },
+    { "id": "volatile", "name": "Volatile", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "flat", "type": "explosive", "provisional": true } }, "within": 1,
+      "effects": [{ "op": "deal", "when": "downed", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" } }], "text": "Destroyed (not let go): a burst of radius {=within}, {=amounts.burst.base} on everyone in it, both sides.", "provisional": true },
     { "id": "tethered", "name": "Tethered", "range": 4, "text": "Its projection range +{=range}; it unravels only past twice that.", "provisional": true },
     { "id": "mirror", "name": "Mirror", "lure": "pick", "text": "It lures as a Double would, in the look of any unit of your side you pick.", "provisional": true },
-    { "id": "barbed", "name": "Barbed", "amounts": { "barb": { "kind": "damage", "base": 10, "profile": "flat", "type": "true", "provisional": true } }, "text": "An enemy that hits it in melee takes {=amounts.barb.base}.", "provisional": true },
+    { "id": "barbed", "name": "Barbed", "amounts": { "barb": { "kind": "damage", "base": 10, "profile": "flat", "type": "true", "provisional": true } },
+      "effects": [{ "op": "deal", "when": "damaged", "if": { "actor": "foe", "melee": true, "by_hit": true }, "amount": "barb", "target": "actor" }], "text": "An enemy that hits it in melee takes {=amounts.barb.base}.", "provisional": true },
     { "id": "lasting", "name": "Lasting", "upkeep": 0, "text": "No upkeep.", "provisional": true },
     { "id": "keen", "name": "Keen", "roll": 2, "vision": 4, "text": "Its attacks +{=roll} to hit; an Eye sees {=vision} further.", "provisional": true },
     { "id": "hollow", "name": "Hollow", "charge": -2, "hp_mult": 0.5, "text": "Costs {=charge|abs} charge less (never under one); HP x{=hp_mult}.", "provisional": true }

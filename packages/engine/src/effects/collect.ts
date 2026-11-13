@@ -3,6 +3,7 @@
 // character.ts; memoised per holder on what it holds.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL } from '../data';
+import figmentsJ from '../../../../data/figments.json';
 import classesJ from '../../../../data/classes.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';
 
@@ -19,7 +20,15 @@ export function _addRawItems(kind: 'perk' | 'trait' | 'relic' | 'verb', items: a
 export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof typeof EXTRA)[]) EXTRA[k] = {}; infoCache.clear(); itemsCache.clear(); }
 /** The data's door verbs: the `items` of kind `verb` of each system's file (Shadow, Tending, Figments, the Chaplain's
  * prayers: one line here as each file comes), and those added at run time (addItems('verb', …): a test's fixtures). */
-const DATA_VERBS: Record<string, any> = Object.fromEntries(([] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
+const FIG: any = figmentsJ;
+/** Rules 1.34 (figments.json): Picture and the core swap are door verbs; each form and each trait is a verb item held only
+ * by a Figment unit (figments.ts gives it its held list): what every Figment is (unit_effects) and its own effects. Their
+ * `requires` names an owned kind, which no sheet meets (meetsRequires), so no character holds them. */
+const FIGMENT_HELD = [
+  ...((FIG.forms || []) as any[]).map((f) => ({ id: 'fig_' + f.id, name: f.name, kind: 'verb', requires: [{ owned: 'figment' }], text: f.text, effects: [...(FIG.unit_effects?.effects || []), ...(f.effects || [])], adjudication: 'engine', provisional: true })),
+  ...((FIG.traits || []) as any[]).map((x) => ({ id: 'figtrait_' + x.id, name: x.name, kind: 'verb', requires: [{ owned: 'figment' }], text: x.text, ...(x.amounts ? { amounts: x.amounts } : {}), effects: x.effects || [], adjudication: 'engine', provisional: true })),
+];
+const DATA_VERBS: Record<string, any> = Object.fromEntries([...((FIG.items || []) as any[]), ...FIGMENT_HELD].filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
 const verbData = (id: string): any => DATA_VERBS[id] || EXTRA.verb[id];
 const perkData = (id: string): any => (PERK as any)[id] || EXTRA.perk[id];
 const traitData = (id: string): any => TRAIT[id] || EXTRA.trait[id];
