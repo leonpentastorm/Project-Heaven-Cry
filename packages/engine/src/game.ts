@@ -3163,6 +3163,8 @@ function runAction(g: GameState, a: Action, by: string) {
     default: fail('No such run action: ' + a.type + '.');
   }
 }
+/** "1 round", "3 rounds". */
+const counted = (n: number, word: string) => n + ' ' + word + (n === 1 ? '' : 's');
 /** The kind of pay a node gives (the gate pays as an Elite). */
 const payKindOf = (n: RunNode): PayKind => (n.gate ? 'gate' : n.kind === 'elite' || n.kind === 'boss' || n.kind === 'cache' ? n.kind : 'fight');
 /** The squad enters a node (rules 1.41; spec rules 13, 24, 29): a new scene; a fight begins, a rest heals, a cache pays,
@@ -3210,7 +3212,7 @@ function runFightOver(g: GameState) {
   const cb = g.combat!, r = g.run!, won = fightBack(g, cb, true), n = runNode(r, r.at)!, k = payKindOf(n);
   const fights = r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, outcome: (won ? 'win' : 'loss') as 'win' | 'loss', rounds: cb.round } : f));
   r.stats = { ...r.stats, fights };
-  cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + cb.round + (cb.round === 1 ? ' round. ' : ' rounds. ') + cb.units.filter((u) => u.side === 'pc' && !u.companion).map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
+  cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + counted(cb.round, 'round') + '. ' + cb.units.filter((u) => u.side === 'pc' && !u.companion).map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
   push(g, { kind: 'combat', text: cb.summary });
   g.phase = 'story'; g.story.await = 'none'; g.story.work = null;
   musicAfterFight(g);

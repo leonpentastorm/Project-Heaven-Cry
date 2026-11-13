@@ -31,8 +31,11 @@ export interface SettingDef { id: string; name: string; kinds: Record<string, nu
 /** The kind of fight a node holds (the gate is an Elite node every path passes). */
 export type FightKind = 'fight' | 'elite' | 'gate' | 'boss';
 
+/** The encounter templates (`survival.json templates`). */
 export const TEMPLATES: EncounterTemplate[] = SV.templates;
+/** The settings, the world's tiles (`survival.json settings`). */
 export const SETTINGS: SettingDef[] = SV.settings;
+/** A setting by id. */
 export const SETTING: Record<string, SettingDef> = Object.fromEntries(SETTINGS.map((s) => [s.id, s]));
 /** The budget's numbers (`survival.json`; every one PROVISIONAL, rules 1.41). */
 export const ENC_BUDGET = {

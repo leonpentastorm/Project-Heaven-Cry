@@ -415,6 +415,9 @@ PRIMITIVE_FILES = [
     (SRC + '/preview.ts', None, 'Previews and dry runs'),
     (SRC + '/datatext.ts', None, 'Numbers in data texts'),
     (SRC + '/run/state.ts', None, 'The mode a room plays and the Survival run (rules 1.39)'),
+    (SRC + '/run/encounter.ts', None, 'Survival encounters: the budget in Soldier-equivalents (rules 1.41)'),
+    (SRC + '/run/rewards.ts', None, 'What a Survival node gives (rules 1.41)'),
+    (SRC + '/credits.ts', None, 'Credits and prices (rules 1.41)'),
     ('apps/web/src/game/actionTip.ts', None, 'The client\'s one hover card'),
     ('apps/web/src/game/actionFlow.ts', None, 'The client\'s action flow'),
 ]

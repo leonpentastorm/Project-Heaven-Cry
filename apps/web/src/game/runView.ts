@@ -2,7 +2,7 @@
 // engine: the map's nodes and links (g.run), what the party can reach and why a node can't be taken (`reachable`,
 // `runMoveProblem`), what a node gives (`NODE_TIP`, `nodeXp`, `nodeCredits`), the panel's words (`NODE_TEXT`), the picks
 // (g.run.offers, priced by the engine), who has a level-up waiting (`levelUpDue`). RunScreen.tsx only draws it.
-import { type GameState, type RunNode, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, levelUpDue, runRetireProblem } from '@engine';
+import { type GameState, type RunNode, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, levelUpDue, runRetireProblem, survivalRun } from '@engine';
 
 export type NodeState = 'here' | 'walked' | 'reachable' | 'ahead' | 'passed';
 export interface RunNodeV { id: string; depth: number; col: number; kind: string; word: string; gate: boolean; state: NodeState; tip: string; leans: { initials: string; color: string; name: string }[]; why: string | null }
@@ -66,7 +66,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
     lines: [
       ...(n.xp ? ['Each of you: ' + n.xp + ' XP' + (n.credits ? ', ' + n.credits + ' credits' : '') + '.'] : []),
       ...Object.entries(n.ammo || {}).filter(([, l]) => l.length).map(([cid, l]) => (g.characters[cid]?.name || cid) + ': ' + l.join(', ') + '.'),
-      ...(n.back || []).map((cid) => (g.characters[cid]?.name || cid) + ' stands up at 1 HP: the squad won.'),
+      ...(n.back || []).map((cid) => (g.characters[cid]?.name || cid) + ' stands up at ' + survivalRun.dead_return_hp + ' HP: the squad won.'),
     ],
   } : null;
   const setting = SETTING[runSetting(r)]?.name || runSetting(r);
