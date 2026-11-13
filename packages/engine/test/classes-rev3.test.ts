@@ -140,7 +140,7 @@ describe('resources follow the moves', () => {
     expect(res('defender')).toEqual(['guard']); expect(res('fighter')).toEqual(['momentum']); expect(res('infiltrator')).toEqual(['marks', 'toxins']);
     expect(res('bard')).toEqual(['supplies']);
     for (const id of ['marksman', 'mage', 'trickster', 'channeler', 'guardian']) expect(res(id)).toEqual([]);
-    expect(CLASS.guardian.resources).toEqual(['devotion']); // rules 1.31: the Chaplain spends no MP or Strain expect(CLASS.marksman.resources).toEqual(['heat']);
+    expect(CLASS.guardian.resources).toEqual(['devotion']); /* rules 1.31: the Chaplain spends no MP or Strain */ expect(CLASS.marksman.resources).toEqual(['heat']);
   });
 });
 
