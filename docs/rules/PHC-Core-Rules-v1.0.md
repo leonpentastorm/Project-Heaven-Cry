@@ -5003,6 +5003,21 @@ PROVISIONAL (items 2500 onward).
    measures 67 (its line 61, +10%: the door and the class differ only by the Mender's moves, which the steady line does
    not use). The balance contract's guard now holds the Mender's healing turn, the door's Tending turn and the Mender's
    offence (`balance.ceilings.tending_turn`, `mender_offence`).
+4. **Classes 3.0 measured** (levels 1, 5, 10, 20, all in; the table in `docs/design/balance-contract.md` section 3 and
+   the step 11 hand-off). On their lines: the plain rifle, the best gun (the Skirmisher, 159 against 145), melee, the
+   Sigil Line, the Outburst steady and peak, the Whisper and Hymn turns (the Faith door), the Chaplain (126 against
+   125: no refit; its level 20 is 138, the 150 of rules 1.36 was a small sample), Shadow (door 113, Operative 124), the
+   Mender's healing turn (65) and offence (point 3). Off its line: **Figments**, the Rigger 123 against 150 and the door
+   119 against 130, with no gap between them: the measure counts the damage enemies spend on Figments, capped at 60% of
+   the enemy's fire, and both sit at the cap, so no HP dial separates them; the Rigger's edge (a third body, Overclock,
+   Field Fix) is not in the measure. Not fitted; it needs a class-only term (point 5). **Reflex** measures +0 (no enemy
+   in the simulator crosses a held line). The guards loosened in steps 3 to 7b are kept, each for its measured reason:
+   the Whisper door's `level_hi` 1.42 (the guard's 6-fight sample reads 113 at level 20, 16 fights read 100), the Faith
+   door's raised tops (a Hymn turn 184, a quiet turn 129, the no-Hymn patron 112: Smite rides the Faith build's weapon
+   hits), the guns guard's 1.13 (armour rounding at level 6), the Skirmisher inside its band.
+5. **Needs a new primitive (not built):** a base class that uses its door better than a door user needs a class-only
+   multiplier on what the door makes (for Figments: a stat a class move can raise that multiplies an owned unit's HP or
+   damage). The Rigger's moves today are all verbs the simulator does not play.
 
 ## Maps (rules 1.16)
 
@@ -8098,3 +8113,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2502. **A focus is any item or weapon with a `focus` block (rules 1.38):** `FOCUS_IDS` is built from data (items.json and weapons.json); the four mana arms that counted as a focus by a list in code carry `focus: {door, fuel}`; the validator refuses a `counts_as_<kind>` property with no block of that door (the Spellslinger's pistol counted as an Evoker in code with no property: it keeps that by its block). PROVISIONAL.
 2503. **The Emanator katana built (rules 1.38; numbers as item 2205):** `weapons.json emanator_katana`: mana arm, 1H, 26 physical, 1.8 kg, 2,400 credits, Will Power 3, light and edge (Dexterity, Agility), `focus` Will Power (fuel MP). No `grants`, no `teaches`, no loot table. Lead's reading where rules 1.35 was silent (the light-blade props and no lent technique, as its twin). PROVISIONAL.
 2504. **`tending.json bond.per_bond` 0.05 (rules 1.38; was 0.10, rules 1.33):** the Mender's steady offence 68 solo / 71 squad against 70 (measured, 8 yardstick fights a cell, levels 1 / 5 / 10 / 20: solo 81 / 67 / 60 / 63, squad 81 / 72 / 63 / 67); the door all in 67 against its 61. PROVISIONAL.
+2505. **Classes 3.0 measured (rules 1.38):** `refit-measure` at 16 fights a cell, all in, levels 1 / 5 / 10 / 20: plain 129 / 113 / 112 / 101; gun 164 / 161 / 158 / 153; blade 156 / 150 / 133 / 178; Sigil Line 155 / 147 / 176 / 189; Outburst 139 / 155 / 136 / 137, peak 150 / 173 / 152 / 158; Whisper 92 / 75 / 62 / 100; Hymn 119 / 104 / 156 / 173; Chaplain 117 / 131 / 117 / 138; off-heal 45. Shadow door 118 / 122 / 104 / 109, Operative 125 / 128 / 133 / 110. Figments (4 fights a cell) Rigger 156 / 118 / 116 / 101, door 144 / 106 / 114 / 112. PROVISIONAL.
+2506. **The Chaplain is not refitted (rules 1.38; item 2334):** 126 against 125, level 20 at 138 (inside ±25%). Smite stays Rebuke's 20. PROVISIONAL.
+2507. **Figments are under their lines and not fitted (rules 1.38):** see point 4; Leon to rule on the class-only term (point 5). PROVISIONAL.
+2508. **The loosened guards stay (rules 1.38):** `whisper_turn.level_hi` 1.42, the Faith door tops (Hymn turn 200, quiet turn 130, no-Hymn patron 125), the long rifle's top 1.13, each with its measured reason in point 4. PROVISIONAL.
+2509. **Reflex measured +0 (rules 1.38):** off-turn damage 4 / 11 / 0 / 0% of a rifle-turn with and without Reflex, levels 1 / 5 / 10 / 20 (4 fights a cell). The spec's +8 to +17% is unconfirmed: a playtest or a scripted fight across a held line. PROVISIONAL.
+2510. **The healer under fire (rules 1.38):** the tank and a dedicated Soul healer under three Soldiers: nobody Down in 10 rounds in 50% (level 1), 75% (levels 6 and 12), 100% (level 20) of fights, against 0% with the healer idle; under two, 100% at every level (the tank alone also lasts at 12 and 20). Whole fights (open ground, 3 a cell): every squad wins, rounds to kill as the level-1 targets at every level (the healer squad 6.3 to 10.7, a round above the standard and Boss targets). A stall to watch in the playtest, not refitted. PROVISIONAL.
+2511. **Items 2500 to 2511 are rules 1.38's.**

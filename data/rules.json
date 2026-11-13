@@ -1362,7 +1362,7 @@
       "gun": {
         "allin": 145,
         "what": "the best gun, the best way (Masterwork)",
-        "dial": "rules.json rarity (Masterwork's damage, 1.0 since rules 1.26), then each weapon's damage"
+        "dial": "each weapon's damage in weapons.json (rarity buys accuracy only since rules 1.26; the ceiling is measured at Masterwork)"
       },
       "melee": {
         "allin": 165,
