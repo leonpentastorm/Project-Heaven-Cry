@@ -9,7 +9,7 @@ import { factorOf } from './effects/output';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import { type Character, mod, prayerCooldown } from './character';
-import { say, type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
+import { say, type Combat, type Unit, type Term, alwaysSeen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
 import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst, condName } from './magic';
@@ -204,6 +204,7 @@ export const seenByFoes = (cb: Combat, u: Unit) => cb.units.some((v) => v.side !
 /** Become Hidden (not while Marked). Each entry gives one ambush. Returns a log suffix. */
 export function hide(cb: Combat, u: Unit, why = ''): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
+  if (alwaysSeen(cb, u)) return ' · ' + u.name + ' can\'t hide: the enemy knows where they are'; // always seen (Traced, rules 1.33)
   if (u.hidden) return '';
   rawHidden(cb, u, true);
   emit(cb, 'hide', { u, why, cb });

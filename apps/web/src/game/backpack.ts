@@ -15,7 +15,7 @@ export interface BpSection { key: string; title: string; rows: BpRow[]; empty: s
 export interface Backpack { who: string; ap: number; sections: BpSection[]; reason: string }
 
 const nameOf = (id: string) => (WEAPON as any)[id]?.name || (ITEM as any)[id]?.name || id;
-const focusOf = (id: string) => (FOCUS_IDS.evoker.includes(id) ? 'Evoker' : FOCUS_IDS.emanator.includes(id) ? 'Emanator' : null);
+const focusOf = (id: string) => (FOCUS_IDS.evoker.includes(id) ? 'Evoker' : FOCUS_IDS.emanator.includes(id) ? 'Emanator' : FOCUS_IDS.attuner.includes(id) ? 'Attuner' : null); // rules 1.33: the Attuner (Bonds and Tending)
 export const FOCUS_NOTE = 'In the pack: counts only in a hand.';
 export const HEAVY_ROW = 'Heavy armour: not in a fight';
 const TYPE: Record<string, string> = { armor_piercing: 'AP', hollow_point: 'HP', incendiary: 'incendiary', enhanced: 'Enhanced' };

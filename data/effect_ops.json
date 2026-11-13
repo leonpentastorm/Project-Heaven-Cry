@@ -4202,6 +4202,34 @@
         "save": "body",
         "via": "ingenuity"
       }
+    },
+    {
+      "id": "mend_mult",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 step 1b): multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, prayer, perk...). Runs on the triggers heal and shield.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "value",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "mend_mult",
+        "when": "heal",
+        "value": 1.2,
+        "if": {
+          "how": [
+            "tending"
+          ]
+        }
+      }
     }
   ],
   "item_ops": {
@@ -4666,23 +4694,89 @@
         "arg": "tie",
         "about": "actor is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
         "values": [
-          "owned"
+          "owned",
+          "bond"
         ]
       },
       "target_tied": {
         "arg": "tie",
         "about": "target is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
         "values": [
-          "owned"
+          "owned",
+          "bond"
         ]
       },
       "self_holds": {
         "arg": "hold",
-        "about": "the holder has it: {slot: hand or person, door: evoker or emanator} (a focus) or {slot, item: an item id}"
+        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner) or the skill it opens (brain_power, will_power, empathy)} (a focus) or {slot, item: an item id}",
+        "values": [
+          "evoker",
+          "emanator",
+          "attuner",
+          "brain_power",
+          "will_power",
+          "empathy"
+        ]
       },
       "self_lacks_gear": {
         "arg": "hold",
-        "about": "the holder does not have it (as self_holds)"
+        "about": "the holder does not have it (as self_holds)",
+        "values": [
+          "evoker",
+          "emanator",
+          "attuner",
+          "brain_power",
+          "will_power",
+          "empathy"
+        ]
+      },
+      "self_skill": {
+        "arg": "skill",
+        "about": "the holder has at least these points in each skill named ({empathy: 7}: a door's ladder)"
+      },
+      "self_skill_below": {
+        "arg": "skill",
+        "about": "the holder has fewer than these points in each skill named (as self_skill)"
+      },
+      "self_tied": {
+        "arg": "tie",
+        "about": "the holder holds a tie of this kind (a kind, or {kind, side: foe, ally or any}: its far end of that side to the holder)",
+        "values": [
+          "owned",
+          "bond"
+        ]
+      },
+      "choice": {
+        "arg": "words",
+        "about": "the action's pick (its `pick` list: a felt feeling, a word…) is one of these"
+      },
+      "self_tie_room": {
+        "arg": "tie",
+        "about": "the holder may hold one more tie of this kind (under its cap: kit.ts tieCap)",
+        "values": [
+          "owned",
+          "bond"
+        ]
+      },
+      "actor_not_tied": {
+        "arg": "tie",
+        "about": "actor is not tied to the holder by this kind (as actor_tied)",
+        "values": [
+          "owned",
+          "bond"
+        ]
+      },
+      "target_not_tied": {
+        "arg": "tie",
+        "about": "target is not tied to the holder by this kind (as target_tied)",
+        "values": [
+          "owned",
+          "bond"
+        ]
+      },
+      "uses_left": {
+        "arg": "limit",
+        "about": "the holder's item has a use left in this limit ({per, n?, key?, each?: target}; read, never taken: the action is refused before it is paid, as \"once an ally a turn\")"
       },
       "toggle": {
         "arg": "words",
@@ -4715,7 +4809,8 @@
           "parts",
           "stims",
           "echo",
-          "pressure"
+          "pressure",
+          "ledger"
         ]
       },
       "self_lacks_res": {
@@ -4733,7 +4828,8 @@
           "parts",
           "stims",
           "echo",
-          "pressure"
+          "pressure",
+          "ledger"
         ]
       },
       "patron": {
@@ -4767,6 +4863,10 @@
       "answered": {
         "arg": "bool",
         "about": "a prayer of the holder's is (or is not) answered now (faith.ts prayerAnswered: the prayer door open, Faith and not Silenced; the Faithful always, an Atheist rolls the Whisper's TN; a preview rolls nothing). Put it last in `if`: it rolls"
+      },
+      "answer_on": {
+        "arg": "string",
+        "about": "the holder keeps this item Answer switched on: the character's Answer list (phys.answers, set by phys/answers) names it, or it keeps none (every Answer on). Share a Hit (rules 1.33)"
       }
     },
     "ops": {
@@ -4969,10 +5069,11 @@
           "rounds",
           "skip_save",
           "via",
+          "by",
           "same_entry"
         ],
         "changes_state": true,
-        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal's via; default the ambient source); condition \"incoming\" (on cond_incoming): the condition being put on, with its rounds unless rounds is given; same_entry (hidden only): the same Hidden entry as before, no new ambush"
+        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save; by: \"source\" (a condition row) puts it on as from whoever gave the row (Afraid of the giver); via: the skill whose strength the save is against (as deal's via; default the ambient source); condition \"incoming\" (on cond_incoming): the condition being put on, with its rounds unless rounds is given; same_entry (hidden only): the same Hidden entry as before, no new ambush (Shadow, rules 1.32)"
       },
       "cleanse": {
         "on": [
@@ -5014,10 +5115,11 @@
         "fields": [
           "condition",
           "family",
-          "count"
+          "count",
+          "newest"
         ],
         "changes_state": true,
-        "about": "end conditions: the ones named, or a family's debuffs, or any debuff (count: how many)"
+        "about": "end conditions: the ones named, or a family's debuffs, or any debuff (count: how many; newest: true, the newest first, else in the order named)"
       },
       "cond_rounds": {
         "on": [
@@ -5113,10 +5215,11 @@
         "fields": [
           "amount",
           "via",
-          "nonlethal"
+          "nonlethal",
+          "by"
         ],
         "changes_state": true,
-        "about": "deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: \"faith\"), nonlethal: a blow that takes the last HP subdues"
+        "about": "deal an amount block (amounts) to the self, actor or target (by: \"source\", a condition row: dealt as by whoever gave it); via: the source skill it counts as (a prayer: \"faith\"), nonlethal: a blow that takes the last HP subdues"
       },
       "mend": {
         "on": [
@@ -5206,7 +5309,7 @@
           "to"
         ],
         "changes_state": true,
-        "about": "push the target away from the holder (how: push) or pull it closer (pull); to: \"cover\", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy's view first (Shadow's Fade, rules 1.32): no tile, nothing happens"
+        "about": "push the target away from the holder (how: push) or pull it closer (pull); to: \"cover\", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy's view first (Shadow's Fade, rules 1.32): no tile, nothing happens; to: \"tile\" (rules 1.33, Guide) moves it, willing, to the event's tile when that is at most `tiles` from it (how: guide)"
       },
       "zone": {
         "on": [
@@ -5393,10 +5496,11 @@
         ],
         "fields": [
           "share",
-          "split"
+          "split",
+          "type"
         ],
         "changes_state": true,
-        "about": "move a share of the damage being taken to the holder (a protector: Share a Hit), or with `targets` and split: true divide it among the units of that set; what is moved lands as the same blow (it is not redirected again)"
+        "about": "move a share of the damage being taken to the holder (a protector: Share a Hit), or with `targets` and split: true divide it among the units of that set; what is moved lands as the same blow (it is not redirected again), or with type as damage of that type (a Bond's share: soul)"
       },
       "use": {
         "on": [
@@ -5567,7 +5671,8 @@
           "eyes"
         ],
         "tied": "string",
-        "aims_at": "string"
+        "aims_at": "string",
+        "beyond": "string"
       }
     }
   }

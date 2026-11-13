@@ -548,33 +548,8 @@ register({
 });
 
 // ======================================================================================================== BARD
-// ---------- Rally (rank III, 2 AP, once a scene) ----------
-// Every squadmate within 4 tiles (not you; Downed ones aren't standing to rally) heals 6 × your Healing given × the
-// level factor (rules 1.23; it was 20 × Healing given) (×
-// their Healing received) and loses Fear and Shaken. Tending others calms your heart once a turn (rules 1.5). No
-// Emanator or Supplies needed. Refused with nobody in reach. Combat only.
-const rallied = (cb: Combat, u: Unit) => cb.units.filter((t) => t !== u && t.side === u.side && alive(t) && dist(t.pos, u.pos) <= 4);
-register({
-  id: 'bard.rally', claims: 'all',
-  actions: [{
-    id: 'rally', label: 'Rally', scope: ['combat'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
-    text: 'Once a scene: every ally within 4 tiles heals 6 HP × your Healing given, more as you level, and loses Fear and Shaken.',
-    preview: (h) => { const ts = rallied(h.cb!, h.u!); if (!ts.length) return { ok: false, why: 'No squadmate within 4 tiles.' }; return { targets: ts.map((t) => t.id), lines: ['Rally ' + ts.map((t) => t.name).join(', ') + ': about ' + Math.floor(kitHeal(RALLY_HEAL, h.c ? healingMult(h.c) : 1, mendFactorOf(h.u))) + ' HP each, and their Fear and Shaken end.'] }; },
-    run: (h) => {
-      const cb = h.cb!, u = h.u!, mult = h.c ? healingMult(h.c) : 1, ts = rallied(cb, u), parts: string[] = [];
-      emitFx(cb, 'rally', { unit: u.id, at: u.pos, radius: 4, targets: ts.map((t) => t.id) });
-      for (const t of ts) {
-        const r = healUnit(cb, t, kitHeal(RALLY_HEAL, mult, mendFactorOf(u)), u, 'rally'), gone = ['fear', 'shaken'].filter((id) => condOn(t, id));
-        for (const id of gone) endCond(t, id, cb);
-        if (gone.length && !r.restored) tendHook.f?.(cb, u, t);
-        emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored });
-        parts.push(t.name + ' +' + r.restored + ' HP' + (gone.length ? ', no longer ' + gone.join(' or ') : ''));
-      }
-      say(cb, u.name + ' rallies the squad: ' + parts.join(' · ') + '.');
-    },
-  }],
-  brief: () => null,
-});
+// Rules 1.33: Rally is data (classes.json bard rally: a grant_action and its `when: acted` ops on every Bonded ally and
+// every ally within 4).
 
 // ======================================================================================================== CHANNELER
 // ---------- Iron Heart (rank I, passive) ----------

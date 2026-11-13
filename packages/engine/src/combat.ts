@@ -1916,11 +1916,11 @@ export function fireAuto(cb: Combat, rng: Rng, u: Unit, t: Unit, who: Character 
 //   4. WHO REACTS. Nobody (`reactions: false` for every kind). A held Watch, Overwatch and opportunity attacks answer a
 //      unit that CHOSE to move. The flag is read: set true for a kind, held Watches and Overwatch answer each tile of it.
 //   5. It ends Braced.
-export type DisplaceHow = 'push' | 'pull' | 'throw' | 'teleport' | 'swap';
+export type DisplaceHow = 'push' | 'pull' | 'throw' | 'teleport' | 'swap' | 'guide'; // guide: rules 1.33 (Tending's Guide: an ally steps, willing, to a tile its Bonder picks)
 interface ForcedRule { tiles: 'each' | 'landing'; traps: boolean; fields: boolean; hazards: boolean; immunity: boolean; reactions: boolean }
 const FORCED: Record<DisplaceHow, ForcedRule> = (() => {
   const d: any = (RULES as any).forced_movement || {}, base = (tiles: 'each' | 'landing'): ForcedRule => ({ tiles, traps: true, fields: true, hazards: true, immunity: true, reactions: false });
-  return { push: { ...base('each'), ...d.push }, pull: { ...base('each'), ...d.pull }, throw: { ...base('landing'), ...d.throw }, teleport: { ...base('landing'), ...d.teleport }, swap: { ...base('landing'), ...d.swap } };
+  return { push: { ...base('each'), ...d.push }, pull: { ...base('each'), ...d.pull }, throw: { ...base('landing'), ...d.throw }, teleport: { ...base('landing'), ...d.teleport }, swap: { ...base('landing'), ...d.swap }, guide: { ...base('landing'), ...d.guide } };
 })();
 /** The trigger table of forced movement (data/rules.json forced_movement), by kind of move. */
 export const forcedRule = (how: DisplaceHow): ForcedRule => FORCED[how];
@@ -2414,9 +2414,10 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
 export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', (u.analysis || 0) >= costOf('analyze', 'quick_at') ? 'ap_quick' : 'ap')).ap;
 /** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
- * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap}. */
-export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number }): void {
-  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), cb });
+ * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap, choice}
+ * (choice, rules 1.33: the action's pick, as a felt feeling given by Inspire). */
+export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
+  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
 }
 /** How far Analyze reads: 4 tiles + Analysis. */
 export const analyzeRange = (u: Unit) => 4 + (u.analysis || 0);
@@ -2478,11 +2479,12 @@ export function clearJam(cb: Combat, u: Unit, hand: 'main' | 'off' = 'main'): st
 /** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others).
  * Else heal 6 × Healing given × the level factor (rules 1.23: it was 30 × Healing given at every level). */
 export const stimHeal = (u: Unit, who: Character) => kitHeal(STIM_HEAL, healingMult(who), mendFactorOf(u));
-export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean): string | null {
+export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean, o: { thrown?: boolean } = {}): string | null {
   if (who.stims <= 0) return 'No stims left.';
-  if (dist(u.pos, t.pos) > 1) return 'Must be adjacent.';
+  // rules 1.33: Stim Throw is everyone's gear action: an ally within the row's range that you see, at its own price
+  if (o.thrown ? dist(u.pos, t.pos) > stimThrowRange() || (t !== u && !unitSees(cb, u, t.pos)) : dist(u.pos, t.pos) > 1) return o.thrown ? 'Out of reach: within ' + stimThrowRange() + ' tiles you can see.' : 'Must be adjacent.';
   if (t.dead) return 'Too late.';
-  const cost = stimAp(u, t, isMedic, cb);
+  const cost = o.thrown ? price({ cb, u }, 'stim_throw').ap : stimAp(u, t, isMedic, cb);
   { const no = whyNot(cb, u, cost); if (no) return no; }
   if (forbids({ u }, 'stim')) return forbids({ u }, 'stim') + ': no stims.';
   // 'stim_start' {u, t, cb, cancel, why}: an item may stop the stim before anything is spent, revive included (Rival's
@@ -2497,6 +2499,8 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   return null;
 }
 
+/** Stim Throw's reach (data/actions.json stim_throw.range; rules 1.33). */
+export const stimThrowRange = (): number => costOf('stim_throw', 'range');
 /** A stim's AP: stabilising a Downed ally 2 (1 for a Medic), healing 1; then items ('stabilise' / 'stim' costs). */
 export const stimAp = (u: Unit, t: Unit, isMedic: boolean, cb?: Combat | null) => (t.downed ? price({ cb, u }, 'stabilise', costOf('stim', isMedic ? 'ap_downed_medic' : 'ap_downed')).ap : price({ cb, u }, 'stim').ap);
 

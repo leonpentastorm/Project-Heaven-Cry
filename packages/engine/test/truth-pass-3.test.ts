@@ -24,11 +24,7 @@ describe('truth pass 3: the engine reads the card\'s number', () => {
   it('Case Closed\'s +20% is effects[2] and its +2 Defense effects[1]', () => {
     const e: any[] = (PERK.case_closed as any).effects; expect(e[2].value).toBe(1.2); expect(e[1].value).toBe(-2);
   });
-  it('Inspire\'s MP, its Strain without an Emanator and its +2 are its card\'s effects', () => {
-    const m: any = Object.values(CLASS_MOVE_POOL).find((x: any) => x?.id === 'inspire');
-    expect(m.effects[0].value).toBe(-10); expect(m.effects[0].without_emanator.value).toBe(2); expect(m.effects[1].value).toBe(2);
-    expect(m.text).toMatch(/^Costs 1 AP and 10 MP \(without an Emanator: no MP, and 2 Strain in its place\)/);
-  });
+  // rules 1.33: Inspire's card is its data (classes.json bard inspire: 1 AP, 10 MP through the Attuner): test/tending.test.ts
   it('every skill\'s Mastered unlock states the Echo the engine charges to resist (unlocks.10.resist_echo)', () => {
     for (const s of Object.values(SKILL) as any[]) { expect(s.unlocks['10'].resist_echo, s.id).toBe(2); expect(s.unlocks['10'].text, s.id).toMatch(/now costs 2 Echo\./); }
   });

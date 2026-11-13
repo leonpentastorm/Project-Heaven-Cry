@@ -139,3 +139,14 @@ describe('old saves', () => {
     expect(resOf(u, 'shadow')).toBe(0);
   });
 });
+
+describe('Shadow and Bonds (the step 6 and step 7 merge)', () => {
+  it('a Traced unit (always seen, rules 1.33) can\'t be made Hidden by any door: Fade, Vanish or the condition op', () => {
+    const f = fightWith([door(5)], [{}]); foeAt(f, '14,5', true);
+    const u = f.turn(f.pc); at(f, u, '1,4');
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(u.id), 'traced', undefined, undefined, { skipSave: true }));
+    expect(condOn(f.unit(u.id), 'traced')).toBe(true);
+    hideNow(f, u);
+    expect(f.unit(u.id).hidden).toBeFalsy();
+  });
+});

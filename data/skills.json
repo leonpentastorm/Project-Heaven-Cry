@@ -2761,10 +2761,10 @@
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
       "per_point": {
-        "text": "+10% healing given. From 3 points, one Pump of an Outburst each round is free. From 7 points, a held Outburst swells without Strain."
+        "text": "Healing given grows with every point. With an Attuner in hand it opens Bonds and Tending: more Bonds held, and more verbs, as it grows."
       },
       "gates": [
-        "focus:emanator_foci"
+        "focus:attuner"
       ],
       "unlocks": {
         "3": {
@@ -2886,7 +2886,7 @@
           "I saw. Horror... horror and pain, grief and helplessness. Oh, I'd give my whole fortune to forget, you understand? Forget the horror in their eyes, the horror I still feel in my chest, the horror no words can describe. The horror of an empty face hanging above an iron stake."
         ],
         "intro": "Empathy is the bridge between one person and another: feeling what someone else is going through, putting yourself where they stand, and understanding at least partly why they do what they do.",
-        "effect": "+10% healing given. From 3 points, one Pump of an Outburst each round is free. From 7 points, a held Outburst swells without Strain.",
+        "effect": "Healing given grows with every point. With an Attuner in hand it opens Bonds and Tending: more Bonds held, and more verbs, as it grows.",
         "high_levels": "you become one with humanity. You understand everyone's circumstances, and everyone's story gets into you. You cry other people's tears and stick your nose into business that isn't yours.",
         "good_for": "therapists, human lie detectors, good alignments.",
         "bad_for": "chaotic alignments, serial killers, non-humanoids.",
@@ -2902,10 +2902,79 @@
       "slot": "beta",
       "summary": "The squad is a world of its own.",
       "per_point": {
-        "text": "+10% healing received."
+        "text": "+10% healing received. Share a Hit, a protective reaction, from the first point."
       },
       "gates": [],
       "unlocks": {
+        "1": {
+          "name": "Share a Hit",
+          "category": "Reaction",
+          "mastery": 0,
+          "text": "Your reaction, when an ally next to you is hit (from {=unlocks.1.effects.1.if.self_skill.camaraderie} points also a Bonded ally you see): you take {=unlocks.1.effects.0.share.base|pct}% of the damage instead, +{=unlocks.1.effects.0.share.per.0.value|pct}% a point of Camaraderie (at most {=unlocks.1.effects.0.share.max|pct}%). It needs no focus. An Answer: on until you switch it off, like every Answer.",
+          "effects": [
+            {
+              "op": "redirect",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_within": 1,
+                "by_hit": true,
+                "actor": "foe",
+                "answer_on": "share_a_hit"
+              },
+              "share": {
+                "base": 0.25,
+                "per": [
+                  {
+                    "of": "skill:camaraderie",
+                    "value": 0.05
+                  }
+                ],
+                "max": 0.5
+              },
+              "limit": {
+                "reaction": 1,
+                "kind": "protect"
+              },
+              "say": "{self} shares the hit on {target}."
+            },
+            {
+              "op": "redirect",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_tied": "bond",
+                "self_skill": {
+                  "camaraderie": 5
+                },
+                "target_sight": [
+                  "seen"
+                ],
+                "by_hit": true,
+                "actor": "foe",
+                "answer_on": "share_a_hit"
+              },
+              "share": {
+                "base": 0.25,
+                "per": [
+                  {
+                    "of": "skill:camaraderie",
+                    "value": 0.05
+                  }
+                ],
+                "max": 0.5
+              },
+              "limit": {
+                "reaction": 1,
+                "kind": "protect"
+              },
+              "say": "{self} shares the hit on {target} through the Bond."
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "item": true
+        },
         "3": {
           "name": "Hand-Off",
           "category": "Passive",
@@ -3030,7 +3099,7 @@
           "If you don't want to get brainwashed, I'd stay away from that Souji. 'The power of friendship,' then 'the bond of hearts'; he says that stuff without a shred of embarrassment. He wants to befriend everyone he meets and goes around calling people 'comrade' before he's even graduated. Go into a fight with him and before you know it half the enemy team are on our side. Last week he talked that platinum-haired girl from the rival school onto our team, just like that. Is that insane or what? Jealous? Why on earth would I be jealous? Completely ridiculous!"
         ],
         "intro": "Camaraderie is your teamwork and your solidarity with your squad, plus your knack for making friends and building factions.",
-        "effect": "+10% healing received.",
+        "effect": "+10% healing received. Share a Hit, a protective reaction, from the first point.",
         "high_levels": "you become the heart of any team you join. You start seeing the team as its own little world and judge outsiders harder than you mean to.",
         "good_for": "captains, team players.",
         "bad_for": "lone wolves, edgelords, murder hobos.",
@@ -3182,7 +3251,7 @@
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
       "per_point": {
-        "text": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against."
+        "text": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain."
       },
       "gates": [
         "focus:emanator"
@@ -3317,7 +3386,7 @@
           "Yes, your heart can shatter like silken tofu. Connecting to the twin world is no joke. Pulling a few little sparks over ten minutes, anyone with a cheap Emanator can do that. A bolt over ten thousand volts in two seconds? Try it and you'll learn what a Mana Short is. There was a Linker once who didn't just bleed internally; he shorted so hard his heart burst on the spot and left a hole in his chest. Outburst craft needs a pure heart, the strength to resist temptation, and the understanding to hold the connection. Now breathe deep and meditate until your doubts fall away!"
         ],
         "intro": "Will Power is the strength of your heart: generosity and spiritual sharpness. A person's soul lives in the heart, and Will Power measures both your mental strength and the strength of the soul inside you. Essential for Outbursts and Emanators.",
-        "effect": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against.",
+        "effect": "+10% Soul power. +10% mana syphoned. Every 2 points: +1 Strain limit, Outbursts reach 1 tile further, and you keep 1 more design ready. Every 3 points: 1 more module slot. Your Outbursts' conditions are harder to save against. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain. From the third point one Pump of an Outburst each round is free; from the seventh a held Outburst swells without Strain.",
         "high_levels": "your heart and soul turn hard and strong. You connect easily with the supernatural, but you slip easily into delusion, because the link to your upper-realm soul is so strong you can't tell this world from that one.",
         "good_for": "Emanator users, monks, crusaders, Bonders.",
         "bad_for": "Evoker users, scientists, melee users.",

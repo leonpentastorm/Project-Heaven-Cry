@@ -1423,6 +1423,22 @@ An enemy has no skill points. A tier lists the Calls it has and one level that s
 | Augment Offline | Body | one augment, prosthetic or implant gives nothing and its actions are unavailable | until repaired |
 | Corroded | Body | 5 damage at the start of each turn; Defense −2. Set by ACID with no save to land it; a Body save at the end of each of your turns ends it early (rules 1.4, provisional) | 3 rounds |
 | Off Balance | Body | −1 AP on your next turn. Set by Shadow's Timing with no save (rules 1.32, provisional) | 1 turn |
+| Felt Rage | Heart | given through a Bond (rules 1.33, Inspire): it has {=effects.0.value} Defense for {=duration.rounds} round | 1 round |
+| Felt Grief | Heart | given through a Bond (rules 1.33, Inspire): it is Slowed for a round | 1 round |
+| Felt Fear | Heart | given through a Bond (rules 1.33, Inspire): it is Afraid of whoever gave it, for a round | 1 round |
+| Felt Spite | Heart | given through a Bond (rules 1.33, Inspire): its next hit on its enemies costs it {=amounts.spite.base} Soul damage (more as the giver levels), no save; no save | 1 round |
+| Felt Shame | Heart | given through a Bond (rules 1.33, Inspire): it loses {=amounts.shame.base} HP now, as Soul damage (more as the giver levels), no save; no save | 1 round |
+| Felt Despair | Heart | given through a Bond (rules 1.33, Inspire): under half its HP it is Weakened for a round | 1 round |
+| Felt Mercy | Heart | given through a Bond (rules 1.33, Inspire): at a quarter of its HP or less it is Commanded to hold for a round (never a Boss) | 1 round |
+| Felt Cruelty | Heart | given through a Bond (rules 1.33, Inspire): it starts Bleeding | 1 round |
+| Felt Loneliness | Heart | given through a Bond (rules 1.33, Inspire): it has {=effects.0.value} to hit for a round, no save; no save | 1 round |
+| Felt Dread | Heart | given through a Bond (rules 1.33, Inspire): it is Suppressed for a round | 1 round |
+| Felt Awe | Heart | given through a Bond (rules 1.33, Inspire): it has Nausea for a round | 1 round |
+| Felt Longing | Heart | given through a Bond (rules 1.33, Inspire): its next move costs {=effects.0.value} AP more, no save; no save | 1 round |
+| Felt Contempt | Heart | given through a Bond (rules 1.33, Inspire): it is Scorned by whoever gave it (worse to hit them) for two rounds, no save; no save | 2 rounds |
+| Felt Guilt | Heart | given through a Bond (rules 1.33, Inspire): it is Taunted by whoever gave it for a round (never a Boss) | 1 round |
+| Felt Wonder | Heart | given through a Bond (rules 1.33, Inspire): it has {=effects.0.value} to spot the Hidden for a round, no save; no save | 1 round |
+| Felt Abandon | Heart | given through a Bond (rules 1.33, Inspire): it has {=effects.0.value} Defense for {=duration.rounds} round | 1 round |
 
 **Helpful states**
 
@@ -4504,6 +4520,139 @@ The line: **a three-turn window with one Break, the Operative all in = 125%** of
 125 ÷ 1.15 = 109, the door at a normal share 87; `rules.json balance.ceilings.shadow`). The dial is
 `rules.json shadow.per_point`, fitted only after measuring (not refitted in this step). Items 1962 to 1965.
 
+## Rules revision 1.33: Tending, Bonds and the Mender (Classes 3.0, step 7)
+
+Built on 13 Nov 2026 from `docs/design/bonds-spec.md` (binding; its "Settled by Leon" notes override its body) and
+`docs/design/class-roster-rev4-proposal.md` section 4.7 and its last blocks. It overrides every body line on the Bard's
+moves, Supplies, Inspire, Empathy's per-point text and the Outburst's free Pump that says otherwise (the class table
+of rules 1.10, rules 1.19's free Pump, rules 1.23's medic kit where it names the class). The class id stays `bard`
+(display name Mender, rules 1.29). Every number here is PROVISIONAL (items 2000 to 2041). Heal and shield SIZES are
+step 7b's (the percent re-fit): they are built on their named dials (`output.profiles.tend`, each verb's amount block)
+so 7b moves them by data alone; the Outburst's, the Sigil's and prayer's heals are not touched here.
+
+### 1. The Attuner: a focus is data
+
+1. **Every focus item names its door** (`items.json` `focus: {door, hand, fuel}`): the Evoker `brain_power` (fuel
+   `core`), the Emanator `will_power` (fuel `mp`), and the new **Attuner** `empathy` (fuel `mp`; off hand, one hand,
+   0.4 kg, 1000 credits). A rule asks for "a focus of door X in a hand" (`self_holds {slot: hand, door: empathy}`),
+   never an item id; a faction's focus later is one more item. Item 2000.
+2. **The Attuner in a hand** lets you Bond and use every Tending verb and every Mender move that spends MP. MP is the
+   Soul's fuel: a character carrying an Emanator **or an Attuner** keeps its MP in it; spending MP through Tending
+   needs the Attuner in a hand (the `mp` resource row's `needs` is "an MP focus in a hand"). **In the pack:** the
+   Bonds you hold stay, you make no new Bond and use no verb, and the passives of section 2 are off. **Off your
+   person:** at the next round's start every Bond you hold ends. Stims and medical kits need no focus. Item 2001.
+3. **Two gloves, no weapon:** Outbursts and Tending together take both hands (an Emanator and an Attuner); the
+   unarmed attack and the Release are then the damaging actions, and every rule below rides both. Item 2002.
+
+### 2. Bonds (ties of kind `bond`)
+
+1. **Bond** (`tending.json tend.bond`): 1 AP; a unit in your sight within `bond.make_range` (6; 9 from Empathy 6);
+   anyone with Empathy 1 and an Attuner in hand. An **ally** Bond needs no roll. An **enemy** rolls a **Heart save**
+   against your Empathy strength (rules 1.13), an Elite at **+2**, a Boss at **+5**; a success: no Bond, the AP is
+   spent. A machine (robot, drone, turret) or a Figment can't be Bonded. Every Bonded unit bears the condition
+   **Bonded** (`bonded`, the tie kind's mark: it ends with the last Bond on it, and the Bond ends with it). Item 2003.
+2. **Bonds held** (`ties_max:bond`): 1 at Empathy 1, 2 at 5, 3 at 8; the Mender +1. Allies and enemies share the cap.
+   A Bond past the cap is refused (let one go first: letting go is free, on your turn). Item 2004.
+3. **How a Bond ends:** an ally Bond: the ally dies; you go Down (from Empathy 10 your ally Bonds hold while you are
+   Downed); the fight ends. An enemy Bond: the enemy goes Down or dies; you go Down; it has been out of your sight
+   for a whole round; a **Boss** Bond at the end of the Boss's third turn (`bond.boss_rounds` 3), and you can't Bond
+   that Boss again for `bond.boss_gap` (4) rounds from the Bond; the fight ends; your Attuner leaves your person. No
+   enemy verb tears a Bond. Item 2005.
+4. **Through a Bond** (`bond.through` ×1.2): every Tending heal or shield you give a Bonded ally is ×1.2, and Tending
+   reaches a Bonded ally at any range while you can see it. Unbonded, Tending reaches 3 tiles in sight (Touch:
+   adjacent). Item 2006.
+5. **It takes damage for you** (`bond.share` 0.20): whenever you take damage from anyone but yourself, after your
+   armour and before your shield, 20% of it goes instead to your Bonded enemies, split evenly, as Soul damage that
+   ignores their armour; a share is never moved again and triggers no reaction. Item 2007.
+6. **You hit it more easily** (`bond.hit` +3): every roll to hit you make against an enemy Bonded to you (a weapon
+   attack, a Sigil, an Outburst: the one roll hook). Allies get nothing. Item 2008.
+7. **Your healing hurts it** (`bond.echo` **0.20**, Leon's number): every heal you give that restores HP to yourself or
+   a Bonded ally (any source) makes each enemy Bonded to you take 20% of the HP restored, as Soul damage at the start
+   of that enemy's next turn (frozen when the heal lands; armour ignored; never redirected; an echo never echoes).
+   Overheal, shields, heals given to you and heals out of a fight do not count. Item 2009.
+8. **The more you are tied, the harder you hit** (`bond.per_bond` 0.10): every damage you deal to an enemy by your own
+   blow is ×(1 + 0.10 × the Bonds you hold). Not the share, the echo, Bleeding or Burning. Item 2010.
+9. Rules 5 to 8 and the Ledger's spend need the Attuner in a hand. Item 2011.
+10. **Felt at the Down:** when a Bonded ally goes Down you lose `bond.down_mp` (10) MP. Item 2012.
+11. **Traced** (condition, no save, 2 rounds): given to whoever tends through a Bond, and renewed at the start of each
+    of your turns while you hold an enemy Bond. While Traced you can't be Hidden and the enemies know where you are
+    (`always_seen`); what you tend counts for the enemies' healer hunt (rules 1.23). Item 2013.
+12. Bonds, the Ledger and the queued echoes live on the fight (`cb.ties`, the resource, `cb.delayed`); all end with
+    it. Item 2014.
+
+### 3. Tending (the verbs; `data/tending.json`)
+
+Every verb needs the Attuner in a hand and pays MP through it; no Strain. Amounts: base × Healing given (the `tend`
+profile: Insight and Empathy, 0.06 a point each, k 1.573) × the level factor (`mend`) × the through (if Bonded). Reach
+"R3": an ally within 3 tiles you see, or a Bonded ally anywhere you see. A Downed ally is reached only by Raise.
+
+| Verb | Cost | Opens | What it does |
+| --- | --- | --- | --- |
+| Bond | 1 AP | Empathy 1 | section 2, rule 1 |
+| Let go | 0 AP | Empathy 1 | end one of your Bonds |
+| Mend | 2 AP, 8 MP (6 from Empathy 9) | Empathy 1 | R3 heal 3.75; on yourself once a turn (no through, no Trace) |
+| Touch | 2 AP, 8 MP (6 from Empathy 9) | Empathy 1 | an adjacent ally: heal 4.3 |
+| Settle | 1 AP, 5 MP | Empathy 1 | R3 or yourself: +2 on Body, Brain and Heart saves until your next turn |
+| Soothe | 1 AP, 6 MP | Empathy 1 | R3 or yourself: end the newest harmful Body condition (Heart too from Empathy 5; two from Empathy 7) |
+| Shield | 2 AP, 10 MP (8 from Empathy 9) | Empathy 2 | R3: a shield of 4.5 on the base layer (the larger stands) |
+| Raise | 1 AP, 12 MP | Empathy 3 | a Downed ally adjacent or Bonded in sight stands at 1.9 (at least 1 HP); once a turn |
+| Guide | 1 AP, 5 MP | Empathy 4 | R3: the ally steps up to 2 tiles (3 from Empathy 7) to a tile you pick; willing; provokes nothing |
+| Share a Hit | reaction (protect) | Camaraderie 1 | an adjacent ally (a Bonded ally in sight from Camaraderie 5) is hit: you take 25% + 5% a point of Camaraderie of it (at most 50%); no focus |
+| Field Surgery | out of a fight, a field kit, 15 MP | Empathy 3 | treat one limb injury or clear every Body condition; once an ally a scene |
+
+Stim Throw is a gear action anyone has (1 AP, a stim, an ally within 4 you see). Songs stay gear and traits. Items
+2015 to 2024.
+
+### 4. The ladder, and what leaves Empathy
+
+Empathy: the door at 1 (Bond, 1 Bond held, Mend, Touch, Settle, Soothe, the passives of section 2); Shield at 2; Raise,
+Field Surgery and Feel Their Pain at 3; Guide at 4; 2 Bonds, Soothe reaches Heart, Mercy at 5; Bond made within 9 at 6;
+Soothe ends 2, Guide 3 tiles, a perk step at 7; 3 Bonds at 8; Mend, Touch and Shield 2 MP cheaper and a perk step at
+9; the Mastered perk and ally Bonds that hold while Downed at 10. Healing given grows 0.06 a point throughout.
+**Empathy's free Pump (from 3) and the held Outburst's swell without Strain (from 7) move to Will Power** at the same
+points (`soul_modules.json cycle`). Anyone with Empathy 1 can feel (rules 1.8's feelings); a character who first gains
+it picks 2 starting feelings. The Empathy gate word is `focus:attuner`. Camaraderie: +10% healing received a point;
+Share a Hit at 1 (a Bonded ally in sight from 5); Hand-Off and Nobody Left Behind kept. Insinuation: unchanged. Items
+2025 to 2027.
+
+### 5. The Mender (`bard`)
+
+**Better:** one more Bond held (2 / 3 / 4); the first Bond action each turn costs 0 AP and has no range limit (any
+unit it sees); six moves. Supplies are no longer the class's resource; its resources are MP and the Ledger.
+
+| Rank | Move (key) | Cost | Effect |
+| --- | --- | --- | --- |
+| I | Triage (`medic.triage`) | 2 AP, 6 MP | an adjacent or Bonded ally in sight: heal 4.3 and end Bleeding; once an ally a turn; out of a fight ×3, once an ally a scene |
+| I | The Ledger (`bard.ledger`) | passive | every heal you give that restores HP and every shield you give, to an ally or yourself, is counted (at most 15.5 × Healing given × level); your next damage to an enemy by your own blow, any weapon or door, adds 0.7 × the Ledger before armour and empties it; a miss spends nothing; it empties at a fight's end |
+| II | Inspire (`bard.inspire`) | 1 AP, 10 MP | a Bonded unit in sight: give it a feeling you have felt (section 6) |
+| II | Take the Weight (`bard.take_the_weight`) | reaction (protect) | a Bonded ally in sight would go Down: it stays at 1 HP and you lose 15% of your max HP (true damage), only while above a quarter of your max HP; or a Bonded ally would be Stunned, Dazed or Afraid: you take it instead |
+| III | Brimming (`bard.mend`) | passive | Tending you give that heals past an ally's max HP leaves half the excess as a shield on it |
+| III | Rally (`bard.rally`) | 2 AP, 20 MP, once a scene | every Bonded ally wherever it is and every ally within 4 heals 3.1 and loses Fear and Shaken |
+
+`medic.stim_throw` and `medic.field_surgery` held by a Mender are dropped (both are everyone's); `res.supplies` is
+dropped; a Mender at rank I has Triage and the Ledger, Inspire comes at rank II. Items 2028 to 2034.
+
+### 6. Feelings given along a Bond (Inspire)
+
+An ally given a feeling gets +2 on its next roll to hit (`given_edge`) and the feeling's boon (`given_<id>`) until the
+end of its next turn; "next attack" parts end with that attack. An enemy gets the feeling's enemy face (`foe_<id>`),
+with a Heart save against your Empathy strength where marked (Elite +2, Boss +5; a Boss is never Commanded or
+Taunted by it), or nothing (10 feelings have none). One given feeling on a unit at a time; each feeling once a fight on
+each unit; once a unit a round; an enemy not two rounds running. The 25 rows are `feelings.json` `given` and
+`given_foe` (bonds-spec.md 5.1). Items 2035 to 2037.
+
+### 7. The other side
+
+Enemies do not Bond or Tend in this patch. A Bonded enemy and its Bonder both see the Bond; while you hold an enemy
+Bond you are Traced (seen through walls by the hunt). The rest of the enemy AI (an Elite or Boss Bonded to you hunts
+you first) is the enemy step's (Classes 3.0 step 9). Item 2038.
+
+### 8. Balance lines
+
+`balance.ceilings.tending_turn` 200 (the Mender's healing turn in Soldier-turns × 100; dial `output.profiles.tend.k`),
+`mender_offence` 70 and `mender_window` 100 (percent of a rifle-turn; dials `bond.per_bond`, the Ledger's factor).
+Measured in the step 7 hand-off, not refitted here. Items 2039 to 2041.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -7459,3 +7608,45 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1967. **Flag conditions in the item ops (rules 1.32):** the predicates `<who>_has` / `_lacks` and op `cleanse` see the conditions kept as unit flags (Hidden, Prone, Bleeding, Dazed: `magic.ts condHas`); before, a data item could not test Hidden. `<who>_sees_self` is false while the holder is Hidden (shadow-spec 2.1). PROVISIONAL.
 1968. **New general op rows (rules 1.32):** op `take` (Lift: a throwable, else a spare magazine, into the pile on the holder's tile; `save`, `via`); op `displace` field `to: "cover"` (Fade's step); op `condition` field `same_entry` (Hidden without a new ambush). PROVISIONAL.
 1969. **Off Balance's "never two rounds running" (rules 1.32):** read as a 2-round cooldown for each target on Timing's condition, and a target already Off Balance can't be picked. PROVISIONAL.
+2000. **A focus is data (rules 1.33 section 1.1):** each focus item names `focus: {door, hand, fuel}` (Evoker brain_power / core, Emanator will_power / mp, Attuner empathy / mp); `self_holds {door}` takes a skill door or the old words evoker / emanator. PROVISIONAL.
+2001. **The Attuner (rules 1.33 section 1.2):** off hand, one hand, 0.4 kg, 1000 credits; MP lives in an Emanator or an Attuner; Tending's MP is paid only with the Attuner in a hand; in the pack Bonds stay but nothing new and no passive; off your person every Bond ends at the next round's start. PROVISIONAL.
+2002. **Two gloves, no weapon (rules 1.33 section 1.3):** the intended price of mixing two Soul doors. PROVISIONAL.
+2003. **Bond (rules 1.33 section 2.1):** 1 AP, in sight within 6 (9 from Empathy 6); an enemy's Heart save against Empathy strength, Elite +2, Boss +5; machines and Figments can't be Bonded; the condition Bonded marks every Bonded unit (the tie kind's `mark`). PROVISIONAL.
+2004. **Bonds held (rules 1.33 section 2.2):** 1 / 2 / 3 at Empathy 1 / 5 / 8, the Mender +1, one shared cap; a Bond past the cap is refused (the spec's "asks which to let go" is the free Let go first). PROVISIONAL; the builder's reading.
+2005. **How a Bond ends (rules 1.33 section 2.3):** as listed; the Boss's gap is built as 4 rounds from the Bond (3 of its turns and a round), counted per Boss (`bond.boss_gap`); the builder's reading of "until a round has passed". PROVISIONAL.
+2006. **Through a Bond (rules 1.33 section 2.4):** ×1.2 on Tending heals and shields given a Bonded ally (`mend_mult`, kind `tending`); any range in the Bonder's own sight. PROVISIONAL.
+2007. **The share (rules 1.33 section 2.5):** 0.20 of damage taken from anyone but yourself, split, Soul, no armour, never moved again. Self-inflicted damage (Take the Weight, Strain, a Short) is not shared: the builder's reading. PROVISIONAL.
+2008. **To hit a Bonded enemy (rules 1.33 section 2.6):** +3 on every roll to hit (Leon: weapon, Sigil, Outburst). PROVISIONAL.
+2009. **The echo (rules 1.33 section 2.7):** 0.20 of the HP restored (Leon's number, 13 Nov 2026; the spec's body said 0.25), at the enemy's next turn start, frozen, armour ignored, never redirected, never echoing. PROVISIONAL.
+2010. **Damage per Bond held (rules 1.33 section 2.8):** ×(1 + 0.10 × Bonds held) on damage to an enemy by your own blow. Counted from the ties you hold at either end (`ties:bond`). PROVISIONAL.
+2011. **The passives need the Attuner in a hand (rules 1.33 section 2.9).** PROVISIONAL.
+2012. **Felt at the Down (rules 1.33 section 2.10):** 10 MP, never below 0. PROVISIONAL.
+2013. **Traced (rules 1.33 section 2.11):** 2 rounds, no save; given by Tending through a Bond and renewed each of your turn starts while you hold an enemy Bond; `always_seen`. PROVISIONAL.
+2014. **Bonds in the save (rules 1.33 section 2.12):** a fight saved before this patch has none. PROVISIONAL.
+2015. **Mend (rules 1.33 section 3):** 2 AP, 8 MP, heal 3.75 × Healing given × level (× 1.2 through); on yourself once a turn. PROVISIONAL.
+2016. **Touch:** 2 AP, 8 MP, adjacent, heal 4.3. PROVISIONAL.
+2017. **Settle:** 1 AP, 5 MP, +2 on every save until your next turn (condition `settled`, 1 round). PROVISIONAL.
+2018. **Soothe:** 1 AP, 6 MP; the newest harmful Body condition of the list (bleeding, burning, weakened, slowed, nausea, pinned, dazed, blinded, suppressed, corroded); Heart (fear, shaken, smitten, scorned) from Empathy 5; two from Empathy 7. PROVISIONAL.
+2019. **Shield:** 2 AP, 10 MP, a shield of 4.5 on the base layer (the larger stands). PROVISIONAL.
+2020. **Raise:** 1 AP, 12 MP, a Downed ally adjacent or Bonded in sight, heal 1.9 (at least 1 HP), once a turn. PROVISIONAL.
+2021. **Guide:** 1 AP, 5 MP, up to 2 tiles (3 from Empathy 7), willing, provokes nothing. PROVISIONAL.
+2022. **Share a Hit:** a protect reaction; 25% + 5% a point of Camaraderie, at most 50%; adjacent, or a Bonded ally in sight from Camaraderie 5; no focus. PROVISIONAL.
+2023. **Field Surgery:** anyone with Empathy 3 and an Attuner, out of a fight, one field kit, 15 MP, once an ally a scene. PROVISIONAL.
+2024. **Stim Throw is everyone's:** 1 AP, one stim, an ally within 4 you see (heal as a stim; a Downed ally stands at 1 HP). PROVISIONAL.
+2025. **The ladder (rules 1.33 section 4):** as listed; Empathy 9's 2 MP off Mend, Touch and Shield. PROVISIONAL.
+2026. **The free Pump and the swell move to Will Power (rules 1.33 section 4):** Will Power 3 and 7, the same points. PROVISIONAL.
+2027. **Who feels:** anyone with Empathy 1 (as well as anyone with Soul magic). PROVISIONAL.
+2028. **The Mender's better (rules 1.33 section 5):** one more Bond; the first Bond action a turn is free and has no range limit in sight. PROVISIONAL.
+2029. **Triage:** 2 AP, 6 MP (the spec's; it had none), 4.3, end Bleeding, once an ally a turn; out of a fight ×3, once an ally a scene. PROVISIONAL.
+2030. **The Ledger:** cap 15.5 × Healing given × level, factor 0.7, spent on the next damage to an enemy by your own blow (with the Attuner in a hand). PROVISIONAL.
+2031. **Inspire:** rank II, 1 AP, 10 MP, a Bonded unit in sight, a felt feeling (section 6). PROVISIONAL.
+2032. **Take the Weight:** rank II, protect reaction; 15% of max HP true damage, only above a quarter of max HP; the condition taken instead is taken with no save (the builder's reading). PROVISIONAL.
+2033. **Brimming:** rank III; half the overheal of a Tending heal on an ally becomes a shield (the builder's conservative reading of "up to half of that heal"). PROVISIONAL.
+2034. **Rally:** rank III, 2 AP, 20 MP, once a scene, heal 3.1 (×1.2 through for the Bonded), Fear and Shaken end. PROVISIONAL.
+2035. **Given feelings, allies (rules 1.33 section 6):** +2 on the next roll to hit and the feeling's boon until the end of the ally's next turn; a boon that is a "next attack" ends with that attack (Rage's and Abandon's Defense cost ends with it too: the builder's reading). PROVISIONAL.
+2036. **Given feelings, enemies:** the enemy face rows `foe_<id>`, Heart save where marked, Elite +2, Boss +5, a Boss never Commanded or Taunted. PROVISIONAL.
+2037. **Inspire's limits:** one given feeling at a time; each feeling once a fight a unit; once a unit a round; an enemy not two rounds running (a marker held 2 rounds on an enemy). PROVISIONAL.
+2038. **The other side (rules 1.33 section 7):** enemies do not Bond or Tend; the AI's Bonded hunt is step 9's. PROVISIONAL.
+2039. **`tending_turn` 200** (Soldier-turns × 100, the Mender all in). PROVISIONAL.
+2040. **`mender_offence` 70** (percent of a rifle-turn). PROVISIONAL.
+2041. **`mender_window` 100** (the best three turns). PROVISIONAL.

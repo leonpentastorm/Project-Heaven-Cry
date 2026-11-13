@@ -374,10 +374,16 @@
           "name": "Reflex",
           "ap_cost": 0,
           "uses": "at_will",
-          "numbers": {"reactions": 1},
+          "numbers": {
+            "reactions": 1
+          },
           "text": "You have {=numbers.reactions} more reaction each round: two in all, of any kind. While you hold a shot, what fires by itself leaves your last reaction for it.",
           "effects": [
-            {"op": "stat_mod", "stat": "reactions", "value": 1}
+            {
+              "op": "stat_mod",
+              "stat": "reactions",
+              "value": 1
+            }
           ],
           "adjudication": "engine",
           "provisional": true,
@@ -407,10 +413,65 @@
               "uses": "at_will",
               "text": "Your first main-hand reload, draw, swap or pick-up each turn costs {=effects.0.value|abs} AP less, but never less than {=effects.0.min} AP. It doesn't apply to your off-hand weapon or to reloading two weapons at once.",
               "effects": [
-                {"op": "cost_mod", "value": -1, "min": 1, "when": "cost", "if": {"action": ["reload", "pickup"], "hand": ["main"]}, "limit": {"per": "per_turn", "n": 1, "peek": true}},
-                {"op": "use", "when": "reload", "if": {"hand": ["main"]}, "limit": {"per": "per_turn", "n": 1}},
-                {"op": "use", "when": "acted", "if": {"action": ["pickup"]}, "limit": {"per": "per_turn", "n": 1}},
-                {"op": "cost_mod", "value": -1, "min": 1, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 1}}
+                {
+                  "op": "cost_mod",
+                  "value": -1,
+                  "min": 1,
+                  "when": "cost",
+                  "if": {
+                    "action": [
+                      "reload",
+                      "pickup"
+                    ],
+                    "hand": [
+                      "main"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "peek": true
+                  }
+                },
+                {
+                  "op": "use",
+                  "when": "reload",
+                  "if": {
+                    "hand": [
+                      "main"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1
+                  }
+                },
+                {
+                  "op": "use",
+                  "when": "acted",
+                  "if": {
+                    "action": [
+                      "pickup"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1
+                  }
+                },
+                {
+                  "op": "cost_mod",
+                  "value": -1,
+                  "min": 1,
+                  "when": "swap",
+                  "if": {
+                    "ap_above": 0
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1
+                  }
+                }
               ],
               "adjudication": "engine",
               "provisional": true,
@@ -484,14 +545,79 @@
               "name": "Run and Gun",
               "ap_cost": 0,
               "uses": "per_turn",
-              "numbers": {"tiles": 2, "pressure": 1},
+              "numbers": {
+                "tiles": 2,
+                "pressure": 1
+              },
               "text": "Once a turn, after you attack, your next move of up to {=numbers.tiles} tiles costs no AP and draws no opportunity attack, and your next hit this turn, with any weapon, adds {=numbers.pressure} more Pressure.",
               "effects": [
-                {"op": "mark", "when": "attack_roll", "flag": "fired", "if": {"own_turn": true}},
-                {"op": "cost_mod", "when": "cost", "set": 0, "if": {"action": ["move"], "flag": "fired", "ap_above": 0, "path_tiles_at_most": 2}, "limit": {"per": "per_turn", "n": 1},
-                  "and": [{"op": "condition", "condition": "slipping", "skip_save": true}, {"op": "mark", "flag": "ran"}]},
-                {"op": "resource", "when": "hit", "resource": "pressure", "value": 1, "target": "target", "if": {"flag": "ran", "own_turn": true}, "and": [{"op": "mark", "flag": "ran", "clear": true}]},
-                {"op": "mark", "when": "turn_end", "flag": "fired", "clear": true, "and": [{"op": "mark", "flag": "ran", "clear": true}]}
+                {
+                  "op": "mark",
+                  "when": "attack_roll",
+                  "flag": "fired",
+                  "if": {
+                    "own_turn": true
+                  }
+                },
+                {
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "set": 0,
+                  "if": {
+                    "action": [
+                      "move"
+                    ],
+                    "flag": "fired",
+                    "ap_above": 0,
+                    "path_tiles_at_most": 2
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1
+                  },
+                  "and": [
+                    {
+                      "op": "condition",
+                      "condition": "slipping",
+                      "skip_save": true
+                    },
+                    {
+                      "op": "mark",
+                      "flag": "ran"
+                    }
+                  ]
+                },
+                {
+                  "op": "resource",
+                  "when": "hit",
+                  "resource": "pressure",
+                  "value": 1,
+                  "target": "target",
+                  "if": {
+                    "flag": "ran",
+                    "own_turn": true
+                  },
+                  "and": [
+                    {
+                      "op": "mark",
+                      "flag": "ran",
+                      "clear": true
+                    }
+                  ]
+                },
+                {
+                  "op": "mark",
+                  "when": "turn_end",
+                  "flag": "fired",
+                  "clear": true,
+                  "and": [
+                    {
+                      "op": "mark",
+                      "flag": "ran",
+                      "clear": true
+                    }
+                  ]
+                }
               ],
               "adjudication": "engine",
               "provisional": true,
@@ -1086,15 +1212,9 @@
       ],
       "role": "support",
       "tagline": "Nobody stays behind.",
-      "resource": {
-        "id": "supplies",
-        "max": "3 + floor(proficiency / 2)",
-        "rule": "Supplies are your stims, kits and med-drones. You carry 3, +1 for every 2 points of Improvisation, restocked when you rest."
-      },
       "resources": [
-        "supplies",
         "mp",
-        "strain"
+        "ledger"
       ],
       "foundation_for": [
         "the medic",
@@ -1110,7 +1230,111 @@
               "ref": "medic.triage"
             },
             {
-              "ref": "bard.inspire"
+              "adjudication": "engine",
+              "provisional": true,
+              "attributes": [
+                "insight"
+              ],
+              "status": "active",
+              "id": "ledger",
+              "name": "The Ledger",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "amounts": {
+                "cap": {
+                  "kind": "heal",
+                  "base": 15.5,
+                  "profile": "tend",
+                  "provisional": true
+                }
+              },
+              "numbers": {
+                "factor": 0.7
+              },
+              "text": "Every heal you give that restores HP and every shield you give, to an ally or to yourself, is counted in your Ledger, up to {=amounts.cap.base} × your Healing given, more as you level. Your next damage to an enemy by your own blow, with any weapon or door and an Attuner in hand, adds {=numbers.factor|pct}% of the Ledger before armour, and the Ledger empties. A miss spends nothing; it empties when the fight ends.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "when": "heal_given",
+                  "if": {
+                    "target": [
+                      "self",
+                      "ally"
+                    ]
+                  },
+                  "resource": "ledger",
+                  "value": {
+                    "base": 0,
+                    "per": [
+                      {
+                        "of": "event:amount",
+                        "value": 1
+                      }
+                    ]
+                  }
+                },
+                {
+                  "op": "resource",
+                  "when": "shield",
+                  "if": {
+                    "actor": "self",
+                    "target": [
+                      "self",
+                      "ally"
+                    ]
+                  },
+                  "resource": "ledger",
+                  "value": {
+                    "base": 0,
+                    "per": [
+                      {
+                        "of": "event:amount",
+                        "value": 1
+                      }
+                    ]
+                  }
+                },
+                {
+                  "op": "damage_mod",
+                  "when": "dealing",
+                  "if": {
+                    "target": "foe",
+                    "by_hit": true,
+                    "self_holds": {
+                      "slot": "hand",
+                      "door": "empathy"
+                    },
+                    "self_has_res": [
+                      "ledger"
+                    ]
+                  },
+                  "value": {
+                    "base": 0,
+                    "per": [
+                      {
+                        "of": "res:ledger",
+                        "value": 0.7
+                      }
+                    ]
+                  },
+                  "and": [
+                    {
+                      "op": "resource",
+                      "resource": "ledger",
+                      "value": "zero"
+                    }
+                  ],
+                  "say": "{self} calls in the Ledger."
+                }
+              ],
+              "origin": "bard",
+              "origin_rank": "I",
+              "new": true,
+              "fantasy_tags": [
+                "heal",
+                "damage"
+              ],
+              "surface": "combat"
             }
           ]
         },
@@ -1118,10 +1342,102 @@
           "threshold": 5,
           "moves": [
             {
-              "ref": "medic.stim_throw"
+              "ref": "bard.inspire"
             },
             {
-              "ref": "bard.mend"
+              "adjudication": "engine",
+              "provisional": true,
+              "attributes": [
+                "insight"
+              ],
+              "status": "active",
+              "id": "take_the_weight",
+              "name": "Take the Weight",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "amounts": {
+                "weight": {
+                  "kind": "damage",
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "self:max_hp",
+                      "value": 0.15
+                    }
+                  ],
+                  "type": "true",
+                  "armour": "none",
+                  "provisional": true
+                }
+              },
+              "numbers": {
+                "above": 0.25
+              },
+              "text": "Your protective reaction: when a Bonded ally you see would go Down, it stays at {=effects.0.value} HP and you lose {=amounts.weight.per.0.value|pct}% of your max HP (only while you are above {=numbers.above|pct}% of it, so it never Downs you); or when a Bonded ally would be Stunned, Dazed or Afraid, you take it instead.",
+              "effects": [
+                {
+                  "op": "floor",
+                  "when": "would_drop",
+                  "if": {
+                    "target": "ally",
+                    "target_tied": "bond",
+                    "target_sight": [
+                      "seen"
+                    ],
+                    "self_hp_above": 0.25,
+                    "open": true
+                  },
+                  "value": 1,
+                  "limit": {
+                    "reaction": 1,
+                    "kind": "protect"
+                  },
+                  "and": [
+                    {
+                      "op": "deal",
+                      "amount": "weight"
+                    }
+                  ],
+                  "say": "{self} takes the weight for {target}."
+                },
+                {
+                  "op": "cancel",
+                  "when": "cond_incoming",
+                  "if": {
+                    "target": "ally",
+                    "target_tied": "bond",
+                    "target_sight": [
+                      "seen"
+                    ],
+                    "cond": [
+                      "stunned",
+                      "dazed",
+                      "fear"
+                    ]
+                  },
+                  "limit": {
+                    "reaction": 1,
+                    "kind": "protect"
+                  },
+                  "and": [
+                    {
+                      "op": "condition",
+                      "condition": "incoming",
+                      "skip_save": true
+                    }
+                  ],
+                  "why": "taken by {self}",
+                  "say": "{self} takes it for {target}."
+                }
+              ],
+              "origin": "bard",
+              "origin_rank": "II",
+              "new": true,
+              "fantasy_tags": [
+                "protect",
+                "reaction"
+              ],
+              "surface": "combat"
             }
           ]
         },
@@ -1129,45 +1445,79 @@
           "threshold": 8,
           "moves": [
             {
-              "ref": "medic.field_surgery"
+              "ref": "bard.mend"
             },
             {
+              "adjudication": "engine",
+              "provisional": true,
+              "attributes": [
+                "insight"
+              ],
+              "status": "active",
               "id": "rally",
               "name": "Rally",
               "ap_cost": 2,
               "uses": "per_scene",
-              "text": "Costs 2 AP, once per scene. Every ally within {=effects.1.radius} tiles heals 6 × your Healing given, more as you level, and loses Fear and Shaken. It doesn't heal you, and it doesn't reach Downed allies.",
+              "amounts": {
+                "heal": {
+                  "kind": "heal",
+                  "base": 3.1,
+                  "profile": "tend",
+                  "heal_kind": "tending",
+                  "provisional": true
+                }
+              },
+              "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP, once a scene, with an Attuner in hand: every Bonded ally wherever it is, and every ally within {=effects.0.effects.0.targets.within} tiles, heals {=amounts.heal.base} × your Healing given, more as you level, and loses Fear and Shaken. It doesn't heal you or a Downed ally.",
               "effects": [
                 {
                   "op": "grant_action",
                   "action": "rally",
                   "ap": 2,
-                  "uses": "per_scene"
-                },
-                {
-                  "op": "aura",
-                  "radius": 4,
-                  "target": "allies",
+                  "uses": "per_scene",
+                  "res": {
+                    "mp": 20
+                  },
+                  "scope": [
+                    "combat"
+                  ],
+                  "if": {
+                    "self_holds": {
+                      "slot": "hand",
+                      "door": "empathy"
+                    }
+                  },
                   "effects": [
                     {
-                      "op": "heal",
-                      "value": 6,
-                      "scale": "healing_given",
-                      "target": "allies"
+                      "op": "mend",
+                      "when": "acted",
+                      "amount": "heal",
+                      "targets": {
+                        "side": "ally",
+                        "within": 4,
+                        "beyond": "bond"
+                      }
                     },
                     {
                       "op": "cleanse",
+                      "when": "acted",
                       "condition": [
                         "fear",
                         "shaken"
                       ],
-                      "target": "allies"
+                      "targets": {
+                        "side": "ally",
+                        "within": 4,
+                        "beyond": "bond"
+                      },
+                      "say": "{self} rallies the squad.",
+                      "fx": {
+                        "k": "rally",
+                        "radius": 4
+                      }
                     }
                   ]
                 }
               ],
-              "adjudication": "engine",
-              "provisional": true,
               "origin": "bard",
               "new": true,
               "fantasy_tags": [
@@ -1175,14 +1525,15 @@
                 "squad",
                 "fear"
               ],
-              "attributes": [
-                "insight"
-              ],
-              "status": "active",
               "surface": "combat"
             }
           ]
         }
+      },
+      "resource": {
+        "id": "ledger",
+        "max": "the Ledger's cap",
+        "rule": "The Ledger counts the healing and shielding you give (to allies and to yourself) up to its cap, and your next damaging blow on an enemy spends it as extra damage. MP is the fuel of every Tending verb and move, paid through the Attuner. Supplies are no longer the class's: stims and kits are everyone's gear."
       }
     },
     {
@@ -1627,9 +1978,47 @@
             "action": "aimed_shot",
             "value": -1
           },
-          {"op": "cost_mod", "when": "attack", "value": -1, "min": 1, "if": {"own_turn": true, "free_tech": false, "tech_ap_at_least": 3}, "limit": {"per": "per_turn", "n": 1, "key": "dear", "peek": true}},
-          {"op": "use", "when": "attack_roll", "if": {"own_turn": true, "free_tech": false, "tech_ap_at_least": 3}, "limit": {"per": "per_turn", "n": 1, "key": "dear"}},
-          {"op": "roll_mod", "when": "attack", "value": 1, "if": {"mode": ["aimed"]}}
+          {
+            "op": "cost_mod",
+            "when": "attack",
+            "value": -1,
+            "min": 1,
+            "if": {
+              "own_turn": true,
+              "free_tech": false,
+              "tech_ap_at_least": 3
+            },
+            "limit": {
+              "per": "per_turn",
+              "n": 1,
+              "key": "dear",
+              "peek": true
+            }
+          },
+          {
+            "op": "use",
+            "when": "attack_roll",
+            "if": {
+              "own_turn": true,
+              "free_tech": false,
+              "tech_ap_at_least": 3
+            },
+            "limit": {
+              "per": "per_turn",
+              "n": 1,
+              "key": "dear"
+            }
+          },
+          {
+            "op": "roll_mod",
+            "when": "attack",
+            "value": 1,
+            "if": {
+              "mode": [
+                "aimed"
+              ]
+            }
+          }
         ],
         "adjudication": "engine",
         "provisional": true,
@@ -1649,7 +2038,10 @@
         "name": "Special Ammo",
         "ap_cost": null,
         "uses": "per_rest",
-        "numbers": {"load_attacks": 12, "load_ap": 1},
+        "numbers": {
+          "load_attacks": 12,
+          "load_ap": 1
+        },
         "text": "You carry one load each of armour-piercing, hollow-point and incendiary ammunition, restocked when you rest, for any weapon but a grenade or other consumable: a weapon that takes a magazine loads it as a magazine, one that draws from a quiver as a quiver of up to {=numbers.load_attacks} (filled before the fight), and any other weapon takes a load that lasts {=numbers.load_attacks} attacks or the fight. Loading is a reload and costs its AP; {=numbers.load_ap} AP for a weapon that never reloads. Armour-piercing ignores armour at ×0.8 damage, hollow-point deals ×1.3 damage against doubled armour, and incendiary deals ×0.9 damage and sets the target Burning.",
         "effects": [
           {
@@ -1678,7 +2070,10 @@
         "name": "Killzone",
         "ap_cost": null,
         "uses": "at_will",
-        "numbers": {"hit": 2, "spend": 2},
+        "numbers": {
+          "hit": 2,
+          "spend": 2
+        },
         "text": "Hold two attacks with any weapon instead of one, for twice the attack's AP. You make one at each of the first two different enemies that move into your line of fire or your reach, both at +{=numbers.hit} to hit. The first one spends {=numbers.spend} reactions, both of yours; with one reaction left, only one fires. You can't set it while Pressed.",
         "effects": [
           {
@@ -1769,10 +2164,54 @@
         "uses": "reaction",
         "text": "You have the Answer Riposte with any melee weapon: when a melee attack misses you and the attacker is within your reach, strike back at once for 0 AP. Your Riposte costs {=effects.2.value|abs} Momentum and adds your Counter bonus to hit; with no Momentum you don't Riposte. It is one Answer and uses your reaction.",
         "effects": [
-          {"op": "stat_mod", "stat": "technique:riposte", "value": 1},
-          {"op": "roll_mod", "when": "attack", "value": {"base": 0, "per": [{"of": "self:counter", "value": 1}]}, "if": {"mode": ["riposte"]}, "label": "Counter"},
-          {"op": "resource", "when": "attack_roll", "resource": "momentum", "value": -1, "if": {"mode": ["riposte"]}},
-          {"op": "cancel", "when": "attack", "why": "No Momentum to Riposte with.", "if": {"mode": ["riposte"], "self_lacks_res": ["momentum"]}}
+          {
+            "op": "stat_mod",
+            "stat": "technique:riposte",
+            "value": 1
+          },
+          {
+            "op": "roll_mod",
+            "when": "attack",
+            "value": {
+              "base": 0,
+              "per": [
+                {
+                  "of": "self:counter",
+                  "value": 1
+                }
+              ]
+            },
+            "if": {
+              "mode": [
+                "riposte"
+              ]
+            },
+            "label": "Counter"
+          },
+          {
+            "op": "resource",
+            "when": "attack_roll",
+            "resource": "momentum",
+            "value": -1,
+            "if": {
+              "mode": [
+                "riposte"
+              ]
+            }
+          },
+          {
+            "op": "cancel",
+            "when": "attack",
+            "why": "No Momentum to Riposte with.",
+            "if": {
+              "mode": [
+                "riposte"
+              ],
+              "self_lacks_res": [
+                "momentum"
+              ]
+            }
+          }
         ],
         "adjudication": "engine",
         "provisional": true,
@@ -1942,118 +2381,106 @@
         "status": "active"
       },
       {
+        "adjudication": "engine",
+        "provisional": true,
+        "attributes": [
+          "insight"
+        ],
+        "status": "active",
         "id": "triage",
         "name": "Triage",
         "ap_cost": 2,
         "uses": "at_will",
-        "text": "Costs {=ap_cost} AP. Heal an ally next to you for 5 × your Healing given, more as you level, and end their Bleeding. It uses no Supplies, and works once per ally per turn. Out of a fight you have time to work: three times as much, once per ally per scene. You can also Stabilise a Downed ally next to you for 1 AP: they come back at 1 HP, with no stim needed.",
+        "amounts": {
+          "heal": {
+            "kind": "heal",
+            "base": 4.3,
+            "profile": "tend",
+            "heal_kind": "tending",
+            "provisional": true
+          }
+        },
+        "numbers": {
+          "rest_mult": 3
+        },
+        "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP, with an Attuner in hand: an ally next to you, or a Bonded ally you see, heals {=amounts.heal.base} × your Healing given, more as you level, and stops Bleeding. Once an ally a turn. Out of a fight, with time to work: ×{=numbers.rest_mult}, once an ally a scene.",
         "effects": [
           {
-            "op": "heal",
-            "value": 5,
-            "target": "ally_adjacent",
-            "scale": "healing_given"
-          },
-          {
-            "op": "condition",
-            "condition": "bleeding",
-            "target": "ally",
-            "when": "remove"
-          },
-          {
-            "op": "action_cost",
-            "action": "stabilise",
-            "value": -1
+            "op": "grant_action",
+            "action": "triage",
+            "ap": 2,
+            "uses": "at_will",
+            "res": {
+              "mp": 6
+            },
+            "scope": [
+              "combat"
+            ],
+            "site": "triage",
+            "if": {
+              "self_holds": {
+                "slot": "hand",
+                "door": "empathy"
+              }
+            },
+            "reach": {
+              "tiles": 1,
+              "sight": true,
+              "side": "ally",
+              "beyond": "bond",
+              "if": {
+                "target_alive": true,
+                "uses_left": {
+                  "per": "per_turn",
+                  "n": 1,
+                  "each": "target",
+                  "key": "triage"
+                }
+              }
+            },
+            "effects": [
+              {
+                "op": "mend",
+                "when": "acted",
+                "amount": "heal",
+                "target": "target",
+                "limit": {
+                  "per": "per_turn",
+                  "n": 1,
+                  "each": "target",
+                  "key": "triage"
+                }
+              },
+              {
+                "op": "cleanse",
+                "when": "acted",
+                "condition": [
+                  "bleeding"
+                ],
+                "target": "target"
+              },
+              {
+                "op": "condition",
+                "when": "acted",
+                "condition": "traced",
+                "skip_save": true,
+                "rounds": 2,
+                "if": {
+                  "target": "ally",
+                  "target_tied": "bond"
+                },
+                "say": "{self} triages {target}."
+              }
+            ]
           }
         ],
-        "adjudication": "engine",
-        "provisional": true,
         "origin": "medic",
         "origin_rank": "I",
         "fantasy_tags": [
           "heal",
           "support"
         ],
-        "attributes": [
-          "insight"
-        ],
-        "status": "active"
-      },
-      {
-        "id": "stim_throw",
-        "name": "Stim Throw",
-        "ap_cost": 1,
-        "uses": "at_will",
-        "text": "Costs {=ap_cost} AP and {=effects.0.value|abs} Supply. An ally within 4 tiles that you can see heals 6 × your Healing given, more as you level, and stops Bleeding. A Downed ally is stabilised at 1 HP instead.",
-        "effects": [
-          {
-            "op": "resource",
-            "resource": "supplies",
-            "value": -1,
-            "when": "on_use"
-          },
-          {
-            "op": "heal",
-            "value": 6,
-            "target": "ally_within_4",
-            "scale": "healing_given"
-          }
-        ],
-        "adjudication": "engine",
-        "provisional": true,
-        "origin": "medic",
-        "origin_rank": "II",
-        "fantasy_tags": [
-          "heal",
-          "supplies",
-          "support"
-        ],
-        "attributes": [
-          "insight"
-        ],
-        "status": "active"
-      },
-      {
-        "id": "field_surgery",
-        "name": "Field Surgery",
-        "ap_cost": 0,
-        "uses": "at_will",
-        "text": "Out of a fight, spend {=effects.0.value|abs} Supply to do one of two things for an ally or yourself: treat one arm or leg injury, or clear every Body condition they carry. A robot medic repairs machines the same way; the Narrator decides which machines count.",
-        "effects": [
-          {
-            "op": "resource",
-            "resource": "supplies",
-            "value": -1,
-            "when": "on_use"
-          },
-          {
-            "op": "condition",
-            "condition": "family:body",
-            "target": "ally",
-            "when": "remove"
-          },
-          {
-            "op": "condition",
-            "condition": "injured",
-            "target": "ally",
-            "when": "remove",
-            "location": "limb"
-          }
-        ],
-        "adjudication": "engine",
-        "provisional": true,
-        "origin": "medic",
-        "origin_rank": "III",
-        "fantasy_tags": [
-          "heal",
-          "supplies",
-          "injury"
-        ],
-        "attributes": [
-          "insight",
-          "perception"
-        ],
-        "status": "active"
+        "surface": "combat"
       },
       {
         "id": "mark",
@@ -2156,8 +2583,32 @@
         "uses": "at_will",
         "text": "The damage words FIRE, FREEZE, SHOCK, STONE and ACID cost {=effects.0.value|abs} charge less to draw: 1 instead of 2. SPARK and GALE already cost the least a glyph can and stay there, because no glyph costs less than 1 charge.",
         "effects": [
-          {"op": "word_cost", "words": ["fire", "shock", "freeze", "stone", "acid"], "value": -1},
-          {"op": "cost_mod", "res": "charge", "at_least": 1, "when": "glyph_cost", "if": {"word": ["fire", "shock", "freeze", "stone", "acid"]}}
+          {
+            "op": "word_cost",
+            "words": [
+              "fire",
+              "shock",
+              "freeze",
+              "stone",
+              "acid"
+            ],
+            "value": -1
+          },
+          {
+            "op": "cost_mod",
+            "res": "charge",
+            "at_least": 1,
+            "when": "glyph_cost",
+            "if": {
+              "word": [
+                "fire",
+                "shock",
+                "freeze",
+                "stone",
+                "acid"
+              ]
+            }
+          }
         ],
         "adjudication": "engine",
         "provisional": true,
@@ -2268,7 +2719,20 @@
       },
       {
         "id": "ward",
-        "amounts": {"shield": {"kind": "shield", "base": 0, "per": [{"of": "charge", "value": 10}], "profile": "healing", "provisional": true}},
+        "amounts": {
+          "shield": {
+            "kind": "shield",
+            "base": 0,
+            "per": [
+              {
+                "of": "charge",
+                "value": 10
+              }
+            ],
+            "profile": "healing",
+            "provisional": true
+          }
+        },
         "name": "Ward",
         "ap_cost": 2,
         "uses": "at_will",
@@ -2472,11 +2936,40 @@
         "uses": "at_will",
         "text": "You learn the condition words BLIND, SLOW and MUDDLE (Left Brain Debuff) if you don't know them yet. MUDDLE costs you 1 charge less to draw: 1 instead of 2. BLIND and SLOW already cost the least a glyph can, and no glyph costs less than 1 charge.",
         "effects": [
-          {"op": "unlock_word", "word": "blind"},
-          {"op": "unlock_word", "word": "slow"},
-          {"op": "unlock_word", "word": "muddle"},
-          {"op": "word_cost", "words": ["blind", "slow", "muddle"], "value": -1},
-          {"op": "cost_mod", "res": "charge", "at_least": 1, "when": "glyph_cost", "if": {"word": ["blind", "slow", "muddle"]}}
+          {
+            "op": "unlock_word",
+            "word": "blind"
+          },
+          {
+            "op": "unlock_word",
+            "word": "slow"
+          },
+          {
+            "op": "unlock_word",
+            "word": "muddle"
+          },
+          {
+            "op": "word_cost",
+            "words": [
+              "blind",
+              "slow",
+              "muddle"
+            ],
+            "value": -1
+          },
+          {
+            "op": "cost_mod",
+            "res": "charge",
+            "at_least": 1,
+            "when": "glyph_cost",
+            "if": {
+              "word": [
+                "blind",
+                "slow",
+                "muddle"
+              ]
+            }
+          }
         ],
         "adjudication": "engine",
         "provisional": true,
@@ -2494,7 +2987,16 @@
       },
       {
         "id": "rewrite",
-        "amounts": {"shield_turned": {"kind": "damage", "base": 30, "profile": "sigil", "type": "sigil", "text": "at most the shield it had", "provisional": true}},
+        "amounts": {
+          "shield_turned": {
+            "kind": "damage",
+            "base": 30,
+            "profile": "sigil",
+            "type": "sigil",
+            "text": "at most the shield it had",
+            "provisional": true
+          }
+        },
         "name": "Rewrite",
         "ap_cost": 3,
         "uses": "per_turn",
@@ -2750,72 +3252,264 @@
         "status": "active"
       },
       {
+        "adjudication": "engine",
+        "provisional": true,
+        "attributes": [
+          "insight"
+        ],
+        "status": "active",
         "id": "inspire",
         "name": "Inspire",
         "ap_cost": 1,
         "uses": "at_will",
-        "text": "Costs {=ap_cost} AP and {=effects.0.value|abs} MP (without an Emanator: no MP, and {=effects.0.without_emanator.value} Strain in its place). An ally within 6 tiles gets +2 on their next d20 roll: an attack, a save or a check. With an Emanator it adds no Strain, and a second Inspire on the same ally doesn't stack.",
+        "amounts": {
+          "love": {
+            "kind": "heal",
+            "base": 1.9,
+            "profile": "tend",
+            "heal_kind": "tending",
+            "provisional": true
+          }
+        },
+        "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP, with an Attuner in hand: give a unit Bonded to you, in sight, a feeling you have felt. An ally gets a bonus on its next roll to hit and the feeling's boon until the end of its next turn (Love heals it {=amounts.love.base} × your Healing given); an enemy gets the feeling's enemy face, often with a Heart save against your Empathy, or nothing. One given feeling on a unit at a time; each feeling once a fight on each unit; once a unit a round; an enemy not two rounds running.",
         "effects": [
           {
-            "op": "resource",
-            "resource": "mp",
-            "value": -10,
-            "when": "on_use",
-            "without_emanator": {
-              "resource": "strain",
-              "value": 2
-            }
-          },
-          {
-            "op": "skill_mod_tag",
-            "tag": "any",
-            "value": 2,
-            "target": "ally",
-            "duration": "next_roll"
+            "op": "grant_action",
+            "action": "inspire",
+            "ap": 1,
+            "uses": "at_will",
+            "res": {
+              "mp": 10
+            },
+            "scope": [
+              "combat"
+            ],
+            "if": {
+              "self_holds": {
+                "slot": "hand",
+                "door": "empathy"
+              }
+            },
+            "pick": "felt",
+            "pick_label": "Give which feeling?",
+            "reach": {
+              "sight": true,
+              "side": "any",
+              "tied": "bond",
+              "if": {
+                "target_alive": true,
+                "target_lacks": [
+                  "given_mark"
+                ]
+              }
+            },
+            "effects": [
+              {
+                "op": "cleanse",
+                "when": "acted",
+                "condition": [
+                  "given_rage",
+                  "given_grief",
+                  "given_fear",
+                  "given_love",
+                  "given_joy",
+                  "given_calm",
+                  "given_spite",
+                  "given_shame",
+                  "given_pride",
+                  "given_despair",
+                  "given_hope",
+                  "given_mercy",
+                  "given_cruelty",
+                  "given_loneliness",
+                  "given_belonging",
+                  "given_dread",
+                  "given_awe",
+                  "given_longing",
+                  "given_relief",
+                  "given_contempt",
+                  "given_guilt",
+                  "given_jealousy",
+                  "given_wonder",
+                  "given_defiance",
+                  "given_abandon",
+                  "foe_rage",
+                  "foe_grief",
+                  "foe_fear",
+                  "foe_spite",
+                  "foe_shame",
+                  "foe_despair",
+                  "foe_mercy",
+                  "foe_cruelty",
+                  "foe_loneliness",
+                  "foe_dread",
+                  "foe_awe",
+                  "foe_longing",
+                  "foe_contempt",
+                  "foe_guilt",
+                  "foe_wonder",
+                  "foe_abandon"
+                ],
+                "target": "target",
+                "limit": {
+                  "per": "per_combat",
+                  "n": 1,
+                  "each": "target",
+                  "key": "{choice}",
+                  "peek": true
+                }
+              },
+              {
+                "op": "mend",
+                "when": "acted",
+                "amount": "love",
+                "target": "target",
+                "if": {
+                  "choice": [
+                    "love"
+                  ],
+                  "target": "ally"
+                },
+                "limit": {
+                  "per": "per_combat",
+                  "n": 1,
+                  "each": "target",
+                  "key": "{choice}",
+                  "peek": true
+                }
+              },
+              {
+                "op": "condition",
+                "when": "acted",
+                "condition": "given_edge",
+                "target": "target",
+                "skip_save": true,
+                "if": {
+                  "target": "ally"
+                },
+                "limit": {
+                  "per": "per_combat",
+                  "n": 1,
+                  "each": "target",
+                  "key": "{choice}",
+                  "peek": true
+                }
+              },
+              {
+                "op": "condition",
+                "when": "acted",
+                "condition": "given_{choice}",
+                "target": "target",
+                "skip_save": true,
+                "if": {
+                  "target": "ally"
+                },
+                "limit": {
+                  "per": "per_combat",
+                  "n": 1,
+                  "each": "target",
+                  "key": "{choice}"
+                },
+                "say": "{self} gives {target} a feeling."
+              },
+              {
+                "op": "condition",
+                "when": "acted",
+                "condition": "foe_{choice}",
+                "target": "target",
+                "via": "empathy",
+                "if": {
+                  "target": "foe"
+                },
+                "limit": {
+                  "per": "per_combat",
+                  "n": 1,
+                  "each": "target",
+                  "key": "{choice}"
+                },
+                "say": "{self} gives {target} a feeling through the Bond."
+              },
+              {
+                "op": "condition",
+                "when": "acted",
+                "condition": "given_mark",
+                "target": "target",
+                "skip_save": true,
+                "rounds": 1,
+                "if": {
+                  "target": "ally"
+                }
+              },
+              {
+                "op": "condition",
+                "when": "acted",
+                "condition": "given_mark",
+                "target": "target",
+                "skip_save": true,
+                "rounds": 2,
+                "if": {
+                  "target": "foe"
+                }
+              }
+            ]
           }
         ],
-        "adjudication": "engine",
-        "provisional": true,
         "origin": "bard",
-        "origin_rank": "I",
+        "origin_rank": "II",
         "fantasy_tags": [
           "soul",
           "buff",
           "support"
         ],
-        "attributes": [
-          "insight"
-        ],
-        "status": "active"
+        "surface": "combat"
       },
       {
-        "id": "mend",
-        "amounts": {"heal": {"kind": "heal", "base": 9, "profile": "mend", "text": "in place of the Buff school's base", "provisional": true}},
-        "name": "Mend",
-        "ap_cost": 0,
-        "uses": "at_will",
-        "text": "Your healing Outbursts (Buff school) heal from a base of 9 instead of 7, before your Healing given, the stage, your level and the ambient mana are counted. Healing is stronger where the ambient mana is Rich or Flooded.",
-        "effects": [
-          {
-            "op": "heal",
-            "value": 9,
-            "target": "ally_in_range",
-            "scale": "healing_given*ambient_healing"
-          }
-        ],
         "adjudication": "engine",
         "provisional": true,
-        "origin": "bard",
-        "origin_rank": "II",
-        "fantasy_tags": [
-          "soul",
-          "heal"
-        ],
         "attributes": [
           "insight"
         ],
         "status": "active",
-        "heal_base": 9
+        "id": "mend",
+        "name": "Brimming",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "amounts": {
+          "brim": {
+            "kind": "shield",
+            "base": 0,
+            "per": [
+              {
+                "of": "event:over",
+                "value": 0.5
+              }
+            ],
+            "heal_kind": "tending",
+            "provisional": true
+          }
+        },
+        "text": "Tending you give that heals past an ally's max HP leaves {=amounts.brim.per.0.value|pct}% of the excess as a shield on it (the larger shield stands).",
+        "effects": [
+          {
+            "op": "mend",
+            "when": "heal_given",
+            "if": {
+              "target": "ally",
+              "how": [
+                "tending"
+              ]
+            },
+            "amount": "brim",
+            "target": "target"
+          }
+        ],
+        "origin": "bard",
+        "origin_rank": "III",
+        "fantasy_tags": [
+          "heal",
+          "shield"
+        ],
+        "surface": "combat"
       },
       {
         "id": "gift",
@@ -3793,7 +4487,14 @@
         },
         {
           "id": "rally_banner",
-          "amounts": {"shield": {"kind": "shield", "base": 10, "profile": "healing", "provisional": true}},
+          "amounts": {
+            "shield": {
+              "kind": "shield",
+              "base": 10,
+              "profile": "healing",
+              "provisional": true
+            }
+          },
           "name": "Rally Banner",
           "ap_cost": 2,
           "uses": "per_scene",
@@ -3823,7 +4524,14 @@
         },
         {
           "id": "sweep",
-          "amounts": {"heal": {"kind": "heal", "base": 10, "profile": "healing", "provisional": true}},
+          "amounts": {
+            "heal": {
+              "kind": "heal",
+              "base": 10,
+              "profile": "healing",
+              "provisional": true
+            }
+          },
           "name": "Sweep",
           "ap_cost": 3,
           "uses": "at_will",
@@ -3912,7 +4620,15 @@
         },
         {
           "id": "strike_call",
-          "amounts": {"damage": {"kind": "damage", "base": 50, "profile": "flat", "type": "physical", "provisional": true}},
+          "amounts": {
+            "damage": {
+              "kind": "damage",
+              "base": 50,
+              "profile": "flat",
+              "type": "physical",
+              "provisional": true
+            }
+          },
           "name": "Strike Call",
           "ap_cost": 3,
           "uses": "per_scene",
@@ -4141,7 +4857,15 @@
         },
         {
           "id": "sentry_turret",
-          "amounts": {"damage": {"kind": "damage", "base": 20, "profile": "flat", "type": "physical", "provisional": true}},
+          "amounts": {
+            "damage": {
+              "kind": "damage",
+              "base": 20,
+              "profile": "flat",
+              "type": "physical",
+              "provisional": true
+            }
+          },
           "name": "Sentry Turret",
           "ap_cost": 3,
           "uses": "at_will",
@@ -4224,7 +4948,18 @@
       "moves": [
         {
           "id": "inscribed_rounds",
-          "amounts": {"damage": {"kind": "damage", "base": 0, "profile": "sigil", "mults": {"word_share": 0.5}, "text": "the inscribed word's own damage, at this share", "provisional": true}},
+          "amounts": {
+            "damage": {
+              "kind": "damage",
+              "base": 0,
+              "profile": "sigil",
+              "mults": {
+                "word_share": 0.5
+              },
+              "text": "the inscribed word's own damage, at this share",
+              "provisional": true
+            }
+          },
           "name": "Inscribed Rounds",
           "ap_cost": 0,
           "uses": "per_rest",
@@ -4335,7 +5070,31 @@
       "moves": [
         {
           "id": "gauntlet_infusion",
-          "amounts": {"damage": {"kind": "damage", "base": 10, "profile": "elemental", "type": "elemental", "provisional": true}, "fire_extra": {"kind": "damage", "base": 5, "profile": "elemental", "type": "elemental", "text": "Fire, when the hit is not a critical", "provisional": true}, "arc": {"kind": "damage", "base": 5, "profile": "elemental", "type": "elemental", "text": "Shock, to one enemy next to the target", "provisional": true}},
+          "amounts": {
+            "damage": {
+              "kind": "damage",
+              "base": 10,
+              "profile": "elemental",
+              "type": "elemental",
+              "provisional": true
+            },
+            "fire_extra": {
+              "kind": "damage",
+              "base": 5,
+              "profile": "elemental",
+              "type": "elemental",
+              "text": "Fire, when the hit is not a critical",
+              "provisional": true
+            },
+            "arc": {
+              "kind": "damage",
+              "base": 5,
+              "profile": "elemental",
+              "type": "elemental",
+              "text": "Shock, to one enemy next to the target",
+              "provisional": true
+            }
+          },
           "name": "Gauntlet Infusion",
           "ap_cost": 0,
           "uses": "at_will",
@@ -4400,7 +5159,21 @@
         },
         {
           "id": "discharge",
-          "amounts": {"damage": {"kind": "damage", "base": 0, "per": [{"of": "charge", "value": 20}], "profile": "elemental", "type": "elemental", "provisional": true}},
+          "amounts": {
+            "damage": {
+              "kind": "damage",
+              "base": 0,
+              "per": [
+                {
+                  "of": "charge",
+                  "value": 20
+                }
+              ],
+              "profile": "elemental",
+              "type": "elemental",
+              "provisional": true
+            }
+          },
           "name": "Discharge",
           "ap_cost": 0,
           "uses": "at_will",
@@ -4455,7 +5228,20 @@
       "moves": [
         {
           "id": "adamantile_plate",
-          "amounts": {"shield": {"kind": "shield", "base": 0, "per": [{"of": "guard", "value": 10}], "profile": "flat", "provisional": true}},
+          "amounts": {
+            "shield": {
+              "kind": "shield",
+              "base": 0,
+              "per": [
+                {
+                  "of": "guard",
+                  "value": 10
+                }
+              ],
+              "profile": "flat",
+              "provisional": true
+            }
+          },
           "name": "Adamantile Plate",
           "ap_cost": 0,
           "uses": "at_will",
@@ -4484,7 +5270,14 @@
         },
         {
           "id": "bulwark_of_will",
-          "amounts": {"shield": {"kind": "shield", "base": 20, "profile": "healing", "provisional": true}},
+          "amounts": {
+            "shield": {
+              "kind": "shield",
+              "base": 20,
+              "profile": "healing",
+              "provisional": true
+            }
+          },
           "name": "Bulwark of Will",
           "ap_cost": 0,
           "uses": "at_will",
@@ -4519,7 +5312,28 @@
           "uses": "per_combat",
           "text": "Once per fight, the first time damage would drop you to 0 HP, you stay at 1 HP instead and gain {=effects.0.and.0.value} Guard.",
           "effects": [
-            {"op": "floor", "value": 1, "when": "would_drop", "if": {"open": true, "self_hp_above": 0}, "limit": {"per": "per_combat", "n": 1}, "priority": 30, "and": [{"op": "resource", "resource": "guard", "value": 3}], "say": "{self} is Unbroken: {=.value} HP, +{gain} Guard ({res:guard}/{resmax:guard})."}
+            {
+              "op": "floor",
+              "value": 1,
+              "when": "would_drop",
+              "if": {
+                "open": true,
+                "self_hp_above": 0
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1
+              },
+              "priority": 30,
+              "and": [
+                {
+                  "op": "resource",
+                  "resource": "guard",
+                  "value": 3
+                }
+              ],
+              "say": "{self} is Unbroken: {=.value} HP, +{gain} Guard ({res:guard}/{resmax:guard})."
+            }
           ],
           "adjudication": "engine",
           "provisional": true,
@@ -5255,7 +6069,96 @@
       "moves": [
         {
           "id": "enlarge",
-          "amounts": {"lava": {"kind": "damage", "base": 10, "profile": "flat", "type": "elemental", "provisional": true}, "storm": {"kind": "damage", "base": 15, "profile": "flat", "type": "elemental", "provisional": true}, "dome": {"kind": "shield", "base": 20, "profile": "flat", "provisional": true}, "mend": {"kind": "heal", "base": 10, "profile": "healing", "provisional": true}, "crush": {"kind": "damage", "base": 10, "profile": "flat", "type": "sigil", "provisional": true}, "tripwire": {"kind": "damage", "base": 10, "profile": "flat", "type": "sigil", "provisional": true}, "mortar": {"kind": "damage", "base": 15, "profile": "flat", "type": "sigil", "provisional": true}, "mortar_splash": {"kind": "damage", "base": 5, "profile": "flat", "type": "sigil", "provisional": true}, "sentinel": {"kind": "damage", "base": 15, "profile": "flat", "type": "sigil", "provisional": true}, "sentinel_leaving": {"kind": "damage", "base": 10, "profile": "flat", "type": "sigil", "provisional": true}, "bloodwell": {"kind": "heal", "base": 5, "profile": "flat", "provisional": true}, "arc": {"kind": "damage", "base": 10, "profile": "flat", "type": "elemental", "provisional": true}, "bloom": {"kind": "damage", "base": 10, "profile": "flat", "type": "sigil", "provisional": true}},
+          "amounts": {
+            "lava": {
+              "kind": "damage",
+              "base": 10,
+              "profile": "flat",
+              "type": "elemental",
+              "provisional": true
+            },
+            "storm": {
+              "kind": "damage",
+              "base": 15,
+              "profile": "flat",
+              "type": "elemental",
+              "provisional": true
+            },
+            "dome": {
+              "kind": "shield",
+              "base": 20,
+              "profile": "flat",
+              "provisional": true
+            },
+            "mend": {
+              "kind": "heal",
+              "base": 10,
+              "profile": "healing",
+              "provisional": true
+            },
+            "crush": {
+              "kind": "damage",
+              "base": 10,
+              "profile": "flat",
+              "type": "sigil",
+              "provisional": true
+            },
+            "tripwire": {
+              "kind": "damage",
+              "base": 10,
+              "profile": "flat",
+              "type": "sigil",
+              "provisional": true
+            },
+            "mortar": {
+              "kind": "damage",
+              "base": 15,
+              "profile": "flat",
+              "type": "sigil",
+              "provisional": true
+            },
+            "mortar_splash": {
+              "kind": "damage",
+              "base": 5,
+              "profile": "flat",
+              "type": "sigil",
+              "provisional": true
+            },
+            "sentinel": {
+              "kind": "damage",
+              "base": 15,
+              "profile": "flat",
+              "type": "sigil",
+              "provisional": true
+            },
+            "sentinel_leaving": {
+              "kind": "damage",
+              "base": 10,
+              "profile": "flat",
+              "type": "sigil",
+              "provisional": true
+            },
+            "bloodwell": {
+              "kind": "heal",
+              "base": 5,
+              "profile": "flat",
+              "provisional": true
+            },
+            "arc": {
+              "kind": "damage",
+              "base": 10,
+              "profile": "flat",
+              "type": "elemental",
+              "provisional": true
+            },
+            "bloom": {
+              "kind": "damage",
+              "base": 10,
+              "profile": "flat",
+              "type": "sigil",
+              "provisional": true
+            }
+          },
           "name": "Enlarge",
           "ap_cost": 3,
           "uses": "per_combat",
@@ -5501,7 +6404,18 @@
         },
         {
           "id": "through",
-          "amounts": {"mirror": {"kind": "heal", "base": 0, "profile": "flat", "mults": {"share": 0.5}, "text": "a share of the heal or shield you received, to each linked ally", "provisional": true}},
+          "amounts": {
+            "mirror": {
+              "kind": "heal",
+              "base": 0,
+              "profile": "flat",
+              "mults": {
+                "share": 0.5
+              },
+              "text": "a share of the heal or shield you received, to each linked ally",
+              "provisional": true
+            }
+          },
           "name": "Through",
           "ap_cost": 0,
           "uses": "at_will",
@@ -5586,7 +6500,20 @@
       "moves": [
         {
           "id": "inner_charge",
-          "amounts": {"heartbeat": {"kind": "heal", "base": 0, "per": [{"of": "forms", "value": 10}], "profile": "healing", "provisional": true}},
+          "amounts": {
+            "heartbeat": {
+              "kind": "heal",
+              "base": 0,
+              "per": [
+                {
+                  "of": "forms",
+                  "value": 10
+                }
+              ],
+              "profile": "healing",
+              "provisional": true
+            }
+          },
           "name": "Inner Charge",
           "ap_cost": 0,
           "uses": "at_will",
@@ -5616,7 +6543,16 @@
         },
         {
           "id": "release_strike",
-          "amounts": {"damage": {"kind": "damage", "base": 15, "profile": "soul", "type": "soul", "text": "each form, times its stage multiplier", "provisional": true}},
+          "amounts": {
+            "damage": {
+              "kind": "damage",
+              "base": 15,
+              "profile": "soul",
+              "type": "soul",
+              "text": "each form, times its stage multiplier",
+              "provisional": true
+            }
+          },
           "name": "Release",
           "ap_cost": 1,
           "uses": "at_will",

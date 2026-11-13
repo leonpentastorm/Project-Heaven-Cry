@@ -20,7 +20,7 @@ describe('P5: targets, the unit set', () => {
   beforeAll(() => addItems('relic', FIX.relics));
   afterAll(() => clearAddedItems());
   it('the shape is checked: fields, words, a cone\'s length', () => {
-    expect(Object.keys(TARGET_FIELDS)).toEqual(['of', 'side', 'within', 'shape', 'seen', 'alive', 'downed', 'max', 'sees', 'tied', 'aims_at']);
+    expect(Object.keys(TARGET_FIELDS)).toEqual(['of', 'side', 'within', 'shape', 'seen', 'alive', 'downed', 'max', 'sees', 'tied', 'aims_at', 'beyond']); // (rules 1.33: beyond)
     expect(targetsProblem({ of: 'target', side: 'foe', within: 3 })).toBeNull();
     expect(targetsProblem({ side: 'enemy' })).toMatch(/side/); expect(targetsProblem({ shape: 'cone' })).toMatch(/within/); expect(targetsProblem({ nearby: 1 })).toMatch(/unknown/); expect(targetsProblem({ tied: 'bond' })).toBeNull(); // (step 1b: tied came with ties)
   });

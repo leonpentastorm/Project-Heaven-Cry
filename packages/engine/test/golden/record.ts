@@ -20,7 +20,7 @@
 //   flat      thrown items, blasts, barrels, traps, hazards, damage over time, the medic's kit
 import { buildCharacter, BUILDS, LEVELS, VARIANTS } from '../balance/builds';
 import { TRIGGERS } from '../../src/effects/triggers';
-import { A, W, act, run, tryAct, strike, useTech, copy, bend, HIT, CRIT, rollState, fightOf, fightSpec, place, turn, units, pcs, foes, charOf, TIERS, isMeleeW , ALSO } from './harness';
+import { A, W, act, run, tryAct, strike, useTech, copy, bend, HIT, CRIT, rollState, fightOf, fightSpec, place, noShare, turn, units, pcs, foes, charOf, TIERS, isMeleeW , ALSO } from './harness';
 
 export type Table = Record<string, string>;
 const clone = copy;
@@ -383,7 +383,7 @@ export const EVEN = () => ({ level: 6, skills: Object.fromEntries(A.SKILLS.map((
 export function itemFight(spec: any) {
   const g = fightSpec([{ ...EVEN(), ...spec }, { name: 'Squadmate', ...EVEN() }], [{ tier: 'soldier', name: 'Soldier' }, { tier: 'soldier', name: 'Far soldier' }, { tier: 'elite', name: 'Elite' }], { level: 6, seed: 'item' });
   const [u, al] = pcs(g), [f, far, el] = foes(g);
-  place(g, [[u, '3,6'], [f, '4,6'], [al, '2,6'], [far, '7,6'], [el, '7,9']]); turn(g, u, 9);
+  noShare(g); place(g, [[u, '3,6'], [f, '4,6'], [al, '2,6'], [far, '7,6'], [el, '7,9']]); turn(g, u, 9);
   al.hp = Math.ceil(al.maxHp * 0.4); u.hp = Math.ceil(u.maxHp * 0.6);
   return g;
 }

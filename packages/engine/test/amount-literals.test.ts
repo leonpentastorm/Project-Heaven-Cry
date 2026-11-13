@@ -28,7 +28,7 @@ const LEDGER: [string, string, Record<string, number>][] = [
   ['feeling:love', 'heal', { 'mults.along_the_chain': 0.5 }],                                         // magic.ts: loveHeal(...) * 0.5
   ['class:warden.ward', 'shield', { base: 0, 'per.charge': 10 }],                                     // 10 * n * Healing given
   ['class:trickster.rewrite', 'shield_turned', { base: 30 }],                                         // floor(30 * Sigil multiplier)
-  ['class:bard.mend', 'heal', { base: 9 }], // (Will Shield left in rules 1.31: the Chaplain's Ward is data)
+  ['class:bard.mend', 'brim', { base: 0 }], // rules 1.33: Brimming (half the overheal); Will Shield left in rules 1.31 (the Chaplain's Ward is data)
   ['class:banner_dancer.rally_banner', 'shield', { base: 10 }], ['class:banner_dancer.sweep', 'heal', { base: 10 }],
   ['class:rtc_contractor.strike_call', 'damage', { base: 50 }], ['class:siege_engineer.sentry_turret', 'damage', { base: 20 }],
   ['class:spellslinger.inscribed_rounds', 'damage', { 'mults.word_share': 0.5 }],                     // floor(word damage / 2)

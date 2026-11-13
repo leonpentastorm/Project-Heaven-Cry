@@ -160,15 +160,8 @@ describe('rules 1.23: the medic\'s kit', () => {
     expect(f.unit(al.id).hp).toBe(100 + want); expect(want).toBeGreaterThan(0); expect(mendFactor(12)).toBe(1.38);
     expect(tendedLately(f.cb, f.unit(me.id))).toBe(want); // the medic's kit marks the medic too
   });
-  it('Triage heals 5 × Healing given × the level factor in a fight', () => {
-    for (const level of [1, 12]) {
-      const f = fightWith([{ classId: 'bard', level, skills: { empathy: 4 }, attrs: { insight: 4 } }, { level }], [{ tier: 'minion' }]); const [me, al] = f.pcs; al.pos = '3,5'; me.pos = '3,4'; (al as any).healRecv = 1; al.maxHp = 900; al.hp = 100;
-      f.turn(me);
-      f.act({ type: 'combat/perk', unitId: me.id, id: 'class:medic.triage', actionId: 'triage', targetId: al.id } as any);
-      const hm = G(f as any, () => healingMult(f.g.characters[me.charId!]));
-      expect(f.unit(al.id).hp, 'level ' + level).toBe(100 + Math.floor(5 * hm * mendFactor(level)));
-    }
-  });
+  // rules 1.33: Triage is the Mender's data move (4.3 × the tend profile, through the Attuner): test/tending.test.ts
+
 });
 
 describe('rules 1.23: Split on a heal or a shield', () => {

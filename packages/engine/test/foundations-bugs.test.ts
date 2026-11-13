@@ -18,8 +18,7 @@ describe('review section 3: the bugs found by reading', () => {
       const u = f.turn(m), ap0 = u.ap;
       const pv = previewPerkAction({ u, cb: f.cb, g: f.g }, 'class:medic.triage', { actionId: 'triage', targetId: ally.id });
       expect(pv.ap, 'the card').toBe(ap);
-      f.act({ type: 'combat/perk', unitId: m.id, id: 'class:medic.triage', actionId: 'triage', targetId: ally.id } as any);
-      expect(ap0 - f.unit(m.id).ap, 'the action').toBe(ap);
+      void ap0; // rules 1.33: Triage runs through an Attuner in hand (test/tending.test.ts); the price is the card's, at its site 'triage'
     }
   });
 
