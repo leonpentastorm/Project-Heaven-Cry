@@ -16,7 +16,7 @@ const SV: any = svJ, RJ: any = rulesJ;
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
 const started = (pcs: Pc[], seed = 'PHC-0001') => apply(survivalRoom(seed, pcs, { test: true }), { type: 'run/start', seed }, 'host');
-const take = (g: GameState, node: RunNode, n: number) => { let x = g; for (let i = 0; i < n; i++) x = apply(x, { type: 'run/move', node: node.id }, ownerOf(i)); return x; };
+const take = (g: GameState, node: RunNode, n: number) => { let x = g; for (let i = 0; i < n && x.run!.at !== node.id; i++) x = apply(x, { type: 'run/move', node: node.id }, ownerOf(i)); return x; };
 /** A run standing at the node before the first shop, then into the shop (both players mark it). */
 function inShop(pcs: Pc[] = DUO, seed = 'PHC-0001', rich: number | null = null): GameState {
   const g = started(pcs, seed), shop = g.run!.nodes.find((n) => n.kind === 'shop')!, prev = g.run!.nodes.find((x) => x.links.includes(shop.id))!;
