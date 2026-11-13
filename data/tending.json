@@ -428,7 +428,8 @@
                 "target_not_tier": [
                   "boss"
                 ]
-              }
+              },
+              "say": "{self} reaches for {target} through a Bond{then}."
             },
             {
               "op": "condition",
@@ -445,7 +446,8 @@
                 "cooldown": 4,
                 "each": "target",
                 "key": "boss"
-              }
+              },
+              "say": "{self} reaches for {target} through a Bond{then}."
             },
             {
               "op": "tie",
@@ -495,7 +497,8 @@
               "op": "tie",
               "kind": "bond",
               "clear": "target",
-              "target": "target"
+              "target": "target",
+              "say": "{self} lets the Bond with {target} go."
             }
           ]
         }
@@ -552,7 +555,8 @@
             {
               "op": "mend",
               "amount": "heal",
-              "target": "target"
+              "target": "target",
+              "say": "{self} mends {target}."
             },
             {
               "op": "condition",
@@ -622,7 +626,8 @@
           "effects": [
             {
               "op": "mend",
-              "amount": "heal"
+              "amount": "heal",
+              "say": "{self} mends their own wounds."
             }
           ]
         }
@@ -687,7 +692,8 @@
             {
               "op": "mend",
               "amount": "heal",
-              "target": "target"
+              "target": "target",
+              "say": "{self} lays a hand on {target}."
             },
             {
               "op": "condition",
@@ -757,7 +763,8 @@
               "condition": "settled",
               "target": "target",
               "skip_save": true,
-              "rounds": 1
+              "rounds": 1,
+              "say": "{self} settles {target}."
             },
             {
               "op": "condition",
@@ -946,7 +953,8 @@
             {
               "op": "mend",
               "amount": "shield",
-              "target": "target"
+              "target": "target",
+              "say": "{self} shields {target}."
             },
             {
               "op": "condition",
@@ -1017,7 +1025,8 @@
             {
               "op": "mend",
               "amount": "heal",
-              "target": "target"
+              "target": "target",
+              "say": "{self} raises {target}."
             },
             {
               "op": "condition",
@@ -1095,7 +1104,8 @@
                     "value": 1
                   }
                 ]
-              }
+              },
+              "say": "{self} guides {target}."
             },
             {
               "op": "condition",
@@ -1179,7 +1189,8 @@
                 "target_not_tier": [
                   "boss"
                 ]
-              }
+              },
+              "say": "{self} reaches for {target} through a Bond{then}."
             },
             {
               "op": "condition",
@@ -1196,7 +1207,8 @@
                 "cooldown": 4,
                 "each": "target",
                 "key": "boss"
-              }
+              },
+              "say": "{self} reaches for {target} through a Bond{then}."
             },
             {
               "op": "tie",
