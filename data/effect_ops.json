@@ -4487,7 +4487,7 @@
       },
       "actor_sees_self": {
         "arg": "bool",
-        "about": "actor can (or cannot) see the holder"
+        "about": "actor can (or cannot) see the holder: its eyes reach the holder's tile and the holder is not Hidden (shadow-spec 2.1)"
       },
       "target_hp_below": {
         "arg": "number",
@@ -4541,7 +4541,7 @@
       },
       "target_sees_self": {
         "arg": "bool",
-        "about": "target can (or cannot) see the holder"
+        "about": "target can (or cannot) see the holder: its eyes reach the holder's tile and the holder is not Hidden (shadow-spec 2.1)"
       },
       "melee": {
         "arg": "bool",

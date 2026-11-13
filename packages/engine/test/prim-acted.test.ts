@@ -76,7 +76,7 @@ describe('P2 and the batch rows: fixture items in data only', () => {
 
   it('by_cover: a move that ends next to cover', () => {
     const g = opsFight({ relics: ['test_by_cover'] }), cb = g.combat, u = pcs(g)[0];
-    expect(PREDICATES.by_cover.values).toEqual(['from', 'to']);
+    expect(PREDICATES.by_cover.values).toEqual(['from', 'to', 'here']); // here: rules 1.32 (Still Breath)
     cb.objects = [...(cb.objects || []), A.makeObject('crate_t', 'crate', '3,10')];
     W(g, () => apply(g, { type: 'combat/move', unitId: u.id, to: '3,9' }));
     const st = pcs(g)[0].ps?.['relic:test_by_cover'];

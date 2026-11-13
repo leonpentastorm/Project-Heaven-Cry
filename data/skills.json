@@ -1608,7 +1608,7 @@
           "A thousand gold for two rocks. The number of people still paying in gold coins outside Central City is baffling. Back when I worked the city, I'd swipe a bank card out of some guy's pocket and that was dinner sorted. Back then I still had Travis to crack the cards... People call it petty theft, but the trade takes real skill. First you learn to walk in step with the crowd and spot which pocket bulges most. Then you work out how much weight to slip back in so they don't notice the coins have flown. If you don't know how, don't mess around. The old men at the guard post started carrying shock batons last week, and it hurts like you wouldn't believe."
         ],
         "intro": "Ingenuity is the finesse in everything you do: staying unseen while sneaking, picking pockets, that sort of thing.",
-        "effect": "Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons are harder to save against.",
+        "effect": "Every 2 points, enemies need 1 more to spot you while you sneak. Your traps and poisons, and what you do unseen, are harder to save against.",
         "high_levels": "you turn into a cosplayer of the sneaking-soldier legend, flickering in and out of the shadows. But all that shifty behaviour makes it hard to look a cop in the eye.",
         "good_for": "rogues, scouts, bandits, gamblers.",
         "bad_for": "model citizens, uniformed (not undercover) cops, anyone trying to romance a uniformed (not undercover) cop.",

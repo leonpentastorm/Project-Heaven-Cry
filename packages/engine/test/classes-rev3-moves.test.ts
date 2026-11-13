@@ -33,9 +33,9 @@ const order = (f: F, ...us: Unit[]) => { f.cb.order = us.map((u) => u.id); };
 describe('the 20 new moves are handled', () => {
   it('every new move has a handler and every effect is engine-run (no gap, nothing left to the Narrator)', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
-    expect(NEW.length).toBe(21); // + Run and Gun (rules 1.30, data only)
+    expect(NEW.length).toBe(20); // + Run and Gun (rules 1.30, data only), − Field Fix (to the move pool, rules 1.32)
     for (const m of NEW as any[]) {
-      const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic'), m.key).toBe(true); // a handler, or data only (engine foundations 3)
+      const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), m.key).toBe(true); // a handler, or data only (engine foundations 3; a data action: P6, rules 1.32's Vanish)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);
     }
   });
@@ -193,9 +193,10 @@ describe('Infiltrator', () => {
     expect(f.unit(u.id).hidden).toBe(true); expect(f.unit(u.id).ap).toBe(5);
     const g = fightWith([cls('infiltrator', 3)], [{}]);
     const v = g.turn(at(g, g.pc, '4,2')); at(g, g.foe, '8,2');
-    expect(() => perk(g, v, 'class:infiltrator.vanish')).toThrow(/can see you/);
+    expect(() => perk(g, v, 'class:infiltrator.vanish')).toThrow(/Not now/); // rules 1.32: data only, its `if` (out of view)
   });
-  it('Field Fix: clear a squadmate\'s jam, restore their weapon, repair a machine for 20; nothing to fix is refused', () => {
+  // Field Fix left the Operative (rules 1.32); its key and handler stay for the Rigger (step 8), which brings this back.
+  it.skip('Field Fix: clear a squadmate\'s jam, restore their weapon, repair a machine for 20; nothing to fix is refused', () => {
     const f = fightWith([cls('infiltrator', 5), { traits: ['factory_made'] }], [{ at: 'P11' }]);
     const [i, a] = f.pcs; at(f, i, '4,2'); at(f, a, '5,2');
     let u = f.turn(i); f.unit(a.id).jammed = true;
@@ -210,11 +211,11 @@ describe('Infiltrator', () => {
     f.unit(a.id).hp = f.unit(a.id).maxHp; f.unit(a.id).dur = f.unit(a.id).maxDur;
     expect(() => perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id })).toThrow(/Nothing to fix/);
   });
-  it('Sabotage: a drone is disabled for 2 rounds (no turns); a human is refused', () => {
+  it('Sabotage: a drone is disabled for numbers.rounds (1, rules 1.32; no turns); a human is refused', () => {
     const f = fightWith([cls('infiltrator', 8)], [{ name: 'Drill drone' }, { name: 'Trooper' }]);
     const u = at(f, f.pc, '4,2'), drone = at(f, f.foes[0], '5,2'); at(f, f.foes[1], '5,3'); f.turn(u);
     perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage', targetId: drone.id });
-    expect(condOn(f.unit(drone.id), 'stunned')).toBe(true); expect(f.unit(drone.id).conds!.stunned).toBe(2);
+    expect(condOn(f.unit(drone.id), 'stunned')).toBe(true); expect(f.unit(drone.id).conds!.stunned).toBe((CLASS.infiltrator as any).ranks.II.moves.find((m: any) => m.id === 'sabotage').numbers.rounds);
     expect(() => perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage', targetId: f.foes[1].id })).toThrow(/isn't a machine/);
   });
   it('Sabotage: a rigged tile springs on the next enemy (30, Pinned on a failed Body save), never on your side', () => {
@@ -229,14 +230,13 @@ describe('Infiltrator', () => {
     expect(f.unit(foe.id).hp).toBe(999 - Math.floor(30 * levelFactor('deal', f.unit(i.id).level))); expect(condOn(f.unit(foe.id), 'pinned')).toBe(true); // rules 1.26 b7: a trap a character set grows with its level
     expect(objectsOf(f.cb).some((o: any) => o.rig)).toBe(false);
   });
-  it('Sabotage: a barricade stops blocking the way for 2 rounds (a way through, not a place to stop: item 568)', () => {
+  it('Sabotage: a barricade next to you breaks (rules 1.32: its hp to 0)', () => {
     const f = fightWith([cls('infiltrator', 8)], [{ at: 'P11' }]);
     const u = at(f, f.pc, '4,2'); f.cb.objects = [...objectsOf(f.cb), makeObject('bx', 'barricade', '5,2')]; f.turn(u);
     perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage_object', tile: '5,2' });
-    expect(paths(f.cb, '4,2', u.id).dist['6,2']).toBe(2); // straight through it
-    expect(() => act(f, f.unit(u.id), { type: 'combat/move', to: '5,2' })).toThrow();
-    act(f, f.unit(u.id), { type: 'combat/move', to: '6,2' });
-    expect(f.unit(u.id).pos).toBe('6,2');
+    expect(objectsOf(f.cb).some((o: any) => o.id === 'bx' && (o.hp == null || o.hp > 0))).toBe(false);
+    act(f, f.unit(u.id), { type: 'combat/move', to: '5,2' });
+    expect(f.unit(u.id).pos).toBe('5,2');
   });
 });
 

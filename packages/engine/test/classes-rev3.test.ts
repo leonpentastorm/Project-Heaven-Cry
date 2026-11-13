@@ -29,15 +29,16 @@ describe('the nine classes (data)', () => {
     for (const k of CLASSES) for (const r of ['I', 'II', 'III']) expect(k.ranks[r].moves.length, k.id + ' ' + r).toBe(2);
     const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves));
     expect(all.length).toBe(54);
-    expect(all.filter((m: any) => m.new).length).toBe(21); // the 20 new moves and Run and Gun (rules 1.30)
+    expect(all.filter((m: any) => m.new).length).toBe(20); // the 20 new moves and Run and Gun (rules 1.30), less Field Fix (to the move pool, rules 1.32)
     expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(28); // 28 old base moves
-    expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(5); // 5 old advanced moves (Called Shot left the Skirmisher, rules 1.30)
+    expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(6); // 6 old advanced moves (Called Shot left the Skirmisher, rules 1.30, and came to the Operative, rules 1.32)
   });
   it('a reused move keeps its old key: Bard\'s Triage is class:medic.triage; a new move is under its class', () => {
     const triage = CLASS.bard.ranks.I.moves.find((m: any) => m.id === 'triage');
     expect(triage.key).toBe('class:medic.triage');
     expect(CLASS.marksman.ranks.III.moves.find((m: any) => m.id === 'called_shot')).toBeUndefined(); // rules 1.30: to the Operative (step 4)
-    expect(CLASS_MOVE_POOL['gunslinger.called_shot']?.future_home).toMatch(/Operative/); // its key stays
+    expect(CLASS.infiltrator.ranks.III.moves.find((m: any) => m.id === 'called_shot').key).toBe('class:gunslinger.called_shot'); // its key stays (rules 1.32)
+    expect(CLASS_MOVE_POOL['infiltrator.field_fix']?.future_home).toMatch(/Rigger/); // Field Fix left the Operative, its key stays (rules 1.32)
     expect(CLASS.marksman.ranks.III.moves.find((m: any) => m.id === 'run_and_gun').key).toBe('class:marksman.run_and_gun');
     expect(CLASS.defender.ranks.II.moves.find((m: any) => m.id === 'shrug_it_off').key).toBe('class:defender.shrug_it_off');
     expect(itemInfo('class:medic.triage')?.name).toBe('Triage');
@@ -45,8 +46,8 @@ describe('the nine classes (data)', () => {
   it('every move in the catalogue carries origin, fantasy_tags, attributes and status; 11 + 58 are shelved', () => {
     const moves = Object.values(CLASS_MOVE_POOL);
     for (const m of moves) { expect(m.origin).toBeTruthy(); expect(m.fantasy_tags?.length).toBeGreaterThan(0); expect(m.attributes?.length).toBeGreaterThan(0); expect(['active', 'shelved']).toContain(m.status); }
-    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(11);
-    expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(58); // Called Shot waits for the Operative (rules 1.30)
+    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(12); // + Field Fix (rules 1.32)
+    expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(57); // Called Shot is the Operative's (rules 1.32)
   });
 });
 
@@ -137,7 +138,7 @@ describe('reused moves run their old handlers', () => {
 describe('resources follow the moves', () => {
   const res = (id: string) => classResources(charOf({}, { classId: id })).map((r) => r.id).sort();
   it('Defender Guard, Fighter Momentum, Infiltrator Marks and toxins, Bard Supplies; Heat, Flux, Strain, MP and Devotion are shared rules', () => {
-    expect(res('defender')).toEqual(['guard']); expect(res('fighter')).toEqual(['momentum']); expect(res('infiltrator')).toEqual(['marks', 'toxins']);
+    expect(res('defender')).toEqual(['guard']); expect(res('fighter')).toEqual(['momentum']); expect(res('infiltrator')).toEqual(['marks', 'shadow', 'toxins']); // Shadow: the class brings it (rules 1.32)
     expect(res('bard')).toEqual(['supplies']);
     for (const id of ['marksman', 'mage', 'trickster', 'channeler', 'guardian']) expect(res(id)).toEqual([]);
     expect(CLASS.guardian.resources).toEqual(['mp', 'strain', 'devotion']); expect(CLASS.marksman.resources).toEqual(['heat']);
@@ -224,14 +225,14 @@ describe('Revision 2 saves migrate', () => {
 describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-moves.test.ts)', () => {
   const NEW = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new).map((m: any) => m.key.replace(/^class:/, ''));
   it('each has its full data entry, a registered handler, and no effect is a coverage gap', () => {
-    expect(NEW.length).toBe(21); // + Run and Gun (rules 1.30, data only)
+    expect(NEW.length).toBe(20); // + Run and Gun (rules 1.30, data only), − Field Fix (rules 1.32)
     for (const k of NEW) {
       const info = itemInfo('class:' + k)!;
       expect(info, k).toBeTruthy(); expect(info.text.length, k).toBeGreaterThan(10); expect(info.provisional, k).toBe(true);
       expect(coverageOf(info).filter((r) => r.owner === 'gap'), k).toEqual([]);
       expect(coverageOf(info).filter((r) => r.owner === 'narrator'), k).toEqual([]); // the engine runs every part now
       // a handler, or (engine foundations 3) written in data only: every effect run by the generic runner
-      expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic'), k).toBe(true);
+      expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), k).toBe(true); // (a data action: P6, rules 1.32's Vanish)
     }
   });
   it('an active one is a lane action under the data\'s action id', () => {

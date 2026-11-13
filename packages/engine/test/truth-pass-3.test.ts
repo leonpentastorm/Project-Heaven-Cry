@@ -5,7 +5,7 @@
 // the MEND base of an allied non-character caster in rules120-heal-shield.test.ts, Crawler-Blooded in truth-pass-2).
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import { SKILL, PERK, CLASS_MOVE_POOL, brace } from '../src';
+import { SKILL, PERK, CLASS_MOVE_POOL, brace, RULES } from '../src';
 import { ambushMult } from '../src/character';
 import { fightWith, withGame } from './helpers/perkfight';
 import { execFileSync } from 'node:child_process';
@@ -15,11 +15,11 @@ import { join } from 'node:path';
 function moved<T>(obj: any, key: string, to: any, fn: () => T): T { const was = obj[key]; obj[key] = to; try { return fn(); } finally { obj[key] = was; } }
 
 describe('truth pass 3: the engine reads the card\'s number', () => {
-  it('Ingenuity\'s ambush damage per point is per_point.ambush_per_point', () => {
+  it('the Ambush multiplier is the flat 1 + rules.json shadow.ambush_bonus (rules 1.32: Ingenuity\'s slope is gone)', () => {
     const f = fightWith([{ skills: { ingenuity: 4 } }], [{ at: 'F6' }]); const c = f.g.characters[f.pc.charId!];
-    const pp = (SKILL.ingenuity as any).per_point; expect(pp.ambush_per_point).toBe(0.05);
-    const base = withGame(f.g, () => ambushMult(c));
-    expect(moved(pp, 'ambush_per_point', 0.1, () => withGame(f.g, () => ambushMult(c)))).toBeCloseTo(base + 4 * 0.05);
+    expect((SKILL.ingenuity as any).per_point.ambush_per_point).toBeUndefined();
+    expect(withGame(f.g, () => ambushMult(c))).toBe(1 + (RULES as any).shadow.ambush_bonus);
+    void moved;
   });
   it('Case Closed\'s +20% is effects[2] and its +2 Defense effects[1]', () => {
     const e: any[] = (PERK.case_closed as any).effects; expect(e[2].value).toBe(1.2); expect(e[1].value).toBe(-2);

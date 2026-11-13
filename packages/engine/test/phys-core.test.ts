@@ -240,7 +240,7 @@ describe('what each side sees', () => {
   it('a Silent weapon\'s unseen hit hides its pips from the target\'s side, in the meters and in the room\'s view', async () => {
     const { viewFor } = await import('../src');
     const f = physFight([{ weapon: 'parlour_pistol', skills: { dexterity: 6 } }], [{ at: 'H8', tier: 'soldier' }]); f.put(f.pc, 'D8'); f.put(f.foe, 'H8'); f.turn(f.pc);
-    f.pc.hidden = true; rig({ hit: true, die: 12 });
+    f.pc.hidden = true; rig({ hit: true, die: 12 }); f.unit(f.foe.id).vision = 1; // it can't see the shooter's tile: no spot-back roll (rules 1.32, 2.6)
     expect(f.tech('shot', { targetId: f.foe.id })).toBeNull();
     expect(f.pressure(f.foe)).toBe(2); expect(f.foe.pressHidden).toBe(2);
     const mine = f.bound(() => phys.physView(f.cb, f.foe, 'pc')), theirs = f.bound(() => phys.physView(f.cb, f.foe, 'foe'));

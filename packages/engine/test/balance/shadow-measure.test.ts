@@ -43,10 +43,10 @@ function windowPct(level: number, who: 'door' | 'operative', n: number) {
 }
 
 describe('Shadow: the window (rules 1.32, item 1962)', () => {
-  it.runIf(process.env.SHADOW_MEASURE === '1')('measures the door and the Operative at levels 1, 5, 10, 20', () => {
-    const n = Number(process.env.SHADOW_N) || 40, rows: string[] = [];
+  it.runIf((globalThis as any).process?.env?.SHADOW_MEASURE === '1')('measures the door and the Operative at levels 1, 5, 10, 20', () => {
+    const n = Number((globalThis as any).process?.env?.SHADOW_N) || 40, rows: string[] = [];
     for (const L of [1, 5, 10, 20]) rows.push('L' + L + ': door ' + windowPct(L, 'door', n) + ', Operative ' + windowPct(L, 'operative', n));
-    console.log('Shadow window (line: Operative ' + C.shadow.allin + ', door all in ' + C.shadow.door_allin + ')\n' + rows.join('\n'));
+    (globalThis as any).console.log('Shadow window (line: Operative ' + C.shadow.allin + ', door all in ' + C.shadow.door_allin + ')\n' + rows.join('\n'));
   });
   it('the guard: a Break never takes a full-HP Elite or Boss at the character\'s level under 1 HP, nor Executes it', () => {
     for (const tier of ['elite', 'boss']) for (let i = 0; i < 6; i++) {
