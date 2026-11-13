@@ -295,13 +295,13 @@ technique({
     let fired = 0, total = 0;
     if (p === 'spread') {
       const close = dist(u.pos, tgt.pos) <= t.num('spread_range', 4);
+      total = dumpRounds(t, 1); // before the barrels fire: what is loaded now
       const r = strike(t, { mult: close ? t.num('spread_mult', 2) : 1, noPressure: true, label: 'both barrels' });
       if (!r.ok) return refused(r);
       if (r.cancelled) return null; // answered before it was fired: nothing more goes
       fired = 1;
       if (t.preview) { addPressure(t, tgt, press, 'a mag dump'); onHitOnly(t); if (!close) t.note('Double damage only within ' + t.num('spread_range', 4) + ' tiles.'); }
       else if (r.hit) addPressure(t, tgt, press, 'a mag dump');
-      total = dumpRounds(t, 1);
     } else {
       const rolls = dumpRolls(t), step = p === 'quick' ? 0 : t.num('step', 4);
       total = dumpRounds(t, rolls);
