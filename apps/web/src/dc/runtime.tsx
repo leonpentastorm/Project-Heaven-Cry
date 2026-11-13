@@ -2,7 +2,7 @@
 // It parses a template once (its own strict parser: the templates are well-formed, and the browser's HTML parser
 // would drop <sc-for> inside <select> and lowercase onClick), then renders it with React against the values a
 // screen's logic returns from renderVals(). Supported: {{dotted.holes}} in text and attributes, <sc-for list as>,
-// <sc-if value>, style strings, class, on* handlers, form attributes, tip (the hover card; a template never has title). <helmet> and <dc-import> are skipped (the
+// <sc-for list as memo> (memo: each item re-renders only when its own values changed; see MemoItem), <sc-if value>, style strings, class, on* handlers, form attributes, tip (the hover card; a template never has title). <helmet> and <dc-import> are skipped (the
 // app loads fonts and CSS globally, and screens are routed by the app, not imported).
 import React from 'react';
 
@@ -115,6 +115,7 @@ function renderNode(n: Node, scope: any, key: React.Key): React.ReactNode {
     const list = listA ? attrValue(listA[1], scope) : [];
     const as = asA && asA[1] !== true ? asA[1] : 'item';
     if (!Array.isArray(list)) return null;
+    if (n.attrs.some((a) => a[0] === 'memo')) return renderMemoList(n, list, as, scope);
     return list.map((item, i) => {
       const s = Object.create(scope);
       s[as] = item; s.$index = i;
@@ -165,6 +166,79 @@ function renderKids(kids: Node[], scope: any): React.ReactNode[] {
   return kids.map((k, i) => renderNode(k, scope, i));
 }
 
+// ---------- <sc-for memo>: a long list whose items mostly stay the same between renders (the map's 676 tiles) ----------
+// Each item is its own memoised component: it renders again only when its item changed (compared by value: strings,
+// numbers, nested lists and objects), or a value from outside the item that its body reads changed. The item's own
+// handlers (onClick="{{t.click}}") are new closures on every render of the screen: the item binds stable stand-ins that
+// call the newest one, so an item that did not render again still runs today's handler. A handler nested deeper than
+// the item itself is compared by identity (it re-renders the item when it changes).
+/** How many list items have rendered (memo lists only): the map-hover tests and the probe read it. */
+export const ITEM_RENDERS = { count: 0 };
+/** Why memo items rendered again (on only while someone looks: window.__phcMemoWhy(true), then window.__phcMemoWhy()):
+ *  the first field that differed, counted. */
+const WHY = { on: false, seen: {} as Record<string, number> };
+if (typeof window !== 'undefined') (window as any).__phcMemoWhy = (on?: boolean) => { if (on != null) { WHY.on = !!on; WHY.seen = {}; } return { renders: ITEM_RENDERS.count, why: WHY.seen }; };
+function firstDiff(a: any, b: any, path: string, depth: number): string | null {
+  if (same(a, b, depth)) return null;
+  if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b)) {
+    for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) { const d = firstDiff(a[k], b[k], path + '.' + k, depth + 1); if (d) return d; }
+  }
+  return path;
+}
+type Box = { item: any; fns: Record<string, (...a: any[]) => any> };
+const MEMO = new WeakMap<ElNode, { deps: string[]; boxes: Map<React.Key, Box> }>();
+/** The holes a list's body reads from outside its own item (their full paths): part of what decides a re-render. */
+function outerHoles(n: ElNode, as: string): string[] {
+  const out = new Set<string>(), local = new Set([as, '$index']);
+  const visit = (k: Node, loc: Set<string>) => {
+    const take = (path: string) => { if (!loc.has(path.split('.')[0])) out.add(path); };
+    if (k.t === 'text') { for (const p of k.parts) if (typeof p !== 'string') take(p.hole); return; }
+    let inner = loc;
+    for (const [, v] of k.attrs) if (typeof v === 'string') for (const m of v.matchAll(/\{\{\s*([\w$.]+)\s*\}\}/g)) take(m[1]);
+    if (k.tag === 'sc-for') { const a = k.attrs.find((x) => x[0] === 'as'); inner = new Set([...loc, a && a[1] !== true ? a[1] : 'item']); }
+    for (const c of k.kids) visit(c, inner);
+  };
+  for (const c of n.kids) visit(c, local);
+  return [...out];
+}
+/** Equal by value (functions: equal at the item's own level, where they are stood in for; by identity deeper). */
+function same(a: any, b: any, depth: number): boolean {
+  if (a === b) return true;
+  const ta = typeof a; if (ta !== typeof b) return false;
+  if (ta === 'function') return depth === 1;
+  if (ta !== 'object' || a === null || b === null || depth > 6) return false;
+  if (Array.isArray(a)) { if (!Array.isArray(b) || a.length !== b.length) return false; for (let i = 0; i < a.length; i++) if (!same(a[i], b[i], depth + 1)) return false; return true; }
+  if (Array.isArray(b) || Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) return false;
+  const ka = Object.keys(a); if (ka.length !== Object.keys(b).length) return false;
+  for (const k of ka) if (!(k in b) || !same(a[k], b[k], depth + 1)) return false;
+  return true;
+}
+type ItemProps = { kids: Node[]; scope: any; as: string; index: number; item: any; box: Box; deps: any[] };
+const MemoItem = React.memo(function MemoItem({ kids, scope, as, index, item, box }: ItemProps) {
+  ITEM_RENDERS.count++;
+  let it = item;
+  if (item && typeof item === 'object' && !Array.isArray(item)) {
+    it = { ...item };
+    for (const k of Object.keys(item)) if (typeof item[k] === 'function') it[k] = box.fns[k] ||= (...a: any[]) => { const f = box.item && box.item[k]; return typeof f === 'function' ? f(...a) : undefined; };
+  }
+  const s = Object.create(scope); s[as] = it; s.$index = index;
+  return <>{renderKids(kids, s)}</>;
+}, (a, b) => {
+  const eq = a.kids === b.kids && a.as === b.as && a.index === b.index && a.box === b.box && same(a.item, b.item, 0) && same(a.deps, b.deps, 2);
+  if (!eq && WHY.on) { const k = firstDiff(a.item, b.item, a.as, 0) || (same(a.deps, b.deps, 2) ? 'index/box' : 'outside values'); WHY.seen[k] = (WHY.seen[k] || 0) + 1; }
+  return eq;
+});
+function renderMemoList(n: ElNode, list: any[], as: string, scope: any): React.ReactNode {
+  let m = MEMO.get(n); if (!m) { m = { deps: outerHoles(n, as), boxes: new Map() }; MEMO.set(n, m); }
+  const deps = m.deps.map((p) => get(scope, p));
+  return list.map((item, i) => {
+    const key: React.Key = item && typeof item === 'object' && item.key != null ? item.key : i;
+    let box = m!.boxes.get(key); if (!box) { box = { item, fns: {} }; m!.boxes.set(key, box); }
+    box.item = item; // (the newest item: what the stood-in handlers call)
+    return <MemoItem key={key} kids={n.kids} scope={scope} as={as} index={i} item={item} box={box} deps={deps} />;
+  });
+}
+
 /** Render parsed template nodes against a values object. */
 export function renderTemplate(nodes: Node[], vals: any): React.ReactNode {
   return <>{renderKids(nodes, vals)}</>;
@@ -184,6 +258,10 @@ export class DCLogic<P = any, S = any> {
   renderVals(): any { return {}; }
 }
 
+/** How many times any screen has rendered (window.__phcRenderCount): the map-hover probe and tests read it. */
+export const RENDERS = { count: 0 };
+if (typeof window !== 'undefined') Object.defineProperty(window, '__phcRenderCount', { get: () => RENDERS.count, configurable: true });
+
 /** A React component for one screen: a parsed template plus a logic class. */
 export function makeScreen<P>(template: string, Logic: new (props: P) => DCLogic<P>) {
   const nodes = parseTemplate(template);
@@ -192,6 +270,7 @@ export function makeScreen<P>(template: string, Logic: new (props: P) => DCLogic
     const ref = React.useRef<DCLogic<P> | null>(null);
     if (!ref.current) ref.current = new Logic(props);
     const inst = ref.current;
+    RENDERS.count++; // (the performance probe and tests read how often a screen renders: tools/perf/map_hover_probe.mjs)
     inst.props = props;
     inst._update = force;
     let vals: any;

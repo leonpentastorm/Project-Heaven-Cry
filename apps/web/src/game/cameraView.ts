@@ -51,6 +51,8 @@ export class CameraView {
   private goal: Pt2 | null = null; private raf = 0;
   /** The move under way (camera.ts planMove) and when it started; the zoom arc on the grid now (1: none). */
   private mv: { m: C.Move; t0: number } | null = null;
+  /** The window's size held for the move under way (frame()). */
+  private held: { w: number; h: number } | null = null;
   private scale = 1; private arcEl: HTMLElement | null = null; private arcBox: { x: number; y: number; w: number; h: number } | null = null;
   private arcContent: { w: number; h: number } | null = null; private relaxRaf = 0;
   private lastMove: { ms: number; px: number; arc: number; over: number; lean: number; plain: boolean; at: number } | null = null;
@@ -58,8 +60,10 @@ export class CameraView {
   private eatClick = 0;
   private pointerOn = false;
   private handAt = -1e9;
+  /** When the window last scrolled (performance.now): the map's hover waits for a moment of stillness (game/mapHover.ts). */
+  private scrollAt = -1e9;
   private pass: { key: string; until: number } | null = null;
-  private mini: MiniData | null = null; private miniRaf = 0;
+  private mini: MiniData | null = null; private miniRaf = 0; private miniSig = ''; private drawnKey = ''; private miniLook = '';
   private miniBox: HTMLElement | null = null; private canvas: HTMLCanvasElement | null = null; private tog: HTMLButtonElement | null = null;
   private arrows: ArrowRec[] = []; private arrowTimer = 0;
   private off: (() => void)[] = [];
@@ -122,13 +126,17 @@ export class CameraView {
     const r = this.el!.getBoundingClientRect();
     setLayerClip({ left: r.left - 6, top: r.top - 22, right: r.right + 6, bottom: r.bottom + 6 });
   }
-  frame(at?: Pt2 | null): Frame { const e = this.el!; return { x: at ? at.x : e.scrollLeft, y: at ? at.y : e.scrollTop, w: e.clientWidth, h: e.clientHeight }; }
+  frame(at?: Pt2 | null): Frame {
+    const e = this.el!, wh = this.mv && this.held ? this.held : { w: e.clientWidth, h: e.clientHeight };
+    return { x: at ? at.x : e.scrollLeft, y: at ? at.y : e.scrollTop, w: wh.w, h: wh.h };
+  }
   // (while the zoom arc is on, the grid's scale shrinks what the page measures: the sizes from before it hold)
   private content() { const e = this.el!; return this.scale !== 1 && this.arcContent ? this.arcContent : { w: e.scrollWidth, h: e.scrollHeight }; }
   /** Where the tiles are inside the scrolling content, measured from the page (cached until the content's size changes). */
   grid(): GridAt | null {
     const e = this.el; if (!e || !this.live() || !this.mapW || !this.mapH) return null;
     if (this.scale !== 1 && this.gridAt) return this.gridAt; // the zoom arc scales the tiles for a moment: not a new grid
+    if (this.mv && this.gridAt && this.held) return this.gridAt; // a move under way: the sizes read when it started hold (no layout in its frames)
     const key = e.scrollWidth + 'x' + e.scrollHeight + '|' + this.mapW + 'x' + this.mapH;
     if (key === this.gridKey && this.gridAt) return this.gridAt;
     const tiles = e.querySelectorAll<HTMLElement>('button.phc-tok');
@@ -165,7 +173,7 @@ export class CameraView {
     const e = this.el; if (!e) return;
     const dx = e.scrollLeft - this.last.x, dy = e.scrollTop - this.last.y;
     if (!dx && !dy) return;
-    this.last = { x: e.scrollLeft, y: e.scrollTop };
+    this.last = { x: e.scrollLeft, y: e.scrollTop }; this.scrollAt = now();
     shiftLayer(dx, dy);
     this.placeArrows();
     if (!this.miniRaf) this.miniRaf = requestAnimationFrame(() => { this.miniRaf = 0; this.drawMini(); });
@@ -210,6 +218,9 @@ export class CameraView {
     if (this.raf) cancelAnimationFrame(this.raf);
     if (this.relaxRaf) { cancelAnimationFrame(this.relaxRaf); this.relaxRaf = 0; }
     const t0 = now(); this.mv = { m, t0 }; this.goal = m.to;
+    // The window's size, read once as the move starts: its frames write the scroll offset and the arc and read nothing
+    // that makes the page lay out again (the small map, the arrows and the hover read these).
+    const e0 = this.el!; this.held = null; this.grid(); this.held = { w: e0.clientWidth, h: e0.clientHeight };
     this.lastMove = { ms: m.ms, px: Math.round(Math.hypot(m.to.x - m.from.x, m.to.y - m.from.y)), arc: m.arc, over: Math.hypot(m.over.x, m.over.y), lean: Math.hypot(m.lean.x, m.lean.y), plain: m.plain, at: t0 };
     const step = () => {
       if (!this.live() || !this.mv || this.mv.m !== m) { this.raf = 0; return; }
@@ -332,9 +343,19 @@ export class CameraView {
   }
   /** Is the player dragging the map right now? */
   dragging() { return !!(this.drag && this.drag.on); }
+  /** Is the map moving under the pointer by itself or by a drag: a glide or the player's eased step under way, the zoom
+   *  arc easing back, a drag? (game/mapHover.ts holds the hover until it is still.) */
+  moving() { return !!this.goal || !!this.mv || !!this.relaxRaf || this.dragging(); }
+  /** When the map's window last scrolled (performance.now clock), by the camera, a drag, the wheel or the scroll bar. */
+  scrolledAt() { return this.scrollAt; }
 
   // ---------- the small map ----------
-  setMini(m: MiniData | null) { this.mini = m; this.buildMini(); this.drawMini(); }
+  /** The small map's picture (after every render of the screen): redrawn only when it changed. */
+  setMini(m: MiniData | null) {
+    const sig = miniSig(m);
+    if (sig === this.miniSig && this.miniBox && this.miniBox.isConnected) { this.mini = m; return; }
+    this.miniSig = sig; this.mini = m; this.buildMini(); this.drawMini();
+  }
   toggleMini() {
     this.miniHidden = !this.miniHidden;
     try { if (this.miniHidden) localStorage.setItem(this.miniKey, 'hidden'); else localStorage.removeItem(this.miniKey); } catch { /* */ }
@@ -364,9 +385,13 @@ export class CameraView {
       const end = (e: PointerEvent) => { if (held === e.pointerId) { held = -1; try { map.releasePointerCapture(e.pointerId); } catch { /* */ } } };
       map.addEventListener('pointerup', end); map.addEventListener('pointercancel', end);
       box.appendChild(map); box.appendChild(tog); host.appendChild(box);
-      this.miniBox = box; this.canvas = cv; this.tog = tog;
+      this.miniBox = box; this.canvas = cv; this.tog = tog; this.drawnKey = ''; this.miniLook = ''; // (a new canvas is blank, its words unwritten)
     }
     const can = this.scrolls(), shown = can && !this.miniHidden, map = this.miniBox.firstElementChild as HTMLElement;
+    // (every render of the screen comes here: the same words are not written again)
+    const look = [can, shown, this.mini ? this.mini.label : ''].join('|');
+    if (look === this.miniLook && map.isConnected) return;
+    this.miniLook = look;
     this.miniBox.style.display = can ? 'flex' : 'none';
     map.style.display = shown ? 'block' : 'none';
     map.setAttribute('aria-label', 'Small map of the whole field' + (this.mini ? ': ' + this.mini.label : '') + '. The white frame is the part on screen. Click or drag to move the view; the arrow keys move it too.');
@@ -377,6 +402,11 @@ export class CameraView {
   }
   private drawMini() {
     const cv = this.canvas, m0 = this.mini; if (!cv || !m0 || !this.miniShown()) return;
+    // (the same picture and the same frame as last time: nothing to draw; a render of the screen calls this every time)
+    const g0 = this.grid(), f0 = g0 ? this.frame() : null;
+    const key = this.miniSig + '|' + this.miniPx() + '|' + (g0 && f0 ? [g0.ox, g0.oy, g0.pitch, f0.x, f0.y, f0.w, f0.h].map((v) => Math.round(v * 10)).join(',') : '-');
+    if (key === this.drawnKey && cv.isConnected) return;
+    this.drawnKey = key;
     const m = C.miniGeom(this.mapW, this.mapH, this.miniPx()), dpr = Math.max(1, Math.min(3, (typeof devicePixelRatio === 'number' && devicePixelRatio) || 1));
     if (cv.width !== Math.round(m.w * dpr) || cv.height !== Math.round(m.h * dpr)) { cv.width = Math.round(m.w * dpr); cv.height = Math.round(m.h * dpr); cv.style.width = m.w + 'px'; cv.style.height = m.h + 'px'; }
     const c = cv.getContext('2d'); if (!c) return;
@@ -439,6 +469,13 @@ export class CameraView {
     const g = this.live() ? this.grid() : null;
     return { id: this.id, live: this.live(), scrolls: this.scrolls(), overview: this.overview, myTurn: this.myTurn, home: this.home, frame: this.live() ? this.frame() : null, grid: g, tiles: this.live() ? this.tiles() : null, arrows: this.arrows.map((a) => a.key), mini: this.miniShown(), gliding: !!this.goal, scale: this.scale, lastMove: this.lastMove };
   }
+}
+
+/** What the small map shows, as one string (to tell a new picture from the same one). */
+function miniSig(m: MiniData | null): string {
+  if (!m) return '';
+  const j = (it: Iterable<string>) => [...it].join(';');
+  return m.label + '#' + j(m.solid) + '#' + j(m.full) + '#' + j(m.half) + '#' + m.dots.map((d) => d.key + d.color + (d.me ? '!' : '') + (d.square ? '□' : '')).join(';');
 }
 
 // ---------- the camera on screen now ----------

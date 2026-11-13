@@ -247,7 +247,8 @@ export function mountActionTips(doc: Document | null = typeof document !== 'unde
   const cancelPress = () => { clearTimeout(press); press = null; };
   doc.addEventListener('pointerup', cancelPress, true);
   doc.addEventListener('pointercancel', cancelPress, true);
-  doc.addEventListener('scroll', () => hide(), true);
+  // (the map's camera scrolls its window every frame of a glide: nothing to do unless a card is up or coming)
+  doc.addEventListener('scroll', () => { if (cur || box || timer) hide(); }, true);
   if (win && win.addEventListener) { win.addEventListener('blur', () => hide()); win.addEventListener('resize', () => hide()); }
   doc.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); }, true);
 }
