@@ -80,6 +80,15 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
       descriptors (no client-built action); the browser suites extended (one new suite a system, in a group).
 - [ ] **11. Balance:** every new line measured at levels 1, 5, 10, 20; `docs/design/balance-contract.md` and its
       guard updated; `PATCH-TALLY.md` (live against Classes 3.0, by system).
+      **Mag Dump, in this step (Leon, 13 Nov: "a weapon with 200 rounds loses them all, fires four shots, stops"):**
+      today it empties the whole magazine for at most three rolls (rules 1.18). Ruling to build (a call made for
+      Leon, he may reverse it): Mag Dump spends **4 rounds a roll, so 12 at most**, never the whole magazine; with
+      fewer than 12 left it spends what is left, one roll for every 4 rounds or part (a 6-shot revolver: two rolls,
+      empty). Rolls, the growing −4, the 4 AP, the Heat and the Pressure stay as rules 1.18, so its damage and the
+      guns' ceiling do not move; the gold tables change only in rounds spent. Spec first (a new revision line and
+      a section 14 item, technique table row 12 and the Spread and Quick/Precise notes reworded), then the number
+      in data (`rounds_per_roll: 4` on the technique, read by the engine; no digit in the text), the card text
+      ("Up to 12 rounds"), and the effect: casings = rounds spent. Enemies' Mag Dump the same way.
 - [ ] **12. Close:** `docs/PLAYTEST-CHECKLIST.md` for Classes 3.0 (what to try, what right looks like, the calls
       made for Leon); `CHANGELOG.md`, the version; `npm run check` ALL GREEN and `npm run e2e -- all` green with
       nothing failing alone; then tell Leon it is ready and wait for his word.
