@@ -323,8 +323,8 @@ register({
   ],
   on: {
     // An Analyze by anyone on the holder's side, on the area map: remembered by the person's id (see studiedBefore).
-    analyze: (ctx, h) => {
-      const t: Unit = ctx.t, by: Unit = ctx.u; if (!h.c || !h.u || !t || !by || by.side !== h.u.side || !overworld(ctx.cb)) return;
+    acted: (ctx, h) => {
+      const t: Unit = ctx.t, by: Unit = ctx.u; if (ctx.action !== 'analyze' || !h.c || !h.u || !t || !by || by.side !== h.u.side || !overworld(ctx.cb)) return;
       const l: string[] = Array.isArray(ro(h.c).studied) ? ro(h.c).studied : [], add = [t.npcId || t.id, t.name.toLowerCase()].filter((x) => x && !l.includes(x));
       if (add.length) cst(h.c).studied = [...l, ...add].slice(-48);
     },
@@ -351,7 +351,7 @@ function closeCase(h: Holder, t: Unit) {
 register({
   id: 'case_closed', claims: 'all',
   on: {
-    analyze: (ctx, h) => { if (ctx.u === h.u && ctx.t) closeCase(h, ctx.t); },
+    acted: (ctx, h) => { if (ctx.action === 'analyze' && ctx.u === h.u && ctx.t) closeCase(h, ctx.t); },
     attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: CASE_CLOSED[1]?.value ?? -2, label: 'Case Closed' }); },
     damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: CASE_CLOSED[2]?.value ?? 1.2, label: 'Case Closed' }); },
     check_result: (ctx, h) => {

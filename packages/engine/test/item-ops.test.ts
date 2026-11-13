@@ -17,7 +17,7 @@ export function itemOpsBlock() {
   return {
     about: 'The closed lists of item ops (engine foundations 3): an effect whose `when` is one of these triggers is run by the engine\'s generic runner (packages/engine/src/effects/triggers.ts). `if` keys are predicates, `op` and every `and` op must take the trigger, `limit` is { per, n, key?, each? } or { cooldown }. Written from the code by test/item-ops.test.ts (ITEM_OPS_WRITE=1); tools/validate.py checks the data against it.',
     triggers: Object.fromEntries(Object.entries(TRIGGERS).map(([k, t]) => [k, { hook: t.hook, ...(t.phase ? { phase: t.phase } : {}), self: t.self, about: t.about }])),
-    predicates: Object.fromEntries(Object.entries(PREDICATES).map(([k, p]) => [k, { arg: p.arg, about: p.about }])),
+    predicates: Object.fromEntries(Object.entries(PREDICATES).map(([k, p]) => [k, { arg: p.arg, about: p.about, ...(p.values ? { values: p.values } : {}) }])),
     ops: Object.fromEntries(Object.entries(OPS).map(([k, o]) => [k, { on: o.on, fields: o.fields, changes_state: o.state, about: o.about }])),
     limit_scopes: LIMIT_SCOPES,
   };

@@ -283,7 +283,7 @@ export function recordPad(T: Record<string, string>) {
 }
 
 const COST_HOOKS = ['stat', 'glyph_cost', 'evoke_cost', 'outburst_cost', 'release_cost', 'move_cost', 'call_cost', 'attack_preview', 'outburst_pump', 'outburst_begin', 'reload', 'swap', 'jam_clear', 'throw', 'hide', 'parley',
-  'stim_start', 'turn_start_pre', 'turn_start', 'turn_end', 'on_kill', 'weapon_actions', 'held_turn_start', 'analyze', 'action_done', 'call', 'moved', 'volley_end', 'combat_start', 'round_start'];
+  'stim_start', 'turn_start_pre', 'turn_start', 'turn_end', 'on_kill', 'weapon_actions', 'held_turn_start', 'acted', 'action_done', 'call', 'moved', 'volley_end', 'combat_start', 'round_start'];
 /** The pad again for every holder of an item that changes a cost or gives AP: only the lines that differ from the same
  * sheet without the item (so a line here is the item's doing). One reading each (no short / again / next). */
 export function recordAskers(T: Record<string, string>, part: 'perks' | 'traits' | 'classes') {

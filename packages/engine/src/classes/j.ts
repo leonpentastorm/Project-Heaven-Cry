@@ -293,7 +293,7 @@ register({
       } },
   ],
   on: {
-    analyze: (ctx, h) => { if (ctx.u === h.u && inFight(h)) say(h.cb, ctx.t.name + ' goes in the case file' + markTarget(h, ctx.t, rngOf(h, ctx)) + '.'); },
+    acted: (ctx, h) => { if (ctx.action === 'analyze' && ctx.u === h.u && inFight(h)) say(h.cb, ctx.t.name + ' goes in the case file' + markTarget(h, ctx.t, rngOf(h, ctx)) + '.'); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !ctx.ck?.roll?.ok || !(ctx.ck.skills || []).includes('analysis')) return;
       const st = charState(h.c)[h.key]; if (!st?.pending || st.pending.scene !== (h.g?.story?.scene?.n ?? 0)) return;

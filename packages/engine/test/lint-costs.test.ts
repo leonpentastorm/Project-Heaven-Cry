@@ -123,7 +123,8 @@ describe('F3: one way to price, check, pay and give AP', () => {
     const got: Record<string, number> = {};
     // Every resource of data/actions.json (its last path segment), spelled any of the ways a subtraction is spelled:
     // `x.mp -= n`, `x.cores--`, `x.mp = x.mp - n`, `x.charge = Math.max(0, x.charge - n)`, `x.parts = (x.parts || 0) - 1`.
-    const R = '(' + [...new Set(Object.values(RESOURCES).map((r: any) => r.path.split('.').pop()))].join('|') + ')';
+    // (a row with a `setter` is a meter its own system writes, Pressure: not a resource anyone spends)
+    const R = '(' + [...new Set(Object.values(RESOURCES).filter((r: any) => !r.setter).map((r: any) => r.path.split('.').pop()))].join('|') + ')';
     const SUB = new RegExp('\\.' + R + '!?\\s*(-=|--)|\\.' + R + '!?\\s*=(?!=)[^;\\n]{0,80}?\\.\\3\\b[^;\\n]{0,24}?\\s-\\s', 'g');
     for (const f of FILES) { if (COST(f.rel)) continue; const n = [...f.code.matchAll(SUB)].length; if (n) got[f.rel] = n; }
     expect(got).toEqual(LEFT);

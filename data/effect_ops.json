@@ -4200,6 +4200,16 @@
         "hook": "glyph_cost",
         "self": "actor",
         "about": "a Sigil glyph is priced (its AP, charge and Flux; also every preview)"
+      },
+      "acted": {
+        "hook": "acted",
+        "self": "actor",
+        "about": "a unit's own action succeeded (once, after it; ctx.action is its id or cost site, test it with `action`); a grant_action's nested `when: acted` effects need no `if.action`"
+      },
+      "spot": {
+        "hook": "spot",
+        "self": "target",
+        "about": "a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: \"tn\", its TN; cancel)"
       }
     },
     "predicates": {
@@ -4418,6 +4428,28 @@
       "amount_share_below": {
         "arg": "number",
         "about": "the event's amount is under this share of the holder's max HP"
+      },
+      "by_cover": {
+        "arg": "words",
+        "about": "the move started (from) and / or ended (to) next to standing cover: every end named must be",
+        "values": [
+          "from",
+          "to"
+        ]
+      },
+      "patron": {
+        "arg": "words",
+        "about": "the holder is Faithful to one of these patrons (patrons.json ids)",
+        "values": [
+          "nerukhan",
+          "the_quartermaster",
+          "the_laughing_mask",
+          "toll_keeper",
+          "mother_ember",
+          "old_overcast",
+          "the_matchmaker",
+          "counting_weaver"
+        ]
       }
     },
     "ops": {
@@ -4458,14 +4490,15 @@
         "on": [
           "attack",
           "cond_incoming",
-          "save"
+          "save",
+          "spot"
         ],
         "fields": [
           "value",
           "roll"
         ],
         "changes_state": false,
-        "about": "a to-hit term on an attack; on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\")"
+        "about": "a to-hit term on an attack; on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\"); on a spot roll, its modifier or (roll: \"tn\") its TN"
       },
       "cost_mod": {
         "on": [
@@ -4516,7 +4549,9 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "spot"
         ],
         "fields": [
           "value",
@@ -4556,14 +4591,16 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "spot"
         ],
         "fields": [
           "resource",
           "value"
         ],
         "changes_state": true,
-        "about": "give (or take) a class resource (guard, momentum…) or Echo"
+        "about": "give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive)"
       },
       "condition": {
         "on": [
@@ -4596,7 +4633,9 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "spot"
         ],
         "fields": [
           "condition",
@@ -4637,7 +4676,9 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "spot"
         ],
         "fields": [
           "condition",
@@ -4671,7 +4712,8 @@
           "cond_incoming",
           "forced_move",
           "injury",
-          "attack"
+          "attack",
+          "spot"
         ],
         "fields": [
           "why"
@@ -4720,13 +4762,17 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "spot"
         ],
         "fields": [
-          "amount"
+          "amount",
+          "via",
+          "nonlethal"
         ],
         "changes_state": true,
-        "about": "deal an amount block (amounts) to the self, actor or target"
+        "about": "deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: \"faith\"), nonlethal: a blow that takes the last HP subdues"
       },
       "mend": {
         "on": [
@@ -4759,13 +4805,15 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "spot"
         ],
         "fields": [
           "amount"
         ],
         "changes_state": true,
-        "about": "heal or shield by an amount block"
+        "about": "heal or shield by an amount block (its heal_kind is the heal's kind for heal_in: tending, prayer…; default perk)"
       },
       "displace": {
         "on": [
@@ -4798,7 +4846,9 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "spot"
         ],
         "fields": [
           "tiles",
@@ -4838,7 +4888,9 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "spot"
         ],
         "fields": [],
         "changes_state": true,
@@ -4875,7 +4927,9 @@
           "reload",
           "swap",
           "injury",
-          "glyph_cost"
+          "glyph_cost",
+          "acted",
+          "spot"
         ],
         "fields": [
           "flag",

@@ -785,6 +785,14 @@ if "actions" in data:
     for rid, r in (_acts_root.get("resources") or {}).items():
         if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
             errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
+        # Classes 3.0 batch row: the item op `resource` gives any row through effects/cost.ts resGive
+        for _k in (set(r) - {"name", "on", "path", "whole", "max", "needs", "setter"}) if isinstance(r, dict) else []:
+            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, on, path, whole, max, needs, setter)")
+        for _k in ("max", "needs", "setter"):
+            if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
+                errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure"):
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
@@ -1527,7 +1535,7 @@ if isinstance(tq, dict):
 #      that kind (a base, no per-point part), they are the same number.
 AMOUNT_KINDS = {"damage", "heal", "shield"}
 AMOUNT_TYPES = {"physical", "sigil", "elemental", "soul", "true"}
-AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text"}
+AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind"}
 out_rules = (data.get("rules") or {}).get("output") or {}
 PROFILES = set(k for k, v in (out_rules.get("profiles") or {}).items() if isinstance(v, dict))
 num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
@@ -1548,6 +1556,8 @@ def check_block(b, where):
         errors.append(f"{where}: unknown damage type '{b['type']}'")
     if "armour" in b and b["armour"] not in ("full", "half", "none"):
         errors.append(f"{where}: armour is full, half or none")
+    if "heal_kind" in b and (b.get("kind") not in ("heal", "shield") or not isinstance(b["heal_kind"], str) or not b["heal_kind"]):
+        errors.append(f"{where}: heal_kind (the heal's kind for heal_in) is a word, on a heal or shield block only")
     if "mults" in b and not (isinstance(b["mults"], dict) and all(num(v) for v in b["mults"].values())):
         errors.append(f"{where}: mults is a map of name to number")
     for k in set(b) - AMOUNT_KEYS:
@@ -1727,6 +1737,7 @@ def check_pred(k, v, w):
     elif a == "bool" and not isinstance(v, bool): errors.append(f"{w}: `if.{k}` must be true or false")
     elif a == "ids" and not all(isinstance(x, str) and x in known["condition"] for x in vals): errors.append(f"{w}: `if.{k}` names a condition that is not in conditions.json")
     elif a in ("words", "string") and not all(isinstance(x, str) for x in vals): errors.append(f"{w}: `if.{k}` must be words")
+    elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
 def check_trigger_effect(e, w):
     t = e.get("when")
     if t not in TRIG:
@@ -1741,6 +1752,8 @@ def check_trigger_effect(e, w):
             if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)): errors.append(f"{w}: '{f}' must be a number in data, never a word")
         if x.get("op") in ("damage_mult", "damage_vs", "roll_mod", "grant_ap", "resource", "floor") and not isinstance(x.get("value"), (int, float)): errors.append(f"{w}: op '{x.get('op')}' needs a numeric value")
         if x.get("op") == "condition" and x.get("condition") not in known["condition"]: errors.append(f"{w}: condition '{x.get('condition')}' is not in conditions.json")
+        if x.get("op") == "deal" and "via" in x and not (isinstance(x["via"], str) and x["via"]): errors.append(f"{w}: a deal's `via` is the source skill it counts as (a word: faith)")
+        if x.get("op") == "deal" and "nonlethal" in x and not isinstance(x["nonlethal"], bool): errors.append(f"{w}: a deal's `nonlethal` is true or false")
     cond = e.get("if")
     if cond is not None:
         if not isinstance(cond, dict): errors.append(f"{w}: `if` must be an object of predicates")

@@ -917,6 +917,11 @@ export function coverTileFor(cb: Combat, from: string, to: string): string | nul
   return null;
 }
 export const coverBonus = (cb: Combat, from: string, to: string) => (coverTileFor(cb, from, to) ? 5 : 0);
+/** Does this tile stand next to (one of the eight tiles round it) cover that still stands? (Predicate `by_cover`.) */
+export function nextToCover(cb: Combat, k: string): boolean {
+  const [tx, ty] = xy(k);
+  return objectsOf(cb).some((o) => { if (!coverKind(o)) return false; const [cx, cy] = xy(o.pos); return Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1; });
+}
 
 // ---------- vision and fog of war (spec: Vision) ----------
 export function litAt(cb: Combat, k: string): boolean {
@@ -2343,6 +2348,11 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
 }
 /** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
 export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', (u.analysis || 0) >= costOf('analyze', 'quick_at') ? 'ap_quick' : 'ap')).ap;
+/** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
+ * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap}. */
+export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number }): void {
+  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), cb });
+}
 /** How far Analyze reads: 4 tiles + Analysis. */
 export const analyzeRange = (u: Unit) => 4 + (u.analysis || 0);
 export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
@@ -2353,7 +2363,7 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   if (dist(u.pos, t.pos) > range) return 'Out of Analyze range (' + range + ' tiles).';
   if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';
   pay(cb, u, cost); t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos }); t.weakPoint = (u.analysis || 0) >= 5;
-  emit(cb, 'analyze', { u, t, ap: cost, cb });
+  acted(cb, u, { action: 'analyze', t, ap: cost }); // P2: Analyze is a verb that fires its own `acted` (in the reducer's action, inside another one, on the area map)
   say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
   return null;
 }

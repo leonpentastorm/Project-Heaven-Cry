@@ -69,8 +69,21 @@ const infoCache = new Map<string, ItemInfo | null>();
 export function itemInfo(key: string, tier?: Tier | string): ItemInfo | null {
   const ck = key + '@' + (tier || ''); if (infoCache.has(ck)) return infoCache.get(ck)!;
   const out = buildInfo(key, tier);
-  if (out) { const dk = rawItem(key)?.damage_kinds; if (Array.isArray(dk)) out.damageKinds = dk.map(String); }
+  if (out) { const dk = rawItem(key)?.damage_kinds; if (Array.isArray(dk)) out.damageKinds = dk.map(String); liftActed(out); }
   infoCache.set(ck, out); return out;
+}
+/** Classes 3.0 P2: a grant_action's nested effects written `when: "acted"` are the item's own triggered effects, each
+ * with `if.action` = that action's id unless it names one (sugar: Ward's mend needs no `if: {action: ["ward"]}`). They
+ * are appended after the item's own effects (the indexes of those stay), and the default action does not run them. */
+function liftActed(info: ItemInfo): void {
+  const add: any[] = [];
+  info.effects.forEach((g, i) => {
+    if (g?.op !== 'grant_action' || !Array.isArray(g.effects)) return;
+    for (const e of g.effects) if (e && e.when === 'acted') add.push({ ...e, if: { action: [g.action || 'use' + i], ...(e.if || {}) } });
+  });
+  if (!add.length) return;
+  const tier = info.effTier[info.effTier.length - 1] ?? info.tier;
+  info.effects = [...info.effects, ...add]; info.effTier = [...info.effTier, ...add.map(() => tier)];
 }
 function buildInfo(key: string, tier?: string): ItemInfo | null {
   const [kind, id] = splitKey(key);

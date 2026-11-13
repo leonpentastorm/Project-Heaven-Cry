@@ -205,7 +205,9 @@
     "mp": {
       "name": "MP",
       "on": "unit",
-      "path": "mg.mp"
+      "path": "mg.mp",
+      "max": "mg.mpMax",
+      "needs": "mg.emanator"
     },
     "charge": {
       "name": "charge",
@@ -251,6 +253,12 @@
       "name": "Echo",
       "on": "character",
       "path": "echo"
+    },
+    "pressure": {
+      "name": "Pressure",
+      "on": "unit",
+      "path": "pressure",
+      "setter": "pressure"
     }
   },
   "costs": {

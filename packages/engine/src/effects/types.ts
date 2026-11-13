@@ -61,7 +61,7 @@ export type HookName =
   // Physical 2.0 (rules 1.12): after a prone unit stands up {u} (Dead to Rights)
   | 'stood_up'
   | 'glyph_cost' | 'evoke_cost' | 'outburst_cost' | 'outburst_begin' | 'outburst_release' | 'outburst_after' | 'outburst_plan'
-  | 'analyze' | 'combat_end'
+  | 'acted' | 'combat_end'
   // hooks gap (rules 1.3): after an Evoke, a held release's price, holding Strain, Strain added, death saves, injuries,
   // a unit built from its character, every reducer action done, before a stim, an ammo spend, weapon actions listed
   | 'evoked' | 'release_cost' | 'outburst_hold' | 'outburst_pump' | 'strain_change' | 'held_turn_start' | 'strain' | 'death_save' | 'injury' | 'unit_built' | 'action_done'
@@ -133,7 +133,7 @@ export const HOOK_ABOUT: Record<HookName, string> = {
   outburst_release: 'an Outburst is being released: its multiplier may change',
   outburst_after: 'an Outburst was released and resolved (its area, targets and hits)',
   outburst_plan: 'an Outburst\'s release is previewed (its stage, aim, area and targets)',
-  analyze: 'Analyze was used on a target',
+  acted: 'a unit\'s own action (or a verb inside it, as Analyze) succeeded: {u, t, action, tile, toggles, mode}; the item ops trigger `acted` listens here (Classes 3.0 P2)',
   combat_end: 'the fight ends, after the fighters are written back to their characters',
   evoked: 'a Sigil spell was Evoked (or fizzled), after it resolved',
   release_cost: 'an Outburst Release is priced: its AP and range',

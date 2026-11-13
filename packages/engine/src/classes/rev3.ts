@@ -7,7 +7,7 @@
 // 'cond_landed' (saves, immunity, Shrug It Off), 'forced_move' (Anchor), 'move_step' (Anchor's Disengage OA),
 // 'move_cost' (free steps: Duck and Roll, Command), 'attack_target' / 'attack_preview' (Duck and Roll), 'reload' and
 // the 'ap_cost:<action>' stats (Speed Loader, Core Change, Bleed the Flux: vent and swapCore price through ventAp /
-// coreAp), the new 'vent' hook, 'glyph_cost' / 'glyph_drawn', 'analyze' + combat.ts enemyIntent (Read), illusion.ts
+// coreAp), the new 'vent' hook, 'glyph_cost' / 'glyph_drawn', the trigger 'acted' (action analyze) + combat.ts enemyIntent (Read), illusion.ts
 // (False Image, Sleight), 'turn_start_pre' (Silver Tongue), the stat 'rider_stage' (magic.ts riderBonus) and the
 // 'strain' hook (Eye of the Storm), 'trap_sprung' (Sabotage's rig), the new 'ai_move_risk' (Anchor in the enemy AI).
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
@@ -423,8 +423,8 @@ register({
 register({
   id: 'trickster.read', claims: [1],
   on: {
-    analyze: (ctx, h) => {
-      if (ctx.u !== h.u || !h.cb || !ctx.t) return; const cb = h.cb, t: Unit = ctx.t, it = enemyIntent(cb, t);
+    acted: (ctx, h) => {
+      if (ctx.action !== 'analyze' || ctx.u !== h.u || !h.cb || !ctx.t) return; const cb = h.cb, t: Unit = ctx.t, it = enemyIntent(cb, t);
       t.readIntent = { ...it, by: h.u!.id, round: cb.round };
       emitFx(cb, 'intent', { unit: h.u!.id, target: t.id, at: t.pos, kind: it.kind, text: it.text, ...(it.targetId ? { targetUnit: it.targetId } : {}), ...(it.to ? { to: it.to } : {}), ...(it.image ? { image: it.image } : {}) });
       say(cb, 'Read: ' + t.name + ' means to ' + it.text + '.');

@@ -1,0 +1,77 @@
+{
+  "about": "Classes 3.0 step 1a (docs/design/rev4-primitives.md): one fixture item per primitive and batch row, written in data only, loaded with addItems() by test/prim-*.test.ts. Test only: not game content. The tests read their numbers from here.",
+  "perks": [
+    {
+      "id": "test_acted_ping",
+      "name": "Ping (test)",
+      "tier": "mastered",
+      "ap_cost": 1,
+      "text": "Costs {=effects.0.ap} AP. When it is done, gain {=effects.0.effects.0.value} perk AP (a grant_action's nested `when: acted` effect: no `if.action`).",
+      "adjudication": "engine",
+      "effects": [
+        { "op": "grant_action", "action": "test_ping", "ap": 1, "uses": "at_will",
+          "effects": [ { "op": "grant_ap", "when": "acted", "value": 2 } ] }
+      ]
+    }
+  ],
+  "relics": [
+    {
+      "id": "test_acted_reload",
+      "name": "Acted on reload (test)",
+      "text": "After a reload of yours, gain {=effects.0.value} perk AP, once a turn.",
+      "effects": [
+        { "op": "grant_ap", "when": "acted", "if": { "action": ["reload"] }, "value": 1, "limit": { "per": "per_turn", "n": 1 } }
+      ]
+    },
+    {
+      "id": "test_acted_analyze",
+      "name": "Acted on Analyze (test)",
+      "text": "After you Analyze, the target is Marked.",
+      "effects": [
+        { "op": "condition", "when": "acted", "if": { "action": ["analyze"] }, "condition": "marked", "target": "target", "skip_save": true, "rounds": 2 }
+      ]
+    },
+    {
+      "id": "test_spot_still",
+      "name": "Still (test)",
+      "text": "Spot rolls against you are {=effects.0.value} (the trigger spot).",
+      "effects": [ { "op": "roll_mod", "when": "spot", "value": -40 } ]
+    },
+    {
+      "id": "test_spot_cancel",
+      "name": "Unspottable (test)",
+      "text": "Nobody rolls to spot you.",
+      "effects": [ { "op": "cancel", "when": "spot" } ]
+    },
+    {
+      "id": "test_by_cover",
+      "name": "Cover to cover (test)",
+      "text": "A move that ends next to cover sets a flag.",
+      "effects": [ { "op": "mark", "when": "moved", "if": { "by_cover": ["to"] }, "flag": "in_cover" } ]
+    },
+    {
+      "id": "test_deal_nonlethal",
+      "name": "Mercy blow (test)",
+      "text": "Your hit also deals a nonlethal blow that counts as a prayer.",
+      "effects": [ { "op": "deal", "when": "hit", "amount": { "kind": "damage", "base": 500, "profile": "flat", "type": "true" }, "target": "target", "via": "faith", "nonlethal": true, "if": { "hostile": true } } ]
+    },
+    {
+      "id": "test_mend_kind",
+      "name": "Tending touch (test)",
+      "text": "Your hit heals you a little, as tending.",
+      "effects": [ { "op": "mend", "when": "hit", "amount": { "kind": "heal", "base": 5, "profile": "flat", "heal_kind": "tending" } } ]
+    },
+    {
+      "id": "test_res_pressure",
+      "name": "Pinning hit (test)",
+      "text": "Your hit adds {=effects.0.value} Pressure to its target (the resource row pressure).",
+      "effects": [ { "op": "resource", "when": "hit", "resource": "pressure", "value": 2, "target": "target", "if": { "hostile": true } } ]
+    },
+    {
+      "id": "test_res_mp",
+      "name": "MP on hit (test)",
+      "text": "Your hit gives you {=effects.0.value} MP, with an Emanator in hand.",
+      "effects": [ { "op": "resource", "when": "hit", "resource": "mp", "value": 30 } ]
+    }
+  ]
+}

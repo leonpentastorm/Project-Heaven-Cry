@@ -13,6 +13,7 @@
 // and runTriggered() below reads the event, tests `if`, takes the `limit` through effects/uses.ts (the item's key, so the
 // counter is the one a handler kept with uses(h)), runs the op and writes `say`. A preview (ctx.preview) changes no
 // state: the amount ops still speak (a preview shows the number), the limit is read and not taken, nothing is logged.
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
@@ -20,7 +21,11 @@ import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems } from './collect';
 import { overworld, rngOf } from '../kit';
 import { say, dist, displace, emitFx, unitSees } from '../combat';
-import { applyCond, endCond, condOn, condId, debuffsOf } from '../magic';
+import { applyCond, endCond, condOn, condId, debuffsOf, withVia } from '../magic';
+import { nextToCover } from '../combat';
+import { charOfUnit } from './hooks';
+import patronsJ from '../../../../data/patrons.json';
+import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
 import { resGain } from '../tactics';
@@ -66,6 +71,9 @@ export const TRIGGERS: Record<string, Trigger> = {
   swap: { hook: 'swap', actor: u_, self: 'actor', about: 'a weapon swap is priced' },
   injury: { hook: 'injury', actor: by, target: t_, self: 'target', about: 'an injury is about to be rolled on a unit' },
   glyph_cost: { hook: 'glyph_cost', actor: u_, self: 'actor', about: 'a Sigil glyph is priced (its AP, charge and Flux; also every preview)' },
+  // Classes 3.0 step 1 (docs/design/rev4-primitives.md P2 and the batch rows)
+  acted: { hook: 'acted', actor: u_, target: t_, self: 'actor', about: 'a unit\'s own action succeeded (once, after it; ctx.action is its id or cost site, test it with `action`); a grant_action\'s nested `when: acted` effects need no `if.action`' },
+  spot: { hook: 'spot', actor: by, target: u_, self: 'target', about: 'a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: "tn", its TN; cancel)' },
 };
 
 // ============================================================================================== the event
@@ -99,13 +107,19 @@ function dmgIs(src: any, w: string): boolean {
 const byHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].includes(src.type);
 /** Damage a unit does to itself (a Mana Short, an overload, Strain, Flux). */
 const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
+/** The patron ids (data/patrons.json): the words predicate `patron` takes. */
+const PATRON_IDS: string[] = ((patronsJ as any).items || []).map((p: any) => p.id);
+/** A character's patron id (faith.ts beliefOf, read here without importing faith.ts: its load order places its global
+ * hooks): Faithful to a patron of patrons.json, else none. */
+const patronIdOf = (c: any): string | null => { if (!c) return null; const b = c.belief; if (b?.kind === 'faithful') return PATRON_IDS.includes(b.patron) ? b.patron : null; if (b?.kind === 'atheist') return null; return PATRON_IDS.includes(c.patron) ? c.patron : null; };
 const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.flags || {};
 
 // ============================================================================================== the predicates
 /** The closed list of `if` keys. Each reads the event; all of an effect's keys must hold. `<who>` is self, actor or
  * target. Numbers are shares of max HP (0.5: half) or tiles. */
-export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string'; test: (ev: Ev, v: any) => boolean }> = {};
-const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string', about: string, test: (ev: Ev, v: any) => boolean) => { PREDICATES[name] = { about, arg, test }; };
+export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
+/** Add a predicate; `values`: the closed list its words come from (the validator refuses any other word). */
+const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string', about: string, test: (ev: Ev, v: any) => boolean, values?: string[]) => { PREDICATES[name] = { about, arg, test, ...(values ? { values } : {}) }; };
 P('actor', 'rel', 'the event\'s actor is (self | ally | side | foe | other | none | any; a list: any of them)', (ev, v) => list(v).some((w) => rel(ev.self, ev.actor, w)));
 P('target', 'rel', 'the event\'s target is (as actor)', (ev, v) => list(v).some((w) => rel(ev.self, ev.target, w)));
 for (const who of ['self', 'actor', 'target'] as Who[]) {
@@ -142,6 +156,9 @@ P('self_alive', 'bool', 'the holder is (or is not) up: not Downed, dead or surre
 P('open', 'bool', 'nothing has stopped it yet: not cancelled, and (would_drop) not floored', (ev, v) => (!ev.ctx.cancel && ev.ctx.floor == null) === v);
 P('amount_above', 'number', 'the event\'s amount (damage, a heal) is over this', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) > v);
 P('amount_share_below', 'number', 'the event\'s amount is under this share of the holder\'s max HP', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) / ev.self.maxHp < v);
+// Classes 3.0 step 1 (the batch rows of docs/design/rev4-primitives.md)
+P('by_cover', 'words', 'the move started (from) and / or ended (to) next to standing cover: every end named must be', (ev, v) => list(v).every((w) => { const k = w === 'from' ? ev.ctx.from : w === 'to' ? ev.ctx.to : null; return !!k && nextToCover(ev.cb, k); }), ['from', 'to']);
+P('patron', 'words', 'the holder is Faithful to one of these patrons (patrons.json ids)', (ev, v) => { const id = patronIdOf(ev.h.c || charOfUnit(ev.self)); return !!id && list(v).includes(id); }, PATRON_IDS);
 
 /** A `say` line's words: {self} {actor} {target} (names), {gain} (what the last resource op really gave), {res:<id>}
  * and {resmax:<id>} (the holder's resource now, and its most). Numbers from the data go in as {=.field} placeholders. */
@@ -167,8 +184,9 @@ O('damage_mod', ['dealing', 'taking'], false, ['value', 'value_pct'], 'add to th
   else if (typeof e.value_pct === 'number') ev.ctx.dmg = ev.ctx.dmg * (1 + e.value_pct / 100); else ev.ctx.dmg += e.value;
 });
 O('damage_vs', ['dealing'], false, ['value'], 'a bonus against this target (added with the other target bonuses)', (ev, e, label) => { ev.ctx.vs.push({ v: e.value, label }); });
-O('roll_mod', ['attack', 'cond_incoming', 'save'], false, ['value', 'roll'], 'a to-hit term on an attack; on a condition or save, the save (roll: "save", the default there) or its TN (roll: "tn")', (ev, e, label) => {
+O('roll_mod', ['attack', 'cond_incoming', 'save', 'spot'], false, ['value', 'roll'], 'a to-hit term on an attack; on a condition or save, the save (roll: "save", the default there) or its TN (roll: "tn"); on a spot roll, its modifier or (roll: "tn") its TN', (ev, e, label) => {
   if (ev.trig.hook === 'attack_preview') ev.ctx.terms.push({ v: e.value, label });
+  else if (ev.trig.hook === 'spot') { if (e.roll === 'tn') ev.ctx.tn += e.value; else ev.ctx.mod += e.value; }
   else if (e.roll === 'tn') ev.ctx.tnAdd = (ev.ctx.tnAdd || 0) + e.value; else ev.ctx.saveAdd = (ev.ctx.saveAdd || 0) + e.value;
 });
 O('cost_mod', ['cost', 'swap', 'reload', 'attack', 'glyph_cost'], false, ['value', 'set', 'min', 'at_least', 'res'], 'change the AP (or with res, a resource: charge, flux…) of the action: add value, or set it; min is the floor a cut stops at; at_least raises it to that', (ev, e) => {
@@ -184,10 +202,10 @@ O('grant_ap', ['turn_ap', ...ANY.filter((t) => t !== 'turn_ap')], true, ['value'
   if (e.value < 0) { loseAp(u, -e.value); return; }
   if (e.bank) bankAp(u, e.value, label, ev.cb); else grantPerkAp(ev.cb, u, e.value, label);
 });
-O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource (guard, momentum…) or Echo', (ev, e, label) => {
+O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive)', (ev, e, label) => {
   const u = pick(ev, e); if (!u) return;
   if (e.resource === 'echo') { if (ev.h.c) gainEcho(ev.h.c, e.value, label); return; }
-  (ev as any).gain = resGain(u, e.resource, e.value);
+  (ev as any).gain = u.resMax?.[e.resource] != null || !RESOURCES[e.resource] ? resGain(u, e.resource, e.value) : resGive(ev.cb, u, e.resource, e.value, { by: ev.self, c: ev.h.c, why: label });
 });
 O('condition', ANY, true, ['condition', 'rounds', 'skip_save'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
@@ -203,19 +221,20 @@ O('cond_rounds', ['cond_incoming'], false, ['max', 'add'], 'change the rounds of
   if (typeof e.add === 'number') ev.ctx.rounds = (ev.ctx.rounds || 1) + e.add;
 });
 O('skip_save', ['cond_incoming'], false, [], 'the condition being put on gets no save', (ev) => { ev.ctx.skipSave = true; });
-O('cancel', ['cond_incoming', 'forced_move', 'injury', 'attack'], false, ['why'], 'stop it: the condition, the forced move or the injury does not happen; an attack is refused (why: the reason shown)', (ev, e, label) => {
+O('cancel', ['cond_incoming', 'forced_move', 'injury', 'attack', 'spot'], false, ['why'], 'stop it: the condition, the forced move or the injury does not happen; an attack is refused (why: the reason shown)', (ev, e, label) => {
   if (ev.trig.hook === 'attack_preview') { if (!ev.ctx.fail) ev.ctx.fail = e.why ? fill(e.why, ev) : label; return; }
   ev.ctx.cancel = true; ev.ctx.why = e.why ? fill(e.why, ev) : label;
 });
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
-O('deal', ANY, true, ['amount'], 'deal an amount block (amounts) to the self, actor or target', (ev, e) => {
+O('deal', ANY, true, ['amount', 'via', 'nonlethal'], 'deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
   const t = pick(ev, e), b = blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
-  const type = b.type || 'true', src: any = { by: ev.self, type, dmgType: type, shield: type !== 'true', credit: 'hp', item: ev.h.key };
-  deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: true }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src } });
+  const type = b.type || 'true', src: any = { by: ev.self, type, dmgType: type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
+  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: true }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src } }); };
+  if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
 });
-O('mend', ANY, true, ['amount'], 'heal or shield by an amount block', (ev, e) => {
+O('mend', ANY, true, ['amount'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk)', (ev, e) => {
   const t = pick(ev, e), b = blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
-  mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: 'perk' });
+  mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk' });
 });
 O('displace', ANY, true, ['tiles', 'how'], 'push the target away from the holder (how: push) or pull it closer (pull)', (ev, e) => {
   const t = pick(ev, e); if (!t || t === ev.self) return;

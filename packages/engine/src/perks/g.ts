@@ -509,7 +509,7 @@ register({
   id: 'cold_read',
   narrator: 'all',
   on: {
-    analyze: (ctx, h) => { if (ctx.u === h.u && ctx.t && person(ctx.t)) note(h, 'Cold Read: tell ' + (h.c?.name || h.u!.name) + ' privately (perkLines key perk:cold_read) what ' + ctx.t.name + ' wants most.'); },
+    acted: (ctx, h) => { if (ctx.action === 'analyze' && ctx.u === h.u && ctx.t && person(ctx.t)) note(h, 'Cold Read: tell ' + (h.c?.name || h.u!.name) + ' privately (perkLines key perk:cold_read) what ' + ctx.t.name + ' wants most.'); },
     check_result: (ctx, h) => { if (ctx.c === h.c && ctx.roll?.ok && hasSkill(ctx.ck, 'analysis')) ruling(h, 'Cold Read: tell ' + h.c!.name + ' privately (perkLines key perk:cold_read) what ' + (ctx.ck.target || 'the person this check was about') + ' wants most.'); },
   },
   brief: () => 'after an Analyze of someone: privately, what they want most (perkLines)',
