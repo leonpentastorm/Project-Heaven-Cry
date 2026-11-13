@@ -27,7 +27,7 @@
 import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
-const SEED = 'PHC-0014'; // rules 1.48: a seed whose stage 1 has a lane route through a training ground, a shrine, a Forge, a crossroads and a rest
+const SEED = 'PHC-0007'; // rules 1.48: a seed whose stage 1 has a lane route through a training ground, a shrine, a Forge, a crossroads and a rest
 const p = await player(browser, 'host', { play: 'survival' });
 await p.context().addInitScript((seed) => { try { localStorage.setItem('phc.testRoom', '1'); localStorage.setItem('phc.testSeed', seed); } catch { /* */ } }, SEED);
 await p.setViewportSize({ width: 1280, height: 720 });
