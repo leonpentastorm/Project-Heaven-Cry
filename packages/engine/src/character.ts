@@ -11,7 +11,7 @@ import worldPlayJ from '../../../data/world_play.json';
 import techniquesJ from '../../../data/techniques.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
-import { statOf, levelFactor } from './effects/output';
+import { statOf, levelFactor, scaleOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 
 export interface Sheet {
@@ -90,6 +90,8 @@ export interface Character extends Sheet {
   focusRev?: number;
   /** The MP rule's revision (rules 1.24; migrateCharacterMp). */
   mpRev?: number;
+  /** The level scale's revision (rules 1.36; migrateCharacterHp): a save from before it holds HP in the old units. */
+  hpRev?: number;
   /** Item use counters that outlive a fight (per scene, session, rest, campaign), lazily stamped (effects/uses.ts). */
   uses?: Record<string, { s: string; n: number }>;
   // ---------- shared subsystems (rules 1.3; all optional, old saves load) ----------
@@ -445,7 +447,7 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   const c: Character = {
     ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, perks: [],
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
-    injuries: [], pack: kit.pack.map((x) => ({ ...x })), offHand: kit.offHand ? { id: kit.offHand } : null, focusRev: FOCUS_REV, mpRev: 124,
+    injuries: [], pack: kit.pack.map((x) => ({ ...x })), offHand: kit.offHand ? { id: kit.offHand } : null, focusRev: FOCUS_REV, mpRev: 124, hpRev: HP_REV,
   };
   // A trait that caps armour (Forlorn Hope: Class I at most) drops the kit's armour to the cap at lock-in (the kit's
   // heavier plate isn't carried; PROVISIONAL, spec 14).
@@ -591,7 +593,24 @@ const fx = (c: Character, stat: StatId, base: number, ctx: any = {}) => { if (!c
 export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dodge: 0 }, { value: 10, move: 0, dodge: 0 }, { value: 15, move: -0.5, dodge: 0 }, { value: 20, move: -0.5, dodge: -1 }, { value: 25, move: -1, dodge: 0 }];
 // Skeleton 2.0 (rules 1.13): defence numbers sit on the betas. HP a level reads Pain Threshold (it was Durability).
 export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'pain_threshold'));
-export const maxHp = (c: Character) => Math.max(1, Math.round(fx(c, 'hp', 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c))));
+/** Rules 1.36 (the level scale): max HP = round(scale(level) × (100 + 15 × (Endurance − 1) + (level − 1) × HP a level)),
+ * perks and traits inside the bracket: a point of Endurance or Pain Threshold is the same share of the bar at every level. */
+export const maxHp = (c: Character) => Math.max(1, Math.round(scaleOf(c.level) * fx(c, 'hp', 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c))));
+/** Rules 1.36: a character's armour (its Class, what gear and items add), in HP: × scale at the wearer's level. */
+export const armourOf = (c: Character, add = 0) => classArmour(c.armourClass, c.level, add);
+/** Rules 1.36: the armour of a Class (0 to 5) at a level, plus what is added, × scale at that level. */
+export const classArmour = (armourClass: number, level: number, add = 0) => Math.round(scaleOf(level) * ((ARMOUR[armourClass]?.value || 0) + add));
+/** The level scale's revision (rules 1.36): a save from before it is moved once (migrateCharacterHp). */
+export const HP_REV = 136;
+/** Rules 1.36: an old save's character keeps the same share of its new max HP as it held of the old one (current HP ×
+ * scale(level), rounded, held to the max; level 1 untouched), once (c.hpRev). True when the save was from before it. */
+export function migrateCharacterHp(c: Character): boolean {
+  if (c.hpRev === HP_REV) return false;
+  c.hpRev = HP_REV;
+  const f = scaleOf(c.level);
+  if (f !== 1 && typeof c.hp === 'number') c.hp = c.hp > 0 ? Math.max(1, Math.min(maxHp(c), Math.round(c.hp * f))) : c.hp;
+  return true;
+}
 export const initiativeBonus = (c: Character) => fx(c, 'init', (A(c, 'agility') - 1) + mod(P(c, 'reaction_speed')) + skillRollMod({ c }, 'reaction_speed', { roll: 'initiative' }).add);
 /** Overburdened (spec: Carry weight): kg over the limit; −1 Movement per started 5 kg over. */
 export const overweightKg = (c: Character) => Math.max(0, Math.round((carriedKg(c).total - carryLimit(c)) * 100) / 100);
@@ -743,19 +762,20 @@ export const strengthTable = (c: Character): Record<string, number> => Object.fr
 // ---------- focuses (spec: Hands 2; item 630: a focus counts only in a hand) ----------
 /** A focus kind: the standard gloves of the gear companies' line (rules 1.33: the Attuner is the third with a door here; rules 1.34: the Visualizer the fourth). */
 export type FocusKind = 'evoker' | 'emanator' | 'attuner' | 'visualizer';
-/** What counts as each focus: the focus items, and the mana arms that count as one. Rules 1.33 (a focus is data): each
- * focus item of items.json names `focus: {door, hand, fuel}`; every item whose `focus.door` is a kind's door counts as
- * that kind (a faction's focus later is one more item, never a new kind in code). */
-const FOCUS_BASE: Record<FocusKind, string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'], attuner: [], visualizer: [] };
 /** The door (a skill id) each focus kind opens (rules 1.33). */
 export const FOCUS_DOOR: Record<FocusKind, string> = { evoker: 'brain_power', emanator: 'will_power', attuner: 'empathy', visualizer: 'visualization' };
-const FOCUS_KINDS = Object.keys(FOCUS_BASE) as FocusKind[];
+const FOCUS_KINDS = Object.keys(FOCUS_DOOR) as FocusKind[];
+/** A thing's focus block (rules 1.33 items, rules 1.38 weapons too): `focus: {door, hand?, fuel}`, or null. */
+const focusOf = (id: string): { door: string; fuel?: string } | null => ((ITEM[id] as any)?.focus || (WEAPON[id] as any)?.focus || null);
 /** A focus kind by its own name or by the door it opens (null: neither). */
 export const kindOfDoor = (door: string): FocusKind | null => (FOCUS_KINDS.includes(door as FocusKind) ? door as FocusKind : FOCUS_KINDS.find((k) => FOCUS_DOOR[k] === door) || null);
+/** What counts as each focus (rules 1.33, rules 1.38): every item AND every weapon whose `focus.door` is a kind's door
+ * (the focus gloves, the mana arms that count as one, the Emanator katana; a faction's focus later is one more item or
+ * weapon in data, never a list in code). */
 export const FOCUS_IDS: Record<FocusKind, string[]> = Object.fromEntries(FOCUS_KINDS.map((k) =>
-  [k, [...new Set([...FOCUS_BASE[k], ...Object.values(ITEM).filter((it: any) => it?.focus && kindOfDoor(String(it.focus.door)) === k).map((it: any) => String(it.id))])]])) as Record<FocusKind, string[]>;
-/** The focus kinds whose fuel is MP (items.json focus.fuel): an Emanator or an Attuner keeps a character's MP. */
-const MP_FOCUS_KINDS: FocusKind[] = FOCUS_KINDS.filter((k) => FOCUS_IDS[k].some((id) => (ITEM[id] as any)?.focus?.fuel === 'mp'));
+  [k, [...new Set([...Object.keys(ITEM), ...Object.keys(WEAPON)].filter((id) => { const f = focusOf(id); return !!f && kindOfDoor(String(f.door)) === k; }))]])) as Record<FocusKind, string[]>;
+/** The focus kinds whose fuel is MP (a focus block's fuel): an Emanator or an Attuner keeps a character's MP. */
+const MP_FOCUS_KINDS: FocusKind[] = FOCUS_KINDS.filter((k) => FOCUS_IDS[k].some((id) => focusOf(id)?.fuel === 'mp'));
 /** What the hands hold: the main-hand weapon, and the off hand unless a two-handed weapon fills both. */
 export const inHands = (c: Character): string[] => [c.weapon, ...(c.offHand && !twoHands(c, c.weapon) ? [c.offHand.id] : [])];
 /** Which hand holds this kind of focus ('main' or 'off'), 'pack' if it is only carried, else null. */
@@ -890,10 +910,11 @@ export function applyLevels(c: Character): number {
   const target = levelForXp(c.xp);
   let gained = 0;
   while (c.level < target) {
+    const was = maxHp(c); // rules 1.36: the rise in max HP (a level's HP and the level scale's step) goes on current HP
     c.level++; gained++;
     const gain = levelGains(c.level);
     c.unspent.skill += gain.skill; c.unspent.attr += gain.attr; c.unspent.core += gain.core;
-    c.hp = Math.min(maxHp(c), c.hp + hpPerLevel(c));
+    c.hp = Math.min(maxHp(c), c.hp + Math.max(0, maxHp(c) - was));
   }
   return gained;
 }

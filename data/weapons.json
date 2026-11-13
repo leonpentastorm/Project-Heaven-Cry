@@ -3083,6 +3083,10 @@
         "scales_with": [
           "agility"
         ]
+      },
+      "focus": {
+        "door": "brain_power",
+        "fuel": "core"
       }
     },
     {
@@ -3141,6 +3145,10 @@
         "scales_with": [
           "agility"
         ]
+      },
+      "focus": {
+        "door": "brain_power",
+        "fuel": "core"
       }
     },
     {
@@ -3200,6 +3208,62 @@
           "raw_power",
           "dexterity"
         ]
+      },
+      "focus": {
+        "door": "will_power",
+        "fuel": "mp"
+      }
+    },
+    {
+      "id": "emanator_katana",
+      "name": "Emanator katana",
+      "category": "mana",
+      "damage": 26,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "single": 2,
+        "aimed": 3
+      },
+      "ammo": null,
+      "skill": "dexterity",
+      "weight_kg": 1.8,
+      "accuracy": 0,
+      "price_credits": 2400,
+      "properties": [
+        "counts_as_emanator"
+      ],
+      "text": "A long single-edged blade with an Emanator's lens in the guard. Counts as an Emanator: hold it and you can fill and spend MP.",
+      "mastery_family": "mana_arms",
+      "hands": "1H",
+      "durability": 250,
+      "mod_slots": [
+        "edge",
+        "grip"
+      ],
+      "lore": "The Soul schools say the heart is a blade drawn once; this one they draw every day.",
+      "type": "emanator_katana",
+      "provisional": true,
+      "requires": {
+        "will_power": 3
+      },
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "edge"
+        ],
+        "hits_with": "dexterity",
+        "scales_with": [
+          "agility"
+        ]
+      },
+      "focus": {
+        "door": "will_power",
+        "fuel": "mp"
       }
     },
     {
@@ -3370,6 +3434,10 @@
         "scales_with": [
           "agility"
         ]
+      },
+      "focus": {
+        "door": "brain_power",
+        "fuel": "core"
       }
     },
     {

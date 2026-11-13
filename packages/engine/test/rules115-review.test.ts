@@ -50,7 +50,7 @@ describe('the Narrator names a tier and a level, never a number', () => {
     const was = FIGHT_TOOLS.pinned; FIGHT_TOOLS.pinned = false;
     try {
       const cb = fightBy(storyWith([{ level: 6 }]), { enemies: [{ name: 'R', tier: 'soldier', weapon: 'service_pistol', fixed: { hp: 9999, defense: 30, attack_bonus: 20, armour: 50 } }] });
-      expect(foesOf(cb)[0]).toMatchObject({ level: 6, maxHp: enemyStats('soldier', 6).hp, def: 13, armour: 6, attack: 4 });
+      expect(foesOf(cb)[0]).toMatchObject({ level: 6, maxHp: enemyStats('soldier', 6).hp, def: 13, armour: enemyStats('soldier', 6).armour, attack: 4 });
     } finally { FIGHT_TOOLS.pinned = was; }
   });
   it('even as a test tool, numbers that are not numbers pin nothing (the unit is never left without HP)', () => {
@@ -160,7 +160,7 @@ describe('enemy casters are their tier at the fight\'s level', () => {
     for (const [caster, key, base] of [['sigil_adept', 'sigilMult', 1], ['heart_adept', 'soulMult', 1.2]] as const) {
       const at = (level: number) => foesOf(fightBy(storyWith([{ level }]), { enemies: [{ name: 'Adept', tier: 'soldier', caster, weapon: 'combat_knife' }] }))[0] as any;
       const hi = at(12), lo = at(1);
-      expect(hi).toMatchObject({ level: 12, maxHp: 244, def: 16, armour: 8 }); expect(hi.lvlDmg).toBeCloseTo(0.78 * 1.38, 3);
+      expect(hi).toMatchObject({ level: 12, maxHp: enemyStats('soldier', 12).hp, def: 16, armour: enemyStats('soldier', 12).armour }); expect(hi.lvlDmg).toBeCloseTo(enemyStats('soldier', 12).damage, 3); // rules 1.36: the table × scale
       expect(hi.mg[key]).toBeCloseTo(base * hi.lvlDmg, 6); expect(lo.mg[key]).toBeCloseTo(base * 0.78, 6);
     }
   });
@@ -176,7 +176,7 @@ describe('Vermin in every list of tiers', () => {
     s.act({ type: 'narrator/turn', turn: { narration: 'Rats.', npcs: [{ action: 'place', name: 'Rat', side: 'hostile', tier: 'vermin', weapon: 'beast_bite', at: 'H6' }] } } as any);
     expect(npcsOf(s.g).find((n) => n.name === 'Rat')!.tier).toBe('vermin');
     const cb = fightBy(s, { difficulty: 'easy', enemies: [{ name: 'Rat', tier: 'vermin', weapon: 'beast_bite' }] });
-    expect(foesOf(cb).every((u) => u.tier === 'vermin' && u.level === 3 && u.maxHp === 17)).toBe(true);
+    expect(foesOf(cb).every((u) => u.tier === 'vermin' && u.level === 3 && u.maxHp === enemyStats('vermin', 3).hp)).toBe(true);
     expect(COMBAT_XP[cb.difficulty]).toBe(25);
   });
 });
@@ -196,7 +196,7 @@ describe('a fight saved before the rule, and the one after it', () => {
     expect(g.phase).not.toBe('combat'); // its last enemy fell: the saved fight is over
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'Again.', combat: { name: 'Next', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'New', tier: 'soldier', weapon: 'fists' }] } } } as any, 'host');
     const nf = g.combat!.units.find((u) => u.side === 'foe')!;
-    expect(g.combat!.level).toBe(12); expect(nf).toMatchObject({ level: 12, maxHp: 244, def: 16, armour: 8 }); expect(g.combat!.units.find((u) => u.side === 'pc')!.level).toBe(12);
+    expect(g.combat!.level).toBe(12); expect(nf).toMatchObject({ level: 12, maxHp: enemyStats('soldier', 12).hp, def: 16, armour: enemyStats('soldier', 12).armour }); expect(g.combat!.units.find((u) => u.side === 'pc')!.level).toBe(12);
   });
 });
 

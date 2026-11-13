@@ -12,7 +12,7 @@
 //   Verdict any weapon; Blessed Arms; Under the Eye; the old save
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import {
+import { scaleOf,
   CLASS, CLASS_MOVE_POOL, WHISPER, FAITH_PATRON, ATHEIST_TN, HYMN_FAITH, WHISPER_FAITH, condOn, condSource, applyDamage, resolveAttack, d20, hymnWait,
   setDevotionXp, devotionThreshold, blessingPower, itemInfo, statQuery, previewPrayer, amountBlock, profileOf, mendFactorOf, zonesAt, perkActionsFor, prayerAnswered,
   type Unit, type Character, type Action,
@@ -56,7 +56,7 @@ type C = ReturnType<typeof chap>;
 const power = (h: C) => h.me.blessPower || blessingPower(h.c);
 /** The Ward a Chaplain gives: base × the profile's Stat (Blessing power × the heal dial) × the level, × what the ally receives. */
 const wardOf = (h: C, t: Unit) => Math.floor(Math.floor(WARD.amounts.ward.base * profileOf('blessing_mend').k / profileOf('blessing').k * power(h) * mendFactorOf(h.me) * 1e6) / 1e6 * (t.shieldRecv || 1));
-const smiteOf = (h: C) => Math.floor(SMITE.amounts.smite.base * power(h));
+const smiteOf = (h: C) => Math.floor(SMITE.amounts.smite.base * power(h) * scaleOf(h.me.level)); // rules 1.36: the blessing profile takes the scale
 const ward = (h: C, t: Unit) => h.perk('class:guardian.ward', { actionId: 'ward', targetId: t.id });
 
 describe('the data (chaplain-spec.md sections 3 and 10)', () => {
@@ -93,7 +93,7 @@ describe('rule 1: prayer opens at Faith 1 (Whispers), Hymns from Faith 3, as bui
   });
   it('a Faith 1 Rebuke deals 20 × its (small) Blessing power', () => {
     const h = chap({ faith: 1, cls: false }), hp = h.foe.hp; h.pray('whisper', 'rebuke', { targetId: h.foe.id });
-    expect(hp - h.foe.hp).toBe(Math.round(REBUKE * power(h)));
+    expect(hp - h.foe.hp).toBe(Math.round(REBUKE * power(h) * scaleOf(h.me.level))); // rules 1.36: × scale(level)
   });
   it('rule 2: the Chaplain waits as everyone does', () => {
     const a = chap(), b = chap({ cls: false }); expect(hymnWait(a.c, a.me)).toBe(hymnWait(b.c, b.me));

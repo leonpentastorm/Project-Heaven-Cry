@@ -87,7 +87,7 @@ describe('every descriptor group renders and confirms on the one action flow', (
     const done = await everyGroup(el, u.id);
     expect(done).toEqual(expect.arrayContaining(['move', 'attack', 'utility', 'faith', 'calls']));
     root.unmount();
-  });
+  }, 30000); // about 2.5 s alone; over 5 s beside the whole suite on a loaded machine (13 Nov 2026)
   it('Class moves (a Bulwark, id defender)', async () => {
     const { u } = fight('acts-b', 'bulwark', 'medic', (c) => { c.classId = 'defender'; c.level = 12; c.attrs.durability = 8; });
     const { el, root } = await mount();
@@ -103,7 +103,7 @@ describe('every descriptor group renders and confirms on the one action flow', (
     m = await mount();
     expect(await everyGroup(m.el, u.id)).toContain('outbursts');
     m.root.unmount();
-  });
+  }, 30000); // as above
 });
 
 describe('a door verb written in data only works on the screen with no client change (Classes 3.0 P6)', () => {

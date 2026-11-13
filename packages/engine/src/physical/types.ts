@@ -16,7 +16,8 @@ export interface TechDef {
   /** mode: the attack the cost is priced as for items that change an attack's AP ('aimed', 'burst', 'auto'); a
    * weapon-based cost is priced as a melee strike or a shot without it. */
   ap: { base: 'weapon' | 'flat' | 'reaction'; add?: number; value?: number; mode?: 'melee' | 'shot' | 'aimed' | 'burst' | 'auto' };
-  rounds: number | 'all';
+  /** 'up_to': it spends up to its numbers' cap (Mag Dump: rounds_per_roll × max_rolls, rules 1.38) and needs one round */
+  rounds: number | 'up_to';
   needs: { momentum?: number; pressed?: boolean; hidden?: boolean; held?: boolean; last_round?: boolean; stowed?: boolean;
     /** a shield's technique (rules 1.13): the off hand holds a shield, and the technique is that hand's */ shield?: boolean };
   /** a technique a skill gives to everyone who has the points (Interpose: Durability 3), whatever is in the hands */
@@ -116,7 +117,7 @@ export interface TechHandler {
   fx?(t: Tech): Record<string, any> | null;
 }
 export interface PadEntry {
-  id: string; name: string; group: TechGroup; ap: number; rounds: number | 'all'; ok: boolean; why: string | null;
+  id: string; name: string; group: TechGroup; ap: number; rounds: number; /** the rounds are a most (Mag Dump: "up to 12 rounds") */ upTo?: boolean; ok: boolean; why: string | null;
   text: string; aim: string;
   /** the property line that applies by default with this weapon */ line: string | null;
   /** present when two lines match: the player picks one (args.line) */ choices?: { prop: string; text: string }[];

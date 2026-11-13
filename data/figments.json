@@ -16,10 +16,11 @@
     "provisional": true
   },
   "level": {
-    "hp": ["hp_mult", "damage_mult"],
+    "hp": ["hp_mult"],
+    "hp_stat": "figment_hp",
     "defense": "defense_plus",
     "armour": "armour_mult",
-    "note": "A Figment's level-1 numbers grow by the enemy table at its owner's level (enemies.json levels): HP by hp_mult x damage_mult (it soaks the same share of a Soldier-turn at every level), Defense by defense_plus, armour by armour_mult. Its damage grows only by output.level.deal (the figment profile), never by skill."
+    "note": "A Figment's level-1 numbers grow by the enemy table at its owner's level (enemies.json levels): HP by hp_mult (rules 1.36: the column carries the level scale) x the maker's Visualization through the profile level.hp_stat names (output.profiles.figment_hp), Defense by defense_plus, armour by armour_mult. Its damage grows only by output.level.deal (the figment profile), never by skill."
   },
   "limits": {
     "bodies": 6,

@@ -11,8 +11,9 @@
 // To measure properly (more fights, both shares, every level): REFIT_MEASURE=1 (refit-measure.test.ts).
 import { describe, it, expect } from 'vitest';
 import { RULES, SIGIL, MODULE, WEAPON, ENEMY, profileOf, statTerm } from '../src';
-import { measure, yardOf, soldierTurnAt } from './balance/refit-measure';
+import { measure, yardOf, soldierTurnAt, refHpAt } from './balance/refit-measure';
 import { inventory } from './balance/heal-measure';
+import { healTurn, shotTurn } from './balance/tending-measure';
 
 const B: any = (RULES as any).balance, C = B.ceilings, TOL = B.tolerance, LEVELS: number[] = B.levels;
 const N = 6; // fights a cell: deterministic (seeded), so the band only has to hold the noise of a small sample once
@@ -54,12 +55,12 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
 
   it('rules 1.27 (the heal re-fit): the Sigil healer\'s turn (MEND · CONDENSE · SEEK) all in sits on the healer\'s ceiling; a Hymn turn\'s healing (Warm Hands and Health) is never past its cap', () => {
     const H = C.healer_turn, at = (rows: any[], re: RegExp) => rows.find((q) => re.test(q.what))?.pctNow ?? 0;
-    const sig = LEVELS.map((lv) => at(inventory('sigil_s', 'allin', lv, soldierTurnAt(lv)), /MEND · CONDENSE · SEEK \(3/));
+    const sig = LEVELS.map((lv) => at(inventory('sigil_s', 'allin', lv, refHpAt(lv)), /MEND · CONDENSE · SEEK \(3/)); // rules 1.36: percent of the reference HP
     const mean = sig.reduce((a, b) => a + b, 0) / sig.length;
     expect(mean, 'the Sigil boon all in, levels ' + LEVELS.join(', ') + ': ' + sig.join(' / ') + ' (dial: output.profiles.sigil_mend.k)').toBeGreaterThanOrEqual(H.allin * (1 - TOL.mean));
     expect(mean).toBeLessThanOrEqual(H.allin * (1 + TOL.mean));
     for (const [i, x] of sig.entries()) { expect(x, 'level ' + LEVELS[i]).toBeGreaterThanOrEqual(H.allin * (1 - TOL.level)); expect(x, 'level ' + LEVELS[i]).toBeLessThanOrEqual(H.allin * (1 + TOL.level)); }
-    for (const v of ['normal', 'allin']) for (const lv of LEVELS) { const rows = inventory('faith_s', v, lv, soldierTurnAt(lv));
+    for (const v of ['normal', 'allin']) for (const lv of LEVELS) { const rows = inventory('faith_s', v, lv, refHpAt(lv));
       expect(at(rows, /Warm Hands/) + at(rows, /Whisper: Health/), 'a Hymn turn\'s healing, ' + v + ', level ' + lv + ' (dial: output.profiles.blessing_mend.k)').toBeLessThanOrEqual(H.hymn_heal_cap); }
   });
 
@@ -71,6 +72,19 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
     }
     for (const id of ['weapon', 'sigil', 'soul', 'elemental', 'blessing', 'flat']) expect(profileOf(id).floor, id + ': a damage profile has no floor').toBeUndefined();
   });
+
+  it('played (rules 1.38): the Mender all in: its healing turn on tending_turn, a door user under it; its steady offence (solo and squad) on mender_offence', () => {
+    const T = C.tending_turn, O = C.mender_offence, bad: string[] = [], rows: string[] = [];
+    const heal = LEVELS.map((lv) => healTurn(lv, true, true)), door = LEVELS.map((lv) => healTurn(lv, true, false));
+    const off = LEVELS.map((lv) => { const y = yardOf(lv, N); return (shotTurn(lv, true, true, 'solo') / y * 100 + shotTurn(lv, true, true, 'squad') / y * 100) / 2; });
+    const chk = (what: string, xs: number[], line: number, dial: string) => {
+      const mean = xs.reduce((a, b) => a + b, 0) / xs.length; rows.push(what + ' ' + xs.map((x) => Math.round(x)).join(' / '));
+      if (mean < line * (1 - TOL.mean) || mean > line * (1 + TOL.mean)) bad.push(what + ': mean ' + Math.round(mean) + ' against ' + line + ' ± ' + TOL.mean * 100 + '% (dial: ' + dial + ')');
+      xs.forEach((x, i) => { if (x < line * (1 - TOL.level) || x > line * (1 + TOL.level)) bad.push(what + ' at level ' + LEVELS[i] + ': ' + Math.round(x) + ' (dial: ' + dial + ')'); });
+    };
+    chk('Mender healing turn (% of R)', heal, T.allin, T.dial); chk('door Tending all in', door, T.door_allin, T.dial); chk('Mender offence', off, O.allin, O.dial);
+    expect(bad, rows.join('\n')).toEqual([]);
+  }, 600000);
 
   it('static: an area deals each target no more than its single-target worth plus half for each extra target it is expected to catch', () => {
     const A = B.yardsticks.area, share = A.extra_target_share, worth = (n: number) => 1 + share * (n - 1);

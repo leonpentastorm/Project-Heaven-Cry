@@ -1954,9 +1954,9 @@
         "value": 4,
         "mode": "shot"
       },
-      "rounds": "all",
+      "rounds": "up_to",
       "needs": {},
-      "text": "Empty the weapon at one target: one roll per 3 rounds left (at most {=numbers.max_rolls} rolls), each at −4 more than the last. +1 Pressure per hit. Heat goes to one under the limit.",
+      "text": "At one target: one roll for every {=numbers.per_roll} rounds left (at most {=numbers.max_rolls} rolls), each at −{=numbers.step} more than the last; each roll spends {=numbers.rounds_per_roll} rounds, never more than are left, so never the whole of a big magazine. +{=numbers.pressure} Pressure per hit. Heat goes to one under the limit.",
       "lines": [
         {
           "props": [
@@ -1996,6 +1996,7 @@
       "particular": true,
       "numbers": {
         "per_roll": 3,
+        "rounds_per_roll": 4,
         "max_rolls": 3,
         "step": 4,
         "pressure": 1,

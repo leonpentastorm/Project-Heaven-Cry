@@ -72,7 +72,7 @@ describe('feelings poured in (section 3; steps and behaviours as rules 1.19 set 
     const d = give(f.pc, { modules: ['burst'] }); begin(f, d); pump(f, 'love');
     expect(fx(f.cb, 'pump').at(-1).does).toBe('now HEALS');
     release(f, '6,5');
-    expect(lost(f.foe)).toBe(Math.floor(20 * 1.1 * 0.7)); expect(f.unit(ally.id).hp).toBe(400 + Math.floor(7 * 1.1 * 0.25)); // Love's step +0.3; the ally heals ×0.25 of the Buff school's heal at that multiplier (rules 1.20)
+    expect(lost(f.foe)).toBe(Math.floor(20 * 1.1 * 0.7)); expect(f.unit(ally.id).hp).toBe(400 + Math.floor(11.3 * 1.1 * 0.25)); // Love's step +0.3; the ally heals ×0.25 of the Buff school's heal at that multiplier (rules 1.36: 11.3)
   });
   it('Joy no longer chains: a Bolt is a critical from 18 up. Calm no longer lands by itself: two rolls, the better kept, at −0.4, and no critical', () => {
     const f = rig(['6,5', '7,6']); const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'joy'); release(f, '6,5');

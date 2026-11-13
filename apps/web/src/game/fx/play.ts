@@ -25,6 +25,7 @@ import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, withEvent, t
 
 import { activeCamera } from '../cameraView';
 import { fxTiles, glideMs, movesCamera } from '../camera';
+import { fmtFloat } from '../numbers'; // rules 1.36: five-digit numbers (the level scale)
 const HP = '#F65157', OK = '#6FEA77', MUTED = '#A3AEC2', WHITE = '#FFFFFF', MUZZLE = '#FFE2A0', HOT = '#FFF3C4';
 /** The window event fired as each effect plays (detail: the FxEvent), and when the queue runs dry. */
 export const FX_EVENT = 'phc-fx', FX_IDLE = 'phc-fx-idle', FX_HOLD = 'phc-fx-hold';
@@ -646,7 +647,7 @@ function impact(e: FxEvent, p: Pt, tid: string | null, o: { crit?: boolean; mele
   if (o.crit) shakeScreen(0.8);
   const snd = o.sound !== undefined ? o.sound : robot ? 'hit_metal' : o.crit ? 'hit_heavy' : 'hit_flesh';
   if (snd) play(snd, p, { rate: jitter() });
-  if (o.dmg != null) floatText(o.dmg > 0 ? '−' + o.dmg + (o.crit ? '!' : '') : o.dmg === 0 && e.downedHit ? 'HIT' : '0', p, HP, { big: o.crit });
+  if (o.dmg != null) floatText(o.dmg > 0 ? '−' + fmtFloat(o.dmg) + (o.crit ? '!' : '') : o.dmg === 0 && e.downedHit ? 'HIT' : '0', p, HP, { big: o.crit });
 }
 /** A mark left on a tile for a few seconds (blood, scorch), anchored so it follows the map. */
 function decal(k: string | undefined, name: string, color: string, ms = 3200, size = 0.55) {
@@ -921,9 +922,9 @@ const H: Record<string, Handler> = {
     pluses(p, OK, 7);
     flash(tokOf(e.target, e.to), 'heal');
     if (e.revive) { ring(p, OK, 700, { from: 0.4, to: 1.4, width: 6 }); floatText('UP', p, OK, { big: true }); }
-    else floatText('+' + (e.heal || 0), p, OK);
+    else floatText('+' + fmtFloat(e.heal || 0), p, OK);
   },
-  heal(e) { const p = centre(e.at); if (!p) return; pluses(p, OK, 6); flash(tokOf(e.target, e.at), 'heal'); floatText(e.revive ? 'UP' : '+' + (e.amount || 0), p, OK, { big: !!e.revive }); play('crystal', p, { rate: 1.3, gain: 0.7 }); },
+  heal(e) { const p = centre(e.at); if (!p) return; pluses(p, OK, 6); flash(tokOf(e.target, e.at), 'heal'); floatText(e.revive ? 'UP' : '+' + fmtFloat(e.amount || 0), p, OK, { big: !!e.revive }); play('crystal', p, { rate: 1.3, gain: 0.7 }); },
   hurt(e) {
     const p = at(e.at); if (!p) return;
     const why = e.why || '', tok = tokOrGhost(e.target, e.at, !!e.killed);
@@ -935,9 +936,9 @@ const H: Record<string, Handler> = {
     if (why === 'acid') { bubbles(p, ELEMENTS.acid, 'sigil', 4, 900); play('stim', p, { gain: 0.4, rate: 1.2 }); }
     shake(tok, why === 'explosion' ? 1.6 : 0.8); flash(tok, color === SOUL_INK ? 'soul' : color ? 'magic' : 'hurt');
     if (why !== 'explosion' && why !== 'trap' && why !== 'strain') play(unit(e.target)?.robot ? 'hit_metal' : 'hit_flesh', p, { rate: jitter(), gain: why === 'bleed' || why === 'burn' ? 0.6 : 1 });
-    floatText(e.dmg > 0 ? '−' + e.dmg : 'HIT', p, HP);
+    floatText(e.dmg > 0 ? '−' + fmtFloat(e.dmg) : 'HIT', p, HP);
   },
-  shield(e) { const p = at(e.at); if (!p) return; ring(p, SIGIL_INK, 420, { from: 0.7, to: 1.05, width: 7 }); floatText('SHIELD −' + (e.absorbed || 0), p, SIGIL_INK, { small: true }); play('hit_metal', p, { rate: 1.4, gain: 0.6 }); },
+  shield(e) { const p = at(e.at); if (!p) return; ring(p, SIGIL_INK, 420, { from: 0.7, to: 1.05, width: 7 }); floatText('SHIELD −' + fmtFloat(e.absorbed || 0), p, SIGIL_INK, { small: true }); play('hit_metal', p, { rate: 1.4, gain: 0.6 }); },
   down(e) {
     if (e.unit && parked.has(String(e.unit))) unpark(String(e.unit)); // a walker stopped to be shot (or struck leaving a tile: an OA): its fall takes over, where it fell
     const p = at(e.at), live = tokOf(e.unit, e.at), tok = live || ghostOf(e.unit, e.at); play('body_fall', p || centre(e.at), { rate: jitter(0.08) });

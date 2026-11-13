@@ -7,7 +7,7 @@ import { reactionsUsed } from '../src';
 // always fails a save, 20 always makes it, whatever the seed (review fix: these tests leaned on the seed's next die).
 const D = vi.hoisted(() => ({ die: null as number | null }));
 vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
-import { phys, WEAPON, coverOf, weaponDamage, physicalMult, heatLimit, type Unit } from '../src';
+import { phys, TECHNIQUE, WEAPON, coverOf, weaponDamage, physicalMult, heatLimit, type Unit } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
 import { unchanged, term } from './helpers/physfight-ranged';
@@ -293,9 +293,10 @@ describe('Mag Dump', () => {
   });
   it('Auto: +1 Pressure per roll, hit or miss', () => {
     const f = fight('hellraiser_service_rifle', [{ at: 'H5' }]);
-    const pv = f.pv('mag_dump', { targetId: f.foe.id }); expect(pv.rounds).toBe(24); expect(pv.pressure!.some((x) => x.onHit)).toBe(false);
+    const N = TECHNIQUE.mag_dump.numbers as any, cap = N.rounds_per_roll * N.max_rolls; // rules 1.38: 4 rounds a roll, 12 at most
+    const pv = f.pv('mag_dump', { targetId: f.foe.id }); expect(pv.rounds).toBe(cap); expect(pv.pressure!.some((x) => x.onHit)).toBe(false);
     rig({ hit: false, die: 5 }); f.tech('mag_dump', { targetId: f.foe.id });
-    expect(f.pressure(f.foe)).toBe(3); expect(f.pc.ammo).toBe(0); expect(f.pc.heat).toBe(heatLimit(f.pc, WEAPON.hellraiser_service_rifle) - 1); // rules 1.18: three rolls
+    expect(f.pressure(f.foe)).toBe(3); expect(f.pc.ammo).toBe(24 - cap); expect(f.pc.heat).toBe(heatLimit(f.pc, WEAPON.hellraiser_service_rifle) - 1); // rules 1.18: three rolls
   });
   it('no Recoil on top of its own growing penalty: the step is all that grows (review fix); one wear', () => {
     const f = fight('hellraiser_service_rifle', [{ at: 'H5' }], { pc: { skills: { dexterity: 0 } } }); const d0 = f.pc.dur!;
@@ -323,7 +324,7 @@ describe('Mag Dump', () => {
   });
   it('off its home (no Auto, Quick or Spread): −2 to every roll and no line', () => {
     const f = fight('long_rifle'); const pv = f.pv('mag_dump', { targetId: f.foe.id });
-    expect(pv.attacks.length).toBe(1); expect(term(pv, 0, 'Mag Dump off its home weapon')).toBe(-2);
+    expect(pv.attacks.length).toBe(1); expect(term(pv, 0, 'Mag Dump off its home weapon')).toBe(-2); // rules 1.38: one roll (as rules 1.18), 4 of its 5 rounds
   });
   it('Drawn: not available; an empty weapon is refused', () => {
     const f = fight('recurve_bow'); expect(f.tech('mag_dump', { targetId: f.foe.id })).toBe('Not available with a drawn weapon.');

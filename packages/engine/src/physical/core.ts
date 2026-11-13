@@ -5,6 +5,7 @@
 import { say, unsay, type Combat, type Unit, noteLoose, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
+import { scaleOf } from '../effects/output';
 import { apDebt } from '../effects/ap';
 import { price, priced, whyNot, pay, refund } from '../effects/cost';
 import type { CostSite } from '../effects/stats';
@@ -208,7 +209,11 @@ function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, 
 
 // ---------- cost and who may use what ----------
 /** Does this technique fire a round of the weapon (a ranged technique that lists rounds)? A Set fires none. */
-const firesRound = (def: TechDef) => def.system === 'ranged' && (def.rounds === 'all' || Number(def.rounds) > 0);
+const firesRound = (def: TechDef) => def.system === 'ranged' && (def.rounds === 'up_to' || Number(def.rounds) > 0);
+/** The rounds a technique spends at most, for its card: a number, or an 'up_to' technique's cap (Mag Dump: its
+ * numbers' rounds_per_roll × max_rolls, rules 1.38). */
+export const roundsCap = (def: TechDef): number => (def.rounds === 'up_to' ? Number(def.numbers?.rounds_per_roll) * Number(def.numbers?.max_rolls) || 0 : def.rounds);
+const roundsOut = (def: TechDef) => ({ rounds: roundsCap(def), ...(def.rounds === 'up_to' ? { upTo: true } : {}) });
 /** A technique's AP with this weapon and line. */
 export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?: Unit | null): number {
   const w = WEAPON[weaponId] || WEAPON.fists;
@@ -302,9 +307,9 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   const ap = pair ? pair.ap : apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null);
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/technique', id: def.id } }); if (no) return no; } // a repeat's credit counts (Encore, items 729, 737)
   const w = WEAPON[weaponId];
-  if (wield === 'throwable') { const need = def.rounds === 'all' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
+  if (wield === 'throwable') { const need = def.rounds === 'up_to' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
-    const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
+    const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'up_to' ? 1 : def.rounds;
     if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? 'The quiver is empty.' : 'Empty: reload first.'; // a quiver can't be refilled in a fight
     if (def.needs.last_round && have !== 1) return props.includes('drawn') ? 'Only with the last arrow in the quiver.' : 'Only with the last round in the weapon.'; // a Drawn weapon's u.ammo is its quiver's total (ranged/quiver.ts)
     if (need > 0 && (hand === 'off' ? u.offJammed : u.jammed)) return 'Jammed: clear it first.'; // each gun its own jam
@@ -442,7 +447,7 @@ onHook('damage_out', (ctx: any) => {
   const a = cur(ctx.att); if (!a) return;
   if (a.o.mult != null && a.o.mult !== 1) ctx.mults.push({ v: a.o.mult, label: a.o.label || a.t.def.name });
   // armour this strike ignores, against the unit really struck (nobody's armour is changed)
-  if (a.o.ignoreArmour === true) ctx.ignoreArmour = true; else if (a.o.ignoreArmour) ctx.pierce = (ctx.pierce || 0) + a.o.ignoreArmour;
+  if (a.o.ignoreArmour === true) ctx.ignoreArmour = true; else if (a.o.ignoreArmour) ctx.pierce = (ctx.pierce || 0) + Math.round(a.o.ignoreArmour * scaleOf(ctx.att?.level)); // rules 1.36: armour in HP, × scale at the striker's level
 });
 /** Could the user make this attack now (range, sight, ammunition)? Nothing is rolled or recorded. */
 export function canStrike(t: Tech, target: Unit, mode?: 'melee' | 'shot' | 'aimed'): boolean {
@@ -934,7 +939,7 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any)
       const def = TECHNIQUE[x.id], lf = linesFor(def, weaponId);
       // an Answer has no button; one that costs Guard says so when there is none to spend
       const why = def.group === 'answer' ? ((def.numbers as any)?.guard_cost && guardOf(u) < (def.numbers as any).guard_cost ? 'Needs ' + (def.numbers as any).guard_cost + ' Guard: Brace or take Guard first.' : null) : gate(cb, u, def, { hand }) || (handlerOf(def.id) ? null : NOT_BUILT);
-      return { id: def.id, name: def.name, group, ap: apFor(cb, u, def, hand), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim,
+      return { id: def.id, name: def.name, group, ap: apFor(cb, u, def, hand), ...roundsOut(def), ok: !why, why, text: def.text, aim: def.aim,
         line: lf.main ? lf.main.text : null, ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
         lent: x.how === 'lent', signature: x.how === 'ready' && taught.has(def.id) && knownSig.has(def.id), plain: def.id === 'cut' || def.id === 'shot', built: !!handlerOf(def.id) };
     }),
@@ -950,7 +955,7 @@ export function packPad(cb: Combat, u: Unit, g?: any): PackPad[] {
   const block = (wi: Wield, name: string, count?: number, refused?: string) => holding(u, wi, () => {
     const entries = usable(cb, u, 'main', wi.kind).map((x): PadEntry => {
       const def = TECHNIQUE[x.id], lf = linesFor(def, wi.weaponId, undefined, u), why = refused || gate(cb, u, def, { hand: 'main', _w: wi.kind } as TechArgs) || (handlerOf(def.id) ? null : NOT_BUILT);
-      return { id: def.id, name: def.name, group: def.group, ap: apFor(cb, u, def, 'main'), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null,
+      return { id: def.id, name: def.name, group: def.group, ap: apFor(cb, u, def, 'main'), ...roundsOut(def), ok: !why, why, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null,
         ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(wi.weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
         lent: x.how === 'lent', signature: false, plain: false, built: !!handlerOf(def.id) };
     });
@@ -981,7 +986,7 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   return {
     momentum: max != null && holdsMelee(u) ? { now: momentumOf(u), max, hint: MOMENTUM_HINT } : null,
     // Durability's Guard (rules 1.13): the pool, what a Brace or the Guard technique would add now, and the rule
-    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: GR().soak ?? 10, shield: !!shieldOf(u), hint: GUARD_HINT } : null,
+    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: Math.max(1, Math.round((GR().soak ?? 10) * scaleOf(u.level))), shield: !!shieldOf(u), hint: GUARD_HINT } : null,
     pressure: { now, max: pressureCap(u), state, word: state ? state[0].toUpperCase() + state.slice(1) : now ? 'Under fire' : '',
       cost: state === 'pressed' ? '−1 to hit with ranged attacks; no held shots' : state === 'suppressed' ? (u.side === 'pc' ? 'No reactions that attack or move you' : '−1 AP; no reactions that attack or move it') : state === 'broken' ? '−2 AP; it must reach cover or drop Prone first' : '', by },
     stopped: stoppedNow(u) ? { on: true, text: 'Can\'t be stopped again until the end of its next turn' } : null,
@@ -1014,7 +1019,7 @@ export function pairedPad(cb: Combat, u: Unit, g?: any): PadEntry[] {
   return PAIRED_TECHNIQUES.map((id) => TECHNIQUE[id]).filter((def) => def && !pairedWhy(u, def)).map((def): PadEntry => {
     const ap = pairedAp(cb, u, def, {}), why = whyNot(cb, u, ap) || gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
     const lf = linesFor(def, u.weapon, undefined, u);
-    return { id: def.id, name: def.name, group: def.group, ap, rounds: def.rounds, ok: !why, why: why || null, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null, lent: false, signature: false, plain: false, built: true };
+    return { id: def.id, name: def.name, group: def.group, ap, ...roundsOut(def), ok: !why, why: why || null, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null, lent: false, signature: false, plain: false, built: true };
   });
 }
 function previewPaired(cb: Combat, u: Unit, id: string, args: TechArgs): TechPreview {

@@ -9,6 +9,7 @@ import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
 import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION } from '@engine';
+import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 
 export const D = PD;
 export const ATTR = {}; D.attrs.forEach((a) => { ATTR[a.id] = a; });
@@ -251,7 +252,7 @@ export function tokenVals(u, opt) {
   return {
     ally: !!opt.ally, foe: !opt.ally, known, unknown: !known, img: faceOf(u), hasImg: !!faceOf(u), noImg: !faceOf(u), short: u.short, name: u.name,
     sub: (opt.ref ? opt.ref + ' · ' : '') + (opt.ally ? opt.player : u.npc ? opt.player + (u.analyzedBy ? ' · ANALYZED' : '') : 'ENEMY · ' + (u.tier || 'hostile').toUpperCase() + (u.analyzedBy ? ' · ANALYZED' : '')), subStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (opt.ally ? opt.color : '#F65157'),
-    hp: u.hp + ' / ' + u.maxHp + ' HP', hpFill: 'height: 100%; width: ' + hpPct + '%; background: #F65157', state: word,
+    hp: fmtNum(u.hp) + ' / ' + fmtNum(u.maxHp) + ' HP', hpFill: 'height: 100%; width: ' + hpPct + '%; background: #F65157', state: word,
     stateStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (u.downed || u.dead ? '#F65157' : '#A3AEC2'),
     ap: opt.inFight && opt.ally ? 'AP ' + u.ap + ' · Movement ' + u.movement : !opt.ally && known ? 'Defense ' + u.def + ' · Armour ' + u.armour : '', hasAp: !!(opt.inFight && opt.ally) || (!opt.ally && known),
     // opt.extra: lines anyone may read (Physical 2.0: Pressure and its state, Stopped once, a held Watch).

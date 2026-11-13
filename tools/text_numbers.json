@@ -1,6 +1,6 @@
 {
  "what": "tools/text_numbers.py: the text-number guard. allow = bare numbers that are right to have no field, each with its reason; baseline = the bare numbers of 12 Nov 2026 not yet bound to a field with a {placeholder} (key: how many times), which may only shrink.",
- "ceiling": 1361,
+ "ceiling": 1357,
  "allow": {
   "actions:extinguish:text:10": "Burning's 10 a turn: conditions.json burning (an amounts block the engine reads); a placeholder reads only its own item",
   "actions:hide:text:19": "the ambush's critical range 19-20 (the engine's Hidden ambush, a rule of combat with no field on this action)",
@@ -359,7 +359,6 @@
   "patrons:the_quartermaster/requisition_form:text:4": 1,
   "patrons:the_quartermaster:intervention.text:25%": 1,
   "patrons:the_quartermaster:leave.grudge.text:1": 1,
-  "patrons:toll_keeper/coin_for_the_ferry:text:5": 1,
   "patrons:toll_keeper/hold_the_gate:text:1": 1,
   "patrons:toll_keeper/pay_the_toll:text:4": 1,
   "patrons:toll_keeper/vigil:text:4": 1,
@@ -847,9 +846,6 @@
   "techniques:heavy_bolt:text:10": 1,
   "techniques:lob:lines.0.text:2": 1,
   "techniques:lob:text:4": 1,
-  "techniques:mag_dump:text:1": 1,
-  "techniques:mag_dump:text:3": 1,
-  "techniques:mag_dump:text:4": 1,
   "techniques:parry:text:2": 1,
   "techniques:pin_down:text:1": 1,
   "techniques:punch_through:text:2": 1,

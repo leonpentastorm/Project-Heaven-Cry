@@ -905,7 +905,7 @@ Weapon skills and lore:
 - **Incendiary · Firebreak:** you choose which tiles in the radius burn. *"The frontier's least favourite smell."*
 - **Bot-scrambler · Static:** mana arms in the radius stay jammed until cleared (2 AP). *"Science Team surplus, sold out the back door."*
 
-##### 7.11 Mana arms: 7 types (new family; requirements listed)
+##### 7.11 Mana arms: 8 types (new family; requirements listed; the Emanator katana: rules 1.38)
 
 Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. These are the class weapons for Spellslinger, Storm Hand, Blade Scribe, Lumeri Templar and Banner Dancer, but anyone who meets the requirement can use them.
 
@@ -915,6 +915,7 @@ Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. T
 | Spellslinger's pistol | 1H | 22 | 8 | .32 Decrkm, sigil-etched magazines | 1.1 | 1,500 | Brain Power 3 to inscribe |
 | Evoker blade | 1H | 26 | 1 | counts as an Evoker | 1.8 | 2,400 | Brain Power 3 |
 | Emanator gauntlet | 1H | 18 + one element | 1 | counts as an Emanator | 1.5 | 2,200 | Will Power 3 |
+| Emanator katana (rules 1.38) | 1H | 26 | 1 | counts as an Emanator | 1.8 | 2,400 | Will Power 3 |
 | Lumeri censer gun | 2H | 30 / 18 (shotgun) | 8 | shells, or blessed shells | 4.5 | 2,000 | Faith 3 |
 | Bot-thread banner | 2H | 24 | 2 | none | 3 | 1,800 | Empathy 3 (rules 1.13; was Camaraderie 3) |
 | Grand staff | 2H | 24 | 1  *(its melee strike reaches 2: the Reach property, rules 1.12)*| counts as an Evoker | 2.5 | 2,400 | Brain Power 3 |
@@ -1212,7 +1213,7 @@ A shield (an off-hand item with the **Shield** property: the buckler and the rio
 | 9 | **Rake** † | 4 | 6 | Up to 3 targets within 2 tiles of each other, each at −3; +1 Pressure on a hit. | **Auto:** a full-auto cone for 10 rounds (one roll at −2 against every enemy near the line); +1 Pressure hit or miss. **Spread:** the cone is 1 wider. |
 | 10 | **Warning Shot** | 1 | 1 | No attack. The target makes a Heart save or gains +1 Pressure. | **Loud:** the save is at −2. **Silent:** not available. |
 | 11 | **Flush** | 3 | 1 | Hit the target's cover (no roll; the cover takes the damage). The target gains +2 Pressure. | **Spread or Blast:** double damage to the cover. **Arc:** the cover is ignored and the target takes half damage as well. |
-| 12 | **Mag Dump** † | 4 | all | Empty the weapon at one target: one roll per 3 rounds left (at most 3 rolls, each at −4 more than the last: rules 1.18; it was 4 rolls, −1 more each). +1 Pressure per hit. Heat goes to one under the limit. | **Auto:** +1 Pressure per roll, hit or miss. **Quick and Precise:** no growing penalty. **Spread:** both barrels, one roll at double damage within 4 tiles. **Drawn:** not available. |
+| 12 | **Mag Dump** † | 4 | up to 12 | At one target: one roll per 3 rounds left (at least one, at most 3 rolls, each at −4 more than the last: rules 1.18). **Each roll spends 4 rounds, never more than are left: 12 at most, never the whole of a big magazine** (rules 1.38; it emptied the weapon). +1 Pressure per hit. Heat goes to one under the limit. | **Auto:** +1 Pressure per roll, hit or miss. **Quick and Precise:** no growing penalty (a 6-shot revolver: two rolls, all six rounds). **Spread:** both barrels, one roll (its rounds, up to 4) at double damage within 4 tiles. **Drawn:** not available. |
 | 13 | **Crossfire** | 2 | 1 | A shot at a target an ally has already hit this round: +2 to hit and +1 extra Pressure. | **Quick:** step 1 tile first, with no opportunity attack. |
 
 **Sets**
@@ -2992,30 +2993,30 @@ An enemy's numbers are its tier's row at level 1, raised by its level's row (`da
 
 *Rules 1.25, how each tier shares its fire:* Vermin and Minions take the nearest; Soldiers spread their fire, one each, the near ones first; Elites and Bosses go for the wounded and hunt the healer. The numbers are in "Rules revision 1.25".
 
-**What a level adds**
+**What a level adds** (rules 1.36: HP, armour and damage are this revision's columns × the level scale, `output.level.scale`; Defense and attack bonus unchanged)
 
 | Level | HP | Armour | Defense | Attack bonus | Damage |
 |---|---|---|---|---|---|
 | 1 | ×1.00 | ×1.00 | +0 | +0 | ×1.00 |
-| 2 | ×1.07 | ×1.04 | +0 | +0 | ×1.02 |
-| 3 | ×1.16 | ×1.09 | +1 | +0 | ×1.05 |
-| 4 | ×1.23 | ×1.16 | +1 | +0 | ×1.07 |
-| 5 | ×1.30 | ×1.20 | +2 | +0 | ×1.10 |
-| 6 | ×1.38 | ×1.27 | +2 | +1 | ×1.13 |
-| 7 | ×1.43 | ×1.29 | +3 | +1 | ×1.17 |
-| 8 | ×1.49 | ×1.36 | +3 | +1 | ×1.20 |
-| 9 | ×1.54 | ×1.40 | +4 | +1 | ×1.24 |
-| 10 | ×1.61 | ×1.47 | +4 | +2 | ×1.28 |
-| 11 | ×1.67 | ×1.49 | +5 | +2 | ×1.33 |
-| 12 | ×1.74 | ×1.56 | +5 | +2 | ×1.38 |
-| 13 | ×1.78 | ×1.60 | +6 | +3 | ×1.43 |
-| 14 | ×1.78 | ×1.60 | +6 | +3 | ×1.48 |
-| 15 | ×1.79 | ×1.60 | +6 | +4 | ×1.53 |
-| 16 | ×1.79 | ×1.60 | +6 | +4 | ×1.58 |
-| 17 | ×1.80 | ×1.60 | +6 | +5 | ×1.64 |
-| 18 | ×1.80 | ×1.60 | +6 | +5 | ×1.70 |
-| 19 | ×1.81 | ×1.60 | +6 | +6 | ×1.76 |
-| 20 | ×1.81 | ×1.60 | +6 | +6 | ×1.82 |
+| 2 | ×1.1154 | ×1.0841 | +0 | +0 | ×1.0632 |
+| 3 | ×1.3037 | ×1.2251 | +1 | +0 | ×1.1801 |
+| 4 | ×1.4492 | ×1.3667 | +1 | +0 | ×1.2607 |
+| 5 | ×1.6557 | ×1.5283 | +2 | +0 | ×1.401 |
+| 6 | ×1.8514 | ×1.7038 | +2 | +1 | ×1.516 |
+| 7 | ×2.0784 | ×1.8749 | +3 | +1 | ×1.7005 |
+| 8 | ×2.2904 | ×2.0906 | +3 | +1 | ×1.8446 |
+| 9 | ×2.5695 | ×2.3359 | +4 | +1 | ×2.0689 |
+| 10 | ×2.851 | ×2.6031 | +4 | +2 | ×2.2666 |
+| 11 | ×3.2151 | ×2.8685 | +5 | +2 | ×2.5605 |
+| 12 | ×3.5661 | ×3.1972 | +5 | +2 | ×2.8283 |
+| 13 | ×3.9717 | ×3.5701 | +6 | +3 | ×3.1908 |
+| 14 | ×4.416 | ×3.9694 | +6 | +3 | ×3.6717 |
+| 15 | ×4.9375 | ×4.4134 | +6 | +4 | ×4.2204 |
+| 16 | ×5.4899 | ×4.9072 | +6 | +4 | ×4.8459 |
+| 17 | ×6.1384 | ×5.4563 | +6 | +5 | ×5.5927 |
+| 18 | ×6.8251 | ×6.0667 | +6 | +5 | ×6.4459 |
+| 19 | ×7.6308 | ×6.7454 | +6 | +6 | ×7.42 |
+| 20 | ×8.4844 | ×7.5 | +6 | +6 | ×8.5312 |
 
 HP and armour are rounded to the nearest whole number. **Damage:** an enemy deals its weapon's damage × its tier's damage factor × its level's damage factor (it used to deal the weapon's damage with no multiplier). Everything else on the tier (Movement, AP, Endurance, spare magazines, techniques, Calls) does not change with level.
 
@@ -3228,7 +3229,7 @@ At 65% to hit, a Burst is worth about 1.7 Shots for the AP of 1.5: +13% for its 
 
 ### Mag Dump and Heavy Bolt
 
-1. **Mag Dump: three rolls at most, each at −4 more than the last** (it was four rolls, each −1 more): the Burst's own step. One roll for every 3 rounds left, as before; the whole magazine goes, 4 AP, Heat to one under the limit. A revolver (Quick and Precise) still has no growing penalty.
+1. **Mag Dump: three rolls at most, each at −4 more than the last** (it was four rolls, each −1 more): the Burst's own step. One roll for every 3 rounds left, as before; the whole magazine goes, 4 AP, Heat to one under the limit. *Superseded by rules 1.38 for the rounds only: each roll spends 4, never more than are left (12 at most); the rolls are as here.* A revolver (Quick and Precise) still has no growing penalty.
 2. **Heavy Bolt: +40% damage** (it was +50%). Still 4 AP, through 10 armour, +2 to hit with a Precise weapon.
 
 ### A slow action: the long rifle's bolt
@@ -3424,6 +3425,9 @@ The Soul 10 caster all in (Will Power 10 from level 9; against the normal-share 
 The Strain rules and the limit, Overdraw, Heart Overload's free Begin, Resonance, the modules (Bloom, Split and Swift are still flagged: item 1063), the shapes and the elements, enemy casters' own numbers, the residue each feeling leaves (Grief's residue still Slows, Fear's still Shakes: they are what the feeling leaves on the ground, not what it does to the Release), and art (no glyph changes its meaning; the six new ways have no icons and need none on today's screens).
 
 ## Rules revision 1.20 (the heal and shield pass): Sigil, the Outburst and prayer
+
+> **Superseded in part by rules 1.36** (heals and shields in percent of HP): the level factor is no longer the enemy table's damage column but its own column `output.level.mend`; every base this revision set for MEND, WARD, the Buff heal, Inverse and the prayers is replaced by rules 1.36's; the Outburst heal reads its own Stat (soul_mend), the Sigil boon no longer reads Healing given.
+
 
 Built on 12 Nov 2026 from Leon's ask ("Do a pass on heal and shield. For both sigil and OB"; then "Faith have heal and shield too"). Rules 1.17 to 1.19 fitted what magic deals; nothing had fitted what it mends. **Every number here is provisional (section 14, items 1230 to 1247).** The measurements, the full inventory and the questions are in `docs/design/handoffs/heal-shield-pass.md`. Where this section and an older one disagree (the Sigil word table, the Buff school, Love, Inverse, Shell, the prayer tables), this one is the rule. Damage is not changed, guns are not touched, and an enemy caster's healing and shields are what they were.
 
@@ -3789,6 +3793,9 @@ Witnessed gave +2 to attack rolls "that would carry a liked tag", and a liked ki
 
 ## Rules revision 1.23 (the defence step): no round limit, the enemies go for the healer, the medic's kit, the Boss
 
+> **Superseded in part by rules 1.36:** a stim heals 20% of its target's max HP (the gate alone), not 6 × Healing given; no single heal restores more than half its target's max HP (the cap); the Boss's 1,484 HP at level 20 is 6,957 in the level scale's units.
+
+
 Built on 12 Nov 2026 from Leon's rulings of that day (`docs/design/proposals/2026-11-balance-pass.md`, section 16, items 9 to 11): "refit boss hp and do the medic pass. No round limit, just balance ap for healing accordingly; also if a tank is unkillable because a healer is healing them dedicatedly, let them have it, in real combat just make AI focus the unit that are dishing out the most heals." **Every number here is provisional (section 14, items 1300 to 1322).** The measurements, the inventory and the questions are in `docs/design/handoffs/defence-step.md`. Where this section and an older one disagree (rules 1.20 section 7; the Boss's row and the damage factors of the rules 1.15 table; the enemy's Burst in rules 1.18; Triage, the stim, Stim Throw, Rally and Field Surgeon wherever they are written), this one is the rule. Prayer numbers are not touched (rules 1.22). Gun, Sigil and Outburst damage are not touched.
 
 ### 1. No round limit
@@ -4060,6 +4067,9 @@ Chosen so the rules 1.15 and 1.23 measurements come back without changing the ta
 
 ## Rules revision 1.26 (the re-fit): every ceiling is what an all-in build reaches; skill buys accuracy, level buys damage
 
+> **Superseded in part by rules 1.36** (the level scale): the `deal` column (item 1703) is 7.5^((level − 1)/19), and everything measured in HP is × `scale`; every ratio of this revision (its ceilings in percent of a rifle-turn, its tolerances) stands unchanged.
+
+
 Built on 12 Nov 2026, stage (b) of `docs/design/proposals/2026-11-unified-damage.md` on the one damage formula of stage (a). Leon's rulings, binding: the ceilings are what an **all-in** build reaches and a normal-share build sits at ceiling ÷ 1.25; **no damage slope on a rolled attack** (skill buys accuracy, level buys damage); flat things grow with level; every system's identity is a **named multiplier in data**. The contract that holds all of it is `docs/design/balance-contract.md` and `data/rules.json` `balance`; the guard is `packages/engine/test/balance-contract.test.ts`. Every number below is **PROVISIONAL** (items 1700 to 1725).
 
 ### 1. The three shapes of the Stat term
@@ -4116,6 +4126,9 @@ A grenade, a blast's splash, a charge, a trap, a hazard, a barrel, and the ticks
 3. The balance contract and its guard (`npm run check`).
 
 ## Rules revision 1.27 (the heal re-fit): a healer's turn is worth two Soldier-turns, and the untrained have a floor
+
+> **Superseded by rules 1.36** (heals and shields in percent of HP): the 2.0 Soldier-turn ceiling, its Stat floor's role as the floor (the gate is the floor now; the profiles' `floor` is kept and never binds) and the Hymn heal cap of 250 are replaced by the percent lines.
+
 
 Built on 12 Nov 2026 from Leon's report on live 0.23.0 ("a recruit at level 0 soul skill and a fully pumped soul mend heals for 6, his HP is 125, we might have over-nerfed the healing") and the lead's ruling on it. It overrides the healer's ceiling of rules 1.26 (section 2, "A healer's turn"), the bands of rules 1.20 (section 2) and the medic's bands of rules 1.23 wherever they state a size. Every number below is **PROVISIONAL** (items 1730 to 1741).
 
@@ -4802,6 +4815,88 @@ takes the Evoker blade's numbers (26 damage, 1H, 1.8 kg, 2,400 credits); each hi
 mana arm's does. It is **held back** because the engine cannot be told by data that a weapon counts as an Emanator: the
 focus gate reads a list written in code (`FOCUS_IDS` in `packages/engine/src/character.ts`), not the weapon's
 `counts_as_emanator` property. It goes into 7.11 and the data the day the focus list is read from data (items 2205, 1956).
+*Built by rules 1.38 (point 2): the focus list is read from data, and the Emanator katana is data alone.*
+
+## Rules revision 1.36: the level scale, and healing and shields in percent of HP (Classes 3.0, step 7b)
+
+Built on 13 Nov 2026 from `docs/design/level-scale-spec.md` and `docs/design/heal-shield-percent-spec.md`, each with its
+"Settled by Leon" block (which overrides its body). Every number here is PROVISIONAL (items 2300 to 2335). The hand-off
+is `docs/design/handoffs/classes-3.0-step-7b.md`.
+
+### 1. The level scale (Leon: a plain rifle hit is 40 at level 1, as before, and about 300 at level 20)
+
+1. **Damage grows ×7.5 from level 1 to level 20, geometric by level:** `output.level.deal` = 7.5^((level − 1)/19)
+   (×1.112 a level: 1 at level 1, 1.53 at 5, 2.60 at 10, 7.5 at 20). The plain rifle's hit on a Soldier of its level
+   is 40 at level 1, 60 at 5, 103 at 10, 299 at 20.
+2. **`output.level.scale`** is the new `deal` over rules 1.26's (1 at level 1, 1.27 at 5, 1.77 at 10, 4.69 at 20). It
+   is what **everything measured in HP** is multiplied by, so every ratio between a hit and what it hits is as before:
+   - **players' max HP** = round(scale × (100 + 15 × (Endurance − 1) + (level − 1) × (5 + 2 × Pain Threshold))), perks
+     and traits inside the bracket (145 / 233 / 441 / 2,086 for the reference rifleman at levels 1 / 5 / 10 / 20);
+   - **enemies**: the table's HP, armour and damage columns (`enemies.json levels.table`) × scale: a Soldier at level
+     20 has 1,188 HP and 38 armour, an Elite 2,036 and 75, a Boss 6,957 and 75; companions and owned units read the
+     same rows at their owner's level;
+   - **players' armour** (a Class's 5 to 25, what gear and items add) × scale at the wearer's level; armour a hit breaks
+     or a technique ignores (a weapon's armour break, Half-Sword, a heavy bolt's pierce, a weapon's armour-ignore) ×
+     scale at the striker's level;
+   - **Guard's soak** (10 a point) × scale at the holder's level; **Strain's burn** (8 a point), Shame's self-damage,
+     a feeling's residue and the Aura's tick × scale at the caster's level;
+   - **cover and objects** at the fight's level (an object remembers the level its HP is in, so one carried from a
+     fight to the story and back moves once); a RAISE wall at its maker's level;
+   - the profiles that had no Level term (`physical`, `elemental`, `healing`, `blessing`: prayer damage, Smite, the
+     interventions, the school riders) read `scale`;
+   - flat things made by nobody (a hazard, a map trap, a barrel) read the enemy table's damage column, as before.
+3. **What does not scale:** to-hit, Defense, attack bonuses, criticals' multipliers, AP, **MP** (a pool and its costs
+   are one unit), Flux, cores, credits, XP, every percent and every ratio (the balance contract's lines), and the
+   1-damage floor of a hit (a Vermin's bite on plate stays 1). **Level 1 is unchanged to the digit.**
+4. A share of max HP or of a hit carries no Level term (or it would grow twice): Shrug It Off, Clean Hands, Field
+   Surgeon and Crawler-Blooded's chitin drop the `flat` profile they had.
+5. **Old saves:** a character saved before this revision keeps the same share of its bar (current HP × scale at its
+   level, held to the new max), once; a fight saved mid-way moves its units' HP, max HP, shields and armour and its
+   objects' HP the same way. A level-up adds the rise in max HP to current HP (rules 1.11's "+HP a level", in the new
+   units).
+
+### 2. Heals and shields in percent of HP
+
+1. **The unit:** percent of the reference character's max HP (`output.level.reference_hp`: the normal-share plain
+   rifleman, smoothed, × scale: 145 at level 1, 2,086 at 20) restored or shielded by one whole turn spent on the source,
+   all in.
+2. **The heal Level term** is its own column, `output.level.mend` = M(L) × scale(L) (M keeps an all-in heal turn on
+   the same percent at every level: 1 at level 1, 1.51 at 5, 2.53 at 10, 11.97 at 20); it no longer reads the enemy
+   table.
+3. **The lines, all in** (`rules.json balance`): the Mender's turn through Bonds 65 (a door user about 59); an
+   off-heal (the Outburst's Buff school, steady; a Sigil MEND Line of three glyphs) 45; a Whisper 15; a Hymn's turn 65
+   at most, about 45 averaged over its wait.
+4. **The gate:** every heal and shield action gives at least a share of its target's max HP, counted up to 145 ×
+   scale at the giver's level: **20% for a 2-AP action** (the `mend`, `sigil_mend`, `soul_mend` and `tend` profiles),
+   13.3% for a Whisper and a 1-AP Raise, 33.3% for a Hymn and an intervention, times the action's own multipliers (an
+   Outburst's stage, a shape's share, a heal in an area ×0.4, a rider's half). It rounds up. The 125-HP level 1
+   Recruit with no Soul skill heals **25** with one quick heal (stage 1) and **40** fully pumped (stage 4, plain).
+5. **The cap:** no single heal restores more than **half its target's max HP**; a Miracle is exempt; a shield has
+   none (one stands per layer).
+6. **A stim** heals 20% of its target's max HP, the whole bar counted (the gate alone; gear, priced in credits).
+7. **The new numbers:** the Buff heal 11.3 on the Outburst's own Stat (`soul_mend`: Will Power and Determination; it
+   no longer reads Healing given); Sigil MEND 15 and WARD 4.3, the boon on the Sigil's own Stat (`sigil_mend.k` 1.629
+   carries what Healing given did); Inverse 7 (Shell 4 kept); Whisper Health 8.5 and Protection 10; Warm Hands 28,
+   Saint's Shield 34, Absolution 19, Coin for the Ferry 11, Hearthlight 9; Mother Ember's intervention 7 + 2.1 ×
+   Devotion, with the heal Level term, the intervention's gate and the cap; Tending's `tend.k` 3.74; the Ledger's cap
+   6.5 (its factor 0.7 and the echo 0.20 kept); Sanctuary's pool 40; Ward 10 (as rules 1.31).
+8. **The shields' order** (Leon: the strongest shield in the game is Faith's): Faith's strongest single use
+   (Sanctuary's pool: about two full assaults, 70% of the reference HP all in) = 1; the Mender's Tending shield about
+   0.36 of it; the Sigil WARD Line and the Outburst's Inverse about 0.33. **A full assault** is what the fire doctrine
+   (rules 1.25) puts on one character in a round of the standard encounter (55 HP at level 1, × scale).
+
+### 3. The fits made with the same dials
+
+- **Shadow:** `shadow.per_point` 0.15 → 0.7 (the door all in about 107 against its 109, the Operative about 121
+  against 125).
+- **Figments:** a Figment's HP follows its maker: its form's HP × `figment_hp` (0.35 × (1 + 0.15 × Visualization's
+  points)) × the enemy table's `hp_mult` at its owner's level (the `damage_mult` term is gone: both columns carry the
+  scale now).
+- **The Mender's offence:** the Ledger's cap 15.5 → 6.5 (its HP as before under `tend.k` 3.74).
+
+Supersedes: rules 1.26's `deal` column (item 1703); rules 1.15's three enemy columns; the HP line of "The game in one
+screen"; rules 1.20's level factor and bases; rules 1.23's stim; rules 1.27 (the 2.0 Soldier-turn ceiling, the Hymn
+heal cap of 250); rules 1.33's `tend.k` 1.573 and the Ledger's 15.5; rules 1.32's `per_point` 0.15.
 
 ## Rules revision 1.37: what enemies do about the new systems (Classes 3.0, step 9)
 
@@ -4878,6 +4973,52 @@ in item 1744 ("an enemy still knows where every hostile who is not Hidden stands
 22. **Reactions:** an enemy never reacts off a reaction and, Suppressed, keeps only its protective reactions (rules
     1.28, the same door as everyone's). Not built: baiting a held line with the cheapest unit and sending two movers
     into a Killzone (reactions-spec 8); waiting out a Sanctuary.
+
+## Rules revision 1.38: balance for Classes 3.0, and Mag Dump's rounds (Classes 3.0, step 11)
+
+Built on 13 Nov 2026 (Classes 3.0 step 11; `docs/design/handoffs/classes-3.0-step-11.md`). Every number here is
+PROVISIONAL (items 2500 onward).
+
+1. **Mag Dump spends 4 rounds a roll, 12 at most** (Leon, 13 Nov 2026: "a weapon with 200 rounds loses them all, fires
+   four shots, stops"; the lead's corrected ruling, so that no weapon's damage moves; a call made for Leon). **The rolls
+   stay rules 1.18's**: one for every 3 rounds left, at least one, at most 3, each at −4 more than the last. **Only the
+   rounds spent change**: each roll spends 4, never more than are left, so 12 at most and never the whole of a big
+   magazine (the long rifle's 5: one roll, 4 rounds, 1 kept; a 6-shot revolver: two rolls, all 6; a belt of 100: 12).
+   The 4 AP, the Heat and the Pressure stay as rules 1.18. Spread fires one roll and spends that roll's rounds (both
+   barrels of a coach gun). The effects draw one casing for every round spent. Enemies' Mag Dump is the same technique.
+   Numbers in data: `techniques.json mag_dump` `rounds: "up_to"`, `numbers.per_roll` 3 (the rolls), `numbers.rounds_per_roll`
+   4 (the rounds a roll) and `numbers.max_rolls` 3 (the cap, 12, is `rounds_per_roll × max_rolls`); the card reads "up to
+   12 rounds" from the engine. No damage and no roll count moved: only the rounds left in the costs tables.
+2. **A focus is data, a weapon too** (rules 1.38; rules 1.33 made a focus item data): what counts as each focus (the
+   Evoker, the Emanator, the Attuner, the Visualizer) is every item AND every weapon with a `focus: {door, fuel}` block
+   naming the door it opens; no list is kept in code. The mana arms that count as a focus carry the block (the Evoker
+   blade, the Spellslinger's pistol and the grand staff the Evoker's door, Brain Power; the Emanator gauntlet the
+   Emanator's, Will Power); a weapon's `counts_as_evoker` / `counts_as_emanator` property needs a block with that door (the
+   validator). **The Emanator katana** (rules 1.35 section 2) is then built by data alone: 7.11's eighth mana arm, a
+   one-handed light blade (Dexterity, Agility; light and edge), 26 damage, 1.8 kg, 2,400 credits, Will Power 3, counts
+   as an Emanator; each hit adds 1 to the ambient mana as every mana arm's does; no weapon skill of its own, no
+   technique lent, in no loot table (the Evoker blade, its twin, is in none).
+3. **The Mender's steady offence is fitted** by its named dial, `tending.json bond.per_bond` 0.10 → **0.05** (+5% damage
+   for each Bond held, anyone with an Attuner in hand): the Mender all in measured 79 solo and 84 in a squad against its
+   line of 70 (rules 1.33), and measures 68 and 71 after (8 fights a cell for the yardstick). The door user all in
+   measures 67 (its line 61, +10%: the door and the class differ only by the Mender's moves, which the steady line does
+   not use). The balance contract's guard now holds the Mender's healing turn, the door's Tending turn and the Mender's
+   offence (`balance.ceilings.tending_turn`, `mender_offence`).
+4. **Classes 3.0 measured** (levels 1, 5, 10, 20, all in; the table in `docs/design/balance-contract.md` section 3 and
+   the step 11 hand-off). On their lines: the plain rifle, the best gun (the Skirmisher, 159 against 145), melee, the
+   Sigil Line, the Outburst steady and peak, the Whisper and Hymn turns (the Faith door), the Chaplain (126 against
+   125: no refit; its level 20 is 138, the 150 of rules 1.36 was a small sample), Shadow (door 113, Operative 124), the
+   Mender's healing turn (65) and offence (point 3). Off its line: **Figments**, the Rigger 123 against 150 and the door
+   119 against 130, with no gap between them: the measure counts the damage enemies spend on Figments, capped at 60% of
+   the enemy's fire, and both sit at the cap, so no HP dial separates them; the Rigger's edge (a third body, Overclock,
+   Field Fix) is not in the measure. Not fitted; it needs a class-only term (point 5). **Reflex** measures +0 (no enemy
+   in the simulator crosses a held line). The guards loosened in steps 3 to 7b are kept, each for its measured reason:
+   the Whisper door's `level_hi` 1.42 (the guard's 6-fight sample reads 113 at level 20, 16 fights read 100), the Faith
+   door's raised tops (a Hymn turn 184, a quiet turn 129, the no-Hymn patron 112: Smite rides the Faith build's weapon
+   hits), the guns guard's 1.13 (armour rounding at level 6), the Skirmisher inside its band.
+5. **Needs a new primitive (not built):** a base class that uses its door better than a door user needs a class-only
+   multiplier on what the door makes (for Figments: a stat a class move can raise that multiplies an owned unit's HP or
+   damage). The Rigger's moves today are all verbs the simulator does not play.
 
 ## Maps (rules 1.16)
 
@@ -7919,6 +8060,42 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2204. **Items 1950 to 1956 are rules 1.35's** (after rules 1.31's block, 1900 to 1949).
 2205. **The Emanator katana's numbers (rules 1.35, not built):** 1H, 26 damage, 1.8 kg, 2,400 credits, Will Power 3, counts as an Emanator, +1 ambient mana a hit (the Evoker blade's). Lead's numbers, Leon to confirm. PROVISIONAL.
 2206. **Needs a ruling and a primitive (rules 1.35):** the Emanator katana waits for the focus list to be read from data (a weapon's `counts_as_evoker` / `counts_as_emanator`, or the Classes 3.0 `focus` block). Leon to confirm the katana goes in once it is.
+2300. **The level scale's ruling read (rules 1.36):** Leon's "×7.5 at level 20" is the hit's growth from level 1 (40 → about 300); the twenty values his settled block lists (1, 1.53, 2.60 … 7.5) are the new `deal` column, and `output.level.scale` (what HP-measured numbers are multiplied by) is that over rules 1.26's `deal` (1 … 4.6875), as the level-scale spec defines it. A normal build's HP at level 20 is 2,086, half the ×15 reading's, as his block says. The builder's reading, Leon to confirm. PROVISIONAL.
+2301. **`output.level.deal` (rules 1.36):** 7.5^((level − 1)/19), four places. PROVISIONAL.
+2302. **`output.level.scale` (rules 1.36):** the new `deal` over rules 1.26's, four places. PROVISIONAL.
+2303. **Max HP (rules 1.36):** round(scale × (100 + 15(E − 1) + (L − 1)(5 + 2 PT))), perks and traits inside. PROVISIONAL.
+2304. **The enemy table (rules 1.36):** hp_mult, armour_mult and damage_mult × scale (four places). PROVISIONAL.
+2305. **The profiles physical, elemental, healing and blessing read `scale` (rules 1.36).** PROVISIONAL.
+2306. **Armour in HP (rules 1.36):** a character's whole armour (its Class, gear, items) × scale at its level; armour broken by a weapon, ignored by a technique or a weapon property × scale at the striker's level. PROVISIONAL.
+2307. **Guard's soak (rules 1.36):** 10 a point × scale at the holder's level (rounded); Guard points do not scale. PROVISIONAL.
+2308. **Strain's burn, Shame's self-damage, residue and the Aura's tick (rules 1.36):** × scale at the caster's level. PROVISIONAL.
+2309. **Objects and cover (rules 1.36):** at the fight's level (`MapObject.hpLvl`), a RAISE wall at its maker's level. Not wired yet (the lead's list): the shelved advanced classes' objects (the Banner Dancer's banner and barricade, the Grand Sigilist's earthworks and walls, the cover rune, Solid Image) and the Sentry turret's 40 HP (a literal in `classes/j.ts`). PROVISIONAL.
+2310. **Flat things made by nobody read the enemy table's damage column (rules 1.36),** never the heal column. PROVISIONAL.
+2311. **MP, the 1-damage floor, Guard points and every ratio do not scale (rules 1.36).** PROVISIONAL.
+2312. **Old saves (rules 1.36):** a character's current HP × scale at its level, held to the max, once (`hpRev` 136); a fight in progress moves its units' HP, max, shield and armour and its objects. PROVISIONAL.
+2313. **A level-up adds the rise in max HP to current HP (rules 1.36).** PROVISIONAL.
+2314. **Shares of max HP or of a hit carry no Level term (rules 1.36):** Shrug It Off, Clean Hands, Field Surgeon, Crawler-Blooded's chitin drop `profile: flat`. PROVISIONAL.
+2315. **A Figment's HP (rules 1.36):** form HP × `output.profiles.figment_hp` (k 0.35, 0.15 a point of Visualization) × hp_mult at its owner's level (`figments.json level.hp` ["hp_mult"], `level.hp_stat`); the damage_mult term is gone. Fitted on a small sample (4 fights a cell). PROVISIONAL.
+2316. **`output.level.mend` and `output.level.reference_hp` (rules 1.36):** M(L) × scale(L) and R(L) × scale(L), the percent spec's section 1 columns on the level scale. PROVISIONAL.
+2317. **The percent gate (rules 1.36; Leon: 20%):** 20% of the target's max HP for a 2-AP heal or shield action (profiles mend, sigil_mend, soul_mend, tend: `min_pct`), 13.3% for a Whisper and Tending's Raise, 33.3% for a Hymn and an intervention (`mending.gate`), times the action's own multipliers; counted up to 145 × scale at the giver's level; rounds up. PROVISIONAL.
+2318. **The cap (rules 1.36):** no single heal more than half its target's max HP (`mending.cap_pct` 0.5); a Miracle is exempt; shields have none. PROVISIONAL.
+2319. **A stim (rules 1.36):** 20% of its target's max HP, the whole bar counted (`mending.medic.stim` 0, `stim_pct` 0.2). PROVISIONAL.
+2320. **The Buff heal (rules 1.36):** 11.3, on the Outburst's own Stat (`soul_mend`), fitted to the off-heal line 45 (the percent spec's 14 measured 56). PROVISIONAL.
+2321. **Sigil MEND 15, WARD 4.3; the boon reads the Sigil's own Stat (`sigil_mend.k` 1.629), not Healing given (rules 1.36).** WARD is set under the Mender's Tending shield (Leon: Faith's shield first). PROVISIONAL.
+2322. **Inverse 7 (rules 1.36); Shell 4 kept.** PROVISIONAL.
+2323. **Prayer (rules 1.36):** Health 8.5, Protection 10, Warm Hands 28, Saint's Shield 34, Absolution 19, Coin for the Ferry 11, Hearthlight 9. PROVISIONAL.
+2324. **Mother Ember's intervention (rules 1.36):** 7 + 2.1 × Devotion, × Blessing power × the heal dial × the heal Level term, the intervention's gate, the cap. PROVISIONAL.
+2325. **`output.profiles.tend.k` 3.74 (rules 1.36):** the Mender's healing turn through Bonds at 65% of the reference HP (measured 70 / 64 / 65 / 65). PROVISIONAL.
+2326. **Sanctuary's pool 40 × Blessing power (heal dial, Level) (rules 1.36):** Faith's strongest shield, about two full assaults. PROVISIONAL.
+2327. **Ward stays 10 (rules 1.31, Leon).** PROVISIONAL.
+2328. **The shields' order (rules 1.36):** `balance.ceilings.shield_order`: Faith 1, the Mender's Tending shield 0.36, the Sigil WARD Line 0.33, the Outburst's Inverse 0.33 (each its strongest single use against Faith's). The builder's shares, Leon to confirm. PROVISIONAL.
+2329. **The Ledger's cap 6.5 (rules 1.36):** its HP as before under `tend.k` 3.74; the factor 0.7 and the echo 0.20 kept. PROVISIONAL.
+2330. **`shadow.per_point` 0.7 (rules 1.36):** the door all in about 13% under the Operative (measured 107 and 121, 24 fights a cell). PROVISIONAL.
+2331. **The balance contract's heal lines (rules 1.36):** `healer_turn` 45 in percent of the reference HP (was 200 Soldier-turns), `hymn_heal_cap` 65, `hymn_avg` 45, `whisper` 15; `tending_turn` 65 (door 59). PROVISIONAL.
+2332. **Yardsticks (rules 1.36):** `soldier_turn` × scale; `full_assault` 55 / 85 / 158 / 708 at levels 1 / 5 / 10 / 20; `heal_floor` 18 / 27 / 44 / 178 and the Recruit's 25. PROVISIONAL.
+2333. **The Emanator katana is still not built (rules 1.36):** the focus list (`FOCUS_IDS`, `packages/engine/src/character.ts`) reads a `focus` block only on items.json entries and keeps the mana arms (evoker_blade, emanator_gauntlet …) as ids typed in `FOCUS_BASE`; a weapons.json entry with a `focus` block is not read. Needs FOCUS_IDS to read weapons.json too (one general line). Leon to confirm. PROVISIONAL.
+2334. **The Chaplain's level 20 (rules 1.36): not refitted.** The named dial, Smite's base, is held equal to Rebuke's 20 by the validator (rules 1.31: Smite is Rebuke's size), and one constant cannot flatten one level. Measured 113 / 134 / 127 / 150 (mean 131, inside 125 ± 12%; level 20 inside ± 25%). Leon to rule. PROVISIONAL.
+2335. **The guns guard's long rifle against the service rifle (rules 1.36):** 1.122 at level 6 against a top of 1.12: the Soldier's armour at level 6 rounds up now (8.52 → 9; it was 6.35 → 6). The band's top is 1.13. PROVISIONAL.
 2400. **An enemy acts on what its side perceives (rules 1.37 rules 1-6; 13 Nov 2026, Classes 3.0 step 9):** its targets, approach, healer hunt and spell planners read only the hostiles its side sees now; the opening gives each side every non-Hidden hostile's tile once; it searches the believed tile; a unit hit by an unseen attacker learns its tile; it never fires at a tile. Overrides item 1744's limit. PROVISIONAL.
 2401. **The opening (rules 1.37 rule 2):** a call made for Leon: without it an enemy that starts out of sight (every shipped full-size map, rules 1.16) would never find the squad. Leon to confirm. PROVISIONAL.
 2402. **A skulker flanks (`ai.skulk_open` 3):** the cost a skulker adds to a tile the other side has in view when it closes in. PROVISIONAL.
@@ -7932,3 +8109,15 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2410. **An Elite fooled by a Double** saves again at each of its turn starts (figments-spec 2, as built in rules 1.34), so it may stay fooled more than one turn; a Boss is fooled through one of its turns at most. The brief's "Elites and Bosses fooled for a turn at most" was not built for Elites: the spec table rules. Leon to confirm. PROVISIONAL.
 2411. **Enemies do not Bond, Tend, hold Shadow or make Figments (rules 1.37 rule 12):** confirmed through the data (a test reads enemies.json). An enemy version would need: a door skill and a focus on the tier row (Attuner, Visualizer), the tending verbs in the enemy's held items, a planner step (ai-*.ts) that weighs a Tend or a Picture against its weapon. PROVISIONAL.
 2412. **Items 2400 to 2412 are rules 1.37's.**
+2500. **Mag Dump: 4 rounds a roll, 12 at most (rules 1.38):** `techniques.json mag_dump numbers.rounds_per_roll` 4, never more than are left; the cap `rounds_per_roll × max_rolls`; Spread spends its one roll's rounds. The rolls stay rules 1.18's (`numbers.per_roll` 3, `max_rolls` 3). The lead's corrected ruling (13 Nov) of Leon's word (a call made for him). PROVISIONAL.
+2501. **No damage moves with Mag Dump's rounds (rules 1.38):** the golden tables changed only in rounds left after a dump (11 costs lines: the service rifle, SMG, LMG, long rifle and scattergun); the long rifle keeps its one roll (an earlier draft of this revision gave it two). PROVISIONAL.
+2502. **A focus is any item or weapon with a `focus` block (rules 1.38):** `FOCUS_IDS` is built from data (items.json and weapons.json); the four mana arms that counted as a focus by a list in code carry `focus: {door, fuel}`; the validator refuses a `counts_as_<kind>` property with no block of that door (the Spellslinger's pistol counted as an Evoker in code with no property: it keeps that by its block). PROVISIONAL.
+2503. **The Emanator katana built (rules 1.38; numbers as item 2205):** `weapons.json emanator_katana`: mana arm, 1H, 26 physical, 1.8 kg, 2,400 credits, Will Power 3, light and edge (Dexterity, Agility), `focus` Will Power (fuel MP). No `grants`, no `teaches`, no loot table. Lead's reading where rules 1.35 was silent (the light-blade props and no lent technique, as its twin). PROVISIONAL.
+2504. **`tending.json bond.per_bond` 0.05 (rules 1.38; was 0.10, rules 1.33):** the Mender's steady offence 68 solo / 71 squad against 70 (measured, 8 yardstick fights a cell, levels 1 / 5 / 10 / 20: solo 81 / 67 / 60 / 63, squad 81 / 72 / 63 / 67); the door all in 67 against its 61. PROVISIONAL.
+2505. **Classes 3.0 measured (rules 1.38):** `refit-measure` at 16 fights a cell, all in, levels 1 / 5 / 10 / 20: plain 129 / 113 / 112 / 101; gun 164 / 161 / 158 / 153; blade 156 / 150 / 133 / 178; Sigil Line 155 / 147 / 176 / 189; Outburst 139 / 155 / 136 / 137, peak 150 / 173 / 152 / 158; Whisper 92 / 75 / 62 / 100; Hymn 119 / 104 / 156 / 173; Chaplain 117 / 131 / 117 / 138; off-heal 45. Shadow door 118 / 122 / 104 / 109, Operative 125 / 128 / 133 / 110. Figments (4 fights a cell) Rigger 156 / 118 / 116 / 101, door 144 / 106 / 114 / 112. PROVISIONAL.
+2506. **The Chaplain is not refitted (rules 1.38; item 2334):** 126 against 125, level 20 at 138 (inside ±25%). Smite stays Rebuke's 20. PROVISIONAL.
+2507. **Figments are under their lines and not fitted (rules 1.38):** see point 4; Leon to rule on the class-only term (point 5). PROVISIONAL.
+2508. **The loosened guards stay (rules 1.38):** `whisper_turn.level_hi` 1.42, the Faith door tops (Hymn turn 200, quiet turn 130, no-Hymn patron 125), the long rifle's top 1.13, each with its measured reason in point 4. PROVISIONAL.
+2509. **Reflex measured +0 (rules 1.38):** off-turn damage 4 / 11 / 0 / 0% of a rifle-turn with and without Reflex, levels 1 / 5 / 10 / 20 (4 fights a cell). The spec's +8 to +17% is unconfirmed: a playtest or a scripted fight across a held line. PROVISIONAL.
+2510. **The healer under fire (rules 1.38):** the tank and a dedicated Soul healer under three Soldiers: nobody Down in 10 rounds in 50% (level 1), 75% (levels 6 and 12), 100% (level 20) of fights, against 0% with the healer idle; under two, 100% at every level (the tank alone also lasts at 12 and 20). Whole fights (open ground, 3 a cell): every squad wins, rounds to kill as the level-1 targets at every level (the healer squad 6.3 to 10.7, a round above the standard and Boss targets). A stall to watch in the playtest, not refitted. PROVISIONAL.
+2511. **Items 2500 to 2511 are rules 1.38's.**

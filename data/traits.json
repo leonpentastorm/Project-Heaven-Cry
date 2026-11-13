@@ -3679,7 +3679,7 @@
     },
     {
       "id": "crawler_blooded",
-      "amounts": {"chitin": {"kind": "heal", "base": 0, "per": [{"of": "damage", "value": 0.3}], "profile": "flat", "text": "of a critical hit that injures a limb", "provisional": true}, "blessing_burn": {"kind": "damage", "base": 10, "profile": "flat", "type": "true", "provisional": true}},
+      "amounts": {"chitin": {"kind": "heal", "base": 0, "per": [{"of": "damage", "value": 0.3}], "text": "of a critical hit that injures a limb", "provisional": true}, "blessing_burn": {"kind": "damage", "base": 10, "type": "true", "provisional": true}},
       "number": 69,
       "name": "Crawler-Blooded",
       "category": "Body and blood",

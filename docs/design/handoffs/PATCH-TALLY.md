@@ -109,7 +109,10 @@ Detail: `damage-step-magic.md`, `outburst-rework-2.md`.
 | **Rules 1.26, the re-fit** | | A healer's turn **all in** on 1.25 Soldier-turns (146 / 132 / 122 / 99% measured at levels 1, 5, 10, 20), a normal share about 1.0: Healing given 0.87 × (1 + 0.06 per point of Insight over 1 and of Empathy). Inverse and Shell read a landed Soul Stat (`soul_mend`) |
 | **Rules 1.27, the heal re-fit** (Leon on 0.23.0: "we might have over-nerfed the healing") | | A healer's turn **all in** on **2.0 Soldier-turns** (234 / 211 / 195 / 158%), a normal share about 1.6: every heal and shield ×1.6 by its dial (Healing given 1.392 ×, the Soul shields 1.296 ×, the Sigil boon 1.17 ×; Faith ×1.51, capped where a Hymn turn heals 2.5 Soldier-turns). The medic's kit ×1.6 through Healing given. A Recruit with no Soul skill: a stage-4 Mend heals 15 at level 1 (it was 9; 6 at stage 1). A heal by a caster with no points in its skill is never under half of a normal share's (a floor; it binds nowhere today). Enemy healers unchanged |
 
-Detail: `heal-shield-pass.md`, `defence-step.md`.
+| **Rules 1.36 (Classes 3.0 step 7b): heals and shields in percent of HP** | | Balanced in percent of the reference character's HP a whole turn, all in: the Mender 65, an off-heal (Buff, MEND) 45, a Whisper 15, a Hymn's turn 65 at most; **a gate** (every 2-AP heal or shield at least 20% of its target, counted to 145 × scale; Whisper 13.3%, Hymn and intervention 33.3%), **a cap** (no single heal over half the target's bar); a stim 20% of the target; Faith's shield the strongest (Sanctuary's pool 40); the Recruit's quick heal 25 (it was 9) |
+| **Rules 1.36: the level scale** | A hit grew ×1.6 over a career (40 at level 1, 64 at 20); HP ×3 | A plain hit grows **×7.5** (40 at level 1, 60 / 103 / 299 at 5 / 10 / 20); **everything measured in HP grows with it** (max HP 145 / 233 / 441 / 2,086 for the reference rifleman; a Soldier 1,188 HP at 20, a Boss 6,957); every ratio, to-hit, Defense, MP unchanged; level 1 identical |
+
+Detail: `heal-shield-pass.md`, `defence-step.md`, `classes-3.0-step-7b.md`.
 
 ## 7. Faith (rules 1.21, 1.22)
 
@@ -263,3 +266,25 @@ row 3 (thrown) fitted; row 9 (control) has its yardstick and a condition table (
   first pass), the 77 artist icons shown, painted icons tinted, the eight failing browser suites.
 - Not done: the final `npm run check` and `npm run e2e -- all` on the merged tree on a quiet machine, a playtest of
   any of it (`docs/PLAYTEST-CHECKLIST.md`), Leon's word. **Nothing here is live.**
+
+## 12. Classes 3.0 (Class Roster Revision 4): live 0.25.0 against this patch, by system
+
+Written 13 Nov 2026 at step 11 (balance). Live is **0.25.0** (rules to 1.27); Classes 3.0 is rules 1.28 to 1.38 on
+`claude/charming-gauss-hbq4n0`. Every number PROVISIONAL; the detail is in each step's hand-off
+(`docs/design/handoffs/classes-3.0-step-*.md`) and the measured lines in `docs/design/balance-contract.md` section 3.
+
+| System | Live 0.25.0 | Classes 3.0 | Rules, hand-off |
+| --- | --- | --- | --- |
+| The classes | Revision 3's nine base classes (Defender, Fighter, Marksman, Infiltrator, Mage, Trickster, Bard, Channeler, Guardian) | Renamed Bulwark, Breaker, Skirmisher, Operative, Sigilist, Rigger, Mender, Channeler, Chaplain; ids unchanged, saves load; every base class weapon-neutral; each attribute's mechanic is a **door** anyone opens through its alpha skill, the base class uses it better | 1.29, step 2 |
+| The primitives | Per-item handlers for many moves | Twelve general primitives (reaction kinds, ties, zones, shield layers, owned units, toggles, delays, standing auras, `self_holds`, verbs as data); the handlers they replace deleted | 1.28, steps 1a, 1b |
+| Reactions | Ad hoc per move; reactions could set off reactions | One door for every reaction, with a kind (attack, move, protect); a reaction never sets off a reaction; Suppressed never blocks a protective one; **Reflex** (two reactions a round) for the Skirmisher; Killzone on both sides; Run and Gun | 1.30, step 3 |
+| Skirmisher | The Marksman | Fire Discipline (once a turn a technique of 3 AP or more costs 1 AP less); measured all in 159 against 145 (+10%); Reflex measured +0 in whole fights (the simulator's enemies never cross a held line) | 1.30, steps 3 and 11 |
+| Prayer | Whispers and Hymns from Faith 3 | Whispers from Faith 1, Hymns from 3; the **Chaplain**: Ward, Sanctuary, Smite, Verdict, the patron's presence; all in 126 against 125 | 1.31, steps 5 and 11 |
+| Shadow (Perception's door) | none | **Shadow** and the Operative: a meter, the Break, 19 verbs (Parting Cut and Case pending); door 113 / Operative 124 against 109 / 125 | 1.32, steps 6 and 11 |
+| Bonds and Tending (Insight's door) | The Bard's Triage | **Tending** (the top heal), **Bonds** (ties to allies and enemies: share, echo, +5% damage a Bond), the Attuner glove, the Mender's Ledger; healing turn 65 (door 62); steady offence 68 / 71 against 70 after the step 11 fit (`bond.per_bond` 0.10 → 0.05) | 1.33, steps 7 and 11 |
+| Figments (Intelligence's door) | The Trickster's tricks | **Figments** and the Visualizer glove: Double, Eye, Wall, Beast, Blade, traits, the Rigger's Field Fix, Overclock, Scrap Turret; Rigger 123 / door 119 against 150 / 130 (the measure's soak is capped by the enemy's fire: see the step 11 hand-off) | 1.34, steps 8 and 11 |
+| The level scale | A level 20 hit about 64 | **×7.5**: a plain hit 40 at level 1, about 300 at level 20; HP, armour, Guard, objects, heals and shields grow with it (one number formatter on the screen) | 1.36, step 7b |
+| Heals and shields | Sized in Soldier-turns (2.0 the ceiling) | In **percent of HP**: the top heal 65% a turn, a gate (20% for a 2-AP heal), a cap (half the bar); Faith's shield the strongest | 1.36, step 7b |
+| The enemy side | Enemies saw everything | Enemies act on what their side perceives; skulkers flank; Bosses never stay Hidden; the Bonded enemy hunts its Bonder; Figments last; held attacks weighed | 1.37, step 9 |
+| Weapons | Mag Dump empties the magazine for at most 3 rolls; the Emanator katana held back | **Mag Dump spends 4 rounds a roll, 12 at most** (the rolls and the damage as before; only the rounds spent change); the focus list read from data; **the Emanator katana** in the game | 1.35, 1.38, step 11 |
+| The screen | | Meters, tabs and hover cards for each new system; every action through the descriptors | step 10 |

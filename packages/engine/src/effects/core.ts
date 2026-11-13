@@ -244,7 +244,7 @@ const blockOf = (h: Holder, e: any): AmountBlock | null => {
   if (typeof e.amount === 'string') { try { return amountBlock(h.key, e.amount); } catch { return null; } }
   return null;
 };
-const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none' });
+const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), ...(b.min_pct != null ? { min_pct: b.min_pct } : {}), ...(b.gate_hp !== undefined ? { gate_hp: b.gate_hp } : {}), round: 'none' });
 registerGeneric({
   op: 'deal', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && !!e.amount,
   run: (h, e, args) => {

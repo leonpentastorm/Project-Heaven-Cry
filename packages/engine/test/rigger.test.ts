@@ -62,7 +62,7 @@ describe('the Rigger: the moves', () => {
     u.ap = 6; expect(() => use(f, u, 'class:trickster.salvage', { choice: 'wreck' })).toThrow(/wreck/);
   });
   it('Overclock: a Figment of yours attacks now at no AP and takes its strain; never a squadmate; once a turn', () => {
-    const f = rigger({ vis: 5 }); let u = f.turn(f.pc); f.picture(u, 'beast', '3,4'); u = f.unit(u.id); f.foe.pos = '4,4';
+    const f = rigger({ vis: 5 }); let u = f.turn(f.pc); f.picture(u, 'beast', '3,4'); u = f.unit(u.id); f.foe.pos = '4,4'; f.foe.hp = f.foe.maxHp = 99999; // the strike must not end the fight (rules 1.36 scaled its hit)
     const b = f.figments(u)[0], hp = b.hp, ap = u.ap; use(f, u, 'class:trickster.overclock', { targetId: b.id }); u = f.unit(u.id);
     expect(ap - u.ap).toBe(move('overclock').ap_cost); expect(f.unit(b.id).hp).toBeLessThan(hp);
     expect(() => use(f, u, 'class:trickster.overclock', { targetId: b.id })).toThrow();

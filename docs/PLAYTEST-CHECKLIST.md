@@ -135,7 +135,9 @@ Make a classless level 5 character (no class picked) and give it 3 points in one
 - [ ] The **Emanator katana** (a mana arm, one-handed light blade): counts as an Emanator for Outbursts and hits like a
       light blade. The katana and the Emanator katana have their painted icons.
 - [ ] **Mag Dump spends 4 rounds a roll, 12 at most** (call 50): a 200-round belt loses 12, not 200; a 6-shot revolver
-      fires two rolls and is empty. The card says "Up to 12 rounds"; the casings match the rounds spent.
+      fires two rolls and is empty; the long rifle (5 rounds) fires one roll and keeps one round. The rolls are as
+      before (one for every 3 rounds left, three at most), so it hits as hard as before. The card says "up to 12
+      rounds"; the casings match the rounds spent.
 
 ### 0.12 Effects: the cleanup and bullet holes (ten minutes, Effect testing room)
 
@@ -229,10 +231,19 @@ any by its number; most are one data field. Sources: `CLASSES-3.0-PICKUP.md` sec
 47. M813 is unlisted (`m813.json` `listed: false`): the Proving Ground first, a new room on the Narrator's own start. Reverse: delete the line.
 48. A Hidden token is at 60%; a Downed one at 50%, the turn bar's portrait too. Reverse: `tokenFade.ts`.
 49. The Bond line between adjacent tokens is a short link mark with a dot, drawn above the tokens. Reverse: `TIE_MARK.min` 0.
-50. **Mag Dump: 4 rounds a roll, 12 at most** (rules 1.38; the long rifle gets two rolls from 5 rounds). Reverse: `techniques.json mag_dump`.
+50. **Mag Dump: 4 rounds a roll, 12 at most, never more than are left** (rules 1.38; the lead's corrected ruling of your word): the rolls stay rules 1.18's (one for every 3 left, three at most), so no weapon's damage moved; only the rounds spent changed. Spread (both barrels) spends its one roll's rounds. Reverse: `techniques.json mag_dump` `rounds_per_roll`.
 51. With six tabs or more the tab bar goes tight (counts in the corner, full names kept) instead of wrapping.
 52. A feeling's unlock card plays after the attack it was felt in, not between its sound and its rounds.
 53. Still kept for your eye: Aimed Shot's and Crossfire's white lines and Storm's red line.
+
+**Balance (step 11, rules 1.38; numbers in `docs/design/handoffs/classes-3.0-step-11.md`)**
+54. A focus is any item or weapon with a `focus` block in data; the Spellslinger's pistol keeps counting as an Evoker (it did in code). Reverse: drop its block.
+55. The Emanator katana: a light, edged mana arm (as its twin the Evoker blade), no lent technique, no weapon skill, in no loot table.
+56. `bond.per_bond` 0.05 is the door's rule, so it also lowers a door user's Bond bonus (their offence 67 against 61).
+57. The Chaplain is not refitted: 126 against 125.
+58. The loosened guards stay, each with its measured reason: the Whisper turn's `level_hi` 1.42, the Faith door's tops raised for Smite, the long rifle's 1.13 (armour rounding).
+59. **Open, not refitted:** a tank with a dedicated healer under three Soldiers never falls in 10 rounds at level 20 (the healer stall); Figments (door and Rigger both at the soak cap, call 32).
+60. Reflex measures +0: no simulated enemy crosses a held line. Watch it in the playtest.
 
 ## The 0.23.0 checks (rules 1.15 to 1.26; still valid where Classes 3.0 did not change them)
 

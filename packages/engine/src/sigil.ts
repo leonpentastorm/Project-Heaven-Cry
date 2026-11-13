@@ -13,7 +13,7 @@ import {
   type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT, lineMult,
 } from './sigilwords';
 export * from './sigilwords';
-import { say,
+import { say, objectAtLevel,
   type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction, displace
 } from './combat';
@@ -25,7 +25,7 @@ import type { Character } from './character';
 import { healUnit, grantShield, tendHook } from './effects/damage';
 import { itemAmount } from './effects/amounts';
 import { mendFactorOf, flatLevelOf } from './effects/mending';
-import { armourAgainst, landed, amountOf, term, type AmountSpec } from './effects/output';
+import { armourAgainst, landed, amountOf, term, gatedAmount, type AmountSpec } from './effects/output';
 import { AP_MAX } from './effects/ap';
 import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE } from './character';
 import { ENEMY_LEVELS } from './data';
@@ -458,7 +458,7 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const saves: Affected['saves'] = [];
   for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: saveTn(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
   if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: saveTn(caster, 'brain_power') });
-  return { dmg: E + S, dmgAfterArmour: arm, heal: sigilBoon('heal', hl, m, mg?.sigilBoon ?? sm, hm, lf, hook('heal')), shield: sigilBoon('shield', sh, m, mg?.sigilBoon ?? sm, hm, lf, hook('shield')),
+  return { dmg: E + S, dmgAfterArmour: arm, heal: gatedAmount('heal', sigilBoon('heal', hl, m, mg?.sigilBoon ?? sm, 1, lf, hook('heal')), { of: 'sigil_mend', own: m }, t, caster), shield: gatedAmount('shield', sigilBoon('shield', sh, m, mg?.sigilBoon ?? sm, 1, lf, hook('shield')), { of: 'sigil_mend', own: m }, t, caster), // the percent spec: the boon is Brain Power's alone (sigil_mend.k carries what Healing given did), through the gate and the cap
     roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
 }
 /** Who a spell affects on a set of tiles, with every one it spares or skips flagged (spec: Filter KIN; Grammar 9). */
@@ -1178,7 +1178,7 @@ function raiseWalls(cb: Combat, by: Unit | null, side: 'pc' | 'foe', tiles: stri
   const old = objectsOf(cb).filter((o) => o.kind === 'sigil_wall' && (o as any).by === (by?.id || '')); // one RAISE working per caster
   if (old.length) { cb.objects = objectsOf(cb).filter((o) => !old.includes(o)); emitFx(cb, 'wall_crumbled', { tiles: old.map((o) => o.pos), why: 'replaced' }); }
   const objs = objectsOf(cb);
-  for (const k of tiles) objs.push(makeObject('sw' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), 'sigil_wall', k, { hp: b.hp ?? 30, max: b.hp ?? 30, by: by?.id || '', side, left, who: by?.name || '', sigilWall: true } as any));
+  for (const k of tiles) objs.push(objectAtLevel(makeObject('sw' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), 'sigil_wall', k, { hp: b.hp ?? 30, max: b.hp ?? 30, by: by?.id || '', side, left, who: by?.name || '', sigilWall: true } as any), by?.level ?? cb.level)); // rules 1.36: at the maker's level
   emitFx(cb, 'wall_raised', { tiles, by: by?.id, side, hp: b.hp ?? 30, rounds: left });
   return ' · walls rise on ' + tiles.map(refOf).join(', ') + (old.length ? ' (the old ones crumble)' : '');
 }

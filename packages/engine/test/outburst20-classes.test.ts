@@ -3,7 +3,7 @@
 // combat/perk, combat/attack, combat/end-turn); enemy-side harm through the engine calls their turns use.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
-import { d20, grantShield, designCost, manaOf, applyDamage, condOn, beginTurn, CLASS, stageMult, type Combat, type Unit, type OutburstDesign } from '../src';
+import { strainBurn, d20, grantShield, designCost, manaOf, applyDamage, condOn, beginTurn, CLASS, stageMult, type Combat, type Unit, type OutburstDesign } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
@@ -214,7 +214,7 @@ describe('Devoted: Heart\'s Own after the Beloved spell is gone', () => {
     A(f, f.unit(u.id), { type: 'combat/release', aim: '4,2' });
     f.unit(u.id).mg!.strain = 5;
     A(f, f.unit(u.id), { type: 'combat/end-turn' });
-    expect(fxOf(f.cb, 'burn').at(-1)).toMatchObject({ unit: u.id, over: 1, dmg: 8 }); // 1 over the plain 4: the burn
+    expect(fxOf(f.cb, 'burn').at(-1)).toMatchObject({ unit: u.id, over: 1, dmg: strainBurn(f.unit(u.id)) }); // 1 over the plain 4: the burn (8, × scale at its level: rules 1.36)
   });
 });
 

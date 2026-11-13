@@ -11,7 +11,7 @@
 // target's max HP.
 // Every number is provisional (spec section 14, items 1230 on and 1300 on).
 import type { Combat, Unit } from '../combat';
-import { RULES } from '../data';
+import { RULES, enemyLevelRow } from '../data';
 import { levelFactor, levelOf, amountOf, term, type Term } from './output';
 
 export const MENDING: any = (RULES as any).mending || {};
@@ -30,7 +30,7 @@ export const dealFactorOf = (u: Unit | null | undefined): number => (u && u.side
  * column, as enemies grow. */
 export function flatLevelOf(by: Unit | null | undefined, cb: Combat | null | undefined): number {
   if (by) return by.lvlDmg ? by.lvlDmg : by.charId && !by.companion ? levelOf('flat', by.level) : 1;
-  return cb?.level ? levelFactor('mend', cb.level) : 1;
+  return cb?.level ? enemyLevelRow(cb.level).damage_mult ?? 1 : 1; // the enemy table's damage column (never the heal column)
 }
 
 // ---------- rules 1.23: who has been mending (the enemy AI's healer weight) ----------
@@ -62,6 +62,8 @@ export const TRIAGE_HEAL: number = MEDIC.triage ?? 5;
 /** Out of a fight, with time to work (once an ally a scene): Triage × this. */
 export const TRIAGE_REST_MULT: number = MEDIC.triage_out_of_fight_mult ?? 3;
 export const STIM_HEAL: number = MEDIC.stim ?? 6;
+/** Rules 1.36: a stim heals this share of its target's max HP (the gate alone). */
+export const STIM_PCT: number = MEDIC.stim_pct ?? 0;
 export const RALLY_HEAL: number = MEDIC.rally ?? 6;
 export const FIELD_REPAIR_HEAL: number = MEDIC.field_repair_per_point ?? 3;
 

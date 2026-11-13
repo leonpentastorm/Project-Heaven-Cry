@@ -278,7 +278,7 @@ describe('rules 1.33 section 4: what leaves Empathy', () => {
   });
   it('the tend profile is Healing given (Insight and Empathy), k from data', () => {
     const c: any = { skills: { empathy: 6 }, attrs: { insight: 6 } };
-    expect(statOf('tend', c)).toBeCloseTo(1.573 * (1 + 0.06 * 5 + 0.06 * 6), 3);
+    expect(statOf('tend', c)).toBeCloseTo(3.74 * (1 + 0.06 * 5 + 0.06 * 6), 3); // rules 1.36: tend.k 3.74 (the Mender's 65% of the reference HP a turn)
     void levelFactor;
   });
 });

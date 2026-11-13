@@ -88,7 +88,10 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [x] **10b. Hide M813** (Leon, 13 Nov): take the M813 campaign off the menu and out of the default start (not deleted; its data and unit tests stay; browser suites that play M813 are moved to the Proving Ground or marked as campaign-only and still pass); say so in the changelog. And the final hand-off for a LOCAL session (Leon: "a very good hand-off file so that when I start a new session on my local computer, Fable gets what's going on"): rewrite `docs/design/handoffs/LOCAL-SESSION-START.md` at the close.
 - [x] **10. The screen:** meters, tabs and hover cards of each spec's section 9; every new action through the
       descriptors (no client-built action); the browser suites extended (one new suite a system, in a group).
-- [ ] **11. Balance:** every new line measured at levels 1, 5, 10, 20; `docs/design/balance-contract.md` and its
+- [ ] **11. Balance** (built 13 Nov on `worktree-agent-a3b99193069de306d` with 7b and step 10 merged in, not merged back:
+      rules 1.38, `classes-3.0-step-11.md`; Mag Dump, the focus list from data and the Emanator katana, the Mender's
+      fit; Figments off its line with no dial; one replay coverage count red for the lead's ruling):
+      every new line measured at levels 1, 5, 10, 20; `docs/design/balance-contract.md` and its
       guard updated; `PATCH-TALLY.md` (live against Classes 3.0, by system).
       **Mag Dump, in this step (Leon, 13 Nov: "a weapon with 200 rounds loses them all, fires four shots, stops"):**
       today it empties the whole magazine for at most three rolls (rules 1.18). Ruling to build (a call made for
@@ -249,6 +252,20 @@ Step 7 (`docs/design/handoffs/classes-3.0-step-7.md` section 6, rules 1.33 items
 7. **Measured, not refitted:** the Mender's healing turn 175 against 200 (−12%), the door's 164 against 174; the Mender's
    offence 79 (solo) / 83 (squad) against 70 (+13% / +19%). The balance guard was not given the three new rows (it would
    fail); the dials are `output.profiles.tend.k` and `tending.json bond.per_bond`.
+
+Step 7b (`docs/design/handoffs/classes-3.0-step-7b.md` section 5, rules 1.36 items 2300 to 2335; built on
+`worktree-agent-aa7fcf4cb4350f000`, not merged):
+1. ×7.5 read as the hit's growth: `deal` = 7.5^((L−1)/19), `scale` = new ÷ old deal (4.69 at 20); the settled block's
+   list is the deal column.
+2. The Buff heal fitted 14 → 11.3 (the off-heal line 45); the Outburst heals by soul_mend, the Sigil boon by sigil_mend
+   alone (the percent spec's question 7).
+3. The shield order by single use: Faith's Sanctuary pool 40 = 1; Tending shield 0.36; WARD Line and Inverse 0.33
+   (WARD 12 → 4.3, Inverse 10 → 7).
+4. The Mender's steady offence (79 / 84 against 70) is per_bond's, not the Ledger's: not reached (the cap 6.5 holds the
+   window). Figments: the door cannot sit 13% under the class by HP alone. Shadow per_point 0.7.
+5. The Chaplain not refitted (Smite is held to Rebuke's 20 by the validator). The Emanator katana still needs
+   FOCUS_IDS to read weapons.json.
+6. The superseded heal-band and medic-kit tests are skipped as a record; the guns guard's long-rifle top 1.13.
 
 ## 7. State when this was last touched
 

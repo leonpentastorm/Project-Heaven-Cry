@@ -84,6 +84,15 @@ describe('a focus counts only in a hand', () => {
     p.act({ type: 'combat/outburst', unitId: v.id, design: p.char(p.soul).outbursts![0].id, hold: true }); v = p.unit(p.soul);
     expect(v.mg!.held).toBeTruthy(); expect(v.mg!.mp).toBe(mp1); expect(v.mg!.strain).toBeGreaterThanOrEqual(st0 + 3);
   });
+  it('the Emanator katana (rules 1.38, data alone): in hand MP pays the Outburst; without any Emanator it draws on the air', () => {
+    const f = fight((_, b) => { b.weapon = 'emanator_katana'; b.loaded = 0; b.offHand = null; b.pack = packOf(b).filter((x) => (x.item || x.id) !== 'emanator'); b.mp = 100; });
+    let u = f.turn(f.soul); expect(u.mg!.emanator).toBe(true); expect(hasEmanator(f.char(f.soul))).toBe(true);
+    const mp0 = u.mg!.mp;
+    f.act({ type: 'combat/outburst', unitId: u.id, design: f.char(f.soul).outbursts![0].id, hold: true }); u = f.unit(f.soul);
+    expect(u.mg!.held).toBeTruthy(); expect(u.mg!.mp).toBeLessThan(mp0);
+    const n = fight((_, b) => { b.weapon = 'katana'; b.loaded = 0; b.offHand = null; b.pack = packOf(b).filter((x) => (x.item || x.id) !== 'emanator'); b.mp = 100; });
+    const v = n.turn(n.soul); expect(v.mg!.emanator).toBe(false); expect(hasEmanator(n.char(n.soul))).toBe(false);
+  });
   it('swapping the Evoker from the pack into the off hand costs 1 AP; then drawing works', () => {
     const f = fight((a) => { a.offHand = null; a.pack = [...packOf(a), tool('evoker')]; });
     let u = f.turn(f.sig); expect(drawRefused(f, f.sig)).toMatch(/Evoker in hand/);

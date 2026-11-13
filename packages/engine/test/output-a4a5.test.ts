@@ -38,11 +38,11 @@ describe('a4: a Sigil Line and an Outburst on the one formula, to the last place
       const atOnce = mods.includes('at_once') ? M.at_once?.damage_mult ?? 0.5 : 1, area = !char ? 1 : form !== 'bolt' ? BOON_AREA : mods.includes('split') ? (M.split?.boon_mult ?? 0.8) : 1, lvl = m.mend ?? 1;
       const dmg = (m.soulBase ?? SOUL_DAMAGE_ENEMY) * m.soulMult * sm * fm(form) * atOnce;
       expect(outburstDamage(m, d, sm)).toBe(dmg);
-      expect(outburstHeal(m, d, sm)).toBe((char ? BUFF_HEAL : BUFF_HEAL_ENEMY) * m.healMult * sm * lvl * area);
+      expect(outburstHeal(m, d, sm)).toBe((char ? BUFF_HEAL * m.soulMult : BUFF_HEAL_ENEMY * m.healMult) * sm * lvl * area); // rules 1.36: a character's Buff heal reads the Outburst's own Stat (soul_mend; soulMult here)
       expect(inverseShield(m, d, sm)).toBe(char ? (M.inverse?.shield ?? 10) * m.soulMult * sm * lvl * area : dmg * (M.inverse?.shield_mult_enemy ?? 0.7));
       expect(shellShield(m, d, sm)).toBe(char ? (M.shell?.shield ?? 4) * m.soulMult * sm * lvl : dmg * (M.shell?.shield_of_power_enemy ?? 0.35));
       for (const [lone, ar] of [[false, false], [true, false], [false, true]] as const)
-        expect(loveHeal(m, d, sm, lone, ar)).toBe((char ? BUFF_HEAL : BUFF_HEAL_ENEMY) * m.healMult * sm * lvl * (ar ? area : 1) * (lone ? F.love?.pour?.lone_heal_share ?? 0.15 : F.love?.pour?.heal_share ?? 0.25));
+        expect(loveHeal(m, d, sm, lone, ar)).toBe((char ? BUFF_HEAL * m.soulMult : BUFF_HEAL_ENEMY * m.healMult) * sm * lvl * (ar ? area : 1) * (lone ? F.love?.pour?.lone_heal_share ?? 0.15 : F.love?.pour?.heal_share ?? 0.25));
     }
   });
 });

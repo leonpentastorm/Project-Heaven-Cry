@@ -26,7 +26,7 @@ describe('ranged techniques from the off hand', () => {
       expect(f.tech(id, args(f, id))).toBeNull();
       const u = f.unit(f.pc.id);
       expect(u.ammo, id + ': the main hand').toBe(main0);
-      expect(off0 - u.offAmmo!, id + ': rounds').toBe(id === 'mag_dump' ? off0 : pv.rounds);
+      expect(off0 - u.offAmmo!, id + ': rounds').toBe(pv.rounds); // rules 1.38: Mag Dump too (up to its cap, not the whole magazine)
       expect(ap0 - u.ap, id + ': AP').toBe(pv.ap);
       expect(u.weapon).toBe('service_pistol'); expect(u.offWeapon).toBe(OFF);
     });

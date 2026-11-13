@@ -9,7 +9,7 @@ import ENEMIESJ from '../../../data/enemies.json';
 import ACTIONSJ from '../../../data/actions.json';
 import ITEMSJ from '../../../data/items.json';
 import { FOCUS_IDS } from '../src/character';
-import { ladderAt, projectionRange, heldMax, figmentCharge, setFigmentDesign, designsMax, pictureOptions, FORM, FIG_TRAIT, isFigment, figmentMeter, levelFactor, enemyLevelRow, mod, applyCond, condOn, perceivedFoes, isGhost, actionsFor, applyDamage, emit } from '../src';
+import { statTerm, ladderAt, projectionRange, heldMax, figmentCharge, setFigmentDesign, designsMax, pictureOptions, FORM, FIG_TRAIT, isFigment, figmentMeter, levelFactor, enemyLevelRow, mod, applyCond, condOn, perceivedFoes, isGhost, actionsFor, applyDamage, emit } from '../src';
 
 const F: any = FIGJ, R: any = RULESJ, ACT: any = ACTIONSJ;
 const cost = (site: string) => ACT.costs[site].ap;
@@ -75,7 +75,7 @@ describe('figments: rules 1.34 section 2', () => {
     const f = beastFight(); let u = f.turn(f.pc); f.picture(u, 'beast', SPOT); u = f.unit(u.id); f.foe.pos = '4,4';
     const b = f.figments(u)[0], prof = R.output.profiles.figment;
     expect(b.attack).toBe(mod(5)); expect(b.lvlDmg).toBeCloseTo(prof.k * levelFactor(prof.level, 5) * R.output.factors.figment, 3);
-    expect(b.maxHp).toBe(Math.round(FORM.beast.hp * lvl(5).damage_mult * lvl(5).hp_mult));
+    expect(b.maxHp).toBe(Math.round(FORM.beast.hp * statTerm('figment_hp', [], [5]) * lvl(5).hp_mult)); // rules 1.36: its maker's Visualization, the level's hp_mult
     const ap = u.ap; f.order(u, b, 'figment_strike', { targetId: f.foe.id }); u = f.unit(u.id);
     expect(ap - u.ap).toBe(cost('figment_strike'));
     const last = f.cb.log.map((l: any) => l.text || l).filter((s: string) => /Beast/.test(s)).pop(); expect(last).toMatch(/d20/);
@@ -174,7 +174,7 @@ describe('figments: designs', () => {
     setFigmentDesign(c, { id: 'h', name: 'Hound', form: 'beast', traits: ['swift', 'armoured'] });
     let u = f.turn(f.pc); f.picture(u, 'd:h', SPOT); u = f.unit(u.id); const b = f.figments(u)[0];
     expect(b.name).toBe('Hound'); expect(b.movement).toBe(FORM.beast.movement + FIG_TRAIT.swift.tiles);
-    expect(b.maxHp).toBe(Math.round(FORM.beast.hp * FIG_TRAIT.armoured.hp_mult * lvl(1).damage_mult * lvl(1).hp_mult));
+    expect(b.maxHp).toBe(Math.round(FORM.beast.hp * FIG_TRAIT.armoured.hp_mult * statTerm('figment_hp', [], [7]) * lvl(1).hp_mult)); // rules 1.36
     expect(u.mg!.vcharge).toBe(F.visualizer.charge - figmentCharge('beast', ['swift', 'armoured']));
   });
 });
