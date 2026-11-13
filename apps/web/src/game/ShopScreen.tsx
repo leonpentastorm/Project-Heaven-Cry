@@ -1,6 +1,6 @@
 // The full-screen shop (survival-spec 8.3; rules 1.42): it replaces the play screen when the party stands on a shop.
-// Drawn in FullScreenFrame (the Forge's frame too): the keeper, the tabs (Always in stock, Today's gear, Upgrade, Sell,
-// and Give as a visible placeholder until build step 4b), large item cards, your purse, hands and pack, and the compare
+// Drawn in FullScreenFrame (every safe node's frame since rules 1.46): the keeper, the tabs (Always in stock, Today's
+// gear, Upgrade: 4a's grade step through the services seam, Sell, Give: GiveTab.tsx), large item cards, your purse, hands and pack, and the compare
 // panel against what you hold. Everything it shows comes from the engine: `shopView` (prices, quantities, the reasons
 // a thing can't be bought, the sell values) and `compareGear` (the gear preview's numbers, both columns); every action is
 // a `run/*` sent through the store. Each player browses their own view of the one shared stock.
@@ -11,6 +11,8 @@ import { gearIconUri, roundsGearId, magGearId } from './gearIcons';
 import { tipProps } from './actionTip';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab } from './FullScreenFrame';
 import ASSETS from './assets.json';
+import { GiveTab } from './GiveTab';
+import { UpgradeCard } from './UpgradeCard';
 
 const A = ASSETS as Record<string, string>;
 const art = (k: string) => (k ? A[k + '-lg'] || A[k] || '' : '');
@@ -143,22 +145,16 @@ export function ShopScreen() {
   const card = (c: ShopCardV, big = false) => <Card key={c.key} c={c} qty={q(c.key)} setQty={setQ(c.key)} onFocus={() => setFocus({ id: c.id, rarity: c.rarity })} onBuy={() => buy(c)} big={big} />;
   const tabs: FrameTab[] = [
     { id: 'always', label: 'Always in stock' }, { id: 'gear', label: "Today's gear" }, { id: 'upgrade', label: 'Upgrade' }, { id: 'sell', label: 'Sell' },
-    { id: 'give', label: 'Give', disabled: true, why: 'Gives between players open with the next build step: credits and pack items, handed over at any safe node.' },
+    { id: 'give', label: 'Give' },
   ];
   const portrait = v.face.portraitPending ? (v.face.fallback ? art('char-' + v.face.fallback) : '') : art(v.face.portrait);
   const backdrop = v.face.backdropPending ? (v.face.backdropFallback ? art('ill-' + v.face.backdropFallback) : '') : art(v.face.backdrop);
   let body: React.ReactNode;
   if (tab === 'always') body = v.shelves.map((s) => <section key={s.shelf} data-phc-shelf={s.shelf}>{shelfHead(s.name, s.shelf === 'guns' ? 'what your squad carries, first' : s.shelf === 'calibres' ? 'never sold out' : undefined)}<div style={GRID}>{s.cards.map((c) => card(c))}</div></section>);
   else if (tab === 'gear') body = <section data-phc-shelf="gear">{shelfHead("Today's gear", 'one of each; the first buyer takes it')}<div style={GRID}>{v.gear.map((c) => card(c, c.rare))}</div></section>;
-  else if (tab === 'upgrade') body = <section data-phc-shelf="upgrade">{shelfHead('Upgrade')}{v.services.length ? <div style={GRID}>{v.services.map((s) => (
-    <article key={s.key} data-phc-service={s.key} style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 18, borderRadius: 16, background: I.raised, border: '1px solid ' + I.line }}>
-      <span style={{ fontFamily: "'Spectral', serif", fontSize: 19, fontWeight: 600 }}>{s.title}</span>
-      {s.lines.map((l, i) => <span key={i} style={{ fontSize: 13 }}>{l.label}: {l.before} → <b>{l.after}</b></span>)}
-      {s.note ? <span style={{ fontSize: 12, color: I.muted }}>{s.note}</span> : null}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 'auto' }}>{s.price != null ? <span style={{ fontSize: 24, fontWeight: 700 }}>{s.price.toLocaleString('en')} <span style={{ fontSize: 11, color: I.muted }}>CREDITS</span></span> : null}
-        <button type="button" disabled={!!s.why} onClick={() => act(s.action as any)} style={{ marginLeft: 'auto', minHeight: 40, padding: '0 18px', borderRadius: 10, border: 0, background: s.why ? I.panel : I.text, color: s.why ? I.muted : I.ground, fontFamily: 'inherit', fontWeight: 700 }}>Take it</button></div>
-      {s.why ? <span style={{ fontSize: 13, color: I.muted }}>{s.why}</span> : null}
-    </article>))}</div> : <p data-phc-upgrade-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>The grade step (a weapon or focus raised one rarity, for credits) opens here with the next build step, and cheaper at a Forge.</p>}</section>;
+  else if (tab === 'upgrade') body = <section data-phc-shelf="upgrade">{shelfHead('Upgrade', 'one grade step a visit, at the full price; cheaper at a Forge')}{v.services.length ? <div style={GRID}>{v.services.map((sv) => <UpgradeCard key={sv.key} s={sv} onFocus={() => sv.id && setFocus({ id: sv.id, rarity: (sv.rarity || 'standard') as Rarity })} />)}</div>
+    : <p data-phc-upgrade-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>Nothing you carry takes a grade step here: a weapon or a focus does.</p>}</section>;
+  else if (tab === 'give') body = <GiveTab />;
   else body = <section data-phc-shelf="sell">{shelfHead('Sell', 'a quarter of the price at its own grade')}<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{v.sell.map((r) => (
     <div key={r.idx} data-phc-sell={r.idx} onMouseEnter={() => setFocus({ id: r.id, rarity: r.rarity })} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px', borderRadius: 12, background: I.raised, border: '1px solid ' + I.line, opacity: r.why ? 0.6 : 1 }}>
       <img src={iconOf(r.id)} alt="" width={40} height={40} style={{ objectFit: 'contain', visibility: iconOf(r.id) ? 'visible' : 'hidden' }} />

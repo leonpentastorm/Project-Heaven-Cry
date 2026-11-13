@@ -3,8 +3,8 @@
 // Chakra Petch caps, the speech card: a polite live region), the party strip and the leaving buttons at its foot; the
 // tabs across the top with the purse right-aligned (its last change floating off it); the shelves in the centre and the
 // side panel on the right (each scrolls on its own; nothing is cut to save space); the visit's log along the bottom.
-// Presentation only: every word and number it shows is handed in by the screen that uses it (ShopScreen; the Forge of
-// build step 4a uses the same frame with its own face and tabs).
+// Presentation only: every word and number it shows is handed in by the screen that uses it (ShopScreen; since rules
+// 1.46 PlaceScreen, every other safe node: the Forge, a training ground, a shrine, a crossroads, a rest).
 import React from 'react';
 import { tipProps } from './actionTip';
 
@@ -22,7 +22,10 @@ export interface FrameProps {
   purse: number; purseLabel?: string;
   party: FrameMember[]; ready: boolean; isHost: boolean; waiting: string[];
   onReady: () => void; onClose: () => void; closeTip: string; readyWord: string;
-  log: string[];
+  /** Rules 1.46: a place the party walks on from (not a shop): no "Close for everyone", and the party strip's words
+   * (`marks`: [marked, not yet]) say who has marked the next node instead of READY / BROWSING. */
+  hideClose?: boolean; marks?: [string, string];
+  log: string[]; emptyLog?: string;
   children: React.ReactNode; side: React.ReactNode;
 }
 const CSS = [
@@ -72,13 +75,13 @@ export function FullScreenFrame(p: FrameProps) {
                 <span key={m.id} data-phc-party={m.id} data-phc-ready={m.ready ? '1' : '0'} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 10px 6px 6px', borderRadius: 99, background: I.panel, border: '1px solid ' + (m.ready ? I.white : I.line), opacity: m.online ? 1 : 0.5 }}>
                   <span style={{ display: 'grid', placeItems: 'center', width: 26, height: 26, borderRadius: '50%', fontSize: 10, fontWeight: 700, background: m.color, color: I.ground }}>{m.initials}</span>
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{m.name}{m.mine ? ' (you)' : ''}</span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: m.ready ? I.white : I.muted }}>{m.ready ? '✓ READY' : 'BROWSING'}</span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: m.ready ? I.white : I.muted }}>{m.ready ? (p.marks ? p.marks[0] : '✓ READY') : (p.marks ? p.marks[1] : 'BROWSING')}</span>
                 </span>
               ))}
             </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button type="button" data-phc-leave="" onClick={p.onReady} disabled={p.ready} style={{ flex: 1, minHeight: 48, padding: '0 18px', borderRadius: 12, border: 0, background: p.ready ? I.raised : I.text, color: p.ready ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: p.ready ? 'default' : 'pointer' }}>{p.ready ? '✓ ' + p.readyWord : p.readyWord}</button>
-              {p.isHost ? <button type="button" data-phc-close="" onClick={p.onClose} {...tipProps(p.closeTip)} style={{ minHeight: 48, padding: '0 18px', borderRadius: 12, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Close for everyone</button> : null}
+              {p.isHost && !p.hideClose ? <button type="button" data-phc-close="" onClick={p.onClose} {...tipProps(p.closeTip)} style={{ minHeight: 48, padding: '0 18px', borderRadius: 12, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Close for everyone</button> : null}
             </div>
           </div>
         </section>
@@ -99,13 +102,13 @@ export function FullScreenFrame(p: FrameProps) {
           </div>
         </div>
         {/* 3. the shelves */}
-        <main role="tabpanel" aria-label={p.tabs.find((t) => t.id === p.tab)?.label} style={{ gridColumn: 2, gridRow: 2, minHeight: 0, overflowY: 'auto', padding: '20px 20px 28px 8px' }}>{p.children}</main>
+        <main role="tabpanel" data-phc-shelves="" aria-label={p.tabs.find((t) => t.id === p.tab)?.label} style={{ gridColumn: 2, gridRow: 2, minHeight: 0, overflowY: 'auto', overscrollBehavior: 'contain', padding: '20px 20px 56px 8px', scrollPaddingBottom: 56, maskImage: 'linear-gradient(180deg, #000 calc(100% - 28px), rgba(0,0,0,0.25) 100%)', WebkitMaskImage: 'linear-gradient(180deg, #000 calc(100% - 28px), rgba(0,0,0,0.25) 100%)' }}>{p.children}</main>
         {/* 4. you */}
         <aside aria-label="You" style={{ gridColumn: 3, gridRow: 2, minHeight: 0, overflowY: 'auto', padding: '20px 28px 28px 12px', borderLeft: '1px solid ' + I.line, background: 'rgba(10,13,19,0.35)' }}>{p.side}</aside>
         {/* 5. the visit's log */}
         <footer data-phc-visit-log="" style={{ gridColumn: '1 / 4', gridRow: 3, display: 'flex', alignItems: 'center', gap: 14, minHeight: 56, padding: '0 28px', borderTop: '1px solid ' + I.line, background: 'rgba(10,13,19,0.92)', overflow: 'hidden', whiteSpace: 'nowrap' }}>
           <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: I.muted, flexShrink: 0 }}>THIS VISIT</span>
-          <span style={{ fontSize: 14, color: I.text, overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.log.length ? p.log.join('  ·  ') : 'Nothing bought or sold yet.'}</span>
+          <span style={{ fontSize: 14, color: I.text, overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.log.length ? p.log.join('  ·  ') : (p.emptyLog || 'Nothing bought or sold yet.')}</span>
         </footer>
       </div>
     </div>
