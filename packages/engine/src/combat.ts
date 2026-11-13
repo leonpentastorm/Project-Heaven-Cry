@@ -680,11 +680,13 @@ export const objectsAt = (cb: Combat, k: string) => objectsOf(cb).filter((o) => 
 export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp: number; max: number; id: string; name: string }> {
   const out: Record<string, any> = {};
   for (const o of objectsOf(cb)) { const c = coverKind(o); if (c) out[o.pos] = { kind: c, hp: o.hp ?? 0, max: o.max ?? 0, id: o.id, name: o.name }; }
-  for (const u of coverUnits(cb)) if (!out[u.pos]) out[u.pos] = { kind: 'half', hp: u.hp, max: u.maxHp, id: u.id, name: u.name }; // Classes 3.0 P9: an owned unit whose block is cover
+  for (const u of coverUnits(cb)) if (!out[u.pos]) out[u.pos] = { kind: unitCover(u), hp: u.hp, max: u.maxHp, id: u.id, name: u.name }; // Classes 3.0 P9: an owned unit whose block is cover
   return out;
 }
 /** Classes 3.0 P9: the living owned units whose block is cover (half cover for those behind them; they block sight). */
 const coverUnits = (cb: Combat): Unit[] => cb.units.filter((u) => u.owned?.cover && !u.dead && !u.downed);
+/** The cover an owned unit gives: its block's `cover` "full" (rules 1.34: the Wall Figment), else half. */
+const unitCover = (u: Unit): 'half' | 'full' => ((u.owned as any)?.cover === 'full' ? 'full' : 'half');
 export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...objectsOf(cb).filter(isDifficult).map((o) => o.pos)]);
 export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
 export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb), ...coverUnits(cb).map((u) => u.pos)]);
@@ -935,7 +937,7 @@ export function coverTileFor(cb: Combat, from: string, to: string): string | nul
     const [cx, cy] = xy(o.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) !== 1) continue;
     const e = near && near.find((q) => q.k === o.pos); if (e) e.kind = c; else (near ||= []).push({ k: o.pos, kind: c });
   }
-  for (const u of coverUnits(cb)) { const [cx, cy] = xy(u.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && !(near && near.some((q) => q.k === u.pos))) (near ||= []).push({ k: u.pos, kind: 'half' }); }
+  for (const u of coverUnits(cb)) { const [cx, cy] = xy(u.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && !(near && near.some((q) => q.k === u.pos))) (near ||= []).push({ k: u.pos, kind: unitCover(u) }); }
   if (!near) return null;
   const far = dist(from, to);
   for (const e of near) if (e.kind === 'half' && dist(from, e.k) < far) return e.k;

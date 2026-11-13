@@ -34,7 +34,7 @@ import type { Rng } from './rng';
 /** How an owned unit takes its turn. */
 export const OWNED_TURNS = ['own', 'owner', 'auto'] as const;
 /** An owned unit's own block (P9). `spent`: what its spawn took (unmake's refund). */
-export interface OwnedBlock { turn: (typeof OWNED_TURNS)[number]; /** companion (default) or a system's word (figment): one tie kind, the record tells them apart */ kind?: string; eyes?: boolean; upkeep?: { res: string; n: number }; cover?: boolean; lure?: boolean; spent?: Record<string, number>; /** turn auto: what it does at its owner's turn start */ auto?: { verb: string; target: (typeof AUTO_TARGETS)[number] };
+export interface OwnedBlock { turn: (typeof OWNED_TURNS)[number]; /** companion (default) or a system's word (figment): one tie kind, the record tells them apart */ kind?: string; eyes?: boolean; upkeep?: { res: string; n: number }; cover?: boolean | 'full'; lure?: boolean; spent?: Record<string, number>; /** turn auto: what it does at its owner's turn start */ auto?: { verb: string; target: (typeof AUTO_TARGETS)[number] };
   /** Classes 3.0 step 8 (rules 1.34): made outside its owner's held count (the Rigger's Double, a Scrap Turret) */ free?: boolean;
   /** rules 1.34: it is unmade at its owner's turn start in this round (a lifetime in rounds) */ until?: number }
 /** The fields of a block a spawn copies onto the unit's record. */
@@ -71,7 +71,7 @@ export function ownedRecord(block: any): OwnedBlock {
   const o: OwnedBlock = { turn: OWNED_TURNS.includes(block?.turn) ? block.turn : 'own' };
   if (block?.eyes === false) o.eyes = false;
   if (block?.upkeep) o.upkeep = { res: block.upkeep.res, n: block.upkeep.n };
-  if (block?.cover) o.cover = true;
+  if (block?.cover) o.cover = block.cover === 'full' ? 'full' : true; // rules 1.34: "full" (the Wall), else half cover
   if (block?.lure) o.lure = true;
   if (typeof block?.owned_kind === 'string' && block.owned_kind !== 'companion') o.kind = block.owned_kind;
   if (o.turn === 'auto' && block?.auto && (OWNED_VERBS as readonly string[]).includes(block.auto.verb)) o.auto = { verb: block.auto.verb, target: (AUTO_TARGETS as readonly string[]).includes(block.auto.target) ? block.auto.target : 'nearest_foe' };

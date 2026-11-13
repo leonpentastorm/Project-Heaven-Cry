@@ -87,7 +87,7 @@ describe('figments: rules 1.34 section 2', () => {
     withGame(f.g, () => { b.hp = 1; applyCond(f.cb, f.g.rng, null, b, 'bleeding'); }); // immune: still standing
     expect(f.figments(u).length).toBe(1);
     withGame(f.g, () => { applyDamage(f.cb, b, 999, { by: f.foe, type: 'weapon' } as any); });
-    u = f.turn(u); expect(f.figments(u).length).toBe(0); expect(u.mg!.vcharge).toBe(c0 - 0); expect(u.ap).toBe(6 - F.let_go.snap_ap);
+    u = f.turn(u); expect(f.figments(u).length).toBe(0); expect(u.mg!.vcharge).toBe(c0); expect(u.ap).toBe(6 - F.let_go.snap_ap);
   });
   it('rule 7: your Downed or Stunned unravels them all; Silenced stops Picture but they stay; out of range at your turn end unravels', () => {
     const f = beastFight(); let u = f.turn(f.pc); f.picture(u, 'beast', SPOT); u = f.unit(u.id);

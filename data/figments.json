@@ -77,7 +77,7 @@
       "adjudication": "engine", "provisional": true
     },
     {
-      "id": "wall", "name": "Wall", "owned_kind": "figment", "turn": "owner", "eyes": false, "cover": true,
+      "id": "wall", "name": "Wall", "owned_kind": "figment", "turn": "owner", "eyes": false, "cover": "full",
       "opens": { "skill": "visualization", "min": 3 }, "charge": 3,
       "hp": 60, "defense": 6, "armour": 5, "attack_bonus": 0, "movement": 1, "weapon": "fists",
       "actions": ["move"], "verbs": ["let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],

@@ -1,3 +1,4 @@
+// @ts-nocheck (Figment fields on units are read loosely here)
 // Classes 3.0 step 8 (rules 1.34; docs/design/figments-spec.md section 5): the Rigger (class id trickster), its six moves,
 // Field Repair (Improvisation's door action), the Blade's Hold, and the old save (every key resolves). Numbers from data.
 import { describe, it, expect } from 'vitest';
@@ -36,7 +37,7 @@ describe('the Rigger: the moves', () => {
   it('Double: 2 AP and its charge; a bare Double outside the held count, no upkeep, gone at your turn start `rounds` on; works with Visualization 0', () => {
     const f = rigger({ vis: 0 }); let u = f.turn(f.pc); const ap = u.ap, c0 = u.mg!.vcharge!;
     use(f, u, 'class:trickster.false_image', { tile: '3,4' }); u = f.unit(u.id);
-    const d = f.figments(u)[0]; expect(d.name).toBe(FORM.double.name); expect(d.owned.free).toBe(true); expect(d.owned.upkeep).toBeUndefined();
+    const d = f.figments(u)[0]; expect(d.name).toBe(FORM.double.name); expect(d.owned!.free).toBe(true); expect(d.owned!.upkeep).toBeUndefined();
     expect(ap - u.ap).toBe(move('false_image').ap_cost); expect(u.mg!.vcharge).toBe(c0 - move('false_image').numbers.charge);
     for (let i = 0; i < move('false_image').numbers.rounds; i++) { f.cb.round++; u = f.turn(u); }
     expect(f.figments(u).length).toBe(0);
@@ -72,7 +73,7 @@ describe('the Rigger: the moves', () => {
     const f = rigger({ vis: 0, foes: [{ tier: 'soldier', at: '9,4', classic: true }, { tier: 'soldier', at: '12,4', classic: true }] }); let u = f.turn(f.pc);
     const w = f.foes[0]; w.kind = 'drone'; w.pos = '2,4'; withGame(f.g, () => applyDamage(f.cb, w, 9999, { by: u, type: 'weapon' } as any));
     use(f, u, 'class:trickster.scrap_turret', { tile: '2,4' }); u = f.unit(u.id);
-    const tr = f.cb.units.find((x: any) => x.owned?.kind === 'machine')!; expect(tr).toBeTruthy(); expect(tr.owned.turn).toBe('auto');
+    const tr = f.cb.units.find((x: any) => x.owned?.kind === 'machine')!; expect(tr).toBeTruthy(); expect(tr.owned!.turn).toBe('auto');
     const n0 = f.cb.log.length; f.cb.round++; u = f.turn(u);
     expect(f.cb.log.slice(n0).some((l: any) => String(l.text || l).includes(tr.name))).toBe(true);
     for (let i = 1; i < move('scrap_turret').numbers.rounds; i++) { f.cb.round++; u = f.turn(u); }
