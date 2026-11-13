@@ -4,7 +4,7 @@ import { chromium, player, click, BASE, hostAs, settle, lockIn } from './lib.mjs
 const SHOTS = process.env.SHOTS || 'apps/web/e2e/shots/';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
-const mk = async () => { const p = await player(browser, 'host'); const errors = []; p.on('pageerror', (e) => errors.push(String(e.message || e))); p.errs = errors; return p; };
+const mk = async () => { const p = await player(browser, 'host', { campaigns: ['m813'] }); const errors = []; p.on('pageerror', (e) => errors.push(String(e.message || e))); p.errs = errors; return p; };
 const G = (p) => p.evaluate(() => window.__phc.getState().game);
 const act = (p, a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const toast = (p) => p.evaluate(() => window.__phc.getState().toast?.text || '');

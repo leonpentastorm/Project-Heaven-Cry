@@ -6,6 +6,7 @@
 // Every action through its real button, except the Break shot, sent as the attack card sends it (its toggle id in mods).
 // Screenshots: e2e/shots/shadow-*.png.
 import { chromium, player, click, BASE, OUT, settle } from './lib.mjs';
+import { tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -15,6 +16,9 @@ const act = (a) => host.evaluate((a) => { try { window.__phc.act(a); return null
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 const tok = (k) => host.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
 const dismissCut = async () => { for (let i = 0; i < 3; i++) { if (!(await host.locator('[data-phc-cutin]').count())) return; await host.mouse.click(1430, 990); await settle(host, 380); } };
+// a token's drawn opacity (the portrait or the initials badge inside the tile button; game/tokenFade.ts)
+const tokOpacity = (k) => host.evaluate((lab) => { const b = [...document.querySelectorAll('button.phc-tok')].find((e) => (e.getAttribute('aria-label') || '').startsWith(lab + ' ·')); if (!b) return null;
+  const f = [...b.querySelectorAll('img, span')].find((e) => { const z = getComputedStyle(e).zIndex; return z === '2' && (e.tagName === 'IMG' || /50%|4px/.test(e.style.borderRadius)); }); return f ? Number(getComputedStyle(f).opacity) : null; }, ref(k));
 let charId;
 const me = async () => (await G()).combat.units.find((u) => u.charId === charId);
 async function toMe() {
@@ -58,11 +62,28 @@ await settle(host, 300);
 const meterText = await host.locator('text=Shadow').first().textContent().catch(() => '');
 ok('the meter row is on the screen ("' + (meterText || '').slice(0, 40) + '")', !!meterText);
 await snap('01-meter');
+// Classes 3.0 step 10 (shadow-spec.md section 9): the meter shows the engine's value, once; the SHADOW tab in its groups;
+// a verb that needs you Hidden is refused in the spec's words while you are seen
+{
+  const row = (await host.locator('.phc-res-row:not(.phc-res-mini)[data-res="res-shadow"]').first().textContent().catch(() => '')) || '';
+  ok('the meter row reads the engine\'s Shadow (' + row.replace(/\s+/g, ' ').slice(0, 60) + ')', row.includes((u.res?.shadow ?? 0) + ' / ' + (u.resMax?.shadow ?? 0)) && (await host.locator('.phc-res-row:not(.phc-res-mini)[data-res="res-shadow"]').count()) === 1);
+  ok('the eye word under it (Unseen / In view / Seen)', /Eye: (Unseen|In view|Seen)/.test(row));
+  await host.locator('#phc-tab-shadow').click(); await settle(host, 200);
+  const tab = (await host.locator('[role="tabpanel"]').textContent()) || '';
+  const groups = ['SLIP', 'MARK', 'WORK', 'BREAK'].filter((w) => tab.includes(w));
+  ok('the SHADOW tab in its groups: ' + groups.join(', '), groups.length >= 3);
+  const ri = host.locator('[role="tabpanel"] button', { hasText: 'Read Intent' }).first();
+  const tip = (await ri.count()) ? await tipOf(ri) : '';
+  ok('Read Intent while seen, refused in the spec\'s words (' + tip.slice(0, 70) + ')', /An enemy sees you/.test(tip));
+}
 
 // ---------- 1. Vanish, then a turn ended Hidden with no attack ----------
 let r = await tabMove('class', /^Vanish/);
 u = await me();
 ok('Vanish: Hidden (' + (r || 'confirmed') + ')', !r && !!u.hidden);
+await settle(host, 300);
+let op = await tokOpacity(u.pos);
+ok('Hidden: my token drawn at 60% (' + op + '), the Hidden word kept', op === 0.6 && /HIDDEN/.test((await tok(u.pos).getAttribute('aria-label')) || ''));
 await act({ type: 'combat/end-turn', unitId: u.id }); await settle(host, 300);
 ok('my turn again', await toMe());
 u = await me();
@@ -83,12 +104,34 @@ ok('Read Intent: the Soldier is Read (' + (r || 'confirmed') + ')', !r && (read.
 
 // ---------- 3. The Break: one shadow term, the meter spent, revealed ----------
 u = await me();
+// Classes 3.0 step 10: on the attack card the Break is a toggle; switching it on changes the previewed damage
+{
+  await host.locator('#phc-tab-attack').click(); await settle(host, 150);
+  await host.locator('[role="tabpanel"]').getByRole('button', { name: /^Shot/ }).first().click(); await settle(host, 150);
+  await tok(foe.pos).click(); await settle(host, 200);
+  const brk = host.locator('[aria-label="Perk options on this action"] button', { hasText: 'Break' }).first();
+  const has = await brk.waitFor({ timeout: 30000 }).then(() => true, () => false);
+  const card = async () => ((await host.locator('.phc-cb-dock').first().textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
+  const before = await card();
+  if (has) { await brk.click(); await host.waitForFunction(() => document.querySelector('[aria-label="Perk options on this action"] button[aria-pressed="true"]'), null, { timeout: 10000 }).catch(() => {}); }
+  const after = await card();
+  let i = 0; while (i < before.length && before[i] === after[i]) i++;
+  const at = Math.max(0, i - 20), seen = after.slice(at, at + 70);
+  ok('the Break is a toggle on the attack card, and switching it changes the preview ("…' + seen + '…")', has && before !== after && /shadow|Break/i.test(after));
+  await host.locator('.phc-res-row:not(.phc-res-mini)[data-res="res-shadow"]').first().scrollIntoViewIfNeeded().catch(() => {}); await settle(host, 150);
+  await host.mouse.move(700, 120); await settle(host, 200); // no hover card over the picture
+  if (process.env.SHOTS_C3) await host.screenshot({ path: process.env.SHOTS_C3 + 'operative-shadow-break.png' });
+  await snap('02b-break-toggle');
+}
 const mods = ['skill:ingenuity.1#shadow.break'];
 const pv = await host.evaluate(({ id, t, mods }) => { const g = window.__phc.getState().game; const E = window.__phcEngine; if (!E?.previewAttack) return null; const cb = { ...g.combat, mods }; return E.previewAttack(cb, cb.units.find((v) => v.id === id), cb.units.find((v) => v.id === t), 'shot').dmg?.mults?.map((m) => m.label); }, { id: u.id, t: foe.id, mods });
 if (pv) ok('the preview lists one shadow term and no ambush term: ' + pv.join(', '), pv.includes('shadow') && !pv.includes('ambush'));
 r = await act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot', mods }); await settle(host, 600);
 u = await me();
 ok('the Break shot: the meter spent (' + (u.res?.shadow ?? 0) + ') and revealed (' + (r || 'sent') + ')', !r && (u.res?.shadow ?? 0) === 0 && !u.hidden);
+await settle(host, 300);
+op = await tokOpacity(u.pos);
+ok('revealed: my token drawn plainly again (' + op + ')', op === 1);
 const log = ((await G()).combat.log || []).map((l) => (typeof l === 'string' ? l : l.text || '')).join('\n');
 ok('the log says so', /breaks from the shadows/.test(log));
 await snap('03-break');

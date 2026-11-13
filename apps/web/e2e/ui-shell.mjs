@@ -6,7 +6,7 @@
 // own confirm(), prompt() and alert() are stubbed to throw: none of them may ever be called.
 import { chromium, player, click, hostAs, settle, BASE, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
-const host = await player(browser, 'host');
+const host = await player(browser, 'host', { campaigns: ['m813'] });
 const refused = []; host.on('response', (r) => { if (r.status() >= 400) refused.push(r.status() + ' ' + r.url().slice(0, 120)); });
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;

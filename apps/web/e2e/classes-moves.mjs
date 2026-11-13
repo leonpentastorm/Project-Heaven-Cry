@@ -86,14 +86,14 @@ async function withFocus(kind) {
   return act(host, { type: 'sandbox/kit', charId: hostChar, kind });
 }
 /** Open the CLASS tab and press a move's button there (the base Shove lives on another tab under the same name). */
-async function pickClass(name) {
-  await host.locator('#phc-tab-class').click(); await settle(host, 120);
+async function pickClass(name, tab = 'class') {
+  await host.locator('#phc-tab-' + tab).click(); await settle(host, 120);
   await host.locator('[role="tabpanel"]').getByRole('button', { name }).first().click(); await settle(host, 150);
 }
 /** Click a CLASS-tab move, then its grid picks and chips, then Confirm. Returns the footer's text if Confirm is disabled. */
 async function useMove(name, o = {}) {
   await dismissCut();
-  await pickClass(name);
+  await pickClass(name, o.tab); // a prayer move (Ward) is on the FAITH tab since Classes 3.0 step 10
   if (o.target) { await tok(o.target).click(); await settle(host, 150); }
   if (o.chip) { await host.locator('.phc-cb-pick').getByRole('button', { name: o.chip }).first().click(); await settle(host, 120); }
   if (o.tile) { await tok(o.tile).click(); await settle(host, 150); }
@@ -167,7 +167,7 @@ ok('host turn', await newTurn());
 ok('the squadmate stands in sight', await mateNear(3));
 let m = await mate(); u = await me();
 n0 = await fxN();
-r = await useMove(/^Ward/, { target: m.pos, shot: '03-ward-picker' });
+r = await useMove(/^Ward/, { tab: 'faith', target: m.pos, shot: '03-ward-picker' });
 m = await mate(); u = await me();
 ok('Ward at Faith 1: ' + (r || 'confirmed') + '; the squadmate carries a Ward (' + JSON.stringify(m.shields || []) + ')', !r && (m.shields || []).some((l) => l.layer === 'ward' && l.by === u.id && l.n > 0));
 ok('Ward was the turn\'s Whisper (its slot is spent: ' + JSON.stringify(Object.keys(u.uses || {}).filter((k) => k.startsWith('faith#'))) + ')', Object.keys(u.uses || {}).some((k) => k.startsWith('faith#whisper')));

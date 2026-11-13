@@ -4,7 +4,7 @@
 // and carries its own Leave the room. No browser confirm/prompt/alert anywhere.
 import { chromium, player, click, BASE, hostAs, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
-const host = await player(browser, 'host'), guest = await player(browser, 'guest');
+const host = await player(browser, 'host', { campaigns: ['m813'] }), guest = await player(browser, 'guest');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
 for (const p of [host, guest]) await p.context().addInitScript(() => {

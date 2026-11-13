@@ -120,8 +120,11 @@ export function Title() {
   const needName = (then: string) => { if (st.me.name.trim()) return false; setAfter(then); return true; };
   const items: Item[] = [
     ...(lastInfo ? [{ id: 'continue', label: 'CONTINUE', sub: 'Room ' + lastInfo.code + ' · ' + ago(lastInfo.savedAt), start: true, bubble: 'Welcome back!', run: () => (needName('resume:' + lastInfo.code) ? setPanel('name') : resumeSession(lastInfo.code)) }] : []),
+    // Classes 3.0 step 10b (Leon, 13 Nov 2026): M813 is off the menu (game/starts.ts), so the Proving Ground is the place to
+    // play until Survival mode exists: it comes first; NEW GAME opens a room for a Narrator's own start or your campaign
+    // (its button keeps the bare name: the suites and players find it by it).
+    { id: 'proving', label: 'PROVING GROUND', sub: 'Fight now · any class, level and gear · endless waves', start: true, bubble: 'Fight me!', run: () => setPanel('proving') },
     { id: 'new', label: 'NEW GAME', start: true, bubble: "Let's go!", run: () => (needName('host') ? setPanel('name') : hostRoom()) },
-    { id: 'proving', label: 'PROVING GROUND', sub: 'Practice fights · endless waves · no Narrator', bubble: 'Fight me!', run: () => setPanel('proving') },
     { id: 'join', label: 'JOIN A FRIEND', bubble: 'Who\'s there?', run: () => setPanel('join') },
     { id: 'chars', label: 'CHARACTERS', bubble: 'Hello!', run: () => setPanel('characters') },
     ...(sessions.length ? [{ id: 'saved', label: 'SAVED GAMES', bubble: 'Hello!', run: () => setPanel('saved') }] : []),

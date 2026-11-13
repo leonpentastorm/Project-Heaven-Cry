@@ -182,7 +182,7 @@ export type TieEnd = (typeof TIE_ENDS)[number] | { word: (typeof TIE_ENDS)[numbe
  * tied by this kind (the Bonded mark): when the last such tie to it ends the mark ends, and when the mark ends (its
  * rounds, a cleanse) every such tie to it ends. `gear`: a focus the near end must carry on its person ({door}), else
  * at a round's start its ties of this kind end (the Attuner leaving your person). */
-export interface TieKind { id: string; max?: number; ends_on?: TieEnd[]; on_end?: (typeof TIE_ON_END)[number]; about?: string; mark?: string; gear?: { door: string } }
+export interface TieKind { id: string; max?: number; ends_on?: TieEnd[]; on_end?: (typeof TIE_ON_END)[number]; about?: string; mark?: string; gear?: { door: string }; /** the map draws it (screenViews.ts tieLines): its ink, and the dash pattern to another side's unit */ line?: { ink: string; foe_dash?: string } }
 const TIE_DATA: TieKind[] = (((RULES_K as any).ties?.kinds || []) as TieKind[]);
 let TIE_ADDED: TieKind[] = [];
 /** The kinds of tie (the data's, then those added at run time: a test's fixture). */

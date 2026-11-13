@@ -28,7 +28,7 @@ import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView 
 import { TECHNIQUE, weaponSystem, propText } from './physical/data';
 import { callPad, previewCall } from './calls/core';
 import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COST_LEVELS, GATE, MIRACLE_FAITH } from './faith';
-import { perkActionsFor, previewPerkAction, togglesFor, type ToggleEntry } from './effects/actions';
+import { perkActionsFor, previewPerkAction, togglesFor, PRAYER_SUB, type ToggleEntry } from './effects/actions';
 import type { PerkActionEntry } from './effects/actions';
 import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
   steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE } from './magic';
@@ -38,9 +38,9 @@ import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo } from './owned';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
-export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'shadow' | 'sigils' | 'outbursts' | 'faith' | 'calls';
+export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'shadow' | 'tend' | 'figments' | 'sigils' | 'outbursts' | 'faith' | 'calls';
 /** The order of the action groups on the fight screen's tabs. */
-export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'shadow', 'sigils', 'outbursts', 'faith', 'calls'];
+export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'shadow', 'tend', 'figments', 'sigils', 'outbursts', 'faith', 'calls'];
 /** What a pick step asks for. enemy/ally/unit: a unit clicked on the grid; tile: a tile; option: one (or up to `max`)
  * of `options`; custom: a bespoke panel the screen registers under `renderer` fills `key` (the glyph keyboard, the
  * HEART panel, a perk's form, the pile checklist, the Evoke planner). */
@@ -103,6 +103,10 @@ export interface ActionDescriptor {
   hand?: 'main' | 'off' | 'both';
   /** A technique's text in parts (techParts), for a hover card that lays it out a line each. */
   parts?: TechParts;
+  /** The row's group inside its tab, a header the screen shows over the first row of each (Classes 3.0 step 10): a
+   * prayer's kind ('Whispers', 'Hymns', 'Miracle'; the Chaplain's Ward among the Whispers), a door verb's data group
+   * (Shadow: Slip, Mark, Work, Break; Tending: Bond, Heal, Help). Absent: no group. */
+  sub?: string;
 }
 export type Picks = Record<string, any>;
 /** One line of a descriptor preview (odds, a note, a meter, a save, the cost, an ask). */
@@ -582,9 +586,9 @@ const PERKS: ActionSystem = {
       if (e.target === 'ally') picks.push({ key: 'targetId', kind: 'ally', prompt: 'Click an ally.', choices: e.choices ? seenOf(x, e.choices) : allyIds(x, true) });
       else if (['unit', 'enemy', 'npc'].includes(e.target as string)) picks.push({ key: 'targetId', kind: e.target === 'enemy' ? 'enemy' : 'unit', prompt: 'Click a target.', choices: e.choices ? seenOf(x, e.choices) : others(x) });
       else if (e.target === 'tile') picks.push({ key: 'tile', kind: 'tile', prompt: 'Click a tile.' });
-      if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
+      if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label, ...(o.off ? { why: o.off } : {}) })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
       // an armed move (Eye of the Storm) can be confirmed again to stand it down: its state is said, the reducer rules
-      return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.arm ? { available: true } : {}) });
+      return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.sub ? { sub: e.sub } : {}), ...(e.arm ? { available: true } : {}) });
     });
   },
   send(x, d, p) {
@@ -662,7 +666,7 @@ const FAITH: ActionSystem = {
       const odds = prayOdds(p), warn = p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP'
         : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : '';
       const label = (kind === 'miracle' ? '✦ ' : '') + name + (kind === 'whisper' ? '' : ' · ' + (kind === 'miracle' ? 'MIRACLE' : gate.replace(/ · DEVOTION \d+$/, '')));
-      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP · ' + odds, gate + ' · ' + odds + '. ' + text + (warn ? ' ' + warn + '.' : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || [], p.target === 'tile' ? seenTiles() : undefined), preview: 'prayer' });
+      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP · ' + odds, gate + ' · ' + odds + '. ' + text + (warn ? ' ' + warn + '.' : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || [], p.target === 'tile' ? seenTiles() : undefined), preview: 'prayer', sub: PRAYER_SUB[kind] });
     };
     return [...v.whispers.map((w: any) => row('whisper', w.id, w.name, w.text, w.preview, 0)), ...v.hymns.map((h: any) => row('hymn', h.key, h.name, h.text, h.preview, h.tier)), ...(v.miracle ? [row('miracle', v.miracle.id, v.miracle.name, v.miracle.text, v.miracle.preview, 4)] : [])];
   },
@@ -766,18 +770,26 @@ const OWNED: ActionSystem = {
   owns: (id) => id.startsWith(OWNED_ID),
   list(x) {
     const out: ActionDescriptor[] = [];
-    for (const o of orderable(x.cb, x.u)) for (const v of ownedVerbs(o)) {
-      // a data verb (rules 1.34: a Figment's Strike, Pounce, Cut, Stare, Let go): its name, its site's price, its pick
-      const dv = ownedVerbInfo(x.cb, x.u, o, v);
-      if (dv) {
-        out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + dv.name, dv.ap, apT(dv.ap) + ' (yours)', o.name + ': ' + dv.text + ' It has no turn of its own: the AP are yours.', ownedWhy(x.cb, x.u, o, v),
-          { picks: dv.pick === 'enemy' ? [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' goes at.', choices: foeIds(x) }] : [] }));
-        continue;
+    // A Figment's rows go on the Figments tab (rules 1.34; figments-spec.md section 9), one group per held Figment headed
+    // by its name and HP (a second of the same name numbered); any other turn-less owned unit's stay on Utility.
+    const named: Record<string, number> = {};
+    for (const o of orderable(x.cb, x.u)) {
+      const fig = (o as any).owned?.kind === 'figment', nth = (named[o.name] = (named[o.name] || 0) + 1), before = out.length;
+      const at: Partial<ActionDescriptor> = fig ? { group: 'figments', sub: o.name + (nth > 1 ? ' ' + nth : '') + ' · HP ' + Math.max(0, Math.round(o.hp)) + '/' + o.maxHp } : {};
+      for (const v of ownedVerbs(o)) {
+        // a data verb (rules 1.34: a Figment's Strike, Pounce, Cut, Stare, Let go): its name, its site's price, its pick
+        const dv = ownedVerbInfo(x.cb, x.u, o, v);
+        if (dv) {
+          out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + dv.name, dv.ap, apT(dv.ap) + ' (yours)', o.name + ': ' + dv.text + ' It has no turn of its own: the AP are yours.', ownedWhy(x.cb, x.u, o, v),
+            { picks: dv.pick === 'enemy' ? [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' goes at.', choices: foeIds(x) }] : [] }));
+          continue;
+        }
+        const w: any = WEAPON[o.weapon], ap = v === 'move' ? 1 : w ? attackApCost(w, v) : 2, why = ownedWhy(x.cb, x.u, o, v);
+        out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + VERB_NAME[v], ap, v === 'move' ? 'AP a step (yours)' : apT(ap) + ' (yours)',
+          v === 'move' ? o.name + ' moves to a tile you pick. It has no turn of its own: the AP are yours.' : o.name + ' attacks an enemy you pick (' + VERB_NAME[v].toLowerCase() + '). It has no turn of its own: the AP are yours.',
+          why, { picks: v === 'move' ? [{ key: 'tile', kind: 'tile', prompt: 'Click the tile ' + o.name + ' goes to.' }] : [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' attacks.', choices: foeIds(x) }] }));
       }
-      const w: any = WEAPON[o.weapon], ap = v === 'move' ? 1 : w ? attackApCost(w, v) : 2, why = ownedWhy(x.cb, x.u, o, v);
-      out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + VERB_NAME[v], ap, v === 'move' ? 'AP a step (yours)' : apT(ap) + ' (yours)',
-        v === 'move' ? o.name + ' moves to a tile you pick. It has no turn of its own: the AP are yours.' : o.name + ' attacks an enemy you pick (' + VERB_NAME[v].toLowerCase() + '). It has no turn of its own: the AP are yours.',
-        why, { picks: v === 'move' ? [{ key: 'tile', kind: 'tile', prompt: 'Click the tile ' + o.name + ' goes to.' }] : [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' attacks.', choices: foeIds(x) }] }));
+      for (let i = before; i < out.length; i++) Object.assign(out[i], at);
     }
     return out;
   },

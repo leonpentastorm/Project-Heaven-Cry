@@ -6,6 +6,7 @@ import { FIGHT_TIMEOUT_MS } from '../narrator/fight';
 import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
 import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
 import { connect, type Conn } from './net';
+import { DEFAULT_START, shownStart } from './starts';
 import { battlePace } from './combatSpeed';
 
 
@@ -86,6 +87,9 @@ export function hostRoom(code = roomCode()) {
   if (!S.me.name) return toast('Enter your name first.');
   const saved: GameState | null = migrateLoaded(read(LS.game(code), null));
   hostState = saved || newGame(code, { id: S.me.id, name: S.me.name });
+  // Classes 3.0 step 10b: a new room starts on the menu's first start, never on a hidden campaign (game/starts.ts, the
+  // campaign's `listed`); a saved room keeps the start it was played with.
+  if (!saved && !shownStart(hostState, hostState.settings.start)) hostState.settings.start = DEFAULT_START;
   befores = {}; loadBefores(code);
   // The full save (with the archive) comes back from IndexedDB a moment later.
   idbGet(code).then((full) => {

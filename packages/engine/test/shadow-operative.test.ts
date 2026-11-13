@@ -8,6 +8,10 @@ import { resOf, FOE_TAGS } from '../src/tactics';
 import { skulks } from '../src/combat';
 import { applyCond } from '../src/magic';
 import { allVerbs } from '../src/effects/collect';
+import shadowJ from '../../../data/shadow.json';
+/** A verb's refusal in words, from its data (Classes 3.0 step 10: the grant's `why`, its reach's `why`). */
+const grantOf = (id: string): any => (shadowJ as any).items.find((x: any) => x.id === id).effects.find((e: any) => e.op === 'grant_action');
+const esc = (t: string) => new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 
 const VERB = (id: string) => allVerbs().find((v: any) => v.id === id) as any;
 const door = (ing: number, extra: CharSpec = {}): CharSpec => ({ ...extra, skills: { ingenuity: ing, ...(extra.skills || {}) }, attrs: { perception: Math.max(ing, 3), ...(extra.attrs || {}) } });
@@ -33,7 +37,7 @@ describe('the verbs at work', () => {
   });
   it('Read Intent needs you Hidden; then its target is Read', () => {
     const { f, u, t } = setup(3, '6,4');
-    expect(() => use(f, u, 'shadow.read_intent', t.id)).toThrow(/Not now/);
+    expect(() => use(f, u, 'shadow.read_intent', t.id)).toThrow(esc(grantOf('shadow.read_intent').why.self_has));
     hideNow(f, u); use(f, u, 'shadow.read_intent', t.id);
     expect(condOn(f.unit(t.id), 'read')).toBe(true);
   });
@@ -53,7 +57,7 @@ describe('the verbs at work', () => {
   });
   it('Disable refuses a target that is not a machine', () => {
     const { f, u, t } = setup(7); hideNow(f, u); setShadow(f, u, 3);
-    expect(() => use(f, u, 'shadow.disable', t.id)).toThrow(/Not on/);
+    expect(() => use(f, u, 'shadow.disable', t.id)).toThrow(esc(grantOf('shadow.disable').reach.why.target_kind));
   });
   it('Still Breath (Ingenuity 5): spot rolls against you lower by cover', () => {
     const e = (SKILL.ingenuity as any).unlocks['5'].effects[0];

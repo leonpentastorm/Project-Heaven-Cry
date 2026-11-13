@@ -11,7 +11,7 @@ import { readFileSync } from 'fs';
 import { chromium, player, click, BASE, OUT, pickAction, settle } from './lib.mjs';
 const FIGHTER = JSON.parse(readFileSync(new URL('../../../data/classes.json', import.meta.url), 'utf8')).base.find((c) => c.id === 'fighter').name; // the class's display name, from the data (Classes 3.0 renamed it)
 const browser = await chromium.launch();
-const p = await player(browser, 'host');
+const p = await player(browser, 'host', { campaigns: ['m813'] });
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const snap = (pg, n) => pg.screenshot({ path: OUT + 'perks-' + n + '.png' });
 const G = (pg = p) => pg.evaluate(() => window.__phc.getState().game);
@@ -193,7 +193,7 @@ await settle(p, 300); await snap(p, '06-levelup-class');
 const sbErrors = [...p.errors];
 
 // ---------- 7. A story check: the trait's +1 is named in the roll math ----------
-const q = await player(browser, 'story');
+const q = await player(browser, 'story', { campaigns: ['m813'] });
 await q.goto(BASE);
 await click(q, 'NEW GAME', { exact: true });
 await q.getByPlaceholder('Leon').fill('Leon');

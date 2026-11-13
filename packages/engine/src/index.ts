@@ -49,6 +49,7 @@ export { preview, dryRun, previewAction, withGame, copyFight, shadowGame, fightS
 export { perkCards, shelfOf, cardText, cardTrigger, coreWired, PERK_CARDS, LOG_LOOKBACK, type PerkCard, type ShelfId, type CardState } from './perkcard';
 export * from './kit';
 export * from './rolls';
+export * from './screenViews';
 // Engine foundations 2: the unit states' setters (Braced, Staggered, Downed, Nailed). The raw flag writes are not exported: applyCond / endCond (magic.ts) are the door.
 export { setBraced, stagger, clearStagger, setDowned, setNailed, startHidden, asStanding } from './unitstate';
 // Classes 3.0 P9: owned units (owned.ts): the doors that make, unmake and order them, and a test's run-time blocks.

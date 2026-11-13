@@ -77,7 +77,7 @@ const hide = (p, on) => p.evaluate((on) => { Object.defineProperty(document, 'hi
 
 async function browsers() {
   const t0 = Date.now(), browser = await chromium.launch();
-  const host = await player(browser, 'host'), guest = await player(browser, 'guest');
+  const host = await player(browser, 'host', { campaigns: ['m813'] }), guest = await player(browser, 'guest');
   // The guest's link runs through a tap: views from the room can be dropped on the way (a lost message).
   const tap = { drop: false, lossy: 0, dropped: 0 };
   await guest.routeWebSocket(/\/room\/[A-Z0-9]{6}\/ws/, (ws) => { const server = ws.connectToServer();

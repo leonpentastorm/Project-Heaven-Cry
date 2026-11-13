@@ -1,6 +1,6 @@
 import { chromium, player, click, shot, BASE, hostAs, answerAsk, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
-const host = await player(browser, 'host'), guest = await player(browser, 'guest');
+const host = await player(browser, 'host', { campaigns: ['m813'] }), guest = await player(browser, 'guest');
 // Named checks (a green line in the runner must mean something was looked at; this suite printed none and showed "0 checks").
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 async function create(page, name, family, kit) {

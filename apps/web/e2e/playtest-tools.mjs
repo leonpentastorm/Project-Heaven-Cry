@@ -6,7 +6,7 @@ const require = createRequire(import.meta.url);
 const { unzipSync, strFromU8 } = require('fflate');
 
 const browser = await chromium.launch();
-const host = await player(browser, 'host');
+const host = await player(browser, 'host', { campaigns: ['m813'] });
 // The guest keeps the tips on (lib turns them off for the other tests).
 const gctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, acceptDownloads: true });
 await gctx.addInitScript(() => { localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); });

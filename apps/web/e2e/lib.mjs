@@ -5,13 +5,17 @@ export const BASE = process.env.BASE || 'http://127.0.0.1:8787';
 // Where pictures go: SHOTS when it is set (the runner gives every suite its own folder and empties it when the suite
 // passes), else apps/web/e2e/shots/.
 export const OUT = process.env.SHOTS ? process.env.SHOTS.replace(/\/?$/, '/') : new URL('./shots/', import.meta.url).pathname;
-export async function player(browser, name) {
+/** player(browser, name, { campaigns: ['m813'] }): a page that shows campaigns their data hides (the test hook of
+ *  apps/web/src/game/starts.ts, localStorage phc.showCampaigns): a suite that plays M813, hidden from the menu since
+ *  Classes 3.0 step 10b, keeps playing it (the room this page hosts starts on it). */
+export async function player(browser, name, opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, ignoreHTTPSErrors: true, deviceScaleFactor: Number(process.env.DSF) || 1 }); // DSF=2: sharper screenshots
   // The Narrator's voice holds new lines until it is ready; tests read the text, so they start with auto-read off (and no tips).
   await ctx.addInitScript((voice) => { try { if (!voice) localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); sessionStorage.setItem('phc.pressedAnyKey', '1'); } catch { /* */ } }, !!process.env.VOICE);
   // FAST=1: a fight plays every effect in order at about 25 times the speed (game/combatSpeed.ts 'test'). For suites
   // that check rules and screens, not animation; the animation suites (melee-fx, brass, reload, cutins, clarity,
   // turn-order, combat-speed) run without it.
+  if (opts.campaigns && opts.campaigns.length) await ctx.addInitScript((ids) => { try { localStorage.setItem('phc.showCampaigns', JSON.stringify(ids)); } catch { /* */ } }, opts.campaigns);
   if (process.env.FAST) await ctx.addInitScript(() => { try { localStorage.setItem('phc.combatSpeed', 'test'); } catch { /* */ } });
   const page = await ctx.newPage();
   const errors = [];
