@@ -26,7 +26,7 @@ import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
 import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile } from '../combat';
 import { WEAPON } from '../data';
 import { magsOf, type PackItem } from '../character';
-import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst } from '../magic';
+import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
 import { nextToCover } from '../combat';
 import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
 import { isStatId } from './stats';
@@ -141,15 +141,15 @@ for (const who of ['self', 'actor', 'target'] as Who[]) {
   P(who + '_hp_below', 'number', who + '\'s HP is under this share of its max', (ev, v) => { const u = unitOf(ev, who); return !!u && share(u) < v; });
   P(who + '_hp_above', 'number', who + '\'s HP is over this share of its max', (ev, v) => { const u = unitOf(ev, who); return !!u && share(u) > v; });
   P(who + '_hp_at_most', 'number', who + '\'s HP is at most this share of its max', (ev, v) => { const u = unitOf(ev, who); return !!u && share(u) <= v; });
-  P(who + '_has', 'ids', who + ' has one of these conditions', (ev, v) => { const u = unitOf(ev, who); return !!u && list(v).some((id) => condOn(u, id)); });
-  P(who + '_lacks', 'ids', who + ' has none of these conditions', (ev, v) => { const u = unitOf(ev, who); return !!u && !list(v).some((id) => condOn(u, id)); });
+  P(who + '_has', 'ids', who + ' has one of these conditions', (ev, v) => { const u = unitOf(ev, who); return !!u && list(v).some((id) => condHas(u, id)); });
+  P(who + '_lacks', 'ids', who + ' has none of these conditions', (ev, v) => { const u = unitOf(ev, who); return !!u && !list(v).some((id) => condHas(u, id)); });
   P(who + '_tier', 'words', who + '\'s tier is one of these (vermin, minion, soldier, elite, boss)', (ev, v) => { const u = unitOf(ev, who); return !!u && list(v).includes((u as any).tier); });
   P(who + '_not_tier', 'words', who + '\'s tier is none of these', (ev, v) => { const u = unitOf(ev, who); return !!u && !list(v).includes((u as any).tier); });
   P(who + '_kind', 'words', who + '\'s kind is one of these (human, robot, crawler, ork…)', (ev, v) => { const u = unitOf(ev, who); return !!u && list(v).includes((u as any).kind || 'human'); });
   P(who + '_not_kind', 'words', who + '\'s kind is none of these', (ev, v) => { const u = unitOf(ev, who); return !!u && !list(v).includes((u as any).kind || 'human'); });
   if (who !== 'self') P(who + '_within', 'number', who + ' stands within this many tiles of the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && !!u.pos && dist(u.pos, ev.self.pos) <= v; });
   P(who + '_sight', 'words', who + '\'s sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named)', (ev, v) => { const u = unitOf(ev, who); if (!u) return false; const s = sightOf(ev.cb, u); return list(v).some((w) => s.includes(w)); }, () => SIGHT_WORDS);
-  if (who !== 'self') P(who + '_sees_self', 'bool', who + ' can (or cannot) see the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && unitSees(ev.cb, u, ev.self.pos) === v; });
+  if (who !== 'self') P(who + '_sees_self', 'bool', who + ' can (or cannot) see the holder: its eyes reach the holder\'s tile and the holder is not Hidden (shadow-spec 2.1)', (ev, v) => { const u = unitOf(ev, who); return !!u && (unitSees(ev.cb, u, ev.self.pos) && !ev.self.hidden) === v; });
 }
 P('melee', 'bool', 'the attack or damage is (true) or is not (false) melee', (ev, v) => !!(ev.ctx.melee ?? ev.ctx.src?.melee) === v);
 P('crit', 'bool', 'the attack is (or is not) a critical', (ev, v) => !!(ev.ctx.crit ?? ev.ctx.src?.crit) === v);
@@ -307,7 +307,7 @@ O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via', 'same_entr
 });
 O('cleanse', ANY, true, ['condition', 'family', 'count'], 'end conditions: the ones named, or a family\'s debuffs, or any debuff (count: how many)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
-  const ids = e.condition ? list(e.condition).map(condId).filter((id) => condOn(u, id)) : debuffsOf(u, e.family || undefined);
+  const ids = e.condition ? list(e.condition).map(condId).filter((id) => condHas(u, id)) : debuffsOf(u, e.family || undefined);
   for (const id of ids.slice(0, e.count || ids.length)) endCond(u, id, ev.cb);
 });
 O('cond_rounds', ['cond_incoming'], false, ['max', 'add'], 'change the rounds of the condition being put on: at most max, or add', (ev, e) => {

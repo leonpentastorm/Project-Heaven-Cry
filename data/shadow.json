@@ -126,7 +126,7 @@
             ]
           },
           "reach": {
-            "tiles": 12,
+            "tiles": 8,
             "side": "foe",
             "if": {
               "target_sees_self": false
@@ -173,7 +173,7 @@
             ]
           },
           "reach": {
-            "tiles": 12,
+            "tiles": 8,
             "side": "foe",
             "if": {
               "target_sees_self": false
@@ -220,7 +220,7 @@
             ]
           },
           "reach": {
-            "tiles": 12,
+            "tiles": 8,
             "side": "foe",
             "if": {
               "target_sees_self": false,

@@ -257,6 +257,14 @@ export function saveAgainst(cb: Combat, rng: Rng, by: Unit | null, target: Unit,
 }
 /** Does the unit have this condition now? */
 export const condOn = (u: Unit, id: string) => !!(u.conds && u.conds[condId(id)] > 0);
+/** Has the unit this condition, a flag one included (Hidden is u.hidden, Prone u.prone, Bleeding u.bleed, Dazed
+ * u.dazedNext: they are kept on the unit, not in u.conds)? The item ops' predicates `<who>_has` / `_lacks` and op
+ * `cleanse` ask this (rules 1.32: Shadow's "from Hidden"). */
+export const condHas = (u: Unit, id: string): boolean => {
+  const k = condId(id);
+  if (k === 'hidden') return !!u.hidden; if (k === 'prone') return !!u.prone; if (k === 'bleeding') return (u.bleed || 0) > 0; if (k === 'dazed') return (u.dazedNext || 0) > 0;
+  return condOn(u, k);
+};
 /** Who put a condition on a unit (its unit id), if anyone. */
 export const condSource = (u: Unit, id: string): string | null => (condOn(u, id) && u.condBy?.[condId(id)]) || null;
 /** The order or variant a condition carries (Commanded's order). */

@@ -1403,12 +1403,7 @@
             {
               "op": "mark",
               "flag": "struck",
-              "when": "hit"
-            },
-            {
-              "op": "mark",
-              "flag": "struck",
-              "when": "miss"
+              "when": "attack_roll"
             },
             {
               "op": "mark",
