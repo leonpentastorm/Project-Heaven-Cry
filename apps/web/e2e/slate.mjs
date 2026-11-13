@@ -45,6 +45,32 @@ for (const [vw, vh] of [[1440, 900], [1280, 720], [1093, 526], [900, 800]]) {
   await p.screenshot({ path: `${OUT}slate-combat-${vw}x${vh}.png` });
   await p.mouse.wheel(0, -800);
 }
+// The panel's top bar (an outside review of 0.25.0): on short windows the one-line "You" (portrait, name, HP, AP,
+// Backpack) shares the bar with the grip, Customise and Hide panel; nothing in it may overlap at any size (the bar
+// wraps instead). With a long name too.
+const barHits = () => p.evaluate(() => {
+  const bar = document.querySelector('.phc-cb-bar'); if (!bar) return ['no bar'];
+  // the leaf boxes a player reads or presses (the HP bar's own fill and chip sit inside its track and are skipped)
+  const els = [...bar.querySelectorAll('button, img, span')].filter((e) => e.getClientRects().length && !e.closest('[aria-hidden="true"]') && (e.tagName !== 'SPAN' || !e.querySelector('span, button, img')) && !(e.parentElement && e.parentElement.closest('button')));
+  const rs = els.map((e) => [((e.textContent || '').trim() || e.getAttribute('aria-label') || e.tagName).slice(0, 24), e.getBoundingClientRect()]);
+  const out = [];
+  for (let i = 0; i < rs.length; i++) for (let j = i + 1; j < rs.length; j++) {
+    const [ta, a] = rs[i], [tb, b] = rs[j];
+    if (a.width && b.width && a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) out.push(ta + ' × ' + tb);
+  }
+  const br = bar.getBoundingClientRect();
+  for (const [t, r] of rs) if (r.right > br.right + 1 || r.left < br.left - 1) out.push(t + ' outside the bar');
+  return out;
+});
+for (const long of [false, true]) {
+  if (long) await p.evaluate(() => { const g = window.__phc.getState().game, u = g.combat.units.find((x) => x.side === 'pc'); const c = g.characters[u.charId]; if (c) c.name = 'Bartholomew Featherstonehaugh'; u.name = 'Bartholomew Featherstonehaugh'; });
+  for (const [vw, vh] of [[1280, 720], [1366, 768], [1440, 900], [1920, 1080], [900, 800]]) {
+    await p.setViewportSize({ width: vw, height: vh }); await pause(p, 400);
+    const hits = await barHits();
+    ok(`${vw}x${vh}${long ? ', a long name' : ''}: nothing in the panel's top bar overlaps (${hits.join('; ') || 'clear'})`, !hits.length);
+    if (vw === 1280 && !long) await p.screenshot({ path: OUT + 'slate-combat-bar-1280x720.png' });
+  }
+}
 await p.setViewportSize({ width: 1440, height: 900 }); await pause(p, 500);
 // Say sends with Enter
 const say = p.getByLabel(/^Say something/);

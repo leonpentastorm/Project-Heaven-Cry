@@ -2,7 +2,7 @@
 // their character's turns), the host gets "Pass Mai's turn ›" on the waiting card when the guest's unit comes up, and the
 // fight goes on; when the host leaves, the guest's "host is offline" bar sits under the header (Leave stays clickable)
 // and carries its own Leave the room. No browser confirm/prompt/alert anywhere.
-import { chromium, player, click, BASE, hostAs, settle } from './lib.mjs';
+import { chromium, player, click, BASE, hostAs, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), guest = await player(browser, 'guest');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -20,7 +20,7 @@ async function create(page, name, family, kit) {
   await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
   await page.locator('button', { hasText: kit }).first().click();
-  await click(page, 'Next ›'); await click(page, 'Lock in and bring to the room');
+  await click(page, 'Next ›'); await lockIn(page);
   await page.waitForSelector('text=✓ LOCKED IN');
 }
 await hostAs(host, 'Leon');

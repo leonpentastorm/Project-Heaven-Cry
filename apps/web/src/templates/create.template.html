@@ -278,6 +278,7 @@
 <span style="padding: 4px 10px; border-radius: 999px; border: 1px solid #D36A90; color: #D36A90; font-size: 12px; font-weight: 700; letter-spacing: 0.12em">{{beliefChip}}</span>
 <span style="font-size: 13px; color: #A3AEC2">{{beliefNote}}</span>
 </div>
+<sc-if value="{{hasBeliefLow}}" hint-placeholder-val="{{false}}"><p role="note" data-belief-faith="" style="margin: 0; padding: 10px 14px; border-radius: 10px; border: 1px solid #FFFFFF; background: #10151F; font-size: 14px; line-height: 1.5; font-weight: 600; color: #FFFFFF">{{beliefLow}}</p></sc-if>
 <div role="radiogroup" aria-label="Faithful or Atheist" style="display: flex; gap: 12px; flex-wrap: wrap">
 <button type="button" role="radio" data-belief="faithful" aria-checked="{{beliefFaithful.pressed}}" onClick="{{beliefFaithful.pick}}" style="{{beliefFaithful.style}}"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.2em; color: #D36A90">FAITHFUL</span><span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">Sworn to a patron</span><span style="font-size: 14px; line-height: 1.5; color: #C9D3E3">{{beliefFaithful.text}}</span></button>
 <button type="button" role="radio" data-belief="atheist" aria-checked="{{beliefAtheist.pressed}}" onClick="{{beliefAtheist.pick}}" style="{{beliefAtheist.style}}"><span style="font-size: 12px; font-weight: 700; letter-spacing: 0.2em; color: #D36A90">ATHEIST · PILGRIM</span><span style="font-family: 'Spectral', serif; font-size: 24px; font-weight: 600">Belong to no god</span><span style="font-size: 14px; line-height: 1.5; color: #C9D3E3">{{beliefAtheist.text}}</span></button>
@@ -512,7 +513,7 @@
 </sc-if>
 </div>
 
-<aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<aside data-lock-aside="" style="flex: 1 1 300px; min-width: 0; position: sticky; top: 16px; align-self: flex-start; display: flex; flex-direction: column; gap: 12px">
 <span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">CHECKLIST</span>
 <sc-for list="{{checks}}" as="c" hint-placeholder-count="4">
 <div style="display: flex; gap: 10px; align-items: center; font-size: 15px"><span style="{{c.markStyle}}">{{c.mark}}</span><span>{{c.label}}</span></div>
@@ -526,7 +527,7 @@
 
 </main>
 
-<footer style="display: flex; justify-content: space-between; gap: 12px; padding: 16px 32px; border-top: 1px solid #232D3F">
+<footer class="phc-cc-foot" style="display: flex; justify-content: space-between; gap: 12px; padding: 16px 32px; border-top: 1px solid #232D3F">
 <button type="button" onClick="{{back}}" disabled="{{atStart}}" style="min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">‹ Back</button>
 <button type="button" onClick="{{next}}" disabled="{{atEnd}}" style="min-height: 44px; padding: 0 22px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-weight: 700; cursor: pointer">Next ›</button>
 </footer>

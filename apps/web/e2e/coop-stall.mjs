@@ -11,7 +11,7 @@
 // Run: BASE=http://127.0.0.1:8787 MODE=plain node apps/web/e2e/coop-stall.mjs   (PARTS=A, PARTS=BC to run a part)
 import net from 'net';
 import crypto from 'crypto';
-import { chromium, player, click, BASE, hostAs, pickAction, settle } from './lib.mjs';
+import { chromium, player, click, BASE, hostAs, pickAction, settle, lockIn } from './lib.mjs';
 
 const MODE = process.env.MODE || 'plain', PARTS = process.env.PARTS || 'ABC';
 const log = (...a) => console.log(...a);
@@ -63,7 +63,7 @@ async function create(page, name, family, kit) {
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
   await page.locator('button', { hasText: kit }).first().click();
   await click(page, 'Next ›');
-  await click(page, 'Lock in and bring to the room');
+  await lockIn(page);
   await page.waitForSelector('text=✓ LOCKED IN');
 }
 /** Everything a stalled screen can say about itself (the two debug hooks: window.__phc.net(), window.__phcFxDebug()). */

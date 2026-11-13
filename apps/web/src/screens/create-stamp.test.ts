@@ -11,7 +11,9 @@ vi.mock('../game/sfx', () => ({ sfx: (...a: any[]) => { calls.sfx.push(a); }, re
 vi.mock('../game/charfile', () => ({ uploadPortrait: () => {}, bigPortrait: (x: string) => x }));
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, location: { search: '', hash: '' } });
 vi.stubGlobal('location', { search: '', hash: '' });
-const { CreateLogic, STAMP_MS } = await import('./create.js');
+const { CreateLogic, STAMP_MS, LOCK_LABEL } = await import('./create.js');
+const { prayFaith, beliefFaithNote } = await import('../game/faithView');
+const { FAITH_MIN, FAITH_RULES } = await import('@engine');
 
 /** A Create screen on the Lock in step with a legal build (the Holdfast preset, a kit, a name and an origin). */
 function screen() {
@@ -100,5 +102,35 @@ describe('the Lock in stamp', () => {
     vi.advanceTimersByTime(STAMP_MS + 10);
     expect(calls.go).toHaveLength(0);
     expect(calls.toast).toHaveLength(1); // still told it was saved
+  });
+});
+
+// An outside review of 0.25.0 (13 Nov 2026): the step tab and the final button both read "Lock in".
+describe('the Lock in button is not named like the step tab', () => {
+  it('alone and in a room, the button differs from the "Lock in" tab for the eye and for a screen reader', () => {
+    const l = screen(), v = l.renderVals();
+    const tab = v.steps.find((s: any) => s.n === 7).label;
+    expect(tab).toBe('Lock in');
+    expect(v.lockLabel).toBe(LOCK_LABEL.solo); expect(v.lockLabel).toBe('Lock in this character');
+    calls.state = { screen: 'create', code: 'ABCD', game: { phase: 'lobby' }, draft: null };
+    const r = l.renderVals();
+    expect(r.lockLabel).toBe(LOCK_LABEL.room);
+    for (const x of [v.lockLabel, r.lockLabel]) expect(x.trim()).not.toBe(tab);
+  });
+});
+
+// The same review: a Faithful with low Faith found out in a fight that praying needs Faith. The Belief step says so,
+// with both thresholds read from the engine (game/faithView.ts prayFaith), never typed here.
+describe('the Belief step: a note when Faith is below what praying needs', () => {
+  it('Faith 0: the note names the Faith Whispers and Hymns each need; enough Faith: no note', () => {
+    const l = screen(); l.state = { ...l.state, step: 'belief', skills: { ...l.state.skills, faith: 0 } };
+    const need = prayFaith(), v = l.renderVals();
+    expect(v.hasBeliefLow).toBe(true);
+    expect(v.beliefLow).toBe(beliefFaithNote(0));
+    expect(v.beliefLow).toContain('Your Faith is 0. Whispers need Faith ' + need.whisper + '; Hymns need Faith ' + need.hymn + '.');
+    expect(need.hymn).toBe(FAITH_RULES.prayer.hymn?.faith_min ?? FAITH_MIN);
+    l.state = { ...l.state, skills: { ...l.state.skills, faith: Math.max(need.whisper, need.hymn) } };
+    const w = l.renderVals();
+    expect(w.hasBeliefLow).toBe(false); expect(w.beliefNote).toMatch(/You have Faith \d+\./);
   });
 });

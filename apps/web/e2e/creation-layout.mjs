@@ -1,7 +1,7 @@
 // Character creation's card layout (Leon, 8 Nov): at most two archetypes, three traits and two patrons a row (bigger
 // pictures and text, at any screen width); every card in a grid the same height, long text scrolling inside its card;
 // a god's art opens large; picking another archetype or origin moves nothing; no sideways scroll at phone width.
-import { chromium, click, player, hostAs, settle } from './lib.mjs';
+import { chromium, click, player, hostAs, settle, LOCK_IN } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
@@ -87,5 +87,31 @@ for (const s of ['Identity', 'Archetype', 'Skills', 'Traits', 'Belief', 'Kit', '
 await step('Belief');
 ok('390 px: one patron a row', (await grid('[data-patron-grid]')).cols === 1);
 if (SHOTS) { await p.locator('[data-patron="mother_ember"]').scrollIntoViewIfNeeded(); await settle(p, 300); await p.screenshot({ path: SHOTS + '/creation-belief-phone.png' }); }
+// Short screens (an outside review of 0.25.0): on every step Back and Next stay in view at the foot of the page, at
+// the top of a long step and at its end, with a fade above them; on the Lock in step its own button is in view too.
+const inView = (sel, name) => p.evaluate(([sel, name]) => {
+  const b = [...document.querySelectorAll(sel)].find((x) => x.textContent.replace(/\s+/g, ' ').trim() === name); if (!b) return false;
+  const r = b.getBoundingClientRect(), e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+  return r.top >= 0 && r.bottom <= innerHeight && !!e && (e === b || b.contains(e));
+}, [sel, name]);
+for (const [W, H] of [[1280, 720], [1366, 768]]) {
+  await p.setViewportSize({ width: W, height: H }); await settle(p, 250);
+  for (const s of ['Identity', 'Archetype', 'Skills', 'Traits', 'Belief', 'Kit', 'Lock in']) {
+    await step(s);
+    const seen = [];
+    for (const y of [0, 1e6]) {
+      await p.evaluate((y) => { window.scrollTo(0, y); for (const e of document.querySelectorAll('*')) if (e.scrollHeight > e.clientHeight + 4 && /auto|scroll/.test(getComputedStyle(e).overflowY) && e.contains(document.querySelector('[data-phc-create]'))) e.scrollTop = y; }, y); await settle(p, 150);
+      seen.push(await inView('footer.phc-cc-foot button', '‹ Back') && await inView('footer.phc-cc-foot button', 'Next ›'));
+      if (s === 'Lock in') seen.push(await inView('button', LOCK_IN.room));
+    }
+    const fade = await p.evaluate(() => { const f = document.querySelector('footer.phc-cc-foot'); return !!f && getComputedStyle(f).position === 'sticky' && getComputedStyle(f, '::before').backgroundImage.includes('gradient'); });
+    ok(`${W}x${H}, ${s}: Back and Next${s === 'Lock in' ? ' and the Lock in button' : ''} in view at the top and the end of the step, a fade above them (${seen.join(',')})`, seen.every(Boolean) && fade);
+    if (SHOTS && s === 'Archetype' && W === 1280) await p.screenshot({ path: SHOTS + '/creation-short-archetype.png' });
+  }
+}
+// The Belief step at Faith 0: a plain note says what Whispers and Hymns each need (the engine's numbers).
+await step('Belief');
+const low = await p.locator('[data-belief-faith]').textContent().catch(() => '');
+ok('Belief at Faith 0: the note says the Faith Whispers and Hymns need ("' + low + '")', /^Your Faith is 0\. Whispers need Faith \d+; Hymns need Faith \d+\./.test(low || ''));
 ok('no page errors' + (p.errors.length ? ': ' + p.errors.join(' | ') : ''), !p.errors.filter((e) => !/ERR_TUNNEL_CONNECTION_FAILED/.test(e)).length);
 await browser.close();

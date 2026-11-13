@@ -2,7 +2,7 @@
 // Kit step, the MAGIC sheet tab shows them, a 2-glyph Line is walked and Evoked on the area map, then a fight: walk a
 // Line, Evoke it from its end, begin/hold/release an Outburst.
 // Screenshots (deviceScaleFactor 1) land in e2e/shots/magic-*.png.
-import { chromium, player, click, hostAs, OUT, pickAction, pause, fxIdle, camStill, until } from './lib.mjs';
+import { chromium, player, click, hostAs, OUT, pickAction, pause, fxIdle, camStill, until, LOCK_IN, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -45,12 +45,12 @@ const v3 = (await verdict())[1];
 ok('the Outburst verdict is legal: ' + v3, /^✓ Red Hand/.test(v3));
 await snap('01-kit');
 await click(host, 'Next ›');
-await host.waitForSelector('text=Lock in and bring to the room');
+await host.waitForSelector('text=' + LOCK_IN.room);
 await snap('02-lockin');
 await host.locator('text=SIGIL WORDS · MIND').first().scrollIntoViewIfNeeded(); await snap('02b-lockin-magic');
 ok('Lock in shows the Sigil and Outburst cards', await host.locator('text=SIGIL WORDS · MIND').count() > 0 && await host.locator('text=OUTBURST · SOUL').count() > 0);
 ok('Lock in lists the Sigil words and the Outburst', await host.locator('text=/Sigil words: (FIRE|ARC)/').count() > 0 && await host.locator('text=Outburst: Red Hand').count() > 0);
-await click(host, 'Lock in and bring to the room');
+await lockIn(host);
 await host.waitForSelector('text=✓ LOCKED IN');
 const me0 = Object.values((await G()).characters)[0];
 ok('the character keeps the picks: ' + JSON.stringify(me0.sigils) + ' / ' + JSON.stringify(me0.outbursts), me0.sigils.includes('fire') && me0.sigils.includes('arc') && me0.outbursts[0]?.name === 'Red Hand');

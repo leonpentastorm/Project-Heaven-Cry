@@ -4,7 +4,7 @@
 // map button and its M key, the settings cog (tabs, volumes that persist), the Music panel being music only, the
 // floating buttons never covering End turn, and the fight's header with the same cluster. Throughout, the browser's
 // own confirm(), prompt() and alert() are stubbed to throw: none of them may ever be called.
-import { chromium, player, click, hostAs, settle, BASE } from './lib.mjs';
+import { chromium, player, click, hostAs, settle, BASE, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
 const refused = []; host.on('response', (r) => { if (r.status() >= 400) refused.push(r.status() + ' ' + r.url().slice(0, 120)); });
@@ -23,7 +23,7 @@ await host.getByPlaceholder('What the squad calls you').fill('MPAT');
 await host.locator('main button[aria-pressed]').first().click();
 await click(host, 'Next ›'); await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 'Next ›'); await host.locator('button', { hasText: 'Line soldier' }).first().click();
-await click(host, 'Next ›'); await click(host, 'Lock in and bring to the room');
+await click(host, 'Next ›'); await lockIn(host);
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');
 await host.waitForSelector('.phc-story', { timeout: 30000 });

@@ -14,7 +14,7 @@
 //      until it lands.
 // Screens at deviceScaleFactor 1 in e2e/shots/cutins-*.png (DSF=2 SHOTS=<dir> for sharper copies in <dir>).
 const SHOTS = process.env.SHOTS;
-import { chromium, player, click, hostAs, BASE, OUT, pause } from './lib.mjs';
+import { chromium, player, click, hostAs, BASE, OUT, pause, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -289,7 +289,7 @@ await nora.getByPlaceholder('What the squad calls you').fill('Nora Vale');
 await nora.locator('main button[aria-pressed]').first().click();
 await click(nora, 'Next ›'); await nora.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(nora, 'Next ›'); await click(nora, 'Next ›'); await click(nora, 'Next ›'); await nora.locator('button', { hasText: 'Line soldier' }).first().click();
-await click(nora, 'Next ›'); await click(nora, 'Lock in and bring to the room');
+await click(nora, 'Next ›'); await lockIn(nora);
 await nora.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(nora, 'Start session');
 await nora.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 30000 });

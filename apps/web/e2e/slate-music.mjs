@@ -3,7 +3,7 @@
 // Heaven Falls, half the party Downed plays Last Rounds (both browsers show it), Gearing Up is back between fights,
 // and leaving the Proving Ground puts both players back on the room screen (not the title). The same alone from the
 // title, and the song holding through a reload: music-pool.mjs.
-import { chromium, player, click, BASE, OUT, hostAs, autoConfirm, pause } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, hostAs, autoConfirm, pause, lockIn } from './lib.mjs';
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), guest = await player(browser, 'guest');
@@ -17,7 +17,7 @@ async function create(page, name) {
   await page.locator('main button[aria-pressed]').first().click();
   await click(page, 'Next ›'); await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
   await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›'); await page.locator('button', { hasText: 'Line soldier' }).first().click(); await click(page, 'Next ›');
-  await click(page, 'Lock in and bring to the room'); await page.waitForSelector('text=✓ LOCKED IN', { timeout: 30000 });
+  await lockIn(page); await page.waitForSelector('text=✓ LOCKED IN', { timeout: 30000 });
 }
 const music = (p) => p.locator('button[aria-label^="Music:"]').getAttribute('aria-label', { timeout: 500 }).catch(() => null);
 const ostNow = (p) => p.evaluate(() => window.__phcOst?.now?.() ?? null);

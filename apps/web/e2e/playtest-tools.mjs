@@ -1,7 +1,7 @@
 // Character files, portrait upload, the Report button, the spend meter and first-time tips, in two browsers.
 import { createRequire } from 'module';
 import { readFileSync } from 'fs';
-import { chromium, player, click, BASE, answerAsk, settle } from './lib.mjs';
+import { chromium, player, click, BASE, answerAsk, settle, lockIn } from './lib.mjs';
 const require = createRequire(import.meta.url);
 const { unzipSync, strFromU8 } = require('fflate');
 
@@ -32,7 +32,7 @@ await click(host, 'Next ›');
 await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 'Next ›');
 await host.locator('button', { hasText: 'Field medic' }).first().click();
-await click(host, 'Next ›'); await click(host, 'Lock in', { exact: true });
+await click(host, 'Next ›'); await lockIn(host, { solo: true });
 await host.waitForSelector('text=Upload Test', { timeout: 30000 });
 
 // 2. Download it as a file
@@ -65,7 +65,7 @@ await guest.getByPlaceholder('What the squad calls you').fill('Ninety-Two');
 await guest.locator('main button[aria-pressed]').first().click();
 await click(guest, 'Next ›'); await guest.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(guest, 'Next ›'); await click(guest, 'Next ›'); await click(guest, 'Next ›'); await guest.locator('button', { hasText: 'Line soldier' }).first().click();
-await click(guest, 'Next ›'); await click(guest, 'Lock in and bring to the room');
+await click(guest, 'Next ›'); await lockIn(guest);
 await guest.waitForSelector('text=✓ LOCKED IN', { timeout: 30000 }); // the Approved stamp files the record ~0.9 s after the press
 
 // 4. Tips for a new player

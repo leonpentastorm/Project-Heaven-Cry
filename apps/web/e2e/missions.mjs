@@ -1,6 +1,6 @@
 // OOC, the mission board and the act's end (spec: OOC, missions and end states), with the scripted Narrator (no API).
 // The scripted Narrator answers OOC questions in its ooc field and marks "done:<objective id>" from a player's line.
-import { chromium, player, click, hostAs, settle } from './lib.mjs';
+import { chromium, player, click, hostAs, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -13,7 +13,7 @@ await host.getByPlaceholder('What the squad calls you').fill('MPAT');
 await host.locator('main button[aria-pressed]').first().click();
 await click(host, 'Next ›'); await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(host, 'Next ›'); await click(host, 'Next ›'); await click(host, 'Next ›'); await host.locator('button', { hasText: 'Line soldier' }).first().click();
-await click(host, 'Next ›'); await click(host, 'Lock in and bring to the room');
+await click(host, 'Next ›'); await lockIn(host);
 await host.evaluate(() => window.__phc.setNarrator({ scripted: true }));
 await click(host, 'Start session');
 await host.waitForSelector('.phc-story', { timeout: 30000 });
