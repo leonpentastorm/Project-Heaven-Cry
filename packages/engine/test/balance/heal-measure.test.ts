@@ -34,7 +34,7 @@ const within = (x: number, lo: number, hi: number, what: string) => { expect(x, 
 // and 20. They are a little wider than the report's, so that a later change that keeps a band does not break a test.
 // Rules 1.36 supersedes these bands (heals and shields in percent of the reference HP, not Soldier-turns, a gate and a cap): the new lines are held by
 // balance-contract.test.ts (the off-heal line), heal-pct.test.ts (the gate, the cap, the Recruit, the stim, the shield order) and the Tending measure.
-// The rules 1.20 bands stay here, skipped, as the record of what they were.
+// The rules 1.20 bands stay here, skipped (13 Nov 2026: superseded by rules 1.36), as the record of what they were.
 describe.skip('the heal and shield bands hold (rules 1.20; superseded by rules 1.36)', () => {
   it('the yardstick: a Soldier-turn is about 13% of the rifleman\'s HP at every level, and the level factor follows it', () => {
     for (const lv of H_LEVELS) { const sh = SOLDIER_TURN[lv] / RIFLEMAN_HP[lv]; expect(sh, 'level ' + lv).toBeGreaterThan(0.12); expect(sh).toBeLessThan(0.145); }

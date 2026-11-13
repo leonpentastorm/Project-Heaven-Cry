@@ -293,7 +293,7 @@ describe('word mastery and inflections (items 915-916)', () => {
     const before = f.unit(f.pc.id).shield; expect(before).toBe(Math.round(4.3 * sb));
     uses(f, 'ward', 30); f.unit(f.pc.id).shield = 0;
     draw(f, f.pc, ['ward', 'seek'], ['5,5', '4,5']); evoke(f, f.pc, '4,5', '4,5');
-    expect(f.unit(f.pc.id).shield).toBe(Math.round(4.3 * 1.1 * sb)); expect(f.unit(f.pc.id).shield).toBeGreaterThan(before);
+    expect(f.unit(f.pc.id).shield).toBe(Math.round(4.3 * 1.1 * sb)); expect(f.unit(f.pc.id).shield).toBeGreaterThan(before ?? 0);
   });
   it('STEP: a teleport of 5 tiles is refused until STEP is Mastered (+1 tile)', () => {
     const f = rig(['step', 'seek'], ['8,5']);

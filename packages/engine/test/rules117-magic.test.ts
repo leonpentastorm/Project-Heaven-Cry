@@ -180,7 +180,7 @@ describe('Outburst: the modules that were repriced (rules 1.17)', () => {
   });
   it('At Once ×0.8, Return\'s second hit ×0.3, Quiet +5 MP (Shell and Inverse have shield bases of their own since rules 1.20)', () => {
     expect((MODULE.at_once as any).damage_mult).toBe(0.8); expect((MODULE.return as any).second_mult).toBe(0.3);
-    expect((MODULE.shell as any).shield).toBe(4); expect((MODULE.inverse as any).shield).toBe(7); // rules 1.36 expect(MODULE.quiet.cost).toBe(5);
+    expect((MODULE.shell as any).shield).toBe(4); expect((MODULE.inverse as any).shield).toBe(7); expect(MODULE.quiet.cost).toBe(5); // rules 1.36: Inverse 7
     const a = heart(); begin(a, give(a.pc, { modules: ['at_once'] }), { aim: '6,5' }); expect(lost(a.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 0.8));
     const r = heart(); begin(r, give(r.pc, { modules: ['return'] }), { aim: '6,5' }); expect(lost(r.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8) + Math.floor(SOUL_DAMAGE * 0.8 * 0.3));
     const pr = heart(); const dr = give(pr.pc, { modules: ['return'] }); expect(withGame(pr.g, () => previewOutburstPlan(pr.cb, me(pr), dr, '6,5')).affected[0].dmg).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 1.3));

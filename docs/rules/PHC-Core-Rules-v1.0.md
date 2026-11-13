@@ -2992,30 +2992,30 @@ An enemy's numbers are its tier's row at level 1, raised by its level's row (`da
 
 *Rules 1.25, how each tier shares its fire:* Vermin and Minions take the nearest; Soldiers spread their fire, one each, the near ones first; Elites and Bosses go for the wounded and hunt the healer. The numbers are in "Rules revision 1.25".
 
-**What a level adds**
+**What a level adds** (rules 1.36: HP, armour and damage are this revision's columns × the level scale, `output.level.scale`; Defense and attack bonus unchanged)
 
 | Level | HP | Armour | Defense | Attack bonus | Damage |
 |---|---|---|---|---|---|
 | 1 | ×1.00 | ×1.00 | +0 | +0 | ×1.00 |
-| 2 | ×1.07 | ×1.04 | +0 | +0 | ×1.02 |
-| 3 | ×1.16 | ×1.09 | +1 | +0 | ×1.05 |
-| 4 | ×1.23 | ×1.16 | +1 | +0 | ×1.07 |
-| 5 | ×1.30 | ×1.20 | +2 | +0 | ×1.10 |
-| 6 | ×1.38 | ×1.27 | +2 | +1 | ×1.13 |
-| 7 | ×1.43 | ×1.29 | +3 | +1 | ×1.17 |
-| 8 | ×1.49 | ×1.36 | +3 | +1 | ×1.20 |
-| 9 | ×1.54 | ×1.40 | +4 | +1 | ×1.24 |
-| 10 | ×1.61 | ×1.47 | +4 | +2 | ×1.28 |
-| 11 | ×1.67 | ×1.49 | +5 | +2 | ×1.33 |
-| 12 | ×1.74 | ×1.56 | +5 | +2 | ×1.38 |
-| 13 | ×1.78 | ×1.60 | +6 | +3 | ×1.43 |
-| 14 | ×1.78 | ×1.60 | +6 | +3 | ×1.48 |
-| 15 | ×1.79 | ×1.60 | +6 | +4 | ×1.53 |
-| 16 | ×1.79 | ×1.60 | +6 | +4 | ×1.58 |
-| 17 | ×1.80 | ×1.60 | +6 | +5 | ×1.64 |
-| 18 | ×1.80 | ×1.60 | +6 | +5 | ×1.70 |
-| 19 | ×1.81 | ×1.60 | +6 | +6 | ×1.76 |
-| 20 | ×1.81 | ×1.60 | +6 | +6 | ×1.82 |
+| 2 | ×1.1154 | ×1.0841 | +0 | +0 | ×1.0632 |
+| 3 | ×1.3037 | ×1.2251 | +1 | +0 | ×1.1801 |
+| 4 | ×1.4492 | ×1.3667 | +1 | +0 | ×1.2607 |
+| 5 | ×1.6557 | ×1.5283 | +2 | +0 | ×1.401 |
+| 6 | ×1.8514 | ×1.7038 | +2 | +1 | ×1.516 |
+| 7 | ×2.0784 | ×1.8749 | +3 | +1 | ×1.7005 |
+| 8 | ×2.2904 | ×2.0906 | +3 | +1 | ×1.8446 |
+| 9 | ×2.5695 | ×2.3359 | +4 | +1 | ×2.0689 |
+| 10 | ×2.851 | ×2.6031 | +4 | +2 | ×2.2666 |
+| 11 | ×3.2151 | ×2.8685 | +5 | +2 | ×2.5605 |
+| 12 | ×3.5661 | ×3.1972 | +5 | +2 | ×2.8283 |
+| 13 | ×3.9717 | ×3.5701 | +6 | +3 | ×3.1908 |
+| 14 | ×4.416 | ×3.9694 | +6 | +3 | ×3.6717 |
+| 15 | ×4.9375 | ×4.4134 | +6 | +4 | ×4.2204 |
+| 16 | ×5.4899 | ×4.9072 | +6 | +4 | ×4.8459 |
+| 17 | ×6.1384 | ×5.4563 | +6 | +5 | ×5.5927 |
+| 18 | ×6.8251 | ×6.0667 | +6 | +5 | ×6.4459 |
+| 19 | ×7.6308 | ×6.7454 | +6 | +6 | ×7.42 |
+| 20 | ×8.4844 | ×7.5 | +6 | +6 | ×8.5312 |
 
 HP and armour are rounded to the nearest whole number. **Damage:** an enemy deals its weapon's damage × its tier's damage factor × its level's damage factor (it used to deal the weapon's damage with no multiplier). Everything else on the tier (Movement, AP, Endurance, spare magazines, techniques, Calls) does not change with level.
 
