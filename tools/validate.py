@@ -1805,6 +1805,14 @@ if TRIG:
     for _x in base + adv: walk_triggers(_x, f"classes:{_x.get('id')}")
     for _m in pool: walk_triggers(_m, f"classes:pool.{_m.get('origin')}.{_m.get('id')}")
     for _x in items("skills"): walk_triggers(_x.get("unlocks"), f"skills:{_x.get('id')}")
+    # (Witnessed's taboo is faith.ts's own rule, read by its words: this list may only shrink)
+    COND_LEGACY_WHEN = {"taboo_tag"}
+    # Classes 3.0 P4: a condition row is an item its bearer holds: its effects whose op is an item op are checked as
+    # triggered effects (a row's own engine rule, Bleeding's turn_start stat_mod, is not an item op and stays prose)
+    for _x in items("conditions"):
+        for _e in _x.get("effects") or []:
+            if isinstance(_e, dict) and _e.get("op") in TOPS and isinstance(_e.get("when"), str) and " " not in _e["when"] and _e["when"] not in COND_LEGACY_WHEN:
+                check_trigger_effect(_e, f"conditions:{_x.get('id')}")
 else:
     errors.append("effect_ops.json: no item_ops block (the closed lists of item ops)")
 

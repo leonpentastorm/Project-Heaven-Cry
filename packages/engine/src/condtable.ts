@@ -63,7 +63,8 @@ export const CONDITION_ROWS: any[] = (conditionsJ as any).items;
 export const CONDS: Record<string, CondDef> = {};
 /** Every other name a condition answers to (its data id when the key differs, its aliases) → its key. */
 const ALIAS: Record<string, string> = {};
-for (const row of CONDITION_ROWS) {
+/** Read one row into the table (the loader, and addConditionRows). */
+function loadRow(row: any): void {
   const key: string = row.key || row.id, until: string | undefined = row.duration?.until;
   if (!['table', 'flag', 'state'].includes(row.engine)) throw new Error('conditions.json: ' + row.id + ' has no `engine` (table, flag or state).');
   if (!until && !(row.duration?.rounds > 0)) throw new Error('conditions.json: ' + row.id + ' needs duration.rounds or duration.until.');
@@ -73,6 +74,21 @@ for (const row of CONDITION_ROWS) {
     ...(row.boon ? { boon: true } : {}), ...(until ? { noTick: true, until } : {}), ...(row.save ? {} : { noSave: true }), engine: row.engine, mods: modsOf(row) };
   if (key !== row.id) ALIAS[row.id] = key;
   for (const a of (row.aliases || []) as string[]) ALIAS[a] = key;
+}
+for (const row of CONDITION_ROWS) loadRow(row);
+/** A number that changes whenever rows are added or taken away (an index over the rows keys on it). */
+export let condRowsVersion = 0;
+const ADDED: any[] = [];
+/** Add condition rows at run time, written as data/conditions.json rows (a relic's own condition, a test's fixture):
+ * the same loader reads them; they run as items like any row (Classes 3.0 P4). Never a row of the data file's ids. */
+export function addConditionRows(rows: any[]): void {
+  for (const row of rows) { if (CONDS[row.key || row.id] && !ADDED.includes(row)) throw new Error('conditions: ' + row.id + ' is already a row'); loadRow(row); CONDITION_ROWS.push(row); ADDED.push(row); }
+  condRowsVersion++;
+}
+/** Take every added row away again. */
+export function clearAddedConditions(): void {
+  for (const row of ADDED.splice(0)) { const key = row.key || row.id; delete CONDS[key]; delete ALIAS[row.id]; for (const a of row.aliases || []) delete ALIAS[a]; const i = CONDITION_ROWS.indexOf(row); if (i >= 0) CONDITION_ROWS.splice(i, 1); }
+  condRowsVersion++;
 }
 /** A condition's storage key from any of its names (an unknown id comes back as it is). */
 export const condId = (id: string): string => ALIAS[id] || id;

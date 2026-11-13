@@ -14,6 +14,18 @@
       ]
     }
   ],
+  "conditions": [
+    {
+      "id": "test_fervent", "name": "Fervent (test)", "kind": "boon", "boon": true, "engine": "table", "duration": { "rounds": 2 },
+      "text": "You deal {=effects.0.value} more damage and have {=effects.1.value} more reaction each round; the one who made you Fervent cheers you on at your turn's start.",
+      "effects": [
+        { "op": "damage_mod", "when": "dealing", "value": 5, "label": "Fervent" },
+        { "op": "stat_mod", "stat": "reactions", "value": 1 },
+        { "op": "grant_ap", "when": "turn_start", "value": 1, "say": "{source} cheers {self} on (Fervent)." }
+      ],
+      "adjudication": "engine"
+    }
+  ],
   "relics": [
     {
       "id": "test_acted_reload",

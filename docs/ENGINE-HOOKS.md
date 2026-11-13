@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 33 triggers, 56 predicates, 18 ops, 90 effect ops, 122 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 50 stats, 24 condition fields, 334 primitive exports, 130 fx kinds, 166 Unit fields, 56 Combat fields, 40 guards.
+Counts: 33 triggers, 56 predicates, 18 ops, 90 effect ops, 122 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 50 stats, 24 condition fields, 340 primitive exports, 130 fx kinds, 166 Unit fields, 56 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -527,6 +527,7 @@ Families: `body`, `brain`, `heart`.
 | `triggerProblem` | `triggerProblem(e: any): string \| null` | Why a triggered effect can't run (null: it can): the op is unknown or doesn't take this trigger, a predicate is unknown, the limit is malformed. tools/validate.py says the same in Python. |
 | `runTriggered` | `runTriggered(ctx: any, h: Holder, e: any): void` | Run one triggered effect on its hook's payload, for one holder. |
 | `triggerHook` | `triggerHook(e: any): HookName \| null` | The hooks any data effect listens on (hooks.ts hookUsed asks, so a hook that is skipped when nobody listens, the `cost` hook, still fires for a data item). |
+| `COND_TABLE_STATS` | `COND_TABLE_STATS` | The stats condtable.ts reads from a row itself (they are not answered through statQuery). |
 
 #### The damage, heal and shield formula (`effects/output.ts`)
 
@@ -686,6 +687,8 @@ Families: `body`, `brain`, `heart`.
 | `_unregisterAll` | `_unregisterAll(keep: (key: string) => boolean = () => false)` | For tests: forget every lane registration (generic handlers stay). |
 | `GenericOp` | `interface GenericOp { op, claim, info, stat, e, stat, ctx, on, checkMod, e, ck, ctx, run, e, args, rng, runs, info }` | A generic core-op handler: which effects it claims, and what it does for them. |
 | `setTriggerRunner` | `setTriggerRunner(r: TriggerRunner)` | effects/triggers.ts registers the item-ops runner here as it loads (no import cycle). |
+| `addConditions` | `addConditions(rows: any[]): void` | Add condition rows at run time (condtable.ts addConditionRows: a relic's own condition, a test's fixture); they are items their bearer holds (Classes 3.0 P4). |
+| `clearAddedConditionRows` | `clearAddedConditionRows(): void` | Take the added condition rows away again. |
 | `registerGeneric` | `registerGeneric(op: GenericOp)` | Register the engine's generic handler of a core data op (effects/core.ts). |
 | `genericOf` | `genericOf(op: string)` | The generic handler of a core data op, if the engine has one. |
 | `Owner` | `type Owner = 'handler' \| 'generic' \| 'narrator' \| 'action' \| 'gap'` | Who runs one effect of an item: a lane handler, a generic op, the Narrator, the item's action, or nobody (a gap). |
@@ -846,6 +849,9 @@ Families: `body`, `brain`, `heart`.
 | `CondDef` | `interface CondDef { id, key, name, title, text, fam, rounds, boon, noTick, noSave, engine, until, mods }` | One condition as the engine reads its data/conditions.json row. |
 | `CONDITION_ROWS` | `CONDITION_ROWS: any[]` | The rows as the data has them (the wiki and the amounts read these; nothing else loads the file). |
 | `CONDS` | `CONDS: Record<string, CondDef>` | The table, by storage key. |
+| `condRowsVersion` | `condRowsVersion` | A number that changes whenever rows are added or taken away (an index over the rows keys on it). |
+| `addConditionRows` | `addConditionRows(rows: any[]): void` | Add condition rows at run time, written as data/conditions.json rows (a relic's own condition, a test's fixture): the same loader reads them; they run as items like any row (Classes 3.0 P4). |
+| `clearAddedConditions` | `clearAddedConditions(): void` | Take every added row away again. |
 | `condId` | `condId(id: string): string` | A condition's storage key from any of its names (an unknown id comes back as it is). |
 | `condDef` | `condDef(id: string): CondDef \| undefined` | A condition's row, by any of its names. |
 | `condMods` | `condMods(id: string): CondMods` | The numbers of a condition (an empty object for one that has none). |

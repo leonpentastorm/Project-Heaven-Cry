@@ -8,7 +8,7 @@ import type { Combat, Unit } from '../combat';
 /** Where an item comes from. Class moves are keyed "class:<classId>.<moveId>". */
 /** 'relic': an item a holder carries that is neither a perk nor a trait (engine foundations 3: a roguelike's relics),
  * loaded with addItems('relic', [...]); written in data only. */
-export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic';
+export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic' | 'condition';
 /** The tier an item is held at: a perk's I or II, a granted perk's kind, 'trait', or a class move's rank ('adv' for an advanced class). */
 export type Tier = 'I' | 'II' | 'mastered' | 'achieved' | 'ultimate' | 'trait' | 'III' | 'adv';
 
@@ -46,6 +46,7 @@ export interface ActiveEffect { key: string; kind: ItemKind; itemId: string; tie
 export interface Holder {
   key: string; itemId: string; kind: ItemKind; tier: Tier; info: ItemInfo;
   c?: Character | null; u?: Unit | null; cb?: Combat | null; g?: any;
+  /** A condition held as an item (Classes 3.0 P4): the unit that gave it (its `{source}`), or null. */ source?: Unit | null;
 }
 
 export type HookName =

@@ -23,6 +23,9 @@ import { overworld, rngOf } from '../kit';
 import { say, dist, displace, emitFx, unitSees } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia } from '../magic';
 import { nextToCover } from '../combat';
+import { CONDITION_ROWS, condRowsVersion } from '../condtable';
+import { isStatId } from './stats';
+import type { ItemInfo } from './types';
 import { charOfUnit } from './hooks';
 import patronsJ from '../../../../data/patrons.json';
 import { RESOURCES, resGive } from './cost';
@@ -197,10 +200,10 @@ function withNumbers(ev: Ev, x: any): any {
   return out;
 }
 
-/** A `say` line's words: {self} {actor} {target} (names), {gain} (what the last resource op really gave), {res:<id>}
+/** A `say` line's words: {self} {actor} {target} (names), {source} (who gave a condition: P4), {gain} (what the last resource op really gave), {res:<id>}
  * and {resmax:<id>} (the holder's resource now, and its most). Numbers from the data go in as {=.field} placeholders. */
 function fill(s: string, ev: Ev): string {
-  return s.replace(/\{(self|actor|target)\}/g, (_m, w) => unitOf(ev, w as Who)?.name || '')
+  return s.replace(/\{(self|actor|target)\}/g, (_m, w) => unitOf(ev, w as Who)?.name || '').replace(/\{source\}/g, () => ev.h.source?.name || '')
   .replace(/\{gain\}/g, () => String((ev as any).gain ?? 0)).replace(/\{res:([a-z_]+)\}/g, (_m, id) => String(ev.self.res?.[id] ?? 0)).replace(/\{resmax:([a-z_]+)\}/g, (_m, id) => String(ev.self.resMax?.[id] ?? 0));
 }
 
@@ -351,5 +354,42 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
  * `cost` hook, still fires for a data item). */
 export const triggerHook = (e: any): HookName | null => (isTriggered(e) ? TRIGGERS[e.when].hook : null);
 
-setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered });
+// ============================================================================================== conditions are items (P4)
+// A data/conditions.json row is an item its bearer holds (Classes 3.0 P4): its effects with a trigger `when` (and an op
+// of the closed list) run through runTriggered with the bearer as the holder and the giver as `source` ({source} in a
+// say); its `stat_mod` of a declared stat answers statQuery. condtable.ts modsOf keeps reading the stats it always read
+// (defense, move_mult, vision, ap, damage_dealt_pct, sigil_ap, soul_cost_pct, save_<family>): those are not answered
+// twice. A row's effect with a trigger word and an op that is not an item op (Bleeding's turn_start stat_mod) is still
+// the engine's own rule, not run here.
+/** The stats condtable.ts reads from a row itself (they are not answered through statQuery). */
+export const COND_TABLE_STATS = new Set(['defense', 'move_mult', 'vision', 'ap', 'damage_dealt_pct', 'sigil_ap', 'soul_cost_pct', 'save_body', 'save_brain', 'save_heart']);
+/** A condition row as the item it is (key condition:<id>). */
+const condInfo = (row: any): ItemInfo => ({ key: 'condition:' + row.id, kind: 'condition', id: row.id, name: row.name, tier: 'I', effects: row.effects || [], effTier: (row.effects || []).map(() => 'I'), text: row.text || '', adjudication: row.adjudication || 'engine', active: false, bound: false, ap: null, uses: 'at_will' });
+/** The index over the rows (rebuilt when rows are added: condtable.ts condRowsVersion): per hook, the rows with a
+ * runnable item op on it and each such effect; per stat, the rows whose plain stat_mod answers it. */
+let CIDX: { v: number; on: Record<string, { row: any; info: ItemInfo; e: any }[]>; stat: Record<string, { row: any; value: number }[]> } | null = null;
+function condIndex() {
+  if (CIDX && CIDX.v === condRowsVersion) return CIDX;
+  const on: Record<string, { row: any; info: ItemInfo; e: any }[]> = {}, stat: Record<string, { row: any; value: number }[]> = {};
+  for (const row of CONDITION_ROWS) {
+    const info = condInfo(row);
+    for (const e of (row.effects || []) as any[]) {
+      if (isTriggered(e) && !triggerProblem(e)) (on[TRIGGERS[e.when].hook] ||= []).push({ row, info, e });
+      else if (e?.op === 'stat_mod' && !e.when && typeof e.value === 'number' && isStatId(e.stat) && !COND_TABLE_STATS.has(e.stat)) (stat[e.stat] ||= []).push({ row, value: e.value });
+    }
+  }
+  return (CIDX = { v: condRowsVersion, on, stat });
+}
+/** Does the unit bear this condition (a table condition or a flag one)? */
+const bears = (u: Unit, id: string) => condOn(u, id);
+/** The unit that gave a unit this condition (u.condBy), or null. */
+const giverOf = (cb: Combat, u: Unit, id: string): Unit | null => { const by = (u as any).condBy?.[condId(id)]; return by ? cb.units.find((x) => x.id === by) || null : null; };
+function condsOn(u: Unit, name: HookName, cb: Combat) {
+  const list = condIndex().on[name]; if (!list) return null;
+  const out = list.filter((x) => bears(u, x.row.id)).map((x) => ({ info: x.info, e: x.e, source: giverOf(cb, u, x.row.id) }));
+  return out.length ? out : null;
+}
+function condStat(u: Unit, stat: string): number { const l = condIndex().stat[stat]; if (!l) return 0; let n = 0; for (const x of l) if (bears(u, x.row.id)) n += x.value; return n; }
+
+setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat });
 setAllItems(allItems);
