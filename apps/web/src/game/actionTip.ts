@@ -197,6 +197,7 @@ export function placeTip(r: Rect, b: { width: number; height: number }, W: numbe
   return { x: Math.round(clampX(x)), y: Math.round(clampY(y)) };
 }
 
+/** Every element that carries a hover card: a structured one (data-tip) or a prose one (data-tip-text). */
 export const TIP_SELECTOR = '[data-tip],[data-tip-text]';
 let mounted: Document | null = null;
 /** The one floating card of the document: any [data-tip] / [data-tip-text] element under the pointer, under keyboard

@@ -929,7 +929,7 @@ Families: `body`, `brain`, `heart`.
 | `TIP_CSS` | `TIP_CSS` | The floating hover card's style, mounted once by mountActionTips. |
 | `tipElement` | `tipElement(doc: Document, t: Tip): HTMLElement` | Lay a card out as elements (the name and its chips if any, a line each). |
 | `placeTip` | `placeTip(r: Rect, b: { width: number; height: number }, W: number, H: number, gap = 6): { x: number; y: number }` | Where the card goes: beside the element (left, then right), else below, else above, shifted inside the window and never over the element itself (so never under the pointer: no flicker). |
-| `TIP_SELECTOR` | `TIP_SELECTOR` | **(no doc comment: add one in the source)** |
+| `TIP_SELECTOR` | `TIP_SELECTOR` | Every element that carries a hover card: a structured one (data-tip) or a prose one (data-tip-text). |
 | `mountActionTips` | `mountActionTips(doc: Document \| null = typeof document !== 'undefined' ? document : null): void` | The one floating card of the document: any [data-tip] / [data-tip-text] element under the pointer, under keyboard focus or long-pressed on a touch screen shows its card, after a short delay (a pointer swept do… |
 
 #### The client's action flow (`apps/web/src/game/actionFlow.ts`)

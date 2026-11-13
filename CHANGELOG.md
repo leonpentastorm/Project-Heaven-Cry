@@ -8,6 +8,20 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.25.0 — 13 November 2026
+
+What Leon found playing 0.24.0, the bugs the Classes 3.0 spec writers found, and the tools that keep the engine in one piece.
+
+- **One hover card everywhere.** Every hover text in the game (298 of them) is the styled card now: a name, its costs, one line a sentence. No browser tooltip is left, and a test fails if one comes back. One card at a time: the feeling pop-ups no longer stack.
+- **Two guns:** one **Clear jam**, in the Both group: it clears every jammed gun you hold for one price (Leon's ruling; the screen read only the main gun's jam before, so the off hand's was invisible). A jammed gun says JAMMED on its own header. **"Shoot an object" is "Attack an object".**
+- **One fact, one place:** Heat, rounds, Momentum and Guard are in the unit panel only; the line under the tabs no longer repeats Stage, Strain, MP, Charge and Flux; a feeling shows its step once; the Momentum meter has one summary line and its full text in the card.
+- **What is shelved is hidden:** a Sigil word no longer shows a Grand form nobody can lay; the practice picker and the Proving Ground's design builder no longer offer advanced-class modules. Read from data, not a typed name.
+- **Fixed:** Execution killed an Elite that the Elite and Boss guard had just left on 1 HP. **An enemy that sees nobody no longer stands still:** it walks to where its side last saw you (and is no longer told where you hid if it never saw you hide). Killzone no longer hands its reaction back between its two shots. Acuity's and Improvisation's attribute tags were swapped in the data. Blade Recluse no longer promises "weapon mastery" (retired in rules 1.12).
+- **For whoever builds next:** `docs/ENGINE-HOOKS.md`, a catalogue of every hook, trigger, condition, op, formula profile, cost site and scope, generated from the code and checked by `npm run check`; `npm run built-from`, which tells a spec or a diff when it is building beside the engine; "Stop: before you build" at the top of `docs/ENGINE-GUIDE.md`.
+- **Designed, not built:** Classes 3.0 (Class Roster Revision 4): `docs/design/handoffs/CLASSES-3.0-PICKUP.md`.
+- **Not reproduced:** four Ripostes in one round (the engine counts one reaction a round on every path tested). If it happens again, use Report a problem at once.
+- **Waiting on Leon:** an off-hand technique's Heat jam lands on the main gun: should it land on the gun that fired?
+
 ## 0.24.0 — 12 November 2026
 
 What Leon found playing 0.23.0 on its first night, and rules 1.27.
