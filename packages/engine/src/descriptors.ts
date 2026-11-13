@@ -28,7 +28,7 @@ import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView 
 import { TECHNIQUE, weaponSystem, propText } from './physical/data';
 import { callPad, previewCall } from './calls/core';
 import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COST_LEVELS, GATE, MIRACLE_FAITH } from './faith';
-import { perkActionsFor, previewPerkAction, togglesFor, type ToggleEntry } from './effects/actions';
+import { perkActionsFor, previewPerkAction, togglesFor, PRAYER_SUB, type ToggleEntry } from './effects/actions';
 import type { PerkActionEntry } from './effects/actions';
 import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
   steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE } from './magic';
@@ -38,9 +38,9 @@ import { orderable, ownedVerbs, ownedWhy } from './owned';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
-export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'shadow' | 'sigils' | 'outbursts' | 'faith' | 'calls';
+export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'shadow' | 'tend' | 'sigils' | 'outbursts' | 'faith' | 'calls';
 /** The order of the action groups on the fight screen's tabs. */
-export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'shadow', 'sigils', 'outbursts', 'faith', 'calls'];
+export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'shadow', 'tend', 'sigils', 'outbursts', 'faith', 'calls'];
 /** What a pick step asks for. enemy/ally/unit: a unit clicked on the grid; tile: a tile; option: one (or up to `max`)
  * of `options`; custom: a bespoke panel the screen registers under `renderer` fills `key` (the glyph keyboard, the
  * HEART panel, a perk's form, the pile checklist, the Evoke planner). */
@@ -103,6 +103,10 @@ export interface ActionDescriptor {
   hand?: 'main' | 'off' | 'both';
   /** A technique's text in parts (techParts), for a hover card that lays it out a line each. */
   parts?: TechParts;
+  /** The row's group inside its tab, a header the screen shows over the first row of each (Classes 3.0 step 10): a
+   * prayer's kind ('Whispers', 'Hymns', 'Miracle'; the Chaplain's Ward among the Whispers), a door verb's data group
+   * (Shadow: Slip, Mark, Work, Break; Tending: Bond, Heal, Help). Absent: no group. */
+  sub?: string;
 }
 export type Picks = Record<string, any>;
 /** One line of a descriptor preview (odds, a note, a meter, a save, the cost, an ask). */
@@ -584,7 +588,7 @@ const PERKS: ActionSystem = {
       else if (e.target === 'tile') picks.push({ key: 'tile', kind: 'tile', prompt: 'Click a tile.' });
       if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
       // an armed move (Eye of the Storm) can be confirmed again to stand it down: its state is said, the reducer rules
-      return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.arm ? { available: true } : {}) });
+      return D(perkId(e), e.tab, e.label + st.tag, priceOf(e), perkCost(e), perkText(e), st.why, { picks, preview: 'perk', engine: e.engine, ...(e.sub ? { sub: e.sub } : {}), ...(e.arm ? { available: true } : {}) });
     });
   },
   send(x, d, p) {
@@ -662,7 +666,7 @@ const FAITH: ActionSystem = {
       const odds = prayOdds(p), warn = p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP'
         : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : '';
       const label = (kind === 'miracle' ? '✦ ' : '') + name + (kind === 'whisper' ? '' : ' · ' + (kind === 'miracle' ? 'MIRACLE' : gate.replace(/ · DEVOTION \d+$/, '')));
-      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP · ' + odds, gate + ' · ' + odds + '. ' + text + (warn ? ' ' + warn + '.' : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || [], p.target === 'tile' ? seenTiles() : undefined), preview: 'prayer' });
+      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP · ' + odds, gate + ' · ' + odds + '. ' + text + (warn ? ' ' + warn + '.' : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || [], p.target === 'tile' ? seenTiles() : undefined), preview: 'prayer', sub: PRAYER_SUB[kind] });
     };
     return [...v.whispers.map((w: any) => row('whisper', w.id, w.name, w.text, w.preview, 0)), ...v.hymns.map((h: any) => row('hymn', h.key, h.name, h.text, h.preview, h.tier)), ...(v.miracle ? [row('miracle', v.miracle.id, v.miracle.name, v.miracle.text, v.miracle.preview, 4)] : [])];
   },

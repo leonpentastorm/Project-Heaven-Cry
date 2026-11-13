@@ -1952,13 +1952,21 @@ if TRIG:
             for v in o: _walk_grant_if(v, w)
     # Classes 3.0 P6: the one action shape. A grant_action's reach, prayer, limit, res and pick are closed lists.
     _RES_ROWS = set(((data.get("actions") or {}).get("resources") or {}).keys())
+    def _check_why(o, w):
+        if "why" not in o: return
+        if not isinstance(o["why"], dict) or not all(isinstance(v, str) and v for v in o["why"].values()): errors.append(f"{w}: why is an object of predicate: sentence"); return
+        for k in o["why"]:
+            if k not in (o.get("if") or {}): errors.append(f"{w}: why names '{k}', which is not one of its if's predicates")
     def _check_grant(g, w):
+        _check_why(g, w)
         r = g.get("reach")
         if r is not None:
             if not isinstance(r, dict): errors.append(f"{w}: a grant_action's reach is an object (tiles, sight, side, self, if, tied)")
             else:
                 for k in r:
-                    if k not in ("tiles", "sight", "side", "self", "if", "tied", "tile", "beyond", "object", "stand", "over"): errors.append(f"{w}: unknown reach field '{k}'")
+                    if k not in ("tiles", "sight", "side", "self", "if", "tied", "tile", "beyond", "object", "stand", "over", "why"): errors.append(f"{w}: unknown reach field '{k}'")
+                # Classes 3.0 step 10: `why` (on the grant and on its reach) is the screen's sentence for a predicate of its `if`
+                _check_why(r, w + ": reach")
                 # Classes 3.0 step 5 (rules 1.31): reach.tile: the action aims at a tile (within tiles, in sight), not a unit
                 if "tile" in r and (r["tile"] is not True or any(k in r for k in ("side", "self", "tied", "if"))): errors.append(f"{w}: reach.tile is true, with only tiles, sight, object, stand and over beside it")
                 # Classes 3.0 step 6, integration (rules 1.32: Pick, Douse, Rig, Vault): what the picked tile must be; an

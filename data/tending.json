@@ -1,6 +1,12 @@
 {
   "$schema_version": 1,
   "kind": "tending",
+  "tab": "tend",
+  "groups": {
+    "bond": "Bond",
+    "heal": "Heal",
+    "help": "Help"
+  },
   "source": "docs/design/bonds-spec.md (rules 1.33: Tending, Bonds and the Mender)",
   "about": "Insight's door: Bonds and Tending, opened by Empathy with an Attuner in hand. `bond`: the Bond numbers (the ops repeat them; tools/validate.py holds them equal). `items`: the door's verbs (kind verb, P6) and its passives (tend.threads and the ladder).",
   "bond": {
@@ -364,6 +370,7 @@
       "id": "tend.bond",
       "name": "Bond",
       "kind": "verb",
+      "group": "bond",
       "door": "empathy",
       "requires": [
         {
@@ -406,6 +413,11 @@
               ],
               "target_alive": true,
               "target_not_tied": "bond"
+            },
+            "why": {
+              "target_not_kind": "A machine has no heart to Bond.",
+              "target_alive": "{target} is Downed: Raise them first.",
+              "target_not_tied": "{target} is already Bonded to you."
             }
           },
           "effects": [
@@ -460,7 +472,11 @@
               },
               "say": "{self} is Bonded to {target}."
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand.",
+            "self_tie_room": "Your Bonds are full: let one go first."
+          }
         }
       ],
       "numbers": {
@@ -474,6 +490,7 @@
       "id": "tend.let_go",
       "name": "Let Go",
       "kind": "verb",
+      "group": "bond",
       "door": "empathy",
       "requires": [
         {
@@ -510,6 +527,7 @@
       "id": "tend.mend",
       "name": "Mend",
       "kind": "verb",
+      "group": "heal",
       "door": "empathy",
       "requires": [
         {
@@ -549,6 +567,9 @@
             "beyond": "bond",
             "if": {
               "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
             }
           },
           "effects": [
@@ -568,7 +589,10 @@
                 "target_tied": "bond"
               }
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
         }
       ],
       "amounts": {
@@ -587,6 +611,7 @@
       "id": "tend.mend_self",
       "name": "Mend Yourself",
       "kind": "verb",
+      "group": "heal",
       "door": "empathy",
       "requires": [
         {
@@ -629,7 +654,10 @@
               "amount": "heal",
               "say": "{self} mends their own wounds."
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
         }
       ],
       "amounts": {
@@ -648,6 +676,7 @@
       "id": "tend.touch",
       "name": "Touch",
       "kind": "verb",
+      "group": "heal",
       "door": "empathy",
       "requires": [
         {
@@ -686,6 +715,9 @@
             "side": "ally",
             "if": {
               "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
             }
           },
           "effects": [
@@ -705,7 +737,10 @@
                 "target_tied": "bond"
               }
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
         }
       ],
       "amounts": {
@@ -724,6 +759,7 @@
       "id": "tend.settle",
       "name": "Settle",
       "kind": "verb",
+      "group": "help",
       "door": "empathy",
       "requires": [
         {
@@ -755,6 +791,9 @@
             "beyond": "bond",
             "if": {
               "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
             }
           },
           "effects": [
@@ -776,7 +815,10 @@
                 "target_tied": "bond"
               }
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
         }
       ],
       "adjudication": "engine",
@@ -786,6 +828,7 @@
       "id": "tend.soothe",
       "name": "Soothe",
       "kind": "verb",
+      "group": "help",
       "door": "empathy",
       "requires": [
         {
@@ -817,6 +860,9 @@
             "beyond": "bond",
             "if": {
               "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
             }
           },
           "effects": [
@@ -898,7 +944,10 @@
                 "target_tied": "bond"
               }
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
         }
       ],
       "adjudication": "engine",
@@ -908,6 +957,7 @@
       "id": "tend.shield",
       "name": "Shield",
       "kind": "verb",
+      "group": "heal",
       "door": "empathy",
       "requires": [
         {
@@ -947,6 +997,9 @@
             "beyond": "bond",
             "if": {
               "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
             }
           },
           "effects": [
@@ -966,7 +1019,10 @@
                 "target_tied": "bond"
               }
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
         }
       ],
       "amounts": {
@@ -985,6 +1041,7 @@
       "id": "tend.raise",
       "name": "Raise",
       "kind": "verb",
+      "group": "heal",
       "door": "empathy",
       "requires": [
         {
@@ -1015,6 +1072,9 @@
             "beyond": "bond",
             "if": {
               "target_alive": false
+            },
+            "why": {
+              "target_alive": "{target} is not Downed."
             }
           },
           "limit": {
@@ -1038,7 +1098,10 @@
                 "target_tied": "bond"
               }
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
         }
       ],
       "amounts": {
@@ -1057,6 +1120,7 @@
       "id": "tend.guide",
       "name": "Guide",
       "kind": "verb",
+      "group": "help",
       "door": "empathy",
       "requires": [
         {
@@ -1087,6 +1151,9 @@
             "beyond": "bond",
             "if": {
               "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
             }
           },
           "effects": [
@@ -1117,7 +1184,10 @@
                 "target_tied": "bond"
               }
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          }
         }
       ],
       "adjudication": "engine",
@@ -1127,6 +1197,7 @@
       "id": "tend.bond_free",
       "name": "Bond (free)",
       "kind": "verb",
+      "group": "bond",
       "door": "empathy",
       "requires": [
         {
@@ -1163,6 +1234,11 @@
               ],
               "target_alive": true,
               "target_not_tied": "bond"
+            },
+            "why": {
+              "target_not_kind": "A machine has no heart to Bond.",
+              "target_alive": "{target} is Downed: Raise them first.",
+              "target_not_tied": "{target} is already Bonded to you."
             }
           },
           "limit": {
@@ -1221,7 +1297,11 @@
               },
               "say": "{self} is Bonded to {target}."
             }
-          ]
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand.",
+            "self_tie_room": "Your Bonds are full: let one go first."
+          }
         }
       ],
       "adjudication": "engine",
@@ -1253,6 +1333,7 @@
       "id": "tend.field_surgery",
       "name": "Field Surgery",
       "kind": "verb",
+      "group": "heal",
       "door": "empathy",
       "requires": [
         {

@@ -21,7 +21,9 @@ export function _addRawItems(kind: 'perk' | 'trait' | 'relic' | 'verb', items: a
 export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof typeof EXTRA)[]) EXTRA[k] = {}; infoCache.clear(); itemsCache.clear(); }
 /** The data's door verbs: the `items` of kind `verb` of each system's file (Shadow, Tending, Figments, the Chaplain's
  * prayers: one line here as each file comes), and those added at run time (addItems('verb', …): a test's fixtures). */
-const DATA_VERBS: Record<string, any> = Object.fromEntries(([...((shadowJ as any).items || []).map((x: any) => ({ ...x, tab: 'shadow' })), ...((tendingJ as any).items || [])] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x])); // a system's verbs: Shadow's on its own tab (rules 1.32), Tending's (data/tending.json, rules 1.33)
+// (each file names its tab, `tab`, and its rows' groups, `groups`: an item's `group` id gives its row's group name `subName`)
+const systemVerbs = (j: any): any[] => (j.items || []).map((x: any) => ({ ...x, tab: x.tab || j.tab, ...(x.group && j.groups?.[x.group] ? { subName: j.groups[x.group] } : {}) }));
+const DATA_VERBS: Record<string, any> = Object.fromEntries(([...systemVerbs(shadowJ), ...systemVerbs(tendingJ)] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x])); // a system's verbs: Shadow's on its own tab (rules 1.32), Tending's (data/tending.json, rules 1.33)
 const verbData = (id: string): any => DATA_VERBS[id] || EXTRA.verb[id];
 const perkData = (id: string): any => (PERK as any)[id] || EXTRA.perk[id];
 const traitData = (id: string): any => TRAIT[id] || EXTRA.trait[id];

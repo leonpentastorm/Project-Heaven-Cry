@@ -52,7 +52,7 @@ const TARGETING = (e: any): ActionDef['target'] => {
 /** The words a reach's side takes (a target relation to the holder). */
 export const REACH_SIDES = ['foe', 'ally', 'side', 'any'];
 /** The fields of a grant_action's `reach`. */
-export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied', 'tile', 'beyond',
+export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied', 'tile', 'beyond', 'why',
   // Classes 3.0 step 6, integration (rules 1.32: Shadow's Pick, Douse, Rig, Vault): what a picked tile must be
   'object', 'stand', 'over'];
 /** Rules 1.33: the surfaces a grant_action's `scope` may name (default: combat and the area map). */
@@ -86,7 +86,7 @@ export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): str
   if (!far && tiles != null && distK(u.pos, t.pos) > tiles) return 'Out of range (' + tiles + (tiles === 1 ? ' tile).' : ' tiles).');
   if (reach.sight && t.side !== u.side && ifFails(h, { target_sight: ['seen'] }, t)) return 'You can\'t see them.'; // the holder's side sees it (P7)
   if (reach.tied && ifFails(h, { target_tied: reach.tied }, t)) return t.name + ' isn\'t tied to you.'; // P8
-  if (reach.if) { const k = ifFails(h, reach.if, t); if (k) return 'Not on ' + t.name + ' (' + human(k) + ').'; }
+  if (reach.if) { const k = ifFails(h, reach.if, t); if (k) return reach.why && typeof reach.why[k] === 'string' ? reach.why[k].replace(/\{target\}/g, t.name) : 'Not on ' + t.name + ' (' + human(k) + ').'; }
   return null;
 }
 /** Why this holder can't aim its action at this tile by a reach with `tile: true` (Classes 3.0 step 5, rules 1.31:
@@ -140,8 +140,10 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     if (typeof reach?.tiles === 'number' && !reach.beyond) d.range = reach.tiles; // (reach.beyond: the reach decides, not a plain range)
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
     if (typeof g.site === 'string') d.site = g.site;
+    if (g.prayer) d.prayer = g.prayer;
     if (g.if || g.prayer) d.available = (h) => {
-      if (g.if && h.u && h.cb) { const k = ifFails(h, g.if); if (k) return 'Not now (' + human(k) + ').'; }
+      // the refusal: the grant's own sentence for the failing predicate (`why`: {predicate: sentence}), else its name
+      if (g.if && h.u && h.cb) { const k = ifFails(h, g.if); if (k) return (g.why && typeof g.why[k] === 'string' ? g.why[k] : 'Not now (' + human(k) + ').'); }
       if (g.prayer && h.u && h.cb && PRAYER) return PRAYER.why(h.cb, h.u, g.prayer) || true;
       return true;
     };
@@ -200,8 +202,21 @@ function costOf(h: Holder, d: ActionDef, args: ActionArgs): Priced {
 }
 /** The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`:
  * Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. */
-export type ItemTab = 'perks' | 'class' | 'shadow';
-const tabOf = (h: Holder): ItemTab => (h.kind === 'class' ? 'class' : h.kind === 'verb' && rawItem(h.key)?.tab === 'shadow' ? 'shadow' : 'perks');
+export type ItemTab = 'perks' | 'class' | 'shadow' | 'tend' | 'faith';
+/** The system tabs a door verb's data file may name (`tab`, rules 1.32-1.33): Shadow's verbs, Tending's. */
+export const VERB_TABS: ItemTab[] = ['shadow', 'tend'];
+/** A prayer granted by any item (rules 1.31: the Chaplain's Ward and Sanctuary) goes on the Faith tab, among the prayers. */
+const tabOf = (h: Holder, d?: ActionDef): ItemTab => {
+  if (d?.prayer) return 'faith';
+  if (h.kind === 'class') return 'class';
+  const t = h.kind === 'verb' ? rawItem(h.key)?.tab : null;
+  return VERB_TABS.includes(t) ? t : 'perks';
+};
+/** The group an action's row sits in inside its tab (Classes 3.0 step 10): a prayer's kind ('Whispers', 'Hymns'), or a
+ * door verb's data group named by its file's `groups` (Shadow: Slip, Mark, Work, Break; Tending: Bond, Heal, Help). */
+const subOf = (h: Holder, d?: ActionDef): string | undefined => (d?.prayer ? PRAYER_SUB[d.prayer] : rawItem(h.key)?.subName || undefined);
+/** The Faith tab's prayer groups (the prayer rows' own: descriptors.ts FAITH). */
+export const PRAYER_SUB: Record<string, string> = { whisper: 'Whispers', hymn: 'Hymns', miracle: 'Miracle' };
 /** One action as the UI shows it. */
 export interface PerkActionEntry {
   /** What combat/perk, world/act perk and story/perk take as id (item key), plus actionId when an item has several. */
@@ -214,6 +229,8 @@ export interface PerkActionEntry {
   engine: boolean;
   /** Which tab: perks (perks and traits) or class (class moves). cls: the class id, for its emblem. */
   tab: ItemTab; cls?: string; arm?: boolean; armed?: any;
+  /** The row's group inside its tab (subOf): a prayer's kind, a door verb's data group. */
+  sub?: string;
   tier: string;
   /** What the action's choice takes (chips in the client), how many at once, and the prompt for a pick or typed detail. */
   options?: { id: string; label: string }[]; pickMulti?: number; pickLabel?: string;
@@ -272,7 +289,7 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   else if (!why) why = resWhyNot(cost.res, null, h.c); // no unit pays here (a story action): what the character holds (stims, Echo) is still asked for
   const lane = handlerOf(h.key)?.actions?.some((a) => a.id === d.id);
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
-    target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: tabOf(h), cls: h.info.classId,
+    target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: tabOf(h, d), ...(subOf(h, d) ? { sub: subOf(h, d) } : {}), cls: h.info.classId,
     arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
     ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}) };
 }
