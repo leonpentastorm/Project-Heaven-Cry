@@ -28,7 +28,10 @@ Fast-forwarded from the branch above, then:
    cheaper. Built with two new closed-list predicates, `free_tech` (techniques.json `free`) and `tech_ap_at_least`
    (the attack's events now carry `techAp`, the technique's own price with the weapon: `combat.ts setStrikeTechAp`,
    registered by `physical/core.ts`). **A reading made here (the lead can reverse it):** "a weapon technique" leaves out
-   the free techniques everyone has, so the Aimed Shot (3 AP) and the long rifle's 3-AP Shot are not cut.
+   the free techniques everyone has, so the Aimed Shot (3 AP) and the long rifle's 3-AP Shot are not cut. Found on the
+   way: the engine's own volleys (Burst, full auto, weapon skills, both hands) roll plain shots, so their rolls never
+   spent the turn's use (a second Burst was cut too); `chained(f, volley, ap)` now gives a volley's rolls its price
+   (`techAp`) and `free_tech` is false for a roll of a volley.
 
    | All in, % of the normal-share rifle turn (`REFIT_MEASURE=1 REFIT_SYSTEMS=plain,gun REFIT_VARIANTS=allin`) | L1 | L5 | L10 | L20 | Mean |
    | --- | --- | --- | --- | --- | --- |
@@ -56,6 +59,14 @@ Fast-forwarded from the branch above, then:
    opportunity attacks and Duck and Roll when two reactions allow it (and Keep one for a held shot); (c) Duck and Roll
    valued by the hit it avoids, so it is taken when a step out of sight or into cover exists; (d) the row as
    `defence-measure.ts reflexRow`: off-turn damage and damage taken with `reactions` 2 against 1, levels 5 to 20.
+6. **Checks:** `python3 tools/validate.py data` 0 errors; `python3 tools/engine_catalog.py --check` clean;
+   `npm run built-from -- claude/charming-gauss-hbq4n0..HEAD` 6 smells in 4 places, 0 a lint fails on (each a line only
+   re-wrapped or renamed: protodata, `classes/i.ts` 185/244/247, `combat.ts` the attack roll's ctx, `perks/a.ts` 70 the
+   Stonewall log line); `npm run check` **ALL GREEN** (engine 3842 passed, web 1117; the contract, Faith dabbler and
+   replay coverage guards included). Browser suites on this worktree's own server (`wrangler dev -c wrangler.dev.jsonc
+   --port 8798`, `--base`, `--jobs 2`): physical, physical-pack, classes, classes-moves, turn-order, rules114,
+   two-players, pg-levelup ok; reload passed alone and failed once beside the others on an animation timing ("Normal
+   speed is slower than Fast", 1201 vs 1226 ms: the loaded machine, not this change).
 
 ## 1. What was built
 
