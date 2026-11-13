@@ -83,6 +83,39 @@ Brace, Duck and Roll, Field Fix. `PENDING` (must reach empty): Fire Discipline, 
 and code; only its name and tag say guns (the Chaplain step). A fifth check fails on a PENDING entry that no longer
 matches anything, so a step that fixes a move must delete its entry.
 
-## 4. Checks
+## 4. Golden lines moved, and the checks
 
-FILLED IN BELOW AT THE CLOSE.
+Pinned first (commit "step 4 pin": three item-ops situations, `blow-shaken`, `blow-shaken-twice`, `shot-afraid`,
+recorded on the old engine; additions only). Re-recorded on purpose (commit "step 4"), and only:
+
+- `itemops-traits-classes`: `class/defender@I/II/III` (Guard 1 in `start`, soaked by the first hit taken, Brace
+  starting from 1) and `class/fighter@I/II/III` in the Shaken / Frightened situations.
+- `itemops-perks` and the `costs-*` tables: perks whose table base is a fighter and whose hits land on a Shaken or
+  Frightened target (`the_name_they_whisper@mastered`, `bone_talk`, `both_hands@II`, `silent_partner` marks), the
+  Lunge counter (`uses.class:fighter.lunge|per_turn`) in the marks of every Lunge holder (shelved advanced ones
+  included), `asker/class/fighter@III`, `item/class/fighter@III` Finisher's `then-shot`.
+- `builds-normal`, `builds-allin`: the tank's L12 and L20 `taken` lines (the start Guard soaks 10).
+- Replay hashes: the oracles (`paths-order`, `sight-order`, `shared-state`) passed, then `REPLAY_RECORD=1
+  REPLAY_FULL=1`; four replays had moved.
+
+Tests changed because a Bulwark no longer starts at 0 Guard: `classes-i.test.ts` (Brace), web `resources.test.ts`
+(both read the start from data). The Narrator's stable prompt cap 25.6k → 25.7k (`faith-context.test.ts`; the longer
+names and the two sentences).
+
+Checks at the close: validator 0 errors; `tools/engine_catalog.py` regenerated; `build.py --web --check` fresh;
+`npm run built-from -- claude/charming-gauss-hbq4n0..HEAD`: two smells, both justified (the generated
+`protodata.json`; Draw Fire's brief's "−2", an old string only renamed), none a lint fails on; `npm run check`: all
+green but web `combat-actions.test.ts`, which timed out at 5 s on the loaded machine and passes alone with
+`--testTimeout 300000`; browser suites on port 8797 with `--base`: `classes classes-moves pg-levelup creation-points
+skeleton-screens playscreen perks magic` ALL GREEN.
+
+## 5. For the lead
+
+1. **A base class's own effects block** (the missing primitive, section 2): needed by this step, the Skirmisher's
+   Reflex, the Operative's better and the Chaplain's presence. Until it exists, the Bulwark's and Breaker's ops ride
+   Brace and Lunge.
+2. **Archetype names** Holdfast, Glyphwright, Empath (Suggested) and the perk Bulwark sharing the class name: for Leon.
+3. **The level 20 Breaker measurement** (rev4 section 1, "measure level 20 before and after", 176 before) was not run
+   here: the balance step's.
+4. Left strings: `effects/stats.ts` `prey_lock`, `effects/types.ts` `braced`, `classes/rev3.ts` Sabotage's brief.
+5. Item numbers 1757 to 1761 may collide with the other builders'.
