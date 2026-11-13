@@ -5,7 +5,7 @@
 import { it } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import { fightWith, withGame } from './helpers/perkfight';
-import { previewTechnique, previewAttack } from '../src';
+import { previewTechnique, previewAttack, toHitTerms } from '../src';
 
 const raw = process.env.PHC_TRY;
 (raw ? it : it.skip)('try', () => {
@@ -26,6 +26,7 @@ const raw = process.env.PHC_TRY;
       if (st.turn) f.turn(unitOf(st0.turn));
       else if (st.set) for (const [k, v] of Object.entries(st0.set)) Object.assign(unitOf(k), fill(v));
       else if (st.preview) { const u = unitOf(st0.unit || '$pc'); const p = withGame(f.g, () => (st.preview.mode ? previewAttack(f.cb, u, unitOf(st0.preview.target || '$foe'), st.preview.mode) : previewTechnique(f.cb, u, st.preview.id, st.preview))); if (p && p.dmg) delete p.dmg.src; res = 'preview ' + JSON.stringify(p).slice(0, 900); }
+      else if (st.tohit) { const u = unitOf(st0.unit || '$pc'); res = 'to-hit terms (' + st.tohit.type + ', the one hook) ' + JSON.stringify(withGame(f.g, () => toHitTerms(f.cb, u, unitOf(st0.tohit.target || '$foe'), st.tohit.type))); } // rules 1.43
       else { const a = { unitId: f.pcs[0].id, ...st }; f.act(a, st.by || 'host'); }
     } catch (e) { res = 'REFUSED: ' + e.message; }
     const fresh = f.cb.log.slice(n).map((l) => (typeof l === 'string' ? l : l.text)); n = f.cb.log.length;

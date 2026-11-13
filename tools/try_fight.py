@@ -6,7 +6,7 @@
 The scenario (every field optional):
   pcs    characters: [{"archetype": "sharpshooter", "weapon": "sabre", "level": 6, "kit": "soul", "classId": "fighter",
          "perks": {"last_wall": "mastered", "bulwark": "II"}, "traits": ["pain_eater"],
-         "skills": {"dexterity": 9}, "attrs": {"agility": 9}}]            (default: one sharpshooter)
+         "skills": {"dexterity": 9}, "attrs": {"agility": 9}, "grade": {"main": "fine", "off": "fine"}}]   (default: one sharpshooter)
   foes   [{"tier": "vermin|minion|soldier|elite|boss", "weapon": "fists", "at": "F6", "level": 9}]   (default: one soldier at F6;
          an enemy is the squad's level unless it has its own; "classic": true gives it the old fixed numbers)
   level  the fight's level, 1 to 20 (default: the average level of the characters, rounded down)
@@ -17,6 +17,7 @@ The scenario (every field optional):
          {"turn": "$foe"}  make it that unit's turn      {"set": {...}}  as above
          {"preview": {"id": "lunge", "targetId": "$foe"}}  what a technique would do, without doing it
          {"preview": {"mode": "shot", "target": "$foe"}}   hit chance and damage of a plain attack
+         {"tohit": {"type": "sigil", "target": "$foe"}}    the terms the one to-hit hook adds (weapon, sigil, soul)
   In any value, "$pc", "$foe", "$pc1", "$foe2" become that unit's id, and "$foe.pos" its tile.
 
 Examples

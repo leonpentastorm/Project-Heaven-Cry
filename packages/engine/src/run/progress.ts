@@ -31,8 +31,9 @@ const SV: any = svJ;
 export const GRADE_UP: { price: Record<'fine' | 'masterwork' | 'relic', number>; places: Record<GradePlace, number>; relic_at: GradePlace; per_visit: number; relic_from_stage: number; relic_offer: number; cut_rate: number; chit: string } = SV.grade_up;
 /** Where a grade step is bought: a shop (full price) or a Forge (its factor; the only place for the Relic step). */
 export type GradePlace = 'shop' | 'forge';
-/** The rest's small training and the training ground's big one (survival.json train, training). */
+/** The rest's small training (survival.json train). */
 export const TRAIN: { drill: number; study: number; practice: number; devotion: number } = SV.train;
+/** The training ground's big training, its second's price and the most a visit (survival.json training). */
 export const TRAINING: { drill: number; study: number; practice: number; extra_price: number; most: number } = SV.training;
 /** The shrine's numbers (survival.json shrine). */
 export const SHRINE: { token_max_worth: number; tokens_per_stage: number } = SV.shrine;

@@ -7,7 +7,7 @@
 //   act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'shot' });
 //   withGame(g, () => …)                           // call engine functions directly with the game bound (h.c, h.g)
 import {
-  ARCHETYPES, PERK, FIGHT_TOOLS, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register,
+  ARCHETYPES, PERK, FIGHT_TOOLS, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register, setGrade,
   type Action, type Character, type Combat, type GameState, type ItemHandler, type Sheet, type Unit,
 } from '../../src';
 import './yard16';
@@ -26,6 +26,8 @@ export interface CharSpec {
   /** Skill points to set after creation (legality is not checked: tests build what they need). */
   skills?: Record<string, number>; attrs?: Record<string, number>;
   level?: number; weapon?: string; owner?: string;
+  /** Rules 1.43: the grade of what each hand holds (setGrade), e.g. {"main": "fine", "off": "masterwork"}. */
+  grade?: { main?: string; off?: string };
 }
 export function sheetOf(spec: CharSpec = {}): Sheet {
   const a = ARCHETYPES.find((x) => x.id === (spec.archetype || 'sharpshooter')) || ARCHETYPES[0];
@@ -45,6 +47,7 @@ export function equipSpec(c: Character, spec: CharSpec) {
   if (spec.advancedClass !== undefined) c.advancedClass = spec.advancedClass;
   if (spec.level) c.level = spec.level;
   if (spec.weapon) { c.weapon = spec.weapon; c.loaded = undefined; }
+  for (const [hand, r] of Object.entries(spec.grade || {})) { const err = setGrade(c, hand as 'main' | 'off', r as any); if (err) throw new Error(err); }
 }
 
 /** A room in the story with these characters (session started, the Narrator's opening done, players to speak). */

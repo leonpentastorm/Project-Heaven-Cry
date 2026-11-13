@@ -5195,6 +5195,97 @@ The shop, the Forge, the training ground, the shrine and the Crossroads exist on
 14. **Tests only:** `run/skip` wins the fight under way at once, and is refused unless the room is a test room
    (`settings.test`, set in the lobby by the browser suites' hook `phc.testRoom`) and by anyone but the host.
 
+## Rules revision 1.43: in-run progression: the grade ladder, the Forge, trainings, the shrine, the Crossroads (Survival, build step 4a)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-4a.md`) from `docs/design/survival-spec.md` (draft 4)
+section 11 and rules 25a, 26, 31, 37 to 46, section 10 row 4a. Every number is in `data/survival.json` (`grade_up`,
+`forge`, `armour_fit`, `boon_cap`, `relic_props`, `boons`, `graft`, `train`, `training`, `shrine`, `lasting`, `trades`)
+or `data/items.json` (`armourer_chit`) and is PROVISIONAL (items 3000 to 3031). Code: `run/progress.ts` (the safe
+nodes' actions and the options the screen draws), `run/power.ts` (the run's cap and the relic items), four general
+primitives (items 3000 to 3004). Revision 1.42 (the shop, build step 4) is built beside it; the shop's grade step is
+this revision's `run/upgrade` with the place `shop`.
+
+1. **A focus's rarity counts on its door** (spec rule 25a; Leon, 13 Nov, "for now"): a character's focus of a door
+   (an Evoker for Brain Power, an Emanator for Will Power, an Attuner for Empathy, a Visualizer for Visualization) **in
+   a hand** adds its rarity's accuracy (`rules.json rarity.<r>.acc`: Fine +1, Masterwork, Relic and Celestial +2, the
+   number a weapon adds to its own attack) to that door's **rolls to hit** (a Sigil's, an Outburst's) and to the **TN of
+   the saves it forces through that door skill** (a Bond's through Empathy, a push's through Will Power, a Figment's
+   through Visualization). One reading (`rolls.ts focusAccTerm`), read by the one to-hit hook (`toHitTerms`) and by
+   `rollSave`. A focus in the pack counts for nothing; a Standard focus adds nothing, so nothing a Standard focus did
+   moves. Heals and shields are landed and gain nothing from it.
+2. **The grade of one instance** (`setGrade`): a carried weapon or focus (a hand, or one pack line) is raised to a
+   grade, keeping its mods, name, named property and identity (drill is per weapon id, so it stays too); its
+   durability is restored to the new grade's full (`maxDurOf`; a focus has none). Refused in words: a grade past
+   Celestial or not one, a plot item, nothing graded there, a thrown thing.
+3. **A named property on an instance** (the Core Rules' Relic: "Masterwork, plus one named property, written per
+   item"): a weapon or focus instance may carry one (`GearState.prop` in a hand, `PackItem.prop` in the pack), a `relic`
+   item kept with the instance through hand, pack, swap, pile, drop and give as its rarity and mods are. It is held for
+   every instance carried and **acts only through the predicate `with_this`**: the instance is in a hand, and the event
+   was made with it (a weapon's attack, roll, hit, damage or reload made with that hand's weapon, the off hand while it
+   strikes, never a thrown thing; a door's Sigil or Outburst roll or damage, a save forced through the door skill, a heal
+   or shield of that door's kind, with that door's focus; a swap or a price needs only the instance in a hand). So a Keen
+   rifle in hand sharpens its own rounds, not a thrown grenade, a Sigil or the off-hand pistol, and nothing from the pack.
+4. **Practice outside a fight** (`addPractice`, beside `addDrill` and `addStudy`): Outburst practice from a rest, a
+   training ground or a trade; its log line says when a new module can be learned.
+5. **The run's cap** (spec rule 31): a character's run power is the `worth` of its relics (boons, a shrine's token, the
+   graft) and of the named property of every Relic it **carries** (hand or pack), at most `boon_cap.cap` 50 (percent of
+   a rifle-turn). An offer that would pass it is not made.
+6. **The grade step** (spec rules 37, 43): `run/upgrade {charId, where, place}` at a node of that place: one carried
+   weapon or focus one step (Standard, Fine, Masterwork, Relic) for `grade_up.price` of the grade it reaches (Fine 1,500,
+   Masterwork 3,500) x the place's factor (`grade_up.places`: a shop 1, a Forge 0.8: 1,200 and 2,800); **one step a
+   character a visit** (`per_visit` 1); **capped by the stage** (the picks' ceiling, `rewards.ceiling`: stage 1 Fine,
+   stage 2 Masterwork, from stage 3 Relic). An **armourer's chit** (`items.json armourer_chit`, never sold) pays one Fine
+   or Masterwork step in place of the credits (`chit: true`; the visit's limit holds). Celestial is never sold.
+7. **The Relic step** (spec rule 38): from stage `relic_from_stage` 3, **at a Forge only** (`relic_at`), a Masterwork
+   weapon or focus becomes a Relic for `grade_up.price.relic` 6,500 (no factor): Masterwork's numbers and **one named
+   property picked from three** (`relic_offer`) rolled from `relic_props` for what it is (`fits`: guns, guns with a
+   magazine, melee, foci) and inside the carrier's cap, from the node's stream for that character and that weapon. The
+   seven properties (worth): Keen +10% damage with it (10), True +2 to hit on the first attack each turn with it (6),
+   Quick its reload 1 AP less, never under 1 (6), Biting +10% melee damage with it (10), Balanced the first swap or draw
+   each turn free while it is in hand (4), Deep +1 more to its door's rolls and the saves it forces (8), Gentle +15% to
+   the heals and shields its door gives (6).
+8. **The Forge** (spec rule 44): the grade step at its factor and the Relic step; **its stock**, `forge.slots` 4 mods
+   and worn pieces rolled on entry for what the visitors carry (a mod for a slot a main weapon has free, a worn piece
+   dearer than the one worn there, then any), each at its price, shared, first buyer (`run/forge {charId, slot}`);
+   **armour fitting**, the next class for `armour_fit.price` (class 2 250, 3 600, 4 1,200), its gate (Pain Threshold,
+   a trait's cap) holding (`run/fit {charId}`).
+9. **Trainings** (spec rules 39, 45): `run/train {charId, train, weapon?}`. **At a rest**, after the heal and the new
+   session, one small training each (`train`): drill 100 on a carried weapon (`addDrill`), study 3 (a Sigil user, Brain
+   Power 1 or more: `addStudy`), practice 5 (an Outburst user, Will Power 1 or more: `addPractice`) or Devotion 2 XP (the
+   Faithful: `shiftDevotion`). **At a training ground** one big training free (`training`: drill 300, study 8, practice
+   10; Devotion is the shrine's) and a second for `extra_price` 300 credits; no third (`most` 2).
+10. **The shrine** (spec rule 46): its patron rolled of the eight on entry; `run/shrine {charId, choice}`, one offer each:
+   **the rite** (the Faithful: Devotion XP by `patrons.json gain.rite_kept` 4, outside the tag caps), **a piece of lore**
+   (an Atheist: `grantPiece` of the shrine's patron, its own refusals in words), or **the token**: one boon of the
+   tile's pool of worth at most `shrine.token_max_worth` 8 inside the cap, at most `tokens_per_stage` 1 a character a
+   stage, put in `c.relics`.
+11. **The Crossroads** (spec rule 42): `trades.offer` 3 of the six trades rolled on entry; `run/trade {charId, trade,
+   …}`, one each, or walk on: **the off-books armourer** (a step to Fine or Masterwork outside the visit's limit for
+   `cut_rate` 0.5 of a shop's price, the weapon left at `dur_share` 0.5 of its new full; weapons only), **a hard
+   sparring** (drill 300 on a carried weapon for `hp_share` a quarter of the HP it has now), **a sealed crate** (300
+   credits, then a weapon pick of three on the Elite's rarity table, capped by the stage), **a wayside shrine** (free,
+   once a stage: Devotion 4 XP, study 5 or practice 5, as the door allows), **a back-room graft** (a boon of the tile's
+   pool inside the cap, grafted: max HP x `graft.hp_mult` 0.9 for the run; a relic, so its worth counts), **a salvage
+   buyer** (a priced weapon or item from the pack for `rate` 0.5 of its price at its grade; rounds and magazines are
+   the shop's).
+12. **Picks of kit** (spec rules 41, 43): after an Elite or the gate, and at a cache, each character is offered three
+   pieces (`lasting.offer`), at least `lasting.min` 2 of them lasting (a mod for a slot its main weapon has free, a
+   worn piece dearer than the one worn there), the rest from `lasting.fill` (stims, grenades, a field kit); **the gate's
+   pick holds an armourer's chit in stage 1**; an Elite from stage 2 may roll one (one chance in `chit_odds` 4).
+   `run/take {charId, choice}` (an index, or `none`). The squad moves on when every pick, weapon and kit, is taken.
+13. **Reward weapons** (spec rule 26): a pick's rarity is capped by the stage (as before); **a Relic is a Relic now**:
+   it comes with one named property rolled for it inside the carrier's cap, or, when none fits, it is offered as
+   Masterwork; a Celestial roll is a Relic. A picked Relic carries its property into the pack.
+14. **Boons in data** (spec section 3.5, the part the token and the graft need): Honed, Second Wind, True Aim,
+   Hardened, Lifeline, Steady Breath, Deep Well, each a `relic` item with ops from the closed lists and its worth. The
+   rest of the list (Primed, Quick Hands, Field Mending, Bandolier, Tithe, Devout) and the Boss's boon pick are build
+   step 5's.
+15. **The screen**: a safe node's panel lists, for each character, every choice the engine offers there (`runOptions`:
+   the grade steps with the Forge's price beside a shop's, the Relic's three properties with their worth against the
+   cap, the stock, fitting, trainings, the shrine's three offers, the trades), each with its price and the engine's
+   reason when it can't be taken; the picks of kit beside the weapon pick. The Forge's full-screen frame is the shop's
+   (build step 4) and comes when the two are merged.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8359,3 +8450,35 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2830. **The panels' and hover cards' words (rules 1.41 item 12; `nodes`, `tips`).** PROVISIONAL.
 2831. **After the Boss (rules 1.41 item 13):** the run stands at `boon` with no boon offered until build step 5; `run/retire` returns the room to its lobby. PROVISIONAL.
 2832. **Items 2800 to 2832 are rules 1.41's.**
+3000. **A focus's rarity on its door (rules 1.43 item 1; spec rule 25a, Leon "for now"):** `rarity.acc` of the focus of the door in a hand, added to the door's roll to hit (`toHitTerms`, type sigil or soul) and to the TN of a save forced through the door skill (`rollSave`, by `via`); one reading, `rolls.ts focusAccTerm`. PROVISIONAL (it reads no new number).
+3001. **The Visualizer's door roll (rules 1.43 item 1):** the saves its Figments force through Visualization (the Double's); a Figment's own attack is its own unit's roll and takes nothing from the glove. A reading of the spec's silence. PROVISIONAL.
+3002. **Saves forced through a door skill by anything (rules 1.43 item 1):** the reading counts every save whose `via` is a door skill while that door's focus is in hand (a Bond's, a Control push's, a perk's through Empathy), not only a class verb's. A call made for Leon: the alternative is a tag on the verbs. PROVISIONAL.
+3003. **`setGrade` (rules 1.43 item 2; spec item 10).** PROVISIONAL.
+3004. **A named property on an instance and the predicate `with_this` (rules 1.43 item 3; spec item 11):** held for every instance carried (so a weapon drawn in a fight works with no rebuild), acting only through `with_this`. PROVISIONAL.
+3005. **`addPractice` (rules 1.43 item 4; spec item 12).** PROVISIONAL.
+3006. **The run's cap counts every Relic carried, hand or pack (rules 1.43 item 5; `boon_cap.cap` 50).** PROVISIONAL.
+3007. **The grade step's prices and places (rules 1.43 item 6; `grade_up.price` fine 1,500, masterwork 3,500; `places` shop 1, forge 0.8; `per_visit` 1).** PROVISIONAL.
+3008. **The grade step is capped by the stage (rules 1.43 item 6):** the picks' ceiling (`rewards.ceiling`) bounds what a shop and a Forge grade to (stage 1 Fine, stage 2 Masterwork), so a pick never gives what a shop could not yet sell. The spec's rule 37 did not say it; the brief's "the stage's grade cap" did. PROVISIONAL.
+3009. **The armourer's chit (rules 1.43 item 6; `items.json armourer_chit`, `stock: false`, no price; `grade_up.chit`).** PROVISIONAL.
+3010. **The Relic step (rules 1.43 item 7; `grade_up.price.relic` 6,500, `relic_from_stage` 3, `relic_at` forge, `relic_offer` 3):** the three are rolled from the node's stream for the character and the weapon id, so a second look offers the same three. PROVISIONAL.
+3011. **The seven Relic properties and their worths (rules 1.43 item 7; `relic_props`).** PROVISIONAL.
+3012. **Balanced reads "in hand" (rules 1.43 item 7):** a swap has no weapon of its own, so the property needs only its instance in a hand. PROVISIONAL.
+3013. **The Forge's stock (rules 1.43 item 8; `forge.slots` 4):** "better than one of them wears" is read as dearer (`priceOf`) than the piece worn in that slot, or any piece for an empty slot; when fewer than four fit the visitors, any mod or worn piece fills. PROVISIONAL.
+3014. **Armour fitting (rules 1.43 item 8; `armour_fit.price` class 2 250, 3 600, 4 1,200).** PROVISIONAL.
+3015. **The rest's small training (rules 1.43 item 9; `train` drill 100, study 3, practice 5, Devotion 2).** PROVISIONAL.
+3016. **Who studies and who practises (rules 1.43 item 9):** a Sigil user is Brain Power 1 or more, an Outburst user Will Power 1 or more; drill takes any weapon carried (hand or pack), not a thrown thing. PROVISIONAL.
+3017. **The training ground (rules 1.43 item 9; `training` drill 300, study 8, practice 10, `extra_price` 300, `most` 2).** PROVISIONAL.
+3018. **The shrine's patron is rolled per node (rules 1.43 item 10).** PROVISIONAL.
+3019. **The shrine's piece is for an Atheist only (rules 1.43 item 10):** a Faithful character keeps the rite (the spec's rule 46). PROVISIONAL.
+3020. **The token (rules 1.43 item 10; `shrine.token_max_worth` 8, `tokens_per_stage` 1).** PROVISIONAL.
+3021. **The trades offered (rules 1.43 item 11; `trades.offer` 3 of six, rolled on entry).** PROVISIONAL.
+3022. **The off-books armourer (rules 1.43 item 11; `cut_rate` 0.5, `dur_share` 0.5):** the stage's ceiling holds; weapons only. PROVISIONAL.
+3023. **A hard sparring (rules 1.43 item 11; `hp_share` 0.25, drill 300):** refused below 4 HP (a quarter that rounds to nothing). PROVISIONAL.
+3024. **A sealed crate (rules 1.43 item 11; `price` 300, the Elite's rarity table, capped by the stage; no ammunition with it).** PROVISIONAL.
+3025. **A wayside shrine (rules 1.43 item 11; Devotion 4, study 5, practice 5, `per_stage` 1).** PROVISIONAL.
+3026. **The graft rolls from the tile's own pool (rules 1.43 item 11):** the spec says "the next tile's", which does not exist before the Boss; build step 5 may move it. `graft.hp_mult` 0.9. PROVISIONAL.
+3027. **A salvage buyer (rules 1.43 item 11; `rate` 0.5 of the price at the item's grade; rounds and magazines excluded).** PROVISIONAL.
+3028. **Picks of kit (rules 1.43 item 12; `lasting.offer` 3, `min` 2, `fill`, `chit_gate` 1, `chit_from_stage` 2, `chit_odds` 4):** "better than what it wears" as in item 3013. PROVISIONAL.
+3029. **A Relic pick with no property that fits the cap comes as Masterwork (rules 1.43 item 13).** PROVISIONAL.
+3030. **The boons in data (rules 1.43 item 14):** seven of spec section 3.5's thirteen; their worths as the spec gives them. PROVISIONAL.
+3031. **Items 3000 to 3031 are rules 1.43's.**
