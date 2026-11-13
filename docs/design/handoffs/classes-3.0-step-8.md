@@ -160,3 +160,11 @@ places: `protodata.json` (generated), the three new Rigger lane handlers in `cla
 on purpose: what they would need is a `spawn` with a weapon taken from a wreck / pile / barricade, an "act now" op on an
 owned unit, and a wreck as a target), `combat.ts` Field Repair's HP write (5.8). `class-weapon-neutral`: the Scrap
 Turret's one family read is in DOOR. Browser: `figments` (new, group `rules`) green on its own port.
+
+**Last parts (16 to 18).** Overclock goes through `owned.ts attackNow` (the "act now" door: a data verb free up to
+`max_ap`, else the weapon's plain attack). Line icons drawn for the Visualizer (`art/icons/focus/visualizer.svg`) and the
+two Figment weapons (checksums rehashed). The spec's unarmed table lists the Figment weapons. The build goldens gained
+the `rigger` rows (added only). Outside the lane, one number: `apps/web/e2e/chaplain.mjs` line 71's optional wait
+15 s → 30 s (the `e2e-groups` rule failed on it on the base). `npm run check`: all green but for the catalogue, then
+regenerated; browser suites `figments`, `classes-moves`, `sandbox`, `tabs`, `playscreen`, `magic`, `two-players` green on
+port 8797 (`sandbox`'s WAVE 1 banner failed once under load and passed alone).
