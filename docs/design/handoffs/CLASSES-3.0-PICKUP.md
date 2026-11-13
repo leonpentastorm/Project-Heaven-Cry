@@ -149,6 +149,19 @@ merged back):
 11. Reflex measured in whole fights: the second reaction is never used by the simulator's enemies (+0); unconfirmed:
     to measure in step 11 (the step 3 hand-off says what the simulator needs).
 
+Step 6 (`docs/design/handoffs/classes-3.0-step-6.md` section 5, rules 1.32 items 1950 to 1969; built on
+`worktree-agent-a240d31a3975ddb8c`, not merged back):
+1. Nine verbs not built (Parting Cut, Decoy, Close Quarters, Vault, Shadow Run, Case, Pick, Douse, Rig): each needs a
+   general primitive (a tile pick on a verb's reach, an op on the last-seen tile, a toggle riding a toggle...). **The
+   lead to rule** which step adds them (item 1966).
+2. `<who>_has` / `_lacks` and `cleanse` see flag conditions (Hidden, Prone, Bleeding, Dazed), and `<who>_sees_self`
+   is false while the holder is Hidden (item 1967): general meaning changes, no golden line outside Shadow moved.
+3. The Break's 1-Shadow floor is the toggle's `if` (`self_has_res`); the turn's attack mark is `attack_roll`; the
+   MARK verbs' reach is 8 (the spec's example); machine saves by Ingenuity only; Foul's save is the `lowered` row's
+   Heart; Off Balance's "two rounds running" is a 2-round cooldown a target; Fade picks its own tile.
+4. **Measured, not refitted:** door all in 85 (line 109), Operative all in 101 (line 125, before Mark's squad
+   value), an upper bound; the dial `rules.json shadow.per_point` is the lead's to move.
+
 Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 items 1762 to 1767):
 7. The lead's "a Call that harms an enemy is not a reaction at all" is read conservatively: a hindering Call may still be
    made as a reaction (kind `attack`), as before; a helping one is `protect` (item 1764).
