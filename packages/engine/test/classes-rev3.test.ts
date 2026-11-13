@@ -29,8 +29,8 @@ describe('the nine classes (data)', () => {
     for (const k of CLASSES) for (const r of ['I', 'II', 'III']) expect(k.ranks[r].moves.length, k.id + ' ' + r).toBe(2);
     const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves));
     expect(all.length).toBe(54);
-    expect(all.filter((m: any) => m.new).length).toBe(20); // the 20 new moves and Run and Gun (rules 1.30), less Field Fix (to the move pool, rules 1.32)
-    expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(28); // 28 old base moves
+    expect(all.filter((m: any) => m.new).length).toBe(21); // the 20 new moves and Run and Gun (rules 1.30); rules 1.31: Ward and Smite in, Command out; less Field Fix (to the move pool, rules 1.32)
+    expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(27); // 28 old base moves; rules 1.31: Will Shield out (Ward)
     expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(6); // 6 old advanced moves (Called Shot left the Skirmisher, rules 1.30, and came to the Operative, rules 1.32)
   });
   it('a reused move keeps its old key: Bard\'s Triage is class:medic.triage; a new move is under its class', () => {
@@ -141,7 +141,7 @@ describe('resources follow the moves', () => {
     expect(res('defender')).toEqual(['guard']); expect(res('fighter')).toEqual(['momentum']); expect(res('infiltrator')).toEqual(['marks', 'shadow', 'toxins']); // Shadow: the class brings it (rules 1.32)
     expect(res('bard')).toEqual(['supplies']);
     for (const id of ['marksman', 'mage', 'trickster', 'channeler', 'guardian']) expect(res(id)).toEqual([]);
-    expect(CLASS.guardian.resources).toEqual(['mp', 'strain', 'devotion']); expect(CLASS.marksman.resources).toEqual(['heat']);
+    expect(CLASS.guardian.resources).toEqual(['devotion']); /* rules 1.31: the Chaplain spends no MP or Strain */ expect(CLASS.marksman.resources).toEqual(['heat']);
   });
 });
 
@@ -225,14 +225,14 @@ describe('Revision 2 saves migrate', () => {
 describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-moves.test.ts)', () => {
   const NEW = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new).map((m: any) => m.key.replace(/^class:/, ''));
   it('each has its full data entry, a registered handler, and no effect is a coverage gap', () => {
-    expect(NEW.length).toBe(20); // + Run and Gun (rules 1.30, data only), − Field Fix (rules 1.32)
+    expect(NEW.length).toBe(21); // + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite (data only), − Command; − Field Fix (rules 1.32)
     for (const k of NEW) {
       const info = itemInfo('class:' + k)!;
       expect(info, k).toBeTruthy(); expect(info.text.length, k).toBeGreaterThan(10); expect(info.provisional, k).toBe(true);
       expect(coverageOf(info).filter((r) => r.owner === 'gap'), k).toEqual([]);
       expect(coverageOf(info).filter((r) => r.owner === 'narrator'), k).toEqual([]); // the engine runs every part now
       // a handler, or (engine foundations 3) written in data only: every effect run by the generic runner
-      expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), k).toBe(true); // (a data action: P6, rules 1.32's Vanish)
+      expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), k).toBe(true); // (a data action: P6, rules 1.32's Vanish; rules 1.31: a prayer's grant runs its own item ops: the Chaplain's Ward)
     }
   });
   it('an active one is a lane action under the data\'s action id', () => {

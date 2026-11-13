@@ -37,14 +37,15 @@ const DOOR: Record<string, Allow> = {
   'class:marksman.duck_and_roll': { words: ['ranged'], code: 1, why: 'it answers an enemy\'s ranged attack at you (the incoming attack)' },
   // Field Fix left the Operative (rules 1.32): its entry comes back with the Rigger's step (8), worded as it was:
   // { words: ['jammed weapon', 'gun'], why: 'support: it clears an ally\'s jam (a gun\'s own state), not a hit' }
+  // The Chaplain's step (rules 1.31): Verdict takes any weapon; the one family read left picks the weapon's plain attack
+  // (a strike with a melee weapon, a throw with a thrown one, else a shot): a branch, never a lock.
+  'class:lumeri_templar.blessed_shells': { words: ['round', 'arrow', 'edge', 'thrown', 'blade'], why: 'Blessed Arms (rules 1.31): the text names every form a weapon takes (a round, an arrow, an edge, a thrown blade) so it reads as any weapon, as the audit 4.7 asks' },
+  'class:lumeri_templar.judgement': { code: 2, why: 'Verdict (rules 1.31): plainMode picks the weapon\'s own plain attack (isMelee, category thrown); every weapon may pass a Verdict' },
 };
 /** Locked today; fixed by another Classes 3.0 step. MUST shrink to empty before the patch ships. */
 const PENDING: Record<string, Allow> = {
-  // The Shadow step (rules 1.32) put Called Shot in the Operative and made Toxin coat any weapon: both left this list.
-  // The Chaplain's step (chaplain-spec.md, audit 4.7)
-  'class:lumeri_templar.judgement': { words: ['melee', 'scattergun', 'shotgun'], code: 5, why: 'Chaplain step: Verdict, one attack with any weapon; the shotgun gate goes' },
-  // Blessed Shells is neutral in rule, text and code (any weapon hit releases it); its name, tag `guns` and story action
-  // say guns: the Chaplain step renames them (Blessed Arms, tag weapon). Nothing here guards a name or a tag.
+  // The Shadow step (rules 1.32) put Called Shot in the Operative and made Toxin coat any weapon; the Chaplain's step
+  // (rules 1.31) made Verdict and Blessed Arms any weapon: all four left this list.
 };
 const ALLOW = (key: string): Allow | undefined => DOOR[key] || PENDING[key];
 

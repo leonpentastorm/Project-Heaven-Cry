@@ -10,6 +10,7 @@ import { say } from '../log';
 // condition, knockback, Echo) and hands the rest to the Narrator with the item's text. A lane's ActionDef replaces the
 // default for the same action id.
 import type { Combat, Unit } from '../combat';
+import { unitSees } from '../combat';
 import type { Character } from '../character';
 import type { ActionArgs, ActionDef, ActionPreview, ActionScope, Holder, ItemInfo, ToggleDef, UseScope } from './types';
 import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isItemOp } from './hooks';
@@ -45,7 +46,7 @@ const TARGETING = (e: any): ActionDef['target'] => {
 /** The words a reach's side takes (a target relation to the holder). */
 export const REACH_SIDES = ['foe', 'ally', 'side', 'any'];
 /** The fields of a grant_action's `reach`. */
-export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied'];
+export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied', 'tile'];
 /** The prayers a grant_action may be. */
 export const PRAYER_KINDS = ['whisper', 'hymn'];
 /** faith.ts registers the prayer door here as it loads (this file can't import it: its load order places its hooks). */
@@ -66,6 +67,15 @@ export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): str
   if (reach.if) { const k = ifFails(h, reach.if, t); if (k) return 'Not on ' + t.name + ' (' + human(k) + ').'; }
   return null;
 }
+/** Why this holder can't aim its action at this tile by a reach with `tile: true` (Classes 3.0 step 5, rules 1.31:
+ * Sanctuary): within `tiles` of the holder, and (sight) a tile its eyes reach. null: it can. */
+export function tileReachWhy(h: Holder, reach: any, tile: string | null | undefined): string | null {
+  const u = h.u, cb = h.cb; if (!reach || !u || !cb) return null;
+  if (!tile) return 'Pick a tile.';
+  if (typeof reach.tiles === 'number' && distK(u.pos, tile) > reach.tiles) return 'Out of range (' + reach.tiles + (reach.tiles === 1 ? ' tile).' : ' tiles).');
+  if (reach.sight && !unitSees(cb, u, tile)) return 'You can\'t see that tile.';
+  return null;
+}
 const TARGET_OF_SIDE: Record<string, ActionDef['target']> = { foe: 'enemy', ally: 'ally', side: 'ally', any: 'unit' };
 
 /** The default actions of an item, from its data. */
@@ -75,9 +85,12 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
   const verb = info.kind === 'verb';
   const mk = (id: string, label: string, apRaw: any, usesRaw: string, effs: any[], g: any = {}): ActionDef => {
     const reach = g.reach, per = g.limit?.per || scopeOf(usesRaw), n = g.limit?.n ?? 1;
-    const target = reach ? TARGET_OF_SIDE[reach.side || 'any'] || 'unit' : effs.map(TARGETING).find((t) => t !== 'none') || 'none';
-    // a door verb's nested item ops are its own effects, run once it succeeds; the rest run by the generic runners
-    const mine = verb ? effs.filter((e) => isItemOp(e)) : [], rest = verb ? effs.filter((e) => !isItemOp(e)) : effs;
+    const target = reach?.tile ? 'tile' : reach ? TARGET_OF_SIDE[reach.side || 'any'] || 'unit' : effs.map(TARGETING).find((t) => t !== 'none') || 'none';
+    // a door verb's nested item ops are its own effects, run once it succeeds; the rest run by the generic runners.
+    // A prayer (any item's, rules 1.31: the Chaplain's Ward and Sanctuary) is the same: its item ops run only when the
+    // patron answers, and the item's triggered effects (its `when`) stay with their triggers.
+    const ops = verb || !!g.prayer;
+    const mine = ops ? effs.filter((e) => isItemOp(e) && !(g.prayer && !verb && e.when)) : [], rest = ops ? effs.filter((e) => !isItemOp(e)) : effs;
     const d: ActionDef = {
       id, label, scope: per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: (h) => apFromData(apRaw, h.u), uses: { per, n }, target,
       run: (h, args, rng) => {
@@ -96,12 +109,14 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
       if (g.prayer && h.u && h.cb && PRAYER) return PRAYER.why(h.cb, h.u, g.prayer) || true;
       return true;
     };
-    if (reach) { d.reach = (h, t) => reachWhy(h, reach, t); d.choices = (h) => (h.cb ? h.cb.units.filter((t) => !reachWhy(h, reach, t)).map((t) => t.id) : []); }
+    if (reach?.tile) d.preview = (h, args) => { const why = tileReachWhy(h, reach, args.tile); return why ? { ok: false, why } : {}; }; // a tile: in range and in sight
+    else if (reach) { d.reach = (h, t) => reachWhy(h, reach, t); d.choices = (h) => (h.cb ? h.cb.units.filter((t) => !reachWhy(h, reach, t)).map((t) => t.id) : []); }
     return d;
   };
   // a nested `when: "acted"` effect is the item's own triggered effect (collect.ts liftActed): the trigger runs it, not the action
   const nested = (g: any) => (g.effects || []).filter((e: any) => e?.when !== 'acted');
-  if (grants.length) return grants.map((g, i) => mk(g.action || 'use' + i, grants.length > 1 ? info.name + ' · ' + human(g.action || 'use') : info.name, g.ap ?? info.ap, g.uses || info.uses, [...(verb ? g.effects || [] : nested(g)), ...own], g));
+  // (a grant's own `label`, else the item's name: with two grants, the name and the action's)
+  if (grants.length) return grants.map((g, i) => mk(g.action || 'use' + i, typeof g.label === 'string' ? g.label : grants.length > 1 ? info.name + ' · ' + human(g.action || 'use') : info.name, g.ap ?? info.ap, g.uses || info.uses, [...(verb ? g.effects || [] : nested(g)), ...own], g));
   if (info.bound) return [mk('use', info.name, info.ap, info.uses, own)];
   return [];
 }

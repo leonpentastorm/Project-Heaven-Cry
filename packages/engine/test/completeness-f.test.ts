@@ -5,7 +5,7 @@
 // Four Hearts and Stored Spell; Quicken and the twin on the area map.
 import { describe, expect, it } from 'vitest';
 import {
-  CLASS, npcsOf, positionsOf, standable, zoneMap, storyObjects, d20, previewOutburst, maxHp,
+  CLASS, grantShield, npcsOf, positionsOf, standable, zoneMap, storyObjects, d20, previewOutburst, maxHp,
   type GameState, type Combat, type Unit, strokePick,
 } from '../src';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -97,7 +97,7 @@ describe('Drink It In: the spell\'s real price (item 68)', () => {
   function setup(rogueSpec: CharSpec) {
     const f = fightWith([cls('guardian', 2, SOUL), {}, rogueSpec], [{ at: 'P15' }]); open(f.cb);
     const [gd, ally, rogue] = f.pcs; at(f, gd, '3,3'); at(f, ally, '5,3'); at(f, rogue, '8,3'); at(f, f.foe, '15,15');
-    const u = f.turn(gd); act(f, u, { type: 'combat/perk', id: 'class:guardian.will_shield', actionId: 'will_shield', targetId: ally.id });
+    const u = f.turn(gd); withGame(f.g, () => grantShield(f.cb, f.unit(ally.id), 30, f.unit(gd.id))); void u; // a shield the Guardian made (Will Shield left in rules 1.31)
     f.unit(ally.id).shield = 500; f.unit(ally.id).def = -40;
     f.unit(gd.id).mg!.mp = 10; f.unit(rogue.id).side = 'foe';
     return { f, gd, ally, rogue };
@@ -197,14 +197,10 @@ describe('Glyph Mason: an ally\'s Survey reach; the Keystone through two Evokes 
 });
 
 describe('class story actions through the reducer (items 72-75)', () => {
-  it('Sanctuary: 60 MP and a ruling; once a scene; a new scene gives it back', () => {
+  it('Sanctuary (the Chaplain, rules 1.31): no MP, a ruling for the Narrator', () => {
     const s = storyWith([cls('guardian', 3, SOUL)]); const id = s.chars[0].id; s.g.characters[id].mp = 200;
     s.act({ type: 'story/perk', charId: id, id: 'class:guardian.sanctuary', actionId: 'sanctuary_story', text: 'the collapsing hall' } as any);
-    expect(s.g.characters[id].mp).toBe(140); expect(rulingHas(s.g, /Sanctuary out of combat \(60 MP paid\)/)).toBe(true);
-    expect(() => s.act({ type: 'story/perk', charId: id, id: 'class:guardian.sanctuary', actionId: 'sanctuary_story' } as any)).toThrow(/Used/);
-    s.act({ type: 'narrator/turn', turn: { narration: 'Later.', sceneTitle: 'Another scene' } } as any);
-    s.act({ type: 'story/perk', charId: id, id: 'class:guardian.sanctuary', actionId: 'sanctuary_story' } as any);
-    expect(s.g.characters[id].mp).toBe(80);
+    expect(s.g.characters[id].mp).toBe(200); expect(rulingHas(s.g, /Hymn only you can say/)).toBe(true);
   });
   it('Strike Call and Extraction: credits paid, rulings posted, Extraction once a session', () => {
     const s = storyWith([adv('rtc_contractor')]); const id = s.chars[0].id; (s.g.characters[id] as any).state = { ...((s.g.characters[id] as any).state || {}), credits: 2000 };

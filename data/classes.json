@@ -40,7 +40,7 @@
       "hybrid_rule": "A hybrid class pairs its base attribute with an attribute from another Core.",
       "squared_rule": "A squared class pairs its base attribute with itself."
     },
-    "patrons": "Prayer is not a class: any character with Faith 3 or more can pray (the Faithful to their patron, an Atheist by dice).",
+    "patrons": "Prayer is not a class: any character with Faith 1 or more prays Whispers, and from Faith 3 Hymns (rules 1.31; the Faithful to their patron, an Atheist by dice).",
     "rank_rule_source": "rules 1.11"
   },
   "migration": {
@@ -1348,18 +1348,13 @@
         "authority"
       ],
       "role": "defense",
-      "tagline": "The saints judge, you deliver, and the squad follows.",
+      "tagline": "The god walks beside you, and strikes where you strike.",
       "resource": {
-        "id": "strain",
-        "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Each Begin or cast adds 1 Strain (2 where the ambient mana is Flooded), and each turn you keep holding an Outburst adds 1 more. Strain falls by 1 at the start of each of your turns, and again when you calm your heart: a turn spent still, your first weapon attack of the turn, the first heal, stim, shield or cleanse you give someone each turn, letting a held Outburst go, or Steady the heart. Your Strain limit is 3, +1 for every 2 points of Will Power. At the end of your turn each point over the limit burns you for 8 damage that ignores armour. At 3 over the limit you suffer a Mana Short with no roll: you are Stunned and a held Outburst goes off wild. Strain is cleared when the fight ends. Crystallise (3 AP, needs ambient mana of 10 or more) lowers the ambient mana by 10 and makes one standard mana core.",
-        "also_uses": [
-          "mp"
-        ]
+        "id": "devotion",
+        "max": 10,
+        "rule": "Your only pool is Devotion, your standing with your patron (0 to 10, earned as Devotion XP), and the Hymn's wait. No move of yours costs MP, Strain, cores or ammunition of its own. You pray like anyone with Faith (Whispers from Faith 1, Hymns from 3, Witnessed at 5, the Miracle at 7); you also say two prayers nobody else can (Ward, Sanctuary), your weapon carries the god (Smite), and while you are Witnessed your patron stands at your side."
       },
       "resources": [
-        "mp",
-        "strain",
         "devotion"
       ],
       "foundation_for": [
@@ -1372,29 +1367,40 @@
           "threshold": "gained",
           "moves": [
             {
-              "ref": "guardian.will_shield"
-            },
-            {
-              "id": "command",
-              "name": "Command",
+              "id": "ward",
+              "name": "Ward",
               "ap_cost": 1,
-              "uses": "per_turn",
-              "text": "Costs 1 AP, once per turn. Needs 1 point of Authority. An ally within {=effects.0.range} tiles moves up to {=effects.1.tiles} tiles to a tile you pick, right now and for none of their AP. It is a normal move, so it can provoke opportunity attacks.",
+              "uses": "at_will",
+              "amounts": {
+                "ward": {
+                  "kind": "shield",
+                  "base": 10,
+                  "profile": "blessing_mend",
+                  "provisional": true
+                }
+              },
+              "text": "A Whisper only you can say, and it is your Whisper for the turn ({=effects.0.ap} AP; no MP, no Strain). An ally you can see (not you) gains a shield of {=amounts.ward.base} × your Blessing power for the rest of the fight; like every prayer's shield it grows with your level. It is a layer of its own on top of any other shield, spent first. At most {=effects.0.effects.0.holders} allies carry your Ward at once: a third Ward ends the oldest, and a Ward on an ally who has one tops it up, never doubles it. An Atheist rolls for it as for any Whisper.",
               "effects": [
                 {
                   "op": "grant_action",
-                  "action": "command",
+                  "action": "ward",
+                  "prayer": "whisper",
                   "ap": 1,
-                  "uses": "per_turn",
-                  "range": 6,
-                  "target": "ally",
-                  "requires_state": "leadership_squad"
-                },
-                {
-                  "op": "free_move",
-                  "tiles": 2,
-                  "target": "ally",
-                  "when": "on_use"
+                  "uses": "at_will",
+                  "reach": {
+                    "sight": true,
+                    "side": "ally",
+                    "self": false
+                  },
+                  "effects": [
+                    {
+                      "op": "mend",
+                      "amount": "ward",
+                      "target": "target",
+                      "layer": "ward",
+                      "holders": 2
+                    }
+                  ]
                 }
               ],
               "adjudication": "engine",
@@ -1402,9 +1408,139 @@
               "origin": "guardian",
               "new": true,
               "fantasy_tags": [
-                "authority",
-                "command",
-                "mobility"
+                "faith",
+                "prayer",
+                "shield",
+                "protect"
+              ],
+              "attributes": [
+                "virtue"
+              ],
+              "status": "active",
+              "surface": "combat"
+            },
+            {
+              "id": "smite",
+              "name": "Smite",
+              "ap_cost": 0,
+              "uses": "per_turn",
+              "amounts": {
+                "smite": {
+                  "kind": "damage",
+                  "base": 20,
+                  "profile": "blessing",
+                  "type": "soul",
+                  "armour": "none",
+                  "provisional": true
+                },
+                "smite_storm": {
+                  "kind": "damage",
+                  "base": 20,
+                  "profile": "blessing",
+                  "type": "soul",
+                  "element": "lightning",
+                  "armour": "none",
+                  "provisional": true
+                }
+              },
+              "text": "Once a turn, on your turn, when an attack with your weapon hits an enemy that still stands (a shot, a strike, a throw, two weapons at once, a focus's own attack), your patron strikes it too: {=amounts.smite.base} × your Blessing power Soul damage, with no roll, through armour (Old Overcast's is lightning). The attack's technique, a critical, Verdict and ammunition don't multiply it. A hit that kills leaves it for a later hit that turn; it never rides a reaction or an opportunity attack. It counts as a prayer for what your patron likes and for your vows, but it is not a Whisper. For the Toll-Keeper and the Matchmaker it never kills: a Smite that would take the last HP subdues instead. An Atheist rolls the Whisper's TN for it on each hit, and a miss leaves it for a later hit. The enemy your weapon hits on your turn is Judged until its next turn ends.",
+              "effects": [
+                {
+                  "op": "deal",
+                  "when": "hit",
+                  "amount": "smite",
+                  "target": "target",
+                  "via": "faith",
+                  "if": {
+                    "own_turn": true,
+                    "hostile": true,
+                    "target_alive": true,
+                    "open": true,
+                    "not_patron": [
+                      "toll_keeper",
+                      "the_matchmaker",
+                      "old_overcast"
+                    ],
+                    "answered": true
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "smite"
+                  },
+                  "say": "{patron} smites {target} (Smite){then}."
+                },
+                {
+                  "op": "deal",
+                  "when": "hit",
+                  "amount": "smite",
+                  "target": "target",
+                  "via": "faith",
+                  "nonlethal": true,
+                  "if": {
+                    "own_turn": true,
+                    "hostile": true,
+                    "target_alive": true,
+                    "open": true,
+                    "patron": [
+                      "toll_keeper",
+                      "the_matchmaker"
+                    ],
+                    "answered": true
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "smite"
+                  },
+                  "say": "{patron} smites {target} (Smite){then}."
+                },
+                {
+                  "op": "deal",
+                  "when": "hit",
+                  "amount": "smite_storm",
+                  "target": "target",
+                  "via": "faith",
+                  "if": {
+                    "own_turn": true,
+                    "hostile": true,
+                    "target_alive": true,
+                    "open": true,
+                    "patron": [
+                      "old_overcast"
+                    ],
+                    "answered": true
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "smite"
+                  },
+                  "say": "{patron} smites {target} (Smite){then}."
+                },
+                {
+                  "op": "condition",
+                  "when": "hit",
+                  "condition": "judged",
+                  "rounds": 1,
+                  "skip_save": true,
+                  "target": "target",
+                  "if": {
+                    "own_turn": true,
+                    "hostile": true,
+                    "target_alive": true
+                  }
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "guardian",
+              "new": true,
+              "fantasy_tags": [
+                "faith",
+                "prayer",
+                "weapon",
+                "burst"
               ],
               "attributes": [
                 "virtue"
@@ -1436,7 +1572,44 @@
             }
           ]
         }
-      }
+      },
+      "gain": [
+        {
+          "id": "at_your_side",
+          "name": "The Patron at Your Side",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "numbers": {
+            "keeps": 1
+          },
+          "text": "While you are Witnessed your patron stands on your tile as a presence (not a body on the board: never targeted, blocks nothing, sees nothing, moves with you). The first {=numbers.keeps} intervention of a fight does not end Witnessed; the next does. Its interventions land where your weapon struck (a Judged enemy of yours first), and each patron's intervention reaches further (your patron's card says how). It never adds an intervention. Faithful only.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "intervention_keeps_witnessed",
+              "value": 1
+            },
+            {
+              "op": "stat_mod",
+              "stat": "patron_presence",
+              "value": 1
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "guardian",
+          "new": true,
+          "fantasy_tags": [
+            "faith",
+            "presence"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active",
+          "surface": "combat"
+        }
+      ]
     }
   ],
   "move_pool": {
@@ -2448,37 +2621,6 @@
         "status": "active"
       },
       {
-        "id": "will_shield",
-        "amounts": {"shield": {"kind": "shield", "base": 12, "profile": "mend", "provisional": true}},
-        "name": "Will Shield",
-        "ap_cost": null,
-        "uses": "at_will",
-        "text": "A Buff-school cast: it costs your Soul cast AP and 20 MP (before the ambient mana is counted), and adds Strain like any cast. You, or an ally you can see within Soul reach, gains a shield of {=effects.0.value} × your Healing given until the fight ends. It grows with your level, like healing. If they already have a bigger shield, that one stays.",
-        "effects": [
-          {
-            "op": "shield",
-            "value": 12,
-            "target": "ally_in_range",
-            "scale": "healing_given",
-            "duration": "combat"
-          }
-        ],
-        "adjudication": "engine",
-        "provisional": true,
-        "origin": "guardian",
-        "origin_rank": "I",
-        "fantasy_tags": [
-          "soul",
-          "shield",
-          "protect"
-        ],
-        "attributes": [
-          "virtue"
-        ],
-        "status": "active",
-        "ap_cost_is": "soul_cast_ap"
-      },
-      {
         "id": "drink_it_in",
         "name": "Drink It In",
         "ap_cost": 0,
@@ -2511,18 +2653,60 @@
       {
         "id": "sanctuary",
         "name": "Sanctuary",
-        "ap_cost": null,
-        "uses": "per_scene",
-        "text": "Once per scene. It costs your Soul cast AP and 60 MP, and adds 1 Strain more than a normal cast. Pick a tile you can see within Soul reach: allies on the 3×3 tiles around it, you included, take half damage until the start of your next turn. The burn from your own Strain is not halved.",
+        "ap_cost": 3,
+        "uses": "at_will",
+        "amounts": {
+          "sanctuary_cap": {
+            "kind": "shield",
+            "base": 11,
+            "profile": "blessing_mend",
+            "provisional": true
+          }
+        },
+        "text": "A Hymn only you can say ({=effects.0.ap} AP; no MP, no Strain): it starts your one Hymn wait, and no Hymn of your patron's until the wait ends. Pick a tile you can see within {=effects.0.reach.tiles} tiles: allies on the 3×3 tiles around it, you included, take half damage until the start of your next turn. It prevents at most {=amounts.sanctuary_cap.base} × your Blessing power in all (growing with your level, like a prayer's shield), then it ends. If you are Faithful, a Sanctuary that is answered makes you Witnessed like your patron's own Hymn. An Atheist rolls for it like a Hymn. Two Sanctuaries on the same tile don't stack. Out of a fight it is the Narrator's to rule (what the sanctuary keeps out), with no MP.",
         "effects": [
+          {
+            "op": "grant_action",
+            "action": "sanctuary",
+            "prayer": "hymn",
+            "ap": 3,
+            "uses": "at_will",
+            "reach": {
+              "tile": true,
+              "tiles": 6,
+              "sight": true
+            },
+            "effects": [
+              {
+                "op": "zone",
+                "kind": "sanctuary",
+                "at": "tile",
+                "within": 1,
+                "rounds": 2,
+                "pool": "sanctuary_cap"
+              }
+            ],
+            "label": "Sanctuary"
+          },
+          {
+            "op": "grant_action",
+            "action": "sanctuary_story",
+            "label": "Sanctuary",
+            "ap": 0,
+            "uses": "out_of_combat"
+          },
           {
             "op": "damage_mult",
             "when": "taking",
             "value": 0.5,
             "round": "up",
+            "pool": "sanctuary",
             "if": {
               "target": "ally",
-              "target_in_zone": { "kind": "sanctuary", "owner": "self" }
+              "target_in_zone": {
+                "kind": "sanctuary",
+                "owner": "self"
+              }
             }
           },
           {
@@ -2530,9 +2714,16 @@
             "when": "taking",
             "value": 0.5,
             "round": "up",
+            "pool": "sanctuary",
             "if": {
-              "target_in_zone": { "kind": "sanctuary", "owner": "self" },
-              "not_damage": [ "short", "strain" ]
+              "target_in_zone": {
+                "kind": "sanctuary",
+                "owner": "self"
+              },
+              "not_damage": [
+                "short",
+                "strain"
+              ]
             }
           },
           {
@@ -2548,15 +2739,15 @@
         "origin": "guardian",
         "origin_rank": "III",
         "fantasy_tags": [
-          "soul",
+          "faith",
+          "prayer",
           "zone",
           "protect"
         ],
         "attributes": [
           "virtue"
         ],
-        "status": "active",
-        "ap_cost_is": "soul_cast_ap"
+        "status": "active"
       },
       {
         "id": "inspire",
@@ -4487,10 +4678,10 @@
       "moves": [
         {
           "id": "blessed_shells",
-          "name": "Blessed Shells",
+          "name": "Blessed Arms",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "When a prayer of yours succeeds, you can load the Hymn into your weapon instead of using it at once. Your next hit releases it: a harmful Hymn lands on the target, a helpful one on every ally next to the target. It stays loaded until that hit or the end of the fight.",
+          "text": "When a prayer of yours succeeds, you can load the Hymn into your weapon instead of using it at once, whatever the weapon is (a round, an arrow, an edge, a thrown blade). Your next hit with it releases it: a harmful Hymn lands on the target, a helpful one on every ally next to the target. It stays loaded until that hit or the end of the fight. A Smite may ride the same hit.",
           "effects": [
             {
               "op": "grant_action",
@@ -4505,7 +4696,7 @@
           "fantasy_tags": [
             "faith",
             "prayer",
-            "guns"
+            "weapon"
           ],
           "attributes": [
             "virtue"
@@ -4541,10 +4732,10 @@
         },
         {
           "id": "judgement",
-          "name": "Judgement",
+          "name": "Verdict",
           "ap_cost": 4,
           "uses": "per_combat",
-          "text": "Costs {=ap_cost} AP and 1 Devotion ({=effects.0.value|abs} Devotion XP), once per fight. Needs a melee weapon or a scattergun. Make one attack that deals damage × (1 + your Blessing power). The Devotion is spent even if you miss.",
+          "text": "Costs {=ap_cost} AP and 1 Devotion ({=effects.0.value|abs} Devotion XP), once per fight. Make one plain attack with your weapon, whatever it is (a strike, a shot or a throw; never a Burst, an Aimed shot or a technique), that deals damage × (1 + your Blessing power). The Devotion is spent even if you miss.",
           "effects": [
             {
               "op": "resource",
@@ -4564,6 +4755,7 @@
           "fantasy_tags": [
             "faith",
             "devotion",
+            "weapon",
             "burst"
           ],
           "attributes": [

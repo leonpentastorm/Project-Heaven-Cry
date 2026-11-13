@@ -1320,30 +1320,6 @@ register({
 });
 
 // ======================================================================================================== GUARDIAN
-// Shields a Guardian makes are tracked (who made the shield on each unit) for Drink It In.
-const shieldBy = (h: Holder): Record<string, boolean> => (stateOf(h).shields ||= {});
-
-// ---------- Will Shield (rank I; a Buff-school cast: Soul cast AP, 20 MP base, 1 Strain) ----------
-// Rules 1.20: 12 × Healing given × the level factor (it was 30 × Healing given).
-// An ally in Soul reach (4 + range bonus) you can see, or you (PROVISIONAL), gains a shield of 12 × your Healing given
-// (× their Healing received) until the fight ends; the higher shield stands. A class cast, so every Guardian has it
-// without a design (PROVISIONAL: the plan's Buff option 'shield' for designs needs the design builder; see the notes).
-const WILL_SHIELD: number = amountBlock('class:guardian.will_shield', 'shield').base;
-const willShield = (self: boolean): ActionDef => ({
-  id: self ? 'will_shield_self' : 'will_shield', label: 'Will Shield' + (self ? ' (yourself)' : ''), scope: ['combat'], target: self ? 'none' : 'ally',
-  ap: (h) => (h.u?.mg ? soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20).ap : 2),
-  text: 'Put a shield of ' + WILL_SHIELD + ' × your Healing given on ' + (self ? 'yourself' : 'an ally in Soul reach that you can see') + '. It grows with your level and lasts until the fight ends. It costs MP and Strain like a Buff Outburst.',
-  available: (h) => { const e = soulReady(h); if (e) return e; const p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20); if (h.u!.mg!.emanator && h.u!.mg!.mp < p.mp) return 'Needs ' + p.mp + ' MP.'; return true; },
-  preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (!t) return {}; const p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20); const e = soulAim(h, t.pos, p.range); return e ? { ok: false, why: e } : { lines: ['Will Shield on ' + t.name + ': about ' + Math.floor(WILL_SHIELD * healMultOf(h) * mendFactorOf(h.u) * (t.shieldRecv || 1)) + ' (' + p.mp + ' MP, ' + p.strain + ' Strain).'] }; },
-  run: (h, args, rng) => {
-    const cb = h.cb!, u = h.u!, t = self ? u : unitById(cb, args.targetId)!, p = soulPrice(h, 'buff', SCHOOL.buff?.base_cost || 20);
-    const v = grantShield(cb, t, itemAmount('class:guardian.will_shield', 'shield', [term(healMultOf(h), 'stat: healing given'), term(mendFactorOf(u), 'level')]), u); shieldBy(h)[t.id] = true;
-    emitFx(cb, 'release', { unit: u.id, at: u.pos, to: t.pos, school: 'buff', option: 'shield', stage: 1, wild: false, area: 0, targets: [t.id] });
-    say(cb, u.name + ' casts Will Shield on ' + (t === u ? 'themself' : t.name) + ': a ' + v + ' shield (' + p.mp + ' MP' + (u.mg!.emanator ? '' : ' from the air') + ')' + soulPay(h, rng as Rng, p) + '.');
-  },
-});
-register({ id: 'guardian.will_shield', claims: 'all', actions: [willShield(false), willShield(true)], brief: () => null });
-
 // ---------- Drink It In (rank II, a reaction once a round) ----------
 // An enemy spell (Outburst, Sigil or a wall's bite) hits a shield you made and the shield takes some of it: gain MP
 // equal to the spell's MP cost, or 10 per Sigil word, up to your Max MP (magic.ts puts spellMp / spellWords on the
@@ -1370,36 +1346,6 @@ register({
     },
   },
   brief: () => null,
-});
-
-// ---------- Sanctuary (rank III, once a scene) ----------
-// Soul cast AP, 60 MP, 1 extra Strain: a 3×3 zone centred on a tile in Soul reach you can see. Allies inside (you too)
-// take half damage until the start of your next turn; it releases at once and can't be held (PROVISIONAL). All damage
-// but your own heart's burn (rules 1.5; PROVISIONAL). Out of combat it is the Narrator's (a safe room against a collapse).
-register({
-  id: 'guardian.sanctuary', // its data effects are item ops (Classes 3.0 P10): the runner runs them
-  actions: [
-    {
-      id: 'sanctuary', label: 'Sanctuary', scope: ['combat'], target: 'tile', ap: (h) => (h.u?.mg ? soulPrice(h, 'buff', 60, 1).ap : 2), uses: { per: 'per_scene', n: 1 },
-      available: (h) => { const e = soulReady(h); if (e) return e; const p = soulPrice(h, 'buff', 60, 1); if (h.u!.mg!.emanator && h.u!.mg!.mp < p.mp) return 'Needs ' + p.mp + ' MP.'; return true; },
-      preview: (h, args) => { const t = tileOf(h.cb!, args.tile); if (!t) return {}; const p = soulPrice(h, 'buff', 60, 1), e = soulAim(h, t, p.range); return e ? { ok: false, why: e } : { tiles: tilesAround(t, 1), lines: ['Sanctuary on ' + refOf(t) + ' (' + p.mp + ' MP, ' + p.strain + ' Strain).'] }; },
-      run: (h, args, rng) => {
-        const cb = h.cb!, u = h.u!, t = tileOf(cb, args.tile)!, p = soulPrice(h, 'buff', 60, 1);
-        makeZone(cb, u, { kind: 'sanctuary', tiles: tilesAround(t, 1), rounds: 2, mult: 0.5 }); // P10: its halving and its end are the move's data (classes.json)
-        emitFx(cb, 'release', { unit: u.id, at: u.pos, to: t, school: 'buff', option: 'sanctuary', stage: 1, wild: false, area: 1, targets: [] });
-        say(cb, u.name + ' raises a Sanctuary around ' + refOf(t) + ': allies inside take half damage until ' + u.name + '\'s next turn (' + p.mp + ' MP)' + soulPay(h, rng as Rng, p) + '.');
-      },
-    },
-    {
-      id: 'sanctuary_story', label: 'Sanctuary', scope: ['story'], target: 'none', ap: 0, uses: { per: 'per_scene', n: 1 },
-      text: 'Once a scene, for 60 MP: raise a sanctuary around the party. The Narrator decides what it keeps out.',
-      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < 60 ? 'Needs 60 MP.' : true) : 'Needs an Emanator in hand.'),
-      run: (h, args) => { const c = h.c!; c.mp = mpNow(c) - 60; const eid = postStory(h, c.name + ' raises a Sanctuary' + (args.text ? ': "' + args.text.slice(0, 120) + '"' : '.'));
-        pendRuling(h.g, c, h.key, 'Sanctuary out of combat (60 MP paid): a 3×3 safe zone where allies take half damage until the danger passes. Rule what it keeps out.', eid || undefined); },
-    },
-  ],
-  // (its halving, item 525's exception for your own heart's burn, and its end at your next turn are item ops in its data)
-  brief: () => 'Sanctuary out of combat: the Narrator rules what it keeps out.',
 });
 
 // ======================================================================================================== BARD

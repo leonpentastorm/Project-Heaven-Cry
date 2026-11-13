@@ -2091,7 +2091,7 @@ Every Grand form is drawn on the grid for everyone: its word's ground look and t
 
 **Belief** (a step in character creation). Every character is **Faithful** (sworn to one patron of their Sector; all eight
 below for the Earth Sector; Devotion starts at 3) or an **Atheist** (no patron, no Devotion; prays by dice: the pilgrim).
-Belief is chosen at Faith 0; **praying at all needs Faith 3**. Old saves: a character with a pact becomes Faithful to that
+Belief is chosen at Faith 0; **praying at all needs Faith 3**. *(Superseded by rules 1.31: Whispers from Faith 1, Hymns from Faith 3.)* Old saves: a character with a pact becomes Faithful to that
 patron with their current Devotion; one without becomes an Atheist.
 
 **Devotion** (Faithful only) runs 0–10: your **standing**. You don't spend it to ask; asking is limited by cooldowns.
@@ -2133,7 +2133,7 @@ the Narrator narrates the rest.
 
 | Size | AP | Limit | Who |
 |---|---|---|---|
-| **Whisper** | 1 | once a turn (once a round in the story) | anyone with Faith 3 |
+| **Whisper** | 1 | once a turn (once a round in the story) | anyone with Faith 3 *(rules 1.31: Faith 1)* |
 | **Hymn** | 3 | the prayer cooldown (rules 1.22: 9 − 0.75 × Faith − 0.25 × Virtue rounds, rounded up, never under 3; a vow fulfilled takes 1 round off, never under 2) | the Faithful: their patron's Hymns; an Atheist: the Hymns they learned |
 | **Miracle** | 3 | once a session | the Faithful at Faith 7 and Devotion 10 (Atheists never); lowers Devotion by 5 levels |
 
@@ -4338,6 +4338,80 @@ the Defender became (rules 1.29), so it is renamed **Stonewall** *(Suggested)*: 
 icon (`art/icons/perks/bulwark.png`), its numbers and a saved character's perk are unchanged. "Rampart" was the first
 choice and was not used: the RAISE Grand form is "Ramparts". `tools/validate.py` now refuses a perk named as a class,
 as it already refused an archetype. Item 1812.
+
+## Rules revision 1.31: the Chaplain, and prayer from Faith 1 (Classes 3.0, step 5)
+
+Built on 13 Nov 2026 from `docs/design/chaplain-spec.md` (binding; its "Settled" notes override its body), the Settled
+blocks of `docs/design/class-roster-rev4-proposal.md` section 8 and `docs/design/rev4-weapon-neutral-audit.md` 4.7. It
+overrides every body line on who may pray (rules 1.6: "praying at all needs Faith 3"), on the Guardian's moves (the
+class table of rules 1.10 and rules 1.29), on Will Shield, Command, Sanctuary and Judgement, where they differ. The class
+id stays `guardian`; its display name is the Chaplain (rules 1.29). Every number here is PROVISIONAL (items 1900 to 1949).
+
+### 1. Prayer opens at Faith 1 (Leon, 13 Nov 2026)
+
+1. **Whispers from Faith 1** (`patrons.json prayer.whisper.faith_min`, 1; `prayer.faith_min`, the least of the two):
+   one Whisper a turn, 1 AP, the Faithful to their patron and an Atheist by dice against 12, as before.
+2. **Hymns from Faith 3** (`prayer.hymn.faith_min`, 3), as built; Witnessed at Faith 5 and the Miracle at Faith 7 and
+   Devotion 10 unchanged. A Whisper's size grows with Faith through Blessing power, so a Faith 1 Whisper is small.
+3. The refusals: "Praying needs Faith 1." (a Whisper), "A Hymn needs Faith 3." (a Hymn, a door verb that is a Hymn,
+   Blessed Arms' story blessing), "A Miracle needs Faith 7.". The Belief step's note reads both thresholds from the engine.
+
+### 2. The Chaplain's moves (`classes.json` the `guardian` block; `move_pool` `guardian.sanctuary`)
+
+| Rank | Key | Move | Rule |
+| --- | --- | --- | --- |
+| I | `guardian.ward` | **Ward** | A Whisper only the Chaplain can say; it **uses the turn's one Whisper** (1 AP; the Atheist's roll). An ally in sight, never yourself, gains a shield of **10 × Blessing power** (`amounts.ward`, profile `blessing_mend`: Blessing power × the prayer heal dial × the level's growth) for the fight, on its own layer `ward` (spent before any other shield; every other shield is the base layer, where the larger stands). **At most 2 allies** carry your Ward (a third ends the oldest); a Ward on an ally who has one tops it up, never doubles. |
+| I | `guardian.smite` | **Smite** | Once a turn, on your own turn, when an attack with your weapon (any: a shot, a strike, a throw, two weapons, a focus's attack; trigger `hit`) hits an enemy that still stands, the patron also deals **20 × Blessing power Soul** (`amounts.smite`, Rebuke's base; no roll, armour does not lower it). Not multiplied by the technique, a critical, Verdict or ammunition (it is an item's damage, not the attack's). A hit that kills leaves it for a later hit that turn; never on another's turn (a reaction, an opportunity attack). It is a prayer: `via: faith` (a kill by prayer for the No Magic but Theirs vow), Old Overcast's is lightning (`amounts.smite_storm`, element lightning: the storm tag); not a Whisper and uses no prayer limit. The Toll-Keeper's and the Matchmaker's (taboo `kill`) are `nonlethal`: a Smite that would take the last HP subdues. An Atheist rolls the Whisper's TN on each hit it would ride (predicate `answered`); a miss leaves it unspent. It needs the prayer door open (Faith 1, not Silenced). |
+| II | `lumeri_templar.under_the_eye` | Under the Eye | As built (allies within 3 get +2 to hit while you are Witnessed; any weapon). |
+| II | `lumeri_templar.blessed_shells` | **Blessed Arms** *(Suggested; was Blessed Shells)* | As built, any weapon: a landed Hymn loads into your weapon (a round, an arrow, an edge, a thrown blade); the next hit releases it; a Smite may ride the same hit. Tag `guns` → `weapon`; the story action is "Bless your weapon". |
+| III | `guardian.sanctuary` | **Sanctuary** | A Hymn only the Chaplain can say (3 AP; it starts the one Hymn wait: no patron Hymn until it ends; tier 1 for the Faithful's overreach; the Atheist's Hymn I roll). A tile in sight within 6 (`reach.tile`): allies on its 3×3, you included, take half damage (rounded up) until the start of your next turn; it prevents at most **11 × Blessing power** (`amounts.sanctuary_cap`, profile `blessing_mend`, rounded) in all, then ends. Your own Strain burn is not halved. An answered Sanctuary makes the Faithful Witnessed (Faith 5). No MP, no Strain. |
+| III | `lumeri_templar.judgement` | **Verdict** *(Suggested; was Judgement; key kept)* | As built (4 AP, 10 Devotion XP, once a fight, × (1 + Blessing power)), with **any weapon**: the weapon's plain attack (a strike if it is a melee weapon, a throw if it is a thrown one, else a shot); never a Burst, an Aimed shot or a technique. The gate "a melee weapon or a scattergun" is gone. |
+| gain | `guardian.at_your_side` | **The Patron at Your Side** | Section 3. |
+
+**Removed:** Will Shield (`guardian.will_shield`, replaced by Ward), Command (out: an order is Authority's Call), the old
+Sanctuary's MP, Strain, once a scene and Soul cast (its handler; its story half is now a Narrator action, no MP).
+**No MP and no Strain:** no Chaplain move costs MP, Strain, cores or ammunition of its own; the class's `resources` are
+`["devotion"]`. Verdict keeps its Devotion XP cost.
+
+### 3. The patron at its side (the presence)
+
+1. **Judged** (`conditions.json`, a state, 1 round, no save): an enemy the Chaplain's weapon hits on its own turn. Its
+   source is the Chaplain: it is how "where the weapon struck" is known.
+2. **The presence:** while a Faithful Chaplain is Witnessed, its patron stands on its tile as a presence (stat
+   `patron_presence`, answered by the class gain): not a unit, never targeted, blocks nothing, sees nothing, moves with
+   it. It ends when Witnessed ends. Downed: it stays (dimmed); dead: it ends.
+3. **The first intervention of a fight does not end Witnessed** (stat `intervention_keeps_witnessed` 1: the first that
+   many interventions keep it); the second (Devotion 7) ends it. The count is the door's (once, twice from Devotion 7);
+   the presence never adds an intervention.
+4. **Each patron's intervention reaches further** (`patrons.json` each patron's `intervention.presence`):
+
+| Patron | The door's | With the presence |
+| --- | --- | --- |
+| Holy Father Nerukhan | an enemy harms the helpless | also when an enemy the Chaplain has Judged damages an ally to a quarter of their HP or less (`judged_harms_below` 0.25) |
+| The Quartermaster | your reload is free | also an ally's reload within 1 tile (`ally_within` 1) |
+| The Laughing Mask | an enemy misses you: Prone | also a miss on an ally within 1 |
+| The Toll-Keeper | an ally stays at 1 HP | the ally kept up also gains your Ward (`ward`: the Chaplain's Ward item) |
+| Mother Ember | an ally below a quarter heals | below half instead (`below` 0.5; the door's quarter is `intervention.below`) |
+| Old Overcast | your kill: lightning on the nearest other enemy | on a Judged enemy of yours first (`judged_first`) |
+| The Matchmaker | an ally next to you is hit: half moves to you | an ally within 2 |
+| The Counting Weaver | an enemy crits you: a normal hit | also a crit on an ally within 1 |
+
+### 4. What the engine gained (general, for the next system too)
+
+- A prayer's own effects (a `grant_action` with `prayer`, on any item, not only a door verb) run only when the patron
+  answers; the item's triggered effects stay with their triggers.
+- `reach.tile` (a door verb aimed at a tile within `tiles`, in sight when `sight`).
+- The `zone` op's `pool` may name the item's amount block (worked out when the zone is laid, rounded).
+- Predicates `not_patron` (words) and `answered` (a prayer riding an event: the Faithful always, an Atheist rolls the
+  Whisper's TN; rolled last). The `say` placeholder `{patron}`; the `deal` op hands what reached the target to `{then}`.
+- An amount block's `element` (the damage's element tag when it is not its type).
+- Stat `patron_presence`.
+
+### 5. The balance line
+
+The Chaplain's own line is **125% of a rifle-turn all in** (`rules.json balance.ceilings.chaplain_turn`; Leon). The
+measured table is in `docs/design/handoffs/classes-3.0-step-5.md`. Shield sizes (Ward 10, Sanctuary's 11) are step 7b's
+to re-fit through `amounts.ward.base` and `amounts.sanctuary_cap.base` (Faith's shield is to be the strongest: Leon).
 
 ## Rules revision 1.32: Shadow and the Operative (Classes 3.0, step 6)
 
@@ -7331,6 +7405,40 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1811. **A free move priced at 0 AP by an item keeps the move bank (rules 1.30):** tiles walked on a move an item made free are not taken from the tiles banked earlier in the turn. PROVISIONAL.
 1812. **The perk Bulwark renamed Stonewall (rules 1.30 section 4; beside items 1757 and 1758; the lead's call on the name, Leon to confirm; Suggested):** the Durability perk `bulwark` shows as Stonewall (display name only: id, icon, numbers and saves unchanged), because the class `defender` is now the Bulwark. The lead suggested Rampart, with Stonewall if Rampart was taken; the RAISE Grand form is "Ramparts", so Stonewall. The validator refuses a perk whose display name is a class's.
 1813. **Fire Discipline's discount, the lead's ruling (rules 1.30; 13 Nov 2026; supersedes the discount of item 1804; PROVISIONAL):** once a turn, on your own turn, a weapon technique whose own price with the weapon is 3 AP or more (`tech_ap_at_least` 3) costs 1 AP less: a Burst 3 → 2 with any gun, a long rifle's Burst 4 → 3, a 3-AP melee technique 3 → 2. The free techniques everyone has (techniques.json `free`: Shot, Aimed Shot, Cut, Overwatch, Pull Out; with no technique a shot, an aimed shot, a blow or a throw) are never cheaper, whatever they cost (the long rifle's 3-AP Shot, a heavy blade's 3-AP blow). The Aimed +1 to hit and the Heat stay as item 1804. Why: as first built (the first attack of each turn 1 AP less) the Skirmisher all in measured 173% of a rifle-turn against the 145 ceiling and a Faith dabbler bought a Whisper with the saved AP every turn. **A reading made by the builder (the lead can reverse it):** "a weapon technique" excludes the free techniques, so the Aimed Shot (3 AP) is not cut; with it cut the Skirmisher measured 164 / 180 / 165 / 170 (mean 170, outside 145 ± 12%) at levels 1 / 5 / 10 / 20; as built 164 / 168 / 166 / 145 (mean 161, inside; 6 fights a cell). New closed-list predicates `free_tech` and `tech_ap_at_least` (the attack's events carry `techAp`).
+1900. **Prayer opens at Faith 1 (rules 1.31; Leon, 13 Nov 2026; `patrons.json prayer.whisper.faith_min` 1, `prayer.faith_min` 1):** Faith 1 and 2 pray Whispers (one a turn, 1 AP, the Faithful to their patron, an Atheist by dice). It replaces "praying at all needs Faith 3" (rules 1.6). PROVISIONAL.
+1901. **Hymns from Faith 3 (rules 1.31; `prayer.hymn.faith_min` 3):** as built; Witnessed at Faith 5, the Miracle at Faith 7 and Devotion 10 unchanged. The refusal "A Hymn needs Faith 3." PROVISIONAL.
+1902. **Ward's size (rules 1.31; `classes.json guardian.ward amounts.ward.base` 10, profile `blessing_mend`):** 10 × Blessing power × the prayer heal dial × the level's growth, for the fight. Leon ruled 7 in the spec and 10 on the heal-shield spec (13 Nov, "Settled" 5: equal to Protection, it stacks on any shield); built at 10. Step 7b re-fits it. PROVISIONAL.
+1903. **Ward is the turn's Whisper (rules 1.31):** it uses the one Whisper slot; an Atheist rolls the Whisper TN (12); a miss spends the AP and the slot. Allies in sight only, never yourself (the lead's call). PROVISIONAL.
+1904. **Wards held (rules 1.31; the mend op's `holders` 2):** at most 2 allies carry one Chaplain's Ward; a third ends the oldest; a new Ward on a Warded ally tops it up (the larger stands). Its own layer `ward`, spent first. PROVISIONAL.
+1905. **Sanctuary is a Hymn (rules 1.31; 3 AP; `reach.tile`, 6 tiles, sight):** it starts the one Hymn wait; the Faithful's overreach as a Hymn I; an Atheist rolls Hymn I's TN. An answered Sanctuary makes the Faithful Witnessed at Faith 5. PROVISIONAL.
+1906. **Sanctuary's zone (rules 1.31):** 3×3, half damage (rounded up) to allies and yourself until the start of your next turn; your own Strain burn and a Mana Short not halved (as before). PROVISIONAL.
+1907. **Sanctuary's cap (rules 1.31; `amounts.sanctuary_cap.base` 11, profile `blessing_mend`, rounded when laid):** at most 11 × Blessing power × the heal dial × the level's growth prevented in all, then the zone ends. Step 7b's heal-shield spec moves it to 21. PROVISIONAL.
+1908. **Two Sanctuaries do not stack (rules 1.31; spec edge case):** each Chaplain's halving reads only its own zone; two Chaplains' zones on one tile would each halve. *Not built: no primitive reads "the first zone of a kind"; listed for the lead (step 5 hand-off).* PROVISIONAL.
+1909. **Smite (rules 1.31; `amounts.smite.base` 20 = Rebuke's; Leon, 13 Nov):** once a turn, on your own turn, a weapon attack's hit on an enemy that still stands: + 20 × Blessing power Soul, no roll, no armour; any weapon (trigger `hit`, no mode list). PROVISIONAL.
+1910. **Smite is not the attack's damage (rules 1.31):** the technique, a critical, Verdict and ammunition do not multiply it (it is an item's deal: `damage_out` mode `item`; Verdict's multiplier skips it). PROVISIONAL.
+1911. **A kill leaves Smite (rules 1.31):** a hit that kills spends nothing (predicate `target_alive`); Smite may ride a later hit that turn. PROVISIONAL.
+1912. **Smite on another's turn (rules 1.31):** never (predicate `own_turn`): a reaction or an opportunity attack carries none. PROVISIONAL.
+1913. **Smite is a prayer (rules 1.31):** `via: faith` (a kill by prayer: the No Magic but Theirs vow); it is not a Whisper and uses no prayer limit; it needs the prayer door open (Faith 1, not Silenced; the lead's reading). PROVISIONAL.
+1914. **Old Overcast's Smite is lightning (rules 1.31; `amounts.smite_storm`, element lightning):** Soul damage (armour none) whose element tag is lightning: the storm tag. PROVISIONAL.
+1915. **The kill-taboo patrons' Smite (rules 1.31):** the Toll-Keeper's and the Matchmaker's Smite is `nonlethal`: one that would take the last HP subdues (the engine's nonlethal: surrendered, not dead). The spec said "never below 1 HP"; built with the batch row's subdue (the lead's call, item 6 of the spec's settled list). PROVISIONAL.
+1916. **An Atheist's Smite (rules 1.31; predicate `answered`):** it rolls the Whisper TN (12) on each hit it would ride; a miss leaves it unspent and is logged "no answer". PROVISIONAL.
+1917. **Judged (rules 1.31; `conditions.json judged`, 1 round, no save):** on an enemy the Chaplain's weapon hits on its own turn (the Smite move's condition op); its source is the Chaplain. PROVISIONAL.
+1918. **No MP and no Strain (rules 1.31):** no Chaplain move costs MP, Strain, cores or ammunition; `resources: ["devotion"]`; the validator refuses a Virtue class move that costs `mp` or `strain`. PROVISIONAL.
+1919. **The presence (rules 1.31; stat `patron_presence`, the class gain `guardian.at_your_side`):** while the Faithful Chaplain is Witnessed its patron stands at its side: not a unit, never targeted, blocks nothing, sees nothing. PROVISIONAL.
+1920. **The first intervention keeps Witnessed (rules 1.31; stat `intervention_keeps_witnessed` 1, now a count):** the fight's first that many interventions do not end Witnessed; the second (Devotion 7) does. PROVISIONAL.
+1921. **Interventions land where the weapon struck (rules 1.31):** Old Overcast's kill lightning goes to a Judged enemy of the Chaplain's first (`presence.judged_first`). The only damage intervention that picks a target. PROVISIONAL.
+1922. **Nerukhan's presence (rules 1.31; `presence.judged_harms_below` 0.25):** also when an enemy the Chaplain has Judged damages one of its allies to a quarter of their HP or less: that enemy takes the scaled Soul damage. PROVISIONAL.
+1923. **The Quartermaster's presence (`presence.ally_within` 1):** an ally's reload within 1 tile is free. PROVISIONAL.
+1924. **The Laughing Mask's presence (`presence.ally_within` 1):** a miss on an ally within 1 tile: the attacker falls Prone. PROVISIONAL.
+1925. **The Toll-Keeper's presence (`presence.ward`):** the ally kept at 1 HP also gains the Chaplain's Ward (its amount, its layer and its holders). PROVISIONAL.
+1926. **Mother Ember's presence (`presence.below` 0.5; the door's `intervention.below` 0.25):** her heal fires below half instead of a quarter. PROVISIONAL.
+1927. **The Matchmaker's presence (`presence.ally_within` 2):** an ally within 2 tiles, not only next to you. PROVISIONAL.
+1928. **The Counting Weaver's presence (`presence.ally_within` 1):** also a critical hit on an ally within 1 tile. PROVISIONAL.
+1929. **Verdict (rules 1.31; was Judgement; key `lumeri_templar.judgement` kept; Suggested):** any weapon's plain attack (a strike, a throw, else a shot); the "melee or scattergun" gate is gone; 4 AP, 10 Devotion XP, once a fight, × (1 + Blessing power) unchanged. PROVISIONAL.
+1930. **Blessed Arms (rules 1.31; was Blessed Shells; Suggested; key kept):** words and tag only (any weapon, as built); the story action "Bless your weapon". PROVISIONAL.
+1931. **Will Shield and Command leave (rules 1.31):** Will Shield (`guardian.will_shield`) is replaced by Ward and deleted with its handler; Command (an order is Authority's Call) is deleted with its handler. The old Sanctuary's combat handler is deleted; its story half is a Narrator action with no MP. PROVISIONAL.
+1932. **The Chaplain's line (rules 1.31; `rules.json balance.ceilings.chaplain_turn` 125):** the Chaplain's weapon turn with Smite, Faith all in + Dexterity, 125% of a rifle-turn (the plain rifle all in). Measured in the step 5 hand-off. PROVISIONAL.
+1933. **General engine rows (rules 1.31 section 4):** a prayer grant's item ops run when answered (any item); `reach.tile`; the zone `pool` from an amount block; predicates `not_patron`, `answered`; `say` `{patron}`; `deal` hands its amount to `{then}`; amount `element`; stat `patron_presence`. PROVISIONAL.
 1950. **The Shadow meter (rules 1.32 section 2.1; `rules.json shadow.cap_by_points` {1: 1, 5: 2, 7: 3}):** anyone with Ingenuity has `res.shadow`, 0 to its cap; 0 at the start of a fight, when Downed and at the fight's end. PROVISIONAL.
 1951. **Shadow's gains (rules 1.32 section 2.2; `door_gains_per_turn` 2):** +1 at a turn's end Hidden with no attack rolled; +1 once a turn for a move or Sprint from cover to cover, Hidden, ending out of view; +1 for a kill after which you are not Seen; at most 2 a turn together; a gain at the cap is lost. PROVISIONAL.
 1952. **Shadow's losses (rules 1.32 section 2.3):** −1 at the start of your turn while Seen; a Break spends all; Fade spends 2. PROVISIONAL.

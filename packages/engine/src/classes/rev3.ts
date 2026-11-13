@@ -630,39 +630,5 @@ register({
   brief: () => null,
 });
 
-// ======================================================================================================== GUARDIAN
-// ---------- Command (rank I, 1 AP, once a turn) ----------
-// Needs Leadership Squad (Authority 1). A squadmate within 6 tiles (inside hearing), standing and able to move, walks up
-// to 2 tiles you pick, now, for no AP (a real walk: opportunity attacks, Overwatch, traps and fear apply; it banks
-// nothing). Combat only.
-let commanded: Unit | null = null;
-const authorityOf = (h: Holder) => h.c?.skills?.authority || 0;
-register({
-  id: 'guardian.command', claims: 'all',
-  actions: [{
-    id: 'command', label: 'Command', scope: ['combat'], target: 'ally', ap: 'data', range: 6, uses: { per: 'per_turn', n: 1 }, pickLabel: 'The squadmate, then the tile',
-    text: 'Once a turn: an ally within 6 tiles moves up to 2 tiles to a tile you pick, right now and for none of their AP. It is a normal move, so it can draw opportunity attacks. Needs 1 point of Authority.',
-    available: (h) => (!h.u ? false : authorityOf(h) < 1 ? 'Needs 1 point of Authority.' : true),
-    preview: (h, args) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
-      if (t === u) return { ok: false, why: 'Command a squadmate, not yourself.' };
-      const blk = moveBlock(t); if (blk) return { ok: false, why: t.name + ': ' + blk };
-      const k = tileOf(cb, args.tile); if (!k) return { ok: false, why: 'Pick the tile they move to (up to 2 tiles).' };
-      const P = paths(cb, t.pos, t.id); if (P.dist[k] === undefined || k === t.pos) return { ok: false, why: 'They can\'t reach that tile.' };
-      if (P.dist[k] > 2) return { ok: false, why: 'They can move 2 tiles at most.' };
-      { const fs = t.condBy?.fear && condOn(t, 'fear') ? unitById(cb, t.condBy.fear) : null; if (fs && !fs.dead && dist(k, fs.pos) < dist(t.pos, fs.pos)) return { ok: false, why: t.name + ' is Afraid of ' + fs.name + '.' }; }
-      return { tiles: [k], targets: [t.id], lines: [t.name + ' moves to ' + refOf(k) + ' for none of their AP.'] };
-    },
-    run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, k = tileOf(cb, args.tile)!, from = t.pos;
-      emitFx(cb, 'command_move', { unit: u.id, target: t.id, from, to: k });
-      say(cb, u.name + ' commands ' + t.name + ' to move.');
-      commanded = t; let err: string | null; try { err = moveUnit(cb, t, k, rng as Rng, 'move'); } finally { commanded = null; }
-      if (err) return err;
-    },
-  }],
-  on: { move_cost: (ctx) => { if (commanded && ctx.u === commanded) { ctx.ap = 0; ctx.free = true; } } },
-  brief: () => null,
-});
 
 void mod; void lineOfSight; void (null as unknown as ActionArgs);

@@ -34,13 +34,16 @@ describe('the Faith targets hold (rules 1.22)', () => {
   // Leon, later the same day, on "a Hymn is always better than a spell or an Outburst": "raise". The Hymn turn is about
   // 150% (Judgement and Lightning Rod 56, the chain 23; measured 139 to 160% at levels 6 to 20, item 1389).
   // Rebuke is held at 20 (a quiet turn of about 60 to 80% from level 6; item 1281), so the quiet band here starts under 80.
+  // Rules 1.31 (Classes 3.0 step 5): the Faith build earns the Chaplain at level 3, and its weapon hits carry Smite (20 ×
+  // Blessing power once a turn): the bands' tops below are the door's plus Smite (Hymn turn 175 → 200, quiet turn 110 →
+  // 130, the no-damage-Hymn patron 100 → 125, the Chaplain's own line). Measured, not fitted: the step 5 hand-off.
   it('a prayer-led character sworn to a damage patron: a turn with a Hymn is about 150% of the plain rifle, a turn with only a Whisper about 60 to 80%, and the Hymn is not there every turn', () => {
     for (const p of ['old_overcast', 'nerukhan']) {
       const r = prayerRow('prayer-led', faithBuild(p), 'normal', lv, n, y, { opts: { hymn: 'damage', vow: VOW } });
       console.log('[targets] ' + fline(r));
       expect(r.errors).toBe(0);
-      expect(r.pctHymnTurn, p + ', a Hymn turn, percent of the rifle').toBeGreaterThanOrEqual(125); expect(r.pctHymnTurn).toBeLessThanOrEqual(175);
-      expect(r.pctQuietTurn, p + ', a quiet turn, percent of the rifle').toBeGreaterThanOrEqual(45); expect(r.pctQuietTurn).toBeLessThanOrEqual(110); // the rifle half rises with the plain rifle's Level term (rules 1.26)
+      expect(r.pctHymnTurn, p + ', a Hymn turn, percent of the rifle').toBeGreaterThanOrEqual(125); expect(r.pctHymnTurn).toBeLessThanOrEqual(200);
+      expect(r.pctQuietTurn, p + ', a quiet turn, percent of the rifle').toBeGreaterThanOrEqual(45); expect(r.pctQuietTurn).toBeLessThanOrEqual(130); // the rifle half rises with the plain rifle's Level term (rules 1.26)
       expect(r.hymns).toBeGreaterThanOrEqual(0.3); expect(r.hymns).toBeLessThanOrEqual(0.55); expect(r.whispers).toBeGreaterThan(0.8);
     }
     // without the vow the wait is 3 rounds at Faith 6: Hymns on turns 1, 4 and 7 of 8
@@ -55,7 +58,7 @@ describe('the Faith targets hold (rules 1.22)', () => {
     const r = prayerRow('prayer-led', faithBuild('mother_ember'), 'normal', lv, n, y, { opts: { hymn: 'any' } });
     console.log('[targets] ' + fline(r));
     expect(r.errors).toBe(0);
-    if (HAS_REBUKE) { expect(r.pctRifle).toBeGreaterThanOrEqual(40); expect(r.pctRifle).toBeLessThanOrEqual(100); }
+    if (HAS_REBUKE) { expect(r.pctRifle).toBeGreaterThanOrEqual(40); expect(r.pctRifle).toBeLessThanOrEqual(125); }
   }, 120000);
   it('the gunner who dabbles (Faith 3 given free, Devotion 3) gains little', () => {
     const nd = 16, base = prayerRow('rifle only', dabblerBuild(), 'normal', lv, nd, y, { opts: { hymn: 'none', whisper: 'none' } });

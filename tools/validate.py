@@ -433,6 +433,43 @@ for _p in items("perks"):
     if isinstance(_p, dict) and _p.get("name", "").lower() in _class_names:
         errors.append(f"perk {_p.get('id')}: name {_p.get('name')!r} collides with a class name")
 
+# Classes 3.0 step 5, the Chaplain (rules 1.31; chaplain-spec.md section 10): Smite is Rebuke's size; every shield
+# layer a move names is a known one; the Judged row exists; no Virtue base-class move costs MP or Strain.
+_SHIELD_LAYERS = {"ward"}
+conds_ids = ids_of(items("conditions"))
+_pool_by = {(m.get("id"), m.get("origin")): m for m in ((data.get("classes") or {}).get("move_pool") or {}).get("moves", []) if isinstance(m, dict)}
+def _class_moves(c):
+    out = []
+    for r in ("I", "II", "III"):
+        for m in ((c.get("ranks") or {}).get(r) or {}).get("moves", []):
+            if "ref" in m:
+                cls_id, mv = m["ref"].split(".", 1)
+                out.append(_pool_by.get((mv, cls_id)) or next((x for a in adv if isinstance(a, dict) and a.get("id") == cls_id for x in a.get("moves", []) if x.get("id") == mv), {}))
+            else: out.append(m)
+    return out + list(c.get("gain") or [])
+def _walk_ops(o):
+    if isinstance(o, dict):
+        yield o
+        for v in o.values(): yield from _walk_ops(v)
+    elif isinstance(o, list):
+        for v in o: yield from _walk_ops(v)
+_rebuke = next((w for w in (data.get("patrons") or {}).get("whispers", []) if w.get("id") == "rebuke"), None)
+_rebuke_n = -next((e.get("value") for e in (_rebuke or {}).get("effects", []) if e.get("op") == "stat_mod" and e.get("stat") == "hp"), 0)
+for c in base:
+    if not isinstance(c, dict): continue
+    for m in _class_moves(c):
+        for e in _walk_ops(m.get("effects") or []):
+            if e.get("layer") is not None and e.get("layer") not in _SHIELD_LAYERS:
+                errors.append(f"classes:{c.get('id')}.{m.get('id')}: unknown shield layer {e.get('layer')!r} (known: {sorted(_SHIELD_LAYERS)})")
+            if c.get("attribute") == "virtue" and (e.get("resource") in ("mp", "strain") or any(k in ("mp", "strain") for k in (e.get("res") or {}))):
+                errors.append(f"classes:{c.get('id')}.{m.get('id')}: a Virtue class move costs no MP or Strain (rules 1.31)")
+    if c.get("id") == "guardian":
+        sm = next((m for m in _class_moves(c) if m.get("id") == "smite"), None)
+        if sm is not None:
+            for k, b in (sm.get("amounts") or {}).items():
+                if b.get("base") != _rebuke_n: errors.append(f"classes:guardian.smite: amounts.{k}.base {b.get('base')} is not Rebuke's {_rebuke_n} (rules 1.31: Smite is Rebuke's size)")
+        if "judged" not in conds_ids: errors.append("conditions: the row 'judged' is missing (rules 1.31: the Chaplain's Smite puts it on)")
+
 # archetypes: creation presets (guidance only)
 arch = data.get("archetypes")
 if isinstance(arch, dict):
@@ -1551,7 +1588,9 @@ if isinstance(tq, dict):
 #      that kind (a base, no per-point part), they are the same number.
 AMOUNT_KINDS = {"damage", "heal", "shield"}
 AMOUNT_TYPES = {"physical", "sigil", "elemental", "soul", "true"}
-AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind", "min_pct", "gate_hp"}
+AMOUNT_KEYS = {"kind", "base", "per", "profile", "type", "armour", "mults", "provisional", "text", "heal_kind", "min_pct", "gate_hp", "element"}
+# Classes 3.0 step 5 (rules 1.31): an amount block's element tag (the damage's dmgType: Old Overcast's Smite is lightning)
+AMOUNT_ELEMENTS = {"fire", "lightning", "cold", "acid", "emp"}
 out_rules = (data.get("rules") or {}).get("output") or {}
 PROFILES = set(k for k, v in (out_rules.get("profiles") or {}).items() if isinstance(v, dict))
 num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
@@ -1572,6 +1611,8 @@ def check_block(b, where):
         errors.append(f"{where}: unknown damage type '{b['type']}'")
     if "armour" in b and b["armour"] not in ("full", "half", "none"):
         errors.append(f"{where}: armour is full, half or none")
+    if "element" in b and (b.get("kind") != "damage" or b["element"] not in AMOUNT_ELEMENTS):
+        errors.append(f"{where}: element is one of {sorted(AMOUNT_ELEMENTS)}, on a damage block only")
     # Classes 3.0 (heal-shield-percent-spec.md section 4): the percent gate, on a heal or shield block only
     if "min_pct" in b and (b.get("kind") not in ("heal", "shield") or not (isinstance(b["min_pct"], (int, float)) and 0 <= b["min_pct"] <= 1)):
         errors.append(f"{where}: min_pct (the percent gate) is a share 0 to 1, on a heal or shield block only")
@@ -1903,7 +1944,9 @@ if TRIG:
             if not isinstance(r, dict): errors.append(f"{w}: a grant_action's reach is an object (tiles, sight, side, self, if, tied)")
             else:
                 for k in r:
-                    if k not in ("tiles", "sight", "side", "self", "if", "tied"): errors.append(f"{w}: unknown reach field '{k}'")
+                    if k not in ("tiles", "sight", "side", "self", "if", "tied", "tile"): errors.append(f"{w}: unknown reach field '{k}'")
+                # Classes 3.0 step 5 (rules 1.31): reach.tile: the action aims at a tile (within tiles, in sight), not a unit
+                if "tile" in r and (r["tile"] is not True or any(k in r for k in ("side", "self", "tied", "if"))): errors.append(f"{w}: reach.tile is true, with only tiles and sight beside it")
                 if "tiles" in r and not (isinstance(r["tiles"], (int, float)) and not isinstance(r["tiles"], bool)): errors.append(f"{w}: reach.tiles is a number")
                 if r.get("side", "any") not in ("foe", "ally", "side", "any"): errors.append(f"{w}: reach.side is foe, ally, side or any")
                 for k in ("sight", "self"):

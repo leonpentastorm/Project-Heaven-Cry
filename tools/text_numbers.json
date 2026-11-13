@@ -1,6 +1,6 @@
 {
  "what": "tools/text_numbers.py: the text-number guard. allow = bare numbers that are right to have no field, each with its reason; baseline = the bare numbers of 12 Nov 2026 not yet bound to a field with a {placeholder} (key: how many times), which may only shrink.",
- "ceiling": 1392,
+ "ceiling": 1387,
  "allow": {
   "actions:extinguish:text:10": "Burning's 10 a turn: conditions.json burning (an amounts block the engine reads); a placeholder reads only its own item",
   "actions:hide:text:19": "the ambush's critical range 19-20 (the engine's Hidden ambush, a rule of combat with no field on this action)",
@@ -76,7 +76,6 @@
   "classes:grand_sigilist/empty_hand:text:2": 1,
   "classes:grand_sigilist/enlarge:text:1": 1,
   "classes:grand_sigilist/enlarge:text:2": 1,
-  "classes:guardian/command:text:1": 2,
   "classes:gunslinger/called_shot:text:2": 1,
   "classes:gunslinger/six_for_six:text:4": 1,
   "classes:gunslinger/the_draw:text:0": 1,
@@ -127,9 +126,7 @@
   "classes:rtc_contractor/strike_call:text:50": 1,
   "classes:rtc_contractor/supply_drop:text:1": 2,
   "classes:rtc_contractor/supply_drop:text:6": 1,
-  "classes:sanctuary:text:1": 1,
   "classes:sanctuary:text:3": 2,
-  "classes:sanctuary:text:60": 1,
   "classes:seal:text:2": 1,
   "classes:shade/lingering_dread:text:12": 1,
   "classes:shade/lingering_dread:text:3": 2,
@@ -190,7 +187,6 @@
   "classes:ward:text:10": 1,
   "classes:ward:text:3": 1,
   "classes:ward:text:6": 1,
-  "classes:will_shield:text:20": 1,
   "conditions:blinded:text:4": 1,
   "conditions:burning:text:1": 1,
   "conditions:commanded:text:3": 1,

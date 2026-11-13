@@ -67,7 +67,7 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [x] **3. Reactions and the Skirmisher** (merged 13 Nov; all in 161 against 145, inside the band near its top; Reflex unmeasured: step 11) (`reactions-spec.md`): one door for every reaction, a reaction never
       triggers a reaction, Suppressed never blocks a protective one, Reflex (two), Killzone on both, Run and Gun.
 - [x] **4. The moves that change hands** (Bulwark and Breaker merged 13 Nov; each moved move rides with its system's step below) and the small changes to Bulwark, Breaker, Sigilist.
-- [ ] **5. The Chaplain** (`chaplain-spec.md`): Ward, Sanctuary, Smite, Verdict, the patron's presence.
+- [x] **5. The Chaplain** (merged 13 Nov; all in 131 against 125; not built: two Sanctuaries on one tile still stack; step 11 re-measures: the door's Whisper-turn band was widened 1.40 to 1.42 by the lead and the old faith caps were raised by Smite's share) (`chaplain-spec.md`): Ward, Sanctuary, Smite, Verdict, the patron's presence.
 - [ ] **6. Shadow and the Operative** (`shadow-spec.md`).
 - [ ] **7. Tending, Bonds and the Mender** (`bonds-spec.md`); **the healing order** (Leon: Tending out-heals every other door: the Outburst's, the Sigil's and a Whisper's heal drop from 2.0 to 1.4 Soldier-turns in this step: `class-roster-rev4-proposal.md`, "The healing order"); the Outburst re-measured after Empathy's free Pump
       moves to Will Power.
@@ -149,6 +149,19 @@ merged back):
 11. Reflex measured in whole fights: the second reaction is never used by the simulator's enemies (+0); unconfirmed:
     to measure in step 11 (the step 3 hand-off says what the simulator needs).
 
+Step 5 (`docs/design/handoffs/classes-3.0-step-5.md` section 5, rules 1.31 items 1900 to 1933; built on
+`worktree-agent-a186113cb0c0b8bf6`, not merged):
+1. Ward is 10 × Blessing power (the heal-shield spec's Settled 5 and the task), not the chaplain spec's 7.
+2. The kill-taboo patrons' Smite subdues (the batch row `nonlethal`), not "never below 1 HP".
+3. Smite needs the prayer door (Faith 1, not Silenced).
+4. Two Sanctuaries on one tile DO stack today (each halves): not built; needs a "first zone of a kind" reading.
+5. The Sanctuary story half is a Narrator action with no MP and no once-a-scene limit.
+6. Sanctuary is a Hymn I for the overreach and the Atheist's TN.
+7. The presence's Ward (the Toll-Keeper) counts toward the two Wards held.
+8. The Faith build earns the Chaplain: faith-measure's old door guards' tops were raised by Smite's share, and the
+   contract's whisper and hymn rows measure a classless Faith sheet (`doorFaithBuild`). Measured: the Chaplain all in
+   122 / 130 / 123 / 149 (mean 131 against 125, +5%); normal share 110 against 100.
+
 Step 6 (`docs/design/handoffs/classes-3.0-step-6.md` section 5, rules 1.32 items 1950 to 1969; built on
 `worktree-agent-a240d31a3975ddb8c`, not merged back):
 1. Nine verbs not built (Parting Cut, Decoy, Close Quarters, Vault, Shadow Run, Case, Pick, Douse, Rig): each needs a
@@ -192,3 +205,5 @@ ordered ally does is that ally's reaction, kind `move` or as the act requires; b
 (a reaction never triggers a reaction). (2) **Anchor's strike is kind `attack`**, not `protect`: Suppressed stops it.
 (3) **Drink It In and the helping Calls are kind `protect`** (they help an ally and move or hurt nobody); a Call that
 harms an enemy is not a reaction at all. (4) The standing-aura form of P5 is the reviewer's recommended shape.
+
+**Lead's calls on step 5 (13 Nov; Leon can reverse):** the Whisper-turn guard's high end goes 1.40 to 1.42 (the door measured 113 against 112 at level 20; step 11 re-measures it on a classless sheet); Ward stays 10 (Leon); a Toll-Keeper's or Matchmaker's Smite subdues; Smite is refused while Silenced.

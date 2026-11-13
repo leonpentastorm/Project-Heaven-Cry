@@ -33,16 +33,7 @@ describe('pickers for the new moves (buttons only)', () => {
     expect(buildArgs(P, { npc: ['n1'] }, x)).toMatch(/^Pick /); // a missing pick is refused, nothing typed
     expect(buildArgs(P, { npc: ['n1'], what: ['ward'] }, x)).toEqual({ text: 'Brother Ash: a ward', npc: 'Brother Ash' });
   });
-  it('Command: the squadmate is the grid target, the walk\'s end a second click on a tile', () => {
-    const f = fightWith([cls('guardian', 3, { skills: { authority: 1 } }), {}], [{}]);
-    const u = f.turn(f.pcs[0]), e = entries(f, u).find((x) => x.actionId === 'command')!;
-    expect(e.why).toBeNull();
-    const P = pickerFor(e, ctx(f, u))!;
-    expect(P.fields.map((x) => x.kind)).toEqual(['tile']);
-    expect(buildArgs(P, {}, ctx(f, u))).toMatch(/^Click where they move/);
-    const v = gridPick(P, {}, null, '3,4')!; expect(buildArgs(P, v, ctx(f, u))).toEqual({ tile: '3,4' });
-    expect(gridPick(P, v, null, '4,4')).toBeNull(); // one tile: a second click re-aims
-  });
+  // (the Guardian's Command left in rules 1.31: an order is Authority's Call)
   it('Shove: push or knock down, as chips with words; Field Fix: three jobs, none meaning the first that applies', () => {
     const f = fightWith([cls('fighter', 3)], [{}]);
     const u = f.turn(f.pc), e = entries(f, u).find((x) => x.actionId === 'class_shove')!;
@@ -222,7 +213,7 @@ describe('fx: every new event draws and sounds', () => {
     const [fi, gu] = f.pcs; at(f, fi, '4,2'); at(f, gu, '4,4'); const foe = at(f, f.foe, '5,2'); foe.sv = { body: -50, brain: -50, heart: -50 }; f.turn(fi);
     f.act({ type: 'combat/perk', unitId: fi.id, id: 'class:fighter.unstoppable' } as any);
     f.act({ type: 'combat/perk', unitId: fi.id, id: 'class:fighter.shove', targetId: foe.id, choice: 'prone' } as any);
-    f.turn(gu); f.act({ type: 'combat/perk', unitId: gu.id, id: 'class:guardian.command', targetId: fi.id, tile: '3,2' } as any);
+    void gu; // (Command left in rules 1.31)
     evs.push(...(f.cb.fx || []));
     const t = fightWith([cls('trickster', 8, MIND), {}], [{}]);
     const [tr, al] = t.pcs; at(t, tr, '4,2'); at(t, al, '4,5'); const tf = at(t, t.foe, '9,2'); tf.sv = { body: -50, brain: -50, heart: -50 }; t.turn(tr);
@@ -231,7 +222,7 @@ describe('fx: every new event draws and sounds', () => {
     t.act({ type: 'combat/perk', unitId: tr.id, id: 'class:trickster.sleight', actionId: 'sleight_image' } as any);
     evs.push(...(t.cb.fx || []));
     const kinds = new Set(evs.map((e) => e.k));
-    for (const k of ['unstoppable', 'shove', 'command_move', 'image', 'silver_tongue', 'swap']) expect(kinds.has(k), k).toBe(true);
+    for (const k of ['unstoppable', 'shove', 'image', 'silver_tongue', 'swap']) expect(kinds.has(k), k).toBe(true);
     setContext({ code: 'X', characters: {}, story: { positions: {}, npcs: [] }, combat: null } as any, 'main');
     const warn = vi.spyOn(console, 'warn');
     for (const e of evs) playFx(e);

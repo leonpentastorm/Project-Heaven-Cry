@@ -279,7 +279,6 @@ const COMBAT: Record<string, Maker> = {
   'perk:lab_coat#neutralise_agent': (e) => ({ head: 'Neutralise agent', hint: e.text + ' Pick one, or none for the first identified here.', fields: [chipsF('choice', 'The agent', [...CHEM_OPTS, { id: 'toxic', label: 'Toxic hazard' }], 1, true)] }),
   // ---- Class Roster Revision 3 (engine classes/rev3.ts) ----
   // Command: the squadmate is the grid target (a click on their token); the walk's end is a second click (up to 2 tiles).
-  'class:guardian.command#command': (e) => ({ head: 'Command', hint: 'Click the squadmate, then the tile they move to (up to 2 tiles, free).', fields: [tileF('tile', 'Where they move')] }),
   // Shove: the enemy is the grid target; push or knock down is a chip (the engine refuses a push into a wall: its reason shows on the chip).
   'class:fighter.shove#class_shove': (e) => ({ head: 'Shove', hint: 'Click the enemy next to you, then push it back or knock it down.',
     fields: [chipsF('choice', 'Push it back, or knock it down', [{ id: 'push', label: 'Push 1 tile', title: 'Straight away from you (a Body save holds it).' }, { id: 'prone', label: 'Knock Prone', title: 'Down on the floor (a Body save holds it).' }])] }),

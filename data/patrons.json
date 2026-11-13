@@ -61,14 +61,16 @@
     "provisional": true
   },
   "prayer": {
-    "faith_min": 3,
+    "faith_min": 1,
     "mana_delta": -5,
     "whisper": {
       "ap": 1,
+      "faith_min": 1,
       "limit": "once per turn"
     },
     "hymn": {
       "ap": 3,
+      "faith_min": 3,
       "cooldown": "prayer_cooldown",
       "cooldown_rule": {
         "base": 9,
@@ -448,7 +450,12 @@
           }
         ],
         "adjudication": "engine",
-        "provisional": true
+        "provisional": true,
+        "presence": {
+          "judged_harms_below": 0.25,
+          "text": "Also when an enemy your weapon has Judged damages an ally at or under {=intervention.presence.judged_harms_below|pct} of their HP: that enemy takes the same.",
+          "provisional": true
+        }
       },
       "hymns": [
         {
@@ -699,7 +706,12 @@
           }
         ],
         "adjudication": "engine",
-        "provisional": true
+        "provisional": true,
+        "presence": {
+          "ally_within": 1,
+          "text": "Also when an ally within {=intervention.presence.ally_within} tile of you reloads: their reload is free.",
+          "provisional": true
+        }
       },
       "hymns": [
         {
@@ -940,7 +952,12 @@
           }
         ],
         "adjudication": "engine",
-        "provisional": true
+        "provisional": true,
+        "presence": {
+          "ally_within": 1,
+          "text": "Also when an enemy misses an ally within {=intervention.presence.ally_within} tile of you: it falls Prone.",
+          "provisional": true
+        }
       },
       "hymns": [
         {
@@ -1151,7 +1168,12 @@
           }
         ],
         "adjudication": "engine",
-        "provisional": true
+        "provisional": true,
+        "presence": {
+          "ward": "class:guardian.ward",
+          "text": "The ally kept standing also gains your Ward.",
+          "provisional": true
+        }
       },
       "hymns": [
         {
@@ -1356,7 +1378,13 @@
           }
         ],
         "adjudication": "engine",
-        "provisional": true
+        "provisional": true,
+        "below": 0.25,
+        "presence": {
+          "below": 0.5,
+          "text": "It fires when an ally drops below {=intervention.presence.below|pct} of their HP instead.",
+          "provisional": true
+        }
       },
       "hymns": [
         {
@@ -1581,7 +1609,12 @@
           }
         ],
         "adjudication": "engine",
-        "provisional": true
+        "provisional": true,
+        "presence": {
+          "judged_first": true,
+          "text": "The lightning goes to an enemy your weapon has Judged first, else the nearest.",
+          "provisional": true
+        }
       },
       "hymns": [
         {
@@ -1820,7 +1853,12 @@
           }
         ],
         "adjudication": "engine",
-        "provisional": true
+        "provisional": true,
+        "presence": {
+          "ally_within": 2,
+          "text": "Also for an ally within {=intervention.presence.ally_within} tiles of you, not only next to you.",
+          "provisional": true
+        }
       },
       "hymns": [
         {
@@ -2027,7 +2065,12 @@
           }
         ],
         "adjudication": "engine",
-        "provisional": true
+        "provisional": true,
+        "presence": {
+          "ally_within": 1,
+          "text": "Also for a critical hit on an ally within {=intervention.presence.ally_within} tile of you.",
+          "provisional": true
+        }
       },
       "hymns": [
         {
