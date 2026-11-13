@@ -102,7 +102,10 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 
 ## 7. State when this was last touched
 
-13 Nov 2026: design complete (frame, six specs, the primitives); the six specs being aligned with Leon's rulings and
-the consolidated primitives; step 0 in flight. Live is 0.24.0; a small release (hover cards everywhere, one Clear
-jam for two guns, the live bugs the spec writers found) is being finished and goes live first, on Leon's word given
-13 Nov ("when the current small bug and UI fixes wave is done push it to live").
+13 Nov 2026, later: **0.25.0 is live** (hover cards everywhere, one Clear jam for two guns, the live bugs, the hooks
+catalogue; `backup/live-0.25.0`; `develop` = `main`). The design is complete and nothing of it is open (Leon's last
+two answers: the Visualizer is a glove with a projector in the palm; prayer opens at Faith 1). Step 0 is done.
+**Step 1 (the primitives) is the next thing to build**; from its first code commit the working branch is no longer
+pushed to `develop`. In flight: see `git branch --list 'worktree-*'` and the `wip/` branches on the remote (a loop
+pushes them while the lead is alive); a `wip/` branch whose step is not ticked above is unfinished work: judge it by
+`PICKUP.md` section 3 before merging, or redo the step from section 5's brief.

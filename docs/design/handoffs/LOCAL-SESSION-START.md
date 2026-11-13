@@ -5,7 +5,7 @@ For Leon, and for the Claude Code session he starts on his own computer. Written
 
 ## 1. Where everything is
 
-- **Live:** 0.24.0 (deployed 12 Nov, later the same night; `backup/live-0.24.0`; the three UI fixes of section 3 item 1 are in it, with rules 1.27, the technique animations and the camera: see `CHANGELOG.md`). Before it: 0.23.0, https://project-heaven-cry.leonpentastorm.workers.dev (deployed 12 Nov on Leon's word).
+- **Live:** 0.25.0 (13 Nov; `backup/live-0.25.0`). **The mission now is Classes 3.0: read `docs/design/handoffs/CLASSES-3.0-PICKUP.md` before anything in section 3 below.** Before it: 0.24.0 (deployed 12 Nov, later the same night; `backup/live-0.24.0`; the three UI fixes of section 3 item 1 are in it, with rules 1.27, the technique animations and the camera: see `CHANGELOG.md`). Before it: 0.23.0, https://project-heaven-cry.leonpentastorm.workers.dev (deployed 12 Nov on Leon's word).
 - **Branches:** `main` = live. `develop` = `main` plus docs. Backups: `backup/live-0.23.0`, `backup/live-0.22.0`.
   `claude/charming-gauss-hbq4n0` was the cloud session's working branch; it is merged, start new work from `develop`.
 - **Stale branches on the remote, safe to delete:** every `wip/worktree-*` (work in flight that has since been merged),
