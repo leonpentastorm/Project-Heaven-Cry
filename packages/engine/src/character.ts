@@ -659,9 +659,9 @@ export const soulCastAp = (c: Character) => { void c; return 2; };
 /** Empathy's free Pump each round (rules 1.19: one from Empathy 3; Empathy 7 no longer gives a second: see swellFree).
  * The table is soul_modules.json cycle.free_pumps; whatever items add, a character takes one free Pump a turn at most
  * (magic.ts FREE_PER_TURN). */
-export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', ((SOUL_RULES as any).cycle?.free_pumps as { empathy: number; pumps: number }[] || [{ empathy: 3, pumps: 1 }]).reduce((n, r) => (P(c, 'empathy') >= r.empathy ? Math.max(n, r.pumps) : n), 0))));
+export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', ((SOUL_RULES as any).cycle?.free_pumps as { will_power: number; pumps: number }[] || [{ will_power: 3, pumps: 1 }]).reduce((n, r) => (P(c, 'will_power') >= r.will_power ? Math.max(n, r.pumps) : n), 0)))); // rules 1.33: Will Power's (it was Empathy's)
 /** Rules 1.19: from Empathy 7 a held Outburst swells without Strain. */
-export const swellFree = (c: Character) => P(c, 'empathy') >= ((SOUL_RULES as any).cycle?.swell_no_strain?.empathy ?? 99);
+export const swellFree = (c: Character) => P(c, 'will_power') >= ((SOUL_RULES as any).cycle?.swell_no_strain?.will_power ?? 99); // rules 1.33: Will Power's (it was Empathy's)
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
 export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
@@ -739,27 +739,41 @@ export const strengthOf = (c: Character, via: string) => Math.max(0, mod(P(c, vi
 /** Every strength above 0, by skill id: what a unit carries into a fight (Unit.dbf; a missing skill reads 0). */
 export const strengthTable = (c: Character): Record<string, number> => Object.fromEntries(SKILLS.map((s) => [s.id, strengthOf(c, s.id)] as [string, number]).filter(([, n]) => n > 0));
 // ---------- focuses (spec: Hands 2; item 630: a focus counts only in a hand) ----------
-/** What counts as each focus: the focus items, and the mana arms that count as one. */
-export const FOCUS_IDS: Record<'evoker' | 'emanator', string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'] };
+/** A focus kind: the standard gloves of the gear companies' line (rules 1.33: the Attuner is the third with a door here). */
+export type FocusKind = 'evoker' | 'emanator' | 'attuner';
+/** What counts as each focus: the focus items, and the mana arms that count as one. Rules 1.33 (a focus is data): each
+ * focus item of items.json names `focus: {door, hand, fuel}`; every item whose `focus.door` is a kind's door counts as
+ * that kind (a faction's focus later is one more item, never a new kind in code). */
+const FOCUS_BASE: Record<FocusKind, string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'], attuner: [] };
+/** The door (a skill id) each focus kind opens (rules 1.33). */
+export const FOCUS_DOOR: Record<FocusKind, string> = { evoker: 'brain_power', emanator: 'will_power', attuner: 'empathy' };
+const FOCUS_KINDS = Object.keys(FOCUS_BASE) as FocusKind[];
+/** A focus kind by its own name or by the door it opens (null: neither). */
+export const kindOfDoor = (door: string): FocusKind | null => (FOCUS_KINDS.includes(door as FocusKind) ? door as FocusKind : FOCUS_KINDS.find((k) => FOCUS_DOOR[k] === door) || null);
+export const FOCUS_IDS: Record<FocusKind, string[]> = Object.fromEntries(FOCUS_KINDS.map((k) =>
+  [k, [...new Set([...FOCUS_BASE[k], ...Object.values(ITEM).filter((it: any) => it?.focus && kindOfDoor(String(it.focus.door)) === k).map((it: any) => String(it.id))])]])) as Record<FocusKind, string[]>;
+/** The focus kinds whose fuel is MP (items.json focus.fuel): an Emanator or an Attuner keeps a character's MP. */
+const MP_FOCUS_KINDS: FocusKind[] = FOCUS_KINDS.filter((k) => FOCUS_IDS[k].some((id) => (ITEM[id] as any)?.focus?.fuel === 'mp'));
 /** What the hands hold: the main-hand weapon, and the off hand unless a two-handed weapon fills both. */
 export const inHands = (c: Character): string[] => [c.weapon, ...(c.offHand && !twoHands(c, c.weapon) ? [c.offHand.id] : [])];
 /** Which hand holds this kind of focus ('main' or 'off'), 'pack' if it is only carried, else null. */
-export function focusHand(c: Character, kind: 'evoker' | 'emanator'): 'main' | 'off' | 'pack' | null {
+export function focusHand(c: Character, kind: FocusKind): 'main' | 'off' | 'pack' | null {
   const ids = FOCUS_IDS[kind], held = inHands(c);
   if (ids.includes(held[0])) return 'main';
   if (held[1] && ids.includes(held[1])) return 'off';
   return carries(c, ids) ? 'pack' : null;
 }
 const carries = (c: Character, ids: string[]) => ids.includes(c.weapon) || (!!c.offHand && ids.includes(c.offHand.id)) || packOf(c).some((x) => ids.includes(x.item || x.id) && x.qty > 0);
-/** What a holder holds (Classes 3.0 section 6: the predicates self_holds / self_lacks_gear): a door's focus (door:
- * evoker, emanator) or an item (item: an id) in a hand (slot hand) or anywhere on the person (slot person: a hand or
- * the pack). THE one test of "a focus in hand": hasEvoker and hasEmanator are it. */
-export interface HoldSpec { slot?: 'hand' | 'person'; door?: 'evoker' | 'emanator'; item?: string }
-/** The doors whose focus `holds` knows (FOCUS_IDS). */
-export const FOCUS_DOORS = Object.keys(FOCUS_IDS) as ('evoker' | 'emanator')[];
+/** What a holder holds (Classes 3.0 section 6: the predicates self_holds / self_lacks_gear): a door's focus (door: a
+ * focus kind, evoker, emanator or attuner, or the door it opens, a skill id: brain_power, will_power, empathy; rules
+ * 1.33) or an item (item: an id) in a hand (slot hand) or anywhere on the person (slot person: a hand or the pack).
+ * THE one test of "a focus in hand": hasEvoker, hasEmanator and hasAttuner are it. */
+export interface HoldSpec { slot?: 'hand' | 'person'; door?: string; item?: string }
+/** The doors whose focus `holds` knows: each kind's name and the skill it opens (FOCUS_IDS, FOCUS_DOOR). */
+export const FOCUS_DOORS: string[] = [...FOCUS_KINDS, ...FOCUS_KINDS.map((k) => FOCUS_DOOR[k])];
 /** Does this character hold it (see HoldSpec)? */
 export function holds(c: Character, o: HoldSpec): boolean {
-  const ids = o.door ? FOCUS_IDS[o.door] || [] : o.item ? [o.item] : [];
+  const k = o.door ? kindOfDoor(o.door) : null, ids = o.door ? (k ? FOCUS_IDS[k] : []) : o.item ? [o.item] : [];
   if (!ids.length) return false;
   if ((o.slot || 'hand') === 'person') return carries(c, ids);
   return inHands(c).some((x) => ids.includes(x));
@@ -772,12 +786,18 @@ export const hasEmanator = (c: Character) => holds(c, { slot: 'hand', door: 'ema
 export const carriesEvoker = (c: Character) => carries(c, FOCUS_IDS.evoker);
 /** An Emanator anywhere (a hand or the pack): it keeps its MP. */
 export const carriesEmanator = (c: Character) => carries(c, FOCUS_IDS.emanator);
+/** Rules 1.33: an Attuner in a hand (Bonds and Tending). */
+export const hasAttuner = (c: Character) => holds(c, { slot: 'hand', door: 'attuner' });
+/** Rules 1.33: an MP focus (items.json focus.fuel mp: an Emanator or an Attuner) in a hand: MP can be spent through it. */
+export const hasMpFocus = (c: Character) => MP_FOCUS_KINDS.some((k) => holds(c, { slot: 'hand', door: k }));
+/** Rules 1.33: an MP focus anywhere on the person: it keeps the character's MP (MP is the Soul's fuel, whichever glove). */
+export const carriesMpFocus = (c: Character) => MP_FOCUS_KINDS.some((k) => carries(c, FOCUS_IDS[k]));
 /** Why a character can't cast now, by focus (null: it can). */
 export const focusWhy = (c: Character, kind: 'evoker' | 'emanator'): string | null => ((kind === 'evoker' ? hasEvoker(c) : hasEmanator(c)) ? null : kind === 'evoker' ? NEEDS_EVOKER : NEEDS_EMANATOR);
 export const NEEDS_EVOKER = 'Needs an Evoker in hand.', NEEDS_EMANATOR = 'Needs an Emanator in hand.';
 export const coresCarried = (c: Character) => packOf(c).filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + x.qty, 0);
-/** MP now: the Emanator's charge (full when first carried); no Emanator, no MP. */
-export const mpNow = (c: Character) => (carriesEmanator(c) ? Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
+/** MP now: the MP focus's charge (an Emanator or, rules 1.33, an Attuner; full when first carried); no MP focus, no MP. */
+export const mpNow = (c: Character) => (carriesMpFocus(c) ?Math.min(maxMp(c), c.mp ?? maxMp(c)) : 0);
 /** Charge left in the core loaded in the Evoker (a fresh core holds 10). */
 export const evoChargeNow = (c: Character) => (carriesEvoker(c) ? c.evoCharge ?? 10 : 0);
 /** The modifier on a skill CHECK (rules 1.13): a gamma-slot skill adds its full points, every other skill points − 1;

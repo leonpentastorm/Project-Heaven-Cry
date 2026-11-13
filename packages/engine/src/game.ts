@@ -6,7 +6,7 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
@@ -1149,7 +1149,7 @@ export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?
     if (c.hp > 0 || kind === 'long') { c.hp = Math.min(max, Math.max(c.hp, 0) + back); if (c.hp > 0) c.downedFails = 0; }
     if (g.story.heat) g.story.heat[c.id] = 0;
     const m = g.story.magic?.[c.id]; if (m) { m.flux = 0; m.strain = 0; m.held = null; }
-    if (kind === 'long') { if (carriesEmanator(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
+    if (kind === 'long') { if (carriesMpFocus(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
   }
   push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full. Day ' + dayOf(g) + '.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
 }
@@ -1160,7 +1160,7 @@ export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?
 function beginSession(g: GameState) {
   g.sessionN = (g.sessionN || 0) + 1; g.restN = 0;
   const sh: any = emitStory(g, 'session_heal', { g, mult: {} as Record<string, { hp?: number; mp?: number }> });
-  for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (carriesEmanator(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); }
+  for (const c of Object.values(g.characters)) { const m = sh.mult[c.id] || {}; c.echo = 1; c.hp = Math.max(c.hp, Math.round(c.hp + (maxHp(c) - c.hp) * (m.hp ?? 1))); if (carriesMpFocus(c)) c.mp = Math.round((c.mp ?? 0) + (maxMp(c) - (c.mp ?? 0)) * (m.mp ?? 1)); restockResources(c); }
   emitStory(g, 'session_start', { g, n: g.sessionN });
 }
 /** Days pass (rules 1.6.1, item 709): the Narrator's turn field days, a whole number from 1 to 3650 (clamped; rounded;
@@ -3157,7 +3157,7 @@ function sbRefill(c: Character) {
   if (w?.ammo) { const r = pack.find((it) => it.calibre === w.ammo); const want = 3 * (w.magazine || 6); if (r) r.qty = Math.max(r.qty, want); else pack.push(roundsOf(w.ammo, want)); }
   if (carriesEvoker(c)) { c.evoCharge = CORE_CHARGE; const core = pack.find((it) => (it.item || it.id) === 'standard_core'); if (core) core.qty = Math.max(core.qty, 4); else pack.push({ id: 'standard_core', item: 'standard_core', name: ITEM.standard_core?.name || 'Standard mana core', qty: 4, kind: 'ammo' }); }
   c.pack = pack;
-  if (carriesEmanator(c)) c.mp = maxMp(c);
+  if (carriesMpFocus(c)) c.mp = maxMp(c);
   c.stims = Math.max(c.stims, 3);
   if (c.weaponState?.dur != null) c.weaponState = { ...c.weaponState, dur: maxDurOf(c.weapon, c.weaponState.rarity) };
 }

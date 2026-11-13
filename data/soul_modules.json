@@ -24,12 +24,12 @@
     "no_emanator_strain": 2,
     "free_pumps": [
       {
-        "empathy": 3,
+        "will_power": 3,
         "pumps": 1
       }
     ],
     "provisional": true,
-    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP, and a tenth of the Begin's MP for each stage it reaches) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1.0, ×1.2, ×1.4 or ×1.6 for stages 0 to 4: every plain Pump adds +0.2, and a feeling adds its own step instead. If you are still holding it at the start of your next turn it swells: +1 stage for no AP and no MP, and +1 Strain (+2 in Flooded air); from Empathy 7 a swell adds no Strain. One Pump a turn can be free of AP (its MP is still owed), never more: your first Pump of a fight, or from Empathy 3 one every round. Revert Pump (0 AP) undoes the last Pump you made this turn.",
+    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP, and a tenth of the Begin's MP for each stage it reaches) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1.0, ×1.2, ×1.4 or ×1.6 for stages 0 to 4: every plain Pump adds +0.2, and a feeling adds its own step instead. If you are still holding it at the start of your next turn it swells: +1 stage for no AP and no MP, and +1 Strain (+2 in Flooded air); from Will Power 7 a swell adds no Strain. One Pump a turn can be free of AP (its MP is still owed), never more: your first Pump of a fight, or from Will Power 3 one every round. Revert Pump (0 AP) undoes the last Pump you made this turn.",
     "first_pump_free": true,
     "free_pumps_per_turn": 1,
     "swell_no_strain": {

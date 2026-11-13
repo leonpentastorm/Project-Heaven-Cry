@@ -12,7 +12,9 @@ import { say } from '../log';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import type { ActionArgs, ActionDef, ActionPreview, ActionScope, Holder, ItemInfo, ToggleDef, UseScope } from './types';
-import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isItemOp } from './hooks';
+import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isItemOp, charOfUnit } from './hooks';
+import { FEELING, feelingsOf } from '../feelings';
+import { unitSees } from '../combat';
 import { keyOf, rawItem } from './collect';
 import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
@@ -45,7 +47,9 @@ const TARGETING = (e: any): ActionDef['target'] => {
 /** The words a reach's side takes (a target relation to the holder). */
 export const REACH_SIDES = ['foe', 'ally', 'side', 'any'];
 /** The fields of a grant_action's `reach`. */
-export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied'];
+export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied', 'beyond'];
+/** Rules 1.33: the surfaces a grant_action's `scope` may name (default: combat and the area map). */
+export const GRANT_SCOPES = ['combat', 'world', 'story'];
 /** The prayers a grant_action may be. */
 export const PRAYER_KINDS = ['whisper', 'hymn'];
 /** faith.ts registers the prayer door here as it loads (this file can't import it: its load order places its hooks). */
@@ -60,7 +64,10 @@ export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): str
   const side = reach.side || 'any';
   if (side === 'foe' && t.side === u.side) return 'Pick an enemy.';
   if ((side === 'ally' || side === 'side') && t.side !== u.side) return 'Pick an ally.';
-  if (typeof reach.tiles === 'number' && distK(u.pos, t.pos) > reach.tiles) return 'Out of range (' + reach.tiles + (reach.tiles === 1 ? ' tile).' : ' tiles).');
+  // rules 1.33: reach.beyond (a tie kind): a unit tied to the holder by it is in reach at any range the holder itself sees
+  const far = !!reach.beyond && !ifFails(h, { target_tied: reach.beyond }, t);
+  if (far && !unitSees(cb, u, t.pos)) return 'Not in sight: a Bond carries it only where you can see.';
+  if (!far && typeof reach.tiles === 'number' && distK(u.pos, t.pos) > reach.tiles) return 'Out of range (' + reach.tiles + (reach.tiles === 1 ? ' tile).' : ' tiles).');
   if (reach.sight && t.side !== u.side && ifFails(h, { target_sight: ['seen'] }, t)) return 'You can\'t see them.'; // the holder's side sees it (P7)
   if (reach.tied && ifFails(h, { target_tied: reach.tied }, t)) return t.name + ' isn\'t tied to you.'; // P8
   if (reach.if) { const k = ifFails(h, reach.if, t); if (k) return 'Not on ' + t.name + ' (' + human(k) + ').'; }
@@ -79,17 +86,17 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     // a door verb's nested item ops are its own effects, run once it succeeds; the rest run by the generic runners
     const mine = verb ? effs.filter((e) => isItemOp(e)) : [], rest = verb ? effs.filter((e) => !isItemOp(e)) : effs;
     const d: ActionDef = {
-      id, label, scope: per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: (h) => apFromData(apRaw, h.u), uses: { per, n }, target,
+      id, label, scope: Array.isArray(g.scope) ? g.scope.filter((x: string) => GRANT_SCOPES.includes(x)) : per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: (h) => apFromData(apRaw, h.u), uses: { per, n }, target,
       run: (h, args, rng) => {
         if (g.prayer && h.cb && h.u && PRAYER && !PRAYER.pray(h.cb, rng, h.u, g.prayer, info.name, g.tier)) return null; // no answer: the AP and the slot are spent
         const t = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) || null : null;
         if (rest.length || !mine.length) defaultRun(h, rest, args, rng);
-        if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null });
+        if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null, ...(args.choice != null ? { choice: args.choice } : {}) });
         return null;
       },
     };
     if (g.res) d.res = { ...g.res };
-    if (typeof reach?.tiles === 'number') d.range = reach.tiles;
+    if (typeof reach?.tiles === 'number' && !reach.beyond) d.range = reach.tiles; // (reach.beyond: the reach decides, not a plain range)
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
     if (g.if || g.prayer) d.available = (h) => {
       if (g.if && h.u && h.cb) { const k = ifFails(h, g.if); if (k) return 'Not now (' + human(k) + ').'; }
@@ -226,6 +233,7 @@ function pickOptions(h: Holder, d: ActionDef): { id: string; label: string }[] {
   if (p === 'words') { const w = h.u?.mg?.words || [...new Set([...(c?.sigils || [])])]; return w.map((x: string) => ({ id: x, label: x.toUpperCase() })); }
   if (p === 'designs') return (c?.outbursts || []).map((x) => ({ id: x.id, label: x.name }));
   if (p === 'gamma') return SKILLS.filter((s: any) => s.slot === 'gamma').map((s) => ({ id: s.id, label: s.name }));
+  if (p === 'felt') return feelingsOf(c || charOfUnit(h.u)).map((x) => ({ id: x, label: FEELING[x]?.name || human(x) })); // rules 1.33: Inspire's felt feelings
   if (p === 'squad') { const g = h.g ?? boundGame(); return (Object.values(g?.characters || {}) as Character[]).filter((x) => x.id !== c?.id && !x.dead).map((x) => ({ id: x.id, label: x.name })); }
   return [];
 }
