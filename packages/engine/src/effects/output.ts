@@ -259,7 +259,7 @@ export function gatePct(of: string): number { const v = Number(MEND_RULES.gate?.
 export function mendGate(spec: AmountSpec, target: Unit, by: Unit | null = null): number {
   const pct = spec.min_pct ?? profileOf(spec.profile).min_pct ?? 0; if (!(pct > 0)) return 0;
   const counted = spec.gate_hp === null ? target.maxHp : Math.min(target.maxHp, spec.gate_hp ?? (MEND_GATE.hp != null ? MEND_GATE.hp * scaleOf(by?.level ?? target.level) : Infinity));
-  return Math.ceil(pct * counted); // the gate rounds up
+  return Math.ceil(pct * counted - 1e-9); // the gate rounds up (a whole number stays whole: 0.2 × 1.6 × 125 is 40, not 41)
 }
 /** An amount with the gate applied after its Stat × Level product, before the own multipliers (and the plus). */
 function gatedRaw(spec: AmountSpec, by: Unit | null, ctx: AmountCtx, gate: number): number {

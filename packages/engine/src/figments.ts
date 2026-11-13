@@ -21,7 +21,7 @@ import { register, statQuery, charOfUnit, uses } from './effects';
 import { onHook } from './effects/hooks';
 import { registerPickList } from './effects/actions';
 import { price, resGive } from './effects/cost';
-import { levelFactor } from './effects/output';
+import { levelFactor, statTerm } from './effects/output';
 import { spawnOwned, unmakeOwned, ownedBy, ownerOf, addOwnedGate } from './owned';
 import { condOn, saveAgainst } from './magic';
 import { canStand, tileOf } from './kit';
@@ -115,7 +115,8 @@ export const figmentCharge = (form: string, traits: string[]): number => Math.ma
  * put in here). */
 export function figmentBlock(owner: Unit, form: string, traits: string[], name?: string): any {
   const f = FORM[form], row: any = enemyLevelRow(owner.level ?? 1);
-  const hpMult = traits.reduce((m, t) => m * (FIG_TRAIT[t]?.hp_mult ?? 1), 1) * (FIG.level.hp as string[]).filter((k) => k !== 'hp_mult').reduce((m, k) => m * (row[k] ?? 1), 1);
+  const hpMult = traits.reduce((m, t) => m * (FIG_TRAIT[t]?.hp_mult ?? 1), 1) * (FIG.level.hp as string[]).filter((k) => k !== 'hp_mult').reduce((m, k) => m * (row[k] ?? 1), 1)
+    * (FIG.level.hp_stat ? statTerm(String(FIG.level.hp_stat), [], [visPoints(owner)]) : 1); // rules 1.36: a Figment's HP follows its maker (Visualization's points, through the profile figments.json level.hp_stat names)
   const lasting = traits.some((t) => FIG_TRAIT[t]?.upkeep === 0);
   return { ...f, name: name || f.name, hp: f.hp * hpMult, defense: typeof f.defense === 'number' ? f.defense : 0, armour: f.armour, attack_bonus: 0,
     movement: (typeof f.movement === 'number' ? f.movement : owner.movement) + traits.reduce((s, t) => s + (FIG_TRAIT[t]?.tiles || 0), 0),

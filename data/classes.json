@@ -1326,7 +1326,7 @@
               "amounts": {
                 "cap": {
                   "kind": "heal",
-                  "base": 15.5,
+                  "base": 6.5,
                   "profile": "tend",
                   "provisional": true
                 }

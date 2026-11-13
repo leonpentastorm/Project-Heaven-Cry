@@ -21,7 +21,7 @@ import { runPerkAction, perkActionId } from '../../src/effects/actions';
 import { acted } from '../../src/combat';
 import { tie } from '../../src/kit';
 import { ledgerCap } from '../../src/character';
-import { soldierTurnAt, yardOf } from './refit-measure';
+import { soldierTurnAt, yardOf, refHpAt } from './refit-measure';
 
 const ON = !!process.env.TEND_MEASURE, N = Math.max(1, Number(process.env.TEND_N) || 8);
 const LEVELS = [1, 5, 10, 20];
@@ -49,7 +49,7 @@ function healTurn(level: number, allin: boolean, mender: boolean): number {
   const hp0 = r.allies.reduce((t, a) => t + a.hp, 0);
   if (mender) r.act('class:medic.triage', { actionId: 'triage', targetId: r.allies[0].id });
   for (const a of mender ? r.allies.slice(1) : r.allies) { if (r.me.ap >= 2) r.act('verb:tend.mend', { targetId: a.id }); }
-  return Math.round(((r.allies.reduce((t, a) => t + a.hp, 0) - hp0) / soldierTurnAt(level)) * 100);
+  return Math.round(((r.allies.reduce((t, a) => t + a.hp, 0) - hp0) / refHpAt(level)) * 100); // rules 1.36: percent of the reference HP
 }
 /** A turn of pistol shots at a Bonded Soldier: expected damage (the preview's chance x damage after armour). */
 function shotTurn(level: number, allin: boolean, mender: boolean, bonds: 'solo' | 'squad', ledger = false): number {

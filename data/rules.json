@@ -1741,6 +1741,15 @@
         "provisional": true,
         "note": "rules 1.34: an attack made through a Figment (its owner's level; the Figment factor is output.factors.figment)"
       },
+      "figment_hp": {
+        "k": 0.45,
+        "attr": 0,
+        "skill": 0.1,
+        "level": null,
+        "pair": "figment_hp",
+        "provisional": true,
+        "note": "rules 1.36: the HP of a Figment, a share of its form's, by its maker's Visualization (k x (1 + skill x points)); its level growth is the enemy table's hp_mult (figments.json level.hp). The dial of the Figments line (balance.ceilings.figments)"
+      },
       "repair": {
         "k": 1.392,
         "attr": 0.06,
@@ -1838,6 +1847,12 @@
         ],
         "skills": [
           "proficiency"
+        ]
+      },
+      "figment_hp": {
+        "attrs": [],
+        "skills": [
+          "visualization"
         ]
       }
     },
@@ -2306,7 +2321,7 @@
     "operative_cap_add": 1,
     "operative_start": 1,
     "ambush_bonus": 0.5,
-    "per_point": 0.15,
+    "per_point": 0.7,
     "marked_bonus": 0.15,
     "door_gains_per_turn": 2,
     "provisional": true

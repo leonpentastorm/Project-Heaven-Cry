@@ -31,6 +31,7 @@ import { tagChip } from './sight';
 import { DRAW_MS, brassOf, ejectShell, whoOf } from './brass';
 import { physBeat, NAME_DY, NAME_RISE } from './physical';
 import * as P from './rangedParts';
+import { fmtFloat, fmtNum } from '../numbers'; // rules 1.36: five-digit numbers (the level scale)
 
 const { WHITE, HP, MUTED } = P;
 const HOT = '#FFF3C4';
@@ -725,7 +726,7 @@ export function rangedHandlers(K: RangedKit, bases: Record<string, Handler>): Re
         coverHit(e.at, shotAngle(r, e.at), e.what, big);
         if (flush) after(() => P.debris(p, shotAngle(r, e.at) + 0.5, P.coverMaterial(e.what).tint, big * 0.85), 70); // heavier: a second burst
       }
-      if (p && Number(e.dmg) > 0 && !e.broken) word('COVER −' + e.dmg + (Number.isFinite(e.max) && Number.isFinite(e.hp) ? ' · ' + e.hp + '/' + e.max : ''), p, MUTED, 0.6, { delay: 120 });
+      if (p && Number(e.dmg) > 0 && !e.broken) word('COVER −' + fmtFloat(e.dmg) + (Number.isFinite(e.max) && Number.isFinite(e.hp) ? ' · ' + fmtNum(e.hp) + '/' + fmtNum(e.max) : ''), p, MUTED, 0.6, { delay: 120 });
       base(e);
     },
 
