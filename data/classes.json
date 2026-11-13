@@ -1492,6 +1492,11 @@
             }
           ]
         }
+      },
+      "resource": {
+        "id": "ledger",
+        "max": "the Ledger's cap",
+        "rule": "The Ledger counts the healing and shielding you give (to allies and to yourself) up to its cap, and your next damaging blow on an enemy spends it as extra damage. MP is the fuel of every Tending verb and move, paid through the Attuner. Supplies are no longer the class's: stims and kits are everyone's gear."
       }
     },
     {

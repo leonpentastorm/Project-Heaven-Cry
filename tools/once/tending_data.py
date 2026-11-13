@@ -386,7 +386,7 @@ for x in pool:
     if x.get("origin") == "bard" and x.get("id") == "inspire": x["origin_rank"] = "II"
     if x.get("origin") == "bard" and x.get("id") == "mend": x["origin_rank"] = "III"
 b = next(x for x in cl["base"] if x["id"] == "bard")
-b.pop("resource", None)
+b["resource"] = {"id": "ledger", "max": "the Ledger's cap", "rule": "The Ledger counts the healing and shielding you give (to allies and to yourself) up to its cap, and your next damaging blow on an enemy spends it as extra damage. MP is the fuel of every Tending verb and move, paid through the Attuner. Supplies are no longer the class's: stims and kits are everyone's gear."}
 b["resources"] = ["mp", "ledger"]
 b["ranks"] = {"I": {"threshold": "gained", "moves": [{"ref": "medic.triage"}, LEDGER]},
               "II": {"threshold": 5, "moves": [{"ref": "bard.inspire"}, WEIGHT]},
