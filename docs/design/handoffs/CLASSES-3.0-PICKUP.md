@@ -8,7 +8,7 @@
 > covers 0.26.0 only; Survival is not deployed without a new word.
 > **Survival branches are held OFF this branch until 0.26.0 is live** (the picker defaults to Survival with nothing
 > behind it): step 1 (mode picker, run state) is `worktree-agent-aac60994cdd4d1f97` (also `wip/…` on the remote),
-> hand-off `survival-step-1.md` on it; step 2 (path map) is in flight. Merge them here only after the deploy.
+> hand-off `survival-step-1.md` on it; step 2 (path map) is `worktree-agent-a620bcbe84dc17ce1` (also `wip/…`), hand-off `survival-step-2.md`: it changed rule 9 (c)(d) to "on at least one route" (accepted by the lead; bring survival-spec.md in line) and measured 4.6 fights a path against the spec's 5 to 8 (raise the fight weight in step 3). Merge them here only after the deploy.
 
 Written 13 Nov 2026 by the lead. **If the lead session is gone, an Opus session reads this file top to bottom and
 continues from section 4.** Keep it current: tick a step in the same commit that finishes it.
