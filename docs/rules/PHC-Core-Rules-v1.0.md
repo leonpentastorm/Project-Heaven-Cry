@@ -4997,6 +4997,12 @@ PROVISIONAL (items 2500 onward).
    one-handed light blade (Dexterity, Agility; light and edge), 26 damage, 1.8 kg, 2,400 credits, Will Power 3, counts
    as an Emanator; each hit adds 1 to the ambient mana as every mana arm's does; no weapon skill of its own, no
    technique lent, in no loot table (the Evoker blade, its twin, is in none).
+3. **The Mender's steady offence is fitted** by its named dial, `tending.json bond.per_bond` 0.10 → **0.05** (+5% damage
+   for each Bond held, anyone with an Attuner in hand): the Mender all in measured 79 solo and 84 in a squad against its
+   line of 70 (rules 1.33), and measures 68 and 71 after (8 fights a cell for the yardstick). The door user all in
+   measures 67 (its line 61, +10%: the door and the class differ only by the Mender's moves, which the steady line does
+   not use). The balance contract's guard now holds the Mender's healing turn, the door's Tending turn and the Mender's
+   offence (`balance.ceilings.tending_turn`, `mender_offence`).
 
 ## Maps (rules 1.16)
 
@@ -8091,3 +8097,4 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2501. **The long rifle's Mag Dump has two rolls (rules 1.38):** its 5 rounds were one roll under "one for every 3 left" and are two under "one for every 4 or part": the one magazine whose rolls changed (golden lines `tech/mag_dump/long_rifle/*` and the optimised gun's `L6` to `L20` Mag Dump lines). Kept as the ruling reads; Leon to confirm. PROVISIONAL.
 2502. **A focus is any item or weapon with a `focus` block (rules 1.38):** `FOCUS_IDS` is built from data (items.json and weapons.json); the four mana arms that counted as a focus by a list in code carry `focus: {door, fuel}`; the validator refuses a `counts_as_<kind>` property with no block of that door (the Spellslinger's pistol counted as an Evoker in code with no property: it keeps that by its block). PROVISIONAL.
 2503. **The Emanator katana built (rules 1.38; numbers as item 2205):** `weapons.json emanator_katana`: mana arm, 1H, 26 physical, 1.8 kg, 2,400 credits, Will Power 3, light and edge (Dexterity, Agility), `focus` Will Power (fuel MP). No `grants`, no `teaches`, no loot table. Lead's reading where rules 1.35 was silent (the light-blade props and no lent technique, as its twin). PROVISIONAL.
+2504. **`tending.json bond.per_bond` 0.05 (rules 1.38; was 0.10, rules 1.33):** the Mender's steady offence 68 solo / 71 squad against 70 (measured, 8 yardstick fights a cell, levels 1 / 5 / 10 / 20: solo 81 / 67 / 60 / 63, squad 81 / 72 / 63 / 67); the door all in 67 against its 61. PROVISIONAL.

@@ -18,7 +18,7 @@
     "share": 0.2,
     "hit": 3,
     "echo": 0.2,
-    "per_bond": 0.1,
+    "per_bond": 0.05,
     "save_elite": 2,
     "save_boss": 5,
     "boss_rounds": 3,
@@ -138,7 +138,7 @@
             "per": [
               {
                 "of": "ties:bond",
-                "value": 0.1
+                "value": 0.05
               }
             ]
           }
@@ -275,7 +275,7 @@
         "share": 0.2,
         "hit": 3,
         "echo": 0.2,
-        "per_bond": 0.1,
+        "per_bond": 0.05,
         "through": 1.2,
         "down_mp": 10,
         "save_elite": 2,

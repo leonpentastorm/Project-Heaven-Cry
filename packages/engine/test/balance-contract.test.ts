@@ -13,6 +13,7 @@ import { describe, it, expect } from 'vitest';
 import { RULES, SIGIL, MODULE, WEAPON, ENEMY, profileOf, statTerm } from '../src';
 import { measure, yardOf, soldierTurnAt, refHpAt } from './balance/refit-measure';
 import { inventory } from './balance/heal-measure';
+import { healTurn, shotTurn } from './balance/tending-measure';
 
 const B: any = (RULES as any).balance, C = B.ceilings, TOL = B.tolerance, LEVELS: number[] = B.levels;
 const N = 6; // fights a cell: deterministic (seeded), so the band only has to hold the noise of a small sample once
@@ -71,6 +72,19 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
     }
     for (const id of ['weapon', 'sigil', 'soul', 'elemental', 'blessing', 'flat']) expect(profileOf(id).floor, id + ': a damage profile has no floor').toBeUndefined();
   });
+
+  it('played (rules 1.38): the Mender all in: its healing turn on tending_turn, a door user under it; its steady offence (solo and squad) on mender_offence', () => {
+    const T = C.tending_turn, O = C.mender_offence, bad: string[] = [], rows: string[] = [];
+    const heal = LEVELS.map((lv) => healTurn(lv, true, true)), door = LEVELS.map((lv) => healTurn(lv, true, false));
+    const off = LEVELS.map((lv) => { const y = yardOf(lv, N); return (shotTurn(lv, true, true, 'solo') / y * 100 + shotTurn(lv, true, true, 'squad') / y * 100) / 2; });
+    const chk = (what: string, xs: number[], line: number, dial: string) => {
+      const mean = xs.reduce((a, b) => a + b, 0) / xs.length; rows.push(what + ' ' + xs.map((x) => Math.round(x)).join(' / '));
+      if (mean < line * (1 - TOL.mean) || mean > line * (1 + TOL.mean)) bad.push(what + ': mean ' + Math.round(mean) + ' against ' + line + ' ± ' + TOL.mean * 100 + '% (dial: ' + dial + ')');
+      xs.forEach((x, i) => { if (x < line * (1 - TOL.level) || x > line * (1 + TOL.level)) bad.push(what + ' at level ' + LEVELS[i] + ': ' + Math.round(x) + ' (dial: ' + dial + ')'); });
+    };
+    chk('Mender healing turn (% of R)', heal, T.allin, T.dial); chk('door Tending all in', door, T.door_allin, T.dial); chk('Mender offence', off, O.allin, O.dial);
+    expect(bad, rows.join('\n')).toEqual([]);
+  }, 600000);
 
   it('static: an area deals each target no more than its single-target worth plus half for each extra target it is expected to catch', () => {
     const A = B.yardsticks.area, share = A.extra_target_share, worth = (n: number) => 1 + share * (n - 1);
