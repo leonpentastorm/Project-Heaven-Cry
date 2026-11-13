@@ -1415,7 +1415,7 @@ An enemy has no skill points. A tier lists the Calls it has and one level that s
 | Fear | Heart | can't move toward or attack the source; −2 to hit anyone else | 2 rounds |
 | Shaken | Heart | −2 on Heart saves and social checks | 3 rounds, or the rest of the scene out of combat |
 | Grappled | Body | held by an adjacent enemy: you can't move; −2 to attacks against anyone but the grappler. Break free: 2 AP, d20 + the better of your Raw Power and Athletics modifiers against the grappler's | until you break free, or the grappler is down or not adjacent |
-| Suppressed | Body | −1 AP and no reactions (lighter than Pinned; item 83) | 1 round |
+| Suppressed | Body | −1 AP and no reactions (lighter than Pinned; item 83) *(Superseded by rules 1.28: no attacking or moving reactions; protective ones still work)* | 1 round |
 | Taunted | Heart | your attacks must go at the one who taunted you while you can see them | 1 round, or until you attack them |
 | Commanded | Heart | you obey one short order on your next turn. Against an enemy the engine runs the order from a menu: halt, hold (no attacks), drop (Disarmed), kneel (prone), flee; anything else goes to the Narrator *(the Sigil word COMMAND has its own four orders: halt, kneel, drop your weapon, or a move of up to 3 tiles (rules 1.4))* | 1 round |
 | Puppeted | Brain | the caster's player runs your next turn (your AP); you can't be made to harm yourself | 1 round |
@@ -2304,7 +2304,7 @@ Written 7 Nov 2026 so every perk, trait and class move has the base rules it sta
 
 **Guns that can't jam.** Only weapons with a Heat limit jam. Bows, crossbows, the flamer, the breacher tube and the core rifle build no Heat; a natural 1 is a fumble (−1 AP next turn).
 
-**Reactions.** One per round, counted (an opportunity attack, an Overwatch shot, a perk reaction). Items may grant more. A Suppressed or Stunned unit has none. Overwatch may hold more than one shot when a class move says so; all of them fire on the one reaction.
+**Reactions.** One per round, counted (an opportunity attack, an Overwatch shot, a perk reaction). Items may grant more. A Suppressed or Stunned unit has none. *(Superseded by rules 1.28: a reaction never triggers a reaction; Suppressed forbids only attacking and moving reactions)* Overwatch may hold more than one shot when a class move says so; all of them fire on the one reaction.
 
 **Moving, tile by tile.** A move is walked one tile at a time. Opportunity attacks and Overwatch are checked at every step, so Overwatch fires the moment you come into its line, not only where you stop. A walk can stop early (a trap, a reaction that Downs or Pins you, a rule that says stop); the tiles you paid for and didn't walk stay in your turn's bank. **Sprint is once per turn.** Rules can open paths: run along a wall or over a hole, jump one blocked tile (2 tiles of movement), pass through an ally, ignore rough ground. A unit avoids the traps its side knows about: the enemy knows its own traps, you know the ones you set or spotted.
 
@@ -4149,6 +4149,38 @@ The pair of rules 1.23 (the tank in front, a Soul healer behind it healing every
 2. The normal share does not hold the ratio of 1.25 at level 20 (it catches all in by level 13, as every system does: rules 1.26 section 2).
 3. The all-in Soul healer of the simulator heals 2 to 8 times a fight under fire against 8 to 10 for the normal share (its policy runs short of MP or reach under fire); not investigated here.
 
+## Rules revision 1.28: the engine's general primitives (Classes 3.0, step 1)
+
+Built on 13 Nov 2026 for Class Roster Revision 4 ("Classes 3.0"; `docs/design/rev4-primitives.md`). It overrides every body
+line on reactions and on Suppressed that says otherwise (rules 1.3 "Reactions", the condition table, items 83 and 89).
+
+### 1. Two rules (Leon, 13 Nov 2026)
+
+1. **A reaction never triggers a reaction.** While a reaction resolves, no other reaction can be made by anyone: no
+   Riposte of a Riposte, no Parry or Riposte of an opportunity attack's blow, no Interpose of an Overwatch shot; a
+   reaction's move (Duck and Roll's step) draws no opportunity attack and sets off no held shot.
+2. **Suppressed never blocks a protective reaction.** Every reaction is one of three kinds: it **attacks** (an
+   opportunity attack, a held shot of any kind, Riposte, Keep Back, Catch, Dance of Iron, Heart Overwatch, a Call made
+   as a reaction), it **moves** you (Duck and Roll, a dive clear) or it **protects** (Parry, Shield Wall, Interpose, Shrug
+   It Off, Anchor, a Heartbinder's Share). The condition Suppressed and Pressure's Suppressed state (rules 1.12) are one
+   rule: they forbid attacking and moving reactions and never protective ones. Stunned, Downed and Dread underfoot still
+   leave no reaction at all.
+
+Also, with them: **one event, one reaction a unit** (a unit with two reactions answers a single attack, step or hit
+once); the round's count is the counters' cell of scope `reaction` (on the area map it lives in the story, so a unit
+rebuilt there gets no fresh reaction each action).
+
+### 2. The primitives (no rule changes)
+
+The engine gained, generally and once, what the Revision 4 systems will stand on; none of it changes play. **acted**,
+a trigger after a unit's own action succeeds (Analyze fires its own); **number blocks** (`{base, per: [{of, value}],
+min, max}`) for any numeric field of an item op, counting `res:`, `event:`, `self:`, `actor:` and `target:` sources,
+and `"all"` / `"zero"` for a resource; **react()**, the one door of every reaction (above); **conditions are items**
+(a condition row's triggered effects run for its bearer, its stats answer); the unit set **targets** on any op; the
+**sight words** seen, unseen, in view, out of view (`self_sight`, `actor_sight`, `target_sight`, stat `always_seen`,
+a unit's `eyes`); and the closed-list rows `spot`, `by_cover`, `patron`, `via`, `nonlethal`, `heal_kind` and the
+resource rows (Pressure, MP). How each is written: `docs/design/handoffs/classes-3.0-step-1a.md`. Items 1750 to 1756.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -4689,13 +4721,13 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 **Added in rules 1.3: the shared rules for perks, traits and classes (7 Nov 2026, provisional, settle in playtest)**
 
 82. **Conditions tick at the end of the bearer's turn**, a condition landed on your own turn loses no round that turn, and conditions keep their source. Durations follow the conditions table: Pinned 1 round (until the end of your next turn), Blinded 1, Shaken 3, Confused 1, Silenced 1, Burning until put out (10 a turn, ignoring armour). Shaken and Confused no longer touch the attack roll; Pinned is −2 and Blinded −4 to hit. The Right Brain Debuff is a Brain condition. Stunned loses the whole next turn (a Mana Short now Stuns); a fumble stays −1 AP.
-83. **Suppressed** (plan 6a-13, the fix for Spray and Pray's soft lock): −1 AP and no reactions, a Body save, 1 round, no stacking. **Withdrawing** +2 Defense for 1 round. **Weapon lowered**: the light Disarmed, 1 AP to raise.
+83. **Suppressed** (plan 6a-13, the fix for Spray and Pray's soft lock): −1 AP and no reactions, a Body save, 1 round, no stacking. *(Superseded by rules 1.28: no attacking or moving reactions, item 1751)* **Withdrawing** +2 Defense for 1 round. **Weapon lowered**: the light Disarmed, 1 AP to raise.
 84. **Commanded against enemies** runs from a menu (halt, hold, drop, kneel, flee); **Puppeted** enemies are run by the caster's player for one turn, with no self-harm.
 85. **Target-specific damage bonuses add, capped at ×2.0** (plan 6a-1: True Name + Judgement Day + Case Closed + Weak Point reached about ×3.7 on one boss). Self multipliers still multiply.
 86. **Derived damage stats now run:** Critical, Elemental and Ambush damage taken (each capped at 60%), Healing and shields received (+10% × Sensory), the air's Healing given multiplier on magical healing.
 87. **Special ammo:** the five ammo types' effects as listed, one type per magazine, special rounds bought or found as items (ammo_*) and loaded out of combat; Enhanced and mana-arm hits put +1 on the meter.
 88. **Recoil runs** (−1 a shot after the first, less floor(Dexterity ÷ 2), halved braced or Emplaced, none in a volley or a reaction). Emplaced: +2 to attacks with the weapon.
-89. **Reactions are counted** (1 a round; items add; none while Suppressed or Stunned); Overwatch can hold several shots on one reaction (class moves).
+89. **Reactions are counted** (1 a round; items add; none while Suppressed or Stunned *(Superseded by rules 1.28: Suppressed forbids attacking and moving ones only, item 1751)*); Overwatch can hold several shots on one reaction (class moves).
 90. **The walk is tile by tile:** opportunity attacks and Overwatch on every step; a walk cut short keeps its unwalked tiles in the bank; **one Sprint per turn for everyone** (plan 6a-12, the Drill Echo fix). Path options (wall running, a 2-tile jump, passing allies, rough ground) are opened by items. Traps a side set itself or spotted are known to that side only.
 91. **Hidden in a fight:** Hide is 2 AP, only out of every enemy's sight; the ambush (crit 19–20, × Ambush) applies to the first attack of each time you hide (plan 6a-8); silent weapons don't reveal; spotting at the end of every turn (d20 + notice, enemies +0/+2/+4/+6 by tier, against 10 + Ingenuity modifier + Stealth); adjacency reveals. *Still to do (lane B): the stay-hidden TN rising +2 per success for Shadow Step II.*
 92. **Kinds and tags** on every unit and NPC (human by default); robots, machines, turrets and drones give +2 on the meter when they die; unaware enemies lose round 1.
@@ -7015,3 +7047,11 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1744. **An enemy that perceives nobody searches (13 Nov 2026; lead's ruling on a live bug, `docs/design/rev4-primitives.md` section 4):** it used to stand still. Each side notes where it last saw each hostile (`cb.seenAt`, after every step of the game, before and after each enemy's turn, and at each step of a walk); when a hostile hides, the other side keeps that tile (`cb.lastSeen`; its tile now if it saw the hide). An enemy with no target walks toward the nearest such tile (fewest tiles of walk) and holds when it has none (an old save has none). A side that never saw the hostile learns nothing (until now every side was told the tile a unit hid on). Limit, unchanged: an enemy still knows where every hostile who is not Hidden stands, seen or not (the AI's targeting reads every unit that is not Hidden); only Hidden is unknown to it.
 1743. **Weapon mastery stays retired, and nothing in play promises it (13 Nov 2026; lead's ruling on a live bug, `docs/design/rev4-primitives.md` section 4):** `data/weapon_mastery.json` (11 families, the kills table, 33 weapon perks, Last Word among them) is marked retired and is loaded by no engine file; rules 1.12 put drill in its place (item 947). It is not wired. The one live promise was Blade Recluse's One Blade ("your weapon mastery with it grows 25% faster", and its Name your weapon text: "counts as 1.25 kills towards its weapon mastery"): both clauses are taken out of the texts; the effect row stays in the data marked `retired`. The UI canvas still draws the kills table (the canvas is paused until v1.0); the live client shows none of it. What bringing weapon perks back would take is in `docs/design/handoffs/BUGLIST-0.22.md` (section "Found by the Revision 4 spec writers").
 1745. **A Heat jam lands on the gun that fired (Leon's ruling, 13 Nov 2026: "an off-hand technique's Heat jam lands on the main gun: it should land on the gun that fired"):** Heat stays one value both guns pool, with the pooled limit (main + off). A shot, a no-roll round (Warning Shot, Flush, Rout, Cover Me's covering round) or a Press's own +1 Heat made with the off-hand gun that reaches the limit jams the off-hand gun (`offJammed`); the main gun still fires. A paired attack and a technique made with both hands jam the gun whose shot reached the limit (each half is its own hand's use). Before this an off-hand technique's no-roll round and Press Heat never jammed, and with the off-hand gun swapped in the pooled limit read off + off (`heatLimit`), so the off-hand gun jammed late or not at all and the next main-hand shot jammed the main gun. Engine: `swapMain` on the fighter while the off-hand weapon stands in u.weapon; `looseRound` and the Press's Heat in `useTechnique` jam the hand that fired. Proof: `packages/engine/test/dual-jam.test.ts`.
+
+1750. **A reaction never triggers a reaction (rules 1.28; Leon, 13 Nov 2026):** while one resolves (`tactics.ts react()` sets `cb.reacting`), nobody can react: no Parry, Riposte or Interpose of a reaction's attack, no opportunity attack or held shot drawn by a reaction's move. Measured on the replays: Duck and Roll's step no longer draws opportunity attacks or Heart Overwatch, and an opportunity attack's blow is no longer Answered. No golden table line moved (none of their situations nests two reactions).
+1751. **Suppressed forbids attacking and moving reactions, never protective ones (rules 1.28; lead's call in `reactions-spec.md` 11.3, binding as Leon's ruling of the step):** the condition (`conditions.json` `suppressed`: `forbid` `reaction` with `kinds` attack and move) and Pressure's Suppressed state are one rule (`tactics.ts reactBlocked`; `physical/pressure.ts` registers the state's). The kinds: attack (opportunity attack, Overwatch and every held shot and Watch, Heart Overwatch, Riposte (both), Keep Back, Catch, Dance of Iron, a Call made as a reaction, Drink It In), move (Duck and Roll, a Strike Call's dive clear; Order spends an ally's reaction as a move), protect (Parry, Shield Wall, Interpose (both), Shrug It Off, Anchor, Adamantile Plate's Interpose and plate, Share). An Answer's kind is its data (`techniques.json` `reaction`). PROVISIONAL: a Call, Drink It In, Catch and Order are not on Revision 4's list; they are classed as not protective, so Suppressed stops them as before (calls made for Leon). Pressure's Suppressed state now also stops Duck and Roll (it stopped only held shots, opportunity attacks and non-protective Answers before).
+1752. **One event, one reaction a unit (rules 1.28; `reactions-spec.md` rule 3):** a unit that has two reactions answers a single attack (each resolved attack is one event), a single step of a walk or a single hit once. PROVISIONAL.
+1753. **The round's reactions are a counters cell (rules 1.28):** scope `reaction` (`effects/uses.ts`): on the unit in a fight, in the story on the area map (a unit rebuilt for each action there gets no fresh reaction). An old save's `reactUsed` / `reactedRound` is read once into it. Many Hands and Cue spend through the same door (`payer`; the cued reaction after the unit's own).
+1754. **What burns reactions without being one (rules 1.28):** Dread (all), Rewrite (one) and an Order (the ally's one) go through `loseReactions`; since Suppressed no longer zeroes a unit's reactions, Dread and Rewrite now take a Suppressed unit's reaction too (a consequence of item 1751).
+1755. **A reaction made by an item in data (rules 1.28):** an item op whose `limit` is `{reaction: 1 or 2, kind}` is a reaction (it spends that many and resolves inside `react()`); the trigger `reaction` fires as one is made (its kind for the predicate `how`). Nothing in the data uses either yet.
+1756. **The general primitives of Classes 3.0, step 1a (rules 1.28 section 2):** `acted`, number blocks and sources, `react()`, conditions as items, `targets`, the sight words and the closed-list rows `spot`, `by_cover`, `patron`, `via`, `nonlethal`, `heal_kind` and the resource rows `pressure` and MP (`max`, `needs`). No number and no rule moved with them (the golden tables and the replays say so; the replays moved only for items 1750, 1751 and 1753's new saved field).
