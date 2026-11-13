@@ -10,7 +10,7 @@
     "charge": 10,
     "door": "visualization",
     "range": { "base": 4, "per_point": 1, "no_door": 6 },
-    "text": "The Visualizer holds one mana core of its own ({=visualizer.charge} charge). Making a Figment and acting through one need it in a hand; held Figments stay while it is carried. Projection range: {=visualizer.range.base} + your Visualization tiles.",
+    "text": "The Visualizer holds one mana core of its own (charge). Making a Figment and acting through one need it in a hand; held Figments stay while it is carried. Projection range: range.base + your Visualization tiles (range.no_door for a Rigger without the door).",
     "provisional": true
   },
   "level": {
@@ -29,11 +29,11 @@
     "n": 1,
     "ap_from": 3,
     "ap": 1,
-    "text": "At your turn start: {=upkeep.n} charge for each Figment held; the {=upkeep.ap_from|ord} held also costs {=upkeep.ap} AP that turn. Short of charge, the newest unravels for each charge missing."
+    "text": "At your turn start: n charge for each Figment held; holding ap_from or more also costs ap AP that turn. Short of charge, the newest unravels for each charge missing."
   },
   "let_go": {
     "snap_ap": 1,
-    "text": "Let go (0 AP): unmake one; half its made charge (rounded down) goes back into the core. A Figment destroyed by damage gives nothing back and Snaps: your next turn has {=let_go.snap_ap} AP less (at most once a turn)."
+    "text": "Let go (verbs.let_go): unmake one; refund_share of its made charge (rounded down) goes back into the core. A Figment destroyed by damage gives nothing back and Snaps: your next turn has snap_ap AP less (at most once a turn)."
   },
   "ladder": [
     { "points": 1, "held": 1, "forms": ["double"], "designs": 0, "traits": 0, "text": "The door: Picture, the Double, 1 held, range 5. The Visualizer also works out of a fight." },
@@ -46,7 +46,7 @@
   ],
   "lure": {
     "found_out_add": 5,
-    "text": "A Double lures by the fire doctrine of enemies.json (double_save): a tier with none is always fooled; the others save (Brain, against 12 + your Visualization strength, plus the tier's double_save) on first sight, an Elite and a Boss again at each of their turn starts, a Boss never two rounds running. An enemy that found a Double out gets +{=lure.found_out_add} against your later Doubles this fight."
+    "text": "A Double lures by the fire doctrine of enemies.json (double_save): a tier with none is always fooled; the others save (Brain, against 12 + your Visualization strength, plus the tier's double_save) on first sight, an Elite and a Boss again at each of their turn starts, a Boss never two rounds running. An enemy that found a Double out gets found_out_add against your later Doubles this fight."
   },
   "unit_effects": {
     "text": "What every Figment is: no saves, immune to every condition (the Body, Brain and Heart families) and to Bleeding. Each form's verb item (fig_<form>, collect.ts) holds these and its own.",

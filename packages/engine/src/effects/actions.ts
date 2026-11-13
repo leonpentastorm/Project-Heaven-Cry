@@ -234,10 +234,16 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
     arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
     ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}) };
 }
+/** A system's own pick lists (Classes 3.0: `forms`, Figments' ready designs and bare forms, rules 1.34; Bonds' `felt`):
+ * a name an action's `pick` may give, and the choices it offers a holder. The system registers it as it loads. */
+const PICK_LISTS: Record<string, (h: Holder) => { id: string; label: string }[]> = {};
+/** Register a system's pick list (see PICK_LISTS). */
+export const registerPickList = (name: string, fn: (h: Holder) => { id: string; label: string }[]) => { PICK_LISTS[name] = fn; };
 /** The choices an action's pick offers this holder (ids are what args.choice takes). */
 function pickOptions(h: Holder, d: ActionDef): { id: string; label: string }[] {
   const p = d.pick, c = h.c;
   if (Array.isArray(p)) return p.map((x) => ({ id: x, label: human(x) }));
+  if (typeof p === 'string' && PICK_LISTS[p]) return PICK_LISTS[p](h);
   if (p === 'words') { const w = h.u?.mg?.words || [...new Set([...(c?.sigils || [])])]; return w.map((x: string) => ({ id: x, label: x.toUpperCase() })); }
   if (p === 'designs') return (c?.outbursts || []).map((x) => ({ id: x.id, label: x.name }));
   if (p === 'gamma') return SKILLS.filter((s: any) => s.slot === 'gamma').map((s) => ({ id: s.id, label: s.name }));

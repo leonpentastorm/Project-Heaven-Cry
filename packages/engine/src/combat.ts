@@ -2539,7 +2539,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     const targets = enemyTargets(cb, u, mode, order, pcs);
     // Rules 1.23, the hunt: an Elite or a Boss with a gun and no shot at the squad's healer steps to where it has one.
     if (!order && !hunted) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; did('move', { tile: hunt.tile }); checkOver(cb); continue; } }
-    if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); did('attack', { t, mode }); checkOver(cb); continue; }
+    if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode, rng); else resolveAttack(cb, rng, u, t, mode, null); did('attack', { t, mode }); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { did('clear_block'); checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
     if (!pcs.length) { const go = enemySearchTile(cb, u, stood); if (!go || moveUnit(cb, u, go.tile, rng)) break; did('move', { tile: go.tile }); continue; } // nobody it perceives: it searches where its side last saw one
@@ -2584,6 +2584,10 @@ const hurtShare = (t: Unit) => Math.round((10 * Math.max(0, t.hp)) / Math.max(1,
  * Under all three: its Taunter first, standing before Downed, the healer weight of rules 1.23 (the healer's place is
  * not moved by distance: an Elite hunts it across the field), the likeliest hit last. */
 export type Doctrine = 'nearest' | 'spread' | 'focus';
+/** Rules 1.34 (Figments): how much less a Figment draws this enemy's fire (enemies.json tier `owned_weight`: 0 for the
+ * Vermin and Minions, who take what is in front of them; more for the tiers that look for the real threat), plus the
+ * Figment's own `figWeight` (the Loud trait: −1, the most hurt in reach for every tier). 0 for anything else. */
+const ownedWeight = (u: Unit, t: Unit): number => ((t as any).owned?.kind === 'figment' && !(t as any).ghostOf ? (Number((!u.charId && u.tier ? (ENEMY as any)[u.tier]?.owned_weight : 0) || 0) + Number((t as any).figWeight || 0)) : 0);
 export const doctrineOf = (u: Unit): { id: Doctrine; spread: number; near: number } => {
   const e: any = u.charId || u.companion || !u.tier ? null : ENEMY[u.tier], id: Doctrine = e?.doctrine === 'nearest' || e?.doctrine === 'spread' ? e.doctrine : 'focus';
   return { id, spread: Math.max(0, Number(e?.fire_spread) || 0), near: Math.max(0, Number(e?.fire_near) || 0) };
@@ -2622,7 +2626,7 @@ function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], rea
   const mark = list.length ? healerMark(cb, u) : null, focus = healerFocus(u), bestPct = Math.max(0, ...list.filter((x) => x.pv.ok).map((x) => x.pv.pct));
   if (mark) for (const x of list) if (aimOwner(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
   const near0 = d.near ? Math.min(...list.filter((x) => !x.t.downed).map((x) => x.far), Infinity) : 0;
-  const key = (x: Aim) => hurtShare(x.t) + d.spread * x.fire + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
+  const key = (x: Aim) => hurtShare(x.t) + d.spread * x.fire + ownedWeight(u, x.t) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
   list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || pct(b) - pct(a));
   const top = list[0];
   if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {

@@ -53,6 +53,8 @@ export * from './rolls';
 export { setBraced, stagger, clearStagger, setDowned, setNailed, startHidden, asStanding } from './unitstate';
 // Classes 3.0 P9: owned units (owned.ts): the doors that make, unmake and order them, and a test's run-time blocks.
 export { spawnOwned, unmakeOwned, ownedBy, runOwned, orderable, ownedVerbs, addOwnedBlocks, clearOwnedBlocks, ownerOf as ownerOfUnit } from './owned';
+// Classes 3.0 step 8 (rules 1.34): Figments and the Visualizer (figments.ts).
+export * from './figments';
 // Action descriptors (engine review 4, finding 3): one description of every action a unit can take, one preview, one send.
 export { actionsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, stepOn, GROUP_ORDER, isLegacyUnit, TQ, TPAD, TWATCH, techId, parseTechId, TECH_OPTIONS, techOpt, techHelp, techParts, ORDER_THINGS, orderMax,
   PR, prayId, parsePrayId, oddsPct, prayOdds, PK, perkId, parsePerkId, perkCost, perkState, perkText,
