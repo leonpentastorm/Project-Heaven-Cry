@@ -171,7 +171,7 @@
                    { "op": "cost_mod", "when": "swap", "if": { "ap_above": 0 }, "value": -1, "min": 0, "limit": { "per": "per_turn", "n": 1, "key": "hands" } } ],
       "text": "Your first reload or weapon swap each turn costs {=effects.0.value|abs} AP less (never under {=effects.0.min})." },
     { "id": "boon.mending", "kind": "relic", "name": "Field Mending", "pools": ["faith", "survival"], "worth": 0, "adjudication": "engine", "provisional": true,
-      "effects": [ { "op": "mend", "when": "combat_over", "if": { "self_alive": true }, "amount": { "kind": "heal", "base": 0, "per": [ { "of": "self:max_hp", "value": 0.2 } ], "profile": "flat", "heal_kind": "perk", "provisional": true } } ],
+      "effects": [ { "op": "mend", "when": "combat_over", "if": { "self_alive": true }, "amount": { "kind": "heal", "base": 0, "per": [ { "of": "self:max_hp", "value": 0.2 } ], "heal_kind": "perk", "provisional": true } } ],
       "text": "At each fight's end you heal {=effects.0.amount.per.0.value|pct}% of your max HP." },
     { "id": "boon.bandolier", "kind": "relic", "name": "Bandolier", "pools": ["machine"], "worth": 0, "adjudication": "engine", "provisional": true,
       "effects": [ { "op": "stat_mult", "stat": "run_ammo", "value": 2 } ],
