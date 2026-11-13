@@ -1,0 +1,331 @@
+{
+  "K109": {
+    "prompt": "Paint one square, opaque, repeatable overhead tactical ground for the machine works in Project Heaven Cry. GROUND, opaque 1024 x 1024 seamless tile. Dark diamond-pattern iron plate floor, evenly worn, tiny bolts. Dark iron plate, soot, ceramic white and cast steel, muted furnace orange #F68A38 and cool neutral blue. Matte Heavenprint gouache and ink, visible wear and worn brush strokes, subdued contrast. The first image is setting for material and colour; the second is repeat logic and view only. Exact orthographic vertical top-down. Flat even light. Keep the entire edge plain and mid-tone except for small pattern continuity. Left and right and top and bottom match when repeated. No floor objects, strong singular motif, border, shadow, gradient, vignette, perspective, text or figures. 1024×1024 opaque tile.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/ground-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K110": {
+    "prompt": "Paint one square, opaque, repeatable overhead tactical ground for the machine works in Project Heaven Cry. GROUND, opaque 1024 x 1024 seamless tile. Soot-grey concrete floor with faint ivory safety lane lines and drain seams. Dark iron plate, soot, ceramic white and cast steel, muted furnace orange #F68A38 and cool neutral blue. Matte Heavenprint gouache and ink, visible wear and worn brush strokes, subdued contrast. The first image is setting for material and colour; the second is repeat logic and view only. Exact orthographic vertical top-down. Flat even light. Keep the entire edge plain and mid-tone except for small pattern continuity. Left and right and top and bottom match when repeated. No floor objects, strong singular motif, border, shadow, gradient, vignette, perspective, text or figures. 1024×1024 opaque tile.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/ground-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K111": {
+    "prompt": "Paint one square, opaque, repeatable overhead tactical ground for the machine works in Project Heaven Cry. GROUND, opaque 1024 x 1024 seamless tile. Damaged floor: warped plate, burn marks, cracked concrete and slag spatter. Dark iron plate, soot, ceramic white and cast steel, muted furnace orange #F68A38 and cool neutral blue. Matte Heavenprint gouache and ink, visible wear and worn brush strokes, subdued contrast. The first image is setting for material and colour; the second is repeat logic and view only. Exact orthographic vertical top-down. Flat even light. Keep the entire edge plain and mid-tone except for small pattern continuity. Left and right and top and bottom match when repeated. No floor objects, strong singular motif, border, shadow, gradient, vignette, perspective, text or figures. 1024×1024 opaque tile.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/ground-3.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K112": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nDECAL (the engine's `rubble` kind), transparent 256 x 256. Rubble scatter: scrap fragments, bolts, cut metal curls. Soft ragged edge, centred, covers about one tile and overlaps well when repeated.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/decal-rubble.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K113": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nDECAL (the engine's `toxic` kind), transparent 256 x 256. Toxic spill: a pooled coolant or oil slick, blue-black with a rainbow sheen (the toxic spill), soft edge.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/decal-toxic.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K114": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nDECAL (hazard and burnt ground), transparent 256 x 256. Scorch: a heat-blackened patch with a faint orange edge glow, soft edge.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/decal-scorch.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K115": {
+    "prompt": "Repaint the EXACT alpha silhouette of the first reference as one 2D tactical map tile. The footprint is ONE RECTANGLE, the middle half of the canvas vertically, from the left edge all the way to the right. Absolutely no turn, branch or angle. A thin muted orange stripe runs straight left to right. Second reference is the corresponding overhead tile from another setting, use it for exact position and shape, not color. This tile is dark iron ceramic cap, dry soot, worn ivory flecks and thin burnt orange centerline. Third image shows the setting and paint style. Orthographic plan looking directly down. Opaque gouache and ink within the footprint, genuinely transparent alpha everywhere else. No floor, background, cast shadow or perspective. Keep rim on exposed edges only. Paint to flat cuts without a dark end rim.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-7.png",
+      "art/sprites/kit/ahoc/wall-straight.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-works/superseded/K115.png",
+      "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nWALL piece, straight, 256 x 256 cell: a cast iron works wall with a ceramic-white cap band and bolted plates, running left to right, half a tile thick, flat cut ends at the cell edges.\nThe first reference gives exact footprint, orientation and shape. For the corner, enter from the left at midheight and exit at bottom midwidth. The third reference is top-view camera only. Paint flat dark iron top caps with a thin centered burnt-orange stripe, matching every exit. Dark outline on exposed edges only; carry the painted cap straight through each flat-cut connection, no end rim. Use 128px center band. Transparent doorway and breach.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-7.png",
+        "art/illustrations/survival/backdrops/works-a-dock.png",
+        "art/sprites/kit/city/wall-straight.png"
+      ]
+    }
+  },
+  "K116": {
+    "prompt": "Repaint the EXACT alpha silhouette of the first reference as one 2D tactical map tile. The footprint is a simple ┐ bend. Enter at the left edge, halfway down. Run east to the center, then turn south to the bottom edge. No third leg or projecting tab. Second reference is the corresponding overhead tile from another setting, use it for exact position and shape, not color. This tile is dark iron ceramic cap, dry soot, worn ivory flecks and thin burnt orange centerline. Third image shows the setting and paint style. Orthographic plan looking directly down. Opaque gouache and ink within the footprint, genuinely transparent alpha everywhere else. No floor, background, cast shadow or perspective. Keep rim on exposed edges only. Paint to flat cuts without a dark end rim.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+      "art/sprites/kit/ahoc/wall-corner.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-works/superseded/K116.png",
+      "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nWALL piece, corner, same wall and thickness: an L joining the left edge and the bottom edge, outer corner square.\nThe first reference gives exact footprint, orientation and shape. For the corner, enter from the left at midheight and exit at bottom midwidth. The third reference is top-view camera only. Paint flat dark iron top caps with a thin centered burnt-orange stripe, matching every exit. Dark outline on exposed edges only; carry the painted cap straight through each flat-cut connection, no end rim. Use 128px center band. Transparent doorway and breach.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-8.png",
+        "art/illustrations/survival/backdrops/works-a-dock.png",
+        "art/sprites/kit/city/wall-corner.png"
+      ]
+    }
+  },
+  "K117": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nWALL piece, end cap, same wall: it runs from the left edge to the middle of the cell and ends in a square finished cap, the right half empty.\nThe first reference gives exact footprint, orientation and shape. For the corner, enter from the left at midheight and exit at bottom midwidth. The third reference is top-view camera only. Paint flat dark iron top caps with a thin centered burnt-orange stripe, matching every exit. Dark outline on exposed edges only; carry the painted cap straight through each flat-cut connection, no end rim. Use 128px center band. Transparent doorway and breach.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-9.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/city/wall-end.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K118": {
+    "prompt": "Repaint the EXACT alpha silhouette of the first reference as one 2D tactical map tile. The footprint is TWO DISJOINT horizontal rectangular stubs from the left and right edges, separated by the empty middle half. Absolutely no bend, angle or shape connecting them. Second reference is the corresponding overhead tile from another setting, use it for exact position and shape, not color. This tile is dark iron ceramic cap, dry soot, worn ivory flecks and thin burnt orange centerline. Third image shows the setting and paint style. Orthographic plan looking directly down. Opaque gouache and ink within the footprint, genuinely transparent alpha everywhere else. No floor, background, cast shadow or perspective. Keep rim on exposed edges only. Paint to flat cuts without a dark end rim.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+      "art/sprites/kit/ahoc/wall-door.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-works/superseded/K118.png",
+      "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nWALL piece, doorway, same wall: two short wall stubs from each side with plain jambs, an empty 128 px gap in the middle (nothing in it), butting at both cell edges.\nThe first reference gives exact footprint, orientation and shape. For the corner, enter from the left at midheight and exit at bottom midwidth. The third reference is top-view camera only. Paint flat dark iron top caps with a thin centered burnt-orange stripe, matching every exit. Dark outline on exposed edges only; carry the painted cap straight through each flat-cut connection, no end rim. Use 128px center band. Transparent doorway and breach.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-10.png",
+        "art/illustrations/survival/backdrops/works-a-dock.png",
+        "art/sprites/kit/city/wall-door.png"
+      ]
+    }
+  },
+  "K119": {
+    "prompt": "Repaint the EXACT alpha silhouette of the first reference as one 2D tactical map tile. The footprint is TWO DISJOINT horizontal cap stubs from left and right, each with jagged broken inner end facing the central hole. Absolutely no bend or L shape. Second reference is the corresponding overhead tile from another setting, use it for exact position and shape, not color. This tile is dark iron ceramic cap, dry soot, worn ivory flecks and thin burnt orange centerline. Third image shows the setting and paint style. Orthographic plan looking directly down. Opaque gouache and ink within the footprint, genuinely transparent alpha everywhere else. No floor, background, cast shadow or perspective. Keep rim on exposed edges only. Paint to flat cuts without a dark end rim.",
+    "references": [
+      "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-11.png",
+      "art/sprites/kit/ahoc/wall-broken.png",
+      "art/illustrations/survival/backdrops/works-a-dock.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-works/superseded/K119.png",
+      "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nWALL piece, broken section, same wall: a straight run with a ragged breach in the middle, brick-sized rubble at the gap, both ends flat cut at the cell edges.\nThe first reference gives exact footprint, orientation and shape. For the corner, enter from the left at midheight and exit at bottom midwidth. The third reference is top-view camera only. Paint flat dark iron top caps with a thin centered burnt-orange stripe, matching every exit. Dark outline on exposed edges only; carry the painted cap straight through each flat-cut connection, no end rim. Use 128px center band. Transparent doorway and breach.",
+      "references": [
+        "art/_archive/survival/2026-11-13-trial/geometry-guides/wall-11.png",
+        "art/illustrations/survival/backdrops/works-a-dock.png",
+        "art/sprites/kit/city/wall-broken.png"
+      ]
+    }
+  },
+  "K120": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nCRATE (`crate`, half cover, destructible): a steel parts crate, welded, with a bolted lid and an orange stripe; about a metre, waist-high look, centred.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/crate.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K121": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nCRATE broken: the same crate smashed to splinters and scraps, flat, low, same footprint, nothing standing.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/crate-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K122": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nLOW WALL (`low_wall`, half cover): a waist-high machine casing or conveyor guard, one tile long, with an ivory safety stripe; fills the width of the tile, low and clearly waist-high with a visible light top face.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/low_wall.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K123": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nPILLAR (`pillar`, full cover, destructible): a square cast steel support pillar with bolts and a base flange; strong dark edge, reads as taller than a person, fits one tile.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/pillar.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K124": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nPILLAR broken: the same pillar collapsed to a low heap of chunks, same footprint, lower and lighter than the standing one.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/pillar-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K125": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nBARRICADE (`barricade`, full cover, destructible): a full-height wall of stacked steel plate and welded scrap, tall enough to hide behind; fills the width of the tile.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/barricade.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K126": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nBARRICADE broken: the same barricade collapsed into a low scatter of parts, same footprint.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/barricade-broken.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K127": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nDOOR closed (`door`): a heavy iron sliding door in a plate frame, closed, with an orange status light; one tile wide, drawn to sit in a wall gap, flat-cut sides at the cell edges.\nOnly a slim overhead gate bar between two small jamb caps. No front or arch.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/door.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K128": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nDOOR open (`door`, open state): the same sliding door retracted, jambs visible, threshold clear; the same door seen open, same cell.\nOnly two small disjoint overhead jamb caps. The gate retracts fully, with true transparent passage between jambs. No sill or threshold plate.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/door-open.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K129": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nHOLE (`hole`): an open maintenance pit with a bent rail edge, black depth; round or square, fits one tile, the depth reads as dark and void.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/hole.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K130": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nTRAP (`trap`): a pressure plate trap with a small hidden spike, set in the plate floor; deliberately subtle but readable at 64 px.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/trap.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K131": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nFIRE (`fire`): a burning oil pool with flames seen from above, orange; fits one tile, bright core, no glow or bloom, flat painted flames.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/fire.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K132": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nBARREL (`barrel`, half cover, explodes): a coolant or fuel drum, dark steel with a red band, explosive-looking; about 60 cm across, reads as dangerous.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/barrel.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K133": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nCONTAINER (`container`, half cover, holds loot), transparent 384 x 256: a large steel parts bin on skids, a tile and a half long, waist-high.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/container.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K134": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nTERMINAL (`terminal`): a factory control terminal on a stand, dark screen glass with abstract blue bars, no text; fits one tile.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/terminal.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K135": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nLAMP (`lamp`): a tall work lamp on a gantry stand with cool blue glass, seen from above; fits one tile.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/lamp.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K136": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nTURRET (`turret`, half cover): an emplaced auto-turret on a pedestal with a dark housing and a sensor eye (waist-high); fits one tile, a single clear barrel direction (up).\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/turret.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K137": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nCAMERA (`camera`): a ceiling-style camera ball on a short arm, seen from above; small, about a third of a tile, centred.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/camera.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K138": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nALARM (`alarm`): a wall alarm panel with a red beacon, flat; small, about a third of a tile, centred.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/alarm.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K139": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nCACHE (`cache`, loot): a locked steel cache locker, low, with an orange seal; about a metre, waist-high look.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/cache.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K140": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nEXIT (`exit`, the way out): a lift pad or door hatch with ivory chevrons toward it, no letters; fits one tile, reads as a place to leave by.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/exit.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K141": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nSET DRESSING (non-blocking, any free tile, no rules meaning): Cables: a heavy hose and cable bundle lying across the floor. Low, flat, nothing taller than a few centimetres.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/dress-1.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K142": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A loose chain and a hook on the ground. Low, flat, nothing taller than a few centimetres.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/dress-2.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K143": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A floor lane marking: ivory dashes and a corner mark, no letters. Low, flat, nothing taller than a few centimetres.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/dress-3.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "K144": {
+    "prompt": "One machine works and drone foundry tactical kit piece for Project Heaven Cry. Heavenprint hand-painted matte gouache and ink, bold angular dry brush marks, cast steel, dark iron, furnace soot, scuffed ivory ceramic and restrained smoky furnace orange or cool blue metal. True alpha. Exact vertical orthographic plan from straight overhead, no perspective or broad side faces, no ground/background, shadows, glow, text, figures, UI, or border. One asset in a 256 square 1.5m cell, 80% safe box except walls and container, strong silhouette at 64px.\nSET DRESSING (non-blocking, any free tile, no rules meaning): A scatter of metal shavings and sparks-cold slag nuggets. Low, flat, nothing taller than a few centimetres.\nSecond reference is for camera and scale only. Reinterpret the subject in machine works materials. Leave true transparency around the shape.",
+    "references": [
+      "art/illustrations/survival/backdrops/works-a-dock.png",
+      "art/sprites/kit/ahoc/dress-4.png"
+    ],
+    "imagegen": "built-in"
+  }
+}
