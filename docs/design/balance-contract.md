@@ -18,10 +18,16 @@ them. The numbers themselves are in **`data/rules.json` `balance`** (read by the
 5. **Cost counts:** a system with set-up or a resource may sit higher than a free one (the cost ledger, section 4).
 6. Weapon Arts (not built) may break the ceiling as a charged ultimate, counted in the build's fight average. Miracles
    are exempt.
-7. **A healer's turn is worth two Soldier-turns all in** (rules 1.27, Leon's report on 0.23.0 and the lead's ruling): a
-   rifle turn removes about a whole Soldier for the rest of the fight, a heal undoes one turn of it, so a heal is priced
-   above its Soldier-turn count. A Hymn turn's healing is capped at 2.5. A heal by a caster with no points in its skill
-   is never under half of a normal share's (the landed profiles' `floor`).
+7. **Heals and shields are balanced in percent of HP** (rules 1.36, Leon 13 Nov 2026; it replaces rules 1.27's two
+   Soldier-turns): one whole turn, all in, restores a percent of the reference character's max HP
+   (`output.level.reference_hp`): the Mender 65, a door user about 59, an off-heal (the Outburst's Buff, a Sigil MEND
+   Line) 45, a Whisper 15, a Hymn's turn 65 at most and about 45 over its wait. **The gate:** every 2-AP heal or shield
+   action gives at least 20% of its target's max HP (counted to 145 × scale; a Whisper 13.3%, a Hymn 33.3%). **The
+   cap:** no single heal more than half its target's bar. Faith's shield is the strongest (two full assaults); the
+   Mender's Tending shield, then the Sigil WARD Line and the Outburst's Inverse sit under it (`ceilings.shield_order`).
+8. **The level scale** (rules 1.36): a plain hit grows ×7.5 from level 1 to 20 (`output.level.deal`), and everything
+   measured in HP grows with it (`output.level.scale`: max HP, enemies' HP, armour and damage, Guard, Strain's burn,
+   objects, heals and shields). Every line of this contract is a ratio and does not move; MP does not scale.
 
 ## 2. The unit and the yardsticks
 
@@ -48,8 +54,10 @@ All in, in percent of a rifle-turn (a healer: of a Soldier-turn). The guard hold
 | Outburst, the biggest Release | 165 | 132 | `soul_modules.json damage.base`, then `cycle.stage_mult` | 147 / 166 / 150 / 157 |
 | Faith, a Whisper turn | 80 | 64 | the Whispers' values in `patrons.json`; `output.profiles.blessing.k` | 98 / 71 / 57 / 98 |
 | Faith, a Hymn turn | 150 (low end 55% at Devotion 3) | 120 | the Hymns' values in `patrons.json`; `output.profiles.blessing.k` | 124 / 95 / 157 / 167 |
-| A healer's turn (rules 1.27; it was 125) | 200 (Soldier-turns × 100) | 160 | `rules.json output.profiles.healing.k` (and `mend`); the Sigil boon `sigil_mend.k`, the Soul shields `soul_mend.k`, prayers `blessing_mend.k` | 234 / 211 / 195 / 158 (the Sigil boon's 3-glyph Line 235 / 212 / 196 / 158; a Hymn turn's healing 249 / 224 / 208 / 168, capped at 250) |
-| A shield | ×1.2 the heal of the same cost | | `balance.ceilings.shield.of_heal` | |
+| An off-heal's turn (rules 1.36: percent of the reference HP; it was 200 Soldier-turns) | 45 | 36 | `soul_modules.json schools.buff.heal` on `soul_mend` (11.3); the Sigil `mend.heal` 15 on `sigil_mend.k` 1.629 | 56 at every level with the spec's 14, so fitted to 11.3 (45) |
+| The Mender's healing turn (rules 1.36) | 65 (a door user 59) | 52 | `rules.json output.profiles.tend.k` (3.74) | 70 / 64 / 65 / 65 (the door 67 / 62 / 62 / 62) |
+| A Hymn turn's healing; a Whisper | at most 65, about 45 over the wait; a Whisper 15 | | the Hymns' and Whispers' values in `patrons.json` | |
+| A shield | Faith's strongest = 1 (70% of the reference HP); the Tending shield 0.36; WARD Line and Inverse 0.33 | | `balance.ceilings.shield_order` | |
 | Grenades and charges a character throws | the budget rule (section 5) | | `rules.json output.factors.thrown` | a frag on the cluster: 64 landed against 61 allowed at level 1 (+5%; it was 98) |
 
 The order of the peaks Leon set: a full Sigil Line 150 to 200%, a charged Weapon Art (to be set), the Outburst's
