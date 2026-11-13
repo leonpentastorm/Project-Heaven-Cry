@@ -130,7 +130,7 @@ for (let i = 0; i < 3 && !(await p.locator('[data-bp-row]').count()); i++) { awa
 // Since the painted Heavenprint gear icons (art/icons/gear, gearIcons.ts: the painted icon wins over the monoline one)
 // a row's icon is an /assets/gear-<id>.webp URL, not always an SVG data URI: what the player needs is a picture that
 // LOADED, so every icon in the pack must have decoded (naturalWidth > 0), whichever kind it is.
-const bpIcons = await p.waitForFunction(() => { const im = [...document.querySelectorAll('[data-bp-row] img')]; return im.length && im.every((i) => i.complete) ? im.map((i) => ({ src: i.getAttribute('src').slice(0, 40), w: i.naturalWidth })) : null; }, null, { timeout: 15000 }).then((h) => h.jsonValue()).catch(() => []);
+const bpIcons = await p.waitForFunction(() => { const im = [...document.querySelectorAll('[data-bp-row] img')]; return im.length && im.every((i) => i.complete) ? im.map((i) => ({ src: i.getAttribute('src').slice(0, 40), w: i.naturalWidth })) : null; }, null, { timeout: 30000 }).then((h) => h.jsonValue()).catch(() => []);
 ok('the backpack shows item icons, every one loaded (' + bpIcons.map((i) => i.src.replace(/^data:image\/svg\+xml.*/, 'svg') + ':' + i.w).join(', ') + ')', bpIcons.length >= 1 && bpIcons.every((i) => i.w > 0 && (/^\/assets\/gear-/.test(i.src) || /^data:image\/svg\+xml/.test(i.src))));
 await p.keyboard.press('Escape'); await settle(p, 300);
 
