@@ -57,6 +57,7 @@ import { setBraced, setDowned, stagger, startHidden } from './unitstate';
 import { clearConds, restoreConds } from './magic';
 import { condMods } from './condtable';
 import { runOwned } from './owned';
+import { type PlayMode, type RunState, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf, OLD_SAVE_PLAY } from './run/state';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -99,7 +100,9 @@ export type NarratorWork = null | { kind: 'opening' | 'round' | 'results' | 'com
 
 export interface GameState {
   v: number; seq: number; rng: Rng; code: string; hostId: string;
-  settings: { mode: 'ai' | 'human'; tone: string; start: string; model: string };
+  /** play (rules 1.39): the mode the room plays, picked in the lobby (data/modes.json); absent in a save from before
+   * modes, which reads as a campaign (playOf). */
+  settings: { mode: 'ai' | 'human'; tone: string; start: string; model: string; play?: PlayMode };
   phase: 'lobby' | 'story' | 'combat';
   players: Player[]; characters: Record<string, Character>;
   story: {
@@ -178,6 +181,8 @@ export interface GameState {
   archive?: Entry[];
   /** The Proving Ground (practice mode): endless waves on one map, no Narrator, no XP, no story (see Sandbox). */
   sandbox?: Sandbox | null;
+  /** A Survival run (rules 1.39, run/state.ts): its seed, stage, path map and where it stands; absent outside one. */
+  run?: RunState | null;
   /** Sessions started in this room, and rests taken this session: the stamps of per-session and per-rest item uses
    * (effects/uses.ts). Old saves: session 1, no rests. */
   sessionN?: number; restN?: number;
@@ -309,6 +314,8 @@ export type Action =
   | { type: 'settings'; patch: Partial<GameState['settings']> }
   | { type: 'char/add'; sheet: Sheet } | { type: 'char/remove'; charId: string }
   | { type: 'session/start' }
+  /** Rules 1.39: the host starts a Survival run (seed: a shared seed, else one from the room); the host retires it after a Boss. */
+  | { type: 'run/start'; seed?: string } | { type: 'run/retire' }
   /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
   | { type: 'session/next' }
   | { type: 'story/speak'; text: string; roll?: boolean; ooc?: boolean } | { type: 'story/skip'; playerId: string }
@@ -478,6 +485,8 @@ function migrateFloor(g: GameState) {
  * settled on every sheet (the other migrations wait for the first action, as before). */
 export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterItems(c as any); } catch { /* a save this old is handled by apply */ }
+  // rules 1.39: a save from before modes played a campaign (the only thing it could be); it says so from now on
+  try { const st = (g as any)?.settings; if (st && !st.play) st.play = OLD_SAVE_PLAY; } catch { /* no settings: nothing to read */ }
   return g;
 }
 // ---------- what apply() shares with the state it was given (it copies everything else) ----------
@@ -584,6 +593,8 @@ function reduce(g: GameState, a: Action, by: string) {
   if (a.type.startsWith('sandbox/')) { sandboxAction(g, a as SandboxAction, by); return; }
   if (a.type.startsWith('faith/')) { faithAction(g, a as FaithAction, by); return; } // rules 1.6 (faith.ts)
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
+  if (a.type.startsWith('run/')) { runAction(g, a, by); return; } // rules 1.39 (run/state.ts)
+  if (g.run && g.run.state !== 'over' && RUN_REFUSED.test(a.type)) fail('A Survival run has no Narrator and no story: the engine runs it, node by node.');
   if (g.sandbox && /^(world\/act|story\/(move|door))$/.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
   if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
   switch (a.type) {
@@ -599,7 +610,12 @@ function reduce(g: GameState, a: Action, by: string) {
     }
     case 'player/online': { if (!isHost(g, by)) fail('Host only.'); const p = g.players.find((x) => x.id === a.id); if (p) p.online = a.online; return; }
     case 'player/kick': { if (!isHost(g, by) || a.id === g.hostId) fail('Host only.'); g.players = g.players.filter((p) => p.id !== a.id); for (const c of Object.values(g.characters)) if (c.owner === a.id) delete g.characters[c.id]; return; }
-    case 'settings': { if (!isHost(g, by)) fail('Only the host changes room settings.'); if (g.phase !== 'lobby' && a.patch.start) fail('The campaign has started.'); Object.assign(g.settings, a.patch); return; }
+    case 'settings': {
+      if (!isHost(g, by)) fail('Only the host changes room settings.'); if (g.phase !== 'lobby' && a.patch.start) fail('The campaign has started.');
+      // rules 1.39: the mode is picked in the lobby, among the open ones (data/modes.json available); the room's own stays
+      if (a.patch.play != null && a.patch.play !== playOf(g)) { if (g.phase !== 'lobby') fail('The mode is picked in the lobby.'); const no = modeLocked(a.patch.play); if (no) fail(no); }
+      Object.assign(g.settings, a.patch); return;
+    }
     case 'char/add': {
       const err = roomSheetError(g, by, a.sheet); if (err) fail(err);
       const c = newCharacter(id(g, 'c'), by, a.sheet);
@@ -627,6 +643,7 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'session/start': {
       if (!isHost(g, by)) fail('Only the host starts the session.');
       if (g.phase !== 'lobby') fail('Already started.');
+      if (playOf(g) !== 'campaign') fail('This room plays ' + (modeOf(playOf(g))?.name || playOf(g)) + ': Start begins a run, not a story.'); // rules 1.39
       if (!Object.keys(g.characters).length) fail('Lock in at least one character.');
       g.phase = 'story'; beginSession(g);
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
@@ -3060,6 +3077,32 @@ export type SandboxAction =
   | { type: 'sandbox/meter'; unitId: string; momentum?: number; pressure?: number }
   | { type: 'sandbox/objective'; id: string; text?: string; where?: Where; status?: 'done' | 'failed' | 'open' };
 
+/** Rules 1.39 (survival-spec rule 36): actions with no place in a Survival run, refused as in the Proving Ground: the
+ * Narrator's, the story's, the room's sessions and rests (a run's are its Rest nodes). (The Proving Ground refuses itself.) Level-ups,
+ * gear, magic and the fight's own actions are not here. */
+const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest\/)/;
+/** Rules 1.39: a run's actions through the one reducer (the state and the refusals are run/state.ts). */
+function runAction(g: GameState, a: Action, by: string) {
+  switch (a.type) {
+    case 'run/start': {
+      const no = runStartProblem(g, by); if (no) fail(no);
+      const seed = typeof a.seed === 'string' && a.seed.trim() ? a.seed.trim().slice(0, 40) : runSeed(g.code, g.seq);
+      g.run = newRun(seed); g.phase = 'story'; beginSession(g);
+      g.story.round = 1; g.story.await = 'none'; g.story.work = null;
+      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ').' });
+      return;
+    }
+    case 'run/retire': {
+      const no = runRetireProblem(g, by); if (no) fail(no);
+      const levels: Record<string, number> = {}; for (const c of Object.values(g.characters)) levels[c.id] = c.level;
+      g.run = endRun(g.run!, 'retired', levels);
+      const e = g.run.end!;
+      push(g, { kind: 'system', head: 'RUN OVER', text: 'The squad retires: ' + e.cleared + (e.cleared === 1 ? ' stage' : ' stages') + ' cleared, ' + e.nodes + (e.nodes === 1 ? ' node' : ' nodes') + ' walked. The score is kept.' });
+      return;
+    }
+    default: fail('No such run action: ' + a.type + '.');
+  }
+}
 /** Actions with no place in the Proving Ground: the Narrator's, the story's, the room's start. */
 const SANDBOX_REFUSED = /^(narrator\/|session\/start|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/)/;
 /** The area map's own actions, which work while gearing up (moving, doors, attacking or casting on a drill unit). */

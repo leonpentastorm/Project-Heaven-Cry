@@ -13,12 +13,15 @@ import { importCharacter } from '../game/charfile';
 import { validateSheet, CLASS } from '@engine';
 import { openProvingGround } from '../game/sandbox';
 import { classOf } from '../game/commands';
+import { modeCards, radioKey, narratorOptional, startsRun } from '../game/modes';
+import { openTipOn } from '../game/actionTip';
+import { modeOf, playOf, runRetireProblem } from '@engine';
 
 const pill = (on) => 'min-height: 42px; padding: 0 16px; border-radius: 10px; font-family: inherit; font-weight: 600; cursor: pointer; ' + (on ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2');
 
 export class RoomLogic extends DCLogic {
   constructor(props) {
-    super(props); this.state = { bring: false, copied: false, loaded: null, loading: false, loadNote: '', keySaved: false, keyChanged: false, testing: false, test: null };
+    super(props); this.state = { narrOpen: false, bring: false, copied: false, loaded: null, loading: false, loadNote: '', keySaved: false, keyChanged: false, testing: false, test: null };
     // Arriving from the Narrator chip's "Change key": scroll to the Narrator box and put the cursor in the key.
     if (getState().roomFocus === 'narrator') setTimeout(() => {
       go('room', { roomFocus: null });
@@ -41,7 +44,7 @@ export class RoomLogic extends DCLogic {
   /** Back to the session (the big button and the header's): say so when the Narrator's settings changed here. */
   backToSession(g) {
     if (this.state.keyChanged && getState().role === 'host' && g.settings.mode === 'ai') toast('Narrator settings updated: used from its next turn.', true);
-    go(g.phase === 'combat' ? 'combat' : 'main');
+    go(g.phase === 'combat' ? 'combat' : g.run ? 'room' : 'main');
   }
   /** "Load models": ask the picked service which models this key can use. */
   loadModels() {
@@ -94,7 +97,7 @@ export class RoomLogic extends DCLogic {
   }
   renderVals() {
     const st = getState(), g = st.game, isHost = st.role === 'host';
-    if (!g) return { ...lightboxVals(this), ...shellVals(this, 'room'), report: openReport, code: st.code || '', connText: 'CONNECTING…', connStyle: 'font-size: 12px; color: #A3AEC2', players: [], squad: [], starts: [], start: { lore: [] }, modes: [], tones: [], notReady: true, startLabel: 'Waiting for the host…', startStyle: 'min-height: 52px; border-radius: 12px; border: 0; background: #1C2536; color: #A3AEC2', copyInvite: () => {}, copyLabel: 'Copy invite link', create: () => {}, toggleBring: () => {}, saved: [], cantAdd: true };
+    if (!g) return { ...lightboxVals(this), ...shellVals(this, 'room'), report: openReport, code: st.code || '', connText: 'CONNECTING…', connStyle: 'font-size: 12px; color: #A3AEC2', players: [], squad: [], starts: [], start: { lore: [] }, modes: [], modeCards: [], showModes: false, narrOpen: true, tones: [], notReady: true, startLabel: 'Waiting for the host…', startStyle: 'min-height: 52px; border-radius: 12px; border: 0; background: #1C2536; color: #A3AEC2', copyInvite: () => {}, copyLabel: 'Copy invite link', create: () => {}, toggleBring: () => {}, saved: [], cantAdd: true };
     const S = g.settings, me = st.me.id, host = g.players.find((p) => p.id === g.hostId);
     const mine = Object.values(g.characters).filter((c) => c.owner === me);
     const players = [...g.players, ...Array(Math.max(0, 4 - g.players.length)).fill(null)].map((p) => {
@@ -116,6 +119,24 @@ export class RoomLogic extends DCLogic {
         style: 'display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 4px solid ' + p.color };
     });
     const st0 = startOf(g);
+    // The mode picker (rules 1.39, survival-spec 8.1): three cards; the host picks an open one; a locked one or a guest's
+    // click opens the card's own hover card with the reason (game/actionTip.ts openTipOn), never a toast.
+    const cards = modeCards(g, isHost, (play) => act({ type: 'settings', patch: { play } }));
+    const run = g.run && g.run.state !== undefined ? g.run : null, runsMode = startsRun(g), optional = narratorOptional(g), mode = modeOf(playOf(g));
+    const modeCardsV = cards.map((m, i) => ({ ...m, lockedStr: m.locked ? 'true' : 'false', tabindex: m.selected || (!cards.some((c) => c.selected) && i === 0) ? '0' : '-1',
+      hasArt: !!(m.art && (IMG[m.art] || ART(m.art))), noArt: !(m.art && (IMG[m.art] || ART(m.art))), img: IMG[m.art] || ART(m.art),
+      onClick: (e) => (m.pick ? m.pick() : m.tip ? openTipOn(e && e.currentTarget) : null),
+      onKey: (e) => { const j = radioKey(e.key, i, cards.length); if (j != null) { e.preventDefault(); const all = e.currentTarget.parentElement.querySelectorAll('[role="radio"]'); if (all[j]) all[j].focus(); } },
+      style: 'position: relative; display: flex; flex-direction: column; min-width: 0; padding: 0; overflow: hidden; text-align: left; border-radius: 14px; font-family: inherit; color: #E7EBF3; cursor: ' + (m.pick || m.selected ? 'pointer' : 'not-allowed') + '; background: #10151F; '
+        + (m.selected ? 'border: 2px solid #FFFFFF; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18)' : 'border: 2px solid #232D3F') + (m.locked ? '; opacity: 0.62' : ''),
+      artBox: 'position: relative; display: grid; place-items: center; width: 100%; height: clamp(96px, 10vw, 220px); overflow: hidden; background: #1C2536; border-bottom: 1px solid #232D3F' + (m.locked ? '; filter: grayscale(0.7)' : ''),
+      nameStyle: 'font-size: 20px; font-weight: 700; letter-spacing: 0.14em; color: ' + (m.locked ? '#A3AEC2' : '#E7EBF3'),
+      statusStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: ' + (m.locked ? '#A3AEC2' : '#FFFFFF'),
+      lineStyle: 'font-size: 13px; line-height: 1.45; color: ' + (m.locked ? '#A3AEC2' : '#C9D3E3') }));
+    const runV = run ? { kicker: 'SURVIVAL · STAGE ' + run.stage + ' · SEED ' + run.seed, title: run.state === 'over' ? 'The run is over' : 'The run is under way',
+      text: run.state === 'over' && run.end ? (run.end.how === 'retired' ? 'The squad retired' : 'The squad fell') + ' after ' + run.end.cleared + (run.end.cleared === 1 ? ' stage' : ' stages') + ' and ' + run.end.nodes + (run.end.nodes === 1 ? ' node' : ' nodes') + '. The score is kept.'
+        : 'Stage ' + run.stage + ' has begun. The path map, its fights, shops and rests arrive with the next update; this room keeps the run until then.',
+      canRetire: isHost && !runRetireProblem(g, me), retire: () => act({ type: 'run/retire' }) } : null;
     const hostPick = (patch) => () => (isHost ? act({ type: 'settings', patch }) : toast('Only the host picks this.'));
     const starts = startsFor(g).map((x) => ({ short: x.short + (x.soon ? ' · soon' : ''), pick: x.soon ? () => toast(x.title + ' is coming after the systems are done. Fight in the Proving Ground, or load your own campaign.') : hostPick({ start: x.id }), pressed: S.start === x.id ? 'true' : 'false', style: pill(S.start === x.id) }));
     const startImg = IMG[st0.art] || ART(st0.art) || IMG['world-pilot'];
@@ -129,7 +150,7 @@ export class RoomLogic extends DCLogic {
     const why = g.story && g.story.complete ? 'Campaign complete ✓ · ' + ((g.campaign && g.campaign.title) || 'the story') + ' is finished'
       : g.phase !== 'lobby' ? null : !isHost ? 'Waiting for ' + (host?.name || 'the host') + ' to start'
       : g.phase !== 'lobby' ? null : !squad.length ? 'Lock in a character to start'
-      : S.mode === 'ai' && !st.narrator.scripted ? notReadyReason(st.narrator) : null;
+      : S.mode === 'ai' && !st.narrator.scripted && !optional ? notReadyReason(st.narrator) : null;
     const notReady = !!why;
     const lib = st.library.filter((c) => !c.draft && !validateSheet(c));
     return {
@@ -154,13 +175,19 @@ export class RoomLogic extends DCLogic {
       ...this.keyVals(g, isHost), remember: st.narrator.remember, onRemember: (e) => setNarrator({ remember: e.target.checked }),
       ...this.narratorVals(),
       // In session the big button is the way back (UI pass 2.1), never a greyed "In session".
-      notReady, startLabel: why || (g.phase !== 'lobby' ? 'Return to the session ›' : g.players.length > 1 && offline.length ? 'Start session · ' + offline.map((p) => p.name).join(', ') + ' has no character yet' : 'Start session'),
-      startSession: () => (g.phase !== 'lobby' ? this.backToSession(g) : act({ type: 'session/start' })),
+      notReady, startLabel: why || (g.phase !== 'lobby' ? 'Return to the session ›' : runsMode ? 'Start the run' : g.players.length > 1 && offline.length ? 'Start session · ' + offline.map((p) => p.name).join(', ') + ' has no character yet' : 'Start session'),
+      startSession: () => (g.phase !== 'lobby' ? this.backToSession(g) : act({ type: runsMode ? 'run/start' : 'session/start' })),
       startNote: g.phase !== 'lobby' && !(g.story && g.story.complete) ? (isHost ? 'Changes here apply from the Narrator\'s next turn.' : 'The session is on: this only takes you back.') : '',
       returnStory: !!(g.story && g.story.complete), toStory: () => this.backToSession(g),
       // The Proving Ground (practice mode): endless waves, no Narrator, no key needed; the squad as locked in, or a test character.
       proveCan: isHost && g.phase === 'lobby', proveGuest: !isHost && g.phase === 'lobby', openProve: () => openProvingGround(mine.length ? undefined : 'sharpshooter'),
-      proveLabel: '⚔ Proving Ground' + (mine.length ? '' : ' · with a test character'),
+      proveLabel: '⚔ Proving Ground · practice range' + (mine.length ? '' : ' · with a test character'),
+      modeCards: modeCardsV, modeWho: isHost ? 'YOU PICK' : 'THE HOST PICKS', seal: IMG['emblem-ahoc-seal'] || ART('emblem-ahoc-seal'), showModes: !run,
+      showCampaign: !run && playOf(g) === 'campaign', runOn: !!run, run: runV || {},
+      // The Narrator panel (survival-spec 8.1 item 8): collapsed, not hidden, where a Narrator is optional flavour
+      narrCollapsed: optional && !this.state.narrOpen, narrOpen: !optional || this.state.narrOpen, narrCanHide: optional && this.state.narrOpen,
+      narrNone: (mode ? mode.name : 'This mode') + ' needs no Narrator.' + (isHost ? '' : ' Nobody here needs a key.'), narrCanAdd: isHost, narrAddLabel: 'Add a Narrator for flavour (optional)',
+      narrExpand: () => this.setState({ narrOpen: true }), narrCollapse: () => this.setState({ narrOpen: false }), modeName: mode ? mode.name : '',
       startStyle: 'min-height: 52px; border-radius: 12px; border: 0; font-family: inherit; font-size: 15px; font-weight: 700; ' + (notReady ? 'background: #1C2536; color: #A3AEC2' : 'background: #6FEA77; color: #0A0D13; cursor: pointer'),
     };
   }

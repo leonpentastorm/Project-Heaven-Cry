@@ -413,6 +413,7 @@ PRIMITIVE_FILES = [
     (SRC + '/descriptors.ts', ['registerActions', 'actionsFor', 'previewDescriptor', 'sendDescriptor', 'nextStep', 'stepOn', 'ActionSystem', 'ActionDescriptor', 'PickStep', 'PickOption', 'DescCost', 'DescCtx', 'DescriptorPreview', 'PreviewLine', 'GridMarks', 'GROUP_ORDER'], 'Action descriptors'),
     (SRC + '/preview.ts', None, 'Previews and dry runs'),
     (SRC + '/datatext.ts', None, 'Numbers in data texts'),
+    (SRC + '/run/state.ts', None, 'The mode a room plays and the Survival run (rules 1.39)'),
     ('apps/web/src/game/actionTip.ts', None, 'The client\'s one hover card'),
     ('apps/web/src/game/actionFlow.ts', None, 'The client\'s action flow'),
 ]

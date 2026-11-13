@@ -5,7 +5,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES, active, fightRulingOf } from '@engine';
 
 { const kept = new Map<string, string>(); // a browser's storage, so a room can be closed and opened again
-  (globalThis as any).localStorage = { getItem: (k: string) => kept.get(k) ?? null, setItem: (k: string, v: string) => { kept.set(k, String(v)); }, removeItem: (k: string) => { kept.delete(k); }, clear: () => kept.clear(), key: (i: number) => [...kept.keys()][i] ?? null, get length() { return kept.size; } }; }
+  (globalThis as any).localStorage = { getItem: (k: string) => kept.get(k) ?? null, setItem: (k: string, v: string) => { kept.set(k, String(v)); }, removeItem: (k: string) => { kept.delete(k); }, clear: () => kept.clear(), key: (i: number) => [...kept.keys()][i] ?? null, get length() { return kept.size; } };
+  kept.set('phc.testPlay', 'campaign'); } // rules 1.39: a story room (the browser suites' test hook, game/modes.ts): a new room opens on Campaign
 (globalThis as any).location = { search: '', origin: 'http://localhost', protocol: 'http:', host: 'localhost' };
 vi.mock('./net', () => ({ connect: () => ({ send: () => {}, close: () => {}, state: 'open' }) }));
 const usage = { input: 0, output: 0, cacheRead: 0, costUsd: 0 };

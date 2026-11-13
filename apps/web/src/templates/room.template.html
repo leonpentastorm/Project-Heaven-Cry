@@ -40,8 +40,29 @@
 </div>
 </div>
 
-<div style="display: flex; flex-direction: column; gap: 10px">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">WHERE IT STARTS · THE EARTH SECTOR</span>
+<sc-if value="{{showModes}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; gap: 10px">
+<span id="phc-mode-label" style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">THE MODE · {{modeWho}}</span>
+<div class="phc-modes" role="radiogroup" aria-labelledby="phc-mode-label" data-phc-modes="">
+<sc-for list="{{modeCards}}" as="m" hint-placeholder-count="3"><button type="button" role="radio" class="phc-mode" data-phc-mode="{{m.key}}" data-locked="{{m.lockedStr}}" aria-checked="{{m.checked}}" aria-label="{{m.aria}}" tabindex="{{m.tabindex}}" tip="{{m.tip}}" onClick="{{m.onClick}}" onKeyDown="{{m.onKey}}" style="{{m.style}}">
+<span class="phc-mode-art" style="{{m.artBox}}"><sc-if value="{{m.hasArt}}"><img src="{{m.img}}" alt="" style="display: block; width: 100%; height: 100%; object-fit: cover"></sc-if><sc-if value="{{m.noArt}}"><img src="{{seal}}" alt="" style="width: 44%; max-width: 96px; aspect-ratio: 1; object-fit: contain; opacity: 0.85"></sc-if><sc-if value="{{m.locked}}"><span aria-hidden="true" style="position: absolute; left: 10px; top: 10px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(10, 13, 19, 0.85); border: 1px solid #3B475D; color: #C9D3E3"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></span></sc-if><sc-if value="{{m.selected}}"><span aria-hidden="true" style="position: absolute; right: 10px; top: 10px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: #FFFFFF; color: #0A0D13; font-size: 17px; font-weight: 700">✓</span></sc-if></span>
+<span style="display: flex; flex-direction: column; gap: 4px; padding: 12px 14px 14px; min-width: 0">
+<span style="display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap"><span style="{{m.nameStyle}}">{{m.name}}</span><span style="{{m.statusStyle}}">{{m.status}}</span></span>
+<span style="{{m.lineStyle}}">{{m.line}}</span>
+</span>
+</button></sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<sc-if value="{{proveCan}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{openProve}}" data-sfx="start" tip="Practice mode: endless waves on one arena, infinite retries, and tools to spawn gear, change class and level, learn any magic and place enemies. No Narrator and no key needed. Nothing carries into a run or a campaign." style="min-height: 40px; padding: 0 4px; border: 0; background: transparent; color: #C9D3E3; font-family: inherit; font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #3B475D; cursor: pointer">{{proveLabel}}</button></sc-if>
+<sc-if value="{{proveGuest}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #A3AEC2">The host can open the Proving Ground: endless practice waves, no Narrator.</span></sc-if>
+<span aria-hidden="true" style="flex: 1 1 0"></span>
+<button type="button" data-phc-start="" onClick="{{startSession}}" disabled="{{notReady}}" style="{{startStyle}}">{{startLabel}}</button>
+</div>
+<sc-if value="{{startNote}}" hint-placeholder-val="{{false}}"><span style="margin-top: -4px; font-size: 12px; text-align: right; color: #A3AEC2">{{startNote}}</span></sc-if>
+<sc-if value="{{returnStory}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{toStory}}" style="align-self: flex-end; min-height: 46px; padding: 0 18px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer">Return to the story ›</button></sc-if>
+</div></sc-if>
+
+<sc-if value="{{showCampaign}}" hint-placeholder-val="{{false}}"><div data-phc-campaign-pick="" style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">THE CAMPAIGN · WHERE IT STARTS · THE EARTH SECTOR</span>
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <sc-for list="{{starts}}" as="c" hint-placeholder-count="5"><button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.short}}</button></sc-for><sc-if value="{{canLoad}}"><label tip="A campaign file in the PHC campaign format (JSON): zones, objects, the arc and the opening" style="display: inline-flex; align-items: center; min-height: 42px; padding: 0 16px; border-radius: 10px; border: 1px dashed #3B475D; color: #A3AEC2; font-weight: 600; cursor: pointer">Load a campaign file…<input type="file" accept=".json,application/json" onChange="{{loadCampaign}}" style="display: none"></label></sc-if>
 </div>
@@ -57,9 +78,23 @@
 <span style="font-size: 13px; color: #A3AEC2">{{start.meta}}</span>
 </div>
 </div>
-</div>
+</div></sc-if>
+
+<sc-if value="{{runOn}}" hint-placeholder-val="{{false}}"><div data-phc-run="" style="display: flex; flex-direction: column; gap: 10px; padding: 18px 20px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
+<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{run.kicker}}</span>
+<span style="font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">{{run.title}}</span>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.65; color: #DCE2EC">{{run.text}}</p>
+<sc-if value="{{run.canRetire}}" hint-placeholder-val="{{false}}"><button type="button" data-phc-retire="" onClick="{{run.retire}}" style="align-self: flex-start; min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer">Retire and keep the score</button></sc-if>
+</div></sc-if>
 </section>
 <aside aria-label="Narrator" class="phc-stagger" style="flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<sc-if value="{{narrCollapsed}}" hint-placeholder-val="{{false}}"><div data-phc-narr-collapsed="" style="display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
+<h2 style="margin: 0; font-size: 14px; letter-spacing: 0.18em; color: #A3AEC2">WHO NARRATES?</h2>
+<span style="font-size: 15px; line-height: 1.5; color: #E7EBF3">{{narrNone}}</span>
+<sc-if value="{{narrCanAdd}}" hint-placeholder-val="{{true}}"><button type="button" data-phc-narr-add="" aria-expanded="false" onClick="{{narrExpand}}" style="align-self: flex-start; min-height: 36px; padding: 0 2px; border: 0; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #3B475D; cursor: pointer">{{narrAddLabel}}</button></sc-if>
+</div></sc-if>
+<sc-if value="{{narrOpen}}" hint-placeholder-val="{{true}}"><div data-phc-narr-open="" style="display: flex; flex-direction: column; gap: 14px">
+<sc-if value="{{narrCanHide}}" hint-placeholder-val="{{false}}"><button type="button" data-phc-narr-hide="" aria-expanded="true" onClick="{{narrCollapse}}" style="align-self: flex-start; min-height: 32px; padding: 0 2px; border: 0; background: transparent; color: #A3AEC2; font-family: inherit; font-size: 12px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: #3B475D; cursor: pointer">Hide the Narrator settings (optional in {{modeName}})</button></sc-if>
 <h2 style="margin: 0; font-size: 14px; letter-spacing: 0.18em; color: #A3AEC2">WHO NARRATES?</h2>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
 <sc-for list="{{modes}}" as="m" hint-placeholder-count="2"><button type="button" onClick="{{m.pick}}" aria-pressed="{{m.pressed}}" style="{{m.style}}"><span style="font-size: 17px; font-weight: 700">{{m.name}}</span><span style="font-size: 13px; color: #A3AEC2; line-height: 1.4">{{m.desc}}</span></button></sc-for>
@@ -91,14 +126,7 @@
 <div style="display: flex; gap: 8px; flex-wrap: wrap">
 <sc-for list="{{tones}}" as="t" hint-placeholder-count="3"><button type="button" onClick="{{t.pick}}" aria-pressed="{{t.pressed}}" style="{{t.style}}">{{t.name}}</button></sc-for>
 </div>
-<button type="button" data-phc-start="" onClick="{{startSession}}" disabled="{{notReady}}" style="{{startStyle}}">{{startLabel}}</button>
-<sc-if value="{{returnStory}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{toStory}}" style="min-height: 46px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer">Return to the story ›</button></sc-if>
-<sc-if value="{{startNote}}" hint-placeholder-val="{{false}}"><span style="margin-top: -6px; font-size: 12px; text-align: center; color: #A3AEC2">{{startNote}}</span></sc-if>
-<sc-if value="{{proveCan}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px dashed #2E3A50">
-<button type="button" onClick="{{openProve}}" data-sfx="start" style="min-height: 46px; border-radius: 10px; border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer">{{proveLabel}}</button>
-<span style="font-size: 12px; line-height: 1.45; color: #A3AEC2">Practice mode: endless waves on one arena, infinite retries, and tools to spawn gear, change class and level, learn any magic and place enemies. No Narrator and no key needed. Nothing carries into the campaign.</span>
 </div></sc-if>
-<sc-if value="{{proveGuest}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; color: #A3AEC2">The host can open the Proving Ground: endless practice waves, no Narrator.</span></sc-if>
 </aside>
 </div>
 <!--LIGHTBOX-->

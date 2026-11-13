@@ -50,7 +50,7 @@ export function shellVals(self, screen) {
   return { sh: {
     code: (g && g.code) || st.code || '',
     showRoom: screen !== 'room', toRoom: () => go('room'),
-    showBack: screen === 'room' && !!g && g.phase !== 'lobby', toSession: () => go(g && g.phase === 'combat' ? 'combat' : 'main'),
+    showBack: screen === 'room' && !!g && g.phase !== 'lobby' && !(g.run && g.phase !== 'combat'), toSession: () => go(g && g.phase === 'combat' ? 'combat' : 'main'),
     isHost, save: () => saveWithFeedback(self), saveLabel: saved ? 'Saved ✓' : 'Save', saveName: saved ? 'Saved' : 'Save', saveStyle: btnStyle(saved),
     saveTitle: 'Save now (Ctrl+S). The game also saves itself after every action, in this browser and on the room server.',
     settings: () => openSettings(), report: openReport,

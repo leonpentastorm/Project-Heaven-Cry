@@ -5020,6 +5020,43 @@ PROVISIONAL (items 2500 onward).
    multiplier on what the door makes (for Figments: a stat a class move can raise that multiplies an owned unit's HP or
    damage). The Rigger's moves today are all verbs the simulator does not play.
 
+## Rules revision 1.39: the mode a room plays, and the Survival run's state (Survival, step 1)
+
+Built on 13 Nov 2026 (Survival build plan step 1; `docs/design/survival-spec.md` rules 1 to 4 and 36, section 8.1;
+hand-off `docs/design/handoffs/survival-step-1.md`). Only what step 1 builds is ruled here: the mode, the run's state,
+starting and retiring a run. The path map, the encounters, the shop, stages and boons are the later steps' revisions.
+Every number and word list is PROVISIONAL (items 2600 to 2612).
+
+1. **A room plays one mode** (`settings.play`): Survival, Roguelike or Campaign, in that order (`data/modes.json`). The
+   host picks it in the lobby with the room's settings; a guest can't. A mode whose data says `available: false` is
+   locked: picking it is refused with its data's words (`coming`). Today only Survival is open. A room's own mode is
+   never a pick: a room already on a locked mode (an old save) keeps it, may leave it for an open one, and can't come
+   back. The mode changes only in the lobby.
+2. **A new room selects Survival** (`modes.json default`). **A save written before modes reads as a Campaign**
+   (`old_save`): it has no `settings.play`; loading writes it in, and the engine reads a missing one the same way.
+3. **Survival starts a run, not a story.** In a Survival room the host's Start is `run/start`; `session/start` is
+   refused ("This room plays Survival: Start begins a run, not a story."). A Campaign room starts its story as before.
+4. **`run/start`** (host): refused unless the room is in its lobby, plays Survival, has at least one character, has no
+   player with two characters (one character a player), has no online player without one (an offline player doesn't
+   hold the room up), and every character is level 1. Each refusal names who or what. It opens the run (`g.run`, item
+   2604) at stage 1 on the map, takes the room out of the lobby, and begins session 1 (Echo 1, recovery, per-session
+   uses). No Narrator work is queued.
+5. **The seed:** the host may give one (a shared seed gives everyone the same run); else it is made from the room's
+   code and its action count ("PHC-" and six letters and digits): the same on a replay, different for each run a room
+   starts. No die is rolled for it.
+6. **During a run** the Narrator's, the story's, the sessions' and the rests' actions are refused, as in the Proving
+   Ground ("A Survival run has no Narrator and no story: the engine runs it, node by node."); level-ups, gear, magic
+   and a fight's own actions are not.
+7. **`run/retire`** (host): only after a Boss (the run standing at its boon pick or its next tile); refused before
+   ("You retire after a Boss: beat this stage's Boss first."), by a guest, with no run, and when the run is over. It
+   ends the run and keeps the score: how it ended, the stage, stages cleared (the stage under way counts: it ended
+   with its Boss), nodes walked, and each character's level.
+8. **The mode picker** (the lobby): three cards side by side, the room's mode checked and saying "Selected"; a locked
+   card is dimmed, carries a lock mark and says "Coming", and a click, a key or a hover shows its reason in the one
+   hover card; a guest's click says "Only the host picks this."; the campaign's starts and "Load a campaign file…" show
+   only in a Campaign room; the Proving Ground is a text button under the cards. Where a mode's Narrator is
+   `optional` (Survival) the Narrator panel is collapsed, not hidden, and Start needs no key.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8121,3 +8158,16 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2509. **Reflex measured +0 (rules 1.38):** off-turn damage 4 / 11 / 0 / 0% of a rifle-turn with and without Reflex, levels 1 / 5 / 10 / 20 (4 fights a cell). The spec's +8 to +17% is unconfirmed: a playtest or a scripted fight across a held line. PROVISIONAL.
 2510. **The healer under fire (rules 1.38):** the tank and a dedicated Soul healer under three Soldiers: nobody Down in 10 rounds in 50% (level 1), 75% (levels 6 and 12), 100% (level 20) of fights, against 0% with the healer idle; under two, 100% at every level (the tank alone also lasts at 12 and 20). Whole fights (open ground, 3 a cell): every squad wins, rounds to kill as the level-1 targets at every level (the healer squad 6.3 to 10.7, a round above the standard and Boss targets). A stall to watch in the playtest, not refitted. PROVISIONAL.
 2511. **Items 2500 to 2511 are rules 1.38's.**
+2600. **A room plays one mode (rules 1.39 rule 1):** `settings.play`, from `data/modes.json` (survival, roguelike, campaign); the host picks an open one in the lobby; a locked one is refused with its `coming` words; a room's own mode is never a pick. PROVISIONAL.
+2601. **Only Survival is open (rules 1.39 rule 1):** `available: false` on Roguelike ("Coming after the advanced classes.") and Campaign ("Coming when the campaigns are rewritten."). Unlocking is one edit. PROVISIONAL.
+2602. **A new room selects Survival; a save from before modes reads as a Campaign (rules 1.39 rule 2):** `modes.json default` and `old_save`; `migrateLoaded` writes the missing field. A lobby saved before modes reads as a Campaign too (a call made for Leon: the spec named only "a campaign under way"; the alternative, Survival for a save still in its lobby, is one line in `migrateLoaded`). PROVISIONAL.
+2603. **Survival starts a run, `session/start` is refused in it (rules 1.39 rule 3).** PROVISIONAL.
+2604. **The run's state `g.run` (rules 1.39 rule 4; survival-spec rule 36):** `seed`, `stage` (from 1), `world` (tiles), `nodes` (this stage's path map), `at`, `path`, `state` (`map`, `boon`, `tile`, `over`; later steps add node states), `leans`, `ready`, `offers`, `shop`, `stats`, `out`, `renown`, and `end` once over. Steps 2 to 6 fill the empty fields. PROVISIONAL.
+2605. **`run/start`'s conditions (rules 1.39 rule 4):** host; lobby; Survival; at least one character; one character a player; every online player has one; every character level 1. PROVISIONAL.
+2606. **Every online player must have a character to start a run (rules 1.39 rule 4):** the spec's "every seat locked in"; an offline player without one doesn't block. A call made for Leon. PROVISIONAL.
+2607. **The run's seed (rules 1.39 rule 5):** given by the host, else "PHC-" and six base-36 characters from the room's code and action count; no die rolled. PROVISIONAL.
+2608. **Actions refused during a run (rules 1.39 rule 6):** narrator, session, story, poi, world, voice, check, overreach, vote, campaign, award, memory, talk and rest actions (the Proving Ground refuses itself). PROVISIONAL.
+2609. **`run/retire` only after a Boss (rules 1.39 rule 7):** the run at `boon` or `tile`; it ends `over` with `end` {how, stage, cleared, nodes, levels}. Until step 5 builds the Boss no run reaches it in play. PROVISIONAL.
+2610. **The mode picker (rules 1.39 rule 8; survival-spec 8.1):** three cards, a radio group (arrows move, Enter or Space picks), the lock in words, the reason in the one hover card; the Narrator panel collapsed where a Narrator is optional. Until the path map lands (step 2) a run under way shows its seed and stage in the room in place of the cards. PROVISIONAL.
+2611. **The browser suites' test hook (rules 1.39):** a page with `phc.testPlay` (or campaigns listed for it, `phc.showCampaigns`) opens new rooms on Campaign and shows its card open; the engine is not told (it refuses a pick of a locked mode even there). Tests only.
+2612. **Items 2600 to 2612 are rules 1.39's.**
