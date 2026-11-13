@@ -1037,7 +1037,7 @@
               "numbers": {
                 "rounds": 3
               },
-              "text": "Costs {=ap_cost} AP, once a scene, one at a time. From a wreck, a pile with a weapon, or a barricade next to you, a turret stands on a free tile next to it. At each of your turn starts for {=numbers.rounds} rounds it makes that weapon's plain attack (a gun at the nearest enemy it sees in range, a melee weapon at an enemy in its reach; a wreck, a barricade or a consumable: a service pistol), rolling with your Improvisation. It is a machine: Overclock and repairs work on it.",
+              "text": "Costs {=ap_cost} AP, once a scene, one at a time. From a wreck, a pile with a weapon, or a barricade next to you, a turret stands on a free tile next to it. At each of your turn starts for {=numbers.rounds} rounds it makes that weapon's plain attack at the nearest enemy it can reach (a barricade, or a weapon that is used up, gives it the turret's own), rolling with your Improvisation. It is a machine: Overclock and repairs work on it.",
               "effects": [
                 {
                   "op": "grant_action",

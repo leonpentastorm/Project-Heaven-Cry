@@ -2291,7 +2291,7 @@
           "Thinking it in your head is not enough! Master Sakamoto once spent four months mixing just 200 grams of watercolour. He called it 'Thousand-Autumn Red.' And if you must know: I've watched the video of him mixing it over a thousand times, and I still can't make that colour. No one can guess what you might do with a few rose stems, glue and an egg yolk. I wonder what 'Afternoon of Blood' looked like inside his mind. But the undeniable truth is that the way he carried that thought from his head onto paper is irresistible. A beauty only he could paint."
         ],
         "intro": "Visualization is your power to picture the world: to take the shapeless thoughts in your head and express them outward as images.",
-        "effect": "+5% elemental damage.",
+        "effect": "One more tile of projection range; Figment accuracy (the modifier).",
         "high_levels": "you see the story behind every landscape and make landscapes out of every story. You risk sinking into faraway worlds and forgetting this one.",
         "good_for": "critics, painters, Projector Gear® users.",
         "bad_for": "the near-sighted, people who'd rather feel than describe.",

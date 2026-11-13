@@ -36,7 +36,7 @@ export const OWNED_TURNS = ['own', 'owner', 'auto'] as const;
 /** An owned unit's own block (P9). `spent`: what its spawn took (unmake's refund). */
 export interface OwnedBlock { turn: (typeof OWNED_TURNS)[number]; /** companion (default) or a system's word (figment): one tie kind, the record tells them apart */ kind?: string; eyes?: boolean; upkeep?: { res: string; n: number }; cover?: boolean | 'full'; lure?: boolean; spent?: Record<string, number>; /** turn auto: what it does at its owner's turn start */ auto?: { verb: string; target: (typeof AUTO_TARGETS)[number] };
   /** Classes 3.0 step 8 (rules 1.34): made outside its owner's held count (the Rigger's Double, a Scrap Turret) */ free?: boolean;
-  /** rules 1.34: it is unmade at its owner's turn start in this round (a lifetime in rounds) */ until?: number }
+  /** rules 1.34: its owner's turn starts left before it is unmade (a lifetime: figments.ts counts it down) */ left?: number }
 /** The fields of a block a spawn copies onto the unit's record. */
 export const OWNED_FIELDS = ['turn', 'owned_kind', 'eyes', 'upkeep', 'cover', 'lure', 'auto'];
 /** The verbs an owned unit of turn owner or auto can be given: the engine's own move and plain attacks, run with the
@@ -138,8 +138,8 @@ const VERB_NAMES: Record<string, string> = { move: 'Move', shot: 'Shot', aimed: 
 /** A data verb's name, its AP for this owner now (its site, priced on the owner), and what it is aimed at: the
  * descriptors' row. null: one of OWNED_VERBS (the descriptors price those from the weapon). */
 export function ownedVerbInfo(cb: Combat, owner: Unit, u: Unit, verb: string): { name: string; ap: number; pick: 'tile' | 'enemy' | 'none'; text: string } | null {
-  const dv = OWNED_DATA_VERBS[verb]; if (!dv) return null;
-  return { name: dv.name || VERB_NAMES[verb] || verb, ap: price({ cb, u: owner }, dv.site, undefined, { owned: u.id }).ap, pick: dv.reach ? 'enemy' : 'none', text: dv.text || '' };
+  const dv = OWNED_DATA_VERBS[verb]; if (!dv) return null; const action: string = dv.site;
+  return { name: dv.name || VERB_NAMES[verb] || verb, ap: price({ cb, u: owner }, action, undefined, { owned: u.id }).ap, pick: dv.reach ? 'enemy' : 'none', text: dv.text || '' };
 }
 /** The units its owner may give orders to now: its owned units with no turn of their own, standing. */
 export const orderable = (cb: Combat, owner: Unit): Unit[] => (cb.ties?.length ? ownedBy(cb, owner).filter((u) => !!turnless(u) && !u.dead && !u.downed && cb.units.includes(u)) : []);
@@ -178,7 +178,7 @@ export function runOwned(cb: Combat, rng: Rng, owner: Unit, u: Unit | undefined,
 /** A data verb (OWNED_DATA_VERBS) run with the owned unit as the actor, priced at its site on the owner and paid by it.
  * `free`: Overclock's (no AP, a verb of up to that many AP). Returns the refusal, or null. */
 export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any, o: { targetId?: string | null; tile?: string | null; free?: number } = {}): string | null {
-  const c = charOfUnit(owner), pr = price({ cb, u: owner }, dv.site, undefined, { owned: me.id });
+  const c = charOfUnit(owner), action: string = dv.site, pr = price({ cb, u: owner }, action, undefined, { owned: me.id });
   if (o.free != null && pr.ap > o.free) return dv.name + ' costs more than ' + o.free + ' AP.';
   const cost = o.free != null ? 0 : pr.ap;
   { const no = whyNot(cb, owner, cost, { c }); if (no) return no; }

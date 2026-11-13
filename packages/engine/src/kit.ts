@@ -76,6 +76,7 @@ export function standBlocker(cb: Combat, k: string, mover?: Unit | null, blocked
  * or not, a companion or not, a False Image or not. Every exception is named at the call. */
 export interface Who {
   /** Downed units too (a body on the ground). */ downed?: boolean;
+  /** Dead units too (a wreck: rules 1.34, the Rigger's Salvage and Scrap Turret). */ dead?: boolean;
   /** Units that surrendered too. */ surrendered?: boolean;
   /** false: leave Hidden units out. */ hidden?: boolean;
   /** false: leave companions (a drone, a beast, a summon with `companion`) out. */ companions?: boolean;
@@ -85,7 +86,7 @@ export interface Who {
   /** alliesOf only: the unit itself too. */ self?: boolean;
 }
 function counts(cb: Combat, v: Unit, o: Who, from: string): boolean {
-  if (v.dead || (v.downed && !o.downed) || (v.surrendered && !o.surrendered)) return false;
+  if ((v.dead && !o.dead) || (!v.dead && v.downed && !o.downed) || (v.surrendered && !o.surrendered)) return false;
   if (o.hidden === false && v.hidden) return false;
   if (o.companions === false && v.companion) return false;
   if (o.images === false && (v as any).ghostOf) return false;

@@ -17,7 +17,7 @@ import { levelFactor } from '../effects/output';
 import { withAp, resGive } from '../effects/cost';
 import { RULES } from '../data';
 import { visFocusWhy, pictureTileWhy, projectionRange, figmentsOf, unravel, makeFigment, isFigment, FIG } from '../figments';
-import { ownerOf as ownerOfUnit, unmakeOwned, spawnOwned, runDataVerb, OWNED_DATA_VERBS } from '../owned';
+import { ownerOf as ownerOfUnit, ownedBy, unmakeOwned, spawnOwned, runDataVerb, OWNED_DATA_VERBS } from '../owned';
 import { tendHook } from '../effects/damage';
 import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
@@ -29,7 +29,7 @@ import {
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
 import { applyCond, endCond, condOn, unitSave, unitStrength, shiftMana, saveAgainst , saveTn } from '../magic';
-import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
+import { overworld, say, unitById, tileOf, rngOf, canStand, foesOf, alliesOf, unitsIn } from '../kit';
 type Fam = 'body' | 'brain' | 'heart';
 import { type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, react, hide, seenByFoes, HEARING } from '../tactics';
@@ -515,7 +515,7 @@ register({
 // salvaged; your newest Figment; the most hurt machine or Figment).
 const wreckOf = (t: Unit) => t.dead && (repairable(t) || machineLike(t));
 function salvageTarget(h: Holder, way: string): Unit | null {
-  const cb = h.cb!, u = h.u!, near = cb.units.filter((t) => t !== u && dist(u.pos, t.pos) <= num(h, 'reach'));
+  const cb = h.cb!, u = h.u!, r = num(h, 'reach'), near = [...alliesOf(cb, u, { within: r, dead: true, downed: true }), ...foesOf(cb, u, { within: r, dead: true, downed: true })];
   if (way === 'wreck') return near.find((t) => wreckOf(t) && !uses(h).on(t).used('per_combat')) || null;
   if (way === 'reclaim') return [...figmentsOf(cb, u)].reverse().find((t) => near.includes(t)) || null;
   return near.filter((t) => !t.dead && t.side === u.side && repairable(t) && (t.hp < t.maxHp || t.downed)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0] || null;
@@ -535,7 +535,7 @@ register({
       const cb = h.cb!, u = h.u!, way = args.choice || 'wreck', t = salvageTarget(h, way)!;
       if (way === 'wreck') { uses(h).on(t).take('per_combat', 1); const got = resGive(cb, u, 'vcharge', num(h, 'charge'), { c: h.c, why: 'salvage' }); emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1000 }); say(cb, u.name + ' strips the wreck of ' + t.name + ': +' + got + ' Visualizer charge.'); return null; }
       if (way === 'reclaim') { unmakeOwned(cb, t, { refund: true, quiet: true }); say(cb, u.name + ' takes ' + t.name + ' back apart: its charge goes home.'); return null; }
-      const n = Math.floor(itemAmount(h.key, 'repair', [{ v: levelFactor('mend', u.level ?? 1), label: 'level' }])), was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + n); if (up) setDowned(t, false);
+      const n = Math.floor(itemAmount('class:trickster.salvage', 'repair', [{ v: levelFactor('mend', u.level ?? 1), label: 'level' }])), was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + n); if (up) setDowned(t, false);
       emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
       say(cb, u.name + ' patches ' + t.name + ' with salvage: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
     },
@@ -570,7 +570,7 @@ register({
       say(cb, u.name + ' overclocks ' + t.name + '.');
       const no = dv ? runDataVerb(cb, rng as Rng, u, t, dv, { targetId: foe.id, free: num(h, 'max_ap') }) : withAp(t, num(h, 'max_ap'), () => { const pv = previewAttack(cb, t, foe, v as any); if (!pv.ok) return pv.why || 'Not now.'; resolveAttack(cb, rng as Rng, t, foe, v as any, null, { noAp: true }); return null; });
       if (no) return no;
-      if (!t.dead) say(cb, t.name + ' strains' + hurtUnit(t, Math.floor(itemAmount(h.key, 'strain', [{ v: levelFactor('deal', u.level ?? 1), label: 'level' }])), true, cb, 'overclock', u) + '.');
+      if (!t.dead) say(cb, t.name + ' strains' + hurtUnit(t, Math.floor(itemAmount('class:trickster.overclock', 'strain', [{ v: levelFactor('deal', u.level ?? 1), label: 'level' }])), true, cb, 'overclock', u) + '.');
       return null;
     },
   }],
@@ -579,7 +579,7 @@ register({
 /** The enemy an overclocked unit attacks: the nearest standing one it can reach with its attack. */
 function overclockFoe(cb: Combat, t: Unit): Unit | null {
   const v = overclockVerb(t); if (!v) return null; const dv = OWNED_DATA_VERBS[v];
-  const foes = cb.units.filter((x) => x.side !== t.side && alive(x) && !x.hidden).sort((a, b) => dist(t.pos, a.pos) - dist(t.pos, b.pos));
+  const foes = foesOf(cb, t, { hidden: false }).sort((a, b) => dist(t.pos, a.pos) - dist(t.pos, b.pos));
   return foes.find((x) => (dv ? dist(t.pos, x.pos) <= (dv.reach?.tiles ?? 1) && !dv.dash : withAp(t, Number.POSITIVE_INFINITY, () => previewAttack(cb, t, x, v as any).ok))) || null;
 }
 
@@ -590,7 +590,7 @@ function overclockFoe(cb: Combat, t: Unit): Unit | null {
 // weapon if it has one that is not used up, else the turret block's own), rolling d20 + your Improvisation modifier,
 // damage on the weapon profile at your level. One at a time. A machine: Overclock and repairs work on it.
 function scrapWeapon(cb: Combat, tile: string): string | null | undefined {
-  const wreck = cb.units.find((x) => x.pos === tile && wreckOf(x)); if (wreck) return WEAPON[wreck.weapon] && !(WEAPON[wreck.weapon] as any).consumable ? wreck.weapon : null;
+  const wreck = unitsIn(cb, [tile], { dead: true }).find((x) => wreckOf(x)); if (wreck) return WEAPON[wreck.weapon] && !(WEAPON[wreck.weapon] as any).consumable ? wreck.weapon : null;
   const pile = objectsAt(cb, tile).find((o) => o.kind === 'pile'); if (pile) { const w = (pile.items || []).map((x: any) => x.weapon || x.item || x.id).find((id: string) => WEAPON[id] && !(WEAPON[id] as any).consumable && WEAPON[id].category !== 'thrown'); return w || null; }
   if (objectsAt(cb, tile).some((o) => /barricade/.test(o.kind))) return null;
   return undefined; // nothing to build from
@@ -600,7 +600,7 @@ register({
   actions: [{
     id: 'scrap_turret', label: 'Scrap Turret', scope: ['combat'], target: 'tile', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'From a wreck, a pile with a weapon, or a barricade next to you: a turret that attacks at your turn starts for a few rounds.',
-    available: (h) => (h.cb && h.u && h.cb.units.some((x) => (x as any).owned?.kind === 'machine' && !x.dead && ownerOfUnit(h.cb!, x) === h.u) ? 'One turret at a time.' : true),
+    available: (h) => (h.cb && h.u && ownedBy(h.cb, h.u).some((x) => (x as any).owned?.kind === 'machine' && !x.dead && h.cb!.units.includes(x)) ? 'One turret at a time.' : true),
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
       if (dist(u.pos, k) > 1) return { ok: false, why: 'Next to you.' };
@@ -614,7 +614,7 @@ register({
       const tr = spawnOwned(cb, u, FIG.turret.id, at, rng as Rng, { block }); if (typeof tr === 'string') return tr;
       tr.attack = mod(u.proficiency || 0); tr.strength = tr.attack; tr.infiniteAmmo = true; tr.kind = FIG.turret.kind;
       tr.lvlDmg = Math.round(RULES.output.profiles.weapon.k * levelFactor('deal', u.level ?? 1) * 1000) / 1000;
-      (tr as any).owned.free = true; (tr as any).owned.until = cb.round + num(h, 'rounds');
+      (tr as any).owned.free = true; (tr as any).owned.left = num(h, 'rounds');
       emitFx(cb, 'figment', { unit: tr.id, owner: u.id, at, form: 'scrap_turret' }); say(cb, u.name + ' rigs a Scrap Turret at ' + refOf(at) + ' (' + (WEAPON[w]?.name || w) + ').'); sightCheck(cb);
       return null;
     },

@@ -29,7 +29,7 @@ describe('the nine classes (data)', () => {
     for (const k of CLASSES) for (const r of ['I', 'II', 'III']) expect(k.ranks[r].moves.length, k.id + ' ' + r).toBe(2);
     const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves));
     expect(all.length).toBe(54);
-    expect(all.filter((m: any) => m.new).length).toBe(22); // the 20 new moves and Run and Gun (rules 1.30); rules 1.31: Ward and Smite in, Command out
+    expect(all.filter((m: any) => m.new).length).toBe(24); // the 20 new moves and Run and Gun (rules 1.30); rules 1.31: Ward and Smite in, Command out; rules 1.34: Salvage, Overclock, Scrap Turret in, Silver Tongue out
     expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(27); // 28 old base moves; rules 1.31: Will Shield out (Ward)
     expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(5); // 5 old advanced moves (Called Shot left the Skirmisher, rules 1.30)
   });
@@ -45,7 +45,7 @@ describe('the nine classes (data)', () => {
   it('every move in the catalogue carries origin, fantasy_tags, attributes and status; 11 + 58 are shelved', () => {
     const moves = Object.values(CLASS_MOVE_POOL);
     for (const m of moves) { expect(m.origin).toBeTruthy(); expect(m.fantasy_tags?.length).toBeGreaterThan(0); expect(m.attributes?.length).toBeGreaterThan(0); expect(['active', 'shelved']).toContain(m.status); }
-    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(11);
+    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(14); // rules 1.34: + Silver Tongue, Blind and Slow, Rewrite
     expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(58); // Called Shot waits for the Operative (rules 1.30)
   });
 });
@@ -211,7 +211,7 @@ describe('Revision 2 saves migrate', () => {
     const c = s.g.characters[id];
     expect(c.classId).toBe('trickster'); expect(c.advancedClass).toBe('siege_engineer');
     expect(classKeys(c).some((k) => k.startsWith('class:warden.'))).toBe(false); // Ward, Seal, Raise Cover: shelved
-    expect(classKeys(c)).toContain('class:trickster.read');
+    expect(classKeys(c)).toContain('class:trickster.false_image'); // rules 1.34: the Rigger's Double (Read went to the Operative)
     expect(classKeys(c).some((k) => k.startsWith('class:siege_engineer.'))).toBe(false);
     const notes = s.g.story.entries.filter((e) => e.kind === 'system').map((e) => e.text).join(' ');
     expect(notes).toContain('Warden is now the ' + CLASS.trickster.name); expect(notes).toMatch(/advanced classes are being rebuilt/);
@@ -224,7 +224,7 @@ describe('Revision 2 saves migrate', () => {
 describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-moves.test.ts)', () => {
   const NEW = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new).map((m: any) => m.key.replace(/^class:/, ''));
   it('each has its full data entry, a registered handler, and no effect is a coverage gap', () => {
-    expect(NEW.length).toBe(22); // + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite (data only), − Command
+    expect(NEW.length).toBe(24); // + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite (data only), − Command; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
     for (const k of NEW) {
       const info = itemInfo('class:' + k)!;
       expect(info, k).toBeTruthy(); expect(info.text.length, k).toBeGreaterThan(10); expect(info.provisional, k).toBe(true);

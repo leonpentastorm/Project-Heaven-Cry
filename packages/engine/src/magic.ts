@@ -2,6 +2,7 @@
 // the facing rule, Reach, Delivery, Burst, KIN), fired with Evoke. Outbursts are held in the heart, grow each turn and are released when
 // the caster chooses. The ambient mana meter, conditions with saves, shields and standing wall zones live here too.
 // Everything is deterministic: rolls come from the rng passed in.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import figmentsJ from '../../../data/figments.json';
 import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, type SigilDef, type ToneRider } from './data';
 import {

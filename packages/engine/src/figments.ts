@@ -17,10 +17,10 @@ import { say, emitFx, dist, unitSees, refOf, alive, resolveAttack, previewAttack
 import type { Character, FigmentDesign } from './character';
 import { mod } from './character';
 import { ENEMY, enemyLevelRow, RULES } from './data';
-import { register, statQuery, charOfUnit } from './effects';
+import { register, statQuery, charOfUnit, uses } from './effects';
 import { onHook } from './effects/hooks';
 import { registerPickList } from './effects/actions';
-import { price } from './effects/cost';
+import { price, resGive } from './effects/cost';
 import { levelFactor } from './effects/output';
 import { spawnOwned, unmakeOwned, ownedBy, ownerOf, addOwnedGate } from './owned';
 import { condOn, saveAgainst } from './magic';
@@ -147,7 +147,7 @@ export function makeFigment(cb: Combat, rng: Rng, owner: Unit, form: string, tra
   if (o.free) delete block.upkeep;
   const u = spawnOwned(cb, owner, form, at, rng, { block, spent: { vcharge: o.charge } }); if (typeof u === 'string') return u;
   setUp(owner, u, form, traits, o.charge);
-  if (o.free) { (u as any).owned.free = true; (u as any).owned.until = cb.round + o.free.rounds; }
+  if (o.free) { (u as any).owned.free = true; (u as any).owned.left = o.free.rounds; }
   if (block.lure) lure(cb, rng, owner, u, o.mirrorOf || owner);
   sightCheck(cb);
   return u;
@@ -230,7 +230,7 @@ register({
   actions: [{
     id: 'visualizer_core', label: 'Load the Visualizer', scope: ['combat'], target: 'none', ap: (h) => price({ cb: h.cb, u: h.u }, 'swap_core').ap, res: { cores: 1 },
     available: (h) => (!h.u?.mg?.visualizer ? 'Needs the Visualizer in hand.' : (h.u.mg.vcharge ?? 0) >= (h.u.mg.vchargeMax ?? 0) ? 'The core is full.' : true),
-    run: (h) => { const m = h.u!.mg!; m.vcharge = m.vchargeMax; emitFx(h.cb!, 'core', { unit: h.u!.id, at: h.u!.pos, dur: 1000, focus: 'visualizer' }); say(h.cb!, h.u!.name + ' loads a fresh core into the Visualizer (' + m.vcharge + ' charge).'); return null; },
+    run: (h) => { const m = h.u!.mg!; resGive(h.cb, h.u!, 'vcharge', (m.vchargeMax ?? 0) - (m.vcharge ?? 0), { c: h.c, why: 'core' }); emitFx(h.cb!, 'core', { unit: h.u!.id, at: h.u!.pos, dur: 1000, focus: 'visualizer' }); say(h.cb!, h.u!.name + ' loads a fresh core into the Visualizer (' + m.vcharge + ' charge).'); return null; },
   }],
   brief: () => null,
 });
@@ -238,7 +238,7 @@ register({
 // ---------------------------------------------------------------------------------------------- holding
 // Acting through a Figment: the Visualizer in hand, not Silenced, the Figment within projection range (Let go: always).
 addOwnedGate((cb, owner, u, verb) => {
-  if (!isFigment(u) || verb === 'let_go') return null;
+  if (!(u as any).figment || verb === 'let_go') return null; // a Figment the Visualizer made (rules 1.34)
   const no = visFocusWhy(owner); if (no) return no;
   const r = projectionRange(owner) + ((u as any).figment?.range || 0);
   return dist(owner.pos, u.pos) > r ? 'Out of projection range (' + r + ').' : null;
@@ -254,12 +254,14 @@ onHook('turn_start', (ctx: any, cb: Combat) => {
   const u: Unit = ctx.u; if (!u || !cb.ties?.length) return;
   // a Figment with a lifetime (the Rigger's Double) fades at its owner's turn start in its last round
   // (and a Scrap Turret after its rounds: any owned unit with a lifetime; an auto unit has acted first, owned.ts)
-  for (const f of ownedBy(cb, u)) { const until = (f as any).owned?.until; if (until == null || cb.round < until || !cb.units.includes(f)) continue; if (isFigment(f)) unravel(cb, f, 'it fades'); else { unmakeOwned(cb, f, { quiet: true }); say(cb, f.name + ' falls apart.'); } }
+  for (const f of ownedBy(cb, u)) { const rec = (f as any).owned; if (rec?.left == null || !cb.units.includes(f)) continue; rec.left -= 1; if (rec.left > 0) continue; if (isFigment(f)) unravel(cb, f, 'it fades'); else { unmakeOwned(cb, f, { quiet: true }); say(cb, f.name + ' falls apart.'); } }
   // an Elite or a Boss tests a Double again at each of its turn starts; a Boss is never fooled two rounds running
   if (u.side === 'foe' && cb.images?.length) for (const img of imagesOf(cb).filter((i) => i.body && i.fooled.includes(u.id))) {
     const tier: any = u.tier ? (ENEMY as any)[u.tier] : null, owner = cb.units.find((x) => x.id === img.owner);
     if (!tier || tier.double_save == null || !(tier.double_save > 0) || !owner) continue;
-    const keep = img.round < cb.round && u.tier === 'boss' ? false : doubleSave(cb, ctx.rng, owner, u).fooled;
+    // a Boss stays fooled through one of its turns (its first turn start after the lie marks it), never two rounds running
+    const boss = u.tier === 'boss', seen = ((img as any).bossTurns ||= {}) as Record<string, number>;
+    const keep = boss ? !seen[u.id] : doubleSave(cb, ctx.rng, owner, u).fooled; if (boss) seen[u.id] = 1;
     if (!keep) { img.fooled = img.fooled.filter((x) => x !== u.id); say(cb, u.name + ' sees through the Double.'); }
   }
 });
@@ -303,11 +305,11 @@ onHook('combat_end', (_ctx: any, cb: Combat) => {
 onHook('move_step', (ctx: any, cb: Combat) => {
   const m: Unit = ctx.u; if (!m || ctx.skipOW || !cb.ties?.length || m.side === 'pc' && !cb.units.some((x) => x.side !== m.side && isFigment(x))) return;
   for (const b of cb.units) {
-    if (b.side === m.side || b.dead || b.downed || !isFigment(b) || !FORM[(b as any).figment?.form]?.hold || (b as any).holdRound === cb.round) continue;
+    if (b.side === m.side || b.dead || b.downed || !isFigment(b) || !FORM[(b as any).figment?.form]?.hold || holdUses(cb, b).used('per_round') > 0) continue;
     const before = dist(ctx.from, b.pos) <= 1, after = dist(ctx.at, b.pos) <= 1; if (before === after) continue;
     const owner = ownerOf(cb, b); if (!owner || visFocusWhy(owner) || dist(owner.pos, b.pos) > projectionRange(owner)) continue;
     react(cb, b, { kind: 'attack', payer: owner, event: 'hold:' + b.id + ':' + cb.round }, () => {
-      (b as any).holdRound = cb.round;
+      holdUses(cb, b).take('per_round');
       const pv = previewAttack(cb, b, m, 'melee'); if (!pv.ok) return;
       say(cb, b.name + ' holds: it cuts ' + m.name + ' (' + owner.name + '\'s reaction).');
       resolveAttack(cb, ctx.rng, b, m, 'melee', null, { noAp: true });
@@ -315,6 +317,9 @@ onHook('move_step', (ctx: any, cb: Combat) => {
     if (m.dead || m.downed) { ctx.stop = true; return; }
   }
 });
+
+/** The Blade's Hold's once a round (effects/uses.ts on the Blade unit). */
+const holdUses = (cb: Combat, b: Unit) => uses({ key: 'figment:hold', u: b, cb });
 
 // ---------------------------------------------------------------------------------------------- what the screen reads
 /** The meter (spec section 9): Figments held / the most, the Visualizer's charge / its core. null: no Visualizer. */

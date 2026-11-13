@@ -19,8 +19,9 @@
 export const COST_SITE_IDS = [
   'analyze', 'break', 'clear_jam', 'crystallise', 'disengage', 'escape', 'extinguish', 'field_repair', 'hide', 'parley', 'pray', 'recover',
   'reload', 'reload_both', 'set_explosive', 'shove', 'sprint', 'stabilise', 'stim', 'swap_core', 'throw', 'triage', 'vent', 'ward', 'whisper',
-  // Classes 3.0 step 8 (rules 1.34): Figments' verbs (figments.ts; owned.ts runDataVerb prices a data verb's site)
-  'picture', 'let_go', 'figment_strike', 'figment_pounce', 'figment_cut', 'figment_stare',
+  // Classes 3.0 step 8 (rules 1.34): Picture (figments.ts). A Figment's own verbs are priced at their data site
+  // (owned.ts runDataVerb): the `cost` hook hears them by name (`action`), no `ap_cost:` stat asks for them.
+  'picture',
   // engine foundations 2: every verb priced by price() is a site (review 1, F3: these priced a literal, so no item could reach them)
   'attempt', 'brace', 'door', 'feed', 'load', 'overwatch', 'pickup', 'prone', 'pull_free', 'scuff', 'search', 'song', 'steady', 'syphon',
 ] as const;

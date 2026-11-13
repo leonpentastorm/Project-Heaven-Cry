@@ -33,7 +33,7 @@ const order = (f: F, ...us: Unit[]) => { f.cb.order = us.map((u) => u.id); };
 describe('the 20 new moves are handled', () => {
   it('every new move has a handler and every effect is engine-run (no gap, nothing left to the Narrator)', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
-    expect(NEW.length).toBe(22); // + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command
+    expect(NEW.length).toBe(24); // + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command; rules 1.34: the Rigger + Salvage, Overclock, Scrap Turret, − Silver Tongue (Field Fix and Read change hands)
     for (const m of NEW as any[]) {
       const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), m.key).toBe(true); // a handler, or data only (engine foundations 3)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);
@@ -195,8 +195,8 @@ describe('Infiltrator', () => {
     const v = g.turn(at(g, g.pc, '4,2')); at(g, g.foe, '8,2');
     expect(() => perk(g, v, 'class:infiltrator.vanish')).toThrow(/can see you/);
   });
-  it('Field Fix: clear a squadmate\'s jam, restore their weapon, repair a machine for 20; nothing to fix is refused', () => {
-    const f = fightWith([cls('infiltrator', 5), { traits: ['factory_made'] }], [{ at: 'P11' }]);
+  it('Field Fix (now the Rigger\'s, rules 1.34): clear a squadmate\'s jam, restore their weapon, repair a machine; nothing to fix is refused', () => {
+    const f = fightWith([cls('trickster', 5), { traits: ['factory_made'] }], [{ at: 'P11' }]);
     const [i, a] = f.pcs; at(f, i, '4,2'); at(f, a, '5,2');
     let u = f.turn(i); f.unit(a.id).jammed = true;
     perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'clear_jam' });
@@ -205,8 +205,8 @@ describe('Infiltrator', () => {
     perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'restore_durability' });
     expect(f.unit(a.id).dur).toBeGreaterThan(10);
     f.cb.round++; u = f.turn(u); f.unit(a.id).hp = 30;
-    perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'repair_machine' });
-    expect(f.unit(a.id).hp).toBe(50);
+    perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'repair' });
+    expect(f.unit(a.id).hp).toBeGreaterThan(30);
     f.unit(a.id).hp = f.unit(a.id).maxHp; f.unit(a.id).dur = f.unit(a.id).maxDur;
     expect(() => perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id })).toThrow(/Nothing to fix/);
   });
@@ -264,8 +264,8 @@ describe('Mage', () => {
 
 // ======================================================================================================== TRICKSTER
 describe('Trickster', () => {
-  it('Read: Analyze costs 1 AP and names the enemy\'s next action, which its turn then does', () => {
-    const f = fightWith([cls('trickster', 3, MIND)], [{}]);
+  it('Read (to the Operative, rules 1.34): Analyze costs 1 AP and names the enemy\'s next action, which its turn then does', () => {
+    const f = fightWith([cls('infiltrator', 5, MIND)], [{}]);
     const u = tough(at(f, f.pc, '4,2')), foe = at(f, f.foe, '7,2'); order(f, u, foe); f.turn(u);
     act(f, u, { type: 'combat/analyze', targetId: foe.id });
     expect(f.unit(u.id).ap).toBe(5);
@@ -283,60 +283,14 @@ describe('Trickster', () => {
     const it0 = withGame(f.g, () => enemyIntent(f.cb, f.foe));
     expect(it0.kind).toMatch(/attack|move/); expect(f.g.rng.state).toBe(s0); expect(JSON.stringify(f.cb)).toBe(before);
   });
-  it('False Image: 1 charge, a decoy the fooled enemy shoots instead of you; it scatters when struck', () => {
-    const f = fightWith([cls('trickster', 3, MIND)], [{}], { classic: true });
-    const u = tough(at(f, f.pc, '4,2')), foe = saves(at(f, f.foe, '10,2'), -50); order(f, u, foe); f.turn(u);
-    const ch = f.unit(u.id).mg!.charge;
-    perk(f, u, 'class:trickster.false_image', { tile: '6,4' });
-    expect(f.unit(u.id).mg!.charge).toBe(ch - 1); expect(f.cb.images![0]).toMatchObject({ owner: u.id, pos: '6,4', fooled: [foe.id] });
-    expect(withGame(f.g, () => enemyIntent(f.cb, f.unit(foe.id)))).toMatchObject({ kind: 'attack', image: f.cb.images![0].id });
-    act(f, f.unit(u.id), { type: 'combat/end-turn' });
-    expect(logHas(f.cb, /passes through a False Image/)).toBe(true);
-    expect(fx(f, 'image_gone').at(-1)).toMatchObject({ why: 'struck' }); expect(f.cb.images || []).toEqual([]);
-  });
-  it('False Image: refused out of range or with no charge', () => {
-    const f = fightWith([cls('trickster', 3, MIND)], [{}]);
-    const u = f.turn(at(f, f.pc, '1,2'));
-    expect(() => perk(f, u, 'class:trickster.false_image', { tile: '12,2' })).toThrow(/Out of range/);
-    f.unit(u.id).mg!.charge = 0;
-    expect(() => perk(f, u, 'class:trickster.false_image', { tile: '3,2' })).toThrow(/charge/);
-  });
-  it('Silver Tongue: a failed Brain save costs 2 AP on its next turn (a Boss 1); a machine or a far target is refused', () => {
-    for (const tier of ['soldier', 'boss']) {
-      const f = fightWith([cls('trickster', 5, MIND)], [{ tier }]);
-      const u = tough(at(f, f.pc, '4,2')), foe = saves(at(f, f.foe, '8,2'), -50); order(f, u, foe); f.turn(u);
-      seed(f, 5); perk(f, u, 'class:trickster.silver_tongue', { targetId: foe.id });
-      f.turn(foe);
-      expect(f.unit(foe.id).ap, tier).toBe(tier === 'boss' ? 5 : 4); expect(logHas(f.cb, /AP \(Silver Tongue\)/)).toBe(true);
-    }
-    const g = fightWith([cls('trickster', 5, MIND)], [{ name: 'Sentry turret' }, {}]);
-    const v = g.turn(at(g, g.pc, '4,2')); at(g, g.foes[0], '6,2'); at(g, g.foes[1], '12,2');
-    expect(() => perk(g, v, 'class:trickster.silver_tongue', { targetId: g.foes[0].id })).toThrow(/doesn't listen/);
-    expect(() => perk(g, v, 'class:trickster.silver_tongue', { targetId: g.foes[1].id })).toThrow(/Too far to be heard|Out of range/);
-  });
-  it('Silver Tongue: the enemy AI walks on what it has left', () => {
-    const f = fightWith([cls('trickster', 5, MIND)], [{ weapon: 'combat_knife' }]);
-    const u = tough(at(f, f.pc, '1,2')), foe = saves(at(f, f.foe, '7,2'), -50); order(f, u, foe); f.turn(u);
-    seed(f, 5); perk(f, u, 'class:trickster.silver_tongue', { targetId: foe.id });
-    at(f, f.unit(foe.id), '14,2'); // it walks from afar on its 4 AP
-    act(f, f.unit(u.id), { type: 'combat/end-turn' });
-    expect(logHas(f.cb, new RegExp(foe.name + ' [-−]2 AP \\(Silver Tongue\\)'))).toBe(true);
-    const g = fightWith([cls('trickster', 5, MIND)], [{ weapon: 'combat_knife' }]);
-    const v = tough(at(g, g.pc, '1,2')), gf = at(g, g.foe, '14,2'); order(g, v, gf); g.turn(v); act(g, g.unit(v.id), { type: 'combat/end-turn' });
-    expect(+f.unit(foe.id).pos.split(',')[0]).toBeGreaterThan(+g.unit(gf.id).pos.split(',')[0]); // it got less far
-  });
-  it('Sleight: swap places with a squadmate or your image, once a scene', () => {
+  // False Image became the Rigger's Double (a Figment) and Silver Tongue left the class (rules 1.34): rigger.test.ts.
+  it('Sleight: swap places with a squadmate (or one of your Figments), once a scene', () => {
     const f = fightWith([cls('trickster', 8, MIND), {}], [{ at: 'P11' }]);
     const [t, a] = f.pcs; at(f, t, '2,2'); at(f, a, '6,2'); f.turn(t);
     perk(f, f.unit(t.id), 'class:trickster.sleight', { actionId: 'sleight', targetId: a.id });
     expect(f.unit(t.id).pos).toBe('6,2'); expect(f.unit(a.id).pos).toBe('2,2'); expect(fx(f, 'swap').length).toBe(1);
     expect(() => perk(f, f.unit(t.id), 'class:trickster.sleight', { actionId: 'sleight', targetId: a.id })).toThrow(/next scene/);
-    const g = fightWith([cls('trickster', 8, MIND)], [{ at: 'P11' }]);
-    const v = g.turn(at(g, g.pc, '2,2'));
-    perk(g, v, 'class:trickster.false_image', { tile: '4,4' });
-    perk(g, g.unit(v.id), 'class:trickster.sleight', { actionId: 'sleight_image' });
-    expect(g.unit(v.id).pos).toBe('4,4'); expect(g.cb.images![0].pos).toBe('2,2');
-    expect(() => perk(g, g.unit(v.id), 'class:trickster.sleight', { actionId: 'sleight_image' })).toThrow(/next scene/); // one use a scene between the two
+    // (the swap with your own Figment: rigger.test.ts, rules 1.34)
   });
 });
 

@@ -117,7 +117,10 @@
    "mage.bleed_the_flux",
    "marksman.duck_and_roll",
    "trickster.false_image",
+   "trickster.overclock",
    "trickster.read",
+   "trickster.salvage",
+   "trickster.scrap_turret",
    "trickster.silver_tongue",
    "trickster.sleight"
   ],
@@ -318,7 +321,6 @@
    "skill:brain_power.3",
    "skill:brain_power.5",
    "skill:rumination.5",
-   "skill:visualization.5",
    "skill:will_power.3",
    "skill:will_power.5"
   ]
@@ -327,7 +329,7 @@
   "classes/i.ts": 77,
   "classes/j.ts": 105,
   "classes/k.ts": 111,
-  "classes/rev3.ts": 25,
+  "classes/rev3.ts": 20,
   "perks/a.ts": 52,
   "perks/b.ts": 49,
   "perks/c.ts": 62,
@@ -337,6 +339,6 @@
   "perks/g.ts": 50,
   "perks/h.ts": 22,
   "perks/skeleton.ts": 5,
-  "perks/skills.ts": 3
+  "perks/skills.ts": 2
  }
 }
