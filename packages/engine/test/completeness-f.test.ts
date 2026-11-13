@@ -143,24 +143,7 @@ describe('Drink It In: the spell\'s real price (item 68)', () => {
   });
 });
 
-describe('Inspire on Sigil and Soul strikes (item 69)', () => {
-  /** The strike's total in the miss line ("d20 r → total vs def"), with and without Inspire, on the same dice. */
-  function total(inspire: boolean, kind: 'sigil' | 'soul') {
-    const f = fightWith([cls('bard', 1, SOUL), kind === 'sigil' ? MIND : SOUL], [{}], { seed: 'INS' }); open(f.cb);
-    const [b, ally] = f.pcs; at(f, b, '2,2'); at(f, ally, kind === 'sigil' ? '4,4' : '3,3'); /* Sigil: next to the Stack and the foe (a Stack fires all around its caster) */ const foe = at(f, f.foe, '5,3'); foe.def = 99; foe.hp = foe.maxHp = 999;
-    caster(f.unit(ally.id), ['fire', 'condense']);
-    if (inspire) { const u = f.turn(b); f.unit(b.id).mg!.mp = 100; act(f, u, { type: 'combat/perk', id: 'class:bard.inspire', actionId: 'inspire', targetId: ally.id }); }
-    const a = f.turn(ally); f.g.rng.state = 4242;
-    if (kind === 'sigil') { glyph(f.cb, f.unit(ally.id), 'fire', '4,3'); glyph(f.cb, f.unit(ally.id), 'condense', '4,3'); act(f, a, { type: 'combat/evoke', tile: '4,3', aim: '5,3' }); }
-    else act(f, a, { type: 'combat/outburst', design: 'o1', aim: '5,3' });
-    const m = f.cb.log.map((l) => /misses Foe 1 \(d20 (\d+) → (-?\d+)/.exec(l)).find(Boolean);
-    return { die: +m![1], tot: +m![2], left: Object.values((f.g.story as any).encouraged || {}).length };
-  }
-  for (const kind of ['sigil', 'soul'] as const) it(kind + ': the next strike roll is +2, and Inspire is spent on it', () => {
-    const plain = total(false, kind), ins = total(true, kind);
-    expect(ins.die).toBe(plain.die); expect(ins.tot).toBe(plain.tot + 2); expect(ins.left).toBe(0);
-  });
-});
+// rules 1.33: item 69 (Inspire on Sigil and Soul strikes) is retired: Inspire gives a felt feeling (test/tending.test.ts)
 
 describe('Glyph Mason: an ally\'s Survey reach; the Keystone through two Evokes in a turn (items 70, 71)', () => {
   // Rules 1.4 (lane classes-k): the Keystone is cut on the mason's own tile; the ally stands 2 tiles beyond the Line's end.

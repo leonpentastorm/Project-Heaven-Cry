@@ -136,14 +136,7 @@ describe('Defender, Channeler, Guardian, Bard Inspire, Glyph Mason', () => {
     });
     expect(s).toBe(1); void foe;
   });
-  it('Inspire: the next Sigil strike roll takes the +2 (spell_roll)', () => {
-    const f = fightWith([cls('bard', 1, SOUL), MIND], [{}]);
-    const [b, ally] = f.pcs; at(f, b, '2,2'); at(f, ally, '3,3'); caster(f.unit(b.id), []); f.unit(b.id).mg!.mp = 100;
-    f.turn(b); act(f, f.unit(b.id), { type: 'combat/perk', id: 'class:bard.inspire', targetId: ally.id });
-    expect(Object.values((f.g.story as any).encouraged || {}).length).toBe(1);
-    const r: any = withGame(f.g, () => emit(f.cb, 'spell_roll', { u: f.unit(ally.id), t: f.foe, die: 10, add: 0, kind: 'sigil', cb: f.cb }));
-    expect(r.add).toBe(2); expect(Object.values((f.g.story as any).encouraged || {}).length).toBe(0);
-  });
+  // rules 1.33: Inspire is a felt feeling along a Bond (test/tending.test.ts); its old +2 on any roll is gone
   it('Glyph Mason Survey: an ally Evokes a Keystone pattern from 2 tiles (the evoke_reach hook)', () => {
     const f = fightWith([adv('glyph_mason'), MIND], [{}]);
     const [m, ally] = f.pcs; caster(f.unit(m.id), ['fire', 'push']); caster(f.unit(ally.id), ['fire', 'push']);

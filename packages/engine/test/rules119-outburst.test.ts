@@ -106,9 +106,9 @@ describe('rules 1.19: the 25 feelings', () => {
 });
 
 describe('rules 1.19: one free Pump a turn', () => {
-  it('the table: Empathy 3 gives the free Pump each round; Empathy 7 no longer gives a second, it swells without Strain', () => {
+  it('the table (rules 1.33: Will Power, it was Empathy): 3 gives the free Pump each round; Empathy 7 no longer gives a second, it swells without Strain', () => {
     const s = storyWith([{ ...SOUL }]); const c = s.g.characters[s.chars[0].id];
-    for (const [e, n, sw] of [[0, 0, false], [2, 0, false], [3, 1, false], [6, 1, false], [7, 1, true], [10, 1, true]] as [number, number, boolean][]) { c.skills.empathy = e; expect(freePumps(c), 'empathy ' + e).toBe(n); expect(swellFree(c), 'empathy ' + e).toBe(sw); }
+    for (const [e, n, sw] of [[0, 0, false], [2, 0, false], [3, 1, false], [6, 1, false], [7, 1, true], [10, 1, true]] as [number, number, boolean][]) { c.skills.will_power = e; expect(freePumps(c), 'will power ' + e).toBe(n); expect(swellFree(c), 'will power ' + e).toBe(sw); }
     expect(FREE_PER_TURN).toBe(1);
   });
   it('a character takes one free Pump a turn whatever gives them: the fight\'s first and Empathy\'s don\'t add up; it comes back next turn', () => {

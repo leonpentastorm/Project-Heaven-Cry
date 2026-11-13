@@ -198,16 +198,10 @@ describe('16 side rolls take the every-d20 modifiers', () => {
 describe('17/21 Medic Triage', () => {
   it('in a fight: never on yourself', () => {
     const f = fightWith([cls('medic', 1)], [{ at: 'O10' }]); const u = f.turn(f.pc); u.hp = 20; u.ap = 6;
-    expect(() => f.act({ type: 'combat/perk', unitId: u.id, id: 'class:medic.triage', actionId: 'triage', targetId: u.id } as any)).toThrow(/not yourself/);
+    expect(() => f.act({ type: 'combat/perk', unitId: u.id, id: 'class:medic.triage', actionId: 'triage', targetId: u.id } as any)).toThrow(/yourself|Attuner|Not now/); // rules 1.33: Triage needs an Attuner in hand, and never targets you
   });
-  it('on the area map: once per ally per scene, shared with the story Triage', () => {
-    const s = storyWith([cls('medic', 1), {}]); const [m, a] = s.chars; live(s, a).hp = 10;
-    const tri = () => s.act({ type: 'world/act', charId: m.id, act: 'perk', id: 'class:medic.triage', actionId: 'triage', targetId: a.id } as any);
-    tri(); const hp = live(s, a).hp; expect(hp).toBeGreaterThan(10);
-    s.g.story.round++; s.g.story.ended = {}; s.g.story.ap = {};
-    expect(() => tri()).toThrow(/this scene/);
-    expect(() => s.act({ type: 'story/perk', charId: m.id, id: 'class:medic.triage', actionId: 'triage_story', choice: a.name, text: a.name } as any)).toThrow(/already treated/);
-  });
+  // rules 1.33: Triage is a fight's action; out of a fight it is the story Triage (classes-i.test.ts)
+
 });
 
 describe('18/24/29 a partial Extraction still ends the fight', () => {

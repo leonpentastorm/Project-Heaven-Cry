@@ -120,9 +120,9 @@ describe('rules 1.20: the Outburst', () => {
     const d = give(me(g), {}); A(g, { type: 'combat/outburst', design: d, hold: true }); A(g, { type: 'combat/pump', feeling: 'love' }); A(g, { type: 'combat/release', aim: '4,5' });
     expect(ally(g).hp).toBe(100 + Math.floor(7 * 10 * 1.1) + Math.floor(7 * 10 * 1.1 * 0.25)); // 77 + 19
   });
-  it('the class moves: Will Shield 12, the Bard\'s Mend a base of 9', () => {
+  it('the class moves: Will Shield 12', () => {
     expect((CLASS_MOVE_POOL['guardian.will_shield'].effects || []).find((e: any) => e.op === 'shield').value).toBe(12);
-    expect(CLASS_MOVE_POOL['bard.mend'].heal_base).toBe(9);
+    // rules 1.33: bard.mend is Brimming now (a Tending overheal becomes a shield): test/tending.test.ts
   });
 });
 
