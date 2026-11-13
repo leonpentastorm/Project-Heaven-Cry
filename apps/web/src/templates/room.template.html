@@ -84,6 +84,7 @@
 <span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{run.kicker}}</span>
 <span style="font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">{{run.title}}</span>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.65; color: #DCE2EC">{{run.text}}</p>
+<sc-if value="{{run.live}}" hint-placeholder-val="{{false}}"><button type="button" data-phc-to-run="" onClick="{{run.toRun}}" style="align-self: flex-start; min-height: 44px; padding: 0 18px; border-radius: 10px; border: 0; background: #E7EBF3; color: #0A0D13; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer">Back to the run ›</button></sc-if>
 <sc-if value="{{run.canRetire}}" hint-placeholder-val="{{false}}"><button type="button" data-phc-retire="" onClick="{{run.retire}}" style="align-self: flex-start; min-height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #E7EBF3; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer">Retire and keep the score</button></sc-if>
 </div></sc-if>
 </section>

@@ -6,14 +6,14 @@ import { ART, ART_BIG } from './shared';
 import { STARTS, startsFor, startOf } from '../game/starts';
 import { MODELS } from '../narrator/anthropic';
 import { PROVIDERS, providerInfo, keyMismatch, notReadyReason, isPriced, listModels, testKey, baseOf } from '../narrator/providers';
-import { act, getState, go, retryNarrator, setNarrator, toast } from '../game/store';
+import { act, getState, go, retryNarrator, setNarrator, toast, homeScreen } from '../game/store';
 import { shellVals } from './shell';
 import { openReport } from '../game/report';
 import { importCharacter } from '../game/charfile';
 import { validateSheet, CLASS } from '@engine';
 import { openProvingGround } from '../game/sandbox';
 import { classOf } from '../game/commands';
-import { modeCards, radioKey, narratorOptional, startsRun } from '../game/modes';
+import { modeCards, radioKey, narratorOptional, startsRun, testSeed } from '../game/modes';
 import { openTipOn } from '../game/actionTip';
 import { modeOf, playOf, runRetireProblem } from '@engine';
 
@@ -44,7 +44,7 @@ export class RoomLogic extends DCLogic {
   /** Back to the session (the big button and the header's): say so when the Narrator's settings changed here. */
   backToSession(g) {
     if (this.state.keyChanged && getState().role === 'host' && g.settings.mode === 'ai') toast('Narrator settings updated: used from its next turn.', true);
-    go(g.phase === 'combat' ? 'combat' : g.run ? 'room' : 'main');
+    go(homeScreen(g));
   }
   /** "Load models": ask the picked service which models this key can use. */
   loadModels() {
@@ -122,7 +122,9 @@ export class RoomLogic extends DCLogic {
     // The mode picker (rules 1.39, survival-spec 8.1): three cards; the host picks an open one; a locked one or a guest's
     // click opens the card's own hover card with the reason (game/actionTip.ts openTipOn), never a toast.
     const cards = modeCards(g, isHost, (play) => act({ type: 'settings', patch: { play } }));
-    const run = g.run && g.run.state !== undefined ? g.run : null, runsMode = startsRun(g), optional = narratorOptional(g), mode = modeOf(playOf(g));
+    // rules 1.41: a run under way shows its panel here (Back to the run); a run that is over leaves the room in its lobby
+    // with the cards, and its score on the panel above them
+    const run = g.run && g.run.state !== undefined ? g.run : null, runLive = !!run && run.state !== 'over', runsMode = startsRun(g), optional = narratorOptional(g), mode = modeOf(playOf(g));
     const modeCardsV = cards.map((m, i) => ({ ...m, lockedStr: m.locked ? 'true' : 'false', tabindex: m.selected || (!cards.some((c) => c.selected) && i === 0) ? '0' : '-1',
       hasArt: !!(m.art && (IMG[m.art] || ART(m.art))), noArt: !(m.art && (IMG[m.art] || ART(m.art))), img: IMG[m.art] || ART(m.art),
       onClick: (e) => (m.pick ? m.pick() : m.tip ? openTipOn(e && e.currentTarget) : null),
@@ -133,10 +135,12 @@ export class RoomLogic extends DCLogic {
       nameStyle: 'font-size: 20px; font-weight: 700; letter-spacing: 0.14em; color: ' + (m.locked ? '#A3AEC2' : '#E7EBF3'),
       statusStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: ' + (m.locked ? '#A3AEC2' : '#FFFFFF'),
       lineStyle: 'font-size: 13px; line-height: 1.45; color: ' + (m.locked ? '#A3AEC2' : '#C9D3E3') }));
-    const runV = run ? { kicker: 'SURVIVAL · STAGE ' + run.stage + ' · SEED ' + run.seed, title: run.state === 'over' ? 'The run is over' : 'The run is under way',
-      text: run.state === 'over' && run.end ? (run.end.how === 'retired' ? 'The squad retired' : 'The squad fell') + ' after ' + run.end.cleared + (run.end.cleared === 1 ? ' stage' : ' stages') + ' and ' + run.end.nodes + (run.end.nodes === 1 ? ' node' : ' nodes') + '. The score is kept.'
-        : 'Stage ' + run.stage + ' has begun. The path map, its fights, shops and rests arrive with the next update; this room keeps the run until then.',
-      canRetire: isHost && !runRetireProblem(g, me), retire: () => act({ type: 'run/retire' }) } : null;
+    const fights = run ? (run.stats && run.stats.fights) || [] : [];
+    const runV = run ? { kicker: 'SURVIVAL · STAGE ' + run.stage + ' · SEED ' + run.seed, title: run.state === 'over' ? 'The last run' : 'The run is under way',
+      text: run.state === 'over' && run.end ? (run.end.how === 'retired' ? 'The squad retired' : 'The squad fell') + ' after ' + run.end.cleared + (run.end.cleared === 1 ? ' stage' : ' stages') + ' cleared and ' + run.end.nodes + (run.end.nodes === 1 ? ' node' : ' nodes') + ' walked, '
+          + fights.filter((f) => f.outcome === 'win').length + ' of ' + fights.length + (fights.length === 1 ? ' fight' : ' fights') + ' won. Levels reached: ' + Object.entries(run.end.levels || {}).map(([id, lv]) => (g.characters[id] ? g.characters[id].name : id) + ' ' + lv).join(', ') + '. A new run starts from level 1 characters.'
+        : 'Stage ' + run.stage + ', node ' + run.path.length + ' of 15. The path map is the run\'s own screen.',
+      canRetire: isHost && !runRetireProblem(g, me), retire: () => act({ type: 'run/retire' }), live: runLive, toRun: () => go('run') } : null;
     const hostPick = (patch) => () => (isHost ? act({ type: 'settings', patch }) : toast('Only the host picks this.'));
     const starts = startsFor(g).map((x) => ({ short: x.short + (x.soon ? ' · soon' : ''), pick: x.soon ? () => toast(x.title + ' is coming after the systems are done. Fight in the Proving Ground, or load your own campaign.') : hostPick({ start: x.id }), pressed: S.start === x.id ? 'true' : 'false', style: pill(S.start === x.id) }));
     const startImg = IMG[st0.art] || ART(st0.art) || IMG['world-pilot'];
@@ -176,14 +180,14 @@ export class RoomLogic extends DCLogic {
       ...this.narratorVals(),
       // In session the big button is the way back (UI pass 2.1), never a greyed "In session".
       notReady, startLabel: why || (g.phase !== 'lobby' ? 'Return to the session ›' : runsMode ? 'Start the run' : g.players.length > 1 && offline.length ? 'Start session · ' + offline.map((p) => p.name).join(', ') + ' has no character yet' : 'Start session'),
-      startSession: () => (g.phase !== 'lobby' ? this.backToSession(g) : act({ type: runsMode ? 'run/start' : 'session/start' })),
+      startSession: () => (g.phase !== 'lobby' ? this.backToSession(g) : act(runsMode ? { type: 'run/start', ...(testSeed() ? { seed: testSeed() } : {}) } : { type: 'session/start' })),
       startNote: g.phase !== 'lobby' && !(g.story && g.story.complete) ? (isHost ? 'Changes here apply from the Narrator\'s next turn.' : 'The session is on: this only takes you back.') : '',
       returnStory: !!(g.story && g.story.complete), toStory: () => this.backToSession(g),
       // The Proving Ground (practice mode): endless waves, no Narrator, no key needed; the squad as locked in, or a test character.
       proveCan: isHost && g.phase === 'lobby', proveGuest: !isHost && g.phase === 'lobby', openProve: () => openProvingGround(mine.length ? undefined : 'sharpshooter'),
       proveLabel: '⚔ Proving Ground · practice range' + (mine.length ? '' : ' · with a test character'),
-      modeCards: modeCardsV, modeWho: isHost ? 'YOU PICK' : 'THE HOST PICKS', seal: IMG['emblem-ahoc-seal'] || ART('emblem-ahoc-seal'), showModes: !run,
-      showCampaign: !run && playOf(g) === 'campaign', runOn: !!run, run: runV || {},
+      modeCards: modeCardsV, modeWho: isHost ? 'YOU PICK' : 'THE HOST PICKS', seal: IMG['emblem-ahoc-seal'] || ART('emblem-ahoc-seal'), showModes: !runLive,
+      showCampaign: !runLive && playOf(g) === 'campaign', runOn: !!run, run: runV || {},
       // The Narrator panel (survival-spec 8.1 item 8): collapsed, not hidden, where a Narrator is optional flavour
       narrCollapsed: optional && !this.state.narrOpen, narrOpen: !optional || this.state.narrOpen, narrCanHide: optional && this.state.narrOpen,
       narrNone: (mode ? mode.name : 'This mode') + ' needs no Narrator.' + (isHost ? '' : ' Nobody here needs a key.'), narrCanAdd: isHost, narrAddLabel: 'Add a Narrator for flavour (optional)',

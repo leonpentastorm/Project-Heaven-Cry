@@ -15,7 +15,7 @@
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, perPoint, ceilingLine } from './shared';
 import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
-import { act, getState, go } from '../game/store';
+import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 
 const PERK_ICON = {};
@@ -61,7 +61,7 @@ export class LevelUpLogic extends DCLogic {
   constructor(props) { super(props); this.state = {}; }
   renderVals() {
     const st = getState(), g = st.game, c = g && g.characters[st.levelupChar];
-    if (!c || c.owner !== st.me.id) { queueMicrotask(() => go(g ? (g.phase === 'combat' ? 'combat' : 'main') : 'home')); return { ...lightboxVals(this), ...epccgVals(this), classCards: [], tree: [], steps: [], pick: {}, cls: { sig: [], ranks: [], closest: [] } }; }
+    if (!c || c.owner !== st.me.id) { queueMicrotask(() => go(g ? homeScreen(g) : 'home')); return { ...lightboxVals(this), ...epccgVals(this), classCards: [], tree: [], steps: [], pick: {}, cls: { sig: [], ranks: [], closest: [] } }; }
     const choosing = c.level >= 3 && !c.classId;
     // ---------- the class choice at level 3 (Class Roster Revision 3): every class of the highest attribute, ties all
     // offered; a card selects, the confirm bar commits (the class is for good) ----------
@@ -195,7 +195,7 @@ export class LevelUpLogic extends DCLogic {
       // Take back what this visit spent (points and perk steps), until a fight or a class settles it.
       canRevert: !canRevertLevelUp(g, c), revert: () => act({ type: 'levelup/revert', charId: c.id }),
       revertStyle: 'min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #A3AEC2; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer',
-      done: () => go(g.phase === 'combat' ? 'combat' : 'main', { levelupChar: null }), doneLabel: g.phase === 'combat' ? (allDone ? 'Done · back to the fight' : 'Back to the fight (finish later)') : allDone ? 'Done · back to the story' : 'Back to the story (finish later)',
+      done: () => go(homeScreen(g), { levelupChar: null }), doneLabel: g.phase === 'combat' ? (allDone ? 'Done · back to the fight' : 'Back to the fight (finish later)') : g.run && g.run.state !== 'over' ? (allDone ? 'Done · back to the map' : 'Back to the map (finish later)') : allDone ? 'Done · back to the story' : 'Back to the story (finish later)',
       doneStyle: 'min-height: 44px; padding: 0 18px; border-radius: 12px; border: 0; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (allDone ? 'background: #6FEA77; color: #0A0D13' : 'background: #1C2536; color: #E7EBF3'),
     };
   }

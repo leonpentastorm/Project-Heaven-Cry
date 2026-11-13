@@ -16,6 +16,11 @@ export function testPlay(): PlayMode | null {
   try { const l = JSON.parse(read('phc.showCampaigns') || '[]'); if (Array.isArray(l) && l.length) return 'campaign'; } catch { /* not a list */ }
   return null;
 }
+/** A browser suite's TEST ROOM (localStorage `phc.testRoom` = "1"; rules 1.41): a new room is opened with
+ * `settings.test`, the only thing that lets the engine take `run/skip` (a fight won at once, to reach the Boss). */
+export const testRoom = (): boolean => read('phc.testRoom') === '1';
+/** A browser suite's fixed run seed (localStorage `phc.testSeed`): Start sends it with run/start. Null on a player's page. */
+export const testSeed = (): string | null => read('phc.testSeed') || null;
 /** The mode a new room opens on: the data's default, or the test hook's. */
 export const newRoomPlay = (): PlayMode => testPlay() || DEFAULT_PLAY;
 
