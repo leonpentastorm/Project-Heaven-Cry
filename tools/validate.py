@@ -1442,8 +1442,10 @@ if isinstance(tq, dict):
             errors.append(f"{where}: ap.mode must be melee | shot | aimed | burst | auto")
         if (t.get("group") == "answer") != (ap.get("base") == "reaction"):
             errors.append(f"{where}: an Answer (and only an Answer) costs a reaction")
-        if not (t.get("rounds") == "all" or (isinstance(t.get("rounds"), int) and t.get("rounds") >= 0)):
-            errors.append(f"{where}: rounds must be a whole number or 'all'")
+        if not (t.get("rounds") == "up_to" or (isinstance(t.get("rounds"), int) and t.get("rounds") >= 0)):
+            errors.append(f"{where}: rounds must be a whole number or 'up_to'")
+        if t.get("rounds") == "up_to" and not all(isinstance((t.get("numbers") or {}).get(k), int) and t["numbers"][k] >= 1 for k in ("rounds_per_roll", "max_rolls")):
+            errors.append(f"{where}: rounds 'up_to' needs numbers.rounds_per_roll and numbers.max_rolls (whole, 1 or more): the cap is their product (rules 1.38)")
         if sysm == "melee" and t.get("rounds") not in (0, None):
             errors.append(f"{where}: a melee technique burns no rounds")
         if t.get("aim") not in AIMS:

@@ -83,7 +83,7 @@ export function needsText(id: string): string {
   return out.length ? out.join(' ') + ' ' : '';
 }
 const chipOf = (e: PadEntry, reaction = false): TechChip => {
-  const rounds = e.rounds === 'all' ? 'all rounds' : e.rounds ? e.rounds + (e.rounds === 1 ? ' round' : ' rounds') : '';
+  const rounds = e.rounds ? (e.upTo ? 'up to ' : '') + e.rounds + (e.rounds === 1 ? ' round' : ' rounds') : '';
   const mark = e.signature ? '◆' : e.lent ? '◇' : '';
   const markTitle = e.signature ? '' : e.lent ? 'This is the weapon\'s signature technique. You can use it while you hold the weapon. Drill it to keep it.' : '';
   const why = e.ok ? '' : (e.why || 'Not now.').replace(/\.+$/, '') + '.';

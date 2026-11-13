@@ -1028,7 +1028,7 @@
 "tech/load_special": "REFUSED (no weapon of the table makes it)",
 "tech/lob/hellraiser_service_rifle": "P1 ammo24>23 ap9>6 heat0>1 | short: Needs 3 AP. | again: P1 ammo23>22 ap9>6 heat1>2 | next: P1 ammo23>22 ap9>6 heat0>1 | later: P1 ammo23>22 ap9>6 heat0>1",
 "tech/lunge/sabre": "P1 ap9>7 | short: Needs 2 AP. | again: NO An Opener is only the first melee technique of your turn. | next: P1 ap9>7 res.momentum3>2 | later: P1 ap9>7 res.momentum3>2",
-"tech/mag_dump/hellraiser_service_rifle": "P1 ammo24>0 ap9>5 heat0>7 | short: Needs 4 AP. | again: NO Empty: reload first. | next: NO Empty: reload first. | later: NO Empty: reload first.",
+"tech/mag_dump/hellraiser_service_rifle": "P1 ammo24>12 ap9>5 heat0>7 | short: Needs 4 AP. | again: P1 ammo12>0 ap9>5 heat7>9; air mana15>20 | next: P1 ammo12>0 ap9>5 heat5>7; air mana15>20 | later: P1 ammo12>0 ap9>5 heat5>7; air mana15>20",
 "tech/overwatch/hellraiser_service_rifle": "P1 ap9>7 | short: Needs 2 AP. | again: P1 ap9>7 | next: P1 ap9>7 | later: P1 ap9>7",
 "tech/parry": "REFUSED (no weapon of the table makes it)",
 "tech/pin_down/hellraiser_service_rifle": "P1 ammo24>23 ap9>6 heat0>1 | short: Needs 3 AP. | again: NO One Take a turn. | next: P1 ammo23>22 ap9>6 heat0>1 | later: P1 ammo23>22 ap9>6 heat0>1",

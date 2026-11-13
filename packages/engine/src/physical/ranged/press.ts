@@ -277,20 +277,22 @@ technique({
   ai: (t) => (t.tgt && enemyOf(t, t.tgt) && !isPressed(t.tgt) && coverTileFor(t.cb, t.u.pos, t.tgt.pos) && canStrike(t, t.tgt) ? 6 : 0),
 });
 
-// 12. Mag Dump (particular: Auto, Quick, Spread). 4 AP, every round. Empty the weapon at one target: one roll per 3
-//     rounds left (at least one, at most 3), each at −4 more than the last (rules 1.18); +1 Pressure per hit (in place of the
-//     ordinary +1). Heat goes to one under the limit. Auto: +1 Pressure per roll, hit or miss. Quick and Precise: no
-//     growing penalty. Spread: both barrels, one roll, at double damage within 4 tiles. Drawn: not available (the core).
-const dumpRolls = (t: Tech): number => {
-  const have = loaded(t), n = Number.isFinite(have) ? have : t.w.magazine ?? t.num('per_roll', 3);
-  return Math.min(t.num('max_rolls', 3), Math.max(1, Math.floor(n / t.num('per_roll', 3))));
-};
+// 12. Mag Dump (particular: Auto, Quick, Spread). 4 AP. At one target: one roll for every rounds_per_roll rounds left or
+//     part of them, at most max_rolls rolls, each at −4 more than the last (rules 1.18); it spends rounds_per_roll rounds a
+//     roll, never more than rounds_per_roll × max_rolls (rules 1.38: 4 a roll, 12 at most; a 6-shot revolver fires two
+//     rolls and is empty, a drum of 200 loses 12). +1 Pressure per hit (in place of the ordinary +1). Heat goes to one
+//     under the limit. Auto: +1 Pressure per roll, hit or miss. Quick and Precise: no growing penalty. Spread: both
+//     barrels, one roll (one roll's rounds), at double damage within 4 tiles. Drawn: not available (the core).
+const dumpHave = (t: Tech): number => { const have = loaded(t); return Number.isFinite(have) ? have : t.w.magazine ?? t.num('rounds_per_roll', 4) * t.num('max_rolls', 3); };
+const dumpRolls = (t: Tech): number => Math.min(t.num('max_rolls', 3), Math.max(1, Math.ceil(dumpHave(t) / t.num('rounds_per_roll', 4))));
+/** The rounds the dump spends for this many rolls: rounds_per_roll each, up to what is loaded. */
+const dumpRounds = (t: Tech, rolls: number): number => Math.min(dumpHave(t), rolls * t.num('rounds_per_roll', 4));
 technique({
   id: 'mag_dump',
   check(t) { return t.tgt ? null : 'Pick a target.'; },
   run(t) {
     const tgt = t.tgt!, p = t.line('auto', 'quick', 'spread'), u = t.u, ammo0 = loaded(t), press = t.num('pressure', 1), heat0 = u.heat;
-    let fired = 0;
+    let fired = 0, total = 0;
     if (p === 'spread') {
       const close = dist(u.pos, tgt.pos) <= t.num('spread_range', 4);
       const r = strike(t, { mult: close ? t.num('spread_mult', 2) : 1, noPressure: true, label: 'both barrels' });
@@ -299,9 +301,11 @@ technique({
       fired = 1;
       if (t.preview) { addPressure(t, tgt, press, 'a mag dump'); onHitOnly(t); if (!close) t.note('Double damage only within ' + t.num('spread_range', 4) + ' tiles.'); }
       else if (r.hit) addPressure(t, tgt, press, 'a mag dump');
+      total = dumpRounds(t, 1);
     } else {
       const rolls = dumpRolls(t), step = p === 'quick' ? 0 : t.num('step', 4);
-      const vev = t.preview ? null : volleyFx(t, tgt, 'dump', Number.isFinite(ammo0) ? ammo0 : rolls, { rolls });
+      total = dumpRounds(t, rolls);
+      const vev = t.preview ? null : volleyFx(t, tgt, 'dump', Number.isFinite(ammo0) ? total : rolls, { rolls });
       // the rolls chained for the screen only (no volley name: no item reads it as a burst or full auto)
       const out = chained((): string | null | undefined => {
         for (let i = 0; i < rolls; i++) {
@@ -318,7 +322,7 @@ technique({
       if (out !== undefined) return out;
       if (t.preview) t.note(rolls + (rolls === 1 ? ' roll' : ' rolls') + (step && rolls > 1 ? ', each at −' + step + ' more than the last' : '') + '; +' + press + ' Pressure per ' + (p === 'auto' ? 'roll, hit or miss' : 'hit') + '.');
     }
-    burnRest(t, Number.isFinite(ammo0) ? ammo0 : 0, fired, ammo0); // the rest of the magazine goes too
+    burnRest(t, Number.isFinite(ammo0) ? total : 0, fired, ammo0); // the rest of its rounds go too (never more than its cap)
     // Heat goes to one under the limit (a jam the shots caused stays). The core adds a Press's +1 Heat after the run (the
     // base: so the rolls match the card), so the run leaves it one lower.
     if (heatsUp(t)) {
@@ -330,7 +334,7 @@ technique({
         emitFx(t.cb, 'heat', { unit: u.id, at: u.pos, now: u.heat + 1, was: heat0, why: 'dump', limit: heatLimit(u, t.w), ...ownSideOnly(t.cb, u) });
       }
     }
-    if (t.preview) t.note('Empties the weapon.');
+    if (t.preview && Number.isFinite(ammo0)) t.note(total >= ammo0 ? 'Empties the weapon (' + total + (total === 1 ? ' round' : ' rounds') + ').' : 'Spends ' + total + ' of ' + ammo0 + ' rounds.');
     return null;
   },
   ai: () => 3, // an enemy that empties its gun reloads it badly: never better than a plain shot

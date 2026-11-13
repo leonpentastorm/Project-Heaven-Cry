@@ -209,7 +209,11 @@ function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, 
 
 // ---------- cost and who may use what ----------
 /** Does this technique fire a round of the weapon (a ranged technique that lists rounds)? A Set fires none. */
-const firesRound = (def: TechDef) => def.system === 'ranged' && (def.rounds === 'all' || Number(def.rounds) > 0);
+const firesRound = (def: TechDef) => def.system === 'ranged' && (def.rounds === 'up_to' || Number(def.rounds) > 0);
+/** The rounds a technique spends at most, for its card: a number, or an 'up_to' technique's cap (Mag Dump: its
+ * numbers' rounds_per_roll × max_rolls, rules 1.38). */
+export const roundsCap = (def: TechDef): number => (def.rounds === 'up_to' ? Number(def.numbers?.rounds_per_roll) * Number(def.numbers?.max_rolls) || 0 : def.rounds);
+const roundsOut = (def: TechDef) => ({ rounds: roundsCap(def), ...(def.rounds === 'up_to' ? { upTo: true } : {}) });
 /** A technique's AP with this weapon and line. */
 export function techniqueAp(def: TechDef, weaponId: string, choice?: string, u?: Unit | null): number {
   const w = WEAPON[weaponId] || WEAPON.fists;
@@ -303,9 +307,9 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   const ap = pair ? pair.ap : apFor(cb, u, def, hand, args.line, args.targetId ? cb.units.find((x) => x.id === args.targetId) : null);
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/technique', id: def.id } }); if (no) return no; } // a repeat's credit counts (Encore, items 729, 737)
   const w = WEAPON[weaponId];
-  if (wield === 'throwable') { const need = def.rounds === 'all' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
+  if (wield === 'throwable') { const need = def.rounds === 'up_to' ? 1 : Math.max(1, def.rounds); if (u.ammo < need) return 'Needs ' + need + ', you carry ' + u.ammo + '.'; }
   if (def.system === 'ranged' && w?.magazine != null && !u.infiniteAmmo) {
-    const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'all' ? 1 : def.rounds;
+    const have = hand === 'off' ? u.offAmmo ?? 0 : u.ammo, need = def.rounds === 'up_to' ? 1 : def.rounds;
     if (need > 0 && have < need) return have ? 'Needs ' + need + ' rounds, ' + have + ' loaded.' : props.includes('drawn') ? 'The quiver is empty.' : 'Empty: reload first.'; // a quiver can't be refilled in a fight
     if (def.needs.last_round && have !== 1) return props.includes('drawn') ? 'Only with the last arrow in the quiver.' : 'Only with the last round in the weapon.'; // a Drawn weapon's u.ammo is its quiver's total (ranged/quiver.ts)
     if (need > 0 && (hand === 'off' ? u.offJammed : u.jammed)) return 'Jammed: clear it first.'; // each gun its own jam
@@ -935,7 +939,7 @@ export function techniquePad(cb: Combat, u: Unit, hand: 'main' | 'off', g?: any)
       const def = TECHNIQUE[x.id], lf = linesFor(def, weaponId);
       // an Answer has no button; one that costs Guard says so when there is none to spend
       const why = def.group === 'answer' ? ((def.numbers as any)?.guard_cost && guardOf(u) < (def.numbers as any).guard_cost ? 'Needs ' + (def.numbers as any).guard_cost + ' Guard: Brace or take Guard first.' : null) : gate(cb, u, def, { hand }) || (handlerOf(def.id) ? null : NOT_BUILT);
-      return { id: def.id, name: def.name, group, ap: apFor(cb, u, def, hand), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim,
+      return { id: def.id, name: def.name, group, ap: apFor(cb, u, def, hand), ...roundsOut(def), ok: !why, why, text: def.text, aim: def.aim,
         line: lf.main ? lf.main.text : null, ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
         lent: x.how === 'lent', signature: x.how === 'ready' && taught.has(def.id) && knownSig.has(def.id), plain: def.id === 'cut' || def.id === 'shot', built: !!handlerOf(def.id) };
     }),
@@ -951,7 +955,7 @@ export function packPad(cb: Combat, u: Unit, g?: any): PackPad[] {
   const block = (wi: Wield, name: string, count?: number, refused?: string) => holding(u, wi, () => {
     const entries = usable(cb, u, 'main', wi.kind).map((x): PadEntry => {
       const def = TECHNIQUE[x.id], lf = linesFor(def, wi.weaponId, undefined, u), why = refused || gate(cb, u, def, { hand: 'main', _w: wi.kind } as TechArgs) || (handlerOf(def.id) ? null : NOT_BUILT);
-      return { id: def.id, name: def.name, group: def.group, ap: apFor(cb, u, def, 'main'), rounds: def.rounds, ok: !why, why, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null,
+      return { id: def.id, name: def.name, group: def.group, ap: apFor(cb, u, def, 'main'), ...roundsOut(def), ok: !why, why, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null,
         ...(lf.choices.length > 1 ? { choices: lf.choices.map((l) => ({ prop: l.props.find((p) => weaponProps(wi.weaponId).includes(p)) || l.props[0], text: l.text })) } : {}),
         lent: x.how === 'lent', signature: false, plain: false, built: !!handlerOf(def.id) };
     });
@@ -1015,7 +1019,7 @@ export function pairedPad(cb: Combat, u: Unit, g?: any): PadEntry[] {
   return PAIRED_TECHNIQUES.map((id) => TECHNIQUE[id]).filter((def) => def && !pairedWhy(u, def)).map((def): PadEntry => {
     const ap = pairedAp(cb, u, def, {}), why = whyNot(cb, u, ap) || gate(cb, u, def, { hand: 'main', _pair: { hit: -1, ap } } as any) || gate(cb, u, def, { hand: 'off', _pair: { hit: offHandPenalty(u), ap: 0, second: true } } as any);
     const lf = linesFor(def, u.weapon, undefined, u);
-    return { id: def.id, name: def.name, group: def.group, ap, rounds: def.rounds, ok: !why, why: why || null, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null, lent: false, signature: false, plain: false, built: true };
+    return { id: def.id, name: def.name, group: def.group, ap, ...roundsOut(def), ok: !why, why: why || null, text: def.text, aim: def.aim, line: lf.main ? lf.main.text : null, lent: false, signature: false, plain: false, built: true };
   });
 }
 function previewPaired(cb: Combat, u: Unit, id: string, args: TechArgs): TechPreview {

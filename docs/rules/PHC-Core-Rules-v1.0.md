@@ -1212,7 +1212,7 @@ A shield (an off-hand item with the **Shield** property: the buckler and the rio
 | 9 | **Rake** † | 4 | 6 | Up to 3 targets within 2 tiles of each other, each at −3; +1 Pressure on a hit. | **Auto:** a full-auto cone for 10 rounds (one roll at −2 against every enemy near the line); +1 Pressure hit or miss. **Spread:** the cone is 1 wider. |
 | 10 | **Warning Shot** | 1 | 1 | No attack. The target makes a Heart save or gains +1 Pressure. | **Loud:** the save is at −2. **Silent:** not available. |
 | 11 | **Flush** | 3 | 1 | Hit the target's cover (no roll; the cover takes the damage). The target gains +2 Pressure. | **Spread or Blast:** double damage to the cover. **Arc:** the cover is ignored and the target takes half damage as well. |
-| 12 | **Mag Dump** † | 4 | all | Empty the weapon at one target: one roll per 3 rounds left (at most 3 rolls, each at −4 more than the last: rules 1.18; it was 4 rolls, −1 more each). +1 Pressure per hit. Heat goes to one under the limit. | **Auto:** +1 Pressure per roll, hit or miss. **Quick and Precise:** no growing penalty. **Spread:** both barrels, one roll at double damage within 4 tiles. **Drawn:** not available. |
+| 12 | **Mag Dump** † | 4 | up to 12 | At one target: **4 rounds a roll, 12 at most, never the whole magazine** (rules 1.38; it emptied the weapon). With fewer than 12 left it spends what is left, one roll for every 4 rounds or part (at most 3 rolls, each at −4 more than the last: rules 1.18). +1 Pressure per hit. Heat goes to one under the limit. | **Auto:** +1 Pressure per roll, hit or miss. **Quick and Precise:** no growing penalty (a 6-shot revolver: two rolls, and it is empty). **Spread:** both barrels, one roll (one roll's rounds, up to 4) at double damage within 4 tiles. **Drawn:** not available. |
 | 13 | **Crossfire** | 2 | 1 | A shot at a target an ally has already hit this round: +2 to hit and +1 extra Pressure. | **Quick:** step 1 tile first, with no opportunity attack. |
 
 **Sets**
@@ -3228,7 +3228,7 @@ At 65% to hit, a Burst is worth about 1.7 Shots for the AP of 1.5: +13% for its 
 
 ### Mag Dump and Heavy Bolt
 
-1. **Mag Dump: three rolls at most, each at −4 more than the last** (it was four rolls, each −1 more): the Burst's own step. One roll for every 3 rounds left, as before; the whole magazine goes, 4 AP, Heat to one under the limit. A revolver (Quick and Precise) still has no growing penalty.
+1. **Mag Dump: three rolls at most, each at −4 more than the last** (it was four rolls, each −1 more): the Burst's own step. One roll for every 3 rounds left, as before; the whole magazine goes, 4 AP, Heat to one under the limit. *Superseded by rules 1.38: 4 rounds a roll (or part), 12 at most; the magazine no longer empties.* A revolver (Quick and Precise) still has no growing penalty.
 2. **Heavy Bolt: +40% damage** (it was +50%). Still 4 AP, through 10 armour, +2 to hit with a Precise weapon.
 
 ### A slow action: the long rifle's bolt
@@ -4971,6 +4971,21 @@ in item 1744 ("an enemy still knows where every hostile who is not Hidden stands
 22. **Reactions:** an enemy never reacts off a reaction and, Suppressed, keeps only its protective reactions (rules
     1.28, the same door as everyone's). Not built: baiting a held line with the cheapest unit and sending two movers
     into a Killzone (reactions-spec 8); waiting out a Sanctuary.
+
+## Rules revision 1.38: balance for Classes 3.0, and Mag Dump's rounds (Classes 3.0, step 11)
+
+Built on 13 Nov 2026 (Classes 3.0 step 11; `docs/design/handoffs/classes-3.0-step-11.md`). Every number here is
+PROVISIONAL (items 2500 onward).
+
+1. **Mag Dump spends 4 rounds a roll, 12 at most** (Leon, 13 Nov 2026: "a weapon with 200 rounds loses them all, fires
+   four shots, stops"; a call made for him, he may reverse it). It never empties a magazine bigger than 12. With fewer
+   than 12 left it spends what is left, one roll for every 4 rounds or part: a 6-shot revolver fires two rolls and is
+   empty, one round left fires one roll. The rolls (at most 3), the growing −4, the 4 AP, the Heat and the Pressure stay
+   as rules 1.18. Spread fires one roll and spends one roll's rounds (both barrels of a coach gun). The effects draw one
+   casing for every round spent. Enemies' Mag Dump is the same technique. Numbers in data: `techniques.json mag_dump`
+   `rounds: "up_to"`, `numbers.rounds_per_roll` 4 and `numbers.max_rolls` 3 (the cap is their product); the card reads
+   "up to 12 rounds" from the engine. One gun's damage moves: the long rifle (5 rounds) had one roll (one for every 3
+   rounds left) and now has two (5 is one 4 and part of another); every other magazine gives the same rolls as before.
 
 ## Maps (rules 1.16)
 
@@ -8061,3 +8076,5 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2410. **An Elite fooled by a Double** saves again at each of its turn starts (figments-spec 2, as built in rules 1.34), so it may stay fooled more than one turn; a Boss is fooled through one of its turns at most. The brief's "Elites and Bosses fooled for a turn at most" was not built for Elites: the spec table rules. Leon to confirm. PROVISIONAL.
 2411. **Enemies do not Bond, Tend, hold Shadow or make Figments (rules 1.37 rule 12):** confirmed through the data (a test reads enemies.json). An enemy version would need: a door skill and a focus on the tier row (Attuner, Visualizer), the tending verbs in the enemy's held items, a planner step (ai-*.ts) that weighs a Tend or a Picture against its weapon. PROVISIONAL.
 2412. **Items 2400 to 2412 are rules 1.37's.**
+2500. **Mag Dump: 4 rounds a roll, 12 at most (rules 1.38):** `techniques.json mag_dump numbers.rounds_per_roll` 4, the cap `rounds_per_roll × max_rolls`; fewer left: one roll for every 4 or part, and it spends what is left; Spread spends one roll's rounds. Leon's ruling as the pick-up guide wrote it (a call made for him). PROVISIONAL.
+2501. **The long rifle's Mag Dump has two rolls (rules 1.38):** its 5 rounds were one roll under "one for every 3 left" and are two under "one for every 4 or part": the one magazine whose rolls changed (golden lines `tech/mag_dump/long_rifle/*` and the optimised gun's `L6` to `L20` Mag Dump lines). Kept as the ruling reads; Leon to confirm. PROVISIONAL.

@@ -5,7 +5,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Saves roll a d20 that the attack rig doesn't reach: D.die forces every d20 (an attack's own is then set by rig()).
 const D = vi.hoisted(() => ({ die: null as number | null }));
 vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
-import { WEAPON, heatLimit, resolveAttack, objectsAt, packOf, type Unit } from '../src';
+import { TECHNIQUE, WEAPON, heatLimit, resolveAttack, objectsAt, packOf, type Unit } from '../src';
 import { fxTaps } from '../src/fxtap';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
@@ -106,7 +106,8 @@ describe('E4 volley: dump, rake, suppress', () => {
     const f = gunner('service_pistol', ['mag_dump'], [{ at: 'G5', tier: 'elite' }]); tough(f, f.foe); rig({ hit: false, die: 5 });
     const ammo0 = f.pc.ammo; expect(f.tech('mag_dump', { targetId: f.foe.id })).toBeNull();
     const v = evs('volley', f.pc.id); expect(v.length).toBe(1);
-    expect(v[0]).toMatchObject({ mode: 'dump', shots: ammo0, rolls: 3, target: f.foe.id, tech: 'mag_dump', weapon: 'service_pistol' });
+    const N = TECHNIQUE.mag_dump.numbers; // rules 1.38: rounds_per_roll a roll, the cap their product
+    expect(v[0]).toMatchObject({ mode: 'dump', shots: Math.min(ammo0, N.rounds_per_roll * N.max_rolls), rolls: 3, target: f.foe.id, tech: 'mag_dump', weapon: 'service_pistol' });
     const shots = evs('shot', f.pc.id); expect(shots.length).toBe(3); // rules 1.18: three rolls at most
     expect(shots.every((e) => e.chain && e.tech === 'mag_dump')).toBe(true); expect(shots.map((e) => e.vi)).toEqual([0, 1, 2]);
     expect(EV.indexOf(v[0])).toBeLessThan(EV.indexOf(shots[0]));
