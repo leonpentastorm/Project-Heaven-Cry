@@ -5,6 +5,7 @@
 // give the same map.
 import survivalJ from '../../../../data/survival.json';
 import { next, rngFor, type Rng } from '../rng';
+import { rollTable } from '../loot';
 
 /** The ten node kinds (survival-spec section 3.1); `event` is the node the card calls Crossroads. */
 export type NodeKind = 'fight' | 'elite' | 'boss' | 'shop' | 'forge' | 'training' | 'shrine' | 'rest' | 'cache' | 'event';
@@ -37,14 +38,9 @@ export interface PathMap { seed: string; stage: number; rows: PathNode[][] }
 export const nodeId = (stage: number, depth: number, i: number) => 's' + stage + '.d' + depth + '.' + i;
 
 const pick = <T>(r: Rng, xs: T[]): T => xs[Math.floor(next(r) * xs.length)];
-function weighted(r: Rng, w: Record<string, number>, allowed?: (k: string) => boolean): string | null {
-  const ks = Object.keys(w).filter((k) => w[k] > 0 && (!allowed || allowed(k)));
-  const tot = ks.reduce((s, k) => s + w[k], 0);
-  if (!ks.length || tot <= 0) return null;
-  let x = next(r) * tot;
-  for (const k of ks) { x -= w[k]; if (x < 0) return k; }
-  return ks[ks.length - 1];
-}
+/** A key of `w` by weight among those `allowed`, through the loot roller's one weighted pick (`rollTable`). */
+const weighted = (r: Rng, w: Record<string, number>, allowed?: (k: string) => boolean): string | null =>
+  rollTable(r, { id: 'weights', entries: Object.keys(w).filter((k) => w[k] > 0 && (!allowed || allowed(k))).map((k) => ({ item: k, weight: w[k] })) })?.item ?? null;
 const fixedRow = (d: MapData, depth: number) => depth === d.gate_row || depth === d.shop_rest_row || depth === d.boss_row;
 /** True when the link from `depth` to `depth + 1` is all-to-all (into or out of the gate, row 14 and the Boss: rule 8). */
 const fullLinks = (d: MapData, depth: number) => fixedRow(d, depth) || fixedRow(d, depth + 1);
@@ -114,7 +110,7 @@ function linkRow(d: MapData, r: Rng, up: PathNode[], down: PathNode[], filter?: 
   return pick(r, best);
 }
 
-/** Everything about a map's graph the repairs and checks read: parents, the half-paths, and paths through each node. */
+/** Everything about a map's graph the repairs and checks read: each node by id, its parents, and the paths through it. */
 interface Graph { byId: Record<string, PathNode>; parents: Record<string, string[]>; through: Record<string, number> }
 function graphOf(m: PathMap): Graph {
   const byId: Record<string, PathNode> = {}, parents: Record<string, string[]> = {};
