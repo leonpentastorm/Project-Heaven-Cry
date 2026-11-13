@@ -151,6 +151,19 @@ describe('Survival, one stage (rules 1.41)', () => {
     expect(r.g.characters.c1.level).toBeGreaterThanOrEqual(3); // the class is earned at level 3 on the way (the level-up screen picks it)
   });
 
+  // The "try it" of a stage (build step 3's npm run try equivalent): SURVIVAL_STAGE_REPORT=1 plays whole stages by the
+  // simulator's policies (solo and a squad of four, six seeds each) and prints each fight's budget, rounds and result.
+  it.runIf((globalThis as any).process?.env?.SURVIVAL_STAGE_REPORT)('report: stages played by the policies', () => {
+    const lines: string[] = [];
+    for (const [name, pcs] of [['solo plain gun', SOLO], ['squad of four', SQUAD]] as [string, Pc[]][]) for (let s = 1; s <= 6; s++) {
+      const r = new Rec(survivalRoom('PHC-T' + s, pcs, { test: true }), pcs); r.must({ type: 'run/start', seed: 'PHC-T' + s }); playStage(r, pcs.length);
+      const run = r.g.run, fs = run.stats.fights;
+      lines.push(name + ' PHC-T' + s + ': ' + (run.state === 'boon' ? 'STAGE CLEARED' : 'lost at node ' + run.path.length) + ', levels ' + Object.values(r.g.characters).map((c: any) => c.level).join('/') + (r.errors.length ? ' ERR ' + r.errors[0] : ''));
+      for (const f of fs) lines.push('   d' + f.depth + ' ' + f.kind + ' ' + f.template + ' L' + f.level + ': bulk ' + f.spent.bulk.toFixed(2) + '/' + f.target.bulk.toFixed(2) + ', pressure ' + f.spent.pressure.toFixed(2) + '/' + f.target.pressure.toFixed(2) + ', ' + f.foes.length + ' foes, ' + f.outcome + ' in ' + f.rounds + ' (R ' + f.target.rounds + ')');
+    }
+    (globalThis as any).console.log(lines.join('\n'));
+  }, 1_200_000);
+
   it('the replay guard: a seeded stage played by the simulator\'s policies gives the same hash twice, and a save and load in the middle changes nothing', () => {
     const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0003', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0003' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
