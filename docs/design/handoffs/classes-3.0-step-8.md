@@ -246,3 +246,10 @@ entry more than the main line's, and the three above are exactly the entries ove
 **The close.** `validate.py` 0 errors; the catalogue `--check` clean; screen data fresh; `npm run built-from --
 claude/charming-gauss-hbq4n0..HEAD`: 7 smells in 3 places, the builder's (`protodata.json` generated; the three Rigger
 lane handlers, in the baseline on purpose; `combat.ts` Field Repair's HP write, a repair is not a heal).
+`npm run check`: validator, spec tables, screen data, the catalogue, both type checks and the engine tests green (4026);
+the web tests green but for `src/screens/combat-actions.test.ts` timing out at 5 s under a load average of 10, which
+passes alone with time (6 of 6, `--testTimeout 300000`). Browser suites on port 8863 (`--base`, own server), two at a
+time: figments, shadow, tending, chaplain, classes-moves, sandbox, tabs, playscreen, magic, two-players, physical,
+faith-pg ALL GREEN. classes-moves failed first, alone too: a setup fault in the suite (the Trickster section used to
+leave a one-handed pistol in hand; without it the Recruit's rifle filled both hands and Rally had no Attuner in hand):
+fixed by giving the Bard the pistol first, no check changed. The chaplain suite's 30 s wait (the builder's) is kept.
