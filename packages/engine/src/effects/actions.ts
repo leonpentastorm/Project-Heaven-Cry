@@ -1,3 +1,4 @@
+import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { say } from '../log';
 // Active items become actions (plan 2.7). One action type per surface:
 //   combat/perk {unitId, id, actionId?, targetId?, targetIds?, tile?, choice?, text?, arm?}   (combat Perks and Class tabs)
