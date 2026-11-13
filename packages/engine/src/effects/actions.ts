@@ -145,6 +145,10 @@ function costOf(h: Holder, d: ActionDef, args: ActionArgs): Priced {
   const ap = typeof d.ap === 'function' ? d.ap(h, args) : d.ap === 'data' ? apFromData(dataAp(h.info, d.id), h.u) : d.ap, res = typeof d.res === 'function' ? d.res(h, args) : d.res;
   return price({ cb: h.cb, u: h.u, c: h.c }, h.key + '#' + d.id, { ap, res: res || undefined }, { item: h.key });
 }
+/** The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`:
+ * Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. */
+export type ItemTab = 'perks' | 'class' | 'shadow';
+const tabOf = (h: Holder): ItemTab => (h.kind === 'class' ? 'class' : h.kind === 'verb' && rawItem(h.key)?.tab === 'shadow' ? 'shadow' : 'perks');
 /** One action as the UI shows it. */
 export interface PerkActionEntry {
   /** What combat/perk, world/act perk and story/perk take as id (item key), plus actionId when an item has several. */
@@ -156,7 +160,7 @@ export interface PerkActionEntry {
   /** The engine runs it all (else part or all goes to the Narrator). */
   engine: boolean;
   /** Which tab: perks (perks and traits) or class (class moves). cls: the class id, for its emblem. */
-  tab: 'perks' | 'class'; cls?: string; arm?: boolean; armed?: any;
+  tab: ItemTab; cls?: string; arm?: boolean; armed?: any;
   tier: string;
   /** What the action's choice takes (chips in the client), how many at once, and the prompt for a pick or typed detail. */
   options?: { id: string; label: string }[]; pickMulti?: number; pickLabel?: string;
@@ -175,7 +179,7 @@ export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {
  *  attack: its toggles) or by itself (a hook). The Perks tab lists these to read, with no button of their own (Leon,
  *  9 Nov 2026: "keep these in the perk tab so you can read that you have the skill and what it does, but remove the
  *  confirm button if the skill already has a use button in its perspective action"). via: where it is used. */
-export interface PerkInfoEntry { id: string; itemId: string; kind: string; label: string; text: string; tab: 'perks' | 'class'; tier: string; via: string; uses: { per: UseScope; n: number; left: number; label: string } }
+export interface PerkInfoEntry { id: string; itemId: string; kind: string; label: string; text: string; tab: ItemTab; tier: string; via: string; uses: { per: UseScope; n: number; left: number; label: string } }
 const VIA: Record<string, string> = { 'combat/pump': 'Pump', 'combat/outburst': 'Begin', 'combat/release': 'Release', 'combat/attack': 'an attack', 'combat/move': 'a move', 'combat/evoke': 'Evoke', 'combat/pray': 'a prayer', 'combat/perk': 'a perk action', 'check/roll': 'a check', 'story/speak': 'speaking' };
 /** The read-only Perks-tab entries of a holder's items on this surface (see PerkInfoEntry). Listed: an item with no
  *  button here (none of its actions has this scope) that the data makes an action here, or whose toggles ride an
@@ -191,7 +195,7 @@ export function perkInfoFor(x: Who, scope: ActionScope): PerkInfoEntry[] {
     // Uses: the data action's, when it has one; a toggle-only item counts its own (at will unless a lane says so).
     const per: UseScope = d?.uses?.per || 'at_will', n = d?.uses?.n ?? 1;
     const left = d ? uses({ ...h, g: x.g ?? boundGame() }).left(per, n) : n;
-    out.push({ id: h.key, itemId: h.itemId, kind: h.kind, label: h.info.name, text: h.info.text, tab: h.kind === 'class' ? 'class' : 'perks', tier: h.tier,
+    out.push({ id: h.key, itemId: h.itemId, kind: h.kind, label: h.info.name, text: h.info.text, tab: tabOf(h), tier: h.tier,
       via: on.length ? 'Used from ' + [...new Set(on.map((o) => VIA[o] || o))].join(' or ') : 'Automatic',
       uses: { per, n, left, label: d ? usesLabel(per, n, Math.min(n, left)) : '' } });
   }
@@ -215,7 +219,7 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   else if (!why) why = resWhyNot(cost.res, null, h.c); // no unit pays here (a story action): what the character holds (stims, Echo) is still asked for
   const lane = handlerOf(h.key)?.actions?.some((a) => a.id === d.id);
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
-    target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: h.kind === 'class' ? 'class' : 'perks', cls: h.info.classId,
+    target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: tabOf(h), cls: h.info.classId,
     arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
     ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}) };
 }

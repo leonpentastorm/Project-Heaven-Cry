@@ -38,9 +38,9 @@ import { orderable, ownedVerbs, ownedWhy } from './owned';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
-export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'sigils' | 'outbursts' | 'faith' | 'calls';
+export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'shadow' | 'sigils' | 'outbursts' | 'faith' | 'calls';
 /** The order of the action groups on the fight screen's tabs. */
-export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'sigils', 'outbursts', 'faith', 'calls'];
+export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'shadow', 'sigils', 'outbursts', 'faith', 'calls'];
 /** What a pick step asks for. enemy/ally/unit: a unit clicked on the grid; tile: a tile; option: one (or up to `max`)
  * of `options`; custom: a bespoke panel the screen registers under `renderer` fills `key` (the glyph keyboard, the
  * HEART panel, a perk's form, the pile checklist, the Evoke planner). */
