@@ -19,7 +19,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { migrateLoaded, apply, viewFor } from '../src';
+import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar } from '../src';
 import { Rec, fightTurn, type Pc } from './helpers/replay';
 
 const load = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
@@ -125,4 +125,31 @@ describe('a save written by the live build (origin/main, 0.22.0) loads and plays
     expect(JSON.stringify(a1) === JSON.stringify(b1)).toBe(true);
     expect(a1.archive.length).toBe(511); expect(a1.archive).not.toBe(a0.archive); expect(a1.archive[0]).toBe(a0.archive[0]); // a new list of the same lines
   }, 60_000);
+});
+
+// Classes 3.0 step 2 (rules 1.29): the nine base classes show new names; ids, move keys and classRev stay, so a save
+// written before the rename loads with the same class and the same moves, and only the name it shows is new.
+describe('Classes 3.0 renamed the base classes: an old save keeps its class, its moves and its rev', () => {
+  const OLD_NAME: Record<string, string> = { defender: 'Defender', fighter: 'Fighter', marksman: 'Marksman', infiltrator: 'Infiltrator', mage: 'Mage', trickster: 'Trickster', bard: 'Bard', channeler: 'Channeler', guardian: 'Guardian' };
+  it('the ids are the Revision 3 ids; the names are the data\'s, new where the rename changed them', () => {
+    expect(CLASSES.map((c) => c.id).sort()).toEqual(Object.keys(OLD_NAME).sort());
+    for (const c of CLASSES) expect(c.name === OLD_NAME[c.id]).toBe(c.id === 'channeler');
+    expect(CLASS_REV).toBe(3); // migrateCharacterClass runs only when this changes: the rename must not run it
+  });
+  for (const f of ['save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight', 'save-live-0.22.0-long-mid-fight']) it(f + ': every character keeps classId, classRev and its move keys; the name comes from the data', () => {
+    const raw = JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + f + '.json', import.meta.url)), 'utf8'));
+    const g = migrateLoaded(JSON.parse(JSON.stringify(raw)));
+    let classed = 0;
+    for (const id of Object.keys(raw.characters)) {
+      const was = raw.characters[id], c = g.characters[id];
+      expect(c.classId ?? null).toBe(was.classId ?? null); expect(c.classRev).toBe(was.classRev);
+      if (!c.classId) continue;
+      classed++;
+      expect(CLASS[c.classId].name).toBe(CLASSES.find((k) => k.id === c.classId)!.name);
+      const keys = itemsOf(heldOfChar(c)).filter((i) => i.kind === 'class').map((i) => i.key);
+      expect(keys.length).toBeGreaterThan(0);
+      for (const k of keys) expect(k).toMatch(/^class:[a-z_]+\.[a-z_]+$/); // keys are ids, never display names
+    }
+    if (f.startsWith('save-develop')) expect(classed).toBeGreaterThan(0);
+  });
 });

@@ -9,6 +9,7 @@
 // Screenshots: e2e/shots/perks-*.png.
 import { readFileSync } from 'fs';
 import { chromium, player, click, BASE, OUT, pickAction, settle } from './lib.mjs';
+const FIGHTER = JSON.parse(readFileSync(new URL('../../../data/classes.json', import.meta.url), 'utf8')).base.find((c) => c.id === 'fighter').name; // the class's display name, from the data (Classes 3.0 renamed it)
 const browser = await chromium.launch();
 const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -186,7 +187,7 @@ if (await lvl.count()) await lvl.click();
 await p.waitForSelector('.phc-lu-class', { timeout: 20000 }).catch(() => {});
 ok('the level-up screen shows the class panel', (await p.locator('.phc-lu-class').count()) > 0);
 ok('class name, rank and emblem: ' + ((await p.locator('.phc-lu-class-name').first().textContent().catch(() => '')) || '').trim() + ' ' + ((await p.locator('.phc-lu-rank').first().textContent().catch(() => '')) || '').trim(),
-  /Fighter/i.test(await p.locator('.phc-lu-class-name').first().textContent().catch(() => '')) && (await p.locator('.phc-lu-class img.phc-lu-emblem, .phc-lu-class img').count()) > 0);
+  new RegExp(FIGHTER, 'i').test(await p.locator('.phc-lu-class-name').first().textContent().catch(() => '')) && (await p.locator('.phc-lu-class img.phc-lu-emblem, .phc-lu-class img').count()) > 0);
 ok('the Fighter moves are listed: ' + (await p.locator('.phc-lu-move').count()), (await p.locator('.phc-lu-move[data-move^="class:fighter."]').count()) >= 3);
 await settle(p, 300); await snap(p, '06-levelup-class');
 const sbErrors = [...p.errors];

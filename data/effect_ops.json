@@ -3567,7 +3567,7 @@
     {
       "id": "anchor",
       "tier": "bespoke",
-      "summary": "Defender Anchor: can't be pushed, pulled or knocked Prone while Braced (rules rev 3).",
+      "summary": "Bulwark Anchor: can't be pushed, pulled or knocked Prone while Braced (rules rev 3).",
       "count": 1,
       "params": [
         "context",
@@ -3589,7 +3589,7 @@
     {
       "id": "ignore_opportunity_attacks",
       "tier": "bespoke",
-      "summary": "Fighter Unstoppable: movement provokes no opportunity attacks for a duration.",
+      "summary": "Breaker Unstoppable: movement provokes no opportunity attacks for a duration.",
       "count": 1,
       "params": [
         "duration"
@@ -3605,7 +3605,7 @@
     {
       "id": "field_repair",
       "tier": "bespoke",
-      "summary": "Infiltrator Field Fix: clear a jam, restore durability, or repair a machine.",
+      "summary": "Operative Field Fix: clear a jam, restore durability, or repair a machine.",
       "count": 1,
       "params": [
         "choose",
@@ -3627,7 +3627,7 @@
     {
       "id": "disable_machine",
       "tier": "bespoke",
-      "summary": "Infiltrator Sabotage: an enemy machine, turret, drone or barricade stops working for N rounds.",
+      "summary": "Operative Sabotage: an enemy machine, turret, drone or barricade stops working for N rounds.",
       "count": 1,
       "params": [
         "duration_rounds"
@@ -3643,7 +3643,7 @@
     {
       "id": "rig_tile",
       "tier": "bespoke",
-      "summary": "Infiltrator Sabotage: a trapped tile; the next enemy to enter it takes damage and a condition (save).",
+      "summary": "Operative Sabotage: a trapped tile; the next enemy to enter it takes damage and a condition (save).",
       "count": 1,
       "params": [
         "condition",
@@ -3663,7 +3663,7 @@
     {
       "id": "ap_loss",
       "tier": "bespoke",
-      "summary": "Trickster Silver Tongue: the target loses AP on its next turn (save).",
+      "summary": "Rigger Silver Tongue: the target loses AP on its next turn (save).",
       "count": 1,
       "params": [
         "boss_value",
@@ -3683,7 +3683,7 @@
     {
       "id": "swap_places",
       "tier": "bespoke",
-      "summary": "Trickster Sleight: swap tiles with a willing ally or your own illusion.",
+      "summary": "Rigger Sleight: swap tiles with a willing ally or your own illusion.",
       "count": 1,
       "params": [
         "range"

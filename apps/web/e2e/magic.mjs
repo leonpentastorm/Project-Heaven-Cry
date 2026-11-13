@@ -18,7 +18,7 @@ await host.getByPlaceholder('What the squad calls you').fill('Chalkhand');
 await host.locator('main button[aria-pressed]').first().click();
 await click(host, 'Next ›');
 await host.getByRole('tab', { name: 'Sigil casters', exact: true }).click();
-await host.locator('button', { hasText: 'Sigilist' }).first().click();
+await host.locator('[data-arch="sigilist"]').first().click(); // the archetype by id (its name is Glyphwright since Classes 3.0 took Sigilist for the class)
 await host.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await host.locator('[data-skill-down="vigilant"]').click(); // (the Skills step's steppers since Skeleton 2.0: creation-points.mjs)
 await host.locator('[data-skill-up="will_power"]').click();

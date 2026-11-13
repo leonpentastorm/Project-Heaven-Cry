@@ -141,12 +141,13 @@ describe('Defender', () => {
     const [d, ally] = f.pcs; line(f, [d, 3], [ally, 4], [f.foe, 8]);
     const u = f.turn(d), def0 = u.def;
     act(f, u, { type: 'combat/perk', id: 'class:defender.brace' });
-    expect(f.unit(d.id).res!.guard).toBe(3); expect(f.unit(d.id).def).toBe(def0 + 2); expect(f.unit(d.id).ap).toBe(4);
+    const start = (CLASS_MOVE_POOL['defender.brace'].effects as any[]).find((e) => e.when === 'combat_start')?.value ?? 0; // Classes 3.0: a fight starts with it
+    expect(f.unit(d.id).res!.guard).toBe(Math.min(f.unit(d.id).resMax!.guard, start + 3)); expect(f.unit(d.id).def).toBe(def0 + 2); expect(f.unit(d.id).ap).toBe(4);
     const foe = f.unit(f.foe.id); sure(foe); const hpA = f.unit(ally.id).hp, hpD = f.unit(d.id).hp;
     withGame(f.g, () => resolveAttack(f.cb, f.g.rng, foe, f.unit(ally.id), 'shot', null, { noAp: true }));
     // the hit lands on the Defender: 1 Guard for the Interpose, and what Guard is left soaks it, 10 a point (rules 1.13)
-    expect(f.unit(ally.id).hp).toBe(hpA); expect(f.unit(d.id).res!.guard).toBeLessThanOrEqual(2);
-    expect(hpD - f.unit(d.id).hp + 10 * (2 - f.unit(d.id).res!.guard)).toBeGreaterThan(0);
+    expect(f.unit(ally.id).hp).toBe(hpA); expect(f.unit(d.id).res!.guard).toBeLessThanOrEqual(start + 2);
+    expect(hpD - f.unit(d.id).hp + 10 * (start + 2 - f.unit(d.id).res!.guard)).toBeGreaterThan(0);
     expect(logHas(f.cb, /interposes for/)).toBe(true);
     act(f, f.unit(d.id), { type: 'combat/move', to: '3,3' });
     expect(f.unit(d.id).def).toBe(def0);

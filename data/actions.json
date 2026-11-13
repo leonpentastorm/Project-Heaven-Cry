@@ -119,7 +119,7 @@
       "ap_downed_medic": 1,
       "rule_downed": "stabilise",
       "pick": "ally_adjacent",
-      "text": "Use a stim on an ally next to you. A Downed ally is stabilised at 1 HP ({ap_downed_medic} AP for a Bard, {ap_downed} AP for anyone else). Anyone else heals {stim_heal} HP × your Healing given, more as you level. It also stops Bleeding. Uses one stim{stims_left}.",
+      "text": "Use a stim on an ally next to you. A Downed ally is stabilised at 1 HP ({ap_downed_medic} AP for a Mender, {ap_downed} AP for anyone else). Anyone else heals {stim_heal} HP × your Healing given, more as you level. It also stops Bleeding. Uses one stim{stims_left}.",
       "adjudication": "engine"
     },
     {

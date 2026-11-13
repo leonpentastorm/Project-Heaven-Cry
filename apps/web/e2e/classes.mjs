@@ -16,6 +16,7 @@ const G = () => p.evaluate(() => window.__phc.getState().game);
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const SKILLS = JSON.parse(readFileSync(new URL('../../../data/skills.json', import.meta.url), 'utf8')).items;
 const CLASSES = JSON.parse(readFileSync(new URL('../../../data/classes.json', import.meta.url), 'utf8')).base;
+const NAME = Object.fromEntries(CLASSES.map((c) => [c.id, c.name])); // display names come from the data (Classes 3.0 renamed them; ids stay)
 const dismissCut = async () => { for (let i = 0; i < 3; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.mouse.click(1430, 990); await settle(p, 380); } };
 
 // ---------- 1. The Proving Ground, then every attribute tied at level 3 ----------
@@ -79,13 +80,13 @@ await settle(p, 300);
 ok('nothing selected yet: no confirm button', (await p.locator('button.phc-lu-confirm-btn').count()) === 0);
 await card.click();
 await settle(p, 250);
-ok('the selected card previews the class: ' + (await p.locator('.phc-lu-class-kicker').textContent()), /PREVIEW/.test(await p.locator('.phc-lu-class-kicker').textContent()) && /Infiltrator/.test(await p.locator('.phc-lu-class-name').textContent()));
+ok('the selected card previews the class: ' + (await p.locator('.phc-lu-class-kicker').textContent()), /PREVIEW/.test(await p.locator('.phc-lu-class-kicker').textContent()) && (await p.locator('.phc-lu-class-name').textContent()).includes(NAME.infiltrator));
 ok('a card only selects (no class yet)', !(await G()).characters[cid].classId);
 await snap('03-picker-selected');
 await p.locator('button.phc-lu-confirm-btn').click();
 await settle(p, 300);
 g = await G();
-ok('confirmed: the Infiltrator', g.characters[cid].classId === 'infiltrator');
+ok('confirmed: the ' + NAME.infiltrator, g.characters[cid].classId === 'infiltrator');
 ok('the picker is gone', (await cards.count()) === 0);
 const again = await act({ type: 'levelup/class', charId: cid, classId: 'mage' });
 const t = await p.evaluate(() => { const x = window.__phc.getState().toast; return x ? (x.text || String(x)) : ''; });
@@ -123,11 +124,11 @@ await p.waitForSelector('[data-phc-cutin]', { timeout: 20000 }).catch(() => {});
 const tab = p.locator('#phc-tab-class');
 ok('a CLASS tab', (await tab.count()) === 1);
 const src = decodeURIComponent((await tab.locator('img').first().getAttribute('src').catch(() => '')) || '');
-ok('the CLASS tab wears the Infiltrator emblem (Mind cyan, the eye)', src.includes('#4FC8DF') && src.includes('M6.4 10.2 Q12 4.6'));
+ok('the CLASS tab wears the ' + NAME.infiltrator + ' emblem (Mind cyan, the eye)', src.includes('#4FC8DF') && src.includes('M6.4 10.2 Q12 4.6'));
 await tab.click();
 await settle(p, 200);
 const panel = await p.locator('[role="tabpanel"]').first().textContent();
-ok('the Class tab names the Infiltrator: ' + panel.slice(0, 40), /INFILTRATOR/i.test(panel));
+ok('the Class tab names the ' + NAME.infiltrator + ': ' + panel.slice(0, 40), panel.toUpperCase().includes(NAME.infiltrator.toUpperCase()));
 ok('the Class tab lists Mark (rank I) and Toxin (rank II)', /Mark/.test(panel) && /Toxin/.test(panel));
 ok('the You card carries the emblem', (await p.locator('.phc-me-class img.phc-class-emblem').count()) > 0);
 await snap('05-class-tab');

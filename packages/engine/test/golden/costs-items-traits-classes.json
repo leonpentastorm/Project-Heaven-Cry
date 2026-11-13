@@ -153,7 +153,7 @@
 "item/class/fighter@III/blow": "P1 ap9>7",
 "item/class/fighter@III/blow-primed": "P1 ap9>7",
 "item/class/fighter@III/fighter.finisher/finisher": "P1 ap9>6 res.momentum5>1; air mana15>20 | short: Needs 3 AP. | again: NO Target is out of the fight. | next: NO Target is out of the fight. | later: NO Target is out of the fight.",
-"item/class/fighter@III/fighter.finisher/finisher/then-shot": "P1 ammo24>23 ap9>7 heat0>1",
+"item/class/fighter@III/fighter.finisher/finisher/then-shot": "P1 ammo24>23 ap9>7 heat0>1 res.momentum1>2",
 "item/class/fighter@III/fighter.lunge/lunge": "P1 ap9>7; air mana15>20 | short: Needs 2 AP. | again: NO Pick a living target. | next: NO Pick a living target. | later: NO Pick a living target.",
 "item/class/fighter@III/fighter.lunge/lunge/then-shot": "P1 ammo24>23 ap9>7 heat0>1",
 "item/class/fighter@III/fighter.riposte/off": "- | short: free | again: NO Already set. | next: NO Already set. | later: NO Already set.",

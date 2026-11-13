@@ -2220,7 +2220,7 @@
       "eye_line": { "x": 0.55, "y": 0.26 }
     },
     "arch-bulwark": {
-      "label": "Bulwark",
+      "label": "Holdfast",
       "path": "art/portraits/archetypes/bulwark.png",
       "sha256": "65aecb05700baaf8b7c5b985e2db2c3a7071e6768d70abbf4240e220e5805997",
       "width": 800,
@@ -2542,7 +2542,7 @@
       "eye_line": { "x": 0.52, "y": 0.13 }
     },
     "arch-sigilist": {
-      "label": "Sigilist",
+      "label": "Glyphwright",
       "path": "art/portraits/archetypes/sigilist.png",
       "sha256": "02fd55babe8abdecf71f7e3feafce8e05e646e115660ec4e5a593fab90fc79e9",
       "width": 800,
@@ -2726,7 +2726,7 @@
       "eye_line": { "x": 0.52, "y": 0.13 }
     },
     "arch-mender": {
-      "label": "Mender",
+      "label": "Empath",
       "path": "art/portraits/archetypes/mender.png",
       "sha256": "34d06292ae9460d7e71f9eea2afc713651b113ec86f388a48c98d5a9f5fc6f63",
       "width": 800,
