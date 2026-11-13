@@ -762,19 +762,20 @@ export const strengthTable = (c: Character): Record<string, number> => Object.fr
 // ---------- focuses (spec: Hands 2; item 630: a focus counts only in a hand) ----------
 /** A focus kind: the standard gloves of the gear companies' line (rules 1.33: the Attuner is the third with a door here; rules 1.34: the Visualizer the fourth). */
 export type FocusKind = 'evoker' | 'emanator' | 'attuner' | 'visualizer';
-/** What counts as each focus: the focus items, and the mana arms that count as one. Rules 1.33 (a focus is data): each
- * focus item of items.json names `focus: {door, hand, fuel}`; every item whose `focus.door` is a kind's door counts as
- * that kind (a faction's focus later is one more item, never a new kind in code). */
-const FOCUS_BASE: Record<FocusKind, string[]> = { evoker: ['evoker', 'evoker_blade', 'spellslinger_pistol', 'grand_staff'], emanator: ['emanator', 'emanator_gauntlet'], attuner: [], visualizer: [] };
 /** The door (a skill id) each focus kind opens (rules 1.33). */
 export const FOCUS_DOOR: Record<FocusKind, string> = { evoker: 'brain_power', emanator: 'will_power', attuner: 'empathy', visualizer: 'visualization' };
-const FOCUS_KINDS = Object.keys(FOCUS_BASE) as FocusKind[];
+const FOCUS_KINDS = Object.keys(FOCUS_DOOR) as FocusKind[];
+/** A thing's focus block (rules 1.33 items, rules 1.38 weapons too): `focus: {door, hand?, fuel}`, or null. */
+const focusOf = (id: string): { door: string; fuel?: string } | null => ((ITEM[id] as any)?.focus || (WEAPON[id] as any)?.focus || null);
 /** A focus kind by its own name or by the door it opens (null: neither). */
 export const kindOfDoor = (door: string): FocusKind | null => (FOCUS_KINDS.includes(door as FocusKind) ? door as FocusKind : FOCUS_KINDS.find((k) => FOCUS_DOOR[k] === door) || null);
+/** What counts as each focus (rules 1.33, rules 1.38): every item AND every weapon whose `focus.door` is a kind's door
+ * (the focus gloves, the mana arms that count as one, the Emanator katana; a faction's focus later is one more item or
+ * weapon in data, never a list in code). */
 export const FOCUS_IDS: Record<FocusKind, string[]> = Object.fromEntries(FOCUS_KINDS.map((k) =>
-  [k, [...new Set([...FOCUS_BASE[k], ...Object.values(ITEM).filter((it: any) => it?.focus && kindOfDoor(String(it.focus.door)) === k).map((it: any) => String(it.id))])]])) as Record<FocusKind, string[]>;
-/** The focus kinds whose fuel is MP (items.json focus.fuel): an Emanator or an Attuner keeps a character's MP. */
-const MP_FOCUS_KINDS: FocusKind[] = FOCUS_KINDS.filter((k) => FOCUS_IDS[k].some((id) => (ITEM[id] as any)?.focus?.fuel === 'mp'));
+  [k, [...new Set([...Object.keys(ITEM), ...Object.keys(WEAPON)].filter((id) => { const f = focusOf(id); return !!f && kindOfDoor(String(f.door)) === k; }))]])) as Record<FocusKind, string[]>;
+/** The focus kinds whose fuel is MP (a focus block's fuel): an Emanator or an Attuner keeps a character's MP. */
+const MP_FOCUS_KINDS: FocusKind[] = FOCUS_KINDS.filter((k) => FOCUS_IDS[k].some((id) => focusOf(id)?.fuel === 'mp'));
 /** What the hands hold: the main-hand weapon, and the off hand unless a two-handed weapon fills both. */
 export const inHands = (c: Character): string[] => [c.weapon, ...(c.offHand && !twoHands(c, c.weapon) ? [c.offHand.id] : [])];
 /** Which hand holds this kind of focus ('main' or 'off'), 'pack' if it is only carried, else null. */

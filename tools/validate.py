@@ -420,6 +420,16 @@ if isinstance(wm, dict):
             errors.append(f"weapons:{w.get('id')}: unknown mastery_family {w.get('mastery_family')}")
         if w.get("category") not in cats:
             errors.append(f"weapons:{w.get('id')}: category {w.get('category')} is in no mastery family")
+        # rules 1.38: a weapon that counts as a focus says so with a focus block (the engine reads it), and its
+        # counts_as_<kind> property has a block with that door (the Spellslinger's pistol: the block, no property)
+        _FD = {"brain_power": "evoker", "will_power": "emanator", "empathy": "attuner", "visualization": "visualizer"}
+        fo = w.get("focus")
+        if fo is not None and not (isinstance(fo, dict) and fo.get("door") in _FD and fo.get("fuel") in ("core", "mp") and not set(fo) - {"door", "fuel", "hand"}):
+            errors.append(f"weapons:{w.get('id')}: focus is {{door: brain_power | will_power | empathy | visualization, fuel: core | mp}}")
+        said = sorted(p[len("counts_as_"):] for p in (w.get("properties") or []) if isinstance(p, str) and p.startswith("counts_as_"))
+        has = [_FD[fo["door"]]] if isinstance(fo, dict) and fo.get("door") in _FD else []
+        if [k for k in said if k not in has]:
+            errors.append(f"weapons:{w.get('id')}: its counts_as_ property ({said}) needs a focus block with that door ({has}) (rules 1.38)")
 
 # equipment slots: the armour class slot must be one of the slots
 slots = data.get("rules", {}).get("equipment_slots", {})

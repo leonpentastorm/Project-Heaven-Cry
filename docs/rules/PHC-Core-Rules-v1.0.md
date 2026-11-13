@@ -905,7 +905,7 @@ Weapon skills and lore:
 - **Incendiary · Firebreak:** you choose which tiles in the radius burn. *"The frontier's least favourite smell."*
 - **Bot-scrambler · Static:** mana arms in the radius stay jammed until cleared (2 AP). *"Science Team surplus, sold out the back door."*
 
-##### 7.11 Mana arms: 7 types (new family; requirements listed)
+##### 7.11 Mana arms: 8 types (new family; requirements listed; the Emanator katana: rules 1.38)
 
 Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. These are the class weapons for Spellslinger, Storm Hand, Blade Scribe, Lumeri Templar and Banner Dancer, but anyone who meets the requirement can use them.
 
@@ -915,6 +915,7 @@ Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. T
 | Spellslinger's pistol | 1H | 22 | 8 | .32 Decrkm, sigil-etched magazines | 1.1 | 1,500 | Brain Power 3 to inscribe |
 | Evoker blade | 1H | 26 | 1 | counts as an Evoker | 1.8 | 2,400 | Brain Power 3 |
 | Emanator gauntlet | 1H | 18 + one element | 1 | counts as an Emanator | 1.5 | 2,200 | Will Power 3 |
+| Emanator katana (rules 1.38) | 1H | 26 | 1 | counts as an Emanator | 1.8 | 2,400 | Will Power 3 |
 | Lumeri censer gun | 2H | 30 / 18 (shotgun) | 8 | shells, or blessed shells | 4.5 | 2,000 | Faith 3 |
 | Bot-thread banner | 2H | 24 | 2 | none | 3 | 1,800 | Empathy 3 (rules 1.13; was Camaraderie 3) |
 | Grand staff | 2H | 24 | 1  *(its melee strike reaches 2: the Reach property, rules 1.12)*| counts as an Evoker | 2.5 | 2,400 | Brain Power 3 |
@@ -4814,6 +4815,7 @@ takes the Evoker blade's numbers (26 damage, 1H, 1.8 kg, 2,400 credits); each hi
 mana arm's does. It is **held back** because the engine cannot be told by data that a weapon counts as an Emanator: the
 focus gate reads a list written in code (`FOCUS_IDS` in `packages/engine/src/character.ts`), not the weapon's
 `counts_as_emanator` property. It goes into 7.11 and the data the day the focus list is read from data (items 2205, 1956).
+*Built by rules 1.38 (point 2): the focus list is read from data, and the Emanator katana is data alone.*
 
 ## Rules revision 1.36: the level scale, and healing and shields in percent of HP (Classes 3.0, step 7b)
 
@@ -4986,6 +4988,15 @@ PROVISIONAL (items 2500 onward).
    `rounds: "up_to"`, `numbers.rounds_per_roll` 4 and `numbers.max_rolls` 3 (the cap is their product); the card reads
    "up to 12 rounds" from the engine. One gun's damage moves: the long rifle (5 rounds) had one roll (one for every 3
    rounds left) and now has two (5 is one 4 and part of another); every other magazine gives the same rolls as before.
+2. **A focus is data, a weapon too** (rules 1.38; rules 1.33 made a focus item data): what counts as each focus (the
+   Evoker, the Emanator, the Attuner, the Visualizer) is every item AND every weapon with a `focus: {door, fuel}` block
+   naming the door it opens; no list is kept in code. The mana arms that count as a focus carry the block (the Evoker
+   blade, the Spellslinger's pistol and the grand staff the Evoker's door, Brain Power; the Emanator gauntlet the
+   Emanator's, Will Power); a weapon's `counts_as_evoker` / `counts_as_emanator` property needs a block with that door (the
+   validator). **The Emanator katana** (rules 1.35 section 2) is then built by data alone: 7.11's eighth mana arm, a
+   one-handed light blade (Dexterity, Agility; light and edge), 26 damage, 1.8 kg, 2,400 credits, Will Power 3, counts
+   as an Emanator; each hit adds 1 to the ambient mana as every mana arm's does; no weapon skill of its own, no
+   technique lent, in no loot table (the Evoker blade, its twin, is in none).
 
 ## Maps (rules 1.16)
 
@@ -8078,3 +8089,5 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2412. **Items 2400 to 2412 are rules 1.37's.**
 2500. **Mag Dump: 4 rounds a roll, 12 at most (rules 1.38):** `techniques.json mag_dump numbers.rounds_per_roll` 4, the cap `rounds_per_roll × max_rolls`; fewer left: one roll for every 4 or part, and it spends what is left; Spread spends one roll's rounds. Leon's ruling as the pick-up guide wrote it (a call made for him). PROVISIONAL.
 2501. **The long rifle's Mag Dump has two rolls (rules 1.38):** its 5 rounds were one roll under "one for every 3 left" and are two under "one for every 4 or part": the one magazine whose rolls changed (golden lines `tech/mag_dump/long_rifle/*` and the optimised gun's `L6` to `L20` Mag Dump lines). Kept as the ruling reads; Leon to confirm. PROVISIONAL.
+2502. **A focus is any item or weapon with a `focus` block (rules 1.38):** `FOCUS_IDS` is built from data (items.json and weapons.json); the four mana arms that counted as a focus by a list in code carry `focus: {door, fuel}`; the validator refuses a `counts_as_<kind>` property with no block of that door (the Spellslinger's pistol counted as an Evoker in code with no property: it keeps that by its block). PROVISIONAL.
+2503. **The Emanator katana built (rules 1.38; numbers as item 2205):** `weapons.json emanator_katana`: mana arm, 1H, 26 physical, 1.8 kg, 2,400 credits, Will Power 3, light and edge (Dexterity, Agility), `focus` Will Power (fuel MP). No `grants`, no `teaches`, no loot table. Lead's reading where rules 1.35 was silent (the light-blade props and no lent technique, as its twin). PROVISIONAL.

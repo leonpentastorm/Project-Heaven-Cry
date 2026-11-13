@@ -3,6 +3,7 @@
 // offers what its properties give, and lends Draw Cut from the pack. Every number is read from data.
 import { describe, it, expect, beforeEach } from 'vitest';
 import { phys, WEAPON, WEAPONS, gearEntry, equip } from '../src';
+import { FOCUS_IDS } from '../src/character';
 import { physFight, rig } from './helpers/physfight';
 
 beforeEach(() => rig(null));
@@ -55,9 +56,17 @@ describe('the katana (rules 1.35): data alone', () => {
   });
 });
 
-describe('the Emanator katana (rules 1.35): designed, not built', () => {
-  // The engine's focus gate reads a list written in code (FOCUS_IDS, character.ts), not a weapon's counts_as_emanator:
-  // a weapon cannot be made a focus by data alone. When that list is read from data, add the weapon and this test.
-  // 13 Nov 2026: held back until the focus list is read from data (rules 1.35 item 2206)
-  it.todo('with it in hand a character with the Outburst door can Begin; without it, cannot (item 1956)');
+describe('the Emanator katana (rules 1.38): data alone, now the focus list is read from data', () => {
+  const E = WEAPON.emanator_katana as any, B = WEAPON.evoker_blade as any;
+  it('loads as a mana arm with the Evoker blade\'s numbers, Will Power 3, and a focus block on the Emanator\'s door', () => {
+    expect(E).toBeTruthy(); expect(E.category).toBe(B.category); expect(E.mastery_family).toBe(B.mastery_family);
+    for (const k of ['damage', 'weight_kg', 'price_credits', 'hands', 'range_tiles']) expect(E[k], k).toBe(B[k]);
+    expect(E.requires).toEqual({ will_power: B.requires.brain_power });
+    expect(E.focus.door).toBe('will_power'); expect(E.properties).toContain('counts_as_emanator');
+  });
+  it('counts as an Emanator: in FOCUS_IDS from data, never by a list in code', () => {
+    expect(FOCUS_IDS.emanator).toContain('emanator_katana');
+    expect(FOCUS_IDS.evoker).not.toContain('emanator_katana');
+  });
+  // the Outburst through it: focus.test.ts ('the Emanator katana')
 });
