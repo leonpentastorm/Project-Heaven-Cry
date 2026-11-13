@@ -251,7 +251,7 @@ register({
     reaction_window: (ctx, h) => {
       const kz = kzOf(h); if (!kz || ctx.reactor !== h.u || ctx.kind !== 'overwatch') return;
       if (kz.hit.includes(ctx.mover.id) || kz.left <= 0) { ctx.cancel = true; return; }
-      kz.hit.push(ctx.mover.id); kz.left--; kz.firing = ctx.mover.id; kz.both = (ctx.spend || 1) >= 2; h.u!.owShots = 1;
+      kz.hit.push(ctx.mover.id); kz.left--; kz.firing = ctx.mover.id; kz.both = (ctx.spend || 1) >= num(h, 'spend'); h.u!.owShots = 1;
     },
     attack_preview: (ctx, h) => { const kz = kzOf(h); if (kz?.firing && ctx.att === h.u && ctx.tgt?.id === kz.firing) ctx.terms.push({ v: num(h, 'hit'), label: 'Killzone' }); },
     // The attack is rolled: the second stays held for the next enemy, already paid for by the reactions the first one
