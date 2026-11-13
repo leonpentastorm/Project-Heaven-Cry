@@ -178,45 +178,14 @@ describe('Defender', () => {
 
 // ======================================================================================================== MEDIC
 describe('Medic', () => {
-  it('Triage: an adjacent ally heals 5 × Healing given × the level factor (rules 1.23; it was 20 × Healing given) and stops bleeding; once per ally per turn', () => {
-    const f = fightWith([cls('medic', 1), {}], [{}]);
-    const [m, ally] = f.pcs; line(f, [m, 3], [ally, 4], [f.foe, 12]);
-    const a = f.unit(ally.id); a.hp = 20; a.bleed = 2;
-    const u = f.turn(m);
-    act(f, u, { type: 'combat/perk', id: 'class:medic.triage', actionId: 'triage', targetId: ally.id });
-    const mult = healingMult(f.g.characters[m.charId!]);
-    expect(f.unit(ally.id).hp).toBe(20 + Math.floor(Math.floor(5 * mult * mendFactor(f.g.characters[m.charId!].level)) * (a.healRecv || 1))); expect(f.unit(ally.id).bleed).toBe(0);
-    expect(() => act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:medic.triage', actionId: 'triage', targetId: ally.id })).toThrow(/already treated/i);
-    f.unit(ally.id).hp = 0; f.unit(ally.id).downed = true;
-    act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:medic.triage', actionId: 'stabilise', targetId: ally.id });
-    expect(f.unit(ally.id).downed).toBe(false); expect(f.unit(ally.id).hp).toBe(1);
-  });
+  // Rules 1.33: Triage in a fight is data (classes.json medic.triage; test/tending.test.ts); Stim Throw is everyone's gear
+  // action; Field Surgery is anyone's at Empathy 3 (tending.json tend.field_surgery). The story Triage stays a lane action.
   it('Triage in the story: the most hurt ally, once per ally per scene', () => {
     const s = storyWith([cls('medic', 1), {}]);
     const [m, ally] = s.chars; s.g.characters[ally.id].hp = 30;
     s.act({ type: 'story/perk', charId: m.id, id: 'class:medic.triage', actionId: 'triage_story' });
     expect(s.g.characters[ally.id].hp).toBeGreaterThan(30);
     expect(() => s.act({ type: 'story/perk', charId: m.id, id: 'class:medic.triage', actionId: 'triage_story', text: s.g.characters[ally.id].name })).toThrow(/already treated/);
-  });
-  it('Stim Throw: 1 Supply, an ally within 4 heals 6 × Healing given × the level factor (rules 1.23; it was 30 × Healing given); a Downed ally gets up at 1 HP', () => {
-    const f = fightWith([cls('medic', 2), {}], [{}]);
-    const [m, ally] = f.pcs; line(f, [m, 2], [ally, 5], [f.foe, 13]);
-    f.unit(ally.id).hp = 10; const u = f.turn(m), sup = f.unit(m.id).res!.supplies;
-    act(f, u, { type: 'combat/perk', id: 'class:medic.stim_throw', targetId: ally.id });
-    { const c = f.g.characters[m.charId!]; expect(f.unit(ally.id).hp).toBe(10 + Math.floor(Math.floor(6 * healingMult(c) * mendFactor(c.level)) * (f.unit(ally.id).healRecv || 1))); } expect(f.unit(m.id).res!.supplies).toBe(sup - 1);
-    f.unit(ally.id).hp = 0; f.unit(ally.id).downed = true;
-    act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:medic.stim_throw', targetId: ally.id });
-    expect(f.unit(ally.id).hp).toBe(1);
-  });
-  it('Field Surgery: out of combat, 1 Supply treats a leg injury (or clears Body conditions)', () => {
-    const s = storyWith([cls('medic', 3), {}]);
-    const [m, ally] = s.chars; s.g.characters[ally.id].injuries = [{ loc: 'leg', side: 'left' }];
-    s.act({ type: 'story/perk', charId: m.id, id: 'class:medic.field_surgery', actionId: 'injury', text: 'I treat ' + s.g.characters[ally.id].name });
-    expect(s.g.characters[ally.id].injuries).toEqual([]);
-    expect(s.g.characters[m.id].res!.supplies).toBe(3 + Math.floor(6 / 2) - 1);
-    s.g.characters[m.id].persistentConds = [{ id: 'nausea', scope: 'session' }];
-    s.act({ type: 'story/perk', charId: m.id, id: 'class:medic.field_surgery', actionId: 'conditions' });
-    expect(s.g.characters[m.id].persistentConds).toEqual([]);
   });
 });
 
@@ -476,36 +445,7 @@ describe('Guardian', () => {
 
 // ======================================================================================================== BARD
 describe('Bard', () => {
-  it('Inspire: 10 MP, an ally\'s next roll is +2 (spent by it)', () => {
-    const f = fightWith([cls('bard', 1, SOUL), {}], [{}]);
-    const [bd, ally] = f.pcs; line(f, [bd, 3], [ally, 5], [f.foe, 9]);
-    const u = f.turn(bd), mp = u.mg!.mp;
-    act(f, u, { type: 'combat/perk', id: 'class:bard.inspire', actionId: 'inspire', targetId: ally.id });
-    expect(f.unit(bd.id).mg!.mp).toBe(mp - 10);
-    const pv = withGame(f.g, () => previewAttack(f.cb, f.unit(ally.id), f.unit(f.foe.id), 'shot'));
-    expect(pv.terms!.some((t) => t.label === 'Encouraged' && t.v === 2)).toBe(true);
-    const a = f.turn(ally); act(f, a, { type: 'combat/attack', targetId: f.foe.id, mode: 'shot' });
-    const pv2 = withGame(f.g, () => previewAttack(f.cb, f.unit(ally.id), f.unit(f.foe.id), 'shot'));
-    expect(pv2.terms!.some((t) => t.label === 'Encouraged')).toBe(false);
-  });
-  it('Inspire in the story: 10 MP, +2 on the ally\'s next check', () => {
-    const s = storyWith([cls('bard', 1, SOUL), {}]);
-    const [b, ally] = s.chars;
-    s.act({ type: 'story/perk', charId: b.id, id: 'class:bard.inspire', actionId: 'inspire_story', text: 'Go on, ' + s.g.characters[ally.id].name });
-    s.act({ type: 'narrator/turn', turn: { narration: 'Try it.', checks: [{ charId: ally.id, skills: ['athletics'], tn: 12, stakes: 'It works.' }] } } as any);
-    const ck = s.g.checks.find((k) => !k.done)!;
-    s.act({ type: 'check/roll', checkId: ck.id }, s.g.characters[ally.id].owner);
-    expect(s.g.story.entries.filter((e) => e.kind === 'check').at(-1)!.head).toMatch(/\+2 Encouraged by/);
-  });
-  it('Mend: a Bard\'s Buff heal heals from 9, not 7 (× Healing given × the level factor × the air)', () => {
-    const f = fightWith([cls('bard', 2, SOUL), {}], [{}]);
-    const [bd, ally] = f.pcs; line(f, [bd, 3], [ally, 5], [f.foe, 13]);
-    const u = f.turn(bd), d = designOf(f.unit(bd.id), 'buff', 'heal'); f.unit(ally.id).hp = 10;
-    // Rules 1.5: Begin, Pump to stage 1 (×1.2 since rules 1.17), Release.
-    act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/release', aim: '5,2' });
-    const hm = f.unit(bd.id).mg!.healMult, recv = f.unit(ally.id).healRecv || 1;
-    expect(f.unit(ally.id).hp - 10).toBe(Math.floor(Math.floor(7 * 1 * hm * (f.unit(bd.id).mg!.mend ?? 1) * recv) * 9 / 7)); // rules 1.20: a base of 9 in place of 7, and the level factor
-  });
+  // Rules 1.33: Inspire (rank II, a felt feeling along a Bond) and Brimming (bard.mend) are data: test/tending.test.ts.
   it('Gift: out of combat, once a rest, a design handed to an ally (the Narrator is told)', () => {
     const s = storyWith([cls('bard', 3, SOUL), {}]);
     const [b, ally] = s.chars;
