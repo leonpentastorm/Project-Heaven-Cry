@@ -15,6 +15,7 @@
 //   else calls applyCond(cb, rng, by, target, 'bleeding' | 'dazed' | 'prone' | 'hidden') and endCond(target, id, cb).
 //     rawBleed(u, rounds)  rawDazed(u, n)  rawProne(u, on, endBrace?)  rawHidden(cb, u, on)
 import type { Combat, Unit } from './combat';
+import { sideSeesUnit } from './combat';
 
 // ---------- unit states ----------
 /** Braced: on (a Brace, a class move's stance) or off (it moved, was pushed, went Prone, changed weapon). */
@@ -50,12 +51,18 @@ export function rawDazed(u: Unit, n: number): void { u.dazedNext = n; }
  * "while braced (or prone)") keeps a weapon set. */
 export function rawProne(u: Unit, on: boolean, endBrace = true): void { u.prone = on; if (on && endBrace) u.braced = false; }
 /** Hidden on or off, with its book-keeping: an entry gives one ambush (`entry: false`: the same entry, kept), and
- * each other side remembers where it last saw the unit until it is seen again. */
+ * each other side remembers where it LAST SAW the unit (its tile if it sees it hide, else cb.seenAt) until it is seen
+ * again (cb.lastSeen; the enemy AI searches there: combat.ts enemySearchTile). A side that never saw it learns nothing
+ * (13 Nov 2026: every side used to be told the tile it hid on, seen or not). */
 export function rawHidden(cb: Combat | null | undefined, u: Unit, on: boolean, o: { entry?: boolean } = {}): void {
   if (on) {
     if (o.entry !== false) u.hideEntry = (u.hideEntry || 0) + 1;
+    if (cb && !u.hidden) for (const side of ['pc', 'foe'] as const) {
+      if (side === u.side) continue;
+      const at = sideSeesUnit(cb, side, u) ? u.pos : cb.seenAt?.[side]?.[u.id]; // seen hiding: here; else where this side last saw it (combat.ts noteSeenAt)
+      if (at) cb.lastSeen = { ...cb.lastSeen, [side]: { ...cb.lastSeen?.[side], [u.id]: at } };
+    }
     u.hidden = true;
-    if (cb) for (const side of ['pc', 'foe']) if (side !== u.side) ((cb.lastSeen ||= {})[side] ||= {})[u.id] = u.pos;
   } else {
     u.hidden = false;
     if (cb) for (const side of Object.keys(cb.lastSeen || {})) delete cb.lastSeen![side][u.id];

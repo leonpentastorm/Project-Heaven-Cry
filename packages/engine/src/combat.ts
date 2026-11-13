@@ -245,8 +245,12 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Rules 1.25, the fire doctrine: who of each side's AI has attacked whom this round (target id -> attacker ids), and
    * the doctrine lines the log has already said this fight. */
   fire?: { round: number; on: Record<string, string[]> }; doctrineSaid?: Record<string, true>;
-  /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id. */
+  /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id: the tile it was on
+   * when this side last saw it (seenAt), or a known position an item gave. The enemy AI searches there (enemySearchTile). */
   lastSeen?: Record<string, Record<string, string>>;
+  /** Rules (13 Nov 2026): where each side last SAW each hostile, by unit id (noteSeenAt; a walk notes each step). Read
+   * only when the hostile hides (rawHidden copies it to lastSeen). Not in a player's view (fog.ts). Old saves: absent. */
+  seenAt?: Record<string, Record<string, string>>;
   /** Who each log line is about, as each side saw it when it was written (say(); fog.ts reads it): logSee[i] is line i's
    * mark, 0 (or past the end: an old save, a line naming nobody) is a line every side may read. Trailing 0s are not kept. */
   logSee?: LogMark[];
@@ -1027,6 +1031,16 @@ export function noteSighted(cb: Combat) {
   const seen = seenIds(cb, 'pc', true), had = cb.sighted || [], add = seen.filter((id) => !had.includes(id));
   if (add.length || !cb.sighted) cb.sighted = [...had, ...add];
 }
+/** Note where each side sees each hostile now (cb.seenAt): what a side last saw is what it can search for when that
+ * hostile hides (rawHidden). Called after every step of the game and before and after each enemy's turn; a walk notes
+ * its own steps (moveUnit). No dice, no rule read; the same order as seenIds. */
+export function noteSeenAt(cb: Combat) {
+  if (cb.over) return;
+  for (const side of ['pc', 'foe'] as const) for (const id of seenIds(cb, side)) { const t = cb.units.find((x) => x.id === id)!; noteSeen(cb, side, id, t.pos); }
+}
+function noteSeen(cb: Combat, side: string, id: string, at: string) {
+  const m = cb.seenAt?.[side]; if (!m || m[id] !== at) cb.seenAt = { ...cb.seenAt, [side]: { ...m, [id]: at } }; // replaced, never written into (a copied fight shares it)
+}
 /** Does anyone on the attacker's side see the target? */
 export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | null): boolean {
   const hid = tgt.hidden && tgt.side !== side, walls = hid ? undefined : sightBlockers(cb), base = !hid && cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos, walls));
@@ -1652,6 +1666,8 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   for (let i = 0; i < route.length; i++) {
     const k = route[i], was = u.pos;
     u.pos = k; seg.push(k); tileSight.push(sightHere(cb, u)); eyes.steps.push({ at: k, ids: new Set(seenIds(cb, u.side as 'pc' | 'foe')) });
+    { const sh = tileSight[tileSight.length - 1], other = u.side === 'pc' ? 'foe' : 'pc'; if (sh[other === 'pc' ? 0 : 1] === '1') noteSeen(cb, other, u.id, k); // the other side saw it step here
+      for (const id of eyes.steps[eyes.steps.length - 1].ids) { const t = cb.units.find((x) => x.id === id); if (t) noteSeen(cb, u.side, id, t.pos); } } // and what the walker's side sees from here
     { const en = enterTile(cb, rng, u, k, flush); if (en.sprung) sprung = en.sprung; if (en.stopped) stopped = en.stopped; } // what the tile does to whoever enters it (a trap, a field, a hazard)
     const ms: any = emit(cb, 'move_step', { u, from: was, at: k, i, route, how, stop: false, cb, rng, skipOW: !!mc.skipOW || !reacts, ...(mc.noWatch ? { noWatch: true } : {}), flush: () => { flush(); } }); // flush: a held shot (physical/) plays the walk so far first; noWatch (set on move_cost): no held Watch hears the step (Shift)
     if (ms.stop && !stopped) stopped = typeof ms.stop === 'string' ? ms.stop : 'stopped';
@@ -2429,7 +2445,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode); else resolveAttack(cb, rng, u, t, mode, null); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
-    if (!pcs.length) break;
+    if (!pcs.length) { const go = enemySearchTile(cb, u, stood); if (!go || moveUnit(cb, u, go.tile, rng)) break; continue; } // nobody it perceives: it searches where its side last saw one
     const best = enemyCloseTile(cb, u, mode, order, pcs, w, stood);
     if (!best || moveUnit(cb, u, best.tile, rng)) break;
   }
@@ -2598,6 +2614,27 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   const b = best;
   return { tile: b, near: [...pcs].sort((a, c) => dist(b, a.pos) - dist(b, c.pos))[0] || null };
 }
+/** An enemy that perceives nobody (every hostile Hidden, or out of the fight) heads for where its side last saw one
+ * (cb.lastSeen[its side]: the tile a hostile was on when this side saw it hide, or a known position an item gave),
+ * never where that hostile really is now: the nearest such tile (fewest tiles of walk; ties by the order of cb.units),
+ * one turn's walk at a time. Nothing known, or nothing nearer within its AP: null (it holds or takes cover, as before;
+ * an old save has no record). Bug, 13 Nov 2026: it used to stand still. Deterministic; no dice. */
+export function enemySearchTile(cb: Combat, u: Unit, stood?: Set<string>): { tile: string; goal: string } | null {
+  const known = cb.lastSeen?.[u.side]; if (!known) return null;
+  const P = paths(cb, u.pos, u.id);
+  let goal: string | null = null, gd = Infinity;
+  for (const t of cb.units) {
+    const at = known[t.id]; if (!at || t.side === u.side || t.dead || t.surrendered || at === u.pos) continue;
+    const d = P.dist[at] ?? dist(u.pos, at); if (d < gd) { gd = d; goal = at; }
+  }
+  if (!goal) return null;
+  const G = paths(cb, goal, u.id); let bd = G.dist[u.pos] ?? Infinity, best: string | null = null;
+  for (const [k, tiles] of Object.entries(P.dist)) {
+    if (k === u.pos || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement))) continue;
+    const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd) { bd = d; best = k; }
+  }
+  return best ? { tile: best, goal } : null;
+}
 /** What an enemy means to do on its next turn (the Trickster's Read): the first thing enemyTurn would do, read with a
  * fresh turn's AP and nothing rolled or changed. Sigil and Soul casters are named as weighing a spell (their planners
  * keep per-turn state), with the weapon choice that follows if they don't cast. */
@@ -2637,7 +2674,8 @@ function intentInner(cb: Combat, u: Unit): Intent {
   else if (targets.length) {
     const t = targets[0].t, ghost = isGhost(t), owner = ghost ? cb.units.find((x) => x.id === (t as any).ghostOf) : t;
     out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name) + (targets[0].why ? AIM_WHY[targets[0].why] : ''), targetId: owner!.id, ...(ghost ? { image: t.id } : {}), ...(targets[0].why ? { why: targets[0].why } : {}) };
-  } else if (moveBlock(u) || !pcs.length) out = { kind: 'wait', text: 'hold where it is' };
+  } else if (moveBlock(u)) out = { kind: 'wait', text: 'hold where it is' };
+  else if (!pcs.length) { const go = enemySearchTile(cb, u); out = go ? { kind: 'move', text: 'move to ' + refOf(go.tile) + ', toward where it last saw someone (' + refOf(go.goal) + ')', to: go.tile } : { kind: 'wait', text: 'hold where it is' }; }
   else {
     const best = enemyCloseTile(cb, u, mode, order, pcs);
     out = best ? { kind: 'move', text: 'move to ' + refOf(best.tile) + (best.near ? ' toward ' + (isGhost(best.near) ? 'the False Image of ' + (cb.units.find((x) => x.id === (best.near as any).ghostOf)?.name || 'someone') : best.near.name) : ''), to: best.tile, ...(best.near ? { targetId: (best.near as any).ghostOf || best.near.id } : {}) } : { kind: 'wait', text: 'hold where it is' };
