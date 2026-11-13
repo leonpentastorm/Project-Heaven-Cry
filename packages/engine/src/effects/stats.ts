@@ -19,6 +19,9 @@
 export const COST_SITE_IDS = [
   'analyze', 'break', 'clear_jam', 'crystallise', 'disengage', 'escape', 'extinguish', 'field_repair', 'hide', 'parley', 'pray', 'recover',
   'reload', 'reload_both', 'set_explosive', 'shove', 'sprint', 'stabilise', 'stim', 'stim_throw', 'swap_core', 'throw', 'triage', 'vent', 'ward', 'whisper',
+  // Classes 3.0 step 8 (rules 1.34): Picture (figments.ts). A Figment's own verbs are priced at their data site
+  // (owned.ts runDataVerb): the `cost` hook hears them by name (`action`), no `ap_cost:` stat asks for them.
+  'picture',
   // engine foundations 2: every verb priced by price() is a site (review 1, F3: these priced a literal, so no item could reach them)
   'attempt', 'brace', 'door', 'feed', 'load', 'overwatch', 'pickup', 'prone', 'pull_free', 'scuff', 'search', 'song', 'steady', 'syphon',
 ] as const;
@@ -48,6 +51,8 @@ export const STATS = {
   // Classes 3.0 step 5 (rules 1.31): the Chaplain's presence
   patron_presence: 'While Witnessed, the patron stands at this unit\'s side: its interventions reach further and land on a Judged enemy of its first (>0; faith.ts presenceOf)',
   always_seen: 'The other side sees this unit wherever it is (>0; tactics.ts sightOf, Classes 3.0 P7: Traced, a Figment\'s Stare)',
+  // Classes 3.0 step 8 (rules 1.34): Figments
+  figment_designs: 'Figment designs kept ready beyond the door\'s ladder (figments.ts designsMax; the Rigger +1)',
   // ---- asked by the sheet (character.ts)
   equip_ban: 'This weapon or mod may not be equipped (>0)', one_hand_heavy: 'Heavy weapons in one hand (>0)',
 } as const;

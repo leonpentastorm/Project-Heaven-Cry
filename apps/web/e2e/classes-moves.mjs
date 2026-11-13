@@ -172,7 +172,7 @@ m = await mate(); u = await me();
 ok('Ward at Faith 1: ' + (r || 'confirmed') + '; the squadmate carries a Ward (' + JSON.stringify(m.shields || []) + ')', !r && (m.shields || []).some((l) => l.layer === 'ward' && l.by === u.id && l.n > 0));
 ok('Ward was the turn\'s Whisper (its slot is spent: ' + JSON.stringify(Object.keys(u.uses || {}).filter((k) => k.startsWith('faith#'))) + ')', Object.keys(u.uses || {}).some((k) => k.startsWith('faith#whisper')));
 
-// ---------- 3. Infiltrator: Vanish, Rig, Sabotage (rank II since rules 1.32) ----------
+// ---------- 3. Infiltrator: Vanish, Rig, Sabotage (and the Rigger's Field Fix between them) ----------
 await setClass('infiltrator', 3);
 ok('host turn', await newTurn());
 // Vanish: no enemy on the field (a cleared field) sees anyone.
@@ -181,7 +181,21 @@ r = await useMove(/^Vanish/);
 u = await me();
 ok('Vanish: Hidden (' + (r || 'confirmed') + ')', !r && !!u.hidden);
 ok('next to the squadmate', await mateNear(1));
-// (Field Fix left the Operative in rules 1.32: the Rigger's step (8) brings its picker check back.)
+// Field Fix (rules 1.34: the Rigger's now, rank I): the squadmate's gun jams (set up by hand), the chip clears it.
+await setClass('trickster', 1);
+ok('host turn (the Rigger)', await newTurn());
+await host.evaluate((id) => { const cb = window.__phc.getState().game.combat; const x = cb.units.find((v) => v.charId === id); x.jammed = true; }, maiChar);
+m = await mate();
+await dismissCut(); await pickClass(/^Field Fix/); await tok(m.pos).click(); await settle(host, 200);
+const chips = await host.locator('.phc-cb-pick button').allTextContents();
+ok('Field Fix offers its three jobs, the ones that don\'t apply greyed with a reason: ' + chips.join(' | '), chips.length === 3 && /Restore durability · /.test(chips.join('|')) && !/Clear the jam ·/.test(chips.join('|')));
+const greyed = await host.locator('.phc-cb-pick button[disabled]').count();
+ok('the greyed chips are disabled (' + greyed + ')', greyed >= 1);
+await snap('04-field-fix-picker');
+r = await useMove(/^Field Fix/, { target: m.pos, chip: /^Clear the jam/ });
+m = await mate();
+ok('Field Fix cleared the jam: ' + (r || 'confirmed'), !r && !m.jammed);
+await setClass('infiltrator', 3);
 ok('host turn', await newTurn());
 n0 = await fxN();
 r = await useMove(/^Sabotage: rig your tile/);
@@ -200,9 +214,9 @@ ok('Sabotage: the drone is disabled (stunned ' + (dr.conds?.stunned || 0) + '): 
 await settle(host, 250);
 await snap('05-sabotage');
 
-// ---------- 4. Trickster: Read, False Image, Silver Tongue, Sleight ----------
+// ---------- 4. Read (the Operative's since rules 1.34) and the Rigger's Sleight (False Image and Silver Tongue left: figments.mjs) ----------
 await act(host, { type: 'sandbox/clear' });
-await setClass('trickster', 3, () => withFocus('sigil'));
+await setClass('infiltrator', 5);
 await act(host, { type: 'sandbox/refill', charId: hostChar });
 u = await me();
 const far = await (async () => { const cb = (await G()).combat, [x, y] = xy(u.pos); for (const d of [4, 5, 3, 6]) for (const [dx, dy] of [[d, 0], [-d, 0], [0, d], [0, -d], [d, 1], [-d, 1]]) { const k = (x + dx) + ',' + (y + dy), [a, b] = xy(k); if (a < 0 || b < 0 || a >= cb.map.w || b >= cb.map.h || cb.map.solid.includes(k) || cb.units.some((v) => !v.dead && v.pos === k)) continue; if (!(await act(host, { type: 'sandbox/spawn', tier: 'soldier', weapon: 'service_pistol', at: ref(k), name: 'Gunner' }))) return k; } return null; })();
@@ -220,25 +234,13 @@ ok('the enemy wears its intent marker: ' + (await intentMark.first().textContent
 const tgtPos = foe.readIntent.targetId ? g.combat.units.find((x) => x.id === foe.readIntent.targetId)?.pos : foe.readIntent.to;
 if (tgtPos) ok('its target tile is marked too (' + ref(tgtPos) + ')', (await tok(tgtPos).locator('span[data-tip-text^="Read: "]').count()) > 0);
 await snap('06-read');
-const imgAt = await freeNear(u.pos, [[1, 1], [-1, 1], [1, -1], [-1, -1], [0, 2], [2, 0]]);
-n0 = await fxN();
-r = await useMove(/^False Image/, { target: null, tile: imgAt });
-g = await G();
-ok('False Image at ' + ref(imgAt) + ': ' + (r || 'confirmed'), !r && (g.combat.images || []).some((i) => i.pos === imgAt));
-await settle(host, 400);
-const decoy = tok(imgAt).locator('span[data-tip-text^="False Image of"]');
-ok('the grid draws the decoy (a translucent copy): ' + (await decoy.count()) + ' marks', (await decoy.count()) >= 1 && /opacity: 0\.55/.test((await decoy.first().getAttribute('style')) || ''));
-ok('the guest (same side) sees it too', (await mai.locator('button.phc-tok[aria-label^="' + ref(imgAt) + ' ·"] span[data-tip-text^="False Image of"]').count()) >= 1);
-await snap('07-false-image');
-n0 = await fxN();
-r = await useMove(/^Silver Tongue/, { target: foe.pos });
-fx = await fxSince(n0);
-ok('Silver Tongue at the gunner: ' + (r || 'confirmed'), !r && fx.some((e) => e.k === 'silver_tongue'));
+await setClass('trickster', 8);
+ok('host turn (the Rigger)', await newTurn());
 m = await mate(); u = await me();
 if (dist(m.pos, u.pos) > 6) ok('squadmate within 6', await mateNear(5));
 m = await mate(); u = await me();
 const before = [u.pos, m.pos];
-r = await useMove(/^Sleight: swap with a squadmate/, { target: m.pos });
+r = await useMove(/^Sleight/, { target: m.pos });
 m = await mate(); u = await me();
 ok('Sleight: the two swapped places (' + before.map(ref).join('↔') + '): ' + (r || 'confirmed'), !r && u.pos === before[1] && m.pos === before[0]);
 await settle(host, 300); await snap('08-sleight');
@@ -246,6 +248,8 @@ await settle(host, 300); await snap('08-sleight');
 // ---------- 5. Bard: Rally ----------
 await act(host, { type: 'sandbox/clear' });
 await setClass('bard', 3);
+// a one-handed pistol first (the Recruit's rifle fills both hands; the Trickster's Sigil kit used to leave one here)
+await act(host, { type: 'sandbox/give', charId: hostChar, item: 'service_pistol', equip: true });
 await act(host, { type: 'sandbox/give', charId: hostChar, item: 'attuner', equip: true }); // rules 1.33: Rally is Tending, through the Attuner
 ok('host turn', await newTurn());
 ok('squadmate within 4', await mateNear(3));
@@ -300,7 +304,7 @@ ok('Shrug It Off: off is in force (' + (r || 'confirmed') + ')', !r && (await ho
 await snap('13-defender');
 
 const seen = new Set(await fxSeenSince(0));
-ok('the fx played: ' + [...seen].filter((k) => ['shove', 'unstoppable', 'stance', 'rig', 'sabotage', 'intent', 'image', 'silver_tongue', 'swap', 'rally', 'eye_storm'].includes(k)).join(', '),
-  ['shove', 'unstoppable', 'rig', 'sabotage', 'intent', 'image', 'silver_tongue', 'swap', 'rally', 'eye_storm'].every((k) => seen.has(k)));
+ok('the fx played: ' + [...seen].filter((k) => ['shove', 'unstoppable', 'stance', 'rig', 'sabotage', 'intent', 'swap', 'rally', 'eye_storm'].includes(k)).join(', '),
+  ['shove', 'unstoppable', 'rig', 'sabotage', 'intent', 'swap', 'rally', 'eye_storm'].every((k) => seen.has(k)));
 ok('no page errors: ' + [...host.errors, ...mai.errors].join(' | '), ![...host.errors, ...mai.errors].length);
 await browser.close();

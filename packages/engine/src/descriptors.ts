@@ -34,7 +34,7 @@ import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, s
   steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE } from './magic';
 import { focusHand, NEEDS_EVOKER, NEEDS_EMANATOR } from './character';
 import { PILE, isPile } from './containers';
-import { orderable, ownedVerbs, ownedWhy } from './owned';
+import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo } from './owned';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
@@ -771,6 +771,13 @@ const OWNED: ActionSystem = {
   list(x) {
     const out: ActionDescriptor[] = [];
     for (const o of orderable(x.cb, x.u)) for (const v of ownedVerbs(o)) {
+      // a data verb (rules 1.34: a Figment's Strike, Pounce, Cut, Stare, Let go): its name, its site's price, its pick
+      const dv = ownedVerbInfo(x.cb, x.u, o, v);
+      if (dv) {
+        out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + dv.name, dv.ap, apT(dv.ap) + ' (yours)', o.name + ': ' + dv.text + ' It has no turn of its own: the AP are yours.', ownedWhy(x.cb, x.u, o, v),
+          { picks: dv.pick === 'enemy' ? [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' goes at.', choices: foeIds(x) }] : [] }));
+        continue;
+      }
       const w: any = WEAPON[o.weapon], ap = v === 'move' ? 1 : w ? attackApCost(w, v) : 2, why = ownedWhy(x.cb, x.u, o, v);
       out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + VERB_NAME[v], ap, v === 'move' ? 'AP a step (yours)' : apT(ap) + ' (yours)',
         v === 'move' ? o.name + ' moves to a tile you pick. It has no turn of its own: the AP are yours.' : o.name + ' attacks an enemy you pick (' + VERB_NAME[v].toLowerCase() + '). It has no turn of its own: the AP are yours.',
@@ -781,6 +788,8 @@ const OWNED: ActionSystem = {
   send(x, d, p) {
     const [, owned, verb] = d.id.split(':');
     if (verb === 'move') return p.tile ? ({ type: 'combat/owned', unitId: x.u.id, owned, verb, tile: p.tile } as Action) : null;
+    const u = x.cb.units.find((y) => y.id === owned), dv = u ? ownedVerbInfo(x.cb, x.u, u, verb) : null;
+    if (dv && dv.pick === 'none') return { type: 'combat/owned', unitId: x.u.id, owned, verb } as Action;
     return p.targetId ? ({ type: 'combat/owned', unitId: x.u.id, owned, verb, targetId: p.targetId } as Action) : null;
   },
 };

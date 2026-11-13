@@ -91,6 +91,14 @@ export const BUILDS: BuildDef[] = [
     allin: ['authority', 'charisma', 'intimidation', 'vigilant', 'eloquence', 'implication', 'reaction_speed', 'lore_master', 'sensory', 'dexterity'], spare: ['endurance', 'agility', 'perception'],
     perks: ['outclassed', 'talks_broke_down', 'crowd_pleaser'], techniques: 'default',
     note: 'The nine gamma skills (Authority and Charisma first) and the kit\'s service pistol. Class: Guardian (Virtue).' },
+  // Classes 3.0 step 8 (rules 1.34; figments-spec.md section 7): Figments. The Visualizer in the off hand (the service
+  // pistol in the main), three spare cores. The door user is the same sheet with no class (figments-measure.ts).
+  { id: 'rigger', label: 'Rigger (Figments)', way: 'j', kit: 'soldier', main: 'visualization', classId: 'trickster', policy: 'plain', weapon: 'service_pistol', offHand: 'visualizer', armour: 2,
+    weights: W({ visualization: NORMAL_SHARE, proficiency: 0.16, dexterity: 0.14, charisma: 0.12, athletics: 0.12, pain_threshold: 0.10 }),
+    allin: ['visualization', 'proficiency', 'dexterity', 'charisma', 'athletics', 'pain_threshold'], spare: ['endurance', 'agility', 'perception'],
+    perks: 'none', techniques: 'default',
+    tweak: (c: any) => { c.pack = [...(c.pack || []), { id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: 3, kind: 'ammo' }]; },
+    note: 'Visualization first, the Visualizer and three spare cores, a service pistol for the AP left. Class: Rigger (Expression). The door user: the same sheet, classless.' },
 ];
 export const BUILD: Record<string, BuildDef> = Object.fromEntries(BUILDS.map((b) => [b.id, b]));
 

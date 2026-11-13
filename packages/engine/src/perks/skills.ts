@@ -4,7 +4,6 @@
 //   Brain Power · Overclock (M1, 3 points)      item 451, 482
 //   Brain Power · Twin Draw (M2, 5 points)      item 483
 //   Rumination · Proven Formula (M2, 5 points)  item 484 (rules 1.13: a save bonus, no longer a Sigil discount)
-//   Visualization · Paint the Field (M2, 5)     item 450, 485
 // and the two Soul ones (rules 1.5):
 //   Will Power · Overdraw (M1, 3 points)        item 539
 //   Will Power · Pure Heart (M2, 5 points)      item 540
@@ -108,24 +107,6 @@ register({
       if (!mine(h, ctx.t) || ctx.skipSave || !((h.u?.ps?.[h.key] as any)?.hit || []).includes(ctx.id)) return;
       ctx.saveAdd = (ctx.saveAdd || 0) + PF_SAVE; say(h.cb, '(Proven Formula: ' + h.u!.name + ' has been hit by this before, +' + PF_SAVE + ' on the save.)');
     },
-  },
-  brief: () => null,
-});
-
-// ---------- Visualization · Paint the Field (Mastery 2) ----------
-// "Once per Evoke, give a Sigil spell with no Burst word a free SPREAD or PUSH (no glyph, no charge, not counted toward
-// 4 glyphs)" (items 450, 485). The Evoke carries opts.paint ('spread' | 'push'); the spell is shaped before it's aimed
-// (spell_shape, ahead of the Mage's Payload, which then doubles it), so the preview, the strike and the fx agree. A spell
-// that already has a Burst ignores it. The free word isn't a repeat and adds no Flux (no glyph is drawn).
-register({
-  id: 'skill:visualization.5', kind: 'skill', claims: 'all', priority: 10,
-  on: {
-    spell_shape: (ctx, h) => {
-      const w = ctx.opts?.paint; if (!mine(h, ctx.u) || (w !== 'spread' && w !== 'push')) return;
-      const sp: Spell = ctx.spell; if (!sp || sp.burst) return;
-      const out: any = compileSpell([...sp.words, w]); out.repeats = sp.repeats; out.repMult = sp.repMult; out.painted = w; ctx.spell = out;
-    },
-    evoked: (ctx, h) => { if (mine(h, ctx.u) && (ctx.spell as any)?.painted) say(h.cb, '(Paint the Field: a free ' + W((ctx.spell as any).painted) + '.)'); },
   },
   brief: () => null,
 });

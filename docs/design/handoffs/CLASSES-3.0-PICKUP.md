@@ -72,7 +72,7 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [x] **7. Tending, Bonds and the Mender** (merged 13 Nov, integrated; NOT built: the TEND tab, Bond strip and Ledger bar (step 10, started), the enemy hunt of a Bonded healer (step 9), the solo fights; offence measures 79 / 83 against 70, healing 175 against 200: steps 7b and 11) (`bonds-spec.md`); **the healing order** (Leon: Tending out-heals every other door: the Outburst's, the Sigil's and a Whisper's heal drop from 2.0 to 1.4 Soldier-turns in this step: `class-roster-rev4-proposal.md`, "The healing order"); the Outburst re-measured after Empathy's free Pump
       moves to Will Power.
 - [ ] **7b. The level scale AND healing and shields in percent of HP, as one step** (`docs/design/level-scale-spec.md`: Leon, 13 Nov: a plain hit 40 at level 1 as today and about 300 at level 20: the scale is x7.5, geometric; everything measured in HP grows with it). Old title: **Healing and shields in percent of HP** (`docs/design/heal-shield-percent-spec.md`; Leon, 13 Nov: the top heal is 65% of HP a turn, the strongest shield soaks about two turns of a full assault, balanced by cost, a percent gate on every heal and shield). **Leon: built inside Classes 3.0, not as a hotfix before it** ("just implement it to Classes 3.0"). It sets the numbers of step 7 and re-fits every existing heal and shield; do it right after step 7's systems exist, before step 8.
-- [ ] **8. Figments, the Visualizer and the Rigger** (`figments-spec.md`): the owned-unit primitive first, with the
+- [x] **8. Figments, the Visualizer and the Rigger** (merged 13 Nov, integrated; the door and a normal Rigger measure far over their lines because a Figment's soak does not depend on investment: step 7b fits Figment HP and makes it follow Visualization; Salvage, Overclock and Scrap Turret are still handlers: the hand-off's Integration section says what each waits for; about 1.8 ms an owned unit) (`figments-spec.md`): the owned-unit primitive first, with the
       drone, the beast and the twin moved onto it and their golden lines unchanged; then the forms.
 - [ ] **9. The enemy side:** what each spec's section 8 asks of the AI, in one piece, after all systems exist.
 - [ ] **10b. Hide M813** (Leon, 13 Nov): take the M813 campaign off the menu and out of the default start (not deleted; its data and unit tests stay; browser suites that play M813 are moved to the Proving Ground or marked as campaign-only and still pass); say so in the changelog. And the final hand-off for a LOCAL session (Leon: "a very good hand-off file so that when I start a new session on my local computer, Fable gets what's going on"): rewrite `docs/design/handoffs/LOCAL-SESSION-START.md` at the close.
@@ -174,6 +174,19 @@ Step 6 (`docs/design/handoffs/classes-3.0-step-6.md` section 5, rules 1.32 items
    Heart; Off Balance's "two rounds running" is a 2-round cooldown a target; Fade picks its own tile.
 4. **Measured, not refitted:** door all in 85 (line 109), Operative all in 101 (line 125, before Mark's squad
    value), an upper bound; the dial `rules.json shadow.per_point` is the lead's to move.
+Step 8 (`docs/design/handoffs/classes-3.0-step-8.md` section 5, rules 1.34 items 2100 to 2140; built on
+`worktree-agent-ab68f95a6fcdfab8e`; integrated, see that hand-off's "Integration"):
+1. Field Fix is a move-pool move the Rigger refs. **Settled at the integration (the lead's ruling):** the Operative's
+   ranks are step 6's (rank II Toxin and Sabotage); Read is folded into the Operative's Analyze, the branch's Read and
+   its `trickster.read` handler are gone.
+2. The held count counts Figments made by Picture only (not the drone, the Rigger's Double or the Scrap Turret).
+3. A Figment acts only on what its side sees (rule 9, literal): a Beast beside an unseen enemy can't strike it.
+4. A Figment's fall is no death: no mana, no Pressure spill.
+5. Overclock is the unit's attack only (the nearest enemy it can reach); Salvage takes the first fitting unit next to you.
+6. A Boss is fooled through one of its turns at most. Paint the Field is deleted.
+7. **Measured: the Rigger all in 159 against 150 (+6%); the door all in 158 against 130, at a normal share 155 against
+   104; the Rigger at a normal share 158 against 120.** The soak is nearly the whole worth and the same for every row:
+   the dial is `figments.json level.hp` (not refitted; the contract guard row not added).
 
 Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 items 1762 to 1767):
 7. The lead's "a Call that harms an enemy is not a reaction at all" is read conservatively: a hindering Call may still be

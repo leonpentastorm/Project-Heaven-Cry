@@ -160,6 +160,24 @@
       "provisional": true
     },
     {
+      "id": "visualizer",
+      "name": "Visualizer",
+      "category": "focus",
+      "weight_kg": 1.0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A glove with a projector set in the middle of the palm: the focus for Figments. Hold the palm out and the bots build what you picture in its light. It holds one mana core of its own.",
+      "slot": "off_hand",
+      "price_credits": 1000,
+      "hands": "1H",
+      "focus": {
+        "door": "visualization",
+        "hand": "one",
+        "fuel": "core"
+      },
+      "source": "rules 1.34 (Classes 3.0 step 8): the third standard focus (Leon, 13 Nov 2026: a glove, the projector in the palm)"
+    },
+    {
       "id": "prayer_beads",
       "name": "Prayer beads and incense",
       "category": "tool",

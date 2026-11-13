@@ -3,6 +3,7 @@
 // character.ts; memoised per holder on what it holds.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL } from '../data';
+import figmentsJ from '../../../../data/figments.json';
 import classesJ from '../../../../data/classes.json';
 import shadowJ from '../../../../data/shadow.json';
 import tendingJ from '../../../../data/tending.json';
@@ -23,7 +24,16 @@ export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof 
  * prayers: one line here as each file comes), and those added at run time (addItems('verb', …): a test's fixtures). */
 // (each file names its tab, `tab`, and its rows' groups, `groups`: an item's `group` id gives its row's group name `subName`)
 const systemVerbs = (j: any): any[] => (j.items || []).map((x: any) => ({ ...x, tab: x.tab || j.tab, ...(x.group && j.groups?.[x.group] ? { subName: j.groups[x.group] } : {}) }));
-const DATA_VERBS: Record<string, any> = Object.fromEntries(([...systemVerbs(shadowJ), ...systemVerbs(tendingJ)] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x])); // a system's verbs: Shadow's on its own tab (rules 1.32), Tending's (data/tending.json, rules 1.33)
+const FIG: any = figmentsJ;
+/** Rules 1.34 (figments.json): Picture and the core swap are door verbs; each form and each trait is a verb item held only
+ * by a Figment unit (figments.ts gives it its held list): what every Figment is (unit_effects) and its own effects. Their
+ * `requires` names an owned kind, which no sheet meets (meetsRequires), so no character holds them. */
+const FIGMENT_HELD = [
+  ...((FIG.forms || []) as any[]).map((f) => ({ id: 'fig_' + f.id, name: f.name, kind: 'verb', requires: [{ owned: 'figment' }], text: f.text, effects: [...(FIG.unit_effects?.effects || []), ...(f.effects || [])], adjudication: 'engine', provisional: true })),
+  ...((FIG.traits || []) as any[]).map((x) => ({ id: 'figtrait_' + x.id, name: x.name, kind: 'verb', requires: [{ owned: 'figment' }], text: x.text, ...(x.amounts ? { amounts: x.amounts } : {}), effects: x.effects || [], adjudication: 'engine', provisional: true })),
+];
+// A system's verbs: Shadow's on its own tab (rules 1.32), Tending's (data/tending.json, rules 1.33), Figments' (rules 1.34).
+const DATA_VERBS: Record<string, any> = Object.fromEntries(([...systemVerbs(shadowJ), ...systemVerbs(tendingJ), ...systemVerbs(FIG), ...FIGMENT_HELD] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
 const verbData = (id: string): any => DATA_VERBS[id] || EXTRA.verb[id];
 const perkData = (id: string): any => (PERK as any)[id] || EXTRA.perk[id];
 const traitData = (id: string): any => TRAIT[id] || EXTRA.trait[id];
@@ -39,6 +49,8 @@ const RANKS = ['I', 'II', 'III'] as const;
 // _setAdvancedLive(true) (a test-only switch).
 const ADV_LIVE_DATA = !!(classesJ as any).assignment?.advanced?.live;
 let advOverride: boolean | null = null;
+/** Bumped by the test switches heldKey reads (rev2, advanced live): heldKey's per-object memo is stale after one. */
+let keyGen = 0;
 /** Is this advanced class active right now (its moves, resources and effects count)? */
 export function advancedActive(id: string | null | undefined): boolean {
   if (!id || !ADVANCED[id]) return false;
@@ -46,7 +58,7 @@ export function advancedActive(id: string | null | undefined): boolean {
   return ADV_LIVE_DATA && !ADVANCED[id].shelved;
 }
 /** Test-only: turn every advanced class on (true), off (false), or back to the data (null). */
-export function _setAdvancedLive(on: boolean | null) { advOverride = on; itemsCache.clear(); }
+export function _setAdvancedLive(on: boolean | null) { advOverride = on; itemsCache.clear(); keyGen++; }
 
 // ---------- the Revision 2 classes, for tests only ----------
 // The engine tests written for Class Roster Revision 2 (a Warden's Ward, an Assassin's Mark at rank I) keep running the
@@ -58,7 +70,7 @@ export const REV2_CLASSES: Record<string, { id: string; name: string; core: stri
 let rev2 = false;
 export const revision2Classes = () => rev2;
 /** Test-only: hold the Revision 2 classes (true) or the Revision 3 ones (false, the default). */
-export function _setRevision2Classes(on: boolean) { rev2 = on; itemsCache.clear(); }
+export function _setRevision2Classes(on: boolean) { rev2 = on; itemsCache.clear(); keyGen++; }
 
 const isAction = (effects: any[], ap: any, perkType?: string | null) =>
   effects.some((e) => e && e.op === 'grant_action') || (typeof ap === 'number' && ap > 0) || (typeof ap === 'string' && !!ap) || perkType === 'active_skill';
@@ -232,7 +244,14 @@ export function itemsOf(h: Held): ItemInfo[] {
 const itemsCache = new Map<string, ItemInfo[]>();
 /** A cache key for what a unit holds: everything itemsOf() reads (each perk's id and tier, the traits, the class, its
  * rank, the advanced class, the skill items), in order. Built by hand: it is asked for every unit on every hook. */
-export const heldKey = (h: Held) => {
+/** heldKey per Held object (a unit's `held` is replaced, never written into: emit asks it for every unit on every hook,
+ * and the same string instance keeps its hash for the index lookups). Bumped by the test switches the key reads. */
+const HELD_KEYS = new WeakMap<Held, { g: number; k: string }>();
+export const heldKey = (h: Held): string => {
+  const m = HELD_KEYS.get(h); if (m && m.g === keyGen) return m.k;
+  const k = heldKeyOf(h); HELD_KEYS.set(h, { g: keyGen, k }); return k;
+};
+const heldKeyOf = (h: Held) => {
   let s = (rev2 ? '1|' : '0|') + (h.cls || '') + '|' + (h.rank || 0) + '|' + (advancedActive(h.adv) ? h.adv : '') + '|';
   for (const p of h.perks || []) s += p.id + '\t' + p.tier + '\n'; s += '|';
   for (const t of h.traits || []) s += t + '\n'; s += '|';

@@ -295,15 +295,23 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
 }
 /** Why a feeling can't be given yet (rules 1.33: only a felt feeling is given). */
 export const UNFELT = 'Not felt yet: a feeling is yours to give once it has happened to you.';
+type PickOption = { id: string; label: string; off?: string };
+/** A system's own pick lists (Classes 3.0: `forms`, Figments' ready designs and bare forms, rules 1.34; Bonds' `felt`):
+ * a name an action's `pick` may give, and the choices it offers a holder (`off`: shown greyed, with why; a greyed pick is
+ * refused). The system registers it as it loads. */
+const PICK_LISTS: Record<string, (h: Holder) => PickOption[]> = {};
+/** Register a system's pick list (see PICK_LISTS). */
+export const registerPickList = (name: string, fn: (h: Holder) => PickOption[]) => { PICK_LISTS[name] = fn; };
+// Rules 1.33: Inspire's feelings: every feeling, the felt first, the unfelt greyed with why (Classes 3.0 step 10: the picker).
+registerPickList('felt', (h) => { const felt: string[] = (h.c || charOfUnit(h.u))?.feelings || []; return [...felt.filter((x) => FEEL_NAME[x]), ...Object.keys(FEEL_NAME).filter((x) => !felt.includes(x))].map((x: string) => ({ id: x, label: FEEL_NAME[x], ...(felt.includes(x) ? {} : { off: UNFELT }) })); });
 /** The choices an action's pick offers this holder (ids are what args.choice takes; `off`: shown greyed, with why). */
-function pickOptions(h: Holder, d: ActionDef): { id: string; label: string; off?: string }[] {
+function pickOptions(h: Holder, d: ActionDef): PickOption[] {
   const p = d.pick, c = h.c;
   if (Array.isArray(p)) return p.map((x) => ({ id: x, label: human(x) }));
+  if (typeof p === 'string' && PICK_LISTS[p]) return PICK_LISTS[p](h);
   if (p === 'words') { const w = h.u?.mg?.words || [...new Set([...(c?.sigils || [])])]; return w.map((x: string) => ({ id: x, label: x.toUpperCase() })); }
   if (p === 'designs') return (c?.outbursts || []).map((x) => ({ id: x.id, label: x.name }));
   if (p === 'gamma') return SKILLS.filter((s: any) => s.slot === 'gamma').map((s) => ({ id: s.id, label: s.name }));
-  // rules 1.33: Inspire's feelings: every feeling, the unfelt ones greyed with why (Classes 3.0 step 10: the picker)
-  if (p === 'felt') { const felt: string[] = (c || charOfUnit(h.u))?.feelings || []; return [...felt.filter((x) => FEEL_NAME[x]), ...Object.keys(FEEL_NAME).filter((x) => !felt.includes(x))].map((x: string) => ({ id: x, label: FEEL_NAME[x], ...(felt.includes(x) ? {} : { off: UNFELT }) })); }
   if (p === 'squad') { const g = h.g ?? boundGame(); return (Object.values(g?.characters || {}) as Character[]).filter((x) => x.id !== c?.id && !x.dead).map((x) => ({ id: x.id, label: x.name })); }
   return [];
 }

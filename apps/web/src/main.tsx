@@ -56,13 +56,21 @@ const MOTION = [
   '.phc-reduce .phc-slide-in-right,.phc-reduce .phc-slide-in-left,.phc-reduce .phc-combat-in,.phc-reduce .phc-story-in,.phc-reduce .phc-a-right,.phc-reduce .phc-a-left,.phc-reduce .phc-a-drop,.phc-reduce .phc-a-rise,.phc-reduce .phc-a-pop,.phc-reduce .phc-drop-in,.phc-reduce .phc-rise-in,.phc-reduce .phc-pop-in,.phc-reduce .phc-stagger>*{animation:phcFadeIn .15s ease-out both!important}',
   '.phc-reduce .phc-slide-out-left,.phc-reduce .phc-slide-out-right,.phc-reduce .phc-combat-ghost,.phc-reduce .phc-story-ghost,.phc-reduce .phc-closing{animation:phcFadeOut .15s ease-in both!important}',
 ].join('');
+// Painted gear icons (game/gearIcons.ts) are full colour and never tinted; much of their metal is charcoal, so a faint
+// light lift sits behind them to keep the silhouette off the dark panel at 24 to 32 px (background only: no layout moves).
+const gearLift = document.createElement('style'); gearLift.id = 'phc-gear-lift';
+gearLift.textContent = 'img[src^="/assets/gear-"]{background:radial-gradient(closest-side,rgba(231,235,243,.16),rgba(231,235,243,.05) 70%,rgba(231,235,243,0));border-radius:8px}';
+document.head.appendChild(gearLift);
 const motion = document.createElement('style'); motion.id = 'phc-global-motion'; motion.textContent = MOTION; document.head.appendChild(motion);
 
 // Every image the game uses: thumbnails first, then the large (zoom) sizes. Failed loads count as done.
-const all = Object.entries(ASSETS as Record<string, string>);
-const URLS = [...all.filter(([k]) => !k.endsWith('-lg')), ...all.filter(([k]) => k.endsWith('-lg'))].map(([, u]) => u);
+// The painted gear icons (gear-<item id>, game/gearIcons.ts) don't hold the title: the small ones (about 260 KB) load
+// after the zoom sizes, and their -lg sizes (hand cards, hover cards; about 1.5 MB) load only when a screen shows one.
+const isGear = (k: string) => k.startsWith('gear-');
+const all = Object.entries(ASSETS as Record<string, string>).filter(([k]) => !(isGear(k) && k.endsWith('-lg')));
+const URLS = [...all.filter(([k]) => !k.endsWith('-lg') && !isGear(k)), ...all.filter(([k]) => k.endsWith('-lg')), ...all.filter(([k]) => isGear(k))].map(([, u]) => u);
 /** The title opens once the small sizes are in; the large (zoom) sizes keep loading in the background. */
-const SMALL = all.filter(([k]) => !k.endsWith('-lg')).length;
+const SMALL = all.filter(([k]) => !k.endsWith('-lg') && !isGear(k)).length;
 const MARK = (ASSETS as Record<string, string>)['wick-welcome'];
 
 function preload(onTick: (n: number) => void): Promise<void> {

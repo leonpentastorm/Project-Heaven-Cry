@@ -291,6 +291,7 @@
 "shelved/rev2/trickster/taken-crit": "F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "shelved/rev2/trickster/taken-low": "F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "shelved/rev2/trickster/trickster.rewrite/rewrite": "P1 faith.acted0>true faith.seenCharge10>7 mg.cast0>true ps.skill:composure.5.acted0>true uses.class:trickster.rewrite#rewrite|per_turn.n0>1 uses.class:trickster.rewrite#rewrite|per_turn.s0>t1.1",
+"shelved/rev2/trickster/trickster.silver_tongue/silver_tongue": "P1 faith.acted0>true faith.apMark6>7 ps.class:trickster.silver_tongue.tongue.foe-00>2 ps.skill:composure.5.acted0>true",
 "shelved/rev2/warden/ally-taken": "P1 ps.skill:camaraderie.3.round0>1 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "shelved/rev2/warden/taken": "F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "shelved/rev2/warden/taken-blow": "F1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true",

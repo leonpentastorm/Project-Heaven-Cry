@@ -11,6 +11,7 @@ import classesJ from '../../../data/classes.json';
 import conditionsJ from '../../../data/conditions.json';
 import enemiesJ from '../../../data/enemies.json';
 import feelingsJ from '../../../data/feelings.json';
+import figmentsJ from '../../../data/figments.json';
 import tendingJ from '../../../data/tending.json';
 import shadowJ from '../../../data/shadow.json';
 import itemsJ from '../../../data/items.json';
@@ -67,4 +68,4 @@ function walk(node: any) {
 /** Fill every placeholder under a parsed data file, in place. Filling twice changes nothing. */
 export function resolveTexts<T>(root: T): T { walk(root); return root; }
 
-for (const j of [actionsJ, callsJ, classesJ, conditionsJ, enemiesJ, feelingsJ, itemsJ, objectsJ, patronsJ, perksJ, rulesJ, sigilsJ, skillsJ, soulJ, techniquesJ, traitsJ, weaponsJ, worldJ, tendingJ, shadowJ]) resolveTexts(j); // (shadow.json: its verbs' texts showed {=…} on the hover card until Classes 3.0 step 10)
+for (const j of [actionsJ, callsJ, classesJ, conditionsJ, enemiesJ, feelingsJ, itemsJ, objectsJ, patronsJ, perksJ, rulesJ, sigilsJ, skillsJ, soulJ, techniquesJ, traitsJ, weaponsJ, worldJ, tendingJ, figmentsJ, shadowJ]) resolveTexts(j); // (shadow.json: its verbs' texts showed {=…} on the hover card until Classes 3.0 step 10)

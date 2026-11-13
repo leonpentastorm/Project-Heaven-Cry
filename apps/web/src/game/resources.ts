@@ -23,7 +23,7 @@ export interface ResRow {
 }
 
 // ---------- colours (CLAUDE.md; docs/design/colour-system.md) ----------
-export const RES_INK = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF', mp: '#5C9EFF', hp: '#F65157', alert: '#F65157', white: '#FFFFFF', ok: '#6FEA77', muted: '#A3AEC2', faith: '#D36A90', perception: '#40BAA0' };
+export const RES_INK = { body: '#F2A54A', mind: '#4FC8DF', soul: '#AE9BFF', mp: '#5C9EFF', hp: '#F65157', alert: '#F65157', white: '#FFFFFF', ok: '#6FEA77', muted: '#A3AEC2', faith: '#D36A90', perception: '#40BAA0', /** Expression's ink (rules 1.34: Figments) */ expression: '#5394AC' };
 
 // ---------- the held Outburst: the ONE adapter over the Soul engine's held-heart fields ----------
 export interface HeldHeart {
@@ -232,6 +232,19 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   }
   // ---- Sigil magic: the Evoker's charge, spare cores, Flux (Mind cyan) ----
   const mg = u?.mg, sm = c ? (g?.story?.magic || {})[c.id] || {} : {};
+  // ---- Figments (rules 1.34; figments-spec.md section 9): held / most as pips, the Visualizer's charge; Expression ink ----
+  if (mg?.vcarry) {
+    const fm = (E as any).figmentMeter(cb, u);
+    if (fm) {
+      rows.push({ key: 'figments', label: 'Figments', value: 'FIGMENTS ' + fm.held + '/' + fm.max, now: fm.held, max: Math.max(1, fm.max), kind: 'pips', colour: RES_INK.expression,
+        hint: 'Figments you hold now, of the most you can. Each costs 1 Visualizer charge at your turn start' + (fm.held < fm.max ? '; you can picture ' + (fm.max - fm.held) + ' more.' : '; let one go to picture another.') });
+      const vr: ResRow = { key: 'vcharge', label: 'Visualizer', value: 'VISUALIZER ' + (fm.charge > 0 ? fm.charge + '/' + fm.chargeMax : 'EMPTY'), now: fm.charge, max: fm.chargeMax, kind: 'bar', colour: RES_INK.expression,
+        hint: 'The core in your Visualizer: Picture and upkeep spend its charge. Load the Visualizer (a spare core) refills it.' };
+      if (!mg.visualizer) Object.assign(vr, { warn: 'STOWED', level: 'caution', hint: 'Your Visualizer is in the pack: your Figments stay, but you can\'t picture or act through them until it is in hand.' });
+      else if (fm.charge <= 0) Object.assign(vr, { warn: 'EMPTY', level: 'alert' });
+      rows.push(vr);
+    }
+  }
   // A focus counts only in a hand (spec: Hands 2, item 630); carried, it keeps its store, so the row stays, marked STOWED.
   const evoHeld = mg ? !!mg.evoker : !!c && hasEvoker(c), evoker = evoHeld || (!!c && carriesEvoker(c));
   if (evoker) {

@@ -237,14 +237,12 @@ describe('the preview gaps of batch 1 (spec 9.7, 9.9; items 480)', () => {
     expect(v.tiles['8,8'].marks.some((m) => m.key === 'orderat')).toBe(true);
     expect(v.payload).toMatchObject({ order: 'move', orderTo: '8,8' });
   });
-  it('Paint the Field: a holder gets SPREAD / PUSH chips on a spell with no Burst; the pick rides the payload (item 485)', () => {
+  it('Paint the Field is gone (rules 1.34: Visualization 5 opens the Beast and the Blade): no SPREAD / PUSH chips', () => {
     const { cb, u, rng } = setup(['spark', 'seek', 'condense'], ['8,5', '9,6']);
     walk(cb, rng, u, ['spark', 'seek'], L2);
     expect(evokeView(cb, u, '2,5', { aims: ['8,5'] }).paints).toEqual([]); // not held
     (u as any).held = { perks: [], traits: [], skills: ['visualization.5'] };
-    const v = evokeView(cb, u, '2,5', { aims: ['8,5'] }); expect(v.paints).toEqual(['spread', 'push']);
-    const p = evokeView(cb, u, '2,5', { aims: ['8,5'], paint: 'spread' });
-    expect(p.paint).toBe('spread'); expect(p.payload).toMatchObject({ paint: 'spread' }); expect(p.affected.filter((a) => !a.extra).length).toBe(2);
+    const v = evokeView(cb, u, '2,5', { aims: ['8,5'] }); expect(v.paints).toEqual([]);
     cb.glyphs = []; walk(cb, rng, u, ['spark', 'condense'], L2);
     expect(evokeView(cb, u, '2,5', { aims: ['3,5'] }).paints).toEqual([]); // it has a Burst word
   });

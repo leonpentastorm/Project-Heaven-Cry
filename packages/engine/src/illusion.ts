@@ -5,7 +5,8 @@
 // attack on an image passes through it and it scatters. Images fade at the start of their owner's turn two rounds on.
 // Everything here is deterministic: no die is rolled (the saves are rolled by the class move with the game's rng).
 import type { Combat, Unit } from './combat';
-import { say, emitFx, previewAttack, isMelee, refOf, alwaysSeen } from './combat';
+import { say, emitFx, previewAttack, isMelee, refOf, alwaysSeen, resolveAttack } from './combat';
+import type { Rng } from './rng';
 import { WEAPON } from './data';
 import { calmFight } from './magic';
 import { pay } from './effects/cost';
@@ -16,6 +17,9 @@ export interface FalseImage {
   round: number;
   /** Enemy unit ids that failed their Brain save: they take the image for its owner. */
   fooled: string[];
+  /** Rules 1.34 (Figments): the Double whose body this image is (a unit of cb.units): a fooled enemy sees the owner
+   * where the body stands, and its attack lands on the body (it is found out). */
+  body?: string;
 }
 export const imagesOf = (cb: Combat): FalseImage[] => cb.images || [];
 export const imageOfOwner = (cb: Combat, ownerId: string): FalseImage | null => imagesOf(cb).find((i) => i.owner === ownerId) || null;
@@ -35,8 +39,9 @@ export function perceivedFoes(cb: Combat, u: Unit): Unit[] {
   const out: Unit[] = [];
   for (const t of cb.units) {
     if (t.side === u.side || t.dead || t.surrendered) continue;
+    if (cb.images?.length && imagesOf(cb).some((i) => i.body === t.id && i.fooled.includes(u.id))) continue; // a Double it was fooled by is its owner to it (rules 1.34)
     const img = fooledBy(cb, u, t);
-    if (img) out.push(ghostOf(img, t)); else if (!t.hidden || alwaysSeen(cb, t)) out.push(t); // a Hidden unit that is always seen (P7) is not hidden from it
+    if (img) out.push(ghostOf(img.body ? { ...img, pos: cb.units.find((x) => x.id === img.body)?.pos || img.pos } : img, t)); else if (!t.hidden || alwaysSeen(cb, t)) out.push(t); // a Hidden unit that is always seen (P7) is not hidden from it
   }
   return out;
 }
@@ -53,8 +58,11 @@ export function dropImage(cb: Combat, img: FalseImage, why: string) {
 }
 /** An enemy attacks an image it took for its owner: the attack's AP (and a round, Heat) are spent, it passes through,
  * and the image scatters. */
-export function strikeImage(cb: Combat, att: Unit, ghost: Unit, mode: 'melee' | 'shot') {
+export function strikeImage(cb: Combat, att: Unit, ghost: Unit, mode: 'melee' | 'shot', rng?: Rng) {
   const img = imagesOf(cb).find((i) => i.id === ghost.id); const owner = cb.units.find((x) => x.id === (ghost as any).ghostOf);
+  // Rules 1.34: a Double has a body: the attack lands on it, and the lie is found out
+  const body = img?.body ? cb.units.find((x) => x.id === img.body && !x.dead) : null;
+  if (body && img && rng) { img.fooled = img.fooled.filter((x) => x !== att.id); ((cb as any).doubleFound ||= {})[att.id] = true; say(cb, att.name + ' attacks ' + (owner ? owner.name : 'someone') + ' and finds a Double.'); resolveAttack(cb, rng, att, body, mode, null); return; }
   const pv = previewAttack(cb, att, ghost, mode);
   if (!pv.ok || !img) { say(cb, '(' + att.name + ' can\'t attack the image: ' + (pv.why || 'gone') + ')'); return; }
   const w = WEAPON[att.weapon], melee = isMelee(w) || mode === 'melee';

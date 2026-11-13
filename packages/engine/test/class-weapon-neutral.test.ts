@@ -35,8 +35,10 @@ const DOOR: Record<string, Allow> = {
   'class:marksman.killzone': { code: 2, why: 'any weapon holds: a melee weapon holds strikes at its reach (a branch, not a refusal); an aimed hold needs a weapon that aims (the Aimed technique)' },
   'class:gunslinger.called_shot': { code: 2, why: 'any weapon (rules 1.32): it reads the family only to make the weapon\'s plain attack (a strike in reach, a throw, else a shot): a branch, never a refusal' },
   'class:marksman.duck_and_roll': { words: ['ranged'], code: 1, why: 'it answers an enemy\'s ranged attack at you (the incoming attack)' },
-  // Field Fix left the Operative (rules 1.32): its entry comes back with the Rigger's step (8), worded as it was:
-  // { words: ['jammed weapon', 'gun'], why: 'support: it clears an ally\'s jam (a gun\'s own state), not a hit' }
+  'class:infiltrator.field_fix': { words: ['jammed weapon', 'gun'], why: 'support: it clears an ally\'s jam (a gun\'s own state), not a hit' },
+  // The Rigger's step (rules 1.34): the Scrap Turret makes ANY weapon's plain attack; the one family read picks which
+  // (a strike for a melee weapon, else a shot): a branch, never a lock (audit 4.6).
+  'class:trickster.scrap_turret': { code: 1, why: 'Scrap Turret (rules 1.34): isMelee picks the weapon\'s plain attack (a strike or a shot) for the turret\'s auto verb; every weapon builds one' },
   // The Chaplain's step (rules 1.31): Verdict takes any weapon; the one family read left picks the weapon's plain attack
   // (a strike with a melee weapon, a throw with a thrown one, else a shot): a branch, never a lock.
   'class:lumeri_templar.blessed_shells': { words: ['round', 'arrow', 'edge', 'thrown', 'blade'], why: 'Blessed Arms (rules 1.31): the text names every form a weapon takes (a round, an arrow, an edge, a thrown blade) so it reads as any weapon, as the audit 4.7 asks' },

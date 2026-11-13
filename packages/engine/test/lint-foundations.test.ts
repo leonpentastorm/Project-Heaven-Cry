@@ -103,7 +103,7 @@ describe('F6: the kit is the only home of the lane helpers (src/kit.ts)', () => 
     // item that does "to every enemy within 3 of the body" is data. Each number is what the perks and class lanes still
     // walk by hand (the six aura items, Rally, Rally Cry, Grim Reaper, The Name They Whisper, Lingering Dread... see the
     // step 1a hand-off for why each could not move yet). Never raise one; lower it when a lane moves onto targets.
-    const LEFT: Record<string, number> = { 'classes/i.ts': 10, 'classes/j.ts': 15, 'classes/k.ts': 20, 'classes/rev3.ts': 2, 'perks/a.ts': 2, 'perks/b.ts': 9, 'perks/c.ts': 15, 'perks/d.ts': 11,
+    const LEFT: Record<string, number> = { 'classes/i.ts': 10, 'classes/j.ts': 15, 'classes/k.ts': 20, 'perks/a.ts': 2, 'perks/b.ts': 9, 'perks/c.ts': 15, 'perks/d.ts': 11,
       'perks/e.ts': 13, 'perks/f.ts': 17, 'perks/g.ts': 8, 'perks/h.ts': 4, 'perks/skeleton.ts': 4 };
     const got: Record<string, number> = {};
     for (const h of hits(/\bcb!?\.units\.(?:filter|find|some|every|forEach)\b|\bof cb!?\.units\b/, (rel) => !/^(perks|classes)\//.test(rel))) { const f = h.split(':')[0]; got[f] = (got[f] || 0) + 1; }
@@ -159,7 +159,7 @@ describe('F2: a unit changes tile by moveUnit (it walks) or displace / swapUnits
     //   a walk vetoed  inside 'move_step' the walker is put back on the tile it came from: physical/melee/links.ts 1, classes/k.ts 1, perks/d.ts 1
     //   not a unit     a glyph, an object, a False Image: classes/k.ts 1, perks/c.ts 1, classes/rev3.ts 1
     const allowed: Record<string, number> = { 'combat.ts': 11, 'game.ts': 2, 'sigil.ts': 2, 'ai-sigil.ts': 2, 'ai-soul.ts': 2, 'calls/rules.ts': 2, 'physical/core.ts': 2, 'physical/ranged/takes.ts': 1, 'physical/ranged/sets.ts': 2,
-      'physical/melee/links.ts': 1, 'classes/i.ts': 2, 'classes/k.ts': 4, 'classes/rev3.ts': 5, 'perks/d.ts': 1, 'perks/c.ts': 1 };
+      'physical/melee/links.ts': 1, 'classes/i.ts': 2, 'classes/k.ts': 4, 'classes/rev3.ts': 4, 'perks/d.ts': 1, 'perks/c.ts': 1 };
     const found: Record<string, number> = {}; for (const h of hits(RE('pos_write'))) { const f = h.split(':')[0]; found[f] = (found[f] || 0) + 1; }
     expect(found, 'a new `.pos = `: move the unit with displace() or swapUnits() (combat.ts), or moveUnit() if it walks. If it truly is not a move (a scratch tile put back, an object), add it to this table and say what it is').toEqual(allowed);
   });

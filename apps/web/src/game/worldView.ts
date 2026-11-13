@@ -10,7 +10,7 @@ import { type GameState, type Character, type TalkOption, type Marker, type Haza
   hazardTilesFor, markersFor, hereCard, npcView, approachOptions, hazardsFor, avatarOf, kindKg, zoneMap, apLeft, storyObjects, blocksMove, standable, SIGIL, MARK, markTn, dayOf,
   pileEntries, PICKUP_AP } from '@engine';
 import { markUri, SIGIL_INK } from './glyphs';
-import { gearIconUri, GEAR_INK_OFF } from './gearIcons';
+import { gearIconUri, GEAR_INK_OFF, magGearId, roundsGearId } from './gearIcons';
 
 // ---------- kinds: a robot looks like a robot ----------
 export const KIND_WORD: Record<string, string> = { human: 'HUMAN', robot: 'ROBOT', drone: 'DRONE', crawler: 'CRAWLER', beast: 'BEAST', machine: 'MACHINE' };
@@ -121,6 +121,16 @@ export interface PileLook { id: string; tile: string; n: number; lines: string[]
 /** The item id a pile entry holds (a pack-shaped entry keeps it inside), for its icon. */
 // (a magazine or rounds carry their gun's id: they are not the gun, so they get none)
 export const pileEntryId = (e: any): string => (e && !e.pack?.mags && !e.pack?.calibre && (e.item || e.pack?.weapon || e.pack?.item || e.pack?.id)) || '';
+/** The gear id a pile entry's icon is drawn from (gearIcons.ts): its item, or for loose rounds and magazines the derived
+ *  gear id (rounds-<calibre>, mag-<family>), '' when there is none. */
+export function pileGearId(e: any): string {
+  const id = pileEntryId(e);
+  if (!e) return '';
+  const it = typeof e.item === 'string' ? e.item : '';
+  if (e.pack?.mags || it.startsWith('mag:')) return magGearId(e.pack?.weapon || it.slice(4));
+  if (e.pack?.calibre || it.startsWith('rounds:')) return roundsGearId(e.pack?.calibre || it.slice(7));
+  return id;
+}
 const TIP_ROW = 'display: flex; gap: 6px; align-items: center; min-height: 24px', TIP_HEAD = 'display: block; padding-bottom: 2px';
 /** What a pile draws on a tile, and the lines its hover lists (one per entry, from the engine's pileEntries). */
 export function pileLook(o: MapObject, big = true): PileLook {
@@ -128,7 +138,7 @@ export function pileLook(o: MapObject, big = true): PileLook {
   if (n > PILE_TIP_LINES) shown.push('+' + (n - PILE_TIP_LINES) + ' more');
   const head = 'Pile at ' + refOf(o.pos) + ' · ' + n + (n === 1 ? ' thing' : ' things');
   const tipRows: PileTipRow[] = [{ key: 'head', text: head.toUpperCase(), icon: '', hasIcon: false, style: TIP_HEAD },
-    ...shown.map((t, i) => { const icon = i < PILE_TIP_LINES ? gearIconUri(pileEntryId((o.items || [])[i])) : ''; return { key: 'e' + i, text: t, icon, hasIcon: !!icon, style: TIP_ROW }; })];
+    ...shown.map((t, i) => { const icon = i < PILE_TIP_LINES ? gearIconUri(pileGearId((o.items || [])[i])) : ''; return { key: 'e' + i, text: t, icon, hasIcon: !!icon, style: TIP_ROW }; })];
   return { id: o.id, tile: o.pos, n, lines, title: head + ':\n' + shown.join('\n'), tip: [head.toUpperCase(), ...shown].join('\n'), tipRows, count: String(n),
     style: 'position: absolute; left: ' + (big ? 1 : 0) + 'px; bottom: ' + (big ? 6 : 0) + 'px; z-index: 5; display: flex; align-items: center; gap: ' + (big ? 2 : 0) + 'px; padding: ' + (big ? '1px 3px 1px 2px' : '0 1px 0 0') + '; border-radius: 3px; pointer-events: none; background: rgba(10, 13, 19, 0.85); box-shadow: 0 0 0 1px #3B475D',
     iconStyle: 'display: block; width: ' + (big ? 12 : 5) + 'px; height: ' + (big ? 12 : 5) + 'px; background: url("' + PILE_ICON + '") center / contain no-repeat',
@@ -160,7 +170,7 @@ export interface PileRow { key: string; label: string; checked: boolean; kind: s
 export function pileRows(o: MapObject | null | undefined, untick: string[] = []): PileRow[] {
   if (!o) return []; const off = new Set(untick);
   // The item's icon (weapons, armour, shields), in white and, for a row out of reach, muted: the screen picks one.
-  return pileEntries(o).map((e, i) => { const id = pileEntryId((o.items || [])[i]), icon = gearIconUri(id);
+  return pileEntries(o).map((e, i) => { const id = pileGearId((o.items || [])[i]), icon = gearIconUri(id);
     return { key: e.key, label: e.label, checked: !off.has(e.key), kind: e.kind, icon, iconOff: icon && gearIconUri(id, GEAR_INK_OFF), hasIcon: !!icon }; });
 }
 /** What a pick-up sends: undefined for everything (all ticked), else the ticked keys ([] when nothing is ticked). */

@@ -179,7 +179,7 @@ describe('Field Medic, Humanity First, Factory Made, Heavyworlder, Old School', 
     const f = fightWith([{ skills: { proficiency: 5 } }, { traits: ['factory_made'] }], [{ at: 'O10' }]);
     const [mech, bot] = f.pcs; mech.pos = '3,3'; bot.pos = '3,4'; f.unit(bot.id).hp = 20; f.unit(mech.id).parts = 2;
     f.turn(mech); f.act({ type: 'combat/repair', unitId: mech.id, targetId: bot.id } as any);
-    expect(f.unit(bot.id).hp).toBeGreaterThan(20); expect(logHas(f.cb, /patches .* chassis/)).toBe(true);
+    expect(f.unit(bot.id).hp).toBeGreaterThan(20); expect(logHas(f.cb, /repairs .* \(Field Repair\)/)).toBe(true); // rules 1.34: the one Field Repair
   });
   it('Heavyworlder: a heavy weapon is one-handed (the off hand stays); Old School refuses an electronic gun or a red dot', () => {
     const heavy = WEAPONS.find((w: any) => /^heavy/.test(w.category) && w.hands === '2H');

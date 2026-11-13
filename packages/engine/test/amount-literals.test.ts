@@ -42,7 +42,7 @@ const LEDGER: [string, string, Record<string, number>][] = [
   ['class:grand_sigilist.enlarge', 'bloom', { base: 10 }],
   ['class:heartbinder.through', 'mirror', { 'mults.share': 0.5 }],                                    // floor(n / 2)
   ['class:vessel.inner_charge', 'heartbeat', { base: 0, 'per.forms': 10 }], ['class:vessel.release_strike', 'damage', { base: 15 }],
-  ['class:infiltrator.field_fix', 'repair', { base: 20 }], ['class:infiltrator.sabotage', 'damage', { base: 30 }],
+  ['class:infiltrator.field_fix', 'repair', { base: 15 }], ['class:infiltrator.sabotage', 'damage', { base: 30 }],
   ['perk:shrug_it_off', 'shield', { base: 0, 'per.max_hp': 0.1 }],
   ['perk:last_charge', 'shield', { base: 15 }], ['perk:last_charge', 'shield_by_armour', { base: 0, 'per.armour_class': 15 }],
   ['perk:trick_shot', 'ricochet', { 'mults.share': 0.5 }], ['perk:breaching_strike', 'slam', { 'mults.share': 0.5 }],

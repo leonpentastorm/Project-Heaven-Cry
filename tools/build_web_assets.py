@@ -86,6 +86,34 @@ for folder, prefix in (("feelings", "feeling-"), ("modules", "module-")):
         stem = src.stem
         key = "heart-" + stem if stem.startswith("ui-") else prefix + (stem[len(prefix):] if stem.startswith(prefix) else stem)
         emit(key, src, (128, 128), (512, 512), 90)
+# Painted gear icons (art/style-guide/gear-icons.md; the catalog's `gear` map, keyed by file stem `<kind>-<id>`): one
+# asset per item, keyed by the ITEM ID the engine uses, so a screen asks for "gear-" + item id (game/gearIcons.ts):
+#   gear-<id>     from the 64 px export (rows and cells up to 32 css px, sharp at 2x)
+#   gear-<id>-lg  from the 256 px export (the hand cards, the hover card's picture)
+# The stem's id has a leading ammo_ / mod_ removed (the naming rule); it is put back when that is the data's id. Derived
+# gear with no item id (rounds-<calibre>, mag-<family>, armour-torso_class<N>_<name>, loot-personal_effects) keeps
+# its kind: gear-rounds-<calibre>. A file whose id is not in the data yet is built under gear-<id>, so the item picks it
+# up the day it is added. The 1024 masters never go to the browser.
+DATA_IDS = {x["id"] for f in ("weapons", "items") for x in json.loads((ROOT / f"data/{f}.json").read_text())["items"]}
+GEAR_DERIVED = ("rounds", "mag", "loot")
+
+def gear_key(stem):
+    kind, _, rid = stem.partition("-")
+    if kind in GEAR_DERIVED or (kind == "armour" and rid.startswith("torso_class")):
+        return "gear-" + stem
+    for cand in (rid, "ammo_" + rid, "mod_" + rid):
+        if cand in DATA_IDS:
+            return "gear-" + cand
+    return "gear-" + rid
+
+GEAR_KEYS = {}
+for stem, a in C.get("gear", {}).items():
+    key = gear_key(stem)
+    assert key not in GEAR_KEYS.values(), f"two gear icons build to {key}"
+    GEAR_KEYS[stem] = key
+    ex = a.get("exports", {})
+    emit(key, ROOT / ex.get("64", a["path"]), (64, 64), None, 85)
+    emit(key, ROOT / ex.get("256", a["path"]), None, (256, 256), 85)
 # Title screen (art/briefs/title-screen.md, docs/design/title-screen.md §8). The painted layers are 4096 x 2304 with
 # overscan (the central safe rect is art/ui/title-screen/technical-review.json); they are exported whole, at three
 # widths, and the title picks one by viewport (srcset): <layer> 1600 w, <layer>-lg 2560 w, <layer>-xl 3840 w.
