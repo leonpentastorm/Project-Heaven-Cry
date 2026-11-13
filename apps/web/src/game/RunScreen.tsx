@@ -1,11 +1,11 @@
-// The Survival run's screen between fights (survival-spec 8.2; rules 1.41, build step 3): the path map (rows of nodes,
-// each its kind's icon and word, links, where the party stands, what it can reach, each player's mark), the party strip
+// The Survival run's screen between fights (survival-spec 8.2; rules 1.41, build step 3): the path map (PathMap.tsx, rules
+// 1.48: lanes on a themed overland map; where the party stands, what it can reach, each player's mark), the party strip
 // (level, HP, credits, a level-up waiting), and the node's panel: what the node gave, the weapon pick after a fight,
 // the stage cleared after the Boss. It draws runView (runView.ts); every action is a `run/*` sent through the store.
 import React from 'react';
 import { act, getState, go } from './store';
 import { runView, type RunNodeV, type OfferV, type ChoiceCharV } from './runView';
-import { nodeIconSvg } from './runIcons';
+import { PathMap } from './PathMap';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { StageScreen } from './StageScreen';
@@ -16,23 +16,6 @@ const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#23
 const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
 const btn = (on = true): React.CSSProperties => ({ minHeight: 40, padding: '0 16px', borderRadius: 10, border: on ? 0 : '1px solid ' + ink.line, background: on ? ink.text : 'transparent', color: on ? ink.ground : ink.text, fontFamily: 'inherit', fontWeight: 700, cursor: 'pointer' });
 const marks = (n: number) => '◆'.repeat(n);
-
-function MapNode({ n, x, y, onPick }: { n: RunNodeV; x: number; y: number; onPick: (n: RunNodeV, el: HTMLElement) => void }) {
-  const lit = n.state === 'reachable', here = n.state === 'here', done = n.state === 'walked';
-  const col = here ? ink.white : lit ? ink.white : done ? ink.text : ink.muted;
-  const ring = here ? '3px solid ' + ink.white : lit ? '2px solid ' + ink.white : done ? '2px solid ' + ink.text : '1px solid #3B475D';
-  const label = n.word + (here ? ', you are here' : lit ? ', reachable' : n.state === 'walked' ? ', walked' : '') + (n.leans.length ? ', marked by ' + n.leans.map((l) => l.name).join(' and ') : '');
-  return (
-    <button type="button" data-phc-node={n.id} data-phc-kind={n.kind} data-phc-state={n.state} aria-label={label} {...tipProps(n.tip + (n.why ? ' ' + n.why : ''))}
-      onClick={(e) => onPick(n, e.currentTarget)}
-      style={{ position: 'absolute', left: x + '%', top: y + '%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: 0, border: 0, background: 'transparent', fontFamily: 'inherit', cursor: lit ? 'pointer' : 'default', opacity: n.state === 'passed' ? 0.35 : 1, zIndex: here || lit ? 3 : 2 }}>
-      <span style={{ position: 'relative', display: 'grid', placeItems: 'center', width: n.kind === 'boss' || n.gate ? 48 : 38, height: n.kind === 'boss' || n.gate ? 48 : 38, borderRadius: '50%', border: ring, background: here ? ink.raised : ink.panel, color: col, boxShadow: lit ? '0 0 0 4px rgba(255,255,255,0.12)' : 'none' }}
-        dangerouslySetInnerHTML={{ __html: nodeIconSvg(n.gate ? 'elite' : n.kind, n.kind === 'boss' || n.gate ? 28 : 22) }} />
-      <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.02em', color: col, textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 1px 2px #000' }}>{n.word}</span>
-      {n.leans.length ? <span style={{ position: 'absolute', top: -8, right: -12, display: 'flex', gap: 2 }}>{n.leans.map((l) => <span key={l.initials} style={{ display: 'grid', placeItems: 'center', width: 20, height: 20, borderRadius: '50%', fontSize: 9, fontWeight: 700, background: l.color, color: ink.ground }}>{l.initials}</span>)}</span> : null}
-    </button>
-  );
-}
 
 function Offer({ o }: { o: OfferV }) {
   return (
@@ -87,14 +70,10 @@ function Choices({ x, kit }: { x: ChoiceCharV; kit?: boolean }) {
 
 export function RunScreen() {
   const st = getState(), g = st.game, me = st.me.id;
-  const box = React.useRef<HTMLDivElement>(null);
   const v = g ? runView(g, me) : null;
   if (!g || !v) return <div style={{ padding: 40, color: ink.muted }}>No run is under way.</div>;
   if (v.state === 'boon' || v.state === 'tile' || v.over) return <StageScreen />; // rules 1.44: the stage's end and the summary, full screen
   const fight = v.state === 'fight';
-  // where each node sits: depth left to right, its column (half-columns, 0 to 6) top to bottom
-  const xOf = (d: number) => 4 + ((d - 1) / Math.max(1, v.rows - 1)) * 92, yOf = (c: number) => 12 + (c / 6) * 76;
-  const pos: Record<string, { x: number; y: number }> = {}; for (const n of v.nodes) pos[n.id] = { x: xOf(n.depth), y: yOf(n.col) };
   const pick = (n: RunNodeV, el: HTMLElement) => { if (n.state === 'reachable') act({ type: 'run/move', node: n.id }); else openTipOn(el); };
   const mine = v.offers.filter((o) => o.mine), others = v.offers.filter((o) => !o.mine);
   return (
@@ -113,14 +92,8 @@ export function RunScreen() {
             {v.waiting ? <span data-phc-waiting="" style={{ fontSize: 13, color: ink.white }}>{v.waiting}</span> : null}
             {v.canGo ? <button type="button" data-phc-go="" onClick={() => act({ type: 'run/go' })} style={btn(true)}>Go now</button> : null}
           </div>
-          <div ref={box} data-phc-pathmap="" style={{ position: 'relative', flex: 1, minHeight: 380, borderRadius: 14, background: 'radial-gradient(ellipse at 50% 40%, #141B28 0%, #0A0D13 75%)', border: '1px solid ' + ink.line, overflow: 'hidden' }}>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} aria-hidden="true">
-              {v.links.map((l) => { const a = pos[l.from], b = pos[l.to]; if (!a || !b) return null;
-                return <line key={l.from + '>' + l.to} x1={a.x} y1={a.y} x2={b.x} y2={b.y} vectorEffect="non-scaling-stroke" stroke={l.walked ? ink.text : l.lit ? ink.white : '#3B475D'} strokeWidth={l.walked || l.lit ? 3 : 1.5} strokeDasharray={l.walked || l.lit ? undefined : '4 5'} />; })}
-            </svg>
-            {v.nodes.map((n) => <MapNode key={n.id} n={n} x={pos[n.id].x} y={pos[n.id].y} onPick={pick} />)}
-          </div>
-          <span style={{ fontSize: 12, color: ink.muted }}>Lit nodes are the ones you can reach. Hover a node for what it gives and costs.{v.solo ? ' Click one to go.' : ' Click one to mark it: the squad goes when everyone has marked; a tie goes to the host.'}</span>
+          <PathMap v={v} onPick={pick} />
+          <span style={{ fontSize: 12, color: ink.muted }}>Lit nodes are the ones you can reach. Hover a node for what it gives and costs. A trail runs on to the next junction: read ahead before you pick one.{v.solo ? ' Click a lit node to go.' : ' Where the trail forks, click one to mark it: the squad goes when everyone has marked; a tie goes to the host. On a trail with one way on, a click walks the squad on.'}</span>
         </section>
         <aside aria-label="The squad and the node" style={{ flex: '0 1 340px', minWidth: 280, display: 'flex', flexDirection: 'column', gap: 12, padding: 16, borderLeft: '1px solid ' + ink.line, overflowY: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
