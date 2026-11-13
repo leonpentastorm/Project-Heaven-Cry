@@ -83,9 +83,24 @@ Soldiers in whole fights, the squad's whole fights, and `bond_dip` (the simulato
 (`balance-contract.test.ts SYS`) was not given rows**: two of the three lines read outside ±12% and the guard would fail
 `npm run check`; the lead chooses the dials (`output.profiles.tend.k`, `bond.per_bond`) first.
 
-## 5. Golden lines and replays (re-recorded on this branch)
+## 5. Golden lines and replays (re-recorded on this branch, after the four oracles passed)
 
-See section 8 (filled at the close).
+Against `claude/charming-gauss-hbq4n0`:
+- `conditions.json` / `.log.json`: **new lines only** for the new rows (`bonded`, `traced`, `settled`, `given_*`,
+  `foe_*` named "Felt <feeling>"); no line of an old row changed.
+- `costs-credit.json`: **new lines only** (+150: the Tending verbs and Stim Throw priced under a Brief / Encore).
+- `costs-items-traits-classes.json` / `.marks`, `costs-items-shelved.json` / `.marks`, `items-traits-classes.json`,
+  `items-shelved.json`: the Mender's rows: Triage, Inspire, Rally (now data, through an Attuner: the fixture has none,
+  so they record nothing), Stim Throw (left the class), `res.supplies` → `res.ledger`; three new `class/bard@*/heal-out`
+  and `shield-out` lines (the Ledger counts them); the `#coverage` counts fell 13 → 11 of 111 → 109 (shelved) and 18 → 15
+  of 129 (the heal actions the table can't run without an Attuner).
+- `itemops-perks` / `itemops-traits-classes` (+ `.log`): log words (feelings now felt by the fixtures' Empathy 5 squad,
+  rules 1.33 rule 23), three new `cond-in-fear` / `cond-ally-fear` lines; `costs-askers-traits.marks` (the same).
+- **The item tables' squad does not Share a Hit** (`harness.ts noShare`, used by `itemops.ts opsFight` and
+  `record.ts itemFight`): without it every damage line near the squadmate moved.
+- **Replays** (`replays.json`): 13 of 13 re-recorded (`REPLAY_RECORD=1 REPLAY_FULL=1`): Share a Hit in the squads, the
+  free Pump now Will Power's, the Mender's moves; `proving-waves-long` 304 → 307 actions. No coverage count fell
+  below its guard.
 
 ## 6. Where the spec was wrong or silent, and what was done (calls for Leon; also in the pick-up guide section 6)
 
@@ -127,7 +142,22 @@ See section 8 (filled at the close).
 
 ## 8. The close
 
-(filled below)
+- `python3 tools/validate.py data`: 0 errors. `tools/check_spec_tables.py`: 0 errors (the 16 enemy faces are rows of
+  the spec's Conditions table: the spec's 5.1 has 16 faces, not the 15 its text counts).
+- `python3 tools/engine_catalog.py --check`: clean. Lints: `lint-item-ops` baseline lowered (inspire, mend, stim_throw,
+  field_surgery, rally gone; `tend.field_surgery` is the old story lane re-keyed, on purpose), `lint-costs` i.ts 6 → 5,
+  `lint-foundations` rev3 cb.units 3 → 2.
+- `npm run built-from -- claude/charming-gauss-hbq4n0..HEAD`: 7 smells in 5 places, 0 a lint fails on: the generated
+  `protodata.json`; `classes/i.ts` Field Surgery's MP from the character (a story action has no unit: as the old story
+  Inspire); `descriptors.ts` the `stim_throw` basic row's pick (a basic action's own id, as every row there);
+  `game.ts` and `magic.ts` MP lines that existed (only `carriesMpFocus` / `attuner` changed).
+- `class-weapon-neutral.test.ts`: passes (the Mender had no PENDING entry).
+- Browser suites on port 8797 (`--base`, own server): `tending` (new, in `rules`), `heart`, `feelings40`,
+  `classes-moves` (the Mender now takes an Attuner before Rally), `magic`: green. (There is no `soul` suite.)
+- **The Outburst's steady line after the free Pump moved** (`REFIT_MEASURE=1 REFIT_SYSTEMS=ob REFIT_VARIANTS=allin
+  REFIT_N=6`): 146 / 146 / 134 / 115, mean **135** against `outburst_steady` 135: the all-in Channeler has Will Power
+  10, so it keeps the free Pump and the swell; the balance-contract guard passes.
+- `npm run check`: see the last line of the final report.
 
 ## How to add one more Tending verb
 
