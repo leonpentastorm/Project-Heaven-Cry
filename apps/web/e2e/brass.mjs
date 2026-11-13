@@ -122,10 +122,14 @@ const burst = await p.evaluate(async ({ id, pos, to }) => {
     { k: 'shot', n: n + 2, ...W, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, tech: 'burst', vi: 0, chain: true },
     { k: 'shot', n: n + 3, ...W, mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, tech: 'burst', vi: 1, chain: true, step: -4 },
   ], 'e2e-brass-burst');
-  await new Promise((r) => setTimeout(r, 2600));
+  // wait for the queue to play out (its own state, not a fixed time: a busy machine runs the timers late), at most 20 s
+  const idle = () => { const d = window.__phcFxDebug?.(); return !d || !(d.timers > 0 || d.queueEndIn > 0 || d.heldBehindGate); };
+  for (let t0 = performance.now(); performance.now() - t0 < 20000;) { await new Promise((r) => setTimeout(r, 100)); if (performance.now() - t0 > 600 && idle()) break; }
   const T = window.__phcFxTrace; window.__phcFxTrace = undefined;
   const holes = T.filter((x) => x.w === 'hole');
-  return { rounds: T.filter((x) => x.w === 'round').length, shells: T.filter((x) => x.w === 'shell').length, holes: holes.length, kinds: [...new Set(holes.map((x) => x.kind))], at: holes.map((x) => Math.round(x.rt)) };
+  // the rhythm is judged on the plan (t: when each hole was due, the same on any machine), not on the wall clock (rt),
+  // where a busy machine bunches late timers together (8 ms apart beside other suites)
+  return { rounds: T.filter((x) => x.w === 'round').length, shells: T.filter((x) => x.w === 'shell').length, holes: holes.length, kinds: [...new Set(holes.map((x) => x.kind))], at: holes.map((x) => Math.round(x.t)) };
 }, { id: me.id, pos: me.pos, to: right });
 ok('a character\'s Burst fires three rounds for its two rolls (' + burst.rounds + ') and throws three casings (' + burst.shells + ')', burst.rounds === 3 && burst.shells === 3);
 const gaps = burst.at.slice(1).map((t, i) => t - burst.at[i]);

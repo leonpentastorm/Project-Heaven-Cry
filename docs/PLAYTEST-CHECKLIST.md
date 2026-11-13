@@ -1,9 +1,243 @@
-# Playtest checklist: what to try by hand before this build goes live
+# Playtest checklist: what to try by hand before a build goes live
 
-For Leon. The build is branch `claude/charming-gauss-hbq4n0` against live 0.22.0 (rules 1.15 to 1.26 are all new to
-players). Nothing here is live. Tick a box when it looks right; write down anything that does not and say which line.
+For Leon. **Section 0 is Classes 3.0 (0.26.0, Class Roster Revision 4), new to players; try it first.** The sections
+after it were written for 0.23.0 (rules 1.15 to 1.26, live since 12 Nov) and still hold where Classes 3.0 did not change
+them. Tick a box when it looks right; write down anything that does not and say which line. "Right" is what the build
+is meant to do, not a guarantee that it does.
+
+## 0. Classes 3.0 (0.26.0)
+
+Sources: `docs/design/handoffs/CLASSES-3.0-PICKUP.md`, the step hand-offs (`classes-3.0-step-*.md`), the specs
+(`docs/design/class-roster-rev4-proposal.md`, `shadow-spec.md`, `bonds-spec.md`, `figments-spec.md`, `chaplain-spec.md`,
+`reactions-spec.md`, `level-scale-spec.md`, `heal-shield-percent-spec.md`), rules 1.28 to 1.38. Where a number is
+still being fitted, it is in `docs/design/handoffs/classes-3.0-step-11.md` and `PATCH-TALLY.md`.
+
+**How to play it.** The title shows **PROVING GROUND first** (M813 is off the menu, see block 0.14). In the gearing-up
+screen give your character a class (any of the nine, any rank), a level, skill points, gear and meters; the Effect
+testing room's dummy has 9,999 HP and comes back after every action. Each block is about ten minutes. Play each class
+once at **level 5, rank I to II**, then the one you like at **level 12, rank III**. Squad blocks want a friend or a
+second browser tab (two players in one room).
+
+### 0.1 The nine classes, by their new names (ten minutes for the roster)
+
+- [ ] The level-up picker, the sheet, the hover cards and the log name the classes **Bulwark** (Endurance), **Breaker**
+      (Strength), **Skirmisher** (Agility), **Operative** (Perception), **Sigilist** (Intelligence), **Rigger**
+      (Expression), **Mender** (Insight), **Channeler** (Determination), **Chaplain** (Virtue). No old name (Defender,
+      Fighter, Marksman, Infiltrator, Mage, Trickster, Bard, Guardian) anywhere a player reads.
+- [ ] An old save opens: its class keeps working under the new name (the ids did not change).
+- [ ] At level 3 you get the class of your highest attribute; a tie lets you choose among the tied. Rank II at that
+      attribute 5 and level 6, rank III at 8 and level 12: two moves a rank.
+- [ ] **What right looks like:** each class has a bigger meter or a cheaper thing than a classless character with the
+      same skill, plus its six moves. Nothing in the mechanic itself is locked behind the class (block 0.2).
+
+### 0.2 The doors: every mechanic is open through its alpha skill (ten minutes)
+
+Make a classless level 5 character (no class picked) and give it 3 points in one alpha skill at a time.
+
+- [ ] Durability: Guard points and the Guard technique. Raw Power: Momentum with a melee weapon. Dexterity: ranged
+      techniques, Pressure and Heat. Ingenuity: **Shadow**. Brain Power: Sigils (with an Evoker). Visualization:
+      **Figments** (with a Visualizer). Empathy: **Bonds and Tending** (with an Attuner). Will Power: Outbursts (with an
+      Emanator). Faith: **prayer from Faith 1** (block 0.7).
+- [ ] Each door's verbs appear on the action panel with no class, and a missing focus says why in words ("Needs an
+      Attuner in hand.").
+- [ ] **Right:** a door user plays the whole loop (build the meter, spend it) but a little worse than the class with
+      the same points (about 13% under its line, `balance-contract.md`).
+
+### 0.3 Shadow and the Operative (ten minutes)
+
+- [ ] With Ingenuity and no enemy seeing you, end a turn: Shadow rises (0 to 3, the meter row with its eye word:
+      Unseen, In view, Seen). Seen, it stops.
+- [ ] The SHADOW tab lists its verbs under **Slip, Mark, Work, Break**. A verb that needs you unseen says so in words
+      ("An enemy sees you: this needs you Hidden.").
+- [ ] Vanish: your token goes to **60%** (and so does its portrait in the turn bar); the HIDDEN chip stays. The Break
+      on the attack card is a toggle; switched on, the previewed damage changes; the hit spends Shadow and you are seen.
+- [ ] An Operative starts a fight with 1 Shadow; Analyze on a target that can't see you gives one more.
+- [ ] **Right:** strong opening hits from out of sight, never a one-shot kill of an Elite or Boss from Shadow alone.
+
+### 0.4 Bonds, Tending and the Ledger: the Mender (ten minutes, squad)
+
+- [ ] With Empathy and an Attuner in the off hand, the **TEND** tab (Insight pink) lists BOND, HEAL, HELP; Triage,
+      Inspire and Rally stay on the CLASS tab.
+- [ ] Bond an ally: the **Bond strip** under your resources shows it (round portrait, HP bar, "BONDS 1 / n"), and the
+      map draws a **faint pink line** between you. **Side by side, the line is a small link mark with a dot at the shared
+      edge** (it was invisible before). Bond an enemy (a save): dashed line, a hollow dot when adjacent.
+- [ ] Put the Attuner in the pack: the strip greys ("Attuner in pack: Bonds held, threads quiet").
+- [ ] A hit on a Bonded ally is shared along the Bond (Share a Hit: automatic for anyone with Camaraderie 1, call 31).
+- [ ] The Mender's **Ledger** is the bar at the end of the strip (not repeated as a row); it fills as you tend and
+      empties into your strikes.
+- [ ] Inspire's picker lists every feeling; the ones you have never felt are greyed and refused.
+- [ ] Let Go: the line is gone at once.
+- [ ] **Right:** the Mender out-heals every other source (the healing order, block 0.10); an enemy Elite or Boss Bonded
+      to your healer goes for the healer.
+
+### 0.5 Figments and the Rigger (ten minutes)
+
+- [ ] With Visualization and a Visualizer in hand, the **FIGMENTS** tab: Picture and Load the Visualizer, then one group
+      per Figment you hold, headed by its **face** (a round chip with the form's glyph in your colour until the
+      portraits are painted, ART-REQUESTS C6) and its name and HP.
+- [ ] Picture a Double, an Eye, a Wall, a Beast, a Blade (the forms open at Visualization 1, 3, 5). A third one past
+      your hold is refused in words ("Hold is full").
+- [ ] A Figment has no turn: its verbs are your rows and cost your AP. Its token says whose it is.
+- [ ] Let go: it comes apart and half its charge comes back. At the fight's end no Figment stays.
+- [ ] Enemies: a Minion is fooled by a Double until it attacks it; Soldiers, Elites and Bosses shoot a character in
+      reach before a Figment.
+- [ ] A Rigger: one more held, the first Figment each fight free, six tabs on **one row** (Move, Attack, Utility,
+      Class, Figments, Calls: the counts sit in the corner of each tab).
+- [ ] **Right:** a Figment soaks fire and changes where enemies go; it is not a second damage dealer.
+
+### 0.6 The Chaplain: Ward, Sanctuary, Smite, Verdict (ten minutes)
+
+- [ ] On the FAITH tab, **Ward** sits among the WHISPERS and **Sanctuary** among the HYMNS; **Verdict** is on CLASS.
+- [ ] Pray a Hymn: you are Witnessed and **your patron stands at your side** on your tile (its portrait at 40%).
+- [ ] While Witnessed, a weapon hit carries **Smite** (the log: "Old Overcast smites … (Smite): n") once a turn and
+      leaves the target Judged; a second hit that turn carries none. A kill-taboo patron's Smite subdues.
+- [ ] Sanctuary right after a Hymn is refused for the Hymn's wait, in words; later it lays a zone that halves damage
+      to allies in it.
+- [ ] Ward gives a shield (10 × the Blessing power, call 22); two Wards held at most.
+- [ ] **Right:** about a Faith build's whole turn of damage plus its prayers; Smite is not a second gun.
+
+### 0.7 Prayer from Faith 1 (five minutes)
+
+- [ ] A Faith 1 character (any class, Faithful) has the FAITH tab with its Whispers; a Hymn says "A Hymn needs
+      Faith 3". An Atheist prays by dice as before.
+
+### 0.8 Reactions and Reflex (ten minutes)
+
+- [ ] Beside your AP: **"REACTION ●"** (white when ready, grey when spent). A Skirmisher shows **two** ("REACTIONS ●●").
+- [ ] Hold a shot; an enemy walks in; the held shot fires and the pip greys. A reaction never triggers another
+      reaction. Suppressed stops an attacking reaction, never a protective one (Interpose, Drink It In).
+- [ ] The pips' hover card lists the Answers you keep on.
+- [ ] Killzone's card says it uses two reactions; Run and Gun leaves you slipping after a move.
+- [ ] **Right:** a Skirmisher can cover two lanes in one enemy phase.
+
+### 0.9 The enemy acts on what it sees (ten minutes)
+
+- [ ] Start a fight on a big map out of sight: enemies walk toward where your side was last seen, not straight at you
+      through walls. Standing on that tile with nobody in sight, they hold.
+- [ ] Hit an enemy from Hidden: its side learns your tile and searches toward it.
+- [ ] A Boss cannot stay hidden after round 1. Enemies shoot a Warded or Sanctuary-sheltered ally less than an equally
+      hurt one in the open. An enemy that sees a held Overwatch walks round it when it can.
+- [ ] **Right:** enemies feel smarter but never know what they cannot see.
+
+### 0.10 The level scale ×7.5 and heals in percent of HP (ten minutes)
+
+- [ ] At level 1 a plain rifle hit on a Soldier is about 40, as before; at level 20 about 300 (the scale is ×7.5,
+      geometric). HP, armour, shields and Guard grow with it. Big numbers read with thousands separators.
+- [ ] Heals and shields are a share of HP now: the strongest heal a turn is about 65% of a body's HP; every heal and
+      shield has a floor so a tiny heal is never worth a turn. The order: **Tending heals most**, then the Outburst,
+      the Sigil and a Whisper.
+- [ ] An old save from before opens with its HP moved up once to the new scale (not again on the next load).
+- [ ] **Right:** a level 10 fight takes about as many rounds as a level 1 fight; numbers bigger, rhythm the same.
+      Exact numbers: `classes-3.0-step-11.md`.
+
+### 0.11 Guns: the katana and Mag Dump (five minutes)
+
+- [ ] The **Emanator katana** (a mana arm, one-handed light blade): counts as an Emanator for Outbursts and hits like a
+      light blade. The katana and the Emanator katana have their painted icons.
+- [ ] **Mag Dump spends 4 rounds a roll, 12 at most** (call 50): a 200-round belt loses 12, not 200; a 6-shot revolver
+      fires two rolls and is empty. The card says "Up to 12 rounds"; the casings match the rounds spent.
+
+### 0.12 Effects: the cleanup and bullet holes (ten minutes, Effect testing room)
+
+- [ ] No tracer lines, no swing arcs, no miss effects drawn over the map. A hit leaves a mark by its ammunition: a
+      bullet hole, a shotgun's pellet cluster, an arrow's shaft; a miss leaves none; a swing leaves no hole.
+- [ ] **A Burst or a Suppress that unlocks a feeling for the first time:** the rattle comes with the first muzzle
+      flash and the "A NEW FEELING" card shows after the shots (it used to sit between the sound and the flash).
+- [ ] The painted Heavenprint gear icons show in the backpack, the gear tab, piles and the Proving Ground lists.
+
+### 0.13 Hover performance and the map (five minutes)
+
+- [ ] Leave the pointer on the map while a unit walks or the camera glides: the frame rate holds (it halved on 0.25.0).
+      Hovering tiles fast does not stutter.
+- [ ] Bond lines and Figment tokens move with the map when you drag or zoom; a Hidden ally is at 60%, a Downed one at
+      50% (the turn bar too).
+
+### 0.14 M813 unlisted (two minutes)
+
+- [ ] The title: PROVING GROUND first and selected, NEW GAME second; no M813 on the menu or in a new room (a new room
+      starts on the Narrator's own start). A room saved on M813 still loads it and says so.
+
+## Calls made for Leon during Classes 3.0 (he can reverse any)
+
+Each was built as written because a spec was silent or the lead ruled while Leon slept ("no answer means yes"). Reverse
+any by its number; most are one data field. Sources: `CLASSES-3.0-PICKUP.md` section 6 and each step hand-off.
+
+**Reactions and the primitives (steps 1a, 1b, 3)**
+1. Reactions with no kind on Revision 4's list: a Call made as a reaction, Drink It In, Catch, Dance of Iron and Heart
+   Overwatch are `attack` (Suppressed stops them); Order and the Strike Call's dive `move`; Adamantile Plate and Share
+   `protect`. Reverse: change the item's `limit.kind`.
+2. A Call that harms or hinders an enemy is never a reaction (the lead's ruling, item 1764). Reverse: allow it as kind `attack`.
+3. Anchor's strike is kind `attack`: Suppressed stops it. Reverse: `protect`.
+4. Order: what the ordered ally does is that ally's reaction and provokes nothing. Reverse: make it a free action.
+5. Drones, beasts, twins and Figments share one tie kind `owned`; a drone stays when its owner falls. Reverse: a second tie kind for Figments.
+6. Reflex lives in a base class's `gain` list (the Bulwark's 1 Guard and the Operative's start use it too). Reverse: data only, the list.
+7. The Breaker does not Riposte with no Momentum, even with a weapon that lends the technique.
+8. Fire Discipline: once a turn a weapon technique of 3 AP or more costs 1 AP less; Shot, Aimed Shot and Cut never (the Skirmisher measured 161 against 145). Reverse: the threshold in data.
+9. Keep one for a held shot is on by default (it refuses everything but the held fire). Reverse: default off.
+10. Run and Gun: a move over 2 tiles leaves it waiting; its Pressure ends with the turn.
+11. Special Ammo arms a no-magazine weapon for the next fight; flamers and launchers take loads.
+12. Killzone's second attack spends the next round's reaction.
+13. A move an item makes free keeps the move bank for every item (Glass Runner moved).
+14. The perk Bulwark is renamed **Stonewall** (the class took the name). Reverse: pick another name.
+15. Archetype names Holdfast, Glyphwright, Empath (Suggested). Reverse: rename in `archetypes.json`.
+
+**Shadow (step 6)**
+16. The Break's 1-Shadow floor; the MARK verbs' reach 8; a machine saves by Ingenuity only; Foul's save is the Heart;
+    Off Balance is a 2-round cooldown a target; Fade picks its own tile.
+17. Hidden, Prone, Bleeding and Dazed count as conditions for `has` / `lacks` and cleanses; a Hidden holder does not "see itself".
+18. Parting Cut and Case are still pending (not built). Reverse: nothing to reverse; they wait for a ruling.
+
+**Bonds and Tending (step 7)**
+19. The echo is 0.20 (Leon); a Bond past the cap is refused (Let Go first); a Boss Bond lasts 3 of its turns, then 4 rounds before it can be Bonded again.
+20. The share skips damage you do to yourself; each Bond counts at both ends.
+21. Brimming leaves half the overheal as a shield; Take the Weight's condition is taken with no save.
+22. Ward is **10 × the Blessing power** (the heal-shield spec), not the Chaplain spec's 7. Reverse: `classes.json` Ward value 7.
+23. "Next attack" boons end with the next damage; the edge +2 with the next weapon hit or miss.
+24. An enemy given a feeling with no enemy face gets nothing for the AP and MP (the screen does not grey it yet).
+25. Field Surgery needs a field kit carried (not used up) and 15 MP; Triage is not on the area map (the story Triage stays).
+26. The Mender's steady offence fitted by `tending.json bond.per_bond` 0.10 → 0.05 (rules 1.38). Reverse: 0.10.
+
+**Figments (step 8)**
+27. Field Fix is a move-pool move the Rigger refs; Read is folded into the Operative's Analyze.
+28. The hold counts Figments made by Picture only (not the drone, the Double of a class move, the Scrap Turret).
+29. A Figment acts only on what its side sees; its fall is no death (no mana, no Pressure spill).
+30. Overclock is the unit's attack only; Salvage takes the first fitting unit next to you; a Boss is fooled through one of its turns at most; Paint the Field is deleted.
+31. **Share a Hit fires automatically** for everyone with Camaraderie 1 (it changes every squad fight). Reverse: a toggle.
+32. The Rigger measures 123 against its line of 150 and the door 119 against 130: not fitted (needs a class-only term, rules 1.38 point 5). Reverse: nothing; a ruling on the new primitive.
+
+**The Chaplain (step 5)**
+33. The kill-taboo patrons' Smite subdues; Smite needs the prayer door and is refused while Silenced.
+34. Two Sanctuaries on one tile still stack (each halves). Reverse: build "the first zone of a kind".
+35. The Sanctuary story half is a Narrator action with no MP and no once-a-scene limit; Sanctuary counts as a Hymn I.
+36. The presence's Ward counts toward the two held; the Whisper-turn guard's top 1.40 → 1.42; the Faith door's tops raised by Smite's share.
+
+**The level scale and heals in percent (step 7b)**
+37. "×7.5" built as the spec's `deal` column (7.5^((L−1)/19)) with `scale` = new ÷ old (4.69 at 20): a plain hit 40 → about 300.
+38. The Buff heal fitted 14 → 11.3 by its own dial (the Outburst heals by its own pair).
+39. The Ledger's cap base 15.5 → 6.5.
+40. Shields' order: Faith on top (Sanctuary's pool 40); Tending shield 0.36 of it, the WARD Line and Inverse 0.33: **the Sigil WARD drops 12 → 4.3**. Reverse: the three shares in data.
+41. Old saves move into the scale once (HP × scale); objects of the shelved advanced classes and the Sentry turret are not scaled yet.
+
+**The enemy side (step 9)**
+42. The opening: each side knows every non-Hidden enemy's tile once, after set-up (else nobody would find anyone on the big maps).
+43. "Figments last" for Elites and Bosses only while a character is in reach (as for Soldiers).
+44. An Elite fooled by a Double keeps saving each turn (may stay fooled more than a turn); the Boss at most one turn.
+45. Heard, not seen: a **hit** (not a miss) from an unseen attacker tells the side its tile.
+46. A searcher on the last-seen tile with nothing in sight holds; it does not sweep further.
+
+**The screens and the close (steps 10, 10b, 11, 12)**
+47. M813 is unlisted (`m813.json` `listed: false`): the Proving Ground first, a new room on the Narrator's own start. Reverse: delete the line.
+48. A Hidden token is at 60%; a Downed one at 50%, the turn bar's portrait too. Reverse: `tokenFade.ts`.
+49. The Bond line between adjacent tokens is a short link mark with a dot, drawn above the tokens. Reverse: `TIE_MARK.min` 0.
+50. **Mag Dump: 4 rounds a roll, 12 at most** (rules 1.38; the long rifle gets two rolls from 5 rounds). Reverse: `techniques.json mag_dump`.
+51. With six tabs or more the tab bar goes tight (counts in the corner, full names kept) instead of wrapping.
+52. A feeling's unlock card plays after the attack it was felt in, not between its sound and its rounds.
+53. Still kept for your eye: Aimed Shot's and Crossfire's white lines and Storm's red line.
+
+## The 0.23.0 checks (rules 1.15 to 1.26; still valid where Classes 3.0 did not change them)
+
 Sources: `docs/design/handoffs/PATCH-TALLY.md`, `BUGLIST-0.22.md`, `PICKUP.md` sections 6 and 7, `balance-refit.md`
-and the engine hand-offs. "Right" is what the build is meant to do, not a guarantee that it does.
+and the engine hand-offs.
 
 How to play: use the Proving Ground solo (the gearing-up screen lets you give yourself gear, skills, perks, levels and
 meters, and has the Effect testing room: a dummy with 9,999 HP and AP that comes back after every action). Use a level 5

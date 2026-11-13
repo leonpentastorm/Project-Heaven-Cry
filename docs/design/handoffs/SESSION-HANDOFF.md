@@ -1,75 +1,64 @@
-# Session hand-off (brought up to date 12 Nov 2026, at the close of the balance pass and the engine foundation)
+# Session hand-off (brought up to date 13 Nov 2026, at the close of Classes 3.0)
 
-For whoever continues: a person, or a fresh AI session. Read `CLAUDE.md` first, then `docs/TESTING.md` (which tool
-proves which change), then `docs/design/handoffs/PICKUP.md` (what is merged, how to take a branch in, what is left in
-order). The older notes that used to fill this file (the 11 Nov checkpoints, maps and camera in flight, the damage step
-brief) are done and live in the hand-offs listed in `README.md`.
+For whoever continues: a person, or a fresh AI session. Read `CLAUDE.md` first, then
+`docs/design/handoffs/LOCAL-SESSION-START.md` (the whole picture, for a session on Leon's PC), then `docs/TESTING.md`.
+The mission just closed is `CLASSES-3.0-PICKUP.md`; the older notes are in the hand-offs listed in `README.md`.
 
 ## 1. What is live
 
-**0.25.0, deployed 13 Nov 2026 on Leon's word** ("when the current small bug and UI fixes wave is done push it to live"; Worker version 5d2c23a9; `backup/live-0.25.0`). What comes next is Classes 3.0: `CLASSES-3.0-PICKUP.md`. Before it: **0.24.0, deployed 12 Nov 2026 on Leon's word** ("push all to live when done"; Worker version 9056a26f; `backup/live-0.24.0`). Before it: **0.23.0, deployed 12 Nov 2026 on Leon's word** (Worker version 7a7fe53c; `backup/live-0.23.0` and `backup/live-0.22.0` on the remote). Anything below that still says 0.22.0 is live, or that 0.23.0 waits for his word, was written before the deploy.
+**0.25.0** (13 Nov 2026, `backup/live-0.25.0`): one hover card everywhere, two guns' Clear jam, the live bugs, the
+engine hooks catalogue. Before it 0.24.0 and 0.23.0 (`backup/live-0.24.0`, `backup/live-0.23.0`; `backup/live-0.22.0`
+and `backup/live-0.23.0` are kept for good).
 
-**0.22.0** at https://project-heaven-cry.leonpentastorm.workers.dev (`main` at `651ad63`: 0.21.0 plus a music
-expansion). Leon decides every deploy; say what is ready and wait for his word. The release steps are at the end of
-`docs/TESTING.md`. Releases are made from a clean copy (a `git worktree` of the release commit). Keep the
-`backup/live-<version>` branches of the two latest live versions.
+**Leon's word for 0.26.0** (13 Nov, before sleeping): when Classes 3.0 is finished and `npm run check` and
+`npm run e2e -- all` are green with nothing failing alone, deploy it as 0.26.0 (merge to `develop`, then `main`,
+`backup/live-0.26.0`) without waiting for him; if anything is red, do not deploy: leave it on the branch with a report
+here. Check `git log -1 origin/main` to see which happened.
 
 ## 2. What is on the branch and not live
 
-Branch `claude/charming-gauss-hbq4n0`, version **0.23.0** (bump and `CHANGELOG.md` entry done):
+Branch `claude/charming-gauss-hbq4n0`: **Classes 3.0** (Class Roster Revision 4, rules 1.28 to 1.38), steps 0 to 12 of
+`CLASSES-3.0-PICKUP.md` section 4: the primitives, the rename, reactions and the Skirmisher, the moves that changed
+hands, the Chaplain, Shadow and the Operative, Tending and Bonds and the Mender, the level scale ×7.5 with heals and
+shields in percent of HP (7b), Figments and the Rigger, the enemy side (9), the screens and M813 unlisted (10, 10b),
+balance and Mag Dump (11), the close (12). `CHANGELOG.md` has the 0.26.0 entry (the version number is bumped at the
+merge); `docs/PLAYTEST-CHECKLIST.md` section 0 says what to try and lists the 53 calls made for Leon.
 
-1. **The balance pass, rules 1.15 to 1.26:** enemies by tier and level, maps up to 26 x 26 with a camera, the guns'
-   ceiling, Sigil, the Outburst round 2, healing and shields, Faith round 2, the defence step, MP off Determination and
-   Insight, the fire doctrine, and the re-fit (every ceiling is what an all-in build reaches; the balance contract and
-   its guard in `npm run check`). Every changed system against live: `PATCH-TALLY.md` (its live column was checked
-   against `origin/main` on 12 Nov).
-2. **The engine foundation:** one damage formula, saves, forced movement, costs and counters, conditions from data,
-   fog of war in the engine including the fight log, action descriptors, item ops first pass (20 of 310 handlers
-   moved), text numbers from data, performance about 3 times faster.
-3. **Bugs from Leon's 0.22.0 playtest fixed** (`BUGLIST-0.22.md`), the artist's 77 icons shown, the browser suites
-   grouped (61) and the eight failing ones repaired.
-4. **Docs:** `docs/ENGINE-GUIDE.md` (how to add things), `docs/PLAYTEST-CHECKLIST.md` (what to try by hand, and the
-   numbered calls made for Leon).
+The close's client fixes (13 Nov): the backpack suite's stale icon check; the Bond line between adjacent tokens is a
+link mark; six combat tabs fit on one row; a Figment's group header shows its face; a feeling's unlock card no longer
+sits between a gun's sound and its flash (a real bug the fx-sweep suite caught); the chaplain suite waits on state.
 
 ## 3. In flight
 
-Nothing. All pieces are merged; no worktree agent is running.
+Nothing once step 12 is merged. Any `worktree-agent-*` branch not in `claude/charming-gauss-hbq4n0` is on the remote as
+`wip/<branch>`; judge it by `PICKUP.md` section 3 before merging.
 
 ## 4. What comes next, in order
 
-1. On a quiet machine: one `npm run check` and `npm run e2e -- all` on the merged branch, both green (`PICKUP.md`
-   section 4, "Close").
-2. **Leon's playtest** with `docs/PLAYTEST-CHECKLIST.md`; he names which of the calls (section 14 there) to reverse.
-3. **His word to deploy 0.23.0**; then the live backup branch.
-4. **After live:** the item ops second pass (289 handlers are still code; `engine-foundations-3-item-ops.md` lists the
-   order), the unmeasured systems (class moves, perks, Mastered perks, special rounds, Calls, reactions, armour; the
-   list is `PATCH-TALLY.md` section 10), and the rest of wave 3 (Preview as a dry run, one state table, effects with a
-   schema, rooms and the Narrator prompt, folding the spec's revisions into its body).
-5. Later, already designed: effects and icons for the nine Calls; Weapon Arts (may break the ceiling as a charged
-   ultimate); tri-scale armour; the M813 rewrite; the roguelike mode.
+1. If 0.26.0 is not live: make `npm run check` and `npm run e2e -- all` green (nothing failing alone), then deploy on
+   the 13 Nov word.
+2. **Leon's playtest of 0.26.0** with `docs/PLAYTEST-CHECKLIST.md` section 0; he names the calls to reverse.
+3. **Survival mode,** `docs/design/survival-spec.md`, stage 1 first (section 10's build plan), open questions on their
+   recommendations; not deployed without a new word.
+4. **The Forge art run** on Leon's GPU (`art/briefs/FORGE-PHC.md`), when he starts a local session.
+5. The open items of each Classes 3.0 step (`LOCAL-SESSION-START.md` section 6 item 4 gathers them).
 
 ## 5. Things Leon has not ruled on (they take the recommendation until he does)
 
-The numbered calls in `docs/PLAYTEST-CHECKLIST.md` section 14 and `PICKUP.md` section 6; the open questions in
-`balance-questions.md`; the 118 card-versus-game disagreements in `text-pass-mismatches.md`; the roles grid in
-`../proposals/2026-11-combat-roles.md`; the choices in `rules-1.14-as-built.md`; Bug 12 of `BUGLIST-0.22.md`.
+The 53 calls in `docs/PLAYTEST-CHECKLIST.md` section 0 (Classes 3.0) and the 0.23.0 calls in its section 14;
+`CLASSES-3.0-PICKUP.md` section 6; `class-roster-rev4-proposal.md` section 8; the open questions in
+`balance-questions.md`; Bug 12 of `BUGLIST-0.22.md`.
 
 ## 6. Known problems
 
-1. **Co-op stall, persistent** (`docs/design/handoffs/coop-stall.md`): one live two-player fight in five stalled on
-   the guest's turn on 0.21.0. One real cause was fixed (the room relay); the stall itself was never reproduced with
-   diagnostics on. If it happens: Report a problem on the stuck screen.
-2. "I'll narrate" (a human Narrator) cannot be selected in a room, so the human Narrator's fight-ruling buttons are
-   built but untested end to end.
-3. The live site's title screen takes longer than 8 seconds to show its buttons to a test browser; suites that start
-   from it time out against live (they pass locally). Raise the wait in `apps/web/e2e/lib.mjs` `click` for live runs.
-
-## 7. Working habits that saved time here
-
-- `npm run check` before saying done; `npm run try` for any rules question; `npm run e2e` for screens. Never a
-  browser for a rules question.
-- Agents: one file-ownership list each, no commits, no builds unless named as the one that builds; a second agent to
-  review every build against the spec; the lead commits. Each run's script is in
-  `/root/.claude/projects/…/workflows/scripts/`.
-- Leon reads plain language: numbered, numbers with units, a recommendation on every question. Push notifications
-  only for real questions and for "ready to deploy".
+1. **Figments sit under their balance line** (the Rigger 123 against 150, the door 119 against 130) with no gap
+   between them: it needs a class-only multiplier (rules 1.38 point 5), a new primitive for the lead.
+2. **Co-op stall** (`coop-stall.md`): one live two-player fight in five stalled on the guest's turn on 0.21.0; never
+   reproduced with diagnostics on. If it happens: Report a problem on the stuck screen.
+3. "I'll narrate" (a human Narrator) cannot be selected in a room; its fight-ruling buttons are built but untested end
+   to end.
+4. Against the live site, suites that start from the title can time out (the title is slow to a test browser); raise
+   the wait in `apps/web/e2e/lib.mjs` `click` for live runs.
+5. Nine of fx-sweep's nineteen real-speed cases are refused "no place to stand" in the Proving Ground (launchers, the
+   flamer, grenades, the thumper): the suite counts them as refused, not failed, so those weapons go unchecked at real
+   speed. Worth a look when someone is in the sweep.
