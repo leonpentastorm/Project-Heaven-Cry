@@ -82,7 +82,7 @@ describe('item ops: a new perk and a relic in data only (test/fixtures/item-ops-
     const g0 = opsFight({ relics: ['test_ember_charm'] }), mine = situations(g0), theirs = situations(base());
     expect(mine.blow.line).toMatch(/F1 [^,]*conds:>burning/); expect(theirs.blow.line).not.toMatch(/burning/);
     expect(mine.blow.words).toMatch(/The Ember Charm flares/);
-    { const m = /P1 hp:141\/235>(\d+)\/235/.exec(mine['turn-again'].line); expect(m && +m[1] > 141, mine['turn-again'].line).toBe(true); } expect(theirs['turn-again'].line).not.toMatch(/hp:/);
+    { const m = /P1 hp:(\d+)\/(\d+)>(\d+)\/\2/.exec(mine['turn-again'].line); expect(m && +m[3] > +m[1], mine['turn-again'].line).toBe(true); } expect(theirs['turn-again'].line).not.toMatch(/hp:/); // rules 1.36: the numbers are the level's
     expect(mine.prices.words).toMatch(/ reload1 /); expect(theirs.prices.words).toMatch(/ reload2 /);
     // once a turn: a second melee hit in the same turn, on a fresh target, lights nothing
     const lit = W(g0, () => dice(HIT, () => { const cb = g0.combat, u = pcs(g0)[0], [f, far] = foes(g0); u.ap = 9; A.resolveAttack(cb, g0.rng, u, f, 'melee', charOf(g0, u)); far.pos = '3,7'; u.ap = 9; A.resolveAttack(cb, g0.rng, u, far, 'melee', charOf(g0, u)); return [A.condOn(f, 'burning'), A.condOn(far, 'burning')]; }));

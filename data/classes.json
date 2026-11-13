@@ -1326,7 +1326,7 @@
               "amounts": {
                 "cap": {
                   "kind": "heal",
-                  "base": 15.5,
+                  "base": 6.5,
                   "profile": "tend",
                   "provisional": true
                 }
@@ -1547,7 +1547,8 @@
                   "base": 3.1,
                   "profile": "tend",
                   "heal_kind": "tending",
-                  "provisional": true
+                  "provisional": true,
+                  "min_pct": 0.08
                 }
               },
               "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP, once a scene, with an Attuner in hand: every Bonded ally wherever it is, and every ally within {=effects.0.effects.0.targets.within} tiles, heals {=amounts.heal.base} × your Healing given, more as you level, and loses Fear and Shaken. It doesn't heal you or a Downed ally.",
@@ -3245,7 +3246,7 @@
         "amounts": {
           "sanctuary_cap": {
             "kind": "shield",
-            "base": 11,
+            "base": 40,
             "profile": "blessing_mend",
             "provisional": true
           }

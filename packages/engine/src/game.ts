@@ -10,9 +10,9 @@ import {
 } from './character';
 import { setFigmentDesign, dropFigmentDesign } from './figments';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
-import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
+import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
+import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
 import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
@@ -35,6 +35,7 @@ import { itemAmount } from './effects/amounts';
 import { price, whyNot, pay, refund, setAp, lend, settleCredit, unlend, poolWhyNot, needs, costOf, apMeter, actionName } from './effects/cost';
 import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy, fightRulingOf, narratorOff, openRuling, talkOf, type FightAnswer, type FightCond, type FightEffect, type FightOutcome, type FightRuling } from './fighttalk';
 export * from './fighttalk';
+import { scaleOf } from './effects/output';
 import { advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
 import { surrender as yieldUnit } from './tactics';
 import { deedGrant } from './deeds';
@@ -453,6 +454,20 @@ export function roomSheetError(g: GameState, by: string, sheet: Sheet): string |
 
 /** Rules 1.9 (item 678): an old save's fight floor (dropped magazines) becomes piles on the fight's map, once; a finished
  * fight on the current zone's map leaves them on the area map too (the fight's objects were already copied there). */
+/** Rules 1.36 (the level scale): a fight saved before it holds HP in the old units: every unit's HP, max, shield and
+ * armour × scale at its own level, and the objects' HP at the fight's level, once (cb.hpRev). A unit of a character
+ * takes its new max from the sheet. */
+function migrateCombatHp(g: GameState) {
+  const cb: any = g.combat; if (!cb || cb.hpRev === HP_REV) return; cb.hpRev = HP_REV;
+  for (const u of cb.units || []) {
+    const f = scaleOf(u.level ?? cb.level); if (f === 1) continue;
+    const c = u.charId && !u.companion ? g.characters?.[u.charId] : null, max = c ? maxHp(c) : Math.max(1, Math.round(u.maxHp * f));
+    u.hp = u.hp > 0 ? Math.max(1, Math.min(max, Math.round(u.hp * f))) : u.hp; u.maxHp = max;
+    if (u.shield) u.shield = Math.round(u.shield * f);
+    if (u.armour) u.armour = Math.round(u.armour * f);
+  }
+  for (const o of cb.objects || []) objectAtLevel(o, cb.level);
+}
 function migrateFloor(g: GameState) {
   const cb = g.combat; if (!cb || !cb.floor) return;
   const list = cb.floor.filter((f) => f.weapon && WEAPON[f.weapon]); delete cb.floor;
@@ -501,6 +516,8 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   for (const c of Object.values(g.characters || {})) {
     const cls0 = c.classId, mpRev0 = c.mpRev, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c), ...migrateCharacterItems(c), ...migrateCharacterMp(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
     // rules 1.24 (item 1348): Max MP left Virtue; a fight saved before it holds the old pool in its units: the same share of the new one
+    // rules 1.36 (the level scale): HP in the new units, the same share of the bar; a fight saved before it moves with it
+    if (migrateCharacterHp(c)) migrateCombatHp(g);
     if (c.mpRev !== mpRev0) for (const u of g.combat?.units || []) if (u.charId === c.id && !u.companion && u.mg && u.mg.mpMax > 0) { const mx = maxMp(c); if (mx !== u.mg.mpMax) { u.mg.mp = Math.max(0, Math.min(mx, Math.round(u.mg.mp * mx / u.mg.mpMax))); u.mg.mpMax = mx; } }
     if (c.classId !== cls0) refreshClassUnits(g, c); // migrated mid-fight: its units' held class and resources follow
     // rules 1.11 (item 930): a fight saved before the rank needed a level holds the old rank in its units; they follow the sheet

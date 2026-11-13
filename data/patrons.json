@@ -219,7 +219,7 @@
       "effects": [
         {
           "op": "heal",
-          "value": 5
+          "value": 8.5
         }
       ],
       "scales_with": "blessing_power",
@@ -234,7 +234,7 @@
       "effects": [
         {
           "op": "shield",
-          "value": 6
+          "value": 10
         }
       ],
       "scales_with": "blessing_power",
@@ -467,7 +467,7 @@
           "effects": [
             {
               "op": "shield",
-              "value": 16
+              "value": 34
             }
           ],
           "scales_with": "blessing_power",
@@ -510,7 +510,7 @@
             },
             {
               "op": "heal",
-              "value": 9
+              "value": 19
             }
           ],
           "scales_with": "blessing_power",
@@ -1180,12 +1180,12 @@
           "id": "coin_for_the_ferry",
           "name": "Coin for the Ferry",
           "tier": 1,
-          "text": "A Downed ally you can see is stabilised and stands up with 5 HP × your Blessing power. The number grows with your level.",
+          "text": "A Downed ally you can see is stabilised and stands up with {=effects.0.value} HP × your Blessing power. The number grows with your level.",
           "target": "downed_ally",
           "effects": [
             {
               "op": "heal",
-              "value": 5,
+              "value": 11,
               "revive": true
             }
           ],
@@ -1372,8 +1372,8 @@
         "effects": [
           {
             "op": "heal",
-            "value": 10,
-            "per_devotion": 3,
+            "value": 7,
+            "per_devotion": 2.1,
             "target": "trigger_ally"
           }
         ],
@@ -1396,7 +1396,7 @@
           "effects": [
             {
               "op": "heal",
-              "value": 13
+              "value": 28
             }
           ],
           "scales_with": "blessing_power",
@@ -1417,7 +1417,7 @@
               "effects": [
                 {
                   "op": "heal",
-                  "value": 4,
+                  "value": 9,
                   "when": "turn_start",
                   "scope": "allies"
                 }

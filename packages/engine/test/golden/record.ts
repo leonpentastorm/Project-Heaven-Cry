@@ -189,7 +189,7 @@ export function recordEnemies(T: Table) {
   for (const tier of TIERS) for (const wid of guns[tier]) for (const lv of [1, 6, 12, 20]) {
     const g0 = fightSpec([{ ...SHOOTER, level: lv }, { ...SHOOTER, level: lv }], [{ tier, weapon: wid, level: lv }], { level: lv, seed: 'enemy/' + tier });
     for (let ac = 0; ac <= 5; ac++) {
-      const g = clone(g0), p = pcs(g)[0], f = foes(g)[0]; p.armour = A.ARMOUR[ac]?.value || 0; face(g, f, p, isMeleeW(wid));
+      const g = clone(g0), p = pcs(g)[0], f = foes(g)[0]; p.armour = A.classArmour(ac, p.level ?? 1); face(g, f, p, isMeleeW(wid));
       foeAttack(T, 'enemy/' + tier + '/' + wid + '/L' + lv + '/armour-class-' + ac, g, f.id, p.id);
     }
   }
@@ -575,7 +575,7 @@ export function recordFlat(T: Table) {
     cb.turn = cb.order.indexOf(t.id); delete cb.window; A.beginTurn(cb, g2.rng); return null; }).line;
   // hazards: each kind and severity under a character in each armour Class and under a Soldier
   for (const h of A.HAZARDS) for (const sev of ['light', 'heavy']) {
-    for (let ac = 0; ac <= 5; ac += 1) T['flat/hazard/' + h.id + '/' + sev + '/character-armour-class-' + ac] = run(g0, (g2, cb) => { const t = byId(g2, u0.id); t.armour = A.ARMOUR[ac]?.value || 0; t.shield = 8; A.hazardHit(cb, g2.rng, t, { id: 'hz', kind: h.id, severity: sev, zone: '', tiles: [t.pos], approaches: [] }, t.pos); return null; }).line;
+    for (let ac = 0; ac <= 5; ac += 1) T['flat/hazard/' + h.id + '/' + sev + '/character-armour-class-' + ac] = run(g0, (g2, cb) => { const t = byId(g2, u0.id); t.armour = A.classArmour(ac, t.level ?? 1); t.shield = 8; A.hazardHit(cb, g2.rng, t, { id: 'hz', kind: h.id, severity: sev, zone: '', tiles: [t.pos], approaches: [] }, t.pos); return null; }).line;
     T['flat/hazard/' + h.id + '/' + sev + '/soldier'] = run(g0, (g2, cb) => { const t = foes(g2)[2]; A.hazardHit(cb, g2.rng, t, { id: 'hz', kind: h.id, severity: sev, zone: '', tiles: [t.pos], approaches: [] }, t.pos); return null; }).line;
   }
   // a map trap walked onto, a barrel set off beside units, by fight level
@@ -616,7 +616,7 @@ export function recordSpecial(T: Table) {
   // Interpose: the squadmate beside the one who is hit takes the blow in its place (the attack's damage against ITS armour)
   for (const [tier, wid] of [['soldier', 'hellraiser_service_rifle'], ['elite', 'adamantile_greatsword'], ['boss', 'hellraiser_lmg']]) for (const ac of [0, 3, 5]) {
     const g = fightSpec([{ ...SHOOTER }, { ...SHOOTER, name: 'Shield', weapon: 'sabre', skills: { ...SHOOTER.skills, durability: 4 }, attrs: { ...SHOOTER.attrs, endurance: 4 } }], [{ tier, weapon: wid }], { level: 6, seed: 'interpose' }), [p, q] = pcs(g), f = foes(g)[0];
-    face(g, f, p, isMeleeW(wid)); q.pos = '7,6'; known(g, q, ['interpose']); q.armour = A.ARMOUR[ac].value; q.resMax = { ...(q.resMax || {}), guard: 5 }; q.res = { ...(q.res || {}), guard: 1 }; q.shield = 4;
+    face(g, f, p, isMeleeW(wid)); q.pos = '7,6'; known(g, q, ['interpose']); q.armour = A.classArmour(ac, q.level ?? 1); q.resMax = { ...(q.resMax || {}), guard: 5 }; q.res = { ...(q.res || {}), guard: 1 }; q.shield = 4;
     foeAttack(T, 'special/interpose/' + tier + '/armour-class-' + ac, g, f.id, p.id);
   }
   // The order of the multiplication when an item's own multipliers AND target bonuses are on the amount (a stand-in

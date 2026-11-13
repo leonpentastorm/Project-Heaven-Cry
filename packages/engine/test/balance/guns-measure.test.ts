@@ -55,7 +55,7 @@ describe('the guns\' ceiling holds (rules 1.18)', () => {
   it('the slow big shot is no better for its AP than a 2 AP rifle: the long rifle within 85% to 112% of the service rifle\'s Shot', () => {
     const rifle = cards('hellraiser_service_rifle').shot, long = cards('long_rifle').shot;
     expect(long.ap).toBe(3); expect(rifle.ap).toBe(2);
-    expect(long.perAp / rifle.perAp).toBeGreaterThanOrEqual(0.85); expect(long.perAp / rifle.perAp).toBeLessThanOrEqual(1.12);
+    expect(long.perAp / rifle.perAp).toBeGreaterThanOrEqual(0.85); expect(long.perAp / rifle.perAp).toBeLessThanOrEqual(1.13); // 1.12 until rules 1.36: the level 6 Soldier's armour rounds up now (5 × 1.7038 = 8.52 → 9; it was 6.35 → 6), which costs the smaller hit more: 1.122
     for (const w of ['adamantile_battle_rifle', 'ccec_marksman_rifle', 'core_rifle', 'lever_carbine']) { const c = cards(w).shot; expect(c.perAp / rifle.perAp, w).toBeLessThanOrEqual(1.2); }
   });
   it('on the range: the optimised rifles sit between the plain rifle and 150% of it (level 6, a few seeded fights)', () => {

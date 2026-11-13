@@ -202,155 +202,155 @@
       },
       {
         "level": 2,
-        "hp_mult": 1.07,
-        "armour_mult": 1.04,
+        "hp_mult": 1.1154,
+        "armour_mult": 1.0841,
         "defense_plus": 0,
         "attack_plus": 0,
-        "damage_mult": 1.02
+        "damage_mult": 1.0632
       },
       {
         "level": 3,
-        "hp_mult": 1.16,
-        "armour_mult": 1.09,
+        "hp_mult": 1.3037,
+        "armour_mult": 1.2251,
         "defense_plus": 1,
         "attack_plus": 0,
-        "damage_mult": 1.05
+        "damage_mult": 1.1801
       },
       {
         "level": 4,
-        "hp_mult": 1.23,
-        "armour_mult": 1.16,
+        "hp_mult": 1.4492,
+        "armour_mult": 1.3667,
         "defense_plus": 1,
         "attack_plus": 0,
-        "damage_mult": 1.07
+        "damage_mult": 1.2607
       },
       {
         "level": 5,
-        "hp_mult": 1.3,
-        "armour_mult": 1.2,
+        "hp_mult": 1.6557,
+        "armour_mult": 1.5283,
         "defense_plus": 2,
         "attack_plus": 0,
-        "damage_mult": 1.1
+        "damage_mult": 1.401
       },
       {
         "level": 6,
-        "hp_mult": 1.38,
-        "armour_mult": 1.27,
+        "hp_mult": 1.8514,
+        "armour_mult": 1.7038,
         "defense_plus": 2,
         "attack_plus": 1,
-        "damage_mult": 1.13
+        "damage_mult": 1.516
       },
       {
         "level": 7,
-        "hp_mult": 1.43,
-        "armour_mult": 1.29,
+        "hp_mult": 2.0784,
+        "armour_mult": 1.8749,
         "defense_plus": 3,
         "attack_plus": 1,
-        "damage_mult": 1.17
+        "damage_mult": 1.7005
       },
       {
         "level": 8,
-        "hp_mult": 1.49,
-        "armour_mult": 1.36,
+        "hp_mult": 2.2904,
+        "armour_mult": 2.0906,
         "defense_plus": 3,
         "attack_plus": 1,
-        "damage_mult": 1.2
+        "damage_mult": 1.8446
       },
       {
         "level": 9,
-        "hp_mult": 1.54,
-        "armour_mult": 1.4,
+        "hp_mult": 2.5695,
+        "armour_mult": 2.3359,
         "defense_plus": 4,
         "attack_plus": 1,
-        "damage_mult": 1.24
+        "damage_mult": 2.0689
       },
       {
         "level": 10,
-        "hp_mult": 1.61,
-        "armour_mult": 1.47,
+        "hp_mult": 2.851,
+        "armour_mult": 2.6031,
         "defense_plus": 4,
         "attack_plus": 2,
-        "damage_mult": 1.28
+        "damage_mult": 2.2666
       },
       {
         "level": 11,
-        "hp_mult": 1.67,
-        "armour_mult": 1.49,
+        "hp_mult": 3.2151,
+        "armour_mult": 2.8685,
         "defense_plus": 5,
         "attack_plus": 2,
-        "damage_mult": 1.33
+        "damage_mult": 2.5605
       },
       {
         "level": 12,
-        "hp_mult": 1.74,
-        "armour_mult": 1.56,
+        "hp_mult": 3.5661,
+        "armour_mult": 3.1972,
         "defense_plus": 5,
         "attack_plus": 2,
-        "damage_mult": 1.38
+        "damage_mult": 2.8283
       },
       {
         "level": 13,
-        "hp_mult": 1.78,
-        "armour_mult": 1.6,
+        "hp_mult": 3.9717,
+        "armour_mult": 3.5701,
         "defense_plus": 6,
         "attack_plus": 3,
-        "damage_mult": 1.43
+        "damage_mult": 3.1908
       },
       {
         "level": 14,
-        "hp_mult": 1.78,
-        "armour_mult": 1.6,
+        "hp_mult": 4.416,
+        "armour_mult": 3.9694,
         "defense_plus": 6,
         "attack_plus": 3,
-        "damage_mult": 1.48
+        "damage_mult": 3.6717
       },
       {
         "level": 15,
-        "hp_mult": 1.79,
-        "armour_mult": 1.6,
+        "hp_mult": 4.9375,
+        "armour_mult": 4.4134,
         "defense_plus": 6,
         "attack_plus": 4,
-        "damage_mult": 1.53
+        "damage_mult": 4.2204
       },
       {
         "level": 16,
-        "hp_mult": 1.79,
-        "armour_mult": 1.6,
+        "hp_mult": 5.4899,
+        "armour_mult": 4.9072,
         "defense_plus": 6,
         "attack_plus": 4,
-        "damage_mult": 1.58
+        "damage_mult": 4.8459
       },
       {
         "level": 17,
-        "hp_mult": 1.8,
-        "armour_mult": 1.6,
+        "hp_mult": 6.1384,
+        "armour_mult": 5.4563,
         "defense_plus": 6,
         "attack_plus": 5,
-        "damage_mult": 1.64
+        "damage_mult": 5.5927
       },
       {
         "level": 18,
-        "hp_mult": 1.8,
-        "armour_mult": 1.6,
+        "hp_mult": 6.8251,
+        "armour_mult": 6.0667,
         "defense_plus": 6,
         "attack_plus": 5,
-        "damage_mult": 1.7
+        "damage_mult": 6.4459
       },
       {
         "level": 19,
-        "hp_mult": 1.81,
-        "armour_mult": 1.6,
+        "hp_mult": 7.6308,
+        "armour_mult": 6.7454,
         "defense_plus": 6,
         "attack_plus": 6,
-        "damage_mult": 1.76
+        "damage_mult": 7.42
       },
       {
         "level": 20,
-        "hp_mult": 1.81,
-        "armour_mult": 1.6,
+        "hp_mult": 8.4844,
+        "armour_mult": 7.5,
         "defense_plus": 6,
         "attack_plus": 6,
-        "damage_mult": 1.82
+        "damage_mult": 8.5312
       }
     ]
   },

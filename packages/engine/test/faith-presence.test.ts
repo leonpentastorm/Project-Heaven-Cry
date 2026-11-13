@@ -5,7 +5,7 @@
 // story Miracle; determinism; old fights in saves. Every rule goes through apply() where a player's click would.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
-import {
+import { mendFactor, gatePct, scaleOf,
   FAITH_PATRONS, FAITH_PATRON, FAITH_FX, INTERVENTION, interventionAmount, interventionLimit, grantLine, LINE_BANKS,
   d20, applyDamage, resolveAttack, condOn, condTurnEnd, setDevotionXp, devotionThreshold,
   type Combat, type GameState, type Unit, type Character, type Action,
@@ -113,10 +113,10 @@ describe('the numbers scale with Devotion, × Blessing power (item 741)', () => 
     const h = holy({ patron: 'nerukhan', devotion: 7 }); hymnAgain(h); kickDowned(h);
     expect(fx(h.cb, FAITH_FX.intervention)[0]).toMatchObject({ unit: h.me.id, patron: 'nerukhan', trigger: 'enemy_harms_helpless', target: h.foe.id, amount: Math.round(48 * h.me.blessPower!) });
   });
-  it('Mother Ember at Devotion 10 heals 40 × power (rules 1.20: 10 + 3 × Devotion); Old Overcast at 10 throws 60 × power Storm', () => {
+  it('Mother Ember at Devotion 10 heals 28 × power × the heal Level term (rules 1.36: 7 + 2.1 × Devotion, the intervention\'s gate); Old Overcast at 10 throws 60 × power Storm', () => {
     const m = holy({ patron: 'mother_ember', devotion: 10 }); m.me.conds = { witnessed: 99 } as any; const mx = m.ally.maxHp;
     m.ally.maxHp = 1000; m.ally.hp = 1000; m.bound(() => applyDamage(m.cb, m.ally, 800, { by: m.foe, type: 'physical' } as any));
-    expect(m.ally.hp).toBe(200 + Math.round(40 * m.me.blessPower! * prayerMendDial())); void mx; // rules 1.27: a heal reads Faith's heal dial
+    expect(m.ally.hp).toBe(200 + Math.min(500, Math.max(Math.round(28 * m.me.blessPower! * prayerMendDial() * mendFactor(m.me.level)), Math.ceil(gatePct('intervention') * Math.min(1000, 145 * scaleOf(m.me.level)) - 1e-9)))); void mx; // rules 1.27: a heal reads Faith's heal dial
     const o = holy({ patron: 'old_overcast', devotion: 10 }); o.me.conds = { witnessed: 99 } as any; o.foe2.maxHp = o.foe2.hp = 2000;
     o.bound(() => applyDamage(o.cb, o.foe, 9999, { by: o.me, type: 'physical', credit: 'hp' } as any));
     const e = fx(o.cb, FAITH_FX.intervention)[0]; expect(e).toMatchObject({ trigger: 'you_kill', target: o.foe2.id, amount: Math.round(60 * o.me.blessPower!) });

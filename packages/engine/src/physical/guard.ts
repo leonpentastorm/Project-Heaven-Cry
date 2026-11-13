@@ -15,7 +15,7 @@
 import { say, type Combat, type Unit, alive, dist, emitFx, fxFell, attackDamage, rollInjury, braceHook } from '../combat';
 import { onHook, emit, charOfUnit, statQuery } from '../effects/hooks';
 import { applyDamage } from '../effects/damage';
-import { landed } from '../effects/output';
+import { landed, scaleOf } from '../effects/output';
 import { PHYS_RULES } from './data';
 import { technique, answer, guardOf, guardMax, guardGain, addGuard, spendGuard, holds } from './core';
 import { NOT_A_HIT } from './rules';
@@ -44,7 +44,7 @@ onHook('damage_in', (ctx: any, cb) => {
   const reach = Math.floor(ctx.dmg) - (shielded ? Math.max(0, u.shield || 0) : 0); if (reach <= 0) return;
   // 1 point is kept back for a reaction (Interpose, Shield Wall, Shrug It Off), unless what gets through would take
   // the unit down: then every point the hit needs is spent (the lead's tuning, 10 Nov 2026; provisional, keep_back).
-  const per = G().soak ?? 10, have = guardOf(u), needs = Math.ceil(reach / per);
+  const per = Math.max(1, Math.round((G().soak ?? 10) * scaleOf(u.level))), have = guardOf(u), needs = Math.ceil(reach / per);
   let k = Math.min(Math.max(0, have - (G().keep_back ?? 1)), needs);
   if (reach - k * per >= u.hp) k = Math.min(have, needs);
   if (k < 1) return;

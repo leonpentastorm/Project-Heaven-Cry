@@ -51,7 +51,7 @@ export interface Profile {
   /** A constant of the profile (×1 today; stage (b) re-pins a system here without touching its bases). */ k: number;
   /** What a point of Attribute over 1 adds to the Stat term. */ attr: number;
   /** What a point of Skill adds to the Stat term. */ skill: number;
-  /** The column of output.level this profile reads: 'deal', 'mend', or null (no level term). */ level: 'deal' | 'mend' | null;
+  /** The column of output.level this profile reads ('deal', 'mend', 'scale': any named column there), or null (no level term). */ level: string | null;
   /** The pair it reads by default (output.pairs). */ pair?: string;
   /** Rules 1.27 (the heal re-fit): the floor of a landed heal or shield profile: its Stat term is never under this share
    * of what a normal share (output.floor_reference: 4 in each Attribute and Skill of the pair) gets. Absent: no floor. */ floor?: number;
@@ -63,7 +63,7 @@ export interface Pair { attrs: string[]; skills: string[] }
 const OUT: any = (RULES as any).output || {};
 /** The profiles (data/rules.json output.profiles). Today's slopes, one per system; `level` null everywhere but `mend`. */
 export const PROFILES: Record<string, Profile> = Object.fromEntries(Object.entries(OUT.profiles || {}).filter(([, p]) => p && typeof p === 'object').map(([id, p]: [string, any]) =>
-  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: p.level === 'deal' || p.level === 'mend' ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}), ...(Number.isFinite(p.floor) ? { floor: Number(p.floor) } : {}), ...(Number.isFinite(p.min_pct) ? { min_pct: Number(p.min_pct) } : {}) }]));
+  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: typeof p.level === 'string' && p.level ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}), ...(Number.isFinite(p.floor) ? { floor: Number(p.floor) } : {}), ...(Number.isFinite(p.min_pct) ? { min_pct: Number(p.min_pct) } : {}) }]));
 /** Rules 1.27: the normal share a landed profile's floor is a share of (data/rules.json output.floor_reference). */
 const FLOOR_REF: { attribute: number; skill: number } = { attribute: Number(OUT.floor_reference?.attribute) || 4, skill: Number(OUT.floor_reference?.skill) || 4 };
 /** The pairs (data/rules.json output.pairs): which Attributes and Skills a Stat term reads. A weapon's own pair comes
@@ -98,15 +98,23 @@ export function statOf(profile: string, c: Pick<Character, 'attrs' | 'skills'>, 
   return statTerm(profile, pair.attrs.map((a) => (c.attrs as any)[a] || 1), pair.skills.map((k) => (c.skills as any)[k] || 0));
 }
 
-const LEVEL_DEAL: number[] = Array.isArray(OUT.level?.deal) ? OUT.level.deal.map((x: any) => (Number.isFinite(x) ? Number(x) : 1)) : [];
-/** The Level term (data/rules.json output.level). `mend`: the enemy table's damage column at that level (rules 1.20:
- * the number that raises what an enemy deals; ×1.00 at level 1 … ×1.82 at 20). `deal`: ×1 at every level today.
- * No column, or no level: ×1. */
-export function levelFactor(column: 'deal' | 'mend' | null | undefined, level: number | null | undefined): number {
+/** The columns of data/rules.json output.level: every named array (one value a level, 1 to 20). `mend` may instead name
+ * the enemy table's damage column (a string), as rules 1.20 had it. */
+const LEVEL_COLS: Record<string, number[]> = Object.fromEntries(Object.entries(OUT.level || {}).filter(([, v]) => Array.isArray(v)).map(([k, v]: [string, any]) => [k, v.map((x: any) => (Number.isFinite(x) ? Number(x) : 1))]));
+/** The Level term (data/rules.json output.level): the named column at that level. `deal`: what a character's level
+ * multiplies its damage by; `scale` (rules 1.36, the level scale): what everything measured in HP is multiplied by at
+ * that level; `mend`: heals and shields (a column, or the enemy table's damage column when the data points there).
+ * No column, or no level: ×1. A column the data lacks throws (never a silent ×1). */
+export function levelFactor(column: string | null | undefined, level: number | null | undefined): number {
   if (!column || level == null) return 1;
+  const col = LEVEL_COLS[column];
+  if (col) return col[clampEnemyLevel(level) - 1] ?? 1;
   if (column === 'mend') return enemyLevelRow(level).damage_mult ?? 1;
-  return LEVEL_DEAL[clampEnemyLevel(level) - 1] ?? 1;
+  throw new Error('data/rules.json output.level.' + column + ' is missing');
 }
+/** Rules 1.36 (the level scale): the factor everything measured in HP takes at this level (output.level.scale; ×1 at
+ * level 1). Read at the one place each such number is read in code (max HP, armour, Guard's soak, Strain's burn…). */
+export const scaleOf = (level: number | null | undefined): number => levelFactor('scale', level ?? 1);
 /** The Level term of a profile for a level. */
 export const levelOf = (profile: string | null | undefined, level: number | null | undefined): number => levelFactor(profileOf(profile).level, level);
 
@@ -243,11 +251,15 @@ export function deal(cb: Combat | null, by: Unit | null, target: Unit, spec: Dea
 const MEND_RULES: any = (RULES as any).mending || {};
 /** The data's gate and cap (data/rules.json mending.gate.hp, mending.cap_pct; absent: none). */
 export const MEND_GATE: { hp: number | null; cap_pct: number | null } = { hp: Number.isFinite(MEND_RULES.gate?.hp) ? Number(MEND_RULES.gate.hp) : null, cap_pct: Number.isFinite(MEND_RULES.cap_pct) ? Number(MEND_RULES.cap_pct) : null };
-/** The gate of a heal or shield on this target: its least amount before the own multipliers (0: no gate). */
-export function mendGate(spec: AmountSpec, target: Unit): number {
+/** The gate's share for a kind of heal or shield action that is not an amount block's (data/rules.json mending.gate:
+ * `whisper`, `hymn`, `intervention`…), or a profile's (output.profiles[].min_pct); 0 when the data has none. */
+export function gatePct(of: string): number { const v = Number(MEND_RULES.gate?.[of]); return Number.isFinite(v) ? v : profileOf(of).min_pct ?? 0; }
+/** The gate of a heal or shield on this target: its least amount before the own multipliers (0: no gate). The HP it
+ * counts up to (mending.gate.hp, a level 1 number) is × scale at the giver's level (rules 1.36). */
+export function mendGate(spec: AmountSpec, target: Unit, by: Unit | null = null): number {
   const pct = spec.min_pct ?? profileOf(spec.profile).min_pct ?? 0; if (!(pct > 0)) return 0;
-  const counted = spec.gate_hp === null ? target.maxHp : Math.min(target.maxHp, spec.gate_hp ?? MEND_GATE.hp ?? Infinity);
-  return Math.ceil(pct * counted); // the gate rounds up
+  const counted = spec.gate_hp === null ? target.maxHp : Math.min(target.maxHp, spec.gate_hp ?? (MEND_GATE.hp != null ? MEND_GATE.hp * scaleOf(by?.level ?? target.level) : Infinity));
+  return Math.ceil(pct * counted - 1e-9); // the gate rounds up (a whole number stays whole: 0.2 × 1.6 × 125 is 40, not 41)
 }
 /** An amount with the gate applied after its Stat × Level product, before the own multipliers (and the plus). */
 function gatedRaw(spec: AmountSpec, by: Unit | null, ctx: AmountCtx, gate: number): number {
@@ -259,9 +271,26 @@ function gatedRaw(spec: AmountSpec, by: Unit | null, ctx: AmountCtx, gate: numbe
 /** Give healing or a shield: the amount (amountOf), then the heal sink or the shield sink (which apply the receiver's
  * multiplier and their hooks). The percent gate (mendGate) and the cap are here, once. Returns what the sink returned. */
 export function mend(cb: Combat | null, by: Unit | null, target: Unit, spec: AmountSpec & { kind: 'heal' | 'shield' }, ctx: AmountCtx & { /** the heal's kind for 'heal_in' (stim, sigil, soul, prayer…) */ healKind?: string; /** a shield that adds to the one standing */ stack?: boolean; /** Classes 3.0 P11: a shield on this layer, at most `holders` units carrying one giver's */ layer?: string; holders?: number; /** a Miracle: past the cap */ uncapped?: boolean } = {}): { amount: number; restored: number; revived: boolean; shield: number } {
-  const gate = mendGate(spec, target), raw = gate > 0 ? gatedRaw(spec, by, ctx, gate) : amountOf(spec, by, ctx).raw;
+  const gate = mendGate(spec, target, by), raw = gate > 0 ? gatedRaw(spec, by, ctx, gate) : amountOf(spec, by, ctx).raw;
   if (spec.kind === 'shield') { const v = grantShield(cb, target, raw, by, { stack: !!ctx.stack, ...(ctx.healKind ? { kind: ctx.healKind } : {}), ...(ctx.layer ? { layer: ctx.layer, holders: ctx.holders } : {}) }); return { amount: raw, restored: 0, revived: false, shield: v }; }
   const cap = !ctx.uncapped && MEND_GATE.cap_pct != null ? Math.floor(MEND_GATE.cap_pct * target.maxHp) : undefined;
   const r = healUnit(cb, target, raw, by, ctx.healKind || 'heal', cap != null ? { cap } : {});
   return { amount: raw, restored: r.restored, revived: r.revived, shield: 0 };
+}
+/** What mendSized would give before the sink (a preview, or a number a source hands on): the gate (and, for a heal, the
+ * cap) applied to a number already sized. The same arithmetic as mend: the gate rounds up, the cap floors. */
+export function gatedAmount(kind: 'heal' | 'shield', n: number, gate: { of: string; own?: number } | null, target: Unit | null | undefined, by: Unit | null = null): number {
+  if (!target || !(n > 0)) return n; // nothing to gate: a word that heals nothing stays nothing
+  const pct = gate ? gatePct(gate.of) * (gate.own ?? 1) : 0;
+  let v = Math.max(n, pct > 0 ? mendGate({ kind, base: 0, min_pct: pct }, target, by) : 0);
+  if (kind === 'heal' && MEND_GATE.cap_pct != null) v = Math.min(v, Math.floor(MEND_GATE.cap_pct * target.maxHp));
+  return v;
+}
+/** A heal or shield a source has already sized (its base × Stat × Level × own multipliers), given through the one gate
+ * and the cap (heal-shield-percent-spec.md section 4): `gate` names the gate's share (gatePct: a profile, or a kind of
+ * prayer) and the product of the source's own multipliers (stage, shape, Line), which the gate takes as well, so the
+ * least amount is share × min(target max HP, the gate's HP) × own. No gate: null. */
+export function mendSized(cb: Combat | null, by: Unit | null, target: Unit, kind: 'heal' | 'shield', n: number, gate: { of: string; own?: number } | null, ctx: Parameters<typeof mend>[4] = {}): ReturnType<typeof mend> {
+  const pct = gate ? gatePct(gate.of) * (gate.own ?? 1) : 0;
+  return mend(cb, by, target, { kind, base: Math.max(0, n), round: 'none', min_pct: pct > 0 ? pct : 0 }, ctx);
 }

@@ -224,6 +224,6 @@ describe('rules 1.19: the same school twice in one design (defined, shelved)', (
     const f = heart(); const d = give(f.pc, { school: 'status', option: 'shaken', school2: 'status', option2: 'shaken', modules: [] }); begin(f, d, { aim: '6,5' });
     expect(f.foe.conds?.shaken).toBe(3); expect(f.cb.log.join('\n').match(/is Shaken/g)!.length).toBe(1);
     let pushed = false; for (let s = 1; s < 40 && !pushed; s++) { const g = heart(); const e = give(g.pc, { school: 'control', option: 'push', school2: 'control', option2: 'push', modules: [] }); g.g.rng.state = s * 7919; begin(g, e, { aim: '6,5' }); if (/holds its ground/.test(g.cb.log.join('\n'))) continue; expect(g.foe.pos).toBe('10,5'); pushed = true; } expect(pushed).toBe(true); // 3, then 1 more (a natural 20 still saves)
-    const h = heart(['6,5'], ['4,5']); const b = give(h.pc, { school: 'buff', option: 'heal', school2: 'buff', option2: 'heal', modules: [] }); h.unit(h.pcs[1].id).hp = 300; begin(h, b, { aim: '4,5' }); expect(h.unit(h.pcs[1].id).hp).toBe(300 + 5 + 2); // 7 × 0.8, then half (rules 1.20)
+    const h = heart(['6,5'], ['4,5']); const b = give(h.pc, { school: 'buff', option: 'heal', school2: 'buff', option2: 'heal', modules: [] }); h.unit(h.pcs[1].id).hp = 300; begin(h, b, { aim: '4,5' }); expect(h.unit(h.pcs[1].id).hp).toBe(300 + Math.ceil(0.2 * 0.8 * 145) + Math.ceil(0.2 * 0.8 * 0.5 * 145)); // 11.3 × 0.8, then half: each under the gate (rules 1.36: 20% × its own multipliers, counted to 145)
   });
 });

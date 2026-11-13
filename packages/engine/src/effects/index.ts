@@ -22,9 +22,9 @@ export { uses, scopeOf, stampOf, usesLabel, sessionN, restN, dayOf, roundNow, SC
 export { turnAp, grantPerkAp, bankAp, apDebt, pushAp, refusedGift, AP_BASE, AP_MAX, AP_MIN, PERK_AP_CAP, AP_DEBT_CAP, type ApLine } from './ap';
 export { applyDamage, healUnit, grantShield, hostileSrc, PAST_SHIELDS, pastShields, type DamageSrc, type DamageResult } from './damage';
 // the one formula (output.ts): amounts, armour, the one way in (the stacking rule is re-exported by tactics.ts, as before)
-export { PROFILES, PAIRS, profileOf, pairOf, statTerm, statOf, levelFactor, levelOf, openAmount, closeAmount, amountOf, armourAgainst, landed, deal, mend, term, factorOf,
+export { PROFILES, PAIRS, profileOf, pairOf, statTerm, statOf, levelFactor, levelOf, scaleOf, openAmount, closeAmount, amountOf, armourAgainst, landed, deal, mend, mendSized, gatedAmount, gatePct, mendGate, term, factorOf,
   type Profile, type Pair, type AmountSpec, type AmountCtx, type Amount, type AmountKind, type ArmourKind, type DealSpec, type DealCtx, type DealResult } from './output';
-export { MENDING, mendFactor, mendFactorOf, dealFactorOf, flatLevelOf, noteTended, tendedLately, TEND_ROUNDS, TEND_NOTICE, MEDIC, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, RALLY_HEAL, FIELD_REPAIR_HEAL, kitHeal } from './mending';
+export { MENDING, mendFactor, mendFactorOf, dealFactorOf, flatLevelOf, noteTended, tendedLately, TEND_ROUNDS, TEND_NOTICE, MEDIC, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, STIM_PCT, RALLY_HEAL, FIELD_REPAIR_HEAL, kitHeal } from './mending';
 // amount blocks (step a6): the numbers items deal, heal and shield with, from their data
 export { itemAmount, amountMult, amountBlock, amountSpecOf, amountHome, type AmountBlock } from './amounts';
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';

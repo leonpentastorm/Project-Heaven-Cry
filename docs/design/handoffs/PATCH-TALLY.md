@@ -109,7 +109,10 @@ Detail: `damage-step-magic.md`, `outburst-rework-2.md`.
 | **Rules 1.26, the re-fit** | | A healer's turn **all in** on 1.25 Soldier-turns (146 / 132 / 122 / 99% measured at levels 1, 5, 10, 20), a normal share about 1.0: Healing given 0.87 × (1 + 0.06 per point of Insight over 1 and of Empathy). Inverse and Shell read a landed Soul Stat (`soul_mend`) |
 | **Rules 1.27, the heal re-fit** (Leon on 0.23.0: "we might have over-nerfed the healing") | | A healer's turn **all in** on **2.0 Soldier-turns** (234 / 211 / 195 / 158%), a normal share about 1.6: every heal and shield ×1.6 by its dial (Healing given 1.392 ×, the Soul shields 1.296 ×, the Sigil boon 1.17 ×; Faith ×1.51, capped where a Hymn turn heals 2.5 Soldier-turns). The medic's kit ×1.6 through Healing given. A Recruit with no Soul skill: a stage-4 Mend heals 15 at level 1 (it was 9; 6 at stage 1). A heal by a caster with no points in its skill is never under half of a normal share's (a floor; it binds nowhere today). Enemy healers unchanged |
 
-Detail: `heal-shield-pass.md`, `defence-step.md`.
+| **Rules 1.36 (Classes 3.0 step 7b): heals and shields in percent of HP** | | Balanced in percent of the reference character's HP a whole turn, all in: the Mender 65, an off-heal (Buff, MEND) 45, a Whisper 15, a Hymn's turn 65 at most; **a gate** (every 2-AP heal or shield at least 20% of its target, counted to 145 × scale; Whisper 13.3%, Hymn and intervention 33.3%), **a cap** (no single heal over half the target's bar); a stim 20% of the target; Faith's shield the strongest (Sanctuary's pool 40); the Recruit's quick heal 25 (it was 9) |
+| **Rules 1.36: the level scale** | A hit grew ×1.6 over a career (40 at level 1, 64 at 20); HP ×3 | A plain hit grows **×7.5** (40 at level 1, 60 / 103 / 299 at 5 / 10 / 20); **everything measured in HP grows with it** (max HP 145 / 233 / 441 / 2,086 for the reference rifleman; a Soldier 1,188 HP at 20, a Boss 6,957); every ratio, to-hit, Defense, MP unchanged; level 1 identical |
+
+Detail: `heal-shield-pass.md`, `defence-step.md`, `classes-3.0-step-7b.md`.
 
 ## 7. Faith (rules 1.21, 1.22)
 

@@ -11,7 +11,7 @@
 // To measure properly (more fights, both shares, every level): REFIT_MEASURE=1 (refit-measure.test.ts).
 import { describe, it, expect } from 'vitest';
 import { RULES, SIGIL, MODULE, WEAPON, ENEMY, profileOf, statTerm } from '../src';
-import { measure, yardOf, soldierTurnAt } from './balance/refit-measure';
+import { measure, yardOf, soldierTurnAt, refHpAt } from './balance/refit-measure';
 import { inventory } from './balance/heal-measure';
 
 const B: any = (RULES as any).balance, C = B.ceilings, TOL = B.tolerance, LEVELS: number[] = B.levels;
@@ -54,12 +54,12 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
 
   it('rules 1.27 (the heal re-fit): the Sigil healer\'s turn (MEND · CONDENSE · SEEK) all in sits on the healer\'s ceiling; a Hymn turn\'s healing (Warm Hands and Health) is never past its cap', () => {
     const H = C.healer_turn, at = (rows: any[], re: RegExp) => rows.find((q) => re.test(q.what))?.pctNow ?? 0;
-    const sig = LEVELS.map((lv) => at(inventory('sigil_s', 'allin', lv, soldierTurnAt(lv)), /MEND · CONDENSE · SEEK \(3/));
+    const sig = LEVELS.map((lv) => at(inventory('sigil_s', 'allin', lv, refHpAt(lv)), /MEND · CONDENSE · SEEK \(3/)); // rules 1.36: percent of the reference HP
     const mean = sig.reduce((a, b) => a + b, 0) / sig.length;
     expect(mean, 'the Sigil boon all in, levels ' + LEVELS.join(', ') + ': ' + sig.join(' / ') + ' (dial: output.profiles.sigil_mend.k)').toBeGreaterThanOrEqual(H.allin * (1 - TOL.mean));
     expect(mean).toBeLessThanOrEqual(H.allin * (1 + TOL.mean));
     for (const [i, x] of sig.entries()) { expect(x, 'level ' + LEVELS[i]).toBeGreaterThanOrEqual(H.allin * (1 - TOL.level)); expect(x, 'level ' + LEVELS[i]).toBeLessThanOrEqual(H.allin * (1 + TOL.level)); }
-    for (const v of ['normal', 'allin']) for (const lv of LEVELS) { const rows = inventory('faith_s', v, lv, soldierTurnAt(lv));
+    for (const v of ['normal', 'allin']) for (const lv of LEVELS) { const rows = inventory('faith_s', v, lv, refHpAt(lv));
       expect(at(rows, /Warm Hands/) + at(rows, /Whisper: Health/), 'a Hymn turn\'s healing, ' + v + ', level ' + lv + ' (dial: output.profiles.blessing_mend.k)').toBeLessThanOrEqual(H.hymn_heal_cap); }
   });
 

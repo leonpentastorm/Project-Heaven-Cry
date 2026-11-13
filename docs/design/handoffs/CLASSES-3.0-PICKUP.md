@@ -240,6 +240,20 @@ Step 7 (`docs/design/handoffs/classes-3.0-step-7.md` section 6, rules 1.33 items
    offence 79 (solo) / 83 (squad) against 70 (+13% / +19%). The balance guard was not given the three new rows (it would
    fail); the dials are `output.profiles.tend.k` and `tending.json bond.per_bond`.
 
+Step 7b (`docs/design/handoffs/classes-3.0-step-7b.md` section 5, rules 1.36 items 2300 to 2335; built on
+`worktree-agent-aa7fcf4cb4350f000`, not merged):
+1. ×7.5 read as the hit's growth: `deal` = 7.5^((L−1)/19), `scale` = new ÷ old deal (4.69 at 20); the settled block's
+   list is the deal column.
+2. The Buff heal fitted 14 → 11.3 (the off-heal line 45); the Outburst heals by soul_mend, the Sigil boon by sigil_mend
+   alone (the percent spec's question 7).
+3. The shield order by single use: Faith's Sanctuary pool 40 = 1; Tending shield 0.36; WARD Line and Inverse 0.33
+   (WARD 12 → 4.3, Inverse 10 → 7).
+4. The Mender's steady offence (79 / 84 against 70) is per_bond's, not the Ledger's: not reached (the cap 6.5 holds the
+   window). Figments: the door cannot sit 13% under the class by HP alone. Shadow per_point 0.7.
+5. The Chaplain not refitted (Smite is held to Rebuke's 20 by the validator). The Emanator katana still needs
+   FOCUS_IDS to read weapons.json.
+6. The superseded heal-band and medic-kit tests are skipped as a record; the guns guard's long-rifle top 1.13.
+
 ## 7. State when this was last touched
 
 13 Nov 2026, later: **0.25.0 is live** (hover cards everywhere, one Clear jam for two guns, the live bugs, the hooks

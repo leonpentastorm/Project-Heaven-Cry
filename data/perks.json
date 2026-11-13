@@ -99,7 +99,7 @@
     },
     {
       "id": "shrug_it_off",
-      "amounts": {"shield": {"kind": "shield", "base": 0, "per": [{"of": "max_hp", "value": 0.1}], "profile": "flat", "text": "Tier II", "provisional": true}},
+      "amounts": {"shield": {"kind": "shield", "base": 0, "per": [{"of": "max_hp", "value": 0.1}], "text": "Tier II", "provisional": true}},
       "name": "Shrug It Off",
       "tier": "acquired",
       "perk_type": "active_skill",
@@ -4226,7 +4226,7 @@
     },
     {
       "id": "clean_hands",
-      "amounts": {"shield": {"kind": "shield", "base": 0, "profile": "flat", "mults": {"pct_of_max_hp_I": 15, "pct_of_max_hp_II": 25}, "provisional": true}},
+      "amounts": {"shield": {"kind": "shield", "base": 0, "mults": {"pct_of_max_hp_I": 15, "pct_of_max_hp_II": 25}, "provisional": true}},
       "name": "Clean Hands",
       "tier": "acquired",
       "perk_type": "passive",
@@ -5797,7 +5797,7 @@
     },
     {
       "id": "field_surgeon",
-      "amounts": {"patch": {"kind": "heal", "base": 0, "per": [{"of": "max_hp", "value": 0.5}], "profile": "flat", "text": "out of a fight", "provisional": true}},
+      "amounts": {"patch": {"kind": "heal", "base": 0, "per": [{"of": "max_hp", "value": 0.5}], "text": "out of a fight", "provisional": true}},
       "name": "Field Surgeon",
       "tier": "achieved",
       "perk_type": null,

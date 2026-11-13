@@ -18,6 +18,7 @@ import { throwRangeOf } from '../../tactics';
 import { condOn, unitSave } from '../../magic';
 import { boundGame } from '../../effects/hooks';
 import { type Rng } from '../../rng';
+import { scaleOf } from '../../effects/output';
 import { apFor } from '../../effects/cost';
 
 // ---------- 11. Hamstring ----------
@@ -135,6 +136,8 @@ onHook('move_cost', (ctx: any, cb) => {
 });
 
 // ---------- 13. Half-Sword ----------
+/** Rules 1.36: the armour Half-Sword ignores, as shown (strike() scales every ignored armour by the striker's level). */
+const ignoreOf = (t: any): number => Math.round(t.num('armour_ignore', 10) * scaleOf(t.u.level));
 // A short, driven thrust: ×0.8 damage, ignores 10 armour. Point: ignores all armour. Heavy: full damage. Bare or Blunt:
 // not available (the core refuses it through the data's not_with).
 technique({
@@ -146,10 +149,10 @@ technique({
     const fx = meleeFx(t, 'thrust', { target: t.tgt.id, to: t.tgt.pos, point: p === 'point' });
     const r = strike(t, { mult: p === 'heavy' ? 1 : t.num('damage_mult', 0.8), ignoreArmour: p === 'point' ? true : t.num('armour_ignore', 10), label: 'Half-Sword' });
     if (!r.ok) { refuseFx(fx); return r.why || 'Can\'t attack that.'; }
-    t.note(p === 'point' ? 'Ignores all armour.' : 'Ignores ' + t.num('armour_ignore', 10) + ' armour.');
+    t.note(p === 'point' ? 'Ignores all armour.' : 'Ignores ' + ignoreOf(t) + ' armour.');
     return null;
   },
-  ai: (t) => (!t.tgt ? 0 : (t.tgt.armour || 0) >= t.num('armour_ignore', 10) / 2 ? 7 : 4),
+  ai: (t) => (!t.tgt ? 0 : (t.tgt.armour || 0) >= ignoreOf(t) / 2 ? 7 : 4),
 });
 
 // ---------- 14. Throw ----------

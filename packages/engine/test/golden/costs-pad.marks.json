@@ -264,7 +264,7 @@
 "pad/maul/stand": "P1 faith.acted0>true faith.apMark6>8",
 "pad/maul/stim": "P1 faith.acted0>true faith.apMark6>8",
 "pad/maul/stim-downed": "P1 faith.acted0>true faith.apMark6>7",
-"pad/maul/tech/break": "P1 attackedTurn0>true chain.ended0>true chain.last0>break chain.n0>1 chain.t0>1.2 faith.acted0>true firstShotDone0>true firstShotTurn0>true; F1 tech.break.by0>pc-c1 tech.break.cut0>6 tech.break.until0>2",
+"pad/maul/tech/break": "P1 attackedTurn0>true chain.ended0>true chain.last0>break chain.n0>1 chain.t0>1.2 faith.acted0>true firstShotDone0>true firstShotTurn0>true; F1 tech.break.by0>pc-c1 tech.break.cut0>9 tech.break.until0>2",
 "pad/maul/tech/cut": "P1 attackedTurn0>true chain.last0>cut chain.n0>1 chain.t0>1.2 faith.acted0>true firstShotDone0>true firstShotTurn0>true",
 "pad/maul/tech/lunge": "P1 attackedTurn0>true chain.last0>lunge chain.n0>1 chain.t0>1.2 faith.acted0>true firstShotDone0>true firstShotTurn0>true openerUsed0>true",
 "pad/maul/tech/sidestep": "P1 attackedTurn0>true chain.last0>sidestep chain.n0>1 chain.t0>1.2 faith.acted0>true faith.apMark6>8 moved0>true tech.charge.run.at0>3,5 tech.charge.run.dy0>-1 tech.charge.run.n0>1 tech.charge.run.t0>1.2 tech.sidestep.t0>1.2 tech.sidestep.target0>foe-0",
