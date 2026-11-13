@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Katana -->
+  <g transform="translate(0 1) rotate(-45 32 32)">
+    <path d="M-3.5 31.5 L-2 30 L15 30 L15 26.5 Q17 25.5 19 26.5 L19 30 Q45 29.5 67 25 Q49 35.5 19 35 L19 38.5 Q17 39.5 15 38.5
+             L15 35 L-2 35 L-3.5 33.5 Z"/>
+    <path d="M0 30 L3.5 35 L7 30 L10.5 35 L14 30"/>
+    <path d="M23 29.8 L23 35"/>
+  </g>
+</svg>

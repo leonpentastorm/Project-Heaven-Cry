@@ -834,7 +834,7 @@ Weapon skills and lore:
 - **Crossbow · Bolt Rest:** a Shot costs 3 AP and loads the next bolt as part of it (no separate reload while bolts are carried); an Aimed Shot costs no more than a Shot. Its signature is **Heavy Bolt**. Provisional (item 955). *"Patience, cranked."*
 - **Repeating crossbow · Volley:** 3 AP; two bolts, each with its own roll. *"An Arkvelton toy that got out of hand."*
 
-##### 7.7 Light blades: 6 types (1H, Dexterity)
+##### 7.7 Light blades: 6 types (1H, Dexterity) *(7 since rules 1.32: the katana)*
 
 | Type | Dmg | Kg | Price | Notes |
 |---|---|---|---|---|
@@ -844,6 +844,7 @@ Weapon skills and lore:
 | Legion gladius | 26 | 1.3 | 300 | |
 | ✓ Sabre | 28 | 1.5 | 400 | |
 | Kemizuchi duelling blade | 24, +1 accuracy | 1.2 | 550 | |
+| Katana (rules 1.32) | 28 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
 
 - **Combat knife · Finish It:** +50% damage against a target that is Dazed, Stunned, Bleeding or Downed. *"Every kit has one. Every story ends with one."*
 - **Throwing knives · Fan of Knives:** 3 AP; one throw each at up to two targets. *"Four problems, four solutions."*
@@ -851,6 +852,7 @@ Weapon skills and lore:
 - **Gladius · Shield Partner:** +1 Defense while your off hand holds a shield. *"Made for the second rank of a shield wall."*
 - **Sabre · Riposte:** reaction; when a melee attack misses you, strike back. *"An officer's argument."*
 - **Duelling blade · Lunge:** strike a target 2 tiles away. *"The school across town settles things with this."*
+- **Katana · Draw Cut (rules 1.32):** it lends the Draw Cut technique (draw it from the pack and strike in one action). *"The Kemizuchi schools say a blade is drawn once; the rest is follow-through."*
 
 ##### 7.8 Heavy melee: 7 types (Raw Power)
 
@@ -4412,6 +4414,31 @@ The Chaplain's own line is **125% of a rifle-turn all in** (`rules.json balance.
 measured table is in `docs/design/handoffs/classes-3.0-step-5.md`. Shield sizes (Ward 10, Sanctuary's 11) are step 7b's
 to re-fit through `amounts.ward.base` and `amounts.sanctuary_cap.base` (Faith's shield is to be the strongest: Leon).
 
+## Rules revision 1.32: the katana, and the Emanator katana held back (a test of adding a weapon by data alone)
+
+Built on 13 Nov 2026 (Leon: "add as weapon, test out our add-weapon capability in this engine"); the art is in the
+13 Nov gear delivery (`weapon-katana`, `weapon-emanator_katana`). Lead's numbers, Leon to confirm: every number here is
+PROVISIONAL (items 1950 to 1956).
+
+### 1. The katana (built: `data/weapons.json` `katana`)
+
+A long one-handed cutting blade, so a **light blade** (7.7): it hits with Dexterity and scales with Agility, 2 AP a
+strike, properties light and edge, mastery family light blades, durability 250, mod slots edge and grip, no
+requirement. Every number sits inside the family's range, nearest the **sabre** (the comparable weapon): damage 28
+(the family's top, the sabre's), 1.4 kg (sabre 1.5), 500 credits (between the sabre's 400 and the duelling blade's
+550). It lends **Draw Cut** (an existing technique: draw it from the pack and strike in one action; Bleeding on a hit
+from its edge), and has every technique its properties give (Cut, the light and edge lines). No weapon skill of its own
+(no `grants`), no martial art, no new technique (Leon shelved those for an advanced class). It is in no loot table:
+the sabre, its comparable, is in none.
+
+### 2. The Emanator katana (designed, NOT built)
+
+The Soul twin of the Evoker blade (7.11): a one-handed blade that **counts as an Emanator**, needs Will Power 3, and
+takes the Evoker blade's numbers (26 damage, 1H, 1.8 kg, 2,400 credits); each hit adds 1 to the ambient mana as every
+mana arm's does. It is **held back** because the engine cannot be told by data that a weapon counts as an Emanator: the
+focus gate reads a list written in code (`FOCUS_IDS` in `packages/engine/src/character.ts`), not the weapon's
+`counts_as_emanator` property. It goes into 7.11 and the data the day the focus list is read from data (items 1955, 1956).
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -7347,3 +7374,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1931. **Will Shield and Command leave (rules 1.31):** Will Shield (`guardian.will_shield`) is replaced by Ward and deleted with its handler; Command (an order is Authority's Call) is deleted with its handler. The old Sanctuary's combat handler is deleted; its story half is a Narrator action with no MP. PROVISIONAL.
 1932. **The Chaplain's line (rules 1.31; `rules.json balance.ceilings.chaplain_turn` 125):** the Chaplain's weapon turn with Smite, Faith all in + Dexterity, 125% of a rifle-turn (the plain rifle all in). Measured in the step 5 hand-off. PROVISIONAL.
 1933. **General engine rows (rules 1.31 section 4):** a prayer grant's item ops run when answered (any item); `reach.tile`; the zone `pool` from an amount block; predicates `not_patron`, `answered`; `say` `{patron}`; `deal` hands its amount to `{then}`; amount `element`; stat `patron_presence`. PROVISIONAL.
+1950. **The katana's family and damage (rules 1.32):** a light blade (Dexterity, 2 AP), 28 damage, the sabre's. Lead's numbers, Leon to confirm. PROVISIONAL.
+1951. **The katana's weight and price (rules 1.32):** 1.4 kg, 500 credits; durability 250, mod slots edge and grip, no requirement. Lead's numbers, Leon to confirm. PROVISIONAL.
+1952. **The katana lends Draw Cut (rules 1.32):** its `phys.teaches`; no weapon skill of its own; in no loot table (as the sabre). Lead's numbers, Leon to confirm. PROVISIONAL.
+1953. **The katana's rarity (rules 1.32):** as every weapon: none in data; a found or bought one rolls a rarity as any weapon does. PROVISIONAL.
+1954. **Items 1950 to 1956 are rules 1.32's** (after rules 1.31's block, 1900 to 1949).
+1955. **The Emanator katana's numbers (rules 1.32, not built):** 1H, 26 damage, 1.8 kg, 2,400 credits, Will Power 3, counts as an Emanator, +1 ambient mana a hit (the Evoker blade's). Lead's numbers, Leon to confirm. PROVISIONAL.
+1956. **Needs a ruling and a primitive (rules 1.32):** the Emanator katana waits for the focus list to be read from data (a weapon's `counts_as_evoker` / `counts_as_emanator`, or the Classes 3.0 `focus` block). Leon to confirm the katana goes in once it is.
