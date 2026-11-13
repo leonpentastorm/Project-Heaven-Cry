@@ -2,13 +2,16 @@
 // engine: the map's nodes and links (g.run), what the party can reach and why a node can't be taken (`reachable`,
 // `runMoveProblem`), what a node gives (`NODE_TIP`, `nodeXp`, `nodeCredits`), the panel's words (`NODE_TEXT`), the picks
 // (g.run.offers, priced by the engine), who has a level-up waiting (`levelUpDue`). RunScreen.tsx only draws it.
-import { type GameState, type RunNode, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, levelUpDue, runRetireProblem, survivalRun } from '@engine';
+import { type GameState, type RunNode, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, levelUpDue, runRetireProblem, survivalRun, gearPreview } from '@engine';
 
 export type NodeState = 'here' | 'walked' | 'reachable' | 'ahead' | 'passed';
 export interface RunNodeV { id: string; depth: number; col: number; kind: string; word: string; gate: boolean; state: NodeState; tip: string; leans: { initials: string; color: string; name: string }[]; why: string | null }
 export interface RunLinkV { from: string; to: string; walked: boolean; lit: boolean }
 export interface PartyV { id: string; name: string; level: number; hp: number; maxHp: number; credits: number; initials: string; color: string; mine: boolean; levelUp: boolean; classLine: string }
-export interface OfferCardV { i: number; id: string; name: string; rarity: string; rarityWord: string; marks: number; category: string; price: number; tip: string }
+export interface OfferCardV { i: number; id: string; name: string; rarity: string; rarityWord: string; marks: number; category: string; price: number; tip: string; lines: { key: string; label: string; value: string }[] }
+/** The path map's legend: every node kind's word, in the map's own words (data), the gate's apart. */
+export const NODE_LEGEND: { kind: string; word: string }[] = ['fight', 'elite', 'boss', 'shop', 'forge', 'training', 'shrine', 'rest', 'cache', 'event']
+  .map((k) => ({ kind: k, word: (MAP_DATA.words as Record<string, string>)[k] || k }));
 export interface OfferV { charId: string; name: string; mine: boolean; canPick: boolean; cards: OfferCardV[]; instead: number }
 export interface RunViewV {
   stage: number; depth: number; rows: number; setting: string; seed: string; state: string; title: string;
@@ -56,7 +59,8 @@ export function runView(g: GameState, me: string): RunViewV | null {
     const c = g.characters[cid];
     return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, instead: o.instead,
       cards: o.weapons.map((w, i) => ({ i, id: w.id, name: itemName(w.id), rarity: w.rarity, rarityWord: cap(w.rarity), marks: (RARITY as any)[w.rarity]?.marks || 0, category: catOf(w.id), price: w.price,
-        tip: itemName(w.id) + ' (' + cap(w.rarity) + '). ' + String((WEAPON[w.id] as any)?.text || (ITEM[w.id] as any)?.text || '') })) };
+        tip: itemName(w.id) + ' (' + cap(w.rarity) + '). ' + String((WEAPON[w.id] as any)?.text || (ITEM[w.id] as any)?.text || ''),
+        lines: c ? gearPreview(c, { id: w.id, rarity: w.rarity }).lines.filter((l) => ['hit', 'dmg', 'ap', 'door_mod'].includes(l.key)).map((l) => ({ key: l.key, label: l.label.replace(/ \(.*\)$/, ''), value: l.value })) : [] })) };
   });
   const n = r.note, nn = n ? runNode(r, n.node) : undefined;
   const note = n && nn ? {

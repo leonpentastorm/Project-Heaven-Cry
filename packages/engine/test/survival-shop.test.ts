@@ -6,7 +6,7 @@
 // The gear preview (spec item 14) gives the card's numbers from the fight's own unit build. Numbers read from data.
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, reachable, creditsOf, priceOf, counterLines, linePrice, sellValue, rollStock, faceFor, FACES, SHOP_DATA, SELL_RATE, ROUND_PRICE, emptyMagPrice,
-  gearPreview, compareGear, registerShopService, shopServices, packOf, WEAPON, ITEM, RARITY, runMoveProblem, type RunNode } from '../src';
+  gearPreview, compareGear, registerShopService, shopServices, packOf, WEAPON, ITEM, RARITY, runMoveProblem, magazineWorth, type RunNode } from '../src';
 import { survivalRoom, ownerOf } from './helpers/survival';
 import { type Pc } from './helpers/replay';
 import svJ from '../../../data/survival.json';
@@ -145,7 +145,8 @@ describe('Survival shop (rules 1.42)', () => {
     const cmp = compareGear(c, { id: gun, rarity: 'fine' });
     expect(cmp.held!.id).toBe(gun); expect(cmp.rows.find((r) => r.key === 'hit')!.diff).toBe(RARITY.fine.acc > 0 ? 'better' : 'same');
     expect(JSON.stringify(g.characters.c1)).toBe(JSON.stringify(c)); // the preview changes nothing
-    const p = gearPreview(c, { id: 'field_kit' }); expect(p.kind).toBe('item');
+    const p = gearPreview(c, { id: 'field_kit' }); expect(p.kind).toBe('item'); expect(gearPreview(c, { id: 'torch' }).kind).toBe('item');
+    expect(magazineWorth('ork_machete')).toEqual([]); // a picked blade takes no magazine (it once gave a stray plot item)
     const r = gearPreview(c, { id: 'rounds:rifle' }); expect(r.kind).toBe('ammo');
   });
 });

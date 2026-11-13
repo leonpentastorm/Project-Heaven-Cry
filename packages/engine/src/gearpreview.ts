@@ -91,7 +91,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       { key: 'fuel', label: 'Runs on', value: it.focus.fuel === 'core' ? 'mana cores' : 'MP', num: null },
     ] };
   }
-  if (it && (it.slot || it.category === 'armour' || it.category === 'shield')) {
+  if (it && (it.category === 'armour' || it.category === 'shield')) {
     const x = clone(c), slot = String(it.slot || '');
     if (slot === 'off_hand') x.offHand = { id } as any; else if (slot) x.worn = { ...(x.worn || {}), [slot]: id };
     const rng = rngFor('gear-preview', c.id + '#' + id), u = unitFromCharacter(x, '0,0', rng);
@@ -117,7 +117,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       lines: [
         ...(r?.[1] === 'mag' ? [{ key: 'rounds', label: 'Rounds', value: String((WEAPON[r[2]] as any)?.magazine ?? 0), num: (WEAPON[r[2]] as any)?.magazine ?? 0 }] : []),
         ...(cal ? [{ key: 'calibre', label: 'Calibre', value: CALIBRE_NAME[cal] || cal, num: null }] : [{ key: 'fits', label: 'Fits', value: 'any gun', num: null }]),
-        ...(users.length ? [{ key: 'used', label: 'Used by', value: users.slice(0, 3).join(', ') + (users.length > 3 ? ' and ' + (users.length - 3) + ' more' : ''), num: null }] : []),
+        ...(users.length ? [{ key: 'used', label: 'Used by', value: users.length > 2 ? users.length + ' guns' : users.join(', '), num: null }] : []),
       ] };
   }
   return { ...base, kind: 'item', category: cap(String(it?.category || 'item')), traits: [], lines: [
