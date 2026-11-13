@@ -11,6 +11,9 @@
 // at each takes one of the engine's choices by clicking it: a drill at the training ground, the shrine's first offer, a
 // grade step at the Forge, a trade, the rest's small training; and each change is checked in the state. The kit picks
 // after the gate and a cache are taken on the way.
+// The fight tally and Report a run (rules 1.47, build step 6), its own small section: after node 1 by hand the reward screen
+// shows the fight's tally (a row a character, the engine's numbers); on the summary the run's and each stage's tables, and
+// "Report a run" saves a file that holds the seed, the mode and the stage log.
 // Stages and boons (rules 1.44, build step 5), its own section after STAGE 1 CLEARED: three boon cards, one clicked (a
 // relic for the run); the next tile's cards, one clicked; stage 2's fresh map; stage 2 walked by the engine's actions
 // (run/skip) to its Boss; retire; the summary (a row a stage); keep the character as a draft; back to the room. The boon
@@ -87,6 +90,13 @@ ok('the rewards: XP and credits each, the ammunition pack (' + (r.note.ammo[c.id
 ok('a pick of three weapons, each with its rarity word and price, and credits instead', await p.locator('[data-phc-pick]').count() === 3 && /Take \d+ credits instead/.test(await p.locator('[data-phc-instead]').textContent())
   && (await p.locator('[data-phc-pick]').allTextContents()).every((t) => /(STANDARD|FINE)/.test(t) && /\d+ credits/.test(t)));
 await shot('survival-reward-pick');
+// ---------- rules 1.47 (build step 6): the fight's tally on the reward screen ----------
+{
+  const t = r.stats.fights[0].tally, row = p.locator('[data-phc-tally="fight"] [data-phc-tally-row="' + c.id + '"]');
+  const cell = async (k) => Number(await row.locator('[data-phc-tally-cell="' + k + '"]').textContent());
+  ok('the reward screen shows the fight\'s tally: a row for the character with the engine\'s damage dealt (' + t.chars[c.id].dealt + '), taken and kills', await p.locator('[data-phc-tally="fight"]').count() === 1 && t.chars[c.id].dealt > 0
+    && await cell('dealt') === t.chars[c.id].dealt && await cell('taken') === t.chars[c.id].taken && await cell('kills') === t.chars[c.id].kills && /of \d+/.test(await row.locator('[data-phc-tally-cell="aim"]').textContent()));
+}
 const want = r.offers[c.id].weapons[0];
 await p.locator('[data-phc-pick="0"]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
@@ -222,6 +232,17 @@ const sum = (await p.locator('[data-phc-summary]').textContent()).replace(/\s+/g
 ok('retire: the summary (' + sum.slice(0, 110) + '): 2 stages cleared, 30 nodes, a row a stage with its fights, foes, credits, grade steps and boons', g.run.end.how === 'retired' && g.run.end.cleared === 2
   && /2 stages cleared/.test(sum) && /30 nodes walked/.test(sum) && await p.locator('[data-phc-stage-row]').count() === 2 && sum.includes(g.run.end.stages[0].boons[cid0] ? 'Kade: ' : 'Boons'));
 await both('survival-summary');
+// ---------- rules 1.47 (build step 6): the summary's tallies and Report a run ----------
+{
+  const sumTx = await p.locator('[data-phc-tallies]').textContent(), k = g.run.stats.fights.filter((f) => f.tally);
+  ok('the summary sums the tallies: the whole run, then each stage (' + (await p.locator('[data-phc-tally]').count()) + ' tables), the run\'s dealt = the fights\' sum', await p.locator('[data-phc-tally="run"]').count() === 1 && await p.locator('[data-phc-tally="stage"]').count() === 2
+    && Number(await p.locator('[data-phc-tally="run"] [data-phc-tally-cell="dealt"]').first().textContent()) === k.reduce((n, f) => n + Object.values(f.tally.chars)[0].dealt, 0) && /WHOLE RUN/.test(sumTx));
+  const dl = p.waitForEvent('download', { timeout: 30000 });
+  await p.locator('[data-phc-report-run]').click();
+  const d = await dl, text = await (await import('node:fs/promises')).readFile(await d.path(), 'utf8'), rep = JSON.parse(text);
+  ok('Report a run saves a file (' + d.suggestedFilename() + ') that holds the seed, the mode and the stage log, the fights\' tallies and the build', d.suggestedFilename().includes(SEED) && rep.format === 'phc-run-report' && rep.seed === SEED && rep.mode === 'Survival'
+    && rep.stages.length === 2 && rep.fights.length === g.run.stats.fights.length && rep.fights[0].tally && rep.characters.length === 1 && !!rep.characters[0].gear.weapon && typeof rep.gameVersion === 'string' && rep.outcome.how === 'retired');
+}
 await p.locator('[data-phc-keep]').first().click();
 const lib = await until(p, () => (window.__phc.getState().library || []).find((x) => x.kept) || null, null, 10000).catch(() => null);
 ok('keep this character as a draft: in the library at its level (' + (lib && lib.name) + ')', !!lib && lib.kept.level === Object.values(g.characters)[0].level && lib.draft === true);
