@@ -105,11 +105,15 @@ const urg = p.locator('.phc-me-urgent');
 ok('1280×720: the urgent rows show in the mini-bar: ' + ((await urg.textContent()) || '').replace(/\s+/g, ' ').slice(0, 80), (await urg.isVisible()) && /RELOAD/.test((await urg.textContent()) || ''));
 await snap('gunner-1280');
 // The collapsed panel's mini card.
-await p.keyboard.press('h'); await pause(p, 400);
+// (each 'h' waits for the panel to change: beside other suites a press sent at once was sometimes lost, and the
+// panel stayed collapsed for the rest of the suite)
+const panelOpen = async () => !(await p.locator('button.phc-cb-show').count()); // hidden: the Show-the-panel button stands in
+const toggleH = async (open) => { for (let i = 0; i < 3 && (await panelOpen()) !== open; i++) { await p.keyboard.press('h'); await p.waitForFunction((open) => !document.querySelector('button.phc-cb-show') === open, open, { timeout: 10000 }).catch(() => {}); } };
+await toggleH(false);
 const mini = p.locator('.phc-cb-mini');
 ok('collapsed panel: the mini card carries the urgent rows', (await mini.count()) > 0 && /RELOAD/.test((await mini.textContent()) || ''));
 await snap('gunner-collapsed-1280');
-await p.keyboard.press('h'); await pause(p, 300);
+await toggleH(true);
 await p.setViewportSize(BIG);
 
 // 2. The Sigil caster: an empty core with spares → RELOAD CORE, Flux 5 → OVERLOAD SOON.
@@ -119,7 +123,6 @@ t = await rowText('charge');
 ok('Sigil: Evoker charge / 10 and spare cores, RELOAD CORE: ' + t, /EVOKER CHARGE/.test(t) && /0 \/ 10/.test(t) && /2 spare cores/.test(t) && /RELOAD CORE/.test(t));
 t = await rowText('flux');
 ok('Sigil: Flux 5 / 6 OVERLOAD SOON: ' + t, /FLUX/.test(t) && /5 \/ 6/.test(t) && /OVERLOAD SOON/.test(t));
-await youCard().locator('[data-res="charge"]').first().hover(); await pause(p, 150);
 ok('Sigil: the hint says swap core (2 AP)', /Swap core \(2 AP\)/i.test(await tipOf(youCard().locator('[data-res="charge"]'))));
 await p.mouse.move(5, 5);
 await snap('sigil-1440');
