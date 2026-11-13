@@ -25,6 +25,7 @@ const cid = Object.keys((await G()).characters)[0];
 
 // ---------- set-up: Visualization 5, the pistol, the Visualizer, cores; the design ----------
 ok('Visualization 5', (await act({ type: 'sandbox/skill', charId: cid, skill: 'visualization', points: 5 })) === null);
+await act({ type: 'sandbox/class', charId: cid, classId: 'marksman', rank: 1 }); // a door user (not the Rigger: its held count is the door's)
 await act({ type: 'sandbox/give', charId: cid, item: 'service_pistol', equip: true });
 ok('the Visualizer in the off hand', (await act({ type: 'sandbox/give', charId: cid, item: 'visualizer', equip: true })) === null);
 await act({ type: 'sandbox/give', charId: cid, item: 'standard_core', qty: 3 });
@@ -54,11 +55,12 @@ const t2 = await free(u.pos);
 const e2 = await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'wall', tile: t2 });
 u = await me(); F = await figs();
 ok('Picture a bare Wall: 3 charge (' + (e2 || 'done') + ')', !e2 && F.length === 2 && u.mg.vcharge === 2);
-const e3 = await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'double', tile: await free(u.pos) });
-ok('a third Picture is refused in words (' + e3 + ')', /Hold is full/.test(e3 || ''));
+await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'double', tile: await free(u.pos) });
 await settle(p, 300);
 const body = (await p.locator('body').textContent()) || '';
-ok('the meter line: FIGMENTS 2/2 · VISUALIZER 2/10', /FIGMENTS 2\/2/.test(body) && /VISUALIZER 2\/10/.test(body));
+ok('a third Picture is refused in words (' + ((body.match(/Hold is full[^.]*\./) || [])[0] || 'no words') + '; ' + (await figs()).length + ' held)', (await figs()).length === 2 && /Hold is full/.test(body));
+const meter = ((body.match(/FIGMENTS \d+\/\d+/) || [])[0] || '') + ' · ' + ((body.match(/VISUALIZER (\d+\/\d+|EMPTY)/) || [])[0] || '');
+ok('the meter: ' + (meter || 'none: ' + ((body.match(/HP \d+ \/ \d+ · AP.{0,160}/) || [])[0] || '')), meter === 'FIGMENTS 2/2 · VISUALIZER 2/10');
 
 // ---------- the Hound's verbs are the owner's rows (Utility) ----------
 await p.locator('[role="tab"][data-tab="utility"]').click().catch(() => {}); await settle(p, 300);
