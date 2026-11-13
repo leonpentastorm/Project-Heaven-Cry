@@ -179,18 +179,30 @@ export function tipElement(doc: Document, t: Tip): HTMLElement {
 
 type Rect = { left: number; top: number; right: number; bottom: number };
 /** Where the card goes: beside the element (left, then right), else below, else above, shifted inside the window and
- *  never over the element itself (so never under the pointer: no flicker). Pure, for the tests. */
-export function placeTip(r: Rect, b: { width: number; height: number }, W: number, H: number, gap = 6): { x: number; y: number } {
+ *  never over the element itself (so never under the pointer: no flicker). `avoid` (rules 1.46: the path map's
+ *  reachable nodes) are rects it should not cover either: beside the element first, then flipped, then slid along the
+ *  side, before falling back to the old order. Pure, for the tests. */
+export function placeTip(r: Rect, b: { width: number; height: number }, W: number, H: number, gap = 6, avoid: Rect[] = []): { x: number; y: number } {
   const clampY = (y: number) => Math.min(Math.max(4, y), Math.max(4, H - b.height - 4));
   const clampX = (x: number) => Math.min(Math.max(4, x), Math.max(4, W - b.width - 4));
-  const overlaps = (x: number, y: number) => x < r.right && x + b.width > r.left && y < r.bottom && y + b.height > r.top;
+  const hits = (q: Rect, x: number, y: number) => x < q.right && x + b.width > q.left && y < q.bottom && y + b.height > q.top;
+  const fits = (x: number, y: number) => x >= 4 && y >= 4 && x + b.width <= W - 4 && y + b.height <= H - 4 && !hits(r, x, y);
   const tries: [number, number][] = [
     [r.left - b.width - gap, clampY(r.top)],
     [r.right + gap, clampY(r.top)],
     [clampX(r.left), r.bottom + gap],
     [clampX(r.left), r.top - b.height - gap],
   ];
-  for (const [x, y] of tries) if (x >= 4 && y >= 4 && x + b.width <= W - 4 && y + b.height <= H - 4 && !overlaps(x, y)) return { x: Math.round(x), y: Math.round(y) };
+  if (avoid.length) {
+    const mid = (r.top + r.bottom) / 2, ys = [clampY(mid - b.height / 2), clampY(r.top), clampY(r.bottom - b.height)];
+    // the right side first near the left edge, the left side first near the right edge (flipped near edges)
+    const sides = r.left + r.right < W ? [r.right + gap, r.left - b.width - gap] : [r.left - b.width - gap, r.right + gap];
+    const cands: [number, number][] = [];
+    for (const x of sides) { for (const y of ys) cands.push([x, y]); for (let k = 1; k <= 8; k++) { cands.push([x, clampY(mid - b.height / 2 - k * 24)]); cands.push([x, clampY(mid - b.height / 2 + k * 24)]); } }
+    cands.push(...tries);
+    for (const [x, y] of cands) if (fits(x, y) && !avoid.some((q) => hits(q, x, y))) return { x: Math.round(x), y: Math.round(y) };
+  }
+  for (const [x, y] of tries) if (fits(x, y)) return { x: Math.round(x), y: Math.round(y) };
   // nowhere clean: the side with the most room, clamped
   const room = [r.left, W - r.right, H - r.bottom, r.top];
   const [x, y] = tries[room.indexOf(Math.max(...room))];
@@ -224,7 +236,10 @@ export function mountActionTips(doc: Document | null = typeof document !== 'unde
     clear();
     box = tipElement(doc, t); box.style.left = '-9999px'; box.style.top = '0px'; doc.body.appendChild(box); shownKey = keyOf(el);
     const r = el.getBoundingClientRect(), b = box.getBoundingClientRect(), W = doc.documentElement.clientWidth || 1024, H = doc.documentElement.clientHeight || 768;
-    const p = placeTip(r, b, W, H);
+    // rules 1.46: a container may name what its cards must not cover (data-tip-avoid: a selector inside it)
+    const zone = el.closest('[data-tip-avoid]'), sel = zone?.getAttribute('data-tip-avoid') || '';
+    const avoid = sel ? Array.from(zone!.querySelectorAll(sel)).filter((x) => x !== el).map((x) => x.getBoundingClientRect()) : [];
+    const p = placeTip(r, b, W, H, 6, avoid);
     box.style.left = p.x + 'px'; box.style.top = p.y + 'px';
     clearInterval(watch);
     // the element went away or was re-rendered under the card: close it, or redraw it with its new words

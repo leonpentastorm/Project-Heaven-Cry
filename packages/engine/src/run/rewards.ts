@@ -46,7 +46,7 @@ export function gunsOf(c: Character): string[] {
 }
 /** A magazine's worth for one gun (rule 23): a full magazine, or a magazine's capacity of loose rounds. */
 export function magazineWorth(id: string): PackItem[] {
-  const w: any = WEAPON[id]; if (!w) return [];
+  const w: any = WEAPON[id]; if (!w || w.magazine == null || !w.ammo || w.category === 'thrown') return []; // rules 1.42: a blade or a thrown thing has no magazine (it gave a stray plot item)
   return w.reload === 'loose' ? [roundsOf(w.ammo, w.magazine || 0)] : lootToPack({ item: 'mag:' + id });
 }
 /** The ammunition pack (rule 23): `n` magazines' worth for every gun carried, and the cores for a Sigil or Visualizer

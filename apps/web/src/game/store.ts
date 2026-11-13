@@ -1,7 +1,7 @@
 // Client store. The host's browser holds the authoritative GameState, applies every action through the engine,
 // runs the AI Narrator with the host's key, and sends each player their filtered view through the room relay.
 // Guests send actions to the host and render the view they get back.
-import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom, migrateLoaded, fightRulingOf } from '@engine';
+import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom, migrateLoaded, fightRulingOf, gearPreview } from '@engine';
 import { FIGHT_TIMEOUT_MS } from '../narrator/fight';
 import { newRoomPlay, testRoom } from './modes';
 import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
@@ -348,6 +348,8 @@ setTimeout(() => { const r = read(LS.room, null), invite = new URLSearchParams(l
 
 /** Testing hook: lets the end-to-end test swap in the scripted Narrator. */
 (globalThis as any).__phc = { getState, act, setNarrator, toast, go,
+  /** The engine's gear preview for a character (the survival suite checks a shop card's numbers against it). */
+  gearPreview: (charId: string, inst: { id: string; rarity?: any }) => { const c = S.game?.characters?.[charId]; return c ? gearPreview(c, inst) : null; },
   /** The host's whole game (the e2e fog check compares a guest's view with it); null on a guest's computer. */
   truth: () => hostState,
   /** The room link now: this player's role, the link's state, the last message and how long ago, the game's version. */

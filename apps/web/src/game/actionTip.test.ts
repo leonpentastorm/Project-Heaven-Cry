@@ -61,6 +61,15 @@ describe('the one hover card everywhere (Leon, live 0.24.0)', () => {
     expect(proseTip('Hide the tools (the tab on the right brings them back)').lines.map((l) => l.text)).toEqual(['Hide the tools (the tab on the right brings them back)']);
     expect(tipText(proseTip('One. Two.'))).toBe('One.\nTwo.');
   });
+  it('placeTip with rects to avoid (rules 1.46, the path map): beside the node, flipped near an edge, never over a reachable node', () => {
+    const b = { width: 300, height: 120 }, over = (p: { x: number; y: number }, q: { left: number; top: number; right: number; bottom: number }) => p.x < q.right && p.x + b.width > q.left && p.y < q.bottom && p.y + b.height > q.top;
+    const node = { left: 100, top: 300, right: 150, bottom: 350 }, next = { left: 220, top: 260, right: 270, bottom: 310 }, next2 = { left: 220, top: 380, right: 270, bottom: 430 };
+    const p = placeTip(node, b, 1280, 720, 6, [next, next2]);
+    expect(over(p, node) || over(p, next) || over(p, next2)).toBe(false);
+    const far = { left: 1200, top: 300, right: 1250, bottom: 350 }, q = placeTip(far, b, 1280, 720, 6, [{ left: 1100, top: 300, right: 1150, bottom: 350 }]);
+    expect(q.x + b.width).toBeLessThanOrEqual(1200); // flipped to the left near the right edge
+    expect(over(q, { left: 1100, top: 300, right: 1150, bottom: 350 })).toBe(false);
+  });
   it('placeTip: beside the element, inside the window, never over the element', () => {
     const r = { left: 900, top: 100, right: 1000, bottom: 130 };
     expect(placeTip(r, { width: 300, height: 80 }, 1024, 768)).toEqual({ x: 594, y: 100 }); // left of it

@@ -2326,7 +2326,7 @@ if _sv is not None:
     if "nodes" in _sv:
         for _k in ("shop", "forge", "training", "shrine", "event", "cache", "rest"):
             if not isinstance(_sv["nodes"].get(_k), str) or not _sv["nodes"][_k].strip(): errors.append(f"survival:nodes.{_k}: the panel's text")
-    for _k in ("run", "stage", "rounds", "tiers", "share", "map_size", "xp", "credits", "ammo_pack", "rewards", "nodes", "tips", "pools", "names"):
+    for _k in ("run", "stage", "rounds", "tiers", "share", "map_size", "xp", "credits", "ammo_pack", "rewards", "nodes", "tips", "pools", "names", "shop", "sell_rate"):
         if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
     # Rules 1.43 (build step 4a, in-run progression): the grade ladder, the Forge, the run's cap, the Relic properties
     # and boons (relic items, their ops from the closed lists), the trainings, the shrine, the lasting picks, the trades.
@@ -2394,6 +2394,72 @@ if _sv is not None:
             if not any(_st.get("pool") in (_b.get("pools") or []) for _b in _sv.get("boons") or []): errors.append(f"{_w}: its pool {_st.get('pool')!r} has no boon")
     for _k in ("grade_up", "forge", "armour_fit", "boon_cap", "graft", "train", "training", "shrine", "lasting", "trades", "boon_pick", "world"):
         if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
+    # Rules 1.42 (spec rules 25, 27, section 3.4): every always-stocked id has a price through credits.ts priceOf's doors
+    # (a weapon's or item's price_credits, a special round's price_mult, a calibre's round price, a magazine's), and every
+    # face's portrait and backdrop is a catalog id or marked pending, with fallbacks that exist.
+    _wr = (data.get("rules") or {}).get("weapons_rules") or {}
+    _cal = {c.get("id"): c.get("price_credits") for c in _wr.get("calibres") or []}
+    _wmap = {w.get("id"): w for w in (data.get("weapons") or {}).get("items", [])}
+    _imap = {i.get("id"): i for i in (data.get("items") or {}).get("items", [])}
+    _mp = _wr.get("magazine_prices") or {}
+    if _sv.get("shop") is not None:
+        if not (_num(_mp.get("default")) and isinstance(_mp.get("by_unit"), dict) and isinstance(_mp.get("by_category"), dict)): errors.append("rules:weapons_rules.magazine_prices: by_unit, by_category and a default price")
+        if (_wr.get("special_round_price") or {}).get("calibre") not in _cal: errors.append("rules:weapons_rules.special_round_price.calibre: not a calibre")
+        def _priced(_id):
+            if _id.startswith("rounds:"): return _num(_cal.get(_id[7:])) and _cal[_id[7:]] > 0
+            _d = _wmap.get(_id) or _imap.get(_id)
+            if not _d or _d.get("stock") is False: return False
+            return (_num(_d.get("price_credits")) and _d["price_credits"] > 0) or (_num(_d.get("price_mult")) and _d["price_mult"] > 0)
+        _shelves = set()
+        for _s in _sv["shop"].get("always") or []:
+            _shelves.add(_s.get("shelf"))
+            for _e in _s.get("ids") or []:
+                if not _priced(_e.get("id", "")): errors.append(f"survival:shop.always.{_s.get('shelf')}: {_e.get('id')!r} has no price (price_credits, price_mult or a calibre's round price)")
+                if not (isinstance(_e.get("per"), int) and _e["per"] >= 1): errors.append(f"survival:shop.always.{_s.get('shelf')}: {_e.get('id')!r} needs `per`, a whole number of 1 or more")
+        for _need in ("guns", "calibres", "special", "thrown", "cores", "supplies", "restock"):
+            if _need not in _shelves: errors.append(f"survival:shop.always: the {_need!r} shelf is missing (spec rule 25)")
+        _calsold = {_e.get("id")[7:] for _s in _sv["shop"].get("always") or [] for _e in _s.get("ids") or [] if str(_e.get("id", "")).startswith("rounds:")}
+        for _c in _cal:
+            if _c not in _calsold: errors.append(f"survival:shop.always: the calibre {_c!r} is not sold (every calibre the engine knows, spec rule 25)")
+        for _c in (_sv["shop"].get("stock") or {}).get("item_categories") or []:
+            if _c in ("mod", "armour"): errors.append(f"survival:shop.stock.item_categories: {_c!r} is the Forge's (spec rule 44)")
+    if (_sv.get("sell_rate") or {}).get("rate") is not None and not (_num(_sv["sell_rate"]["rate"]) and 0 < _sv["sell_rate"]["rate"] < 1): errors.append("survival:sell_rate.rate: a share between 0 and 1")
+    if _sv.get("faces") is not None:
+        _catp = root.parent / "art" / "catalog.json"
+        _cat = json.loads(_catp.read_text()) if _catp.exists() else {}
+        _ids_all = set()
+        for _sec in ("characters", "illustrations", "patrons", "gear", "maps", "sprites", "emblems"):
+            if isinstance(_cat.get(_sec), dict): _ids_all |= set(_cat[_sec].keys())
+        _chars = set((_cat.get("characters") or {}).keys()); _ills = set((_cat.get("illustrations") or {}).keys())
+        _setids = {s.get("id") for s in _sv.get("settings") or []}
+        for _f in (_sv["faces"].get("items") or []):
+            _w = f"survival:faces.{_f.get('id')}"
+            for _k in ("name", "role", "node"):
+                if not isinstance(_f.get(_k), str) or not _f[_k].strip(): errors.append(f"{_w}: needs a {_k}")
+            for _k in ("portrait", "backdrop"):
+                if not _f.get(_k): errors.append(f"{_w}: needs a {_k} catalog id")
+                elif _f[_k] not in _ids_all and _f.get(_k + "_pending") is not True: errors.append(f"{_w}: {_k} {_f[_k]!r} is not in art/catalog.json; mark it {_k}_pending until it lands")
+            if _f.get("fallback") is not None and _f["fallback"] not in _chars: errors.append(f"{_w}: fallback {_f['fallback']!r} is not a portrait in art/catalog.json characters")
+            if _f.get("fallback") is None and not _f.get("fallback_patron"): errors.append(f"{_w}: needs a fallback portrait (or fallback_patron)")
+            if _f.get("backdrop_fallback") is not None and _f["backdrop_fallback"] not in _ills: errors.append(f"{_w}: backdrop_fallback {_f['backdrop_fallback']!r} is not in art/catalog.json illustrations")
+            for _s in _f.get("settings") or []:
+                if _s not in _setids: errors.append(f"{_w}: setting {_s!r} is not a setting")
+            for _k in ("greet", "bought", "cant_afford", "sold", "sold_to", "gave", "leave"):
+                _l = (_f.get("lines") or {}).get(_k)
+                if not (isinstance(_l, list) and _l and all(isinstance(x, str) and x.strip() for x in _l)): errors.append(f"{_w}: lines.{_k}: one line or more")
+            if _f.get("provisional") is not True: errors.append(f"{_w}: provisional: true")
+        for _s in _setids:
+            if not any(_f.get("node") == "shop" and _s in (_f.get("settings") or []) for _f in _sv["faces"].get("items") or []): errors.append(f"survival:faces: the setting {_s!r} has no shopkeeper (spec 3.4)")
+        # Rules 1.46 (build step 4b): every safe node is a full-screen place with a face
+        for _nk in ("shop", "forge", "training", "shrine", "rest", "event"):
+            if not any(_f.get("node") == _nk for _f in _sv["faces"].get("items") or []): errors.append(f"survival:faces: no face stands at a {_nk!r} node (rules 1.46: every safe node is a full-screen place)")
+    # Rules 1.46 (build step 4b, spec rule 47): where gives are made in a run
+    _gv = _sv.get("give")
+    if _gv is not None:
+        _kinds = {"fight", "elite", "boss", "shop", "forge", "training", "shrine", "rest", "cache", "event"}
+        if not _gv.get("where") or not set(_gv["where"]) <= _kinds - {"fight", "elite", "boss"}: errors.append("survival:give.where: node kinds with no fight")
+        if not isinstance(_gv.get("at_start"), bool): errors.append("survival:give.at_start: true or false")
+        if _gv.get("provisional") is not True: errors.append("survival:give: provisional: true")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:

@@ -18,7 +18,13 @@
 // relic for the run); the next tile's cards, one clicked; stage 2's fresh map; stage 2 walked by the engine's actions
 // (run/skip) to its Boss; retire; the summary (a row a stage); keep the character as a draft; back to the room. The boon
 // pick, the next tile and the summary are saved at 1280 and 1920 (SHOTS, DSF=2).
-import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT } from './lib.mjs';
+// Rules 1.46 (build step 4b): node 1's shots are pinned (the d20 an 18, as chaplain.mjs does: it cannot lose); the shop's
+// Upgrade tab takes 4a's grade step at the full price; its Give tab says solo there is nobody to give to; every safe node
+// opens full screen (the Forge, a training ground, a shrine, a crossroads, a rest; each saved at 1280 and 1920 and checked
+// for clipping) and "To the path map" walks out of it; the path map's hover card covers no reachable node. Then C, two
+// browsers: a host and a guest walk to a shop, the host gives credits and a graded weapon with a mod, the guest sees each
+// arrive (a toast, the purse, the pack line whole), the guest marks Ready and the host closes the shop for both.
+import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SEED = 'PHC-0001';
@@ -30,6 +36,10 @@ const run = () => p.evaluate(() => window.__phc.getState().game?.run);
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const screen = () => p.evaluate(() => window.__phc.getState().screen);
 // a screenshot when the screen change has played out (no fight screen still fading under the run's)
+// The engine's dice (packages/engine/src/rng.ts, as in cutins.mjs and chaplain.mjs): a state whose next d20 is v.
+function nextR(r) { let t = (r.state = (r.state + 0x6d2b79f5) | 0); t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+const dieSeed = (v) => { for (let s = 1; s < 1e7; s++) { const r = { state: s }; if (1 + Math.floor(nextR(r) * 20) === v) return s; } return 1; };
+const D18 = dieSeed(18);
 const shot = async (name) => { await p.waitForFunction(() => !document.querySelector('.phc-cb-dock'), null, { timeout: 30000 }).catch(() => {}); await settle(p, 1200); return p.screenshot({ path: OUT + name + '.png' }); };
 
 // ---------- the lobby: a character, then Start the run ----------
@@ -63,7 +73,10 @@ const far = r.nodes.find((n) => n.depth === 3);
 await p.locator('[data-phc-node="' + far.id + '"]').click();
 const tip1 = await until(p, () => (document.querySelector('.phc-atip')?.textContent || '').trim() || null, null, 5000).catch(() => '');
 ok('an unlit node can\'t be taken and its card says why ("' + tip1.slice(0, 90) + '")', (await run()).at === null && /can.t reach/.test(tip1));
-await shot('survival-path-map');
+const covers = await p.evaluate(() => { const t = document.querySelector('.phc-atip')?.getBoundingClientRect(); if (!t) return ['no card'];
+  return [...document.querySelectorAll('[data-phc-node][data-phc-state="reachable"]')].map((n) => [n.getAttribute('data-phc-node'), n.getBoundingClientRect()]).filter(([, b]) => t.left < b.right && b.left < t.right && t.top < b.bottom && b.top < t.bottom).map(([id]) => id); });
+ok('rules 1.46: the path map\'s hover card sits beside its node and covers no reachable node (' + covers.join(', ') + ')', !covers.length);
+await shot("survival-path-map"); await p.setViewportSize({ width: 1920, height: 1080 }); await shot("survival-path-map-1920"); await p.setViewportSize({ width: 1280, height: 720 });
 
 // ---------- node 1 by hand ----------
 await p.locator('[data-phc-node="' + lit[0] + '"]').click();
@@ -75,6 +88,7 @@ for (let i = 0; i < 400; i++) {
   if (s === 'over') break;
   if (s !== 'mine' || !(await p.locator('text=ACTION POINTS').count()) || await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'); return d ? d.getAttribute('data-lock') || '' : 'none'; })) { await settle(p, 120); continue; }
   await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
+  await p.evaluate((s) => { window.__phc.getState().game.rng.state = s; }, D18); // rules 1.46: node 1 cannot lose (every shot an 18)
   const conf = p.getByRole('button', { name: 'Confirm', exact: true });
   try { if (await conf.isEnabled({ timeout: 30000 })) await conf.click({ timeout: 30000 }); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 30000 }); } catch { /* the turn moved on under us */ }
   await settle(p, 60);
@@ -108,9 +122,120 @@ ok('… and the map lights the node\'s links', JSON.stringify((await p.locator('
 await act({ type: 'run/skip' }); // a refused action comes back as the player's toast, in the engine's words
 const plain = await until(p, () => window.__phc.getState().toast?.text || null, null, 10000).catch(() => '');
 ok('run/skip with no fight on is refused: "' + plain + '"', plain === 'No fight is under way.');
-let sawLevelUp = false, sawPanel = 0, guard = 0;
+await p.waitForFunction(() => !window.__phc.getState().toast, null, { timeout: 15000 }).catch(() => {}); // rules 1.46: the refusal's toast is gone before the shop opens (it showed over the shop)
+// ---------- the shop (rules 1.42, spec 8.3): full screen, at 1280 and 1920 ----------
+let sawShop = false;
+const fitsCheck = () => p.evaluate(() => {
+  const bad = [];
+  if (document.documentElement.scrollWidth > innerWidth + 1) bad.push('the page scrolls sideways');
+  for (const el of document.querySelectorAll('[data-phc-card-name], [data-phc-keeper-name], [data-phc-tab], [data-phc-price]')) if (el.scrollWidth > el.clientWidth + 1) bad.push('clipped: ' + el.textContent.slice(0, 30));
+  const cards = [...document.querySelectorAll('[data-phc-card]')].map((e) => e.getBoundingClientRect());
+  for (let i = 0; i < cards.length; i++) for (let j = i + 1; j < cards.length; j++) { const a = cards[i], b = cards[j]; if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) bad.push('cards overlap'); }
+  return bad.slice(0, 4);
+});
+async function shopChecks() {
+  sawShop = true;
+  await p.waitForSelector('[data-phc-fullscreen]', { timeout: 30000 });
+  ok('a shop node opens the shop full screen: the keeper, the tabs, the purse; the path map is gone', await p.locator('[data-phc-pathmap]').count() === 0
+    && /\S/.test(await p.locator('[data-phc-keeper-name]').textContent()) && await p.locator('[role="tab"]').count() === 5 && /\d/.test(await p.locator('[data-phc-purse-n]').textContent()));
+  await p.locator('[data-phc-tab="give"]').click();
+  ok('rules 1.46: the Give tab opens; solo it says there is nobody to give to', await p.locator('[data-phc-give-none]').count() === 1 && /nobody to give to/.test(await p.locator('[data-phc-give]').textContent()));
+  await p.locator('[data-phc-tab="always"]').click();
+  const cal = await p.locator('[data-phc-shelf="calibres"] [data-phc-card]').count();
+  ok('Always in stock: every calibre on its own shelf (' + cal + ')', cal === 12);
+  await settle(p, 1400); await p.screenshot({ path: OUT + 'survival-shop-1280.png' });
+  ok('at 1280: nothing clipped, nothing overlaps (' + (await fitsCheck()).join('; ') + ')', !(await fitsCheck()).length);
+  // buy ammunition
+  const me = Object.values((await G()).characters)[0];
+  const c0 = me.credits, rifle = p.locator('[data-phc-card="rounds:rifle"]');
+  const price = Number((await rifle.locator('[data-phc-price]').textContent()).replace(/\D/g, ''));
+  await rifle.locator('[data-phc-buy]').click();
+  await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, c0, { timeout: 30000 });
+  const c1 = Object.values((await G()).characters)[0].credits;
+  ok('buy rifle rounds at the card\'s price (' + price + '): ' + c0 + ' → ' + c1 + ', logged', c0 - c1 === price && /bought/.test(await p.locator('[data-phc-visit-log]').textContent()));
+  // today's gear: a card's numbers are the engine's
+  await p.locator('[data-phc-tab="gear"]').click();
+  const gear = await p.locator('[data-phc-shelf="gear"] [data-phc-card]').evaluateAll((l) => l.map((e) => ({ key: e.getAttribute('data-phc-card'), id: e.getAttribute('data-phc-card-id'), hit: e.querySelector('[data-phc-num="hit"]')?.textContent || null, dmg: e.querySelector('[data-phc-num="dmg"]')?.textContent || null, price: Number(e.querySelector('[data-phc-price]').textContent.replace(/\D/g, '')) })));
+  const sh = (await run()).shop, gun = gear.find((x) => x.hit);
+  const pv = gun ? await p.evaluate(([cid, id, rar]) => window.__phc.gearPreview(cid, { id, rarity: rar }), [me.id, gun.id, sh.stock.find((s) => s.key === gun.key).rarity]) : null;
+  ok('a gear card\'s numbers equal the engine\'s preview (' + (gun ? gun.id + ': ' + gun.hit + ', ' + gun.dmg : 'none') + ')', !!pv && pv.lines.find((l) => l.key === 'hit').value === gun.hit && pv.lines.find((l) => l.key === 'dmg').value === gun.dmg);
+  await p.locator('[data-phc-card="' + gun.key + '"]').hover();
+  ok('hovering a card fills the compare panel (holding against this)', await p.locator('[data-phc-compare]').count() === 1);
+  await settle(p, 400); await p.screenshot({ path: OUT + 'survival-shop-gear-1280.png' });
+  // a purse too short says why
+  const credits = Object.values((await G()).characters)[0].credits, dear = gear.filter((x) => x.price > credits).sort((a, b) => b.price - a.price)[0];
+  if (dear) {
+    const status = await p.locator('[data-phc-card="' + dear.key + '"] [data-phc-status]').textContent();
+    await p.locator('[data-phc-card="' + dear.key + '"] [data-phc-buy]').click();
+    const t = await until(p, () => window.__phc.getState().toast?.text || null, null, 10000).catch(() => '');
+    ok('a purse too short says why, on the card and when tried ("' + status + '" / "' + t + '")', status === 'Short ' + (dear.price - credits) + ' credits.' && t === status);
+  } else ok('a purse too short says why (every piece affordable: nothing to test)', false);
+  await p.waitForFunction(() => !window.__phc.getState().toast, null, { timeout: 15000 }).catch(() => {}); // its toast gone before the next shots
+  // sell one (the weapon picked after node 1), then buy a rolled weapon
+  await p.locator('[data-phc-tab="sell"]').click();
+  const rows = await p.locator('[data-phc-sell]').evaluateAll((l) => l.map((e) => ({ idx: e.getAttribute('data-phc-sell'), v: Number(e.querySelector('[data-phc-sell-value]')?.textContent.replace(/\D/g, '') || 0), btn: !!e.querySelector('[data-phc-sell-btn]') })));
+  const best = rows.filter((x) => x.btn).sort((a, b) => b.v - a.v)[0], s0 = Object.values((await G()).characters)[0].credits;
+  await p.locator('[data-phc-sell="' + best.idx + '"] [data-phc-sell-btn]').click();
+  if (await p.locator('[data-phc-sell-yes]').count()) await p.locator('[data-phc-sell-yes]').click();
+  await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, s0, { timeout: 30000 });
+  ok('sell one at the row\'s price (+' + best.v + ')', Object.values((await G()).characters)[0].credits - s0 === best.v);
+  await p.locator('[data-phc-tab="gear"]').click();
+  const now = Object.values((await G()).characters)[0].credits, cheap = gear.filter((x) => (WEAPONISH.test(x.id)) && x.price <= now).sort((a, b) => a.price - b.price)[0];
+  if (cheap) {
+    await p.locator('[data-phc-card="' + cheap.key + '"] [data-phc-buy]').click();
+    await p.waitForFunction((k) => window.__phc.getState().game.run.shop?.stock.find((s) => s.key === k)?.sold, cheap.key, { timeout: 30000 });
+    ok('buy a rolled weapon (' + cheap.id + ' for ' + cheap.price + '): it is marked "Sold to" and in the pack', /Sold to/.test(await p.locator('[data-phc-card="' + cheap.key + '"] [data-phc-status]').textContent())
+      && (Object.values((await G()).characters)[0].pack || []).some((x) => (x.weapon || x.item || x.id) === cheap.id));
+  } else ok('buy a rolled weapon: none affordable (' + now + ' credits; ' + gear.map((x) => x.id + ' ' + x.price).join(', ') + ')', false);
+  // rules 1.46: the Upgrade tab is 4a's grade step at the full price (a weapon in the pack; the Forge grades the one in hand)
+  await p.evaluate(() => { const c = Object.values(window.__phc.getState().game.characters)[0]; c.credits += 5000; }); // a test purse, so the step is affordable
+  await p.locator('[data-phc-tab="upgrade"]').click();
+  const ups = await p.locator('[data-phc-service]').evaluateAll((l) => l.map((e) => ({ key: e.getAttribute('data-phc-service'), why: e.hasAttribute('data-phc-service-why'), price: Number(e.querySelector('[data-phc-price]')?.textContent.replace(/\D/g, '') || 0), lines: e.querySelectorAll('[data-phc-upgrade-lines] b').length })));
+  const up = ups.find((x) => !x.why && x.key !== 'grade:main') || ups.find((x) => !x.why);
+  ok('the Upgrade tab: a card per weapon or focus, each with its price here and what changes (' + ups.map((x) => x.key + ' ' + x.price + (x.why ? ' refused' : '')).join(', ') + ')', !!up && up.lines > 0);
+  await settle(p, 400); await p.screenshot({ path: OUT + 'survival-shop-upgrade-1280.png' });
+  if (up) {
+    const u0 = Object.values((await G()).characters)[0].credits;
+    await p.locator('[data-phc-service="' + up.key + '"] [data-phc-upgrade-go]').click();
+    await p.waitForFunction((c) => Object.values(window.__phc.getState().game.characters)[0].credits !== c, u0, { timeout: 30000 });
+    const after = Object.values((await G()).characters)[0];
+    ok('a shop upgrade clicked (' + up.key + '): the full price paid (' + up.price + '), the step logged, a second refused in words', u0 - after.credits === up.price && /Fine now/.test(await p.locator('[data-phc-visit-log]').textContent())
+      && /One grade step a visit/.test(await p.locator('[data-phc-shelf="upgrade"]').textContent()));
+  }
+  await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 600); await p.screenshot({ path: OUT + 'survival-shop-upgrade-1920.png' });
+  await p.locator('[data-phc-tab="give"]').click(); await settle(p, 400); await p.screenshot({ path: OUT + 'survival-shop-give-solo-1920.png' });
+  await p.setViewportSize({ width: 1280, height: 720 });
+  // the shelves scroll inside their region: no card's price or button sits under the visit's strip
+  await p.locator('[data-phc-tab="gear"]').click(); await settle(p, 300);
+  const under = await p.evaluate(async () => { const foot = document.querySelector('[data-phc-visit-log]').getBoundingClientRect().top, bad = [];
+    for (const b of document.querySelectorAll('[data-phc-buy]')) { b.scrollIntoView({ block: 'nearest' }); await new Promise((r) => setTimeout(r, 30)); const r = b.getBoundingClientRect(); if (r.bottom > foot) bad.push(b.getAttribute('data-phc-buy')); }
+    return bad; });
+  ok('every Buy button, scrolled to, sits above the visit\'s strip (' + under.join(', ') + ')', !under.length);
+  await p.locator('[data-phc-tab="always"]').click();
+  await p.setViewportSize({ width: 1920, height: 1080 });
+  await settle(p, 900); await p.screenshot({ path: OUT + 'survival-shop-1920.png' });
+  ok('at 1920: nothing clipped, nothing overlaps (' + (await fitsCheck()).join('; ') + ')', !(await fitsCheck()).length);
+  await p.locator('[data-phc-tab="gear"]').click(); await settle(p, 500); await p.screenshot({ path: OUT + 'survival-shop-gear-1920.png' });
+  await p.setViewportSize({ width: 1280, height: 720 });
+  await p.locator('[data-phc-leave]').click();
+  await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
+  ok('Leave the shop: back on the path map', await p.locator('[data-phc-pathmap]').count() === 1);
+}
+const WEAPONISH = /^(?!.*(kit|ration|parts|torch|flare|beads|chalk|toolbox|spirits|cigarettes|plate|shield|buckler|pavise|essence|stim|core$|musek))/;
+let sawLevelUp = false, guard = 0;
+const PLACES = ['forge', 'training', 'shrine', 'event', 'rest'], placeShots = {};
+/** A full-screen place's layout check: no clipped words, no overlapping cards, no card under the visit's strip. */
+const placeFits = () => p.evaluate(() => {
+  const bad = [], foot = document.querySelector('[data-phc-visit-log]')?.getBoundingClientRect().top ?? Infinity;
+  if (document.documentElement.scrollWidth > innerWidth + 1) bad.push('the page scrolls sideways');
+  for (const el of document.querySelectorAll('[data-phc-keeper-name], [data-phc-tab], [data-phc-price]')) if (el.scrollWidth > el.clientWidth + 1) bad.push('clipped: ' + el.textContent.slice(0, 30));
+  const cards = [...new Set([...document.querySelectorAll('[data-phc-choice], [data-phc-service]')].map((e) => e.closest('[data-phc-service]') || e))].map((e) => e.getBoundingClientRect());
+  for (let i = 0; i < cards.length; i++) for (let j = i + 1; j < cards.length; j++) { const a = cards[i], b = cards[j]; if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) bad.push('cards overlap'); }
+  const first = document.querySelector('[data-phc-choice], [data-phc-service]'); if (first && first.getBoundingClientRect().top > foot) bad.push('the first card is under the strip');
+  return bad.slice(0, 4);
+});
 // rules 1.43: the route from here that passes the most of the five progression nodes (then the most fights)
-const WANT = ['training', 'shrine', 'forge', 'event', 'rest'];
+const WANT = ['training', 'shrine', 'forge', 'event', 'rest', 'shop'];
 const route = (() => { const by = Object.fromEntries(r.nodes.map((n) => [n.id, n])); let best = { n: -1, path: [] };
   const walk = (id, path) => { const pp = [...path, id], n = by[id]; if (!n.links.length) { const k = new Set(pp.map((x) => by[x].kind).filter((x) => WANT.includes(x))); const sc = k.size * 10 + Math.min(4, pp.filter((x) => by[x].kind === 'fight').length); if (sc > best.n) best = { n: sc, path: pp }; return; } for (const l of n.links) walk(l, pp); };
   for (const l of by[r.at].links) walk(l, []); return best.path; })();
@@ -129,13 +254,26 @@ const choose = async (pre) => {
 while (guard++ < 40) {
   r = await run(); if (!r || r.state === 'boon' || r.state === 'over') break;
   if (r.state === 'map') {
+    if (await p.locator('[data-phc-place]').count()) { await p.locator('[data-phc-leave]').click(); await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }); } // back at a place after its pick (a crate)
     const ids = await p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')));
     const kinds = Object.fromEntries(r.nodes.map((n) => [n.id, n.kind]));
     const next = ids.find((id) => route.includes(id)) || ids.find((id) => !['fight', 'elite', 'boss'].includes(kinds[id])) || ids[0];
     await p.locator('[data-phc-node="' + next + '"]').click();
     await p.waitForFunction((id) => window.__phc.getState().game.run.at === id, next, { timeout: 30000 });
-    if (kinds[next] === 'shop') { await p.waitForSelector('[data-phc-note]'); if (/will stand here/.test(await p.locator('[data-phc-note]').textContent())) sawPanel++; }
     const k = kinds[next], cid = (await G()).characters && Object.keys((await G()).characters)[0];
+    if (PLACES.includes(k)) await p.waitForSelector('[data-phc-place="' + k + '"]', { timeout: 30000 }).catch(() => {});
+    if (PLACES.includes(k) && await p.locator('[data-phc-place]').count()) { // rules 1.46: every safe node opens full screen (seen on arrival)
+      if (!placeShots[k]) {
+        placeShots[k] = true;
+        ok('rules 1.46: the ' + k + ' opens full screen: its face, its tabs, large cards, the Give tab; the path map is gone', await p.locator('[data-phc-pathmap]').count() === 0 && /\S/.test(await p.locator('[data-phc-keeper-name]').textContent())
+          && await p.locator('[data-phc-tab="give"]').count() === 1 && !!(await p.locator('[data-phc-keeper-portrait]').getAttribute('src').catch(() => '')));
+        await p.mouse.move(2, 2); // no hover card over the shot
+        await settle(p, 900); await p.screenshot({ path: OUT + 'survival-place-' + k + '-1280.png' });
+        const bad1 = await placeFits(); await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 700); await p.screenshot({ path: OUT + 'survival-place-' + k + '-1920.png' });
+        const bad2 = await placeFits(); await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
+        ok('… at 1280 and 1920 nothing is clipped, overlapping or covered (' + [...bad1, ...bad2].join('; ') + ')', !bad1.length && !bad2.length);
+      }
+    }
     if (k === 'training' && !done.training) {
       const { before, after, key } = await choose('drill:'), w = key && key.slice(6);
       done.training = !!key && (after.characters[cid].phys?.drill?.[w] || 0) - (before.characters[cid].phys?.drill?.[w] || 0) === 300;
@@ -160,6 +298,13 @@ while (guard++ < 40) {
       done.rest = !!key && after.run.visit.did[cid] === 1;
       ok('a rest: its small training clicked (' + key + ')', done.rest);
     }
+    if (await p.locator('[data-phc-place]').count()) { // rules 1.46: every safe node is a full-screen place; walk out to the map
+      await p.locator('[data-phc-leave]').click();
+      await p.waitForSelector('[data-phc-pathmap]', { timeout: 30000 });
+    }
+  } else if (r.state === 'shop') {
+    if (!sawShop) await shopChecks();
+    else { await p.locator('[data-phc-leave]').click(); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'shop', null, { timeout: 30000 }); }
   } else if (r.state === 'fight') {
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
@@ -185,8 +330,9 @@ while (guard++ < 40) {
 }
 r = await run(); g = await G();
 ok('the level-up waits on the map at level 3 (the class is earned there), and Back to the map returns', sawLevelUp && Object.values(g.characters)[0].level >= 3);
-ok('the shop (build step 4) still says what will be there (' + sawPanel + ' seen)', sawPanel >= 1);
 ok('rules 1.43: the route passed a training ground, a shrine, a Forge, a crossroads and a rest, each choice landed (' + JSON.stringify(done) + ')', ['training', 'shrine', 'forge', 'event', 'rest'].every((k) => done[k]));
+ok('a shop was on the way and opened full screen', sawShop);
+ok('rules 1.46: every safe node on the route opened full screen (' + Object.keys(placeShots).join(', ') + ')', ['forge', 'training', 'shrine', 'event', 'rest'].every((k) => placeShots[k]));
 ok('the whole stage walked to the Boss: 15 nodes, STAGE 1 CLEARED', r.state === 'boon' && r.path.length === 15 && /STAGE 1 CLEARED/.test(await p.locator('[data-phc-cleared]').textContent()));
 
 // ---------- rules 1.44 (build step 5): the boon, the next tile, stage 2, retire, the summary ----------
@@ -217,6 +363,7 @@ for (let i = 0; i < 120; i++) {
   let e = null;
   if (r.state === 'map') { const here = r.nodes.find((n) => n.id === r.at), next = here ? here.links[0] : r.nodes.find((n) => n.depth === 1).id; e = await act({ type: 'run/move', node: next }); }
   else if (r.state === 'fight') e = await act({ type: 'run/skip' });
+  else if (r.state === 'shop') e = await act({ type: 'run/leave' }); // rules 1.42: a shop on the way (solo: leaving is the close)
   else if (r.state === 'reward') { for (const id of Object.keys(r.offers || {})) e = e || await act({ type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(r.lasting || {})) e = e || await act({ type: 'run/take', charId: id, choice: 0 }); }
   if (e) { ok('stage 2 walked: ' + e, false); break; }
   await settle(p, 40);
@@ -251,4 +398,77 @@ await p.waitForFunction(() => window.__phc.getState().screen === 'room', null, {
 const last = await p.locator('[data-phc-run]').textContent().catch(() => '');
 ok('back in the room: the lobby with the last run\'s score and a way back to its summary ("' + last.replace(/\s+/g, ' ').slice(0, 120) + '")', /The last run/.test(last) && /retired after 2 stages cleared and 30 nodes walked/.test(last) && await p.locator('[role="radiogroup"]').count() === 1 && await p.locator('[data-phc-to-summary]').count() === 1);
 ok('no page errors (' + p.errors.slice(0, 3).join(' | ') + ')', !p.errors.length);
+await p.context().close();
+
+// ---------- C. rules 1.46 (build step 4b): two browsers, a give seen arriving, ready and the host's close ----------
+const h = await player(browser, 'host-c', { play: 'survival' }), gu = await player(browser, 'guest-c', { play: 'survival' });
+await h.context().addInitScript((seed) => { try { localStorage.setItem('phc.testRoom', '1'); localStorage.setItem('phc.testSeed', seed); } catch { /* */ } }, SEED);
+for (const x of [h, gu]) await x.setViewportSize({ width: 1280, height: 720 });
+const create = async (page, name) => {
+  await click(page, 'Create a character');
+  await page.getByPlaceholder('What the squad calls you').fill(name);
+  await page.locator('main button[aria-pressed]').first().click();
+  await click(page, 'Next ›');
+  await page.locator('button', { hasText: /^Use .* ›$/ }).first().click();
+  await click(page, 'Next ›'); await click(page, 'Next ›'); await click(page, 'Next ›');
+  await page.locator('button', { hasText: 'Line soldier' }).first().click();
+  await click(page, 'Next ›'); await lockIn(page);
+  await page.waitForSelector('text=✓ LOCKED IN');
+};
+await hostAs(h, 'Leon');
+await h.waitForSelector('[role="radiogroup"]');
+const code = (await h.locator('text=/ROOM [A-Z0-9]{6}/').first().textContent()).match(/ROOM ([A-Z0-9]{6})/)[1];
+await gu.goto(BASE + '/?room=' + code); await gu.getByPlaceholder('Leon').fill('Mai'); await click(gu, 'Join ›'); await gu.waitForSelector('text=The squad');
+await create(h, 'Kade'); await create(gu, 'Ha');
+await h.locator('button[data-phc-start]').click();
+await until(gu, () => !!document.querySelector('[data-phc-run-screen]'), null, 30000).catch(() => false);
+const HG = () => h.evaluate(() => window.__phc.getState().game), GG = () => gu.evaluate(() => window.__phc.getState().game);
+const actOn = (page, a) => page.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
+let hr = (await HG()).run;
+// the way to the first shop: a path through the links from the first row
+const byId = Object.fromEntries(hr.nodes.map((n) => [n.id, n])), shopN = hr.nodes.filter((n) => n.kind === 'shop').sort((a, b) => a.depth - b.depth)[0];
+const way = (() => { const back = (id) => { const n = byId[id]; if (n.depth === 1) return [id]; const prev = hr.nodes.find((x) => x.links.includes(id) && back(x.id)); return prev ? [...back(prev.id), id] : null; }; return back(shopN.id) || []; })();
+for (let i = 0; i < 80; i++) {
+  hr = (await HG()).run; if (hr.state === 'shop' || hr.state === 'over') break;
+  let e = null;
+  if (hr.state === 'map') { const next = way[hr.path.length]; e = await actOn(h, { type: 'run/move', node: next }); if (!e) { await settle(h, 150); e = await actOn(gu, { type: 'run/move', node: next }); } }
+  else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
+  else if (hr.state === 'reward') { for (const id of Object.keys(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: 'credits' }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
+  if (e) { ok('C: walked to the shop: ' + e, false); break; }
+  await settle(h, 120);
+}
+await h.evaluate(() => window.__phc.go('run')).catch(() => {}); await gu.evaluate(() => window.__phc.go('run')).catch(() => {});
+await h.waitForSelector('[data-phc-fullscreen]', { timeout: 60000 }); await gu.waitForSelector('[data-phc-fullscreen]', { timeout: 60000 });
+ok('C: both browsers stand in the shop, full screen (node ' + shopN.id + ')', (await HG()).run.state === 'shop');
+// a graded weapon with a mod in Kade's pack (a test hand-off: the host's state, as the purse above)
+let hg = await HG(); const kade = Object.values(hg.characters).find((c) => c.owner === hg.hostId), ha = Object.values(hg.characters).find((c) => c.id !== kade.id);
+await h.evaluate(([cid, gun]) => { const c = window.__phc.getState().game.characters[cid]; c.pack = [...(c.pack || []), { id: gun, weapon: gun, name: 'Kade\'s old rifle', qty: 1, kind: 'weapon', rarity: 'fine', mods: ['mod_red_dot'] }]; c.credits += 400; }, [kade.id, kade.weapon]);
+await h.locator('[data-phc-tab="give"]').click();
+await h.waitForSelector('[data-phc-give-to]');
+ok('C: the Give tab: the party as cards (' + (await h.locator('[data-phc-give-to]').allTextContents()).join(', ') + '), what can\'t be given greyed with its reason', await h.locator('[data-phc-give-to="' + ha.id + '"]').count() === 1
+  && /never given/.test(await h.locator('[data-phc-give-row="train"]').textContent()));
+const haC0 = (await GG()).characters[ha.id].credits;
+await h.locator('[data-phc-give-row="credits"]').click();
+for (let i = 0; i < 3; i++) await h.locator('[data-phc-give-send] [aria-label="More"]').click(); // 100 → 130 → 140 → 150? (steps of 10 above 10)
+const n = Number((await h.locator('[data-phc-give-n]').textContent()).replace(/\D/g, ''));
+ok('C: the button reads what it does ("' + (await h.locator('[data-phc-give-go]').textContent()) + '")', new RegExp('^Give ' + n + ' credits to Ha$').test(await h.locator('[data-phc-give-go]').textContent()));
+await h.screenshot({ path: OUT + 'survival-shop-give-1280.png' });
+await h.locator('[data-phc-give-go]').click();
+const toastC = await until(gu, () => window.__phc.getState().toast?.text || null, null, 15000).catch(() => '');
+ok('C: the guest sees the credits arrive: a toast ("' + toastC + '") and the purse (' + haC0 + ' → ' + (await GG()).characters[ha.id].credits + ')', /gives Ha \d+ credits/.test(toastC) && (await GG()).characters[ha.id].credits === haC0 + n);
+const idx = (await HG()).characters[kade.id].pack.findIndex((x) => x.name === 'Kade\'s old rifle');
+await h.locator('[data-phc-give-row="pack:' + idx + '"]').click();
+await h.locator('[data-phc-give-go]').click();
+await gu.waitForFunction((cid) => (window.__phc.getState().game.characters[cid].pack || []).some((x) => x.name === 'Kade\'s old rifle'), ha.id, { timeout: 30000 }).catch(() => {});
+const got = ((await GG()).characters[ha.id].pack || []).find((x) => x.name === 'Kade\'s old rifle');
+ok('C: the graded weapon arrives whole on the guest\'s side (Fine, its mod, its own pack line)', !!got && got.rarity === 'fine' && JSON.stringify(got.mods) === '["mod_red_dot"]' && got.qty === 1);
+ok('C: both browsers\' visit logs say who gave what', /gives Ha/.test(await gu.locator('[data-phc-visit-log]').textContent()) && /gives Ha/.test(await h.locator('[data-phc-visit-log]').textContent()));
+await h.setViewportSize({ width: 1920, height: 1080 }); await settle(h, 600); await h.screenshot({ path: OUT + 'survival-shop-give-1920.png' }); await h.setViewportSize({ width: 1280, height: 720 });
+await gu.locator('[data-phc-leave]').click();
+await h.waitForFunction((pid) => !!window.__phc.getState().game.run.ready?.[pid], (await GG()).players.find((x) => x.name === 'Mai').id, { timeout: 30000 }).catch(() => {});
+ok('C: the guest marks Ready to leave; the host sees READY and the shop stays open', (await HG()).run.state === 'shop' && /READY/.test(await h.locator('[data-phc-party][data-phc-ready="1"]').first().textContent().catch(() => '')));
+await h.locator('[data-phc-close]').click();
+await gu.waitForSelector('[data-phc-pathmap]', { timeout: 30000 }).catch(() => {});
+ok('C: the host closes the shop: both browsers are back on the path map', (await HG()).run.state === 'map' && await gu.locator('[data-phc-pathmap]').count() === 1 && await h.locator('[data-phc-pathmap]').count() === 1);
+ok('C: no page errors (' + [...h.errors, ...gu.errors].slice(0, 3).join(' | ') + ')', !h.errors.length && !gu.errors.length);
 await browser.close();

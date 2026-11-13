@@ -12,6 +12,7 @@ import survivalJ from '../../../../data/survival.json';
 import { seedFrom } from '../rng';
 import type { FightTally } from './tally';
 import { type PathNode, pathMap, mapNodes, MAP_DATA } from './map';
+import type { ShopState } from './shop';
 
 /** The run's start numbers (data/survival.json `run`: start_credits, dead_return_hp, first_setting; rules 1.41). */
 export const survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string } = (survivalJ as any).run;
@@ -32,9 +33,10 @@ export const modeOf = (id: string | null | undefined): ModeDef | undefined => MO
 export const playOf = (g: { settings: { play?: PlayMode } }): PlayMode => g.settings.play || OLD_SAVE_PLAY;
 
 /** Where a run stands. `map`: choosing the next node; `fight`: a fight at the node under way; `reward`: picks waiting
- * after a won fight (offers); `boon` and `tile`: after a Boss (the stage is cleared; rules 1.44: each character picks a
- * boon, then the squad picks the next tile); `over`: lost or retired. */
-export type RunPhase = 'map' | 'fight' | 'reward' | 'boon' | 'tile' | 'over';
+ * after a won fight (offers); `shop`: a shop open full screen at the node (rules 1.42, `shop`); `boon` and `tile`:
+ * after a Boss (the stage is cleared; rules 1.44: each character picks a boon, then the squad picks the next tile);
+ * `over`: lost or retired. */
+export type RunPhase = 'map' | 'fight' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
 /** A node of a stage's path map (spec section 9's shape, so a node can later hold a designed room): run/map.ts. */
 export type RunNode = PathNode;
 /** A tile of the world the party walks (rule 32): a stage's setting and its boon pool. */
@@ -64,7 +66,8 @@ export interface RunStock { id: string; price: number; sold?: string }
  * node rolled on entry. `steps`: grade steps taken (rule 37's one a visit); `did`: the node's one choice taken (a rest's
  * or a training ground's trainings, the shrine's offer, the Crossroads' trade), by character; `stock`: the Forge's
  * rolled stock; `trades`: the Crossroads' offered trades; `patron`: the shrine's patron. */
-export interface RunVisit { node: string; kind: string; steps: Record<string, number>; did: Record<string, number>; stock?: RunStock[]; trades?: string[]; patron?: string }
+export interface RunVisit { node: string; kind: string; steps: Record<string, number>; did: Record<string, number>; stock?: RunStock[]; trades?: string[]; patron?: string;
+  /** Rules 1.46: what was done here, newest first (the full-screen place's log strip). */ log?: string[] }
 /** An armour-or-item pick (rules 1.43, spec rule 41): three things, at least two lasting; or nothing. */
 export interface RunLasting { node: string; items: { id: string; lasting: boolean }[] }
 /** A Survival run (rule 36): `g.run`. Every field is changed only by a `run/*` action. */
@@ -89,8 +92,8 @@ export interface RunState {
   ready: Record<string, boolean>;
   /** The picks on offer after a won fight, by character id; null when none (step 5 adds the boons and tiles). */
   offers: Record<string, RunOffer> | null;
-  /** The shop or Forge open at this node; null when none (step 4). */
-  shop: unknown | null;
+  /** The shop or Forge open at this node; null when none (rules 1.42, run/shop.ts). */
+  shop: ShopState | null;
   /** The fights' tally for Report a run (rule 35; step 6 adds the damage by system). */
   stats: { fights: RunFight[] };
   /** Characters dead in the fight under way (rule 5: out for that fight), by id. */
@@ -140,6 +143,7 @@ export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by:
   if (!g.players.some((p) => p.id === by)) return 'Only a player in the room picks the way.';
   if (r.state === 'fight') return 'The fight is on.';
   if (r.state === 'reward') return 'Take your picks first: the squad moves on when everyone has.';
+  if (r.state === 'shop') return 'Leave the shop first: everyone marks Ready to leave, or the host closes it.';
   if (r.state === 'boon') return 'Pick your boons first: the next tile comes after them.';
   if (r.state === 'tile') return 'Pick the next tile first: its map comes with it.';
   if (r.state !== 'map') return 'The stage is over.';
