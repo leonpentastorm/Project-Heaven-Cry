@@ -1,4 +1,4 @@
-# Class Roster, Revision 4: nine mechanics, four tiers of using them (draft 1, 13 Nov 2026)
+# Class Roster, Revision 4: nine mechanics, four tiers of using them (draft 2, 13 Nov 2026)
 
 A proposal. **Nothing here is built.** It replaces `class-roster-rev3-proposal.md` when Leon accepts it; until then
 Revision 3 is in force. Written by the lead from a design talk with Leon (13 Nov 2026). Every name marked
@@ -19,6 +19,21 @@ squared classes, 27 cross-core hybrids).
 4. **Everyone can use all nine mechanics.** "A Channeler can throw on a melee weapon and use Momentum. The 9 base
    classes use these 9 base mechanics BETTER, then the squared class uses it BESTEST. A mixed class uses 2 mechanics
    from 2 trees at once and is better than just randomly picking up a blade."
+
+**Leon's answers to draft 1 (13 Nov 2026), built into this draft:**
+
+5. **Bulwark and Breaker: the new names are better.** (The other names stand as suggested until he says otherwise.)
+6. **Talk is nobody's class move.** "All classes have a gamma skill, all classes can talk if they raise it far
+   enough, no reason for only one of the 9 to have a special talk mechanic." So no class move is a speech action:
+   Silver Tongue (Rigger) and Command (Chaplain) are out; speech is the nine Calls, on their one ladder.
+7. **Reactions must be looked at before anyone gets more of them.** "I've seen a turn where my character Riposted 4
+   times and downed [an enemy] while they missed me 3 times." Section 2.1.
+8. **Everyone can wait and pray. The Chaplain has special prayers, and attacks with the power of the god, with the
+   patron at his side.** The wait is not shortened for the class.
+9. **The Mender bonds for free, as a function of the class:** one free Bond action. Anyone else who wants to heal
+   puts points in the tree and pays AP to Bond.
+10. **The budget (15% / 30% / 5% and a bridge) is used as written;** playtests find the real targets later.
+11. **Design everything, then build it as one big patch.** (The lead advised one system a version; Leon's call.)
 
 ## 2. The four tiers
 
@@ -42,6 +57,25 @@ normal line, the base class about 15% above it, the squared class about 30% abov
 two systems about 5% above the door and the rest of its worth in the bridge. All of them stay under the system's
 all-in ceiling in the contract.
 
+### 2.1 Reactions, made real (Leon's ruling 7)
+
+The spec already says it ("Reactions": one a round, counted; an Answer "uses your reaction"), and Riposte's own
+text says "Uses your reaction". Four Ripostes in one enemy turn is therefore either a bug or a hole in the rule; the
+engine is being checked (bug list, "Riposte fired four times"). Whatever the cause, this revision needs the rule
+stated so that it holds for every class:
+
+1. **One reaction a round, for everyone, and everything that happens outside your turn spends it:** an opportunity
+   attack, every Answer (Riposte, Parry, Keep Back, Interpose, Shield Wall), an Overwatch or held shot, Heart
+   Overwatch, a class reaction (Shrug It Off, Duck and Roll, Take the Weight), a perk's reaction.
+2. **A reaction never triggers a reaction.** A Riposte can't be Riposted, and its hit starts no chain.
+3. **More reactions come from one place only:** the Skirmisher's Reflex (two a round), and items that say so. A
+   Call that gives one (Cue) gives exactly one, used before the giver's next turn.
+4. **A reaction that attacks is a plain attack** (no technique riders unless its own text gives one), so that a
+   second reaction is worth about a third of a turn and can be priced.
+5. Protective reactions still work while Suppressed (as today); attacking and moving ones do not.
+
+Reflex stays in this draft **on the condition** that rule 1 is true in the engine first.
+
 ## 3. The nine, at a glance
 
 | Attribute | Door (alpha skill) | Mechanic and meter | Fuel | Base class (now → suggested) | State |
@@ -56,8 +90,9 @@ all-in ceiling in the contract.
 | Determination | Will Power | **Outbursts** and Strain | MP | Channeler (kept) | built |
 | Virtue | Faith | **Blessings**, Devotion and the wait | none | Guardian → **Chaplain** | built; the class changes |
 
-A correction to what the lead said in the talk: **Calls stay everyone's.** They are the nine gamma skills' speech
-actions (rules 1.13), one for each attribute, so no class owns them; the Chaplain's is Order, through Authority.
+**Calls stay everyone's (Leon's ruling 6).** They are the nine gamma skills' speech actions (rules 1.13), one for
+each attribute, on one ladder by the skill's points. No class has a speech move of its own, and none is needed: a
+character of any class who raises a gamma skill talks as well as its points say.
 
 ## 4. The nine classes
 
@@ -98,7 +133,7 @@ the six moves (kept from Revision 3, moved in, or NEW); what leaves; and the rul
 | --- | --- | --- |
 | I | Lunge (1 Momentum) | kept |
 | I | Shove (1 AP) | kept |
-| II | Riposte (reaction, 1 Momentum) | kept |
+| II | Riposte (reaction, 1 Momentum): **the one reaction of the round**, section 2.1 | kept; the count made real |
 | II | Lingering Dread (a kill Shakes those who saw it) | kept |
 | III | Finisher (3 AP, all Momentum) | kept |
 | III | Unstoppable (once a scene) | kept |
@@ -112,7 +147,7 @@ the six moves (kept from Revision 3, moved in, or NEW); what leaves; and the rul
 
 - **The door:** ranged techniques and light blades, Pressure on what you shoot, Heat on the gun. As built
   (Physical 2.0).
-- **Better:** **Reflex: two reactions a round** *(new; everyone else has one)*; the first reload each turn 1 AP
+- **Better:** **Reflex: two reactions a round** *(new; everyone else has one; on the condition of section 2.1)*; the first reload each turn 1 AP
   cheaper; the six moves. The class is about handling the weapon and not being where the shot lands. **Aiming is
   Perception's** and moves there.
 
@@ -194,15 +229,16 @@ the six moves (kept from Revision 3, moved in, or NEW); what leaves; and the rul
 | --- | --- | --- |
 | I | Double (2 AP): the False Image, now the Double form made at once within range for 2 rounds, outside your held count | kept, renamed; it is a Figment now, not a Sigil |
 | I | Field Fix (2 AP): clear a jam, restore an item, repair a robot, drone or turret for 20 | moved in from the Infiltrator |
-| II | Silver Tongue (2 AP): Brain save or lose 2 AP next turn | kept (Charisma: the class's talking move) |
+| II | **Salvage** (1 AP): from a wreck, a destroyed machine or one of your own Figments next to you, take back 1 core charge, or repair a machine or Figment of your side for 15 | NEW (replaces Silver Tongue: talk is no class's move, ruling 6) |
 | II | **Overclock** (1 AP, once a turn): one Figment, robot, drone or turret of your side acts once now. A machine pushed this way takes 5 damage | NEW |
 | III | Sleight (once a scene, 1 AP): swap places with a Figment or a willing ally within 6 | kept |
 | III | **Jury-Rig** (3 AP, once a scene): from a wreck, a dropped weapon or a barricade next to you, build a turret that fights for 3 rounds with that weapon's plain attack | NEW (replaces Rewrite) |
 
-- **Leaves:** Rewrite (flipping a buff is neither making nor mending; to the move pool for the Mirage or the
-  Hexer), Blind and Slow (above), Read (to the Operative).
-- **What this costs the old fantasy:** the Trickster as "the liar" is one move (Silver Tongue) and the Double. The
-  liar comes back whole in the squared class.
+- **Leaves:** Silver Tongue (ruling 6: what it did is what Charisma's Call is for), Rewrite (flipping a buff is
+  neither making nor mending; to the move pool for the Mirage or the Hexer), Blind and Slow (above), Read (to the
+  Operative).
+- **What this costs the old fantasy:** the Trickster as "the liar" is the Double and whatever its Charisma lets it
+  say, like anyone's. The liar comes back whole in the squared class.
 - **Squared, the Mirage, breaks:** "a Figment has no turn of its own." Its Figments act by themselves, and enemies
   must save to tell which is real.
 
@@ -211,12 +247,13 @@ the six moves (kept from Revision 3, moved in, or NEW); what leaves; and the rul
 *Nobody in this squad falls alone.* Empathy, Camaraderie, Insinuation. **The pure healer and support (Leon).**
 
 - **The door (new):** **Tending** (the support list of nine doors 5.4: mend, shield, lift a condition, move an
-  ally; opened by Empathy, which carries the healing multiplier) and **Bonds**. A Bond (1 AP, an ally within 6 who
-  can hear you; it lasts the fight) is a tie between you and one ally: **your tending reaches a Bonded ally at any
+  ally; opened by Empathy, which carries the healing multiplier) and **Bonds**. A Bond (**1 AP for anyone**, an ally within 6
+  you can see; it lasts the fight) is a tie between you and one ally: **your tending reaches a Bonded ally at any
   range you can see, and at +20% (PROVISIONAL)**; you know their HP, conditions and who is aiming at them; when a
   Bonded ally goes Down you take 1 Strain. Bonds held: 1 at Empathy 1, 2 at Empathy 5, 3 at Empathy 8. Fuel: MP.
   Medical kits and stims are gear anyone uses; they are not this class's.
-- **Better:** one more Bond; **Bonds with the whole squad are made free when the fight starts**; feelings travel
+- **Better:** one more Bond; **Bonding is free: one free Bond action a turn, with whoever the Mender wants**
+  (Leon's ruling 9; everyone else pays the 1 AP); feelings travel
   along a Bond (the 25 feelings of rules 1.8: the Channeler pours its own into an Outburst, the Mender gives one to
   an ally); the six moves.
 
@@ -259,20 +296,22 @@ the six moves (kept from Revision 3, moved in, or NEW); what leaves; and the rul
 
 - **The door:** anyone with Faith 3 prays: Whispers, Hymns and their wait, Devotion, Witnessed, the Miracle. As
   built (rules 1.6 to 1.22).
-- **Better:** **its prayers are for other people**: a Whisper aimed at an ally doesn't use up the turn's Whisper
-  *(new, PROVISIONAL: once a turn)*; the Hymn's wait is 1 round shorter; Witnessed is shared with allies within 3.
-  It spends **no MP and no Strain**: one pool, Devotion, and the wait.
+- **Better (Leon's ruling 8):** the wait is the same as everyone's. What the class has is **prayers nobody else
+  can say** (Ward, Sanctuary: below), **the god in its weapon** (Smite), and **the patron at its side**: while the
+  Chaplain is Witnessed its patron stands on the field beside it (the Miracle cut-in's figure, as a presence on its
+  tile), the first intervention of a fight does not end Witnessed, and the patron's interventions strike where the
+  Chaplain's weapon struck. It spends **no MP and no Strain**: one pool, Devotion, and the wait.
 
 | Rank | Move | State |
 | --- | --- | --- |
-| I | **Ward** (a Whisper, 1 AP): an ally gains a shield of 30 × Blessing power for the fight | reworked from Will Shield: a prayer now, no MP |
-| I | Command (1 AP, once a turn; Authority 1): an ally within 6 moves up to 2 tiles now | kept |
+| I | **Ward** (a Whisper only the Chaplain has, 1 AP): an ally gains a shield of 30 × Blessing power for the fight | reworked from Will Shield: a prayer now, no MP |
+| I | **Smite** (once a turn, with a weapon attack): the hit also deals Rebuke's damage (20 at rules 1.21) × Blessing power, as the patron's own; it counts as a prayer for what the patron likes | NEW (replaces Command: an order is Authority's Call, ruling 6) |
 | II | Under the Eye | kept |
 | II | Blessed Shells | kept |
-| III | **Sanctuary** (a Hymn, 3 AP, the Hymn's wait): a 3×3 zone where allies take half damage until your next turn | reworked: a Hymn now, no MP or Strain |
+| III | **Sanctuary** (a Hymn only the Chaplain has, 3 AP, the Hymn's wait): a 3×3 zone where allies take half damage until your next turn | reworked: a Hymn now, no MP or Strain |
 | III | Judgement (4 AP, 3 Devotion, once a scene) | kept |
 
-- **Leaves:** MP and Strain as costs.
+- **Leaves:** MP and Strain as costs; Command (to Authority's Call, Order).
 - **Squared, the Saint, breaks:** "a Hymn makes you wait." Its first Hymn each fight has no wait.
 
 ## 5. What moves where
@@ -288,6 +327,7 @@ the six moves (kept from Revision 3, moved in, or NEW); what leaves; and the rul
 | Rewrite | Trickster | the move pool (Mirage or Hexer) | fits neither maker nor mender |
 | Stim Throw | Bard | a gear action | kits are everyone's |
 | Will Shield, Sanctuary | Guardian (MP, Strain) | Chaplain's prayers | one pool |
+| Silver Tongue, Command | Trickster, Guardian | out: the Calls do this for everyone | talk is the gamma's, no class's (ruling 6) |
 | The healing multiplier | Camaraderie | Empathy | it is the alpha's (nine doors 5.4) |
 
 ## 6. Mixed classes: what a bridge is
@@ -328,26 +368,41 @@ holds a melee weapon). A Storm Hand is that character with the bridge.
    rule changes to built systems. Small to build, but two reactions a round touches every Answer and Overwatch, and
    Faith is the one system with no fuel: measure both.
 
-**Order (the lead's recommendation):** the rename and the moves that only change hands (section 5) with Reflex and
-the Chaplain, as one roster revision; then Shadow; then Bonds; then Figments. One system a version, each with its
-playtest.
+**Order (Leon's ruling 11): design everything, then build it as one big patch.** So nothing is built until each
+of these is a full spec with its data tables, and this document is accepted:
+
+1. The reaction rule (section 2.1), with the engine's count checked first.
+2. Shadow: the list of about twenty verbs in four kinds, the meter's gains and losses, the Break's multiplier.
+3. Tending and Bonds: the support list, what each of the 25 feelings does when given to an ally, range and sight.
+4. Figments: the Visualizer as an item, the five forms' numbers, traits, designs, upkeep, what the AI does about
+   them.
+5. The Chaplain's prayers and the patron's presence: Ward, Sanctuary, Smite, and what "at his side" does for each
+   of the eight patrons.
+6. The moves that change hands (section 5) and the new ones (Run and Gun, Salvage, Overclock, Jury-Rig, Take the
+   Weight), each with its number and its ceiling.
+7. The rename.
+
+The lead's advice stands beside the ruling: the patch can be built in that order behind the scenes and still ship
+as one, so that each system is measured against the contract before the next is laid on it.
 
 **What the rename touches:** class ids in data and saves (keep the ids, change the display names: `class:defender`
 stays), the level-up picker, nine class emblems (`art/briefs/ART-REQUESTS.md`: new marks only if the names change
 the picture), every card text that names a class, the spec's class section, CLAUDE.md.
 
-## 8. Decisions for Leon
+## 8. Settled, and still open
 
-1. **The names.** Bulwark, Breaker, Skirmisher, Operative, Sigilist, Rigger, Mender, Channeler, Chaplain: the voice
-   of a Command manual. Bulwark and Breaker change nothing but the word; keep Defender and Fighter if the new ones
-   are not better to your ear.
-2. **The Rigger loses the liar.** Silver Tongue and the Double are what is left of the Trickster; the rest waits
-   for the Mirage. Accept, or keep Rewrite in place of Jury-Rig.
-3. **Reflex.** Two reactions a round for one class is a strong, simple identity and the riskiest number here. The
-   alternative is a second reaction only for a reaction that moves you (Duck and Roll, a step).
-4. **The Chaplain pays nothing but the wait.** Faith is already the system with no fuel. If Ward as a free-standing
-   Whisper every turn is too much, it costs the turn's Whisper like any other.
-5. **Bonds made free with the whole squad** at the start of a fight for the Mender, or one free and the rest
-   bought with AP.
-6. **Budget:** class about 15% over the door, squared about 30%, mixed 5% and a bridge. These are the lead's
-   starting numbers, not measurements.
+**Settled by Leon (13 Nov):** Bulwark and Breaker; talk is no class's move; the Chaplain's shape; the Mender's free
+Bond; the budget; one big patch.
+
+**Calls made for him (he can reverse any):** the other seven names stand as suggested (Skirmisher, Operative,
+Sigilist, Rigger, Mender, Channeler kept, Chaplain); Salvage replaces Silver Tongue and Smite replaces Command;
+Rewrite waits in the move pool; Jury-Rig is the Rigger's rank III.
+
+**Still open:**
+
+1. **Reflex.** Two reactions a round for the Skirmisher, once the count is real (section 2.1). The safer form is a
+   second reaction only for one that moves you. The lead recommends the full form, measured.
+2. **The patron at the Chaplain's side:** a presence that changes how interventions land (this draft), or a body on
+   the board that can be struck and blocks a tile. The lead recommends the presence: a body is the Rigger's thing.
+3. **Smite's size:** Rebuke's 20 every turn on top of a weapon hit puts a Chaplain's weapon turn near a Whisper
+   turn plus a rifle turn. It needs its own line in the contract.
