@@ -4879,6 +4879,58 @@ in item 1744 ("an enemy still knows where every hostile who is not Hidden stands
     1.28, the same door as everyone's). Not built: baiting a held line with the cheapest unit and sending two movers
     into a Killzone (reactions-spec 8); waiting out a Sanctuary.
 
+## Rules revision 1.40: Survival's path map (Survival, build step 2)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-2.md`) from `docs/design/survival-spec.md` (draft 4) rules 7 to
+12 and section 3.1: the map a Survival stage is walked on. Nothing plays it yet: the run (`g.run`, `run/start`) and the
+fights are the next steps. Every number is in `data/survival.json` `map` and is PROVISIONAL (items 2700 to 2715). Code:
+`packages/engine/src/run/map.ts` (`pathMap`, `mapProblems`, `referenceRoute`, `renderPathMap`) and `rngFor` in
+`rng.ts`. Where this revision and the spec's rule 9 differ (guarantees c and d, and "links never cross"), this
+revision rules: the spec's wording cannot hold together with its guarantee (a) (item 2709).
+
+1. **A stage's map is a function of the run's seed and the stage** (spec rule 12): `pathMap(seed, stage)` draws
+   everything from its own named stream, `rngFor(seed, 'map#' + stage)`, never from a fight's dice and never from
+   anything else, so the same seed and stage give the same map, in every browser and after a reload. A node's id
+   names its stage, depth and place (`s1.d3.0`), so a node's own streams (`rngFor(seed, id + purpose)`) differ by stage.
+2. **Rows** (spec rule 7): 15 depths. Depth 1: 2 or 3 plain fights. Depth 2: 2 or 3 nodes, fights and exactly one
+   cache or training ground. Depths 3 to 7 and 9 to 13: 2 to 4 nodes. Depth 8: the gate, one Elite every path passes.
+   Depth 14: one shop and one rest. Depth 15: the Boss. A half (depths 1 to 7, and 9 to 13) starts 2 or 3 wide and
+   never narrows (a narrower row would leave a node one link, item 2709); each row widens by one at chance `widen`,
+   by two at `widen_two`. About 40 nodes.
+3. **Links** (spec rule 8): each node of an open row links to 2 nodes of the next row within one column of its own
+   (columns are half-steps so a row of any width sits centred); every node of the next row gets a way in; depth 7
+   links to the gate, the gate to all of depth 9, every node of depth 13 to both nodes of depth 14, both to the Boss.
+   **Links cross only where a row keeps its width, and then once** (an X between two neighbours): two links from
+   every node of a row into a row as wide cannot all miss each other (item 2709). The whole map, with each node's
+   kind, is known from the start.
+4. **Kinds** (spec rule 9): the open rows' kinds are drawn row by row, left to right, by `kind_weights` (fight 36,
+   elite 10, shop 10, forge 8, training 8, shrine 6, rest 6, cache 8, Crossroads 8) from the kinds the rules allow
+   at that node: no Elite before depth 4 nor at depths 7 and 9; no shop and no rest at depth 13; never the kind of
+   a parent if it is not a fight (guarantee b); never the kind of the other link of a parent (guarantee a); never
+   the only kind of its row.
+5. **Guarantee (a), a choice of gains:** every node of depths 1 to 6 and 8 to 13 links to two kinds (the gate's
+   links: two kinds at least), and every row from depth 2 holds two kinds. So every path offers a choice of kinds at
+   12 of its 14 steps; the two without are into the gate and into the Boss (Leon's ruling 7, second batch).
+6. **Guarantee (b):** an Elite, shop, Forge, training ground, shrine, rest, cache or Crossroads never links to one of
+   its own kind.
+7. **Guarantees (c) and (d), as this revision reads them** (item 2709):
+   - **The reference route:** at least one route from depth 1 to the Boss holds a shop at depths 3 to 7, a shop at
+     depths 9 to 12, a Forge at depths 3 to 13 and a rest at depths 3 to 12, with never more than `shop_gap` 6 nodes
+     between two of its shops (the stage's start counting as a shop: the run's start in stage 1, the previous
+     stage's depth 14 from stage 2, so the gap runs on across the Boss; depth 14's shop counting at the end).
+   - **No dead end:** from every node before a window opens (`until`: depth 2 for the first shop, the rest and the
+     Forge, depth 8 for the second shop), a node of that kind inside the window lies ahead.
+   - **The shop chain:** from the stage's start and from every shop, the next shop is at most 6 nodes ahead on some
+     route. A party that goes from shop to shop is never more than six nodes from one; a party that passes them by
+     chooses to.
+8. **Repair, never reroll** (spec rule 9): when the drawn kinds break item 7, the map is repaired in a fixed order
+   (the reference route first, then the dead ends, then the shop chain): the plain fight with the fewest paths
+   through it, among the nodes that can mend the break, becomes the kind wanted, unless that breaks items 4 to 6;
+   if no fight can, a node of a kind no guarantee asks for (training, shrine, cache, Crossroads, Elite) may. Ties go
+   by a key each node draws from the map's stream. Over 1,000 seeds and stages 1 to 5 every map holds items 2 to 7
+   (`test/survival-map.test.ts`).
+9. **Tools:** `mapProblems(map)` lists in words what breaks items 2 to 7 (empty: none); `referenceRoute(map)` gives
+   the route of item 7 (the simulated party's, spec 5.6); `renderPathMap(map)` prints a map as text, the Boss on top.
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -5304,6 +5356,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | patrons.json | 3 | Patrons and blessings by Faith tier (provisional numbers) |
 | maps.json | object | Map limits (26 at most, 8 at least; deployment 10 to 14 tiles), the picture legend, and the shared open-ground layout (rules 1.16) |
 | effect_ops.json | 132 | Registry of every effect op: 50 core, 82 bespoke |
+| survival.json | object | Survival mode's numbers (rules 1.40 on): `map`, the path map of a stage; a key more per build step (survival-spec section 7) |
 
 *(The counts in this table and the paragraph below are rules 1.0's. Counted from `data/` on 12 Nov 2026: classes 9 base + 21 advanced (Class Roster Revision 3; the level-3 rule is the highest attribute); enemies 5 tiers (Vermin, rules 1.15) with the level table, companions and casters; conditions 40; weapons 60; weapon_mastery 11 families + 33 items (retired by rules 1.12); techniques 65 (33 melee, 32 ranged); items 60; soul_modules 4 schools + 38 items; patrons 8 (Faith 2.0: Whispers, Hymns I to III by Devotion 3 / 5 / 7, a Miracle at Faith 7 + Devotion 10, interventions, vows, rites, line banks); effect_ops 192 (50 core, 113 bespoke, 17 weapon, 11 item, 1 sigil; bespoke about 14% of uses). Not in the table: actions, calls, feelings, loot_tables, objects, perk_cards, world_play. skills.json carries no signature-of, and archetypes spend no Core points (rules 1.13).)*
 
@@ -7932,3 +7985,19 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2410. **An Elite fooled by a Double** saves again at each of its turn starts (figments-spec 2, as built in rules 1.34), so it may stay fooled more than one turn; a Boss is fooled through one of its turns at most. The brief's "Elites and Bosses fooled for a turn at most" was not built for Elites: the spec table rules. Leon to confirm. PROVISIONAL.
 2411. **Enemies do not Bond, Tend, hold Shadow or make Figments (rules 1.37 rule 12):** confirmed through the data (a test reads enemies.json). An enemy version would need: a door skill and a focus on the tier row (Attuner, Visualizer), the tending verbs in the enemy's held items, a planner step (ai-*.ts) that weighs a Tend or a Picture against its weapon. PROVISIONAL.
 2412. **Items 2400 to 2412 are rules 1.37's.**
+2700. **Survival's map rows (rules 1.40 item 2; `survival.json map.rows`, `gate_row`, `shop_rest_row`, `boss_row`):** 15 depths, the gate at 8, the shop and rest at 14, the Boss at 15 (survival-spec rule 7). PROVISIONAL.
+2701. **Row widths (rules 1.40 item 2; `map.width`):** 2 to 4 nodes (depths 1 and 2: 2 or 3); a half starts 2 or 3 wide (`start` weights 1 : 1) and widens by one at `widen` 0.2, by two at `widen_two` 0.05, never narrowing. Builder's numbers, fitted to the spec's "about 40 nodes" (measured 40.4). PROVISIONAL.
+2702. **Links (rules 1.40 item 3; `map.links` 2, `map.reach` 1):** two links a node within one column. PROVISIONAL.
+2703. **Depth 1 and depth 2 (rules 1.40 item 2; `map.fight_rows` [1], `map.row_one_of` {row 2: cache 8, training 8}):** depth 1 plain fights; depth 2 exactly one cache or training ground (the spec's "at most one": one is needed for guarantee a), placed under every depth-1 node. PROVISIONAL.
+2704. **Kind weights (rules 1.40 item 4; `map.kind_weights`):** fight 36, elite 10, shop 10, forge 8, training 8, shrine 6, rest 6, cache 8, event (Crossroads) 8 (survival-spec rule 9). PROVISIONAL.
+2705. **Placement (rules 1.40 item 4; `map.from_depth` elite 4, `map.not_rows` elite 7 and 9, shop and rest 13).** PROVISIONAL.
+2706. **The shop gap (rules 1.40 item 7; `map.shop_gap` 6):** at most six nodes between shops on the reference route and on the shop chain; the stage's start counts as a shop (the run's start in stage 1, the previous stage's depth 14 after). PROVISIONAL.
+2707. **The guarantee windows (rules 1.40 item 7; `map.guarantees`):** a shop at depths 3 to 7 and 9 to 12, a rest at 3 to 12, a Forge at 3 to 13 (survival-spec rule 9 c, d); `until` 2, 8, 2, 2: the last depth from which one must still lie ahead. Tightening `until` holds to (3, 9, 6, 8) with no failure over 1,000 seeds (shops 5.0 a map, rests 3.6); (4, 10, 9, 10) fails 3%. PROVISIONAL.
+2708. **The text words of the kinds (`map.words`):** Fight, Elite, Boss, Shop, Forge, Training, Shrine, Rest, Cache, Crossroads (survival-spec section 3.1). *(Suggested.)*
+2709. **Needs a ruling (rules 1.40 items 3 and 7): the spec's rule 9 c and d and rule 8's "links never cross" cannot hold with guarantee (a).** (1) "Every path holds a shop in depths 3 to 7" with "every node links to two different kinds": take the deepest node, not a shop, from which every path ahead meets a shop in the window; both its links must then be shops (else the one that is not would be a deeper such node), and two links of one kind break (a). So no map has both; likewise for the second shop, the Forge and the rest. (2) Two links from every node with no crossing allow at most w + w′ − 1 links between rows of w and w′ nodes, so a row as wide as the one before needs a crossing. Leon's ruling 7 (second batch, binding: a choice of kinds at 12 of 14 steps) is kept whole; the smallest change is to read (c) and (d) as rules 1.40 item 7 does (one route holds them all; no dead end before a window; the shop chain) and to allow one X where a row keeps its width. The lead to confirm and to bring the spec's rule 9 and section 3.1's per-path ranges in line. PROVISIONAL.
+2710. **The per-path counts the spec states ("[5 to 8] fights", "[2 to 3] shops" a path, section 3.1) are not guarantees under item 2709:** measured over all paths of 5,000 maps, fights 4.6 a path (50.7% in 5 to 8; the route that seeks fights takes 8.8), shops 1.6 (49.3% in 2 to 3; the route that seeks them, 3.9). The map counts are within the spec's "about" values (item 2711). PROVISIONAL.
+2711. **The map counts (measured, 1,000 seeds × stages 1 to 5; `map.expect`, the test's bands: about ± 1.5, fights ± 2, nodes ± 3):** fights 13.8 (about 15), Elites 3.4 with the gate (about 4), shops 4.5 (about 4), Forges 2.9 (3), training grounds 3.2 (2), shrines 2.2 (2), rests 3.2 (3), caches 3.2 (2 to 3), Crossroads 2.8 (2), nodes 40.4 (40). Training grounds, caches and Crossroads run about one over the spec's figures: guarantee (a) never lets a node link to two fights, which moves weight from fights to the other kinds. If Leon wants them nearer, lower their weights; no guarantee depends on it. PROVISIONAL.
+2712. **Repair order (rules 1.40 item 8):** the reference route, then the dead ends, then the shop chain; the plain fight with the fewest paths through it, else a node of a kind no guarantee asks for (the latter is the builder's addition: the spec's "its plain fight" alone left some maps unrepaired). PROVISIONAL.
+2713. **`rngFor(seed, key)` (rules 1.40 item 1; `rng.ts`):** a stream seeded by `seedFrom(seed + '#' + key)`; the map's key is `'map#' + stage`. The first named stream (survival-spec section 4.2 item 3).
+2714. **The map does not read the setting:** a node carries the stage's `setting` as given (null until the run's tiles exist, survival-spec rule 10); every setting draws the same map for the same seed and stage.
+2715. **Items 2700 to 2715 are rules 1.40's.**
