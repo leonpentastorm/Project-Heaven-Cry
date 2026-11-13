@@ -9,7 +9,7 @@ const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 
-async function open(vw, vh) {
+async function open(vw, vh, before = []) {
   const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, deviceScaleFactor: 1 });
   await ctx.addInitScript(() => { try { localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); sessionStorage.setItem('phc.pressedAnyKey', '1'); } catch { /* */ } });
   const p = await ctx.newPage();
@@ -22,6 +22,8 @@ async function open(vw, vh) {
   await p.mouse.move(vw - 10, vh - 10);
   // The Proving Ground opens gearing up on the map; start the fight straight away.
   await p.waitForFunction(() => !!window.__phc.getState().game?.sandbox, null, { timeout: 30000 });
+  // set-up actions for the Proving Ground's character before the fight (charId filled in)
+  for (const a of before) await p.evaluate((a) => { const cid = Object.keys(window.__phc.getState().game.characters)[0]; try { window.__phc.act({ ...a, charId: cid }); } catch { /* */ } }, a);
   if (await p.evaluate(() => window.__phc.getState().game.phase !== 'combat')) await p.evaluate(() => window.__phc.act({ type: 'sandbox/fight' }));
   await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
   await p.waitForSelector('text=YOUR TURN', { timeout: 30000 });
@@ -129,6 +131,25 @@ for (const [vw, vh] of [[1440, 900], [1280, 720]]) {
     await settle(p, 300); await p.screenshot({ path: OUT + 'tabs-' + tag + '-after-cutin.png' });
   }
   ok(tag + ' no page errors' + (p.errors.length ? ': ' + p.errors.join(' | ') : ''), !p.errors.length);
+  await p.context().close();
+}
+
+// Six tabs on one row (Classes 3.0: a Rigger has Move, Attack, Utility, Class, Figments and Calls; the bar wrapped onto a
+// second row with one tab alone on it). The tight bar keeps every full name; checked at the side-by-side widths down to
+// 1024 px, where the panel is narrowest (about 400 px).
+for (const [vw, vh] of [[1440, 900], [1280, 720], [1024, 768]]) {
+  const p = await open(vw, vh, [{ type: 'sandbox/class', classId: 'trickster', rank: 1 }, { type: 'sandbox/give', item: 'visualizer', equip: true },
+    { type: 'sandbox/skill', skill: 'visualization', points: 5 }, { type: 'sandbox/skill', skill: 'rhetoric', points: 3 }]);
+  await act(p, { type: 'sandbox/ai', on: false });
+  await p.waitForSelector('[role="tablist"][aria-label="Actions"] [role="tab"]', { timeout: 30000 });
+  await dismissCut(p, vw, vh); await settle(p, 300);
+  const bar = await p.evaluate(() => { const l = document.querySelector('[role="tablist"][aria-label="Actions"]'), ts = [...l.querySelectorAll('[role="tab"]')];
+    return { tabs: ts.map((t) => t.getAttribute('data-tab')), rows: new Set(ts.map((t) => Math.round(t.getBoundingClientRect().top))).size, over: l.scrollWidth - l.clientWidth,
+      // a name cut short (its text wider than its box) would be an abbreviation the player never asked for
+      cut: ts.filter((t) => { const n = [...t.querySelectorAll('span')].find((x) => x.style.textOverflow === 'ellipsis'); return n && n.scrollWidth > n.clientWidth + 1; }).map((t) => t.getAttribute('data-tab')) }; });
+  await p.locator('[role="tablist"][aria-label="Actions"]').screenshot({ path: OUT + 'tabs-six-' + vw + '.png' }).catch(() => {});
+  ok(vw + 'x' + vh + ' a Rigger\'s six tabs (' + bar.tabs.join(', ') + ') sit on ONE row, no name cut short' + (bar.cut.length ? ' (cut: ' + bar.cut.join(', ') + ')' : '') + ', nothing scrolls sideways',
+    bar.tabs.length === 6 && bar.tabs.includes('figments') && bar.rows === 1 && !bar.cut.length && bar.over <= 1);
   await p.context().close();
 }
 

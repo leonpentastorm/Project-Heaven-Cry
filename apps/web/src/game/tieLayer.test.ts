@@ -4,7 +4,7 @@
 // the screen runtime, from a combat with one ally Bond and one enemy Bond; then a combat without the ties draws nothing.
 import { describe, expect, it } from 'vitest';
 import RULES from '../../../../data/rules.json';
-import { tieLayerVals, TIE_OPACITY, TIE_WIDTH } from './tieLayer';
+import { tieLayerVals, TIE_OPACITY, TIE_WIDTH, TIE_MARK } from './tieLayer';
 import { tokenOpacity, fadeStyle, HIDDEN_OPACITY } from './tokenFade';
 
 const React = await import('react'); const { createRoot } = await import('react-dom/client'); const { act } = await import('react');
@@ -58,6 +58,40 @@ describe('the tie lines: one ally Bond and one enemy Bond', () => {
     const f = fight([BONDS[0]]); f.units[1].pos = '5,4';
     const b = tieLayerVals(f).lines[0];
     expect(b.key).toBe(a.key); expect(b.y2).toBeGreaterThan(a.y2);
+  });
+});
+describe('adjacent tokens: the link mark at the shared edge (Leon: the line between neighbours was invisible)', () => {
+  // the Mender beside its Bonded ally (east) and beside a Bonded enemy (south): the rims leave a few pixels between them
+  const near = () => ({ map: { w: 10, h: 8 }, units: [unit('me', 'pc', '3,3'), unit('mate', 'pc', '4,3'), unit('foe', 'foe', '3,4')], ties: BONDS });
+  it('each near pair draws a mark at least TIE_MARK.len long, thicker and stronger than the far line, with a knot; ally solid and filled, enemy dashed and hollow; no pointer', () => {
+    const v = tieLayerVals(near(), { motion: false });
+    const host = render(v);
+    const svg = host.querySelector('svg[data-tie-layer]') as SVGElement;
+    expect(svg.getAttribute('style') || '').toContain('pointer-events: none');
+    const lines = [...host.querySelectorAll('line[data-tie]')];
+    expect(lines.length).toBe(2);
+    for (const l of lines) {
+      const len = Math.hypot(Number(l.getAttribute('x2')) - Number(l.getAttribute('x1')), Number(l.getAttribute('y2')) - Number(l.getAttribute('y1')));
+      expect(len).toBeGreaterThanOrEqual(TIE_MARK.len - 1);
+      expect(Number(l.getAttribute('stroke-width'))).toBeGreaterThan(TIE_WIDTH);
+      expect(Number(l.getAttribute('stroke-opacity'))).toBeGreaterThan(TIE_OPACITY.hot);
+      expect(l.getAttribute('stroke')).toBe(BOND.line.ink);
+    }
+    const ally = lines.find((l) => l.getAttribute('data-tie-side') === 'ally')!, foe = lines.find((l) => l.getAttribute('data-tie-side') === 'foe')!;
+    expect(ally.getAttribute('stroke-dasharray') || '').toBe('');
+    expect(foe.getAttribute('stroke-dasharray')).toBe(BOND.line.foe_dash);
+    const knots = [...host.querySelectorAll('circle[data-tie-knot]')];
+    expect(knots.length).toBe(2);
+    const ka = knots.find((k) => k.getAttribute('data-tie-side') === 'ally')!, kf = knots.find((k) => k.getAttribute('data-tie-side') === 'foe')!;
+    expect(ka.getAttribute('fill')).toBe(BOND.line.ink);
+    expect(kf.getAttribute('fill')).not.toBe(BOND.line.ink); expect(kf.getAttribute('stroke')).toBe(BOND.line.ink);
+    // the knot sits on the shared edge: halfway between the two tiles' centres (the ally is east, the enemy south)
+    expect(Number(ka.getAttribute('cy'))).toBe(Number(ally.getAttribute('y1')));
+    expect(Number(kf.getAttribute('cx'))).toBe(Number(foe.getAttribute('x1')));
+  });
+  it('far pairs keep the faint line and no knot', () => {
+    const v = tieLayerVals(fight(BONDS), { motion: false });
+    expect(v.knots.length).toBe(0); expect(v.lines.every((l) => !l.mark && l.width === TIE_WIDTH)).toBe(true);
   });
 });
 describe('no tie, no line', () => {

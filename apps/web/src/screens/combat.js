@@ -47,7 +47,7 @@ import { mapLegacy, isLegacyUnit, plainAction, actionGroups, resolveCommands, re
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
-import { areaOrder, areaHead, subHead } from '../game/attackAreas';
+import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
@@ -1416,7 +1416,10 @@ export class CombatLogic extends DCLogic {
     // Faith, Slip, Mark, Work and Break on Shadow, Bond, Heal and Help on Tend); a 1 px line between groups.
     groups.filter((gr) => gr.id !== 'attack' && gr.items.some((a) => a.sub)).forEach((gr) => {
       const subs = [...new Set(gr.items.filter((a) => !isPerkInfo(a.key)).map((a) => a.sub))];
-      subs.forEach((sb, i) => { const first = gr.items.find((a) => a.sub === sb && !isPerkInfo(a.key)); if (!first || !sb) return; if (i > 0) sepOf[first.key] = true; headOf[first.key] = subHead(sb); });
+      subs.forEach((sb, i) => { const first = gr.items.find((a) => a.sub === sb && !isPerkInfo(a.key)); if (!first || !sb) return; if (i > 0) sepOf[first.key] = true;
+        // a held Figment's group (its rows are `ow:<unit id>:<verb>`): headed by its face as its token shows it
+        const fu = gr.id === 'figments' && first.key.startsWith('ow:') ? cb.units.find((x) => x.id === first.key.split(':')[1]) : null;
+        headOf[first.key] = fu ? figmentHead(sb, { unit: fu.id, img: faceOf(fu), short: fu.short || fu.name.slice(0, 2).toUpperCase(), ink: ring(fu) }) : subHead(sb); });
     });
     const tabIds = groups.map((gr) => gr.id);
     if (mineTurn && newTurn) { // a new turn of yours: the tab this character used last, else Attack with a hostile in sight, else Move
@@ -1451,6 +1454,13 @@ export class CombatLogic extends DCLogic {
       this._tabCls = this._tabShown == null ? '' : tabIds.indexOf(S.tab) > tabIds.indexOf(this._tabShown) ? 'phc-slide-in-right' : 'phc-slide-in-left'; this._tabShown = S.tab;
     }
     const klass = classOf(ch);
+    // Six tabs or more (a Rigger: Move, Attack, Utility, Class, Figments, Calls) wrapped the bar onto a second row with
+    // one tab alone on it. The tight bar keeps every FULL name (no abbreviation to learn, no tab hidden behind a scroll
+    // arrow and its key number with it): the action count moves from beside the name to a small badge in the tab's top
+    // right corner (as the key number sits top left), the label drops below both, the padding and the letter-spacing
+    // shrink. Six fit on one row down to the narrowest side-by-side panel (about 400 px, a 1024 px window). The bar
+    // still wraps as a last resort (seven or more on a narrow window).
+    const tight = groups.length >= 6;
     const tabs = groups.map((gr, i) => {
       const on = gr.id === S.tab, ink = gr.id === 'class' && klass ? klass.ink : TAB_INK[gr.id] || '#E7EBF3', holds = !on && tabOf[S.action] === gr.id;
       // The number is usable actions only: the Perks tab's read-only rows (pki:, used from another action's chip or
@@ -1461,10 +1471,10 @@ export class CombatLogic extends DCLogic {
         title: gr.name + ' · ' + acts + (i < 9 ? ' · key ' + (i + 1) : ''),
         pick: () => this.setTab(gr.id), onKey: (e) => this.tabKey(e), holds,
         // Each tab wears its family's ink: full when open, a faint underline when not (with the word, never colour alone).
-        style: 'position: relative; flex: 1 0 auto; min-width: 0; max-width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 36px; padding: 0 9px; border: 0; border-bottom: 2px solid ' + (on ? ink : ink + '55') + '; border-radius: 8px 8px 0 0; background: ' + (on ? '#1C2536' : 'transparent') + '; color: ' + (on ? ink : '#A3AEC2') + '; font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; cursor: pointer',
-        countStyle: 'flex: none; min-width: 15px; padding: 0 4px; border-radius: 999px; font-size: 9.5px; line-height: 15px; letter-spacing: 0; text-align: center; ' + (on ? 'background: ' + ink + '; color: #0A0D13' : 'background: #1C2536; color: #C9D3E3'),
+        style: 'position: relative; flex: 1 0 auto; min-width: 0; max-width: 100%; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: ' + (tight ? '3px' : '4px') + '; min-height: 36px; padding: ' + (tight ? '9px 5px 0' : '0 9px') + '; border: 0; border-bottom: 2px solid ' + (on ? ink : ink + '55') + '; border-radius: 8px 8px 0 0; background: ' + (on ? '#1C2536' : 'transparent') + '; color: ' + (on ? ink : '#A3AEC2') + '; font-family: inherit; font-size: ' + (tight ? '10.5px' : '11px') + '; font-weight: 700; letter-spacing: ' + (tight ? '0.02em' : '0.04em') + '; text-transform: uppercase; white-space: nowrap; cursor: pointer',
+        countStyle: (tight ? 'position: absolute; right: 3px; top: 2px; min-width: 13px; padding: 0 3px; font-size: 9px; line-height: 13px; ' : 'flex: none; min-width: 15px; padding: 0 4px; font-size: 9.5px; line-height: 15px; ') + 'border-radius: 999px; letter-spacing: 0; text-align: center; box-sizing: border-box; ' + (on ? 'background: ' + ink + '; color: #0A0D13' : 'background: #1C2536; color: #C9D3E3'),
         numStyle: 'position: absolute; left: 4px; top: 2px; font-size: 9px; font-weight: 600; letter-spacing: 0; color: ' + (on ? '#A3AEC2' : '#5D6A80'),
-        holdStyle: 'position: absolute; right: 4px; top: 4px; width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF' };
+        holdStyle: 'position: absolute; right: 4px; ' + (tight ? 'bottom: 5px' : 'top: 4px') + '; width: 6px; height: 6px; border-radius: 50%; background: #FFFFFF' };
     });
     // The Calls tab's rows are chips (as the technique pad's): the Call, its AP and reach, the text of the step the
     // speaker has, its save and TN; greyed with the engine's reason when it can't be made now.

@@ -104,6 +104,13 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
       7b; fix, never skip); browser suite `physical` "backpack shows item icons" fails alone since the gear icons
       (a real bug until proven stale); `fx-sweep` Suppress sound-before-flash and `chaplain` fail only beside others.
       Still open for Leon's eye: Aimed Shot's and Crossfire's white lines and Storm's red line were kept.
+      **The client part of the close (13 Nov, a builder beside the balance step):** `physical`'s backpack check was
+      stale (the painted gear icons are URLs; it now checks every icon loaded); `fx-sweep`'s report-before-flash was a
+      REAL bug that also failed alone (a feeling's unlock card sat between a volley's rattle and its rounds:
+      `fx/play.ts feltAfterAttack`); `chaplain` and `brass` waited on time and now wait on state. Also: the Bond link mark
+      between adjacent tokens, six tabs on one row, the Figment face in its group header. The checklist (section 0 and
+      53 calls), the 0.26.0 CHANGELOG entry (no bump), `LOCAL-SESSION-START.md`, `SESSION-HANDOFF.md` and the ROADMAP
+      are written.
 
 ## 5. The brief every builder gets (fill in the step)
 
