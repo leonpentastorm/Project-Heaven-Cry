@@ -76,6 +76,17 @@ stated so that it holds for every class:
 
 Reflex stays in this draft **on the condition** that rule 1 is true in the engine first.
 
+### 2.2 Built on the engine's primitives, never beside them (Leon, 13 Nov)
+
+"They are forbidden to write custom code for each system if one already exists. We need to make use of our new
+engine effectively." Every one of the seven specs carries a **"Built from"** table: each rule and verb against the
+primitive that carries it (item ops and their closed lists of triggers, predicates and ops; action descriptors; the
+condition table; the output profiles and amounts; costs; uses and cooldowns; rolls; kit geometry; `displace`; fog;
+`say`; the hover card: `docs/ENGINE-GUIDE.md`). What no primitive can carry is listed as **"Needs a new
+primitive"**, with the one general thing to add to the closed lists so the next system can use it too. No spec may
+ask for a per-item or per-system handler where a primitive exists, and the builder may not write one: the lints
+(`lint-item-ops`, `lint-costs`, `lint-conditions`, `lint-foundations`) are the guard.
+
 ## 3. The nine, at a glance
 
 | Attribute | Door (alpha skill) | Mechanic and meter | Fuel | Base class (now → suggested) | State |
