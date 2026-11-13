@@ -168,3 +168,81 @@ the `rigger` rows (added only). Outside the lane, one number: `apps/web/e2e/chap
 15 s → 30 s (the `e2e-groups` rule failed on it on the base). `npm run check`: all green but for the catalogue, then
 regenerated; browser suites `figments`, `classes-moves`, `sandbox`, `tabs`, `playscreen`, `magic`, `two-players` green on
 port 8797 (`sandbox`'s WAVE 1 banner failed once under load and passed alone).
+
+## Integration (13 Nov 2026, on the worktree branch `worktree-agent-af277264e78ad02b7`)
+
+On top of the builder's branch (fast-forwarded): the merge of the main line (`claude/charming-gauss-hbq4n0`: step 5
+the Chaplain, steps 6 and 7 integrated, the 151 gear icons), then the interactions, the performance work and the close.
+Not pushed, no version bump.
+
+**The merge.** Rules 1.31 to 1.34 all stand, in order, with their item ranges (1900s, 1950s, 2000s, 2100s). Data merged
+by id (a 3-way JSON merge, written indent 2 as the main line); closed lists keep every side's rows (`self_has_res` /
+`self_lacks_res` hold shadow, ledger and vcharge; `effect_ops.json item_ops` rewritten from the code with
+`ITEM_OPS_WRITE=1`). Generated files regenerated, never hand-merged: `ENGINE-HOOKS.md`, `protodata.json`,
+`art/checksums.sha256` (rehash), `tools/text_numbers.json` (shrunk to 1361, under both parents' 1372 and 1379).
+**The lead's rulings applied:** (1) the Operative's ranks are step 6's (rank II Toxin and Sabotage, rank III Execution
+and Called Shot); this branch's Read move (move pool) and the `trickster.read` handler are deleted (Read is the
+Operative's Analyze). (2) The Visualizer is a focus block like the others: `items.json visualizer.focus {door:
+visualization, hand: one, fuel: core}`; `character.ts FocusKind` gains `visualizer` (door `visualization`), so
+`FOCUS_IDS.visualizer` comes from the data as the Attuner's does. (3) See "Interactions".
+**One mechanism where both sides added one:** the pick lists: `registerPickList` is the one route; step 7's `felt`
+(Inspire) is registered through it (`effects/actions.ts`), beside step 8's `forms`. The standing verb item (a verb with
+no `grant_action`) was written by both sides as the same line: one copy. Field Repair: the main line had no Field Repair
+action of its own (step 7 made Field Surgery and Stim Throw gear verbs; they stay verbs, priced at their sites); Field
+Fix, Salvage and Field Repair go through this branch's one `combat.ts fieldRepair`; the main line's old Field Fix
+handler (kept for this step) is deleted. Focus gates: all through `holds()` with a focus kind or its door.
+`class-weapon-neutral.test.ts` PENDING is **empty**; DOOR keeps Field Fix (support: a jam is a gun's own state) and the
+Scrap Turret (a branch on the weapon picks strike or shot, never a lock).
+
+**Golden tables and replays** (re-recorded on the merged code after `paths-order`, `sight-order`, `shared-state` and
+`old-save` passed; never hand-merged). Against the main line: +318 −45 lines, every one step 8's: `watched` (36 + 36
+log), the two Figment weapons (10 in each of six tables), the door verbs in `costs-credit` (30), the `rigger` build rows
+(75 all in, 78 normal), Silver Tongue shelved (1 + 1), the old Trickster rows gone (6 + 6 costs, 6 + 6 rules, 8
+item-ops; 3 stats rows added), `picture2` added to the price lists, two `#coverage` counts (108 → 109, 131 → 132). Only
+lines added or removed, no existing number changed: held to the builder's word. (Read's four Operative rows of the
+branch are not there: Read is gone.) Against step 8: +4620 −807, all the main line's. **Replays:** 10 games differ from
+the main line, exactly the 10 step 8 moved (the Sigil builds' new door verbs); 18 differ from step 8, exactly the 18 the
+main line moved. The interactions and the performance work moved nothing (all re-checked, `REPLAY_FULL=1`).
+
+**Interactions** (test `figments-integration.test.ts`): a Figment is **immune to Hidden** (`figments.json
+unit_effects` gains `immunity hidden`; `tactics.ts hide` asks `immuneByItem`, the item half of `immune()`: Silent
+Partner could hide an ally Figment, and the stat half would have answered the golden table's every-stat query site).
+**Bonds** already refused Figments and robots by `target_not_kind`; turrets and drones are added (bonds-spec rule 11:
+machines). **Tending heals a Figment**: figments-spec rule 14 says heals may target them and bonds-spec is silent, so
+the specs agree (no fallback needed). **Execution** needs an enemy-side Marked target: no enemy makes Figments, so its
+kill rule never meets one. Shadow's predicate changes (`sees_self`, flag conditions) broke nothing of Figments
+(`figments`, `rigger`, `shadow*`, `tending` suites green).
+
+**Performance (part 2).** Measured with a throwaway probe (CPU time, `process.cpuUsage`, 4 v 7 Soldiers on `yard16`,
+the End turn that runs the longest enemy run, 6 enemy turns; 15 samples each, machine loaded) and an inspector
+profile of 25 End turns. Before: no owned unit 26 ms (lower quartile; median 33), twelve Figments 55 ms (median 88):
+**+29 ms, 2.4 ms an owned unit**. The plain inefficiency: every `emit`, `anyOn` and `statHeard` walked every unit and
+built its held key as a new string (then hashed it for the index Map), so twelve more units multiplied string work on
+every hook and every sight test (`buildIndex` 16.4 ms, `statHeard` 11.4, `heldKey` 4.0 per End turn). Fix
+(`effects/collect.ts`, `effects/hooks.ts`): `heldKey` memoised per Held object (a unit's `held` is replaced, never
+written into; the two test switches that the key reads bump a generation), `statHeard` keys a Map per held key. After:
+`buildIndex` 2.8, `statHeard` 5.3, `heldKey` 1.7; no owned unit 22 ms, twelve 44 ms (median 27 / 60): **+22 ms, about
+1.8 ms an owned unit**, inside the target. The rest is inherent to more units: the enemy turns rank and preview 16
+targets instead of 4 (`enemyRank`, `previewAttack`) and actually attack Figments, and sight runs for 12 more units.
+What would cut it further is the enemy step's (9): prune the targets an enemy previews (a tier whose `owned_weight` is
+0 need not preview a Figment; preview only the nearest few), which changes tie-breaks, so it is a ruling with
+replays re-recorded, not a refactor. (The builder's 7.4 → 64.7 ms was another layout; the probe is not committed.)
+
+**Part 3, the three lane handlers** (`trickster.salvage`, `trickster.overclock`, `trickster.scrap_turret`). The main
+line's new primitives (reach `object` / `stand` / `over` / `tile`, op `object`, `displace to: "tile"`, `amountHome`,
+`last_seen`, `close_roll`) do not cover any of them; each stays a handler and waits for:
+- **Overclock**: an item op `act_now {max_ap}` (owned.ts `attackNow` as a closed-list row: the target owned unit attacks
+  the nearest foe it can reach now, free up to `max_ap`, refused in preview when none), a predicate for "an owned unit
+  of the holder's side" (`target_owned`), and the strain on the `deal` op with the Level term (the amount block's
+  profile has none: a `flat` block times `levelFactor('deal')` today).
+- **Salvage**: a reach that takes a **wreck** (a dead machine unit) as the target, and a per-target once-a-fight limit
+  on it; its other two ways exist (`unmake {refund}`; the repair would need `fieldRepair` as an op, `field_repair`).
+- **Scrap Turret**: `spawn` with the weapon taken from the source (a wreck's weapon, a pile's item, else the block's),
+  and the source as the target (a wreck, a pile or a barricade tile next to you).
+The lint baseline against the main line: `classes/rev3.ts` 17 handlers (main 15: these three in, `trickster.read`
+out), `perks/skills.ts` 5 (main 6: `skill:visualization.5` out); literals 9 (main 18) and 2 (main 3). In all one
+entry more than the main line's, and the three above are exactly the entries over it.
+
+**The close.** `validate.py` 0 errors; the catalogue `--check` clean; screen data fresh; `npm run built-from --
+claude/charming-gauss-hbq4n0..HEAD`: 7 smells in 3 places, the builder's (`protodata.json` generated; the three Rigger
+lane handlers, in the baseline on purpose; `combat.ts` Field Repair's HP write, a repair is not a heal).

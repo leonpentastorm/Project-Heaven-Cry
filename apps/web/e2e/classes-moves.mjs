@@ -248,6 +248,8 @@ await settle(host, 300); await snap('08-sleight');
 // ---------- 5. Bard: Rally ----------
 await act(host, { type: 'sandbox/clear' });
 await setClass('bard', 3);
+// a one-handed pistol first (the Recruit's rifle fills both hands; the Trickster's Sigil kit used to leave one here)
+await act(host, { type: 'sandbox/give', charId: hostChar, item: 'service_pistol', equip: true });
 await act(host, { type: 'sandbox/give', charId: hostChar, item: 'attuner', equip: true }); // rules 1.33: Rally is Tending, through the Attuner
 ok('host turn', await newTurn());
 ok('squadmate within 4', await mateNear(3));
