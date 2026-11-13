@@ -53,9 +53,11 @@ describe('run/start', () => {
   it('starts the run: g.run at stage 1 on the map, the room out of the lobby, session 1 begun, no Narrator work', () => {
     const g0 = squad(), g = start(g0, 'PHC-0001');
     expect(g.phase).toBe('story');
-    expect(g.run).toEqual({ seed: 'PHC-0001', stage: 1, world: [], nodes: [], at: null, path: [], state: 'map', leans: {}, ready: {}, offers: null, shop: null, stats: { fights: [] }, out: [], renown: 0 });
+    // rules 1.41: the run holds stage 1's tile and its path map (survival-run.test.ts checks them)
+    expect({ ...g.run, nodes: [], world: [] }).toEqual({ seed: 'PHC-0001', stage: 1, world: [], nodes: [], at: null, path: [], state: 'map', leans: {}, ready: {}, offers: null, shop: null, stats: { fights: [] }, out: [], renown: 0, last: null, note: null });
+    expect(g.run!.nodes.length).toBeGreaterThan(0); expect(g.run!.world).toHaveLength(1);
     expect(g.sessionN).toBe(1); expect(g.story.await).toBe('none'); expect(g.story.work).toBeNull(); expect(g.narrator.busy).toBe(false);
-    expect(g.story.entries.at(-1)!.text).toBe('The run begins at stage 1 (seed PHC-0001).');
+    expect(g.story.entries.at(-1)!.text).toBe('The run begins at stage 1 (seed PHC-0001) on AHOC chapter outpost. Pick the first node.');
     for (const c of Object.values(g.characters)) { expect(c.level).toBe(1); expect(c.echo).toBe(1); }
     expect(g0.run).toBeUndefined(); // the state given is untouched
   });
@@ -119,9 +121,10 @@ describe('run/retire', () => {
     const over = apply(afterBoss(g), { type: 'run/retire' }, HOST);
     expect(refused(over, { type: 'run/retire' })).toBe('The run is over.');
   });
-  it('a run that is over refuses nothing else on its account (the summary is the next step\'s)', () => {
+  it('a retired run is over and the room is back in its lobby (rules 1.41); a new run needs level 1 characters', () => {
     const over = apply(afterBoss(start(squad())), { type: 'run/retire' }, HOST);
-    expect(refused(over, { type: 'run/start' })).toBe('The room has already started.');
+    expect(over.phase).toBe('lobby'); expect(over.run!.state).toBe('over');
+    expect(apply(over, { type: 'run/start' }, HOST).run!.state).toBe('map'); // these two are still level 1
   });
 });
 

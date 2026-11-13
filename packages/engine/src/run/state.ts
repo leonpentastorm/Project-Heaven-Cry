@@ -143,7 +143,7 @@ export function modeLocked(id: string): string | null {
 }
 
 /** What a character in a run needs, said in words (rule 2): one a player, every one level 1. */
-interface Seat { id: string; name: string; level: number; owner: string }
+interface Seat { id: string; name: string; level: number; owner: string; dead?: boolean }
 interface Who { id: string; name: string; online: boolean }
 /** Why `run/start` can't start the run now, or null (rule 2, section 8.1 item 9). `by` is the player asking. */
 export function runStartProblem(g: { hostId: string; phase: string; settings: { play?: PlayMode }; players: Who[]; characters: Record<string, Seat>; run?: RunState | null }, by: string): string | null {
@@ -158,6 +158,8 @@ export function runStartProblem(g: { hostId: string; phase: string; settings: { 
     if (!mine.length && p.online) return 'Everyone plays: ' + p.name + ' has no character locked in yet.';
   }
   const high = seats.find((c) => c.level !== 1); if (high) return 'Survival starts at level 1: ' + high.name + ' is level ' + high.level + '.';
+  // rules 1.41: a character who fell in a lost run stays fallen (its run is its score): a new run takes a fresh one
+  const fell = seats.find((c) => c.dead); if (fell) return fell.name + ' fell in the last run: take ' + fell.name + ' back and bring a fresh level 1 character.';
   return null;
 }
 /** Why `run/retire` can't end the run now, or null (rule 4: the host, after a Boss). */

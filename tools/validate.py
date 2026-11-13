@@ -2264,6 +2264,67 @@ if _sv is not None:
                     errors.append(f"{_w}.expect: unknown kind {_k}")
         if _mp.get("provisional") is not True:
             errors.append(f"{_w}: every number is provisional (provisional: true)")
+    # Rules 1.41 (build step 3): the run's start, the encounter generator's budget, templates and settings, the rewards.
+    _tiers = {t.get("id") for t in (data.get("enemies") or {}).get("items", [])}
+    _casters = {c.get("id"): c for c in ((data.get("enemies") or {}).get("casters") or []) + ((data.get("enemies") or {}).get("soul_casters") or [])}
+    _wids = {w.get("id") for w in (data.get("weapons") or {}).get("items", [])}
+    _kt = set(((data.get("loot_tables") or {}).get("kind_tables") or {}).keys())
+    _num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
+    for _t in (data.get("enemies") or {}).get("items", []):
+        if "survival" in data and not (isinstance(_t.get("lag"), list) and _t["lag"] and all(isinstance(r, dict) and _num(r.get("from")) and _num(r.get("lag")) and 0 <= r["lag"] < 5 for r in _t["lag"])):
+            errors.append(f"enemies:{_t.get('id')}: lag is a list of {{from, lag}} rows, each lag 0 to 4 (rules 1.41; never 5: the gap rule's one-hit line)")
+    if "run" in _sv:
+        _r = _sv["run"]
+        for _k in ("start_credits", "dead_return_hp"):
+            if not _num(_r.get(_k)) or _r.get(_k) < 0: errors.append(f"survival:run.{_k}: a number of 0 or more")
+        if _r.get("first_setting") not in {s.get("id") for s in _sv.get("settings") or []}: errors.append("survival:run.first_setting: not a setting")
+    if "tiers" in _sv:
+        for _t in _tiers:
+            _row = _sv["tiers"].get(_t)
+            if not (isinstance(_row, dict) and _num(_row.get("bulk")) and _num(_row.get("pressure"))): errors.append(f"survival:tiers.{_t}: bulk and pressure for every enemy tier")
+        for _k in ("bulk_per_char_round", "bulk_band", "pressure_band", "lag_factor"):
+            if not _num(_sv.get(_k)): errors.append(f"survival:{_k}: a number")
+        for _k in ("pressure_per_char", "max_foes"):
+            if not (isinstance(_sv.get(_k), list) and len(_sv[_k]) == 4 and all(_num(v) for v in _sv[_k])): errors.append(f"survival:{_k}: four numbers, by party size 1 to 4")
+    for _ti, _tp in enumerate(_sv.get("templates") or []):
+        _w = f"survival:templates.{_tp.get('id', _ti)}"
+        if not set(_tp.get("nodes") or []) <= {"fight", "elite", "gate", "boss"} or not _tp.get("nodes"): errors.append(f"{_w}: nodes are fight, elite, gate or boss")
+        if not any(s.get("req") for s in _tp.get("slots") or []): errors.append(f"{_w}: at least one required slot (the anchor)")
+        for _s in _tp.get("slots") or []:
+            if _s.get("tier") and _s["tier"] not in _tiers: errors.append(f"{_w}: tier {_s['tier']!r} is not an enemy tier")
+            for _c in _s.get("caster") or []:
+                if _c not in _casters: errors.append(f"{_w}: caster {_c!r} is not in enemies.json casters or soul_casters")
+            if _s.get("kind") and (_s["kind"] not in _kt or _s["kind"] == "celestial"): errors.append(f"{_w}: kind {_s['kind']!r} is not a loot kind (never celestial)")
+            if _s.get("range") not in (None, "ranged", "melee", "close"): errors.append(f"{_w}: range is ranged, melee or close")
+            if _s.get("spawn") not in (None, "far", "near", "between", "back", "central", "flanks", "split"): errors.append(f"{_w}: spawn {_s.get('spawn')!r} is not a spawn")
+        if _tp.get("provisional") is not True: errors.append(f"{_w}: provisional: true")
+    for _st in _sv.get("settings") or []:
+        _w = f"survival:settings.{_st.get('id')}"
+        for _k in (_st.get("kinds") or {}):
+            if _k not in _kt or _k == "celestial": errors.append(f"{_w}: kind {_k!r} is not a loot_tables kind_tables key (and never celestial: the Accords)")
+        _b = _st.get("boss") or {}
+        if _b.get("weapon") not in _wids: errors.append(f"{_w}: the Boss's weapon {_b.get('weapon')!r} is not a weapon")
+        if _b.get("kind") not in _kt or _b.get("kind") == "celestial": errors.append(f"{_w}: the Boss's kind is not a loot kind")
+        for _c in _b.get("casters") or []:
+            if _c not in _casters: errors.append(f"{_w}: the Boss's caster {_c!r} is not a caster")
+    for _tier, _ranges in ((_sv.get("pools") or {}).items()):
+        if _tier in ("about", "provisional"): continue
+        if _tier not in _tiers: errors.append(f"survival:pools.{_tier}: not an enemy tier")
+        for _rg, _ids in (_ranges or {}).items():
+            for _id in _ids:
+                if _id not in _wids: errors.append(f"survival:pools.{_tier}.{_rg}: {_id!r} is not a weapon")
+    if "rewards" in _sv:
+        _rw = _sv["rewards"]
+        for _k, _tbl in (_rw.get("rarity") or {}).items():
+            for _rr in _tbl:
+                if _rr not in ("standard", "fine", "masterwork", "relic", "celestial"): errors.append(f"survival:rewards.rarity.{_k}: {_rr!r} is not a rarity")
+        for _rr in _rw.get("ceiling") or []:
+            if _rr not in ("standard", "fine", "masterwork", "relic"): errors.append(f"survival:rewards.ceiling: {_rr!r} (Celestial is never a ceiling)")
+    if "nodes" in _sv:
+        for _k in ("shop", "forge", "training", "shrine", "event", "cache", "rest"):
+            if not isinstance(_sv["nodes"].get(_k), str) or not _sv["nodes"][_k].strip(): errors.append(f"survival:nodes.{_k}: the panel's text")
+    for _k in ("run", "stage", "rounds", "tiers", "share", "map_size", "xp", "credits", "ammo_pack", "rewards", "nodes", "pools", "names"):
+        if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:
