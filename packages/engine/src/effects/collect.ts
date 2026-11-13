@@ -22,6 +22,8 @@ export function _addRawItems(kind: 'perk' | 'trait' | 'relic' | 'verb', items: a
 export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof typeof EXTRA)[]) EXTRA[k] = {}; infoCache.clear(); itemsCache.clear(); }
 /** The data's door verbs: the `items` of kind `verb` of each system's file (Shadow, Tending, Figments, the Chaplain's
  * prayers: one line here as each file comes), and those added at run time (addItems('verb', …): a test's fixtures). */
+// (each file names its tab, `tab`, and its rows' groups, `groups`: an item's `group` id gives its row's group name `subName`)
+const systemVerbs = (j: any): any[] => (j.items || []).map((x: any) => ({ ...x, tab: x.tab || j.tab, ...(x.group && j.groups?.[x.group] ? { subName: j.groups[x.group] } : {}) }));
 const FIG: any = figmentsJ;
 /** Rules 1.34 (figments.json): Picture and the core swap are door verbs; each form and each trait is a verb item held only
  * by a Figment unit (figments.ts gives it its held list): what every Figment is (unit_effects) and its own effects. Their
@@ -31,7 +33,7 @@ const FIGMENT_HELD = [
   ...((FIG.traits || []) as any[]).map((x) => ({ id: 'figtrait_' + x.id, name: x.name, kind: 'verb', requires: [{ owned: 'figment' }], text: x.text, ...(x.amounts ? { amounts: x.amounts } : {}), effects: x.effects || [], adjudication: 'engine', provisional: true })),
 ];
 // A system's verbs: Shadow's on its own tab (rules 1.32), Tending's (data/tending.json, rules 1.33), Figments' (rules 1.34).
-const DATA_VERBS: Record<string, any> = Object.fromEntries(([...((shadowJ as any).items || []).map((x: any) => ({ ...x, tab: 'shadow' })), ...((tendingJ as any).items || []), ...((FIG.items || []) as any[]), ...FIGMENT_HELD] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
+const DATA_VERBS: Record<string, any> = Object.fromEntries(([...systemVerbs(shadowJ), ...systemVerbs(tendingJ), ...systemVerbs(FIG), ...FIGMENT_HELD] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
 const verbData = (id: string): any => DATA_VERBS[id] || EXTRA.verb[id];
 const perkData = (id: string): any => (PERK as any)[id] || EXTRA.perk[id];
 const traitData = (id: string): any => TRAIT[id] || EXTRA.trait[id];

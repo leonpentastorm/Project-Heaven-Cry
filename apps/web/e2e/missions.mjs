@@ -2,7 +2,7 @@
 // The scripted Narrator answers OOC questions in its ooc field and marks "done:<objective id>" from a player's line.
 import { chromium, player, click, hostAs, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
-const host = await player(browser, 'host');
+const host = await player(browser, 'host', { campaigns: ['m813'] });
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
 const G = () => host.evaluate(() => window.__phc.getState().game);
@@ -90,7 +90,7 @@ if (SHOTS) { await settle(host, 900); await host.screenshot({ path: SHOTS + '/mi
 await card.getByRole('button', { name: 'Continue' }).click();
 await card.waitFor({ state: 'detached', timeout: 30000 });
 ok('Continue returns to the story', await host.locator('.phc-story').isVisible());
-await host.reload(); await host.waitForSelector('.phc-story', { timeout: 30000 }); await settle(host, 800);
+await host.reload(); await host.waitForSelector('.phc-story', { timeout: 90000 }); await settle(host, 800); // a reload took over 30 s beside other suites (load 35)
 ok('the card stays closed after a reload', !(await host.getByRole('dialog', { name: 'Mission complete' }).count()));
 console.log('errors', host.errors.filter((e) => !/ERR_TUNNEL_CONNECTION_FAILED|youtube/i.test(e)));
 await browser.close();

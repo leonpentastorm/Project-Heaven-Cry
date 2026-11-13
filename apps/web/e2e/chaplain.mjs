@@ -8,7 +8,7 @@
 import { chromium, click, BASE, pause, settle, tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
-const ctx = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 });
+const ctx = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: Number(process.env.DSF) || 1 });
 await ctx.addInitScript(() => { try { localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); sessionStorage.setItem('phc.pressedAnyKey', '1'); } catch { /* */ } });
 const p = await ctx.newPage();
 const errors = []; p.on('pageerror', (e) => errors.push(e.message));
@@ -71,11 +71,26 @@ const hymnErr = await act({ type: 'faith/pray', unitId: u.id, kind: 'hymn', id: 
 const wit = await p.waitForFunction((id) => !!window.__phc.getState().game.combat.units.find((x) => x.charId === id)?.conds?.witnessed, cid, { timeout: 30000 }).then(() => true, () => false);
 u = await me();
 ok('the Hymn (Thunderclap on the sergeant\'s tile): ' + (hymnErr || 'prayed') + '; Witnessed, the patron at the side', wit);
-// Sanctuary is a Hymn: right after the Hymn it waits for the Hymn's wait, in words; the CLASS tab lists the moves
+// Classes 3.0 step 10 (chaplain-spec.md section 9): the patron stands at the Witnessed Chaplain's side, on its tile
+// (the engine's presenceOf: the portrait at 40%)
+{
+  await dismiss();
+  const pr = p.locator('[data-presence]').first();
+  const shown = await pr.waitFor({ timeout: 30000 }).then(() => true, () => false);
+  const look = shown ? await pr.evaluate((el) => ({ patron: el.getAttribute('data-presence'), op: getComputedStyle(el).opacity, img: !!el.querySelector('img')?.getAttribute('src') })) : null;
+  ok('the presence: ' + JSON.stringify(look), !!look && look.patron === 'old_overcast' && Math.abs(Number(look.op) - 0.4) < 0.01 && look.img);
+  await p.mouse.move(700, 120); await settle(p, 200);
+  if (process.env.SHOTS_C3) await p.screenshot({ path: process.env.SHOTS_C3 + 'chaplain-witnessed-presence.png' });
+}
+// Sanctuary is a Hymn: right after the Hymn it waits for the Hymn's wait, in words. Since step 10 Ward and Sanctuary are
+// prayers on the FAITH tab (Ward among the Whispers, Sanctuary among the Hymns); Verdict stays on the CLASS tab.
 await p.locator('#phc-tab-class').click(); await settle(p, 200);
+ok('the CLASS tab lists Verdict (and not the two prayers)', await (async () => { const t = (await p.locator('[role="tabpanel"]').textContent()) || ''; return /Verdict/.test(t) && !/Ward|Sanctuary/.test(t); })());
+await p.locator('#phc-tab-faith').click(); await settle(p, 200);
 {
   const txt = (await p.locator('[role="tabpanel"]').textContent()) || '';
-  ok('the CLASS tab lists Ward, Sanctuary and Verdict', /Ward/.test(txt) && /Sanctuary/.test(txt) && /Verdict/.test(txt));
+  const order = (s) => txt.indexOf(s);
+  ok('the FAITH tab: WHISPERS (with Ward) then HYMNS (with Sanctuary)', order('WHISPERS') >= 0 && order('WHISPERS') < order('Ward') && order('Ward') < order('HYMNS') && order('HYMNS') < order('Sanctuary'));
   const sb = p.locator('[role="tabpanel"] button', { hasText: 'Sanctuary' }).first(), sTip = (await sb.count()) ? await tipOf(sb) : '';
   await act({ type: 'combat/perk', unitId: u.id, id: 'class:guardian.sanctuary', actionId: 'sanctuary', tile: u.pos }); await settle(p, 400);
   const zones = ((await G()).combat.zones || []).filter((z) => z.kind === 'sanctuary');
@@ -96,7 +111,7 @@ let smote = false, judged = false, second = null;
 for (let t = 0; t < 5 && !smote; t++) {
   if (t > 0) ok('turn ' + (t + 1), await nextTurn());
   u = await me();
-  while (u.ap >= 2 && !smote) {
+  for (let k = 0; k < 6 && u.ap >= 2 && !smote; k++) { // (bounded: a busy machine once left the AP unread and the loop ran to the suite's timeout)
     const before = (await G()).combat.log.length;
     const e = await act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot' });
     if (e) { console.log('note shot: ' + e); break; }
@@ -107,7 +122,7 @@ for (let t = 0; t < 5 && !smote; t++) {
   }
   if (smote && u.ap >= 2) {
     const n = ((await log()).match(/\(Smite\)/g) || []).length;
-    while (u.ap >= 2) { if (await act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot' })) break; u = await me(); }
+    for (let k = 0; k < 6 && u.ap >= 2; k++) { if (await act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot' })) break; u = await me(); }
     second = ((await log()).match(/\(Smite\)/g) || []).length === n;
   }
 }

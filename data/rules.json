@@ -2276,7 +2276,7 @@
     "provisional": true
   },
   "ties": {
-    "about": "Classes 3.0 P8 (engine: kit.ts tie, untie, tiesOf): the kinds of tie between two units. A row: id, max (a holder's base cap; the stat ties_max:<kind> adds to it; no max: no cap), ends_on (from_down, to_down, to_dead, unseen_round, combat_end), on_end (none, or unmake: the far end is unmade, P9). Each system adds its own kind.",
+    "about": "Classes 3.0 P8 (engine: kit.ts tie, untie, tiesOf): the kinds of tie between two units. A row: id, max (a holder's base cap; the stat ties_max:<kind> adds to it; no max: no cap), ends_on (from_down, to_down, to_dead, unseen_round, combat_end), on_end (none, or unmake: the far end is unmade, P9), line (the map draws the tie: ink, and foe_dash, the dash pattern to a unit of another side; screenViews.ts tieLines). Each system adds its own kind.",
     "kinds": [
       {
         "id": "owned",
@@ -2290,6 +2290,11 @@
         "id": "bond",
         "max": 0,
         "mark": "bonded",
+        "line": {
+          "ink": "#EB95B7",
+          "foe_dash": "5 4",
+          "about": "Classes 3.0 step 10 (Leon): a faint line on the map from the Bonder to each unit it is Bonded to while the tie lasts; Insight's ink; dashed to an enemy (the shape, not the colour alone, tells them apart). A kind with no line draws none."
+        },
         "gear": {
           "door": "empathy"
         },

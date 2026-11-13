@@ -4,7 +4,7 @@
 // Screenshots (deviceScaleFactor 1) land in e2e/shots/magic-*.png.
 import { chromium, player, click, hostAs, OUT, pickAction, pause, fxIdle, camStill, until, LOCK_IN, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
-const host = await player(browser, 'host');
+const host = await player(browser, 'host', { campaigns: ['m813'] });
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const snap = (n) => host.screenshot({ path: OUT + 'magic-' + n + '.png' });
 const G = () => host.evaluate(() => window.__phc.getState().game);

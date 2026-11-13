@@ -1,6 +1,8 @@
 {
   "$schema_version": "1.0",
   "kind": "figments",
+  "tab": "figments",
+  "groups": { "picture": "Picture" },
   "source": "PHC Core Rules v1.0, rules 1.34: Figments, the Visualizer and the Rigger (Classes 3.0 step 8; docs/design/figments-spec.md). Every number PROVISIONAL (spec section 14, items 2100 to 2199).",
   "adjudication": "engine",
   "provisional": true,
@@ -158,13 +160,13 @@
   "trait_charge": 1,
   "items": [
     {
-      "id": "picture", "name": "Picture", "kind": "verb", "requires": [{ "skill": "visualization", "min": 1 }],
+      "id": "picture", "name": "Picture", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
       "text": "Costs {=effects.0.ap} AP and the form's charge (more for each trait) from your Visualizer. A Figment of a ready design or a bare form you have opened appears on a free tile your side sees within your projection range. Needs the Visualizer in hand.",
       "effects": [{ "op": "grant_action", "action": "picture", "ap": 2, "uses": "at_will", "pick": "forms", "pick_label": "What to picture", "reach": { "tile": true } }],
       "adjudication": "engine", "provisional": true
     },
     {
-      "id": "visualizer_core", "name": "Load the Visualizer", "kind": "verb", "requires": [{ "skill": "visualization", "min": 1 }],
+      "id": "visualizer_core", "name": "Load the Visualizer", "kind": "verb", "group": "picture", "requires": [{ "skill": "visualization", "min": 1 }],
       "text": "Costs {=effects.0.ap} AP and a spare core: the Visualizer's core is swapped for a fresh one, full.",
       "effects": [{ "op": "grant_action", "action": "visualizer_core", "ap": 2, "uses": "at_will", "res": { "cores": 1 } }],
       "adjudication": "engine", "provisional": true

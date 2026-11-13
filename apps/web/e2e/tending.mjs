@@ -3,12 +3,13 @@
 // Bonds its squadmate for 1 AP, Triages and Mends it through the Bond (the Ledger fills), gives the Soldier a felt
 // feeling, and its next shot calls in the Ledger. Every action through the engine's descriptors (the TEND verbs on the
 // action panel, the class moves on the CLASS tab), the state checked after each. Screenshots: e2e/shots/tending-*.png.
-import { chromium, player, click, BASE, OUT, settle } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, settle, tipOf } from './lib.mjs';
 const browser = await chromium.launch();
-const host = await player(browser, 'host');
+const host = await player(browser, 'host'), mai = await player(browser, 'mai'); // a friend: the Mender's squadmate (an ally to Bond)
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const snap = (n) => host.screenshot({ path: OUT + 'tending-' + n + '.png' });
 const G = () => host.evaluate(() => window.__phc.getState().game);
+const actOn = (pg, a) => pg.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const act = (a) => host.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const until = (f, arg, t = 15000) => host.waitForFunction(f, arg, { timeout: t });
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
@@ -20,7 +21,7 @@ async function toMe() {
   for (let i = 0; i < 30; i++) {
     const cb = (await G()).combat, cur = cb.units.find((u) => u.id === cb.order[cb.turn]);
     if (cur && cur.charId === me && cur.ap >= 5) return true;
-    if (cur) await act({ type: 'combat/end-turn', unitId: cur.id });
+    if (cur) await actOn(cur.charId && cur.charId === mate ? mai : host, { type: 'combat/end-turn', unitId: cur.id });
     await settle(host, 250);
   }
   return false;
@@ -32,9 +33,36 @@ await host.goto(BASE);
 await click(host, 'PROVING GROUND', { timeout: 30000 });
 const nm = host.getByPlaceholder('Leon');
 await Promise.race([nm.waitFor({ timeout: 20000 }).catch(() => {}), until(() => !!window.__phc.getState().game?.sandbox, null, 20000).catch(() => {})]);
-if (await nm.count()) { await nm.fill('Leon'); await click(host, 'Solo ›'); }
+if (await nm.count()) { await nm.fill('Leon'); await click(host, 'With friends ›'); }
 await until(() => !!window.__phc.getState().game?.sandbox, null, 30000);
-let g = await G(); me = Object.keys(g.characters)[0];
+{ const invite = host.locator('div[role="dialog"][aria-label="Invite friends"]'); await invite.waitFor({ timeout: 30000 });
+  const code = (await G()).code; await invite.getByRole('button', { name: 'Gear up ›' }).click();
+  await mai.goto(BASE); await click(mai, 'JOIN A FRIEND', { timeout: 30000 });
+  await mai.getByPlaceholder('Leon').fill('Mai'); await mai.getByPlaceholder('ROOM CODE').fill(code); await click(mai, 'Join ›');
+  await mai.waitForFunction(() => !!window.__phc.getState().game?.sandbox && window.__phc.getState().screen === 'main', null, { timeout: 60000 }); }
+const maiId = await mai.evaluate(() => window.__phc.getState().me.id);
+let g = await G(); me = Object.values(g.characters).find((c) => c.owner !== maiId).id; mate = Object.values(g.characters).find((c) => c.owner === maiId)?.id || null;
+// ---------- Classes 3.0 step 10: the TEND tab's rows come and go with Empathy; a verb refused in words ----------
+// Empathy 1 and no Attuner: the tab is there, Shield (Empathy 2) and Raise (Empathy 3) are not, and Bond says why not.
+const tendRows = async () => { await host.locator('#phc-tab-tend').click(); await settle(host, 200); return host.locator('[role="tabpanel"] button').allTextContents(); };
+await act({ type: 'sandbox/class', charId: me, classId: null });
+await act({ type: 'sandbox/skill', charId: me, skill: 'empathy', points: 1 });
+await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/auto', on: false });
+await act({ type: 'sandbox/fight' });
+await until(() => window.__phc.getState().screen === 'combat');
+await act({ type: 'sandbox/clear' });
+ok('Empathy 1: my turn', await toMe());
+{
+  const rows = await tendRows(), txt = (await host.locator('[role="tabpanel"]').textContent()) || '';
+  ok('Empathy 1: the TEND tab, in its groups (' + ['BOND', 'HEAL', 'HELP'].filter((w) => txt.includes(w)).join(', ') + ')', rows.some((t) => /^Bond/.test(t)) && ['BOND', 'HEAL', 'HELP'].every((w) => txt.includes(w)));
+  ok('Empathy 1: no Shield (Empathy 2) and no Raise (Empathy 3)', !rows.some((t) => /^Shield/.test(t)) && !rows.some((t) => /^Raise/.test(t)));
+  const b = host.locator('[role="tabpanel"] button', { hasText: /^Bond/ }).first(), tip = (await b.count()) ? await tipOf(b) : '';
+  ok('no Attuner in hand: Bond says why (' + tip.slice(0, 60) + ')', /Needs an Attuner in hand\./.test(tip));
+  const strip = (await host.locator('[data-bond-strip]').first().textContent().catch(() => '')) || '';
+  ok('the Bond strip: none held, and why the threads are quiet (' + strip.slice(0, 60) + ')', /BONDS\s*0 \/ 1/.test(strip) && /Attuner/.test(strip));
+}
+await act({ type: 'sandbox/stop' });
+await host.waitForFunction(() => window.__phc.getState().game?.phase !== 'combat', null, { timeout: 30000 }).catch(() => {});
 await act({ type: 'sandbox/class', charId: me, classId: 'bard', rank: 2 });
 await act({ type: 'sandbox/skill', charId: me, skill: 'empathy', points: 6 });
 await act({ type: 'sandbox/give', charId: me, item: 'service_pistol', equip: true });
@@ -54,6 +82,14 @@ ok('a Soldier stands 4 tiles off', !!foe);
 const mates = g.combat.units.filter((v) => v.side === 'pc' && v.charId !== me && !v.dead);
 mate = mates[0]?.charId || null;
 await snap('01-start');
+{
+  const rows = await tendRows();
+  ok('Empathy 6: Shield and Raise have come (' + rows.filter((t) => /^(Shield|Raise)/.test(t)).length + ')', rows.some((t) => /^Shield/.test(t)) && rows.some((t) => /^Raise/.test(t)));
+  const mp = (await host.locator('.phc-res-row:not(.phc-res-mini)[data-res="mp"]').first().textContent().catch(() => '')) || '';
+  ok('the MP row names the Attuner as the door\'s focus (' + mp.replace(/\s+/g, ' ').slice(0, 50) + ')', /Attuner · off hand/.test(mp));
+  const rx = await host.locator('[data-reactions]').first().getAttribute('data-reactions').catch(() => null);
+  ok('the reaction pips beside AP read the engine (' + rx + ')', rx === '1 / 1');
+}
 
 // ---------- the TEND verbs are on the action panel, through the descriptors ----------
 await host.locator('#phc-tab-perks').click().catch(() => {}); await settle(host, 200);
@@ -64,16 +100,35 @@ ok('the panel offers Bond', names.some((t) => /Bond/.test(t)));
 // ---------- the free Bond on the Soldier (the Mender's: 0 AP); its save forced to fail ----------
 const ap0 = u.ap;
 let r = null;
-for (let i = 0; i < 6 && !r; i++) {
+// the Soldier saves against the Bond on some rolls: the free Bond is tried a turn at a time (the AI is off), at most 8
+for (let i = 0; i < 8; i++) {
   r = await perk('verb:tend.bond_free', { targetId: foe.id });
-  if (r) break;
-  g = await G(); if ((g.combat.ties || []).some((t) => t.kind === 'bond' && t.to === foe.id)) break;
-  r = 'the Soldier saved'; // a save passed: the free Bond is spent this turn
+  g = await G(); if ((g.combat.ties || []).some((t) => t.kind === 'bond' && t.to === foe.id)) { r = null; break; }
+  if (!r) r = 'the Soldier saved';
+  if (i < 7) { await act({ type: 'combat/end-turn', unitId: (await unit(me)).id }); await toMe(); }
 }
+u = await unit(me);
 g = await G(); u = await unit(me);
 const bonded = (g.combat.ties || []).some((t) => t.kind === 'bond' && t.from === u.id && t.to === foe.id);
 ok('free Bond: 0 AP (' + (r || 'tied: ' + bonded) + ')', u.ap === ap0);
+ok('the Soldier is Bonded (a save failed within 8 turns)', bonded);
 if (bonded) ok('the Soldier is Bonded and the Mender Traced next turn', !!g.combat.units.find((v) => v.id === foe.id).conds?.bonded);
+// Classes 3.0 step 10 (bonds-spec.md section 9): the Bond strip adds the enemy after a Bond that passes its save
+if (bonded) {
+  const chip = host.locator('[data-bond-strip] [data-bond-side="foe"] [data-bond="' + foe.id + '"]');
+  const shown = await chip.waitFor({ timeout: 30000 }).then(() => true, () => false);
+  const held = (g.combat.ties || []).filter((t) => t.kind === 'bond' && t.from === u.id).length;
+  const count = (await host.locator('[data-bond-count]').first().textContent().catch(() => '')) || '';
+  ok('the Bond strip lists the Soldier under the enemies, ' + count + ' held (the engine: ' + held + ')', shown && count.startsWith(held + ' / '));
+  const led = await host.locator('[data-ledger]').first().getAttribute('data-ledger').catch(() => null);
+  ok('the Ledger bar at the strip\'s end reads the engine (' + led + ')', !!led && led.startsWith((u.res?.ledger ?? 0) + ' / '));
+  ok('the Ledger is not repeated as a resource row', (await host.locator('[data-res="res-ledger"]').count()) === 0);
+  await host.locator('[data-bond-strip]').first().scrollIntoViewIfNeeded().catch(() => {});
+  await tendRows(); await host.locator('[data-bond-strip]').first().scrollIntoViewIfNeeded().catch(() => {}); await settle(host, 200);
+  await host.mouse.move(700, 120); await settle(host, 200); // no hover card over the picture
+  if (process.env.SHOTS_C3) await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-tend-bond-strip.png' });
+  await snap('01b-bond-strip');
+}
 
 // ---------- a Bond to the squadmate, Triage and Mend through it: the Ledger fills ----------
 if (mate) {
@@ -85,6 +140,30 @@ if (mate) {
   g = await G(); u = await unit(me);
   ok('Triage through the Bond: ' + (r || 'healed ' + (g.combat.units.find((v) => v.id === m.id).hp - hp0)), !r || /Already|full|range/i.test(r));
   ok('the Ledger counts it (' + (u.res?.ledger ?? 0) + ')', (u.res?.ledger ?? 0) >= 0);
+  // ---------- the Bond's line on the map (Leon, step 10's integration): faint, Insight ink, follows the tokens ----------
+  const tieSel = (to) => 'svg[data-tie-layer] line[data-tie-from="' + u.id + '"][data-tie-to="' + to + '"]';
+  const lineOf = (to) => host.evaluate((s) => { const l = document.querySelector(s); if (!l) return null; const a = (n) => l.getAttribute(n);
+    return { x1: +a('x1'), y1: +a('y1'), x2: +a('x2'), y2: +a('y2'), ink: a('stroke'), dash: a('stroke-dasharray') || '', w: +a('stroke-width'), op: +a('stroke-opacity'), pe: getComputedStyle(l.ownerSVGElement).pointerEvents }; }, tieSel(m.id));
+  await until(() => !!document.querySelector('svg[data-tie-layer] line[data-tie-kind="bond"]'), null, 30000).catch(() => {});
+  let ln = await lineOf(m.id);
+  ok('the Bond to the squadmate draws a faint solid line (' + JSON.stringify(ln) + ')', !!ln && ln.ink.toUpperCase() === '#EB95B7' && ln.dash === '' && ln.w <= 2 && ln.op <= 0.6 && ln.pe === 'none');
+  if (bonded) { const fl = await host.evaluate((s) => { const l = document.querySelector(s); return l ? l.getAttribute('stroke-dasharray') : null; }, tieSel(foe.id));
+    ok('the Bond to the Soldier draws a dashed line (' + fl + ')', !!fl); }
+  if (process.env.SHOTS_C3) { await host.mouse.move(700, 120); await settle(host, 200); await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-bond-lines.png' }); }
+  // the Mender steps a tile: the line's near end moves with it
+  const before = ln, step = await host.evaluate(({ id }) => { const cb = window.__phc.getState().game.combat, u = cb.units.find((x) => x.id === id), [x, y] = u.pos.split(',').map(Number);
+    const taken = new Set(cb.units.filter((v) => !v.dead).map((v) => v.pos)), bad = new Set([...(cb.map.solid || []), ...(cb.map.cover || []), ...(cb.map.full || [])]);
+    for (const [dx, dy] of [[0, 1], [1, 0], [0, -1], [-1, 0]]) { const k = (x + dx) + ',' + (y + dy); if (x + dx >= 0 && y + dy >= 0 && x + dx < cb.map.w && y + dy < cb.map.h && !taken.has(k) && !bad.has(k)) return k; } return null; }, { id: u.id });
+  if (step) {
+    r = await act({ type: 'combat/move', unitId: u.id, to: step, how: 'move' });
+    await until((b) => { const l = document.querySelector('svg[data-tie-layer] line[data-tie-kind="bond"][data-tie-side="ally"]'); return l && (+l.getAttribute('x1') !== b.x1 || +l.getAttribute('y1') !== b.y1); }, before, 30000).catch(() => {});
+    ln = await lineOf(m.id);
+    ok('the line follows the Mender\'s step (' + (r || step) + ': ' + before.x1 + ',' + before.y1 + ' → ' + (ln ? ln.x1 + ',' + ln.y1 : 'gone') + ')', !r && !!ln && (ln.x1 !== before.x1 || ln.y1 !== before.y1));
+  }
+  // Let Go: the line is gone the moment the tie is
+  r = await perk('verb:tend.let_go', { targetId: m.id });
+  await until((s) => !document.querySelector(s), tieSel(m.id), 30000).catch(() => {});
+  ok('Let Go ends the Bond and its line (' + (r || 'let go') + ')', !r && !(await lineOf(m.id)));
 }
 await snap('02-tended');
 

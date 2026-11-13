@@ -1,6 +1,7 @@
 {
   "$schema_version": "1.0",
   "kind": "shadow",
+  "tab": "shadow",
   "source": "docs/design/shadow-spec.md section 3; rules 1.32 (Classes 3.0 step 6): Perception's door verbs, through Ingenuity. Each is a door verb (kind verb, P6) held by anyone whose Ingenuity reaches its `requires`; the Break is a toggle on the attack card (skills.json ingenuity.1); the passive Still Breath is Ingenuity's unlock 5.",
   "groups": {
     "slip": "Slip",
@@ -96,7 +97,10 @@
               "condition": "hidden",
               "skip_save": true
             }
-          ]
+          ],
+          "why": {
+            "self_lacks": "Not while Marked, or already Hidden."
+          }
         }
       ]
     },
@@ -130,6 +134,9 @@
             "side": "foe",
             "if": {
               "target_sees_self": false
+            },
+            "why": {
+              "target_sees_self": "{target} can see you."
             }
           },
           "effects": [
@@ -140,7 +147,10 @@
               "skip_save": true,
               "say": "{self} reads {target}'s next move."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -177,6 +187,9 @@
             "side": "foe",
             "if": {
               "target_sees_self": false
+            },
+            "why": {
+              "target_sees_self": "{target} can see you."
             }
           },
           "effects": [
@@ -187,7 +200,10 @@
               "skip_save": true,
               "say": "{self} finds the seam in {target}'s guard."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -227,6 +243,10 @@
               "target_lacks": [
                 "off_balance"
               ]
+            },
+            "why": {
+              "target_sees_self": "{target} can see you.",
+              "target_lacks": "{target} is already off balance."
             }
           },
           "effects": [
@@ -241,7 +261,10 @@
               },
               "say": "{self} catches {target} at the wrong moment."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -278,6 +301,9 @@
             "side": "foe",
             "if": {
               "target_sees_self": false
+            },
+            "why": {
+              "target_sees_self": "{target} can see you."
             }
           },
           "effects": [
@@ -288,7 +314,10 @@
               "via": "ingenuity",
               "say": "{self} cuts {target}'s strap{then}."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -325,6 +354,9 @@
             "side": "foe",
             "if": {
               "target_sees_self": false
+            },
+            "why": {
+              "target_sees_self": "{target} can see you."
             }
           },
           "effects": [
@@ -335,7 +367,10 @@
               "via": "ingenuity",
               "say": "{self} fouls {target}'s weapon{then}."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -372,6 +407,9 @@
             "side": "foe",
             "if": {
               "target_sees_self": false
+            },
+            "why": {
+              "target_sees_self": "{target} can see you."
             }
           },
           "effects": [
@@ -382,7 +420,10 @@
               "skip_save": true,
               "say": "{self} plants a tracker on {target}{then}."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -424,6 +465,9 @@
                 "turret",
                 "drone"
               ]
+            },
+            "why": {
+              "target_kind": "Only a machine."
             }
           },
           "effects": [
@@ -435,7 +479,10 @@
               "via": "ingenuity",
               "say": "{self} reaches into {target}'s works{then}."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -477,6 +524,9 @@
                 "turret",
                 "drone"
               ]
+            },
+            "why": {
+              "target_kind": "Only a machine."
             }
           },
           "effects": [
@@ -488,7 +538,10 @@
               "via": "ingenuity",
               "say": "{self} takes over {target}{then}."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -529,7 +582,10 @@
               "op": "last_seen",
               "say": "{self} throws a sound: the enemy will look for them there."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -574,7 +630,10 @@
               "say": "{self} vaults over{then}.",
               "tiles": 2
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -615,7 +674,10 @@
               "has": "door",
               "say": "{self} works the lock{then}."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -656,7 +718,10 @@
               "has": "lamp",
               "say": "{self} douses the light{then}."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     },
@@ -710,7 +775,10 @@
               "amount": "rig",
               "say": "{self} rigs a trap{then}."
             }
-          ]
+          ],
+          "why": {
+            "self_has": "An enemy sees you: this needs you Hidden."
+          }
         }
       ]
     }

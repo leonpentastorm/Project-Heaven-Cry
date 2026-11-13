@@ -1952,13 +1952,21 @@ if TRIG:
             for v in o: _walk_grant_if(v, w)
     # Classes 3.0 P6: the one action shape. A grant_action's reach, prayer, limit, res and pick are closed lists.
     _RES_ROWS = set(((data.get("actions") or {}).get("resources") or {}).keys())
+    def _check_why(o, w):
+        if "why" not in o: return
+        if not isinstance(o["why"], dict) or not all(isinstance(v, str) and v for v in o["why"].values()): errors.append(f"{w}: why is an object of predicate: sentence"); return
+        for k in o["why"]:
+            if k not in (o.get("if") or {}): errors.append(f"{w}: why names '{k}', which is not one of its if's predicates")
     def _check_grant(g, w):
+        _check_why(g, w)
         r = g.get("reach")
         if r is not None:
             if not isinstance(r, dict): errors.append(f"{w}: a grant_action's reach is an object (tiles, sight, side, self, if, tied)")
             else:
                 for k in r:
-                    if k not in ("tiles", "sight", "side", "self", "if", "tied", "tile", "beyond", "object", "stand", "over"): errors.append(f"{w}: unknown reach field '{k}'")
+                    if k not in ("tiles", "sight", "side", "self", "if", "tied", "tile", "beyond", "object", "stand", "over", "why"): errors.append(f"{w}: unknown reach field '{k}'")
+                # Classes 3.0 step 10: `why` (on the grant and on its reach) is the screen's sentence for a predicate of its `if`
+                _check_why(r, w + ": reach")
                 # Classes 3.0 step 5 (rules 1.31): reach.tile: the action aims at a tile (within tiles, in sight), not a unit
                 if "tile" in r and (r["tile"] is not True or any(k in r for k in ("side", "self", "tied", "if"))): errors.append(f"{w}: reach.tile is true, with only tiles, sight, object, stand and over beside it")
                 # Classes 3.0 step 6, integration (rules 1.32: Pick, Douse, Rig, Vault): what the picked tile must be; an
@@ -1998,7 +2006,10 @@ if TRIG:
     for _k in ((data.get("rules") or {}).get("ties") or {}).get("kinds") or []:
         w = f"rules.ties.kinds:{_k.get('id')}"
         for f in _k:
-            if f not in ("id", "max", "ends_on", "on_end", "about", "provisional", "mark", "gear"): errors.append(f"{w}: unknown field '{f}'")
+            if f not in ("id", "max", "ends_on", "on_end", "about", "provisional", "mark", "gear", "line"): errors.append(f"{w}: unknown field '{f}'")
+        if "line" in _k:  # the map draws the tie (screenViews.ts tieLines): an ink, and the dash pattern to another side's unit
+            _ln = _k["line"]
+            if not (isinstance(_ln, dict) and isinstance(_ln.get("ink"), str) and re.fullmatch(r"#[0-9A-Fa-f]{6}", _ln["ink"]) and set(_ln) <= {"ink", "foe_dash", "about"} and isinstance(_ln.get("foe_dash", ""), str)): errors.append(f"{w}: line is {{ink: '#RRGGBB', foe_dash?: an SVG dash pattern, about?}}")
         if "mark" in _k and _k["mark"] not in known["condition"]: errors.append(f"{w}: mark names a condition (conditions.json)")
         if "gear" in _k and not (isinstance(_k["gear"], dict) and isinstance(_k["gear"].get("door"), str)): errors.append(f"{w}: gear is {{door}} (a focus the near end carries)")
         if "max" in _k and not (isinstance(_k["max"], int) and _k["max"] >= 0): errors.append(f"{w}: max is a whole number")

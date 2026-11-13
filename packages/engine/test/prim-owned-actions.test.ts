@@ -30,12 +30,12 @@ describe('the owned action system', () => {
     });
   });
 
-  it('its verbs are the owner\'s rows (Utility); sent, the owned unit moves and attacks and the owner pays', () => {
+  it('its verbs are the owner\'s rows (a Figment\'s: the Figments tab, Classes 3.0 step 10); sent, the owned unit moves and attacks and the owner pays', () => {
     const g0 = opsFight({}), u0 = pcs(g0)[0];
     const p0 = W(g0, () => spawnOwned(g0.combat, u0, PUPPET.id, '3,7', g0.rng)) as any;
     const rows = actionsFor(g0, u0.id).filter((d) => d.id.startsWith('ow:'));
     expect(rows.map((d) => d.id)).toEqual(['ow:' + p0.id + ':move', 'ow:' + p0.id + ':melee']);
-    expect(rows.every((d) => d.group === 'utility' && d.available)).toBe(true);
+    expect(rows.every((d) => d.group === 'figments' && !!d.sub && d.available)).toBe(true); // this fixture is owned_kind figment: its own group on the Figments tab
     expect(actionsFor(g0, pcs(g0)[1].id).some((d) => d.id.startsWith('ow:'))).toBe(false); // not the squadmate's
     // move: the descriptor's action through the reducer
     const mv = sendDescriptor(g0, u0.id, 'ow:' + p0.id + ':move', { tile: '3,8' });

@@ -2,7 +2,7 @@
 // Latest button, a point of interest rolled in its own popup, and the area map's status and log, with real ammo.
 import { chromium, player, click, BASE, hostAs, settle, until, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
-const host = await player(browser, 'host');
+const host = await player(browser, 'host', { campaigns: ['m813'] });
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
 
