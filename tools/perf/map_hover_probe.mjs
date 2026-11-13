@@ -76,7 +76,7 @@ await p.evaluate(() => {
   R.loaf = [];
   try { new PerformanceObserver((l) => { if (R.on) for (const e of l.getEntries()) R.loaf.push(e); }).observe({ type: 'long-animation-frame', buffered: false }); } catch { /* */ }
 });
-const start = () => p.evaluate(() => { const R = window.__probe; R.frames = []; R.last = 0; R.enters = 0; R.renders = 0; R.loaf = []; R.c0 = window.__phcRenderCount || 0; R.on = true; });
+const start = () => p.evaluate(() => { const R = window.__probe; R.frames = []; R.last = 0; R.enters = 0; R.renders = 0; R.loaf = []; R.c0 = window.__phcRenderCount || 0; R.h0 = window.__phcHoverTold || 0; R.on = true; });
 const stop = () => p.evaluate(() => { const R = window.__probe; R.on = false;
   const sum = (f) => R.loaf.reduce((a, e) => a + f(e), 0);
   const script = sum((e) => e.scripts.reduce((a, s) => a + s.duration, 0)), forced = sum((e) => e.scripts.reduce((a, s) => a + (s.forcedStyleAndLayoutDuration || 0), 0));
@@ -84,11 +84,11 @@ const stop = () => p.evaluate(() => { const R = window.__probe; R.on = false;
   // who spent the scripts' time and their forced layouts (the invoker: an event, a frame callback, a timer)
   const by = {}; for (const e of R.loaf) for (const s of e.scripts) { const k = (s.invokerType || '') + ' ' + (s.invoker || '').slice(0, 60) + ' ' + (s.sourceFunctionName || ''); const o = (by[k] ||= { ms: 0, forced: 0, n: 0 }); o.ms += s.duration; o.forced += s.forcedStyleAndLayoutDuration || 0; o.n++; }
   const top = Object.entries(by).sort((a, b) => b[1].ms - a[1].ms).slice(0, 6).map(([k, v]) => Math.round(v.ms) + ' ms (' + Math.round(v.forced) + ' forced, ' + v.n + 'x) ' + k);
-  return { frames: R.frames, enters: R.enters, mutations: R.renders, renders: (window.__phcRenderCount || 0) - R.c0, loaf: { n: R.loaf.length, ms: sum((e) => e.duration), script, forced, layout }, top }; });
+  return { frames: R.frames, enters: R.enters, mutations: R.renders, renders: (window.__phcRenderCount || 0) - R.c0, hover: (window.__phcHoverTold || 0) - R.h0, loaf: { n: R.loaf.length, ms: sum((e) => e.duration), script, forced, layout }, top }; });
 const stats = (r) => {
   const f = r.frames.slice(1); // (the first delta straddles the start)
   const n = f.length || 1, mean = f.reduce((a, b) => a + b, 0) / n;
-  return { n: f.length, mean: +mean.toFixed(1), worst: +Math.max(0, ...f).toFixed(1), over16: f.filter((x) => x > 16.7 * 1.05).length, over33: f.filter((x) => x > 33.4).length, enters: r.enters, mutations: r.mutations, renders: r.renders, loaf: r.loaf };
+  return { n: f.length, mean: +mean.toFixed(1), worst: +Math.max(0, ...f).toFixed(1), over16: f.filter((x) => x > 16.7 * 1.05).length, over33: f.filter((x) => x > 33.4).length, enters: r.enters, mutations: r.mutations, renders: r.renders, hover: r.hover, loaf: r.loaf };
 };
 
 // ---------- the scenarios ----------
@@ -96,10 +96,14 @@ const box = await p.evaluate(() => { const r = document.querySelector('.phc-grid
 const mid = { x: box.x + box.w / 2, y: box.y + box.h / 2 };
 const OFF = { x: 4, y: 880 };
 const farAway = async () => { await p.mouse.move(OFF.x, OFF.y); for (let i = 0; i < 6; i++) { await p.keyboard.press('ArrowRight'); await p.keyboard.press('ArrowDown'); } await settle(); await pause(250); };
-const sweep = async (ms) => {
-  // back and forth across the middle of the map, a tile about every 30 ms (a quick but ordinary hand)
+// Is anything moving the map: the camera gliding, or the effects queue playing (a walk)? Read the same way on any build.
+const busy = () => p.evaluate(() => { const c = window.__phcCamera?.(), d = window.__phcFxDebug?.(); return !!(c && c.gliding) || !!(d && (d.timers > 0 || d.queueEndIn > 0)); });
+const sweep = async (ms, until) => {
+  // back and forth across the middle of the map, two tiles a step (a quick but ordinary hand); `until`: stop after the
+  // pass in which it came true (and at least `ms`)
   const t0 = Date.now(); let dir = 1, x = box.x + 40;
-  while (Date.now() - t0 < ms) {
+  while (Date.now() - t0 < ms || (until && !(await until()))) {
+    if (Date.now() - t0 > 15000) break;
     const nx = dir > 0 ? box.x + box.w - 60 : box.x + 40;
     await p.mouse.move(nx, mid.y + (dir > 0 ? 20 : -20), { steps: 14 });
     dir = -dir; x = nx;
@@ -130,8 +134,9 @@ async function walk() {
   await p.mouse.move(mid.x, mid.y);
   await start();
   const err = await act({ type: 'combat/move', unitId: me.id, to });
-  const sw = sweep(1800);
-  await sw; await fxIdle(); await settle(); await pause(100);
+  // the sweep lasts as long as the walk plays (and the camera follows it): the frames are the motion's
+  await sweep(300, async () => !(await busy()));
+  await fxIdle(); await settle(); await pause(50);
   const r = await stop();
   await p.mouse.move(OFF.x, OFF.y);
   if (err) r.err = err;
@@ -151,12 +156,12 @@ for (const rate of RATES) {
     const all = [];
     for (let i = 0; i < RUNS; i++) all.push(await SC[s][1]());
     const add = (f) => all.reduce((a, r) => a + f(r), 0);
-    const merged = { frames: all.flatMap((r) => r.frames.slice(1)), enters: add((r) => r.enters), mutations: add((r) => r.mutations), renders: add((r) => r.renders),
+    const merged = { frames: all.flatMap((r) => r.frames.slice(1)), enters: add((r) => r.enters), mutations: add((r) => r.mutations), renders: add((r) => r.renders), hover: add((r) => r.hover || 0),
       loaf: { n: add((r) => r.loaf.n), ms: Math.round(add((r) => r.loaf.ms)), script: Math.round(add((r) => r.loaf.script)), forced: Math.round(add((r) => r.loaf.forced)), layout: Math.round(add((r) => r.loaf.layout)) } };
     merged.frames.unshift(0);
     const st = stats(merged); out[rate + 'x ' + s] = st;
     if (process.env.TOP) for (const r of all) for (const l of r.top || []) console.log('      ' + l);
-    console.log(`${rate}x  ${SC[s][0].padEnd(40)} frames ${String(st.n).padStart(4)}  mean ${String(st.mean).padStart(5)} ms  worst ${String(st.worst).padStart(6)} ms  >16.7 ${String(st.over16).padStart(4)}  >33 ${String(st.over33).padStart(4)}  tiles entered ${st.enters}  screen renders ${st.renders}  grid mutations ${st.mutations}  | long frames ${st.loaf.n}: ${st.loaf.ms} ms (script ${st.loaf.script}, forced layout ${st.loaf.forced}, style+layout ${st.loaf.layout})${all.some((r) => r.err) ? '  (move refused: ' + all.find((r) => r.err).err + ')' : ''}`);
+    console.log(`${rate}x  ${SC[s][0].padEnd(40)} frames ${String(st.n).padStart(4)}  mean ${String(st.mean).padStart(5)} ms  worst ${String(st.worst).padStart(6)} ms  >16.7 ${String(st.over16).padStart(4)}  >33 ${String(st.over33).padStart(4)}  tiles entered ${st.enters}  screen renders ${st.renders} (hover told ${st.hover})  grid mutations ${st.mutations}  | long frames ${st.loaf.n}: ${st.loaf.ms} ms (script ${st.loaf.script}, forced layout ${st.loaf.forced}, style+layout ${st.loaf.layout})${all.some((r) => r.err) ? '  (move refused: ' + all.find((r) => r.err).err + ')' : ''}`);
   }
 }
 if (PROFILE) {

@@ -17,7 +17,7 @@
 // The screen keeps `state.hover` as before: what a hover shows when the map is still (the path and its AP cost, the
 // legal tiles, the chips, the tooltip, the click target) is unchanged.
 import { activeCamera } from './cameraView';
-import { fxBusyUntil } from './fx/play';
+import { fxDebug } from './fx/play';
 
 /** What the screen gives: its current hovered tile and how to change it (a setState). */
 export interface HoverHost { hovered(): string | null; setHover(key: string | null): void }
@@ -45,12 +45,16 @@ export function keyFromLabel(label: string | null | undefined): string | null {
 export interface Motion { camera: boolean; scrolledAgo: number; fxBusy: boolean }
 export function motionNow(): Motion {
   const cam = activeCamera();
-  let busy = false; try { busy = fxBusyUntil() > now() + 1; } catch { busy = false; }
+  // (the effects queue's beats still to play, a walk under way, a timer of the layer's still to run: what the browser
+  // suites call idle, read only while a hover waits)
+  let busy = false; try { const d = fxDebug(); busy = d.queueEndIn > 0 || d.walking.length > 0 || d.timers > 0; } catch { busy = false; }
   return { camera: !!cam && cam.moving(), scrolledAgo: cam ? now() - cam.scrolledAt() : Infinity, fxBusy: busy };
 }
 export const isMoving = (m: Motion) => m.camera || m.fxBusy || m.scrolledAgo < SCROLL_QUIET_MS;
 // For the browser suites and the probe: what the hover sees as motion now.
-if (typeof window !== 'undefined') (window as any).__phcMapMotion = () => motionNow();
+/** How many times any map hover told its screen (window.__phcHoverTold: the probe tells hover renders from the rest). */
+export const HOVER_TOLD = { count: 0 };
+if (typeof window !== 'undefined') { (window as any).__phcMapMotion = () => motionNow(); Object.defineProperty(window, '__phcHoverTold', { get: () => HOVER_TOLD.count, configurable: true }); }
 
 /** The hover of one map. One per screen instance; `host` is the screen. */
 export class MapHover {
@@ -98,7 +102,7 @@ export class MapHover {
     if (!tile) return null; // a label, a gap: no tile
     return KEY_OF.get(tile) ?? keyFromLabel(tile.getAttribute('aria-label')) ?? this.cand;
   }
-  private tell(key: string | null) { if (this.host.hovered() === key) return; this.told++; this.host.setHover(key); }
+  private tell(key: string | null) { if (this.host.hovered() === key) return; this.told++; HOVER_TOLD.count++; this.host.setHover(key); }
 }
 
 /** A small cache for what a hover shows (the route to the hovered tile, its preview): asked again for the same tile in
