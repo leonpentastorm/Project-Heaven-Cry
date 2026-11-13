@@ -1,10 +1,15 @@
 // @vitest-environment jsdom
 // Shots on screen match rounds spent (Leon, 12 Nov 2026: "Burst eats 3 ammo but shoots only 2 bullet VFX on many
-// weapons"). For every gun in the data and every shooting technique it can use (and the plain Burst and full auto, for
-// a character and for an enemy), the engine really fires it (the test fight of the engine's own suite), and the client
-// plays the effects it sent: the rounds drawn (a tracer, an arrow, a gout: each `round` the effects trace) must be the
-// rounds the magazine lost, and the casings thrown out must be the same number for a gun that throws one per shot (none
-// for a revolver, a break-action or a bow, which empty theirs at the reload). Past STREAM_CAP a Mag Dump's stream draws
+// weapons"), and since 13 Nov 2026 (no tracers: "change the effect for shots to a bullet hole"): bullet holes drawn =
+// rounds that hit; casings = rounds spent. For every gun in the data and every shooting technique it can use (and the
+// plain Burst and full auto, for a character and for an enemy), the engine really fires it (the test fight of the
+// engine's own suite), and the client plays the effects it sent: the rounds fired (each `round` the effects trace: its
+// muzzle flash, an arrow, a gout) must be the rounds the magazine lost; the casings thrown out the same number for a gun
+// that throws one per shot (none for a revolver, a break-action or a bow, which empty theirs at the reload); and the
+// marks put down (each `hole` traced: a bullet hole, a shotgun's pellet cluster, an arrow's shaft) the rounds that hit:
+// one for each roll that hit (a unit, an object, or the cover in the way), and one for each round it carried beyond
+// itself (a Burst's third, a double barrel's second shell); the rounds of a spray (full auto, a Mag Dump's stream,
+// Suppress's two before its rolled one) are fired at nobody and mark nothing. Past STREAM_CAP a Mag Dump's stream draws
 // that many. The engine's side: combat.ts noteLoose (the rounds a volley spent with no roll of their own).
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { refOf, WEAPONS, TECHNIQUES, fireBurst, fireAuto } from '@engine';
@@ -12,6 +17,7 @@ import { fightWith, withGame } from '../../../../../packages/engine/test/helpers
 import { setLayer } from './dom';
 import { queueFx, setContext, clearFx } from './play';
 import { resetRanged, STREAM_CAP } from './ranged';
+import { techPrepass, shotMarkOf, TECH_FX, rowKey } from './techniqueFx';
 import { brassOf } from './brass';
 import { setInBattle } from '../combatSpeed';
 
@@ -32,7 +38,7 @@ const guns = (WEAPONS as any[]).filter((w) => w.magazine != null && (GUN_CATS.in
 /** The shooting techniques: ranged, firing rounds now (a Watch fires later, a Set fires none, a Lob is a grenade's). */
 const SHOOTING = (TECHNIQUES as any[]).filter((t) => t.system === 'ranged' && ['fire', 'press', 'take'].includes(t.group) && t.rounds !== 0 && t.id !== 'lob').map((t) => t.id);
 
-interface Run { label: string; spent: number; rounds: number; shells: number; perShot: boolean }
+interface Run { label: string; spent: number; rounds: number; shells: number; perShot: boolean; holes: number; hits: number }
 /** Fire `what` with this gun (a character's technique, or a plain attack mode by a character or an enemy) and play it. */
 function fire(gun: any, what: { tech?: string; mode?: string; enemy?: boolean }): Run | null {
   const f = fightWith([{ weapon: gun.id, level: 6, skills: { dexterity: 5, raw_power: 5, athletics: 3 }, attrs: { agility: 5, strength: 5 } }], [{ weapon: what.enemy ? gun.id : 'service_pistol' }, {}, {}]);
@@ -56,7 +62,17 @@ function fire(gun: any, what: { tech?: string; mode?: string; enemy?: boolean })
   vi.advanceTimersByTime(30000);
   const T: any[] = (window as any).__phcFxTrace;
   clearFx();
-  return { label: gun.id + ' · ' + (what.tech || what.mode) + (what.enemy ? ' (enemy)' : ''), spent, rounds: T.filter((x) => x.w === 'round' && x.unit === u1.id).length, shells: T.filter((x) => x.w === 'shell').length, perShot: brassOf(gun.id, gun.category).when === 'shot' };
+  // the rounds that hit, from the events: each roll that hit (or struck the cover in the way), and the rounds it carries
+  // beyond itself (the pre-pass hands a volley's loose rounds to its last roll, as the queue does; a bullet Mag Dump's
+  // stream keeps them: a spray), for a weapon whose rounds leave a mark and a roll that is not a miss on purpose
+  const pre = techPrepass(evs as any[], (v: any) => v.mode === 'dump' && v.cat !== 'shotgun' && shotMarkOf(v.weapon, v.cat) === 'hole');
+  let hits = 0;
+  for (const e of pre as any[]) {
+    if (e.k === 'shot' && !e.thrown && shotMarkOf(e.weapon, e.cat) && !TECH_FX[rowKey(e) || '']?.noRoll) {
+      if (e.hit) hits += 1 + (e.tech === 'suppress' ? 0 : Number(e._loose) || 0); else if (e.cover && !e.object) hits += 1;
+    }
+  }
+  return { label: gun.id + ' · ' + (what.tech || what.mode) + (what.enemy ? ' (enemy)' : ''), spent, rounds: T.filter((x) => x.w === 'round' && x.unit === u1.id).length, shells: T.filter((x) => x.w === 'shell').length, perShot: brassOf(gun.id, gun.category).when === 'shot', holes: T.filter((x) => x.w === 'hole').length, hits };
 }
 
 beforeEach(() => { vi.useFakeTimers(); resetRanged(); clearFx(); });
@@ -79,7 +95,9 @@ describe('shots on screen match rounds spent (every gun × every shooting techni
         if (r.spent > STREAM_CAP) { expect(r.rounds, r.label).toBeGreaterThanOrEqual(STREAM_CAP); expect(r.rounds, r.label).toBeLessThanOrEqual(r.spent); }
         else expect(r.rounds, r.label + ': rounds drawn vs spent').toBe(r.spent);
         expect(r.shells, r.label + ': casings').toBe(r.perShot ? r.rounds : 0);
+        expect(r.holes, r.label + ': marks drawn vs rounds that hit').toBe(r.hits);
       }
+      if (shotMarkOf(gun.id, gun.category)) expect(runs.some((r) => r.holes > 0), gun.id + ': no round of any run hit (the walk would prove nothing)').toBe(true);
     }, 120000);
   }
   it('a character\'s Burst: three rounds drawn for its two rolls, the third on the second roll', () => {

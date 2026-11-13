@@ -357,12 +357,12 @@ describe('review: a technique\'s record ends with its action', () => {
   it('R9: Punch Through Heavy: the round carries on into the next in line, and its hurt waits for it', () => {
     const layer = grid();
     const t = tech('punch_through'); tagOf(t); tagOf(shot());
-    const proj = () => ([...layer.children] as HTMLElement[]).filter((b) => b.style.transformOrigin === '100% 50%').length;
-    const before = proj();
+    // (a bullet is not drawn in flight since 13 Nov 2026: the round arrives as its hole in the next one, with the hurt)
+    const holes = () => layer.querySelectorAll('[data-tech-fx="hole"]').length;
+    const before = holes();
     playFx({ k: 'hurt', n: n(), target: 'f2', at: '7,4', dmg: 6, why: 'weapon' } as any);
-    expect(proj()).toBe(before + 1);
-    vi.advanceTimersByTime(40); expect(text(layer)).not.toMatch(/6/);
-    vi.advanceTimersByTime(200); expect(text(layer)).toMatch(/6/);
+    vi.advanceTimersByTime(40); expect(text(layer)).not.toMatch(/6/); expect(holes()).toBe(before);
+    vi.advanceTimersByTime(200); expect(text(layer)).toMatch(/6/); expect(holes()).toBe(before + 1);
   });
   it('RFX-2: a plain Shot\'s miss into cover is today\'s (no ranged debris); a technique\'s throws it', () => {
     const layer = grid();

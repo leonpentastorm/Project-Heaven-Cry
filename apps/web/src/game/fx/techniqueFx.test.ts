@@ -1,18 +1,20 @@
 // @vitest-environment jsdom
 // Every physical technique has its own animation (fx/techniqueFx.ts, the table; fx/techniqueParts.ts, the parts). Leon,
-// 12 Nov 2026: "every technique that doesn't have its own unique SVG animation to have one", with "an attack effect
-// and a result effect so you feel something if it misses". So: every technique in the data and every base-class move
-// that makes a physical attack has a row; every part a row names exists; no two rows are the same; every row has an
-// attack and a result for a hit and (when it can miss) for a miss; a hit, a miss and a crit draw different things; the
-// parts draw, follow the clock and leave nothing behind.
+// 12 Nov 2026: "every technique that doesn't have its own unique SVG animation to have one". So: every technique in the
+// data and every base-class move that makes a physical attack has a row; every part a row names exists; no two rows are
+// the same; every row has a result for a hit; the parts draw, follow the clock and leave nothing behind.
+// Leon, 13 Nov 2026 (live 0.25.0): no tracer lines, no half circle on a swing, no miss effects; a shot that hits leaves
+// a bullet hole. So a miss draws no result (its word MISS is the whole of it), and a shot's hit is the weapon's mark,
+// chosen by the weapon's family (its ammunition in the data): every gun × every shooting technique it can use is
+// walked here and must leave its family's mark.
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { refOf, TECHNIQUES } from '@engine';
+import { refOf, TECHNIQUES, WEAPONS } from '@engine';
 import { setLayer } from './dom';
 import { playFx, setContext, clearFx } from './play';
 import { resetRanged } from './ranged';
-import { TECH_FX, PART_NAMES, partsOf, rowKey, techPrepass, inkOf, ATTR_INK, playRow } from './techniqueFx';
+import { TECH_FX, PART_NAMES, partsOf, rowKey, techPrepass, inkOf, ATTR_INK, playRow, shotMarkOf, LOOSE_GAP } from './techniqueFx';
 import { PARTS } from './techniqueParts';
 import * as sfxMod from '../sfx';
 
@@ -60,13 +62,21 @@ describe('the table: a row for every physical technique', () => {
     expect(moves.length).toBeGreaterThanOrEqual(5);
     expect(moves.filter((k) => !TECH_FX[k])).toEqual([]);
   });
-  it('every part a row names exists; every row has an attack and a result for a hit; one that rolls has a miss too', () => {
+  it('every part a row names exists; every row has a result for a hit (an attack part is the technique\'s own, and optional)', () => {
     for (const [k, r] of Object.entries(TECH_FX)) {
       for (const n of partsOf(r)) expect(PART_NAMES, k + ' names ' + n).toContain(n);
-      expect(r.attack.length, k + ': no attack').toBeGreaterThan(0);
       expect(r.hit.length, k + ': no hit result').toBeGreaterThan(0);
-      const rolls = r.on === 'strike' && !r.noRoll, resists = r.on === 'use' && !['guard', 'sidestep', 'raise_shield', 'shield_wall', 'interpose', 'bead', 'spot', 'brace', 'load_special', 'shift', 'vent', 'head_down'].includes(k);
-      if (rolls || resists || r.on === 'shove') expect(r.miss.length, k + ': no miss result').toBeGreaterThan(0);
+    }
+  });
+  it('the removed parts are gone for good: no tracer, no swept arc, no miss marks (Leon, 13 Nov 2026)', () => {
+    for (const n of ['tracer', 'slash', 'whiff', 'deflect', 'wide']) expect(PART_NAMES, n).not.toContain(n);
+    expect(Object.values(TECH_FX).some((r) => 'miss' in r)).toBe(false);
+  });
+  it('a shooting row\'s hit is the weapon\'s mark (`round`), unless its round misses on purpose or lands as a blast', () => {
+    for (const t of (TECHNIQUES as any[]).filter((x) => x.system === 'ranged')) {
+      const r = TECH_FX[t.id]; if (r.on !== 'strike') continue;
+      const has = r.hit.some(([n]) => n === 'round');
+      if (r.noRoll || t.id === 'lob') expect(has, t.id).toBe(false); else expect(has, t.id).toBe(true);
     }
   });
   it('no two rows are the same (each technique is recognisable), and the table is not padded with rows for nothing', () => {
@@ -75,12 +85,8 @@ describe('the table: a row for every physical technique', () => {
     const known = new Set([...(TECHNIQUES as any[]).map((t) => t.id), ...physicalMoves()]);
     expect(Object.keys(TECH_FX).filter((k) => !known.has(k))).toEqual([]);
   });
-  it('a miss never draws the hit\'s mark, and a crit adds to the hit (three different results)', () => {
-    for (const [k, r] of Object.entries(TECH_FX)) {
-      if (!r.miss.length) continue;
-      expect(JSON.stringify(r.miss), k).not.toBe(JSON.stringify(r.hit));
-      if (r.on === 'strike' && !r.noRoll) expect(r.crit.length, k + ': a crit adds nothing').toBeGreaterThan(0);
-    }
+  it('a crit adds to the hit on every strike that rolls', () => {
+    for (const [k, r] of Object.entries(TECH_FX)) if (r.on === 'strike' && !r.noRoll) expect(r.crit.length, k + ': a crit adds nothing').toBeGreaterThan(0);
   });
   it('which row an event plays: its technique, its class move, else Cut or Shot', () => {
     expect(rowKey({ k: 'melee', tech: 'sunder' })).toBe('sunder');
@@ -118,29 +124,30 @@ describe('the pre-pass: rounds to their rolls, a use read ahead', () => {
 });
 
 describe('the parts draw, keep the clock and clean up', () => {
-  const ctx = (outcome: 'hit' | 'miss' | 'crit' | 'use') => ({ a: { x: 60, y: 140, s: 40 }, b: { x: 180, y: 140, s: 40 }, dir: { x: 1, y: 0 }, s: 40, ink: '#F68A38', weapon: 'war_axe', strikes: 2 });
-  it('every row draws its attack, then its result at the landing time, and every node is gone after', () => {
+  const ctx = (outcome: 'hit' | 'miss' | 'crit' | 'use') => ({ a: { x: 60, y: 140, s: 40 }, b: { x: 180, y: 140, s: 40 }, dir: { x: 1, y: 0 }, s: 40, ink: '#F68A38', weapon: 'war_axe', strikes: 2, mark: 'hole' });
+  it('every row draws its attack now and its result only at the landing time, and every node is gone after', () => {
     const layer = grid();
-    for (const [k, r] of Object.entries(TECH_FX)) for (const out of ['hit', 'miss', 'crit'] as const) {
+    for (const [k, r] of Object.entries(TECH_FX)) for (const out of ['hit', 'crit'] as const) {
       playRow(k, r, ctx(out), out, 120);
-      const attackNow = pieces(layer).length;
-      expect(attackNow, k + ' ' + out + ': no attack drawn').toBeGreaterThan(0);
+      expect(pieces(layer).length > 0, k + ' ' + out + ': the attack drawn now').toBe(r.attack.length > 0);
       vi.advanceTimersByTime(130);
+      expect(pieces(layer).length, k + ' ' + out + ': the result drawn at the landing').toBeGreaterThan(0);
       vi.advanceTimersByTime(3000);
       expect(pieces(layer).length, k + ' ' + out + ': nodes left').toBe(0);
     }
   });
-  it('a hit, a miss and a crit draw different results; a miss is never empty', () => {
+  it('a miss draws no result at all: only the technique\'s own attack, if it has one; a crit differs from a hit', () => {
     const layer = grid();
     for (const [k, r] of Object.entries(TECH_FX)) {
-      if (r.on !== 'strike' || r.noRoll) continue;
       const seen: Record<string, string> = {};
       for (const out of ['hit', 'miss', 'crit'] as const) {
-        playRow(k, r, ctx(out), out, 100); vi.advanceTimersByTime(105);
-        seen[out] = pieces(layer).sort().join(','); vi.advanceTimersByTime(3000);
+        playRow(k, r, ctx(out), out, 100); const now = pieces(layer).sort().join(','); vi.advanceTimersByTime(105);
+        seen[out] = pieces(layer).sort().join(','); if (out === 'miss') seen.missAttack = now; vi.advanceTimersByTime(3000);
       }
-      expect(seen.miss, k).not.toBe(seen.hit); expect(seen.crit, k).not.toBe(seen.hit);
-      expect(seen.miss.length, k).toBeGreaterThan(0);
+      const attackParts = new Set(r.attack.map(([n]) => n));
+      expect(seen.miss.split(',').filter(Boolean).every((n) => attackParts.has(n)), k + ': a miss drew ' + seen.miss).toBe(true);
+      if (!r.attack.length) expect(seen.miss, k).toBe('');
+      if (r.on === 'strike' && !r.noRoll) expect(seen.crit, k).not.toBe(seen.hit);
     }
   });
   it('nothing of the result lands before the impact: a melee strike\'s result waits for its 120 ms', () => {
@@ -152,20 +159,90 @@ describe('the parts draw, keep the clock and clean up', () => {
     expect(pieces(layer)).toContain('crack');
     expect((window as any).__phcTechFx.at(-1)).toMatchObject({ key: 'sunder', outcome: 'hit' });
   });
-  it('a missed shot plays its wide result; a plain swing plays Cut\'s row; reduced motion still shows the end state', () => {
+  it('a missed shot and a missed swing draw nothing on the layer (the word MISS only); a plain swing plays Cut\'s row', () => {
     const layer = grid();
+    const floats = () => Array.from(layer.querySelectorAll('span')).map((x) => x.textContent);
     playFx({ k: 'shot', n: ++N, unit: 'pc-a', target: 'f1', from: '1,3', to: '4,3', weapon: 'service_pistol', cat: 'pistol', mode: 'shot', hit: false, crit: false, dmg: 0 } as any);
-    vi.advanceTimersByTime(400);
+    for (let t = 0; t < 600; t += 20) { vi.advanceTimersByTime(20); expect(pieces(layer), 'a shot\'s miss at ' + t + ' ms').toEqual([]); }
     expect((window as any).__phcTechFx.at(-1)).toMatchObject({ key: 'shot', outcome: 'miss' });
+    expect(floats()).toContain('MISS');
+    vi.advanceTimersByTime(3000);
+    playFx({ k: 'melee', n: ++N, unit: 'pc-a', target: 'f1', from: '1,3', to: '2,3', weapon: 'sabre', cat: 'light_melee', mode: 'melee', hit: false, crit: false, dmg: 0 } as any);
+    for (let t = 0; t < 600; t += 20) { vi.advanceTimersByTime(20); expect(pieces(layer), 'a swing\'s miss at ' + t + ' ms').toEqual([]); }
+    expect(floats()).toContain('MISS');
+    vi.advanceTimersByTime(3000);
+    // a hit: no arc swept with the swing, the cut (Cut's mark) on the target as it lands
+    playFx({ k: 'melee', n: ++N, unit: 'pc-a', target: 'f1', from: '1,3', to: '2,3', weapon: 'sabre', cat: 'light_melee', mode: 'melee', hit: true, crit: false, dmg: 9 } as any);
+    expect(pieces(layer)).toEqual([]);
+    expect(Array.from(layer.querySelectorAll('[data-fx-sprite]')).length + Array.from(layer.querySelectorAll('img')).filter((i) => /slash/.test(i.getAttribute('src') || '')).length).toBe(0);
+    vi.advanceTimersByTime(125);
+    expect(pieces(layer)).toEqual(['cross']);
     vi.advanceTimersByTime(3000);
     vi.spyOn(sfxMod, 'reducedMotion').mockReturnValue(true);
     playFx({ k: 'melee', n: ++N, unit: 'pc-a', target: 'f1', from: '1,3', to: '4,3', weapon: 'combat_knife', cat: 'light_melee', mode: 'melee', hit: true, crit: true, dmg: 9 } as any);
     vi.advanceTimersByTime(130);
-    expect(pieces(layer)).toEqual(expect.arrayContaining(['slash', 'cross', 'star']));
+    expect(pieces(layer)).toEqual(expect.arrayContaining(['cross', 'star']));
     expect((window as any).__phcTechFx.at(-1)).toMatchObject({ key: 'cut', outcome: 'crit' });
   });
+  it('a shot that hits puts its bullet hole on the target as the round lands (not before), and it fades in about a second', () => {
+    const layer = grid();
+    playFx({ k: 'shot', n: ++N, unit: 'pc-a', target: 'f1', from: '1,3', to: '4,3', weapon: 'service_pistol', cat: 'pistol', mode: 'shot', hit: true, crit: false, dmg: 9 } as any);
+    expect(pieces(layer)).not.toContain('hole');
+    vi.advanceTimersByTime(40);
+    expect(pieces(layer)).not.toContain('hole');
+    vi.advanceTimersByTime(200);
+    expect(pieces(layer)).toEqual(['hole']);
+    vi.advanceTimersByTime(1400);
+    expect(pieces(layer)).toEqual([]);
+  });
+
   it('every part survives a missing attacker (fog) without throwing', () => {
     grid();
     for (const n of PART_NAMES) expect(() => PARTS[n]({ a: null, b: { x: 100, y: 100, s: 40 }, dir: { x: 1, y: 0 }, s: 40, ink: '#FFF', scale: 1, delay: 0, outcome: 'hit' }, {})).not.toThrow();
+  });
+});
+
+// Leon, 13 Nov 2026: "Rake and Mag Dump on a shotgun also use the shoot effect even though it says right on the card:
+// double barrel." A shot's mark is the weapon's family's, whatever the technique: walked here for every gun in the data
+// × every shooting technique its properties allow (the data's lines and not_with), hit by a synthetic shot of it.
+describe('every gun family × every shooting technique it can use leaves its family\'s mark', () => {
+  /** What the data says the family's mark is: a shell's pellets, an arrow's or a bolt's shaft, nothing for a grenade, a
+   *  rocket, fuel or a thrown weapon, a bullet hole for any other cartridge. */
+  const familyMark = (w: any): string | null => (w.category === 'thrown' || !w.ammo ? null : w.ammo === 'shell' ? 'pellets' : ['arrow', 'bolt'].includes(w.ammo) ? 'shaft' : ['40 mm grenade', 'rocket', 'fuel canister'].includes(w.ammo) ? null : 'hole');
+  const guns = (WEAPONS as any[]).filter((w) => w.phys?.system === 'ranged' && w.category !== 'thrown');
+  const props = (w: any): string[] => w.phys?.props || [];
+  const usable = (w: any) => (TECHNIQUES as any[]).filter((t) => t.system === 'ranged' && TECH_FX[t.id]?.on === 'strike' && !(t.not_with || []).some((p: string) => props(w).includes(p)) && !(t.lines || []).some((l: any) => /can.t be used/.test(l.text || '') && l.props.some((p: string) => props(w).includes(p))));
+  it('the walk covers every family: bullets, shells, arrows and bolts, and the ones with no mark', () => {
+    const fams = new Set(guns.map(familyMark));
+    expect([...fams].sort()).toEqual(['hole', 'pellets', 'shaft', null].sort() as any);
+    expect(guns.length).toBeGreaterThan(25);
+  });
+  for (const w of guns) it(w.id + ' (' + (familyMark(w) || 'no mark') + ')', () => {
+    const layer = grid();
+    expect(shotMarkOf(w.id, w.category), w.id).toBe(familyMark(w));
+    for (const t of usable(w)) {
+      (window as any).__phcFxTrace = [];
+      playFx({ k: 'shot', n: ++N, unit: 'pc-a', target: 'f1', from: '1,3', to: '4,3', weapon: w.id, cat: w.category, mode: 'shot', hit: true, crit: false, dmg: 9, tech: t.id } as any);
+      vi.advanceTimersByTime(1200);
+      const marks = ((window as any).__phcFxTrace as any[]).filter((x) => x.w === 'hole').map((x) => x.kind);
+      const want = TECH_FX[t.id].noRoll || t.id === 'lob' ? null : familyMark(w);
+      expect(marks, w.id + ' · ' + t.id).toEqual(want ? [want] : []);
+      vi.advanceTimersByTime(3000); clearFx(); layer.innerHTML = '';
+    }
+    (window as any).__phcFxTrace = undefined;
+  });
+  it('a double barrel firing both barrels: two blasts one-two, two pellet clusters, one LOOSE_GAP apart; a miss draws none', () => {
+    grid();
+    for (const hit of [true, false]) {
+      (window as any).__phcFxTrace = [];
+      playFx({ k: 'shot', n: ++N, unit: 'pc-a', target: 'f1', from: '1,3', to: '4,3', weapon: 'coach_gun', cat: 'shotgun', mode: 'shot', hit, crit: false, dmg: hit ? 9 : 0, tech: 'mag_dump', _loose: 1 } as any);
+      vi.advanceTimersByTime(1500);
+      const T: any[] = (window as any).__phcFxTrace, holes = T.filter((x) => x.w === 'hole'), blasts = T.filter((x) => x.w === 'muzzle');
+      expect(blasts.length).toBe(2); expect(blasts.every((b) => b.wide)).toBe(true);
+      if (hit) { expect(holes.map((x) => x.kind)).toEqual(['pellets', 'pellets']); expect(holes[1].rt - holes[0].rt).toBeGreaterThanOrEqual(LOOSE_GAP * 0.9); }
+      else expect(holes).toEqual([]);
+      vi.advanceTimersByTime(3000); clearFx();
+    }
+    (window as any).__phcFxTrace = undefined;
   });
 });

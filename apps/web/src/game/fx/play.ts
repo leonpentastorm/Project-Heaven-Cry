@@ -596,25 +596,31 @@ function landsIn(e: FxEvent): number {
   const g = shotGun(e), muz = g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' && g.look !== 'thrown' ? a.s * 0.42 : 0;
   return (drawsArrow(e) ? DRAW_MS : 0) + flyMs(g.look, Math.max(0, Math.hypot(b.x - a.x, b.y - a.y) - muz));
 }
-function muzzle(from: Pt, to: Pt, color = MUZZLE) {
+/** The muzzle flash; wide: a shotgun's blast, shorter and wider, with a second flash fanned across it. */
+function muzzle(from: Pt, to: Pt, color = MUZZLE, wide = false) {
   const a = angle(from, to), r = (a * 180) / Math.PI + 90, off = from.s * 0.42;
-  trace('muzzle');
+  trace('muzzle', { wide });
   const p = { x: from.x + Math.cos(a) * off, y: from.y + Math.sin(a) * off };
-  burst('muzzle', { x: p.x + Math.cos(a) * from.s * 0.3, y: p.y + Math.sin(a) * from.s * 0.3 }, from.s * 1.05, 140, { color, rot: r, from: 0.7, to: 1.2, fade: 0 });
-  burst('flare', p, from.s * 1.15, 150, { color: HOT, from: 0.6, to: 1.5 });
+  const k = wide ? 0.22 : 0.3, at = { x: p.x + Math.cos(a) * from.s * k, y: p.y + Math.sin(a) * from.s * k };
+  burst('muzzle', at, from.s * (wide ? 1.2 : 1.05), wide ? 120 : 140, { color, rot: r, from: 0.7, to: wide ? 1.35 : 1.2, fade: 0 });
+  if (wide) burst('muzzle', at, from.s * 1.05, 110, { color, rot: r + 90, from: 0.6, to: 1.2, fade: 0 });
+  burst('flare', p, from.s * (wide ? 1.5 : 1.15), 150, { color: HOT, from: 0.6, to: wide ? 1.7 : 1.5 });
   return p;
 }
-/** A projectile from a to b over ms (straight, or lobbed). */
+/** A round's flight from a to b over ms (straight, or lobbed). Traced for every round (its time is what the landing
+ *  waits for); drawn for what is seen in the air: an arrow, a bolt of energy, a rocket, a lobbed grenade. A bullet's
+ *  and a shotgun's pellets are not drawn in flight (Leon, 13 Nov 2026, live 0.25.0: the tracer lines "look SO BAD"):
+ *  the shot is its muzzle flash, then the hole where it lands. */
 function projectile(a: { x: number; y: number }, b: { x: number; y: number }, ms: number, look: Look, s: number, color?: string) {
   trace('proj', { look, ms: Math.round(slow(ms)) });
-  if (reducedMotion()) return;
+  if (reducedMotion() || look === 'bullet' || look === 'pellets') return;
   const ang = Math.atan2(b.y - a.y, b.x - a.x), deg = (ang * 180) / Math.PI;
   const el = document.createElement('div');
   const len = look === 'arrow' ? s * 0.55 : look === 'bolt' || look === 'beam' ? s * 0.7 : look === 'rocket' ? s * 0.35 : look === 'lob' ? s * 0.18 : s * 0.8;
   const hgt = look === 'lob' ? s * 0.18 : look === 'rocket' ? 5 : look === 'arrow' ? 2 : 4;
   el.style.cssText = 'width:100%;height:100%;border-radius:' + (look === 'lob' ? '50%' : '2px') + ';' + (look === 'arrow' ? 'background:linear-gradient(90deg,rgba(201,183,156,0),#C9B79C 30%,#E7EBF3)'
     : look === 'lob' ? 'background:#2A3242;border:2px solid #A3AEC2' : look === 'rocket' ? 'background:linear-gradient(90deg,rgba(255,180,90,0),#FFB45A 40%,#FFFFFF);box-shadow:0 0 8px #FFB45A'
-    : 'background:linear-gradient(90deg,rgba(255,243,196,0),' + (color || HOT) + ' 70%,#FFFFFF);box-shadow:0 0 8px ' + (color || '#FFD27A') + ',0 0 2px #FFFFFF');
+    : 'background:linear-gradient(90deg,rgba(255,255,255,0),' + (color || WHITE) + ' 70%,#FFFFFF);box-shadow:0 0 8px ' + (color || WHITE) + ',0 0 2px #FFFFFF'); // a core rifle's bolt, a beam: in its own colour
   const box = put(el, a, len, hgt, ms);
   box.style.left = a.x - len + 'px'; box.style.top = a.y - hgt / 2 + 'px'; box.style.transformOrigin = '100% 50%';
   const dx = b.x - a.x, dy = b.y - a.y;
@@ -799,7 +805,7 @@ const H: Record<string, Handler> = {
       if (!silent && g.sound) play(g.sound, from || toP, { rate: (g.rate || 1) * jitter(0.04) });
       if (!toP) return;
       let mp: { x: number; y: number } | null = null;
-      if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' && g.look !== 'thrown') mp = muzzle(from, toP, g.color);
+      if (from && shooterSeen && g.look !== 'lob' && g.look !== 'flame' && g.look !== 'arrow' && g.look !== 'thrown') mp = muzzle(from, toP, g.color, g.look === 'pellets');
       if (from && shooterTok && !rico) { const a = angle(from, toP); lunge(shooterTok, -Math.cos(a) * 3, -Math.sin(a) * 3, 120); }
       // the casing: thrown out behind the shooter (away from the target), with a wisp of smoke; a pump, a lever or a
       // bolt is worked first, so its casing comes a beat later
@@ -810,8 +816,7 @@ const H: Record<string, Handler> = {
       const coverP = e.cover ? centre(e.cover) : null;
       const end = e.hit ? toP : coverP || missPoint(from || toP, toP);
       if (start) {
-        if (g.look === 'pellets') for (let i = 0; i < 5; i++) { const sp = toP.s * 0.35, q = { x: end.x + (Math.random() - 0.5) * sp, y: end.y + (Math.random() - 0.5) * sp }; projectile(start, q, ft * jitter(0.15), 'bullet', toP.s * 0.8, g.color); }
-        else if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
+        if (g.look === 'flame') { for (let i = 0; i < 6; i++) { const t = (i + 1) / 6; burst('flame', { x: start.x + (end.x - start.x) * t, y: start.y + (end.y - start.y) * t }, toP.s * (0.5 + t * 0.5), 420, { color: '#F68A38', from: 0.4, to: 1.2, delay: i * 45, blend: 'screen' }); } }
         else if (!(g.look === 'thrown' && e.thrown)) projectile(start, end, ft, g.look === 'thrown' ? 'arrow' : g.look, toP.s, g.color); // a thrown melee weapon's flight is its melee_fx; any other melee-category shot keeps a tracer
       }
       after(() => {
@@ -826,7 +831,7 @@ const H: Record<string, Handler> = {
         else {
           if (g.look === 'flame') { burst('flame', end, toP.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 }); play('vent', toP, { rate: 0.6, gain: 0.8 }); }
           else if (!g.blast) play(g.look === 'arrow' ? 'hit_wood' : g.look === 'lob' || g.look === 'rocket' ? 'hit_heavy' : 'whiz', toP, { rate: g.look === 'lob' ? 0.7 : jitter(0.15), delay: 0 });
-          dust(end, toP.s); floatText(e.fumble ? 'FUMBLE' : e.image ? 'DECOY' : 'MISS', toP, e.image ? SIGIL_INK : MUTED); // through a False Image (it scatters: image_gone)
+          floatText(e.fumble ? 'FUMBLE' : e.image ? 'DECOY' : 'MISS', toP, e.image ? SIGIL_INK : MUTED); // through a False Image (it scatters: image_gone)
         }
         if (e.jam || (e.fumble && !/melee|unarmed/.test(e.cat || ''))) { const fp = from || toP; floatText('JAMMED', fp, HP, { small: true, delay: 120 }); play('dry_click', fp, { delay: 160 }); }
       }, ft);
@@ -839,13 +844,10 @@ const H: Record<string, Handler> = {
     if (!toP) return;
     if (e.killed && e.target) tokOrGhost(e.target, e.to, true);
     if (from) {
-      const a = angle(from, toP), d = from.s * 0.55;
+      const a = angle(from, toP);
+      // the swing is the attacker's lunge (no arc swept in front of it: Leon, 13 Nov 2026, live 0.25.0); its cut is the
+      // mark on the target when it lands (fx/techniqueFx.ts, the row's hit)
       lunge(tokOf(e.unit, e.from), Math.cos(a) * from.s * 0.3, Math.sin(a) * from.s * 0.3, 240);
-      const tint = /evoker_blade/.test(e.weapon || '') ? SIGIL_INK : /emanator_gauntlet/.test(e.weapon || '') ? SOUL_INK : WHITE;
-      // The arc: a bright cut in front of the attacker, a wider tinted echo behind it.
-      const sp = { x: from.x + Math.cos(a) * d, y: from.y + Math.sin(a) * d }, rot = (a * 180) / Math.PI + (cat === 'heavy_melee' ? 45 : 0), big = cat === 'heavy_melee' ? 2.1 : 1.6;
-      burst(cat === 'heavy_melee' ? 'slash_wide' : 'slash', sp, from.s * big * 1.15, 300, { color: tint === WHITE ? '#A3AEC2' : tint, rot: rot - 18, from: 0.5, to: 1.1, delay: 30 });
-      burst(cat === 'heavy_melee' ? 'slash_wide' : 'slash', sp, from.s * big, 280, { color: tint, rot, from: 0.65, to: 1.2 });
     }
     after(() => {
       if (e.object) { dust(toP, toP.s); play('chop', toP); return; }
