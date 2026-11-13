@@ -1514,7 +1514,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/brace': err = brace(cb!, u); break;
     case 'combat/skill': { const t = a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null; if (a.targetId && !anyTarget(t || undefined, u)) fail('Pick someone else.'); err = useWeaponSkill(cb!, g.rng, u, t, who); break; }
     case 'combat/gift': err = runGift(g, cb!, g.rng, u, tileKey(g, a.aim)); break;
-    case 'combat/repair': err = a.targetId && a.targetId !== u.id ? repairAlly(cb!, u, cb!.units.find((x) => x.id === a.targetId)) : fieldRepair(cb!, u); break;
+    case 'combat/repair': { const t = a.targetId && a.targetId !== u.id ? cb!.units.find((x) => x.id === a.targetId) : null; if (a.targetId && a.targetId !== u.id && !t) fail('Pick one of your side.'); err = fieldRepair(cb!, u, { target: t, way: (a as any).way || null }); break; } // rules 1.34: one action, on you or a unit of your side next to you
     case 'combat/paired': { const t = cb!.units.find((x) => x.id === a.targetId), t2 = a.targetId2 ? cb!.units.find((x) => x.id === a.targetId2) || null : null; if (!anyTarget(t, u) || (t2 && !anyTarget(t2, u))) fail('Pick someone else.'); err = pairedAttack(cb!, g.rng, u, t!, t2, c); break; }
     case 'combat/overwatch': { const mode = playerMode(a.mode, ['shot', 'aimed', 'melee'] as const); if (mode !== 'melee' && isPressed(u)) fail('You are Pressed: you can\'t hold a shot.'); refuseHook(cb!, u, a); err = setOverwatch(cb!, u, mode); break; } // rules 1.12: refused before the AP is paid
     case 'combat/attack': {
@@ -2689,18 +2689,6 @@ function worldAct(g: GameState, a: Extract<Action, { type: 'world/act' }>, by: s
 /** Field Repair on a squadmate whose body is a machine (Factory Made; perk-runtime A10): adjacent, Proficiency 3+, one of
  * your spare-parts charges, the Field Repair AP: +10 HP per your Proficiency point (as their own self-repair; not halved
  * by Plug: it isn't healing). PROVISIONAL, spec 14. */
-function repairAlly(cb: Combat, u: Combat['units'][number], t: Combat['units'][number] | undefined): string | null {
-  if (!t || t.side !== u.side || t.dead) return 'Pick a squadmate.';
-  if (!holdersOf({ u: t }).some((h) => h.key === 'trait:factory_made')) return t.name + ' isn\'t a machine: stim them instead.';
-  if (dist(u.pos, t.pos) > 1) return 'Walk up to them first.';
-  if ((u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
-  if (!(u.parts || 0)) return 'No spare-parts charges.';
-  if (t.hp >= t.maxHp) return t.name + ' is already whole.';
-  const cost = price({ cb, u }, 'field_repair').ap; { const no = whyNot(cb, u, cost); if (no) return no; }
-  const was = t.hp; pay(cb, u, cost); u.parts = (u.parts || 0) - 1; t.hp = Math.min(t.maxHp, t.hp + itemAmount('trait:factory_made', 'repair', [], { improvisation: u.proficiency || 0 })); if (t.downed && t.hp > 0) setDowned(t, false);
-  emitFx(cb, 'repair', { unit: u.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was });
-  say(cb, u.name + ' patches ' + t.name + '\'s chassis: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
-}
 /** Can this character design Outbursts? A Vessel can't (K30: the charge lives in the body). The Magic panel hides the
  * design screen when this gives a reason. */
 export function designBan(c: Character): string | null {

@@ -12,13 +12,19 @@
 // 'strain' hook (Eye of the Storm), 'trap_sprung' (Sabotage's rig), the new 'ai_move_risk' (Anchor in the enemy AI).
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { itemAmount } from '../effects/amounts';
+import { num, effNum } from '../effects/num';
+import { levelFactor } from '../effects/output';
+import { withAp, resGive } from '../effects/cost';
+import { RULES } from '../data';
+import { visFocusWhy, pictureTileWhy, projectionRange, figmentsOf, unravel, makeFigment, isFigment, FIG } from '../figments';
+import { ownerOf as ownerOfUnit, unmakeOwned, spawnOwned, runDataVerb, OWNED_DATA_VERBS } from '../owned';
 import { tendHook } from '../effects/damage';
 import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, stepsFrom, moveUnit,
   previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike, displace, swapUnits,
-  attackEvent, stepEvent,
+  attackEvent, stepEvent, sideSeesUnit, resolveAttack, hurtUnit, fieldRepair, repairWays, repairable, REPAIR_WAYS,
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
@@ -27,7 +33,6 @@ import { overworld, say, unitById, tileOf, rngOf, canStand } from '../kit';
 type Fam = 'body' | 'brain' | 'heart';
 import { type Rng } from '../rng';
 import { resOf, resGain, resSpend, canReact, react, hide, seenByFoes, HEARING } from '../tactics';
-import { addImage, dropImage, imageOfOwner, imageTurnStart, imagesOf, type FalseImage } from '../illusion';
 import { makeObject, kindOf } from '../objects';
 import { setBraced, setDowned } from '../unitstate';
 import { condNotFresh } from '../magic';
@@ -61,8 +66,6 @@ function pushTile(cb: Combat, from: Unit, t: Unit): string | null {
 const MACHINE = ['machine', 'turret', 'drone'];
 /** Sabotage's targets: machines, turrets and drones (an enemy named a drone or turret counts; robots are people). */
 const machineLike = (t: Unit) => MACHINE.includes(t.kind || '') || /drone|turret/i.test(t.name);
-/** Field Fix repairs robots, drones, turrets and machines (a Factory Made squadmate is one). */
-const repairable = (t: Unit) => ['robot', ...MACHINE].includes(t.kind || '') || (t.held?.traits || []).includes('factory_made');
 
 // ======================================================================================================== DEFENDER
 // ---------- Shrug It Off (rank II, reaction, 1 Guard) ----------
@@ -290,44 +293,6 @@ register({
   brief: () => null,
 });
 
-// ---------- Field Fix (rank II, 2 AP) ----------
-// An adjacent squadmate (not you: your own jam is Clear Jam): clear their jammed weapon (the Heat goes too, as a clear),
-// restore their weapon's durability (the base Field Repair's amount, at least 10% of its maximum, with no spare parts),
-// or repair a robot, drone, turret or machine (a Factory Made squadmate too) for exactly 20 (a repair, as Field Repair:
-// no healing multipliers, not halved by Plug; a Downed one comes back up). The choice is yours; with none, the first that applies in that order. Combat only.
-const FIX = ['clear_jam', 'restore_durability', 'repair_machine'] as const;
-function fixable(t: Unit): string[] {
-  return FIX.filter((x) => (x === 'clear_jam' ? t.jammed : x === 'restore_durability' ? !!t.maxDur && (t.dur ?? t.maxDur) < t.maxDur : repairable(t) && (t.hp < t.maxHp || t.downed)));
-}
-register({
-  id: 'infiltrator.field_fix', claims: 'all',
-  actions: [{
-    id: 'field_fix', label: 'Field Fix', scope: ['combat'], target: 'ally', ap: 'data', range: 1, pick: [...FIX], pickLabel: 'What to fix',
-    text: 'Do one thing for an ally next to you: clear their jammed weapon, restore some of their weapon\'s durability, or repair a robot, drone, turret or machine for 20 HP.',
-    preview: (h, args) => {
-      const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Field Fix works on a squadmate. For your own jammed weapon, use Clear Jam.' };
-      const can = fixable(t), what = args.choice || can[0];
-      if (!what) return { ok: false, why: 'Nothing to fix on ' + t.name + '.' };
-      if (!can.includes(what)) return { ok: false, why: what === 'clear_jam' ? t.name + '\'s weapon isn\'t jammed.' : what === 'restore_durability' ? t.name + '\'s weapon is in full repair.' : repairable(t) ? t.name + ' is undamaged.' : t.name + ' isn\'t a machine.' };
-      return { lines: ['Field Fix: ' + what.replace(/_/g, ' ') + ' on ' + t.name + '.'] };
-    },
-    run: (h, args) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, what = args.choice || fixable(t)[0];
-      if (what === 'clear_jam') { t.jammed = false; t.heat = 0; emitFx(cb, 'clear', { unit: t.id, at: t.pos, dur: 1000, by: u.id }); say(cb, u.name + ' clears ' + t.name + '\'s jam (Field Fix).'); return; }
-      if (what === 'restore_durability') {
-        const prof = u.proficiency || 0, add = Math.ceil(t.maxDur! * Math.max(0.1, 0.1 + 0.05 * (prof - 3)));
-        t.dur = Math.min(t.maxDur!, (t.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 });
-        say(cb, u.name + ' fixes ' + t.name + '\'s weapon: +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return;
-      }
-      // A repair, not a heal (as Field Repair): exactly 20, no healing multipliers, not halved by Factory Made's Plug.
-      const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + itemAmount('class:infiltrator.field_fix', 'repair')); if (up) setDowned(t, false);
-      emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
-      say(cb, u.name + ' repairs ' + t.name + ': +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
-    },
-  }],
-  brief: () => null,
-});
-
 // ---------- Sabotage (rank III, 2 AP) ----------
 // Either: an adjacent enemy machine, turret or drone is disabled for 2 rounds (Stunned for 2 of its turns: no actions,
 // no reactions), or an adjacent barricade stops blocking the way for 2 rounds, or an adjacent emplaced turret object is
@@ -440,54 +405,6 @@ register({
   brief: () => null,
 });
 
-// ---------- False Image (rank I, 2 AP, 1 charge) ----------
-// A decoy of you on a free tile within 8 + your Sigil range bonus that you can see (the Seal's reach, item 287). Every
-// enemy that can see that tile makes a Brain save against 12 + your Brain Power strength; those that fail take it
-// for you (illusion.ts: the AI attacks and closes on it, not on you; spells leave you alone). One image at a time; it
-// fades at the start of your turn two rounds on, when you fall, or when it is attacked (the attack passes through).
-// Needs an Evoker and adds no Flux (it isn't a word). Combat only.
-const IMAGE_RANGE = 8;
-function evokerWhy(h: Holder): string | null {
-  const u = h.u, m = u?.mg; if (!u || !m || !m.evoker) return 'Needs an Evoker in hand.';
-  if (u.dead || u.downed) return 'Downed.'; if (condOn(u, 'silenced')) return 'You are Silenced: no magic this round.';
-  if (m.lockRound != null && h.cb && h.cb.round <= m.lockRound) return 'Your Evoker overloaded. It is locked until next round.';
-  return null;
-}
-register({
-  id: 'trickster.false_image', claims: 'all',
-  actions: [{
-    id: 'false_image', label: 'False Image', scope: ['combat'], target: 'tile', ap: 'data',
-    text: 'Costs 1 charge. Needs an Evoker in hand. A decoy of you appears on a free tile you can see within 8 tiles (plus your Sigil range bonus) and lasts 2 rounds. Every enemy that can see it makes a Brain save, and those who fail treat the decoy as you. It fades when it is attacked or when you go down.',
-    available: (h) => { if (!h.u) return false; const e = evokerWhy(h); if (e) return e; if ((h.u.mg!.charge || 0) < 1) return 'Needs 1 charge. Swap in a fresh core.'; return true; },
-    preview: (h, args) => {
-      const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {}; const r = IMAGE_RANGE + (u.mg?.rangeBonus || 0);
-      if (k === u.pos) return { ok: false, why: 'Put it on another tile.' };
-      if (dist(u.pos, k) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' };
-      if (!unitSees(cb, u, k)) return { ok: false, why: 'You can\'t see that tile.' };
-      if (!canStand(cb, k) || imagesOf(cb).some((i) => i.pos === k)) return { ok: false, why: 'That tile isn\'t free.' };
-      return { tiles: [k], sigil: true, lines: ['A False Image at ' + refOf(k) + ': enemies who see it make a Brain save (vs ' + (saveTn(u, 'brain_power')) + ').'] };
-    },
-    run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!; u.mg!.charge -= 1; u.mg!.cast = true;
-      const img: FalseImage = { id: 'img' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), owner: u.id, pos: k, side: u.side, round: cb.round, fooled: [] };
-      const lines: string[] = [];
-      for (const e of cb.units) {
-        if (e.side === u.side || !alive(e) || !unitSees(cb, e, k)) continue;
-        const s = famSave(cb, rng as Rng, u, e, 'false_image', 'brain', 'brain_power');
-        if (!s.ok) img.fooled.push(e.id);
-        lines.push(e.name + (s.cancel ? ' is untouched (' + s.cancel + ')' : s.ok ? ' sees through it (' + s.line + ')' : ' is fooled (' + s.line + ')'));
-      }
-      addImage(cb, img);
-      say(cb, u.name + ' casts a False Image at ' + refOf(k) + ' (1 charge)' + (lines.length ? ': ' + lines.join(' · ') : ': no enemy sees it') + '.');
-    },
-  }],
-  on: {
-    turn_start: (ctx, h) => { if (ctx.u === h.u && h.cb) imageTurnStart(h.cb, h.u!); },
-    on_downed: (ctx, h) => { if (ctx.victim === h.u && h.cb) { const i = imageOfOwner(h.cb, h.u!.id); if (i) dropImage(h.cb, i, 'owner down'); } },
-  },
-  brief: () => null,
-});
-
 // ---------- Silver Tongue (rank II, 2 AP) ----------
 // An enemy within 6 tiles who can hear you (not a machine, turret or drone: nothing to lie to) makes a Brain save
 // against 12 + your Charisma strength, or loses 2 AP on its next turn (a Boss or Celestial 1), through the turn's
@@ -513,47 +430,203 @@ register({
 });
 
 // ---------- Sleight (rank III, 1 AP, once a scene) ----------
-// Swap places with your False Image or a squadmate within 6 tiles who is standing (a Downed one isn't willing or able).
-// A swap is no walk: no opportunity attacks, no Overwatch, no traps; both lose Braced. One use a scene between the two
-// actions (a squadmate, or the image). Combat only.
+// Swap places with one of your Figments or a squadmate within 6 tiles who is standing (rules 1.34: a Figment is willing;
+// a Downed squadmate isn't willing or able). A swap is no walk: no opportunity attacks, no Overwatch, no traps; both
+// lose Braced. Combat only.
 const sleightLeft = (h: Holder): true | string => (uses(h).left('per_scene', 1, h.key) > 0 ? true : 'Used until the next scene.');
 register({
   id: 'trickster.sleight', claims: 'all',
-  // Two actions (a squadmate token, or your image: a button), one use a scene between them.
-  actions: [
-    {
-      id: 'sleight', label: 'Sleight: swap with a squadmate', scope: ['combat'], target: 'ally', ap: 'data', range: 6,
-      text: 'Once a scene: swap places with a standing ally within 6 tiles. This shares its one use a scene with the False Image swap.',
-      available: sleightLeft,
-      preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === u) return { ok: false, why: 'Pick a squadmate.' }; if (!alive(t)) return { ok: false, why: t.name + ' is Downed and can\'t swap.' }; return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] }; },
-      run: (h, args, rng) => {
-        const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, from = u.pos, to = t.pos; uses(h).take('per_scene', 1, h.key);
-        const sw = swapUnits(cb, rng as Rng, u, t, { by: u, source: 'sleight', willing: [u, t], drawn: () => { emitFx(cb, 'swap', { unit: u.id, target: t.id, from, to }); say(cb, u.name + ' and ' + t.name + ' swap places.'); } }); // both chose it
-        if (sw.text) say(cb, sw.text.replace(/^ · /, '') + '.');
-        emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
-        emit(cb, 'moved', { u: t, from: to, to: from, tiles: dist(from, to), how: 'swap', forced: false, route: [from], stopped: null, cb, rng });
-        sightCheck(cb);
-      },
+  actions: [{
+    id: 'sleight', label: 'Sleight', scope: ['combat'], target: 'ally', ap: 'data', range: effNum({ key: 'class:trickster.sleight' }, 'grant_action', 'range'),
+    text: 'Once a scene: swap places with one of your Figments or a standing ally within range. No opportunity attacks.',
+    available: sleightLeft,
+    preview: (h, args) => { const u = h.u!, t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === u) return { ok: false, why: 'Pick a squadmate or a Figment of yours.' }; if (!alive(t)) return { ok: false, why: t.name + ' is Downed and can\'t swap.' }; if ((t as any).owned && ownerOfUnit(h.cb!, t) !== u && !t.charId) return { ok: false, why: t.name + ' isn\'t yours.' }; return { tiles: [t.pos], targets: [t.id], lines: ['Swap places with ' + t.name + '.'] }; },
+    run: (h, args, rng) => {
+      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, from = u.pos, to = t.pos; uses(h).take('per_scene', 1, h.key);
+      const sw = swapUnits(cb, rng as Rng, u, t, { by: u, source: 'sleight', willing: [u, t], drawn: () => { emitFx(cb, 'swap', { unit: u.id, target: t.id, from, to }); say(cb, u.name + ' and ' + t.name + ' swap places.'); } }); // both chose it
+      if (sw.text) say(cb, sw.text.replace(/^ · /, '') + '.');
+      emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
+      emit(cb, 'moved', { u: t, from: to, to: from, tiles: dist(from, to), how: 'swap', forced: false, route: [from], stopped: null, cb, rng });
+      sightCheck(cb);
     },
-    {
-      id: 'sleight_image', label: 'Sleight: swap with your False Image', scope: ['combat'], target: 'none', ap: 'data',
-      text: 'Once a scene: swap places with your False Image within 6 tiles. This shares its one use a scene with the squadmate swap.',
-      available: (h) => { const l = sleightLeft(h); if (l !== true) return l; return h.cb && h.u && imageOfOwner(h.cb, h.u.id) ? true : 'You have no False Image out.'; },
-      preview: (h) => {
-        const img = imageOfOwner(h.cb!, h.u!.id)!; if (dist(h.u!.pos, img.pos) > 6) return { ok: false, why: 'Your image is out of range (6 tiles).' };
-        if (h.cb!.units.some((x) => x !== h.u && !x.dead && x.pos === img.pos)) return { ok: false, why: 'Someone stands on your image.' };
-        return { tiles: [img.pos], lines: ['Swap places with your False Image at ' + refOf(img.pos) + '.'] }; },
-      run: (h, _args, rng) => {
-        const cb = h.cb!, u = h.u!, img = imageOfOwner(cb, u.id)!, from = u.pos, to = img.pos; uses(h).take('per_scene', 1, h.key);
-        const sw = displace(cb, rng as Rng, u, { tile: to }, { by: u, how: 'swap', source: 'sleight', willing: true, fx: false, drawn: () => { img.pos = from; emitFx(cb, 'swap', { unit: u.id, target: img.id, from, to, image: true }); say(cb, u.name + ' swaps places with the False Image (' + refOf(to) + ').'); } }); // an image is not a unit: the caster lands on its tile and the image is put where the caster stood
-        if (sw.text) say(cb, sw.text.replace(/^ · /, '') + '.');
-        emit(cb, 'moved', { u, from, to, tiles: dist(from, to), how: 'swap', forced: false, route: [to], stopped: null, cb, rng });
-        sightCheck(cb);
-      },
-    },
-  ],
+  }],
   brief: () => null,
 });
+
+// ======================================================================================================== RIGGER
+// Rules 1.34 (Classes 3.0 step 8; docs/design/figments-spec.md section 5). The Rigger's moves need no Visualization
+// (a Rigger with Visualization 0 still has them). Each is an action here because what it does is a branch on a unit
+// the move finds (a wreck, a Figment, a machine) that no item op names: the ops it would need are listed in the step's
+// hand-off (`spawn` with a weapon taken from a wreck, a pile or a barricade; "act now" on an owned unit; a wreck as a
+// target). Every number is the move's data (num, itemAmount).
+
+// ---------- Double (rank I, 2 AP, 1 charge; the old False Image key) ----------
+// A bare Double appears within projection range (the door's, else no_door), outside the held count, no upkeep, and
+// lasts until its owner's turn start `rounds` rounds on. One at a time. Needs the Visualizer in hand.
+register({
+  id: 'trickster.false_image', claims: 'all',
+  actions: [{
+    id: 'false_image', label: 'Double', scope: ['combat'], target: 'tile', ap: 'data', res: (h) => ({ vcharge: num(h, 'charge') }),
+    text: 'A bare Double of you appears within projection range, outside your held count, with no upkeep. One at a time.',
+    available: (h) => { if (!h.u) return false; const no = visFocusWhy(h.u); return no || true; },
+    preview: (h, args) => {
+      const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
+      const no = pictureTileWhy(cb, u, k, projectionRange(u, h.c) || num(h, 'range_no_door')); if (no) return { ok: false, why: no };
+      return { tiles: [k], lines: ['A Double at ' + refOf(k) + (figmentsOf(cb, u).some((f) => (f as any).owned?.free && (f as any).figment?.form === 'double') ? ' (your Double now fades)' : '') + '.'] };
+    },
+    run: (h, args, rng) => {
+      const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!;
+      for (const f of figmentsOf(cb, u)) if ((f as any).owned?.free && (f as any).figment?.form === 'double') unravel(cb, f, 'a new Double');
+      const d = makeFigment(cb, rng as Rng, u, 'double', [], k, { charge: num(h, 'charge'), free: { rounds: num(h, 'rounds') } }); if (typeof d === 'string') return d;
+      emitFx(cb, 'figment', { unit: d.id, owner: u.id, at: k, form: 'double' }); say(cb, u.name + ' throws a Double at ' + refOf(k) + '.');
+      return null;
+    },
+  }],
+  brief: () => null,
+});
+
+// ---------- Field Fix (rank I, 2 AP; the Infiltrator's old key) ----------
+// The one action field_repair (combat.ts fieldRepair) with no part, no Improvisation gate, a longer reach, and the
+// move's own repair amount.
+register({
+  id: 'infiltrator.field_fix', claims: 'all',
+  actions: [{
+    id: 'field_fix', label: 'Field Fix', scope: ['combat'], target: 'ally', ap: 'data', range: num({ key: 'class:infiltrator.field_fix' }, 'reach'), pick: [...REPAIR_WAYS], pickLabel: 'What to fix',
+    text: 'Field Repair on you or a unit of your side in reach, with no spare part: clear a jam, restore weapon durability, or repair a machine or Figment.',
+    preview: (h, args) => {
+      const t = unitById(h.cb!, args.targetId); if (!t) return {};
+      const can = repairWays(t), what = args.choice || can[0];
+      if (!what) return { ok: false, why: 'Nothing to fix on ' + t.name + '.' };
+      if (!can.includes(what as any)) return { ok: false, why: what === 'clear_jam' ? t.name + '\'s weapon isn\'t jammed.' : what === 'restore_durability' ? t.name + '\'s weapon is in full repair.' : repairable(t) ? t.name + ' is undamaged.' : t.name + ' isn\'t a machine.' };
+      return { lines: ['Field Fix: ' + what.replace(/_/g, ' ') + ' on ' + t.name + '.'] };
+    },
+    run: (h, args) => {
+      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
+      return withAp(u, Number.POSITIVE_INFINITY, () => fieldRepair(cb, u, { target: t, way: args.choice || null, parts: 0, gate: false, reach: num(h, 'reach'), item: h.key, label: 'Field Fix' }));
+    },
+  }],
+  brief: () => null,
+});
+
+// ---------- Salvage (rank II, 1 AP) ----------
+// Next to you, one of: a wreck (a destroyed robot, drone, turret or machine of either side) gives `charge` to your
+// Visualizer core, each wreck once a fight; one of your Figments is let go with all its charge back; or repair a machine
+// or Figment of your side (the move's repair amount). The unit is the first next to you that fits (a wreck not yet
+// salvaged; your newest Figment; the most hurt machine or Figment).
+const wreckOf = (t: Unit) => t.dead && (repairable(t) || machineLike(t));
+function salvageTarget(h: Holder, way: string): Unit | null {
+  const cb = h.cb!, u = h.u!, near = cb.units.filter((t) => t !== u && dist(u.pos, t.pos) <= num(h, 'reach'));
+  if (way === 'wreck') return near.find((t) => wreckOf(t) && !uses(h).on(t).used('per_combat')) || null;
+  if (way === 'reclaim') return [...figmentsOf(cb, u)].reverse().find((t) => near.includes(t)) || null;
+  return near.filter((t) => !t.dead && t.side === u.side && repairable(t) && (t.hp < t.maxHp || t.downed)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0] || null;
+}
+register({
+  id: 'trickster.salvage', claims: 'all',
+  actions: [{
+    id: 'salvage', label: 'Salvage', scope: ['combat'], target: 'none', ap: 'data', pick: ['wreck', 'reclaim', 'repair'], pickLabel: 'What to salvage',
+    text: 'Next to you: charge from a wreck, one of your Figments let go with all its charge back, or a repair.',
+    preview: (h, args) => {
+      const way = args.choice || 'wreck', t = salvageTarget(h, way);
+      if (!t) return { ok: false, why: way === 'wreck' ? 'No wreck next to you (or salvaged already).' : way === 'reclaim' ? 'No Figment of yours next to you.' : 'Nothing of your side next to you needs a repair.' };
+      if (way === 'wreck' && !h.u!.mg?.vcarry) return { ok: false, why: 'No Visualizer to charge.' };
+      return { targets: [t.id], lines: ['Salvage: ' + way + ' (' + t.name + ').'] };
+    },
+    run: (h, args) => {
+      const cb = h.cb!, u = h.u!, way = args.choice || 'wreck', t = salvageTarget(h, way)!;
+      if (way === 'wreck') { uses(h).on(t).take('per_combat', 1); const got = resGive(cb, u, 'vcharge', num(h, 'charge'), { c: h.c, why: 'salvage' }); emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1000 }); say(cb, u.name + ' strips the wreck of ' + t.name + ': +' + got + ' Visualizer charge.'); return null; }
+      if (way === 'reclaim') { unmakeOwned(cb, t, { refund: true, quiet: true }); say(cb, u.name + ' takes ' + t.name + ' back apart: its charge goes home.'); return null; }
+      const n = Math.floor(itemAmount(h.key, 'repair', [{ v: levelFactor('mend', u.level ?? 1), label: 'level' }])), was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + n); if (up) setDowned(t, false);
+      emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
+      say(cb, u.name + ' patches ' + t.name + ' with salvage: +' + (t.hp - was) + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
+    },
+  }],
+  brief: () => null,
+});
+
+// ---------- Overclock (rank II, 1 AP, once a turn) ----------
+// A Figment, robot, drone or turret of your side within range that your side sees attacks now, at no AP (its attack of
+// up to max_ap AP; the nearest enemy it can reach), and takes `strain`. Never a character (AP for a character is a
+// gamma's). The Rigger's "one thing a turn cheaper" (Rev 4 section 2).
+const overclockable = (cb: Combat, u: Unit, t: Unit) => !t.charId && !t.dead && !t.downed && t.side === u.side && (isFigment(t) || repairable(t) || machineLike(t)) && !!(t as any).owned;
+function overclockVerb(t: Unit): string | null {
+  const dv = ((t as any).dataVerbs || []).map((v: string) => OWNED_DATA_VERBS[v]).find((v: any) => v?.attack);
+  if (dv) return dv.id;
+  const w: any = WEAPON[t.weapon]; return (t as any).owned?.auto?.verb || (w && isMelee(w) ? 'melee' : 'shot');
+}
+register({
+  id: 'trickster.overclock', claims: 'all',
+  actions: [{
+    id: 'overclock', label: 'Overclock', scope: ['combat'], target: 'ally', ap: 'data', range: num({ key: 'class:trickster.overclock' }, 'range'),
+    text: 'A Figment or machine of your side in range acts now, at no AP: its attack at the nearest enemy it can reach. It takes strain damage.',
+    preview: (h, args) => {
+      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
+      if (t.charId) return { ok: false, why: 'Never a squadmate.' }; if (!overclockable(cb, u, t)) return { ok: false, why: t.name + ' isn\'t a Figment or machine of your side.' };
+      if (!sideSeesUnit(cb, u.side, t)) return { ok: false, why: 'Your side can\'t see ' + t.name + '.' };
+      const foe = overclockFoe(cb, t); if (!foe) return { ok: false, why: t.name + ' has no enemy in reach.' };
+      return { targets: [t.id, foe.id], lines: ['Overclock: ' + t.name + ' attacks ' + foe.name + ' now.'] };
+    },
+    run: (h, args, rng) => {
+      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, foe = overclockFoe(cb, t)!, v = overclockVerb(t)!, dv = OWNED_DATA_VERBS[v];
+      say(cb, u.name + ' overclocks ' + t.name + '.');
+      const no = dv ? runDataVerb(cb, rng as Rng, u, t, dv, { targetId: foe.id, free: num(h, 'max_ap') }) : withAp(t, num(h, 'max_ap'), () => { const pv = previewAttack(cb, t, foe, v as any); if (!pv.ok) return pv.why || 'Not now.'; resolveAttack(cb, rng as Rng, t, foe, v as any, null, { noAp: true }); return null; });
+      if (no) return no;
+      if (!t.dead) say(cb, t.name + ' strains' + hurtUnit(t, Math.floor(itemAmount(h.key, 'strain', [{ v: levelFactor('deal', u.level ?? 1), label: 'level' }])), true, cb, 'overclock', u) + '.');
+      return null;
+    },
+  }],
+  brief: () => null,
+});
+/** The enemy an overclocked unit attacks: the nearest standing one it can reach with its attack. */
+function overclockFoe(cb: Combat, t: Unit): Unit | null {
+  const v = overclockVerb(t); if (!v) return null; const dv = OWNED_DATA_VERBS[v];
+  const foes = cb.units.filter((x) => x.side !== t.side && alive(x) && !x.hidden).sort((a, b) => dist(t.pos, a.pos) - dist(t.pos, b.pos));
+  return foes.find((x) => (dv ? dist(t.pos, x.pos) <= (dv.reach?.tiles ?? 1) && !dv.dash : withAp(t, Number.POSITIVE_INFINITY, () => previewAttack(cb, t, x, v as any).ok))) || null;
+}
+
+// ---------- Scrap Turret (rank III, 3 AP, once a scene; was Jury-Rig) ----------
+// From a wreck, a pile with a weapon, or a barricade next to you: a turret (an owned unit, turn auto: figments.json
+// turret) on a free tile next to it. At each of your turn starts for `rounds` rounds it makes that weapon's plain
+// attack (a gun or bow at the nearest enemy it sees in range, a melee weapon at one in its reach; a wreck's or a pile's
+// weapon if it has one that is not used up, else the turret block's own), rolling d20 + your Improvisation modifier,
+// damage on the weapon profile at your level. One at a time. A machine: Overclock and repairs work on it.
+function scrapWeapon(cb: Combat, tile: string): string | null | undefined {
+  const wreck = cb.units.find((x) => x.pos === tile && wreckOf(x)); if (wreck) return WEAPON[wreck.weapon] && !(WEAPON[wreck.weapon] as any).consumable ? wreck.weapon : null;
+  const pile = objectsAt(cb, tile).find((o) => o.kind === 'pile'); if (pile) { const w = (pile.items || []).map((x: any) => x.weapon || x.item || x.id).find((id: string) => WEAPON[id] && !(WEAPON[id] as any).consumable && WEAPON[id].category !== 'thrown'); return w || null; }
+  if (objectsAt(cb, tile).some((o) => /barricade/.test(o.kind))) return null;
+  return undefined; // nothing to build from
+}
+register({
+  id: 'trickster.scrap_turret', claims: 'all',
+  actions: [{
+    id: 'scrap_turret', label: 'Scrap Turret', scope: ['combat'], target: 'tile', ap: 'data',
+    text: 'From a wreck, a pile with a weapon, or a barricade next to you: a turret that attacks at your turn starts for a few rounds.',
+    available: (h) => (h.cb && h.u && h.cb.units.some((x) => (x as any).owned?.kind === 'machine' && !x.dead && ownerOfUnit(h.cb!, x) === h.u) ? 'One turret at a time.' : true),
+    preview: (h, args) => {
+      const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
+      if (dist(u.pos, k) > 1) return { ok: false, why: 'Next to you.' };
+      if (scrapWeapon(cb, k) === undefined) return { ok: false, why: 'No wreck, pile with a weapon or barricade there.' };
+      const at = turretTile(cb, k); if (!at) return { ok: false, why: 'No free tile next to it.' };
+      return { tiles: [at], lines: ['A Scrap Turret at ' + refOf(at) + '.'] };
+    },
+    run: (h, args, rng) => {
+      const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!, at = turretTile(cb, k)!, w = scrapWeapon(cb, k) || FIG.turret.weapon;
+      const melee = isMelee(WEAPON[w]), block = { ...FIG.turret, weapon: w, auto: { ...FIG.turret.auto, verb: melee ? 'melee' : 'shot' } };
+      const tr = spawnOwned(cb, u, FIG.turret.id, at, rng as Rng, { block }); if (typeof tr === 'string') return tr;
+      tr.attack = mod(u.proficiency || 0); tr.strength = tr.attack; tr.infiniteAmmo = true; tr.kind = FIG.turret.kind;
+      tr.lvlDmg = Math.round(RULES.output.profiles.weapon.k * levelFactor('deal', u.level ?? 1) * 1000) / 1000;
+      (tr as any).owned.free = true; (tr as any).owned.until = cb.round + num(h, 'rounds');
+      emitFx(cb, 'figment', { unit: tr.id, owner: u.id, at, form: 'scrap_turret' }); say(cb, u.name + ' rigs a Scrap Turret at ' + refOf(at) + ' (' + (WEAPON[w]?.name || w) + ').'); sightCheck(cb);
+      return null;
+    },
+  }],
+  brief: () => null,
+});
+/** A free tile next to the turret's source (nearest first, in the map's order). */
+function turretTile(cb: Combat, k: string): string | null {
+  const [x, y] = xy(k), out: string[] = [];
+  for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const n = key(x + dx, y + dy); if (n !== k && canStand(cb, n)) out.push(n); }
+  return canStand(cb, k) ? k : out[0] || null;
+}
 
 // ======================================================================================================== BARD
 // ---------- Rally (rank III, 2 AP, once a scene) ----------
