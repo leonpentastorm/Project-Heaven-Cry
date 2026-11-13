@@ -123,7 +123,8 @@ Step 3 (`docs/design/handoffs/classes-3.0-step-3.md` section 5, rules 1.30 items
    Answer with any melee weapon. An item can give an Answer (stat `technique:<id>`), not any other technique.
 3. Fire Discipline's "first attack" is the first attack roll of your own turn, a free one included; its Aimed +1 also
    applies to a held aimed shot. **Measured: the Skirmisher all in is 173% against 145 (+19%; level 5 +30%) from the
-   new first-attack cut alone (the long rifle); the dial is the lead's to choose (not refitted).**
+   new first-attack cut alone (the long rifle); `npm run check`'s balance-contract guard fails on it (176%), and the
+   Faith dabbler guard too (the saved AP buys a Whisper); the dial is the lead's to choose (not refitted).**
 4. Keep one for a held shot refuses everything but the held fire and a Call made as a reaction; on by default, no screen
    switch until step 10.
 5. Run and Gun: a move over 2 tiles leaves it waiting; its Pressure ends with the turn.

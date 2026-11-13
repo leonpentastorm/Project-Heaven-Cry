@@ -105,6 +105,11 @@ neither confirmed nor refuted here; it needs a fight where enemies cross a held 
 Read with the gun row: the Skirmisher all in measures 173 (+19%) on the range from Fire Discipline alone, before any
 reaction is counted.
 
+**The Faith guard** (`test/balance/faith-measure.test.ts`, "the gunner who dabbles gains little": the best with prayer at
+most ×1.15 the rifle alone) now fails: 123.3 against 104.9. The dabbler is a Skirmisher with 2-AP shots: Fire
+Discipline's saved AP buys a Whisper (1 AP) every turn, which it could not before. The same finding as the gun row, from
+the other side: left failing for the lead's dial, not refitted.
+
 ## 5. Where the spec was silent, and what was done (calls made for Leon, listed in the pick-up guide section 6)
 
 1. **Where Reflex lives:** a base class's new `gain` list (moves held from class gain, outside the six). Revision 4's
@@ -133,8 +138,18 @@ reaction is counted.
 - `python3 tools/validate.py data`: 0 errors. `npm run built-from -- claude/charming-gauss-hbq4n0..HEAD`: 5 smells in 2
   places, 0 a lint fails on, each a line this step only re-wrapped (`classes/i.ts` the load action's preview fallback 2,
   Killzone's `2 ×` AP and its two held attacks; `combat.ts` 1312 the attack's roll, one field added).
-- CHECK_LINE
-- E2E_LINE
+- `npm run check` (the full run, at the end): validator, spec tables, screen data, engine hooks, both type checks: ok.
+  Engine tests 3 failed of 3851, **all three the same finding or the brief's own rule**: `balance-contract` "gun: the
+  all-in average 176% is outside 145% ± 12%; level 5 191%" (the guard agrees with section 4's 173), `faith-measure` the
+  dabbler (above), and `replay-hash`'s coverage line (section 3). Web tests: 2 failed, `combat-actions.test.ts` two
+  5 s timeouts on the loaded machine; the file passes alone with `--testTimeout 300000` (4 of 4).
+- Browser suites on this worktree's own server (`wrangler dev --port 8797`, `python3 tools/e2e.py physical physical-pack
+  classes-moves reload turn-order rules114 two-players --base http://127.0.0.1:8797 --jobs 2`): **ALL GREEN, 7 suites
+  (5.0 min)**.
+
+**For step 4** (the Operative takes Called Shot): the web's fx row for it as a class move was removed with it (the table
+may hold no row for a move no class has); put it back in `apps/web/src/game/fx/techniqueFx.ts`:
+`'move:gunslinger.called_shot': row([p('aim', { dash: '1 3' }), p('tracer')], [p('brand', { shape: 'target', up: 0, size: 0.18 }), p('cross', { n: 1, size: 0.14 })], [p('wide')]),`
 
 ## 7. How to add a reaction
 
