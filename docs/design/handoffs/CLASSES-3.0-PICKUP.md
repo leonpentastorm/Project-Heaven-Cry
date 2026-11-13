@@ -98,7 +98,18 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 
 ## 6. Calls made for Leon during the build (he can reverse any)
 
-*(none yet; the design's own calls are in `class-roster-rev4-proposal.md` section 8)*
+*(the design's own calls are in `class-roster-rev4-proposal.md` section 8)*
+
+Step 1a (`docs/design/handoffs/classes-3.0-step-1a.md` section 3, rules 1.28 items 1750 to 1756):
+1. Reactions not on Revision 4's kind list: a Call made as a reaction, Drink It In, Catch, Dance of Iron and Heart
+   Overwatch are `attack`; Order and the Strike Call's dive `move`; Adamantile Plate and Share `protect`. So Suppressed
+   still stops the Call, Drink It In, Catch and Order (item 1751).
+2. An item op that is a reaction names its kind: `limit: {reaction: 1 or 2, kind}`.
+3. `acted` for an attack names `attack` (mode in ctx); Analyze fires its own `acted`; only a nested `when: "acted"`
+   effect is lifted onto the item.
+4. A number block may carry `min` and `max` (the Finisher's cap).
+5. `always_seen` is read by the sight words only; the fog and the AI honour it with its first user.
+6. Riposte is not folded, and reactions that never opened a window still open none (step 3).
 
 ## 7. State when this was last touched
 
