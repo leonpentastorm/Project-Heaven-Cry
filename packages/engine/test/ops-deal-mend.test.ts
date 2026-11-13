@@ -34,7 +34,6 @@ describe('the generic deal and mend ops', () => {
       // the `mend` profile reads the Level term too (the level factor of rules 1.20, at the giver's level)
       ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'mend' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(100 + Math.floor(10 * hg * mendFactor(me.level)));
       ally.shield = 0; op.run!(h, { op: 'mend', amount: { kind: 'shield', base: 12, profile: 'flat' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.shield).toBe(Math.floor(12 * levelFactor('deal', 6)));
-      ally.shield = 0; op.run!({ ...h, key: 'class:guardian.will_shield' }, { op: 'mend', amount: 'shield', target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.shield).toBe(Math.floor(12 * hg * mendFactor(me.level)));
     });
   });
 });

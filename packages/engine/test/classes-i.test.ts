@@ -10,7 +10,7 @@ import {
 } from '../src';
 import { fightWith, storyWith, withGame, rng, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
-import { CLASS_MOVE_POOL, REV2_CLASSES, mendFactor } from '../src';
+import { CLASS_MOVE_POOL, REV2_CLASSES, mendFactor, grantShield } from '../src';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
 
 type F = ReturnType<typeof fightWith>;
@@ -441,37 +441,17 @@ describe('Channeler', () => {
 
 // ======================================================================================================== GUARDIAN
 describe('Guardian', () => {
-  it('Will Shield: a Buff cast, a shield of 12 × Healing given on an ally in reach (rules 1.20); MP and Strain paid', () => {
-    const f = fightWith([cls('guardian', 1, SOUL), {}], [{}]);
-    const [gd, ally] = f.pcs; line(f, [gd, 3], [ally, 5], [f.foe, 13]);
-    const u = f.turn(gd), mp = u.mg!.mp;
-    act(f, u, { type: 'combat/perk', id: 'class:guardian.will_shield', actionId: 'will_shield', targetId: ally.id });
-    const mult = healingMult(f.g.characters[gd.charId!]);
-    expect(f.unit(ally.id).shield).toBe(Math.floor(Math.floor(12 * mult * mendFactor(f.g.characters[gd.charId!].level)) * (f.unit(ally.id).shieldRecv || 1)));
-    expect(f.unit(gd.id).mg!.mp).toBeLessThan(mp); expect(f.unit(gd.id).mg!.strain).toBe(1);
-  });
   it('Drink It In: an enemy spell on your shield feeds your Emanator (one reaction a round)', () => {
     const f = fightWith([cls('guardian', 2, SOUL), {}], [{}]);
     const [gd, ally] = f.pcs; line(f, [gd, 3], [ally, 5], [f.foe, 9]);
     const u = f.turn(gd);
-    act(f, u, { type: 'combat/perk', id: 'class:guardian.will_shield', actionId: 'will_shield', targetId: ally.id });
+    withGame(f.g, () => grantShield(f.cb, f.unit(ally.id), 30, f.unit(gd.id))); f.unit(gd.id).mg!.mp -= 50; // a shield the Guardian made, and room for MP (Will Shield left in rules 1.31)
     const mp = f.unit(gd.id).mg!.mp;
     withGame(f.g, () => harm(f.cb, f.g.rng, f.unit(f.foe.id), f.unit(ally.id), 10, 'soul'));
-    expect(f.unit(gd.id).mg!.mp).toBe(Math.min(f.unit(gd.id).mg!.mpMax, mp + 25));
+    expect(f.unit(gd.id).mg!.mp).toBeGreaterThan(mp); // (the gain itself is pinned in completeness-f: Drink It In's real price)
     expect(logHas(f.cb, /drinks the spell off the shield/)).toBe(true);
   });
-  it('Sanctuary: allies in the 3×3 take half damage until the Guardian\'s next turn', () => {
-    const f = fightWith([cls('guardian', 3, SOUL), {}], [{}]);
-    const [gd, ally] = f.pcs; line(f, [gd, 3], [ally, 5], [f.foe, 13]);
-    const u = f.turn(gd); f.unit(gd.id).mg!.mp = 200;
-    act(f, u, { type: 'combat/perk', id: 'class:guardian.sanctuary', tile: '5,2' });
-    const a = f.unit(ally.id), hp = a.hp;
-    withGame(f.g, () => applyDamage(f.cb, a, 30, { by: f.unit(f.foe.id), type: 'weapon', shield: true }));
-    expect(hp - a.hp).toBe(15);
-    f.turn(gd);
-    const hp2 = f.unit(ally.id).hp; withGame(f.g, () => applyDamage(f.cb, f.unit(ally.id), 30, { by: f.unit(f.foe.id), type: 'weapon', shield: true }));
-    expect(hp2 - f.unit(ally.id).hp).toBe(30);
-  });
+  // (Sanctuary is the Chaplain's Hymn since rules 1.31: test/chaplain.test.ts)
 });
 
 // ======================================================================================================== BARD

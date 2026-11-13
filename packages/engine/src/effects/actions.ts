@@ -115,7 +115,8 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
   };
   // a nested `when: "acted"` effect is the item's own triggered effect (collect.ts liftActed): the trigger runs it, not the action
   const nested = (g: any) => (g.effects || []).filter((e: any) => e?.when !== 'acted');
-  if (grants.length) return grants.map((g, i) => mk(g.action || 'use' + i, grants.length > 1 ? info.name + ' · ' + human(g.action || 'use') : info.name, g.ap ?? info.ap, g.uses || info.uses, [...(verb ? g.effects || [] : nested(g)), ...own], g));
+  // (a grant's own `label`, else the item's name: with two grants, the name and the action's)
+  if (grants.length) return grants.map((g, i) => mk(g.action || 'use' + i, typeof g.label === 'string' ? g.label : grants.length > 1 ? info.name + ' · ' + human(g.action || 'use') : info.name, g.ap ?? info.ap, g.uses || info.uses, [...(verb ? g.effects || [] : nested(g)), ...own], g));
   if (info.bound) return [mk('use', info.name, info.ap, info.uses, own)];
   return [];
 }

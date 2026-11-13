@@ -28,7 +28,7 @@ import { sessionN, dayOf, uses as usesOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
 import { mendFactor, mendFactorOf } from './effects/mending';
 import { amountOf, term, levelOf, profileOf, type Term } from './effects/output';
-import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory, statQuery } from './effects/hooks';
+import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory, statQuery, holdersOf, runOwnEffects } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
 import { surrender, reveal, blessing as legacyBlessing , dropHeldShot } from './tactics';
@@ -42,9 +42,6 @@ import { rngOf, overworld, tilesAround, foesOf } from './kit';
 import { setBraced, setDowned, clearStagger } from './unitstate';
 import { condNotFresh } from './magic';
 import { setAnsweredDoor } from './effects/triggers';
-import { itemInfo } from './effects/collect';
-import { amountBlock } from './effects/amounts';
-import { mend } from './effects/output';
 
 export type { Belief, Vow } from './character';
 
@@ -650,12 +647,14 @@ const presenceReach = (cb: Combat, f: Unit): number => Number(presenceOf(cb, f)?
 const presenceCovers = (cb: Combat, f: Unit, t: Unit | null | undefined): boolean => !!t && (t === f || (t.side === f.side && !t.dead && dist(t.pos, f.pos) <= presenceReach(cb, f)));
 /** A Judged enemy of this fighter's (its weapon struck it on its turn: the condition's source), nearest first. */
 const judgedOf = (cb: Combat, f: Unit, near: string): Unit | null => cb.units.filter((v) => v.side !== f.side && alive(v) && condOn(v, 'judged') && condSource(v, 'judged') === f.id).sort((a, b) => dist(a.pos, near) - dist(b.pos, near))[0] || null;
-/** The presence's Ward (the Toll-Keeper's): the item its data names, its Ward amount and its mend's layer. */
+/** The presence's Ward (the Toll-Keeper's): the item its data names, held by the fighter: that item's own `mend` op on
+ * a layer, run by the generic runner with the kept-up ally as its target (its amount, layer and holders: the Ward's). */
 function presenceWard(cb: Combat, f: Unit, t: Unit, key: string): string {
-  const info = itemInfo(key); const op = (info?.effects || []).flatMap((e: any) => [e, ...(e.effects || [])]).find((e: any) => e.op === 'mend' && e.layer); if (!op) return '';
-  const b = amountBlock(key, op.amount), c = unitChar(f);
-  const r = mend(cb, f, t, { kind: 'shield', base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none' }, { who: c, healKind: 'prayer', layer: op.layer, ...(typeof op.holders === 'number' ? { holders: op.holders } : {}) });
-  return ' and ' + (info?.name || 'a Ward') + ' (' + r.shield + ')';
+  const h = holdersOf({ u: f, c: unitChar(f), cb }).find((x) => x.key === key); if (!h) return '';
+  const ops = (h.info.effects || []).flatMap((e: any) => [e, ...(e.effects || [])]).filter((e: any) => e.op === 'mend' && e.layer); if (!ops.length) return '';
+  const lay = () => (t.shields || []).find((l) => l.layer === ops[0].layer && l.by === f.id)?.n || 0, was = lay();
+  runOwnEffects(h, ops, { u: f, t, action: 'presence', tile: null, toggles: [], mode: null });
+  return lay() > was ? ' and ' + h.info.name + ' (' + lay() + ')' : '';
 }
 /** The predicate `answered` (Smite: a prayer that rides a hit): the prayer door open (Faith for a Whisper, not
  * Silenced); the Faithful are answered, an Atheist rolls the Whisper's TN. A preview rolls nothing. */
