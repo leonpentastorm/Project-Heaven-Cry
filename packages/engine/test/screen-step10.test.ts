@@ -120,3 +120,30 @@ describe('step 10: Inspire\'s feeling picker (bonds-spec.md section 9)', () => {
     expect(r.ok).toBe(false); expect(r.why).toBe(UNFELT);
   });
 });
+
+// Integration of step 10 with step 8 (figments-spec.md section 9): Picture on the Figments tab under its data group, each
+// held Figment its own group (name and HP), and the token's owner line (ownedView).
+import { figFight } from './helpers/figfight';
+import { ownedView } from '../src';
+import figmentsJ from '../../../data/figments.json';
+describe('screen: Figments', () => {
+  const FJ: any = figmentsJ;
+  it('Picture and Load the Visualizer under Picture; each Figment a group of its own with its verbs and HP', () => {
+    const f = figFight([{ skills: { visualization: 5 }, level: 5, weapon: 'service_pistol' }]); let u = f.turn(f.pc);
+    f.picture(u, 'beast', '3,4'); u = f.unit(u.id); u.ap = 6; f.picture(u, 'double', '3,5'); u = f.unit(u.id);
+    const rows = actionsFor(f.g, u.id), tab = rows.filter((d) => d.group === FJ.tab);
+    const pic = tab.filter((d) => d.sub === FJ.groups.picture).map((d) => d.id);
+    expect(pic.length).toBe(2);
+    const figs = f.figments(u); expect(figs.length).toBe(2);
+    for (const x of figs) {
+      const mine = tab.filter((d) => d.id.startsWith('ow:' + x.id + ':'));
+      expect(mine.length).toBeGreaterThan(0);
+      expect(new Set(mine.map((d) => d.sub)).size).toBe(1);
+      expect(mine[0].sub).toContain(x.name); expect(mine[0].sub).toContain(x.hp + '/' + x.maxHp);
+    }
+    expect(rows.filter((d) => d.id.startsWith('ow:') && d.group !== FJ.tab)).toEqual([]);
+    const ow = ownedView(f.cb, figs[0]);
+    expect(ow.kind).toBe('figment'); expect(ow.ownerId).toBe(u.id); expect(ow.turnless).toBe(true); expect(ow.line).toContain(u.name);
+    expect(ownedView(f.cb, u)).toBeNull();
+  });
+});

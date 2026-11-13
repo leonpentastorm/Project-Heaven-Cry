@@ -59,14 +59,26 @@ await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'doub
 await settle(p, 300);
 const body = (await p.locator('body').textContent()) || '';
 ok('a third Picture is refused in words (' + ((body.match(/Hold is full[^.]*\./) || [])[0] || 'no words') + '; ' + (await figs()).length + ' held)', (await figs()).length === 2 && /Hold is full/.test(body));
-const meter = ((body.match(/FIGMENTS \d+\/\d+/) || [])[0] || '') + ' · ' + ((body.match(/VISUALIZER (\d+\/\d+|EMPTY)/) || [])[0] || '');
+const rowVal = (label) => p.evaluate((label) => { const l = [...document.querySelectorAll('.phc-res-line')].find((e) => (e.firstElementChild?.textContent || '').trim().toLowerCase() === label); return l ? [...l.children].map((c) => c.textContent.trim()).filter(Boolean).slice(1).join(' ') : ''; }, label);
+const vis = (body.match(/VISUALIZER[^0-9A-Za-z]{0,40}(\d+ ?\/ ?\d+|EMPTY)/) || [])[1] || '';
+const meter = ('FIGMENTS ' + (await rowVal('figments')) + ' · VISUALIZER ' + vis).replace(/ \/ /g, '/'); // the row's label and its value, once each
 ok('the meter: ' + (meter || 'none: ' + ((body.match(/HP \d+ \/ \d+ · AP.{0,160}/) || [])[0] || '')), meter === 'FIGMENTS 2/2 · VISUALIZER 2/10');
 
-// ---------- the Hound's verbs are the owner's rows (Utility) ----------
-await p.locator('[role="tab"][data-tab="utility"]').click().catch(() => {}); await settle(p, 300);
-const hound = F.find((x) => x.name === 'Hound');
+// ---------- the Hound's verbs are the owner's rows, on the Figments tab (Classes 3.0 step 10's integration) ----------
+await p.locator('[role="tab"][data-tab="figments"]').click({ timeout: 30000 }).catch(() => {}); await settle(p, 300);
+const hound = F.find((x) => x.name === 'Hound'), wall = F.find((x) => x.name !== 'Hound');
 const rows = await p.evaluate((id) => [...document.querySelectorAll('[data-act^="ow:' + id + ':"]')].map((e) => e.getAttribute('data-act')), hound.id);
-ok('the Hound\'s rows: ' + rows.map((r) => r.split(':').pop()).join(', '), ['move', 'figment_strike', 'figment_pounce', 'let_go'].every((v) => rows.includes('ow:' + hound.id + ':' + v)));
+ok('the Hound\'s rows on the FIGMENTS tab: ' + rows.map((r) => r.split(':').pop()).join(', '), ['move', 'figment_strike', 'figment_pounce', 'let_go'].every((v) => rows.includes('ow:' + hound.id + ':' + v)));
+// the tab's groups: PICTURE, then one per held Figment headed by its name and the engine's HP
+const tabText = ((await p.locator('body').textContent()) || '').toUpperCase();
+const head = (x) => (x.name + ' · HP ' + Math.max(0, Math.round(x.hp)) + '/' + x.maxHp).toUpperCase();
+ok('the groups: PICTURE, ' + head(hound) + ', ' + head(wall), tabText.includes('PICTURE') && tabText.includes(head(hound)) && tabText.includes(head(wall)));
+// the Visualizer named as the door's focus on its row; a Figment's token names its owner
+const meName = (await me()).name;
+const vRow = (((await p.locator('body').textContent()) || '').match(/Visualizer · (off hand|main hand|in the pack)/) || [])[0] || '';
+ok('the Visualizer row names the focus (' + (vRow || 'none') + ')', /Visualizer · (off hand|main hand)/.test(vRow));
+const tokLabel = await p.evaluate((name) => { const b = [...document.querySelectorAll('button.phc-tok')].find((e) => (e.getAttribute('aria-label') || '').includes(' · ' + name + ' · ')); return b ? b.getAttribute('aria-label') : ''; }, hound.name);
+ok('a Figment\'s token reads as ' + meName + '\'s (' + tokLabel.slice(0, 90) + ')', tokLabel.includes(meName + '\'s Figment'));
 
 // ---------- Let go: half its charge back ----------
 const c0 = u.mg.vcharge, eg = await act({ type: 'combat/owned', unitId: u.id, owned: hound.id, verb: 'let_go' });

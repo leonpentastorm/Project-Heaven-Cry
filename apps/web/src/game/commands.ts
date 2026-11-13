@@ -22,7 +22,7 @@ export interface ActionMeta { /** the row's group inside its tab (the descriptor
 export type ActionItem = [string, string, string, string, (string | null)?, ActionMeta?];
 /** [group title, items, family ink (or null), tab id] */
 export type ActionGroup = [string, ActionItem[], string | null, string];
-export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', shadow: 'Shadow', tend: 'Tend', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith', calls: 'Calls' };
+export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', shadow: 'Shadow', tend: 'Tend', figments: 'Figments', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith', calls: 'Calls' };
 
 // ---------- prayers (Blessing 2.0, rules 1.6; the engine's faithView and previewPrayer) ----------
 /** A prayer's id in the action list: "pr:<kind>:<id>" (the engine's descriptor id). */
@@ -110,6 +110,8 @@ export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = 
   if (shadowRows.length) out.push(['SHADOW · UNSEEN', shadowRows, '#40BAA0', 'shadow']);
   const tendRows = by('tend'); // rules 1.33: Insight's door verbs (Bond, Heal, Help), in Insight ink
   if (tendRows.length) out.push(['TEND · BONDS AND CARE', tendRows, '#EB95B7', 'tend']);
+  const figRows = by('figments'); // rules 1.34: Expression's door (Picture, then each held Figment's verbs), in Expression ink
+  if (figRows.length) out.push(['FIGMENTS · PICTURED', figRows, '#5394AC', 'figments']);
   const sig = by('sigils'), soul = by('outbursts'), pray = by('faith'), cl = by('calls');
   if (sig.length) out.push(['MAGIC · SIGILS', sig, SIGIL_GLOW, 'sigils']);
   if (soul.length) out.push(['MAGIC · OUTBURSTS', soul, SOUL_INK, 'outbursts']);

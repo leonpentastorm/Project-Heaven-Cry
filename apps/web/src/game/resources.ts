@@ -236,9 +236,12 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   if (mg?.vcarry) {
     const fm = (E as any).figmentMeter(cb, u);
     if (fm) {
-      rows.push({ key: 'figments', label: 'Figments', value: 'FIGMENTS ' + fm.held + '/' + fm.max, now: fm.held, max: Math.max(1, fm.max), kind: 'pips', colour: RES_INK.expression,
+      rows.push({ key: 'figments', label: 'Figments', value: fm.held + '/' + fm.max, /* the label says FIGMENTS: the value is the count alone */ now: fm.held, max: Math.max(1, fm.max), kind: 'pips', colour: RES_INK.expression,
         hint: 'Figments you hold now, of the most you can. Each costs 1 Visualizer charge at your turn start' + (fm.held < fm.max ? '; you can picture ' + (fm.max - fm.held) + ' more.' : '; let one go to picture another.') });
-      const vr: ResRow = { key: 'vcharge', label: 'Visualizer', value: 'VISUALIZER ' + (fm.charge > 0 ? fm.charge + '/' + fm.chargeMax : 'EMPTY'), now: fm.charge, max: fm.chargeMax, kind: 'bar', colour: RES_INK.expression,
+      // the door's focus, named where the Attuner's and the Emanator's are (the engine's focusHand: a hand, or the pack)
+      const vHand = c ? E.focusHand(c, 'visualizer') : null;
+      const vr: ResRow = { key: 'vcharge', label: 'Visualizer', value: fm.charge > 0 ? fm.charge + '/' + fm.chargeMax : 'EMPTY', now: fm.charge, max: fm.chargeMax, kind: 'bar', colour: RES_INK.expression,
+        ...(vHand ? { sub: 'Visualizer · ' + (vHand === 'off' ? 'off hand' : vHand === 'main' ? 'main hand' : 'in the pack') } : {}),
         hint: 'The core in your Visualizer: Picture and upkeep spend its charge. Load the Visualizer (a spare core) refills it.' };
       if (!mg.visualizer) Object.assign(vr, { warn: 'STOWED', level: 'caution', hint: 'Your Visualizer is in the pack: your Figments stay, but you can\'t picture or act through them until it is in hand.' });
       else if (fm.charge <= 0) Object.assign(vr, { warn: 'EMPTY', level: 'alert' });
@@ -318,7 +321,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   rows.push(...faithRows(u, c));
   // ---- companions (drone, beast, twin) ----
   const comps: { key: string; name: string; hp: number; max: number; kind: string }[] = [];
-  if (u && cb) for (const x of cb.units) { if (x.ctrl && x.ctrl === u.charId) comps.push({ key: x.id, name: x.name, hp: x.dead ? 0 : x.hp, max: x.maxHp, kind: x.companion || '' }); }
+  // (a Figment is not listed here: the Figments tab groups each with its HP and verbs, and the meter counts them: one fact, one place)
+  if (u && cb) for (const x of cb.units) { if (x.ctrl && x.ctrl === u.charId && E.ownedView(cb, x)?.kind !== 'figment') comps.push({ key: x.id, name: x.name, hp: x.dead ? 0 : x.hp, max: x.maxHp, kind: x.companion || '' }); }
   else if (c?.companions) for (const k of c.companions) { const kd: any = (COMPANION_KINDS as any)[k.kind] || {}; const max = k.maxHp ?? kd.hp ?? 0; if (max) comps.push({ key: k.id, name: k.name || kd.name || words(k.kind), hp: k.hp ?? max, max, kind: k.kind }); }
   for (const x of comps) rows.push({ key: 'cp-' + x.key, label: x.name[0].toUpperCase() + x.name.slice(1), value: x.hp <= 0 ? 'DOWN' : x.hp + ' / ' + x.max + ' HP', now: Math.max(0, x.hp), max: x.max, kind: 'bar', colour: RES_INK.hp,
     ...(x.hp <= 0 ? { warn: 'DOWN' as ResWarn, level: 'alert' as const } : x.hp < x.max * 0.3 ? { warn: 'LOW' as ResWarn, level: 'caution' as const } : {}),

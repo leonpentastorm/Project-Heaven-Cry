@@ -202,9 +202,9 @@ function costOf(h: Holder, d: ActionDef, args: ActionArgs): Priced {
 }
 /** The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`:
  * Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. */
-export type ItemTab = 'perks' | 'class' | 'shadow' | 'tend' | 'faith';
+export type ItemTab = 'perks' | 'class' | 'shadow' | 'tend' | 'figments' | 'faith';
 /** The system tabs a door verb's data file may name (`tab`, rules 1.32-1.33): Shadow's verbs, Tending's. */
-export const VERB_TABS: ItemTab[] = ['shadow', 'tend'];
+export const VERB_TABS: ItemTab[] = ['shadow', 'tend', 'figments'];
 /** A prayer granted by any item (rules 1.31: the Chaplain's Ward and Sanctuary) goes on the Faith tab, among the prayers. */
 const tabOf = (h: Holder, d?: ActionDef): ItemTab => {
   if (d?.prayer) return 'faith';

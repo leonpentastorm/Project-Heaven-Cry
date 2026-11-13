@@ -12,6 +12,7 @@ import { UNTIL } from './condtable';
 import { maxReactions, reactionsUsed, cueLive } from './tactics';
 import { TECHNIQUE } from './physical';
 import { SKILL } from './data';
+import { ownerOf } from './owned';
 
 /** One unit on the Bond strip. */
 export interface BondChip {
@@ -75,4 +76,24 @@ export function reactionView(cb: Combat, u: Unit, c: Character | null): Reaction
   const max = maxReactions(u, cb), used = Math.min(max, reactionsUsed(cb, u));
   const on = (c as any)?.phys?.answers;
   return { max, used, left: Math.max(0, max - used), cue: cueLive(cb, u), answers: Array.isArray(on) ? on.map(answerName) : null };
+}
+
+/** An owned unit as the screen reads it (figments-spec.md section 9: a Figment's token names its owner; Classes 3.0 P9). */
+export interface OwnedView {
+  ownerId: string; ownerName: string;
+  /** The record's kind: 'figment', else 'companion' (the drone, the beast). */
+  kind: string;
+  /** No turn of its own: its owner acts through it on the owner's turn, with the owner's AP. */
+  turnless: boolean;
+  /** The line a token's card shows: "Ha's Figment: Ha acts through it." */
+  line: string;
+}
+/** Null: the unit is not an owned unit (owned.ts ownerOf: the far end of its `owned` tie). */
+export function ownedView(cb: Combat, u: Unit): OwnedView | null {
+  const rec: any = (u as any).owned, owner = rec ? ownerOf(cb, u) : null;
+  if (!rec || !owner) return null;
+  const kind = rec.kind || 'companion', turnless = rec.turn === 'owner';
+  const what = kind === 'figment' ? 'Figment' : 'companion';
+  return { ownerId: owner.id, ownerName: owner.name, kind, turnless,
+    line: owner.name + '\'s ' + what + (turnless ? ': ' + owner.name + ' acts through it (no turn of its own)' : ': it acts on its own turn') };
 }

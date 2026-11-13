@@ -817,7 +817,7 @@ Families: `body`, `brain`, `heart`.
 | `defaultActions` | `defaultActions(info: ItemInfo): ActionDef[]` | The default actions of an item, from its data. |
 | `actionDefs` | `actionDefs(info: ItemInfo): ActionDef[]` | An item's actions: a lane's, when it registered any (they replace the data defaults), else the defaults. |
 | `dataAp` | `dataAp(info: ItemInfo, actionId: string): number \| string` | The data's AP for an item's action: the `ap` of the grant_action that names it, else the item's own (ap_cost). |
-| `ItemTab` | `type ItemTab = 'perks' \| 'class' \| 'shadow' \| 'tend' \| 'faith'` | The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`: Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. |
+| `ItemTab` | `type ItemTab = 'perks' \| 'class' \| 'shadow' \| 'tend' \| 'figments' \| 'faith'` | The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`: Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. |
 | `VERB_TABS` | `VERB_TABS: ItemTab[]` | The system tabs a door verb's data file may name (`tab`, rules 1.32-1.33): Shadow's verbs, Tending's. |
 | `PRAYER_SUB` | `PRAYER_SUB: Record<string, string>` | The Faith tab's prayer groups (the prayer rows' own: descriptors.ts FAITH). |
 | `PerkActionEntry` | `interface PerkActionEntry { id, actionId, itemId, kind, label, text, ap, uses, target, range, scope, why, engine, tab, cls, arm, armed, sub, tier, options, pickMulti, pi…` | One action as the UI shows it. |

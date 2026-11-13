@@ -38,9 +38,9 @@ import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo } from './owned';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
-export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'shadow' | 'tend' | 'sigils' | 'outbursts' | 'faith' | 'calls';
+export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'shadow' | 'tend' | 'figments' | 'sigils' | 'outbursts' | 'faith' | 'calls';
 /** The order of the action groups on the fight screen's tabs. */
-export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'shadow', 'tend', 'sigils', 'outbursts', 'faith', 'calls'];
+export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'shadow', 'tend', 'figments', 'sigils', 'outbursts', 'faith', 'calls'];
 /** What a pick step asks for. enemy/ally/unit: a unit clicked on the grid; tile: a tile; option: one (or up to `max`)
  * of `options`; custom: a bespoke panel the screen registers under `renderer` fills `key` (the glyph keyboard, the
  * HEART panel, a perk's form, the pile checklist, the Evoke planner). */
@@ -770,18 +770,26 @@ const OWNED: ActionSystem = {
   owns: (id) => id.startsWith(OWNED_ID),
   list(x) {
     const out: ActionDescriptor[] = [];
-    for (const o of orderable(x.cb, x.u)) for (const v of ownedVerbs(o)) {
-      // a data verb (rules 1.34: a Figment's Strike, Pounce, Cut, Stare, Let go): its name, its site's price, its pick
-      const dv = ownedVerbInfo(x.cb, x.u, o, v);
-      if (dv) {
-        out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + dv.name, dv.ap, apT(dv.ap) + ' (yours)', o.name + ': ' + dv.text + ' It has no turn of its own: the AP are yours.', ownedWhy(x.cb, x.u, o, v),
-          { picks: dv.pick === 'enemy' ? [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' goes at.', choices: foeIds(x) }] : [] }));
-        continue;
+    // A Figment's rows go on the Figments tab (rules 1.34; figments-spec.md section 9), one group per held Figment headed
+    // by its name and HP (a second of the same name numbered); any other turn-less owned unit's stay on Utility.
+    const named: Record<string, number> = {};
+    for (const o of orderable(x.cb, x.u)) {
+      const fig = (o as any).owned?.kind === 'figment', nth = (named[o.name] = (named[o.name] || 0) + 1), before = out.length;
+      const at: Partial<ActionDescriptor> = fig ? { group: 'figments', sub: o.name + (nth > 1 ? ' ' + nth : '') + ' · HP ' + Math.max(0, Math.round(o.hp)) + '/' + o.maxHp } : {};
+      for (const v of ownedVerbs(o)) {
+        // a data verb (rules 1.34: a Figment's Strike, Pounce, Cut, Stare, Let go): its name, its site's price, its pick
+        const dv = ownedVerbInfo(x.cb, x.u, o, v);
+        if (dv) {
+          out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + dv.name, dv.ap, apT(dv.ap) + ' (yours)', o.name + ': ' + dv.text + ' It has no turn of its own: the AP are yours.', ownedWhy(x.cb, x.u, o, v),
+            { picks: dv.pick === 'enemy' ? [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' goes at.', choices: foeIds(x) }] : [] }));
+          continue;
+        }
+        const w: any = WEAPON[o.weapon], ap = v === 'move' ? 1 : w ? attackApCost(w, v) : 2, why = ownedWhy(x.cb, x.u, o, v);
+        out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + VERB_NAME[v], ap, v === 'move' ? 'AP a step (yours)' : apT(ap) + ' (yours)',
+          v === 'move' ? o.name + ' moves to a tile you pick. It has no turn of its own: the AP are yours.' : o.name + ' attacks an enemy you pick (' + VERB_NAME[v].toLowerCase() + '). It has no turn of its own: the AP are yours.',
+          why, { picks: v === 'move' ? [{ key: 'tile', kind: 'tile', prompt: 'Click the tile ' + o.name + ' goes to.' }] : [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' attacks.', choices: foeIds(x) }] }));
       }
-      const w: any = WEAPON[o.weapon], ap = v === 'move' ? 1 : w ? attackApCost(w, v) : 2, why = ownedWhy(x.cb, x.u, o, v);
-      out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + VERB_NAME[v], ap, v === 'move' ? 'AP a step (yours)' : apT(ap) + ' (yours)',
-        v === 'move' ? o.name + ' moves to a tile you pick. It has no turn of its own: the AP are yours.' : o.name + ' attacks an enemy you pick (' + VERB_NAME[v].toLowerCase() + '). It has no turn of its own: the AP are yours.',
-        why, { picks: v === 'move' ? [{ key: 'tile', kind: 'tile', prompt: 'Click the tile ' + o.name + ' goes to.' }] : [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' attacks.', choices: foeIds(x) }] }));
+      for (let i = before; i < out.length; i++) Object.assign(out[i], at);
     }
     return out;
   },
