@@ -10,7 +10,7 @@ import { TRIGGERS, PREDICATES, OPS, LIMIT_SCOPES, TARGET_FIELDS, isTriggered, tr
 import { allItems, ownerOf, addItems, clearAddedItems, itemInfo, handlerOf } from '../src';
 import { afterAll, beforeAll } from 'vitest';
 import { opsFight, situations } from './golden/itemops';
-import { A, W, dice, HIT, pcs, foes, charOf } from './golden/harness';
+import { A, W, dice, HIT, pcs, foes, charOf, noShare } from './golden/harness';
 
 const OPS_FILE = fileURLToPath(new URL('../../../data/effect_ops.json', import.meta.url));
 export function itemOpsBlock() {
@@ -54,7 +54,7 @@ describe('item ops: a new perk and a relic in data only (test/fixtures/item-ops-
     }
   });
   // (rules 1.33: Share a Hit, Camaraderie 1, would take part of the ally's lethal hit: these situations are about the item, so the squad doesn't share)
-  const noShare = (g: any) => { for (const u of pcs(g)) if (u.held?.skills) u.held = { ...u.held, skills: u.held.skills.filter((k: string) => !k.startsWith('camaraderie.')) }; return g; };
+
   const base = () => noShare(opsFight({}));
   it('the perk: an ally dropped by an enemy banks 2 AP once a fight, and the next hit deals +50%', () => {
     const g0 = noShare(opsFight({ perks: { test_blood_for_blood: 'mastered' } })), b0 = base();

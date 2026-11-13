@@ -167,6 +167,9 @@ export function fightSpec(specs: any[], foeSpecs: { tier?: string; weapon?: stri
   const f = fightWith(specs, foeSpecs.map((x) => ({ tier: x.tier || 'soldier', weapon: x.weapon || TIER_WEAPON[x.tier || 'soldier'], ...(x.level != null ? { level: x.level } : {}), ...(x.name ? { name: x.name } : {}) })), { map: 'golden', seed: o.seed || 'GOLDEN', ...(o.level != null ? { level: o.level } : {}) });
   return tidy(f.g);
 }
+/** Rules 1.33: the fixtures' squad (every skill 5) would Share a Hit (Camaraderie 1, a protective reaction) on every hit
+ * next to it; the item tables pin each item's own behaviour, so their squad does not share (test/tending.test.ts has it). */
+export function noShare(g: any) { for (const u of units(g)) if (u.side === 'pc' && u.held?.skills?.length) u.held = { ...u.held, skills: u.held.skills.filter((k: string) => !k.startsWith('camaraderie.1')) }; return g; }
 /** Stand units: place(g, [[unit, '3,5'], …]); everyone not named goes to the far corner rows, apart from each other. */
 export function place(g: any, at: [any, string][]) {
   const named = new Set(at.map(([u]) => u.id)); let k = 0;
