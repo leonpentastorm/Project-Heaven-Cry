@@ -31,7 +31,7 @@ export function GiveTab() {
     act({ ...(row.action as any), to: who, ...(row.kind === 'credits' ? { credits: amount } : row.kind === 'pack' ? { qty: amount } : {}) });
     setN(1); if (row.kind === 'pack') setSel('credits');
   };
-  const word = row.kind === 'credits' ? 'Give ' + amount.toLocaleString('en') + ' credits to ' + target.name
+  const word = row.kind === 'credits' ? 'Give ' + amount.toLocaleString('en') + (amount === 1 ? ' credit' : ' credits') + ' to ' + target.name
     : row.kind === 'held' ? 'Put it in the pack' : row.kind === 'never' ? 'Not given' : 'Give ' + (most > 1 ? amount + ' × ' : '') + row.label + ' to ' + target.name;
   const line = (r: GiveRowV) => {
     const w = r.why[who], on = r.key === row.key, icon = r.kind === 'pack' || r.kind === 'held' ? gearIconUri(r.id, undefined, { large: true }) : '';

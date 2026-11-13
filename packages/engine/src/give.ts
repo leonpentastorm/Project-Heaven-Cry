@@ -8,6 +8,7 @@
 // (`c.relics`); a training; the fitted armour class; a Relic whose property would take the receiver past the run's cap.
 // The entry arrives as it was: an instance is never merged into another (packAdd merges only what a pickup merges:
 // loose rounds by calibre and type, magazines by gun, plain stacks).
+import './datatext';
 import svJ from '../../../data/survival.json';
 import { WEAPON, ITEM } from './data';
 import { type Character, type PackItem, packOf } from './character';
@@ -84,7 +85,7 @@ export function giveNow(g: GameState, by: string, a: GiveAction): { ok: string; 
   if (part.kind === 'plot') { const ex = tp.find((x) => x.kind === 'plot' && x.id === part.id); if (ex) ex.qty += part.qty; else tp.push(part); }
   else packAdd(tp, part);
   to.pack = tp;
-  const label = 'the ' + itemLabel(part) + (part.prop ? ' (' + (relicRow(part.prop)?.name || part.prop) + ')' : '') + ((part.mods || []).length ? ' with ' + part.mods!.length + ' mod' + (part.mods!.length === 1 ? '' : 's') : '');
+  const label = itemLabel(part) + (part.prop ? ' (' + (relicRow(part.prop)?.name || part.prop) + ')' : '') + ((part.mods || []).length ? ' with ' + part.mods!.length + ' mod' + (part.mods!.length === 1 ? '' : 's') : '');
   return { ok: c.name + ' gives ' + to.name + ' ' + (k > 1 && !part.calibre && !part.mags ? k + ' × ' + itemLabel(part) : label) + '.', to, from: c };
 }
 
