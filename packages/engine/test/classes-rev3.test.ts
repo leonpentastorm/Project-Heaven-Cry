@@ -105,14 +105,14 @@ describe('ranks read the class\'s own attribute', () => {
     const s = storyWith([{ classId: 'fighter', level: 6, attrs: { strength: 4 } }]);
     const c = s.g.characters[s.chars[0].id]; c.unspent.attr = 1; c.cores.body = Math.max(c.cores.body, 5);
     s.act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: 'strength' });
-    expect(s.g.story.entries.at(-1)!.text).toMatch(/Fighter II: Riposte, Lingering Dread/);
+    expect(s.g.story.entries.at(-1)!.text).toContain(CLASS.fighter.name + ' II: Riposte, Lingering Dread');
   });
   it('a rank that comes with the level (rules 1.11) is announced the same way; no rise, no line', () => {
     const s = storyWith([{ classId: 'fighter', level: 5, attrs: { strength: 5 } }]);
     const c = s.g.characters[s.chars[0].id]; expect(classRank(c)).toBe(1);
     const n0 = s.g.story.entries.length; rankReached(s.g, c, 1); expect(s.g.story.entries.length).toBe(n0);
     c.level = 6; rankReached(s.g, c, 1);
-    expect(s.g.story.entries.at(-1)!.text).toMatch(/reaches Fighter II: Riposte, Lingering Dread/);
+    expect(s.g.story.entries.at(-1)!.text).toContain('reaches ' + CLASS.fighter.name + ' II: Riposte, Lingering Dread');
   });
 });
 
@@ -214,7 +214,7 @@ describe('Revision 2 saves migrate', () => {
     expect(classKeys(c)).toContain('class:trickster.read');
     expect(classKeys(c).some((k) => k.startsWith('class:siege_engineer.'))).toBe(false);
     const notes = s.g.story.entries.filter((e) => e.kind === 'system').map((e) => e.text).join(' ');
-    expect(notes).toMatch(/Warden is now the Trickster/); expect(notes).toMatch(/advanced classes are being rebuilt/);
+    expect(notes).toContain('Warden is now the ' + CLASS.trickster.name); expect(notes).toMatch(/advanced classes are being rebuilt/);
   });
   it('a new character is already at Revision 3 (nothing to migrate)', () => {
     const c = charOf({}, { classId: 'bard' }); expect(migrateCharacterClass(c)).toEqual([]);

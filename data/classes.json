@@ -56,7 +56,7 @@
   "base": [
     {
       "id": "defender",
-      "name": "Defender",
+      "name": "Bulwark",
       "attribute": "endurance",
       "core": "body",
       "skills": [
@@ -197,7 +197,7 @@
     },
     {
       "id": "fighter",
-      "name": "Fighter",
+      "name": "Breaker",
       "attribute": "strength",
       "core": "body",
       "skills": [
@@ -343,7 +343,7 @@
     },
     {
       "id": "marksman",
-      "name": "Marksman",
+      "name": "Skirmisher",
       "attribute": "agility",
       "core": "body",
       "skills": [
@@ -405,7 +405,7 @@
               "name": "Speed Loader",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Your first main-hand reload, draw, swap or pick-up each turn costs {=effects.0.value|abs} AP less, but never less than {=effects.0.min} AP. It doesn't apply to your off-hand gun or to reloading two guns at once.",
+              "text": "Your first main-hand reload, draw, swap or pick-up each turn costs {=effects.0.value|abs} AP less, but never less than {=effects.0.min} AP. It doesn't apply to your off-hand weapon or to reloading two weapons at once.",
               "effects": [
                 {"op": "cost_mod", "value": -1, "min": 1, "when": "cost", "if": {"action": ["reload", "pickup"], "hand": ["main"]}, "limit": {"per": "per_turn", "n": 1, "peek": true}},
                 {"op": "use", "when": "reload", "if": {"hand": ["main"]}, "limit": {"per": "per_turn", "n": 1}},
@@ -513,7 +513,7 @@
     },
     {
       "id": "infiltrator",
-      "name": "Infiltrator",
+      "name": "Operative",
       "attribute": "perception",
       "core": "mind",
       "skills": [
@@ -698,7 +698,7 @@
     },
     {
       "id": "mage",
-      "name": "Mage",
+      "name": "Sigilist",
       "attribute": "intelligence",
       "core": "mind",
       "skills": [
@@ -822,7 +822,7 @@
     },
     {
       "id": "trickster",
-      "name": "Trickster",
+      "name": "Rigger",
       "attribute": "expression",
       "core": "mind",
       "skills": [
@@ -1023,7 +1023,7 @@
     },
     {
       "id": "bard",
-      "name": "Bard",
+      "name": "Mender",
       "attribute": "insight",
       "core": "soul",
       "skills": [
@@ -1286,7 +1286,7 @@
     },
     {
       "id": "guardian",
-      "name": "Guardian",
+      "name": "Chaplain",
       "attribute": "virtue",
       "core": "soul",
       "skills": [
@@ -1424,7 +1424,7 @@
         "ap_cost": null,
         "uses": "per_rest",
         "numbers": {"load_attacks": 12, "load_ap": 1},
-        "text": "You carry one load each of armour-piercing, hollow-point and incendiary rounds, restocked when you rest, for any weapon but a grenade or other consumable: a magazine for a gun, a quiver of up to {=numbers.load_attacks} arrows for a bow (filled before the fight), and for a blade, a fist or a thrown blade a load that lasts {=numbers.load_attacks} attacks or the fight. Loading is a reload and costs its AP; {=numbers.load_ap} AP for a weapon that never reloads. Armour-piercing ignores armour at ×0.8 damage, hollow-point deals ×1.3 damage against doubled armour, and incendiary deals ×0.9 damage and sets the target Burning.",
+        "text": "You carry one load each of armour-piercing, hollow-point and incendiary ammunition, restocked when you rest, for any weapon but a grenade or other consumable: a weapon that takes a magazine loads it as a magazine, one that draws from a quiver as a quiver of up to {=numbers.load_attacks} (filled before the fight), and any other weapon takes a load that lasts {=numbers.load_attacks} attacks or the fight. Loading is a reload and costs its AP; {=numbers.load_ap} AP for a weapon that never reloads. Armour-piercing ignores armour at ×0.8 damage, hollow-point deals ×1.3 damage against doubled armour, and incendiary deals ×0.9 damage and sets the target Burning.",
         "effects": [
           {
             "op": "resource",
@@ -1453,7 +1453,7 @@
         "ap_cost": null,
         "uses": "at_will",
         "numbers": {"hit": 2, "spend": 2},
-        "text": "Hold two attacks with any weapon instead of one, for twice the attack's AP. You make one at each of the first two different enemies that move into your line (a gun, a bow) or your reach (a melee weapon), both at +{=numbers.hit} to hit. The first one spends {=numbers.spend} reactions, both of yours; with one reaction left, only one fires. You can't set it while Pressed.",
+        "text": "Hold two attacks with any weapon instead of one, for twice the attack's AP. You make one at each of the first two different enemies that move into your line of fire or your reach, both at +{=numbers.hit} to hit. The first one spends {=numbers.spend} reactions, both of yours; with one reaction left, only one fires. You can't set it while Pressed.",
         "effects": [
           {
             "op": "grant_action",
@@ -1488,7 +1488,7 @@
         "name": "Lunge",
         "ap_cost": null,
         "uses": "at_will",
-        "text": "Costs the AP of your melee attack and {=effects.0.value|abs} Momentum. Move up to {=effects.1.value} tiles and strike an enemy, all in one action. The move provokes no opportunity attacks.",
+        "text": "Costs the AP of your melee attack and {=effects.0.value|abs} Momentum. Move up to {=effects.1.value} tiles and strike an enemy, all in one action. The move provokes no opportunity attacks. Once a turn, your first hit on a Shaken or Frightened enemy, with any weapon, gives you {=effects.2.value} Momentum (the Breaker's).",
         "effects": [
           {
             "op": "resource",
@@ -1500,6 +1500,24 @@
             "op": "stat_mod",
             "stat": "move_in_attack",
             "value": 2
+          },
+          {
+            "op": "resource",
+            "when": "hit",
+            "resource": "momentum",
+            "value": 1,
+            "if": {
+              "own_turn": true,
+              "hostile": true,
+              "target_has": [
+                "shaken",
+                "fear"
+              ]
+            },
+            "limit": {
+              "per": "per_turn",
+              "n": 1
+            }
           }
         ],
         "adjudication": "engine",
@@ -1584,7 +1602,7 @@
         "name": "Brace",
         "ap_cost": 2,
         "uses": "at_will",
-        "text": "Costs {=ap_cost} AP. You gain Guard equal to your Durability points (at least 1; you hold 5 at most) and become Braced: +{=effects.2.value} Defense until you move, are pushed or are knocked Prone. While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend 1 Guard and your reaction and take the hit yourself, with your own armour.",
+        "text": "Costs {=ap_cost} AP. You gain Guard equal to your Durability points (at least 1; you hold 5 at most) and become Braced: +{=effects.2.value} Defense until you move, are pushed or are knocked Prone. While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend 1 Guard and your reaction and take the hit yourself, with your own armour. A fight starts with {=effects.4.value} Guard for you (the Bulwark's).",
         "effects": [
           {
             "op": "resource",
@@ -1608,6 +1626,12 @@
             "action": "interpose",
             "ap": 0,
             "uses": "at_will"
+          },
+          {
+            "op": "resource",
+            "when": "combat_start",
+            "resource": "guard",
+            "value": 1
           }
         ],
         "adjudication": "engine",
@@ -2665,7 +2689,7 @@
     "revision_2_classes": [
       {
         "id": "marksman",
-        "name": "Marksman",
+        "name": "Skirmisher",
         "core": "body",
         "signature": [
           "dexterity",
@@ -2676,7 +2700,7 @@
       },
       {
         "id": "fighter",
-        "name": "Fighter",
+        "name": "Breaker",
         "core": "body",
         "signature": [
           "athletics",
@@ -2689,7 +2713,7 @@
       },
       {
         "id": "defender",
-        "name": "Defender",
+        "name": "Bulwark",
         "core": "body",
         "signature": [
           "durability",
@@ -2729,7 +2753,7 @@
       },
       {
         "id": "mage",
-        "name": "Mage",
+        "name": "Sigilist",
         "core": "mind",
         "signature": [
           "brain_power",
@@ -2762,7 +2786,7 @@
       },
       {
         "id": "trickster",
-        "name": "Trickster",
+        "name": "Rigger",
         "core": "mind",
         "signature": [
           "analysis",
@@ -2784,7 +2808,7 @@
       },
       {
         "id": "guardian",
-        "name": "Guardian",
+        "name": "Chaplain",
         "core": "soul",
         "signature": [
           "lore_master",
@@ -2795,7 +2819,7 @@
       },
       {
         "id": "bard",
-        "name": "Bard",
+        "name": "Mender",
         "core": "soul",
         "signature": [
           "camaraderie",

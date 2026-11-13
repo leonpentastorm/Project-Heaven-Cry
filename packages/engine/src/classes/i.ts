@@ -156,7 +156,8 @@ register({
   id: 'marksman.fire_discipline', claims: ['heat_mod'],
   on: {
     // resolveAttack adds +1 Heat to every gun shot after the die: take it off first, so the jam check sees the net.
-    attack_roll: (ctx, h) => { if (ctx.att !== h.u || ctx.mode !== 'aimed') return; const w = WEAPON[h.u!.weapon]; if (w?.heat_limit && !isMelee(w)) h.u!.heat -= 1; },
+    // Only a gun has Heat (heat_limit): no family read.
+    attack_roll: (ctx, h) => { if (ctx.att !== h.u || ctx.mode !== 'aimed') return; const w = WEAPON[h.u!.weapon]; if (w?.heat_limit) h.u!.heat -= 1; },
   },
   brief: () => null,
 });
@@ -282,7 +283,7 @@ function lungeTile(cb: Combat, u: Unit, t: Unit): string | null {
 }
 let lunging: Unit | null = null;
 register({
-  id: 'fighter.lunge', claims: 'all',
+  id: 'fighter.lunge', claims: (e: any) => e?.when !== 'hit', // Momentum on a Shaken or Frightened enemy (Classes 3.0) is an item op: the runner runs it
   actions: [{
     id: 'lunge', label: 'Lunge', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
     text: 'Costs 1 Momentum and the AP of a strike. Move up to 2 tiles and strike, as one action. The move draws no opportunity attacks.',
@@ -358,7 +359,7 @@ let interposing = false;
 /** The ally an Interpose just covered (the same attack's injury follows the hit to the Defender). */
 let interposed: { t: string; me: string } | null = null;
 register({
-  id: 'defender.brace', claims: 'all',
+  id: 'defender.brace', claims: (e: any) => e?.when !== 'combat_start', // the fight's starting Guard (Classes 3.0) is an item op: the runner runs it
   actions: [
     {
       id: 'brace', label: 'Brace (Hold the Line)', scope: ['combat'], target: 'none', ap: 'data',
@@ -435,7 +436,7 @@ register({
     },
     turn_end: (ctx, h) => { const b = stateOf(h).boss; if (b && b[ctx.u.id]) delete b[ctx.u.id]; },
   },
-  brief: () => 'Celestials (Narrator-run) honour the −2 against anyone but the Defender.',
+  brief: () => 'Celestials (Narrator-run) honour the −2 against anyone but the Bulwark.',
 });
 
 // ---------- Reactive Plate (rank III, passive; no reaction, PROVISIONAL) ----------
