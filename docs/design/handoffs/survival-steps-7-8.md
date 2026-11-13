@@ -21,7 +21,7 @@ left to the step built beside this one. Branch: this worktree's, from `claude/ch
 | The renderer: `kitLayout(map)` (once per map: per tile its ground, wall layers by neighbours, doorway or breach, decals, dressing, the door's turn), `wallLayers`, `kitSprite`, `kitGround`, `kitFloorBg` (was `kitTileBg`), `kitArt`, `setKitAssets` (tests) | `apps/web/src/game/kitMap.ts` |
 | Wiring: the ground through the tile's background (the same door as a campaign's painted map, `paint`), the kit layers first in the tile (under every highlight, token and effect), dimmed with the fog; `spriteOf` falls back to the kit's sprite by kind; a broken kit piece is drawn whole; a door turns with its doorway; "ROUGH" is not written over a rubble decal | `apps/web/src/screens/combat.js`, `screens/shared.js`, `templates/combat.template.html` (one `sc-if` line) |
 | Tests: `test/survival-layout.test.ts` (engine), `src/game/kitMap.test.ts` (web), browser suite `kit-map` (group rules) | |
-| Docs: rules 1.45, the spec's rows 7 and 8 and item 6 marked built, ART-REQUESTS S7 (S4 on the branch; renumbered at the merge), the prompts file's note, `docs/ASSET-DIRECTORY.md` (a kit section, by hand: the file has no generator), `docs/ART-INTEGRATION.md`, `docs/ENGINE-HOOKS.md` regenerated, `apps/web/e2e/README.md` | |
+| Docs: rules 1.45, the spec's rows 7 and 8 and item 6 marked built, ART-REQUESTS S8 (S4 on the branch; renumbered at the merges), the prompts file's note, `docs/ASSET-DIRECTORY.md` (a kit section, by hand: the file has no generator), `docs/ART-INTEGRATION.md`, `docs/ENGINE-HOOKS.md` regenerated, `apps/web/e2e/README.md` | |
 
 ## 2. Built from
 
@@ -99,7 +99,7 @@ Walls join across tiles (the pieces reach over the 2 px grid gap and the tile bo
 room stamps read as rooms with clear gaps, cover and objects sit on the ground, the fog dims the kit with the tile. Still
 rough: (1) the 2 px grid lines cut the ground into squares (the spec's "darkened under the grid"; a gap of 0 would need
 the camera's tile pitch changed); (2) cover tiles keep their brown tint and the "HALF 30" line over the sprite (kept: the
-HP is information); (3) the container is drawn shrunk into one tile (the engine's container is one tile; S7 asks for a
+HP is information); (3) the container is drawn shrunk into one tile (the engine's container is one tile; S8 asks for a
 one-tile piece); (4) the solid tile shows darkened ground beside the half-tile wall band, which reads as the wall's
 shadow (Leon's "half a tile is ok").
 
@@ -125,9 +125,9 @@ shadow (Leon's "half a tile is ok").
 ## 9. At the merge with steps 5 and 6 (13 Nov)
 
 - `data/survival.json` settings carry step 5's `line`, `backdrop`, `awaiting` and this step's `layout`. Rules 1.45 sits
-  between 1.44 and 1.47. ART-REQUESTS: this step's S4 is now **S7** (step 5 took S4 to S6).
-- **Tile backdrops wired** (S5): `tools/build_web_assets.py` emits each `survival_art` backdrop as
-  `survival-backdrop-<setting>-<letter>` (from its file name); the next tile's card draws it, else the plain panel.
+  between 1.44 and 1.47. ART-REQUESTS: this step's S4 is now **S8** (steps 4 and 5 took S4 to S7).
+- **Tile backdrops wired** (S6): `tools/build_web_assets.py` emits each `survival_art` backdrop as
+  `survival-backdrop-<setting>-<letter>` (from its file name); the next tile's card draws it, else the plain panel (ART-REQUESTS S6).
   The `survival` suite checks each card's backdrop.
 - **The kit map polished** (section 6's points 1, 2 and 4): a kit tile's ground is a floor layer (`<i data-kit-floor>`)
   that reaches 2 px past its tile over the grid's gap, the ground in grid pixels (`kitFloorBg`, `TILE_PITCH` 48,

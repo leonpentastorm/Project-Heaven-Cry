@@ -998,6 +998,27 @@
       }
     ],
     "calibres_provisional": true,
+    "magazine_prices": {
+      "about": "Rules 1.42 (Core Rules, Ammo and calibres: empty magazines cost 30 for a pistol, 40 for a rifle, 25 for a speedloader, 60 for a drum or box). An empty magazine's price for a gun: by its reload unit first (speedloader, drum, belt), then by its category (pistol calibres 30, heavy boxes 60), else the default. A full magazine adds its rounds at the calibre's price (credits.ts priceOf).",
+      "by_unit": {
+        "speedloader": 25,
+        "drum": 60,
+        "belt": 60
+      },
+      "by_category": {
+        "pistol": 30,
+        "smg": 30,
+        "mana": 30,
+        "heavy": 60
+      },
+      "default": 40,
+      "provisional": true
+    },
+    "special_round_price": {
+      "about": "Rules 1.42: special rounds fit any gun, so a round's price is its `price_mult` (items.json) times this calibre's round price (Core Rules: armour-piercing x3, hollow-point x2, incendiary x3 of a rifle round); enhanced rounds have their own price.",
+      "calibre": "rifle",
+      "provisional": true
+    },
     "reloading": {
       "cost_ap": 2,
       "magazine": "speed reload (cost_ap): swap in the fullest spare magazine; the one in the gun drops into the pile on your tile, empty or with its rounds and ammo type (spec items 679, 680)",
@@ -1288,6 +1309,14 @@
     },
     "cap_pct": 0.5,
     "cap_note": "Rules 1.36: no single heal restores more than this share of its target's max HP (a Miracle is exempt; shields have no cap: one stands per layer)."
+  },
+  "gear_preview": {
+    "about": "Rules 1.42 (survival-spec section 4.2 item 14): the reference a gear card's numbers are measured against outside a fight: a foe of this tier with this weapon, at the holder's level, standing `range_tiles` away (or the weapon's effective range when shorter; adjacent for a melee weapon). gearpreview.ts.",
+    "name": "Soldier",
+    "tier": "soldier",
+    "weapon": "hellraiser_service_rifle",
+    "range_tiles": 5,
+    "provisional": true
   },
   "rarity": {
     "rules": "rules 1.26 (the re-fit): Weapons v2, Rarity, moved from code into data. Rarity buys accuracy, durability and a mod slot; since the re-fit it adds no damage (Masterwork's +10% was the gun premium the all-in ceiling could not hold: PROVISIONAL, spec item 1701)",

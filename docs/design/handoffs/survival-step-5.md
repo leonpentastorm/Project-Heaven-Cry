@@ -19,7 +19,7 @@ kit drawing (steps 7, 8); `RunScreen.tsx` gained one early return and lost its d
 | Tithe and Bandolier: `creditsFor`, `ammoMult` (the stats asked); `ammoPack` takes the multiplier | `run/rewards.ts` |
 | Screens: `StageScreen.tsx` (boon pick: three large cards with a line glyph, name, sentence, worth against the cap; next tile: two or three cards with backdrop or plain panel, line, Boss, boon theme, placeholders, marks; Retire; the summary: score chips, a row a stage, each member's level, class and boons, "Keep as a draft", back to the room), `stageView.ts`, `boonIcons.ts`; the room's "The run's summary ›"; a run that has just ended shows its summary | `apps/web/src/game/`, `room.js`, `room.template.html`, `store.ts` |
 | Tests: `test/survival-stage.test.ts` (26); `survival-encounter` (stage 3 now fully in band, `anchorDamage`); `run-state` (the new fields); the `survival` browser suite's own section (10 checks) | |
-| ART-REQUESTS S4 (thirteen boon icons), S5 (six tile backdrops, delivered on the art branch, not merged), S6 (two Boss portraits) | `art/briefs/ART-REQUESTS.md` |
+| ART-REQUESTS S5 (thirteen boon icons), S6 (six tile backdrops, delivered on the art branch, not merged), S7 (two Boss portraits; renumbered at the merge with step 4b) | `art/briefs/ART-REQUESTS.md` |
 
 ## 2. Built from
 
@@ -54,7 +54,7 @@ new hook has no listener outside a run's relics). The survival replay guard now 
   pools), `worth` (percent of a rifle-turn; 0 for a utility boon), optional `doors` (door skills it serves), `effects`
   (item ops from the closed lists; a run economy answers `stat_mult` on `run_ammo` / `run_credits`), `text` with
   `{=placeholders}`, `adjudication: "engine"`, `provisional: true`. Then `python3 tools/validate.py data`, a line glyph
-  in `boonIcons.ts` and a row under ART-REQUESTS S4. Its graft is made by `run/power.ts` at load.
+  in `boonIcons.ts` and a row under ART-REQUESTS S5. Its graft is made by `run/power.ts` at load.
 - **A setting (a tile):** one row in `survival.json settings` (`kinds`, `boss`, `pool` with at least one boon, `line`,
   `backdrop` `survival-backdrop-<id>-a`, `awaiting`), a `names` row per new kind, a shop face (step 4). `settingReady`
   offers it as soon as its data is whole.
@@ -69,7 +69,7 @@ new hook has no listener outside a run's relics). The survival replay guard now 
    1 character from a sheet and Survival refuses above level 1. A campaign room taking a levelled sheet is a new door.
 3. **Tile backdrops:** wired at the merge with steps 7 and 8: the 24 are in the catalog (`survival_art`, `survival-b01`..`b24`,
    review candidates); `npm run assets` emits each as `survival-backdrop-<setting>-<letter>` and the card draws it, else a
-   plain panel (ART-REQUESTS S5). Boss portraits for field and shrine are missing (S6).
+   plain panel (ART-REQUESTS S6, renumbered at the merge with step 4). Boss portraits for field and shrine are missing (S7).
 4. **Placeholder settings** (item 3114): every setting but AHOC fights with stand-ins by name (`awaiting`).
 5. Stage 2's foes dropped read 0 when every fight is skipped by `run/skip` (no foe falls); real fights count.
 6. The Report a run bundle (step 6) can read `g.run.stages` and `RunEnd` as they are.

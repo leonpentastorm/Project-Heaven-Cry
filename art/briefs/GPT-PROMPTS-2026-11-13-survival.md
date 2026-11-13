@@ -27,7 +27,7 @@
 > `tools/art/kit_seams.py`, which every ground must pass ("clean") before delivery; AHOC `dress-2` (it has lettering:
 > no text, ever); rim `wall-corner` (paint it as the rim's straight piece bent round: same panels, same shade). **Wanted
 > besides:** a one-tile `container` per setting (the engine's container is one tile; the 1.5-tile one is drawn shrunk).
-> The list is `ART-REQUESTS.md` S7.
+> The list is `ART-REQUESTS.md` S8.
 
 Everything the Survival mode (`docs/ROADMAP.md`, "Survival mode" and "The roguelike: Leon's scope") needs that an image
 generator can make **now**. Leon, 13 Nov 2026: "Artist is free, ask for more paintings, prepare for Survival mode
