@@ -10,6 +10,7 @@ import { callEstimate, COST_CEILING_USD, MODELS } from '../narrator/anthropic';
 import { isPriced, providerInfo } from '../narrator/providers';
 import { GAME_VERSION } from '../version';
 import { tipProps } from './actionTip';
+import { runReport } from './runReport';
 
 // ---------- open from anywhere (the screens' buttons) ----------
 let which: 'report' | 'spend' | null = null;
@@ -33,6 +34,7 @@ export function buildReport(what: string, withSave: boolean) {
     narrator: { provider: st.narrator.provider, baseUrl: st.narrator.baseUrl, model: st.narrator.model, effort: st.narrator.effort, scripted: st.narrator.scripted, hasKey: !!st.narrator.key },
     voice: { ...voiceState(), prefs: voicePrefs() }, rerollCopies: reportBefores(),
     game: withSave ? g : g && { code: g.code, v: g.v, phase: g.phase, players: g.players, scene: g.story?.scene, await: g.story?.await, work: g.story?.work, narrator: g.narrator, lastLines: g.story?.entries.slice(-12) },
+    run: g?.run ? runReport(g as any) : undefined, // rules 1.47: a Survival room's run (seed, stages, fights' tallies, builds)
     narratorCalls: recentExchanges(), log: recentLogs(),
   };
   let json = JSON.stringify(report, null, 1);

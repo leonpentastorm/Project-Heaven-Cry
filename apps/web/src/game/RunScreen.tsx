@@ -9,6 +9,8 @@ import { nodeIconSvg } from './runIcons';
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { StageScreen } from './StageScreen';
+import { TallyTable } from './RunTally';
+import { lastFightTally } from './tallyView';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
 const kick: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
@@ -143,6 +145,7 @@ export function RunScreen() {
               {v.note.lines.map((l, i) => <span key={i} style={{ fontSize: 13, lineHeight: 1.45 }}>{l}</span>)}
             </div>
           ) : null}
+          {(() => { const t = lastFightTally(g); return t ? <TallyTable t={t} compact /> : null; })()}
           {v.kits.map((x) => <Choices key={'kit-' + x.charId} x={x} kit />)}
           {v.choices.map((x) => <Choices key={'ch-' + x.charId} x={x} />)}
           {mine.map((o) => <Offer key={o.charId} o={o} />)}
