@@ -6,7 +6,9 @@
 // cleared after the Boss. A shop replaces the whole screen (ShopScreen.tsx, spec 8.3). It draws runView (runView.ts);
 // every action is a `run/*` sent through the store.
 import React from 'react';
-import { act, getState, go } from './store';
+import { act, getState, go, toast } from './store';
+import { placeOpen } from '@engine';
+import { PlaceScreen } from './PlaceScreen';
 import { runView, NODE_LEGEND, type RunNodeV, type OfferV, type ChoiceCharV } from './runView';
 import { nodeIconSvg } from './runIcons';
 import { gearIconUri } from './gearIcons';
@@ -91,11 +93,31 @@ function Choices({ x, kit }: { x: ChoiceCharV; kit?: boolean }) {
   );
 }
 
+/** Rules 1.46: a give that arrives says so on the receiver's screen (a toast in the engine's words), wherever the
+ * receiver is in the run: the shop, a place, the map. Each give entry is seen once. */
+const seenGives = new Set<string>(); let givesPrimed = false;
+function useGiveToast(g: any, me: string) {
+  const entries: any[] = g?.story?.entries || [];
+  const last = entries.length ? entries[entries.length - 1].id : '';
+  React.useEffect(() => {
+    if (!givesPrimed) { givesPrimed = true; for (const e of entries) if (e.head === 'A GIVE') seenGives.add(e.id); return; } // a page loaded mid-run: old gives are old
+    for (const e of entries.slice(-8)) {
+      if (e.head !== 'A GIVE' || seenGives.has(e.id)) continue;
+      seenGives.add(e.id);
+      if (e.charId && g.characters[e.charId]?.owner === me) toast(e.text, true);
+    }
+  }, [last]); // eslint-disable-line react-hooks/exhaustive-deps
+}
+
 export function RunScreen() {
   const st = getState(), g = st.game, me = st.me.id;
   const box = React.useRef<HTMLDivElement>(null);
+  const [closed, setClosed] = React.useState<string | null>(null); // rules 1.46: the place this screen walked out of
+  useGiveToast(g, me);
   const v = g ? runView(g, me) : null;
   if (!g || !v) return <div style={{ padding: 40, color: ink.muted }}>No run is under way.</div>;
+  const visitNode = g.run?.visit?.node || null, place = placeOpen(g as any);
+  if (place && closed !== visitNode) return <PlaceScreen onLeave={() => setClosed(visitNode)} />; // rules 1.46: every safe node full screen
   if (v.state === 'shop') return <ShopScreen />; // rules 1.42: the shop replaces the play screen (spec 8.3)
   if (v.state === 'boon' || v.state === 'tile' || v.over) return <StageScreen />; // rules 1.44: the stage's end and the summary, full screen
   const fight = v.state === 'fight';
@@ -129,7 +151,7 @@ export function RunScreen() {
             {NODE_LEGEND.map((k) => <span key={k.kind} data-phc-legend-kind={k.kind} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ display: 'inline-grid', color: ink.text }} dangerouslySetInnerHTML={{ __html: nodeIconSvg(k.kind, 16) }} />{k.word}</span>)}
             <span style={{ marginLeft: 'auto' }}>Lit: reachable · solid: your route · {v.solo ? 'click a lit node to go' : 'click to mark; the squad goes when everyone has, a tie to the host'}</span>
           </div>
-          <div ref={box} data-phc-pathmap="" style={{ position: 'relative', flex: 1, minHeight: 360, borderRadius: 14, background: 'radial-gradient(ellipse at 50% 40%, #141B28 0%, #0A0D13 75%)', border: '1px solid ' + ink.line, overflow: 'hidden' }}>
+          <div ref={box} data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', flex: 1, minHeight: 360, borderRadius: 14, background: 'radial-gradient(ellipse at 50% 40%, #141B28 0%, #0A0D13 75%)', border: '1px solid ' + ink.line, overflow: 'hidden' }}>
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} aria-hidden="true">
               {v.links.map((l) => { const a = pos[l.from], b = pos[l.to]; if (!a || !b) return null;
                 return <line key={l.from + '>' + l.to} x1={a.x} y1={a.y} x2={b.x} y2={b.y} vectorEffect="non-scaling-stroke" stroke={l.walked ? ink.text : l.lit ? ink.white : '#34405A'} strokeWidth={l.walked ? 3.5 : l.lit ? 2.5 : 1.25} strokeDasharray={l.walked ? undefined : l.lit ? '6 4' : '3 6'} strokeLinecap="round" />; })}
@@ -161,7 +183,7 @@ export function RunScreen() {
             </div>
           ) : null}
           {v.kits.map((x) => <Choices key={'kit-' + x.charId} x={x} kit />)}
-          {v.choices.map((x) => <Choices key={'ch-' + x.charId} x={x} />)}
+          {place ? <button type="button" data-phc-reopen="" onClick={() => setClosed(null)} style={btn(true)}>Back to the {(v.note?.title || 'place')} ›</button> : v.choices.map((x) => <Choices key={'ch-' + x.charId} x={x} />)}
           {mine.map((o) => <Offer key={o.charId} o={o} />)}
           {others.map((o) => <Offer key={o.charId} o={o} />)}
         </aside>

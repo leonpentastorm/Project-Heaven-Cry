@@ -64,11 +64,7 @@ export function GiveTab() {
             </button>; })}
         </div>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <span style={kick}>WHAT</span>
-        {v.rows.filter((r) => r.kind !== 'never').map(line)}
-      </div>
-      <div data-phc-give-send="" style={{ position: 'sticky', bottom: 0, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', padding: '14px 16px', borderRadius: 14, background: 'rgba(16,21,31,0.97)', border: '1px solid #3B475D' }}>
+      <div data-phc-give-send="" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', padding: '14px 16px', borderRadius: 14, background: 'rgba(16,21,31,0.97)', border: '1px solid #3B475D' }}>
         {(row.kind === 'credits' || (row.kind === 'pack' && most > 1)) && !why ? (
           <div role="group" aria-label="How many" style={{ display: 'flex', alignItems: 'center', border: '1px solid #3B475D', borderRadius: 10 }}>
             <button type="button" aria-label="Fewer" onClick={() => setN(Math.max(1, amount - (row.kind === 'credits' && amount > 10 ? 10 : 1)))} style={{ width: 34, height: 42, border: 0, background: 'transparent', color: I.text, fontSize: 20, cursor: 'pointer' }}>‹</button>
@@ -79,6 +75,10 @@ export function GiveTab() {
         <button type="button" data-phc-give-go="" disabled={!!why || row.kind === 'never'} onClick={send}
           style={{ minHeight: 46, padding: '0 20px', borderRadius: 12, border: 0, background: why || row.kind === 'never' ? I.raised : I.text, color: why || row.kind === 'never' ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15.5, fontWeight: 700, cursor: why ? 'default' : 'pointer' }}>{word}</button>
         {why ? <span data-phc-give-reason="" style={{ fontSize: 13, color: I.muted }}>{why}</span> : null}
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <span style={kick}>WHAT</span>
+        {v.rows.filter((r) => r.kind !== 'never').map(line)}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <span style={kick}>NEVER GIVEN</span>

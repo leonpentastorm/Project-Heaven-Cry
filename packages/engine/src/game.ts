@@ -3159,8 +3159,10 @@ function runAction(g: GameState, a: Action, by: string) {
       return;
     }
     case 'run/upgrade': case 'run/forge': case 'run/fit': case 'run/train': case 'run/shrine': case 'run/trade': case 'run/take': { // rules 1.43 (run/progress.ts)
-      const no = progressAction(g, a, by, (text, charId, head) => { push(g, { kind: 'system', text, ...(charId ? { charId } : {}), ...(head ? { head } : {}) }); visitNote(g, text.replace(/\.$/, ''), 'bought'); });
+      const said: string[] = [];
+      const no = progressAction(g, a, by, (text, charId, head) => { push(g, { kind: 'system', text, ...(charId ? { charId } : {}), ...(head ? { head } : {}) }); said.push(text.replace(/\.$/, '')); });
       if (no) fail(no);
+      for (const t of said) visitNote(g, t, 'bought'); // after the action, which writes the visit itself
       runPicksDone(g);
       return;
     }

@@ -123,6 +123,8 @@ describe('rules 1.46: the shop\'s Upgrade tab is 4a\'s grade step (the services 
 describe('rules 1.46: every safe node opens as a full-screen place', () => {
   it('the Forge: the armourer, Upgrade / Mods and pieces / Armour fitting / Give, its cards the engine\'s options', () => {
     const g = at('forge'), v = placeView(g, 'host')!;
+    const after = apply(g, v.cards.find((x) => x.o.key === 'grade:main')!.o.action as any, 'host');
+    expect(placeView(after, 'host')!.log[0]).toMatch(/Fine now/); // the visit's log strip
     expect(v.face.id).toBe('armourer'); expect(v.face.line).toBeTruthy();
     expect(v.tabs.map((t) => t.id)).toEqual(['upgrade', 'stock', 'fit', 'give']);
     const grade = v.cards.find((x) => x.o.key === 'grade:main')!;

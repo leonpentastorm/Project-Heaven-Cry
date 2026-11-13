@@ -14,25 +14,26 @@ export interface UpgradeCardData { key: string; title: string; id?: string | nul
 export function UpgradeCard({ s, onFocus, choice }: { s: UpgradeCardData; onFocus?: () => void; choice?: boolean }) {
   const icon = s.id ? gearIconUri(s.id, undefined, { large: true }) : '';
   return (
-    <article data-phc-service={s.key} data-phc-choice={choice ? s.key : undefined} data-phc-why={s.why ? '' : undefined} tabIndex={0} onMouseEnter={onFocus} onFocus={onFocus} {...tipProps((s.note || '') + (s.why ? ' ' + s.why : ''))}
+    <article data-phc-service={s.key} data-phc-service-why={s.why ? '' : undefined} tabIndex={0} onMouseEnter={onFocus} onFocus={onFocus} {...tipProps(s.why)}
       style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 236, padding: 18, borderRadius: 16, background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', border: '1px solid ' + (s.why ? I.line : '#7A879E'), opacity: s.why ? 0.82 : 1 }}>
       <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
         <div style={{ flexShrink: 0, width: 80, height: 80, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
           {icon ? <img src={icon} alt="" width={72} height={72} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 26, color: I.muted }}>▲</span>}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-          <span style={{ fontFamily: "'Spectral', serif", fontSize: 19, fontWeight: 600, lineHeight: 1.2 }}>{s.title}</span>
+          <span style={{ fontFamily: "'Spectral', serif", fontSize: 20, fontWeight: 600, lineHeight: 1.2 }}>{s.title.split(': ')[0]}</span>
+          {s.title.includes(': ') ? <span data-phc-step="" style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.12em', color: I.white, textTransform: 'uppercase' }}>{s.title.split(': ').slice(1).join(': ')}</span> : null}
           {s.note ? <span style={{ fontSize: 12.5, color: I.muted, lineHeight: 1.4 }}>{s.note}</span> : null}
         </div>
       </div>
       {s.lines.length ? (
         <div data-phc-upgrade-lines="" style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '4px 10px', fontSize: 13.5, alignItems: 'baseline' }}>
-          {s.lines.map((l) => <React.Fragment key={l.label}><span style={{ color: I.muted }}>{l.label}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{l.before}</span><span aria-hidden="true" style={{ color: I.muted }}>→</span><b style={{ fontVariantNumeric: 'tabular-nums', color: I.ok }}>{l.after} <span style={{ fontSize: 11 }}>▲ better</span></b></React.Fragment>)}
+          {s.lines.map((l) => <React.Fragment key={l.label}><span style={{ color: I.muted }}>{l.label.replace(/ \(.*\)$/, '')}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{l.before}</span><span aria-hidden="true" style={{ color: I.muted }}>→</span><b style={{ fontVariantNumeric: 'tabular-nums', color: I.ok }}>{l.after} <span style={{ fontSize: 11 }}>▲ better</span></b></React.Fragment>)}
         </div>
       ) : null}
       <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
         {s.price != null ? <div style={{ display: 'flex', flexDirection: 'column' }}><span data-phc-price="" style={{ fontSize: 26, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{s.price ? s.price.toLocaleString('en') : 'Free'}</span>{s.price ? <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : null}</div> : null}
-        <button type="button" data-phc-upgrade-go="" aria-disabled={s.why ? 'true' : undefined} onClick={(e) => { if (s.why) openTipOn(e.currentTarget.closest('article')); else act(s.action as any); }}
+        <button type="button" data-phc-upgrade-go="" data-phc-choice={choice ? s.key : undefined} data-phc-why={choice && s.why ? '' : undefined} aria-disabled={s.why ? 'true' : undefined} onClick={(e) => { if (s.why) openTipOn(e.currentTarget.closest('article')); else act(s.action as any); }}
           style={{ marginLeft: 'auto', minHeight: 42, padding: '0 18px', borderRadius: 10, border: 0, background: s.why ? 'transparent' : I.text, outline: s.why ? '1px solid #3B475D' : 'none', color: s.why ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>Upgrade</button>
       </div>
       <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, color: s.why ? I.muted : I.ok }}>{s.why || '✓ You can take this step'}</span>

@@ -63,7 +63,7 @@ export function placeView(g: GameState, me: string, charId?: string | null): Pla
   const party = g.players.map((p) => ({ id: p.id, name: Object.values(g.characters).find((x) => x.owner === p.id)?.name || p.name, initials: p.initials || '?', color: p.color || '#A3AEC2', online: p.online, mine: p.id === me, marked: !!r.leans[p.id] }));
   return {
     node: v.node, kind: v.kind, word: (n.gate ? 'Gate' : (MAP_DATA.words as Record<string, string>)[v.kind] || v.kind), setting: SETTING[setting]?.name || setting,
-    face: { id: f?.id || '', name: patron ? patron.name : f?.name || '', role: patron ? 'Patron · the shrine' : f?.role || '', portrait: f?.portrait || '', portraitPending: !!f?.portrait_pending, fallback: f?.fallback ?? null,
+    face: { id: f?.id || '', name: patron ? patron.name : f?.name || '', role: patron ? 'Patron' : f?.role || '', portrait: f?.portrait || '', portraitPending: !!f?.portrait_pending, fallback: f?.fallback ?? null,
       patron: patron ? v.patron! : null, backdrop: f?.backdrop || '', backdropPending: !!f?.backdrop_pending, backdropFallback: f?.backdrop_fallback ?? null, line },
     tabs: [...(TABS[v.kind] || []), { id: 'give', label: 'Give', groups: [] }], cards, me: c ? meBlock(c) : null, canAct: !!c && (c.owner === me),
     party, log: v.log || [], worth: c ? runWorth(c) + ' of ' + BOON_CAP : '',

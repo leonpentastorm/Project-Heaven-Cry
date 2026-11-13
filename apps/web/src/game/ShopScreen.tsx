@@ -167,7 +167,7 @@ export function ShopScreen() {
     </div>))}</div></section>;
   return (
     <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.setting} line={v.face.line} lineKey={v.face.line + v.log.length}
-      tabs={tabs} tab={tab} onTab={setTab} purse={v.me?.credits ?? 0}
+      tabs={tabs} tab={tab} onTab={(t) => { setTab(t); setFocus(null); }} purse={v.me?.credits ?? 0}
       party={v.party.map((p) => ({ id: p.id, name: p.charName, initials: p.initials, color: p.color, ready: p.ready, online: p.online, mine: p.mine }))} ready={v.ready} isHost={v.isHost} waiting={v.party.length > 1 ? v.waiting : []}
       onReady={() => act({ type: 'run/leave' })} onClose={() => act({ type: 'run/leave', close: true })} closeTip="Everyone goes back to the map." readyWord={v.party.length > 1 ? 'Ready to leave' : 'Leave the shop'}
       log={v.log} side={<You v={v} focus={focus} />}>
