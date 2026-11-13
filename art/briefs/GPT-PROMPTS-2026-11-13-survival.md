@@ -17,6 +17,17 @@
 > is that the part you move in reads as clear at a glance:** a doorway's opening is a clean, obviously walkable gap
 > with the floor showing through, a broken section's gap likewise, and nothing of a wall piece spills onto the
 > walkable tiles beside it.
+>
+> **The kits in the game's renderer (13 Nov, later: Survival steps 7 and 8, rules 1.45).** All six kits are in and the game
+> draws its fight maps from them: the ground repeated under the tiles, walls chosen by their neighbours (straight,
+> corner, end; the game makes a T and a cross from those, so **no T piece is wanted**), doorway gaps, cover and objects
+> by kind, decals, dressing. Half-tile walls read well and the doorways read clear. **Redo four pieces** (held back
+> until then; the game draws its plain fallback in their place): AHOC `ground-2` (a seam at the left-right join) and
+> shrine `ground-2` (the octagon rows lose their step at the top-bottom join), both measured with
+> `tools/art/kit_seams.py`, which every ground must pass ("clean") before delivery; AHOC `dress-2` (it has lettering:
+> no text, ever); rim `wall-corner` (paint it as the rim's straight piece bent round: same panels, same shade). **Wanted
+> besides:** a one-tile `container` per setting (the engine's container is one tile; the 1.5-tile one is drawn shrunk).
+> The list is `ART-REQUESTS.md` S4.
 
 Everything the Survival mode (`docs/ROADMAP.md`, "Survival mode" and "The roguelike: Leon's scope") needs that an image
 generator can make **now**. Leon, 13 Nov 2026: "Artist is free, ask for more paintings, prepare for Survival mode
