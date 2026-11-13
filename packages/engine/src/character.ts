@@ -135,7 +135,11 @@ export interface Companion { id: string; kind: 'drone' | 'beast' | 'twin' | stri
  * half strength with its own option2. */
 export interface OutburstDesign { id: string; name: string; school: string; school2?: string; modules: string[]; option?: string; option2?: string; tone?: string }
 export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
-export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string }
+/** A weapon's or focus's condition, in a hand. `prop` (rules 1.43, survival-spec 4.2 item 11): the id of the named
+ * property its instance carries (a `relic` item: a Relic's "one named property, written per item"), kept with the
+ * instance through hand, pack, pile, drop and give as rarity and mods are; it works only while the instance is in a hand
+ * (heldOfChar) and only for what is made with it (the item-op predicate `with_this`). */
+export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string; prop?: string }
 /** Rarity (spec: Weapons v2, Rarity; data/rules.json `rarity` since rules 1.26): accuracy, damage and durability bonuses; price multiplier. */
 export const RARITY: Record<Rarity, { acc: number; dmg: number; dur: number; price: number; marks: number }> = Object.fromEntries((['standard', 'fine', 'masterwork', 'relic', 'celestial'] as Rarity[]).map((r) => {
   const d: any = (RULES as any).rarity?.[r]; if (!d) throw new Error('data/rules.json rarity.' + r + ' is missing');
@@ -161,6 +165,7 @@ export interface PackItem {
   /** Spare magazines for `weapon`: rounds in each. Loose rounds use `calibre` and qty = rounds. `item` names the items.json entry for weight. */
   mags?: number[]; calibre?: string; item?: string;
   rarity?: Rarity; dur?: number; mods?: string[];
+  /** The named property this instance carries (rules 1.43: GearState.prop). */ prop?: string;
 }
 
 
@@ -591,7 +596,7 @@ export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP nex
 const P = (c: Character, id: string) => c.skills[id] || 0;
 const A = (c: Character, id: string) => c.attrs[id] || 1;
 /** A derived stat after items (plan 2.4): + the items' adds, × their multipliers (effects/hooks.ts statQuery). */
-const fx = (c: Character, stat: StatId, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass) return base; const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
+const fx = (c: Character, stat: StatId, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass && !c.relics?.length) return base; /* rules 1.43: a relic answers stats too (a graft's max HP) */ const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
 export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dodge: 0 }, { value: 10, move: 0, dodge: 0 }, { value: 15, move: -0.5, dodge: 0 }, { value: 20, move: -0.5, dodge: -1 }, { value: 25, move: -1, dodge: 0 }];
 // Skeleton 2.0 (rules 1.13): defence numbers sit on the betas. HP a level reads Pain Threshold (it was Durability).
 export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'pain_threshold'));
@@ -803,6 +808,64 @@ export function holds(c: Character, o: HoldSpec): boolean {
   if (!ids.length) return false;
   if ((o.slot || 'hand') === 'person') return carries(c, ids);
   return inHands(c).some((x) => ids.includes(x));
+}
+/** Rules 1.43 (survival-spec rule 25a, 4.2 item 9): the rarity of the focus of this door (a focus kind or the skill it
+ * opens) in a hand, the main hand first; null when none is in a hand. What a graded focus adds to its door's rolls is
+ * read from it once (rolls.ts focusAccTerm). */
+export function focusRarity(c: Character, door: string): Rarity | null {
+  const k = kindOfDoor(door); if (!k) return null;
+  const ids = FOCUS_IDS[k], held = inHands(c);
+  if (ids.includes(held[0])) return c.weaponState?.rarity || 'standard';
+  if (held[1] && ids.includes(held[1])) return c.offHand?.rarity || 'standard';
+  return null;
+}
+/** Rules 1.43 (item 11): the named properties of the instances in the hands, with the hand each is in (the off hand
+ * unless a two-handed weapon fills both). What heldOfChar loads as relic items. */
+export const handProps = (c: Character): { prop: string; hand: 'main' | 'off' }[] => [
+  ...(c.weaponState?.prop && c.weapon !== 'fists' ? [{ prop: c.weaponState.prop, hand: 'main' as const }] : []),
+  ...(c.offHand?.prop && !twoHands(c, c.weapon) ? [{ prop: c.offHand.prop, hand: 'off' as const }] : []),
+];
+/** Rules 1.43 (item 11; survival-spec rule 31): the named property of every instance a character carries (hands and
+ * pack), one per instance: what counts on its run's cap whether in hand or not. */
+export const gearProps = (c: Character): string[] => [
+  ...(c.weaponState?.prop ? [c.weaponState.prop] : []), ...(c.offHand?.prop ? [c.offHand.prop] : []),
+  ...packOf(c).flatMap((x) => (x.prop ? Array(Math.max(1, x.qty || 1)).fill(x.prop) : [])),
+];
+/** Where a carried instance is: a hand, or a pack line by its index. */
+export type GearWhere = 'main' | 'off' | number;
+const isFocusId = (id: string) => Object.values(FOCUS_IDS).some((l) => l.includes(id));
+/** The weapon or focus instance at `where`: its id, rarity and property, or null (an empty hand, fists, a line that is
+ * not a weapon or a focus). */
+export function gearAt(c: Character, where: GearWhere): { id: string; rarity: Rarity; prop?: string; focus: boolean } | null {
+  const of = (id: string | undefined, st: { rarity?: Rarity; prop?: string } | undefined | null) => (!id || id === 'fists' || (!WEAPON[id] && !isFocusId(id)) ? null : { id, rarity: st?.rarity || 'standard', ...(st?.prop ? { prop: st.prop } : {}), focus: isFocusId(id) });
+  if (where === 'main') return of(c.weapon, c.weaponState);
+  if (where === 'off') return c.offHand && !twoHands(c, c.weapon) ? of(c.offHand.id, c.offHand) : null;
+  const it = packOf(c)[where]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
+  return of(it.weapon || it.item || it.id, it);
+}
+const GRADES: Rarity[] = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
+/** Rules 1.43 (survival-spec 4.2 item 10): set the rarity of ONE carried weapon or focus instance (a hand, or a pack
+ * line: one of a stack is split off), keeping its mods, name, property and identity (drill is per weapon id, so it is
+ * kept too). Its durability is restored to the new grade's full (`maxDurOf`; a focus has none; `o.durShare` leaves a
+ * share of it). `prop` (optional):
+ * the named property it takes (a Relic's), or null to clear it. Returns null, or the refusal in words (nothing
+ * changes): a rarity past Celestial or not one, a plot item, nothing graded there, a thrown thing. General: a shop's or
+ * a Forge's grade step, a trade, a smith, a campaign's reward. */
+export function setGrade(c: Character, where: GearWhere, rarity: Rarity, prop?: string | null, o: { /** the durability it is left with, a share of the new full (a worn step) */ durShare?: number } = {}): string | null {
+  if (!GRADES.includes(rarity)) return 'There is no grade "' + rarity + '": the grades are Standard, Fine, Masterwork, Relic and Celestial.';
+  if (typeof where === 'number' && isPlotItem(packOf(c)[where])) return 'A plot item has no grade.';
+  const g = gearAt(c, where); if (!g) return 'There is no weapon or focus there to grade.';
+  if ((WEAPON[g.id] as any)?.category === 'thrown') return 'A thrown thing is not graded.';
+  const dur = Math.round(maxDurOf(g.id, rarity) * Math.max(0, Math.min(1, o.durShare ?? 1))), keepProp = prop === undefined ? g.prop : prop || undefined;
+  const st = <T extends { dur?: number; prop?: string; rarity?: Rarity }>(old: T): T => { const { prop: _p, dur: _d, ...rest } = old; void _p; void _d; return { ...rest, rarity, ...(dur ? { dur } : {}), ...(keepProp ? { prop: keepProp } : {}) } as T; };
+  if (where === 'main') c.weaponState = st({ ...(c.weaponState || {}) });
+  else if (where === 'off') c.offHand = st({ ...c.offHand! });
+  else {
+    const pack = packOf(c).map((x) => ({ ...x })), it = pack[where];
+    if ((it.qty || 1) > 1) { it.qty -= 1; pack.push({ ...st({ ...it }), qty: 1 }); } else pack[where] = st(it);
+    c.pack = pack;
+  }
+  return null;
 }
 /** An Evoker in a hand: Sigils can be drawn and Evoked (spec: Hands 2). */
 export const hasEvoker = (c: Character) => holds(c, { slot: 'hand', door: 'evoker' });
@@ -1145,7 +1208,7 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (c.offHand && !twoHands(c, wid)) { const sw = secondWeaponWhy(c, c.offHand.id, wid); if (sw) return sw; }
     take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType); // a stowed gun keeps the rounds in it (rules 1.3), and their type
     if (twoHands(c, wid) && c.offHand) { putBack(c.offHand.id, c.offHand); c.offHand = null; }
-    c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined }; c.loaded = it.loaded ?? 0;
+    c.weapon = wid; c.weaponState = { rarity: it.rarity, dur: it.dur, mods: it.mods, name: it.name !== WEAPON[wid].name ? it.name : undefined, ...(it.prop ? { prop: it.prop } : {}) }; c.loaded = it.loaded ?? 0;
     c.loadedType = it.loaded && it.ammoType ? it.ammoType : null; // the drawn gun holds the rounds its entry kept, of their type (review fix)
   } else if (to === 'off') {
     if (twoHands(c, c.weapon)) return 'Your main-hand weapon needs both hands.';
@@ -1156,7 +1219,7 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     if (wid) { const sw = secondWeaponWhy(c, wid, c.weapon); if (sw) return sw; }
     take(); if (c.offHand) putBack(c.offHand.id, c.offHand);
     // An off-hand gun holds what its pack entry held, as the main hand does (rules 1.9, item 688).
-    c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods, ...(wid && WEAPON[wid].magazine != null ? { loaded: it.loaded ?? 0, ...(it.loaded && it.ammoType ? { ammoType: it.ammoType } : {}) } : {}) };
+    c.offHand = { id: wid || it.item || it.id, rarity: it.rarity, dur: it.dur, mods: it.mods, ...(it.prop ? { prop: it.prop } : {}), ...(wid && WEAPON[wid].magazine != null ? { loaded: it.loaded ?? 0, ...(it.loaded && it.ammoType ? { ammoType: it.ammoType } : {}) } : {}) };
   } else {
     const slot = item?.slot; if (!slot || slot === 'off_hand' || item.category !== 'armour') return 'That isn\'t slot armour.';
     { const rq = requiresWhy(c, item.requires); if (rq) return rq; } // a worn piece that asks a skill

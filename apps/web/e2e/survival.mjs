@@ -6,6 +6,11 @@
 // three; take one; then the rest of the stage with run/skip (a fight won at once) to the Boss: the level-up waiting at
 // level 3, the nodes still to be built saying what will be there, the Boss's rewards, STAGE 1 CLEARED, retire, and the
 // room back in its lobby with the last run's score. SHOTS=dir saves the path map and the reward pick (DSF=2 for 2x).
+// In-run progression (rules 1.43, build step 4a), its own section inside the walk: the squad follows the route through
+// the seed's map that passes a training ground, a shrine, a Forge, a crossroads and a rest (computed from the map), and
+// at each takes one of the engine's choices by clicking it: a drill at the training ground, the shrine's first offer, a
+// grade step at the Forge, a trade, the rest's small training; and each change is checked in the state. The kit picks
+// after the gate and a cache are taken on the way.
 import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -90,21 +95,69 @@ await act({ type: 'run/skip' }); // a refused action comes back as the player's 
 const plain = await until(p, () => window.__phc.getState().toast?.text || null, null, 10000).catch(() => '');
 ok('run/skip with no fight on is refused: "' + plain + '"', plain === 'No fight is under way.');
 let sawLevelUp = false, sawPanel = 0, guard = 0;
+// rules 1.43: the route from here that passes the most of the five progression nodes (then the most fights)
+const WANT = ['training', 'shrine', 'forge', 'event', 'rest'];
+const route = (() => { const by = Object.fromEntries(r.nodes.map((n) => [n.id, n])); let best = { n: -1, path: [] };
+  const walk = (id, path) => { const pp = [...path, id], n = by[id]; if (!n.links.length) { const k = new Set(pp.map((x) => by[x].kind).filter((x) => WANT.includes(x))); const sc = k.size * 10 + Math.min(4, pp.filter((x) => by[x].kind === 'fight').length); if (sc > best.n) best = { n: sc, path: pp }; return; } for (const l of n.links) walk(l, pp); };
+  for (const l of by[r.at].links) walk(l, []); return best.path; })();
+const done = {};
+/** At a progression node: click the first choice the engine allows whose key starts with `pre` (any, when empty), and
+ * wait for the visit to record it; returns the state before and after. */
+const choose = async (pre) => {
+  await p.waitForSelector('[data-phc-choices] [data-phc-choice]', { timeout: 30000 });
+  const sel = '[data-phc-choices]:not([data-phc-kit]) [data-phc-choice' + (pre ? '^="' + pre + '"' : '') + ']:not([data-phc-why])';
+  const before = await G(); const key = await p.locator(sel).first().getAttribute('data-phc-choice', { timeout: 10000 }).catch(() => null);
+  if (!key) return { before, after: before, key: null };
+  await p.locator(sel).first().click();
+  await p.waitForFunction((k) => { const r = window.__phc.getState().game.run; return !!r.visit && (Object.values(r.visit.did).some((n) => n > 0) || Object.values(r.visit.steps).some((n) => n > 0)); }, key, { timeout: 30000 });
+  return { before, after: await G(), key };
+};
 while (guard++ < 40) {
   r = await run(); if (!r || r.state === 'boon' || r.state === 'over') break;
   if (r.state === 'map') {
     const ids = await p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')));
     const kinds = Object.fromEntries(r.nodes.map((n) => [n.id, n.kind]));
-    const next = ids.find((id) => !['fight', 'elite', 'boss'].includes(kinds[id])) || ids[0]; // walk past the panels too
+    const next = ids.find((id) => route.includes(id)) || ids.find((id) => !['fight', 'elite', 'boss'].includes(kinds[id])) || ids[0];
     await p.locator('[data-phc-node="' + next + '"]').click();
     await p.waitForFunction((id) => window.__phc.getState().game.run.at === id, next, { timeout: 30000 });
-    if (['shop', 'forge', 'training', 'shrine', 'event'].includes(kinds[next])) { await p.waitForSelector('[data-phc-note]'); if (/will stand here/.test(await p.locator('[data-phc-note]').textContent())) sawPanel++; }
+    if (kinds[next] === 'shop') { await p.waitForSelector('[data-phc-note]'); if (/will stand here/.test(await p.locator('[data-phc-note]').textContent())) sawPanel++; }
+    const k = kinds[next], cid = (await G()).characters && Object.keys((await G()).characters)[0];
+    if (k === 'training' && !done.training) {
+      const { before, after, key } = await choose('drill:'), w = key && key.slice(6);
+      done.training = !!key && (after.characters[cid].phys?.drill?.[w] || 0) - (before.characters[cid].phys?.drill?.[w] || 0) === 300;
+      ok('a training ground: a drill clicked (' + key + '), +300 drill, free', done.training && after.characters[cid].credits === before.characters[cid].credits);
+    } else if (k === 'shrine' && !done.shrine) {
+      const { before, after, key } = await choose('');
+      const b = before.characters[cid], a = after.characters[cid];
+      done.shrine = !!key && ((a.devotionXp || 0) > (b.devotionXp || 0) || JSON.stringify(a.faithPieces || {}) !== JSON.stringify(b.faithPieces || {}) || (a.relics || []).length > (b.relics || []).length);
+      ok('a shrine: its first open offer clicked (' + key + ') and it landed', done.shrine);
+    } else if (k === 'forge' && !done.forge) {
+      const { before, after, key } = await choose('grade:main');
+      const b = before.characters[cid], a = after.characters[cid];
+      done.forge = !!key && (a.weaponState?.rarity === 'fine') && b.credits - a.credits === 1200;
+      ok('a Forge: the grade step clicked (' + key + '): Fine, 1,200 credits (' + b.credits + ' → ' + a.credits + ')', done.forge);
+      ok('… and a second step this visit is shown refused in words', /One grade step a visit/.test(await p.locator('[data-phc-choices]').first().textContent()));
+    } else if (k === 'event' && !done.event) {
+      const { after, key } = await choose('');
+      done.event = !!key && after.run.visit.did[cid] === 1;
+      ok('a crossroads: a trade clicked (' + key + '), one a character', done.event);
+    } else if (k === 'rest' && !done.rest) {
+      const { after, key } = await choose('');
+      done.rest = !!key && after.run.visit.did[cid] === 1;
+      ok('a rest: its small training clicked (' + key + ')', done.rest);
+    }
   } else if (r.state === 'fight') {
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
     await click(p, 'Back to the map ›', { timeout: 60000 });
   } else if (r.state === 'reward') {
-    await p.waitForSelector('[data-phc-instead]', { timeout: 30000 });
+    await p.waitForSelector('[data-phc-instead], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
+    if (await p.locator('[data-phc-kit] [data-phc-choice]').count()) { // rules 1.43: the pick of kit (an Elite's, a cache's)
+      const before = await G(); await p.locator('[data-phc-kit] [data-phc-choice]').first().click();
+      await p.waitForFunction(() => !window.__phc.getState().game.run.lasting, null, { timeout: 30000 });
+      if (!done.kit) { done.kit = true; const after = await G(), cid = Object.keys(after.characters)[0]; ok('a pick of kit: one taken into the pack', (after.characters[cid].pack || []).length >= (before.characters[cid].pack || []).length); }
+      if (!(await run()).offers) continue;
+    }
     if (!sawLevelUp && await p.locator('[data-phc-levelup]').count()) {
       sawLevelUp = true;
       await p.locator('[data-phc-levelup]').first().click();
@@ -118,7 +171,8 @@ while (guard++ < 40) {
 }
 r = await run(); g = await G();
 ok('the level-up waits on the map at level 3 (the class is earned there), and Back to the map returns', sawLevelUp && Object.values(g.characters)[0].level >= 3);
-ok('the nodes still to be built say what will be there (' + sawPanel + ' seen)', sawPanel >= 1);
+ok('the shop (build step 4) still says what will be there (' + sawPanel + ' seen)', sawPanel >= 1);
+ok('rules 1.43: the route passed a training ground, a shrine, a Forge, a crossroads and a rest, each choice landed (' + JSON.stringify(done) + ')', ['training', 'shrine', 'forge', 'event', 'rest'].every((k) => done[k]));
 ok('the whole stage walked to the Boss: 15 nodes, STAGE 1 CLEARED', r.state === 'boon' && r.path.length === 15 && /STAGE 1 CLEARED/.test(await p.locator('[data-phc-cleared]').textContent()));
 await shot('survival-stage-cleared');
 await p.locator('[data-phc-cleared] [data-phc-retire]').click();

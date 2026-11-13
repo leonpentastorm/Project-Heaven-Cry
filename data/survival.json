@@ -59,14 +59,14 @@
     "provisional": true
   },
   "nodes": {
-    "about": "Rules 1.41: what each kind of node without a fight says on its panel. Until build steps 4 and 4a the shop, Forge, training ground, shrine and Crossroads only say what will be here, and the party moves on.",
+    "about": "Rules 1.41, 1.43: what each kind of node without a fight says on its panel. The shop says what will be there until build step 4.",
     "shop": "A shop will stand here: every calibre always in stock, rolled gear, selling, the grade step and gives between players. It opens with the next build step.",
-    "forge": "A Forge will stand here: the grade step for less, the Relic step, mods and worn pieces, armour fitting. It opens with a later build step.",
-    "training": "A training ground will stand here: one big training each (drill, study or practice), and a second for credits. It opens with a later build step.",
-    "shrine": "A shrine will stand here: a rite for Devotion, a knowledge piece, or the patron's token. It opens with a later build step.",
-    "event": "A crossroads will stand here: one trade for each of you, or walk on. It opens with a later build step.",
-    "cache": "A cache: credits, ammunition and a little experience. Its armour-or-item pick opens with a later build step.",
-    "rest": "A safe place: everyone is healed in full and a new session begins. The small training at a rest opens with a later build step.",
+    "forge": "The armourer's Forge. One grade step each, cheaper than a shop's; the Relic step and its named property; mods and worn pieces made for what you carry; armour fitted.",
+    "training": "The drill sergeant's yard. One big training each: drill on a weapon you carry, study for the Sigil words, or practice for the Outburst; a second for credits.",
+    "shrine": "A shrine to one of the eight. Each of you takes one: a rite kept for Devotion, a piece of its lore for the faithless, or its token, a small blessing for the run.",
+    "event": "A crossroads. Someone here will deal, and each trade has its price. Take one each, or walk on.",
+    "cache": "A cache: credits, ammunition, a little experience, and a pick of three pieces of kit, most of them made to last.",
+    "rest": "A safe place: everyone is healed in full and a new session begins. Each of you may take one small training before you move on.",
     "provisional": true
   },
   "tips": {
@@ -76,12 +76,135 @@
     "gate": "The gate: an Elite every path passes. Better pay and a better pick.",
     "boss": "The stage's Boss. The best pay and pick of the stage; beating it clears the stage.",
     "shop": "A shop: refills, gear, selling and the grade step. Costs credits. (Opens with the next build step.)",
-    "forge": "A Forge: the grade step for less, the Relic step, mods. Costs credits. (Opens with a later build step.)",
-    "training": "A training ground: one big training each. Costs a node not spent fighting. (Opens with a later build step.)",
-    "shrine": "A shrine: a rite, a knowledge piece or the patron's token. (Opens with a later build step.)",
-    "rest": "A rest: everyone healed in full and a new session. Costs a node not spent fighting or shopping.",
-    "cache": "A cache: credits, ammunition and a little XP, no fight.",
-    "event": "A crossroads: a trade with a cost, or walk on. (Opens with a later build step.)",
+    "forge": "A Forge: the grade step for less, the Relic step, mods and worn pieces, armour fitting. Costs credits.",
+    "training": "A training ground: one big training each, a second for credits. Costs a node not spent fighting.",
+    "shrine": "A shrine: a rite, a knowledge piece or the patron's token. Costs a node not spent fighting.",
+    "rest": "A rest: everyone healed in full, a new session and one small training each. Costs a node not spent fighting or shopping.",
+    "cache": "A cache: credits, ammunition, a little XP and a pick of kit, no fight.",
+    "event": "A crossroads: a trade with a cost, or walk on.",
+    "provisional": true
+  },
+  "grade_up": {
+    "about": "Rules 1.43 (spec rules 37, 38, 43; section 11.2): the grade step of one carried weapon or focus. At a place of `places` (a shop, a Forge) to Fine or Masterwork at `price` of the grade it reaches x the place's factor; the Relic step only at a Forge, at its own price (no factor), from stage relic_from_stage; per_visit steps a character a visit; an armourer's chit (`chit`, items.json) pays one Fine or Masterwork step in place of the credits. cut_rate: the Crossroads' off-books step (a share of the shop's price).",
+    "price": { "fine": 1500, "masterwork": 3500, "relic": 6500 },
+    "places": { "shop": 1, "forge": 0.8 },
+    "relic_at": "forge",
+    "per_visit": 1,
+    "relic_from_stage": 3,
+    "relic_offer": 3,
+    "cut_rate": 0.5,
+    "chit": "armourer_chit",
+    "provisional": true
+  },
+  "forge": {
+    "about": "Rules 1.43 (spec rule 44): the Forge's rolled stock, `slots` mods and worn pieces made for what its visitors carry (a mod for a slot one of them has free, a worn piece better than one of them wears), each at its price; the grade step's factor is grade_up.places.forge.",
+    "slots": 4,
+    "provisional": true
+  },
+  "armour_fit": {
+    "about": "Rules 1.43 (spec rule 44): the Forge fits the next armour class for its price, until body armour becomes items (Equipment 2.0). The class's own gate (Pain Threshold, a trait's cap) holds.",
+    "price": { "2": 250, "3": 600, "4": 1200 },
+    "provisional": true
+  },
+  "boon_cap": {
+    "about": "Rules 1.43 (spec rule 31): the run power a character may carry, in percent of a rifle-turn: its boons, a shrine's token, the graft and the named property of every Relic it carries add their `worth` against `cap`.",
+    "cap": 50,
+    "provisional": true
+  },
+  "relic_props": [
+    { "id": "prop.keen", "kind": "relic", "name": "Keen", "fits": ["guns"], "worth": 10, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "damage_mult", "when": "dealing", "if": { "with_this": true, "damage": ["weapon"] }, "value": 1.1 } ],
+      "text": "Every round it sends lands {=effects.0.value|more}% harder." },
+    { "id": "prop.true", "kind": "relic", "name": "True", "fits": ["guns", "melee"], "worth": 6, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "roll_mod", "when": "attack", "if": { "with_this": true }, "limit": { "per": "per_turn", "n": 1 }, "value": 2 } ],
+      "text": "The first attack you make with it each turn is {=effects.0.value|signed} to hit." },
+    { "id": "prop.quick", "kind": "relic", "name": "Quick", "fits": ["magazine_guns"], "worth": 6, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "cost_mod", "when": "reload", "if": { "with_this": true }, "value": -1, "min": 1 } ],
+      "text": "Reloading it costs {=effects.0.value|abs} AP less, never under {=effects.0.min}." },
+    { "id": "prop.biting", "kind": "relic", "name": "Biting", "fits": ["melee"], "worth": 10, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "damage_mult", "when": "dealing", "if": { "with_this": true, "damage": ["melee"] }, "value": 1.1 } ],
+      "text": "Every blow it lands bites {=effects.0.value|more}% deeper." },
+    { "id": "prop.balanced", "kind": "relic", "name": "Balanced", "fits": ["melee"], "worth": 4, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "cost_mod", "when": "swap", "if": { "with_this": true }, "limit": { "per": "per_turn", "n": 1 }, "set": 0 } ],
+      "text": "While it is in your hand, your first swap or draw each turn costs nothing." },
+    { "id": "prop.deep", "kind": "relic", "name": "Deep", "fits": ["foci"], "worth": 8, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "roll_mod", "when": "to_hit", "if": { "with_this": true }, "value": 1 },
+                   { "op": "roll_mod", "when": "save", "roll": "tn", "if": { "actor": "self", "with_this": true }, "value": 1 } ],
+      "text": "Its door's rolls to hit are {=effects.0.value|signed} more, and the saves it forces are {=effects.1.value|signed} harder." },
+    { "id": "prop.gentle", "kind": "relic", "name": "Gentle", "fits": ["foci"], "worth": 6, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "mend_mult", "when": "heal", "if": { "actor": "self", "with_this": true }, "value": 1.15 },
+                   { "op": "mend_mult", "when": "shield", "if": { "actor": "self", "with_this": true }, "value": 1.15 } ],
+      "text": "The heals and shields its door gives are {=effects.0.value|more}% stronger." }
+  ],
+  "boons": [
+    { "id": "boon.edge", "kind": "relic", "name": "Honed", "pools": ["war"], "worth": 10, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "damage_mult", "when": "dealing", "if": { "actor": "self" }, "value": 1.1 } ],
+      "text": "Everything you deal is {=effects.0.value|more}% stronger for the rest of the run." },
+    { "id": "boon.second_wind", "kind": "relic", "name": "Second Wind", "pools": ["discipline"], "worth": 17, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "grant_ap", "when": "turn_ap", "value": 1 } ],
+      "text": "{=effects.0.value|signed} AP every turn (the ceiling holds)." },
+    { "id": "boon.true_aim", "kind": "relic", "name": "True Aim", "pools": ["discipline"], "worth": 7, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "roll_mod", "when": "to_hit", "value": 1 } ],
+      "text": "{=effects.0.value|signed} to every roll to hit." },
+    { "id": "boon.hardened", "kind": "relic", "name": "Hardened", "pools": ["survival"], "worth": 13, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "damage_mult", "when": "taking", "value": 0.9 } ],
+      "text": "You take {=effects.0.value|less}% less damage." },
+    { "id": "boon.lifeline", "kind": "relic", "name": "Lifeline", "pools": ["war"], "worth": 8, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "floor", "when": "would_drop", "limit": { "per": "per_combat", "n": 1 }, "value": 1 } ],
+      "text": "The first blow each fight that would drop you leaves you on {=effects.0.value} HP." },
+    { "id": "boon.echo", "kind": "relic", "name": "Steady Breath", "pools": ["discipline"], "worth": 5, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "resource", "when": "combat_start", "resource": "echo", "value": 1 } ],
+      "text": "{=effects.0.value|signed} Echo at each fight's start (the most you hold still holds)." },
+    { "id": "boon.deep_well", "kind": "relic", "name": "Deep Well", "pools": ["faith", "survival"], "worth": 8, "adjudication": "engine", "provisional": true,
+      "effects": [ { "op": "mend_mult", "when": "heal", "if": { "actor": "self" }, "value": 1.2 },
+                   { "op": "mend_mult", "when": "shield", "if": { "actor": "self" }, "value": 1.2 } ],
+      "text": "The heals and shields you give are {=effects.0.value|more}% stronger." }
+  ],
+  "graft": {
+    "about": "Rules 1.43 (spec rule 42, the back-room graft): the graft is a relic made of a boon of the tile's pool and a cut to max HP for the run (`hp_mult`, the stat `hp`); its worth is the boon's.",
+    "hp_mult": 0.9,
+    "provisional": true
+  },
+  "train": {
+    "about": "Rules 1.43 (spec rule 39): the rest's small training, one a character: drill on a weapon it carries (addDrill), study (addStudy, a Sigil user), practice (addPractice, an Outburst user), or Devotion XP (shiftDevotion, the Faithful).",
+    "drill": 100, "study": 3, "practice": 5, "devotion": 2,
+    "provisional": true
+  },
+  "training": {
+    "about": "Rules 1.43 (spec rule 45): the training ground's big training, one a character for free and a second (the most is `most`) for extra_price credits: drill, study or practice (Devotion is the shrine's).",
+    "drill": 300, "study": 8, "practice": 10, "extra_price": 300, "most": 2,
+    "provisional": true
+  },
+  "shrine": {
+    "about": "Rules 1.43 (spec rule 46): one offer a character: the rite (Devotion XP by patrons.json gain.rite_kept), a knowledge piece for an Atheist (grantPiece), or the patron's token, a boon of the tile's pool of worth at most token_max_worth, at most tokens_per_stage a character a stage, on the cap.",
+    "token_max_worth": 8,
+    "tokens_per_stage": 1,
+    "provisional": true
+  },
+  "lasting": {
+    "about": "Rules 1.43 (spec rules 41, 43): an Elite's and a cache's armour-or-item pick of `offer`, at least `min` of them lasting (a mod for a slot the main weapon has free, a worn piece better than the one worn there; never two consumables); the rest from `fill`. The gate's pick holds an armourer's chit in stage chit_gate; an Elite from stage chit_from_stage may roll one, one chance in chit_odds.",
+    "offer": 3, "min": 2,
+    "fill": ["stim_injector", "frag_grenade", "field_kit", "smoke_grenade"],
+    "chit_gate": 1, "chit_from_stage": 2, "chit_odds": 4,
+    "provisional": true
+  },
+  "trades": {
+    "about": "Rules 1.43 (spec rule 42): a Crossroads offers `offer` of these trades, each a cost and a gain the engine takes and gives (`do` names which); each character takes at most one, or walks on. The wayside shrine is free and once a stage.",
+    "offer": 3,
+    "items": [
+      { "id": "ev.offbooks", "name": "The off-books armourer", "do": "grade", "cut_rate": 0.5, "dur_share": 0.5, "provisional": true,
+        "text": "One grade step to Fine or Masterwork outside the visit's limit, for a cut of a shop's price; the weapon comes back worn." },
+      { "id": "ev.drill_yard", "name": "A hard sparring", "do": "drill", "hp_share": 0.25, "drill": 300, "provisional": true,
+        "text": "Drill on a weapon you carry, paid for in a share of the HP you have now." },
+      { "id": "ev.sealed_crate", "name": "A sealed crate", "do": "crate", "price": 300, "rarity": "elite", "provisional": true,
+        "text": "A weapon of three at an Elite's grade, still sealed, for its price in credits." },
+      { "id": "ev.wayside", "name": "A wayside shrine", "do": "wayside", "devotion": 4, "study": 5, "practice": 5, "per_stage": 1, "provisional": true,
+        "text": "Free, and once a stage: Devotion XP for the faithful, or study or practice for your door." },
+      { "id": "ev.graft", "name": "A back-room graft", "do": "graft", "provisional": true,
+        "text": "A small blessing grafted on for the run, paid for in max HP; it counts on your cap." },
+      { "id": "ev.salvage", "name": "A salvage buyer", "do": "salvage", "rate": 0.5, "provisional": true,
+        "text": "Sell one weapon or item from your pack for a share of its price, twice what a shop pays." }
+    ],
     "provisional": true
   },
   "pools": {

@@ -4805,6 +4805,10 @@
           "visualization"
         ]
       },
+      "with_this": {
+        "arg": "bool",
+        "about": "the event is (or is not) made with the gear instance that carries this item as its named property (rules 1.43: a Relic's property): the instance in a hand, and a weapon's event made with that hand's weapon, a door's event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door's focus"
+      },
       "self_skill": {
         "arg": "skill",
         "about": "the holder has at least these points in each skill named ({empathy: 7}: a door's ladder)"

@@ -2328,6 +2328,56 @@ if _sv is not None:
             if not isinstance(_sv["nodes"].get(_k), str) or not _sv["nodes"][_k].strip(): errors.append(f"survival:nodes.{_k}: the panel's text")
     for _k in ("run", "stage", "rounds", "tiers", "share", "map_size", "xp", "credits", "ammo_pack", "rewards", "nodes", "tips", "pools", "names"):
         if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
+    # Rules 1.43 (build step 4a, in-run progression): the grade ladder, the Forge, the run's cap, the Relic properties
+    # and boons (relic items, their ops from the closed lists), the trainings, the shrine, the lasting picks, the trades.
+    _all_ids = {i["id"] for i in items("items")} | {i["id"] for i in items("weapons")}
+    _gu = _sv.get("grade_up")
+    if _gu is not None:
+        for _r in ("fine", "masterwork", "relic"):
+            if not _num((_gu.get("price") or {}).get(_r)) or _gu["price"][_r] <= 0: errors.append(f"survival:grade_up.price.{_r}: a price above 0")
+        _pl = _gu.get("places") or {}
+        if set(_pl) != {"shop", "forge"} or not all(_num(v) and 0 < v <= 1 for v in _pl.values()): errors.append("survival:grade_up.places: shop and forge, each a factor above 0 and at most 1")
+        if _gu.get("relic_at") not in _pl: errors.append("survival:grade_up.relic_at: one of the places")
+        _chit = next((i for i in items("items") if i["id"] == _gu.get("chit")), None)
+        if not _chit or _chit.get("stock") is not False: errors.append("survival:grade_up.chit: an items.json item with stock: false (never sold)")
+        for _k in ("per_visit", "relic_from_stage", "relic_offer", "cut_rate"):
+            if not _num(_gu.get(_k)) or _gu[_k] <= 0: errors.append(f"survival:grade_up.{_k}: a number above 0")
+    if "armour_fit" in _sv and sorted((_sv["armour_fit"].get("price") or {}).keys()) != ["2", "3", "4"]: errors.append("survival:armour_fit.price: a price for classes 2, 3 and 4")
+    if "boon_cap" in _sv and not _num(_sv["boon_cap"].get("cap")): errors.append("survival:boon_cap.cap: a number (percent of a rifle-turn)")
+    _FITS = {"guns", "magazine_guns", "melee", "foci"}
+    _POOLS = {s.get("pool") for s in _sv.get("settings") or []}
+    for _lk in ("relic_props", "boons"):
+        _seen = set()
+        for _it in _sv.get(_lk) or []:
+            _w = f"survival:{_lk}.{_it.get('id')}"
+            if _it.get("id") in _seen: errors.append(f"{_w}: an id twice")
+            _seen.add(_it.get("id"))
+            if _it.get("kind") != "relic": errors.append(f"{_w}: a relic item (kind relic)")
+            if not _num(_it.get("worth")) or _it["worth"] < 0: errors.append(f"{_w}: a worth (percent of a rifle-turn, 0 or more)")
+            if _it.get("provisional") is not True or _it.get("adjudication") != "engine": errors.append(f"{_w}: provisional, adjudication engine")
+            if not _it.get("effects"): errors.append(f"{_w}: its effects (item ops)")
+            for _ei, _e in enumerate(_it.get("effects") or []):
+                check_trigger_effect(_e, f"{_w} effect {_ei}")
+                if _lk == "relic_props" and (_e.get("if") or {}).get("with_this") is not True: errors.append(f"{_w} effect {_ei}: a property works only with its instance: if.with_this true")
+            if _lk == "relic_props" and (not _it.get("fits") or not set(_it["fits"]) <= _FITS): errors.append(f"{_w}: fits names what it goes on ({sorted(_FITS)})")
+            if _lk == "boons" and (not _it.get("pools") or not set(_it["pools"]) <= _POOLS | {"faith"}): errors.append(f"{_w}: pools names the settings' pools ({sorted(p for p in _POOLS if p)})")
+    for _k, _f in (("train", ("drill", "study", "practice", "devotion")), ("training", ("drill", "study", "practice", "extra_price", "most")), ("shrine", ("token_max_worth", "tokens_per_stage")), ("forge", ("slots",)), ("graft", ("hp_mult",))):
+        for _x in _f:
+            if _k in _sv and (not _num(_sv[_k].get(_x)) or _sv[_k][_x] <= 0): errors.append(f"survival:{_k}.{_x}: a number above 0")
+    _ls = _sv.get("lasting")
+    if _ls is not None:
+        for _id in _ls.get("fill") or []:
+            if _id not in _all_ids: errors.append(f"survival:lasting.fill: {_id!r} is not an item or weapon")
+        if not (_num(_ls.get("offer")) and _num(_ls.get("min")) and _ls["min"] <= _ls["offer"]): errors.append("survival:lasting: offer and min (min at most offer)")
+    _tr = _sv.get("trades")
+    if _tr is not None:
+        _DO = {"grade", "drill", "crate", "wayside", "graft", "salvage"}
+        for _t in _tr.get("items") or []:
+            if _t.get("do") not in _DO: errors.append(f"survival:trades.{_t.get('id')}: do is one of {sorted(_DO)}")
+            if not (isinstance(_t.get("text"), str) and _t["text"].strip()) or _t.get("provisional") is not True: errors.append(f"survival:trades.{_t.get('id')}: a text, provisional")
+        if not _num(_tr.get("offer")) or _tr["offer"] > len(_tr.get("items") or []): errors.append("survival:trades.offer: at most the number of trades")
+    for _k in ("grade_up", "forge", "armour_fit", "boon_cap", "graft", "train", "training", "shrine", "lasting", "trades"):
+        if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:

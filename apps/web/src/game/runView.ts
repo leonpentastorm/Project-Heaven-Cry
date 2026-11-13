@@ -2,7 +2,7 @@
 // engine: the map's nodes and links (g.run), what the party can reach and why a node can't be taken (`reachable`,
 // `runMoveProblem`), what a node gives (`NODE_TIP`, `nodeXp`, `nodeCredits`), the panel's words (`NODE_TEXT`), the picks
 // (g.run.offers, priced by the engine), who has a level-up waiting (`levelUpDue`). RunScreen.tsx only draws it.
-import { type GameState, type RunNode, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, levelUpDue, runRetireProblem, survivalRun } from '@engine';
+import { type GameState, type RunNode, type RunOption, MAP_DATA, SETTING, NODE_TEXT, NODE_TIP, WEAPON, ITEM, RARITY, reachable, runMoveProblem, runNode, runSetting, nodeXp, nodeCredits, creditsOf, maxHp, levelUpDue, runRetireProblem, survivalRun, runOptions, lastingOptions, runWorth, BOON_CAP, relicRow } from '@engine';
 
 export type NodeState = 'here' | 'walked' | 'reachable' | 'ahead' | 'passed';
 export interface RunNodeV { id: string; depth: number; col: number; kind: string; word: string; gate: boolean; state: NodeState; tip: string; leans: { initials: string; color: string; name: string }[]; why: string | null }
@@ -17,9 +17,13 @@ export interface RunViewV {
   waiting: string | null; canGo: boolean; isHost: boolean; solo: boolean;
   note: { kicker: string; title: string; text: string; lines: string[] } | null;
   offers: OfferV[]; pending: string[];
+  /** Rules 1.43: what the safe node offers each character (and the picks of kit), from the engine (runOptions). */
+  choices: ChoiceCharV[]; kits: ChoiceCharV[];
   cleared: boolean; canRetire: boolean; over: boolean;
 }
 
+/** Rules 1.43: one character's choices at a safe node (or its pick of kit): each option as the engine priced and judged it. */
+export interface ChoiceCharV { charId: string; name: string; mine: boolean; canAct: boolean; credits: number; worth: string; relics: string[]; options: RunOption[] }
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const wordOf = (n: RunNode) => (n.gate ? 'Gate' : (MAP_DATA.words as Record<string, string>)[n.kind] || n.kind);
 const itemName = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id;
@@ -58,6 +62,13 @@ export function runView(g: GameState, me: string): RunViewV | null {
       cards: o.weapons.map((w, i) => ({ i, id: w.id, name: itemName(w.id), rarity: w.rarity, rarityWord: cap(w.rarity), marks: (RARITY as any)[w.rarity]?.marks || 0, category: catOf(w.id), price: w.price,
         tip: itemName(w.id) + ' (' + cap(w.rarity) + '). ' + String((WEAPON[w.id] as any)?.text || (ITEM[w.id] as any)?.text || '') })) };
   });
+  const charV = (cid: string, options: RunOption[]): ChoiceCharV => {
+    const c = g.characters[cid];
+    return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canAct: c?.owner === me || isHost, credits: c ? creditsOf(c) : 0, worth: (c ? runWorth(c) : 0) + ' of ' + BOON_CAP, relics: (c?.relics || []).map((id) => relicRow(id)?.name || id), options };
+  };
+  const mineFirst = (a: ChoiceCharV, b: ChoiceCharV) => Number(b.mine) - Number(a.mine);
+  const choices = r.visit && r.visit.node === here ? Object.keys(g.characters).map((cid) => charV(cid, runOptions(g, cid))).filter((x) => x.options.length).sort(mineFirst) : [];
+  const kits = Object.keys(r.lasting || {}).map((cid) => charV(cid, lastingOptions(g, cid))).sort(mineFirst);
   const n = r.note, nn = n ? runNode(r, n.node) : undefined;
   const note = n && nn ? {
     kicker: (nn.gate ? 'THE GATE' : wordOf(nn).toUpperCase()) + ' · NODE ' + nn.depth + ' OF ' + MAP_DATA.rows,
@@ -74,7 +85,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
     stage: r.stage, depth, rows: MAP_DATA.rows, setting, seed: r.seed, state: r.state,
     title: r.state === 'boon' ? 'STAGE ' + r.stage + ' CLEARED' : r.state === 'reward' ? 'Rewards' : r.state === 'over' ? 'The run is over' : depth ? 'Pick the next node' : 'Pick the first node',
     nodes, links, party, waiting, canGo: isHost && !solo && leaned > 0 && r.state === 'map', isHost, solo, note,
-    offers, pending: offers.map((o) => o.name),
+    offers, pending: [...offers.map((o) => o.name), ...kits.map((k) => k.name)], choices, kits,
     cleared: r.state === 'boon', canRetire: !runRetireProblem(g, me), over: r.state === 'over',
   };
 }

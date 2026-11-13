@@ -6,7 +6,7 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import figmentsJ from '../../../data/figments.json';
 import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, type SigilDef, type ToneRider } from './data';
 import {
-  type Character, type OutburstDesign, mod, maxMp, healingMult, packOf,
+  type Character, type OutburstDesign, mod, maxMp, healingMult, packOf, soulPicksLeft, practiceOf,
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, carriesVisualizer, hasVisualizer, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
@@ -1597,8 +1597,17 @@ export function practiceOnce<T>(cb: Combat, u: Unit, fn: () => T, after: () => n
 function gainPractice(cb: Combat, u: Unit, n: number) {
   if ((cb as any).dry || PRACTICE_HELD) return; // the area map's dry run (game.ts): only the real release practises
   const c = charOfUnit(u); if (!c || n <= 0 || u.companion) return;
-  c.soulPractice = (c.soulPractice || 0) + n;
+  addPractice(c, n);
   emitFx(cb, 'practice', { unit: u.id, gain: n, total: c.soulPractice });
+}
+/** Rules 1.43 (survival-spec 4.2 item 12): Outburst practice outside a fight (beside addDrill and addStudy): a rest, a
+ * training ground, a trade, a tutor. `n` whole points to `c.soulPractice` (the module picks follow it: soulPicksLeft).
+ * Returns the log line ("" when nothing was added); `why` names where it came from. A fight's practice is gainPractice. */
+export function addPractice(c: Character, n: number, why = ''): string {
+  const add = Math.max(0, Math.round(Number(n) || 0)); if (!add) return '';
+  const before = soulPicksLeft(c).practice; c.soulPractice = (c.soulPractice || 0) + add;
+  const got = soulPicksLeft(c).practice - before;
+  return c.name + ' practises the Outburst (+' + add + (why ? ', ' + why : '') + '): practice ' + practiceOf(c) + (got > 0 ? '; a new module can be learned.' : '.');
 }
 /** Residue on a creature's tile at the start of its turn, or as it steps in (rules 1.8, item 807). */
 export function residueTick(cb: Combat, rng: Rng, u: Unit, when: 'turn' | 'entry') {
