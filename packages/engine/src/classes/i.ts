@@ -9,6 +9,7 @@
 import { isPressed } from '../physical/pressure';
 import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, effNum, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { stampOf } from '../effects/uses';
+import { num } from '../effects/num';
 import { weaponProps, ensurePhys } from '../physical/data';
 import { loadQuiverWith } from '../physical/ranged/quiver';
 import { strikeFromWorld, apLeft } from '../game';
@@ -148,51 +149,51 @@ function spendStoryRes(c: Character, id: string): boolean { const n = storyRes(c
 // ======================================================================================================== MARKSMAN
 // Heat (the class resource) is the shared gun rule (lane 0B: bows build none; Recoil applies; jams at the limit).
 
-// ---------- Fire Discipline (rank I, passive) ----------
-// Aimed shots add no Heat. Once per turn a Burst costs 2 AP, not 3. With a bow an Aimed shot is +3 to hit, not +2.
+// ---------- Fire Discipline (rank I, passive; rules 1.30: weapon-neutral) ----------
+// Aimed attacks add no Heat (the gun's door: this handler, the data's heat_mod). The rest is item ops in its data:
+// once a turn a weapon technique of 3 AP or more 1 AP less (the free ones never: the lead's ruling, item 1813), Aimed attacks +1 to hit, any weapon.
 register({
-  id: 'marksman.fire_discipline', claims: 'all',
+  id: 'marksman.fire_discipline', claims: ['heat_mod'],
   on: {
     // resolveAttack adds +1 Heat to every gun shot after the die: take it off first, so the jam check sees the net.
-    attack_roll: (ctx, h) => { if (ctx.att !== h.u || ctx.mode !== 'aimed') return; const w = WEAPON[h.u!.weapon]; if (w?.heat_limit && !isMelee(w)) h.u!.heat -= 1; },
-    attack_preview: (ctx, h) => {
-      if (ctx.att !== h.u) return;
-      const w: any = WEAPON[h.u!.weapon];
-      if (ctx.mode === 'burst' && uses(h).left('per_turn', 1, h.key + '#burst') > 0) ctx.ap = Math.min(ctx.ap, 2);
-      if (ctx.mode === 'aimed' && /bow/.test(w?.category || '')) ctx.terms.push({ v: 1, label: 'Fire Discipline (bow)' });
-    },
-    // fireBurst spends the preview's AP (2): the burst's first round spends the once-a-turn use.
-    attack_target: (ctx, h) => {
-      if (ctx.att !== h.u || ctx.volley !== 'burst' || ctx.vi !== 0 || !h.cb) return;
-      if (uses(h).take('per_turn', 1, h.key + '#burst')) say(h.cb, h.u!.name + ': Fire Discipline, the burst costs 2 AP.');
-    },
+    // Only a gun has Heat (heat_limit): no family read.
+    attack_roll: (ctx, h) => { if (ctx.att !== h.u || ctx.mode !== 'aimed') return; const w = WEAPON[h.u!.weapon]; if (w?.heat_limit) h.u!.heat -= 1; },
   },
   brief: () => null,
 });
 
-// ---------- Special Ammo (rank II) ----------
-// One magazine (or a quiver of 12 arrows, PROVISIONAL) each of armour-piercing, hollow-point and incendiary, restocked
-// at rest (one of each, never stockpiled). Switching type is part of a reload (the reload's AP, no extra cost). Weapons
-// with no magazine (flamers, launchers) aren't eligible (PROVISIONAL). The rounds' effects are the shared ammo types
-// (rules.json ammo_types: AP ignores armour at ×0.8, hollow-point ×1.3 with armour doubled, incendiary Burning at ×0.9).
+// ---------- Special Ammo (rank II; rules 1.30: any weapon) ----------
+// One load each of armour-piercing, hollow-point and incendiary, restocked at rest (one of each, never stockpiled), for
+// any weapon but a consumable: a magazine for a gun (switching type is part of a reload: its AP), a quiver for a bow
+// (filled before the fight), and for a weapon with no magazine (a blade, a fist, a thrown blade) a load that lasts
+// numbers.load_attacks attacks or the fight, for numbers.load_ap AP. The rounds' effects are the shared ammo types
+// (rules.json ammo_types: AP ignores armour at ×0.8, hollow-point ×1.3 with armour doubled, incendiary Burning at ×0.9);
+// combat.ts applies them to a weapon with no magazine's hits as to a gun's.
 const SPECIAL = [['armor_piercing', 'armour-piercing'], ['hollow_point', 'hollow-point'], ['incendiary', 'incendiary']] as const;
-export const QUIVER = 12;
 /** A Drawn weapon (a bow) has a quiver, and a quiver can't be refilled in a fight (rules 1.12, Weapons 10). */
 const isDrawn = (wid: string | null | undefined) => !!wid && weaponProps(wid).includes('drawn');
 const QUIVER_WHY = 'A quiver is filled before the fight, not during it.';
-const ammoOk = (wid: string): string | null => { const w = WEAPON[wid]; if (!w || isMelee(w)) return 'Your weapon takes no rounds.'; if (w.magazine == null || /flame|launcher|thrown/.test(w.category) || !w.ammo) return 'No special rounds for this weapon.'; return null; };
+/** A weapon with no magazine takes a load (a coat, an edge) that lasts a number of attacks. */
+const noMag = (wid: string | null | undefined) => !!wid && WEAPON[wid]?.magazine == null;
+const ammoOk = (wid: string): string | null => { const w = WEAPON[wid]; if (!w) return 'No weapon.'; if ((w.properties || []).includes('consumable')) return 'A grenade is its own payload: nothing to load.'; return null; };
+/** The quiver of a bow, and a no-magazine load: numbers.load_attacks (12, PROVISIONAL). */
+const loadOf = (h: Holder) => num(h, 'load_attacks');
 register({
   id: 'marksman.special_ammo', claims: 'all',
   actions: [
     ...SPECIAL.map(([id, name]): ActionDef => ({
-      id: 'load_' + id, label: 'Load ' + name, scope: ['combat'], target: 'none', ap: (h) => (h.u ? reloadAp(h.u, h.cb) : 2),
-      text: 'Reload with your ' + name + ' magazine. You carry one, and it is restocked when you rest.',
+      id: 'load_' + id, label: 'Load ' + name, scope: ['combat'], target: 'none', ap: (h) => (h.u ? (noMag(h.u.weapon) ? num(h, 'load_ap') : reloadAp(h.u, h.cb)) : 2),
+      text: 'Load your ' + name + ' rounds: a magazine for a gun (a reload), or a load for a weapon that never reloads. You carry one, and it is restocked when you rest.',
       available: (h) => { if (!h.u) return false; const e = ammoOk(h.u.weapon) || (isDrawn(h.u.weapon) ? QUIVER_WHY : null); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Used up. It is restocked at your next rest.'; return true; },
       run: (h) => {
         const u = h.u!, cb = h.cb!, w = WEAPON[u.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
+        if (noMag(u.weapon)) { // a blade, a fist, a thrown blade: the load lasts load_attacks attacks or the fight
+          u.ammoType = id; stateOf(h).special = id; stateOf(h).left = loadOf(h);
+          say(cb, u.name + ' loads ' + name + ' on the ' + w.name + ' (' + loadOf(h) + ' attacks).'); return;
+        }
         // The magazine in the gun goes back to the pouch (a partly spent standard one keeps its rounds; a spent special one is dropped).
         const was = u.ammo, wasType = u.ammoType || null;
-        if (w.reload === 'loose') { if (!wasType) u.loose = (u.loose || 0) + was; u.ammo = Math.min(w.magazine!, QUIVER); }
+        if (w.reload === 'loose') { if (!wasType) u.loose = (u.loose || 0) + was; u.ammo = Math.min(w.magazine!, loadOf(h)); }
         else { if (u.mags && !wasType && was > 0) u.mags.push(was); u.ammo = w.magazine!; }
         u.ammoType = id; u.jammed = false; stateOf(h).special = id;
         emit(cb, 'reload', { u, ap: 0, cb, special: id });
@@ -207,8 +208,9 @@ register({
         const c = h.c!, w = WEAPON[c.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
         // A Drawn weapon's arrows are its quiver (Physical 2.0, rules 1.12: physical/ranged/quiver.ts): what it held goes
         // back to the pack, and the quiver is the special arrows, typed (review fix: c.loadedType alone was lost).
-        if (isDrawn(c.weapon)) { loadQuiverWith(c, c.weapon, {}); c.loaded = Math.min(w.magazine!, QUIVER); c.loadedType = null; ensurePhys(c).quiver[c.weapon] = { [id]: c.loaded }; postStory(h, c.name + ' fills the quiver with ' + name + ' arrows.'); return; }
-        c.loaded = w.reload === 'loose' ? Math.min(w.magazine!, QUIVER) : w.magazine!; c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' rounds.');
+        if (isDrawn(c.weapon)) { loadQuiverWith(c, c.weapon, {}); c.loaded = Math.min(w.magazine!, loadOf(h)); c.loadedType = null; ensurePhys(c).quiver[c.weapon] = { [id]: c.loaded }; postStory(h, c.name + ' fills the quiver with ' + name + ' arrows.'); return; }
+        if (noMag(c.weapon)) { c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' on the ' + w.name + ' for the next fight.'); return; }
+        c.loaded = w.reload === 'loose' ? Math.min(w.magazine!, loadOf(h)) : w.magazine!; c.loadedType = id; postStory(h, c.name + ' loads ' + name + ' rounds.');
       },
     })),
   ],
@@ -216,37 +218,50 @@ register({
     // A normal reload after the special magazine: standard rounds again.
     reload: (ctx, h) => { if (ctx.u !== h.u || ctx.special || ctx.hand === 'off') return; /* the off-hand gun's reload leaves the main gun's rounds alone */ const u = h.u!, w = WEAPON[u.weapon]; if (!u.ammoType || !stateOf(h).special) return;
       if (w?.reload === 'loose' ? (u.loose || 0) > 0 : (u.mags || []).some((n) => n > 0)) { u.ammoType = null; stateOf(h).special = null; } },
+    // A no-magazine load counts down an attack at a time (a load from the story starts full at the fight).
+    attack_roll: (ctx, h) => {
+      const u = h.u!; if (ctx.att !== u || !u.ammoType || !noMag(u.weapon)) return;
+      const st = stateOf(h); st.left = (st.left ?? loadOf(h)) - 1;
+      if (st.left <= 0) { u.ammoType = null; st.special = null; delete st.left; say(h.cb, u.name + '\'s special load is spent.'); }
+    },
   },
   brief: () => null,
 });
 
-// ---------- Killzone (rank III) ----------
-// Hold two Overwatch shots (twice the shot's AP): one each at the first two different enemies that move into your line,
-// both at +2 to hit (only these double holds, PROVISIONAL). The two shots spend one reaction between them (PROVISIONAL).
-const kzOf = (h: Holder) => stateOf(h).kz as undefined | { left: number; hit: string[]; mode: 'shot' | 'aimed'; firing?: string | null };
+// ---------- Killzone (rank III; rules 1.30) ----------
+// Hold two attacks with any weapon (twice the attack's AP): one each at the first two different enemies that move into
+// your line (a gun, a bow) or your reach (a melee weapon: the held mode is melee), both at +numbers.hit to hit. The
+// first one spends numbers.spend reactions (both of the Skirmisher's, Leon); with fewer left it spends one, and only
+// that one fires. The second, already paid for this round (tactics.ts payHeldShot), fires on nothing else.
+type KzMode = 'shot' | 'aimed' | 'melee';
+const kzOf = (h: Holder) => stateOf(h).kz as undefined | { left: number; hit: string[]; mode: KzMode; firing?: string | null; both?: boolean };
 register({
   id: 'marksman.killzone', claims: 'all',
-  actions: (['shot', 'aimed'] as const).map((mode): ActionDef => ({
-    id: 'overwatch_double' + (mode === 'aimed' ? '_aimed' : ''), label: 'Killzone' + (mode === 'aimed' ? ' (aimed)' : ''), scope: ['combat'], target: 'none',
-    ap: (h) => (h.u ? 2 * attackApCost(WEAPON[h.u.weapon], mode) : 4),
-    text: 'Hold two ' + (mode === 'aimed' ? 'aimed ' : '') + 'overwatch shots. You fire one at each of the first two enemies that move into your line of fire, each at +2 to hit.',
-    available: (h) => { const u = h.u; if (!u) return false; const w = WEAPON[u.weapon]; if (!w || isMelee(w)) return 'Killzone needs a ranged weapon.'; if (u.overwatch) return 'Already on overwatch.'; if (isPressed(u)) return 'You are Pressed and can\'t hold a shot.'; return true; },
-    run: (h) => { const u = h.u!; u.overwatch = mode; u.owShots = 1; stateOf(h).kz = { left: 2, hit: [], mode, firing: null }; emitFx(h.cb!, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); say(h.cb, u.name + ' sets a killzone: two shots held.'); },
-  })),
+  actions: (['shot', 'aimed'] as const).map((m): ActionDef => {
+    const modeOf = (h: Holder): KzMode => (h.u && isMelee(WEAPON[h.u.weapon]) ? 'melee' : m);
+    return {
+      id: 'overwatch_double' + (m === 'aimed' ? '_aimed' : ''), label: 'Killzone' + (m === 'aimed' ? ' (aimed)' : ''), scope: ['combat'], target: 'none',
+      ap: (h) => (h.u ? 2 * attackApCost(WEAPON[h.u.weapon], modeOf(h)) : 4),
+      text: 'Hold two ' + (m === 'aimed' ? 'aimed ' : '') + 'attacks. You make one at each of the first two enemies that move into your line of fire (or your reach), each at a bonus to hit. It spends both your reactions.',
+      available: (h) => { const u = h.u; if (!u) return false; const w = WEAPON[u.weapon]; if (!w) return 'No weapon.'; if (m === 'aimed' && isMelee(w)) return 'An aimed hold needs a ranged weapon.'; if (u.overwatch) return 'Already on overwatch.'; if (isPressed(u)) return 'You are Pressed and can\'t hold an attack.'; return true; },
+      run: (h) => { const u = h.u!, mode = modeOf(h); u.overwatch = mode; u.owShots = 1; u.owSpend = num(h, 'spend'); stateOf(h).kz = { left: 2, hit: [], mode, firing: null }; emitFx(h.cb!, 'stance', { unit: u.id, at: u.pos, what: 'overwatch' }); say(h.cb, u.name + ' sets a killzone: two attacks held.'); },
+    };
+  }),
   on: {
-    turn_start: (ctx, h) => { if (ctx.u === h.u) delete stateOf(h).kz; },
+    turn_start: (ctx, h) => { if (ctx.u === h.u) { delete stateOf(h).kz; delete h.u!.owSpend; } },
     reaction_window: (ctx, h) => {
       const kz = kzOf(h); if (!kz || ctx.reactor !== h.u || ctx.kind !== 'overwatch') return;
       if (kz.hit.includes(ctx.mover.id) || kz.left <= 0) { ctx.cancel = true; return; }
-      kz.hit.push(ctx.mover.id); kz.left--; kz.firing = ctx.mover.id; h.u!.owShots = 1;
+      kz.hit.push(ctx.mover.id); kz.left--; kz.firing = ctx.mover.id; kz.both = (ctx.spend || 1) >= num(h, 'spend'); h.u!.owShots = 1;
     },
-    attack_preview: (ctx, h) => { const kz = kzOf(h); if (kz?.firing && ctx.att === h.u && ctx.tgt?.id === kz.firing) ctx.terms.push({ v: 2, label: 'Killzone' }); },
-    // The shot is rolled: the second one stays held for the next enemy, already paid for by the reaction the first one
-    // spent ("the two shots use one reaction between them"): nothing else may use a reaction in between.
+    attack_preview: (ctx, h) => { const kz = kzOf(h); if (kz?.firing && ctx.att === h.u && ctx.tgt?.id === kz.firing) ctx.terms.push({ v: num(h, 'hit'), label: 'Killzone' }); },
+    // The attack is rolled: the second stays held for the next enemy, already paid for by the reactions the first one
+    // spent; with only one spent (one was left), the second is not held.
     attack_roll: (ctx, h) => {
       const kz = kzOf(h); if (!kz?.firing || ctx.att !== h.u) return;
       kz.firing = null;
-      if (kz.left > 0) { h.u!.overwatch = kz.mode; h.u!.owShots = 1; if (kz.left === 1 && h.cb) payHeldShot(h.cb, h.u!); }
+      if (kz.left > 0 && kz.both) { h.u!.overwatch = kz.mode; h.u!.owShots = 1; h.u!.owSpend = 1; if (kz.left === 1 && h.cb) payHeldShot(h.cb, h.u!); }
+      else kz.left = 0;
     },
   },
   brief: () => null,
@@ -268,7 +283,7 @@ function lungeTile(cb: Combat, u: Unit, t: Unit): string | null {
 }
 let lunging: Unit | null = null;
 register({
-  id: 'fighter.lunge', claims: 'all',
+  id: 'fighter.lunge', claims: (e: any) => e?.when !== 'hit', // Momentum on a Shaken or Frightened enemy (Classes 3.0) is an item op: the runner runs it
   actions: [{
     id: 'lunge', label: 'Lunge', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
     text: 'Costs 1 Momentum and the AP of a strike. Move up to 2 tiles and strike, as one action. The move draws no opportunity attacks.',
@@ -300,28 +315,10 @@ register({
   brief: () => null,
 });
 
-// ---------- Riposte (rank II, reaction) ----------
-// A melee attack against you misses (a fumble counts): spend 1 Momentum for a 0-AP melee strike back with your Counter
-// bonus to hit. Uses your reaction; a riposte never triggers a riposte (PROVISIONAL). Policy: on (default) or off.
-let riposting = false;
-register({
-  id: 'fighter.riposte', claims: 'all',
-  actions: [policyAction('off', 'Riposte off', 'off', 'No automatic Ripostes for the rest of this fight.'), policyAction('on', 'Riposte on', 'auto', 'Riposte whenever a melee attack misses you and you can. This is the default.')],
-  on: {
-    on_miss: (ctx, h) => {
-      const u = h.u!, cb = h.cb!; if (!ctx.melee || ctx.tgt !== u || riposting || !foeOf(ctx.att, u)) return;
-      if (policy(h, 'auto') === 'off') return;
-      if (!alive(u) || resOf(u, 'momentum') < 1 || !canReact(cb, u, 'attack') || dist(u.pos, ctx.att.pos) > reachOf(u) || !alive(ctx.att)) return;
-      if (!previewAttack(cb, u, ctx.att, 'melee', { free: true, extra: u.counter || 0 }).ok) return;
-      react(cb, u, { kind: 'attack', event: attackEvent() }, () => {
-        resSpend(u, 'momentum', 1); say(cb, u.name + ' ripostes (1 Momentum).');
-        riposting = true; try { resolveAttack(cb, rngOf(h, ctx), u, ctx.att, 'melee', null, { noAp: true, extra: u.counter || 0, fx: { move: 'fighter.riposte' } }); } finally { riposting = false; }
-        checkOver(cb);
-      });
-    },
-  },
-  brief: () => null,
-});
+// ---------- Riposte (rank II): one Answer (rules 1.30) ----------
+// Folded into the technique Riposte (physical/melee/answers.ts): the class's data gives the Answer with any melee weapon
+// (stat technique:riposte) and its riders as item ops (1 Momentum on the strike's roll, the Counter bonus to hit, no
+// Riposte with no Momentum). No handler.
 
 // ---------- Finisher (rank III, 3 AP) ----------
 // Spend all your Momentum (at least 1) on one melee strike: +20% damage per point, up to +100%. Momentum is spent even
@@ -362,7 +359,7 @@ let interposing = false;
 /** The ally an Interpose just covered (the same attack's injury follows the hit to the Defender). */
 let interposed: { t: string; me: string } | null = null;
 register({
-  id: 'defender.brace', claims: 'all',
+  id: 'defender.brace', claims: (e: any) => e?.when !== 'combat_start', // the fight's starting Guard (Classes 3.0) is an item op: the runner runs it
   actions: [
     {
       id: 'brace', label: 'Brace (Hold the Line)', scope: ['combat'], target: 'none', ap: 'data',
@@ -439,7 +436,7 @@ register({
     },
     turn_end: (ctx, h) => { const b = stateOf(h).boss; if (b && b[ctx.u.id]) delete b[ctx.u.id]; },
   },
-  brief: () => 'Celestials (Narrator-run) honour the −2 against anyone but the Defender.',
+  brief: () => 'Celestials (Narrator-run) honour the −2 against anyone but the Bulwark.',
 });
 
 // ---------- Reactive Plate (rank III, passive; no reaction, PROVISIONAL) ----------

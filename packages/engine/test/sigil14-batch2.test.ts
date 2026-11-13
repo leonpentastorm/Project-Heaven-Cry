@@ -1,6 +1,6 @@
 // Sigil rules 1.4, completeness batch 2 (spec items 481-489): COMMAND · move checked when planned and on its turn, every
 // save in the log, a Stack's area around its caster, the four Sigil skill unlocks (Overclock, Twin Draw, Proven Formula,
-// Paint the Field), the Evoker blade's Edge Word, Barrage and ACID, Bulwark's line of fire from the spell's origin, and
+// Paint the Field), the Evoker blade's Edge Word, Barrage and ACID, Stonewall's line of fire from the spell's origin, and
 // the class-move previews the grid paints. Everything a player does goes through apply() (combat/draw, combat/evoke,
 // combat/perk, combat/attack).
 import { describe, expect, it } from 'vitest';
@@ -181,8 +181,8 @@ describe('gap 23: Barrage and the 1.4 elements (item 486)', () => {
   });
 });
 
-describe('gap 24: Bulwark traces the line of fire from where the spell comes from (item 488)', () => {
-  /** A hostile caster on the foe side (the Sigil words given), Bulwark I on PC 2, PC 3 its ally. */
+describe('gap 24: Stonewall traces the line of fire from where the spell comes from (item 488)', () => {
+  /** A hostile caster on the foe side (the Sigil words given), Stonewall I on PC 2, PC 3 its ally. */
   function bulwark(gPos: string, tPos: string) {
     const f = fightWith([{ archetype: 'sigilist', kit: 'sigil' }, { archetype: 'sigilist', kit: 'sigil', perks: { bulwark: 'I' } }, { archetype: 'sigilist', kit: 'sigil' }], [{ tier: 'minion' }]);
     const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
@@ -193,7 +193,7 @@ describe('gap 24: Bulwark traces the line of fire from where the spell comes fro
     f.g.rng.state = SEED;
     return { f, g, t, e };
   }
-  it('across a vertical Line, an ARC lob from the lane\'s glyph passes over the guard: Bulwark cuts it, though the caster is off that line', () => {
+  it('across a vertical Line, an ARC lob from the lane\'s glyph passes over the guard: Stonewall cuts it, though the caster is off that line', () => {
     // The Line is FIRE on 4,2 and ARC on 4,3; the caster beside it on 3,2 fires across (east), the lanes on rows 2 and 3.
     // The target on 6,3 is in row 3's lane (the lob leaves from 4,3), the guard on 5,3 between: origin, guard, target in a
     // row. From the caster's tile (3,2) the ray through the guard misses the target (the 1.3 caster-based reading).
@@ -204,10 +204,10 @@ describe('gap 24: Bulwark traces the line of fire from where the spell comes fro
       e.pos = '3,2';
       expect(evokeSpell(cb, rng, e, '4,2', '6,3')).toBeNull();
     });
-    expect(500 - f.unit(t.id).hp).toBe(18); // FIRE 30 × ARC 0.8 = 24, Bulwark I −25% = 18
-    expect(logHas(f.cb, /Bulwark/)).toBe(true);
+    expect(500 - f.unit(t.id).hp).toBe(18); // FIRE 30 × ARC 0.8 = 24, Stonewall I −25% = 18
+    expect(logHas(f.cb, /Stonewall/)).toBe(true);
   });
-  it('a Touch spell from the glyph the guard stands on has no line through the guard: no Bulwark (the caster-based ray would have given one)', () => {
+  it('a Touch spell from the glyph the guard stands on has no line through the guard: no Stonewall (the caster-based ray would have given one)', () => {
     const { f, t, e } = bulwark('4,3', '5,3');
     withGame(f.g, () => {
       const cb = f.cb, rng = f.g.rng; arm(e, ['fire', 'condense']);
@@ -215,7 +215,7 @@ describe('gap 24: Bulwark traces the line of fire from where the spell comes fro
       e.pos = '3,3'; // beside the Line: across (east); the caster, the guard on 4,3 and the target on 5,3 are in a row
       expect(evokeSpell(cb, rng, e, '4,2', '5,3')).toBeNull();
     });
-    expect(500 - f.unit(t.id).hp).toBe(45); expect(logHas(f.cb, /Bulwark/)).toBe(false);
+    expect(500 - f.unit(t.id).hp).toBe(45); expect(logHas(f.cb, /Stonewall/)).toBe(false);
   });
 });
 

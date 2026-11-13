@@ -62,7 +62,7 @@ function blastPressure(t: Tech, tile: string, radius: number): void {
 // the user with it this round (hitRound: Crossfire; hitWith: drill on its kill, rules 1.12 drill point 6): after damage
 // that leaves it standing, and, for a blow that would take it out, just before (the kill's drill reads the mark). Reading: the kill spill (Pressure rule 4,
 // "a ranged attack takes someone out") stays off: the spec rules that area blasts are never ranged attacks (the
-// Bulwark ruling), and the Blast's own +2 Pressure already reaches everyone in its radius.
+// Stonewall ruling), and the Blast's own +2 Pressure already reaches everyone in its radius.
 let LOBBING: { by: Unit; weapon: string } | null = null;
 function lobbing<T>(by: Unit, weapon: string, fn: () => T): T { const was = LOBBING; LOBBING = { by, weapon }; try { return fn(); } finally { LOBBING = was; } }
 onHook('damage_in', (ctx: any, cb) => {

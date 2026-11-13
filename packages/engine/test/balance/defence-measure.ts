@@ -14,7 +14,7 @@ import { runFight, TIER_WEAPON, MAP_ID } from './sim';
 import { BUILD, BUILDS, LEVELS } from './builds';
 import { POLICIES, plain, type Ctx, type Step, type Policy } from './policies';
 import { SOLDIER_TURN, RIFLEMAN_HP, unitOf, stand, inventory } from './heal-measure';
-import { ENEMY, bindGame, dist, paths, apForTiles, healingMult, mendFactor, TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL, TRIAGE_REST_MULT } from '../../src';
+import { ENEMY, CLASS, bindGame, dist, paths, apForTiles, healingMult, mendFactor, TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL, TRIAGE_REST_MULT } from '../../src';
 
 export const D_LEVELS = LEVELS;
 const r1 = (n: number) => Math.round(n * 10) / 10, pct = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 100) : 0);
@@ -145,3 +145,38 @@ export function medicRow(who: string, build: string, variant: string, level: num
 export const medicLine = (r: MedicRow) => r.who + ' L' + r.level + ' (Healing given ×' + r.healGiven + '): Triage ' + r.triage + ' · ' + r.triagePct + '% (' + r.triagePerAp + '% an AP; before ' + r.before.triage + ' · ' + r.before.triagePct + '%) · a dose ' + r.stim + ' · ' + r.stimPct + '% (before ' + r.before.stim + ' · ' + r.before.stimPct + '%) · Rally ' + r.rally + ' each · ' + r.rallyPct + '% · out of a fight ' + r.triageRest + (r.magicPerAp != null ? ' · the same character\'s steady Outburst heal: ' + r.magicPerAp + '% an AP' : '');
 export { SOLDIER_TURN, RIFLEMAN_HP };
 void MAP_ID; void TIER_WEAPON; void plain;
+
+// ---------- Reflex (rules 1.30; reactions-spec.md section 7, "Measure when built") ----------
+/** The Skirmisher's second reaction, measured in whole fights (the range's target never acts, so it shows nothing
+ * there): the reference gun squad (SQUADS.guns: the optimised gun, a Skirmisher, first, playing `watcher`: a shot, then a
+ * held Overwatch; `variant` for it, the rest normal) in a fight, with Reflex as built and with its stat turned off. Per Skirmisher turn: the damage it dealt outside
+ * its own turn (its reactions) and what it took, as a percent of the normal-share plain rifle's turn at that level
+ * (`yard`: refit-measure.ts yardOf). */
+/** A policy that holds Overwatch (reactions-spec.md section 7): the plain rifleman's turn, but after its first attack,
+ * once it has the AP for a shot, it holds one on Overwatch (the stance) and ends the turn there. */
+export const watcher: Policy = (x) => {
+  const u = x.u, M = x.memo; if (M.round !== x.cb.round) { M.round = x.cb.round; M.shots = 0; }
+  if (M.shots >= 1 && !u.overwatch && !u.watch && u.ap >= 2) { const s: Step = { action: { type: 'combat/overwatch', unitId: u.id, mode: 'shot' }, kind: 'other', label: 'overwatch' }; if (!x.banned.has(JSON.stringify(s.action))) return s; }
+  if (u.overwatch) return null;
+  const s = plain(x); if (s && s.kind === 'attack') M.shots++; return s;
+};
+(POLICIES as any).watcher = watcher;
+export interface ReflexSide { off: number; taken: number; turns: number }
+export interface ReflexRow { level: number; variant: string; fight: string; map: string; n: number; on: ReflexSide; off: ReflexSide; gain: number; errors: number }
+export function reflexRow(level: number, variant: string, n: number, yard: number, o: { fight?: string; map?: 'open' | 'cover' } = {}): ReflexRow {
+  const fight = o.fight || 'standard', map = o.map || 'cover', eff = (CLASS as any).marksman.gain.find((m: any) => m.id === 'reflex').effects[0], was = eff.value;
+  let errors = 0;
+  const side = (on: boolean): ReflexSide => {
+    eff.value = on ? was : 0; let off = 0, taken = 0, turns = 0;
+    try {
+      for (let i = 0; i < n; i++) {
+        const r = runFight({ pcs: SQUADS.guns.map((b, k) => ({ build: b, variant: (k === 0 ? variant : 'normal') as any, level, ...(k === 0 ? { policy: 'watcher' } : {}) })), foes: FIGHTS[fight].map((t) => ({ tier: t })), map, seed: ['REFLEX', fight, level, map, i].join('-'), maxRounds: 12 });
+        errors += r.errors.length; const s = r.pcs[0]; off += s.offTurnDmg; taken += s.taken; turns += Math.max(1, s.turns);
+      }
+    } finally { eff.value = was; }
+    return { off: pct(off / turns, yard), taken: pct(taken / turns, yard), turns: r1(turns / n) };
+  };
+  const a = side(true), b = side(false);
+  return { level, variant, fight, map, n, on: a, off: b, gain: a.off - b.off, errors };
+}
+export const reflexLine = (r: ReflexRow) => 'Reflex L' + r.level + ' ' + r.variant + ' ' + r.fight + ' ' + r.map + ' (' + r.n + ' fights): its off-turn damage ' + r.on.off + '% of a rifle-turn a turn with Reflex, ' + r.off.off + '% without (' + (r.gain >= 0 ? '+' : '') + r.gain + ') · taken ' + r.on.taken + '% / ' + r.off.taken + '%' + (r.errors ? ' · ERRORS ' + r.errors : '');

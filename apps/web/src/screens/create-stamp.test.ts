@@ -13,7 +13,7 @@ vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, remove
 vi.stubGlobal('location', { search: '', hash: '' });
 const { CreateLogic, STAMP_MS } = await import('./create.js');
 
-/** A Create screen on the Lock in step with a legal build (the Bulwark preset, a kit, a name and an origin). */
+/** A Create screen on the Lock in step with a legal build (the Holdfast preset, a kit, a name and an origin). */
 function screen() {
   const l: any = new CreateLogic({ sampleName: 'Test', sampleArch: 'bulwark', startStep: 'lockin' });
   l.setState = (x: any) => { l.state = { ...l.state, ...(typeof x === 'function' ? x(l.state) : x) }; };

@@ -147,6 +147,7 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
 export function classMove(cls: string, mv: string): { move: any; rank: string } | null {
   const key = 'class:' + cls + '.' + mv;
   for (const b of CLASSES as any[]) for (const r of RANKS) { const m = (b.ranks?.[r]?.moves || []).find((x: any) => x.key === key); if (m) return { move: m, rank: r }; }
+  for (const b of CLASSES as any[]) { const m = (b.gain || []).find((x: any) => x.key === key); if (m) return { move: m, rank: 'I' }; } // held from class gain (Reflex, rules 1.30)
   const p = CLASS_MOVE_POOL[cls + '.' + mv]; if (p) return { move: p, rank: ADVANCED[cls] ? 'adv' : p.origin_rank || 'I' };
   return null;
 }
@@ -202,6 +203,8 @@ export function classMoveKeys(h: Held): { key: string; rank: string }[] {
   const b = h.cls && !rev2 ? BASE_CLASS[h.cls] : null;
   // A rank's moves keep their own keys: Bard's Triage is "class:medic.triage", so the Medic's handler runs it.
   if (b) RANKS.slice(0, Math.max(1, Math.min(3, h.rank || 1))).forEach((r) => (b.ranks?.[r]?.moves || []).forEach((m: any) => out.push({ key: m.key, rank: r })));
+  // A class's `gain` (rules 1.30: the Skirmisher's Reflex) is held (after them) from class gain, beside the six moves, at rank I.
+  if (b) (b.gain || []).forEach((m: any) => out.push({ key: m.key, rank: 'I' }));
   const a = h.adv && advancedActive(h.adv) ? ADVANCED[h.adv] : null;
   if (a) (a.moves || []).forEach((m: any) => out.push({ key: 'class:' + a.id + '.' + m.id, rank: 'adv' }));
   return out;
@@ -251,6 +254,7 @@ export function allItems(): ItemInfo[] {
   // Every class move once: the 9 classes' moves (new ones under their class, reused ones under their old key), then the
   // rest of the pool and the advanced moves (shelved: their handlers and tests stay, so coverage still counts them).
   const seen = new Set<string>();
+  for (const b of CLASSES as any[]) for (const m of b.gain || []) if (!seen.has(m.key)) { seen.add(m.key); out.push(itemInfo(m.key)!); }
   for (const b of CLASSES as any[]) for (const r of RANKS) for (const m of b.ranks?.[r]?.moves || []) if (!seen.has(m.key)) { seen.add(m.key); out.push(itemInfo(m.key)!); }
   for (const k of Object.keys(CLASS_MOVE_POOL)) if (!seen.has('class:' + k)) { seen.add('class:' + k); out.push(itemInfo('class:' + k)!); }
   for (const k of SKILL_ITEMS) out.push(itemInfo('skill:' + k)!);

@@ -1,6 +1,6 @@
 // "I've seen a turn where my character Riposted 4 times" (Leon, 13 Nov 2026; BUGLIST-0.22.md, "Riposte fired four
 // times"). Rules: one reaction a round, counted, for everyone (spec item 89); an Answer is a reaction; Riposte "uses
-// your reaction"; the Fighter's Riposte is "reaction, 1 Momentum"; Killzone's "two shots use one reaction between them".
+// your reaction"; the Fighter's Riposte is "reaction, 1 Momentum" (rules 1.30: one Answer); Killzone spends both reactions.
 import { describe, it, expect, beforeEach } from 'vitest';
 import './helpers/yard16';
 import { physFight, rig } from './helpers/physfight';
@@ -32,7 +32,7 @@ describe('one reaction a round: Riposte', () => {
     expect(count(log, /^Foe \d strikes Tester 1: .* miss/)).toBeGreaterThanOrEqual(4);
     expect(count(log, /Tester 1 answers with Riposte/)).toBe(1);
   });
-  it('the Fighter\'s class move and the technique share the one reaction: three misses in a round, one Riposte', () => {
+  it('the Fighter\'s Riposte is the technique\'s one Answer (rules 1.30): three misses in a round, one Riposte', () => {
     const f = fightWith([cls('fighter', 2, { weapon: 'sabre' })], [{ weapon: 'combat_knife' }, { weapon: 'combat_knife' }, { weapon: 'combat_knife' }]);
     const me = f.unit(f.pc.id); me.pos = '4,2'; me.res!.momentum = 5; me.hp = me.maxHp = 9999;
     const foes = f.foes.map((x) => f.unit(x.id)); foes[0].pos = '5,2'; foes[1].pos = '4,3'; foes[2].pos = '3,2';
@@ -45,8 +45,8 @@ describe('one reaction a round: Riposte', () => {
   });
 });
 
-describe('Killzone: the two shots use one reaction between them', () => {
-  it('after the first shot no other reaction is free, and the second shot still fires', () => {
+describe('Killzone (rules 1.30): it spends both reactions; a unit with one spends it, and only one shot fires', () => {
+  it('a Revision 2 Marksman (no Reflex): the first shot takes the one reaction, nothing else is free, the second is not held', () => {
     const f = fightWith([cls('marksman', 3, { weapon: 'hellraiser_service_rifle' })], [{}, {}]);
     const u = f.turn(f.pc); const [a, b] = f.foes;
     for (const [x, at] of [[u, '1,2'], [a, '10,2'], [b, '12,2']] as [Unit, string][]) f.unit(x.id).pos = at;
@@ -54,10 +54,10 @@ describe('Killzone: the two shots use one reaction between them', () => {
     const g = f.g, cb = f.cb, me = f.unit(u.id); me.attack = 60; for (const x of [a, b]) f.unit(x.id).ap = 6;
     withGame(g, () => { moveUnit(cb, f.unit(a.id), '9,2', g.rng); moveUnit(cb, f.unit(a.id), '9,3', g.rng); });
     expect(count(cb.log, /fires from overwatch/)).toBe(1);
-    expect(reactionsUsed(cb, me)).toBe(1);   // was 0: the first shot's reaction was given back
-    expect(canReact(cb, me)).toBe(false);    // so nothing else (a Parry, a Dance of Iron, a Call) can take it
+    expect(reactionsUsed(cb, me)).toBe(1);
+    expect(canReact(cb, me)).toBe(false);    // nothing else (a Parry, a Dance of Iron, a Call) can take one
     withGame(g, () => { moveUnit(cb, f.unit(b.id), '11,3', g.rng); });
-    expect(count(cb.log, /fires from overwatch/)).toBe(2); // the second shot fires on the reaction already spent
+    expect(count(cb.log, /fires from overwatch/)).toBe(1); // both reactions (Leon): with one, only one fires (skirmisher.test.ts: two with Reflex)
     expect(reactionsUsed(cb, me)).toBe(1);
   });
 });

@@ -29,22 +29,24 @@ describe('the nine classes (data)', () => {
     for (const k of CLASSES) for (const r of ['I', 'II', 'III']) expect(k.ranks[r].moves.length, k.id + ' ' + r).toBe(2);
     const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves));
     expect(all.length).toBe(54);
-    expect(all.filter((m: any) => m.new).length).toBe(20); // the 20 new moves
+    expect(all.filter((m: any) => m.new).length).toBe(21); // the 20 new moves and Run and Gun (rules 1.30)
     expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(28); // 28 old base moves
-    expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(6); // 6 old advanced moves
+    expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(5); // 5 old advanced moves (Called Shot left the Skirmisher, rules 1.30)
   });
   it('a reused move keeps its old key: Bard\'s Triage is class:medic.triage; a new move is under its class', () => {
     const triage = CLASS.bard.ranks.I.moves.find((m: any) => m.id === 'triage');
     expect(triage.key).toBe('class:medic.triage');
-    expect(CLASS.marksman.ranks.III.moves.find((m: any) => m.id === 'called_shot').key).toBe('class:gunslinger.called_shot');
+    expect(CLASS.marksman.ranks.III.moves.find((m: any) => m.id === 'called_shot')).toBeUndefined(); // rules 1.30: to the Operative (step 4)
+    expect(CLASS_MOVE_POOL['gunslinger.called_shot']?.future_home).toMatch(/Operative/); // its key stays
+    expect(CLASS.marksman.ranks.III.moves.find((m: any) => m.id === 'run_and_gun').key).toBe('class:marksman.run_and_gun');
     expect(CLASS.defender.ranks.II.moves.find((m: any) => m.id === 'shrug_it_off').key).toBe('class:defender.shrug_it_off');
     expect(itemInfo('class:medic.triage')?.name).toBe('Triage');
   });
-  it('every move in the catalogue carries origin, fantasy_tags, attributes and status; 11 + 57 are shelved', () => {
+  it('every move in the catalogue carries origin, fantasy_tags, attributes and status; 11 + 58 are shelved', () => {
     const moves = Object.values(CLASS_MOVE_POOL);
     for (const m of moves) { expect(m.origin).toBeTruthy(); expect(m.fantasy_tags?.length).toBeGreaterThan(0); expect(m.attributes?.length).toBeGreaterThan(0); expect(['active', 'shelved']).toContain(m.status); }
     expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(11);
-    expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(57);
+    expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(58); // Called Shot waits for the Operative (rules 1.30)
   });
 });
 
@@ -103,14 +105,14 @@ describe('ranks read the class\'s own attribute', () => {
     const s = storyWith([{ classId: 'fighter', level: 6, attrs: { strength: 4 } }]);
     const c = s.g.characters[s.chars[0].id]; c.unspent.attr = 1; c.cores.body = Math.max(c.cores.body, 5);
     s.act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: 'strength' });
-    expect(s.g.story.entries.at(-1)!.text).toMatch(/Fighter II: Riposte, Lingering Dread/);
+    expect(s.g.story.entries.at(-1)!.text).toContain(CLASS.fighter.name + ' II: Riposte, Lingering Dread');
   });
   it('a rank that comes with the level (rules 1.11) is announced the same way; no rise, no line', () => {
     const s = storyWith([{ classId: 'fighter', level: 5, attrs: { strength: 5 } }]);
     const c = s.g.characters[s.chars[0].id]; expect(classRank(c)).toBe(1);
     const n0 = s.g.story.entries.length; rankReached(s.g, c, 1); expect(s.g.story.entries.length).toBe(n0);
     c.level = 6; rankReached(s.g, c, 1);
-    expect(s.g.story.entries.at(-1)!.text).toMatch(/reaches Fighter II: Riposte, Lingering Dread/);
+    expect(s.g.story.entries.at(-1)!.text).toContain('reaches ' + CLASS.fighter.name + ' II: Riposte, Lingering Dread');
   });
 });
 
@@ -212,7 +214,7 @@ describe('Revision 2 saves migrate', () => {
     expect(classKeys(c)).toContain('class:trickster.read');
     expect(classKeys(c).some((k) => k.startsWith('class:siege_engineer.'))).toBe(false);
     const notes = s.g.story.entries.filter((e) => e.kind === 'system').map((e) => e.text).join(' ');
-    expect(notes).toMatch(/Warden is now the Trickster/); expect(notes).toMatch(/advanced classes are being rebuilt/);
+    expect(notes).toContain('Warden is now the ' + CLASS.trickster.name); expect(notes).toMatch(/advanced classes are being rebuilt/);
   });
   it('a new character is already at Revision 3 (nothing to migrate)', () => {
     const c = charOf({}, { classId: 'bard' }); expect(migrateCharacterClass(c)).toEqual([]);
@@ -222,7 +224,7 @@ describe('Revision 2 saves migrate', () => {
 describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-moves.test.ts)', () => {
   const NEW = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new).map((m: any) => m.key.replace(/^class:/, ''));
   it('each has its full data entry, a registered handler, and no effect is a coverage gap', () => {
-    expect(NEW.length).toBe(20);
+    expect(NEW.length).toBe(21); // + Run and Gun (rules 1.30, data only)
     for (const k of NEW) {
       const info = itemInfo('class:' + k)!;
       expect(info, k).toBeTruthy(); expect(info.text.length, k).toBeGreaterThan(10); expect(info.provisional, k).toBe(true);

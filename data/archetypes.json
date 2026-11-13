@@ -59,7 +59,7 @@
   "items": [
     {
       "id": "bulwark",
-      "name": "Bulwark",
+      "name": "Holdfast",
       "family": "frontline",
       "role": "Tank",
       "blurb": "Stands in the doorway so nobody else has to. Has been shot more times than most people have been hugged.",
@@ -514,7 +514,7 @@
     },
     {
       "id": "sigilist",
-      "name": "Sigilist",
+      "name": "Glyphwright",
       "family": "sigils",
       "role": "Sigil blaster",
       "blurb": "Draws FIRE · SEEK · SPREAD faster than most people draw breath. Smells faintly of scorched Evoker.",
@@ -768,7 +768,7 @@
     },
     {
       "id": "mender",
-      "name": "Mender",
+      "name": "Empath",
       "family": "soul",
       "role": "Soul healer",
       "blurb": "Feels your wound from across the room and closes it before you finish screaming.",

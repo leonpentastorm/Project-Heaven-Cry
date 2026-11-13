@@ -261,7 +261,7 @@ const MOVE_VALUE: Record<string, (m: any) => Val> = {
   'shade.lingering_dread': () => ({ how: 'on a kill, enemies within 3 tiles save or are Shaken', cur: 'enemy AP removed', partial: true }),
   'fighter.finisher': () => ({ d: 1 + 0.2 * 3, how: '1 strike at +20% per Momentum spent (3 counted)', max: '×2 at 5 Momentum' }),
   'fighter.unstoppable': () => ({ x: 2 * K.MOMENTUM_AP * K.AP, how: '+2 Momentum; Fear, Shaken, Slowed and Pinned set aside and no opportunity attacks on you until your next turn (not priced)', cur: 'position', partial: true }),
-  'marksman.fire_discipline': () => ({ how: 'once a turn a Burst costs 2 AP instead of 3; Aimed shots add no Heat', cur: 'AP given to the squad', partial: true }),
+  'marksman.fire_discipline': () => ({ how: 'once a turn a weapon technique of 3 AP or more costs 1 AP less (a Burst 2); Aimed +1 to hit and no Heat', cur: 'AP given to the squad', partial: true }),
   'marksman.speed_loader': () => ({ how: 'your first reload each turn costs 1 AP less', cur: 'AP given to the squad', partial: true }),
   'marksman.special_ammo': () => ({ how: 'a magazine of armour-piercing (×0.8, ignores armour), hollow-point (×1.3 against doubled armour) or incendiary (×0.9 + Burning)', cur: 'damage dealt', partial: true }),
   'marksman.duck_and_roll': () => ({ x: 2 * HIT, how: 'a free step when shot at: the shot is at −2 if you reach cover, and not made at all if you leave its sight', cur: 'damage prevented', partial: true }),

@@ -1124,8 +1124,10 @@ fdd7c36efe3c8a23a0d6c78c6c90875df52a8941edd04ee5a7909a6b92613462  art/_archive/u
 3e2a46e3761f429c81126e838bf4f78c273bceec495c057bc5fa5db1dae8807a  art/_archive/ui/title-screen/source-renders/title-back-native.png
 0e2bf5319cf4a3236811c008052ce53a066d29e9fd59873e974a15ab6a17f105  art/_archive/ui/title-screen/source-renders/title-front-native.png
 c116fc3201c5bc293ff601b0dae0694087512777909f5ec2293fbc49c570a635  art/_archive/ui/title-screen/source-renders/title-mid-native.png
-35d835e200f41f7362cd9d6ffd564e9efa7efa952684c3c9e82892e32be532aa  art/briefs/ART-REQUESTS.md
+e0b6f5fb0ed309d3e39b4347d1ef30987b7dd22608362518b64253e07a4cb0f3  art/briefs/ART-REQUESTS.md
 5ac78bd3f6fc7dead3745784d88e9bf079638c42771d3a52e4f41b5ad221a4b3  art/briefs/GPT-PROMPTS-2026-11-12.md
+0fc9a744f2b7170309075493c06fad0a85d64fa205c5cf6679951295830ea4a0  art/briefs/GPT-PROMPTS-2026-11-13-classes-3.0.md
+2b004eee7d2b27ee05e731d39ab2b1af1c732630211b0e7931588491810f8ace  art/briefs/GPT-PROMPTS-2026-11-13-gear.md
 74862e11059029851b0152176699f3a057789d839b0d5926d75bd81980701040  art/briefs/archetype-portraits.md
 ca90bd7e555afdd1bad775f64454bf410cf6d1856070e566cc181ddbfe784138  art/briefs/first-patch-revival-redo.md
 821628bf1325a4023d390dbe8b0908751f860aab17ab4b138997f785aade81db  art/briefs/m813-mpat.md
@@ -1139,9 +1141,9 @@ f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/tit
 dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/title-screen/gaze-guide.jpg
 621ac2546d6520ab704ab84af7429b5f30c32309707fbe3d59ea7e5dec0bd0e5  art/briefs/title-screen/ref-spellsword-soul.webp
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
-fd9fd865d5891d7e7880b1def9c8b3fb60cbe6697d91b5afe36cc91a20af0961  art/briefs/wick-production-icons.md
+3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-063deed58759921552a0018e1cf65c39ed714bfb16814428c2774e6cfc0f22f0  art/catalog.json
+4d42c65532be69f2614b39904640dddc12f8121e9741ef82e0ec5b031b5ebbae  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 79a8fdcfaf94dfbd8fabd5492492ddae430bb3f773cc2826712103ad667c8347  art/emblems/patrons/mother_ember.png
@@ -3672,6 +3674,7 @@ ea4780d8419dbac128d34f0cd579779ae14e0ad069822b05393d06b964c6f990  art/sprites/ob
 951b3a6e4cb843e49584b94f43161d4a5f1ce3008f35b3affeea81d6f1da3652  art/sprites/objects/triage-line.png
 b461023ea400c1c72cfa64bc51544da9c13360f8f29326e20f26924745a3a312  art/style-guide/CHANGELOG.md
 faf45825723f142e54f43210465ccd58ba0cd73056d1544034c549ff2e3d71c6  art/style-guide/PHC-Style-Guide.md
+3af89adb2825e37151a6aa3f56e6dda337100d9a8f86c0f6cee924cebb0a9655  art/style-guide/gear-icons.md
 96b8c4a3b2016c81de0ed69ba7e013ad6512ac9c4aacbbc40109b213b0076dd0  art/style-guide/palette.json
 53c463be08bd5942267894503dbdef810d0688ee84b973d3962de70e4071a656  art/style-guide/reference-index.json
 888759c80611ca5e859181576d5c458629c6bf862e017471c0acbf37fffaff29  art/style-guide/references/approved-new-faces-27.jpg
@@ -3680,7 +3683,7 @@ f2918fc5d05c2b9115088cb2569bfc654fdcd989f3ba74757caacb190625aa51  art/style-guid
 fd92e6250f0e398385c56eafedc3e79d72a869d751a449dc8a33f28df7ea55b4  art/style-guide/references/current-abstract-skills-27.jpg
 152a6a99400e8764fff2058e7d3550d4df30ee35c3dc5b48fe46672472a5f1c4  art/style-guide/references/current-skill-palette.png
 01dfa53b9cd5b635b7f8dbc40fd2028e9373df09c1533b5dad22f7ed4042e35b  art/style-guide/references/wick-model-study.png
-dc6dc3bf42df45b0f88239a6a86de5647d396ea9e4efcd2b4be6d8be385f4b27  art/style-guide/weapon-icons.md
+e373164f59a46e129a89bd97add86cd2bc831d0aeaa9c6668c2042db47ecd657  art/style-guide/weapon-icons.md
 9a5cb38bebf185e3f095a24957118937ad857a1e6d9a859fe6370719b16bee70  art/style-guide/weapon-icons/armour-sheet.png
 378be1a6984b32f749fdbd03356ba61fc0f8649136ea858da02a43e9b3ee725b  art/style-guide/weapon-icons/weapons-sheet.png
 124029c9243549111855af3640409b48239db1b194e41cce63c3a3432d2acae5  art/ui/title-screen/README.md

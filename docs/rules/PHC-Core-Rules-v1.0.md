@@ -273,7 +273,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 ## Classes
 
-**Class Roster Revision 3 (accepted 8 Nov 2026; `docs/design/class-roster-rev3-proposal.md`).** Each of the 9 attributes has one base class. A class's three skills are that attribute's combat, utility and social sides (α, β, γ), and the class's fantasy is read from them. The cores line up by themselves: Body is Defender, Fighter and Marksman; Mind is Infiltrator, Mage and Trickster; Soul is Bard, Channeler and Guardian.
+**Class Roster Revision 3 (accepted 8 Nov 2026; `docs/design/class-roster-rev3-proposal.md`).** Each of the 9 attributes has one base class. A class's three skills are that attribute's combat, utility and social sides (α, β, γ), and the class's fantasy is read from them. The cores line up by themselves: Body is Bulwark, Breaker and Skirmisher; Mind is Operative, Sigilist and Rigger; Soul is Mender, Channeler and Chaplain (Classes 3.0 names, rules 1.29; the class ids are unchanged: `defender`, `fighter`, `marksman`, `infiltrator`, `mage`, `trickster`, `bard`, `channeler`, `guardian`).
 
 **Getting your class (level 3).** You get the class of your **highest attribute** (trait bonuses never count). On a tie you choose among the tied classes. If every attribute is tied, all nine are offered. Nobody is left without a class (item 551).
 
@@ -283,15 +283,15 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 
 | Core | Class | Attribute | Rank I | Rank II | Rank III |
 |---|---|---|---|---|---|
-| Body | Defender | Endurance | Brace (`defender.brace`) · Draw Fire (`defender.draw_fire`) | Unbroken (`adamantile_knight.unbroken`) · **Shrug It Off** (new) | Reactive Plate (`defender.reactive_plate`) · **Anchor** (new) |
-| Body | Fighter | Strength | Lunge (`fighter.lunge`) · **Shove** (new) | Riposte (`fighter.riposte`) · Lingering Dread (`shade.lingering_dread`) | Finisher (`fighter.finisher`) · **Unstoppable** (new) |
-| Body | Marksman | Agility | Fire Discipline (`marksman.fire_discipline`) · **Speed Loader** (new) | Special Ammo (`marksman.special_ammo`) · **Duck and Roll** (new) | Killzone (`marksman.killzone`) · Called Shot (`gunslinger.called_shot`) |
-| Mind | Infiltrator | Perception | Mark (`assassin.mark`) · **Vanish** (new) | Toxin (`assassin.toxin`) · **Field Fix** (new) | Execution (`assassin.execution`) · **Sabotage** (new) |
-| Mind | Mage | Intelligence | Barrage (`mage.barrage`) · **Core Change** (new) | Overcharge (`mage.overcharge`) · **Bleed the Flux** (new) | Payload (`mage.payload`) · Stored Spell (`scribe.stored_spell`) |
-| Mind | Trickster | Expression | **Read** (new) · **False Image** (new) | Blind and Slow (`trickster.blind_and_slow`) · **Silver Tongue** (new) | Rewrite (`trickster.rewrite`) · **Sleight** (new) |
-| Soul | Bard | Insight | Triage (`medic.triage`) · Inspire (`bard.inspire`) | Stim Throw (`medic.stim_throw`) · Mend (`bard.mend`) | Field Surgery (`medic.field_surgery`) · **Rally** (new) |
+| Body | Bulwark (was Defender) | Endurance | Brace (`defender.brace`) · Draw Fire (`defender.draw_fire`) | Unbroken (`adamantile_knight.unbroken`) · **Shrug It Off** (new) | Reactive Plate (`defender.reactive_plate`) · **Anchor** (new) |
+| Body | Breaker (was Fighter) | Strength | Lunge (`fighter.lunge`) · **Shove** (new) | Riposte (`fighter.riposte`) · Lingering Dread (`shade.lingering_dread`) | Finisher (`fighter.finisher`) · **Unstoppable** (new) |
+| Body | Skirmisher (was Marksman) | Agility | Fire Discipline (`marksman.fire_discipline`) · **Speed Loader** (new) | Special Ammo (`marksman.special_ammo`) · **Duck and Roll** (new) | Killzone (`marksman.killzone`) · Called Shot (`gunslinger.called_shot`) |
+| Mind | Operative (was Infiltrator) | Perception | Mark (`assassin.mark`) · **Vanish** (new) | Toxin (`assassin.toxin`) · **Field Fix** (new) | Execution (`assassin.execution`) · **Sabotage** (new) |
+| Mind | Sigilist (was Mage) | Intelligence | Barrage (`mage.barrage`) · **Core Change** (new) | Overcharge (`mage.overcharge`) · **Bleed the Flux** (new) | Payload (`mage.payload`) · Stored Spell (`scribe.stored_spell`) |
+| Mind | Rigger (was Trickster) | Expression | **Read** (new) · **False Image** (new) | Blind and Slow (`trickster.blind_and_slow`) · **Silver Tongue** (new) | Rewrite (`trickster.rewrite`) · **Sleight** (new) |
+| Soul | Mender (was Bard) | Insight | Triage (`medic.triage`) · Inspire (`bard.inspire`) | Stim Throw (`medic.stim_throw`) · Mend (`bard.mend`) | Field Surgery (`medic.field_surgery`) · **Rally** (new) |
 | Soul | Channeler | Determination | Shape (`channeler.shape`) · **Iron Heart** (new) | Storm Front (`channeler.storm_front`) · **Occult Library** (new) | Heart Surge (`channeler.heart_surge`) · **Eye of the Storm** (new) |
-| Soul | Guardian | Virtue | Will Shield (`guardian.will_shield`) · **Command** (new) | Under the Eye (`lumeri_templar.under_the_eye`) · Blessed Shells (`lumeri_templar.blessed_shells`) | Sanctuary (`guardian.sanctuary`) · Judgement (`lumeri_templar.judgement`) |
+| Soul | Chaplain (was Guardian) | Virtue | Will Shield (`guardian.will_shield`) · **Command** (new) | Under the Eye (`lumeri_templar.under_the_eye`) · Blessed Shells (`lumeri_templar.blessed_shells`) | Sanctuary (`guardian.sanctuary`) · Judgement (`lumeri_templar.judgement`) |
 
 The 54 moves:
 
@@ -321,16 +321,16 @@ The 54 moves:
 
 **Resources follow the moves.**
 
-- Defender: Guard.
-- Fighter: Momentum.
-- Marksman: Heat (the shared gun rule).
-- Infiltrator: Marks and toxin doses.
-- Mage and Trickster: Flux.
-- Bard: Supplies, MP and Strain.
+- Bulwark: Guard.
+- Breaker: Momentum.
+- Skirmisher: Heat (the shared gun rule).
+- Operative: Marks and toxin doses.
+- Sigilist and Rigger: Flux.
+- Mender: Supplies, MP and Strain.
 - Channeler: Strain.
-- Guardian: MP, Strain and Devotion (the patron's).
+- Chaplain: MP, Strain and Devotion (the patron's).
 
-The Guardian's Under the Eye, Blessed Shells and Judgement need a patron and prayer. Without one, a Guardian has Will Shield, Command and Sanctuary (item 555).
+The Chaplain's Under the Eye, Blessed Shells and Judgement need a patron and prayer. Without one, a Chaplain has Will Shield, Command and Sanctuary (item 555).
 
 **Shelved moves.** 11 old base moves and 57 advanced moves are on no class's list. Their data, handlers and tests stay in the engine; `docs/design/move-pool.md` lists each with a suggested future home.
 
@@ -2350,10 +2350,10 @@ Written 7 Nov 2026, when every perk, trait and class move was built into the eng
 
 ### Body, melee and damage taken
 
-- **Ranged, for Bulwark.** Ranged means weapon shots, plus Sigil, Soul or Elemental damage from a caster who isn't
+- **Ranged, for Stonewall** (the perk `bulwark`, renamed in rules 1.30). Ranged means weapon shots, plus Sigil, Soul or Elemental damage from a caster who isn't
   adjacent. Area blasts (explosions, barrels, grenades) are never ranged. "Behind" means the ray from the attacker
-  through the guard, carried on 1 tile (Tier II: 2). Diagonal rays are rounded. Two Bulwarks don't stack; the best one
-  counts. The attack preview names it in the covered ally's damage chain ("Bulwark (name)", ×0.75 or ×0.5); the real cut
+  through the guard, carried on 1 tile (Tier II: 2). Diagonal rays are rounded. Two Stonewalls don't stack; the best one
+  counts. The attack preview names it in the covered ally's damage chain ("Stonewall (name)", ×0.75 or ×0.5); the real cut
   comes after armour (item 377).
 - **A wound** is a hit by someone that takes HP. A hit fully absorbed by a shield is not a wound. Hazards, traps,
   Bleeding and Burning are not wounds. Used to the Pain and Scar Tissue both use this definition.
@@ -4210,7 +4210,117 @@ fight starts, their turn unchanged); **delay** on any op; the number source `tie
 `self_lacks_gear` (the one test of a focus in hand); `redirect` and its `split`; the standing aura (a stat answered for
 every unit near its holder); `via` on a condition; the witness filter; and the percent gate and cap of a heal or a
 shield (`heal-shield-percent-spec.md`), with no number set. How each is written:
-`docs/design/handoffs/classes-3.0-step-1b.md`. Items 1757 to 1762.
+`docs/design/handoffs/classes-3.0-step-1b.md`. Items 1762 to 1767.
+
+## Rules revision 1.29: Classes 3.0, the nine base classes renamed (Classes 3.0, steps 2 and 4)
+
+Built on 13 Nov 2026 for Class Roster Revision 4 (`docs/design/rev4-moves-and-rename.md` sections 1, 3 and 5). It
+overrides every body line that names a base class by its old name.
+
+### 1. The rename (names only; no rule changes)
+
+| Class id (unchanged) | Was (Revision 3) | Now (Classes 3.0) |
+| --- | --- | --- |
+| `defender` | Defender | **Bulwark** |
+| `fighter` | Fighter | **Breaker** |
+| `marksman` | Marksman | **Skirmisher** |
+| `infiltrator` | Infiltrator | **Operative** |
+| `mage` | Mage | **Sigilist** |
+| `trickster` | Trickster | **Rigger** |
+| `bard` | Bard | **Mender** |
+| `channeler` | Channeler | Channeler (unchanged) |
+| `guardian` | Guardian | **Chaplain** |
+
+Only the display name changes (`data/classes.json` `base[].name`, and the Revision 2 shells' names). The ids, every
+move key (`class:<origin>.<moveId>`), the saved `classId` and `classRev` (3) are as they were, so a save or a
+character made before the rename loads with the same class and the same moves, and shows the new name. Advanced
+classes keep their own names ("Circuit Mage" is an advanced class, not the Sigilist). The archetype families
+(Frontline, Shadows, Sigil casters…) are playstyles and keep their names. **Three archetype presets had a new class's
+name** (an archetype may not share a class's name: the validator's rule), so they show new names; their ids, portraits
+and points are unchanged, and an archetype is never saved: Bulwark → **Holdfast** (`bulwark`), Sigilist →
+**Glyphwright** (`sigilist`), Mender → **Empath** (`mender`) *(Suggested)*. Three emblems are redrawn (Rigger: a
+wrench crossed with a spark; Mender: two hands around a plus; Chaplain: a dome under a flame); the other six keep
+theirs. Items 1757 and 1758.
+
+### 2. The classes that keep their mechanic, made a little better (PROVISIONAL)
+
+| Class | Change | Number |
+| --- | --- | --- |
+| **Bulwark** | A fight starts with Guard (the cap stays 5). | 1 Guard |
+| **Breaker** | Once a turn, your first hit on a **Shaken** or **Frightened** (Fear) enemy, with **any** weapon, on your own turn, gives Momentum, on top of what the hit itself gives (a melee hit's 1). The cap stays 5. Riposte is unchanged here (the reaction rule's step folds it into the Answer). | 1 Momentum, once a turn |
+| **Sigilist** | Unchanged in this step. Its one Revision 4 change (BLIND, SLOW and MUDDLE back to the common word list, MUDDLE's −1 charge gone) is the Rigger's move leaving the class: built with the Rigger. | |
+| **Channeler** | Unchanged. | |
+
+Both changes are item ops in data (`data/classes.json`): the Bulwark's on Brace (`{op: resource, when: combat_start,
+resource: guard, value: 1}`), the Breaker's on Lunge (`{op: resource, when: hit, resource: momentum, value: 1, if:
+{own_turn, hostile, target_has: [shaken, fear]}, limit: {per: per_turn, n: 1}}`). Each class gets its rank I moves at
+level 3, so the change comes with the class; it sits on a rank I move until the engine has a base class's own effects
+block (the design's "class `effects`"), then moves there unchanged. Items 1759 and 1760.
+
+### 3. Base classes are weapon-neutral (Leon, 13 Nov 2026): the guard
+
+No Bulwark, Breaker, Sigilist or Channeler move is locked to a weapon family (`docs/design/rev4-weapon-neutral-audit.md`
+sections 3.1, 3.2, 3.5, 3.8): Lunge, Riposte and Finisher ask for a melee weapon (or fists) because Momentum is
+melee's meter, and Anchor's opportunity attack is a melee blow because every opportunity attack is. The guard
+`packages/engine/test/class-weapon-neutral.test.ts` checks every base-class move's data, text and handler; the moves
+still locked (Fire Discipline, Speed Loader, Special Ammo, Killzone, Called Shot, Toxin, Judgement) are on its PENDING
+list, which the Skirmisher's, Shadow's and the Chaplain's steps empty. Item 1761.
+## Rules revision 1.30: reactions made real, and the Skirmisher (Classes 3.0, step 3)
+
+Built on 13 Nov 2026 from `docs/design/reactions-spec.md` (binding) and `docs/design/rev4-weapon-neutral-audit.md` 4.1.
+It overrides every body line on reactions and on the Marksman's moves that says otherwise (rules 1.3 "Reactions", the
+class table of rules 1.10, items 89 and 1750 to 1756 where they differ). The class id stays `marksman`; its display name
+is the rename step's. Every number here is PROVISIONAL (items 1800 to 1813).
+
+### 1. The reaction rule, complete
+
+1. **Everyone has one reaction a round** (`rules.json combat.reactions.per_round`, 1); a new round gives it back.
+   Everything a unit does outside its own turn spends one.
+2. **A reaction never triggers a reaction**, and **one event, one reaction a unit** (rules 1.28, unchanged).
+3. **More only from:** Reflex (the Skirmisher: two), an item that says so (Before the Blink: one more), a Call that
+   gives one (Cue: exactly one, before the giver's next turn), or a Many Hands donor's (spent on the donor).
+4. **A reaction that attacks is a plain attack** (the weapon's plain shot or blow), unless its own text gives it
+   something (Riposte's Edge or Point +2, the Breaker's Counter; Overwatch's +2 when Precise; Killzone's +2).
+5. **Held fire:** a held Burst fires its rounds on one reaction. **Killzone** holds two attacks and **spends both of
+   the Skirmisher's reactions** on the first one it fires; with one reaction left, only one fires.
+6. **Suppressed** forbids attacking and moving reactions, never protective ones (rules 1.28); **forced movement**
+   provokes nothing (`rules.json forced_movement`).
+7. **Keep one for a held shot** (on by default): a unit with two or more reactions that holds a shot (Overwatch, a
+   Watch, Killzone, a held Outburst's watch) never spends its last reaction on anything that fires by itself (an
+   opportunity attack, an Answer, Duck and Roll, an item's reaction): the held shot keeps it.
+8. **The dial** `rules.json combat.reactions.second_hit` (0): a to-hit step on the attack of a unit's second reaction
+   in a round, defined and unused (moved only if the measured Skirmisher passes its line by more than 12%).
+
+### 2. The Skirmisher (`marksman`; Agility): the class
+
+**At class gain, Reflex:** two reactions a round (stat `reactions` +1). **Weapon-neutral** (Leon, 13 Nov 2026): every
+move works with whatever the Skirmisher attacks with; only Heat stays the gun's.
+
+| Rank | Move | What it does |
+| --- | --- | --- |
+| I | **Fire Discipline** | Aimed attacks have +1 to hit, and with a weapon that has Heat they add none. Once a turn, on your turn, a weapon technique that costs 3 AP or more costs 1 AP less (a Burst 2, a Mag Dump, a dear blow: any weapon). The free techniques everyone has (a shot, an Aimed shot, a blow) are never cheaper (item 1813). |
+| I | **Speed Loader** | Your first main-hand reload, draw, swap or pick-up each turn costs 1 AP less (at least 1). |
+| II | **Duck and Roll** | Unchanged (reaction, kind move). |
+| II | **Special Ammo** | One load each of armour-piercing, hollow-point and incendiary a rest, on any weapon: a magazine for a gun, a quiver of 12 for a bow (filled before the fight), and for a blade, a fist or a thrown blade a load that lasts 12 attacks or the fight. Loading is your reload's AP; 1 AP for a weapon that never reloads. Never a consumable (a grenade is its own payload). The rounds' effects are `rules.json ammo_types`. |
+| III | **Killzone** | Hold two attacks with any weapon, for twice the attack's AP: one at each of the first two different enemies that move into your line (a gun, a bow) or your reach (a melee weapon), +2 to hit each. It spends both your reactions; with one left, only one fires. |
+| III | **Run and Gun** (new) | Once a turn, after you attack, your next move of up to 2 tiles costs no AP and draws no opportunity attack, and your next hit this turn, with any weapon, adds 1 more Pressure. |
+
+**Called Shot leaves the class** (to the Operative, Classes 3.0 step 4); its key `gunslinger.called_shot` stays.
+
+### 3. Riposte: the two become one
+
+The Breaker's class Riposte and the technique Riposte are one Answer and one reaction. The class move gives the
+Breaker the Answer with any melee weapon and two riders on it: it costs 1 Momentum, and it adds the Breaker's Counter
+bonus to hit. With no Momentum the Breaker does not Riposte (even with a weapon that lends the technique). The
+technique's own policy (the character's Answers) is the only on/off.
+
+### 4. The perk Bulwark is renamed Stonewall
+
+The Durability perk `bulwark` (allies directly behind you take less from ranged attacks) shared its name with the class
+the Defender became (rules 1.29), so it is renamed **Stonewall** *(Suggested)*: display name only; the id `bulwark`, its
+icon (`art/icons/perks/bulwark.png`), its numbers and a saved character's perk are unchanged. "Rampart" was the first
+choice and was not used: the RAISE Grand form is "Ramparts". `tools/validate.py` now refuses a perk named as a class,
+as it already refused an archetype. Item 1812.
 
 ## Maps (rules 1.16)
 
@@ -6064,7 +6174,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 374. **A partial Extraction.** When some PCs are lifted out and everyone left behind is Downed, dead or surrendered, the fight ends as extracted (no win, no loss). If nobody was lifted, it is a loss. *Engine: combat.ts checkOver.*
 375. **Triage out of a fight.** On the area map it is once per ally per scene, counted with the story Triage (it used to reset every area-map round), and never on yourself. *Engine: classes/i.ts medic.triage.*
 376. **Adamantile Knight from Defender.** The Defender's Brace grants Bulwark of Will. Guard spent by the Defender's Reactive Plate still shields the adjacent ally (Adamantile Plate). A hit either Interpose took is plated without a second reaction. *Engine: classes/i.ts 'braced' and 'plate_spent' hooks; classes/j.ts.*
-377. **Bulwark in the attack preview.** The covered ally's damage chain shows "Bulwark (name)" (×0.75, Tier II ×0.5),
+377. **Stonewall (was Bulwark) in the attack preview.** The covered ally's damage chain shows "Stonewall (name)" (×0.75, Tier II ×0.5),
     the best one only. It is shown in the preview alone, because the real cut comes after armour in damage_in. Sigil,
     Soul and Elemental damage from a caster more than 1 tile away is ranged; explosions never are. *Engine: perks/a.ts.*
 378. **Breaching Strike on the area map.** The same 3 AP strike against an NPC token next to you starts the fight with *(Rules 1.13: superseded in part or whole by "The perk, unlock and trait pass" and items 973 to 990.)*
@@ -6260,7 +6370,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 485. **Paint the Field in the engine** (Mastery 2, 5 points; item 450). The Evoke carries the choice (SPREAD or PUSH); a spell that already has a Burst ignores it. The free word shapes the spell before it is aimed, before the Mage's Payload (which then doubles it). It is no glyph, so it adds no Flux, costs no charge, isn't a repeat and doesn't count toward 4 or Max Sigil words. PUSH's rule holds (refused on your own tile). PROVISIONAL.
 486. **Barrage and the 1.4 elements** (closes the impact doc's OPEN). Barrage takes 1 charge off the 2-charge damage words: FIRE, FREEZE, SHOCK, STONE and **ACID**. SPARK and GALE cost 1 already, the floor, so they gain nothing. OPEN for Leon only if he wants Barrage limited to the three words of the old text. PROVISIONAL.
 487. **Evoker blade · Edge Word in the engine.** A hit with the blade (an Evoker in hand) leaves one free glyph: your next glyph **this turn** costs 0 AP (charge and Flux as usual), drawn on your own tile by the drawing rules. It doesn't stack with itself, ends at the end of your turn, and isn't given by an attack that already drew a glyph through Sword Form (one free glyph per attack, item 321). PROVISIONAL.
-488. **Bulwark under 1.4.** A Sigil spell counts as ranged for Bulwark when its caster isn't next to the target (a Touch spell from a Line beside the caster included). The line of fire runs from where the spell comes from, not from the caster: the Line's glyph a Touch spell or a bolt leaves from (SEEK: the far-end glyph along, the lane's glyph across), a chain's last target for a CHAIN jump, a turret's tile. SENSE appears at its target and a field lies under it: they have no line of fire, so Bulwark doesn't apply. PROVISIONAL.
+488. **Stonewall (was Bulwark) under 1.4.** A Sigil spell counts as ranged for Stonewall when its caster isn't next to the target (a Touch spell from a Line beside the caster included). The line of fire runs from where the spell comes from, not from the caster: the Line's glyph a Touch spell or a bolt leaves from (SEEK: the far-end glyph along, the lane's glyph across), a chain's last target for a CHAIN jump, a turret's tile. SENSE appears at its target and a field lies under it: they have no line of fire, so Bulwark doesn't apply. PROVISIONAL.
 489. **Sigil log and previews (completeness batch 2).** (a) **Every save is logged:** a failed save shows its roll and TN beside the condition ("Pinned (1 round; body save 7 vs 14)"), every Affliction, FREEZE's Slowed and STEP's Body save included, and the conditions perks and traits set. (b) **A Stack's area** is centred on the caster (the facing rule). (c) **Class moves that cast Sigils** (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell) paint their area, the tiles they cover and who they affect on the grid before you confirm, as an Evoke does. (d) **Turrets** show their reach on both maps (item 480 c). PROVISIONAL.
 490. **Enemy COMMAND orders** (completeness batch 3; Leon's answers 4 and 8). An enemy caster's COMMAND gives the order that fits the creature at its aim, checked in this order: **move** (single-target spells only: no Burst, one missile, no CHAIN) a player standing next to one of the caster's side to the tile it can walk to in 3 tiles that is farthest from the caster's side, at least 2 tiles from all of them, never onto a tile under a field, trap, turret or wall of either side (the order never sends it into harm), worth 18 + 2 for each of the caster's side it stood next to; **halt** a player charging in with a melee weapon (item 469's test), worth 20; **drop** the weapon of an armed player who could shoot one of the caster's side (a ranged weapon, one of them in its range and sight), worth 16, or who stands next to one of them, worth 14; else **kneel** (Prone), worth 9. A burst whose aim tile holds nobody halts whoever it catches. The worth replaces item 469's flat 14 and is × the target's chance to fail its Brain save, as every condition's. So that a cheap control word is still weighed, the caster keeps, in each group of harmful spells, the strongest spell for each Affliction it knows beside the 6 strongest. The target obeys on its turn by the Commanded rules (item 481). Ties break by tile key; deterministic. PROVISIONAL.
 491. **The boss-tier caster** (completeness batch 3). enemies.json `casters` adds the *Sigil magister* (boss, magistrate pistol, spell bias ×1.2): the boss tier's nine default words (FIRE, SHOCK, SEEK, ARC, SPREAD, CHAIN, KIN, WARD, NULL; sigils.json `enemy_ai`) plus ACID, CONDENSE, MEND, STEP and COMMAND, Max Sigil words 4 (item 453). A boss foe given `sigils: true` still gets the nine default words. In the Proving Ground, from wave 10, on every champion wave (every 5th), the first Proving champion is a Sigil magister (same tier, same points). **The spells the AI weighs are kept per length:** with many words the strongest spells on paper are all 4 glyphs long, and a 4-glyph Line (4 glyphs, 3 steps and the Evoke: 8 AP at Glyph AP 1) never fits an enemy's 6 AP turn, so a caster with a large word set (the warden, the magister) cast nothing; item 469's pruning now keeps the strongest few of each length. PROVISIONAL.
@@ -7086,9 +7196,28 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1754. **What burns reactions without being one (rules 1.28):** Dread (all), Rewrite (one) and an Order (the ally's one) go through `loseReactions`; since Suppressed no longer zeroes a unit's reactions, Dread and Rewrite now take a Suppressed unit's reaction too (a consequence of item 1751).
 1755. **A reaction made by an item in data (rules 1.28):** an item op whose `limit` is `{reaction: 1 or 2, kind}` is a reaction (it spends that many and resolves inside `react()`); the trigger `reaction` fires as one is made (its kind for the predicate `how`). Nothing in the data uses either yet.
 1756. **The general primitives of Classes 3.0, step 1a (rules 1.28 section 2):** `acted`, number blocks and sources, `react()`, conditions as items, `targets`, the sight words and the closed-list rows `spot`, `by_cover`, `patron`, `via`, `nonlethal`, `heal_kind` and the resource rows `pressure` and MP (`max`, `needs`). No number and no rule moved with them (the golden tables and the replays say so; the replays moved only for items 1750, 1751 and 1753's new saved field).
-1757. **An Order is the ordered ally's reaction (rules 1.28 section 3; the lead's ruling, 13 Nov 2026):** the ally acts on its reaction, kind move (`calls/handlers.ts`, inside `react()`), so its move provokes no opportunity attack and no held shot. Before, the Order spent the ally's reaction outside a reaction and its move provoked. PROVISIONAL. No golden line and no replay moved (no recorded game orders a move past a foe).
-1758. **Anchor's strike is an attacking reaction (rules 1.28 section 3; the lead's ruling):** Suppressed stops it (it was classed protective). PROVISIONAL. No golden line moved.
-1759. **Drink It In and a helping Call made as a reaction are protective (rules 1.28 section 3; the lead's ruling):** Suppressed no longer stops them; a hindering Call made as a reaction stays an attacking one. PROVISIONAL (the lead's words "a Call that harms an enemy is not a reaction at all" are read conservatively: a hindering Call may still be made as a reaction, as before; Leon to confirm). No golden line moved.
-1760. **One step, one answer (rules 1.28 section 3, item 1752 made exact):** every reaction to a step of a walk (an opportunity attack, Overwatch, a held Watch, Heart Overwatch, Anchor) names the same event, the mover, the step's serial and the tile it arrives on (`combat.ts stepEvent`); a unit with two reactions takes the opportunity attack and keeps its Overwatch for a later step. PROVISIONAL. No golden line and no replay moved.
-1761. **The primitives of Classes 3.0, step 1b (rules 1.28 section 4):** one hook for every roll to hit, door verbs, zones from data, shield layers, data toggles, ties, owned units, `delay`, `ties:`, `self_holds` / `self_lacks_gear`, `redirect` with `split`, the standing aura, `via` on a condition, the witness filter, `always_seen` in the fog and the enemy's sight, `acted` from the enemy's own actions. No number and no rule moved with them; the existing Sanctuary (its halving, its exception for your own burn, its end), Lingering Dread and the drone and the beast stand on them now. The golden tables moved only in two marks lines (the deleted Sanctuary handler's own bookkeeping); no replay moved.
-1762. **The percent gate and the cap of a heal or a shield are built with no number (rules 1.28 section 4; `heal-shield-percent-spec.md` section 4):** the fields `min_pct` (an amount block's, else its profile's) and `gate_hp`, and `mending.gate.hp` and `mending.cap_pct`, read in one place (`effects/output.ts mend`); none is set, so no heal or shield moves. Step 7b sets them (the gate 20% for a 2-AP heal, the cap 50%: Leon, 13 Nov 2026). PROVISIONAL.
+1757. **The nine base classes renamed (rules 1.29; Class Roster Revision 4, `rev4-moves-and-rename.md` section 3; Bulwark and Breaker Leon's, the rest the lead's, PROVISIONAL as display names):** Bulwark (`defender`), Breaker (`fighter`), Skirmisher (`marksman`), Operative (`infiltrator`), Sigilist (`mage`), Rigger (`trickster`), Mender (`bard`), Channeler (`channeler`, unchanged), Chaplain (`guardian`). Names only: ids, move keys, `classId` and `classRev` 3 stay, so old saves load unchanged (`test/old-save.test.ts`); `migrateCharacterClass` does not run. The Chaplain's Judgement → Verdict is that class's step (`chaplain-spec.md`), not this item.
+1758. **Three archetype presets renamed for the classes (rules 1.29; a call made for Leon by the step's builder, Suggested names, PROVISIONAL):** the rename gave three classes the names of archetype presets (`rev4-moves-and-rename.md` section 3 counted presets that name a class, not presets a class name now matches), and `tools/validate.py` refuses an archetype named as a class. Display names only: Holdfast (id `bulwark`), Glyphwright (`sigilist`), Empath (`mender`); ids, portraits (`art/catalog.json` labels follow) and presets stay. The perk Bulwark (`perks.json` `bulwark`, Durability) also shares the Bulwark class's name: nothing refuses it and the keys differ (`perk:bulwark`, `class:defender.*`); left for Leon.
+1759. **The Bulwark starts a fight with 1 Guard (rules 1.29 section 2; `rev4-moves-and-rename.md` section 1, PROVISIONAL):** an item op on Brace (`combat_start`, `resource` guard 1); the Guard cap stays 5. Priced at 0.54 / 0.41 / 0.29 / 0.17 of a Soldier-turn at levels 1 / 5 / 10 / 20 (one soak of 10); the Tank sits under melee's 165. Where the data sits is the builder's call: on the class's rank I move until a base class's own effects block exists (no primitive for it yet), then moved there unchanged.
+1760. **The Breaker's Momentum on a Shaken or Frightened enemy (rules 1.29 section 2; `rev4-moves-and-rename.md` section 1, PROVISIONAL):** once a turn (`limit per_turn 1`), on its own turn, the first hit on a hostile with `shaken` or `fear` gives 1 Momentum, with any weapon (no `melee` predicate: a gun Breaker banks Momentum for Lunge and Finisher; audit 3.2), on top of a melee hit's own 1; cap 5. An item op on Lunge (same note as item 1759). Estimated about +5% on a fight; the level 20 measurement the design asks for (before 176 → after) is left to the balance step.
+1761. **The weapon-neutral guard (rules 1.29 section 3; `rev4-weapon-neutral-audit.md` section 5):** `test/class-weapon-neutral.test.ts` walks the 54 base-class moves (data predicates, text words, handler reads with the one-line helpers they call; a ratchet). Allowed for good (DOOR): Lunge, Riposte, Finisher (Momentum's door), Anchor (the opportunity blow), Brace and Duck and Roll (the incoming attack), Field Fix (a jam). PENDING, to reach empty before Classes 3.0 ships: Fire Discipline, Speed Loader, Special Ammo, Killzone, Called Shot, Toxin, Judgement. A "round" of time is not ammunition (the word test takes "1 round", "each round" out).
+1762. **An Order is the ordered ally's reaction (rules 1.28 section 3; the lead's ruling, 13 Nov 2026):** the ally acts on its reaction, kind move (`calls/handlers.ts`, inside `react()`), so its move provokes no opportunity attack and no held shot. Before, the Order spent the ally's reaction outside a reaction and its move provoked. PROVISIONAL. No golden line and no replay moved (no recorded game orders a move past a foe).
+1763. **Anchor's strike is an attacking reaction (rules 1.28 section 3; the lead's ruling):** Suppressed stops it (it was classed protective). PROVISIONAL. No golden line moved.
+1764. **Drink It In and a helping Call made as a reaction are protective (rules 1.28 section 3; the lead's ruling):** Suppressed no longer stops them; a hindering Call made as a reaction stays an attacking one. PROVISIONAL (the lead's words "a Call that harms an enemy is not a reaction at all" are read conservatively: a hindering Call may still be made as a reaction, as before; Leon to confirm). No golden line moved.
+1765. **One step, one answer (rules 1.28 section 3, item 1752 made exact):** every reaction to a step of a walk (an opportunity attack, Overwatch, a held Watch, Heart Overwatch, Anchor) names the same event, the mover, the step's serial and the tile it arrives on (`combat.ts stepEvent`); a unit with two reactions takes the opportunity attack and keeps its Overwatch for a later step. PROVISIONAL. No golden line and no replay moved.
+1766. **The primitives of Classes 3.0, step 1b (rules 1.28 section 4):** one hook for every roll to hit, door verbs, zones from data, shield layers, data toggles, ties, owned units, `delay`, `ties:`, `self_holds` / `self_lacks_gear`, `redirect` with `split`, the standing aura, `via` on a condition, the witness filter, `always_seen` in the fog and the enemy's sight, `acted` from the enemy's own actions. No number and no rule moved with them; the existing Sanctuary (its halving, its exception for your own burn, its end), Lingering Dread and the drone and the beast stand on them now. The golden tables moved only in two marks lines (the deleted Sanctuary handler's own bookkeeping); no replay moved.
+1767. **The percent gate and the cap of a heal or a shield are built with no number (rules 1.28 section 4; `heal-shield-percent-spec.md` section 4):** the fields `min_pct` (an amount block's, else its profile's) and `gate_hp`, and `mending.gate.hp` and `mending.cap_pct`, read in one place (`effects/output.ts mend`); none is set, so no heal or shield moves. Step 7b sets them (the gate 20% for a 2-AP heal, the cap 50%: Leon, 13 Nov 2026). PROVISIONAL.
+1800. **Reactions a round: 1 for everyone (rules 1.30; `rules.json combat.reactions.per_round`):** read from data by `tactics.ts maxReactions`; items add through stat `reactions`. PROVISIONAL.
+1801. **Reflex (rules 1.30; Leon chose the full form, 13 Nov 2026):** the Skirmisher has one more reaction a round (two), any kind, from class gain (`classes.json` the class's `gain` list: `marksman.reflex`, `stat_mod reactions +1`). Before the Blink stacks (three). PROVISIONAL.
+1802. **Keep one for a held shot (rules 1.30, `reactions-spec.md` rule 10; `rules.json combat.reactions.keep_for_held`, 1):** a unit with more reactions than this that holds a shot keeps the last one for it: a reaction that fires by itself is refused when it would leave fewer. On by default; a unit's `keepForHeld: false` turns it off (the switch on the screen is Classes 3.0 step 10). PROVISIONAL.
+1803. **The second reaction's to-hit dial (rules 1.30; `rules.json combat.reactions.second_hit`, 0):** defined, unused. PROVISIONAL.
+1804. **Fire Discipline (rules 1.30, weapon-neutral):** Aimed attacks add no Heat (the gun's door) and have +1 to hit (any weapon: new for guns); once a turn the first attack of your own turn costs 1 AP less, at least 1 (any attack: a Burst 3 → 2, a shot 2 → 1, a melee strike). *(Superseded by item 1813: the discount is a dear technique's only.)* It replaces "one Burst a turn 2 AP" and "+1 on Aimed with a bow". A free attack on your own turn (a Lunge's strike) counts as the first. PROVISIONAL.
+1805. **Speed Loader (rules 1.30):** the first main-hand reload, swap or draw from the pack, or pick-up, each turn costs 1 AP less, at least 1 (one use a turn shared by all four). PROVISIONAL.
+1806. **Special Ammo on any weapon (rules 1.30):** a load for a weapon with no magazine (a blade, a fist, a thrown blade) lasts 12 attacks (`numbers.load_attacks`) or the fight, costs 1 AP to load (`numbers.load_ap`), and its rounds' effects apply to that weapon's hits as a gun's (armour-piercing ×0.8 ignoring armour, hollow-point ×1.3 against doubled armour, incendiary ×0.9 and Burning). A gun, a bow and a launcher load as before. Never a grenade or other consumable. PROVISIONAL.
+1807. **Killzone (rules 1.30):** two held attacks with any weapon (a melee weapon holds strikes at enemies entering its reach), twice the attack's AP, +2 to hit each (`numbers.hit`); the first one fired spends both reactions (`numbers.spend`, 2; Leon); with one reaction left only that one fires. The second, if it fires in the next round (before your turn), spends that round's one. PROVISIONAL.
+1808. **Run and Gun (rules 1.30, new, rank III):** once a turn, after an attack of your own turn, your next move of up to 2 tiles (`numbers.tiles`) costs no AP and draws no opportunity attack (the condition `slipping`, one move); your next hit that turn adds 1 Pressure more (`numbers.pressure`). A longer move leaves it unused. PROVISIONAL.
+1809. **Called Shot leaves the Skirmisher (rules 1.30):** out of rank III; its key `gunslinger.called_shot` stays in data for the Operative (step 4). PROVISIONAL.
+1810. **Riposte, one Answer (rules 1.30):** the Breaker's class move gives the Answer Riposte with any melee weapon (stat `technique:riposte`), costs 1 Momentum (the strike's roll) and adds the Counter bonus to hit; with no Momentum the Breaker does not Riposte. The class's own Riposte handler and its on/off policy are gone; the character's Answers are the policy. PROVISIONAL.
+1811. **A free move priced at 0 AP by an item keeps the move bank (rules 1.30):** tiles walked on a move an item made free are not taken from the tiles banked earlier in the turn. PROVISIONAL.
+1812. **The perk Bulwark renamed Stonewall (rules 1.30 section 4; beside items 1757 and 1758; the lead's call on the name, Leon to confirm; Suggested):** the Durability perk `bulwark` shows as Stonewall (display name only: id, icon, numbers and saves unchanged), because the class `defender` is now the Bulwark. The lead suggested Rampart, with Stonewall if Rampart was taken; the RAISE Grand form is "Ramparts", so Stonewall. The validator refuses a perk whose display name is a class's.
+1813. **Fire Discipline's discount, the lead's ruling (rules 1.30; 13 Nov 2026; supersedes the discount of item 1804; PROVISIONAL):** once a turn, on your own turn, a weapon technique whose own price with the weapon is 3 AP or more (`tech_ap_at_least` 3) costs 1 AP less: a Burst 3 → 2 with any gun, a long rifle's Burst 4 → 3, a 3-AP melee technique 3 → 2. The free techniques everyone has (techniques.json `free`: Shot, Aimed Shot, Cut, Overwatch, Pull Out; with no technique a shot, an aimed shot, a blow or a throw) are never cheaper, whatever they cost (the long rifle's 3-AP Shot, a heavy blade's 3-AP blow). The Aimed +1 to hit and the Heat stay as item 1804. Why: as first built (the first attack of each turn 1 AP less) the Skirmisher all in measured 173% of a rifle-turn against the 145 ceiling and a Faith dabbler bought a Whisper with the saved AP every turn. **A reading made by the builder (the lead can reverse it):** "a weapon technique" excludes the free techniques, so the Aimed Shot (3 AP) is not cut; with it cut the Skirmisher measured 164 / 180 / 165 / 170 (mean 170, outside 145 ± 12%) at levels 1 / 5 / 10 / 20; as built 164 / 168 / 166 / 145 (mean 161, inside; 6 fights a cell). New closed-list predicates `free_tech` and `tech_ap_at_least` (the attack's events carry `techAp`).

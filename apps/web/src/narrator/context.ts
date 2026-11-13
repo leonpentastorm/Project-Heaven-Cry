@@ -202,7 +202,7 @@ LOOT
 - Anything else (a key, a letter, a keepsake) is a plot item: give it with item "" and its name and text (one line). When the story uses one up, send it back with its [plot:id] and a negative qty. text is "" for real items.
 
 INJURIES
-- The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest under a medic's care, a Bard's Field Surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
+- The engine rolls injuries on critical hits (head: Dazed; torso: Bleeding; arm: −2 to attacks with it; leg: half Movement). Arm and leg injuries last until treated. Describe them in the story. When the story gives real treatment (a long rest under a medic's care, a ${CLASS.bard.name}'s Field Surgery, a field hospital), add treat[] with the charId and loc (arm, leg or all); otherwise treat is an empty array.
 
 THE OVERWORLD (rounds)
 - Outside fights the story runs in rounds. Each round every player has a full turn of AP (the same as in a fight) and one Say. Between your turns they move, open doors, reload, stim, examine and try approaches on the map, all paid in AP. You are called only when a round has something for you: a line said, an examine, an attempt, a travel request, or a sneaking character being spotted. Answer those; you don't need to narrate plain movement.

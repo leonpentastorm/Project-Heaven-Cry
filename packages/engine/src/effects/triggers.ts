@@ -31,6 +31,7 @@ import { isStatId } from './stats';
 import type { ItemInfo } from './types';
 import { charOfUnit } from './hooks';
 import patronsJ from '../../../../data/patrons.json';
+import techniquesJ from '../../../../data/techniques.json';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
@@ -150,7 +151,7 @@ for (const who of ['self', 'actor', 'target'] as Who[]) {
 }
 P('melee', 'bool', 'the attack or damage is (true) or is not (false) melee', (ev, v) => !!(ev.ctx.melee ?? ev.ctx.src?.melee) === v);
 P('crit', 'bool', 'the attack is (or is not) a critical', (ev, v) => !!(ev.ctx.crit ?? ev.ctx.src?.crit) === v);
-P('mode', 'words', 'the attack\'s mode is one of these (shot, aimed, burst, auto, melee, thrown, paired)', (ev, v) => list(v).includes(ev.ctx.mode));
+P('mode', 'words', 'the attack\'s mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech)', (ev, v) => list(v).includes(ev.ctx.mode) || (!!ev.ctx.tech && list(v).includes(ev.ctx.tech)));
 P('damage', 'words', 'the damage is of one of these kinds (' + DMG_WORDS.join(', ') + ')', (ev, v) => list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));
 P('not_damage', 'words', 'the damage is of none of these kinds (as damage; also a source type: strain, short)', (ev, v) => !list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));
 P('by_hit', 'bool', 'the damage came (or did not come) from someone\'s blow, not a hazard, trap, Bleeding or Burning', (ev, v) => byHit(ev.ctx.src) === v);
@@ -189,6 +190,15 @@ P('toggle', 'words', 'one of the holder\'s item\'s data toggles (its ids) is on 
   const mods: string[] = ev.ctx.toggles?.length ? ev.ctx.toggles : (ev.cb as any).mods || [], defs = (rawItemT(ev.h.key)?.toggles || []) as any[];
   return list(v).some((id) => { const t = defs.find((x) => x.id === id); const k = ev.h.key + '#' + id; return mods.includes(k) || mods.includes(id) || (!!t?.default_on && !mods.includes('!' + k) && !mods.includes('!' + id)); });
 });
+// Classes 3.0 step 3 (rules 1.30): Run and Gun's 2-tile cap (reactions-spec.md 10), the Breaker's Momentum-priced rider
+/** The free techniques (techniques.json `free`: everyone's, whatever they have readied: Shot, Aimed Shot, Cut,
+ * Overwatch, Pull Out): rules 1.30, Fire Discipline's dear technique is any other. */
+const FREE_TECH: string[] = ((techniquesJ as any).items || []).filter((t: any) => t.free).map((t: any) => t.id);
+P('free_tech', 'bool', 'the attack is (true) or is not (false) made with a free technique, everyone\'s (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands)', (ev, v) => (ev.ctx.tech ? FREE_TECH.includes(ev.ctx.tech) : !ev.ctx.volley && ['shot', 'aimed', 'melee', 'thrown'].includes(ev.ctx.mode)) === v);
+P('tech_ap_at_least', 'number', 'the attack\'s own price is at least this many AP: its technique\'s cost with the weapon before any item (ctx.techAp), or with no technique the attack\'s base AP', (ev, v) => typeof ev.ctx.techAp === 'number' && ev.ctx.techAp >= v);
+P('path_tiles_at_most', 'number', 'the move (its priced walk: ctx.tiles) is at most this many tiles', (ev, v) => typeof ev.ctx.tiles === 'number' && ev.ctx.tiles <= v);
+P('self_has_res', 'words', 'the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)', (ev, v) => list(v).every((id) => resNow(ev, id) >= 1), () => Object.keys(RESOURCES));
+P('self_lacks_res', 'words', 'the holder has none of one of these resources (as self_has_res)', (ev, v) => list(v).some((id) => resNow(ev, id) < 1), () => Object.keys(RESOURCES));
 P('patron', 'words', 'the holder is Faithful to one of these patrons (patrons.json ids)', (ev, v) => { const id = patronIdOf(ev.h.c || charOfUnit(ev.self)); return !!id && list(v).includes(id); }, PATRON_IDS);
 
 // ============================================================================================== amount sources (P3)

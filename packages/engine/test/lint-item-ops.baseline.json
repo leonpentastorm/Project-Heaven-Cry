@@ -16,7 +16,6 @@
    "defender.reactive_plate",
    "fighter.finisher",
    "fighter.lunge",
-   "fighter.riposte",
    "guardian.drink_it_in",
    "guardian.sanctuary",
    "guardian.will_shield",
@@ -328,7 +327,7 @@
   ]
  },
  "literals": {
-  "classes/i.ts": 89,
+  "classes/i.ts": 87,
   "classes/j.ts": 105,
   "classes/k.ts": 112,
   "classes/rev3.ts": 27,

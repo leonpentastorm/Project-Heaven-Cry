@@ -11,7 +11,7 @@ import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlockedOf, type ReactKind } from '../tactics';
-import { attackEvent, stepEvent } from '../combat';
+import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
 import { mod } from '../character';
@@ -231,7 +231,7 @@ export function apFor(cb: Combat, u: Unit, def: TechDef, hand: 'main' | 'off', c
   const own = AP_BY_NAME.has(def.id) ? price({ cb, u }, def.id, own0).ap : own0;
   const mode = (def.ap as any).mode || (def.ap.base === 'weapon' ? (def.system === 'melee' ? 'melee' : 'shot') : null);
   if (!mode || hand === 'off' || def.ap.base === 'reaction') return priced({ cb, u }, 'technique:' + def.id, own, undefined, { tech: def.id }).ap;
-  const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', tech: def.id, ap: own, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
+  const hk: any = { att: u, tgt: tgt || u, mode, melee: mode === 'melee', tech: def.id, ap: own, techAp: own0, reach: 1, ignoreCover: false, terms: [], fail: null, free: false, preview: true, volleyCost: true, cb, mods: cb.mods || [] };
   emit(cb, 'attack_preview', hk); return priced({ cb, u }, 'technique:' + def.id, Math.max(0, hk.ap), undefined, { tech: def.id, mode }).ap;
 }
 /** The techniques a unit may use with the weapon in this hand, and how it has each: free, lent by the weapon, coming
@@ -264,6 +264,8 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     else if (ready.has(d.id)) out.push({ id: d.id, how: 'ready' });
     else if (lent === d.id) out.push({ id: d.id, how: 'lent' });
     else if (!plainOnly && d.comes_with.some((p) => props.includes(p))) out.push({ id: d.id, how: 'comes' });
+    // an item gives the technique with any weapon of its system (stat 'technique:<id>': the Breaker's Riposte, rules 1.30)
+    else if (!plainOnly && hand === 'main' && !wield && d.group === 'answer' && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' });
   }
   return out;
 }
@@ -451,6 +453,9 @@ export function canStrike(t: Tech, target: Unit, mode?: 'melee' | 'shot' | 'aime
 export const strikeNoPressure = (att: Unit) => !!cur(att)?.o.noPressure;
 /** The technique a unit is striking with right now, if any (pressure.ts, drill.ts). */
 export const strikingWith = (att: Unit): Tech | null => cur(att)?.t || null;
+setStrikeTech((att) => cur(att)?.t.def.id || null); // an attack's events carry the technique (rules 1.30: the predicate `mode`)
+// ... and its own price with the weapon, before items (rules 1.30: the predicate `tech_ap_at_least`, Fire Discipline)
+setStrikeTechAp((att) => { const a = cur(att); return a ? techniqueAp(a.t.def, a.t.weaponId, (a.t.args as any).line, a.t.u) : null; });
 
 // ---------- helpers a handler calls ----------
 /** A set-up mark on the user's next technique against a target this turn (strike applies it; spent on use). */

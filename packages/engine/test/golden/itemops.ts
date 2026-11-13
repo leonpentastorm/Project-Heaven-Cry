@@ -130,6 +130,10 @@ export const SITUATIONS: [string, (g: any, cb: any) => any, any?][] = [
   ['analyze', (g) => reduce(g, { type: 'combat/analyze', unitId: P(g.combat).id, targetId: FAR(g.combat).id })],
   ['brace', (g) => reduce(g, { type: 'combat/brace', unitId: P(g.combat).id })],
   ['vanish', (g, cb) => { for (const f of cb.units) if (f.side === 'foe') f.vision = 0.1; return reduce(g, { type: 'combat/perk', unitId: P(cb).id, id: 'class:infiltrator.vanish' }); }],
+  // added before Classes 3.0 step 4 (the Breaker's Momentum on a Shaken or Frightened enemy: recorded on the engine before it)
+  ['blow-shaken', (g, cb) => { const u = P(cb), t = F(cb); A.applyCond(cb, g.rng, u, t, 'shaken', 2, undefined, { skipSave: true }); return A.resolveAttack(cb, g.rng, u, t, 'melee', charOf(g, u)).refused || null; }],
+  ['blow-shaken-twice', (g, cb) => { const u = P(cb), t = F(cb); A.applyCond(cb, g.rng, u, t, 'shaken', 2, undefined, { skipSave: true }); A.resolveAttack(cb, g.rng, u, t, 'melee', charOf(g, u)); return A.resolveAttack(cb, g.rng, u, t, 'melee', charOf(g, u)).refused || null; }],
+  ['shot-afraid', (g, cb) => { const u = P(cb), t = FAR(cb); A.applyCond(cb, g.rng, u, t, 'fear', 2, undefined, { skipSave: true }); return A.resolveAttack(cb, g.rng, u, t, 'shot', charOf(g, u)).refused || null; }],
 ];
 
 /** The item sweep's fight (record.ts itemFight), with what a situation needs on the ground: ammo in hand, a second weapon. */

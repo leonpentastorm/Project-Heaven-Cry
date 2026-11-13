@@ -180,7 +180,7 @@ describe('level-up screen', () => {
     expect(m.el.querySelector('.phc-lu-adv-note')!.textContent).toBe('Advanced classes are being rebuilt.');
     expect(m.el.querySelector('.phc-lu-adv')).toBeNull();
     expect(m.el.querySelector('button.phc-lu-learn')).toBeNull();
-    expect(m.el.querySelector('.phc-lu-class-name')!.textContent).toBe('Marksman'); // the shelved Gunslinger isn't shown
+    expect(m.el.querySelector('.phc-lu-class-name')!.textContent).toBe(CLASS.marksman.name); // the shelved Gunslinger isn't shown
     expect(m.el.textContent).not.toMatch(/Gunslinger|tutor/i);
     expect(Array.from(m.el.querySelectorAll('.phc-lu-rank-state')).map((x) => x.textContent)).toEqual(['✓ UNLOCKED', '✓ UNLOCKED', '✓ UNLOCKED']);
     expect(m.el.querySelectorAll('.phc-lu-move').length).toBe(6); // the base class's 6 moves only

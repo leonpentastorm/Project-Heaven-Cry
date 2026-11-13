@@ -44,6 +44,7 @@ export function resolveClassMove(clsId: string, m: any): any {
 }
 export const CLASSES: ClassDef[] = ((classesJ as any).base as any[]).map((b) => ({
   ...b, ranks: Object.fromEntries(Object.entries(b.ranks || {}).map(([r, v]: [string, any]) => [r, { ...v, moves: (v.moves || []).map((m: any) => resolveClassMove(b.id, m)) }])),
+  ...(b.gain ? { gain: (b.gain as any[]).map((m: any) => resolveClassMove(b.id, m)) } : {}), // held from class gain (rules 1.30)
 }));
 /** Revision 2 class ids and the Revision 3 class an old save's class becomes (medic → bard …). */
 export const CLASS_MIGRATION: Record<string, string> = (classesJ as any).migration?.class_ids || {};

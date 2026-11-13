@@ -3,7 +3,7 @@
 Built 13 Nov 2026 on the worktree branch `worktree-agent-aec2e65b4ba394b21`, started from `claude/charming-gauss-hbq4n0`
 (step 1a merged). Not pushed; no version bump. Rows 7 to 11 of `docs/design/rev4-primitives.md` section 5, its section 6
 (the addendum), the one hook for every roll to hit, and the step 1a review's "step 1b must add". Spec: rules 1.28
-sections 3 and 4 in `docs/rules/PHC-Core-Rules-v1.0.md`, items 1757 to 1762. One commit a sub-step (0 to 8, and 6b).
+sections 3 and 4 in `docs/rules/PHC-Core-Rules-v1.0.md`, items 1762 to 1767. One commit a sub-step (0 to 8, and 6b).
 
 Fixtures: `packages/engine/test/fixtures/classes-3.0-primitives-1b.json` (relics, verbs, tie kinds, an owned block) and
 `classes-3.0-specs-1b.json` (one row of each system spec). Tests: `test/prim-1b-review`, `prim-tohit`, `prim-verbs`,
@@ -183,7 +183,7 @@ itself, as `damage_mult`).
 ## 4. Where `rev4-primitives.md` or a spec was wrong or silent, and what was done
 
 1. **The lead's ruling 3 says "a Call that harms an enemy is not a reaction at all."** Read conservatively: a hindering
-   Call may still be made as a reaction (kind `attack`), as it always could. Leon to confirm (item 1759).
+   Call may still be made as a reaction (kind `attack`), as it always could. Leon to confirm (item 1764).
 2. **P6 `prayer`**: a verb has no tier; a Hymn verb's gate and the Atheist's TN read `tier` (1 to 3, default 1) on the
    grant_action. Its speech lines: `answered` and `witnessed` for a Hymn, none for a Whisper (as a Whisper).
 3. **P6 nested effects as `acted`** (finding 16): for verbs, run by the action once it succeeds (so a prayer with no

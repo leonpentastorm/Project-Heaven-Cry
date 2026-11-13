@@ -12,7 +12,7 @@ import { healingMult } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { Holder, ItemInfo } from './types';
 import { registerGeneric, genericEffects, statQuery, charOfUnit } from './hooks';
-import { COST_SITES, type CostSite } from './stats';
+import { COST_SITES, isStatId, type CostSite } from './stats';
 import type { Rng } from '../rng';
 import { applyCond, endCond, isCondition, condFamily, debuffsOf, condId } from '../magic';
 import { moveBlockers, key, xy, dist, displace } from '../combat';
@@ -67,14 +67,15 @@ const STAT_MAP: Record<string, string> = {
   module_slots: 'module_slots', ready_designs: 'ready_designs', vision: 'vision', carry: 'carry', injury_resist: 'injury_resist', mp_max: 'mp_max',
   hp_per_level: 'hp_per_level', glyph_ap: 'glyph_ap', attack: 'attack', ap: 'ap', shove_guard: 'shove_guard', one_hand_heavy: 'one_hand_heavy', throw_range: 'throw_range',
 };
-/** Stat families a data stat_mod names as they are asked (Classes 3.0: ties_max:<kind>, P8). */
-const PASS_STAT = /^ties_max:[a-z_]+$/;
 const MULT_MAP: Record<string, string> = { hp_max: 'hp', hp: 'hp', move: 'move', carry: 'carry', mp_max: 'mp_max', field_repair_amount: 'field_repair_amount' };
 
+/** The stat a data stat_mod answers: its STAT_MAP name, else the stat itself when it is a declared one (stats.ts STATS
+ * and families: Reflex's `reactions`, the Breaker's `technique:riposte`; rules 1.30), else none. */
+const statOfMod = (s: any): string | null => (STAT_MAP[s] || (typeof s === 'string' && isStatId(s) ? s : null));
 registerGeneric({
   op: 'stat_mod',
-  claim: (e) => plainOrTagged(e) && (!!STAT_MAP[e.stat] || PASS_STAT.test(e.stat)) && typeof e.value === 'number',
-  stat: (h, e, stat, ctx) => ((STAT_MAP[e.stat] ?? (PASS_STAT.test(e.stat) ? e.stat : null)) === stat && contextHolds(e, h, ctx) ? e.value : 0),
+  claim: (e) => plainOrTagged(e) && !!statOfMod(e.stat) && typeof e.value === 'number',
+  stat: (h, e, stat, ctx) => (statOfMod(e.stat) === stat && contextHolds(e, h, ctx) ? e.value : 0),
   on: { turn_start_pre: (ctx, h, e) => { if (STAT_MAP[e.stat] === 'ap' && ctx.u === h.u && contextHolds(e, h, ctx)) (e.value >= 0 ? ctx.grants : ctx.penalties).push({ n: e.value, why: h.info.name }); } },
 });
 registerGeneric({

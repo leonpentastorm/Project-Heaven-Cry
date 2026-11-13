@@ -291,7 +291,9 @@ const sightGame = (name: string, pcs: Pc[], o: { wave?: number; maxRounds?: numb
       if (n % 3 === 0 && dist(me.pos, WEST_DOOR) <= 1) rec.act({ type: 'combat/door', unitId: id, tile: WEST_DOOR }); // shut (or open) it again; refused with someone in the doorway
       return;
     }
-    if (charId === 'c1' && n % 2 === 0) {
+    // (n === 3 added 13 Nov 2026, Classes 3.0 step 3, under the lead's leave to add actions and never remove one: with the
+    // squad's Skirmishers the fight is shorter, so the blade also goes to ground on its third turn)
+    if (charId === 'c1' && (n % 2 === 0 || n === 3)) {
       const to = unseenTile(rec, id);
       if (to && besetBy(rec, id).length) rec.act({ type: 'combat/move', unitId: id, to }); // straight out of reach: no Disengage
       else if (to) walkTowards(rec, id, to, { tries: 2 });

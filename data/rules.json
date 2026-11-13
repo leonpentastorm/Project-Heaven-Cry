@@ -452,7 +452,11 @@
         "perk marked reaction",
         "overwatch shot"
       ],
-      "ap_cost": 0
+      "ap_cost": 0,
+      "keep_for_held": 1,
+      "second_hit": 0,
+      "provisional": true,
+      "note": "rules 1.30 (items 1800 to 1803): per_round for everyone (stat reactions adds: Reflex, Before the Blink); keep_for_held: a unit with more reactions than this that holds a shot keeps this many for it from anything that fires by itself; second_hit: the dial, a to-hit step on a unit's second reaction attack in a round (defined, unused)"
     },
     "opportunity_attack": {
       "trigger": "enemy leaves your melee reach without Disengage",
@@ -1291,7 +1295,7 @@
     "ceilings": {
       "plain": { "allin": 125, "what": "the plain rifle in all-in hands (a normal share is 100 by definition)", "dial": "rules.json output.profiles.weapon.k and output.level.deal" },
       "gun": { "allin": 145, "what": "the best gun, the best way (Masterwork)", "dial": "rules.json rarity (Masterwork's damage, 1.0 since rules 1.26), then each weapon's damage" },
-      "melee": { "allin": 165, "what": "the heavy-melee damage dealer (the Defender sits lower: its own armour and Guard pay for standing in reach)", "dial": "rules.json output.factors.melee" },
+      "melee": { "allin": 165, "what": "the heavy-melee damage dealer (the Bulwark sits lower: its own armour and Guard pay for standing in reach)", "dial": "rules.json output.factors.melee" },
       "sigil_line": { "allin": [150, 200], "what": "a full Line (4 glyphs) over the turns it takes to draw", "dial": "sigils.json grammar.line_mult" },
       "outburst_steady": { "allin": 135, "what": "steady play, the early feelings", "dial": "soul_modules.json damage.base" },
       "outburst_peak": { "allin": 165, "what": "the biggest Release, one turn", "dial": "soul_modules.json damage.base, then cycle.stage_mult" },

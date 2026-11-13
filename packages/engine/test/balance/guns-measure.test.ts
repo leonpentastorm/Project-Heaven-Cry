@@ -20,6 +20,8 @@ import { freshFight, runFight, MAP_ID, TIER_WEAPON } from './sim';
 import { expected } from './policies';
 import { buildCharacter } from './builds';
 import { WEAPON, MAPS, ENEMY, previewAttack, previewTechnique, bindGame } from '../../src';
+import { uses } from '../../src/effects/uses';
+const FD = 'class:marksman.fire_discipline';
 
 const FULL = !!process.env.GUNS_MEASURE, OUT = process.env.GUNS_MEASURE_OUT, TAG = process.env.GUNS_MEASURE_TAG || 'now';
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..'), fromRepo = (p: string) => (p.startsWith('/') ? p : resolve(REPO, p));
@@ -30,6 +32,9 @@ function cards(weapon: string, level = 6) {
   const b = gunBuild(weapon, 'masterwork'), st = freshFight({ build: b, variant: 'normal', level }, 'sim_range_soldier', 'GMC');
   const cb = st.g.combat, u = cb.units.find((q: any) => q.side === 'pc'), t = cb.units.find((q: any) => q.side === 'foe');
   u.ap = 9; // the cards, not the turn: every price is affordable
+  // the weapon's own prices: Fire Discipline's first attack of a turn (rules 1.30: 1 AP less) is the class's, measured on
+  // the range rows; here the turn's first attack is taken as made
+  W(st.g, () => uses({ key: FD, u, c: null, cb, g: st.g } as any).take('per_turn', 1, FD + '#dear'));
   const shot = W(st.g, () => previewAttack(cb, u, t, 'shot'));
   const tech = (id: string) => { const pv = W(st.g, () => previewTechnique(cb, u, id, { targetId: t.id }, st.g)); return pv.ok ? { ap: pv.ap, rolls: pv.attacks.length, perAp: pv.attacks.reduce((n: number, a: any) => n + expected(a.pv), 0) / pv.ap } : null; };
   return { shot: { ap: shot.ap, perAp: expected(shot) / shot.ap }, burst: tech('burst'), dump: tech('mag_dump') };

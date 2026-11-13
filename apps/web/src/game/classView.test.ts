@@ -30,9 +30,10 @@ describe('classView', () => {
     const m = classMoves({}, c, 'marksman');
     expect(m.map((x) => x.earned)).toEqual([true, true, true, true, false, false]);
     expect(m[4].unlock).toBe('unlocks at Agility 8 and level 12');
-    expect(m.find((x) => x.id === 'called_shot')!.key).toBe('class:gunslinger.called_shot');
+    expect(m.find((x) => x.id === 'run_and_gun')!.key).toBe('class:marksman.run_and_gun'); // rules 1.30: Called Shot left rank III
+    expect(m.find((x) => x.id === 'killzone')!.key).toBe('class:marksman.killzone'); // a reused move keeps its old key
     m.forEach((x) => expect(['Engine runs it', 'Narrator rules it', 'Both']).toContain(x.badge));
-    expect(classLabel(c)).toBe('Marksman II');
+    expect(classLabel(c)).toBe(CLASS.marksman.name + ' II');
   });
   it('ranks: three, two moves each, with the attribute value that unlocks them', () => {
     const c = charWith({ classId: 'bard', level: 6 }); setAttr(c, 'bard', 5);
@@ -54,9 +55,9 @@ describe('classView', () => {
   it('a held shelved advanced class shows nothing of its own; a move origin maps to the class that holds it now', () => {
     const c = charWith({ classId: 'marksman', advancedClass: 'gunslinger' } as any);
     expect(heldClassId(c)).toBe('marksman');
-    expect(classOf(c)!.name).toBe('Marksman');
+    expect(classOf(c)!.name).toBe(CLASS.marksman.name);
     expect(currentClassId('medic')).toBe('bard'); expect(currentClassId('assassin')).toBe('infiltrator'); expect(currentClassId('mage')).toBe('mage');
-    expect(classOf(null, 'medic')!.name).toBe('Bard'); // the Class tab with no character: Triage's origin → Bard
+    expect(classOf(null, 'medic')!.name).toBe(CLASS.bard.name); // the Class tab with no character: Triage's origin → the bard class
     expect(classOf({ classId: 'bard' }, 'medic')!.id).toBe('bard');
   });
   it('closest classes mark the closest-class options', () => {
@@ -69,7 +70,7 @@ describe('classView', () => {
     const c = charWith({ classId: 'marksman' });
     const gun = advancedInReach(c, 30).find((a) => a.id === 'gunslinger')!;
     expect(gun.ready).toBe(false); expect(gun.missing).toEqual(['Advanced classes are being rebuilt; not learnable yet.']);
-    c.advancedClass = 'gunslinger'; expect(classLabel(c)).toBe('Marksman I');
+    c.advancedClass = 'gunslinger'; expect(classLabel(c)).toBe(CLASS.marksman.name + ' I');
   });
   it('uses left from the engine counters (a per-scene move)', () => {
     const c = charWith({ classId: 'mage', level: 6 }); setAttr(c, 'mage', 5); c.uses = {};

@@ -52,6 +52,8 @@ renamed (Bulwark, Breaker, Skirmisher, Operative, Sigilist, Rigger, Mender, Chan
    it for the three new systems or the reaction rule. If a spec is wrong or silent, do not invent: take the
    conservative reading, write it under "Calls made for Leon" in section 6, and go on.
 
+**The watchdog (Leon, 13 Nov: "set up checkers to make sure they push their WIP branch and don't time out without us knowing").** While builders run, keep `tools/agent_watch.sh` running in the background: every five minutes it pushes each unmerged worktree branch to `wip/<branch>` on the remote, and it EXITS with a line (which wakes the session) when a worktree has shown no commit, no changed file and no test log for 40 minutes, or disk falls under 7 GB. On a STALL line: look at that worktree (`git -C <path> status`, its last commit, `ps` for its tests); if its agent is dead, its work is on `wip/`: start a new builder that fast-forwards to that branch and finishes the step (as was done for the hover-card work on 13 Nov). It runs just under two hours: re-arm it. Leon's instruction for the build: about three builders in parallel, the whole patch ready before he tests, target six hours from 13 Nov afternoon.
+
 ## 4. The build, in order (tick as you go)
 
 Each step: a builder agent with the brief of section 5; then the checks; then merge.
@@ -60,9 +62,9 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [ ] **1. The primitives** (1a merged 13 Nov, reviewed: `classes-3.0-step-1a.md` and `-review.md`; **1b built 13 Nov, to review and merge**: `classes-3.0-step-1b.md` (P6, P10, P11, P12, P8, P9 without its `owned` action system, the addendum, the one hook for every roll to hit, the review's list); left for a step 1c or the systems' own steps: the batch rows `mend_mult`, `condition: "incoming"`, `intervention_keeps_witnessed`, `read`) of `rev4-primitives.md`, in its order, with NO system built on them yet: each with its
       test, its lint baseline, the catalogue regenerated, and the bespoke handlers it replaces deleted. Golden
       tables and replay hashes unchanged (a primitive that moves a golden line is wrong).
-- [ ] **2. The rename** (`rev4-moves-and-rename.md`): display names only, ids stay; the level-up picker, card
+- [x] **2. The rename** (merged 13 Nov) (`rev4-moves-and-rename.md`): display names only, ids stay; the level-up picker, card
       texts, the spec, CLAUDE.md, the checklist; emblems listed in `art/briefs/ART-REQUESTS.md`.
-- [ ] **3. Reactions and the Skirmisher** (`reactions-spec.md`): one door for every reaction, a reaction never
+- [x] **3. Reactions and the Skirmisher** (merged 13 Nov; all in 161 against 145, inside the band near its top; Reflex unmeasured: step 11) (`reactions-spec.md`): one door for every reaction, a reaction never
       triggers a reaction, Suppressed never blocks a protective one, Reflex (two), Killzone on both, Run and Gun.
 - [ ] **4. The moves that change hands** and the small changes to Bulwark, Breaker, Sigilist.
 - [ ] **5. The Chaplain** (`chaplain-spec.md`): Ward, Sanctuary, Smite, Verdict, the patron's presence.
@@ -115,9 +117,40 @@ Step 1a (`docs/design/handoffs/classes-3.0-step-1a.md` section 3, rules 1.28 ite
 5. `always_seen` is read by the sight words only; the fog and the AI honour it with its first user.
 6. Riposte is not folded, and reactions that never opened a window still open none (step 3).
 
-Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 items 1757 to 1762):
+Step 3 (`docs/design/handoffs/classes-3.0-step-3.md` sections 0 and 5, rules 1.30 items 1800 to 1813; built on
+`worktree-agent-a87f47094562526ef`, finished on `worktree-agent-a5b91e20e7254055a` with the main line merged in; not
+merged back):
+1. Reflex lives in a base class's new `gain` list (moves held from class gain, beside the six); the Bulwark's 1 Guard and
+   the Operative's Read can use it.
+2. The Breaker does not Riposte with no Momentum, even with a weapon that lends the technique; the class gives the
+   Answer with any melee weapon. An item can give an Answer (stat `technique:<id>`), not any other technique.
+3. Fire Discipline's "first attack" is the first attack roll of your own turn, a free one included; its Aimed +1 also
+   applies to a held aimed shot. **Measured: the Skirmisher all in is 173% against 145 (+19%; level 5 +30%) from the
+   new first-attack cut alone (the long rifle); `npm run check`'s balance-contract guard fails on it (176%), and the
+   Faith dabbler guard too (the saved AP buys a Whisper); the dial is the lead's to choose (not refitted).**
+   **Ruled by the lead (item 1813): once a turn a weapon technique of 3 AP or more costs 1 AP less; a plain attack never.
+   The finishing builder's reading: the free techniques (Shot, Aimed Shot, Cut) are never cut, so the Aimed Shot stays
+   3 AP; with it cut the gun measured 170 (outside). As built: 164 / 168 / 166 / 145, mean 161 (inside 145 ± 12%); both
+   guards pass.**
+4. Keep one for a held shot refuses everything but the held fire and a Call made as a reaction; on by default, no screen
+   switch until step 10.
+5. Run and Gun: a move over 2 tiles leaves it waiting; its Pressure ends with the turn.
+6. Special Ammo: a story load arms a no-magazine weapon for the next fight; flamers and launchers now take loads (only
+   a consumable is refused). Speed Loader at 1 AP saves nothing and spends the turn's use.
+7. Killzone's second attack in the next round spends that round's one reaction.
+8. A move an item makes free keeps the move bank, for every item (Glass Runner's golden line moved: a negative bank).
+9. Called Shot is `status: shelved` with a `future_home` until step 4.
+10. **The replay coverage guard failed "actions with a door open" (19, needs more than 20)**: after the ruling the door
+    line holds on its own (57) but "a player's unit Hidden" fell to 13; under the lead's leave to add (never remove), the
+    sight game's blade also goes to ground on its third turn (hiddenPc 33, doors 62).
+12. **The perk Bulwark is renamed Stonewall** (item 1812; Leon asked for a new name; Rampart was the lead's first choice,
+    but the RAISE Grand form is "Ramparts"): display name only; the validator refuses a perk named as a class.
+11. Reflex measured in whole fights: the second reaction is never used by the simulator's enemies (+0); unconfirmed:
+    to measure in step 11 (the step 3 hand-off says what the simulator needs).
+
+Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 items 1762 to 1767):
 7. The lead's "a Call that harms an enemy is not a reaction at all" is read conservatively: a hindering Call may still be
-   made as a reaction (kind `attack`), as before; a helping one is `protect` (item 1759).
+   made as a reaction (kind `attack`), as before; a helping one is `protect` (item 1764).
 8. The tie kind `owned` (the drone, the beast, the twin) ends only with the fight and unmakes nothing, so a drone stays
    when its owner falls (as today). Figments want `on_end: unmake` and their owner's fall to end them: one kind for both
    (the drone unmade too) or a second kind for Figments? Built: one kind, the companions' behaviour kept.

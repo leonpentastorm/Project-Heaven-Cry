@@ -1,5 +1,5 @@
 // The completeness pass, batch 1 (rules 1.3): the branches the first pass left untested, each through the reducer
-// (apply) where a player's click or an enemy's turn reaches it: Bulwark against spells, blasts and a second Bulwark,
+// (apply) where a player's click or an enemy's turn reaches it: Stonewall against spells, blasts and a second Stonewall,
 // and in the attack preview; Eyes in the Back's cover tile taking a shot an enemy missed by its margin; Iron Stomach
 // and Nothing Left to Fear in a fight; the area-map Breaching Strike at Tier II; Talks Broke Down II; Soulmate II.
 import { describe, expect, it } from 'vitest';
@@ -23,7 +23,7 @@ function readyEnemyTurn(f: F, pc: Unit, foe: Unit) {
 }
 const clearAround = (cb: Combat) => { cb.objects = []; (cb.map as any).solid = []; };
 
-describe('Bulwark: spells, blasts, two guards, the preview (batch 1)', () => {
+describe('Stonewall: spells, blasts, two guards, the preview (batch 1)', () => {
   it('an enemy\'s shot on its turn (through the reducer) at the ally behind the guard is cut', () => {
     const f = fightWith([{ perks: { bulwark: 'II' } }, {}], [{ at: 'O10', weapon: 'hellraiser_service_rifle' }]);
     const [guard, ally] = f.pcs, foe = f.foe; clearAround(f.cb);
@@ -32,7 +32,7 @@ describe('Bulwark: spells, blasts, two guards, the preview (batch 1)', () => {
     let hitSeen = false;
     for (let seed = 1; seed < 60 && !hitSeen; seed++) {
       const g = clone(f.g); g.rng.state = seed; const after = apply(g, { type: 'combat/end-turn', unitId: guard.id } as any, 'host');
-      const cb = after.combat!; if (cb.log.some((l) => /fires at Tester 2.*hit/.test(l))) { hitSeen = true; expect(logHas(cb, /Bulwark\): Tester 2 takes 50% less/)).toBe(true); }
+      const cb = after.combat!; if (cb.log.some((l) => /fires at Tester 2.*hit/.test(l))) { hitSeen = true; expect(logHas(cb, /Stonewall\): Tester 2 takes 50% less/)).toBe(true); }
     }
     expect(hitSeen).toBe(true);
   });
@@ -42,12 +42,12 @@ describe('Bulwark: spells, blasts, two guards, the preview (batch 1)', () => {
       const [guard, ally] = f.pcs, foe = f.foe; clearAround(f.cb);
       foe.pos = '2,5'; guard.pos = '5,5'; ally.pos = '6,5'; ally.armour = 0;
       const hit = () => withGame(f.g, () => { const hp = ally.hp; harm(f.cb, f.g.rng, foe, ally, 40, type); const d = hp - ally.hp; ally.hp = ally.maxHp; return d; });
-      expect(hit()).toBe(30); expect(logHas(f.cb, /Bulwark/)).toBe(true);
+      expect(hit()).toBe(30); expect(logHas(f.cb, /Stonewall/)).toBe(true);
       foe.pos = '7,5'; guard.pos = '5,5'; // adjacent caster (behind the ally): not ranged, and off the line
       expect(hit()).toBe(40);
     }
   });
-  it('a blast is not cut, and two Bulwarks don\'t stack (the best counts)', () => {
+  it('a blast is not cut, and two Stonewalls don\'t stack (the best counts)', () => {
     const f = fightWith([{ perks: { bulwark: 'I' } }, {}], [{ at: 'O10' }]);
     const [guard, ally] = f.pcs, foe = f.foe; clearAround(f.cb);
     foe.pos = '2,5'; guard.pos = '5,5'; ally.pos = '6,5';
@@ -61,16 +61,16 @@ describe('Bulwark: spells, blasts, two guards, the preview (batch 1)', () => {
     const d = withGame(t.g, () => { const hp = a.hp; harm(t.cb, t.g.rng, t.foe, a, 40, 'soul'); return hp - a.hp; });
     expect(d).toBe(20);
   });
-  it('the attack preview names Bulwark in the damage chain for the covered ally (and only the best one)', () => {
+  it('the attack preview names Stonewall in the damage chain for the covered ally (and only the best one)', () => {
     const t = fightWith([{ perks: { bulwark: 'I' } }, { perks: { bulwark: 'II' } }, {}], [{ at: 'O10' }]);
     const [g1, g2, a] = t.pcs, foe = t.foe; clearAround(t.cb); foe.pos = '2,5'; g2.pos = '4,5'; g1.pos = '5,5'; a.pos = '6,5'; foe.ap = 6;
     const pv = withGame(t.g, () => previewAttack(t.cb, foe, a, 'shot'));
-    const b = pv.dmg!.mults.filter((m) => /^Bulwark/.test(m.label));
-    expect(b).toEqual([{ v: 0.5, label: 'Bulwark (' + g2.name + ')' }]);
+    const b = pv.dmg!.mults.filter((m) => /^Stonewall/.test(m.label));
+    expect(b).toEqual([{ v: 0.5, label: 'Stonewall (' + g2.name + ')' }]);
     // The guard itself, and a shot from the side: nothing.
-    expect(withGame(t.g, () => previewAttack(t.cb, foe, g2, 'shot')).dmg!.mults.some((m) => /^Bulwark/.test(m.label))).toBe(false);
+    expect(withGame(t.g, () => previewAttack(t.cb, foe, g2, 'shot')).dmg!.mults.some((m) => /^Stonewall/.test(m.label))).toBe(false);
     foe.pos = '6,1';
-    expect(withGame(t.g, () => previewAttack(t.cb, foe, a, 'shot')).dmg!.mults.some((m) => /^Bulwark/.test(m.label))).toBe(false);
+    expect(withGame(t.g, () => previewAttack(t.cb, foe, a, 'shot')).dmg!.mults.some((m) => /^Stonewall/.test(m.label))).toBe(false);
   });
 });
 

@@ -47,7 +47,7 @@ export const radiusOf = (w: WeaponDef | undefined) => { const p = (w?.properties
  * Rewrite, a knockback, Extraction). */
 export function dropHeldShot(cb: Combat | null | undefined, u: Unit, why = 'lost'): boolean {
   const had = !!u.overwatch || !!u.watch, w = u.watch;
-  u.overwatch = null; u.owShots = 0;
+  u.overwatch = null; u.owShots = 0; delete u.owSpend;
   if (w) { delete u.watch; if (cb) emitFx(cb, 'watch_end', { unit: u.id, at: u.pos, id: w.id, why }); }
   return had;
 }
@@ -87,7 +87,20 @@ function oldReactions(cb: Combat, u: Unit): void {
 export function maxReactions(u: Unit, cb?: Combat | null): number {
   if (!alive(u) || condOn(u, 'stunned') || u.skipTurn) return 0;
   if (cb && residueFlag(cb, u, 'no_reaction')) return 0; // rules 1.8: Dread underfoot
-  return Math.max(0, 1 + statQuery({ u }, 'reactions').add);
+  return Math.max(0, PER_ROUND + statQuery({ u }, 'reactions').add);
+}
+/** Reactions a round for everyone, and how many a unit holding a shot keeps for it (rules 1.30: rules.json combat.reactions). */
+const PER_ROUND: number = RULES.combat?.reactions?.per_round ?? 1, KEEP_FOR_HELD: number = RULES.combat?.reactions?.keep_for_held ?? 0;
+/** Reactions that do not fire by themselves: the held fire (it spends what the hold kept: Overwatch and Killzone, a held
+ * Watch, Heart Overwatch) and a Call the player chose to make as a reaction. */
+const NOT_AUTOMATIC = new Set(['overwatch', 'watch', 'heart_overwatch', 'call']);
+/** Keep one for a held shot (rules 1.30, reactions-spec.md rule 10; on unless u.keepForHeld is false): a unit with more
+ * reactions than rules.json keep_for_held that holds a shot never spends the last of them on a reaction that fires by
+ * itself (anything but the held fire). */
+function keptForHeld(cb: Combat, u: Unit, o: ReactOpts, spend: number): boolean {
+  if (!KEEP_FOR_HELD || spend <= 0 || (o.payer && o.payer !== u) || (o.window && NOT_AUTOMATIC.has(o.window.kind)) || u.keepForHeld === false) return false;
+  if (!u.overwatch && !u.watch && !u.mg?.held?.watch) return false;
+  return maxReactions(u, cb) > KEEP_FOR_HELD && baseLeft(cb, u) - spend < KEEP_FOR_HELD;
 }
 /** Reactions this unit has spent this round (its cell). */
 export function reactionsUsed(cb: Combat, u: Unit): number { oldReactions(cb, u); return reactCell(cb, u).used('reaction'); }
@@ -129,7 +142,8 @@ export function react(cb: Combat, u: Unit, o: ReactOpts, fn?: () => void): boole
   if (ek && seen?.has(ek)) return false;
   if (!canReact(cb, u, o.kind, o.payer && o.payer !== u ? 0 : spend)) return false;
   if (o.payer && o.payer !== u && (spend > 0 && !ownReact(cb, o.payer, spend))) return false;
-  if (o.window) { const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: o.window.mover ?? null, kind: o.window.kind, ...(o.window.id ? { id: o.window.id } : {}), cancel: false, at: o.window.at ?? u.pos, cb, rng: o.window.rng }); if (rw.cancel) return false; }
+  if (keptForHeld(cb, u, o, spend)) return false; // rules 1.30: the last reaction is the held shot's
+  if (o.window) { const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: o.window.mover ?? null, kind: o.window.kind, ...(o.window.id ? { id: o.window.id } : {}), spend, cancel: false, at: o.window.at ?? u.pos, cb, rng: o.window.rng }); if (rw.cancel) return false; }
   if (spend > 0) payReaction(cb, o.payer || u, spend);
   if (ek) { const s = seen || new Set<string>(); if (s.size > 512) s.clear(); s.add(ek); ANSWERED.set(cb, s); }
   const was = cb.reacting; cb.reacting = { unit: u.id, kind: o.kind };

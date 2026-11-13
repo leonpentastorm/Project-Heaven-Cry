@@ -32,7 +32,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   await step('Archetype');
   await p.locator('[data-arch="bulwark"]').click();
   await p.locator('[data-arch-preview] button', { hasText: /^Use / }).click(); await settle(p, 300);
-  ok(at + 'the Bulwark lands on the points step with every point placed (' + await budgets() + ')', (await budgets()) === '✓ ALL 10 PLACED | ✓ ALL 10 PLACED' && /^✓ Every point is placed/.test(await text('[data-points-todo]')));
+  ok(at + 'the Holdfast preset (id bulwark) lands on the points step with every point placed (' + await budgets() + ')', (await budgets()) === '✓ ALL 10 PLACED | ✓ ALL 10 PLACED' && /^✓ Every point is placed/.test(await text('[data-points-todo]')));
   ok(at + 'no sideways page scroll (' + await sideways() + ' px over)', (await sideways()) <= 1);
   // The gate is the layout: three families, nine attributes, each skill inside its attribute's block and under its header.
   const lay = await p.evaluate(() => {
