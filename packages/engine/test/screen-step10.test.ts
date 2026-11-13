@@ -53,6 +53,7 @@ describe('step 10: Shadow\'s groups (shadow-spec.md section 9)', () => {
     for (const d of rows) { const id = d.id.match(/verb:(shadow\.[a-z_]+)/)?.[1]; expect(d.sub).toBe(subOf(SJ, id)); }
     const fade = rows.find((d) => d.id.includes('shadow.read_intent'));
     expect(fade.why).toBe(grantOf(SJ, 'shadow.read_intent').why.self_has); // not Hidden yet: the spec's words
+    for (const d of rows) expect(d.text).not.toMatch(/\{=/); // the hover card's text has its numbers filled (datatext.ts)
   });
 });
 

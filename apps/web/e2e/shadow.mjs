@@ -62,8 +62,8 @@ await snap('01-meter');
 // Classes 3.0 step 10 (shadow-spec.md section 9): the meter shows the engine's value, once; the SHADOW tab in its groups;
 // a verb that needs you Hidden is refused in the spec's words while you are seen
 {
-  const row = (await host.locator('[data-res="res-shadow"]').first().textContent().catch(() => '')) || '';
-  ok('the meter row reads the engine\'s Shadow (' + row.replace(/\s+/g, ' ').slice(0, 60) + ')', row.includes((u.res?.shadow ?? 0) + ' / ' + (u.resMax?.shadow ?? 0)) && (await host.locator('[data-res="res-shadow"]').count()) === 1);
+  const row = (await host.locator('.phc-res-row:not(.phc-res-mini)[data-res="res-shadow"]').first().textContent().catch(() => '')) || '';
+  ok('the meter row reads the engine\'s Shadow (' + row.replace(/\s+/g, ' ').slice(0, 60) + ')', row.includes((u.res?.shadow ?? 0) + ' / ' + (u.resMax?.shadow ?? 0)) && (await host.locator('.phc-res-row:not(.phc-res-mini)[data-res="res-shadow"]').count()) === 1);
   ok('the eye word under it (Unseen / In view / Seen)', /Eye: (Unseen|In view|Seen)/.test(row));
   await host.locator('#phc-tab-shadow').click(); await settle(host, 200);
   const tab = (await host.locator('[role="tabpanel"]').textContent()) || '';
@@ -109,8 +109,9 @@ u = await me();
   const before = await card();
   if (has) { await brk.click(); await host.waitForFunction(() => document.querySelector('[aria-label="Perk options on this action"] button[aria-pressed="true"]'), null, { timeout: 10000 }).catch(() => {}); }
   const after = await card();
-  const dmg = (t) => (t.match(/(\d+)\s*[–-]\s*(\d+)/) || [])[0] || '';
-  ok('the Break is a toggle on the attack card, and it changes the previewed damage (' + dmg(before) + ' → ' + dmg(after) + ')', has && before !== after);
+  let i = 0; while (i < before.length && before[i] === after[i]) i++;
+  const at = Math.max(0, i - 20), seen = after.slice(at, at + 70);
+  ok('the Break is a toggle on the attack card, and switching it changes the preview ("…' + seen + '…")', has && before !== after && /shadow|Break/i.test(after));
   if (process.env.SHOTS_C3) await host.screenshot({ path: process.env.SHOTS_C3 + 'operative-shadow-break.png' });
   await snap('02b-break-toggle');
 }
