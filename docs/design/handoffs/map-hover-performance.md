@@ -144,3 +144,12 @@ costs is (1) above, which a canvas would not fix (it is the screen's logic, not 
 canvas might: the case for a canvas is the browser's paint and raster of the grid during a glide, and that has to be
 measured on a real GPU machine (this one has none). Re-measure with the probe on Leon's laptop and a 40 × 40 map before
 the next mode; move to a canvas only if style/layout/paint of the grid is then the largest share of a glide's frame.
+
+## Verification (13 Nov 2026)
+
+- Browser suites on our own server (`python3 tools/e2e.py … --base http://127.0.0.1:8917 --jobs 2`): camera 63, mapzoom
+  17, layout 19, tabs 31, playscreen 10, ground 28, world-play 35, two-players 11, turn-order 9, combat-speed 20, slate 34
+  checks: **ALL GREEN, 11 suites**, no retries.
+- `npm run check`: green except timeouts on the loaded machine (load 16 to 31); each file that timed out passes alone with
+  `--testTimeout 300000`: `combat-actions`, `combat-attack-areas`, `combat-heart`, `combat-say`, `combat-screen` (web) and
+  `perk-audit` (engine).
