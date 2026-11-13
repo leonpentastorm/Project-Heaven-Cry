@@ -85,7 +85,10 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [ ] **10b. Hide M813** (Leon, 13 Nov): take the M813 campaign off the menu and out of the default start (not deleted; its data and unit tests stay; browser suites that play M813 are moved to the Proving Ground or marked as campaign-only and still pass); say so in the changelog. And the final hand-off for a LOCAL session (Leon: "a very good hand-off file so that when I start a new session on my local computer, Fable gets what's going on"): rewrite `docs/design/handoffs/LOCAL-SESSION-START.md` at the close.
 - [ ] **10. The screen:** meters, tabs and hover cards of each spec's section 9; every new action through the
       descriptors (no client-built action); the browser suites extended (one new suite a system, in a group).
-- [ ] **11. Balance:** every new line measured at levels 1, 5, 10, 20; `docs/design/balance-contract.md` and its
+- [ ] **11. Balance** (built 13 Nov on `worktree-agent-a3b99193069de306d` with 7b and step 10 merged in, not merged back:
+      rules 1.38, `classes-3.0-step-11.md`; Mag Dump, the focus list from data and the Emanator katana, the Mender's
+      fit; Figments off its line with no dial; one replay coverage count red for the lead's ruling):
+      every new line measured at levels 1, 5, 10, 20; `docs/design/balance-contract.md` and its
       guard updated; `PATCH-TALLY.md` (live against Classes 3.0, by system).
       **Mag Dump, in this step (Leon, 13 Nov: "a weapon with 200 rounds loses them all, fires four shots, stops"):**
       today it empties the whole magazine for at most three rolls (rules 1.18). Ruling to build (a call made for
