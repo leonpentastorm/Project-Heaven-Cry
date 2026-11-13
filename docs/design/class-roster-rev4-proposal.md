@@ -441,8 +441,9 @@ supply); the Mender as its spec recommends (Take the Weight 15% of max HP, a fel
 with no range limit, Supplies leave, Brimming replaces the Outburst Mend, Empathy's free Pump moves to Will Power
 and the Outburst is re-measured); Figments as its spec recommends (upkeep 1 charge a Figment a turn, the Blade's
 strike spends your reaction, a ceiling of 150% for bodies on the board, Scrap Turret for Jury-Rig); Suppressed never
-blocks a protective reaction; the Chaplain's Judgement is renamed Verdict *(Suggested)*. **Leon's alone, still
-open:** what the Visualizer looks like (assumed: a hand-held projector in the off hand).
+blocks a protective reaction; the Chaplain's Judgement is renamed Verdict *(Suggested)*. **Settled by Leon since:** the Visualizer is a
+glove with a projector in the middle of the palm; **prayer opens at Faith 1** (Whispers at Faith 1 and 2, Hymns
+from 3 as built). Nothing of the design is open now.
 
 **The consolidated primitives** are in `rev4-primitives.md`: the six specs asked for 26; 12 are needed, with 13 rows
 added to closed lists. The specs are brought into line with it and with the rulings above in one pass.

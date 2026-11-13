@@ -215,6 +215,10 @@ The trigger `acted` (P2), `prayer` and `reach` (P6), `layer` and `holders` (P11)
 6. Sanctuary's cap binds only in Boss fights; Toll-Keeper and Matchmaker Smites are nonlethal (lead).
 7. The advanced classes are a sketch only (L).
 
-**Still open (Leon's alone):** **does prayer open at Faith 1?** The door-at-1-point ruling is applied to the new doors;
-prayer opens at Faith 3 (rules 1.6, built), so a smaller loop at Faith 1 and 2 would be a rules change of his own
-(rev4-primitives 3.3). Nothing here assumes it.
+**Settled by Leon (13 Nov): prayer opens at Faith 1.** The door-at-1-point ruling holds for Faith too: **Faith 1
+and 2 pray Whispers** (the one Whisper a turn, 1 AP, the Faithful to their patron and an Atheist by dice, as built);
+**Hymns open at Faith 3** as today, Witnessed at 5 and the Miracle at 7 unchanged. Everywhere this spec says
+"anyone with Faith 3 prays", read "anyone with Faith 1 prays Whispers; Hymns from Faith 3". This changes a built
+rule (rules 1.6: prayer at Faith 3): it goes into the Classes 3.0 rules revision with its own section 14 item, and
+the Whisper-turn line of the contract is re-measured with a Faith 1 and a Faith 2 sheet (a Whisper's size already
+grows with Faith through Blessing power, so a Faith 1 Whisper is small).

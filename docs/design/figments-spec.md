@@ -345,5 +345,6 @@ turret block; every form's `weapon` exists in weapons.json and is not on any loo
 10. Ceiling 150% for bodies on the board and the factor 0.9 (lead); the soak share is the estimate most likely wrong.
 11. The advanced classes are a sketch only; the Warden and Hexer bridges are dropped from this spec (L).
 
-**Still open (Leon's alone):** **the Visualizer's look** (a lens worn on the off hand, a hand-held projector, a brush;
-nine doors 5.2.1). Assumed until he says: a hand-held projector, off hand, 1 kg, 1,000 credits, as the Evoker.
+**Settled by Leon (13 Nov): the Visualizer is a glove, worn on the hand like the other focuses, with a projector set
+in the middle of the palm.** You hold the palm out and the bots build what you picture in its light. Off hand, 1 kg,
+1,000 credits, as the Evoker (those numbers are the lead's, PROVISIONAL). Art: `art/briefs/ART-REQUESTS.md`.
