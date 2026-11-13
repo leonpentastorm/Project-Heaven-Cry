@@ -7,7 +7,7 @@ import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
 import type { StatId } from './stats';
-import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, classMoveKeys, rawItem, _addRawItems, _clearRawItems } from './collect';
+import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, verbsOf, classMoveKeys, rawItem, _addRawItems, _clearRawItems } from './collect';
 
 // ---------- the bound game (set by apply() for the length of one action) ----------
 let G: any = null;
@@ -41,7 +41,7 @@ export const _snapshotRegistry = () => new Map(REG);
 export function _restoreRegistry(snap: Map<string, ItemHandler>) { REG.clear(); for (const [k, v] of snap) REG.set(k, v); dirty(); }
 /** Add items at run time (engine foundations 3): a mode's relics or new perks, a test's fixtures; plain data in the
  * shape of perks.json / traits.json items. They run on the generic runners only (no handler). */
-export function addItems(kind: 'perk' | 'trait' | 'relic', items: any[]) { _addRawItems(kind, items); dirty(); }
+export function addItems(kind: 'perk' | 'trait' | 'relic' | 'verb', items: any[]) { _addRawItems(kind, items); dirty(); }
 /** For tests: forget the items added with addItems. */
 export function clearAddedItems() { _clearRawItems(); dirty(); }
 /** For tests: forget every lane registration (generic handlers stay). */
@@ -69,7 +69,10 @@ interface TriggerRunner { isTriggered(e: any): boolean; problem(e: any): string 
   /** What the conditions a unit bears answer to a stat (a row's stat_mod of a declared stat no other path reads). */ condStat?(u: Unit, stat: string): number;
   /** The condition ids whose rows answer this stat (none: no condition can). */ condStatRows?(stat: string): string[];
   /** P5's standing aura: the units of a holder's set (effects/triggers.ts selectUnits, centred on the holder). */ auraSet?(cb: Combat, holder: Unit, targets: any): Unit[];
-  /** Why a standing aura is malformed (null: fine). */ auraProblem?(e: any): string | null }
+  /** Why a standing aura is malformed (null: fine). */ auraProblem?(e: any): string | null;
+  /** P6: the first predicate of an `if` block that fails for this holder (and target), or null. */ ifFails?(h: Holder, cond: any, target?: Unit | null): string | null;
+  /** P6: run item ops as an action's own effects, on a ctx shaped as `acted`'s. */ runOwn?(h: Holder, effects: any[], ctx: any): void;
+  /** Is this op an item op (OPS)? */ isOp?(op: string): boolean }
 let TR: TriggerRunner | null = null;
 /** effects/triggers.ts registers the item-ops runner here as it loads (no import cycle). */
 export function setTriggerRunner(r: TriggerRunner) { TR = r; dirty(); }
@@ -169,8 +172,8 @@ function buildIndex(held: Held): Record<string, Slot[]> {
 /** What a character holds (the compact form). Rank comes from the class rules; see character.ts classRank. */
 export function heldOfChar(c: Character | null | undefined): Held {
   if (!c) return { perks: [], traits: [] };
-  const sk = skillItemsOf(c.skills);
-  return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank: rankHook ? rankHook(c) : 1, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}), ...(c.relics?.length ? { relics: [...c.relics] } : {}) };
+  const sk = skillItemsOf(c.skills), rank = rankHook ? rankHook(c) : 1, vb = verbsOf({ skills: c.skills, cls: c.classId || null, rank }); // P6: the door verbs its sheet reaches
+  return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}), ...(c.relics?.length ? { relics: [...c.relics] } : {}), ...(vb.length ? { verbs: vb } : {}) };
 }
 let rankHook: ((c: Character) => number) | null = null;
 /** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */
@@ -281,6 +284,14 @@ export function statHeard(cb: Combat | null | undefined, stat: StatId): boolean 
   return false;
 }
 const STAT_HELD = new Map<string, boolean>();
+
+/** P6: the first predicate of an `if` block that fails for this holder (and its action's target), or null (it holds;
+ * outside a fight, or before the runner is loaded, nothing is tested). */
+export const ifFails = (h: Holder, cond: any, target?: Unit | null): string | null => (cond && TR?.ifFails && h.u && h.cb ? TR.ifFails(h, cond, target) : null);
+/** P6: run a door verb's nested item ops as its action's own effects (a ctx shaped as `acted`'s). */
+export const runOwnEffects = (h: Holder, effects: any[], ctx: any): void => { TR?.runOwn?.(h, effects, ctx); };
+/** Is this effect's op one of the item ops' closed list (effects/triggers.ts OPS)? */
+export const isItemOp = (e: any): boolean => !!e && !!TR?.isOp?.(e.op);
 
 // ---------- standing auras (Classes 3.0 P5, the step 1a review's form; the lead's ruling, 13 Nov 2026) ----------
 /** A standing aura: `{ "op": "stat_mod", "stat": <any declared stat>, "value": n, "targets": {…} }` with no `when`. While

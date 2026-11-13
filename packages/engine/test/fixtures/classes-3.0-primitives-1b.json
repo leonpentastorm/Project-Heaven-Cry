@@ -80,5 +80,120 @@
       ]
     }
   ],
-  "conditions": []
+  "conditions": [],
+  "verbs": [
+    {
+      "id": "test_verb_mark",
+      "name": "Paint Them (test)",
+      "kind": "verb",
+      "requires": [
+        {
+          "skill": "dexterity",
+          "min": 1
+        }
+      ],
+      "text": "Costs {=effects.0.ap} AP, once a turn: an enemy you see within {=effects.0.reach.tiles} tiles that is not Marked is Marked for {=effects.0.effects.0.rounds} rounds.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "test_mark",
+          "ap": 1,
+          "uses": "at_will",
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "reach": {
+            "tiles": 3,
+            "side": "foe",
+            "sight": true,
+            "if": {
+              "target_lacks": [
+                "marked"
+              ]
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "marked",
+              "target": "target",
+              "skip_save": true,
+              "rounds": 2
+            }
+          ]
+        }
+      ],
+      "adjudication": "engine"
+    },
+    {
+      "id": "test_verb_steady",
+      "name": "Steady (test)",
+      "kind": "verb",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 1
+        }
+      ],
+      "text": "Costs {=effects.0.ap} AP and {=effects.0.res.echo} Echo, while you are not Marked: gain {=effects.0.effects.0.value} perk AP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "test_steady",
+          "ap": 1,
+          "uses": "at_will",
+          "res": {
+            "echo": 1
+          },
+          "if": {
+            "self_lacks": [
+              "marked"
+            ]
+          },
+          "effects": [
+            {
+              "op": "grant_ap",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "adjudication": "engine"
+    },
+    {
+      "id": "test_verb_whisper",
+      "name": "Small Grace (test)",
+      "kind": "verb",
+      "requires": [
+        {
+          "skill": "faith",
+          "min": 1
+        }
+      ],
+      "text": "A Whisper ({=effects.0.ap} AP, your Whisper this turn): an ally within {=effects.0.reach.tiles} tiles, or you, gains {=effects.0.effects.0.value} perk AP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "test_grace",
+          "ap": 1,
+          "uses": "at_will",
+          "prayer": "whisper",
+          "reach": {
+            "tiles": 4,
+            "side": "ally",
+            "self": true
+          },
+          "effects": [
+            {
+              "op": "grant_ap",
+              "target": "target",
+              "value": 1
+            }
+          ]
+        }
+      ],
+      "adjudication": "engine"
+    }
+  ]
 }

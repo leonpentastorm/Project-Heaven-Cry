@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 34 triggers, 59 predicates, 18 ops, 90 effect ops, 123 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 51 stats, 24 condition fields, 350 primitive exports, 130 fx kinds, 167 Unit fields, 56 Combat fields, 40 guards.
+Counts: 34 triggers, 59 predicates, 18 ops, 90 effect ops, 123 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 51 stats, 24 condition fields, 358 primitive exports, 130 fx kinds, 167 Unit fields, 56 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -321,13 +321,13 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `volley_end` | a weapon action's shots are all resolved (a burst, an auto volley, a paired attack, a skill shot) | `u`, `mode`, `target`, `hits` | combat.ts:1845 (+6) | classes/rev3.ts:270 (+2) |  |
 | `weapon_actions` | a unit's weapon actions are listed (declared; nothing emits it yet) |  | **never emitted** | none |  |
 | `path_opts` | a walk's path options are opened by items (run, pass, jump, ignore difficult ground, known traps) | `u`, `runnable`, `pass`, `jump`, `ignoreDifficult` | combat.ts:757 | perks/a.ts:530 |  |
-| `hide` | a unit became hidden | `u`, `why` | sigil.ts:51 (+1) | faith.ts:718 (+7) |  |
+| `hide` | a unit became hidden | `u`, `why` | sigil.ts:51 (+1) | faith.ts:719 (+7) |  |
 | `spot` | a unit tries to spot a hidden one: the die, the modifier, the TN, cancel | `by`, `u`, `die`, `mod`, `tn`, `cancel` | tactics.ts:233 | classes/k.ts:123 (+8) | `spot` |
 | `spotted` | a hidden unit was revealed | `u`, `why` | magic.ts:1401 (+2) | perks/b.ts:244 (+2) |  |
 | `on_surrender` | a unit surrendered or was subdued | `t`, `by`, `why` | effects/damage.ts:103 (+2) | deeds.ts:193 (+5) |  |
 | `parley` | a parley in a fight is attempted (its TN, a refusal, the result) | `u`, `t`, `kind`, `text`, `tnAdd`, `via`, `cancel`, `result` | tactics.ts:285 | perks/g.ts:207 |  |
 | `throw` | a thrown item is about to land (its AP, radius, cancel, caught) | `u`, `item`, `tile`, `ap`, `radius`, `cancel`, `caughtBy`, `preview`, `technique` | physical/ranged/thrown.ts:86 (+1) | perks/c.ts:146 (+2) |  |
-| `blessing_in` | a blessing reaches a unit: an item may handle it itself | `u`, `t`, `blessing`, `power`, `handled`, `out` | faith.ts:967 (+1) | classes/k.ts:202 (+6) |  |
+| `blessing_in` | a blessing reaches a unit: an item may handle it itself | `u`, `t`, `blessing`, `power`, `handled`, `out` | faith.ts:1015 (+1) | classes/k.ts:202 (+6) |  |
 | `trap_sprung` | a trap was sprung on a unit | `u`, `obj` | combat.ts:1926 | classes/rev3.ts:385 |  |
 | `blast_landed` | a blast landed on a tile (who made it, the radius, who was in it) | `by`, `tile`, `item`, `radius`, `who` | tactics.ts:324 | physical/ranged/thrown.ts:163 |  |
 | `glyphs_per_tile` | how many glyphs a tile may hold for this caster | `u`, `tile`, `n` | sigil.ts:82 | classes/k.ts:356 |  |
@@ -350,7 +350,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `overreach_cost` | the Echo price of resisting an Overreach | `c`, `skill`, `cost` | game.ts:717 | perks/g.ts:616 |  |
 | `echo_gain` | a character gained Echo | `c`, `n`, `why`, `cap` | effects/echo.ts:10 | none |  |
 | `scene_change` | the Narrator opened a new scene | `n`, `title` | game.ts:1284 | feelings.ts:218 (+12) |  |
-| `session_start` | a session started (or a late player joined one) | `n`, `late` | game.ts:589 (+1) | faith.ts:1506 (+15) |  |
+| `session_start` | a session started (or a late player joined one) | `n`, `late` | game.ts:589 (+1) | faith.ts:1554 (+15) |  |
 | `rest` | a rest is taken: HP and MP multipliers per character | `kind`, `chars`, `settlement`, `hpMult`, `mult` | game.ts:1141 | perks/a.ts:429 (+8) |  |
 | `xp_grant` | XP is about to be granted (the amount may change) | `c`, `source`, `amount` | game.ts:1258 | perks/e.ts:853 (+1) |  |
 | `notice` | an NPC on the area map may notice a character (its range) | `c`, `npc`, `range`, `dark`, `ignore` | game.ts:2503 | perks/a.ts:382 (+5) |  |
@@ -362,7 +362,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `spell_roll` | a spell's to-hit d20 was rolled: items may add to it | `u`, `t`, `die`, `add`, `kind` | magic.ts:1256 (+1) | classes/i.ts:1455 (+2) |  |
 | `to_hit` | THE hook of every roll to hit a target (rolls.ts toHitTerms): a weapon attack, a Sigil, an Outburst {att, tgt, type, mode, terms, preview}: a listener adds to-hit terms | `att`, `tgt`, `type`, `mode`, `terms`, `preview` | rolls.ts:175 | none | `to_hit` |
 | `session_heal` | the heal at a session's start: HP and MP multipliers | `mult` | game.ts:1159 | perks/h.ts:415 |  |
-| `story_blessing` | a prayer is answered outside a fight (lines to add) | `c`, `lines` | faith.ts:1449 | perks/d.ts:715 |  |
+| `story_blessing` | a prayer is answered outside a fight (lines to add) | `c`, `lines` | faith.ts:1497 | perks/d.ts:715 |  |
 | `ap_gift` | a unit is about to receive AP from another (the receiver may refuse) | `t`, `from`, `n`, `cancel`, `why` | effects/ap.ts:77 | perks/f.ts:732 |  |
 | `npc_moved` | an NPC moved on the area map | `npc`, `from`, `to`, `hid` | game.ts:2305 | perks/b.ts:297 |  |
 | `npc_sense` | an NPC senses something on the area map (it may reveal someone) | `npc`, `why`, `reveal` | game.ts:2311 | perks/b.ts:352 (+2) |  |
@@ -371,12 +371,12 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `stay_hidden_result` | staying hidden was rolled: items may change the result | `c`, `npc`, `ok`, `die`, `auto`, `labels` | game.ts:2519 | perks/b.ts:607 (+2) |  |
 | `ruling_answered` | the Narrator answered a pending ruling (accepted or refused) | `r`, `accepted`, `c` | game.ts:1277 | perks/f.ts:223 (+8) |  |
 | `braced` | a Defender's Brace landed | `u` | classes/i.ts:376 | classes/j.ts:1129 (+1) |  |
-| `protect_act` | a unit protected another (a Brace or an Interpose: the patrons' protect tag) | `u`, `how`, `t` | combat.ts:2050 (+1) | faith.ts:716 |  |
+| `protect_act` | a unit protected another (a Brace or an Interpose: the patrons' protect tag) | `u`, `how`, `t` | combat.ts:2050 (+1) | faith.ts:717 |  |
 | `plate_spent` | Guard was spent on a plate (Adamantile Plate's ally shield) | `u`, `k` | classes/i.ts:467 | classes/j.ts:1180 |  |
 | `round_ap` | a character's AP for a round on the area map is counted | `c`, `ap`, `lines` | game.ts:2248 | perks/a.ts:566 (+2) |  |
 | `world_round_start` | a new round begins on the area map | `n` | game.ts:2246 | classes/i.ts:854 (+5) |  |
 | `story_cond_apply` | a condition is about to be put on a character outside a fight (cancel with a reason) | `c`, `id`, `scope`, `cancel`, `why` | game.ts:1183 | perks/a.ts:165 (+2) |  |
-| `gift` | a gift was given (the patrons' supply tag) |  | **never emitted** | faith.ts:719 |  |
+| `gift` | a gift was given (the patrons' supply tag) |  | **never emitted** | faith.ts:720 |  |
 | `vent` | a Vent is made: the Flux it puts into the air may change | `u`, `flux`, `extra` | magic.ts:602 | classes/rev3.ts:413 |  |
 | `ai_move_risk` | an enemy's walk is scored for risk by items (the AI avoids it) | `u`, `from`, `to`, `risk` | combat.ts:2673 | classes/rev3.ts:134 |  |
 | `cond_resisted` | a condition's save was passed | `by`, `t`, `id` | magic.ts:312 | feelings.ts:188 |  |
@@ -692,7 +692,7 @@ Families: `body`, `brain`, `heart`.
 | `registered` | `registered()` | Every item key that has a lane handler. |
 | `_snapshotRegistry` | `_snapshotRegistry()` | For tests: take a copy of the lane registrations, and put a copy back (test helpers isolate runtime tests from lanes). |
 | `_restoreRegistry` | `_restoreRegistry(snap: Map<string, ItemHandler>)` | Put back a registry saved by _snapshotRegistry (tests only). |
-| `addItems` | `addItems(kind: 'perk' \| 'trait' \| 'relic', items: any[])` | Add items at run time (engine foundations 3): a mode's relics or new perks, a test's fixtures; plain data in the shape of perks.json / traits.json items. |
+| `addItems` | `addItems(kind: 'perk' \| 'trait' \| 'relic' \| 'verb', items: any[])` | Add items at run time (engine foundations 3): a mode's relics or new perks, a test's fixtures; plain data in the shape of perks.json / traits.json items. |
 | `clearAddedItems` | `clearAddedItems()` | For tests: forget the items added with addItems. |
 | `_unregisterAll` | `_unregisterAll(keep: (key: string) => boolean = () => false)` | For tests: forget every lane registration (generic handlers stay). |
 | `GenericOp` | `interface GenericOp { op, claim, info, stat, e, stat, ctx, on, checkMod, e, ck, ctx, run, e, args, rng, runs, info }` | A generic core-op handler: which effects it claims, and what it does for them. |
@@ -723,6 +723,9 @@ Families: `body`, `brain`, `heart`.
 | `emitStory` | `emitStory(g: any, name: HookName, ctx: any, only?: Character[]): any` | Fire a story hook for characters (all of them in g.characters order, or the ones given). |
 | `anyOn` | `anyOn(cb: Combat \| null \| undefined, name: HookName): boolean` | Does anyone in this fight have a handler on this hook? (Lets costly payloads be skipped: sight diffs.) |
 | `statHeard` | `statHeard(cb: Combat \| null \| undefined, stat: StatId): boolean` | Is anything in this fight able to answer this data stat (a condition a unit bears whose row has its stat_mod, an item a unit holds with a stat_mod of it, an engine system's answer)? The gate before a costly pe… |
+| `ifFails` | `ifFails(h: Holder, cond: any, target?: Unit \| null): string \| null` | P6: the first predicate of an `if` block that fails for this holder (and its action's target), or null (it holds; outside a fight, or before the runner is loaded, nothing is tested). |
+| `runOwnEffects` | `runOwnEffects(h: Holder, effects: any[], ctx: any): void` | P6: run a door verb's nested item ops as its action's own effects (a ctx shaped as `acted`'s). |
+| `isItemOp` | `isItemOp(e: any): boolean` | Is this effect's op one of the item ops' closed list (effects/triggers.ts OPS)? |
 | `isAura` | `isAura(e: any): boolean` | A standing aura: `{ "op": "stat_mod", "stat": <any declared stat>, "value": n, "targets": {…} }` with no `when`. |
 | `statQuery` | `statQuery(x: { u?: Unit \| null; c?: Character \| null; cb?: Combat \| null }, stat: StatId, ctx: any = {}): { add: number; mult: number }` | Sum of every item's answer to a stat query (stat handlers, then generic stat effects). mult multiplies. |
 | `checkQuery` | `checkQuery(x: { u?: Unit \| null; c?: Character \| null; cb?: Combat \| null }, ck: any, ctx: any = {}): CheckMod[]` | Modifiers to one d20 check from every item (handler checkMod, then generic skill and roll mods). |
@@ -733,6 +736,11 @@ Families: `body`, `brain`, `heart`.
 | name | signature or shape | what for |
 | --- | --- | --- |
 | `apFromData` | `apFromData(ap: any, u?: Unit \| null): number` | Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). |
+| `REACH_SIDES` | `REACH_SIDES` | The words a reach's side takes (a target relation to the holder). |
+| `REACH_FIELDS` | `REACH_FIELDS` | The fields of a grant_action's `reach`. |
+| `PRAYER_KINDS` | `PRAYER_KINDS` | The prayers a grant_action may be. |
+| `setPrayerDoor` | `setPrayerDoor(p: typeof PRAYER)` | faith.ts's prayer door for a verb that is a prayer (verbPrayerWhy, verbPray). |
+| `reachWhy` | `reachWhy(h: Holder, reach: any, t: Unit \| null \| undefined): string \| null` | Why this holder can't aim its action at this unit by its `reach` (null: it can). |
 | `defaultActions` | `defaultActions(info: ItemInfo): ActionDef[]` | The default actions of an item, from its data. |
 | `actionDefs` | `actionDefs(info: ItemInfo): ActionDef[]` | An item's actions: a lane's, when it registered any (they replace the data defaults), else the defaults. |
 | `dataAp` | `dataAp(info: ItemInfo, actionId: string): number \| string` | The data's AP for an item's action: the `ap` of the grant_action that names it, else the item's own (ap_cost). |
@@ -1004,7 +1012,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `command` | `target`, `at`, `order`, `to`, `by` | sigil.ts:1078 | 1 |
 | `command_move` | `unit`, `target`, `from`, `to` | classes/rev3.ts:666 | 1 |
 | `cond` | `target`, `at`, `id`, `resisted`, `element` | magic.ts:303 | 5 |
-| `core` | `unit`, `at`, `dur`, `focus` | faith.ts:642 | 2 |
+| `core` | `unit`, `at`, `dur`, `focus` | faith.ts:643 | 2 |
 | `crystallise` | `unit`, `at`, `dur`, `self` | classes/k.ts:576 | 2 |
 | `door` | `unit`, `at`, `open` | combat.ts:738 | 3 |
 | `down` | `unit`, `at`, `dead`, `vanish`, `surrendered` | classes/j.ts:1156 | 4 |

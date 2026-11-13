@@ -1837,6 +1837,52 @@ if TRIG:
             for v in o.values(): _walk_grant_if(v, w)
         elif isinstance(o, list):
             for v in o: _walk_grant_if(v, w)
+    # Classes 3.0 P6: the one action shape. A grant_action's reach, prayer, limit, res and pick are closed lists.
+    _RES_ROWS = set(((data.get("actions") or {}).get("resources") or {}).keys())
+    def _check_grant(g, w):
+        r = g.get("reach")
+        if r is not None:
+            if not isinstance(r, dict): errors.append(f"{w}: a grant_action's reach is an object (tiles, sight, side, self, if, tied)")
+            else:
+                for k in r:
+                    if k not in ("tiles", "sight", "side", "self", "if", "tied"): errors.append(f"{w}: unknown reach field '{k}'")
+                if "tiles" in r and not (isinstance(r["tiles"], (int, float)) and not isinstance(r["tiles"], bool)): errors.append(f"{w}: reach.tiles is a number")
+                if r.get("side", "any") not in ("foe", "ally", "side", "any"): errors.append(f"{w}: reach.side is foe, ally, side or any")
+                for k in ("sight", "self"):
+                    if k in r and not isinstance(r[k], bool): errors.append(f"{w}: reach.{k} is true or false")
+                if isinstance(r.get("if"), dict):
+                    for k, v in r["if"].items(): check_pred(k, v, w)
+                if "tied" in r: check_pred("target_tied", r["tied"], w) if "target_tied" in PRED else errors.append(f"{w}: reach.tied needs ties (P8)")
+        if "prayer" in g and g["prayer"] not in ("whisper", "hymn"): errors.append(f"{w}: a grant_action's prayer is whisper or hymn")
+        if "tier" in g and g["tier"] not in (1, 2, 3): errors.append(f"{w}: a prayer's tier is 1, 2 or 3")
+        lim = g.get("limit")
+        if lim is not None and not (isinstance(lim, dict) and lim.get("per") in LIMIT_SCOPES | {"per_turn", "per_round", "per_combat", "per_scene", "per_session", "per_rest"} and isinstance(lim.get("n", 1), int)): errors.append(f"{w}: a grant_action's limit is {{per, n}}")
+        if "res" in g and not (isinstance(g["res"], dict) and all(k in _RES_ROWS and isinstance(v, (int, float)) for k, v in g["res"].items())): errors.append(f"{w}: a grant_action's res maps actions.json resources to numbers ({sorted(_RES_ROWS)})")
+    def _walk_grant(o, w):
+        if isinstance(o, dict):
+            if o.get("op") == "grant_action": _check_grant(o, w)
+            for v in o.values(): _walk_grant(v, w)
+        elif isinstance(o, list):
+            for v in o: _walk_grant(v, w)
+    for _x in base + adv + pool: _walk_grant(_x, f"classes:{_x.get('id')}")
+    for _n in ("perks", "traits"):
+        for _x in items(_n): _walk_grant(_x, f"{_n}:{_x.get('id')}")
+    # a door verb (item kind `verb`, any data file's items): held by a sheet that meets every `requires`
+    _SK = set(known["skill"]); _CL = {b.get("id") for b in base}
+    for _fn, _blk in data.items():
+        for _x in (_blk.get("items") if isinstance(_blk, dict) else None) or []:
+            if not (isinstance(_x, dict) and _x.get("kind") == "verb"): continue
+            w = f"{_fn}:{_x.get('id')}"
+            req = _x.get("requires")
+            if not (isinstance(req, list) and req): errors.append(f"{w}: a verb names what it requires ([{{skill, min}}] or [{{class, rank}}])")
+            for q in req or []:
+                if not (isinstance(q, dict) and ((q.get("skill") in _SK and isinstance(q.get("min", 1), int)) or (q.get("class") in _CL and q.get("rank", 1) in (1, 2, 3)))): errors.append(f"{w}: a verb's requires entry is {{skill, min}} or {{class, rank}}")
+            if sum(1 for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action") != 1: errors.append(f"{w}: a verb has one grant_action")
+            _walk_grant(_x, w); walk_triggers(_x, w)
+    # skills.json unlocks marked `item` are run as items (effects/collect.ts SKILL_ITEMS)
+    for _x in items("skills"):
+        for _l, _u in (_x.get("unlocks") or {}).items():
+            if "item" in _u and _u["item"] is not True: errors.append(f"skills:{_x.get('id')}.{_l}: `item` is true or absent")
     for _x in base + adv + pool: _walk_grant_if(_x, f"classes:{_x.get('id')}")
     for _n in ("perks", "traits"):
         for _x in items(_n): _walk_grant_if(_x, f"{_n}:{_x.get('id')}")

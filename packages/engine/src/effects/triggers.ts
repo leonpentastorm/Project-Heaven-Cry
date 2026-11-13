@@ -404,6 +404,17 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
   if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));
 }
+// ============================================================================================== door verbs (P6)
+/** The first predicate of an `if` block that fails for this holder and target (the action's), outside a trigger (a
+ * door verb's `if` and its `reach.if`), or null. Unknown keys fail. */
+function ifFailsImpl(h: Holder, cond: any, target?: Unit | null): string | null {
+  const self = h.u!, ev: Ev = { ctx: { u: self, t: target || null }, trig: TRIGGERS.acted, h, self, cb: h.cb!, actor: self, target: target || null, preview: true };
+  for (const k of Object.keys(cond || {})) if (!PREDICATES[k]?.test(ev, cond[k])) return k;
+  return null;
+}
+/** Run item ops as an action's own effects: each as a triggered effect on `acted` (its `if`, `limit`, `targets`, `say`). */
+function runOwnImpl(h: Holder, effects: any[], ctx: any): void { for (const e of effects) if (e && OPS[e.op]) runTriggered({ ...ctx, cb: h.cb }, h, { ...e, when: 'acted' }); }
+
 /** The hooks any data effect listens on (hooks.ts hookUsed asks, so a hook that is skipped when nobody listens, the
  * `cost` hook, still fires for a data item). */
 export const triggerHook = (e: any): HookName | null => (isTriggered(e) ? TRIGGERS[e.when].hook : null);
@@ -443,5 +454,5 @@ function condsOn(u: Unit, name: HookName, cb: Combat) {
 }
 function condStat(u: Unit, stat: string): number { const l = condIndex().stat[stat]; if (!l) return 0; let n = 0; for (const x of l) if (bears(u, x.row.id)) n += x.value; return n; }
 
-setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat, auraSet, auraProblem, condStatRows: (s) => (condIndex().stat[s] || []).map((x) => x.row.id) });
+setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat, auraSet, auraProblem, ifFails: ifFailsImpl, runOwn: runOwnImpl, isOp: (op) => !!OPS[op], condStatRows: (s) => (condIndex().stat[s] || []).map((x) => x.row.id) });
 setAllItems(allItems);

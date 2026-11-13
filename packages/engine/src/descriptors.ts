@@ -179,6 +179,8 @@ const priceOf = (entry: { ap: number }) => entry.ap;
 const alive = (v: Unit) => !v.dead;
 const others = (x: DescCtx) => x.seen.units.filter((v) => alive(v) && v.id !== x.u.id).map((v) => v.id);
 const allyIds = (x: DescCtx, self = false) => x.seen.units.filter((v) => alive(v) && v.side === x.u.side && (self || v.id !== x.u.id)).map((v) => v.id);
+/** The engine's own pick list (a door verb's reach), kept to what this side sees (the fog). */
+const seenOf = (x: DescCtx, ids: string[]) => { const seen = new Set(x.seen.units.map((v) => v.id)); return ids.filter((id) => seen.has(id)); };
 const foeIds = (x: DescCtx) => x.seen.units.filter((v) => alive(v) && v.side !== x.u.side).map((v) => v.id);
 const mx = (p: Picks) => (Array.isArray(p.mods) && p.mods.length ? { mods: p.mods as string[] } : {});
 const safe = <T>(f: () => T, d: T): T => { try { return f(); } catch { return d; } };
@@ -573,8 +575,9 @@ const PERKS: ActionSystem = {
   list(x) {
     return perkEntriesOf(x).map((e) => {
       const st = perkState(e), picks: PickStep[] = [];
-      if (e.target === 'ally') picks.push({ key: 'targetId', kind: 'ally', prompt: 'Click an ally.', choices: allyIds(x, true) });
-      else if (['unit', 'enemy', 'npc'].includes(e.target as string)) picks.push({ key: 'targetId', kind: e.target === 'enemy' ? 'enemy' : 'unit', prompt: 'Click a target.', choices: others(x) });
+      // a door verb's reach (Classes 3.0 P6): the engine's own list of who it may go at
+      if (e.target === 'ally') picks.push({ key: 'targetId', kind: 'ally', prompt: 'Click an ally.', choices: e.choices ? seenOf(x, e.choices) : allyIds(x, true) });
+      else if (['unit', 'enemy', 'npc'].includes(e.target as string)) picks.push({ key: 'targetId', kind: e.target === 'enemy' ? 'enemy' : 'unit', prompt: 'Click a target.', choices: e.choices ? seenOf(x, e.choices) : others(x) });
       else if (e.target === 'tile') picks.push({ key: 'tile', kind: 'tile', prompt: 'Click a tile.' });
       if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
       // an armed move (Eye of the Storm) can be confirmed again to stand it down: its state is said, the reducer rules

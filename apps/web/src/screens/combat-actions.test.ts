@@ -3,7 +3,7 @@
 // confirms through the one action flow, rendered for real; and an action defined only in the engine (registerActions)
 // appears on the screen and works with no client change (the worked example of client-boundary-3-actions.md).
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, actionsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, type GameState, type Sheet, type ActionDescriptor } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, actionsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, addItems, clearAddedItems, type GameState, type Sheet, type ActionDescriptor } from '@engine';
 import { FLOW_PREVIEWS } from '../game/actionFlow';
 
 let G: GameState; const ME = 'host';
@@ -103,6 +103,27 @@ describe('every descriptor group renders and confirms on the one action flow', (
     m = await mount();
     expect(await everyGroup(m.el, u.id)).toContain('outbursts');
     m.root.unmount();
+  });
+});
+
+describe('a door verb written in data only works on the screen with no client change (Classes 3.0 P6)', () => {
+  it('a fixture verb: its row on its tab, the engine\'s pick list (its reach), Confirm sends combat/perk and it lands', async () => {
+    const verb = { id: 'test_web_verb', name: 'Paint Them (test)', kind: 'verb', requires: [{ skill: 'dexterity', min: 1 }], text: 'Costs 1 AP: an enemy you see within 3 tiles is Marked for 2 rounds.',
+      effects: [{ op: 'grant_action', action: 'test_paint', ap: 1, uses: 'at_will', reach: { tiles: 3, side: 'foe', sight: true }, effects: [{ op: 'condition', condition: 'marked', target: 'target', skip_save: true, rounds: 2 }] }], adjudication: 'engine' };
+    addItems('verb', [verb]);
+    try {
+      const { u, foe } = fight('acts-verb', 'sharpshooter', 'medic');
+      const d = actionsFor(G, u.id, ME).find((x) => x.id.includes('verb:test_web_verb'))!;
+      expect(d).toBeTruthy(); expect(d.picks[0].choices).toEqual([foe.id]);
+      const { el, root } = await mount();
+      await click(el.querySelector('[role="tab"][data-tab="' + d.group + '"]'));
+      const row = el.querySelector('button[data-act="' + d.id + '"]');
+      expect(row?.textContent).toMatch(/Paint Them/);
+      await click(row); await click(tokenOf(el, foe.name)); await click(confirmBtn(el));
+      expect(sent.find((a) => a.type === 'combat/perk')).toMatchObject({ unitId: u.id, id: 'verb:test_web_verb', targetId: foe.id });
+      expect(G.combat!.units.find((x) => x.id === foe.id)!.conds?.marked).toBeGreaterThan(0);
+      root.unmount();
+    } finally { clearAddedItems(); }
   });
 });
 

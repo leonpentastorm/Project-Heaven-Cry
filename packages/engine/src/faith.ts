@@ -22,6 +22,7 @@ import type { Combat, Unit } from './combat';
 import { say, unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
 import { condOn, applyCond, endCond, harm, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE } from './magic';
 import { pushAway } from './effects/core';
+import { setPrayerDoor } from './effects/actions';
 import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot } from './effects/cost';
 import { sessionN, dayOf, uses as usesOf } from './effects/uses';
 import { applyDamage, healUnit, grantShield } from './effects/damage';
@@ -935,6 +936,53 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   }
   return null;
 }
+// ---------- a door verb that is a prayer (Classes 3.0 P6: grant_action `prayer: "whisper" | "hymn"`) ----------
+// The verb is prayed as one of the patron's own prayers would be: the same gate (Faith, Silenced, your turn), the same
+// slot (one Whisper a turn; a Hymn's wait), the same dice (an Atheist rolls; a Faithful's Hymn above its standing is an
+// overreach: grant_action `tier`, default 1), the mana, Witnessed after a Hymn. Its effects are the verb's own.
+/** Why this unit can't pray a verb of this kind now (null: it can). */
+export function verbPrayerWhy(cb: Combat, u: Unit, kind: 'whisper' | 'hymn'): string | null {
+  const c = unitChar(u), g = boundGame(); if (!c) return 'Only a character can pray.';
+  if (faithOf(c) < FAITH_MIN) return 'Praying needs Faith ' + FAITH_MIN + '.';
+  if (condOn(u, 'silenced')) return 'Silenced: no prayers.';
+  if (cb.order[cb.turn] !== u.id) return 'Pray on your turn.';
+  const lim = prayed({ c, u, cb, g });
+  if (kind === 'whisper' && lim.left('per_turn', 1, WHISPER_KEY) <= 0) return 'One Whisper a turn.';
+  if (kind === 'hymn') { const cd = hymnWait(c, u), last = lim.cooledAt(HYMN_KEY); if (last != null && lim.coolLeft(cd, HYMN_KEY) > 0) return 'Your last Hymn was ' + (cb.round - last) + ' round(s) ago: wait ' + cd + '.'; }
+  return null;
+}
+/** Pray a verb (its gate already asked): takes the slot, moves the meter, rolls when the rules say so. True: the patron
+ * answers (the verb's effects run); false: no answer (the AP and the slot are spent, as a prayer's). */
+export function verbPray(cb: Combat, rng: Rng, u: Unit, kind: 'whisper' | 'hymn', name: string, tier = 1): boolean {
+  const c = unitChar(u)!, g = boundGame(), lim = prayed({ c, u, cb, g }), belief = beliefOf(c), patron = patronOf(c);
+  if (kind === 'whisper') lim.take('per_turn', 1, WHISPER_KEY); else { lim.uncool(HYMN_KEY); lim.cool(0, HYMN_KEY); }
+  shiftMana(cb, PRAYER_MANA, 'a prayer');
+  let roll: { tn: number; mod: number } | null = null, over = false;
+  if (belief.kind !== 'faithful') roll = { tn: kind === 'whisper' ? ATHEIST_TN.whisper : ATHEIST_TN[tier] ?? ATHEIST_TN[1], mod: prayerMod(g, c, u) };
+  else if (kind === 'hymn') { const gate = (GATE as any)[tier] ?? GATE[1], dv = devotionNow(c); if (dv < gate) { over = true; roll = { tn: OVERREACH.base + OVERREACH.step * (gate - dv), mod: prayerMod(g, c, u) }; } }
+  let line = u.name + (kind === 'whisper' ? ' whispers a prayer' : ' prays') + (patron ? ' to ' + patron.name : '') + ': ' + name;
+  if (roll) {
+    const rv = rollVs(cb, rng, { by: u, mod: roll.mod, tn: roll.tn, why: 'pray' });
+    line += ' · ' + rv.text + (over ? ' (overreach)' : '');
+    if (!rv.ok) {
+      emitFx(cb, FAITH_FX.prayer_fail, { unit: u.id, kind, id: name, patron: patron?.id || null, at: u.pos, why: over ? 'overreach' : 'dice' });
+      say(cb, line + ' · no answer.');
+      if (over) { shiftDevotion(g, cb, c, OVERREACH.miss, 'a failed overreach'); speak(g, cb, rng, c, patron, 'refused'); }
+      return false;
+    }
+  }
+  emitFx(cb, FAITH_FX.prayer, { unit: u.id, kind, id: name, patron: patron?.id || null, at: u.pos, target: null, ok: true });
+  say(cb, line + '.');
+  if (patron && kind === 'hymn') speak(g, cb, rng, c, patron, 'answered');
+  if (kind === 'hymn' && belief.kind === 'faithful' && patron && faithOf(c) >= WITNESS_FAITH) {
+    applyCond(cb, rng, u, u, 'witnessed', undefined, undefined, { skipSave: true, via: 'faith' });
+    emitFx(cb, FAITH_FX.witnessed, { unit: u.id, patron: patron.id, at: u.pos });
+    speak(g, cb, rng, c, patron, 'witnessed');
+  }
+  return true;
+}
+setPrayerDoor({ why: verbPrayerWhy, pray: verbPray });
+
 type Target = Unit | null | { units: Unit[] };
 function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs): Target | string {
   const byId = (id?: string) => (id ? cb.units.find((x) => x.id === id) || null : null);

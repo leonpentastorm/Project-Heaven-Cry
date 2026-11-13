@@ -8,7 +8,7 @@ import type { Combat, Unit } from '../combat';
 /** Where an item comes from. Class moves are keyed "class:<classId>.<moveId>". */
 /** 'relic': an item a holder carries that is neither a perk nor a trait (engine foundations 3: a roguelike's relics),
  * loaded with addItems('relic', [...]); written in data only. */
-export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic' | 'condition';
+export type ItemKind = 'perk' | 'trait' | 'class' | 'skill' | 'relic' | 'condition' | 'verb';
 /** The tier an item is held at: a perk's I or II, a granted perk's kind, 'trait', or a class move's rank ('adv' for an advanced class). */
 export type Tier = 'I' | 'II' | 'mastered' | 'achieved' | 'ultimate' | 'trait' | 'III' | 'adv';
 
@@ -268,6 +268,10 @@ export interface ActionDef {
   pickMulti?: number;
   /** The prompt for the pick or typed detail ("Head, arm or leg", "The squadmate"). */
   pickLabel?: string;
+  /** Who it may go at, worked out by the engine (Classes 3.0 P6: a door verb's `reach`): the descriptor's pick list. */
+  choices?(h: Holder): string[];
+  /** Why it can't go at this unit (a door verb's `reach`: side, range, sight, its `if`), or null. */
+  reach?(h: Holder, t: Unit): string | null;
 }
 
 /** A flag on an existing action (Ricochet, Double or Nothing, Nonlethal…): the player turns it on with `mods`. */
