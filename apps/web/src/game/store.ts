@@ -3,6 +3,7 @@
 // Guests send actions to the host and render the view they get back.
 import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom, migrateLoaded, fightRulingOf } from '@engine';
 import { FIGHT_TIMEOUT_MS } from '../narrator/fight';
+import { newRoomPlay, testRoom } from './modes';
 import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
 import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
 import { connect, type Conn } from './net';
@@ -10,7 +11,7 @@ import { DEFAULT_START, shownStart } from './starts';
 import { battlePace } from './combatSpeed';
 
 
-export type Screen = 'home' | 'create' | 'room' | 'main' | 'combat' | 'levelup' | 'ultimate';
+export type Screen = 'home' | 'create' | 'room' | 'main' | 'combat' | 'levelup' | 'ultimate' | 'run';
 export interface Me { id: string; name: string }
 export interface ClientState {
   me: Me; role: 'host' | 'guest' | null; code: string | null; game: GameState | null;
@@ -90,6 +91,9 @@ export function hostRoom(code = roomCode()) {
   // Classes 3.0 step 10b: a new room starts on the menu's first start, never on a hidden campaign (game/starts.ts, the
   // campaign's `listed`); a saved room keeps the start it was played with.
   if (!saved && !shownStart(hostState, hostState.settings.start)) hostState.settings.start = DEFAULT_START;
+  // Rules 1.39: a new room selects its mode (data/modes.json default: Survival; a browser suite's page: its test hook,
+  // game/modes.ts); a saved room keeps its own (one from before modes reads as a campaign: migrateLoaded).
+  if (!saved) { hostState.settings.play = newRoomPlay(); if (testRoom()) hostState.settings.test = true; }
   befores = {}; loadBefores(code);
   // The full save (with the archive) comes back from IndexedDB a moment later.
   idbGet(code).then((full) => {
@@ -203,11 +207,13 @@ function provingClosed(prev: GameState | null, g: GameState) {
   else toast('The host closed the Proving Ground: back to the room.');
 }
 /** Where a player should be, given the game: combat follows the fight, story otherwise. */
-function screenFor(g: GameState): Screen { return g.phase === 'lobby' ? 'room' : g.phase === 'combat' ? 'combat' : 'main'; }
+function screenFor(g: GameState): Screen { return g.phase === 'lobby' ? 'room' : g.phase === 'combat' ? 'combat' : homeScreen(g); }
+/** Where "back" goes outside a fight: a Survival run's path map (rules 1.41), else the story. */
+export const homeScreen = (g: GameState | null | undefined): Screen => (g && g.phase === 'combat' ? 'combat' : g && g.run && g.run.state !== 'over' ? 'run' : g && g.phase === 'lobby' ? 'room' : 'main');
 function followPhase(prev: GameState | null, g: GameState) {
   if (S.screen === 'create' || S.screen === 'levelup' || S.screen === 'ultimate') return;
   // A finished fight keeps its players on the grid until they click "Back to the story".
-  if (prev && prev.phase === 'combat' && g.phase === 'story' && S.screen === 'combat') return;
+  if (prev && prev.phase === 'combat' && g.phase !== 'combat' && S.screen === 'combat') return; // (a lost Survival run goes to the lobby: its card shows first too)
   if (!prev || prev.phase !== g.phase) set({ screen: screenFor(g) });
   if (g.awards.some((a) => g.characters[a.charId]?.owner === S.me.id)) set({ screen: 'ultimate' });
 }

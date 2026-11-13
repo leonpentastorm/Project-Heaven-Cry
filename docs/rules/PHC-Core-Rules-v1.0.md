@@ -5020,6 +5020,181 @@ PROVISIONAL (items 2500 onward).
    multiplier on what the door makes (for Figments: a stat a class move can raise that multiplies an owned unit's HP or
    damage). The Rigger's moves today are all verbs the simulator does not play.
 
+## Rules revision 1.39: the mode a room plays, and the Survival run's state (Survival, step 1)
+
+Built on 13 Nov 2026 (Survival build plan step 1; `docs/design/survival-spec.md` rules 1 to 4 and 36, section 8.1;
+hand-off `docs/design/handoffs/survival-step-1.md`). Only what step 1 builds is ruled here: the mode, the run's state,
+starting and retiring a run. The path map, the encounters, the shop, stages and boons are the later steps' revisions.
+Every number and word list is PROVISIONAL (items 2600 to 2612).
+
+1. **A room plays one mode** (`settings.play`): Survival, Roguelike or Campaign, in that order (`data/modes.json`). The
+   host picks it in the lobby with the room's settings; a guest can't. A mode whose data says `available: false` is
+   locked: picking it is refused with its data's words (`coming`). Today only Survival is open. A room's own mode is
+   never a pick: a room already on a locked mode (an old save) keeps it, may leave it for an open one, and can't come
+   back. The mode changes only in the lobby.
+2. **A new room selects Survival** (`modes.json default`). **A save written before modes reads as a Campaign**
+   (`old_save`): it has no `settings.play`; loading writes it in, and the engine reads a missing one the same way.
+3. **Survival starts a run, not a story.** In a Survival room the host's Start is `run/start`; `session/start` is
+   refused ("This room plays Survival: Start begins a run, not a story."). A Campaign room starts its story as before.
+4. **`run/start`** (host): refused unless the room is in its lobby, plays Survival, has at least one character, has no
+   player with two characters (one character a player), has no online player without one (an offline player doesn't
+   hold the room up), and every character is level 1. Each refusal names who or what. It opens the run (`g.run`, item
+   2604) at stage 1 on the map, takes the room out of the lobby, and begins session 1 (Echo 1, recovery, per-session
+   uses). No Narrator work is queued.
+5. **The seed:** the host may give one (a shared seed gives everyone the same run); else it is made from the room's
+   code and its action count ("PHC-" and six letters and digits): the same on a replay, different for each run a room
+   starts. No die is rolled for it.
+6. **During a run** the Narrator's, the story's, the sessions' and the rests' actions are refused, as in the Proving
+   Ground ("A Survival run has no Narrator and no story: the engine runs it, node by node."); level-ups, gear, magic
+   and a fight's own actions are not.
+7. **`run/retire`** (host): only after a Boss (the run standing at its boon pick or its next tile); refused before
+   ("You retire after a Boss: beat this stage's Boss first."), by a guest, with no run, and when the run is over. It
+   ends the run and keeps the score: how it ended, the stage, stages cleared (the stage under way counts: it ended
+   with its Boss), nodes walked, and each character's level.
+8. **The mode picker** (the lobby): three cards side by side, the room's mode checked and saying "Selected"; a locked
+   card is dimmed, carries a lock mark and says "Coming", and a click, a key or a hover shows its reason in the one
+   hover card; a guest's click says "Only the host picks this."; the campaign's starts and "Load a campaign file…" show
+   only in a Campaign room; the Proving Ground is a text button under the cards. Where a mode's Narrator is
+   `optional` (Survival) the Narrator panel is collapsed, not hidden, and Start needs no key.
+
+## Rules revision 1.40: Survival's path map (Survival, build step 2)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-2.md`) from `docs/design/survival-spec.md` (draft 4) rules 7 to
+12 and section 3.1: the map a Survival stage is walked on. Nothing plays it yet: the run (`g.run`, `run/start`) and the
+fights are the next steps. Every number is in `data/survival.json` `map` and is PROVISIONAL (items 2700 to 2715). Code:
+`packages/engine/src/run/map.ts` (`pathMap`, `mapProblems`, `referenceRoute`, `renderPathMap`) and `rngFor` in
+`rng.ts`. Where this revision and the spec's rule 9 differ (guarantees c and d, and "links never cross"), this
+revision rules: the spec's wording cannot hold together with its guarantee (a) (item 2709).
+
+1. **A stage's map is a function of the run's seed and the stage** (spec rule 12): `pathMap(seed, stage)` draws
+   everything from its own named stream, `rngFor(seed, 'map#' + stage)`, never from a fight's dice and never from
+   anything else, so the same seed and stage give the same map, in every browser and after a reload. A node's id
+   names its stage, depth and place (`s1.d3.0`), so a node's own streams (`rngFor(seed, id + purpose)`) differ by stage.
+2. **Rows** (spec rule 7): 15 depths. Depth 1: 2 or 3 plain fights. Depth 2: 2 or 3 nodes, fights and exactly one
+   cache or training ground. Depths 3 to 7 and 9 to 13: 2 to 4 nodes. Depth 8: the gate, one Elite every path passes.
+   Depth 14: one shop and one rest. Depth 15: the Boss. A half (depths 1 to 7, and 9 to 13) starts 2 or 3 wide and
+   never narrows (a narrower row would leave a node one link, item 2709); each row widens by one at chance `widen`,
+   by two at `widen_two`. About 40 nodes.
+3. **Links** (spec rule 8): each node of an open row links to 2 nodes of the next row within one column of its own
+   (columns are half-steps so a row of any width sits centred); every node of the next row gets a way in; depth 7
+   links to the gate, the gate to all of depth 9, every node of depth 13 to both nodes of depth 14, both to the Boss.
+   **Links cross only where a row keeps its width, and then once** (an X between two neighbours): two links from
+   every node of a row into a row as wide cannot all miss each other (item 2709). The whole map, with each node's
+   kind, is known from the start.
+4. **Kinds** (spec rule 9): the open rows' kinds are drawn row by row, left to right, by `kind_weights` (fight 36,
+   elite 10, shop 10, forge 8, training 8, shrine 6, rest 6, cache 8, Crossroads 8) from the kinds the rules allow
+   at that node: no Elite before depth 4 nor at depths 7 and 9; no shop and no rest at depth 13; never the kind of
+   a parent if it is not a fight (guarantee b); never the kind of the other link of a parent (guarantee a); never
+   the only kind of its row.
+5. **Guarantee (a), a choice of gains:** every node of depths 1 to 6 and 8 to 13 links to two kinds (the gate's
+   links: two kinds at least), and every row from depth 2 holds two kinds. So every path offers a choice of kinds at
+   12 of its 14 steps; the two without are into the gate and into the Boss (Leon's ruling 7, second batch).
+6. **Guarantee (b):** an Elite, shop, Forge, training ground, shrine, rest, cache or Crossroads never links to one of
+   its own kind.
+7. **Guarantees (c) and (d), as this revision reads them** (item 2709):
+   - **The reference route:** at least one route from depth 1 to the Boss holds a shop at depths 3 to 7, a shop at
+     depths 9 to 12, a Forge at depths 3 to 13 and a rest at depths 3 to 12, with never more than `shop_gap` 6 nodes
+     between two of its shops (the stage's start counting as a shop: the run's start in stage 1, the previous
+     stage's depth 14 from stage 2, so the gap runs on across the Boss; depth 14's shop counting at the end).
+   - **No dead end:** from every node before a window opens (`until`: depth 2 for the first shop, the rest and the
+     Forge, depth 8 for the second shop), a node of that kind inside the window lies ahead.
+   - **The shop chain:** from the stage's start and from every shop, the next shop is at most 6 nodes ahead on some
+     route. A party that goes from shop to shop is never more than six nodes from one; a party that passes them by
+     chooses to.
+8. **Repair, never reroll** (spec rule 9): when the drawn kinds break item 7, the map is repaired in a fixed order
+   (the reference route first, then the dead ends, then the shop chain): the plain fight with the fewest paths
+   through it, among the nodes that can mend the break, becomes the kind wanted, unless that breaks items 4 to 6;
+   if no fight can, a node of a kind no guarantee asks for (training, shrine, cache, Crossroads, Elite) may. Ties go
+   by a key each node draws from the map's stream. Over 1,000 seeds and stages 1 to 5 every map holds items 2 to 7
+   (`test/survival-map.test.ts`).
+9. **Tools:** `mapProblems(map)` lists in words what breaks items 2 to 7 (empty: none); `referenceRoute(map)` gives
+   the route of item 7 (the simulated party's, spec 5.6); `renderPathMap(map)` prints a map as text, the Boss on top.
+
+## Rules revision 1.41: a Survival stage played: encounters, rewards, rests and the Boss (Survival, build step 3)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-3.md`) from `docs/design/survival-spec.md` (draft 4) rules
+2, 4, 5, 8, 11, 13 to 24 and 26, sections 3.1 to 3.3 and 5, and section 10 step 3: the first playable form of
+Survival, ONE stage. Every number is in `data/survival.json` (and the tiers' `lag` in `data/enemies.json`) and is
+PROVISIONAL (items 2800 to 2832). Code: `packages/engine/src/run/encounter.ts` (the generator),
+`run/rewards.ts` (what a node pays), `credits.ts` (the purse and prices), the run reducer in `game.ts` (`run/*`).
+The shop, the Forge, the training ground, the shrine and the Crossroads exist on the map and say what will be there
+(build steps 4 and 4a); boons, the next tile and stage 2 are build step 5.
+
+1. **The map on the run's start** (spec rules 10, 12): `run/start` draws stage 1's path map from the run's seed
+   (`pathMap(seed, 1)`, rules 1.40) on stage 1's tile (`run.first_setting`, the AHOC chapter outpost) and puts
+   `run.start_credits` (150) in **each character's own purse** (`c.credits`; `earnCredits`, `payCredits` with its
+   refusal in words, `priceOf(id, rarity)`: one door each). A character who fell in a lost run is refused at the next
+   `run/start` in words: a new run takes a fresh level 1 character.
+2. **Choosing the next node** (spec rules 8, 11): the first row before any node, then the links of the node the
+   squad stands on. `run/move {node}` is a player's mark; a node out of reach, a fight under way, picks still waiting
+   or the stage over are refused in words. Solo, the mark is the move. In co-op the squad goes when every connected
+   player has marked: the node with most marks, a tie to the host's mark (else the first in map order); the host may
+   go at once (`run/go`), a guest may not. Entering a node begins a new scene (per-scene uses come back, rule 29).
+3. **The encounter's budget** (spec rules 16, 17): in Soldier-equivalents (SE) on two axes, **bulk** (the fight's
+   length) and **pressure** (its danger). Per tier at equal level (`tiers`): Vermin 0.3 / 0.3, Minion 0.55 / 0.75,
+   Soldier 1 / 1, Elite 2.1 / 2.2, Boss 7.9 / 3. Target bulk = `bulk_per_char_round` 0.25 x party size N x rounds R
+   (`rounds`: a plain fight 5, at depths 1 and 2 4; an Elite and the gate 6.5; the Boss 9). Pressure cap =
+   `pressure_per_char` [1.2, 1.25, 1.3, 1.3] by N, x N. A fight is inside its bands with bulk within +-`bulk_band`
+   15% and pressure at most `pressure_band` 10% over the cap; at most `max_foes` [4, 6, 8, 10] by N.
+4. **The lag and the lead** (spec rules 18, 19; the level-scale spec's section 6, built here): each enemy tier has a
+   `lag` (enemies.json `items[].lag`, rows `{from, lag}` by fight level): Vermin and Minions 3, Soldiers 1 (2 from
+   fight level 10), Elites and Bosses 0. A foe's level is max(1, fight level - lag); Elites and Bosses stand
+   min((stage - 1) x `stage.elite_up.per`, `elite_up.max`) levels above it (0 in stage 1), never past 20. A foe is
+   priced x `lag_factor` 0.83 a level below the fight level on both axes, x its inverse a level above.
+5. **The spawn share** (spec rule 20): an Elite or a Boss against a small party spawns scaled by N (`share`): Boss HP
+   x 0.28 / 0.5 / 0.75 / 1, damage x 0.4 / 0.6 / 0.8 / 1; Elite HP x 0.7 / 0.9 / 1 / 1, damage x 0.55 / 0.8 / 1 / 1;
+   it costs its bulk x the HP share and its pressure x the damage share. Built as a **spawn scale on `FoeSpec`**
+   (`scale: {hp, damage}`, applied after the level row: HP and max HP, and the level's damage factor its weapon and
+   spells read): general, for any generated or campaign encounter. The Elite-and-Boss guard holds on the scaled HP.
+6. **Composition by template** (spec rule 21; `templates`): the templates eligible by node kind, depth, party size and
+   the setting's kinds, one rolled by weight and never the last fight's; its required slots, then its optional slots
+   in order, one foe at a time while it brings the bulk nearer the target, keeps pressure inside the cap's band and
+   the party under `max_foes`. When the cap or `max_foes` stops another foe and the bulk is still under the band,
+   **every foe takes the rest as HP** (`scale.hp` = target / bulk, rule 19); a template short only because its slots
+   ran out gives way to the next. Weapons from `pools` by tier and range (ranged, melee, close; a setting may name its
+   own), casters from enemies.json `casters` / `soul_casters`, the Boss from the setting, names from `names` by kind
+   and tier, tags (`skulk` and a hidden start for an ambush) from the slot. **Never a Celestial.** Deterministic:
+   `rngFor(seed, node + '#fight')`; the same seed, party and node give the same fight.
+7. **The fight's map** (spec rule 22, this step's form): the open ground's middle cropped to the size its units ask
+   (`map_size`: up to 6 units 16 x 16, up to 10 20 x 20, else 26 x 26), the squad's start tiles in its west columns
+   (`squad_cols` 1 and 2), the enemy line by the map's own deployment rule (10 to 14 tiles off) and each slot's spawn
+   (far, near, between, back, central, flanks, split), never nearer the squad than the deployment minimum. Build step
+   7 replaces the crop with the layout generator.
+8. **A fight node** (spec rule 13): Fight, Elite (the gate is one) and Boss nodes start the composed fight through
+   `startCombat` on the fight's own dice (`g.rng`), with no XP of the fight's own (the run pays it, item 10); the
+   fight's budget asked and spent, its template, foes and result are kept in `g.run.stats.fights` (rule 35's start).
+9. **Death in a run** (spec rule 5, Leon): a character who dies is out for the rest of that fight. **If the team wins,
+   it stands at `run.dead_return_hp` (1) HP** at the fight's end and takes its full share; a level its share of XP
+   brings adds its HP as any level does. If the whole party is down the fight is lost and **the run is over**
+   (`end.how` lost, its score kept) and **the room goes back to its lobby** (rule 4).
+10. **A won fight pays** (spec rules 14, 23, 26; section 3.1), each character its own: XP f(d) = `xp.base` 100 +
+   `xp.per_depth` 22 x (d - 1) (x `xp.elite` 1.5 for an Elite or the gate, x `xp.boss` 2 for the Boss) through
+   `giveXp`, so levels and the class at level 3 come as they always do (the level-up screen opens from the map);
+   credits c(d) = `credits.base` 80 + `credits.per_depth` 20 x d (x the same 1.5 and 2); **the ammunition pack**:
+   `ammo_pack` magazines' worth (a fight 1, an Elite 2, the Boss 3) for every gun it carries, in hand or pack (a
+   loose-loaded gun a magazine's capacity of rounds), and `ammo_pack.cores` 1 standard core if it carries an Evoker or
+   a Visualizer; and **the weapon pick**.
+11. **The weapon pick** (spec rule 26): `rewards.offer` 3 weapons or foci (every one with a price; no thrown things),
+   each at most `rewards.price_band` base 300 + per_depth 150 x d + per_stage 1,000 x (s - 1) on its standard price
+   (x 1.25 from an Elite, x 1.5 from the Boss); the first is for the character's own door (a focus of the door skill
+   it has most points in) or else the category of the weapon in its hand; each at a rarity rolled from
+   `rewards.rarity` (a fight standard 75 / fine 25; an Elite fine 60 / masterwork 35 / relic 5; the Boss masterwork
+   70 / relic 25 / celestial 5) and **capped by the stage** (`rewards.ceiling`: stage 1 Fine, stage 2 Masterwork, then
+   Relic; a Celestial roll is a Relic; **a Relic is offered as Masterwork until build step 4a gives Relics their named
+   property**). Or **credits instead**: `rewards.instead_rate` 0.5 of the cheapest offer's price. `run/pick
+   {charId, choice}` by the character's player (or the host, for an away player); a picked gun takes its share of the
+   ammunition pack. The squad moves on when every pick is taken.
+12. **The nodes without a fight** (spec rules 13, 24): a **rest** is `applyRest(g, 'long')` and a new session
+   (`beginSession`); a **cache** pays `xp.cache` 0.25 x f(d) XP, `credits.cache` 1.5 x c(d) credits and the
+   ammunition pack (`ammo_pack.cache` 1); its armour-or-item pick is build step 4a's. The shop, Forge, training
+   ground, shrine and Crossroads show their `nodes` text (what will be there) and the squad moves on. Every node's
+   hover card is its `tips` text with the engine's XP and credits.
+13. **The Boss** ends the stage: after its picks the run stands at `boon` ("STAGE 1 CLEARED"). Boons, the next tile
+   and stage 2 are build step 5; until then the host retires the run (`run/retire`), which ends it with its score and
+   **returns the room to its lobby**, where the last run's score shows above the mode cards.
+14. **Tests only:** `run/skip` wins the fight under way at once, and is refused unless the room is a test room
+   (`settings.test`, set in the lobby by the browser suites' hook `phc.testRoom`) and by anyone but the host.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -5445,6 +5620,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | patrons.json | 3 | Patrons and blessings by Faith tier (provisional numbers) |
 | maps.json | object | Map limits (26 at most, 8 at least; deployment 10 to 14 tiles), the picture legend, and the shared open-ground layout (rules 1.16) |
 | effect_ops.json | 132 | Registry of every effect op: 50 core, 82 bespoke |
+| survival.json | object | Survival mode's numbers (rules 1.40 on): `map`, the path map of a stage; a key more per build step (survival-spec section 7) |
 
 *(The counts in this table and the paragraph below are rules 1.0's. Counted from `data/` on 12 Nov 2026: classes 9 base + 21 advanced (Class Roster Revision 3; the level-3 rule is the highest attribute); enemies 5 tiers (Vermin, rules 1.15) with the level table, companions and casters; conditions 40; weapons 60; weapon_mastery 11 families + 33 items (retired by rules 1.12); techniques 65 (33 melee, 32 ranged); items 60; soul_modules 4 schools + 38 items; patrons 8 (Faith 2.0: Whispers, Hymns I to III by Devotion 3 / 5 / 7, a Miracle at Faith 7 + Devotion 10, interventions, vows, rites, line banks); effect_ops 192 (50 core, 113 bespoke, 17 weapon, 11 item, 1 sigil; bespoke about 14% of uses). Not in the table: actions, calls, feelings, loot_tables, objects, perk_cards, world_play. skills.json carries no signature-of, and archetypes spend no Core points (rules 1.13).)*
 
@@ -8121,3 +8297,65 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2509. **Reflex measured +0 (rules 1.38):** off-turn damage 4 / 11 / 0 / 0% of a rifle-turn with and without Reflex, levels 1 / 5 / 10 / 20 (4 fights a cell). The spec's +8 to +17% is unconfirmed: a playtest or a scripted fight across a held line. PROVISIONAL.
 2510. **The healer under fire (rules 1.38):** the tank and a dedicated Soul healer under three Soldiers: nobody Down in 10 rounds in 50% (level 1), 75% (levels 6 and 12), 100% (level 20) of fights, against 0% with the healer idle; under two, 100% at every level (the tank alone also lasts at 12 and 20). Whole fights (open ground, 3 a cell): every squad wins, rounds to kill as the level-1 targets at every level (the healer squad 6.3 to 10.7, a round above the standard and Boss targets). A stall to watch in the playtest, not refitted. PROVISIONAL.
 2511. **Items 2500 to 2511 are rules 1.38's.**
+2600. **A room plays one mode (rules 1.39 rule 1):** `settings.play`, from `data/modes.json` (survival, roguelike, campaign); the host picks an open one in the lobby; a locked one is refused with its `coming` words; a room's own mode is never a pick. PROVISIONAL.
+2601. **Only Survival is open (rules 1.39 rule 1):** `available: false` on Roguelike ("Coming after the advanced classes.") and Campaign ("Coming when the campaigns are rewritten."). Unlocking is one edit. PROVISIONAL.
+2602. **A new room selects Survival; a save from before modes reads as a Campaign (rules 1.39 rule 2):** `modes.json default` and `old_save`; `playOf` reads the missing field as `old_save`; a load writes nothing (merge of Survival steps 1 and 2: writing it changed the state hash of a saved and reloaded game, the replay guard's save-and-load case). A lobby saved before modes reads as a Campaign too (a call made for Leon: the spec named only "a campaign under way"; the alternative, Survival for a save still in its lobby, is one line in `playOf`). PROVISIONAL.
+2603. **Survival starts a run, `session/start` is refused in it (rules 1.39 rule 3).** PROVISIONAL.
+2604. **The run's state `g.run` (rules 1.39 rule 4; survival-spec rule 36):** `seed`, `stage` (from 1), `world` (tiles), `nodes` (this stage's path map), `at`, `path`, `state` (`map`, `boon`, `tile`, `over`; later steps add node states), `leans`, `ready`, `offers`, `shop`, `stats`, `out`, `renown`, and `end` once over. Steps 2 to 6 fill the empty fields. PROVISIONAL.
+2605. **`run/start`'s conditions (rules 1.39 rule 4):** host; lobby; Survival; at least one character; one character a player; every online player has one; every character level 1. PROVISIONAL.
+2606. **Every online player must have a character to start a run (rules 1.39 rule 4):** the spec's "every seat locked in"; an offline player without one doesn't block. A call made for Leon. PROVISIONAL.
+2607. **The run's seed (rules 1.39 rule 5):** given by the host, else "PHC-" and six base-36 characters from the room's code and action count; no die rolled. PROVISIONAL.
+2608. **Actions refused during a run (rules 1.39 rule 6):** narrator, session, story, poi, world, voice, check, overreach, vote, campaign, award, memory, talk and rest actions (the Proving Ground refuses itself). PROVISIONAL.
+2609. **`run/retire` only after a Boss (rules 1.39 rule 7):** the run at `boon` or `tile`; it ends `over` with `end` {how, stage, cleared, nodes, levels}. Until step 5 builds the Boss no run reaches it in play. PROVISIONAL.
+2610. **The mode picker (rules 1.39 rule 8; survival-spec 8.1):** three cards, a radio group (arrows move, Enter or Space picks), the lock in words, the reason in the one hover card; the Narrator panel collapsed where a Narrator is optional. Until the path map lands (step 2) a run under way shows its seed and stage in the room in place of the cards. PROVISIONAL.
+2611. **The browser suites' test hook (rules 1.39):** a page with `phc.testPlay` (or campaigns listed for it, `phc.showCampaigns`) opens new rooms on Campaign and shows its card open; the engine is not told (it refuses a pick of a locked mode even there). Tests only.
+2612. **Items 2600 to 2612 are rules 1.39's.**
+2700. **Survival's map rows (rules 1.40 item 2; `survival.json map.rows`, `gate_row`, `shop_rest_row`, `boss_row`):** 15 depths, the gate at 8, the shop and rest at 14, the Boss at 15 (survival-spec rule 7). PROVISIONAL.
+2701. **Row widths (rules 1.40 item 2; `map.width`):** 2 to 4 nodes (depths 1 and 2: 2 or 3); a half starts 2 or 3 wide (`start` weights 1 : 1) and widens by one at `widen` 0.2, by two at `widen_two` 0.05, never narrowing. Builder's numbers, fitted to the spec's "about 40 nodes" (measured 40.4). PROVISIONAL.
+2702. **Links (rules 1.40 item 3; `map.links` 2, `map.reach` 1):** two links a node within one column. PROVISIONAL.
+2703. **Depth 1 and depth 2 (rules 1.40 item 2; `map.fight_rows` [1], `map.row_one_of` {row 2: cache 8, training 8}):** depth 1 plain fights; depth 2 exactly one cache or training ground (the spec's "at most one": one is needed for guarantee a), placed under every depth-1 node. PROVISIONAL.
+2704. **Kind weights (rules 1.40 item 4; `map.kind_weights`):** fight 36, elite 10, shop 10, forge 8, training 8, shrine 6, rest 6, cache 8, event (Crossroads) 8 (survival-spec rule 9). Superseded by rules 1.41 (item 2801): fight 60. PROVISIONAL.
+2705. **Placement (rules 1.40 item 4; `map.from_depth` elite 4, `map.not_rows` elite 7 and 9, shop and rest 13).** PROVISIONAL.
+2706. **The shop gap (rules 1.40 item 7; `map.shop_gap` 6):** at most six nodes between shops on the reference route and on the shop chain; the stage's start counts as a shop (the run's start in stage 1, the previous stage's depth 14 after). PROVISIONAL.
+2707. **The guarantee windows (rules 1.40 item 7; `map.guarantees`):** a shop at depths 3 to 7 and 9 to 12, a rest at 3 to 12, a Forge at 3 to 13 (survival-spec rule 9 c, d); `until` 2, 8, 2, 2: the last depth from which one must still lie ahead. Tightening `until` holds to (3, 9, 6, 8) with no failure over 1,000 seeds (shops 5.0 a map, rests 3.6); (4, 10, 9, 10) fails 3%. PROVISIONAL.
+2708. **The text words of the kinds (`map.words`):** Fight, Elite, Boss, Shop, Forge, Training, Shrine, Rest, Cache, Crossroads (survival-spec section 3.1). *(Suggested.)*
+2709. **Needs a ruling (rules 1.40 items 3 and 7): the spec's rule 9 c and d and rule 8's "links never cross" cannot hold with guarantee (a).** (1) "Every path holds a shop in depths 3 to 7" with "every node links to two different kinds": take the deepest node, not a shop, from which every path ahead meets a shop in the window; both its links must then be shops (else the one that is not would be a deeper such node), and two links of one kind break (a). So no map has both; likewise for the second shop, the Forge and the rest. (2) Two links from every node with no crossing allow at most w + w′ − 1 links between rows of w and w′ nodes, so a row as wide as the one before needs a crossing. Leon's ruling 7 (second batch, binding: a choice of kinds at 12 of 14 steps) is kept whole; the smallest change is to read (c) and (d) as rules 1.40 item 7 does (one route holds them all; no dead end before a window; the shop chain) and to allow one X where a row keeps its width. The lead to confirm and to bring the spec's rule 9 and section 3.1's per-path ranges in line. PROVISIONAL.
+2710. **The per-path counts the spec states ("[5 to 8] fights", "[2 to 3] shops" a path, section 3.1) are not guarantees under item 2709:** measured over all paths of 5,000 maps, fights 4.6 a path (50.7% in 5 to 8; the route that seeks fights takes 8.8), shops 1.6 (49.3% in 2 to 3; the route that seeks them, 3.9). The map counts are within the spec's "about" values (item 2711). PROVISIONAL.
+2711. **The map counts (measured, 1,000 seeds × stages 1 to 5; `map.expect`, the test's bands: about ± 1.5, fights ± 2, nodes ± 3):** fights 13.8 (about 15), Elites 3.4 with the gate (about 4), shops 4.5 (about 4), Forges 2.9 (3), training grounds 3.2 (2), shrines 2.2 (2), rests 3.2 (3), caches 3.2 (2 to 3), Crossroads 2.8 (2), nodes 40.4 (40). Training grounds, caches and Crossroads run about one over the spec's figures: guarantee (a) never lets a node link to two fights, which moves weight from fights to the other kinds. If Leon wants them nearer, lower their weights; no guarantee depends on it. PROVISIONAL.
+2712. **Repair order (rules 1.40 item 8):** the reference route, then the dead ends, then the shop chain; the plain fight with the fewest paths through it, else a node of a kind no guarantee asks for (the latter is the builder's addition: the spec's "its plain fight" alone left some maps unrepaired). PROVISIONAL.
+2713. **`rngFor(seed, key)` (rules 1.40 item 1; `rng.ts`):** a stream seeded by `seedFrom(seed + '#' + key)`; the map's key is `'map#' + stage`. The first named stream (survival-spec section 4.2 item 3).
+2714. **The map does not read the setting:** a node carries the stage's `setting` as given (null until the run's tiles exist, survival-spec rule 10); every setting draws the same map for the same seed and stage.
+2715. **Items 2700 to 2715 are rules 1.40's.**
+2800. **A character's purse (rules 1.41 item 1; `survival.json run.start_credits` 150):** `c.credits`, `earnCredits`, `payCredits` (its refusal in words), `priceOf(id, rarity)` = `price_credits` x `rules.json rarity.<r>.price`, null for the unpriced and `stock: false`. PROVISIONAL.
+2801. **The fight weight on the path map raised to 60 (rules 1.41; supersedes item 2704's fight 36):** at 36 a path held 4.61 fights (50.7% of paths in the spec's 5 to 8); at 60, measured over 1,000 seeds x stages 1 to 5 (64,487,424 paths): 5.14 a path (5%-95%: 3 to 8; 63.1% in 5 to 8), 15.73 on a map (spec: about 15); the other weights unchanged; every map still holds every rule of 1.40. Higher weights gain little (70: 5.27; 100: 5.53): guarantee (a) caps it. PROVISIONAL.
+2802. **Item 2709 ruled by the lead (rules 1.41):** the spec's rule 9 (c) and (d) read "on at least one route" (the reference route, no dead end, the shop chain of 1.40 item 7), and rule 8 allows one crossing where a row keeps its width; the spec text is brought in line. PROVISIONAL.
+2803. **Choosing the next node (rules 1.41 item 2):** `run/move`, `run/go`; a tie to the host's mark, else the first node in map order. PROVISIONAL.
+2804. **A node is a new scene (rules 1.41 item 2; spec rule 29).** PROVISIONAL.
+2805. **The tiers' SE (rules 1.41 item 3; `survival.json tiers`):** Vermin 0.3 / 0.3, Minion 0.55 / 0.75, Soldier 1 / 1, Elite 2.1 / 2.2, Boss 7.9 / 3 (bulk / pressure; spec 5.1). PROVISIONAL.
+2806. **The budget (rules 1.41 item 3):** `bulk_per_char_round` 0.25; `rounds` fight 5 (4 at depth 2 or less, `early_depth` 2), elite and gate 6.5, boss 9; `pressure_per_char` 1.2 / 1.25 / 1.3 / 1.3; `bulk_band` 0.15; `pressure_band` 0.1; `max_foes` 4 / 6 / 8 / 10. PROVISIONAL.
+2807. **The lag (rules 1.41 item 4; `enemies.json items[].lag`):** Vermin and Minions 3, Soldiers 1 (2 from fight level 10), Elites and Bosses 0; never 5 (the gap rule's one-hit line; the validator). Read only by the encounter generator: a campaign's fights are unchanged. PROVISIONAL.
+2808. **The lag factor (rules 1.41 item 4; `lag_factor` 0.83):** checked against `enemies.json levels.table` (the geometric mean of a level's HP and damage step, with one point to hit each way at a 65% hit chance) within 3% (`test/survival-encounter.test.ts`): bulk 0.830, pressure 0.825. PROVISIONAL.
+2809. **The stage term (rules 1.41 item 4; spec rule 19; `stage`):** bulk +0.35 and pressure +0.15 a stage, credits +0.35, XP x [1, 0.8, 0.9, 1, 1], `elite_up` per 1, max 3. Built and tested on stages 1 to 3; played from build step 5. PROVISIONAL.
+2810. **The spawn share (rules 1.41 item 5; `share`):** Boss HP 0.28 / 0.5 / 0.75 / 1, damage 0.4 / 0.6 / 0.8 / 1; Elite HP 0.7 / 0.9 / 1 / 1, damage 0.55 / 0.8 / 1 / 1. PROVISIONAL.
+2811. **`FoeSpec.scale` (rules 1.41 item 5):** a new general primitive (`foeScale` in combat.ts): HP and max HP x hp (at least 1), the level damage factor x damage, before the foe's magic is levelled. No fight before this step sets it: the golden tables and replays are unchanged. PROVISIONAL.
+2812. **Filling a template (rules 1.41 item 6):** one foe at a time while it brings the bulk nearer the target; short with no room for another foe: every foe x `scale.hp` = target / bulk; short only for want of slots: the next template first. The spec's "swap a Soldier for two Minions" (rule 21 d) is not built: the HP scale and the next template cover every case measured. PROVISIONAL.
+2813. **Measured (rules 1.41 item 6; 150 seeds x party 1 to 4 x levels 1, 3, 6, 9 x every fight node of a stage, stages 1 to 3: 50,400 fights):** stages 1 and 2 are all inside both bands; the means of bulk spent over target 0.95 to 1.00, of pressure over the cap 0.74 to 1.06 (the table is in the hand-off). PROVISIONAL.
+2814. **Needs a ruling (rules 1.41 item 6), for build step 5:** in stage 3 a solo party's Elite, gate or Boss two levels up passes the pressure cap's band by itself (Elite 1.76 against 1.72): the anchor is required and no rule scales its damage down. Recommendation: the same HP rule mirrored, a `scale.damage` down to the cap for a required anchor that passes it alone. Pinned by a test until ruled. PROVISIONAL.
+2815. **The templates (rules 1.41 item 6; `templates`):** the eleven of spec 3.2 with their slots (data); `twin_elites` needs a party of 3; `machines` a setting with robots or drones; the champion's Boss is the setting's. PROVISIONAL.
+2816. **The settings (rules 1.41 item 6; `settings`):** the six of spec 3.3 with their kinds and weights, each Boss (name, kind, weapon, casters, portrait id); stage 1 is AHOC (`run.first_setting`). The other five are data for build step 5. PROVISIONAL.
+2817. **The weapon pools and names (rules 1.41 item 6; `pools`, `names`):** by tier and range (ranged, melee, close), names by kind and tier; Vermin bite. PROVISIONAL.
+2818. **The fight's map (rules 1.41 item 7; `map_size`):** 16 / 20 / 26 by units up to 6 / 10 / more; the open ground's middle cropped; squad columns 1 and 2; no foe nearer than the deployment minimum (10). PROVISIONAL.
+2819. **Death (rules 1.41 item 9; `run.dead_return_hp` 1):** back at 1 HP after a won fight with a full share (spec question 4's recommendation). PROVISIONAL.
+2820. **A lost run returns the room to its lobby (rules 1.41 items 9, 13):** with the score in `g.run.end`; the fallen characters stay fallen and are refused at the next `run/start` (item 2800's words). A call made for Leon: the alternative is to raise them at the next run's start. PROVISIONAL.
+2821. **XP a node pays (rules 1.41 item 10; `xp`):** base 100, per_depth 22, elite 1.5, boss 2, cache 0.25. PROVISIONAL.
+2822. **Credits a node pays (rules 1.41 item 10; `credits`):** base 80, per_depth 20, elite 1.5, boss 2, cache 1.5. PROVISIONAL.
+2823. **The ammunition pack (rules 1.41 item 10; `ammo_pack`):** fight 1, elite 2, boss 3, cache 1 magazines' worth a gun; 1 core for an Evoker or Visualizer carried (`core_doors`). One core whatever the node (the spec's "one standard core"). PROVISIONAL.
+2824. **The pick's size and band (rules 1.41 item 11; `rewards.offer` 3, `rewards.price_band`):** base 300, per_depth 150, per_stage 1,000, elite x 1.25, boss x 1.5, on the standard price. PROVISIONAL.
+2825. **The pick's rarity (rules 1.41 item 11; `rewards.rarity`, `rewards.ceiling`):** as the spec; a Relic is offered as Masterwork until build step 4a (no Relic property exists yet). PROVISIONAL.
+2826. **The pick's first offer (rules 1.41 item 11):** the door with most points (a focus of its kind), else the hand weapon's category; when none fits the band, any. PROVISIONAL.
+2827. **Credits instead (rules 1.41 item 11; `rewards.instead_rate` 0.5).** PROVISIONAL.
+2828. **A picked gun takes its share of the ammunition pack (rules 1.41 item 11):** the pack is paid at the fight's end, the pick after it; rule 23's "every gun it carries" is read to include the picked one. PROVISIONAL.
+2829. **The rest and the cache (rules 1.41 item 12):** the rest's small training and the cache's armour-or-item pick are build step 4a's. PROVISIONAL.
+2830. **The panels' and hover cards' words (rules 1.41 item 12; `nodes`, `tips`).** PROVISIONAL.
+2831. **After the Boss (rules 1.41 item 13):** the run stands at `boon` with no boon offered until build step 5; `run/retire` returns the room to its lobby. PROVISIONAL.
+2832. **Items 2800 to 2832 are rules 1.41's.**

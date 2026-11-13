@@ -1,0 +1,14 @@
+// Writes test/fixtures/save-pre-modes-lobby.json with the engine at 7cd6b8a0 (before rules 1.39's modes): a room saved
+// in its lobby, two players, one character each, the host's picks (start, tone) made. Run once; never regenerate.
+import { it } from 'vitest';
+import { writeFileSync } from 'node:fs';
+import { newGame, apply } from '../src';
+import { sheetOf } from './helpers/perkfight';
+it('writes the fixture', () => {
+  let g = newGame('LOBBY1', { id: 'host', name: 'Leon' }, 'seed-lobby');
+  g = apply(g, { type: 'player/join', id: 'p2', name: 'Mai' }, 'host');
+  g = apply(g, { type: 'settings', patch: { start: 'own', tone: 'Pulp' } }, 'host');
+  g = apply(g, { type: 'char/add', sheet: sheetOf({ name: 'Kade', archetype: 'sharpshooter', kit: 'soldier' }) }, 'host');
+  g = apply(g, { type: 'char/add', sheet: sheetOf({ name: 'Ha', archetype: 'sharpshooter', kit: 'medic' }) }, 'p2');
+  writeFileSync(process.env.OUT!, JSON.stringify(g));
+});

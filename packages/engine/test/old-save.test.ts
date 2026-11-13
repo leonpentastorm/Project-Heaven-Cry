@@ -13,13 +13,18 @@
 //       sides, glyphs and an Outburst on the field; and back in the story with the finished fight still in `combat`.
 //       Neither has an archive.
 //
+//   save-pre-modes-lobby.json     written by the claude/charming-gauss-hbq4n0 engine at 7cd6b8a0, the commit before rules
+//       1.39 (modes and the Survival run): a room saved in its lobby, two players, one character each, start and tone
+//       picked. The script beside it (save-pre-modes-lobby.how.ts.txt) wrote it. It has no settings.play: it loads as a
+//       campaign (run-state.test.ts reads it).
+//
 // Each is loaded the way the client loads a save (parsed, migrateLoaded) and played on. NEVER regenerate these files:
 // they are what an old save looks like. When the saved shape changes, add a NEW fixture beside them (written by the
 // engine as it was before the change; say which commit in this list) and a migration, and these must still pass.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV } from '../src';
+import { migrateLoaded, apply, viewFor, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV, playOf } from '../src';
 import { Rec, fightTurn, type Pc } from './helpers/replay';
 
 const load = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
@@ -190,5 +195,26 @@ describe('rules 1.36 (the level scale): a save from before it moves into the new
     const r = raw(), before = Object.fromEntries(Object.values(r.characters).map((c: any) => [c.id, c.hp]));
     const g = apply(migrateLoaded(r), { type: 'player/online', id: 'p2', online: true } as any, 'host');
     for (const [id, hp] of Object.entries(before)) expect(g.characters[id].hp).toBe(hp);
+  });
+});
+
+// Rules 1.39 (Survival step 1): a save from before modes has no settings.play; it reads as a campaign (data/modes.json
+// old_save) and plays its story on; a lobby saved then can still switch to Survival and start a run.
+describe('rules 1.39: an old save loads as a campaign', () => {
+  const start = (g: any, seed: string) => apply(g, { type: 'run/start', seed }, g.hostId);
+  const fixture = (name: string) => migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + name + '.json', import.meta.url)), 'utf8')));
+  it('every old save (written before modes) loads as a campaign and keeps playing its story', () => {
+    for (const name of ['save-live-0.22.0-long-mid-fight', 'save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight', 'save-1b-pre-owned-companion-mid-fight', 'save-pre-modes-lobby']) {
+      const g = fixture(name);
+      expect(g.settings.play, name).toBeUndefined(); expect(playOf(g), name).toBe('campaign'); expect(g.run, name).toBeFalsy();
+      expect(() => viewFor(g, g.hostId), name).not.toThrow();
+    }
+  });
+  it('a lobby saved before modes (save-pre-modes-lobby) starts its story as before, and can switch to Survival and run', () => {
+    const g = fixture('save-pre-modes-lobby');
+    expect(g.phase).toBe('lobby');
+    expect(apply(g, { type: 'session/start' }, g.hostId).phase).toBe('story');
+    const s = apply(g, { type: 'settings', patch: { play: 'survival' } }, g.hostId);
+    expect(start(s, 'PHC-0002').run!.state).toBe('map');
   });
 });

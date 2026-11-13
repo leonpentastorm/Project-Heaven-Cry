@@ -38,6 +38,7 @@ import { MissionLayer } from './game/missionBoard';
 import { DialogHost } from './game/dialog';
 import { SettingsHost } from './game/settings';
 import { leaveFlow } from './screens/shell';
+import { RunScreen } from './game/RunScreen';
 
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
   home: Title as any,
@@ -47,6 +48,7 @@ const SCREENS: Record<Screen, React.ComponentType<any>> = {
   combat: makeScreen(expandLayout(expand(combatT)), CombatLogic as any),
   levelup: makeScreen(expand(levelupT), LevelUpLogic as any),
   ultimate: makeScreen(expand(ultimateT), UltimateLogic as any),
+  run: RunScreen as any,
 };
 
 onVoice(poke);

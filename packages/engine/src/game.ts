@@ -57,6 +57,11 @@ import { setBraced, setDowned, stagger, startHidden } from './unitstate';
 import { clearConds, restoreConds } from './magic';
 import { condMods } from './condtable';
 import { runOwned } from './owned';
+import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf, survivalRun, runSetting, runNode, runMoveProblem, leanWinner } from './run/state';
+import { MAP_DATA } from './run/map';
+import { composeEncounter, SETTING } from './run/encounter';
+import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT } from './run/rewards';
+import { earnCredits } from './credits';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -99,7 +104,11 @@ export type NarratorWork = null | { kind: 'opening' | 'round' | 'results' | 'com
 
 export interface GameState {
   v: number; seq: number; rng: Rng; code: string; hostId: string;
-  settings: { mode: 'ai' | 'human'; tone: string; start: string; model: string };
+  /** play (rules 1.39): the mode the room plays, picked in the lobby (data/modes.json); absent in a save from before
+   * modes, which reads as a campaign (playOf). */
+  settings: { mode: 'ai' | 'human'; tone: string; start: string; model: string; play?: PlayMode;
+    /** Rules 1.41: the browser suites' test room (set in the lobby by the test hook): only it allows `run/skip`. */
+    test?: boolean };
   phase: 'lobby' | 'story' | 'combat';
   players: Player[]; characters: Record<string, Character>;
   story: {
@@ -178,6 +187,8 @@ export interface GameState {
   archive?: Entry[];
   /** The Proving Ground (practice mode): endless waves on one map, no Narrator, no XP, no story (see Sandbox). */
   sandbox?: Sandbox | null;
+  /** A Survival run (rules 1.39, run/state.ts): its seed, stage, path map and where it stands; absent outside one. */
+  run?: RunState | null;
   /** Sessions started in this room, and rests taken this session: the stamps of per-session and per-rest item uses
    * (effects/uses.ts). Old saves: session 1, no rests. */
   sessionN?: number; restN?: number;
@@ -309,6 +320,11 @@ export type Action =
   | { type: 'settings'; patch: Partial<GameState['settings']> }
   | { type: 'char/add'; sheet: Sheet } | { type: 'char/remove'; charId: string }
   | { type: 'session/start' }
+  /** Rules 1.39: the host starts a Survival run (seed: a shared seed, else one from the room); the host retires it after a Boss. */
+  | { type: 'run/start'; seed?: string } | { type: 'run/retire' }
+  // rules 1.41 (Survival step 3): mark (or, solo, take) the next node; the host goes at once; a weapon pick or its
+  // credits; tests only, win the fight under way
+  | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'credits' } | { type: 'run/skip' }
   /** The host ends a session and starts the next one in the same room (rules 1.6.1, item 721). */
   | { type: 'session/next' }
   | { type: 'story/speak'; text: string; roll?: boolean; ooc?: boolean } | { type: 'story/skip'; playerId: string }
@@ -478,6 +494,8 @@ function migrateFloor(g: GameState) {
  * settled on every sheet (the other migrations wait for the first action, as before). */
 export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterItems(c as any); } catch { /* a save this old is handled by apply */ }
+  // rules 1.39: a save from before modes played a campaign; playOf reads the missing field so, and nothing is written
+  // here (a load must leave the state as it was: the replay guard's save-and-load case)
   return g;
 }
 // ---------- what apply() shares with the state it was given (it copies everything else) ----------
@@ -584,6 +602,8 @@ function reduce(g: GameState, a: Action, by: string) {
   if (a.type.startsWith('sandbox/')) { sandboxAction(g, a as SandboxAction, by); return; }
   if (a.type.startsWith('faith/')) { faithAction(g, a as FaithAction, by); return; } // rules 1.6 (faith.ts)
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
+  if (a.type.startsWith('run/')) { runAction(g, a, by); return; } // rules 1.39 (run/state.ts)
+  if (g.run && g.run.state !== 'over' && RUN_REFUSED.test(a.type)) fail('A Survival run has no Narrator and no story: the engine runs it, node by node.');
   if (g.sandbox && /^(world\/act|story\/(move|door))$/.test(a.type)) { sandboxWorld(g, a, by); return; } // the area map while gearing up
   if (g.sandbox && /^(gear|magic)\//.test(a.type)) { sandboxGear(g, a, by); return; } // gear and magic change mid-fight here
   switch (a.type) {
@@ -599,7 +619,13 @@ function reduce(g: GameState, a: Action, by: string) {
     }
     case 'player/online': { if (!isHost(g, by)) fail('Host only.'); const p = g.players.find((x) => x.id === a.id); if (p) p.online = a.online; return; }
     case 'player/kick': { if (!isHost(g, by) || a.id === g.hostId) fail('Host only.'); g.players = g.players.filter((p) => p.id !== a.id); for (const c of Object.values(g.characters)) if (c.owner === a.id) delete g.characters[c.id]; return; }
-    case 'settings': { if (!isHost(g, by)) fail('Only the host changes room settings.'); if (g.phase !== 'lobby' && a.patch.start) fail('The campaign has started.'); Object.assign(g.settings, a.patch); return; }
+    case 'settings': {
+      if (!isHost(g, by)) fail('Only the host changes room settings.'); if (g.phase !== 'lobby' && a.patch.start) fail('The campaign has started.');
+      // rules 1.39: the mode is picked in the lobby, among the open ones (data/modes.json available); the room's own stays
+      if (a.patch.play != null && a.patch.play !== playOf(g)) { if (g.phase !== 'lobby') fail('The mode is picked in the lobby.'); const no = modeLocked(a.patch.play); if (no) fail(no); }
+      if (a.patch.test != null && !!a.patch.test !== !!g.settings.test && g.phase !== 'lobby') fail('A test room is set in the lobby.'); // rules 1.41
+      Object.assign(g.settings, a.patch); return;
+    }
     case 'char/add': {
       const err = roomSheetError(g, by, a.sheet); if (err) fail(err);
       const c = newCharacter(id(g, 'c'), by, a.sheet);
@@ -627,6 +653,7 @@ function reduce(g: GameState, a: Action, by: string) {
     case 'session/start': {
       if (!isHost(g, by)) fail('Only the host starts the session.');
       if (g.phase !== 'lobby') fail('Already started.');
+      if (playOf(g) !== 'campaign') fail('This room plays ' + (modeOf(playOf(g))?.name || playOf(g)) + ': Start begins a run, not a story.'); // rules 1.39
       if (!Object.keys(g.characters).length) fail('Lock in at least one character.');
       g.phase = 'story'; beginSession(g);
       g.story.magic = {}; g.story.glyphs = []; g.story.zones = []; g.story.mana = MANA_START;
@@ -1297,6 +1324,12 @@ function giveXp(g: GameState, c: Character, source: string, amount: number, reas
   if (gained) rankReached(g, c, rankBefore); // rules 1.11: a rank can come with the level (6, 12)
 }
 
+/** A new scene begins (the Narrator's scene title, a Survival node): per-scene uses come back. 'scene_change' {g, n, title}. */
+function newScene(g: GameState, title: string) {
+  g.story.scene = { title, n: g.story.scene.n + 1, hooks: [], revealed: [], asked: {}, fired: {} };
+  push(g, { kind: 'scene', text: title });
+  emitStory(g, 'scene_change', { g, n: g.story.scene.n, title }); // 'scene_change' {g, n, title}
+}
 /** Apply the Narrator's validated turn. Anything that breaks a rule is dropped with a note (the adapter retries first). */
 export function narratorTurn(g: GameState, t: NarratorTurn) {
   const began = g.narrator.busy ? g.narrator.beganSeq : undefined;
@@ -1310,11 +1343,7 @@ export function narratorTurn(g: GameState, t: NarratorTurn) {
     // Rulings made while this call was in flight weren't in its prompt: they wait for the next turn (no lost uses).
     const later = began == null ? [] : list.filter((r) => !answered.has(r.id) && Number(String(r.id).slice(1)) > began);
     g.story.rulings = later; if (later.length) g.story.needs = true; }
-  if (t.sceneTitle && t.sceneTitle !== g.story.scene.title) {
-    g.story.scene = { title: t.sceneTitle, n: g.story.scene.n + 1, hooks: [], revealed: [], asked: {}, fired: {} };
-    push(g, { kind: 'scene', text: t.sceneTitle });
-    emitStory(g, 'scene_change', { g, n: g.story.scene.n, title: t.sceneTitle }); // 'scene_change' {g, n, title}
-  }
+  if (t.sceneTitle && t.sceneTitle !== g.story.scene.title) newScene(g, t.sceneTitle);
   if (t.narration?.trim()) { push(g, { kind: 'narration', text: t.narration.trim() }); const v = votesOf(g); v.turns = [...v.turns, g.story.entries.at(-1)!.id].slice(-REROLLABLE_TURNS); }
   { const m = momentsOpen(g).find((x) => x.id === t.moment); if (m) { (g.story.moments ||= []).push(m.id); push(g, { kind: 'art', art: m.art, text: m.caption }); } }
   // Voice hooks: passive 10 + mod against each hook; each player sees at most 2, biggest margins first (spec: Voices).
@@ -1983,19 +2012,25 @@ function runEnemies(g: GameState) {
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
   clearAction(cb);
-  if (cb.over) { if (g.sandbox) sandboxOver(g); else finishCombat(g); }
+  if (cb.over) { if (g.sandbox) sandboxOver(g); else if (g.run) runFightOver(g); else finishCombat(g); }
 }
 
-function finishCombat(g: GameState) {
-  const cb = g.combat!;
+/** A fight's end, the part every kind of fight shares (a story's and a Survival run's): vows, the fighters written back
+ * to their characters, weapons left in someone dropped, companions' HP, the deaths swept, magic out, 'combat_end'. */
+function fightBack(g: GameState, cb: Combat, afterFight: boolean): boolean {
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
-  for (const u of cb.units) if (u.charId) unitToCharacter(g, u, !cb.noXp);
+  for (const u of cb.units) if (u.charId) unitToCharacter(g, u, afterFight);
   // Companions keep their HP (destroyed ones stay at 0 until repaired or healed in the story).
   for (const u of cb.units) { if (u.nailed) dropNailed(cb, u); if (u.stuck) dropStuck(cb, u); } // rules 1.12: a weapon left in someone falls where they stand when the fight ends
   for (const u of cb.units) if (u.companion && u.ctrl) { const owner = g.characters[u.ctrl], comp = owner?.companions?.find((x) => 'cp-' + owner.id + '-' + x.id === u.id); if (comp) comp.hp = u.dead ? 0 : u.hp; }
   noteDeaths(cb, g.rng); magicOut(g, cb, true);
   const won = cb.over === 'win';
   emitHook(cb, 'combat_end', { cb, won, g }); // 'combat_end' {cb, won}: after the fighters are written back to their characters
+  return won;
+}
+function finishCombat(g: GameState) {
+  const cb = g.combat!;
+  const won = fightBack(g, cb, !cb.noXp);
   { const fallen = cb.units.filter((u) => u.side === 'foe' && u.dead).map((u) => u.name), lost = cb.units.filter((u) => u.side === 'pc' && u.dead).map((u) => u.name);
     canon(g, (won ? 'The party won' : (cb.over as string) === 'extracted' ? 'The party was extracted from' : 'The party lost') + ' the fight "' + cb.name + '" in ' + cb.round + ' rounds' + (fallen.length ? '; killed: ' + fallen.join(', ') : '') + (lost.length ? '; fallen: ' + lost.join(', ') : '') + '.', [...new Set([...fallen, ...lost])], lost.length ? 5 : 3);
     for (const n of [...fallen, ...lost]) { const p = findPerson(memoryOf(g), n); if (p) applyMemOp(g, { op: 'person', id: p.id, status: 'dead' }); else if (!GENERIC.test(n)) applyMemOp(g, { op: 'person', name: n, status: 'dead' }); } }
@@ -3060,6 +3095,150 @@ export type SandboxAction =
   | { type: 'sandbox/meter'; unitId: string; momentum?: number; pressure?: number }
   | { type: 'sandbox/objective'; id: string; text?: string; where?: Where; status?: 'done' | 'failed' | 'open' };
 
+/** Rules 1.39 (survival-spec rule 36): actions with no place in a Survival run, refused as in the Proving Ground: the
+ * Narrator's, the story's, the room's sessions and rests (a run's are its Rest nodes). (The Proving Ground refuses itself.) Level-ups,
+ * gear, magic and the fight's own actions are not here. */
+const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest\/)/;
+/** Rules 1.39: a run's actions through the one reducer (the state and the refusals are run/state.ts). */
+function runAction(g: GameState, a: Action, by: string) {
+  switch (a.type) {
+    case 'run/start': {
+      const no = runStartProblem(g, by); if (no) fail(no);
+      const seed = typeof a.seed === 'string' && a.seed.trim() ? a.seed.trim().slice(0, 40) : runSeed(g.code, g.seq);
+      g.run = newRun(seed); g.phase = 'story'; g.combat = null; beginSession(g);
+      g.story.round = 1; g.story.await = 'none'; g.story.work = null;
+      // rules 1.41 (spec rule 2): each character's own purse starts at start_credits
+      for (const c of Object.values(g.characters)) { c.credits = 0; earnCredits(c, survivalRun.start_credits); }
+      push(g, { kind: 'system', head: 'SURVIVAL', text: 'The run begins at stage 1 (seed ' + seed + ') on ' + (SETTING[runSetting(g.run)]?.name || runSetting(g.run)) + '. Pick the first node.' });
+      return;
+    }
+    case 'run/move': { // rules 1.41 (spec rules 8, 11): a player's mark on a reachable node; when everyone has marked, the squad goes
+      const no = runMoveProblem(g, by, a.node); if (no) fail(no);
+      g.run!.leans = { ...g.run!.leans, [by]: a.node };
+      const w = leanWinner(g); if (w) runEnter(g, w);
+      return;
+    }
+    case 'run/go': { // the host takes the squad at once: the node most marked, a tie to the host's own mark
+      if (!isHost(g, by)) fail('Only the host sends the squad on before everyone has marked a node.');
+      const w = leanWinner(g, true); if (!w) fail('Mark a node first.');
+      const no = runMoveProblem(g, by, w!); if (no) fail(no);
+      runEnter(g, w!); return;
+    }
+    case 'run/pick': { // rules 1.41 (spec rule 26): one weapon of three, or the credits instead
+      const r = g.run!, o = r.offers?.[a.charId], c = g.characters[a.charId];
+      if (r.state !== 'reward' || !o || !c) fail('There is nothing to pick for that character now.');
+      if (c!.owner !== by && !isHost(g, by)) fail('Only ' + c!.name + '\'s player picks for ' + c!.name + ' (or the host, for an away player).');
+      if (a.choice === 'credits') { earnCredits(c!, o!.instead); push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes ' + o!.instead + ' credits instead of a weapon.' }); }
+      else {
+        const w = o!.weapons[Number(a.choice)]; if (!w) fail('No such weapon in the pick.');
+        const pack = packOf(c!).map((x) => ({ ...x }));
+        for (const it of pickedItem(w!)) packAdd(pack, it);
+        for (let i = 0; i < o!.ammo; i++) for (const it of magazineWorth(w!.id)) packAdd(pack, it); // rule 23: a picked gun takes its share of the pack
+        c!.pack = pack;
+        push(g, { kind: 'system', charId: c!.id, text: c!.name + ' takes the ' + (w!.rarity !== 'standard' ? w!.rarity[0].toUpperCase() + w!.rarity.slice(1) + ' ' : '') + itemName(w!.id) + '.' });
+      }
+      const rest = { ...r.offers! }; delete rest[a.charId];
+      r.offers = Object.keys(rest).length ? rest : null;
+      if (!r.offers) {
+        const n = runNode(r, r.at);
+        r.state = n?.kind === 'boss' ? 'boon' : 'map';
+        if (r.state === 'boon') push(g, { kind: 'system', head: 'STAGE ' + r.stage + ' CLEARED', text: 'The Boss is down. The boons and the next tile come with a later build: the host can retire the run with its score.' });
+      }
+      return;
+    }
+    case 'run/skip': { // tests only (the browser suites' room): the fight under way is won at once
+      if (!g.settings.test) fail('Skipping a fight is for the test room only.');
+      if (!isHost(g, by)) fail('Only the host skips a fight.');
+      const cb = g.combat; if (g.run?.state !== 'fight' || !cb || cb.over) fail('No fight is under way.');
+      cb!.over = 'win'; say(cb!, 'TEST: the fight is skipped and counts as won.'); runFightOver(g); return;
+    }
+    case 'run/retire': {
+      const no = runRetireProblem(g, by); if (no) fail(no);
+      const levels: Record<string, number> = {}; for (const c of Object.values(g.characters)) levels[c.id] = c.level;
+      g.run = endRun(g.run!, 'retired', levels); g.phase = 'lobby'; // rules 1.41: the room is back in its lobby, the score kept in g.run
+      const e = g.run.end!;
+      push(g, { kind: 'system', head: 'RUN OVER', text: 'The squad retires: ' + e.cleared + (e.cleared === 1 ? ' stage' : ' stages') + ' cleared, ' + e.nodes + (e.nodes === 1 ? ' node' : ' nodes') + ' walked. The score is kept.' });
+      return;
+    }
+    default: fail('No such run action: ' + a.type + '.');
+  }
+}
+/** "1 round", "3 rounds". */
+const counted = (n: number, word: string) => n + ' ' + word + (n === 1 ? '' : 's');
+/** The kind of pay a node gives (the gate pays as an Elite). */
+const payKindOf = (n: RunNode): PayKind => (n.gate ? 'gate' : n.kind === 'elite' || n.kind === 'boss' || n.kind === 'cache' ? n.kind : 'fight');
+/** The squad enters a node (rules 1.41; spec rules 13, 24, 29): a new scene; a fight begins, a rest heals, a cache pays,
+ * the nodes still to be built say what will be there. */
+function runEnter(g: GameState, id: string) {
+  const r = g.run!, n = runNode(r, id)!, word = (MAP_DATA.words as any)[n.kind] || n.kind;
+  r.at = id; r.path = [...r.path, id]; r.leans = {}; r.note = null;
+  newScene(g, 'Stage ' + r.stage + ' · ' + (n.gate ? 'The gate' : word) + ' · node ' + n.depth + ' of ' + MAP_DATA.rows);
+  if (n.kind === 'fight' || n.kind === 'elite' || n.kind === 'boss') { runFight(g, n); return; }
+  const text = (NODE_TEXT as any)[n.kind] as string | undefined;
+  r.note = { node: id, kind: n.kind, ...(text ? { text } : {}) };
+  if (n.kind === 'rest') { applyRest(g, 'long'); beginSession(g); } // rule 24: the long rest and a new session (the small training: step 4a)
+  if (n.kind === 'cache') { const k: PayKind = 'cache', xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), ammo: Record<string, string[]> = {};
+    for (const c of Object.values(g.characters)) { giveXp(g, c, 'survival', xp, 'a cache'); earnCredits(c, cr); ammo[c.id] = runAmmo(c, packCount(k)); }
+    r.note = { ...r.note, xp, credits: cr, ammo }; }
+  push(g, { kind: 'system', head: (n.gate ? 'THE GATE' : word.toUpperCase()), text: text || word });
+}
+/** Give a character the ammunition pack (rule 23); the names of what it got, for the panel. */
+function runAmmo(c: Character, count: number): string[] {
+  const got = ammoPack(c, count); if (!got.length) return [];
+  const pack = packOf(c).map((x) => ({ ...x })); for (const it of got) packAdd(pack, it); c.pack = pack;
+  return got.map((it) => itemLabel(it));
+}
+/** A fight node: the encounter composed for this party (run/encounter.ts) and started on the fight's own dice. */
+function runFight(g: GameState, n: RunNode) {
+  const r = g.run!, chars = Object.values(g.characters).filter((c) => !c.dead);
+  const enc = composeEncounter({ levels: chars.map((c) => c.level), node: n, stage: r.stage, setting: runSetting(r), seed: r.seed, last: r.last });
+  const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' ? 'hard' : 'standard', g.rng);
+  magicIn(g, cb);
+  cb.noXp = true; // the run pays its own XP (rule 14)
+  sayAt(cb, 0, (n.gate ? 'THE GATE' : n.kind.toUpperCase()) + ' · ' + enc.name + ' · ' + enc.foes.length + (enc.foes.length === 1 ? ' foe' : ' foes') + ' · level ' + enc.level);
+  r.state = 'fight'; r.last = enc.template; r.out = [];
+  r.stats = { ...r.stats, fights: [...r.stats.fights, { node: n.id, stage: r.stage, depth: n.depth, kind: n.gate ? 'gate' : n.kind, template: enc.template, setting: runSetting(r), level: enc.level,
+    target: enc.target, spent: enc.spent, scaleHp: enc.scaleHp, foes: enc.foes.map((f) => ({ name: f.name, tier: f.tier, level: f.level!, weapon: f.weapon, ...(f.kind ? { kind: f.kind } : {}), ...(f.caster ? { caster: f.caster } : {}), ...(f.scale ? { scale: f.scale } : {}) })) }] };
+  const wasLive = !!liveFight(g);
+  g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
+  if (!wasLive) musicOf(g).fight++;
+  syncSong(g);
+  runEnemies(g);
+}
+/** A run's fight ends (rules 1.41; spec rules 4, 5, 14, 23, 26): the fighters written back as every fight's are; lost:
+ * the run is over and the room goes back to its lobby with the score; won: the dead stand at 1 HP, and everyone takes
+ * the node's XP, credits, the ammunition pack and a weapon pick. */
+function runFightOver(g: GameState) {
+  const cb = g.combat!, r = g.run!, won = fightBack(g, cb, true), n = runNode(r, r.at)!, k = payKindOf(n);
+  const fights = r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, outcome: (won ? 'win' : 'loss') as 'win' | 'loss', rounds: cb.round } : f));
+  r.stats = { ...r.stats, fights };
+  cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + counted(cb.round, 'round') + '. ' + cb.units.filter((u) => u.side === 'pc' && !u.companion).map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
+  push(g, { kind: 'combat', text: cb.summary });
+  g.phase = 'story'; g.story.await = 'none'; g.story.work = null;
+  musicAfterFight(g);
+  g.combat = { ...cb };
+  const chars = Object.values(g.characters);
+  if (!won) {
+    const levels: Record<string, number> = {}; for (const c of chars) levels[c.id] = c.level;
+    g.run = endRun(r, 'lost', levels); g.phase = 'lobby';
+    const e = g.run.end!;
+    push(g, { kind: 'system', head: 'RUN OVER', text: 'The squad falls at stage ' + e.stage + ', node ' + n.depth + ': ' + e.cleared + (e.cleared === 1 ? ' stage' : ' stages') + ' cleared, ' + e.nodes + (e.nodes === 1 ? ' node' : ' nodes') + ' walked. The score is kept.' });
+    return;
+  }
+  const back: string[] = [];
+  for (const c of chars) if (c.dead) { c.dead = false; c.hp = Math.min(maxHp(c), survivalRun.dead_return_hp); back.push(c.id); } // rule 5
+  const xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), ammo: Record<string, string[]> = {}, offers: Record<string, RunOffer> = {};
+  for (const c of chars) {
+    giveXp(g, c, 'combat', xp, 'Survival, ' + (n.gate ? 'the gate' : n.kind));
+    earnCredits(c, cr);
+    ammo[c.id] = runAmmo(c, packCount(k));
+    offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
+  }
+  if (back.length) push(g, { kind: 'system', text: back.map((id) => g.characters[id].name).join(' and ') + ' stand' + (back.length === 1 ? 's' : '') + ' up at ' + survivalRun.dead_return_hp + ' HP: the squad won.' });
+  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits, the ammunition pack, and a weapon to pick (or credits instead).' });
+  r.out = []; r.state = 'reward'; r.offers = offers;
+  r.note = { node: n.id, kind: n.kind, xp, credits: cr, ammo, won: true, rounds: cb.round, ...(back.length ? { back } : {}) };
+}
 /** Actions with no place in the Proving Ground: the Narrator's, the story's, the room's start. */
 const SANDBOX_REFUSED = /^(narrator\/|session\/start|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/)/;
 /** The area map's own actions, which work while gearing up (moving, doors, attacking or casting on a drill unit). */

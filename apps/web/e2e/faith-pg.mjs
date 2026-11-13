@@ -18,6 +18,14 @@ const p = await ctx.newPage();
 const errors = []; p.on('pageerror', (e) => errors.push(e.message));
 const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
 const me = () => p.evaluate(() => Object.values(window.__phc.getState().game.characters)[0]);
+/** Open the FAITH tab, waiting on the game's state, not on a clock (it failed beside 65 other suites on a 30 s wait):
+ *  the combat screen up, its action dock drawn and unlocked (the other turns and any cut-in played out), then the tab,
+ *  then the tab selected. */
+async function faithTab() {
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat' && !!document.querySelector('[role="tab"][data-tab="faith"]') && !document.querySelector('.phc-cb-dock')?.getAttribute('data-lock'), null, { timeout: 180000, polling: 100 });
+  await p.locator('[role="tab"][data-tab="faith"]').click({ timeout: 60000 });
+  await p.waitForFunction(() => document.querySelector('[role="tab"][data-tab="faith"]')?.getAttribute('aria-selected') === 'true', null, { timeout: 60000 }).catch(() => {});
+}
 /** The effects layer's box around a node (fx/dom.ts put()): where it is placed (the layer is the viewport), before its
  *  animation moves it. */
 const fxRect = (sel) => p.evaluate((sel) => { const el = document.querySelector(sel); if (!el) return null; let b = el; while (b && !(b.style && b.style.position === 'absolute' && b.style.left)) b = b.parentElement; if (!b) return null; return { x: parseFloat(b.style.left), y: parseFloat(b.style.top), w: parseFloat(b.style.width), h: parseFloat(b.style.height) }; }, sel);
@@ -55,7 +63,7 @@ await drawer.locator('[data-sb-vow="stand"]').click(); await pause(p, 300);
 const vow = await p.evaluate(() => { const cb = window.__phc.getState().game.combat; return cb.units.find((x) => x.charId).vow; });
 ok('a vow set from the tools is on the unit (' + JSON.stringify(vow) + ')', vow?.id === 'stand');
 await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {});
-await p.locator('[role="tab"][data-tab="faith"]').click();
+await faithTab();
 // Faith 2.2 (spec 2.4): the FAITH tab's header in a fight: your patron's portrait beside the Devotion meter; a click opens it large.
 {
   const head = p.locator('[role="tabpanel"] [data-faith-head="mother_ember"]');
@@ -181,7 +189,7 @@ await drawer.getByRole('button', { name: 'Raise Mother Ember pieces' }).click();
 c = await me();
 ok('an Atheist with 2 pieces learns 2 Hymns (' + (c.hymns || []).join(', ') + ')', c.belief?.kind === 'atheist' && (c.hymns || []).length === 2);
 await drawer.getByRole('button', { name: 'Close the tools' }).click().catch(() => {});
-await p.locator('[role="tab"][data-tab="faith"]').click();
+await faithTab();
 const hy = await p.locator('[role="tabpanel"] [data-act^="pr:hymn:"]').allTextContents();
 ok('the FAITH tab shows them by dice (' + hy.join(' / ').slice(0, 80) + ')', hy.length === 2 && hy.every((t) => /BY DICE|TN \d+/.test(t)));
 
@@ -203,7 +211,7 @@ ok('not Witnessed yet: it comes with your patron\'s first Hymn', !(u.conds && u.
 await p.locator('[data-phc-vow-prompt] [data-vow="mercy"]').click(); await pause(p, 300);
 ok('Mercy sworn from the prompt', (await myU()).vow?.id === 'mercy');
 // A Hymn at its gate (Thunderclap, Hymn I, Devotion 5): SURE, aimed at a tile on the grid.
-await p.locator('[role="tab"][data-tab="faith"]').click();
+await faithTab();
 await p.locator('[role="tabpanel"] [data-act="pr:hymn:old_overcast.thunderclap"]').click(); await pause(p, 250);
 ok('Thunderclap at its gate reads SURE', /HYMN · Thunderclap · 3 AP · SURE/.test(await p.locator('aside').first().textContent()));
 const g1 = await G(), mapW = g1.combat.map.w;
@@ -313,7 +321,7 @@ ok('a step back the next turn breaks it (' + (e42 || '') + JSON.stringify((await
 // An Atheist's Whisper by dice.
 await myTurn().catch(() => {}); await calm();
 await act({ type: 'sandbox/faith', charId: cid, belief: 'atheist', faith: 7, reset: true }); await pause(p, 300);
-await p.locator('[role="tab"][data-tab="faith"]').click();
+await faithTab();
 await p.locator('[role="tabpanel"] [data-act="pr:whisper:guidance"]').click(); await pause(p, 250);
 ok('an Atheist\'s Whisper is by dice (TN 12)', /WHISPER · Guidance · 1 AP · TN 12/.test(await p.locator('aside').first().textContent()));
 const n5 = (await G()).combat.log.length;

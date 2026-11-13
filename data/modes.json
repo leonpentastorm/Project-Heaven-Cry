@@ -1,0 +1,45 @@
+{
+  "$schema_version": "1.0",
+  "kind": "modes",
+  "source": "PHC Core Rules v1.0, rules 1.39: the mode a room plays (docs/design/survival-spec.md section 8.1, Leon's lobby sketch, 13 Nov 2026). A room picks one of these in its lobby (`settings.play`). The lock is this file: `available: true` opens a card; unlocking a mode is one edit, like a campaign's `listed`.",
+  "adjudication": "engine",
+  "provisional": true,
+  "default": "survival",
+  "old_save": "campaign",
+  "items": [
+    {
+      "id": "survival",
+      "name": "Survival",
+      "line": "Fight from tile to tile: shops, rests, a Boss each stage. Solo or co-op, no Narrator needed.",
+      "art": "survival-card-title",
+      "art_pending": true,
+      "available": true,
+      "narrator": "optional",
+      "start": "run",
+      "coming": null,
+      "provisional": true
+    },
+    {
+      "id": "roguelike",
+      "name": "Roguelike",
+      "line": "Dungeons, a world map and companions.",
+      "art": null,
+      "available": false,
+      "narrator": "optional",
+      "start": "run",
+      "coming": "Coming after the advanced classes.",
+      "provisional": true
+    },
+    {
+      "id": "campaign",
+      "name": "Campaign",
+      "line": "A written story with a Narrator.",
+      "art": "world-pilot",
+      "available": false,
+      "narrator": "required",
+      "start": "session",
+      "coming": "Coming when the campaigns are rewritten.",
+      "provisional": true
+    }
+  ]
+}
