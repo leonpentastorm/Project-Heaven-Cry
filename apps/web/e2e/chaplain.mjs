@@ -25,6 +25,22 @@ const dismiss = async () => {
     if (await fxIdle(p, 5000)) return;
   }
 };
+// The engine's dice (packages/engine/src/rng.ts, as in cutins.mjs): a state whose next d20 is v. The shots below are
+// pinned to an 18 (+3 hits the sergeant's 18; no critical, no natural 1). Unpinned, the game's own seed decided: about
+// one run in ten missed every shot, or rolled a natural 1, jammed the rifle, and every later shot was refused
+// ("Weapon jammed: clear it") in a toast the suite's act() cannot see, so Smite and Judged never came (failed beside
+// other suites, passed alone: a different seed, not a different machine).
+function next(r) { let t = (r.state = (r.state + 0x6d2b79f5) | 0); t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+const dieSeed = (v, skip = 0) => { for (let s = 1; s < 1e7; s++) { const r = { state: s }; if (1 + Math.floor(next(r) * 20) === v && skip-- <= 0) return s; } return 1; };
+/** A pinned shot: the next d20 is an 18. Returns the refusal (act() can't: the store turns it into a toast) or ''. */
+const shot = async (u, k) => {
+  await p.evaluate((s) => { window.__phc.getState().game.rng.state = s; }, dieSeed(18, k));
+  const before = (await G()).combat.log.length;
+  const e = await act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot' });
+  if (e) return e;
+  if ((await G()).combat.log.length > before) return '';
+  return (await p.evaluate(() => window.__phc.getState().toast?.text)) || 'nothing happened';
+};
 const log = async () => ((await G()).combat?.log || []).map((l) => (typeof l === 'string' ? l : l.text || '')).join('\n');
 
 await p.goto(BASE);
@@ -126,16 +142,17 @@ for (let t = 0; t < 5 && !smote; t++) {
   u = await me();
   for (let k = 0; k < 6 && u.ap >= 2 && !smote; k++) { // (bounded: a busy machine once left the AP unread and the loop ran to the suite's timeout)
     const before = (await G()).combat.log.length;
-    const e = await act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot' });
+    const e = await shot(u, k);
     if (e) { console.log('note shot: ' + e); break; }
     const lines = (await G()).combat.log.slice(before).map((l) => (typeof l === 'string' ? l : l.text || '')).join('\n');
+    console.log('note shot: ' + lines.replace(/\n/g, ' / '));
     smote = /Old Overcast smites Drill Sergeant \(Smite\): \d+/.test(lines);
     judged = !!(await G()).combat.units.find((x) => x.id === foe.id)?.conds?.judged;
     u = await me();
   }
   if (smote && u.ap >= 2) {
     const n = ((await log()).match(/\(Smite\)/g) || []).length;
-    for (let k = 0; k < 6 && u.ap >= 2; k++) { if (await act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot' })) break; u = await me(); }
+    for (let k = 0; k < 6 && u.ap >= 2; k++) { if (await shot(u, k + 1)) break; u = await me(); }
     second = ((await log()).match(/\(Smite\)/g) || []).length === n;
   }
 }
