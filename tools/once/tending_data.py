@@ -380,9 +380,8 @@ def put(m):
             pool[i] = {**m, **keep}; return
     raise SystemExit("no pool move " + m["origin"] + "." + m["id"])
 put(TRIAGE); put(INSPIRE); put(BRIM)
-for x in pool:
-    if x.get("origin") == "medic" and x.get("id") in ("stim_throw", "field_surgery"):
-        x["status"] = "shelved"; x["future_home"] = "rules 1.33: everyone's (Stim Throw a gear action, actions.json stim_throw; Field Surgery tending.json tend.field_surgery at Empathy 3)"
+# rules 1.33: Stim Throw and Field Surgery leave the pool (everyone's: actions.json stim_throw, tending.json tend.field_surgery)
+pool[:] = [x for x in pool if not (x.get("origin") == "medic" and x.get("id") in ("stim_throw", "field_surgery"))]
 for x in pool:
     if x.get("origin") == "bard" and x.get("id") == "inspire": x["origin_rank"] = "II"
     if x.get("origin") == "bard" and x.get("id") == "mend": x["origin_rank"] = "III"

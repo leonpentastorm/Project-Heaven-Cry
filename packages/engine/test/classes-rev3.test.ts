@@ -42,10 +42,10 @@ describe('the nine classes (data)', () => {
     expect(CLASS.defender.ranks.II.moves.find((m: any) => m.id === 'shrug_it_off').key).toBe('class:defender.shrug_it_off');
     expect(itemInfo('class:medic.triage')?.name).toBe('Triage');
   });
-  it('every move in the catalogue carries origin, fantasy_tags, attributes and status; 13 + 58 are shelved', () => {
+  it('every move in the catalogue carries origin, fantasy_tags, attributes and status; 11 + 58 are shelved', () => {
     const moves = Object.values(CLASS_MOVE_POOL);
     for (const m of moves) { expect(m.origin).toBeTruthy(); expect(m.fantasy_tags?.length).toBeGreaterThan(0); expect(m.attributes?.length).toBeGreaterThan(0); expect(['active', 'shelved']).toContain(m.status); }
-    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(13); // rules 1.33: Stim Throw and Field Surgery are everyone's now
+    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(11);
     expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(58); // Called Shot waits for the Operative (rules 1.30)
   });
 });

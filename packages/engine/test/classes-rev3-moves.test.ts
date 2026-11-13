@@ -33,9 +33,9 @@ const order = (f: F, ...us: Unit[]) => { f.cb.order = us.map((u) => u.id); };
 describe('the 20 new moves are handled', () => {
   it('every new move has a handler and every effect is engine-run (no gap, nothing left to the Narrator)', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
-    expect(NEW.length).toBe(21); // + Run and Gun (rules 1.30, data only)
+    expect(NEW.length).toBe(23); // + Run and Gun (rules 1.30), the Ledger and Take the Weight (rules 1.33), data only
     for (const m of NEW as any[]) {
-      const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic'), m.key).toBe(true); // a handler, or data only (engine foundations 3)
+      const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), m.key).toBe(true); // a handler, or data only (engine foundations 3; rules 1.33: a data action whose ops run on acted)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);
     }
   });
@@ -342,23 +342,8 @@ describe('Trickster', () => {
 
 // ======================================================================================================== BARD
 describe('Bard', () => {
-  it('Rally: allies within 4 heal 6 × Healing given × the level factor (rules 1.23; it was 20 × Healing given) and lose Fear and Shaken; the far one doesn\'t; once a scene', () => {
-    const f = fightWith([cls('bard', 8), {}, {}], [{ at: 'P11' }]);
-    const [b, a, far] = f.pcs; at(f, b, '2,2'); at(f, a, '4,2'); at(f, far, '9,2');
-    f.unit(a.id).hp = 20; f.unit(far.id).hp = 20;
-    withGame(f.g, () => { applyCond(f.cb, f.g.rng, f.foe, f.unit(a.id), 'fear', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, f.foe, f.unit(a.id), 'shaken', 3, undefined, { skipSave: true }); });
-    f.turn(b); perk(f, f.unit(b.id), 'class:bard.rally');
-    const n = Math.floor(Math.floor(6 * healingMult(charOf(f, b)) * mendFactor(charOf(f, b).level)) * (f.unit(a.id).healRecv || 1));
-    expect(f.unit(a.id).hp).toBe(20 + n);
-    expect(condOn(f.unit(a.id), 'fear')).toBe(false); expect(condOn(f.unit(a.id), 'shaken')).toBe(false);
-    expect(f.unit(far.id).hp).toBe(20); expect(f.unit(b.id).ap).toBe(4);
-    expect(() => perk(f, f.unit(b.id), 'class:bard.rally')).toThrow(/next scene/);
-  });
-  it('Rally: refused with nobody in reach', () => {
-    const f = fightWith([cls('bard', 8)], [{ at: 'P11' }]);
-    const b = f.turn(f.pc);
-    expect(() => perk(f, b, 'class:bard.rally')).toThrow(/No squadmate within 4/);
-  });
+  // Rules 1.33: Rally is data (an Attuner in hand, MP; every Bonded ally anywhere and every ally within reach): test/tending.test.ts.
+  it('Rally is the data\'s own action', () => { expect(itemInfo('class:bard.rally')!.effects.some((e: any) => e.op === 'grant_action' && e.action === 'rally')).toBe(true); });
 });
 
 // ======================================================================================================== CHANNELER
