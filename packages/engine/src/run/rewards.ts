@@ -17,6 +17,8 @@ const SV: any = svJ;
 /** What each kind of node without a fight says on its panel (`survival.json nodes`; the shop, Forge, training ground,
  * shrine and Crossroads until build steps 4 and 4a). */
 export const NODE_TEXT: Record<string, string> = SV.nodes;
+/** The path map's hover card for each kind of node (`survival.json tips`; the gate has its own). */
+export const NODE_TIP: Record<string, string> = SV.tips;
 /** The node kinds that pay: the fights, and a cache. */
 export type PayKind = FightKind | 'cache';
 const mult = (o: { elite: number; boss: number; cache: number }, k: PayKind) => (k === 'elite' || k === 'gate' ? o.elite : k === 'boss' ? o.boss : k === 'cache' ? o.cache : 1);

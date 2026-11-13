@@ -69,6 +69,21 @@
     "rest": "A safe place: everyone is healed in full and a new session begins. The small training at a rest opens with a later build step.",
     "provisional": true
   },
+  "tips": {
+    "about": "Rules 1.41 (spec 8.2): the path map's hover card for each kind of node, what it gives and what it costs (section 3.1); the engine adds the XP and credits it pays.",
+    "fight": "A fight. Each of you takes XP, credits, the ammunition pack and a pick of three weapons, or credits instead.",
+    "elite": "A harder fight, opted into: an Elite and its line. Better pay and a better pick.",
+    "gate": "The gate: an Elite every path passes. Better pay and a better pick.",
+    "boss": "The stage's Boss. The best pay and pick of the stage; beating it clears the stage.",
+    "shop": "A shop: refills, gear, selling and the grade step. Costs credits. (Opens with the next build step.)",
+    "forge": "A Forge: the grade step for less, the Relic step, mods. Costs credits. (Opens with a later build step.)",
+    "training": "A training ground: one big training each. Costs a node not spent fighting. (Opens with a later build step.)",
+    "shrine": "A shrine: a rite, a knowledge piece or the patron's token. (Opens with a later build step.)",
+    "rest": "A rest: everyone healed in full and a new session. Costs a node not spent fighting or shopping.",
+    "cache": "A cache: credits, ammunition and a little XP, no fight.",
+    "event": "A crossroads: a trade with a cost, or walk on. (Opens with a later build step.)",
+    "provisional": true
+  },
   "pools": {
     "about": "Rules 1.41 (spec rule 21 e): the weapons a foe of a tier may carry, by range (a slot names `ranged`, `melee` or `close`; none: ranged). A setting may name its own in place of these.",
     "vermin": { "ranged": ["beast_bite"], "melee": ["beast_bite"], "close": ["beast_bite"] },

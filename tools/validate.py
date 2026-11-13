@@ -2320,10 +2320,13 @@ if _sv is not None:
                 if _rr not in ("standard", "fine", "masterwork", "relic", "celestial"): errors.append(f"survival:rewards.rarity.{_k}: {_rr!r} is not a rarity")
         for _rr in _rw.get("ceiling") or []:
             if _rr not in ("standard", "fine", "masterwork", "relic"): errors.append(f"survival:rewards.ceiling: {_rr!r} (Celestial is never a ceiling)")
+    if "tips" in _sv:
+        for _k in ("fight", "elite", "gate", "boss", "shop", "forge", "training", "shrine", "event", "cache", "rest"):
+            if not isinstance(_sv["tips"].get(_k), str) or not _sv["tips"][_k].strip(): errors.append(f"survival:tips.{_k}: the hover card's text")
     if "nodes" in _sv:
         for _k in ("shop", "forge", "training", "shrine", "event", "cache", "rest"):
             if not isinstance(_sv["nodes"].get(_k), str) or not _sv["nodes"][_k].strip(): errors.append(f"survival:nodes.{_k}: the panel's text")
-    for _k in ("run", "stage", "rounds", "tiers", "share", "map_size", "xp", "credits", "ammo_pack", "rewards", "nodes", "pools", "names"):
+    for _k in ("run", "stage", "rounds", "tiers", "share", "map_size", "xp", "credits", "ammo_pack", "rewards", "nodes", "tips", "pools", "names"):
         if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).

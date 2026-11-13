@@ -1051,6 +1051,9 @@ export const stepsEarned = (p: number) => [3, 5, 7, 9].filter((t) => p >= t).len
 export function stepsTaken(c: Character, skill: string) {
   return c.perks.filter((x) => PERK[x.id]?.tier === 'acquired' && PERK[x.id].skills.includes(skill)).reduce((n, x) => n + (x.tier === 'II' ? 2 : 1), 0);
 }
+/** Something waits on the level-up screen: points to spend, a class to earn (level 3), a perk step to take. */
+export const levelUpDue = (c: Character | null | undefined): boolean =>
+  !!c && (c.unspent.skill + c.unspent.attr + c.unspent.core > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length > 0);
 /** Skills with a perk step waiting, and the choices for each (a new Tier I, or an upgrade of a held Tier I). */
 export function pendingPerkSteps(c: Character) {
   const out: { skill: string; choices: { id: string; tier: 'I' | 'II' }[]; /** Steps owed in this skill (2+ after a jump). */ free: number }[] = [];
