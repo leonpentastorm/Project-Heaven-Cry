@@ -59,6 +59,7 @@ import { condMods } from './condtable';
 import { runOwned } from './owned';
 import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runSeed, runStartProblem, runRetireProblem, endRun, modeLocked, modeOf, playOf, survivalRun, runSetting, runNode, runMoveProblem, leanWinner } from './run/state';
 import { MAP_DATA } from './run/map';
+import { fightTally, settleTape } from './run/tally';
 import { composeEncounter, SETTING } from './run/encounter';
 import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult } from './run/rewards';
 import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, renownOf, boonsOf } from './run/stage';
@@ -550,7 +551,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   migrateFloor(g); // rules 1.9: an old save's floor becomes piles, once
   if (g.combat) trimFx(g.combat); // older effects go now; this action's own are never cut (a long hostile phase is one action)
   try { reduce(g, action, by); worldAfter(g); } finally { bindGame(was); } // rules 1.7: Downed carriers drop, objective triggers
-  if (g.combat) stampFxHp(g.combat); // HP changed by the last effect of this action is stamped on it
+  if (g.combat) { stampFxHp(g.combat); settleTape(g.combat); } // HP changed by the last effect of this action is stamped on it; a run's tape is cut down (rules 1.47)
   if (state.phase !== 'combat' && g.phase === 'combat' && !g.sandbox) for (const c of Object.values(g.characters || {})) delete (c as any).lvlUndo; // a fight settles a level-up: no taking points back after using them
   // Rules 1.10 (Sigil 1.5): Mastery in Brain Power, Rumination or Eloquence pays its study (and the Mastered free word) once.
   for (const c of Object.values(g.characters || {})) { const notes = masterySync(c); if (g.story?.entries) for (const n of notes) push(g, { kind: 'system', text: n }); }
@@ -3264,6 +3265,7 @@ function runFight(g: GameState, n: RunNode) {
   const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' ? 'hard' : 'standard', g.rng);
   magicIn(g, cb);
   cb.noXp = true; // the run pays its own XP (rule 14)
+  cb.tape = []; // rules 1.47: the fight keeps its effects for the tally (run/tally.ts)
   sayAt(cb, 0, (n.gate ? 'THE GATE' : n.kind.toUpperCase()) + ' · ' + enc.name + ' · ' + enc.foes.length + (enc.foes.length === 1 ? ' foe' : ' foes') + ' · level ' + enc.level);
   r.state = 'fight'; r.last = enc.template; r.out = [];
   r.stats = { ...r.stats, fights: [...r.stats.fights, { node: n.id, stage: r.stage, depth: n.depth, kind: n.gate ? 'gate' : n.kind, template: enc.template, setting: runSetting(r), level: enc.level,
@@ -3279,8 +3281,8 @@ function runFight(g: GameState, n: RunNode) {
  * the node's XP, credits, the ammunition pack and a weapon pick. */
 function runFightOver(g: GameState) {
   const cb = g.combat!, r = g.run!, won = fightBack(g, cb, true), n = runNode(r, r.at)!, k = payKindOf(n);
-  const fights = r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, outcome: (won ? 'win' : 'loss') as 'win' | 'loss', rounds: cb.round } : f));
-  r.stats = { ...r.stats, fights };
+  const fights = r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, outcome: (won ? 'win' : 'loss') as 'win' | 'loss', rounds: cb.round, tally: fightTally(cb.tape || [], cb.units, cb.round) } : f));
+  r.stats = { ...r.stats, fights }; delete cb.tape; // the tally is kept; the tape is not
   cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + counted(cb.round, 'round') + '. ' + cb.units.filter((u) => u.side === 'pc' && !u.companion).map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';
   push(g, { kind: 'combat', text: cb.summary });
   g.phase = 'story'; g.story.await = 'none'; g.story.work = null;
