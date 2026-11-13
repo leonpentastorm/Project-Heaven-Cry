@@ -10,7 +10,7 @@ import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, an
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor } from '@engine';
+  attemptWhy, ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, figmentMeter } from '@engine';
 import { act as actNow, getState, go, toast } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
@@ -1230,6 +1230,8 @@ export class CombatLogic extends DCLogic {
     const magicLine = (u) => { const m = u.mg, cs = condChips(u, g); let t = '';
       if (m && m.evoker) t += ' · Flux ' + m.flux + '/' + FLUX_MAX + ' · Charge ' + m.charge;
       if (m && m.emanator) t += ' · MP ' + Math.round(m.mp) + '/' + m.mpMax;
+      // rules 1.34: the Figments meter (the engine's figmentMeter): held / most, and the Visualizer's charge (EMPTY at 0)
+      const fm = m && m.vcarry ? figmentMeter(cb, u) : null; if (fm) t += ' · FIGMENTS ' + fm.held + '/' + fm.max + ' · VISUALIZER ' + (fm.charge > 0 ? fm.charge + '/' + fm.chargeMax : 'EMPTY');
       const hh = m ? heldOutburstOf(m) : null;
       if (hh && (hh.strain || hh.held)) t += ' · Strain ' + hh.strain + '/' + hh.limit;
       if (hh && hh.held) t += ' · Holding ' + hh.held.name + ' (stage ' + hh.held.stage + ')';

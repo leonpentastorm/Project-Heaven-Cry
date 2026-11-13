@@ -218,7 +218,6 @@ register({
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, p = pictureChoice(h.c, args.choice)!, k = tileOf(cb, args.tile)!, n = figmentCharge(p.form, p.traits);
       const f = makeFigment(cb, rng as Rng, u, p.form, p.traits, k, { name: p.name, charge: n }); if (typeof f === 'string') return f;
-      emitFx(cb, 'figment', { unit: f.id, owner: u.id, at: k, form: p.form });
       say(cb, u.name + ' pictures ' + (p.name === FORM[p.form].name ? 'a ' + p.name : p.name) + ' at ' + refOf(k) + ' (' + n + ' charge; ' + heldFigments(cb, u).length + '/' + heldMax(u, h.c) + ' held).');
       return null;
     },

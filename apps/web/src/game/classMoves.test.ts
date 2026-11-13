@@ -41,10 +41,10 @@ describe('pickers for the new moves (buttons only)', () => {
     expect(P.fields[0].kind).toBe('chips'); expect((P.fields[0] as any).options.map((o: any) => o.label)).toEqual(['Push 1 tile', 'Knock Prone']);
     expect(buildArgs(P, {}, ctx(f, u))).toMatch(/^Pick push it back/);
     expect(buildArgs(P, { choice: ['prone'] }, ctx(f, u))).toEqual({ choice: 'prone' });
-    const g = fightWith([cls('infiltrator', 5), {}], [{}]);
+    const g = fightWith([cls('trickster', 5), {}], [{}]); // rules 1.34: Field Fix is the Rigger's
     const w = g.turn(g.pcs[0]), ff = entries(g, w).find((x) => x.actionId === 'field_fix')!;
     const F = pickerFor(ff, ctx(g, w))!;
-    expect((F.fields[0] as any).options.map((o: any) => o.id)).toEqual(['clear_jam', 'restore_durability', 'repair_machine']);
+    expect((F.fields[0] as any).options.map((o: any) => o.id)).toEqual(['clear_jam', 'restore_durability', 'repair']);
     expect(buildArgs(F, {}, ctx(g, w))).toEqual({});
     expect(buildArgs(F, { choice: ['clear_jam'] }, ctx(g, w))).toEqual({ choice: 'clear_jam' });
   });
@@ -93,12 +93,11 @@ describe('the Class tab reads each move\'s state', () => {
 });
 
 describe('the grid marks what stands', () => {
-  it('a False Image: a translucent Sigil-cyan copy of its owner\'s token, with its word and its fooled count', () => {
-    const f = fightWith([cls('trickster', 3, MIND)], [{}], { classic: true }); // a fixed target (the old Soldier): the test is about the mark
-    const u = at(f, f.pc, '4,2'); at(f, f.foe, '10,2').sv = { body: -50, brain: -50, heart: -50 }; f.turn(u);
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'class:trickster.false_image', tile: '6,4' } as any);
-    const m = classMarks(f.cb, 'pc', { imgOf: () => '/art/me.webp' })['6,4'];
-    expect(m.marks.map((x) => x.text)).toContain('IMAGE');
+  it('a Double (rules 1.34: an image with a body): a translucent copy of its owner\'s token where the body stands, with its word and its fooled count', () => {
+    const cb: any = { round: 1, units: [{ id: 'u', name: 'Rigger', side: 'pc', pos: '4,2', short: 'RI' }, { id: 'd', name: 'Double', side: 'pc', pos: '6,4', short: 'DO', owned: { kind: 'figment' } }],
+      images: [{ id: 'img1', owner: 'u', pos: '5,5', side: 'pc', round: 1, fooled: ['f1'], body: 'd' }] };
+    const m = classMarks(cb, 'pc', { imgOf: () => '/art/me.webp' })['6,4'];
+    expect(m.marks.map((x) => x.text)).toContain('DOUBLE');
     const decoy = m.marks.find((x) => x.key.startsWith('img') && !x.key.startsWith('imgt'))!;
     expect(decoy.style).toMatch(/opacity: 0\.55/); expect(decoy.style).toMatch(/#8BDEEE|rgba\(79, 200, 223/i); expect(decoy.style).toMatch(/url\("\/art\/me\.webp"\)/); expect(decoy.style).toMatch(/phcDecoy/);
     expect(decoy.title).toMatch(/1 enemy takes it for/); expect(m.note).toMatch(/False Image of/);
@@ -129,7 +128,7 @@ describe('the grid marks what stands', () => {
     expect(MA[aPos].marks[0].text).toBe('✱ RIG'); expect(MA['9,9']).toBeUndefined();
   });
   it('Read: an arrow on the enemy toward its target and a ring on the target, until its turn ends', () => {
-    const f = fightWith([cls('trickster', 3, MIND)], [{}]);
+    const f = fightWith([cls('infiltrator', 5, MIND)], [{}]); // rules 1.34: Read went to the Operative
     const u = at(f, f.pc, '4,2'), foe = at(f, f.foe, '7,2'); f.cb.order = [u.id, foe.id]; f.turn(u);
     f.act({ type: 'combat/analyze', unitId: u.id, targetId: foe.id } as any);
     const M = classMarks(f.cb, 'pc', {});
@@ -222,12 +221,10 @@ describe('fx: every new event draws and sounds', () => {
     evs.push(...(f.cb.fx || []));
     const t = fightWith([cls('trickster', 8, MIND), {}], [{}]);
     const [tr, al] = t.pcs; at(t, tr, '4,2'); at(t, al, '4,5'); const tf = at(t, t.foe, '9,2'); tf.sv = { body: -50, brain: -50, heart: -50 }; t.turn(tr);
-    t.act({ type: 'combat/perk', unitId: tr.id, id: 'class:trickster.false_image', tile: '6,4' } as any);
-    t.act({ type: 'combat/perk', unitId: tr.id, id: 'class:trickster.silver_tongue', targetId: tf.id } as any);
-    t.act({ type: 'combat/perk', unitId: tr.id, id: 'class:trickster.sleight', actionId: 'sleight_image' } as any);
+    t.act({ type: 'combat/perk', unitId: tr.id, id: 'class:trickster.sleight', targetId: al.id } as any); // (rules 1.34: the False Image and Silver Tongue left)
     evs.push(...(t.cb.fx || []));
     const kinds = new Set(evs.map((e) => e.k));
-    for (const k of ['unstoppable', 'shove', 'image', 'silver_tongue', 'swap']) expect(kinds.has(k), k).toBe(true);
+    for (const k of ['unstoppable', 'shove', 'swap']) expect(kinds.has(k), k).toBe(true);
     setContext({ code: 'X', characters: {}, story: { positions: {}, npcs: [] }, combat: null } as any, 'main');
     const warn = vi.spyOn(console, 'warn');
     for (const e of evs) playFx(e);

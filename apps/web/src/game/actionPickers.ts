@@ -283,13 +283,13 @@ const COMBAT: Record<string, Maker> = {
   'class:fighter.shove#class_shove': (e) => ({ head: 'Shove', hint: 'Click the enemy next to you, then push it back or knock it down.',
     fields: [chipsF('choice', 'Push it back, or knock it down', [{ id: 'push', label: 'Push 1 tile', title: 'Straight away from you (a Body save holds it).' }, { id: 'prone', label: 'Knock Prone', title: 'Down on the floor (a Body save holds it).' }])] }),
   // Field Fix: the squadmate is the grid target; what to fix is a chip (none: the first that applies).
-  'class:infiltrator.field_fix#field_fix': (e) => ({ head: 'Field Fix', hint: 'Click the squadmate next to you, then what to fix (none: the first that applies).',
+  'class:infiltrator.field_fix#field_fix': (e) => ({ head: 'Field Fix', hint: 'Click one of your side within reach, then what to fix (none: the first that applies).',
     fields: [chipsF('choice', 'What to fix', FIX_OPTS, 1, true)] }),
 };
-/** Field Fix's three jobs (engine rev3.ts FIX). */
+/** Field Fix's three ways (engine combat.ts REPAIR_WAYS: the one Field Repair, rules 1.34). */
 const FIX_OPTS: Opt[] = [{ id: 'clear_jam', label: 'Clear the jam', title: 'Their jammed weapon fires again (the Heat goes too).' },
   { id: 'restore_durability', label: 'Restore durability', title: 'Their weapon\'s durability back, as a Field Repair (no spare parts).' },
-  { id: 'repair_machine', label: 'Repair the machine', title: 'A robot, drone or turret (a Factory Made squadmate too) repaired for 20.' }];
+  { id: 'repair', label: 'Repair', title: 'A robot, drone, turret, Factory Made squadmate or Figment repaired (rules 1.34: the Field Repair amount, no part).' }];
 
 /** The key a picker is filed under: "itemKey#actionId", else the bare action id (shared ones like extra_mod). */
 const keyOf = (e: Pick<PerkActionEntry, 'id' | 'actionId'>) => e.id + '#' + e.actionId;

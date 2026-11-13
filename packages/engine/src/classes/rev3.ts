@@ -478,7 +478,7 @@ register({
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!;
       for (const f of figmentsOf(cb, u)) if ((f as any).owned?.free && (f as any).figment?.form === 'double') unravel(cb, f, 'a new Double');
       const d = makeFigment(cb, rng as Rng, u, 'double', [], k, { charge: num(h, 'charge'), free: { rounds: num(h, 'rounds') } }); if (typeof d === 'string') return d;
-      emitFx(cb, 'figment', { unit: d.id, owner: u.id, at: k, form: 'double' }); say(cb, u.name + ' throws a Double at ' + refOf(k) + '.');
+      say(cb, u.name + ' throws a Double at ' + refOf(k) + '.');
       return null;
     },
   }],
@@ -615,7 +615,7 @@ register({
       tr.attack = mod(u.proficiency || 0); tr.strength = tr.attack; tr.infiniteAmmo = true; tr.kind = FIG.turret.kind;
       tr.lvlDmg = Math.round(RULES.output.profiles.weapon.k * levelFactor('deal', u.level ?? 1) * 1000) / 1000;
       (tr as any).owned.free = true; (tr as any).owned.left = num(h, 'rounds');
-      emitFx(cb, 'figment', { unit: tr.id, owner: u.id, at, form: 'scrap_turret' }); say(cb, u.name + ' rigs a Scrap Turret at ' + refOf(at) + ' (' + (WEAPON[w]?.name || w) + ').'); sightCheck(cb);
+      say(cb, u.name + ' rigs a Scrap Turret at ' + refOf(at) + ' (' + (WEAPON[w]?.name || w) + ').'); sightCheck(cb);
       return null;
     },
   }],
