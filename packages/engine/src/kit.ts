@@ -9,7 +9,7 @@
 //   AREAS       Area (burst, aura, cone, line, band), inArea, tilesIn, unitsIn   (engine foundations 2)
 import type { Combat, Unit } from './combat';
 import { keyOf, key, xy, dist, moveBlockers, unitSees } from './combat';
-import { boundGame, onHook, statQuery } from './effects/hooks';
+import { boundGame, onHook, statQuery, emit } from './effects/hooks';
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import RULES_K from '../../../data/rules.json';
 import type { Rng } from './rng';
@@ -200,15 +200,12 @@ export function tie(cb: Combat, from: Unit, to: Unit, kind: string): Tie | null 
   cb.ties = [...(cb.ties || []), t];
   return t;
 }
-/** What unmakes a far end whose tie says so (owned.ts registers it: P9). */
-let UNMAKE: ((cb: Combat, t: Tie) => void) | null = null;
-/** Register what on_end "unmake" does (P9's owned units). */
-export const setTieUnmake = (f: typeof UNMAKE) => { UNMAKE = f; };
 /** End the ties that match (each kind's on_end runs). Returns how many ended. */
 export function untie(cb: Combat, pick: (t: Tie) => boolean): number {
   const gone = (cb.ties || []).filter(pick); if (!gone.length) return 0;
   cb.ties = (cb.ties || []).filter((t) => !gone.includes(t)); if (!cb.ties.length) delete cb.ties;
-  for (const t of gone) if (tieKind(t.kind)?.on_end === 'unmake') UNMAKE?.(cb, t);
+  // 'tie_end' {cb, tie, unmake}: a tie ended (owned.ts unmakes the far end when its kind says so: P9)
+  for (const t of gone) emit(cb, 'tie_end', { cb, tie: t, unmake: tieKind(t.kind)?.on_end === 'unmake' });
   return gone.length;
 }
 const tieEnds = (t: Tie, w: (typeof TIE_ENDS)[number]) => !!tieKind(t.kind)?.ends_on?.includes(w);

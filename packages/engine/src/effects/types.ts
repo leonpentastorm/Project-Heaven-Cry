@@ -57,7 +57,7 @@ export type HookName =
   | 'damage_in' | 'on_damaged' | 'on_downed' | 'on_kill'
   | 'cond_apply' | 'save' | 'cond_landed' | 'cond_end' | 'displaced'
   | 'heal_given' | 'heal_in' | 'shield_grant'
-  | 'reaction_window' | 'reaction' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
+  | 'reaction_window' | 'reaction' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed' | 'tie_end'
   | 'reload' | 'jam_clear' | 'swap'
   // Physical 2.0 (rules 1.12): after a prone unit stands up {u} (Dead to Rights)
   | 'stood_up'
@@ -191,6 +191,7 @@ export const HOOK_ABOUT: Record<HookName, string> = {
   action_refuse: 'an item may refuse an action before it is done (a shove, an Overwatch)',
   evoke_reach: 'how far from its Line a caster may Evoke',
   spell_roll: 'a spell\'s to-hit d20 was rolled: items may add to it',
+  tie_end: 'a tie between two units ended (kit.ts untie, Classes 3.0 P8) {cb, tie, unmake}: unmake when its kind says the far end is unmade (owned.ts)',
   to_hit: 'THE hook of every roll to hit a target (rolls.ts toHitTerms): a weapon attack, a Sigil, an Outburst {att, tgt, type, mode, terms, preview}: a listener adds to-hit terms',
   session_heal: 'the heal at a session\'s start: HP and MP multipliers',
   story_blessing: 'a prayer is answered outside a fight (lines to add)',

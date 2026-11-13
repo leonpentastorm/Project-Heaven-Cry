@@ -19,7 +19,8 @@ import type { Holder, HookName } from './types';
 import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems, rawItem as rawItemT } from './collect';
-import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, type Area } from '../kit';
+import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, canStand, type Area } from '../kit';
+import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
 import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS } from '../magic';
 import { nextToCover } from '../combat';
@@ -318,6 +319,16 @@ O('tie', ANY, true, ['kind', 'clear'], 'tie the holder to the target by a kind (
   if (e.clear === 'target') return t && untie(ev.cb, (x) => x.kind === e.kind && x.from === ev.self.id && x.to === t.id) > 0 ? undefined : false;
   return t && tie(ev.cb, ev.self, t, e.kind) ? undefined : false;
 });
+O('spawn', ANY, true, ['block', 'at'], 'make an owned unit (P9: owned.ts spawnOwned) from a data block (enemies.json companions, a system\'s forms) at the holder\'s level, on the free tile nearest the holder (at: self), the target or the event\'s tile; tied to the holder (owned); refused at its cap (ties_max:owned): nothing said', (ev, e) => {
+  const anchor: string | null = e.at === 'tile' ? ev.ctx.tile ?? ev.ctx.at ?? null : (e.at === 'target' ? ev.target : ev.self)?.pos ?? null; if (!anchor) return false;
+  const free = [anchor, ...[1, 2, 3].flatMap((r) => tilesAround(anchor, r, ev.cb))].find((k) => canStand(ev.cb, k)); if (!free) return false;
+  const u = spawnOwned(ev.cb, ev.self, e.block, free, rngOf(ev.h, ev.ctx) as any);
+  return typeof u === 'string' ? false : ' · ' + u.name + ' appears';
+});
+O('unmake', ANY, true, ['refund'], 'unmake an owned unit (P9: owned.ts unmakeOwned; the target, else the holder): it leaves the fight; refund: what its making took goes back to its owner', (ev, e) => {
+  const u = e.target === 'target' ? ev.target : e.target === 'actor' ? ev.actor : ev.self; if (!u || !ownerOf(ev.cb, u)) return false;
+  unmakeOwned(ev.cb, u, { refund: !!e.refund });
+});
 O('use', ANY, true, [], 'nothing but its limit: spends one use (for a limit another effect reads with peek)', () => undefined);
 O('mark', ANY, true, ['flag', 'clear'], 'set (or with clear: true, clear) one of the item\'s own flags, for a later trigger\'s flag / no_flag', (ev, e) => {
   const st: any = ((ev.self.ps ||= {}) as any)[ev.h.key] ||= {}; const f = (st.flags ||= {});
@@ -433,13 +444,14 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   const all = [e, ...(Array.isArray(e.and) ? e.and : [])], changes = all.some((x) => OPS[x.op]?.state);
   if (ev.preview && changes) return; // a preview changes nothing
   const lim = e.limit, asReaction = !!lim && typeof lim.reaction === 'number';
-  if (asReaction ? !canReact(cb, self, lim.kind, lim.reaction) : !limitOk(ev, lim, !ev.preview)) return;
+  if (asReaction ? !canReact(cb, self, lim.kind, lim.of === 'owner' ? 0 : lim.reaction) : !limitOk(ev, lim, !ev.preview)) return;
   const label = e.label || h.info.name, parts: string[] = [];
   let ran = 0;
   const one = (ev1: Ev, x0: any) => { const x = withNumbers(ev1, x0), r = OPS[x.op].run(ev1, x, x.label || label); if (r !== false) ran++; if (typeof r === 'string' && r) parts.push(r); }; // an op that returns false did nothing (a zone cleared that wasn't there)
   // P5: an op with `targets` runs once for each unit of its set, that unit as its target
   const go = () => { for (const x0 of all) { if (x0.targets) { for (const t of selectUnits(ev, x0.targets)) one({ ...ev, target: t }, { ...x0, target: 'target' }); } else one(ev, x0); } };
-  if (asReaction && !ev.preview) { if (!react(cb, self, { kind: lim.kind, spend: lim.reaction, event: attackEvent() }, go)) return; } else go();
+  // the batch row limit.of "owner": an owned unit's reaction is its owner's (P1's payer, P9's record)
+  if (asReaction && !ev.preview) { const payer = lim.of === 'owner' ? ownerOf(cb, self) : null; if (lim.of === 'owner' && !payer) return; if (!react(cb, self, { kind: lim.kind, spend: lim.reaction, event: attackEvent(), ...(payer ? { payer } : {}) }, go)) return; } else go();
   if (ev.preview || !ran) return; // a set with nobody in it: nothing happened, nothing is said
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
   if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));

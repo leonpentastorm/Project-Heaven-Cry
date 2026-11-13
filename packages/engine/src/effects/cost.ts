@@ -114,7 +114,7 @@ export function resGive(cb: Combat | null | undefined, u: Unit, id: string, n: n
 
 // ---------------------------------------------------------------------------------------------- the price
 const r10 = (n: number) => Math.round(n * 10) / 10;
-type Who = { cb?: Combat | null; u?: Unit | null; c?: Character | null };
+type Who = { cb?: Combat | null; u?: Unit | null; c?: Character | null; /** Classes 3.0 P9: who will pay (priced on u, paid by payer: whyNot / pay take it too) */ payer?: Unit | null };
 /** What `action` costs this unit now. base: its AP (or `{ ap, res }`) before items; left out, the data's
  * (data/actions.json). ctx: what the action knows that an item may ask about (the hand, the target, the word). It goes
  * to the stat query and onto the `cost` hook's context.
@@ -196,7 +196,8 @@ const apOf = (p: Priced | number) => (typeof p === 'number' ? p : p.ap);
 export const apFor = (cb: Combat | null | undefined, u: Unit, as?: any): number => (u.ap ?? 0) + creditFor(u, as, cb);
 /** Why the unit can't pay this (the one sentence), or null: it can. o.as: the reducer action this is (Encore's key), for
  * a preview made outside the action; o.c: the character, for a resource kept there (stims, Echo). */
-export function whyNot(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { as?: any; c?: Character | null } = {}): string | null {
+export function whyNot(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { as?: any; c?: Character | null; /** Classes 3.0 P9: who pays a price made on another (an owned unit's, paid by its owner) */ payer?: Unit | null } = {}): string | null {
+  if (o.payer && o.payer !== u) return whyNot(cb, o.payer, p, { as: o.as, c: o.c });
   const ap = apOf(p);
   if (typeof p !== 'number') { const no = resWhyNot(p.res, u, o.c); if (no) return no; }
   if (ap > 0 && apFor(cb, u, o.as) < ap) return needs(ap);
@@ -223,7 +224,8 @@ export const canPay = (cb: Combat | null | undefined, u: Unit, p: Priced | numbe
 // ---------------------------------------------------------------------------------------------- pay, refund
 /** Take the cost. AP comes first from the credit this action carries (a Brief's, then Encore's), then from the unit.
  * Returns the AP taken from the unit itself. */
-export function pay(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { c?: Character | null } = {}): number {
+export function pay(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { c?: Character | null; /** Classes 3.0 P9: the unit that pays (an owner for its owned unit) */ payer?: Unit | null } = {}): number {
+  if (o.payer && o.payer !== u) return pay(cb, o.payer, p, { c: o.c });
   let due = apOf(p);
   const cr = FREE.has(u) ? null : creditOf(cb, u);
   if (cr && due > 0) {
@@ -238,7 +240,8 @@ export function pay(cb: Combat | null | undefined, u: Unit, p: Priced | number, 
 /** Give a cost back, each resource to where it came from. The AP goes back where pay() took it: while the action that
  * paid is still running, first to its credit (Encore's part, then the Brief's: the reverse of pay), so a refunded
  * action has not used a Brief up; the rest, and everything once the action is over, to the unit. */
-export function refund(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { c?: Character | null } = {}): void {
+export function refund(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { c?: Character | null; payer?: Unit | null } = {}): void {
+  if (o.payer && o.payer !== u) return refund(cb, o.payer, p, { c: o.c });
   let ap = apOf(p);
   const cr = FREE.has(u) || !(cb as any)?.acting ? null : creditOf(cb, u);
   if (cr && ap > 0) {

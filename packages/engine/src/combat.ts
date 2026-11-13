@@ -19,6 +19,7 @@ import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion
 import { skillItemsOf } from './effects/collect';
 import type { ShieldLayer } from './effects/damage';
 import type { Tie } from './kit';
+import { type OwnedBlock, tieCompanions } from './owned';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { itemAmount } from './effects/amounts';
@@ -161,7 +162,7 @@ export interface Unit {
    * weapon, so the Heat limit both guns pool is still main + off (Leon's ruling, 13 Nov 2026: the jam lands on the gun that fired). */
   swapMain?: string;
   /** A companion (drone, beast): the character who controls it (its owner's player gives its orders). */
-  ctrl?: string; companion?: string;
+  ctrl?: string; companion?: string; /** Classes 3.0 P9: an owned unit's own block (owned.ts: turn, eyes, upkeep, cover, lure); its owner is its `owned` tie's far end */ owned?: OwnedBlock;
   /** The only actions this unit has (action ids as the action list names them: 'move', 'shot'…), besides ending its
    * turn and declining a reaction window. Unset: every action its weapon and kind allow. The drone (enemies.json
    * companions `actions`; spec §14 item 370): move and a plain shot. */
@@ -665,11 +666,14 @@ export const objectsAt = (cb: Combat, k: string) => objectsOf(cb).filter((o) => 
 export function coverOf(cb: Combat): Record<string, { kind: 'half' | 'full'; hp: number; max: number; id: string; name: string }> {
   const out: Record<string, any> = {};
   for (const o of objectsOf(cb)) { const c = coverKind(o); if (c) out[o.pos] = { kind: c, hp: o.hp ?? 0, max: o.max ?? 0, id: o.id, name: o.name }; }
+  for (const u of coverUnits(cb)) if (!out[u.pos]) out[u.pos] = { kind: 'half', hp: u.hp, max: u.maxHp, id: u.id, name: u.name }; // Classes 3.0 P9: an owned unit whose block is cover
   return out;
 }
+/** Classes 3.0 P9: the living owned units whose block is cover (half cover for those behind them; they block sight). */
+const coverUnits = (cb: Combat): Unit[] => cb.units.filter((u) => u.owned?.cover && !u.dead && !u.downed);
 export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...objectsOf(cb).filter(isDifficult).map((o) => o.pos)]);
 export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
-export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb)]);
+export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb), ...coverUnits(cb).map((u) => u.pos)]);
 
 /** What hurtUnit deals that an item may speak about when someone made it (its `damage_kinds`). */
 export const BLAST_KINDS = ['explosion', 'trap', 'thrown'];
@@ -917,6 +921,7 @@ export function coverTileFor(cb: Combat, from: string, to: string): string | nul
     const [cx, cy] = xy(o.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) !== 1) continue;
     const e = near && near.find((q) => q.k === o.pos); if (e) e.kind = c; else (near ||= []).push({ k: o.pos, kind: c });
   }
+  for (const u of coverUnits(cb)) { const [cx, cy] = xy(u.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && !(near && near.some((q) => q.k === u.pos))) (near ||= []).push({ k: u.pos, kind: 'half' }); }
   if (!near) return null;
   const far = dist(from, to);
   for (const e of near) if (e.kind === 'half' && dist(from, e.k) < far) return e.k;
@@ -1480,6 +1485,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   const order = [...units].sort((a, b) => b.init - a.init || b.agility - a.agility).map((u) => u.id);
   const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: [], over: null, level, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
   cb.objects = objs; cb.sigilV = SIGIL_REV; // a fresh fight: rules 1.4 glyphs only
+  tieCompanions(cb); // Classes 3.0 P9: each companion is tied to its owner (the owned-unit record)
   say(cb, 'Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')); // (re-marked by sightQuietly when the set-up hides someone)
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });

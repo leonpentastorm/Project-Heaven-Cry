@@ -200,6 +200,40 @@
           "value": 1
         }
       ]
+    },
+    {
+      "id": "test_spawn_wisp",
+      "name": "Wisp Maker (test)",
+      "text": "Once a fight, at your turn start: make a Wisp next to you.",
+      "effects": [
+        {
+          "op": "spawn",
+          "when": "turn_start",
+          "block": "test_wisp",
+          "at": "self",
+          "limit": {
+            "per": "per_combat",
+            "n": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_unmake_hit",
+      "name": "Let It Go (test)",
+      "text": "When a unit you own is hit, unmake it, giving back what it took.",
+      "effects": [
+        {
+          "op": "unmake",
+          "when": "taking",
+          "refund": true,
+          "if": {
+            "target": "any",
+            "actor": "foe"
+          },
+          "target": "target"
+        }
+      ]
     }
   ],
   "conditions": [],
@@ -336,6 +370,26 @@
         "to_down"
       ],
       "on_end": "none"
+    }
+  ],
+  "owned_blocks": [
+    {
+      "id": "test_wisp",
+      "name": "Wisp (test)",
+      "kind": "machine",
+      "hp": 20,
+      "defense": 10,
+      "attack_bonus": 1,
+      "armour": 0,
+      "movement": 2,
+      "weapon": "fists",
+      "turn": "own",
+      "eyes": false,
+      "cover": true,
+      "upkeep": {
+        "res": "echo",
+        "n": 1
+      }
     }
   ]
 }

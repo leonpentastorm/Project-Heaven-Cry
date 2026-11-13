@@ -4100,6 +4100,54 @@
         "kind": "bond",
         "target": "target"
       }
+    },
+    {
+      "id": "spawn",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 P9): make an owned unit (owned.ts spawnOwned) from a data block (enemies.json companions, a system's forms) at the holder's level on the free tile nearest the holder (at: self), the target or the event's tile, tied to the holder (owned); its record: turn (own, owner, auto), eyes, upkeep, cover, lure. Runs on a trigger.",
+      "count": 0,
+      "params": [
+        "and",
+        "at",
+        "block",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "spawn",
+        "when": "acted",
+        "block": "drone",
+        "at": "self"
+      }
+    },
+    {
+      "id": "unmake",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 P9): unmake an owned unit (owned.ts unmakeOwned): it leaves the fight, its tie ends; refund: what its making took goes back to its owner. Runs on a trigger.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "refund",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "unmake",
+        "when": "acted",
+        "target": "target",
+        "refund": true
+      }
     }
   ],
   "item_ops": {
@@ -4554,12 +4602,16 @@
       "actor_tied": {
         "arg": "tie",
         "about": "actor is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
-        "values": []
+        "values": [
+          "owned"
+        ]
       },
       "target_tied": {
         "arg": "tie",
         "about": "target is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
-        "values": []
+        "values": [
+          "owned"
+        ]
       },
       "toggle": {
         "arg": "words",
@@ -5096,6 +5148,93 @@
         ],
         "changes_state": true,
         "about": "tie the holder to the target by a kind (P8: kit.ts tie; refused at the holder's cap: nothing said); clear: \"target\" ends the holder's ties of that kind to the target, \"all\" every one of that kind it holds"
+      },
+      "spawn": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "block",
+          "at"
+        ],
+        "changes_state": true,
+        "about": "make an owned unit (P9: owned.ts spawnOwned) from a data block (enemies.json companions, a system's forms) at the holder's level, on the free tile nearest the holder (at: self), the target or the event's tile; tied to the holder (owned); refused at its cap (ties_max:owned): nothing said"
+      },
+      "unmake": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "refund"
+        ],
+        "changes_state": true,
+        "about": "unmake an owned unit (P9: owned.ts unmakeOwned; the target, else the holder): it leaves the fight; refund: what its making took goes back to its owner"
       },
       "use": {
         "on": [

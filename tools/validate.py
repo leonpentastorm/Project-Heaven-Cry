@@ -1803,6 +1803,12 @@ def check_trigger_effect(e, w):
             if x.get("kind") not in _zk: errors.append(f"{w}: a zone's kind is one of {_zk}")
             if x.get("at", "self") not in ("self", "target", "tile"): errors.append(f"{w}: a zone's at is self, target or tile")
         if x.get("op") == "damage_mult" and x.get("round") not in (None, "up"): errors.append(f"{w}: damage_mult's round is up")
+        if x.get("op") == "spawn":
+            _blocks = {k.get("id") for k in ((data.get("enemies") or {}).get("companions") or [])}
+            if x.get("block") not in _blocks: errors.append(f"{w}: a spawn names a block (enemies.json companions: {sorted(_blocks)})")
+            if x.get("at", "self") not in ("self", "target", "tile"): errors.append(f"{w}: a spawn's at is self, target or tile")
+        if x.get("op") == "unmake" and "refund" in x and not isinstance(x["refund"], bool): errors.append(f"{w}: an unmake's refund is true or false")
+        if isinstance(x.get("limit"), dict) and "of" in x["limit"] and x["limit"]["of"] != "owner": errors.append(f"{w}: a limit's of is owner (an owned unit's reaction is its owner's)")
     cond = e.get("if")
     if cond is not None:
         if not isinstance(cond, dict): errors.append(f"{w}: `if` must be an object of predicates")
