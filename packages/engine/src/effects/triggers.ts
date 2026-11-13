@@ -17,9 +17,11 @@ import '../datatext'; // fills the texts' {=placeholders} before any data is rea
 import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
-import { setTriggerRunner, setAllItems } from './hooks';
-import { allItems, rawItem as rawItemT } from './collect';
-import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, canStand, type Area } from '../kit';
+import { setTriggerRunner, setAllItems, onHook } from './hooks';
+import { allItems, rawItem as rawItemT, itemInfo as itemInfoT } from './collect';
+import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, canStand, tiesOf as tiesOfK, type Area } from '../kit';
+import { holds } from '../character';
+import { applyDamage } from './damage';
 import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
 import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS } from '../magic';
@@ -34,7 +36,7 @@ import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
 import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
-import { deal, mend, type AmountSpec } from './output';
+import { deal, mend, amountOf, type AmountSpec } from './output';
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
 import { resOf } from '../tactics';
 import { patronIdOf } from '../belief'; // (no global hooks: faith.ts's load order stays as it was)
@@ -123,9 +125,9 @@ const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.
 // ============================================================================================== the predicates
 /** The closed list of `if` keys. Each reads the event; all of an effect's keys must hold. `<who>` is self, actor or
  * target. Numbers are shares of max HP (0.5: half) or tiles. */
-export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
+export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
 /** Add a predicate; `values`: the closed list its words come from (the validator refuses any other word). */
-const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
+const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
   PREDICATES[name] = { about, arg, test };
   // (a function: read when asked, for a list defined in a module this one is loaded inside of: tactics.ts SIGHT_WORDS)
   if (values) Object.defineProperty(PREDICATES[name], 'values', { enumerable: true, get: typeof values === 'function' ? values : () => values });
@@ -177,6 +179,11 @@ for (const who of ['self', 'target'] as Who[]) P(who + '_in_zone', 'zone', who +
 // the tie's from end, the holder its to end: an owned unit's owner is `actor_tied: {kind: "owned", as: "from"}`)
 const tieArg = (v: any): { kind: string; as: 'from' | 'to' | 'any' } => (typeof v === 'string' ? { kind: v, as: 'any' } : { kind: v?.kind, as: v?.as || 'any' });
 for (const who of ['actor', 'target'] as Who[]) P(who + '_tied', 'tie', who + ' is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit\'s end of it)', (ev, v) => { const u = unitOf(ev, who), a = tieArg(v); return !!u && tiedTo(ev.cb, ev.self, u, a.kind, a.as); }, () => tieKinds().map((k) => k.id));
+// Classes 3.0 section 6: what the holder holds. {slot: hand | person, door: evoker | emanator} or {slot, item: <id>}
+// (character.ts holds: the one "focus in hand" test, which hasEvoker and hasEmanator are)
+const holdsOf = (ev: Ev, v: any): boolean => { const c = ev.h.c || charOfUnit(ev.self); return !!c && holds(c, v || {}); };
+P('self_holds', 'hold', 'the holder has it: {slot: hand or person, door: ' + 'evoker or emanator} (a focus) or {slot, item: an item id}', (ev, v) => holdsOf(ev, v));
+P('self_lacks_gear', 'hold', 'the holder does not have it (as self_holds)', (ev, v) => !holdsOf(ev, v));
 // Classes 3.0 P12: a data toggle is on for the action being resolved (cb.mods; acted's ctx.toggles): `toggle: [ids]`
 P('toggle', 'words', 'one of the holder\'s item\'s data toggles (its ids) is on for the action being resolved', (ev, v) => {
   const mods: string[] = ev.ctx.toggles?.length ? ev.ctx.toggles : (ev.cb as any).mods || [], defs = (rawItemT(ev.h.key)?.toggles || []) as any[];
@@ -205,10 +212,11 @@ export function sourceOf(ev: Ev, of: string): number {
   if (ns === 'res') return resNow(ev, f);
   if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount ?? ev.ctx.base) : ev.ctx[f] ?? ev.ctx[camel(f)] ?? ev.ctx.src?.[f] ?? ev.ctx.src?.[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
   if (ns === 'self' || ns === 'actor' || ns === 'target') return unitField(unitOf(ev, ns as Who), f);
+  if (ns === 'ties') return tiesOfK(ev.cb, ev.self, f).length; // section 6: how many ties of a kind the holder has
   return 0;
 }
 /** The namespaces a number block's `of` may name in an item op. */
-export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target'];
+export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties'];
 /** The numeric fields of an item op that may be number blocks. */
 const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders'];
 /** An op with its number blocks read for this event (a plain op is itself). */
@@ -294,13 +302,13 @@ O('cancel', ['cond_incoming', 'forced_move', 'injury', 'attack', 'spot'], false,
 });
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
 O('deal', ANY, true, ['amount', 'via', 'nonlethal'], 'deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
-  const t = pick(ev, e), b = blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
+  const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
   const type = b.type || 'true', src: any = { by: ev.self, type, dmgType: type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
-  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: true }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
+  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
   if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
 });
 O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder\'s layer)', (ev, e) => {
-  const t = pick(ev, e), b = blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
+  const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
   mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b), ...(typeof e.layer === 'string' ? { layer: e.layer, ...(typeof e.holders === 'number' ? { holders: e.holders } : {}) } : {}) });
 });
 O('displace', ANY, true, ['tiles', 'how'], 'push the target away from the holder (how: push) or pull it closer (pull)', (ev, e) => {
@@ -329,12 +337,22 @@ O('unmake', ANY, true, ['refund'], 'unmake an owned unit (P9: owned.ts unmakeOwn
   const u = e.target === 'target' ? ev.target : e.target === 'actor' ? ev.actor : ev.self; if (!u || !ownerOf(ev.cb, u)) return false;
   unmakeOwned(ev.cb, u, { refund: !!e.refund });
 });
+O('redirect', ['taking'], true, ['share', 'split'], 'move a share of the damage being taken to the holder (a protector: Share a Hit), or with `targets` and split: true divide it among the units of that set; what is moved lands as the same blow (it is not redirected again)', (ev, e) => {
+  const c = ev.ctx; if (c.src?.redirected || !(c.dmg > 0)) return false;
+  const share = Math.max(0, Math.min(1, typeof e.share === 'number' ? e.share : 0.5)), moved = Math.floor(c.dmg * share); if (moved <= 0) return false;
+  const to: Unit[] = e.split && e.targets ? selectUnits(ev, e.targets).filter((u) => u !== c.t) : [ev.self].filter((u) => u !== c.t); if (!to.length) return false;
+  c.dmg -= moved; const each = Math.floor(moved / to.length);
+  if (ev.preview) return;
+  to.forEach((u, i) => { const n = i === 0 ? moved - each * (to.length - 1) : each; if (n > 0) applyDamage(ev.cb, u, n, { ...c.src, redirected: true }); });
+});
 O('use', ANY, true, [], 'nothing but its limit: spends one use (for a limit another effect reads with peek)', () => undefined);
 O('mark', ANY, true, ['flag', 'clear'], 'set (or with clear: true, clear) one of the item\'s own flags, for a later trigger\'s flag / no_flag', (ev, e) => {
   const st: any = ((ev.self.ps ||= {}) as any)[ev.h.key] ||= {}; const f = (st.flags ||= {});
   if (e.clear) delete f[e.flag]; else f[e.flag] = true;
 });
 
+/** A delayed deal's or mend's amount, fixed when it was queued (section 6: `delay`). */
+const fixedBlock = (e: any): AmountBlock => ({ kind: e.fixed.kind, base: e.fixed.n, ...(e.fixed.type ? { type: e.fixed.type } : {}), ...(e.fixed.armour ? { armour: e.fixed.armour } : {}), ...(e.fixed.heal_kind ? { heal_kind: e.fixed.heal_kind } : {}) } as AmountBlock);
 const blockOf = (h: Holder, e: any): AmountBlock | null => {
   if (e.amount && typeof e.amount === 'object' && typeof e.amount.base === 'number') return e.amount as AmountBlock;
   if (typeof e.amount === 'string') { try { return amountBlock(h.key, e.amount); } catch { return null; } }
@@ -429,6 +447,7 @@ export function triggerProblem(e: any): string | null {
   }
   if (e.if != null) { if (typeof e.if !== 'object' || Array.isArray(e.if)) return '`if` must be an object'; for (const k of Object.keys(e.if)) if (!PREDICATES[k]) return 'unknown predicate ' + k; }
   for (const x of [e, ...(Array.isArray(e.and) ? e.and : [])]) if (x.targets != null) { const why = targetsProblem(x.targets); if (why) return why; }
+  for (const x of [e, ...(Array.isArray(e.and) ? e.and : [])]) if (x.delay != null && (typeof x.delay !== 'object' || !(DELAY_UNTIL as readonly string[]).includes(x.delay.until))) return 'delay is {until: ' + DELAY_UNTIL.join(' | ') + ', n?}';
   if (e.limit != null) { const l = e.limit; if (typeof l !== 'object' || (typeof l.cooldown !== 'number' && !LIMIT_SCOPES.includes(l.per) && typeof l.reaction !== 'number')) return 'limit must be { per, n }, { cooldown } or { reaction, kind }'; if (typeof l.reaction === 'number' && !REACT_KINDS.includes(l.kind)) return 'a reaction limit names its kind (' + REACT_KINDS.join(', ') + ')'; }
   return null;
 }
@@ -449,13 +468,44 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   let ran = 0;
   const one = (ev1: Ev, x0: any) => { const x = withNumbers(ev1, x0), r = OPS[x.op].run(ev1, x, x.label || label); if (r !== false) ran++; if (typeof r === 'string' && r) parts.push(r); }; // an op that returns false did nothing (a zone cleared that wasn't there)
   // P5: an op with `targets` runs once for each unit of its set, that unit as its target
-  const go = () => { for (const x0 of all) { if (x0.targets) { for (const t of selectUnits(ev, x0.targets)) one({ ...ev, target: t }, { ...x0, target: 'target' }); } else one(ev, x0); } };
+  // section 6: an op with `delay` is queued (its numbers and amount fixed now) and run then (runDelayed)
+  const run1 = (ev1: Ev, x0: any) => { if (x0.delay) { queueDelayed(ev1, x0, x0.label || label); ran++; } else one(ev1, x0); };
+  const go = () => { for (const x0 of all) { if (x0.targets && !(x0.op === 'redirect' && x0.split)) { for (const t of selectUnits(ev, x0.targets)) run1({ ...ev, target: t }, { ...x0, target: 'target' }); } else run1(ev, x0); } };
   // the batch row limit.of "owner": an owned unit's reaction is its owner's (P1's payer, P9's record)
   if (asReaction && !ev.preview) { const payer = lim.of === 'owner' ? ownerOf(cb, self) : null; if (lim.of === 'owner' && !payer) return; if (!react(cb, self, { kind: lim.kind, spend: lim.reaction, event: attackEvent(), ...(payer ? { payer } : {}) }, go)) return; } else go();
   if (ev.preview || !ran) return; // a set with nobody in it: nothing happened, nothing is said
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
   if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));
 }
+// ============================================================================================== delay (section 6)
+/** When a delayed op runs: at the start of the target's next turn, of the holder's next turn, or after n rounds. */
+export const DELAY_UNTIL = ['target_turn_start', 'holder_turn_start', 'rounds'] as const;
+/** A queued op (cb.delayed; saved with the fight). Its numbers are fixed (a deal's or a mend's amount too). */
+export interface Delayed { key: string; holder: string; actor: string | null; target: string | null; op: any; label: string; until: (typeof DELAY_UNTIL)[number]; n: number; round: number }
+function queueDelayed(ev: Ev, x0: any, label: string): void {
+  const x: any = withNumbers(ev, x0), d = x0.delay || {};
+  if ((x.op === 'deal' || x.op === 'mend') && !x.fixed) { const b = blockOf(ev.h, x); if (b) { const r = amountOf({ ...specOf(b), kind: b.kind }, ev.self, { who: ev.h.c || null, counts: countsOf(ev, b) }); x.fixed = { kind: b.kind, n: r.raw, ...(b.type ? { type: b.type } : {}), ...(b.armour ? { armour: b.armour } : {}), ...(b.heal_kind ? { heal_kind: b.heal_kind } : {}) }; } }
+  delete x.delay; delete x.targets; delete x.when; delete x.if; delete x.limit; delete x.and;
+  const q: Delayed = { key: ev.h.key, holder: ev.self.id, actor: ev.actor?.id || null, target: ev.target?.id || null, op: x, label, until: d.until, n: typeof d.n === 'number' ? d.n : 1, round: ev.cb.round };
+  ev.cb.delayed = [...(ev.cb.delayed || []), q];
+}
+/** Run the queued ops that are due (a turn's start, a round's): a queued op whose holder or target is dead is dropped. */
+function runDelayed(cb: Combat, due: (d: Delayed) => boolean): void {
+  const now = (cb.delayed || []).filter(due); if (!now.length) return;
+  cb.delayed = (cb.delayed || []).filter((d) => !now.includes(d)); if (!cb.delayed.length) delete cb.delayed;
+  const byId = (id: string | null) => (id ? cb.units.find((x) => x.id === id) || null : null);
+  for (const d of now) {
+    const self = byId(d.holder), target = byId(d.target), actor = byId(d.actor), op = OPS[d.op.op];
+    if (!self || self.dead || (d.target && (!target || target.dead)) || !op) continue;
+    const info = itemInfoT(d.key) || { key: d.key, kind: 'perk', id: d.key, name: d.label, tier: 'I', effects: [], effTier: [], text: '', adjudication: 'engine', active: false, bound: false, ap: null, uses: 'at_will' } as ItemInfo;
+    const h: Holder = { key: d.key, itemId: info.id, kind: info.kind, tier: info.tier, info, c: charOfUnit(self), u: self, cb, g: null } as any;
+    const ev: Ev = { ctx: { cb }, trig: TRIGGERS.acted, h, self, cb, actor, target, preview: false };
+    const r = op.run(ev, d.op, d.label); if (typeof r === 'string' && r) say(cb, self.name + ' (' + d.label + ')' + r + '.');
+  }
+}
+onHook('turn_start', (ctx: any, cb: Combat) => { const u: Unit = ctx.u; if (u && cb.delayed?.length) runDelayed(cb, (d) => (d.until === 'target_turn_start' && d.target === u.id) || (d.until === 'holder_turn_start' && d.holder === u.id)); });
+onHook('round_start', (_ctx: any, cb: Combat) => { if (cb.delayed?.length) runDelayed(cb, (d) => d.until === 'rounds' && cb.round >= d.round + d.n); });
+
 // ============================================================================================== door verbs (P6)
 /** The first predicate of an `if` block that fails for this holder and target (the action's), outside a trigger (a
  * door verb's `if` and its `reach.if`), or null. Unknown keys fail. */

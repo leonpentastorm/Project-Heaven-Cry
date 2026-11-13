@@ -1739,11 +1739,12 @@ def check_pred(k, v, w):
     elif a in ("words", "string") and not all(isinstance(x, str) for x in vals): errors.append(f"{w}: `if.{k}` must be words")
     elif a == "zone" and not ((isinstance(v, str) and v in (p.get("values") or [])) or (isinstance(v, dict) and v.get("kind") in (p.get("values") or []) and v.get("owner", "any") in ("self", "side", "any") and set(v) <= {"kind", "owner"})): errors.append(f"{w}: `if.{k}` is a zone kind ({p.get('values')}) or {{kind, owner: self, side or any}}")
     elif a == "tie" and not ((isinstance(v, str) and v in (p.get("values") or [])) or (isinstance(v, dict) and v.get("kind") in (p.get("values") or []) and v.get("as", "any") in ("from", "to", "any") and set(v) <= {"kind", "as"})): errors.append(f"{w}: `if.{k}` is a tie kind ({p.get('values')}) or {{kind, as: from or to}}")
-    elif a in ("zone", "tie"): pass
+    elif a == "hold" and not (isinstance(v, dict) and set(v) <= {"slot", "door", "item"} and v.get("slot", "hand") in ("hand", "person") and (v.get("door") in ("evoker", "emanator") or (isinstance(v.get("item"), str) and "door" not in v))): errors.append(f"{w}: `if.{k}` is {{slot: hand or person, door: evoker or emanator}} or {{slot, item: <id>}}")
+    elif a in ("zone", "tie", "hold"): pass
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
-SOURCE_SPACES = ["res", "event", "self", "actor", "target"]
+SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties"]
 def check_number_block(b, w, item_op=True):
     if not isinstance(b.get("base"), (int, float)) or isinstance(b.get("base"), bool) or "kind" in b:
         errors.append(f"{w} is a number block: {{base: <number>, per: [{{of, value}}], min?, max?}}"); return
@@ -1808,6 +1809,9 @@ def check_trigger_effect(e, w):
             if x.get("block") not in _blocks: errors.append(f"{w}: a spawn names a block (enemies.json companions: {sorted(_blocks)})")
             if x.get("at", "self") not in ("self", "target", "tile"): errors.append(f"{w}: a spawn's at is self, target or tile")
         if x.get("op") == "unmake" and "refund" in x and not isinstance(x["refund"], bool): errors.append(f"{w}: an unmake's refund is true or false")
+        if "delay" in x and not (isinstance(x["delay"], dict) and x["delay"].get("until") in ("target_turn_start", "holder_turn_start", "rounds") and isinstance(x["delay"].get("n", 1), int)): errors.append(f"{w}: delay is {{until: target_turn_start, holder_turn_start or rounds, n?}}")
+        if x.get("op") == "redirect" and not (0 < (x.get("share") or 0.5) <= 1): errors.append(f"{w}: a redirect's share is over 0 and at most 1")
+        if x.get("op") == "redirect" and x.get("split") and "targets" not in x: errors.append(f"{w}: a split redirect names its receivers (targets)")
         if isinstance(x.get("limit"), dict) and "of" in x["limit"] and x["limit"]["of"] != "owner": errors.append(f"{w}: a limit's of is owner (an owned unit's reaction is its owner's)")
     cond = e.get("if")
     if cond is not None:

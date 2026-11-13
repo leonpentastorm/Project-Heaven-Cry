@@ -234,6 +234,80 @@
           "target": "target"
         }
       ]
+    },
+    {
+      "id": "test_delay_sting",
+      "name": "Late Sting (test)",
+      "text": "Your hit stings again at the start of the target's next turn ({=effects.0.amount.base}, fixed now).",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "hit",
+          "amount": {
+            "kind": "damage",
+            "base": 5,
+            "profile": "flat",
+            "type": "true"
+          },
+          "target": "target",
+          "delay": {
+            "until": "target_turn_start"
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_ties_count",
+      "name": "Many Hooks (test)",
+      "text": "You deal {=effects.0.value.per.0.value} more damage for each test bond you hold.",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "when": "dealing",
+          "value": {
+            "base": 0,
+            "per": [
+              {
+                "of": "ties:test_bond",
+                "value": 2
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_share_hit",
+      "name": "Share a Hit (test)",
+      "text": "When an ally within {=effects.0.if.target_within} tiles takes damage, half of it comes to you.",
+      "effects": [
+        {
+          "op": "redirect",
+          "when": "taking",
+          "share": 0.5,
+          "if": {
+            "target": "ally",
+            "target_within": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_share_split",
+      "name": "Spread It (test)",
+      "text": "When you take damage, half of it is divided among your allies within {=effects.0.targets.within} tiles.",
+      "effects": [
+        {
+          "op": "redirect",
+          "when": "taking",
+          "share": 0.5,
+          "split": true,
+          "targets": {
+            "side": "ally",
+            "within": 3
+          }
+        }
+      ]
     }
   ],
   "conditions": [],

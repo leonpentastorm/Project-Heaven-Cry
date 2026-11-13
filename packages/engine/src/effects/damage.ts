@@ -23,6 +23,7 @@ export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => vo
 export interface DamageSrc {
   /** Who did it (null: a hazard, a trap, bleeding, burning). */
   by?: Unit | null;
+  /** Classes 3.0: a share moved by the item op `redirect` (it is not moved again). */ redirected?: boolean;
   /** 'weapon' (an attack), 'hazard', 'trap', 'explosion', 'bleed', 'burn', 'sigil', 'elemental', 'soul', 'true', 'short', … */
   type: string;
   melee?: boolean; ranged?: boolean; crit?: boolean; explosive?: boolean; ambush?: boolean; shared?: boolean;

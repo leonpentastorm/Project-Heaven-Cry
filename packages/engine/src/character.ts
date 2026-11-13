@@ -751,10 +751,23 @@ export function focusHand(c: Character, kind: 'evoker' | 'emanator'): 'main' | '
   return carries(c, ids) ? 'pack' : null;
 }
 const carries = (c: Character, ids: string[]) => ids.includes(c.weapon) || (!!c.offHand && ids.includes(c.offHand.id)) || packOf(c).some((x) => ids.includes(x.item || x.id) && x.qty > 0);
+/** What a holder holds (Classes 3.0 section 6: the predicates self_holds / self_lacks_gear): a door's focus (door:
+ * evoker, emanator) or an item (item: an id) in a hand (slot hand) or anywhere on the person (slot person: a hand or
+ * the pack). THE one test of "a focus in hand": hasEvoker and hasEmanator are it. */
+export interface HoldSpec { slot?: 'hand' | 'person'; door?: 'evoker' | 'emanator'; item?: string }
+/** The doors whose focus `holds` knows (FOCUS_IDS). */
+export const FOCUS_DOORS = Object.keys(FOCUS_IDS) as ('evoker' | 'emanator')[];
+/** Does this character hold it (see HoldSpec)? */
+export function holds(c: Character, o: HoldSpec): boolean {
+  const ids = o.door ? FOCUS_IDS[o.door] || [] : o.item ? [o.item] : [];
+  if (!ids.length) return false;
+  if ((o.slot || 'hand') === 'person') return carries(c, ids);
+  return inHands(c).some((x) => ids.includes(x));
+}
 /** An Evoker in a hand: Sigils can be drawn and Evoked (spec: Hands 2). */
-export const hasEvoker = (c: Character) => { const h = focusHand(c, 'evoker'); return h === 'main' || h === 'off'; };
+export const hasEvoker = (c: Character) => holds(c, { slot: 'hand', door: 'evoker' });
 /** An Emanator in a hand: MP can be spent and filled (spec: Hands 2; without one an Outburst draws on the air). */
-export const hasEmanator = (c: Character) => { const h = focusHand(c, 'emanator'); return h === 'main' || h === 'off'; };
+export const hasEmanator = (c: Character) => holds(c, { slot: 'hand', door: 'emanator' });
 /** An Evoker anywhere (a hand or the pack): it keeps its core's charge. */
 export const carriesEvoker = (c: Character) => carries(c, FOCUS_IDS.evoker);
 /** An Emanator anywhere (a hand or the pack): it keeps its MP. */

@@ -4148,6 +4148,34 @@
         "target": "target",
         "refund": true
       }
+    },
+    {
+      "id": "redirect",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0, the batch row and section 6's split): on taking, move a share of the damage to the holder (a protector), or with targets and split: true divide it among that set; what is moved lands as the same blow and is not moved again. Runs on the trigger taking.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "share",
+        "split",
+        "targets",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "redirect",
+        "when": "taking",
+        "share": 0.5,
+        "if": {
+          "target": "ally",
+          "target_within": 1
+        }
+      }
     }
   ],
   "item_ops": {
@@ -4612,6 +4640,14 @@
         "values": [
           "owned"
         ]
+      },
+      "self_holds": {
+        "arg": "hold",
+        "about": "the holder has it: {slot: hand or person, door: evoker or emanator} (a focus) or {slot, item: an item id}"
+      },
+      "self_lacks_gear": {
+        "arg": "hold",
+        "about": "the holder does not have it (as self_holds)"
       },
       "toggle": {
         "arg": "words",
@@ -5235,6 +5271,17 @@
         ],
         "changes_state": true,
         "about": "unmake an owned unit (P9: owned.ts unmakeOwned; the target, else the holder): it leaves the fight; refund: what its making took goes back to its owner"
+      },
+      "redirect": {
+        "on": [
+          "taking"
+        ],
+        "fields": [
+          "share",
+          "split"
+        ],
+        "changes_state": true,
+        "about": "move a share of the damage being taken to the holder (a protector: Share a Hit), or with `targets` and split: true divide it among the units of that set; what is moved lands as the same blow (it is not redirected again)"
       },
       "use": {
         "on": [

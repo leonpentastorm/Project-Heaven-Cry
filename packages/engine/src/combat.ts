@@ -214,6 +214,7 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Magic on the field (spec: Mana): Sigil glyphs on tiles, standing zones (walls, smoke, light), the ambient mana
    * meter, and the dead already counted toward it. */
   glyphs?: Glyph[]; zones?: Zone[]; mana?: number; deadSeen?: string[]; glyphSeq?: number;
+  /** Classes 3.0 section 6: ops queued by `delay` (effects/triggers.ts), oldest first; absent while there are none. */ delayed?: any[];
   /** Classes 3.0 P8: the ties between units (kit.ts tie / untie / tiesOf; their kinds: data/rules.json ties.kinds), oldest first; absent while there are none. */ ties?: Tie[];
   /** Rules 1.10: scuffed glyphs' traces (readable for a few rounds). */
   traces?: Trace[];
