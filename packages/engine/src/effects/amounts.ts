@@ -32,7 +32,7 @@ import { PERK, TRAITS, SKILL, RULES, SIGIL } from '../data';
 import { CONDITION_ROWS } from '../condtable';
 import feelingsJ from '../../../../data/feelings.json';
 import patronsJ from '../../../../data/patrons.json';
-import { classMove } from './collect';
+import { classMove, rawItem } from './collect';
 import { amountOf, type AmountSpec, type Term } from './output';
 
 /** An item's `amounts` block as data writes it (data/CONVENTIONS.md "Amount blocks"): kind, base, per, profile, type, armour, mults. */
@@ -54,6 +54,7 @@ export function amountHome(key: string): any | null {
   if (kind === 'class') { const [cls, mv] = id.split('.'); return classMove(cls, mv)?.move || null; }
   if (kind === 'skill') { const [sid, lvl] = id.split('.'); return (SKILL as any)[sid]?.unlocks?.[lvl] || null; }
   if (kind === 'condition') return COND_BY[id] || null;
+  if (kind === 'verb' || kind === 'relic') return rawItem(key); // a door verb (rules 1.33: Tending's amounts) or a relic
   if (kind === 'word') return (SIGIL as any)[id] || null;
   if (kind === 'feeling') return FEELING_BY[id] || null;
   if (kind === 'patron') {

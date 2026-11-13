@@ -266,6 +266,8 @@ export const OPS: Record<string, TriggerOp> = {};
 const O = (name: string, on: string[], state: boolean, fields: string[], about: string, run: TriggerOp['run']) => { OPS[name] = { on, state, fields, about, run }; };
 const ANY = Object.keys(TRIGGERS);
 const pick = (ev: Ev, e: any): Unit | null => (e.target === 'actor' ? ev.actor : e.target === 'target' ? ev.target : ev.self);
+/** Who an op acts as: the holder, or (rules 1.33, `by: "source"` on a condition row's op) whoever gave the row. */
+const giverOfOp = (ev: Ev, e: any): Unit => (e.by === 'source' && ev.h.source && !ev.h.source.dead ? ev.h.source : ev.self);
 
 O('damage_mult', ['dealing', 'taking'], false, ['value', 'round', 'pool'], 'multiply the amount being dealt or taken (taking: round "up" rounds it up; pool: the holder\'s zone of that kind the target stands in gives what is prevented, and ends when spent)', (ev, e, label) => {
   if (ev.trig.hook === 'damage_out') { ev.ctx.mults.push({ v: e.value, label }); return; }
@@ -310,13 +312,13 @@ O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource
 /** The value of op `condition` that names the condition being put on (on cond_incoming: Take the Weight's "you take it
  * instead"; rev4-primitives.md batch row `condition: "incoming"`). */
 export const INCOMING = 'incoming';
-O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal\'s via; default the ambient source); condition "incoming" (on cond_incoming): the condition being put on, with its rounds unless rounds is given', (ev, e) => {
+O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via', 'by'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save; by: "source" (a condition row) puts it on as from whoever gave the row (Afraid of the giver); via: the skill whose strength the save is against (as deal\'s via; default the ambient source); condition "incoming" (on cond_incoming): the condition being put on, with its rounds unless rounds is given', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
   const inc = e.condition === INCOMING; if (inc && (ev.trig.hook !== 'cond_apply' || !ev.ctx.id)) return false;
   // rules 1.33: `{choice}` in the id is the action's pick ("given_{choice}": Inspire's felt feeling); an id that names no row does nothing
   const tmpl = !inc && typeof e.condition === 'string' && e.condition.includes('{choice}'), id = inc ? ev.ctx.id : tmpl ? withChoice(e.condition, ev) : e.condition, rounds = typeof e.rounds === 'number' ? e.rounds : inc && typeof ev.ctx.rounds === 'number' ? ev.ctx.rounds : undefined;
   if (tmpl && !CONDITION_ROWS.some((r: any) => r.id === id)) return false;
-  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), ev.self, u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}) });
+  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), giverOfOp(ev, e), u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}) });
 });
 O('cleanse', ANY, true, ['condition', 'family', 'count', 'newest'], 'end conditions: the ones named, or a family\'s debuffs, or any debuff (count: how many; newest: true, the newest first, else in the order named)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
@@ -340,10 +342,10 @@ O('mend_mult', ['heal', 'shield'], false, ['value'], 'multiply the heal or shiel
   const v = typeof e.value === 'number' ? e.value : 1; if (typeof ev.ctx.n === 'number') ev.ctx.n = ev.ctx.n * v;
 });
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
-O('deal', ANY, true, ['amount', 'via', 'nonlethal'], 'deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
+O('deal', ANY, true, ['amount', 'via', 'nonlethal', 'by'], 'deal an amount block (amounts) to the self, actor or target (by: "source", a condition row: dealt as by whoever gave it); via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
-  const type = b.type || 'true', src: any = { by: ev.self, type, dmgType: type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
-  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
+  const type = b.type || 'true', src: any = { by: giverOfOp(ev, e), type, dmgType: type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
+  const from = giverOfOp(ev, e), go = () => { deal(ev.cb, from, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed && e.by !== 'source' }, { who: from === ev.self ? ev.h.c || null : charOfUnit(from), src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
   if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
 });
 O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder\'s layer)', (ev, e) => {
