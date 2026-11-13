@@ -56,7 +56,9 @@ mate = mates[0]?.charId || null;
 await snap('01-start');
 
 // ---------- the TEND verbs are on the action panel, through the descriptors ----------
+await host.locator('#phc-tab-perks').click().catch(() => {}); await settle(host, 200);
 const names = await host.evaluate(() => [...document.querySelectorAll('button')].map((b) => b.textContent || ''));
+await snap('00-perks-tab');
 ok('the panel offers Bond', names.some((t) => /Bond/.test(t)));
 
 // ---------- the free Bond on the Soldier (the Mender's: 0 AP); its save forced to fail ----------

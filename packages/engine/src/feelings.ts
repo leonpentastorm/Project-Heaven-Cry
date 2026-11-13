@@ -40,7 +40,7 @@ export const RESIDUE_ROUNDS: number = FJ.residue_rounds ?? 2;
 export const FEELING_FAMILIES: Record<string, string> = FJ.families || {};
 
 /** Who feels (item 809): a player character who can cast Outbursts (a design, or a known school). */
-export const canFeel = (c: Character | null | undefined): boolean => !!c && ((c.outbursts || []).length > 0 || (c.soulKnown?.schools || []).length > 0);
+export const canFeel = (c: Character | null | undefined): boolean => !!c && ((c.outbursts || []).length > 0 || (c.soulKnown?.schools || []).length > 0 || (c.skills?.empathy || 0) >= 1); // rules 1.33: Empathy 1 feels too (the Mender gives what it felt)
 export const feelingsOf = (c: Character | null | undefined): string[] => (c?.feelings || []).filter((f) => FEELING[f]);
 /** The starting feelings check (creation): exactly 2 known, different feelings. */
 export function startingFeelingsError(f: string[] | undefined): string | null {
