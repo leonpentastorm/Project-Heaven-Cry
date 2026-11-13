@@ -2157,6 +2157,75 @@ for _c in items("conditions"):
         if not _fb or sorted(_fb[0].get("kinds") or []) != ["attack", "move"]:
             errors.append("conditions:suppressed: its reaction `forbid` names kinds attack and move only (rules 1.28, 1.30)")
 
+# Survival (data/survival.json, rules 1.40 onward; docs/design/survival-spec.md section 7). The file grows a key per build
+# step: each key is checked when it is there. `map` (rules 1.40, the path map): the shape, the ten kinds, the placement
+# rules and the guarantees. Whether the guarantees hold with these weights is the seeded test (test/survival-map.test.ts).
+_sv = data.get("survival")
+if _sv is not None:
+    if not isinstance(_sv, dict) or _sv.get("kind") != "survival":
+        errors.append("survival: the file is one object of kind 'survival'")
+        _sv = {}
+    _SV_KINDS = {"fight", "elite", "boss", "shop", "forge", "training", "shrine", "rest", "cache", "event"}
+    _mp = _sv.get("map")
+    if _mp is not None:
+        _w = "survival:map"
+        _whole = lambda v, lo=0: isinstance(v, int) and not isinstance(v, bool) and v >= lo
+        _rows = _mp.get("rows")
+        if not _whole(_rows, 3):
+            errors.append(f"{_w}: rows must be a whole number of 3 or more")
+            _rows = 15
+        _g, _s, _b = _mp.get("gate_row"), _mp.get("shop_rest_row"), _mp.get("boss_row")
+        if not (all(_whole(x, 1) for x in (_g, _s, _b)) and 2 < _g < _s - 1 and _s == _b - 1 and _b == _rows):
+            errors.append(f"{_w}: gate_row, shop_rest_row and boss_row must stand in that order with the Boss last (got {_g}, {_s}, {_b} of {_rows})")
+        _wd = _mp.get("width") or {}
+        _lo, _hi = _wd.get("min"), _wd.get("max")
+        if not (_whole(_lo, 2) and _whole(_hi, 2) and _lo <= _hi):
+            errors.append(f"{_w}.width: min and max must be whole numbers, 2 or more, min <= max")
+        else:
+            for _r, _rg in (_wd.get("rows") or {}).items():
+                if not (str(_r).isdigit() and 1 <= int(_r) <= _rows and isinstance(_rg, list) and len(_rg) == 2 and _lo <= _rg[0] <= _rg[1] <= _hi):
+                    errors.append(f"{_w}.width.rows.{_r}: a depth of the map and [low, high] inside min..max")
+            for _k, _v in (_wd.get("start") or {}).items():
+                if not (str(_k).isdigit() and _lo <= int(_k) <= _hi and isinstance(_v, (int, float)) and _v >= 0):
+                    errors.append(f"{_w}.width.start.{_k}: a width inside min..max with a weight of 0 or more")
+        _p1, _p2 = _wd.get("widen"), _wd.get("widen_two")
+        if not (isinstance(_p1, (int, float)) and isinstance(_p2, (int, float)) and 0 <= _p1 and 0 <= _p2 and _p1 + _p2 <= 1):
+            errors.append(f"{_w}.width: widen and widen_two are chances (0 to 1, together at most 1)")
+        if not (_whole(_mp.get("links"), 1) and _whole(_mp.get("reach"), 1)):
+            errors.append(f"{_w}: links and reach must be whole numbers of 1 or more")
+        _kw = _mp.get("kind_weights") or {}
+        if not _kw or set(_kw) - (_SV_KINDS - {"boss"}) or any(not isinstance(v, (int, float)) or v < 0 for v in _kw.values()) or not _kw.get("fight"):
+            errors.append(f"{_w}.kind_weights: weights of 0 or more for the open-row kinds ({', '.join(sorted(_SV_KINDS - {'boss'}))}), fight above 0")
+        _one = _mp.get("row_one_of") or {}
+        if not (_whole(_one.get("row"), 1) and _one.get("row") < _g and (_one.get("kinds") or {}) and not set(_one.get("kinds")) - _SV_KINDS):
+            errors.append(f"{_w}.row_one_of: a depth before the gate and weights for known kinds")
+        for _d in _mp.get("fight_rows") or []:
+            if not (_whole(_d, 1) and _d < _g):
+                errors.append(f"{_w}.fight_rows: {_d} is not a depth before the gate")
+        for _k, _v in (_mp.get("from_depth") or {}).items():
+            if _k not in _SV_KINDS or not _whole(_v, 1):
+                errors.append(f"{_w}.from_depth.{_k}: a known kind and a depth")
+        for _k, _v in (_mp.get("not_rows") or {}).items():
+            if _k not in _SV_KINDS or not isinstance(_v, list) or any(not _whole(x, 1) or x > _rows for x in _v):
+                errors.append(f"{_w}.not_rows.{_k}: a known kind and depths of the map")
+        for _i, _gu in enumerate(_mp.get("guarantees") or []):
+            _r = _gu.get("rows") if isinstance(_gu, dict) else None
+            if not (isinstance(_gu, dict) and _gu.get("kind") in _SV_KINDS - {"fight", "boss"} and isinstance(_r, list) and len(_r) == 2
+                    and all(_whole(x, 1) for x in _r) and _r[0] <= _r[1] < _s and _whole(_gu.get("until"), 0) and _gu["until"] < _r[1]):
+                errors.append(f"{_w}.guarantees[{_i}]: a special kind, rows [first, last] before row {_s}, and until (a depth before the last)")
+        if not _whole(_mp.get("shop_gap"), 1):
+            errors.append(f"{_w}: shop_gap must be a whole number of 1 or more")
+        _wo = _mp.get("words") or {}
+        if set(_wo) != _SV_KINDS or any(not isinstance(v, str) or not v for v in _wo.values()):
+            errors.append(f"{_w}.words: one word for each of the ten kinds")
+        _ex = _mp.get("expect")
+        if _ex is not None:
+            for _k in list((_ex.get("about") or {}).keys()) + list((_ex.get("path") or {}).keys()):
+                if _k not in _SV_KINDS | {"nodes"}:
+                    errors.append(f"{_w}.expect: unknown kind {_k}")
+        if _mp.get("provisional") is not True:
+            errors.append(f"{_w}: every number is provisional (provisional: true)")
+
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:
     _want = {k["slot"]: k["id"] for k in data["skills"]["items"] if k["attribute"] == _a["id"]}

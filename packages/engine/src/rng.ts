@@ -15,3 +15,6 @@ export const ROLL_TAP: { f?: ((sides: number, value: number) => void) | null } =
 export const die = (r: Rng, sides: number) => { const v = 1 + Math.floor(next(r) * sides); if (ROLL_TAP.f) ROLL_TAP.f(sides, v); return v; };
 export const d20 = (r: Rng) => die(r, 20);
 export const seedFrom = (s: string) => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h | 0; };
+/** A named seeded stream (Survival rule 12): the same seed and key always give the same stream, and content generation
+ * (a stage's path map, a node's encounter, offers and stock) never consumes a fight's dice in `g.rng`. */
+export const rngFor = (seed: string | number, key: string): Rng => ({ state: seedFrom(String(seed) + '#' + key) });
