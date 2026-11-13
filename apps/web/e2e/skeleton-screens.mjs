@@ -9,7 +9,7 @@
 //   5. a fight with three talking skills and a shield: the Calls tab, a Call made, the shield's block with its Guard pips.
 // Shots for Leon: docs/design/handoffs/skeleton-2.0-shots/{archetypes,skillpage,levelup,tabs-wrap,calls,shield}-*.png
 // (or SHOTS=<dir>).
-import { mkdirSync } from 'fs';
+import { mkdirSync, readFileSync } from 'fs';
 import { chromium, click, player, hostAs, BASE, settle } from './lib.mjs';
 const SHOTS = process.env.SHOTS || new URL('../../../docs/design/handoffs/skeleton-2.0-shots/', import.meta.url).pathname.replace(/\/$/, '');
 mkdirSync(SHOTS, { recursive: true });
@@ -283,9 +283,13 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     ok(at + 'with the shield\'s technique picked the grid and Confirm are in view', v.grid && v.confirm && v.pageScroll <= 1);
     await p.screenshot({ path: SHOTS + '/shield-raise-' + W + '.png' });
   }
-  // the resources strip says Guard's rule
-  const gr = await p.evaluate(() => { const el = [...document.querySelectorAll('[data-tip-text], [aria-label]')].find((x) => /Guard: each point soaks 10 damage; Brace and the Guard technique refill it\./.test((x.getAttribute('data-tip-text') || '') + (x.getAttribute('aria-label') || '') + x.textContent)); return !!el; });
-  ok('the resources strip says Guard\'s rule in a sentence', gr || /Guard: each point soaks 10 damage/.test(await p.locator('body').innerText()));
+  // the resources strip says Guard's rule. Its soak is a number in HP, so it scales with level (rules 1.36): the sentence
+  // and the engine's fuller hint must say the same whole number, at least data's level-1 soak (rules.guard.soak in
+  // data/techniques.json; the scale never shrinks it). It said a typed 10 before rules 1.36.
+  const soak1 = JSON.parse(readFileSync(new URL('../../../data/techniques.json', import.meta.url), 'utf8')).rules.guard.soak;
+  const gr = await p.evaluate(() => { const el = [...document.querySelectorAll('[aria-label]')].find((x) => /^Guard: \d+ \/ \d+ \(Guard: each point soaks/.test(x.getAttribute('aria-label') || '')); return el ? el.getAttribute('aria-label') : ''; });
+  const gs = [...gr.matchAll(/each point soaks (\S+) damage; Brace and the Guard technique refill it\./g)].map((m) => m[1]), gh = gr.match(/Each point takes (\S+) damage off a hit/)?.[1];
+  ok('the resources strip says Guard\'s rule in a sentence, its soak the engine\'s at this level (' + gs.join('/') + ', hint ' + gh + ', level 1: ' + soak1 + ')', gs.length >= 1 && gs.every((x) => x === gh) && /^\d+$/.test(gh || '') && Number(gh) >= soak1);
 
   // ----- use a Call -----
   await p.locator('#phc-tab-calls').click(); await settle(p, 250);

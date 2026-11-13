@@ -309,7 +309,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     // Guard (rules 1.13) is anyone's with Durability, not a class's: its rule in one sentence, the soak read from the
     // engine (physView), and the engine's fuller hint beside the pips in a fight.
     const gv = id === 'guard' && u && cb ? (() => { try { return E.phys.physView(cb, u, u.side, g)?.guard || null; } catch { return null; } })() : null;
-    const gRule = id === 'guard' ? guardRule(gv?.soak ?? ((E.phys as any).PHYS_RULES?.guard?.soak ?? 10)) : '';
+    const gRule = id === 'guard' ? guardRule(gv?.soak ?? E.phys.guardSoak({ level: u?.level ?? c?.level ?? 1 })) : '';
     // Shadow (rules 1.32): Perception's door, in Perception ink, with the engine's sight word for the unit (Unseen, In view, Seen)
     const sight = id === 'shadow' && u && cb ? (() => { try { const [s1, s2] = E.sightOf(cb, u); return s1 === 'seen' ? 'Seen' : s2 === 'in_view' ? 'In view' : 'Unseen'; } catch { return ''; } })() : '';
     const sRule = id === 'shadow' ? 'Shadow: built while unseen (a turn ended Hidden with no attack, a move from cover to cover, a kill nobody saw; at most 2 a turn), lost 1 at the start of a turn while seen, spent all at once by a Break on a weapon attack from Hidden.' : '';
