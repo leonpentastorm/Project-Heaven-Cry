@@ -26,6 +26,7 @@ import techniquesJ from '../../../data/techniques.json';
 import traitsJ from '../../../data/traits.json';
 import weaponsJ from '../../../data/weapons.json';
 import worldJ from '../../../data/world_play.json';
+import survivalJ from '../../../data/survival.json';
 
 const PH = /\{=(\.?[A-Za-z0-9_$]+(?:\.[A-Za-z0-9_$]+)*)(?:\|([a-z]+))?\}/g;
 const FORMATS = ['', 'abs', 'signed', 'pct', 'more', 'less'];
@@ -68,4 +69,4 @@ function walk(node: any) {
 /** Fill every placeholder under a parsed data file, in place. Filling twice changes nothing. */
 export function resolveTexts<T>(root: T): T { walk(root); return root; }
 
-for (const j of [actionsJ, callsJ, classesJ, conditionsJ, enemiesJ, feelingsJ, itemsJ, objectsJ, patronsJ, perksJ, rulesJ, sigilsJ, skillsJ, soulJ, techniquesJ, traitsJ, weaponsJ, worldJ, tendingJ, figmentsJ, shadowJ]) resolveTexts(j); // (shadow.json: its verbs' texts showed {=…} on the hover card until Classes 3.0 step 10)
+for (const j of [actionsJ, callsJ, classesJ, conditionsJ, enemiesJ, feelingsJ, itemsJ, objectsJ, patronsJ, perksJ, rulesJ, sigilsJ, skillsJ, soulJ, techniquesJ, traitsJ, weaponsJ, worldJ, tendingJ, figmentsJ, shadowJ, survivalJ]) resolveTexts(j); // (shadow.json: its verbs' texts showed {=…} on the hover card until Classes 3.0 step 10)

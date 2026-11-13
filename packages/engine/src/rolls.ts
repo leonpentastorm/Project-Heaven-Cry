@@ -20,7 +20,8 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import rulesJ from '../../../data/rules.json';
 import type { Combat, Unit } from './combat';
 import { emitFx } from './combat';
-import { emit, hookUsed } from './effects/hooks';
+import { emit, hookUsed, charOfUnit } from './effects/hooks';
+import { RARITY, focusRarity } from './character';
 import { d20, type Rng } from './rng';
 
 const R: any = (rulesJ as any).rolls || {}, LADDER: any = (rulesJ as any).resolution?.tn_ladder || {};
@@ -149,7 +150,8 @@ export function rollSave(cb: Combat, rng: Rng, s: SaveSpec): RollResult {
   if (sv.pass) return skip('auto', true, sv.why || '');
   if (sv.fail) return skip('no_save', false, sv.why || '');
   const parts: RollPart[] = [{ add: s.mod, label: s.fam + ' save' }, ...(sv.saveAdd ? [{ add: sv.saveAdd, label: 'items' }] : [])];
-  const res = judge('save', rollD20(rng, { adv: s.adv }), parts, s.tn + (sv.tnAdd || 0), { fam: s.fam, ...(s.lead ? { lead: s.lead } : {}) });
+  const fa = s.via ? focusAccTerm(s.by, s.via) : null; // rules 1.43: a graded focus makes its door's forced saves harder
+  const res = judge('save', rollD20(rng, { adv: s.adv }), parts, s.tn + (sv.tnAdd || 0) + (fa?.v || 0), { fam: s.fam, ...(s.lead ? { lead: s.lead } : {}) });
   if (s.fx !== false) rollFx(cb, res, t, { by: s.by, why: s.id });
   return res;
 }
@@ -171,9 +173,21 @@ export type HitKind = 'weapon' | 'sigil' | 'soul';
  * classes/soul.ts soulStrike) all ask here, so an item or a condition that changes "a roll to hit this target" reaches
  * all three. Pure: a listener only adds terms ({v, label}). Returns the terms added (none while nobody listens). */
 export function toHitTerms(cb: Combat | null | undefined, att: Unit | null | undefined, tgt: Unit, type: HitKind, o: { mode?: string; preview?: boolean } = {}): { v: number; label: string }[] {
-  if (!cb || !att || !hookUsed('to_hit')) return [];
+  const fa = type === 'weapon' ? null : focusAccTerm(att, HIT_DOOR[type]); // rules 1.43: a graded focus on its door's roll to hit
+  if (!cb || !att || !hookUsed('to_hit')) return fa ? [fa] : [];
   const ctx: any = emit(cb, 'to_hit', { att, tgt, type, mode: o.mode ?? null, terms: [] as { v: number; label: string }[], preview: o.preview !== false, cb });
-  return (ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v);
+  return [...(fa ? [fa] : []), ...(ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v)];
+}
+/** The door each kind of roll to hit is made through (a weapon's own rarity is in its attack already). */
+const HIT_DOOR: Record<HitKind, string> = { weapon: '', sigil: 'brain_power', soul: 'will_power' };
+/** Rules 1.43 (survival-spec rule 25a, 4.2 item 9; Leon, 13 Nov, "for now"): THE reading of a focus's rarity on its
+ * door. A character's focus of this door (a skill id or a focus kind) in a hand adds its rarity's `acc` (rules.json
+ * rarity: the number a weapon adds to its own attack) as a term: to its door's roll to hit (toHitTerms: a Sigil's, an
+ * Outburst's) and to the TN of a save forced through that door skill (rollSave: a Bond's, a push's, a Figment's).
+ * Null when nothing is added (no focus of that door in a hand, a Standard one, no character behind the unit). */
+export function focusAccTerm(u: Unit | null | undefined, door: string): { v: number; label: string } | null {
+  const c = door ? charOfUnit(u) : null, r = c ? focusRarity(c, door) : null, v = r ? RARITY[r].acc : 0;
+  return v ? { v, label: r + ' focus' } : null;
 }
 /** The sum of toHitTerms. */
 export const toHitAdd = (cb: Combat | null | undefined, att: Unit | null | undefined, tgt: Unit, type: HitKind, o: { mode?: string; preview?: boolean } = {}): number => toHitTerms(cb, att, tgt, type, o).reduce((n, t) => n + t.v, 0);

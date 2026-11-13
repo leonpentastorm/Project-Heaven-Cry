@@ -61,6 +61,16 @@
       "price_credits": 120
     },
     {
+      "id": "armourer_chit",
+      "name": "Armourer's chit",
+      "category": "tool",
+      "weight_kg": 0,
+      "stock": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A chapter armourer's stamped requisition. At a shop or a Forge it pays for one grade step to Fine or Masterwork in place of credits. Never sold; it may be given."
+    },
+    {
       "id": "ration_pack",
       "name": "Ration pack",
       "category": "food",
