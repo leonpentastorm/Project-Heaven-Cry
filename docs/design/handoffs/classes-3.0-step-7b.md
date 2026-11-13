@@ -153,3 +153,11 @@ Give it an amount block with a profile (its Level term comes from the column), o
 that is HP, multiply it by `scaleOf(level of whoever owns it)` at that one place. A share of max HP or of a hit takes
 no profile. A heal or shield goes through `mend()` (an amount block) or `mendSized` (a number you sized) so the gate
 and the cap apply. Then `python3 tools/golden_scale_check.py --rev <base>`.
+
+## 7. `npm run built-from` on this step (10 smells in 5 places, none a lint fails on)
+
+- `character.ts` 611, 916 and `game.ts` 465: the old-save move and the level-up's rise in max HP set HP by hand: a
+  change of units, not damage or healing (as `migrateCharacterMp` does for MP).
+- `combat.ts` 673: `objectAtLevel` puts an object's HP in the level's units (not damage).
+- `faith.ts` 1152 to 1227: the prayer switch by id was there before; this step only routed its amounts through `mendSized`.
+- `magic.ts` 1776, 1781: the Outburst's preview sums were there before; this step wrapped them in `gatedAmount`.
