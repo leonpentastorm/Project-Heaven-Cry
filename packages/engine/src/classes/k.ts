@@ -176,10 +176,10 @@ const harmful = (bl: any) => (bl?.polarity ? bl.polarity === 'harm' : (bl?.effec
 // shell before a fight (the engine rolls the prayer); it loads at the start of the next fight this scene.
 register({
   id: 'lumeri_templar.blessed_shells', claims: 'all',
-  toggles: [{ id: 'load', label: 'Blessed Shells: load the Blessing into your weapon', on: ['combat/pray'], available: (h) => !!h.c?.patron }],
+  toggles: [{ id: 'load', label: 'Blessed Arms: load the Blessing into your weapon', on: ['combat/pray'], available: (h) => !!h.c?.patron }],
   actions: [{
-    id: 'bless_shell', label: 'Bless a shell', scope: ['story'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
-    text: 'Once a scene: pray over a shell. A Hymn above your standing with your patron is an overreach. If the prayer succeeds, the shell carries the Hymn into the next fight this scene.',
+    id: 'bless_shell', label: 'Bless your weapon', scope: ['story'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
+    text: 'Once a scene: pray over your weapon (a round, an arrow, an edge). A Hymn above your standing with your patron is an overreach. If the prayer succeeds, the weapon carries the Hymn into the next fight this scene.',
     available: (h) => (!h.c?.patron || !PATRON[h.c.patron] ? 'You have no patron.' : (h.c.skills.faith || 0) < HYMN_FAITH ? 'A Hymn needs Faith ' + HYMN_FAITH + '.' : true),
     run: (h, a, rng) => {
       const c = h.c!, p = PATRON[c.patron!], bl = (p.blessings || []).find((b: any) => b.id === a.choice) || (p.blessings || [])[0];
@@ -187,7 +187,7 @@ register({
       const gate = (GATE as any)[bl.tier || 1] ?? 3, dv = devotionNow(c), m = mod(c.skills.faith || 0);
       const tn = dv >= gate ? 0 : OVERREACH.base + OVERREACH.step * (gate - dv), rv = tn ? rollVs(h.cb || null, rng as any, { by: h.u || null, mod: m, tn, why: 'pray' }) : null, ok = !rv || rv.ok;
       if (!ok) shiftDevotion(h.g || null, null, c, OVERREACH.miss, 'a failed overreach');
-      const line = c.name + ' prays over a shell to ' + p.name + (rv ? ': ' + rv.text + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −' + -OVERREACH.miss + ' Devotion XP.');
+      const line = c.name + ' prays over their weapon to ' + p.name + (rv ? ': ' + rv.text + ' (overreach)' : ' (by standing)') + (ok ? ' · ' + bl.name + ' is sealed in it.' : ' · no answer: −' + -OVERREACH.miss + ' Devotion XP.');
       if (ok) charState(c).blessedShell = { id: bl.id, scene: sceneOf(h), power: blessPower(null, c) };
       postStory(h, line); if (h.g) pendRuling(h.g, c, h.key, line + ' Describe how the patron answers (or doesn\'t).');
       return null;
@@ -197,11 +197,11 @@ register({
     combat_start: (ctx, h) => {
       const c = h.c, u = h.u; if (!c || !u || !inFight(h)) return; const s = cs(c).blessedShell; if (!s || s.scene !== sceneOf(h)) return;
       const bl = (PATRON[c.patron || '']?.blessings || []).find((b: any) => b.id === s.id); delete charState(c).blessedShell; if (!bl) return;
-      stateOf(h).loaded = { bl, power: s.power }; say(ctx.cb, u.name + ' carries a blessed shell: ' + bl.name + '.');
+      stateOf(h).loaded = { bl, power: s.power }; say(ctx.cb, u.name + ' carries a blessed weapon: ' + bl.name + '.');
     },
     blessing_in: (ctx, h) => {
       if (ctx.u !== h.u || !inFight(h) || stateOf(h).resolving || !modOn(h, 'load')) return;
-      stateOf(h).loaded = { bl: ctx.blessing, power: ctx.power }; ctx.handled = true; ctx.out = ' · loaded into ' + (W(h.u!)?.name || 'the weapon') + ' (Blessed Shells)';
+      stateOf(h).loaded = { bl: ctx.blessing, power: ctx.power }; ctx.handled = true; ctx.out = ' · loaded into ' + (W(h.u!)?.name || 'the weapon') + ' (Blessed Arms)';
     },
     on_hit: (ctx, h) => {
       const u = h.u!, cb = h.cb!, st = stateOf(h); if (ctx.att !== u || !inFight(h) || !st.loaded) return;
@@ -210,12 +210,12 @@ register({
         let line = '';
         if (harmful(bl)) line = t.dead ? ' · the target is already gone' : blessing(cb, rng, u, t, bl, power);
         else for (const x of cb.units.filter((v) => v.side === u.side && !v.dead && dist(v.pos, t.pos) <= 1)) line += blessing(cb, rng, u, x, bl, power);
-        say(cb, 'The blessed shell bursts: ' + bl.name + (harmful(bl) ? ' on ' + t.name : ' on the allies around ' + t.name) + (line || ' · nobody to bless') + '.');
-        if (!bl.polarity) note(h, 'Blessed Shells: ' + bl.name + ' read as ' + (harmful(bl) ? 'harmful' : 'helpful') + ' (patrons.json has no polarity); overrule if wrong.');
+        say(cb, 'The blessing in the weapon bursts: ' + bl.name + (harmful(bl) ? ' on ' + t.name : ' on the allies around ' + t.name) + (line || ' · nobody to bless') + '.');
+        if (!bl.polarity) note(h, 'Blessed Arms: ' + bl.name + ' read as ' + (harmful(bl) ? 'harmful' : 'helpful') + ' (patrons.json has no polarity); overrule if wrong.');
       } finally { st.resolving = false; }
     },
   },
-  brief: () => 'Blessed Shells: rule untagged Blessings and how a shell blessed in the story behaves.',
+  brief: () => 'Blessed Arms: rule untagged Blessings and how a weapon blessed in the story behaves.',
 });
 
 // Under the Eye (K5, PROVISIONAL, audit 1-5): while you are Witnessed, allies within 3 tiles get +2 to hit (combat: the
@@ -245,32 +245,35 @@ function eyeNote(ctx: any, h: Holder) {
   note(h, 'Under the Eye: allies near ' + u.name + ' got +2 to hit this round as on-theme for ' + (PATRON[h.c?.patron || '']?.name || 'the patron') + '; rule if it was off-theme.');
 }
 
-// Judgement (K6, PROVISIONAL, audit 1-5): 4 AP all told, once per fight: spend 1 Devotion (not 3: the 3 drained
-// prayer and made it a once-in-3-sessions move) for one melee or shotgun attack whose damage is × (1 + Blessing power).
-// The Devotion is spent hit or miss. Rules 1.6.1 (item 706): "1 Devotion" is 10 Devotion XP, through the choke point.
-const shotgun = (u: Unit) => W(u)?.category === 'shotgun' || /scattergun|censer/.test(u.weapon);
+// Verdict (was Judgement; K6, PROVISIONAL, audit 1-5): 4 AP all told, once per fight: spend 1 Devotion (not 3: the 3
+// drained prayer and made it a once-in-3-sessions move) for one plain attack with any weapon (rules 1.31, the Chaplain:
+// base classes are weapon-neutral) whose damage is × (1 + Blessing power). The Devotion is spent hit or miss. Rules
+// 1.6.1 (item 706): "1 Devotion" is 10 Devotion XP, through the choke point.
+/** The weapon's plain attack (a strike in reach, a throw, else a shot): never a Burst, an Aimed shot or a technique. */
+const plainMode = (u: Unit): 'melee' | 'thrown' | 'shot' => (isMelee(W(u)) ? 'melee' : W(u)?.category === 'thrown' ? 'thrown' : 'shot');
 register({
   id: 'lumeri_templar.judgement', claims: 'all',
   actions: [{
-    id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 'data', uses: { per: 'per_combat', n: 1 },
-    text: 'Once a fight, for ' + DEVOTION_XP.judgement + ' Devotion XP: make one melee or scattergun attack whose damage is multiplied by 1 + your Blessing power. The Devotion XP is spent whether you hit or miss.',
-    available: (h) => (!h.u || !h.c ? false : !h.c.patron ? 'You have no patron.' : devotionXpOf(h.c) < DEVOTION_XP.judgement ? 'Needs ' + DEVOTION_XP.judgement + ' Devotion XP.' : !(isMelee(W(h.u)) || shotgun(h.u)) ? 'Needs a melee weapon or a scattergun.' : true),
+    id: 'judgement', label: 'Verdict', scope: ['combat'], target: 'enemy', ap: 'data', uses: { per: 'per_combat', n: 1 },
+    text: 'Once a fight, for ' + DEVOTION_XP.judgement + ' Devotion XP: make one plain attack with your weapon (a strike, a shot or a throw) whose damage is multiplied by 1 + your Blessing power. The Devotion XP is spent whether you hit or miss.',
+    available: (h) => (!h.u || !h.c ? false : !h.c.patron ? 'You have no patron.' : devotionXpOf(h.c) < DEVOTION_XP.judgement ? 'Needs ' + DEVOTION_XP.judgement + ' Devotion XP.' : true),
     preview: (h, a) => {
       const t = unitById(h.cb!, a.targetId); if (!t) return {};
-      const pv = previewAttack(h.cb!, h.u!, t, isMelee(W(h.u!)) ? 'melee' : 'shot', { free: true });
+      const pv = previewAttack(h.cb!, h.u!, t, plainMode(h.u!), { free: true });
       return pv.ok ? { lines: ['×' + Math.round((1 + blessPower(h.u, h.c)) * 100) / 100 + ' damage; ' + pv.pct + '% to hit.'] } : { ok: false, why: pv.why };
     },
     run: (h, a, rng) => {
       const u = h.u!, cb = h.cb!, t = unitById(cb, a.targetId)!, m = 1 + blessPower(u, h.c);
-      shiftDevotion(h.g || null, cb, h.c!, -DEVOTION_XP.judgement, 'Judgement');
-      say(cb, u.name + ' passes Judgement on ' + t.name + ' (' + DEVOTION_XP.judgement + ' Devotion XP; Devotion ' + devotionOf(h.c!) + ' left).');
-      withMult(u, m, 'Judgement', () => resolveAttack(cb, rng, u, t, isMelee(W(u)) ? 'melee' : 'shot', null, { free: true, fx: { move: 'lumeri_templar.judgement' } }));
-      note(h, 'Judgement by ' + u.name + ' on ' + t.name + ': does it keep or break a taboo of ' + (PATRON[h.c!.patron!]?.name || 'the patron') + '?');
+      shiftDevotion(h.g || null, cb, h.c!, -DEVOTION_XP.judgement, 'Verdict');
+      say(cb, u.name + ' passes a Verdict on ' + t.name + ' (' + DEVOTION_XP.judgement + ' Devotion XP; Devotion ' + devotionOf(h.c!) + ' left).');
+      withMult(u, m, 'Verdict', () => resolveAttack(cb, rng, u, t, plainMode(u), null, { free: true, fx: { move: 'lumeri_templar.judgement' } }));
+      note(h, 'Verdict by ' + u.name + ' on ' + t.name + ': does it keep or break a taboo of ' + (PATRON[h.c!.patron!]?.name || 'the patron') + '?');
       checkOver(cb); return null;
     },
   }],
-  on: { damage_out: (ctx, h) => { if (ctx.att !== h.u) return; for (const m of MULTS) if (m.att === h.u!.id) ctx.mults.push({ v: m.v, label: m.label }); } },
-  brief: () => 'Judgement: a dramatic moment to colour; rule a taboo it breaks.',
+  // (an item's own damage riding the attack, Smite's, is not the attack's: Verdict doesn't multiply it; rules 1.31)
+  on: { damage_out: (ctx, h) => { if (ctx.att !== h.u || ctx.mode === 'item') return; for (const m of MULTS) if (m.att === h.u!.id) ctx.mults.push({ v: m.v, label: m.label }); } },
+  brief: () => 'Verdict: a dramatic moment to colour; rule a taboo it breaks.',
 });
 
 // =============================================================================================== STROKE GAMBLER

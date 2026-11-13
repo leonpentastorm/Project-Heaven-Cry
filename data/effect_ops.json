@@ -4720,6 +4720,24 @@
           "the_matchmaker",
           "counting_weaver"
         ]
+      },
+      "not_patron": {
+        "arg": "words",
+        "about": "the holder is not Faithful to any of these patrons (an Atheist is none of them)",
+        "values": [
+          "nerukhan",
+          "the_quartermaster",
+          "the_laughing_mask",
+          "toll_keeper",
+          "mother_ember",
+          "old_overcast",
+          "the_matchmaker",
+          "counting_weaver"
+        ]
+      },
+      "answered": {
+        "arg": "bool",
+        "about": "a prayer of the holder's is (or is not) answered now (faith.ts prayerAnswered: the prayer door open, Faith and not Silenced; the Faithful always, an Atheist rolls the Whisper's TN; a preview rolls nothing). Put it last in `if`: it rolls"
       }
     },
     "ops": {

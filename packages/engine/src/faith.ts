@@ -41,6 +41,10 @@ import { WEAPON, SKILL, ITEM } from './data';
 import { rngOf, overworld, tilesAround, foesOf } from './kit';
 import { setBraced, setDowned, clearStagger } from './unitstate';
 import { condNotFresh } from './magic';
+import { setAnsweredDoor } from './effects/triggers';
+import { itemInfo } from './effects/collect';
+import { amountBlock } from './effects/amounts';
+import { mend } from './effects/output';
 
 export type { Belief, Vow } from './character';
 
@@ -625,16 +629,54 @@ function intervene(cb: Combat, f: Unit, trigger: string, target: Unit | null, am
   const g = G(), why = String(said || '').replace(/^[\s:·]+/, '').trim();
   if (g && !(cb as any).dry) spotlight(g, { kind: 'god', patron: p.id, char: c.id, unit: f.id, reason: why || 'intervenes for ' + f.name, ...(line ? { line } : {}),
     ...(target ? { target: target.id, targetName: target.name } : {}), ...(target?.charId && target.charId !== c.id && target.side === f.side ? { targetChar: target.charId } : {}) });
-  // Classes 3.0 (rev4 batch row; chaplain-spec.md rule 11): stat intervention_keeps_witnessed keeps it on
-  if (condOn(f, 'witnessed') && !(statQuery({ cb, u: f, c }, 'intervention_keeps_witnessed').add > 0)) { endCond(f, 'witnessed', cb); say(cb, f.name + ' is no longer Witnessed.'); }
+  // Classes 3.0 (rev4 batch row; chaplain-spec.md rule 11, rules 1.31): stat intervention_keeps_witnessed keeps it on
+  // for that many of the fight's first interventions (the Chaplain: the first; the second ends it)
+  if (condOn(f, 'witnessed') && !(st.interventions <= statQuery({ cb, u: f, c }, 'intervention_keeps_witnessed').add)) { endCond(f, 'witnessed', cb); say(cb, f.name + ' is no longer Witnessed.'); }
 }
+// ---------- the patron at its side (Classes 3.0 step 5, the Chaplain; rules 1.31; chaplain-spec.md rules 10 to 12) ----------
+/** While a Faithful fighter whose items answer stat patron_presence is Witnessed, its patron stands at its side as a
+ * presence (not a unit: never targeted, blocks nothing, sees nothing): the patron's intervention reaches further as its
+ * data says (patrons.json intervention.presence), and a damage intervention that picks a target picks a Judged enemy
+ * of the fighter's first. Null: no presence. */
+export function presenceOf(cb: Combat, f: Unit): any | null {
+  if (!condOn(f, 'witnessed') || f.dead) return null;
+  const c = unitChar(f), p = c ? patronOf(c) : null; if (!c || !p) return null;
+  return statQuery({ cb, u: f, c }, 'patron_presence').add > 0 ? (p.intervention?.presence || {}) : null;
+}
+/** How far the presence carries an intervention that is the fighter's own (an ally within this many tiles counts as
+ * the fighter): 0 without a presence. */
+const presenceReach = (cb: Combat, f: Unit): number => Number(presenceOf(cb, f)?.ally_within) || 0;
+/** Does this intervention, which fires when something happens to the fighter, also fire when it happens to `t`? */
+const presenceCovers = (cb: Combat, f: Unit, t: Unit | null | undefined): boolean => !!t && (t === f || (t.side === f.side && !t.dead && dist(t.pos, f.pos) <= presenceReach(cb, f)));
+/** A Judged enemy of this fighter's (its weapon struck it on its turn: the condition's source), nearest first. */
+const judgedOf = (cb: Combat, f: Unit, near: string): Unit | null => cb.units.filter((v) => v.side !== f.side && alive(v) && condOn(v, 'judged') && condSource(v, 'judged') === f.id).sort((a, b) => dist(a.pos, near) - dist(b.pos, near))[0] || null;
+/** The presence's Ward (the Toll-Keeper's): the item its data names, its Ward amount and its mend's layer. */
+function presenceWard(cb: Combat, f: Unit, t: Unit, key: string): string {
+  const info = itemInfo(key); const op = (info?.effects || []).flatMap((e: any) => [e, ...(e.effects || [])]).find((e: any) => e.op === 'mend' && e.layer); if (!op) return '';
+  const b = amountBlock(key, op.amount), c = unitChar(f);
+  const r = mend(cb, f, t, { kind: 'shield', base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none' }, { who: c, healKind: 'prayer', layer: op.layer, ...(typeof op.holders === 'number' ? { holders: op.holders } : {}) });
+  return ' and ' + (info?.name || 'a Ward') + ' (' + r.shield + ')';
+}
+/** The predicate `answered` (Smite: a prayer that rides a hit): the prayer door open (Faith for a Whisper, not
+ * Silenced); the Faithful are answered, an Atheist rolls the Whisper's TN. A preview rolls nothing. */
+export function prayerAnswered(cb: Combat, rng: Rng | null, u: Unit, preview: boolean): boolean {
+  const c = unitChar(u); if (!c || faithOf(c) < WHISPER_FAITH || condOn(u, 'silenced')) return false;
+  if (beliefOf(c).kind === 'faithful') return true;
+  if (preview || !rng) return true;
+  const rv = rollVs(cb, rng, { by: u, mod: prayerMod(boundGame() as any, c, u), tn: ATHEIST_TN.whisper, why: 'pray' });
+  if (!rv.ok) say(cb, u.name + ' prays as the blow lands · ' + rv.text + ' · no answer.');
+  return rv.ok;
+}
+setAnsweredDoor((cb, rng, u, preview) => prayerAnswered(cb, rng as Rng | null, u, preview));
 /** The Quartermaster (item 742): a reload of yours that cost AP gives it all back. game.ts calls this after a
  * combat/reload action that succeeded, with the AP it took. */
 export function faithReloaded(cb: Combat, u: Unit, spent: number) {
   if (!(spent > 0)) return;
-  for (const f of intervening(cb, 'the_quartermaster')) { if (f !== u) continue; intervene(cb, f, 'you_reload', f, spent, () => { refund(cb, u, spent); return ': the reload is free (' + spent + ' AP back)'; }); break; }
+  for (const f of intervening(cb, 'the_quartermaster')) { if (!presenceCovers(cb, f, u)) continue; intervene(cb, f, u === f ? 'you_reload' : 'ally_reload', u, spent, () => { refund(cb, u, spent); return ': the reload is free (' + spent + ' AP back)'; }); break; }
 }
 /** The Quartermaster's MP share when your MP runs out (item 742; patrons.json, the mp_out effect): 25% of max. */
+/** Mother Ember's door: an ally below this share of max HP (rules 1.6.3: a quarter). */
+const EMBER_BELOW: number = FAITH_PATRON.mother_ember?.intervention?.below ?? 0.25;
 const QM_MP_SHARE: number = (FAITH_PATRON.the_quartermaster?.intervention?.effects || []).find((e: any) => e.when === 'mp_out')?.value ?? 0.25;
 /** The Quartermaster (item 742, Leon 9 Nov 2026): your Evoker's charge or your MP hits 0. Each fighter's charge and MP
  * are remembered after every action and at every turn's start; one that was above 0 and is now 0 is a hit, while
@@ -674,7 +716,7 @@ export function registerFaithHooks() {
         if (other && alive(other)) { const half = Math.floor(ctx.dmg / 2); if (half > 0) { ctx.dmg -= half; applyDamage(cb, other, half, { ...src, faithShare: true, shield: true } as any); say(cb, 'Red Thread: ' + other.name + ' takes ' + half + ' of the hit on ' + t.name + '.'); } }
         // The Matchmaker's intervention: an ally next to you is hit, half moves to you.
         else for (const f of intervening(cb, 'the_matchmaker')) {
-          if (f === t || f.side !== t.side || dist(f.pos, t.pos) > 1 || !alive(f)) continue;
+          if (f === t || f.side !== t.side || dist(f.pos, t.pos) > Math.max(1, presenceReach(cb, f)) || !alive(f)) continue; // the presence: further (rules 1.31)
           const half = Math.floor(ctx.dmg / 2); if (half <= 0) break;
           ctx.dmg -= half;
           intervene(cb, f, 'ally_hit_adjacent', t, half, () => { applyDamage(cb, f, half, { ...src, faithShare: true } as any); return ': ' + f.name + ' takes ' + half + ' of the hit on ' + t.name; });
@@ -684,18 +726,23 @@ export function registerFaithHooks() {
     }
     if (ctx.phase === 'would_drop_to_0' && ctx.floor == null && !ctx.self) {
       if ((cb as any).faithGates?.some((gt: any) => gt.side === t.side && gt.ids.includes(t.id))) { ctx.floor = 1; say(cb, 'Hold the Gate: ' + t.name + ' stays at 1 HP.'); return; }
-      for (const f of intervening(cb, 'toll_keeper')) { if (f.side !== t.side || t.companion) continue; ctx.floor = 1; intervene(cb, f, 'ally_would_die', t, 1, () => ': ' + t.name + ' stays at 1 HP'); break; }
+      for (const f of intervening(cb, 'toll_keeper')) { if (f.side !== t.side || t.companion) continue; ctx.floor = 1; const ward = presenceOf(cb, f)?.ward; intervene(cb, f, 'ally_would_die', t, 1, () => ': ' + t.name + ' stays at 1 HP' + (ward ? presenceWard(cb, f, t, ward) : '')); break; }
     }
     if (ctx.phase === 'after' && ctx.dealt > 0 && by) {
       if (ctx.faithHelpless && !ctx.faithHelplessDone && by.side !== t.side) harmedHelpless(cb, by, t);
       if (by !== t && by.side === t.side && !src.faithShare && !['hazard', 'trap', 'bleed', 'burn', 'short'].includes(src.type)) faithTag(cb, by, 'betray');
       if (src.dmgType === 'fire') faithTag(cb, by, 'burn');
       if (src.dmgType === 'lightning' || src.dmgType === 'storm') faithTag(cb, by, 'storm');
+      // The presence (rules 1.31): Nerukhan also answers a Judged enemy of the Chaplain's that hurts an ally brought low
+      if (by.side !== t.side && !by.dead && !t.dead) for (const f of intervening(cb, 'nerukhan')) {
+        const below = Number(presenceOf(cb, f)?.judged_harms_below) || 0; if (!below || f.side !== t.side || condSource(by, 'judged') !== f.id || t.hp > t.maxHp * below) continue;
+        const n = scaled(f); intervene(cb, f, 'judged_harms_ally', by, n, () => harmLine(cb, f, by, n, 'soul')); break;
+      }
     }
   });
-  onHook('on_damaged', (ctx, cb) => { // Mother Ember: an ally drops below a quarter HP
-    const t: Unit = ctx.t; if (t.dead || t.hp <= 0 || ctx.prevHp < t.maxHp / 4 || t.hp >= t.maxHp / 4) return;
-    for (const f of intervening(cb, 'mother_ember')) { if (f.side !== t.side) continue; const fc = unitChar(f), n = fc ? interventionHeal(fc, f.blessPower || blessingPower(fc)) : 0; intervene(cb, f, 'ally_below_quarter', t, n, () => ': ' + t.name + healLine(cb, f, t, n)); break; }
+  onHook('on_damaged', (ctx, cb) => { // Mother Ember: an ally drops below a quarter HP (below half with the presence: rules 1.31)
+    const t: Unit = ctx.t; if (t.dead || t.hp <= 0) return;
+    for (const f of intervening(cb, 'mother_ember')) { const at = t.maxHp * (Number(presenceOf(cb, f)?.below) || EMBER_BELOW); if (f.side !== t.side || ctx.prevHp < at || t.hp >= at) continue; const fc = unitChar(f), n = fc ? interventionHeal(fc, f.blessPower || blessingPower(fc)) : 0; intervene(cb, f, 'ally_below_quarter', t, n, () => ': ' + t.name + healLine(cb, f, t, n)); break; }
   });
   onHook('on_downed', (ctx, cb) => {
     const v: Unit = ctx.victim, by: Unit | null = ctx.by;
@@ -715,7 +762,7 @@ export function registerFaithHooks() {
     if (by && vowOn(by, 'unarmed_faith') && (ACTING.includes(by) || viaOf(by) === 'faith')) fulfilVow(cb, by, v.name + ' falls to a prayer');
     for (const f of intervening(cb, 'old_overcast')) {
       if (f !== by) continue;
-      const n = cb.units.filter((x) => x.side !== f.side && alive(x) && x !== v).sort((a, b) => dist(a.pos, v.pos) - dist(b.pos, v.pos))[0]; if (!n) break;
+      const n = (presenceOf(cb, f)?.judged_first ? judgedOf(cb, f, v.pos) : null) || cb.units.filter((x) => x.side !== f.side && alive(x) && x !== v).sort((a, b) => dist(a.pos, v.pos) - dist(b.pos, v.pos))[0]; if (!n) break; // where the weapon struck first (rules 1.31)
       const amt = scaled(f); intervene(cb, f, 'you_kill', n, amt, () => harmLine(cb, f, n, amt, 'elemental', 'lightning')); break;
     }
   });
@@ -823,13 +870,13 @@ export function registerFaithHooks() {
       if (fails) { const left = (att.faith.luckyBreak === true ? 1 : Number(att.faith.luckyBreak) || 1) - 1; if (left > 0) att.faith.luckyBreak = left; else delete att.faith.luckyBreak; const r = rerollAttack(rc, rc.rng || rngOf(), 5); say(cb, 'Lucky Break: ' + att.name + ' rerolls (d20 ' + r + ' +5).'); }
     }
     if (!tgt || att.side === tgt.side) return;
-    for (const f of intervening(cb, 'counting_weaver')) { if (f !== tgt || !(rc.die === 20 || rc.die >= rc.critMin)) continue; intervene(cb, f, 'enemy_crits_you', att, null, () => ': the critical becomes a normal hit'); rc.die = 19; rc.critMin = 21; rc.hit = true; break; }
+    for (const f of intervening(cb, 'counting_weaver')) { if (!presenceCovers(cb, f, tgt) || !(rc.die === 20 || rc.die >= rc.critMin)) continue; intervene(cb, f, f === tgt ? 'enemy_crits_you' : 'enemy_crits_ally', att, null, () => ': the critical becomes a normal hit'); rc.die = 19; rc.critMin = 21; rc.hit = true; break; }
   });
   // The Laughing Mask (item 743): an enemy's attack at you misses (a fumble too; a shot cover stops is no miss): it
   // falls Prone, no save. In a volley the first missed shot fires it.
   onHook('on_miss', (ctx, cb) => {
     const att: Unit = ctx.att, tgt: Unit = ctx.tgt; if (!att || !tgt || att.side === tgt.side || ctx.stopped) return;
-    for (const f of intervening(cb, 'the_laughing_mask')) { if (f !== tgt) continue; intervene(cb, f, 'enemy_misses_you', att, null, () => applyCond(cb, ctx.rng || rngOf(), f, att, 'prone', undefined, undefined, { skipSave: true, via: 'faith' })); break; }
+    for (const f of intervening(cb, 'the_laughing_mask')) { if (!presenceCovers(cb, f, tgt)) continue; intervene(cb, f, f === tgt ? 'enemy_misses_you' : 'enemy_misses_ally', att, null, () => applyCond(cb, ctx.rng || rngOf(), f, att, 'prone', undefined, undefined, { skipSave: true, via: 'faith' })); break; }
   });
   onHook('glyph_drawn', (ctx, cb) => { if (vowOn(ctx.u, 'unarmed_faith')) breakVow(cb, ctx.u, 'drew a glyph'); });
   onHook('evoked', (ctx, cb) => { if (vowOn(ctx.u, 'unarmed_faith')) breakVow(cb, ctx.u, 'Evoked a spell'); if (vowOn(ctx.u, 'bare')) breakVow(cb, ctx.u, 'attacked with a spell'); });
