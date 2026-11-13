@@ -8,6 +8,15 @@
 > wanted for the other five. (3) The 18 painted maps (training material for the project's own style model; the
 > game draws its maps from tiles and kit pieces). (4) Everything else. Do not paint all six kits before the trial
 > has been looked at.
+>
+> **The trial passed (13 Nov; tested by repeating the ground 3 × 3 and butting the wall pieces together).** Keep
+> that quality for the other five settings, with these corrections: (1) no dark outline on the ENDS of wall pieces
+> that join (outline the outer long edges only: today a line shows at every joint); (2) the stripe or trim on door
+> and broken pieces sits on exactly the same line as the straight piece's; (3) a third ground texture a setting with
+> more character than a plain one (wear, stains, seams); (4) **walls half a tile thick are fine (Leon); what matters
+> is that the part you move in reads as clear at a glance:** a doorway's opening is a clean, obviously walkable gap
+> with the floor showing through, a broken section's gap likewise, and nothing of a wall piece spills onto the
+> walkable tiles beside it.
 
 Everything the Survival mode (`docs/ROADMAP.md`, "Survival mode" and "The roguelike: Leon's scope") needs that an image
 generator can make **now**. Leon, 13 Nov 2026: "Artist is free, ask for more paintings, prepare for Survival mode
