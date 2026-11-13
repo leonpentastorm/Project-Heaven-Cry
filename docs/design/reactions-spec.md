@@ -30,7 +30,7 @@ between its shots for free.
 | 3 | **One event, one reaction a unit:** a single attack, step or hit can be answered once by each unit (a Skirmisher can't Duck and Roll and Parry the same shot). | engine |
 | 4 | **More only from:** Reflex (the Skirmisher: 2), an item that says so (stat `reactions`: Before the Blink +1), a Call that gives one (Cue: exactly one, before the giver's next turn). | engine |
 | 5 | **A reaction that attacks is a plain attack:** the weapon's plain shot or blow, no technique riders, no Smite, no Opener, unless the reaction's own text gives one (Riposte's Edge or Point +2; Overwatch's +2 when Precise). | engine |
-| 6 | **Multi-shot held fire stays on one reaction:** an Overwatch held with a Burst fires its rounds on one reaction (`owShots`). **Killzone** is two held shots at two enemies: it spends **both** of the Skirmisher's reactions (Leon, 13 Nov; `spend: 2`; with one left, one shot fires). | engine |
+| 6 | **Multi-shot held fire stays on one reaction:** an Overwatch held with a Burst fires its rounds on one reaction (`owShots`). **Killzone** is two held attacks (any weapon) at two enemies: it spends **both** of the Skirmisher's reactions (Leon, 13 Nov; `spend: 2`; with one left, one shot fires). | engine |
 | 7 | **Suppressed never blocks a protective reaction** (one rule for the condition and for Pressure's state at 3): every reaction has a kind (P1 of `rev4-primitives.md`): `attack` (opportunity attack, Overwatch and held shots, Riposte, Keep Back, the Blade's Hold, Catch), `move` (Duck and Roll) or `protect` (Parry, Shield Wall, Interpose, Shrug It Off, Anchor, Share a Hit, Take the Weight). Suppressed takes `attack` and `move`, never `protect`. Stunned, Downed, Dread underfoot: none. | engine |
 | 8 | **Forced movement provokes nothing** (`rules.json forced_movement`, `reactions: false` for every kind): stays. | engine |
 | 9 | **Spent on a Many Hands donor** counts on the donor. **Order** (Authority's Call) spends the ally's reaction. A Call made as a reaction (9 points) spends the speaker's. | engine |
@@ -78,16 +78,19 @@ Broken 4: `techniques.json rules.pressure`), Heat on the gun. Reaction Speed's C
 ## 5. The class
 
 **Better:** **Reflex** (two reactions a round, stat `reactions` +1, at class gain); **one thing cheaper:** Speed Loader
-(the first reload each turn −1 AP, never under 1: as built); the six moves.
+(the first reload, draw, swap or pick-up each turn −1 AP, never under 1); the six moves. **Weapon-neutral** (Leon, 13
+Nov; `rev4-weapon-neutral-audit.md` 4.1): Agility's door is ranged techniques **and** light blades and thrown
+weapons, so every move below works with whatever the Skirmisher attacks with; only Heat (the gun's own rule) stays
+the gun's.
 
 | Rank | Move | Cost | What it does | Data |
 | --- | --- | --- | --- | --- |
-| I | Fire Discipline (kept) | 0 | Aimed shots add no Heat; once a turn a Burst costs 2 AP (not 3); with a bow, Aimed +3 | `move_pool` `fire_discipline` |
-| I | Speed Loader (kept) | 0 | first main-hand reload each turn −1 AP, min 1 | `cost_mod`, `when: cost`, `limit per_turn 1` (built) |
+| I | Fire Discipline (changed: weapon-neutral) | 0 | Aimed attacks add no Heat and have +1 to hit (+3 in all); once a turn, your first attack costs 1 AP less, at least 1 (a Burst 2, a shot or a light strike 1, a heavy strike 2) | `move_pool` `fire_discipline`: `heat_mod` kept; `cost_mod` on `attack` replaces `action_cost burst`; `roll_mod` `if: {mode: [aimed]}` replaces `context: aimed_shot_with_bow` |
+| I | Speed Loader (changed: weapon-neutral) | 0 | your first main-hand reload, draw, swap or pick-up each turn −1 AP, min 1 | `cost_mod`, `when: cost`, `if: {action: [reload, pickup], hand: [main]}`, and `cost_mod` `when: swap`, one `limit per_turn 1` by `key` |
 | II | Duck and Roll (kept) | a reaction | a ranged attack at you: step 1 tile before it is rolled; out of sight, no attack; into cover, −2 to hit | as built |
-| II | Special Ammo (kept) | a reload, per rest | one magazine each of AP (×0.8, ignores armour), hollow-point (×1.3, armour doubled), incendiary (×0.9, Burning) | as built |
-| III | Killzone (changed) | twice the shot's AP; **both reactions** | two held shots at the first two different enemies in the line, +2 each; with one reaction left, only one fires | text and `spend: 2` on the held shot |
-| III | **Run and Gun** (new) | 0, once a turn | after an attack this turn, your next move of up to 2 tiles costs no AP and provokes no opportunity attack; your next shot this turn adds +1 Pressure | below |
+| II | Special Ammo (changed: weapon-neutral) | your reload's AP (1 AP for a weapon that never reloads), per rest | one load each of AP (×0.8, ignores armour), hollow-point (×1.3, armour doubled), incendiary (×0.9, Burning): a magazine for a gun, a quiver of 12 for a bow, a load that lasts 12 attacks or the fight for a blade, a fist or a thrown blade; never a consumable (a grenade is its own payload) | `numbers.load_attacks` 12; the shared `rules.json ammo_types` |
+| III | Killzone (changed) | twice the attack's AP; **both reactions** | two held attacks with **any** weapon at the first two different enemies that move into your line (a gun, a bow) or your reach (a melee or thrown weapon), +2 each; with one reaction left, only one fires | text and `spend: 2` on the held attack; the held mode is `melee` for a melee weapon |
+| III | **Run and Gun** (new) | 0, once a turn | after an attack this turn, your next move of up to 2 tiles costs no AP and provokes no opportunity attack; your next hit this turn, with any weapon, adds +1 Pressure | below |
 
 Called Shot leaves for the Operative. **Squared and mixed classes** (Rev 4 4.3, the Gunslinger): **a sketch of the
 shape only; no rule, primitive or number here may depend on it** (Leon, 13 Nov: the advanced classes may be shelved).
@@ -104,7 +107,9 @@ shape only; no rule, primitive or number here may depend on it** (Leon, 13 Nov: 
 | Rule 7 | P1's `kind`; the `suppressed` row's `forbid` with `kinds: [attack, move]` |
 | Rule 8 | `rules.json forced_movement.*.reactions` |
 | Killzone's two | `spend: 2` on the held shot, passed to `react()` where the Watch fires (`fireWatch`) |
-| Speed Loader | `cost_mod` on `cost`, `if: {action: [reload], hand: [main]}`, `limit per_turn` (built) |
+| Speed Loader | `cost_mod` on `cost`, `if: {action: [reload, pickup], hand: [main]}`, and `cost_mod` on `swap` (the trigger takes it: `effects/triggers.ts` `cost_mod`), sharing one `limit per_turn` by `key` |
+| Fire Discipline | `heat_mod` (kept); `cost_mod` on `attack`, `value: -1`, `min: 1`, `limit: {per: per_turn, n: 1}`; `roll_mod` on `attack`, `if: {mode: [aimed]}` (a technique, not a family). The handler's `mode === 'burst'` and `/bow/` reads (`classes/i.ts` 160-161) go |
+| Special Ammo, Killzone (any weapon) | the existing handlers (`classes/i.ts` `marksman.special_ammo`, `marksman.killzone`) lose their family refusals (`ammoOk`'s `isMelee`, `thrown`; Killzone's `isMelee`); a payload on a weapon with no magazine counts down per attack. No new handler |
 | Run and Gun's free move | `cost_mod` `set: 0` on `cost`, `if: {action: [move], flag: "fired"}`, `limit per_turn 1`; the flag from `mark` on trigger `attack_roll` with `if: {own_turn: true}`; cleared by `mark clear` on `turn_end` |
 | Run and Gun's +1 Pressure | op `resource` on `hit`, `if: {flag: "ran"}`, then `mark clear`; the `actions.json resources.pressure` row (`on: target`, setter `addPressureTo`: batch row) |
 | Run and Gun's no opportunity attack | `immune({u}, 'opportunity_attack')` (`effects/core.ts`), answered by a condition row `slipping` (1 move) whose `stat_mod` answers `immune:opportunity_attack` (P4) |
@@ -141,6 +146,12 @@ turn the target can waste: +10%) prices at 2 × 36 = 72% for 4 AP against 67% fo
 dial** stays defined and unused: `rules.json reactions.second_hit` (new, 0), the to-hit of the second reaction's
 attack; moved only if the measured Skirmisher passes 145 + 12%.
 
+**Weapon-neutral (13 Nov):** Fire Discipline's +1 on Aimed is new for guns (about a third of a gun's shots: about
++1.5%, inside the −7%); the 1 AP a turn is the Burst's old saving for a gun, and new for a light blade or a thrown
+blade (a strike in two turns: that sheet sits on the melee line, 165, not the gun's). Special Ammo's loads on a blade
+and a melee Killzone (fewer triggers than a line of fire) are measured with a light-blade sheet in step 5; nothing
+moves for a gun.
+
 **Measure when built:** a `reflex` row in `defence-measure.ts` (pairs under fire: the range's target never acts),
 levels 1 / 5 / 10 / 20, a policy that holds Overwatch.
 
@@ -160,7 +171,7 @@ and Gun icon (line); the emblem (`classIcons.ts`) fits.
 ```json
 { "id": "run_and_gun", "name": "Run and Gun", "ap_cost": 0, "uses": "per_turn",
   "numbers": { "tiles": 2, "pressure": 1 },
-  "text": "Once a turn, after you attack, your next move of up to {=numbers.tiles} tiles costs no AP and draws no opportunity attack, and your next shot this turn adds {=numbers.pressure} more Pressure.",
+  "text": "Once a turn, after you attack, your next move of up to {=numbers.tiles} tiles costs no AP and draws no opportunity attack, and your next hit this turn, with any weapon, adds {=numbers.pressure} more Pressure.",
   "effects": [
     { "op": "mark", "when": "attack_roll", "flag": "fired", "if": { "own_turn": true } },
     { "op": "cost_mod", "when": "cost", "set": 0, "if": { "action": ["move"], "flag": "fired", "ap_above": 0 }, "limit": { "per": "per_turn", "n": 1 },

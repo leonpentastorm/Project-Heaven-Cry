@@ -28,7 +28,7 @@ presence that keeps watching after it first acts. Its only pool is Devotion and 
 | 3 | **Ward** is a Whisper only the Chaplain can say (rank I; Leon, 13 Nov: 7 × Blessing power, the turn's Whisper, two allies). It **uses the turn's one Whisper**. 1 AP, an ally you can see (not yourself), no roll for the Faithful (an Atheist: the Whisper TN, 12). The ally gains a shield of 7 × Blessing power, through the prayer heal dial and the level (as Protection), for the rest of the fight. | engine |
 | 4 | **Wards held:** at most 2 allies carry a Ward of yours at once; a third Ward ends the oldest's remainder. A Ward on an ally who has one tops it up to the new value (never stacks with itself). A Ward **stacks on top** of any other shield: it is its own layer (`ward`, P11 of `rev4-primitives.md`), spent first; every other shield (Protection, Tending's Shield, Brimming) is the base layer, where the larger stands. | engine |
 | 5 | **Sanctuary** is a Hymn only the Chaplain can say (rank III). 3 AP, starts the one Hymn wait (it is the Hymn of that wait: no patron Hymn until it ends). A tile you can see within 6: allies on its 3×3 (you too) take half damage until the start of your next turn. The zone prevents at most 11 × Blessing power × heal dial × level in all, then ends. Your own Strain burn is not halved (you have none: rule 8). A successful Sanctuary makes the Faithful Witnessed (it is a Hymn of their own patron's door). | engine |
-| 6 | **Smite** (rank I): once a turn, on your own turn, when your weapon attack hits a living enemy that is not Downed or surrendered, the patron also deals 20 × Blessing power Soul damage to it (no roll, armour does not lower it). It is not multiplied by the attack's technique, critical, Verdict or ammunition. If the hit kills, Smite is not spent and may ride a later hit that turn. Not on a reaction or an opportunity attack (rule 2.1.4 of Revision 4: a reaction is a plain attack). Leon, 13 Nov: Smite stays at Rebuke's 20. | engine |
+| 6 | **Smite** (rank I): once a turn, on your own turn, when your weapon attack (any weapon: a shot, a strike, a throw, two weapons at once, a focus's own attack; `rev4-weapon-neutral-audit.md`) hits a living enemy that is not Downed or surrendered, the patron also deals 20 × Blessing power Soul damage to it (no roll, armour does not lower it). It is not multiplied by the attack's technique, critical, Verdict or ammunition. If the hit kills, Smite is not spent and may ride a later hit that turn. Not on a reaction or an opportunity attack (rule 2.1.4 of Revision 4: a reaction is a plain attack). Leon, 13 Nov: Smite stays at Rebuke's 20. | engine |
 | 7 | **Smite is a prayer** for everything that counts prayers: its kill is a kill by prayer (the No Magic but Theirs vow, Witnessed's kill edge), its damage carries the patron's element tag (Soul; Old Overcast: lightning, so `storm`). It is **not** a Whisper and uses no prayer limit. For a patron whose taboo is `kill` (the Toll-Keeper, the Matchmaker), Smite never drops a target below 1 HP. An Atheist Chaplain's Smite rolls the Whisper TN (12) on each hit it would ride; a failed roll leaves it unspent. | engine |
 | 8 | **No MP and no Strain.** No class move costs MP, Strain, cores or ammo of its own; Verdict keeps its Devotion XP cost (it is the class's pool). | engine |
 | 9 | **Judged:** an enemy hit by the Chaplain's weapon on its own turn carries the condition Judged (1 round, no save, the Chaplain's). It is how "where the weapon struck" is known. | engine |
@@ -50,9 +50,9 @@ stack. Saves: shields, `cb.zones`, conditions, all saved today. Fight end: all o
 | I | `guardian.ward` (new; replaces `guardian.will_shield`) | **Ward** | 1 AP, the turn's Whisper | ally shield 7 × Blessing power (heal dial, level) for the fight; 2 held | `classes.json` move, `amounts.ward` |
 | I | `guardian.smite` (new; replaces `command`) | **Smite** | 0 AP, once a turn | +20 × Blessing power Soul on a weapon hit; a prayer for tags and vows | `amounts.smite`, one `deal` op |
 | II | `lumeri_templar.under_the_eye` (kept) | Under the Eye | passive | while Witnessed, allies within 3 get +2 to hit | as built (hybrid: its story half) |
-| II | `lumeri_templar.blessed_shells` (kept) | Blessed Shells | 0 AP | load a landed Hymn into the weapon; the next hit releases it (a Smite may ride the same hit) | as built (hybrid) |
+| II | `lumeri_templar.blessed_shells` (kept) | Blessed Shells (display name **Blessed Arms** *(Suggested)*: the rule never was gun-only, the words were) | 0 AP | load a landed Hymn into your weapon, whatever it is (a round, an arrow, an edge, a thrown blade); the next hit releases it (a Smite may ride the same hit) | as built (hybrid: `classes/k.ts` releases it on any weapon hit); data: text says "your weapon", the tag `guns` → `weapon`; the story action "Bless your weapon" |
 | III | `guardian.sanctuary` (reworked) | **Sanctuary** | 3 AP, the Hymn and its wait | 3×3, allies take half damage until your next turn, at most 11 × BP × dial × level prevented | `amounts.sanctuary_cap` |
-| III | `lumeri_templar.judgement` (kept key) | **Verdict** *(Suggested; was Judgement)* | 4 AP, 10 Devotion XP, once a fight | one melee or scattergun attack × (1 + Blessing power) | as built; display name only |
+| III | `lumeri_templar.judgement` (kept key) | **Verdict** *(Suggested; was Judgement)* | 4 AP, 10 Devotion XP, once a fight | one plain attack with **any** weapon (a strike, a shot or a throw; never a Burst, an Aimed shot or a technique) × (1 + Blessing power) | display name; the text's "Needs a melee weapon or a scattergun" goes, and the handler's gate (`classes/k.ts` `shotgun`, `isMelee`) with it: it resolves the weapon's plain mode (`melee`, `shot`, `thrown`) |
 
 **Better** (Revision 4 section 2): no bigger meter (Devotion is standing: the class keeps Witnessed instead, rule 11);
 **one thing free:** Smite; **six moves:** above.
@@ -73,7 +73,8 @@ stack. Saves: shields, `cb.zones`, conditions, all saved today. Fight end: all o
 ## 4. The ladder
 
 The door's, unchanged (Faith 3 prays, 5 Witnessed, 7 the Miracle; each point −0.75 rounds of wait, +0.06 × 0.956 Blessing
-power). Conscience: +10% shields received (reaches Ward). Gear: any weapon carries Smite; Verdict as built. **Doors at 1 point:** the
+power). Conscience: +10% shields received (reaches Ward). Gear: any weapon carries Smite, Blessed Shells and Verdict
+(the base classes are weapon-neutral: Leon, 13 Nov; `rev4-weapon-neutral-audit.md`). **Doors at 1 point:** the
 ruling binds the new doors; prayer opening at Faith 3 is built (rules 1.6) and is Leon's to change (section 11).
 
 ## 5. The class
@@ -90,8 +91,10 @@ may depend on it** (Leon, 13 Nov: the advanced classes may be shelved for a whol
 | Whisper limit, Hymn wait (rules 1, 2, 3, 5) | `faith.ts` `combatPray` → `prayed(...).take('per_turn', 1, WHISPER_KEY)` / `.cool(..., HYMN_KEY)`, i.e. `effects/uses.ts`; `hymnWait` |
 | Atheist rolls (rules 3, 7) | `previewPrayer` → `rollVs` (`rolls.ts`), `patrons.json prayer.atheist_tn` |
 | Ward | a `verb`-shaped `grant_action` with `prayer: "whisper"` and `reach` (P6), its `mend` on trigger `acted` (P2); an `amounts` block, `profile: "blessing_mend"`, `level: "mend"` (as `prayerAmount('shield', …)`); `grantShield` with `layer: "ward"`, `holders: 2` (P11) |
-| Smite (rule 6, 7) | item op `deal`, `when: "hit"`, `if: {own_turn, hostile, mode, target_lacks: [downed], open}`, `limit: {per: "per_turn", n: 1}`; amount `profile: "blessing"`; fields `via`, `nonlethal` (batch rows) with predicate `patron` for the kill-taboo patrons |
+| Smite (rule 6, 7) | item op `deal`, `when: "hit"` (trigger `hit` is every weapon attack and only those: `combat.ts` `resolveAttack`; so no `mode` predicate), `if: {own_turn, hostile, target_lacks: [downed], open}`, `limit: {per: "per_turn", n: 1}`; amount `profile: "blessing"`; fields `via`, `nonlethal` (batch rows) with predicate `patron` for the kill-taboo patrons |
 | Judged (rule 9) | a row in `data/conditions.json`; op `condition` with `skip_save`, `when: "hit"` |
+| Verdict (any weapon) | as built (`classes/k.ts` `lumeri_templar.judgement`, an action with `withMult`); the `available` gate loses `isMelee \|\| shotgun`, and `resolveAttack` takes the weapon's plain mode (`melee` in reach, `thrown`, else `shot`). No new handler |
+| Blessed Shells (any weapon) | as built: `blessing_in` loads, trigger `hit` releases; only the texts and the tag change |
 | Sanctuary | `prayer: "hymn"` (P6); op `zone` (`kind: "sanctuary"`, 3×3, `pool` = the cap) on `acted` (P2, P10); its halving op `damage_mult` on `taking`, `if: {target_in_zone: {kind: "sanctuary", owner: "self"}}`, spent from the pool (P10) |
 | Witnessed, its end | `applyCond` / `endCond`, the `witnessed` row; `intervene()` in `faith.ts` |
 | Rule 11 | stat `intervention_keeps_witnessed` (batch row), asked with `statQuery` in `intervene()`, answered by a data `stat_mod` on the class |
@@ -160,7 +163,13 @@ held at most, never stacked with itself. No Devotion cost (spending standing wou
 **The presence:** below Devotion 7 it only keeps Witnessed (Under the Eye's +2 runs on: watch it); from 7 the second
 intervention needs no new Hymn: one rifle-turn once a fight, +5 to +10% on a fight. Inside the band.
 
-**Measure when built:** `refit-measure.ts` `chaplain_turn` (Faith all in + Dexterity, `faith` policy with Smite) into
+**Verdict on any weapon** (the weapon-neutral ruling): once a fight, ×(1 + Blessing power) on one plain attack. The
+biggest plain attacks it allowed before (a scattergun's close shot, a heavy strike) are about the size of a long
+rifle's bolt, so the peak hardly moves; a pistol or bow Chaplain gains a use it never had (about +0.5 of a rifle-turn
+once a fight, +5% on a four-round fight). The Elite and Boss guard holds every roll. **Smite** loses its `mode` list:
+a thrown or paired attack carries it too, at the same 20 × BP once a turn: nothing moves.
+
+**Measure when built:** `refit-measure.ts` `chaplain_turn` (also with a long rifle and with a pistol, for Verdict) (Faith all in + Dexterity, `faith` policy with Smite) into
 `balance-contract.test.ts` `SYS`; Ward and Sanctuary in `heal-measure.ts` pairs under fire; levels 1 / 5 / 10 / 20.
 
 ## 8. The other side
@@ -194,7 +203,7 @@ icons for Ward, Sanctuary and Smite.
   "text": "Once a turn, when your weapon attack hits an enemy that still stands, your patron strikes it too: {=amounts.smite.base} × your Blessing power Soul damage, with no roll, through armour. It counts as a prayer.",
   "effects": [
     { "op": "deal", "when": "hit", "amount": "smite", "target": "target", "via": "faith",
-      "if": { "own_turn": true, "hostile": true, "mode": ["shot", "aimed", "burst", "auto", "melee"], "target_lacks": ["downed"], "open": true },
+      "if": { "own_turn": true, "hostile": true, "target_lacks": ["downed"], "open": true },
       "limit": { "per": "per_turn", "n": 1 } },
     { "op": "condition", "when": "hit", "condition": "judged", "rounds": 1, "skip_save": true, "target": "target", "if": { "own_turn": true, "hostile": true } } ],
   "adjudication": "engine", "provisional": true, "origin": "guardian", "attributes": ["virtue"], "status": "active" }

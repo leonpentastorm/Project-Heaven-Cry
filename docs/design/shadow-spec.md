@@ -137,10 +137,10 @@ shown: Read Intent folded in; the Trickster's Read of Revision 3); (3) **six mov
 | --- | --- | --- | --- | --- |
 | I | **Mark** (kept, `assassin.mark`) | 1 AP | an enemy you see is Marked to the fight's end: squad +1 to hit it, it can't hide; 3 at once, a fourth lifts the oldest | a Break on it counts +1 point |
 | I | **Vanish** (kept) | 1 AP, once a turn | if you are not in view, become Hidden (a new entry: fresh ambush). Not while Marked | re-opens the gate after a Break |
-| II | **Toxin** (kept, `assassin.toxin`) | 1 AP, 1 dose (`res.toxins`, restocked at rest) | coat a blade, bow or thrown weapon: Weakened, Slowed or Bleeding on the next hit (Body save vs 12 + Ingenuity mod); a Break with it adds the Shadow spent to the TN | spends none, rides a Break |
+| II | **Toxin** (kept, `assassin.toxin`) | 1 AP, 1 dose (`res.toxins`, restocked at rest) | coat **any** weapon (a blade's edge, your arrows, a thrown weapon, the next rounds of your gun; weapon-neutral, `rev4-weapon-neutral-audit.md` 4.4): Weakened, Slowed or Bleeding on the next hit (Body save vs 12 + Ingenuity mod); a Break with it adds the Shadow spent to the TN | spends none, rides a Break |
 | II | **Sabotage** (kept, moved from III) | 2 AP | within 1: a machine, turret or drone is Stunned 1 round (no Shadow, unlike Disable); or a barricade within 1 breaks (its hp to 0); or Rig your tile (rank II's Rig costs no Shadow) | feeds the gate: a Stunned machine sees nobody |
 | III | **Execution** (kept) | passive | your hit that leaves a Marked enemy at ¼ max HP or less kills it; Bosses and Celestials immune; **never on a hit the Elite and Boss guard held, nor on an Elite that was at full HP when the action began** | a Break is its usual set-up |
-| III | **Called Shot** (moved in, from `gunslinger.called_shot`) | 3 AP | gun or bow; name head (Dazed), arm (−2 with it) or leg (half Movement): that injury on a hit; −2 to hit, **no −2 if the target can't see you** | may carry a Break |
+| III | **Called Shot** (moved in, from `gunslinger.called_shot`) | 3 AP | **any** weapon: a shot, a throw or a strike in reach (weapon-neutral); name head (Dazed), arm (−2 with it) or leg (half Movement): that injury on a hit; −2 to hit, **no −2 if the target can't see you** | may carry a Break |
 
 **Squared and mixed classes** (Rev 4 4.4, the Ghost): **a sketch of the shape only; no rule, primitive or number
 here may depend on it** (Leon, 13 Nov: the advanced classes may be shelved for a whole new system).
@@ -165,6 +165,8 @@ here may depend on it** (Leon, 13 Nov: the advanced classes may be shelved for a
 | Verb costs, limits | `ap`, `res: {shadow: n}` on the action (the `shadow` resource row), `price`/`whyNot`/`pay`; `uses(h).take('per_turn')` | `effects/cost.ts`, `effects/uses.ts` |
 | Exposed, Off Balance, `read` | condition rows (`defense` −2; `ap` −1; `read`: the source's side sees the bearer's `enemyIntent`), P4 | `data/conditions.json`, `condtable.ts` |
 | Cut the Strap, Foul, Disable, Hijack | existing rows `disarmed`, `lowered`, `stunned`, `puppeted` via op `condition` with the save | `applyCond`, `saveAgainst` (`magic.ts`) |
+| Toxin's coat, any weapon | a condition row (P4) whose `hit` op carries no `melee` or `mode` predicate (trigger `hit` is every weapon attack); `classes/i.ts` `coatable` and its "not a gun" refusal go with the handler |
+| Called Shot, any weapon | as built (`classes/j.ts` `gunslinger.called_shot`): its `isRanged` refusal goes and `resolveAttack` takes the weapon's plain mode (`melee` in reach, `thrown`, else `shot`); the rider `roll_mod` `if: {action: [called_shot], target_sees_self: false}` (`rev4-moves-and-rename.md` 2). No new handler |
 | Lift, Pick, Douse, Rig, Plant, Sabotage | the pile (`containers.ts`), `door` and `interact` cost sites, object hp, `makeObject('trap')` with a `flat` amount, op `condition` `marked` | `objects.ts`, `combat.ts` |
 | Vault, Fade's step | `displace(..., { tile, willing: true })` | `combat.ts` |
 | Decoy | `cb.lastSeen` (written by `rawHidden`), over `targets: {side: "foe"}` (P5) | `unitstate.ts` |
@@ -225,6 +227,11 @@ cover move (+1), Break shot ×1.95: 1.95 units; T2 Mark, Analyze, two shots: 2; 
 allowance Shadow never pays; settled). Dial: **`rules.json shadow.per_point`** (0.15), fitted only after the window
 rows are measured (rev4-primitives 3.2); the estimate puts the door under its band (−12%), so expect it raised, and
 recheck the single Break against its allowance when it is.
+
+**Weapon-neutral (13 Nov):** Toxin on a gun is the same coat on one hit, now delivered at range (used more often,
+more safely: the supply is still the price); a called strike pays 1 AP over a light strike, as a pistol's called
+shot does; heavy weapons and the long rifle pay none (the −2 is the price). Neither raises a number; measure the
+window with a rifle and Toxin in step 6.
 
 **Stealth as defence** (off the target list, `perceivedFoes`) is worth **0** by the control yardstick (as Taunted: the
 doctrine moves the fire onto the other three), except an enemy left with **no target at all**: a denied turn (1.0 a
