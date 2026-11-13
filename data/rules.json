@@ -1300,6 +1300,12 @@
       "sigil_line": { "allin": [150, 200], "what": "a full Line (4 glyphs) over the turns it takes to draw", "dial": "sigils.json grammar.line_mult" },
       "outburst_steady": { "allin": 135, "what": "steady play, the early feelings", "dial": "soul_modules.json damage.base" },
       "outburst_peak": { "allin": 165, "what": "the biggest Release, one turn", "dial": "soul_modules.json damage.base, then cycle.stage_mult" },
+      "chaplain_turn": {
+        "allin": 125,
+        "provisional": true,
+        "what": "the Chaplain's weapon turn (rules 1.31): Faith all in + Dexterity, a turn with only a Whisper and the weapon with the AP left, Smite riding the weapon's hit (Leon, 13 Nov 2026: the god in the gun never out-hits a gunner who put everything in the gun)",
+        "dial": "classes.json guardian.smite amounts.smite.base (Rebuke's 20; 15 only if the measured all-in mean passes 140)"
+      },
       "whisper_turn": { "allin": 80, "level_hi": 1.4, "what": "a turn with only a Whisper (and the rifle with the AP left: since rules 1.26 the rifle hits as hard in anyone's hands, and the Faith build's Dexterity sets the shape over the levels, hence the high end)", "dial": "patrons.json the Whispers' values; rules.json output.profiles.blessing.k" },
       "hymn_turn": { "allin": 150, "level_lo": 0.55, "what": "a turn with a Hymn (Old Overcast); Devotion 3 has Hymn I only, hence the low end at levels 1 to 5", "dial": "patrons.json the Hymns' values; rules.json output.profiles.blessing.k" },
       "healer_turn": { "allin": 200, "what": "a healer's turn, all in, in Soldier-turns x 100 (rules 1.27, the heal re-fit: was 125; a normal share 160): the Soul healer's steady Buff heal; the Sigil healer's MEND line of 3 glyphs sits on the same ceiling through output.profiles.sigil_mend.k; a Hymn turn's healing is capped at hymn_heal_cap", "dial": "rules.json output.profiles.healing.k (and mend; sigil_mend, soul_mend and blessing_mend for their own systems)", "hymn_heal_cap": 250 },

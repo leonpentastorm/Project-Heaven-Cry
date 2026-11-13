@@ -18,7 +18,7 @@ const B: any = (RULES as any).balance, C = B.ceilings, TOL = B.tolerance, LEVELS
 const N = 6; // fights a cell: deterministic (seeded), so the band only has to hold the noise of a small sample once
 const GUARD_GUNS = ['adamantile_battle_rifle', 'long_rifle', 'hellraiser_service_rifle'];
 // system id in refit-measure.ts → its ceiling in the contract
-const SYS: Record<string, string> = { plain: 'plain', gun: 'gun', blade: 'melee', sigil4: 'sigil_line', ob: 'outburst_steady', obPeak: 'outburst_peak', whisper: 'whisper_turn', hymn: 'hymn_turn', heal: 'healer_turn' };
+const SYS: Record<string, string> = { plain: 'plain', gun: 'gun', blade: 'melee', sigil4: 'sigil_line', ob: 'outburst_steady', obPeak: 'outburst_peak', whisper: 'whisper_turn', hymn: 'hymn_turn', heal: 'healer_turn', chaplain: 'chaplain_turn' }; // chaplain: rules 1.31
 const band = (k: string): [number, number] => { const a = C[k].allin; return Array.isArray(a) ? [a[0], a[1]] : [a, a]; };
 
 describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () => {
