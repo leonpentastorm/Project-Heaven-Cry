@@ -3,7 +3,7 @@
 // confirms through the one action flow, rendered for real; and an action defined only in the engine (registerActions)
 // appears on the screen and works with no client change (the worked example of client-boundary-3-actions.md).
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, actionsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, addItems, clearAddedItems, type GameState, type Sheet, type ActionDescriptor } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, actionsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, addItems, clearAddedItems, addOwnedBlocks, clearOwnedBlocks, spawnOwned, withGame, type GameState, type Sheet, type ActionDescriptor } from '@engine';
 import { FLOW_PREVIEWS } from '../game/actionFlow';
 
 let G: GameState; const ME = 'host';
@@ -124,6 +124,29 @@ describe('a door verb written in data only works on the screen with no client ch
       expect(G.combat!.units.find((x) => x.id === foe.id)!.conds?.marked).toBeGreaterThan(0);
       root.unmount();
     } finally { clearAddedItems(); }
+  });
+});
+
+describe('an owned unit with no turn of its own is ordered from its owner\'s panel with no client change (Classes 3.0 P9)', () => {
+  it('a fixture puppet: its verbs are rows of the owner\'s Utility tab; Strike picks the enemy and Confirm sends combat/owned', async () => {
+    addOwnedBlocks([{ id: 'test_web_puppet', name: 'Puppet', kind: 'machine', hp: 20, defense: 10, attack_bonus: 1, armour: 0, movement: 2, weapon: 'fists', turn: 'owner', actions: ['move', 'melee'] }]);
+    try {
+      const { u, foe } = fight('acts-owned', 'sharpshooter', 'medic');
+      const p: any = withGame(G, () => spawnOwned(G.combat!, G.combat!.units.find((x) => x.id === u.id)!, 'test_web_puppet', '3,3', G.rng));
+      expect(G.combat!.order).not.toContain(p.id);
+      snap = view();
+      const d = actionsFor(G, u.id, ME).find((x) => x.id === 'ow:' + p.id + ':melee')!;
+      expect(d).toBeTruthy(); expect(d.group).toBe('utility'); expect(d.picks[0].choices).toEqual([foe.id]);
+      const { el, root } = await mount();
+      await click(el.querySelector('[role="tab"][data-tab="utility"]'));
+      const row = el.querySelector('button[data-act="' + d.id + '"]');
+      expect(row?.textContent).toMatch(/Puppet: Strike/);
+      const ap = G.combat!.units.find((x) => x.id === u.id)!.ap;
+      await click(row); await click(tokenOf(el, foe.name)); await click(confirmBtn(el));
+      expect(sent.find((a) => a.type === 'combat/owned')).toMatchObject({ unitId: u.id, owned: p.id, verb: 'melee', targetId: foe.id });
+      expect(G.combat!.units.find((x) => x.id === u.id)!.ap).toBeLessThan(ap); // the owner paid
+      root.unmount();
+    } finally { clearOwnedBlocks(); }
   });
 });
 

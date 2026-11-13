@@ -510,6 +510,15 @@ for k in (data.get("enemies", {}) or {}).get("companions", []) if isinstance(dat
     for f in ("hp", "defense", "attack_bonus", "armour", "movement"):
         if not isinstance(k.get(f), (int, float)):
             errors.append(f"enemies.companions:{k.get('id')}: {f} must be a number")
+    # Classes 3.0 P9 (owned.ts): an owned block's turn, its auto verb and target, its kind (one tie kind for all)
+    _w = f"enemies.companions:{k.get('id')}"
+    if k.get("turn", "own") not in ("own", "owner", "auto"): errors.append(f"{_w}: turn is own, owner or auto")
+    if k.get("turn") == "auto" and not (isinstance(k.get("auto"), dict) and k["auto"].get("verb") in ("shot", "aimed", "melee") and k["auto"].get("target", "nearest_foe") in ("nearest_foe", "weakest_foe")):
+        errors.append(f"{_w}: a turn auto block needs auto {{verb: shot, aimed or melee; target: nearest_foe or weakest_foe}}")
+    if "auto" in k and k.get("turn") != "auto": errors.append(f"{_w}: auto is for a turn auto block")
+    if "owned_kind" in k and not (isinstance(k["owned_kind"], str) and k["owned_kind"]): errors.append(f"{_w}: owned_kind is a word (companion, figment)")
+    for _v in k.get("actions") or []:
+        if k.get("turn") in ("owner", "auto") and _v not in ("move", "shot", "aimed", "melee"): errors.append(f"{_w}: an owned unit's verb is move, shot, aimed or melee (owned.ts OWNED_VERBS), not {_v}")
 # Rules 1.15: enemy levels. Every tier row is its level 1 block with a damage factor; `levels.table` has one row for
 # each level from min to max, in order, with the five columns the engine reads; the gap and the Narrator's shift are numbers.
 if isinstance(data.get("enemies"), dict):
@@ -1665,7 +1674,7 @@ COND_READS = {
     "fear": ["attack_mod:not_vs_source"], "shaken": ["stat_mod:save_heart"], "marked": ["attack_mod:marker_squad_vs_self"], "grappled": ["attack_mod:not_vs_source"],
     "suppressed": ["stat_mod:ap"], "withdrawing": ["stat_mod:defense"], "corroded": ["stat_mod:defense"], "quickened": ["stat_mod:ap"],
     "sharpened": ["attack_mod:next_attack", "damage_mult:next_attack"], "hopeful": ["attack_mod:next_attack"], "scorned": ["attack_mod:vs_source"],
-    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"],
+    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"], "read": ["reveal:intent"],
 }
 COND_ENGINE_STATS = {"defense", "move_mult", "vision", "ap", "damage_dealt_pct", "sigil_ap", "soul_cost_pct", "save_body", "save_brain", "save_heart"}
 # stat_mod stats and attack_mod contexts a row may carry that the loader does not read (another part of the engine does)
@@ -1687,6 +1696,7 @@ def cond_reads(c):
         if e.get("op") == "attack_mod" and (e.get("context") or "own_attacks") in COND_HIT and isinstance(e.get("value"), (int, float)): out.append("attack_mod:" + (e.get("context") or "own_attacks"))
         if e.get("op") == "skill_mod_tag" and isinstance(e.get("value"), (int, float)): out.append("skill_mod_tag:" + str(e.get("tag")))
         if e.get("op") == "damage_mult" and e.get("context") == "next_attack": out.append("damage_mult:next_attack")
+        if e.get("op") == "reveal" and e.get("what") == "intent": out.append("reveal:intent")
     return sorted(out)
 cond_names = set()
 for c in items("conditions"):
@@ -1810,7 +1820,8 @@ def check_trigger_effect(e, w):
         if x.get("op") in ("deal", "mend") and isinstance(x.get("amount"), dict):
             for pp in x["amount"].get("per") or []:
                 if isinstance(pp, dict) and ":" in str(pp.get("of", "")) and str(pp["of"]).split(":", 1)[0] not in SOURCE_SPACES: errors.append(f"{w}: an amount's per-point part names '{pp['of']}': its source is one of {SOURCE_SPACES}")
-        if x.get("op") == "condition" and x.get("condition") not in known["condition"]: errors.append(f"{w}: condition '{x.get('condition')}' is not in conditions.json")
+        if x.get("op") == "condition" and x.get("condition") == "incoming" and t != "cond_incoming": errors.append(f"{w}: condition \"incoming\" (the condition being put on) runs on cond_incoming only")
+        if x.get("op") == "condition" and x.get("condition") not in known["condition"] and x.get("condition") != "incoming": errors.append(f"{w}: condition '{x.get('condition')}' is not in conditions.json")
         if "targets" in x: check_targets(x["targets"], w)
         if x.get("op") == "deal" and "via" in x and not (isinstance(x["via"], str) and x["via"]): errors.append(f"{w}: a deal's `via` is the source skill it counts as (a word: faith)")
         if x.get("op") == "deal" and "nonlethal" in x and not isinstance(x["nonlethal"], bool): errors.append(f"{w}: a deal's `nonlethal` is true or false")

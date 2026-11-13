@@ -12,7 +12,7 @@ import { addItems, clearAddedItems, addConditions, clearAddedConditionRows, stat
 import { react, maxReactions, reactionsUsed } from '../src/tactics';
 import { newStep, stepEvent, visibility } from '../src/combat';
 import { perceivedFoes } from '../src/illusion';
-import { callReactKind } from '../src/calls/core';
+import { callReactKind, callReactWhy } from '../src/calls/core';
 import { CALL } from '../src/calls/data';
 import { COND_TABLE_STATS } from '../src/condtable';
 import { patronIdOf } from '../src/belief';
@@ -63,8 +63,8 @@ describe('the lead\'s rulings (rules 1.28)', () => {
     expect(f.unit(a.id).pos).toBe('3,4'); expect(reactionsUsed(f.cb, f.unit(a.id))).toBe(1);
     expect(reactionsUsed(f.cb, f.unit(foe.id))).toBe(0); expect(f.unit(a.id).hp).toBe(hp);
   });
-  it('a helping Call made as a reaction protects; a hindering one attacks', () => {
-    for (const d of Object.values(CALL) as any[]) expect(callReactKind(d)).toBe(d.kind === 'helping' ? 'protect' : 'attack');
+  it('a helping Call made as a reaction protects; a hindering one is never a reaction (the integration\'s ruling)', () => {
+    for (const d of Object.values(CALL) as any[]) { expect(callReactWhy(d) === null).toBe(d.kind === 'helping'); if (d.kind === 'helping') expect(callReactKind(d)).toBe('protect'); }
   });
   it('Anchor\'s strike is an attack and Drink It In protects (the source)', () => {
     expect(SRC('classes/rev3.ts')).toMatch(/react\(cb, me, \{ kind: 'attack', event: stepEvent\(u\), window: \{ kind: 'opportunity'/);

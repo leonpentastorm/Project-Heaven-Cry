@@ -34,6 +34,7 @@ import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, designAp, s
   steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE } from './magic';
 import { focusHand, NEEDS_EVOKER, NEEDS_EMANATOR } from './character';
 import { PILE, isPile } from './containers';
+import { orderable, ownedVerbs, ownedWhy } from './owned';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
@@ -374,7 +375,7 @@ const TOGGLE_ON: Record<string, string> = { shot: 'combat/attack', aimed: 'comba
 /** The weapon rows, the basic actions and the technique pads: the Move, Attack and Utility tabs. */
 const PHYSICAL: ActionSystem = {
   id: 'physical',
-  owns: (id) => !/^(pk|cl|pr):/.test(id) && !(id in MAGIC_SEND),
+  owns: (id) => !/^(pk|cl|pr|ow):/.test(id) && !(id in MAGIC_SEND),
   list(x) {
     const { cb, u, c, g } = x, w: any = WEAPON[u.weapon], melee = w ? isMelee(w) : false, modes = (w && w.modes) || [];
     const wa = safe(() => weaponActions(u, cb), [] as any[]), W = (id: string) => wa.find((a: any) => a.id === id);
@@ -752,7 +753,33 @@ const MAGIC: ActionSystem = {
   send(x, d, p) { const f = MAGIC_SEND[d.id]; return f ? f(x, p) || null : null; },
 };
 
-const BUILT_IN: ActionSystem[] = [PHYSICAL, PERKS, MAGIC, FAITH, CALLS];
+// ---------- owned units with no turn of their own (Classes 3.0 P9; the lead's ruling at step 1b's integration) ----------
+// Each verb of each of the owner's turn-less owned units is a row of the OWNER's Utility tab: 'ow:<owned id>:<verb>'.
+// The reducer runs it with the owned unit as the actor and the owner paying (owned.ts runOwned); the preview is the
+// reducer's dry run of that action, as for any basic row.
+const OWNED_ID = 'ow:';
+const VERB_NAME: Record<string, string> = { move: 'Move', shot: 'Shot', aimed: 'Aimed shot', melee: 'Strike' };
+const OWNED: ActionSystem = {
+  id: 'owned',
+  owns: (id) => id.startsWith(OWNED_ID),
+  list(x) {
+    const out: ActionDescriptor[] = [];
+    for (const o of orderable(x.cb, x.u)) for (const v of ownedVerbs(o)) {
+      const w: any = WEAPON[o.weapon], ap = v === 'move' ? 1 : w ? attackApCost(w, v) : 2, why = ownedWhy(x.cb, x.u, o, v);
+      out.push(D(OWNED_ID + o.id + ':' + v, 'utility', o.name + ': ' + VERB_NAME[v], ap, v === 'move' ? 'AP a step (yours)' : apT(ap) + ' (yours)',
+        v === 'move' ? o.name + ' moves to a tile you pick. It has no turn of its own: the AP are yours.' : o.name + ' attacks an enemy you pick (' + VERB_NAME[v].toLowerCase() + '). It has no turn of its own: the AP are yours.',
+        why, { picks: v === 'move' ? [{ key: 'tile', kind: 'tile', prompt: 'Click the tile ' + o.name + ' goes to.' }] : [{ key: 'targetId', kind: 'enemy', prompt: 'Click the enemy ' + o.name + ' attacks.', choices: foeIds(x) }] }));
+    }
+    return out;
+  },
+  send(x, d, p) {
+    const [, owned, verb] = d.id.split(':');
+    if (verb === 'move') return p.tile ? ({ type: 'combat/owned', unitId: x.u.id, owned, verb, tile: p.tile } as Action) : null;
+    return p.targetId ? ({ type: 'combat/owned', unitId: x.u.id, owned, verb, targetId: p.targetId } as Action) : null;
+  },
+};
+
+const BUILT_IN: ActionSystem[] = [PHYSICAL, PERKS, MAGIC, FAITH, CALLS, OWNED];
 const systems = () => [...BUILT_IN, ...SYSTEMS];
 const SYS_OF = new WeakMap<ActionDescriptor, ActionSystem>();
 

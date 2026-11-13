@@ -89,6 +89,13 @@ describe('the ladder', () => {
     const h = fight([speaker('charisma', 9), {}]);
     expect(h.call('call.rally', { targetId: h.pcs[1].id, react: true })).toMatch(/your turn/); // on your own turn it is an action
   });
+  it('a Call that hinders an enemy is never a reaction (the lead\'s ruling, rules 1.28 item 1764): only on your own turn', () => {
+    const f = fight([speaker('intimidation', 9), {}]); f.next(); // the second PC's turn
+    const ap = f.pc.ap;
+    expect(f.cpv('call.threaten', { targetId: f.foe.id, react: true }).ok).toBe(false);
+    expect(f.call('call.threaten', { targetId: f.foe.id, react: true }, f.pc)).toMatch(/hinders an enemy.*own turn/);
+    expect(f.pc.ap).toBe(ap); expect(reactionsUsed(f.cb, f.pc)).toBe(0);
+  });
   it('emits one call event, and a refusal spends nothing and emits none', () => {
     const f = fight([speaker('charisma', 3), {}]);
     expect(f.call('call.rally', { targetId: f.foe.id })).toMatch(/Call to an ally/);

@@ -54,6 +54,7 @@ import { HEART_CASTER, armHeart } from './ai-soul';
 import { setBraced, setDowned, stagger, startHidden } from './unitstate';
 import { clearConds, restoreConds } from './magic';
 import { condMods } from './condtable';
+import { runOwned } from './owned';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
 export interface Entry {
@@ -342,6 +343,8 @@ export type Action =
   // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
   | { type: 'gear/give'; charId: string; idx: number; to: string; qty?: number } | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
+  /** Classes 3.0 P9: the owner gives one of its turn-less owned units a verb (owned.ts runOwned; paid by the owner) */
+  | { type: 'combat/owned'; unitId: string; owned: string; verb: string; targetId?: string; tile?: any }
   | { type: 'combat/pickup'; unitId: string; tile: string; /** Rules 1.9: the pile entries to take (keys or indices); none: everything. */ take?: (string | number)[] } | { type: 'combat/load'; unitId: string } | { type: 'combat/shoot-cover'; unitId: string; tile: string; /** With the off-hand weapon (its rounds, range and damage). */ hand?: 'main' | 'off' }
   | { type: 'gear/load'; charId: string } | { type: 'story/move'; charId: string; to: string } | { type: 'poi/examine'; charId: string; objId: string } | { type: 'poi/travel'; charId: string; objId: string } | { type: 'poi/try'; charId: string; objId: string; idx: number } | { type: 'story/door'; charId: string; objId: string } | { type: 'combat/say'; charId: string; text: string } | { type: 'combat/door'; unitId: string; tile: string } | { type: 'campaign/load'; campaign: Campaign }
   | { type: 'award/ack'; charId: string; perkId: string }
@@ -1545,6 +1548,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/door': err = toggleDoor(cb!, u, a.tile); break;
     case 'combat/load': err = loadMagazine(cb!, u); break;
     case 'combat/shoot-cover': err = shootCover(cb!, u, a.tile, c, a.hand === 'off' ? 'off' : 'main'); break;
+    case 'combat/owned': err = runOwned(cb!, g.rng, u, cb!.units.find((x) => x.id === a.owned), String(a.verb || ''), { targetId: a.targetId || null, tile: a.tile != null ? tileKey(g, a.tile) : null }); break;
     case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); if (!err) readDrawnBy(cb!, u, t!); break; } // rules 1.10: its glyphs are read too
     case 'combat/read': err = readGlyph(cb!, u, tileKey(g, a.tile)); break;
     case 'combat/clear': err = clearJam(cb!, u, a.hand === 'off' ? 'off' : 'main'); break;

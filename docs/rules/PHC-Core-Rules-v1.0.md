@@ -4189,7 +4189,9 @@ resource rows (Pressure, MP). How each is written: `docs/design/handoffs/classes
 2. **Anchor's strike is an attack.** The opportunity attack Anchor makes on a Disengaging enemy is an attacking
    reaction: Suppressed stops it. (Anchor's refusal to be moved is not a reaction.)
 3. **Drink It In and a helping Call are protective.** They help an ally and move or hurt nobody, so Suppressed does not
-   stop them; a hindering Call made as a reaction stays an attacking one.
+   stop them. **A Call that harms or hinders an enemy is never a reaction** (the lead's ruling at the step's integration,
+   13 Nov 2026): it is made on your own turn only (Spot, Threaten, Taunt); from 9 points only a helping Call can be made
+   as a reaction.
 
 With them, one key names every answer to a step of a walk (an opportunity attack, Overwatch, a held Watch, Heart
 Overwatch, Anchor): a unit with two reactions answers one step once, whichever reaction it makes; the same tiles walked
@@ -4211,6 +4213,20 @@ fight starts, their turn unchanged); **delay** on any op; the number source `tie
 every unit near its holder); `via` on a condition; the witness filter; and the percent gate and cap of a heal or a
 shield (`heal-shield-percent-spec.md`), with no number set. How each is written:
 `docs/design/handoffs/classes-3.0-step-1b.md`. Items 1762 to 1767.
+
+### 5. Completed at the step's integration (the lead's rulings, 13 Nov 2026; no rule of play changes)
+
+1. **A unit with no turn of its own.** An owned unit whose block says its turn is its owner's is never in the turn
+   order: on its owner's turn its verbs (a move, its weapon's plain attacks, as its block lists them) are its owner's
+   actions, made with the owned unit and paid from its owner's AP. One whose turn is automatic acts once at the start of
+   its owner's turn, at the target its block names (the nearest enemy or the most hurt), paid the same way.
+2. **One tie for every owned unit.** A drone, a beast and a Figment are all tied to their owner by the one tie `owned`;
+   what each is (a companion, a figment) is written on the unit, and a rule that treats them differently reads that.
+3. **A Call that harms or hinders an enemy is never a reaction** (section 3, rule 3, as amended).
+4. **The four rows left from the batch:** a heal or shield of a kind can be multiplied by an item (`mend_mult`: Bonds'
+   ×1.2 through a Bond); an item that cancels a condition on an ally can take that condition itself (`incoming`: Take
+   the Weight); an intervention can leave Witnessed on (a stat: the Chaplain); and the condition **Read**: its source's
+   side sees what the bearer means to do on its next turn until that turn ends. Items 1768 and 1769.
 
 ## Rules revision 1.29: Classes 3.0, the nine base classes renamed (Classes 3.0, steps 2 and 4)
 
@@ -7203,10 +7219,12 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1761. **The weapon-neutral guard (rules 1.29 section 3; `rev4-weapon-neutral-audit.md` section 5):** `test/class-weapon-neutral.test.ts` walks the 54 base-class moves (data predicates, text words, handler reads with the one-line helpers they call; a ratchet). Allowed for good (DOOR): Lunge, Riposte, Finisher (Momentum's door), Anchor (the opportunity blow), Brace and Duck and Roll (the incoming attack), Field Fix (a jam). PENDING, to reach empty before Classes 3.0 ships: Fire Discipline, Speed Loader, Special Ammo, Killzone, Called Shot, Toxin, Judgement. A "round" of time is not ammunition (the word test takes "1 round", "each round" out).
 1762. **An Order is the ordered ally's reaction (rules 1.28 section 3; the lead's ruling, 13 Nov 2026):** the ally acts on its reaction, kind move (`calls/handlers.ts`, inside `react()`), so its move provokes no opportunity attack and no held shot. Before, the Order spent the ally's reaction outside a reaction and its move provoked. PROVISIONAL. No golden line and no replay moved (no recorded game orders a move past a foe).
 1763. **Anchor's strike is an attacking reaction (rules 1.28 section 3; the lead's ruling):** Suppressed stops it (it was classed protective). PROVISIONAL. No golden line moved.
-1764. **Drink It In and a helping Call made as a reaction are protective (rules 1.28 section 3; the lead's ruling):** Suppressed no longer stops them; a hindering Call made as a reaction stays an attacking one. PROVISIONAL (the lead's words "a Call that harms an enemy is not a reaction at all" are read conservatively: a hindering Call may still be made as a reaction, as before; Leon to confirm). No golden line moved.
+1764. **Drink It In and a helping Call made as a reaction are protective (rules 1.28 section 3; the lead's ruling):** Suppressed no longer stops them. A Call that harms or hinders an enemy is never a reaction: only on your own turn (the lead's ruling at the step's integration, 13 Nov 2026, replacing the builder's conservative reading; `calls/core.ts callReactWhy`). PROVISIONAL. No golden line moved.
 1765. **One step, one answer (rules 1.28 section 3, item 1752 made exact):** every reaction to a step of a walk (an opportunity attack, Overwatch, a held Watch, Heart Overwatch, Anchor) names the same event, the mover, the step's serial and the tile it arrives on (`combat.ts stepEvent`); a unit with two reactions takes the opportunity attack and keeps its Overwatch for a later step. PROVISIONAL. No golden line and no replay moved.
 1766. **The primitives of Classes 3.0, step 1b (rules 1.28 section 4):** one hook for every roll to hit, door verbs, zones from data, shield layers, data toggles, ties, owned units, `delay`, `ties:`, `self_holds` / `self_lacks_gear`, `redirect` with `split`, the standing aura, `via` on a condition, the witness filter, `always_seen` in the fog and the enemy's sight, `acted` from the enemy's own actions. No number and no rule moved with them; the existing Sanctuary (its halving, its exception for your own burn, its end), Lingering Dread and the drone and the beast stand on them now. The golden tables moved only in two marks lines (the deleted Sanctuary handler's own bookkeeping); no replay moved.
 1767. **The percent gate and the cap of a heal or a shield are built with no number (rules 1.28 section 4; `heal-shield-percent-spec.md` section 4):** the fields `min_pct` (an amount block's, else its profile's) and `gate_hp`, and `mending.gate.hp` and `mending.cap_pct`, read in one place (`effects/output.ts mend`); none is set, so no heal or shield moves. Step 7b sets them (the gate 20% for a 2-AP heal, the cap 50%: Leon, 13 Nov 2026). PROVISIONAL.
+1768. **The owned action system (rules 1.28 section 5; the lead's ruling at step 1b's integration):** an owned unit of turn `owner` is never in `cb.order`; its verbs (`owned.ts OWNED_VERBS`: move, shot, aimed, melee; the block's `actions` picks) are rows of its owner's Utility tab (`descriptors.ts` OWNED) and run by `combat/owned` with the owned unit as the actor, priced on it and paid by its owner; a turn `auto` unit acts once at its owner's turn start (`auto {verb: shot, aimed or melee, target: nearest_foe or weakest_foe}`) through the same door. One tie kind `owned` for companions and Figments; the record's `kind` (block `owned_kind`, default companion) tells them apart. An auto unit's move is not built (no rule names one). PROVISIONAL.
+1769. **The batch rows `mend_mult`, `condition: "incoming"`, `intervention_keeps_witnessed` and `read` (rules 1.28 section 5):** `mend_mult` runs on `heal` and `shield` (not on `heal_given`: the heal has landed), before the heal is floored and capped, the kind read with `how`; `incoming` takes the condition being put on and its rounds; the stat is asked in `faith.ts intervene`; the row `read` (`conditions.json`, 1 round: the bearer's turn end) keeps the bearer's intent for its source's side (`readIntent`, never sent to the other side). No number set. PROVISIONAL.
 1800. **Reactions a round: 1 for everyone (rules 1.30; `rules.json combat.reactions.per_round`):** read from data by `tactics.ts maxReactions`; items add through stat `reactions`. PROVISIONAL.
 1801. **Reflex (rules 1.30; Leon chose the full form, 13 Nov 2026):** the Skirmisher has one more reaction a round (two), any kind, from class gain (`classes.json` the class's `gain` list: `marksman.reflex`, `stat_mod reactions +1`). Before the Blink stacks (three). PROVISIONAL.
 1802. **Keep one for a held shot (rules 1.30, `reactions-spec.md` rule 10; `rules.json combat.reactions.keep_for_held`, 1):** a unit with more reactions than this that holds a shot keeps the last one for it: a reaction that fires by itself is refused when it would leave fewer. On by default; a unit's `keepForHeld: false` turns it off (the switch on the screen is Classes 3.0 step 10). PROVISIONAL.
