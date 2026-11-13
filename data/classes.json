@@ -1503,13 +1503,20 @@
         "name": "Finisher",
         "ap_cost": 3,
         "uses": "at_will",
-        "text": "Costs {=ap_cost} AP and all your Momentum (at least 1). Make one melee strike that deals +{=effects.0.value|pct}% damage for each point spent, up to +100%. The Momentum is spent even if you miss.",
+        "text": "Costs {=ap_cost} AP and all your Momentum (at least 1). Make one melee strike that deals +{=effects.0.value.per.0.value|pct}% damage for each point spent, up to +{=effects.0.value.max|more}%. The Momentum is spent even if you miss.",
         "effects": [
           {
             "op": "damage_mult",
-            "value": 0.2,
-            "per": "momentum_spent",
-            "max": 1.0
+            "value": {
+              "base": 1,
+              "per": [
+                {
+                  "of": "momentum_spent",
+                  "value": 0.2
+                }
+              ],
+              "max": 2.0
+            }
           }
         ],
         "adjudication": "engine",
@@ -1610,7 +1617,7 @@
         "name": "Reactive Plate",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Your armour is woven with bots and hardens when struck. When you take damage, Guard is spent to block it: each point takes {=effects.0.value} off the damage, as many points as the hit needs. It costs no AP and no reaction. For every 3 Guard spent this way the plate sheds bots, and the ambient mana rises by 2.",
+        "text": "Your armour is woven with bots and hardens when struck. When you take damage, Guard is spent to block it: each point takes {=effects.0.value} off the damage, as many points as the hit needs. It costs no AP and no reaction. For every {=effects.1.every} Guard spent this way the plate sheds bots, and the ambient mana rises by {=effects.1.value}.",
         "effects": [
           {
             "op": "stat_mod",
@@ -1620,6 +1627,7 @@
           {
             "op": "meter",
             "value": 2,
+            "every": 3,
             "when": "per_3_guard_lost"
           }
         ],

@@ -82,6 +82,26 @@ export function amountSpecOf(key: string, name: string): AmountSpec {
 export function itemAmount(key: string, name: string, own: Term[] = [], counts?: Record<string, number>): number {
   return amountOf(amountSpecOf(key, name), null, { level: null, mults: own, ...(counts ? { counts } : {}) }).raw;
 }
+// ---------------------------------------------------------------------------------------------- number blocks (P3)
+/** A NUMBER BLOCK (Classes 3.0 P3, docs/design/rev4-primitives.md): any numeric field of an item op (and a number a
+ * handler reads from its data) may be a plain number or
+ *   { "base": 1, "per": [{ "of": "res:shadow", "value": 0.15 }, { "of": "event:ambush", "value": 0.5 }], "min": 0, "max": 2 }
+ * = base + Σ value × source(of), held between min and max. What `of` names (effects/triggers.ts sourceOf): res:<id> (the
+ * holder's resource now), event:<field> (the trigger's payload: amount, over, ambush…), self:<field> / actor:<field> /
+ * target:<field> (a unit's field such as max_hp, or 1 / 0 for a condition id), or a plain name the caller counts. */
+export interface NumberBlock { base: number; per?: { of: string; value: number }[]; min?: number; max?: number }
+/** Is this a number block (and not an amount block, which has a `kind`)? */
+export const isNumberBlock = (x: any): x is NumberBlock => !!x && typeof x === 'object' && !Array.isArray(x) && typeof x.base === 'number' && !('kind' in x);
+/** A number block's value (a plain number is itself): base + Σ value × source(of), between min and max. `src` answers
+ * each `of` (a handler: its counts; the item-op runner: sourceOf). Anything else (null, a word) is NaN: the caller's bug. */
+export function numberOf(x: number | NumberBlock, src: (of: string) => number = () => 0): number {
+  if (typeof x === 'number') return x;
+  if (!isNumberBlock(x)) return NaN;
+  let v = (x.per || []).reduce((t, p) => t + p.value * (src(p.of) || 0), x.base);
+  if (typeof x.min === 'number') v = Math.max(x.min, v);
+  if (typeof x.max === 'number') v = Math.min(x.max, v);
+  return v;
+}
 /** One of a block's own named multipliers (data `mults`). Throws when the data has none. */
 export function amountMult(key: string, name: string, mult: string): number {
   const v = amountBlock(key, name).mults?.[mult];

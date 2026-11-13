@@ -4600,7 +4600,7 @@
           "value"
         ],
         "changes_state": true,
-        "about": "give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive)"
+        "about": "give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive); value \"all\" spends and \"zero\" loses all of it"
       },
       "condition": {
         "on": [

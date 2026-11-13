@@ -68,6 +68,33 @@
       "effects": [ { "op": "resource", "when": "hit", "resource": "pressure", "value": 2, "target": "target", "if": { "hostile": true } } ]
     },
     {
+      "id": "test_num_marked",
+      "name": "Marked bonus (test)",
+      "text": "Against a Marked target your damage is a number block (P3): +{=effects.0.value.per.0.value|pct}% while it is Marked.",
+      "effects": [ { "op": "damage_mult", "when": "dealing", "label": "Marked bonus", "value": { "base": 1, "per": [ { "of": "target:marked", "value": 0.5 } ], "max": 1.5 } } ]
+    },
+    {
+      "id": "test_num_guard",
+      "name": "Guard to AP (test)",
+      "text": "After a reload, gain perk AP equal to your Guard (P3 res:guard), at most {=effects.0.value.max}.",
+      "effects": [ { "op": "grant_ap", "when": "acted", "if": { "action": ["reload"] }, "value": { "base": 0, "per": [ { "of": "res:guard", "value": 1 } ], "max": 2 } } ]
+    },
+    {
+      "id": "test_res_all",
+      "name": "Spend it all (test)",
+      "text": "Your hit spends all your Guard (value all); the turn's end loses all your Momentum (value zero).",
+      "effects": [ { "op": "resource", "when": "hit", "resource": "guard", "value": "all" }, { "op": "resource", "when": "turn_end", "resource": "momentum", "value": "zero" } ]
+    },
+    {
+      "id": "test_amount_sources",
+      "name": "Sources (test)",
+      "text": "Damage you take gives you a shield of half of it (event:amount); your hit heals you a tenth of your max HP (self:max_hp).",
+      "effects": [
+        { "op": "mend", "when": "damaged", "amount": { "kind": "shield", "base": 0, "per": [ { "of": "event:amount", "value": 0.5 } ] } },
+        { "op": "mend", "when": "hit", "amount": { "kind": "heal", "base": 0, "per": [ { "of": "self:max_hp", "value": 0.1 } ] } }
+      ]
+    },
+    {
       "id": "test_res_mp",
       "name": "MP on hit (test)",
       "text": "Your hit gives you {=effects.0.value} MP, with an Emanator in hand.",

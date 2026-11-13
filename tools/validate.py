@@ -1738,6 +1738,20 @@ def check_pred(k, v, w):
     elif a == "ids" and not all(isinstance(x, str) and x in known["condition"] for x in vals): errors.append(f"{w}: `if.{k}` names a condition that is not in conditions.json")
     elif a in ("words", "string") and not all(isinstance(x, str) for x in vals): errors.append(f"{w}: `if.{k}` must be words")
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
+# Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
+# (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
+SOURCE_SPACES = ["res", "event", "self", "actor", "target"]
+def check_number_block(b, w, item_op=True):
+    if not isinstance(b.get("base"), (int, float)) or isinstance(b.get("base"), bool) or "kind" in b:
+        errors.append(f"{w} is a number block: {{base: <number>, per: [{{of, value}}], min?, max?}}"); return
+    for k in set(b) - {"base", "per", "min", "max"}: errors.append(f"{w}: unknown field '{k}' in a number block")
+    for k in ("min", "max"):
+        if k in b and not (isinstance(b[k], (int, float)) and not isinstance(b[k], bool)): errors.append(f"{w}: a number block's {k} is a number")
+    for pp in b.get("per") or []:
+        if not (isinstance(pp, dict) and isinstance(pp.get("of"), str) and isinstance(pp.get("value"), (int, float)) and not isinstance(pp.get("value"), bool)):
+            errors.append(f"{w}: a number block's per-point part is {{of, value}}"); continue
+        if item_op and pp["of"].split(":", 1)[0] not in SOURCE_SPACES or item_op and ":" not in pp["of"]:
+            errors.append(f"{w}: an item op's number block counts '{pp['of']}': name a source ({', '.join(s + ':' for s in SOURCE_SPACES)})")
 def check_trigger_effect(e, w):
     t = e.get("when")
     if t not in TRIG:
@@ -1748,9 +1762,14 @@ def check_trigger_effect(e, w):
         if not o: errors.append(f"{w}: op '{x.get('op')}' does not run on a trigger (item_ops.ops)"); continue
         if t not in o["on"]: errors.append(f"{w}: op '{x.get('op')}' does not run on '{t}' (it runs on {o['on'][:6]}…)")
         if x.get("target") not in (None, "self", "actor", "target"): errors.append(f"{w}: an item op's target is self, actor or target")
-        for f in ("value", "value_pct", "max", "add", "set", "min", "tiles", "rounds"):
-            if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)): errors.append(f"{w}: '{f}' must be a number in data, never a word")
-        if x.get("op") in ("damage_mult", "damage_vs", "roll_mod", "grant_ap", "resource", "floor") and not isinstance(x.get("value"), (int, float)): errors.append(f"{w}: op '{x.get('op')}' needs a numeric value")
+        for f in ("value", "value_pct", "max", "add", "set", "min", "at_least", "tiles", "rounds"):
+            if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)) and not (f == "value" and x.get("op") == "resource" and x[f] in ("all", "zero")):
+                if isinstance(x[f], dict): check_number_block(x[f], f"{w}: '{f}'")
+                else: errors.append(f"{w}: '{f}' must be a number (or a number block) in data, never a word")
+        if x.get("op") in ("damage_mult", "damage_vs", "roll_mod", "grant_ap", "resource", "floor") and not (isinstance(x.get("value"), (int, float)) or isinstance(x.get("value"), dict) or (x.get("op") == "resource" and x.get("value") in ("all", "zero"))): errors.append(f"{w}: op '{x.get('op')}' needs a numeric value (a number block; a resource: \"all\" or \"zero\")")
+        if x.get("op") in ("deal", "mend") and isinstance(x.get("amount"), dict):
+            for pp in x["amount"].get("per") or []:
+                if isinstance(pp, dict) and ":" in str(pp.get("of", "")) and str(pp["of"]).split(":", 1)[0] not in SOURCE_SPACES: errors.append(f"{w}: an amount's per-point part names '{pp['of']}': its source is one of {SOURCE_SPACES}")
         if x.get("op") == "condition" and x.get("condition") not in known["condition"]: errors.append(f"{w}: condition '{x.get('condition')}' is not in conditions.json")
         if x.get("op") == "deal" and "via" in x and not (isinstance(x["via"], str) and x["via"]): errors.append(f"{w}: a deal's `via` is the source skill it counts as (a word: faith)")
         if x.get("op") == "deal" and "nonlethal" in x and not isinstance(x["nonlethal"], bool): errors.append(f"{w}: a deal's `nonlethal` is true or false")

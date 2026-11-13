@@ -7,7 +7,7 @@
 // where it has one, in the story; what the engine can't judge goes to the Narrator (note / pendRuling / brief).
 // Recommended fixes from the audit are marked PROVISIONAL and listed in the spec (section 14, tags I…) and docs/design/perk-runtime.md.
 import { isPressed } from '../physical/pressure';
-import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, type Holder, type ActionDef, type ActionArgs } from '../effects';
+import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, effNum, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { stampOf } from '../effects/uses';
 import { weaponProps, ensurePhys } from '../physical/data';
 import { loadQuiverWith } from '../physical/ranged/quiver';
@@ -324,6 +324,8 @@ register({
 // Spend all your Momentum (at least 1) on one melee strike: +20% damage per point, up to +100%. Momentum is spent even
 // on a miss; a hit then earns the usual +1.
 let finishing: { u: Unit; n: number } | null = null;
+/** The Finisher's multiplier for n Momentum spent: its data's number block (P3: base, per momentum_spent, max). */
+const finisherMult = (h: Holder, n: number) => effNum(h, 'damage_mult', 'value', { momentum_spent: n });
 register({
   id: 'fighter.finisher', claims: 'all',
   actions: [{
@@ -331,15 +333,15 @@ register({
     available: (h) => (h.u ? (resOf(h.u, 'momentum') < 1 ? 'Needs at least 1 Momentum.' : true) : false),
     preview: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {}; if (dist(u.pos, t.pos) > reachOf(u)) return { ok: false, why: 'Out of melee reach.' };
       const pv = previewAttack(cb, u, t, 'melee', { free: true }); if (!pv.ok) return { ok: false, why: pv.why };
-      const n = Math.min(5, resOf(u, 'momentum')); return { lines: ['Finisher: ' + n + ' Momentum, +' + 20 * n + '% damage, ' + pv.pct + '% to hit.'] }; },
+      const n = resOf(u, 'momentum'); return { lines: ['Finisher: ' + n + ' Momentum, +' + Math.round((finisherMult(h, n) - 1) * 100) + '% damage, ' + pv.pct + '% to hit.'] }; },
     run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, n = Math.min(5, resOf(u, 'momentum'));
+      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, n = resOf(u, 'momentum');
       u.res!.momentum = 0; say(cb, u.name + ' spends ' + n + ' Momentum on a Finisher.');
       finishing = { u, n }; try { resolveAttack(cb, rng as Rng, u, t, 'melee', null, { noAp: true, fx: { move: 'fighter.finisher' } }); } finally { finishing = null; }
       checkOver(cb);
     },
   }],
-  on: { damage_out: (ctx, h) => { if (finishing && finishing.u === h.u && ctx.att === h.u) ctx.mults.push({ v: 1 + 0.2 * finishing.n, label: 'Finisher' }); } },
+  on: { damage_out: (ctx, h) => { if (finishing && finishing.u === h.u && ctx.att === h.u) ctx.mults.push({ v: finisherMult(h, finishing.n), label: 'Finisher' }); } },
   brief: () => null,
 });
 
@@ -449,10 +451,11 @@ register({
       const me = h.u!, cb = h.cb!; if (ctx.phase !== 'reduce' || ctx.t !== me || ctx.dmg <= 0) return;
       const pol = policy(h, 'auto'); if (pol === 'off') return;
       const have = resOf(me, 'guard') - (pol === 'keep1' ? 1 : 0); if (have <= 0) return;
-      const k = Math.min(have, Math.ceil(ctx.dmg / 10)); if (k <= 0) return;
-      resSpend(me, 'guard', k); const was = ctx.dmg; ctx.dmg = Math.max(0, ctx.dmg - 10 * k);
+      const per = effNum(h, 'stat_mod'), every = effNum(h, 'meter', 'every'), bots = effNum(h, 'meter'); // its data (P3: no literal)
+      const k = Math.min(have, Math.ceil(ctx.dmg / per)); if (k <= 0) return;
+      resSpend(me, 'guard', k); const was = ctx.dmg; ctx.dmg = Math.max(0, ctx.dmg - per * k);
       const st = stateOf(h); st.lost = (st.lost || 0) + k;
-      let shed = 0; while (st.lost >= 3) { st.lost -= 3; shed += 2; }
+      let shed = 0; while (st.lost >= every) { st.lost -= every; shed += bots; }
       say(cb, me.name + '\'s plate hardens: ' + k + ' Guard, ' + (was - ctx.dmg) + ' damage stopped.');
       if (shed) shiftMana(cb, shed, 'reactive plate sheds bots');
       emit(cb, 'plate_spent', { u: me, k, cb }); // 'plate_spent' {u, k}: Guard the plate spent (Adamantile Plate's ally shield)

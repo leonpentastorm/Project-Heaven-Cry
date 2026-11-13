@@ -31,7 +31,9 @@ import { loseAp } from './cost';
 import { resGain } from '../tactics';
 import { gainEcho } from './echo';
 import { deal, mend, type AmountSpec } from './output';
-import { amountBlock, type AmountBlock } from './amounts';
+import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
+import { resOf } from '../tactics';
+import { resLeft } from './cost';
 
 // ============================================================================================== the triggers
 /** A trigger: the hook it listens on (and the hook's phase), who the event's ACTOR and TARGET are, and whose event it
@@ -160,6 +162,40 @@ P('amount_share_below', 'number', 'the event\'s amount is under this share of th
 P('by_cover', 'words', 'the move started (from) and / or ended (to) next to standing cover: every end named must be', (ev, v) => list(v).every((w) => { const k = w === 'from' ? ev.ctx.from : w === 'to' ? ev.ctx.to : null; return !!k && nextToCover(ev.cb, k); }), ['from', 'to']);
 P('patron', 'words', 'the holder is Faithful to one of these patrons (patrons.json ids)', (ev, v) => { const id = patronIdOf(ev.h.c || charOfUnit(ev.self)); return !!id && list(v).includes(id); }, PATRON_IDS);
 
+// ============================================================================================== amount sources (P3)
+const camel = (f: string) => f.replace(/_([a-z])/g, (_m, c) => c.toUpperCase());
+/** A unit's field as a number (P3 `self:` / `actor:` / `target:`): max_hp, hp, ap, armour, level… (snake case of the
+ * unit's own field), true / false as 1 / 0; a condition id: 1 while it has it. 0 for no unit. */
+function unitField(u: Unit | null, f: string): number {
+  if (!u) return 0;
+  const v = (u as any)[camel(f)] ?? (u as any)[f];
+  if (typeof v === 'number') return v; if (typeof v === 'boolean') return v ? 1 : 0;
+  return condOn(u, f) ? 1 : 0;
+}
+/** What a holder has of a resource now: a class resource (guard, momentum…), else a data/actions.json row (MP, Pressure…). */
+const resNow = (ev: Ev, id: string): number => (ev.self.resMax?.[id] != null || !RESOURCES[id] ? resOf(ev.self, id) : resLeft(ev.self, id, ev.h.c));
+/** THE source reader of a number block's `of` (and an amount block's per-point parts) in an item op: res:<id>,
+ * event:<field> (amount: the damage or heal; any other field of the payload, true as 1), self:/actor:/target:<field>.
+ * A plain name is 0 here (a handler counts its own). */
+export function sourceOf(ev: Ev, of: string): number {
+  const i = of.indexOf(':'); if (i < 0) return 0;
+  const ns = of.slice(0, i), f = of.slice(i + 1);
+  if (ns === 'res') return resNow(ev, f);
+  if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount) : ev.ctx[f] ?? ev.ctx[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
+  if (ns === 'self' || ns === 'actor' || ns === 'target') return unitField(unitOf(ev, ns as Who), f);
+  return 0;
+}
+/** The namespaces a number block's `of` may name in an item op. */
+export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target'];
+/** The numeric fields of an item op that may be number blocks. */
+const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds'];
+/** An op with its number blocks read for this event (a plain op is itself). */
+function withNumbers(ev: Ev, x: any): any {
+  let out = x;
+  for (const f of NUM_FIELDS) if (isNumberBlock(x[f])) { if (out === x) out = { ...x }; out[f] = numberOf(x[f], (of) => sourceOf(ev, of)); }
+  return out;
+}
+
 /** A `say` line's words: {self} {actor} {target} (names), {gain} (what the last resource op really gave), {res:<id>}
  * and {resmax:<id>} (the holder's resource now, and its most). Numbers from the data go in as {=.field} placeholders. */
 function fill(s: string, ev: Ev): string {
@@ -202,10 +238,13 @@ O('grant_ap', ['turn_ap', ...ANY.filter((t) => t !== 'turn_ap')], true, ['value'
   if (e.value < 0) { loseAp(u, -e.value); return; }
   if (e.bank) bankAp(u, e.value, label, ev.cb); else grantPerkAp(ev.cb, u, e.value, label);
 });
-O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive)', (ev, e, label) => {
+O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive); value "all" spends and "zero" loses all of it', (ev, e, label) => {
   const u = pick(ev, e); if (!u) return;
   if (e.resource === 'echo') { if (ev.h.c) gainEcho(ev.h.c, e.value, label); return; }
-  (ev as any).gain = u.resMax?.[e.resource] != null || !RESOURCES[e.resource] ? resGain(u, e.resource, e.value) : resGive(ev.cb, u, e.resource, e.value, { by: ev.self, c: ev.h.c, why: label });
+  const own = u.resMax?.[e.resource] != null || !RESOURCES[e.resource];
+  // P3: "all" (spend all of it) and "zero" (lose all of it): take what the unit has now
+  const n = e.value === 'all' || e.value === 'zero' ? -(own ? resOf(u, e.resource) : resLeft(u, e.resource, ev.h.c)) : e.value;
+  (ev as any).gain = own ? resGain(u, e.resource, n) : resGive(ev.cb, u, e.resource, n, { by: ev.self, c: ev.h.c, why: label });
 });
 O('condition', ANY, true, ['condition', 'rounds', 'skip_save'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
@@ -229,12 +268,12 @@ O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this m
 O('deal', ANY, true, ['amount', 'via', 'nonlethal'], 'deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
   const t = pick(ev, e), b = blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
   const type = b.type || 'true', src: any = { by: ev.self, type, dmgType: type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
-  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: true }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src } }); };
+  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: true }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
   if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
 });
 O('mend', ANY, true, ['amount'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk)', (ev, e) => {
   const t = pick(ev, e), b = blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
-  mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk' });
+  mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b) });
 });
 O('displace', ANY, true, ['tiles', 'how'], 'push the target away from the holder (how: push) or pull it closer (pull)', (ev, e) => {
   const t = pick(ev, e); if (!t || t === ev.self) return;
@@ -252,6 +291,8 @@ const blockOf = (h: Holder, e: any): AmountBlock | null => {
   if (typeof e.amount === 'string') { try { return amountBlock(h.key, e.amount); } catch { return null; } }
   return null;
 };
+/** P3: an amount block's per-point parts that name a source (res:, event:, self:, target:) are counted from the event. */
+const countsOf = (ev: Ev, b: AmountBlock): Record<string, number> => Object.fromEntries((b.per || []).filter((p) => p.of.includes(':')).map((p) => [p.of, sourceOf(ev, p.of)]));
 const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none' });
 
 // ============================================================================================== the limit
@@ -297,7 +338,7 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   if (ev.preview && changes) return; // a preview changes nothing
   if (!limitOk(ev, e.limit, !ev.preview)) return;
   const label = e.label || h.info.name, parts: string[] = [];
-  for (const x of all) { const r = OPS[x.op].run(ev, x, x.label || label); if (typeof r === 'string' && r) parts.push(r); }
+  for (const x0 of all) { const x = withNumbers(ev, x0), r = OPS[x.op].run(ev, x, x.label || label); if (typeof r === 'string' && r) parts.push(r); }
   if (ev.preview) return;
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
   if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));
