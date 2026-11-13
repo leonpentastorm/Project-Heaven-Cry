@@ -235,7 +235,7 @@ describe('rules 1.44: the end of a run and its score (spec rules 4, 6, 35)', () 
   it('a character kept as a draft keeps its level, gear and perks, and leaves the run\'s purse and relics', () => {
     const g = afterBoss(), c = g.characters.c1, k: any = keptDraft(c, g.run!.seed, g.run!.stage);
     expect(k.level).toBe(c.level); expect(k.xp).toBe(c.xp); expect(k.weapon).toBe(c.weapon); expect(k.draft).toBe(true);
-    expect(k.kept).toEqual({ from: 'survival', seed: g.run!.seed, stage: 1, level: c.level });
+    expect(k.kept).toEqual({ from: 'survival', seed: g.run!.seed, stage: 1, level: c.level, name: c.name }); expect(k.name).toBe(c.name + ' (level ' + c.level + ')');
     expect(k.credits).toBeUndefined(); expect(k.id).toBeUndefined(); expect(k.owner).toBeUndefined();
   });
 });

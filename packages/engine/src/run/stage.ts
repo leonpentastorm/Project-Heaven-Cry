@@ -109,6 +109,7 @@ export const boonsOf = (chars: Character[]): Record<string, string[]> => Object.
 export function keptDraft(c: Character, seed: string, stage: number): Record<string, unknown> {
   const x: any = JSON.parse(JSON.stringify(c));
   for (const k of ['id', 'owner', 'credits', 'relics', 'faithTally', 'lvlUndo']) delete x[k];
-  x.dead = false; x.draft = true; x.kept = { from: 'survival', seed, stage, level: c.level };
+  // named with its level, so it never replaces the level 1 sheet of the same name in a player's library
+  x.dead = false; x.draft = true; x.name = c.name + ' (level ' + c.level + ')'; x.kept = { from: 'survival', seed, stage, level: c.level, name: c.name };
   return x;
 }

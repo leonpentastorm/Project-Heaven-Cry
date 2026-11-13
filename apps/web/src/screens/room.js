@@ -140,7 +140,7 @@ export class RoomLogic extends DCLogic {
       text: run.state === 'over' && run.end ? (run.end.how === 'retired' ? 'The squad retired' : 'The squad fell') + ' after ' + run.end.cleared + (run.end.cleared === 1 ? ' stage' : ' stages') + ' cleared and ' + run.end.nodes + (run.end.nodes === 1 ? ' node' : ' nodes') + ' walked, '
           + fights.filter((f) => f.outcome === 'win').length + ' of ' + fights.length + (fights.length === 1 ? ' fight' : ' fights') + ' won. Levels reached: ' + Object.entries(run.end.levels || {}).map(([id, lv]) => (g.characters[id] ? g.characters[id].name : id) + ' ' + lv).join(', ') + '. A new run starts from level 1 characters.'
         : 'Stage ' + run.stage + ', node ' + run.path.length + ' of 15. The path map is the run\'s own screen.',
-      canRetire: isHost && !runRetireProblem(g, me), retire: () => act({ type: 'run/retire' }), live: runLive, toRun: () => go('run') } : null;
+      canRetire: isHost && !runRetireProblem(g, me), retire: () => act({ type: 'run/retire' }), live: runLive, over: run.state === 'over' && !!run.end, toRun: () => go('run') } : null; // rules 1.44: the summary is the run screen's
     const hostPick = (patch) => () => (isHost ? act({ type: 'settings', patch }) : toast('Only the host picks this.'));
     const starts = startsFor(g).map((x) => ({ short: x.short + (x.soon ? ' · soon' : ''), pick: x.soon ? () => toast(x.title + ' is coming after the systems are done. Fight in the Proving Ground, or load your own campaign.') : hostPick({ start: x.id }), pressed: S.start === x.id ? 'true' : 'false', style: pill(S.start === x.id) }));
     const startImg = IMG[st0.art] || ART(st0.art) || IMG['world-pilot'];
