@@ -17,6 +17,7 @@
     "balance": "npm run balance -w @phc/engine",
     "check": "python3 tools/check.py",
     "e2e": "python3 tools/e2e.py",
-    "try": "python3 tools/try_fight.py"
+    "try": "python3 tools/try_fight.py",
+    "built-from": "python3 tools/built_from.py"
   }
 }

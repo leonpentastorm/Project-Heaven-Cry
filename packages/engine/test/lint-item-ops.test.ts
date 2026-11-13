@@ -17,6 +17,10 @@ import '../src';
 import { handlerOf, itemInfo, coverageOf } from '../src/effects';
 import { rawItem, splitKey } from '../src/effects/collect';
 import { TRIGGERS } from '../src/effects/triggers';
+import LINT_PATTERNS from './lint-patterns.json';
+/** Patterns shared with tools/built_from.py (test/lint-patterns.json): one list, read by both. */
+const PAT = (id: string) => (LINT_PATTERNS as any).patterns[id];
+const REG_START = new RegExp(PAT('register_block').re);
 
 const SRC = fileURLToPath(new URL('../src/', import.meta.url));
 const BASE = fileURLToPath(new URL('./lint-item-ops.baseline.json', import.meta.url));
@@ -27,7 +31,7 @@ interface Block { file: string; id: string; text: string; hooks: string[]; actio
 export function blocks(file: string): Block[] {
   const L = readFileSync(SRC + file, 'utf8').split('\n'), out: Block[] = [];
   for (let i = 0; i < L.length; i++) {
-    if (!L[i].startsWith('register({')) continue;
+    if (!REG_START.test(L[i])) continue;
     let j = i; if (!/\}\);\s*(\/\/.*)?$/.test(L[i])) { j = i + 1; while (j < L.length && !L[j].startsWith('});')) j++; }
     const text = L.slice(i, j + 1).join('\n'), id = /id:\s*'([^']+)'/.exec(text)?.[1] || /id:\s*([A-Z_]+)/.exec(text)?.[1] || '?';
     out.push({ file, id, text, hooks: [...new Set([...text.matchAll(/(?:^|[\s{,])(\w+):\s*\(ctx/g)].map((m) => m[1]))], actions: /\bactions:|\btoggles:/.test(text), rest: /\bstat[:(]|checkMod|pendRuling|\bnote\(|narrator:/.test(text) });
@@ -38,7 +42,7 @@ export function blocks(file: string): Block[] {
 /** Numeric literals in code (strings, template strings and comments taken out first; 0 and 1 not counted). */
 export function literals(text: string): number {
   const code = text.replace(/\/\/[^\n]*/g, '').replace(/'(?:[^'\\\n]|\\.)*'/g, "''").replace(/"(?:[^"\\\n]|\\.)*"/g, '""').replace(/`(?:[^`\\]|\\.)*`/g, '``');
-  return [...code.matchAll(/(?<![\w.$])(\d+(?:\.\d+)?|\.\d+)(?![\w.])/g)].filter((m) => !['0', '1'].includes(m[1])).length;
+  return [...code.matchAll(new RegExp(PAT('handler_literal').re, 'g'))].filter((m) => !PAT('handler_literal').ignore_values.includes(m[1])).length;
 }
 const HOOKS_OF_TRIGGERS = new Set(Object.values(TRIGGERS).map((t) => t.hook));
 const now = () => {

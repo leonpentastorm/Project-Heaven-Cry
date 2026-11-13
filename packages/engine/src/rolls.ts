@@ -41,8 +41,11 @@ export const tierSave = (tier?: string | null): number => NPC_SAVE[tier || 'mini
 /** How hard what someone with no sheet does is to save against, by tier (rolls.npc_strength_by_tier). */
 export const tierStrength = (tier?: string | null): number => NPC_STRENGTH[tier || 'minion'] ?? 0;
 
+/** A save's family: Body, Brain or Heart. */
 export type Fam = 'body' | 'brain' | 'heart';
+/** One labelled term of a roll's modifier. */
 export interface RollPart { add: number; label: string }
+/** What a roll did: the die (and dice), the modifier and its parts, the total, the TN, ok, the natural, the sentence. */
 export interface RollResult {
   kind: 'save' | 'roll' | 'contest';
   /** The natural die kept (0: nothing was rolled). */ die: number;
@@ -89,6 +92,7 @@ export function rollFx(cb: Combat | null | undefined, r: RollResult, who: Unit |
     die: r.die, ...(r.dice ? { dice: r.dice } : {}), mod: r.mod, total: r.total, tn: r.tn, ok: r.ok, ...(r.nat ? { nat: r.nat } : {}), ...(r.skipped ? { skipped: r.skipped } : {}) });
 }
 
+/** What rollVs needs: who rolls, the modifier, the TN, why, and how the natural and the effect event are treated. */
 export interface RollSpec {
   /** Who rolls (for the effect event; null: nobody on the grid, a story roll). */ by?: Unit | null;
   /** The modifier: a number, or its parts with labels. */ mod?: number | RollPart[];
@@ -107,6 +111,7 @@ export function rollVs(cb: Combat | null | undefined, rng: Rng, s: RollSpec): Ro
   return res;
 }
 
+/** What rollSave needs: who forces it, the target, the family, the TN or the source it comes from, the condition id. */
 export interface SaveSpec {
   /** Who did it (null: nobody, a hazard or the world). */ by: Unit | null;
   /** Who saves. */ target: Unit;

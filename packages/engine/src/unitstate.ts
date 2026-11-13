@@ -26,6 +26,7 @@ export function setBraced(u: Unit, on: boolean, guard?: boolean): void {
 export function bracedAs(u: Unit, was: boolean | undefined): void { if (was === undefined) delete u.braced; else u.braced = was; }
 /** Staggered: this unit loses AP at its next turn (the turn's AP reads it and clears it). The larger of two stands. */
 export function stagger(u: Unit, n = 1): void { u.stunnedNext = Math.max(u.stunnedNext || 0, n); }
+/** Take a pending stagger off a unit. */
 export function clearStagger(u: Unit): void { u.stunnedNext = 0; }
 /** Downed on or off. Up again: the death saves start over. */
 export function setDowned(u: Unit, on: boolean): void {

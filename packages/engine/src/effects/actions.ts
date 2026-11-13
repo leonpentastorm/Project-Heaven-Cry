@@ -256,6 +256,7 @@ export function modOn(h: Holder, toggleId: string): boolean {
 }
 /** Armed preset of this item on its unit (combat/perk {arm:true}), or undefined. */
 export const armedOf = (h: Holder) => h.u?.armed?.[h.key];
+/** Clear the holder's armed preset (an armed action fired or was cancelled). */
 export const disarm = (h: Holder) => { if (h.u?.armed) delete h.u.armed[h.key]; };
 
 // ---------- off-turn windows (plan 2.7) ----------
@@ -282,5 +283,6 @@ export function windowStep(cb: Combat, declined = false) {
   }
   if (!w.queue.length) closeWindow(cb);
 }
+/** End the fight's open reaction or interrupt window. */
 export function closeWindow(cb: Combat) { delete cb.window; }
 export type { ToggleDef };

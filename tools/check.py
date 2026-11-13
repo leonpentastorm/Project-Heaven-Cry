@@ -2,7 +2,7 @@
 """One command for "did I break anything?" without a browser: the data validator (with the text-number guard), the
 spec-table and screen-data checks, both type checks and both unit suites, run together, with ONE short line each and only the failures printed. Meant to be cheap to read.
 
-    npm run check            everything (about 1 to 2 minutes)
+    npm run check            everything (about 1 to 2 minutes); "engine hooks" is docs/ENGINE-HOOKS.md's freshness
     npm run check -- engine  only what touches the engine (validator, engine tsc, engine tests)
     npm run check -- web     only the client (web tsc, the screen data's freshness, web tests)
     npm run check -- -t "Heart Overload"     both suites, only tests whose name matches
@@ -30,6 +30,9 @@ JOBS = [
     # The creation and sheet screens' card texts (apps/web/src/game/protodata.json) are generated from data/*.json: this
     # fails when the committed file is stale against the data (engine review 4, finding 6). Nothing is written.
     ('data', 'screen data', ['python3', 'design/canvas-build/build.py', '--web', '--check']),
+    # docs/ENGINE-HOOKS.md (the catalogue of the engine's extension points) is generated from the source and data by
+    # tools/engine_catalog.py: this fails when it is stale, or when a catalogued name has no doc comment. Nothing is written.
+    ('data', 'engine hooks', ['python3', 'tools/engine_catalog.py', '--check']),
     ('engine', 'engine types', ['npx', 'tsc', '--noEmit', '-p', 'packages/engine']),
     ('web', 'web types', ['npx', 'tsc', '--noEmit', '-p', 'apps/web']),
     ('engine', 'engine tests', ['npm', 'test', '-w', '@phc/engine'] + vt),
@@ -42,7 +45,7 @@ WEB_GUARDS = [('web', 'lint tests', ['npm', 'test', '-w', '@phc/engine', '--', '
 if only: JOBS = [j for j in JOBS if j[0] == only or (only == 'engine' and j[0] == 'data') or (only == 'web' and j[1] == 'screen data')] + (WEB_GUARDS if only == 'web' and not pat else [])
 else: JOBS = [j for j in JOBS if j[0] != 'balance']
 if pat: JOBS = [j for j in JOBS if 'tests' in j[1]]
-DATA_JOBS = ('validator', 'spec tables', 'screen data')  # each prints one line 'N errors'
+DATA_JOBS = ('validator', 'spec tables', 'screen data', 'engine hooks')  # each prints one line 'N errors'
 ANSI = re.compile(r'\x1b\[[0-9;]*m')
 
 def run(job):

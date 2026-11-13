@@ -14,8 +14,11 @@
 // The card itself is one floating element (mountActionTips): any element with data-tip (the JSON of a Tip) shows it on
 // hover or keyboard focus, so a tooltip inside a scrolling column is never clipped by it.
 
+/** One line of the hover card: what it does, the weapon's line, a trait, a note, or the refusal. */
 export interface TipLine { key: string; kind: 'text' | 'weapon' | 'trait' | 'note' | 'why'; label: string; text: string }
+/** A laid-out hover card: the name, its cost chips, its lines. */
 export interface Tip { name: string; chips: string[]; lines: TipLine[] }
+/** What a hover card is made from (the descriptor's own fields). */
 export interface TipSrc {
   name: string;
   /** The cost: the descriptor's cost text ("2 AP · the magazine drops", split on " · " into chips) or the chips. */
@@ -98,6 +101,7 @@ export function tipAttrs(src: TipSrc): { tip: string; tipText: string } { const 
 
 // ---------- the floating card ----------
 const INK: Record<TipLine['kind'], string> = { text: '#E7EBF3', weapon: '#F2A54A', trait: '#C9D3E3', note: '#C9D3E3', why: '#F65157' };
+/** The floating hover card's style, mounted once by mountActionTips. */
 export const TIP_CSS = [
   '.phc-atip{position:fixed;z-index:1000;max-width:340px;padding:8px 10px;border-radius:8px;background:#10151F;border:1px solid #3B475D;box-shadow:0 6px 22px rgba(0,0,0,.6);',
   'color:#E7EBF3;font:400 12px/1.4 \'Chakra Petch\',sans-serif;pointer-events:none;display:flex;flex-direction:column;gap:3px}',

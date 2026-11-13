@@ -47,6 +47,8 @@ docs/ART-INTEGRATION.md, docs/ASSET-DIRECTORY.md   how code picks art (by catalo
 docs/TESTING.md           which tool proves which change, cheapest first
 data/                     the JSON data pack + CONVENTIONS.md + README.md; data/campaigns/ holds the campaigns (format: docs/design/campaign-format.md)
 tools/                    check.py (npm run check), validate.py (data cross-reference checker; text_numbers.py is its text-number guard),
+                          engine_catalog.py (writes docs/ENGINE-HOOKS.md, the engine's extension points, from code and data; checked by npm run check),
+                          built_from.py (npm run built-from: a spec's Built-from names, or a diff's smells of building beside the engine),
                           check_spec_tables.py (the spec's tables against data), try_fight.py (npm run try), e2e.py (npm run e2e),
                           fix_pack.py (normaliser), archetype_fill.py (archetype budgets), skeleton_diff.py, maplayout.py, normalize_sfx.py,
                           build_web_assets.py (npm run assets), deploy_site.py, render_map_guides.py,

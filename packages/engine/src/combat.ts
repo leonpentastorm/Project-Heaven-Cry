@@ -360,6 +360,7 @@ export const FX_CAP = 40;
 let fxChain = 0;
 /** Keep the last FX_CAP effects of earlier actions (called before a new action runs). */
 export function trimFx(cb: Combat) { const list = cb.fx; if (list && list.length > FX_CAP) list.splice(0, list.length - FX_CAP); }
+/** Put one effect event on the fight's stream (the client animates it; fxTaps in fxtap.ts may watch it). */
 export function emitFx(cb: Combat, k: string, data: Record<string, any> = {}): FxEvent {
   // A turn's ring and a stance's word show only to a side that sees the unit as it happens (not at the batch's end: it
   // may walk into the fog or fall later in the same batch): seen {pc, foe}, 1 or 0, stamped now.
@@ -458,6 +459,7 @@ export function walkable(map: MapDef, objs: MapObject[], from: string, to: strin
 /** Tiles a character may stand on outside a fight. */
 export const standable = (map: MapDef, k: string) => { const [x, y] = k.split(',').map(Number); return x >= 0 && y >= 0 && x < map.w && y < map.h && !map.solid.includes(k) && !map.cover.includes(k) && !(map.full || []).includes(k); };
 
+/** Tiles between two tiles on the grid (diagonals count 1). */
 export const dist = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by] = xy(b); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
 
 /** A character's Vision in tiles (spec: Vision): 12 + 2 per Perception above 1 + Vigilant + items. */
@@ -651,9 +653,9 @@ export const difficultOf = (cb: Combat) => new Set([...cb.map.difficult, ...obje
 export const moveBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksMove).map((o) => o.pos)]);
 export const sightBlockers = (cb: Combat) => new Set([...cb.map.solid, ...objectsOf(cb).filter(blocksSight).map((o) => o.pos), ...veilTiles(cb)]);
 
-/** Damage to a unit from something other than an attack (explosions, traps, hazards). Returns a log suffix. */
 /** What hurtUnit deals that an item may speak about when someone made it (its `damage_kinds`). */
 export const BLAST_KINDS = ['explosion', 'trap', 'thrown'];
+/** Damage to a unit from something other than an attack (explosions, traps, hazards). Returns a log suffix. */
 export function hurtUnit(u: Unit, dmg: number, ignoreArmour = false, cb?: Combat, why = 'hazard', by?: Unit | null): string {
   if (u.dead) return '';
   // The one way in (effects/output.ts deal): the number as given (no Stat or Level term yet, no 'damage_out' hook:
@@ -1629,6 +1631,7 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/move', how } }); if (no) return no; }
   return { ap, ap0, tiles, route, mc, P };
 }
+/** A unit walks to a tile on its own (move, sprint or disengage): priced, paid, step by step with every reaction, trap and hazard. */
 export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move' | 'sprint' | 'disengage' = 'move', o: MoveOpts = {}): string | null {
   const pl = movePlan(cb, u, to, how, o); if (typeof pl === 'string') return pl;
   const { ap, ap0, tiles, route, mc, P } = pl;
