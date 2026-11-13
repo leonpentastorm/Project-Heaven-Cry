@@ -1,5 +1,7 @@
 # Classes 3.0: the mission, and how to carry it on with Opus alone
 
+> **LIVE: 0.26.0, Classes 3.0, deployed 13 Nov 2026 on Leon's word** (`backup/live-0.26.0`; `main` = `develop` = be21576a). Release run: `npm run check` ALL GREEN; 66 browser suites green, `faith-pg` passing only alone (a suite fault: fix it); live verified with old-save, creation-points, perks, two-players, turn-order. From here this branch carries **Survival mode** (not on `develop`; not deployed without Leon's new word): steps 1 and 2 merged, step 3 next (`docs/design/survival-spec.md` section 10).
+
 > **Leon's word for this release (13 Nov, before sleeping):** when Classes 3.0 is finished and `npm run check` and
 > `npm run e2e -- all` are green (nothing failing alone), **deploy it to live as 0.26.0** (merge to `develop`, then
 > `main`; `backup/live-0.26.0`; the deploy routine in CLAUDE.md), without waiting for him. If anything is red, do not
@@ -102,7 +104,7 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
       a section 14 item, technique table row 12 and the Spread and Quick/Precise notes reworded), then the number
       in data (`rounds_per_roll: 4` on the technique, read by the engine; no digit in the text), the card text
       ("Up to 12 rounds"), and the effect: casings = rounds spent. Enemies' Mag Dump the same way.
-- [ ] **12. Close:** `docs/PLAYTEST-CHECKLIST.md` for Classes 3.0 (what to try, what right looks like, the calls
+- [x] **12. Close:** `docs/PLAYTEST-CHECKLIST.md` for Classes 3.0 (what to try, what right looks like, the calls
       made for Leon); `CHANGELOG.md`, the version; `npm run check` ALL GREEN and `npm run e2e -- all` green with
       nothing failing alone; then tell Leon it is ready and wait for his word.
       **Known red going in (13 Nov, reported by the effects and hover builders on the branch before 7b and
