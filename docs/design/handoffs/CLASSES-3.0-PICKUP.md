@@ -75,6 +75,7 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [ ] **8. Figments, the Visualizer and the Rigger** (`figments-spec.md`): the owned-unit primitive first, with the
       drone, the beast and the twin moved onto it and their golden lines unchanged; then the forms.
 - [ ] **9. The enemy side:** what each spec's section 8 asks of the AI, in one piece, after all systems exist.
+- [ ] **10b. Hide M813** (Leon, 13 Nov): take the M813 campaign off the menu and out of the default start (not deleted; its data and unit tests stay; browser suites that play M813 are moved to the Proving Ground or marked as campaign-only and still pass); say so in the changelog. And the final hand-off for a LOCAL session (Leon: "a very good hand-off file so that when I start a new session on my local computer, Fable gets what's going on"): rewrite `docs/design/handoffs/LOCAL-SESSION-START.md` at the close.
 - [ ] **10. The screen:** meters, tabs and hover cards of each spec's section 9; every new action through the
       descriptors (no client-built action); the browser suites extended (one new suite a system, in a group).
 - [ ] **11. Balance:** every new line measured at levels 1, 5, 10, 20; `docs/design/balance-contract.md` and its

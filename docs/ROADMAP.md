@@ -307,3 +307,29 @@ proven with twenty or thirty rooms before the rest are written; (c) the encounte
 spend: the balance contract and the enemy table by tier and level are that budget; (d) the shop needs prices and
 rarity for every item, which today exist only in part; (e) measure the map's rendering (a full map, many units)
 before this mode, as the performance notes say.
+
+## Survival mode (Leon, 13 Nov 2026): the patch after Classes 3.0, and the roguelike's first piece
+
+Leon: "I just want a mode you can play with progression and combat. Our combat system is sick, but M813 is not
+written well and is very outdated now, you barely have any combat in it, and the only place to do anything in this
+game is the Proving Ground, which is a glorified tester tool." Name: **Survival** *(his: "survival mode or
+something")*. Nothing is designed in detail or built; the spec is written when Classes 3.0 closes.
+
+**The shape (the lead's proposal, accepted, with Leon's map):** make or pick a character at level 1; **a simple map
+of paths you choose between** ("this path leads to a shop, that path to a boss, that one to a free rest"): each
+node is a generated fight sized to your level from the enemy table and the balance contract, a shop, a rest, or an
+Elite or Boss; after a fight, pick one of three rewards and take the XP; level up as you earn it (class at level 3
+as usual); lose and the run ends and shows how far you got. Solo or co-op, no Narrator needed. A run of ten to
+fifteen nodes takes a character to about level 6 or 7.
+
+**Why first:** it is nearly all built pieces (the Proving Ground's waves, loot tables, levelling, classes, the fire
+doctrine); the new parts are the encounter picker, the reward screen, the shop, the path map and a run counter; and
+**the path map is reused as the dungeon map of the roguelike**, the encounter generator and the shop are items 3
+and 4 of its stage 1. It is also how Classes 3.0 gets tested across many fights at rising levels.
+
+**Left out on purpose** (still on the roguelike's list above): designed rooms, the five dungeons, the world map,
+missions, per-player unlocks, companions.
+
+**M813 is hidden for now** (Leon, 13 Nov: "hide it for now, it wastes tokens and is broken"): the campaign is taken
+off the menu (not deleted: `data/campaigns/m813.json` and its tests stay) in the Classes 3.0 patch, until it is
+rewritten.
