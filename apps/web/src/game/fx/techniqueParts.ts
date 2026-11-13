@@ -11,7 +11,7 @@
 // the combat speed (Normal, Fast, the test pace) and a spotlight's slow-mo apply. Reduced motion: nothing travels or
 // draws on; each part shows its end state and fades.
 import { reducedMotion } from '../sfx';
-import { gearIconUri, hasGearIcon } from '../gearIcons';
+import { gearLineUri, hasGearIcon } from '../gearIcons';
 import { type Pt, anim, put, svg } from './dom';
 
 export const INK_DARK = '#0A0D13', WHITE = '#FFFFFF', MUTED = '#A3AEC2', HP = '#F65157';
@@ -269,7 +269,7 @@ export const PARTS: Record<string, PartFn> = {
   weapon(c, o) {
     if (!c.a) return;
     const size = c.s * num(o, 'size', 0.8) * c.scale, ink = str(o, 'color', '') || c.ink, move = str(o, 'move', 'swing');
-    const node: HTMLElement = c.weapon && hasGearIcon(c.weapon) ? (() => { const i = document.createElement('img'); i.src = gearIconUri(c.weapon, ink); i.alt = ''; i.style.cssText = 'width:100%;height:100%;display:block;filter:' + CASING; return i; })()
+    const node: HTMLElement = c.weapon && hasGearIcon(c.weapon) ? (() => { const i = document.createElement('img'); i.src = gearLineUri(c.weapon, ink); i.alt = ''; i.style.cssText = 'width:100%;height:100%;display:block;filter:' + CASING; return i; })()
       : (() => { const d = document.createElement('div'); d.style.cssText = 'width:100%;height:' + Math.max(3, size * 0.1) + 'px;margin-top:' + size * 0.45 + 'px;background:' + ink + ';border-radius:2px;box-shadow:0 0 3px #000'; return d; })();
     const hit = nearSide(c, 0.45), base = (angOf(c.dir) * 180) / Math.PI, back = add(hit, c.dir, -c.s * 0.55);
     const box = put(node, hit, size, size, 520 + c.delay); box.setAttribute('data-tech-fx', 'weapon'); box.style.zIndex = '2'; // under the floating number (z 3)

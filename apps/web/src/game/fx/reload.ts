@@ -22,7 +22,7 @@ import { PILE, WEAPON, type FxEvent } from '@engine';
 import { reducedMotion } from '../sfx';
 import { type Mag, type Shell, arrowPicture, brassOf, magPicture, roundPicture } from './brass';
 import { anim, after, centre, clampCentre, layerEl, slow, tileEl, tokenEl } from './dom';
-import { gearIconUri } from '../gearIcons';
+import { gearLineUri } from '../gearIcons';
 
 // ---------- what the card shows (pure: tests) ----------
 /** How a gun's reload is drawn: a magazine swapped; a revolver's cylinder; a row of rounds fed one by one; arrows into
@@ -167,7 +167,7 @@ export function reloadCard(e: Partial<FxEvent>, key: string, ms: number): HTMLEl
 
 /** A weapon's icon as an <img> in one ink (null when it has none: nothing is drawn). */
 function iconImg(weapon: string, ink: string, size: number): HTMLImageElement | null {
-  const src = gearIconUri(weapon, ink); if (!src) return null;
+  const src = gearLineUri(weapon, ink); if (!src) return null;
   const im = document.createElement('img'); im.src = src; im.alt = ''; im.setAttribute('data-reload-icon', weapon);
   im.style.cssText = 'flex:none;display:block;width:' + size + 'px;height:' + size + 'px'; return im;
 }

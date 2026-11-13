@@ -7,9 +7,10 @@
 // In a fight the ammo lives on the unit (u.mags, u.loose, u.offMags, u.extra, u.throwables, u.parts): c.pack is only
 // written back at the end of the fight or on a gear change, so those numbers are read from the unit.
 import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, withGame } from '@engine';
+import { magGearId, roundsGearId } from './gearIcons';
 
 export interface BpAct { key: string; label: string; cost: string; off: boolean; why: string; action: any }
-/** item: the weapon, armour or shield the row is (its icon, gearIcons.ts); absent for ammo, stims and the rest. */
+/** item: the item (or derived gear id: rounds-<calibre>, mag-<family>) the row is, for its icon (gearIcons.ts); absent when there is none. */
 export interface BpRow { key: string; tag: string; name: string; sub: string; acts: BpAct[]; note: string; item?: string }
 export interface BpSection { key: string; title: string; rows: BpRow[]; empty: string }
 export interface Backpack { who: string; ap: number; sections: BpSection[]; reason: string }
@@ -89,24 +90,24 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
   const ammo: BpRow[] = [];
   const cap = w && w.magazine != null ? w.magazine : 0;
   const unit = (w && w.reload_unit) || 'magazine';
-  if (w && w.magazine != null && w.reload !== 'loose' && Array.isArray(u.mags)) ammo.push({ key: 'mags', tag: (unit + 's').toUpperCase(), name: u.mags.length + ' spare ' + unit + (u.mags.length === 1 ? '' : 's') + ' · ' + w.name, sub: u.mags.length ? u.mags.map((n: number, k: number) => typed(n, cap, u.magTypes?.[k])).join(' · ') : 'None left.', note: '', acts: [] });
-  if ((u.loose ?? 0) > 0 || (w && w.reload === 'loose')) ammo.push({ key: 'loose', tag: 'ROUNDS', name: (u.loose ?? 0) + ' loose rounds', sub: w && w.reload === 'loose' ? 'Loaded round by round.' : 'Load them into a ' + unit + ' (Utility).', note: '', acts: [] });
-  if (ow && ow.magazine != null && Array.isArray(u.offMags)) ammo.push({ key: 'offmags', tag: 'OFF-HAND MAGAZINES', name: u.offMags.length + ' · ' + ow.name, sub: u.offMags.map((n: number, k: number) => typed(n, ow.magazine, u.offMagTypes?.[k])).join(' · ') || 'None left.', note: '', acts: [] });
-  for (const [k, x] of (u.extra || []).entries()) { const xw: any = (WEAPON as any)[x.weapon]; ammo.push({ key: 'extra-' + k, tag: 'MAGAZINE', name: (xw ? xw.name : x.weapon) + ' magazine', sub: typed(x.rounds, xw?.magazine || 0, x.type) + ' · goes to the pack after the fight', note: '', acts: [] }); }
+  if (w && w.magazine != null && w.reload !== 'loose' && Array.isArray(u.mags)) ammo.push({ key: 'mags', tag: (unit + 's').toUpperCase(), name: u.mags.length + ' spare ' + unit + (u.mags.length === 1 ? '' : 's') + ' · ' + w.name, sub: u.mags.length ? u.mags.map((n: number, k: number) => typed(n, cap, u.magTypes?.[k])).join(' · ') : 'None left.', note: '', acts: [], item: magGearId(w.id) || undefined });
+  if ((u.loose ?? 0) > 0 || (w && w.reload === 'loose')) ammo.push({ key: 'loose', tag: 'ROUNDS', name: (u.loose ?? 0) + ' loose rounds', sub: w && w.reload === 'loose' ? 'Loaded round by round.' : 'Load them into a ' + unit + ' (Utility).', note: '', acts: [], item: roundsGearId(w?.ammo) || undefined });
+  if (ow && ow.magazine != null && Array.isArray(u.offMags)) ammo.push({ key: 'offmags', tag: 'OFF-HAND MAGAZINES', name: u.offMags.length + ' · ' + ow.name, sub: u.offMags.map((n: number, k: number) => typed(n, ow.magazine, u.offMagTypes?.[k])).join(' · ') || 'None left.', note: '', acts: [], item: magGearId(ow.id) || undefined });
+  for (const [k, x] of (u.extra || []).entries()) { const xw: any = (WEAPON as any)[x.weapon]; ammo.push({ key: 'extra-' + k, tag: 'MAGAZINE', name: (xw ? xw.name : x.weapon) + ' magazine', sub: typed(x.rounds, xw?.magazine || 0, x.type) + ' · goes to the pack after the fight', note: '', acts: [], item: magGearId(x.weapon) || undefined }); }
   // Ammo for guns not in hand (or in hand but tracked elsewhere) is in the pack: read-only, by gun or calibre (review fix:
   // a stowed rifle's magazines vanished from the panel).
   const offCal = u.offLoose != null && ow ? ow.ammo : null;
   packOf(c).forEach((it: any, i: number) => {
     if (it.mags && it.weapon && it.weapon !== u.weapon && it.weapon !== u.offWeapon && it.mags.length) { const xw: any = (WEAPON as any)[it.weapon];
-      ammo.push({ key: 'pmags-' + i, tag: ((xw?.reload_unit || 'magazine') + 's').toUpperCase(), name: it.mags.length + ' × ' + (xw ? xw.name : it.weapon), sub: it.mags.map((n: number, k: number) => typed(n, xw?.magazine || 0, it.magTypes?.[k])).join(' · ') + ' · in the pack', note: '', acts: [] }); }
+      ammo.push({ key: 'pmags-' + i, tag: ((xw?.reload_unit || 'magazine') + 's').toUpperCase(), name: it.mags.length + ' × ' + (xw ? xw.name : it.weapon), sub: it.mags.map((n: number, k: number) => typed(n, xw?.magazine || 0, it.magTypes?.[k])).join(' · ') + ' · in the pack', note: '', acts: [], item: magGearId(it.weapon) || undefined }); }
     else if (it.calibre && !it.mags && it.qty > 0 && it.calibre !== (w && w.ammo) && it.calibre !== offCal)
-      ammo.push({ key: 'prounds-' + i, tag: 'ROUNDS', name: it.qty + ' × ' + calName(it.calibre) + (it.ammoType ? ' ' + (TYPE[it.ammoType] || it.ammoType) : ''), sub: 'In the pack.', note: '', acts: [] });
+      ammo.push({ key: 'prounds-' + i, tag: 'ROUNDS', name: it.qty + ' × ' + calName(it.calibre) + (it.ammoType ? ' ' + (TYPE[it.ammoType] || it.ammoType) : ''), sub: 'In the pack.', note: '', acts: [], item: roundsGearId(it.calibre) || undefined });
   });
-  if (offCal) ammo.push({ key: 'offloose', tag: 'OFF-HAND ROUNDS', name: (u.offLoose ?? 0) + ' × ' + calName(offCal), sub: 'Loaded round by round into the off-hand gun.', note: '', acts: [] });
+  if (offCal) ammo.push({ key: 'offloose', tag: 'OFF-HAND ROUNDS', name: (u.offLoose ?? 0) + ' × ' + calName(offCal), sub: 'Loaded round by round into the off-hand gun.', note: '', acts: [], item: roundsGearId(offCal) || undefined });
   for (const [id, n] of Object.entries(u.throwables || {})) if ((n as number) > 0) ammo.push({ key: 'thr-' + id, tag: 'THROWABLE', name: n + ' × ' + nameOf(id), sub: 'Throw it from the Attack tab.', note: '', acts: [], item: id });
-  if ((u.parts ?? 0) > 0) ammo.push({ key: 'parts', tag: 'PARTS', name: u.parts + ' spare parts', sub: 'Field Repair uses one.', note: '', acts: [] });
-  if (u.mg && (u.mg.cores ?? 0) > 0) ammo.push({ key: 'cores', tag: 'CORES', name: u.mg.cores + ' mana ' + (u.mg.cores === 1 ? 'core' : 'cores'), sub: 'Swap a core from the Sigils tab.', note: '', acts: [] });
-  if ((c.stims ?? 0) > 0) ammo.push({ key: 'stims', tag: 'STIMS', name: c.stims + ' stim ' + (c.stims === 1 ? 'injector' : 'injectors'), sub: 'Stim an ally from the Utility tab.', note: '', acts: [] });
+  if ((u.parts ?? 0) > 0) ammo.push({ key: 'parts', tag: 'PARTS', name: u.parts + ' spare parts', sub: 'Field Repair uses one.', note: '', acts: [], item: 'spare_parts' });
+  if (u.mg && (u.mg.cores ?? 0) > 0) ammo.push({ key: 'cores', tag: 'CORES', name: u.mg.cores + ' mana ' + (u.mg.cores === 1 ? 'core' : 'cores'), sub: 'Swap a core from the Sigils tab.', note: '', acts: [], item: 'standard_core' });
+  if ((c.stims ?? 0) > 0) ammo.push({ key: 'stims', tag: 'STIMS', name: c.stims + ' stim ' + (c.stims === 1 ? 'injector' : 'injectors'), sub: 'Stim an ally from the Utility tab.', note: '', acts: [], item: 'stim_injector' });
   return { who: c.name, ap: u.ap ?? 0, reason, sections: [
     { key: 'hands', title: 'HANDS', rows: [main, off], empty: '' },
     { key: 'armour', title: 'ARMOUR', rows: armour, empty: 'Nothing worn. A light piece (' + GEAR.light_armour_max_kg + ' kg or less) goes on for 1 AP.' },
