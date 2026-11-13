@@ -59,10 +59,13 @@ const MOTION = [
 const motion = document.createElement('style'); motion.id = 'phc-global-motion'; motion.textContent = MOTION; document.head.appendChild(motion);
 
 // Every image the game uses: thumbnails first, then the large (zoom) sizes. Failed loads count as done.
-const all = Object.entries(ASSETS as Record<string, string>);
-const URLS = [...all.filter(([k]) => !k.endsWith('-lg')), ...all.filter(([k]) => k.endsWith('-lg'))].map(([, u]) => u);
+// The painted gear icons (gear-<item id>, game/gearIcons.ts) don't hold the title: the small ones (about 260 KB) load
+// after the zoom sizes, and their -lg sizes (hand cards, hover cards; about 1.5 MB) load only when a screen shows one.
+const isGear = (k: string) => k.startsWith('gear-');
+const all = Object.entries(ASSETS as Record<string, string>).filter(([k]) => !(isGear(k) && k.endsWith('-lg')));
+const URLS = [...all.filter(([k]) => !k.endsWith('-lg') && !isGear(k)), ...all.filter(([k]) => k.endsWith('-lg')), ...all.filter(([k]) => isGear(k))].map(([, u]) => u);
 /** The title opens once the small sizes are in; the large (zoom) sizes keep loading in the background. */
-const SMALL = all.filter(([k]) => !k.endsWith('-lg')).length;
+const SMALL = all.filter(([k]) => !k.endsWith('-lg') && !isGear(k)).length;
 const MARK = (ASSETS as Record<string, string>)['wick-welcome'];
 
 function preload(onTick: (n: number) => void): Promise<void> {

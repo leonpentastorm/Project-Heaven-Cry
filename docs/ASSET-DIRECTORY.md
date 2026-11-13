@@ -172,3 +172,7 @@ UI exports and 40/128 px review sheets: [Wick test set 1](../art/_archive/traits
 | illustrations | `outpost1-repair-bay` | **Ending-only**; see [spoiler routing](../art/_archive/illustrations/m813/v1/README.md) |
 
 Portraits are 800 × 1000 RGB; world scenes are 1600 × 900 RGB. The [opening-safe overview](../art/_archive/illustrations/m813/v1/previews/opening-safe.png) excludes the ending.
+
+## Painted gear icons (Heavenprint, 13 Nov 2026)
+
+151 painted icons in `catalog.gear` (key = file stem `<kind>-<id>`, rule: [gear-icons.md](../art/style-guide/gear-icons.md)); masters in [art/icons/gear/](../art/icons/gear/), exports at 256 / 128 / 64 / 32 px under `art/icons/gear/exports/`. `npm run assets` builds each one by **item id**: `gear-<item id>` (from the 64 px export) and `gear-<item id>-lg` (from the 256 px export); derived gear with no item id keeps its kind (`gear-rounds-<calibre>`, `gear-mag-<family>`, `gear-armour-torso_class<N>_<name>`, `gear-loot-personal_effects`). The game resolves them in `apps/web/src/game/gearIcons.ts`.
