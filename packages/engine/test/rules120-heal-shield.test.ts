@@ -87,9 +87,9 @@ describe('MEND\'s base by who casts it (truth pass 3)', () => {
 });
 
 describe('rules 1.20: the Outburst', () => {
-  it('the Buff heal is 14 × the Outburst\'s heal Stat (soul_mend, rules 1.36) × the stage multiplier × the level factor, through the gate', () => {
-    expect(BUFF_HEAL).toBe(14); expect((SCHOOL.buff as any).heal).toBe(14);
-    const f = rig({}, { level: 6 }); me(f).mg!.soulBoon = 2; ally(f).hp = 100; const want = Math.floor(Math.max(14 * 2 * 1.2 * mendFactor(6), gateOf(ally(f), 1.2, me(f))));
+  it('the Buff heal is 11.3 × the Outburst\'s heal Stat (soul_mend, rules 1.36) × the stage multiplier × the level factor, through the gate', () => {
+    expect(BUFF_HEAL).toBe(11.3); expect((SCHOOL.buff as any).heal).toBe(11.3);
+    const f = rig({}, { level: 6 }); me(f).mg!.soulBoon = 2; ally(f).hp = 100; const want = Math.floor(Math.max(11.3 * 2 * 1.2 * mendFactor(6), gateOf(ally(f), 1.2, me(f))));
     const d = give(me(f), {}); A(f, { type: 'combat/outburst', design: d, hold: true }); A(f, { type: 'combat/pump' }); A(f, { type: 'combat/pump' });
     const pv = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '4,5')); expect(pv.affected[0].heal).toBe(want);
     A(f, { type: 'combat/release', aim: '4,5' }); expect(ally(f).hp).toBe(100 + want);
@@ -98,7 +98,7 @@ describe('rules 1.20: the Outburst', () => {
     expect(BOON_AREA).toBe(0.4); expect((SCHOOL.buff as any).area_mult).toBe(0.4);
     const f = rig(); me(f).mg!.soulBoon = 10; ally(f).hp = 100; me(f).hp = 100;
     const d = give(me(f), { modules: ['aura'] }); A(f, { type: 'combat/outburst', design: d, hold: true }); A(f, { type: 'combat/pump' }); A(f, { type: 'combat/release' });
-    expect(ally(f).hp).toBe(100 + Math.floor(14 * 10 * 1.0 * 0.4)); expect(me(f).hp).toBe(100 + Math.floor(14 * 10 * 1.0 * 0.4)); // 56 each
+    expect(ally(f).hp).toBe(100 + Math.floor(11.3 * 10 * 1.0 * 0.4)); expect(me(f).hp).toBe(100 + Math.floor(11.3 * 10 * 1.0 * 0.4)); // 45 each
   });
   it('Inverse and Shell have shield bases of their own: the Damage base does not move them', () => {
     expect((MODULE.inverse as any).shield).toBe(7); expect((MODULE.shell as any).shield).toBe(4); // rules 1.36: Inverse under the Mender's Tending shield
@@ -116,12 +116,12 @@ describe('rules 1.20: the Outburst', () => {
     expect((FEELING.love.pour as any).heal_share).toBe(0.25); expect((FEELING.love.pour as any).lone_heal_share).toBe(0.15);
     expect((FEELING.love.pour as any).heal_of_power).toBeUndefined();
     const f = rig(), m = me(f).mg!; m.soulBoon = 4; const bolt: any = { id: 'b', school: 'damage', modules: [] };
-    const a = loveHeal(m, bolt, 2), lone = loveHeal(m, bolt, 2, true); expect(a).toBeCloseTo(14 * 4 * 2 * 0.25, 5); expect(lone).toBeCloseTo(14 * 4 * 2 * 0.15, 5);
+    const a = loveHeal(m, bolt, 2), lone = loveHeal(m, bolt, 2, true); expect(a).toBeCloseTo(11.3 * 4 * 2 * 0.25, 5); expect(lone).toBeCloseTo(11.3 * 4 * 2 * 0.15, 5);
     m.soulMult = 9; m.soulBase = 999; expect(loveHeal(m, bolt, 2)).toBe(a);
     // on a healing Outburst: each ally it reaches heals a quarter more
     const g = rig(); me(g).mg!.soulBoon = 10; ally(g).hp = 100;
     const d = give(me(g), {}); A(g, { type: 'combat/outburst', design: d, hold: true }); A(g, { type: 'combat/pump', feeling: 'love' }); A(g, { type: 'combat/release', aim: '4,5' });
-    expect(ally(g).hp).toBe(100 + Math.floor(14 * 10 * 1.1) + Math.floor(14 * 10 * 1.1 * 0.25)); // 154 + 38
+    expect(ally(g).hp).toBe(100 + Math.floor(11.3 * 10 * 1.1) + Math.floor(11.3 * 10 * 1.1 * 0.25)); // 124 + 31
   });
   it('the class moves: Will Shield left (rules 1.31: the Chaplain\'s Ward); the Bard\'s Mend is Brimming (rules 1.33)', () => {
     expect(CLASS_MOVE_POOL['guardian.will_shield']).toBeUndefined();

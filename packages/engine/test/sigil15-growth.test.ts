@@ -287,13 +287,13 @@ describe('word mastery and inflections (items 915-916)', () => {
     uses(f, 'seek', 30);
     expect(previewEvoke(f.cb, f.unit(f.pc.id), '4,5').range).toBe(9);
   });
-  it('WARD: the shield is 10% bigger (12 to 13)', () => {
-    const f = rig(['ward', 'seek']);
+  it('WARD: the shield is 10% bigger (rules 1.36: 4.3 × the boon\'s Stat; a small bar, so the gate stays under it)', () => {
+    const f = rig(['ward', 'seek']); f.unit(f.pc.id).maxHp = 10; const sb = f.unit(f.pc.id).mg!.sigilBoon ?? 1;
     draw(f, f.pc, ['ward', 'seek'], ['5,5', '4,5']); evoke(f, f.pc, '4,5', '4,5');
-    expect(f.unit(f.pc.id).shield).toBe(12);
+    const before = f.unit(f.pc.id).shield; expect(before).toBe(Math.round(4.3 * sb));
     uses(f, 'ward', 30); f.unit(f.pc.id).shield = 0;
     draw(f, f.pc, ['ward', 'seek'], ['5,5', '4,5']); evoke(f, f.pc, '4,5', '4,5');
-    expect(f.unit(f.pc.id).shield).toBe(13);
+    expect(f.unit(f.pc.id).shield).toBe(Math.round(4.3 * 1.1 * sb)); expect(f.unit(f.pc.id).shield).toBeGreaterThan(before);
   });
   it('STEP: a teleport of 5 tiles is refused until STEP is Mastered (+1 tile)', () => {
     const f = rig(['step', 'seek'], ['8,5']);

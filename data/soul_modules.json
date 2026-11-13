@@ -210,7 +210,7 @@
         "heal_30"
       ],
       "duration_rounds": 2,
-      "heal": 14,
+      "heal": 11.3,
       "hit": "auto",
       "provisional": true,
       "identity": "The school that keeps your side standing.",

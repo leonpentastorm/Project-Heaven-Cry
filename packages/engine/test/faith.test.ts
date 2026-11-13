@@ -491,7 +491,7 @@ describe('prayer in the story', () => {
   it('a Whisper heals a squad member, costs story AP and the mana meter, once a round', () => {
     const { s, c, ally } = faithful(); ally().hp = 40; const mana = s.g.story.mana ?? 15;
     s.act({ type: 'faith/pray', charId: c().id, kind: 'whisper', id: 'health', targetId: ally().id });
-    expect(ally().hp).toBe(40 + Math.round(8.5 * blessingPower(c()) * prayerMendDial() * mendFactor(c().level))); // rules 1.36: 8.5 (story: no gate) expect(s.g.story.ap?.[c().id]).toBe(5); expect(s.g.story.mana).toBe(Math.max(0, mana - 5));
+    expect(ally().hp).toBe(40 + Math.round(8.5 * blessingPower(c()) * prayerMendDial() * mendFactor(c().level))); expect(s.g.story.ap?.[c().id]).toBe(5); expect(s.g.story.mana).toBe(Math.max(0, mana - 5)); // rules 1.36: 8.5 (story: no gate)
     expect(said(s.g, /BY STANDING · ✓ ANSWERED/)).toBe(true);
     expect(() => s.act({ type: 'faith/pray', charId: c().id, kind: 'whisper', id: 'luck' })).toThrow(/One Whisper a round/);
   });
