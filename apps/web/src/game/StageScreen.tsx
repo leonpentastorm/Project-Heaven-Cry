@@ -8,6 +8,10 @@ import { act, getState, go, saveToLibrary, toast } from './store';
 import { stageView, draftOf, type BoonPickV, type TileCardV, type SummaryV } from './stageView';
 import { boonIconSvg } from './boonIcons';
 import { tipProps, openTipOn } from './actionTip';
+import { TallyTable } from './RunTally';
+import { summaryTallies } from './tallyView';
+import { downloadRunReport } from './runReport';
+import { scrub } from './debug';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', white: '#FFFFFF', ok: '#6FEA77' };
 const kick: React.CSSProperties = { fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
@@ -90,7 +94,11 @@ function Summary({ s }: { s: SummaryV }) {
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', gap: 12 }}><button type="button" data-phc-to-room="" onClick={() => go('room')} style={btn(true)}>Back to the room</button></div>
+      <section aria-label="What each character did" data-phc-tallies="" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <span style={kick}>WHAT EACH OF YOU DID</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(520px, 1fr))', gap: 14 }}>{summaryTallies(g).map((t) => <TallyTable key={t.caption} t={t} />)}</div>
+      </section>
+      <div style={{ display: 'flex', gap: 12 }}><button type="button" data-phc-report-run="" {...tipProps('Saves one file with the seed, the stages, every fight\'s tally and each character\'s build. Nothing is sent.')} onClick={() => downloadRunReport(g, scrub, toast)} style={btn(false)}>Report a run</button><button type="button" data-phc-to-room="" onClick={() => go('room')} style={btn(true)}>Back to the room</button></div>
     </div>
   );
 }

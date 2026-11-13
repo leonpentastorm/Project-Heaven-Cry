@@ -5339,6 +5339,34 @@ shop) and 1.45 (the fight map's layout) are built beside it.
    pressure band by itself takes a damage scale down to the cap (`anchorDamage`: the HP rule mirrored, damage is
    pressure as HP is bulk), so every fight of stages 1 to 3 composes inside both bands.
 
+## Rules revision 1.47: the fight tally and Report a run (Survival, build step 6)
+
+Built on 13 Nov 2026 (`docs/design/handoffs/survival-step-6.md`) from `docs/design/survival-spec.md` (draft 4) rule 35,
+section 4.2 item 5 and section 10 row 6. No number is new (items 3400 to 3406). Code: `run/tally.ts`, the reducer's
+two lines in `game.ts`, `apps/web/src/game/` (`tallyView.ts`, `RunTally.tsx`, `runReport.ts`).
+
+1. **The fight tally** (spec rule 35, section 4.2 item 5): what each character did in a run's fight, read off the
+   effects the fight emitted and nothing else. A tap on `fxTaps` keeps the few effects the tally reads (`shot`, `melee`,
+   `hurt`, `heal`, `leech`, `shield`, `down`, `turn`) in the fight's tape, which only a run's fight has; when the fight
+   ends the tape is turned into the tally by a pure function (`fightTally`) and dropped; the tally is kept on the run's
+   fight record. There is no counter in combat. Per character: damage dealt, damage taken, healing done, damage its
+   shield soaked, kills, Downs and deaths, weapon attacks made and landed; and the fight's rounds.
+2. **Whose it is:** an attack names its attacker and its target. A `hurt` or a `heal` names only its target, so it is
+   credited to the unit whose `turn` is open; one made while a foe's turn is open (a bleed, a reaction that is not a
+   shot) is the fight's `other`. A kill is credited to the last character to damage the foe. A foe given up counts as
+   dropped, as the stage's foes dropped does.
+3. **What the stream does not say, and so is not counted:** shields given (`grantShield` emits a hook, not an effect: the
+   tally has what a shield soaked, not what was given), a heal that no effect reports (the perk `mend` op), the split of
+   damage by system (weapon, Sigil, Outburst, prayer, Figment, Bond, Shadow) and a Burst's rounds past the first that
+   carry no `shot` of their own. Each needs an event the engine does not emit today; none is faked.
+4. **Where it is shown:** a small table after each fight on the reward screen; on the summary, the run's sum and each
+   stage's (`sumTallies`).
+5. **Report a run:** the summary's button saves one file (plain JSON, so it can be pasted): the format and the game
+   version, the mode, the seed, the outcome, the path, each stage's log, each fight (node, stage, kind, setting,
+   template, level, the budget asked and spent, the foes, the outcome, rounds, kills, its tally), the run's tally, and
+   each character's build at the end (level, class, points, perks, gear, boons). Nothing is sent; no key is in it. The
+   Report a problem bundle carries the same as its `run` part when a run is on the room.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8557,3 +8585,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 3119. **The kept draft (rules 1.44 item 7):** saved to the player's library only (the browser); **no room takes a levelled character yet** (`char/add` builds a level 1 character from a sheet, and Survival refuses above level 1): open, for Leon. PROVISIONAL.
 3120. **Item 2814's damage scale (rules 1.44 item 8):** the big units' damage x (cap - the rest's pressure) / their pressure, only when the band is passed by required units. PROVISIONAL.
 3121. **Items 3100 to 3121 are rules 1.44's.**
+3400. **The fight tally (rules 1.47 item 1):** per character, per fight: dealt, taken, healed, soaked, kills, Downs, deaths, shots, hits, from the effects stream by `fightTally`; kept on `RunFight.tally`; summed by `sumTallies`. No number is a rule: it is a record. PROVISIONAL.
+3401. **Attribution (rules 1.47 item 2):** a `hurt` or `heal` is the actor's (the unit whose `turn` is open); off a squad member's turn it is `other`. A kill is the last character to damage the foe. PROVISIONAL.
+3402. **Not counted (rules 1.47 item 3):** shields given, heals no effect reports, damage by system. The events missing are listed in the build step 6 hand-off. PROVISIONAL.
+3403. **The tape (rules 1.47 item 1):** `cb.tape`, set only by a run's fight, cut to the fields read at the end of each action (`settleTape`) and dropped when the fight's tally is kept. PROVISIONAL.
+3404. **The tally's display (rules 1.47 item 4):** the reward screen's small table; the summary's run and per-stage tables. PROVISIONAL.
+3405. **Report a run (rules 1.47 item 5):** one JSON file, builds at the end only (the start sheets are level 1 and are not kept). PROVISIONAL.
+3406. **Items 3400 to 3406 are rules 1.47's.**
