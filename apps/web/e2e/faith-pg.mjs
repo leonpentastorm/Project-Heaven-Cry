@@ -8,7 +8,7 @@
 // Faith 2.2's patron on screen (spec 2.1, 2.2, 2.4-2.6): the FAITH tab's header portrait and its lightbox, the Hymn's face over the
 // head (and greyed on a miss), the Whisper's icon over the head, the Witnessed chip's words, round crops on the voice-line cards,
 // portraits on the pact / switch / grudge / apostasy cards (the grudge's greyed), the story faith tab's header portrait.
-import { chromium, click, BASE, pickAction, pause, settle, fxIdle, watch, watched, watchedGone, traceStart, traceTake, tipOf } from './lib.mjs';
+import { chromium, click, BASE, pickAction, pause, settle, fxIdle, camStill, watch, watched, watchedGone, traceStart, traceTake, tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
@@ -223,7 +223,8 @@ await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
   if (up) {
     const r = await fxRect('[data-phc-faith-face="old_overcast"]'), t = await tokRect(meU.pos);
     ok('square, over the token\'s head, not on it (' + JSON.stringify(r) + ' over ' + JSON.stringify(t) + ')', !!r && !!t && Math.abs(r.w - r.h) < 1 && r.y + r.h <= t.y + 2 && Math.abs(r.x + r.w / 2 - (t.x + t.w / 2)) < 2);
-    const border = await face.first().evaluate((el) => getComputedStyle(el).borderTopColor);
+    // read live, else as the watcher saw it appear (on a loaded machine the face can be gone already: never a fixed wait)
+    const border = (await face.first().evaluate((el) => getComputedStyle(el).borderTopColor, null, { timeout: 2000 }).catch(() => '')) || (await watched(p, 'face'))?.border || '';
     ok('framed in the patron\'s accent (' + border + ')', /rgb\(110, 156, 240\)|rgb\(/.test(border) && border !== 'rgb(0, 0, 0)');
     if (SHOTS) { await pause(p, 250); await p.screenshot({ path: SHOTS + '/faith-hymn-face.png', clip: { x: Math.max(0, t.x - 160), y: Math.max(0, t.y - 200), width: 360, height: 300 } }); }
     const wf = await watchedGone(p, 'face', 30000);
@@ -401,9 +402,13 @@ await pause(p, 300);
   await p.locator('[data-phc-miracle]').waitFor({ state: 'detached', timeout: 20000 }).catch(() => {}); await calm();
   const uE = await myU(), en = uE.faith?.encore;
   ok('a shot, then Encore: the repeat is lent ' + (en?.ap ?? '?') + ' AP with ' + uE.ap + ' AP left (' + (eA || eP || 'prayed') + ')', !eA && !eP && en?.key === 'combat/attack:shot' && en.ap === ap0 - 3 - uE.ap);
-  await pickAction(p, /^Shot/); await pause(p, 150);
+  // on a loaded machine the Miracle's cut-in and the camera can still be moving: wait for both, as a player does, so
+  // the target click lands on the boss's tile; then wait for the panel to say it (never a fixed pause)
+  await fxIdle(p); await pickAction(p, /^Shot/); await pause(p, 150);
   const mapW = gE.combat.map.w, [fx, fy] = fE.pos.split(',').map(Number);
-  await p.locator('.phc-grid button.phc-tok').nth(fy * mapW + fx).click(); await pause(p, 250);
+  const freeShown = () => p.waitForFunction(() => /FREE · ENCORE/.test(document.querySelector('aside')?.textContent || ''), null, { timeout: 20000 }).then(() => true, () => false);
+  await camStill(p); await p.locator('.phc-grid button.phc-tok').nth(fy * mapW + fx).click();
+  if (!(await freeShown())) { await camStill(p); await p.locator('.phc-grid button.phc-tok').nth(fy * mapW + fx).click(); await freeShown(); } // a click the camera slid away from: the player clicks again
   const asideT = await p.locator('aside').first().textContent(), conf = p.getByRole('button', { name: 'Confirm', exact: true }).first();
   ok('the action panel marks the repeat FREE · ENCORE', /FREE · ENCORE/.test(asideT));
   await p.waitForFunction(() => [...document.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Confirm' && !b.disabled), null, { timeout: 20000 }).catch(() => {});
