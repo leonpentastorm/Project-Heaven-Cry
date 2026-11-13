@@ -1180,7 +1180,7 @@
           "id": "coin_for_the_ferry",
           "name": "Coin for the Ferry",
           "tier": 1,
-          "text": "A Downed ally you can see is stabilised and stands up with 5 HP × your Blessing power. The number grows with your level.",
+          "text": "A Downed ally you can see is stabilised and stands up with {=effects.0.value} HP × your Blessing power. The number grows with your level.",
           "target": "downed_ally",
           "effects": [
             {

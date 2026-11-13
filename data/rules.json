@@ -1742,9 +1742,9 @@
         "note": "rules 1.34: an attack made through a Figment (its owner's level; the Figment factor is output.factors.figment)"
       },
       "figment_hp": {
-        "k": 0.45,
+        "k": 0.35,
         "attr": 0,
-        "skill": 0.1,
+        "skill": 0.15,
         "level": null,
         "pair": "figment_hp",
         "provisional": true,
