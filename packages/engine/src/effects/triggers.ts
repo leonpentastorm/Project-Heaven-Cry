@@ -20,7 +20,7 @@ import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems } from './collect';
 import { overworld, rngOf, unitsIn, type Area } from '../kit';
-import { say, dist, displace, emitFx, unitSees, sideSees } from '../combat';
+import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia } from '../magic';
 import { nextToCover } from '../combat';
 import { CONDITION_ROWS, condRowsVersion } from '../condtable';
@@ -184,13 +184,13 @@ function unitField(u: Unit | null, f: string): number {
 /** What a holder has of a resource now: a class resource (guard, momentum…), else a data/actions.json row (MP, Pressure…). */
 const resNow = (ev: Ev, id: string): number => (ev.self.resMax?.[id] != null || !RESOURCES[id] ? resOf(ev.self, id) : resLeft(ev.self, id, ev.h.c));
 /** THE source reader of a number block's `of` (and an amount block's per-point parts) in an item op: res:<id>,
- * event:<field> (amount: the damage or heal; any other field of the payload, true as 1), self:/actor:/target:<field>.
+ * event:<field> (amount: the damage or heal; any other field of the payload, else of its damage source ctx.src: ambush, crit; true as 1), self:/actor:/target:<field>.
  * A plain name is 0 here (a handler counts its own). */
 export function sourceOf(ev: Ev, of: string): number {
   const i = of.indexOf(':'); if (i < 0) return 0;
   const ns = of.slice(0, i), f = of.slice(i + 1);
   if (ns === 'res') return resNow(ev, f);
-  if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount) : ev.ctx[f] ?? ev.ctx[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
+  if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount) : ev.ctx[f] ?? ev.ctx[camel(f)] ?? ev.ctx.src?.[f] ?? ev.ctx.src?.[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
   if (ns === 'self' || ns === 'actor' || ns === 'target') return unitField(unitOf(ev, ns as Who), f);
   return 0;
 }
@@ -322,6 +322,7 @@ export function targetsProblem(t: any): string | null {
     if (f === 'number' ? typeof v !== 'number' : f === 'bool' ? typeof v !== 'boolean' : !f.includes(v as string)) return 'targets.' + k + ' takes ' + (Array.isArray(f) ? f.join(', ') : 'a ' + f);
   }
   if ((t.shape === 'cone' || t.shape === 'line') && typeof t.within !== 'number') return 'a cone or a line needs `within` (its length)';
+  if ((t.shape === 'burst' || t.shape === 'aura') && typeof t.within !== 'number') return 'a burst or an aura needs `within` (its radius)';
   return null;
 }
 /** THE unit set of an op's `targets` for this event (see TargetSet). */
@@ -387,7 +388,7 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   const one = (ev1: Ev, x0: any) => { const x = withNumbers(ev1, x0), r = OPS[x.op].run(ev1, x, x.label || label); ran++; if (typeof r === 'string' && r) parts.push(r); };
   // P5: an op with `targets` runs once for each unit of its set, that unit as its target
   const go = () => { for (const x0 of all) { if (x0.targets) { for (const t of selectUnits(ev, x0.targets)) one({ ...ev, target: t }, { ...x0, target: 'target' }); } else one(ev, x0); } };
-  if (asReaction && !ev.preview) { if (!react(cb, self, { kind: lim.kind, spend: lim.reaction }, go)) return; } else go();
+  if (asReaction && !ev.preview) { if (!react(cb, self, { kind: lim.kind, spend: lim.reaction, event: attackEvent() }, go)) return; } else go();
   if (ev.preview || !ran) return; // a set with nobody in it: nothing happened, nothing is said
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
   if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));

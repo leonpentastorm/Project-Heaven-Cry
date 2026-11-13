@@ -116,7 +116,7 @@ export function reactionDonor(cb: Combat, u: Unit): Unit | null {
 export function canReact(cb: Combat, u: Unit, kind?: ReactKind, n = 1): boolean {
   if (cb.reacting) return false; // a reaction never triggers a reaction (rules 1.28)
   if (kind && reactBlocked(u, kind)) return false;
-  if (n <= 0) return true; // a reaction already paid for (Killzone's second shot), or paid by another (payer)
+  if (n <= 0) return maxReactions(u, cb) > 0; // already paid for (Killzone's second shot) or paid by another (payer): the reactor must still be able to react (not Stunned, Downed)
   return ownReact(cb, u, n) || (n === 1 && !!reactionDonor(cb, u));
 }
 /** The events each unit has already answered (rule 3): transient, within one action; never saved. */

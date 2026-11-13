@@ -393,16 +393,18 @@ register({
       if (statQuery({ u: t }, 'prey_lock', { by: src.by }).add > 0) return; // Rabbit's Foot: a hunter's or Ork's blow stays on its prey
       const pol = policy(h, 'auto');
       if (pol === 'off' || (pol === 'down' && ctx.dmg < t.hp + (t.shield || 0))) return;
-      if (!react(cb, me, { kind: 'protect', event: attackEvent() })) return;
-      resSpend(me, 'guard', 1);
-      const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
-      const dmg = Math.max(1, Math.floor(d.total) - d.armour);
-      ctx.dmg = 0;
-      interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
-      emitFx(cb, 'shove', { unit: me.id, target: t.id, from: me.pos, to: me.pos, ok: true, interpose: true });
-      say(cb, me.name + ' interposes for ' + t.name + ' (1 Guard, ' + resOf(me, 'guard') + ' left) and takes ' + r.amount + ' damage' + (me.hp === 0 ? ' · Downed' : '') + '.');
-      if (me.hp === 0) fxFell(cb, me);
-      interposed = { t: t.id, me: me.id };
+      // the hit it takes for the ally is part of the reaction (rules 1.28: nothing answers it)
+      react(cb, me, { kind: 'protect', event: attackEvent() }, () => {
+        resSpend(me, 'guard', 1);
+        const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
+        const dmg = Math.max(1, Math.floor(d.total) - d.armour);
+        ctx.dmg = 0;
+        interposing = true; let r; try { r = applyDamage(cb, me, dmg, { ...src, shield: true, interposed: true } as any); } finally { interposing = false; }
+        emitFx(cb, 'shove', { unit: me.id, target: t.id, from: me.pos, to: me.pos, ok: true, interpose: true });
+        say(cb, me.name + ' interposes for ' + t.name + ' (1 Guard, ' + resOf(me, 'guard') + ' left) and takes ' + r.amount + ' damage' + (me.hp === 0 ? ' · Downed' : '') + '.');
+        if (me.hp === 0) fxFell(cb, me);
+        interposed = { t: t.id, me: me.id };
+      });
     },
     // The hit's critical injury goes to the Defender who took it, not the ally (audit problem 3, PROVISIONAL).
     injury: (ctx, h) => {

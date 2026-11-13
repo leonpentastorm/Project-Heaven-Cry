@@ -1763,6 +1763,7 @@ def check_targets(t, w):
         elif f == "bool" and not isinstance(v, bool): errors.append(f"{w}: targets.{k} is true or false")
         elif isinstance(f, list) and v not in f: errors.append(f"{w}: targets.{k} takes {f}")
     if t.get("shape") in ("cone", "line") and not isinstance(t.get("within"), (int, float)): errors.append(f"{w}: a cone or a line in targets needs `within`")
+    if t.get("shape") in ("burst", "aura") and not isinstance(t.get("within"), (int, float)): errors.append(f"{w}: a burst or an aura in targets needs `within`")
 def check_trigger_effect(e, w):
     t = e.get("when")
     if t not in TRIG:

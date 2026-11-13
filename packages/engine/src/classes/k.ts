@@ -1413,10 +1413,12 @@ register({
   on: {
     damage_in: (ctx, h) => {
       const u = h.u, t: Unit = ctx.t; if (!u || !onGrid(h) || ctx.phase !== 'shield' || ctx.src?.shared || !alive(u) || !isLinked(h, t) || cs(h.c).shareMode === 'never') return;
-      const left = Math.max(0, ctx.dmg - (t.shield || 0)), take = Math.floor(left / 2); if (take <= 0 || !canReact(ctx.cb, u, 'protect') || !react(ctx.cb, u, { kind: 'protect', event: attackEvent() })) return;
-      ctx.dmg -= take;
-      const r = applyDamage(ctx.cb, u, take, { by: ctx.src.by || null, type: 'shared', shared: true, shield: false, credit: 'none' });
-      say(ctx.cb, u.name + ' takes ' + r.dealt + ' of ' + t.name + '\'s wound through the link (Share).');
+      const left = Math.max(0, ctx.dmg - (t.shield || 0)), take = Math.floor(left / 2); if (take <= 0 || !canReact(ctx.cb, u, 'protect')) return;
+      react(ctx.cb, u, { kind: 'protect', event: attackEvent() }, () => { // the share it takes is part of the reaction (rules 1.28)
+        ctx.dmg -= take;
+        const r = applyDamage(ctx.cb, u, take, { by: ctx.src.by || null, type: 'shared', shared: true, shield: false, credit: 'none' });
+        say(ctx.cb, u.name + ' takes ' + r.dealt + ' of ' + t.name + '\'s wound through the link (Share).');
+      });
     },
     heal_in: (ctx, h) => { if (ctx.by !== h.u || !onGrid(h) || !isLinked(h, ctx.t)) return; ctx.n *= 1.25; },
     on_downed: (ctx, h) => { const u = h.u, v: Unit = ctx.victim; if (!u || !onGrid(h) || !isLinked(h, v) || !alive(u)) return; say(ctx.cb, u.name + ' feels ' + v.name + ' fall through the link (+2 Strain)' + strainUp(ctx.cb, rngOf(h), u, 2, 'a linked ally fell') + '.'); },

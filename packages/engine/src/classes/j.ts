@@ -1148,15 +1148,15 @@ register({
     damage_in: (ctx, h) => {
       const u = h.u, cb = h.cb; if (!u || !cb || ctx.phase !== 'reduce' || ctx.dmg <= 0 || !ctx.hostile || !alive(u)) return;
       // Interpose: an adjacent ally hit by an attack.
-      if (ctx.t !== u && ctx.t.side === u.side && !ctx.t.companion && ctx.src?.type === 'weapon' && adj(ctx.t.pos, u.pos) && !has(u, DEF_BRACE) && resOf(u, 'guard') >= 1 && canReact(cb, u, 'protect') && !INTERPOSE && react(cb, u, { kind: 'protect', event: attackEvent() })) {
+      // (the hit it takes for the ally is part of the reaction: rules 1.28, nothing answers it)
+      if (ctx.t !== u && ctx.t.side === u.side && !ctx.t.companion && ctx.src?.type === 'weapon' && adj(ctx.t.pos, u.pos) && !has(u, DEF_BRACE) && resOf(u, 'guard') >= 1 && canReact(cb, u, 'protect') && !INTERPOSE && react(cb, u, { kind: 'protect', event: attackEvent() }, () => {
         const d = ctx.dmg; ctx.dmg = 0; resSpend(u, 'guard', 1);
         say(cb, u.name + ' interposes for ' + ctx.t.name + ' (1 Guard).');
         INTERPOSE = u.id;
         try { const r = applyDamage(cb, u, d, { ...ctx.src, shield: true }); say(cb, u.name + ' takes ' + r.amount + (u.hp === 0 ? ' · Downed' : '') + '.'); if (u.hp === 0) emitFx(cb, 'down', { unit: u.id, at: u.pos, dead: !!u.dead }); }
         finally { INTERPOSE = null; }
         KNIGHT_COVERED = { t: ctx.t.id, me: u.id };
-        return;
-      }
+      })) return;
       // Reactive Plate: on the Knight.
       if (ctx.t !== u || has(u, DEF_PLATE) || resOf(u, 'guard') <= 0) return;
       if (INTERPOSE !== u.id && !ctx.src?.interposed) { if (!canReact(cb, u, 'protect') || !react(cb, u, { kind: 'protect', event: attackEvent() })) return; } // a hit Interposed for (either Interpose) is free
