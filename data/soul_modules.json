@@ -33,7 +33,7 @@
     "first_pump_free": true,
     "free_pumps_per_turn": 1,
     "swell_no_strain": {
-      "empathy": 7
+      "will_power": 7
     },
     "feeling_pump_ap_extra": 0,
     "pump_ap_after_second": null,

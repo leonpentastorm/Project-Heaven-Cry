@@ -483,7 +483,7 @@ function mostHurt(h: Holder): Character | null {
 const triageStoryHeal = (h: Holder) => amountOf(amountSpecOf('class:medic.triage', 'heal'), null, { who: h.c || null, level: h.c?.level ?? null, mults: [term(num(h, 'rest_mult'), 'time to work')] }).raw;
 function storyHeal(h: Holder, t: Character, n: number): number { const was = t.hp; t.hp = Math.min(maxHp(t), t.hp + Math.floor(n)); return t.hp - was; }
 register({
-  id: 'medic.triage', claims: 'all', dataActions: true,
+  id: 'medic.triage', dataActions: true, // claims nothing: the data's ops are the engine's (only the story half is this lane's)
   actions: [
     {
       id: 'triage_story', label: 'Triage', scope: ['story'], target: 'none', ap: 0,
