@@ -23,13 +23,17 @@ const SV: any = svJ;
 export type Spawn = 'far' | 'near' | 'between' | 'back' | 'central' | 'flanks' | 'split';
 /** One slot of a template: a tier (or a caster archetype, whose tier it takes, or the setting's Boss), how many are
  * required (`req`) or allowed (`max`), from which depth, its weapons' range, a fixed kind, tags, a hidden start. */
-export interface EncounterSlot { tier?: string; caster?: string[]; boss?: boolean; range?: 'ranged' | 'melee' | 'close'; kind?: string; tags?: string[]; hidden?: boolean; req?: number; max?: number; from_depth?: number; spawn?: Spawn }
+export interface EncounterSlot { tier?: string; caster?: string[]; boss?: boolean; /** rules 1.48: the setting's named vault guard */ guard?: boolean; range?: 'ranged' | 'melee' | 'close'; kind?: string; tags?: string[]; hidden?: boolean; req?: number; max?: number; from_depth?: number; spawn?: Spawn }
 /** A template (spec section 3.2, `survival.json templates`). */
 export interface EncounterTemplate { id: string; name: string; nodes: string[]; from_depth: number; weight: number; min_party?: number; kinds?: string[]; slots: EncounterSlot[]; text: string }
 /** A setting, one tile of the world (spec section 3.3, `survival.json settings`). */
-export interface SettingDef { id: string; name: string; kinds: Record<string, number>; boss: { name: string; kind: string; weapon: string; casters: string[]; portrait: string | null }; pool: string; pools?: Record<string, Record<string, string[]>> }
-/** The kind of fight a node holds (the gate is an Elite node every path passes). */
-export type FightKind = 'fight' | 'elite' | 'gate' | 'boss';
+export interface SettingDef { id: string; name: string; kinds: Record<string, number>; boss: { name: string; kind: string; weapon: string; casters: string[]; portrait: string | null }; /** rules 1.48: the vault's named guard (an Elite) */ vault_guard?: { name: string; kind: string; weapon: string }; pool: string; pools?: Record<string, Record<string, string[]>> }
+/** The kind of fight a node holds (the gate is an Elite node every path passes; rules 1.48: the vault's guard). */
+export type FightKind = 'fight' | 'elite' | 'gate' | 'boss' | 'vault_guard';
+/** Rules 1.48: the vault (survival.json `vault`): its guard's budget is an Elite fight's x `guard_factor` (bulk and
+ * pressure); the chest's weapon is `grade_up` grades above the stage's pick ceiling, at most `grade_max` (its credits
+ * are credits.vault x c(d), rewards.ts nodeCredits). */
+export const VAULT: { guard_factor: number; grade_up: number; grade_max: string } = SV.vault;
 
 /** The encounter templates (`survival.json templates`). */
 export const TEMPLATES: EncounterTemplate[] = SV.templates;
@@ -39,7 +43,7 @@ export const SETTINGS: SettingDef[] = SV.settings;
 export const SETTING: Record<string, SettingDef> = Object.fromEntries(SETTINGS.map((s) => [s.id, s]));
 /** The budget's numbers (`survival.json`; every one PROVISIONAL, rules 1.41). */
 export const ENC_BUDGET = {
-  rounds: SV.rounds as { fight: number; fight_early: number; early_depth: number; elite: number; gate: number; boss: number },
+  rounds: SV.rounds as { fight: number; fight_early: number; early_depth: number; elite: number; gate: number; boss: number; vault_guard: number },
   bulkPerCharRound: SV.bulk_per_char_round as number, pressurePerChar: SV.pressure_per_char as number[],
   bulkBand: SV.bulk_band as number, pressureBand: SV.pressure_band as number, maxFoes: SV.max_foes as number[],
   tiers: SV.tiers as Record<string, { bulk: number; pressure: number }>, lagFactor: SV.lag_factor as number,
@@ -79,7 +83,8 @@ export function targetRounds(kind: FightKind, depth: number): number {
 /** The budget for a party of N at a node (rules 17 and 19): the bulk target and the pressure cap, in SE. */
 export function budgetFor(n: number, kind: FightKind, depth: number, stage: number): { bulk: number; pressure: number; rounds: number } {
   const s = Math.max(1, stage) - 1, rounds = targetRounds(kind, depth);
-  return { rounds, bulk: ENC_BUDGET.bulkPerCharRound * n * rounds * (1 + ENC_BUDGET.stage.bulk * s), pressure: at(ENC_BUDGET.pressurePerChar, n - 1) * n * (1 + ENC_BUDGET.stage.pressure * s) };
+  const f = kind === 'vault_guard' ? VAULT.guard_factor : 1; // rules 1.48: the vault's guard, stronger than an Elite of the depth
+  return { rounds, bulk: ENC_BUDGET.bulkPerCharRound * n * rounds * (1 + ENC_BUDGET.stage.bulk * s) * f, pressure: at(ENC_BUDGET.pressurePerChar, n - 1) * n * (1 + ENC_BUDGET.stage.pressure * s) * f };
 }
 
 /** One foe of a composed fight: what `startCombat` takes, and what it cost and where it starts. */
@@ -96,7 +101,7 @@ export interface Encounter {
 /** The fight's inputs (rule 15). */
 export interface EncounterIn { levels: number[]; node: { id: string; depth: number; kind: string; gate?: boolean }; stage: number; setting: string; seed: string; last?: string | null }
 
-const kindOfNode = (node: EncounterIn['node']): FightKind => (node.gate ? 'gate' : node.kind === 'elite' || node.kind === 'boss' ? node.kind : 'fight');
+const kindOfNode = (node: EncounterIn['node']): FightKind => (node.gate ? 'gate' : node.kind === 'elite' || node.kind === 'boss' || node.kind === 'vault_guard' ? node.kind : 'fight');
 /** The templates a node may take (rule 21 a), in the order they are tried: the rolled one first, then the others by
  * weight (ties by data order). Never the last fight's, unless it is the only one. */
 export function templatesFor(rng: Rng, kind: FightKind, depth: number, n: number, setting: SettingDef, last?: string | null): EncounterTemplate[] {
@@ -179,11 +184,13 @@ export function composeEncounter(inp: EncounterIn): Encounter {
 /** A slot's foe made whole (rule 21 e): its weapon from the setting's pool by tier and range (a caster's own; the Boss's
  * the setting's), its kind, tags, level, spawn and scale. Never a Celestial. */
 function armed(p: Pick, rng: Rng, setting: SettingDef, fightKind: string, n: number, scaleHp: number, scaleDmg = 1): EncounterFoe {
-  const s = p.slot, kind = s.boss ? setting.boss.kind : s.kind || fightKind, sh = shareOf(p.tier, n);
+  const s = p.slot, vg = s.guard ? setting.vault_guard : undefined, kind = s.boss ? setting.boss.kind : vg ? vg.kind : s.kind || fightKind, sh = shareOf(p.tier, n);
   let weapon: string, name: string, caster = p.caster;
   if (s.boss) {
     weapon = setting.boss.weapon; name = setting.boss.name;
     const cs = setting.boss.casters || []; if (cs.length) { const k = die(rng, cs.length + 1) - 1; if (k < cs.length) caster = cs[k]; }
+  } else if (vg) { // rules 1.48: the vault's named guard
+    weapon = vg.weapon; name = vg.name;
   } else {
     const pool = (setting.pools?.[p.tier] || SV.pools[p.tier] || SV.pools.minion)[s.range || 'ranged'] || SV.pools.minion.ranged;
     weapon = pool[die(rng, pool.length) - 1];

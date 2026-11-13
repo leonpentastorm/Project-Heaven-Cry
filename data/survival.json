@@ -19,7 +19,7 @@
     "elite_up": { "per": 1, "max": 3 },
     "provisional": true
   },
-  "rounds": { "about": "Rules 1.41 (spec rule 17): the target rounds R of a fight by node kind; a plain fight at depth early_depth or less is fight_early.", "fight": 5, "fight_early": 4, "early_depth": 2, "elite": 6.5, "gate": 6.5, "boss": 9, "provisional": true },
+  "rounds": { "about": "Rules 1.41 (spec rule 17): the target rounds R of a fight by node kind; a plain fight at depth early_depth or less is fight_early.", "fight": 5, "fight_early": 4, "early_depth": 2, "elite": 6.5, "gate": 6.5, "boss": 9, "vault_guard": 6.5, "provisional": true },
   "bulk_per_char_round": 0.25,
   "pressure_per_char": [1.2, 1.25, 1.3, 1.3],
   "bulk_band": 0.15,
@@ -42,9 +42,9 @@
     "provisional": true
   },
   "map_size": { "about": "Rules 1.41 (spec rule 22): the fight's map by its units (the party and the foes): up to `units`, a square of `size` tiles cropped from the middle of the open ground; the squad starts in the columns `squad_cols` (the west edge).", "steps": [ { "units": 6, "size": 16 }, { "units": 10, "size": 20 }, { "units": 99, "size": 26 } ], "squad_cols": [1, 2], "provisional": true },
-  "xp": { "about": "Rules 1.41 (spec section 3.1): f(d) = base + per_depth x (d - 1) to each character; an Elite x elite, the Boss x boss, a cache x cache.", "base": 100, "per_depth": 22, "elite": 1.5, "boss": 2, "cache": 0.25, "provisional": true },
-  "credits": { "about": "Rules 1.41 (spec section 3.1): c(d) = base + per_depth x d to each character; an Elite x elite, the Boss x boss, a cache x cache.", "base": 80, "per_depth": 20, "elite": 1.5, "boss": 2, "cache": 1.5, "provisional": true },
-  "ammo_pack": { "about": "Rules 1.41 (spec rule 23): after a won fight (or at a cache) each character gets this many magazines' worth of rounds for every gun it carries, and `cores` standard cores if it carries a focus of a kind in `core_doors`.", "fight": 1, "elite": 2, "boss": 3, "cache": 1, "cores": 1, "core_doors": ["evoker", "visualizer"], "provisional": true },
+  "xp": { "about": "Rules 1.41 (spec section 3.1): f(d) = base + per_depth x (d - 1) to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault.", "base": 100, "per_depth": 22, "elite": 1.5, "boss": 2, "cache": 0.25, "vault_guard": 1.5, "vault": 0, "provisional": true },
+  "credits": { "about": "Rules 1.41 (spec section 3.1): c(d) = base + per_depth x d to each character; an Elite x elite, the Boss x boss, a cache x cache; rules 1.48: the vault's guard x vault_guard, its chest x vault.", "base": 80, "per_depth": 20, "elite": 1.5, "boss": 2, "cache": 1.5, "vault_guard": 1.5, "vault": 2, "provisional": true },
+  "ammo_pack": { "about": "Rules 1.41 (spec rule 23): after a won fight (or at a cache) each character gets this many magazines' worth of rounds for every gun it carries, and `cores` standard cores if it carries a focus of a kind in `core_doors`.", "fight": 1, "elite": 2, "boss": 3, "cache": 1, "vault_guard": 2, "vault": 1, "cores": 1, "core_doors": ["evoker", "visualizer"], "provisional": true },
   "rewards": {
     "about": "Rules 1.41 (spec rule 26): the weapon pick of `offer` weapons after a won fight, the first for the character's own door or weapon category; rarity by node kind, capped by `ceiling` (by stage, the last repeats); price at most base + per_depth x d + per_stage x (s - 1), x elite or boss; or credits instead, instead_rate of the cheapest offer's price.",
     "offer": 3,
@@ -54,7 +54,7 @@
       "boss": { "masterwork": 70, "relic": 25, "celestial": 5 }
     },
     "ceiling": ["fine", "masterwork", "relic"],
-    "price_band": { "base": 300, "per_depth": 150, "per_stage": 1000, "elite": 1.25, "boss": 1.5 },
+    "price_band": { "base": 300, "per_depth": 150, "per_stage": 1000, "elite": 1.25, "boss": 1.5, "vault_guard": 1.25, "vault": 1.5 },
     "instead_rate": 0.5,
     "provisional": true
   },
@@ -67,6 +67,7 @@
     "event": "A crossroads. Someone here will deal, and each trade has its price. Take one each, or walk on.",
     "cache": "A cache: credits, ammunition, a little experience, and a pick of three pieces of kit, most of them made to last.",
     "rest": "A safe place: everyone is healed in full and a new session begins. Each of you may take one small training before you move on.",
+    "vault": "The vault, its guard down. Each of you takes credits and a pick of three weapons a grade above anything this stage sells; then back onto the trail you left.",
     "provisional": true
   },
   "tips": {
@@ -82,6 +83,8 @@
     "rest": "A rest: everyone healed in full, a new session and one small training each. Costs a node not spent fighting or shopping.",
     "cache": "A cache: credits, ammunition, a little XP and a pick of kit, no fight.",
     "event": "A crossroads: a trade with a cost, or walk on.",
+    "vault_guard": "The trail forks: a guarded vault. A fight harder than an Elite's, against a named guard; it leads nowhere but to the vault, and back. Skip it if you like.",
+    "vault": "The vault: credits and a pick of three weapons a grade above this stage's, no fight. Then back onto the trail.",
     "provisional": true
   },
   "grade_up": {
@@ -319,50 +322,58 @@
       "slots": [ { "tier": "boss", "boss": true, "req": 1, "spawn": "central" },
                  { "tier": "soldier", "range": "ranged", "max": 3, "spawn": "far" },
                  { "tier": "minion", "max": 4, "spawn": "far" } ],
-      "text": "The tile's champion and its guard.", "provisional": true }
+      "text": "The tile's champion and its guard.", "provisional": true },
+    { "id": "vault_watch", "name": "The vault's guard", "nodes": ["vault_guard"], "from_depth": 1, "weight": 1,
+      "slots": [ { "tier": "elite", "guard": true, "req": 1, "spawn": "central" },
+                 { "tier": "soldier", "range": "ranged", "max": 4, "spawn": "far" },
+                 { "tier": "minion", "max": 4, "spawn": "far" } ],
+      "text": "The vault's guard and its watch, between you and the strongbox.", "provisional": true }
   ],
   "settings": [
     { "id": "ahoc", "name": "AHOC chapter outpost", "kinds": { "human": 5, "robot": 3, "drone": 2 },
-      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "discipline", "line": "A chapter outpost of the Command: bunkers, gates, crates, and a warframe kept for bad days.", "backdrop": "survival-backdrop-ahoc-a", "awaiting": [], "provisional": true },
+      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "vault_guard": { "name": "Strongroom warden", "kind": "human", "weapon": "adamantile_battle_rifle" }, "pool": "discipline", "line": "A chapter outpost of the Command: bunkers, gates, crates, and a warframe kept for bad days.", "backdrop": "survival-backdrop-ahoc-a", "awaiting": [], "provisional": true },
     { "id": "city", "name": "Central City back streets", "kinds": { "human": 5, "crawler": 3, "drone": 2 },
-      "boss": { "name": "Crawler elder", "kind": "crawler", "weapon": "adamantile_greatsword", "casters": ["heart_sovereign"], "portrait": "elite-crawler" }, "pool": "streets", "line": "The back streets under Central City: alleys, stalls, and the Crawlers who live below.", "backdrop": "survival-backdrop-city-a", "awaiting": ["its own enemies (Crawlers are human and drone stand-ins by name)"], "provisional": true },
+      "boss": { "name": "Crawler elder", "kind": "crawler", "weapon": "adamantile_greatsword", "casters": ["heart_sovereign"], "portrait": "elite-crawler" }, "vault_guard": { "name": "The fence's bruiser", "kind": "crawler", "weapon": "war_axe" }, "pool": "streets", "line": "The back streets under Central City: alleys, stalls, and the Crawlers who live below.", "backdrop": "survival-backdrop-city-a", "awaiting": ["its own enemies (Crawlers are human and drone stand-ins by name)"], "provisional": true },
     { "id": "field", "name": "Daggerfall-type battlefield", "kinds": { "ork": 4, "human": 3, "beast": 2, "cursed": 1 },
-      "boss": { "name": "Ork warlord", "kind": "ork", "weapon": "ork_rip_saw", "casters": [], "portrait": null }, "pool": "war", "line": "An old battlefield of trenches and craters, where orks and warped beasts still fight over nothing.", "backdrop": "survival-backdrop-field-a", "awaiting": ["the Boss portrait", "its own enemies (orks, beasts and the cursed are stand-ins by name)"], "provisional": true },
+      "boss": { "name": "Ork warlord", "kind": "ork", "weapon": "ork_rip_saw", "casters": [], "portrait": null }, "vault_guard": { "name": "Ork loot-keeper", "kind": "ork", "weapon": "brigade_auto_shotgun" }, "pool": "war", "line": "An old battlefield of trenches and craters, where orks and warped beasts still fight over nothing.", "backdrop": "survival-backdrop-field-a", "awaiting": ["the Boss portrait", "its own enemies (orks, beasts and the cursed are stand-ins by name)"], "provisional": true },
     { "id": "works", "name": "Machine works and drone foundry", "kinds": { "robot": 4, "machine": 3, "drone": 3 },
-      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "machine", "line": "A machine works and drone foundry that never stopped building, long after anyone asked it to.", "backdrop": "survival-backdrop-works-a", "awaiting": ["its own enemies (machines are stand-ins by name)"], "provisional": true },
+      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "vault_guard": { "name": "Vault press", "kind": "machine", "weapon": "brigade_auto_shotgun" }, "pool": "machine", "line": "A machine works and drone foundry that never stopped building, long after anyone asked it to.", "backdrop": "survival-backdrop-works-a", "awaiting": ["its own enemies (machines are stand-ins by name)"], "provisional": true },
     { "id": "shrine", "name": "Shrine and cathedral district", "kinds": { "human": 4, "cursed": 3, "upper_realm": 2 },
-      "boss": { "name": "Upper-realm patch", "kind": "upper_realm", "weapon": "adamantile_greatsword", "casters": ["sigil_magister", "heart_sovereign"], "portrait": null }, "pool": "faith", "line": "A shrine and cathedral district, where the cursed pray and something from higher up answers.", "backdrop": "survival-backdrop-shrine-a", "awaiting": ["the Boss portrait", "its own enemies (the cursed and the upper realm are stand-ins by name)"], "provisional": true },
+      "boss": { "name": "Upper-realm patch", "kind": "upper_realm", "weapon": "adamantile_greatsword", "casters": ["sigil_magister", "heart_sovereign"], "portrait": null }, "vault_guard": { "name": "Reliquary warden", "kind": "cursed", "weapon": "katana" }, "pool": "faith", "line": "A shrine and cathedral district, where the cursed pray and something from higher up answers.", "backdrop": "survival-backdrop-shrine-a", "awaiting": ["the Boss portrait", "its own enemies (the cursed and the upper realm are stand-ins by name)"], "provisional": true },
     { "id": "rim", "name": "Rim station", "kinds": { "robot": 4, "drone": 3, "machine": 2, "human": 1 },
-      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "survival", "line": "A station on the rim, all bulkheads and containers, holding its air against the dark.", "backdrop": "survival-backdrop-rim-a", "awaiting": ["its own enemies (machines are stand-ins by name)"], "provisional": true }
+      "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "vault_guard": { "name": "Bonded-store sentinel", "kind": "robot", "weapon": "ccec_marksman_rifle" }, "pool": "survival", "line": "A station on the rim, all bulkheads and containers, holding its air against the dark.", "backdrop": "survival-backdrop-rim-a", "awaiting": ["its own enemies (machines are stand-ins by name)"], "provisional": true }
   ],
+  "vault": { "about": "Rules 1.48 (Leon, 13 Nov): the one dead end of a map. Its guard's fight has an Elite fight's budget x guard_factor (bulk and pressure; the template vault_watch, the setting's named vault_guard); its chest gives each character credits (`credits.vault` x c(d)) and a pick of three weapons or foci at grade_up grades above the stage's pick ceiling, at most grade_max (stage 1 Masterwork, from stage 2 Relic), or credits instead.", "guard_factor": 1.3, "grade_up": 1, "grade_max": "relic", "provisional": true },
   "map": {
+    "about": "Rules 1.48 (Leon, 13 Nov: lanes; survival-spec rules 7 to 9, section 3.1): the path map. From the start every lane can be chosen; a lane is a run of nodes with exactly one way forward; lanes meet only at junctions (two or three neighbouring lanes, `junction.sizes`, merge into one node and split again), at the gate (every lane), at the final junction (every lane, before row 14's shop and rest) and at the Boss. A segment, a lane's run between two meeting nodes, is `junction.segment` nodes long and takes a theme (`themes`: what it holds, placed where the rules allow; `fill`: what fills the rest, none: fights) distinct from its siblings', so a party picks a lane by reading ahead. `junction_kinds`: what a junction node rolls. `every_route`: kinds every route passes in depths 1 to final_row; `guarantees`: the reference route's windows; `shop_gap`: a shop within that many nodes of the start and of every junction on some route (and the reference route's shops never further apart). One vault a map: a spur of a guard fight and a chest off an edge lane node (`vault.edge`) in `vault.depths`.",
     "rows": 15,
     "gate_row": 8,
+    "final_row": 13,
     "shop_rest_row": 14,
     "boss_row": 15,
-    "width": {
-      "min": 2,
-      "max": 4,
-      "rows": { "1": [2, 3], "2": [2, 3] },
-      "start": { "2": 1, "3": 1 },
-      "widen": 0.2,
-      "widen_two": 0.05
-    },
-    "links": 2,
-    "reach": 1,
+    "lanes": { "3": 1, "4": 1 },
+    "junction": { "sizes": { "2": 1, "3": 1 }, "segment": [2, 4] },
     "fight_rows": [1],
-    "row_one_of": { "row": 2, "kinds": { "cache": 8, "training": 8 } },
-    "kind_weights": { "fight": 60, "elite": 10, "shop": 10, "forge": 8, "training": 8, "shrine": 6, "rest": 6, "cache": 8, "event": 8 },
+    "junction_kinds": { "fight": 6, "shop": 2, "rest": 2, "event": 1, "cache": 1, "shrine": 1, "training": 1 },
+    "themes": [
+      { "id": "hard", "name": "The hard road", "weight": 3, "holds": ["elite"] },
+      { "id": "market", "name": "The market road", "weight": 3, "holds": ["shop"], "fill": { "fight": 4, "cache": 1 } },
+      { "id": "smithy", "name": "The armourer's road", "weight": 2, "holds": ["forge"] },
+      { "id": "drill", "name": "The drill road", "weight": 2, "holds": ["training", "shrine"] },
+      { "id": "quiet", "name": "The quiet road", "weight": 2, "holds": ["rest"], "fill": { "fight": 4, "event": 1 } }
+    ],
     "from_depth": { "elite": 4 },
     "not_rows": { "elite": [7, 9], "shop": [13], "rest": [13] },
+    "every_route": ["shop", "rest"],
     "guarantees": [
-      { "kind": "shop", "rows": [3, 7], "until": 2 },
-      { "kind": "shop", "rows": [9, 12], "until": 8 },
-      { "kind": "rest", "rows": [3, 12], "until": 2 },
-      { "kind": "forge", "rows": [3, 13], "until": 2 }
+      { "kind": "shop", "rows": [3, 7] },
+      { "kind": "shop", "rows": [9, 12] },
+      { "kind": "rest", "rows": [3, 12] },
+      { "kind": "forge", "rows": [3, 13] }
     ],
     "shop_gap": 6,
-    "words": { "fight": "Fight", "elite": "Elite", "boss": "Boss", "shop": "Shop", "forge": "Forge", "training": "Training", "shrine": "Shrine", "rest": "Rest", "cache": "Cache", "event": "Crossroads" },
+    "vault": { "depths": [6, 10], "edge": true },
+    "words": { "fight": "Fight", "elite": "Elite", "boss": "Boss", "shop": "Shop", "forge": "Forge", "training": "Training", "shrine": "Shrine", "rest": "Rest", "cache": "Cache", "event": "Crossroads", "vault_guard": "Vault guard", "vault": "Vault" },
     "expect": {
       "about": { "nodes": 40, "fight": 15, "elite": 4, "shop": 4, "forge": 3, "training": 2, "shrine": 2, "rest": 3, "cache": 2.5, "event": 2, "boss": 1 },
       "tolerance": { "default": 1.5, "fight": 2, "nodes": 3 },
