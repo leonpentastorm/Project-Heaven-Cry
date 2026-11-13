@@ -205,5 +205,6 @@ they extend (so in step 1b, with P8 and the batch rows), and each needs its test
 **One thing the Bonds rewrite found that the frame's weapon-neutral rule must settle before step 7:** its to-hit
 bonus against a Bonded enemy reaches weapon attacks only, because Sigil and Outburst rolls do not go through the
 `attack` hook. Either those rolls are brought onto the same roll primitive's hook (the lead's recommendation: one
-place where "a roll to hit this target" can be changed, in `rolls.ts`), or the bonus is stated as weapon-only. Until
-ruled, the spec says weapon attacks.
+place where "a roll to hit this target" can be changed, in `rolls.ts`), or the bonus is stated as weapon-only. **Ruled by
+Leon, 13 Nov: one hook.** Step 1b brings Sigil and Outburst attack rolls onto the roll primitive's hook; the Bonds
+spec's to-hit bonus then reads "any attack roll against a Bonded enemy".

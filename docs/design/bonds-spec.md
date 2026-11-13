@@ -294,3 +294,5 @@ An enemy face (a condition row; the number from `feelings.json given_foe`): `{"i
 1. **The Attuner's name and look** *(Suggested; the lead's suggestion: filaments from a core on the back of the hand to each fingertip, one lit a Bond)*; assumed meanwhile: "Attuner", the icon waits.
 2. **The Ledger's name** *(Suggested)*; assumed meanwhile: "The Ledger".
 3. **The Outburst-and-Tending mixed sheet** may read about 140 against `outburst_steady` 135 (section 7): recommend measuring before any change; assumed meanwhile: no change.
+
+**Settled by Leon, 13 Nov (after this rewrite):** the to-hit bonus against a Bonded enemy applies to EVERY attack roll (weapon, Sigil, Outburst), through the one roll hook built in step 1b: wherever this spec says "weapon attacks only", read "any attack roll"; the Ledger at rank I, self-healing once a turn: accepted; the Channeler who also tends is measured when built; the focus is named the Attuner.

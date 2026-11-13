@@ -497,3 +497,11 @@ exactly as they are.** They are already what a faction focus looks like in rules
 it frees the hand the standard glove takes. When the advanced system is designed, these seven are its starting stock
 and that freed hand is its first number to price; until then no new one is added, and none counts as the Visualizer
 or the Bond focus.
+
+**Settled by Leon, 13 Nov (on the Bonds rewrite):** (1) **one hook for every roll to hit:** Sigil and Outburst
+attack rolls are brought onto the same roll primitive's hook as weapon attacks (`rolls.ts`), so a to-hit bonus such
+as the one against a Bonded enemy reaches every way of attacking; built in step 1b; (2) the Ledger is the Mender's
+rank I move (Inspire to II, Brimming to III; Field Surgery is anyone's at Empathy 3); (3) healing yourself is once a
+turn; (4) a Channeler who also tends (about 140 against the Outburst's 135) is measured when built, not refitted on
+paper. **The Bond focus is the Attuner** (Leon: "sounds cool, keep it"): the fourth standard glove, fine filaments
+from a core on the back of the hand to each fingertip, one lit a Bond, in Insight's ink.
