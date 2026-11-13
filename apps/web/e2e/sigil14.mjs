@@ -99,6 +99,9 @@ async function confirmAndCatch(name, at = [120, 320, 650]) {
   const b = confirmBtn(); const en = await b.isEnabled().catch(() => false);
   if (en) await b.click(); else console.log('  confirm is disabled: ' + (await b.textContent().catch(() => '')));
   let peak = 0, t = 0;
+  // the effects start when the action has landed, which on a loaded machine is later than the first sample: wait for
+  // the first effect node (or 15 s) before the timed samples (a sample before it came read "peak 0 nodes" beside others)
+  if (en) peak = await p.waitForFunction(() => document.querySelector('.phc-fx-layer')?.childElementCount || 0, null, { timeout: 15000, polling: 30 }).then((h) => h.jsonValue(), () => 0);
   for (const ms of at) { await pause(p, Math.max(0, ms - t)); t = ms; peak = Math.max(peak, await fxCount()); await snap(name + '-' + ms); }
   return { en, peak, events: await fxSince(n0), log: await logSince(l0) };
 }
