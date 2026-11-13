@@ -4338,6 +4338,97 @@ icon (`art/icons/perks/bulwark.png`), its numbers and a saved character's perk a
 choice and was not used: the RAISE Grand form is "Ramparts". `tools/validate.py` now refuses a perk named as a class,
 as it already refused an archetype. Item 1812.
 
+## Rules revision 1.32: Shadow and the Operative (Classes 3.0, step 6)
+
+Built on 13 Nov 2026 from `docs/design/shadow-spec.md` (binding; its "Settled" notes override its body) and
+`docs/design/rev4-weapon-neutral-audit.md` 4.4. It overrides every body line on the Ambush multiplier, Ingenuity's
+per-point line and unlocks, and the Infiltrator's moves that says otherwise (rules 1.3 "combat Hidden", the class table
+of rules 1.10, rules 1.29's Operative). The class id stays `infiltrator`, its display name the Operative. Every number
+here is PROVISIONAL (items 1950 to 1969).
+
+### 1. Sight, in the engine's words
+
+**Hidden** is the flag (`u.hidden`; the condition row `hidden`). **In view**: some living, standing enemy's eyes reach
+your tile, Hidden or not. **Seen**: not Hidden and in view. **Can't see you** (a target): its eyes don't reach your
+tile, or you are Hidden. Data reads these through the sight words (`self_sight`, `actor_sight`, `target_sight`) and
+`target_sees_self` (false while you are Hidden). A Silent weapon attacks without ending Hidden, as before.
+
+### 2. The door: the Shadow meter (anyone with Ingenuity)
+
+1. **The meter** (`res.shadow`, `data/rules.json shadow`): cap 1 at Ingenuity 1, 2 at 5, 3 at 7 (`cap_by_points`). It
+   starts each fight at 0 and is 0 when you go Down and when the fight ends. Built like Guard: a pool for anyone with
+   the skill. Item 1950.
+2. **Gains** (each +1; the door item, `skills.json ingenuity.1`): (a) your turn ends Hidden and you made no attack this
+   turn (an attack rolled marks the turn: a hit, a miss or a shot cover stops); (b) once a turn, a move of your own
+   (a move or a Sprint, never a push) that starts and ends next to cover, made Hidden and ending out of view; (c) your
+   hit drops an enemy and, after the attack, you are not Seen. **At most 2 a turn** from (a) to (c) together
+   (`door_gains_per_turn`); a gain at the cap is lost. Item 1951.
+3. **Losses:** at the start of each of your turns, −1 while you are Seen; a Break spends it all; Fade spends 2. Item 1952.
+4. **The Break** (Ingenuity 1): a toggle on any weapon attack or weapon technique of yours (a shot, an Aimed Shot, a
+   Burst, a melee technique, a throw), never a spell, prayer, Call or reaction. It needs Hidden and 1 Shadow. Every roll
+   of that one action takes **one** multiplier `shadow` = 1 + **0.15 a point spent** (`per_point`) + **0.5 on a fresh
+   ambush** (`ambush_bonus`: the first attack of a Hidden entry) + **0.15 against an enemy you Marked**
+   (`marked_bonus`). It stands in place of the Ambush multiplier (the two never multiply). When the action ends the
+   Shadow is spent and you are revealed, even with a Silent weapon. The Elite and Boss guard holds every roll of it. Item 1953.
+5. **The Ambush multiplier is a flat ×1.5** (1 + `ambush_bonus`): Ingenuity's +5% a point is gone. Crits on 19-20 come
+   with the ambush, as before. Item 1954.
+6. **A silent attack from Hidden** lets its target, if it is still up and its eyes reach your tile, roll to spot you at
+   once (the spotting roll, for that one looker; no reaction spent). Item 1955.
+
+### 3. The verbs (`data/shadow.json`; door verbs, anyone whose Ingenuity reaches them)
+
+Every verb but Lift needs you Hidden; "unseen" means the target can't see you. Saves are against 12 + your Ingenuity
+strength. Built:
+
+| Verb | Opens | Cost | Does |
+| --- | --- | --- | --- |
+| Lift | 3 | 2 AP | an adjacent enemy's grenade, else a spare magazine, goes into the pile on your tile; if it can see you, a Body save keeps it |
+| Read Intent | 3 | 1 AP | an unseen enemy within 8 is Read: your side sees its next action until its turn ends |
+| Cut the Strap | 3 | 1 AP, 1 Shadow | an adjacent unseen enemy is Disarmed (its save) |
+| Fade | 5 | 2 AP, 2 Shadow | even while Seen: step to the nearest tile next to cover within your Movement (one out of view first) and become Hidden (a new entry). Not while Marked |
+| Open Seam | 5 | 1 AP, 1 Shadow | an unseen enemy within 8 is **Exposed** (Defense −2, 1 round) |
+| Foul the Action | 5 | 1 AP, 1 Shadow | an adjacent unseen enemy's weapon is Lowered (its save) |
+| Still Breath | 5 | passive | spot rolls against you are −2 while you stand next to cover |
+| Timing | 7 | 1 AP, 1 Shadow | an unseen enemy within 8 is **Off Balance** (−1 AP on its next turn); never the same enemy two rounds running |
+| Plant | 7 | 2 AP, 1 Shadow | an adjacent unseen enemy is Marked by you |
+| Disable | 7 | 2 AP, 1 Shadow | an adjacent machine, robot, turret or drone is Stunned 1 round (its save) |
+| Hijack | 9 | 2 AP, 2 Shadow | an adjacent machine, robot, turret or drone is Puppeted 1 round (its save) |
+
+**Not built in this step** (listed in `shadow.json pending` with the reason; item 1966): Parting Cut, Decoy, Close
+Quarters, Vault, Shadow Run, Case, Pick, Douse, Rig.
+
+### 4. The Operative (`infiltrator`; Perception)
+
+1. **Tradecraft** (class gain): starts each fight with 1 Shadow (`operative_start`), and the meter holds 1 more
+   (`operative_cap_add`: a class that brings Shadow); its Analyze costs 1 AP and puts **Read** on the target (the
+   Trickster's Read folded in); once a turn, Analyzing an enemy that can't see it gives 1 Shadow. Item 1956.
+2. **Rank I:** Mark (kept: 1 AP, an enemy you see is Marked to the fight's end, 3 at once; a Break on it counts the
+   0.15 above); **Vanish** (kept, now data only: 1 AP once a turn, out of view, become Hidden, a new entry; not while
+   Marked). Item 1957.
+3. **Rank II:** **Toxin** (kept: 1 AP, a dose of `res.toxins`, restocked at rest) now coats **any** weapon, a gun's next
+   rounds too; a Break with it adds the Shadow it spends to the save's TN. **Sabotage** (moved from rank III): a machine
+   within 1 is Stunned **1 round** (`numbers.rounds`; was 2), no save and no Shadow; or a barricade within 1 breaks;
+   or rig your tile (unchanged). Item 1958.
+4. **Rank III:** **Execution** (kept) never fires on a hit the Elite and Boss guard held, nor on an Elite or Boss that
+   was at full HP when the action began, whatever the level gap. **Called Shot** (moved in from the Skirmisher's pool,
+   key `gunslinger.called_shot`): with any weapon (a shot, a throw, or a strike in reach), −2 to hit, **no −2 while the
+   target can't see you**. Item 1959.
+5. **Field Fix leaves the class** (its key `infiltrator.field_fix` stays, in the move pool, shelved, for the Rigger in
+   step 8). Item 1960.
+
+### 5. The other side
+
+Enemies carry no Shadow meter. The Elite and Boss guard holds every roll of a Break; Execution never finishes a
+guard-held or full-HP Elite in the same action (item 1959). Enemies tagged **`skulk`** (`FOE_TAGS`: Vermin, Minions and
+Soldiers) Hide when out of view with no shot, and ambush from it at the flat ×1.5 (item 1961). The search of the
+last-seen tile is the 0.25.0 rule, unchanged.
+
+### 6. Balance
+
+The line: **a three-turn window with one Break, the Operative all in = 125%** of a rifle-turn (the door all in
+125 ÷ 1.15 = 109, the door at a normal share 87; `rules.json balance.ceilings.shadow`). The dial is
+`rules.json shadow.per_point`, fitted only after measuring (not refitted in this step). Items 1962 to 1965.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -7239,3 +7330,23 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1811. **A free move priced at 0 AP by an item keeps the move bank (rules 1.30):** tiles walked on a move an item made free are not taken from the tiles banked earlier in the turn. PROVISIONAL.
 1812. **The perk Bulwark renamed Stonewall (rules 1.30 section 4; beside items 1757 and 1758; the lead's call on the name, Leon to confirm; Suggested):** the Durability perk `bulwark` shows as Stonewall (display name only: id, icon, numbers and saves unchanged), because the class `defender` is now the Bulwark. The lead suggested Rampart, with Stonewall if Rampart was taken; the RAISE Grand form is "Ramparts", so Stonewall. The validator refuses a perk whose display name is a class's.
 1813. **Fire Discipline's discount, the lead's ruling (rules 1.30; 13 Nov 2026; supersedes the discount of item 1804; PROVISIONAL):** once a turn, on your own turn, a weapon technique whose own price with the weapon is 3 AP or more (`tech_ap_at_least` 3) costs 1 AP less: a Burst 3 → 2 with any gun, a long rifle's Burst 4 → 3, a 3-AP melee technique 3 → 2. The free techniques everyone has (techniques.json `free`: Shot, Aimed Shot, Cut, Overwatch, Pull Out; with no technique a shot, an aimed shot, a blow or a throw) are never cheaper, whatever they cost (the long rifle's 3-AP Shot, a heavy blade's 3-AP blow). The Aimed +1 to hit and the Heat stay as item 1804. Why: as first built (the first attack of each turn 1 AP less) the Skirmisher all in measured 173% of a rifle-turn against the 145 ceiling and a Faith dabbler bought a Whisper with the saved AP every turn. **A reading made by the builder (the lead can reverse it):** "a weapon technique" excludes the free techniques, so the Aimed Shot (3 AP) is not cut; with it cut the Skirmisher measured 164 / 180 / 165 / 170 (mean 170, outside 145 ± 12%) at levels 1 / 5 / 10 / 20; as built 164 / 168 / 166 / 145 (mean 161, inside; 6 fights a cell). New closed-list predicates `free_tech` and `tech_ap_at_least` (the attack's events carry `techAp`).
+1950. **The Shadow meter (rules 1.32 section 2.1; `rules.json shadow.cap_by_points` {1: 1, 5: 2, 7: 3}):** anyone with Ingenuity has `res.shadow`, 0 to its cap; 0 at the start of a fight, when Downed and at the fight's end. PROVISIONAL.
+1951. **Shadow's gains (rules 1.32 section 2.2; `door_gains_per_turn` 2):** +1 at a turn's end Hidden with no attack rolled; +1 once a turn for a move or Sprint from cover to cover, Hidden, ending out of view; +1 for a kill after which you are not Seen; at most 2 a turn together; a gain at the cap is lost. PROVISIONAL.
+1952. **Shadow's losses (rules 1.32 section 2.3):** −1 at the start of your turn while Seen; a Break spends all; Fade spends 2. PROVISIONAL.
+1953. **The Break (rules 1.32 section 2.4; `per_point` 0.15, `ambush_bonus` 0.5, `marked_bonus` 0.15):** a toggle on a weapon attack or technique from Hidden with 1 Shadow or more: one multiplier `shadow` = 1 + 0.15 a point spent + 0.5 on a fresh ambush + 0.15 against a Marked enemy, in place of the Ambush multiplier (a general field `replaces` on the item op `damage_mult`); spent and revealed when the action ends. PROVISIONAL.
+1954. **The Ambush multiplier is a flat ×1.5 (rules 1.32 section 2.5):** 1 + `ambush_bonus`; Ingenuity's `ambush_per_point` (0.05) is gone. PROVISIONAL.
+1955. **The silent attack's spot-back (rules 1.32 section 2.6):** the surviving target whose eyes reach the attacker rolls to spot it at once (`spotHidden` for that one Hidden unit). PROVISIONAL.
+1956. **The Operative's Tradecraft (rules 1.32 section 4.1; `operative_start` 1, `operative_cap_add` 1):** starts with 1 Shadow and holds 1 more; Analyze 1 AP and Read on its target; +1 Shadow once a turn for an Analyze on an enemy that can't see it. PROVISIONAL.
+1957. **The Operative's rank I (rules 1.32 section 4.2):** Mark and Vanish kept; Vanish is data only (its handler is gone). PROVISIONAL.
+1958. **The Operative's rank II (rules 1.32 section 4.3):** Toxin on any weapon (the Break adds the Shadow it spends to the poison's TN); Sabotage moves from rank III, Stuns a machine 1 round (was 2) and breaks a barricade (was: stops blocking it 2 rounds). PROVISIONAL.
+1959. **The Operative's rank III (rules 1.32 section 4.4):** Execution never on a guard-held hit nor on an Elite or Boss at full HP at the action's start (combat.ts `fullAtAction`); Called Shot moves in, with any weapon (its plain mode), its −2 (`attack_mod`) dropped while the target can't see you. PROVISIONAL.
+1960. **Field Fix leaves the Operative (rules 1.32 section 4.5):** its key `infiltrator.field_fix` and handler stay, in the move pool (status shelved, `future_home` the Rigger, step 8). PROVISIONAL.
+1961. **Skulk enemies (rules 1.32 section 5; `FOE_TAGS` `skulk`):** a Vermin, Minion or Soldier tagged so Hides on its turn when it is out of every enemy's view and has no shot, and ambushes from it at ×1.5. PROVISIONAL.
+1962. **Shadow's line (rules 1.32 section 6; `balance.ceilings.shadow`):** a three-turn window with one Break, the Operative all in, 125% of a rifle-turn; the door all in 109, at a normal share 87. PROVISIONAL.
+1963. **Shadow's verbs (rules 1.32 section 3; `data/shadow.json`):** Lift (3; 2 AP), Read Intent (3; 1 AP, reach 8), Cut the Strap (3; 1 AP, 1 Shadow), Fade (5; 2 AP, 2 Shadow), Open Seam (5; 1 AP, 1 Shadow, reach 8), Foul the Action (5; 1 AP, 1 Shadow), Timing (7; 1 AP, 1 Shadow, reach 8, a 2-round cooldown a target), Plant (7; 2 AP, 1 Shadow), Disable (7; 2 AP, 1 Shadow, 1 round), Hijack (9; 2 AP, 2 Shadow, 1 round). Reach 8 is the spec's example number (section 10). PROVISIONAL.
+1964. **Exposed and Off Balance (rules 1.32 section 3; `conditions.json`):** Exposed Defense −2 for 1 round (a state, no save); Off Balance −1 AP on the next turn (body; Timing gives it with no save). PROVISIONAL.
+1965. **Still Breath (rules 1.32 section 3; Ingenuity 5's unlock):** spot rolls against you −2 while you stand next to cover (predicate `by_cover` gains the word `here`). PROVISIONAL.
+1966. **The verbs not built in step 6 (rules 1.32 section 3):** Parting Cut, Decoy, Close Quarters, Vault, Shadow Run, Case, Pick, Douse, Rig: each needs a primitive the step did not add (`data/shadow.json pending` names it). Leon / the lead to rule whether they come with the enemy or screen step. PROVISIONAL.
+1967. **Flag conditions in the item ops (rules 1.32):** the predicates `<who>_has` / `_lacks` and op `cleanse` see the conditions kept as unit flags (Hidden, Prone, Bleeding, Dazed: `magic.ts condHas`); before, a data item could not test Hidden. `<who>_sees_self` is false while the holder is Hidden (shadow-spec 2.1). PROVISIONAL.
+1968. **New general op rows (rules 1.32):** op `take` (Lift: a throwable, else a spare magazine, into the pile on the holder's tile; `save`, `via`); op `displace` field `to: "cover"` (Fade's step); op `condition` field `same_entry` (Hidden without a new ambush). PROVISIONAL.
+1969. **Off Balance's "never two rounds running" (rules 1.32):** read as a 2-round cooldown for each target on Timing's condition, and a target already Off Balance can't be picked. PROVISIONAL.

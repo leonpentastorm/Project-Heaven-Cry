@@ -1505,9 +1505,22 @@
           "name": "Mastery 2",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Still Breath, Open Seam and Foul the Action.",
-          "effects": [],
-          "adjudication": "engine"
+          "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Open Seam and Foul the Action.",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "spot",
+              "value": -2,
+              "if": {
+                "by_cover": [
+                  "here"
+                ]
+              },
+              "label": "Still Breath"
+            }
+          ],
+          "adjudication": "engine",
+          "item": true
         },
         "7": {
           "name": "Mastery 3",

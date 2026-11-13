@@ -466,7 +466,7 @@ export function resSpend(u: Unit, id: string, n: number): boolean { return spend
 // ---------- what an enemy carries into a fight (Narrator start_fight, campaign data) ----------
 export interface FoeTraits { kind?: string; tags?: string[]; unaware?: boolean; no_surrender?: boolean; hidden?: boolean }
 export const KINDS = ['human', 'robot', 'crawler', 'ork', 'upper_realm', 'cursed', 'beast', 'machine', 'turret', 'celestial', 'drone'];
-export const FOE_TAGS = ['military', 'hunter', 'humanoid', 'unaware', 'no_surrender', 'lawful', 'prisoner', 'civilian', 'underworld', 'official', 'heretic', 'faithful'];
+export const FOE_TAGS = ['military', 'hunter', 'humanoid', 'unaware', 'no_surrender', 'lawful', 'prisoner', 'civilian', 'underworld', 'official', 'heretic', 'faithful', 'skulk']; // skulk: rules 1.32, it Hides and ambushes (combat.ts skulks)
 /** Apply a foe's kind and tags (unknown values dropped; default human and humanoid). Unaware foes sit out round 1. */
 export function applyFoeTraits(u: Unit, f: FoeTraits | undefined) {
   const kind = f?.kind && KINDS.includes(f.kind) ? f.kind : u.kind || 'human';
