@@ -10,7 +10,7 @@ page.on('console', (m) => { if (m.type() === 'error' && !/Permissions policy/.te
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 
 await page.goto(BASE);
-await page.waitForSelector('text=PRESS ANY KEY');
+await page.waitForSelector('text=PRESS ANY KEY', { timeout: 90000 });
 ok('no header bar on the title', await page.locator('header').count() === 0);
 await page.screenshot({ path: SHOTS + '/title-press.png' });
 await page.keyboard.press('Space');
@@ -66,7 +66,7 @@ await page.getByRole('button', { name: 'CREDITS', exact: true }).hover();
 await pause(page, 60);
 ok('reduce motion: Wick does not run', await page.locator('.phc-wick.run').count() === 0);
 // a ?room= link opens straight on Join
-const p2 = await ctx.newPage(); await p2.goto(BASE + '/?room=ABC123'); await p2.waitForSelector('text=PRESS ANY KEY'); await p2.keyboard.press('Enter');
+const p2 = await ctx.newPage(); await p2.goto(BASE + '/?room=ABC123'); await p2.waitForSelector('text=PRESS ANY KEY', { timeout: 90000 }); await p2.keyboard.press('Enter'); // (90 s: a fresh page's first screen took over 30 s beside other suites, load 35)
 await p2.waitForSelector('text=Join a friend', { timeout: 30000 });
 ok('a room link opens on Join with the code filled', (await p2.getByPlaceholder('ROOM CODE').inputValue()) === 'ABC123');
 await p2.setViewportSize({ width: 390, height: 844 }); await p2.keyboard.press('Escape'); await pause(p2, 500);
