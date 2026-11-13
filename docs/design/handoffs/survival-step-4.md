@@ -92,7 +92,13 @@ registry for any safe node), `FullScreenFrame` (the client's frame for any full-
   a gear card's to-hit and damage equal to `__phc.gearPreview`, the compare panel on hover, "Short N credits." on the
   card and as the refusal, a sale at the row's price, a rolled weapon bought and marked "Sold to", leaving); **`room`
   25 of 25**.
-- `npm run check`: see the final report (names what was re-run alone).
+- `npm run check`: **ALL GREEN** (engine 4136 passed, web 1198 passed). The first full run failed one web guard
+  (`e2e-groups.test.ts`: the suite's new waits were 15 s; a failing wait must be 30 s); fixed, `npm run check -- web`
+  green alone, then the whole check green again. Nothing else was re-run alone.
+- **Flaky, not new:** one of five `survival` runs failed at step 3's hand-fought node 1 ("Lost in 48 rounds"): the
+  fight's dice follow the room's code, and the suite's Shot loop does not always land its clicks on a loaded machine.
+  The two runs after it were 31 of 31. A fix (a `run/skip` fallback when node 1 is lost, or a fixed room code) is
+  step 10's suite work.
 - Screenshots (deviceScaleFactor 2), in the session scratchpad `shots4/`: `survival-shop-1280.png`,
   `survival-shop-gear-1280.png`, `survival-shop-1920.png`, `survival-shop-gear-1920.png`, `survival-path-map.png`
   (after; before: `shots/survival-path-map.png` from step 3), `survival-path-map-1920.png`, `survival-reward-pick.png`.
