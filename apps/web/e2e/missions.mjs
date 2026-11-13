@@ -2,7 +2,7 @@
 // The scripted Narrator answers OOC questions in its ooc field and marks "done:<objective id>" from a player's line.
 import { chromium, player, click, hostAs, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
-const host = await player(browser, 'host');
+const host = await player(browser, 'host', { campaigns: ['m813'] });
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
 const G = () => host.evaluate(() => window.__phc.getState().game);

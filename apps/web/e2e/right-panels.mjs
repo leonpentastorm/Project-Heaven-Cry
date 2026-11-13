@@ -5,7 +5,7 @@
 // Screenshots: e2e/shots/rp-*.png (1440 × 900 and 1280 × 720).
 import { chromium, player, click, hostAs, OUT, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
-const p = await player(browser, 'host');
+const p = await player(browser, 'host', { campaigns: ['m813'] });
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const snap = (n) => p.screenshot({ path: OUT + 'rp-' + n + '.png' });
 /** The modules on screen, top to bottom. */

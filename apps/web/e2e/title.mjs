@@ -18,6 +18,13 @@ await page.waitForSelector('nav[aria-label="Main menu"] button', { timeout: 3000
 await pause(page, 600);
 const labels = await page.locator('nav[aria-label="Main menu"] [data-item] .phc-label').allTextContents();
 ok('menu: ' + labels.join(' / '), labels.includes('NEW GAME') && labels.includes('JOIN A FRIEND') && labels.includes('CHARACTERS') && labels.includes('SETTINGS') && labels.includes('CREDITS'));
+// Classes 3.0 step 10b: M813 is off the menu, so the Proving Ground is the first thing offered (after CONTINUE, when
+// there is a room to continue), and nothing on the title names M813.
+const firstPlay = labels.filter((l) => l !== 'CONTINUE')[0];
+ok('the first thing offered is the Proving Ground (' + firstPlay + '), before NEW GAME', firstPlay === 'PROVING GROUND' && labels.indexOf('PROVING GROUND') < labels.indexOf('NEW GAME'));
+const menuText = (await page.locator('nav[aria-label="Main menu"]').textContent()) || '';
+ok('the menu names no M813', !/M813|Last Ship/i.test(menuText));
+await page.screenshot({ path: SHOTS + '/title-menu.png' });
 const wickTop = () => page.locator('.phc-wick').evaluate((el) => parseFloat(el.style.top));
 const t0 = await wickTop();
 await page.mouse.move(700, 450);
@@ -64,5 +71,21 @@ await p2.waitForSelector('text=Join a friend', { timeout: 30000 });
 ok('a room link opens on Join with the code filled', (await p2.getByPlaceholder('ROOM CODE').inputValue()) === 'ABC123');
 await p2.setViewportSize({ width: 390, height: 844 }); await p2.keyboard.press('Escape'); await pause(p2, 500);
 await p2.screenshot({ path: SHOTS + '/title-phone.png' });
+// Classes 3.0 step 10b: NEW GAME's room offers no M813 and does not start on it (the Narrator's own start instead).
+{
+  const c3 = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await c3.addInitScript(() => { try { sessionStorage.setItem('phc.pressedAnyKey', '1'); localStorage.setItem('phc.tips', '["*"]'); } catch { /* */ } });
+  const p3 = await c3.newPage(); await p3.goto(BASE);
+  await p3.getByRole('button', { name: 'NEW GAME', exact: true }).first().waitFor({ timeout: 90000 });
+  await p3.getByRole('button', { name: 'NEW GAME', exact: true }).first().click();
+  await p3.getByPlaceholder('Leon').fill('Leon');
+  await p3.getByRole('button', { name: 'Open a room ›' }).first().click();
+  await p3.waitForFunction(() => window.__phc?.getState().screen === 'room', null, { timeout: 60000 });
+  const start = await p3.evaluate(() => window.__phc.getState().game.settings.start);
+  const roomText = (await p3.locator('#root').textContent()) || '';
+  ok('a new room starts on ' + start + ', not M813, and its start list names no M813', start !== 'm813' && !/M813|The Last Ship Out/.test(roomText));
+  await p3.screenshot({ path: SHOTS + '/title-room-no-m813.png' });
+  await c3.close();
+}
 console.log('errors', errors);
 await browser.close();

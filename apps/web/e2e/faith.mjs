@@ -6,7 +6,7 @@ import { chromium, click, player, hostAs, settle, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const SHOTS = process.env.SHOTS;
-const p = await player(browser, 'A');
+const p = await player(browser, 'A', { campaigns: ['m813'] });
 await hostAs(p, 'Leon');
 await click(p, 'Create a character');
 await p.getByPlaceholder('What the squad calls you').fill('Vess');

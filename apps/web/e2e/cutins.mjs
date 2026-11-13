@@ -16,7 +16,7 @@
 const SHOTS = process.env.SHOTS;
 import { chromium, player, click, hostAs, BASE, OUT, pause, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
-const host = await player(browser, 'host'), mai = await player(browser, 'mai');
+const host = await player(browser, 'host', { campaigns: ['m813'] }), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const snap = (p, n) => p.screenshot({ path: (SHOTS ? SHOTS + '/' : OUT) + 'cutins-' + n + '.png' });
 const G = (p) => p.evaluate(() => window.__phc.getState().game);
@@ -282,7 +282,7 @@ if (await host.locator('[data-phc-cut-box] .c').count()) await host.locator('[da
 
 // 5. (b) + (c) A story room (the scripted Narrator): a natural 20 on a Hard check on the area map plays a cut-in with
 // no slow-mo; a player who set Cut-ins: Off on the title's Settings sees none of it, nor the trigger API's.
-const nora = await player(browser, 'nora'), zed = await player(browser, 'zed');
+const nora = await player(browser, 'nora', { campaigns: ['m813'] }), zed = await player(browser, 'zed');
 await hostAs(nora, 'Nora');
 await click(nora, 'Create a character');
 await nora.getByPlaceholder('What the squad calls you').fill('Nora Vale');
