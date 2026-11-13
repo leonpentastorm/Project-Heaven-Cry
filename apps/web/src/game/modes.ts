@@ -47,7 +47,7 @@ export function modeCards(g: GameState, isHost: boolean, send: (play: PlayMode) 
     return {
       key: m.id, name: m.name.toUpperCase(), line: m.line, art: m.art_pending ? '' : m.art || '',
       selected, locked, checked: selected ? 'true' : 'false',
-      status: locked ? 'Coming' : selected ? 'Selected' : '',
+      status: selected ? (locked ? 'Selected · Coming' : 'Selected') : locked ? 'Coming' : '',
       tip: why, aria: m.name + (locked ? ', locked, coming' : ''),
       pick: !why && !selected ? () => send(m.id) : null,
     };

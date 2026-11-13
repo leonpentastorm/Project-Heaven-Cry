@@ -4,7 +4,7 @@
   "old-save", "creation-points", "creation-layout", "skeleton-screens", "rules114", "perks", "classes", "classes-moves", "chaplain", "figments", "pg-levelup",
   "physical", "physical-pack", "gear-icons", "combat-fixes", "tabs", "sandbox", "ground", "world-play", "right-panels",
   "music-pool", "coop-stall", "faith", "layout", "mana-forecast", "mapzoom", "missions", "pg-art", "playscreen",
-  "playtest-tools", "reconnect", "shell-guest", "ui-shell", "voice", "vote", "shadow", "tending", "reactions"
+  "playtest-tools", "reconnect", "shell-guest", "ui-shell", "voice", "vote", "shadow", "tending", "reactions", "room"
  ],
  "anim": [
   "two-players", "turn-order", "camera", "fx-room", "fx-sweep", "melee-fx", "reload", "brass", "clarity",

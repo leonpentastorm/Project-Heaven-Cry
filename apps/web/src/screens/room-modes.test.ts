@@ -66,6 +66,12 @@ describe('the mode picker: three cards from data', () => {
     c[0].onClick({ currentTarget: {} }); expect(act).not.toHaveBeenCalled(); expect(openTipOn).toHaveBeenCalled();
     expect(vals().modeWho).toBe('THE HOST PICKS');
   });
+  it('a room on a locked mode (an old save) shows it selected and locked: "Selected · Coming"', () => {
+    G.settings.play = 'campaign';
+    const c = vals().modeCards;
+    expect(c[2].checked).toBe('true'); expect(c[2].status).toBe('Selected · Coming'); expect(c[2].locked).toBe(true);
+    expect(c[0].pick).toBeTruthy(); // Survival can still be picked
+  });
   it('arrows move between the cards (a radio group); only the selected one is in the tab order', () => {
     expect(radioKey('ArrowRight', 2, 3)).toBe(0); expect(radioKey('ArrowLeft', 0, 3)).toBe(2); expect(radioKey('ArrowDown', 0, 3)).toBe(1); expect(radioKey('a', 0, 3)).toBeNull();
     expect(vals().modeCards.map((m: any) => m.tabindex)).toEqual(['0', '-1', '-1']);
