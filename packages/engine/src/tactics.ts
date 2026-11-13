@@ -17,7 +17,7 @@ import { emit, statQuery, charOfUnit, boundGame, heldOfUnit } from './effects/ho
 import { grantShield, tendHook } from './effects/damage';
 import { actionAp } from './effects/core';
 import { note } from './effects/narrator';
-import { sessionN } from './effects/uses';
+import { sessionN, uses } from './effects/uses';
 import { makeObject } from './objects';
 import { residueFlag } from './feelings';
 import { tilesAround, unitsIn } from './kit';
@@ -87,6 +87,18 @@ export function useReaction(cb: Combat, u: Unit): boolean {
   }
   u.reactUsed = { r: cb.round, n: reactionsUsed(cb, u) + 1 }; u.reactedRound = cb.round; return true;
 }
+/** A held shot already paid for this round: Killzone's second shot (classes.json: "The two shots use one reaction
+ * between them"). The first shot spends the round's reaction; the second fires on it, and nothing else does. One cell
+ * in the counters primitive (effects/uses.ts, scope 'reaction': fresh again next round, where the second shot spends
+ * that round's reaction as any held shot does). It used to give the reaction back after the first shot, which left the
+ * holder a whole reaction for anything else in between (a Parry, a Dance of Iron, a Call): two in one round. */
+const PAID_SHOT = 'held_shot_paid';
+const paidCell = (cb: Combat, u: Unit) => uses({ key: PAID_SHOT, u, c: null, cb, g: boundGame() });
+export const heldShotPaid = (cb: Combat, u: Unit): boolean => maxReactions(u, cb) > 0 && paidCell(cb, u).used('reaction') > 0;
+/** The next held shot this round is already paid for (Killzone's second). */
+export function payHeldShot(cb: Combat, u: Unit): void { paidCell(cb, u).take('reaction'); }
+/** The paid held shot fires: the mark is used up. */
+export function spendPaidShot(cb: Combat, u: Unit): void { paidCell(cb, u).refund('reaction'); }
 /** Give a used reaction back (Many Hands shares one; a refused reaction). */
 export function refundReaction(cb: Combat, u: Unit) { const n = reactionsUsed(cb, u); if (n > 0) u.reactUsed = { r: cb.round, n: n - 1 }; if (n <= 1) delete u.reactedRound; }
 

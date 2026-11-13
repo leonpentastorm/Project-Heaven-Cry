@@ -190,3 +190,58 @@ suites was checked: it points at an element that still has one (tiles, plan chip
 | melee-fx (alone only, the re-run) | suite's dice | Parry needs a melee HIT; at Defense 19 the drill elite hits 3 in 10, so 8 rounds without one came about 1 run in 17 | Athletics 1 (Defense 10) for the Parry case; the note now prints the round's log |
 
 Proof: magic, playscreen, melee-fx and camera each three times beside two others, green; then the full run.
+
+## Riposte fired four times (Leon, 13 Nov)
+
+Leon, from play: "a turn where my character Riposted 4 times and downed [an enemy] while they missed me 3 times."
+The rule: one reaction a round, counted, for everyone (spec item 89; an Answer is a reaction; Riposte "uses your
+reaction"; the Fighter's Riposte is "reaction, 1 Momentum").
+
+**Cause: not reproduced in the engine.** Every reaction path asks the one counter (`tactics.ts` `canReact` /
+`useReaction`, `u.reactUsed` stamped with `cb.round`), and the counter held in every test: four foes missing in one
+round through the real enemy AI give one Riposte (technique); the Fighter's class Riposte and the technique on the same
+misses share the one reaction; a seeded run of 60 fights (sabre and 14 other melee weapons, boss/elite/soldier foes
+that Riposte back, the Fighter class on and off, one and two PCs, the PC attacking on its own turn) made 3,314
+reactions and never two by one unit in one round. No perk or trait raises the count except Before the Blink (2). What
+can look like "several Ripostes in one turn": the enemy phase between two of your turns is two rounds when you are not
+first in the initiative (one Riposte in each), and your own turn is in a round too (an enemy's Riposte that misses you
+is answered). That is at most two between two of your turns, not four. **Needed from Leon:** the Report a problem
+bundle (or the fight log) of that turn, to replay it.
+
+**Found on the way, and fixed: Killzone.** "The two shots use one reaction between them": the first shot spent the
+reaction and then gave it back (`refundReaction`), so between the two shots the Marksman had a whole reaction for
+anything else (Dance of Iron, Parry, a Call as a reaction): two reactions in a round. Now the first shot keeps the
+reaction spent and marks the second shot paid (one cell in `effects/uses.ts`, scope `reaction`: `payHeldShot`,
+`heldShotPaid`, `spendPaidShot` in tactics.ts); the held shot (`triggerOverwatch`) fires on that mark. A second shot
+in the next round spends that round's reaction, as before. Proof: `reactions-once-a-round.test.ts` (fails without the
+fix). Golden tables and replay hashes: unchanged (the engine suite passes as recorded).
+
+| Reaction | Spends the one reaction? | Spec / text |
+| --- | --- | --- |
+| Opportunity attack (`combat.ts` moveUnit) | yes | reaction |
+| Overwatch, old held shot (`triggerOverwatch`; several shots `owShots`) | yes, all shots on one | item 89 |
+| Killzone (Marksman) | **was: first shot given back (2 a round possible); now one for both** | "use one reaction between them" |
+| Watches: Overwatch, Deny, Cover Me, Dead to Rights (`fireWatch`) | yes | "uses your reaction" |
+| Answers: Riposte, Parry, Keep Back, Interpose, Shield Wall (`answer()`) | yes | "uses your reaction" |
+| Fighter Riposte (class) | yes (and 1 Momentum) | "reaction, 1 Momentum" |
+| Defender Interpose (Brace), Shrug It Off, Anchor; Duck and Roll; Drink It In; Share; Dive | yes | "your reaction" |
+| Reactive Plate (Defender) | no | "passive; no reaction" (PROVISIONAL) |
+| Heart Overwatch (`magic.ts`) | yes | reaction |
+| Catch, Dance of Iron (perks) | yes | "uses your reaction" |
+| Calls as a reaction; Order (the ally's) | yes (+ its own one-a-round cell) | rules 1.13 |
+| Rewrite, Dread | take the target's | — |
+| Cue | +1 until the speaker's next turn | rules 1.13 |
+| Many Hands | an ally may spend the holder's | perk text |
+| Before the Blink | 2 a round | perk text |
+| Between Heartbeats | no (its own once a fight) | "doesn't use your reaction" |
+| Last Word (weapon mastery) | not in the engine (weapon_mastery.json is not loaded) | "use your reaction" |
+
+Uncounted before the fix: one (Killzone's gap). None uncounted now.
+
+Open questions (behaviour unchanged, the spec is silent):
+1. Can a reaction trigger a reaction? Today yes: your Riposte that misses can be Riposted by the enemy (its own
+   reaction), an opportunity attack can be Parried or Riposted. Only the Fighter's class Riposte has "a riposte never
+   triggers a riposte (PROVISIONAL)", and its guard is one global flag, so it also stops anyone else's class Riposte
+   during a class Riposte; the technique has no such guard.
+2. The counter is `u.reactUsed` with a round compared by hand, not a `uses.ts` cell (the F8 rule). It works; moving it
+   into the primitive is a refactor for the engine review, not a fix.

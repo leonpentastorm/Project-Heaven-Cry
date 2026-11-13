@@ -35,7 +35,7 @@ import {
 import { soulStrike, designRolls } from './soul';
 import { die, type Rng } from '../rng';
 import { rollVs, rollD20, SAVE_TN } from '../rolls';
-import { resOf, resGain, resSpend, canReact, useReaction, refundReaction, reveal , dropHeldShot } from '../tactics';
+import { resOf, resGain, resSpend, canReact, useReaction, payHeldShot, reveal , dropHeldShot } from '../tactics';
 import { itemWords, wordCostMods, actionAp } from '../effects/core';
 import { makeObject } from '../objects';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround } from '../kit';
@@ -240,11 +240,12 @@ register({
       kz.hit.push(ctx.mover.id); kz.left--; kz.firing = ctx.mover.id; h.u!.owShots = 1;
     },
     attack_preview: (ctx, h) => { const kz = kzOf(h); if (kz?.firing && ctx.att === h.u && ctx.tgt?.id === kz.firing) ctx.terms.push({ v: 2, label: 'Killzone' }); },
-    // The shot is rolled: the second one stays held for the next enemy (the reaction it took is given back once).
+    // The shot is rolled: the second one stays held for the next enemy, already paid for by the reaction the first one
+    // spent ("the two shots use one reaction between them"): nothing else may use a reaction in between.
     attack_roll: (ctx, h) => {
       const kz = kzOf(h); if (!kz?.firing || ctx.att !== h.u) return;
       kz.firing = null;
-      if (kz.left > 0) { h.u!.overwatch = kz.mode; h.u!.owShots = 1; if (kz.left === 1 && h.cb) refundReaction(h.cb, h.u!); }
+      if (kz.left > 0) { h.u!.overwatch = kz.mode; h.u!.owShots = 1; if (kz.left === 1 && h.cb) payHeldShot(h.cb, h.u!); }
     },
   },
   brief: () => null,
