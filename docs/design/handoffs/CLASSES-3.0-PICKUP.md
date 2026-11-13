@@ -62,9 +62,9 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [ ] **1. The primitives** (1a merged 13 Nov, reviewed: `classes-3.0-step-1a.md` and `-review.md`; **1b is next**: P6, P10, P11, P12, P8, P9, the addendum rows of `rev4-primitives.md` section 6, the one hook for every roll to hit, and what the review lists under "step 1b must add") of `rev4-primitives.md`, in its order, with NO system built on them yet: each with its
       test, its lint baseline, the catalogue regenerated, and the bespoke handlers it replaces deleted. Golden
       tables and replay hashes unchanged (a primitive that moves a golden line is wrong).
-- [ ] **2. The rename** (`rev4-moves-and-rename.md`): display names only, ids stay; the level-up picker, card
+- [x] **2. The rename** (merged 13 Nov) (`rev4-moves-and-rename.md`): display names only, ids stay; the level-up picker, card
       texts, the spec, CLAUDE.md, the checklist; emblems listed in `art/briefs/ART-REQUESTS.md`.
-- [ ] **3. Reactions and the Skirmisher** (`reactions-spec.md`): one door for every reaction, a reaction never
+- [x] **3. Reactions and the Skirmisher** (merged 13 Nov; all in 161 against 145, inside the band near its top; Reflex unmeasured: step 11) (`reactions-spec.md`): one door for every reaction, a reaction never
       triggers a reaction, Suppressed never blocks a protective one, Reflex (two), Killzone on both, Run and Gun.
 - [ ] **4. The moves that change hands** and the small changes to Bulwark, Breaker, Sigilist.
 - [ ] **5. The Chaplain** (`chaplain-spec.md`): Ward, Sanctuary, Smite, Verdict, the patron's presence.
