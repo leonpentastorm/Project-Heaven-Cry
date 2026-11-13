@@ -94,6 +94,9 @@ export const unitSkill = (u: Unit, skill: string): number => { const c = u.compa
 const GR = () => PHYS_RULES.guard || {};
 export const guardOf = (u: Unit) => resOf(u, 'guard');
 export const guardMax = (u: Unit) => u.resMax?.guard ?? 0;
+/** What one Guard point takes off a hit for this unit (rules.guard.soak, in HP: × the level scale, rules 1.36). The one
+ * place it is worked out: the soak (guard.ts) and the panel's words (physView) both read it. */
+export const guardSoak = (u: Pick<Unit, 'level'>): number => Math.max(1, Math.round((GR().soak ?? 10) * scaleOf(u.level)));
 /** What gives this unit Guard, and how much (0 for a unit with no Guard pool; the pool's size cuts it). The Guard
  * technique scales: 1, +1 for each Durability point above 1, +1 with a shield in the off hand. The Brace action is
  * flat: 2, 3 with a shield (the lead's tuning, 10 Nov 2026; provisional, rules.guard brace_gain / brace_shield_gain). */
@@ -976,7 +979,11 @@ export function physView(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe', g?: any)
 /** The Momentum rule in two plain sentences (the meter's hint on the screen). */
 export const MOMENTUM_HINT = 'A plain attack that hits gives 1. A Strike or an Opener spends 1; each tile you walk and each hit you take costs 1.';
 /** The Guard rule in plain sentences (the pool's hint on the screen). */
-export const GUARD_HINT = 'Brace gives 2 Guard (3 with a shield); the Guard technique gives 1, +1 for each Durability point above 1, +1 with a shield. Each point takes 10 damage off a hit; the last point is kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
+/** Guard's rule in words, every number from rules.guard (its soak at this unit's level, rules 1.36). */
+export function guardHint(u: Pick<Unit, 'level'>): string {
+  const g = GR(), brace = g.brace_gain ?? 2, keep = g.keep_back ?? 1;
+  return 'Brace gives ' + brace + ' Guard (' + (brace + (g.brace_shield_gain ?? 1)) + ' with a shield); the Guard technique gives ' + (g.gain_base ?? 1) + ', +' + (g.gain_per_point ?? 1) + ' for each Durability point above 1, +' + (g.shield_gain ?? 1) + ' with a shield. Each point takes ' + guardSoak(u) + ' damage off a hit; ' + (keep === 1 ? 'the last point is' : 'the last ' + keep + ' points are') + ' kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
+}
 function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   const max = u.resMax?.momentum;
   const hid = viewerSide === u.side ? Math.min(pressureOf(u), (u as any).pressHidden || 0) : 0, now = pressureOf(u) - hid;
@@ -986,7 +993,7 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   return {
     momentum: max != null && holdsMelee(u) ? { now: momentumOf(u), max, hint: MOMENTUM_HINT } : null,
     // Durability's Guard (rules 1.13): the pool, what a Brace or the Guard technique would add now, and the rule
-    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: Math.max(1, Math.round((GR().soak ?? 10) * scaleOf(u.level))), shield: !!shieldOf(u), hint: GUARD_HINT } : null,
+    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back ?? 1, soak: guardSoak(u), shield: !!shieldOf(u), hint: guardHint(u) } : null,
     pressure: { now, max: pressureCap(u), state, word: state ? state[0].toUpperCase() + state.slice(1) : now ? 'Under fire' : '',
       cost: state === 'pressed' ? '−1 to hit with ranged attacks; no held shots' : state === 'suppressed' ? (u.side === 'pc' ? 'No reactions that attack or move you' : '−1 AP; no reactions that attack or move it') : state === 'broken' ? '−2 AP; it must reach cover or drop Prone first' : '', by },
     stopped: stoppedNow(u) ? { on: true, text: 'Can\'t be stopped again until the end of its next turn' } : null,
