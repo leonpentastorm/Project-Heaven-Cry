@@ -11,6 +11,8 @@ import { type Character, type Rarity, RARITY, kindOfDoor, mod, magazineSize } fr
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee } from './combat';
 import { priced } from './effects/cost';
 import { rngFor } from './rng';
+import { focusAccTerm } from './rolls';
+import { bindGame } from './effects/hooks';
 import { CALIBRE_NAME } from './data';
 
 /** One gear instance: an item id with its grade and fitted mods (a pack entry's or a shop card's). */
@@ -39,6 +41,12 @@ function scratch(c: Character, inst: GearInstance, range: number): { cb: Combat;
   const u = unitFromCharacter(x, '0,0', rng), foe = unitFromEnemy('gear-preview-foe', GP.name, GP.tier, GP.weapon, Math.min(STRIP.w - 1, range) + ',0', rng, c.level);
   const cb = { name: 'Gear preview', map: STRIP, units: [u, foe], order: [u.id, foe.id], turn: 0, round: 1, difficulty: 'standard', log: [], over: null, level: c.level, objects: [] } as unknown as Combat;
   return { cb, u, foe };
+}
+/** The bonus a focus at this grade gives its door's rolls (to hit and the TN of the saves it forces), as the fight reads
+ * it: `focusAccTerm` for a scratch copy of the character holding the focus in its main hand. */
+function doorAcc(c: Character, inst: GearInstance, door: string): number {
+  const x = clone(c); x.weapon = inst.id; x.weaponState = { ...(x.weaponState || {}), rarity: inst.rarity || 'standard' } as any; x.offHand = null;
+  const was = bindGame({ characters: { [x.id]: x } }); try { return focusAccTerm({ charId: x.id } as Unit, door)?.v ?? 0; } finally { bindGame(was); }
 }
 const pct = (n: number) => n + '%';
 /** The attack's numbers in this mode, or null when the weapon has no such mode or can't attack (its words in `why`). */
@@ -88,6 +96,8 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
     return { ...base, kind: 'focus', category: 'Focus · ' + cap(kind || it.id), traits: [], lines: [
       { key: 'door', label: 'Door', value: sk?.name || door, num: null },
       { key: 'door_mod', label: (sk?.name || door) + ' modifier', value: (mod(pts) >= 0 ? '+' : '') + mod(pts), num: mod(pts), better: 'higher' },
+      // rules 1.46: the grade's bonus to the door's rolls, read by the fight's own term (rolls.ts focusAccTerm, rules 1.43)
+      { key: 'door_acc', label: 'Grade on ' + (sk?.name || door) + ' rolls', value: '+' + doorAcc(c, inst, door), num: doorAcc(c, inst, door), better: 'higher' },
       { key: 'fuel', label: 'Runs on', value: it.focus.fuel === 'core' ? 'mana cores' : 'MP', num: null },
     ] };
   }

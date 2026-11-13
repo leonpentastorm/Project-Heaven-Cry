@@ -429,9 +429,20 @@
           "sold_to": ["Already given."],
           "gave": ["Witnessed."],
           "leave": ["Go on."]
+        }, "provisional": true },
+      { "id": "broker", "name": "Teo Vant", "role": "Crossroads broker", "node": "event", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "event-broker", "portrait_pending": true, "fallback": "veyra-salt", "backdrop": "crossroads", "backdrop_pending": true, "backdrop_fallback": null, "bias": {}, "price": 1.0,
+        "lines": {
+          "greet": ["Everyone who walks this road wants something. So do I."],
+          "bought": ["A fair trade, near enough."],
+          "cant_afford": ["Come back when you can pay."],
+          "sold": ["I'll find it a buyer."],
+          "sold_to": ["Somebody beat you to it."],
+          "gave": ["Generous. Unwise, maybe."],
+          "leave": ["The road forks again further on."]
         }, "provisional": true }
     ]
   },
+  "give": { "about": "Rules 1.46 (spec rule 47; primitive 13): where a character of a run may give another credits or a pack entry: the node kinds with no fight (`where`), and before the first node (`at_start`). A give is plain (no confirm from the receiver) and logged in words. Never given: boons, tokens and the graft (c.relics), trainings, the fitted armour class; a Relic whose property would take the receiver past the boon cap is refused. Out of a run (a campaign) a give is made out of a fight.", "where": ["shop", "forge", "training", "shrine", "rest", "cache", "event"], "at_start": true, "provisional": true },
   "map": {
     "rows": 15,
     "gate_row": 8,

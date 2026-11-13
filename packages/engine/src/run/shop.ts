@@ -146,6 +146,8 @@ function sayLine(r: RunState, sh: ShopState, kind: FaceLine, to: string | null =
   sh.line = { kind, text: l[i], to }; sh.said++;
 }
 const logLine = (sh: ShopState, text: string) => { sh.log = [text, ...sh.log].slice(0, 8); };
+/** Rules 1.46: a line in the open shop's log, and its face's line of that kind (a give seen, a grade step bought). */
+export function shopSays(g: { run?: RunState | null }, kind: FaceLine, text: string): void { const sh = shopOf(g); if (!sh) return; sayLine(g.run!, sh, kind); logLine(sh, text); }
 /** Open the shop at a node (rule 25): its face, today's stock, the greet line; the run waits in the shop. */
 export function openShop(r: RunState, node: { id: string; depth: number }, setting: string): ShopState {
   const face = faceFor('shop', setting);

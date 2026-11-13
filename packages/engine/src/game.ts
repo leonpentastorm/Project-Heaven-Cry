@@ -62,7 +62,8 @@ import { MAP_DATA } from './run/map';
 import { composeEncounter, SETTING } from './run/encounter';
 import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT } from './run/rewards';
 import { type ProgressAction, progressAction, openVisit, lastingOffer } from './run/progress';
-import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES } from './run/shop';
+import { openShop, buy as shopBuy, sell as shopSell, leaveShop, FACES, shopSays } from './run/shop';
+import { type GiveAction, giveNow } from './give';
 import { earnCredits } from './credits';
 
 export interface Player { id: string; name: string; initials: string; color: string; online: boolean }
@@ -364,7 +365,7 @@ export type Action =
   | { type: 'levelup/advanced'; charId: string; classId: string } | { type: 'rest'; kind: 'short' | 'long' } | { type: 'story/ask-rest'; charId: string; kind: 'short' | 'long' } | { type: 'story/pray'; charId: string; text?: string; choice?: string }
   | { type: 'gear/ammo'; charId: string; ammo: string }
   // Plot items (spec: Plot items): hand one to another character, or drop it (gone from the story).
-  | { type: 'gear/give'; charId: string; idx: number; to: string; qty?: number } | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
+  | GiveAction | { type: 'gear/drop'; charId: string; idx: number; qty?: number }
   | { type: 'combat/end-turn'; unitId: string } | { type: 'combat/analyze'; unitId: string; targetId: string }
   /** Classes 3.0 P9: the owner gives one of its turn-less owned units a verb (owned.ts runOwned; paid by the owner) */
   | { type: 'combat/owned'; unitId: string; owned: string; verb: string; targetId?: string; tile?: any }
@@ -1028,18 +1029,23 @@ function reduce(g: GameState, a: Action, by: string) {
       const err = a.type === 'gear/equip' ? equip(c!, i, a.to) : a.type === 'gear/unequip' ? unequip(c!, a.slot) : fitMod(c!, i);
       if (err) fail(err); return;
     }
-    case 'gear/give': case 'gear/drop': {
+    case 'gear/give': { // rules 1.46 (give.ts): credits or any pack entry, to another character; a plain give, logged
+      const res = giveNow(g, by, a); if ('no' in res) fail(res.no);
+      const done = res as { ok: string; to: Character; from: Character };
+      push(g, { kind: 'system', head: 'A GIVE', text: done.ok, charId: done.to.id });
+      visitNote(g, done.ok.replace(/\.$/, ''), 'gave');
+      if (g.phase === 'story' && !g.run) canon(g, done.ok.replace(/\.$/, '') + ' (scene ' + g.story.scene.n + ').', [], 1);
+      return;
+    }
+    case 'gear/drop': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase === 'combat') fail('Hand things over after the fight.');
       const pack = packOf(c!).map((x) => ({ ...x })), it = pack[a.idx]; if (!it) fail('Nothing there.');
-      if (it!.kind !== 'plot') fail('Only plot items can be handed over or dropped for now.');
+      if (it!.kind !== 'plot') fail('Only plot items can be dropped out of a fight for now.');
       const k = Math.max(1, Math.min(it!.qty, Math.round(a.qty || it!.qty)));
-      let to: Character | undefined;
-      if (a.type === 'gear/give') { to = g.characters[a.to]; if (!to || to.id === c!.id) fail('Give it to whom?'); if (to!.dead) fail(to!.name + ' is dead.'); }
       it!.qty -= k; if (it!.qty <= 0) pack.splice(a.idx, 1); c!.pack = pack;
-      if (to) { const tp = packOf(to).map((x) => ({ ...x })), ex = tp.find((x) => x.kind === 'plot' && x.id === it!.id); if (ex) ex.qty += k; else tp.push({ ...it!, qty: k }); to.pack = tp; }
-      push(g, { kind: 'system', text: c!.name + (to ? ' gives ' + to.name + ' ' : ' drops ') + (k > 1 ? k + ' × ' : '') + it!.name + '.' });
-      if (g.phase === 'story') canon(g, c!.name + (to ? ' gave ' + to.name + ' ' : ' dropped ') + it!.name + ' (scene ' + g.story.scene.n + ').', [], 1);
+      push(g, { kind: 'system', text: c!.name + ' drops ' + (k > 1 ? k + ' × ' : '') + it!.name + '.' });
+      if (g.phase === 'story') canon(g, c!.name + ' dropped ' + it!.name + ' (scene ' + g.story.scene.n + ').', [], 1);
       return;
     }
     case 'phys/ready': case 'phys/pick': case 'phys/quiver': case 'phys/answers': {
@@ -3148,7 +3154,7 @@ function runAction(g: GameState, a: Action, by: string) {
       return;
     }
     case 'run/upgrade': case 'run/forge': case 'run/fit': case 'run/train': case 'run/shrine': case 'run/trade': case 'run/take': { // rules 1.43 (run/progress.ts)
-      const no = progressAction(g, a, by, (text, charId, head) => push(g, { kind: 'system', text, ...(charId ? { charId } : {}), ...(head ? { head } : {}) }));
+      const no = progressAction(g, a, by, (text, charId, head) => { push(g, { kind: 'system', text, ...(charId ? { charId } : {}), ...(head ? { head } : {}) }); visitNote(g, text.replace(/\.$/, ''), 'bought'); });
       if (no) fail(no);
       runPicksDone(g);
       return;
@@ -3180,6 +3186,13 @@ function runAction(g: GameState, a: Action, by: string) {
     }
     default: fail('No such run action: ' + a.type + '.');
   }
+}
+/** Rules 1.46: a line of the visit's log at the safe node the party stands on (the shop's log and its face's line of
+ * that kind, or the visit's own log), so every full-screen place shows what was done there, a give included. */
+function visitNote(g: GameState, text: string, kind: 'gave' | 'bought') {
+  const r = g.run; if (!r) return;
+  if (r.state === 'shop' && r.shop) { shopSays(g, kind, text); return; }
+  if (r.visit && r.visit.node === r.at) r.visit = { ...r.visit, log: [text, ...(r.visit.log || [])].slice(0, 8) };
 }
 /** "1 round", "3 rounds". */
 const counted = (n: number, word: string) => n + ' ' + word + (n === 1 ? '' : 's');

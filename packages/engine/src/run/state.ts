@@ -60,7 +60,8 @@ export interface RunStock { id: string; price: number; sold?: string }
  * node rolled on entry. `steps`: grade steps taken (rule 37's one a visit); `did`: the node's one choice taken (a rest's
  * or a training ground's trainings, the shrine's offer, the Crossroads' trade), by character; `stock`: the Forge's
  * rolled stock; `trades`: the Crossroads' offered trades; `patron`: the shrine's patron. */
-export interface RunVisit { node: string; kind: string; steps: Record<string, number>; did: Record<string, number>; stock?: RunStock[]; trades?: string[]; patron?: string }
+export interface RunVisit { node: string; kind: string; steps: Record<string, number>; did: Record<string, number>; stock?: RunStock[]; trades?: string[]; patron?: string;
+  /** Rules 1.46: what was done here, newest first (the full-screen place's log strip). */ log?: string[] }
 /** An armour-or-item pick (rules 1.43, spec rule 41): three things, at least two lasting; or nothing. */
 export interface RunLasting { node: string; items: { id: string; lasting: boolean }[] }
 /** A Survival run (rule 36): `g.run`. Every field is changed only by a `run/*` action. */

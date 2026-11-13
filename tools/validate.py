@@ -2434,6 +2434,16 @@ if _sv is not None:
             if _f.get("provisional") is not True: errors.append(f"{_w}: provisional: true")
         for _s in _setids:
             if not any(_f.get("node") == "shop" and _s in (_f.get("settings") or []) for _f in _sv["faces"].get("items") or []): errors.append(f"survival:faces: the setting {_s!r} has no shopkeeper (spec 3.4)")
+        # Rules 1.46 (build step 4b): every safe node is a full-screen place with a face
+        for _nk in ("shop", "forge", "training", "shrine", "rest", "event"):
+            if not any(_f.get("node") == _nk for _f in _sv["faces"].get("items") or []): errors.append(f"survival:faces: no face stands at a {_nk!r} node (rules 1.46: every safe node is a full-screen place)")
+    # Rules 1.46 (build step 4b, spec rule 47): where gives are made in a run
+    _gv = _sv.get("give")
+    if _gv is not None:
+        _kinds = {"fight", "elite", "boss", "shop", "forge", "training", "shrine", "rest", "cache", "event"}
+        if not _gv.get("where") or not set(_gv["where"]) <= _kinds - {"fight", "elite", "boss"}: errors.append("survival:give.where: node kinds with no fight")
+        if not isinstance(_gv.get("at_start"), bool): errors.append("survival:give.at_start: true or false")
+        if _gv.get("provisional") is not True: errors.append("survival:give: provisional: true")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:

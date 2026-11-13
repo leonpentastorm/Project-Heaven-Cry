@@ -25,6 +25,8 @@ import { SETTING } from './encounter';
 import { stageCeiling, weaponOffer } from './rewards';
 import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf, BOON_CAP, runWorth } from './power';
 import type { GameState } from '../game';
+import { registerShopService, type ServiceCard } from './shop';
+import { gearPreview } from '../gearpreview';
 
 const SV: any = svJ;
 /** The grade ladder (survival.json grade_up): prices, the places and their factors, the Relic's place and stage, the chit. */
@@ -408,3 +410,18 @@ export function lastingOptions(g: GameState, charId: string): RunOption[] {
   return [...l.items.map((x, i) => ({ group: 'lasting' as const, key: 'take:' + i, label: nameOf(x.id), detail: String((ITEM[x.id] as any)?.text || (WEAPON[x.id] as any)?.text || ''), price: 0, why: null, action: { type: 'run/take' as const, charId, choice: i } })),
     { group: 'lasting' as const, key: 'take:none', label: 'Leave it', detail: '', price: 0, why: null, action: { type: 'run/take' as const, charId, choice: 'none' as const } }];
 }
+
+// ---------------------------------------------------------------------------------------------- the shop's Upgrade tab
+/** Rules 1.46: the shop's grade step as cards of the services shelf (run/shop.ts `registerShopService`): each carried
+ * weapon or focus with the step's price here, what changes (the gear preview before and after: to hit, a focus's grade
+ * on its door's rolls), and the engine's reason when it can't be taken; the action is 4a's `run/upgrade {place: 'shop'}`. */
+export function gradeCards(g: GameState, c: Character): ServiceCard[] {
+  return runOptions(g, c.id).filter((o) => o.group === 'grade' || o.group === 'relic').map((o) => {
+    const a = o.action as Extract<ProgressAction, { type: 'run/upgrade' }>, it = gearAt(c, a.where), to = it ? nextGrade(it.rarity) : null;
+    const before = it ? gearPreview(c, { id: it.id, rarity: it.rarity }) : null, after = it && to ? gearPreview(c, { id: it.id, rarity: to }) : null;
+    const lines = before && after ? after.lines.filter((l) => l.num != null).map((l) => ({ label: l.label, before: before.lines.find((x) => x.key === l.key)?.value ?? '—', after: l.value }))
+      .filter((l) => l.before !== l.after) : [];
+    return { key: o.key, title: o.label, ...(it ? { id: it.id, rarity: it.rarity } : {}), price: o.price, why: o.why, note: o.detail, lines, action: o.action as any };
+  });
+}
+registerShopService({ id: 'grade_step', tab: 'upgrade', kinds: ['shop'], cards: (g, c) => gradeCards(g as GameState, c) });
