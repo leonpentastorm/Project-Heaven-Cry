@@ -4,7 +4,7 @@
 // the one armour function; deal and mend. That whole actions still produce and land the same numbers is the golden
 // tables' job (golden-damage*.test.ts).
 import { describe, expect, it } from 'vitest';
-import {
+import { scaleOf,
   RULES, ENEMY_LEVELS, enemyLevelRow, ARCHETYPES, newCharacter, WEAPON,
   PROFILES, PAIRS, profileOf, pairOf, statTerm, statOf, levelFactor, levelOf, stackDamage, VS_CAP, openAmount, closeAmount, amountOf, armourAgainst, landed, deal, mend,
   physicalMult, weaponMult, sigilMult, soulMult, elementalMult, healingMult, blessingPower, mendFactor, mendFactorOf, hurtUnit, harm,
@@ -37,17 +37,17 @@ describe('the data (rules.json output): the profiles of rules 1.26 (the re-fit)'
     expect(PAIRS.blessing).toEqual({ attrs: ['virtue'], skills: ['faith'] }); expect(PAIRS.healing).toEqual({ attrs: ['insight'], skills: ['empathy'] });
     expect(pairOf('mend')).toEqual(PAIRS.healing); expect(pairOf('nothing')).toEqual({ attrs: [], skills: [] }); expect(profileOf('nothing')).toEqual({ k: 1, attr: 0, skill: 0, level: null });
   });
-  it('Level: `deal` leaves the normal-share plain rifle where it was (k x deal is its old multiplier); `mend` is the enemy table\'s damage column, read and not copied', () => {
+  it('Level: `deal` is the old plain rifle (k x deal) x the level scale (rules 1.36: 7.5^((level - 1)/19)); `mend` and `scale` are columns of their own', () => {
     const deal = (RULES as any).output.level.deal as number[]; expect(deal.length).toBe(20); expect(deal[0]).toBe(1);
     for (let l = 2; l <= 20; l++) expect(deal[l - 1], 'level ' + l).toBeGreaterThanOrEqual(deal[l - 2]);
     const old = [1.5, 1.6, 1.65, 1.75, 1.8, 1.9, 1.95, 2.05, 2.1, 2.2, 2.25, 2.35, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4]; // the plain rifle's weapon multiplier at a normal share, levels 1 to 20, before
-    for (let l = 1; l <= 20; l++) { expect(PROFILES.weapon.k * levelFactor('deal', l)).toBeCloseTo(old[l - 1], 9); expect(levelFactor('mend', l)).toBe(enemyLevelRow(l).damage_mult); expect(mendFactor(l)).toBe(levelFactor('mend', l)); expect(levelOf('mend', l)).toBe(mendFactor(l)); expect(levelOf('weapon', l)).toBe(levelFactor('deal', l)); }
-    expect(levelFactor('mend', 1)).toBe(1); expect(levelFactor('mend', 20)).toBe(ENEMY_LEVELS.table[ENEMY_LEVELS.table.length - 1].damage_mult);
+    for (let l = 1; l <= 20; l++) { expect(PROFILES.weapon.k * levelFactor('deal', l)).toBeCloseTo(old[l - 1] * scaleOf(l), 3); expect(levelFactor('deal', l)).toBeCloseTo(7.5 ** ((l - 1) / 19), 4); expect(levelFactor('mend', l)).toBe((RULES as any).output.level.mend[l - 1]); expect(mendFactor(l)).toBe(levelFactor('mend', l)); expect(levelOf('mend', l)).toBe(mendFactor(l)); expect(levelOf('weapon', l)).toBe(levelFactor('deal', l)); }
+    expect(levelFactor('mend', 1)).toBe(1); expect(levelFactor('scale', 1)).toBe(1); expect(levelFactor('scale', 20)).toBeCloseTo(7.5 / 1.6, 4);
     expect(levelFactor('mend', null)).toBe(1); expect(levelFactor(null, 12)).toBe(1); expect(mendFactor(undefined)).toBe(1);
-    for (const p of ['physical', 'elemental', 'blessing', 'healing']) expect(levelOf(p, 20)).toBe(1);
+    for (const p of ['physical', 'elemental', 'blessing', 'healing']) expect(levelOf(p, 20)).toBe(scaleOf(20)); // rules 1.36: the profiles with no column of their own take the scale
   });
   it('an enemy\'s healing and shields take no level factor from here (they grow through its own multipliers)', () => {
-    expect(mendFactorOf({ side: 'foe', level: 20 } as Unit)).toBe(1); expect(mendFactorOf({ side: 'pc', level: 12 } as Unit)).toBe(enemyLevelRow(12).damage_mult); expect(mendFactorOf(null)).toBe(1);
+    expect(mendFactorOf({ side: 'foe', level: 20 } as Unit)).toBe(1); expect(mendFactorOf({ side: 'pc', level: 12 } as Unit)).toBe(levelFactor('mend', 12)); expect(mendFactorOf(null)).toBe(1);
   });
 });
 
@@ -88,7 +88,7 @@ describe('an amount: base, per-point parts, flat, Stat, Level, own multipliers, 
   it('the base takes its per-point parts; the Stat and Level terms come first; a term of exactly x1 is not listed', () => {
     const c = withStats({ insight: 5 }, { empathy: 3 });
     const a = openAmount({ kind: 'heal', base: 5, profile: 'mend' }, { level: 12 } as Unit, { who: c, mults: [{ v: 0.4, label: 'area share' }, { v: 1, label: 'nothing' }] });
-    expect(a.base).toBe(5); expect(a.mults).toEqual([{ v: statOf('mend', c), label: 'mend' }, { v: enemyLevelRow(12).damage_mult, label: 'level' }, { v: 0.4, label: 'area share' }]);
+    expect(a.base).toBe(5); expect(a.mults).toEqual([{ v: statOf('mend', c), label: 'mend' }, { v: levelFactor('mend', 12), label: 'level' }, { v: 0.4, label: 'area share' }]);
     expect(openAmount({ kind: 'damage', base: 20, per: [{ of: 'devotion', value: 4 }] }, null, { counts: { devotion: 7 } }).base).toBe(48); // an intervention: 20 + 4 x Devotion
     expect(openAmount({ kind: 'damage', base: 30, profile: 'weapon' }, { level: 9 } as Unit, { stat: { v: 1, label: 'x' } }).mults).toEqual([{ v: levelFactor('deal', 9), label: 'level' }]); // x1 Stat: not listed; the Level term (rules 1.26) is
     expect(openAmount({ kind: 'damage', base: 30, profile: 'weapon' }, { level: 9 } as Unit, { stat: { v: 1.5, label: 'Agility and Dexterity' }, level: null }).mults).toEqual([{ v: 1.5, label: 'Agility and Dexterity' }]);
@@ -167,7 +167,7 @@ describe('deal and mend: the one way in', () => {
     const { f, a, b } = setup(); b.hp = 10; (b as any).healRecv = 1.5; (b as any).shieldRecv = 2; b.shield = 0;
     const c = withStats({ insight: 5 }, { empathy: 3 }); a.level = 12;
     const h = withGame(f.g, () => mend(f.cb, a, b, { kind: 'heal', base: 5, profile: 'mend' }, { who: c, healKind: 'triage' }));
-    const want = 5 * statOf('mend', c) * enemyLevelRow(12).damage_mult; /* in the formula's order: base × Stat × Level */ expect(h.amount).toBe(want); expect(h.restored).toBe(Math.min(b.maxHp - 10, Math.floor(want * 1.5)));
-    const s = withGame(f.g, () => mend(f.cb, a, b, { kind: 'shield', base: 6, profile: 'mend' }, { who: c })); expect(s.shield).toBe(Math.floor(6 * (statOf('mend', c) * enemyLevelRow(12).damage_mult) * 2)); expect(b.shield).toBe(s.shield);
+    const want = 5 * statOf('mend', c) * levelFactor('mend', 12); /* in the formula's order: base × Stat × Level */ expect(h.amount).toBe(want); expect(h.restored).toBe(Math.min(b.maxHp - 10, Math.floor(want * 1.5)));
+    const s = withGame(f.g, () => mend(f.cb, a, b, { kind: 'shield', base: 6, profile: 'mend' }, { who: c })); expect(s.shield).toBe(Math.floor(6 * (statOf('mend', c) * levelFactor('mend', 12)) * 2)); expect(b.shield).toBe(s.shield);
   });
 });

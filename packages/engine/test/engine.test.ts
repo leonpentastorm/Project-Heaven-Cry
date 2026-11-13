@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
-import {
+import { scaleOf,
   PORTRAIT_MAX, SHEET_REV,
   ARCHETYPES, FOG_CORE, votesOf, rerollFrom, memoryOf, recall, SCENES_PER_CHAPTER, apLeft, npcsOf, momentsOpen, wikiKinds, wikiLookup, wikiEntries, ytId, ytStart, songOf, musicFor, startSong, songMod, type Sheet, type GameState, apply, resolveAttack, deriveCreation, eligibleClasses, levelForXp, maxHp, mod, movement, newCharacter, newGame,
   standable, loadedOf, pendingPerkSteps, validateSheet, viewFor, active, apForTiles, paths, startCombat, MAPS, RuleError, overweightKg, equip, fitMod, useWeaponSkill, fieldRepair, pairedAttack, defense, visibility, shove, toggleProne, setOverwatch, fireBurst, brace, refOf, keyOf, notesAt, BUILT_IN_CAMPAIGNS, validateCampaign, zoneMap, makeObject, moveUnit, damageObject, toggleDoor, storyObjects, mapBrief, positionsOf, combatReport, rollInjury, armPenalty, beginTurn, WEAPON, packOf, reload, analyze, carriedKg, spareMags, previewAttack, lineOfSight, shootCover, pickUp, loadMagazine, coverOf, loadAll,
@@ -21,7 +21,7 @@ describe('spec tables', () => {
   it('HP and movement (Derived stats)', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
     c.attrs.endurance = 3; c.skills.pain_threshold = 2; c.level = 3; // rules 1.13: HP a level reads Pain Threshold
-    expect(maxHp(c)).toBe(100 + 15 * 2 + 2 * (5 + 4));
+    expect(maxHp(c)).toBe(Math.round(scaleOf(3) * (100 + 15 * 2 + 2 * (5 + 4)))); // rules 1.36: × scale(level)
     c.attrs.agility = 3; c.armourClass = 0; expect(movement(c)).toBe(2);
     c.armourClass = 5; expect(movement(c)).toBe(1);
   });

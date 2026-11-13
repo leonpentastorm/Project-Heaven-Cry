@@ -1331,7 +1331,7 @@
   "balance": {
     "rules": "rules 1.26 (the re-fit, 12 Nov 2026): the balance contract. docs/design/balance-contract.md explains every number; packages/engine/test/balance-contract.test.ts measures each system and fails when it leaves its band.",
     "provisional": true,
-    "unit": "percent of what the normal-share plain rifle deals in one 6-AP turn on the simulator's range at the same level (a heal: of one Soldier-turn)",
+    "unit": "percent of what the normal-share plain rifle deals in one 6-AP turn on the simulator's range at the same level; a heal or a shield (rules 1.36): unit_heal",
     "ratio_allin_to_normal": 1.25,
     "levels": [
       1,
@@ -1406,14 +1406,18 @@
         "dial": "patrons.json the Hymns' values; rules.json output.profiles.blessing.k"
       },
       "healer_turn": {
-        "allin": 200,
-        "what": "a healer's turn, all in, in Soldier-turns x 100 (rules 1.27, the heal re-fit: was 125; a normal share 160): the Soul healer's steady Buff heal; the Sigil healer's MEND line of 3 glyphs sits on the same ceiling through output.profiles.sigil_mend.k; a Hymn turn's healing is capped at hymn_heal_cap",
-        "dial": "rules.json output.profiles.healing.k (and mend; sigil_mend, soul_mend and blessing_mend for their own systems)",
-        "hymn_heal_cap": 250
+        "allin": 45,
+        "unit": "heal",
+        "what": "rules 1.36: an off-heal's turn, all in, in percent of the reference character's HP: the Outburst's steady Buff heal (Begin, Pumps with Rage and Love, Release); the Sigil MEND line of 3 glyphs sits on the same line (sigil_mend.k). Was 200 Soldier-turns (rules 1.27).",
+        "dial": "soul_modules.json schools.buff.heal on output.profiles.soul_mend (the Sigil: sigils.json mend.heal, output.profiles.sigil_mend.k)",
+        "hymn_heal_cap": 65,
+        "hymn_avg": 45,
+        "whisper": 15,
+        "hymn_note": "a Hymn turn's healing (Warm Hands and Health) at most hymn_heal_cap; averaged over the Hymn's wait about hymn_avg; a Whisper (Health) about whisper"
       },
       "shield": {
         "of_heal": 1.2,
-        "what": "a shield is worth 1.2 times the heal of the same cost"
+        "what": "a shield is worth 1.2 times the heal of the same cost (under the shield order, rules 1.36)"
       },
       "weapon_art": {
         "what": "not built: may break the ceiling as a charged ultimate, counted in the build's fight average (steady + 10%)"
@@ -1429,8 +1433,11 @@
         "dial": "rules.json shadow.per_point (fitted after the window rows are measured)"
       },
       "tending_turn": {
-        "allin": 200,
-        "what": "the Mender's healing turn through Bonds, all in, in Soldier-turns x 100 (rules 1.33; the healer ceiling of rules 1.27); a door user about 174",
+        "allin": 65,
+        "door_allin": 59,
+        "unit": "heal",
+        "provisional": true,
+        "what": "the Mender's healing turn through Bonds (Triage and two Mends on Bonded allies), all in, in percent of the reference character's HP (rules 1.36: the top heal, Leon); a door user about 59 (rules 1.33 measured it in Soldier-turns: 200)",
         "dial": "rules.json output.profiles.tend.k"
       },
       "mender_offence": {
@@ -1442,17 +1449,27 @@
         "allin": 100,
         "what": "the Mender's best three turns (strike, heal, strike: the Ledger included), never above a rifle-turn on average (rules 1.33)",
         "dial": "classes.json bard.ledger numbers.factor"
+      },
+      "shield_order": {
+        "faith": 1.0,
+        "tending_shield": 0.36,
+        "sigil_ward_line": 0.33,
+        "outburst_inverse": 0.33,
+        "top_pct": 70,
+        "provisional": true,
+        "what": "rules 1.36 (Leon: the strongest shield in the game is Faith's): the strongest single use of each source, as a share of Faith's (Sanctuary's pool, about two full assaults: top_pct of the reference HP, all in). Faith, then the Mender's Tending shield, then the Sigil WARD Line and the Outburst's Inverse shield.",
+        "dial": "classes.json guardian sanctuary amounts.sanctuary_cap.base; tending.json tend.shield; sigils.json ward.shield; soul_modules.json inverse.shield"
       }
     },
     "yardsticks": {
       "soldier_turn": {
         "1": 18.5,
-        "3": 21.5,
-        "6": 25.4,
-        "9": 32.4,
-        "12": 37.8,
-        "20": 60.2,
-        "note": "what one Soldier of the fight's level takes off the plain rifleman in one of its turns (heal-shield-pass.md 1.1); one Soldier-turn kept off the squad counts as one plain rifle's turn of damage"
+        "3": 24.2,
+        "6": 34.1,
+        "9": 54.1,
+        "12": 77.5,
+        "20": 282.2,
+        "note": "what one Soldier of the fight's level takes off the plain rifleman in one of its turns (heal-shield-pass.md 1.1); one Soldier-turn kept off the squad counts as one plain rifle's turn of damage Rules 1.36: in the level scale's units (x scale(level))."
       },
       "control": {
         "denied_turn": 1.0,
@@ -1494,8 +1511,26 @@
         "peak": 1.65,
         "ultimate": 2.5,
         "note": "the budget rule for one use: allowed = (AP / 6) x tier x (1 + cost allowances) x the area worth"
+      },
+      "full_assault": {
+        "1": 55,
+        "5": 85,
+        "10": 158,
+        "20": 708,
+        "provisional": true,
+        "note": "rules 1.36 (heal-shield-percent-spec.md section 2, Leon: accepted): what the fire doctrine puts on one character in one round of the standard encounter (the Elite focused, three quarters of a Soldier-turn), in HP, x scale"
+      },
+      "heal_floor": {
+        "1": 18,
+        "5": 27,
+        "10": 44,
+        "20": 178,
+        "recruit": 25,
+        "provisional": true,
+        "note": "rules 1.36: floor (a): one 2-AP heal action of the least trained legal healer restores at least one Soldier hit through Class 1 armour (in HP, x scale); the 125-HP level 1 Recruit's quick heal is 25 (the gate: 20%)"
       }
-    }
+    },
+    "unit_heal": "rules 1.36 (heal-shield-percent-spec.md): percent of the reference character's max HP (output.level.reference_hp) restored or shielded by one whole turn spent on the source, all in"
   },
   "output": {
     "provisional": true,

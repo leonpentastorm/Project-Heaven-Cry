@@ -19,6 +19,7 @@ import { SQUAD, FIGHTS } from './report';
 import { gunBuild, gunRow, ROTATIONS } from './guns-measure';
 import { pattern } from './magic-measure';
 import { faithBuild, doorFaithBuild, chaplainBuild, prayerRow } from './faith-measure';
+import { levelFactor } from '../../src';
 import { inventory, SOLDIER_TURN } from './heal-measure';
 
 export const R_LEVELS = [1, 5, 10, 20];
@@ -26,6 +27,8 @@ export const GUN_SET = ['long_rifle', 'hellraiser_service_rifle', 'adamantile_ba
 export const SYSTEMS = ['plain', 'gun', 'blade', 'tank', 'sigil2', 'sigil3', 'sigil4', 'ob', 'obPeak', 'whisper', 'hymn', 'heal', 'chaplain'];
 const pct = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 100) : 0);
 
+/** Rules 1.36: the reference character's max HP at a level (rules.json output.level.reference_hp): the unit of a heal or a shield. */
+export const refHpAt = (level: number): number => levelFactor('reference_hp', level);
 /** A Soldier-turn at any level: the measured table, straight lines between its rows. */
 export function soldierTurnAt(level: number): number {
   const ks = Object.keys(SOLDIER_TURN).map(Number).sort((a, b) => a - b);
@@ -53,7 +56,7 @@ export function measure(level: number, variant: string, n: number, which: string
     if (s === 'obPeak') { let r = pattern('peak', 'outburst', variant, level, n * 2, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 1); if (!r.casts) r = pattern('peak', 'outburst', variant, level, n * 2, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 2); out.obPeak = r.pctRifle; errors += r.errors; }
     if (s === 'whisper' || s === 'hymn') { if (out.whisper == null) { const r = prayerRow('faith', doorFaithBuild('old_overcast'), variant, level, n, yard); out.whisper = r.pctQuietTurn; out.hymn = r.pctHymnTurn; errors += r.errors; } }
     if (s === 'chaplain') { const r = prayerRow('chaplain', chaplainBuild('old_overcast'), variant, level, n, yard); out.chaplain = r.pctQuietTurn; (out as any).chaplainHymn = r.pctHymnTurn; errors += r.errors; }
-    if (s === 'heal') { const r = inventory('mender', variant, level, soldierTurnAt(level)).find((q) => /steady \(Rage and Love/.test(q.what)); out.heal = r ? r.pctNow : 0; }
+    if (s === 'heal') { const r = inventory('outburst', variant, level, refHpAt(level)) /* rules 1.36: the Outburst heals by its own pair (Will Power): its all-in build */.find((q) => /steady \(Rage and Love/.test(q.what)); out.heal = r ? r.pctNow : 0; }
   }
   out.errors = errors;
   return out;

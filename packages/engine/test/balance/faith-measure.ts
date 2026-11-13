@@ -16,7 +16,7 @@
 import { runCell, runFight, MAP_ID, TIER_WEAPON } from './sim';
 import { BUILD, BUILDS, buildCharacter } from './builds';
 import { prayerHarms } from './policies';
-import { FAITH_PATRONS, FAITH_PATRON, WHISPERS, MAPS, ENEMY, blessingPower, prayerCooldown, devotionNow, maxHp, bindGame, newGame } from '../../src';
+import { RULES, FAITH_PATRONS, FAITH_PATRON, WHISPERS, MAPS, ENEMY, blessingPower, prayerCooldown, devotionNow, maxHp, bindGame, newGame } from '../../src';
 import * as ENGINE from '../../src';
 
 export const F_LEVELS = [1, 3, 6, 9, 12, 20];
@@ -141,7 +141,7 @@ export function inventory(): InvRow[] {
 /** One Soldier-turn, the heal and shield pass's yardstick (docs/design/handoffs/heal-shield-pass.md, section 1.1: what
  * one Soldier of the fight's level takes off the plain rifleman in one of its turns, two Soldiers firing, 60 fights a
  * level). `soldierTurn` above is this file's own cross-check of it (one Soldier, fewer fights: it reads lower). */
-export const SOLDIER_TURN: Record<number, number> = { 1: 18.5, 3: 21.5, 6: 25.4, 9: 32.4, 12: 37.8, 20: 60.2 };
+export const SOLDIER_TURN: Record<number, number> = Object.fromEntries(Object.entries((RULES as any).balance.yardsticks.soldier_turn).filter(([k]) => /^\d+$/.test(k)).map(([k, v]) => [Number(k), Number(v)])); // rules 1.36: data, in the level scale's units
 /** Rules 1.20: prayer heals and shields grow with the caster's level (×1 when the engine has no such rule). */
 const mend = (level: number): number => (typeof (ENGINE as any).mendFactor === 'function' ? (ENGINE as any).mendFactor(level) : 1);
 const entryOf = (id: string): any => (WHISPERS as any[]).find((w) => w.id === id) || (FAITH_PATRONS as any[]).flatMap((p) => p.hymns || []).find((h) => h.id === id);

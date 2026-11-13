@@ -2111,7 +2111,7 @@ function onHit(cb: Combat, att: Unit, t: Unit, fx: any, rng?: Rng | null): strin
   if (fx.apply === 'prone') { const pr = applyCond(cb, rng as Rng, att, t, 'prone', undefined, undefined, { skipSave: true }); return t.prone ? ' · knocked prone' : pr; }
   if (fx.apply === 'bleed') return /Bleeding/.test(applyCond(cb, rng as Rng, att, t, 'bleeding', undefined, undefined, { skipSave: true })) ? ' · Bleeding' : '';
   if (fx.apply === 'armour_break') { // on the armour it wears: a Break's 0 for a round is not what is cut (it is mended to the cut value)
-    const worn = effectiveArmour(t); t.baseArmour ??= worn; const sc = scaleOf(att.level), now = Math.max(Math.round(t.baseArmour - 10 * sc), Math.round(worn - (fx.value || 5) * sc), 0); // rules 1.36: armour broken in HP, × scale at the striker's level setEffectiveArmour(t, now);
+    const worn = effectiveArmour(t); t.baseArmour ??= worn; const sc = scaleOf(att.level), now = Math.max(Math.round(t.baseArmour - 10 * sc), Math.round(worn - (fx.value || 5) * sc), 0); setEffectiveArmour(t, now); // rules 1.36: armour broken in HP, × scale at the striker's level
     return ' · armour broken (' + now + ')'; }
   if (fx.apply === 'push') {
     const mv = displace(cb, rng, t, { away: att.pos, tiles: fx.value || 1 }, { by: att, how: 'push', source: 'knockback' });

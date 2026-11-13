@@ -16,7 +16,7 @@
 import { runFight, MAP_ID, TIER_WEAPON } from './sim';
 import { BUILD, BUILDS, LEVELS } from './builds';
 import { POLICIES, plain, type Ctx, type Step, type Policy } from './policies';
-import {
+import { RULES, scaleOf,
   MAPS, ENEMY, SIGIL, MODULE, SCHOOL, FEELING, STAGE_MULT, WHISPERS, FAITH_PATRON, bindGame, dist, paths, apForTiles, lineOfSight, standable, canStand,
   previewOutburst, heartReach, planEvoke, glyphCost, previewPrayer, patronOf, blessingPower, devotionNow,
   mendFactor, outburstHeal, inverseShield, shellShield, loveHeal, interventionHeal, BUFF_HEAL, BOON_AREA, CLASS_MOVE_POOL, profileOf,
@@ -34,9 +34,9 @@ for (const t of ['soldier', 'elite']) if (!ENEMY['sim_bag_' + t]) { ENEMY['sim_b
 
 /** One Soldier-turn, as measured for the report (60 fights a level, two Soldiers on the rifleman; section 1 of the
  * hand-off). The cheap tests read this table; `soldierTurn` measures it again. */
-export const SOLDIER_TURN: Record<number, number> = { 1: 18.5, 3: 21.5, 6: 25.4, 9: 32.4, 12: 37.8, 20: 60.2 };
+export const SOLDIER_TURN: Record<number, number> = Object.fromEntries(Object.entries((RULES as any).balance.yardsticks.soldier_turn).filter(([k]) => /^\d+$/.test(k)).map(([k, v]) => [Number(k), Number(v)])); // rules 1.36: data, in the level scale's units
 /** The plain rifleman's max HP at the reference levels (builds.ts 'plain_gun', normal share). */
-export const RIFLEMAN_HP: Record<number, number> = { 1: 145, 3: 163, 6: 190, 9: 233, 12: 288, 20: 445 };
+export const RIFLEMAN_HP: Record<number, number> = Object.fromEntries(Object.entries({ 1: 145, 3: 163, 6: 190, 9: 233, 12: 288, 20: 445 }).map(([k, v]) => [Number(k), Math.round(v * scaleOf(Number(k)))])); // the measured rifleman, × scale (rules 1.36)
 export function soldierTurn(level: number, n = 30, soldiers = 2) {
   let taken = 0, ft = 0, lasted = 0, hp = 0;
   for (let i = 0; i < n; i++) {
@@ -220,7 +220,8 @@ export function inventory(build: string, variant: string, level: number, st = SO
   const { g, u, c } = unitOf(build, variant, level), m = u.mg || {}, lf = mendFactor(level), rows: InvRow[] = [];
   const add = (school: string, what: string, cost: string, targets: string, before: number, now: number, note?: string) => rows.push({ school, what, cost, targets, before: Math.round(before), now: Math.round(now), pctBefore: pct(before, st), pctNow: pct(now, st), ...(note ? { note } : {}) });
   if (m.evoker || (m.words || []).length) {
-    const s = (m.sigilBoon ?? m.sigilMult ?? 1) * (m.healMult || 1), mend = (SIGIL.mend as any).heal, ward = (SIGIL.ward as any).shield, rp = 0.9, cond = 1.5, spread = 0.6;
+    const s = (m.sigilBoon ?? m.sigilMult ?? 1), // rules 1.36: the boon is Brain Power's alone (sigil_mend.k)
+      mend = (SIGIL.mend as any).heal, ward = (SIGIL.ward as any).shield, rp = 0.9, cond = 1.5, spread = 0.6;
     add('Sigil', 'MEND · SEEK (2 glyphs)', 'about 4 AP, 5 charge', '1', OLD.mend * s, mend * s * lf);
     add('Sigil', 'MEND · CONDENSE · SEEK (3 glyphs)', 'about 5.5 AP, 6 charge', '1', OLD.mend * cond * s, mend * cond * s * lf);
     add('Sigil', 'MEND · MEND · CONDENSE · SEEK (the full Line)', 'about 6.5 AP over 1.1 to 1.6 turns, 9 charge', '1', OLD.mend * 2 * rp * cond * s, mend * 2 * rp * cond * s * lf);

@@ -4,7 +4,7 @@
 // reducer makes.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
-import {
+import { scaleOf,
   applyCond, applyDamage, resolveAttack, damageObject, condOn, d20, maxHp, holderOf, briefOf, passive, emit, unitSave, previewAttack,
   type Unit, type Combat, type GameState, type Character,
 } from '../src';
@@ -170,7 +170,7 @@ describe('Oil in My Mind / Oil in My Soul', () => {
     const head = check(s, c.id, ['durability']).roll();
     expect(head.match(/−1 perks/g)?.length).toBe(1);
     const base = maxHp({ ...s.g.characters[d.id], skills: { ...s.g.characters[c.id].skills }, attrs: { ...s.g.characters[c.id].attrs } } as any);
-    expect(maxHp(s.g.characters[c.id])).toBe(base - 4 * 2);
+    expect(Math.abs(maxHp(s.g.characters[c.id]) - (base - 4 * 2 * scaleOf(5)))).toBeLessThanOrEqual(1); // rules 1.36: the 8 HP inside the bracket, × scale(5)
     expect(check(s, c.id, ['visualization']).roll()).toMatch(/\+1 Oil in My Mind/);
     expect(check(s, c.id, ['empathy']).roll()).toMatch(/\+1 Oil in My Soul/);
   });

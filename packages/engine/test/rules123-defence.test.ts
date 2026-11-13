@@ -13,7 +13,7 @@
 // The bands (percent of a Soldier-turn, heal per AP) are pinned in balance/defence-measure.test.ts.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import {
+import { ENEMY_LEVELS,
   ENEMY, RULES, MODULE, TECHNIQUE, healUnit, grantShield, enemyIntent, enemyTurn, healerMark, healerFocus, tendedLately, noteTended, mendFactor, healingMult,
   TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, RALLY_HEAL, FIELD_REPAIR_HEAL, TEND_ROUNDS, TEND_NOTICE, SPLIT_BOON, outburstHeal, inverseShield, burstRolls, WEAPON, enemyStats,
   applyCond, HEALER_WHY, type Unit,
@@ -148,16 +148,16 @@ describe('rules 1.23: the enemies go for the healer', () => {
 });
 
 describe('rules 1.23: the medic\'s kit', () => {
-  it('the numbers: Triage 5, a stim 6, Rally 6, a Field Repair 3 a point; out of a fight a Triage is three times', () => {
-    expect([TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL, FIELD_REPAIR_HEAL, TRIAGE_REST_MULT]).toEqual([5, 6, 6, 3, 3]);
-    expect((RULES as any).mending.medic).toMatchObject({ triage: 5, stim: 6, rally: 6, field_repair_per_point: 3, triage_out_of_fight_mult: 3, provisional: true, level_factor: true });
+  it('the numbers: Triage 5, a stim the gate alone (rules 1.36: 20% of its target), Rally 6, a Field Repair 3 a point; out of a fight a Triage is three times', () => {
+    expect([TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL, FIELD_REPAIR_HEAL, TRIAGE_REST_MULT]).toEqual([5, 0, 6, 3, 3]);
+    expect((RULES as any).mending.medic).toMatchObject({ triage: 5, stim: 0, stim_pct: 0.2, rally: 6, field_repair_per_point: 3, triage_out_of_fight_mult: 3, provisional: true, level_factor: true });
   });
-  for (const level of [1, 12]) it('a stim heals 6 × Healing given × the level factor (level ' + level + ')', () => {
+  for (const level of [1, 12]) it('a stim heals 20% of its target\'s max HP, the whole bar counted (rules 1.36; level ' + level + ')', () => {
     const f = fightWith([{ kit: 'medic', level }, { level }], [{ tier: 'minion' }]); const [me, al] = f.pcs; al.pos = '3,5'; me.pos = '3,4'; (al as any).healRecv = 1; al.maxHp = 900; al.hp = 100;
     const c = f.g.characters[me.charId!]; c.stims = 2; f.turn(me);
     f.act({ type: 'combat/stim', unitId: me.id, targetId: al.id } as any);
-    const want = Math.floor(6 * G(f as any, () => healingMult(f.g.characters[me.charId!])) * mendFactor(level));
-    expect(f.unit(al.id).hp).toBe(100 + want); expect(want).toBeGreaterThan(0); expect(mendFactor(12)).toBe(1.38);
+    const want = Math.ceil(0.2 * 900); void healingMult;
+    expect(f.unit(al.id).hp).toBe(100 + want); expect(want).toBeGreaterThan(0);
     expect(tendedLately(f.cb, f.unit(me.id))).toBe(want); // the medic's kit marks the medic too
   });
   // rules 1.33: Triage is the Mender's data move (4.3 × the tend profile, through the Attuner): test/tending.test.ts
@@ -179,8 +179,8 @@ describe('rules 1.23: Split on a heal or a shield', () => {
 });
 
 describe('rules 1.23: the Boss, and the enemy\'s Burst', () => {
-  it('the Boss has 820 HP at level 1 (it was 960) and 1,484 at level 20; the Elite, the Soldier and every damage factor are unchanged', () => {
-    expect(ENEMY.boss.hp).toBe(820); expect(enemyStats('boss', 20).hp).toBe(1484); expect(enemyStats('boss', 6).hp).toBe(Math.round(820 * 1.38));
+  it('the Boss has 820 HP at level 1 (it was 960) and 6,957 at level 20 (rules 1.36: × scale); the Elite, the Soldier and every damage factor are unchanged', () => {
+    expect(ENEMY.boss.hp).toBe(820); expect(enemyStats('boss', 20).hp).toBe(6957); expect(enemyStats('boss', 6).hp).toBe(Math.round(820 * ENEMY_LEVELS.table[5].hp_mult));
     expect([ENEMY.elite.hp, ENEMY.soldier.hp, ENEMY.minion.hp]).toEqual([240, 140, 70]);
     expect([ENEMY.soldier.damage, ENEMY.elite.damage, ENEMY.boss.damage]).toEqual([0.78, 1.05, 1.2]);
   });
