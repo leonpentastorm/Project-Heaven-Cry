@@ -39,6 +39,20 @@ export function faithBuild(patron: string): string {
   if (!BUILD[id]) { const def = { ...BUILD.faith, id, label: 'Faith (' + (FAITH_PATRON[patron]?.name || patron) + ')', belief: { kind: 'faithful', patron }, policy: 'prayer', devotionAt: DEVOTION_BY_LEVEL }; BUILDS.push(def); BUILD[id] = def; }
   return id;
 }
+/** Rules 1.31 (Classes 3.0 step 5): the Faith build as a DOOR user: the same sheet with no class (an "as if": the rules
+ * give it the Chaplain at level 3; this measures what the door alone gives, the contract's whisper and hymn rows). */
+export function doorFaithBuild(patron: string): string {
+  const id = 'faith_door:' + patron;
+  if (!BUILD[id]) { const def = { ...BUILD[faithBuild(patron)], id, label: 'Faith door (' + (FAITH_PATRON[patron]?.name || patron) + '; no class: an as if)', tweak: (c: any) => { c.classId = null; } }; BUILDS.push(def); BUILD[id] = def; }
+  return id;
+}
+/** Rules 1.31: the Chaplain's own sheet (chaplain-spec.md section 7): Faith all in, then Dexterity (the weapon carries
+ * Smite), the rest as the Faith build. The class's line, `balance.ceilings.chaplain_turn`. */
+export function chaplainBuild(patron = 'old_overcast'): string {
+  const id = 'chaplain:' + patron;
+  if (!BUILD[id]) { const f = BUILD[faithBuild(patron)]; const def = { ...f, id, label: 'Chaplain, Faith all in + Dexterity (' + (FAITH_PATRON[patron]?.name || patron) + ')', allin: ['faith', 'dexterity', ...f.allin.filter((s: string) => s !== 'faith' && s !== 'dexterity')] }; BUILDS.push(def); BUILD[id] = def; }
+  return id;
+}
 /** The dabbler: the plain rifleman with Faith 3 and Virtue 3 GIVEN to it (an "as if": the points are not taken from
  * anything, so this is the most a gunner could gain from prayer, not what a legal sheet gains), sworn at Devotion 3. */
 export function dabblerBuild(patron = 'old_overcast', devotion = 3): string {

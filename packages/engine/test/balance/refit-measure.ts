@@ -10,18 +10,20 @@
 //   tank        the Tank (Defender, sabre and riot shield)
 //   sigil2..4   a Line of 2, 3, 4 glyphs over the turns it takes (magic-measure.ts pattern)
 //   ob          the Outburst, steady play with the early feelings; obPeak: the biggest Release (all 25 felt) in one turn
-//   whisper     Faith (Old Overcast): a turn with only a Whisper; hymn: a turn with a Hymn (faith-measure.ts prayerRow)
+//   whisper     Faith (Old Overcast): a turn with only a Whisper; hymn: a turn with a Hymn (faith-measure.ts prayerRow).
+//               Rules 1.31: the door's rows, so the sheet with no class (doorFaithBuild: the Chaplain's Smite is its own row)
+//   chaplain    the Chaplain (rules 1.31): Faith all in + Dexterity, a turn with only a Whisper and the weapon, Smite on it
 //   heal        the Soul healer's steady Buff heal (6 AP: one turn) in Soldier-turns (heal-measure.ts inventory), ×100
 import { runCell, runFight } from './sim';
 import { SQUAD, FIGHTS } from './report';
 import { gunBuild, gunRow, ROTATIONS } from './guns-measure';
 import { pattern } from './magic-measure';
-import { faithBuild, prayerRow } from './faith-measure';
+import { faithBuild, doorFaithBuild, chaplainBuild, prayerRow } from './faith-measure';
 import { inventory, SOLDIER_TURN } from './heal-measure';
 
 export const R_LEVELS = [1, 5, 10, 20];
 export const GUN_SET = ['long_rifle', 'hellraiser_service_rifle', 'adamantile_battle_rifle', 'ccec_marksman_rifle'];
-export const SYSTEMS = ['plain', 'gun', 'blade', 'tank', 'sigil2', 'sigil3', 'sigil4', 'ob', 'obPeak', 'whisper', 'hymn', 'heal'];
+export const SYSTEMS = ['plain', 'gun', 'blade', 'tank', 'sigil2', 'sigil3', 'sigil4', 'ob', 'obPeak', 'whisper', 'hymn', 'heal', 'chaplain'];
 const pct = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 100) : 0);
 
 /** A Soldier-turn at any level: the measured table, straight lines between its rows. */
@@ -49,7 +51,8 @@ export function measure(level: number, variant: string, n: number, which: string
     if (/^sigil[234]$/.test(s)) { const g = Number(s.slice(5)), r = pattern(g + ' glyphs', 'sigil', variant, level, n, { glyphs: g }, /^Evoke /, y); out[s] = r.casts ? r.pctRifle : 0; errors += r.errors; }
     if (s === 'ob') { const r = pattern('steady', 'outburst', variant, level, n, { feelings: 'early' }, /^Release /, y); out.ob = r.pctRifle; errors += r.errors; }
     if (s === 'obPeak') { let r = pattern('peak', 'outburst', variant, level, n * 2, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 1); if (!r.casts) r = pattern('peak', 'outburst', variant, level, n * 2, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 2); out.obPeak = r.pctRifle; errors += r.errors; }
-    if (s === 'whisper' || s === 'hymn') { if (out.whisper == null) { const r = prayerRow('faith', faithBuild('old_overcast'), variant, level, n, yard); out.whisper = r.pctQuietTurn; out.hymn = r.pctHymnTurn; errors += r.errors; } }
+    if (s === 'whisper' || s === 'hymn') { if (out.whisper == null) { const r = prayerRow('faith', doorFaithBuild('old_overcast'), variant, level, n, yard); out.whisper = r.pctQuietTurn; out.hymn = r.pctHymnTurn; errors += r.errors; } }
+    if (s === 'chaplain') { const r = prayerRow('chaplain', chaplainBuild('old_overcast'), variant, level, n, yard); out.chaplain = r.pctQuietTurn; (out as any).chaplainHymn = r.pctHymnTurn; errors += r.errors; }
     if (s === 'heal') { const r = inventory('mender', variant, level, soldierTurnAt(level)).find((q) => /steady \(Rage and Love/.test(q.what)); out.heal = r ? r.pctNow : 0; }
   }
   out.errors = errors;

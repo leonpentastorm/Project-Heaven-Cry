@@ -11,7 +11,7 @@ import {
 } from '../src';
 import { mendFactor } from '../src/effects/mending'; // rules 1.20: prayer heals and shields grow with level
 import { fightWith, storyWith, withGame, sheetOf } from './helpers/perkfight';
-import { clearPrayerLimits, blessingPower, prayerMendDial } from '../src';
+import { clearPrayerLimits, blessingPower, prayerMendDial, WHISPER_FAITH, HYMN_FAITH } from '../src';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
@@ -79,8 +79,10 @@ describe('previewPrayer: the gate, the mode and every refusal', () => {
     expect(previewPrayer(a.g, a.me.id, 'hymn', 'mother_ember.hearthlight').roll!.tn).toBe(16);
     expect(previewPrayer(a.g, a.me.id, 'hymn', 'mother_ember.feed_the_fire').why).toMatch(/haven't learned/);
   });
-  it('refuses: Faith 3, an Atheist\'s Miracle, Faith 7, Devotion 10 (rules 1.6.2), Silenced, not your turn, AP', () => {
-    const h = holy({ faith: 2 }); expect(previewPrayer(h.g, h.me.id, 'whisper', 'luck').why).toMatch(/Faith 3/);
+  it('refuses: Faith 1 (a Whisper) and 3 (a Hymn; rules 1.31), an Atheist\'s Miracle, Faith 7, Devotion 10 (rules 1.6.2), Silenced, not your turn, AP', () => {
+    const z = holy({ faith: 0 }); expect(previewPrayer(z.g, z.me.id, 'whisper', 'luck').why).toBe('Praying needs Faith ' + WHISPER_FAITH + '.');
+    const h = holy({ faith: HYMN_FAITH - 1 }); expect(previewPrayer(h.g, h.me.id, 'whisper', 'luck').ok).toBe(true);
+    expect(previewPrayer(h.g, h.me.id, 'hymn', 'saints_shield').why).toBe('A Hymn needs Faith ' + HYMN_FAITH + '.');
     const a = holy({ atheist: true }); expect(previewPrayer(a.g, a.me.id, 'miracle', '').why).toMatch(/Atheist never gets a Miracle/);
     const lo = holy({ faith: 6, devotion: 9 }); expect(previewPrayer(lo.g, lo.me.id, 'miracle', 'saints_verdict').why).toMatch(/Faith 7/);
     const dv = holy({ faith: 7, devotion: 9 }); expect(previewPrayer(dv.g, dv.me.id, 'miracle', 'saints_verdict').why).toMatch(/Devotion 10 \(you have 9\)/);

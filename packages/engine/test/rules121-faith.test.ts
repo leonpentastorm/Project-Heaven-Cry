@@ -14,7 +14,7 @@
 // The measurements behind the numbers are test/balance/faith-measure.test.ts (the cheap targets run in `npm run balance`).
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import { clearPrayerLimits, previewPrayer, FAITH_PATRON, WHISPER, WHISPERS, FAITH_FX, ATHEIST_TN, prayerDamage, d20, resolveAttack, condOn, type Combat, type Unit, type Character, type Action } from '../src';
+import { clearPrayerLimits, previewPrayer, FAITH_PATRON, WHISPER, WHISPERS, FAITH_FX, ATHEIST_TN, WHISPER_FAITH, prayerDamage, d20, resolveAttack, condOn, type Combat, type Unit, type Character, type Action } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
@@ -114,8 +114,9 @@ describe('Rebuke, the seventh Whisper (item 1260)', () => {
     a.g.rng.state = rngFor(2); const ap = a.me.ap; a.pray('whisper', 'rebuke', { targetId: a.foe.id }); expect(a.foe.hp).toBe(2000); expect(a.me.ap).toBe(ap - 1);
     const b = holy({ atheist: true }); b.g.rng.state = rngFor(19); b.pray('whisper', 'rebuke', { targetId: b.foe.id }); expect(b.foe.hp).toBe(2000 - Math.round(20 * b.me.blessPower!));
   });
-  it('praying needs Faith 3: below it there is no Rebuke', () => {
-    const h = holy({ faith: 2 }); expect(() => h.pray('whisper', 'rebuke', { targetId: h.foe.id })).toThrow(/Faith 3/);
+  it('praying needs Faith 1 (rules 1.31): below it there is no Rebuke; at Faith 1 there is', () => {
+    const h = holy({ faith: WHISPER_FAITH - 1 }); expect(() => h.pray('whisper', 'rebuke', { targetId: h.foe.id })).toThrow(/Praying needs Faith/);
+    const one = holy({ faith: WHISPER_FAITH }); one.pray('whisper', 'rebuke', { targetId: one.foe.id }); expect(one.foe.hp).toBe(2000 - Math.round(20 * one.me.blessPower!));
   });
 });
 

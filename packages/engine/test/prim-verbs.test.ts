@@ -67,8 +67,8 @@ describe('P6: door verbs', () => {
     expect(perk(f, 'test_verb_whisper', { targetId: f.pc.id })).toBeNull();
     expect(f.cb.log.some((l: string) => /whispers a prayer/.test(l))).toBe(true);
     expect(perk(f, 'test_verb_whisper', { targetId: f.pc.id })).toMatch(/One Whisper a turn/);
-    const low = fight({ dexterity: 1, faith: 1 });
-    expect(perk(low, 'test_verb_whisper', { targetId: low.pc.id })).toMatch(/Praying needs Faith/);
+    const low = fight({ dexterity: 1, faith: 1 }); // rules 1.31: Whispers open at Faith 1
+    expect(perk(low, 'test_verb_whisper', { targetId: low.pc.id })).toBeNull();
     void g; void reactionsUsed;
   });
   it('the descriptors list it with the engine\'s pick list: a new verb needs no client code', () => {

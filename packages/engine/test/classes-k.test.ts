@@ -91,9 +91,9 @@ describe('Lumeri Templar', () => {
     const f = fightWith([TEMPLAR], [{}]); templar(f);
     const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '4,2')); f.unit(u.id).ap = 9; seed(f, 20);
     act(f, f.unit(u.id), { type: 'combat/pray', choice: 'judgement', targetId: foe.id, mods: ['class:lumeri_templar.blessed_shells#load'] });
-    expect(f.unit(foe.id).hp).toBe(999); expect(logHas(f.cb, /Blessed Shells/)).toBe(true);
+    expect(f.unit(foe.id).hp).toBe(999); expect(logHas(f.cb, /Blessed Arms/)).toBe(true);
     seed(f, 10); act(f, f.unit(u.id), { type: 'combat/attack', targetId: foe.id, mode: 'melee' });
-    expect(logHas(f.cb, /blessed shell bursts: Judgement on Foe 1/)).toBe(true);
+    expect(logHas(f.cb, /blessing in the weapon bursts: Judgement on Foe 1/)).toBe(true);
     expect(f.unit(foe.id).hp).toBeLessThan(999 - 40);
   });
   it('Blessed Shells in the story: a blessed shell (the engine rolls the prayer) loads at the next fight this scene', () => {

@@ -121,12 +121,17 @@ const byHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].in
 const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
 /** The patron ids (data/patrons.json): the words predicate `patron` takes. */
 const PATRON_IDS: string[] = ((patronsJ as any).items || []).map((p: any) => p.id);
+const PATRON_NAME: Record<string, string> = Object.fromEntries(((patronsJ as any).items || []).map((p: any) => [p.id, p.name]));
 const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.flags || {};
 
 // ============================================================================================== the predicates
 /** The closed list of `if` keys. Each reads the event; all of an effect's keys must hold. `<who>` is self, actor or
  * target. Numbers are shares of max HP (0.5: half) or tiles. */
 export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
+/** faith.ts lends the predicate `answered` its prayer door as it loads (this file can't import it: load order). */
+let ANSWERED: ((cb: Combat, rng: { state: number } | null, u: Unit, preview: boolean) => boolean) | null = null;
+/** faith.ts sets the door the predicate `answered` asks (prayerAnswered: Classes 3.0 step 5, the Chaplain). */
+export const setAnsweredDoor = (f: typeof ANSWERED) => { ANSWERED = f; };
 /** Add a predicate; `values`: the closed list its words come from (the validator refuses any other word). */
 const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
   PREDICATES[name] = { about, arg, test };
@@ -202,6 +207,9 @@ P('path_tiles_at_most', 'number', 'the move (its priced walk: ctx.tiles) is at m
 P('self_has_res', 'words', 'the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)', (ev, v) => list(v).every((id) => resNow(ev, id) >= 1), () => Object.keys(RESOURCES));
 P('self_lacks_res', 'words', 'the holder has none of one of these resources (as self_has_res)', (ev, v) => list(v).some((id) => resNow(ev, id) < 1), () => Object.keys(RESOURCES));
 P('patron', 'words', 'the holder is Faithful to one of these patrons (patrons.json ids)', (ev, v) => { const id = patronIdOf(ev.h.c || charOfUnit(ev.self)); return !!id && list(v).includes(id); }, PATRON_IDS);
+// Classes 3.0 step 5, the Chaplain (rules 1.31): the patron rows' other half, and a prayer that rides an event (Smite)
+P('not_patron', 'words', 'the holder is not Faithful to any of these patrons (an Atheist is none of them)', (ev, v) => { const id = patronIdOf(ev.h.c || charOfUnit(ev.self)); return !id || !list(v).includes(id); }, PATRON_IDS);
+P('answered', 'bool', 'a prayer of the holder\'s is (or is not) answered now (faith.ts prayerAnswered: the prayer door open, Faith and not Silenced; the Faithful always, an Atheist rolls the Whisper\'s TN; a preview rolls nothing). Put it last in `if`: it rolls', (ev, v) => (ANSWERED ? ANSWERED(ev.cb, ev.preview ? null : rngOf(ev.h, ev.ctx), ev.self, ev.preview) : false) === v);
 
 // ============================================================================================== amount sources (P3)
 const camel = (f: string) => f.replace(/_([a-z])/g, (_m, c) => c.toUpperCase());
@@ -242,6 +250,7 @@ function withNumbers(ev: Ev, x: any): any {
  * and {resmax:<id>} (the holder's resource now, and its most). Numbers from the data go in as {=.field} placeholders. */
 function fill(s: string, ev: Ev): string {
   return s.replace(/\{(self|actor|target)\}/g, (_m, w) => unitOf(ev, w as Who)?.name || '').replace(/\{source\}/g, () => ev.h.source?.name || '')
+  .replace(/\{patron\}/g, () => PATRON_NAME[patronIdOf(ev.h.c || charOfUnit(ev.self)) || ''] || 'the patron') // rules 1.31: the holder's patron (Smite's line)
   .replace(/\{gain\}/g, () => String((ev as any).gain ?? 0)).replace(/\{res:([a-z_]+)\}/g, (_m, id) => String(ev.self.res?.[id] ?? 0)).replace(/\{resmax:([a-z_]+)\}/g, (_m, id) => String(ev.self.resMax?.[id] ?? 0));
 }
 
@@ -326,9 +335,11 @@ O('mend_mult', ['heal', 'shield'], false, ['value'], 'multiply the heal or shiel
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
 O('deal', ANY, true, ['amount', 'via', 'nonlethal'], 'deal an amount block (amounts) to the self, actor or target; via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
-  const type = b.type || 'true', src: any = { by: ev.self, type, dmgType: type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
-  const go = () => { deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); };
+  const type = b.type || 'true', src: any = { by: ev.self, type, dmgType: b.element || type, shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(e.nonlethal ? { nonlethal: true } : {}) };
+  let sent = 0;
+  const go = () => { sent = deal(ev.cb, ev.self, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed }, { who: ev.h.c || null, src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }).sent; };
   if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
+  return ': ' + sent; // what reached the target, for a `say` with {then}
 });
 O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder\'s layer)', (ev, e) => {
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind === 'damage') return;
@@ -342,7 +353,10 @@ O('displace', ANY, true, ['tiles', 'how'], 'push the target away from the holder
 O('zone', ANY, true, ['kind', 'at', 'within', 'rounds', 'pool', 'clear'], 'lay a zone the holder owns (P10): kind (a data zone kind: magic.ts DATA_ZONE_KINDS), at (self, target or tile: the event\'s), within (its radius: a square), rounds, pool (what it has to give); clear: true ends the holder\'s zones of that kind (nothing said when it had none)', (ev, e) => {
   if (e.clear) return endZones(ev.cb, (z) => z.kind === e.kind && z.by === ev.self.id) > 0 ? undefined : false;
   const at: string | null = e.at === 'tile' ? ev.ctx.tile ?? ev.ctx.at ?? null : (e.at === 'target' ? ev.target : ev.self)?.pos ?? null; if (!at) return false;
-  makeZone(ev.cb, ev.self, { kind: e.kind, tiles: tilesAround(at, e.within ?? 0), rounds: typeof e.rounds === 'number' ? e.rounds : 1, ...(typeof e.pool === 'number' ? { pool: e.pool } : {}) });
+  // pool: a number, or (Classes 3.0 step 5, rules 1.31: Sanctuary's cap) the name of the item's amount block, worked out now
+  const pb = typeof e.pool === 'string' ? blockOf(ev.h, { amount: e.pool }) : null;
+  const pool = typeof e.pool === 'number' ? e.pool : pb ? amountOf({ ...specOf(pb), round: 'round' }, ev.self, { who: ev.h.c || null, counts: countsOf(ev, pb) }).amount : null;
+  makeZone(ev.cb, ev.self, { kind: e.kind, tiles: tilesAround(at, e.within ?? 0), rounds: typeof e.rounds === 'number' ? e.rounds : 1, ...(pool != null ? { pool } : {}) });
 });
 O('tie', ANY, true, ['kind', 'clear'], 'tie the holder to the target by a kind (P8: kit.ts tie; refused at the holder\'s cap: nothing said); clear: "target" ends the holder\'s ties of that kind to the target, "all" every one of that kind it holds', (ev, e) => {
   const t = pick(ev, e);

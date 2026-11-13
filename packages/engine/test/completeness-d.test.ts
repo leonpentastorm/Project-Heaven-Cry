@@ -166,11 +166,10 @@ describe('Defender, Channeler, Guardian, Bard Inspire, Glyph Mason', () => {
 });
 
 describe('class story actions', () => {
-  it('Guardian Sanctuary out of a fight: 60 MP, a ruling, once a scene', () => {
+  it('Chaplain Sanctuary out of a fight: no MP, the Narrator\'s ruling (rules 1.31)', () => {
     const s = storyWith([cls('guardian', 3, SOUL)]); const c = s.g.characters[s.chars[0].id]; c.mp = 200;
     s.act({ type: 'story/perk', charId: c.id, id: 'class:guardian.sanctuary', actionId: 'sanctuary_story' } as any);
-    expect(s.g.characters[c.id].mp).toBe(140); expect(rulingHas(s.g, /Sanctuary out of combat/)).toBe(true);
-    expect(() => s.act({ type: 'story/perk', charId: c.id, id: 'class:guardian.sanctuary', actionId: 'sanctuary_story' } as any)).toThrow(/Used/);
+    expect(s.g.characters[c.id].mp).toBe(200); expect(rulingHas(s.g, /Hymn only you can say/)).toBe(true);
   });
   it('RTC Contractor: Strike Call and Extraction in the story spend credits and open rulings', () => {
     const s = storyWith([adv('rtc_contractor')]); const c = s.chars[0];

@@ -534,6 +534,27 @@
       "source": "Classes 3.0 (rev4-primitives.md batch row read): Shadow's Read Intent, the Operative's Analyze, Bonds' aim read"
     },
     {
+      "id": "judged",
+      "name": "Judged",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "A Chaplain's weapon struck you on its turn: its patron's interventions land on you first. It lasts until your next turn ends.",
+      "effects": [],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "the bearer's turn ends",
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "Classes 3.0 (chaplain-spec.md rule 9; rules 1.31): how \"where the weapon struck\" is known"
+    },
+    {
       "id": "braced",
       "name": "Braced",
       "kind": "state",
