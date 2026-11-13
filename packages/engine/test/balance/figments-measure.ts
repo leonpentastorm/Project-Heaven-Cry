@@ -9,7 +9,7 @@
 // what AP is left; swap the core when it runs short. Fights: the build against two Soldiers on open ground, 5 rounds.
 import { startFight, TIER_WEAPON } from './sim';
 import { yardOf, soldierTurnAt } from './refit-measure';
-import { apply, withGame, beginTurn, previewAttack, dist, heldMax, ladderAt, figmentsOf, heldFigments, FORM, figmentCharge, projectionRange, canStand, unitSees } from '../../src';
+import { apply, withGame, beginTurn, previewAttack, sideSeesUnit, dist, heldMax, ladderAt, figmentsOf, heldFigments, FORM, figmentCharge, projectionRange, canStand, unitSees } from '../../src';
 import { onHook } from '../../src/effects/hooks';
 
 const W = (g: any, f: () => any) => withGame(g, f);
@@ -21,13 +21,23 @@ onHook('on_damaged', (ctx: any, cb: any) => {
   if (by.side === 'foe') { TRACK.F += ctx.dmg; if (t.owned?.kind === 'figment') TRACK.S += ctx.dmg; }
 });
 
-const act = (g: any, a: any) => { try { return { g: apply(g, a, 'host'), ok: true }; } catch (e) { return { g, ok: false, why: String(e) }; } };
+const act = (g: any, a: any) => { try { return { g: apply(g, a, 'host'), ok: true }; } catch (e) { if ((globalThis as any).FIGDBG) (globalThis as any).console.log("REFUSED", a.type, a.verb || a.id || "", String(e)); return { g, ok: false, why: String(e) }; } };
 /** A free tile within projection range that the owner sees, nearest `to` (and at least `minFrom` from the owner). */
 function tileNear(cb: any, u: any, to: string, o: { adj?: boolean } = {}): string | null {
   const r = projectionRange(u); let best: string | null = null, bd = 1e9;
   for (let x = 0; x < cb.map.w; x++) for (let y = 0; y < cb.map.h; y++) {
     const k = x + ',' + y; if (dist(u.pos, k) > r || !canStand(cb, k) || !unitSees(cb, u, k)) continue;
     const d = dist(k, to); if (o.adj && d < 1) continue; if (d < bd) { bd = d; best = k; }
+  }
+  return best;
+}
+/** The free tile within `tiles` of the unit nearest `to` (no nearer than `keep`). */
+function stepToward(cb: any, u: any, to: string, tiles: number, keep = 1): string | null {
+  let best: string | null = null, bd = dist(u.pos, to);
+  const [x0, y0] = u.pos.split(',').map(Number);
+  for (let dx = -tiles; dx <= tiles; dx++) for (let dy = -tiles; dy <= tiles; dy++) {
+    const k = (x0 + dx) + ',' + (y0 + dy); if (k === u.pos || !canStand(cb, k, u)) continue;
+    const d = dist(k, to); if (d < keep) continue; if (d < bd) { bd = d; best = k; }
   }
   return best;
 }
@@ -48,15 +58,20 @@ function pcTurn(g: any, rigger: boolean): any {
     if (!at) break;
     const r = act(g, { type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: next, tile: at }); g = r.g; if (!r.ok) break;
   }
+  // the owner first steps up until its side sees the nearest enemy (a Figment acts on what your side sees: rule 9)
+  { const u = me(), n = near(); if (n && !W(g, () => sideSeesUnit(cb(), u.side, n)) && u.ap >= 3) { const to = W(g, () => stepToward(cb(), u, n.pos, Math.floor(u.movement * 2), 5)); if (to) g = act(g, { type: 'combat/move', unitId: u.id, to }).g; } }
   // the striker: Overclock (the Rigger), then its own verbs on the owner's AP
   for (let i = 0; i < 6; i++) {
     const u = me(), f = W(g, () => figmentsOf(cb(), u)).find((x: any) => x.dataVerbs?.some((v: string) => /strike|cut/.test(v))); const n = near(); if (!f || !n) break;
     const verb = f.dataVerbs.find((v: string) => /strike|cut/.test(v)), foe = foes().sort((a: any, b: any) => dist(f.pos, a.pos) - dist(f.pos, b.pos))[0];
-    if (rigger && c.classId === 'trickster' && dist(f.pos, foe.pos) <= 1 && !u.__oc) { const r = act(g, { type: 'combat/perk', unitId: u.id, id: 'class:trickster.overclock', targetId: f.id }); g = r.g; if (r.ok) { me().__oc = 1; continue; } }
+    if (rigger && c.classId === 'trickster' && dist(f.pos, foe.pos) <= 1 && dist(u.pos, f.pos) <= 8 && !u.__oc) { const r = act(g, { type: 'combat/perk', unitId: u.id, id: 'class:trickster.overclock', targetId: f.id }); g = r.g; if (r.ok) { me().__oc = 1; continue; } }
     if (dist(f.pos, foe.pos) <= 1) { const r = act(g, { type: 'combat/owned', unitId: u.id, owned: f.id, verb, targetId: foe.id }); g = r.g; if (!r.ok) break; continue; }
-    const to = W(g, () => tileNear(cb(), u, foe.pos)); if (!to || dist(to, foe.pos) > 1 || dist(to, f.pos) > f.movement * Math.max(1, me().ap - 2)) break;
+    // one AP of walking toward it (its tiles an AP), then try again
+    const to = W(g, () => stepToward(cb(), f, foe.pos, Math.max(1, Math.floor(f.movement)))); if (!to || me().ap < 1) break;
     const r = act(g, { type: 'combat/owned', unitId: u.id, owned: f.id, verb: 'move', tile: to }); g = r.g; if (!r.ok) break;
   }
+  // the owner closes to shoot when nothing is in its reach (2 AP of walking at most)
+  { const u = me(), n = near(); if (n && u.ap >= 3 && !W(g, () => previewAttack(cb(), u, n, 'shot')).ok) { const to = W(g, () => stepToward(cb(), u, n.pos, Math.floor(u.movement * 2), 5)); if (to) g = act(g, { type: 'combat/move', unitId: u.id, to }).g; } }
   // the AP left: the owner's own shots
   for (let i = 0; i < 6; i++) {
     const u = me(), n = near(); if (!n) break; const pv = W(g, () => previewAttack(cb(), u, n, 'shot')); if (!pv.ok) break;
@@ -80,7 +95,7 @@ export function figmentFight(build: string, variant: 'normal' | 'allin', level: 
       const cur2 = g.combat.units.find((x: any) => x.id === g.combat.order[g.combat.turn]);
       g = apply(g, { type: 'combat/end-turn', unitId: cur2.id }, 'host');
     }
-  } finally { TRACK.on = false; }
+  } finally { TRACK.on = false; if ((globalThis as any).FIGDBG) (globalThis as any).console.log(g.combat?.log?.slice(-40).join("\n")); }
   return { D: TRACK.D, S: Math.min(TRACK.S, 0.6 * TRACK.F), turns: Math.max(1, turns) };
 }
 /** A cell: n fights; the worth a turn as a percent of the rifle-turn (D, S and the sum). */

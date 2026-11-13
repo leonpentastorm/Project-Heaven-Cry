@@ -6,8 +6,9 @@ import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
   type Character, type Sheet, restockResources, advancedClassError, applyLevels, RANK_LEVEL, canRaise, comboEligible, grantAutomaticPerks, maxHp, mod, checkMod, SAVE_SKILL_OF, newCharacter,
-  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
+  packOf, magsOf, roundsOf, loadAll, equip, unequip, fitMod, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, maxDurOf, hasEvoker, carriesEvoker, carriesEmanator, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
+import { setFigmentDesign, dropFigmentDesign } from './figments';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
 import { setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
@@ -363,6 +364,8 @@ export type Action =
   | { type: 'combat/pump'; unitId: string; feeling?: string } | { type: 'combat/revert'; unitId: string } | { type: 'combat/letgo'; unitId: string } | { type: 'combat/steady'; unitId: string } | { type: 'combat/feed'; unitId: string }
   | { type: 'combat/heartwatch'; unitId: string; on?: boolean }
   | { type: 'magic/learn'; charId: string; word?: string; module?: string; school?: string; tone?: string; from: 'ally' | 'plate' } | { type: 'magic/design'; charId: string; design: OutburstDesign } | { type: 'magic/pick'; charId: string; module: string; via?: string } | { type: 'magic/forget'; charId: string; designId: string }
+  /** Rules 1.34: keep (or with `drop`, forget) a Figment design out of a fight (figments.ts setFigmentDesign) */
+  | { type: 'figments/design'; charId: string; design?: FigmentDesign; drop?: string }
   // Rules 1.10 (Sigil 1.5): learn a word with a study pick (or the Mastered free word, over the cap); read a glyph or a trace (copying).
   | { type: 'sigil/learn'; charId: string; word: string; free?: boolean } | { type: 'combat/read'; unitId: string; tile: string }
   | { type: 'story/pass' } | { type: 'story/focus'; charId: string; objId?: string; hover?: number } | { type: 'story/unfocus' }
@@ -884,6 +887,15 @@ function reduce(g: GameState, a: Action, by: string) {
       if (at < 0) g.seq++;
       if (learnTone) { const k = (c!.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(learnTone); }
       if (at >= 0) list[at] = clean; else list.push(clean);
+      return;
+    }
+    case 'figments/design': {
+      // Rules 1.34: a Figment design (a form and its traits, named) is made out of a fight, as an Outburst's
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      if (g.phase === 'combat') fail('Design Figments out of combat.');
+      if (a.drop) { dropFigmentDesign(c!, a.drop); return; }
+      if (!a.design) fail('Name the design.');
+      const why = setFigmentDesign(c!, { ...a.design!, id: a.design!.id || 'f' + (g.seq += 1) }); if (why) fail(why);
       return;
     }
     case 'sigil/learn': {

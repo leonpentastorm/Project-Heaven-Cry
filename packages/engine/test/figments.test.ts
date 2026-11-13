@@ -2,7 +2,7 @@
 // per rule of the spec's section 2, the forms' verbs, designs and the ladder. Every number is read from the data.
 import { describe, it, expect } from 'vitest';
 import { figFight } from './helpers/figfight';
-import { withGame } from './helpers/perkfight';
+import { withGame, storyWith } from './helpers/perkfight';
 import FIGJ from '../../../data/figments.json';
 import RULESJ from '../../../data/rules.json';
 import ENEMIESJ from '../../../data/enemies.json';
@@ -160,6 +160,12 @@ describe('figments: designs', () => {
     expect(setFigmentDesign(c, { id: 'x', name: 'X', form: 'beast', traits: ['swift', 'keen'] })).toMatch(/trait/);
     c.skills.visualization = 1; expect(setFigmentDesign(c, { id: 'y', name: 'Y', form: 'wall', traits: [] })).toMatch(/Visualization/);
     c.skills.visualization = 5; expect(pictureOptions(c)[0]).toMatchObject({ id: 'd:h' });
+  });
+  it('figments/design: kept out of a fight through the reducer; refused in one', () => {
+    const s = storyWith([{ skills: { visualization: 5 } }]); const id = s.chars[0].id;
+    s.act({ type: 'figments/design', charId: id, design: { id: 'h', name: 'Hound', form: 'beast', traits: ['swift'] } } as any);
+    expect(s.g.characters[id].figments).toEqual([{ id: 'h', name: 'Hound', form: 'beast', traits: ['swift'] }]);
+    s.act({ type: 'figments/design', charId: id, drop: 'h' } as any); expect(s.g.characters[id].figments).toEqual([]);
   });
   it('a pictured design carries its traits (Swift +2 tiles an AP, Armoured HP x1.5)', () => {
     const f = figFight([{ skills: { visualization: 7 }, level: 1, weapon: 'service_pistol' }]); const c = f.g.characters[f.pc.charId!];
