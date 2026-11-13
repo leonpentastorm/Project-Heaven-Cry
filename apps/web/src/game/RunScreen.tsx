@@ -95,16 +95,16 @@ export function RunScreen() {
             {v.waiting ? <span data-phc-waiting="" style={{ fontSize: 13, color: ink.white }}>{v.waiting}</span> : null}
             {v.canGo ? <button type="button" data-phc-go="" onClick={() => act({ type: 'run/go' })} style={btn(true)}>Go now</button> : null}
           </div>
+          <div data-phc-legend="" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 16px', fontSize: 11.5, color: ink.muted }}>
+            {NODE_LEGEND.map((k) => <span key={k.kind} data-phc-legend-kind={k.kind} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ display: 'inline-grid', color: ink.text }} dangerouslySetInnerHTML={{ __html: nodeIconSvg(k.kind, 16) }} />{k.word}</span>)}
+            <span style={{ marginLeft: 'auto' }}>Lit: reachable · solid: your route · {v.solo ? 'click a lit node to go' : 'click to mark; the squad goes when everyone has, a tie to the host'}</span>
+          </div>
           <div ref={box} data-phc-pathmap="" style={{ position: 'relative', flex: 1, minHeight: 360, borderRadius: 14, background: 'radial-gradient(ellipse at 50% 40%, #141B28 0%, #0A0D13 75%)', border: '1px solid ' + ink.line, overflow: 'hidden' }}>
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} aria-hidden="true">
               {v.links.map((l) => { const a = pos[l.from], b = pos[l.to]; if (!a || !b) return null;
                 return <line key={l.from + '>' + l.to} x1={a.x} y1={a.y} x2={b.x} y2={b.y} vectorEffect="non-scaling-stroke" stroke={l.walked ? ink.text : l.lit ? ink.white : '#34405A'} strokeWidth={l.walked ? 3.5 : l.lit ? 2.5 : 1.25} strokeDasharray={l.walked ? undefined : l.lit ? '6 4' : '3 6'} strokeLinecap="round" />; })}
             </svg>
             {v.nodes.map((n) => <MapNode key={n.id} n={n} x={pos[n.id].x} y={pos[n.id].y} onPick={pick} />)}
-          </div>
-          <div data-phc-legend="" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 16px', fontSize: 11.5, color: ink.muted }}>
-            {NODE_LEGEND.map((k) => <span key={k.kind} data-phc-legend-kind={k.kind} style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}><span style={{ display: 'inline-grid', color: ink.text }} dangerouslySetInnerHTML={{ __html: nodeIconSvg(k.kind, 16) }} />{k.word}</span>)}
-            <span style={{ marginLeft: 'auto' }}>Lit: reachable · solid: your route · {v.solo ? 'click a lit node to go' : 'click to mark; the squad goes when everyone has, a tie to the host'}</span>
           </div>
         </section>
         <aside aria-label="The squad and the node" style={{ flex: '0 1 340px', minWidth: 280, display: 'flex', flexDirection: 'column', gap: 12, padding: 16, borderLeft: '1px solid ' + ink.line, overflowY: 'auto' }}>

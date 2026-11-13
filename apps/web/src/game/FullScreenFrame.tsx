@@ -95,7 +95,7 @@ export function FullScreenFrame(p: FrameProps) {
           <div data-phc-purse="" style={{ marginLeft: 'auto', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', paddingBottom: 8 }}>
             <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.18em', color: I.muted }}>{p.purseLabel || 'CREDITS'}</span>
             <span data-phc-purse-n="" style={{ fontSize: 'clamp(30px, 2.4vw, 44px)', fontWeight: 700, lineHeight: 1, color: I.white, fontVariantNumeric: 'tabular-nums' }}>{p.purse.toLocaleString('en')}</span>
-            {float && float.n ? <span key={float.k} className="phc-float" aria-hidden="true" style={{ position: 'absolute', right: 0, top: -8, fontSize: 18, fontWeight: 700, color: float.n > 0 ? I.ok : I.white }}>{float.n > 0 ? '+' + float.n : '−' + Math.abs(float.n)}</span> : null}
+            {float && float.n ? <span key={float.k} className="phc-float" aria-hidden="true" style={{ position: 'absolute', right: 'calc(100% + 14px)', bottom: 10, fontSize: 18, fontWeight: 700, color: float.n > 0 ? I.ok : I.white }}>{float.n > 0 ? '+' + float.n : '−' + Math.abs(float.n)}</span> : null}
           </div>
         </div>
         {/* 3. the shelves */}

@@ -9,6 +9,8 @@ export interface RunNodeV { id: string; depth: number; col: number; kind: string
 export interface RunLinkV { from: string; to: string; walked: boolean; lit: boolean }
 export interface PartyV { id: string; name: string; level: number; hp: number; maxHp: number; credits: number; initials: string; color: string; mine: boolean; levelUp: boolean; classLine: string }
 export interface OfferCardV { i: number; id: string; name: string; rarity: string; rarityWord: string; marks: number; category: string; price: number; tip: string; lines: { key: string; label: string; value: string }[] }
+/** The pick card's short words for the gear preview's lines (the card is narrow; the hover card has the rest). */
+const PICK_WORD: Record<string, string> = { hit: 'To hit', dmg: 'Damage', ap: 'AP', door_mod: 'Door' };
 /** The path map's legend: every node kind's word, in the map's own words (data), the gate's apart. */
 export const NODE_LEGEND: { kind: string; word: string }[] = ['fight', 'elite', 'boss', 'shop', 'forge', 'training', 'shrine', 'rest', 'cache', 'event']
   .map((k) => ({ kind: k, word: (MAP_DATA.words as Record<string, string>)[k] || k }));
@@ -60,7 +62,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
     return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, instead: o.instead,
       cards: o.weapons.map((w, i) => ({ i, id: w.id, name: itemName(w.id), rarity: w.rarity, rarityWord: cap(w.rarity), marks: (RARITY as any)[w.rarity]?.marks || 0, category: catOf(w.id), price: w.price,
         tip: itemName(w.id) + ' (' + cap(w.rarity) + '). ' + String((WEAPON[w.id] as any)?.text || (ITEM[w.id] as any)?.text || ''),
-        lines: c ? gearPreview(c, { id: w.id, rarity: w.rarity }).lines.filter((l) => ['hit', 'dmg', 'ap', 'door_mod'].includes(l.key)).map((l) => ({ key: l.key, label: l.label.replace(/ \(.*\)$/, ''), value: l.value })) : [] })) };
+        lines: c ? gearPreview(c, { id: w.id, rarity: w.rarity }).lines.filter((l) => ['hit', 'dmg', 'ap', 'door_mod'].includes(l.key)).map((l) => ({ key: l.key, label: PICK_WORD[l.key] || l.label, value: l.value })) : [] })) };
   });
   const n = r.note, nn = n ? runNode(r, n.node) : undefined;
   const note = n && nn ? {

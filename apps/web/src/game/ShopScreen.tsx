@@ -47,7 +47,7 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
           <span data-phc-card-name="" style={{ fontFamily: "'Spectral', serif", fontSize: big ? 24 : 19, fontWeight: 600, lineHeight: 1.15 }}>{c.name}</span>
-          <span data-phc-grade="" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: graded ? I.white : I.muted }}>{c.rarityWord.toUpperCase()}{graded ? ' ' + MARK.repeat(c.marks) : ''}{c.rare ? ' · THE RARER PIECE' : ''}</span>
+          {graded || ['weapon', 'focus', 'armour'].includes(c.preview.kind) || c.rare ? <span data-phc-grade="" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: graded ? I.white : I.muted }}>{c.rarityWord.toUpperCase()}{graded ? ' ' + MARK.repeat(c.marks) : ''}{c.rare ? ' · THE RARER PIECE' : ''}</span> : null}
           <span style={{ fontSize: 12.5, color: I.muted }}>{c.doorWord && c.attr ? <>{c.forLine.split(' · ')[0]} · <span style={{ color: ATTR_INK[c.attr] || I.text }}>{c.doorWord}</span>{c.forLine.includes('your door') ? ' · your door' : ''}</> : c.forLine}</span>
         </div>
       </div>
@@ -56,20 +56,20 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
           {c.preview.lines.slice(0, 5).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted }}>{l.label}</dt><dd data-phc-num={l.key} style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
         </dl>
       ) : null}
-      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
+      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 8, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-price="" style={{ fontSize: 26, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{total.toLocaleString('en')}</span>
           <span style={{ fontSize: 11, color: I.muted, letterSpacing: '0.08em' }}>CREDITS{c.per > 1 ? ' · ' + c.per * qty + ' ROUNDS' : qty > 1 ? ' · ' + qty + ' OF THEM' : ''}</span>
         </div>
         {c.qtyMax > 1 && !sold ? (
           <div role="group" aria-label="How many" style={{ display: 'flex', alignItems: 'center', border: '1px solid #3B475D', borderRadius: 10 }}>
-            <button type="button" aria-label="One fewer" onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: 34, height: 38, border: 0, background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 18, cursor: 'pointer' }}>‹</button>
+            <button type="button" aria-label="One fewer" onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: 28, height: 38, border: 0, background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 18, cursor: 'pointer' }}>‹</button>
             <span data-phc-qty="" style={{ minWidth: 22, textAlign: 'center', fontWeight: 700 }}>{qty}</span>
-            <button type="button" aria-label="One more" onClick={() => setQty(Math.min(c.qtyMax, qty + 1))} style={{ width: 34, height: 38, border: 0, background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 18, cursor: 'pointer' }}>›</button>
+            <button type="button" aria-label="One more" onClick={() => setQty(Math.min(c.qtyMax, qty + 1))} style={{ width: 28, height: 38, border: 0, background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 18, cursor: 'pointer' }}>›</button>
           </div>
         ) : null}
         <button type="button" data-phc-buy={c.key} disabled={sold} onClick={onBuy}
-          style={{ marginLeft: 'auto', minHeight: 42, padding: '0 22px', borderRadius: 10, border: 0, background: sold ? I.raised : why ? 'transparent' : I.text, outline: why && !sold ? '1px solid #3B475D' : 'none', color: sold ? I.muted : why ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: sold ? 'default' : 'pointer' }}>Buy</button>
+          style={{ marginLeft: 'auto', minHeight: 42, padding: '0 16px', borderRadius: 10, border: 0, background: sold ? I.raised : why ? 'transparent' : I.text, outline: why && !sold ? '1px solid #3B475D' : 'none', color: sold ? I.muted : why ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: sold ? 'default' : 'pointer' }}>Buy</button>
       </div>
       <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, fontWeight: sold ? 700 : 500, color: sold ? I.white : why ? I.muted : I.ok }}>{sold ? 'Sold to ' + c.sold : why ? why : '✓ You can buy this'}</span>
     </article>
@@ -83,15 +83,15 @@ function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rari
   if (!cmp.held) return <p data-phc-compare="" style={{ margin: 0, fontSize: 13, color: I.muted, lineHeight: 1.5 }}>{cmp.next.name}: nothing you hold takes its place; it goes in the pack.</p>;
   return (
     <div data-phc-compare="" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 8, fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>
         <span>{(cmp.slot || '').toUpperCase()}</span><span>HOLDING</span><span>THIS</span>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 8, fontSize: 13, fontWeight: 600 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 13, fontWeight: 600 }}>
         <span style={{ color: I.muted }}>Item</span><span>{cmp.held.name}</span><span>{cmp.next.name}</span>
       </div>
       {cmp.rows.map((r) => (
-        <div key={r.key} data-phc-cmp={r.key} style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr', gap: 8, fontSize: 13, alignItems: 'baseline', paddingTop: 6, borderTop: '1px solid ' + I.line }}>
-          <span style={{ color: I.muted }}>{r.label}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{r.held}</span>
+        <div key={r.key} data-phc-cmp={r.key} style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 13, alignItems: 'baseline', paddingTop: 6, borderTop: '1px solid ' + I.line }}>
+          <span style={{ color: I.muted }}>{r.label.replace(/ \(.*\)$/, '')}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{r.held}</span>
           <span style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{r.next}{r.diff && r.diff !== 'same' ? <span style={{ marginLeft: 6, fontSize: 11.5, color: r.diff === 'better' ? I.ok : I.muted }}>{r.diff === 'better' ? '▲ better' : '▼ worse'}</span> : r.diff === 'same' ? <span style={{ marginLeft: 6, fontSize: 11.5, color: I.muted }}>= same</span> : null}</span>
         </div>
       ))}
