@@ -16358,6 +16358,25 @@
       "source_path": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K002.png",
       "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/ground-2.png"
     },
+    "survival-k003": {
+      "label": "ground-3.png",
+      "path": "art/sprites/kit/ahoc/ground-3.png",
+      "sha256": "4657f62a1f6eca07c8557b43c5d05cb91dfd3ca76a93e482d414d8baa5eba5ce",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "opaque",
+      "mode": "ground",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K003.png"
+    },
     "survival-k004": {
       "label": "decal-rubble.png",
       "path": "art/sprites/kit/ahoc/decal-rubble.png",
@@ -16396,10 +16415,29 @@
       "collection": "survival-trial-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-trial/native-renders/K005.png"
     },
+    "survival-k006": {
+      "label": "decal-scorch.png",
+      "path": "art/sprites/kit/ahoc/decal-scorch.png",
+      "sha256": "483b6cb1fb3fb56fd944421f2930d7bfbc3836c9519c0cf76f2eb05e99eaa22f",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "decal",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K006.png"
+    },
     "survival-k007": {
       "label": "wall-straight.png",
       "path": "art/sprites/kit/ahoc/wall-straight.png",
-      "sha256": "1415ebe13e1ae807489dc8c98693138e453bffe0b9613c06b72dbb1784bfdbb8",
+      "sha256": "2b73ebb5c8fa0a97eb5fcd6cb8faa988931396334bca62a252ba337299bad702",
       "width": 256,
       "height": 256,
       "native_dimensions": [
@@ -16412,13 +16450,14 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false,
-      "collection": "survival-trial-2026-11-13",
-      "source_path": "art/_archive/survival/2026-11-13-trial/native-renders/K007.png"
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-trial/native-renders/K007.png",
+      "previous_path": "art/_archive/survival/2026-11-13-ahoc-complete/superseded/sprites/kit/ahoc/wall-straight.png"
     },
     "survival-k008": {
       "label": "wall-corner.png",
       "path": "art/sprites/kit/ahoc/wall-corner.png",
-      "sha256": "04a1e2ad4bda920148b5550f85b82c60c533ff69762401e8843bdb814fabf3ca",
+      "sha256": "a80f13e528e15ed591fca95e4b86638d782af7e5289ef8036806ef6bd63100fd",
       "width": 256,
       "height": 256,
       "native_dimensions": [
@@ -16431,14 +16470,14 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false,
-      "collection": "survival-trial-2026-11-13",
+      "collection": "survival-ahoc-complete-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K008.png",
-      "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/wall-corner.png"
+      "previous_path": "art/_archive/survival/2026-11-13-ahoc-complete/superseded/sprites/kit/ahoc/wall-corner.png"
     },
     "survival-k009": {
       "label": "wall-end.png",
       "path": "art/sprites/kit/ahoc/wall-end.png",
-      "sha256": "0e7c051a858096f6db4ff615ce61293a9fef7124b9f35516bfdd724ef354cb3b",
+      "sha256": "9e41466b3300b5910e5daa45be2c91c8fa78246cda168d5033b7508f2c05affa",
       "width": 256,
       "height": 256,
       "native_dimensions": [
@@ -16451,14 +16490,14 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false,
-      "collection": "survival-trial-2026-11-13",
+      "collection": "survival-ahoc-complete-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K009.png",
-      "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/wall-end.png"
+      "previous_path": "art/_archive/survival/2026-11-13-ahoc-complete/superseded/sprites/kit/ahoc/wall-end.png"
     },
     "survival-k010": {
       "label": "wall-door.png",
       "path": "art/sprites/kit/ahoc/wall-door.png",
-      "sha256": "24928e51eeb509286989c4c7130e8d6a7aa7115a97f2a39de1bbbd8c2f2cc086",
+      "sha256": "3bfaa412006b9d9b38074b25f9dd396f5f3526e4c8a0d23c04696c5e653efb87",
       "width": 256,
       "height": 256,
       "native_dimensions": [
@@ -16471,14 +16510,14 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false,
-      "collection": "survival-trial-2026-11-13",
+      "collection": "survival-ahoc-complete-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K010.png",
-      "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/wall-door.png"
+      "previous_path": "art/_archive/survival/2026-11-13-ahoc-complete/superseded/sprites/kit/ahoc/wall-door.png"
     },
     "survival-k011": {
       "label": "wall-broken.png",
       "path": "art/sprites/kit/ahoc/wall-broken.png",
-      "sha256": "8103627a2eee908fc8f0cc56abfa1865755214db8a65f36fe9c45d25f47b2d18",
+      "sha256": "85a339f153c2dc515509b1d357863857ad5fa59d7e979f19b7eac0c606250f98",
       "width": 256,
       "height": 256,
       "native_dimensions": [
@@ -16491,9 +16530,9 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false,
-      "collection": "survival-trial-2026-11-13",
+      "collection": "survival-ahoc-complete-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K011.png",
-      "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/wall-broken.png"
+      "previous_path": "art/_archive/survival/2026-11-13-ahoc-complete/superseded/sprites/kit/ahoc/wall-broken.png"
     },
     "survival-k012": {
       "label": "crate.png",
@@ -16514,6 +16553,25 @@
       "collection": "survival-trial-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K012.png",
       "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/crate.png"
+    },
+    "survival-k013": {
+      "label": "crate-broken.png",
+      "path": "art/sprites/kit/ahoc/crate-broken.png",
+      "sha256": "34bae8936a10cfa806357e5a0f0497620d87f2a87cb800e34cc34624d78a5a12",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K013.png"
     },
     "survival-k014": {
       "label": "low_wall.png",
@@ -16554,6 +16612,25 @@
       "collection": "survival-trial-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-trial/native-renders/K015.png"
     },
+    "survival-k016": {
+      "label": "pillar-broken.png",
+      "path": "art/sprites/kit/ahoc/pillar-broken.png",
+      "sha256": "98881cb992ceb57c3f35956a2801499fcf5372ed1aa0f4bed24d42e766e95345",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K016.png"
+    },
     "survival-k017": {
       "label": "barricade.png",
       "path": "art/sprites/kit/ahoc/barricade.png",
@@ -16573,6 +16650,25 @@
       "collection": "survival-trial-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K017.png",
       "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/barricade.png"
+    },
+    "survival-k018": {
+      "label": "barricade-broken.png",
+      "path": "art/sprites/kit/ahoc/barricade-broken.png",
+      "sha256": "39b842feaed96b7758f8bdab132737c81642dd103fda80c4b3e3bb4dc34c9bd6",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K018.png"
     },
     "survival-k019": {
       "label": "door.png",
@@ -16632,6 +16728,25 @@
       "implementation_ready": false,
       "collection": "survival-trial-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-trial/native-renders/K021.png"
+    },
+    "survival-k022": {
+      "label": "trap.png",
+      "path": "art/sprites/kit/ahoc/trap.png",
+      "sha256": "5c04d4d40663f0ce1237323ccd91ecb522c35c136ee5c1be55216ef136d75577",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        2172,
+        724
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K022.png"
     },
     "survival-k023": {
       "label": "fire.png",
@@ -16730,6 +16845,177 @@
       "collection": "survival-trial-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-ahoc-revision/native-renders/K027.png",
       "previous_path": "art/_archive/survival/2026-11-13-ahoc-revision/superseded/sprites/kit/ahoc/lamp.png"
+    },
+    "survival-k028": {
+      "label": "turret.png",
+      "path": "art/sprites/kit/ahoc/turret.png",
+      "sha256": "3ce30f3625c064f092013645a09b22dbc2ee6dbcf55327e9c082fcd74b116f71",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K028.png"
+    },
+    "survival-k029": {
+      "label": "camera.png",
+      "path": "art/sprites/kit/ahoc/camera.png",
+      "sha256": "a70dc56c021cc5aa7b759b52d5501691bbf6220f51aa5c4f55322dd0359edece",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K029.png"
+    },
+    "survival-k030": {
+      "label": "alarm.png",
+      "path": "art/sprites/kit/ahoc/alarm.png",
+      "sha256": "6ebd405a9ecea5686adf0c6f20e74413afa6baf280dafff36c896fe98b6562c3",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K030.png"
+    },
+    "survival-k031": {
+      "label": "cache.png",
+      "path": "art/sprites/kit/ahoc/cache.png",
+      "sha256": "81e9d15b6fdf9599ded49a25bd48c538ab7134ef8a0062092c1cadf085911033",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K031.png"
+    },
+    "survival-k032": {
+      "label": "exit.png",
+      "path": "art/sprites/kit/ahoc/exit.png",
+      "sha256": "0cc7f1fb11efc5fe633d199ad718b97f789084e0e7f8f8ed30c714f940f2faa3",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K032.png"
+    },
+    "survival-k033": {
+      "label": "dress-1.png",
+      "path": "art/sprites/kit/ahoc/dress-1.png",
+      "sha256": "8e02d461b623d874504034029c9bb310ad057c8d8616cd7caf6a2d853f56305b",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        2172,
+        724
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K033.png"
+    },
+    "survival-k034": {
+      "label": "dress-2.png",
+      "path": "art/sprites/kit/ahoc/dress-2.png",
+      "sha256": "733a68112d5c86bd8b4f4ead63758fb351603ca144d4641e4752c384b2ef5c47",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K034.png"
+    },
+    "survival-k035": {
+      "label": "dress-3.png",
+      "path": "art/sprites/kit/ahoc/dress-3.png",
+      "sha256": "f09d98bb95496152fe442c10d7afec0deb77db88d127a05d1a4e766ca712d131",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K035.png"
+    },
+    "survival-k036": {
+      "label": "dress-4.png",
+      "path": "art/sprites/kit/ahoc/dress-4.png",
+      "sha256": "1321688c0d753a35a0c72a0545aeefb3c3785217e7617f49bf00e0e1999a58a4",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-ahoc-complete-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K036.png"
     }
   }
 }

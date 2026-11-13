@@ -247,6 +247,10 @@ edge), `wall-door` (two short wall stubs with jambs, an empty 128 px gap between
 `wall-broken` (a straight run whose middle is a ragged breach, rubble at the edges of the gap, still butts at both ends).
 Saved facing east/right; the game rotates them.
 
+At a connecting cell edge, carry the painted cap through the cut without a dark end outline. Keep the dark outline on
+exposed edges. Align the painted stripe on the straight, corner, end, doorway and broken pieces to the same centreline
+at every connection. Check straight runs and rotated corners at 256 px and 64 px.
+
 **Where to save (a proposal; rename at integration):** `art/sprites/kit/<setting>/<piece>.png`, with `<setting>` one of
 `ahoc`, `city`, `field`, `works`, `shrine`, `rim`; ground `ground-1.png` to `ground-3.png` (1024 x 1024, opaque); decals
 `decal-rubble.png`, `decal-toxic.png`, `decal-scorch.png` (256 x 256, transparent, soft edges, sized to cover one tile and
