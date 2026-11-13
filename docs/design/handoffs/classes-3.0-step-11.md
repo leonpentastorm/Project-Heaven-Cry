@@ -82,10 +82,8 @@ The level scale holds the shape: level 20 reads as level 1.
 3. **The Hymn door** 138 against 150 and the **Whisper door** 82 against 80: inside.
 4. **The healer stall** (above): a dedicated healer keeps a tank standing under three Soldiers from level 6 on.
 5. **Reflex** +0: no enemy in the simulator crosses a held line (step 3's list of what the simulator needs stands).
-6. **KNOWN RED: the replay coverage guard** "actions with a player's unit Hidden" reads 20 (needs more than 20). Mag
-   Dump's new rule moved the scripted games (a gun keeps rounds after a dump; proved: with the old dump put back, every
-   replay plays as recorded). Not fixed by editing a scripted game (the brief forbids it). **The lead's ruling**, as at
-   step 3: add a hiding step to a scripted game, or lower the threshold.
+6. **The replay coverage guard** ("actions with a player's unit Hidden") fell to 20 with Mag Dump's new rounds; **fixed
+   by the lead's ruling**: the sight game's blade also goes to ground on its fifth turn (added, nothing removed; f6a301fb).
 
 ## 4. The loosened guards, revisited
 
@@ -110,6 +108,15 @@ The level scale holds the shape: level 20 reads as level 1.
 6. `bond.per_bond` 0.05 also lowers the door user's Bond bonus (it is the door's rule): the door's offence 67 against 61.
 7. The Chaplain is not refitted (126 against 125).
 8. The game/ views' previews (heart, sigil, world) still print raw numbers: not screens; for the closer.
+
+## 7. The lead's rulings after the first report (13 Nov)
+
+1. Mag Dump corrected: the rolls stay rules 1.18's (`numbers.per_roll` 3), only the rounds spent change (4 a roll); the
+   golden tables against c9174b11 changed only in rounds left (11 costs lines), no roll or damage line. The long rifle's
+   guard top 1.13 stays (it was 7b's armour rounding, not the roll).
+2. The coverage step above.
+3. `per_bond` 0.05, the Spellslinger's pistol, the loosened guards, the healer stall and Figments: accepted as calls for
+   Leon, open, no refit now (`docs/PLAYTEST-CHECKLIST.md` section 0, calls 50 and 54 to 60).
 
 ## 6. How to fit the next class line
 
