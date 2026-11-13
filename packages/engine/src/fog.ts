@@ -128,7 +128,7 @@ export function fogFight(g: unknown, real: Combat, view: Combat, me: Side, full 
   const seenNames = new Set(real.units.filter((u) => !hid.has(u.id)).map((u) => u.name));
   const c: Ctx = { hid, names: new Set([...hid.values()].map((u) => u.name).filter((n) => !!n && !seenNames.has(n))), tiles: vis.tiles };
   const own = new Set(real.units.filter((u) => u.side === me).map((u) => u.id));
-  const { units, order, fx, glyphs, traces, zones, images, sightWas, lastSeen, sightPos, log, logSee, ...rest } = view as Combat & { sightPos?: unknown };
+  const { units, order, fx, glyphs, traces, zones, images, sightWas, lastSeen, seenAt, sightPos, log, logSee, ...rest } = view as Combat & { sightPos?: unknown };
   const lg = fogLog(log || [], logSee, me);
   const mine = (x: { side?: string }) => x.side === me;
   const out = {

@@ -1541,7 +1541,7 @@
       "tags": [
         "beta",
         "core:mind",
-        "attr:expression",
+        "attr:perception",
         "investigation",
         "support",
         "debuff"
@@ -2393,7 +2393,7 @@
       "tags": [
         "beta",
         "core:mind",
-        "attr:perception",
+        "attr:expression",
         "tech",
         "support",
         "repair"

@@ -71,6 +71,14 @@ for k, n in c.items():
 sk = ids_of(items("skills"))
 if sk and sk != set(SKILLS):
     errors.append(f"skills.json ids differ: missing {set(SKILLS)-sk}, extra {sk-set(SKILLS)}")
+# a skill's attr:<x> tag names its own attribute (13 Nov 2026: Acuity and Improvisation had theirs swapped; the engine's
+# skill_mod_tag matches a tag as well as the attribute, so a wrong tag puts a skill under two attributes)
+for s in items("skills"):
+    if not isinstance(s, dict):
+        continue
+    at = [t for t in (s.get("tags") or []) if isinstance(t, str) and t.startswith("attr:")]
+    if at != ["attr:" + str(s.get("attribute"))]:
+        errors.append(f"skills: {s.get('id')} has attr tags {at}, its attribute is {s.get('attribute')} (want exactly ['attr:{s.get('attribute')}'])")
 
 new_ops = collections.Counter()
 
