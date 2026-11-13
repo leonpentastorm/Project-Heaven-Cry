@@ -320,7 +320,7 @@ MOVE = lambda **kw: {"adjudication": "engine", "provisional": True, "attributes"
 TRIAGE = MOVE(id="triage", name="Triage", ap_cost=2, uses="at_will",
   amounts={"heal": HEAL(4.3)}, numbers={"rest_mult": 3},
   text="{=effects.0.ap} AP and {=effects.0.res.mp} MP, with an Attuner in hand: an ally next to you, or a Bonded ally you see, heals {=amounts.heal.base} × your Healing given, more as you level, and stops Bleeding. Once an ally a turn. Out of a fight, with time to work: ×{=numbers.rest_mult}, once an ally a scene.",
-  effects=[{"op": "grant_action", "action": "triage", "ap": 2, "uses": "at_will", "res": {"mp": 6}, "scope": ["combat"], "if": {"self_holds": HAND},
+  effects=[{"op": "grant_action", "action": "triage", "ap": 2, "uses": "at_will", "res": {"mp": 6}, "scope": ["combat"], "site": "triage", "if": {"self_holds": HAND},
     "reach": {"tiles": 1, "sight": True, "side": "ally", "beyond": "bond", "if": {"target_alive": True, "uses_left": {"per": "per_turn", "n": 1, "each": "target", "key": "triage"}}},
     "effects": [
       {"op": "mend", "when": "acted", "amount": "heal", "target": "target", "limit": {"per": "per_turn", "n": 1, "each": "target", "key": "triage"}},

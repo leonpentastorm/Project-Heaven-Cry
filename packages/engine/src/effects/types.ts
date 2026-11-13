@@ -269,6 +269,8 @@ export interface ActionDef {
   pickMulti?: number;
   /** The prompt for the pick or typed detail ("Head, arm or leg", "The squadmate"). */
   pickLabel?: string;
+  /** Rules 1.33: the cost site the action is priced at (a data grant_action's `site`; default '<item key>#<action id>'). */
+  site?: string;
   /** Who it may go at, worked out by the engine (Classes 3.0 P6: a door verb's `reach`): the descriptor's pick list. */
   choices?(h: Holder): string[];
   /** Why it can't go at this unit (a door verb's `reach`: side, range, sight, its `if`), or null. */

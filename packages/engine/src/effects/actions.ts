@@ -109,6 +109,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     if (g.res) d.res = Object.values(g.res).some(isNumberBlock) ? (h) => Object.fromEntries(Object.entries(g.res).map(([k, v]) => [k, holderNumber(h, v as any) ?? 0])) : { ...g.res }; // rules 1.33: a number block (a ladder: Mend 2 MP cheaper from Empathy 9)
     if (typeof reach?.tiles === 'number' && !reach.beyond) d.range = reach.tiles; // (reach.beyond: the reach decides, not a plain range)
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
+    if (typeof g.site === 'string') d.site = g.site;
     if (g.if || g.prayer) d.available = (h) => {
       if (g.if && h.u && h.cb) { const k = ifFails(h, g.if); if (k) return 'Not now (' + human(k) + ').'; }
       if (g.prayer && h.u && h.cb && PRAYER) return PRAYER.why(h.cb, h.u, g.prayer) || true;
@@ -162,7 +163,8 @@ export function dataAp(info: ItemInfo, actionId: string): number | string {
  * one price (effects/cost.ts: the `cost` hook sees it as '<item key>#<action id>'). */
 function costOf(h: Holder, d: ActionDef, args: ActionArgs): Priced {
   const ap = typeof d.ap === 'function' ? d.ap(h, args) : d.ap === 'data' ? apFromData(dataAp(h.info, d.id), h.u) : d.ap, res = typeof d.res === 'function' ? d.res(h, args) : d.res;
-  return price({ cb: h.cb, u: h.u, c: h.c }, h.key + '#' + d.id, { ap, res: res || undefined }, { item: h.key });
+  const site = d.site ?? h.key + '#' + d.id; // rules 1.33: a data action may name its cost site (Triage's 'triage': what items answer as ap_cost:triage)
+  return price({ cb: h.cb, u: h.u, c: h.c }, site, { ap, res: res || undefined }, { item: h.key });
 }
 /** One action as the UI shows it. */
 export interface PerkActionEntry {

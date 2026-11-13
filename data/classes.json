@@ -2197,6 +2197,7 @@
             "scope": [
               "combat"
             ],
+            "site": "triage",
             "if": {
               "self_holds": {
                 "slot": "hand",
