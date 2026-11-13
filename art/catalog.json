@@ -17016,6 +17016,690 @@
       "implementation_ready": false,
       "collection": "survival-ahoc-complete-2026-11-13",
       "source_path": "art/_archive/survival/2026-11-13-ahoc-complete/native-renders/K036.png"
+    },
+    "survival-k037": {
+      "label": "ground-1.png",
+      "path": "art/sprites/kit/city/ground-1.png",
+      "sha256": "3a5233a306768a96b9dafd86ff35d5db718310a73d09707827411de2f6c9642e",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "opaque",
+      "mode": "ground",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K037.png"
+    },
+    "survival-k038": {
+      "label": "ground-2.png",
+      "path": "art/sprites/kit/city/ground-2.png",
+      "sha256": "e61399ab826cd02104be0f46e1fde90c55cdc7777b882f5eca2cfd65a987cde4",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "opaque",
+      "mode": "ground",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K038.png"
+    },
+    "survival-k039": {
+      "label": "ground-3.png",
+      "path": "art/sprites/kit/city/ground-3.png",
+      "sha256": "30989af0795812128e76e982f835b391441bfc6f45c2114d3dd45a6ed32749d7",
+      "width": 1024,
+      "height": 1024,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "opaque",
+      "mode": "ground",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K039.png"
+    },
+    "survival-k040": {
+      "label": "decal-rubble.png",
+      "path": "art/sprites/kit/city/decal-rubble.png",
+      "sha256": "1a304439e48d205b42c4deaf9972810a18bbcf5296300d51dcbb07b7a0790707",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "decal",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K040.png"
+    },
+    "survival-k041": {
+      "label": "decal-toxic.png",
+      "path": "art/sprites/kit/city/decal-toxic.png",
+      "sha256": "c64fc1d45410cbbe0e51b63ccdea00a5f301b9ba67b310ab355ce06c39f1e61b",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "decal",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K041.png"
+    },
+    "survival-k042": {
+      "label": "decal-scorch.png",
+      "path": "art/sprites/kit/city/decal-scorch.png",
+      "sha256": "59c8fe804d505acf86fd6777ac114a7a24870fe45919195cc4b086cfede35fa3",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "decal",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K042.png"
+    },
+    "survival-k043": {
+      "label": "wall-straight.png",
+      "path": "art/sprites/kit/city/wall-straight.png",
+      "sha256": "a739260e736da76d1124e58354491e58b53adfa96273cd84ab67eb37be8c62c6",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1774,
+        887
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "wall",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K043.png"
+    },
+    "survival-k044": {
+      "label": "wall-corner.png",
+      "path": "art/sprites/kit/city/wall-corner.png",
+      "sha256": "0e8de85c144021ead1c5f88733d97c02913123ead99e530c8b21146d66e71f8d",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "wall",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K044.png"
+    },
+    "survival-k045": {
+      "label": "wall-end.png",
+      "path": "art/sprites/kit/city/wall-end.png",
+      "sha256": "1934b21574022d2e9c6518828b7a39072704c7045b7237f37284081ca663ad0b",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "wall",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K045.png"
+    },
+    "survival-k046": {
+      "label": "wall-door.png",
+      "path": "art/sprites/kit/city/wall-door.png",
+      "sha256": "5c0b6a11432aaa014ed183dcfa3575d271ad59a828ed0aaf58adb4580b0904ad",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "wall",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K046.png"
+    },
+    "survival-k047": {
+      "label": "wall-broken.png",
+      "path": "art/sprites/kit/city/wall-broken.png",
+      "sha256": "8cdef3464bba165ae6510a4b2272b4bdada417188cf202776e3f24d9aa198294",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "wall",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K047.png"
+    },
+    "survival-k048": {
+      "label": "crate.png",
+      "path": "art/sprites/kit/city/crate.png",
+      "sha256": "c83762e501d7c34602d0e0689e9bebb23ecb46386b94ecb83cd37302aaa69132",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K048.png"
+    },
+    "survival-k049": {
+      "label": "crate-broken.png",
+      "path": "art/sprites/kit/city/crate-broken.png",
+      "sha256": "0c87fef41a3c1caa43225cffe91b3c07d54024134b67a3f0e187f3b0f00ac572",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K049.png"
+    },
+    "survival-k050": {
+      "label": "low_wall.png",
+      "path": "art/sprites/kit/city/low_wall.png",
+      "sha256": "14312a33c42a7ee526c1d480d0dce998c4264c232f25fee769bd9ab792763602",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K050.png"
+    },
+    "survival-k051": {
+      "label": "pillar.png",
+      "path": "art/sprites/kit/city/pillar.png",
+      "sha256": "6a1f24c62e8fadc2b91402f4e1647655ed96ea81b94ac3eaec8b55ce999ed9cd",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K051.png"
+    },
+    "survival-k052": {
+      "label": "pillar-broken.png",
+      "path": "art/sprites/kit/city/pillar-broken.png",
+      "sha256": "972ee832df68d6426b7e2f64ff7e69fe9461f385c805a66bbd40ed88685e9639",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K052.png"
+    },
+    "survival-k053": {
+      "label": "barricade.png",
+      "path": "art/sprites/kit/city/barricade.png",
+      "sha256": "7912091907b198774b4bd6925411d907d1facea7d9daa201fc9ce72616ca72bc",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K053.png"
+    },
+    "survival-k054": {
+      "label": "barricade-broken.png",
+      "path": "art/sprites/kit/city/barricade-broken.png",
+      "sha256": "17370da7da652f5754fa71eb6086c0c6ded4fd2f3e811aa617eb58ef621b8263",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K054.png"
+    },
+    "survival-k055": {
+      "label": "door.png",
+      "path": "art/sprites/kit/city/door.png",
+      "sha256": "e5795da192e67d851ca6a37e889fa5a6cc658431b7f975472457cf159b6d6cd7",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K055.png"
+    },
+    "survival-k056": {
+      "label": "door-open.png",
+      "path": "art/sprites/kit/city/door-open.png",
+      "sha256": "559b1872833f427c7586774c986e8812cf05c9a81aa29d07c8d8a514ae413fd8",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K056.png"
+    },
+    "survival-k057": {
+      "label": "hole.png",
+      "path": "art/sprites/kit/city/hole.png",
+      "sha256": "16aeb562ae51618526c30597e136fbbc58cd3ba6799aa77e5323d50cd0a39936",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K057.png"
+    },
+    "survival-k058": {
+      "label": "trap.png",
+      "path": "art/sprites/kit/city/trap.png",
+      "sha256": "08f78fd6e38a49bb31fc1d515b041dfb27ddd77004ae157ca1d6c4d32f702bfa",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K058.png"
+    },
+    "survival-k059": {
+      "label": "fire.png",
+      "path": "art/sprites/kit/city/fire.png",
+      "sha256": "4f5a8ede6bdfe47eff2c05bce2ff5d28d342f03af1a420c1fce219c8ba0e63f5",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K059.png"
+    },
+    "survival-k060": {
+      "label": "barrel.png",
+      "path": "art/sprites/kit/city/barrel.png",
+      "sha256": "5323f1824fa2191c56e928c6da6da0ca5ef7dfe3d3933755d4940df55dc71c5f",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K060.png"
+    },
+    "survival-k061": {
+      "label": "container.png",
+      "path": "art/sprites/kit/city/container.png",
+      "sha256": "3b3ecdc58f46f4dc9a1fcc1ae43d448fa04dbc11bafcbaaaa17af1d2fabd433f",
+      "width": 384,
+      "height": 256,
+      "native_dimensions": [
+        1536,
+        1024
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K061.png"
+    },
+    "survival-k062": {
+      "label": "terminal.png",
+      "path": "art/sprites/kit/city/terminal.png",
+      "sha256": "f05936f9e54b097bc5afc04f23da57a4a4c6a63d9096fb98c599c688d04a65c1",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K062.png"
+    },
+    "survival-k063": {
+      "label": "lamp.png",
+      "path": "art/sprites/kit/city/lamp.png",
+      "sha256": "3ce834b0347765b8146d7180c19db582a4bde289d764aebf5a69e5d3803ce8bc",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K063.png"
+    },
+    "survival-k064": {
+      "label": "turret.png",
+      "path": "art/sprites/kit/city/turret.png",
+      "sha256": "b527942aee6fb87838987dcafd2ef4f6513b4ba3797700172cdcb3ee69a078cd",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K064.png"
+    },
+    "survival-k065": {
+      "label": "camera.png",
+      "path": "art/sprites/kit/city/camera.png",
+      "sha256": "16b5f5e070c96c502d09f6f0afea1cd364e2be1ab6ea400ad24baf2ec1944e63",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K065.png"
+    },
+    "survival-k066": {
+      "label": "alarm.png",
+      "path": "art/sprites/kit/city/alarm.png",
+      "sha256": "0beae7ac2cd6d2eb865d12711d9f24be1bfc73e8d9f80949a87a8dcddd8d9a70",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K066.png"
+    },
+    "survival-k067": {
+      "label": "cache.png",
+      "path": "art/sprites/kit/city/cache.png",
+      "sha256": "3e42460fddeef6362c36e4a5916489026770f7e329c468c7467782356270c12a",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K067.png"
+    },
+    "survival-k068": {
+      "label": "exit.png",
+      "path": "art/sprites/kit/city/exit.png",
+      "sha256": "b48c7cfac56426ab358e7099fe5d1ee57a974394dc7ac84b075a5fa19738b9dd",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K068.png"
+    },
+    "survival-k069": {
+      "label": "dress-1.png",
+      "path": "art/sprites/kit/city/dress-1.png",
+      "sha256": "e190a844a6525a7e31e6a3f29543cfe9cf1ca457652183db6c620e4d1d630c8a",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K069.png"
+    },
+    "survival-k070": {
+      "label": "dress-2.png",
+      "path": "art/sprites/kit/city/dress-2.png",
+      "sha256": "17662f6fbdd9734036647d99d35917e6157b43561810b71c27b57a56a79d5247",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K070.png"
+    },
+    "survival-k071": {
+      "label": "dress-3.png",
+      "path": "art/sprites/kit/city/dress-3.png",
+      "sha256": "74309ea953853c71fe3d2af49c7200aeff5587e47371453d7bbe9e69f2d8c88f",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K071.png"
+    },
+    "survival-k072": {
+      "label": "dress-4.png",
+      "path": "art/sprites/kit/city/dress-4.png",
+      "sha256": "3fc59f1184f2f0772a3459e8c79294e73d5db3fe256c41e710295dda07cf9cbf",
+      "width": 256,
+      "height": 256,
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "upscaled": false,
+      "background": "transparent",
+      "mode": "sprite",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "survival-central-city-2026-11-13",
+      "source_path": "art/_archive/survival/2026-11-13-central-city/native-renders/K072.png"
     }
   }
 }
