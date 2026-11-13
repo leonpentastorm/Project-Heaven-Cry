@@ -168,7 +168,9 @@ export class CameraView {
   private hand() { this.handAt = now(); }
   /** Stop the move under way (the player took over, or the window changed). A zoom arc under way eases back. */
   private cancelGlide() { if (this.raf) cancelAnimationFrame(this.raf); this.raf = 0; this.goal = null; this.mv = null; if (this.scale !== 1) this.relaxArc(); }
-  private set(x: number, y: number) { const e = this.el; if (!e) return; e.scrollLeft = x; e.scrollTop = y; this.scrolled(); }
+  // (one scroll update a frame, not two: each write of scrollLeft or scrollTop is a whole scroll update of the window,
+  // its sticky row and column labels included)
+  private set(x: number, y: number) { const e = this.el; if (!e) return; if (typeof e.scrollTo === 'function') e.scrollTo({ left: x, top: y, behavior: 'instant' as ScrollBehavior }); else { e.scrollLeft = x; e.scrollTop = y; } this.scrolled(); }
   private scrolled() {
     const e = this.el; if (!e) return;
     const dx = e.scrollLeft - this.last.x, dy = e.scrollTop - this.last.y;
