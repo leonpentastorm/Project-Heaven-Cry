@@ -505,7 +505,15 @@
                   "action": "vanish",
                   "ap": 1,
                   "uses": "per_turn",
-                  "requires_state": "unseen_by_enemies"
+                  "if": {
+                    "self_sight": [
+                      "out_of_view"
+                    ],
+                    "self_lacks": [
+                      "marked",
+                      "hidden"
+                    ]
+                  }
                 },
                 {
                   "op": "condition",

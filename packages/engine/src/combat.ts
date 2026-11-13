@@ -129,6 +129,7 @@ export interface Unit {
   surrendered?: boolean; subdued?: boolean; surrenderTried?: boolean;
   /** Reactions used this round (one by default; items add through stat 'reactions'), and shots held on Overwatch. */
   reactUsed?: { r: number; n: number }; owShots?: number;
+  /** Classes 3.0 P7: false: the unit has no sight of its own (a Figment but the Eye): it sees nothing; its side sees through the others. */ eyes?: boolean;
   /** The first shot of this turn (per turn) and Sprint this turn (spec: once per turn, rules 1.3). */
   firstShotTurn?: boolean; sprinted?: boolean; attackedTurn?: boolean;
   /** This unit has used an Opener this fight: the first one costs no Momentum (physical/core.ts). */ openerUsed?: boolean;
@@ -933,7 +934,7 @@ export function litAt(cb: Combat, k: string): boolean {
 /** Can this unit see that tile (range, darkness, line of sight)? */
 /** walls: sightBlockers(cb), from a caller that asks about many eyes or many tiles at once (building it is four times the cost of walking one line). */
 export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>): boolean {
-  if (u.dead || u.downed) return false;
+  if (u.dead || u.downed || u.eyes === false) return false; // Classes 3.0 P7: a unit with no eyes of its own sees nothing
   const range = litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2);
   return dist(u.pos, k) <= range && (k === u.pos || lineOfSight(cb, u.pos, k, false, walls));
 }

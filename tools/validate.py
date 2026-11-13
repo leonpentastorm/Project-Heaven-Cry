@@ -1817,6 +1817,19 @@ if TRIG:
     for _x in base + adv: walk_triggers(_x, f"classes:{_x.get('id')}")
     for _m in pool: walk_triggers(_m, f"classes:pool.{_m.get('origin')}.{_m.get('id')}")
     for _x in items("skills"): walk_triggers(_x.get("unlocks"), f"skills:{_x.get('id')}")
+    # Classes 3.0 (P7, ahead of P6's door verbs): a grant_action's `if` is the holder's predicates (Vanish: out of view)
+    def _walk_grant_if(o, w):
+        if isinstance(o, dict):
+            if o.get("op") == "grant_action" and o.get("if") is not None:
+                if not isinstance(o["if"], dict): errors.append(f"{w}: a grant_action's `if` is an object of predicates")
+                else:
+                    for k, v in o["if"].items(): check_pred(k, v, w)
+            for v in o.values(): _walk_grant_if(v, w)
+        elif isinstance(o, list):
+            for v in o: _walk_grant_if(v, w)
+    for _x in base + adv + pool: _walk_grant_if(_x, f"classes:{_x.get('id')}")
+    for _n in ("perks", "traits"):
+        for _x in items(_n): _walk_grant_if(_x, f"{_n}:{_x.get('id')}")
     # (Witnessed's taboo is faith.ts's own rule, read by its words: this list may only shrink)
     COND_LEGACY_WHEN = {"taboo_tag"}
     # Classes 3.0 P4: a condition row is an item its bearer holds: its effects whose op is an item op are checked as

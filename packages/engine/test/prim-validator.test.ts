@@ -31,6 +31,7 @@ export const BAD: [string, any, RegExp][] = [
   ['number block namespace', { op: 'damage_mult', when: 'dealing', value: { base: 1, per: [{ of: 'pocket:coins', value: 0.1 }] } }, /name a source/],
   ['number block shape', { op: 'grant_ap', when: 'turn_start', value: { base: 'one' } }, /is a number block/],
   ['reaction limit without a kind', { op: 'damage_mult', when: 'taking', value: 0.5, limit: { reaction: 1 } }, /names its kind/],
+  ['sight word', { op: 'mark', when: 'turn_start', flag: 'x', if: { self_sight: ['hidden'] } }, /if\.self_sight` takes only/],
   ['reaction limit of three', { op: 'damage_mult', when: 'taking', value: 0.5, limit: { reaction: 3, kind: 'protect' } }, /spends 1 or 2/],
 ];
 /** Each case: the same words used rightly (the validator says nothing about them). */

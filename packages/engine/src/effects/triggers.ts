@@ -31,7 +31,7 @@ import patronsJ from '../../../../data/patrons.json';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
-import { resGain, react, canReact, REACT_KINDS } from '../tactics';
+import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
 import { deal, mend, type AmountSpec } from './output';
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
@@ -125,7 +125,11 @@ const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.
  * target. Numbers are shares of max HP (0.5: half) or tiles. */
 export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
 /** Add a predicate; `values`: the closed list its words come from (the validator refuses any other word). */
-const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string', about: string, test: (ev: Ev, v: any) => boolean, values?: string[]) => { PREDICATES[name] = { about, arg, test, ...(values ? { values } : {}) }; };
+const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
+  PREDICATES[name] = { about, arg, test };
+  // (a function: read when asked, for a list defined in a module this one is loaded inside of: tactics.ts SIGHT_WORDS)
+  if (values) Object.defineProperty(PREDICATES[name], 'values', { enumerable: true, get: typeof values === 'function' ? values : () => values });
+};
 P('actor', 'rel', 'the event\'s actor is (self | ally | side | foe | other | none | any; a list: any of them)', (ev, v) => list(v).some((w) => rel(ev.self, ev.actor, w)));
 P('target', 'rel', 'the event\'s target is (as actor)', (ev, v) => list(v).some((w) => rel(ev.self, ev.target, w)));
 for (const who of ['self', 'actor', 'target'] as Who[]) {
@@ -139,6 +143,7 @@ for (const who of ['self', 'actor', 'target'] as Who[]) {
   P(who + '_kind', 'words', who + '\'s kind is one of these (human, robot, crawler, ork…)', (ev, v) => { const u = unitOf(ev, who); return !!u && list(v).includes((u as any).kind || 'human'); });
   P(who + '_not_kind', 'words', who + '\'s kind is none of these', (ev, v) => { const u = unitOf(ev, who); return !!u && !list(v).includes((u as any).kind || 'human'); });
   if (who !== 'self') P(who + '_within', 'number', who + ' stands within this many tiles of the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && !!u.pos && dist(u.pos, ev.self.pos) <= v; });
+  P(who + '_sight', 'words', who + '\'s sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named)', (ev, v) => { const u = unitOf(ev, who); if (!u) return false; const s = sightOf(ev.cb, u); return list(v).some((w) => s.includes(w)); }, () => SIGHT_WORDS);
   if (who !== 'self') P(who + '_sees_self', 'bool', who + ' can (or cannot) see the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && unitSees(ev.cb, u, ev.self.pos) === v; });
 }
 P('melee', 'bool', 'the attack or damage is (true) or is not (false) melee', (ev, v) => !!(ev.ctx.melee ?? ev.ctx.src?.melee) === v);

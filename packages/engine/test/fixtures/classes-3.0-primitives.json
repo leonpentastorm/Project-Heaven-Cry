@@ -24,6 +24,12 @@
         { "op": "grant_ap", "when": "turn_start", "value": 1, "say": "{source} cheers {self} on (Fervent)." }
       ],
       "adjudication": "engine"
+    },
+    {
+      "id": "test_beacon", "name": "Beacon (test)", "kind": "debuff", "family": "body", "engine": "table", "duration": { "rounds": 2 },
+      "text": "The other side sees you wherever you are (the stat always_seen: P4 and P7).",
+      "effects": [ { "op": "stat_mod", "stat": "always_seen", "value": 1 } ],
+      "adjudication": "engine"
     }
   ],
   "relics": [
@@ -135,6 +141,15 @@
       "name": "Cone of fear (test)",
       "text": "Your hit Shakes every enemy in a cone {=effects.0.targets.within} tiles long toward the target, no save, if your side sees it.",
       "effects": [ { "op": "condition", "when": "hit", "condition": "shaken", "skip_save": true, "rounds": 1, "targets": { "shape": "cone", "within": 6, "side": "foe", "seen": true } } ]
+    },
+    {
+      "id": "test_sight_shroud",
+      "name": "Shroud (test)",
+      "text": "At your turn's start, out of every enemy's view, gain {=effects.0.value} perk AP; seen, lose a flag.",
+      "effects": [
+        { "op": "grant_ap", "when": "turn_start", "if": { "self_sight": ["out_of_view"] }, "value": 1 },
+        { "op": "mark", "when": "turn_start", "if": { "self_sight": "seen" }, "flag": "spotted" }
+      ]
     },
     {
       "id": "test_res_mp",

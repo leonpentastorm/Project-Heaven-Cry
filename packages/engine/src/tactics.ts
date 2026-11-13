@@ -9,7 +9,7 @@ import { factorOf } from './effects/output';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import { type Character, mod, prayerCooldown } from './character';
-import { say, type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
+import { say, type Combat, type Unit, type Term, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
 import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst, condName } from './magic';
@@ -164,6 +164,23 @@ export const heldShotPaid = (cb: Combat, u: Unit): boolean => maxReactions(u, cb
 export function payHeldShot(cb: Combat, u: Unit): void { paidCell(cb, u).take('reaction'); }
 /** The paid held shot fires: the mark is used up. */
 export function spendPaidShot(cb: Combat, u: Unit): void { paidCell(cb, u).refund('reaction'); }
+
+// ---------- sight words (Classes 3.0 P7; shadow-spec.md 2.1) ----------
+/** The words data uses for a unit's sight (predicates self_sight, actor_sight, target_sight): `seen` (not Hidden and
+ * in view, after the 'sees' hook: sideSeesUnit), `unseen`, `in_view` (some living, standing enemy's eyes reach its tile,
+ * Hidden or not: seenByFoes over unitSees), `out_of_view`. */
+export type SightWord = 'seen' | 'unseen' | 'in_view' | 'out_of_view';
+/** The sight words, in order. */
+export const SIGHT_WORDS: SightWord[] = ['seen', 'unseen', 'in_view', 'out_of_view'];
+/** THE one sight test for data: the two words that hold for a unit, to the other side (or to one unit `by`). A unit whose
+ * stat `always_seen` is over 0 is seen and in view wherever it is. */
+export function sightOf(cb: Combat, u: Unit, by?: Unit | null): [SightWord, SightWord] {
+  const always = statQuery({ u, cb }, 'always_seen').add > 0;
+  let inView: boolean, seen: boolean;
+  if (by) { inView = always || unitSees(cb, by, u.pos); seen = always || (inView && !u.hidden); }
+  else { inView = always || seenByFoes(cb, u); seen = always || sideSeesUnit(cb, u.side === 'pc' ? 'foe' : 'pc', u); }
+  return [seen ? 'seen' : 'unseen', inView ? 'in_view' : 'out_of_view'];
+}
 
 // ---------- combat Hidden (spec: Helpful states; rules 1.3) ----------
 export const TIER_NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
