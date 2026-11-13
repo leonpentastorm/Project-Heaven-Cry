@@ -137,7 +137,7 @@ describe('Survival encounters (rules 1.41)', () => {
   it.runIf(process.env.SURVIVAL_ENC_REPORT)('report: the measured budget by party size and node kind', () => {
     const rows: Record<string, { n: number; bulk: number; press: number; foes: number; scaled: number; maps: Record<number, number> }> = {};
     for (const c of cases) {
-      const k = 'N' + c.n + ' ' + fk(c.node), r = (rows[k] ||= { n: 0, bulk: 0, press: 0, foes: 0, scaled: 0, maps: {} });
+      const k = 'Stage ' + c.stage + ', N' + c.n + ' ' + fk(c.node), r = (rows[k] ||= { n: 0, bulk: 0, press: 0, foes: 0, scaled: 0, maps: {} });
       r.n++; r.bulk += c.e.spent.bulk / c.e.target.bulk; r.press += c.e.spent.pressure / c.e.target.pressure; r.foes += c.e.foes.length; r.scaled += c.e.scaleHp !== 1 ? 1 : 0; r.maps[c.e.map.w] = (r.maps[c.e.map.w] || 0) + 1;
     }
     const lines = ['| Party, node | Fights | Bulk spent / target | Pressure spent / cap | Foes (mean) | HP-scaled | Maps (16 / 20 / 26) |', '| --- | --- | --- | --- | --- | --- | --- |'];

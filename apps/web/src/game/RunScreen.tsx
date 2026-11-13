@@ -119,7 +119,7 @@ export function RunScreen() {
             <div data-phc-cleared="" style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 14, borderRadius: 12, background: ink.raised, border: '1px solid ' + ink.white }}>
               <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: '0.14em' }}>STAGE {v.stage} CLEARED</span>
               <span style={{ fontSize: 13, color: '#DCE2EC', lineHeight: 1.5 }}>The Boss is down. Boons and the next tile come with a later build: retire to keep the score.</span>
-              {(g.run!.stats.fights || []).map((f, i) => <span key={i} style={{ fontSize: 12, color: ink.muted }}>Node {f.depth}: {f.template.replace(/_/g, ' ')} · {f.outcome === 'win' ? 'won' : f.outcome || 'on'} in {f.rounds} rounds · {f.foes.length} foes</span>)}
+              {(g.run!.stats.fights || []).map((f, i) => <span key={i} style={{ fontSize: 12, color: ink.muted }}>Node {f.depth}: {f.template.replace(/_/g, ' ')} · {f.outcome === 'win' ? 'won' : f.outcome || 'on'} in {f.rounds} {f.rounds === 1 ? 'round' : 'rounds'} · {f.foes.length} {f.foes.length === 1 ? 'foe' : 'foes'}</span>)}
               {v.canRetire ? <button type="button" data-phc-retire="" onClick={() => act({ type: 'run/retire' })} style={btn(true)}>Retire the run · keep the score</button> : <span style={{ fontSize: 12, color: ink.muted }}>The host retires the run.</span>}
             </div>
           ) : null}
