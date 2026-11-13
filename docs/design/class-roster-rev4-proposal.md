@@ -1,6 +1,6 @@
 # Class Roster, Revision 4: nine mechanics, four tiers of using them (draft 2, 13 Nov 2026)
 
-A proposal. **Nothing here is built.** It replaces `class-roster-rev3-proposal.md` when Leon accepts it; until then
+**Leon's name for the patch that builds this: Classes 3.0** (13 Nov; the build's guide is `handoffs/CLASSES-3.0-PICKUP.md`). A proposal, accepted in its rulings (section 8). **Nothing here is built.** It replaces `class-roster-rev3-proposal.md` when Leon accepts it; until then
 Revision 3 is in force. Written by the lead from a design talk with Leon (13 Nov 2026). Every name marked
 *(Suggested)* is the lead's and Leon's to change. Every number is PROVISIONAL and has no ceiling yet: section 7 says
 what must be measured against the balance contract (`balance-contract.md`) before anything is built.
