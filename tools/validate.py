@@ -2307,6 +2307,45 @@ if _sv is not None:
         if _b.get("kind") not in _kt or _b.get("kind") == "celestial": errors.append(f"{_w}: the Boss's kind is not a loot kind")
         for _c in _b.get("casters") or []:
             if _c not in _casters: errors.append(f"{_w}: the Boss's caster {_c!r} is not a caster")
+    # Rules 1.45 (survival-spec rule 22, section 4.3): the layout generator's recipe. Stamps 3 to 7 a side, rectangular,
+    # in the maps legend's characters (or the layout's own); every setting's stamps exist, its cover kinds give cover,
+    # its hazard is a hazard kind, its props are object kinds; its kit names a folder of art/sprites/kit (or "pending").
+    if "layout" in _sv:
+        _ly, _w = _sv["layout"], "survival:layout"
+        _ok_ids = {o.get("id"): o for o in items("objects")}
+        if _ly.get("use") not in ("generated", "open_ground"): errors.append(f"{_w}.use: generated or open_ground (the switch)")
+        _leg = {**((data.get("maps") or {}).get("legend") or {}), **(_ly.get("legend") or {})}
+        for _c, _v in (_ly.get("legend") or {}).items():
+            if not (isinstance(_v, dict) and _v.get("kind") in _ok_ids): errors.append(f"{_w}.legend.{_c}: an object of objects.json")
+        for _sid, _stp in (_ly.get("stamps") or {}).items():
+            _rows = _stp.get("rows") or []
+            if not (_rows and all(isinstance(r, str) and len(r) == len(_rows[0]) for r in _rows) and 3 <= max(len(_rows), len(_rows[0])) <= 7):
+                errors.append(f"{_w}.stamps.{_sid}: rows of one length, 3 to 7 tiles a side")
+            for _ch in set("".join(_rows)) - {".", " ", "#", "~"}:
+                if not isinstance(_leg.get(_ch), dict): errors.append(f"{_w}.stamps.{_sid}: {_ch!r} is not in the maps legend or the layout's")
+        for _k in ("stamp_count",):
+            if set((_ly.get(_k) or {}).keys()) != {str(s["size"]) for s in (_sv.get("map_size") or {}).get("steps") or []}: errors.append(f"{_w}.{_k}: one range for every map size")
+        for _k in ("tries", "stamp_gap", "zone_cols", "foe_zone", "full_every", "cover_reach", "start_cover_reach", "dress_pieces", "grounds"):
+            if not (_num(_ly.get(_k)) and _ly[_k] >= 0): errors.append(f"{_w}.{_k}: a number of 0 or more")
+        for _k in ("cover_share", "cover_run", "barrels", "hazard_size", "dressing"):
+            _r = _ly.get(_k)
+            if not (isinstance(_r, list) and len(_r) == 2 and all(_num(v) for v in _r) and _r[0] <= _r[1]): errors.append(f"{_w}.{_k}: a range [low, high]")
+        if _ly.get("provisional") is not True: errors.append(f"{_w}: provisional: true")
+        for _st in _sv.get("settings") or []:
+            _sl, _w2 = _st.get("layout") or {}, f"survival:settings.{_st.get('id')}.layout"
+            if not _sl: errors.append(f"{_w2}: every setting has a layout block (rules 1.45)"); continue
+            for _id in _sl.get("stamps") or []:
+                if _id not in (_ly.get("stamps") or {}): errors.append(f"{_w2}: stamp {_id!r} is not in layout.stamps")
+            for _g in ("half", "full"):
+                for _k in (_sl.get("cover") or {}).get(_g) or []:
+                    if (_ok_ids.get(_k) or {}).get("cover") != _g: errors.append(f"{_w2}.cover.{_g}: {_k!r} is not {_g} cover in objects.json")
+            _hz = _sl.get("hazard")
+            if _hz is not None and not ((_ok_ids.get(_hz.get("kind")) or {}).get("hazard") and _num(_hz.get("chance")) and 0 <= _hz["chance"] <= 1): errors.append(f"{_w2}.hazard: a hazard kind of objects.json and a chance 0 to 1 (or null)")
+            for _k in (_sl.get("props") or {}):
+                if _k not in _ok_ids: errors.append(f"{_w2}.props: {_k!r} is not an object kind")
+            if _sl.get("kit") != "pending" and not (pathlib.Path(__file__).resolve().parent.parent / "art/sprites/kit" / str(_sl.get("kit"))).is_dir(): errors.append(f"{_w2}.kit: {_sl.get('kit')!r} is not a folder of art/sprites/kit (or \"pending\")")
+        for _tp in _sv.get("templates") or []:
+            if _tp.get("hazard") not in (None, True, False): errors.append(f"survival:templates.{_tp.get('id')}.hazard: true or false")
     for _tier, _ranges in ((_sv.get("pools") or {}).items()):
         if _tier in ("about", "provisional"): continue
         if _tier not in _tiers: errors.append(f"survival:pools.{_tier}: not an enemy tier")

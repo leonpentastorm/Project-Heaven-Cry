@@ -25,6 +25,7 @@ const act = (a) => {
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
 import { CameraView, CAMERA_CSS } from '../game/cameraView';
 import { hoverFor, hoverMemo } from '../game/mapHover';
+import { kitLayout, kitTileBg, kitArt } from '../game/kitMap';
 import { usualScale, overviewScale, naturalSize, fitsWhole, panKey, REF_W } from '../game/camera';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';
 import { forecastVals } from '../game/manaForecast';
@@ -962,7 +963,13 @@ export class CombatLogic extends DCLogic {
     };
     // The zone's map painting under the grid (spec: Campaigns, art): each tile shows its slice, colours become tints.
     const mapArt = ART(zoneOf(g)?.art?.map), TINT = { '#0D1119': 'rgba(10, 13, 19, 0.1)', '#1C2536': 'rgba(10, 13, 19, 0.55)', '#4A3A20': 'rgba(140, 111, 58, 0.22)', '#2A2113': 'rgba(140, 111, 58, 0.12)', '#3A2E1A': 'rgba(58, 46, 26, 0.3)', '#161C28': 'rgba(22, 28, 40, 0.3)' };
-    const paint = (k, col) => (mapArt && !String(col).startsWith('rgba(255') ? tileBg(mapArt, k, cb.map.w, cb.map.h, TINT[col] || (String(col).startsWith('rgba') ? col : 'rgba(10, 13, 19, 0.1)')) : col);
+    // Rules 1.45 (game/kitMap.ts): a generated map with a skin is drawn from its setting's kit: the ground under every tile
+    // (a solid tile only when its wall piece is drawn: else its flat fill, as before), wall, doorway, decal and dressing
+    // layers under everything else. Static per map (worked out once), so a hover re-renders no tile for it.
+    const KL = !mapArt ? kitLayout(cb.map) : null, kitKey = cb.map.skin && cb.map.skin.setting;
+    const tintOf = (col) => TINT[col] || (String(col).startsWith('rgba') ? col : 'rgba(10, 13, 19, 0.1)');
+    const paint = (k, col) => { if (String(col).startsWith('rgba(255')) return col; if (mapArt) return tileBg(mapArt, k, cb.map.w, cb.map.h, tintOf(col));
+      const kt = KL && KL.get(k); return kt && kt.ground && (!solid.has(k) || kt.wall) ? kitTileBg(kt.ground, k, tintOf(col)) : col; };
     // The glyph layer: glyphs and standing zones by tile. Hostile glyphs show only where you can see, and only as words
     // your side can read (the rest are scratches).
     // Glyphs follow the effects too (fx/play.ts fxShownGlyphs): a Line drawn and Evoked in one step (a hostile caster's
@@ -1090,12 +1097,16 @@ export class CombatLogic extends DCLogic {
         hasHz: !!(u && hz.marks.has(u.id)), hzText: u && hz.marks.has(u.id) ? markChipText(hz.marks.get(u.id)) : '', hzStyle: u && hz.marks.has(u.id) ? markChipStyle(hz.marks.get(u.id)) : '', hzTitle: u && hz.marks.has(u.id) ? hz.marks.get(u.id).title : '',
         hasHeart: !!(u && u.mg && u.mg.held), heart: u && u.mg && u.mg.held ? heartUri(u.mg.held.stage) : '', heartTitle: u && u.mg && u.mg.held ? u.name + ' is holding an Outburst: stage ' + u.mg.held.stage + ' (×' + stageMult(u.mg.held.stage) + ')' : '',
         sfx: isMagic && S.action === 'draw' && drawReach.has(k) ? 'none' : undefined,
-        hasSprite: !!spr, sprite: spr ? spriteOf(g, spr) : '', spriteStyle: spr ? spriteStyle(spr) : '',
+        hasSprite: !!spr, sprite: spr ? spriteOf(g, spr) : '',
+        // a kit's broken piece is drawn whole (not faded); a door's sprite turns with its doorway (kitMap.ts)
+        spriteStyle: spr ? spriteStyle(kitKey && spr.hp != null && spr.hp <= 0 && kitArt(kitKey, spr.kind + '-broken') ? { ...spr, hp: 1 } : spr) + (KL && spr.kind === 'door' && (KL.get(k) || {}).doorTurn ? '; transform: rotate(90deg)' : '') : '',
+        // the fog and the dark stay above the kit: a tile out of sight (or unlit) dims its kit layers as its own shade does
+        hasKit: !!(KL && KL.get(k) && KL.get(k).layers.length), kit: KL && KL.get(k) ? ((dim) => (dim ? KL.get(k).layers.map((l) => ({ ...l, style: l.style + '; filter: brightness(' + dim + ')' })) : KL.get(k).layers))(!vis.tiles.has(k) ? (cb.map.dark && !litAt(cb, k) ? 0.28 : 0.5) : cb.map.dark && !litAt(cb, k) ? 0.75 : 0) : [],
         hasImg: !!faceOf(u), img: faceOf(u),
         imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + fadeStyle(u, { held: isHeld }) + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : ''), // tokenFade.ts: held, Downed, Hidden, in that order
         hasBadge: !!(u && !faceOf(u)), badge: u ? u.short : '',
         badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + fadeStyle(u, { held: isHeld }),
-        hasText: ((diff.has(k) && !mapArt) || !!cv) && !u, text: cv ? (ob ? fmtNum(cv.hp) : (cv.kind === 'full' ? 'FULL ' : 'HALF ') + fmtNum(cv.hp)) : (cb.rubble || []).includes(k) ? 'RUBBLE' : 'ROUGH',
+        hasText: ((diff.has(k) && !mapArt && !(KL && (KL.get(k) || {}).decal)) || !!cv) && !u, text: cv ? (ob ? fmtNum(cv.hp) : (cv.kind === 'full' ? 'FULL ' : 'HALF ') + fmtNum(cv.hp)) : (cb.rubble || []).includes(k) ? 'RUBBLE' : 'ROUGH',
         style: 'position: relative; display: grid; place-items: center; padding: 0; border-radius: 4px; cursor: pointer; background: ' + (k === hv ? 'rgba(255, 255, 255, 0.28)' : route[k] && k !== (cur && cur.pos) ? 'rgba(255, 255, 255, 0.18)' : paint(k, bg)) + '; border: ' + (k === hv ? '2px solid #FFFFFF' : border) + (!vis.tiles.has(k) ? '; box-shadow: inset 0 0 0 46px rgba(5, 7, 11, ' + (cb.map.dark && !litAt(cb, k) ? '0.72' : '0.5') + ')' : cb.map.dark && !litAt(cb, k) ? '; box-shadow: inset 0 0 0 46px rgba(5, 7, 11, 0.25)' : ''),
       });
     }
