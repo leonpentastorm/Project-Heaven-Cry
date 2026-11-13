@@ -1,5 +1,12 @@
 # Classes 3.0: the mission, and how to carry it on with Opus alone
 
+> **Leon's word for this release (13 Nov, before sleeping):** when Classes 3.0 is finished and `npm run check` and
+> `npm run e2e -- all` are green (nothing failing alone), **deploy it to live as 0.26.0** (merge to `develop`, then
+> `main`; `backup/live-0.26.0`; the deploy routine in CLAUDE.md), without waiting for him. If anything is red, do not
+> deploy: leave it on the branch with a report. Then **start building Survival mode** from
+> `docs/design/survival-spec.md` (stage 1 first), every open question defaulting to its recommendation. This word
+> covers 0.26.0 only; Survival is not deployed without a new word.
+
 Written 13 Nov 2026 by the lead. **If the lead session is gone, an Opus session reads this file top to bottom and
 continues from section 4.** Keep it current: tick a step in the same commit that finishes it.
 
