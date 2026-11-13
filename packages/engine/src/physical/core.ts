@@ -11,7 +11,7 @@ import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlockedOf, type ReactKind } from '../tactics';
-import { attackEvent } from '../combat';
+import { attackEvent, setStrikeTech } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
 import { mod } from '../character';
@@ -264,6 +264,8 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     else if (ready.has(d.id)) out.push({ id: d.id, how: 'ready' });
     else if (lent === d.id) out.push({ id: d.id, how: 'lent' });
     else if (!plainOnly && d.comes_with.some((p) => props.includes(p))) out.push({ id: d.id, how: 'comes' });
+    // an item gives the technique with any weapon of its system (stat 'technique:<id>': the Breaker's Riposte, rules 1.30)
+    else if (!plainOnly && hand === 'main' && !wield && d.group === 'answer' && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0) out.push({ id: d.id, how: 'comes' });
   }
   return out;
 }
@@ -451,6 +453,7 @@ export function canStrike(t: Tech, target: Unit, mode?: 'melee' | 'shot' | 'aime
 export const strikeNoPressure = (att: Unit) => !!cur(att)?.o.noPressure;
 /** The technique a unit is striking with right now, if any (pressure.ts, drill.ts). */
 export const strikingWith = (att: Unit): Tech | null => cur(att)?.t || null;
+setStrikeTech((att) => cur(att)?.t.def.id || null); // an attack's events carry the technique (rules 1.30: the predicate `mode`)
 
 // ---------- helpers a handler calls ----------
 /** A set-up mark on the user's next technique against a target this turn (strike applies it; spent on use). */

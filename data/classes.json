@@ -368,6 +368,31 @@
         "the ballistician",
         "the spellslinger"
       ],
+      "gain": [
+        {
+          "id": "reflex",
+          "name": "Reflex",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "numbers": {"reactions": 1},
+          "text": "You have {=numbers.reactions} more reaction each round: two in all, of any kind. While you hold a shot, what fires by itself leaves your last reaction for it.",
+          "effects": [
+            {"op": "stat_mod", "stat": "reactions", "value": 1}
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "marksman",
+          "new": true,
+          "fantasy_tags": [
+            "reaction"
+          ],
+          "attributes": [
+            "agility"
+          ],
+          "status": "active",
+          "surface": "combat"
+        }
+      ],
       "ranks": {
         "I": {
           "threshold": "gained",
@@ -380,10 +405,12 @@
               "name": "Speed Loader",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Your first reload each turn costs 1 AP less, but never less than 1 AP. It doesn't apply to your off-hand gun or to reloading two guns at once.",
+              "text": "Your first main-hand reload, draw, swap or pick-up each turn costs {=effects.0.value|abs} AP less, but never less than {=effects.0.min} AP. It doesn't apply to your off-hand gun or to reloading two guns at once.",
               "effects": [
-                {"op": "cost_mod", "value": -1, "min": 1, "when": "cost", "if": {"action": ["reload"], "hand": ["main"]}, "limit": {"per": "per_turn", "n": 1, "peek": true}},
-                {"op": "use", "when": "reload", "if": {"hand": ["main"]}, "limit": {"per": "per_turn", "n": 1}}
+                {"op": "cost_mod", "value": -1, "min": 1, "when": "cost", "if": {"action": ["reload", "pickup"], "hand": ["main"]}, "limit": {"per": "per_turn", "n": 1, "peek": true}},
+                {"op": "use", "when": "reload", "if": {"hand": ["main"]}, "limit": {"per": "per_turn", "n": 1}},
+                {"op": "use", "when": "acted", "if": {"action": ["pickup"]}, "limit": {"per": "per_turn", "n": 1}},
+                {"op": "cost_mod", "value": -1, "min": 1, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 1}}
               ],
               "adjudication": "engine",
               "provisional": true,
@@ -453,7 +480,32 @@
               "ref": "marksman.killzone"
             },
             {
-              "ref": "gunslinger.called_shot"
+              "id": "run_and_gun",
+              "name": "Run and Gun",
+              "ap_cost": 0,
+              "uses": "per_turn",
+              "numbers": {"tiles": 2, "pressure": 1},
+              "text": "Once a turn, after you attack, your next move of up to {=numbers.tiles} tiles costs no AP and draws no opportunity attack, and your next hit this turn, with any weapon, adds {=numbers.pressure} more Pressure.",
+              "effects": [
+                {"op": "mark", "when": "attack_roll", "flag": "fired", "if": {"own_turn": true}},
+                {"op": "cost_mod", "when": "cost", "set": 0, "if": {"action": ["move"], "flag": "fired", "ap_above": 0, "path_tiles_at_most": 2}, "limit": {"per": "per_turn", "n": 1},
+                  "and": [{"op": "condition", "condition": "slipping", "skip_save": true}, {"op": "mark", "flag": "ran"}]},
+                {"op": "resource", "when": "hit", "resource": "pressure", "value": 1, "target": "target", "if": {"flag": "ran", "own_turn": true}, "and": [{"op": "mark", "flag": "ran", "clear": true}]},
+                {"op": "mark", "when": "turn_end", "flag": "fired", "clear": true, "and": [{"op": "mark", "flag": "ran", "clear": true}]}
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "marksman",
+              "new": true,
+              "fantasy_tags": [
+                "mobility",
+                "pressure"
+              ],
+              "attributes": [
+                "agility"
+              ],
+              "status": "active",
+              "surface": "combat"
             }
           ]
         }
@@ -1342,24 +1394,16 @@
         "name": "Fire Discipline",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Aimed shots add no Heat. Once per turn, a Burst costs 2 AP instead of 3. With a bow, an Aimed shot has +3 to hit instead of +2.",
+        "text": "Your Aimed attacks add no Heat and have +{=effects.3.value} to hit. Once a turn, your first attack costs {=effects.1.value|abs} AP less, but never less than {=effects.1.min} AP: a Burst, a shot or a strike, with any weapon.",
         "effects": [
           {
             "op": "heat_mod",
             "action": "aimed_shot",
             "value": -1
           },
-          {
-            "op": "action_cost",
-            "action": "burst",
-            "value": -1,
-            "uses": "per_turn"
-          },
-          {
-            "op": "attack_mod",
-            "context": "aimed_shot_with_bow",
-            "value": 1
-          }
+          {"op": "cost_mod", "when": "attack", "value": -1, "min": 1, "if": {"own_turn": true}, "limit": {"per": "per_turn", "n": 1, "key": "first", "peek": true}},
+          {"op": "use", "when": "attack_roll", "if": {"own_turn": true}, "limit": {"per": "per_turn", "n": 1, "key": "first"}},
+          {"op": "roll_mod", "when": "attack", "value": 1, "if": {"mode": ["aimed"]}}
         ],
         "adjudication": "engine",
         "provisional": true,
@@ -1379,7 +1423,8 @@
         "name": "Special Ammo",
         "ap_cost": null,
         "uses": "per_rest",
-        "text": "You carry one magazine (or one quiver of up to 12 arrows) each of armour-piercing, hollow-point and incendiary rounds, restocked when you rest. Loading one is a reload and costs the same AP; a quiver has to be filled before the fight. Armour-piercing ignores armour at ×0.8 damage, hollow-point deals ×1.3 damage against doubled armour, and incendiary deals ×0.9 damage and sets the target Burning.",
+        "numbers": {"load_attacks": 12, "load_ap": 1},
+        "text": "You carry one load each of armour-piercing, hollow-point and incendiary rounds, restocked when you rest, for any weapon but a grenade or other consumable: a magazine for a gun, a quiver of up to {=numbers.load_attacks} arrows for a bow (filled before the fight), and for a blade, a fist or a thrown blade a load that lasts {=numbers.load_attacks} attacks or the fight. Loading is a reload and costs its AP; {=numbers.load_ap} AP for a weapon that never reloads. Armour-piercing ignores armour at ×0.8 damage, hollow-point deals ×1.3 damage against doubled armour, and incendiary deals ×0.9 damage and sets the target Burning.",
         "effects": [
           {
             "op": "resource",
@@ -1393,7 +1438,7 @@
         "origin": "marksman",
         "origin_rank": "II",
         "fantasy_tags": [
-          "guns",
+          "weapons",
           "ammo"
         ],
         "attributes": [
@@ -1407,7 +1452,8 @@
         "name": "Killzone",
         "ap_cost": null,
         "uses": "at_will",
-        "text": "Hold two Overwatch shots instead of one, for twice the shot's AP. You fire one at each of the first two different enemies that move into your line, both at +2 to hit. The two shots use one reaction between them. You can't set it while Pressed.",
+        "numbers": {"hit": 2, "spend": 2},
+        "text": "Hold two attacks with any weapon instead of one, for twice the attack's AP. You make one at each of the first two different enemies that move into your line (a gun, a bow) or your reach (a melee weapon), both at +{=numbers.hit} to hit. The first one spends {=numbers.spend} reactions, both of yours; with one reaction left, only one fires. You can't set it while Pressed.",
         "effects": [
           {
             "op": "grant_action",
@@ -1427,7 +1473,7 @@
         "origin": "marksman",
         "origin_rank": "III",
         "fantasy_tags": [
-          "guns",
+          "weapons",
           "overwatch"
         ],
         "attributes": [
@@ -1477,20 +1523,12 @@
         "name": "Riposte",
         "ap_cost": 0,
         "uses": "reaction",
-        "text": "When a melee attack misses you and the attacker is within your reach: strike back at once for 0 AP, adding your Counter bonus to hit. Costs {=effects.0.value|abs} Momentum and your reaction.",
+        "text": "You have the Answer Riposte with any melee weapon: when a melee attack misses you and the attacker is within your reach, strike back at once for 0 AP. Your Riposte costs {=effects.2.value|abs} Momentum and adds your Counter bonus to hit; with no Momentum you don't Riposte. It is one Answer and uses your reaction.",
         "effects": [
-          {
-            "op": "resource",
-            "resource": "momentum",
-            "value": -1,
-            "when": "reaction:melee_miss_against_self"
-          },
-          {
-            "op": "grant_action",
-            "action": "counter_attack",
-            "ap": 0,
-            "uses": "at_will"
-          }
+          {"op": "stat_mod", "stat": "technique:riposte", "value": 1},
+          {"op": "roll_mod", "when": "attack", "value": {"base": 0, "per": [{"of": "self:counter", "value": 1}]}, "if": {"mode": ["riposte"]}, "label": "Counter"},
+          {"op": "resource", "when": "attack_roll", "resource": "momentum", "value": -1, "if": {"mode": ["riposte"]}},
+          {"op": "cancel", "when": "attack", "why": "No Momentum to Riposte with.", "if": {"mode": ["riposte"], "self_lacks_res": ["momentum"]}}
         ],
         "adjudication": "engine",
         "provisional": true,
@@ -3118,7 +3156,8 @@
           "attributes": [
             "agility"
           ],
-          "status": "active"
+          "status": "shelved",
+          "future_home": "Operative III (Classes 3.0 step 4; rev4-moves-and-rename.md section 2): it left the Skirmisher's rank III in rules 1.30, its key stays"
         }
       ],
       "shelved": true,

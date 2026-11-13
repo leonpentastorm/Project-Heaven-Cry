@@ -1659,6 +1659,14 @@ COND_ENGINE_STATS = {"defense", "move_mult", "vision", "ap", "damage_dealt_pct",
 # stat_mod stats and attack_mod contexts a row may carry that the loader does not read (another part of the engine does)
 COND_OTHER_STATS = {"can_act", "hp", "next_attack_mult", "random_target_pct", "untargetable"}
 COND_OTHER_HIT = {"liked_tag", "emplaced_weapon"}
+# Classes 3.0 P4 (rules 1.28): a row's stat_mod of a DECLARED stat (packages/engine/src/effects/stats.ts STATS, or a
+# family prefix with a suffix) answers statQuery for its bearer: Slipping's immune:opportunity_attack (rules 1.30).
+_STATS_TS = (pathlib.Path(__file__).resolve().parent.parent / "packages/engine/src/effects/stats.ts").read_text()
+_STATS_BODY = re.search(r"export const STATS = \{(.*?)\n\} as const", _STATS_TS, re.S).group(1)
+DECLARED_STATS = set(re.findall(r"(?:^|[\s,])([a-z_]+):\s*'", _STATS_BODY))
+DECLARED_FAMILIES = re.findall(r"'([a-z_]+[:_])':", re.search(r"export const STAT_FAMILIES = \{(.*?)\}", _STATS_TS, re.S).group(1))
+def declared_stat(sid):
+    return isinstance(sid, str) and (sid in DECLARED_STATS or any(sid.startswith(f) and len(sid) > len(f) for f in DECLARED_FAMILIES))
 def cond_reads(c):
     out = []
     for e in c.get("effects") or []:
@@ -1700,7 +1708,7 @@ for c in items("conditions"):
     if got != want: errors.append(f"{w}: the engine reads {want or 'no number'} from this row's effects; the row gives it {got or 'none'} (condtable.ts modsOf; tools/validate.py COND_READS)")
     for e in c.get("effects") or []:
         if not isinstance(e, dict): continue
-        if e.get("op") == "stat_mod" and e.get("stat") not in COND_ENGINE_STATS | COND_OTHER_STATS: errors.append(f"{w}: stat_mod stat '{e.get('stat')}' is not one the engine knows ({sorted(COND_ENGINE_STATS | COND_OTHER_STATS)})")
+        if e.get("op") == "stat_mod" and e.get("stat") not in COND_ENGINE_STATS | COND_OTHER_STATS and not declared_stat(e.get("stat")): errors.append(f"{w}: stat_mod stat '{e.get('stat')}' is not one the engine knows ({sorted(COND_ENGINE_STATS | COND_OTHER_STATS)})")
         if e.get("op") == "stat_mod" and e.get("stat") in COND_ENGINE_STATS and e.get("when"): errors.append(f"{w}: stat_mod {e.get('stat')} has a `when`, and the engine skips a condition's number with one")
         if e.get("op") == "attack_mod" and (e.get("context") or "own_attacks") not in COND_HIT | COND_OTHER_HIT: errors.append(f"{w}: attack_mod context '{e.get('context')}' is not one the engine knows ({sorted(COND_HIT | COND_OTHER_HIT)})")
         if e.get("op") == "damage_mult" and e.get("context") != "next_attack": errors.append(f"{w}: damage_mult is read only with context next_attack")

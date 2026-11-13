@@ -33,7 +33,7 @@ const order = (f: F, ...us: Unit[]) => { f.cb.order = us.map((u) => u.id); };
 describe('the 20 new moves are handled', () => {
   it('every new move has a handler and every effect is engine-run (no gap, nothing left to the Narrator)', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
-    expect(NEW.length).toBe(20);
+    expect(NEW.length).toBe(21); // + Run and Gun (rules 1.30, data only)
     for (const m of NEW as any[]) {
       const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic'), m.key).toBe(true); // a handler, or data only (engine foundations 3)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);

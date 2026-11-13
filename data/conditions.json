@@ -1176,6 +1176,31 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "engine foundations 2 (item 1562)"
+    },
+    {
+      "id": "slipping",
+      "name": "Slipping",
+      "label": "Slipping (no opportunity attacks)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "Your move draws no opportunity attack. It ends when the move does.",
+      "effects": [
+        {"op": "stat_mod", "stat": "immune:opportunity_attack", "value": 1},
+        {"op": "cleanse", "when": "moved", "condition": "slipping"}
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "Classes 3.0 step 3, Run and Gun (rules 1.30, item 1808)"
     }
   ],
   "families": {

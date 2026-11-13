@@ -4390,7 +4390,7 @@
       },
       "mode": {
         "arg": "words",
-        "about": "the attack's mode is one of these (shot, aimed, burst, auto, melee, thrown, paired)"
+        "about": "the attack's mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech)"
       },
       "damage": {
         "arg": "words",
@@ -4470,6 +4470,44 @@
         "values": [
           "from",
           "to"
+        ]
+      },
+      "path_tiles_at_most": {
+        "arg": "number",
+        "about": "the move (its priced walk: ctx.tiles) is at most this many tiles"
+      },
+      "self_has_res": {
+        "arg": "words",
+        "about": "the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure"
+        ]
+      },
+      "self_lacks_res": {
+        "arg": "words",
+        "about": "the holder has none of one of these resources (as self_has_res)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure"
         ]
       },
       "patron": {
