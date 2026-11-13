@@ -79,7 +79,7 @@ view only reads.
 - Browser (own server, port 8963, `FAST=1 DSF=2`): `survival` 69 ok (A: the walk with every place full screen and
   checked at 1280 and 1920, the shop upgrade, the solo Give tab; step 5's boon, tile, stage 2, summary; C: two browsers,
   credits and a graded weapon seen arriving, ready and the host's close), `room` 25 ok.
-- `npm run check` ALL GREEN at the end (see the final report for the commit).
+- `npm run check` ALL GREEN on the tree holding steps 4, 4a, 5 and 4b (engine 4196 passed, web 1199 passed; nothing had to be re-run alone); `npm run built-from` no smells.
 - Screenshots: the session scratchpad `shots4b/` (survival-shop-upgrade, survival-place-forge, -training, -shrine,
   -event, -rest, survival-shop-give, each at 1280 and 1920).
 
