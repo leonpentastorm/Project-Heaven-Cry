@@ -1,6 +1,6 @@
 // Class Roster Revision 3's new moves in play (Proving Ground with a friend: the host acts, the guest is the squadmate):
 //  · Fighter: Shove (the "Knock Prone" chip) and Unstoppable (+2 Momentum);
-//  · Guardian: Command (click the squadmate, then the tile: they walk for free);
+//  · Chaplain (was Guardian; rules 1.31): Ward (click the squadmate: a shield on its own layer, the turn's Whisper);
 //  · Infiltrator: Vanish (out of every enemy's sight), Field Fix (the "Clear the jam" chip on a jammed squadmate),
 //    Sabotage on a drone, and Rig (the rigged tile marked on the grid);
 //  · Trickster: Read (Analyze names the enemy's next move: a marker on the enemy and its target), False Image (a
@@ -160,16 +160,17 @@ const unBtn = host.locator('[role="tabpanel"] button', { hasText: 'Unstoppable' 
 const unTip = await tipOf(unBtn);
 ok('its button carries the reason: ' + unTip.slice(0, 60), /Used until the next scene/.test(unTip));
 
-// ---------- 2. Guardian: Command ----------
+// ---------- 2. Chaplain: Ward (rules 1.31; Command left: an order is Authority's Call) ----------
 await act(host, { type: 'sandbox/clear' });
-await setClass('guardian', 1, () => act(host, { type: 'sandbox/skill', charId: hostChar, skill: 'authority', points: 1 }));
+await setClass('guardian', 1, () => act(host, { type: 'sandbox/faith', charId: hostChar, belief: 'faithful', patron: 'mother_ember', faith: 1, devotion: 3, reset: true }));
 ok('host turn', await newTurn());
+ok('the squadmate stands in sight', await mateNear(3));
 let m = await mate(); u = await me();
-const dest = await freeNear(m.pos, [[0, 1], [1, 0], [-1, 0], [0, -1], [1, 1], [-1, 1]]);
 n0 = await fxN();
-r = await useMove(/^Command/, { target: m.pos, tile: dest, shot: '03-command-picker' });
-m = await mate(); fx = await fxSince(n0);
-ok('Command: ' + (r || 'confirmed') + '; the squadmate walked to ' + ref(dest) + ' (now ' + ref(m.pos) + ') for free', !r && m.pos === dest && fx.some((e) => e.k === 'command_move'));
+r = await useMove(/^Ward/, { target: m.pos, shot: '03-ward-picker' });
+m = await mate(); u = await me();
+ok('Ward at Faith 1: ' + (r || 'confirmed') + '; the squadmate carries a Ward (' + JSON.stringify(m.shields || []) + ')', !r && (m.shields || []).some((l) => l.layer === 'ward' && l.by === u.id && l.n > 0));
+ok('Ward was the turn\'s Whisper: Rebuke is refused now', /One Whisper a turn/.test(String(await act(host, { type: 'faith/pray', unitId: u.id, kind: 'whisper', id: 'rebuke', targetId: (await G()).combat.units.find((x) => x.side === 'foe' && !x.dead)?.id }))));
 
 // ---------- 3. Infiltrator: Vanish, Field Fix, Rig, Sabotage ----------
 await setClass('infiltrator', 3);
@@ -309,7 +310,7 @@ ok('Shrug It Off: off is in force (' + (r || 'confirmed') + ')', !r && (await ho
 await snap('13-defender');
 
 const seen = new Set(await fxSeenSince(0));
-ok('the fx played: ' + [...seen].filter((k) => ['shove', 'unstoppable', 'command_move', 'stance', 'rig', 'sabotage', 'intent', 'image', 'silver_tongue', 'swap', 'rally', 'eye_storm'].includes(k)).join(', '),
-  ['shove', 'unstoppable', 'command_move', 'rig', 'sabotage', 'intent', 'image', 'silver_tongue', 'swap', 'rally', 'eye_storm'].every((k) => seen.has(k)));
+ok('the fx played: ' + [...seen].filter((k) => ['shove', 'unstoppable', 'stance', 'rig', 'sabotage', 'intent', 'image', 'silver_tongue', 'swap', 'rally', 'eye_storm'].includes(k)).join(', '),
+  ['shove', 'unstoppable', 'rig', 'sabotage', 'intent', 'image', 'silver_tongue', 'swap', 'rally', 'eye_storm'].every((k) => seen.has(k)));
 ok('no page errors: ' + [...host.errors, ...mai.errors].join(' | '), ![...host.errors, ...mai.errors].length);
 await browser.close();
