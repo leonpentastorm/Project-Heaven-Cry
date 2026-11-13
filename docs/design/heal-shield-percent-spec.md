@@ -320,3 +320,20 @@ and (b) and the Class 1 armour they read.
 9. **What cannot hold at 65:** the Outburst's biggest Release (71% by formula) and the full MEND Line (81%) pass the top
    as single actions; the per-action cap (50% of the target) holds them. If you would rather keep them under 65 by
    their own numbers, the dials are `cycle.stage_mult` and `grammar` (the second MEND's share). **The cap.**
+
+## Settled by Leon, 13 Nov (after this spec was written; these override the text above where they differ)
+
+1. **The percent gate is 20% of the target's max HP for a 2-AP heal action** (not 15): the 125-HP level 1 Recruit's
+   quick heal is 25, which clears an unarmoured Soldier hit (23). Every gate value in this spec that was derived from
+   15% is scaled by 20 / 15; the gate's 145-HP counting cap and the 50% cap on a single heal stay as written.
+2. **The healing echo is 20% of the heal** (Leon's quarter was too much for the offence line at these heal sizes; the
+   spec's tenth was too little for him). The Mender's offence is re-pinned to its line (about 70% of a rifle-turn
+   steady, the best three-turn window under 100) by the **Ledger's factor and cap**, not by the echo: the builder
+   recomputes them with the echo at 0.20 and states the arithmetic.
+3. **"A full assault"** is what the fire doctrine puts on one character in a round, as defined here. Accepted.
+4. **The strongest shield in the game is Faith's.** The Chaplain's shield (Sanctuary for a zone; Ward for one ally,
+   10 × Blessing power, on at most two allies) holds the top line: about two full assaults for the strongest single
+   use, paid for by the Hymn's wait and the Whisper slot. The full Sigil WARD Line, which this spec had on top at 70,
+   is set **under** it; the builder gives the Sigil's and every other shield's line as a share of Faith's and shows
+   the order: Faith, then the Mender's Tending shield, then the Sigil Line and the Outburst's shield.
+5. **Ward is 10 × Blessing power.** Accepted.
