@@ -1,0 +1,586 @@
+[
+  {
+    "id": "P045",
+    "mode": "gear-followup",
+    "filename": "mag-pistol_32.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P045.png",
+    "native_sha256": "19607c4243d50e56ba90f60503bf34382e61bb3d844f0da6b0b79ea4a8965950",
+    "export_hashes": {
+      "256": "d4d4686da2189e68fcd31fdb6c98668a7cfe5a00afa9acfe7964b56ea5fd39a7",
+      "128": "eb8c5776b8f1891f230a2648323f7fd7a8663fc16502f0093a33b813b29207b1",
+      "64": "2cf67a8dbc2eb132bf55a1994c53dec5a7aefcf2186dd941d5eede94a3a99f28",
+      "32": "b85709be6df90020102bb3756344ae9169f2790441115c51ae4e583a355a5cfd"
+    },
+    "label": "Pistol magazine",
+    "path": "art/icons/gear/mag-pistol_32.png",
+    "sha256": "b4c00d08a79c0daa0ca07d99795103f8645ceb24773f4e390991437ee598d36f",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-pistol_32.png",
+      "128": "art/icons/gear/exports/128/mag-pistol_32.png",
+      "64": "art/icons/gear/exports/64/mag-pistol_32.png",
+      "32": "art/icons/gear/exports/32/mag-pistol_32.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P045.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 12,
+    "origin": "brief",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/mag-pistol_32.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/mag-pistol_32.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/mag-pistol_32.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/mag-pistol_32.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/mag-pistol_32.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mag-pistol_32.png"
+  },
+  {
+    "id": "P046",
+    "mode": "gear-followup",
+    "filename": "mag-smg_32.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P046.png",
+    "native_sha256": "4c14d196228b539b22f29950d35b385309dc787a156638d9019c8bde4a460e64",
+    "export_hashes": {
+      "256": "af43856848ecbf6cfac3f50958bad852810ec73f98ac401b5b9ae27d2f1e50d0",
+      "128": "11b85a84fbab16430eb23094052a39158d768d76327570fbce649d1f6b6b7f82",
+      "64": "7c493b3450599c394f95ecb90c714cbccf10b1956d3a07434f85079d78b82280",
+      "32": "9ecdbb9a915bed3de6869d9ea5ba0ebfc65435cf7e58c0edba62486af0c8b7f8"
+    },
+    "label": "mag-smg_32",
+    "path": "art/icons/gear/mag-smg_32.png",
+    "sha256": "ccdfa6c4cda654c702f9c6bc2de3b022322e0cb363fb1733e12cbabf6fa35664",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-smg_32.png",
+      "128": "art/icons/gear/exports/128/mag-smg_32.png",
+      "64": "art/icons/gear/exports/64/mag-smg_32.png",
+      "32": "art/icons/gear/exports/32/mag-smg_32.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P046.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 143,
+    "origin": "brief",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/mag-smg_32.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/mag-smg_32.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/mag-smg_32.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/mag-smg_32.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/mag-smg_32.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mag-smg_32.png"
+  },
+  {
+    "id": "P047",
+    "mode": "gear-followup",
+    "filename": "mag-rifle.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P047.png",
+    "native_sha256": "b226c9b86eb28cd97c27e51d479b93d535f4c71c55bfbf533f25b087970f38d6",
+    "export_hashes": {
+      "256": "aed8356eaac5a904f6aa21b66d7ca6c8f3e0aa9f0dfaaa5c64bd8ea6dc69aad1",
+      "128": "7bcb274801104af3295b4edf0220439189c7b99f24f5eec3cfc68e5f31007e99",
+      "64": "bbcb626ebf0b1a6b2bef78bad026f53126e7ecc00c99517e47301e50436cfad1",
+      "32": "f2898b1fabb3f1aa218c4984530268e61c928f3f60f429d8c4d4444b33dcbca7"
+    },
+    "label": "Rifle magazine",
+    "path": "art/icons/gear/mag-rifle.png",
+    "sha256": "1ade725e59e929c9066e6603f0293b8de2c54c8a3d00959a6b09e045c59413de",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-rifle.png",
+      "128": "art/icons/gear/exports/128/mag-rifle.png",
+      "64": "art/icons/gear/exports/64/mag-rifle.png",
+      "32": "art/icons/gear/exports/32/mag-rifle.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P047.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 13,
+    "origin": "brief",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/mag-rifle.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/mag-rifle.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/mag-rifle.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/mag-rifle.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/mag-rifle.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mag-rifle.png"
+  },
+  {
+    "id": "P048",
+    "mode": "gear-followup",
+    "filename": "mod-extended_mag.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P048.png",
+    "native_sha256": "220a614fec40fb0e0f859aa2e5444cfa3281ea585c51f4a1c9e1d1e93e732434",
+    "export_hashes": {
+      "256": "ec7b6b1ddbd0086ebc227b77f6a1f1deb6d815b832da5493bb6b9599317d80a8",
+      "128": "6171d1845234e3d67658c526e53d9980d84697f960d0264b9cf0aa1f26b7cf77",
+      "64": "8a855a4d4caacc2c8cb620837d660f9031e8ceebb4b6da00c8b276bbf2a44cb8",
+      "32": "89e8a59dc821d198a65d5492eb357f808703398e35aa1ecd60f14a67081f1a86"
+    },
+    "label": "Extended magazine",
+    "path": "art/icons/gear/mod-extended_mag.png",
+    "sha256": "e0a213c92fbcf919e26b3f36fe72b875d077bdbdfc217b9ce0b23112d37a315c",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-extended_mag.png",
+      "128": "art/icons/gear/exports/128/mod-extended_mag.png",
+      "64": "art/icons/gear/exports/64/mod-extended_mag.png",
+      "32": "art/icons/gear/exports/32/mod-extended_mag.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P048.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 121,
+    "origin": "brief",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/mod-extended_mag.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/mod-extended_mag.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/mod-extended_mag.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/mod-extended_mag.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/mod-extended_mag.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mod-extended_mag.png"
+  },
+  {
+    "id": "P049",
+    "mode": "gear-followup",
+    "filename": "weapon-service_pistol.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P049.png",
+    "native_sha256": "2c6e9ff5a3db7a9c4191058deae0a3f182ee372b65e084c0713ab5f849753fde",
+    "export_hashes": {
+      "256": "156fe535d6ed9678d8d1ae99976987ea186426b4c7b883515b51f93e3791dd5d",
+      "128": "16afafb1c24f35173a86e0c8d7a4de540df6333d88c2a8293ebee563f6234ffa",
+      "64": "7d118652423da601ac7aadf7205c02e6be478cf210b21ee632e1dcffb1f7ffbd",
+      "32": "2ab98e5632be52cf3582bc0655506edb889dd9d916f91ffced3d40d6127c4cc7"
+    },
+    "label": "Service pistol",
+    "path": "art/icons/gear/weapon-service_pistol.png",
+    "sha256": "cd5841d14335d25229287f0398e49f76cf8c4e3d9f8459db78e920510aa6697e",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-service_pistol.png",
+      "128": "art/icons/gear/exports/128/weapon-service_pistol.png",
+      "64": "art/icons/gear/exports/64/weapon-service_pistol.png",
+      "32": "art/icons/gear/exports/32/weapon-service_pistol.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P049.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 1,
+    "origin": "brief",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-service_pistol.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-service_pistol.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-service_pistol.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-service_pistol.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-service_pistol.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-service_pistol.png"
+  },
+  {
+    "id": "P050",
+    "mode": "gear-followup",
+    "filename": "mag-magistrate.png",
+    "operation": "new",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P050.png",
+    "native_sha256": "1c9c20e872f8eaa4a8366f63a7f6caa0b7cae2a7605468e187260b56cd268cf6",
+    "export_hashes": {
+      "256": "38d07e5a8ae1fdcb5b0257f87d797eb2d01c03a7a2f0d652d100a36de2fff61e",
+      "128": "f656b058c8c08e30a0578f3b9b8dd8fd22bdeb0d45f35dca046da092fdb629f7",
+      "64": "f2053b38c21b0ba0206063f2dc3865ec1347dfd65c4e82be866a255efb1285fa",
+      "32": "2a0a811f54a234529bd0c1a6163ffab204f9327e5ddd94995286c688d8a2676c"
+    },
+    "label": "Magistrate heavy-pistol magazine",
+    "path": "art/icons/gear/mag-magistrate.png",
+    "sha256": "3d0720d8b17a3bb952a3bde2dd7ec445edd185ae4f234a2b94f82ee1c200d0b1",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-magistrate.png",
+      "128": "art/icons/gear/exports/128/mag-magistrate.png",
+      "64": "art/icons/gear/exports/64/mag-magistrate.png",
+      "32": "art/icons/gear/exports/32/mag-magistrate.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P050.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "origin": "survival-followup"
+  },
+  {
+    "id": "P051",
+    "mode": "gear-followup",
+    "filename": "mag-brigade_shotgun.png",
+    "operation": "new",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P051.png",
+    "native_sha256": "d522d46eb60c58a297774f3cd5112f16e0d68aac590d9629545b817528461806",
+    "export_hashes": {
+      "256": "1f029ede702a75b2af9339cf151893d377bf05bae07a756536310ce012efc2a1",
+      "128": "11960505e3495faea62940ea9d3bc26fe0134551ea61e126ce1bf2bdf270bc59",
+      "64": "e51fc8e743b44a46eac35ffa6e80a2abc859c4fdc2b996b968cadecd86616e58",
+      "32": "5dc08257cac0a201b1a9ba952217d034dd96dfa621d29b206e9af86114de14ab"
+    },
+    "label": "Brigade auto-shotgun magazine",
+    "path": "art/icons/gear/mag-brigade_shotgun.png",
+    "sha256": "a894c768554656189802c5e18f608211c152cb5035f7937ff5429274c4876bf8",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-brigade_shotgun.png",
+      "128": "art/icons/gear/exports/128/mag-brigade_shotgun.png",
+      "64": "art/icons/gear/exports/64/mag-brigade_shotgun.png",
+      "32": "art/icons/gear/exports/32/mag-brigade_shotgun.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P051.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "origin": "survival-followup"
+  },
+  {
+    "id": "P052",
+    "mode": "gear-followup",
+    "filename": "mag-repeating_crossbow.png",
+    "operation": "new",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P052.png",
+    "native_sha256": "810c596170482a474662a69e9a1246feb14421b1f9b636889c4d45cdb66b188d",
+    "export_hashes": {
+      "256": "3eb3568a437ef10c776cfb7a75a23d6b93aa376a1da5a00e6a5f9438cf837b10",
+      "128": "2f76a3eb2927845b5bd5af76b6e63f70b1900498681ca6df15019e6ae1398467",
+      "64": "b2012498397834f8bc811a984be83023d1b5b00491d9ad68349b32f0af4ac29a",
+      "32": "6d10cbfba45d01f9dc75a2a3a962fff65f12c55019263fd5c72e008e84b259c2"
+    },
+    "label": "Repeating crossbow magazine",
+    "path": "art/icons/gear/mag-repeating_crossbow.png",
+    "sha256": "e32b145038304d202aec60f85e7c1855155ee6765d9ac2a61ede18f07dfc5196",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-repeating_crossbow.png",
+      "128": "art/icons/gear/exports/128/mag-repeating_crossbow.png",
+      "64": "art/icons/gear/exports/64/mag-repeating_crossbow.png",
+      "32": "art/icons/gear/exports/32/mag-repeating_crossbow.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P052.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "origin": "survival-followup"
+  },
+  {
+    "id": "P053",
+    "mode": "gear-followup",
+    "filename": "weapon-long_rifle.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P053.png",
+    "native_sha256": "561b0f0f36a66737a29879396080158c7ac113328f23daefb2d38b4f7465c791",
+    "export_hashes": {
+      "256": "e4ebd727b35523073d4bdbcb0e002c009c45ede48c6dd98d954517f2a461bba4",
+      "128": "6c2150ff83ef65d8d6a5b42207d007c5b01996117048011a4434dbacdd72d9e2",
+      "64": "778d15b88283e8d4bdb214e53dcce441d69547d130cfb02c3876e7872312d6e2",
+      "32": "5a9ad4136252e8bc0cf13d61a8ea2c2ed8a145187894cba946ba4f6b68b07ac0"
+    },
+    "label": "Long rifle",
+    "path": "art/icons/gear/weapon-long_rifle.png",
+    "sha256": "ad7f4f3bf6366701a7b0886a3400574c0a9834e23c803cb47e66d0c470337831",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-long_rifle.png",
+      "128": "art/icons/gear/exports/128/weapon-long_rifle.png",
+      "64": "art/icons/gear/exports/64/weapon-long_rifle.png",
+      "32": "art/icons/gear/exports/32/weapon-long_rifle.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P053.png",
+    "native_dimensions": [
+      1536,
+      1024
+    ],
+    "brief_number": 30,
+    "origin": "brief",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-long_rifle.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-long_rifle.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-long_rifle.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-long_rifle.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-long_rifle.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-long_rifle.png"
+  },
+  {
+    "id": "P054",
+    "mode": "gear-followup",
+    "filename": "weapon-ccec_marksman_rifle.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P054.png",
+    "native_sha256": "0762a10914083b5ee5d9a21f59ded5572922f4e2b0e29fe69585804588ff398f",
+    "export_hashes": {
+      "256": "713e3888f7aef27dd8e056b8ece7e5bb6c352ea2184ef2e00d058415390f266e",
+      "128": "34866e14ccd7657851525feedf3393e800ca081908f2aeaca41041758c06463a",
+      "64": "d08ff0e89e9e3727a7b906a52b3ac576ce95a35cd04dd32fe8a30b9d5acd124d",
+      "32": "1bf85acc806ff7914e0353a973e696724b3a96ca16d08f17cc1512704ec334c8"
+    },
+    "label": "CCEC marksman rifle",
+    "path": "art/icons/gear/weapon-ccec_marksman_rifle.png",
+    "sha256": "b7b78f5e26d3dd0b6b4af59a29183ceefc1674c3f3cf0c7a1826f08f8fe9b357",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-ccec_marksman_rifle.png",
+      "128": "art/icons/gear/exports/128/weapon-ccec_marksman_rifle.png",
+      "64": "art/icons/gear/exports/64/weapon-ccec_marksman_rifle.png",
+      "32": "art/icons/gear/exports/32/weapon-ccec_marksman_rifle.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P054.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 32,
+    "origin": "brief",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-ccec_marksman_rifle.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-ccec_marksman_rifle.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-ccec_marksman_rifle.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-ccec_marksman_rifle.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-ccec_marksman_rifle.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-ccec_marksman_rifle.png"
+  },
+  {
+    "id": "P055",
+    "mode": "gear-followup",
+    "filename": "weapon-blackpoint_700.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P055.png",
+    "native_sha256": "79a135d7f734c42536d2fd7da2ea4f979b4af2e5016f338e2b7fe3ec2b874862",
+    "export_hashes": {
+      "256": "b68749260ad3add3bdaa844b543510907236a24de9f351d15da7c2ade1cd163e",
+      "128": "cb1387bba8eb6be3ace8d555dd465d68bc23b798aa75195515e0f733a9e5a26a",
+      "64": "c76770b7050bd32c42accd8741bfc93e87d8b8d7ed8320606692afc2cb24fdd5",
+      "32": "fd5fc131fdcb8d3a9e4dc781851cb2c3e7de94ae36c3e0eed61e59d555f38791"
+    },
+    "label": ".700 Blackpoint anti-materiel",
+    "path": "art/icons/gear/weapon-blackpoint_700.png",
+    "sha256": "5fbdc19509e6aaf6f494622272880c8886223cecbec35e5c9fa028a1c78feb03",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-blackpoint_700.png",
+      "128": "art/icons/gear/exports/128/weapon-blackpoint_700.png",
+      "64": "art/icons/gear/exports/64/weapon-blackpoint_700.png",
+      "32": "art/icons/gear/exports/32/weapon-blackpoint_700.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P055.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 41,
+    "origin": "brief",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-blackpoint_700.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-blackpoint_700.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-blackpoint_700.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-blackpoint_700.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-blackpoint_700.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-blackpoint_700.png"
+  },
+  {
+    "id": "P056",
+    "mode": "gear-followup",
+    "filename": "weapon-katana.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P056.png",
+    "native_sha256": "90f6df3868c696862a24cd659b6bf753672b2eb061148dee393738834c84a8b1",
+    "export_hashes": {
+      "256": "28d035b478131d2378fb9ef32e8f0f2f42b2fdea8915b2fddd3af94b1c94573a",
+      "128": "e291bf6e01fc33fa976bbb1509d63accaeac9d07d0ce514c73dd111f218b60bf",
+      "64": "c161ec288096dea1401ea4258a97dfaca42080c0edaeb0f07e67b5e32e5a6fcf",
+      "32": "fa574ecb10a082c4b19a525987527b0d637ef7c5089171811235c06c9193755d"
+    },
+    "label": "Katana",
+    "path": "art/icons/gear/weapon-katana.png",
+    "sha256": "59588dba217985563b09c144f62b048cf3b0bc3465873e692ad8df403144fe58",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-katana.png",
+      "128": "art/icons/gear/exports/128/weapon-katana.png",
+      "64": "art/icons/gear/exports/64/weapon-katana.png",
+      "32": "art/icons/gear/exports/32/weapon-katana.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P056.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 150,
+    "origin": "user-requested addition",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-katana.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-katana.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-katana.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-katana.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-katana.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-katana.png"
+  },
+  {
+    "id": "P057",
+    "mode": "gear-followup",
+    "filename": "weapon-emanator_katana.png",
+    "operation": "replace existing",
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P057.png",
+    "native_sha256": "34571a07d6bc59d0e5c249b93240790695e02bbcfb3d4287b9b9dae6025c6908",
+    "export_hashes": {
+      "256": "02f8d160ea3f7685d0f3a1f35e20ba6b65b83563bcebf16cc4009c02968dee39",
+      "128": "b5aa3b89dede588a16211fa7298b3cfa149cf4868d38ac5d6be6e9316d8d83c6",
+      "64": "37492a6ae3cf6709ff6a498511a3ae24f52fe339ac12a9d5265e6de5d8d62207",
+      "32": "6a0af04d93de69b503b6d4425e0090028e84468a3205d14c5d22f8f3897535c6"
+    },
+    "label": "Emanator katana",
+    "path": "art/icons/gear/weapon-emanator_katana.png",
+    "sha256": "ddb4a491352712db2686ab1fd618106df782eb4201cfb49bb5ff138e85366b3a",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-emanator_katana.png",
+      "128": "art/icons/gear/exports/128/weapon-emanator_katana.png",
+      "64": "art/icons/gear/exports/64/weapon-emanator_katana.png",
+      "32": "art/icons/gear/exports/32/weapon-emanator_katana.png"
+    },
+    "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P057.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 151,
+    "origin": "user-requested addition",
+    "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-emanator_katana.png",
+    "previous_exports": {
+      "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-emanator_katana.png",
+      "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-emanator_katana.png",
+      "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-emanator_katana.png",
+      "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-emanator_katana.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-emanator_katana.png"
+  }
+]

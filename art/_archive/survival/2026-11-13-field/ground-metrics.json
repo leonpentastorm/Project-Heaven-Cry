@@ -1,0 +1,32 @@
+{
+  "ground-1": {
+    "mean_abs_rgb_lr_tb_native_resized": [
+      6.8792,
+      6.1647
+    ],
+    "mean_abs_rgb_lr_tb_export": [
+      0.0,
+      0.0
+    ]
+  },
+  "ground-2": {
+    "mean_abs_rgb_lr_tb_native_resized": [
+      6.929,
+      6.3369
+    ],
+    "mean_abs_rgb_lr_tb_export": [
+      0.0,
+      0.0
+    ]
+  },
+  "ground-3": {
+    "mean_abs_rgb_lr_tb_native_resized": [
+      7.5153,
+      6.5807
+    ],
+    "mean_abs_rgb_lr_tb_export": [
+      0.0,
+      0.0
+    ]
+  }
+}

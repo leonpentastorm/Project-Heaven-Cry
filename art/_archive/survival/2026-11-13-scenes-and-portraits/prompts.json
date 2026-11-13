@@ -1,0 +1,339 @@
+{
+  "P025": {
+    "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\n(direction A) An **in-world tactical display**: a dark table or a wall of a command room, a raised relief of broken ground and districts in dark slate with thin etched ivory contour lines and faint cyan `#4FC8DF` grid ticks at the edges only, a few brass pins and cables, a lamp's pool of light on one side. Blank, no labels or lettering, no parchment, no paper.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/proving-ground/drill-yard.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P026": {
+    "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\n(direction B) A **painted aerial** of a district at dusk, as if seen from a drone high over it: a river bend, rooftops and courtyards in layered Heavenprint planes, roads as pale thread-like lines, a rim of mist and darkness at the edges, calm open areas of plaza, field and water where nodes can sit. No labels, no UI, no map symbols, no parchment.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/proving-ground/drill-yard.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P027": {
+    "prompt": "Paint one landscape 4:3 arrival card, Project Heaven Cry. A quartermaster's counter in an AHOC chapter store: a steel counter with a mesh cage, shelves of boxed kit and rifles in racks behind, a ledger and a bell, a green-shaded lamp. Ordered, military, a little dusty. 2048×1536 opaque PNG requested, at least 1600×1200. Frame subject comfortably for a 4:3 crop, keep the lower third quiet for text, one practical light source, no characters or creatures. Heavenprint opaque gouache and ink, broken expressive angular paint, scumbled low-detail passages, charcoal lost edges and warm ivory highlights. Local colors, no digital gloss, bloom, text, logo, UI, frame or watermark. Match paint and mood of references. The set is for a tactical game's Survival mode.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P027.png",
+      "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\nA quartermaster's counter in an AHOC chapter store: a steel counter with a mesh cage, shelves of boxed kit and rifles in racks behind, a ledger and a bell, a green-shaded lamp. Ordered, military, a little dusty.",
+      "references": [
+        "art/illustrations/m813/outpost813.png",
+        "art/illustrations/m813/shield-line.png",
+        "art/illustrations/proving-ground/drill-yard.png",
+        "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+      ]
+    }
+  },
+  "P028": {
+    "prompt": "Paint one landscape 4:3 arrival card, Project Heaven Cry. A back-alley dealer's pitch in Central City: a canvas awning, a folding table of mismatched goods under a bare bulb, a hanging coat of pockets, crates, wet cobbles, a lookout's empty stool. 2048×1536 opaque PNG requested, at least 1600×1200. Frame subject comfortably for a 4:3 crop, keep the lower third quiet for text, one practical light source, no characters or creatures. Heavenprint opaque gouache and ink, broken expressive angular paint, scumbled low-detail passages, charcoal lost edges and warm ivory highlights. Local colors, no digital gloss, bloom, text, logo, UI, frame or watermark. Match paint and mood of references. The set is for a tactical game's Survival mode.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/city-a-archway.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P028.png",
+      "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\nA back-alley dealer's pitch in Central City: a canvas awning, a folding table of mismatched goods under a bare bulb, a hanging coat of pockets, crates, wet cobbles, a lookout's empty stool.",
+      "references": [
+        "art/illustrations/m813/outpost813.png",
+        "art/illustrations/m813/shield-line.png",
+        "art/illustrations/proving-ground/drill-yard.png",
+        "art/illustrations/survival/backdrops/city-a-archway.png"
+      ]
+    }
+  },
+  "P029": {
+    "prompt": "Paint one landscape 4:3 arrival card, Project Heaven Cry. A faction trader's wagon or stall at the frontier: a Smetanita-style lacquer-black and brass pavilion with a bright lamp, drawers of cores and rounds, bundles of gold-coin pouches; rich, polished, slightly sinister. No logos or lettering. 2048×1536 opaque PNG requested, at least 1600×1200. Frame subject comfortably for a 4:3 crop, keep the lower third quiet for text, one practical light source, no characters or creatures. Heavenprint opaque gouache and ink, broken expressive angular paint, scumbled low-detail passages, charcoal lost edges and warm ivory highlights. Local colors, no digital gloss, bloom, text, logo, UI, frame or watermark. Match paint and mood of references. The set is for a tactical game's Survival mode.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P029.png",
+      "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\nA faction trader's wagon or stall at the frontier: a Smetanita-style lacquer-black and brass pavilion with a bright lamp, drawers of cores and rounds, bundles of gold-coin pouches; rich, polished, slightly sinister. No logos or lettering.",
+      "references": [
+        "art/illustrations/m813/outpost813.png",
+        "art/illustrations/m813/shield-line.png",
+        "art/illustrations/proving-ground/drill-yard.png",
+        "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+      ]
+    }
+  },
+  "P030": {
+    "prompt": "Paint one landscape 4:3 arrival card, Project Heaven Cry. A safe room: a reinforced cellar with a cot, a medical kit, a stove, a lamp, a rug over concrete, a door barred from inside. Warm, quiet, human. 2048×1536 opaque PNG requested, at least 1600×1200. Frame subject comfortably for a 4:3 crop, keep the lower third quiet for text, one practical light source, no characters or creatures. Heavenprint opaque gouache and ink, broken expressive angular paint, scumbled low-detail passages, charcoal lost edges and warm ivory highlights. Local colors, no digital gloss, bloom, text, logo, UI, frame or watermark. Match paint and mood of references. The set is for a tactical game's Survival mode.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P030.png",
+      "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\nA safe room: a reinforced cellar with a cot, a medical kit, a stove, a lamp, a rug over concrete, a door barred from inside. Warm, quiet, human.",
+      "references": [
+        "art/illustrations/m813/outpost813.png",
+        "art/illustrations/m813/shield-line.png",
+        "art/illustrations/proving-ground/drill-yard.png",
+        "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+      ]
+    }
+  },
+  "P031": {
+    "prompt": "Paint one landscape 4:3 arrival card, Project Heaven Cry. A campfire under a broken roof: a ruined hall with rafters open to a night sky, a small fire in a ring of stones, a kettle, bedrolls (empty), sparks rising. The warm fire is the only strong light. 2048×1536 opaque PNG requested, at least 1600×1200. Frame subject comfortably for a 4:3 crop, keep the lower third quiet for text, one practical light source, no characters or creatures. Heavenprint opaque gouache and ink, broken expressive angular paint, scumbled low-detail passages, charcoal lost edges and warm ivory highlights. Local colors, no digital gloss, bloom, text, logo, UI, frame or watermark. Match paint and mood of references. The set is for a tactical game's Survival mode.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P031.png",
+      "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\nA campfire under a broken roof: a ruined hall with rafters open to a night sky, a small fire in a ring of stones, a kettle, bedrolls (empty), sparks rising. The warm fire is the only strong light.",
+      "references": [
+        "art/illustrations/m813/outpost813.png",
+        "art/illustrations/m813/shield-line.png",
+        "art/illustrations/proving-ground/drill-yard.png",
+        "art/illustrations/survival/backdrops/field-a-ridge.png"
+      ]
+    }
+  },
+  "P032": {
+    "prompt": "Paint one landscape 4:3 arrival card, Project Heaven Cry. An Elite's lair: a wide chamber hung with trophies and salvage (no bodies), a throne of crates and plates, chains, a dim red work lamp; threat without a creature in sight. 2048×1536 opaque PNG requested, at least 1600×1200. Frame subject comfortably for a 4:3 crop, keep the lower third quiet for text, one practical light source, no characters or creatures. Heavenprint opaque gouache and ink, broken expressive angular paint, scumbled low-detail passages, charcoal lost edges and warm ivory highlights. Local colors, no digital gloss, bloom, text, logo, UI, frame or watermark. Match paint and mood of references. The set is for a tactical game's Survival mode.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P032.png",
+      "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\nAn Elite's lair: a wide chamber hung with trophies and salvage (no bodies), a throne of crates and plates, chains, a dim red work lamp; threat without a creature in sight.",
+      "references": [
+        "art/illustrations/m813/outpost813.png",
+        "art/illustrations/m813/shield-line.png",
+        "art/illustrations/proving-ground/drill-yard.png",
+        "art/illustrations/survival/backdrops/field-a-ridge.png"
+      ]
+    }
+  },
+  "P033": {
+    "prompt": "Paint one landscape 4:3 arrival card, Project Heaven Cry. A Boss's arena door: a colossal doorway of black stone and iron at the end of a ruined hall, light leaking along its seam, fallen banners, the floor scratched in a wide arc. The most dramatic picture in the set (still no figure). 2048×1536 opaque PNG requested, at least 1600×1200. Frame subject comfortably for a 4:3 crop, keep the lower third quiet for text, one practical light source, no characters or creatures. Heavenprint opaque gouache and ink, broken expressive angular paint, scumbled low-detail passages, charcoal lost edges and warm ivory highlights. Local colors, no digital gloss, bloom, text, logo, UI, frame or watermark. Match paint and mood of references. The set is for a tactical game's Survival mode.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/shrine-a-steps.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P033.png",
+      "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\nA Boss's arena door: a colossal doorway of black stone and iron at the end of a ruined hall, light leaking along its seam, fallen banners, the floor scratched in a wide arc. The most dramatic picture in the set (still no figure).",
+      "references": [
+        "art/illustrations/m813/outpost813.png",
+        "art/illustrations/m813/shield-line.png",
+        "art/illustrations/proving-ground/drill-yard.png",
+        "art/illustrations/survival/backdrops/shrine-a-steps.png"
+      ]
+    }
+  },
+  "P034": {
+    "prompt": "Paint one landscape 4:3 arrival card, Project Heaven Cry. A reward cache: an open armoured locker or sunken vault holding a few wrapped bundles, a glowing core, a pouch of coins (ivory and gold accents), dust motes in one shaft of light. Generic enough to hold any reward. 2048×1536 opaque PNG requested, at least 1600×1200. Frame subject comfortably for a 4:3 crop, keep the lower third quiet for text, one practical light source, no characters or creatures. Heavenprint opaque gouache and ink, broken expressive angular paint, scumbled low-detail passages, charcoal lost edges and warm ivory highlights. Local colors, no digital gloss, bloom, text, logo, UI, frame or watermark. Match paint and mood of references. The set is for a tactical game's Survival mode.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P034.png",
+      "prompt": "Paint one Project Heaven Cry environment in opaque Heavenprint gouache and ink with expressive broken angular brushwork, subtle scumbling, charcoal lost edges and local colour. Use the references for paint and material finish. Keep one practical source of light, calm clear visual hierarchy and quiet areas. No figures, creatures, lettering, logos, symbols for navigation, UI, frame or watermark. Invented environment. Aim for a 16:9 opaque frame. For path map keep large calm open areas for node overlays. For node cards keep the subject legible in a smaller crop.\nA reward cache: an open armoured locker or sunken vault holding a few wrapped bundles, a glowing core, a pouch of coins (ivory and gold accents), dust motes in one shaft of light. Generic enough to hold any reward.",
+      "references": [
+        "art/illustrations/m813/outpost813.png",
+        "art/illustrations/m813/shield-line.png",
+        "art/illustrations/proving-ground/drill-yard.png",
+        "art/illustrations/survival/backdrops/ahoc-a-gate.png"
+      ]
+    }
+  },
+  "P035": {
+    "prompt": "One Project Heaven Cry Heavenprint NPC portrait. Preserve the exact job, action and emotional intent: An AHOC chapter quartermaster (Factions.md section 0): a broad middle-aged woman with grey-streaked cropped hair, sleeves rolled, a pencil behind her ear, a mesh counter in front, a lamp. Action: weighing a box of rounds in one hand. Emotion: dry patience, \"you again?\". Casting and camera are explicit: Make her 56, broad and stocky with a square face, full cheeks, broad flat nose, short graying black crew cut and dark brown skin. Straight frontal or nearly frontal, chin level, one eyebrow slightly up; broad hands weighing the box. Cool green task light and ceramic grey uniform, chest-up. Use a believable individual with unmistakable face shape, nose and hair. Paint in hand-made opaque matte gouache and restrained expressive ink, broken brushwork, selective hatching, warm ivory highlights, charcoal lost edges, natural local color. Keep the expression subtle and anatomy credible. The references provide brushwork and lighting hierarchy only. Target native 4:5, 800×1000 minimum, full bleed, no frame, labels, text, logos or watermark.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P035.png",
+      "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\nAn AHOC chapter quartermaster (Factions.md section 0): a broad middle-aged woman with grey-streaked cropped hair, sleeves rolled, a pencil behind her ear, a mesh counter in front, a lamp. Action: weighing a box of rounds in one hand. Emotion: dry patience, \"you again?\".",
+      "references": [
+        "art/style-guide/references/approved-original-27.jpg",
+        "art/style-guide/references/approved-new-faces-27.jpg",
+        "art/style-guide/references/approved-pilot.png"
+      ]
+    }
+  },
+  "P036": {
+    "prompt": "One Project Heaven Cry Heavenprint NPC portrait. Preserve the exact job, action and emotional intent: A civilian back-alley dealer in Central City (Sector-Earth): a thin, quick man in his thirties with a patched long coat full of inside pockets, stubble, a rolled sleeve, a bare bulb overhead. Action: opening his coat to show the goods. Emotion: friendly and calculating. Casting and camera are explicit: Make him 32, lean and wiry with a long narrow face, high cheekbones, hooked prominent nose, dark tight curls close to the scalp and olive-brown skin. Crisp full profile facing right and a quick sideways smile. A wet blue street and one warm bulb. Do not tilt his head up. Use a believable individual with unmistakable face shape, nose and hair. Paint in hand-made opaque matte gouache and restrained expressive ink, broken brushwork, selective hatching, warm ivory highlights, charcoal lost edges, natural local color. Keep the expression subtle and anatomy credible. The references provide brushwork and lighting hierarchy only. Target native 4:5, 800×1000 minimum, full bleed, no frame, labels, text, logos or watermark.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P036.png",
+      "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\nA civilian back-alley dealer in Central City (Sector-Earth): a thin, quick man in his thirties with a patched long coat full of inside pockets, stubble, a rolled sleeve, a bare bulb overhead. Action: opening his coat to show the goods. Emotion: friendly and calculating.",
+      "references": [
+        "art/style-guide/references/approved-original-27.jpg",
+        "art/style-guide/references/approved-new-faces-27.jpg",
+        "art/style-guide/references/approved-pilot.png"
+      ]
+    }
+  },
+  "P037": {
+    "prompt": "Paint a single 4:5 full bleed Heavenprint gouache and ink NPC portrait. The Smetanita Conjunction faction trader is 68, seated at her lacquer-black counter sliding a single gold coin under one index finger. She has a delicate narrow heart-shaped face, high cheekbones, narrow pointed chin, long aquiline nose, almond-shaped dark eyes, fine arched brows, and a visibly aged warm olive complexion. Her silver hair is mostly hidden under an architectural deep-plum and gold-thread head wrap. She wears a high-collared black silk robe and an ornate ring. Face shown in an elegant three-quarter view looking left toward the buyer, quiet amused half-smile. A little abacus sits beside the coin, warm candlelight comes from lower left across amber and plum, dark lacquer masses. Distinct slim poised silhouette and individual facial anatomy. Matte broken brush strokes, restrained hatching and warm ivory selective detail. The references establish paint style only. No text, frame, watermark, logo. Project Heaven Cry.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P037.png",
+      "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\nA faction trader of the Smetanita Conjunction (Factions.md section 4): a poised older woman in lacquer-black and brass, rings, a gold-thread scarf, a small abacus-like ledger. Action: sliding a coin over the counter with one finger. Emotion: amused, in no hurry.",
+      "references": [
+        "art/style-guide/references/approved-original-27.jpg",
+        "art/style-guide/references/approved-new-faces-27.jpg",
+        "art/style-guide/references/approved-pilot.png"
+      ]
+    },
+    "superseded_repaint": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P037-first-repaint.png",
+      "prompt": "One Project Heaven Cry Heavenprint NPC portrait. Preserve the exact job, action and emotional intent: A faction trader of the Smetanita Conjunction (Factions.md section 4): a poised older woman in lacquer-black and brass, rings, a gold-thread scarf, a small abacus-like ledger. Action: sliding a coin over the counter with one finger. Emotion: amused, in no hurry. Casting and camera are explicit: Make her 68, with rich brown skin, a round face with soft jaw and deep smile lines, a wide rounded nose, pale close-cropped natural hair, dark lacquer robe and a tightly wrapped gold-thread scarf. Straight-on across a low counter, poised, eyes directly on the viewer, coin motion in foreground. Warm parchment against deep plum shadows. Use a believable individual with unmistakable face shape, nose and hair. Paint in hand-made opaque matte gouache and restrained expressive ink, broken brushwork, selective hatching, warm ivory highlights, charcoal lost edges, natural local color. Keep the expression subtle and anatomy credible. The references provide brushwork and lighting hierarchy only. Target native 4:5, 800×1000 minimum, full bleed, no frame, labels, text, logos or watermark.",
+      "references": [
+        "art/style-guide/references/approved-original-27.jpg",
+        "art/style-guide/references/approved-new-faces-27.jpg"
+      ]
+    }
+  },
+  "P038": {
+    "prompt": "One Project Heaven Cry Heavenprint NPC portrait. Preserve the exact job, action and emotional intent: A field medic at a rest stop: a tired young man (or woman) in a stained grey medical smock with a stitched plain plus mark patch (never a real-world cross emblem), a lantern, an open satchel. Action: stitching a bandage. Emotion: gentle, exhausted, steady. Casting and camera are explicit: Cast a 24-year-old male medic with light freckled skin, a heart-shaped face, small straight nose, fine eyebrows, short close-cropped ginger hair, no stubble. Seated in three-quarter view from slightly above, gaze down at the bandage. Blue-grey smock, quiet cool lantern light with a small ivory accent. Use a believable individual with unmistakable face shape, nose and hair. Paint in hand-made opaque matte gouache and restrained expressive ink, broken brushwork, selective hatching, warm ivory highlights, charcoal lost edges, natural local color. Keep the expression subtle and anatomy credible. The references provide brushwork and lighting hierarchy only. Target native 4:5, 800×1000 minimum, full bleed, no frame, labels, text, logos or watermark.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P038.png",
+      "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\nA field medic at a rest stop: a tired young man (or woman) in a stained grey medical smock with a stitched plain plus mark patch (never a real-world cross emblem), a lantern, an open satchel. Action: stitching a bandage. Emotion: gentle, exhausted, steady.",
+      "references": [
+        "art/style-guide/references/approved-original-27.jpg",
+        "art/style-guide/references/approved-new-faces-27.jpg",
+        "art/style-guide/references/approved-pilot.png"
+      ]
+    }
+  },
+  "P039": {
+    "prompt": "One Project Heaven Cry Heavenprint NPC portrait. Preserve the exact job, action and emotional intent: A mission-giver (an AHOC chapter officer with the suspicion of the truth, Factions.md section 0): a lean man in his fifties in a worn long coat with a ceramic-grey lapel plate, a map case, a dim office. Action: sliding a sealed folder across a desk. Emotion: controlled urgency, hiding something. Casting and camera are explicit: Make him 54, with warm medium brown skin, a lean rectangular face and a markedly long jaw, close-shaved head, thin straight brows, flattened nose tip and a neat narrow black-and-grey moustache. Portrait from his right side with eyes down toward the folder. Controlled, upright, cold window light across charcoal ceramic and slate. Use a believable individual with unmistakable face shape, nose and hair. Paint in hand-made opaque matte gouache and restrained expressive ink, broken brushwork, selective hatching, warm ivory highlights, charcoal lost edges, natural local color. Keep the expression subtle and anatomy credible. The references provide brushwork and lighting hierarchy only. Target native 4:5, 800×1000 minimum, full bleed, no frame, labels, text, logos or watermark.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg"
+    ],
+    "imagegen": "built-in",
+    "superseded_attempt": {
+      "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/superseded/P039.png",
+      "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\nA mission-giver (an AHOC chapter officer with the suspicion of the truth, Factions.md section 0): a lean man in his fifties in a worn long coat with a ceramic-grey lapel plate, a map case, a dim office. Action: sliding a sealed folder across a desk. Emotion: controlled urgency, hiding something.",
+      "references": [
+        "art/style-guide/references/approved-original-27.jpg",
+        "art/style-guide/references/approved-new-faces-27.jpg",
+        "art/style-guide/references/approved-pilot.png"
+      ]
+    }
+  },
+  "P040": {
+    "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\n(kind `ork`) An Ork warlord (Orks are the Hellraisers' standing enemy, Sector-Earth.md): a huge green-grey-ochre warrior with a broken tusk, daubed war paint in ochre and rust, a patchwork of salvaged plates, a heavy jaw. Action: hefting a nailed club, looking straight at the viewer. Emotion: delighted menace. Nothing recognisable from any game or film.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/style-guide/references/approved-pilot.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P041": {
+    "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\n(kind `crawler`) A Crawler (NPC version 2: a human esper cursed to look like a monster to ordinary eyes; Sector-Earth.md): drawn as the player sees it, a hunched pale thing with too many joints and long dark fingers, but with a human sorrow in the eyes. Action: crouched on a wall edge, one hand raised. Emotion: wary grief. Not a copy of any known monster.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/style-guide/references/approved-pilot.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P042": {
+    "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\n(kind `robot`) A heavy Factory war robot (Sector-Earth.md; MPAT-and-M813.md): a tall ivory-and-charcoal ceramic combat automaton, chipped, a blank pixel-screen face with a single line of light, a stencilled regimental mark (abstract marks, no letters), welded patches. Action: raising one servo gauntlet. Emotion: none; the line of light on its face is the only expression. In the construction language of MPAT, but bigger and a soldier.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/style-guide/references/approved-pilot.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P043": {
+    "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\n(kind `beast`) A mana-warped beast: a lean horned hound-bear creature with faint glowing ivory veins along its flanks (mana as nanobots), ash on its fur, a ring of bone plates on its shoulder. Action: low and about to spring. Emotion: hunger, almost sorrow. Painted creature, not a monster-manual illustration.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/style-guide/references/approved-pilot.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P044": {
+    "prompt": "Paint a single Heavenprint game character portrait in hand-painted opaque gouache and expressive restrained ink. Matte directional strokes, restrained hatching, charcoal lost edges, warm ivory focal highlights and natural local colour. Anatomy and facial expression remain believable. Use a clear action, believable hands and a single visible light. Shape hierarchy concentrates detail on face and hands. Take only brushwork and rendering cues from references, no character identity. Target 4:5 full-bleed portrait, at least 800×1000. No text, frame, UI, border or watermark.\n(kind `upper_realm`) An upper-realm \"patch\": a Celestial's counter to a mistake, a hero made to correct something (World Bible, \"Heroes are patches\"): a tall, immaculate figure in a pale armoured coat with a faint halo of straight lines behind the head, a perfect calm face that is slightly too symmetrical, hands empty. Action: standing quite still, one hand opening. Emotion: serene and mechanical, like a rule being applied. No wings, no religious emblem.",
+    "references": [
+      "art/style-guide/references/approved-original-27.jpg",
+      "art/style-guide/references/approved-new-faces-27.jpg",
+      "art/style-guide/references/approved-pilot.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P058": {
+    "prompt": "Paint one 4:3 Project Heaven Cry Survival mode card, 2048×1536 opaque target. The mode's title card: a long road of broken tiles and rubble leading toward a cluster of lit district windows on a dark horizon, three paths forking in the middle ground, a cold sky with a thin crack of gold light high up (Heaven coming down). Hope and dread together. Match the other two cards in a coherent suite: the same broken road to the same invented city gate with tired fortified geometry. Use hand-painted opaque Heavenprint gouache and ink, angular layered forms, expressive broken strokes, restrained hatching, local colour and small warm ivory highlights. Keep the lower third quiet for overlay text. No people, figures, gore, text, UI, borders or watermark. The references control paint and atmosphere only.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P059": {
+    "prompt": "Paint one 4:3 Project Heaven Cry Survival mode card, 2048×1536 opaque target. A \"run over\" card: the same road at night, a single dropped lantern burning low on a cracked step in the foreground, mana motes rising from the ground (the dead feed the air), the lit windows far away and dim. Quiet loss, not gore. Match the other two cards in a coherent suite: the same broken road to the same invented city gate with tired fortified geometry. Use hand-painted opaque Heavenprint gouache and ink, angular layered forms, expressive broken strokes, restrained hatching, local colour and small warm ivory highlights. Keep the lower third quiet for overlay text. No people, figures, gore, text, UI, borders or watermark. The references control paint and atmosphere only.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png"
+    ],
+    "imagegen": "built-in"
+  },
+  "P060": {
+    "prompt": "Paint one 4:3 Project Heaven Cry Survival mode card, 2048×1536 opaque target. A \"run won\" card: dawn on the same road, the paths merging into one wide road to a lit city gate, the lantern re-lit and placed on a wall, a pale gold sky, warm ivory light. Earned relief, not triumph. Match the other two cards in a coherent suite: the same broken road to the same invented city gate with tired fortified geometry. Use hand-painted opaque Heavenprint gouache and ink, angular layered forms, expressive broken strokes, restrained hatching, local colour and small warm ivory highlights. Keep the lower third quiet for overlay text. No people, figures, gore, text, UI, borders or watermark. The references control paint and atmosphere only.",
+    "references": [
+      "art/illustrations/m813/outpost813.png",
+      "art/illustrations/m813/shield-line.png",
+      "art/illustrations/survival/backdrops/field-a-ridge.png"
+    ],
+    "imagegen": "built-in"
+  }
+}

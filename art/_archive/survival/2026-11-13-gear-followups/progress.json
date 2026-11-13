@@ -1,0 +1,8 @@
+{
+  "commission_total": 294,
+  "gear_followups": 13,
+  "replacements": 10,
+  "new_magazines": 3,
+  "remaining_planned_renders": 18,
+  "native_resolution_blocker": "Painted battle maps require native 2080 square; the built-in renderer returned 1254 square for each of three tests."
+}

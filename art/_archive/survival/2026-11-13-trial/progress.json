@@ -1,0 +1,15 @@
+{
+  "commission_total": 294,
+  "selected_candidates": 45,
+  "backdrops_completed": 24,
+  "AHOC_trial_completed": 21,
+  "AHOC_trial_accepted": false,
+  "painted_maps_completed": 0,
+  "next": [
+    "Review AHOC trial",
+    "Repair plate ground and overhead wall/sprite failures once quota resets",
+    "Complete kit decision before other five settings",
+    "18 painted maps and later batches per brief"
+  ],
+  "remaining_planned_renders": 249
+}

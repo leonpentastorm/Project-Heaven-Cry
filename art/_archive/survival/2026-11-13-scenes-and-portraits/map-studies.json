@@ -1,0 +1,50 @@
+{
+  "M001": {
+    "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/map-studies/ahoc-1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": 2080,
+    "sha256": "14b1b799a693b0cb5e58c270f44e09bb9f7444782ced24b7eea1b685ef956cb7",
+    "prompt": "One tactical battle map for Project Heaven Cry, Heavenprint opaque gouache and ink, broken brushwork, dry brush, restrained hatching. The outpost yard and gatehouse: walled compound seen from above; a gate in the south wall, a loading yard of packed gravel with crates and drums in two stacks (cover), a gatehouse and a guard shed on the left, a watchtower base on the right, a long barracks block across the north with two doors; lanes run left and right of a central parked cargo hauler. Straight overhead orthographic, perfectly vertically down, no tilt, horizon, perspective or vertical faces. Wall tops as flat bands, roofs flat. Invented 39m square area fills frame edge to edge. Use the largest square native output available, ideally 2600 px square with 2080 px native minimum. Low-contrast walkable floor and sharp clear cover edges; subtle short shadows lower right. 26 tiles of 1.5m across; doors about 1–2 tiles, corridors 2–4. No grid, UI, figures, sky, letters, labels, border or watermark. First two references for overhead paint, third for AHOC colors and materials, fourth for brush style.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/illustrations/m813/outpost813.png"
+    ]
+  },
+  "M002": {
+    "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/map-studies/ahoc-2.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": 2080,
+    "sha256": "b376cda8b9caf92ee6803dcb095c953226216126ded2882c67595a9ab1766ecc",
+    "prompt": "One tactical battle map for Project Heaven Cry, Heavenprint opaque gouache and ink, broken brushwork, dry brush, restrained hatching. The corridor grid: a plan of ceramic-grey panelled corridors, four rooms around a central junction hall; each room has a door onto the hall and one back door; pipe runs and filing racks as cover inside the rooms, a bare 4 tile central hall with two pillars. Straight overhead orthographic, perfectly vertically down, no tilt, horizon, perspective or vertical faces. Wall tops as flat bands, roofs flat. Invented 39m square area fills frame edge to edge. Use the largest square native output available, ideally 2600 px square with 2080 px native minimum. Low-contrast walkable floor and sharp clear cover edges; subtle short shadows lower right. 26 tiles of 1.5m across; doors about 1–2 tiles, corridors 2–4. No grid, UI, figures, sky, letters, labels, border or watermark. First two references for overhead paint, third for AHOC colors and materials, fourth for brush style.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/illustrations/m813/outpost813.png"
+    ]
+  },
+  "M003": {
+    "path": "art/_archive/survival/2026-11-13-scenes-and-portraits/map-studies/ahoc-3.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "native_minimum": 2080,
+    "sha256": "0550a8fb7cade5eb9522511756cfa2c92f95af2b918186bd4a4fcad4a7ab2684",
+    "prompt": "One tactical battle map for Project Heaven Cry, Heavenprint opaque gouache and ink, broken brushwork, dry brush, restrained hatching. The records vault: a large circular hall with a ring of dark machine banks and cabinets as cover around a bare central floor, four entrances at the compass points, a raised catwalk platform in the north, and two side alcoves. Straight overhead orthographic, perfectly vertically down, no tilt, horizon, perspective or vertical faces. Wall tops as flat bands, roofs flat. Invented 39m square area fills frame edge to edge. Use the largest square native output available, ideally 2600 px square with 2080 px native minimum. Low-contrast walkable floor and sharp clear cover edges; subtle short shadows lower right. 26 tiles of 1.5m across; doors about 1–2 tiles, corridors 2–4. No grid, UI, figures, sky, letters, labels, border or watermark. First two references for overhead paint, third for AHOC colors and materials, fourth for brush style.",
+    "references": [
+      "art/_archive/maps/m813/v1/outpost_1.png",
+      "art/_archive/maps/m813/v1/shield_line.png",
+      "art/illustrations/survival/backdrops/ahoc-a-gate.png",
+      "art/illustrations/m813/outpost813.png"
+    ]
+  }
+}
