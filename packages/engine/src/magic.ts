@@ -21,7 +21,7 @@ import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { itemAmount, amountMult } from './effects/amounts';
 import { mendFactor, MENDING, flatLevelOf } from './effects/mending';
 import { deal, mend, amountOf, term, armourAgainst, levelFactor, statOf, type Term } from './effects/output';
-import { canReact, useReaction, dropHeldShot } from './tactics';
+import { canReact, react, loseReactions, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
 import { itemWords, wordCostMods, immune } from './effects/core';
@@ -1148,17 +1148,17 @@ export function setHeartWatch(cb: Combat, u: Unit, on = true): string | null {
 export function heartOverwatch(cb: Combat, rng: Rng, mover: Unit, from: string) {
   if (mover.dead || mover.downed || mover.hidden) return;
   for (const h of cb.units) {
-    const m = h.mg; if (!m?.held?.watch || h.side === mover.side || h.dead || h.downed || h.surrendered || !canReact(cb, h)) continue;
+    const m = h.mg; if (!m?.held?.watch || h.side === mover.side || h.dead || h.downed || h.surrendered || !canReact(cb, h, 'attack')) continue;
     if (canCast(h, cb)) continue;
     const d = findDesign(heart(h)!, m.held.design); if (!d) continue;
     const r = heartReach(m, d);
     if (dist(h.pos, mover.pos) > r || dist(h.pos, from) <= r) continue;
     if (!d.modules.includes('ether') && !lineOfSight(cb, h.pos, mover.pos)) continue;
-    const rw: any = emit(cb, 'reaction_window', { reactor: h, mover, kind: 'heart_overwatch', cancel: false, at: mover.pos, cb, rng }); if (rw.cancel) continue;
-    useReaction(cb, h);
-    emitFx(cb, 'heart_overwatch', { unit: h.id, at: h.pos, target: mover.id, to: mover.pos, stage: m.held.stage, tone: m.held.tone || 'raw' });
-    say(cb, h.name + ' gasps and lets the heart go at ' + mover.name + ' (Heart Overwatch).');
-    releaseAt(cb, rng, h, d, formOf(d) === 'aura' ? h.pos : mover.pos, false, true);
+    if (!react(cb, h, { kind: 'attack', event: 'step:' + mover.id + ':' + mover.pos, window: { kind: 'heart_overwatch', mover, at: mover.pos, rng } }, () => {
+      emitFx(cb, 'heart_overwatch', { unit: h.id, at: h.pos, target: mover.id, to: mover.pos, stage: m.held!.stage, tone: m.held!.tone || 'raw' });
+      say(cb, h.name + ' gasps and lets the heart go at ' + mover.name + ' (Heart Overwatch).');
+      releaseAt(cb, rng, h, d, formOf(d) === 'aura' ? h.pos : mover.pos, false, true);
+    })) continue;
     if (mover.dead || mover.downed) return;
   }
 }
@@ -1488,7 +1488,7 @@ function pourOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, F: Se
     const v = cb.units.filter((x) => x !== t && !x.dead && x.side === t.side && dist(x.pos, t.pos) <= 1).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0];
     if (v) out += applyCond(cb, rng, u, v, 'bleeding', undefined, undefined, { skipSave: true });
   }
-  if (F.has('dread') && !t.dead) { while (canReact(cb, t)) { if (!useReaction(cb, t)) break; } dropHeldShot(cb, t, 'Dread'); out += ' · ' + t.name + ' loses its reaction (Dread)'; }
+  if (F.has('dread') && !t.dead) { loseReactions(cb, t, 'all'); dropHeldShot(cb, t, 'Dread'); out += ' · ' + t.name + ' loses its reaction (Dread)'; }
   if (F.has('awe') && !t.dead) { apDebt(t, FP('awe').ap_loss ?? 1); out += ' · ' + t.name + ' will lose ' + (FP('awe').ap_loss ?? 1) + ' AP (Awe)'; }
   if (F.has('longing') && !t.dead && FP('longing').pull) out += magicShove(cb, t, u.pos, -FP('longing').pull, u); // rules 1.19: reach only (Lure and Control pull)
   if (F.has('contempt') && !t.dead) out += applyCond(cb, rng, u, t, 'scorned', FP('contempt').rounds ?? 2, undefined, { skipSave: true });

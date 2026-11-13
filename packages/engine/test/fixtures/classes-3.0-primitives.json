@@ -95,6 +95,18 @@
       ]
     },
     {
+      "id": "test_react_brace",
+      "name": "Brace for it (test)",
+      "text": "Once a round, as your reaction (a protective one), a hit you take is multiplied by {=effects.0.value}.",
+      "effects": [ { "op": "damage_mult", "when": "taking", "value": 0.5, "if": { "by_hit": true }, "limit": { "reaction": 1, "kind": "protect" }, "say": "{self} braces for it (a reaction)." } ]
+    },
+    {
+      "id": "test_react_seen",
+      "name": "Reaction watcher (test)",
+      "text": "Each time you make a protective reaction, mark a flag (the trigger reaction).",
+      "effects": [ { "op": "mark", "when": "reaction", "if": { "how": ["protect"] }, "flag": "protected" } ]
+    },
+    {
       "id": "test_res_mp",
       "name": "MP on hit (test)",
       "text": "Your hit gives you {=effects.0.value} MP, with an Emanator in hand.",

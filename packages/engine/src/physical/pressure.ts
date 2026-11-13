@@ -6,6 +6,7 @@ import { isSilent } from '../tactics';
 import { PHYS_RULES } from './data';
 import { foesOf } from '../kit';
 import { setResSetter } from '../effects/cost';
+import { addReactBlock } from '../tactics';
 
 export type PressState = '' | 'pressed' | 'suppressed' | 'broken';
 const P = () => PHYS_RULES.pressure;
@@ -95,3 +96,6 @@ export function hitPressure(cb: Combat, att: Unit, tgt: Unit): { n: number; hidd
 // The resource row `pressure` (data/actions.json resources; Classes 3.0 batch row): the item op `resource` gives
 // Pressure through the meter's own door (its cap, its filters, its state words), and takes it through lowerPressureOf.
 setResSetter('pressure', (cb, u, n, by, why) => (!cb ? 0 : n >= 0 ? addPressureTo(cb, u, n, by, why || 'an item') : -lowerPressureOf(cb, u, -n, why || 'an item')));
+// Rules 1.28: Pressure's Suppressed state forbids attacking and moving reactions, never protective ones (one rule with
+// the condition Suppressed: tactics.ts reactBlocked).
+addReactBlock((u, kind) => (kind !== 'protect' && isSuppressed(u) ? 'Suppressed' : null));

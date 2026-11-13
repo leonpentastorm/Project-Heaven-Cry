@@ -63,7 +63,7 @@ technique({
       if (forAlly) {
         // Heavy: an adjacent ally; the ally parries for itself first when it can
         if (!heavy || !alive(v) || dist(v.pos, t.u.pos) > t.num('ally_reach', 1)) return;
-        if (canAnswer(t.cb, v, 'parry', att) && canReact(t.cb, v)) return;
+        if (canAnswer(t.cb, v, 'parry', att) && canReact(t.cb, v, 'protect')) return;
       }
       const vs = attackTotal(att, v); if (vs == null) return;
       answer(t, att, () => {

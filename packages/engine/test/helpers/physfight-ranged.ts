@@ -27,7 +27,7 @@ export function offHand(f: PhysF, weaponId: string) {
 export function calm(f: PhysF) {
   for (const u of f.cb.units) {
     f.press(u, 0);
-    for (const k of ['hitRound', 'hitWith', 'pressedThis', 'stopped', 'watch', 'coveredBy', 'caughtFirst', 'nailed', 'setUp', 'reactUsed', 'freeReload', 'noWatch']) delete (u as any)[k];
+    for (const k of ['hitRound', 'hitWith', 'pressedThis', 'stopped', 'watch', 'coveredBy', 'caughtFirst', 'nailed', 'setUp', 'reactUsed', 'freeReload', 'noWatch']) delete (u as any)[k]; delete (u as any).uses?.['reaction|reaction'];
     for (const k of ['bead', 'spotted', 'suppress', 'brace', 'load_special', '_take']) delete (u.tech || {})[k];
     u.hp = u.maxHp; u.conds = {}; u.prone = false; u.hidden = false; u.braced = false; u.overwatch = null; u.jammed = false; u.shotsThisTurn = 0; u.heat = 0;
     if (u.side !== 'pc' && !u.charId && WEAPON[u.weapon]?.magazine != null) { u.ammo = WEAPON[u.weapon].magazine!; if (isDrawn(u.weapon)) { delete u.quiver; delete (u.tech || {})._quiver; armQuiver(u); } }

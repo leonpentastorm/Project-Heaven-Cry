@@ -843,7 +843,7 @@
       "family": "body",
       "save": true,
       "engine": "table",
-      "text": "You have {=effects.0.value|abs} AP less on your turn and can't use reactions. Lasts {=duration.rounds} round.",
+      "text": "You have {=effects.0.value|abs} AP less on your turn and can't make attacking or moving reactions (protective ones still work). Lasts {=duration.rounds} round.",
       "effects": [
         {
           "op": "stat_mod",
@@ -852,7 +852,11 @@
         },
         {
           "op": "forbid",
-          "action": "reaction"
+          "action": "reaction",
+          "kinds": [
+            "attack",
+            "move"
+          ]
         }
       ],
       "duration": {

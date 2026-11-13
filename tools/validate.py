@@ -1779,8 +1779,8 @@ def check_trigger_effect(e, w):
         else:
             for k, v in cond.items(): check_pred(k, v, w)
     lim = e.get("limit")
-    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
-        errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }} or {{ cooldown: rounds }}")
+    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
+        errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }}, {{ cooldown: rounds }} or {{ reaction: 1 or 2, kind }}")
 def walk_triggers(o, w):
     if isinstance(o, dict):
         if isinstance(o.get("op"), str) and isinstance(o.get("when"), str) and " " not in o["when"] and ";" not in o["when"]:
@@ -1807,6 +1807,32 @@ if TRIG:
     for _x in items("skills"): walk_triggers(_x.get("unlocks"), f"skills:{_x.get('id')}")
 else:
     errors.append("effect_ops.json: no item_ops block (the closed lists of item ops)")
+
+# Rules 1.28 (Classes 3.0 P1): every reaction has a kind. An Answer technique names its own (`reaction`: attack or
+# protect); a condition's `forbid` of action `reaction` names the kinds it forbids; an item op that is a reaction
+# (`limit: {reaction: n, kind}`) names its kind and spends 1 or 2.
+REACT_KINDS = ["attack", "move", "protect"]
+for _t in items("techniques") if isinstance(items("techniques"), list) else []:
+    if _t.get("group") == "answer" and _t.get("reaction") not in REACT_KINDS:
+        errors.append(f"techniques:{_t.get('id')}: an Answer names its reaction kind (`reaction`: {REACT_KINDS})")
+    elif "reaction" in _t and _t.get("group") != "answer":
+        errors.append(f"techniques:{_t.get('id')}: only an Answer has a `reaction` kind")
+for _c in items("conditions"):
+    for _e in _c.get("effects") or []:
+        if _e.get("op") == "forbid" and _e.get("action") == "reaction" and "kinds" in _e and not (isinstance(_e["kinds"], list) and _e["kinds"] and all(k in REACT_KINDS for k in _e["kinds"])):
+            errors.append(f"conditions:{_c.get('id')}: a forbidden reaction's kinds are some of {REACT_KINDS}")
+def _walk_react(o, w):
+    if isinstance(o, dict):
+        lim = o.get("limit")
+        if isinstance(lim, dict) and "reaction" in lim:
+            if lim.get("reaction") not in (1, 2): errors.append(f"{w}: a reaction limit spends 1 or 2 reactions")
+            if lim.get("kind") not in REACT_KINDS: errors.append(f"{w}: a reaction limit names its kind ({REACT_KINDS})")
+        for v in o.values(): _walk_react(v, w)
+    elif isinstance(o, list):
+        for v in o: _walk_react(v, w)
+for _n in ("perks", "traits"):
+    for _x in items(_n): _walk_react(_x, f"{_n}:{_x.get('id')}")
+for _x in base + adv + pool: _walk_react(_x, f"classes:{_x.get('id')}")
 
 # attributes.json's skills map is a copy of skills.json's attribute and slot: it must say the same (it went stale once, 4 slots).
 for _a in data["attributes"]["items"]:

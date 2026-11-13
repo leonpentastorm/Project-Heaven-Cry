@@ -4206,6 +4206,11 @@
         "self": "actor",
         "about": "a unit's own action succeeded (once, after it; ctx.action is its id or cost site, test it with `action`); a grant_action's nested `when: acted` effects need no `if.action`"
       },
+      "reaction": {
+        "hook": "reaction",
+        "self": "actor",
+        "about": "the holder makes a reaction (tactics.ts react(); its kind for `how`: attack, move, protect), before it resolves"
+      },
       "spot": {
         "hook": "spot",
         "self": "target",
@@ -4395,7 +4400,7 @@
       },
       "how": {
         "arg": "words",
-        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport)"
+        "about": "the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect)"
       },
       "ap_above": {
         "arg": "number",
@@ -4551,6 +4556,7 @@
           "injury",
           "glyph_cost",
           "acted",
+          "reaction",
           "spot"
         ],
         "fields": [
@@ -4593,6 +4599,7 @@
           "injury",
           "glyph_cost",
           "acted",
+          "reaction",
           "spot"
         ],
         "fields": [
@@ -4635,6 +4642,7 @@
           "injury",
           "glyph_cost",
           "acted",
+          "reaction",
           "spot"
         ],
         "fields": [
@@ -4678,6 +4686,7 @@
           "injury",
           "glyph_cost",
           "acted",
+          "reaction",
           "spot"
         ],
         "fields": [
@@ -4764,6 +4773,7 @@
           "injury",
           "glyph_cost",
           "acted",
+          "reaction",
           "spot"
         ],
         "fields": [
@@ -4807,6 +4817,7 @@
           "injury",
           "glyph_cost",
           "acted",
+          "reaction",
           "spot"
         ],
         "fields": [
@@ -4848,6 +4859,7 @@
           "injury",
           "glyph_cost",
           "acted",
+          "reaction",
           "spot"
         ],
         "fields": [
@@ -4890,6 +4902,7 @@
           "injury",
           "glyph_cost",
           "acted",
+          "reaction",
           "spot"
         ],
         "fields": [],
@@ -4929,6 +4942,7 @@
           "injury",
           "glyph_cost",
           "acted",
+          "reaction",
           "spot"
         ],
         "fields": [

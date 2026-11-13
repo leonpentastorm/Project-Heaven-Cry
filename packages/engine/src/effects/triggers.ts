@@ -28,7 +28,7 @@ import patronsJ from '../../../../data/patrons.json';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
 import { loseAp } from './cost';
-import { resGain } from '../tactics';
+import { resGain, react, canReact, REACT_KINDS } from '../tactics';
 import { gainEcho } from './echo';
 import { deal, mend, type AmountSpec } from './output';
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
@@ -75,6 +75,7 @@ export const TRIGGERS: Record<string, Trigger> = {
   glyph_cost: { hook: 'glyph_cost', actor: u_, self: 'actor', about: 'a Sigil glyph is priced (its AP, charge and Flux; also every preview)' },
   // Classes 3.0 step 1 (docs/design/rev4-primitives.md P2 and the batch rows)
   acted: { hook: 'acted', actor: u_, target: t_, self: 'actor', about: 'a unit\'s own action succeeded (once, after it; ctx.action is its id or cost site, test it with `action`); a grant_action\'s nested `when: acted` effects need no `if.action`' },
+  reaction: { hook: 'reaction', actor: u_, self: 'actor', about: 'the holder makes a reaction (tactics.ts react(); its kind for `how`: attack, move, protect), before it resolves' },
   spot: { hook: 'spot', actor: by, target: u_, self: 'target', about: 'a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: "tn", its TN; cancel)' },
 };
 
@@ -149,7 +150,7 @@ P('cond_family', 'words', 'the condition\'s family is one of these (body, brain,
 P('action', 'words', 'the priced action (its cost site) is one of these', (ev, v) => list(v).includes(ev.ctx.action));
 P('word', 'words', 'the Sigil word being drawn is one of these', (ev, v) => list(v).includes(ev.ctx.word));
 P('hand', 'words', 'the hand is one of these (main, off, both)', (ev, v) => list(v).includes(ev.ctx.hand || (ev.ctx.both ? 'both' : 'main')));
-P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
+P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
 P('ap_above', 'number', 'the event\'s AP (a price, a swap) is over this', (ev, v) => (ev.ctx.ap ?? 0) > v);
 P('own_turn', 'bool', 'it is (or is not) the holder\'s own turn', (ev, v) => (ev.cb.order[ev.cb.turn] === ev.self.id && !ev.cb.window) === v);
 P('flag', 'string', 'the item\'s flag is set (the mark op sets it)', (ev, v) => !!flags(ev)[v]);
@@ -298,7 +299,8 @@ const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ..
 // ============================================================================================== the limit
 /** `limit`: { per: a scope of effects/uses.ts (per_turn, per_round, per_combat, per_scene, per_session, per_rest), n,
  * key? (a second counter on the same item: "<item key>#<key>"), each?: "target" | "actor" (a counter per unit) } or
- * { cooldown: rounds }. */
+ * { cooldown: rounds }, or (rules 1.28) { reaction: n, kind: attack | move | protect }: the effect IS a reaction, made
+ * through tactics.ts react() (it spends n of the holder's reactions, and none answers what it does). */
 export const LIMIT_SCOPES = ['per_turn', 'per_round', 'per_combat', 'per_scene', 'per_session', 'per_rest'];
 function limitOk(ev: Ev, lim: any, take: boolean): boolean {
   if (!lim) return true;
@@ -322,7 +324,7 @@ export function triggerProblem(e: any): string | null {
     if (!op.on.includes(e.when)) return 'op ' + x.op + ' does not run on ' + e.when;
   }
   if (e.if != null) { if (typeof e.if !== 'object' || Array.isArray(e.if)) return '`if` must be an object'; for (const k of Object.keys(e.if)) if (!PREDICATES[k]) return 'unknown predicate ' + k; }
-  if (e.limit != null) { const l = e.limit; if (typeof l !== 'object' || (typeof l.cooldown !== 'number' && !LIMIT_SCOPES.includes(l.per))) return 'limit must be { per, n } or { cooldown }'; }
+  if (e.limit != null) { const l = e.limit; if (typeof l !== 'object' || (typeof l.cooldown !== 'number' && !LIMIT_SCOPES.includes(l.per) && typeof l.reaction !== 'number')) return 'limit must be { per, n }, { cooldown } or { reaction, kind }'; if (typeof l.reaction === 'number' && !REACT_KINDS.includes(l.kind)) return 'a reaction limit names its kind (' + REACT_KINDS.join(', ') + ')'; }
   return null;
 }
 /** Run one triggered effect on its hook's payload, for one holder. */
@@ -336,9 +338,11 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   for (const k of Object.keys(cond)) if (!PREDICATES[k]?.test(ev, cond[k])) return;
   const all = [e, ...(Array.isArray(e.and) ? e.and : [])], changes = all.some((x) => OPS[x.op]?.state);
   if (ev.preview && changes) return; // a preview changes nothing
-  if (!limitOk(ev, e.limit, !ev.preview)) return;
+  const lim = e.limit, asReaction = !!lim && typeof lim.reaction === 'number';
+  if (asReaction ? !canReact(cb, self, lim.kind, lim.reaction) : !limitOk(ev, lim, !ev.preview)) return;
   const label = e.label || h.info.name, parts: string[] = [];
-  for (const x0 of all) { const x = withNumbers(ev, x0), r = OPS[x.op].run(ev, x, x.label || label); if (typeof r === 'string' && r) parts.push(r); }
+  const go = () => { for (const x0 of all) { const x = withNumbers(ev, x0), r = OPS[x.op].run(ev, x, x.label || label); if (typeof r === 'string' && r) parts.push(r); } };
+  if (asReaction && !ev.preview) { if (!react(cb, self, { kind: lim.kind, spend: lim.reaction }, go)) return; } else go();
   if (ev.preview) return;
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
   if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));

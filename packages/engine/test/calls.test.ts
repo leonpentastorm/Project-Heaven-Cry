@@ -1,9 +1,10 @@
 // Calls (rules 1.13, Skeleton 2.0): the nine gamma skills' speech actions in a fight. The ladder, each Call's three
 // steps, the limits, the AP rule, preview purity, the parley alias, the enemy AI and the view.
 import { unitSave } from '../src';
+import { reactionsUsed } from '../src';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CALLS, CALL, CALL_RULES, SKILL, calls, previewCall, callPad, callView, viewFor, previewAttack, resolveAttack, moveUnit, enemyIntent, enemyTurn, endTurn, parley,
-  canReact, useReaction, condOn, condSource, unitStrength, WEAPON, dropToPile, type Unit, type CallArgs } from '../src';
+  canReact, react, condOn, condSource, unitStrength, WEAPON, dropToPile, type Unit, type CallArgs } from '../src';
 import { physFight, rig, type PhysSpec } from './helpers/physfight';
 import { withGame, type FoeSpec } from './helpers/perkfight';
 
@@ -79,7 +80,7 @@ describe('the ladder', () => {
     const ap = f.pc.ap;
     expect(f.cpv('call.rally', { targetId: f.pcs[1].id, react: true }).ap).toBe(0);
     expect(f.call('call.rally', { targetId: f.pcs[1].id, react: true }, f.pc)).toBeNull();
-    expect(f.pc.ap).toBe(ap); expect(f.pc.reactUsed).toEqual({ r: f.cb.round, n: 1 }); expect(f.pcs[1].ap).toBe(8); // step 3's 2 AP, and on its own turn the AP lands now
+    expect(f.pc.ap).toBe(ap); expect(reactionsUsed(f.cb, f.pc)).toBe(1); expect(f.pcs[1].ap).toBe(8); // step 3's 2 AP, and on its own turn the AP lands now
     expect(f.fx('call').pop()).toMatchObject({ unit: f.pc.id, reaction: true });
     expect(f.call('call.rally', { targetId: f.pcs[2].id, react: true }, f.pc)).toMatch(/One Call as a reaction a round/);
     expect(f.call('call.rally', { targetId: f.pcs[2].id }, f.pc)).toMatch(/turn/); // not its turn: only as a reaction
@@ -152,11 +153,11 @@ describe('Order (Authority)', () => {
     expect(f.call('call.order', { targetId: a.id, opt: 'attack' })).toMatch(/Never to attack/);
     expect(f.call('call.order', { targetId: a.id, opt: 'move', tile: '3,3' })).toMatch(/needs 3 points of Authority/);
     expect(f.call('call.order', { targetId: a.id, opt: 'stand' })).toBeNull();
-    expect(f.unit(a.id).prone).toBe(false); expect(f.unit(a.id).ap).toBe(ap); expect(f.unit(a.id).reactUsed?.n).toBe(1); expect(f.pc.ap).toBe(4);
+    expect(f.unit(a.id).prone).toBe(false); expect(f.unit(a.id).ap).toBe(ap); expect(reactionsUsed(f.cb, f.unit(a.id))).toBe(1); expect(f.pc.ap).toBe(4);
     f.cb.round++;
     expect(f.call('call.order', { targetId: a.id, opt: 'stand' })).toMatch(/isn't prone/);
     f.unit(a.id).ammo = 0; f.unit(a.id).mags = [];
-    expect(f.call('call.order', { targetId: a.id, opt: 'reload' })).toMatch(/spare magazines/); expect(f.pc.ap).toBe(4); expect(f.unit(a.id).reactUsed?.n).toBe(1); // the engine's own refusal: nothing spent
+    expect(f.call('call.order', { targetId: a.id, opt: 'reload' })).toMatch(/spare magazines/); expect(f.pc.ap).toBe(4); expect(reactionsUsed(f.cb, f.unit(a.id))).toBe(0); // the engine's own refusal: nothing spent (a new round: the count is the round's)
     f.unit(a.id).mags = [WEAPON[a.weapon].magazine!];
     expect(f.call('call.order', { targetId: a.id, opt: 'reload' })).toBeNull(); expect(f.unit(a.id).ammo).toBeGreaterThan(0); expect(f.unit(a.id).ap).toBe(ap);
   });
@@ -172,7 +173,7 @@ describe('Order (Authority)', () => {
   });
   it('an ally with no reaction left, or Stunned, can\'t be Ordered', () => {
     const f = fight([speaker('authority', 3), {}]), a = f.pcs[1]; f.unit(a.id).prone = true;
-    withGame(f.g, () => useReaction(f.cb, f.unit(a.id)));
+    withGame(f.g, () => react(f.cb, f.unit(a.id), { kind: 'attack' }));
     expect(f.call('call.order', { targetId: a.id, opt: 'stand' })).toMatch(/no reaction left/);
     f.cb.round++; f.unit(a.id).conds = { stunned: 1 };
     expect(f.call('call.order', { targetId: a.id, opt: 'stand' })).toMatch(/Stunned/);
@@ -190,7 +191,7 @@ describe('Order (Authority)', () => {
     const g = fight([speaker('authority', 7), {}]), b = g.pcs[1]; g.unit(b.id).prone = true;
     expect(g.call('call.order', { targetId: b.id, opt: 'stand+stand' })).toMatch(/two different things/);
     expect(g.call('call.order', { targetId: b.id, opt: 'stand+move', tile: '3,3' })).toBeNull();
-    expect(g.unit(b.id).prone).toBe(false); expect(g.unit(b.id).pos).toBe('3,3'); expect(g.unit(b.id).reactUsed?.n).toBe(1); expect(g.pc.ap).toBe(5);
+    expect(g.unit(b.id).prone).toBe(false); expect(g.unit(b.id).pos).toBe('3,3'); expect(reactionsUsed(g.cb, g.unit(b.id))).toBe(1); expect(g.pc.ap).toBe(5);
   });
 });
 
@@ -258,8 +259,8 @@ describe('Cue (Reaction Speed)', () => {
     const f = fight([speaker('reaction_speed', 1), {}]), a = f.pcs[1];
     expect(f.call('call.cue', { targetId: a.id, tile: '3,3' })).toMatch(/needs 3 points of Reaction Speed/);
     expect(f.call('call.cue', { targetId: a.id })).toBeNull();
-    const react = () => withGame(f.g, () => useReaction(f.cb, f.unit(a.id))), can = () => withGame(f.g, () => canReact(f.cb, f.unit(a.id)));
-    expect(react()).toBe(true); expect(can()).toBe(true); expect(react()).toBe(true); expect(can()).toBe(false); expect(react()).toBe(false);
+    const doReact = () => withGame(f.g, () => react(f.cb, f.unit(a.id), { kind: 'attack' })), can = () => withGame(f.g, () => canReact(f.cb, f.unit(a.id)));
+    expect(doReact()).toBe(true); expect(can()).toBe(true); expect(doReact()).toBe(true); expect(can()).toBe(false); expect(doReact()).toBe(false);
     const g = fight([speaker('reaction_speed', 1), {}]); g.call('call.cue', { targetId: g.pcs[1].id });
     g.turn(g.pc); expect(g.pcs[1].call?.cue).toBeUndefined(); // the speaker's next turn: it ends
   });

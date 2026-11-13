@@ -110,7 +110,7 @@ describe('each technique\'s beat', () => {
     expect(since(c, k).filter((e: any) => e.beat === 'fall').length).toBeLessThanOrEqual(1); // a maul's hit may already have floored it
   });
   it('Parry: the clash between the attacker and the defender, won or lost', () => {
-    const f = fight('sabre', ['parry']); f.turn(f.foe); for (const u of f.cb.units) { delete (u as any).reactUsed; (u as any).reactedRound = undefined; }
+    const f = fight('sabre', ['parry']); f.turn(f.foe); for (const u of f.cb.units) { delete (u as any).reactUsed; delete (u as any).uses?.['reaction|reaction']; (u as any).reactedRound = undefined; }
     f.foe.attack = -100; rig({ hit: true, die: 10 });
     const n = mark(f); f.bound(() => resolveAttack(f.cb, f.g.rng, f.foe, f.unit(f.pc.id), 'melee', null, { noAp: true }));
     const e = one(f, n, 'parry'); expect(e).toMatchObject({ unit: f.pc.id, from: f.tile('D5'), to: f.tile('C5'), attacker: f.foe.id, ally: null, won: true });
@@ -133,7 +133,7 @@ describe('each technique\'s beat', () => {
     const s = fight('maul', ['sidestep']); n = mark(s); expect(s.tech('sidestep', { targetId: s.foe.id, tile: s.tile('D6') })).toBeNull();
     expect(one(s, n, 'sidestep')).toMatchObject({ from: s.tile('C5'), to: s.tile('D6'), foe: s.foe.id, at: s.tile('D6') });
     const k = physFight([{ weapon: 'sabre', known: ['keep_back'], skills: SK }], [{ at: 'H5', tier: 'elite', weapon: 'sabre' }]);
-    k.put(k.pc, 'D4'); k.put(k.foe, 'H5'); k.turn(k.foe); for (const u of k.cb.units) { delete (u as any).reactUsed; (u as any).reactedRound = undefined; }
+    k.put(k.pc, 'D4'); k.put(k.foe, 'H5'); k.turn(k.foe); for (const u of k.cb.units) { delete (u as any).reactUsed; delete (u as any).uses?.['reaction|reaction']; (u as any).reactedRound = undefined; }
     rig({ hit: true, die: 12 }); D20.v = 2; n = mark(k); k.walk(k.foe, 'C4');
     expect(one(k, n, 'halt')).toMatchObject({ unit: k.pc.id, target: k.foe.id, to: k.unit(k.foe.id).pos, reach: 1 });
   });

@@ -16,7 +16,8 @@ import type { Combat, Unit, Term } from '../combat';
 import type { Character, OutburstDesign } from '../character';
 import {
   dist, alive, refOf, keyOf as refKey, xy, key, standable, lineOfSight, resolveAttack, previewAttack, isMelee, emitFx, fxFell,
-  checkOver, unitSees, sideSees, objectsOf, unitFromEnemy, displace
+  checkOver, unitSees, sideSees, objectsOf, unitFromEnemy, displace,
+  attackEvent,
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV } from '../data';
 import { mod, devotionXpOf, moduleSlots, packOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns } from '../character';
@@ -30,7 +31,7 @@ import {
 import { castAt, compileSpell, evokeMarks, strokePick, tidyStrokes, fadePattern } from '../sigil';
 import { die } from '../rng';
 import { rollVs, rollD20 } from '../rolls';
-import { isSilent, canReact, useReaction, blessing, PATRON, devotionOf, reveal } from '../tactics';
+import { isSilent, canReact, react, blessing, PATRON, devotionOf, reveal } from '../tactics';
 import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } from '../faith';
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
@@ -1412,8 +1413,8 @@ register({
   on: {
     damage_in: (ctx, h) => {
       const u = h.u, t: Unit = ctx.t; if (!u || !onGrid(h) || ctx.phase !== 'shield' || ctx.src?.shared || !alive(u) || !isLinked(h, t) || cs(h.c).shareMode === 'never') return;
-      const left = Math.max(0, ctx.dmg - (t.shield || 0)), take = Math.floor(left / 2); if (take <= 0 || !canReact(ctx.cb, u)) return;
-      useReaction(ctx.cb, u); ctx.dmg -= take;
+      const left = Math.max(0, ctx.dmg - (t.shield || 0)), take = Math.floor(left / 2); if (take <= 0 || !canReact(ctx.cb, u, 'protect') || !react(ctx.cb, u, { kind: 'protect', event: attackEvent() })) return;
+      ctx.dmg -= take;
       const r = applyDamage(ctx.cb, u, take, { by: ctx.src.by || null, type: 'shared', shared: true, shield: false, credit: 'none' });
       say(ctx.cb, u.name + ' takes ' + r.dealt + ' of ' + t.name + '\'s wound through the link (Share).');
     },

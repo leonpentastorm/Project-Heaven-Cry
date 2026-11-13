@@ -1,5 +1,6 @@
 // Physical 2.0 (rules 1.12), the melee Answers built by the melee lane: Parry (25) and Keep Back (27).
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { reactionsUsed } from '../src';
 import { phys, resolveAttack, dist } from '../src';
 import { emit } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
@@ -11,7 +12,7 @@ vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ..
 beforeEach(() => { rig(null); D20.v = null; });
 const parries = (f: any) => f.cb.log.filter((l: string) => / parries/.test(l));
 /** A clean round for the test: the fight's opening turns (an enemy may act first) leave no reaction spent. */
-const fresh = (f: any) => { for (const u of f.cb.units) { delete u.reactUsed; u.reactedRound = undefined; } return f; };
+const fresh = (f: any) => { for (const u of f.cb.units) { delete u.reactUsed; delete (u as any).uses?.['reaction|reaction']; u.reactedRound = undefined; } return f; };
 const answered = (f: any, name: string) => f.cb.log.filter((l: string) => new RegExp('answers with ' + name).test(l)).length;
 
 describe('Parry', () => {
@@ -29,7 +30,7 @@ describe('Parry', () => {
     const d = full('bot_thread_banner'); expect(d).toBeGreaterThan(1);
     const f = fight('bot_thread_banner'); const ap = f.pc.ap; f.momentum(f.pc, 1);
     expect(swing(f)).toBe(Math.floor(d / 2));
-    expect(answered(f, 'Parry')).toBe(1); expect(f.pc.reactUsed?.n).toBe(1); expect(f.pc.ap).toBe(ap);
+    expect(answered(f, 'Parry')).toBe(1); expect(reactionsUsed(f.cb, f.pc)).toBe(1); expect(f.pc.ap).toBe(ap);
     expect(f.momentum(f.pc)).toBe(1); // none gained, and none lost to a Parried hit
     expect(swing(f)).toBe(d); // the reaction is spent: the second hit lands whole
     expect(f.momentum(f.pc)).toBe(0); // and that one costs 1
@@ -51,7 +52,7 @@ describe('Parry', () => {
     const ally = { weapon: 'bot_thread_banner', skills: { athletics: 4 } };
     const base = fight('maul', [], -100, [ally]); const whole = swing(base, base.pcs[1]);
     const f = fight('maul', ['parry'], -100, [ally]); expect(swing(f, f.pcs[1])).toBe(Math.floor(whole / 2));
-    expect(f.pc.reactUsed?.n).toBe(1); expect(parries(f)[0]).toMatch(/for /);
+    expect(reactionsUsed(f.cb, f.pc)).toBe(1); expect(parries(f)[0]).toMatch(/for /);
     const g = fight('sabre', ['parry'], -100, [ally]); expect(swing(g, g.pcs[1])).toBe(whole); expect(answered(g, 'Parry')).toBe(0);
     const h = fight('maul', ['parry'], -100, [ally]); h.put(h.pcs[1], 'D7'); h.put(h.foe, 'D6'); expect(swing(h, h.pcs[1])).toBe(whole); // not adjacent
   });
@@ -59,7 +60,7 @@ describe('Parry', () => {
     const f = fight('maul', ['parry'], -100, [{ weapon: 'bot_thread_banner', known: ['parry'] }]);
     const whole = (() => { const b = fight('maul', [], -100, [{ weapon: 'bot_thread_banner' }]); return swing(b, b.pcs[1]); })();
     expect(swing(f, f.pcs[1])).toBe(Math.floor(whole / 2));
-    expect(answered(f, 'Parry')).toBe(1); expect(f.unit(f.pcs[1].id).reactUsed?.n).toBe(1); expect(f.pc.reactUsed?.n ?? 0).toBe(0);
+    expect(answered(f, 'Parry')).toBe(1); expect(reactionsUsed(f.cb, f.unit(f.pcs[1].id))).toBe(1); expect(reactionsUsed(f.cb, f.pc)).toBe(0);
   });
   it('a shield in the off hand adds +2 to the parry roll, with any weapon (Leon\'s ruling, 10 Nov 2026)', () => {
     const bonus = (weapon: string, shield: boolean) => {
@@ -104,7 +105,7 @@ describe('Keep Back', () => {
     expect(answered(f, 'Keep Back')).toBe(1); expect(f.foe.hp).toBeLessThan(hp);
     expect(d(f)).toBe(1); expect(f.foe.pos).not.toBe(f.tile('C4')); expect(f.foe.prone).toBeFalsy();
     expect(f.cb.log.some((l) => /fails the save against Keep Back/.test(l))).toBe(true);
-    expect(f.pc.reactUsed?.n).toBe(1); expect(f.pc.ap).toBe(ap); expect(f.momentum(f.pc)).toBe(1);
+    expect(reactionsUsed(f.cb, f.pc)).toBe(1); expect(f.pc.ap).toBe(ap); expect(f.momentum(f.pc)).toBe(1);
   });
   it('a miss: no save, the enemy walks on', () => {
     const f = fight('sabre'); rig({ hit: false, die: 3 }); f.walk(f.foe, 'C4');

@@ -1,5 +1,6 @@
 // Physical 2.0 (rules 1.12), ranged Fire: Snap Shot, Burst, Called Shot, Walking Fire and Punch Through (fire.ts).
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { reactionsUsed } from '../src';
 // Saves roll a d20 that the attack rig doesn't reach: D.die forces every d20 (an attack's own is then set by rig()). 1
 // always fails a save, 20 always makes it, whatever the seed (review fix: these tests leaned on the seed's next die).
 const D = vi.hoisted(() => ({ die: null as number | null }));
@@ -237,7 +238,7 @@ describe('Walking Fire', () => {
   it('a held shot fires on the move', () => {
     const f = fight('ccec_marksman_rifle', [{ at: 'J5', tier: 'soldier', weapon: 'ccec_marksman_rifle' }]); rig({ hit: false, die: 5 });
     f.turn(f.foe); expect(f.use(f.foe, 'overwatch', {})).toBeNull(); f.turn(f.pc);
-    f.tech('walking_fire', { targetId: f.foe.id, tile: f.tile('C7') }); expect(f.foe.watch).toBeUndefined(); expect(f.foe.reactUsed?.n).toBe(1);
+    f.tech('walking_fire', { targetId: f.foe.id, tile: f.tile('C7') }); expect(f.foe.watch).toBeUndefined(); expect(reactionsUsed(f.cb, f.foe)).toBe(1);
   });
   it('the preview matches the action and changes nothing', () => {
     const f = fight(); rig({ die: 11 }); let pv!: phys.TechPreview;

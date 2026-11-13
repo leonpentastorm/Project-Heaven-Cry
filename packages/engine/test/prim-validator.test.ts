@@ -30,6 +30,8 @@ export const BAD: [string, any, RegExp][] = [
   ['number block of a plain name', { op: 'damage_mult', when: 'dealing', value: { base: 1, per: [{ of: 'momentum', value: 0.1 }] } }, /name a source/],
   ['number block namespace', { op: 'damage_mult', when: 'dealing', value: { base: 1, per: [{ of: 'pocket:coins', value: 0.1 }] } }, /name a source/],
   ['number block shape', { op: 'grant_ap', when: 'turn_start', value: { base: 'one' } }, /is a number block/],
+  ['reaction limit without a kind', { op: 'damage_mult', when: 'taking', value: 0.5, limit: { reaction: 1 } }, /names its kind/],
+  ['reaction limit of three', { op: 'damage_mult', when: 'taking', value: 0.5, limit: { reaction: 3, kind: 'protect' } }, /spends 1 or 2/],
 ];
 /** Each case: the same words used rightly (the validator says nothing about them). */
 export const GOOD: any[] = [
@@ -40,6 +42,8 @@ export const GOOD: any[] = [
   { op: 'damage_mult', when: 'dealing', value: { base: 1, per: [{ of: 'res:momentum', value: 0.15 }, { of: 'event:ambush', value: 0.5 }, { of: 'target:marked', value: 0.15 }], max: 2 } },
   { op: 'grant_ap', when: 'acted', if: { action: ['reload'] }, value: 1 },
   { op: 'roll_mod', when: 'spot', value: -2 },
+  { op: 'damage_mult', when: 'taking', value: 0.5, limit: { reaction: 1, kind: 'protect' } },
+  { op: 'mark', when: 'reaction', flag: 'x', if: { how: ['protect'] } },
 ];
 
 describe('the validator and the new words (Classes 3.0 step 1a)', () => {

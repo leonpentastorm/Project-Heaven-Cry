@@ -56,7 +56,7 @@ export type HookName =
   | 'damage_in' | 'on_damaged' | 'on_downed' | 'on_kill'
   | 'cond_apply' | 'save' | 'cond_landed' | 'cond_end' | 'displaced'
   | 'heal_given' | 'heal_in' | 'shield_grant'
-  | 'reaction_window' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
+  | 'reaction_window' | 'reaction' | 'enemy_action_start' | 'sight_change' | 'sees' | 'object_destroyed'
   | 'reload' | 'jam_clear' | 'swap'
   // Physical 2.0 (rules 1.12): after a prone unit stands up {u} (Dead to Rights)
   | 'stood_up'
@@ -118,6 +118,7 @@ export const HOOK_ABOUT: Record<HookName, string> = {
   heal_in: 'a unit is about to be healed (the amount may change)',
   shield_grant: 'a shield is about to be given (the amount may change)',
   reaction_window: 'a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it',
+  reaction: 'a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves',
   enemy_action_start: 'an enemy is about to act (an item may open a window or make it skip)',
   sight_change: 'after a move, the units each side stopped or started seeing (only computed while someone listens)',
   sees: 'a side\'s sight of a unit is decided: items may make it seen or unseen',

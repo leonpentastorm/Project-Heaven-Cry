@@ -1219,6 +1219,7 @@
     },
     {
       "id": "parry",
+      "reaction": "protect",
       "name": "Parry",
       "system": "melee",
       "group": "answer",
@@ -1260,6 +1261,7 @@
     },
     {
       "id": "riposte",
+      "reaction": "attack",
       "name": "Riposte",
       "system": "melee",
       "group": "answer",
@@ -1294,6 +1296,7 @@
     },
     {
       "id": "keep_back",
+      "reaction": "attack",
       "name": "Keep Back",
       "system": "melee",
       "group": "answer",
@@ -2841,6 +2844,7 @@
     },
     {
       "id": "shield_wall",
+      "reaction": "protect",
       "name": "Shield Wall",
       "system": "melee",
       "group": "answer",
@@ -2872,6 +2876,7 @@
     },
     {
       "id": "interpose",
+      "reaction": "protect",
       "name": "Interpose",
       "system": "melee",
       "group": "answer",

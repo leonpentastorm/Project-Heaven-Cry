@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   applyCond, condOn, condSource, condTurnEnd, unitSave, previewAttack, resolveAttack, attackDamage, stackDamage, moveUnit, endTurn, beginTurn, active, checkOver,
-  hideAction, hide, spotHidden, canReact, maxReactions, useReaction, trySurrender, parley, throwItem, applyDamage, register, holderOf, statQuery,
+  hideAction, hide, spotHidden, canReact, maxReactions, react, trySurrender, parley, throwItem, applyDamage, register, holderOf, statQuery,
   WEAPON, d20, validateSheet, newCharacter, enemyTurn, weaponActions, COMPANION_KINDS, type Unit, type Combat, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, onlyHandlers, rng, sheetOf } from './helpers/perkfight';
@@ -127,14 +127,15 @@ describe('combat Hidden, ambush and spotting (rules 1.3)', () => {
 });
 
 describe('reactions, surrender and parley (rules 1.3)', () => {
-  it('one reaction a round, more from items; none while Suppressed', () => onlyHandlers([{ id: 'heavyworlder', stat: (h, s) => (s === 'reactions' ? 1 : 0) }], () => {
+  it('one reaction a round, more from items; Suppressed forbids attacking and moving ones (rules 1.28)', () => onlyHandlers([{ id: 'heavyworlder', stat: (h, s) => (s === 'reactions' ? 1 : 0) }], () => {
     const f = fightWith([{ traits: ['heavyworlder'] }, {}], [{ at: 'F6' }]);
     const [a, b] = f.pcs;
     withGame(f.g, () => {
       expect(maxReactions(a)).toBe(2); expect(maxReactions(b)).toBe(1);
-      expect(useReaction(f.cb, b)).toBe(true); expect(canReact(f.cb, b)).toBe(false);
+      expect(react(f.cb, b, { kind: 'attack' })).toBe(true); expect(canReact(f.cb, b)).toBe(false);
       applyCond(f.cb, rng(), f.foe, a, 'suppressed', 1, undefined, { skipSave: true });
-      expect(maxReactions(a)).toBe(0);
+      // rules 1.28 (Leon, 13 Nov 2026): Suppressed forbids attacking and moving reactions, never protective ones
+      expect(maxReactions(a)).toBe(2); expect(canReact(f.cb, a, 'attack')).toBe(false); expect(canReact(f.cb, a, 'move')).toBe(false); expect(canReact(f.cb, a, 'protect')).toBe(true);
     });
   }));
   it('a beaten enemy may surrender to terms (once); a Boss never does; surrendered foes end the fight as prisoners', () => {

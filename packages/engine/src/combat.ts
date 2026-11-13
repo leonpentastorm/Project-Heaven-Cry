@@ -10,7 +10,7 @@ import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HAND
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
-import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, useReaction, heldShotPaid, spendPaidShot, spotHidden, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
+import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, react, heldShotPaid, spendPaidShot, spotHidden, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
 import { armHeart, aiSoulStep } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
@@ -231,6 +231,8 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   critNotes?: { unit: string; target: string; via: 'weapon' | 'sigil' | 'outburst'; n: number }[];
   /** An off-turn window (On My Mark, Supreme Command): active(cb) is the queue's head while it is open (effects/actions.ts). */
   window?: { kind: string; queue: { unitId: string; ap?: number; limit?: number; done?: number }[]; saved: Record<string, number>; by?: string };
+  /** A reaction is resolving (tactics.ts react(), rules 1.28): who and what kind. No reaction opens while it is set. */
+  reacting?: { unit: string; kind: string };
   /** The toggles the player set on the action being resolved (combat/attack mods…); set and cleared by the reducer. */
   mods?: string[];
   /** The overworld's throwaway fight state (storyCb): per-turn item counters live in the story instead. */
@@ -1254,9 +1256,15 @@ export type AttackOpts = { extra?: number; free?: boolean; noAp?: boolean; dmgMu
 /** The skill a weapon's conditions are delivered by (rules 1.13): the skill it hits with. Melee blows Raw Power; shots,
  * light blades and throws Dexterity. */
 export const weaponVia = (att: Unit, mode: string): string => strikeWeapon(att, mode)?.skill || 'raw_power';
+/** The attacks being resolved, innermost last (a serial each; never saved): what react()'s `event` names, so a unit
+ * answers one attack once (rules 1.28, rule 3 of reactions-spec.md). */
+const ATTACKS: number[] = []; let ATTACK_N = 0;
+/** The event id of the attack being resolved now ('atk<serial>'), or null outside one. */
+export const attackEvent = (): string | null => (ATTACKS.length ? 'atk' + ATTACKS[ATTACKS.length - 1] : null);
 export function resolveAttack(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: AttackOpts = {}): AttackResult {
   // Whatever this attack puts on someone (a weapon's rider, a perk's on-hit) is delivered by the weapon's skill.
-  return withVia(att, weaponVia(att, mode), () => resolveAttackInner(cb, rng, att, tgt0, mode, who, opts));
+  ATTACKS.push(++ATTACK_N);
+  try { return withVia(att, weaponVia(att, mode), () => resolveAttackInner(cb, rng, att, tgt0, mode, who, opts)); } finally { ATTACKS.pop(); }
 }
 function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: AttackMode, who: Character | null, opts: AttackOpts): AttackResult {
   // Items may redirect an attack (a grappled shield, a judged foe's blow): 'attack_target' {att, tgt, mode} (tgt mutable).
@@ -1687,15 +1695,16 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
       // Opportunity attacks (spec): leaving an enemy's melee reach without Disengaging, checked at each step.
       if (how !== 'disengage' && !mc.skipOA && !immune({ u }, 'opportunity_attack')) for (const h of cb.units) {
         if (u.dead || u.downed) break;
-        if (h.side === u.side || !alive(h) || dist(h.pos, was) > 1 || dist(h.pos, k) <= 1 || !canReact(cb, h)) continue;
-        // 'reaction_window' {reactor, mover, kind, cancel}: an item may cancel a reaction (or take its own).
-        const rw: any = emit(cb, 'reaction_window', { reactor: h, mover: u, kind: 'opportunity', cancel: false, at: k, cb, rng }); if (rw.cancel) continue;
-        // The walk so far plays up to the tile it is leaving, then the blow; the step out plays after it, and only if
-        // the mover is still on its feet (a mover dropped there never showed the step it didn't finish).
-        if (seg[seg.length - 1] === k) { seg.pop(); tileSight.pop(); }
-        u.pos = was; flush(); u.pos = k;
-        useReaction(cb, h); say(cb, h.name + ' takes an opportunity attack.'); opportunityStrike(cb, rng!, h, u, was);
-        if (!u.dead && !u.downed) { seg.push(k); tileSight.push(sightHere(cb, u)); }
+        if (h.side === u.side || !alive(h) || dist(h.pos, was) > 1 || dist(h.pos, k) <= 1 || !canReact(cb, h, 'attack')) continue;
+        // react(): the reaction window {reactor, mover, kind, cancel} (an item may cancel it), then the blow.
+        react(cb, h, { kind: 'attack', event: 'step:' + u.id + ':' + was + '>' + k, window: { kind: 'opportunity', mover: u, at: k, rng } }, () => {
+          // The walk so far plays up to the tile it is leaving, then the blow; the step out plays after it, and only if
+          // the mover is still on its feet (a mover dropped there never showed the step it didn't finish).
+          if (seg[seg.length - 1] === k) { seg.pop(); tileSight.pop(); }
+          u.pos = was; flush(); u.pos = k;
+          say(cb, h.name + ' takes an opportunity attack.'); opportunityStrike(cb, rng!, h, u, was);
+          if (!u.dead && !u.downed) { seg.push(k); tileSight.push(sightHere(cb, u)); }
+        });
       }
       if (!mc.skipOW && !u.dead && !u.downed) { const before = cb.log.length; triggerOverwatch(cb, rng!, u, seg, tileSight); if (cb.log.length !== before) restart(); }
       // Heart Overwatch (rules 1.5): a watching Soul mage releases at an enemy entering its design's reach.
@@ -1739,9 +1748,10 @@ export function sightCheck(cb: Combat) {
  * there. Exported for class moves that grant one (Anchor). */
 export function opportunityStrike(cb: Combat, rng: Rng, h: Unit, t: Unit, from: string) {
   const at = t.pos; t.pos = from;
-  try { react(cb, rng, h, t, 'melee'); } finally { if (!t.dead && !t.downed) t.pos = at; }
+  try { reactionStrike(cb, rng, h, t, 'melee'); } finally { if (!t.dead && !t.downed) t.pos = at; }
 }
-function react(cb: Combat, rng: Rng, h: Unit, t: Unit, mode: AttackMode) {
+/** A reaction's plain attack (an opportunity strike): previewed, then resolved at no AP. */
+function reactionStrike(cb: Combat, rng: Rng, h: Unit, t: Unit, mode: AttackMode) {
   const pv = previewAttack(cb, h, t, mode, { free: true });
   if (!pv.ok) { say(cb, '(' + h.name + ' can\'t: ' + pv.why + ')'); return; }
   resolveAttack(cb, rng, h, t, mode, null, { noAp: true }); checkOver(cb);
@@ -1752,15 +1762,16 @@ export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit, seg?: string
   for (const h of cb.units) if (h.overwatch && h.side !== mover.side && alive(h) && !mover.dead && !mover.downed && !mover.hidden && unitSees(cb, h, mover.pos)) {
     const pv = previewAttack(cb, h, mover, h.overwatch, { free: true }); if (!pv.ok) continue;
     const paid = heldShotPaid(cb, h); // Killzone's second shot: the reaction its first shot spent covers it
-    if (!paid && !canReact(cb, h)) continue;
-    const rw: any = emit(cb, 'reaction_window', { reactor: h, mover, kind: 'overwatch', cancel: false, at: mover.pos, cb, rng }); if (rw.cancel) continue;
-    if (seg && seg.length > 1) { moveFx(cb, mover, seg, 'move', walked); seg.splice(0, seg.length - 1); walked?.splice(0, walked.length - 1); }
-    if (paid) spendPaidShot(cb, h); else useReaction(cb, h); const mode = h.overwatch, shots = Math.max(1, h.owShots || 1); h.overwatch = null; h.owShots = 0;
-    // Presentation: the held shot is sprung here (the client stops the mover's walk on this tile for it).
-    emitFx(cb, 'overwatch', { unit: h.id, target: mover.id, from: h.pos, at: mover.pos, mode });
-    say(cb, h.name + ' fires from overwatch.');
-    for (let i = 0; i < shots && !mover.dead && !mover.downed; i++) { if (i && !previewAttack(cb, h, mover, mode, { free: true }).ok) break; resolveAttack(cb, rng, h, mover, mode, null, { noAp: true }); }
-    checkOver(cb);
+    if (!canReact(cb, h, 'attack', paid ? 0 : 1)) continue;
+    react(cb, h, { kind: 'attack', spend: paid ? 0 : 1, event: 'step:' + mover.id + ':' + mover.pos, window: { kind: 'overwatch', mover, at: mover.pos, rng } }, () => {
+      if (seg && seg.length > 1) { moveFx(cb, mover, seg, 'move', walked); seg.splice(0, seg.length - 1); walked?.splice(0, walked.length - 1); }
+      if (paid) spendPaidShot(cb, h); const mode = h.overwatch!, shots = Math.max(1, h.owShots || 1); h.overwatch = null; h.owShots = 0;
+      // Presentation: the held shot is sprung here (the client stops the mover's walk on this tile for it).
+      emitFx(cb, 'overwatch', { unit: h.id, target: mover.id, from: h.pos, at: mover.pos, mode });
+      say(cb, h.name + ' fires from overwatch.');
+      for (let i = 0; i < shots && !mover.dead && !mover.downed; i++) { if (i && !previewAttack(cb, h, mover, mode, { free: true }).ok) break; resolveAttack(cb, rng, h, mover, mode, null, { noAp: true }); }
+      checkOver(cb);
+    });
   }
 }
 export function setOverwatch(cb: Combat, u: Unit, mode: 'shot' | 'aimed' | 'melee'): string | null {

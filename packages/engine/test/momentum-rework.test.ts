@@ -26,7 +26,7 @@ function fight(weapon: string, known: string[], o: { foes?: { at: string; weapon
   f.put(f.pc, 'C5'); foes.forEach((x, i) => { const u = f.put(f.foes[i], x.at); u.hp = u.maxHp = 900; });
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
   f.turn(f.pc);
-  for (const u of f.cb.units) { delete u.openerUsed; delete (u as any).reactUsed; if (u.side === 'pc') u.hp = u.maxHp; }
+  for (const u of f.cb.units) { delete u.openerUsed; delete (u as any).reactUsed; delete (u as any).uses?.['reaction|reaction']; if (u.side === 'pc') u.hp = u.maxHp; }
   f.momentum(f.pc, o.m ?? 1);
   return f;
 }

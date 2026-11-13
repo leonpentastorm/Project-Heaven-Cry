@@ -343,8 +343,10 @@ export const SCENARIOS: Scenario[] = [
   proving('proving-4v10-boss', LINE, 5, ['soldier', 'sigil_adept', 'elite', 'heart_adept', 'minion'], { maxRounds: 5, total: 10 }),
   proving('proving-waves', GUNS, 1, [], { waves: 3, maxRounds: 5 }),
   roundTrip('story-fight-story', [{ build: 'opt_gun', level: 9 }, { build: 'tank', level: 9 }, { build: 'calls', level: 9 }, { build: 'outburst', level: 9 }], ['minion', 'soldier', 'sigil_novice']),
-  sightGame('proving-doors-hiding-watches', SIGHT),
-  walkAway('open-4v6-blades-walk-away', BLADES, [['soldier', 'sabre'], ['soldier', 'sabre'], ['minion', 'combat_knife'], ['elite', 'sabre'], ['minion', 'combat_knife'], ['soldier', 'combat_knife']], 'open'),
+  sightGame('proving-doors-hiding-watches', SIGHT, { maxRounds: 8 }), // 8 rounds since rules 1.28 (no reaction answers a reaction: the squad's tank lasts less long, so c1 hid less in 7)
+  // (a second minion became a sabre soldier, rules 1.28: an opportunity attack's blow is no longer Answered, so the walk
+  // needs more blades on it to play the squad's Answers as often as before)
+  walkAway('open-4v6-blades-walk-away', BLADES, [['soldier', 'sabre'], ['soldier', 'sabre'], ['minion', 'combat_knife'], ['elite', 'sabre'], ['soldier', 'sabre'], ['soldier', 'combat_knife']], 'open'),
   // ----- the larger set (REPLAY_FULL=1)
   storyFight('open-4v6-guns-blades', GUNS, ['minion', 'minion', 'soldier', 'soldier', 'soldier', 'elite'], 'open', 10, true),
   storyFight('cover-4v7-magic-boss', MAGIC, ['minion', 'soldier', 'soldier', 'elite', 'soldier', 'minion', 'boss'], 'cover', 10, true),

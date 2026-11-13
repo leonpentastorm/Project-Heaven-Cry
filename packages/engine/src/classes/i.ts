@@ -16,6 +16,7 @@ import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, sideSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, paths, moveUnit,
   resolveAttack, previewAttack, attackDamage, attackApCost, isMelee, checkOver, reloadAp, coverTileFor, fxFell, rollInjury, guardHeld,
+  attackEvent,
 } from '../combat';
 import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
@@ -35,7 +36,7 @@ import {
 import { soulStrike, designRolls } from './soul';
 import { die, type Rng } from '../rng';
 import { rollVs, rollD20, SAVE_TN } from '../rolls';
-import { resOf, resGain, resSpend, canReact, useReaction, payHeldShot, reveal , dropHeldShot } from '../tactics';
+import { resOf, resGain, resSpend, canReact, react, loseReactions, payHeldShot, reveal , dropHeldShot } from '../tactics';
 import { itemWords, wordCostMods, actionAp } from '../effects/core';
 import { makeObject } from '../objects';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround } from '../kit';
@@ -310,11 +311,13 @@ register({
     on_miss: (ctx, h) => {
       const u = h.u!, cb = h.cb!; if (!ctx.melee || ctx.tgt !== u || riposting || !foeOf(ctx.att, u)) return;
       if (policy(h, 'auto') === 'off') return;
-      if (!alive(u) || resOf(u, 'momentum') < 1 || !canReact(cb, u) || dist(u.pos, ctx.att.pos) > reachOf(u) || !alive(ctx.att)) return;
+      if (!alive(u) || resOf(u, 'momentum') < 1 || !canReact(cb, u, 'attack') || dist(u.pos, ctx.att.pos) > reachOf(u) || !alive(ctx.att)) return;
       if (!previewAttack(cb, u, ctx.att, 'melee', { free: true, extra: u.counter || 0 }).ok) return;
-      resSpend(u, 'momentum', 1); useReaction(cb, u); say(cb, u.name + ' ripostes (1 Momentum).');
-      riposting = true; try { resolveAttack(cb, rngOf(h, ctx), u, ctx.att, 'melee', null, { noAp: true, extra: u.counter || 0, fx: { move: 'fighter.riposte' } }); } finally { riposting = false; }
-      checkOver(cb);
+      react(cb, u, { kind: 'attack', event: attackEvent() }, () => {
+        resSpend(u, 'momentum', 1); say(cb, u.name + ' ripostes (1 Momentum).');
+        riposting = true; try { resolveAttack(cb, rngOf(h, ctx), u, ctx.att, 'melee', null, { noAp: true, extra: u.counter || 0, fx: { move: 'fighter.riposte' } }); } finally { riposting = false; }
+        checkOver(cb);
+      });
     },
   },
   brief: () => null,
@@ -386,11 +389,12 @@ register({
     damage_in: (ctx, h) => {
       const me = h.u!, cb = h.cb!, t: Unit = ctx.t, src = ctx.src;
       if (ctx.phase !== 'reduce' || interposing || t === me || t.side !== me.side || src?.type !== 'weapon' || !src.by || !foeOf(src.by, t)) return;
-      if (!alive(me) || dist(me.pos, t.pos) > 1 || resOf(me, 'guard') < 1 || !canReact(cb, me) || ctx.dmg <= 0) return;
+      if (!alive(me) || dist(me.pos, t.pos) > 1 || resOf(me, 'guard') < 1 || !canReact(cb, me, 'protect') || ctx.dmg <= 0) return;
       if (statQuery({ u: t }, 'prey_lock', { by: src.by }).add > 0) return; // Rabbit's Foot: a hunter's or Ork's blow stays on its prey
       const pol = policy(h, 'auto');
       if (pol === 'off' || (pol === 'down' && ctx.dmg < t.hp + (t.shield || 0))) return;
-      resSpend(me, 'guard', 1); useReaction(cb, me);
+      if (!react(cb, me, { kind: 'protect', event: attackEvent() })) return;
+      resSpend(me, 'guard', 1);
       const d = attackDamage(cb, src.by, me, src.mode || 'shot', charOfUnit(src.by), { crit: !!src.crit, preview: true, ambush: !!src.ambush });
       const dmg = Math.max(1, Math.floor(d.total) - d.armour);
       ctx.dmg = 0;
@@ -1147,7 +1151,7 @@ register({
         if (ok) { say(cb, line + ' · resists' + addFlux(cb, u, 1) + '.'); return; }
         const f = flippable(t)[0], st = stateOf(h);
         switch (f) {
-          case 'overwatch': dropHeldShot(cb, t, 'Rewrite'); useReaction(cb, t); line += ' · its held shot is gone'; break;
+          case 'overwatch': dropHeldShot(cb, t, 'Rewrite'); loseReactions(cb, t, 1); line += ' · its held shot is gone'; break;
           case 'shield': { const n = Math.min(t.shield || 0, Math.floor(itemAmount('class:trickster.rewrite', 'shield_turned', [term(u.mg?.sigilMult || 1, 'stat: sigil')]))); t.shield = 0; line += ' · the shield turns on it' + harm(cb, r0, u, t, n, 'sigil'); break; }
           case 'braced': case 'emplaced': setBraced(t, false); endCond(t, 'emplaced', cb); line += applyCond(cb, r0, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'brain_power' }); break;
           case 'guarded': case 'withdrawing': { const left = t.conds![f]; endCond(t, f, cb); t.def -= 2; (st.def ||= []).push({ id: t.id, until: cb.round + left }); line += ' · its guard becomes an opening (−2 Defense, ' + left + ' round' + (left === 1 ? '' : 's') + ')'; break; }
@@ -1351,8 +1355,8 @@ register({
       const me = h.u!, cb = h.cb!, t: Unit = ctx.t, src = ctx.src;
       if (ctx.phase !== 'shield' || !((t.shield || 0) > 0) || ctx.dmg <= 0 || !stateOf(h).shields?.[t.id]) return;
       if (!src?.by || src.by.side === me.side || !['sigil', 'elemental', 'soul', 'wall'].includes(src.type)) return;
-      if (policy(h, 'auto') === 'off' || !alive(me) || !me.mg?.emanator || me.mg.mp >= me.mg.mpMax || !canReact(cb, me)) return;
-      useReaction(cb, me);
+      if (policy(h, 'auto') === 'off' || !alive(me) || !me.mg?.emanator || me.mg.mp >= me.mg.mpMax || !canReact(cb, me, 'attack')) return;
+      if (!react(cb, me, { kind: 'attack', event: attackEvent() })) return; // (not a protective reaction in rules 1.28's list: Suppressed still stops it)
       // The spell's own price (magic.ts carries it on the damage): an Outburst's MP cost, 10 MP per Sigil word; the old
       // stand-ins (25 for an Outburst, 2 words) only when a source carries neither.
       // Rules 1.5: an elemental Outburst is 'elemental' damage, told from a Sigil by the MP it carries.
