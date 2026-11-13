@@ -2467,11 +2467,12 @@ export function clearJam(cb: Combat, u: Unit, hand: 'main' | 'off' = 'main'): st
 /** Stim (spec: Downed and dying; Medic Triage): an adjacent ally. Downed: stabilise at 1 HP (1 AP Medic, 2 AP others).
  * Else heal 6 × Healing given × the level factor (rules 1.23: it was 30 × Healing given at every level). */
 export const stimHeal = (u: Unit, who: Character) => kitHeal(STIM_HEAL, healingMult(who), mendFactorOf(u));
-export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean): string | null {
+export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean, o: { thrown?: boolean } = {}): string | null {
   if (who.stims <= 0) return 'No stims left.';
-  if (dist(u.pos, t.pos) > 1) return 'Must be adjacent.';
+  // rules 1.33: Stim Throw is everyone's gear action: an ally within the row's range that you see, at its own price
+  if (o.thrown ? dist(u.pos, t.pos) > stimThrowRange() || (t !== u && !unitSees(cb, u, t.pos)) : dist(u.pos, t.pos) > 1) return o.thrown ? 'Out of reach: within ' + stimThrowRange() + ' tiles you can see.' : 'Must be adjacent.';
   if (t.dead) return 'Too late.';
-  const cost = stimAp(u, t, isMedic, cb);
+  const cost = o.thrown ? price({ cb, u }, 'stim_throw').ap : stimAp(u, t, isMedic, cb);
   { const no = whyNot(cb, u, cost); if (no) return no; }
   if (forbids({ u }, 'stim')) return forbids({ u }, 'stim') + ': no stims.';
   // 'stim_start' {u, t, cb, cancel, why}: an item may stop the stim before anything is spent, revive included (Rival's
@@ -2486,6 +2487,8 @@ export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: b
   return null;
 }
 
+/** Stim Throw's reach (data/actions.json stim_throw.range; rules 1.33). */
+export const stimThrowRange = (): number => costOf('stim_throw', 'range');
 /** A stim's AP: stabilising a Downed ally 2 (1 for a Medic), healing 1; then items ('stabilise' / 'stim' costs). */
 export const stimAp = (u: Unit, t: Unit, isMedic: boolean, cb?: Combat | null) => (t.downed ? price({ cb, u }, 'stabilise', costOf('stim', isMedic ? 'ap_downed_medic' : 'ap_downed')).ap : price({ cb, u }, 'stim').ap);
 

@@ -18,7 +18,7 @@
  * may name, and the suffixes of 'ap_cost:<site>'. Kept equal to the real call sites by the lint test. */
 export const COST_SITE_IDS = [
   'analyze', 'break', 'clear_jam', 'crystallise', 'disengage', 'escape', 'extinguish', 'field_repair', 'hide', 'parley', 'pray', 'recover',
-  'reload', 'reload_both', 'set_explosive', 'shove', 'sprint', 'stabilise', 'stim', 'swap_core', 'throw', 'triage', 'vent', 'ward', 'whisper',
+  'reload', 'reload_both', 'set_explosive', 'shove', 'sprint', 'stabilise', 'stim', 'stim_throw', 'swap_core', 'throw', 'triage', 'vent', 'ward', 'whisper',
   // engine foundations 2: every verb priced by price() is a site (review 1, F3: these priced a literal, so no item could reach them)
   'attempt', 'brace', 'door', 'feed', 'load', 'overwatch', 'pickup', 'prone', 'pull_free', 'scuff', 'search', 'song', 'steady', 'syphon',
 ] as const;

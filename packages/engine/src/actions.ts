@@ -100,6 +100,7 @@ function rowsOf(cb: Combat | null, u: Unit, x: ActionCtx): BasicAction[] {
   { const ap = priced(u, 'door'); row('door', ap, need(u, ap)); }
   { const d = ACTION.stim, p = stimPrices(u, isMedicChar(c)), lo = Math.min(p.up, p.down), hi = Math.max(p.up, p.down);
     row('stim', p.up, c && c.stims <= 0 ? 'No stims left.' : need(u, lo), { cost: lo === hi ? apText(lo) : lo + '–' + hi + ' AP', tokens: { ap_downed: d.ap_downed, ap_downed_medic: d.ap_downed_medic, stim_heal: STIM_HEAL, stims_left: c ? ' (' + c.stims + ' left)' : '' } }); }
+  { const ap = priced(u, 'stim_throw'); row('stim_throw', ap, c && c.stims <= 0 ? 'No stims left.' : need(u, ap), { tokens: { range: ACTION.stim_throw?.range ?? '', stims_left: c ? ' (' + c.stims + ' left)' : '' } }); } // rules 1.33: everyone's
   if (c && musicTraitOf(c) && songOf(c)) { const ap = priced(u, 'song'); row('song', ap, need(u, ap)); }
   if (condOn(u, 'burning')) { const ap = priced(u, 'extinguish'); row('extinguish', ap, need(u, ap)); }
   if (condOn(u, 'grappled')) { const ap = priced(u, 'escape'); row('escape', ap, need(u, ap)); }

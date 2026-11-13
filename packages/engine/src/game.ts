@@ -327,7 +327,7 @@ export type Action =
   | { type: 'combat/gift'; unitId: string; aim: string }
   | { type: 'combat/skill'; unitId: string; targetId?: string } | { type: 'combat/repair'; unitId: string; targetId?: string } | { type: 'combat/paired'; unitId: string; targetId: string; targetId2?: string }
   | { type: 'gear/equip'; charId: string; idx: number | string; to: 'main' | 'off' | 'worn' } | { type: 'gear/unequip'; charId: string; slot: string } | { type: 'gear/mod'; charId: string; idx: number | string }
-  | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both'; /** Rules 1.9: the old magazine back in the pack (+1 AP). */ tactical?: boolean } | { type: 'combat/clear'; unitId: string; /** The off-hand gun's jam (its own Clear jam). */ hand?: 'main' | 'off' } | { type: 'combat/stim'; unitId: string; targetId: string }
+  | { type: 'combat/reload'; unitId: string; hand?: 'main' | 'off' | 'both'; /** Rules 1.9: the old magazine back in the pack (+1 AP). */ tactical?: boolean } | { type: 'combat/clear'; unitId: string; /** The off-hand gun's jam (its own Clear jam). */ hand?: 'main' | 'off' } | { type: 'combat/stim'; unitId: string; targetId: string; /** rules 1.33: Stim Throw (within 4 in sight) */ thrown?: boolean }
   // Shared subsystems (rules 1.3): throw, swap a hand, pray, talk mid-fight, hide, put out a fire, break a hold, recover a weapon.
   | { type: 'combat/throw'; unitId: string; item: string; tile: string } | { type: 'combat/swap'; unitId: string; from?: 'off' | number | string; mod?: number | string; to?: 'main' | 'off' }
   /** Rules 1.9 gear in a fight (items 684–690): draw from the pack into a hand, or put on a light armour piece ('worn');
@@ -1552,7 +1552,7 @@ function combatAction(g: GameState, a: Action, by: string) {
     case 'combat/analyze': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t) fail('Pick an enemy.'); err = analyze(cb!, u, t!); if (!err) readDrawnBy(cb!, u, t!); break; } // rules 1.10: its glyphs are read too
     case 'combat/read': err = readGlyph(cb!, u, tileKey(g, a.tile)); break;
     case 'combat/clear': err = clearJam(cb!, u, a.hand === 'off' ? 'off' : 'main'); break;
-    case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!)); break; }
+    case 'combat/stim': { const t = cb!.units.find((x) => x.id === a.targetId); if (!t || t.side !== u.side) fail('Pick an ally.'); err = useStim(cb!, u, t!, c!, isMedicChar(c!), { thrown: !!(a as any).thrown }); break; }
     case 'combat/end-turn': endTurn(cb!, g.rng); break;
     case 'combat/draw': err = drawGlyph(cb!, g.rng, u, a.word, tileKey(g, a.tile), a.stroke); break;
     case 'combat/evoke': err = evokeSpell(cb!, g.rng, u, tileKey(g, a.tile), a.aim ? tileKey(g, a.aim) : undefined, evokeOptsOf(g, a)); break;
