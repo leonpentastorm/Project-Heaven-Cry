@@ -127,7 +127,11 @@ await snap('pad-watch-1440');
 
 // icons in the backpack (here, while the fight is sure to be on)
 for (let i = 0; i < 3 && !(await p.locator('[data-bp-row]').count()); i++) { await p.locator('button[data-tip-text^="Open your backpack"]').first().click().catch(async () => { await p.keyboard.press('b'); }); await settle(p, 700); }
-ok('the backpack shows item icons', (await p.locator('[data-bp-row] img[src^="data:image/svg+xml"]').count()) >= 1);
+// Since the painted Heavenprint gear icons (art/icons/gear, gearIcons.ts: the painted icon wins over the monoline one)
+// a row's icon is an /assets/gear-<id>.webp URL, not always an SVG data URI: what the player needs is a picture that
+// LOADED, so every icon in the pack must have decoded (naturalWidth > 0), whichever kind it is.
+const bpIcons = await p.waitForFunction(() => { const im = [...document.querySelectorAll('[data-bp-row] img')]; return im.length && im.every((i) => i.complete) ? im.map((i) => ({ src: i.getAttribute('src').slice(0, 40), w: i.naturalWidth })) : null; }, null, { timeout: 15000 }).then((h) => h.jsonValue()).catch(() => []);
+ok('the backpack shows item icons, every one loaded (' + bpIcons.map((i) => i.src.replace(/^data:image\/svg\+xml.*/, 'svg') + ':' + i.w).join(', ') + ')', bpIcons.length >= 1 && bpIcons.every((i) => i.w > 0 && (/^\/assets\/gear-/.test(i.src) || /^data:image\/svg\+xml/.test(i.src))));
 await p.keyboard.press('Escape'); await settle(p, 300);
 
 // ---------- 5. Lunge, Cut, Coup: Momentum rises, then the Finisher spends it ----------
