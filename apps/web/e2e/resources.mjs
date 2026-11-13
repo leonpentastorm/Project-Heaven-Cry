@@ -130,7 +130,20 @@ await build([{ type: 'sandbox/unequip', slot: 'main' }, { type: 'sandbox/kit', k
 await patch('const d = (u.mg.designs || [])[0]; u.mg.strain = Math.max(1, (u.mg.strainLimit || 3) - 1); if (d) u.mg.held = { design: d.id, stage: 2, cost: 40 };');
 // One fact, one place (Leon, live 0.24.0): on the Outbursts tab the HEART panel says the Strain and the held Outburst,
 // so the unit panel doesn't; on any other tab the unit panel does.
-const onTab = async (id) => { await p.locator('[role="tab"][data-tab="' + id + '"]').first().click(); await pause(p, 250); };
+// (after a reload the turn card comes up when the room has resumed and the turn's intro has played: wait for the tab,
+// then for it to be the selected one, never a fixed pause)
+const onTab = async (id) => {
+  const tab = p.locator('[role="tab"][data-tab="' + id + '"]').first();
+  await tab.waitFor({ state: 'visible', timeout: 120000 });
+  // a held Outburst opens the turn on a cut-in ("Your turn", with Pump on it) that covers the tabs: dismiss it, as
+  // often as it comes back, until the click lands (up to two minutes on a loaded machine)
+  for (let t0 = Date.now(), done = false; !done;) {
+    await dismissCut();
+    done = await tab.click({ timeout: 5000 }).then(() => true, () => false);
+    if (!done && Date.now() - t0 > 120000) await tab.click({ timeout: 5000 }); // the last try throws with its reason
+  }
+  await p.waitForFunction((id) => document.querySelector('[role="tab"][data-tab="' + id + '"]')?.getAttribute('aria-selected') === 'true', id, { timeout: 30000 });
+};
 await onTab('outbursts');
 ok('Soul: with the HEART panel up, Strain and the held Outburst are said there, not again in the unit panel', !(await youCard().locator('[data-res="strain"], [data-res="held"]').count()) && (await p.locator('.phc-heart-panel').count()) > 0);
 await onTab('move');
