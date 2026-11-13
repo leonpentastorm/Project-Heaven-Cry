@@ -8,6 +8,55 @@ Built 13 Nov 2026 on the worktree branch `worktree-agent-a87f47094562526ef`, sta
 Commits: the spec; data, engine and tests; the golden tables (re-recorded on purpose); the replays, the Reflex measuring
 row and the catalogue; this hand-off with the e2e run.
 
+## 0. Finished (second builder, 13 Nov 2026): branch `worktree-agent-a5b91e20e7254055a`
+
+Fast-forwarded from the branch above, then:
+
+1. **The main line merged in** (`claude/charming-gauss-hbq4n0`: steps 2 and 4, rules 1.29). The spec keeps 1.29 then
+   1.30 (items 1757-1761 and 1800-1813, no collision). Golden tables and replays were taken from this branch and
+   re-recorded on the merged code; every changed line is one a parent changed on purpose, except 9 itemops lines that
+   are the cross of both sides' additions (marksman@I-III × blow-shaken, blow-shaken-twice, shot-afraid) and one replay,
+   `proving-4v10-boss` (moved by this branch only, moves again merged: the Breaker's Momentum on the shaken plays into
+   the Skirmisher's fight). **The weapon-neutral guard:** the four Skirmisher moves left PENDING. Texts made neutral
+   (Speed Loader "off-hand weapon"; Killzone "your line of fire or your reach"; Special Ammo "ammunition…a weapon that
+   takes a magazine / draws from a quiver"); Fire Discipline's Heat refund reads `heat_limit` only. In DOOR with the
+   reason: Riposte (mode `riposte`, its handler gone: code 0), Fire Discipline (mode `aimed`), Special Ammo (the words
+   magazine and quiver; one read: the reload effect's art), Killzone (2 reads: a melee weapon holds at its reach, an
+   aimed hold needs a weapon that aims). Called Shot left PENDING (no base-class move until the Operative step adds it).
+2. **The lead's ruling on Fire Discipline (item 1813):** Aimed attacks +1 to hit, no Heat with a weapon that has Heat;
+   once a turn, on your turn, a weapon technique that costs 3 AP or more costs 1 AP less; a plain 2-AP attack is never
+   cheaper. Built with two new closed-list predicates, `free_tech` (techniques.json `free`) and `tech_ap_at_least`
+   (the attack's events now carry `techAp`, the technique's own price with the weapon: `combat.ts setStrikeTechAp`,
+   registered by `physical/core.ts`). **A reading made here (the lead can reverse it):** "a weapon technique" leaves out
+   the free techniques everyone has, so the Aimed Shot (3 AP) and the long rifle's 3-AP Shot are not cut.
+
+   | All in, % of the normal-share rifle turn (`REFIT_MEASURE=1 REFIT_SYSTEMS=plain,gun REFIT_VARIANTS=allin`) | L1 | L5 | L10 | L20 | Mean |
+   | --- | --- | --- | --- | --- | --- |
+   | The Skirmisher (best gun), as built, 4 fights a cell (the first builder's sample) | 163 | 173 | 165 | 138 | 160 |
+   | The same, 6 fights a cell (the contract guard's sample) | 164 | 168 | 166 | 145 | **161** |
+   | With the Aimed Shot also cut (the other reading; contract guard, 6 a cell) | 164 | 180 | 165 | 170 | 170 |
+   | Plain rifle all in (unchanged) | 126 | 123 | 109 | 108 | 117 |
+
+   The band is 145 ± 12% (127.6 to 162.4): as built it is inside, near the top (+11%). The balance-contract guard and
+   the Faith dabbler guard pass.
+3. **The replay coverage line.** After the ruling the door line holds on its own (actions with a door open: 57) but
+   "actions with a player's unit Hidden" fell to 13 (needs more than 20). Under the lead's leave to ADD to a scripted
+   game: in `proving-doors-hiding-watches` the optimised blade (c1) also walks out of sight and goes to ground on its
+   **third** turn (as on its even turns): `helpers/replay.ts`, one condition `n === 3` added. Now hidden 33, doors 62.
+   No action removed, no guard lowered; replays re-recorded.
+4. **The perk Bulwark renamed Stonewall** (Leon, via the lead; item 1812, rules 1.30 section 4): the lead's Rampart was
+   not used because the RAISE Grand form is "Ramparts". Display name only (id `bulwark`, icon, numbers, saves
+   unchanged): data, the perk's log line and preview label, tests, the art catalog label and icon brief, ART-REQUESTS
+   (nothing to redraw), perk-runtime, the spec body and items 377, 488. `tools/validate.py` now refuses a perk named
+   as a class. `itemops-perks.log.json` moved on that word only.
+5. **To measure in step 11: Reflex.** The simulator never uses the second reaction (+0 measured, so its worth, the
+   spec's +8 to +17%, is unconfirmed). What the simulator needs: (a) enemies that cross a held line: an AI that
+   advances through Overwatch and Killzone lanes (melee enemies charging, shooters repositioning between cover), or a
+   scripted fight where they walk across it; (b) a Skirmisher policy that holds Killzone or Overwatch and still takes
+   opportunity attacks and Duck and Roll when two reactions allow it (and Keep one for a held shot); (c) Duck and Roll
+   valued by the hit it avoids, so it is taken when a step out of sight or into cover exists; (d) the row as
+   `defence-measure.ts reflexRow`: off-turn damage and damage taken with `reactions` 2 against 1, levels 5 to 20.
+
 ## 1. What was built
 
 | Rule or move | How (the primitive) | Where |

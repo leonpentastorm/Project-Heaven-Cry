@@ -46,15 +46,18 @@ describe('class coverage', () => {
 
 // ======================================================================================================== MARKSMAN
 describe('Marksman', () => {
-  it('Fire Discipline (rules 1.30): an aimed shot adds no Heat; the first attack of a turn costs 1 AP less (a Burst 2), the next its own', () => {
+  it('Fire Discipline (rules 1.30, item 1813): an aimed shot adds no Heat and is never cheaper; once a turn a technique of 3 AP or more costs its cut less (a Burst 2), the next its own', () => {
     const f = fightWith([cls('marksman', 1, { weapon: 'hellraiser_service_rifle' })], [{}]);
     let u = f.turn(f.pc); line(f, [u, 2], [f.foe, 6]); sure(f.unit(u.id));
     const cut = -itemInfo('class:marksman.fire_discipline')!.effects.find((e: any) => e.op === 'cost_mod').value;
     act(f, u, { type: 'combat/attack', targetId: f.foe.id, mode: 'aimed' });
-    expect(f.pc.heat).toBe(0); expect(f.pc.ap).toBe(6 - (3 - cut)); // the aimed shot (3 AP) is the turn's first attack
+    expect(f.pc.heat).toBe(0); expect(f.pc.ap).toBe(6 - 3); // the aimed shot (3 AP) is everyone's: never cut
     f.unit(u.id).ap = 6; f.unit(f.foe.id).hp = 999; f.unit(f.foe.id).maxHp = 999;
     act(f, u, { type: 'combat/attack', targetId: f.foe.id, mode: 'burst' });
-    expect(f.pc.ap).toBe(3); // the second attack: the Burst's own 3
+    expect(f.pc.ap).toBe(6 - (3 - cut)); // the turn's first dear technique: the Burst's 3, cut
+    f.unit(u.id).ap = 6;
+    act(f, u, { type: 'combat/attack', targetId: f.foe.id, mode: 'burst' });
+    expect(f.pc.ap).toBe(3); // the second: its own 3
   });
   it('Fire Discipline (rules 1.30): Aimed attacks +1 to hit with any weapon (a bow, a rifle)', () => {
     const plus = itemInfo('class:marksman.fire_discipline')!.effects.find((e: any) => e.op === 'roll_mod').value;
