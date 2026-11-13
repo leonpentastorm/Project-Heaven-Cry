@@ -4779,14 +4779,16 @@
       },
       "self_holds": {
         "arg": "hold",
-        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner) or the skill it opens (brain_power, will_power, empathy)} (a focus) or {slot, item: an item id}",
+        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}",
         "values": [
           "evoker",
           "emanator",
           "attuner",
+          "visualizer",
           "brain_power",
           "will_power",
-          "empathy"
+          "empathy",
+          "visualization"
         ]
       },
       "self_lacks_gear": {
@@ -4796,98 +4798,12 @@
           "evoker",
           "emanator",
           "attuner",
+          "visualizer",
           "brain_power",
           "will_power",
-          "empathy"
+          "empathy",
+          "visualization"
         ]
-      },
-      "toggle": {
-        "arg": "words",
-        "about": "one of the holder's item's data toggles (its ids) is on for the action being resolved"
-      },
-      "free_tech": {
-        "arg": "bool",
-        "about": "the attack is (true) or is not (false) made with a free technique, everyone's (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands)"
-      },
-      "tech_ap_at_least": {
-        "arg": "number",
-        "about": "the attack's own price is at least this many AP: its technique's cost with the weapon before any item (ctx.techAp), or with no technique the attack's base AP"
-      },
-      "path_tiles_at_most": {
-        "arg": "number",
-        "about": "the move (its priced walk: ctx.tiles) is at most this many tiles"
-      },
-      "self_has_res": {
-        "arg": "words",
-        "about": "the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)",
-        "values": [
-          "mp",
-          "charge",
-          "cores",
-          "momentum",
-          "guard",
-          "shadow",
-          "supplies",
-          "toxins",
-          "parts",
-          "stims",
-          "echo",
-          "pressure",
-          "ledger",
-          "vcharge"
-        ]
-      },
-      "self_lacks_res": {
-        "arg": "words",
-        "about": "the holder has none of one of these resources (as self_has_res)",
-        "values": [
-          "mp",
-          "charge",
-          "cores",
-          "momentum",
-          "guard",
-          "shadow",
-          "supplies",
-          "toxins",
-          "parts",
-          "stims",
-          "echo",
-          "pressure",
-          "ledger",
-          "vcharge"
-        ]
-      },
-      "patron": {
-        "arg": "words",
-        "about": "the holder is Faithful to one of these patrons (patrons.json ids)",
-        "values": [
-          "nerukhan",
-          "the_quartermaster",
-          "the_laughing_mask",
-          "toll_keeper",
-          "mother_ember",
-          "old_overcast",
-          "the_matchmaker",
-          "counting_weaver"
-        ]
-      },
-      "not_patron": {
-        "arg": "words",
-        "about": "the holder is not Faithful to any of these patrons (an Atheist is none of them)",
-        "values": [
-          "nerukhan",
-          "the_quartermaster",
-          "the_laughing_mask",
-          "toll_keeper",
-          "mother_ember",
-          "old_overcast",
-          "the_matchmaker",
-          "counting_weaver"
-        ]
-      },
-      "answered": {
-        "arg": "bool",
-        "about": "a prayer of the holder's is (or is not) answered now (faith.ts prayerAnswered: the prayer door open, Faith and not Silenced; the Faithful always, an Atheist rolls the Whisper's TN; a preview rolls nothing). Put it last in `if`: it rolls"
       },
       "self_skill": {
         "arg": "skill",
@@ -4936,6 +4852,94 @@
       "uses_left": {
         "arg": "limit",
         "about": "the holder's item has a use left in this limit ({per, n?, key?, each?: target}; read, never taken: the action is refused before it is paid, as \"once an ally a turn\")"
+      },
+      "toggle": {
+        "arg": "words",
+        "about": "one of the holder's item's data toggles (its ids) is on for the action being resolved"
+      },
+      "free_tech": {
+        "arg": "bool",
+        "about": "the attack is (true) or is not (false) made with a free technique, everyone's (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands)"
+      },
+      "tech_ap_at_least": {
+        "arg": "number",
+        "about": "the attack's own price is at least this many AP: its technique's cost with the weapon before any item (ctx.techAp), or with no technique the attack's base AP"
+      },
+      "path_tiles_at_most": {
+        "arg": "number",
+        "about": "the move (its priced walk: ctx.tiles) is at most this many tiles"
+      },
+      "self_has_res": {
+        "arg": "words",
+        "about": "the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure",
+          "vcharge",
+          "shadow",
+          "ledger"
+        ]
+      },
+      "self_lacks_res": {
+        "arg": "words",
+        "about": "the holder has none of one of these resources (as self_has_res)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure",
+          "vcharge",
+          "shadow",
+          "ledger"
+        ]
+      },
+      "patron": {
+        "arg": "words",
+        "about": "the holder is Faithful to one of these patrons (patrons.json ids)",
+        "values": [
+          "nerukhan",
+          "the_quartermaster",
+          "the_laughing_mask",
+          "toll_keeper",
+          "mother_ember",
+          "old_overcast",
+          "the_matchmaker",
+          "counting_weaver"
+        ]
+      },
+      "not_patron": {
+        "arg": "words",
+        "about": "the holder is not Faithful to any of these patrons (an Atheist is none of them)",
+        "values": [
+          "nerukhan",
+          "the_quartermaster",
+          "the_laughing_mask",
+          "toll_keeper",
+          "mother_ember",
+          "old_overcast",
+          "the_matchmaker",
+          "counting_weaver"
+        ]
+      },
+      "answered": {
+        "arg": "bool",
+        "about": "a prayer of the holder's is (or is not) answered now (faith.ts prayerAnswered: the prayer door open, Faith and not Silenced; the Faithful always, an Atheist rolls the Whisper's TN; a preview rolls nothing). Put it last in `if`: it rolls"
       },
       "answer_on": {
         "arg": "string",

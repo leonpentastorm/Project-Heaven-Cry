@@ -119,8 +119,16 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `target_in_zone` | zone | target stands in a zone of this kind (a kind, or {kind, owner: self, side or any}) | `sanctuary` (classes.json) |
 | `actor_tied` | tie | actor is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it) | none yet |
 | `target_tied` | tie | target is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it) | `take_the_weight` (classes.json) |
-| `self_holds` | hold | the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner) or the skill it opens (brain_power, will_power, empathy)} (a focus) or {slot, item: an item id} | `ledger` (classes.json) |
+| `self_holds` | hold | the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id} | `ledger` (classes.json) |
 | `self_lacks_gear` | hold | the holder does not have it (as self_holds) | none yet |
+| `self_skill` | skill | the holder has at least these points in each skill named ({empathy: 7}: a door's ladder) | `camaraderie` (skills.json) |
+| `self_skill_below` | skill | the holder has fewer than these points in each skill named (as self_skill) | none yet |
+| `self_tied` | tie | the holder holds a tie of this kind (a kind, or {kind, side: foe, ally or any}: its far end of that side to the holder) | `tend.threads` (tending.json) |
+| `choice` | words | the action's pick (its `pick` list: a felt feeling, a word…) is one of these | `inspire` (classes.json) |
+| `self_tie_room` | tie | the holder may hold one more tie of this kind (under its cap: kit.ts tieCap) | none yet |
+| `actor_not_tied` | tie | actor is not tied to the holder by this kind (as actor_tied) | none yet |
+| `target_not_tied` | tie | target is not tied to the holder by this kind (as target_tied) | none yet |
+| `uses_left` | limit | the holder's item has a use left in this limit ({per, n?, key?, each?: target}; read, never taken: the action is refused before it is paid, as "once an ally a turn") | none yet |
 | `toggle` | words | one of the holder's item's data toggles (its ids) is on for the action being resolved | none yet |
 | `free_tech` | bool | the attack is (true) or is not (false) made with a free technique, everyone's (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands) | `fire_discipline` (classes.json) |
 | `tech_ap_at_least` | number | the attack's own price is at least this many AP: its technique's cost with the weapon before any item (ctx.techAp), or with no technique the attack's base AP | `fire_discipline` (classes.json) |
@@ -130,14 +138,6 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `patron` | words | the holder is Faithful to one of these patrons (patrons.json ids) | `smite` (classes.json) |
 | `not_patron` | words | the holder is not Faithful to any of these patrons (an Atheist is none of them) | `smite` (classes.json) |
 | `answered` | bool | a prayer of the holder's is (or is not) answered now (faith.ts prayerAnswered: the prayer door open, Faith and not Silenced; the Faithful always, an Atheist rolls the Whisper's TN; a preview rolls nothing). Put it last in `if`: it rolls | `smite` (classes.json) |
-| `self_skill` | skill | the holder has at least these points in each skill named ({empathy: 7}: a door's ladder) | `camaraderie` (skills.json) |
-| `self_skill_below` | skill | the holder has fewer than these points in each skill named (as self_skill) | none yet |
-| `self_tied` | tie | the holder holds a tie of this kind (a kind, or {kind, side: foe, ally or any}: its far end of that side to the holder) | `tend.threads` (tending.json) |
-| `choice` | words | the action's pick (its `pick` list: a felt feeling, a word…) is one of these | `inspire` (classes.json) |
-| `self_tie_room` | tie | the holder may hold one more tie of this kind (under its cap: kit.ts tieCap) | none yet |
-| `actor_not_tied` | tie | actor is not tied to the holder by this kind (as actor_tied) | none yet |
-| `target_not_tied` | tie | target is not tied to the holder by this kind (as target_tied) | none yet |
-| `uses_left` | limit | the holder's item has a use left in this limit ({per, n?, key?, each?: target}; read, never taken: the action is refused before it is paid, as "once an ally a turn") | none yet |
 | `answer_on` | string | the holder keeps this item Answer switched on: the character's Answer list (phys.answers, set by phys/answers) names it, or it keeps none (every Answer on). Share a Hit (rules 1.33) | `camaraderie` (skills.json) |
 
 ### Ops (28)

@@ -28,7 +28,10 @@ describe('the Rigger: the class', () => {
     const g = rigger({ vis: 0 }); expect(heldMax(g.turn(g.pc))).toBe(0); // the extra one needs the door
   });
   it('the old save: an old Trickster loads; every move key it held resolves', () => {
-    for (const k of ['class:trickster.false_image', 'class:trickster.sleight', 'class:trickster.read', 'class:trickster.silver_tongue', 'class:trickster.blind_and_slow', 'class:trickster.rewrite', 'class:infiltrator.field_fix'])
+    // (class:trickster.read is gone: Read is folded into the Operative's Analyze, rules 1.32, the lead's ruling at step 8's
+    // integration. A class's moves come from its ranks, not the save, so an old Trickster simply has no Read.)
+    expect(itemInfo('class:trickster.read')).toBeNull();
+    for (const k of ['class:trickster.false_image', 'class:trickster.sleight', 'class:trickster.silver_tongue', 'class:trickster.blind_and_slow', 'class:trickster.rewrite', 'class:infiltrator.field_fix'])
       expect(itemInfo(k), k).toBeTruthy();
   });
 });
