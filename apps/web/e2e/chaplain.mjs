@@ -5,7 +5,7 @@
 // Judged; a second hit that turn carries none; Rebuke after it (the turn's Whisper); the CLASS tab lists Ward and
 // Sanctuary (and Verdict), and Sanctuary (a Hymn) is refused during the Hymn's wait, in words. Ward is in classes-moves.
 // Everything through the real buttons where the screen has one, the reducer (window.__phc.act) for the drill's set-up.
-import { chromium, click, BASE, pause, settle, tipOf } from './lib.mjs';
+import { chromium, click, BASE, settle, tipOf, fxIdle } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const ctx = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: Number(process.env.DSF) || 1 });
@@ -16,7 +16,15 @@ const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; }
 const G = () => p.evaluate(() => window.__phc.getState().game);
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 const xy = (k) => k.split(',').map(Number);
-const dismiss = async () => { for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await pause(p, 300); } };
+/** Close every cut-in and wait for the fight's effects to be idle (on the page's state, not on time): on a busy machine
+ *  the turn's cut-in came up AFTER a count of 0 was read, covered the tab bar and the next click waited it out to the
+ *  suite's timeout (it failed only beside other suites). fxIdle is false while a cut-in is up, so the loop closes it. */
+const dismiss = async () => {
+  for (let i = 0; i < 12; i++) {
+    if (await p.locator('[data-phc-cutin]').count()) { await p.keyboard.press('Escape'); await p.waitForFunction(() => !document.querySelector('[data-phc-cutin]'), null, { timeout: 5000 }).catch(() => {}); continue; }
+    if (await fxIdle(p, 5000)) return;
+  }
+};
 const log = async () => ((await G()).combat?.log || []).map((l) => (typeof l === 'string' ? l : l.text || '')).join('\n');
 
 await p.goto(BASE);
@@ -66,6 +74,7 @@ for (const [dx, dy] of [[3, 0], [-3, 0], [0, 3], [0, -3], [2, 2], [-2, -2], [2, 
   if ((await G()).combat.units.length > n0) { foe = (await G()).combat.units.at(-1); break; }
 }
 ok('a drill sergeant stands in range', !!foe);
+await dismiss();
 await p.locator('[role="tab"][data-tab="faith"]').click(); await settle(p, 200);
 const hymnErr = await act({ type: 'faith/pray', unitId: u.id, kind: 'hymn', id: 'thunderclap', tile: foe.pos });
 const wit = await p.waitForFunction((id) => !!window.__phc.getState().game.combat.units.find((x) => x.charId === id)?.conds?.witnessed, cid, { timeout: 30000 }).then(() => true, () => false);
@@ -84,6 +93,7 @@ ok('the Hymn (Thunderclap on the sergeant\'s tile): ' + (hymnErr || 'prayed') + 
 }
 // Sanctuary is a Hymn: right after the Hymn it waits for the Hymn's wait, in words. Since step 10 Ward and Sanctuary are
 // prayers on the FAITH tab (Ward among the Whispers, Sanctuary among the Hymns); Verdict stays on the CLASS tab.
+await dismiss();
 await p.locator('#phc-tab-class').click(); await settle(p, 200);
 ok('the CLASS tab lists Verdict (and not the two prayers)', await (async () => { const t = (await p.locator('[role="tabpanel"]').textContent()) || ''; return /Verdict/.test(t) && !/Ward|Sanctuary/.test(t); })());
 await p.locator('#phc-tab-faith').click(); await settle(p, 200);
@@ -98,11 +108,14 @@ await p.locator('#phc-tab-faith').click(); await settle(p, 200);
 }
 /** End the Chaplain's turn and come back to it (the AI is off: the drill units pass). */
 async function nextTurn() {
+  // each step waits for the turn to move on (the state), not for a number of milliseconds: a busy machine took longer
+  // than the old 30 × 300 ms to play the drill units' turns
   for (let i = 0; i < 30; i++) {
     const cb = (await G()).combat, cur = cb.units.find((x) => x.id === cb.order[cb.turn]), mine = await me();
     if (i > 0 && cur && cur.id === mine.id) { await dismiss(); return true; }
+    const was = cb.round + ':' + cb.turn;
     if (cur && cur.side === 'pc') await act({ type: 'combat/end-turn', unitId: cur.id });
-    await settle(p, 300);
+    await p.waitForFunction((was) => { const c = window.__phc.getState().game.combat; return !!c && c.round + ':' + c.turn !== was; }, was, { timeout: 30000 }).catch(() => {});
   }
   return false;
 }
