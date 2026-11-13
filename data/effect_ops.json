@@ -4960,6 +4960,34 @@
       "per_scene",
       "per_session",
       "per_rest"
-    ]
+    ],
+    "targets": {
+      "about": "Classes 3.0 P5: `targets` on any op runs it once for each unit of the set, as its target (effects/triggers.ts TargetSet)",
+      "fields": {
+        "of": [
+          "self",
+          "actor",
+          "target",
+          "tile"
+        ],
+        "side": [
+          "foe",
+          "ally",
+          "side",
+          "any"
+        ],
+        "within": "number",
+        "shape": [
+          "burst",
+          "aura",
+          "cone",
+          "line"
+        ],
+        "seen": "bool",
+        "alive": "bool",
+        "downed": "bool",
+        "max": "number"
+      }
+    }
   }
 }

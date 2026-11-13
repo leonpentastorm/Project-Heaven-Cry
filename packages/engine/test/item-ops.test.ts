@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { TRIGGERS, PREDICATES, OPS, LIMIT_SCOPES, isTriggered, triggerProblem } from '../src/effects/triggers';
+import { TRIGGERS, PREDICATES, OPS, LIMIT_SCOPES, TARGET_FIELDS, isTriggered, triggerProblem } from '../src/effects/triggers';
 import { allItems, ownerOf, addItems, clearAddedItems, itemInfo, handlerOf } from '../src';
 import { afterAll, beforeAll } from 'vitest';
 import { opsFight, situations } from './golden/itemops';
@@ -20,6 +20,7 @@ export function itemOpsBlock() {
     predicates: Object.fromEntries(Object.entries(PREDICATES).map(([k, p]) => [k, { arg: p.arg, about: p.about, ...(p.values ? { values: p.values } : {}) }])),
     ops: Object.fromEntries(Object.entries(OPS).map(([k, o]) => [k, { on: o.on, fields: o.fields, changes_state: o.state, about: o.about }])),
     limit_scopes: LIMIT_SCOPES,
+    targets: { about: 'Classes 3.0 P5: `targets` on any op runs it once for each unit of the set, as its target (effects/triggers.ts TargetSet)', fields: TARGET_FIELDS },
   };
 }
 

@@ -119,6 +119,24 @@
       "effects": [ { "op": "mark", "when": "reaction", "if": { "how": ["protect"] }, "flag": "protected" } ]
     },
     {
+      "id": "test_targets_dread",
+      "name": "Dread over the body (test)",
+      "text": "When you kill, every other enemy within {=effects.0.targets.within} tiles of the body is Marked (no save): the unit set targets (P5).",
+      "effects": [ { "op": "condition", "when": "kill", "condition": "marked", "skip_save": true, "rounds": 2, "targets": { "of": "target", "side": "foe", "within": 3 }, "say": "Dread over {target}{then}." } ]
+    },
+    {
+      "id": "test_targets_rally",
+      "name": "Rally on reload (test)",
+      "text": "After you reload, each other ally within {=effects.0.targets.within} tiles (at most {=effects.0.targets.max}) heals {=effects.0.amount.base} HP.",
+      "effects": [ { "op": "mend", "when": "acted", "if": { "action": ["reload"] }, "amount": { "kind": "heal", "base": 10, "profile": "flat" }, "targets": { "side": "ally", "within": 4, "max": 1 } } ]
+    },
+    {
+      "id": "test_targets_cone",
+      "name": "Cone of fear (test)",
+      "text": "Your hit Shakes every enemy in a cone {=effects.0.targets.within} tiles long toward the target, no save, if your side sees it.",
+      "effects": [ { "op": "condition", "when": "hit", "condition": "shaken", "skip_save": true, "rounds": 1, "targets": { "shape": "cone", "within": 6, "side": "foe", "seen": true } } ]
+    },
+    {
       "id": "test_res_mp",
       "name": "MP on hit (test)",
       "text": "Your hit gives you {=effects.0.value} MP, with an Emanator in hand.",

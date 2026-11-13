@@ -1752,6 +1752,17 @@ def check_number_block(b, w, item_op=True):
             errors.append(f"{w}: a number block's per-point part is {{of, value}}"); continue
         if item_op and pp["of"].split(":", 1)[0] not in SOURCE_SPACES or item_op and ":" not in pp["of"]:
             errors.append(f"{w}: an item op's number block counts '{pp['of']}': name a source ({', '.join(s + ':' for s in SOURCE_SPACES)})")
+# Classes 3.0 P5: `targets` on any op (the unit set it runs on): its fields and words are item_ops.targets.fields.
+def check_targets(t, w):
+    fields = (IOPS.get("targets") or {}).get("fields") or {}
+    if not isinstance(t, dict): errors.append(f"{w}: `targets` is an object ({sorted(fields)})"); return
+    for k, v in t.items():
+        f = fields.get(k)
+        if f is None: errors.append(f"{w}: unknown targets field '{k}' ({sorted(fields)})")
+        elif f == "number" and not (isinstance(v, (int, float)) and not isinstance(v, bool)): errors.append(f"{w}: targets.{k} is a number")
+        elif f == "bool" and not isinstance(v, bool): errors.append(f"{w}: targets.{k} is true or false")
+        elif isinstance(f, list) and v not in f: errors.append(f"{w}: targets.{k} takes {f}")
+    if t.get("shape") in ("cone", "line") and not isinstance(t.get("within"), (int, float)): errors.append(f"{w}: a cone or a line in targets needs `within`")
 def check_trigger_effect(e, w):
     t = e.get("when")
     if t not in TRIG:
@@ -1771,6 +1782,7 @@ def check_trigger_effect(e, w):
             for pp in x["amount"].get("per") or []:
                 if isinstance(pp, dict) and ":" in str(pp.get("of", "")) and str(pp["of"]).split(":", 1)[0] not in SOURCE_SPACES: errors.append(f"{w}: an amount's per-point part names '{pp['of']}': its source is one of {SOURCE_SPACES}")
         if x.get("op") == "condition" and x.get("condition") not in known["condition"]: errors.append(f"{w}: condition '{x.get('condition')}' is not in conditions.json")
+        if "targets" in x: check_targets(x["targets"], w)
         if x.get("op") == "deal" and "via" in x and not (isinstance(x["via"], str) and x["via"]): errors.append(f"{w}: a deal's `via` is the source skill it counts as (a word: faith)")
         if x.get("op") == "deal" and "nonlethal" in x and not isinstance(x["nonlethal"], bool): errors.append(f"{w}: a deal's `nonlethal` is true or false")
     cond = e.get("if")

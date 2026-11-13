@@ -19,8 +19,8 @@ import type { Holder, HookName } from './types';
 import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems } from './collect';
-import { overworld, rngOf } from '../kit';
-import { say, dist, displace, emitFx, unitSees } from '../combat';
+import { overworld, rngOf, unitsIn, type Area } from '../kit';
+import { say, dist, displace, emitFx, unitSees, sideSees } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia } from '../magic';
 import { nextToCover } from '../combat';
 import { CONDITION_ROWS, condRowsVersion } from '../condtable';
@@ -299,6 +299,39 @@ const blockOf = (h: Holder, e: any): AmountBlock | null => {
 const countsOf = (ev: Ev, b: AmountBlock): Record<string, number> => Object.fromEntries((b.per || []).filter((p) => p.of.includes(':')).map((p) => [p.of, sourceOf(ev, p.of)]));
 const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none' });
 
+// ============================================================================================== the unit set (P5)
+/** `targets` on any op (Classes 3.0 P5): the op runs once for each unit of the set, as its target, in the fight's order
+ * (kit.ts unitsIn). The set: of (the centre: self, actor, target, or tile: the event's tile), side (foe, ally, side,
+ * any; to the holder), within (tiles from the centre), shape (burst: the centre's tile too; aura: not it; cone and
+ * line: from the centre toward the event's target, or its actor, `within` long), seen (seen, or not, by the holder's
+ * side), alive (default true: still in the fight; false: Downed only), downed (true: the Downed too), max (the first n).
+ * With no within and no shape, the whole field. `tied` and `aims_at` come with ties (P8) and the enemy's aim (a batch row). */
+export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number }
+/** The fields of `targets` and the words each takes (data/effect_ops.json item_ops.targets is written from it). */
+export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number' };
+/** Why a `targets` block is malformed (null: it is fine). */
+export function targetsProblem(t: any): string | null {
+  if (!t || typeof t !== 'object' || Array.isArray(t)) return '`targets` is an object';
+  for (const [k, v] of Object.entries(t)) {
+    const f = TARGET_FIELDS[k]; if (!f) return 'unknown targets field ' + k;
+    if (f === 'number' ? typeof v !== 'number' : f === 'bool' ? typeof v !== 'boolean' : !f.includes(v as string)) return 'targets.' + k + ' takes ' + (Array.isArray(f) ? f.join(', ') : 'a ' + f);
+  }
+  if ((t.shape === 'cone' || t.shape === 'line') && typeof t.within !== 'number') return 'a cone or a line needs `within` (its length)';
+  return null;
+}
+/** THE unit set of an op's `targets` for this event (see TargetSet). */
+export function selectUnits(ev: Ev, t: TargetSet): Unit[] {
+  const cb = ev.cb, of = t.of || 'self', cu = of === 'actor' ? ev.actor : of === 'target' ? ev.target : of === 'self' ? ev.self : null;
+  const at: string | null = of === 'tile' ? ev.ctx.tile ?? ev.ctx.at ?? ev.ctx.to ?? null : cu?.pos ?? null; if (!at) return [];
+  const toward = ev.target?.pos !== at ? ev.target?.pos : ev.actor?.pos;
+  const shape = t.shape || (t.within != null ? 'burst' : null);
+  const area: Area | null = shape === 'burst' || shape === 'aura' ? { shape, at, r: t.within! } : (shape === 'cone' || shape === 'line') && toward && toward !== at ? (shape === 'cone' ? { shape, from: at, toward, n: t.within! } : { shape, from: at, toward, n: t.within }) : null;
+  if ((shape === 'cone' || shape === 'line') && !area) return [];
+  const downed = t.downed || t.alive === false, all = area ? unitsIn(cb, area, { downed }) : unitsIn(cb, { shape: 'burst', at, r: Math.max(cb.map.w, cb.map.h) }, { downed });
+  const out = all.filter((v) => (t.alive === false ? !!v.downed : true) && (!t.side || rel(ev.self, v, t.side)) && (t.seen == null || sideSees(cb, ev.self.side as 'pc' | 'foe', v) === t.seen));
+  return typeof t.max === 'number' ? out.slice(0, t.max) : out;
+}
+
 // ============================================================================================== the limit
 /** `limit`: { per: a scope of effects/uses.ts (per_turn, per_round, per_combat, per_scene, per_session, per_rest), n,
  * key? (a second counter on the same item: "<item key>#<key>"), each?: "target" | "actor" (a counter per unit) } or
@@ -327,6 +360,7 @@ export function triggerProblem(e: any): string | null {
     if (!op.on.includes(e.when)) return 'op ' + x.op + ' does not run on ' + e.when;
   }
   if (e.if != null) { if (typeof e.if !== 'object' || Array.isArray(e.if)) return '`if` must be an object'; for (const k of Object.keys(e.if)) if (!PREDICATES[k]) return 'unknown predicate ' + k; }
+  for (const x of [e, ...(Array.isArray(e.and) ? e.and : [])]) if (x.targets != null) { const why = targetsProblem(x.targets); if (why) return why; }
   if (e.limit != null) { const l = e.limit; if (typeof l !== 'object' || (typeof l.cooldown !== 'number' && !LIMIT_SCOPES.includes(l.per) && typeof l.reaction !== 'number')) return 'limit must be { per, n }, { cooldown } or { reaction, kind }'; if (typeof l.reaction === 'number' && !REACT_KINDS.includes(l.kind)) return 'a reaction limit names its kind (' + REACT_KINDS.join(', ') + ')'; }
   return null;
 }
@@ -344,9 +378,12 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   const lim = e.limit, asReaction = !!lim && typeof lim.reaction === 'number';
   if (asReaction ? !canReact(cb, self, lim.kind, lim.reaction) : !limitOk(ev, lim, !ev.preview)) return;
   const label = e.label || h.info.name, parts: string[] = [];
-  const go = () => { for (const x0 of all) { const x = withNumbers(ev, x0), r = OPS[x.op].run(ev, x, x.label || label); if (typeof r === 'string' && r) parts.push(r); } };
+  let ran = 0;
+  const one = (ev1: Ev, x0: any) => { const x = withNumbers(ev1, x0), r = OPS[x.op].run(ev1, x, x.label || label); ran++; if (typeof r === 'string' && r) parts.push(r); };
+  // P5: an op with `targets` runs once for each unit of its set, that unit as its target
+  const go = () => { for (const x0 of all) { if (x0.targets) { for (const t of selectUnits(ev, x0.targets)) one({ ...ev, target: t }, { ...x0, target: 'target' }); } else one(ev, x0); } };
   if (asReaction && !ev.preview) { if (!react(cb, self, { kind: lim.kind, spend: lim.reaction }, go)) return; } else go();
-  if (ev.preview) return;
+  if (ev.preview || !ran) return; // a set with nobody in it: nothing happened, nothing is said
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx; emitFx(cb, k, { target: self.id, at: self.pos, ...rest }); }
   if (e.say) say(cb, fill(e.say, ev).replace('{then}', parts.join('')));
 }

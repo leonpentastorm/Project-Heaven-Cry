@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 33 triggers, 56 predicates, 18 ops, 90 effect ops, 122 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 50 stats, 24 condition fields, 340 primitive exports, 130 fx kinds, 166 Unit fields, 56 Combat fields, 40 guards.
+Counts: 33 triggers, 56 predicates, 18 ops, 90 effect ops, 122 hooks, 3 never emitted, 12 profiles, 39 cost sites, 11 resources, 50 stats, 24 condition fields, 344 primitive exports, 130 fx kinds, 166 Unit fields, 56 Combat fields, 40 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -522,6 +522,10 @@ Families: `body`, `brain`, `heart`.
 | `SOURCE_SPACES` | `SOURCE_SPACES` | The namespaces a number block's `of` may name in an item op. |
 | `TriggerOp` | `interface TriggerOp { on, state, about, fields, run }` | The closed list of ops a triggered effect may run, with the triggers each one understands. |
 | `OPS` | `OPS: Record<string, TriggerOp>` | THE OPS: filled by O(...) below, one line each (data/effect_ops.json item_ops.ops is written from it). |
+| `TargetSet` | `interface TargetSet { of, side, within, shape, seen, alive, downed, max }` | `targets` on any op (Classes 3.0 P5): the op runs once for each unit of the set, as its target, in the fight's order (kit.ts unitsIn). |
+| `TARGET_FIELDS` | `TARGET_FIELDS: Record<string, string[] \| 'number' \| 'bool'>` | The fields of `targets` and the words each takes (data/effect_ops.json item_ops.targets is written from it). |
+| `targetsProblem` | `targetsProblem(t: any): string \| null` | Why a `targets` block is malformed (null: it is fine). |
+| `selectUnits` | `selectUnits(ev: Ev, t: TargetSet): Unit[]` | THE unit set of an op's `targets` for this event (see TargetSet). |
 | `LIMIT_SCOPES` | `LIMIT_SCOPES` | `limit`: { per: a scope of effects/uses.ts (per_turn, per_round, per_combat, per_scene, per_session, per_rest), n, key? (a second counter on the same item: "<item key>#<key>"), each?: "target" \| "actor" (a cou… |
 | `isTriggered` | `isTriggered(e: any): boolean` | Is this effect a triggered one (its `when` names a trigger)? |
 | `triggerProblem` | `triggerProblem(e: any): string \| null` | Why a triggered effect can't run (null: it can): the op is unknown or doesn't take this trigger, a predicate is unknown, the limit is malformed. tools/validate.py says the same in Python. |
