@@ -2006,7 +2006,10 @@ if TRIG:
     for _k in ((data.get("rules") or {}).get("ties") or {}).get("kinds") or []:
         w = f"rules.ties.kinds:{_k.get('id')}"
         for f in _k:
-            if f not in ("id", "max", "ends_on", "on_end", "about", "provisional", "mark", "gear"): errors.append(f"{w}: unknown field '{f}'")
+            if f not in ("id", "max", "ends_on", "on_end", "about", "provisional", "mark", "gear", "line"): errors.append(f"{w}: unknown field '{f}'")
+        if "line" in _k:  # the map draws the tie (screenViews.ts tieLines): an ink, and the dash pattern to another side's unit
+            _ln = _k["line"]
+            if not (isinstance(_ln, dict) and isinstance(_ln.get("ink"), str) and re.fullmatch(r"#[0-9A-Fa-f]{6}", _ln["ink"]) and set(_ln) <= {"ink", "foe_dash", "about"} and isinstance(_ln.get("foe_dash", ""), str)): errors.append(f"{w}: line is {{ink: '#RRGGBB', foe_dash?: an SVG dash pattern, about?}}")
         if "mark" in _k and _k["mark"] not in known["condition"]: errors.append(f"{w}: mark names a condition (conditions.json)")
         if "gear" in _k and not (isinstance(_k["gear"], dict) and isinstance(_k["gear"].get("door"), str)): errors.append(f"{w}: gear is {{door}} (a focus the near end carries)")
         if "max" in _k and not (isinstance(_k["max"], int) and _k["max"] >= 0): errors.append(f"{w}: max is a whole number")
