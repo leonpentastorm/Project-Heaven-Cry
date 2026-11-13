@@ -52,6 +52,8 @@ export const CLASS_RULES: any = (classesJ as any).assignment;
 export const PERKS: PerkDef[] = (perksJ as any).items;
 export const TRAITS: TraitDef[] = (traitsJ as any).items;
 export const ENEMIES: EnemyTier[] = (enemiesJ as any).items;
+/** Rules 1.37: how the enemy AI reads the new systems (enemies.json `ai`): behaviour only. */
+export const ENEMY_AI: { figments_last: string[]; shelter: Record<string, number>; held_risk: number; skulk_open: number; healer_tie: string | null; boss_hidden_rounds: number } = { figments_last: [], shelter: {}, held_risk: 0, skulk_open: 0, healer_tie: null, boss_hidden_rounds: Infinity, ...((enemiesJ as any).ai || {}) };
 export const ARCHETYPES: any[] = (archetypesJ as any).items;
 
 export const SKILL: Record<string, SkillDef> = Object.fromEntries(SKILLS.map((s) => [s.id, s]));

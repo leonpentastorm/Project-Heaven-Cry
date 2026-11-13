@@ -19,8 +19,10 @@
 //    and casts only when the spell's value per AP beats its weapon's.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
-import { WEAPON } from './data';
-import { type Combat, type Unit, dist, xy, key, paths, moveUnit, apForTiles, previewAttack, isMelee, effectiveRange, lineOfSight, unitSees, sideSeesUnit, knownTile, objectsOf, shootCover } from './combat';
+import figmentsJ from '../../../data/figments.json';
+import { WEAPON, ENEMY_AI } from './data';
+import { type Combat, type Unit, dist, xy, key, paths, moveUnit, apForTiles, previewAttack, isMelee, effectiveRange, lineOfSight, unitSees, sideSeesUnit, sightBlockers, knownTile, objectsOf, shootCover, MAX_RANGE_BANDS, resolveAttack } from './combat';
+import { canReact } from './tactics';
 import { type Rng } from './rng';
 import {
   type EvokePreview, type EvokeOpts, type Affected, type Dir, type Spell,
@@ -70,11 +72,44 @@ export function aiTileRisk(cb: Combat, u: Unit, k: string): number {
   }
   return r;
 }
-/** The risk of the walk paths() would take to k (every tile after the start). Added to the enemy's move score. */
+/** The risk of the walk paths() would take to k (every tile after the start). Added to the enemy's move score.
+ * Rules 1.37: and each held attack of the other side its side can see being held that the walk would spring (an
+ * Overwatch or a Killzone whose holder sees a tile of the walk within its weapon's reach; a Blade's Hold the walk steps
+ * into or out of reach of), enemies.json `ai.held_risk` each, and ending next to a Volatile Figment it sees the same. A
+ * held attack it can't perceive (a Hidden holder) is unknown to it. */
 export function aiRouteRisk(cb: Combat, u: Unit, P: { prev: Record<string, string> }, k: string): number {
-  if (!(cb.zones || []).length) return 0;
-  let r = 0; for (let t = k; t && t !== u.pos; t = P.prev[t]) r += aiTileRisk(cb, u, t);
+  const held = heldThreats(cb, u, P);
+  if (!(cb.zones || []).length && !held.length) return 0;
+  let r = 0;
+  if ((cb.zones || []).length) for (let t = k; t && t !== u.pos; t = P.prev[t]) r += aiTileRisk(cb, u, t);
+  for (const h of held) {
+    if (h.kind === 'burst') { if (dist(k, h.u.pos) <= h.reach) r += ENEMY_AI.held_risk; continue; }
+    for (let t = k; t && t !== u.pos; t = P.prev[t]) {
+      const from = P.prev[t] ?? u.pos;
+      if (h.kind === 'watch' ? dist(h.u.pos, t) <= h.reach && unitSees(cb, h.u, t) : (dist(from, h.u.pos) <= 1) !== (dist(t, h.u.pos) <= 1)) { r += ENEMY_AI.held_risk; break; }
+    }
+  }
   return r;
+}
+/** The other side's held attacks u's side perceives now (rules 1.37), once for a set of paths (P). */
+interface Held { u: Unit; kind: 'watch' | 'hold' | 'burst'; reach: number }
+const HELD = new WeakMap<object, { by: Unit; list: Held[] }>();
+const HOLD_FORMS = new Set(((figmentsJ as any).forms || []).filter((f: any) => f.hold).map((f: any) => f.id as string));
+const BURST_TRAITS: Record<string, number> = Object.fromEntries(((figmentsJ as any).traits || []).filter((t: any) => (t.effects || []).some((e: any) => e.when === 'downed' && e.op === 'deal')).map((t: any) => [t.id, Number(t.within) || 1]));
+function heldThreats(cb: Combat, u: Unit, P: object): Held[] {
+  const hit = HELD.get(P); if (hit && hit.by === u) return hit.list;
+  const list: Held[] = []; let walls: Set<string> | null = null;
+  for (const h of cb.units) {
+    if (h.side === u.side || h.dead || h.downed) continue;
+    const fig = (h as any).figment, watch = !!h.overwatch, hold = !!fig && HOLD_FORMS.has(fig.form), burst = fig ? Math.max(0, ...(fig.traits || []).map((t: string) => BURST_TRAITS[t] || 0)) : 0;
+    if (!watch && !hold && !burst) continue;
+    if (!sideSeesUnit(cb, u.side, h, false, walls ||= sightBlockers(cb))) continue; // it can't perceive what it can't see
+    if (watch && canReact(cb, h, 'attack')) list.push({ u: h, kind: 'watch', reach: isMelee(WEAPON[h.weapon]) ? 1 : effectiveRange(WEAPON[h.weapon]) * MAX_RANGE_BANDS });
+    if (hold) list.push({ u: h, kind: 'hold', reach: 1 });
+    if (burst) list.push({ u: h, kind: 'burst', reach: burst });
+  }
+  HELD.set(P, { by: u, list });
+  return list;
 }
 // A False Image's fooled enemy doesn't know where its owner really is (illusion.ts): it aims no spell at them. Rules 1.37:
 // only those its side sees now (kit.ts seenBySide).
@@ -108,7 +143,9 @@ export function aiClearBlock(cb: Combat, rng: Rng, u: Unit): boolean {
     if (!mine.some((t) => dist(t.pos, z.tiles[0]) <= reach)) continue;
     if (!strikeTurret(cb, rng, u, z.tiles[0])) return true;
   }
-  const walls = objectsOf(cb).filter((o) => o.kind === 'sigil_wall' && (o as any).side !== u.side && (o.hp ?? 1) > 0);
+  // rules 1.37: a Wall Figment (an owned unit that is cover) of the other side its side sees joins the RAISE walls
+  const walls: { pos: string; unit?: Unit }[] = [...objectsOf(cb).filter((o) => o.kind === 'sigil_wall' && (o as any).side !== u.side && (o.hp ?? 1) > 0),
+    ...foesOf(cb, u, { seenBySide: u.side }).filter((t) => (t as any).owned?.cover).map((t) => ({ pos: t.pos, unit: t }))];
   if (!walls.length) return false;
   // rules 1.37: the nearest player it sees, else the nearest tile its side last placed one on (it knows nothing more)
   const seen = players(cb, u), pcs = seen.length ? seen.map((t) => t.pos) : foesOf(cb, u).map((t) => knownTile(cb, u.side, t)).filter((k): k is string => !!k);
@@ -121,6 +158,7 @@ export function aiClearBlock(cb: Combat, rng: Rng, u: Unit): boolean {
   const wall = walls.filter((o) => between(o.pos)).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos) || (a.pos < b.pos ? -1 : 1))[0];
   if (!wall) return false;
   if (isMelee(w) && dist(u.pos, wall.pos) > 1) return false;
+  if (wall.unit) { const mode = isMelee(w) ? 'melee' : 'shot'; if (!previewAttack(cb, u, wall.unit, mode).ok) return false; resolveAttack(cb, rng, u, wall.unit, mode, null); return true; }
   return !shootCover(cb, u, wall.pos, null);
 }
 

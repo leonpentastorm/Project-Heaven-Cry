@@ -94,9 +94,11 @@ describe('Field Repair (Improvisation\'s door action) and the Blade', () => {
   it('the Blade\'s Hold: the first enemy to step next to it is Cut, spending its owner\'s reaction', () => {
     const f = figFight([{ skills: { visualization: 5 }, level: 5, weapon: 'service_pistol' }], [{ tier: 'soldier', at: '12,4', classic: true }]); let u = f.turn(f.pc);
     f.picture(u, 'blade', '6,4'); u = f.unit(u.id); const bl = f.figments(u)[0]; expect(FORM.blade.hold).toBeTruthy();
+    const adj = (x: any) => Math.max(Math.abs(Number(x.pos.split(',')[0]) - 6), Math.abs(Number(x.pos.split(',')[1]) - 4)) <= 1;
+    const was = f.foes.map(adj); // (rules 1.37: a foe that sees the Blade walks round its reach when it can; it is Cut only if it steps into or out of it)
     f.act({ type: 'combat/end-turn', unitId: u.id } as any);
     const cut = f.cb.log.some((l: any) => /holds: it cuts/.test(String(l.text || l)));
-    const near = f.foes.some((x: any) => Math.max(Math.abs(Number(x.pos.split(',')[0]) - 6), Math.abs(Number(x.pos.split(',')[1]) - 4)) <= 1);
-    expect(cut || !near).toBe(true); void bl; void isFigment; void figmentsOf; void perkActionsFor; void F;
+    const crossed = f.foes.some((x: any, i: number) => adj(x) !== was[i]);
+    expect(cut || !crossed).toBe(true); void bl; void isFigment; void figmentsOf; void perkActionsFor; void F;
   });
 });

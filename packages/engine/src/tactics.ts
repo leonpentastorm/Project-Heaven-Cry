@@ -9,12 +9,12 @@ import { factorOf } from './effects/output';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import { type Character, mod, prayerCooldown } from './character';
-import { say, type Combat, type Unit, type Term, alwaysSeen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
+import { say, type Combat, type Unit, type Term, alwaysSeen, bossInTheOpen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
 import { applyCond, condOn, condSource, endCond, harm, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst, condName } from './magic';
 import { condMods } from './condtable';
-import { emit, statQuery, charOfUnit, boundGame, heldOfUnit, hookUsed } from './effects/hooks';
+import { emit, statQuery, charOfUnit, boundGame, heldOfUnit, hookUsed, onHook } from './effects/hooks';
 import { grantShield, tendHook } from './effects/damage';
 import { actionAp, immuneByItem } from './effects/core';
 import { note } from './effects/narrator';
@@ -205,6 +205,7 @@ export const seenByFoes = (cb: Combat, u: Unit) => cb.units.some((v) => v.side !
 export function hide(cb: Combat, u: Unit, why = ''): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
   if (alwaysSeen(cb, u)) return ' · ' + u.name + ' can\'t hide: the enemy knows where they are'; // always seen (Traced, rules 1.33)
+  if (bossInTheOpen(cb, u)) return ' · ' + u.name + ' can\'t hide: a Boss stands in the open after the first round'; // rules 1.37
   if (immuneByItem({ u }, 'hidden')) return ' · ' + u.name + ' can\'t hide'; // immune to Hidden (a Figment: figments.json unit_effects, rules 1.34)
   if (u.hidden) return '';
   rawHidden(cb, u, true);
@@ -221,11 +222,15 @@ export function reveal(cb: Combat, u: Unit, why: string): string {
   sightFx(cb, null, { [u.id]: 'reveal' }); // presentation: it shimmers into the sight of a side that can see its tile
   return ' · revealed';
 }
+// Rules 1.37 (shadow-spec 8.1): a Boss still Hidden when its first round is over (placed Hidden by the Narrator) is
+// revealed as the next round starts.
+onHook('round_start', (_ctx: any, cb: Combat) => { for (const u of cb.units) if (u.hidden && !u.dead && bossInTheOpen(cb, u)) reveal(cb, u, 'a Boss stands in the open after the first round'); });
 /** The Hide action (2 AP, provisional): only out of every enemy's sight, never while Marked. */
 /** Why this unit can't Hide now, whatever its AP (or null): the Hide action and its row in the action list both ask. */
 export function hideBlock(cb: Combat, u: Unit): string | null {
   if (u.hidden) return 'Already Hidden.';
   if (condOn(u, 'marked')) return 'Marked: you can\'t hide.';
+  if (bossInTheOpen(cb, u)) return 'A Boss stands in the open after the first round.'; // rules 1.37
   if (seenByFoes(cb, u)) return 'An enemy can see you: get out of sight first.';
   return null;
 }

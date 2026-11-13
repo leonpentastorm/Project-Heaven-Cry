@@ -620,5 +620,15 @@
       "provisional": true
     }
   ],
-  "soul_casters_note": "Enemy Soul casters (rules 1.5, Outburst 2.0; ai-soul.ts): a fight's foe naming one of these by `caster` gets its tier's stat block, this weapon and an Emanator with these ready designs (school, modules, tone, as a player's), this Soul multiplier, MP, Strain limit and free Pumps a round (as Empathy; Will Power for its rolls is its tier's attack bonus). The AI Begins, Pumps, holds for a big release, watches with the heart, Steadies or lets go before the burn, and heals with Buff designs, through the engine's own previewOutburstPlan. Provisional (the damage balance pass)."
+  "soul_casters_note": "Enemy Soul casters (rules 1.5, Outburst 2.0; ai-soul.ts): a fight's foe naming one of these by `caster` gets its tier's stat block, this weapon and an Emanator with these ready designs (school, modules, tone, as a player's), this Soul multiplier, MP, Strain limit and free Pumps a round (as Empathy; Will Power for its rolls is its tier's attack bonus). The AI Begins, Pumps, holds for a big release, watches with the heart, Steadies or lets go before the burn, and heals with Buff designs, through the engine's own previewOutburstPlan. Provisional (the damage balance pass).",
+  "ai": {
+    "about": "Rules 1.37 (Classes 3.0 step 9; combat.ts enemy turn): how the enemy AI reads the four new systems. Behaviour only, no HP or damage number. figments_last: the tiers that take a Figment (one that is not Loud, not a Double that fools it) only when no character is in reach (figments-spec 8: Soldiers shoot Figments only with no character in reach; Elites and Bosses ignore them); the AI previews no Figment while a character is in reach. shelter: a target standing in a zone of this kind of its own side counts as this many times its HP to the doctrine's 'most hurt' (a Sanctuary halves damage: 2); a shield (a Ward) counts as HP the same way. held_risk: what a held attack the enemy's side can see being held (an Overwatch, a Killzone, a Blade's Hold) adds to a walk that crosses it, as Anchor's opportunity attack does. healer_tie: the kind of tie whose holder an enemy at its far end takes for the other side's healer whatever it has healed (bonds-spec 8: a Bonded enemy turns on its Bonder; an Elite or a Boss hunts it). boss_hidden_rounds: a Boss is never Hidden after this round (shadow-spec 8.1: it can't hide, and one still Hidden is revealed as the next round starts). skulk_open: what a skulker adds to a tile the other side has in view when it closes in (it flanks through cover rather than walk into the open). Provisional, items 2400 to 2409.",
+    "figments_last": ["soldier", "elite", "boss"],
+    "shelter": { "sanctuary": 2 },
+    "held_risk": 10,
+    "skulk_open": 3,
+    "healer_tie": "bond",
+    "boss_hidden_rounds": 1,
+    "provisional": true
+  }
 }

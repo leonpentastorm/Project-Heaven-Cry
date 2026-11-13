@@ -3,7 +3,7 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
 import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from './log';
 import { MAP_LAYOUTS, readLayout, nearestFree } from './maplayout';
-import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
+import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, gearEntry, type Injury, ARMOUR, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, gearBonus, gearHas, gearEffects, hasMod, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
@@ -21,7 +21,7 @@ import type { ShieldLayer } from './effects/damage';
 import type { Tie } from './kit';
 import { type OwnedBlock, tieCompanions } from './owned';
 import type { Held } from './effects/collect';
-import { applyDamage, healUnit } from './effects/damage';
+import { applyDamage, healUnit, shieldTotal } from './effects/damage';
 import { itemAmount, amountSpecOf } from './effects/amounts';
 import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf, amountOf } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, mendFactorOf, kitHeal, flatLevelOf } from './effects/mending';
@@ -33,7 +33,7 @@ import { noteFallbacks } from './effects/narrator';
 import { windowStep } from './effects/actions';
 import { type Hazard, hazardStep, spotHazards, hazardLiveAt, HAZARD } from './hazards';
 import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PILE } from './containers';
-import { canStand, standBlocker, unitsIn, inBounds, work } from './kit';
+import { canStand, standBlocker, unitsIn, inBounds, work, tiedTo } from './kit';
 import { setBraced, setDowned, setNailed, stagger, clearStagger, rawDazed, rawBleed, setSideSees } from './unitstate';
 import { setProne, bleedTick, dazeSpent } from './magic';
 import { condMods, condDef } from './condtable';
@@ -2562,6 +2562,8 @@ export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId
 const ENEMY_STEPS: EnemyStep[] = [];
 /** first: tried before the steps already registered (a Call comes before a technique: calls/ai.ts). */
 export const enemyStep = (s: EnemyStep, first = false) => { if (first) ENEMY_STEPS.unshift(s); else ENEMY_STEPS.push(s); };
+/** Rules 1.37 (shadow-spec 8.1): a Boss is never Hidden after round `ai.boss_hidden_rounds` (enemies.json). */
+export const bossInTheOpen = (cb: Combat | null | undefined, u: Unit): boolean => !!cb && u.tier === 'boss' && !u.charId && cb.round > ENEMY_AI.boss_hidden_rounds;
 /** Does this enemy skulk (rules 1.32: tag skulk, and only a Vermin, a Minion or a Soldier)? */
 const SKULK_TIERS = ['vermin', 'minion', 'soldier'];
 export const skulks = (u: Unit): boolean => (u.tags || []).includes('skulk') && SKULK_TIERS.includes(u.tier || '');
@@ -2627,9 +2629,13 @@ export const healerFocus = (u: Unit): number => (u.charId || u.companion || !u.t
 export function healerMark(cb: Combat, u: Unit): Unit | null {
   if (!healerFocus(u)) return null;
   let best: Unit | null = null, bn = 0;
+  const tieK = cb.ties?.length ? ENEMY_AI.healer_tie : null;
   for (const t of cb.units) {
     if (t.side === u.side || !alive(t) || t.hidden) continue;
-    const n = tendedLately(cb, t); if (n <= bn || n < Math.max(1, Math.floor(TEND_NOTICE * t.maxHp))) continue;
+    // Rules 1.37 (bonds-spec 8): an enemy Bonded to t knows the tie and counts t as the healer whatever it has healed
+    // (it is being hurt by that healing); the first such Bonder comes before any other healer
+    const tied = !!tieK && tiedTo(cb, u, t, tieK, 'from');
+    const n = tied ? Infinity : tendedLately(cb, t); if (n <= bn || (!tied && n < Math.max(1, Math.floor(TEND_NOTICE * t.maxHp)))) continue;
     if (!sideSees(cb, u.side, t, u)) continue;
     best = t; bn = n;
   }
@@ -2638,7 +2644,21 @@ export function healerMark(cb: Combat, u: Unit): Unit | null {
 /** How hurt a target looks to an enemy: its HP as a share of its max, in tenths (12 Nov 2026). It was the bare HP left,
  * which made every enemy open on whoever has the smallest pool (the caster, the healer) from round 1. In tenths, so a
  * scratch doesn't pull the whole line's fire: among the equally hurt the likeliest hit decides. */
-const hurtShare = (t: Unit) => Math.round((10 * Math.max(0, t.hp)) / Math.max(1, t.maxHp)) / 10;
+const hurtShare = (cb: Combat, t: Unit) => Math.round((10 * Math.max(0, t.hp + shieldTotal(t)) * shelterOf(cb, t)) / Math.max(1, t.maxHp)) / 10;
+/** Rules 1.37: how much harder a target is to hurt where it stands, as the AI reads it: each zone of its own side on its
+ * tile whose kind is in enemies.json `ai.shelter` (a Sanctuary halves damage: 2). Its shield layers (a Ward) are added to
+ * its HP above (hurtShare). 1 for none. Pure. */
+function shelterOf(cb: Combat, t: Unit): number {
+  let m = 1; if (!cb.zones?.length) return m;
+  for (const z of cb.zones) if (z.side === t.side && z.tiles.includes(t.pos) && ENEMY_AI.shelter[z.kind] > 0) m *= ENEMY_AI.shelter[z.kind];
+  return m;
+}
+/** Rules 1.37: does this enemy's tier take a Figment only when no character is in reach (enemies.json `ai.figments_last`)? */
+const figmentsLast = (u: Unit): boolean => !u.charId && !u.companion && !!u.tier && ENEMY_AI.figments_last.includes(u.tier);
+/** A Figment such a tier leaves for last: not Loud (figWeight below 0 draws every tier) and not a Double it takes for
+ * someone (that is a False Image stand-in, ghostOf). */
+const lateFigment = (t: Unit): boolean => (t as any).owned?.kind === 'figment' && !(t as any).ghostOf && !(Number((t as any).figWeight || 0) < 0);
+const NO_PREVIEW: AttackPreview = { ok: false, why: '', ap: 0, toHit: 0, need: 0, pct: 0, cover: 0, rangePenalty: 0 };
 /** Rules 1.25, the fire doctrine: how a tier chooses among the targets it could attack (enemies.json `doctrine`, with
  * its two numbers). Every enemy takes "the most hurt" (HP as a share of max, in tenths), and its tier bends that:
  *   fire_spread  a target counts as less hurt by this share of its max HP for each OTHER unit of this enemy's side
@@ -2687,17 +2707,23 @@ export function noteEnemyAim(cb: Combat, u: Unit, t: Unit, why?: AimWhy) {
 interface Aim { t: Unit; pv: AttackPreview; healer: boolean; fire: number; far: number; why?: AimWhy }
 function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], reachOnly: boolean): Aim[] {
   const tauntBy = condSource(u, 'taunted'), d = doctrineOf(u);
-  let list: Aim[] = pcs.map((t) => ({ t, pv: previewAttack(cb, u, t, mode), healer: false, fire: d.spread ? alliesOn(cb, u, t) : 0, far: d.near ? dist(u.pos, t.pos) : 0 }));
+  // Rules 1.37: a tier that leaves Figments for last (Soldiers, Elites, Bosses) sizes up no Figment while a character is
+  // in reach (the twelve-Figment End turn: each enemy previewed sixteen targets instead of four); they follow the
+  // characters, unpreviewed, in a list that keeps everyone.
+  const late = figmentsLast(u) ? pcs.filter(lateFigment) : [], mk = (t: Unit, pv?: AttackPreview): Aim => ({ t, pv: pv || previewAttack(cb, u, t, mode), healer: false, fire: d.spread ? alliesOn(cb, u, t) : 0, far: d.near ? dist(u.pos, t.pos) : 0 });
+  let list: Aim[] = (late.length ? pcs.filter((t) => !late.includes(t)) : pcs).map((t) => mk(t));
   if (reachOnly) list = list.filter((x) => x.pv.ok);
+  if (late.length) { if (!list.some((x) => x.pv.ok)) { const more = late.map((t) => mk(t)); list = list.concat(reachOnly ? more.filter((x) => x.pv.ok) : more); } else if (!reachOnly) list = list.concat(late.map((t) => mk(t, NO_PREVIEW))); }
   const mark = list.length ? healerMark(cb, u) : null, focus = healerFocus(u), bestPct = Math.max(0, ...list.filter((x) => x.pv.ok).map((x) => x.pv.pct));
   if (mark) for (const x of list) if (aimOwner(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
   const near0 = d.near ? Math.min(...list.filter((x) => !x.t.downed).map((x) => x.far), Infinity) : 0;
-  const key = (x: Aim) => hurtShare(x.t) + d.spread * x.fire + ownedWeight(u, x.t) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
-  list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || key(a) - key(b) || pct(b) - pct(a));
+  const lateOf = (x: Aim) => (late.length && late.includes(x.t) ? 1 : 0);
+  const key = (x: Aim) => hurtShare(cb, x.t) + d.spread * x.fire + ownedWeight(u, x.t) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
+  list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || lateOf(a) - lateOf(b) || key(a) - key(b) || pct(b) - pct(a));
   const top = list[0];
   if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {
     const rest = list.filter((x) => !x.t.downed && aimOwner(x.t) !== aimOwner(top.t));
-    const nearer = d.near > 0 && rest.some((x) => x.far > top.far), fresher = rest.some((x) => x.fire > top.fire), worse = rest.some((x) => hurtShare(x.t) > hurtShare(top.t));
+    const nearer = d.near > 0 && rest.some((x) => x.far > top.far), fresher = rest.some((x) => x.fire > top.fire), worse = rest.some((x) => hurtShare(cb, x.t) > hurtShare(cb, top.t));
     top.why = top.healer ? 'healer' : d.id === 'nearest' && nearer ? 'nearest' : fresher ? 'spread' : worse ? 'wounded' : nearer ? 'nearest' : undefined;
     if (!top.why) delete top.why;
   }
@@ -2747,6 +2773,7 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   // Threatened (a Call, rules 1.13): it doesn't close on the one who threatened it this turn (as with what it fears).
   const cowBy = u.call?.cowed ? cb.units.find((x) => x.id === u.call!.cowed!.by && alive(x)) : null, fu = fu0 && !fu0.dead ? fu0 : cowBy || fu0, fu2 = fu === cowBy ? null : cowBy;
   const risky = anyOn(cb, 'ai_move_risk');
+  const sneak = skulks(u) && ENEMY_AI.skulk_open > 0 ? pcs.filter((t) => !isGhost(t)) : null; // the eyes a skulker keeps out of
   // A False Image it was fooled by is someone standing there, as far as it knows (spec item 573): never a tile to end on.
   const imaged = new Set(pcs.filter((t) => isGhost(t)).map((t) => t.pos));
   // Where it stands is the tile to beat: a move that gains nothing is not made (it used to take the best OTHER tile
@@ -2766,7 +2793,8 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
     if (k === u.pos || imaged.has(k) || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement) + (u.ap > 2 ? 2 : 0))) continue;
     if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
     if (fu2 && dist(k, fu2.pos) < dist(u.pos, fu2.pos)) continue;
-    let score = score0(k, tiles) + aiRouteRisk(cb, u, P, k); // around known fields and spotted traps
+    let score = score0(k, tiles) + aiRouteRisk(cb, u, P, k); // around known fields, spotted traps and held attacks it sees
+    if (sneak && sneak.some((t) => unitSees(cb, t, k, walls))) score += ENEMY_AI.skulk_open; // rules 1.37: a skulker flanks through what the other side can't see
     if (risky) score += (emit(cb, 'ai_move_risk', { u, from: u.pos, to: k, risk: 0, cb }) as any).risk || 0;
     if (score < bestScore) { bestScore = score; best = k; }
   }
