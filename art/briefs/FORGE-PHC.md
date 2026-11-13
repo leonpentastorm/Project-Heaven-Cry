@@ -11,13 +11,11 @@ stack: WSL2 Ubuntu 22.04, ROCm 7.2, AMD's PyTorch, ai-toolkit, **SDXL base**. Re
 
 1. `Forge.bat doctor` must be healthy. Never `--force` past it. One GPU job at a time.
 2. Ask the tool (its CLAUDE.md, `--help`): can it train and export at **1024**, with **aspect-ratio buckets** (section 3)? How does
-   it flatten **alpha**? Does `--pixel-art` exist: **never use it here**, none of this is pixel art. How long does a run take at
-   about 150 and at about 190 images, at 16 GB? Report the answers to Leon before the long runs.
+   it flatten **alpha**? `--pixel-art`: **never use it here**. Run time at about 150 and 190 images on 16 GB? Report to Leon before the long runs.
 
 ## 1. Not one LoRA: one per art mode
 
-The modes must not blend. Counts are from `art/catalog.json` and the prompt files on 13 Nov 2026. "In training" is after the
-hold-outs (the test set to compare against, 5 per mode).
+The modes must not blend. Counts: `art/catalog.json` and the prompt files, 13 Nov 2026. "In training" is after 5 hold-outs.
 
 | Mode | Forge project / trigger | Images | In training | Order |
 | --- | --- | --- | --- | --- |
@@ -32,8 +30,7 @@ hold-outs (the test set to compare against, 5 per mode).
 
 - **Gear:** the 149 masters are the artist's 13 Nov delivery and are **not in the repo yet** (no `art/icons/gear/`, no `gear` map in
   the catalog). Ask Leon for the folder they were delivered to (files `<kind>-<id>.png`, e.g. `weapon-service_pistol.png`).
-- Why Wick and glyphs are separate: Wick is a figure doing something with a prop; feelings and modules are abstract
-  marks. One LoRA would drift between them.
+- Wick and glyphs are separate: a figure with a prop versus abstract marks; one LoRA would drift between them.
 - **Exclude always:** anything under `art/_archive/` (except the maps, 1.2), `art/illustrations/**/spoilers/`, catalog entries
   with status `rejected`/`superseded`/`retired` (none today: 411 `review-candidate`, 1 `approved`), the 2020 sources in
   `source/2020/`, the object sprites (top-down, another mode), the AHOC seal, the patron marks. The script enforces the
@@ -47,8 +44,7 @@ hold-outs (the test set to compare against, 5 per mode).
 - **The eight patrons stay out.** They are divine apparitions (faceless ivory effigies, masks, radiant absence, giant scale); in a
   people LoRA they pull every NPC face toward an effigy. Eight images cannot carry a LoRA; if Leon wants gods, a fresh
   brief for ten or more first. (The script has `--mode patrons` for their captions, one line each, if that day comes.)
-- **Use:** NEW faces for NPCs (the Narrator casts from a pool; `art/briefs/archetype-portraits.md`), the picker's roleplay cards,
-  enemy tokens. **Never a remake of a named cast member** (the EPCCG 27, New Faces, M813): reject a candidate that reads as a
+- **Use:** NEW faces for NPCs (the Narrator's casting pool), roleplay cards, enemy tokens. **Never a remake of a named cast member** (the EPCCG 27, New Faces, M813): reject a candidate that reads as a
   known one; compare against the nearest training file. Nothing recognisable from real Earth (the Unspoken Name).
 - **Format:** 800 x 1000 RGB opaque, face in the upper-middle third (`eye_line`), no text. A generated pick needs an `eye_line`
   in its catalog entry (`validate_eye_lines`): put it by eye, as a fraction of the image.
@@ -66,8 +62,8 @@ Inventory (13 Nov, verified by listing, not by eye):
   `v1/sources` and `revisions/v2/sources` are earlier states of the same four: near-duplicates, not new images). `art/briefs/m813-tutorial/maps/*-layout.png`
   are layout guides, not paintings. Archived because maps are no longer painted (rules 1.16), but they are the project's own
   art and the only map paintings there are. **Recommendation: yes, train on them, as style reference only**, with the
-  archive exclusion lifted for this one folder (the script's `--allow-archive-maps` is not built: copy by hand). **Flag for Leon.**
-- Object sprites (25, top-down props) are another mode. Nothing else in the catalog is scene-like.
+  archive exclusion lifted for this one folder (the script has no mode for them: copy by hand). **Flag for Leon.**
+- Object sprites (25, top-down props) are another mode; nothing else in the catalog is scene-like.
 
 **Honest count: about 12 images, 7 of them from one campaign. Far below the 20 to 40 consistent images a style LoRA on SDXL wants.**
 Risk: the LoRA memorises these paintings and hands them back (compositions, the black hole, the hangar) instead of a style.
@@ -100,9 +96,11 @@ python3 tools/art/forge_captions.py --mode wick --out D:\LocalAI\work\phcwick\in
 python3 tools/art/forge_captions.py --mode gear --gear-src "<folder of the 13 Nov delivery>" \
     --out D:\LocalAI\work\phcgear\in --images-out D:\LocalAI\work\phcgear\in \
     --holdout weapon-service_pistol,weapon-hellraiser_service_rifle,armour-ballistic_helmet,shield-buckler,tool-field_kit
+python3 tools/art/forge_captions.py --mode portraits --out D:\LocalAI\work\phcportrait\in --images-out D:\LocalAI\work\phcportrait\in \
+    --holdout arch-bulwark,arch-fencer,arch-sharpshooter,m813-penny,m813-keel
 ```
 
-Modes: `gear`, `wick`, `glyph`, `portraits`, `skills`. `--trigger` overrides the word. It prints one JSON summary:
+Modes: `gear`, `wick`, `glyph`, `portraits`, `patrons`, `skills` (scenes and maps have no mode: about 12 images, caption them by eye). `--trigger` overrides the word. It prints one JSON summary:
 `written`, `missing` (ids with no text found; **written nowhere**), `held_out`, `images_copied`. It refuses to write
 under the repo's `art/` tree. (Gear without `--gear-src` writes captions only, for all 149 ids.)
 
@@ -110,9 +108,16 @@ under the repo's `art/` tree. (Gear without `--gear-src` writes captions only, f
   project folder). Run `ingest <project> "<folder>"` first, then `captions <project>` to list images, then write or copy
   each `<id>.txt` **next to the ingested image of the same id**. If ingest renames files, map by order or hash and say so.
 - **Caption coverage without eyes** (from the catalog and prompt files today): gear 149 of 149, Wick 189 of 189, glyph
-  67 of 105 (the 38 `missing` are prayers: Whisper, Hymn and Miracle icons), portraits 46 of 145 (the archetype cards; the
-  99 `missing` are named people: caption by eye), skills 27 of 27 (thin: one line each). Open and caption the `missing`
-  ones by eye; also open a handful of the others and fix any caption that is plainly wrong.
+  67 of 105 (the 38 `missing` are prayers: Whisper, Hymn and Miracle icons), portraits **64 of 145** (46 archetype cards from
+  `archetype-portraits.md`, 18 M813 from the catalog `brief_row` and `m813-mpat.md`), skills 27 of 27 (thin: one line each).
+  **81 portraits still need eyes: the 54 world portraits (27 New Faces, 27 Original Heavenprint) and the 27 EPCCG cast.** The
+  search found no appearance text for them anywhere (`EPCCG-Cast-and-Factions.md` and the EPCCG give factions and field quotes,
+  `data/patrons.json` and `data/campaigns/*.json` give lore and cast lists, `data/archetypes.json` a blurb: none says what
+  a face or outfit looks like; the quotes say who they are, not what is seen, so they are not used). For those 81 the local
+  session **captions by looking at each image**, and may batch them through a cheaper vision model (about 81 images, one short
+  caption each, reviewed in a contact sheet) instead of spending the main session on them. A caption describes only what is
+  SEEN: apparent age, build, hair, clothing, gear, pose, framing, background. **Never the name, the lore, the faction or the
+  style.** Open a handful of the written captions too and fix any plainly wrong. Scenes, maps and the 38 prayers are also by eye.
 - **Caption rule:** `<trigger>, <what the object is: type, parts, materials, colours, view, background>`. Never style words
   (the script strips "painted", "Heavenprint", "flat ink", "white ink", "style", artist words). In Wick captions the
   mascot is "the robot mascot" (the script replaces "Wick"); if Wick's identity drifts in samples, retrain with the
@@ -121,9 +126,28 @@ under the repo's `art/` tree. (Gear without `--gear-src` writes captions only, f
   alpha, flatten before ingest onto ONE flat colour per project: gear `#808080` (grey), Wick and glyph `#10151F`
   (the captions say "plain flat grey / dark blue background"; change `BACKGROUNDS` in the script if you pick another).
   Pad nothing: leave the masters as they are, flatten only the ingest copies.
-- Training resolution 1024 if the tool allows; else the nearest it offers, and tell Leon.
 
-## 3. Generating for this project
+## 3. What the stack means here (things to verify, not facts about the tool)
+
+- **Native size 1024 x 1024.** That matches the gear and Wick masters. Portraits are 4:5 (800 x 1000) and scenes 16:9: SDXL
+  trains and samples on **aspect-ratio buckets** (sizes near the same pixel count, for example about 832 x 1040 for 4:5 and about
+  1344 x 768 for 16:9). Check that ai-toolkit, as Forge drives it, has bucketing **on** and is not centre-cropping everything
+  square (that cuts heads off the portraits and the sides off the scenes); else tell Leon before the long run. Generate portraits
+  at a 4:5 bucket and resize to 800 x 1000; scenes at 16:9 and resize to 1600 x 900.
+- **No alpha channel.** Wick, glyph and gear masters are RGBA. Train on copies flattened onto one flat dark colour
+  (section 2), and **key the generated picks back afterwards**. The rule `tools/validate_art.py` (`validate_white_rgba`) enforces
+  for a Wick, glyph or trait/perk icon: an 8-bit RGBA, non-interlaced PNG; **every pixel with alpha above 0 has RGB exactly
+  255, 255, 255** (anti-aliased edge pixels too: one grey or tinted pixel fails the file); at least one pixel with alpha 0 and
+  one above 0. So: alpha = brightness above the flat ground (rescaled so the ground is 0 and the ink is 255), then set RGB to
+  255 wherever alpha > 0, and drop alpha under about 8 so there is no haze. **This keying is the step most likely to need
+  care:** check the corners, the thin strokes and the soft edges by eye on a light ground, and a failed key is a failed pick. Portraits and
+  scenes are RGB, opaque, no alpha (colour type 2): nothing to key.
+- **Small and uniform sets overfit fast.** The white-ink icons (Wick, glyph) are very uniform; scenes are tiny. Do not take the last
+  step: pick the earliest step where the style shows (the `samples` step), and expect it to be early for scenes.
+- **One LoRA per mode, never stacked at full strength.** If two are loaded together (for example a scene LoRA with a portrait one),
+  each at about 0.5 or lower, and say so in the pick's provenance.
+
+## 4. Generating for this project
 
 Set the framing once per project (`Forge.bat set <project> prompt_suffix="..."`):
 
@@ -150,7 +174,7 @@ mark each pick as an alternative): Classes 3.0 Wick icons C1 to C4 (45; prompts 
 `GPT-PROMPTS-2026-11-13-classes-3.0.md`, Job 1) and the two gear icons C5 (Attuner, Toxin vial). **Do not regenerate the
 katana or the Emanator katana**: they are Leon's picks.
 
-## 4. Bringing a pick into the repo, the project's way
+## 5. Bringing a pick into the repo, the project's way
 
 Never use `pick ... --to` straight into `art/`. Export to a staging folder outside the repo (`D:\LocalAI\work\<project>\out`).
 Work on a branch `art/forge-<date>`, pushed for review, **never develop or main**.
@@ -173,7 +197,7 @@ Work on a branch `art/forge-<date>`, pushed for review, **never develop or main*
 4. Run, in order: `python3 tools/rehash_art_checksums.py`, `python3 tools/validate_art.py`, `npm run assets`
    (`tools/build_web_assets.py`: the game's webp). Commit the picks, catalog and checksums together; push the branch.
 
-## 5. Rules
+## 6. Rules
 
 - Train only on the project's own art: the artist's deliveries for this project (the image generator's included) and Leon's
   2020 originals. **Anything Leon commissioned from a human artist goes in only if that artist agreed: ask Leon before
@@ -187,8 +211,18 @@ Work on a branch `art/forge-<date>`, pushed for review, **never develop or main*
   Wick pose that broke an anchor (chamfered head and pixel screen, separate capelet wedge, lantern heart with thick equal cross
   arms, mitten hands), anything unreadable at 64 and 32 px on `#10151F`.
 
-## 6. Not checked when this was written
+## 7. Order for tonight
 
-The tool's real commands and flags; 1024 training and export; whether its background removal gives clean alpha (and
-whether it can force white ink); the AMD behaviour; run times at about 150 and 190 images; where its `captions` step wants
-the text files. Verify each before relying on any line above, and tell Leon what you changed.
+1. **Wick** first: every master, prompt and caption is in the repo, no delivery to wait for (the white-ink keying is the risk).
+2. **Gear** when the artist's branch lands (not before: no masters in the repo).
+3. **Portraits** next: the 64 captioned ones are ready; caption the 81 by eye first (batched), train, then the hold-out test.
+4. **Scenes and maps** last, and **only if the count supports it** (section 1.2: about 12 images; stop at the `samples` step if it only copies).
+
+## 8. Not checked when this was written
+
+The tool's real commands and flags; 1024 training and export; **whether ai-toolkit buckets by aspect ratio**; whether its
+background removal gives clean alpha (and whether it can force white ink); the AMD and ROCm 7.2 behaviour at 16 GB; run times
+at about 150 and 190 images; where its `captions` step wants the text files; the 81 portraits' and the scenes' content (this
+session did not look at the images: counts are from the catalog and file listing, not by eye); whether the 4 archived maps are
+top-down or oblique; and whether the maps may be used at all (Leon's call, 1.2). Verify each before relying on any line above,
+and tell Leon what you changed.
