@@ -4252,8 +4252,15 @@
             {
               "op": "condition",
               "condition": "shaken",
-              "target": "area",
-              "when": "on_kill"
+              "when": "kill",
+              "via": "will_power",
+              "targets": {
+                "of": "target",
+                "side": "foe",
+                "within": 3,
+                "sees": "line"
+              },
+              "say": "Dread lingers over {target}'s body (Lingering Dread){then}."
             }
           ],
           "adjudication": "engine",

@@ -11,7 +11,7 @@ import type { CostSite } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlockedOf, type ReactKind } from '../tactics';
-import { attackEvent } from '../combat';
+import { attackEvent, stepEvent } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
 import { mod } from '../character';
@@ -778,7 +778,7 @@ export function endWatch(cb: Combat, u: Unit, why: string): void {
 export function fireWatch(t: Tech, ctx: any, target: Unit, fn: () => void, kind: 'watch' | 'overwatch' = 'watch', fx: Record<string, any> = {}): boolean {
   const u = t.u, cb = t.cb, w = (u as any).watch as HeldWatch | undefined;
   if (t.preview || !w || w.id !== t.def.id || !alive(u) || isPressed(u) || !canReact(cb, u, 'attack')) return false;
-  return react(cb, u, { kind: 'attack', event: 'step:' + target.id + ':' + target.pos, window: { kind, mover: target, id: w.id, at: target.pos, rng: t.rng } }, () => {
+  return react(cb, u, { kind: 'attack', event: stepEvent(target), window: { kind, mover: target, id: w.id, at: target.pos, rng: t.rng } }, () => {
     ctx?.flush?.(); // the mover's walk so far plays before the shot
     delete (u as any).watch;
     emitFx(cb, kind === 'overwatch' ? 'overwatch' : 'watch_fire', { unit: u.id, target: target.id, from: u.pos, at: target.pos, id: w.id, mode: 'shot', ...fx });

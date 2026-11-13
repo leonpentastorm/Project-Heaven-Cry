@@ -5,7 +5,7 @@
 // attack on an image passes through it and it scatters. Images fade at the start of their owner's turn two rounds on.
 // Everything here is deterministic: no die is rolled (the saves are rolled by the class move with the game's rng).
 import type { Combat, Unit } from './combat';
-import { say, emitFx, previewAttack, isMelee, refOf } from './combat';
+import { say, emitFx, previewAttack, isMelee, refOf, alwaysSeen } from './combat';
 import { WEAPON } from './data';
 import { calmFight } from './magic';
 import { pay } from './effects/cost';
@@ -36,7 +36,7 @@ export function perceivedFoes(cb: Combat, u: Unit): Unit[] {
   for (const t of cb.units) {
     if (t.side === u.side || t.dead || t.surrendered) continue;
     const img = fooledBy(cb, u, t);
-    if (img) out.push(ghostOf(img, t)); else if (!t.hidden) out.push(t);
+    if (img) out.push(ghostOf(img, t)); else if (!t.hidden || alwaysSeen(cb, t)) out.push(t); // a Hidden unit that is always seen (P7) is not hidden from it
   }
   return out;
 }

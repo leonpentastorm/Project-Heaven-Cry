@@ -8,7 +8,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide,
 } from './character';
-import { say, type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits } from './combat';
+import { say, type Combat, type Unit, dist, lineOfSight, standable, refOf, coverTileFor, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
 import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
@@ -1154,7 +1154,7 @@ export function heartOverwatch(cb: Combat, rng: Rng, mover: Unit, from: string) 
     const r = heartReach(m, d);
     if (dist(h.pos, mover.pos) > r || dist(h.pos, from) <= r) continue;
     if (!d.modules.includes('ether') && !lineOfSight(cb, h.pos, mover.pos)) continue;
-    if (!react(cb, h, { kind: 'attack', event: 'step:' + mover.id + ':' + mover.pos, window: { kind: 'heart_overwatch', mover, at: mover.pos, rng } }, () => {
+    if (!react(cb, h, { kind: 'attack', event: stepEvent(mover), window: { kind: 'heart_overwatch', mover, at: mover.pos, rng } }, () => {
       emitFx(cb, 'heart_overwatch', { unit: h.id, at: h.pos, target: mover.id, to: mover.pos, stage: m.held!.stage, tone: m.held!.tone || 'raw' });
       say(cb, h.name + ' gasps and lets the heart go at ' + mover.name + ' (Heart Overwatch).');
       releaseAt(cb, rng, h, d, formOf(d) === 'aura' ? h.pos : mover.pos, false, true);

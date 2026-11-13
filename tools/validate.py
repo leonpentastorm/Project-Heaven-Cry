@@ -1786,6 +1786,7 @@ def check_trigger_effect(e, w):
         if "targets" in x: check_targets(x["targets"], w)
         if x.get("op") == "deal" and "via" in x and not (isinstance(x["via"], str) and x["via"]): errors.append(f"{w}: a deal's `via` is the source skill it counts as (a word: faith)")
         if x.get("op") == "deal" and "nonlethal" in x and not isinstance(x["nonlethal"], bool): errors.append(f"{w}: a deal's `nonlethal` is true or false")
+        if x.get("op") == "condition" and "via" in x and not (isinstance(x["via"], str) and x["via"] in known["skill"]): errors.append(f"{w}: a condition's `via` is the skill whose strength its save is against (a skills.json id)")
     cond = e.get("if")
     if cond is not None:
         if not isinstance(cond, dict): errors.append(f"{w}: `if` must be an object of predicates")
@@ -1794,10 +1795,18 @@ def check_trigger_effect(e, w):
     lim = e.get("limit")
     if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
         errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }}, {{ cooldown: rounds }} or {{ reaction: 1 or 2, kind }}")
+# Classes 3.0 P5, the standing aura: a stat_mod with `targets` and no `when` (statQuery answers it for every unit of the
+# set while its holder stands): a well-formed set centred on the holder, a numeric value.
+def check_aura(o, w):
+    check_targets(o["targets"], w)
+    if isinstance(o["targets"], dict) and o["targets"].get("of", "self") != "self": errors.append(f"{w}: a standing aura is centred on its holder (targets.of: self)")
+    if not (isinstance(o.get("value"), (int, float)) and not isinstance(o.get("value"), bool)): errors.append(f"{w}: a standing aura's value is a number")
+    if not isinstance(o.get("stat"), str): errors.append(f"{w}: a standing aura names its stat")
 def walk_triggers(o, w):
     if isinstance(o, dict):
         if isinstance(o.get("op"), str) and isinstance(o.get("when"), str) and " " not in o["when"] and ";" not in o["when"]:
             check_trigger_effect(o, w)
+        if o.get("op") == "stat_mod" and "targets" in o and "when" not in o: check_aura(o, w)
         for v in o.values(): walk_triggers(v, w)
     elif isinstance(o, list):
         for v in o: walk_triggers(v, w)

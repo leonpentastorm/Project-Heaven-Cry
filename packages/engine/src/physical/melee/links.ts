@@ -16,7 +16,7 @@ import { statQuery } from '../../effects/hooks';
 import { technique, save, cond, stop, forceMove, pushBlocked, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { PHYS_RULES } from '../data';
 import { strikingWith, techSaveTn, techVia, saveOutside, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
-import { say, type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf, swapUnits } from '../../combat';
+import { say, type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf, swapUnits, newStep } from '../../combat';
 import { mod } from '../../character';
 import { zoneEnter } from '../../magic';
 import { hazardStep, hazardLiveAt } from '../../hazards';
@@ -295,7 +295,7 @@ function swap(t: Tech, tgt: Unit): boolean {
   } });
   if (!sw.ok) { say(cb, tgt.name + ' holds firm.'); return false; }
   // the user's own step is a move it chose, so a held shot may answer it; the target's half is forced: nobody reacts
-  if (alive(u)) { emit(cb, 'move_step', { u, from: a, at: b, i: 0, route: [b], how: 'drag', stop: false, cb, rng: t.rng, technique: t.def.id }); if (alive(u) && !u.hidden) triggerOverwatch(cb, t.rng, u, [a, b]); }
+  if (alive(u)) { newStep(u); emit(cb, 'move_step', { u, from: a, at: b, i: 0, route: [b], how: 'drag', stop: false, cb, rng: t.rng, technique: t.def.id }); if (alive(u) && !u.hidden) triggerOverwatch(cb, t.rng, u, [a, b]); }
   return true;
 }
 technique({

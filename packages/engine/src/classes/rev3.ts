@@ -18,7 +18,7 @@ import type { Combat, Unit } from '../combat';
 import {
   dist, key, xy, alive, unitSees, lineOfSight, standable, refOf, keyOf as refKey, emitFx, objectsOf, objectsAt, paths, stepsFrom, moveUnit,
   previewAttack, isMelee, moveBlockers, moveBlock, sightCheck, enemyIntent, opportunityStrike, displace, swapUnits,
-  attackEvent,
+  attackEvent, stepEvent,
 } from '../combat';
 import { type Character, mod, healingMult } from '../character';
 import { WEAPON, TONE } from '../data';
@@ -75,10 +75,11 @@ function shrug(h: Holder, id: string) {
   const u = h.u!, cb = h.cb!; if (!inFight(h) || policy(h, 'auto') === 'off' || !alive(u)) return;
   const has = id === 'bleeding' ? !!u.bleed : id === 'prone' ? !!u.prone : condOn(u, id); if (!has) return;
   if (resOf(u, 'guard') < 1 || !canReact(cb, u, 'protect')) return;
-  if (!react(cb, u, { kind: 'protect' })) return;
-  resSpend(u, 'guard', 1); endCond(u, id, cb);
-  emitFx(cb, 'shrug', { unit: u.id, at: u.pos, cond: id });
-  say(cb, u.name + ' shrugs it off: no longer ' + (id === 'bleeding' ? 'Bleeding' : id === 'prone' ? 'prone' : id[0].toUpperCase() + id.slice(1)) + ' (1 Guard, ' + resOf(u, 'guard') + ' left; reaction).');
+  react(cb, u, { kind: 'protect' }, () => {
+    resSpend(u, 'guard', 1); endCond(u, id, cb);
+    emitFx(cb, 'shrug', { unit: u.id, at: u.pos, cond: id });
+    say(cb, u.name + ' shrugs it off: no longer ' + (id === 'bleeding' ? 'Bleeding' : id === 'prone' ? 'prone' : id[0].toUpperCase() + id.slice(1)) + ' (1 Guard, ' + resOf(u, 'guard') + ' left; reaction).');
+  });
 }
 register({
   id: 'defender.shrug_it_off', claims: 'all',
@@ -122,16 +123,16 @@ register({
       const me = h.u!, cb = h.cb!, u: Unit = ctx.u;
       if (!inFight(h) || ctx.how !== 'disengage' || !u || u.side === me.side || cb.order[cb.turn] !== u.id) return;
       if (stateOf(h).adj?.[u.id] !== cb.round || dist(me.pos, ctx.from) > 1 || dist(me.pos, ctx.at) <= 1) return;
-      if (!alive(me) || !canReact(cb, me, 'protect') || immune({ u }, 'opportunity_attack')) return;
+      if (!alive(me) || !canReact(cb, me, 'attack') || immune({ u }, 'opportunity_attack')) return;
       { const at = u.pos; u.pos = ctx.from; const ok = previewAttack(cb, me, u, 'melee', { free: true }).ok; u.pos = at; if (!ok) return; } // (asked before the window now: react() opens it and spends together)
-      react(cb, me, { kind: 'protect', event: 'step:' + u.id + ':' + ctx.from + '>' + ctx.at, window: { kind: 'opportunity', mover: u, at: ctx.at, rng: ctx.rng } }, () => {
+      react(cb, me, { kind: 'attack', event: stepEvent(u), window: { kind: 'opportunity', mover: u, at: ctx.at, rng: ctx.rng } }, () => {
         say(cb, me.name + ' is Anchored: ' + u.name + ' can\'t slip away (opportunity attack).');
         emitFx(cb, 'anchor', { unit: me.id, at: me.pos, what: 'oa', target: u.id });
         opportunityStrike(cb, rngOf(h, ctx), me, u, ctx.from);
       });
     },
     ai_move_risk: (ctx, h) => {
-      const me = h.u!, cb = h.cb!, u: Unit = ctx.u; if (!inFight(h) || !alive(me) || u.side === me.side || !canReact(cb, me, 'protect')) return;
+      const me = h.u!, cb = h.cb!, u: Unit = ctx.u; if (!inFight(h) || !alive(me) || u.side === me.side || !canReact(cb, me, 'attack')) return;
       if (stateOf(h).adj?.[u.id] === cb.round && dist(me.pos, ctx.from) <= 1 && dist(me.pos, ctx.to) > 1) ctx.risk += 10;
     },
   },

@@ -1357,14 +1357,16 @@ register({
       const me = h.u!, cb = h.cb!, t: Unit = ctx.t, src = ctx.src;
       if (ctx.phase !== 'shield' || !((t.shield || 0) > 0) || ctx.dmg <= 0 || !stateOf(h).shields?.[t.id]) return;
       if (!src?.by || src.by.side === me.side || !['sigil', 'elemental', 'soul', 'wall'].includes(src.type)) return;
-      if (policy(h, 'auto') === 'off' || !alive(me) || !me.mg?.emanator || me.mg.mp >= me.mg.mpMax || !canReact(cb, me, 'attack')) return;
-      if (!react(cb, me, { kind: 'attack', event: attackEvent() })) return; // (not a protective reaction in rules 1.28's list: Suppressed still stops it)
-      // The spell's own price (magic.ts carries it on the damage): an Outburst's MP cost, 10 MP per Sigil word; the old
-      // stand-ins (25 for an Outburst, 2 words) only when a source carries neither.
-      // Rules 1.5: an elemental Outburst is 'elemental' damage, told from a Sigil by the MP it carries.
-      const gain = src.type === 'soul' || src.spellMp != null ? (src.spellMp || SCHOOL.damage?.base_cost || 25) : 10 * (src.spellWords || 2), was = me.mg.mp; me.mg.mp = Math.min(me.mg.mpMax, me.mg.mp + gain);
-      emitFx(cb, 'syphon', { unit: me.id, at: me.pos, mp: me.mg.mp - was });
-      say(cb, me.name + ' drinks the spell off the shield: +' + (me.mg.mp - was) + ' MP (' + me.mg.mp + '/' + me.mg.mpMax + ').');
+      if (policy(h, 'auto') === 'off' || !alive(me) || !me.mg?.emanator || me.mg.mp >= me.mg.mpMax || !canReact(cb, me, 'protect')) return;
+      // a protective reaction (the lead's ruling on rules 1.28: it helps an ally and moves or hurts nobody): Suppressed doesn't stop it
+      react(cb, me, { kind: 'protect', event: attackEvent() }, () => {
+        // The spell's own price (magic.ts carries it on the damage): an Outburst's MP cost, 10 MP per Sigil word; the old
+        // stand-ins (25 for an Outburst, 2 words) only when a source carries neither.
+        // Rules 1.5: an elemental Outburst is 'elemental' damage, told from a Sigil by the MP it carries.
+        const gain = src.type === 'soul' || src.spellMp != null ? (src.spellMp || SCHOOL.damage?.base_cost || 25) : 10 * (src.spellWords || 2), was = me.mg!.mp; me.mg!.mp = Math.min(me.mg!.mpMax, me.mg!.mp + gain);
+        emitFx(cb, 'syphon', { unit: me.id, at: me.pos, mp: me.mg!.mp - was });
+        say(cb, me.name + ' drinks the spell off the shield: +' + (me.mg!.mp - was) + ' MP (' + me.mg!.mp + '/' + me.mg!.mpMax + ').');
+      });
     },
   },
   brief: () => null,

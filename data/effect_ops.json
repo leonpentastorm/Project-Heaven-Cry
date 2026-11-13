@@ -4678,10 +4678,11 @@
         "fields": [
           "condition",
           "rounds",
-          "skip_save"
+          "skip_save",
+          "via"
         ],
         "changes_state": true,
-        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save"
+        "about": "put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal's via; default the ambient source)"
       },
       "cleanse": {
         "on": [
@@ -5016,7 +5017,11 @@
         "seen": "bool",
         "alive": "bool",
         "downed": "bool",
-        "max": "number"
+        "max": "number",
+        "sees": [
+          "line",
+          "eyes"
+        ]
       }
     }
   }

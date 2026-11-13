@@ -30,7 +30,8 @@ import { amountOf, term, levelOf, profileOf, type Term } from './effects/output'
 import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, emit, emitStory, statQuery } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
-import { surrender, reveal, PATRON as LEGACY_PATRON, blessing as legacyBlessing , dropHeldShot } from './tactics';
+import { surrender, reveal, blessing as legacyBlessing , dropHeldShot } from './tactics';
+import { FAITH_PATRONS, FAITH_PATRON, patronById, beliefOf } from './belief';
 import { die, type Rng } from './rng';
 import { rollVs, rerollAttack, attackHits } from './rolls';
 import { spotlight } from './spotlight';
@@ -53,11 +54,8 @@ export const WHISPER: Record<string, any> = Object.fromEntries(WHISPERS.map((w) 
 export const VOWS: any[] = PJ.vows || [];
 export const VOW: Record<string, any> = Object.fromEntries(VOWS.map((v) => [v.id, v]));
 export const LINE_BANKS: string[] = PJ.line_banks || ['answered', 'refused', 'taboo', 'vow_kept', 'vow_broken', 'witnessed', 'intervention', 'miracle', 'conversion', 'farewell', 'grant'];
-/** The patrons (rules 1.6 shape; tactics.ts PATRON is the same list with the old `blessings` alias = hymns). */
-export const FAITH_PATRONS: any[] = PJ.items || [];
-export const FAITH_PATRON: Record<string, any> = Object.fromEntries(FAITH_PATRONS.map((p) => [p.id, p]));
-/** A patron by id: patrons.json, or one added to tactics.ts PATRON at run time (old-shape patrons: blessings = Hymns). */
-export const patronById = (id: string | null | undefined): any | null => (id ? FAITH_PATRON[id] || LEGACY_PATRON[id] || null : null);
+// The patrons, patronById and beliefOf live in belief.ts (no global hooks: the predicate `patron` reads the same copy).
+export { FAITH_PATRONS, FAITH_PATRON, patronById, beliefOf } from './belief';
 const hymnsOf = (p: any): any[] => p?.hymns || p?.blessings || [];
 
 const PR = PJ.prayer || {};
@@ -192,12 +190,6 @@ let B: FaithBindings | null = null;
 export function bindFaith(b: FaithBindings) { B = b; }
 
 // ---------- belief, Devotion, the kit ----------
-/** A character's belief. Old saves (no belief): a pact makes them Faithful to that patron, else Atheist (spec 1.6 §1). */
-export function beliefOf(c: Character): Belief {
-  if (c.belief?.kind === 'faithful' && patronById(c.belief.patron)) return c.belief;
-  if (c.belief?.kind === 'atheist') return c.belief;
-  return c.patron && patronById(c.patron) ? { kind: 'faithful', patron: c.patron } : { kind: 'atheist' };
-}
 export const patronOf = (c: Character): any | null => { const b = beliefOf(c); return b.kind === 'faithful' ? patronById(b.patron) : null; };
 export const faithOf = (c: Character) => c.skills?.faith || 0;
 /** Devotion (Faithful only; 0-10). */

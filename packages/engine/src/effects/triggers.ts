@@ -20,10 +20,10 @@ import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems } from './collect';
 import { overworld, rngOf, unitsIn, type Area } from '../kit';
-import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent } from '../combat';
+import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia } from '../magic';
 import { nextToCover } from '../combat';
-import { CONDITION_ROWS, condRowsVersion } from '../condtable';
+import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
 import { isStatId } from './stats';
 import type { ItemInfo } from './types';
 import { charOfUnit } from './hooks';
@@ -36,6 +36,7 @@ import { gainEcho } from './echo';
 import { deal, mend, type AmountSpec } from './output';
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
 import { resOf } from '../tactics';
+import { patronIdOf } from '../belief'; // (no global hooks: faith.ts's load order stays as it was)
 import { resLeft } from './cost';
 
 // ============================================================================================== the triggers
@@ -115,9 +116,6 @@ const byHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].in
 const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
 /** The patron ids (data/patrons.json): the words predicate `patron` takes. */
 const PATRON_IDS: string[] = ((patronsJ as any).items || []).map((p: any) => p.id);
-/** A character's patron id (faith.ts beliefOf, read here without importing faith.ts: its load order places its global
- * hooks): Faithful to a patron of patrons.json, else none. */
-const patronIdOf = (c: any): string | null => { if (!c) return null; const b = c.belief; if (b?.kind === 'faithful') return PATRON_IDS.includes(b.patron) ? b.patron : null; if (b?.kind === 'atheist') return null; return PATRON_IDS.includes(c.patron) ? c.patron : null; };
 const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.flags || {};
 
 // ============================================================================================== the predicates
@@ -255,9 +253,9 @@ O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource
   const n = e.value === 'all' || e.value === 'zero' ? -(own ? resOf(u, e.resource) : resLeft(u, e.resource, ev.h.c)) : e.value;
   (ev as any).gain = own ? resGain(u, e.resource, n) : resGive(ev.cb, u, e.resource, n, { by: ev.self, c: ev.h.c, why: label });
 });
-O('condition', ANY, true, ['condition', 'rounds', 'skip_save'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save', (ev, e) => {
+O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via'], 'put a condition on the self, the actor or the target (target:), with its save unless skip_save; via: the skill whose strength the save is against (as deal\'s via; default the ambient source)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
-  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), ev.self, u, e.condition, typeof e.rounds === 'number' ? e.rounds : undefined, undefined, e.skip_save ? { skipSave: true } : {});
+  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), ev.self, u, e.condition, typeof e.rounds === 'number' ? e.rounds : undefined, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}) });
 });
 O('cleanse', ANY, true, ['condition', 'family', 'count'], 'end conditions: the ones named, or a family\'s debuffs, or any debuff (count: how many)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
@@ -311,9 +309,9 @@ const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ..
  * line: from the centre toward the event's target, or its actor, `within` long), seen (seen, or not, by the holder's
  * side), alive (default true: still in the fight; false: Downed only), downed (true: the Downed too), max (the first n).
  * With no within and no shape, the whole field. `tied` and `aims_at` come with ties (P8) and the enemy's aim (a batch row). */
-export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number }
+export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number; sees?: 'line' | 'eyes' }
 /** The fields of `targets` and the words each takes (data/effect_ops.json item_ops.targets is written from it). */
-export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number' };
+export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number', sees: ['line', 'eyes'] };
 /** Why a `targets` block is malformed (null: it is fine). */
 export function targetsProblem(t: any): string | null {
   if (!t || typeof t !== 'object' || Array.isArray(t)) return '`targets` is an object';
@@ -325,6 +323,15 @@ export function targetsProblem(t: any): string | null {
   if ((t.shape === 'burst' || t.shape === 'aura') && typeof t.within !== 'number') return 'a burst or an aura needs `within` (its radius)';
   return null;
 }
+/** P5's standing aura (a `stat_mod` with `targets` and no `when`): the units its holder's set holds now. */
+const auraSet = (cb: Combat, holder: Unit, t: TargetSet): Unit[] => selectUnits({ ctx: {}, trig: TRIGGERS.combat_start, h: { key: '', info: null as any, u: holder, cb } as any, self: holder, cb, actor: null, target: null, preview: true }, t);
+/** Why a standing aura is malformed (null: fine): a well-formed set, centred on its holder, of a declared stat. */
+export function auraProblem(e: any): string | null {
+  const why = targetsProblem(e.targets); if (why) return why;
+  if (e.targets.of && e.targets.of !== 'self') return 'a standing aura is centred on its holder (targets.of: self)';
+  if (!isStatId(e.stat)) return 'unknown stat ' + e.stat;
+  return null;
+}
 /** THE unit set of an op's `targets` for this event (see TargetSet). */
 export function selectUnits(ev: Ev, t: TargetSet): Unit[] {
   const cb = ev.cb, of = t.of || 'self', cu = of === 'actor' ? ev.actor : of === 'target' ? ev.target : of === 'self' ? ev.self : null;
@@ -334,7 +341,10 @@ export function selectUnits(ev: Ev, t: TargetSet): Unit[] {
   const area: Area | null = shape === 'burst' || shape === 'aura' ? { shape, at, r: t.within! } : (shape === 'cone' || shape === 'line') && toward && toward !== at ? (shape === 'cone' ? { shape, from: at, toward, n: t.within! } : { shape, from: at, toward, n: t.within }) : null;
   if ((shape === 'cone' || shape === 'line') && !area) return [];
   const downed = t.downed || t.alive === false, all = area ? unitsIn(cb, area, { downed }) : unitsIn(cb, { shape: 'burst', at, r: Math.max(cb.map.w, cb.map.h) }, { downed });
-  const out = all.filter((v) => (t.alive === false ? !!v.downed : true) && (!t.side || rel(ev.self, v, t.side)) && (t.seen == null || sideSees(cb, ev.self.side as 'pc' | 'foe', v) === t.seen));
+  // sees (witnesses, the step 1a review): each unit of the set sees the centre's tile: `line` a line of sight to it and not
+  // Blinded (a body falling in the dark is still seen); `eyes` its own eyes reach it (combat.ts unitSees: range, light)
+  const out = all.filter((v) => (t.alive === false ? !!v.downed : true) && (!t.side || rel(ev.self, v, t.side)) && (t.seen == null || sideSees(cb, ev.self.side as 'pc' | 'foe', v) === t.seen)
+    && (!t.sees || (t.sees === 'eyes' ? unitSees(cb, v, at) : !condOn(v, 'blinded') && lineOfSight(cb, v.pos, at))));
   return typeof t.max === 'number' ? out.slice(0, t.max) : out;
 }
 
@@ -404,8 +414,6 @@ export const triggerHook = (e: any): HookName | null => (isTriggered(e) ? TRIGGE
 // (defense, move_mult, vision, ap, damage_dealt_pct, sigil_ap, soul_cost_pct, save_<family>): those are not answered
 // twice. A row's effect with a trigger word and an op that is not an item op (Bleeding's turn_start stat_mod) is still
 // the engine's own rule, not run here.
-/** The stats condtable.ts reads from a row itself (they are not answered through statQuery). */
-export const COND_TABLE_STATS = new Set(['defense', 'move_mult', 'vision', 'ap', 'damage_dealt_pct', 'sigil_ap', 'soul_cost_pct', 'save_body', 'save_brain', 'save_heart']);
 /** A condition row as the item it is (key condition:<id>). */
 const condInfo = (row: any): ItemInfo => ({ key: 'condition:' + row.id, kind: 'condition', id: row.id, name: row.name, tier: 'I', effects: row.effects || [], effTier: (row.effects || []).map(() => 'I'), text: row.text || '', adjudication: row.adjudication || 'engine', active: false, bound: false, ap: null, uses: 'at_will' });
 /** The index over the rows (rebuilt when rows are added: condtable.ts condRowsVersion): per hook, the rows with a
@@ -434,5 +442,5 @@ function condsOn(u: Unit, name: HookName, cb: Combat) {
 }
 function condStat(u: Unit, stat: string): number { const l = condIndex().stat[stat]; if (!l) return 0; let n = 0; for (const x of l) if (bears(u, x.row.id)) n += x.value; return n; }
 
-setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat });
+setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat, auraSet, auraProblem, condStatRows: (s) => (condIndex().stat[s] || []).map((x) => x.row.id) });
 setAllItems(allItems);

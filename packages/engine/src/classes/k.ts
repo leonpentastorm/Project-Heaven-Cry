@@ -162,24 +162,8 @@ register({
   brief: () => 'Nightmare Mark: play an NPC the Shade marked as haunted by its own fear.',
 });
 
-// Lingering Dread (K3, PROVISIONAL, audit 1-4): when you kill, every enemy within 3 tiles of the victim with sight of
-// the victim's tile (not Blinded) makes a Heart save or is Shaken (3 rounds). A silent kill frightens the witnesses too:
-// they saw the death, not you. Story: the Narrator puts Shaken on the NPCs who saw it (conditions field).
-register({
-  id: 'shade.lingering_dread', claims: 'all',
-  on: {
-    on_kill: (ctx, h) => {
-      const u = h.u, cb = h.cb!, v: Unit = ctx.victim; if (ctx.by !== u || !u || !inFight(h)) return;
-      let line = '';
-      for (const t of foesOf(cb, u)) {
-        if (t === v || dist(t.pos, v.pos) > 3 || condOn(t, 'blinded') || !lineOfSight(cb, t.pos, v.pos)) continue;
-        line += applyCond(cb, rngOf(h, ctx), u, t, 'shaken', undefined, 'heart', { via: 'will_power' });
-      }
-      if (line) say(cb, 'Dread lingers over ' + v.name + '\'s body (Lingering Dread)' + line + '.');
-    },
-  },
-  brief: () => 'Lingering Dread: after a story kill, witnesses within 3 tiles are Shaken (put it on them).',
-});
+// Lingering Dread (K3, PROVISIONAL, audit 1-4): data only since Classes 3.0 step 1b (an item op on `kill` with P5's
+// `targets` and its witness filter `sees: "line"`, the save Will Power's through `via`): classes.json move pool.
 
 // =============================================================================================== LUMERI TEMPLAR
 const blessPower = (u: Unit | null | undefined, c: Character | null | undefined) => u?.blessPower ?? 1 + 0.1 * (c?.skills?.faith || 0);
