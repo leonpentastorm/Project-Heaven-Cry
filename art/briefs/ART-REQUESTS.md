@@ -94,6 +94,26 @@ Nothing waiting.
 When Equipment 2.0 settles the item list, this row is replaced by one row an item, grouped by family, each with its
 line icon beside it as the reference.
 
+### 4b. Painted gear icons for inventory and shop (Heavenprint, 1024 x 1024, transparent)
+
+**Leon, 13 Nov 2026:** "Update the artist brief for GPT, give it prompts to make a Heavenprint icon for every weapon and
+item the engine currently recognises. We will do the roguelike after Classes 3.0 and that needs a shop and many new
+pipelines, better prepare now. The current SVG icons for weapons are just placeholders, and for effects like Sunder."
+**The rule change:** the monoline SVG weapon and armour icons (`art/icons/weapons`, `armour`, `focus`) are
+**placeholders for inventory and shop use**. They stay for effects and small marks (Sunder's weapon strike, the hover
+card's weapon glyph) until painted icons can be traced or simplified from. This row supersedes the "What does not need
+an artist" bullet on weapon and armour icons below, for inventory and shop art only.
+
+| # | For | Status | What it must show | Direction | Goes to |
+| --- | --- | --- | --- | --- | --- |
+| E2 | **A painted icon for every weapon and item the engine recognises: 147 icons** (60 weapons, 16 armour, 3 shields, 3 focuses, 13 mods, 7 tools, 5 consumables, 4 special ammunition, 3 food, 2 lights, 2 documents, 1 augment, 1 loot, 1 companion, and 26 derived: torso armour classes 1 to 5, 12 loose-round calibres, 8 magazine families, personal effects). The Visualizer (`focus-visualizer`) is **Planned, coming in Classes 3.0**: draw it with the batch, it is in the engine's plan | **Wanted.** Ready to paint: the list is generated from data (13 Nov 2026). Re-check it against `data/weapons.json` and `data/items.json` before a later batch (Classes 3.0 and Equipment changes will add items) | One object, three-quarter view, painted, bold silhouette first, readable at 64 px (shop grid) and 32 px (backpack row). Rarity by finish and wear, never a border; no text, no hands, no figures, no real-world makes | Heavenprint object icon: rule in [`gear-icons.md`](../style-guide/gear-icons.md); faction silhouettes and signatures in [`weapon-icons.md`](../style-guide/weapon-icons.md); **paste-ready prompts, one per item, in [`GPT-PROMPTS-2026-11-13-gear.md`](GPT-PROMPTS-2026-11-13-gear.md)**. Send batch 1 (the starting gear, 24 icons) to Leon first and wait for his verdict before batching the rest | `art/icons/gear/<kind>-<id>.png` (master, 1024 x 1024 RGBA); the pipeline makes the web exports (256, 128, 64 and 32 px) and the catalog entries (a new `gear` map, ids `gear-<kind>-<id>`) |
+
+**Done means:** a transparent 1024 x 1024 PNG master per file name in the prompts file; the object inside the central
+80 to 85% of the canvas; no text; checked on the dark panel `#10151F` at 64 px and 32 px; then Claude adds the catalog
+entry, makes the web exports, runs `python3 tools/validate_art.py` and `npm run assets`, and Leon's approval flips it
+from review candidate to production. Rarity variants (`--worn`, `--fine`, `--masterwork`, `--relic`, `--celestial`) are
+a second pass; the prompts file lists the first four.
+
 ## At risk in the balance pass
 
 The balance pass (`docs/design/proposals/2026-11-balance-pass.md`) will rewrite, merge or remove perks, traits and
