@@ -61,14 +61,16 @@
     "provisional": true
   },
   "prayer": {
-    "faith_min": 3,
+    "faith_min": 1,
     "mana_delta": -5,
     "whisper": {
       "ap": 1,
+      "faith_min": 1,
       "limit": "once per turn"
     },
     "hymn": {
       "ap": 3,
+      "faith_min": 3,
       "cooldown": "prayer_cooldown",
       "cooldown_rule": {
         "base": 9,

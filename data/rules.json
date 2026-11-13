@@ -637,7 +637,8 @@
         "id": "pray",
         "ap": "by the prayer (patrons.json prayer): a Whisper 1, a Hymn 3, a Miracle 3",
         "requires": {
-          "faith_min": 3
+          "faith_min": 1,
+          "hymn_faith_min": 3
         },
         "note": "an Atheist prays too, by dice, with no patron (rules 1.6: Atheists and pilgrims)"
       },

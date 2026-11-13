@@ -32,7 +32,7 @@ import { castAt, compileSpell, evokeMarks, strokePick, tidyStrokes, fadePattern 
 import { die } from '../rng';
 import { rollVs, rollD20 } from '../rolls';
 import { isSilent, canReact, react, blessing, PATRON, devotionOf, reveal } from '../tactics';
-import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion } from '../faith';
+import { GATE, OVERREACH, DEVOTION_XP, devotionNow, patronOf, shiftDevotion, HYMN_FAITH } from '../faith';
 import { makeObject } from '../objects';
 import { asBolt, resonanceWithout } from './soul';
 import { overworld, say, unitById, tileOf, rngOf, tilesAround, foesOf, canStand, tilesLine } from '../kit';
@@ -180,7 +180,7 @@ register({
   actions: [{
     id: 'bless_shell', label: 'Bless a shell', scope: ['story'], target: 'none', ap: 'data', uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: pray over a shell. A Hymn above your standing with your patron is an overreach. If the prayer succeeds, the shell carries the Hymn into the next fight this scene.',
-    available: (h) => (!h.c?.patron || !PATRON[h.c.patron] ? 'You have no patron.' : (h.c.skills.faith || 0) < 3 ? 'Prayer needs Faith 3.' : true),
+    available: (h) => (!h.c?.patron || !PATRON[h.c.patron] ? 'You have no patron.' : (h.c.skills.faith || 0) < HYMN_FAITH ? 'A Hymn needs Faith ' + HYMN_FAITH + '.' : true),
     run: (h, a, rng) => {
       const c = h.c!, p = PATRON[c.patron!], bl = (p.blessings || []).find((b: any) => b.id === a.choice) || (p.blessings || [])[0];
       // Rules 1.6 (item 619): by standing (no roll) when Devotion reaches the Hymn's gate, else an overreach (a miss: −3 XP, item 716).

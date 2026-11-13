@@ -40,7 +40,7 @@
       "hybrid_rule": "A hybrid class pairs its base attribute with an attribute from another Core.",
       "squared_rule": "A squared class pairs its base attribute with itself."
     },
-    "patrons": "Prayer is not a class: any character with Faith 3 or more can pray (the Faithful to their patron, an Atheist by dice).",
+    "patrons": "Prayer is not a class: any character with Faith 1 or more prays Whispers, and from Faith 3 Hymns (rules 1.31; the Faithful to their patron, an Atheist by dice).",
     "rank_rule_source": "rules 1.11"
   },
   "migration": {

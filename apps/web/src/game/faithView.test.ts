@@ -93,10 +93,14 @@ describe('faith views', () => {
     expect(b.whispers[0].gate).toBe('BY DICE · TN 12'); expect(b.whispers[0].odds).toMatch(/^TN 12 · \d+%$/);
     expect(b.hymns).toEqual([]); expect(b.miracle).toBeNull();
   });
-  it('Faith under 3: praying is closed, in words', () => {
-    const { g, c } = game({ kind: 'faithful', patron: 'nerukhan' }, 1);
+  it('Faith 0: praying is closed, in words; Faith 1 and 2 pray Whispers, not Hymns (rules 1.31)', () => {
+    const need = prayFaith();
+    const { g, c } = game({ kind: 'faithful', patron: 'nerukhan' }, need.whisper - 1);
     const v = faithView(g, c.id)!;
-    expect(faithPanel(v)!.closed).toMatch(/Faith 3/); expect(prayerButtons(v).whispers[0].why).toMatch(/Faith 3/);
+    expect(faithPanel(v)!.closed).toMatch(new RegExp('Faith ' + need.whisper)); expect(prayerButtons(v).whispers[0].why).toMatch(new RegExp('Faith ' + need.whisper));
+    const lo = game({ kind: 'faithful', patron: 'nerukhan' }, need.hymn - 1), w = faithView(lo.g, lo.c.id)!;
+    expect(faithPanel(w)!.closed).toBeUndefined(); expect(prayerButtons(w).whispers[0].why).toBeFalsy();
+    expect(w.hymns[0].preview.why).toMatch(new RegExp('Hymn needs Faith ' + need.hymn));
   });
   it('pickers and the payload follow the contract', () => {
     expect(pickerFor('self_or_ally')).toEqual({ kind: 'unit', side: 'ally', self: true }); expect(pickerFor('tile').kind).toBe('tile');
@@ -116,7 +120,8 @@ describe('faith views', () => {
     expect(beliefFaithNote(top)).toBeNull();
     const low = beliefFaithNote(0)!;
     expect(low).toContain('Your Faith is 0. Whispers need Faith ' + need.whisper + '; Hymns need Faith ' + need.hymn + '.');
-    expect(low).toContain(top + ' more Faith points on the Skills step');
+    expect(low).toContain(top + (need.whisper === need.hymn ? ' more Faith points on the Skills step' : ' would open both'));
+    expect(need).toEqual({ whisper: 1, hymn: 3 }); // rules 1.31: Whispers from Faith 1, Hymns from Faith 3
     // the split a later rule brings (Whispers lower than Hymns): each is said apart
     expect(beliefFaithNote(0, { whisper: 1, hymn: 3 })).toBe('Your Faith is 0. Whispers need Faith 1; Hymns need Faith 3. 1 more Faith point on the Skills step would open Whispers, 3 would open both. You can still choose your belief now.');
     expect(beliefFaithNote(1, { whisper: 1, hymn: 3 })).toBe('Your Faith is 1. Whispers are open to you; Hymns need Faith 3. 2 more Faith points on the Skills step would open Hymns. You can still choose your belief now.');

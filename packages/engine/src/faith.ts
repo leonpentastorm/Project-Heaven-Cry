@@ -68,7 +68,14 @@ export const MIRACLE_COST_LEVELS: number = PR.miracle?.devotion_cost_levels ?? 5
 /** Together's conditions are held until the caster's next turn starts (ended there), never by the bearer's own clock. */
 const TOGETHER_HOLD = 99;
 export const WITNESS_BONUS: number = PR.witnessed?.like_bonus ?? 2;
-export const FAITH_MIN = PR.faith_min ?? 3, WITNESS_FAITH = PR.witnessed?.faith_min ?? 5, MIRACLE_FAITH = PR.miracle?.faith_min ?? 7;
+export const FAITH_MIN = PR.faith_min ?? 1, WITNESS_FAITH = PR.witnessed?.faith_min ?? 5, MIRACLE_FAITH = PR.miracle?.faith_min ?? 7;
+/** Rules 1.31 (Leon, 13 Nov 2026: prayer opens at Faith 1): Whispers from Faith 1, Hymns from Faith 3 (patrons.json
+ * prayer.whisper.faith_min, prayer.hymn.faith_min); FAITH_MIN is the least of them (praying at all). */
+export const WHISPER_FAITH: number = PR.whisper?.faith_min ?? FAITH_MIN, HYMN_FAITH: number = PR.hymn?.faith_min ?? 3;
+/** The Faith a prayer of this kind needs (a Miracle's own Faith 7 is asked after it). */
+export const prayerFaith = (kind: PrayerKind): number => (kind === 'whisper' ? WHISPER_FAITH : Math.max(WHISPER_FAITH, HYMN_FAITH));
+/** The refusal when the Faith is short: Whispers' own words, else the Hymn's. */
+export const prayerFaithWhy = (kind: PrayerKind): string => (kind === 'whisper' ? 'Praying needs Faith ' + WHISPER_FAITH + '.' : 'A Hymn needs Faith ' + HYMN_FAITH + '.');
 export const AP_COST = { whisper: PR.whisper?.ap ?? 1, hymn: PR.hymn?.ap ?? 3, miracle: PR.miracle?.ap ?? 3 };
 export const OVERREACH = { base: PR.overreach?.tn_base ?? 12, step: PR.overreach?.tn_per_step ?? 2, miss: -(PJ.devotion?.loss?.overreach_miss ?? 3) };
 export const ATHEIST_TN = { whisper: PR.atheist_tn?.whisper ?? 12, 1: PR.atheist_tn?.hymn_1 ?? 14, 2: PR.atheist_tn?.hymn_2 ?? 16, 3: PR.atheist_tn?.hymn_3 ?? 18 } as Record<string | number, number>;
@@ -271,7 +278,7 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
   } else { mode = 'dice'; roll = { tn: ATHEIST_TN[pe.tier], mod: m }; }
   const out = { ...info, gate, mode, roll, overreach };
   // Who may pray this.
-  if (faith < FAITH_MIN) return no('Praying needs Faith ' + FAITH_MIN + '.', out);
+  if (faith < prayerFaith(kind)) return no(kind === 'miracle' ? 'A Miracle needs Faith ' + MIRACLE_FAITH + '.' : prayerFaithWhy(kind), out);
   if (kind === 'miracle') {
     if (belief.kind !== 'faithful') return no('An Atheist never gets a Miracle.', out);
     if (faith < MIRACLE_FAITH) return no('A Miracle needs Faith ' + MIRACLE_FAITH + '.', out);
@@ -370,7 +377,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
   return {
     belief, patron: p ? { id: p.id, name: p.name, costume: p.costume, archetype: p.archetype, accent: p.accent, rule: p.rule, likes: (p.likes || []).map(tag), taboos: (p.taboos || []).map((t: string) => ({ ...tag(t), ...(p.taboo_notes?.[t] ? { note: p.taboo_notes[t] as string } : {}) })) } : null,
     faith, devotion: dv,
-    gates: { whisper: faith >= FAITH_MIN, hymn1: !!p && dv >= GATE[1], hymn2: !!p && dv >= GATE[2], hymn3: !!p && dv >= GATE[3], miracle: !!p && faith >= MIRACLE_FAITH && dv >= GATE.miracle },
+    gates: { whisper: faith >= WHISPER_FAITH, hymn1: !!p && dv >= GATE[1], hymn2: !!p && dv >= GATE[2], hymn3: !!p && dv >= GATE[3], miracle: !!p && faith >= MIRACLE_FAITH && dv >= GATE.miracle },
     witnessed: !!u && condOn(u, 'witnessed'), canBeWitnessed: belief.kind === 'faithful' && faith >= WITNESS_FAITH,
     whispers: WHISPERS.map((w) => ({ id: w.id, name: w.name, text: w.text, preview: previewPrayer(g, who, 'whisper', w.id) })),
     hymns,
@@ -944,7 +951,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
 /** Why this unit can't pray a verb of this kind now (null: it can). */
 export function verbPrayerWhy(cb: Combat, u: Unit, kind: 'whisper' | 'hymn'): string | null {
   const c = unitChar(u), g = boundGame(); if (!c) return 'Only a character can pray.';
-  if (faithOf(c) < FAITH_MIN) return 'Praying needs Faith ' + FAITH_MIN + '.';
+  if (faithOf(c) < prayerFaith(kind)) return prayerFaithWhy(kind);
   if (condOn(u, 'silenced')) return 'Silenced: no prayers.';
   if (cb.order[cb.turn] !== u.id) return 'Pray on your turn.';
   const lim = prayed({ c, u, cb, g });
