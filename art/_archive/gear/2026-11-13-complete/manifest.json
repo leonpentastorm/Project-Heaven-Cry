@@ -1,0 +1,4834 @@
+[
+  {
+    "number": 1,
+    "filename": "weapon-service_pistol.png",
+    "label": "Service pistol",
+    "family": "Starting kit",
+    "path": "art/icons/gear/weapon-service_pistol.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      112,
+      921,
+      911
+    ],
+    "sha256": "49985224ea7c104a3e4dee4b84e792d1b87194112efaebc6a8bef66652529adb",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-service_pistol.png",
+      "128": "art/icons/gear/exports/128/weapon-service_pistol.png",
+      "64": "art/icons/gear/exports/64/weapon-service_pistol.png",
+      "32": "art/icons/gear/exports/32/weapon-service_pistol.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-service_pistol.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 2,
+    "filename": "weapon-drifter_revolver.png",
+    "label": "Drifter revolver",
+    "family": "Starting kit",
+    "path": "art/icons/gear/weapon-drifter_revolver.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      114,
+      921,
+      909
+    ],
+    "sha256": "841e8815e3211ea0fee655c185b59f8976cb18dc3c2c08d0eee0d5db70bff11a",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-drifter_revolver.png",
+      "128": "art/icons/gear/exports/128/weapon-drifter_revolver.png",
+      "64": "art/icons/gear/exports/64/weapon-drifter_revolver.png",
+      "32": "art/icons/gear/exports/32/weapon-drifter_revolver.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-drifter_revolver.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 3,
+    "filename": "weapon-decrkm_smg.png",
+    "label": "Decrkm SMG",
+    "family": "Starting kit",
+    "path": "art/icons/gear/weapon-decrkm_smg.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      157,
+      870,
+      867
+    ],
+    "sha256": "766f93557fddb09b779d93c042b3d7c23e1c7937101f78119087382729a2bd69",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-decrkm_smg.png",
+      "128": "art/icons/gear/exports/128/weapon-decrkm_smg.png",
+      "64": "art/icons/gear/exports/64/weapon-decrkm_smg.png",
+      "32": "art/icons/gear/exports/32/weapon-decrkm_smg.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-decrkm_smg.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 4,
+    "filename": "weapon-hellraiser_service_rifle.png",
+    "label": "Hellraiser rifle",
+    "family": "Starting kit",
+    "path": "art/icons/gear/weapon-hellraiser_service_rifle.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      110,
+      937,
+      913
+    ],
+    "sha256": "99c427ece30b53645dafd986dc133011d5254ae1d83c3612943c21795d150587",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-hellraiser_service_rifle.png",
+      "128": "art/icons/gear/exports/128/weapon-hellraiser_service_rifle.png",
+      "64": "art/icons/gear/exports/64/weapon-hellraiser_service_rifle.png",
+      "32": "art/icons/gear/exports/32/weapon-hellraiser_service_rifle.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-hellraiser_service_rifle.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 5,
+    "filename": "weapon-combat_knife.png",
+    "label": "Combat knife",
+    "family": "Starting kit",
+    "path": "art/icons/gear/weapon-combat_knife.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      139,
+      904,
+      885
+    ],
+    "sha256": "75fea68403b5a2a96e294f937d027422f74fba9de5253bddadc3a7d5297267e1",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-combat_knife.png",
+      "128": "art/icons/gear/exports/128/weapon-combat_knife.png",
+      "64": "art/icons/gear/exports/64/weapon-combat_knife.png",
+      "32": "art/icons/gear/exports/32/weapon-combat_knife.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-combat_knife.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 6,
+    "filename": "weapon-fists.png",
+    "label": "Hand wraps",
+    "family": "Starting kit",
+    "path": "art/icons/gear/weapon-fists.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      128,
+      895,
+      884
+    ],
+    "sha256": "2f502ba719410c0a0c6bc725286a54457a34945fe95dfe15100e708d69ba1c6e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-fists.png",
+      "128": "art/icons/gear/exports/128/weapon-fists.png",
+      "64": "art/icons/gear/exports/64/weapon-fists.png",
+      "32": "art/icons/gear/exports/32/weapon-fists.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-fists.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 7,
+    "filename": "focus-evoker.png",
+    "label": "Evoker",
+    "family": "Starting kit",
+    "path": "art/icons/gear/focus-evoker.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      93,
+      87,
+      926,
+      937
+    ],
+    "sha256": "3947d21607b863bf71949ab13c1a7667ca3cb5a006314d082516daaa1ee076f4",
+    "exports": {
+      "256": "art/icons/gear/exports/256/focus-evoker.png",
+      "128": "art/icons/gear/exports/128/focus-evoker.png",
+      "64": "art/icons/gear/exports/64/focus-evoker.png",
+      "32": "art/icons/gear/exports/32/focus-evoker.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/focus-evoker.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 8,
+    "filename": "focus-emanator.png",
+    "label": "Emanator",
+    "family": "Starting kit",
+    "path": "art/icons/gear/focus-emanator.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      87,
+      937,
+      937
+    ],
+    "sha256": "4fcd240a5ebe70b3c72cc08a8de1203f83e19382d4fd119b06a4ccd32e728bd5",
+    "exports": {
+      "256": "art/icons/gear/exports/256/focus-emanator.png",
+      "128": "art/icons/gear/exports/128/focus-emanator.png",
+      "64": "art/icons/gear/exports/64/focus-emanator.png",
+      "32": "art/icons/gear/exports/32/focus-emanator.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/focus-emanator.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 9,
+    "filename": "armour-torso_class1_light.png",
+    "label": "Padded coat",
+    "family": "Starting kit",
+    "path": "art/icons/gear/armour-torso_class1_light.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      94,
+      937,
+      929
+    ],
+    "sha256": "993f7915c6be69db181495b5a8f185813e0ffa40a3e5deb9f5ad1fbd4ef5207f",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-torso_class1_light.png",
+      "128": "art/icons/gear/exports/128/armour-torso_class1_light.png",
+      "64": "art/icons/gear/exports/64/armour-torso_class1_light.png",
+      "32": "art/icons/gear/exports/32/armour-torso_class1_light.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-torso_class1_light.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 10,
+    "filename": "armour-torso_class2_medium.png",
+    "label": "Medic plate",
+    "family": "Starting kit",
+    "path": "art/icons/gear/armour-torso_class2_medium.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      87,
+      937,
+      937
+    ],
+    "sha256": "668167f8973f2c10d039bad7d0a07d5db593d1722021fdc1b25ed2f5da29ef3d",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-torso_class2_medium.png",
+      "128": "art/icons/gear/exports/128/armour-torso_class2_medium.png",
+      "64": "art/icons/gear/exports/64/armour-torso_class2_medium.png",
+      "32": "art/icons/gear/exports/32/armour-torso_class2_medium.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-torso_class2_medium.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 11,
+    "filename": "armour-torso_class3_heavy.png",
+    "label": "Flak vest",
+    "family": "Starting kit",
+    "path": "art/icons/gear/armour-torso_class3_heavy.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      94,
+      87,
+      930,
+      937
+    ],
+    "sha256": "8240c5b8ec6b2d169cc8a52ac2c0b7192cd06137f9ac3c75e5b2c4d436b0b3c9",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-torso_class3_heavy.png",
+      "128": "art/icons/gear/exports/128/armour-torso_class3_heavy.png",
+      "64": "art/icons/gear/exports/64/armour-torso_class3_heavy.png",
+      "32": "art/icons/gear/exports/32/armour-torso_class3_heavy.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-torso_class3_heavy.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 12,
+    "filename": "mag-pistol_32.png",
+    "label": "Pistol magazine",
+    "family": "Starting kit",
+    "path": "art/icons/gear/mag-pistol_32.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      103,
+      921,
+      921
+    ],
+    "sha256": "919b82a8508c15a01f8818ef149d9dd30008d2e50f4188aba1b07f5b4dcce7d9",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-pistol_32.png",
+      "128": "art/icons/gear/exports/128/mag-pistol_32.png",
+      "64": "art/icons/gear/exports/64/mag-pistol_32.png",
+      "32": "art/icons/gear/exports/32/mag-pistol_32.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mag-pistol_32.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 13,
+    "filename": "mag-rifle.png",
+    "label": "Rifle magazine",
+    "family": "Starting kit",
+    "path": "art/icons/gear/mag-rifle.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      111,
+      102,
+      912,
+      921
+    ],
+    "sha256": "7e6a4505841af6e3d06175ff4e9fd4bfe4b6604eaa1ead3425c568afd23b06e4",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-rifle.png",
+      "128": "art/icons/gear/exports/128/mag-rifle.png",
+      "64": "art/icons/gear/exports/64/mag-rifle.png",
+      "32": "art/icons/gear/exports/32/mag-rifle.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mag-rifle.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 14,
+    "filename": "mag-speedloader_revolver.png",
+    "label": "Revolver loader",
+    "family": "Starting kit",
+    "path": "art/icons/gear/mag-speedloader_revolver.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      106,
+      102,
+      917,
+      921
+    ],
+    "sha256": "042ec9e543fd9c38158604653f369e7f1a1ede5cd3170ee17eb8de5149cbbfae",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-speedloader_revolver.png",
+      "128": "art/icons/gear/exports/128/mag-speedloader_revolver.png",
+      "64": "art/icons/gear/exports/64/mag-speedloader_revolver.png",
+      "32": "art/icons/gear/exports/32/mag-speedloader_revolver.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mag-speedloader_revolver.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 15,
+    "filename": "rounds-32_decrkm.png",
+    "label": ".32 rounds",
+    "family": "Starting kit",
+    "path": "art/icons/gear/rounds-32_decrkm.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      153,
+      870,
+      870
+    ],
+    "sha256": "2b4d5e616e0dde344445b4081cf613fe0a5f0f6fd3793d93d9415e090fdb69bb",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-32_decrkm.png",
+      "128": "art/icons/gear/exports/128/rounds-32_decrkm.png",
+      "64": "art/icons/gear/exports/64/rounds-32_decrkm.png",
+      "32": "art/icons/gear/exports/32/rounds-32_decrkm.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-32_decrkm.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 16,
+    "filename": "rounds-revolver.png",
+    "label": "Revolver rounds",
+    "family": "Starting kit",
+    "path": "art/icons/gear/rounds-revolver.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      156,
+      870,
+      868
+    ],
+    "sha256": "f2dacbf673880506fdf7422fc3ade31ead256306666fdfbdd86c3b713c5655b2",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-revolver.png",
+      "128": "art/icons/gear/exports/128/rounds-revolver.png",
+      "64": "art/icons/gear/exports/64/rounds-revolver.png",
+      "32": "art/icons/gear/exports/32/rounds-revolver.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-revolver.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 17,
+    "filename": "rounds-rifle.png",
+    "label": "Rifle rounds",
+    "family": "Starting kit",
+    "path": "art/icons/gear/rounds-rifle.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      155,
+      153,
+      869,
+      870
+    ],
+    "sha256": "1c1c8c3f96fa0d124d731d4151398d1f150c1ee34e7c213607a6cd226d048f9a",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-rifle.png",
+      "128": "art/icons/gear/exports/128/rounds-rifle.png",
+      "64": "art/icons/gear/exports/64/rounds-rifle.png",
+      "32": "art/icons/gear/exports/32/rounds-rifle.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-rifle.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 18,
+    "filename": "tool-field_kit.png",
+    "label": "Field kit",
+    "family": "Starting kit",
+    "path": "art/icons/gear/tool-field_kit.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      130,
+      128,
+      894,
+      896
+    ],
+    "sha256": "74c441c377e0ecff9f0c562a7d676da2d30b22930c7d04c9125639341a43ec7a",
+    "exports": {
+      "256": "art/icons/gear/exports/256/tool-field_kit.png",
+      "128": "art/icons/gear/exports/128/tool-field_kit.png",
+      "64": "art/icons/gear/exports/64/tool-field_kit.png",
+      "32": "art/icons/gear/exports/32/tool-field_kit.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/tool-field_kit.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 19,
+    "filename": "tool-spare_parts.png",
+    "label": "Spare parts",
+    "family": "Starting kit",
+    "path": "art/icons/gear/tool-spare_parts.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      137,
+      128,
+      887,
+      896
+    ],
+    "sha256": "2c12fca9dcbf77b2aef8aa3e2d6f49b82f79cc52de68361642017674fa504bc8",
+    "exports": {
+      "256": "art/icons/gear/exports/256/tool-spare_parts.png",
+      "128": "art/icons/gear/exports/128/tool-spare_parts.png",
+      "64": "art/icons/gear/exports/64/tool-spare_parts.png",
+      "32": "art/icons/gear/exports/32/tool-spare_parts.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/tool-spare_parts.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 20,
+    "filename": "consumable-standard_core.png",
+    "label": "Standard mana core",
+    "family": "Starting kit",
+    "path": "art/icons/gear/consumable-standard_core.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      128,
+      890,
+      895
+    ],
+    "sha256": "d81b78b94d956629c47b2a2a7d4076c36777812ce246479478588e27fba358e8",
+    "exports": {
+      "256": "art/icons/gear/exports/256/consumable-standard_core.png",
+      "128": "art/icons/gear/exports/128/consumable-standard_core.png",
+      "64": "art/icons/gear/exports/64/consumable-standard_core.png",
+      "32": "art/icons/gear/exports/32/consumable-standard_core.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/consumable-standard_core.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 21,
+    "filename": "tool-chalk_and_wax.png",
+    "label": "Chalk and wax",
+    "family": "Starting kit",
+    "path": "art/icons/gear/tool-chalk_and_wax.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      134,
+      886,
+      889
+    ],
+    "sha256": "ebebf7f35e1cd6ec181b8c91f81f98cf652ebf551ff353a64198fe251b691911",
+    "exports": {
+      "256": "art/icons/gear/exports/256/tool-chalk_and_wax.png",
+      "128": "art/icons/gear/exports/128/tool-chalk_and_wax.png",
+      "64": "art/icons/gear/exports/64/tool-chalk_and_wax.png",
+      "32": "art/icons/gear/exports/32/tool-chalk_and_wax.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/tool-chalk_and_wax.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 22,
+    "filename": "food-ration_pack.png",
+    "label": "Ration pack",
+    "family": "Starting kit",
+    "path": "art/icons/gear/food-ration_pack.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      133,
+      128,
+      891,
+      896
+    ],
+    "sha256": "eb11fbab7b1acf6f66ae02ab373d88da213cef79231739e680c6a54411f05ecd",
+    "exports": {
+      "256": "art/icons/gear/exports/256/food-ration_pack.png",
+      "128": "art/icons/gear/exports/128/food-ration_pack.png",
+      "64": "art/icons/gear/exports/64/food-ration_pack.png",
+      "32": "art/icons/gear/exports/32/food-ration_pack.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/food-ration_pack.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 23,
+    "filename": "tool-prayer_beads.png",
+    "label": "Prayer beads",
+    "family": "Starting kit",
+    "path": "art/icons/gear/tool-prayer_beads.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      132,
+      128,
+      891,
+      896
+    ],
+    "sha256": "a90ea3563ce57dbc1bdb7c00650de460e70cb08b581377a533acd09e823b0589",
+    "exports": {
+      "256": "art/icons/gear/exports/256/tool-prayer_beads.png",
+      "128": "art/icons/gear/exports/128/tool-prayer_beads.png",
+      "64": "art/icons/gear/exports/64/tool-prayer_beads.png",
+      "32": "art/icons/gear/exports/32/tool-prayer_beads.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/tool-prayer_beads.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 24,
+    "filename": "consumable-stim_injector.png",
+    "label": "Stim injector",
+    "family": "Starting kit",
+    "path": "art/icons/gear/consumable-stim_injector.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      129,
+      896,
+      894
+    ],
+    "sha256": "f61827be7806e230278ed0341e27443e453680feb4a2313337306f3e762a5e45",
+    "exports": {
+      "256": "art/icons/gear/exports/256/consumable-stim_injector.png",
+      "128": "art/icons/gear/exports/128/consumable-stim_injector.png",
+      "64": "art/icons/gear/exports/64/consumable-stim_injector.png",
+      "32": "art/icons/gear/exports/32/consumable-stim_injector.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/consumable-stim_injector.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 25,
+    "filename": "weapon-decrkm_autopistol.png",
+    "label": "Decrkm auto-pistol",
+    "family": "Pistols and revolvers",
+    "path": "art/icons/gear/weapon-decrkm_autopistol.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      110,
+      921,
+      914
+    ],
+    "sha256": "7e349cb915ee1c555f7faba91f2f4161a8ff541e004c561efde1bf32b2eb0a44",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-decrkm_autopistol.png",
+      "128": "art/icons/gear/exports/128/weapon-decrkm_autopistol.png",
+      "64": "art/icons/gear/exports/64/weapon-decrkm_autopistol.png",
+      "32": "art/icons/gear/exports/32/weapon-decrkm_autopistol.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-decrkm_autopistol.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 26,
+    "filename": "weapon-parlour_pistol.png",
+    "label": "Parlour pistol",
+    "family": "Pistols and revolvers",
+    "path": "art/icons/gear/weapon-parlour_pistol.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      107,
+      102,
+      917,
+      921
+    ],
+    "sha256": "0c1368d1206cd634f28b22e78a67d53a5d540dbcb26739b7c98cd7e804eaefd0",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-parlour_pistol.png",
+      "128": "art/icons/gear/exports/128/weapon-parlour_pistol.png",
+      "64": "art/icons/gear/exports/64/weapon-parlour_pistol.png",
+      "32": "art/icons/gear/exports/32/weapon-parlour_pistol.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-parlour_pistol.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 27,
+    "filename": "weapon-magistrate_pistol.png",
+    "label": "Magistrate heavy pistol",
+    "family": "Pistols and revolvers",
+    "path": "art/icons/gear/weapon-magistrate_pistol.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      118,
+      102,
+      892,
+      921
+    ],
+    "sha256": "2f2480add3d3b09b9546464aea65ccd153b8b843cc1df8a7969632286ba035cd",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-magistrate_pistol.png",
+      "128": "art/icons/gear/exports/128/weapon-magistrate_pistol.png",
+      "64": "art/icons/gear/exports/64/weapon-magistrate_pistol.png",
+      "32": "art/icons/gear/exports/32/weapon-magistrate_pistol.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-magistrate_pistol.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 28,
+    "filename": "weapon-frontier_hand_cannon.png",
+    "label": "Frontier hand cannon",
+    "family": "Pistols and revolvers",
+    "path": "art/icons/gear/weapon-frontier_hand_cannon.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      105,
+      921,
+      919
+    ],
+    "sha256": "9f8ff0d261dd8ab6241f816c0927f09d57022c5eae737a27de4376210e0b75b0",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-frontier_hand_cannon.png",
+      "128": "art/icons/gear/exports/128/weapon-frontier_hand_cannon.png",
+      "64": "art/icons/gear/exports/64/weapon-frontier_hand_cannon.png",
+      "32": "art/icons/gear/exports/32/weapon-frontier_hand_cannon.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-frontier_hand_cannon.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 29,
+    "filename": "weapon-lever_carbine.png",
+    "label": "Lever carbine",
+    "family": "Rifles and long rifles",
+    "path": "art/icons/gear/weapon-lever_carbine.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      92,
+      94,
+      932,
+      937
+    ],
+    "sha256": "240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-lever_carbine.png",
+      "128": "art/icons/gear/exports/128/weapon-lever_carbine.png",
+      "64": "art/icons/gear/exports/64/weapon-lever_carbine.png",
+      "32": "art/icons/gear/exports/32/weapon-lever_carbine.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-lever_carbine.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 30,
+    "filename": "weapon-long_rifle.png",
+    "label": "Long rifle",
+    "family": "Rifles and long rifles",
+    "path": "art/icons/gear/weapon-long_rifle.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      89,
+      937,
+      914
+    ],
+    "sha256": "1204c627d9d719857e5f237b36197ba82fab6e0d76db1cf5339bbe60249d06b9",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-long_rifle.png",
+      "128": "art/icons/gear/exports/128/weapon-long_rifle.png",
+      "64": "art/icons/gear/exports/64/weapon-long_rifle.png",
+      "32": "art/icons/gear/exports/32/weapon-long_rifle.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-long_rifle.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 31,
+    "filename": "weapon-adamantile_battle_rifle.png",
+    "label": "Adamantile battle rifle",
+    "family": "Rifles and long rifles",
+    "path": "art/icons/gear/weapon-adamantile_battle_rifle.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      88,
+      87,
+      935,
+      937
+    ],
+    "sha256": "5ceab3a2e8ca3857674057e3bcbd9240eb688d62a14e73f87333607eb03449a7",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-adamantile_battle_rifle.png",
+      "128": "art/icons/gear/exports/128/weapon-adamantile_battle_rifle.png",
+      "64": "art/icons/gear/exports/64/weapon-adamantile_battle_rifle.png",
+      "32": "art/icons/gear/exports/32/weapon-adamantile_battle_rifle.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-adamantile_battle_rifle.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 32,
+    "filename": "weapon-ccec_marksman_rifle.png",
+    "label": "CCEC marksman rifle",
+    "family": "Rifles and long rifles",
+    "path": "art/icons/gear/weapon-ccec_marksman_rifle.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      89,
+      87,
+      935,
+      937
+    ],
+    "sha256": "4cc5eb509310ed8ae59a99b89eb87e58ea71d029dbbb317575f0407bf019a9f4",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-ccec_marksman_rifle.png",
+      "128": "art/icons/gear/exports/128/weapon-ccec_marksman_rifle.png",
+      "64": "art/icons/gear/exports/64/weapon-ccec_marksman_rifle.png",
+      "32": "art/icons/gear/exports/32/weapon-ccec_marksman_rifle.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-ccec_marksman_rifle.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 33,
+    "filename": "weapon-legion_bullpup.png",
+    "label": "Legion bullpup",
+    "family": "Rifles and long rifles",
+    "path": "art/icons/gear/weapon-legion_bullpup.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      158,
+      937,
+      922
+    ],
+    "sha256": "3dc7d695c6eb6c2698fa797c62cb8e81159f117c8cbfca317632d8cdc62581a1",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-legion_bullpup.png",
+      "128": "art/icons/gear/exports/128/weapon-legion_bullpup.png",
+      "64": "art/icons/gear/exports/64/weapon-legion_bullpup.png",
+      "32": "art/icons/gear/exports/32/weapon-legion_bullpup.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-legion_bullpup.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 34,
+    "filename": "weapon-legion_pdw.png",
+    "label": "Legion PDW",
+    "family": "Submachine guns",
+    "path": "art/icons/gear/weapon-legion_pdw.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      165,
+      870,
+      860
+    ],
+    "sha256": "6d69f356c1f392d54de6a83bec57c2c388925b5f16b2ead6898b3a27e95e864c",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-legion_pdw.png",
+      "128": "art/icons/gear/exports/128/weapon-legion_pdw.png",
+      "64": "art/icons/gear/exports/64/weapon-legion_pdw.png",
+      "32": "art/icons/gear/exports/32/weapon-legion_pdw.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-legion_pdw.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 35,
+    "filename": "weapon-whisper_smg.png",
+    "label": "Whisper SMG",
+    "family": "Submachine guns",
+    "path": "art/icons/gear/weapon-whisper_smg.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      161,
+      870,
+      863
+    ],
+    "sha256": "b916756013c04cb3db56a413db970873a054e1964531142606f77e5a26138765",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-whisper_smg.png",
+      "128": "art/icons/gear/exports/128/weapon-whisper_smg.png",
+      "64": "art/icons/gear/exports/64/weapon-whisper_smg.png",
+      "32": "art/icons/gear/exports/32/weapon-whisper_smg.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-whisper_smg.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 36,
+    "filename": "weapon-mandestra_drum_gun.png",
+    "label": "Mandestra drum-gun",
+    "family": "Submachine guns",
+    "path": "art/icons/gear/weapon-mandestra_drum_gun.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      160,
+      870,
+      865
+    ],
+    "sha256": "5e66c975478e57d858651ce349c38a7661f28f2afd2b893c91ad11b27d878d36",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-mandestra_drum_gun.png",
+      "128": "art/icons/gear/exports/128/weapon-mandestra_drum_gun.png",
+      "64": "art/icons/gear/exports/64/weapon-mandestra_drum_gun.png",
+      "32": "art/icons/gear/exports/32/weapon-mandestra_drum_gun.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-mandestra_drum_gun.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 37,
+    "filename": "weapon-lumeri_scattergun.png",
+    "label": "Lumeri scattergun",
+    "family": "Shotguns",
+    "path": "art/icons/gear/weapon-lumeri_scattergun.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      107,
+      921,
+      915
+    ],
+    "sha256": "1bc03bc277797f589a6d56cdeb00d488a046e14e120c783dfc59940bed80692b",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-lumeri_scattergun.png",
+      "128": "art/icons/gear/exports/128/weapon-lumeri_scattergun.png",
+      "64": "art/icons/gear/exports/64/weapon-lumeri_scattergun.png",
+      "32": "art/icons/gear/exports/32/weapon-lumeri_scattergun.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-lumeri_scattergun.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 38,
+    "filename": "weapon-coach_gun.png",
+    "label": "Coach gun",
+    "family": "Shotguns",
+    "path": "art/icons/gear/weapon-coach_gun.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      111,
+      102,
+      913,
+      921
+    ],
+    "sha256": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-coach_gun.png",
+      "128": "art/icons/gear/exports/128/weapon-coach_gun.png",
+      "64": "art/icons/gear/exports/64/weapon-coach_gun.png",
+      "32": "art/icons/gear/exports/32/weapon-coach_gun.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-coach_gun.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 39,
+    "filename": "weapon-sawn_off.png",
+    "label": "Sawn-off",
+    "family": "Shotguns",
+    "path": "art/icons/gear/weapon-sawn_off.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      107,
+      921,
+      917
+    ],
+    "sha256": "182449097f5759e63b764a0c3e22615aec2f9f69cf7967c48f7045a92765aabc",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-sawn_off.png",
+      "128": "art/icons/gear/exports/128/weapon-sawn_off.png",
+      "64": "art/icons/gear/exports/64/weapon-sawn_off.png",
+      "32": "art/icons/gear/exports/32/weapon-sawn_off.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-sawn_off.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 40,
+    "filename": "weapon-brigade_auto_shotgun.png",
+    "label": "Brigade auto-shotgun",
+    "family": "Shotguns",
+    "path": "art/icons/gear/weapon-brigade_auto_shotgun.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      103,
+      921,
+      921
+    ],
+    "sha256": "d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-brigade_auto_shotgun.png",
+      "128": "art/icons/gear/exports/128/weapon-brigade_auto_shotgun.png",
+      "64": "art/icons/gear/exports/64/weapon-brigade_auto_shotgun.png",
+      "32": "art/icons/gear/exports/32/weapon-brigade_auto_shotgun.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-brigade_auto_shotgun.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 41,
+    "filename": "weapon-blackpoint_700.png",
+    "label": ".700 Blackpoint anti-materiel",
+    "family": "Heavy weapons and launchers",
+    "path": "art/icons/gear/weapon-blackpoint_700.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      77,
+      89,
+      947,
+      935
+    ],
+    "sha256": "4114cbc7b9e92b77334d8bd1ed59cb9b359349f3d4d83a3aea654ab433850ef5",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-blackpoint_700.png",
+      "128": "art/icons/gear/exports/128/weapon-blackpoint_700.png",
+      "64": "art/icons/gear/exports/64/weapon-blackpoint_700.png",
+      "32": "art/icons/gear/exports/32/weapon-blackpoint_700.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-blackpoint_700.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 42,
+    "filename": "weapon-hellraiser_lmg.png",
+    "label": "Hellraiser LMG",
+    "family": "Heavy weapons and launchers",
+    "path": "art/icons/gear/weapon-hellraiser_lmg.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      77,
+      81,
+      947,
+      943
+    ],
+    "sha256": "41e839611f911c6e16ed33df550e9a5104d5d5891f60499ab24af75982713c99",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-hellraiser_lmg.png",
+      "128": "art/icons/gear/exports/128/weapon-hellraiser_lmg.png",
+      "64": "art/icons/gear/exports/64/weapon-hellraiser_lmg.png",
+      "32": "art/icons/gear/exports/32/weapon-hellraiser_lmg.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-hellraiser_lmg.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 43,
+    "filename": "weapon-hellraiser_rotary.png",
+    "label": "Hellraiser rotary",
+    "family": "Heavy weapons and launchers",
+    "path": "art/icons/gear/weapon-hellraiser_rotary.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      77,
+      77,
+      939,
+      946
+    ],
+    "sha256": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-hellraiser_rotary.png",
+      "128": "art/icons/gear/exports/128/weapon-hellraiser_rotary.png",
+      "64": "art/icons/gear/exports/64/weapon-hellraiser_rotary.png",
+      "32": "art/icons/gear/exports/32/weapon-hellraiser_rotary.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-hellraiser_rotary.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 44,
+    "filename": "weapon-smetanita_thumper.png",
+    "label": "Smetanita thumper",
+    "family": "Heavy weapons and launchers",
+    "path": "art/icons/gear/weapon-smetanita_thumper.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      82,
+      77,
+      942,
+      947
+    ],
+    "sha256": "6354abeadb429ac6452833cb2cecacdc7534bdbf3f6dcf856fba957c58982616",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-smetanita_thumper.png",
+      "128": "art/icons/gear/exports/128/weapon-smetanita_thumper.png",
+      "64": "art/icons/gear/exports/64/weapon-smetanita_thumper.png",
+      "32": "art/icons/gear/exports/32/weapon-smetanita_thumper.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-smetanita_thumper.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 45,
+    "filename": "weapon-breacher_tube.png",
+    "label": "Breacher tube",
+    "family": "Heavy weapons and launchers",
+    "path": "art/icons/gear/weapon-breacher_tube.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      77,
+      91,
+      947,
+      919
+    ],
+    "sha256": "da212443b07ddc1acc0bf3045dbad1fbcad6989521e731bf43ec318ddefa7334",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-breacher_tube.png",
+      "128": "art/icons/gear/exports/128/weapon-breacher_tube.png",
+      "64": "art/icons/gear/exports/64/weapon-breacher_tube.png",
+      "32": "art/icons/gear/exports/32/weapon-breacher_tube.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-breacher_tube.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 46,
+    "filename": "weapon-purifier_flamer.png",
+    "label": "Purifier flamer",
+    "family": "Heavy weapons and launchers",
+    "path": "art/icons/gear/weapon-purifier_flamer.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      77,
+      83,
+      947,
+      941
+    ],
+    "sha256": "f315ad1c1970249e94351f5e4c696af4109b5fc13f49400043d98586d8aec23f",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-purifier_flamer.png",
+      "128": "art/icons/gear/exports/128/weapon-purifier_flamer.png",
+      "64": "art/icons/gear/exports/64/weapon-purifier_flamer.png",
+      "32": "art/icons/gear/exports/32/weapon-purifier_flamer.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-purifier_flamer.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 47,
+    "filename": "weapon-recurve_bow.png",
+    "label": "Recurve bow",
+    "family": "Bows and crossbows",
+    "path": "art/icons/gear/weapon-recurve_bow.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      87,
+      937,
+      937
+    ],
+    "sha256": "99d911d23e02069a19152df8e8229e9ebaf2f90dd19d2c47900a2c9145df905e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-recurve_bow.png",
+      "128": "art/icons/gear/exports/128/weapon-recurve_bow.png",
+      "64": "art/icons/gear/exports/64/weapon-recurve_bow.png",
+      "32": "art/icons/gear/exports/32/weapon-recurve_bow.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-recurve_bow.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 48,
+    "filename": "weapon-crossbow.png",
+    "label": "Crossbow",
+    "family": "Bows and crossbows",
+    "path": "art/icons/gear/weapon-crossbow.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      95,
+      937,
+      929
+    ],
+    "sha256": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-crossbow.png",
+      "128": "art/icons/gear/exports/128/weapon-crossbow.png",
+      "64": "art/icons/gear/exports/64/weapon-crossbow.png",
+      "32": "art/icons/gear/exports/32/weapon-crossbow.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-crossbow.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 49,
+    "filename": "weapon-longbow.png",
+    "label": "Longbow",
+    "family": "Bows and crossbows",
+    "path": "art/icons/gear/weapon-longbow.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      97,
+      87,
+      927,
+      937
+    ],
+    "sha256": "1d5cdecce61c01040f856930aaca1b4ae702d1ed5203336c9c43a69aae29d368",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-longbow.png",
+      "128": "art/icons/gear/exports/128/weapon-longbow.png",
+      "64": "art/icons/gear/exports/64/weapon-longbow.png",
+      "32": "art/icons/gear/exports/32/weapon-longbow.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-longbow.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 50,
+    "filename": "weapon-repeating_crossbow.png",
+    "label": "Repeating crossbow",
+    "family": "Bows and crossbows",
+    "path": "art/icons/gear/weapon-repeating_crossbow.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      89,
+      87,
+      921,
+      926
+    ],
+    "sha256": "d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-repeating_crossbow.png",
+      "128": "art/icons/gear/exports/128/weapon-repeating_crossbow.png",
+      "64": "art/icons/gear/exports/64/weapon-repeating_crossbow.png",
+      "32": "art/icons/gear/exports/32/weapon-repeating_crossbow.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-repeating_crossbow.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 51,
+    "filename": "weapon-sabre.png",
+    "label": "Sabre",
+    "family": "Light blades and tools",
+    "path": "art/icons/gear/weapon-sabre.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      104,
+      921,
+      919
+    ],
+    "sha256": "cd3bbe4eb898b4d4072305ead7f2d46ae038dc525c85b6965e0043b8ea18bb80",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-sabre.png",
+      "128": "art/icons/gear/exports/128/weapon-sabre.png",
+      "64": "art/icons/gear/exports/64/weapon-sabre.png",
+      "32": "art/icons/gear/exports/32/weapon-sabre.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-sabre.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 52,
+    "filename": "weapon-throwing_knives.png",
+    "label": "Throwing knives",
+    "family": "Light blades and tools",
+    "path": "art/icons/gear/weapon-throwing_knives.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      113,
+      921,
+      911
+    ],
+    "sha256": "8e36e35a0a48efd17166fe67d9ed3e47343497619dc16b865d1a9c41ca88e71e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-throwing_knives.png",
+      "128": "art/icons/gear/exports/128/weapon-throwing_knives.png",
+      "64": "art/icons/gear/exports/64/weapon-throwing_knives.png",
+      "32": "art/icons/gear/exports/32/weapon-throwing_knives.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-throwing_knives.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 53,
+    "filename": "weapon-hatchet.png",
+    "label": "Hatchet",
+    "family": "Light blades and tools",
+    "path": "art/icons/gear/weapon-hatchet.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      117,
+      103,
+      921,
+      921
+    ],
+    "sha256": "a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-hatchet.png",
+      "128": "art/icons/gear/exports/128/weapon-hatchet.png",
+      "64": "art/icons/gear/exports/64/weapon-hatchet.png",
+      "32": "art/icons/gear/exports/32/weapon-hatchet.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-hatchet.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 54,
+    "filename": "weapon-legion_gladius.png",
+    "label": "Legion gladius",
+    "family": "Light blades and tools",
+    "path": "art/icons/gear/weapon-legion_gladius.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      108,
+      921,
+      916
+    ],
+    "sha256": "28e96e7333bce563f97911b40b91750c9a6b578573f85c2438e4e045a5c6cd92",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-legion_gladius.png",
+      "128": "art/icons/gear/exports/128/weapon-legion_gladius.png",
+      "64": "art/icons/gear/exports/64/weapon-legion_gladius.png",
+      "32": "art/icons/gear/exports/32/weapon-legion_gladius.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-legion_gladius.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 55,
+    "filename": "weapon-kemizuchi_duelling_blade.png",
+    "label": "Kemizuchi duelling blade",
+    "family": "Light blades and tools",
+    "path": "art/icons/gear/weapon-kemizuchi_duelling_blade.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      106,
+      105,
+      917,
+      921
+    ],
+    "sha256": "f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade.png",
+      "128": "art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade.png",
+      "64": "art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade.png",
+      "32": "art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-kemizuchi_duelling_blade.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 56,
+    "filename": "weapon-ork_machete.png",
+    "label": "Ork machete",
+    "family": "Heavy blades, blunt weapons and polearms",
+    "path": "art/icons/gear/weapon-ork_machete.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      108,
+      102,
+      916,
+      921
+    ],
+    "sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-ork_machete.png",
+      "128": "art/icons/gear/exports/128/weapon-ork_machete.png",
+      "64": "art/icons/gear/exports/64/weapon-ork_machete.png",
+      "32": "art/icons/gear/exports/32/weapon-ork_machete.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-ork_machete.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 57,
+    "filename": "weapon-maul.png",
+    "label": "Maul",
+    "family": "Heavy blades, blunt weapons and polearms",
+    "path": "art/icons/gear/weapon-maul.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      114,
+      921,
+      894
+    ],
+    "sha256": "50f0d5620bd8dd5a51d0e676e69ebad5e586a47a01634ac17ac96d7a26da8dac",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-maul.png",
+      "128": "art/icons/gear/exports/128/weapon-maul.png",
+      "64": "art/icons/gear/exports/64/weapon-maul.png",
+      "32": "art/icons/gear/exports/32/weapon-maul.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-maul.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 58,
+    "filename": "weapon-lance.png",
+    "label": "Lance",
+    "family": "Heavy blades, blunt weapons and polearms",
+    "path": "art/icons/gear/weapon-lance.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      103,
+      102,
+      921,
+      921
+    ],
+    "sha256": "20bff5d57a4df6bee81a29c9ab1e01390b6f232bf3073a275d99a105825a04a3",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-lance.png",
+      "128": "art/icons/gear/exports/128/weapon-lance.png",
+      "64": "art/icons/gear/exports/64/weapon-lance.png",
+      "32": "art/icons/gear/exports/32/weapon-lance.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-lance.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 59,
+    "filename": "weapon-war_axe.png",
+    "label": "War axe",
+    "family": "Heavy blades, blunt weapons and polearms",
+    "path": "art/icons/gear/weapon-war_axe.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      104,
+      921,
+      920
+    ],
+    "sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-war_axe.png",
+      "128": "art/icons/gear/exports/128/weapon-war_axe.png",
+      "64": "art/icons/gear/exports/64/weapon-war_axe.png",
+      "32": "art/icons/gear/exports/32/weapon-war_axe.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-war_axe.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 60,
+    "filename": "weapon-adamantile_greatsword.png",
+    "label": "Adamantile greatsword",
+    "family": "Heavy blades, blunt weapons and polearms",
+    "path": "art/icons/gear/weapon-adamantile_greatsword.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      105,
+      102,
+      919,
+      921
+    ],
+    "sha256": "74764eb60ffb2b26b581206171e9d7f9a44453f23c061fb636fef61e2efe7f12",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-adamantile_greatsword.png",
+      "128": "art/icons/gear/exports/128/weapon-adamantile_greatsword.png",
+      "64": "art/icons/gear/exports/64/weapon-adamantile_greatsword.png",
+      "32": "art/icons/gear/exports/32/weapon-adamantile_greatsword.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-adamantile_greatsword.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 61,
+    "filename": "weapon-glaive.png",
+    "label": "Glaive",
+    "family": "Heavy blades, blunt weapons and polearms",
+    "path": "art/icons/gear/weapon-glaive.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      123,
+      102,
+      900,
+      921
+    ],
+    "sha256": "c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-glaive.png",
+      "128": "art/icons/gear/exports/128/weapon-glaive.png",
+      "64": "art/icons/gear/exports/64/weapon-glaive.png",
+      "32": "art/icons/gear/exports/32/weapon-glaive.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-glaive.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 62,
+    "filename": "weapon-ork_rip_saw.png",
+    "label": "Ork rip-saw",
+    "family": "Heavy blades, blunt weapons and polearms",
+    "path": "art/icons/gear/weapon-ork_rip_saw.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      115,
+      102,
+      908,
+      921
+    ],
+    "sha256": "c84615ce46a39d894b3d9df041db64b66f0ea1470ccd8f08b1e3c0ce2e940776",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-ork_rip_saw.png",
+      "128": "art/icons/gear/exports/128/weapon-ork_rip_saw.png",
+      "64": "art/icons/gear/exports/64/weapon-ork_rip_saw.png",
+      "32": "art/icons/gear/exports/32/weapon-ork_rip_saw.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-ork_rip_saw.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 63,
+    "filename": "weapon-knuckledusters.png",
+    "label": "Knuckledusters",
+    "family": "Unarmed and natural weapons",
+    "path": "art/icons/gear/weapon-knuckledusters.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      129,
+      896,
+      894
+    ],
+    "sha256": "739f0487a4696800a0b0ac3979352df8cc595446a0d6f235cbcb5045d0fb245e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-knuckledusters.png",
+      "128": "art/icons/gear/exports/128/weapon-knuckledusters.png",
+      "64": "art/icons/gear/exports/64/weapon-knuckledusters.png",
+      "32": "art/icons/gear/exports/32/weapon-knuckledusters.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-knuckledusters.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 64,
+    "filename": "weapon-hellraiser_servo_fist.png",
+    "label": "Hellraiser servo-fist",
+    "family": "Unarmed and natural weapons",
+    "path": "art/icons/gear/weapon-hellraiser_servo_fist.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      129,
+      128,
+      895,
+      896
+    ],
+    "sha256": "194e053129041c6456b705be701992e72d6ec8420a7901f10fe8cf0bf92bec00",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-hellraiser_servo_fist.png",
+      "128": "art/icons/gear/exports/128/weapon-hellraiser_servo_fist.png",
+      "64": "art/icons/gear/exports/64/weapon-hellraiser_servo_fist.png",
+      "32": "art/icons/gear/exports/32/weapon-hellraiser_servo_fist.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-hellraiser_servo_fist.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 65,
+    "filename": "weapon-beast_bite.png",
+    "label": "Bite and claws",
+    "family": "Unarmed and natural weapons",
+    "path": "art/icons/gear/weapon-beast_bite.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      129,
+      128,
+      891,
+      896
+    ],
+    "sha256": "7f457aa27ebe1908fb9df93eb3a2d10efa67fbb8b029bb039bff882dace73a10",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-beast_bite.png",
+      "128": "art/icons/gear/exports/128/weapon-beast_bite.png",
+      "64": "art/icons/gear/exports/64/weapon-beast_bite.png",
+      "32": "art/icons/gear/exports/32/weapon-beast_bite.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-beast_bite.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 66,
+    "filename": "weapon-frag_grenade.png",
+    "label": "Frag grenade",
+    "family": "Grenades and explosives",
+    "path": "art/icons/gear/weapon-frag_grenade.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      164,
+      867,
+      865
+    ],
+    "sha256": "97105cdb00c750f82641139d84c46e516f211cb8782a60dd33254d5e6b49006f",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-frag_grenade.png",
+      "128": "art/icons/gear/exports/128/weapon-frag_grenade.png",
+      "64": "art/icons/gear/exports/64/weapon-frag_grenade.png",
+      "32": "art/icons/gear/exports/32/weapon-frag_grenade.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-frag_grenade.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 67,
+    "filename": "weapon-smoke_grenade.png",
+    "label": "Smoke grenade",
+    "family": "Grenades and explosives",
+    "path": "art/icons/gear/weapon-smoke_grenade.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      163,
+      153,
+      861,
+      870
+    ],
+    "sha256": "be5922ce28cda57d0763cc9ca06a8c3d710e04407b1c1ce47b206bc315525970",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-smoke_grenade.png",
+      "128": "art/icons/gear/exports/128/weapon-smoke_grenade.png",
+      "64": "art/icons/gear/exports/64/weapon-smoke_grenade.png",
+      "32": "art/icons/gear/exports/32/weapon-smoke_grenade.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-smoke_grenade.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 68,
+    "filename": "weapon-flashbang.png",
+    "label": "Flashbang",
+    "family": "Grenades and explosives",
+    "path": "art/icons/gear/weapon-flashbang.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      161,
+      153,
+      860,
+      870
+    ],
+    "sha256": "76e2077ec36195c2397ec34a8debc9b9ee899225afb93dcb5195c2bcdc87c1b1",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-flashbang.png",
+      "128": "art/icons/gear/exports/128/weapon-flashbang.png",
+      "64": "art/icons/gear/exports/64/weapon-flashbang.png",
+      "32": "art/icons/gear/exports/32/weapon-flashbang.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-flashbang.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 69,
+    "filename": "weapon-satchel_charge.png",
+    "label": "Satchel charge",
+    "family": "Grenades and explosives",
+    "path": "art/icons/gear/weapon-satchel_charge.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      158,
+      153,
+      866,
+      870
+    ],
+    "sha256": "07ef2d47b2682612fdad4cc657a034ae0544aae6c6e92c5d2eefaf721b732780",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-satchel_charge.png",
+      "128": "art/icons/gear/exports/128/weapon-satchel_charge.png",
+      "64": "art/icons/gear/exports/64/weapon-satchel_charge.png",
+      "32": "art/icons/gear/exports/32/weapon-satchel_charge.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-satchel_charge.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 70,
+    "filename": "weapon-incendiary_grenade.png",
+    "label": "Incendiary grenade",
+    "family": "Grenades and explosives",
+    "path": "art/icons/gear/weapon-incendiary_grenade.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      154,
+      153,
+      869,
+      860
+    ],
+    "sha256": "8cb7669e3e9fc0b7c5c58545cae242f2090ab00cb976b4da93df90457daf0fee",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-incendiary_grenade.png",
+      "128": "art/icons/gear/exports/128/weapon-incendiary_grenade.png",
+      "64": "art/icons/gear/exports/64/weapon-incendiary_grenade.png",
+      "32": "art/icons/gear/exports/32/weapon-incendiary_grenade.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-incendiary_grenade.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 71,
+    "filename": "weapon-bot_scrambler.png",
+    "label": "Bot-scrambler",
+    "family": "Grenades and explosives",
+    "path": "art/icons/gear/weapon-bot_scrambler.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      156,
+      161,
+      867,
+      861
+    ],
+    "sha256": "ce8b984ffb8a28202f0a5344a8d6eceee333b98e1625108ac0881dc67c0fb738",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-bot_scrambler.png",
+      "128": "art/icons/gear/exports/128/weapon-bot_scrambler.png",
+      "64": "art/icons/gear/exports/64/weapon-bot_scrambler.png",
+      "32": "art/icons/gear/exports/32/weapon-bot_scrambler.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-bot_scrambler.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 72,
+    "filename": "weapon-core_rifle.png",
+    "label": "Science Team core rifle",
+    "family": "Mana arms",
+    "path": "art/icons/gear/weapon-core_rifle.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      107,
+      103,
+      917,
+      921
+    ],
+    "sha256": "af6729737210a873c2c8002ef2d672cb9f2b0257ce3fb9b51f6317265ea1ea10",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-core_rifle.png",
+      "128": "art/icons/gear/exports/128/weapon-core_rifle.png",
+      "64": "art/icons/gear/exports/64/weapon-core_rifle.png",
+      "32": "art/icons/gear/exports/32/weapon-core_rifle.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-core_rifle.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 73,
+    "filename": "weapon-spellslinger_pistol.png",
+    "label": "Spellslinger's pistol",
+    "family": "Mana arms",
+    "path": "art/icons/gear/weapon-spellslinger_pistol.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      107,
+      102,
+      917,
+      921
+    ],
+    "sha256": "52c807eb7c781a8d5c7f941f417215cf6237b6d53206501b1b32f6b34d1c408e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-spellslinger_pistol.png",
+      "128": "art/icons/gear/exports/128/weapon-spellslinger_pistol.png",
+      "64": "art/icons/gear/exports/64/weapon-spellslinger_pistol.png",
+      "32": "art/icons/gear/exports/32/weapon-spellslinger_pistol.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-spellslinger_pistol.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 74,
+    "filename": "weapon-evoker_blade.png",
+    "label": "Evoker blade",
+    "family": "Mana arms",
+    "path": "art/icons/gear/weapon-evoker_blade.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      112,
+      921,
+      912
+    ],
+    "sha256": "c0053b826f74dfb8916a37fc7ecd1e7df1d2a216da00bb3a33568726b2974fc7",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-evoker_blade.png",
+      "128": "art/icons/gear/exports/128/weapon-evoker_blade.png",
+      "64": "art/icons/gear/exports/64/weapon-evoker_blade.png",
+      "32": "art/icons/gear/exports/32/weapon-evoker_blade.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-evoker_blade.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 75,
+    "filename": "weapon-emanator_gauntlet.png",
+    "label": "Emanator gauntlet",
+    "family": "Mana arms",
+    "path": "art/icons/gear/weapon-emanator_gauntlet.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      110,
+      102,
+      913,
+      921
+    ],
+    "sha256": "0e63dc224d15837b444846c1763961c9f9166691bf0a066b18c06715d961901b",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-emanator_gauntlet.png",
+      "128": "art/icons/gear/exports/128/weapon-emanator_gauntlet.png",
+      "64": "art/icons/gear/exports/64/weapon-emanator_gauntlet.png",
+      "32": "art/icons/gear/exports/32/weapon-emanator_gauntlet.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-emanator_gauntlet.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 76,
+    "filename": "weapon-lumeri_censer_gun.png",
+    "label": "Lumeri censer gun",
+    "family": "Mana arms",
+    "path": "art/icons/gear/weapon-lumeri_censer_gun.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      107,
+      102,
+      917,
+      921
+    ],
+    "sha256": "6a1fe04b004d8a6f951a0da65888ed6c95eac0b4d020dc1b60c1b49163956a68",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-lumeri_censer_gun.png",
+      "128": "art/icons/gear/exports/128/weapon-lumeri_censer_gun.png",
+      "64": "art/icons/gear/exports/64/weapon-lumeri_censer_gun.png",
+      "32": "art/icons/gear/exports/32/weapon-lumeri_censer_gun.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-lumeri_censer_gun.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 77,
+    "filename": "weapon-bot_thread_banner.png",
+    "label": "Bot-thread banner",
+    "family": "Mana arms",
+    "path": "art/icons/gear/weapon-bot_thread_banner.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      107,
+      102,
+      917,
+      921
+    ],
+    "sha256": "a921425cfa3302536816c3931140439d5081a176e05fac4804a1a6a42bdf0ac0",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-bot_thread_banner.png",
+      "128": "art/icons/gear/exports/128/weapon-bot_thread_banner.png",
+      "64": "art/icons/gear/exports/64/weapon-bot_thread_banner.png",
+      "32": "art/icons/gear/exports/32/weapon-bot_thread_banner.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-bot_thread_banner.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 78,
+    "filename": "weapon-grand_staff.png",
+    "label": "Grand staff",
+    "family": "Mana arms",
+    "path": "art/icons/gear/weapon-grand_staff.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      111,
+      921,
+      913
+    ],
+    "sha256": "50c5f9e9ecc5268e40bcf9784a32caf37d550ec1cf647ad8253f90c805b40281",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-grand_staff.png",
+      "128": "art/icons/gear/exports/128/weapon-grand_staff.png",
+      "64": "art/icons/gear/exports/64/weapon-grand_staff.png",
+      "32": "art/icons/gear/exports/32/weapon-grand_staff.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-grand_staff.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 79,
+    "filename": "shield-buckler.png",
+    "label": "Buckler",
+    "family": "Shields",
+    "path": "art/icons/gear/shield-buckler.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      91,
+      87,
+      932,
+      937
+    ],
+    "sha256": "1aeb92d2b419c48978476f314468c35639a89abe0732b5edf8cdbcc4d8510b9b",
+    "exports": {
+      "256": "art/icons/gear/exports/256/shield-buckler.png",
+      "128": "art/icons/gear/exports/128/shield-buckler.png",
+      "64": "art/icons/gear/exports/64/shield-buckler.png",
+      "32": "art/icons/gear/exports/32/shield-buckler.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/shield-buckler.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 80,
+    "filename": "shield-riot_shield.png",
+    "label": "Legion riot shield",
+    "family": "Shields",
+    "path": "art/icons/gear/shield-riot_shield.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      109,
+      912,
+      901
+    ],
+    "sha256": "be50f5e0eae8c794f4ba47ebc2e9d8d19f7a8a8cde211262e39c655d9195e8f0",
+    "exports": {
+      "256": "art/icons/gear/exports/256/shield-riot_shield.png",
+      "128": "art/icons/gear/exports/128/shield-riot_shield.png",
+      "64": "art/icons/gear/exports/64/shield-riot_shield.png",
+      "32": "art/icons/gear/exports/32/shield-riot_shield.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/shield-riot_shield.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 81,
+    "filename": "shield-pavise.png",
+    "label": "Pavise",
+    "family": "Shields",
+    "path": "art/icons/gear/shield-pavise.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      88,
+      87,
+      935,
+      937
+    ],
+    "sha256": "5d4a3d9d3befae48f6fa549b634ad79ef864406fd5186a9e75ea6fd19aac4d52",
+    "exports": {
+      "256": "art/icons/gear/exports/256/shield-pavise.png",
+      "128": "art/icons/gear/exports/128/shield-pavise.png",
+      "64": "art/icons/gear/exports/64/shield-pavise.png",
+      "32": "art/icons/gear/exports/32/shield-pavise.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/shield-pavise.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 82,
+    "filename": "armour-field_helmet.png",
+    "label": "Field helmet",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-field_helmet.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      90,
+      937,
+      933
+    ],
+    "sha256": "d32379fb535b312e867f35936b1b3dbbc1c4ae28cbd4ad8a8394a70bb2c75fe8",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-field_helmet.png",
+      "128": "art/icons/gear/exports/128/armour-field_helmet.png",
+      "64": "art/icons/gear/exports/64/armour-field_helmet.png",
+      "32": "art/icons/gear/exports/32/armour-field_helmet.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-field_helmet.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 83,
+    "filename": "armour-ballistic_helmet.png",
+    "label": "Ballistic helmet",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-ballistic_helmet.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      94,
+      87,
+      929,
+      937
+    ],
+    "sha256": "7358ee39e955f8f5362faee1f96608313272f0cc164d0c7ca6b22c5755460d2f",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-ballistic_helmet.png",
+      "128": "art/icons/gear/exports/128/armour-ballistic_helmet.png",
+      "64": "art/icons/gear/exports/64/armour-ballistic_helmet.png",
+      "32": "art/icons/gear/exports/32/armour-ballistic_helmet.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-ballistic_helmet.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 84,
+    "filename": "armour-night_goggles.png",
+    "label": "Night-sight goggles",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-night_goggles.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      92,
+      937,
+      932
+    ],
+    "sha256": "87b18113df301af7e4ac7d5e21afef5e251aafc32624c3a5a9b29370a41af813",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-night_goggles.png",
+      "128": "art/icons/gear/exports/128/armour-night_goggles.png",
+      "64": "art/icons/gear/exports/64/armour-night_goggles.png",
+      "32": "art/icons/gear/exports/32/armour-night_goggles.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-night_goggles.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 85,
+    "filename": "armour-gas_mask.png",
+    "label": "Gas mask",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-gas_mask.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      88,
+      937,
+      936
+    ],
+    "sha256": "a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-gas_mask.png",
+      "128": "art/icons/gear/exports/128/armour-gas_mask.png",
+      "64": "art/icons/gear/exports/64/armour-gas_mask.png",
+      "32": "art/icons/gear/exports/32/armour-gas_mask.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-gas_mask.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 86,
+    "filename": "armour-prescription_glasses.png",
+    "label": "Prescription glasses",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-prescription_glasses.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      87,
+      937,
+      937
+    ],
+    "sha256": "0f44b47bed85ac981c11a1f5d31a6d3f1cffe87e4365576ea2dab0369cc3aef2",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-prescription_glasses.png",
+      "128": "art/icons/gear/exports/128/armour-prescription_glasses.png",
+      "64": "art/icons/gear/exports/64/armour-prescription_glasses.png",
+      "32": "art/icons/gear/exports/32/armour-prescription_glasses.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-prescription_glasses.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 87,
+    "filename": "armour-smiling_mask.png",
+    "label": "Smiling mask",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-smiling_mask.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      87,
+      936,
+      937
+    ],
+    "sha256": "a4041379dedc8aa9b2468e69b5e6cf60021c4581dacf44837461c54a3ddc9b9a",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-smiling_mask.png",
+      "128": "art/icons/gear/exports/128/armour-smiling_mask.png",
+      "64": "art/icons/gear/exports/64/armour-smiling_mask.png",
+      "32": "art/icons/gear/exports/32/armour-smiling_mask.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-smiling_mask.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 88,
+    "filename": "armour-padded_undershirt.png",
+    "label": "Padded undershirt",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-padded_undershirt.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      137,
+      936,
+      918
+    ],
+    "sha256": "da04bbb067c16ca0c133c96426d79b1cb0ca8c46ab3eb533b34a12017e7af6ed",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-padded_undershirt.png",
+      "128": "art/icons/gear/exports/128/armour-padded_undershirt.png",
+      "64": "art/icons/gear/exports/64/armour-padded_undershirt.png",
+      "32": "art/icons/gear/exports/32/armour-padded_undershirt.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-padded_undershirt.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 89,
+    "filename": "armour-trauma_plate.png",
+    "label": "Trauma plate insert",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-trauma_plate.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      88,
+      87,
+      936,
+      937
+    ],
+    "sha256": "34cbf6f62a75b1718185be1bcc9eba105ad8fae3bac0b9e3bfb522e777a0a767",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-trauma_plate.png",
+      "128": "art/icons/gear/exports/128/armour-trauma_plate.png",
+      "64": "art/icons/gear/exports/64/armour-trauma_plate.png",
+      "32": "art/icons/gear/exports/32/armour-trauma_plate.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-trauma_plate.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 90,
+    "filename": "armour-utility_belt.png",
+    "label": "Utility belt",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-utility_belt.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      94,
+      87,
+      929,
+      937
+    ],
+    "sha256": "4bb4cedeb68f51fde7c8749b6b0f34e1f4af6522504e5e1c38bd580a9d79f498",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-utility_belt.png",
+      "128": "art/icons/gear/exports/128/armour-utility_belt.png",
+      "64": "art/icons/gear/exports/64/armour-utility_belt.png",
+      "32": "art/icons/gear/exports/32/armour-utility_belt.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-utility_belt.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 91,
+    "filename": "armour-armoured_belt.png",
+    "label": "Armoured belt",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-armoured_belt.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      109,
+      937,
+      914
+    ],
+    "sha256": "62aca06a1b568ececfb41659464c314668671b49259e0aa537da112f75318bfd",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-armoured_belt.png",
+      "128": "art/icons/gear/exports/128/armour-armoured_belt.png",
+      "64": "art/icons/gear/exports/64/armour-armoured_belt.png",
+      "32": "art/icons/gear/exports/32/armour-armoured_belt.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-armoured_belt.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 92,
+    "filename": "armour-armoured_greaves.png",
+    "label": "Armoured greaves",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-armoured_greaves.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      91,
+      87,
+      933,
+      937
+    ],
+    "sha256": "fb960809ab40e72d1ceb6c00a35824825eb38dadfb660993bd789e6b459d7056",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-armoured_greaves.png",
+      "128": "art/icons/gear/exports/128/armour-armoured_greaves.png",
+      "64": "art/icons/gear/exports/64/armour-armoured_greaves.png",
+      "32": "art/icons/gear/exports/32/armour-armoured_greaves.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-armoured_greaves.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 93,
+    "filename": "armour-runner_trousers.png",
+    "label": "Runner's trousers",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-runner_trousers.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      104,
+      937,
+      920
+    ],
+    "sha256": "2e2fe38e84e0e8da30560a478bc6af62db8c4de93fdf8a690e7ec84747e2f977",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-runner_trousers.png",
+      "128": "art/icons/gear/exports/128/armour-runner_trousers.png",
+      "64": "art/icons/gear/exports/64/armour-runner_trousers.png",
+      "32": "art/icons/gear/exports/32/armour-runner_trousers.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-runner_trousers.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 94,
+    "filename": "armour-work_gloves.png",
+    "label": "Work gloves",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-work_gloves.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      88,
+      87,
+      936,
+      937
+    ],
+    "sha256": "4ad6c1706c2db4051f02d71ec41d3e878c23c5be12661864a81d80888f6b12c6",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-work_gloves.png",
+      "128": "art/icons/gear/exports/128/armour-work_gloves.png",
+      "64": "art/icons/gear/exports/64/armour-work_gloves.png",
+      "32": "art/icons/gear/exports/32/armour-work_gloves.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-work_gloves.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 95,
+    "filename": "armour-combat_gloves.png",
+    "label": "Combat gloves",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-combat_gloves.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      105,
+      87,
+      919,
+      937
+    ],
+    "sha256": "66dc7cda8639e28a20fc66538026fe2eb4880e85be90e3508ed73d3671b57b25",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-combat_gloves.png",
+      "128": "art/icons/gear/exports/128/armour-combat_gloves.png",
+      "64": "art/icons/gear/exports/64/armour-combat_gloves.png",
+      "32": "art/icons/gear/exports/32/armour-combat_gloves.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-combat_gloves.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 96,
+    "filename": "armour-field_boots.png",
+    "label": "Field boots",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-field_boots.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      90,
+      88,
+      934,
+      937
+    ],
+    "sha256": "ba426f025a3b38a93adca821a970134edb9ecabb89498f09ee28f6e117d8083e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-field_boots.png",
+      "128": "art/icons/gear/exports/128/armour-field_boots.png",
+      "64": "art/icons/gear/exports/64/armour-field_boots.png",
+      "32": "art/icons/gear/exports/32/armour-field_boots.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-field_boots.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 97,
+    "filename": "armour-heavy_boots.png",
+    "label": "Heavy boots",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-heavy_boots.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      97,
+      87,
+      925,
+      937
+    ],
+    "sha256": "bf6aa28766f45a090f5289c830c5638b78a1b54fc8034dda83eca4e4d839bf96",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-heavy_boots.png",
+      "128": "art/icons/gear/exports/128/armour-heavy_boots.png",
+      "64": "art/icons/gear/exports/64/armour-heavy_boots.png",
+      "32": "art/icons/gear/exports/32/armour-heavy_boots.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-heavy_boots.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 98,
+    "filename": "armour-torso_class4_assault.png",
+    "label": "armour-torso_class4_assault",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-torso_class4_assault.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      93,
+      87,
+      931,
+      937
+    ],
+    "sha256": "e89e958a8111b23300a6bc1a9cbabcc089e50ed980659f45d39ddebdd726978a",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-torso_class4_assault.png",
+      "128": "art/icons/gear/exports/128/armour-torso_class4_assault.png",
+      "64": "art/icons/gear/exports/64/armour-torso_class4_assault.png",
+      "32": "art/icons/gear/exports/32/armour-torso_class4_assault.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-torso_class4_assault.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 99,
+    "filename": "armour-torso_class5_juggernaut.png",
+    "label": "armour-torso_class5_juggernaut",
+    "family": "Armour by weight, and clothing",
+    "path": "art/icons/gear/armour-torso_class5_juggernaut.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      98,
+      87,
+      926,
+      937
+    ],
+    "sha256": "0330e412b117353ba0c949b970e873970eaa5ee2e60c320e284a404d16ad990c",
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-torso_class5_juggernaut.png",
+      "128": "art/icons/gear/exports/128/armour-torso_class5_juggernaut.png",
+      "64": "art/icons/gear/exports/64/armour-torso_class5_juggernaut.png",
+      "32": "art/icons/gear/exports/32/armour-torso_class5_juggernaut.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/armour-torso_class5_juggernaut.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 100,
+    "filename": "focus-visualizer.png",
+    "label": "Visualizer",
+    "family": "Focuses: the three gloves",
+    "path": "art/icons/gear/focus-visualizer.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      90,
+      87,
+      933,
+      937
+    ],
+    "sha256": "b0184fad79241f59ef9f6afd4ef1e696b48c29e03ce6c9e76cbea1b36ca3f1ac",
+    "exports": {
+      "256": "art/icons/gear/exports/256/focus-visualizer.png",
+      "128": "art/icons/gear/exports/128/focus-visualizer.png",
+      "64": "art/icons/gear/exports/64/focus-visualizer.png",
+      "32": "art/icons/gear/exports/32/focus-visualizer.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/focus-visualizer.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 101,
+    "filename": "consumable-essence_of_experience.png",
+    "label": "Essence of Experience",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/consumable-essence_of_experience.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      129,
+      128,
+      895,
+      896
+    ],
+    "sha256": "cd46066e7ea18a8b0654420acac35b2351d167eb3e4366b4f775e212edb2b3b0",
+    "exports": {
+      "256": "art/icons/gear/exports/256/consumable-essence_of_experience.png",
+      "128": "art/icons/gear/exports/128/consumable-essence_of_experience.png",
+      "64": "art/icons/gear/exports/64/consumable-essence_of_experience.png",
+      "32": "art/icons/gear/exports/32/consumable-essence_of_experience.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/consumable-essence_of_experience.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 102,
+    "filename": "consumable-sigil_plate.png",
+    "label": "Sigil plate",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/consumable-sigil_plate.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      142,
+      129,
+      882,
+      896
+    ],
+    "sha256": "7094902b7d910007d7bd60a597e13d7f62a4841efceba06610720fc87c083f20",
+    "exports": {
+      "256": "art/icons/gear/exports/256/consumable-sigil_plate.png",
+      "128": "art/icons/gear/exports/128/consumable-sigil_plate.png",
+      "64": "art/icons/gear/exports/64/consumable-sigil_plate.png",
+      "32": "art/icons/gear/exports/32/consumable-sigil_plate.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/consumable-sigil_plate.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 103,
+    "filename": "consumable-heart_plate.png",
+    "label": "Heart plate",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/consumable-heart_plate.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      130,
+      128,
+      892,
+      896
+    ],
+    "sha256": "6faf2377f53631ced3a55668ad0010ec67cb2d882b4b92f4e4422631a1c5a20e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/consumable-heart_plate.png",
+      "128": "art/icons/gear/exports/128/consumable-heart_plate.png",
+      "64": "art/icons/gear/exports/64/consumable-heart_plate.png",
+      "32": "art/icons/gear/exports/32/consumable-heart_plate.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/consumable-heart_plate.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 104,
+    "filename": "light-torch.png",
+    "label": "Torch",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/light-torch.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      129,
+      896,
+      895
+    ],
+    "sha256": "5e7e134b175fac38db2507ff00b7ddecb7a77817b6e8f8f151b739200b1099a1",
+    "exports": {
+      "256": "art/icons/gear/exports/256/light-torch.png",
+      "128": "art/icons/gear/exports/128/light-torch.png",
+      "64": "art/icons/gear/exports/64/light-torch.png",
+      "32": "art/icons/gear/exports/32/light-torch.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/light-torch.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 105,
+    "filename": "light-flare.png",
+    "label": "Flare",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/light-flare.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      134,
+      128,
+      890,
+      896
+    ],
+    "sha256": "5d14a7b82437647fa08354058cf4e6bc4dbb44cdfd03c3b56d17b53ad7fa54b8",
+    "exports": {
+      "256": "art/icons/gear/exports/256/light-flare.png",
+      "128": "art/icons/gear/exports/128/light-flare.png",
+      "64": "art/icons/gear/exports/64/light-flare.png",
+      "32": "art/icons/gear/exports/32/light-flare.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/light-flare.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 106,
+    "filename": "tool-musek_blestor.png",
+    "label": "Musek Blestor",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/tool-musek_blestor.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      131,
+      128,
+      893,
+      896
+    ],
+    "sha256": "60ab91b28fbe3a58570df15f89b39cd6c640019a7d9223645e31ec5aea4e7044",
+    "exports": {
+      "256": "art/icons/gear/exports/256/tool-musek_blestor.png",
+      "128": "art/icons/gear/exports/128/tool-musek_blestor.png",
+      "64": "art/icons/gear/exports/64/tool-musek_blestor.png",
+      "32": "art/icons/gear/exports/32/tool-musek_blestor.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/tool-musek_blestor.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 107,
+    "filename": "tool-toolbox.png",
+    "label": "Toolbox",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/tool-toolbox.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      131,
+      896,
+      894
+    ],
+    "sha256": "bba0793af050a0f45f72fc71e78258697ace49265634e7f5f9674d3289da8c84",
+    "exports": {
+      "256": "art/icons/gear/exports/256/tool-toolbox.png",
+      "128": "art/icons/gear/exports/128/tool-toolbox.png",
+      "64": "art/icons/gear/exports/64/tool-toolbox.png",
+      "32": "art/icons/gear/exports/32/tool-toolbox.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/tool-toolbox.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 108,
+    "filename": "tool-grimoire.png",
+    "label": "Grimoire",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/tool-grimoire.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      128,
+      895,
+      896
+    ],
+    "sha256": "96a97489a6eb5afaee59ecbd893ecdd3d22ed65bcde411dd1284d1480838f05e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/tool-grimoire.png",
+      "128": "art/icons/gear/exports/128/tool-grimoire.png",
+      "64": "art/icons/gear/exports/64/tool-grimoire.png",
+      "32": "art/icons/gear/exports/32/tool-grimoire.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/tool-grimoire.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 109,
+    "filename": "food-bottle_of_spirits.png",
+    "label": "Bottle of spirits",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/food-bottle_of_spirits.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      133,
+      896,
+      892
+    ],
+    "sha256": "030afb3a60f0b240c1ca399517cc382f6a36b14d816bbc4e4f7204e7e1f67ff2",
+    "exports": {
+      "256": "art/icons/gear/exports/256/food-bottle_of_spirits.png",
+      "128": "art/icons/gear/exports/128/food-bottle_of_spirits.png",
+      "64": "art/icons/gear/exports/64/food-bottle_of_spirits.png",
+      "32": "art/icons/gear/exports/32/food-bottle_of_spirits.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/food-bottle_of_spirits.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 110,
+    "filename": "food-cigarettes.png",
+    "label": "Pack of cigarettes",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/food-cigarettes.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      130,
+      896,
+      894
+    ],
+    "sha256": "bd175fa9a2df4e84540eceddad3d4e94ae84c47bd3e9e8e36a23f23a943782be",
+    "exports": {
+      "256": "art/icons/gear/exports/256/food-cigarettes.png",
+      "128": "art/icons/gear/exports/128/food-cigarettes.png",
+      "64": "art/icons/gear/exports/64/food-cigarettes.png",
+      "32": "art/icons/gear/exports/32/food-cigarettes.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/food-cigarettes.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 111,
+    "filename": "loot-contraband.png",
+    "label": "Contraband",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/loot-contraband.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      133,
+      128,
+      891,
+      896
+    ],
+    "sha256": "ce9bca305764d08511b8006e21446fbc2c97120ea6ff01ea6f3c900228945b0a",
+    "exports": {
+      "256": "art/icons/gear/exports/256/loot-contraband.png",
+      "128": "art/icons/gear/exports/128/loot-contraband.png",
+      "64": "art/icons/gear/exports/64/loot-contraband.png",
+      "32": "art/icons/gear/exports/32/loot-contraband.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/loot-contraband.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 112,
+    "filename": "loot-personal_effects.png",
+    "label": "loot-personal_effects",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/loot-personal_effects.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      129,
+      896,
+      895
+    ],
+    "sha256": "3d76231da42722757445be2fac3181ee0f1f1faea8614e4ff66ef7d9b0f0e574",
+    "exports": {
+      "256": "art/icons/gear/exports/256/loot-personal_effects.png",
+      "128": "art/icons/gear/exports/128/loot-personal_effects.png",
+      "64": "art/icons/gear/exports/64/loot-personal_effects.png",
+      "32": "art/icons/gear/exports/32/loot-personal_effects.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/loot-personal_effects.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 113,
+    "filename": "document-city_id.png",
+    "label": "Central City ID",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/document-city_id.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      129,
+      135,
+      895,
+      896
+    ],
+    "sha256": "e842a4e9009b75f15d64bed23ece80404ac4f7bca84f9e9e06150de2081ae64e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/document-city_id.png",
+      "128": "art/icons/gear/exports/128/document-city_id.png",
+      "64": "art/icons/gear/exports/64/document-city_id.png",
+      "32": "art/icons/gear/exports/32/document-city_id.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/document-city_id.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 114,
+    "filename": "document-bank_card.png",
+    "label": "Bank card",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/document-bank_card.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      135,
+      896,
+      888
+    ],
+    "sha256": "ec5f9c022125c99b111fbda7050e2bb10a96cfa9f63bb2b79ed695b1cbf622c1",
+    "exports": {
+      "256": "art/icons/gear/exports/256/document-bank_card.png",
+      "128": "art/icons/gear/exports/128/document-bank_card.png",
+      "64": "art/icons/gear/exports/64/document-bank_card.png",
+      "32": "art/icons/gear/exports/32/document-bank_card.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/document-bank_card.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 115,
+    "filename": "augment-prosthetic_arm.png",
+    "label": "Prosthetic arm",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/augment-prosthetic_arm.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      128,
+      894,
+      896
+    ],
+    "sha256": "6b36ced3d972b8948d483738127c3d6df3be4803cc0b1e37e0798b2cae257ca9",
+    "exports": {
+      "256": "art/icons/gear/exports/256/augment-prosthetic_arm.png",
+      "128": "art/icons/gear/exports/128/augment-prosthetic_arm.png",
+      "64": "art/icons/gear/exports/64/augment-prosthetic_arm.png",
+      "32": "art/icons/gear/exports/32/augment-prosthetic_arm.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/augment-prosthetic_arm.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 116,
+    "filename": "companion-drone_frame.png",
+    "label": "Drone frame",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/companion-drone_frame.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      132,
+      128,
+      891,
+      896
+    ],
+    "sha256": "957c138cdd78ea80a00c8d755cd649a7e019b34fe647417940fca8fbfca11612",
+    "exports": {
+      "256": "art/icons/gear/exports/256/companion-drone_frame.png",
+      "128": "art/icons/gear/exports/128/companion-drone_frame.png",
+      "64": "art/icons/gear/exports/64/companion-drone_frame.png",
+      "32": "art/icons/gear/exports/32/companion-drone_frame.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/companion-drone_frame.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 117,
+    "filename": "mod-red_dot.png",
+    "label": "Red dot sight",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-red_dot.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      132,
+      128,
+      891,
+      896
+    ],
+    "sha256": "56bb984956d50eeba06a0ae0ffe004b2fffbb7cbadf6b09b3d63acd5fc3dfb9a",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-red_dot.png",
+      "128": "art/icons/gear/exports/128/mod-red_dot.png",
+      "64": "art/icons/gear/exports/64/mod-red_dot.png",
+      "32": "art/icons/gear/exports/32/mod-red_dot.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-red_dot.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 118,
+    "filename": "mod-scope.png",
+    "label": "Scope",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-scope.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      137,
+      896,
+      887
+    ],
+    "sha256": "058f407177fe908b121050e699568bc2ecec754fbcaa67aaeb505b92cb42b1d9",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-scope.png",
+      "128": "art/icons/gear/exports/128/mod-scope.png",
+      "64": "art/icons/gear/exports/64/mod-scope.png",
+      "32": "art/icons/gear/exports/32/mod-scope.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-scope.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 119,
+    "filename": "mod-suppressor.png",
+    "label": "Suppressor",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-suppressor.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      129,
+      138,
+      894,
+      896
+    ],
+    "sha256": "52acc4c84b4b32c45bbc752169ddc2f93fe479123f07cfed776c0448f5d540fa",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-suppressor.png",
+      "128": "art/icons/gear/exports/128/mod-suppressor.png",
+      "64": "art/icons/gear/exports/64/mod-suppressor.png",
+      "32": "art/icons/gear/exports/32/mod-suppressor.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-suppressor.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 120,
+    "filename": "mod-compensator.png",
+    "label": "Compensator",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-compensator.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      138,
+      896,
+      886
+    ],
+    "sha256": "358b67c44f2332bb6f7793cbc680c780bb2127e8512efdf3305ac944ec8dbe58",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-compensator.png",
+      "128": "art/icons/gear/exports/128/mod-compensator.png",
+      "64": "art/icons/gear/exports/64/mod-compensator.png",
+      "32": "art/icons/gear/exports/32/mod-compensator.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-compensator.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 121,
+    "filename": "mod-extended_mag.png",
+    "label": "Extended magazine",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-extended_mag.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      128,
+      896,
+      895
+    ],
+    "sha256": "01fe8976dec119742cbc009811d601953608f47253b0dce36515408a1a62343e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-extended_mag.png",
+      "128": "art/icons/gear/exports/128/mod-extended_mag.png",
+      "64": "art/icons/gear/exports/64/mod-extended_mag.png",
+      "32": "art/icons/gear/exports/32/mod-extended_mag.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-extended_mag.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 122,
+    "filename": "mod-quick_release.png",
+    "label": "Quick-release magazine",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-quick_release.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      128,
+      896,
+      895
+    ],
+    "sha256": "03016c95eeee9c83ad404ec2674a7259866ad4d64c0f142d358551a736e06295",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-quick_release.png",
+      "128": "art/icons/gear/exports/128/mod-quick_release.png",
+      "64": "art/icons/gear/exports/64/mod-quick_release.png",
+      "32": "art/icons/gear/exports/32/mod-quick_release.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-quick_release.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 123,
+    "filename": "mod-foregrip.png",
+    "label": "Foregrip",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-foregrip.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      140,
+      128,
+      884,
+      896
+    ],
+    "sha256": "bb367f3b4ce2ac71d8e3b5c98803dff28d8fa3571ecf26dee1cfaf0f6050ae77",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-foregrip.png",
+      "128": "art/icons/gear/exports/128/mod-foregrip.png",
+      "64": "art/icons/gear/exports/64/mod-foregrip.png",
+      "32": "art/icons/gear/exports/32/mod-foregrip.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-foregrip.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 124,
+    "filename": "mod-bayonet.png",
+    "label": "Bayonet",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-bayonet.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      136,
+      896,
+      887
+    ],
+    "sha256": "d2ea384687bd1bd29cfae5db32637513eafe10535f295dfe8c424ffd20fb34dc",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-bayonet.png",
+      "128": "art/icons/gear/exports/128/mod-bayonet.png",
+      "64": "art/icons/gear/exports/64/mod-bayonet.png",
+      "32": "art/icons/gear/exports/32/mod-bayonet.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-bayonet.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 125,
+    "filename": "mod-underslung.png",
+    "label": "Underslung launcher",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-underslung.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      130,
+      128,
+      894,
+      880
+    ],
+    "sha256": "b676bc1c37e31c82560b503526a9f3babfc6482bf80abeacb4a50efa1f4264b6",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-underslung.png",
+      "128": "art/icons/gear/exports/128/mod-underslung.png",
+      "64": "art/icons/gear/exports/64/mod-underslung.png",
+      "32": "art/icons/gear/exports/32/mod-underslung.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-underslung.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 126,
+    "filename": "mod-serrated.png",
+    "label": "Serrated edge",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-serrated.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      132,
+      896,
+      891
+    ],
+    "sha256": "0b2c4fbf8bf94011ec5722dbe239ce8455a2d791272a80031ed0cb41d9aa171b",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-serrated.png",
+      "128": "art/icons/gear/exports/128/mod-serrated.png",
+      "64": "art/icons/gear/exports/64/mod-serrated.png",
+      "32": "art/icons/gear/exports/32/mod-serrated.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-serrated.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 127,
+    "filename": "mod-weighted.png",
+    "label": "Weighted head",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-weighted.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      133,
+      128,
+      890,
+      896
+    ],
+    "sha256": "f3875bed1e22d39cef30407e23a6d7a6f75a9f9dbc310e21ed96a16e3c601365",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-weighted.png",
+      "128": "art/icons/gear/exports/128/mod-weighted.png",
+      "64": "art/icons/gear/exports/64/mod-weighted.png",
+      "32": "art/icons/gear/exports/32/mod-weighted.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-weighted.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 128,
+    "filename": "mod-wrapped_grip.png",
+    "label": "Wrapped grip",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-wrapped_grip.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      130,
+      128,
+      894,
+      896
+    ],
+    "sha256": "aa42b170778a02419c8a5e5f7965df59b47291e999470462d7cbba45a153310a",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-wrapped_grip.png",
+      "128": "art/icons/gear/exports/128/mod-wrapped_grip.png",
+      "64": "art/icons/gear/exports/64/mod-wrapped_grip.png",
+      "32": "art/icons/gear/exports/32/mod-wrapped_grip.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-wrapped_grip.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 129,
+    "filename": "mod-sigil_magazine.png",
+    "label": "Sigil-etched magazine",
+    "family": "Weapon mods",
+    "path": "art/icons/gear/mod-sigil_magazine.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      134,
+      128,
+      890,
+      896
+    ],
+    "sha256": "2d985b33a02c616d7664f20e2e3cf9c3dfffd5379cfa5bb93ddf39942267e80a",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mod-sigil_magazine.png",
+      "128": "art/icons/gear/exports/128/mod-sigil_magazine.png",
+      "64": "art/icons/gear/exports/64/mod-sigil_magazine.png",
+      "32": "art/icons/gear/exports/32/mod-sigil_magazine.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mod-sigil_magazine.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 130,
+    "filename": "ammo-armor_piercing.png",
+    "label": "Armour-piercing rounds",
+    "family": "Special ammunition",
+    "path": "art/icons/gear/ammo-armor_piercing.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      156,
+      153,
+      864,
+      870
+    ],
+    "sha256": "113ca977daf04fecd61aaf8d87068851647c11ea952fddcbcc085db76a3eceaa",
+    "exports": {
+      "256": "art/icons/gear/exports/256/ammo-armor_piercing.png",
+      "128": "art/icons/gear/exports/128/ammo-armor_piercing.png",
+      "64": "art/icons/gear/exports/64/ammo-armor_piercing.png",
+      "32": "art/icons/gear/exports/32/ammo-armor_piercing.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/ammo-armor_piercing.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 131,
+    "filename": "ammo-hollow_point.png",
+    "label": "Hollow-point rounds",
+    "family": "Special ammunition",
+    "path": "art/icons/gear/ammo-hollow_point.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      155,
+      153,
+      868,
+      870
+    ],
+    "sha256": "d4dbc9cdc68dd0f4b96118a46597f956f138a212631d839954af9b3a9996d3e8",
+    "exports": {
+      "256": "art/icons/gear/exports/256/ammo-hollow_point.png",
+      "128": "art/icons/gear/exports/128/ammo-hollow_point.png",
+      "64": "art/icons/gear/exports/64/ammo-hollow_point.png",
+      "32": "art/icons/gear/exports/32/ammo-hollow_point.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/ammo-hollow_point.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 132,
+    "filename": "ammo-incendiary.png",
+    "label": "Incendiary rounds",
+    "family": "Special ammunition",
+    "path": "art/icons/gear/ammo-incendiary.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      157,
+      153,
+      866,
+      870
+    ],
+    "sha256": "60b44ed64f99e6cbd7a548784829fd203449f3d79eacb22fe442a0d13a498d58",
+    "exports": {
+      "256": "art/icons/gear/exports/256/ammo-incendiary.png",
+      "128": "art/icons/gear/exports/128/ammo-incendiary.png",
+      "64": "art/icons/gear/exports/64/ammo-incendiary.png",
+      "32": "art/icons/gear/exports/32/ammo-incendiary.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/ammo-incendiary.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 133,
+    "filename": "ammo-enhanced.png",
+    "label": "Enhanced rounds",
+    "family": "Special ammunition",
+    "path": "art/icons/gear/ammo-enhanced.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      156,
+      870,
+      868
+    ],
+    "sha256": "ec39099941b1c047e4f5d5c2d053a376b14b765430c4e64c835b64e858eac653",
+    "exports": {
+      "256": "art/icons/gear/exports/256/ammo-enhanced.png",
+      "128": "art/icons/gear/exports/128/ammo-enhanced.png",
+      "64": "art/icons/gear/exports/64/ammo-enhanced.png",
+      "32": "art/icons/gear/exports/32/ammo-enhanced.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/ammo-enhanced.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 134,
+    "filename": "rounds-shell.png",
+    "label": "rounds-shell",
+    "family": "Loose rounds by calibre",
+    "path": "art/icons/gear/rounds-shell.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      155,
+      870,
+      868
+    ],
+    "sha256": "a96c7fb9105e64c51cb74549ef4a24d6e9e02dc817bc9307a8e5e3825fbd07ae",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-shell.png",
+      "128": "art/icons/gear/exports/128/rounds-shell.png",
+      "64": "art/icons/gear/exports/64/rounds-shell.png",
+      "32": "art/icons/gear/exports/32/rounds-shell.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-shell.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 135,
+    "filename": "rounds-700.png",
+    "label": "rounds-700",
+    "family": "Loose rounds by calibre",
+    "path": "art/icons/gear/rounds-700.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      162,
+      870,
+      865
+    ],
+    "sha256": "74ea397685c6edd2e1b0dfb4bd0b4da009bbfab8b6da2ed7c88058205ded4f54",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-700.png",
+      "128": "art/icons/gear/exports/128/rounds-700.png",
+      "64": "art/icons/gear/exports/64/rounds-700.png",
+      "32": "art/icons/gear/exports/32/rounds-700.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-700.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 136,
+    "filename": "rounds-arrow.png",
+    "label": "rounds-arrow",
+    "family": "Loose rounds by calibre",
+    "path": "art/icons/gear/rounds-arrow.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      153,
+      156,
+      870,
+      867
+    ],
+    "sha256": "08f10709488b093a42e2b0447f02ec2432c5d0692b8f8e3722e4b296044eb96c",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-arrow.png",
+      "128": "art/icons/gear/exports/128/rounds-arrow.png",
+      "64": "art/icons/gear/exports/64/rounds-arrow.png",
+      "32": "art/icons/gear/exports/32/rounds-arrow.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-arrow.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 137,
+    "filename": "rounds-bolt.png",
+    "label": "rounds-bolt",
+    "family": "Loose rounds by calibre",
+    "path": "art/icons/gear/rounds-bolt.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      154,
+      155,
+      869,
+      870
+    ],
+    "sha256": "ececfaab07311616b893a213a8cea2600359d6662cef0bc54b050ad347a9b3a0",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-bolt.png",
+      "128": "art/icons/gear/exports/128/rounds-bolt.png",
+      "64": "art/icons/gear/exports/64/rounds-bolt.png",
+      "32": "art/icons/gear/exports/32/rounds-bolt.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-bolt.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 138,
+    "filename": "rounds-50_frontier.png",
+    "label": "rounds-50_frontier",
+    "family": "Loose rounds by calibre",
+    "path": "art/icons/gear/rounds-50_frontier.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      157,
+      153,
+      867,
+      870
+    ],
+    "sha256": "d8af322a27f2fe5104c1fd367461fd0c7c51c37fb49ac30194bdad72ec883f8e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-50_frontier.png",
+      "128": "art/icons/gear/exports/128/rounds-50_frontier.png",
+      "64": "art/icons/gear/exports/64/rounds-50_frontier.png",
+      "32": "art/icons/gear/exports/32/rounds-50_frontier.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-50_frontier.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 139,
+    "filename": "rounds-40mm_grenade.png",
+    "label": "rounds-40mm_grenade",
+    "family": "Loose rounds by calibre",
+    "path": "art/icons/gear/rounds-40mm_grenade.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      156,
+      153,
+      867,
+      870
+    ],
+    "sha256": "332124da1926e596982f2cc6e77c80bdfe51eb769cceab42e841b28b3c356e84",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-40mm_grenade.png",
+      "128": "art/icons/gear/exports/128/rounds-40mm_grenade.png",
+      "64": "art/icons/gear/exports/64/rounds-40mm_grenade.png",
+      "32": "art/icons/gear/exports/32/rounds-40mm_grenade.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-40mm_grenade.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 140,
+    "filename": "rounds-rocket.png",
+    "label": "rounds-rocket",
+    "family": "Loose rounds by calibre",
+    "path": "art/icons/gear/rounds-rocket.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      155,
+      153,
+      868,
+      870
+    ],
+    "sha256": "8c48d21b18c43479ec07746155bbf07737ae4a97cde866df7dc531d651dcc957",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-rocket.png",
+      "128": "art/icons/gear/exports/128/rounds-rocket.png",
+      "64": "art/icons/gear/exports/64/rounds-rocket.png",
+      "32": "art/icons/gear/exports/32/rounds-rocket.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-rocket.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 141,
+    "filename": "rounds-fuel_canister.png",
+    "label": "rounds-fuel_canister",
+    "family": "Loose rounds by calibre",
+    "path": "art/icons/gear/rounds-fuel_canister.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      158,
+      153,
+      865,
+      870
+    ],
+    "sha256": "ae49d4c315158b8b3af9e882e31b6cc2b78d51e0e7f3c6056bcebb27f80f8b3c",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-fuel_canister.png",
+      "128": "art/icons/gear/exports/128/rounds-fuel_canister.png",
+      "64": "art/icons/gear/exports/64/rounds-fuel_canister.png",
+      "32": "art/icons/gear/exports/32/rounds-fuel_canister.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-fuel_canister.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 142,
+    "filename": "rounds-core_charge.png",
+    "label": "rounds-core_charge",
+    "family": "Loose rounds by calibre",
+    "path": "art/icons/gear/rounds-core_charge.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      160,
+      153,
+      864,
+      870
+    ],
+    "sha256": "9df0d93298ca7492eac3500c8ce7a7edd630de22c5642e26a9182e363714ec5f",
+    "exports": {
+      "256": "art/icons/gear/exports/256/rounds-core_charge.png",
+      "128": "art/icons/gear/exports/128/rounds-core_charge.png",
+      "64": "art/icons/gear/exports/64/rounds-core_charge.png",
+      "32": "art/icons/gear/exports/32/rounds-core_charge.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/rounds-core_charge.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 143,
+    "filename": "mag-smg_32.png",
+    "label": "mag-smg_32",
+    "family": "Magazines and loaders",
+    "path": "art/icons/gear/mag-smg_32.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      105,
+      921,
+      918
+    ],
+    "sha256": "546e037854997fce9b408a65e3651bb05c221d347295162214d5a9d1986f0761",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-smg_32.png",
+      "128": "art/icons/gear/exports/128/mag-smg_32.png",
+      "64": "art/icons/gear/exports/64/mag-smg_32.png",
+      "32": "art/icons/gear/exports/32/mag-smg_32.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mag-smg_32.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 144,
+    "filename": "mag-blackpoint_700.png",
+    "label": "mag-blackpoint_700",
+    "family": "Magazines and loaders",
+    "path": "art/icons/gear/mag-blackpoint_700.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      107,
+      102,
+      917,
+      921
+    ],
+    "sha256": "86fd29551f00048f468522cfa93b9528b1dd0400a0f18b58cfa8884f4be4a7f2",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-blackpoint_700.png",
+      "128": "art/icons/gear/exports/128/mag-blackpoint_700.png",
+      "64": "art/icons/gear/exports/64/mag-blackpoint_700.png",
+      "32": "art/icons/gear/exports/32/mag-blackpoint_700.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mag-blackpoint_700.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 145,
+    "filename": "mag-speedloader_50.png",
+    "label": "mag-speedloader_50",
+    "family": "Magazines and loaders",
+    "path": "art/icons/gear/mag-speedloader_50.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      104,
+      921,
+      920
+    ],
+    "sha256": "a9594b6a15eec1d2e45509dcaffad615fee5e8b610f9df38dfd271e4560f9c5e",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-speedloader_50.png",
+      "128": "art/icons/gear/exports/128/mag-speedloader_50.png",
+      "64": "art/icons/gear/exports/64/mag-speedloader_50.png",
+      "32": "art/icons/gear/exports/32/mag-speedloader_50.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mag-speedloader_50.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 146,
+    "filename": "mag-drum_32.png",
+    "label": "mag-drum_32",
+    "family": "Magazines and loaders",
+    "path": "art/icons/gear/mag-drum_32.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      102,
+      121,
+      921,
+      914
+    ],
+    "sha256": "c3339689ceafdd5dead007367fd27d22096ec9aa7ae087b5c422955af8b40250",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-drum_32.png",
+      "128": "art/icons/gear/exports/128/mag-drum_32.png",
+      "64": "art/icons/gear/exports/64/mag-drum_32.png",
+      "32": "art/icons/gear/exports/32/mag-drum_32.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mag-drum_32.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 147,
+    "filename": "mag-belt.png",
+    "label": "mag-belt",
+    "family": "Magazines and loaders",
+    "path": "art/icons/gear/mag-belt.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      106,
+      102,
+      918,
+      921
+    ],
+    "sha256": "bcf477d96daaced65a1d5ec02750e9913b3e5f0699e43a3230495832a23dd074",
+    "exports": {
+      "256": "art/icons/gear/exports/256/mag-belt.png",
+      "128": "art/icons/gear/exports/128/mag-belt.png",
+      "64": "art/icons/gear/exports/64/mag-belt.png",
+      "32": "art/icons/gear/exports/32/mag-belt.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/mag-belt.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 148,
+    "filename": "focus-attuner.png",
+    "label": "Attuner",
+    "family": "Focuses: the four gloves",
+    "path": "art/icons/gear/focus-attuner.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      87,
+      89,
+      937,
+      935
+    ],
+    "sha256": "e5c096f0816f62ee9e2a86cacb9741a5c73d21dc35dea0f6c66f8d55a9b27a84",
+    "exports": {
+      "256": "art/icons/gear/exports/256/focus-attuner.png",
+      "128": "art/icons/gear/exports/128/focus-attuner.png",
+      "64": "art/icons/gear/exports/64/focus-attuner.png",
+      "32": "art/icons/gear/exports/32/focus-attuner.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/focus-attuner.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 149,
+    "filename": "consumable-toxin_vial.png",
+    "label": "Toxin vial",
+    "family": "Consumables, tools, lights, food, documents, loot",
+    "path": "art/icons/gear/consumable-toxin_vial.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      128,
+      128,
+      896,
+      896
+    ],
+    "sha256": "dd85c4dac901fb476b69ef67d4b102f2db41f7fdfc944a1b0a9dff8784b403bf",
+    "exports": {
+      "256": "art/icons/gear/exports/256/consumable-toxin_vial.png",
+      "128": "art/icons/gear/exports/128/consumable-toxin_vial.png",
+      "64": "art/icons/gear/exports/64/consumable-toxin_vial.png",
+      "32": "art/icons/gear/exports/32/consumable-toxin_vial.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/consumable-toxin_vial.png",
+    "origin": "brief",
+    "production_approved": false
+  },
+  {
+    "number": 150,
+    "filename": "weapon-katana.png",
+    "label": "Katana",
+    "family": "Light blades and tools",
+    "path": "art/icons/gear/weapon-katana.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      108,
+      102,
+      915,
+      920
+    ],
+    "sha256": "b85f62d7bb1c016172d06ca63c6296e0fefacfbdd00867cf21384a3c76675ff6",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-katana.png",
+      "128": "art/icons/gear/exports/128/weapon-katana.png",
+      "64": "art/icons/gear/exports/64/weapon-katana.png",
+      "32": "art/icons/gear/exports/32/weapon-katana.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-katana.png",
+    "origin": "user-requested addition",
+    "production_approved": false
+  },
+  {
+    "number": 151,
+    "filename": "weapon-emanator_katana.png",
+    "label": "Emanator katana",
+    "family": "Mana arms",
+    "path": "art/icons/gear/weapon-emanator_katana.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "alpha_bbox": [
+      114,
+      102,
+      909,
+      921
+    ],
+    "sha256": "d233c40bd47cb963171d3c8228d1123549249a3e7657321c7bd369bf2aa1c4f3",
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-emanator_katana.png",
+      "128": "art/icons/gear/exports/128/weapon-emanator_katana.png",
+      "64": "art/icons/gear/exports/64/weapon-emanator_katana.png",
+      "32": "art/icons/gear/exports/32/weapon-emanator_katana.png"
+    },
+    "status": "review-candidate",
+    "source": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-emanator_katana.png",
+    "origin": "user-requested addition",
+    "production_approved": false
+  }
+]

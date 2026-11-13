@@ -1,0 +1,22 @@
+[
+  {
+    "number": 1,
+    "filename": "weapon-service_pistol.png",
+    "source": "/workspace/generated_images/exec-87526d48-a1f2-4234-a0c4-f1ad3fdb617a.png"
+  },
+  {
+    "number": 2,
+    "filename": "weapon-drifter_revolver.png",
+    "source": "/workspace/generated_images/exec-4796d538-089d-4faa-a6cc-827e251ff49c.png"
+  },
+  {
+    "number": 3,
+    "filename": "weapon-decrkm_smg.png",
+    "source": "/workspace/generated_images/exec-0ce810e5-2560-4fc5-aaba-bdba9a037364.png"
+  },
+  {
+    "number": 4,
+    "filename": "weapon-hellraiser_service_rifle.png",
+    "source": "/workspace/generated_images/exec-e0081549-d617-4b72-996a-618d7207c3e0.png"
+  }
+]

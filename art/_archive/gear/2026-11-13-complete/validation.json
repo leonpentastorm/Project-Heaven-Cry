@@ -1,0 +1,27 @@
+{
+  "delivered": 151,
+  "expected": 151,
+  "missing_numbers": [],
+  "png_validation": "all masters and four runtime sizes passed RGBA, dimensions, nonempty opaque content and transparent borders",
+  "native_dimensions": [
+    [
+      1254,
+      1254
+    ]
+  ],
+  "master_dimensions": [
+    1024,
+    1024
+  ],
+  "runtime_sizes": [
+    256,
+    128,
+    64,
+    32
+  ],
+  "integration": "Masters, exports and gear catalog registered on a dedicated art branch. Web asset pipeline and game data integration remain separate.",
+  "visual_review": "All assets inspected in native or numbered previews; all seven 64/32 px sheets inspected; light-background alpha sheets sampled across firearms, clothing, focuses and additions.",
+  "brief_filename_match": "149 of 149 exact; two user additions separately numbered",
+  "unique_assets": 151,
+  "runtime_guard": "32px exports have a one-pixel transparent guard against Lanczos edge ringing."
+}
