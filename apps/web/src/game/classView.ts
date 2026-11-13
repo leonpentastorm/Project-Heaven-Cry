@@ -102,7 +102,7 @@ export function attributeProgress(c: any, clsId: string) {
     nextLine: next ? 'Rank ' + ROMAN_RANK[rank + 1] + ' at ' + an + ' ' + next + (total < next ? ' · ' + (next - total) + ' to go' : ' ✓') + ' and level ' + nextLevel + (lv < nextLevel ? ' · ' + (nextLevel - lv) + ' to go' : ' ✓') : 'Top rank' };
 }
 
-const RES_WORD: Record<string, string> = { guard: 'Guard', momentum: 'Momentum', heat: 'Heat', marks: 'Marks', toxins: 'Toxin doses', flux: 'Flux', supplies: 'Supplies', mp: 'MP', strain: 'Strain', devotion: 'Devotion' };
+const RES_WORD: Record<string, string> = { guard: 'Guard', momentum: 'Momentum', heat: 'Heat', marks: 'Marks', toxins: 'Toxin doses', flux: 'Flux', supplies: 'Supplies', mp: 'MP', strain: 'Strain', devotion: 'Devotion', ledger: 'the Ledger' }; // (rules 1.33: the Mender's)
 /** A class's resources in words: "Marks (max 3) · Toxin doses". */
 export function resourceLine(clsId: string): string {
   const k: any = (CLASS as any)[clsId]; if (!k) return '';

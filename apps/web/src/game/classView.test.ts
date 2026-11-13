@@ -50,7 +50,7 @@ describe('classView', () => {
     expect(v.tagline).toBe(CLASS.infiltrator.tagline); expect(v.resource).toBe('Marks (max 3) · Toxin doses');
     expect(v.moves.map((m: any) => m.name)).toEqual(CLASS.infiltrator.ranks.I.moves.map((m: any) => m.name));
     expect(v.moves.length).toBe(2); expect(v.icon).toMatch(/^data:image\/svg\+xml,/);
-    expect(resourceLine('bard')).toBe('Supplies · MP · Strain');
+    expect(resourceLine('bard')).toBe('MP · the Ledger'); // rules 1.33: Supplies left the Mender
   });
   it('a held shelved advanced class shows nothing of its own; a move origin maps to the class that holds it now', () => {
     const c = charWith({ classId: 'marksman', advancedClass: 'gunslinger' } as any);
