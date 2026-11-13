@@ -31,7 +31,7 @@ import { windowStep } from './effects/actions';
 import { type Hazard, hazardStep, spotHazards, hazardLiveAt, HAZARD } from './hazards';
 import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PILE } from './containers';
 import { canStand, standBlocker, unitsIn, inBounds, work } from './kit';
-import { setBraced, setDowned, setNailed, stagger, clearStagger, rawDazed, rawBleed } from './unitstate';
+import { setBraced, setDowned, setNailed, stagger, clearStagger, rawDazed, rawBleed, setSideSees } from './unitstate';
 import { setProne, bleedTick, dazeSpent } from './magic';
 import { condMods, condDef } from './condtable';
 
@@ -959,6 +959,7 @@ export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly 
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
+setSideSees(sideSeesUnit); // rawHidden (unitstate.ts) keeps where a side last saw a unit that hides
 /** A walk's sight, per side: '1' at each path tile where that side sees the mover, '0' where it doesn't (presentation
  * only: the client walks a hostile in from the fog edge and out into it, and never draws it where it was unseen). */
 export function pathSight(cb: Combat, u: Unit, path: string[]): { pc: string; foe: string } {

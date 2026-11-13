@@ -15,7 +15,10 @@
 //   else calls applyCond(cb, rng, by, target, 'bleeding' | 'dazed' | 'prone' | 'hidden') and endCond(target, id, cb).
 //     rawBleed(u, rounds)  rawDazed(u, n)  rawProne(u, on, endBrace?)  rawHidden(cb, u, on)
 import type { Combat, Unit } from './combat';
-import { sideSeesUnit } from './combat';
+/** Does a side see this unit now (combat.ts sideSeesUnit)? Set by combat.ts when it loads: importing it here would
+ * close a module cycle and change the load order (13 Nov 2026). */
+let sideSeesUnit: (cb: Combat, side: 'pc' | 'foe', u: Unit) => boolean = () => false;
+export const setSideSees = (f: typeof sideSeesUnit) => { sideSeesUnit = f; };
 
 // ---------- unit states ----------
 /** Braced: on (a Brace, a class move's stance) or off (it moved, was pushed, went Prone, changed weapon). */
