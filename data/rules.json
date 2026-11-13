@@ -998,6 +998,27 @@
       }
     ],
     "calibres_provisional": true,
+    "magazine_prices": {
+      "about": "Rules 1.42 (Core Rules, Ammo and calibres: empty magazines cost 30 for a pistol, 40 for a rifle, 25 for a speedloader, 60 for a drum or box). An empty magazine's price for a gun: by its reload unit first (speedloader, drum, belt), then by its category (pistol calibres 30, heavy boxes 60), else the default. A full magazine adds its rounds at the calibre's price (credits.ts priceOf).",
+      "by_unit": {
+        "speedloader": 25,
+        "drum": 60,
+        "belt": 60
+      },
+      "by_category": {
+        "pistol": 30,
+        "smg": 30,
+        "mana": 30,
+        "heavy": 60
+      },
+      "default": 40,
+      "provisional": true
+    },
+    "special_round_price": {
+      "about": "Rules 1.42: special rounds fit any gun, so a round's price is its `price_mult` (items.json) times this calibre's round price (Core Rules: armour-piercing x3, hollow-point x2, incendiary x3 of a rifle round); enhanced rounds have their own price.",
+      "calibre": "rifle",
+      "provisional": true
+    },
     "reloading": {
       "cost_ap": 2,
       "magazine": "speed reload (cost_ap): swap in the fullest spare magazine; the one in the gun drops into the pile on your tile, empty or with its rounds and ammo type (spec items 679, 680)",

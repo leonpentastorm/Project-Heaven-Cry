@@ -59,8 +59,8 @@
     "provisional": true
   },
   "nodes": {
-    "about": "Rules 1.41: what each kind of node without a fight says on its panel. Until build steps 4 and 4a the shop, Forge, training ground, shrine and Crossroads only say what will be here, and the party moves on.",
-    "shop": "A shop will stand here: every calibre always in stock, rolled gear, selling, the grade step and gives between players. It opens with the next build step.",
+    "about": "Rules 1.41, 1.42: what each kind of node without a fight says on its panel. The shop opens full screen (rules 1.42); until build step 4a the Forge, training ground, shrine and Crossroads only say what will be here, and the party moves on.",
+    "shop": "A shop: every calibre always in stock, today's rolled gear, selling, and gives between players.",
     "forge": "A Forge will stand here: the grade step for less, the Relic step, mods and worn pieces, armour fitting. It opens with a later build step.",
     "training": "A training ground will stand here: one big training each (drill, study or practice), and a second for credits. It opens with a later build step.",
     "shrine": "A shrine will stand here: a rite for Devotion, a knowledge piece, or the patron's token. It opens with a later build step.",
@@ -75,7 +75,7 @@
     "elite": "A harder fight, opted into: an Elite and its line. Better pay and a better pick.",
     "gate": "The gate: an Elite every path passes. Better pay and a better pick.",
     "boss": "The stage's Boss. The best pay and pick of the stage; beating it clears the stage.",
-    "shop": "A shop: refills, gear, selling and the grade step. Costs credits. (Opens with the next build step.)",
+    "shop": "A shop: refills of every calibre, cores and supplies, today's rolled gear, and selling. Costs credits; it opens full screen.",
     "forge": "A Forge: the grade step for less, the Relic step, mods. Costs credits. (Opens with a later build step.)",
     "training": "A training ground: one big training each. Costs a node not spent fighting. (Opens with a later build step.)",
     "shrine": "A shrine: a rite, a knowledge piece or the patron's token. (Opens with a later build step.)",
@@ -179,6 +179,136 @@
     { "id": "rim", "name": "Rim station", "kinds": { "robot": 4, "drone": 3, "machine": 2, "human": 1 },
       "boss": { "name": "Chapter warframe", "kind": "robot", "weapon": "hellraiser_lmg", "casters": [], "portrait": "boss-robot-warframe" }, "pool": "survival", "provisional": true }
   ],
+  "shop": {
+    "about": "Rules 1.42 (spec rules 25 to 27, section 8.3): the shop. `always`: the counter, never sold out, at the fixed price of credits.ts priceOf, in shelves (`guns`: a magazine or the rounds of every gun the party carries, worked out per visit; `restock`: the persistent class resources, a point at a time; the others list ids); `per`: how many one purchase gives (a stack of rounds). `stock`: the rolled gear of a visit, shared by the party (first buyer): `weapons` weapons and foci and `items` items in the depth's price band (rewards.price_band, on the standard price), and `rare` pieces in the band times `rare_band` at `rare_rarity`; rarity by `rarity` (the last row whose `from_stage` the stage reaches), every roll capped by the stage's ceiling (rewards.ceiling); `item_categories`: the items.json categories it may roll (mods and armour are the Forge's). `restock_price`: credits a point of a persistent class resource. `max_qty`: the most of one counter line in one purchase.",
+    "always": [
+      { "shelf": "guns", "name": "For your guns", "ids": [] },
+      { "shelf": "calibres", "name": "Every calibre", "ids": [ { "id": "rounds:.32 decrkm", "per": 20 }, { "id": "rounds:rifle", "per": 20 }, { "id": "rounds:revolver", "per": 12 }, { "id": "rounds:.50 frontier", "per": 10 }, { "id": "rounds:.700", "per": 3 }, { "id": "rounds:shell", "per": 12 }, { "id": "rounds:arrow", "per": 10 }, { "id": "rounds:bolt", "per": 10 }, { "id": "rounds:40 mm grenade", "per": 1 }, { "id": "rounds:rocket", "per": 1 }, { "id": "rounds:fuel canister", "per": 1 }, { "id": "rounds:core charge", "per": 10 } ] },
+      { "shelf": "special", "name": "Special rounds", "ids": [ { "id": "ammo_armor_piercing", "per": 10 }, { "id": "ammo_hollow_point", "per": 10 }, { "id": "ammo_incendiary", "per": 10 }, { "id": "ammo_enhanced", "per": 10 } ] },
+      { "shelf": "thrown", "name": "Thrown", "ids": [ { "id": "frag_grenade", "per": 1 }, { "id": "smoke_grenade", "per": 1 }, { "id": "flashbang", "per": 1 }, { "id": "incendiary_grenade", "per": 1 }, { "id": "throwing_knives", "per": 1 } ] },
+      { "shelf": "cores", "name": "Cores", "ids": [ { "id": "standard_core", "per": 1 } ] },
+      { "shelf": "supplies", "name": "Field supplies", "ids": [ { "id": "spare_parts", "per": 1 }, { "id": "stim_injector", "per": 1 }, { "id": "field_kit", "per": 1 }, { "id": "ration_pack", "per": 1 } ] },
+      { "shelf": "restock", "name": "Restock", "ids": [] }
+    ],
+    "max_qty": 10,
+    "stock": {
+      "weapons": 3, "items": 2, "rare": 1, "rare_band": 1.5, "rare_rarity": { "fine": 60, "masterwork": 40 },
+      "rarity": [
+        { "from_stage": 1, "standard": 70, "fine": 25, "masterwork": 5 },
+        { "from_stage": 2, "standard": 50, "fine": 35, "masterwork": 15 },
+        { "from_stage": 4, "standard": 45, "fine": 35, "masterwork": 15, "relic": 5 }
+      ],
+      "item_categories": ["consumable", "tool", "light", "shield", "food"]
+    },
+    "restock_price": 40,
+    "provisional": true
+  },
+  "sell_rate": { "about": "Rules 1.42 (spec rule 27, Leon 13 Nov): a sale pays `rate` of the price at the item's own rarity, its fitted mods at theirs (credits.ts priceOf); plot items and the unpriced cannot be sold.", "rate": 0.25, "provisional": true },
+  "faces": {
+    "about": "Rules 1.42 (spec section 3.4): the faces of the safe nodes: one shopkeeper per setting, one armourer, drill sergeant and medic for every setting, the shrine's patron. `portrait` and `backdrop` are the art/catalog.json ids the artist will deliver (`*_pending: true` until they land); `fallback` is a world-pool portrait (catalog `characters`; the patron's is the rolled patron's own, `fallback_patron`) and `backdrop_fallback` an illustration id (catalog `illustrations`), or null for the ground colour, drawn meanwhile. `bias` weights the rolled stock by tag (weapon, item, melee, thrown, focus, mana, core, mod); `price` multiplies the rolled stock's prices only. `lines`: greet, bought, cant_afford, sold, sold_to (a rolled piece another player took), gave, leave.",
+    "items": [
+      { "id": "quartermaster", "name": "Ledda Kroll", "role": "Chapter quartermaster", "node": "shop", "settings": ["ahoc"], "portrait": "keeper-ahoc", "portrait_pending": true, "fallback": "drava-keel", "backdrop": "shop-ahoc", "backdrop_pending": true, "backdrop_fallback": "m813-outpost-hangar", "bias": {"weapon": 1.5}, "price": 1.0,
+        "lines": {
+          "greet": ["Sign for it or don't touch it.", "Chapter stores. Everything here is counted twice and blessed once.", "You look like someone who just spent a magazine on a wall. Restock."],
+          "bought": ["Logged.", "Signed out to you. Bring back the casing if you can.", "That is on the ledger now."],
+          "cant_afford": ["The chapter doesn't do credit.", "Come back with the credits. The rifle will wait."],
+          "sold": ["I'll find a use for it.", "Back into stores. Somebody will be glad of it."],
+          "sold_to": ["Gone. Signed out to someone faster."],
+          "gave": ["Sharing kit. Put it in the ledger."],
+          "leave": ["Bring it back in one piece.", "Stay off the lists."]
+        }, "provisional": true },
+      { "id": "dealer", "name": "Sefa Mire", "role": "Back-alley dealer", "node": "shop", "settings": ["city"], "portrait": "keeper-city", "portrait_pending": true, "fallback": "selka-noon", "backdrop": "shop-city", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"item": 1.5}, "price": 0.9,
+        "lines": {
+          "greet": ["You didn't see me. I didn't see you. Now, what do you need?", "Everything here fell off something. The prices are honest, which is more than the streets are."],
+          "bought": ["Pleasure.", "Don't tell anyone where you got it."],
+          "cant_afford": ["Then window-shop somewhere else, friend.", "Short. I don't do favours, I do business."],
+          "sold": ["I know a buyer.", "That'll move by morning."],
+          "sold_to": ["Somebody beat you to it."],
+          "gave": ["Generous. Bad for business."],
+          "leave": ["You were never here."]
+        }, "provisional": true },
+      { "id": "sutler", "name": "Brann Okoye", "role": "Camp sutler", "node": "shop", "settings": ["field"], "portrait": "keeper-field", "portrait_pending": true, "fallback": "basko-rell", "backdrop": "shop-field", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"melee": 1.5, "thrown": 1.5}, "price": 0.95,
+        "lines": {
+          "greet": ["Mind the mud. Blades on the left, bangs on the right.", "The front takes everything eventually. Take what you need first."],
+          "bought": ["Good choice. Sharp end away from you.", "That'll see you through the next trench."],
+          "cant_afford": ["The war doesn't give discounts and neither do I."],
+          "sold": ["Salvage is salvage.", "I'll sell it to the next poor sod."],
+          "sold_to": ["Gone with the last squad."],
+          "gave": ["Look after each other out there."],
+          "leave": ["Keep your head below the line."]
+        }, "provisional": true },
+      { "id": "trader", "name": "Ivo Smetanin", "role": "Smetanita trader", "node": "shop", "settings": ["works"], "portrait": "keeper-works", "portrait_pending": true, "fallback": "pell-morrow", "backdrop": "shop-works", "backdrop_pending": true, "backdrop_fallback": "m813-rear-pad-loading", "bias": {"focus": 2.0, "mana": 2.0}, "price": 1.15,
+        "lines": {
+          "greet": ["Smetanita goods. Precision costs, and precision is all I sell.", "Gloves, cores, tools of the trade. The foundry makes, I deliver."],
+          "bought": ["A sound investment.", "Calibrated this morning."],
+          "cant_afford": ["Quality has a price. You are below it."],
+          "sold": ["I'll have it refurbished.", "Acceptable condition."],
+          "sold_to": ["Already contracted."],
+          "gave": ["A transfer. Noted."],
+          "leave": ["The foundry thanks you."]
+        }, "provisional": true },
+      { "id": "reliquary", "name": "Sister Amaun", "role": "Reliquary keeper", "node": "shop", "settings": ["shrine"], "portrait": "keeper-shrine", "portrait_pending": true, "fallback": "brother-halden", "backdrop": "shop-shrine", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"focus": 1.5}, "price": 1.1,
+        "lines": {
+          "greet": ["Peace on your road. The relics are blessed; the rounds are merely counted.", "Lay down your burdens. Then pick up new ones; they are for sale."],
+          "bought": ["May it serve you.", "Go with it."],
+          "cant_afford": ["Faith is free. This is not."],
+          "sold": ["It will find a better owner.", "Given back to the house."],
+          "sold_to": ["Another pilgrim took it."],
+          "gave": ["A gift freely given is twice blessed."],
+          "leave": ["Walk in the light, or at least near it."]
+        }, "provisional": true },
+      { "id": "chandler", "name": "Corra Vell", "role": "Rim chandler", "node": "shop", "settings": ["rim"], "portrait": "keeper-rim", "portrait_pending": true, "fallback": "asher-fen", "backdrop": "shop-rim", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"item": 1.5, "core": 1.5}, "price": 1.0,
+        "lines": {
+          "greet": ["Air's recycled, prices aren't. Take a look.", "Last stop before the dark. Stock up."],
+          "bought": ["Sealed and stamped.", "Don't let it vent."],
+          "cant_afford": ["Out here nothing's free. Not even breathing."],
+          "sold": ["Everything gets used twice on the rim."],
+          "sold_to": ["Already shipped out."],
+          "gave": ["Crew looks after crew."],
+          "leave": ["Check your seals."]
+        }, "provisional": true },
+      { "id": "armourer", "name": "Hesk Varro", "role": "Armourer", "node": "forge", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "forge-armourer", "portrait_pending": true, "fallback": "orren-vask", "backdrop": "forge", "backdrop_pending": true, "backdrop_fallback": null, "bias": {"mod": 1.5}, "price": 1.0,
+        "lines": {
+          "greet": ["Put it on the bench. Let's see what it could be."],
+          "bought": ["Good steel."],
+          "cant_afford": ["Grades cost. Come back richer."],
+          "sold": ["Scrap is scrap."],
+          "sold_to": ["Already on someone else's bench."],
+          "gave": ["Share the load."],
+          "leave": ["Don't waste my work."]
+        }, "provisional": true },
+      { "id": "sergeant", "name": "Nara Dusk", "role": "Drill sergeant", "node": "training", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "train-sergeant", "portrait_pending": true, "fallback": "captain-nara-dusk", "backdrop": "training", "backdrop_pending": true, "backdrop_fallback": "proving-ground-drill-yard", "bias": {}, "price": 1.0,
+        "lines": {
+          "greet": ["On the line. Again. Until it's boring."],
+          "bought": ["Again."],
+          "cant_afford": ["Extra drill costs. Pay or run laps."],
+          "sold": ["Not a market."],
+          "sold_to": ["Taken."],
+          "gave": ["Good. A squad shares."],
+          "leave": ["Dismissed."]
+        }, "provisional": true },
+      { "id": "medic", "name": "Mallow", "role": "Field medic", "node": "rest", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "rest-medic", "portrait_pending": true, "fallback": "mallow-3", "backdrop": "rest-safe-room", "backdrop_pending": true, "backdrop_fallback": null, "bias": {}, "price": 1.0,
+        "lines": {
+          "greet": ["Sit. Breathe. Let me look at that."],
+          "bought": ["Use it well."],
+          "cant_afford": ["Rest is free. That isn't."],
+          "sold": ["I'll put it to use."],
+          "sold_to": ["Gone."],
+          "gave": ["Kind of you."],
+          "leave": ["Come back in one piece."]
+        }, "provisional": true },
+      { "id": "patron", "name": "The shrine's patron", "role": "Patron", "node": "shrine", "settings": ["ahoc", "city", "field", "works", "shrine", "rim"], "portrait": "shrine-patron", "portrait_pending": true, "fallback": null, "backdrop": "shrine", "backdrop_pending": true, "backdrop_fallback": null, "bias": {}, "price": 1.0, "fallback_patron": true,
+        "lines": {
+          "greet": ["The candles lean toward you."],
+          "bought": ["Accepted."],
+          "cant_afford": ["The offering is short."],
+          "sold": ["Taken up."],
+          "sold_to": ["Already given."],
+          "gave": ["Witnessed."],
+          "leave": ["Go on."]
+        }, "provisional": true }
+    ]
+  },
   "map": {
     "rows": 15,
     "gate_row": 8,
