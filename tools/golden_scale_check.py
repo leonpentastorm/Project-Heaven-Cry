@@ -40,27 +40,27 @@ def split(line):
     s = line if isinstance(line, str) else json.dumps(line, sort_keys=True)
     return NUM.split(s), [(m.group(0), s[:m.start()]) for m in NUM.finditer(s)]
 
-def judge(o, n, sc):
-    """'same', 'scaled', 'scale2', 'other' for one number pair at this scale."""
+def judge(o, n, scs):
+    """'same', 'scaled', 'scale2', 'other' for one number pair at these scales (the dealer's level, the target's)."""
     fo, fn = float(o), float(n)
     if fo == fn: return 'same'
     dec = '.' in o or '.' in n
     def near(f):
         if dec: return abs(fn - fo * f) <= 0.003 * abs(fo * f) + 0.0011 * max(1, f)
         return abs(fn / f - fo) <= 2 + 0.003 * abs(fo)
-    if near(sc): return 'scaled'
-    if sc > 1.0001 and near(sc * sc): return 'scale2'
+    if any(near(sc) for sc in scs): return 'scaled'
+    if any(sc > 1.0001 and near(sc * sc) for sc in scs): return 'scale2'
     return 'other'
 
-def check_line(old, new, level):
+def check_line(old, new, levels):
     wo, no = split(old); wn, nn = split(new)
     if wo != wn or len(no) != len(nn): return {'shape': 1}, []
-    sc = SCALE[level - 1]
+    scs = [SCALE[l - 1] for l in levels]; sc = max(scs)
     counts = collections.Counter(); bad = []
     for (o, ctx), (n, _) in zip(no, nn):
-        j = judge(o, n, sc)
+        j = judge(o, n, scs)
         hp = bool(HP_TAG.search(ctx[-12:])) and abs(float(o)) >= 8
-        if j == 'same' and hp and sc >= 1.1 and abs(float(o)) * sc - abs(float(o)) > 2.5: j = 'notmoved'
+        if j == "same" and hp and min(scs) >= 1.1 and abs(float(o)) * min(scs) - abs(float(o)) > 2.5: j = "notmoved"
         counts[j] += 1
         if j in ('scale2', 'other', 'notmoved'): bad.append((j, o, n, ctx[-24:]))
     return counts, bad
@@ -82,16 +82,16 @@ def main():
             lv = key_level(k)
             keyL1 = lv == 1
             if keyL1: lv = None  # a key's L1 may be the enemy's level with the dealer at another: inferred, and reported apart
-            if lv is None:
-                best = None
-                for L in range(2, 21):
-                    c, b = check_line(old[k], new[k], L)
-                    if 'shape' in c: best = (L, c, b); break
-                    score = (len(b), -c['scaled'])
-                    if best is None or score < best[3]: best = (L, c, b, score)
-                lv, c, b = best[0], best[1], best[2]; total['inferred'] += 1
-            else:
-                c, b = check_line(old[k], new[k], lv)
+            # A line may hold two levels (a character of its level in a fight of another): the dealer's and the target's.
+            cands = [(lv,)] + [(lv, m) for m in range(1, 21) if m != lv] if lv else [(x,) for x in range(2, 21)] + [(x, y) for x in range(1, 21) for y in range(x + 1, 21)]
+            if not lv: total['inferred'] += 1
+            best = None
+            for ls in cands:
+                c, b = check_line(old[k], new[k], ls)
+                if 'shape' in c: best = (ls, c, b, None); break
+                score = (len(b), len(ls), -c['scaled'])
+                if best is None or score < best[3]: best = (ls, c, b, score)
+            lv, c, b = max(best[0]), best[1], best[2]
             if keyL1:
                 if 'shape' in c or b: groups['LEVEL 1 CHANGED'].append((name, k, 1, [('l1', str(old[k])[:160], str(new[k])[:160], '')]))
                 else: groups['KEY L1, THE DEALER AT ANOTHER LEVEL (moved by its scale)'].append((name, k, lv, [('ok', str(old[k])[:120], str(new[k])[:120], '')]))
