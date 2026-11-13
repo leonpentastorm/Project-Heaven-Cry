@@ -99,6 +99,11 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [ ] **12. Close:** `docs/PLAYTEST-CHECKLIST.md` for Classes 3.0 (what to try, what right looks like, the calls
       made for Leon); `CHANGELOG.md`, the version; `npm run check` ALL GREEN and `npm run e2e -- all` green with
       nothing failing alone; then tell Leon it is ready and wait for his word.
+      **Known red going in (13 Nov, reported by the effects and hover builders on the branch before 7b and
+      step 10 landed):** `npm run check` red on the spec tables, the engine types and engine tests (re-check after
+      7b; fix, never skip); browser suite `physical` "backpack shows item icons" fails alone since the gear icons
+      (a real bug until proven stale); `fx-sweep` Suppress sound-before-flash and `chaplain` fail only beside others.
+      Still open for Leon's eye: Aimed Shot's and Crossfire's white lines and Storm's red line were kept.
 
 ## 5. The brief every builder gets (fill in the step)
 
