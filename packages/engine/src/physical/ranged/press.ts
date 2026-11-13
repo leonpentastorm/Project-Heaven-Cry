@@ -277,14 +277,14 @@ technique({
   ai: (t) => (t.tgt && enemyOf(t, t.tgt) && !isPressed(t.tgt) && coverTileFor(t.cb, t.u.pos, t.tgt.pos) && canStrike(t, t.tgt) ? 6 : 0),
 });
 
-// 12. Mag Dump (particular: Auto, Quick, Spread). 4 AP. At one target: one roll for every rounds_per_roll rounds left or
-//     part of them, at most max_rolls rolls, each at −4 more than the last (rules 1.18); it spends rounds_per_roll rounds a
-//     roll, never more than rounds_per_roll × max_rolls (rules 1.38: 4 a roll, 12 at most; a 6-shot revolver fires two
-//     rolls and is empty, a drum of 200 loses 12). +1 Pressure per hit (in place of the ordinary +1). Heat goes to one
-//     under the limit. Auto: +1 Pressure per roll, hit or miss. Quick and Precise: no growing penalty. Spread: both
+// 12. Mag Dump (particular: Auto, Quick, Spread). 4 AP. At one target: one roll for every per_roll (3) rounds left, at
+//     least one, at most max_rolls, each at −4 more than the last (rules 1.18, unchanged); each roll spends rounds_per_roll
+//     (4) rounds, never more than are left (rules 1.38: 12 at most, never the whole of a big magazine; the long rifle's 5:
+//     one roll, 4 rounds; a 6-shot revolver: two rolls, all 6). +1 Pressure per hit (in place of the ordinary +1). Heat goes
+//     to one under the limit. Auto: +1 Pressure per roll, hit or miss. Quick and Precise: no growing penalty. Spread: both
 //     barrels, one roll (one roll's rounds), at double damage within 4 tiles. Drawn: not available (the core).
 const dumpHave = (t: Tech): number => { const have = loaded(t); return Number.isFinite(have) ? have : t.w.magazine ?? t.num('rounds_per_roll', 4) * t.num('max_rolls', 3); };
-const dumpRolls = (t: Tech): number => Math.min(t.num('max_rolls', 3), Math.max(1, Math.ceil(dumpHave(t) / t.num('rounds_per_roll', 4))));
+const dumpRolls = (t: Tech): number => Math.min(t.num('max_rolls', 3), Math.max(1, Math.floor(dumpHave(t) / t.num('per_roll', 3)))); // rules 1.18's rolls, unchanged by rules 1.38
 /** The rounds the dump spends for this many rolls: rounds_per_roll each, up to what is loaded. */
 const dumpRounds = (t: Tech, rolls: number): number => Math.min(dumpHave(t), rolls * t.num('rounds_per_roll', 4));
 technique({

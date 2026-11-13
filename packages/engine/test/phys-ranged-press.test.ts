@@ -324,7 +324,7 @@ describe('Mag Dump', () => {
   });
   it('off its home (no Auto, Quick or Spread): −2 to every roll and no line', () => {
     const f = fight('long_rifle'); const pv = f.pv('mag_dump', { targetId: f.foe.id });
-    expect(pv.attacks.length).toBe(2); expect(term(pv, 0, 'Mag Dump off its home weapon')).toBe(-2); // rules 1.38: its 5 rounds are one 4 and part of another
+    expect(pv.attacks.length).toBe(1); expect(term(pv, 0, 'Mag Dump off its home weapon')).toBe(-2); // rules 1.38: one roll (as rules 1.18), 4 of its 5 rounds
   });
   it('Drawn: not available; an empty weapon is refused', () => {
     const f = fight('recurve_bow'); expect(f.tech('mag_dump', { targetId: f.foe.id })).toBe('Not available with a drawn weapon.');

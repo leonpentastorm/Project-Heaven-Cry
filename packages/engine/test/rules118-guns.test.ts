@@ -62,7 +62,7 @@ describe('rules 1.18: the Burst', () => {
 
 describe('rules 1.18: Mag Dump and Heavy Bolt', () => {
   it('Mag Dump: three rolls at most, each −4 more than the last', () => {
-    expect(TECHNIQUE.mag_dump.numbers).toMatchObject({ max_rolls: 3, step: 4, rounds_per_roll: 4 });
+    expect(TECHNIQUE.mag_dump.numbers).toMatchObject({ max_rolls: 3, step: 4, per_roll: 3, rounds_per_roll: 4 });
   });
   it('Heavy Bolt: +40% damage', () => {
     expect((TECHNIQUE.heavy_bolt.numbers as any).damage_pct).toBe(40);

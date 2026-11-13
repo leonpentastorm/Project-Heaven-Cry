@@ -21,7 +21,7 @@ Not pushed, version not bumped, no browser suite run (the closer's).
 
 | Piece | Built from | Commit |
 | --- | --- | --- |
-| **Mag Dump: 4 rounds a roll, 12 at most** (point 1, items 2500, 2501) | data: `techniques.json mag_dump` `rounds: "up_to"`, `numbers.rounds_per_roll` 4 (was `per_roll` 3), `max_rolls` 3; the cap is their product (no third number). Engine: `press.ts` `dumpRolls` (one for every 4 or part, at most 3) and `dumpRounds` (4 a roll, up to what is loaded), through the existing `burnRest`; the volley's `shots` is the rounds spent (casings follow). Spread spends one roll's rounds. `core.ts roundsCap`: the pad says `rounds 12, upTo`; `techView.ts`: "up to 12 rounds". Validator: an `up_to` technique needs both numbers. Enemies use the same technique | 1b5e6bb5, ab0c79cd |
+| **Mag Dump: 4 rounds a roll, 12 at most** (point 1, items 2500, 2501) | data: `techniques.json mag_dump` `rounds: "up_to"`, `numbers.per_roll` 3 (the rolls, as rules 1.18), `rounds_per_roll` 4 (new), `max_rolls` 3; the cap is `rounds_per_roll × max_rolls`. Engine: `press.ts` `dumpRolls` (unchanged: one for every 3 left, at most 3) and `dumpRounds` (4 a roll, up to what is loaded), through the existing `burnRest`; the volley's `shots` is the rounds spent (casings follow). Spread spends one roll's rounds. `core.ts roundsCap`: the pad says `rounds 12, upTo`; `techView.ts`: "up to 12 rounds". Validator: an `up_to` technique needs both numbers. Enemies use the same technique | 1b5e6bb5, ab0c79cd, and the lead's correction (see section 7) |
 | **The focus list from data** (point 2, item 2502) | `character.ts FOCUS_IDS`: every item AND weapon with a `focus` block (`focusOf`); `FOCUS_BASE` (the list in code) deleted; the four mana arms carry `focus {door, fuel}`; the validator refuses a `counts_as_<kind>` property with no block of that door | bc99a6dd |
 | **The Emanator katana** (item 2503) | data alone: `weapons.json emanator_katana` (the Evoker blade's numbers, Will Power 3, light and edge, focus Will Power / MP), 7.11's eighth row, a monoline `art/icons/weapons/emanator_katana.svg` (the painted icon was delivered); tests in `katana.test.ts` and `focus.test.ts` | bc99a6dd |
 | **HP and shield readouts through the one formatter** | `fmtNum` in `screens/combat.js` (cover HP, the analysed target's and the current unit's line, HP chips, the shield badge), `main.js` (sheet bar and line, an object's HP, the shield row), `shared.js` (unit card) | c6d323f6 |
@@ -98,9 +98,9 @@ The level scale holds the shape: level 20 reads as level 1.
 
 ## 5. Calls made for Leon (he can reverse any)
 
-1. **Mag Dump** as the pick-up guide ruled it, read literally: "one roll for every 4 rounds or part" gives the **long
-   rifle** (5 rounds) two rolls where it had one: the one gun whose damage moves (golden lines `tech/mag_dump/long_rifle/*`
-   and the optimised gun's L6 to L20 Mag Dump lines). Every other magazine rolls as before.
+1. **Mag Dump** (the lead's corrected ruling, 13 Nov): the rolls stay rules 1.18's (one per 3 left, at most 3), so no
+   weapon's damage moves; each roll spends 4 rounds, never more than are left (the long rifle: one roll, 4 of its 5;
+   the revolver: two rolls, all 6; a belt: 12). The golden tables changed only in rounds left (11 costs lines).
 2. **Spread** (both barrels) spends one roll's rounds (up to 4), not the whole magazine.
 3. The card's "up to 12 rounds" is the pad's rounds chip (the engine's number); the text reads "Up to 3 rolls, 4 rounds a
    roll" from the item's fields (a text cannot hold a product).
