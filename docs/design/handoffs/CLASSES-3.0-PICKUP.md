@@ -149,6 +149,19 @@ merged back):
 11. Reflex measured in whole fights: the second reaction is never used by the simulator's enemies (+0); unconfirmed:
     to measure in step 11 (the step 3 hand-off says what the simulator needs).
 
+Step 5 (`docs/design/handoffs/classes-3.0-step-5.md` section 5, rules 1.31 items 1900 to 1933; built on
+`worktree-agent-a186113cb0c0b8bf6`, not merged):
+1. Ward is 10 × Blessing power (the heal-shield spec's Settled 5 and the task), not the chaplain spec's 7.
+2. The kill-taboo patrons' Smite subdues (the batch row `nonlethal`), not "never below 1 HP".
+3. Smite needs the prayer door (Faith 1, not Silenced).
+4. Two Sanctuaries on one tile DO stack today (each halves): not built; needs a "first zone of a kind" reading.
+5. The Sanctuary story half is a Narrator action with no MP and no once-a-scene limit.
+6. Sanctuary is a Hymn I for the overreach and the Atheist's TN.
+7. The presence's Ward (the Toll-Keeper) counts toward the two Wards held.
+8. The Faith build earns the Chaplain: faith-measure's old door guards' tops were raised by Smite's share, and the
+   contract's whisper and hymn rows measure a classless Faith sheet (`doorFaithBuild`). Measured: the Chaplain all in
+   122 / 130 / 123 / 149 (mean 131 against 125, +5%); normal share 110 against 100.
+
 Step 1b (`docs/design/handoffs/classes-3.0-step-1b.md` section 4, rules 1.28 items 1762 to 1767):
 7. The lead's "a Call that harms an enemy is not a reaction at all" is read conservatively: a hindering Call may still be
    made as a reaction (kind `attack`), as before; a helping one is `protect` (item 1764).
