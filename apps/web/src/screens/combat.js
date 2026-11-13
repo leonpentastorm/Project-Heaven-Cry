@@ -34,6 +34,8 @@ import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, joinUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
 import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
+import { fadeStyle } from '../game/tokenFade';
+import { tieLayerVals } from '../game/tieLayer';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
 import { physOf, pressureLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode } from '../game/techView';
@@ -135,6 +137,8 @@ const COMBAT_CSS = [
   // A False Image's shimmer (game/classMarks.ts sets it inline on the decoy; still under reduced motion).
   '@keyframes phcDecoy{0%,100%{opacity:.42;filter:saturate(.4) brightness(1.05) drop-shadow(0 0 3px rgba(79,200,223,.6))}50%{opacity:.66;filter:saturate(.5) brightness(1.25) drop-shadow(0 0 7px rgba(79,200,223,.9))}}',
   '.phc-reduce .phc-plan{animation:none!important}@media (prefers-reduced-motion: reduce){.phc-plan{animation:none!important}}',
+  // A tie's line on the map (game/tieLayer.ts): a soft, slow pulse; none under reduced motion.
+  '@keyframes phcTiePulse{0%,100%{opacity:1}50%{opacity:.6}}.phc-tie-pulse{animation:phcTiePulse 3.2s ease-in-out infinite}.phc-reduce .phc-tie-pulse{animation:none}@media (prefers-reduced-motion: reduce){.phc-tie-pulse{animation:none}}',
   // The shared in-and-out pairs (main.tsx: .phc-a-right … .phc-closing) inside the combat screen: the TARGET card, the
   // Sigil and Heart pads, the turn panels' swap. Only their durations change, × the combat speed (review, 9 Nov 2026:
   // these are the pop-ups a player sees most in a fight). Reduce motion's !important fades still win.
@@ -1086,14 +1090,16 @@ export class CombatLogic extends DCLogic {
         sfx: isMagic && S.action === 'draw' && drawReach.has(k) ? 'none' : undefined,
         hasSprite: !!spr, sprite: spr ? spriteOf(g, spr) : '', spriteStyle: spr ? spriteStyle(spr) : '',
         hasImg: !!faceOf(u), img: faceOf(u),
-        imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + (u && u.downed ? '; opacity: 0.5' : '') + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + (isHeld ? '; opacity: 0' : ''),
+        imgStyle: 'position: relative; z-index: 2; width: 38px; height: 38px; object-fit: cover; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 3px ' + (u.downed ? 'dashed ' : 'solid ') + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : u && u.surrendered ? '#A3AEC2' : '#F65157')) + fadeStyle(u, { held: isHeld }) + (u && u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : ''), // tokenFade.ts: held, Downed, Hidden, in that order
         hasBadge: !!(u && !faceOf(u)), badge: u ? u.short : '',
-        badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + (u && u.downed ? '; opacity: 0.5' : '') + (isHeld ? '; opacity: 0' : ''),
+        badgeStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; font-size: 11px; font-weight: 700; ' + (u && u.side === 'pc' ? 'border-radius: 50%; border: 2px dashed ' + ring(u) + '; color: ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (sel ? '#FFFFFF' : '#F65157') + '; color: #F65157') + (isCur ? '; box-shadow: 0 0 0 3px #FFFFFF' : '') + fadeStyle(u, { held: isHeld }),
         hasText: ((diff.has(k) && !mapArt) || !!cv) && !u, text: cv ? (ob ? cv.hp + '' : (cv.kind === 'full' ? 'FULL ' : 'HALF ') + cv.hp) : (cb.rubble || []).includes(k) ? 'RUBBLE' : 'ROUGH',
         style: 'position: relative; display: grid; place-items: center; padding: 0; border-radius: 4px; cursor: pointer; background: ' + (k === hv ? 'rgba(255, 255, 255, 0.28)' : route[k] && k !== (cur && cur.pos) ? 'rgba(255, 255, 255, 0.18)' : paint(k, bg)) + '; border: ' + (k === hv ? '2px solid #FFFFFF' : border) + (!vis.tiles.has(k) ? '; box-shadow: inset 0 0 0 46px rgba(5, 7, 11, ' + (cb.map.dark && !litAt(cb, k) ? '0.72' : '0.5') + ')' : cb.map.dark && !litAt(cb, k) ? '; box-shadow: inset 0 0 0 46px rgba(5, 7, 11, 0.25)' : ''),
       });
     }
     for (const t of tiles) if (t.worldNote) t.label += t.worldNote;
+    // The map's tie lines (game/tieLayer.ts: a Bond's faint line, from the view's ties; stronger on the Bonder's turn or a hovered chip)
+    const tieLayer = tieLayerVals(cb, { turnOf: cur ? cur.id : null, hotTo: S.tieHot || null, motion: !reducedMotion() });
     // The strip turns over: the acting unit first, then who comes next (each slides to its new place).
     // An unseen hostile's place in the order is an opaque mark (the engine's fog): a card with nothing on it.
     const ordU = cb.order.map((id) => cb.units.find((u) => u.id === id) || (isUnseenId(id) ? { id, side: 'foe', unseen: true, hp: 1, maxHp: 1 } : null)).filter((u) => u && !u.dead), actId = cur ? cur.id : cb.window?.queue[0]?.unitId ?? cb.order[cb.turn], ci = Math.max(0, ordU.findIndex((u) => u.id === actId));
@@ -1112,7 +1118,7 @@ export class CombatLogic extends DCLogic {
       show: () => { if (!sn(u) || u.dead) return; if (this._overview) this.toggleOverview(u.pos); else CAM.follow([u.pos], 'ask'); },
       showLabel: sn(u) ? 'Show ' + u.name + ' on the map' : 'Unseen hostile: not on the map', cantShow: !sn(u) || !!u.dead,
       showBtn: 'padding: 0; border: 0; background: transparent; font-family: inherit; line-height: 0; border-radius: 6px; cursor: ' + (sn(u) && !u.dead ? 'pointer' : 'default'),
-      imgStyle: 'width: 36px; height: 36px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (u.surrendered ? '#A3AEC2' : '#F65157')) + (u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : ''),
+      imgStyle: 'width: 36px; height: 36px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (u.surrendered ? '#A3AEC2' : '#F65157')) + (u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (u.unseen ? '' : fadeStyle(u)),
       badgeStyle: 'display: grid; place-items: center; width: 36px; height: 36px; border-radius: ' + (u.side === 'pc' ? '50%' : '4px') + '; border: 2px solid ' + ring(u) + '; color: ' + ring(u) + '; font-size: 11px; font-weight: 700',
       style: 'display: flex; gap: 8px; align-items: center; padding: 6px 12px 6px 6px; border-radius: 999px; flex: none; ' + (cur && u.id === cur.id && !cb.over ? 'border: 1px solid #FFFFFF; background: #1C2536; box-shadow: 0 0 0 1px #FFFFFF, 0 0 14px rgba(255, 255, 255, 0.25)' : 'border: 1px solid #232D3F'),
     }));
@@ -1429,6 +1435,8 @@ export class CombatLogic extends DCLogic {
       const jamHead = new Set(S.tab === 'attack' ? Object.values(headOf).filter((h) => h && h.jammed).map((h) => h.hand) : []);
       const rows0 = resourcesOf(myU, mc, g), ledgerRow = rows0.find((r) => r.key === 'res-ledger') || null;
       mePanel.bonds = bondStripVals(cb, myU, mc, (id) => { const v = cb.units.find((x) => x.id === id); return v ? faceOf(v) || '' : ''; }, ledgerRow);
+      // a chip hovered lights its line on the map (tieLayer); the layer itself never takes the pointer
+      for (const b of [...(mePanel.bonds.allies || []), ...(mePanel.bonds.enemies || [])]) Object.assign(b, { hot: () => { if (this.state.tieHot !== b.id) this.setState({ tieHot: b.id }); }, cold: () => { if (this.state.tieHot) this.setState({ tieHot: null }); } });
       mePanel.res = resView(rows0.filter((r) => !(mePanel.bonds.show && mePanel.bonds.hasLedger && r.key === 'res-ledger')).filter((r) => !(S.tab === 'outbursts' && myU.mg && myU.mg.held && (r.key === 'strain' || r.key === 'held')))
         .map((r) => (r.warn === 'JAMMED' && jamHead.has(r.key === 'off' ? 'off' : 'main') ? { ...r, warn: undefined, level: undefined } : r)));
     }
@@ -1538,7 +1546,8 @@ export class CombatLogic extends DCLogic {
       gridLeave: () => { if (this.state.hover != null) this.setState({ hover: null }); }, // the stroke tip and lit stroke go with the cursor
       // isolation: the map is one stacking layer, so nothing in it (a hovered tile, a chip, a token's card) rises above the
       // small map, the camera's arrows or any panel; inside it the axis labels are on top (GRID_LAYER).
-      gridStyle: 'display: grid; isolation: isolate; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (this._camNeeded && !this._overview && !CAM.miniHidden ? '; margin-right: ' + Math.round(MINI_SLACK / zoom) + 'px' : ''),
+      tieLayer,
+      gridStyle: 'display: grid; position: relative; isolation: isolate; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (this._camNeeded && !this._overview && !CAM.miniHidden ? '; margin-right: ' + Math.round(MINI_SLACK / zoom) + 'px' : ''),
       // The map's window (the camera): the grid scrolls inside it when it is bigger.
       camStyle: 'flex: none; max-width: ' + (this._view ? this._view.w + 'px' : '100%') + (this._view ? '; max-height: ' + this._view.h + 'px' : ''),
       camLabel: 'The map. Drag it, or use the arrow keys or W A S D, to look around; Home goes back to your unit; M shows the whole map.',

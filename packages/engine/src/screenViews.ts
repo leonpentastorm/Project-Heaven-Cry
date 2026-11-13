@@ -97,3 +97,26 @@ export function ownedView(cb: Combat, u: Unit): OwnedView | null {
   return { ownerId: owner.id, ownerName: owner.name, kind, turnless,
     line: owner.name + '\'s ' + what + (turnless ? ': ' + owner.name + ' acts through it (no turn of its own)' : ': it acts on its own turn') };
 }
+
+/** A tie the map draws (Classes 3.0 step 10, Leon: a Bond's faint line). */
+export interface TieLine {
+  /** kind:from:to, stable while the tie lasts. */
+  key: string; kind: string; from: string; to: string; fromPos: string; toPos: string;
+  /** ally: the far end is of the near end's side; foe: another side's (drawn dashed). */
+  side: 'ally' | 'foe';
+  ink: string; /** '' solid, else an SVG dash pattern */ dash: string;
+}
+/** The ties of this fight a kind with a `line` asks the map to draw (rules.json ties.kinds[].line), read from the combat
+ * the screen holds: a player's VIEW, where fog has already kept its own side's ties only and turned an unseen far end
+ * into UNSEEN (fog.ts). A tie whose far end is not on the view (unseen, gone) draws nothing: no hidden tile is shown. */
+export function tieLines(cb: Combat | null | undefined): TieLine[] {
+  const out: TieLine[] = [];
+  for (const t of (cb?.ties || []) as any[]) {
+    const line = tieKind(t.kind)?.line; if (!line?.ink) continue;
+    const a = cb!.units.find((u) => u.id === t.from), b = cb!.units.find((u) => u.id === t.to);
+    if (!a || !b || a.dead || b.dead || !a.pos || !b.pos) continue;
+    const side: TieLine['side'] = a.side === b.side ? 'ally' : 'foe';
+    out.push({ key: t.kind + ':' + t.from + ':' + t.to, kind: t.kind, from: a.id, to: b.id, fromPos: a.pos, toPos: b.pos, side, ink: line.ink, dash: side === 'foe' ? String(line.foe_dash || '') : '' });
+  }
+  return out;
+}

@@ -900,7 +900,7 @@ Families: `body`, `brain`, `heart`.
 | `TIE_ENDS` | `TIE_ENDS` | What ends a tie (a kind's `ends_on`). |
 | `TIE_ON_END` | `TIE_ON_END` | What happens when a tie ends (a kind's `on_end`). |
 | `TieEnd` | `type TieEnd = (typeof TIE_ENDS)[number] \| { word: (typeof TIE_ENDS)[number]` | An end rule: a word, or (rules 1.33) {word, side}: only for a tie whose far end is of that side to the near end (foe, ally). |
-| `TieKind` | `interface TieKind { id, max, ends_on, on_end, about, mark, gear }` | A kind of tie, as data/rules.json ties.kinds has it. |
+| `TieKind` | `interface TieKind { id, max, ends_on, on_end, about, mark, gear, line }` | A kind of tie, as data/rules.json ties.kinds has it. |
 | `tieKinds` | `tieKinds(): TieKind[]` | The kinds of tie (the data's, then those added at run time: a test's fixture). |
 | `tieKind` | `tieKind(id: string): TieKind \| undefined` | A kind of tie by id. |
 | `addTieKinds` | `addTieKinds(rows: TieKind[])` | Add tie kinds at run time (tests); clearTieKinds takes them away. |

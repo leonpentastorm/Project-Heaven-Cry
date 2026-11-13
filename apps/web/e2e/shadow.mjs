@@ -16,6 +16,9 @@ const act = (a) => host.evaluate((a) => { try { window.__phc.act(a); return null
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 const tok = (k) => host.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
 const dismissCut = async () => { for (let i = 0; i < 3; i++) { if (!(await host.locator('[data-phc-cutin]').count())) return; await host.mouse.click(1430, 990); await settle(host, 380); } };
+// a token's drawn opacity (the portrait or the initials badge inside the tile button; game/tokenFade.ts)
+const tokOpacity = (k) => host.evaluate((lab) => { const b = [...document.querySelectorAll('button.phc-tok')].find((e) => (e.getAttribute('aria-label') || '').startsWith(lab + ' ·')); if (!b) return null;
+  const f = [...b.querySelectorAll('img, span')].find((e) => { const z = getComputedStyle(e).zIndex; return z === '2' && (e.tagName === 'IMG' || /50%|4px/.test(e.style.borderRadius)); }); return f ? Number(getComputedStyle(f).opacity) : null; }, ref(k));
 let charId;
 const me = async () => (await G()).combat.units.find((u) => u.charId === charId);
 async function toMe() {
@@ -78,6 +81,9 @@ await snap('01-meter');
 let r = await tabMove('class', /^Vanish/);
 u = await me();
 ok('Vanish: Hidden (' + (r || 'confirmed') + ')', !r && !!u.hidden);
+await settle(host, 300);
+let op = await tokOpacity(u.pos);
+ok('Hidden: my token drawn at 60% (' + op + '), the Hidden word kept', op === 0.6 && /HIDDEN/.test((await tok(u.pos).getAttribute('aria-label')) || ''));
 await act({ type: 'combat/end-turn', unitId: u.id }); await settle(host, 300);
 ok('my turn again', await toMe());
 u = await me();
@@ -123,6 +129,9 @@ if (pv) ok('the preview lists one shadow term and no ambush term: ' + pv.join(',
 r = await act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot', mods }); await settle(host, 600);
 u = await me();
 ok('the Break shot: the meter spent (' + (u.res?.shadow ?? 0) + ') and revealed (' + (r || 'sent') + ')', !r && (u.res?.shadow ?? 0) === 0 && !u.hidden);
+await settle(host, 300);
+op = await tokOpacity(u.pos);
+ok('revealed: my token drawn plainly again (' + op + ')', op === 1);
 const log = ((await G()).combat.log || []).map((l) => (typeof l === 'string' ? l : l.text || '')).join('\n');
 ok('the log says so', /breaks from the shadows/.test(log));
 await snap('03-break');
