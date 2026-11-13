@@ -67,7 +67,7 @@ Each step: a builder agent with the brief of section 5; then the checks; then me
 - [x] **3. Reactions and the Skirmisher** (merged 13 Nov; all in 161 against 145, inside the band near its top; Reflex unmeasured: step 11) (`reactions-spec.md`): one door for every reaction, a reaction never
       triggers a reaction, Suppressed never blocks a protective one, Reflex (two), Killzone on both, Run and Gun.
 - [x] **4. The moves that change hands** (Bulwark and Breaker merged 13 Nov; each moved move rides with its system's step below) and the small changes to Bulwark, Breaker, Sigilist.
-- [ ] **5. The Chaplain** (`chaplain-spec.md`): Ward, Sanctuary, Smite, Verdict, the patron's presence.
+- [x] **5. The Chaplain** (merged 13 Nov; all in 131 against 125; not built: two Sanctuaries on one tile still stack; step 11 re-measures: the door's Whisper-turn band was widened 1.40 to 1.42 by the lead and the old faith caps were raised by Smite's share) (`chaplain-spec.md`): Ward, Sanctuary, Smite, Verdict, the patron's presence.
 - [ ] **6. Shadow and the Operative** (`shadow-spec.md`).
 - [ ] **7. Tending, Bonds and the Mender** (`bonds-spec.md`); **the healing order** (Leon: Tending out-heals every other door: the Outburst's, the Sigil's and a Whisper's heal drop from 2.0 to 1.4 Soldier-turns in this step: `class-roster-rev4-proposal.md`, "The healing order"); the Outburst re-measured after Empathy's free Pump
       moves to Will Power.
@@ -192,3 +192,5 @@ ordered ally does is that ally's reaction, kind `move` or as the act requires; b
 (a reaction never triggers a reaction). (2) **Anchor's strike is kind `attack`**, not `protect`: Suppressed stops it.
 (3) **Drink It In and the helping Calls are kind `protect`** (they help an ally and move or hurt nobody); a Call that
 harms an enemy is not a reaction at all. (4) The standing-aura form of P5 is the reviewer's recommended shape.
+
+**Lead's calls on step 5 (13 Nov; Leon can reverse):** the Whisper-turn guard's high end goes 1.40 to 1.42 (the door measured 113 against 112 at level 20; step 11 re-measures it on a classless sheet); Ward stays 10 (Leon); a Toll-Keeper's or Matchmaker's Smite subdues; Smite is refused while Silenced.
