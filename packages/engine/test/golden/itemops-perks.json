@@ -26,6 +26,7 @@
 "perk/bulwark@I/ally-taken": "turn:1>3, P2 hp:94/235>86/235, F2 ap:0>7",
 "perk/bulwark@II/ally-lethal": "turn:1>3, P2 hp:94/235>0/235 downed:->1, F2 ap:0>7",
 "perk/bulwark@II/ally-taken": "turn:1>3, P2 hp:94/235>89/235, F2 ap:0>7",
+"perk/case_closed@mastered/analyze": "P1 ap:9>8",
 "perk/detectives_eye@II/move": "P1 hp:141/235>139/235 ap:9>8 pos:3,6>3,9",
 "perk/detectives_eye@II/move-charge": "P1 hp:141/235>139/235 ap:9>8 pos:3,6>6,6",
 "perk/detectives_eye@II/move-far": "P1 hp:141/235>139/235 ap:9>6 bank:0>1 pos:3,6>11,6, F2 pos:7,6>12,6",
