@@ -7,7 +7,7 @@
 // In a fight the ammo lives on the unit (u.mags, u.loose, u.offMags, u.extra, u.throwables, u.parts): c.pack is only
 // written back at the end of the fight or on a gear change, so those numbers are read from the unit.
 import { WEAPON, ITEM, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, withGame } from '@engine';
-import { magGearId, roundsGearId } from './gearIcons';
+import { magGearId, roundsGearId, torsoGearId } from './gearIcons';
 
 export interface BpAct { key: string; label: string; cost: string; off: boolean; why: string; action: any }
 /** item: the item (or derived gear id: rounds-<calibre>, mag-<family>) the row is, for its icon (gearIcons.ts); absent when there is none. */
@@ -61,7 +61,7 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
   const armour: BpRow[] = Object.entries(c.worn || {}).filter(([, id]) => !!id).map(([slot, id]: [string, any]) => ({
     key: 'worn-' + slot, tag: slot.replace(/_/g, ' ').toUpperCase(), name: nameOf(id), sub: ((ITEM as any)[id]?.weight_kg ?? 0) + ' kg', note: '', item: id,
     acts: isLightArmour(id) ? [act('off-' + slot, 'Take off', { op: 'stow', slot }, { type: 'combat/stow', unitId: uid, slot })] : [{ key: 'heavy', label: HEAVY_ROW, cost: '', off: true, why: HEAVY_ROW + '.', action: null }] }));
-  if (c.armourClass) armour.unshift({ key: 'body', tag: 'BODY ARMOUR', name: 'Armour Class ' + c.armourClass, sub: 'From your kit.', note: '', acts: [{ key: 'heavy', label: HEAVY_ROW, cost: '', off: true, why: HEAVY_ROW + '.', action: null }] });
+  if (c.armourClass) armour.unshift({ key: 'body', tag: 'BODY ARMOUR', name: 'Armour Class ' + c.armourClass, sub: 'From your kit.', note: '', acts: [{ key: 'heavy', label: HEAVY_ROW, cost: '', off: true, why: HEAVY_ROW + '.', action: null }], item: torsoGearId(c.armourClass) || undefined });
   // ---------- the pack (weapons, focuses, shields, armour, mods, the rest) ----------
   const rows: BpRow[] = [];
   packOf(c).forEach((it: any, i: number) => {
