@@ -16,9 +16,10 @@ describe('the katana (rules 1.32): data alone', () => {
     expect(K.category).toBe('light_melee'); expect(K.mastery_family).toBe(WEAPON.sabre.mastery_family);
     expect(K.hands).toBe('1H'); expect(K.range_tiles).toBe(1); expect(K.skill).toBe('dexterity');
     for (const k of ['damage', 'weight_kg', 'price_credits']) { const [lo, hi] = range(k); expect(K[k], k).toBeGreaterThanOrEqual(lo); expect(K[k], k).toBeLessThanOrEqual(hi); }
-    expect(K.ap_cost).toEqual(WEAPON.sabre.ap_cost); expect(K.durability).toBe(WEAPON.sabre.durability);
+    const S = WEAPON.sabre as any;
+    expect(K.ap_cost).toEqual(S.ap_cost); expect(K.durability).toBe(S.durability);
     expect(K.requires).toBeUndefined(); // no light blade needs a skill
-    expect(K.phys.props).toEqual(WEAPON.sabre.phys.props);
+    expect(K.phys.props).toEqual(S.phys.props);
     expect(phys.TECHNIQUE[K.phys.teaches]).toBeTruthy(); // an existing technique, no new one
   });
   it('equips from the pack into the main hand', () => {
@@ -57,5 +58,6 @@ describe('the katana (rules 1.32): data alone', () => {
 describe('the Emanator katana (rules 1.32): designed, not built', () => {
   // The engine's focus gate reads a list written in code (FOCUS_IDS, character.ts), not a weapon's counts_as_emanator:
   // a weapon cannot be made a focus by data alone. When that list is read from data, add the weapon and this test.
+  // 13 Nov 2026: held back until the focus list is read from data (rules 1.32 item 1956)
   it.todo('with it in hand a character with the Outburst door can Begin; without it, cannot (item 1956)');
 });
