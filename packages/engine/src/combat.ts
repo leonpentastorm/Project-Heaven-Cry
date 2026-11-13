@@ -18,6 +18,7 @@ import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook, statHeard }
 import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion';
 import { skillItemsOf } from './effects/collect';
 import type { ShieldLayer } from './effects/damage';
+import type { Tie } from './kit';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit } from './effects/damage';
 import { itemAmount } from './effects/amounts';
@@ -212,6 +213,7 @@ export interface Combat { /** No XP or weapon kills: the fight started on people
   /** Magic on the field (spec: Mana): Sigil glyphs on tiles, standing zones (walls, smoke, light), the ambient mana
    * meter, and the dead already counted toward it. */
   glyphs?: Glyph[]; zones?: Zone[]; mana?: number; deadSeen?: string[]; glyphSeq?: number;
+  /** Classes 3.0 P8: the ties between units (kit.ts tie / untie / tiesOf; their kinds: data/rules.json ties.kinds), oldest first; absent while there are none. */ ties?: Tie[];
   /** Rules 1.10: scuffed glyphs' traces (readable for a few rounds). */
   traces?: Trace[];
   /** The Sigil rules revision this fight's glyphs follow (14 = rules 1.4; absent: a 1.2 save, migrated on first use); the

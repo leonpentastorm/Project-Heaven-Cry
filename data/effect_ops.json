@@ -4075,6 +4075,31 @@
         "within": 1,
         "rounds": 2
       }
+    },
+    {
+      "id": "tie",
+      "tier": "core",
+      "summary": "Item op (Classes 3.0 P8): tie the holder to the target by a kind of rules.json ties.kinds (kit.ts tie: refused at the holder's cap), or with clear (target: its ties of that kind to the target; all: every one it holds) end them; read by the predicates actor_tied and target_tied and by targets.tied. Runs on a trigger.",
+      "count": 0,
+      "params": [
+        "and",
+        "clear",
+        "if",
+        "kind",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "tie",
+        "when": "acted",
+        "kind": "bond",
+        "target": "target"
+      }
     }
   ],
   "item_ops": {
@@ -4525,6 +4550,16 @@
         "values": [
           "sanctuary"
         ]
+      },
+      "actor_tied": {
+        "arg": "tie",
+        "about": "actor is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
+        "values": []
+      },
+      "target_tied": {
+        "arg": "tie",
+        "about": "target is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it)",
+        "values": []
       },
       "toggle": {
         "arg": "words",
@@ -5018,6 +5053,50 @@
         "changes_state": true,
         "about": "lay a zone the holder owns (P10): kind (a data zone kind: magic.ts DATA_ZONE_KINDS), at (self, target or tile: the event's), within (its radius: a square), rounds, pool (what it has to give); clear: true ends the holder's zones of that kind (nothing said when it had none)"
       },
+      "tie": {
+        "on": [
+          "combat_start",
+          "combat_end",
+          "round_start",
+          "turn_ap",
+          "turn_start",
+          "turn_end",
+          "attack",
+          "attack_roll",
+          "hit",
+          "miss",
+          "dealing",
+          "taking",
+          "would_drop",
+          "damaged",
+          "downed",
+          "kill",
+          "cond_incoming",
+          "cond_landed",
+          "cond_ended",
+          "save",
+          "moved",
+          "forced_move",
+          "heal",
+          "heal_given",
+          "shield",
+          "cost",
+          "reload",
+          "swap",
+          "injury",
+          "glyph_cost",
+          "acted",
+          "reaction",
+          "to_hit",
+          "spot"
+        ],
+        "fields": [
+          "kind",
+          "clear"
+        ],
+        "changes_state": true,
+        "about": "tie the holder to the target by a kind (P8: kit.ts tie; refused at the holder's cap: nothing said); clear: \"target\" ends the holder's ties of that kind to the target, \"all\" every one of that kind it holds"
+      },
       "use": {
         "on": [
           "combat_start",
@@ -5141,7 +5220,9 @@
         "sees": [
           "line",
           "eyes"
-        ]
+        ],
+        "tied": "string",
+        "aims_at": "string"
       }
     }
   }

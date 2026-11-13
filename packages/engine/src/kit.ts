@@ -9,7 +9,9 @@
 //   AREAS       Area (burst, aura, cone, line, band), inArea, tilesIn, unitsIn   (engine foundations 2)
 import type { Combat, Unit } from './combat';
 import { keyOf, key, xy, dist, moveBlockers, unitSees } from './combat';
-import { boundGame } from './effects/hooks';
+import { boundGame, onHook, statQuery } from './effects/hooks';
+import './datatext'; // fills the texts' {=placeholders} before any data is read
+import RULES_K from '../../../data/rules.json';
 import type { Rng } from './rng';
 
 // =================================================================================================== prelude
@@ -153,3 +155,76 @@ export function unitsIn(cb: Combat, a: Area | string[], o: Who & { side?: Unit['
   const tiles = Array.isArray(a) ? new Set(a) : null;
   return cb.units.filter((v) => (tiles ? tiles.has(v.pos) : inArea(a as Area, v.pos)) && (!o.side || v.side === o.side) && !(o.not || []).includes(v) && counts(cb, v, o, v.pos));
 }
+
+// ====================================================================================================== ties (P8)
+// Classes 3.0 P8 (docs/design/rev4-primitives.md): an edge between two units with a kind (a Bond, an owned unit…):
+// cb.ties [{kind, from, to}], oldest first. Each kind is a row of data/rules.json ties.kinds (or added at run time):
+// `max` (a holder's base cap; the stat ties_max:<kind> adds to it; no max: no cap), `ends_on` (from_down: the near
+// end goes Down; to_down: the far end goes Down; to_dead: the far end dies; unseen_round: the far end has been out of
+// the near end's sight for a full round; combat_end) and `on_end` (none, or unmake: the far end is unmade, P9).
+/** A tie between two units. `lost`: the round starts in a row its far end was out of the near end's sight (unseen_round). */
+export interface Tie { kind: string; from: string; to: string; lost?: number }
+/** What ends a tie (a kind's `ends_on`). */
+export const TIE_ENDS = ['from_down', 'to_down', 'to_dead', 'unseen_round', 'combat_end'] as const;
+/** What happens when a tie ends (a kind's `on_end`). */
+export const TIE_ON_END = ['none', 'unmake'] as const;
+/** A kind of tie, as data/rules.json ties.kinds has it. */
+export interface TieKind { id: string; max?: number; ends_on?: (typeof TIE_ENDS)[number][]; on_end?: (typeof TIE_ON_END)[number]; about?: string }
+const TIE_DATA: TieKind[] = (((RULES_K as any).ties?.kinds || []) as TieKind[]);
+let TIE_ADDED: TieKind[] = [];
+/** The kinds of tie (the data's, then those added at run time: a test's fixture). */
+export const tieKinds = (): TieKind[] => [...TIE_DATA, ...TIE_ADDED];
+/** A kind of tie by id. */
+export const tieKind = (id: string): TieKind | undefined => tieKinds().find((k) => k.id === id);
+/** Add tie kinds at run time (tests); clearTieKinds takes them away. */
+export function addTieKinds(rows: TieKind[]) { TIE_ADDED = [...TIE_ADDED.filter((k) => !rows.some((r) => r.id === k.id)), ...rows]; }
+/** Forget the tie kinds added at run time. */
+export function clearTieKinds() { TIE_ADDED = []; }
+/** The ties a unit has (as: from, to or any end), of a kind or of every kind. */
+export function tiesOf(cb: Combat, u: Unit, kind?: string | null, as: 'from' | 'to' | 'any' = 'any'): Tie[] {
+  return (cb.ties || []).filter((t) => (!kind || t.kind === kind) && ((as !== 'to' && t.from === u.id) || (as !== 'from' && t.to === u.id)));
+}
+/** Is `v` tied to `u` by this kind (as: v is the tie's from end, its to end, or either)? */
+export const tiedTo = (cb: Combat, u: Unit, v: Unit, kind: string, as: 'from' | 'to' | 'any' = 'any'): boolean =>
+  (cb.ties || []).some((t) => t.kind === kind && ((as !== 'to' && t.from === v.id && t.to === u.id) || (as !== 'from' && t.from === u.id && t.to === v.id)));
+/** How many ties of a kind a unit may hold from its end: the kind's max + the stat ties_max:<kind> (Infinity: no max). */
+export function tieCap(cb: Combat, u: Unit, kind: string): number {
+  const k = tieKind(kind); if (!k || k.max == null) return Infinity;
+  return Math.max(0, k.max + statQuery({ u, cb }, `ties_max:${kind}`).add);
+}
+/** THE door that ties two units (from → to): refused (null) for an unknown kind, a tie that stands, or a holder at its cap. */
+export function tie(cb: Combat, from: Unit, to: Unit, kind: string): Tie | null {
+  if (!tieKind(kind) || from === to || tiedTo(cb, from, to, kind, 'to')) return null;
+  if (tiesOf(cb, from, kind, 'from').length >= tieCap(cb, from, kind)) return null;
+  const t: Tie = { kind, from: from.id, to: to.id };
+  cb.ties = [...(cb.ties || []), t];
+  return t;
+}
+/** What unmakes a far end whose tie says so (owned.ts registers it: P9). */
+let UNMAKE: ((cb: Combat, t: Tie) => void) | null = null;
+/** Register what on_end "unmake" does (P9's owned units). */
+export const setTieUnmake = (f: typeof UNMAKE) => { UNMAKE = f; };
+/** End the ties that match (each kind's on_end runs). Returns how many ended. */
+export function untie(cb: Combat, pick: (t: Tie) => boolean): number {
+  const gone = (cb.ties || []).filter(pick); if (!gone.length) return 0;
+  cb.ties = (cb.ties || []).filter((t) => !gone.includes(t)); if (!cb.ties.length) delete cb.ties;
+  for (const t of gone) if (tieKind(t.kind)?.on_end === 'unmake') UNMAKE?.(cb, t);
+  return gone.length;
+}
+const tieEnds = (t: Tie, w: (typeof TIE_ENDS)[number]) => !!tieKind(t.kind)?.ends_on?.includes(w);
+// the end rules, while there are ties: a unit going Down or dying; a round's sight
+onHook('on_downed', (ctx: any, cb: Combat) => {
+  if (!cb.ties?.length) return; const v: Unit = ctx.victim; if (!v) return;
+  untie(cb, (t) => (t.from === v.id && tieEnds(t, 'from_down')) || (t.to === v.id && (tieEnds(t, 'to_down') || (!!v.dead && tieEnds(t, 'to_dead')))));
+});
+onHook('combat_end', (_ctx: any, cb: Combat) => { if (cb.ties?.length) untie(cb, (t) => tieEnds(t, 'combat_end')); });
+onHook('round_start', (_ctx: any, cb: Combat) => {
+  if (!cb.ties?.length) return;
+  const byId = (id: string) => cb.units.find((x) => x.id === id);
+  for (const t of [...cb.ties]) {
+    if (!tieEnds(t, 'unseen_round')) continue;
+    const a = byId(t.from), b = byId(t.to); if (!a || !b) continue;
+    if (unitSees(cb, a, b.pos)) { delete t.lost; continue; }
+    t.lost = (t.lost || 0) + 1; if (t.lost >= 2) untie(cb, (x) => x === t); // out of sight at two round starts in a row: a full round
+  }
+});

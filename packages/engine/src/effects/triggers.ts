@@ -19,8 +19,8 @@ import type { Holder, HookName } from './types';
 import { uses } from './uses';
 import { setTriggerRunner, setAllItems } from './hooks';
 import { allItems, rawItem as rawItemT } from './collect';
-import { overworld, rngOf, unitsIn, tilesAround, type Area } from '../kit';
-import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight } from '../combat';
+import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, type Area } from '../kit';
+import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent } from '../combat';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS } from '../magic';
 import { nextToCover } from '../combat';
 import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
@@ -172,6 +172,10 @@ P('by_cover', 'words', 'the move started (from) and / or ended (to) next to stan
 // Classes 3.0 P10: zones from data. {kind, owner: self (the holder's own), side (its side's) or any}
 const zoneArg = (v: any) => (typeof v === 'string' ? { kind: v, owner: 'any' } : { kind: v?.kind, owner: v?.owner || 'any' });
 for (const who of ['self', 'target'] as Who[]) P(who + '_in_zone', 'zone', who + ' stands in a zone of this kind (a kind, or {kind, owner: self, side or any})', (ev, v) => { const u = unitOf(ev, who), a = zoneArg(v); return !!u && zonesAt(ev.cb, u.pos, a.kind, a.owner, ev.self).length > 0; }, () => [...DATA_ZONE_KINDS]);
+// Classes 3.0 P8: ties. `<who>_tied: "<kind>"` (tied to the holder either way) or {kind, as: from or to} (the unit is
+// the tie's from end, the holder its to end: an owned unit's owner is `actor_tied: {kind: "owned", as: "from"}`)
+const tieArg = (v: any): { kind: string; as: 'from' | 'to' | 'any' } => (typeof v === 'string' ? { kind: v, as: 'any' } : { kind: v?.kind, as: v?.as || 'any' });
+for (const who of ['actor', 'target'] as Who[]) P(who + '_tied', 'tie', who + ' is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit\'s end of it)', (ev, v) => { const u = unitOf(ev, who), a = tieArg(v); return !!u && tiedTo(ev.cb, ev.self, u, a.kind, a.as); }, () => tieKinds().map((k) => k.id));
 // Classes 3.0 P12: a data toggle is on for the action being resolved (cb.mods; acted's ctx.toggles): `toggle: [ids]`
 P('toggle', 'words', 'one of the holder\'s item\'s data toggles (its ids) is on for the action being resolved', (ev, v) => {
   const mods: string[] = ev.ctx.toggles?.length ? ev.ctx.toggles : (ev.cb as any).mods || [], defs = (rawItemT(ev.h.key)?.toggles || []) as any[];
@@ -308,6 +312,12 @@ O('zone', ANY, true, ['kind', 'at', 'within', 'rounds', 'pool', 'clear'], 'lay a
   const at: string | null = e.at === 'tile' ? ev.ctx.tile ?? ev.ctx.at ?? null : (e.at === 'target' ? ev.target : ev.self)?.pos ?? null; if (!at) return false;
   makeZone(ev.cb, ev.self, { kind: e.kind, tiles: tilesAround(at, e.within ?? 0), rounds: typeof e.rounds === 'number' ? e.rounds : 1, ...(typeof e.pool === 'number' ? { pool: e.pool } : {}) });
 });
+O('tie', ANY, true, ['kind', 'clear'], 'tie the holder to the target by a kind (P8: kit.ts tie; refused at the holder\'s cap: nothing said); clear: "target" ends the holder\'s ties of that kind to the target, "all" every one of that kind it holds', (ev, e) => {
+  const t = pick(ev, e);
+  if (e.clear === 'all') return untie(ev.cb, (x) => x.kind === e.kind && x.from === ev.self.id) > 0 ? undefined : false;
+  if (e.clear === 'target') return t && untie(ev.cb, (x) => x.kind === e.kind && x.from === ev.self.id && x.to === t.id) > 0 ? undefined : false;
+  return t && tie(ev.cb, ev.self, t, e.kind) ? undefined : false;
+});
 O('use', ANY, true, [], 'nothing but its limit: spends one use (for a limit another effect reads with peek)', () => undefined);
 O('mark', ANY, true, ['flag', 'clear'], 'set (or with clear: true, clear) one of the item\'s own flags, for a later trigger\'s flag / no_flag', (ev, e) => {
   const st: any = ((ev.self.ps ||= {}) as any)[ev.h.key] ||= {}; const f = (st.flags ||= {});
@@ -330,19 +340,27 @@ const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ..
  * line: from the centre toward the event's target, or its actor, `within` long), seen (seen, or not, by the holder's
  * side), alive (default true: still in the fight; false: Downed only), downed (true: the Downed too), max (the first n).
  * With no within and no shape, the whole field. `tied` and `aims_at` come with ties (P8) and the enemy's aim (a batch row). */
-export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number; sees?: 'line' | 'eyes' }
+export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number; sees?: 'line' | 'eyes'; tied?: string; aims_at?: string }
 /** The fields of `targets` and the words each takes (data/effect_ops.json item_ops.targets is written from it). */
-export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number', sees: ['line', 'eyes'] };
+export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool' | 'string'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number', sees: ['line', 'eyes'], tied: 'string', aims_at: 'string' };
 /** Why a `targets` block is malformed (null: it is fine). */
 export function targetsProblem(t: any): string | null {
   if (!t || typeof t !== 'object' || Array.isArray(t)) return '`targets` is an object';
   for (const [k, v] of Object.entries(t)) {
     const f = TARGET_FIELDS[k]; if (!f) return 'unknown targets field ' + k;
-    if (f === 'number' ? typeof v !== 'number' : f === 'bool' ? typeof v !== 'boolean' : !f.includes(v as string)) return 'targets.' + k + ' takes ' + (Array.isArray(f) ? f.join(', ') : 'a ' + f);
+    if (f === 'number' ? typeof v !== 'number' : f === 'bool' ? typeof v !== 'boolean' : f === 'string' ? typeof v !== 'string' : !f.includes(v as string)) return 'targets.' + k + ' takes ' + (Array.isArray(f) ? f.join(', ') : 'a ' + f);
   }
   if ((t.shape === 'cone' || t.shape === 'line') && typeof t.within !== 'number') return 'a cone or a line needs `within` (its length)';
   if ((t.shape === 'burst' || t.shape === 'aura') && typeof t.within !== 'number') return 'a burst or an aura needs `within` (its radius)';
   return null;
+}
+/** The batch row `aims_at` (rev4): does this unit's next action (combat.ts enemyIntent) go at the holder ("self") or at a
+ * unit tied to the holder ("tied:<kind>")? */
+function aimsAt(cb: Combat, holder: Unit, v: Unit, w: string): boolean {
+  const id = enemyIntent(cb, v).targetId; if (!id) return false;
+  if (w === 'self') return id === holder.id;
+  const k = w.startsWith('tied:') ? w.slice(5) : null, t = k ? cb.units.find((x) => x.id === id) : null;
+  return !!t && tiedTo(cb, holder, t, k!);
 }
 /** P5's standing aura (a `stat_mod` with `targets` and no `when`): the units its holder's set holds now. */
 const auraSet = (cb: Combat, holder: Unit, t: TargetSet): Unit[] => selectUnits({ ctx: {}, trig: TRIGGERS.combat_start, h: { key: '', info: null as any, u: holder, cb } as any, self: holder, cb, actor: null, target: null, preview: true }, t);
@@ -365,7 +383,9 @@ export function selectUnits(ev: Ev, t: TargetSet): Unit[] {
   // sees (witnesses, the step 1a review): each unit of the set sees the centre's tile: `line` a line of sight to it and not
   // Blinded (a body falling in the dark is still seen); `eyes` its own eyes reach it (combat.ts unitSees: range, light)
   const out = all.filter((v) => (t.alive === false ? !!v.downed : true) && (!t.side || rel(ev.self, v, t.side)) && (t.seen == null || sideSees(cb, ev.self.side as 'pc' | 'foe', v) === t.seen)
-    && (!t.sees || (t.sees === 'eyes' ? unitSees(cb, v, at) : !condOn(v, 'blinded') && lineOfSight(cb, v.pos, at))));
+    && (!t.sees || (t.sees === 'eyes' ? unitSees(cb, v, at) : !condOn(v, 'blinded') && lineOfSight(cb, v.pos, at)))
+    && (!t.tied || tiedTo(cb, ev.self, v, t.tied)) // P8: tied to the holder by this kind
+    && (!t.aims_at || aimsAt(cb, ev.self, v, t.aims_at))); // the batch row: what the unit means to do next is aimed at the holder (self) or at a unit tied to it (tied:<kind>)
   return typeof t.max === 'number' ? out.slice(0, t.max) : out;
 }
 

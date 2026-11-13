@@ -128,7 +128,7 @@ export function fogFight(g: unknown, real: Combat, view: Combat, me: Side, full 
   const seenNames = new Set(real.units.filter((u) => !hid.has(u.id)).map((u) => u.name));
   const c: Ctx = { hid, names: new Set([...hid.values()].map((u) => u.name).filter((n) => !!n && !seenNames.has(n))), tiles: vis.tiles };
   const own = new Set(real.units.filter((u) => u.side === me).map((u) => u.id));
-  const { units, order, fx, glyphs, traces, zones, images, sightWas, lastSeen, seenAt, sightPos, log, logSee, ...rest } = view as Combat & { sightPos?: unknown };
+  const { units, order, fx, glyphs, traces, zones, images, sightWas, lastSeen, seenAt, sightPos, log, logSee, ties, ...rest } = view as Combat & { sightPos?: unknown };
   const lg = fogLog(log || [], logSee, me);
   const mine = (x: { side?: string }) => x.side === me;
   const out = {
@@ -144,6 +144,8 @@ export function fogFight(g: unknown, real: Combat, view: Combat, me: Side, full 
       const o = hid.get(i.owner); if (!o) return scrub(i, c);
       return { ...scrub(i, c), owner: UNSEEN, look: { name: o.name, short: (o as any).short, img: (o as any).img, kind: (o as any).kind, side: o.side } };
     }) } : {}),
+    // Classes 3.0 P8: a side keeps its own ties (a tie whose near end is one of its units); another side's are never sent
+    ...(ties ? { ties: ties.filter((t) => own.has(t.from)).map((t) => (hid.has(t.to) ? { ...t, to: UNSEEN } : t)) } : {}),
     fog,
   };
   return out as unknown as Combat;

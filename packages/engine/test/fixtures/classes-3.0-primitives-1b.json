@@ -156,6 +156,50 @@
         }
       ],
       "effects": []
+    },
+    {
+      "id": "test_tie_on_hit",
+      "name": "Hook (test)",
+      "text": "When you hit an enemy, you tie it to you (test_bond); you deal {=effects.1.value} more damage to a unit tied to you; at your turn start each tied unit is Marked.",
+      "effects": [
+        {
+          "op": "tie",
+          "when": "hit",
+          "kind": "test_bond",
+          "target": "target"
+        },
+        {
+          "op": "damage_mod",
+          "when": "dealing",
+          "value": 5,
+          "if": {
+            "target_tied": "test_bond"
+          }
+        },
+        {
+          "op": "condition",
+          "when": "turn_start",
+          "condition": "marked",
+          "skip_save": true,
+          "rounds": 2,
+          "targets": {
+            "side": "foe",
+            "tied": "test_bond"
+          }
+        }
+      ]
+    },
+    {
+      "id": "test_ties_more",
+      "name": "Two Hooks (test)",
+      "text": "You may hold {=effects.0.value} more test bond.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ties_max:test_bond",
+          "value": 1
+        }
+      ]
     }
   ],
   "conditions": [],
@@ -272,6 +316,26 @@
         }
       ],
       "adjudication": "engine"
+    }
+  ],
+  "tie_kinds": [
+    {
+      "id": "test_bond",
+      "max": 1,
+      "ends_on": [
+        "from_down",
+        "to_dead",
+        "unseen_round",
+        "combat_end"
+      ],
+      "on_end": "none"
+    },
+    {
+      "id": "test_leash",
+      "ends_on": [
+        "to_down"
+      ],
+      "on_end": "none"
     }
   ]
 }

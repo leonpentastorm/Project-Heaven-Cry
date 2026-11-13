@@ -56,12 +56,13 @@ export const STAT_FAMILIES = {
   'skill:': 'a modifier to a d20 that uses this skill id (effects/core.ts skillRollMod)',
   'immune:': 'immunity to a condition id or one of IMMUNE_IDS (effects/core.ts immune; >0 is immune)',
   'save_': 'a save bonus: body, brain or heart (character.ts saveBonus)',
+  'ties_max:': 'Classes 3.0 P8: how many ties of this kind a unit may hold more than its kind\'s max (kit.ts tieCap)',
   'passive:': 'a passive score of this skill id (character.ts passive)',
   'technique:': 'this technique id comes with a perk (>0; physical/core.ts)',
   'momentum_needed:': 'Momentum a finisher of this technique id needs (physical/core.ts finisherNeed)',
 } as const;
 
-export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}`;
+export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `ties_max:${string}`;
 
 /** Is this string a declared stat id? (For data and tests; code is checked by the type.) */
 export function isStatId(id: string): id is StatId {

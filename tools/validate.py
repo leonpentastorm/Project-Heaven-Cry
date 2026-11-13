@@ -1765,6 +1765,10 @@ def check_targets(t, w):
         elif f == "number" and not (isinstance(v, (int, float)) and not isinstance(v, bool)): errors.append(f"{w}: targets.{k} is a number")
         elif f == "bool" and not isinstance(v, bool): errors.append(f"{w}: targets.{k} is true or false")
         elif isinstance(f, list) and v not in f: errors.append(f"{w}: targets.{k} takes {f}")
+        elif f == "string" and not isinstance(v, str): errors.append(f"{w}: targets.{k} is a word")
+    _tk = {k.get("id") for k in (((data.get("rules") or {}).get("ties") or {}).get("kinds") or [])}
+    if "tied" in t and t["tied"] not in _tk: errors.append(f"{w}: targets.tied names a tie kind (rules.json ties.kinds: {sorted(_tk)})")
+    if "aims_at" in t and not (t["aims_at"] == "self" or (isinstance(t["aims_at"], str) and t["aims_at"].startswith("tied:") and t["aims_at"][5:] in _tk)): errors.append(f"{w}: targets.aims_at is self or tied:<a tie kind>")
     if t.get("shape") in ("cone", "line") and not isinstance(t.get("within"), (int, float)): errors.append(f"{w}: a cone or a line in targets needs `within`")
     if t.get("shape") in ("burst", "aura") and not isinstance(t.get("within"), (int, float)): errors.append(f"{w}: a burst or an aura in targets needs `within`")
 def check_trigger_effect(e, w):
@@ -1790,6 +1794,15 @@ def check_trigger_effect(e, w):
         if x.get("op") == "deal" and "via" in x and not (isinstance(x["via"], str) and x["via"]): errors.append(f"{w}: a deal's `via` is the source skill it counts as (a word: faith)")
         if x.get("op") == "deal" and "nonlethal" in x and not isinstance(x["nonlethal"], bool): errors.append(f"{w}: a deal's `nonlethal` is true or false")
         if x.get("op") == "condition" and "via" in x and not (isinstance(x["via"], str) and x["via"] in known["skill"]): errors.append(f"{w}: a condition's `via` is the skill whose strength its save is against (a skills.json id)")
+        if x.get("op") == "tie":
+            _tk2 = {k.get("id") for k in (((data.get("rules") or {}).get("ties") or {}).get("kinds") or [])}
+            if x.get("kind") not in _tk2: errors.append(f"{w}: a tie's kind is one of rules.json ties.kinds ({sorted(_tk2)})")
+            if x.get("clear") not in (None, "all", "target"): errors.append(f"{w}: a tie's clear is all or target")
+        if x.get("op") == "zone":
+            _zk = (PRED.get("target_in_zone") or {}).get("values") or []
+            if x.get("kind") not in _zk: errors.append(f"{w}: a zone's kind is one of {_zk}")
+            if x.get("at", "self") not in ("self", "target", "tile"): errors.append(f"{w}: a zone's at is self, target or tile")
+        if x.get("op") == "damage_mult" and x.get("round") not in (None, "up"): errors.append(f"{w}: damage_mult's round is up")
     cond = e.get("if")
     if cond is not None:
         if not isinstance(cond, dict): errors.append(f"{w}: `if` must be an object of predicates")
@@ -1870,6 +1883,14 @@ if TRIG:
     for _x in base + adv + pool: _walk_grant(_x, f"classes:{_x.get('id')}")
     for _n in ("perks", "traits"):
         for _x in items(_n): _walk_grant(_x, f"{_n}:{_x.get('id')}")
+    # Classes 3.0 P8: the kinds of tie (rules.json ties.kinds)
+    for _k in ((data.get("rules") or {}).get("ties") or {}).get("kinds") or []:
+        w = f"rules.ties.kinds:{_k.get('id')}"
+        for f in _k:
+            if f not in ("id", "max", "ends_on", "on_end", "about", "provisional"): errors.append(f"{w}: unknown field '{f}'")
+        if "max" in _k and not (isinstance(_k["max"], int) and _k["max"] >= 0): errors.append(f"{w}: max is a whole number")
+        if not all(x in ("from_down", "to_down", "to_dead", "unseen_round", "combat_end") for x in _k.get("ends_on") or []): errors.append(f"{w}: ends_on takes from_down, to_down, to_dead, unseen_round, combat_end")
+        if _k.get("on_end", "none") not in ("none", "unmake"): errors.append(f"{w}: on_end is none or unmake")
     # Classes 3.0 P12: an item's data toggles: [{id, name, on: [action types], if, default_on, effects}]
     def _check_toggles(x, w):
         ts = x.get("toggles")
