@@ -3372,6 +3372,96 @@
           "dexterity"
         ]
       }
+    },
+    {
+      "id": "figment_claws",
+      "name": "Figment claws",
+      "category": "unarmed",
+      "damage": 30,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 0,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": "",
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "grants": null,
+      "lore": "A Beast Figment's claws: bots in the shape of a blow.",
+      "type": "fists",
+      "companion_only": true,
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "bare",
+          "edge"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "also_scales": [
+          "raw_power",
+          "dexterity"
+        ]
+      },
+      "source": "rules 1.34 (figments-spec.md section 3): a Figment's own weapon, never on a loot table"
+    },
+    {
+      "id": "figment_edge",
+      "name": "Figment edge",
+      "category": "unarmed",
+      "damage": 25,
+      "damage_type": "physical",
+      "range_tiles": 1,
+      "magazine": null,
+      "heat_limit": null,
+      "modes": [],
+      "ap_cost": {
+        "attack": 2
+      },
+      "ammo": null,
+      "skill": "raw_power",
+      "weight_kg": 0,
+      "accuracy": 0,
+      "price_credits": null,
+      "properties": [],
+      "text": "",
+      "mastery_family": "unarmed",
+      "hands": "1H",
+      "grants": null,
+      "lore": "A Blade Figment's edge: bots in the shape of a cut.",
+      "type": "fists",
+      "companion_only": true,
+      "provisional": true,
+      "phys": {
+        "system": "melee",
+        "props": [
+          "light",
+          "bare",
+          "edge"
+        ],
+        "hits_with": "raw_power",
+        "scales_with": [
+          "strength"
+        ],
+        "also_scales": [
+          "raw_power",
+          "dexterity"
+        ]
+      },
+      "source": "rules 1.34 (figments-spec.md section 3): a Figment's own weapon, never on a loot table"
     }
   ]
 }

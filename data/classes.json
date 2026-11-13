@@ -597,45 +597,7 @@
               "ref": "assassin.toxin"
             },
             {
-              "id": "field_fix",
-              "amounts": {"repair": {"kind": "heal", "base": 20, "profile": "flat", "text": "a repair, not a heal: no healing multipliers", "provisional": true}},
-              "name": "Field Fix",
-              "ap_cost": 2,
-              "uses": "at_will",
-              "text": "Costs 2 AP. Do one of three things for an ally next to you: clear their jammed weapon, restore some of their weapon's durability, or repair a robot, drone, turret or machine for {=effects.1.repair} HP. The repair also brings a Downed machine back up.",
-              "effects": [
-                {
-                  "op": "grant_action",
-                  "action": "field_fix",
-                  "ap": 2,
-                  "uses": "at_will",
-                  "range": 1,
-                  "target": "ally_adjacent"
-                },
-                {
-                  "op": "field_repair",
-                  "choose": [
-                    "clear_jam",
-                    "restore_durability",
-                    "repair_machine"
-                  ],
-                  "repair": 20
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true,
-              "origin": "infiltrator",
-              "new": true,
-              "fantasy_tags": [
-                "mechanic",
-                "repair",
-                "support"
-              ],
-              "attributes": [
-                "perception"
-              ],
-              "status": "active",
-              "surface": "combat"
+              "ref": "trickster.read"
             }
           ]
         },
@@ -830,57 +792,99 @@
         "proficiency",
         "charisma"
       ],
-      "role": "debuff",
-      "tagline": "Images, reading people, lying with a smile.",
+      "role": "control",
+      "tagline": "Give me a minute and some scrap.",
       "resource": {
-        "id": "flux",
-        "max": 6,
-        "shared_rule": "Every word you draw adds 1 Flux to your Evoker, which holds 6. If it goes above 6 the Evoker overloads: you take 10 damage for each point over 6, all the Flux bursts into the ambient mana, and the Evoker is locked until the next round. Vent (1 AP) empties your Flux into the ambient mana, which rises by the amount vented.",
+        "id": "figments",
+        "max": "held",
+        "rule": "Figments held: the door's count (1 at Visualization 1, 2 at 5, 3 at 7) and one more for the Rigger. Each is kept with the Visualizer's charge (figments.json upkeep).",
         "also_uses": [
-          "mana_core"
+          "vcharge"
         ]
       },
       "resources": [
-        "flux"
+        "vcharge"
       ],
       "foundation_for": [
         "the illusionist",
-        "the con artist",
-        "the duellist of minds",
-        "the stroke gambler"
+        "the scrapper",
+        "the puppeteer",
+        "the mirage"
+      ],
+      "gain": [
+        {
+          "id": "riggers_hands",
+          "name": "The Rigger's Hands",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "numbers": {
+            "held": 1,
+            "designs": 1
+          },
+          "text": "You hold {=numbers.held} more Figment than the door gives (once the door is open) and keep {=numbers.designs} more ready design.",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ties_max:owned",
+              "value": 1
+            },
+            {
+              "op": "stat_mod",
+              "stat": "figment_designs",
+              "value": 1
+            }
+          ],
+          "origin": "trickster",
+          "new": true,
+          "fantasy_tags": [
+            "figment",
+            "mechanic"
+          ],
+          "source": "rules 1.34: the Rigger's bigger meter (figments-spec.md section 5)",
+          "adjudication": "engine",
+          "provisional": true,
+          "attributes": [
+            "expression"
+          ],
+          "status": "active",
+          "surface": "combat"
+        }
       ],
       "ranks": {
         "I": {
           "threshold": "gained",
           "moves": [
             {
-              "id": "read",
-              "name": "Read",
-              "ap_cost": 0,
+              "id": "false_image",
+              "name": "Double",
+              "ap_cost": 2,
               "uses": "at_will",
-              "text": "Analyze costs you 1 AP, and it also shows what the target means to do on its next turn.",
+              "numbers": {
+                "charge": 1,
+                "rounds": 2,
+                "range_no_door": 6
+              },
+              "text": "Costs {=ap_cost} AP and {=numbers.charge} charge, with the Visualizer in hand. A bare Double (a Figment of you) appears on a free tile your side sees within your projection range ({=numbers.range_no_door} tiles without the door) and lasts until your turn starts {=numbers.rounds} rounds on. It needs no upkeep and is outside your held count. One at a time.",
               "effects": [
                 {
-                  "op": "action_cost",
-                  "action": "analyze",
-                  "set": 1
-                },
-                {
-                  "op": "reveal",
-                  "what": "intended_action",
-                  "when": "on_analyze",
-                  "target": "target"
+                  "op": "grant_action",
+                  "action": "false_image",
+                  "ap": 2,
+                  "uses": "at_will",
+                  "res": {
+                    "vcharge": 1
+                  }
                 }
               ],
-              "adjudication": "engine",
-              "provisional": true,
               "origin": "trickster",
               "new": true,
               "fantasy_tags": [
-                "analysis",
-                "reading",
-                "intel"
+                "figment",
+                "decoy",
+                "illusion"
               ],
+              "adjudication": "engine",
+              "provisional": true,
               "attributes": [
                 "expression"
               ],
@@ -888,44 +892,7 @@
               "surface": "combat"
             },
             {
-              "id": "false_image",
-              "name": "False Image",
-              "ap_cost": 2,
-              "uses": "at_will",
-              "text": "Costs 2 AP and {=effects.0.cost.value} charge. Needs an Evoker in hand. A decoy of you appears on a free tile you can see within 8 tiles (plus your Sigil range bonus) and lasts {=effects.1.duration_rounds} rounds. Every enemy that can see it makes a Brain save against 12 + your strength with Brain Power, and those who fail treat the decoy as you. You can have one at a time; it fades when it is attacked or when you go down.",
-              "effects": [
-                {
-                  "op": "grant_action",
-                  "action": "false_image",
-                  "ap": 2,
-                  "uses": "at_will",
-                  "cost": {
-                    "resource": "charge",
-                    "value": 1
-                  }
-                },
-                {
-                  "op": "spawn_illusion",
-                  "of": "self",
-                  "range": "sigil_range",
-                  "duration_rounds": 2,
-                  "save": "brain"
-                }
-              ],
-              "adjudication": "engine",
-              "provisional": true,
-              "origin": "trickster",
-              "new": true,
-              "fantasy_tags": [
-                "illusion",
-                "decoy",
-                "sigil"
-              ],
-              "attributes": [
-                "expression"
-              ],
-              "status": "active",
-              "surface": "combat"
+              "ref": "infiltrator.field_fix"
             }
           ]
         },
@@ -933,41 +900,89 @@
           "threshold": 5,
           "moves": [
             {
-              "ref": "trickster.blind_and_slow"
-            },
-            {
-              "id": "silver_tongue",
-              "name": "Silver Tongue",
-              "ap_cost": 2,
+              "id": "salvage",
+              "name": "Salvage",
+              "ap_cost": 1,
               "uses": "at_will",
-              "text": "Costs 2 AP. An enemy within {=effects.0.range} tiles that can hear you makes a Brain save against 12 + your strength with Charisma. If it fails, it loses 2 AP on its next turn (a boss or a Celestial loses 1). It doesn't work on machines, turrets or drones.",
+              "numbers": {
+                "charge": 2,
+                "reach": 1
+              },
+              "amounts": {
+                "repair": {
+                  "kind": "heal",
+                  "base": 15,
+                  "profile": "repair",
+                  "text": "a repair, not a heal",
+                  "provisional": true
+                }
+              },
+              "text": "Costs {=ap_cost} AP, next to you, one of: a wreck (a destroyed robot, drone, turret or machine of either side) gives {=numbers.charge} charge to your Visualizer core, each wreck once a fight; one of your Figments is let go with all its charge back; or repair a machine or Figment of your side for {=amounts.repair.base}.",
               "effects": [
                 {
                   "op": "grant_action",
-                  "action": "silver_tongue",
-                  "ap": 2,
+                  "action": "salvage",
+                  "ap": 1,
                   "uses": "at_will",
-                  "range": 6,
-                  "target": "enemy"
-                },
-                {
-                  "op": "ap_loss",
-                  "value": 2,
-                  "boss_value": 1,
-                  "save": "brain",
-                  "when": "next_turn",
-                  "requires_state": "can_hear"
+                  "pick": [
+                    "wreck",
+                    "reclaim",
+                    "repair"
+                  ],
+                  "pick_label": "What to salvage"
                 }
               ],
-              "adjudication": "engine",
-              "provisional": true,
               "origin": "trickster",
               "new": true,
               "fantasy_tags": [
-                "charisma",
-                "lies",
-                "ap"
+                "mechanic",
+                "scrap",
+                "figment"
               ],
+              "adjudication": "engine",
+              "provisional": true,
+              "attributes": [
+                "expression"
+              ],
+              "status": "active",
+              "surface": "combat"
+            },
+            {
+              "id": "overclock",
+              "name": "Overclock",
+              "ap_cost": 1,
+              "uses": "per_turn",
+              "numbers": {
+                "range": 8,
+                "max_ap": 2
+              },
+              "amounts": {
+                "strain": {
+                  "kind": "damage",
+                  "base": 5,
+                  "profile": "flat",
+                  "type": "true",
+                  "provisional": true
+                }
+              },
+              "text": "Costs {=ap_cost} AP, once a turn. A Figment, robot, drone or turret of your side within {=numbers.range} tiles that your side sees takes one of its actions now, of up to {=numbers.max_ap} AP, at no AP. It takes {=amounts.strain.base} damage, more at higher levels. Never a squadmate.",
+              "effects": [
+                {
+                  "op": "grant_action",
+                  "action": "overclock",
+                  "ap": 1,
+                  "uses": "per_turn"
+                }
+              ],
+              "origin": "trickster",
+              "new": true,
+              "fantasy_tags": [
+                "mechanic",
+                "machine",
+                "tempo"
+              ],
+              "adjudication": "engine",
+              "provisional": true,
               "attributes": [
                 "expression"
               ],
@@ -980,14 +995,11 @@
           "threshold": 8,
           "moves": [
             {
-              "ref": "trickster.rewrite"
-            },
-            {
               "id": "sleight",
               "name": "Sleight",
               "ap_cost": 1,
               "uses": "per_scene",
-              "text": "Costs 1 AP, once per scene. Swap places with your False Image or with a standing ally within 6 tiles. The swap provokes no opportunity attacks.",
+              "text": "Costs 1 AP, once per scene. Swap places with one of your Figments or with a standing ally within {=effects.0.range} tiles. The swap provokes no opportunity attacks.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -995,7 +1007,7 @@
                   "ap": 1,
                   "uses": "per_scene",
                   "range": 6,
-                  "target": "ally_or_own_illusion"
+                  "target": "ally_or_own_figment"
                 },
                 {
                   "op": "swap_places",
@@ -1009,8 +1021,41 @@
               "fantasy_tags": [
                 "trick",
                 "teleport",
-                "illusion"
+                "figment"
               ],
+              "attributes": [
+                "expression"
+              ],
+              "status": "active",
+              "surface": "combat"
+            },
+            {
+              "id": "scrap_turret",
+              "name": "Scrap Turret",
+              "ap_cost": 3,
+              "uses": "per_scene",
+              "numbers": {
+                "rounds": 3
+              },
+              "text": "Costs {=ap_cost} AP, once a scene, one at a time. From a wreck, a pile with a weapon, or a barricade next to you, a turret stands on a free tile next to it. At each of your turn starts for {=numbers.rounds} rounds it makes that weapon's plain attack (a gun at the nearest enemy it sees in range, a melee weapon at an enemy in its reach; a wreck, a barricade or a consumable: a service pistol), rolling with your Improvisation. It is a machine: Overclock and repairs work on it.",
+              "effects": [
+                {
+                  "op": "grant_action",
+                  "action": "scrap_turret",
+                  "ap": 3,
+                  "uses": "per_scene"
+                }
+              ],
+              "origin": "trickster",
+              "new": true,
+              "fantasy_tags": [
+                "mechanic",
+                "turret",
+                "scrap"
+              ],
+              "source": "rules 1.34: was Jury-Rig (Revision 4)",
+              "adjudication": "engine",
+              "provisional": true,
               "attributes": [
                 "expression"
               ],
@@ -2437,7 +2482,8 @@
         "attributes": [
           "expression"
         ],
-        "status": "active"
+        "status": "shelved",
+        "future_home": "the common words (Revision 4 section 5: BLIND and SLOW go to everyone's Sigil list)"
       },
       {
         "id": "rewrite",
@@ -2469,7 +2515,8 @@
         "attributes": [
           "expression"
         ],
-        "status": "active"
+        "status": "shelved",
+        "future_home": "the move pool (Revision 4 section 5)"
       },
       {
         "id": "shape",
@@ -2891,6 +2938,123 @@
         ],
         "status": "shelved",
         "future_home": "Hexer (Expression + Insight; batch 2)"
+      },
+      {
+        "id": "read",
+        "name": "Read",
+        "ap_cost": 0,
+        "uses": "at_will",
+        "text": "Analyze costs you {=effects.0.set} AP, and it also shows what the target means to do on its next turn.",
+        "effects": [
+          {
+            "op": "action_cost",
+            "action": "analyze",
+            "set": 1
+          },
+          {
+            "op": "reveal",
+            "what": "intended_action",
+            "when": "on_analyze",
+            "target": "target"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "trickster",
+        "new": true,
+        "fantasy_tags": [
+          "analysis",
+          "reading",
+          "intel"
+        ],
+        "attributes": [
+          "expression"
+        ],
+        "status": "active",
+        "note": "Rules 1.34 (Classes 3.0 step 8): Read left the Rigger; it goes to the Operative (Revision 4 section 5). On the step 8 branch it stands in the Operative's rank II where Field Fix was; the Shadow step's merge sets that rank."
+      },
+      {
+        "id": "silver_tongue",
+        "name": "Silver Tongue",
+        "ap_cost": 2,
+        "uses": "at_will",
+        "text": "Costs {=ap_cost} AP. An enemy within {=effects.0.range} tiles that can hear you makes a Brain save against your Charisma. If it fails, it loses {=effects.1.value} AP on its next turn (a boss or a Celestial loses {=effects.1.boss_value}). It doesn't work on machines, turrets or drones.",
+        "effects": [
+          {
+            "op": "grant_action",
+            "action": "silver_tongue",
+            "ap": 2,
+            "uses": "at_will",
+            "range": 6,
+            "target": "enemy"
+          },
+          {
+            "op": "ap_loss",
+            "value": 2,
+            "boss_value": 1,
+            "save": "brain",
+            "when": "next_turn",
+            "requires_state": "can_hear"
+          }
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "origin": "trickster",
+        "new": true,
+        "fantasy_tags": [
+          "charisma",
+          "lies",
+          "ap"
+        ],
+        "attributes": [
+          "expression"
+        ],
+        "status": "shelved",
+        "surface": "combat",
+        "origin_rank": "II",
+        "future_home": "none (Revision 4 ruling 6: talk is no class's move)"
+      },
+      {
+        "id": "field_fix",
+        "origin": "infiltrator",
+        "name": "Field Fix",
+        "ap_cost": 2,
+        "uses": "at_will",
+        "amounts": {
+          "repair": {
+            "kind": "heal",
+            "base": 15,
+            "profile": "repair",
+            "text": "a repair, not a heal: no healing multipliers",
+            "provisional": true
+          }
+        },
+        "numbers": {
+          "reach": 2
+        },
+        "text": "Costs {=ap_cost} AP; no spare part, no Improvisation needed. Field Repair on yourself or a unit of your side within {=numbers.reach} tiles: clear a jammed weapon, restore weapon durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=amounts.repair.base}, more as you level (a Downed machine comes back up).",
+        "effects": [
+          {
+            "op": "grant_action",
+            "action": "field_fix",
+            "ap": 2,
+            "uses": "at_will"
+          }
+        ],
+        "new": true,
+        "fantasy_tags": [
+          "mechanic",
+          "repair",
+          "support"
+        ],
+        "adjudication": "engine",
+        "provisional": true,
+        "attributes": [
+          "expression"
+        ],
+        "status": "active",
+        "surface": "combat",
+        "origin_rank": "II"
       }
     ],
     "revision_2_classes": [

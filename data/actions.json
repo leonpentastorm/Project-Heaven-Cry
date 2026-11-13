@@ -259,6 +259,13 @@
       "on": "unit",
       "path": "pressure",
       "setter": "pressure"
+    },
+    "vcharge": {
+      "name": "Visualizer charge",
+      "on": "unit",
+      "path": "mg.vcharge",
+      "max": "mg.vchargeMax",
+      "needs": "mg.vcarry"
     }
   },
   "costs": {
@@ -315,6 +322,36 @@
     "interact": {
       "ap": 1,
       "rule": "interact"
+    },
+    "picture": {
+      "ap": 2,
+      "provisional": true,
+      "source": "rules 1.34 (Figments)"
+    },
+    "let_go": {
+      "ap": 0,
+      "provisional": true,
+      "source": "rules 1.34 (Figments)"
+    },
+    "figment_strike": {
+      "ap": 2,
+      "provisional": true,
+      "source": "rules 1.34 (Figments)"
+    },
+    "figment_pounce": {
+      "ap": 3,
+      "provisional": true,
+      "source": "rules 1.34 (Figments)"
+    },
+    "figment_cut": {
+      "ap": 2,
+      "provisional": true,
+      "source": "rules 1.34 (Figments)"
+    },
+    "figment_stare": {
+      "ap": 1,
+      "provisional": true,
+      "source": "rules 1.34 (Figments)"
     }
   }
 }
