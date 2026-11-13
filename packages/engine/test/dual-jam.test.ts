@@ -1,7 +1,9 @@
-// Two guns in hand: the off-hand gun has its own Clear jam and its own Shoot an object (lead's call for Leon, after live
-// 0.23.0: the off hand had neither, so a jammed off-hand gun could never be cleared). Same AP and rule as the main
-// hand's, on the off-hand weapon: its jam, its rounds, its range and damage. A fumble with the off-hand gun jams that
-// gun, not the main one.
+// Two guns in hand (Hands 5d). Each gun jams on its own: a fumble with the off-hand gun jams that gun, not the main one,
+// and a jammed gun never stops the other firing. Clearing is ONE action (Leon's ruling, 13 Nov 2026: "move clear jam to
+// Both when dual wielding … we have 2 buttons at 2 places for one thing now"): one Clear jam in the Both area clears
+// every jammed gun you hold, for the main hand's price once, and resets the Heat they pool. The retired off-hand row's
+// id ('clear-off') still resolves to it, for saved turn-card picks. Shoot an object ("Attack an object") has an
+// off-hand row of its own: its rounds, its jam, its range and damage.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { actionsFor, sendDescriptor } from '../src';
@@ -22,29 +24,46 @@ const barricade = (f: any, u: any) => {
   return at;
 };
 
-describe('two guns: the off-hand gun\'s own Clear jam', () => {
-  it('a jammed off-hand gun is cleared by the off-hand Clear jam, not by the main hand\'s', () => {
+
+describe('two guns: one Clear jam, in the Both area', () => {
+  it('both guns jammed: the one Clear jam clears both for one price, and resets the Heat', () => {
     const { f, u } = twoGuns();
-    f.unit(u.id).offJammed = true; f.unit(u.id).heat = 3;
-    const main = row(f, u, 'clear')!, off = row(f, u, 'clear-off')!;
-    expect(off.hand).toBe('off'); expect(main.hand).toBe('main');
-    expect(main.why).toBe('Not jammed.'); // the main gun is fine: its Clear jam does nothing for the other gun
-    expect(off.available, off.why || '').toBe(true); expect(off.cost.ap).toBe(main.cost.ap); // the same price
-    expect(() => f.act(sendDescriptor(f.g, u.id, 'clear', {}, 'host')!)).toThrow(/Not jammed/); // refused
-    expect(f.unit(u.id).offJammed).toBe(true);
+    f.unit(u.id).jammed = true; f.unit(u.id).offJammed = true; f.unit(u.id).heat = 3;
+    const rows = actionsFor(f.g, u.id, 'host').filter((d) => /^clear/.test(d.id));
+    expect(rows.map((d) => [d.id, d.hand])).toEqual([['clear', 'both']]); // no per-weapon rows
+    const c = rows[0]; expect(c.available, c.why || '').toBe(true);
     const ap0 = f.unit(u.id).ap;
-    f.act(sendDescriptor(f.g, u.id, 'clear-off', {}, 'host')!);
-    expect(f.unit(u.id).offJammed).toBeFalsy(); expect(f.unit(u.id).jammed).toBe(false);
-    expect(f.unit(u.id).heat).toBe(0); expect(f.unit(u.id).ap).toBe(ap0 - off.cost.ap); // the main hand's rule: Heat resets
-    expect(row(f, u, 'clear-off')!.why).toBe('Not jammed.');
+    f.act(sendDescriptor(f.g, u.id, 'clear', {}, 'host')!);
+    const v = f.unit(u.id);
+    expect(v.jammed).toBe(false); expect(v.offJammed).toBeFalsy(); expect(v.heat).toBe(0);
+    expect(v.ap).toBe(ap0 - c.cost.ap); // one price
+    expect(row(f, u, 'clear')!.why).toBe('Not jammed.');
   });
 
-  it('a jammed main gun is not cleared by the off-hand Clear jam', () => {
+  it('only the off-hand gun jammed: the one Clear jam is enabled and clears it; the main gun still fires meanwhile', () => {
+    const { f, u } = twoGuns();
+    f.unit(u.id).offJammed = true; f.unit(u.id).heat = 2;
+    expect(row(f, u, 'tq:main:shot')?.why || '').not.toMatch(/Jammed/);
+    expect(row(f, u, 'tq:off:shot')?.why || '').toMatch(/Jammed/);
+    const c = row(f, u, 'clear')!; expect(c.hand).toBe('both'); expect(c.available, c.why || '').toBe(true);
+    f.act(sendDescriptor(f.g, u.id, 'clear', {}, 'host')!);
+    expect(f.unit(u.id).offJammed).toBeFalsy(); expect(f.unit(u.id).jammed).toBe(false); expect(f.unit(u.id).heat).toBe(0);
+  });
+
+  it('only the main gun jammed: the same action clears it, and the off-hand gun still fires meanwhile', () => {
     const { f, u } = twoGuns();
     f.unit(u.id).jammed = true;
-    expect(row(f, u, 'clear-off')!.why).toBe('Not jammed.');
-    expect(() => f.act(sendDescriptor(f.g, u.id, 'clear-off', {}, 'host')!)).toThrow(/Not jammed/);
-    expect(f.unit(u.id).jammed).toBe(true);
+    expect(row(f, u, 'tq:off:shot')?.why || '').not.toMatch(/Jammed/);
+    f.act(sendDescriptor(f.g, u.id, 'clear', {}, 'host')!);
+    expect(f.unit(u.id).jammed).toBe(false);
+  });
+
+  it('an old saved pick of the retired off-hand row resolves to the one Clear jam', () => {
+    const { f, u } = twoGuns();
+    f.unit(u.id).offJammed = true;
+    expect(row(f, u, 'clear-off')).toBeUndefined(); // not listed
+    f.act(sendDescriptor(f.g, u.id, 'clear-off', {}, 'host')!);
+    expect(f.unit(u.id).offJammed).toBeFalsy();
   });
 
   it('a jammed off-hand gun refuses its own shots; the main gun still fires', () => {
@@ -54,13 +73,17 @@ describe('two guns: the off-hand gun\'s own Clear jam', () => {
     expect(offShot?.why || '').toMatch(/Jammed/); expect(mainShot?.why || '').not.toMatch(/Jammed/);
   });
 
-  it('one gun: no off-hand Clear jam or Shoot an object', () => {
+  it('one gun: Clear jam stays in that weapon\'s area, unchanged; no off-hand rows', () => {
     const f = fightWith([{ archetype: 'deadeye', weapon: 'service_pistol' }], [{ at: 'F6' }]); const u = f.turn(f.pc);
     expect(row(f, u, 'clear-off')).toBeUndefined(); expect(row(f, u, 'cover-off')).toBeUndefined();
+    expect(row(f, u, 'clear')!.hand).toBe('main'); expect(row(f, u, 'clear')!.why).toBe('Not jammed.');
+    f.unit(u.id).jammed = true; f.unit(u.id).heat = 4; const ap0 = f.unit(u.id).ap, c = row(f, u, 'clear')!;
+    f.act(sendDescriptor(f.g, u.id, 'clear', {}, 'host')!);
+    expect(f.unit(u.id).jammed).toBe(false); expect(f.unit(u.id).heat).toBe(0); expect(f.unit(u.id).ap).toBe(ap0 - c.cost.ap);
   });
 });
 
-describe('two guns: Shoot an object with the off hand', () => {
+describe('two guns: Attack an object with the off hand', () => {
   it('spends the off-hand gun\'s round, not the main gun\'s, at the main hand\'s price', () => {
     const { f, u } = twoGuns(); const at = barricade(f, u);
     const main = row(f, u, 'cover')!, off = row(f, u, 'cover-off')!;

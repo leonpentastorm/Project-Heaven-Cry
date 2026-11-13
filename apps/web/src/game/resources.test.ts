@@ -57,8 +57,10 @@ describe('the gunner: ammo, spares, ammo type, Heat', () => {
     u.heat = lim - 1; r = resourcesOf(u, c, g);
     expect(row(r, 'heat')).toMatchObject({ warn: 'JAM SOON', label: 'Heat' });
     u.jammed = true; r = resourcesOf(u, c, g);
-    expect(row(r, 'heat')).toMatchObject({ warn: 'JAMMED', level: 'alert' });
-    expect(row(r, 'heat').hint).toMatch(/Clear it \(2 AP\)/);
+    // the jam is the gun's own: on its ammo row (Hands 5d: two guns jam apart; Heat, which they pool, has its own row)
+    expect(row(r, 'ammo')).toMatchObject({ warn: 'JAMMED', level: 'alert' });
+    expect(row(r, 'ammo').hint).toMatch(/Clear jam/);
+    expect(row(r, 'heat').warn).not.toBe('JAMMED');
   });
   it('a gun that never runs dry (the drone) has no ammo or Heat rows', () => {
     const { u, c, g } = fight((c) => { c.weapon = 'hellraiser_service_rifle'; });

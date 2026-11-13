@@ -2,7 +2,7 @@
 // its step and effect; collapsed into "Feelings ▸" with a search past six), the colour and glyph of each feeling, the
 // residue tiles' tint, the unlock card, and the practice bar. The engine is the one source of numbers (previewPump,
 // previewOutburstPlan, practiceOf); this file only words and styles them.
-import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, MODULE, SKILL } from '@engine';
+import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, moduleShelved, MODULE, SKILL } from '@engine';
 import { feelingIcon, moduleIcon, heartMark, paintedStyle } from './heartIcons';
 import { tipAttrs } from './actionTip';
 
@@ -42,6 +42,39 @@ export const feelingIconSrc = (id: string, ink = feelingInk(id), size = 24) => i
 export const moduleIconSrc = (id: string, ink = '#E7EBF3', size = 24) => iconSrc(moduleIcon(id, size), ink);
 export const markIconSrc = (id: 'revert' | 'practice' | 'felt', ink = '#E7EBF3', size = 24) => iconSrc(heartMark(id, size), ink);
 
+// ---------- one feeling, said once (Leon, live 0.24.0: "Rage: +0.5 · +0.5 to the multiplier…") ----------
+const sgn = (n: number) => (n < 0 ? '−' : '+') + String(Math.abs(r2(n)));
+/** A feeling's ONE step chip, from the data's number: its base step ("+0.5", "−0.4"). What raises it (an ally down,
+ *  whoever last hurt you, HP missing, allies near) is said once, in its text, never again in the chip. */
+export function feelingStepChip(f: any): string {
+  const s = f?.step || {};
+  return sgn(Number(s.base ?? PLAIN_STEP));
+}
+/** A feeling's effect in words, once: the data's pour text without its opening step clause, which only repeats the
+ *  chip ("+0.3. ", "+0.5 to the multiplier (a plain Pump gives +0.2). ", "−0.4: ", "+0.2, like a plain Pump. ").
+ *  A conditional step keeps only its condition: "+0.2, or +0.5 if an ally has gone Down…" says "+0.5 if an ally has
+ *  gone Down…" (the +0.2 is the chip); "+0.2, and +0.1 more for every 20%…" says "+0.1 more for every 20%…". */
+export function feelingText(f: any): string {
+  const t = String(f?.pour?.text || '').trim();
+  const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
+  const c = /^[+−-]\d+(?:\.\d+)?,\s+(?:or|and)\s+(\S[\s\S]*)$/.exec(t);
+  if (c) return cap(c[1]);
+  const m = /^[+−-]\d+(?:\.\d+)?(?:\s+to the multiplier(?:[^.(]|\([^)]*\))*|,\s*like a plain Pump)?[.:]\s+(\S[\s\S]*)$/.exec(t);
+  if (!m) return t;
+  // "…it only adds its +0.3." names the chip's number again: "its step" (the chip beside it says which)
+  const rest = m[1].replace(/^the multiplier goes down\.\s+In return,?\s+/i, 'The multiplier goes down. In return ').replace(/\bits [+−-]\d+(?:\.\d+)?(?=[.,;)\s])/g, 'its step');
+  return cap(rest);
+}
+/** The residue line and the "felt first when" line of a feeling. */
+export const feelingResidue = (f: any) => (f?.residue?.kind === 'none' || !f?.residue ? 'No residue.' : 'Residue (' + f.residue.kind + '): ' + f.residue.text);
+export const feelingTrigger = (f: any) => String(f?.trigger?.text || '');
+/** A feeling's hover card outside a fight (the Magic tab, creation, the Proving Ground): name, its step chip, its text
+ *  once, the residue, and when it is first felt. */
+export function feelingTip(f: any, extra: { why?: string | null } = {}) {
+  const res = f?.residue && f.residue.kind !== 'none' ? { label: 'Residue (' + f.residue.kind + ')', text: String(f.residue.text || '') } : { label: 'Residue', text: 'None.' };
+  return tipAttrs({ name: f.name, cost: [feelingStepChip(f)], text: feelingText(f), notes: [res, { label: 'Felt first when', text: feelingTrigger(f) }].filter((n) => n.text), why: extra.why || null });
+}
+
 /** How many feeling buttons show before they collapse into "Feelings ▸" (the design's open item 3: 6 proposed). */
 export const FEELINGS_OPEN_MAX = 6;
 export interface FeelingBtn { id: string; name: string; ink: string; icon: string; iconStyle: string; ok: boolean; why: string; step: number; mult: number; stepText: string; effect: string; cost: string; free: boolean; does: string }
@@ -53,7 +86,7 @@ export function feelingButtons(cb: any, u: any): FeelingBtn[] {
     const p = previewPump(cb, u, f.id), ink = feelingInk(f.id);
     const step = p.step ?? (f.step?.base ?? PLAIN_STEP);
     return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), iconStyle: iconStyle(feelingIconSrc(f.id, ink), ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: (step >= 0 ? '+' : '−') + Math.abs(r2(step)).toFixed(1), // rules 1.19: Calm and Relief take the multiplier down
-      effect: f.pour?.text || '', cost: p.ok ? (p.mp ? (p.free ? '0 AP' : p.ap + ' AP') + ' · ' + p.mp + ' MP' : p.free ? 'FREE' : p.ap + ' AP') : '', free: !!(p.ok && p.free), does: '' }; // rules 1.24: a Pump's MP
+      effect: feelingText(f), cost: p.ok ? (p.mp ? (p.free ? '0 AP' : p.ap + ' AP') + ' · ' + p.mp + ' MP' : p.free ? 'FREE' : p.ap + ' AP') : '', free: !!(p.ok && p.free), does: '' }; // rules 1.24: a Pump's MP
   });
 }
 /** Template rows for the feeling buttons: collapsed past FEELINGS_OPEN_MAX unless opened, filtered by the search. */
@@ -65,7 +98,6 @@ export function feelingRows(btns: FeelingBtn[], open: boolean, query: string, ru
     has: btns.length > 0, many, open: show, count: btns.length, canSearch: many && show,
     toggleLabel: (show ? 'Feelings ▾' : 'Feelings ▸') + ' (' + btns.length + ')',
     rows: list.map((b) => ({ key: b.id, name: b.name, icon: b.icon, iconStyle: b.iconStyle, ink: b.ink, off: !b.ok, cost: b.ok ? b.cost : '✕ ' + b.why.replace(/\.$/, ''), step: b.stepText, effect: b.effect,
-      title: b.name + ' (step ' + b.stepText + ', ×' + b.mult + ' after): ' + b.effect + (b.why ? ' · ' + b.why : ''),
       ...tipAttrs({ name: b.name, cost: [...(b.ok ? [b.cost] : []), 'step ' + b.stepText, '×' + b.mult + ' after'], text: b.effect, why: b.why || null }), pick: () => { if (b.ok) run('pump:' + b.id); },
       style: 'display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0 6px; align-items: center; min-height: 34px; padding: 3px 7px; border-radius: 8px; text-align: left; font-family: inherit; color: #E7EBF3; cursor: ' + (b.ok ? 'pointer' : 'default') + '; border: 1px solid ' + rgba(b.ink, b.ok ? 0.75 : 0.3) + '; background: ' + rgba(b.ink, b.ok ? 0.12 : 0.04) + (b.ok ? '' : '; opacity: 0.55'),
       nameStyle: 'font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
@@ -108,7 +140,8 @@ export function practiceView(c: any): PracticeView | null {
   const p = practiceOf(c), nx = nextPickAt(p), left = soulPicksLeft(c), prev = [0, 5, 15].filter((x) => x <= p).pop() ?? 0;
   const lo = picksAt(p) >= 2 ? nx - 15 : prev;
   const known: string[] = c.soulKnown?.modules || [];
-  const modules = (Object.values(MODULE) as any[]).filter((m) => !known.includes(m.id)).map((m) => {
+  // a shelved advanced class's module is not offered (it does not exist for a player yet; Leon, live 0.24.0)
+  const modules = (Object.values(MODULE) as any[]).filter((m) => !known.includes(m.id) && !moduleShelved(m.id)).map((m) => {
     const why = moduleGateError(c, m.id), g = m.gate;
     return { id: m.id, name: m.name, gate: g ? ((SKILL as any)[g.skill]?.name || g.skill) + ' ' + g.points : 'no gate', ok: !why, why: why || '', locked: !!m.locked, cls: moduleClass(m.id) };
   });
@@ -130,14 +163,16 @@ export function moduleGroups(c: any): CodexGroup[] {
   const all = Object.values(MODULE) as any[], used = new Set<string>(), out: CodexGroup[] = [];
   for (const sk of GATE_ORDER) { const ms = gatedBy(sk).map((id: string) => (MODULE as any)[id]).filter((m: any) => m && !m.locked); ms.forEach((m: any) => used.add(m.id)); if (ms.length) out.push({ key: sk, label: ((SKILL as any)[sk]?.name || sk), blurb: GATE_BLURB[sk] || '', modules: ms.map(mk) }); }
   const free = all.filter((m) => !used.has(m.id) && !m.locked); if (free.length) out.push({ key: 'free', label: 'No gate', blurb: 'anyone may learn these', modules: free.map(mk) });
-  const adv = all.filter((m) => m.locked); if (adv.length) out.push({ key: 'advanced', label: 'Advanced classes', blurb: 'only with the class, when its batch returns', modules: adv.map(mk) });
+  // an advanced class's own modules show only once that class is back (while shelved they don't exist for a player;
+  // Leon, live 0.24.0: "don't show what we don't have")
+  const adv = all.filter((m) => m.locked && !moduleShelved(m.id)); if (adv.length) out.push({ key: 'advanced', label: 'Advanced classes', blurb: 'only with the class', modules: adv.map(mk) });
   return out;
 }
-export interface CodexFeeling { id: string; name: string; icon: string; iconStyle: string; ink: string; known: boolean; step: string; effect: string; residue: string; trigger: string }
+export interface CodexFeeling { id: string; name: string; icon: string; iconStyle: string; ink: string; known: boolean; step: string; effect: string; residue: string; trigger: string; tip: string; tipText: string }
 /** Every feeling: known ones with their step, effect and residue; the rest locked, with what unlocks them. */
 export function feelingCodex(c: any): CodexFeeling[] {
   const known: string[] = c?.feelings || [];
   return FEELINGS.map((f: any) => { const k = known.includes(f.id), ink = feelingInk(f.id), shown = k ? ink : '#7F8BA1', s = f.step || {};
-    const step = s.text || (s.base != null ? '+' + s.base : ''); // the step in words, from the data ("+0.2; +0.5 against whoever last hurt you")
-    return { id: f.id, name: f.name, icon: feelingIconSrc(f.id, shown), iconStyle: iconStyle(feelingIconSrc(f.id, shown), shown), ink, known: k, step, effect: f.pour?.text || '', residue: f.residue?.kind === 'none' ? 'No residue.' : 'Residue (' + f.residue.kind + '): ' + f.residue.text, trigger: 'Felt first when: ' + (f.trigger?.text || '') }; });
+    void s; // one step chip from the data's numbers, the effect once (Leon, live 0.24.0: no summary joined to its own sentence)
+    return { id: f.id, name: f.name, icon: feelingIconSrc(f.id, shown), iconStyle: iconStyle(feelingIconSrc(f.id, shown), shown), ink, known: k, step: feelingStepChip(f), effect: feelingText(f), residue: feelingResidue(f), trigger: 'Felt first when: ' + feelingTrigger(f), ...feelingTip(f) }; });
 }

@@ -18,7 +18,7 @@
 // player's saved turn-card picks and the two-key hotkeys keep working.
 import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility } from './combat';
+import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns } from './combat';
 import { kindOf } from './objects';
 import { apFor } from './effects/cost';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
@@ -97,7 +97,7 @@ export interface ActionDescriptor {
   /** Who adjudicates it: the engine runs it all, or part goes to the Narrator. */
   engine?: boolean;
   /** The weapon hand this action belongs to (the Attack tab's areas: a weapon's shots and techniques, its reload, its
-   * unjam, shooting an object with it): 'main', 'off', or 'both' for what uses both hands (the paired attack, Reload
+   * unjam, attacking an object with it): 'main', 'off', or 'both' for what uses both hands (the paired attack, Reload
    * both). Absent: no one weapon (Shove, Brace, Hold a shot). */
   hand?: 'main' | 'off' | 'both';
   /** A technique's text in parts (techParts), for a hover card that lays it out a line each. */
@@ -383,7 +383,8 @@ const PHYSICAL: ActionSystem = {
     const dual = pads.some((d) => d.id === TPAD + 'both' || d.id === 'paired');
     const gunTab = (!!w && !melee && w.id !== 'fists') || (!!offW && !isMelee(offW));
     const wRow = (id: string, group: DescGroup, o: Partial<ActionDescriptor> & { label?: string; cost?: string; text?: string } = {}) => { const a: any = W(id); return a ? [D(id, group, o.label || a.label, a.ap, o.cost || apT(a.ap), o.text || a.text, a.why, { picks: basicPicks(x, id), ...o })] : []; };
-    const clear = (group: DescGroup) => wRow('clear', group, { hand: 'main' });
+    // two guns that can jam: ONE Clear jam, in the Both area (Leon's ruling, 13 Nov 2026; Hands 5d); one gun: its own area
+    const clear = (group: DescGroup) => wRow('clear', group, { hand: twoJammingGuns(u) ? 'both' : 'main' });
     const reloads = (group: DescGroup): ActionDescriptor[] => {
       const R: any = W('reload'); if (!R) return [];
       const unit = (w && w.reload_unit) || 'magazine', now = w && w.magazine != null ? ' ' + u.ammo + ' / ' + w.magazine + ' loaded now.' : '';
@@ -395,7 +396,7 @@ const PHYSICAL: ActionSystem = {
     const bothRows = B('reload2', 'reload2-tac').map((d) => ({ ...d, hand: 'both' as const }));
     // the off-hand gun's own reload (its own AP): reloading one gun never blocks the other
     const offRows = (group: DescGroup): ActionDescriptor[] => safe(() => withGame(g, () => reloadOffRows(cb, u, { c, g })), [] as any[]).map((r: any) => D(r.id, group, r.label, r.ap, r.cost, r.text, r.why, { hand: 'off' }));
-    // the off-hand weapon's own Clear jam and Shoot an object (its jam, rounds, range and damage)
+    // the off-hand weapon's own Attack an object (and Clear jam, for a single off-hand gun) (its jam, rounds, range and damage)
     const offHand = (id: string): ActionDescriptor[] => safe(() => withGame(g, () => offHandRows(cb, u, { c, g })), [] as any[]).filter((r: any) => r.id === id).map((r: any) => D(r.id, 'attack', r.label, r.ap, r.cost, r.text, r.why, { hand: 'off', picks: basicPicks(x, r.id) }));
     const out: ActionDescriptor[] = [...B('move', 'sprint', 'disengage', 'prone')];
     // ----- attack -----
@@ -475,7 +476,7 @@ function basicSay(x: DescCtx, d: ActionDescriptor, p: Picks): string | null {
     case 'shove': return t ? 'Shove ' + t.name + '. Confirm.' : null;
     case 'paired': return t ? 'Both hands at ' + t.name + '. Confirm.' : null;
     case 'pullfree': return t ? 'Pull ' + (t.id === u.id ? 'yourself' : t.name) + ' free. Confirm.' : null;
-    case 'cover': case 'cover-off': return obj && obj.hp > 0 ? 'Target: ' + obj.name + ', HP ' + obj.hp + '. Confirm to shoot it' + (d.id === 'cover-off' ? ' with the off-hand weapon' : '') + '.' : null;
+    case 'cover': case 'cover-off': return obj && obj.hp > 0 ? 'Target: ' + obj.name + ', HP ' + obj.hp + '. Confirm to attack it' + (d.id === 'cover-off' ? ' with the off-hand weapon' : '') + '.' : null;
     case 'door': return obj && kindOf(obj).door ? (obj.open ? 'Close' : 'Open') + ' the door at ' + refOf(obj.pos) + '. Confirm.' : null;
     case 'load': { const li = safe(() => loadPlan(x.g, x.cb, u), null); return li ? 'Confirm to load ' + li.rounds + ' rounds for ' + li.ap + ' AP.' : 'Nothing to load: you need loose rounds and a part-empty magazine.'; }
     case 'analyze': return t ? ((t as any).analyzedBy ? t.name + ' is already analyzed.' : 'Target: ' + t.name + '. Click a hostile to change. Confirm to analyze.') : null;
@@ -765,9 +766,12 @@ export function actionsFor(g: GameState, unitId: string, viewer?: string | null)
   if (x.u.downed) for (const d of kept) { d.available = false; d.why = 'Downed.'; }
   return GROUP_ORDER.flatMap((gr) => kept.filter((d) => d.group === gr)).concat(kept.filter((d) => !GROUP_ORDER.includes(d.group)));
 }
+/** Retired ids that still resolve (a saved turn-card pick, an old hotkey): 'clear-off' was the off-hand gun's own Clear
+ * jam; with two guns there is one Clear jam now (Hands 5d, 13 Nov 2026), so the old pick is that one action. */
+const DESC_ALIAS: Record<string, string> = { 'clear-off': 'clear' };
 function find(x: DescCtx, id: string): { d: ActionDescriptor; s: ActionSystem } | null {
   for (const s of systems()) { if (s.owns && !s.owns(id)) continue; const d = safe(() => s.list(x), [] as ActionDescriptor[]).find((y) => y.id === id); if (d) return { d, s }; }
-  return null;
+  return DESC_ALIAS[id] ? find(x, DESC_ALIAS[id]) : null;
 }
 /** Does this step apply with these picks? */
 export const stepOn = (st: PickStep, p: Picks) => {

@@ -105,6 +105,21 @@ describe('the Outbursts tab (rules 1.5)', () => {
     expect(G.combat!.units.find((v) => v.id === foe.id)!.hp).toBeLessThan(hp0);
   });
 
+  // One fact, one place (Leon, live 0.24.0): the stage and Strain are the HEART panel's, MP the unit panel's; the
+  // selected action's detail under the tabs (sel.extra) said them again ("Stage 0 ×0.8 · Strain 1/6").
+  it('holding: the detail line under the tabs does not repeat the stage, Strain or MP', () => {
+    const { u } = soulFight('heart-c');
+    doAct({ type: 'combat/outburst', unitId: u.id, design: 'fb', hold: true });
+    const L = new CombatLogic({}) as any;
+    for (const a of ['pump', 'steady', 'release']) {
+      L.renderVals(); L.pickAction(a); const r = L.renderVals();
+      const ex = String(r.turnPanels[0].sel.extra || '');
+      expect(ex, a).not.toMatch(/Strain \d|Stage \d|MP \d/);
+    }
+    L.pickAction('outburst'); const r = L.renderVals();
+    expect(String(r.turnPanels[0].sel.extra || '')).not.toMatch(/Strain \d|MP \d/);
+  });
+
   it('renders: the panel and the design cards bind in the real template', async () => {
     const { u } = soulFight('heart-c');
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);

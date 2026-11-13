@@ -30,8 +30,15 @@ const idleOn = (pg) => pg.waitForFunction(() => !window.__phcHold || performance
 async function newRound() {
   await idleOn(p); await dismissCut();
   const r0 = (await st()).cb.round;
-  await p.getByRole('button', { name: 'End turn', exact: true }).click();
-  await p.waitForFunction((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; }, r0, { timeout: 30000 });
+  // (End turn is pressed again only while the turn is still ours in the same round: beside other suites a press during
+  // the last effects' playback was lost and the round never came; a press that did land is never repeated)
+  const fresh = (r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round > r0 && u && u.side === 'pc' && u.ap >= 5; };
+  for (let i = 0; i < 6; i++) {
+    const still = await p.evaluate((r0) => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.round === r0 && !!u && u.side === 'pc'; }, r0);
+    if (still) { await idleOn(p); await dismissCut(); await p.getByRole('button', { name: 'End turn', exact: true }).click(); }
+    if ((await p.waitForFunction(fresh, r0, { timeout: 15000 }).catch(() => 'not yet')) !== 'not yet') break;
+  }
+  await p.waitForFunction(fresh, r0, { timeout: 30000 });
   await p.waitForSelector('[data-phc-cutin]', { timeout: 1800 }).catch(() => {}); await dismissCut(); await idleOn(p);
 }
 const ensureAp = async (n) => { if ((await st()).u.ap < n) await newRound(); };
@@ -99,6 +106,9 @@ async function confirmAndCatch(name, at = [120, 320, 650]) {
   const b = confirmBtn(); const en = await b.isEnabled().catch(() => false);
   if (en) await b.click(); else console.log('  confirm is disabled: ' + (await b.textContent().catch(() => '')));
   let peak = 0, t = 0;
+  // the effects start when the action has landed, which on a loaded machine is later than the first sample: wait for
+  // the first effect node (or 15 s) before the timed samples (a sample before it came read "peak 0 nodes" beside others)
+  if (en) peak = await p.waitForFunction(() => document.querySelector('.phc-fx-layer')?.childElementCount || 0, null, { timeout: 15000, polling: 30 }).then((h) => h.jsonValue(), () => 0);
   for (const ms of at) { await pause(p, Math.max(0, ms - t)); t = ms; peak = Math.max(peak, await fxCount()); await snap(name + '-' + ms); }
   return { en, peak, events: await fxSince(n0), log: await logSince(l0) };
 }
@@ -176,7 +186,7 @@ await p.screenshot({ path: OUT + 'sigil14-01b-keyboard-rows.png' });
 await tok(L(4)).hover(); await pause(p, 150); await snap('01-keyboard');
 await tok(L(4)).click(); await pause(p, 300);
 // Our own tile now holds FIRE: every key is refused, and says why on the key, in its tooltip and its aria label.
-const refused = await p.evaluate(() => { const b = [...document.querySelectorAll('div[aria-label="Glyph keyboard"] button[data-word]')]; return b.length ? b.map((x) => ({ off: x.getAttribute('aria-disabled'), text: (x.textContent || '').replace(/\s+/g, ' '), title: x.getAttribute('aria-description') || x.title, aria: x.getAttribute('aria-label') })) : null; });
+const refused = await p.evaluate(() => { const b = [...document.querySelectorAll('div[aria-label="Glyph keyboard"] button[data-word]')]; return b.length ? b.map((x) => ({ off: x.getAttribute('aria-disabled'), text: (x.textContent || '').replace(/\s+/g, ' '), title: x.getAttribute('aria-description') || x.getAttribute('data-tip-text') || '', aria: x.getAttribute('aria-label') })) : null; });
 if (refused) ok('on a tile with a glyph every key says "tile taken": ' + refused[0].text + ' | ' + refused[0].aria, refused.every((k) => k.off === 'true' && /tile taken/.test(k.text) && /One glyph per tile/.test(k.title) && /can't draw now/.test(k.aria)));
 await moveTo(L(3));
 await pickAct(/^Draw a glyph/).catch(() => {});

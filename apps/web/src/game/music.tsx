@@ -12,6 +12,7 @@ import { onVoice, voiceState } from './voice';
 import { openSettings } from './settings';
 import { useFloatStyle, onFloatOut, floatOut } from './floaters';
 import { COMBAT_IN_MS, usePresence, presenceCls } from './presence';
+import { tipProps } from './actionTip';
 
 declare global { interface Window { YT?: any; onYouTubeIframeAPIReady?: () => void } }
 let apiP: Promise<any> | null = null;
@@ -260,7 +261,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
           })}
       </div>
       <button ref={btnRef} data-phc-float="music" data-phc-float-place={place} onClick={() => { setOpen(!open); if (blocked) setPrefs({ paused: false }); }} aria-expanded={open} aria-label={'Music: ' + (track ? track.title + ' by ' + track.artist : 'nothing playing')}
-        title={iconOnly ? btnText : undefined} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}
+        {...tipProps(iconOnly ? btnText : undefined)} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}
         style={{ position: 'fixed', [side]: 16, bottom: 16, zIndex: 9, maxWidth: 300, minHeight: 40, minWidth: 40, padding: iconOnly ? 0 : '0 14px', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 999, border: '1px solid ' + (hostCol || '#3B475D'), background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
         <span aria-hidden style={{ fontSize: 16, color: hostCol || '#FFFFFF' }}>♪</span>
         {!iconOnly && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{btnText}</span>}

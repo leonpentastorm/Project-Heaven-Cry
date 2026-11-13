@@ -225,7 +225,9 @@ export function bodyFigure({ worn = [], injuries = [], hot = [], mainSide = 'rig
 }
 
 // ---------- status effects, in words (combat panel, hover cards) ----------
-export function effectsOf(u) {
+/** own: the unit panel of your own fighter, where the resource rows already say Heat and each gun's jam (one fact, one
+ *  place: Leon, live 0.24.0); elsewhere (an ally's line, a target's line) the chips say them. */
+export function effectsOf(u, own = false) {
   const fx = [];
   if (u.dead) fx.push(['DEAD', 'Out of the fight for good.']);
   else if (u.downed) fx.push(['DOWNED', 'Death saves ' + (u.saves ? u.saves.ok + ' ✓ / ' + u.saves.fail + ' ✕' : '') + '. A stim stabilises.']);
@@ -233,8 +235,8 @@ export function effectsOf(u) {
   if (u.bleed) fx.push(['BLEEDING', '5 damage at the start of each turn, ' + u.bleed + (u.bleed === 1 ? ' round' : ' rounds') + ' left. A stim stops it.']);
   if (u.dazedNext) fx.push(['DAZED', '−2 AP next turn.']);
   if (u.stunnedNext) fx.push(['OFF BALANCE', '−1 AP next turn (fumbled a strike).']);
-  if (u.jammed) fx.push(['JAMMED', 'The gun won\'t fire until cleared (2 AP).']);
-  if (u.heat) fx.push(['HEAT ' + u.heat, '−' + Math.floor(u.heat / 2) + ' to hit; drops by 2 each turn.']);
+  if (!own && (u.jammed || u.offJammed)) fx.push(['JAMMED', (u.jammed && u.offJammed ? 'Both guns are' : u.offJammed ? 'The off-hand gun is' : 'The gun is') + ' jammed: it won\'t fire until cleared.']);
+  if (u.heat && !own) fx.push(['HEAT ' + u.heat, '−' + Math.floor(u.heat / 2) + ' to hit; drops by 2 each turn.']);
   (u.injuries || []).forEach((i) => fx.push([((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), i.loc === 'arm' ? '−2 to attacks with that arm, until treated.' : i.loc === 'leg' ? 'Half Movement, until treated.' : 'Injured.']));
   if (u.weakPoint) fx.push(['READ', 'It deals 15% less damage to the squad.']);
   if (u.overweight > 0) fx.push(['OVERBURDENED', u.overweight + ' kg over the carry limit: −' + Math.ceil(u.overweight / 5) + ' Movement, no Sprint.']);

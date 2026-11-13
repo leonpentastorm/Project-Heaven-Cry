@@ -1,7 +1,7 @@
 // The basic actions of a fight, as data the client prints (engine review 4, finding 1): what each costs this unit,
 // whether it can be done now, and the engine's reason when it can't. weaponActions() (combat.ts) does this for what a
 // weapon grants; this module does it for everything else that is not a technique, a Call, a perk, a prayer or magic:
-// Move, Sprint, Disengage, Prone, Shove, Shoot an object, Pick up, a door, a stim, the song, the rules 1.3 conditions
+// Move, Sprint, Disengage, Prone, Shove, Attack an object, Pick up, a door, a stim, the song, the rules 1.3 conditions
 // (Burning, Grappled, Disarmed), Hide, Analyze, Pull free and reloading both guns.
 //
 //   basicActions(cb, u, { c, g })          every row the unit has: { id, label, ap, cost, text, why, tab }
@@ -20,7 +20,7 @@ import type { Character } from './character';
 import { isMedicChar } from './character';
 import { WEAPON } from './data';
 import { type Combat, type Unit, type AttackMode, isMelee, attackApCost, effectiveRange, analyzeCost, analyzeRange, stimAp, reloadBothAp, reloadOffAp, reloadHands, loadMagazine, clearJam, coverOffAp, canJam, moveBlock, moveHowBlock, movePlan,
-  sprintTiles, apForTiles, paths, movePaths, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, dist, objectsOf, type MoveHow } from './combat';
+  sprintTiles, apForTiles, paths, movePaths, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, dist, objectsOf, twoJammingGuns, type MoveHow } from './combat';
 import { price, whyNot, needs, creditFor, setAp } from './effects/cost';
 import { COST_SITE_IDS, type CostSite } from './effects/stats';
 import { emitStory } from './effects/hooks';
@@ -110,7 +110,7 @@ function rowsOf(cb: Combat | null, u: Unit, x: ActionCtx): BasicAction[] {
   // A unit with a fixed action list (the drone: move and a plain shot) has only those.
   return u.allowedActions ? out.filter((a) => u.allowedActions!.includes(a.id)) : out;
 }
-/** Shoot an object: the weapon's shot (a strike for a melee weapon), priced through the items, at least 1 AP. */
+/** Attack an object (was Shoot an object): the weapon's shot (a strike for a melee weapon), priced through the items, at least 1 AP. */
 function coverAp(u: Unit): number { const w = WEAPON[u.weapon]; return w ? Math.max(1, price({ cb: CB, u }, 'break', attackApCost(w, isMelee(w) ? 'melee' : 'shot')).ap) : 2; }
 /** Reload both guns (two guns in hand): the speed reload, and the tactical one when both take magazines. The refusal is
  * the engine's own (reloadHands, tried on a copy). */
@@ -141,7 +141,7 @@ export function reloadOffRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): Ba
     { id: 'reload-off-tac', label: 'Reload (tactical)', tab: 'attack', ap: tac, cost: apText(tac) + ' · the ' + unit + ' goes in your pack', text: 'Swap in the off-hand gun\'s fullest spare ' + unit + '. The one in the gun goes back in your pack with its rounds still in it.' + now, why: whyOf(true) }];
 }
 
-/** The off-hand weapon's own Clear jam and Shoot an object (two weapons in hand; lead's call for Leon, live 0.23.0: a
+/** The off-hand weapon's own Clear jam (one gun only: with two there is one Clear jam, Hands 5d) and Attack an object (two weapons in hand; lead's call for Leon, live 0.23.0: a
  * jammed off-hand gun could never be cleared): the main hand's rule and price, on the off-hand weapon (its jam, its
  * rounds, its range and damage). Clear jam is listed for an off-hand gun that can jam; the refusal is the engine's own
  * (clearJam, tried on a copy). */
@@ -152,7 +152,7 @@ export function offHandRows(cb: Combat | null, u: Unit, x: ActionCtx = {}): Basi
     const ap = coverOffAp(u, cb);
     out.push({ id: 'cover-off', label: d.name, tab: d.tab, ap, cost: apText(ap), text: 'With the off-hand ' + ow.name + ': ' + d.text.replace(/your weapon's/, 'its'), why: need(u, ap, { type: 'combat/shoot-cover', hand: 'off' }) });
     const hd: any = ow.handling || {};
-    if (canJam(ow) || (hd.grant || []).includes('clear')) {
+    if ((canJam(ow) || (hd.grant || []).includes('clear')) && !twoJammingGuns(u)) { // two guns: the one Clear jam (Hands 5d)
       const c = price({ cb, u }, 'clear_jam', undefined, { hand: 'off' }).ap;
       const fight = cb || ({ name: 'card', units: [u], order: [u.id], turn: 0, round: 1, log: [], fx: [], notes: [], objects: [], glyphs: [], zones: [], map: { id: 'card', w: 3, h: 3, solid: [] } } as any as Combat);
       const why = !u.offJammed ? 'Not jammed.' : dryRun(x.g || null, fight, u.id, (c2, u2) => clearJam(c2, u2, 'off')).err;
@@ -243,7 +243,7 @@ export function reachOf(cb: Combat | null, u: Unit, what: ReachWhat, o: { step?:
     const reach = o.fists ? 1 : meleeReachOf(u, 'melee');
     return { max: reach + Math.max(0, o.step || 0), band: 0, los: false, melee: true };
   }
-  // Optics only help against units; shooting an object (shootCover) has no optic term.
+  // Optics only help against units; attacking an object (shootCover) has no optic term.
   const eff = effectiveRange(w), bands = MAX_RANGE_BANDS + (what === 'cover' ? 0 : opticBands(u, mode));
   return { max: eff * bands, band: eff, los: true, melee: false };
 }

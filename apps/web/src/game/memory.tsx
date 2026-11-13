@@ -6,6 +6,7 @@ import { useFloatStyle } from './floaters';
 import type { GameState, MemEdit } from '@engine';
 import { act } from './store';
 import { usePresence, presenceCls } from './presence';
+import { tipProps } from './actionTip';
 
 type Tab = 'story' | 'people' | 'threads' | 'facts' | 'more';
 const ATT = ['−3 hostile', '−2 hostile', '−1 unfriendly', '0 neutral', '+1 friendly', '+2 warm', '+3 devoted'];
@@ -72,7 +73,7 @@ export function MemoryPanel({ game, isHost, side, compact = false }: { game: Gam
   const add = (kind: string, patch: Record<string, any>) => { edit({ kind, patch } as MemEdit); setAdding(''); };
   return (
     <>
-      <button ref={btnRef} type="button" data-phc-float="memory" data-phc-float-place={place} onClick={() => setOpen(true)} aria-label="The Narrator's memory (host)" title={compact && !hover ? 'The Narrator\'s memory' : undefined}
+      <button ref={btnRef} type="button" data-phc-float="memory" data-phc-float-place={place} onClick={() => setOpen(true)} aria-label="The Narrator's memory (host)" {...tipProps(compact && !hover ? 'The Narrator\'s memory' : undefined)}
         onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}
         style={{ position: 'fixed', [side]: compact ? 64 : 16, bottom: compact ? 16 : 64, zIndex: 9, minHeight: 40, minWidth: 40, padding: compact && !hover ? 0 : '0 14px', borderRadius: 999, border: '1px solid #3B475D', background: ink.panel, color: ink.text, fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
         {compact && !hover ? '◈' : '◈ Memory'}

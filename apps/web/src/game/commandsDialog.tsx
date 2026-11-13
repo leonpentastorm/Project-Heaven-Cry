@@ -11,6 +11,7 @@ import { ART } from '../screens/shared';
 import { castFight } from './cast';
 import { catalogue, readPrefs, resolveCommands, writePrefs, readCardSide, writeCardSide, TAB_NAME, type CatEntry, type CardSide } from './commands';
 import { SIGIL_INK, SOUL_INK } from './glyphs';
+import { tipProps } from './actionTip';
 
 const INK: Record<string, string> = { attack: '#F65157', sigils: SIGIL_INK, outbursts: SOUL_INK };
 const UI = "'Chakra Petch', sans-serif";
@@ -81,7 +82,7 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
             const ink = e ? INK[e.tab] || '#E7EBF3' : '#5D6A80';
             return (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 8, borderRadius: 10, background: on ? '#1C2536' : '#0D1119', ...edges(on ? '2px solid #FFFFFF' : '2px solid #232D3F', '4px solid ' + ink) }}>
-                <button type="button" data-slot={i + 1} aria-pressed={on} onClick={() => setAt(i)} title={'Fill slot ' + (i + 1)}
+                <button type="button" data-slot={i + 1} aria-pressed={on} onClick={() => setAt(i)} {...tipProps('Fill slot ' + (i + 1))}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 0, border: 0, background: 'transparent', color: 'inherit', fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
                   <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 11, fontWeight: 700 }}>{i + 1}</span>
                   <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
@@ -108,7 +109,7 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
                 {cat.filter((e) => e.tab === t).map((e) => {
                   const inSlot = slots.indexOf(e.action), here = inSlot === at, ink = INK[e.tab];
                   return (
-                    <button key={e.action} type="button" data-cmd={e.action} aria-pressed={here} onClick={() => pick(e.action)} title={e.text}
+                    <button key={e.action} type="button" data-cmd={e.action} aria-pressed={here} onClick={() => pick(e.action)} {...tipProps(e.text)}
                       style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 2, padding: '6px 10px', borderRadius: 8, ...edges('1px solid ' + (here ? '#FFFFFF' : '#232D3F'), '3px solid ' + (ink || (here ? '#FFFFFF' : '#232D3F'))), background: here ? '#1C2536' : '#10151F', color: '#E7EBF3', fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
                       <span style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
                         <span style={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.label}</span>
@@ -126,7 +127,7 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
         <div role="radiogroup" aria-label="Card side" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
           <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: '#A3AEC2', marginRight: 4 }}>CARD SIDE</span>
           {([['auto', 'Auto', 'The left, unless the card would cover your unit there: then the right'], ['left', '◧ Left', 'Always on the left of the screen'], ['right', 'Right ◨', 'Always on the right of the screen']] as [CardSide, string, string][]).map(([v, label, title]) => (
-            <button key={v} type="button" role="radio" aria-checked={side === v} data-card-side={v} title={title} onClick={() => setSide(v)} style={{ ...btn(side === v), minHeight: 32, padding: '0 12px' }}>{label}</button>
+            <button key={v} type="button" role="radio" aria-checked={side === v} data-card-side={v} {...tipProps(title)} onClick={() => setSide(v)} style={{ ...btn(side === v), minHeight: 32, padding: '0 12px' }}>{label}</button>
           ))}
           <span style={{ fontSize: 11, color: '#A3AEC2' }}>{side === 'auto' ? 'Moves to the right when it would cover your unit.' : 'Every character, in this browser.'}</span>
         </div>

@@ -404,9 +404,9 @@ async function fogPart() {
   const blast = p.locator('.phc-cb-dock').getByRole('button', { name: /blast/i }).first();
   if (await blast.count()) { await blast.click(); await pause(p, 200); }
   const shown = () => p.evaluate(() => {
-    const marks = [...document.querySelectorAll('button.phc-tok [title$=": affected"]')].map((m) => m.closest('button.phc-tok').getAttribute('aria-label').split(' ')[0] + ' ' + m.getAttribute('title'));
+    const marks = [...document.querySelectorAll('button.phc-tok [data-tip-text$=": affected"]')].map((m) => m.closest('button.phc-tok').getAttribute('aria-label').split(' ')[0] + ' ' + m.getAttribute('data-tip-text'));
     const dock = (document.querySelector('.phc-cb-dock') || document.body).innerText || '';
-    const attrs = [...document.querySelectorAll('button.phc-tok, button.phc-tok *')].map((e) => (e.getAttribute('title') || '') + ' ' + (e.getAttribute('aria-label') || '')).join(' ');
+    const attrs = [...document.querySelectorAll('button.phc-tok, button.phc-tok *')].map((e) => (e.getAttribute('data-tip-text') || '') + ' ' + (e.getAttribute('aria-label') || '')).join(' ');
     return { marks, card: (dock.match(/Fog lurker/g) || []).length, plain: (dock.match(/Plain sight/g) || []).length, onTiles: /Fog lurker/.test(attrs), covered: document.querySelectorAll('button.phc-tok[aria-label*="it covers this tile"]').length };
   });
   const base = await shown();
@@ -440,7 +440,7 @@ async function glyphPart() {
     const cb = window.__phc.getState().game.combat; if (!cb) return null;
     const refOf = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
     const eff = (el) => { let o = 1; for (let e = el; e && e !== document.body; e = e.parentElement) { const cs = getComputedStyle(e); o *= +cs.opacity; if (cs.visibility === 'hidden' || cs.display === 'none') o = 0; } return o; };
-    const drawn = [...document.querySelectorAll('button.phc-tok[aria-label]')].flatMap((b) => [...b.querySelectorAll('img')].filter((i) => /rounds?\)/.test(i.title || '') && eff(i) > 0.9 && i.getBoundingClientRect().width > 8).map(() => b.getAttribute('aria-label').split(' ')[0]));
+    const drawn = [...document.querySelectorAll('button.phc-tok[aria-label]')].flatMap((b) => [...b.querySelectorAll('img')].filter((i) => /rounds?\)/.test(i.getAttribute('data-tip-text') || '') && eff(i) > 0.9 && i.getBoundingClientRect().width > 8).map(() => b.getAttribute('aria-label').split(' ')[0]));
     return { state: (cb.glyphs || []).map((g) => refOf(g.pos)).sort().join(' '), drawn: drawn.sort().join(' '), log: cb.log.slice(-4).map((l) => (typeof l === 'string' ? l : l.text)).join(' | ') };
   });
   const steps = [['draws FIRE', { type: 'combat/draw', unitId: me.id, word: 'fire', tile: ref(K(0)) }], ['steps on', { type: 'combat/move', unitId: me.id, to: K(1) }], ['draws SEEK', { type: 'combat/draw', unitId: me.id, word: 'seek', tile: ref(K(1)) }],

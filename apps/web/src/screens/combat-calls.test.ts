@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // The fight panel after Skeleton 2.0, rendered for real: the Calls tab (shown only to a speaker), a Call picked, aimed
-// and confirmed (combat/call); the shield's block on the Attack tab with its Guard pips; the tab row's nine tabs.
+// and confirmed (combat/call); the shield's block on the Attack tab (its Guard in the unit panel); the tab row's nine tabs.
 import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES, apply, newGame, viewFor, active, type GameState, type Sheet } from '@engine';
 
@@ -119,9 +119,10 @@ describe('the shield on the Attack tab', () => {
     await click(el.querySelector('[role="tab"][data-tab="attack"]'));
     const head = el.querySelector('[data-weapon-block="off"]')!;
     expect(head.textContent).toMatch(/OFF HAND · .*RIOT SHIELD/i);
-    expect(head.textContent).toContain('Guard 2 / ' + cu.resMax!.guard);
-    const pips = head.querySelectorAll('[data-pips="guard"] > span');
-    expect(pips.length).toBe(cu.resMax!.guard); expect(Array.from(pips).filter((p) => p.getAttribute('data-on') === 'true').length).toBe(2);
+    // one fact, one place (Leon, live 0.24.0): Guard is the unit panel's resource row, not repeated in the header
+    expect(head.textContent).not.toMatch(/Guard \d/); expect(head.querySelectorAll('[data-pips]').length).toBe(0);
+    const gr = el.querySelector('[aria-label="Your resources"] [data-res="res-guard"]')!;
+    expect(gr.textContent).toContain('2 / ' + cu.resMax!.guard);
     await click(el.querySelector('button[data-act="tpad:off"]'));
     const pad = el.querySelector('[data-tech-pad="tpad:off"]')!;
     const chips = Array.from(pad.querySelectorAll('button[data-tech]'));

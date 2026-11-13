@@ -9,6 +9,7 @@ import { shiftLayer, setLayerClip } from './fx/dom';
 import { battlePace } from './combatSpeed';
 import { reducedMotion } from './sfx';
 import { ZOOM_MIN } from './mapZoom';
+import { setTip } from './actionTip';
 
 export interface MiniDot { key: string; color: string; me?: boolean; square?: boolean }
 export interface MiniData { solid: Iterable<string>; full: Iterable<string>; half: Iterable<string>; dots: MiniDot[]; label: string }
@@ -372,7 +373,7 @@ export class CameraView {
     this.tog!.textContent = shown ? 'HIDE ▴' : 'SMALL MAP ▾';
     this.tog!.setAttribute('aria-label', shown ? 'Hide the small map' : 'Show the small map');
     this.tog!.setAttribute('aria-expanded', shown ? 'true' : 'false');
-    this.tog!.title = shown ? 'Hide the small map' : 'Show the small map of the whole field';
+    setTip(this.tog!, shown ? 'Hide the small map' : 'Show the small map of the whole field');
   }
   private drawMini() {
     const cv = this.canvas, m0 = this.mini; if (!cv || !m0 || !this.miniShown()) return;
@@ -405,10 +406,10 @@ export class CameraView {
     const host = this.over; if (!host || !host.isConnected || !this.scrolls() || this.shows(key)) return;
     const life = Math.max(1200, ARROW_MS * battlePace());
     const had = this.arrows.find((a) => a.key === key);
-    if (had) { had.until = now() + life; had.el.style.color = color; had.el.setAttribute('aria-label', label + ' is off screen. Go there.'); had.el.title = label; this.sweepArrows(); return; }
+    if (had) { had.until = now() + life; had.el.style.color = color; had.el.setAttribute('aria-label', label + ' is off screen. Go there.'); setTip(had.el, label); this.sweepArrows(); return; }
     while (this.arrows.length >= MAX_ARROWS) this.arrows.shift()!.el.remove();
     const b = document.createElement('button'); b.type = 'button'; b.className = 'phc-cam-arrow'; b.style.color = color;
-    b.setAttribute('data-cam-arrow', key); b.setAttribute('aria-label', label + ' is off screen. Go there.'); b.title = label;
+    b.setAttribute('data-cam-arrow', key); b.setAttribute('aria-label', label + ' is off screen. Go there.'); setTip(b, label);
     b.innerHTML = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M17 9 L4 4.5 L4 13.5 Z" fill="currentColor"/></svg>';
     b.addEventListener('click', (e) => { e.stopPropagation(); this.follow([key], 'ask'); this.dropArrow(key); });
     host.appendChild(b);

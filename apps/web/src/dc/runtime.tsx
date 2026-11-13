@@ -2,7 +2,7 @@
 // It parses a template once (its own strict parser: the templates are well-formed, and the browser's HTML parser
 // would drop <sc-for> inside <select> and lowercase onClick), then renders it with React against the values a
 // screen's logic returns from renderVals(). Supported: {{dotted.holes}} in text and attributes, <sc-for list as>,
-// <sc-if value>, style strings, class, on* handlers, form attributes. <helmet> and <dc-import> are skipped (the
+// <sc-if value>, style strings, class, on* handlers, form attributes, tip (the hover card; a template never has title). <helmet> and <dc-import> are skipped (the
 // app loads fonts and CSS globally, and screens are routed by the app, not imported).
 import React from 'react';
 
@@ -90,6 +90,16 @@ function attrValue(v: string | true, scope: any): any {
   return splitHoles(v).map((p) => (typeof p === 'string' ? p : String(get(scope, p.hole) ?? ''))).join('');
 }
 
+/** Whether an element says its own name: words in it (text or a {{hole}}), an image with alt text, or an aria-label.
+ *  An element without one (an icon-only button) takes its hover text as its accessible name too. */
+const NAMED = new WeakMap<ElNode, boolean>();
+function hasOwnName(n: ElNode): boolean {
+  const hit = NAMED.get(n); if (hit !== undefined) return hit;
+  const own = n.attrs.some(([k, v]) => (k === 'aria-label' || k === 'aria-labelledby' || (k === 'alt' && v !== '' && v !== true)))
+    || n.kids.some((k) => (k.t === 'text' ? k.parts.some((p) => typeof p !== 'string' || p.trim() !== '') : k.tag !== 'svg' && hasOwnName(k)));
+  NAMED.set(n, own); return own;
+}
+
 function renderNode(n: Node, scope: any, key: React.Key): React.ReactNode {
   if (n.t === 'text') {
     if (n.parts.length === 1 && typeof n.parts[0] === 'string') return n.parts[0];
@@ -123,6 +133,16 @@ function renderNode(n: Node, scope: any, key: React.Key): React.ReactNode {
     const v = attrValue(raw, scope);
     if (/^on[A-Z]/.test(name)) { if (typeof v === 'function') props[name] = v; if (name === 'onChange') hasOnChange = true; continue; }
     if (name === 'style') { if (v) props.style = parseStyle(String(v)); continue; }
+    // tip="…": the game's hover card (game/actionTip.ts), never a native title. The words go to assistive tech too:
+    // as the description, or as the name of an element with no words of its own.
+    if (name === 'tip') {
+      const t = v == null || v === false || typeof v === 'function' ? '' : String(v).trim();
+      if (!t || n.attrs.some((a) => a[0] === 'data-tip')) continue;
+      props['data-tip-text'] = t;
+      if (hasOwnName(n)) { if (!n.attrs.some((a) => a[0] === 'aria-description')) props['aria-description'] = t; }
+      else if (!n.attrs.some((a) => a[0] === 'aria-label')) props['aria-label'] = t;
+      continue;
+    }
     if (name === 'value') hasValue = true;
     if (name === 'disabled' || name === 'checked' || name === 'selected' || name === 'readonly' || name === 'autofocus') {
       props[ATTR_MAP[name] ?? name] = v === true || v === '' || v === 'true' || (v !== false && v !== 'false' && v != null && v !== 0);

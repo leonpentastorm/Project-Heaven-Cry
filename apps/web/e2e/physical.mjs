@@ -46,6 +46,7 @@ p.on('dialog', (d) => d.accept());
 const inView = (sel) => p.evaluate((s) => { const e = document.querySelector(s); if (!e) return false; const r = e.getBoundingClientRect(); return r.width > 0 && r.top >= 0 && r.bottom <= innerHeight + 1 && r.left >= 0 && r.right <= innerWidth + 1; }, sel);
 const noPageScroll = () => p.evaluate(() => document.scrollingElement.scrollHeight <= innerHeight + 2);
 const panel = () => p.locator('.phc-cb-tabpanel').first();
+const momRow = () => p.locator('[aria-label="Your resources"] [data-res="res-momentum"]').first().innerText().then((t) => t.replace(/\s+/g, ' ')).catch(() => '');
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 const tok = (k) => p.locator('.phc-grid button.phc-tok[aria-label^="' + ref(k) + ' "], .phc-grid button.phc-tok[aria-label^="' + ref(k) + ':"]').first();
 
@@ -125,7 +126,7 @@ ok('Hold a shot opens the Watches (Overwatch, Deny)', (await p.locator('[data-te
 await snap('pad-watch-1440');
 
 // icons in the backpack (here, while the fight is sure to be on)
-for (let i = 0; i < 3 && !(await p.locator('[data-bp-row]').count()); i++) { await p.locator('button[title^="Open your backpack"]').first().click().catch(async () => { await p.keyboard.press('b'); }); await settle(p, 700); }
+for (let i = 0; i < 3 && !(await p.locator('[data-bp-row]').count()); i++) { await p.locator('button[data-tip-text^="Open your backpack"]').first().click().catch(async () => { await p.keyboard.press('b'); }); await settle(p, 700); }
 ok('the backpack shows item icons', (await p.locator('[data-bp-row] img[src^="data:image/svg+xml"]').count()) >= 1);
 await p.keyboard.press('Escape'); await settle(p, 300);
 
@@ -164,7 +165,7 @@ g = await G();
 ok('Confirm sends combat/technique: the log says Lunge', g.combat.log.slice(n0).some((l) => /uses Lunge/.test(l)));
 const m1 = await mom();
 if (m1 > 0) {
-  ok('a hit: Momentum ' + m1 + ', and the block\'s pips show it', (await panel().locator('[data-weapon-block="main"] [data-momentum-pips] span[data-on="true"]').count()) === m1);
+  ok('a hit: Momentum ' + m1 + ', and the unit panel\'s Momentum row shows it (one place: not repeated in the weapon\'s header)', (await momRow()).includes(m1 + ' / ') && !(await panel().locator('[data-weapon-block="main"] [data-momentum-pips]').count()));
   await panel().locator('[data-act="tq:main:cut"]').click(); await settle(p, 250);
   if ((await G()).combat.units.find((u) => u.id === foe1.id && !u.dead)) { await tok((await G()).combat.units.find((u) => u.id === foe1.id).pos).click(); await settle(p, 250); await confirm(); }
   const m2 = await mom();
@@ -179,7 +180,7 @@ if (m1 > 0) {
 } else {
   note('Lunge missed (Momentum 0): Momentum set to 2 with the tools to try Coup');
   await act({ type: 'sandbox/meter', unitId: (await me()).id, momentum: 2 }); await settle(p, 400);
-  ok('…the block\'s pips show the 2', (await panel().locator('[data-weapon-block="main"] [data-momentum-pips] span[data-on="true"]').count()) === 2);
+  ok('…the Momentum row shows the 2', (await momRow()).includes('2 / '));
   await panel().locator('[data-act="tpad:main"]').click(); await settle(p, 300);
   await p.locator('[data-tech-pad="tpad:main"] [data-tech="coup"]').click(); await settle(p, 300);
   await tok((await G()).combat.units.find((u) => u.id === foe1.id).pos).click(); await settle(p, 250);

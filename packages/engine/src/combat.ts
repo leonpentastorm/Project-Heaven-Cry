@@ -2312,7 +2312,7 @@ export function withOffHand<T>(u: Unit, fn: () => T): T {
   u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed;
   try { return fn(); } finally { u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); }
 }
-/** Shoot an object with the off-hand weapon: its attack AP, rounds, range and damage (the main hand's rule). */
+/** Attack an object with the off-hand weapon: its attack AP, rounds, range and damage (the main hand's rule). */
 export const coverOffAp = (u: Unit, cb?: Combat | null): number => { const w = u.offWeapon ? WEAPON[u.offWeapon] : null; return w ? Math.max(1, price({ cb, u }, 'break', attackApCost(w, isMelee(w) ? 'melee' : 'shot'), { hand: 'off' }).ap) : 2; };
 /** Shoot cover on purpose (spec: Cover): the weapon's attack AP and ammo, no roll, the weapon's damage. hand 'off':
  * the off-hand weapon's (its own rounds, jam, range and damage). */
@@ -2354,8 +2354,30 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
   return null;
 }
-/** Clear a jam (2 AP, then items; it resets Heat). hand 'off': the off-hand gun's own jam, at the same price. */
+/** Two guns that can jam, one in each hand: then there is ONE Clear jam (Leon's ruling, 13 Nov 2026; Hands 5d). */
+export function twoJammingGuns(u: Unit): boolean {
+  const mw = WEAPON[u.weapon], ow = u.offWeapon ? WEAPON[u.offWeapon] : null;
+  const jams = (w: WeaponDef | null | undefined) => !!w && !isMelee(w) && (canJam(w) || ((w as any).handling?.grant || []).includes('clear'));
+  return jams(mw) && jams(ow);
+}
+/** Is any gun this unit holds jammed (with two guns, either)? */
+export const anyJammed = (u: Unit): boolean => !!u.jammed || (twoJammingGuns(u) && !!u.offJammed);
+/** Clear a jam (2 AP, then items; it resets Heat). With two guns that can jam (twoJammingGuns) it is ONE action whatever
+ * `hand` says: it clears every jammed gun you hold for the main hand's price, once, and resets the Heat they pool
+ * (Leon's ruling, 13 Nov 2026; Hands 5d: the guns still jam apart, and a jammed one never stops the other firing).
+ * hand 'off' with a single off-hand gun (a melee weapon in the main hand): that gun's own jam, at the same price. */
 export function clearJam(cb: Combat, u: Unit, hand: 'main' | 'off' = 'main'): string | null {
+  if (twoJammingGuns(u)) {
+    const main = !!u.jammed, off = !!u.offJammed;
+    if (!main && !off) return 'Not jammed.';
+    const cost = price({ cb, u }, 'clear_jam').ap;
+    { const no = whyNot(cb, u, cost); if (no) return no; }
+    const jc: any = emit(cb, 'jam_clear', { u, ap: cost, keepHeat: false, cb, hand: main && off ? 'both' : main ? 'main' : 'off' });
+    pay(cb, u, cost); u.jammed = false; setOffJam(u, false); if (!jc.keepHeat) u.heat = 0;
+    emitFx(cb, 'clear', { unit: u.id, at: u.pos, dur: 1000, ...(main && off ? { hand: 'both' } : off ? { hand: 'off' } : {}) });
+    say(cb, u.name + (main && off ? ' clears both guns\' jams.' : off ? ' clears the off-hand gun\'s jam.' : ' clears the jam.'));
+    return null;
+  }
   if (hand === 'off') {
     const ow = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow || isMelee(ow)) return 'Your off hand holds no gun.';
     if (!u.offJammed) return 'Not jammed.';
@@ -2734,7 +2756,7 @@ export function weaponActions(u: Unit, cb?: Combat | null): WeaponAction[] {
     const lAp = price({ cb, u }, 'load').ap, why = !open.length ? 'Every spare ' + unit + ' is full.' : !u.loose ? 'No loose rounds to load.' : need(lAp);
     add({ id: 'load', label: unit === 'magazine' ? 'Load a magazine' : 'Fill a ' + unit, ap: lAp, why, text: 'Load loose rounds into your fullest part-empty ' + unit + ', 1 AP per ' + ROUNDS_PER_AP + ' rounds.' });
   }
-  if (canJam(w) || grant.has('clear')) { const c = price({ cb, u }, 'clear_jam').ap; add({ id: 'clear', label: 'Clear jam', ap: c, why: !u.jammed ? 'Not jammed.' : need(c), text: 'A jammed gun can\'t fire until cleared. Clearing resets Heat.' }); }
+  if (canJam(w) || grant.has('clear')) { const c = price({ cb, u }, 'clear_jam').ap, two = twoJammingGuns(u); add({ id: 'clear', label: 'Clear jam', ap: c, why: !anyJammed(u) ? 'Not jammed.' : need(c), text: two ? 'Clears every jammed gun you hold, for this one price. A jammed gun can\'t fire until cleared; the other still fires. Clearing resets Heat.' + (u.jammed && u.offJammed ? ' Clears: both guns.' : u.offJammed ? ' Clears: the off-hand gun.' : u.jammed ? ' Clears: the main-hand gun.' : '') : 'A jammed gun can\'t fire until cleared. Clearing resets Heat.' }); }
   const braces = weaponBraces(u);
   // Rules 1.13: anyone with a Guard pool (Durability 1+) may Brace, whatever the weapon: it is how Guard is gained.
   const pool = u.resMax?.guard != null;

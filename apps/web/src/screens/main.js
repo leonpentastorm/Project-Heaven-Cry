@@ -46,7 +46,7 @@ import { STORY_PANELS, STORY_PANEL_NAME, STORY_PANELS_CSS, readStoryPanels, save
 const armsLine = (wid) => { const pr = phys.weaponProps(wid), t = phys.weaponTeaches(wid); return [pr.length ? pr.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : '', t && phys.TECHNIQUE[t] ? 'teaches ' + phys.TECHNIQUE[t].name : ''].filter(Boolean).join(' · '); };
 import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVals, approachRows, hereVals, carriedRows, loadLine, nearItems, putDownTiles, isCacheV, holdsText, rawApproach,
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
-import { approachOptions, sigilGrowthView } from '@engine';
+import { approachOptions, sigilGrowthView, canLayGrandForms } from '@engine';
 import { groupedSection, sigilWordGroups } from '../game/workshopGroups';
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
@@ -149,9 +149,12 @@ function magicVals(self, g, c) {
   const GV = sigilGrowthView(c), useOf = Object.fromEntries(GV.words.map((x) => [x.word, x]));
   const rerender = () => self.setState({ wsTick: (self.state.wsTick || 0) + 1 });
   const TIER = { new: 'NEW', practised: 'PRACTISED', mastered: 'MASTERED' };
-  const wordCard = (id) => { const w = SIGIL[id], open = S.mgWord === id, u = useOf[id] || { uses: 0, tier: 'new', practisedAt: 10, masteredAt: 30, inflection: null }, on = !!(u.inflection && u.inflection.unlocked);
+  // A word's Grand form shows only to a character who can lay one (the Grand Sigilist's move, while its class is active;
+  // shelved today: Leon, live 0.24.0, "we don't even have the Grand Sigilist yet").
+  const grandOk = canLayGrandForms(c);
+  const wordCard = (id) => { const w0 = SIGIL[id], w = grandOk ? w0 : { ...w0, grand: '' }, open = S.mgWord === id, u = useOf[id] || { uses: 0, tier: 'new', practisedAt: 10, masteredAt: 30, inflection: null }, on = !!(u.inflection && u.inflection.unlocked);
     const nextAt = u.tier === 'new' ? u.practisedAt : u.masteredAt;
-    return { key: id, img: glyphUri(id, SIGIL_INK, { glow: true }), word: w.word, cls: WORD_CLASS[w.class] || '', charge: 'CHARGE ' + w.charge, text: w.text, title: w.grand ? 'Grand form (Grand Sigilist): ' + w.grand : '',
+    return { key: id, img: glyphUri(id, SIGIL_INK, { glow: true }), word: w.word, cls: WORD_CLASS[w.class] || '', charge: 'CHARGE ' + w.charge, text: w.text, title: w.grand ? 'Grand form: ' + w.grand : '',
       open: open ? 'true' : 'false', toggle: () => self.setState({ mgWord: open ? null : id }), hasGrand: open && !!w.grand, grand: w.grand || '', hint: w.grand ? (open ? '▾' : '▸') : '',
       star: starUri(u.tier), starAlt: TIER[u.tier], tierText: TIER[u.tier] + ' · ' + u.uses + (u.uses === 1 ? ' USE' : ' USES') + (u.tier === 'mastered' ? '' : ' / ' + nextAt),
       tierStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: ' + (u.tier === 'new' ? '#7F8BA1' : SIGIL_INK),
@@ -262,8 +265,7 @@ function magicVals(self, g, c) {
   const viaFor = (id) => (left.practice > 0 ? 'practice' : left.mastered.find((sk) => gatedBy(sk).includes(id)) || null);
   const codex = {
     feltCount: (c.feelings || []).length + ' / ' + FEELINGS.length + ' FELT',
-    feelings: feelingCodex(c).map((f) => ({ key: f.id, name: f.name, icon: f.icon, line: f.known ? f.step + ' · ' + f.effect : f.trigger, sub: f.known ? f.residue : '', known: f.known,
-      title: f.name + (f.known ? '' : ' (not felt yet)') + ': ' + f.effect + ' ' + f.residue + ' ' + f.trigger,
+    feelings: feelingCodex(c).map((f) => ({ key: f.id, name: f.name, icon: f.icon, step: f.known ? f.step : '', line: f.known ? f.effect : f.trigger, sub: f.known ? f.residue : '', known: f.known, tip: f.tip, tipText: f.tipText,
       style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 1px 8px; align-items: start; padding: 6px 8px; border-radius: 8px; background: #10151F; border: 1px solid ' + (f.known ? epRgba(f.ink, 0.55) : '#1C2536') + (f.known ? '' : '; opacity: 0.65'),
       nameStyle: 'font-size: 12px; font-weight: 700; color: ' + (f.known ? f.ink : '#A3AEC2') })),
     groups: moduleGroups(c).map((gr) => ({ key: gr.key, label: gr.label.toUpperCase() + ' · ' + gr.blurb, count: gr.modules.filter((x) => x.known).length + ' / ' + gr.modules.length,
