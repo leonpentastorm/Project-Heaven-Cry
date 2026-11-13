@@ -35,7 +35,7 @@ describe('basicActions: the rows a plain unit has', () => {
   it('every row prints a cost, and the base costs are the data\'s', () => {
     const f = fightWith([{}], [{ at: 'F6' }]); f.turn(f.pc);
     const R = rows(f);
-    expect(R.map((r) => r.id)).toEqual(['move', 'sprint', 'disengage', 'prone', 'shove', 'cover', 'pickup', 'door', 'stim', 'hide', 'analyze']);
+    expect(R.map((r) => r.id)).toEqual(['move', 'sprint', 'disengage', 'prone', 'shove', 'cover', 'pickup', 'door', 'stim', 'stim_throw', 'hide', 'analyze']); // rules 1.33: Stim Throw is everyone's
     for (const r of R) { expect(r.cost, r.id).toMatch(/AP/); expect(r.text.length, r.id).toBeGreaterThan(10); expect(r.text, r.id).not.toMatch(/\{\w+\}/); }
     for (const id of ['sprint', 'disengage', 'prone', 'shove', 'pickup', 'door', 'stim', 'hide']) expect(rowOf(f, id).ap, id).toBe(ACTION[id].ap);
     expect(rowOf(f, 'stim').cost).toBe('1–2 AP');

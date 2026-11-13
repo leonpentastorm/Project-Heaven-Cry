@@ -119,7 +119,7 @@ def foe_row(fid, name, text, save, effs):
             if extra: op["if"] = extra
             out.append(landed("foe_" + fid, op)); continue
         out.append(e)
-    row = {"id": "foe_" + fid, "name": name + " (given)", "label": name + " (given)", "kind": "debuff", "family": "heart", "save": bool(save), "engine": "table",
+    row = {"id": "foe_" + fid, "name": "Felt " + name, "label": "Felt " + name, "kind": "debuff", "family": "heart", "save": bool(save), "engine": "table",
            "text": "A feeling given through a Bond: " + text[0].lower() + text[1:], "effects": out,
            "duration": {"rounds": 2 if fid == "contempt" else 1}, "ends_on": ["duration"], "stacks": False, "set_by": "class:bard.inspire",
            "adjudication": "engine", "provisional": True, "source": "rules 1.33 section 6 (bonds-spec.md 5.1)"}

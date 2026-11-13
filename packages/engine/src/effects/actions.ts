@@ -13,7 +13,8 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import type { ActionArgs, ActionDef, ActionPreview, ActionScope, Holder, ItemInfo, ToggleDef, UseScope } from './types';
 import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isItemOp, charOfUnit } from './hooks';
-import { FEELING, feelingsOf } from '../feelings';
+import feelingsJ from '../../../../data/feelings.json';
+const FEEL_NAME: Record<string, string> = Object.fromEntries(((feelingsJ as any).items || []).map((f: any) => [f.id, f.name])); // (the data, not feelings.ts: its load order)
 import { unitSees } from '../combat';
 import { keyOf, rawItem } from './collect';
 import { SKILLS } from '../data';
@@ -247,7 +248,7 @@ function pickOptions(h: Holder, d: ActionDef): { id: string; label: string }[] {
   if (p === 'words') { const w = h.u?.mg?.words || [...new Set([...(c?.sigils || [])])]; return w.map((x: string) => ({ id: x, label: x.toUpperCase() })); }
   if (p === 'designs') return (c?.outbursts || []).map((x) => ({ id: x.id, label: x.name }));
   if (p === 'gamma') return SKILLS.filter((s: any) => s.slot === 'gamma').map((s) => ({ id: s.id, label: s.name }));
-  if (p === 'felt') return feelingsOf(c || charOfUnit(h.u)).map((x) => ({ id: x, label: FEELING[x]?.name || human(x) })); // rules 1.33: Inspire's felt feelings
+  if (p === 'felt') return ((c || charOfUnit(h.u))?.feelings || []).filter((x: string) => FEEL_NAME[x]).map((x: string) => ({ id: x, label: FEEL_NAME[x] })); // rules 1.33: Inspire's felt feelings
   if (p === 'squad') { const g = h.g ?? boundGame(); return (Object.values(g?.characters || {}) as Character[]).filter((x) => x.id !== c?.id && !x.dead).map((x) => ({ id: x.id, label: x.name })); }
   return [];
 }

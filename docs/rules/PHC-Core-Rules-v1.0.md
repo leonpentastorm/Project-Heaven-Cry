@@ -1422,6 +1422,22 @@ An enemy has no skill points. A tier lists the Calls it has and one level that s
 | Disarmed | Heart | your weapon is down: you strike with your fists until you recover it (2 AP) or draw another (rules 1.9, item 687: the downed one stays in the pile). **Weapon lowered** is the light version: 1 AP to raise it | until recovered |
 | Augment Offline | Body | one augment, prosthetic or implant gives nothing and its actions are unavailable | until repaired |
 | Corroded | Body | 5 damage at the start of each turn; Defense −2. Set by ACID with no save to land it; a Body save at the end of each of your turns ends it early (rules 1.4, provisional) | 3 rounds |
+| Felt Rage | Heart | given through a Bond (rules 1.33, Inspire): it has {=effects.0.value} Defense for {=duration.rounds} round | 1 round |
+| Felt Grief | Heart | given through a Bond (rules 1.33, Inspire): it is Slowed for a round | 1 round |
+| Felt Fear | Heart | given through a Bond (rules 1.33, Inspire): it is Afraid of whoever gave it, for a round | 1 round |
+| Felt Spite | Heart | given through a Bond (rules 1.33, Inspire): its next hit on its enemies costs it {=amounts.spite.base} Soul damage (more as the giver levels), no save; no save | 1 round |
+| Felt Shame | Heart | given through a Bond (rules 1.33, Inspire): it loses {=amounts.shame.base} HP now, as Soul damage (more as the giver levels), no save; no save | 1 round |
+| Felt Despair | Heart | given through a Bond (rules 1.33, Inspire): under half its HP it is Weakened for a round | 1 round |
+| Felt Mercy | Heart | given through a Bond (rules 1.33, Inspire): at a quarter of its HP or less it is Commanded to hold for a round (never a Boss) | 1 round |
+| Felt Cruelty | Heart | given through a Bond (rules 1.33, Inspire): it starts Bleeding | 1 round |
+| Felt Loneliness | Heart | given through a Bond (rules 1.33, Inspire): it has {=effects.0.value} to hit for a round, no save; no save | 1 round |
+| Felt Dread | Heart | given through a Bond (rules 1.33, Inspire): it is Suppressed for a round | 1 round |
+| Felt Awe | Heart | given through a Bond (rules 1.33, Inspire): it has Nausea for a round | 1 round |
+| Felt Longing | Heart | given through a Bond (rules 1.33, Inspire): its next move costs {=effects.0.value} AP more, no save; no save | 1 round |
+| Felt Contempt | Heart | given through a Bond (rules 1.33, Inspire): it is Scorned by whoever gave it (worse to hit them) for two rounds, no save; no save | 2 rounds |
+| Felt Guilt | Heart | given through a Bond (rules 1.33, Inspire): it is Taunted by whoever gave it for a round (never a Boss) | 1 round |
+| Felt Wonder | Heart | given through a Bond (rules 1.33, Inspire): it has {=effects.0.value} to spot the Hidden for a round, no save; no save | 1 round |
+| Felt Abandon | Heart | given through a Bond (rules 1.33, Inspire): it has {=effects.0.value} Defense for {=duration.rounds} round | 1 round |
 
 **Helpful states**
 

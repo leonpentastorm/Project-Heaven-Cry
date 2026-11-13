@@ -247,7 +247,7 @@ describe('rules 1.33 section 5: the Mender', () => {
     near.hp = 10; far.hp = 10; expect(f.act(u, 'class:bard.rally')).toBeNull(); expect(near.hp).toBeGreaterThan(10); expect(far.hp).toBeGreaterThan(10);
   });
   it('the class: MP and the Ledger, no Supplies; its old move keys still resolve', () => {
-    expect(BARD.resources).toEqual(['mp', 'ledger']); expect(BARD.resource).toBeUndefined();
+    expect(BARD.resources).toEqual(['mp', 'ledger']); expect(BARD.resource.id).toBe('ledger');
     const keys = classMoveKeys({ perks: [], traits: [], cls: 'bard', rank: 3 }).map((k) => k.key);
     expect(keys).toEqual(['class:medic.triage', 'class:bard.ledger', 'class:bard.inspire', 'class:bard.take_the_weight', 'class:bard.mend', 'class:bard.rally']);
     for (const k of keys) expect(itemInfo(k), k).toBeTruthy();
