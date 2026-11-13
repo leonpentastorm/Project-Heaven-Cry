@@ -229,4 +229,12 @@ One row of each is written and run in `test/fixtures/classes-3.0-specs-1b.json` 
 1. Calls for Leon (added to `CLASSES-3.0-PICKUP.md` section 6): section 4 items 1, 10, 12.
 2. The batch rows not yet built: `mend_mult`, `condition: "incoming"`, `intervention_keeps_witnessed`, `read`; and the
    `owned` action system. Each is small but belongs to its first user's step (or a step 1c).
-3. `npm run e2e -- all`: see the commit that closes this step.
+3. Checks at the close: `python3 tools/validate.py data` 0 errors; `npm run check` ALL GREEN (an earlier run timed out
+   two `combat-actions` web tests at 5 s while another worktree's vitest shared the machine: alone they pass in 2.9 s and
+   3.6 s, as on the base branch); `npm run e2e -- all`: 58 of 61 green beside each other, and `pg-art`,
+   `combat-portraits`, `slate-title` failed only because this worktree had no web images (`apps/web/public/assets` is
+   built, not committed): after `npm run assets` the three are green. Nothing in this step touches the client but one
+   test and the descriptors' pick list.
+4. The engine suite's time moved with the machine's load (168 s to 295 s across runs, 187 s at the close); one file
+   timed against the base branch (`replay-hash` 16.6 s now, 17.5 s on the base) shows no slowdown. `statHeard` and the
+   standing aura ask nothing while no data item can answer them.
