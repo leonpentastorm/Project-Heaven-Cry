@@ -131,7 +131,7 @@ export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null,
   if (t.downed) { setDowned(t, false); t.hp = Math.min(t.maxHp, Math.max(1, ctx.n)); restored = t.hp; revived = true; }
   else { const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + ctx.n); restored = t.hp - was; }
   noteTended(cb, by, t, restored);
-  if (cb) emit(cb, 'heal_given', { t, by, n: restored, kind, revived, cb });
+  if (cb) emit(cb, 'heal_given', { t, by, n: restored, over: Math.max(0, ctx.n - restored), kind, revived, cb }); // over: the heal that didn't fit (P3 event:over)
   if (cb && by && (restored > 0 || revived)) tendHook.f?.(cb, by, t);
   return { restored, revived, limited: false };
 }

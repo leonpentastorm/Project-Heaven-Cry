@@ -12,7 +12,7 @@ import { say, type Combat, type Unit, dist, lineOfSight, standable, refOf, cover
 import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
-import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult } from './rolls';
+import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult, toHitAdd } from './rolls';
 import { emit, boundGame, statQuery, onHook, charOfUnit } from './effects/hooks';
 import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
@@ -1186,7 +1186,7 @@ const sameWayTwice = (d: OutburstDesign) => !!d.school2 && d.school2 === d.schoo
 interface Hit { landed: boolean; crit: boolean; line: string }
 function rollFor(cb: Combat, u: Unit, d: OutburstDesign, t: Unit, ignoreCover: boolean) {
   const homing = d.modules.includes('homing'), cover = !homing && !ignoreCover && coverTileFor(cb, u.pos, t.pos) ? 5 : 0;
-  const bonus = u.mg!.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (homing ? 2 : 0) + condHit(u, t, cb) - cover + spellGapToHit(cb, u, t); // rules 1.17: a spell reads the level gap
+  const bonus = u.mg!.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (homing ? 2 : 0) + condHit(u, t, cb) - cover + spellGapToHit(cb, u, t) + toHitAdd(cb, u, t, 'soul'); // rules 1.17: a spell reads the level gap; the one hook of every roll to hit (rolls.ts)
   const one = Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5));
   return { bonus, cover: !!cover, need: t.def, pct: one, one };
 }

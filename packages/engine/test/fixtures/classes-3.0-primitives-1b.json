@@ -6,19 +6,78 @@
       "id": "test_aura_reactions",
       "name": "Steady Line (test)",
       "text": "Allies within {=effects.0.targets.within} tiles of you have {=effects.0.value} more reaction a round while you stand (a standing aura: P5).",
-      "effects": [ { "op": "stat_mod", "stat": "reactions", "value": 1, "targets": { "side": "ally", "within": 2 } } ]
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "reactions",
+          "value": 1,
+          "targets": {
+            "side": "ally",
+            "within": 2
+          }
+        }
+      ]
     },
     {
       "id": "test_witness_dread",
       "name": "Witnessed Dread (test)",
       "text": "When you kill, every enemy within {=effects.0.targets.within} tiles of the body with a line of sight to it saves against your Will Power or is Shaken.",
-      "effects": [ { "op": "condition", "when": "kill", "condition": "shaken", "via": "will_power", "targets": { "of": "target", "side": "foe", "within": 3, "sees": "line" } } ]
+      "effects": [
+        {
+          "op": "condition",
+          "when": "kill",
+          "condition": "shaken",
+          "via": "will_power",
+          "targets": {
+            "of": "target",
+            "side": "foe",
+            "within": 3,
+            "sees": "line"
+          }
+        }
+      ]
     },
     {
       "id": "test_acted_foe",
       "name": "Foe's habit (test)",
       "text": "After its own action, it marks it (the trigger acted, fired by the enemy AI too).",
-      "effects": [ { "op": "mark", "when": "acted", "flag": "acted" } ]
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "flag": "acted"
+        }
+      ]
+    },
+    {
+      "id": "test_to_hit_marked",
+      "name": "Sure Mark (test)",
+      "text": "Any roll to hit a Marked enemy, a weapon's, a Sigil's or an Outburst's, gets +{=effects.0.value}; a Sigil's +{=effects.1.value} more.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "target_has": [
+              "marked"
+            ]
+          },
+          "value": 3
+        },
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "target_has": [
+              "marked"
+            ],
+            "damage": [
+              "sigil"
+            ]
+          },
+          "value": 1
+        }
+      ]
     }
   ],
   "conditions": []

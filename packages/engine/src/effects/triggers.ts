@@ -80,6 +80,7 @@ export const TRIGGERS: Record<string, Trigger> = {
   // Classes 3.0 step 1 (docs/design/rev4-primitives.md P2 and the batch rows)
   acted: { hook: 'acted', actor: u_, target: t_, self: 'actor', about: 'a unit\'s own action succeeded (once, after it; ctx.action is its id or cost site, test it with `action`); a grant_action\'s nested `when: acted` effects need no `if.action`' },
   reaction: { hook: 'reaction', actor: u_, self: 'actor', about: 'the holder makes a reaction (tactics.ts react(); its kind for `how`: attack, move, protect), before it resolves' },
+  to_hit: { hook: 'to_hit', actor: att, target: tgt, self: 'actor', about: 'a roll to hit a target is sized up: a weapon attack, a Sigil or an Outburst (one hook, rolls.ts toHitTerms; `damage` reads its type: weapon, sigil, soul); roll_mod adds a term' },
   spot: { hook: 'spot', actor: by, target: u_, self: 'target', about: 'a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: "tn", its TN; cancel)' },
 };
 
@@ -182,13 +183,13 @@ function unitField(u: Unit | null, f: string): number {
 /** What a holder has of a resource now: a class resource (guard, momentum…), else a data/actions.json row (MP, Pressure…). */
 const resNow = (ev: Ev, id: string): number => (ev.self.resMax?.[id] != null || !RESOURCES[id] ? resOf(ev.self, id) : resLeft(ev.self, id, ev.h.c));
 /** THE source reader of a number block's `of` (and an amount block's per-point parts) in an item op: res:<id>,
- * event:<field> (amount: the damage or heal; any other field of the payload, else of its damage source ctx.src: ambush, crit; true as 1), self:/actor:/target:<field>.
+ * event:<field> (amount: the damage or heal, on `dealing` its base before the multipliers; over: a heal's part that didn't fit; any other field of the payload, else of its damage source ctx.src: ambush, crit; true as 1), self:/actor:/target:<field>.
  * A plain name is 0 here (a handler counts its own). */
 export function sourceOf(ev: Ev, of: string): number {
   const i = of.indexOf(':'); if (i < 0) return 0;
   const ns = of.slice(0, i), f = of.slice(i + 1);
   if (ns === 'res') return resNow(ev, f);
-  if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount) : ev.ctx[f] ?? ev.ctx[camel(f)] ?? ev.ctx.src?.[f] ?? ev.ctx.src?.[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
+  if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount ?? ev.ctx.base) : ev.ctx[f] ?? ev.ctx[camel(f)] ?? ev.ctx.src?.[f] ?? ev.ctx.src?.[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
   if (ns === 'self' || ns === 'actor' || ns === 'target') return unitField(unitOf(ev, ns as Who), f);
   return 0;
 }
@@ -227,8 +228,8 @@ O('damage_mod', ['dealing', 'taking'], false, ['value', 'value_pct'], 'add to th
   else if (typeof e.value_pct === 'number') ev.ctx.dmg = ev.ctx.dmg * (1 + e.value_pct / 100); else ev.ctx.dmg += e.value;
 });
 O('damage_vs', ['dealing'], false, ['value'], 'a bonus against this target (added with the other target bonuses)', (ev, e, label) => { ev.ctx.vs.push({ v: e.value, label }); });
-O('roll_mod', ['attack', 'cond_incoming', 'save', 'spot'], false, ['value', 'roll'], 'a to-hit term on an attack; on a condition or save, the save (roll: "save", the default there) or its TN (roll: "tn"); on a spot roll, its modifier or (roll: "tn") its TN', (ev, e, label) => {
-  if (ev.trig.hook === 'attack_preview') ev.ctx.terms.push({ v: e.value, label });
+O('roll_mod', ['attack', 'to_hit', 'cond_incoming', 'save', 'spot'], false, ['value', 'roll'], 'a to-hit term on an attack (to_hit: on any roll to hit, weapon, Sigil or Outburst); on a condition or save, the save (roll: "save", the default there) or its TN (roll: "tn"); on a spot roll, its modifier or (roll: "tn") its TN', (ev, e, label) => {
+  if (ev.trig.hook === 'attack_preview' || ev.trig.hook === 'to_hit') ev.ctx.terms.push({ v: e.value, label });
   else if (ev.trig.hook === 'spot') { if (e.roll === 'tn') ev.ctx.tn += e.value; else ev.ctx.mod += e.value; }
   else if (e.roll === 'tn') ev.ctx.tnAdd = (ev.ctx.tnAdd || 0) + e.value; else ev.ctx.saveAdd = (ev.ctx.saveAdd || 0) + e.value;
 });

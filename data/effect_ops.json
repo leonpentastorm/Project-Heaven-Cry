@@ -4211,6 +4211,11 @@
         "self": "actor",
         "about": "the holder makes a reaction (tactics.ts react(); its kind for `how`: attack, move, protect), before it resolves"
       },
+      "to_hit": {
+        "hook": "to_hit",
+        "self": "actor",
+        "about": "a roll to hit a target is sized up: a weapon attack, a Sigil or an Outburst (one hook, rolls.ts toHitTerms; `damage` reads its type: weapon, sigil, soul); roll_mod adds a term"
+      },
       "spot": {
         "hook": "spot",
         "self": "target",
@@ -4524,6 +4529,7 @@
       "roll_mod": {
         "on": [
           "attack",
+          "to_hit",
           "cond_incoming",
           "save",
           "spot"
@@ -4533,7 +4539,7 @@
           "roll"
         ],
         "changes_state": false,
-        "about": "a to-hit term on an attack; on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\"); on a spot roll, its modifier or (roll: \"tn\") its TN"
+        "about": "a to-hit term on an attack (to_hit: on any roll to hit, weapon, Sigil or Outburst); on a condition or save, the save (roll: \"save\", the default there) or its TN (roll: \"tn\"); on a spot roll, its modifier or (roll: \"tn\") its TN"
       },
       "cost_mod": {
         "on": [
@@ -4587,6 +4593,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4630,6 +4637,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4673,6 +4681,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4718,6 +4727,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4805,6 +4815,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4849,6 +4860,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4891,6 +4903,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
@@ -4934,6 +4947,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [],
@@ -4974,6 +4988,7 @@
           "glyph_cost",
           "acted",
           "reaction",
+          "to_hit",
           "spot"
         ],
         "fields": [
