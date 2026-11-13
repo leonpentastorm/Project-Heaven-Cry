@@ -447,3 +447,26 @@ from 3 as built). Nothing of the design is open now.
 
 **The consolidated primitives** are in `rev4-primitives.md`: the six specs asked for 26; 12 are needed, with 13 rows
 added to closed lists. The specs are brought into line with it and with the rulings above in one pass.
+
+**Settled by Leon, 13 Nov (after 0.25.0): the Mender fights, through Bonds on enemies; and base classes are
+weapon-neutral.**
+
+1. **A Bond can be tied to an enemy** (the door, for anyone with Empathy; the same action and the same cap as an ally
+   Bond). While an enemy is Bonded to you:
+   - **it takes damage for you:** part of the damage you take goes to it instead, so you take less;
+   - **you hit it more easily:** a bonus to hit a Bonded enemy;
+   - **your healing hurts it:** when you heal yourself, each Bonded enemy takes a quarter of that heal as damage at the
+     start of its next turn; with Bonds on allies and on enemies at once the same holds through the ally Bond (what
+     you heal on a Bonded ally is felt the same way).
+   An advanced class may later tie an ALLY to an enemy ("making the tank the mega tank"): a sketch only, like every
+   advanced idea.
+2. **The more you are tied, the harder you hit:** an inherent rule of the door: your damage rises with the number of
+   Bonds you hold, to allies or to enemies.
+3. **The Mender's class skill:** it collects the healing and shielding it gives (to allies and to itself) and spends
+   what it has collected as a damage bonus on its next damaging action.
+4. **Base classes are weapon-neutral (binding on all nine):** a class move or class rule that changes damage, to-hit
+   or what a hit does applies to EVERY weapon the character may attack with (gun, bow, blade, fist, thrown, and the
+   weapon attack of a focus), never to one family. A move may still need what its own door needs (a reaction, the
+   door's meter, a focus in hand). Leon saw a Faith rank II move that only worked with guns: that is the kind of thing
+   to find and fix. The specs and `data/classes.json` are audited against this rule (13 Nov), and step 2 onward
+   builds from the audited specs.
