@@ -29,8 +29,8 @@ describe('the nine classes (data)', () => {
     for (const k of CLASSES) for (const r of ['I', 'II', 'III']) expect(k.ranks[r].moves.length, k.id + ' ' + r).toBe(2);
     const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves));
     expect(all.length).toBe(54);
-    expect(all.filter((m: any) => m.new).length).toBe(21); // the 20 new moves and Run and Gun (rules 1.30)
-    expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(28); // 28 old base moves
+    expect(all.filter((m: any) => m.new).length).toBe(23); // the 20 new moves, Run and Gun (rules 1.30), the Ledger and Take the Weight (rules 1.33)
+    expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(26); // 28 old base moves, less Stim Throw and Field Surgery (everyone's, rules 1.33)
     expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(5); // 5 old advanced moves (Called Shot left the Skirmisher, rules 1.30)
   });
   it('a reused move keeps its old key: Bard\'s Triage is class:medic.triage; a new move is under its class', () => {
@@ -42,10 +42,10 @@ describe('the nine classes (data)', () => {
     expect(CLASS.defender.ranks.II.moves.find((m: any) => m.id === 'shrug_it_off').key).toBe('class:defender.shrug_it_off');
     expect(itemInfo('class:medic.triage')?.name).toBe('Triage');
   });
-  it('every move in the catalogue carries origin, fantasy_tags, attributes and status; 11 + 58 are shelved', () => {
+  it('every move in the catalogue carries origin, fantasy_tags, attributes and status; 13 + 58 are shelved', () => {
     const moves = Object.values(CLASS_MOVE_POOL);
     for (const m of moves) { expect(m.origin).toBeTruthy(); expect(m.fantasy_tags?.length).toBeGreaterThan(0); expect(m.attributes?.length).toBeGreaterThan(0); expect(['active', 'shelved']).toContain(m.status); }
-    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(11);
+    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(13); // rules 1.33: Stim Throw and Field Surgery are everyone's now
     expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(58); // Called Shot waits for the Operative (rules 1.30)
   });
 });
@@ -97,8 +97,8 @@ describe('ranks read the class\'s own attribute', () => {
   });
   it('each rank gives both of its moves', () => {
     const c = charOf({ insight: 4 }, { classId: 'bard', level: 12 });
-    expect(classKeys(c)).toEqual(['class:medic.triage', 'class:bard.inspire']);
-    c.attrs.insight = 5; expect(classKeys(c)).toEqual(['class:medic.triage', 'class:bard.inspire', 'class:medic.stim_throw', 'class:bard.mend']);
+    expect(classKeys(c)).toEqual(['class:medic.triage', 'class:bard.ledger']); // rules 1.33: the Ledger at rank I, Inspire at II
+    c.attrs.insight = 5; expect(classKeys(c)).toEqual(['class:medic.triage', 'class:bard.ledger', 'class:bard.inspire', 'class:bard.take_the_weight']);
     c.attrs.insight = 8; expect(classKeys(c)).toContain('class:bard.rally'); expect(classKeys(c).length).toBe(6);
   });
   it('raising the attribute to 5 says which moves the rank brings', () => {
@@ -118,15 +118,8 @@ describe('ranks read the class\'s own attribute', () => {
 
 describe('reused moves run their old handlers', () => {
   it('a Bard gets the Medic\'s Triage (class:medic.triage) and it heals through apply()', () => {
-    const f = fightWith([cls('bard', 2), {}], [{}]);
-    const [m, ally] = f.pcs;
-    f.unit(m.id).pos = '3,2'; f.unit(ally.id).pos = '4,2'; f.foe.pos = '12,2';
-    const a = f.unit(ally.id); a.hp = 20; a.bleed = 2;
-    const u = f.turn(m);
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'class:medic.triage', actionId: 'triage', targetId: ally.id });
-    const mult = healingMult(f.g.characters[m.charId!]);
-    expect(f.unit(ally.id).hp).toBe(20 + Math.floor(Math.floor(5 * mult * mendFactor(f.g.characters[m.charId!].level)) * (a.healRecv || 1))); // rules 1.23: 5 × Healing given × the level factor
-    expect(f.unit(ally.id).bleed).toBe(0);
+    // rules 1.33: Triage is data now (an Attuner in hand, MP, priced at its site); its play: test/tending.test.ts
+    expect(itemInfo('class:medic.triage')!.effects.some((e: any) => e.op === 'grant_action' && e.site === 'triage')).toBe(true);
   });
   it('a Fighter at rank II holds Lingering Dread under its Shade key; a Defender Unbroken under the Knight\'s', () => {
     expect(classKeys(charOf({ strength: 5 }, { classId: 'fighter', level: 6 }))).toContain('class:shade.lingering_dread');
@@ -136,9 +129,9 @@ describe('reused moves run their old handlers', () => {
 
 describe('resources follow the moves', () => {
   const res = (id: string) => classResources(charOf({}, { classId: id })).map((r) => r.id).sort();
-  it('Defender Guard, Fighter Momentum, Infiltrator Marks and toxins, Bard Supplies; Heat, Flux, Strain, MP and Devotion are shared rules', () => {
+  it('Defender Guard, Fighter Momentum, Infiltrator Marks and toxins, Bard the Ledger; Heat, Flux, Strain, MP and Devotion are shared rules', () => {
     expect(res('defender')).toEqual(['guard']); expect(res('fighter')).toEqual(['momentum']); expect(res('infiltrator')).toEqual(['marks', 'toxins']);
-    expect(res('bard')).toEqual(['supplies']);
+    expect(res('bard')).toEqual(['ledger']); // rules 1.33: MP and the Ledger; Supplies left the class
     for (const id of ['marksman', 'mage', 'trickster', 'channeler', 'guardian']) expect(res(id)).toEqual([]);
     expect(CLASS.guardian.resources).toEqual(['mp', 'strain', 'devotion']); expect(CLASS.marksman.resources).toEqual(['heat']);
   });
@@ -224,18 +217,18 @@ describe('Revision 2 saves migrate', () => {
 describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-moves.test.ts)', () => {
   const NEW = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new).map((m: any) => m.key.replace(/^class:/, ''));
   it('each has its full data entry, a registered handler, and no effect is a coverage gap', () => {
-    expect(NEW.length).toBe(21); // + Run and Gun (rules 1.30, data only)
+    expect(NEW.length).toBe(23); // + Run and Gun (rules 1.30), the Ledger and Take the Weight (rules 1.33), data only
     for (const k of NEW) {
       const info = itemInfo('class:' + k)!;
       expect(info, k).toBeTruthy(); expect(info.text.length, k).toBeGreaterThan(10); expect(info.provisional, k).toBe(true);
       expect(coverageOf(info).filter((r) => r.owner === 'gap'), k).toEqual([]);
       expect(coverageOf(info).filter((r) => r.owner === 'narrator'), k).toEqual([]); // the engine runs every part now
       // a handler, or (engine foundations 3) written in data only: every effect run by the generic runner
-      expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic'), k).toBe(true);
+      expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), k).toBe(true); // (rules 1.33: a data action whose ops run on acted)
     }
   });
   it('an active one is a lane action under the data\'s action id', () => {
-    expect(actionDefs(itemInfo('class:bard.rally')!).map((d) => d.id)).toEqual(['rally']);
+    expect(actionDefs(itemInfo('class:bard.rally')!).map((d) => d.id)).toEqual(['rally']); // rules 1.33: data's own action
     expect(actionDefs(itemInfo('class:fighter.shove')!).map((d) => d.id)).toEqual(['class_shove']);
   });
 });
