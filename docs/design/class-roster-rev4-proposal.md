@@ -470,3 +470,16 @@ weapon-neutral.**
    door's meter, a focus in hand). Leon saw a Faith rank II move that only worked with guns: that is the kind of thing
    to find and fix. The specs and `data/classes.json` are audited against this rule (13 Nov), and step 2 onward
    builds from the audited specs.
+
+**Lore and a ruling from Leon, 13 Nov: the gloves are the standard system; a faction's way has its own focus.**
+The Evoker and the Emanator as gloves are a **unified system made by the gear companies**: standard issue, the same
+for everyone, and what the base classes use. So the base doors' focuses are all gloves of that one system: the
+Evoker (Sigils), the Emanator (Outbursts), the Visualizer (Figments: the projector in the palm), and **the focus that
+gates Bonds** (Leon: Bonds is unique enough to need its own gate, like the Visualizer; working name the Attuner
+*(Suggested)*: a glove of the same line with its own heart, not a separate kind of object). **Advanced classes are
+learned from factions, and each faction has its own way of Sigiling or Outbursting, so each advanced class (squared
+or hybrid) has a special Evoker or Emanator of its own; the Evoker blade is one.** For the design: a base class
+never needs anything but the standard glove; a faction focus is how an advanced class will be told apart and gated
+when that system is designed (a sketch, like every advanced idea here); nothing in Classes 3.0 builds one, and the
+focus item's data shape must leave room for variants (a focus is an item with a door, a hand rule and a core or MP
+link, not a hard-coded glove).
