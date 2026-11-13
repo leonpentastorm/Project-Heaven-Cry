@@ -369,7 +369,7 @@ RALLY = MOVE(id="rally", name="Rally", ap_cost=2, uses="per_scene", amounts={"he
   effects=[{"op": "grant_action", "action": "rally", "ap": 2, "uses": "per_scene", "res": {"mp": 20}, "scope": ["combat"], "if": {"self_holds": HAND},
     "effects": [
       {"op": "mend", "when": "acted", "amount": "heal", "targets": {"side": "ally", "within": 4, "beyond": "bond"}},
-      {"op": "cleanse", "when": "acted", "condition": ["fear", "shaken"], "targets": {"side": "ally", "within": 4, "beyond": "bond"}, "say": "{self} rallies the squad."}]}],
+      {"op": "cleanse", "when": "acted", "condition": ["fear", "shaken"], "targets": {"side": "ally", "within": 4, "beyond": "bond"}, "say": "{self} rallies the squad.", "fx": {"k": "rally", "radius": 4}}]}],
   origin="bard", new=True, fantasy_tags=["heal", "squad", "fear"], surface="combat")
 
 pool = cl["move_pool"]["moves"]

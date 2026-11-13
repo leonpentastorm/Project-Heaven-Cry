@@ -1472,7 +1472,11 @@
                         "within": 4,
                         "beyond": "bond"
                       },
-                      "say": "{self} rallies the squad."
+                      "say": "{self} rallies the squad.",
+                      "fx": {
+                        "k": "rally",
+                        "radius": 4
+                      }
                     }
                   ]
                 }

@@ -256,6 +256,7 @@ await settle(host, 300); await snap('08-sleight');
 // ---------- 5. Bard: Rally ----------
 await act(host, { type: 'sandbox/clear' });
 await setClass('bard', 3);
+await act(host, { type: 'sandbox/give', charId: hostChar, item: 'attuner', equip: true }); // rules 1.33: Rally is Tending, through the Attuner
 ok('host turn', await newTurn());
 ok('squadmate within 4', await mateNear(3));
 n0 = await fxN();
