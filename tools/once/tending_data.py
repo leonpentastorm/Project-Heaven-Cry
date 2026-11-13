@@ -76,7 +76,7 @@ FEEL = {
              "Its next move costs {=effects.0.value} AP more, no save.", False, [{"op": "cost_mod", "when": "cost", "if": {"action": ["move"]}, "value": 1}, {"op": "cleanse", "when": "moved", "condition": ["foe_longing"]}]),
  "relief": ("Your Bleeding and Burning end.", ["RELIEF"], None, None, None, None),
  "contempt": ("The next enemy you hit is Scorned by you for {=effects.0.rounds} rounds, no save.", [rider("contempt", "scorned", 2)], "nexthit",
-              "It is Scorned by whoever gave it (−2 to hit them) for two rounds, no save.", False, [("scorned", 2)]),
+              "It is Scorned by whoever gave it (worse to hit them) for two rounds, no save.", False, [("scorned", 2)]),
  "guilt": ("The next enemy you hit is Taunted by you (a Heart save).", [rider("guilt", "taunted", None, skip=False)], "nexthit",
            "It is Taunted by whoever gave it for a round (never a Boss).", True, [("taunted", 1, {"self_not_tier": ["boss"]})]),
  "jealousy": ("Your next attack deals ×{=effects.0.value} damage to a target with a boon on it.",
@@ -136,8 +136,8 @@ names = {f["id"]: f["name"] for f in fe["items"]}
 FOE_IDS = ["foe_" + f for f, v in FEEL.items() if v[3]]
 rows += [
  {"id": "bonded", "name": "Bonded", "kind": "state", "family": "heart", "save": True, "engine": "table",
-  "text": "Tied by a Bond to whoever made it (an enemy saves against it with Heart, against the Bonder's Empathy). It lasts while the Bond does, and the Bond ends with it; on a Boss it lasts {=duration.boss_rounds} of its turns.",
-  "effects": [], "duration": {"rounds": 99, "boss_rounds": 3}, "ends_on": ["the last Bond on you ends", "end of fight"], "stacks": False,
+  "text": "Tied by a Bond to whoever made it (an enemy saves against it with Heart, against the Bonder's Empathy). It lasts while the Bond does, and the Bond ends with it; on a Boss it lasts three of its turns.",
+  "effects": [], "duration": {"rounds": 99}, "ends_on": ["the last Bond on you ends", "end of fight"], "stacks": False,
   "adjudication": "engine", "provisional": True, "source": "rules 1.33 section 2.1 (the tie kind bond's mark)"},
  {"id": "traced", "name": "Traced", "kind": "state", "family": None, "save": False, "engine": "table",
   "text": "Your Bond gives you away: you can't be Hidden and your enemies know where you are. Lasts {=duration.rounds} rounds; renewed while you tend through a Bond or hold an enemy Bond.",
@@ -195,6 +195,7 @@ save("rules.json", rj)
 # ---------------------------------------------------------------------------------------------- actions.json: the MP row
 aj = load("actions.json")
 aj["resources"]["mp"]["needs"] = ["mg.emanator", "mg.attuner"]
+aj["resources"]["ledger"] = {"name": "Ledger", "on": "unit", "path": "res.ledger", "max": "resMax.ledger"}
 save("actions.json", aj)
 
 # ---------------------------------------------------------------------------------------------- tending.json
@@ -296,7 +297,7 @@ for s in sj["items"]:
         s["per_point"]["text"] = "+10% healing received. Share a Hit, a protective reaction, from the first point."
         s["epccg"]["effect"] = s["per_point"]["text"]
         un = {"1": {"name": "Share a Hit", "category": "Reaction", "mastery": 0,
-          "text": "Your reaction, when an ally next to you is hit (from {=effects.1.if.self_skill.camaraderie} points also a Bonded ally you see): you take {=effects.0.share.base|pct}% of the damage instead, +{=effects.0.share.per.0.value|pct}% a point of Camaraderie (at most {=effects.0.share.max|pct}%). It needs no focus.",
+          "text": "Your reaction, when an ally next to you is hit (from {=unlocks.1.effects.1.if.self_skill.camaraderie} points also a Bonded ally you see): you take {=unlocks.1.effects.0.share.base|pct}% of the damage instead, +{=unlocks.1.effects.0.share.per.0.value|pct}% a point of Camaraderie (at most {=unlocks.1.effects.0.share.max|pct}%). It needs no focus.",
           "effects": [
             {"op": "redirect", "when": "taking", "if": {"target": "ally", "target_within": 1, "by_hit": True, "actor": "foe"}, "share": {"base": 0.25, "per": [{"of": "skill:camaraderie", "value": 0.05}], "max": 0.5}, "limit": {"reaction": 1, "kind": "protect"}, "say": "{self} shares the hit on {target}."},
             {"op": "redirect", "when": "taking", "if": {"target": "ally", "target_tied": "bond", "self_skill": {"camaraderie": 5}, "target_sight": ["seen"], "by_hit": True, "actor": "foe"}, "share": {"base": 0.25, "per": [{"of": "skill:camaraderie", "value": 0.05}], "max": 0.5}, "limit": {"reaction": 1, "kind": "protect"}, "say": "{self} shares the hit on {target} through the Bond."}],
@@ -379,6 +380,9 @@ def put(m):
             pool[i] = {**m, **keep}; return
     raise SystemExit("no pool move " + m["origin"] + "." + m["id"])
 put(TRIAGE); put(INSPIRE); put(BRIM)
+for x in pool:
+    if x.get("origin") == "medic" and x.get("id") in ("stim_throw", "field_surgery"):
+        x["status"] = "shelved"; x["future_home"] = "rules 1.33: everyone's (Stim Throw a gear action, actions.json stim_throw; Field Surgery tending.json tend.field_surgery at Empathy 3)"
 for x in pool:
     if x.get("origin") == "bard" and x.get("id") == "inspire": x["origin_rank"] = "II"
     if x.get("origin") == "bard" and x.get("id") == "mend": x["origin_rank"] = "III"

@@ -262,6 +262,12 @@
       "on": "unit",
       "path": "pressure",
       "setter": "pressure"
+    },
+    "ledger": {
+      "name": "Ledger",
+      "on": "unit",
+      "path": "res.ledger",
+      "max": "resMax.ledger"
     }
   },
   "costs": {

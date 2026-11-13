@@ -2294,7 +2294,8 @@
         "attributes": [
           "insight"
         ],
-        "status": "active"
+        "status": "shelved",
+        "future_home": "rules 1.33: everyone's (Stim Throw a gear action, actions.json stim_throw; Field Surgery tending.json tend.field_surgery at Empathy 3)"
       },
       {
         "id": "field_surgery",
@@ -2336,7 +2337,8 @@
           "insight",
           "perception"
         ],
-        "status": "active"
+        "status": "shelved",
+        "future_home": "rules 1.33: everyone's (Stim Throw a gear action, actions.json stim_throw; Field Surgery tending.json tend.field_surgery at Empathy 3)"
       },
       {
         "id": "mark",

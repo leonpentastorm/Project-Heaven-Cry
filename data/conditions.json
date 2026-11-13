@@ -1268,11 +1268,10 @@
       "family": "heart",
       "save": true,
       "engine": "table",
-      "text": "Tied by a Bond to whoever made it (an enemy saves against it with Heart, against the Bonder's Empathy). It lasts while the Bond does, and the Bond ends with it; on a Boss it lasts {=duration.boss_rounds} of its turns.",
+      "text": "Tied by a Bond to whoever made it (an enemy saves against it with Heart, against the Bonder's Empathy). It lasts while the Bond does, and the Bond ends with it; on a Boss it lasts three of its turns.",
       "effects": [],
       "duration": {
-        "rounds": 99,
-        "boss_rounds": 3
+        "rounds": 99
       },
       "ends_on": [
         "the last Bond on you ends",
@@ -2662,7 +2661,7 @@
       "family": "heart",
       "save": false,
       "engine": "table",
-      "text": "A feeling given through a Bond: it is Scorned by whoever gave it (−2 to hit them) for two rounds, no save.",
+      "text": "A feeling given through a Bond: it is Scorned by whoever gave it (worse to hit them) for two rounds, no save.",
       "effects": [
         {
           "op": "condition",

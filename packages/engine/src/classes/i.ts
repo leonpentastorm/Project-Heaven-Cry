@@ -20,13 +20,14 @@ import {
   attackEvent,
 } from '../combat';
 import {
-  type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
+  type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, hasAttuner, packOf, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
   classResources, migrateDesign,
 } from '../character';
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV, CLASS_MOVE_POOL } from '../data';
 import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, kitHeal } from '../effects/mending';
-import { term } from '../effects/output';
-import { itemAmount, amountMult, amountBlock } from '../effects/amounts';
+import { term, amountOf } from '../effects/output';
+import { rawItem } from '../effects/collect';
+import { itemAmount, amountMult, amountBlock, amountSpecOf } from '../effects/amounts';
 import { BUFF_HEAL, saveTn, makeZone } from '../magic';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitStrength, saveAgainst, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
@@ -467,113 +468,70 @@ register({
   brief: () => null,
 });
 
-// ======================================================================================================== MEDIC
-// Supplies (3 + floor(Proficiency ÷ 2)) persist between fights and refill at a long rest (lane 0B).
-
-// ---------- Triage (rank I, 2 AP) ----------
-// Heal an adjacent ally 5 × your Healing given multiplier × the level factor (rules 1.23; it was 20) and end their Bleeding; no Supplies. GAMEBREAKING at will:
-// PROVISIONAL once per target per turn in a fight, once per ally per scene out of one. Stabilise a Downed ally for 1 AP
-// without a stim (that is the point of the move; the base 1-AP Medic stim stays).
+// ======================================================================================================== MEDIC → the Mender (rules 1.33)
+// Triage in a fight is data (classes.json pool medic.triage: its grant_action and `when: acted` ops: 4.3 × Healing given
+// through the tend profile, once an ally a turn, Bonded allies at any range in sight). Stim Throw is everyone's gear
+// action (combat.ts useStim, {throw}); Field Surgery is everyone's at Empathy 3 (tending.json tend.field_surgery, below).
+// What stays here is the story half item ops can't run (they run in a fight only): Triage out of a fight, with time to
+// work, ×numbers.rest_mult, once an ally a scene; and Field Surgery's two story actions.
 const healMultOf = (h: Holder) => (h.c ? healingMult(h.c) : h.u?.mg?.healMult || 1);
-// Rules 1.23, the medic pass: Triage and a thrown stim grow with the giver's level, as spells do since rules 1.20.
-// On the area map and in the story (out of a fight, once an ally a scene) a Triage is three times a fight's.
-const lvlOf = (h: Holder) => (h.u ? mendFactorOf(h.u) : mendFactor(h.c?.level));
-const triageHeal = (h: Holder, rest = false) => kitHeal(TRIAGE_HEAL, healMultOf(h), lvlOf(h), { own: [term(rest ? TRIAGE_REST_MULT : 1, 'time to work')] });
-const thrownStimHeal = (h: Holder) => kitHeal(STIM_HEAL, healMultOf(h), lvlOf(h));
 function mostHurt(h: Holder): Character | null {
   const all: Character[] = Object.values(h.g?.characters || {});
   return all.filter((c) => !c.dead && c.id !== h.c?.id && c.hp < maxHp(c)).sort((a, b) => a.hp / maxHp(a) - b.hp / maxHp(b))[0] || null;
 }
-/** Triage's limit: once per ally per turn in a fight; on the area map (out of a fight) once per ally per scene, the
- * same count as the story Triage (spec I12). */
-const triPer = (h: Holder) => (h.cb && (h.cb.overworld || h.cb.name === 'overworld') ? 'per_scene' as const : 'per_turn' as const);
-const triKey = (h: Holder, t: Unit) => h.key + '#' + (triPer(h) === 'per_scene' ? t.charId || t.id : t.id);
+/** Triage out of a fight: the move's own amount block (heal: tend profile, the giver's sheet and level) × rest_mult. */
+const triageStoryHeal = (h: Holder) => amountOf(amountSpecOf('class:medic.triage', 'heal'), null, { who: h.c || null, level: h.c?.level ?? null, mults: [term(num(h, 'rest_mult'), 'time to work')] }).raw;
 function storyHeal(h: Holder, t: Character, n: number): number { const was = t.hp; t.hp = Math.min(maxHp(t), t.hp + Math.floor(n)); return t.hp - was; }
 register({
-  id: 'medic.triage', claims: 'all',
+  id: 'medic.triage', claims: 'all', dataActions: true,
   actions: [
     {
-      id: 'triage', label: 'Triage', scope: ['combat', 'world'], target: 'ally', ap: (h) => (h.u ? price({ cb: h.cb, u: h.u }, 'triage', 2).ap : 2), range: 1,
-      text: 'Heal an ally next to you for 5 HP × your Healing given, more as you level, and end their Bleeding. Once per ally each turn. Out of a fight you have time to work: three times as much, once per ally each scene. Costs no Supplies.',
-      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (t === h.u) return { ok: false, why: 'Triage an ally, not yourself.' }; if (t.downed) return { ok: false, why: 'They are Downed. Stabilise them instead (1 AP).' }; if (uses(h).left(triPer(h), 1, triKey(h, t)) <= 0) return { ok: false, why: triPer(h) === 'per_scene' ? 'Already treated this scene.' : 'Already treated this turn.' };
-        return { lines: ['Heal ' + t.name + ' about ' + Math.floor(triageHeal(h, triPer(h) === 'per_scene') * (t.healRecv || 1)) + (t.bleed ? ' and stop the bleeding.' : '.')] }; },
-      run: (h, args) => {
-        const cb = h.cb!, t = unitById(cb, args.targetId)!; if (t === h.u) return 'Triage an ally, not yourself.';
-        if (!uses(h).take(triPer(h), 1, triKey(h, t))) return triPer(h) === 'per_scene' ? 'Already treated this scene.' : 'Already treated this turn.';
-        const r = healUnit(cb, t, triageHeal(h, triPer(h) === 'per_scene'), h.u!, 'triage'), bled = !!t.bleed; endCond(t, 'bleeding', cb);
-        emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored });
-        say(cb, h.u!.name + ' triages ' + t.name + ': +' + r.restored + ' HP' + (bled ? ', bleeding stopped' : '') + '.');
-      },
-    },
-    {
-      id: 'stabilise', label: 'Stabilise (Triage)', scope: ['combat', 'world'], target: 'ally', ap: 1, range: 1,
-      text: 'Stabilise a Downed ally next to you at 1 HP. No stim needed.',
-      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (t && !t.downed) return { ok: false, why: t.name + ' isn\'t Downed.' }; return {}; },
-      run: (h, args) => { const cb = h.cb!, t = unitById(cb, args.targetId)!; healUnit(cb, t, 1, h.u!, 'stabilise'); endCond(t, 'bleeding', cb); emitFx(cb, 'stim', { unit: h.u!.id, target: t.id, from: h.u!.pos, to: t.pos }); say(cb, h.u!.name + ' stabilises ' + t.name + ' at 1 HP.'); },
-    },
-    {
       id: 'triage_story', label: 'Triage', scope: ['story'], target: 'none', ap: 0,
-      text: 'Patch up an ally for 15 HP × your Healing given, more as you level. Name the ally in what you say, or it goes to whoever is most hurt. Once per ally each scene.',
+      get text() { return 'Out of a fight, with time to work: patch up an ally. Name the ally in what you say, or it goes to whoever is most hurt. Once per ally each scene.'; },
       available: (h) => (mostHurt(h) ? true : 'Nobody is hurt.'),
       run: (h, args) => {
         const t = charNamed(h, args) || mostHurt(h); if (!t) return 'Nobody is hurt.';
         if (t.id === h.c?.id) return 'Triage an ally, not yourself.';
         if (t.hp <= 0) return t.name + ' is Downed. Use a stim on them, or the Narrator decides the treatment.';
         if (!uses(h).take('per_scene', 1, h.key + '#' + t.id)) return t.name + ' was already treated this scene.';
-        const n = storyHeal(h, t, triageHeal(h, true)); postStory(h, h.c!.name + ' triages ' + t.name + ': +' + n + ' HP (' + t.hp + '/' + maxHp(t) + ').');
+        const n = storyHeal(h, t, triageStoryHeal(h)); postStory(h, h.c!.name + ' triages ' + t.name + ': +' + n + ' HP (' + t.hp + '/' + maxHp(t) + ').');
       },
     },
   ],
   brief: () => null,
 });
 
-// ---------- Stim Throw (rank II, 1 AP) ----------
-// Spend 1 Supply: an ally within 4 tiles you can see heals 6 × your Healing given × the level factor (rules 1.23) and stops Bleeding; a Downed ally is
-// stabilised at 1 HP instead (PROVISIONAL; needs sight, ignores the throwing range).
-register({
-  id: 'medic.stim_throw', claims: 'all',
-  actions: [{
-    id: 'stim_throw', label: 'Stim Throw', scope: ['combat', 'world'], target: 'ally', ap: 'data', res: { supplies: 1 }, range: 4, needsSight: true,
-    available: (h) => (h.u ? (resOf(h.u, 'supplies') < 1 ? 'No Supplies left. They are restocked when you rest.' : true) : false),
-    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (t && t !== h.u && !unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
-    run: (h, args) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
-      emitFx(cb, 'stim', { unit: u.id, target: t.id, from: u.pos, to: t.pos });
-      if (t.downed) { healUnit(cb, t, 1, u, 'stim'); endCond(t, 'bleeding', cb); say(cb, u.name + ' throws a stim to ' + t.name + ': stabilised at 1 HP (' + resOf(u, 'supplies') + ' Supplies left).'); return; }
-      const r = healUnit(cb, t, thrownStimHeal(h), u, 'stim'), bled = !!t.bleed; endCond(t, 'bleeding', cb);
-      say(cb, u.name + ' throws a stim to ' + t.name + ': +' + r.restored + ' HP' + (bled ? ', bleeding stopped' : '') + ' (' + resOf(u, 'supplies') + ' Supplies left).');
-    },
-  }],
-  brief: () => null,
-});
-
-// ---------- Field Surgery (rank III, out of combat) ----------
-// Spend 1 Supply: treat one arm or leg injury, OR clear every Body condition the ally carries (choose one; the data's
-// both-at-once is the bug, PROVISIONAL). Robot medics repair machines the same way: the Narrator rules which.
+// ---------- Field Surgery (rules 1.33: anyone with Empathy 3 and an Attuner in hand, out of a fight) ----------
+// One field kit carried and the verb's MP (tending.json tend.field_surgery res.mp, paid from the character's MP: a
+// story action has no unit to pay through): treat one arm or leg injury, OR clear every Body condition the ally carries
+// (choose one, PROVISIONAL), once an ally a scene. Robot medics repairing machines: the Narrator rules which.
 const surgeryTarget = (h: Holder, args: ActionArgs) => charNamed(h, args) || h.c || null;
+const surgeryMp = (): number => Number(rawItem('verb:tend.field_surgery')?.effects?.[0]?.res?.mp ?? 0);
+const surgeryWhy = (h: Holder): string | true => (!h.c ? 'No one to do it.' : !hasAttuner(h.c) ? 'Needs an Attuner in hand.' : !packOf(h.c).some((x) => (x.item || x.id) === 'field_kit' && x.qty > 0) ? 'Needs a field kit.' : mpNow(h.c) < surgeryMp() ? 'Needs ' + surgeryMp() + ' MP.' : true);
+const surgeryPay = (h: Holder, t: Character): string | null => { if (!uses(h).take('per_scene', 1, h.key + '#' + t.id)) return t.name + ' was already treated this scene.'; h.c!.mp = mpNow(h.c!) - surgeryMp(); return null; };
 register({
-  id: 'medic.field_surgery', claims: 'all',
+  id: 'tend.field_surgery', kind: 'verb', claims: 'all',
   actions: [
     {
       id: 'injury', label: 'Field Surgery: treat an injury', scope: ['story', 'world'], target: 'none', ap: 'data',
-      text: 'Out of a fight, for 1 Supply: treat one arm or leg injury. Name the ally in what you say, or you treat yourself.',
-      available: (h) => (h.c ? (storyRes(h.c, 'supplies') < 1 ? 'No Supplies left. They are restocked when you rest.' : true) : false),
+      text: 'Out of a fight, with an Attuner in hand and a field kit: treat one arm or leg injury. Name the ally in what you say, or you treat yourself.',
+      available: (h) => surgeryWhy(h),
       run: (h, args) => {
         const t = surgeryTarget(h, args); if (!t) return 'Name who you treat.';
         const i = (t.injuries || []).findIndex((x) => x.loc === 'arm' || x.loc === 'leg'); if (i < 0) return t.name + ' has no arm or leg injury.';
-        if (!spendStoryRes(h.c!, 'supplies')) return 'No Supplies left.';
+        const no = surgeryPay(h, t); if (no) return no;
         const [inj] = t.injuries!.splice(i, 1);
-        postStory(h, h.c!.name + ' performs field surgery on ' + t.name + ': the ' + (inj.side ? inj.side + ' ' : '') + inj.loc + ' is treated (' + storyRes(h.c!, 'supplies') + ' Supplies left).');
+        postStory(h, h.c!.name + ' performs field surgery on ' + t.name + ': the ' + (inj.side ? inj.side + ' ' : '') + inj.loc + ' is treated.');
       },
     },
     {
       id: 'conditions', label: 'Field Surgery: clear Body conditions', scope: ['story', 'world'], target: 'none', ap: 'data',
-      text: 'Out of a fight, for 1 Supply: clear every Body condition on one person. Name the ally in what you say, or you treat yourself.',
-      available: (h) => (h.c ? (storyRes(h.c, 'supplies') < 1 ? 'No Supplies left. They are restocked when you rest.' : true) : false),
+      text: 'Out of a fight, with an Attuner in hand and a field kit: clear every Body condition on one person. Name the ally in what you say, or you treat yourself.',
+      available: (h) => surgeryWhy(h),
       run: (h, args) => {
         const t = surgeryTarget(h, args); if (!t) return 'Name who you treat.';
         const body = (t.persistentConds || []).filter((x) => condFamily(x.id) === 'body');
-        if (!spendStoryRes(h.c!, 'supplies')) return 'No Supplies left.';
+        const no = surgeryPay(h, t); if (no) return no;
         t.persistentConds = (t.persistentConds || []).filter((x) => condFamily(x.id) !== 'body');
         const g = h.g; if (g?.story?.scene?.npcConds?.[t.id]) delete g.story.scene.npcConds[t.id];
         postStory(h, h.c!.name + ' works on ' + t.name + ': ' + (body.length ? body.map((x) => x.id).join(', ') + ' cleared' : 'no lasting Body conditions, but they are seen to') + '.');
@@ -1400,73 +1358,9 @@ register({
 });
 
 // ======================================================================================================== BARD
-
-// ---------- Inspire (rank I, 1 AP) ----------
-// 10 MP, no Strain (without an Emanator: +2 Strain instead, PROVISIONAL): an ally within 6 (not you; no sight needed)
-// gets +2 on their next d20 roll: an attack, a save or a check (named "Encouraged" so it never overwrites the Buff
-// school's Inspired). One at a time per ally: a second Inspire refreshes, never stacks (PROVISIONAL). Sigil and Soul
-// strikes take it too ('spell_roll'). In the story: 10 MP, +2 on the ally's next check.
-// Its numbers are read from its card (classes.json bard inspire: effects[0] the MP and, without an Emanator, the Strain;
-// effects[1] the bonus), so the card and the engine cannot drift apart.
-const insFx = (): any[] => (Object.values(CLASS_MOVE_POOL).find((m: any) => m?.id === 'inspire') as any)?.effects || [];
-const INS_MP = () => Math.abs(insFx()[0]?.value ?? -10), INS_STRAIN = () => insFx()[0]?.without_emanator?.value ?? 2, INS_BONUS = () => insFx()[1]?.value ?? 2;
-const encouraged = (g: any): Record<string, string> => (!g ? {} : ((g.story ||= {}).encouraged ||= {}));
-const encKey = (u: Unit | null | undefined, c?: Character | null) => c?.id || u?.charId || u?.id || '';
-function useEnc(h: Holder, who: string): boolean { const e = encouraged(h.g); if (!e[who] || e[who] !== (h.c?.id || h.u?.charId)) return false; delete e[who]; return true; }
-register({
-  id: 'bard.inspire', claims: 'all',
-  actions: [
-    {
-      id: 'inspire', label: 'Inspire', scope: ['combat', 'world'], target: 'ally', ap: 'data', range: 6,
-      available: (h) => { const u = h.u; if (!u) return false; if (condOn(u, 'silenced')) return 'Silenced.'; if (u.mg?.emanator && u.mg.mp < INS_MP()) return 'Needs ' + INS_MP() + ' MP.'; if (!u.mg) return 'You have no Soul magic.'; return true; },
-      run: (h, args, rng) => {
-        const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!; if (t === u) return 'Inspire an ally, not yourself.';
-        let out = ''; if (u.mg!.emanator) u.mg!.mp -= INS_MP(); else out = strainUp(cb, rng as Rng, u, INS_STRAIN());
-        encouraged(h.g)[encKey(t)] = h.c?.id || u.charId || u.id;
-        emitFx(cb, 'stance', { unit: t.id, at: t.pos, what: 'inspire' });
-        say(cb, u.name + ' inspires ' + t.name + ': +' + INS_BONUS() + ' on their next roll' + (u.mg!.emanator ? ' (' + INS_MP() + ' MP)' : '') + out + '.');
-      },
-    },
-    {
-      id: 'inspire_story', label: 'Inspire', scope: ['story'], target: 'none', ap: 0,
-      get text() { return 'For ' + INS_MP() + ' MP: an ally gets +' + INS_BONUS() + ' on their next check. Name the ally in what you say.'; },
-      available: (h) => (h.c && hasEmanator(h.c) ? (mpNow(h.c) < INS_MP() ? 'Needs ' + INS_MP() + ' MP.' : true) : 'Needs an Emanator in hand.'),
-      run: (h, args) => {
-        const t = charNamed(h, args); if (!t || t === h.c) return 'Name the ally you inspire.';
-        h.c!.mp = mpNow(h.c!) - INS_MP(); encouraged(h.g)[t.id] = h.c!.id; postStory(h, h.c!.name + ' inspires ' + t.name + ': +' + INS_BONUS() + ' on their next check.');
-      },
-    },
-  ],
-  on: {
-    attack_preview: (ctx, h) => { const who = encKey(ctx.att); if (encouraged(h.g)[who] && encouraged(h.g)[who] === (h.c?.id || h.u?.charId)) ctx.terms.push({ v: INS_BONUS(), label: 'Encouraged' }); },
-    attack_roll: (ctx, h) => { useEnc(h, encKey(ctx.att)); },
-    spell_roll: (ctx, h) => { if (useEnc(h, encKey(ctx.u))) ctx.add += INS_BONUS(); }, // Sigil and Soul strikes are d20 rolls too
-    cond_apply: (ctx, h) => { if (ctx.skipSave || isBoon(ctx.id) || ['marked', 'augment_offline', 'bleeding', 'injured', 'hidden', 'prone'].includes(ctx.id) || ctx.t.side === ctx.by?.side) return; if (useEnc(h, encKey(ctx.t))) ctx.saveAdd += INS_BONUS(); },
-  },
-  brief: () => null,
-});
-// Story checks: check_mod reaches every character's handlers; the ally's check takes the +2 here (the Bard's handler).
-register({
-  id: 'bard.inspire',
-  on: { check_mod: (ctx, h) => { const c: Character = ctx.c, e = encouraged(h.g); if (!c || !e[c.id] || e[c.id] !== h.c?.id) return; delete e[c.id]; ctx.add.push({ add: INS_BONUS(), label: 'Encouraged by ' + h.c!.name }); } },
-});
-
-// ---------- Mend (rank II) ----------
-// Your Buff-school heals use a base of 9 (not 7; rules 1.20) × the level factor × your Healing given × the stage × the air's Healing multiplier (Thin ×0.75,
-// Normal ×1, Rich and Flooded ×1.25; heal() applies the air): an upgrade of every Bard Buff heal, not a separate design
-// (PROVISIONAL). The data's AP 0 is the Soul cast AP. Out of combat the area map's casts use the same numbers.
+// Rules 1.33: Inspire (rank II), the Ledger (I), Take the Weight (II) and Brimming (III, key bard.mend) are data
+// (classes.json); Rally (III) too. Only the shelved Gift stays here.
 const GIFT_AP = SOUL_AP.begin + SOUL_AP.release, GIFT_STAGE = 1;
-const isHealDesign = (d: any) => !!d && (d.school === 'buff' || d.school2 === 'buff') && (!d.option || d.option === 'heal');
-const BARD_MEND: number = amountBlock('class:bard.mend', 'heal').base;
-register({
-  id: 'bard.mend', claims: 'all',
-  on: {
-    outburst_release: (ctx, h) => { if (ctx.u === h.u && isHealDesign(ctx.design)) markRelease(h, ctx, 'mend'); },
-    heal_in: (ctx, h) => { if (ctx.by === h.u && ctx.kind === 'soul' && releasing(h, 'mend')) ctx.n = ctx.n * BARD_MEND / BUFF_HEAL; }, // rules 1.20: a base of 9 in place of the Buff school's 7
-  },
-  brief: () => null,
-});
-
 // ---------- Gift (rank III, once a rest) ----------
 // Out of combat, hand an ally one of your ready designs (say the ally and the design; else your first design). They
 // cast it once with their own AP (rules 1.5: a snap's 3, Begin and Release), on your MP (the design's full price) and
