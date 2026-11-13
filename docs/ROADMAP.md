@@ -3,6 +3,25 @@
 This is a list of leads, not a spec. Each item says where its design lives. Before building anything, read
 `CLAUDE.md` and `docs/HANDOFF.md`. Leon decides the order; the top section is the suggested one.
 
+## Now (13 Nov 2026, at the close of Classes 3.0)
+
+1. **Classes 3.0 is built** (0.26.0; rules 1.28 to 1.38; `docs/design/handoffs/CLASSES-3.0-PICKUP.md`): nine doors,
+   nine renamed base classes, Shadow, Bonds and Tending, Figments, the Chaplain's prayers, reactions made real, the
+   enemy acting on what it sees, the level scale ×7.5 with heals in percent of HP. **Leon's playtest** with
+   `docs/PLAYTEST-CHECKLIST.md` section 0 comes first; he names which of its 53 calls to reverse.
+2. **Survival mode** (`docs/design/survival-spec.md`, draft 4): the first real game mode and the roguelike's first piece.
+   Stage 1 first (the build plan is its section 10), open questions on their recommendations.
+3. **The Forge art run** on Leon's GPU (`art/briefs/FORGE-PHC.md`): LoRAs per art mode, then the Classes 3.0 icons and
+   the Figment portraits (`art/briefs/ART-REQUESTS.md` section 5, C6).
+4. **What Classes 3.0 left:** gathered in `docs/design/handoffs/LOCAL-SESSION-START.md` section 6 item 4 (Parting Cut and
+   Case, NULL on Figments, the Figments' class-only term, Smite's chip, two Sanctuaries stacking, the enemy's squad plan
+   against reactions, enemy versions of the doors).
+5. **The advanced classes** come back as attribute pairs (squared and cross-core hybrids, in batches; they may be
+   redesigned; shelved moves: `docs/design/move-pool.md`), each with its faction's own Evoker or Emanator.
+6. **M813** is unlisted until it is rewritten for World Play (item 3 below).
+
+The list below is the older suggested order; items marked built or done stay for the record.
+
 ## Suggested order
 
 1. **A real M813 playtest of the new Narrator and World Play**, on a fresh API key.
