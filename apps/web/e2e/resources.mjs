@@ -5,7 +5,7 @@
 // The Proving Ground starts each build with real actions (class, kit, gear); the state a test needs (ammo, charge,
 // Flux, Strain…) is written into the host's own save and the page reloads it, as a returning host would.
 // Screenshots: e2e/shots/resources-*.png (deviceScaleFactor 1, 1440×900 and 1280×720).
-import { chromium, click, BASE, OUT, pause } from './lib.mjs';
+import { chromium, click, BASE, OUT, pause, tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
 await ctx.addInitScript(() => { try { localStorage.setItem('phc.voice', JSON.stringify({ auto: false })); localStorage.setItem('phc.tips', '["*"]'); sessionStorage.setItem('phc.pressedAnyKey', '1'); } catch { /* */ } });
@@ -96,7 +96,8 @@ await snap('gunner-1440');
 // Hover shows the hint.
 await youCard().locator('[data-res="ammo"]').first().hover();
 await pause(p, 200);
-ok('hovering a row shows its hint (what to do)', await youCard().locator('[data-res="ammo"] .phc-res-hint').first().isVisible());
+await youCard().locator('[data-res="ammo"]').first().hover(); await pause(p, 500);
+ok('hovering a row shows its hint (what to do) in the one card', (await p.locator('.phc-atip').count()) === 1 && /\S/.test(await tipOf(youCard().locator('[data-res="ammo"]'))));
 await snap('gunner-hover-1440');
 // 1280×720: the full card steps aside; the 2–3 most urgent rows sit under the bar.
 await p.setViewportSize(SMALL); await settle();
@@ -119,7 +120,7 @@ ok('Sigil: Evoker charge / 10 and spare cores, RELOAD CORE: ' + t, /EVOKER CHARG
 t = await rowText('flux');
 ok('Sigil: Flux 5 / 6 OVERLOAD SOON: ' + t, /FLUX/.test(t) && /5 \/ 6/.test(t) && /OVERLOAD SOON/.test(t));
 await youCard().locator('[data-res="charge"]').first().hover(); await pause(p, 150);
-ok('Sigil: the hint says swap core (2 AP)', /Swap core \(2 AP\)/i.test((await youCard().locator('[data-res="charge"] .phc-res-hint').first().textContent()) || ''));
+ok('Sigil: the hint says swap core (2 AP)', /Swap core \(2 AP\)/i.test(await tipOf(youCard().locator('[data-res="charge"]'))));
 await p.mouse.move(5, 5);
 await snap('sigil-1440');
 await snap('sigil-1280', SMALL); await p.setViewportSize(BIG);

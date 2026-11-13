@@ -269,7 +269,8 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     const head = panel().locator('[data-weapon-block="off"]');
     const hd = await head.evaluate((el) => ({ text: el.innerText.replace(/\s+/g, ' '), pips: el.querySelectorAll('[data-pips="guard"] > span').length, on: el.querySelectorAll('[data-pips="guard"] > span[data-on="true"]').length })).catch(() => null);
     me = (await G()).combat.units.find((u) => u.charId === cid);
-    ok(at + 'the shield has its own block with Guard pips: ' + (hd && hd.text), !!hd && /RIOT SHIELD/i.test(hd.text) && hd.text.includes('Guard ' + (me.res.guard || 0) + ' / ' + me.resMax.guard) && hd.pips === me.resMax.guard && hd.on === (me.res.guard || 0));
+    const gRow = await p.locator('[aria-label="Your resources"] [data-res="res-guard"]').first().innerText().then((t) => t.replace(/\s+/g, ' ')).catch(() => '');
+    ok(at + 'the shield has its own block; its Guard is the unit panel\'s row, said once: ' + (hd && hd.text) + ' | ' + gRow, !!hd && /RIOT SHIELD/i.test(hd.text) && !/Guard \d/.test(hd.text) && hd.pips === 0 && gRow.includes((me.res.guard || 0) + ' / ' + me.resMax.guard));
     await panel().locator('[data-act="tpad:off"]').click(); await settle(p, 350);
     const sc = await p.locator('[data-tech-pad="tpad:off"] button[data-tech]').evaluateAll((xs) => xs.map((x) => [x.getAttribute('data-tech'), x.getAttribute('data-reaction')]));
     ok(at + 'its pad: Shield Bash and Raise Shield to use, Shield Wall and Interpose as reactions', sc.filter((x) => x[1] !== 'true').map((x) => x[0]).sort().join() === 'raise_shield,shield_bash' && sc.filter((x) => x[1] === 'true').map((x) => x[0]).sort().join() === 'interpose,shield_wall');
@@ -283,7 +284,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     await p.screenshot({ path: SHOTS + '/shield-raise-' + W + '.png' });
   }
   // the resources strip says Guard's rule
-  const gr = await p.evaluate(() => { const el = [...document.querySelectorAll('[title], [aria-label]')].find((x) => /Guard: each point soaks 10 damage; Brace and the Guard technique refill it\./.test((x.getAttribute('title') || '') + (x.getAttribute('aria-label') || '') + x.textContent)); return !!el; });
+  const gr = await p.evaluate(() => { const el = [...document.querySelectorAll('[data-tip-text], [aria-label]')].find((x) => /Guard: each point soaks 10 damage; Brace and the Guard technique refill it\./.test((x.getAttribute('data-tip-text') || '') + (x.getAttribute('aria-label') || '') + x.textContent)); return !!el; });
   ok('the resources strip says Guard\'s rule in a sentence', gr || /Guard: each point soaks 10 damage/.test(await p.locator('body').innerText()));
 
   // ----- use a Call -----

@@ -641,7 +641,7 @@ Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(i
 <sc-if value="{{r.hasSub}}"><span style="{{r.subStyle}}">{{r.sub}}</span></sc-if>
 <sc-if value="{{r.isBar}}"><span aria-hidden="true" style="{{r.trackStyle}}"><span style="{{r.fillStyle}}"></span></span></sc-if>
 <sc-if value="{{r.isPips}}"><span aria-hidden="true" style="{{r.pipsStyle}}"><sc-for list="{{r.pips}}" as="p"><span style="{{p.style}}"></span></sc-for></span></sc-if>
-<span class="phc-res-hint">{{r.hint}}</span>
+
 </div></sc-for>
 </div></sc-if>
 <sc-for list="{{hud.magic}}" as="ml"><span style="{{ml.style}}">{{ml.text}}</span></sc-for>

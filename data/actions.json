@@ -63,13 +63,13 @@
     },
     {
       "id": "cover",
-      "name": "Shoot an object",
+      "name": "Attack an object",
       "tab": "attack",
       "type": "combat/shoot-cover",
       "ap": null,
       "site": "break",
       "pick": "object",
-      "text": "Shoot cover, a barricade, a door, a barrel or a lamp. There is no roll: it takes your weapon's damage. Broken cover becomes rubble, and barrels explode.",
+      "text": "Attack cover, a barricade, a door, a barrel or a lamp: a shot with a gun, a strike with a melee weapon. There is no roll: it takes your weapon's damage. Broken cover becomes rubble, and barrels explode.",
       "adjudication": "engine"
     },
     {

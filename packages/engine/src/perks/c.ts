@@ -13,7 +13,7 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
   key, xy, dist, alive, refOf, keyOf as refKey, objectsOf, objectsAt, standable, lineOfSight, previewAttack, resolveAttack, reload, clearJam,
-  weaponActions, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees, displace
+  weaponActions, anyJammed, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees, displace
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { factorOf } from '../effects/output';
@@ -54,7 +54,7 @@ const unitMod = (u: Unit, skill: 'proficiency' | 'dexterity' | 'analysis') => mo
 const RR_RELOAD = '#reload', RR_CLEAR = '#clear';
 const reloadEntry = (u: Unit) => weaponActions(u).find((x) => x.id === 'reload');
 const canReloadNow = (u: Unit) => { const a = reloadEntry(u); return !!a && (a.why == null || /^Needs/.test(a.why)); };
-const canClearNow = (u: Unit) => !!u.jammed && weaponActions(u).some((x) => x.id === 'clear');
+const canClearNow = (u: Unit) => anyJammed(u) && weaponActions(u).some((x) => x.id === 'clear');
 function runningReload(h: Holder, u: Unit, cb: Combat, wantReload: boolean, wantClear: boolean): string {
   const did: string[] = [];
   if (wantClear && tierII(h) && canClearNow(u) && uses(h).take('per_turn', 1, h.key + RR_CLEAR)) {

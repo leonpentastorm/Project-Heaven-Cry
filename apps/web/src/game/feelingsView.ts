@@ -2,7 +2,7 @@
 // its step and effect; collapsed into "Feelings ▸" with a search past six), the colour and glyph of each feeling, the
 // residue tiles' tint, the unlock card, and the practice bar. The engine is the one source of numbers (previewPump,
 // previewOutburstPlan, practiceOf); this file only words and styles them.
-import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, MODULE, SKILL } from '@engine';
+import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, moduleShelved, MODULE, SKILL } from '@engine';
 import { feelingIcon, moduleIcon, heartMark, paintedStyle } from './heartIcons';
 import { tipAttrs } from './actionTip';
 
@@ -159,7 +159,9 @@ export function moduleGroups(c: any): CodexGroup[] {
   const all = Object.values(MODULE) as any[], used = new Set<string>(), out: CodexGroup[] = [];
   for (const sk of GATE_ORDER) { const ms = gatedBy(sk).map((id: string) => (MODULE as any)[id]).filter((m: any) => m && !m.locked); ms.forEach((m: any) => used.add(m.id)); if (ms.length) out.push({ key: sk, label: ((SKILL as any)[sk]?.name || sk), blurb: GATE_BLURB[sk] || '', modules: ms.map(mk) }); }
   const free = all.filter((m) => !used.has(m.id) && !m.locked); if (free.length) out.push({ key: 'free', label: 'No gate', blurb: 'anyone may learn these', modules: free.map(mk) });
-  const adv = all.filter((m) => m.locked); if (adv.length) out.push({ key: 'advanced', label: 'Advanced classes', blurb: 'only with the class, when its batch returns', modules: adv.map(mk) });
+  // an advanced class's own modules show only once that class is back (while shelved they don't exist for a player;
+  // Leon, live 0.24.0: "don't show what we don't have")
+  const adv = all.filter((m) => m.locked && !moduleShelved(m.id)); if (adv.length) out.push({ key: 'advanced', label: 'Advanced classes', blurb: 'only with the class', modules: adv.map(mk) });
   return out;
 }
 export interface CodexFeeling { id: string; name: string; icon: string; iconStyle: string; ink: string; known: boolean; step: string; effect: string; residue: string; trigger: string; tip: string; tipText: string }

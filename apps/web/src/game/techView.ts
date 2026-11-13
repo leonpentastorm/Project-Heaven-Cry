@@ -59,6 +59,7 @@ export interface WeaponBlock {
   hand: Hand; weaponId: string; name: string; icon: string; iconOff: string; system: 'melee' | 'ranged';
   /** the meter in the header: Momentum pips (melee), or rounds loaded and Heat (ranged) */
   meter: string; pips: { key: string; on: boolean }[]; meterHint: string;
+  /** this gun is jammed (each gun jams on its own; Hands 5d) */ jammed?: boolean;
   plain: TechChip | null; groups: ChipGroup[]; usable: number; total: number;
   watch: TechChip[];
   /** the off hand's shield (rules 1.13): its meter is Guard, its pad holds the shield's techniques and its reactions */ shield?: boolean;
@@ -146,7 +147,7 @@ export function weaponBlocks(g: any, cb: any, u: any): WeaponBlock[] {
       const loaded = hand === 'off' ? u.offAmmo ?? 0 : u.ammo ?? 0;
       meter = (w.magazine != null ? loaded + ' / ' + w.magazine + ' loaded' : '') + (w.heat_limit ? (w.magazine != null ? ' · ' : '') + 'Heat ' + (u.heat || 0) + ' / ' + heatLimit(u, w) : '');
     }
-    return { hand, weaponId, name: (hand === 'main' ? u.weaponName : null) || w.name, icon: gearIconUri(weaponId), iconOff: gearIconUri(weaponId, GEAR_INK_OFF), system, meter, pips, meterHint,
+    return { hand, weaponId, name: (hand === 'main' ? u.weaponName : null) || w.name, icon: gearIconUri(weaponId), iconOff: gearIconUri(weaponId, GEAR_INK_OFF), system, meter, pips, meterHint, jammed: system === 'ranged' && !!(hand === 'off' ? u.offJammed : u.jammed),
       plain: plainE ? chipOf(plainE) : null, groups, usable: chips.filter((c) => c.ok).length, total: chips.length, watch, ...(system === 'melee' && pips.length ? { meterKind: 'momentum' as const } : {}) };
   }).filter((b): b is WeaponBlock => !!b);
   // Two weapons of one kind (two guns, two melee weapons): a third block for what both do together (Leon, 10 Nov 2026):

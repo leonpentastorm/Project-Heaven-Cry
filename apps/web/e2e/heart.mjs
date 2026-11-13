@@ -165,7 +165,7 @@ ok('the steadied heart held at stage ' + stg + ' over the turn (now ' + s.u.mg.h
 await ensureAp(1); await tab('Outbursts');
 await p.locator('.phc-heart-panel button[data-hact="release"]').click(); await pause(p, 250);
 await tileOf(foeAt).hover(); await pause(p, 400);
-const chips = await p.locator('.phc-grid .phc-plan[title]').evaluateAll((ns) => ns.map((n) => n.textContent));
+const chips = await p.locator('.phc-grid .phc-plan[data-tip-text]').evaluateAll((ns) => ns.map((n) => n.textContent));
 ok('both drill units marked with their numbers: ' + JSON.stringify(chips), chips.filter((t) => /^ENEMY −\d+/.test(t)).length >= 2);
 await snap('4-burst-preview');
 await tileOf(foeAt).click(); await pause(p, 250);

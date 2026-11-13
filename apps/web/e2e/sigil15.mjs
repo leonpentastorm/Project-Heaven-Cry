@@ -54,7 +54,7 @@ async function word(w) {
 }
 const putDraw = () => p.locator('[role="tabpanel"]').getByRole('button', { name: /^Draw a glyph/ }).first().click().catch(() => {});
 const picker = async () => (await p.locator('[data-stroke-picker] button').allTextContents()).map((t) => t.trim());
-const note = async () => ((await p.locator('.phc-cb-seltext').first().getAttribute('title').catch(() => '')) || '').trim();
+const note = async () => ((await p.locator('.phc-cb-seltext').first().getAttribute('data-tip-text').catch(() => '')) || '').trim();
 const pick = async (re) => { await p.locator('[data-stroke-picker] button', { hasText: re }).first().click(); await pause(p, 150); };
 /** Draw the picked word on your own tile (a click on it). */
 async function drawHere() { await ensureAp(2); const s = await st(); await tok(s.u.pos).click(); await pause(p, 300); await idle(); }

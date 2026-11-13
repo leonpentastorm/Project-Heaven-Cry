@@ -56,12 +56,12 @@ describe('residue, practice and the codex', () => {
     expect(r).toMatchObject({ feeling: 'rage', ink: FEELING_INK.rage, kind: 'harms' }); expect(residueTileStyle(r)).toMatch(/repeating-linear-gradient/);
     const pv = placedView(cb, 'pc'); expect(pv.kinds.has('residue')).toBe(true); expect(pv.rows.some((x) => /Rage residue/.test(x.label))).toBe(true);
   });
-  it('the practice bar reads practice, the next pick and the picks to take; modules group by gate skill, the advanced ones locked', () => {
+  it('the practice bar reads practice, the next pick and the picks to take; modules group by gate skill, the advanced classes\' own modules hidden while their classes are shelved', () => {
     const { c } = fight(); c.soulPractice = 6; c.skills.will_power = 2; c.skills.lore_master = 0;
     const p = practiceView(c)!; expect(p.practice).toBeGreaterThanOrEqual(6); expect(p.picks).toBeGreaterThanOrEqual(1); expect(p.text).toMatch(/^PRACTICE \d+ · next pick at \d+/);
-    const gs = moduleGroups(c); expect(gs.map((g) => g.key)).toEqual(['lore_master', 'will_power', 'empathy', 'camaraderie', 'implication', 'composure', 'advanced']);
+    const gs = moduleGroups(c); expect(gs.map((g) => g.key)).toEqual(['lore_master', 'will_power', 'empathy', 'camaraderie', 'implication', 'composure']); // no 'advanced' group: those classes are shelved (Leon, live 0.24.0: don't show what doesn't exist)
     const fuse = gs[0].modules.find((m) => m.id === 'fuse')!; expect(fuse).toMatchObject({ ok: false, gate: 'Lore Master 4' });
-    const echo = gs.at(-1)!.modules.find((m) => m.id === 'echo')!; expect(echo).toMatchObject({ locked: true, cls: 'heartfed', ok: false });
+    expect(gs.flatMap((g) => g.modules).some((m) => m.id === 'echo')).toBe(false); // Heartfed's own module, shelved
     const fc = feelingCodex(c); expect(fc.length).toBe(25); expect(fc.find((f) => f.id === 'grief')).toMatchObject({ known: false }); expect(fc.find((f) => f.id === 'grief')!.trigger).toMatch(/^Felt first when/);
   });
   it('iconSrc: painted art\'s URL wins; an SVG drawing is tinted into a data URI', () => {
@@ -86,5 +86,27 @@ describe('painted icons take the ink the drawn ones took', () => {
       expect(mods.find((m) => m.id === 'split')!.iconStyle).toContain('background-color: #7F8BA1'); // unknown: grey
       expect(iconStyle('/assets/feeling-rage.webp', '#0A0D13')).toContain('background-color: #0A0D13'); // the lit stage segment's dark ink
     } finally { setHeartArt(null); }
+  });
+});
+
+// Leon, live 0.24.0: "Rage: +0.5 · +0.5 to the multiplier…", "Grief: +0.2; +0.5 once an ally has fallen · +0.2, …":
+// a short summary joined to the full sentence that begins with the same words. Each feeling: ONE step chip, its text once.
+describe('a feeling says its step once', () => {
+  const c: any = { feelings: FEELINGS.map((f: any) => f.id), soulKnown: { modules: [] } };
+  it('the codex: a chip from the data\'s numbers, and the text without the step clause that only repeated it', () => {
+    const cx = feelingCodex(c), by = (id: string) => cx.find((f) => f.id === id)!;
+    expect(by('rage').step).toBe('+0.5'); expect(by('rage').effect).not.toMatch(/^\+0\.5/); expect(by('rage').effect).toMatch(/Strain/);
+    expect(by('grief').step).toBe('+0.2 / +0.5'); expect(by('spite').step).toBe('+0.2 / +0.5'); expect(by('despair').step).toBe('+0.2 to +0.6');
+    expect(by('calm').step).toBe('−0.4'); expect(by('fear').effect).toMatch(/^The Release throws you/);
+    for (const f of cx) {
+      // no summary joined on: the chip, then the text, and the plain step is not said again at the text's start
+      expect(f.step + ' · ' + f.effect, f.id).not.toMatch(/·.*·/);
+      if (!/\//.test(f.step) && !/ to /.test(f.step)) expect(f.effect.startsWith(f.step), f.id).toBe(false);
+      // the card: name, the chip, the text once, then residue and when it is first felt
+      const t = JSON.parse(f.tip);
+      expect(t.chips, f.id).toEqual([f.step]);
+      expect(t.lines.filter((l: any) => l.text === t.lines[0].text).length, f.id).toBe(1);
+      expect(t.lines.some((l: any) => /^Felt first when/.test(l.label)), f.id).toBe(true);
+    }
   });
 });

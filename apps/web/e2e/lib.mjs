@@ -68,7 +68,7 @@ export const shot = (page, n) => page.screenshot({ path: OUT + n + '.png', fullP
  *  or when the locator matches nothing. */
 export async function tipOf(locator) {
   if (!(await locator.count().catch(() => 0))) return '';
-  return locator.first().evaluate((el) => (el.getAttribute('aria-description') || el.getAttribute('title')) || '').catch(() => '');
+  return locator.first().evaluate((el) => (el.getAttribute('aria-description') || el.getAttribute('data-tip-text') || el.getAttribute('title')) || '').catch(() => '');
 }
 export async function makeCharacter(page, name, archFamily, archName, kit) {
   await click(page, 'Make a character');

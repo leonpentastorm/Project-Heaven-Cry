@@ -25,7 +25,7 @@ Two browsers, two locations, Anthropic key on the host. Tick what works; note wh
 - [ ] Move, shoot, aim, take cover behind the stakes (−5 shows on the odds).
 - [ ] Hover tokens: allies show everything; enemies only after Analyze.
 - [ ] Reload early (the magazine drops), pick it up, load it.
-- [ ] Shoot an object (stakes, a barrel); cover breaks into rubble.
+- [ ] Attack an object (stakes, a barrel), with a gun and with a melee weapon (the log says shoots or smashes); cover breaks into rubble.
 - [ ] Get injured (crits); see it on the Status body.
 - [ ] Try the new actions: Sprint, Disengage (no opportunity attack), drop prone, Shove, Overwatch, Burst or Full auto.
 - [ ] Fog of war: an enemy behind the pylon shows as "Unseen hostile"; you can't target what nobody sees.

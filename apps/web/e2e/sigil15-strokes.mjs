@@ -36,7 +36,7 @@ async function word(w) {
   await key.click(); await pause(p, 150);
 }
 const picker = async () => (await p.locator('[data-stroke-picker] button').allTextContents()).map((t) => t.trim());
-const note = async () => ((await p.locator('.phc-cb-seltext').first().getAttribute('title').catch(() => '')) || '').trim();
+const note = async () => ((await p.locator('.phc-cb-seltext').first().getAttribute('data-tip-text').catch(() => '')) || '').trim();
 const pick = async (label) => { const re = new RegExp('^\\s*(✓ )?' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$'); await p.locator('[data-stroke-picker] button', { hasText: re }).first().click(); await pause(p, 150); };
 async function drawHere() { await ensureAp(2); const s = await st(); await tok(s.u.pos).click(); await pause(p, 300); await idle(); }
 

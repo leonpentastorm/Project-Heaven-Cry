@@ -76,7 +76,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   const say = p.locator('form.phc-cb-say, form.phc-cb-say2').filter({ has: p.locator(':visible') }).first();
   const att = p.locator('[data-say="attempt"]:visible').first();
   ok('the Say row has Say and Attempt (' + (await att.innerText().catch(() => '?')) + ')', (await p.locator('[data-say="say"]:visible').count()) > 0 && (await att.count()) > 0);
-  ok('with no Narrator the Attempt is off, with the reason: ' + (await att.getAttribute('title')), await att.isDisabled());
+  ok('with no Narrator the Attempt is off, with the reason: ' + (await att.getAttribute('data-tip-text')), await att.isDisabled());
   void say; ok('no page errors (heart): ' + p.errs.join(' | ').slice(0, 200), p.errs.length === 0);
   await p.context().close(); }
 
@@ -106,7 +106,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   ok('plain speech is free and goes in the log (AP ' + ap0 + ' → ' + (await me()).ap + ')', (await me()).ap === ap0 && (await G(p)).combat.log.slice(n0).some((l) => /Easy now/.test(l)));
   await box().fill('I taunt him: is that all you have?'); await settle(p, 600);
   const attOn = await att().evaluate((b) => new Promise((res) => { const t0 = Date.now(); const tick = () => (!b.disabled ? res(true) : Date.now() - t0 > 3000 ? res(false) : setTimeout(tick, 100)); tick(); }));
-  ok('Attempt is on, and says its price: ' + (await att().innerText()) + ' (' + (await att().getAttribute('title')) + ')', attOn && /1 AP/.test(await att().innerText()));
+  ok('Attempt is on, and says its price: ' + (await att().innerText()) + ' (' + (await att().getAttribute('data-tip-text')) + ')', attOn && /1 AP/.test(await att().innerText()));
   const n1 = (await G(p)).combat.log.length; await att().click();
   const deciding = await p.waitForSelector('text=/The Narrator is deciding/', { timeout: 30000 }).then(() => true, () => false);
   await p.waitForFunction(() => !window.__phc.getState().game.combat.ruling && !(window.__phc.getState().game.combat.pending || []).length, null, { timeout: 30000 }).catch(() => {});
@@ -116,7 +116,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   ok('the Narrator answered in the log (the waiting line was seen: ' + deciding + '; the scripted Narrator answers at once): ' + JSON.stringify(fresh).slice(0, 260), fresh.some((l) => /Narrator/.test(l)));
   await p.screenshot({ path: SHOTS + 'rules114-attempt.png' });
   await box().fill('And another thing.'); await settle(p, 150);
-  ok('a second attempt the same turn is off: ' + (await att().getAttribute('title')), await att().isDisabled());
+  ok('a second attempt the same turn is off: ' + (await att().getAttribute('data-tip-text')), await att().isDisabled());
   ok('no page errors (speech): ' + p.errs.join(' | ').slice(0, 300), p.errs.length === 0);
   await p.context().close(); }
 await browser.close();

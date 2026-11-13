@@ -236,9 +236,10 @@ await pause(p, 300);
 ok('Thunderclap is prayed by standing: 3 AP, in the log', (await G()).combat.log.length > n1 && (await myU()).ap <= 3);
 ok('Faith 7 and your patron\'s Hymn: Witnessed', !!(await myU()).conds?.witnessed);
 ok('the resource rows say WITNESSED', /WITNESSED/.test(await p.locator('aside').first().textContent()));
-{ const chip = p.locator('aside').first().locator('[title^="Witnessed:"]').first();
-  const ct = (await chip.count()) ? { text: (await chip.textContent()) || '', title: (await chip.getAttribute('title')) || '', color: await chip.evaluate((el) => getComputedStyle(el).color) } : null;
-  ok('the Witnessed chip: short, in the faith light (not the harm red), its title says how long (' + JSON.stringify(ct) + ')', !!ct && /◉ WITNESSED/.test(ct.text) && /until the fight ends or Old Overcast acts/.test(ct.title) && ct.color !== 'rgb(246, 81, 87)' && !/WITNESSED · 99/.test(await p.locator('body').textContent())); }
+{ // one fact, one place (Leon, live 0.24.0): Witnessed is the resource row in your panel, said once (no chip beside it)
+  const row = p.locator('aside').first().locator('[data-res="witnessed"]').first();
+  const rt = (await row.count()) ? { text: (await row.textContent()) || '', tip: (await row.getAttribute('data-tip-text')) || '' } : null;
+  ok('Witnessed is said once in your panel, and its card says how long (' + JSON.stringify(rt) + ')', !!rt && /until the fight ends or Old Overcast/.test(rt.tip) && (await p.locator('aside').first().locator('[data-tip-text^="Witnessed:"]').count()) === 0 && !/WITNESSED · 99/.test(await p.locator('body').textContent())); }
 ok('the FAITH tab\'s header says so too', /WITNESSED · UNTIL THE FIGHT ENDS OR OLD OVERCAST ACTS/.test((await p.locator('[role="tabpanel"] [data-faith-head="old_overcast"]').textContent().catch(() => '')) || ''));
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-hymn.png' });
 // An overreach: Gather the Clouds (Hymn III, gate 7) at Devotion 5: TN 16; the limits reset so the cooldown allows it.

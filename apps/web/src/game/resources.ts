@@ -194,7 +194,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const row: ResRow = { key: 'ammo', label: 'Ammo', value: now + ' / ' + cap + ' loaded' + (spareTxt ? ' · ' + spareTxt : ''), now, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body,
       sub: (w.name || wid) + (type ? ' · ' + type + ' rounds' : ''),
       hint: 'Rounds in the ' + (w.name || 'gun').toLowerCase() + '. ' + (spare > 0 ? 'Reload: ' + rAp + ' AP' + (loose ? ' (round by round from loose rounds).' : ' (a fresh ' + (w.reload_unit || 'magazine') + ').') : 'No spares left: pick some up, or switch weapons.') };
-    if (u?.jammed && !w.heat_limit) Object.assign(row, { warn: 'JAMMED', level: 'alert', hint: 'The gun is jammed: Clear it (2 AP) before it fires again.' });
+    // each gun's jam on its own ammo row (Hands 5d: the guns jam apart); Heat, which they pool, has its own row
+    if (u?.jammed) Object.assign(row, { warn: 'JAMMED', level: 'alert', hint: 'The ' + (u.offWeapon && (WEAPON as any)[u.offWeapon]?.magazine != null ? 'main-hand ' : '') + 'gun is jammed: Clear jam before it fires again.' });
     else if (now <= 0) Object.assign(row, spare > 0 ? { warn: 'RELOAD', level: 'alert', hint: 'Empty: Reload (' + rAp + ' AP) before you can shoot.' } : { warn: 'EMPTY', level: 'alert', hint: 'Empty and no spares: pick some up, swap weapons, or fight hand to hand.' });
     else if (low) Object.assign(row, spare > 0 ? { warn: 'RELOAD', level: 'caution', hint: 'Only ' + plural(now, 'round') + ' left: Reload (' + rAp + ' AP) before you run dry.' } : { warn: 'LOW', level: 'caution', hint: 'Only ' + plural(now, 'round') + ' left and no spares.' });
     rows.push(row);
@@ -203,7 +204,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   if (u?.offWeapon && (WEAPON as any)[u.offWeapon]?.magazine != null) {
     const ow: any = (WEAPON as any)[u.offWeapon], n = u.offAmmo ?? 0, cap = ow.magazine;
     rows.push({ key: 'off', label: 'Off-hand', value: n + ' / ' + cap + ' loaded' + (u.offMags ? ' · ' + plural(u.offMags.filter((x: number) => x > 0).length, 'spare') : ''), now: n, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body, sub: ow.name,
-      ...(n <= 0 ? { warn: 'RELOAD' as ResWarn, level: 'alert' as const } : {}), hint: 'Rounds in the off-hand ' + (ow.name || 'gun').toLowerCase() + '. Reload both: one action.' });
+      ...(u.offJammed ? { warn: 'JAMMED' as ResWarn, level: 'alert' as const } : n <= 0 ? { warn: 'RELOAD' as ResWarn, level: 'alert' as const } : {}), hint: u.offJammed ? 'The off-hand gun is jammed: Clear jam before it fires again. The main gun still fires.' : 'Rounds in the off-hand ' + (ow.name || 'gun').toLowerCase() + '. Reload both: one action.' });
   }
   // (a blade in the main hand and a gun in the other: the gun's Heat is still yours to watch)
   const offGun: any = u?.offWeapon ? (WEAPON as any)[u.offWeapon] : null, hw: any = w && w.heat_limit ? w : offGun && offGun.heat_limit ? offGun : null;
@@ -211,9 +212,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const lim = heatLimit(u, hw), h = u.heat || 0, pooled = !!(w && w.heat_limit && offGun && offGun.heat_limit);
     const row: ResRow = { key: 'heat', label: 'Heat', value: h + ' / ' + lim, now: h, max: lim, kind: 'bar', colour: RES_INK.body,
       hint: pooled ? 'Both guns share this Heat (their two limits added): each shot adds +1, a burst +2; −1 to hit per 2 Heat; it cools 4 at your turn start. At ' + lim + ' the gun that fires jams.' : 'Each shot heats the gun (single +1, burst +2, auto +4): −1 to hit per 2 Heat; it cools 2 at your turn start. At ' + lim + ' it jams.' };
-    if (u.jammed) Object.assign(row, { warn: 'JAMMED', level: 'alert', hint: 'Jammed: Clear it (2 AP) before it fires again.' });
-    else if (h >= lim - 2 && h > 0) Object.assign(row, { warn: 'JAM SOON', level: h >= lim - 1 ? 'alert' : 'caution', hint: 'Heat ' + h + ' of ' + lim + ': one more burst can jam it. Single shots, or let it cool a turn.' });
-    if (h > 0 || u.jammed) rows.push(row);
+    if (h >= lim - 2 && h > 0) Object.assign(row, { warn: 'JAM SOON', level: h >= lim - 1 ? 'alert' : 'caution', hint: 'Heat ' + h + ' of ' + lim + ': one more burst can jam it. Single shots, or let it cool a turn.' });
+    if (h > 0) rows.push(row);
     else rows.push({ ...row, value: '0 / ' + lim + ' · cool' });
   }
   if (u?.maxDur) {
@@ -269,6 +269,9 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     rows.push(...strainRows(hh));
   }
   // ---- class resources the runtime tracks (Momentum, Guard, Marks, Charges, Supplies…) ----
+  // Momentum: one line in the panel, the whole rule (and the engine's own two sentences) only in the hover card
+  // (Leon, live 0.24.0: the same paragraph was printed in the panel, again under it, and in the hover).
+  const MOMENTUM_SUB = 'Built by plain attacks that hit; Strikes, Openers and Finishers spend it.';
   const resMax: Record<string, number> = u?.resMax || (c ? Object.fromEntries(classResources(c).filter((r: any) => r.persist).map((r: any) => [r.id, r.max])) : {});
   const resNow: Record<string, number> = u?.res || (c?.res ? c.res : {});
   for (const id of Object.keys(resMax)) {
@@ -276,9 +279,6 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const ink = (RES_INK as any)[info.core] || RES_INK.body;
     const rule = info.rule;
     const spend = info.spend.length ? ' Spent by ' + info.spend.join(', ') + '.' : '';
-    // Physical 2.0 (rules 1.12): Momentum is on every unit holding a melee weapon; the engine's hint (the rule in two
-    // sentences) sits beside the pips.
-    const mHint = id === 'momentum' && u && cb ? (() => { try { return E.phys.physView(cb, u, u.side, g)?.momentum?.hint || ''; } catch { return ''; } })() : '';
     // Momentum belongs to everyone with a melee weapon, not to a class: its rule is said here (it read "Momentum ()." for
     // anyone but a Fighter). The rework (Leon, 10 Nov 2026).
     const mRule = id === 'momentum' ? 'Momentum: a fight starts with 1, and a plain attack that hits gives 1. A Strike or an Opener spends 1 (your first Opener of a fight is free); a Finisher needs 2 and spends all of it. Each tile you walk costs 1, and so does each hit you take unless you are guarding (Guard, a Parry that wins, Guard points); a Link\'s move costs none. It carries from turn to turn.' : '';
@@ -286,7 +286,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     // engine (physView), and the engine's fuller hint beside the pips in a fight.
     const gv = id === 'guard' && u && cb ? (() => { try { return E.phys.physView(cb, u, u.side, g)?.guard || null; } catch { return null; } })() : null;
     const gRule = id === 'guard' ? guardRule(gv?.soak ?? ((E.phys as any).PHYS_RULES?.guard?.soak ?? 10)) : '';
-    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: ink, sub: mHint || (id === 'guard' ? gRule : '') || info.source || (id === 'momentum' ? 'Built by plain attacks; Strikes and Openers spend 1, a Finisher all of it.' : ''),
+    rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: ink, sub: id === 'momentum' ? MOMENTUM_SUB : (id === 'guard' ? gRule : '') || info.source || '',
       ...(n >= max && max > 0 ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : n <= 0 && id === 'supplies' ? { warn: 'EMPTY' as ResWarn, level: 'caution' as const } : {}),
       hint: (mRule || (gRule ? gRule + (gv?.hint ? ' ' + gv.hint : '') : '') || rule || (info.source ? info.label + ' (' + info.source + ').' : info.label + '.')) + spend });
   }
@@ -316,8 +316,6 @@ export const RES_CSS = [
   '.phc-res>.phc-res-row[data-wide=true]{grid-column:1/-1}',
   '.phc-res-row{position:relative;display:flex;flex-direction:column;gap:3px;outline:none;border-radius:6px;padding:2px 4px;margin:0 -4px;cursor:help}',
   '.phc-res-row:hover,.phc-res-row:focus-visible{background:#151C29}.phc-res-row:focus-visible{box-shadow:0 0 0 2px #FFFFFF}',
-  '.phc-res-hint{display:none;font-size:12px;line-height:1.4;color:#C9D3E3;font-weight:500;letter-spacing:0}',
-  '.phc-res-row:hover .phc-res-hint,.phc-res-row:focus .phc-res-hint{display:block}',
   '.phc-res-row[data-level=alert] .phc-res-chip{animation:phcResPulse 1.4s ease-in-out infinite}',
   '@keyframes phcResPulse{0%,100%{box-shadow:0 0 0 0 rgba(246,81,87,.0)}50%{box-shadow:0 0 0 4px rgba(246,81,87,.35)}}',
   '.phc-rm .phc-res-row .phc-res-chip{animation:none!important}',

@@ -74,10 +74,10 @@ describe('the Attack tab in areas', () => {
     expect(a.map((x) => x.area)).toEqual(['main', 'off', 'both', 'other']);
     expect(a.map((x) => x.sep)).toEqual([false, true, true, true]);
     expect(a[0].head).toMatch(/^MAIN HAND · SERVICE PISTOL/); expect(a[1].head).toMatch(/^OFF HAND · SERVICE PISTOL/); expect(a[2].head).toBe('BOTH');
-    expect(a[0].ids).toEqual(expect.arrayContaining(['tq:main:shot', 'reload', 'reload-tac', 'cover']));
-    expect(a[1].ids).toEqual(expect.arrayContaining(['tq:off:shot', 'reload-off', 'reload-off-tac', 'clear-off', 'cover-off'])); // the off-hand gun's own Clear jam and Shoot an object
-    expect(a[0].ids).toEqual(expect.arrayContaining(['clear'])); expect(a[0].ids).not.toContain('clear-off');
-    expect(a[2].ids).toEqual(expect.arrayContaining(['paired', 'reload2', 'reload2-tac']));
+    expect(a[1].ids).toEqual(expect.arrayContaining(['tq:off:shot', 'reload-off', 'reload-off-tac', 'cover-off'])); // the off-hand gun's own reloads and Attack an object
+    expect(a[1].ids).not.toContain('clear-off'); expect(a[1].ids).not.toContain('clear'); // two guns: ONE Clear jam, in the Both area (Hands 5d)
+    expect(a[0].ids).not.toContain('clear'); expect(a[0].ids).not.toContain('clear-off');
+    expect(a[2].ids).toEqual(expect.arrayContaining(['paired', 'reload2', 'reload2-tac', 'clear']));
     // each row is where its descriptor says
     const hand = Object.fromEntries(actionsFor(G, u.id, ME).map((d) => [d.id, d.hand || 'other']));
     for (const x of a) for (const id of x.ids) expect(hand[id], id).toBe(x.area);
@@ -101,15 +101,15 @@ describe('the Attack tab in areas', () => {
     await React.act(async () => root.unmount()); el.remove();
   });
 
-  it('two guns: the off-hand gun\'s own Clear jam clears its jam, and a paged code (2 0 n) picks a row past the ninth', async () => {
+  it('two guns: the one Clear jam (Both area) clears the off-hand gun\'s jam, and a paged code (2 0 n) picks a row past the ninth', async () => {
     const { u } = fight(true); u.offJammed = true; snap = view(); const { el, root } = await mount(); await toAttack(el);
-    const b = el.querySelector('button[data-act="clear-off"]') as HTMLButtonElement; expect(b).toBeTruthy();
+    const b = el.querySelector('button[data-act="clear"]') as HTMLButtonElement; expect(b).toBeTruthy();
     const code = b.querySelector('.phc-key-code')!.getAttribute('data-code')!;
     expect(code.length).toBeGreaterThan(2); // past the ninth row with two guns
     for (const k of code) await React.act(async () => { window.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true })); });
-    expect(el.querySelector('button[data-act="clear-off"]')!.getAttribute('aria-pressed')).toBe('true');
+    expect(el.querySelector('button[data-act="clear"]')!.getAttribute('aria-pressed')).toBe('true');
     await click(confirmBtn(el));
-    expect(sent.at(-1)).toMatchObject({ type: 'combat/clear', hand: 'off' });
+    expect(sent.at(-1)).toMatchObject({ type: 'combat/clear' });
     expect(G.combat!.units.find((x) => x.id === u.id)!.offJammed).toBeFalsy();
     await React.act(async () => root.unmount()); el.remove();
   });
@@ -144,6 +144,51 @@ describe('the Attack tab in areas', () => {
     for (const b of refused) expect(b.getAttribute('aria-description')).toMatch(/Can't now: \S/);
     await click(el.querySelector('button[data-act="tpad:main"]'));
     for (const c of Array.from(el.querySelectorAll('[data-tech-pad] button[data-tech]'))) expect((c.getAttribute('aria-description') || '').length).toBeGreaterThan(0);
+    await React.act(async () => root.unmount()); el.remove();
+  });
+});
+
+// One fact, one place per view (Leon, live 0.24.0: "status effect, heat and such duplicated again"; "maybe I just can't
+// tell which one is jammed, they share one heat bar"). Heat is ONE value the two guns pool (u.heat): it is said once, in
+// the unit panel's Heat row, never in a weapon's header; each gun's jam is its own, marked on its own header.
+describe('two guns: Heat once, each jam on its own gun', () => {
+  const count = (s: string, re: RegExp) => (s.match(re) || []).length;
+  it('the rendered screen says the Heat once (the unit panel), and no weapon header repeats rounds or Heat', async () => {
+    const { u } = fight(true); u.heat = 4; snap = view(); const { el, root } = await mount(); await toAttack(el);
+    const res = el.querySelector('[aria-label="Your resources"]')!, tab = el.querySelector('[role="tabpanel"]')!;
+    expect(res.querySelectorAll('[data-res="heat"]').length).toBe(1);
+    expect(count(tab.textContent || '', /Heat \d/g)).toBe(0);
+    for (const h of Array.from(tab.querySelectorAll('[data-weapon-block]'))) expect(h.textContent).not.toMatch(/loaded|Heat/);
+    // and no HEAT chip beside the Heat row in your own panel
+    expect(count(res.parentElement!.textContent || '', /HEAT \d/g)).toBe(0);
+    await React.act(async () => root.unmount()); el.remove();
+  });
+  it('the off-hand gun jammed: ✕ JAMMED on the off hand\'s header only, its shot refused, the one Clear jam in Both says what it clears', async () => {
+    const { u } = fight(true); u.offJammed = true; snap = view(); const { el, root } = await mount(); await toAttack(el);
+    const tab = el.querySelector('[role="tabpanel"]')!;
+    expect(Array.from(tab.querySelectorAll('[data-jammed]')).map((x) => x.getAttribute('data-jammed'))).toEqual(['off']);
+    const offShot = tab.querySelector('button[data-act="tq:off:shot"]') as HTMLButtonElement;
+    expect(offShot.getAttribute('aria-description') || '').toMatch(/Jammed: clear it first/);
+    const clr = tab.querySelector('button[data-act="clear"]') as HTMLButtonElement;
+    expect(clr.closest('[data-area]')!.getAttribute('data-area')).toBe('both');
+    expect(clr.getAttribute('aria-description') || '').toMatch(/Clears: the off-hand gun/);
+    // the unit panel: the jam is on the off-hand gun's own row, once
+    const res = el.querySelector('[aria-label="Your resources"]')!;
+    expect(count(res.parentElement!.textContent || '', /JAMMED/g)).toBe(1);
+    expect(res.querySelector('[data-res="off"]')!.textContent).toMatch(/JAMMED/);
+    await React.act(async () => root.unmount()); el.remove();
+  });
+  it('both jammed: both headers marked, and the card says both', async () => {
+    const { u } = fight(true); u.jammed = true; u.offJammed = true; snap = view(); const { el, root } = await mount(); await toAttack(el);
+    const tab = el.querySelector('[role="tabpanel"]')!;
+    expect(Array.from(tab.querySelectorAll('[data-jammed]')).map((x) => x.getAttribute('data-jammed'))).toEqual(['main', 'off']);
+    expect((tab.querySelector('button[data-act="clear"]') as HTMLElement).getAttribute('aria-description') || '').toMatch(/Clears: both guns/);
+    await React.act(async () => root.unmount()); el.remove();
+  });
+  it('a condition on your unit is said once in your panel', async () => {
+    const { u } = fight(false); (u as any).conds = { ...(u.conds || {}), slowed: 2 }; snap = view(); const { el, root } = await mount();
+    const res = el.querySelector('[aria-label="Your resources"]')!;
+    expect(count(res.parentElement!.textContent || '', /SLOWED/gi)).toBe(1);
     await React.act(async () => root.unmount()); el.remove();
   });
 });
