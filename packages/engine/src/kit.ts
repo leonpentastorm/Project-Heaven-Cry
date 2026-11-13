@@ -101,6 +101,7 @@ export const alliesOf = (cb: Combat, u: Unit, o: Who = {}): Unit[] => cb.units.f
  * (planEvoke, previewOutburstPlan, paths). A test that used to assert milliseconds asserts these instead: a count is
  * the same on a loaded machine. Nothing in the rules reads it. */
 export const WORK: Record<string, number> = {};
+/** Count one unit of work under a name (speed tests count work, never milliseconds). */
 export const work = (what: string): void => { WORK[what] = (WORK[what] || 0) + 1; };
 /** Run fn and return what it counted (the counters are put back as they were). */
 export function counted<T>(fn: () => T): { ret: T; work: Record<string, number> } {

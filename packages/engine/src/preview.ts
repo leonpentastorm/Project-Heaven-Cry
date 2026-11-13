@@ -53,6 +53,7 @@ export function shadowGame(g: any, cb: Combat | null): any {
   return { ...g, rng: g.rng ? { ...g.rng } : { state: 1 }, characters: clone(g.characters || {}), story, ...(g.narrator ? { narrator: { ...g.narrator } } : {}), ...(cb && g.combat ? { combat: cb } : {}) };
 }
 
+/** How a dry run is made: the viewer whose fog limits the copy, and other switches. */
 export interface PreviewOpts {
   /** The side that is looking: units it can't see are not in the copy (nothing of them can be marked, counted or named). */
   viewer?: Side | null;
@@ -67,6 +68,7 @@ export function preview<T>(g: any, cb: Combat, fn: (cb: Combat, g: any, rng: Rng
   try { return logQuietly(() => fn(c, sg, sg?.rng || { state: 1 })); } finally { bindGame(was); }
 }
 
+/** What a dry run on a copy found: the refusal or null, the AP it took, the unit after. */
 export interface DryRun { /** the engine's refusal in plain words, or null: it would go through */ err: string | null;
   /** the unit on the copy, as the action left it (null: no such unit) */ u: Unit | null;
   /** the copy the action ran on */ cb: Combat;
@@ -82,6 +84,7 @@ export function dryRun(g: any, cb: Combat, unitId: string, fn: (cb: Combat, u: U
   }, o);
 }
 
+/** Would the reducer accept this action now: ok, or its refusal in its own words. */
 export interface ActionVerdict { ok: boolean; /** the reducer's refusal, in its own words */ why: string | null;
   /** AP the acting unit paid (after anything lent to it: Encore, a Brief) */ ap: number;
   /** the game after the action (a copy), when it went through */ g: GameState | null }

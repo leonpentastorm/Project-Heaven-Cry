@@ -38,12 +38,15 @@ import { PILE, isPile } from './containers';
 // ---------- the types ----------
 /** The tab an action sits on. */
 export type DescGroup = 'move' | 'attack' | 'utility' | 'perks' | 'class' | 'sigils' | 'outbursts' | 'faith' | 'calls';
+/** The order of the action groups on the fight screen's tabs. */
 export const GROUP_ORDER: DescGroup[] = ['move', 'attack', 'utility', 'perks', 'class', 'sigils', 'outbursts', 'faith', 'calls'];
 /** What a pick step asks for. enemy/ally/unit: a unit clicked on the grid; tile: a tile; option: one (or up to `max`)
  * of `options`; custom: a bespoke panel the screen registers under `renderer` fills `key` (the glyph keyboard, the
  * HEART panel, a perk's form, the pile checklist, the Evoke planner). */
 export type PickKind = 'enemy' | 'ally' | 'unit' | 'tile' | 'option' | 'custom';
+/** One choice of an option pick: its id, label, help text, and why it is greyed out. */
 export interface PickOption { id: string; label: string; text?: string; why?: string | null }
+/** One pick an action asks for (a target, a tile, an option, a custom panel), with what may be picked. */
 export interface PickStep {
   /** The field of `picks` this step fills (targetId, tile, opt, word…). */
   key: string;
@@ -66,7 +69,9 @@ export interface PickStep {
   /** The step applies only when another pick has this value (Order's tile: when `opt` holds 'move'). */
   when?: { key: string; is?: string; has?: string; not?: string };
 }
+/** An action's price as the engine priced it: AP, the words shown, resources. */
 export interface DescCost { ap: number; text: string; res?: Record<string, number> }
+/** One action a unit may take, as the client renders it: id, group, name, cost, availability, picks. */
 export interface ActionDescriptor {
   /** The id a screen keeps for the picked action (and the turn card saves). */
   id: string;
@@ -99,13 +104,16 @@ export interface ActionDescriptor {
   parts?: TechParts;
 }
 export type Picks = Record<string, any>;
+/** One line of a descriptor preview (odds, a note, a meter, a save, the cost, an ask). */
 export interface PreviewLine { k: 'odds' | 'note' | 'meter' | 'save' | 'cost' | 'ask'; text: string }
+/** What a preview paints on the grid (tiles, targets, an area, a path). */
 export interface GridMarks {
   /** Units the action would touch (fogged: only units the viewer sees). tone: harm, help, spared, or the picked target. */
   units: { id: string; tag: string; tone: 'harm' | 'help' | 'spared' | 'target' }[];
   /** Tiles: the area it covers, the picked tile, the tiles that may be picked next. */
   tiles: { tile: string; kind: 'area' | 'pick' | 'choice' | 'reach'; /** a reach's range band (0: no penalty) */ band?: number }[];
 }
+/** What an action would do with these picks: ok or why not, its AP, its lines and grid marks. */
 export interface DescriptorPreview {
   id: string;
   /** Whether it would go through as picked (false while a pick is missing: `ask` says which). */

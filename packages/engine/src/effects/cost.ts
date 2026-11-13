@@ -65,6 +65,7 @@ export function costOf(action: string, field = 'ap'): number {
   if (typeof n !== 'number') throw new Error('No ' + field + ' for the action "' + action + '" in data/actions.json.');
   return n;
 }
+/** Does data/actions.json give this action a number in this field (default `ap`)? */
 export const hasCost = (action: string, field = 'ap'): boolean => typeof verbOf(action)?.[field] === 'number';
 /** THE name of a priced action: its cost site. A row's id ('pullfree', 'reload2', 'cover') becomes its site ('pull_free',
  * 'reload_both', 'break'); any other name is itself. What the `cost` hook's ctx.action carries. */
@@ -195,6 +196,7 @@ export function resWhyNot(res: Record<string, number> | undefined, u: Unit | nul
 export function resPay(res: Record<string, number> | undefined, u: Unit | null | undefined, c?: Character | null): void {
   for (const [id, n] of Object.entries(res || {})) if (n) resAdd(u, id, -n, c);
 }
+/** Can the unit pay this price now (AP and resources, with any credit)? whyNot() says why not. */
 export const canPay = (cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { as?: any; c?: Character | null } = {}): boolean => !whyNot(cb, u, p, o);
 
 // ---------------------------------------------------------------------------------------------- pay, refund

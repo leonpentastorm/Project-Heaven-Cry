@@ -30,7 +30,9 @@ function cached<T>(g: any, key: string, f: () => T): T {
 /** Every descriptor of this unit for this viewer, once per game state. */
 export const descriptorsOf = (g: any, unitId: string, me: string | null): ActionDescriptor[] => cached(g, 'list|' + unitId + '|' + me, () => { try { return actionsFor(g, unitId, me); } catch { return []; } });
 
+/** One chip of the picked action's flow (an option or a toggle), with whether it is on or greyed out. */
 export interface FlowChip { key: string; label: string; title: string; on: boolean; off: boolean; pick: Picks }
+/** What the fight screen shows for the picked action: the descriptor, its preview, the picks, the next step. */
 export interface FlowView {
   d: ActionDescriptor; pv: DescriptorPreview; picks: Picks;
   /** AP the picked action will take (the engine's: after the picks, the items and anything lent). */

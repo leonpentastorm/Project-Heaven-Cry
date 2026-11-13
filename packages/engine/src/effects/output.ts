@@ -46,6 +46,7 @@ import { applyDamage, healUnit, grantShield, type DamageSrc, type DamageResult }
 
 // ---------------------------------------------------------------------------------------------- the data
 export interface Term { v: number; label: string }
+/** A damage, heal or shield profile (data/rules.json output.profiles): the slopes of its Stat term and the Level column it reads. */
 export interface Profile {
   /** A constant of the profile (×1 today; stage (b) re-pins a system here without touching its bases). */ k: number;
   /** What a point of Attribute over 1 adds to the Stat term. */ attr: number;
@@ -55,6 +56,7 @@ export interface Profile {
   /** Rules 1.27 (the heal re-fit): the floor of a landed heal or shield profile: its Stat term is never under this share
    * of what a normal share (output.floor_reference: 4 in each Attribute and Skill of the pair) gets. Absent: no floor. */ floor?: number;
 }
+/** The Attributes and Skills a Stat term reads (data/rules.json output.pairs). */
 export interface Pair { attrs: string[]; skills: string[] }
 const OUT: any = (RULES as any).output || {};
 /** The profiles (data/rules.json output.profiles). Today's slopes, one per system; `level` null everywhere but `mend`. */
@@ -65,10 +67,12 @@ const FLOOR_REF: { attribute: number; skill: number } = { attribute: Number(OUT.
 /** The pairs (data/rules.json output.pairs): which Attributes and Skills a Stat term reads. A weapon's own pair comes
  * from weapons.json `phys` (each `scales_with` Attribute; the skill it hits with): character.ts weaponMult. */
 export const PAIRS: Record<string, Pair> = Object.fromEntries(Object.entries(OUT.pairs || {}).filter(([, p]: [string, any]) => p && Array.isArray(p.attrs) && Array.isArray(p.skills)).map(([id, p]: [string, any]) => [id, { attrs: [...p.attrs], skills: [...p.skills] }]));
+/** The profile of this id (data/rules.json output.profiles); an unknown or absent id is the flat profile (no Stat, no Level term). */
 export const profileOf = (id: string | null | undefined): Profile => PROFILES[id || ''] || FLAT;
 /** Rules 1.26 (the re-fit): a system's own named multiplier (data/rules.json output.factors: melee, thrown). Throws when the data has none: never a silent ×1. */
 export function factorOf(name: string): number { const v = Number(OUT.factors?.[name]); if (!Number.isFinite(v)) throw new Error('data/rules.json output.factors.' + name + ' is missing'); return v; }
 const FLAT: Profile = { k: 1, attr: 0, skill: 0, level: null };
+/** The pair a profile reads: its own id in output.pairs, else the profile's default pair, else none. */
 export const pairOf = (id: string | null | undefined): Pair => PAIRS[id || ''] || PAIRS[profileOf(id).pair || ''] || { attrs: [], skills: [] };
 
 /** The Stat term of a profile for these Attribute and Skill values: 1 + Σ attr × (Attribute − 1) + Σ skill × Skill.
@@ -120,6 +124,7 @@ export function stackDamage(mults: Term[], vs: Term[]): { mult: number; vsMult: 
 export type AmountKind = 'damage' | 'heal' | 'shield';
 /** How a source meets armour: in full, at half (rounded down), or not at all. */
 export type ArmourKind = 'full' | 'half' | 'none';
+/** One amount before the formula: its kind, base, per-point parts, profile and rounding (an item's `amounts` block becomes one). */
 export interface AmountSpec {
   kind: AmountKind;
   /** The source's own number, before anything. */ base: number;
@@ -134,6 +139,7 @@ export interface AmountSpec {
   round?: 'floor' | 'round' | 'none';
   /** Marked for spec section 14. */ provisional?: boolean;
 }
+/** Who makes an amount and how: the dealer's sheet or Stat term, level, armour rule, and whether the damage_out hook fires. */
 export interface AmountCtx {
   /** The dealer's sheet (a character); null for an enemy or a thing. */ who?: Pick<Character, 'attrs' | 'skills'> | null;
   /** The Stat term outright, when the caller owns it (a weapon's multiplier with perks and gear in it; an enemy's tier and level). */ stat?: Term | null;
@@ -198,11 +204,13 @@ export interface DealSpec extends AmountSpec {
   /** The 'damage_out' hook fires (items add flat damage, own multipliers and target bonuses) when there is a dealer.
    * Off for what is not anybody's action: a blast's splash, a trap, a hazard, a tick. */ hook?: boolean;
 }
+/** What deal() is told besides the amount: the source for the sink, the hook's context, armour piercing. */
 export interface DealCtx extends AmountCtx {
   /** What the sink is told: the source (type, damage type, shield, credit and the rest of DamageSrc). `by` is filled in. */ src: DamageSrc & Record<string, any>;
   /** What the 'damage_out' hook is told besides the amount (mode: 'spell', spell: true…). */ hookCtx?: Record<string, any>;
   /** Armour this hit ignores, or all of it. */ pierce?: number; ignoreArmour?: boolean; armourMult?: number;
 }
+/** What deal() did: the amount made, the armour it met, what reached the sink, and the sink's own result. */
 export interface DealResult extends DamageResult { /** before armour, after the hook */ produced: number; /** the armour it met */ armour: number; /** after armour: what went to the sink */ sent: number }
 const ARMOUR_OF_TYPE: Record<string, ArmourKind> = { sigil: 'full', physical: 'full', elemental: 'half' };
 /** Deal damage: the amount (amountOf, with the 'damage_out' hook between its two halves when spec.hook), the armour

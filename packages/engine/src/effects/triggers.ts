@@ -153,6 +153,7 @@ function fill(s: string, ev: Ev): string {
 // ============================================================================================== the ops
 /** The closed list of ops a triggered effect may run, with the triggers each one understands. */
 export interface TriggerOp { on: string[]; state: boolean; about: string; fields: string[]; run: (ev: Ev, e: any, label: string) => string | void }
+/** THE OPS: filled by O(...) below, one line each (data/effect_ops.json item_ops.ops is written from it). */
 export const OPS: Record<string, TriggerOp> = {};
 const O = (name: string, on: string[], state: boolean, fields: string[], about: string, run: TriggerOp['run']) => { OPS[name] = { on, state, fields, about, run }; };
 const ANY = Object.keys(TRIGGERS);

@@ -1,5 +1,40 @@
 # Engine guide: read this before you extend the engine
 
+## Stop: before you build
+
+Leon (13 Nov 2026): *"Write into the engine hand-off all the hooks so Opus stops inventing things on its own. If I use
+only Opus, I want it to spot by itself if it builds a new system instead of using the formula we already had."* And:
+it is forbidden to write custom code for a system or an item where the engine already has a primitive.
+
+**The routine, every time** (a spec, a class, an item, a screen):
+
+1. **Look it up** in [`docs/ENGINE-HOOKS.md`](ENGINE-HOOKS.md): the catalogue of every trigger, predicate, op, hook,
+   profile, cost site, scope, stat, selector and guard, generated from the code (`python3 tools/engine_catalog.py`).
+   Then in `docs/design/rev4-primitives.md` (what is already planned).
+2. **Write the "Built from" table**: each rule against the primitive that carries it. What is truly missing goes in a
+   separate "Needs a new primitive" list, each one general (for the next system too), never named after one item.
+3. **Check the spec**: `npm run built-from -- docs/design/<spec>.md`. Every unknown name is a typo, an invention, or
+   belongs on the "Needs" list. Every "Needs" entry it says already exists is not needed.
+4. **Build** from the table.
+5. **Check the diff**: `npm run built-from -- develop..HEAD`, then `npm run check`. Fix every smell or say in the
+   hand-off why it stays.
+
+**Thoughts that mean stop and look it up first** (the catalogue, then `rev4-primitives.md`):
+"I'll add a small handler for this item" (it is data: `when` / `if` / `limit` / an op) · "this needs its own counter"
+(`uses(h)`) · "I'll compute the damage here" (`amounts` + `deal` / `mend`) · "the client can work that out" (the
+engine's descriptor and preview) · "this spec needs a new op" (one of the 18 ops, or a field on one, usually fits).
+
+**When a primitive is truly missing**, add it GENERAL, in this order: extend the closed list (`TRIGGERS`,
+`PREDICATES` or `OPS` in `effects/triggers.ts`, `STATS` in `effects/stats.ts`, `COST_SITE_IDS`, a `SCOPES` row,
+`HOOK_ABOUT` for a hook) with its one-line `about` or doc comment; write the data list from it
+(`ITEM_OPS_WRITE=1 npx vitest run --root packages/engine test/item-ops`: `test/item-ops.test.ts` keeps
+`data/effect_ops.json item_ops` and the code equal); if it retires a handler, lower the lint baseline on purpose
+(`LINT_RECORD=1 npx vitest run --root packages/engine test/lint-item-ops`; baselines only shrink); regenerate the
+catalogue (`python3 tools/engine_catalog.py`; `npm run check` fails while it is stale); one line in the session's
+hand-off naming the primitive and its first user. **Parallel work gets one consolidation pass before anything is
+built**: on 13 Nov 2026 six specs written side by side asked for 26 new primitives; 12 were needed
+(`docs/design/rev4-primitives.md`).
+
 One page for an agent about to add or change something under `packages/engine/` (or the client's boundary with it).
 It collects; it does not decide. Every rule below comes from a hand-off in `docs/design/handoffs/` (called H:name
 here, for example H:engine-foundations-1), and each row says which section has the detail. Function and file names
@@ -35,10 +70,13 @@ part of the rules; replace shared objects, never write into them.
 
 ## 2. I want to add X
 
-"First look" is where to start reading. "Write it" is the shape to produce. "Proof" is what fails or passes.
+"First look" is where to start reading. "Write it" is the shape to produce. "Proof" is what fails or passes. Every
+name below, with its signature, its one-line purpose and an example use, is in the generated catalogue
+[`docs/ENGINE-HOOKS.md`](ENGINE-HOOKS.md): (a) the item-op lists, (b) the hook bus, (c) the primitives, (d) the guards.
 
 | I want to add | Write it here | Call this | Proof | Detail |
 | --- | --- | --- | --- | --- |
+| Anything at all: first, does the engine have it? | Nothing yet: look the thing up in `docs/ENGINE-HOOKS.md` and `docs/design/rev4-primitives.md`; write the spec's "Built from" table | `npm run built-from -- <spec.md>` | `npm run built-from -- develop..HEAD` on the diff; `npm run check` (the catalogue's freshness is the line "engine hooks") | "Stop: before you build" at the top of this page |
 | A perk, trait, class move or relic that is "when X, if Y, do Z, at most N per scope" | Data only, in the item's `effects`: `{op, when, if, limit, and, say}` using the closed lists in `data/effect_ops.json` `item_ops` (30 triggers, 54 predicates, 18 ops). Then `python3 tools/validate.py data` | nothing; the generic runner `effects/triggers.ts` `runTriggered` runs it. Do not write a `register({...})` | `test/item-ops.test.ts` (well-formed, lists equal data), `test/lint-item-ops.test.ts` (a new handler fails), the validator | H:engine-foundations-3-item-ops sections 1, 2, 7 (worked examples for a perk, trait, class move, relic) |
 | ...same, but no trigger, predicate or op fits | One line in `TRIGGERS`, `PREDICATES` or `OPS` in `effects/triggers.ts` (what it reads, `about` in words). Then `ITEM_OPS_WRITE=1 npx vitest run --root packages/engine test/item-ops`, and add the op to `data/effect_ops.json` `items` as a `core` row. Never test an item id inside the runner | `triggerProblem` checks the shape | `test/item-ops.test.ts` | H:engine-foundations-3-item-ops section 7 rule 2 |
 | ...but the shape really does not fit (a private clock, its own log lines, the story half, an area) | A bespoke handler in the lane file. Read its numbers with `num(h, 'key')` (`effects/num.ts`) from the item's `numbers`, never a literal | `num`, `uses(h)`, `price`, `applyCond`, the rest of this table | The literal count in `lint-item-ops.test.ts` only goes down | H:engine-foundations-3-item-ops sections 6, 7 rule 4 |

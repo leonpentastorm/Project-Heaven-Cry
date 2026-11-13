@@ -12,6 +12,7 @@ import { type Held, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, _addRawItems
 let G: any = null;
 /** Bind a game state while one action runs, so handlers see h.g and h.c (the live character). Returns the previous one. */
 export function bindGame(g: any): any { const was = G; G = g; return was; }
+/** The game bound for this action (bindGame), or null: how items reach the characters. */
 export const boundGame = (): any => G;
 
 // ---------- registry ----------
@@ -29,10 +30,13 @@ export function register(def: ItemHandler): void {
   dirty();
 }
 const mergeSel = (a: any, b: any) => (a == null ? b : b == null ? a : (e: any, i: number, t: string) => sel(a, e, i, t) || sel(b, e, i, t));
+/** The lane handler registered for this item key, if any. */
 export const handlerOf = (key: string): ItemHandler | undefined => REG.get(key);
+/** Every item key that has a lane handler. */
 export const registered = () => [...REG.keys()];
 /** For tests: take a copy of the lane registrations, and put a copy back (test helpers isolate runtime tests from lanes). */
 export const _snapshotRegistry = () => new Map(REG);
+/** Put back a registry saved by _snapshotRegistry (tests only). */
 export function _restoreRegistry(snap: Map<string, ItemHandler>) { REG.clear(); for (const [k, v] of snap) REG.set(k, v); dirty(); }
 /** Add items at run time (engine foundations 3): a mode's relics or new perks, a test's fixtures; plain data in the
  * shape of perks.json / traits.json items. They run on the generic runners only (no handler). */
@@ -59,15 +63,19 @@ const GEN = new Map<string, GenericOp>();
 // ---------- item ops: triggered effects (engine foundations 3, effects/triggers.ts sets this at load) ----------
 interface TriggerRunner { isTriggered(e: any): boolean; problem(e: any): string | null; hookOf(e: any): HookName | null; run(ctx: any, h: Holder, e: any): void }
 let TR: TriggerRunner | null = null;
+/** effects/triggers.ts registers the item-ops runner here as it loads (no import cycle). */
 export function setTriggerRunner(r: TriggerRunner) { TR = r; dirty(); }
 /** Does this effect run as a triggered item op (its `when` names a trigger and it is well formed)? */
 const triggered = (e: any): boolean => !!TR && TR.isTriggered(e) && !TR.problem(e);
+/** Register the engine's generic handler of a core data op (effects/core.ts). */
 export function registerGeneric(op: GenericOp) { GEN.set(op.op, op); dirty(); }
+/** The generic handler of a core data op, if the engine has one. */
 export const genericOf = (op: string) => GEN.get(op);
 
 const sel = (s: any, e: any, i: number, t: string): boolean =>
   s == null ? false : s === 'all' ? true : typeof s === 'function' ? !!s(e, i, t) : Array.isArray(s) ? s.some((x: any) => (typeof x === 'number' ? x === i : x === e?.op)) : false;
 
+/** Who runs one effect of an item: a lane handler, a generic op, the Narrator, the item's action, or nobody (a gap). */
 export type Owner = 'handler' | 'generic' | 'narrator' | 'action' | 'gap';
 /** Who runs one effect of one item: its lane's handler, a generic op, the Narrator (op narrator or listed), the item's
  * action (an active item's own effects, run when the action runs), or nobody yet (a gap: the Narrator gets the text). */
@@ -107,6 +115,7 @@ export function hookUsed(name: HookName): boolean {
   }
   return v;
 }
+/** A number that changes whenever handlers or items change (caches key on it). */
 export const registryVersion = () => version;
 /** The hooks the data's item ops listen on (every item, and any added by addItems). */
 let TH: Set<string> | null = null;
@@ -152,7 +161,9 @@ let rankHook: ((c: Character) => number) | null = null;
 /** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */
 export const setRankRule = (f: (c: Character) => number) => { rankHook = f; };
 
+/** What a unit holds (perks, traits, class moves): its own list, else its character's. */
 export const heldOfUnit = (u: Unit | null | undefined): Held => (u?.held ? u.held : u?.charId && G?.characters?.[u.charId] ? heldOfChar(G.characters[u.charId]) : { perks: [], traits: [] });
+/** The character behind a unit in the bound game, or null (an enemy, a thing). */
 export const charOfUnit = (u: Unit | null | undefined): Character | null => (u?.charId && G?.characters?.[u.charId]) || null;
 
 function holder(info: ItemInfo, c: Character | null, u: Unit | null, cb: Combat | null): Holder {
@@ -169,11 +180,11 @@ export function holderOf(x: { u?: Unit | null; c?: Character | null; cb?: Combat
 }
 
 // ---------- emit ----------
-/** Fire a combat hook: every unit's handlers in cb.units order (an ally's or an enemy's items may react). */
 /** Step a7 (leak 4): a blast, a splash, a trap and a thrown item fire 'damage_out' too when someone made them
  * (ctx.blast, ctx.kind: 'explosion' | 'trap' | 'thrown'), but an item speaks about them only when its data says so
  * (`damage_kinds`): every item written before then keeps meaning weapon attacks and spells, so nothing moved by itself. */
 const speaksOfBlast = (info: ItemInfo, kind: string): boolean => { const k = info.damageKinds; return !!k && (k.includes('blast') || k.includes('all') || k.includes(kind)); };
+/** Fire a combat hook: every unit's handlers in cb.units order (an ally's or an enemy's items may react). */
 export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): any {
   if (!cb) return ctx;
   const blast = name === 'damage_out' && !!ctx?.blast;
@@ -201,11 +212,14 @@ type GlobalHook = (ctx: any, cb: Combat) => void;
 const GLOBAL_HOOKS: Partial<Record<HookName, GlobalHook[]>> = {};
 const GLOBAL_STATS: Record<string, ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number)[]> = {};
 const GLOBAL_CHECKS: ((x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[])[] = [];
+/** An engine system (not an item) listens on a combat hook; it runs after every unit's items. */
 export function onHook(name: HookName, fn: GlobalHook) { (GLOBAL_HOOKS[name] ||= []).push(fn); listened.delete(name); }
+/** An engine system (not an item) answers a stat query. */
 export function onStat(stat: StatId, fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ctx: any) => number) { (GLOBAL_STATS[stat] ||= []).push(fn); }
+/** An engine system (not an item) adds modifiers to d20 checks. */
 export function onCheck(fn: (x: { u?: Unit | null; c?: Character | null; cb?: Combat | null }, ck: any, ctx: any) => CheckMod[]) { GLOBAL_CHECKS.push(fn); }
-/** A story hook for an engine system (no item): runs after the characters' items, with the game. */
 const GLOBAL_STORY: Partial<Record<HookName, ((ctx: any, g: any) => void)[]>> = {};
+/** A story hook for an engine system (no item): runs after the characters' items, with the game. */
 export function onStoryHook(name: HookName, fn: (ctx: any, g: any) => void) { (GLOBAL_STORY[name] ||= []).push(fn); }
 /** Fire a story hook for characters (all of them in g.characters order, or the ones given). */
 export function emitStory(g: any, name: HookName, ctx: any, only?: Character[]): any {

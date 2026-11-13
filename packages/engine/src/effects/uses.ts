@@ -21,6 +21,7 @@ import type { Holder, UseScope } from './types';
 import { boundGame } from './hooks';
 import { overworld } from '../kit';
 
+/** One counter cell: the stamp it was taken under (s) and how many were taken (n). */
 export interface UseCell { s: string; n: number }
 type Home = 'unit' | 'story' | 'character';
 /** THE RESET POINTS, one row a scope: when it is fresh again (the stamp it carries changes), and where its cells live.
@@ -51,6 +52,7 @@ export function scopeOf(uses: string | null | undefined): UseScope {
 export const sessionN = (g: any) => (g?.sessionN ?? 1);
 /** The day counter (rules 1.6.1, item 709): g.day, from 1; a long rest is a day, the Narrator's turn field days adds more. Old saves: day 1. */
 export const dayOf = (g: any): number => (Number.isFinite(g?.day) ? g.day : 1);
+/** The game's long-rest counter (old saves: 0). */
 export const restN = (g: any) => (g?.restN ?? 0);
 /** The round a limit counts in: the fight's, or on the area map (and in the story) the story's. */
 export const roundNow = (x: { cb?: Combat | null; g?: any }): number => { const cb = x.cb; return cb && !overworld(cb) ? cb.round : (x.g ?? boundGame())?.story?.round ?? 0; };
@@ -92,6 +94,7 @@ export interface Uses {
   coolLeft(turns: number, key?: string, atRound?: number): number; ready(turns: number, key?: string, atRound?: number): boolean;
   cooledAt(key?: string): number | null; cool(turns: number, key?: string, atRound?: number): boolean; uncool(key?: string): void;
 }
+/** THE counter door: every limit, "first X of the fight" and cooldown of one holder (see the header and SCOPES). */
 export function uses(h: Pick<Holder, 'key' | 'u' | 'c' | 'cb' | 'g'>): Uses {
   const g = h.g ?? boundGame();
   const at = (scope: UseScope, key: string | undefined, create: boolean) => {
